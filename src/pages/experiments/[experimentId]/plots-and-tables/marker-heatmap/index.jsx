@@ -9,7 +9,7 @@ import { Vega } from 'react-vega';
 import PropTypes from 'prop-types';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
 import endUserMessages from 'utils/endUserMessages';
-import { getCellSets } from 'redux/selectors';
+import { getCellSets, getCellSetsHierarchyByKey } from 'redux/selectors';
 import loadProcessingSettings from '../../../../../redux/actions/experimentSettings/processingConfig/loadProcessingSettings';
 import PlotStyling from '../../../../../components/plots/styling/PlotStyling';
 import { updatePlotConfig, loadPlotConfig } from '../../../../../redux/actions/componentConfig';
@@ -36,10 +36,14 @@ const MarkerHeatmap = ({ experimentId }) => {
   const dispatch = useDispatch();
   const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
 
-  const { expression: expressionData } = useSelector((state) => state.genes);
   const { error, loading } = expressionData;
-  const cellSets = useSelector(getCellSets());
-  const { hierarchy, properties } = cellSets;
+
+  const { expression: expressionData } = useSelector((state) => state.genes);
+  const { hierarchy, properties } = useSelector(getCellSets());
+  const selectedCellSetClassAvailable = useSelector(
+    getCellSetsHierarchyByKey([config.selectedCellSet]),
+  ).length;
+
   const selectedGenes = useSelector((state) => state.genes.expression.views[plotUuid]?.data) || [];
   const louvainClustersResolutionRef = useRef(null);
 
@@ -47,28 +51,28 @@ const MarkerHeatmap = ({ experimentId }) => {
     loading: loadingMarkerGenes,
     error: errorMarkerGenes,
   } = useSelector((state) => state.genes.markers);
-  const [vegaSpec, setVegaSpec] = useState();
+
   const louvainClustersResolution = useSelector(
     (state) => state.experimentSettings.processing
       .configureEmbedding?.clusteringSettings.methodSettings.louvain.resolution,
   ) || false;
+
+  const [vegaSpec, setVegaSpec] = useState();
 
   useEffect(() => {
     if (!louvainClustersResolution) {
       dispatch(loadProcessingSettings(experimentId));
     }
     dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
-    if (!cellSets?.hierarchy?.length) {
+    if (!hierarchy?.length) {
       dispatch(loadCellSets(experimentId));
     }
   }, []);
 
-  const selectedClustersAvailable = (node) => hierarchy.filter((cluster) => (
-    cluster.key === node))[0]?.children.length;
   useEffect(() => {
     if (louvainClustersResolution && config?.numGenes && hierarchy?.length) {
       louvainClustersResolutionRef.current = louvainClustersResolution;
-      if (selectedClustersAvailable(config.selectedCellSet)) {
+      if (selectedCellSetClassAvailable) {
         dispatch(loadMarkerGenes(
           experimentId, louvainClustersResolution,
           plotUuid, config.numGenes, config.selectedCellSet,
