@@ -23,7 +23,9 @@ const ViolinPlot = (props) => {
   const geneExpression = useSelector((state) => state.genes.expression);
   const cellSets = useSelector(getCellSets());
 
-  const selectedCellSetHierarchy = useSelector(getCellSetsHierarchyByKey([config.selectedCellSet]));
+  const selectedCellSetClassAvailable = useSelector(
+    getCellSetsHierarchyByKey([config.selectedCellSet]),
+  ).length;
 
   const [plotSpec, setPlotSpec] = useState({});
   const highestDispersionLoading = useSelector(
@@ -96,8 +98,6 @@ const ViolinPlot = (props) => {
     }
   }, [experimentId, cellSets.loading, cellSets.error]);
 
-  const clustersAvailable = () => selectedCellSetHierarchy.length;
-
   useEffect(() => {
     if (config
       && Object.getOwnPropertyDescriptor(geneExpression.data, config.shownGene)
@@ -107,7 +107,7 @@ const ViolinPlot = (props) => {
       const geneExpressionData = config.normalised === 'normalised'
         ? geneExpression.data[config.shownGene].zScore
         : geneExpression.data[config.shownGene].rawExpression.expression;
-      if (clustersAvailable) {
+      if (selectedCellSetClassAvailable) {
         const generatedPlotData = generateData(
           cellSets,
           geneExpressionData,
@@ -130,7 +130,7 @@ const ViolinPlot = (props) => {
         />
       );
     }
-    if (!clustersAvailable()) {
+    if (!selectedCellSetClassAvailable) {
       return (
         <PlatformError
           description='No clustering available.'
