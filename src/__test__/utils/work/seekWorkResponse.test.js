@@ -79,7 +79,7 @@ describe('seekFromAPI unit tests', () => {
 
     const socketMock = new SocketMock();
 
-    socketConnectionMocks.mockEmit.mockImplementation((workRequest, requestBody) => {
+    socketConnectionMocks.mockEmit.mockImplementation((workRequestType, requestBody) => {
       const responseBody = {
         response: {
           error: false,

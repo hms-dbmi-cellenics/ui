@@ -39,7 +39,7 @@ const plotType = 'markerHeatmap';
 
 const route = {
   path: 'marker-heatmap',
-  breadcrumbName: 'Marker-Heatmap',
+  breadcrumbName: 'Marker Heatmap',
 };
 const MarkerHeatmap = ({ experimentId }) => {
   const dispatch = useDispatch();
@@ -82,7 +82,6 @@ const MarkerHeatmap = ({ experimentId }) => {
 
   useEffect(() => {
     if (louvainClustersResolution && config?.nMarkerGenes && hierarchy?.length) {
-      louvainClustersResolutionRef.current = louvainClustersResolution;
       if (selectedClustersAvailable(config.selectedCellSet)) {
         dispatch(loadMarkerGenes(
           experimentId, louvainClustersResolution,
@@ -168,7 +167,8 @@ const MarkerHeatmap = ({ experimentId }) => {
   const reSortGenes = () => {
     const newGenes = _.difference(loadedGenes, config.selectedGenes);
     let newOrder;
-    if (newGenes.length > 0) {
+
+    if (!newGenes.length) {
       // gene was removed instead of added - no need to sort
       const removedGenes = _.difference(config.selectedGenes, loadedGenes);
       newOrder = _.cloneDeep(config.selectedGenes);
@@ -193,11 +193,11 @@ const MarkerHeatmap = ({ experimentId }) => {
       return;
     }
 
-    if (!_.isEqual(loadedGenes, config.selectedGenes)) {
+    if (loadedGenes.length !== config.selectedGenes.length) {
       const newOrder = reSortGenes();
       updatePlotWithChanges({ selectedGenes: newOrder });
     }
-  }, [loadedGenes]);
+  }, [loadedGenes, config?.selectedGenes]);
 
   useEffect(() => {
     if (cellSets.loading
@@ -244,12 +244,6 @@ const MarkerHeatmap = ({ experimentId }) => {
     dispatch(updatePlotConfig(plotUuid, updatedField));
   };
 
-  useEffect(() => {
-    if (config?.selectedGenes && config.selectedGenes.length > 0) {
-      dispatch(loadGeneExpression(experimentId, config.selectedGenes, plotUuid));
-    }
-  }, [config?.selectedGenes.length]);
-
   const renderPlot = () => {
     if (!config
       || loading.length > 0
@@ -268,6 +262,7 @@ const MarkerHeatmap = ({ experimentId }) => {
         />
       );
     }
+
     if (errorMarkerGenes) {
       return (
         <PlatformError
@@ -297,7 +292,12 @@ const MarkerHeatmap = ({ experimentId }) => {
     }
   };
 
+  const onGeneEnter = (genes) => {
+    dispatch(loadGeneExpression(experimentId, genes, plotUuid));
+  };
+
   const onReset = () => {
+    onGeneEnter([]);
     dispatch(loadMarkerGenes(
       experimentId,
       louvainClustersResolution,
@@ -345,7 +345,7 @@ const MarkerHeatmap = ({ experimentId }) => {
     },
   ];
 
-  if (!config || cellSets.loading || !hierarchy) {
+  if (!config || cellSets.loading || hierarchy.length === 0) {
     return (<Skeleton />);
   }
 
@@ -360,7 +360,6 @@ const MarkerHeatmap = ({ experimentId }) => {
   };
   const changeClusters = (option) => {
     const newValue = option.value.toLowerCase();
-    console.log('*** newValue', newValue);
 
     updatePlotWithChanges({ selectedCellSet: newValue });
   };
@@ -374,6 +373,7 @@ const MarkerHeatmap = ({ experimentId }) => {
           <MarkerGeneSelection
             config={config}
             onUpdate={updatePlotWithChanges}
+            onGeneEnter={onGeneEnter}
             onReset={onReset}
           />
           <div>

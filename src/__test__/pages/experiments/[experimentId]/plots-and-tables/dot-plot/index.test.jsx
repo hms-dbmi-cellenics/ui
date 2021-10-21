@@ -1,85 +1,122 @@
 import React from 'react';
+import _ from 'lodash';
+
+import { act } from 'react-dom/test-utils';
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { Provider } from 'react-redux';
-import configureMockStore from 'redux-mock-store';
-import thunk from 'redux-thunk';
+import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 
+import { makeStore } from 'redux/store';
 import DotPlotPage from 'pages/experiments/[experimentId]/plots-and-tables/dot-plot/index';
 
-import { initialPlotConfigStates } from 'redux/reducers/componentConfig/initialState';
-import initialCellSetsState from 'redux/reducers/cellSets/initialState';
-import initialGenesState from 'redux/reducers/genes/initialState';
+import fake from '__test__/test-utils/constants';
+import mockExperimentData from '__test__/test-utils/experimentData.mock';
+import mockBackendStatus from '__test__/test-utils/backendStatus.mock';
+import { loadBackendStatus } from 'redux/actions/backendStatus';
+
+const cellSetsData = require('__test__/data/cell_sets.json');
+
+enableFetchMocks();
 
 jest.mock('localforage');
 
-jest.mock('swr', () => () => ({
-  data: {
-    experimentId: '1234ABC',
-    experimentName: 'test',
-  },
-}));
+jest.mock('utils/socketConnection', () => {
+  const mockEmit = jest.fn();
+  const mockOn = jest.fn();
 
-const mockStore = configureMockStore([thunk]);
+  return {
+    __esModule: true,
+    default: new Promise((resolve) => {
+      resolve({ emit: mockEmit, on: mockOn, id: '5678' });
+    }),
+    mockEmit,
+    mockOn,
+  };
+});
 
-const dotPlotPageFactory = (state, experimentId) => (
-  <Provider store={mockStore(state)}>
-    <DotPlotPage experimentId={experimentId} />
-  </Provider>
-);
+const dotPlotPageFactory = (customProps = {}) => {
+  const props = _.merge({
+    experimentId: fake.EXPERIMENT_ID,
+  }, customProps);
 
-const experimentId = '1234ABC';
-const plotUuid = 'dotPlotMain';
+  // eslint-disable-next-line react/jsx-props-no-spreading
+  return <DotPlotPage {...props} />;
+};
 
-const initialState = {
-  componentConfig: {
-    [plotUuid]: {
-      config: initialPlotConfigStates.dotPlot,
-    },
-  },
-  cellSets: {
-    ...initialCellSetsState,
-  },
-  genes: {
-    ...initialGenesState,
-  },
+let storeState;
+
+const mockFetchAPI = (req) => {
+  const path = req.url;
+
+  // return SWR call in Header to get experiment data
+  if (path.endsWith(fake.EXPERIMENT_ID)) {
+    return Promise.resolve(new Response(
+      JSON.stringify(mockExperimentData),
+    ));
+  }
+
+  // return call to loadPlotConfig
+  if (path.endsWith('/plots-tables/dotPlotMain')) {
+    // Return 404 so plot uses default config
+    return Promise.resolve({
+      status: 404,
+      body: 'Not Found',
+    });
+  }
+
+  // return calls from loadCellSets
+  if (path.endsWith('/cellSets')) {
+    return Promise.resolve(new Response(
+      JSON.stringify(cellSetsData),
+    ));
+  }
+
+  // Return backend status
+  if (path.endsWith('/backendStatus')) {
+    return Promise.resolve(new Response(
+      JSON.stringify(mockBackendStatus),
+    ));
+  }
+
+  return Promise.resolve({
+    status: 404,
+    body: path,
+  });
 };
 
 describe('Dot plot page', () => {
-  it('Renders the plot correctly', () => {
-    render(dotPlotPageFactory(initialState, experimentId));
+  beforeEach(() => {
+    enableFetchMocks();
+    fetchMock.resetMocks();
+    fetchMock.doMock();
+    fetchMock.mockIf(fake.API_ENDPOINT, mockFetchAPI);
+    storeState = makeStore();
 
-    // There is the text Dot plot show in the breadcrumbs
-    expect(screen.getByText('Dot plot')).toBeInTheDocument();
-
-    // It has 4 options
-    expect(screen.getByText('Gene selection')).toBeInTheDocument();
-    expect(screen.getByText('Select data')).toBeInTheDocument();
-    expect(screen.getByText('Main schema')).toBeInTheDocument();
-    expect(screen.getByText('Axes and margins')).toBeInTheDocument();
-    expect(screen.getByText('Colours')).toBeInTheDocument();
-    expect(screen.getByText('Legend')).toBeInTheDocument();
+    storeState.dispatch(loadBackendStatus(fake.EXPERIMENT_ID));
   });
 
-  it('Shows a skeleton screen if config is not loaded', () => {
-    const noConfigState = {
-      ...initialState,
-      componentConfig: {},
-    };
+  it('Renders the plot page correctly', async () => {
+    await act(async () => {
+      render(
+        <Provider store={storeState}>
+          {dotPlotPageFactory()}
+        </Provider>,
+      );
+    });
 
-    const { container } = render(dotPlotPageFactory(noConfigState, experimentId));
-    const loadingElement = container.querySelectorAll('div[class*="skeleton"]');
+    // There is the text Dot plot show in the breadcrumbs
+    expect(screen.getByText(/Dot plot/i)).toBeInTheDocument();
 
-    // There is Dot plot for the bread crumbs
-    expect(loadingElement.length).toBeGreaterThan(0);
+    // It has the required dropdown options
+    expect(screen.getByText(/Gene selection/i)).toBeInTheDocument();
+    expect(screen.getByText(/Select data/i)).toBeInTheDocument();
+    expect(screen.getByText(/Main schema/i)).toBeInTheDocument();
+    expect(screen.getByText(/Axes and margins/i)).toBeInTheDocument();
+    expect(screen.getByText(/Colours/i)).toBeInTheDocument();
+    expect(screen.getByText(/Legend/i)).toBeInTheDocument();
 
-    // It doesn't show the plot
-    expect(screen.queryByText('Gene selection')).toBeNull();
-    expect(screen.queryByText('Select data')).toBeNull();
-    expect(screen.queryByText('Main schema')).toBeNull();
-    expect(screen.queryByText('Axes and margins')).toBeNull();
-    expect(screen.queryByText('Colours')).toBeNull();
-    expect(screen.queryByText('Legend')).toBeNull();
-    expect(screen.queryByRole('graphics-document')).toBeNull();
+    // It shows the plot
+    expect(screen.getByRole('graphics-document', { name: 'Vega visualization' })).toBeInTheDocument();
   });
 });

@@ -52,16 +52,9 @@ HeatmapControls.propTypes = {
   onGeneEnter: PropTypes.func.isRequired,
   selectedGenes: PropTypes.array.isRequired,
   plotUuid: PropTypes.string.isRequired,
-  onUpdate: PropTypes.func,
-  markerHeatmap: PropTypes.bool,
-  config: PropTypes.object,
   onReset: PropTypes.func,
 };
 HeatmapControls.defaultProps = {
-  markerHeatmap: false,
-  onUpdate: () => { },
-  config: {},
   onReset: () => { },
-  cellSets: {},
 };
 export default HeatmapControls;

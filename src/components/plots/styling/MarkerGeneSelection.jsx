@@ -9,7 +9,9 @@ import {
 } from 'antd';
 
 const MarkerGeneSelection = (props) => {
-  const { config, onUpdate, onReset } = props;
+  const {
+    config, onUpdate, onReset, onGeneEnter,
+  } = props;
   const [numGenes, setNumGenes] = useState(config.nMarkerGenes);
   const [genesLoaded, setGenesLoaded] = useState(true);
 
@@ -35,7 +37,7 @@ const MarkerGeneSelection = (props) => {
             />
             <Button
               onClick={() => onUpdate({ nMarkerGenes: numGenes })}
-              disabled={genesLoaded}
+              disabled={numGenes === config.nMarkerGenes}
               type='primary'
               size='small'
             >
@@ -53,7 +55,7 @@ const MarkerGeneSelection = (props) => {
           mode='tags'
           style={{ width: '100%' }}
           placeholder='Select genes...'
-          onChange={(genes) => onUpdate({ selectedGenes: genes })}
+          onChange={onGeneEnter}
           value={config.selectedGenes}
           tokenSeparators={[' ']}
           notFoundContent='No gene added yet.'
@@ -88,11 +90,8 @@ const MarkerGeneSelection = (props) => {
 MarkerGeneSelection.propTypes = {
   onUpdate: propTypes.func.isRequired,
   config: propTypes.object.isRequired,
-  onReset: propTypes.func,
-};
-
-MarkerGeneSelection.defaultProps = {
-  onReset: () => {},
+  onGeneEnter: propTypes.func.isRequired,
+  onReset: propTypes.func.isRequired,
 };
 
 export default MarkerGeneSelection;

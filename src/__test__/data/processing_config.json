@@ -1,0 +1,195 @@
+{
+  "processingConfig": {
+    "cellSizeDistribution": {
+      "a6322104-6b1b-4b13-8dca-ee952cb8c4d8": {
+        "auto": false,
+        "auth_JWT": "mock AuthToken",
+        "filterSettings": {
+          "minCellSize": 359,
+          "binStep": 200
+        },
+        "defaultFilterSettings": {
+          "minCellSize": 359,
+          "binStep": 200
+        },
+        "api_url": "http://host.docker.internal:3000",
+        "enabled": true
+      },
+      "auto": true,
+      "filterSettings": {
+        "minCellSize": 1080,
+        "binStep": 200
+      },
+      "enabled": true
+    },
+    "classifier": {
+      "a6322104-6b1b-4b13-8dca-ee952cb8c4d8": {
+        "auto": true,
+        "auth_JWT": "mock AuthToken",
+        "filterSettings": {
+          "FDR": 0.01
+        },
+        "api_url": "http://host.docker.internal:3000",
+        "prefiltered": false,
+        "defaultFilterSettings": {
+          "FDR": 0.01
+        },
+        "enabled": true
+      },
+      "auto": true,
+      "prefiltered": false,
+      "filterSettings": {
+        "FDR": 0.01
+      },
+      "enabled": true
+    },
+    "dataIntegration": {
+      "dataIntegration": {
+        "method": "harmony",
+        "methodSettings": {
+          "harmony": {
+            "numGenes": 2000,
+            "normalisation": "logNormalize"
+          },
+          "fastmnn": {
+            "numGenes": 2000,
+            "normalisation": "logNormalize"
+          },
+          "seuratv4": {
+            "numGenes": 2000,
+            "normalisation": "logNormalize"
+          },
+          "unisample": {
+            "numGenes": 2000,
+            "normalisation": "logNormalize"
+          }
+        }
+      },
+      "auth_JWT": "mock AuthToken",
+      "dimensionalityReduction": {
+        "method": "rpca",
+        "excludeGeneCategories": [],
+        "numPCs": 30
+      },
+      "api_url": "http://host.docker.internal:3000"
+    },
+    "mitochondrialContent": {
+      "a6322104-6b1b-4b13-8dca-ee952cb8c4d8": {
+        "auto": true,
+        "auth_JWT": "mock AuthToken",
+        "filterSettings": {
+          "method": "absolute_threshold",
+          "methodSettings": {
+            "absolute_threshold": {
+              "maxFraction": 0.1,
+              "binStep": 0.05
+            }
+          }
+        },
+        "defaultFilterSettings": {
+          "method": "absolute_threshold",
+          "methodSettings": {
+            "absolute_threshold": {
+              "maxFraction": 0.1,
+              "binStep": 0.05
+            }
+          }
+        },
+        "api_url": "http://host.docker.internal:3000",
+        "enabled": true
+      },
+      "auto": true,
+      "filterSettings": {
+        "method": "absolute_threshold",
+        "methodSettings": {
+          "absolute_threshold": {
+            "maxFraction": 0.1,
+            "binStep": 0.05
+          }
+        }
+      },
+      "enabled": true
+    },
+    "configureEmbedding": {
+      "auth_JWT": "mock AuthToken",
+      "api_url": "http://host.docker.internal:3000",
+      "embeddingSettings": {
+        "method": "umap",
+        "methodSettings": {
+          "tsne": {
+            "perplexity": 30,
+            "learningRate": 9550.167
+          },
+          "umap": {
+            "minimumDistance": 0.3,
+            "distanceMetric": "cosine"
+          }
+        }
+      },
+      "clusteringSettings": {
+        "method": "louvain",
+        "methodSettings": {
+          "louvain": {
+            "resolution": 0.8
+          }
+        }
+      }
+    },
+    "numGenesVsNumUmis": {
+      "a6322104-6b1b-4b13-8dca-ee952cb8c4d8": {
+        "auto": true,
+        "auth_JWT": "mock AuthToken",
+        "filterSettings": {
+          "regressionType": "gam",
+          "regressionTypeSettings": {
+            "gam": {
+              "p.level": 0.0001405679
+            }
+          }
+        },
+        "defaultFilterSettings": {
+          "regressionType": "gam",
+          "regressionTypeSettings": {
+            "gam": {
+              "p.level": 0.0001405679
+            }
+          }
+        },
+        "api_url": "http://host.docker.internal:3000",
+        "enabled": true
+      },
+      "auto": true,
+      "filterSettings": {
+        "regressionType": "gam",
+        "regressionTypeSettings": {
+          "gam": {
+            "p.level": 0.001
+          }
+        }
+      },
+      "enabled": true
+    },
+    "doubletScores": {
+      "a6322104-6b1b-4b13-8dca-ee952cb8c4d8": {
+        "auto": true,
+        "auth_JWT": "mock AuthToken",
+        "filterSettings": {
+          "probabilityThreshold": 0.3877274,
+          "binStep": 0.05
+        },
+        "defaultFilterSettings": {
+          "probabilityThreshold": 0.3877274,
+          "binStep": 0.05
+        },
+        "api_url": "http://host.docker.internal:3000",
+        "enabled": true
+      },
+      "auto": true,
+      "filterSettings": {
+        "probabilityThreshold": 0.5,
+        "binStep": 0.05
+      },
+      "enabled": true
+    }
+  }
+}

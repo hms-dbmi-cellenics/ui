@@ -74,11 +74,11 @@ const dotPlot = (props) => {
 
   const dispatch = useDispatch();
   const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
-  const fetching = useSelector((state) => state.genes.properties.views[plotUuid]?.fetching);
+  const {
+    fetching: genesFetching,
+    data: highestDispersionGenes,
+  } = useSelector((state) => state.genes.properties.views[plotUuid] || {});
   const cellSets = useSelector((state) => state.cellSets);
-  const highestDispersionGenes = useSelector(
-    (state) => state.genes.properties.views[plotUuid]?.data,
-  );
 
   const PROPERTIES = ['dispersions'];
   const tableState = {
@@ -96,10 +96,10 @@ const dotPlot = (props) => {
   }, []);
 
   useEffect(() => {
-    if (config?.selectedGenes.length === 0 && !fetching && !highestDispersionGenes) {
+    if (config?.selectedGenes.length === 0 && !genesFetching && !highestDispersionGenes) {
       dispatch(loadPaginatedGeneProperties(experimentId, PROPERTIES, plotUuid, tableState));
     }
-  }, [highestDispersionGenes, config, fetching]);
+  }, [highestDispersionGenes, config, genesFetching]);
 
   useEffect(() => {
     if (config?.selectedGenes.length === 0 && highestDispersionGenes?.length > 0) {
