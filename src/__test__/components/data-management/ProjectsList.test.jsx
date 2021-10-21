@@ -1,7 +1,5 @@
 import React from 'react';
-import { configure, mount } from 'enzyme';
-import Adapter from 'enzyme-adapter-react-16';
-import preloadAll from 'jest-next-dynamic';
+import { mount } from 'enzyme';
 import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
@@ -9,9 +7,8 @@ import '@testing-library/jest-dom';
 import ProjectsList from '../../../components/data-management/ProjectsList';
 import ProjectCard from '../../../components/data-management/ProjectCard';
 import initialState, { projectTemplate } from '../../../redux/reducers/projects/initialState';
+import '__test__/test-utils/setupTests';
 
-jest.mock('localforage');
-configure({ adapter: new Adapter() });
 const mockStore = configureMockStore([thunk]);
 
 const project1 = {
@@ -89,10 +86,6 @@ const filledStore = mockStore({
 });
 
 describe('ProjectsList', () => {
-  beforeAll(async () => {
-    await preloadAll();
-  });
-
   it('renders without options', () => {
     const component = mount(
       <Provider store={initialStore}>

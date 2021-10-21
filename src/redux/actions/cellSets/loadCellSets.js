@@ -9,17 +9,15 @@ const loadCellSets = (experimentId, forceReload = false) => async (dispatch, get
   const {
     loading, error, updatingClustering,
   } = getState().cellSets;
+
   if (!forceReload && ((!loading && !error) || updatingClustering)) {
     return null;
   }
-
   if (getState().cellSets.error) {
     dispatch({
       type: CELL_SETS_LOADING,
     });
   }
-
-  const sampleIds = { sample: getState().experimentSettings.info.sampleIds };
 
   const url = `/v1/experiments/${experimentId}/cellSets`;
   try {
@@ -31,7 +29,6 @@ const loadCellSets = (experimentId, forceReload = false) => async (dispatch, get
       payload: {
         experimentId,
         data: json.cellSets,
-        order: sampleIds,
       },
     });
   } catch (e) {

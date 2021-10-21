@@ -1,9 +1,9 @@
 import React from 'react';
 import { Table, Empty } from 'antd';
-import { mount, configure } from 'enzyme';
-import Adapter from 'enzyme-adapter-react-16';
+import { mount } from 'enzyme';
 
 import FilterResultTable from '../../../components/data-processing/FilterResultTable';
+import '__test__/test-utils/setupTests';
 
 const correctInput = {
   after: {
@@ -19,8 +19,6 @@ const correctInput = {
 };
 
 describe('FilterResultTable', () => {
-  configure({ adapter: new Adapter() });
-
   it('Should show Empty if passed empty or incorrect input', () => {
     const emptyInput = [];
 

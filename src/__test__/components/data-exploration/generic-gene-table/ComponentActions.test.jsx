@@ -1,7 +1,6 @@
 import React from 'react';
-import { mount, configure } from 'enzyme';
+import { mount } from 'enzyme';
 import { Provider } from 'react-redux';
-import Adapter from 'enzyme-adapter-react-16';
 import { Dropdown } from 'antd';
 import waitForActions from 'redux-mock-store-await-actions';
 import thunk from 'redux-thunk';
@@ -11,8 +10,6 @@ import ComponentActions from '../../../../components/data-exploration/generic-ge
 import { fetchWork } from '../../../../utils/work/fetchWork';
 
 import { GENES_EXPRESSION_LOADING, GENES_EXPRESSION_LOADED } from '../../../../redux/actionTypes/genes';
-
-jest.mock('localforage');
 
 jest.mock('../../../../utils/getTimeoutForWorkerTask', () => ({
   __esModule: true, // this property makes it work
@@ -40,7 +37,6 @@ jest.mock('../../../../utils/work/fetchWork', () => ({
 }));
 
 const mockStore = configureMockStore([thunk]);
-configure({ adapter: new Adapter() });
 
 let component;
 const experimentId = '1234';

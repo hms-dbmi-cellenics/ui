@@ -10,6 +10,7 @@ import { createExperiment } from 'redux/actions/experiments';
 import {
   PROJECTS_CREATE, PROJECTS_SAVING, PROJECTS_ERROR,
 } from 'redux/actionTypes/projects';
+import '__test__/test-utils/setupTests';
 
 const mockStore = configureStore([thunk]);
 
@@ -26,7 +27,6 @@ createExperiment.mockImplementation((uuid, name) => async () => ({
   uuid,
 }));
 
-jest.mock('utils/pushNotificationMessage');
 pushNotificationMessage.mockImplementation(() => async () => { });
 
 enableFetchMocks();

@@ -109,12 +109,6 @@ jest.mock('../../../utils/upload/loadAndCompressIfNecessary',
     },
   ));
 
-jest.mock('../../../utils/environment', () => ({
-  __esModule: true,
-  isBrowser: () => false,
-  ssrGetCurrentEnvironment: () => 'development',
-}));
-
 jest.mock('../../../redux/actions/samples/saveSamples', () => jest.fn().mockImplementation(() => ({
   type: 'samples/saved',
 })));

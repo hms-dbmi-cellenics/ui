@@ -1,9 +1,7 @@
 import React from 'react';
-import { mount, configure } from 'enzyme';
-import Adapter from 'enzyme-adapter-react-16';
+import { mount } from 'enzyme';
 import EditableField from '../../components/EditableField';
-
-configure({ adapter: new Adapter() });
+import '__test__/test-utils/setupTests';
 
 const eventStub = {
   stopPropagation: () => { },

@@ -5,8 +5,11 @@ import {
   InputNumber,
   Form,
   Tooltip,
+  Select,
 } from 'antd';
 import { InfoCircleOutlined } from '@ant-design/icons';
+
+const { Option } = Select;
 
 const GenesVsUMIsConfig = (props) => {
   const {
@@ -16,17 +19,42 @@ const GenesVsUMIsConfig = (props) => {
 
   return (
     <>
+      <Form.Item label={(
+        <span>
+          Fit type&nbsp;
+          <Tooltip overlay={(
+            <span>
+              A linear fit works well for most samples and is performed with `MASS::rlm`.
+              A spline fit is useful to prevent excluding samples that show a natural saturation
+              in the gene counts at high molecule counts and is performed with `splines::bs`.
+            </span>
+          )}
+          >
+            <InfoCircleOutlined />
+          </Tooltip>
+        </span>
+      )}
+      >
+        <Select
+          value={config.regressionType}
+          onChange={(val) => updateSettings({ regressionType: val })}
+          disabled={disabled}
+        >
+          <Option value='linear'>linear</Option>
+          <Option value='spline'>spline</Option>
+        </Select>
+      </Form.Item>
       <Form.Item label='p-level cut-off:'>
         <Space direction='horizontal'>
-          <Tooltip title='Linear regression (Gam) of UMIs vs features (genes) is performed for all cells in order to detect outliers. The ‘p-level cut-off’ is the stringency for defining outliers: ‘p.level’ refers to the confidence level for a given cell to deviate from the main trend. The smaller the number the more stringent cut-off.
-‘p.level’ sets the prediction intervals calculated by the R `predict.lm` whereas `level = 1 - p.value`. The underlying regression is performed with `MASS::rlm`'
+          <Tooltip title='Regression of feature counts (genes) vs UMI counts (molecules) is performed for all cells in order to detect outliers. The ‘p-level cut-off’ is the stringency for defining outliers: ‘p.level’ refers to the confidence level for a given cell to deviate from the main trend. The smaller the number the more stringent cut-off.
+‘p.level’ sets the prediction intervals calculated by the R `predict` where `level = 1 - p.value`.'
           >
             <InfoCircleOutlined />
           </Tooltip>
           <InputNumber
-            value={config.regressionTypeSettings.gam['p.level']}
-            onChange={(value) => updateSettings({ regressionTypeSettings: { gam: { 'p.level': value } } })}
-            onPressEnter={(e) => updateSettings({ regressionTypeSettings: { gam: { 'p.level': e.target.value } } })}
+            value={config.regressionTypeSettings[config.regressionType]['p.level']}
+            onChange={(value) => updateSettings({ regressionTypeSettings: { [config.regressionType]: { 'p.level': value } } })}
+            onPressEnter={(e) => updateSettings({ regressionTypeSettings: { [config.regressionType]: { 'p.level': e.target.value } } })}
             placeholder={0.00001}
             min={0}
             max={1}

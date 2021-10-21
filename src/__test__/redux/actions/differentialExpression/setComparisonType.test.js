@@ -6,7 +6,7 @@ import { DIFF_EXPR_COMPARISON_TYPE_SET } from '../../../../redux/actionTypes/dif
 
 import initialState from '../../../../redux/reducers/differentialExpression/initialState';
 
-jest.mock('localforage');
+import '__test__/test-utils/setupTests';
 
 const mockStore = configureStore([thunk]);
 

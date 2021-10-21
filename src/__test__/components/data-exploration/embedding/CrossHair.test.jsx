@@ -1,7 +1,6 @@
 import React from 'react';
 import { Provider } from 'react-redux';
-import { mount, configure } from 'enzyme';
-import Adapter from 'enzyme-adapter-react-16';
+import { mount } from 'enzyme';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import CrossHair from '../../../../components/data-exploration/embedding/CrossHair';
@@ -9,7 +8,6 @@ import CrossHair from '../../../../components/data-exploration/embedding/CrossHa
 const mockStore = configureMockStore([thunk]);
 
 describe('CrossHair', () => {
-  configure({ adapter: new Adapter() });
   test('renders correctly', () => {
     const store = mockStore({
       cellInfo: {

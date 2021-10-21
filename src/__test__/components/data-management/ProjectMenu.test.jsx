@@ -9,6 +9,7 @@ import initialProjectState, { projectTemplate } from '../../../redux/reducers/pr
 import initialBackendStatus from '../../../redux/reducers/backendStatus/initialState';
 
 import ProjectMenu from '../../../components/data-management/ProjectMenu';
+import '__test__/test-utils/setupTests';
 
 const mockStore = configureMockStore([thunk]);
 
