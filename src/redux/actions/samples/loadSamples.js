@@ -21,7 +21,7 @@ const loadSamples = (
     let samples;
 
     // Querying using experimentId returns an object with a `samples` key
-    if (experimentId) samples = data.samples;
+    if (experimentId) samples = data;
 
     // Querying using projectUuid returns an array with oh objects with of `samples` key
     // Data[0] because 1 project contains only 1 experiment right now.
