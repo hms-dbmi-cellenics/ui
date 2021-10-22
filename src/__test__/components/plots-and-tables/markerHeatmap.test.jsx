@@ -9,13 +9,16 @@ import { Provider } from 'react-redux';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 
 import fake from '__test__/test-utils/constants';
-import mockMarkerHeatmapGeneResponse from '__test__/test-utils/markerHeatmapWorkResponse.mock';
+// import mockMarkerHeatmapGeneResponse from '__test__/test-utils/markerHeatmapWorkResponse.mock';
 import mockExperimentData from '__test__/test-utils/experimentData.mock';
-import mockBackendStatus from '__test__/test-utils/backendStatus.mock';
+// import mockBackendStatus from '__test__/test-utils/backendStatus.mock';
 import MarkerHeatmap from 'pages/experiments/[experimentId]/plots-and-tables/marker-heatmap/index';
 import { loadBackendStatus } from 'redux/actions/backendStatus';
 
 import cellSetsData from '__test__/data/cell_sets.json';
+import backendStatusData from '__test__/data/backend_status.json';
+import markerGenesData5 from '__test__/data/marker_genes_5.json';
+import markerGenesData2 from '__test__/data/marker_genes_2.json';
 import processingConfigData from '__test__/data/processing_config.json';
 
 import { makeStore } from 'redux/store';
@@ -40,7 +43,6 @@ jest.mock('utils/work/seekWorkResponse', () => {
 global.Math.random = () => 0.5;
 
 jest.useFakeTimers('modern').setSystemTime(new Date('2020-01-01').getTime());
-// jest.mock('moment', () => () => jest.requireActual('moment')('4022-01-01T00:00:00.000Z'));
 
 // Return
 jest.mock('aws-amplify', () => ({
@@ -52,7 +54,7 @@ jest.mock('aws-amplify', () => ({
     },
   })),
   Storage: {
-    get: jest.fn().mockImplementation(async () => 'http://mock.s3.amazonaws.com/marker-genes'),
+    get: jest.fn().mockImplementation(async (ETag) => `http://mock.s3.amazonaws.com/marker-genes/${ETag}`),
   },
   Auth: {
     currentSession: jest.fn(() => ({
@@ -90,58 +92,72 @@ const heatmapPageFactory = (customProps = {}) => {
   return <MarkerHeatmap {...props} />;
 };
 
-const mockFetchAPI = (req) => {
-  const path = req.url;
+const promiseResponse = (response) => Promise.resolve(new Response(response));
+const promiseStatus = (code, body) => Promise.resolve({
+  status: code,
+  body: JSON.stringify(body),
+});
 
-  if (path.endsWith(experimentId)) {
-    // return SWR call in Header to get experiment data
-    return Promise.resolve(new Response(
+const generateMockApiConfig = (customMap = {}) => {
+  const defaultMockApiMapping = {
+    [experimentId]: () => promiseResponse(
       JSON.stringify(mockExperimentData),
-    ));
-  }
-
-  if (path.endsWith('processingConfig')) {
-    return Promise.resolve(new Response(
+    ),
+    processingConfig: () => promiseResponse(
       JSON.stringify(processingConfigData),
-    ));
-  }
-
-  // return call to loadPlotConfig
-  if (path.endsWith('/plots-tables/markerHeatmapPlotMain')) {
-    // Return 404 so plot uses default plot config
-    return Promise.resolve({
-      status: 404,
-      body: JSON.stringify('Not Found'),
-    });
-  }
-
-  // return calls from loadCellSets
-  if (path.endsWith('/cellSets')) {
-    return Promise.resolve(new Response(
+    ),
+    '/plots-tables/markerHeatmapPlotMain': () => promiseStatus(404, 'Not Founds'),
+    '/cellSets': () => promiseResponse(
       JSON.stringify(cellSetsData),
-    ));
-  }
-
-  // Return backend status
-  if (path.endsWith('/backendStatus')) {
-    return Promise.resolve(new Response(
-      JSON.stringify(mockBackendStatus),
-    ));
-  }
-
-  if (path.endsWith('/marker-genes')) {
-    return Promise.resolve(new Response(
+    ),
+    '/backendStatus': () => promiseResponse(
+      JSON.stringify(backendStatusData),
+    ),
+    '/marker-genes/5': () => promiseResponse(
       JSON.stringify({
         results: [
           {
-            body: JSON.stringify(mockMarkerHeatmapGeneResponse),
+            body: JSON.stringify(markerGenesData5),
           },
         ],
         response: { error: false },
       }),
-    ));
-  }
+    ),
+    '/marker-genes/2': () => promiseResponse(
+      JSON.stringify({
+        results: [
+          {
+            body: JSON.stringify(markerGenesData2),
+          },
+        ],
+        response: { error: false },
+      }),
+    ),
+  };
+
+  return _.merge(
+    defaultMockApiMapping,
+    customMap,
+  );
 };
+
+const mockApi = (apiMapping) => (req) => {
+  const path = req.url;
+
+  console.log('*** path', path);
+
+  const key = _.find(
+    Object.keys(apiMapping),
+    (urlStub) => path.endsWith(urlStub),
+  );
+
+  return apiMapping[key](req);
+};
+
+// Mock hash so that eTag is equal to numGenes
+jest.mock('object-hash', () => ({
+  MD5: (object) => object.body.nGenes.toString(),
+}));
 
 describe('Marker heatmap plot', () => {
   const socketMock = new SocketMock();
@@ -150,28 +166,26 @@ describe('Marker heatmap plot', () => {
     enableFetchMocks();
     fetchMock.resetMocks();
     fetchMock.doMock();
-    fetchMock.mockIf(/.*/, mockFetchAPI);
+    fetchMock.mockIf(/.*/, mockApi(generateMockApiConfig()));
     storeState = makeStore();
 
     // Set up state for backend status
     storeState.dispatch(loadBackendStatus(experimentId));
 
-    socketConnectionMocks.mockEmit.mockImplementation((workRequestType, requestBody) => {
-      const responseBody = {
-        response: {
-          error: false,
-        },
-      };
+    // Set to null to force fetch from API
+    seekWorkResponseMocks.seekFromS3.mockImplementation(() => null);
 
-      // This is a mocked response emit response from server
+    // Set up socket emitter mock
+    socketConnectionMocks.mockEmit.mockImplementation((workRequestType, requestBody) => {
+      const responseBody = { response: { error: false } };
+
+      // After emitting, send reply to listener
       socketMock.socketClient.emit(`WorkResponse-${requestBody.ETag}`, responseBody);
     });
 
+    // Set up socket listener mock
     socketConnectionMocks.mockOn.mockImplementation((channel, f) => {
-      // This is a listener for the response from the server
-      socketMock.on(channel, (responseBody) => {
-        f(responseBody);
-      });
+      socketMock.on(channel, (responseBody) => f(responseBody));
     });
   });
 
@@ -196,32 +210,11 @@ describe('Marker heatmap plot', () => {
   });
 
   it('Loads the plot', async () => {
-    seekWorkResponseMocks.seekFromS3.mockImplementation(() => null);
-
     const defaultBody = {
       name: 'MarkerHeatmap',
       nGenes: 5,
       cellSetKey: 'louvain',
     };
-
-    socketConnectionMocks.mockEmit.mockImplementation((workRequestType, requestBody) => {
-      // change seekfroms3.mockImplementation to return a response with the right genes
-      seekWorkResponseMocks.seekFromS3.mockImplementationOnce(() => mockMarkerHeatmapGeneResponse);
-
-      const responseBody = {
-        response: {
-          error: false,
-        },
-      };
-
-      // call mockOn with a fake response from the worker
-      socketMock.socketClient.emit(`WorkResponse-${requestBody.ETag}`, responseBody);
-    });
-
-    socketConnectionMocks.mockOn.mockImplementation((channel, f) => {
-      // This is a listener for the response from the server
-      socketMock.on(channel, (responseBody) => f(responseBody));
-    });
 
     await act(async () => (
       render(
@@ -245,26 +238,42 @@ describe('Marker heatmap plot', () => {
     expect(screen.getByRole('graphics-document', { name: 'Vega visualization' })).toBeInTheDocument();
   });
 
-  // it('loads marker genes on selecting', async () => {
+  it.only('loads marker genes on specifying new nunmber of genes per cluster', async () => {
+    await act(async () => (
+      render(
+        <Provider store={storeState}>
+          {heatmapPageFactory()}
+        </Provider>,
+      )
+    ));
 
-  //   await act(async () => (
-  //     render(
-  //       <Provider store={storeState}>
-  //         {heatmapPageFactory()}
-  //       </Provider>,
-  //     )
-  //   ));
+    // Check that initially there are 5 marker genes - the default
+    markerGenesData5.order.forEach((geneName) => {
+      expect(screen.getByText(geneName)).toBeInTheDocument();
+    });
 
-  //   const markerGenes = screen.getByText('Marker genes');
+    userEvent.click(screen.getByText('Marker genes'));
 
-  //   userEvent.click(markerGenes);
-  //   const nGenesInput = screen.getByRole('spinbutton', { name: 'Number of genes input' });
-  //   userEvent.type(nGenesInput, 5);
+    expect(screen.getByText('Number of marker genes per cluster')).toBeInTheDocument();
 
-  //   userEvent.click(screen.getByText('Run'));
+    const nGenesInput = screen.getByRole('spinbutton', { name: 'Number of genes input' });
 
-  //   // Load marker genes
-  // });
+    userEvent.type(nGenesInput, '{backspace}2');
+
+    await act(async () => {
+      userEvent.click(screen.getByText('Run'));
+    });
+
+    // Expect there have been two calls to load marker genes : initial load and 2nd request
+    expect(socketConnectionMocks.mockEmit.mock.calls.length).toEqual(2);
+
+    // Go back to "Custom Genes" and check the number of genes
+    userEvent.click(screen.getByText('Custom genes'));
+
+    markerGenesData2.order.forEach((geneName) => {
+      expect(screen.getByText(geneName)).toBeInTheDocument();
+    });
+  });
 
   // it.only('sorts genes properly when adding a gene', async () => {
   //   await act(async () => (

@@ -1,0 +1,39 @@
+{
+  "pipeline": {
+    "startDate": "2021-10-20T12:51:44.755Z",
+    "stopDate": "2021-10-20T12:53:50.986Z",
+    "status": "SUCCEEDED",
+    "error": false,
+    "completedSteps": [
+      "ClassifierFilter",
+      "CellSizeDistributionFilter",
+      "MitochondrialContentFilter",
+      "NumGenesVsNumUmisFilter",
+      "DoubletScoresFilter",
+      "DataIntegration",
+      "ConfigureEmbedding"
+    ]
+  },
+  "gem2s": {
+    "startDate": "2021-10-20T12:49:06.414Z",
+    "stopDate": "2021-10-20T12:51:44.081Z",
+    "status": "SUCCEEDED",
+    "error": false,
+    "completedSteps": [
+      "DownloadGem",
+      "PreProcessing",
+      "EmptyDrops",
+      "DoubletScores",
+      "CreateSeurat",
+      "PrepareExperiment",
+      "UploadToAWS"
+    ],
+    "paramsHash": "2a0a9cdca259ce91207cbe62574ba6f4851ce245"
+  },
+  "worker": {
+    "status": "Running",
+    "started": true,
+    "ready": true,
+    "restartCount": 0
+  }
+}
