@@ -41,10 +41,11 @@ describe('Select cell sets tests ', () => {
   it('switching cellsets updates the plot', async () => {
     await renderSelectCellSets();
     const box = screen.getByLabelText('cell sets', { selector: 'input' });
+
     fireEvent.change(box, { target: { value: 'Scratchpad' } });
-    const option = screen.getAllByText('Scratchpad')[1];
+    const option = screen.getByText('Scratchpad');
     fireEvent.click(option);
-    const option2 = screen.getAllByText('Louvain')[1];
+    const option2 = screen.getByText('Louvain');
     fireEvent.click(option2);
     expect(mockOnUpdate).toHaveBeenCalledTimes(2);
   });
