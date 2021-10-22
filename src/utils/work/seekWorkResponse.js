@@ -1,10 +1,35 @@
 import moment from 'moment';
 import Amplify, { Storage } from 'aws-amplify';
 
+import { chain } from 'stream-chain';
+import { parser } from 'stream-json/Parser';
+import { streamObject } from 'stream-json/streamers/StreamObject';
+import zlib from 'zlib';
+
 import connectionPromise from '../socketConnection';
 import WorkResponseError from '../WorkResponseError';
 import getAuthJWT from '../getAuthJWT';
 import WorkTimeoutError from '../WorkTimeoutError';
+
+const unpackResult = async (storageResp) => {
+  const promise = new Promise();
+
+  const bodyParserPipeline = chain([
+    storageResp,
+    zlib.createGunzip(),
+    parser(),
+    streamObject(),
+  ]);
+
+  bodyParserPipeline.on('end', () => console.log('end'));
+  bodyParserPipeline.on('data', (data) => {
+    console.log('data:', data.value);
+    promise.resolve();
+  });
+  bodyParserPipeline.on('error', (error) => console.log(`Error: \n${error}`));
+
+  return promise;
+};
 
 const seekFromS3 = async (ETag) => {
   const configuredBucket = Amplify.configure().Storage.AWSS3.bucket;
@@ -20,7 +45,9 @@ const seekFromS3 = async (ETag) => {
     return null;
   }
 
-  const response = await storageResp.json();
+  const response = await unpackResult(storageResp);
+
+  // const response = await storageResp.json();
 
   return response;
 };

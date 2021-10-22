@@ -3,13 +3,14 @@ import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Vega } from 'react-vega';
 
-import Loader from '../Loader';
-import PlatformError from '../PlatformError';
-import { generateSpec, generateData } from '../../utils/plotSpecs/generateViolinSpec';
-import { loadGeneExpression, loadPaginatedGeneProperties } from '../../redux/actions/genes';
-import { loadCellSets } from '../../redux/actions/cellSets';
-import { updatePlotConfig } from '../../redux/actions/componentConfig/index';
-import { getCellSets } from '../../redux/selectors';
+import { getCellSets, getCellSetsHierarchyByKey } from 'redux/selectors';
+
+import { generateSpec, generateData } from 'utils/plotSpecs/generateViolinSpec';
+import { loadGeneExpression, loadPaginatedGeneProperties } from 'redux/actions/genes';
+import { loadCellSets } from 'redux/actions/cellSets';
+import { updatePlotConfig } from 'redux/actions/componentConfig/index';
+import PlatformError from 'components/PlatformError';
+import Loader from 'components/Loader';
 
 const geneDispersionsKey = 'dispersions';
 
@@ -21,6 +22,10 @@ const ViolinPlot = (props) => {
 
   const geneExpression = useSelector((state) => state.genes.expression);
   const cellSets = useSelector(getCellSets());
+
+  const selectedCellSetClassAvailable = useSelector(
+    getCellSetsHierarchyByKey([config.selectedCellSet]),
+  ).length;
 
   const [plotSpec, setPlotSpec] = useState({});
   const highestDispersionLoading = useSelector(
@@ -93,10 +98,6 @@ const ViolinPlot = (props) => {
     }
   }, [experimentId, cellSets.loading, cellSets.error]);
 
-  const clustersAvailable = () => (
-    cellSets.hierarchy.find((hierarchy) => hierarchy.key === config.selectedCellSet)
-  );
-
   useEffect(() => {
     if (config
       && Object.getOwnPropertyDescriptor(geneExpression.data, config.shownGene)
@@ -106,7 +107,7 @@ const ViolinPlot = (props) => {
       const geneExpressionData = config.normalised === 'normalised'
         ? geneExpression.data[config.shownGene].zScore
         : geneExpression.data[config.shownGene].rawExpression.expression;
-      if (clustersAvailable()) {
+      if (selectedCellSetClassAvailable) {
         const generatedPlotData = generateData(
           cellSets,
           geneExpressionData,
@@ -129,7 +130,7 @@ const ViolinPlot = (props) => {
         />
       );
     }
-    if (!clustersAvailable()) {
+    if (!selectedCellSetClassAvailable) {
       return (
         <PlatformError
           description='No clustering available.'
