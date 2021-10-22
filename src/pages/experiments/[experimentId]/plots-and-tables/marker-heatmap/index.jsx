@@ -43,7 +43,7 @@ const MarkerHeatmap = ({ experimentId }) => {
   const { hierarchy, properties } = cellSets;
 
   const selectedCellSetClassAvailable = useSelector(
-    getCellSetsHierarchyByKey([config.selectedCellSet]),
+    getCellSetsHierarchyByKey([config?.selectedCellSet]),
   ).length;
 
   const selectedGenes = useSelector((state) => state.genes.expression.views[plotUuid]?.data) || [];
