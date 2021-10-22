@@ -1,7 +1,7 @@
 import React from 'react';
 import _ from 'lodash';
 
-import { screen, render, waitFor } from '@testing-library/react';
+import { screen, render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { act } from 'react-dom/test-utils';
 import { Provider } from 'react-redux';
@@ -9,42 +9,41 @@ import { Provider } from 'react-redux';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 
 import fake from '__test__/test-utils/constants';
-// import mockMarkerHeatmapGeneResponse from '__test__/test-utils/markerHeatmapWorkResponse.mock';
-import mockExperimentData from '__test__/test-utils/experimentData.mock';
-// import mockBackendStatus from '__test__/test-utils/backendStatus.mock';
 import MarkerHeatmap from 'pages/experiments/[experimentId]/plots-and-tables/marker-heatmap/index';
 import { loadBackendStatus } from 'redux/actions/backendStatus';
 
-import cellSetsData from '__test__/data/cell_sets.json';
-import backendStatusData from '__test__/data/backend_status.json';
 import markerGenesData5 from '__test__/data/marker_genes_5.json';
 import markerGenesData2 from '__test__/data/marker_genes_2.json';
-import processingConfigData from '__test__/data/processing_config.json';
+import expressionDataFAKEGENE from '__test__/data/gene_expression_FAKEGENE.json';
+
+import mockApi, { promiseResponse, promiseStatus } from '__test__/test-utils/mockPlatformAPI';
 
 import { makeStore } from 'redux/store';
 import * as socketConnectionMocks from 'utils/socketConnection';
 import * as seekWorkResponseMocks from 'utils/work/seekWorkResponse';
 
 import SocketMock from 'socket.io-mock';
+import { loadGeneExpression } from 'redux/actions/genes';
 
 enableFetchMocks();
-jest.mock('utils/work/seekWorkResponse', () => {
-  const mockSeekFromS3 = jest.fn();
-  const originalModule = jest.requireActual('utils/work/seekWorkResponse');
 
-  return {
-    __esModule: true, // Use it when dealing with esModules
-    ...originalModule,
-    seekFromS3: mockSeekFromS3,
-  };
-});
+// Mock hash so we can control the ETag that is produced
+// and  use the ETag to route mock responses from S3
+jest.mock('object-hash', () => ({
+  MD5: (object) => {
+    if (object?.body) {
+      return object.body.nGenes.toString();
+    }
 
-// Mock Math.random() to return a predictable value
-global.Math.random = () => 0.5;
+    if (object?.missingGenesBody) {
+      // Return concatenated string of missing gene names
+      // e.g. gene1-gene2-gene3
+      return object.missingGenesBody.genes.join('-');
+    }
+  },
+}));
 
-jest.useFakeTimers('modern').setSystemTime(new Date('2020-01-01').getTime());
-
-// Return
+// Return mock configuration for accessing AWS resources
 jest.mock('aws-amplify', () => ({
   configure: jest.fn().mockImplementation(() => ({
     Storage: {
@@ -65,6 +64,17 @@ jest.mock('aws-amplify', () => ({
   },
 }));
 
+jest.mock('utils/work/seekWorkResponse', () => {
+  const mockSeekFromS3 = jest.fn();
+  const originalModule = jest.requireActual('utils/work/seekWorkResponse');
+
+  return {
+    __esModule: true, // Use it when dealing with esModules
+    ...originalModule,
+    seekFromS3: mockSeekFromS3,
+  };
+});
+
 jest.mock('utils/socketConnection', () => {
   const mockEmit = jest.fn();
   const mockOn = jest.fn();
@@ -80,8 +90,41 @@ jest.mock('utils/socketConnection', () => {
 
 const experimentId = fake.EXPERIMENT_ID;
 const plotUuid = 'markerHeatmapPlotMain';
-
 let storeState = null;
+
+const additionalMockAPIRoutes = {
+  '/plots-tables/markerHeatmapPlotMain': () => promiseStatus(404, 'Not Found'),
+  '/marker-genes/5': () => promiseResponse(
+    JSON.stringify({
+      results: [
+        {
+          body: JSON.stringify(markerGenesData5),
+        },
+      ],
+      response: { error: false },
+    }),
+  ),
+  '/marker-genes/2': () => promiseResponse(
+    JSON.stringify({
+      results: [
+        {
+          body: JSON.stringify(markerGenesData2),
+        },
+      ],
+      response: { error: false },
+    }),
+  ),
+  '/marker-genes/FAKEGENE': () => promiseResponse(
+    JSON.stringify({
+      results: [
+        {
+          body: JSON.stringify(expressionDataFAKEGENE),
+        },
+      ],
+      response: { error: false },
+    }),
+  ),
+};
 
 const heatmapPageFactory = (customProps = {}) => {
   const props = _.merge({
@@ -92,72 +135,11 @@ const heatmapPageFactory = (customProps = {}) => {
   return <MarkerHeatmap {...props} />;
 };
 
-const promiseResponse = (response) => Promise.resolve(new Response(response));
-const promiseStatus = (code, body) => Promise.resolve({
-  status: code,
-  body: JSON.stringify(body),
-});
-
-const generateMockApiConfig = (customMap = {}) => {
-  const defaultMockApiMapping = {
-    [experimentId]: () => promiseResponse(
-      JSON.stringify(mockExperimentData),
-    ),
-    processingConfig: () => promiseResponse(
-      JSON.stringify(processingConfigData),
-    ),
-    '/plots-tables/markerHeatmapPlotMain': () => promiseStatus(404, 'Not Founds'),
-    '/cellSets': () => promiseResponse(
-      JSON.stringify(cellSetsData),
-    ),
-    '/backendStatus': () => promiseResponse(
-      JSON.stringify(backendStatusData),
-    ),
-    '/marker-genes/5': () => promiseResponse(
-      JSON.stringify({
-        results: [
-          {
-            body: JSON.stringify(markerGenesData5),
-          },
-        ],
-        response: { error: false },
-      }),
-    ),
-    '/marker-genes/2': () => promiseResponse(
-      JSON.stringify({
-        results: [
-          {
-            body: JSON.stringify(markerGenesData2),
-          },
-        ],
-        response: { error: false },
-      }),
-    ),
-  };
-
-  return _.merge(
-    defaultMockApiMapping,
-    customMap,
-  );
+// Helper function to get displayed genes from the gene input
+const getDisplayedGenes = (container) => {
+  const genesNodeList = container.querySelectorAll('span[class*=selection-item-content]');
+  return Array.from(genesNodeList).map((gene) => gene.textContent);
 };
-
-const mockApi = (apiMapping) => (req) => {
-  const path = req.url;
-
-  console.log('*** path', path);
-
-  const key = _.find(
-    Object.keys(apiMapping),
-    (urlStub) => path.endsWith(urlStub),
-  );
-
-  return apiMapping[key](req);
-};
-
-// Mock hash so that eTag is equal to numGenes
-jest.mock('object-hash', () => ({
-  MD5: (object) => object.body.nGenes.toString(),
-}));
 
 describe('Marker heatmap plot', () => {
   const socketMock = new SocketMock();
@@ -166,7 +148,7 @@ describe('Marker heatmap plot', () => {
     enableFetchMocks();
     fetchMock.resetMocks();
     fetchMock.doMock();
-    fetchMock.mockIf(/.*/, mockApi(generateMockApiConfig()));
+    fetchMock.mockIf(/.*/, mockApi(experimentId, additionalMockAPIRoutes));
     storeState = makeStore();
 
     // Set up state for backend status
@@ -210,12 +192,6 @@ describe('Marker heatmap plot', () => {
   });
 
   it('Loads the plot', async () => {
-    const defaultBody = {
-      name: 'MarkerHeatmap',
-      nGenes: 5,
-      cellSetKey: 'louvain',
-    };
-
     await act(async () => (
       render(
         <Provider store={storeState}>
@@ -224,21 +200,10 @@ describe('Marker heatmap plot', () => {
       )
     ));
 
-    // Check that work request is emitted
-    expect(socketConnectionMocks.mockEmit).toHaveBeenCalledWith('WorkRequest', {
-      ETag: '5935a9216045f65f708abdbfa5621061', // pragma: allowlist secret
-      PipelineRunETag: '2021-08-16T12:10:32.320Z',
-      socketId: '5678',
-      experimentId: fake.EXPERIMENT_ID,
-      Authorization: 'Bearer fakeJwtToken',
-      body: defaultBody,
-      timeout: '2020-01-01T00:01:00.060Z',
-    });
-
     expect(screen.getByRole('graphics-document', { name: 'Vega visualization' })).toBeInTheDocument();
   });
 
-  it.only('loads marker genes on specifying new nunmber of genes per cluster', async () => {
+  it('loads marker genes on specifying new nunmber of genes per cluster', async () => {
     await act(async () => (
       render(
         <Provider store={storeState}>
@@ -264,114 +229,78 @@ describe('Marker heatmap plot', () => {
       userEvent.click(screen.getByText('Run'));
     });
 
-    // Expect there have been two calls to load marker genes : initial load and 2nd request
-    expect(socketConnectionMocks.mockEmit.mock.calls.length).toEqual(2);
-
     // Go back to "Custom Genes" and check the number of genes
     userEvent.click(screen.getByText('Custom genes'));
 
+    // The genes in Data 2 should exist
     markerGenesData2.order.forEach((geneName) => {
       expect(screen.getByText(geneName)).toBeInTheDocument();
     });
   });
 
-  // it.only('sorts genes properly when adding a gene', async () => {
-  //   await act(async () => (
-  //     render(
-  //       <Provider store={storeState}>
-  //         {heatmapPageFactory()}
-  //       </Provider>,
-  //     )
-  //   ));
+  it('adds genes correctly into the plot', async () => {
+    await act(async () => (
+      render(
+        <Provider store={storeState}>
+          {heatmapPageFactory()}
+        </Provider>,
+      )
+    ));
 
-  // // Check that all genes are available
-  // expect(screen.getByText('GENE1')).toBeInTheDocument();
-  // expect(screen.getByText('GENE2')).toBeInTheDocument();
-  // expect(screen.getByText('GENE3')).toBeInTheDocument();
+    // Add in a new gene
+    // This is done because we can not insert text into the genes list input
+    const genesToLoad = [...markerGenesData5.order, 'FAKEGENE'];
 
-  // // Get container of list of genes
-  // const geneInput = screen.getByText('GENE1').closest('div[class*="selector"]');
+    await act(async () => {
+      storeState.dispatch(loadGeneExpression(experimentId, genesToLoad, plotUuid));
+    });
 
-  // // Type in a new gene
-  // await act(async () => {
-  //   userEvent.type(geneInput, 'GENE4');
-  //   userEvent.keyboard(geneInput, '{enter}');
-  // });
+    expect(screen.getByText('FAKEGENE')).toBeInTheDocument();
 
-  // // Check that all genes are in the selection
-  // expect(screen.getByText('GENE1')).toBeInTheDocument();
-  // expect(screen.getByText('GENE2')).toBeInTheDocument();
-  // expect(screen.getByText('GENE3')).toBeInTheDocument();
-  // expect(screen.getByText('GENE4')).toBeInTheDocument();
+    // The returned value is a HTML NodeList
+    const genesContainer = screen.getByText('FAKEGENE').closest('div[class*=selector]');
 
-  // // Check that genes are in order
-  // const shownGenes = geneInput.querySelectorAll('div[class*=selection-item-content]');
+    const displayedGenesList = getDisplayedGenes(genesContainer);
 
-  // ['GENE1', 'GENE2', 'GENE3', 'GENE4'].forEach((gene, i) => {
-  //   expect(shownGenes[i].textContent).toBe(gene);
-  // });
+    // Check that the genes is ordered correctly.
+    // This means that FAKEGENE should not be the last in the genes list
+    expect(_.isEqual(displayedGenesList, genesToLoad)).toEqual(false);
+  });
 
-  // await waitFor(() => expect(configUpdatedSpy).toHaveBeenCalled());
+  it('removing a gene keeps the sorted order without re-sorting', async () => {
+    await act(async () => (
+      render(
+        <Provider store={storeState}>
+          {heatmapPageFactory()}
+        </Provider>,
+      )
+    ));
 
-  //   await act(async () => {
-  //     storeState.dispatch(loadGeneExpression(experimentId, ['GENE1', 'GENE3', 'GENE2', 'GENE0'], plotUuid));
-  //   });
+    // Setting up so that there is an inserted gene in the list
+    const genesToLoad = [...markerGenesData5.order, 'FAKEGENE'];
 
-  //   expect(storeState.getState().componentConfig[plotUuid].config.selectedGenes).toEqual(['GENE0', 'GENE1', 'GENE2', 'GENE3']);
-  // });
+    await act(async () => {
+      // This is done because we can not insert text into the genes list input
+      storeState.dispatch(loadGeneExpression(experimentId, genesToLoad, plotUuid));
+    });
 
-  // it('removing a gene keeps the sorted order without re-sorting', async () => {
-  //   await act(async () => (
-  //     render(
-  //       <Provider store={storeState}>
-  //         {heatmapPageFactory()}
-  //       </Provider>,
-  //     )
-  //   ));
+    expect(screen.getByText('FAKEGENE')).toBeInTheDocument();
 
-  //   // await renderHeatmapPage(defaultStore);
-  //   await waitFor(() => expect(configUpdatedSpy).toHaveBeenCalled());
-  //   store.dispatch(loadGeneExpression(experimentId, ['gene0', 'gene3'], plotUuid));
-  //   await waitFor(() => expect(configUpdatedSpy).toHaveBeenCalledTimes(4));
-  //   expect(store.getState().componentConfig[plotUuid].config.selectedGenes).toEqual(['gene0', 'gene3']);
-  //   expect(loadMarkersSpy).toHaveBeenCalledTimes(1);
-  // });
+    // The returned value is a HTML NodeList
+    const genesContainer = screen.getByText('FAKEGENE').closest('div[class*=selector]');
+    const genesListBeforeRemoval = getDisplayedGenes(genesContainer);
 
-  // it('loads cellsets if not available', async () => {
-  //   const newStore = { ...storeState, cellSets: { loading: true } };
-  //   store = createStore(rootReducer, _.cloneDeep(newStore), applyMiddleware(thunk));
+    // Removing the 5th gene from the list
+    // genesListBeforeRemoval is modified - splice removes the item from the list
+    const geneToRemove = genesListBeforeRemoval.splice(5, 1);
+    const geneRemoveButton = screen.getByText(geneToRemove).nextSibling;
 
-  //   await act(async () => (
-  //     <Provider store={storeState}>
-  //       {heatmapPageFactory(storeState)}
-  //     </Provider>
-  //   ));
+    userEvent.click(geneRemoveButton);
 
-  //   const skeleton = screen.queryAllByRole('list');
-  //   expect(skeleton.length).toBe(1);
-  //   // await waitFor(() => expect(cellSetsLoadedSpy).toHaveBeenCalled());
-  // });
+    // Get newly displayed genes after the removal
+    const genesListAfterRemoval = getDisplayedGenes(genesContainer);
 
-  // it('loads processing settings if louvainresolution is not available', async () => {
-  //   const newStore = {
-  //     ...defaultStore,
-  //     experimentSettings: {
-  //       ...defaultStore.experimentSettings,
-  //       processing: {
-  //         configureEmbedding: {
-  //           clusteringSettings: {
-  //             methodSettings: {
-  //               louvain: {
-  //                 resolution: false,
-  //               },
-  //             },
-  //           },
-  //         },
-  //         meta: { loading: true, loadingSettingsError: false },
-  //       },
-  //     },
-  //   };
-  //   await renderHeatmapPage(newStore);
-  //   await waitFor(() => expect(loadedProcessingConfigSpy).toHaveBeenCalled());
-  // });
+    // The list of displayed genes should be in the same order as the displayed genes
+    expect(_.isEqual(genesListAfterRemoval, genesListBeforeRemoval)).toEqual(true);
+  });
 });
