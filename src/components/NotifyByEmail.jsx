@@ -14,7 +14,7 @@ const NotifyByEmail = (props) => {
     dispatch(updateExperiment(experimentId, { notifyByEmail: value }));
   };
   const experiments = useSelector((state) => state.experiments);
-  const { activeProjectUuid } = useSelector((state) => state.projects.meta);
+  const { activeProjectUuid } = useSelector((state) => state?.projects?.meta) || false;
   useEffect(() => {
     if (!activeProjectUuid) {
       dispatch(loadProjects());
