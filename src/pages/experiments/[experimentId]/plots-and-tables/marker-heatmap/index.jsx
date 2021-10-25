@@ -17,19 +17,20 @@ import { Vega } from 'react-vega';
 import PropTypes from 'prop-types';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
 import endUserMessages from 'utils/endUserMessages';
-import { getCellSets } from 'redux/selectors';
+
+import { getCellSets, getCellSetsHierarchyByKey } from 'redux/selectors';
 import getSelectOptions from 'utils/plots/getSelectOptions';
 import MarkerGeneSelection from 'components/plots/styling/MarkerGeneSelection';
-import loadProcessingSettings from 'redux/actions/experimentSettings/processingConfig/loadProcessingSettings';
-import PlotStyling from 'components/plots/styling/PlotStyling';
-import { updatePlotConfig, loadPlotConfig } from 'redux/actions/componentConfig';
-import Header from 'components/plots/Header';
-import { generateSpec } from 'utils/plotSpecs/generateHeatmapSpec';
-import { loadGeneExpression, loadMarkerGenes } from 'redux/actions/genes';
-import { loadCellSets } from 'redux/actions/cellSets';
-import PlatformError from 'components/PlatformError';
-import Loader from 'components/Loader';
-import populateHeatmapData from 'components/plots/helpers/populateHeatmapData';
+import loadProcessingSettings from '../../../../../redux/actions/experimentSettings/processingConfig/loadProcessingSettings';
+import PlotStyling from '../../../../../components/plots/styling/PlotStyling';
+import { updatePlotConfig, loadPlotConfig } from '../../../../../redux/actions/componentConfig';
+import Header from '../../../../../components/plots/Header';
+import { generateSpec } from '../../../../../utils/plotSpecs/generateHeatmapSpec';
+import { loadGeneExpression, loadMarkerGenes } from '../../../../../redux/actions/genes';
+import { loadCellSets } from '../../../../../redux/actions/cellSets';
+import PlatformError from '../../../../../components/PlatformError';
+import Loader from '../../../../../components/Loader';
+import populateHeatmapData from '../../../../../components/plots/helpers/populateHeatmapData';
 
 const { Text } = Typography;
 const { Panel } = Collapse;
@@ -50,9 +51,17 @@ const MarkerHeatmap = ({ experimentId }) => {
 
   const { expression: expressionData } = useSelector((state) => state.genes);
   const { error, loading } = expressionData;
+
   const cellSets = useSelector(getCellSets());
   const { hierarchy, properties } = cellSets;
-  const loadedGenes = useSelector((state) => state.genes.expression.views[plotUuid]?.data) || [];
+
+  const selectedCellSetClassAvailable = useSelector(
+    getCellSetsHierarchyByKey([config?.selectedCellSet]),
+  ).length;
+
+  const loadedMarkerGenes = useSelector(
+    (state) => state.genes.expression.views[plotUuid]?.data,
+  ) || [];
   const louvainClustersResolutionRef = useRef(null);
 
   const {
@@ -71,21 +80,17 @@ const MarkerHeatmap = ({ experimentId }) => {
     }
 
     dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
-
-    if (!cellSets?.hierarchy?.length) {
+    if (!hierarchy?.length) {
       dispatch(loadCellSets(experimentId));
     }
   }, []);
 
-  const selectedClustersAvailable = (node) => hierarchy.filter((cluster) => (
-    cluster.key === node))[0]?.children.length;
-
   useEffect(() => {
     if (louvainClustersResolution && config?.nMarkerGenes && hierarchy?.length) {
-      if (selectedClustersAvailable(config.selectedCellSet)) {
+      if (selectedCellSetClassAvailable) {
         dispatch(loadMarkerGenes(
           experimentId, louvainClustersResolution,
-          plotUuid, config.nMarkerGenes, config.selectedCellSet,
+          plotUuid, config.numGenes, config.selectedCellSet,
         ));
       } else {
         pushNotificationMessage('error', endUserMessages.NO_CLUSTERS);
@@ -165,12 +170,12 @@ const MarkerHeatmap = ({ experimentId }) => {
   };
 
   const reSortGenes = () => {
-    const newGenes = _.difference(loadedGenes, config.selectedGenes);
+    const newGenes = _.difference(loadedMarkerGenes, config.selectedGenes);
     let newOrder;
 
     if (!newGenes.length) {
       // gene was removed instead of added - no need to sort
-      const removedGenes = _.difference(config.selectedGenes, loadedGenes);
+      const removedGenes = _.difference(config.selectedGenes, loadedMarkerGenes);
       newOrder = _.cloneDeep(config.selectedGenes);
       newOrder = newOrder.filter((gene) => !removedGenes.includes(gene));
     } else if (newGenes.length === 1) {
@@ -178,7 +183,7 @@ const MarkerHeatmap = ({ experimentId }) => {
       newOrder = sortGenes(newGenes);
     } else {
       // selected data was changed
-      newOrder = loadedGenes;
+      newOrder = loadedMarkerGenes;
     }
 
     return newOrder;
@@ -188,21 +193,21 @@ const MarkerHeatmap = ({ experimentId }) => {
     if (!config || _.isEmpty(expressionData)) {
       return;
     }
-    if (loadedGenes.length && !config.selectedGenes.length) {
-      updatePlotWithChanges({ selectedGenes: loadedGenes });
+    if (loadedMarkerGenes.length && !config.selectedGenes.length) {
+      updatePlotWithChanges({ selectedGenes: loadedMarkerGenes });
       return;
     }
 
-    if (loadedGenes.length !== config.selectedGenes.length) {
+    if (loadedMarkerGenes.length !== config.selectedGenes.length) {
       const newOrder = reSortGenes();
       updatePlotWithChanges({ selectedGenes: newOrder });
     }
-  }, [loadedGenes, config?.selectedGenes]);
+  }, [loadedMarkerGenes, config?.selectedGenes]);
 
   useEffect(() => {
     if (cellSets.loading
       || _.isEmpty(expressionData)
-      || _.isEmpty(loadedGenes)
+      || _.isEmpty(loadedMarkerGenes)
       || !loading
       || !hierarchy?.length
     ) {
@@ -279,7 +284,7 @@ const MarkerHeatmap = ({ experimentId }) => {
         />
       );
     }
-    if (loadedGenes.length === 0) {
+    if (loadedMarkerGenes.length === 0) {
       return (
         <Empty description={(
           <Text>Add some genes to this heatmap to get started.</Text>

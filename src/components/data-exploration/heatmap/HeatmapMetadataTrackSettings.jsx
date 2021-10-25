@@ -12,22 +12,24 @@ import {
 
 import { updatePlotConfig } from '../../../redux/actions/componentConfig';
 import ReorderableList from '../../ReorderableList';
-import { getCellSetsHierarchy } from '../../../redux/selectors';
+import { getCellSetsHierarchyByType } from '../../../redux/selectors';
 
 const HeatmapMetadataTrackSettings = (props) => {
   const dispatch = useDispatch();
 
   const { componentType } = props;
-  const selectedHierarchy = useSelector(getCellSetsHierarchy(['cellSets', 'metadataCategorical']));
-  const currentSelectedHierarchy = useRef(selectedHierarchy);
+  const selectedHierarchy = useSelector(getCellSetsHierarchyByType(['cellSets', 'metadataCategorical']));
+
   const selectedTracks = useSelector(
     (state) => state.componentConfig[componentType].config.selectedTracks,
   );
+
   const getTrackData = () => selectedHierarchy.map(
     (data) => ({ selected: selectedTracks.includes(data.key), key: data.key }),
   );
 
   const isInitialRenderRef = useRef(true);
+
   const [trackData, setTrackData] = useState(getTrackData());
 
   const getUpdatedTrackData = () => _.unionBy(
@@ -35,16 +37,14 @@ const HeatmapMetadataTrackSettings = (props) => {
     trackData,
     'key',
   );
+
   useEffect(() => {
     // Prevent initial dispatch when object appears
-    if (isInitialRenderRef.current
-      || _.isEqual(selectedHierarchy, currentSelectedHierarchy.current)) {
-      return;
-    }
-    currentSelectedHierarchy.current = selectedHierarchy;
-    // Do not re-render if visible track data hasn't changed
+    if (isInitialRenderRef.current) return;
+
     const newTrackData = getUpdatedTrackData();
     if (_.isEqual(trackData, newTrackData)) return;
+
     setTrackData(newTrackData);
   }, [selectedHierarchy]);
 

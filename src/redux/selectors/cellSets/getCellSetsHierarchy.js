@@ -1,22 +1,21 @@
-const getCellSetsHierarchy = (type = [], searchBy = 'type') => (state) => {
+import createMemoizedSelector from 'redux/selectors/createMemoizedSelector';
+
+const getCellSetsHierarchy = () => (state) => {
   if (!state || state.loading) {
     return [];
   }
-  let hierarchy = state.hierarchy.map(
+
+  const hierarchy = state.hierarchy.map(
     (cellSet) => (
       {
         key: cellSet.key,
         name: state.properties[cellSet.key]?.name,
         type: state.properties[cellSet.key]?.type,
-        children: cellSet?.children || 0,
+        children: cellSet?.children || [],
       }
     ),
   );
-  if (type.length) {
-    hierarchy = hierarchy.filter(
-      (child) => type.includes(child[searchBy]),
-    );
-  }
   return hierarchy;
 };
-export default getCellSetsHierarchy;
+
+export default createMemoizedSelector(getCellSetsHierarchy);

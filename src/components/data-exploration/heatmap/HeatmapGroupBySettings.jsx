@@ -13,7 +13,7 @@ import PropTypes from 'prop-types';
 import _ from 'lodash';
 import { updatePlotConfig } from '../../../redux/actions/componentConfig';
 import ReorderableList from '../../ReorderableList';
-import { getCellSetsHierarchy } from '../../../redux/selectors';
+import { getCellSetsHierarchyByType } from '../../../redux/selectors';
 
 const HeatmapGroupBySettings = (props) => {
   const dispatch = useDispatch();
@@ -23,7 +23,7 @@ const HeatmapGroupBySettings = (props) => {
   const groupedTracksKeys = useSelector(
     (state) => state.componentConfig[componentType].config.groupedTracks,
   );
-  const allCellSetsGroupBys = useSelector(getCellSetsHierarchy(['cellSets', 'metadataCategorical']));
+  const allCellSetsGroupBys = useSelector(getCellSetsHierarchyByType(['cellSets', 'metadataCategorical']));
   const getCellSetsOrder = () => {
     const groupedCellSets = [];
 

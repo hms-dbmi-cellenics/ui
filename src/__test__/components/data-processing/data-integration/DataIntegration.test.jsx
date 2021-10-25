@@ -18,7 +18,7 @@ import generateExperimentSettingsMock from '__test__/test-utils/experimentSettin
 import '__test__/test-utils/setupTests';
 
 jest.mock('redux/selectors');
-jest.mock('../../../../redux/selectors');
+
 const dataIntegrationEmbeddingConfig = initialPlotConfigStates.dataIntegrationEmbedding;
 const dataIntegrationFrequencyConfig = initialPlotConfigStates.dataIntegrationFrequency;
 const dataIntegrationElbowConfig = initialPlotConfigStates.dataIntegrationElbow;

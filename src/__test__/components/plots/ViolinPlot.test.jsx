@@ -23,6 +23,7 @@ const plotUuid = 'ViolinMain'; // At some point this will stop being hardcoded
 const defaultStore = {
   cellSets: {
     hierarchy: [{ key: 'louvain' }],
+    properties: {},
   },
   componentConfig: initialComponentConfigStates,
   embeddings: {},
@@ -66,6 +67,7 @@ describe('ViolinPlot', () => {
     const storeContents = {
       ..._.cloneDeep(defaultStore),
       cellSets: {
+        hierarchy: [],
         error: 'Broken CellSet',
       },
     };
