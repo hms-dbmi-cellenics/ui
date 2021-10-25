@@ -115,8 +115,6 @@
     "redux-thunk": "^2.3.0",
     "reselect": "^4.0.0",
     "socket.io-client": "^2.3.0",
-    "stream-chain": "^2.2.4",
-    "stream-json": "^1.7.3",
     "styled-components": "^5.3.1",
     "swr": "^0.3.2",
     "terser-webpack-plugin": "^1.1.0",
@@ -126,8 +124,7 @@
     "vega-lite": "^4.13.0",
     "vitessce": "^0.2.1",
     "webpack": "^4.43.0",
-    "webpack-bundle-analyzer": "^3.3.2",
-    "zlib": "^1.0.5"
+    "webpack-bundle-analyzer": "^3.3.2"
   },
   "devDependencies": {
     "@testing-library/dom": "^7.30.2",
