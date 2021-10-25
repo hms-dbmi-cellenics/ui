@@ -82,7 +82,8 @@ const fetchGeneExpressionWork = async (
     );
   }
 
-  const responseData = JSON.parse(response.results[0].body);
+  // TODO JUST GET THE JSON
+  const responseData = JSON.parse(response);
 
   if (!responseData[missingGenes[0]]?.error) {
     // Preprocessing data before entering cache
@@ -156,7 +157,8 @@ const fetchWork = async (
     return response;
   }
 
-  const responseData = JSON.parse(response.results[0].body);
+  // TODO JUST GET THE JSON
+  const responseData = JSON.parse(response);
 
   if (response.response?.cacheable) {
     await cache.set(ETag, responseData);
