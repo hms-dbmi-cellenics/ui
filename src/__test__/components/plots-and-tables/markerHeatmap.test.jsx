@@ -74,19 +74,18 @@ const getDisplayedGenes = (container) => {
   return Array.from(genesNodeList).map((gene) => gene.textContent);
 };
 
+const defaultResponses = _.merge(
+  generateDefaultMockAPIResponses(experimentId),
+  customAPIResponses,
+  mockWorkerResponses,
+);
+
 describe('Marker heatmap plot', () => {
   beforeEach(() => {
     enableFetchMocks();
     fetchMock.resetMocks();
     fetchMock.doMock();
-
-    const mockRequests = _.merge(
-      generateDefaultMockAPIResponses(experimentId),
-      customAPIResponses,
-      mockWorkerResponses,
-    );
-
-    fetchMock.mockIf(/.*/, mockApi(mockRequests));
+    fetchMock.mockIf(/.*/, mockApi(defaultResponses));
 
     storeState = makeStore();
 
@@ -124,6 +123,29 @@ describe('Marker heatmap plot', () => {
     ));
 
     expect(screen.getByRole('graphics-document', { name: 'Vega visualization' })).toBeInTheDocument();
+  });
+
+  it('Shows an error message if marker genes failed to load', async () => {
+    const noDataResponse = {
+      ...defaultResponses,
+      '5-marker-genes': () => workerResponse('Not Found', 404),
+    };
+
+    fetchMock.mockIf(/.*/, mockApi(noDataResponse));
+
+    await act(async () => (
+      render(
+        <Provider store={storeState}>
+          {heatmapPageFactory()}
+        </Provider>,
+      )
+    ));
+
+    // It shouldn't show the plot
+    expect(screen.queryByRole('graphics-document', { name: 'Vega visualization' })).toBeNull();
+
+    // There is an error message
+    expect(screen.getByText(/Could not load marker genes/i)).toBeInTheDocument();
   });
 
   it('loads marker genes on specifying new nunmber of genes per cluster', async () => {
@@ -188,6 +210,35 @@ describe('Marker heatmap plot', () => {
     // Check that the genes is ordered correctly.
     // This means that FAKEGENE should not be the last in the genes list
     expect(_.isEqual(displayedGenesList, genesToLoad)).toEqual(false);
+  });
+
+  it('Shows an error message if gene expression fails to load', async () => {
+    const noDataResponse = {
+      ...defaultResponses,
+      'FAKEGENE-expression': () => workerResponse('Not Found', 404),
+    };
+
+    fetchMock.mockIf(/.*/, mockApi(noDataResponse));
+
+    await act(async () => (
+      render(
+        <Provider store={storeState}>
+          {heatmapPageFactory()}
+        </Provider>,
+      )
+    ));
+
+    const genesToLoad = [...markerGenesData5.order, 'FAKEGENE'];
+
+    await act(async () => {
+      storeState.dispatch(loadGeneExpression(experimentId, genesToLoad, plotUuid));
+    });
+
+    // It shouldn't show the plot
+    expect(screen.queryByRole('graphics-document', { name: 'Vega visualization' })).toBeNull();
+
+    // There is an error message
+    expect(screen.getByText(/Could not load gene expression data/i)).toBeInTheDocument();
   });
 
   it('removing a gene keeps the sorted order without re-sorting', async () => {

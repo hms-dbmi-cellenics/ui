@@ -250,14 +250,6 @@ const MarkerHeatmap = ({ experimentId }) => {
   };
 
   const renderPlot = () => {
-    if (!config
-      || loading.length > 0
-      || cellSets.loading
-      || loadingMarkerGenes
-      || !config.selectedGenes.length) {
-      return (<Loader experimentId={experimentId} />);
-    }
-
     if (error) {
       return (
         <PlatformError
@@ -284,6 +276,15 @@ const MarkerHeatmap = ({ experimentId }) => {
         />
       );
     }
+
+    if (!config
+      || loading.length > 0
+      || cellSets.loading
+      || loadingMarkerGenes
+      || !config.selectedGenes.length) {
+      return (<Loader experimentId={experimentId} />);
+    }
+
     if (loadedMarkerGenes.length === 0) {
       return (
         <Empty description={(
@@ -292,6 +293,7 @@ const MarkerHeatmap = ({ experimentId }) => {
         />
       );
     }
+
     if (vegaSpec) {
       return <Vega spec={vegaSpec} renderer='canvas' />;
     }
