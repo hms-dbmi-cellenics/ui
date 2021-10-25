@@ -137,22 +137,6 @@ const dotPlot = (props) => {
     </>
   );
 
-  const renderPlot = () => {
-    if (!config) {
-      return (
-        <center>
-          <Loader experimentId={experimentId} />
-        </center>
-      );
-    }
-
-    return (
-      <center>
-        <DotPlot config={config} />
-      </center>
-    );
-  };
-
   return (
     <div style={{ paddingLeft: 32, paddingRight: 32 }}>
       <Header
@@ -165,7 +149,9 @@ const dotPlot = (props) => {
           <Space direction='vertical' style={{ width: '100%' }}>
             <Collapse defaultActiveKey={['1']}>
               <Panel header='Preview' key='1'>
-                {renderPlot()}
+                <center>
+                  <DotPlot config={config} />
+                </center>
               </Panel>
             </Collapse>
           </Space>

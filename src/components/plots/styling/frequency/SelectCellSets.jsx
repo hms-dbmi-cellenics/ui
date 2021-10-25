@@ -27,12 +27,13 @@ const SelectCellSets = (props) => {
   const metadataMenu = getSelectOptions(optionsMetadata);
   const cellSetMenu = getSelectOptions(optionsCellSets);
   let menuValue;
+
   if (!metadataMenu) {
-    menuValue = 'Sample';
+    menuValue = 'sample';
     disabled = true;
     toolTipText = 'The x-axis cannot be changed as this dataset has only a single sample.';
   } else {
-    menuValue = _.upperFirst(config.xAxisGrouping);
+    menuValue = config.xAxisGrouping;
   }
 
   return (
