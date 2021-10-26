@@ -70,7 +70,7 @@ const PlotsTablesHome = ({ experimentId, experimentData, route }) => {
   const lastUpdatedMarkerHeatmap = useSelector(
     (state) => state.componentConfig.markerHeatmapPlotMain?.lastUpdated || 'never',
   );
-  const lastUpdatedDot = useSelector(
+  const lastUpdatedDotPlot = useSelector(
     (state) => state.componentConfig.dotPlotMain?.lastUpdated || 'never',
   );
 
@@ -124,14 +124,14 @@ const PlotsTablesHome = ({ experimentId, experimentData, route }) => {
       link: 'violin',
       description: `Last updated: ${lastUpdatedViolin}`,
     },
-    {
-      // == Uncomment this configuration when we're ready to show the dot plot
-      name: 'Dot Plot',
-      image: dotPlot,
-      key: 'dot-key',
-      link: 'dot-plot',
-      description: `Last updated: ${lastUpdatedDot}`,
-    },
+    // == Uncomment the object below when we're ready to show the dot plot
+    // {
+    //   name: 'Dot Plot',
+    //   image: dotPlot,
+    //   key: 'dot-key',
+    //   link: 'dot-plot',
+    //   description: `Last updated: ${lastUpdatedDotPlot}`,
+    // },
   ];
 
   const [openedPlots, setOpenedPlots] = useState(plots);
