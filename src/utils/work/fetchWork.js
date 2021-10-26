@@ -82,18 +82,18 @@ const fetchGeneExpressionWork = async (
     );
   }
 
-  const responseJson = JSON.parse(response);
+  const { data: responseData } = response;
 
-  if (!responseJson[missingGenes[0]]?.error) {
+  if (!responseData[missingGenes[0]]?.error) {
     // Preprocessing data before entering cache
-    const processedData = calculateZScore(responseJson);
+    const processedData = calculateZScore(responseData);
 
     Object.keys(missingDataKeys).forEach(async (gene) => {
       await cache.set(missingDataKeys[gene], processedData[gene]);
     });
   }
 
-  return responseJson;
+  return responseData;
 };
 
 const fetchWork = async (
@@ -156,13 +156,13 @@ const fetchWork = async (
     return response;
   }
 
-  const responseJson = JSON.parse(response);
+  const { data: responseData, cacheable } = response;
 
-  if (response.response?.cacheable) {
-    await cache.set(ETag, responseJson);
+  if (cacheable) {
+    await cache.set(ETag, responseData);
   }
 
-  return responseJson;
+  return responseData;
 };
 
 export { fetchWork, fetchGeneExpressionWork };
