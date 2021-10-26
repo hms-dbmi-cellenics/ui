@@ -4,7 +4,7 @@ import _ from 'lodash';
 import cellSetsData from '__test__/data/cell_sets.json';
 import backendStatusData from '__test__/data/backend_status.json';
 import processingConfigData from '__test__/data/processing_config.json';
-import mockExperimentData from '__test__/test-utils/experimentData.mock';
+import generateMockExperimentData from '__test__/test-utils/mockExperimentData';
 
 const promiseResponse = (
   response,
@@ -25,17 +25,17 @@ const workerResponse = (body, error = false) => promiseResponse(JSON.stringify({
   response: { error },
 }));
 
-const generateDefaultMockAPIResponses = (mockExperimentId) => ({
-  [mockExperimentId]: () => promiseResponse(
-    JSON.stringify(mockExperimentData),
+const generateDefaultMockAPIResponses = (experimentId) => ({
+  [`experiments/${experimentId}`]: () => promiseResponse(
+    JSON.stringify(generateMockExperimentData(experimentId)),
   ),
-  processingConfig: () => promiseResponse(
+  [`experiments/${experimentId}/processingConfig`]: () => promiseResponse(
     JSON.stringify(processingConfigData),
   ),
-  '/cellSets': () => promiseResponse(
+  [`experiments/${experimentId}/cellSets`]: () => promiseResponse(
     JSON.stringify(cellSetsData),
   ),
-  '/backendStatus': () => promiseResponse(
+  [`experiments/${experimentId}/backendStatus`]: () => promiseResponse(
     JSON.stringify(backendStatusData),
   ),
 });
