@@ -125,7 +125,7 @@ const dotPlot = (props) => {
             config={config}
             onUpdate={updatePlotWithChanges}
             cellSets={cellSets}
-            isValueForYAxis={false}
+            axisName='x'
           />
         ) : <Skeleton.Input style={{ width: 200 }} active />}
       </Panel>

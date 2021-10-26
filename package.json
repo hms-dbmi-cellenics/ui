@@ -123,7 +123,7 @@
     "uuid": "^8.1.0",
     "vega": "^5.13.0",
     "vega-lite": "^4.13.0",
-    "vitessce": "^0.2.5",
+    "vitessce": "^0.2.1",
     "webpack": "^4.43.0",
     "webpack-bundle-analyzer": "^3.3.2"
   },
