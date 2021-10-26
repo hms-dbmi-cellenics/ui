@@ -13,7 +13,7 @@ const { Option, OptGroup } = Select;
 
 const SelectData = (props) => {
   const {
-    onUpdate, config, cellSets,
+    onUpdate, config, cellSets, isValueForYAxis,
   } = props;
   const { hierarchy, properties } = cellSets;
 
@@ -65,7 +65,8 @@ const SelectData = (props) => {
   return (
     <>
       <div>
-        Select the Cell sets or Metadata that cells are grouped by (determines the y-axis):
+        {`Select the Cell sets or Metadata that cells are grouped by (determines the ${isValueForYAxis ? 'y-axis' : 'x-axis'})`}
+        :
       </div>
       <Form.Item>
         <Select
@@ -108,9 +109,16 @@ const SelectData = (props) => {
     </>
   );
 };
+
 SelectData.propTypes = {
   onUpdate: PropTypes.func.isRequired,
   config: PropTypes.object.isRequired,
   cellSets: PropTypes.object.isRequired,
+  isValueForYAxis: PropTypes.bool,
 };
+
+SelectData.defaultProps = {
+  isValueForYAxis: true,
+};
+
 export default SelectData;

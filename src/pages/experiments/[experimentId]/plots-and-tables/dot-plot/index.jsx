@@ -21,8 +21,6 @@ import {
   loadPlotConfig,
 } from 'redux/actions/componentConfig';
 
-import Loader from 'components/Loader';
-
 const { Panel } = Collapse;
 const plotUuid = 'dotPlotMain';
 const plotType = 'dotPlot';
@@ -108,10 +106,6 @@ const dotPlot = (props) => {
     }
   }, [highestDispersionGenes, config]);
 
-  if (!config) {
-    return <Skeleton />;
-  }
-
   const updatePlotWithChanges = (obj) => {
     dispatch(updatePlotConfig(plotUuid, obj));
   };
@@ -131,11 +125,16 @@ const dotPlot = (props) => {
             config={config}
             onUpdate={updatePlotWithChanges}
             cellSets={cellSets}
+            isValueForYAxis={false}
           />
         ) : <Skeleton.Input style={{ width: 200 }} active />}
       </Panel>
     </>
   );
+
+  if (!config) {
+    return <Skeleton />;
+  }
 
   return (
     <div style={{ paddingLeft: 32, paddingRight: 32 }}>

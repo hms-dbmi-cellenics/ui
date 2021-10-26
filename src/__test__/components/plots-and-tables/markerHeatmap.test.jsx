@@ -9,6 +9,7 @@ import { Provider } from 'react-redux';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 
 // This should be imported before any components or action creators
+// Because it contains mockings for connections to the backend
 import '__test__/test-utils/mockBackend';
 
 import fake from '__test__/test-utils/constants';
