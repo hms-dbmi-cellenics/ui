@@ -6,7 +6,9 @@ import { Provider } from 'react-redux';
 
 import { act } from 'react-dom/test-utils';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
-import '@testing-library/jest-dom';
+
+import '__test__/test-utils/mockWorkerBackend';
+
 import DotPlot from 'components/plots/DotPlot';
 
 import { makeStore } from 'redux/store';

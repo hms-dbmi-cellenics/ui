@@ -8,7 +8,7 @@ import { Provider } from 'react-redux';
 
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 
-import '__test__/test-utils/mockBackend';
+import '__test__/test-utils/mockWorkerBackend';
 
 import fake from '__test__/test-utils/constants';
 import mockAPI, {
