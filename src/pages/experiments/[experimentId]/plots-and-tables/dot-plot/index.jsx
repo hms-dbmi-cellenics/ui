@@ -19,6 +19,7 @@ import Header from 'components/plots/Header';
 import {
   updatePlotConfig,
   loadPlotConfig,
+  loadPlotData,
 } from 'redux/actions/componentConfig';
 
 const { Panel } = Collapse;
@@ -71,11 +72,13 @@ const DotPlotPage = (props) => {
   const { experimentId } = props;
 
   const dispatch = useDispatch();
-  const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
+  const { config, plotData } = useSelector((state) => state.componentConfig[plotUuid]) || {};
+
   const {
     fetching: genesFetching,
     data: highestDispersionGenes,
   } = useSelector((state) => state.genes.properties.views[plotUuid] || {});
+
   const cellSets = useSelector((state) => state.cellSets);
   const {
     loading: cellSetsLoading,
@@ -88,6 +91,10 @@ const DotPlotPage = (props) => {
 
     if (hierarchy.length === 0) dispatch(loadCellSets(experimentId));
   }, []);
+
+  useEffect(() => {
+    if (plotData?.length === 0) dispatch(loadPlotData(experimentId, plotUuid, plotType));
+  }, [config]);
 
   useEffect(() => {
     if (config && config.selectedGenes.length === 0 && !genesFetching && !highestDispersionGenes) {

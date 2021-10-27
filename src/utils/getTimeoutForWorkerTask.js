@@ -24,6 +24,7 @@ const getTimeoutForWorkerTaskUncapped = (state, taskName, options) => {
       return 180;
     }
     case 'ListGenes':
+    case 'DotPlot':
     case 'GeneExpression':
     case 'GetMitochondrialContent':
     case 'GetDoubletScore': {
