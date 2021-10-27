@@ -5,9 +5,11 @@ import _ from 'lodash';
 import {
   Form,
   Select,
+  Skeleton,
 } from 'antd';
 
 import composeTree from 'utils/composeTree';
+import InlineError from 'components/InlineError';
 
 const { Option, OptGroup } = Select;
 
@@ -15,7 +17,10 @@ const SelectData = (props) => {
   const {
     onUpdate, config, cellSets, axisName,
   } = props;
-  const { hierarchy, properties } = cellSets;
+
+  const {
+    loading: cellSetsLoading, error: cellSetsError, hierarchy, properties,
+  } = cellSets;
 
   const getDefaultCellSetNotIn = (rootNodeKey) => {
     const fallBackRootNodesKeys = ['sample', 'louvain'];
@@ -61,6 +66,14 @@ const SelectData = (props) => {
       );
     });
   };
+
+  if (cellSetsLoading) {
+    return <Skeleton.Input style={{ width: 200 }} active />;
+  }
+
+  if (cellSetsError) {
+    return <InlineError message='Error loading cell set' actionable />;
+  }
 
   return (
     <>

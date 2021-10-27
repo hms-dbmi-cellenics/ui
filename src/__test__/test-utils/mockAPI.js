@@ -16,6 +16,12 @@ const statusResponse = (code, body) => Promise.resolve({
   body: JSON.stringify(body),
 });
 
+const delayedResponse = (response, delay = 10000, options = {}) => new Promise((resolve) => {
+  setTimeout(() => {
+    resolve(new Response(response, options));
+  }, delay);
+});
+
 const workerResponse = (body, error = false) => promiseResponse(JSON.stringify({
   results: [
     {
@@ -64,4 +70,5 @@ export {
   promiseResponse,
   statusResponse,
   workerResponse,
+  delayedResponse,
 };

@@ -15,7 +15,7 @@ const MarkerGeneSelection = (props) => {
   const [numGenes, setNumGenes] = useState(config.nMarkerGenes);
 
   const renderOptions = () => {
-    if (!config.useMarkerGenes) {
+    if (config.useCustomGenes) {
       return (
         <Space direction='vertical' size='small'>
           <p>Type in a gene name and hit space or enter to add it to the heatmap.</p>
@@ -66,11 +66,11 @@ const MarkerGeneSelection = (props) => {
     <>
       <Space direction='vertical' size='middle'>
         <Radio.Group
-          onChange={(e) => onUpdate({ useMarkerGenes: e.target.value })}
-          value={config.useMarkerGenes}
+          onChange={(e) => onUpdate({ useCustomGenes: e.target.value })}
+          value={config.useCustomGenes}
         >
-          <Radio value={false}>Custom genes</Radio>
-          <Radio value>Marker genes</Radio>
+          <Radio value>Custom genes</Radio>
+          <Radio value={false}>Marker genes</Radio>
         </Radio.Group>
         {renderOptions()}
       </Space>

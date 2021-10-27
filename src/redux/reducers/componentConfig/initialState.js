@@ -105,7 +105,7 @@ const heatmapInitialConfig = {
 // PLOTS & TABLES - Marker heatmap
 const markerHeatmapInitialConfig = {
   ...heatmapInitialConfig,
-  useMarkerGenes: false,
+  useCustomGenes: true,
   guardLines: false,
   nMarkerGenes: 5,
   showGeneLabels: true,
@@ -247,7 +247,7 @@ const dotPlotConfig = {
   colour: colourBaseState,
   marker: markerBaseState,
   labels: labelBaseState,
-  useMarkerGenes: false,
+  useCustomGenes: true,
   nMarkerGenes: 3,
   selectedGenes: [],
   selectedCellSet: 'louvain',

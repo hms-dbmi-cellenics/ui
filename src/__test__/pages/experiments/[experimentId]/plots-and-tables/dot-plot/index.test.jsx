@@ -14,6 +14,7 @@ import fake from '__test__/test-utils/constants';
 import mockAPI, {
   generateDefaultMockAPIResponses,
   statusResponse,
+  delayedResponse,
 } from '__test__/test-utils/mockAPI';
 
 import { makeStore } from 'redux/store';
@@ -26,18 +27,21 @@ jest.mock('localforage');
 
 enableFetchMocks();
 
+const experimentId = fake.EXPERIMENT_ID;
+const plotUuid = 'dotPlotMain';
+
 const customAPIResponses = {
-  '/plots-tables/dotPlotMain': () => statusResponse(404, 'Not Found'),
+  [`/plots-tables/${plotUuid}`]: () => statusResponse(404, 'Not Found'),
 };
 
 const defaultMockResponses = _.merge(
-  generateDefaultMockAPIResponses(fake.EXPERIMENT_ID),
+  generateDefaultMockAPIResponses(experimentId),
   customAPIResponses,
 );
 
 const dotPlotPageFactory = (customProps = {}) => {
   const props = _.merge({
-    experimentId: fake.EXPERIMENT_ID,
+    experimentId,
   }, customProps);
 
   // eslint-disable-next-line react/jsx-props-no-spreading
@@ -79,5 +83,26 @@ describe('Dot plot page', () => {
 
     // It shows the plot
     expect(screen.getByRole('graphics-document', { name: 'Vega visualization' })).toBeInTheDocument();
+  });
+
+  it('Shows a skeleton if config is not loaded', async () => {
+    const noConfigResponse = _.merge(
+      defaultMockResponses,
+      {
+        [`/plots-tables/${plotUuid}`]: () => delayedResponse({ status: 404, body: 'NotFound' }),
+      },
+    );
+
+    fetchMock.mockIf(/.*/, noConfigResponse);
+
+    await act(async () => {
+      render(
+        <Provider store={storeState}>
+          {dotPlotPageFactory()}
+        </Provider>,
+      );
+    });
+
+    expect(screen.getByRole('list')).toHaveClass('ant-skeleton-paragraph');
   });
 });

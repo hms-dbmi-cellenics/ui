@@ -126,14 +126,12 @@ const DotPlotPage = (props) => {
         />
       </Panel>
       <Panel header='Select data' key='15'>
-        {config && !cellSetsLoading && !cellSetsError ? (
-          <SelectData
-            config={config}
-            onUpdate={updatePlotWithChanges}
-            cellSets={cellSets}
-            axisName='x'
-          />
-        ) : <Skeleton.Input style={{ width: 200 }} active />}
+        <SelectData
+          config={config}
+          onUpdate={updatePlotWithChanges}
+          cellSets={cellSets}
+          axisName='x'
+        />
       </Panel>
     </>
   );
