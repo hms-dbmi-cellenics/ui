@@ -17,11 +17,11 @@ import mockAPI, {
   delayedResponse,
 } from '__test__/test-utils/mockAPI';
 
+import createComponentFactory from '__test__/test-utils/componentFactory';
 import { makeStore } from 'redux/store';
 
-import DotPlotPage from 'pages/experiments/[experimentId]/plots-and-tables/dot-plot/index';
-
 import { loadBackendStatus } from 'redux/actions/backendStatus';
+import DotPlotPage from 'pages/experiments/[experimentId]/plots-and-tables/dot-plot/index';
 
 jest.mock('localforage');
 
@@ -39,14 +39,8 @@ const defaultMockResponses = _.merge(
   customAPIResponses,
 );
 
-const dotPlotPageFactory = (customProps = {}) => {
-  const props = _.merge({
-    experimentId,
-  }, customProps);
-
-  // eslint-disable-next-line react/jsx-props-no-spreading
-  return <DotPlotPage {...props} />;
-};
+const defaultProps = { experimentId };
+const dotPlotPageFactory = createComponentFactory(DotPlotPage, defaultProps);
 
 let storeState = null;
 

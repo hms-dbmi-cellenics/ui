@@ -11,6 +11,7 @@ import '__test__/test-utils/mockWorkerBackend';
 
 import DotPlot from 'components/plots/DotPlot';
 
+import createComponentFactory from '__test__/test-utils/componentFactory';
 import { makeStore } from 'redux/store';
 import { loadCellSets } from 'redux/actions/cellSets';
 
@@ -28,16 +29,11 @@ import fake from '__test__/test-utils/constants';
 
 enableFetchMocks();
 
-const dotPlotFactory = (customProps = {}) => {
-  const props = _.merge(
-    {
-      config: initialPlotConfigStates.dotPlot,
-    },
-    customProps,
-  );
-
-  return <DotPlot {...props} />;
+const defaultProps = {
+  config: initialPlotConfigStates.dotPlot,
 };
+
+const dotPlotFactory = createComponentFactory(DotPlot, defaultProps);
 
 const plotUuid = 'dotPlotMain';
 

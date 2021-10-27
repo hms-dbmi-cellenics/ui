@@ -1,7 +1,7 @@
 import React from 'react';
 import _ from 'lodash';
 
-const testComponentFactory = (Component, defaultProps) => (customProps = {}) => {
+const createTestComponentFactory = (Component, defaultProps) => (customProps = {}) => {
   const props = _.merge(
     defaultProps,
     customProps,
@@ -11,4 +11,4 @@ const testComponentFactory = (Component, defaultProps) => (customProps = {}) => 
   return <Component {...props} />;
 };
 
-export default testComponentFactory;
+export default createTestComponentFactory;
