@@ -13,7 +13,7 @@ import {
 } from 'antd';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
-import { getCellSets, getCellSetsHierarchy } from 'redux/selectors';
+import { getCellSets, getCellSetsHierarchyByType } from 'redux/selectors';
 import SelectCellSets from 'components/plots/styling/frequency/SelectCellSets';
 import Header from 'components/plots/Header';
 
@@ -40,8 +40,8 @@ const frequencyPlot = ({ experimentId }) => {
   const dispatch = useDispatch();
   const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
   const cellSets = useSelector(getCellSets());
-  const optionsMetadata = useSelector(getCellSetsHierarchy(['metadataCategorical']));
-  const optionsCellSets = useSelector(getCellSetsHierarchy(['cellSets']));
+  const optionsMetadata = useSelector(getCellSetsHierarchyByType(['metadataCategorical']));
+  const optionsCellSets = useSelector(getCellSetsHierarchyByType(['cellSets']));
   const {
     loading, error, hierarchy, properties,
   } = cellSets;

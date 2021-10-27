@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Get cell sets hierarchy selector test Returns all if no type provided 1`] = `
+exports[`Get cell sets hierarchy selector by key test returns correctly by more than one key 1`] = `
 Array [
   Object {
     "children": Array [
@@ -31,20 +31,20 @@ Array [
 ]
 `;
 
-exports[`Get cell sets hierarchy selector test returns only selected cellset types 1`] = `
+exports[`Get cell sets hierarchy selector by key test returns correctly by one key 1`] = `
 Array [
   Object {
     "children": Array [
       Object {
-        "key": "test-1",
+        "key": "anotherTest-1",
       },
       Object {
-        "key": "test-2",
+        "key": "anotherTest-2",
       },
     ],
-    "key": "test",
-    "name": "Test",
-    "type": "firstType",
+    "key": "anotherTest",
+    "name": "AnotherTest",
+    "type": "anotherType",
   },
 ]
 `;

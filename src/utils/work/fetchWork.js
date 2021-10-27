@@ -10,6 +10,14 @@ import { calculateZScore } from '../postRequestProcessing';
 
 const createObjectHash = (object) => hash.MD5(object);
 
+const transformToOldMethodIfCachedResponseIsOld = (response) => {
+  if (!response.data) {
+    return { data: JSON.parse(response.results[0].body), cacheable: response.response?.cacheable };
+  }
+
+  return response;
+};
+
 const decomposeBody = async (body, experimentId) => {
   const { genes: requestedGenes } = body;
   const missingDataKeys = {};
@@ -82,7 +90,14 @@ const fetchGeneExpressionWork = async (
     );
   }
 
-  const responseData = JSON.parse(response.results[0].body);
+  // transformToOldMethodIfCachedResponseIsOld is to deal with the fact that
+  // users might have the old work response
+  // cached in the browser for 12 hours after the release is made and
+  // we don't want the UI to crash due to this.
+  // This line should eventually be replaced by:
+  // `const { data: responseData } = response;`
+  // (12 hours after the first release should be enough to safely remove the line)
+  const { data: responseData } = transformToOldMethodIfCachedResponseIsOld(response);
 
   if (!responseData[missingGenes[0]]?.error) {
     // Preprocessing data before entering cache
@@ -156,9 +171,16 @@ const fetchWork = async (
     return response;
   }
 
-  const responseData = JSON.parse(response.results[0].body);
+  // transformToOldMethodIfCachedResponseIsOld is to deal with the fact that
+  // users might have the old work response
+  // cached in the browser for 12 hours after the release is made and
+  // we don't want the UI to crash due to this.
+  // This line should eventually be replaced by:
+  // `const { data: responseData, cacheable } = response;`
+  // (12 hours after the first release should be enough to safely remove the line)
+  const { data: responseData, cacheable } = transformToOldMethodIfCachedResponseIsOld(response);
 
-  if (response.response?.cacheable) {
+  if (cacheable) {
     await cache.set(ETag, responseData);
   }
 

@@ -12,13 +12,13 @@ import {
 
 import { updatePlotConfig } from '../../../redux/actions/componentConfig';
 import ReorderableList from '../../ReorderableList';
-import { getCellSetsHierarchy } from '../../../redux/selectors';
+import { getCellSetsHierarchyByType } from '../../../redux/selectors';
 
 const HeatmapMetadataTrackSettings = (props) => {
   const dispatch = useDispatch();
 
   const { componentType } = props;
-  const selectedHierarchy = useSelector(getCellSetsHierarchy(['cellSets', 'metadataCategorical']));
+  const selectedHierarchy = useSelector(getCellSetsHierarchyByType(['cellSets', 'metadataCategorical']));
 
   const selectedTracks = useSelector(
     (state) => state.componentConfig[componentType].config.selectedTracks,
