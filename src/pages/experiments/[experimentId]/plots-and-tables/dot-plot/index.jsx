@@ -67,7 +67,7 @@ const plotStylingControlsConfig = [
   },
 ];
 
-const dotPlot = (props) => {
+const DotPlotPage = (props) => {
   const { experimentId } = props;
 
   const dispatch = useDispatch();
@@ -172,8 +172,8 @@ const dotPlot = (props) => {
   );
 };
 
-dotPlot.propTypes = {
+DotPlotPage.propTypes = {
   experimentId: PropTypes.string.isRequired,
 };
 
-export default dotPlot;
+export default DotPlotPage;
