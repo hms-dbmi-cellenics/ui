@@ -77,11 +77,16 @@ const DotPlotPage = (props) => {
     data: highestDispersionGenes,
   } = useSelector((state) => state.genes.properties.views[plotUuid] || {});
   const cellSets = useSelector((state) => state.cellSets);
+  const {
+    loading: cellSetsLoading,
+    error: cellSetsError,
+    hierarchy,
+  } = cellSets;
 
   useEffect(() => {
     dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
 
-    if (cellSets.hierarchy.length === 0) dispatch(loadCellSets(experimentId));
+    if (hierarchy.length === 0) dispatch(loadCellSets(experimentId));
   }, []);
 
   useEffect(() => {
@@ -121,7 +126,7 @@ const DotPlotPage = (props) => {
         />
       </Panel>
       <Panel header='Select data' key='15'>
-        {config && !cellSets.loading && !cellSets.error ? (
+        {config && !cellSetsLoading && !cellSetsError ? (
           <SelectData
             config={config}
             onUpdate={updatePlotWithChanges}
