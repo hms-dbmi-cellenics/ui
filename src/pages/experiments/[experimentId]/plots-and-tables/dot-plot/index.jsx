@@ -15,12 +15,14 @@ import PlotStyling from 'components/plots/styling/PlotStyling';
 import SelectData from 'components/plots/styling/SelectData';
 import MarkerGeneSelection from 'components/plots/styling/MarkerGeneSelection';
 import Header from 'components/plots/Header';
+import Loader from 'components/Loader';
 
 import {
   updatePlotConfig,
   loadPlotConfig,
   loadPlotData,
 } from 'redux/actions/componentConfig';
+import PlatformError from 'components/PlatformError';
 
 const { Panel } = Collapse;
 const plotUuid = 'dotPlotMain';
@@ -122,6 +124,11 @@ const DotPlotPage = (props) => {
     dispatch(updatePlotConfig(plotUuid, obj));
   };
 
+  const reloadPlotData = () => {
+    if (hierarchy.length === 0) dispatch(loadCellSets(experimentId));
+    if (plotData.length === 0) dispatch(loadPlotData(experimentId, plotUuid, plotType));
+  };
+
   const renderExtraPanels = () => (
     <>
       <Panel header='Gene selection' key='gene-selection'>
@@ -149,6 +156,33 @@ const DotPlotPage = (props) => {
     return <Skeleton />;
   }
 
+  const renderPlot = () => {
+    if (cellSetsError) {
+      return (
+        <center>
+          <PlatformError
+            error='Error loading plot data, please rela'
+            onClick={() => reloadPlotData()}
+          />
+        </center>
+      );
+    }
+
+    if (cellSetsLoading || genesFetching || plotData.length === 0) {
+      return (
+        <center>
+          <Loader experimentId={experimentId} />
+        </center>
+      );
+    }
+
+    return (
+      <center>
+        <DotPlot config={config} plotData={plotData} />
+      </center>
+    );
+  };
+
   return (
     <div style={{ paddingLeft: 32, paddingRight: 32 }}>
       <Header
@@ -161,9 +195,7 @@ const DotPlotPage = (props) => {
           <Space direction='vertical' style={{ width: '100%' }}>
             <Collapse defaultActiveKey={['1']}>
               <Panel header='Preview' key='1'>
-                <center>
-                  <DotPlot config={config} />
-                </center>
+                {renderPlot()}
               </Panel>
             </Collapse>
           </Space>
