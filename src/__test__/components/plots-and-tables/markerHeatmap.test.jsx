@@ -17,7 +17,7 @@ import markerGenesData5 from '__test__/data/marker_genes_5.json';
 import markerGenesData2 from '__test__/data/marker_genes_2.json';
 import expressionDataFAKEGENE from '__test__/data/gene_expression_FAKEGENE.json';
 
-import mockApi, {
+import mockAPI, {
   generateDefaultMockAPIResponses,
   statusResponse,
   workerResponse,
@@ -29,19 +29,16 @@ import MarkerHeatmap from 'pages/experiments/[experimentId]/plots-and-tables/mar
 import { loadBackendStatus } from 'redux/actions/backendStatus';
 import { loadGeneExpression } from 'redux/actions/genes';
 
-// Mock hash so we can control the ETag that is produced by hash.MD5
+// Mock hash so we can control the ETag that is produced by hash.MD5 when fetching work requests
 // EtagParams is the object that's passed to the function which generates ETag in fetchWork
 jest.mock('object-hash', () => {
   const objectHash = jest.requireActual('object-hash');
-  const { mockETag } = jest.requireActual('__test__/test-utils/mockWorker');
+  const mockWorkResultETag = jest.requireActual('__test__/test-utils/mockWorkResultETag').default;
 
   const mockWorkRequestETag = (ETagParams) => `${ETagParams.body.nGenes}-marker-genes`;
   const mockGeneExpressionETag = (ETagParams) => `${ETagParams.missingGenesBody.genes.join('-')}-expression`;
 
-  return {
-    ...objectHash,
-    MD5: mockETag(mockWorkRequestETag, mockGeneExpressionETag),
-  };
+  return mockWorkResultETag(objectHash, mockWorkRequestETag, mockGeneExpressionETag);
 });
 
 // Worker responses are fetched from S3, so these endpoints are added to fetchMock
@@ -57,12 +54,18 @@ const plotUuid = 'markerHeatmapPlotMain';
 let storeState = null;
 
 const customAPIResponses = {
-  '/plots-tables/markerHeatmapPlotMain': () => statusResponse(404, 'Not Found'),
+  [`/plots-tables/${plotUuid}`]: () => statusResponse(404, 'Not Found'),
 };
+
+const defaultResponses = _.merge(
+  generateDefaultMockAPIResponses(experimentId),
+  customAPIResponses,
+  mockWorkerResponses,
+);
 
 const heatmapPageFactory = (customProps = {}) => {
   const props = _.merge({
-    experimentId: fake.EXPERIMENT_ID,
+    experimentId,
   }, customProps);
 
   // eslint-disable-next-line react/jsx-props-no-spreading
@@ -75,18 +78,12 @@ const getDisplayedGenes = (container) => {
   return Array.from(genesNodeList).map((gene) => gene.textContent);
 };
 
-const defaultResponses = _.merge(
-  generateDefaultMockAPIResponses(experimentId),
-  customAPIResponses,
-  mockWorkerResponses,
-);
-
 describe('Marker heatmap plot', () => {
   beforeEach(() => {
     enableFetchMocks();
     fetchMock.resetMocks();
     fetchMock.doMock();
-    fetchMock.mockIf(/.*/, mockApi(defaultResponses));
+    fetchMock.mockIf(/.*/, mockAPI(defaultResponses));
 
     storeState = makeStore();
 
@@ -108,6 +105,8 @@ describe('Marker heatmap plot', () => {
     expect(screen.getByText(/Gene selection/i)).toBeInTheDocument();
     expect(screen.getByText(/Select data/i)).toBeInTheDocument();
     expect(screen.getByText(/Cluster guardlines/i)).toBeInTheDocument();
+    expect(screen.getByText(/Metadata tracks/i)).toBeInTheDocument();
+    expect(screen.getByText(/Group by/i)).toBeInTheDocument();
     expect(screen.getByText(/Expression values/i)).toBeInTheDocument();
     expect(screen.getByText(/Main schema/i)).toBeInTheDocument();
     expect(screen.getByText(/Colours/i)).toBeInTheDocument();
@@ -132,7 +131,7 @@ describe('Marker heatmap plot', () => {
       '5-marker-genes': () => workerResponse('Not Found', 404),
     };
 
-    fetchMock.mockIf(/.*/, mockApi(noDataResponse));
+    fetchMock.mockIf(/.*/, mockAPI(noDataResponse));
 
     await act(async () => (
       render(
@@ -219,7 +218,7 @@ describe('Marker heatmap plot', () => {
       'FAKEGENE-expression': () => workerResponse('Not Found', 404),
     };
 
-    fetchMock.mockIf(/.*/, mockApi(noDataResponse));
+    fetchMock.mockIf(/.*/, mockAPI(noDataResponse));
 
     await act(async () => (
       render(

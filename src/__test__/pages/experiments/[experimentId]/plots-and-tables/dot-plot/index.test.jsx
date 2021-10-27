@@ -5,35 +5,35 @@ import { act } from 'react-dom/test-utils';
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { Provider } from 'react-redux';
+
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 
-import { makeStore } from 'redux/store';
-import DotPlotPage from 'pages/experiments/[experimentId]/plots-and-tables/dot-plot/index';
+import '__test__/test-utils/mockBackend';
 
 import fake from '__test__/test-utils/constants';
-import mockExperimentData from '__test__/test-utils/experimentData.mock';
-import mockBackendStatus from '__test__/test-utils/backendStatus.mock';
+import mockAPI, {
+  generateDefaultMockAPIResponses,
+  statusResponse,
+} from '__test__/test-utils/mockAPI';
+
+import { makeStore } from 'redux/store';
+
+import DotPlotPage from 'pages/experiments/[experimentId]/plots-and-tables/dot-plot/index';
+
 import { loadBackendStatus } from 'redux/actions/backendStatus';
-
-const cellSetsData = require('__test__/data/cell_sets.json');
-
-enableFetchMocks();
 
 jest.mock('localforage');
 
-jest.mock('utils/socketConnection', () => {
-  const mockEmit = jest.fn();
-  const mockOn = jest.fn();
+enableFetchMocks();
 
-  return {
-    __esModule: true,
-    default: new Promise((resolve) => {
-      resolve({ emit: mockEmit, on: mockOn, id: '5678' });
-    }),
-    mockEmit,
-    mockOn,
-  };
-});
+const customAPIResponses = {
+  '/plots-tables/dotPlotMain': () => statusResponse(404, 'Not Found'),
+};
+
+const defaultMockResponses = _.merge(
+  generateDefaultMockAPIResponses(fake.EXPERIMENT_ID),
+  customAPIResponses,
+);
 
 const dotPlotPageFactory = (customProps = {}) => {
   const props = _.merge({
@@ -44,53 +44,14 @@ const dotPlotPageFactory = (customProps = {}) => {
   return <DotPlotPage {...props} />;
 };
 
-let storeState;
-
-const mockFetchAPI = (req) => {
-  const path = req.url;
-
-  // return SWR call in Header to get experiment data
-  if (path.endsWith(fake.EXPERIMENT_ID)) {
-    return Promise.resolve(new Response(
-      JSON.stringify(mockExperimentData),
-    ));
-  }
-
-  // return call to loadPlotConfig
-  if (path.endsWith('/plots-tables/dotPlotMain')) {
-    // Return 404 so plot uses default config
-    return Promise.resolve({
-      status: 404,
-      body: 'Not Found',
-    });
-  }
-
-  // return calls from loadCellSets
-  if (path.endsWith('/cellSets')) {
-    return Promise.resolve(new Response(
-      JSON.stringify(cellSetsData),
-    ));
-  }
-
-  // Return backend status
-  if (path.endsWith('/backendStatus')) {
-    return Promise.resolve(new Response(
-      JSON.stringify(mockBackendStatus),
-    ));
-  }
-
-  return Promise.resolve({
-    status: 404,
-    body: path,
-  });
-};
+let storeState = null;
 
 describe('Dot plot page', () => {
   beforeEach(() => {
     enableFetchMocks();
     fetchMock.resetMocks();
     fetchMock.doMock();
-    fetchMock.mockIf(fake.API_ENDPOINT, mockFetchAPI);
+    fetchMock.mockIf(/.*/, mockAPI(defaultMockResponses));
     storeState = makeStore();
 
     storeState.dispatch(loadBackendStatus(fake.EXPERIMENT_ID));

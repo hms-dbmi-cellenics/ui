@@ -90,10 +90,10 @@ describe('seekFromAPI unit tests', () => {
       socketMock.socketClient.emit(`WorkResponse-${requestBody.ETag}`, responseBody);
     });
 
-    socketConnectionMocks.mockOn.mockImplementation((channel, f) => {
+    socketConnectionMocks.mockOn.mockImplementation((channel, socketCallback) => {
       // This is a listener for the response from the server
       socketMock.on(channel, (responseBody) => {
-        f(responseBody);
+        socketCallback(responseBody);
       });
     });
   });

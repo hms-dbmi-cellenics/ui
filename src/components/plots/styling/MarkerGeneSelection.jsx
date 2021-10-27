@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import propTypes from 'prop-types';
 import {
   Space,
@@ -13,61 +13,52 @@ const MarkerGeneSelection = (props) => {
     config, onUpdate, onReset, onGeneEnter,
   } = props;
   const [numGenes, setNumGenes] = useState(config.nMarkerGenes);
-  const [genesLoaded, setGenesLoaded] = useState(true);
-
-  useEffect(() => {
-    if (numGenes === config.numGenes) {
-      setGenesLoaded(true);
-    } else if (numGenes !== config.numGenes && genesLoaded) {
-      setGenesLoaded(false);
-    }
-  }, [config.numGenes, numGenes]);
 
   const renderOptions = () => {
-    if (config.useMarkerGenes) {
+    if (!config.useMarkerGenes) {
       return (
-        <div>
-          <p>Number of marker genes per cluster</p>
-          <Space direction='horizontal' size='small'>
-            <InputNumber
-              aria-label='Number of genes input'
-              size='small'
-              value={numGenes}
-              onChange={(value) => setNumGenes(value)}
-            />
-            <Button
-              onClick={() => onUpdate({ nMarkerGenes: numGenes })}
-              disabled={numGenes === config.nMarkerGenes}
-              type='primary'
-              size='small'
-            >
-              Run
-            </Button>
-          </Space>
-        </div>
+        <Space direction='vertical' size='small'>
+          <p>Type in a gene name and hit space or enter to add it to the heatmap.</p>
+          <Select
+            mode='tags'
+            style={{ width: '100%' }}
+            placeholder='Select genes...'
+            onChange={onGeneEnter}
+            value={config.selectedGenes}
+            tokenSeparators={[' ']}
+            notFoundContent='No gene added yet.'
+          />
+          <Button
+            type='primary'
+            onClick={onReset}
+            size='small'
+          >
+            Reset
+          </Button>
+        </Space>
       );
     }
 
     return (
-      <Space direction='vertical' size='small'>
-        <p>Type in a gene name and hit space or enter to add it to the heatmap.</p>
-        <Select
-          mode='tags'
-          style={{ width: '100%' }}
-          placeholder='Select genes...'
-          onChange={onGeneEnter}
-          value={config.selectedGenes}
-          tokenSeparators={[' ']}
-          notFoundContent='No gene added yet.'
-        />
-        <Button
-          type='primary'
-          onClick={onReset}
-          size='small'
-        >
-          Reset
-        </Button>
-      </Space>
+      <div>
+        <p>Number of marker genes per cluster</p>
+        <Space direction='horizontal' size='small'>
+          <InputNumber
+            aria-label='Number of genes input'
+            size='small'
+            value={numGenes}
+            onChange={(value) => setNumGenes(value)}
+          />
+          <Button
+            onClick={() => onUpdate({ nMarkerGenes: numGenes })}
+            disabled={numGenes === config.nMarkerGenes}
+            type='primary'
+            size='small'
+          >
+            Run
+          </Button>
+        </Space>
+      </div>
     );
   };
 

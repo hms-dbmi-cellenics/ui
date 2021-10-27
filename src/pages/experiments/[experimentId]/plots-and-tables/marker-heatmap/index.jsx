@@ -1,5 +1,5 @@
 /* eslint-disable import/no-unresolved */
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Row,
   Col,
@@ -18,19 +18,23 @@ import PropTypes from 'prop-types';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
 import endUserMessages from 'utils/endUserMessages';
 
-import { getCellSets, getCellSetsHierarchyByKey } from 'redux/selectors';
+import { getCellSets, getCellSetsHierarchyByKey, getCellSetsHierarchyByType } from 'redux/selectors';
 import getSelectOptions from 'utils/plots/getSelectOptions';
+
+import HeatmapGroupBySettings from 'components/data-exploration/heatmap/HeatmapGroupBySettings';
+import HeatmapMetadataTracksSettings from 'components/data-exploration/heatmap/HeatmapMetadataTrackSettings';
+
 import MarkerGeneSelection from 'components/plots/styling/MarkerGeneSelection';
-import loadProcessingSettings from '../../../../../redux/actions/experimentSettings/processingConfig/loadProcessingSettings';
-import PlotStyling from '../../../../../components/plots/styling/PlotStyling';
-import { updatePlotConfig, loadPlotConfig } from '../../../../../redux/actions/componentConfig';
-import Header from '../../../../../components/plots/Header';
-import { generateSpec } from '../../../../../utils/plotSpecs/generateHeatmapSpec';
-import { loadGeneExpression, loadMarkerGenes } from '../../../../../redux/actions/genes';
-import { loadCellSets } from '../../../../../redux/actions/cellSets';
-import PlatformError from '../../../../../components/PlatformError';
-import Loader from '../../../../../components/Loader';
-import populateHeatmapData from '../../../../../components/plots/helpers/populateHeatmapData';
+import loadProcessingSettings from 'redux/actions/experimentSettings/processingConfig/loadProcessingSettings';
+import PlotStyling from 'components/plots/styling/PlotStyling';
+import { updatePlotConfig, loadPlotConfig } from 'redux/actions/componentConfig';
+import Header from 'components/plots/Header';
+import { generateSpec } from 'utils/plotSpecs/generateHeatmapSpec';
+import { loadGeneExpression, loadMarkerGenes } from 'redux/actions/genes';
+import { loadCellSets } from 'redux/actions/cellSets';
+import PlatformError from 'components/PlatformError';
+import Loader from 'components/Loader';
+import populateHeatmapData from 'components/plots/helpers/populateHeatmapData';
 
 const { Text } = Typography;
 const { Panel } = Collapse;
@@ -55,6 +59,8 @@ const MarkerHeatmap = ({ experimentId }) => {
   const cellSets = useSelector(getCellSets());
   const { hierarchy, properties } = cellSets;
 
+  const cellOptions = useSelector(getCellSetsHierarchyByType(['cellSets']));
+
   const selectedCellSetClassAvailable = useSelector(
     getCellSetsHierarchyByKey([config?.selectedCellSet]),
   ).length;
@@ -62,7 +68,6 @@ const MarkerHeatmap = ({ experimentId }) => {
   const loadedMarkerGenes = useSelector(
     (state) => state.genes.expression.views[plotUuid]?.data,
   ) || [];
-  const louvainClustersResolutionRef = useRef(null);
 
   const {
     loading: loadingMarkerGenes,
@@ -90,7 +95,7 @@ const MarkerHeatmap = ({ experimentId }) => {
       if (selectedCellSetClassAvailable) {
         dispatch(loadMarkerGenes(
           experimentId, louvainClustersResolution,
-          plotUuid, config.numGenes, config.selectedCellSet,
+          plotUuid, config.nMarkerGenes, config.selectedCellSet,
         ));
       } else {
         pushNotificationMessage('error', endUserMessages.NO_CLUSTERS);
@@ -100,9 +105,7 @@ const MarkerHeatmap = ({ experimentId }) => {
 
   useEffect(() => {
     if (louvainClustersResolution
-      && louvainClustersResolutionRef.current !== louvainClustersResolution
       && config && hierarchy?.length) {
-      louvainClustersResolutionRef.current = louvainClustersResolution;
       dispatch(loadMarkerGenes(
         experimentId,
         louvainClustersResolution,
@@ -356,22 +359,13 @@ const MarkerHeatmap = ({ experimentId }) => {
     return (<Skeleton />);
   }
 
-  const getCellOptions = (type) => {
-    const filteredOptions = hierarchy.filter((element) => (
-      properties[element.key].type === type
-    ));
-    if (!filteredOptions.length) {
-      return [];
-    }
-    return filteredOptions;
-  };
   const changeClusters = (option) => {
     const newValue = option.value.toLowerCase();
 
     updatePlotWithChanges({ selectedCellSet: newValue });
   };
 
-  const clustersForSelect = getSelectOptions(getCellOptions('cellSets'));
+  const clustersForSelect = getSelectOptions(cellOptions);
 
   const renderExtraPanels = () => (
     <>
@@ -420,6 +414,12 @@ const MarkerHeatmap = ({ experimentId }) => {
           <Radio value>Show</Radio>
           <Radio value={false}>Hide</Radio>
         </Radio.Group>
+      </Panel>
+      <Panel header='Metadata tracks' key='metadataTracks'>
+        <HeatmapMetadataTracksSettings componentType={plotUuid} />
+      </Panel>
+      <Panel header='Group by' key='groupBy'>
+        <HeatmapGroupBySettings componentType={plotUuid} />
       </Panel>
     </>
   );

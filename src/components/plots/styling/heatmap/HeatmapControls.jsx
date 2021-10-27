@@ -3,8 +3,8 @@ import {
   Collapse, Select, Space, Button,
 } from 'antd';
 import PropTypes from 'prop-types';
-import HeatmapGroupBySettings from '../../../data-exploration/heatmap/HeatmapGroupBySettings';
-import HeatmapMetadataTracksSettings from '../../../data-exploration/heatmap/HeatmapMetadataTrackSettings';
+import HeatmapGroupBySettings from 'components/data-exploration/heatmap/HeatmapGroupBySettings';
+import HeatmapMetadataTracksSettings from 'components/data-exploration/heatmap/HeatmapMetadataTrackSettings';
 
 const { Panel } = Collapse;
 

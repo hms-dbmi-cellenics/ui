@@ -78,15 +78,6 @@ const dotPlot = (props) => {
   } = useSelector((state) => state.genes.properties.views[plotUuid] || {});
   const cellSets = useSelector((state) => state.cellSets);
 
-  const PROPERTIES = ['dispersions'];
-  const tableState = {
-    pagination: {
-      current: 1, pageSize: config?.nMarkerGenes ?? 3, showSizeChanger: true, total: 0,
-    },
-    geneNamesFilter: null,
-    sorter: { field: PROPERTIES[0], columnKey: PROPERTIES[0], order: 'descend' },
-  };
-
   useEffect(() => {
     dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
 
@@ -94,7 +85,16 @@ const dotPlot = (props) => {
   }, []);
 
   useEffect(() => {
-    if (config?.selectedGenes.length === 0 && !genesFetching && !highestDispersionGenes) {
+    if (config && config.selectedGenes.length === 0 && !genesFetching && !highestDispersionGenes) {
+      const PROPERTIES = ['dispersions'];
+      const tableState = {
+        pagination: {
+          current: 1, pageSize: config.nMarkerGenes, showSizeChanger: true, total: 0,
+        },
+        geneNamesFilter: null,
+        sorter: { field: PROPERTIES[0], columnKey: PROPERTIES[0], order: 'descend' },
+      };
+
       dispatch(loadPaginatedGeneProperties(experimentId, PROPERTIES, plotUuid, tableState));
     }
   }, [highestDispersionGenes, config, genesFetching]);
@@ -117,6 +117,7 @@ const dotPlot = (props) => {
           config={config}
           onUpdate={updatePlotWithChanges}
           onReset={() => updatePlotWithChanges({ selectedGenes: [] })}
+          onGeneEnter={() => {}}
         />
       </Panel>
       <Panel header='Select data' key='15'>

@@ -40,7 +40,7 @@ const generateDefaultMockAPIResponses = (experimentId) => ({
   ),
 });
 
-const mockApi = (apiMapping) => (req) => {
+const mockAPI = (apiMapping) => (req) => {
   const path = req.url;
 
   const key = _.find(
@@ -48,10 +48,17 @@ const mockApi = (apiMapping) => (req) => {
     (urlStub) => path.endsWith(urlStub),
   );
 
+  if (!key) {
+    return statusResponse({
+      status: 404,
+      body: `Path ${path} is undefined`,
+    });
+  }
+
   return apiMapping[key](req);
 };
 
-export default mockApi;
+export default mockAPI;
 export {
   generateDefaultMockAPIResponses,
   promiseResponse,

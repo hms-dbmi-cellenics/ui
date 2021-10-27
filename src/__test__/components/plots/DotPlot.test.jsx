@@ -1,75 +1,119 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React from 'react';
 import { screen, render, waitFor } from '@testing-library/react';
-import '@testing-library/jest-dom';
-import DotPlot from 'components/plots/DotPlot';
-import configureMockStore from 'redux-mock-store';
-import thunk from 'redux-thunk';
+
 import { Provider } from 'react-redux';
 
+import { act } from 'react-dom/test-utils';
+import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
+import '@testing-library/jest-dom';
+import DotPlot from 'components/plots/DotPlot';
+
+import { makeStore } from 'redux/store';
+import { loadCellSets } from 'redux/actions/cellSets';
+
 import { initialPlotConfigStates } from 'redux/reducers/componentConfig/initialState';
-import initialCellSetsState from 'redux/reducers/cellSets/initialState';
-import { getCellSets } from 'redux/selectors';
 
-const mockStore = configureMockStore([thunk]);
+import endUserMessages from 'utils/endUserMessages';
 
-jest.mock('redux/selectors');
+import _ from 'lodash';
+import mockAPI, {
+  generateDefaultMockAPIResponses,
+  statusResponse,
+} from '__test__/test-utils/mockAPI';
 
-const dotPlotFactory = (store, config) => (
-  <Provider store={mockStore(store)}>
-    <DotPlot config={config} />
-  </Provider>
+import fake from '__test__/test-utils/constants';
+
+enableFetchMocks();
+
+const dotPlotFactory = (customProps = {}) => {
+  const props = _.merge(
+    {
+      config: initialPlotConfigStates.dotPlot,
+    },
+    customProps,
+  );
+
+  return <DotPlot {...props} />;
+};
+
+const plotUuid = 'dotPlotMain';
+
+const customAPIResponses = {
+  [`/plots-tables/${plotUuid}`]: () => statusResponse(404, 'Not found'),
+};
+
+const mockAPIResponses = _.merge(
+  generateDefaultMockAPIResponses(fake.EXPERIMENT_ID),
+  customAPIResponses,
 );
 
-const config = initialPlotConfigStates.dotPlot;
-
-const state = {};
+let storeState = null;
 
 describe('DotPlot', () => {
-  it('Renders a plot', async () => {
-    getCellSets.mockImplementation(() => () => ({
-      ...initialCellSetsState,
-      loading: false,
-      hierarchy: [
-        {
-          key: 'louvain',
-          children: [
-            { key: 'louvain-0' },
-          ],
-        },
-      ],
-    }));
+  beforeEach(() => {
+    enableFetchMocks();
+    fetchMock.resetMocks();
+    fetchMock.doMock();
+    fetchMock.mockIf(/.*/, mockAPI(mockAPIResponses));
 
-    // Expects Vega to be called
-    render(dotPlotFactory(state, config));
-
-    await waitFor(() => {
-      expect(screen.getByRole('graphics-document', { name: 'Vega visualization' })).toBeInTheDocument();
-    });
+    storeState = makeStore();
   });
 
-  it('Shows a loading screen if cell sets is still loading', () => {
-    getCellSets.mockImplementation(() => () => ({
-      ...initialCellSetsState,
-      loading: true,
-    }));
-
-    render(dotPlotFactory(state, config));
+  it('Shows a loader screen if cell sets is not loaded / still loading', async () => {
+    await act(async () => {
+      render(
+        <Provider store={storeState}>
+          {dotPlotFactory()}
+        </Provider>,
+      );
+    });
 
     expect(screen.getByText("We're getting your data...")).toBeInTheDocument();
   });
 
-  it('Shows an error if there is an error while loading cellSets', () => {
-    const errorMessage = 'This is an error message';
+  it('Renders a plot', async () => {
+    await act(async () => {
+      render(
+        <Provider store={storeState}>
+          {dotPlotFactory()}
+        </Provider>,
+      );
+    });
 
-    getCellSets.mockImplementation(() => () => ({
-      ...initialCellSetsState,
-      error: new Error(errorMessage),
-      loading: false,
-    }));
+    // Load cell sets for the plot
+    await act(async () => {
+      storeState.dispatch(loadCellSets(fake.EXPERIMENT_ID));
+    });
 
-    render(dotPlotFactory(state, config));
+    expect(screen.getByRole('graphics-document', { name: 'Vega visualization' })).toBeInTheDocument();
+  });
 
-    expect(screen.getByText(errorMessage)).toBeInTheDocument();
+  it('Shows an error if there is an error while loading cellSets', async () => {
+    const errorResponse = {
+      ...mockAPIResponses,
+      [`experiments/${fake.EXPERIMENT_ID}/cellSets`]: () => statusResponse(500, 'Some random error'),
+    };
+
+    fetchMock.mockIf(/.*/, mockAPI(errorResponse));
+
+    await act(async () => {
+      render(
+        <Provider store={storeState}>
+          {dotPlotFactory()}
+        </Provider>,
+      );
+    });
+
+    // Load cell sets for the plot and get error
+    await act(async () => {
+      storeState.dispatch(loadCellSets(fake.EXPERIMENT_ID));
+    });
+
+    // No plot should be rendered
+    expect(screen.queryByRole('graphics-document', { name: 'Vega visualization' })).toBeNull();
+
+    // Error message should be shown
+    expect(screen.getByText(endUserMessages.ERROR_FETCHING_CELL_SETS)).toBeInTheDocument();
   });
 });

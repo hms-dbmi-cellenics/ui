@@ -1,10 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
 import { Vega } from 'react-vega';
-import _ from 'lodash';
 import { generateSpec } from 'utils/plotSpecs/generateDotPlotSpec';
-import { getCellSets } from 'redux/selectors';
+import { getCellSets, getCellSetsHierarchyByKey } from 'redux/selectors';
 
 import PlatformError from 'components/PlatformError';
 import { fastLoad } from 'components/Loader';
@@ -32,20 +31,9 @@ const plotData = generateMockData(3, 14);
 const DotPlot = (props) => {
   const { config } = props;
 
-  const [numClusters, setNumClusters] = useState(0);
-
-  const { loading: cellSetsLoading, error: cellSetsError, hierarchy } = useSelector(getCellSets());
-
-  useEffect(() => {
-    if (Object.keys(hierarchy).length === 0) return;
-
-    const clusters = _.find(
-      hierarchy,
-      (rootNode) => rootNode.key === config.selectedCellSet,
-    ).children.length;
-
-    setNumClusters(clusters);
-  }, [hierarchy]);
+  const { loading: cellSetsLoading, error: cellSetsError } = useSelector(getCellSets());
+  const cellSet = useSelector(getCellSetsHierarchyByKey([config.selectedCellSet]))[0];
+  const numClusters = cellSet ? cellSet.children.length : 0;
 
   const actions = {
     export: true,
