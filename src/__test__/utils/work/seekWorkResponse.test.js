@@ -65,14 +65,8 @@ describe('seekFromAPI unit tests', () => {
       {
         ok: true,
         json: () => ({
-          results: [
-            {
-              body: JSON.stringify({
-                hello: 'world',
-              }),
-            },
-          ],
-          response: { error: false },
+          data: { hello: 'world' },
+          cacheable: true,
         }),
       },
     );
@@ -113,8 +107,8 @@ describe('seekFromAPI unit tests', () => {
 
     expect(socketConnectionMocks.mockOn).toHaveBeenCalledTimes(1);
     expect(response).toEqual({
-      results: [{ body: '{"hello":"world"}' }],
-      response: { error: false },
+      data: { hello: 'world' },
+      cacheable: true,
     });
   });
 
