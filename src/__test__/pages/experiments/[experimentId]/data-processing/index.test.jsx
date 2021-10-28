@@ -6,6 +6,8 @@ import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import _ from 'lodash';
+
+import createComponentFactory from '__test__/test-utils/componentFactory';
 import DataProcessingPage from 'pages/experiments/[experimentId]/data-processing/index';
 
 import { initialPlotConfigStates } from 'redux/reducers/componentConfig/initialState';
@@ -108,19 +110,13 @@ const experimentId = 'experimentId';
 const experimentData = {};
 const route = `localhost:3000/${experimentId}/data-processing`;
 
-const dataProcessingPageFactory = (override = {}) => {
-  const props = _.merge({
-    experimentId,
-    experimentData,
-    route,
-  }, override);
-  return (
-    // eslint-disable-next-line react/jsx-props-no-spreading
-    <DataProcessingPage {...props}>
-      <></>
-    </DataProcessingPage>
-  );
+const defaultProps = {
+  experimentId,
+  experimentData,
+  route,
 };
+
+const dataProcessingPageFactory = createComponentFactory(DataProcessingPage, defaultProps);
 
 describe('DataProcessingPage', () => {
   it('Renders the first page correctly', () => {

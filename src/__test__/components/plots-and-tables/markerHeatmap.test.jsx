@@ -23,6 +23,7 @@ import mockAPI, {
   workerResponse,
 } from '__test__/test-utils/mockAPI';
 
+import createComponentFactory from '__test__/test-utils/componentFactory';
 import { makeStore } from 'redux/store';
 
 import MarkerHeatmap from 'pages/experiments/[experimentId]/plots-and-tables/marker-heatmap/index';
@@ -63,14 +64,9 @@ const defaultResponses = _.merge(
   mockWorkerResponses,
 );
 
-const heatmapPageFactory = (customProps = {}) => {
-  const props = _.merge({
-    experimentId,
-  }, customProps);
+const defaultProps = { experimentId };
 
-  // eslint-disable-next-line react/jsx-props-no-spreading
-  return <MarkerHeatmap {...props} />;
-};
+const heatmapPageFactory = createComponentFactory(MarkerHeatmap, defaultProps);
 
 // Helper function to get displayed genes from the gene input
 const getDisplayedGenes = (container) => {
