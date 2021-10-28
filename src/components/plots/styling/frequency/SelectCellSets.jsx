@@ -46,7 +46,6 @@ const SelectCellSets = (props) => {
       <div>
         Select the metadata that cells are grouped by
         (Determines the x-axis):
-        {' '}
       </div>
       <Form.Item>
         <Tooltip title={toolTipText}>
@@ -65,11 +64,11 @@ const SelectCellSets = (props) => {
         </Tooltip>
       </Form.Item>
       <div>
-        Select the cell sets to be shown:
+        Select how the data should be grouped:
       </div>
       <Form.Item>
         <Select
-          aria-label='cell sets'
+          aria-label='groupBy'
           value={{
             value: config.proportionGrouping,
           }}
