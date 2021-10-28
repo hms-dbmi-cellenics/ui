@@ -1,11 +1,10 @@
 import defaultCellMapper from './defaultCellMapper';
 
-const DEFAULT_CELL_SET_CLASS = 'sample';
-
-const getAllCells = (cellSets, mapper = defaultCellMapper) => {
-  // We are using sample by default because heuristically it has the least number of entries
+const getAllCells = (cellSets, groupBy = 'sample', mapper = defaultCellMapper) => {
+  // We are using sample as cellSetClass to iterate by default
+  // because heuristically it has the least number of entries
   const sampleHierarchy = cellSets.hierarchy.find(
-    (rootNode) => rootNode.key === DEFAULT_CELL_SET_CLASS,
+    (rootNode) => rootNode.key === groupBy,
   )?.children || [];
 
   const sampleNames = sampleHierarchy.map((sample) => sample.key);

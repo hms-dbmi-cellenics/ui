@@ -189,37 +189,30 @@ const cellPropMapper = (cellId, sampleKey, cellSets) => ({
   color: cellSets.properties[sampleKey].color,
 });
 
-const filterCells = (cellSets, selectedSample) => {
+const filterCells = (cellSets, sampleKey, groupBy) => {
   let filteredCells = [];
   let cellSetNames = [];
 
-  if (selectedSample === 'All') {
+  if (sampleKey === 'All') {
     const clusterEnteries = cellSets.hierarchy.find(
-      (rootNode) => rootNode.key === selectedSample,
+      (rootNode) => rootNode.key === groupBy,
     )?.children || [];
 
-    cellSetNames = clusterEnteries.map((cluster) => cluster.key);
-    filteredCells = getAllCells(cellSets, cellPropMapper);
+    cellSetNames = clusterEnteries.map(({ key }) => cellSets.properties[key].name);
+    filteredCells = getAllCells(cellSets, groupBy, cellPropMapper);
   } else {
-    cellSetNames = [cellSets.properties[selectedSample].name];
-    filteredCells = getSampleCells(cellSets, selectedSample, cellPropMapper);
+    cellSetNames = [cellSets.properties[sampleKey].name];
+    filteredCells = getSampleCells(cellSets, sampleKey, cellPropMapper);
   }
 
   return { filteredCells, cellSetNames };
 };
 
 // Generate dynamic data from redux store
-const generateData = (cellSets, selectedCellSet, embeddingData) => {
-  const { filteredCells, cellSetNames } = filterCells(cellSets, selectedCellSet);
+const generateData = (cellSets, sampleKey, groupBy, embeddingData) => {
+  const { filteredCells, cellSetNames } = filterCells(cellSets, sampleKey, groupBy);
 
-  const dataWithInfo = filteredCells.map(({ cellId, cellSetKey }) => ({
-    cellId,
-    cellSetKey: selectedCellSet,
-    cellSetName: cellSets.properties[cellSetKey].name,
-    color: cellSets.properties[cellSetKey].color,
-  }));
-
-  const plotData = dataWithInfo
+  const plotData = filteredCells
     .filter((d) => d.cellId < embeddingData.length)
     .filter((data) => embeddingData[data.cellId]) // filter out cells removed in data processing
     .map((data) => {

@@ -48,13 +48,13 @@ const EmbeddingCategoricalPage = ({ experimentId }) => {
     dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
   }, []);
 
-  const generateCellSetOptions = () => {
+  const generateGroupByOptions = () => {
     if (cellSets.loading) {
       return [];
     }
     return hierarchy.map(({ key, children }) => ({
       value: key,
-      label: `${cellSets.properties[key].name} (${children} ${children === 1 ? 'child' : 'children'})`,
+      label: `${cellSets.properties[key].name} (${children.length} ${children === 1 ? 'child' : 'children'})`,
     }));
   };
 
@@ -63,7 +63,7 @@ const EmbeddingCategoricalPage = ({ experimentId }) => {
   };
 
   const onCellSetSelect = ({ value }) => {
-    updatePlotWithChanges({ selectedCellSet: value });
+    updatePlotWithChanges({ groupBy: value });
   };
 
   const plotStylingControlsConfig = [
@@ -131,8 +131,8 @@ const EmbeddingCategoricalPage = ({ experimentId }) => {
             style={{ width: '100%' }}
             placeholder='Select cell set...'
             loading={config}
-            value={{ key: config.selectedCellSet }}
-            options={generateCellSetOptions()}
+            value={{ value: config.groupBy }}
+            options={generateGroupByOptions()}
             onChange={onCellSetSelect}
           />
         ) : <Skeleton.Input style={{ width: '100%' }} active />}

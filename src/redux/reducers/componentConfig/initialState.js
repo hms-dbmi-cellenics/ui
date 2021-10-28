@@ -38,7 +38,7 @@ const embeddingCategoricalInitialConfig = {
     ...labelBaseState,
     enabled: false,
   },
-  selectedCellSet: 'louvain',
+  groupBy: 'louvain',
   selectedSample: 'All',
 };
 
