@@ -7,7 +7,7 @@ import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import _ from 'lodash';
 
-import createComponentFactory from '__test__/test-utils/componentFactory';
+import createTestComponentFactory from '__test__/test-utils/testComponentFactory';
 import DataProcessingPage from 'pages/experiments/[experimentId]/data-processing/index';
 
 import { initialPlotConfigStates } from 'redux/reducers/componentConfig/initialState';
@@ -116,7 +116,7 @@ const defaultProps = {
   route,
 };
 
-const dataProcessingPageFactory = createComponentFactory(DataProcessingPage, defaultProps);
+const dataProcessingPageFactory = createTestComponentFactory(DataProcessingPage, defaultProps);
 
 describe('DataProcessingPage', () => {
   it('Renders the first page correctly', () => {

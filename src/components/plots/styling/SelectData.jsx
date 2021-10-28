@@ -19,7 +19,10 @@ const SelectData = (props) => {
   } = props;
 
   const {
-    loading: cellSetsLoading, error: cellSetsError, hierarchy, properties,
+    loading: cellSetsLoading,
+    error: cellSetsError,
+    hierarchy,
+    properties,
   } = cellSets;
 
   const getDefaultCellSetNotIn = (rootNodeKey) => {
@@ -72,7 +75,7 @@ const SelectData = (props) => {
   }
 
   if (cellSetsError) {
-    return <InlineError message='Error loading cell set' actionable />;
+    return <InlineError message='Error loading cell set' />;
   }
 
   return (
@@ -83,6 +86,7 @@ const SelectData = (props) => {
       </div>
       <Form.Item>
         <Select
+          aria-label='selectCellSets'
           defaultValue={config.selectedCellSet}
           style={{ width: 200 }}
           onChange={(value) => {
@@ -99,10 +103,11 @@ const SelectData = (props) => {
         </Select>
       </Form.Item>
       <div>
-        Select the Cell sets or Metadata to be shown as points:
+        Select the Cell sets or Metadata to be shown as data:
       </div>
       <Form.Item>
         <Select
+          aria-label='selectPoints'
           value={config.selectedPoints}
           style={{ width: 200 }}
           onChange={(value) => {
