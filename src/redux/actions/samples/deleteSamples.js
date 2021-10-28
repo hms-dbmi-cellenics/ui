@@ -39,9 +39,10 @@ const sendDeleteSamplesRequest = async (projectUuid, experimentId, sampleUuids) 
 
 const cancelUploads = async (files) => {
   const promises = Object.values(files).map(({ upload }) => {
-    if (upload?.amplifyPromise) {
-      // return Storage.cancel(upload.amplifyPromise);
-    }
+    // Disabled because eslint is dumb and doesn't recognize function calls if they have "?" before
+    // eslint-disable-next-line no-unused-expressions
+    upload?.cancelToken.cancel();
+
     return Promise.resolve();
   });
 

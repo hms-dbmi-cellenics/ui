@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
 import _ from 'lodash';
-
 import axios from 'axios';
+import EventEmitter from 'events';
 
 import { createSample, updateSampleFile } from '../../redux/actions/samples';
 
@@ -28,24 +28,23 @@ const putInS3 = async (projectUuid, loadedFileData, dispatch, sampleUuid, fileNa
 
   const signedUrl = await signedUrlResponse.json();
 
-  return axios.request({
+  const progressEmitter = new EventEmitter();
+  const cancelToken = axios.CancelToken.source();
+
+  const uploadPromise = axios.request({
     method: 'put',
     url: signedUrl,
     data: loadedFileData,
     headers: {
       'Content-Type': 'application/octet-stream',
     },
-    // onUploadProgress: (progress) => {
-    //   const percentProgress = Math.round((progress.loaded / progress.total) * 100);
-
-    //   dispatch(updateSampleFile(sampleUuid, fileName, {
-    //     upload: {
-    //       status: UploadStatus.UPLOADING,
-    //       progress: percentProgress ?? 0,
-    //     },
-    //   }));
-    // },
+    onUploadProgress: (progress) => {
+      const percentProgress = Math.round((progress.loaded / progress.total) * 100);
+      progressEmitter.emit('progress', percentProgress);
+    },
   });
+
+  return { uploadPromise, progressEmitter, cancelToken };
 };
 
 const metadataForBundle = (bundle) => {
@@ -91,7 +90,7 @@ const compressAndUploadSingleFile = async (
   }
 
   try {
-    const uploadPromise = putInS3(
+    const { progressEmitter, cancelToken, uploadPromise } = await putInS3(
       projectUuid, loadedFile, dispatch,
       sampleUuid, fileName, metadata,
     );
@@ -102,7 +101,7 @@ const compressAndUploadSingleFile = async (
         fileName,
         {
           bundle: file.bundle,
-          upload: { status: UploadStatus.UPLOADING, amplifyPromise: uploadPromise },
+          upload: { status: UploadStatus.UPLOADING, progressEmitter, cancelToken },
         },
       ),
     );
@@ -122,7 +121,13 @@ const compressAndUploadSingleFile = async (
       updateSampleFile(
         sampleUuid,
         fileName,
-        { upload: { status: UploadStatus.UPLOAD_ERROR, amplifyPromise: null } },
+        {
+          upload: {
+            status: UploadStatus.UPLOAD_ERROR,
+            progressEmitter: null,
+            cancelToken: null,
+          },
+        },
       ),
     );
 
@@ -136,8 +141,8 @@ const compressAndUploadSingleFile = async (
       {
         upload: {
           status: UploadStatus.UPLOADED,
-          progress: 100,
-          amplifyPromise: null,
+          progressEmitter: null,
+          cancelToken: null,
         },
       },
     ),
@@ -238,10 +243,7 @@ const bundleToFile = async (bundle, technology) => {
   return {
     name: filename,
     bundle,
-    upload: {
-      status: UploadStatus.UPLOADING,
-      progress: 0,
-    },
+    upload: { status: UploadStatus.UPLOADING },
     valid: !error,
     errors: error,
     compressed: verdict === Verdict.VALID_ZIPPED,

@@ -24,7 +24,8 @@ const sampleFileTemplate = {
   lastModified: '',
   upload: {
     status: null,
-    amplifyPromise: null,
+    progressEmitter: null,
+    cancelToken: null,
   },
 };
 

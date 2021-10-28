@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   Space, Typography, Progress, Tooltip, Button,
 } from 'antd';
@@ -35,9 +35,15 @@ const UploadCell = (props) => {
     sampleUuid,
     file,
   } = tableCellData;
-  const { progress = null, status = null } = file?.upload ?? {};
+  const { progressEmitter = null, status = null } = file?.upload ?? {};
   const [uploadDetailsModalVisible, setUploadDetailsModalVisible] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(null);
+
   const uploadDetailsModalDataRef = useRef(null);
+  useEffect(() => {
+    // eslint-disable-next-line no-unused-expressions
+    progressEmitter?.on('progress', setUploadProgress);
+  }, [progressEmitter]);
 
   const showDetails = () => {
     uploadDetailsModalDataRef.current = {
@@ -74,7 +80,7 @@ const UploadCell = (props) => {
         <UploadCellStyle>
           <Space direction='vertical' size={[1, 1]}>
             <Text type='warning'>{`${messageForStatus(status)}`}</Text>
-            {progress ? (<Progress percent={progress} size='small' />) : <div />}
+            {status === UploadStatus.UPLOADING && uploadProgress ? (<Progress percent={uploadProgress} size='small' />) : <div />}
           </Space>
         </UploadCellStyle>
       );
