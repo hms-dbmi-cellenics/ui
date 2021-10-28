@@ -35,16 +35,16 @@ const putInS3 = async (projectUuid, loadedFileData, dispatch, sampleUuid, fileNa
     headers: {
       'Content-Type': 'application/octet-stream',
     },
-    onUploadProgress: (progress) => {
-      const percentProgress = Math.round((progress.loaded / progress.total) * 100);
+    // onUploadProgress: (progress) => {
+    //   const percentProgress = Math.round((progress.loaded / progress.total) * 100);
 
-      dispatch(updateSampleFile(sampleUuid, fileName, {
-        upload: {
-          status: UploadStatus.UPLOADING,
-          progress: percentProgress ?? 0,
-        },
-      }));
-    },
+    //   dispatch(updateSampleFile(sampleUuid, fileName, {
+    //     upload: {
+    //       status: UploadStatus.UPLOADING,
+    //       progress: percentProgress ?? 0,
+    //     },
+    //   }));
+    // },
   });
 };
 
