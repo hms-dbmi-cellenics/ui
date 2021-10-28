@@ -1,22 +1,23 @@
-const getAllCells = (cellSets, cellSetClass = 'sample') => {
+import defaultCellMapper from './defaultCellMapper';
+
+const DEFAULT_CELL_SET_CLASS = 'sample';
+
+const getAllCells = (cellSets, mapper = defaultCellMapper) => {
   // We are using sample by default because heuristically it has the least number of entries
   const sampleHierarchy = cellSets.hierarchy.find(
-    (rootNode) => rootNode.key === cellSetClass,
+    (rootNode) => rootNode.key === DEFAULT_CELL_SET_CLASS,
   )?.children || [];
 
   const sampleNames = sampleHierarchy.map((sample) => sample.key);
 
-  const allCellIds = sampleNames.reduce((acc, sampleName) => {
+  const allCells = sampleNames.reduce((acc, sampleName) => {
     const cellIdsArr = Array.from(cellSets.properties[sampleName].cellIds);
-    const sampleCellId = cellIdsArr.map((cellId) => ({
-      cellId,
-      cellSetKey: sampleName,
-    }));
+    const sampleCellId = cellIdsArr.map((cellId) => mapper(cellId, sampleName, cellSets));
 
     return acc.concat(sampleCellId);
   }, []);
 
-  return allCellIds;
+  return allCells;
 };
 
 export default getAllCells;

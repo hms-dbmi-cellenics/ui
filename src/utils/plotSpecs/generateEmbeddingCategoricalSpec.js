@@ -182,6 +182,13 @@ const generateSpec = (config, plotData, cellSetNames) => {
   };
 };
 
+const cellPropMapper = (cellId, sampleKey, cellSets) => ({
+  cellId,
+  cellSetKey: sampleKey,
+  cellSetName: cellSets.properties[sampleKey].name,
+  color: cellSets.properties[sampleKey].color,
+});
+
 const filterCells = (cellSets, selectedSample) => {
   let filteredCells = [];
   let cellSetNames = [];
@@ -192,10 +199,10 @@ const filterCells = (cellSets, selectedSample) => {
     )?.children || [];
 
     cellSetNames = clusterEnteries.map((cluster) => cluster.key);
-    filteredCells = getAllCells(cellSets);
+    filteredCells = getAllCells(cellSets, cellPropMapper);
   } else {
     cellSetNames = [cellSets.properties[selectedSample].name];
-    filteredCells = getSampleCells(cellSets, selectedSample);
+    filteredCells = getSampleCells(cellSets, selectedSample, cellPropMapper);
   }
 
   return { filteredCells, cellSetNames };
