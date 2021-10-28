@@ -30,7 +30,7 @@ const route = {
 const plotUuid = 'embeddingContinuousMain';
 const plotType = 'embeddingContinuous';
 
-const EmbeddingContinuousIndex = ({ experimentId }) => {
+const ContinuousEmbeddingPage = ({ experimentId }) => {
   const dispatch = useDispatch();
   const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
   const loadedGene = useSelector((state) => state.genes.expression.views[plotUuid]?.data);
@@ -145,7 +145,6 @@ const EmbeddingContinuousIndex = ({ experimentId }) => {
             cellSets={cellSets}
           />
         ) : <Skeleton.Input style={{ width: 200 }} active />}
-
       </Panel>
     </>
   );
@@ -195,8 +194,8 @@ const EmbeddingContinuousIndex = ({ experimentId }) => {
   );
 };
 
-EmbeddingContinuousIndex.propTypes = {
+ContinuousEmbeddingPage.propTypes = {
   experimentId: PropTypes.string.isRequired,
 };
 
-export default EmbeddingContinuousIndex;
+export default ContinuousEmbeddingPage;

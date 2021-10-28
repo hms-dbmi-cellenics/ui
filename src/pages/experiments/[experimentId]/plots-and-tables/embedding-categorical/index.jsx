@@ -15,15 +15,15 @@ import { InfoCircleOutlined } from '@ant-design/icons';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import { getCellSets, getCellSetsHierarchy } from 'redux/selectors';
-import PlotStyling from '../../../../../components/plots/styling/PlotStyling';
+import PlotStyling from 'components/plots/styling/PlotStyling';
 import {
   updatePlotConfig,
   loadPlotConfig,
-} from '../../../../../redux/actions/componentConfig/index';
-import Header from '../../../../../components/plots/Header';
-import { loadCellSets } from '../../../../../redux/actions/cellSets';
-import CategoricalEmbeddingPlot from '../../../../../components/plots/CategoricalEmbeddingPlot';
-import SelectData from '../../../../../components/plots/styling/embedding-continuous/SelectData';
+} from 'redux/actions/componentConfig/index';
+import Header from 'components/plots/Header';
+import { loadCellSets } from 'redux/actions/cellSets';
+import CategoricalEmbeddingPlot from 'components/plots/CategoricalEmbeddingPlot';
+import SelectData from 'components/plots/styling/embedding-continuous/SelectData';
 
 const { Panel } = Collapse;
 
@@ -37,7 +37,7 @@ const route = {
   breadcrumbName: 'Categorical Embedding',
 };
 
-const EmbeddingCategoricalIndex = ({ experimentId }) => {
+const EmbeddingCategoricalPage = ({ experimentId }) => {
   const dispatch = useDispatch();
   const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
   const cellSets = useSelector(getCellSets());
@@ -184,8 +184,8 @@ const EmbeddingCategoricalIndex = ({ experimentId }) => {
     </div>
   );
 };
-EmbeddingCategoricalIndex.propTypes = {
+EmbeddingCategoricalPage.propTypes = {
   experimentId: PropTypes.string.isRequired,
 };
 
-export default EmbeddingCategoricalIndex;
+export default EmbeddingCategoricalPage;

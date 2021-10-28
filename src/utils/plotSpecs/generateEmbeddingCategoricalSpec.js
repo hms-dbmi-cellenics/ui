@@ -1,4 +1,6 @@
 /* eslint-disable no-param-reassign */
+import { getAllCells, getSampleCells } from 'utils/cellSets';
+
 const generateSpec = (config, plotData, cellSetNames) => {
   let legend = [];
 
@@ -180,42 +182,44 @@ const generateSpec = (config, plotData, cellSetNames) => {
   };
 };
 
-const filterCells = (cellSets, selectedCellSet) => {
-  const newCellSets = cellSets.hierarchy.find(
-    (rootNode) => rootNode.key === selectedCellSet,
-  )?.children || [];
+const filterCells = (cellSets, selectedSample) => {
+  let filteredCells = [];
+  let cellSetNames = [];
 
-  // Build up the data source based on the properties. Note that the child nodes
-  // in the hierarchy are /objects/ with a `key` property, hence the destructuring
-  // in the function.
-  const dataPoints = newCellSets.flatMap(({ key }) => {
-    const cells = Array.from(cellSets.properties[key].cellIds);
+  if (selectedSample === 'All') {
+    const clusterEnteries = cellSets.hierarchy.find(
+      (rootNode) => rootNode.key === selectedSample,
+    )?.children || [];
 
-    return cells.map((cellId) => ({
-      cellId,
-      cellSetKey: key,
-      cellSetName: cellSets.properties[key].name,
-      color: cellSets.properties[key].color,
-    }));
-  });
+    cellSetNames = clusterEnteries.map((cluster) => cluster.key);
+    filteredCells = getAllCells(cellSets);
+  } else {
+    cellSetNames = [cellSets.properties[selectedSample].name];
+    filteredCells = getSampleCells(cellSets, selectedSample);
+  }
 
-  const cellSetNames = newCellSets.map(({ key }) => cellSets.properties[key].name);
-
-  return { dataPoints, cellSetNames };
+  return { filteredCells, cellSetNames };
 };
 
 // Generate dynamic data from redux store
 const generateData = (cellSets, selectedCellSet, embeddingData) => {
-  const { dataPoints, cellSetNames } = filterCells(cellSets, selectedCellSet);
+  const { filteredCells, cellSetNames } = filterCells(cellSets, selectedCellSet);
 
-  const plotData = dataPoints
+  const dataWithInfo = filteredCells.map(({ cellId, cellSetKey }) => ({
+    cellId,
+    cellSetKey: selectedCellSet,
+    cellSetName: cellSets.properties[cellSetKey].name,
+    color: cellSets.properties[cellSetKey].color,
+  }));
+
+  const plotData = dataWithInfo
     .filter((d) => d.cellId < embeddingData.length)
     .filter((data) => embeddingData[data.cellId]) // filter out cells removed in data processing
     .map((data) => {
-      const { cellId, ...leftOverData } = data;
+      const { cellId, ...supportingData } = data;
 
       return {
-        ...leftOverData,
+        ...supportingData,
         x: embeddingData[cellId][0],
         y: embeddingData[cellId][1],
       };

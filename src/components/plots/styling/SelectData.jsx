@@ -8,7 +8,7 @@ import {
   Skeleton,
 } from 'antd';
 
-import composeTree from 'utils/composeTree';
+import { composeTree } from 'utils/cellSets';
 import InlineError from 'components/InlineError';
 
 const { Option, OptGroup } = Select;

@@ -1,4 +1,7 @@
 /* eslint-disable no-param-reassign */
+
+import { getAllCells, getSampleCells } from 'utils/cellSets';
+
 const generateSpec = (config, plotData) => {
   let legend = [];
 
@@ -146,41 +149,16 @@ const generateSpec = (config, plotData) => {
   };
 };
 
-const filterCells = (cellSets, selectedSample, embeddingData) => {
-  let newCellSets = [];
+const filterCells = (cellSets, selectedSample) => {
+  let filteredCells = [];
 
-  const cellSetHierarchyKeys = cellSets.hierarchy.map((value) => value.key);
-
-  // Filter by cellSet
-  if (cellSetHierarchyKeys.includes(selectedSample)) {
-    newCellSets = cellSets.hierarchy.find(
-      (rootNode) => rootNode.key === selectedSample,
-    )?.children || [];
-
-    // Build up the data source based on the properties. Note that the child nodes
-    // in the hierarchy are /objects/ with a `key` property, hence the destructuring
-    // in the function.
-    newCellSets = newCellSets.flatMap(({ key }) => {
-      const cells = Array.from(cellSets.properties[key].cellIds);
-
-      return cells.map((cellId) => ({
-        cellId,
-      }));
-    });
-
-    // Filter by sample
+  if (selectedSample === 'All') {
+    filteredCells = getAllCells(cellSets);
   } else {
-    newCellSets = embeddingData.map((_, cellId) => ({
-      cellId,
-    }));
-
-    if (selectedSample !== 'All') {
-      const cellIds = Array.from(cellSets.properties[selectedSample].cellIds);
-      newCellSets = newCellSets.filter((val) => cellIds.includes(val.cellId));
-    }
+    filteredCells = getSampleCells(cellSets, selectedSample);
   }
 
-  return newCellSets;
+  return filteredCells;
 };
 
 const generateData = (
@@ -189,9 +167,9 @@ const generateData = (
   plotData,
   embeddingData,
 ) => {
-  const newCellSets = filterCells(cellSets, selectedSample, embeddingData);
+  const filteredCells = filterCells(cellSets, selectedSample, embeddingData);
 
-  const cells = newCellSets
+  const cells = filteredCells
     .filter((d) => d.cellId < embeddingData.length)
     .filter((data) => embeddingData[data.cellId]) // filter out cells removed in data processing
     .map((data) => {
