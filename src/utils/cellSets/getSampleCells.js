@@ -1,11 +1,10 @@
-import defaultCellMapper from './defaultCellMapper';
-
-const getSampleCells = (cellSets, sampleKey, mapper = defaultCellMapper) => {
+const getSampleCells = (cellSets, sampleKey) => {
   const cellIds = Array.from(cellSets.properties[sampleKey].cellIds);
 
-  return cellIds.map(
-    (cellId) => mapper(cellId, sampleKey, cellSets),
-  );
+  return cellIds.map((cellId) => ({
+    cellId,
+    cellSetKey: sampleKey,
+  }));
 };
 
 export default getSampleCells;

@@ -182,28 +182,51 @@ const generateSpec = (config, plotData, cellSetNames) => {
   };
 };
 
-const cellPropMapper = (cellId, sampleKey, cellSets) => ({
-  cellId,
-  cellSetKey: sampleKey,
-  cellSetName: cellSets.properties[sampleKey].name,
-  color: cellSets.properties[sampleKey].color,
-});
-
 const filterCells = (cellSets, sampleKey, groupBy) => {
   let filteredCells = [];
-  let cellSetNames = [];
 
+  // Get all the filtered cells
   if (sampleKey === 'All') {
-    const clusterEnteries = cellSets.hierarchy.find(
-      (rootNode) => rootNode.key === groupBy,
-    )?.children || [];
-
-    cellSetNames = clusterEnteries.map(({ key }) => cellSets.properties[key].name);
-    filteredCells = getAllCells(cellSets, groupBy, cellPropMapper);
+    filteredCells = getAllCells(cellSets, groupBy);
   } else {
-    cellSetNames = [cellSets.properties[sampleKey].name];
-    filteredCells = getSampleCells(cellSets, sampleKey, cellPropMapper);
+    filteredCells = getSampleCells(cellSets, sampleKey);
   }
+
+  // Get the cell set names
+  const clusterEnteries = cellSets.hierarchy.find(
+    (rootNode) => rootNode.key === groupBy,
+  )?.children || [];
+
+  const cellSetNames = clusterEnteries.map(({ key }) => cellSets.properties[key].name);
+
+  const colorToCellIdsMap = clusterEnteries.reduce((acc, { key }) => {
+    acc.push({
+      cellIds: cellSets.properties[key].cellIds,
+      key,
+      name: cellSets.properties[key].name,
+      color: cellSets.properties[key].color,
+    });
+
+    return acc;
+  }, []);
+
+  filteredCells = filteredCells.map((cell) => {
+    const inCellSet = colorToCellIdsMap.find((map) => map.cellIds.has(cell.cellId));
+
+    // If cell is not in the cell set, then return null
+    if (!inCellSet) return null;
+
+    const { key, name, color } = inCellSet;
+
+    return {
+      ...cell,
+      cellSetKey: key,
+      cellSetName: name,
+      color,
+    };
+  });
+
+  filteredCells = filteredCells.filter((cell) => cell !== null);
 
   return { filteredCells, cellSetNames };
 };
