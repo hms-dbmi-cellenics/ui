@@ -13,7 +13,7 @@ import {
 } from 'antd';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
-import { getCellSets, getCellSetsHierarchyByType } from 'redux/selectors';
+import { getCellSets } from 'redux/selectors';
 import SelectCellSets from 'components/plots/styling/frequency/SelectCellSets';
 import Header from 'components/plots/Header';
 

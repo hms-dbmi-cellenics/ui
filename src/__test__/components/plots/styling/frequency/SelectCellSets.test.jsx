@@ -10,6 +10,8 @@ import {
   screen, render, fireEvent,
 } from '@testing-library/react';
 
+import '__test__/test-utils/mockWorkerBackend';
+
 import SelectCellSets from 'components/plots/styling/frequency/SelectCellSets';
 import { loadCellSets } from 'redux/actions/cellSets';
 
