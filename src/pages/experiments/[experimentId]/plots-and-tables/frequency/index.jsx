@@ -40,8 +40,6 @@ const frequencyPlot = ({ experimentId }) => {
   const dispatch = useDispatch();
   const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
   const cellSets = useSelector(getCellSets());
-  const optionsMetadata = useSelector(getCellSetsHierarchyByType(['metadataCategorical']));
-  const optionsCellSets = useSelector(getCellSetsHierarchyByType(['cellSets']));
   const {
     loading, error, hierarchy, properties,
   } = cellSets;
@@ -52,15 +50,6 @@ const frequencyPlot = ({ experimentId }) => {
   }, []);
 
   const dataExplorationPath = '/experiments/[experimentId]/data-exploration';
-
-  useEffect(() => {
-    if (!loading && config?.proportionGrouping === '') {
-      updatePlotWithChanges({
-        xAxisGrouping: optionsMetadata[0]?.key,
-        proportionGrouping: optionsCellSets[0].key,
-      });
-    }
-  });
 
   const updatePlotWithChanges = (obj) => {
     dispatch(updatePlotConfig(plotUuid, obj));
@@ -152,8 +141,6 @@ const frequencyPlot = ({ experimentId }) => {
         <SelectCellSets
           config={config}
           onUpdate={updatePlotWithChanges}
-          optionsMetadata={optionsMetadata}
-          optionsCellSets={optionsCellSets}
         />
       </Panel>
       <Panel header='Plot Type' key='1'>

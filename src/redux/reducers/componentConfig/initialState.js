@@ -156,7 +156,6 @@ const volcanoInitialConfig = {
 const frequencyInitialConfig = {
   spec: '1.0.0',
   frequencyType: 'proportional',
-  proportionGrouping: '',
   legend: {
     ...legendBaseState,
     title: 'Cell Set',
@@ -176,7 +175,8 @@ const frequencyInitialConfig = {
     offset: 10,
   },
   fontStyle: fontStyleBaseState,
-  xAxisGrouping: '',
+  proportionGrouping: 'louvain',
+  xAxisGrouping: 'sample',
   axisTitlesize: 13,
   geneexpLegendloc: '',
 };
