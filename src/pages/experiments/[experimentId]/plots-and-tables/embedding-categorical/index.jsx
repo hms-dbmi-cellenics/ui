@@ -82,7 +82,7 @@ const EmbeddingCategoricalIndex = ({ experimentId }) => {
       ],
     },
     {
-      panelTitle: 'Axes and Margins',
+      panelTitle: 'Axes and margins',
       controls: ['axes'],
     },
     {
@@ -112,7 +112,7 @@ const EmbeddingCategoricalIndex = ({ experimentId }) => {
 
   const renderExtraPanels = () => (
     <>
-      <Panel header='Select Data' key='15'>
+      <Panel header='Select data' key='15'>
         {config && !cellSets.loading && !cellSets.error ? (
           <SelectData
             config={config}

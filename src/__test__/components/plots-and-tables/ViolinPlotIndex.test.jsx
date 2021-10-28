@@ -107,7 +107,7 @@ describe('ViolinIndex', () => {
   it('loads by default the gene with the highest dispersion, allows another to be selected, and updates the plot\'s title', async () => {
     await renderViolinIndex();
 
-    const geneSelection = rtl.screen.getByText('Gene Selection');
+    const geneSelection = rtl.screen.getByText(/Gene selection/i);
     const panelContainer = geneSelection.parentElement;
 
     userEvent.click(geneSelection);
@@ -117,7 +117,7 @@ describe('ViolinIndex', () => {
 
     const newGeneShown = 'NewGeneShown';
     userEvent.type(geneInput, `{selectall}{del}${newGeneShown}`);
-    const searchButton = rtl.getByText(panelContainer, 'Search');
+    const searchButton = rtl.getByText(panelContainer, /Search/i);
     userEvent.click(searchButton);
     await rtl.waitFor(() => expect(fetchWork).toHaveBeenCalledTimes(3));
 
@@ -130,7 +130,7 @@ describe('ViolinIndex', () => {
   it('allows selection of the grouping/points, defaulting to louvain and All', async () => {
     await renderViolinIndex();
 
-    const dataSelection = rtl.screen.getByText('Select Data');
+    const dataSelection = rtl.screen.getByText(/Select data/i);
     const panelContainer = dataSelection.parentElement;
 
     userEvent.click(dataSelection);
@@ -169,7 +169,7 @@ describe('ViolinIndex', () => {
   it('has a Data Tranformation panel', async () => {
     await renderViolinIndex();
 
-    const dataTransformation = rtl.screen.getByText('Data Transformation');
+    const dataTransformation = rtl.screen.getByText(/Data transformation/i);
     const panelContainer = dataTransformation.parentElement;
     userEvent.click(dataTransformation);
 
@@ -268,14 +268,14 @@ describe('ViolinIndex', () => {
     await expectStringInVegaCanvas('MockGeneWithHighestDispersion', 1);
     await expectStringInVegaCanvas(titleOverride, 1);
 
-    const geneSelection = rtl.screen.getByText('Gene Selection');
+    const geneSelection = rtl.screen.getByText(/Gene selection/i);
     panelContainer = geneSelection.parentNode;
     userEvent.click(geneSelection);
     const geneInput = rtl.getByRole(panelContainer, 'textbox');
     const newGeneShown = 'NewGeneShown';
     generateSpecSpy.mockClear();
     userEvent.type(geneInput, `{selectall}{del}${newGeneShown}`);
-    const searchButton = rtl.getByText(panelContainer, 'Search');
+    const searchButton = rtl.getByText(panelContainer, /Search/i);
 
     userEvent.click(searchButton);
     await rtl.waitFor(() => expect(generateSpecSpy).toHaveBeenCalled());
@@ -286,7 +286,7 @@ describe('ViolinIndex', () => {
     await renderViolinIndex();
 
     const tabs = rtl.screen.getAllByRole('tab');
-    const markers = tabs.find((tab) => tab.textContent === 'Axes and Margins');
+    const markers = tabs.find((tab) => tab.textContent === 'Axes and margins');
     const panelContainer = markers.parentElement;
     userEvent.click(markers);
 

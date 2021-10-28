@@ -143,11 +143,11 @@ const HeatmapPlot = ({ experimentId }) => {
 
   const plotStylingControlsConfig = [
     {
-      panelTitle: 'Expression Values',
+      panelTitle: 'Expression values',
       controls: ['expressionValuesType', 'expressionValuesCapping'],
     },
     {
-      panelTitle: 'Main Schema',
+      panelTitle: 'Main schema',
       controls: ['dimensions'],
       children: [
         {

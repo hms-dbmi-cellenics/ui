@@ -105,8 +105,9 @@ const heatmapInitialConfig = {
 // PLOTS & TABLES - Marker heatmap
 const markerHeatmapInitialConfig = {
   ...heatmapInitialConfig,
+  useCustomGenes: true,
   guardLines: false,
-  numGenes: 5,
+  nMarkerGenes: 5,
   showGeneLabels: true,
 };
 
@@ -215,6 +216,44 @@ const violinConfig = {
   kdeBandwidth: 0.3,
   normalised: 'normalised',
 };
+
+// PLOTS & TABLES - Dot Plot
+const dotPlotConfig = {
+  spec: '1.0.0',
+  legend: {
+    ...legendBaseState,
+    position: 'right',
+    enabled: true,
+    direction: 'vertical',
+  },
+  dimensions: {
+    ...dimensionsBaseState,
+    width: 700,
+    height: 550,
+  },
+  axes: {
+    ...axesBaseState,
+    tickOffset: 10,
+    xAxisRotateLabels: true,
+    xAxisText: 'Gene names',
+    yAxisText: 'Louvain clusters',
+  },
+  title: {
+    ...titleBaseState,
+    dx: 0,
+    fontSize: 20,
+  },
+  fontStyle: fontStyleBaseState,
+  colour: colourBaseState,
+  marker: markerBaseState,
+  labels: labelBaseState,
+  useCustomGenes: true,
+  nMarkerGenes: 3,
+  selectedGenes: [],
+  selectedCellSet: 'louvain',
+  selectedPoints: 'All',
+};
+
 // EMBEDDING PREVIEW - Coloured by sample
 const embeddingPreviewBySampleInitialConfig = {
   spec: '1.0.0',
@@ -700,6 +739,7 @@ const initialPlotConfigStates = {
   volcano: volcanoInitialConfig,
   markerHeatmap: markerHeatmapInitialConfig,
   violin: violinConfig,
+  dotPlot: dotPlotConfig,
   frequency: frequencyInitialConfig,
   embeddingPreviewBySample: embeddingPreviewBySampleInitialConfig,
   embeddingPreviewByCellSets: embeddingPreviewByCellSetsInitialConfig,
