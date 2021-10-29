@@ -5,12 +5,12 @@ import uuid from 'uuid';
 import axios from 'axios';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import EventEmitter from 'events';
-import { SAMPLES_FILE_UPDATE } from '../../../redux/actionTypes/samples';
-import initialSampleState, { sampleTemplate } from '../../../redux/reducers/samples/initialState';
-import initialProjectState, { projectTemplate } from '../../../redux/reducers/projects/initialState';
-import initialExperimentState, { experimentTemplate } from '../../../redux/reducers/experiments/initialState';
-import { processUpload } from '../../../utils/upload/processUpload';
-import UploadStatus from '../../../utils/upload/UploadStatus';
+import { SAMPLES_FILE_UPDATE } from 'redux/actionTypes/samples';
+import initialSampleState, { sampleTemplate } from 'redux/reducers/samples/initialState';
+import initialProjectState, { projectTemplate } from 'redux/reducers/projects/initialState';
+import initialExperimentState, { experimentTemplate } from 'redux/reducers/experiments/initialState';
+import { processUpload } from 'utils/upload/processUpload';
+import UploadStatus from 'utils/upload/UploadStatus';
 
 enableFetchMocks();
 const validFilesList = [

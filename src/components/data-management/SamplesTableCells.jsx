@@ -8,15 +8,17 @@ import {
 import { useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
-import integrationTestConstants from '../../utils/integrationTestConstants';
 
 import {
   deleteSamples, updateSample,
-} from '../../redux/actions/samples';
-import UploadStatus, { messageForStatus } from '../../utils/upload/UploadStatus';
-import EditableField from '../EditableField';
-import UploadDetailsModal from './UploadDetailsModal';
-import SpeciesSelector from './SpeciesSelector';
+} from 'redux/actions/samples';
+
+import integrationTestConstants from 'utils/integrationTestConstants';
+import UploadStatus, { messageForStatus } from 'utils/upload/UploadStatus';
+
+import EditableField from 'components/EditableField';
+import UploadDetailsModal from 'components/data-management/UploadDetailsModal';
+import SpeciesSelector from 'components/data-management/SpeciesSelector';
 
 const { Text } = Typography;
 
@@ -41,6 +43,7 @@ const UploadCell = (props) => {
 
   const uploadDetailsModalDataRef = useRef(null);
   useEffect(() => {
+    // Disabled because eslint is dumb and doesn't recognize function calls if they have "?" before
     // eslint-disable-next-line no-unused-expressions
     progressEmitter?.on('progress', setUploadProgress);
   }, [progressEmitter]);
