@@ -4,6 +4,7 @@ import waitForActions from 'redux-mock-store-await-actions';
 import uuid from 'uuid';
 import axios from 'axios';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
+import EventEmitter from 'events';
 import { SAMPLES_FILE_UPDATE } from '../../../redux/actionTypes/samples';
 import initialSampleState, { sampleTemplate } from '../../../redux/reducers/samples/initialState';
 import initialProjectState, { projectTemplate } from '../../../redux/reducers/projects/initialState';
@@ -99,7 +100,7 @@ const initialState = {
 const flushPromises = () => new Promise(setImmediate);
 const mockStore = configureMockStore([thunk]);
 
-jest.mock('../../../utils/upload/loadAndCompressIfNecessary',
+jest.mock('utils/upload/loadAndCompressIfNecessary',
   () => jest.fn().mockImplementation(
     (bundle) => {
       if (!bundle.valid) {
@@ -109,9 +110,11 @@ jest.mock('../../../utils/upload/loadAndCompressIfNecessary',
     },
   ));
 
-jest.mock('../../../redux/actions/samples/saveSamples', () => jest.fn().mockImplementation(() => ({
+jest.mock('redux/actions/samples/saveSamples', () => jest.fn().mockImplementation(() => ({
   type: 'samples/saved',
 })));
+
+jest.mock('events', () => jest.fn());
 
 describe('processUpload', () => {
   afterEach(() => {
@@ -137,6 +140,15 @@ describe('processUpload', () => {
       .mockImplementationOnce(uploadSuccess)
       .mockImplementationOnce(uploadSuccess)
       .mockImplementationOnce(uploadSuccess);
+
+    const mockCancelToken = 'token';
+    const mockCancelTokenGenerator = jest.fn(() => mockCancelToken);
+
+    axios.CancelToken = { source: jest.fn().mockImplementation(mockCancelTokenGenerator) };
+
+    const mockProgressEmitter = { on: jest.fn(), emit: jest.fn() };
+
+    EventEmitter.mockImplementation(() => (mockProgressEmitter));
 
     await processUpload(
       validFilesList,
@@ -177,12 +189,16 @@ describe('processUpload', () => {
     );
     // There are 6 files actions with status uploading
     expect(uploadingStatusProperties.length).toEqual(6);
+
+    for (let i = 0; i < 3; i += 1) {
+      const properties = uploadingStatusProperties.pop();
+
+      expect(properties.cancelToken).toEqual(mockCancelToken);
+      expect(properties.progressEmitter).toEqual(mockProgressEmitter);
+    }
+
     // There are 3 files actions with status uploaded
     expect(uploadedStatusProperties.length).toEqual(3);
-    // After uploading ends successfully the upload promises are removed
-    uploadedStatusProperties.forEach(({ amplifyPromise }) => {
-      expect(amplifyPromise).toBeNull();
-    });
   });
 
   it('Updates redux correctly when there are file load and compress errors', async () => {
@@ -286,9 +302,5 @@ describe('processUpload', () => {
     expect(errorFileProperties.length).toEqual(3);
     // There are no file actions with status successfully uploaded
     expect(uploadedFileProperties.length).toEqual(0);
-    // Upload end deletes aws promise (if there was one)
-    errorFileProperties.forEach(({ amplifyPromise }) => {
-      expect(amplifyPromise).toBeNull();
-    });
   });
 });

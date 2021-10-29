@@ -302,7 +302,8 @@ Object {
         "size": 0,
         "success": false,
         "upload": Object {
-          "amplifyPromise": null,
+          "cancelToken": null,
+          "progressEmitter": null,
           "status": null,
         },
       },
@@ -343,7 +344,8 @@ Object {
         "size": 0,
         "success": false,
         "upload": Object {
-          "amplifyPromise": null,
+          "cancelToken": null,
+          "progressEmitter": null,
           "status": null,
         },
       },
