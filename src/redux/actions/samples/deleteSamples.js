@@ -37,16 +37,12 @@ const sendDeleteSamplesRequest = async (projectUuid, experimentId, sampleUuids) 
   }
 };
 
-const cancelUploads = async (files) => {
-  const promises = Object.values(files).map(({ upload }) => {
+const cancelUploads = (files) => {
+  Object.values(files).forEach(({ upload }) => {
     // Disabled because eslint is dumb and doesn't recognize function calls if they have "?" before
     // eslint-disable-next-line no-unused-expressions
-    upload?.cancelTokenSource.cancel();
-
-    return Promise.resolve();
+    upload?.cancelTokenSource?.cancel();
   });
-
-  return Promise.all(promises);
 };
 
 const deleteSamples = (
@@ -61,7 +57,7 @@ const deleteSamples = (
       acc[samples[sampleUuid].projectUuid] = [];
     }
 
-    await cancelUploads(files);
+    cancelUploads(files);
 
     return {
       ...acc,
