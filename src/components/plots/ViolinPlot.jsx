@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Vega } from 'react-vega';
 
-import { getCellSets, getCellSetsHierarchyByKey } from 'redux/selectors';
+import { getCellSets, getCellSetsHierarchyByKeys } from 'redux/selectors';
 
 import { generateSpec, generateData } from 'utils/plotSpecs/generateViolinSpec';
 import { loadGeneExpression, loadPaginatedGeneProperties } from 'redux/actions/genes';
@@ -24,7 +24,7 @@ const ViolinPlot = (props) => {
   const cellSets = useSelector(getCellSets());
 
   const selectedCellSetClassAvailable = useSelector(
-    getCellSetsHierarchyByKey([config.selectedCellSet]),
+    getCellSetsHierarchyByKeys([config.selectedCellSet]),
   ).length;
 
   const [plotSpec, setPlotSpec] = useState({});

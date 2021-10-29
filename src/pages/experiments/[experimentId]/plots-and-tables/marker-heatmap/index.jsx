@@ -18,7 +18,7 @@ import PropTypes from 'prop-types';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
 import endUserMessages from 'utils/endUserMessages';
 
-import { getCellSets, getCellSetsHierarchyByKey, getCellSetsHierarchyByType } from 'redux/selectors';
+import { getCellSets, getCellSetsHierarchyByKeys, getCellSetsHierarchyByType } from 'redux/selectors';
 import getSelectOptions from 'utils/plots/getSelectOptions';
 
 import HeatmapGroupBySettings from 'components/data-exploration/heatmap/HeatmapGroupBySettings';
@@ -62,7 +62,7 @@ const MarkerHeatmap = ({ experimentId }) => {
   const cellOptions = useSelector(getCellSetsHierarchyByType('cellSets'));
 
   const selectedCellSetClassAvailable = useSelector(
-    getCellSetsHierarchyByKey([config?.selectedCellSet]),
+    getCellSetsHierarchyByKeys([config?.selectedCellSet]),
   ).length;
 
   const loadedMarkerGenes = useSelector(
