@@ -302,7 +302,7 @@ Object {
         "size": 0,
         "success": false,
         "upload": Object {
-          "cancelToken": null,
+          "cancelTokenSource": null,
           "progressEmitter": null,
           "status": null,
         },
@@ -344,7 +344,7 @@ Object {
         "size": 0,
         "success": false,
         "upload": Object {
-          "cancelToken": null,
+          "cancelTokenSource": null,
           "progressEmitter": null,
           "status": null,
         },

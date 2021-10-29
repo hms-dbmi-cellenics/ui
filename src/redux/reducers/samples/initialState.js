@@ -25,7 +25,7 @@ const sampleFileTemplate = {
   upload: {
     status: null,
     progressEmitter: null,
-    cancelToken: null,
+    cancelTokenSource: null,
   },
 };
 

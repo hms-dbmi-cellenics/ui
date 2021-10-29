@@ -41,7 +41,7 @@ const cancelUploads = async (files) => {
   const promises = Object.values(files).map(({ upload }) => {
     // Disabled because eslint is dumb and doesn't recognize function calls if they have "?" before
     // eslint-disable-next-line no-unused-expressions
-    upload?.cancelToken.cancel();
+    upload?.cancelTokenSource.cancel();
 
     return Promise.resolve();
   });

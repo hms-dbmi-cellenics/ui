@@ -29,12 +29,13 @@ const putInS3 = async (projectUuid, loadedFileData, dispatch, sampleUuid, fileNa
   const signedUrl = await signedUrlResponse.json();
 
   const progressEmitter = new EventEmitter();
-  const cancelToken = axios.CancelToken.source();
+  const cancelTokenSource = axios.CancelToken.source();
 
   const uploadPromise = axios.request({
     method: 'put',
     url: signedUrl,
     data: loadedFileData,
+    cancelToken: cancelTokenSource.token,
     headers: {
       'Content-Type': 'application/octet-stream',
     },
@@ -44,7 +45,7 @@ const putInS3 = async (projectUuid, loadedFileData, dispatch, sampleUuid, fileNa
     },
   });
 
-  return { uploadPromise, progressEmitter, cancelToken };
+  return { uploadPromise, progressEmitter, cancelTokenSource };
 };
 
 const metadataForBundle = (bundle) => {
@@ -90,7 +91,7 @@ const compressAndUploadSingleFile = async (
   }
 
   try {
-    const { progressEmitter, cancelToken, uploadPromise } = await putInS3(
+    const { progressEmitter, cancelTokenSource, uploadPromise } = await putInS3(
       projectUuid, loadedFile, dispatch,
       sampleUuid, fileName, metadata,
     );
@@ -101,7 +102,7 @@ const compressAndUploadSingleFile = async (
         fileName,
         {
           bundle: file.bundle,
-          upload: { status: UploadStatus.UPLOADING, progressEmitter, cancelToken },
+          upload: { status: UploadStatus.UPLOADING, progressEmitter, cancelTokenSource },
         },
       ),
     );
@@ -125,7 +126,7 @@ const compressAndUploadSingleFile = async (
           upload: {
             status: UploadStatus.UPLOAD_ERROR,
             progressEmitter: null,
-            cancelToken: null,
+            cancelTokenSource: null,
           },
         },
       ),
@@ -142,7 +143,7 @@ const compressAndUploadSingleFile = async (
         upload: {
           status: UploadStatus.UPLOADED,
           progressEmitter: null,
-          cancelToken: null,
+          cancelTokenSource: null,
         },
       },
     ),

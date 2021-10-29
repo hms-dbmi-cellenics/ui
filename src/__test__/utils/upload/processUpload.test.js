@@ -117,14 +117,21 @@ jest.mock('redux/actions/samples/saveSamples', () => jest.fn().mockImplementatio
 jest.mock('events', () => jest.fn());
 
 describe('processUpload', () => {
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
+  let mockCancelToken;
+  let mockProgressEmitter;
 
   beforeEach(() => {
+    jest.clearAllMocks();
     fetchMock.resetMocks();
     fetchMock.doMock();
     fetchMock.mockResponse(JSON.stringify('theSignedUrl'), { status: 200 });
+
+    mockCancelToken = { cancel: jest.fn(), token: 'token' };
+    const mockCancelTokenGenerator = jest.fn(() => (mockCancelToken));
+    axios.CancelToken = { source: jest.fn().mockImplementation(mockCancelTokenGenerator) };
+
+    mockProgressEmitter = { on: jest.fn(), emit: jest.fn() };
+    EventEmitter.mockImplementation(() => (mockProgressEmitter));
   });
 
   it('Uploads and updates redux correctly when there are no errors', async () => {
@@ -140,15 +147,6 @@ describe('processUpload', () => {
       .mockImplementationOnce(uploadSuccess)
       .mockImplementationOnce(uploadSuccess)
       .mockImplementationOnce(uploadSuccess);
-
-    const mockCancelToken = 'token';
-    const mockCancelTokenGenerator = jest.fn(() => mockCancelToken);
-
-    axios.CancelToken = { source: jest.fn().mockImplementation(mockCancelTokenGenerator) };
-
-    const mockProgressEmitter = { on: jest.fn(), emit: jest.fn() };
-
-    EventEmitter.mockImplementation(() => (mockProgressEmitter));
 
     await processUpload(
       validFilesList,
@@ -193,7 +191,7 @@ describe('processUpload', () => {
     for (let i = 0; i < 3; i += 1) {
       const properties = uploadingStatusProperties.pop();
 
-      expect(properties.cancelToken).toEqual(mockCancelToken);
+      expect(properties.cancelTokenSource).toEqual(mockCancelToken);
       expect(properties.progressEmitter).toEqual(mockProgressEmitter);
     }
 
