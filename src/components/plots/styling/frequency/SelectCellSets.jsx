@@ -15,8 +15,8 @@ const SelectCellSets = (props) => {
     onUpdate, config,
   } = props;
 
-  const optionsMetadata = useSelector(getCellSetsHierarchyByType(['metadataCategorical']));
-  const optionsCellSets = useSelector(getCellSetsHierarchyByType(['cellSets']));
+  const optionsMetadata = useSelector(getCellSetsHierarchyByType('metadataCategorical'));
+  const optionsCellSets = useSelector(getCellSetsHierarchyByType('cellSets'));
 
   let disabled = false;
   let toolTipText;

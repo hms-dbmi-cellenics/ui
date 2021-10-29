@@ -59,7 +59,7 @@ const MarkerHeatmap = ({ experimentId }) => {
   const cellSets = useSelector(getCellSets());
   const { hierarchy, properties } = cellSets;
 
-  const cellOptions = useSelector(getCellSetsHierarchyByType(['cellSets']));
+  const cellOptions = useSelector(getCellSetsHierarchyByType('cellSets'));
 
   const selectedCellSetClassAvailable = useSelector(
     getCellSetsHierarchyByKey([config?.selectedCellSet]),
