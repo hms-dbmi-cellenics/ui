@@ -1,18 +1,26 @@
-import React, { useState } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
+
 import {
-  Form,
   Select,
+  Form,
+  Skeleton,
 } from 'antd';
 
 import { metadataKeyToName } from 'utils/data-management/metadataUtils';
 
+import InlineError from 'components/InlineError';
+
 const { Option, OptGroup } = Select;
 const SelectData = (props) => {
   const { onUpdate, config, cellSets } = props;
-  const { hierarchy, properties } = cellSets;
 
-  const [selectOpen, setSelectOpen] = useState(false);
+  const {
+    loading: cellSetsLoading,
+    error: cellSetsError,
+    hierarchy,
+    properties,
+  } = cellSets;
 
   const getMetadataOptions = (parent) => {
     const children = hierarchy.filter((cluster) => (
@@ -32,23 +40,26 @@ const SelectData = (props) => {
   };
   const parents = getMetadataParents();
 
+  if (cellSetsLoading) {
+    return <Skeleton.Input style={{ width: 200 }} active />;
+  }
+
+  if (cellSetsError) {
+    return <InlineError message='Error loading cell set' />;
+  }
+
   return (
     <>
       <div>
         Select the data to view on the embedding:
       </div>
-      <Form.Item
-        onFocus={() => setSelectOpen(true)}
-        onBlur={() => setSelectOpen(false)}
-      >
+      <Form.Item>
         <Select
           defaultValue={config.selectedSample}
           style={{ width: 200 }}
           onChange={(value) => {
             handleChange(value);
           }}
-          open={selectOpen}
-
         >
           <Option value='All'>All</Option>
           {parents.map((parent) => (

@@ -8,6 +8,8 @@ import {
   Skeleton,
 } from 'antd';
 
+import { metadataKeyToName } from 'utils/data-management/metadataUtils';
+
 import { composeTree } from 'utils/cellSets';
 import InlineError from 'components/InlineError';
 
@@ -54,7 +56,7 @@ const SelectData = (props) => {
     onUpdate({ selectedPoints: value });
   };
 
-  const tree = composeTree(hierarchy, properties);
+  const optionTree = composeTree(hierarchy, properties);
 
   const renderChildren = (rootNodeKey, children) => {
     if (!children || children.length === 0) { return (<></>); }
@@ -94,9 +96,9 @@ const SelectData = (props) => {
           }}
         >
           {
-            tree.map(({ key, name }) => (
-              <Option key={key}>
-                {name}
+            optionTree.map(({ key, name }) => (
+              <Option value={key} key={key}>
+                {metadataKeyToName(name)}
               </Option>
             ))
           }
@@ -116,8 +118,8 @@ const SelectData = (props) => {
         >
           <Option key='All'>All</Option>
           {
-            tree.map(({ key, children }) => (
-              <OptGroup label={properties[key]?.name} key={key}>
+            optionTree.map(({ key, children }) => (
+              <OptGroup label={metadataKeyToName(properties[key]?.name)} key={key}>
                 {renderChildren(key, [...children])}
               </OptGroup>
             ))
