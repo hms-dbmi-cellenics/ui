@@ -5,13 +5,14 @@ import {
 import {
   UploadOutlined,
 } from '@ant-design/icons';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 
 import {
   deleteSamples, updateSample,
 } from 'redux/actions/samples';
+
 
 import integrationTestConstants from 'utils/integrationTestConstants';
 import UploadStatus, { messageForStatus } from 'utils/upload/UploadStatus';
@@ -35,17 +36,22 @@ const UploadCell = (props) => {
   const { columnId, tableCellData } = props;
   const {
     sampleUuid,
-    file,
+    fileName,
   } = tableCellData;
+  const file = useSelector((state) => state.samples[sampleUuid].files[fileName]);
+
   const { progressEmitter = null, status = null } = file?.upload ?? {};
   const [uploadDetailsModalVisible, setUploadDetailsModalVisible] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(null);
 
   const uploadDetailsModalDataRef = useRef(null);
+
   useEffect(() => {
-    // Disabled because eslint is dumb and doesn't recognize function calls if they have "?" before
-    // eslint-disable-next-line no-unused-expressions
-    progressEmitter?.on('progress', setUploadProgress);
+    if (status === UploadStatus.UPLOADING) {
+      // Disabled because eslint is dumb and doesn't recognize function calls if they have "?" before
+      // eslint-disable-next-line no-unused-expressions
+      progressEmitter?.on(`progress${sampleUuid}`, setUploadProgress);
+    }
   }, [progressEmitter]);
 
   const showDetails = () => {

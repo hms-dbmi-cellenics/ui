@@ -41,7 +41,7 @@ const putInS3 = async (projectUuid, loadedFileData, sampleUuid, fileName, metada
     },
     onUploadProgress: (progress) => {
       const percentProgress = Math.round((progress.loaded / progress.total) * 100);
-      progressEmitter.emit('progress', percentProgress);
+      progressEmitter.emit(`progress${sampleUuid}`, percentProgress);
     },
   });
 

@@ -1,8 +1,8 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React, {
-  useEffect, useState, forwardRef, useImperativeHandle,
+  useEffect, useState, useRef, forwardRef, useImperativeHandle,
 } from 'react';
-
+import _ from 'lodash';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import {
@@ -44,6 +44,8 @@ const SamplesTable = forwardRef((props, ref) => {
   const { height } = props;
   const dispatch = useDispatch();
   const [tableData, setTableData] = useState([]);
+
+  const currentSampleIdsRef = useRef(null);
 
   const projects = useSelector((state) => state.projects);
   const samples = useSelector((state) => state.samples);
@@ -111,7 +113,8 @@ const SamplesTable = forwardRef((props, ref) => {
         </Space>
       ),
       dataIndex: 'species',
-      render: (organismId, record) => <SpeciesCell organismId={organismId} recordUuid={record.uuid} />,
+      render: (organismId, record) => (
+        <SpeciesCell organismId={organismId} recordUuid={record.uuid} />),
       width: 200,
     },
   ];
@@ -244,6 +247,11 @@ const SamplesTable = forwardRef((props, ref) => {
       return;
     }
 
+    if (_.isEqual(currentSampleIdsRef.current, activeProject.samples)) return;
+    currentSampleIdsRef.current = activeProject.samples;
+
+    console.log('Re-rendering');
+
     // Set table data
     const newData = activeProject.samples.map((sampleUuid, idx) => {
       // upload problems sometimes lead to partial updates and incosistent states
@@ -257,9 +265,9 @@ const SamplesTable = forwardRef((props, ref) => {
       const genesFile = sampleFiles['features.tsv.gz'] ?? { upload: { status: UploadStatus.FILE_NOT_FOUND } };
       const matrixFile = sampleFiles['matrix.mtx.gz'] ?? { upload: { status: UploadStatus.FILE_NOT_FOUND } };
 
-      const barcodesData = { sampleUuid, file: barcodesFile };
-      const genesData = { sampleUuid, file: genesFile };
-      const matrixData = { sampleUuid, file: matrixFile };
+      const barcodesData = { sampleUuid, fileName: 'barcodes.tsv.gz', file: barcodesFile };
+      const genesData = { sampleUuid, fileName: 'features.tsv.gz', file: genesFile };
+      const matrixData = { sampleUuid, fileName: 'features.tsv.gz', file: matrixFile };
 
       return {
         key: idx,
@@ -272,8 +280,10 @@ const SamplesTable = forwardRef((props, ref) => {
         ...samples[sampleUuid].metadata,
       };
     });
+
+    console.log('settingNewData');
     setTableData(newData);
-  }, [projects, samples, activeProjectUuid]);
+  }, [activeProjectUuid]);
 
   const downloadPublicDataset = async () => {
     const s3Object = await Storage.get('PBMC_3k.zip',
