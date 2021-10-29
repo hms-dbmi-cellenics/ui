@@ -15,13 +15,14 @@ const ContinuousEmbeddingPlot = (props) => {
   const {
     experimentId, config, plotUuid,
     plotData, truncatedPlotData,
-    actions, loading, error, reloadPlotData,
+    actions, loading, error, reloadPlotData, onUpdate,
   } = props;
   const dispatch = useDispatch();
 
   const embeddingSettings = useSelector(
     (state) => state.experimentSettings.originalProcessing?.configureEmbedding?.embeddingSettings,
   );
+  const { method } = embeddingSettings || false;
 
   const {
     data: embeddingData,
@@ -49,6 +50,21 @@ const ContinuousEmbeddingPlot = (props) => {
       dispatch(loadEmbedding(experimentId, embeddingSettings?.method));
     }
   }, [experimentId, embeddingSettings?.method]);
+  useEffect(() => {
+    if (!config) return;
+    const { defaultValues: axesDefaultValues, xAxisText, yAxisText } = config?.axes;
+
+    if (embeddingSettings?.method && axesDefaultValues?.length) {
+      const methodUppercase = method[0].toUpperCase() + method.slice(1);
+      console.log('METHOD IS ', methodUppercase, 'config axes ', config.axes);
+      if (axesDefaultValues.includes('x') && !xAxisText.includes(methodUppercase)) {
+        onUpdate({ axes: { xAxisText: `${methodUppercase} 1` } });
+      }
+      if (axesDefaultValues.includes('y') && !yAxisText.includes(methodUppercase)) {
+        onUpdate({ axes: { yAxisText: `${methodUppercase} 2` } });
+      }
+    }
+  }, [config, embeddingSettings?.method]);
 
   useEffect(() => {
     if (!embeddingLoading
@@ -124,6 +140,7 @@ ContinuousEmbeddingPlot.propTypes = {
   loading: PropTypes.bool.isRequired,
   error: PropTypes.bool.isRequired,
   reloadPlotData: PropTypes.func,
+  onUpdate: PropTypes.func.isRequired,
 };
 
 ContinuousEmbeddingPlot.defaultProps = {

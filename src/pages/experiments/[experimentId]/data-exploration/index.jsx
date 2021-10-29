@@ -7,6 +7,7 @@ import { Mosaic, MosaicWindow } from 'react-mosaic-component';
 import ReactResizeDetector from 'react-resize-detector';
 import { DownOutlined, PictureOutlined, ToolOutlined } from '@ant-design/icons';
 import PropTypes from 'prop-types';
+import { loadProcessingSettings } from 'redux/actions/experimentSettings';
 import Header from '../../../../components/Header';
 
 import CellSetsTool from '../../../../components/data-exploration/cell-sets-tool/CellSetsTool';
@@ -41,13 +42,23 @@ const ExplorationViewPage = ({
   const { windows, panel } = layout;
   const [selectedTab, setSelectedTab] = useState(panel);
   const [addMenuVisible, setAddMenuVisible] = useState(false);
-
+  const { method } = useSelector((state) => (
+    state.experimentSettings.processing?.configureEmbedding?.embeddingSettings || ' '
+  ));
   useEffect(() => {
     setSelectedTab(panel);
   }, [panel]);
 
+  useEffect(() => {
+    if (!method) {
+      dispatch(loadProcessingSettings(experimentId));
+    }
+  }, []);
+  console.log('method is ', method);
+
+  const methodUppercase = method ? method.toUpperCase() : ' ';
   const TILE_MAP = {
-    'UMAP Embedding': {
+    'UMAP Embeddingg': {
       toolbarControls: <MosaicCloseButton key='remove-button-embedding' />,
       component: (width, height) => (
         <Embedding
@@ -123,7 +134,7 @@ const ExplorationViewPage = ({
     ],
     Plots: [
       {
-        key: 'UMAP Embedding',
+        key: 'UMAP Embeddingg',
         description: 'Visualize cells clustered by genetic expression using a UMAP embedding.',
       },
       {

@@ -174,7 +174,10 @@ const EmbeddingContinuousIndex = ({ experimentId }) => {
                   }
                   loading={geneExpression.loading.length > 0}
                   error={geneExpression.error}
-                  reloadPlotData={() => loadGeneExpression(experimentId, [config?.shownGene], plotUuid)}
+                  reloadPlotData={() => loadGeneExpression(
+                    experimentId, [config?.shownGene], plotUuid,
+                  )}
+                  onUpdate={updatePlotWithChanges}
                 />
               </Panel>
             </Collapse>

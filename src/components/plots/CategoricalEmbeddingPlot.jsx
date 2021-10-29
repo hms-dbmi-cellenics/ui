@@ -13,7 +13,7 @@ import { getCellSets } from '../../redux/selectors';
 
 const CategoricalEmbeddingPlot = (props) => {
   const {
-    experimentId, config, actions,
+    experimentId, config, actions, onUpdate,
   } = props;
   const dispatch = useDispatch();
 
@@ -22,6 +22,7 @@ const CategoricalEmbeddingPlot = (props) => {
   const embeddingSettings = useSelector(
     (state) => state.experimentSettings.originalProcessing?.configureEmbedding?.embeddingSettings,
   );
+  const { method } = embeddingSettings || false;
 
   const {
     data: embeddingData,
@@ -46,6 +47,22 @@ const CategoricalEmbeddingPlot = (props) => {
       dispatch(loadEmbedding(experimentId, embeddingSettings?.method));
     }
   }, [experimentId, embeddingSettings?.method]);
+
+  useEffect(() => {
+    if (!config) return;
+    const { defaultValues: axesDefaultValues, xAxisText, yAxisText } = config?.axes;
+
+    if (embeddingSettings?.method && axesDefaultValues?.length) {
+      const methodUppercase = method[0].toUpperCase() + method.slice(1);
+      console.log('METHOD IS ', methodUppercase, 'config axes ', config.axes);
+      if (axesDefaultValues.includes('x') && !xAxisText.includes(methodUppercase)) {
+        onUpdate({ axes: { xAxisText: `${methodUppercase} 1` } });
+      }
+      if (axesDefaultValues.includes('y') && !yAxisText.includes(methodUppercase)) {
+        onUpdate({ axes: { yAxisText: `${methodUppercase} 2` } });
+      }
+    }
+  }, [config, embeddingSettings?.method]);
 
   useEffect(() => {
     if (!config
@@ -103,6 +120,7 @@ CategoricalEmbeddingPlot.propTypes = {
     PropTypes.bool,
     PropTypes.object,
   ]),
+  onUpdate: PropTypes.func.isRequired,
 };
 
 CategoricalEmbeddingPlot.defaultProps = {
