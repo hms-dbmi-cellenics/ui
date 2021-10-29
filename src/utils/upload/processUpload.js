@@ -11,7 +11,7 @@ import UploadStatus from 'utils/upload/UploadStatus';
 import loadAndCompressIfNecessary from 'utils/upload/loadAndCompressIfNecessary';
 import { inspectFile, Verdict } from 'utils/upload/fileInspector';
 
-const putInS3 = async (projectUuid, loadedFileData, dispatch, sampleUuid, fileName, metadata) => {
+const putInS3 = async (projectUuid, loadedFileData, sampleUuid, fileName, metadata) => {
   const baseUrl = `/v1/projects/${projectUuid}/samples/${sampleUuid}/${fileName}/uploadUrl`;
 
   const urlParams = new URLSearchParams(metadata);
@@ -92,7 +92,7 @@ const compressAndUploadSingleFile = async (
 
   try {
     const { progressEmitter, cancelTokenSource, uploadPromise } = await putInS3(
-      projectUuid, loadedFile, dispatch,
+      projectUuid, loadedFile,
       sampleUuid, fileName, metadata,
     );
 
