@@ -30,7 +30,6 @@ Object {
         "colour": "#000000",
         "font": "sans-serif",
       },
-      "groupBy": "louvain",
       "labels": Object {
         "enabled": false,
         "size": 18,
@@ -45,6 +44,7 @@ Object {
         "shape": "circle",
         "size": 5,
       },
+      "selectedCellSet": "louvain",
       "selectedSample": "All",
       "spec": "1.0.0",
       "title": Object {

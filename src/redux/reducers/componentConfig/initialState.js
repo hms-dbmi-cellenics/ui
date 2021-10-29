@@ -38,7 +38,7 @@ const embeddingCategoricalInitialConfig = {
     ...labelBaseState,
     enabled: false,
   },
-  groupBy: 'louvain',
+  selectedCellSet: 'louvain',
   selectedSample: 'All',
 };
 
@@ -344,7 +344,8 @@ const embeddingPreviewMitochondrialContentInitialConfig = {
   colour: colourBaseState,
   marker: markerBaseState,
   labels: labelBaseState,
-  selectedSample: 'sample',
+  shownGene: 'notSelected',
+  selectedSample: 'All',
 };
 
 // EMBEDDING PREVIEW - Config for doublet score
@@ -371,7 +372,7 @@ const embeddingPreviewDoubletScoreInitialConfig = {
   colour: colourBaseState,
   marker: markerBaseState,
   labels: labelBaseState,
-  selectedSample: 'sample',
+  selectedSample: 'All',
 };
 
 const interactiveHeatmapInitialConfig = {

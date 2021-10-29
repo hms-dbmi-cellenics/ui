@@ -63,7 +63,7 @@ const EmbeddingCategoricalPage = ({ experimentId }) => {
   };
 
   const onCellSetSelect = ({ value }) => {
-    updatePlotWithChanges({ groupBy: value });
+    updatePlotWithChanges({ selectedCellSet: value });
   };
 
   const plotStylingControlsConfig = [
@@ -113,13 +113,11 @@ const EmbeddingCategoricalPage = ({ experimentId }) => {
   const renderExtraPanels = () => (
     <>
       <Panel header='Select data' key='15'>
-        {config && !cellSets.loading && !cellSets.error ? (
-          <SelectData
-            config={config}
-            onUpdate={updatePlotWithChanges}
-            cellSets={cellSets}
-          />
-        ) : <Skeleton.Input style={{ width: 200 }} active />}
+        <SelectData
+          config={config}
+          onUpdate={updatePlotWithChanges}
+          cellSets={cellSets}
+        />
       </Panel>
       <Panel header='Group by' key='1'>
         <p>
@@ -131,7 +129,7 @@ const EmbeddingCategoricalPage = ({ experimentId }) => {
             style={{ width: '100%' }}
             placeholder='Select cell set...'
             loading={config}
-            value={{ value: config.groupBy }}
+            value={{ value: config.selectedCellSet }}
             options={generateGroupByOptions()}
             onChange={onCellSetSelect}
           />

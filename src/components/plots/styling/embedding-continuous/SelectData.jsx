@@ -5,6 +5,8 @@ import {
   Select,
 } from 'antd';
 
+import { metadataKeyToName } from 'utils/data-management/metadataUtils';
+
 const { Option, OptGroup } = Select;
 const SelectData = (props) => {
   const { onUpdate, config, cellSets } = props;
@@ -34,7 +36,6 @@ const SelectData = (props) => {
     <>
       <div>
         Select the data to view on the embedding:
-        {' '}
       </div>
       <Form.Item
         onFocus={() => setSelectOpen(true)}
@@ -51,7 +52,7 @@ const SelectData = (props) => {
         >
           <Option value='All'>All</Option>
           {parents.map((parent) => (
-            <OptGroup label={properties[parent.value].name}>
+            <OptGroup label={metadataKeyToName(properties[parent.value].name)}>
               {getMetadataOptions(parent.value).map((option) => (
                 <Option value={option.key}>{properties[option.key].name}</Option>
               ))}

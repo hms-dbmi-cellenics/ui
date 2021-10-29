@@ -58,7 +58,7 @@ const CategoricalEmbeddingPlot = (props) => {
       const {
         plotData,
         cellSetNames,
-      } = generateData(cellSets, config.selectedSample, config.groupBy, embeddingData);
+      } = generateData(cellSets, config.selectedSample, config.selectedCellSet, embeddingData);
 
       setPlotSpec(generateSpec(config, plotData, cellSetNames));
     }
