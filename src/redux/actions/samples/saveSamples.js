@@ -1,9 +1,25 @@
 /* eslint-disable no-param-reassign */
+import _ from 'lodash';
+
 import fetchAPI from '../../../utils/fetchAPI';
 import { isServerError, throwIfRequestFailed } from '../../../utils/fetchErrors';
 import endUserMessages from '../../../utils/endUserMessages';
 import pushNotificationMessage from '../../../utils/pushNotificationMessage';
 import { SAMPLES_ERROR, SAMPLES_SAVING, SAMPLES_SAVED } from '../../actionTypes/samples';
+
+// Removes parts of the files we don't need to store in dynamo
+const cleanupPayload = (samplePayload) => {
+  const payloadToUpload = _.cloneDeep(samplePayload);
+
+  Object.values(payloadToUpload).forEach((sample) => {
+    Object.values(sample.files).forEach((file) => {
+      delete file?.upload?.cancelTokenSource;
+      delete file?.upload?.progressEmitter;
+    });
+  });
+
+  return payloadToUpload;
+};
 
 const saveSamples = (
   projectUuid,
@@ -43,6 +59,8 @@ const saveSamples = (
     });
   }
 
+  const payloadToSend = cleanupPayload(payload);
+
   const url = `/v1/projects/${projectUuid}/${experimentId}/samples`;
   try {
     const response = await fetchAPI(
@@ -55,7 +73,7 @@ const saveSamples = (
         body: JSON.stringify({
           projectUuid,
           experimentId,
-          samples: payload,
+          samples: payloadToSend,
         }),
       },
     );
