@@ -6,7 +6,7 @@ import { generateSpec } from 'utils/plotSpecs/generateDotPlotSpec';
 import { getCellSets, getCellSetsHierarchyByKeys } from 'redux/selectors';
 
 import PlatformError from 'components/PlatformError';
-import { fastLoad } from 'components/Loader';
+import Loader from 'components/Loader';
 
 // Mock data, delete this once we have the real data
 const generateMockData = (numGenes, numClusters) => {
@@ -29,7 +29,7 @@ const generateMockData = (numGenes, numClusters) => {
 const plotData = generateMockData(3, 14);
 
 const DotPlot = (props) => {
-  const { config } = props;
+  const { config, experimentId } = props;
 
   const { loading: cellSetsLoading, error: cellSetsError } = useSelector(getCellSets());
   const cellSet = useSelector(getCellSetsHierarchyByKeys([config.selectedCellSet]))[0];
@@ -59,7 +59,7 @@ const DotPlot = (props) => {
     if (cellSetsLoading) {
       return (
         <center>
-          {fastLoad()}
+          <Loader experimentId={experimentId} />
         </center>
       );
     }

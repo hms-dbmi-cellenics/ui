@@ -36,7 +36,7 @@ const route = {
   breadcrumbName: 'Frequency plot',
 };
 
-const frequencyPlot = ({ experimentId }) => {
+const FrequencyPlotPage = ({ experimentId }) => {
   const dispatch = useDispatch();
   const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
   const cellSets = useSelector(getCellSets());
@@ -120,7 +120,12 @@ const frequencyPlot = ({ experimentId }) => {
 
     return (
       <center>
-        <FrequencyPlot hierarchy={hierarchy} properties={properties} config={config} />
+        <FrequencyPlot
+          experimentId={experimentId}
+          hierarchy={hierarchy}
+          properties={properties}
+          config={config}
+        />
       </center>
     );
   };
@@ -165,7 +170,7 @@ const frequencyPlot = ({ experimentId }) => {
       <Row gutter={16}>
         <Col span={16}>
           <Space direction='vertical' style={{ width: '100%' }}>
-            <Collapse defaultActiveKey={['1']}>
+            <Collapse defaultActiveKey='1'>
               <Panel header='Preview' key='1'>
                 {renderPlot()}
               </Panel>
@@ -187,8 +192,8 @@ const frequencyPlot = ({ experimentId }) => {
   );
 };
 
-FrequencyPlot.propTypes = {
+FrequencyPlotPage.propTypes = {
   experimentId: PropTypes.string.isRequired,
 };
 
-export default frequencyPlot;
+export default FrequencyPlotPage;

@@ -430,7 +430,7 @@ const MarkerHeatmap = ({ experimentId }) => {
       <Row gutter={16}>
         <Col span={16}>
           <Space direction='vertical' style={{ width: '100%' }}>
-            <Collapse defaultActiveKey={['1']}>
+            <Collapse defaultActiveKey='1'>
               <Panel header='Preview' key='1'>
                 <center>
                   {renderPlot()}
@@ -445,7 +445,7 @@ const MarkerHeatmap = ({ experimentId }) => {
               formConfig={plotStylingControlsConfig}
               config={config}
               onUpdate={updatePlotWithChanges}
-              defaultActiveKey={['gene-selection']}
+              defaultActiveKey='gene-selection'
               renderExtraPanels={renderExtraPanels}
             />
           </Space>

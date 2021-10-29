@@ -189,7 +189,7 @@ const HeatmapPlot = ({ experimentId }) => {
       <Row gutter={16}>
         <Col span={16}>
           <Space direction='vertical' style={{ width: '100%' }}>
-            <Collapse defaultActiveKey={['1']}>
+            <Collapse defaultActiveKey='1'>
               <Panel header='Preview' key='1'>
                 <center>
                   {renderPlot()}
@@ -205,7 +205,7 @@ const HeatmapPlot = ({ experimentId }) => {
               plotUuid={plotUuid}
               onGeneEnter={onGeneEnter}
             />
-            <PlotStyling formConfig={plotStylingControlsConfig} config={config} onUpdate={updatePlotWithChanges} defaultActiveKey={['5']} />
+            <PlotStyling formConfig={plotStylingControlsConfig} config={config} onUpdate={updatePlotWithChanges} defaultActiveKey='5' />
           </Space>
         </Col>
       </Row>

@@ -72,7 +72,7 @@ const SelectData = (props) => {
     });
   };
 
-  if (cellSetsLoading) {
+  if (!config || cellSetsLoading) {
     return <Skeleton.Input style={{ width: 200 }} active />;
   }
 
@@ -131,13 +131,14 @@ const SelectData = (props) => {
 };
 
 SelectData.propTypes = {
+  config: PropTypes.object,
   onUpdate: PropTypes.func.isRequired,
-  config: PropTypes.object.isRequired,
   cellSets: PropTypes.object.isRequired,
   axisName: PropTypes.oneOf(['x', 'y']),
 };
 
 SelectData.defaultProps = {
+  config: null,
   axisName: 'y',
 };
 

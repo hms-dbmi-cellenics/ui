@@ -40,7 +40,7 @@ const SelectData = (props) => {
   };
   const parents = getMetadataParents();
 
-  if (cellSetsLoading) {
+  if (!config || cellSetsLoading) {
     return <Skeleton.Input style={{ width: 200 }} active />;
   }
 
@@ -76,7 +76,11 @@ const SelectData = (props) => {
 };
 SelectData.propTypes = {
   onUpdate: PropTypes.func.isRequired,
-  config: PropTypes.object.isRequired,
+  config: PropTypes.object,
   cellSets: PropTypes.object.isRequired,
+};
+
+SelectData.defaultProps = {
+  config: null,
 };
 export default SelectData;

@@ -162,7 +162,8 @@ const ViolinPlot = (props) => {
       );
     }
 
-    if (geneExpression.loading.length
+    if (
+      geneExpression.loading.length
       || cellSets.loading
       || highestDispersionLoading) {
       return (
@@ -190,7 +191,11 @@ ViolinPlot.propTypes = {
   experimentId: PropTypes.string.isRequired,
   config: PropTypes.object.isRequired,
   plotUuid: PropTypes.string.isRequired,
-  searchedGene: PropTypes.string.isRequired,
+  searchedGene: PropTypes.string,
+};
+
+ViolinPlot.defaultProps = {
+  searchedGene: null,
 };
 
 export default ViolinPlot;
