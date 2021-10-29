@@ -1,6 +1,8 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { Button, Tooltip, Popconfirm } from 'antd';
+import {
+  Button, Tooltip, Popconfirm, Skeleton,
+} from 'antd';
 import { useRouter } from 'next/router';
 import moment from 'moment';
 import { updateExperimentInfo } from '../../redux/actions/experimentSettings';
@@ -17,8 +19,10 @@ import { runGem2s } from '../../redux/actions/pipeline';
 import { updateExperiment } from '../../redux/actions/experiments';
 
 const LaunchButtonTemplate = (props) => {
-  // eslint-disable-next-line react/prop-types
-  const { onClick, disabled, text } = props;
+  const {
+    // eslint-disable-next-line react/prop-types
+    onClick, disabled, text, loading,
+  } = props;
 
   return (
     <Button
@@ -26,6 +30,7 @@ const LaunchButtonTemplate = (props) => {
       type='primary'
       disabled={disabled}
       onClick={onClick}
+      loading={loading}
     >
       {text}
     </Button>
@@ -151,6 +156,10 @@ const LaunchAnalysisButton = () => {
 
   const renderLaunchButton = () => {
     const buttonText = !gem2sRerunStatus.rerun ? 'Go to Data Processing' : 'Process project';
+
+    if (!backendStatus[experimentId] || backendStatus[experimentId]?.loading) {
+      return <LaunchButtonTemplate text='Loading project...' disabled loading />;
+    }
 
     if (!canLaunchAnalysis()) {
       return (

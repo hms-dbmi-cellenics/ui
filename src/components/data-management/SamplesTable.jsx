@@ -275,12 +275,24 @@ const SamplesTable = forwardRef((props, ref) => {
     setTableData(newData);
   }, [projects, samples, activeProjectUuid]);
 
+  const sampleData = [
+    {
+      filename: 'PBMC_3k.zip',
+      description: 'Unisample PBMC',
+    },
+    {
+      filename: 'PBMC_BMMC_17k.zip',
+      description: 'Multisample blood and bone marrow dataset',
+    },
+  ];
+
   const downloadPublicDataset = async () => {
-    const s3Object = await Storage.get('PBMC_3k.zip',
+    const s3Object = await Storage.get(
       {
         bucket: `biomage-public-datasets-${environment}`,
         contentType: 'multipart/form-data',
-      });
+      },
+    );
     downloadFromUrl(s3Object);
   };
 
@@ -290,23 +302,30 @@ const SamplesTable = forwardRef((props, ref) => {
         height: 60,
       }}
       description={(
-        <>
+        <Space size='middle' direction='vertical'>
           <Text>
             Start uploading your samples by clicking on Add samples.
             <br />
-            Don&apos;t have data? Download our
+            Don&apos;t have data? Get started using one of our sample datasets:
           </Text>
-          <Button
-            type='link'
-            size='small'
-            onClick={() => downloadPublicDataset()}
-          >
-            example PBMC data set
-          </Button>
-          <Text>
-            .
-          </Text>
-        </>
+          <div style={{ width: 'auto', textAlign: 'left' }}>
+            <ul>
+              {
+                sampleData.map(({ filename, description }) => (
+                  <li>
+                    <Button
+                      type='link'
+                      size='small'
+                      onClick={() => downloadPublicDataset(filename)}
+                    >
+                      {description}
+                    </Button>
+                  </li>
+                ))
+              }
+            </ul>
+          </div>
+        </Space>
       )}
     />
   );
