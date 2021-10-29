@@ -173,6 +173,10 @@ describe('processUpload', () => {
     expect(mockAxiosCalls[1].data).toEqual('loadedGzippedFile');
     expect(mockAxiosCalls[2].data).toEqual('loadedGzippedFile');
 
+    expect(mockAxiosCalls[0].cancelToken).toEqual(mockCancelToken.token);
+    expect(mockAxiosCalls[1].cancelToken).toEqual(mockCancelToken.token);
+    expect(mockAxiosCalls[2].cancelToken).toEqual(mockCancelToken.token);
+
     // Wait until all put promises are resolved
     await flushPromises();
     const fileUpdateActions = store.getActions().filter(
