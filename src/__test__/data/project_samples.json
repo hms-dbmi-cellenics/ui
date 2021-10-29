@@ -1,0 +1,218 @@
+[
+  {
+    "experimentId": "testae48e318dab9a1bd0experiment2",
+    "samples": {
+      "997b3bba-mock-test-9d18-1f794162a392": {
+        "metadata": {
+          "Track_1": "B"
+        },
+        "createdDate": "0000-00-00T00:00:00.000Z",
+        "species": null,
+        "name": "WT1",
+        "files": {
+          "matrix.mtx.gz": {
+            "valid": true,
+            "path": "380c53b4-mock-test-8091-4c82336d6d49/matrix.mtx.gz",
+            "upload": {
+              "amplifyPromise": null,
+              "progress": 100,
+              "status": "uploaded"
+            },
+            "name": "matrix.mtx.gz",
+            "compressed": true,
+            "lastModified": "0000-00-00T00:00:00.000Z",
+            "bundle": {
+              "path": "/multisample-murine-gamma/WT1/matrix.mtx.gz"
+            },
+            "errors": ""
+          },
+          "lastModified": "0000-00-00T00:00:00.000Z",
+          "features.tsv.gz": {
+            "valid": true,
+            "path": "380c53b4-mock-test-8091-4c82336d6d49/features.tsv.gz",
+            "upload": {
+              "amplifyPromise": null,
+              "progress": 100,
+              "status": "uploaded"
+            },
+            "name": "features.tsv.gz",
+            "compressed": true,
+            "lastModified": "0000-00-00T00:00:00.000Z",
+            "bundle": {
+              "path": "/multisample-murine-gamma/WT1/features.tsv.gz"
+            },
+            "errors": ""
+          },
+          "barcodes.tsv.gz": {
+            "valid": true,
+            "path": "380c53b4-mock-test-8091-4c82336d6d49/barcodes.tsv.gz",
+            "upload": {
+              "amplifyPromise": null,
+              "progress": 100,
+              "status": "uploaded"
+            },
+            "name": "barcodes.tsv.gz",
+            "compressed": true,
+            "lastModified": "0000-00-00T00:00:00.000Z",
+            "bundle": {
+              "path": "/multisample-murine-gamma/WT1/barcodes.tsv.gz"
+            },
+            "errors": ""
+          }
+        },
+        "lastModified": "0000-00-00T00:00:00.000Z",
+        "type": "10X Chromium",
+        "complete": false,
+        "error": false,
+        "uuid": "997b3bba-mock-test-9d18-1f794162a392",
+        "fileNames": [
+          "features.tsv.gz",
+          "barcodes.tsv.gz",
+          "matrix.mtx.gz"
+        ],
+        "projectUuid": "380c53b4-mock-test-8091-4c82336d6d49"
+      },
+      "32084405-mock-test-930b-338de0d2db79": {
+        "metadata": {
+          "Track_1": "A"
+        },
+        "createdDate": "0000-00-00T00:00:00.000Z",
+        "species": null,
+        "name": "WT2",
+        "files": {
+          "matrix.mtx.gz": {
+            "valid": true,
+            "path": "380c53b4-mock-test-8091-4c82336d6d49/matrix.mtx.gz",
+            "upload": {
+              "amplifyPromise": null,
+              "progress": 100,
+              "status": "uploaded"
+            },
+            "name": "matrix.mtx.gz",
+            "compressed": true,
+            "lastModified": "0000-00-00T00:00:00.000Z",
+            "bundle": {
+              "path": "/multisample-murine-gamma/WT2/matrix.mtx.gz"
+            },
+            "errors": ""
+          },
+          "lastModified": "0000-00-00T00:00:00.000Z",
+          "features.tsv.gz": {
+            "valid": true,
+            "path": "380c53b4-mock-test-8091-4c82336d6d49/features.tsv.gz",
+            "upload": {
+              "amplifyPromise": null,
+              "progress": 100,
+              "status": "uploaded"
+            },
+            "name": "features.tsv.gz",
+            "compressed": true,
+            "lastModified": "0000-00-00T00:00:00.000Z",
+            "bundle": {
+              "path": "/multisample-murine-gamma/WT2/features.tsv.gz"
+            },
+            "errors": ""
+          },
+          "barcodes.tsv.gz": {
+            "valid": true,
+            "path": "380c53b4-mock-test-8091-4c82336d6d49/barcodes.tsv.gz",
+            "upload": {
+              "amplifyPromise": null,
+              "progress": 100,
+              "status": "uploaded"
+            },
+            "name": "barcodes.tsv.gz",
+            "compressed": true,
+            "lastModified": "0000-00-00T00:00:00.000Z",
+            "bundle": {
+              "path": "/multisample-murine-gamma/WT2/barcodes.tsv.gz"
+            },
+            "errors": ""
+          }
+        },
+        "lastModified": "0000-00-00T00:00:00.000Z",
+        "type": "10X Chromium",
+        "complete": false,
+        "error": false,
+        "uuid": "32084405-mock-test-930b-338de0d2db79",
+        "fileNames": [
+          "features.tsv.gz",
+          "barcodes.tsv.gz",
+          "matrix.mtx.gz"
+        ],
+        "projectUuid": "380c53b4-mock-test-8091-4c82336d6d49"
+      },
+      "e162b6b8-mock-test-b9b3-af5f32f160a2": {
+        "metadata": {
+          "Track_1": "A"
+        },
+        "createdDate": "0000-00-00T00:00:00.000Z",
+        "species": null,
+        "name": "KO",
+        "files": {
+          "matrix.mtx.gz": {
+            "valid": true,
+            "path": "380c53b4-mock-test-8091-4c82336d6d49/matrix.mtx.gz",
+            "upload": {
+              "amplifyPromise": null,
+              "progress": 100,
+              "status": "uploaded"
+            },
+            "name": "matrix.mtx.gz",
+            "compressed": true,
+            "lastModified": "0000-00-00T00:00:00.000Z",
+            "bundle": {
+              "path": "/multisample-murine-gamma/KO/matrix.mtx.gz"
+            },
+            "errors": ""
+          },
+          "lastModified": "0000-00-00T00:00:00.000Z",
+          "features.tsv.gz": {
+            "valid": true,
+            "path": "380c53b4-mock-test-8091-4c82336d6d49/features.tsv.gz",
+            "upload": {
+              "amplifyPromise": null,
+              "progress": 100,
+              "status": "uploaded"
+            },
+            "name": "features.tsv.gz",
+            "compressed": true,
+            "lastModified": "0000-00-00T00:00:00.000Z",
+            "bundle": {
+              "path": "/multisample-murine-gamma/KO/features.tsv.gz"
+            },
+            "errors": ""
+          },
+          "barcodes.tsv.gz": {
+            "valid": true,
+            "path": "380c53b4-mock-test-8091-4c82336d6d49/barcodes.tsv.gz",
+            "upload": {
+              "amplifyPromise": null,
+              "progress": 100,
+              "status": "uploaded"
+            },
+            "name": "barcodes.tsv.gz",
+            "compressed": true,
+            "lastModified": "0000-00-00T00:00:00.000Z",
+            "bundle": {
+              "path": "/multisample-murine-gamma/KO/barcodes.tsv.gz"
+            },
+            "errors": ""
+          }
+        },
+        "lastModified": "0000-00-00T00:00:00.000Z",
+        "type": "10X Chromium",
+        "complete": false,
+        "error": false,
+        "uuid": "e162b6b8-mock-test-b9b3-af5f32f160a2",
+        "fileNames": [
+          "features.tsv.gz",
+          "barcodes.tsv.gz",
+          "matrix.mtx.gz"
+        ],
+        "projectUuid": "380c53b4-mock-test-8091-4c82336d6d49"
+      }
+    },
+    "projectUuid": "380c53b4-mock-test-8091-4c82336d6d49"
+  }
+]

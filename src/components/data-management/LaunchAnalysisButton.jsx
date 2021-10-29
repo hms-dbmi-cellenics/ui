@@ -1,22 +1,22 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import {
-  Button, Tooltip, Popconfirm, Skeleton,
+  Button, Tooltip, Popconfirm,
 } from 'antd';
 import { useRouter } from 'next/router';
 import moment from 'moment';
-import { updateExperimentInfo } from '../../redux/actions/experimentSettings';
+import { updateExperimentInfo } from 'redux/actions/experimentSettings';
 import {
   updateProject,
-} from '../../redux/actions/projects';
+} from 'redux/actions/projects';
 
-import fileUploadSpecifications from '../../utils/upload/fileUploadSpecifications';
-import UploadStatus from '../../utils/upload/UploadStatus';
-import pipelineStatus from '../../utils/pipelineStatusValues';
-import integrationTestConstants from '../../utils/integrationTestConstants';
-import generateGem2sParamsHash from '../../utils/data-management/generateGem2sParamsHash';
-import { runGem2s } from '../../redux/actions/pipeline';
-import { updateExperiment } from '../../redux/actions/experiments';
+import fileUploadSpecifications from 'utils/upload/fileUploadSpecifications';
+import UploadStatus from 'utils/upload/UploadStatus';
+import pipelineStatus from 'utils/pipelineStatusValues';
+import integrationTestConstants from 'utils/integrationTestConstants';
+import generateGem2sParamsHash from 'utils/data-management/generateGem2sParamsHash';
+import { runGem2s } from 'redux/actions/pipeline';
+import { updateExperiment } from 'redux/actions/experiments';
 
 const LaunchButtonTemplate = (props) => {
   const {

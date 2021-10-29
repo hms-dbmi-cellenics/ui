@@ -1,0 +1,34 @@
+[
+  {
+    "metadataKeys": [],
+    "createdDate": "0000-00-00T00:00:00.000Z",
+    "experiments": [
+      "testae48e318dab9a1bd0experiment1"
+    ],
+    "name": "Project without samples",
+    "description": "Project without samples",
+    "lastAnalyzed": null,
+    "lastModified": "0000-00-00T00:00:00.000Z",
+    "uuid": "4761594b-mock-test-ba89-c2c812d39bb5",
+    "samples": []
+  },
+  {
+    "metadataKeys": [
+      "Track_1"
+    ],
+    "createdDate": "0000-00-00T00:00:00.000Z",
+    "experiments": [
+      "testae48e318dab9a1bd0experiment2"
+    ],
+    "name": "Project with samples",
+    "description": "Project with samples",
+    "lastAnalyzed": "0000-00-00T00:00:00.000Z",
+    "lastModified": "0000-00-00T00:00:00.000Z",
+    "uuid": "380c53b4-mock-test-8091-4c82336d6d49",
+    "samples": [
+      "e162b6b8-mock-test-b9b3-af5f32f160a2",
+      "32084405-mock-test-930b-338de0d2db79",
+      "997b3bba-mock-test-9d18-1f794162a392"
+    ]
+  }
+]

@@ -5,6 +5,9 @@ import cellSetsData from '__test__/data/cell_sets.json';
 import backendStatusData from '__test__/data/backend_status.json';
 import processingConfigData from '__test__/data/processing_config.json';
 import generateMockExperimentData from '__test__/test-utils/mockExperimentData';
+import experimentsData from '__test__/data/experiments.json';
+import projectsData from '__test__/data/projects.json';
+import projectSamples from '__test__/data/project_samples.json';
 
 const promiseResponse = (
   response,
@@ -43,6 +46,15 @@ const generateDefaultMockAPIResponses = (experimentId) => ({
   ),
   [`experiments/${experimentId}/backendStatus`]: () => promiseResponse(
     JSON.stringify(backendStatusData),
+  ),
+  '/experiments': () => promiseResponse(
+    JSON.stringify(experimentsData),
+  ),
+  '/projects': () => promiseResponse(
+    JSON.stringify(projectsData),
+  ),
+  'projects/380c53b4-mock-test-8091-4c82336d6d49/samples': () => promiseResponse(
+    JSON.stringify(projectSamples),
   ),
 });
 

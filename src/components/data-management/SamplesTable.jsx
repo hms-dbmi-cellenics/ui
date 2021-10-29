@@ -13,7 +13,11 @@ import {
 } from '@ant-design/icons';
 import { sortableHandle, sortableContainer, sortableElement } from 'react-sortable-hoc';
 import { updateExperiment } from 'redux/actions/experiments';
-import { updateProject } from 'redux/actions/projects';
+import {
+  updateProject,
+  deleteMetadataTrack,
+  createMetadataTrack,
+} from 'redux/actions/projects';
 import { Storage } from 'aws-amplify';
 import UploadStatus from 'utils/upload/UploadStatus';
 import { arrayMoveImmutable } from 'utils/array-move';
@@ -21,11 +25,9 @@ import downloadFromUrl from 'utils/data-management/downloadFromUrl';
 import { DEFAULT_NA } from 'redux/reducers/projects/initialState';
 import {
   updateSample,
-} from '../../redux/actions/samples';
-import {
-  deleteMetadataTrack,
-  createMetadataTrack,
-} from '../../redux/actions/projects';
+} from 'redux/actions/samples';
+import { metadataNameToKey, metadataKeyToName, temporaryMetadataKey } from 'utils/data-management/metadataUtils';
+import integrationTestConstants from 'utils/integrationTestConstants';
 import {
   UploadCell, SampleNameCell, EditableFieldCell, SpeciesCell,
 } from './SamplesTableCells';
@@ -33,10 +35,8 @@ import MetadataColumnTitle from './MetadataColumn';
 import MetadataEditor from './MetadataEditor';
 import SpeciesSelector from './SpeciesSelector';
 import MetadataPopover from './MetadataPopover';
-import { metadataNameToKey, metadataKeyToName, temporaryMetadataKey } from '../../utils/data-management/metadataUtils';
-import integrationTestConstants from '../../utils/integrationTestConstants';
 
-import '../../utils/css/data-management.css';
+import 'utils/css/data-management.css';
 
 const { Text } = Typography;
 
