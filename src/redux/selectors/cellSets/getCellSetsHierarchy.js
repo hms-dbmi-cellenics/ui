@@ -15,7 +15,6 @@ const getCellSetsHierarchy = () => (state) => {
       }
     ),
   );
-
   return hierarchy;
 };
 

@@ -5,16 +5,22 @@ import _ from 'lodash';
 import {
   Form,
   Select,
+  Skeleton,
 } from 'antd';
 
-import composeTree from '../../../../utils/composeTree';
+import composeTree from 'utils/composeTree';
+import InlineError from 'components/InlineError';
 
 const { Option, OptGroup } = Select;
+
 const SelectData = (props) => {
   const {
-    onUpdate, config, cellSets,
+    onUpdate, config, cellSets, axisName,
   } = props;
-  const { hierarchy, properties } = cellSets;
+
+  const {
+    loading: cellSetsLoading, error: cellSetsError, hierarchy, properties,
+  } = cellSets;
 
   const getDefaultCellSetNotIn = (rootNodeKey) => {
     const fallBackRootNodesKeys = ['sample', 'louvain'];
@@ -61,11 +67,19 @@ const SelectData = (props) => {
     });
   };
 
+  if (cellSetsLoading) {
+    return <Skeleton.Input style={{ width: 200 }} active />;
+  }
+
+  if (cellSetsError) {
+    return <InlineError message='Error loading cell set' actionable />;
+  }
+
   return (
     <>
       <div>
-        Select the Cell sets or Metadata that cells are grouped by (determined the x-axis):
-        {' '}
+        {`Select the Cell sets or Metadata that cells are grouped by (determines the ${axisName}-axis)`}
+        :
       </div>
       <Form.Item>
         <Select
@@ -86,7 +100,6 @@ const SelectData = (props) => {
       </Form.Item>
       <div>
         Select the Cell sets or Metadata to be shown as points:
-        {' '}
       </div>
       <Form.Item>
         <Select
@@ -109,9 +122,16 @@ const SelectData = (props) => {
     </>
   );
 };
+
 SelectData.propTypes = {
   onUpdate: PropTypes.func.isRequired,
   config: PropTypes.object.isRequired,
   cellSets: PropTypes.object.isRequired,
+  axisName: PropTypes.oneOf(['x', 'y']),
 };
+
+SelectData.defaultProps = {
+  axisName: 'y',
+};
+
 export default SelectData;

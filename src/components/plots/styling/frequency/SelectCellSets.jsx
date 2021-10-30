@@ -6,15 +6,15 @@ import {
   Tooltip,
 } from 'antd';
 import getSelectOptions from 'utils/plots/getSelectOptions';
+import _ from 'lodash';
 
 const SelectCellSets = (props) => {
   const {
     onUpdate, config, optionsMetadata, optionsCellSets,
   } = props;
 
-  const firstLetterUppercase = (word) => word?.charAt(0).toUpperCase() + word?.slice(1);
-  const changeClusters = (val) => {
-    const newValue = val.key.toLowerCase();
+  const changeClusters = (option) => {
+    const newValue = option.value.toLowerCase();
     onUpdate({ proportionGrouping: newValue });
   };
   let disabled = false;
@@ -27,13 +27,15 @@ const SelectCellSets = (props) => {
   const metadataMenu = getSelectOptions(optionsMetadata);
   const cellSetMenu = getSelectOptions(optionsCellSets);
   let menuValue;
+
   if (!metadataMenu) {
-    menuValue = 'Sample';
+    menuValue = 'sample';
     disabled = true;
     toolTipText = 'The x-axis cannot be changed as this dataset has only a single sample.';
   } else {
-    menuValue = firstLetterUppercase(config.xAxisGrouping);
+    menuValue = config.xAxisGrouping;
   }
+
   return (
     <>
       <div>
@@ -46,7 +48,7 @@ const SelectCellSets = (props) => {
           <Select
             aria-label='metadata'
             value={{
-              key: menuValue,
+              value: menuValue,
             }}
             onChange={changeMetadata}
             labelInValue
@@ -64,7 +66,7 @@ const SelectCellSets = (props) => {
         <Select
           aria-label='cell sets'
           value={{
-            key: firstLetterUppercase(config.proportionGrouping),
+            value: config.proportionGrouping,
           }}
           onChange={changeClusters}
           labelInValue

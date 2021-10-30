@@ -77,7 +77,7 @@ const VolcanoPlot = ({ experimentId }) => {
 
   const plotStylingControlsConfig = [
     {
-      panelTitle: 'Main Schema',
+      panelTitle: 'Main schema',
       controls: [{
         name: 'volcanoDimensions',
         props: {
@@ -101,7 +101,7 @@ const VolcanoPlot = ({ experimentId }) => {
       controls: ['volcanoThresholds'],
     },
     {
-      panelTitle: 'Axes and Margins',
+      panelTitle: 'Axes and margins',
       controls: ['axes'],
     },
     {

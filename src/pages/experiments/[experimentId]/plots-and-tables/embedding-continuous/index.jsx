@@ -45,6 +45,7 @@ const EmbeddingContinuousIndex = ({ experimentId }) => {
   const highestDispersionGene = useSelector(
     (state) => state.genes.properties.views[plotUuid]?.data[0],
   );
+
   const PROPERTIES = ['dispersions'];
   const tableState = {
     pagination: {
@@ -69,15 +70,16 @@ const EmbeddingContinuousIndex = ({ experimentId }) => {
     }
   }, [loadedGene]);
 
-  if (config?.shownGene === 'notSelected' && !fetching && !highestDispersionGene) {
-    dispatch(loadPaginatedGeneProperties(experimentId, PROPERTIES, plotUuid, tableState));
-  }
-
   useEffect(() => {
     if (searchedGene) {
       dispatch(loadGeneExpression(experimentId, [searchedGene], plotUuid));
     }
   }, [searchedGene]);
+
+  if (config?.shownGene === 'notSelected' && !fetching && !highestDispersionGene) {
+    dispatch(loadPaginatedGeneProperties(experimentId, PROPERTIES, plotUuid, tableState));
+  }
+
   useEffect(() => {
     if (config?.shownGene === 'notSelected' && highestDispersionGene) {
       updatePlotWithChanges({ shownGene: highestDispersionGene });
@@ -92,7 +94,7 @@ const EmbeddingContinuousIndex = ({ experimentId }) => {
 
   const plotStylingControlsConfig = [
     {
-      panelTitle: 'Expression Values',
+      panelTitle: 'Expression values',
       controls: ['expressionValuesCapping'],
     },
     {
@@ -110,7 +112,7 @@ const EmbeddingContinuousIndex = ({ experimentId }) => {
       ],
     },
     {
-      panelTitle: 'Axes and Margins',
+      panelTitle: 'Axes and margins',
       controls: ['axes'],
     },
     {
@@ -129,13 +131,13 @@ const EmbeddingContinuousIndex = ({ experimentId }) => {
 
   const renderExtraPanels = () => (
     <>
-      <Panel header='Gene Selection' key='666'>
+      <Panel header='Gene selection' key='666'>
         <SingleGeneSelection
           config={config}
           setSearchedGene={setSearchedGene}
         />
       </Panel>
-      <Panel header='Select Data' key='15'>
+      <Panel header='Select data' key='15'>
         {config && !cellSets.loading && !cellSets.error ? (
           <SelectData
             config={config}
