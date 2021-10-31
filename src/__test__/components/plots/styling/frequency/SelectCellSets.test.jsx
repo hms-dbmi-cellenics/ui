@@ -20,7 +20,7 @@ import { initialPlotConfigStates } from 'redux/reducers/componentConfig/initialS
 
 import createTestComponentFactory from '__test__/test-utils/testComponentFactory';
 
-const mockOnUpdate = jest.fn().mockImplementation(() => { console.error('*** TESTING ***'); });
+const mockOnUpdate = jest.fn().mockImplementation(() => {});
 
 const defaultProps = {
   onUpdate: mockOnUpdate,

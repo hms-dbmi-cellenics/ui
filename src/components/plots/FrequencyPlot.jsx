@@ -1,20 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
 import { Vega } from 'react-vega';
 import PropTypes from 'prop-types';
 
-import loadCellSets from '../../redux/actions/cellSets/loadCellSets';
-import { getCellSets } from '../../redux/selectors';
 import { generateSpec, generateData } from '../../utils/plotSpecs/generateFrequencySpec';
 
 const FrequencyPlot = (props) => {
   const {
-    experimentId, config, actions,
+    config, actions, cellSets,
   } = props;
-
-  const dispatch = useDispatch();
-
-  const cellSets = useSelector(getCellSets());
 
   const [plotSpec, setPlotSpec] = useState({});
 
@@ -23,16 +16,11 @@ const FrequencyPlot = (props) => {
   } = cellSets;
 
   useEffect(() => {
-    if (!hierarchy && !properties) {
-      dispatch(loadCellSets(experimentId));
-    }
-  }, []);
-
-  useEffect(() => {
     if (hierarchy && properties && config) {
       const {
         xNamesToDisplay,
-        yNamesToDisplay, plotData,
+        yNamesToDisplay,
+        plotData,
       } = generateData(hierarchy, properties, config);
 
       setPlotSpec(generateSpec(config, plotData, xNamesToDisplay, yNamesToDisplay));
@@ -48,15 +36,16 @@ const FrequencyPlot = (props) => {
 
 FrequencyPlot.propTypes = {
   config: PropTypes.object.isRequired,
-  experimentId: PropTypes.string.isRequired,
   actions: PropTypes.oneOfType([
     PropTypes.bool,
     PropTypes.object,
   ]),
+  cellSets: PropTypes.object,
 };
 
 FrequencyPlot.defaultProps = {
   actions: true,
+  cellSets: null,
 };
 
 export default FrequencyPlot;

@@ -41,7 +41,8 @@ const FrequencyPlotPage = ({ experimentId }) => {
   const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
   const cellSets = useSelector(getCellSets());
   const {
-    loading, error, hierarchy, properties,
+    loading: cellSetsLoading,
+    error: cellSetsError,
   } = cellSets;
 
   useEffect(() => {
@@ -102,15 +103,15 @@ const FrequencyPlotPage = ({ experimentId }) => {
   }
 
   const renderPlot = () => {
-    if (error) {
+    if (cellSetsError) {
       return (
         <PlatformError
-          description={error}
+          description={cellSetsError}
           onClick={() => loadCellSets(experimentId)}
         />
       );
     }
-    if (!config || loading) {
+    if (!config || cellSetsLoading) {
       return (
         <center>
           <Loader experimentId={experimentId} />
@@ -122,9 +123,8 @@ const FrequencyPlotPage = ({ experimentId }) => {
       <center>
         <FrequencyPlot
           experimentId={experimentId}
-          hierarchy={hierarchy}
-          properties={properties}
           config={config}
+          cellSets={cellSets}
         />
       </center>
     );
