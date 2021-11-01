@@ -440,7 +440,6 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
                                 && !pipelineRunning
                                 && !isStepComplete(key) ? (
                                 <>
-                                  {/* failed */}
                                   <Text
                                     type='danger'
                                     strong
