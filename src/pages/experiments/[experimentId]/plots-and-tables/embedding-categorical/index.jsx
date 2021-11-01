@@ -15,15 +15,15 @@ import { InfoCircleOutlined } from '@ant-design/icons';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import { getCellSets, getCellSetsHierarchy } from 'redux/selectors';
-import PlotStyling from '../../../../../components/plots/styling/PlotStyling';
+import PlotStyling from 'components/plots/styling/PlotStyling';
 import {
   updatePlotConfig,
   loadPlotConfig,
-} from '../../../../../redux/actions/componentConfig/index';
-import Header from '../../../../../components/plots/Header';
-import { loadCellSets } from '../../../../../redux/actions/cellSets';
-import CategoricalEmbeddingPlot from '../../../../../components/plots/CategoricalEmbeddingPlot';
-import SelectData from '../../../../../components/plots/styling/embedding-continuous/SelectData';
+} from 'redux/actions/componentConfig/index';
+import Header from 'components/plots/Header';
+import { loadCellSets } from 'redux/actions/cellSets';
+import CategoricalEmbeddingPlot from 'components/plots/CategoricalEmbeddingPlot';
+import SelectData from 'components/plots/styling/embedding-continuous/SelectData';
 
 const { Panel } = Collapse;
 
@@ -37,7 +37,7 @@ const route = {
   breadcrumbName: 'Categorical Embedding',
 };
 
-const EmbeddingCategoricalIndex = ({ experimentId }) => {
+const EmbeddingCategoricalPage = ({ experimentId }) => {
   const dispatch = useDispatch();
   const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
   const cellSets = useSelector(getCellSets());
@@ -48,13 +48,13 @@ const EmbeddingCategoricalIndex = ({ experimentId }) => {
     dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
   }, []);
 
-  const generateCellSetOptions = () => {
+  const generateGroupByOptions = () => {
     if (cellSets.loading) {
       return [];
     }
     return hierarchy.map(({ key, children }) => ({
       value: key,
-      label: `${cellSets.properties[key].name} (${children} ${children === 1 ? 'child' : 'children'})`,
+      label: `${cellSets.properties[key].name} (${children.length} ${children === 1 ? 'child' : 'children'})`,
     }));
   };
 
@@ -113,13 +113,11 @@ const EmbeddingCategoricalIndex = ({ experimentId }) => {
   const renderExtraPanels = () => (
     <>
       <Panel header='Select data' key='15'>
-        {config && !cellSets.loading && !cellSets.error ? (
-          <SelectData
-            config={config}
-            onUpdate={updatePlotWithChanges}
-            cellSets={cellSets}
-          />
-        ) : <Skeleton.Input style={{ width: 200 }} active />}
+        <SelectData
+          config={config}
+          onUpdate={updatePlotWithChanges}
+          cellSets={cellSets}
+        />
       </Panel>
       <Panel header='Group by' key='1'>
         <p>
@@ -131,8 +129,8 @@ const EmbeddingCategoricalIndex = ({ experimentId }) => {
             style={{ width: '100%' }}
             placeholder='Select cell set...'
             loading={config}
-            value={{ key: config.selectedCellSet }}
-            options={generateCellSetOptions()}
+            value={{ value: config.selectedCellSet }}
+            options={generateGroupByOptions()}
             onChange={onCellSetSelect}
           />
         ) : <Skeleton.Input style={{ width: '100%' }} active />}
@@ -150,7 +148,7 @@ const EmbeddingCategoricalIndex = ({ experimentId }) => {
       <Row gutter={16}>
         <Col span={16}>
           <Space direction='vertical' style={{ width: '100%' }}>
-            <Collapse defaultActiveKey={['1']}>
+            <Collapse defaultActiveKey='1'>
               <Panel
                 header='Preview'
                 key='1'
@@ -185,8 +183,8 @@ const EmbeddingCategoricalIndex = ({ experimentId }) => {
     </div>
   );
 };
-EmbeddingCategoricalIndex.propTypes = {
+EmbeddingCategoricalPage.propTypes = {
   experimentId: PropTypes.string.isRequired,
 };
 
-export default EmbeddingCategoricalIndex;
+export default EmbeddingCategoricalPage;

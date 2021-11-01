@@ -158,7 +158,6 @@ const volcanoInitialConfig = {
 const frequencyInitialConfig = {
   spec: '1.0.0',
   frequencyType: 'proportional',
-  proportionGrouping: '',
   legend: {
     ...legendBaseState,
     title: 'Cell Set',
@@ -178,7 +177,8 @@ const frequencyInitialConfig = {
     offset: 10,
   },
   fontStyle: fontStyleBaseState,
-  xAxisGrouping: '',
+  proportionGrouping: 'louvain',
+  xAxisGrouping: 'sample',
   axisTitlesize: 13,
   geneexpLegendloc: '',
 };
@@ -349,7 +349,8 @@ const embeddingPreviewMitochondrialContentInitialConfig = {
   colour: colourBaseState,
   marker: markerBaseState,
   labels: labelBaseState,
-  selectedSample: 'sample',
+  shownGene: 'notSelected',
+  selectedSample: 'All',
 };
 
 // EMBEDDING PREVIEW - Config for doublet score
@@ -377,7 +378,7 @@ const embeddingPreviewDoubletScoreInitialConfig = {
   colour: colourBaseState,
   marker: markerBaseState,
   labels: labelBaseState,
-  selectedSample: 'sample',
+  selectedSample: 'All',
 };
 
 const interactiveHeatmapInitialConfig = {

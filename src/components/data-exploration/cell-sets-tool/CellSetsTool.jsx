@@ -22,7 +22,7 @@ import {
   updateCellSetSelected,
 } from 'redux/actions/cellSets';
 import { loadGeneExpression } from 'redux/actions/genes';
-import composeTree from 'utils/composeTree';
+import { composeTree } from 'utils/cellSets';
 import PlatformError from 'components/PlatformError';
 import HierarchicalTree from 'components/data-exploration/hierarchical-tree/HierarchicalTree';
 import { complement, intersection, union } from 'utils/cellSetOperations';

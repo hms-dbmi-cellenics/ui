@@ -13,7 +13,7 @@ import {
 } from 'antd';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
-import { getCellSets, getCellSetsHierarchyByType } from 'redux/selectors';
+import { getCellSets } from 'redux/selectors';
 import SelectCellSets from 'components/plots/styling/frequency/SelectCellSets';
 import Header from 'components/plots/Header';
 
@@ -36,14 +36,13 @@ const route = {
   breadcrumbName: 'Frequency plot',
 };
 
-const frequencyPlot = ({ experimentId }) => {
+const FrequencyPlotPage = ({ experimentId }) => {
   const dispatch = useDispatch();
   const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
   const cellSets = useSelector(getCellSets());
-  const optionsMetadata = useSelector(getCellSetsHierarchyByType(['metadataCategorical']));
-  const optionsCellSets = useSelector(getCellSetsHierarchyByType(['cellSets']));
   const {
-    loading, error, hierarchy, properties,
+    loading: cellSetsLoading,
+    error: cellSetsError,
   } = cellSets;
 
   useEffect(() => {
@@ -52,15 +51,6 @@ const frequencyPlot = ({ experimentId }) => {
   }, []);
 
   const dataExplorationPath = '/experiments/[experimentId]/data-exploration';
-
-  useEffect(() => {
-    if (!loading && config?.proportionGrouping === '') {
-      updatePlotWithChanges({
-        xAxisGrouping: optionsMetadata[0]?.key,
-        proportionGrouping: optionsCellSets[0].key,
-      });
-    }
-  });
 
   const updatePlotWithChanges = (obj) => {
     dispatch(updatePlotConfig(plotUuid, obj));
@@ -113,15 +103,15 @@ const frequencyPlot = ({ experimentId }) => {
   }
 
   const renderPlot = () => {
-    if (error) {
+    if (cellSetsError) {
       return (
         <PlatformError
-          description={error}
+          description={cellSetsError}
           onClick={() => loadCellSets(experimentId)}
         />
       );
     }
-    if (!config || loading) {
+    if (!config || cellSetsLoading) {
       return (
         <center>
           <Loader experimentId={experimentId} />
@@ -131,7 +121,10 @@ const frequencyPlot = ({ experimentId }) => {
 
     return (
       <center>
-        <FrequencyPlot hierarchy={hierarchy} properties={properties} config={config} />
+        <FrequencyPlot
+          experimentId={experimentId}
+          config={config}
+        />
       </center>
     );
   };
@@ -152,8 +145,6 @@ const frequencyPlot = ({ experimentId }) => {
         <SelectCellSets
           config={config}
           onUpdate={updatePlotWithChanges}
-          optionsMetadata={optionsMetadata}
-          optionsCellSets={optionsCellSets}
         />
       </Panel>
       <Panel header='Plot Type' key='1'>
@@ -178,7 +169,7 @@ const frequencyPlot = ({ experimentId }) => {
       <Row gutter={16}>
         <Col span={16}>
           <Space direction='vertical' style={{ width: '100%' }}>
-            <Collapse defaultActiveKey={['1']}>
+            <Collapse defaultActiveKey='1'>
               <Panel header='Preview' key='1'>
                 {renderPlot()}
               </Panel>
@@ -200,8 +191,8 @@ const frequencyPlot = ({ experimentId }) => {
   );
 };
 
-FrequencyPlot.propTypes = {
+FrequencyPlotPage.propTypes = {
   experimentId: PropTypes.string.isRequired,
 };
 
-export default frequencyPlot;
+export default FrequencyPlotPage;

@@ -98,7 +98,10 @@ PlotStyling.propTypes = {
   config: PropTypes.object,
   onUpdate: PropTypes.func.isRequired,
   renderExtraPanels: PropTypes.func,
-  defaultActiveKey: PropTypes.array,
+  defaultActiveKey: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.array,
+  ]),
 };
 
 PlotStyling.defaultProps = {

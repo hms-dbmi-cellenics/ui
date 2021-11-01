@@ -201,7 +201,7 @@ const MitochondrialContent = (props) => {
           </Row>
         </Col>
         <Col flex='1 0px'>
-          <Collapse defaultActiveKey={['settings']}>
+          <Collapse defaultActiveKey='settings'>
             <Panel header='Filtering Settings' key='settings'>
               <CalculationConfigContainer
                 filterUuid={filterName}

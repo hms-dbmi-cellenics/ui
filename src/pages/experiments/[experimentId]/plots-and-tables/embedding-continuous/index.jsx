@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
 import React, { useState, useEffect } from 'react';
 import {
-  Row, Col, Space, Collapse, Skeleton,
+  Row, Col, Space, Collapse,
 } from 'antd';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
@@ -30,7 +30,7 @@ const route = {
 const plotUuid = 'embeddingContinuousMain';
 const plotType = 'embeddingContinuous';
 
-const EmbeddingContinuousIndex = ({ experimentId }) => {
+const ContinuousEmbeddingPage = ({ experimentId }) => {
   const dispatch = useDispatch();
   const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
   const loadedGene = useSelector((state) => state.genes.expression.views[plotUuid]?.data);
@@ -131,21 +131,18 @@ const EmbeddingContinuousIndex = ({ experimentId }) => {
 
   const renderExtraPanels = () => (
     <>
-      <Panel header='Gene selection' key='666'>
+      <Panel header='Gene selection' key='gene-selection'>
         <SingleGeneSelection
           config={config}
           setSearchedGene={setSearchedGene}
         />
       </Panel>
-      <Panel header='Select data' key='15'>
-        {config && !cellSets.loading && !cellSets.error ? (
-          <SelectData
-            config={config}
-            onUpdate={updatePlotWithChanges}
-            cellSets={cellSets}
-          />
-        ) : <Skeleton.Input style={{ width: 200 }} active />}
-
+      <Panel header='Select data' key='select-data'>
+        <SelectData
+          config={config}
+          onUpdate={updatePlotWithChanges}
+          cellSets={cellSets}
+        />
       </Panel>
     </>
   );
@@ -160,7 +157,7 @@ const EmbeddingContinuousIndex = ({ experimentId }) => {
       <Row gutter={16}>
         <Col span={16}>
           <Space direction='vertical' style={{ width: '100%' }}>
-            <Collapse defaultActiveKey={['1']}>
+            <Collapse defaultActiveKey='1'>
               <Panel header='Preview' key='1'>
                 <ContinuousEmbeddingPlot
                   experimentId={experimentId}
@@ -190,6 +187,7 @@ const EmbeddingContinuousIndex = ({ experimentId }) => {
               config={config}
               onUpdate={updatePlotWithChanges}
               renderExtraPanels={renderExtraPanels}
+              defaultActiveKey='gene-selection'
             />
           </Space>
         </Col>
@@ -198,8 +196,8 @@ const EmbeddingContinuousIndex = ({ experimentId }) => {
   );
 };
 
-EmbeddingContinuousIndex.propTypes = {
+ContinuousEmbeddingPage.propTypes = {
   experimentId: PropTypes.string.isRequired,
 };
 
-export default EmbeddingContinuousIndex;
+export default ContinuousEmbeddingPage;

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Vega } from 'react-vega';
-import { fastLoad } from '../Loader';
+import Loader from '../Loader';
 
 import PlatformError from '../PlatformError';
 import { generateSpec, generateData } from '../../utils/plotSpecs/generateEmbeddingContinuousSpec';
@@ -99,10 +99,10 @@ const ContinuousEmbeddingPlot = (props) => {
       );
     }
 
-    if (loading || embeddingLoading || !plotComponent) {
+    if (!config || loading || embeddingLoading || !plotComponent) {
       return (
         <center>
-          {fastLoad()}
+          <Loader experimentId={experimentId} />
         </center>
       );
     }
@@ -128,7 +128,7 @@ ContinuousEmbeddingPlot.defaultProps = {
 
 ContinuousEmbeddingPlot.propTypes = {
   experimentId: PropTypes.string.isRequired,
-  config: PropTypes.object.isRequired,
+  config: PropTypes.object,
   plotData: PropTypes.array,
   truncatedPlotData: PropTypes.array,
   plotUuid: PropTypes.string.isRequired,
@@ -144,6 +144,7 @@ ContinuousEmbeddingPlot.propTypes = {
 
 ContinuousEmbeddingPlot.defaultProps = {
   reloadPlotData: () => { },
+  config: null,
   truncatedPlotData: null,
 };
 

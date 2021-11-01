@@ -10,10 +10,10 @@ import {
 import { InfoCircleOutlined } from '@ant-design/icons';
 
 import PropTypes from 'prop-types';
-import { loadCellSets } from '../../../redux/actions/cellSets';
-import { setComparisonGroup, setComparisonType } from '../../../redux/actions/differentialExpression';
-import { getCellSets } from '../../../redux/selectors';
-import composeTree from '../../../utils/composeTree';
+import { loadCellSets } from 'redux/actions/cellSets';
+import { setComparisonGroup, setComparisonType } from 'redux/actions/differentialExpression';
+import { getCellSets } from 'redux/selectors';
+import { composeTree } from 'utils/cellSets';
 
 const { Option, OptGroup } = Select;
 
