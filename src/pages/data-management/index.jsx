@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Mosaic, MosaicWindow } from 'react-mosaic-component';
@@ -38,12 +38,8 @@ const DataManagementPage = ({ route }) => {
 
   const experiments = useSelector((state) => state.experiments);
   const [newProjectModalVisible, setNewProjectModalVisible] = useState(false);
-  const [justLoggedIn, setJustLoggedIn] = useState(true);
-  const activeProject = projectsList[activeProjectUuid];
 
-  const experimentIds = new Set(experiments.ids);
-  const experimentsAreLoaded = activeProject?.experiments
-    .every((experimentId) => experimentIds.has(experimentId));
+  const justLoggedInRef = useRef(true);
 
   useEffect(() => {
     if (projectsList.ids.length === 0) dispatch(loadProjects());
@@ -62,6 +58,12 @@ const DataManagementPage = ({ route }) => {
 
     dispatch(loadProcessingSettings(activeExperimentId));
 
+    const experimentIds = new Set(experiments.ids);
+
+    const activeProject = projectsList[activeProjectUuid];
+    const experimentsAreLoaded = activeProject?.experiments
+      .every((experimentId) => experimentIds.has(experimentId));
+
     if (!experimentsAreLoaded) {
       dispatch(loadExperiments(activeProjectUuid)).then(() => updateRunStatus(activeExperimentId));
     }
@@ -71,11 +73,11 @@ const DataManagementPage = ({ route }) => {
 
   useEffect(() => {
     // only open the modal the first time a user logs in if there are no projects
-    if (justLoggedIn === false || projectsLoading === true) {
+    if (justLoggedInRef.current === false || projectsLoading === true) {
       return;
     }
 
-    setJustLoggedIn(false);
+    justLoggedInRef.current = false;
 
     if (projectsList.ids.length === 0) {
       setNewProjectModalVisible(true);
