@@ -2,9 +2,9 @@ import createMemoizedSelector from 'redux/selectors/createMemoizedSelector';
 
 import getCellSetsHierarchy from './getCellSetsHierarchy';
 
-const getCellSetsHierarchyByType = (types) => (hierarchy) => (
+const getCellSetsHierarchyByType = (type) => (hierarchy) => (
   hierarchy.filter(
-    (child) => types.includes(child.type),
+    (child) => child.type === type,
   )
 );
 

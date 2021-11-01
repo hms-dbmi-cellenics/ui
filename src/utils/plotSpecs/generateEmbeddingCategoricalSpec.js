@@ -1,4 +1,6 @@
 /* eslint-disable no-param-reassign */
+import { getAllCells, getSampleCells } from 'utils/cellSets';
+
 const generateSpec = (config, plotData, cellSetNames) => {
   let legend = [];
 
@@ -180,42 +182,67 @@ const generateSpec = (config, plotData, cellSetNames) => {
   };
 };
 
-const filterCells = (cellSets, selectedCellSet) => {
-  const newCellSets = cellSets.hierarchy.find(
-    (rootNode) => rootNode.key === selectedCellSet,
+const filterCells = (cellSets, sampleKey, groupBy) => {
+  let filteredCells = [];
+
+  // Get all the filtered cells
+  if (sampleKey === 'All') {
+    filteredCells = getAllCells(cellSets, groupBy);
+  } else {
+    filteredCells = getSampleCells(cellSets, sampleKey);
+  }
+
+  // Get the cell set names
+  const clusterEnteries = cellSets.hierarchy.find(
+    (rootNode) => rootNode.key === groupBy,
   )?.children || [];
 
-  // Build up the data source based on the properties. Note that the child nodes
-  // in the hierarchy are /objects/ with a `key` property, hence the destructuring
-  // in the function.
-  const dataPoints = newCellSets.flatMap(({ key }) => {
-    const cells = Array.from(cellSets.properties[key].cellIds);
+  const cellSetNames = clusterEnteries.map(({ key }) => cellSets.properties[key].name);
 
-    return cells.map((cellId) => ({
-      cellId,
-      cellSetKey: key,
-      cellSetName: cellSets.properties[key].name,
+  const colorToCellIdsMap = clusterEnteries.reduce((acc, { key }) => {
+    acc.push({
+      cellIds: cellSets.properties[key].cellIds,
+      key,
+      name: cellSets.properties[key].name,
       color: cellSets.properties[key].color,
-    }));
+    });
+
+    return acc;
+  }, []);
+
+  filteredCells = filteredCells.map((cell) => {
+    const inCellSet = colorToCellIdsMap.find((map) => map.cellIds.has(cell.cellId));
+
+    // If cell is not in the cell set, then return null
+    if (!inCellSet) return null;
+
+    const { key, name, color } = inCellSet;
+
+    return {
+      ...cell,
+      cellSetKey: key,
+      cellSetName: name,
+      color,
+    };
   });
 
-  const cellSetNames = newCellSets.map(({ key }) => cellSets.properties[key].name);
+  filteredCells = filteredCells.filter((cell) => cell !== null);
 
-  return { dataPoints, cellSetNames };
+  return { filteredCells, cellSetNames };
 };
 
 // Generate dynamic data from redux store
-const generateData = (cellSets, selectedCellSet, embeddingData) => {
-  const { dataPoints, cellSetNames } = filterCells(cellSets, selectedCellSet);
+const generateData = (cellSets, sampleKey, groupBy, embeddingData) => {
+  const { filteredCells, cellSetNames } = filterCells(cellSets, sampleKey, groupBy);
 
-  const plotData = dataPoints
+  const plotData = filteredCells
     .filter((d) => d.cellId < embeddingData.length)
     .filter((data) => embeddingData[data.cellId]) // filter out cells removed in data processing
     .map((data) => {
-      const { cellId, ...leftOverData } = data;
+      const { cellId, ...supportingData } = data;
 
       return {
-        ...leftOverData,
+        ...supportingData,
         x: embeddingData[cellId][0],
         y: embeddingData[cellId][1],
       };
