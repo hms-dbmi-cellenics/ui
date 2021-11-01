@@ -137,7 +137,7 @@ const DoubletScores = (props) => {
 
         <Col flex='1 0px'>
           <Space direction='vertical' style={{ width: '100%' }} />
-          <Collapse defaultActiveKey={['settings']}>
+          <Collapse defaultActiveKey='settings'>
             <Panel header='Filtering Settings' key='settings'>
               <CalculationConfigContainer
                 filterUuid={filterName}
