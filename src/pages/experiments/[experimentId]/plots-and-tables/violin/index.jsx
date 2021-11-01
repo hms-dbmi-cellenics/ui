@@ -72,7 +72,7 @@ const ViolinIndex = ({ experimentId }) => {
       ],
     },
     {
-      panelTitle: 'Axes and Margins',
+      panelTitle: 'Axes and margins',
       controls: ['axes'],
     },
     {
@@ -112,7 +112,7 @@ const ViolinIndex = ({ experimentId }) => {
       <Row gutter={16}>
         <Col span={16}>
           <Space direction='vertical' style={{ width: '100%' }}>
-            <Collapse defaultActiveKey={['1']}>
+            <Collapse defaultActiveKey='1'>
               <Panel
                 header='Preview'
                 key='1'
@@ -137,12 +137,12 @@ const ViolinIndex = ({ experimentId }) => {
         </Col>
         <Col span={8}>
           <Space direction='vertical' style={{ width: '100%' }}>
-
             <PlotStyling
               formConfig={plotStylingControlsConfig}
               config={config}
               onUpdate={updatePlotWithChanges}
               renderExtraPanels={renderExtraPanels}
+              defaultActiveKey='gene-selection'
             />
           </Space>
         </Col>

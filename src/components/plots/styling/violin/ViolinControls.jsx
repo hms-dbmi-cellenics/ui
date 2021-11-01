@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import {
   Collapse, Radio, Form, Slider, Skeleton,
 } from 'antd';
-import SelectData from 'components/plots/styling/violin/SelectData';
+import SelectData from 'components/plots/styling/SelectData';
 import SingleGeneSelection from '../SingleGeneSelection';
 
 const { Panel } = Collapse;
@@ -15,22 +15,20 @@ const ViolinControls = (props) => {
 
   return (
     <Collapse>
-      <Panel header='Gene Selection' key='1'>
+      <Panel header='Gene selection' key='1'>
         <SingleGeneSelection
           config={config}
           setSearchedGene={setSearchedGene}
         />
       </Panel>
-      <Panel header='Select Data' key='15'>
-        {config && !cellSets.loading && !cellSets.error ? (
-          <SelectData
-            config={config}
-            onUpdate={onUpdate}
-            cellSets={cellSets}
-          />
-        ) : <Skeleton.Input style={{ width: 200 }} active />}
+      <Panel header='Select data' key='15'>
+        <SelectData
+          config={config}
+          onUpdate={onUpdate}
+          cellSets={cellSets}
+        />
       </Panel>
-      <Panel header='Data Transformation' key='16'>
+      <Panel header='Data transformation' key='16'>
         {config ? (
           <div>
             <Form.Item>

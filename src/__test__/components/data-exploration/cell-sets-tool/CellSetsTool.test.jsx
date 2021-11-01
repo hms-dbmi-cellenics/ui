@@ -12,10 +12,12 @@ import { Provider } from 'react-redux';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import { fetchWork } from 'utils/work/fetchWork';
 
+import createTestComponentFactory from '__test__/test-utils/testComponentFactory';
+import { makeStore } from 'redux/store';
+
 import CellSetsTool from 'components/data-exploration/cell-sets-tool/CellSetsTool';
 import { createCellSet } from 'redux/actions/cellSets';
 import { loadGeneExpression } from 'redux/actions/genes';
-import { makeStore } from 'redux/store';
 
 jest.mock('utils/work/fetchWork');
 
@@ -40,16 +42,13 @@ const getClusterByName = (clusterName) => {
   return clusterKey;
 };
 
-const cellSetToolFactory = (customProps = {}) => {
-  const props = _.merge({
-    experimentId,
-    width: 50,
-    height: 50,
-  }, customProps);
-
-  // eslint-disable-next-line react/jsx-props-no-spreading
-  return <CellSetsTool {...props} />;
+const defaultProps = {
+  experimentId,
+  width: 50,
+  height: 50,
 };
+
+const cellSetsToolFactory = createTestComponentFactory(CellSetsTool, defaultProps);
 
 let storeState;
 describe('CellSetsTool', () => {
@@ -65,7 +64,7 @@ describe('CellSetsTool', () => {
     await act(async () => {
       render(
         <Provider store={storeState}>
-          {cellSetToolFactory()}
+          {cellSetsToolFactory()}
         </Provider>,
       );
     });
@@ -88,7 +87,7 @@ describe('CellSetsTool', () => {
     await act(async () => {
       render(
         <Provider store={storeState}>
-          {cellSetToolFactory()}
+          {cellSetsToolFactory()}
         </Provider>,
       );
     });
@@ -113,7 +112,7 @@ describe('CellSetsTool', () => {
     await act(async () => {
       render(
         <Provider store={storeState}>
-          {cellSetToolFactory()}
+          {cellSetsToolFactory()}
         </Provider>,
       );
     });
@@ -128,7 +127,7 @@ describe('CellSetsTool', () => {
     await act(async () => {
       render(
         <Provider store={storeState}>
-          {cellSetToolFactory()}
+          {cellSetsToolFactory()}
         </Provider>,
       );
     });
@@ -147,7 +146,7 @@ describe('CellSetsTool', () => {
     await act(async () => {
       render(
         <Provider store={storeState}>
-          {cellSetToolFactory()}
+          {cellSetsToolFactory()}
         </Provider>,
       );
     });
@@ -193,7 +192,7 @@ describe('CellSetsTool', () => {
     await act(async () => {
       render(
         <Provider store={storeState}>
-          {cellSetToolFactory()}
+          {cellSetsToolFactory()}
         </Provider>,
       );
     });
@@ -239,7 +238,7 @@ describe('CellSetsTool', () => {
     await act(async () => {
       render(
         <Provider store={storeState}>
-          {cellSetToolFactory()}
+          {cellSetsToolFactory()}
         </Provider>,
       );
     });
@@ -279,7 +278,7 @@ describe('CellSetsTool', () => {
     await act(async () => {
       render(
         <Provider store={storeState}>
-          {cellSetToolFactory()}
+          {cellSetsToolFactory()}
         </Provider>,
       );
     });
@@ -316,7 +315,7 @@ describe('CellSetsTool', () => {
     await act(async () => {
       render(
         <Provider store={storeState}>
-          {cellSetToolFactory()}
+          {cellSetsToolFactory()}
         </Provider>,
       );
     });
@@ -357,7 +356,7 @@ describe('CellSetsTool', () => {
     await act(async () => {
       render(
         <Provider store={storeState}>
-          {cellSetToolFactory()}
+          {cellSetsToolFactory()}
         </Provider>,
       );
     });
@@ -409,7 +408,7 @@ describe('CellSetsTool', () => {
     await act(async () => {
       render(
         <Provider store={storeState}>
-          {cellSetToolFactory()}
+          {cellSetsToolFactory()}
         </Provider>,
       );
     });
@@ -437,7 +436,7 @@ describe('CellSetsTool', () => {
     await act(async () => {
       render(
         <Provider store={storeState}>
-          {cellSetToolFactory()}
+          {cellSetsToolFactory()}
         </Provider>,
       );
     });
@@ -463,7 +462,7 @@ describe('CellSetsTool', () => {
     await act(async () => {
       render(
         <Provider store={storeState}>
-          {cellSetToolFactory()}
+          {cellSetsToolFactory()}
         </Provider>,
       );
     });
@@ -485,7 +484,7 @@ describe('CellSetsTool', () => {
     await act(async () => {
       render(
         <Provider store={storeState}>
-          {cellSetToolFactory()}
+          {cellSetsToolFactory()}
         </Provider>,
       );
     });
@@ -502,7 +501,7 @@ describe('CellSetsTool', () => {
     await act(async () => {
       render(
         <Provider store={storeState}>
-          {cellSetToolFactory()}
+          {cellSetsToolFactory()}
         </Provider>,
       );
     });
@@ -532,7 +531,7 @@ describe('CellSetsTool', () => {
     await act(async () => {
       render(
         <Provider store={storeState}>
-          {cellSetToolFactory()}
+          {cellSetsToolFactory()}
         </Provider>,
       );
     });

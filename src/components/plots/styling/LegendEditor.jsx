@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Radio, Form } from 'antd';
-import _ from 'lodash';
 
 const defaultOption = {
   positions: 'corners',
@@ -39,7 +38,10 @@ const LegendEditor = (props) => {
 
       <p><strong>Toggle Legend</strong></p>
       <Form.Item>
-        <Radio.Group onChange={(e) => onUpdate({ legend: { enabled: e.target.value } })} value={config.legend.enabled}>
+        <Radio.Group
+          onChange={(e) => onUpdate({ legend: { enabled: e.target.value } })}
+          value={config.legend.enabled}
+        >
           <Radio value>Show</Radio>
           <Radio value={false}>Hide</Radio>
         </Radio.Group>
@@ -61,6 +63,20 @@ const LegendEditor = (props) => {
                 }
               </Radio.Group>
             </Form.Item>
+            { config.legend.direction ? (
+              <>
+                <p><strong>Direction</strong></p>
+                <Form.Item>
+                  <Radio.Group
+                    onChange={(e) => onUpdate({ legend: { direction: e.target.value } })}
+                    value={config.legend.direction}
+                  >
+                    <Radio key='direction-vertical' value='vertical'>Vertical</Radio>
+                    <Radio key='direction-horizontal' value='horizontal'>Horizontal</Radio>
+                  </Radio.Group>
+                </Form.Item>
+              </>
+            ) : <></>}
           </>
         )
       }
