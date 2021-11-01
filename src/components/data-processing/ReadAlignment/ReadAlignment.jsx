@@ -420,7 +420,7 @@ class ReadAlignment extends React.Component {
           </Col>
           <Col span={6}>
             <Space direction='vertical' style={{ width: '100%' }} />
-            <Collapse defaultActiveKey={['filtering-settings']}>
+            <Collapse defaultActiveKey='filtering-settings'>
               <Panel header='Filtering Settings' collapsible={!filtering ? 'disabled' : 'header'} key='filtering-settings'>
                 <Form.Item
                   label='Method:'

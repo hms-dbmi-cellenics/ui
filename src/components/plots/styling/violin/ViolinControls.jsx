@@ -22,13 +22,11 @@ const ViolinControls = (props) => {
         />
       </Panel>
       <Panel header='Select data' key='15'>
-        {config && !cellSets.loading && !cellSets.error ? (
-          <SelectData
-            config={config}
-            onUpdate={onUpdate}
-            cellSets={cellSets}
-          />
-        ) : <Skeleton.Input style={{ width: 200 }} active />}
+        <SelectData
+          config={config}
+          onUpdate={onUpdate}
+          cellSets={cellSets}
+        />
       </Panel>
       <Panel header='Data transformation' key='16'>
         {config ? (

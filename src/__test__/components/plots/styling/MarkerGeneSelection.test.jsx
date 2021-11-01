@@ -8,7 +8,7 @@ import { act } from 'react-dom/test-utils';
 
 import { initialPlotConfigStates } from 'redux/reducers/componentConfig/initialState';
 import MarkerGeneSelection from 'components/plots/styling/MarkerGeneSelection';
-import createComponentFactory from '__test__/test-utils/componentFactory';
+import createTestComponentFactory from '__test__/test-utils/testComponentFactory';
 
 const mockOnUpdate = jest.fn();
 const mockOnReset = jest.fn();
@@ -20,7 +20,7 @@ const defaultProps = {
   onGeneEnter: mockOnGeneEnter,
 };
 
-const markerGeneSelectionFactory = createComponentFactory(MarkerGeneSelection, defaultProps);
+const markerGeneSelectionFactory = createTestComponentFactory(MarkerGeneSelection, defaultProps);
 
 describe('MarkerGeneSelection', () => {
   beforeEach(() => {
