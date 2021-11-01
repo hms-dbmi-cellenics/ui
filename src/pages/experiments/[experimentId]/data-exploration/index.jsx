@@ -54,16 +54,30 @@ const ExplorationViewPage = ({
       dispatch(loadProcessingSettings(experimentId));
     }
   }, []);
-  console.log('method is ', method);
-
   const methodUppercase = method ? method.toUpperCase() : ' ';
+
+  useEffect(() => {
+    if (method && windows) {
+      dispatch(updateLayout({
+        ...windows,
+        first: {
+          ...windows.first,
+          first: {
+            ...windows.first.first,
+            first: `${methodUppercase} Embedding`,
+          },
+        },
+      }));
+    }
+  }, [method]);
+
+  const embeddingTileName = `${methodUppercase} Embedding`;
   const TILE_MAP = {
-    'UMAP Embeddingg': {
+    [embeddingTileName]: {
       toolbarControls: <MosaicCloseButton key='remove-button-embedding' />,
       component: (width, height) => (
         <Embedding
           experimentId={experimentId}
-          embeddingType='umap'
           width={width}
           height={height}
         />
@@ -134,8 +148,8 @@ const ExplorationViewPage = ({
     ],
     Plots: [
       {
-        key: 'UMAP Embeddingg',
-        description: 'Visualize cells clustered by genetic expression using a UMAP embedding.',
+        key: `${embeddingTileName}`,
+        description: `Visualize cells clustered by genetic expression using a ${embeddingTileName}.`,
       },
       {
         key: 'Heatmap',

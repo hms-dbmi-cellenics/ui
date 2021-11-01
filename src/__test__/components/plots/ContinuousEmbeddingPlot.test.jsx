@@ -25,7 +25,7 @@ const mockCellSets = {
 const mockStore = configureStore([thunk]);
 
 const initialExperimentState = generateExperimentSettingsMock([]);
-
+const mockOnUpdate = jest.fn();
 describe('Continuous embedding plot', () => {
   const config = initialPlotConfigStates.embeddingContinuous;
   const experimentId = 'asd';
@@ -89,6 +89,7 @@ describe('Continuous embedding plot', () => {
           plotData={mockedStore.genes.expression.data[shownGene].expression}
           loading
           error={mockedStore.genes.expression.error}
+          onUpdate={mockOnUpdate}
         />
       </Provider>,
     );
@@ -111,6 +112,7 @@ describe('Continuous embedding plot', () => {
           plotData={mockedStore.genes.expression.data[shownGene].expression}
           loading={false}
           error={mockedStore.genes.expression.error}
+          onUpdate={mockOnUpdate}
         />
       </Provider>,
     );

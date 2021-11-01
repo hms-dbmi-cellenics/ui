@@ -18,6 +18,7 @@ import '__test__/test-utils/setupTests';
 const mockStore = configureStore([thunk]);
 
 const initialExperimentState = generateExperimentSettingsMock([]);
+const mockOnUpdate = jest.fn();
 
 describe('Categorical embedding', () => {
   const emptyStore = {
@@ -89,6 +90,7 @@ describe('Categorical embedding', () => {
         <CategoricalEmbeddingPlot
           experimentId='asd'
           config={config}
+          onUpdate={mockOnUpdate}
         />
       </Provider>,
     );
@@ -107,6 +109,7 @@ describe('Categorical embedding', () => {
         <CategoricalEmbeddingPlot
           experimentId='asd'
           config={config}
+          onUpdate={mockOnUpdate}
         />
       </Provider>,
     );

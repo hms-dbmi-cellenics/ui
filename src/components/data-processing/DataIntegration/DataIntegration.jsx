@@ -58,9 +58,13 @@ const DataIntegration = (props) => {
               title: 'Sample Name',
             },
             selectedCellSet: 'sample',
+            axes: {
+              defaultValues: [],
+            },
           }}
           plotData={plotData}
           actions={actions}
+          onUpdate={updatePlotWithChanges}
         />
       ),
       blockedByConfigureEmbedding: true,

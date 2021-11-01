@@ -56,7 +56,6 @@ const ContinuousEmbeddingPlot = (props) => {
 
     if (embeddingSettings?.method && axesDefaultValues?.length) {
       const methodUppercase = method[0].toUpperCase() + method.slice(1);
-      console.log('METHOD IS ', methodUppercase, 'config axes ', config.axes);
       if (axesDefaultValues.includes('x') && !xAxisText.includes(methodUppercase)) {
         onUpdate({ axes: { xAxisText: `${methodUppercase} 1` } });
       }
