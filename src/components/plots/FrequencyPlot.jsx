@@ -1,19 +1,29 @@
 import React, { useEffect, useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import { Vega } from 'react-vega';
 import PropTypes from 'prop-types';
+
+import loadCellSets from '../../redux/actions/cellSets/loadCellSets';
+import { getCellSets } from '../../redux/selectors';
 
 import { generateSpec, generateData } from '../../utils/plotSpecs/generateFrequencySpec';
 
 const FrequencyPlot = (props) => {
   const {
-    config, actions, cellSets,
+    experimentId, config, actions,
   } = props;
+
+  const dispatch = useDispatch();
+
+  const { hierarchy, properties } = useSelector(getCellSets()) || {};
 
   const [plotSpec, setPlotSpec] = useState({});
 
-  const {
-    hierarchy, properties,
-  } = cellSets;
+  useEffect(() => {
+    if (!hierarchy || !properties.length) {
+      dispatch(loadCellSets(experimentId));
+    }
+  }, []);
 
   useEffect(() => {
     if (hierarchy && properties && config) {
@@ -40,12 +50,11 @@ FrequencyPlot.propTypes = {
     PropTypes.bool,
     PropTypes.object,
   ]),
-  cellSets: PropTypes.object,
+  experimentId: PropTypes.string.isRequired,
 };
 
 FrequencyPlot.defaultProps = {
   actions: true,
-  cellSets: null,
 };
 
 export default FrequencyPlot;

@@ -73,7 +73,6 @@ const DataIntegration = (props) => {
         <FrequencyPlot
           experimentId={experimentId}
           config={config}
-          cellSets={cellSets}
           actions={actions}
         />
       ),

@@ -124,7 +124,6 @@ const FrequencyPlotPage = ({ experimentId }) => {
         <FrequencyPlot
           experimentId={experimentId}
           config={config}
-          cellSets={cellSets}
         />
       </center>
     );
