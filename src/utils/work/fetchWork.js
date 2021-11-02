@@ -20,7 +20,7 @@ const transformToOldMethodIfCachedResponseIsOld = (response) => {
 
   console.log('QONDA');
 
-  return JSON.parse(response);
+  return response;
 };
 
 const decomposeBody = async (body, experimentId) => {
