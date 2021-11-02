@@ -73,7 +73,7 @@ const generateSpec = (config, plotData, numClusters) => {
           {
             type: 'formula',
             as: 'size',
-            expr: 'datum.cellsFraction * 100',
+            expr: 'datum.cellsPercentage * 100',
           },
         ],
       },
@@ -84,7 +84,7 @@ const generateSpec = (config, plotData, numClusters) => {
         name: 'x',
         type: 'point',
         range: 'width',
-        domain: { data: 'plotData', field: 'gene' },
+        domain: { data: 'plotData', field: 'geneName' },
         padding: radius / 2,
       },
       {
@@ -94,7 +94,7 @@ const generateSpec = (config, plotData, numClusters) => {
         padding: radius / 2,
         domain: {
           data: 'plotData',
-          field: 'cluster',
+          field: 'cellSets',
         },
       },
       {
@@ -115,7 +115,7 @@ const generateSpec = (config, plotData, numClusters) => {
         type: 'linear',
         domain: {
           data: 'plotData',
-          field: 'AvgExpression',
+          field: 'avgExpression',
         },
         range: {
           scheme: config.colour.gradient === 'default'
@@ -180,11 +180,11 @@ const generateSpec = (config, plotData, numClusters) => {
           enter: {
             xc: {
               scale: 'x',
-              field: 'gene',
+              field: 'geneName',
             },
             yc: {
               scale: 'y',
-              field: 'cluster',
+              field: 'cellSets',
             },
             size: {
               scale: 'dotSize',
@@ -192,7 +192,7 @@ const generateSpec = (config, plotData, numClusters) => {
             },
             fill: {
               scale: 'color',
-              field: 'AvgExpression',
+              field: 'avgExpression',
             },
           },
         },

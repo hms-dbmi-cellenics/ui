@@ -8,26 +8,6 @@ import { getCellSets, getCellSetsHierarchyByKey } from 'redux/selectors';
 import PlatformError from 'components/PlatformError';
 import { fastLoad } from 'components/Loader';
 
-// Mock data, delete this once we have the real data
-// const generateMockData = (numGenes, numClusters) => {
-//   const mockPlotData = [];
-
-//   for (let gene = 0; gene < numGenes; gene += 1) {
-//     for (let cluster = 0; cluster < numClusters; cluster += 1) {
-//       mockPlotData.push({
-//         gene: `gene${gene}`,
-//         cluster: `cluster${cluster}`,
-//         AvgExpression: Math.random(),
-//         cellsFraction: Math.random(),
-//       });
-//     }
-//   }
-
-//   return mockPlotData;
-// };
-
-// const plotData = generateMockData(3, 14);
-
 const DotPlot = (props) => {
   const { config, plotData } = props;
 
