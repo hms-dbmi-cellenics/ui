@@ -10,18 +10,19 @@ import { calculateZScore } from '../postRequestProcessing';
 
 const createObjectHash = (object) => hash.MD5(object);
 
-const transformToOldMethodIfCachedResponseIsOld = (response) => {
-  console.log('responseDebug');
-  console.log(response);
-  // if (!response.data) {
-  // console.log('ENTRE ACA ESTA MAL');
-  // return { data: JSON.parse(response.results[0].body), cacheable: response.response?.cacheable };
-  // }
+// const transformToOldMethodIfCachedResponseIsOld = (response) => {
+//   console.log('responseDebug');
+//   console.log(response);
+//   // if (!response.data) {
+//   // console.log('ENTRE ACA ESTA MAL');
+//   // return { data: JSON.parse(response.res
+// ults[0].body), cacheable: response.response?.cacheable };
+//   // }
 
-  console.log('QONDA');
+//   console.log('QONDA');
 
-  return response;
-};
+//   return response;
+// };
 
 const decomposeBody = async (body, experimentId) => {
   const { genes: requestedGenes } = body;
@@ -102,7 +103,8 @@ const fetchGeneExpressionWork = async (
   // This line should eventually be replaced by:
   // `const { data: responseData } = response;`
   // (12 hours after the first release should be enough to safely remove the line)
-  const responseData = transformToOldMethodIfCachedResponseIsOld(response);
+  // const responseData = transformToOldMethodIfCachedResponseIsOld(response);
+  const responseData = JSON.parse(response);
 
   console.log('responseDataDebug');
   console.log(responseData);
@@ -186,7 +188,8 @@ const fetchWork = async (
   // This line should eventually be replaced by:
   // `const { data: responseData, cacheable } = response;`
   // (12 hours after the first release should be enough to safely remove the line)
-  const responseData = transformToOldMethodIfCachedResponseIsOld(response);
+  // const responseData = transformToOldMethodIfCachedResponseIsOld(response);
+  const responseData = JSON.parse(response);
 
   // if (cacheable) {
   if (false) {
