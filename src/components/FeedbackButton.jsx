@@ -1,10 +1,16 @@
-import React, { useState } from 'react';
 import {
-  Button, Dropdown, Card, Input, Space,
+  Button,
+  Card,
+  Dropdown,
+  Input,
+  Space,
 } from 'antd';
 import { CommentOutlined, DownOutlined } from '@ant-design/icons';
+import React, { useState } from 'react';
+
 import { Auth } from 'aws-amplify';
 import endUserMessages from '../utils/endUserMessages';
+import { getWebhookUrl } from '../utils/crypt';
 import pushNotificationMessage from '../utils/pushNotificationMessage';
 
 const { TextArea } = Input;
@@ -12,8 +18,6 @@ const { TextArea } = Input;
 const FeedbackButton = () => {
   const [visible, setVisible] = useState(false);
   const [feedbackText, setFeedbackText] = useState('');
-
-  const HOOK_URL = 'aHR0cHM6Ly9ob29rcy5zbGFjay5jb20vc2VydmljZXMvVDAxNTVEWkZWTTAvQjAxOVlCQVJYSjkvTWNwRnF5RGtHSmE1WTd0dGFSZHpoQXNQ'; // pragma: allowlist secret
 
   const submitFeedback = async () => {
     setVisible(false);
@@ -85,7 +89,7 @@ const FeedbackButton = () => {
     };
 
     try {
-      const r = await fetch(atob(HOOK_URL), {
+      const r = await fetch(getWebhookUrl(), {
         method: 'POST',
         body: JSON.stringify(feedbackData),
       });
