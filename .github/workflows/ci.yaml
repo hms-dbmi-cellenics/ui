@@ -30,26 +30,26 @@ jobs:
         git config --global url."https://".insteadOf ssh://
         npm ci
 
-    # # - id: test
-    # #   name: Run unit tests
-    # #   uses: mattallty/jest-github-action@v1
-    # #   env:
-    # #     AWS_DEFAULT_REGION: 'eu-west-1'
-    # #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    # #   with:
-    # #     test-command: "npm run coverage"
-    # #     coverage-comment: false
-    
-    # # - id: upload-coverage
-    # #   name: Upload coverage to Codecov
-    # #   uses: codecov/codecov-action@v1
-
-    # - id: next-cache-seek
-    #   name: Look up the Next.js build cache
-    #   uses: actions/cache@v2
+    # - id: test
+    #   name: Run unit tests
+    #   uses: mattallty/jest-github-action@v1
+    #   env:
+    #     AWS_DEFAULT_REGION: 'eu-west-1'
+    #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     #   with:
-    #     path: ${{ github.workspace }}/.next/cache
-    #     key: ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}
+    #     test-command: "npm run coverage"
+    #     coverage-comment: false
+    
+    # - id: upload-coverage
+    #   name: Upload coverage to Codecov
+    #   uses: codecov/codecov-action@v1
+
+    - id: next-cache-seek
+      name: Look up the Next.js build cache
+      uses: actions/cache@v2
+      with:
+        path: ${{ github.workspace }}/.next/cache
+        key: ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}
 
     - id: build
       name: Build project
@@ -63,16 +63,16 @@ jobs:
         path: |
           .next/
           !.next/cache
-    # - id: send-to-slack
-    #   name: Send failure notification to Slack
-    #   if: failure() && github.event_name == 'push'
-    #   env:
-    #     SLACK_BOT_TOKEN: ${{ secrets.BUILD_STATUS_BOT_TOKEN }}
-    #   uses: voxmedia/github-action-slack-notify-build@v1
-    #   with:
-    #     channel: pipelines
-    #     status: FAILED
-    #     color: danger
+    - id: send-to-slack
+      name: Send failure notification to Slack
+      if: failure() && github.event_name == 'push'
+      env:
+        SLACK_BOT_TOKEN: ${{ secrets.BUILD_STATUS_BOT_TOKEN }}
+      uses: voxmedia/github-action-slack-notify-build@v1
+      with:
+        channel: pipelines
+        status: FAILED
+        color: danger
  
   build-docker:
     name: Build Docker container
@@ -155,16 +155,16 @@ jobs:
         env:
           IMAGE_NAME: ${{ format('{0}/{1}:{2}', steps.login-ecr.outputs.registry, steps.ref.outputs.repo-name, steps.ref.outputs.tag) }}
 
-  #     - id: send-to-slack
-  #       name: Send failure notification to Slack
-  #       if: failure() && github.event_name == 'push'
-  #       env:
-  #         SLACK_BOT_TOKEN: ${{ secrets.BUILD_STATUS_BOT_TOKEN }}
-  #       uses: voxmedia/github-action-slack-notify-build@v1
-  #       with:
-  #         channel: pipelines
-  #         status: FAILED
-  #         color: danger
+      - id: send-to-slack
+        name: Send failure notification to Slack
+        if: failure() && github.event_name == 'push'
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.BUILD_STATUS_BOT_TOKEN }}
+        uses: voxmedia/github-action-slack-notify-build@v1
+        with:
+          channel: pipelines
+          status: FAILED
+          color: danger
 
   deploy:
     name: Deploy to Kubernetes
@@ -173,7 +173,7 @@ jobs:
     strategy:
       max-parallel: 1
       matrix:
-        environment: ['staging']
+        environment: ['production', 'staging', 'develop']
     steps:
       - id: checkout
         name: Check out source code
