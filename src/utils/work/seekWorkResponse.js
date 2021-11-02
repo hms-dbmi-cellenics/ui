@@ -13,6 +13,16 @@ const unpackResult = async (storageResp) => {
   const decompressed = decompressSync(new Uint8Array(arrayBuf));
 
   const origText = strFromU8(decompressed);
+
+  // stream.pipe(JSONStream.parse('*'));
+
+  // stream.on('data', (data) => {
+  //   if (i < 10) {
+  //     console.log(i, data);
+  //   }
+  //   i++;
+  // });
+
   return JSON.parse(origText);
 };
 
@@ -30,7 +40,8 @@ const seekFromS3 = async (ETag) => {
     return null;
   }
 
-  return unpackResult(storageResp);
+  // eslint-disable-next-line no-return-await
+  return await unpackResult(storageResp);
 };
 
 const seekFromAPI = async (
