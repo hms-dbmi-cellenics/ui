@@ -5,7 +5,3 @@
   visibility: visible;
 }
 
-#heatmap-container canvas {
-  left: -30px !important;
-  top: -10px !important;
-}
