@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Vega } from 'react-vega';
-import { fastLoad } from '../Loader';
+import Loader from '../Loader';
 
 import PlatformError from '../PlatformError';
 import { generateSpec, generateData } from '../../utils/plotSpecs/generateEmbeddingCategoricalSpec';
@@ -58,7 +58,7 @@ const CategoricalEmbeddingPlot = (props) => {
       const {
         plotData,
         cellSetNames,
-      } = generateData(cellSets, config.selectedCellSet, embeddingData);
+      } = generateData(cellSets, config.selectedSample, config.selectedCellSet, embeddingData);
 
       setPlotSpec(generateSpec(config, plotData, cellSetNames));
     }
@@ -74,10 +74,10 @@ const CategoricalEmbeddingPlot = (props) => {
       );
     }
 
-    if (cellSets.loading || !embeddingData || embeddingLoading || !config) {
+    if (!config || cellSets.loading || !embeddingData || embeddingLoading || !config) {
       return (
         <center>
-          {fastLoad()}
+          <Loader experimentId={experimentId} />
         </center>
       );
     }
@@ -98,7 +98,7 @@ const CategoricalEmbeddingPlot = (props) => {
 
 CategoricalEmbeddingPlot.propTypes = {
   experimentId: PropTypes.string.isRequired,
-  config: PropTypes.object.isRequired,
+  config: PropTypes.object,
   actions: PropTypes.oneOfType([
     PropTypes.bool,
     PropTypes.object,
@@ -107,6 +107,7 @@ CategoricalEmbeddingPlot.propTypes = {
 
 CategoricalEmbeddingPlot.defaultProps = {
   actions: true,
+  config: null,
 };
 
 export default CategoricalEmbeddingPlot;

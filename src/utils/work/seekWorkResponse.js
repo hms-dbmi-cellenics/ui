@@ -58,7 +58,7 @@ const seekFromAPI = async (
     ...requestProps,
   };
 
-  io.emit('WorkRequest', request);
+  let result = null;
 
   if (eventCallback) {
     io.off(`${experimentId}-${body.name}`);
@@ -103,8 +103,11 @@ const seekFromAPI = async (
       });
     });
 
-    return Promise.race([timeoutPromise, responsePromise]);
+    result = Promise.race([timeoutPromise, responsePromise]);
   }
+
+  io.emit('WorkRequest', request);
+  return result;
 };
 
 export { seekFromAPI, seekFromS3 };

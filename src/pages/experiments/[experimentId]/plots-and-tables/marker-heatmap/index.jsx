@@ -1,7 +1,15 @@
 /* eslint-disable import/no-unresolved */
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
-  Row, Col, Space, Collapse, Skeleton, Empty, Typography,
+  Row,
+  Col,
+  Space,
+  Collapse,
+  Skeleton,
+  Empty,
+  Typography,
+  Select,
+  Radio,
 } from 'antd';
 import _ from 'lodash';
 import { useSelector, useDispatch } from 'react-redux';
@@ -9,18 +17,24 @@ import { Vega } from 'react-vega';
 import PropTypes from 'prop-types';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
 import endUserMessages from 'utils/endUserMessages';
-import { getCellSets, getCellSetsHierarchyByKey } from 'redux/selectors';
-import loadProcessingSettings from '../../../../../redux/actions/experimentSettings/processingConfig/loadProcessingSettings';
-import PlotStyling from '../../../../../components/plots/styling/PlotStyling';
-import { updatePlotConfig, loadPlotConfig } from '../../../../../redux/actions/componentConfig';
-import Header from '../../../../../components/plots/Header';
-import { generateSpec } from '../../../../../utils/plotSpecs/generateHeatmapSpec';
-import { loadGeneExpression, loadMarkerGenes } from '../../../../../redux/actions/genes';
-import { loadCellSets } from '../../../../../redux/actions/cellSets';
-import PlatformError from '../../../../../components/PlatformError';
-import Loader from '../../../../../components/Loader';
-import populateHeatmapData from '../../../../../components/plots/helpers/populateHeatmapData';
-import HeatmapControls from '../../../../../components/plots/styling/heatmap/HeatmapControls';
+
+import { getCellSets, getCellSetsHierarchyByKeys, getCellSetsHierarchyByType } from 'redux/selectors';
+import getSelectOptions from 'utils/plots/getSelectOptions';
+
+import HeatmapGroupBySettings from 'components/data-exploration/heatmap/HeatmapGroupBySettings';
+import HeatmapMetadataTracksSettings from 'components/data-exploration/heatmap/HeatmapMetadataTrackSettings';
+
+import MarkerGeneSelection from 'components/plots/styling/MarkerGeneSelection';
+import loadProcessingSettings from 'redux/actions/experimentSettings/processingConfig/loadProcessingSettings';
+import PlotStyling from 'components/plots/styling/PlotStyling';
+import { updatePlotConfig, loadPlotConfig } from 'redux/actions/componentConfig';
+import Header from 'components/plots/Header';
+import { generateSpec } from 'utils/plotSpecs/generateHeatmapSpec';
+import { loadGeneExpression, loadMarkerGenes } from 'redux/actions/genes';
+import { loadCellSets } from 'redux/actions/cellSets';
+import PlatformError from 'components/PlatformError';
+import Loader from 'components/Loader';
+import populateHeatmapData from 'components/plots/helpers/populateHeatmapData';
 
 const { Text } = Typography;
 const { Panel } = Collapse;
@@ -30,10 +44,13 @@ const plotType = 'markerHeatmap';
 
 const route = {
   path: 'marker-heatmap',
-  breadcrumbName: 'Marker-Heatmap',
+  breadcrumbName: 'Marker Heatmap',
 };
 const MarkerHeatmap = ({ experimentId }) => {
   const dispatch = useDispatch();
+
+  const [vegaSpec, setVegaSpec] = useState();
+
   const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
 
   const { expression: expressionData } = useSelector((state) => state.genes);
@@ -42,12 +59,15 @@ const MarkerHeatmap = ({ experimentId }) => {
   const cellSets = useSelector(getCellSets());
   const { hierarchy, properties } = cellSets;
 
+  const cellOptions = useSelector(getCellSetsHierarchyByType('cellSets'));
+
   const selectedCellSetClassAvailable = useSelector(
-    getCellSetsHierarchyByKey([config?.selectedCellSet]),
+    getCellSetsHierarchyByKeys([config?.selectedCellSet]),
   ).length;
 
-  const selectedGenes = useSelector((state) => state.genes.expression.views[plotUuid]?.data) || [];
-  const louvainClustersResolutionRef = useRef(null);
+  const loadedMarkerGenes = useSelector(
+    (state) => state.genes.expression.views[plotUuid]?.data,
+  ) || [];
 
   const {
     loading: loadingMarkerGenes,
@@ -59,12 +79,11 @@ const MarkerHeatmap = ({ experimentId }) => {
       .configureEmbedding?.clusteringSettings.methodSettings.louvain.resolution,
   ) || false;
 
-  const [vegaSpec, setVegaSpec] = useState();
-
   useEffect(() => {
     if (!louvainClustersResolution) {
       dispatch(loadProcessingSettings(experimentId));
     }
+
     dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
     if (!hierarchy?.length) {
       dispatch(loadCellSets(experimentId));
@@ -72,26 +91,27 @@ const MarkerHeatmap = ({ experimentId }) => {
   }, []);
 
   useEffect(() => {
-    if (louvainClustersResolution && config?.numGenes && hierarchy?.length) {
-      louvainClustersResolutionRef.current = louvainClustersResolution;
+    if (louvainClustersResolution && config?.nMarkerGenes && hierarchy?.length) {
       if (selectedCellSetClassAvailable) {
         dispatch(loadMarkerGenes(
           experimentId, louvainClustersResolution,
-          plotUuid, config.numGenes, config.selectedCellSet,
+          plotUuid, config.nMarkerGenes, config.selectedCellSet,
         ));
       } else {
         pushNotificationMessage('error', endUserMessages.NO_CLUSTERS);
       }
     }
-  }, [config?.selectedCellSet, config?.numGenes, hierarchy]);
+  }, [config?.selectedCellSet, config?.nMarkerGenes, hierarchy]);
 
   useEffect(() => {
     if (louvainClustersResolution
-      && louvainClustersResolutionRef.current !== louvainClustersResolution
       && config && hierarchy?.length) {
-      louvainClustersResolutionRef.current = louvainClustersResolution;
       dispatch(loadMarkerGenes(
-        experimentId, louvainClustersResolution, plotUuid, config.numGenes, config.selectedCellSet,
+        experimentId,
+        louvainClustersResolution,
+        plotUuid,
+        config.nMarkerGenes,
+        config.selectedCellSet,
       ));
     }
   }, [louvainClustersResolution]);
@@ -100,6 +120,7 @@ const MarkerHeatmap = ({ experimentId }) => {
     if (!config) {
       return;
     }
+
     // grouping and metadata tracks should change when data is changed
     updatePlotWithChanges(
       { selectedTracks: [config.selectedCellSet], groupedTracks: [config.selectedCellSet] },
@@ -150,41 +171,52 @@ const MarkerHeatmap = ({ experimentId }) => {
     });
     return newOrder;
   };
+
+  const reSortGenes = () => {
+    const newGenes = _.difference(loadedMarkerGenes, config.selectedGenes);
+    let newOrder;
+
+    if (!newGenes.length) {
+      // gene was removed instead of added - no need to sort
+      const removedGenes = _.difference(config.selectedGenes, loadedMarkerGenes);
+      newOrder = _.cloneDeep(config.selectedGenes);
+      newOrder = newOrder.filter((gene) => !removedGenes.includes(gene));
+    } else if (newGenes.length === 1) {
+      // single gene difference - added manually by user
+      newOrder = sortGenes(newGenes);
+    } else {
+      // selected data was changed
+      newOrder = loadedMarkerGenes;
+    }
+
+    return newOrder;
+  };
+
   useEffect(() => {
     if (!config || _.isEmpty(expressionData)) {
       return;
     }
-    if (selectedGenes.length && !config.selectedGenes.length) {
-      updatePlotWithChanges({ selectedGenes });
+    if (loadedMarkerGenes.length && !config.selectedGenes.length) {
+      updatePlotWithChanges({ selectedGenes: loadedMarkerGenes });
       return;
     }
-    if (selectedGenes.length !== config.selectedGenes.length) {
-      const newGenes = _.difference(selectedGenes, config.selectedGenes);
-      let newOrder;
-      if (!newGenes.length) {
-        // gene was removed instead of added - no need to sort
-        const removedGenes = _.difference(config.selectedGenes, selectedGenes);
-        newOrder = _.cloneDeep(config.selectedGenes);
-        newOrder = newOrder.filter((gene) => !removedGenes.includes(gene));
-      } else if (newGenes.length === 1) {
-        // single gene difference - added manually by user
-        newOrder = sortGenes(newGenes);
-      } else {
-        // selected data was changed
-        newOrder = selectedGenes;
-      }
+
+    if (loadedMarkerGenes.length !== config.selectedGenes.length) {
+      const newOrder = reSortGenes();
       updatePlotWithChanges({ selectedGenes: newOrder });
     }
-  }, [selectedGenes, config?.selectedGenes]);
+  }, [loadedMarkerGenes, config?.selectedGenes]);
+
   useEffect(() => {
     if (cellSets.loading
       || _.isEmpty(expressionData)
-      || _.isEmpty(selectedGenes)
+      || _.isEmpty(loadedMarkerGenes)
       || !loading
       || !hierarchy?.length
     ) {
       return;
     }
+
     const data = populateHeatmapData(cellSets, config, expressionData, config.selectedGenes, true);
 
     const spec = generateSpec(config, 'Cluster ID', data.trackGroupData, plotUuid);
@@ -220,19 +252,7 @@ const MarkerHeatmap = ({ experimentId }) => {
     dispatch(updatePlotConfig(plotUuid, updatedField));
   };
 
-  const onGeneEnter = (genes) => {
-    dispatch(loadGeneExpression(experimentId, genes, plotUuid));
-  };
-
   const renderPlot = () => {
-    if (!config
-      || loading.length > 0
-      || cellSets.loading
-      || loadingMarkerGenes
-      || !config.selectedGenes.length) {
-      return (<Loader experimentId={experimentId} />);
-    }
-
     if (error) {
       return (
         <PlatformError
@@ -242,6 +262,7 @@ const MarkerHeatmap = ({ experimentId }) => {
         />
       );
     }
+
     if (errorMarkerGenes) {
       return (
         <PlatformError
@@ -251,14 +272,23 @@ const MarkerHeatmap = ({ experimentId }) => {
             () => dispatch(
               loadMarkerGenes(
                 experimentId, louvainClustersResolution,
-                plotUuid, config.numGenes, config.selectedCellSet,
+                plotUuid, config.nMarkerGenes, config.selectedCellSet,
               ),
             )
           }
         />
       );
     }
-    if (selectedGenes.length === 0) {
+
+    if (!config
+      || loading.length > 0
+      || cellSets.loading
+      || loadingMarkerGenes
+      || !config.selectedGenes.length) {
+      return (<Loader experimentId={experimentId} />);
+    }
+
+    if (loadedMarkerGenes.length === 0) {
       return (
         <Empty description={(
           <Text>Add some genes to this heatmap to get started.</Text>
@@ -266,24 +296,34 @@ const MarkerHeatmap = ({ experimentId }) => {
         />
       );
     }
+
     if (vegaSpec) {
       return <Vega spec={vegaSpec} renderer='canvas' />;
     }
   };
+
+  const onGeneEnter = (genes) => {
+    dispatch(loadGeneExpression(experimentId, genes, plotUuid));
+  };
+
   const onReset = () => {
     onGeneEnter([]);
     dispatch(loadMarkerGenes(
-      experimentId, louvainClustersResolution, plotUuid, config.numGenes, config.selectedCellSet,
+      experimentId,
+      louvainClustersResolution,
+      plotUuid,
+      config.nMarkerGenes,
+      config.selectedCellSet,
     ));
   };
 
   const plotStylingControlsConfig = [
     {
-      panelTitle: 'Expression Values',
+      panelTitle: 'Expression values',
       controls: ['expressionValuesType', 'expressionValuesCapping'],
     },
     {
-      panelTitle: 'Main Schema',
+      panelTitle: 'Main schema',
       controls: ['dimensions'],
       children: [
         {
@@ -315,9 +355,74 @@ const MarkerHeatmap = ({ experimentId }) => {
     },
   ];
 
-  if (!config || cellSets.loading || !hierarchy) {
+  if (!config || cellSets.loading || hierarchy.length === 0) {
     return (<Skeleton />);
   }
+
+  const changeClusters = (option) => {
+    const newValue = option.value.toLowerCase();
+
+    updatePlotWithChanges({ selectedCellSet: newValue });
+  };
+
+  const clustersForSelect = getSelectOptions(cellOptions);
+
+  const renderExtraPanels = () => (
+    <>
+      <Panel header='Gene selection' key='gene-selection'>
+        <Space direction='vertical' size='small'>
+          <MarkerGeneSelection
+            config={config}
+            onUpdate={updatePlotWithChanges}
+            onGeneEnter={onGeneEnter}
+            onReset={onReset}
+          />
+          <div>
+            <p>Gene labels:</p>
+            <Radio.Group
+              onChange={
+                (e) => updatePlotWithChanges({ showGeneLabels: e.target.value })
+              }
+              value={config.showGeneLabels}
+            >
+              <Radio value>Show</Radio>
+              <Radio value={false}>Hide</Radio>
+            </Radio.Group>
+          </div>
+        </Space>
+      </Panel>
+      <Panel header='Select data' key='selectData'>
+        <Space direction='vertical' size='small'>
+          <p>Select the cell sets to show markers for:</p>
+          <Select
+            value={{
+              value: config.selectedCellSet,
+            }}
+            onChange={changeClusters}
+            labelInValue
+            style={{ width: '100%' }}
+            placeholder='Select cell set...'
+            options={clustersForSelect}
+          />
+        </Space>
+      </Panel>
+      <Panel header='Cluster guardlines' key='clusterGuardlines'>
+        <Radio.Group
+          value={config.guardLines}
+          onChange={(e) => updatePlotWithChanges({ guardLines: e.target.value })}
+        >
+          <Radio value>Show</Radio>
+          <Radio value={false}>Hide</Radio>
+        </Radio.Group>
+      </Panel>
+      <Panel header='Metadata tracks' key='metadataTracks'>
+        <HeatmapMetadataTracksSettings componentType={plotUuid} />
+      </Panel>
+      <Panel header='Group by' key='groupBy'>
+        <HeatmapGroupBySettings componentType={plotUuid} />
+      </Panel>
+    </>
+  );
 
   return (
     <div style={{ paddingLeft: 32, paddingRight: 32 }}>
@@ -325,7 +430,7 @@ const MarkerHeatmap = ({ experimentId }) => {
       <Row gutter={16}>
         <Col span={16}>
           <Space direction='vertical' style={{ width: '100%' }}>
-            <Collapse defaultActiveKey={['1']}>
+            <Collapse defaultActiveKey='1'>
               <Panel header='Preview' key='1'>
                 <center>
                   {renderPlot()}
@@ -336,17 +441,13 @@ const MarkerHeatmap = ({ experimentId }) => {
         </Col>
         <Col span={8}>
           <Space direction='vertical' style={{ width: '100%' }}>
-            <HeatmapControls
-              selectedGenes={config.selectedGenes}
-              onUpdate={updatePlotWithChanges}
+            <PlotStyling
+              formConfig={plotStylingControlsConfig}
               config={config}
-              plotUuid={plotUuid}
-              markerHeatmap
-              onGeneEnter={onGeneEnter}
-              cellSets={cellSets}
-              onReset={onReset}
+              onUpdate={updatePlotWithChanges}
+              defaultActiveKey='gene-selection'
+              renderExtraPanels={renderExtraPanels}
             />
-            <PlotStyling formConfig={plotStylingControlsConfig} config={config} onUpdate={updatePlotWithChanges} defaultActiveKey={['5']} />
           </Space>
         </Col>
       </Row>

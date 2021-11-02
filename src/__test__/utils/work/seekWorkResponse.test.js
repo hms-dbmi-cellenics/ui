@@ -1,5 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
+import SocketMock from 'socket.io-mock';
 import { seekFromAPI } from '../../../utils/work/seekWorkResponse';
 
 /**
@@ -70,9 +71,23 @@ describe('seekFromAPI unit tests', () => {
       },
     );
 
-    socketConnectionMocks.mockOn.mockImplementation(async (x, f) => {
-      f({
-        response: { error: false },
+    const socketMock = new SocketMock();
+
+    socketConnectionMocks.mockEmit.mockImplementation((workRequestType, requestBody) => {
+      const responseBody = {
+        response: {
+          error: false,
+        },
+      };
+
+      // This is a mocked response emit response from server
+      socketMock.socketClient.emit(`WorkResponse-${requestBody.ETag}`, responseBody);
+    });
+
+    socketConnectionMocks.mockOn.mockImplementation((channel, socketCallback) => {
+      // This is a listener for the response from the server
+      socketMock.on(channel, (responseBody) => {
+        socketCallback(responseBody);
       });
     });
   });

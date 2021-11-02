@@ -73,7 +73,6 @@ const DataIntegration = (props) => {
         <FrequencyPlot
           experimentId={experimentId}
           config={config}
-          plotData={plotData}
           actions={actions}
         />
       ),
@@ -170,7 +169,7 @@ const DataIntegration = (props) => {
       ],
     },
     {
-      panelTitle: 'Axes and Margins',
+      panelTitle: 'Axes and margins',
       controls: ['axes'],
     },
     ...plotSpecificStylingControl[selectedPlot],
@@ -227,8 +226,6 @@ const DataIntegration = (props) => {
   }, [selectedPlot]);
 
   useEffect(() => {
-    // Do not update anything if the cell sets are stil loading or if
-    // the config does not exist yet.
     if (!selectedConfig || !plotData) {
       return;
     }

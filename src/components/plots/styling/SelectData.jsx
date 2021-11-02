@@ -5,16 +5,27 @@ import _ from 'lodash';
 import {
   Form,
   Select,
+  Skeleton,
 } from 'antd';
 
-import composeTree from '../../../../utils/composeTree';
+import { metadataKeyToName } from 'utils/data-management/metadataUtils';
+
+import { composeTree } from 'utils/cellSets';
+import InlineError from 'components/InlineError';
 
 const { Option, OptGroup } = Select;
+
 const SelectData = (props) => {
   const {
-    onUpdate, config, cellSets,
+    onUpdate, config, cellSets, axisName,
   } = props;
-  const { hierarchy, properties } = cellSets;
+
+  const {
+    loading: cellSetsLoading,
+    error: cellSetsError,
+    hierarchy,
+    properties,
+  } = cellSets;
 
   const getDefaultCellSetNotIn = (rootNodeKey) => {
     const fallBackRootNodesKeys = ['sample', 'louvain'];
@@ -45,7 +56,7 @@ const SelectData = (props) => {
     onUpdate({ selectedPoints: value });
   };
 
-  const tree = composeTree(hierarchy, properties);
+  const optionTree = composeTree(hierarchy, properties);
 
   const renderChildren = (rootNodeKey, children) => {
     if (!children || children.length === 0) { return (<></>); }
@@ -61,14 +72,23 @@ const SelectData = (props) => {
     });
   };
 
+  if (!config || cellSetsLoading) {
+    return <Skeleton.Input style={{ width: 200 }} active />;
+  }
+
+  if (cellSetsError) {
+    return <InlineError message='Error loading cell set' />;
+  }
+
   return (
     <>
       <div>
-        Select the Cell sets or Metadata that cells are grouped by (determined the x-axis):
-        {' '}
+        {`Select the Cell sets or Metadata that cells are grouped by (determines the ${axisName}-axis)`}
+        :
       </div>
       <Form.Item>
         <Select
+          aria-label='selectCellSets'
           defaultValue={config.selectedCellSet}
           style={{ width: 200 }}
           onChange={(value) => {
@@ -76,20 +96,20 @@ const SelectData = (props) => {
           }}
         >
           {
-            tree.map(({ key, name }) => (
-              <Option key={key}>
-                {name}
+            optionTree.map(({ key, name }) => (
+              <Option value={key} key={key}>
+                {metadataKeyToName(name)}
               </Option>
             ))
           }
         </Select>
       </Form.Item>
       <div>
-        Select the Cell sets or Metadata to be shown as points:
-        {' '}
+        Select the Cell sets or Metadata to be shown as data:
       </div>
       <Form.Item>
         <Select
+          aria-label='selectPoints'
           value={config.selectedPoints}
           style={{ width: 200 }}
           onChange={(value) => {
@@ -98,8 +118,8 @@ const SelectData = (props) => {
         >
           <Option key='All'>All</Option>
           {
-            tree.map(({ key, children }) => (
-              <OptGroup label={properties[key]?.name} key={key}>
+            optionTree.map(({ key, children }) => (
+              <OptGroup label={metadataKeyToName(properties[key]?.name)} key={key}>
                 {renderChildren(key, [...children])}
               </OptGroup>
             ))
@@ -109,9 +129,17 @@ const SelectData = (props) => {
     </>
   );
 };
+
 SelectData.propTypes = {
+  config: PropTypes.object,
   onUpdate: PropTypes.func.isRequired,
-  config: PropTypes.object.isRequired,
   cellSets: PropTypes.object.isRequired,
+  axisName: PropTypes.oneOf(['x', 'y']),
 };
+
+SelectData.defaultProps = {
+  config: null,
+  axisName: 'y',
+};
+
 export default SelectData;
