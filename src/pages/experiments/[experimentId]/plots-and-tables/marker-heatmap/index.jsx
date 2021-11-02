@@ -18,7 +18,7 @@ import PropTypes from 'prop-types';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
 import endUserMessages from 'utils/endUserMessages';
 
-import { getCellSets, getCellSetsHierarchyByKey, getCellSetsHierarchyByType } from 'redux/selectors';
+import { getCellSets, getCellSetsHierarchyByKeys, getCellSetsHierarchyByType } from 'redux/selectors';
 import getSelectOptions from 'utils/plots/getSelectOptions';
 
 import HeatmapGroupBySettings from 'components/data-exploration/heatmap/HeatmapGroupBySettings';
@@ -59,10 +59,10 @@ const MarkerHeatmap = ({ experimentId }) => {
   const cellSets = useSelector(getCellSets());
   const { hierarchy, properties } = cellSets;
 
-  const cellOptions = useSelector(getCellSetsHierarchyByType(['cellSets']));
+  const cellOptions = useSelector(getCellSetsHierarchyByType('cellSets'));
 
   const selectedCellSetClassAvailable = useSelector(
-    getCellSetsHierarchyByKey([config?.selectedCellSet]),
+    getCellSetsHierarchyByKeys([config?.selectedCellSet]),
   ).length;
 
   const loadedMarkerGenes = useSelector(
@@ -430,7 +430,7 @@ const MarkerHeatmap = ({ experimentId }) => {
       <Row gutter={16}>
         <Col span={16}>
           <Space direction='vertical' style={{ width: '100%' }}>
-            <Collapse defaultActiveKey={['1']}>
+            <Collapse defaultActiveKey='1'>
               <Panel header='Preview' key='1'>
                 <center>
                   {renderPlot()}
@@ -445,7 +445,7 @@ const MarkerHeatmap = ({ experimentId }) => {
               formConfig={plotStylingControlsConfig}
               config={config}
               onUpdate={updatePlotWithChanges}
-              defaultActiveKey={['gene-selection']}
+              defaultActiveKey='gene-selection'
               renderExtraPanels={renderExtraPanels}
             />
           </Space>

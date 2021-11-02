@@ -3,10 +3,10 @@ import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
 import { Vega } from 'react-vega';
 import { generateSpec } from 'utils/plotSpecs/generateDotPlotSpec';
-import { getCellSets, getCellSetsHierarchyByKey } from 'redux/selectors';
+import { getCellSets, getCellSetsHierarchyByKeys } from 'redux/selectors';
 
 import PlatformError from 'components/PlatformError';
-import { fastLoad } from 'components/Loader';
+import Loader from 'components/Loader';
 
 // Mock data, delete this once we have the real data
 const generateMockData = (numGenes, numClusters) => {
@@ -29,10 +29,10 @@ const generateMockData = (numGenes, numClusters) => {
 const plotData = generateMockData(3, 14);
 
 const DotPlot = (props) => {
-  const { config } = props;
+  const { config, experimentId } = props;
 
   const { loading: cellSetsLoading, error: cellSetsError } = useSelector(getCellSets());
-  const cellSet = useSelector(getCellSetsHierarchyByKey([config.selectedCellSet]))[0];
+  const cellSet = useSelector(getCellSetsHierarchyByKeys([config.selectedCellSet]))[0];
   const numClusters = cellSet ? cellSet.children.length : 0;
 
   const actions = {
@@ -59,7 +59,7 @@ const DotPlot = (props) => {
     if (cellSetsLoading) {
       return (
         <center>
-          {fastLoad()}
+          <Loader experimentId={experimentId} />
         </center>
       );
     }

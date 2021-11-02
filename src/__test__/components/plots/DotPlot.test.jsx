@@ -11,7 +11,7 @@ import '__test__/test-utils/mockWorkerBackend';
 
 import DotPlot from 'components/plots/DotPlot';
 
-import createComponentFactory from '__test__/test-utils/componentFactory';
+import createTestComponentFactory from '__test__/test-utils/testComponentFactory';
 import { makeStore } from 'redux/store';
 import { loadCellSets } from 'redux/actions/cellSets';
 
@@ -33,7 +33,7 @@ const defaultProps = {
   config: initialPlotConfigStates.dotPlot,
 };
 
-const dotPlotFactory = createComponentFactory(DotPlot, defaultProps);
+const dotPlotFactory = createTestComponentFactory(DotPlot, defaultProps);
 
 const plotUuid = 'dotPlotMain';
 
