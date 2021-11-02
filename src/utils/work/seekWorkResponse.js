@@ -20,7 +20,9 @@ const seekFromS3 = async (ETag) => {
     return null;
   }
 
-  const response = await storageResp.json();
+  const response = await storageResp.text();
+  console.log('responseDebug');
+  console.log(response);
 
   return response;
 };

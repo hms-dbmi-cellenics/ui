@@ -189,7 +189,12 @@ const fetchWork = async (
   // `const { data: responseData, cacheable } = response;`
   // (12 hours after the first release should be enough to safely remove the line)
   // const responseData = transformToOldMethodIfCachedResponseIsOld(response);
-  const responseData = JSON.parse(response);
+
+  console.log('about to parse');
+  const responseData = JSON.parse(JSON.parse(response));
+
+  console.log('parsed');
+  console.log(responseData);
 
   // if (cacheable) {
   if (false) {
