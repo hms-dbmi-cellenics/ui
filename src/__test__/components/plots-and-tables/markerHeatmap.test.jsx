@@ -23,7 +23,7 @@ import mockAPI, {
   workerResponse,
 } from '__test__/test-utils/mockAPI';
 
-import createComponentFactory from '__test__/test-utils/componentFactory';
+import createTestComponentFactory from '__test__/test-utils/testComponentFactory';
 import { makeStore } from 'redux/store';
 
 import MarkerHeatmap from 'pages/experiments/[experimentId]/plots-and-tables/marker-heatmap/index';
@@ -66,7 +66,7 @@ const defaultResponses = _.merge(
 
 const defaultProps = { experimentId };
 
-const heatmapPageFactory = createComponentFactory(MarkerHeatmap, defaultProps);
+const heatmapPageFactory = createTestComponentFactory(MarkerHeatmap, defaultProps);
 
 // Helper function to get displayed genes from the gene input
 const getDisplayedGenes = (container) => {

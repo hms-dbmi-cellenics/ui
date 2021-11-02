@@ -17,7 +17,7 @@ import mockAPI, {
   delayedResponse,
 } from '__test__/test-utils/mockAPI';
 
-import createComponentFactory from '__test__/test-utils/componentFactory';
+import createTestComponentFactory from '__test__/test-utils/testComponentFactory';
 import { makeStore } from 'redux/store';
 
 import { loadBackendStatus } from 'redux/actions/backendStatus';
@@ -40,7 +40,7 @@ const defaultMockResponses = _.merge(
 );
 
 const defaultProps = { experimentId };
-const dotPlotPageFactory = createComponentFactory(DotPlotPage, defaultProps);
+const dotPlotPageFactory = createTestComponentFactory(DotPlotPage, defaultProps);
 
 let storeState = null;
 

@@ -6,7 +6,7 @@ import { act } from 'react-dom/test-utils';
 
 import InlineError from 'components/InlineError';
 
-import createComponentFactory from '__test__/test-utils/componentFactory';
+import createTestComponentFactory from '__test__/test-utils/testComponentFactory';
 
 const mockOnClick = jest.fn();
 
@@ -15,7 +15,7 @@ const defaultProps = {
   actionable: false,
 };
 
-const inlineErrorFactory = createComponentFactory(InlineError, defaultProps);
+const inlineErrorFactory = createTestComponentFactory(InlineError, defaultProps);
 
 const message = 'This is an error message';
 

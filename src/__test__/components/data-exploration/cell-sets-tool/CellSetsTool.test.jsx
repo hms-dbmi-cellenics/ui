@@ -12,7 +12,7 @@ import { Provider } from 'react-redux';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import { fetchWork } from 'utils/work/fetchWork';
 
-import createComponentFactory from '__test__/test-utils/componentFactory';
+import createTestComponentFactory from '__test__/test-utils/testComponentFactory';
 import { makeStore } from 'redux/store';
 
 import CellSetsTool from 'components/data-exploration/cell-sets-tool/CellSetsTool';
@@ -48,7 +48,7 @@ const defaultProps = {
   height: 50,
 };
 
-const cellSetsToolFactory = createComponentFactory(CellSetsTool, defaultProps);
+const cellSetsToolFactory = createTestComponentFactory(CellSetsTool, defaultProps);
 
 let storeState;
 describe('CellSetsTool', () => {
