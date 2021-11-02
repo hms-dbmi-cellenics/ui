@@ -11,11 +11,16 @@ import { calculateZScore } from '../postRequestProcessing';
 const createObjectHash = (object) => hash.MD5(object);
 
 const transformToOldMethodIfCachedResponseIsOld = (response) => {
-  if (!response.data) {
-    return { data: JSON.parse(response.results[0].body), cacheable: response.response?.cacheable };
-  }
+  console.log('responseDebug');
+  console.log(response);
+  // if (!response.data) {
+  // console.log('ENTRE ACA ESTA MAL');
+  // return { data: JSON.parse(response.results[0].body), cacheable: response.response?.cacheable };
+  // }
 
-  return response;
+  console.log('QONDA');
+
+  return JSON.parse(response);
 };
 
 const decomposeBody = async (body, experimentId) => {
@@ -97,7 +102,10 @@ const fetchGeneExpressionWork = async (
   // This line should eventually be replaced by:
   // `const { data: responseData } = response;`
   // (12 hours after the first release should be enough to safely remove the line)
-  const { data: responseData } = transformToOldMethodIfCachedResponseIsOld(response);
+  const responseData = transformToOldMethodIfCachedResponseIsOld(response);
+
+  console.log('responseDataDebug');
+  console.log(responseData);
 
   if (!responseData[missingGenes[0]]?.error) {
     // Preprocessing data before entering cache
@@ -178,9 +186,10 @@ const fetchWork = async (
   // This line should eventually be replaced by:
   // `const { data: responseData, cacheable } = response;`
   // (12 hours after the first release should be enough to safely remove the line)
-  const { data: responseData, cacheable } = transformToOldMethodIfCachedResponseIsOld(response);
+  const responseData = transformToOldMethodIfCachedResponseIsOld(response);
 
-  if (cacheable) {
+  // if (cacheable) {
+  if (false) {
     await cache.set(ETag, responseData);
   }
 
