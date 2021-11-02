@@ -8,13 +8,13 @@ import { loadProjects } from 'redux/actions/projects';
 const { Text } = Typography;
 const NotifyByEmail = (props) => {
   const { experimentId } = props;
-  const experiment = useSelector((state) => state.experiments[experimentId]) || [];
+  const experiment = useSelector((state) => state.experiments[experimentId]) || false;
   const dispatch = useDispatch();
   const changeEmailNotification = (value) => {
     dispatch(updateExperiment(experimentId, { notifyByEmail: value }));
   };
-  const experiments = useSelector((state) => state.experiments);
   const { activeProjectUuid } = useSelector((state) => state?.projects?.meta) || false;
+
   useEffect(() => {
     if (!activeProjectUuid) {
       dispatch(loadProjects());
@@ -22,7 +22,7 @@ const NotifyByEmail = (props) => {
   }, []);
 
   useEffect(() => {
-    if (!experiments.ids?.length && activeProjectUuid) {
+    if (!experiment && activeProjectUuid) {
       dispatch(loadExperiments(activeProjectUuid));
     }
   }, [activeProjectUuid]);

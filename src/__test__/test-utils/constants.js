@@ -2,6 +2,7 @@ export default {
   EXPERIMENT_ID: 'testae48e318dab9a1bd0bexperiment',
   EXPERIMENT_NAME: 'Test Experiment',
   PROJECT_ID: 'test24b6-8600-test-mock-63822d2fmock',
+  PROJECT_NAME: 'Mock project',
   SAMPLE_ID: 'test9188-d682-test-mock-cb6d644cmock',
   API_ENDPOINT: /^http?:\/\/localhost:3000.*$/,
   S3_ENDPOINT: 'http://mock.s3.amazonaws.com',
