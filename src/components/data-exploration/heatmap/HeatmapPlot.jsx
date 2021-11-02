@@ -63,6 +63,8 @@ const HeatmapPlot = (props) => {
   const [selectedGene, setSelectedGene] = useState(null);
 
   const cellSets = useSelector(getCellSets());
+  const selectedCell = useSelector((state) => state.cellInfo.cellName);
+
   const {
     hierarchy: cellSetsHierarchy,
     loading: cellSetsLoading,
