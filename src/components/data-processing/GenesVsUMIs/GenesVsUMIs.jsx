@@ -133,7 +133,7 @@ const GenesVsUMIs = (props) => {
         </Col>
 
         <Col flex='1 0px'>
-          <Collapse defaultActiveKey={['settings']}>
+          <Collapse defaultActiveKey='settings'>
             <Space direction='vertical' style={{ width: '100%' }} />
             <Panel header='Filtering Settings' key='settings'>
               <CalculationConfigContainer

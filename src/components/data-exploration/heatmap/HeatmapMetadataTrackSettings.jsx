@@ -12,38 +12,24 @@ import {
 
 import { updatePlotConfig } from '../../../redux/actions/componentConfig';
 import ReorderableList from '../../ReorderableList';
+import { getCellSetsHierarchy } from '../../../redux/selectors';
 
 const HeatmapMetadataTrackSettings = (props) => {
   const dispatch = useDispatch();
 
   const { componentType } = props;
+  const selectedHierarchy = useSelector(getCellSetsHierarchy());
 
-  const cellSets = useSelector((state) => state.cellSets);
   const selectedTracks = useSelector(
     (state) => state.componentConfig[componentType].config.selectedTracks,
   );
 
-  const getCellSets = (category) => {
-    if (!cellSets || cellSets.loading) {
-      return [];
-    }
-
-    return cellSets.hierarchy.map(
-      ({ key }) => (
-        { key, name: cellSets.properties[key].name, type: cellSets.properties[key].type }
-      ),
-    ).filter(
-      ({ type }) => category.includes(type),
-    );
-  };
-
-  const getTrackData = () => getCellSets(
-    ['cellSets', 'metadataCategorical'],
-  ).map(
+  const getTrackData = () => selectedHierarchy.map(
     (data) => ({ selected: selectedTracks.includes(data.key), key: data.key }),
   );
 
   const isInitialRenderRef = useRef(true);
+
   const [trackData, setTrackData] = useState(getTrackData());
 
   const getUpdatedTrackData = () => _.unionBy(
@@ -54,16 +40,13 @@ const HeatmapMetadataTrackSettings = (props) => {
 
   useEffect(() => {
     // Prevent initial dispatch when object appears
-    if (isInitialRenderRef.current) {
-      return;
-    }
+    if (isInitialRenderRef.current) return;
 
-    // Do not re-render if visible track data hasn't changed
     const newTrackData = getUpdatedTrackData();
     if (_.isEqual(trackData, newTrackData)) return;
 
-    setTrackData(getUpdatedTrackData());
-  }, [cellSets.hierarchy]);
+    setTrackData(newTrackData);
+  }, [selectedHierarchy]);
 
   const getEnabledTracks = () => trackData.filter((entry) => entry.selected).map((o) => o.key);
 
@@ -111,9 +94,8 @@ const HeatmapMetadataTrackSettings = (props) => {
       }}
     />
   );
-
   const rightItem = (trackDataItem) => (
-    cellSets.properties[trackDataItem.key].name
+    selectedHierarchy.filter((current) => current.key === trackDataItem.key)[0].name
   );
 
   return (

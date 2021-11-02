@@ -1,3 +1,4 @@
+/* eslint-disable import/no-unresolved */
 import React, {
   useRef, useEffect, useState, useCallback,
 } from 'react';
@@ -8,6 +9,9 @@ import {
   Empty, Typography, Skeleton,
 } from 'antd';
 import _ from 'lodash';
+import { getCellSets } from 'redux/selectors';
+import spec from '../../../utils/heatmapSpec';
+import VegaHeatmap from './VegaHeatmap';
 import PlatformError from '../../PlatformError';
 import { updateCellInfo } from '../../../redux/actions/cellInfo';
 import { loadGeneExpression, loadMarkerGenes } from '../../../redux/actions/genes';
@@ -58,11 +62,12 @@ const HeatmapPlot = (props) => {
 
   const [selectedGene, setSelectedGene] = useState(null);
 
-  const cellSets = useSelector((state) => state.cellSets);
-  const cellSetsHierarchy = useSelector((state) => state.cellSets.hierarchy);
-  const cellSetsLoading = useSelector((state) => state.cellSets.loading);
-  const cellSetsHidden = useSelector((state) => state.cellSets.hidden);
-  const selectedCell = useSelector((state) => state.cellInfo.cellName);
+  const cellSets = useSelector(getCellSets());
+  const {
+    hierarchy: cellSetsHierarchy,
+    loading: cellSetsLoading,
+    hidden: cellSetsHidden,
+  } = cellSets;
 
   const heatmapSettings = useSelector(
     (state) => state.componentConfig[COMPONENT_TYPE]?.config,

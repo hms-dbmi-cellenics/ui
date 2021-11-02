@@ -1,14 +1,14 @@
 import React from 'react';
-import { configure, mount } from 'enzyme';
+import { mount } from 'enzyme';
 import { Provider } from 'react-redux';
 import { act } from 'react-dom/test-utils';
-import Adapter from 'enzyme-adapter-react-16';
 import thunk from 'redux-thunk';
 import configureMockStore from 'redux-mock-store';
 import { Radio } from 'antd';
 
 import { UPDATE_CONFIG } from '../../../../redux/actionTypes/componentConfig';
 import HeatmapLegendVisibilitySettings from '../../../../components/data-exploration/heatmap/HeatmapLegendVisibilitySettings';
+import '__test__/test-utils/setupTests';
 
 const initialState = {
   cellSets: {
@@ -76,7 +76,6 @@ const initialState = {
 };
 
 const mockStore = configureMockStore([thunk]);
-configure({ adapter: new Adapter() });
 
 describe('HeatmapLegendVisibilitySettings', () => {
   let component; let store;

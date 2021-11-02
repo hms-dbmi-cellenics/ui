@@ -1,3 +1,4 @@
+/* eslint-disable import/no-unresolved */
 /* eslint-disable no-param-reassign */
 import React, { useEffect } from 'react';
 import Link from 'next/link';
@@ -12,20 +13,20 @@ import {
 } from 'antd';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
-import SelectCellSets from '../../../../../components/plots/styling/frequency/SelectCellSets';
-import Header from '../../../../../components/plots/Header';
+import { getCellSets } from 'redux/selectors';
+import SelectCellSets from 'components/plots/styling/frequency/SelectCellSets';
+import Header from 'components/plots/Header';
 
-import PlotStyling from '../../../../../components/plots/styling/PlotStyling';
+import PlotStyling from 'components/plots/styling/PlotStyling';
 import {
   updatePlotConfig,
   loadPlotConfig,
-} from '../../../../../redux/actions/componentConfig';
-import PlatformError from '../../../../../components/PlatformError';
-import loadCellSets from '../../../../../redux/actions/cellSets/loadCellSets';
+} from 'redux/actions/componentConfig';
+import PlatformError from 'components/PlatformError';
+import loadCellSets from 'redux/actions/cellSets/loadCellSets';
 
-import FrequencyPlot from '../../../../../components/plots/FrequencyPlot';
-
-import Loader from '../../../../../components/Loader';
+import FrequencyPlot from 'components/plots/FrequencyPlot';
+import Loader from 'components/Loader';
 
 const { Panel } = Collapse;
 const plotUuid = 'frequencyPlotMain';
@@ -35,13 +36,13 @@ const route = {
   breadcrumbName: 'Frequency plot',
 };
 
-const frequencyPlot = ({ experimentId }) => {
+const FrequencyPlotPage = ({ experimentId }) => {
   const dispatch = useDispatch();
   const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
-  const cellSets = useSelector((state) => state.cellSets);
-
+  const cellSets = useSelector(getCellSets());
   const {
-    loading, error, hierarchy, properties,
+    loading: cellSetsLoading,
+    error: cellSetsError,
   } = cellSets;
 
   useEffect(() => {
@@ -49,28 +50,7 @@ const frequencyPlot = ({ experimentId }) => {
     dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
   }, []);
 
-  const getCellOptions = (type) => {
-    const filteredOptions = hierarchy.filter((element) => (
-      properties[element.key].type === type
-    ));
-    if (!filteredOptions.length) {
-      return [];
-    }
-    return filteredOptions;
-  };
-
-  const optionsMetadata = getCellOptions('metadataCategorical');
-  const optionsCellSets = getCellOptions('cellSets');
   const dataExplorationPath = '/experiments/[experimentId]/data-exploration';
-
-  useEffect(() => {
-    if (!loading && config?.proportionGrouping === '') {
-      updatePlotWithChanges({
-        xAxisGrouping: optionsMetadata[0]?.key,
-        proportionGrouping: optionsCellSets[0].key,
-      });
-    }
-  });
 
   const updatePlotWithChanges = (obj) => {
     dispatch(updatePlotConfig(plotUuid, obj));
@@ -92,7 +72,7 @@ const frequencyPlot = ({ experimentId }) => {
       ],
     },
     {
-      panelTitle: 'Axes and Margins',
+      panelTitle: 'Axes and margins',
       controls: ['axes'],
     },
     {
@@ -123,15 +103,15 @@ const frequencyPlot = ({ experimentId }) => {
   }
 
   const renderPlot = () => {
-    if (error) {
+    if (cellSetsError) {
       return (
         <PlatformError
-          description={error}
+          description={cellSetsError}
           onClick={() => loadCellSets(experimentId)}
         />
       );
     }
-    if (!config || loading) {
+    if (!config || cellSetsLoading) {
       return (
         <center>
           <Loader experimentId={experimentId} />
@@ -141,7 +121,10 @@ const frequencyPlot = ({ experimentId }) => {
 
     return (
       <center>
-        <FrequencyPlot hierarchy={hierarchy} properties={properties} config={config} />
+        <FrequencyPlot
+          experimentId={experimentId}
+          config={config}
+        />
       </center>
     );
   };
@@ -158,12 +141,10 @@ const frequencyPlot = ({ experimentId }) => {
 
   const renderExtraPanels = () => (
     <>
-      <Panel header='Select Data' key='20'>
+      <Panel header='Select data' key='20'>
         <SelectCellSets
           config={config}
           onUpdate={updatePlotWithChanges}
-          optionsMetadata={optionsMetadata}
-          optionsCellSets={optionsCellSets}
         />
       </Panel>
       <Panel header='Plot Type' key='1'>
@@ -188,7 +169,7 @@ const frequencyPlot = ({ experimentId }) => {
       <Row gutter={16}>
         <Col span={16}>
           <Space direction='vertical' style={{ width: '100%' }}>
-            <Collapse defaultActiveKey={['1']}>
+            <Collapse defaultActiveKey='1'>
               <Panel header='Preview' key='1'>
                 {renderPlot()}
               </Panel>
@@ -210,8 +191,8 @@ const frequencyPlot = ({ experimentId }) => {
   );
 };
 
-FrequencyPlot.propTypes = {
+FrequencyPlotPage.propTypes = {
   experimentId: PropTypes.string.isRequired,
 };
 
-export default frequencyPlot;
+export default FrequencyPlotPage;

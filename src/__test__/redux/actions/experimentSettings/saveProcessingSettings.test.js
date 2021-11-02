@@ -7,7 +7,7 @@ import {
 import saveProcessingSettings from '../../../../redux/actions/experimentSettings/processingConfig/saveProcessingSettings';
 import generateExperimentSettingsMock from '../../../test-utils/experimentSettings.mock';
 
-jest.mock('localforage');
+import '__test__/test-utils/setupTests';
 
 const mockStore = configureStore([thunk]);
 

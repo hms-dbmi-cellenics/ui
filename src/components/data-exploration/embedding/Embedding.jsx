@@ -26,10 +26,10 @@ import {
   colorByGeneExpression,
   colorInterpolator,
 } from '../../../utils/embeddingPlotHelperFunctions/helpers';
-import { isBrowser } from '../../../utils/environment';
 import PlatformError from '../../PlatformError';
 
 import { loadProcessingSettings } from '../../../redux/actions/experimentSettings';
+import { getCellSets } from '../../../redux/selectors';
 
 const Scatterplot = dynamic(
   () => import('vitessce/dist/umd/production/scatterplot.min').then((mod) => mod.Scatterplot),
@@ -59,10 +59,11 @@ const Embedding = (props) => {
 
   const focusData = useSelector((state) => state.cellInfo.focus);
   const focusedExpression = useSelector((state) => state.genes.expression.data[focusData.key]);
-
-  const cellSetProperties = useSelector((state) => state.cellSets.properties);
-  const cellSetHierarchy = useSelector((state) => state.cellSets.hierarchy);
-  const cellSetHidden = useSelector((state) => state.cellSets.hidden);
+  const {
+    properties: cellSetProperties,
+    hierarchy: cellSetHierarchy,
+    hidden: cellSetHidden,
+  } = useSelector(getCellSets());
 
   const selectedCell = useSelector((state) => state.cellInfo.cellName);
   const expressionLoading = useSelector((state) => state.genes.expression.loading);
@@ -106,11 +107,8 @@ const Embedding = (props) => {
 
       // Cell sets are easy, just return the appropriate color and set them up.
       case 'cellSets': {
-        if (isBrowser) {
-          setCellColors(renderCellSetColors(key, cellSetHierarchy, cellSetProperties));
-          setCellInfoVisible(false);
-        }
-
+        setCellColors(renderCellSetColors(key, cellSetHierarchy, cellSetProperties));
+        setCellInfoVisible(false);
         return;
       }
 

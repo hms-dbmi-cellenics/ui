@@ -10,10 +10,10 @@ import {
 import { InfoCircleOutlined } from '@ant-design/icons';
 
 import PropTypes from 'prop-types';
-import { loadCellSets } from '../../../redux/actions/cellSets';
-import { setComparisonGroup, setComparisonType } from '../../../redux/actions/differentialExpression';
-
-import composeTree from '../../../utils/composeTree';
+import { loadCellSets } from 'redux/actions/cellSets';
+import { setComparisonGroup, setComparisonType } from 'redux/actions/differentialExpression';
+import { getCellSets } from 'redux/selectors';
+import { composeTree } from 'utils/cellSets';
 
 const { Option, OptGroup } = Select;
 
@@ -26,9 +26,7 @@ const DiffExprCompute = (props) => {
   } = props;
 
   const dispatch = useDispatch();
-
-  const properties = useSelector((state) => state.cellSets.properties);
-  const hierarchy = useSelector((state) => state.cellSets.hierarchy);
+  const { properties, hierarchy } = useSelector(getCellSets());
   const [isFormValid, setIsFormValid] = useState(false);
   const [numSamples, setNumSamples] = useState(1);
   const comparisonGroup = useSelector((state) => state.differentialExpression.comparison.group);

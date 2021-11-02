@@ -1,14 +1,12 @@
 import React from 'react';
 import { Button, Select } from 'antd';
-import { configure, mount, shallow } from 'enzyme';
-import Adapter from 'enzyme-adapter-react-16';
+import { mount, shallow } from 'enzyme';
 import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import Dropzone from 'react-dropzone';
 import FileUploadModal from '../../../components/data-management/FileUploadModal';
-
-configure({ adapter: new Adapter() });
+import '__test__/test-utils/setupTests';
 
 const mockStore = configureMockStore([thunk]);
 const store = mockStore({});

@@ -1,7 +1,6 @@
 import React from 'react';
 import * as rtl from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import preloadAll from 'jest-next-dynamic';
 import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
@@ -14,8 +13,8 @@ import {
 import initialExperimentState from '../../../redux/reducers/experimentSettings/initialState';
 import genes from '../../../redux/reducers/genes/initialState';
 import ViolinPlot from '../../../components/plots/ViolinPlot';
+import '__test__/test-utils/setupTests';
 
-jest.mock('localforage');
 const mockStore = configureMockStore([thunk]);
 
 const experimentId = 'mockExperimentId';
@@ -24,6 +23,7 @@ const plotUuid = 'ViolinMain'; // At some point this will stop being hardcoded
 const defaultStore = {
   cellSets: {
     hierarchy: [{ key: 'louvain' }],
+    properties: {},
   },
   componentConfig: initialComponentConfigStates,
   embeddings: {},
@@ -41,9 +41,6 @@ const defaultStore = {
 describe('ViolinPlot', () => {
   let store = null;
 
-  beforeAll(async () => {
-    await preloadAll();
-  });
   beforeEach(() => {
     jest.clearAllMocks(); // Do not mistake with resetAllMocks()!
   });
@@ -70,6 +67,7 @@ describe('ViolinPlot', () => {
     const storeContents = {
       ..._.cloneDeep(defaultStore),
       cellSets: {
+        hierarchy: [],
         error: 'Broken CellSet',
       },
     };

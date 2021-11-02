@@ -1,7 +1,5 @@
 import React from 'react';
-import { mount, configure } from 'enzyme';
-import Adapter from 'enzyme-adapter-react-16';
-import preloadAll from 'jest-next-dynamic';
+import { mount } from 'enzyme';
 import { act } from 'react-dom/test-utils';
 import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
@@ -12,12 +10,7 @@ import DiffExprResults from '../../../../components/data-exploration/differentia
 import initialState from '../../../../redux/reducers/differentialExpression/initialState';
 import genesInitialState from '../../../../redux/reducers/genes/initialState';
 import cellSetsInitialState from '../../../../redux/reducers/cellSets/initialState';
-
-jest.mock('localforage');
-jest.mock('../../../../utils/environment', () => ({
-  __esModule: true,
-  isBrowser: () => false,
-}));
+import '__test__/test-utils/setupTests';
 
 const mockStore = configureMockStore([thunk]);
 
@@ -58,11 +51,6 @@ const emptyStore = mockStore(emptyState);
 const filledStore = mockStore(filledState);
 
 describe('DiffExprManager', () => {
-  beforeAll(async () => {
-    await preloadAll();
-  });
-
-  configure({ adapter: new Adapter() });
   it('renders correctly a compute view', () => {
     const component = mount(
       <Provider store={emptyStore}>

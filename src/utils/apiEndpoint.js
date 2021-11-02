@@ -13,6 +13,7 @@ const getApiEndpoint = (location) => {
     return 'https://api.scp.biomage.net';
   } catch (error) {
     console.error('Failed to get API endpoint.');
+    console.error(error);
   }
 };
 

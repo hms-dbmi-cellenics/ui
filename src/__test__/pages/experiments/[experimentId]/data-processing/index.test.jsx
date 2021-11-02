@@ -1,41 +1,72 @@
 import React from 'react';
-import { mount, configure } from 'enzyme';
+import { screen, render } from '@testing-library/react';
+import '@testing-library/jest-dom';
+import userEvent from '@testing-library/user-event';
 import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
-import waitForActions from 'redux-mock-store-await-actions';
-import Adapter from 'enzyme-adapter-react-16';
-import { act } from 'react-dom/test-utils';
 import thunk from 'redux-thunk';
 import _ from 'lodash';
-import { Modal } from 'antd';
-import DataProcessingPage from '../../../../../pages/experiments/[experimentId]/data-processing/index';
 
-import generateExperimentSettingsMock from '../../../../test-utils/experimentSettings.mock';
-import { initialPlotConfigStates } from '../../../../../redux/reducers/componentConfig/initialState';
-import initialCellSetsState from '../../../../../redux/reducers/cellSets/initialState';
+import createTestComponentFactory from '__test__/test-utils/testComponentFactory';
+import DataProcessingPage from 'pages/experiments/[experimentId]/data-processing/index';
 
-import { BACKEND_STATUS_LOADING } from '../../../../../redux/actionTypes/backendStatus';
+import { initialPlotConfigStates } from 'redux/reducers/componentConfig/initialState';
+import initialCellSetsState from 'redux/reducers/cellSets/initialState';
+import initialSamplesState, { sampleTemplate } from 'redux/reducers/samples/initialState';
 
-import { getBackendStatus } from '../../../../../redux/selectors';
+import { getBackendStatus } from 'redux/selectors';
+import '__test__/test-utils/setupTests';
 
-configure({ adapter: new Adapter() });
+import { runPipeline } from 'redux/actions/pipeline';
+import generateExperimentSettingsMock from '__test__/test-utils/experimentSettings.mock';
 
-jest.mock('localforage');
-jest.mock('../../../../../redux/selectors');
+jest.mock('components/UserButton', () => () => <></>);
 
-jest.mock('../../../../../utils/AppRouteProvider', () => ({
-  useAppRouter: jest.fn().mockReturnValue(() => {}),
+// Mock all filter components
+jest.mock('components/data-processing/CellSizeDistribution/CellSizeDistribution', () => () => <></>);
+jest.mock('components/data-processing/MitochondrialContent/MitochondrialContent', () => () => <></>);
+jest.mock('components/data-processing/GenesVsUMIs/GenesVsUMIs', () => () => <></>);
+jest.mock('components/data-processing/DoubletScores/DoubletScores', () => () => <></>);
+jest.mock('components/data-processing/DataIntegration/DataIntegration', () => () => <></>);
+jest.mock('components/data-processing/ConfigureEmbedding/ConfigureEmbedding', () => () => <></>);
+
+const mockNavigateTo = jest.fn();
+
+jest.mock('utils/AppRouteProvider', () => ({
+  useAppRouter: jest.fn(() => mockNavigateTo),
+}));
+
+jest.mock('redux/selectors');
+
+jest.mock('redux/actions/pipeline', () => ({
+  runPipeline: jest.fn(() => ({ type: 'RUN_PIPELINE' })),
 }));
 
 const mockStore = configureMockStore([thunk]);
 
-const sampleIds = ['sample-1', 'sample-2'];
+const sampleIds = ['sample-1'];
 
 const initialExperimentState = generateExperimentSettingsMock(sampleIds);
 
+getBackendStatus.mockImplementation(() => () => ({
+  loading: false,
+  error: false,
+  status: {
+    pipeline: {
+      status: 'SUCCEEDED',
+      completedSteps: [
+        'CellSizeDistributionFilter',
+        'MitochondrialContentFilter',
+        'ClassifierFilter',
+        'NumGenesVsNumUmisFilter',
+        'DoubletScoresFilter',
+      ],
+    },
+  },
+}));
+
 const getStore = (experimentId, settings = {}) => {
   const initialState = {
-    notifications: {},
     experimentSettings: {
       ...initialExperimentState,
       info: {
@@ -57,16 +88,15 @@ const getStore = (experimentId, settings = {}) => {
     componentConfig: { ...initialPlotConfigStates },
     cellSets: { ...initialCellSetsState },
     samples: {
+      ...initialSamplesState,
       ids: sampleIds,
       meta: {
         loading: false,
         error: false,
       },
       'sample-1': {
+        ...sampleTemplate,
         name: 'sample-1',
-      },
-      'sample-2': {
-        name: 'sample-2',
       },
     },
   };
@@ -76,148 +106,218 @@ const getStore = (experimentId, settings = {}) => {
   return store;
 };
 
-describe('DataProcessingPage', () => {
-  const experimentData = {};
+const experimentId = 'experimentId';
+const experimentData = {};
+const route = `localhost:3000/${experimentId}/data-processing`;
 
-  beforeEach(() => {
+const defaultProps = {
+  experimentId,
+  experimentData,
+  route,
+};
+
+const dataProcessingPageFactory = createTestComponentFactory(DataProcessingPage, defaultProps);
+
+describe('DataProcessingPage', () => {
+  it('Renders the first page correctly', () => {
+    const store = getStore();
+
+    render(
+      <Provider store={store}>
+        {dataProcessingPageFactory()}
+      </Provider>,
+    );
+
+    // It contains the title Data Processing
+    const titles = screen.getAllByText('Data Processing');
+
+    // One for breadcrumb, one for title
+    expect(titles).toHaveLength(2);
+
+    // It shows the first filter step - Classifier filter
+    expect(screen.getByText(/Classifier/i)).toBeInTheDocument();
+
+    // It shows a Disable filter button, which should be enabled by default
+    expect(screen.getByText(/Disable/i).closest('button')).toBeEnabled();
+
+    // It shows the status indicator (which has "Status wording")
+    expect(screen.getByText(/status/i)).toBeInTheDocument();
+
+    // gets the previous button
+
+    const prevButton = screen.getByRole('img', { name: 'left' });
+    expect(prevButton.closest('button')).toBeInTheDocument();
+
+    // It contains a next button - the first button showing the "right" arrow image
+    const nextButton = screen.getAllByRole('img', { name: 'right' })[0];
+    expect(nextButton.closest('button')).toBeInTheDocument();
+  });
+
+  it('Last button of the filter should redirect to Data Exploration', () => {
+    const store = getStore();
+
+    render(
+      <Provider store={store}>
+        {dataProcessingPageFactory()}
+      </Provider>,
+    );
+
+    const numQcSteps = 7;
+
+    // -1 because you only need n-1 clicks to go from page 1 to page n
+    const numClicksUntilLastFilter = numQcSteps - 1;
+
+    const nextButton = screen.getAllByRole('img', { name: 'right' })[0];
+
+    // Click next button n times until the end
+    for (let i = 0; i < numClicksUntilLastFilter; i += 1) {
+      userEvent.click(nextButton);
+    }
+
+    // Expect there to be the check button
+    // 1st check = check in the dropdown box
+    // 2nd check = check in the status bar
+    // 3rd check = check in the finish qc button
+    const finishQcButton = screen.getAllByRole('img', { name: /check/i })[2];
+
+    expect(finishQcButton).toBeInTheDocument();
+
+    // Clicking finish button should redirect to Data Processing page
+    finishQcButton.click();
+
+    expect(mockNavigateTo).toHaveBeenCalled();
+
+    const url = mockNavigateTo.mock.calls[0][0];
+    expect(url).toMatch('data-exploration');
+  });
+
+  it('Triggers the pipeline on click run filter', () => {
+    const store = getStore(experimentId, { experimentSettings: { processing: { meta: { changedQCFilters: new Set(['classifier']) } } } });
+
+    render(
+      <Provider store={store}>
+        {dataProcessingPageFactory()}
+      </Provider>,
+    );
+
+    // Change settings by clicking on the "manual" radio button
+    const manualButton = screen.getByText('Manual');
+
+    userEvent.click(manualButton);
+
+    // Click on the run button
+    userEvent.click(screen.getByText('Run'));
+
+    userEvent.click(screen.getByText('Start'));
+
+    expect(runPipeline).toHaveBeenCalled();
+  });
+
+  it('Classifier filter (1st filter) should show custom disabled message if sample is prefiltered ', () => {
+    const store = getStore(
+      experimentId,
+      {
+        experimentSettings: {
+          processing: {
+            classifier: {
+              enabled: false,
+              prefiltered: true,
+            },
+          },
+        },
+      },
+    );
+
+    render(
+      <Provider store={store}>
+        {dataProcessingPageFactory()}
+      </Provider>,
+    );
+
+    // Button show should show "Enable" because filter is disabled
+    const enableButton = screen.getByText(/Enable/i).closest('button');
+
+    expect(enableButton).toBeInTheDocument();
+    expect(enableButton).toBeDisabled();
+
+    expect(screen.getByText(/is pre-filtered/i)).toBeInTheDocument();
+  });
+
+  it('Classifier filter (1st filter) should not be disabled and not show error if not prefiltered ', () => {
+    const store = getStore(
+      experimentId,
+      {
+        experimentSettings: {
+          processing: {
+            classifier: {
+              enabled: true,
+              prefiltered: false,
+            },
+          },
+        },
+      },
+    );
+
+    render(
+      <Provider store={store}>
+        {dataProcessingPageFactory()}
+      </Provider>,
+    );
+
+    // Button show should show "Disable"
+    const disableButton = screen.getByText(/Disable/i).closest('button');
+
+    expect(disableButton).toBeInTheDocument();
+    expect(disableButton).toBeEnabled();
+
+    expect(screen.queryByText(/is pre-filtered/i)).toBeNull();
+  });
+
+  it('A disabled filter shows a warning', () => {
+    const store = getStore(
+      experimentId,
+      {
+        experimentSettings: {
+          processing: {
+            classifier: {
+              enabled: false,
+            },
+          },
+        },
+      },
+    );
+
+    render(
+      <Provider store={store}>
+        {dataProcessingPageFactory()}
+      </Provider>,
+    );
+
+    userEvent.click(screen.getByText(/Disable/i));
+
+    expect(screen.getByText(/This filter is disabled/i)).toBeInTheDocument();
+  });
+
+  it('Shows a wait screen if pipeline is still running', () => {
     getBackendStatus.mockImplementation(() => () => ({
       loading: false,
       error: false,
       status: {
         pipeline: {
-          status: 'SUCCEEDED',
-          completedSteps: [
-            'CellSizeDistributionFilter',
-            'MitochondrialContentFilter',
-            'ClassifierFilter',
-            'NumGenesVsNumUmisFilter',
-            'DoubletScoresFilter',
-          ],
+          status: 'RUNNING',
+          completedSteps: [],
         },
       },
     }));
-  });
 
-  it('renders correctly', () => {
-    const experimentId = 'experimentId';
-    const store = getStore(experimentId);
+    const store = getStore();
 
-    const page = mount(
+    render(
       <Provider store={store}>
-        <DataProcessingPage experimentId={experimentId} experimentData={experimentData} route='route'>
-          <></>
-        </DataProcessingPage>
+        {dataProcessingPageFactory()}
       </Provider>,
     );
 
-    const header = page.find('Header');
-    expect(header.length).toEqual(1);
-
-    const card = page.find('Card');
-    expect(card.length).toEqual(1);
-
-    const runFilterButton = page.find('#runFilterButton').filter('Button');
-
-    // Run filter doesn't exist initially
-    expect(runFilterButton.length).toEqual(0);
-  });
-
-  it('triggers the pipeline on click run filter', async () => {
-    const experimentId = 'experimentId';
-    const store = getStore(experimentId, { experimentSettings: { processing: { meta: { changedQCFilters: new Set(['classifier']) } } } });
-
-    const page = mount(
-      <Provider store={store}>
-        <DataProcessingPage experimentId={experimentId} experimentData={experimentData} route='route'>
-          <></>
-        </DataProcessingPage>
-      </Provider>,
-    );
-
-    const filterComponent = page.find('#classifier');
-
-    act(() => {
-      filterComponent.at(0).props().onConfigChange();
-    });
-
-    page.update();
-
-    const runFilterButton = page.find('#runFilterButton').filter('Button');
-
-    // Run filter shows up after changes take place
-    expect(runFilterButton.length).toEqual(1);
-
-    act(() => { runFilterButton.at(0).props().onClick(); });
-    page.update();
-    const modal = page.find(Modal);
-    const startButton = modal.find('Button').at(1);
-    act(() => startButton.simulate('click'));
-
-    // Pipeline is triggered on clicking run button
-    await waitForActions(
-      store,
-      [BACKEND_STATUS_LOADING],
-      { matcher: waitForActions.matchers.containing },
-    );
-  });
-
-  it('preFiltered on a sample disables filter', async () => {
-    const experimentId = 'experimentId';
-
-    const store = getStore(
-      experimentId,
-      {
-        samples: {
-          'sample-1': {
-            preFiltered: true,
-          },
-        },
-      },
-    );
-
-    const page = mount(
-      <Provider store={store}>
-        <DataProcessingPage experimentId={experimentId} experimentData={experimentData} route='route'>
-          <></>
-        </DataProcessingPage>
-      </Provider>,
-    );
-
-    // Run filter button doesn't show up on the first
-    expect(page.find('#runFilterButton').filter('Button').length).toEqual(0);
-  });
-
-  it('disables steps that are not finished if the pipeline is still running', async () => {
-    const experimentId = 'experimentId';
-
-    getBackendStatus.mockImplementation(() => () => ({
-      loading: false,
-      error: false,
-      status: { pipeline: { status: 'RUNNING', completedSteps: [] } },
-    }));
-
-    const store = getStore(
-      experimentId,
-      {
-        samples: {
-          'sample-1': {
-            preFiltered: true,
-          },
-        },
-      },
-    );
-
-    const page = mount(
-      <Provider store={store}>
-        <DataProcessingPage experimentId={experimentId} experimentData={experimentData} route='route'>
-          <></>
-        </DataProcessingPage>
-      </Provider>,
-    );
-
-    // Run filter button doesn't show up on the first
-    page.find('Option').forEach((option) => {
-      expect(option).toBeDisabled();
-    });
+    expect(screen.getByText(/Your data is getting ready./i)).toBeInTheDocument();
   });
 });

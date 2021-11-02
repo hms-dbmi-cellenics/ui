@@ -22,8 +22,8 @@ import updateProject from '../../../redux/actions/projects/updateProject';
 
 import UploadStatus from '../../../utils/upload/UploadStatus';
 import generateGem2sParamsHash from '../../../utils/data-management/generateGem2sParamsHash';
+import '__test__/test-utils/setupTests';
 
-jest.mock('localforage');
 jest.mock('../../../utils/data-management/generateGem2sParamsHash');
 jest.mock('../../../redux/actions/experimentSettings/updateExperimentInfo', () => jest.fn().mockReturnValue({ type: 'UPDATE_EXPERIMENT_INFO' }));
 jest.mock('../../../redux/actions/experiments/updateExperiment', () => jest.fn().mockReturnValue({ type: 'UPDATE_EXPERIMENT' }));
@@ -39,7 +39,6 @@ jest.mock('next/router', () => ({
 }));
 
 const mockStore = configureMockStore([thunk]);
-jest.mock('localforage');
 
 const projectName = 'Project 1';
 const projectUuid = 'project-1-uuid';
@@ -160,7 +159,6 @@ const withDataState = {
 describe('LaunchAnalysisButton', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    jest.doMock();
   });
 
   it('Process project button is disabled if not all sample metadata are inserted', () => {

@@ -7,6 +7,7 @@ import {
   Row, Col, Space, PageHeader, Collapse, Empty, Alert,
 } from 'antd';
 
+import { isUnisample } from 'utils/experimentPredicates';
 import CalculationConfig from './CalculationConfig';
 import MiniPlot from '../../plots/MiniPlot';
 
@@ -20,18 +21,18 @@ import {
 } from '../../../redux/actions/componentConfig';
 
 import PlotStyling from '../../plots/styling/PlotStyling';
-import { filterCells } from '../../../utils/plotSpecs/generateEmbeddingCategoricalSpec';
 import { updateFilterSettings } from '../../../redux/actions/experimentSettings';
 import loadCellMeta from '../../../redux/actions/cellMeta';
 import generateDataProcessingPlotUuid from '../../../utils/generateDataProcessingPlotUuid';
 import Loader from '../../Loader';
+import { getCellSets } from '../../../redux/selectors';
 
 const { Panel } = Collapse;
 
 const ConfigureEmbedding = (props) => {
   const { experimentId, onConfigChange } = props;
   const [plot, setPlot] = useState(null);
-  const cellSets = useSelector((state) => state.cellSets);
+  const cellSets = useSelector(getCellSets());
   const cellMeta = useSelector((state) => state.cellMeta);
 
   const { selectedConfigureEmbeddingPlot: selectedPlot } = useSelector(
@@ -230,7 +231,7 @@ const ConfigureEmbedding = (props) => {
       ],
     },
     {
-      panelTitle: 'Axes and Margins',
+      panelTitle: 'Axes and margins',
       controls: ['axes'],
     },
     ...plotSpecificStylingControl[selectedPlot],
@@ -345,11 +346,15 @@ const ConfigureEmbedding = (props) => {
       );
     }
 
-    if (selectedPlot === 'sample'
-      && !cellSets.loading
-      && filterCells(cellSets, selectedConfig.selectedCellSet).length === 0) {
+    if (selectedPlot === 'sample' && !cellSets.loading && isUnisample(cellSets.hierarchy)
+    ) {
       return (
-        <Empty description='Your project has only one sample.' />
+        <center>
+          <Empty
+            style={{ width: selectedConfig.dimensions.width }}
+            description='Your project has only one sample.'
+          />
+        </center>
       );
     }
 

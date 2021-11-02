@@ -7,10 +7,10 @@ import {
 } from 'antd';
 
 import PropTypes from 'prop-types';
-import HeatmapMetadataTrackSettings from './HeatmapMetadataTrackSettings';
-import HeatmapGroupBySettings from './HeatmapGroupBySettings';
-import HeatmapExpressionValuesSettings from './HeatmapExpressionValuesSettings';
-import HeatmapLegendVisibilitySettings from './HeatmapLegendVisibilitySettings';
+import HeatmapMetadataTrackSettings from 'components/data-exploration/heatmap/HeatmapMetadataTrackSettings';
+import HeatmapGroupBySettings from 'components/data-exploration/heatmap/HeatmapGroupBySettings';
+import HeatmapExpressionValuesSettings from 'components/data-exploration/heatmap/HeatmapExpressionValuesSettings';
+import HeatmapLegendVisibilitySettings from 'components/data-exploration/heatmap/HeatmapLegendVisibilitySettings';
 
 const { SubMenu } = Menu;
 
@@ -33,6 +33,7 @@ const HeatmapSettings = (props) => {
       </SubMenu>
     </Menu>
   );
+
   return (
     <Dropdown arrow type='link' size='small' overlay={renderMenu()} trigger={['click']}>
       <Tooltip title='Settings'>

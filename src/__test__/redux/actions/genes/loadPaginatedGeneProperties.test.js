@@ -11,7 +11,8 @@ import {
   GENES_PROPERTIES_ERROR,
 } from '../../../../redux/actionTypes/genes';
 
-jest.mock('localforage');
+import '__test__/test-utils/setupTests';
+
 jest.mock('../../../../utils/work/seekWorkResponse', () => ({
   __esModule: true, // this property makes it work
   seekFromAPI: jest.fn(),
@@ -74,24 +75,20 @@ describe('loadPaginatedGeneProperties action', () => {
       // No need to mock the result accurately.
 
       const resolveWith = {
-        results:
-          [
+        data: {
+          total: 2,
+          rows: [
             {
-              body: JSON.stringify({
-                total: 2,
-                rows: [
-                  {
-                    gene_names: 'a',
-                    dispersions: 1,
-                  },
-                  {
-                    gene_names: 'b',
-                    dispersions: 1,
-                  },
-                ],
-              }),
+              gene_names: 'a',
+              dispersions: 1,
+            },
+            {
+              gene_names: 'b',
+              dispersions: 1,
             },
           ],
+        },
+        cacheable: true,
       };
 
       return new Promise((resolve) => resolve(resolveWith));

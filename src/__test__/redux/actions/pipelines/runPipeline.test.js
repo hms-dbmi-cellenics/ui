@@ -24,9 +24,10 @@ import { runPipeline } from '../../../../redux/actions/pipeline';
 
 import generateExperimentSettingsMock from '../../../test-utils/experimentSettings.mock';
 
+import '__test__/test-utils/setupTests';
+
 const mockStore = configureStore([thunk]);
 
-jest.mock('localforage');
 enableFetchMocks();
 
 jest.mock('../../../../redux/actions/backendStatus/loadBackendStatus',

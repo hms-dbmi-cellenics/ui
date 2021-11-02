@@ -1,19 +1,17 @@
 import React from 'react';
-import { configure, mount } from 'enzyme';
+import { mount } from 'enzyme';
 import { Provider } from 'react-redux';
-import Adapter from 'enzyme-adapter-react-16';
 import thunk from 'redux-thunk';
 import configureMockStore from 'redux-mock-store';
 import { Switch } from 'antd';
 
 import { UPDATE_CONFIG } from '../../../../redux/actionTypes/componentConfig';
 import HeatmapMetadataTrackSettings from '../../../../components/data-exploration/heatmap/HeatmapMetadataTrackSettings';
+import '__test__/test-utils/setupTests';
 
-jest.mock('localforage');
 jest.mock('../../../../components/data-exploration/heatmap/VegaHeatmap');
 
 const mockStore = configureMockStore([thunk]);
-configure({ adapter: new Adapter() });
 
 let component;
 

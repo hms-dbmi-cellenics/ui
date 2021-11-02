@@ -11,7 +11,7 @@ import {
 
 import { seekFromAPI } from '../../../../utils/work/seekWorkResponse';
 
-jest.mock('localforage');
+import '__test__/test-utils/setupTests';
 
 jest.mock('../../../../utils/getTimeoutForWorkerTask', () => ({
   __esModule: true, // this property makes it work
@@ -110,16 +110,9 @@ describe('loadEmbedding action', () => {
 
   it('Dispatches on a previously unseen embedding', async () => {
     seekFromAPI.mockImplementation(() => {
-      // We are resolving with two identical results, because in the transition period
-      // the worker will return both types of results. TODO: reduce this to just one
-      // result when the initial version of the UI is pushed.
-
       const resolveWith = {
-        results:
-          [
-            { body: JSON.stringify([[1, 2], [3, 4]]) },
-            { body: JSON.stringify([[1, 2], [3, 4]]) },
-          ],
+        data: [[1, 2], [3, 4]],
+        cacheable: true,
       };
 
       return new Promise((resolve) => resolve(resolveWith));
@@ -152,16 +145,9 @@ describe('loadEmbedding action', () => {
 
   it('Dispatches on a previous error condition', async () => {
     seekFromAPI.mockImplementation(() => {
-      // We are resolving with two identical results, because in the transition period
-      // the worker will return both types of results. TODO: reduce this to just one
-      // result when the initial version of the UI is pushed.
-
       const resolveWith = {
-        results:
-          [
-            { body: JSON.stringify([[1, 2], [3, 4]]) },
-            { body: JSON.stringify([[1, 2], [3, 4]]) },
-          ],
+        data: [[1, 2], [3, 4]],
+        cacheable: true,
       };
 
       return new Promise((resolve) => resolve(resolveWith));
@@ -271,16 +257,9 @@ describe('loadEmbedding action', () => {
 
   it('Dispatches on if forceReload is set to true', async () => {
     seekFromAPI.mockImplementation(() => {
-      // We are resolving with two identical results, because in the transition period
-      // the worker will return both types of results. TODO: reduce this to just one
-      // result when the initial version of the UI is pushed.
-
       const resolveWith = {
-        results:
-          [
-            { body: JSON.stringify([[1, 2], [3, 4]]) },
-            { body: JSON.stringify([[1, 2], [3, 4]]) },
-          ],
+        data: [[1, 2], [3, 4]],
+        cacheable: true,
       };
 
       return new Promise((resolve) => resolve(resolveWith));

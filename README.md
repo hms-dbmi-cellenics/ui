@@ -2,7 +2,7 @@
 ui
 ==
 
-The user interface of Cellscope (the Biomage single cell analysis platform).
+The user interface of Cellenics (the Biomage single cell analysis platform).
 
 Development
 -----------
