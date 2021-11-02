@@ -10,59 +10,59 @@ on:
     branches:
       - master
 jobs:
-  # build:
-  #   name: Build website
-  #   runs-on: ubuntu-20.04
-  #   env:
-  #     CI: "true"
-  #   steps:
-  #   - id: checkout
-  #     name: Check out source code
-  #     uses: actions/checkout@v2
+  build:
+    name: Build website
+    runs-on: ubuntu-20.04
+    env:
+      CI: "true"
+    steps:
+    - id: checkout
+      name: Check out source code
+      uses: actions/checkout@v2
 
-  #   - id: cache-seek
-  #     name: Check for npm cache hit
-  #     uses: c-hive/gha-npm-cache@v1
+    - id: cache-seek
+      name: Check for npm cache hit
+      uses: c-hive/gha-npm-cache@v1
 
-  #   - id: install
-  #     name: Install dependencies
-  #     run: |-
-  #       git config --global url."https://".insteadOf ssh://
-  #       npm ci
+    - id: install
+      name: Install dependencies
+      run: |-
+        git config --global url."https://".insteadOf ssh://
+        npm ci
 
-  #   # - id: test
-  #   #   name: Run unit tests
-  #   #   uses: mattallty/jest-github-action@v1
-  #   #   env:
-  #   #     AWS_DEFAULT_REGION: 'eu-west-1'
-  #   #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  #   #   with:
-  #   #     test-command: "npm run coverage"
-  #   #     coverage-comment: false
+    # # - id: test
+    # #   name: Run unit tests
+    # #   uses: mattallty/jest-github-action@v1
+    # #   env:
+    # #     AWS_DEFAULT_REGION: 'eu-west-1'
+    # #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    # #   with:
+    # #     test-command: "npm run coverage"
+    # #     coverage-comment: false
     
-  #   # - id: upload-coverage
-  #   #   name: Upload coverage to Codecov
-  #   #   uses: codecov/codecov-action@v1
+    # # - id: upload-coverage
+    # #   name: Upload coverage to Codecov
+    # #   uses: codecov/codecov-action@v1
 
-  #   - id: next-cache-seek
-  #     name: Look up the Next.js build cache
-  #     uses: actions/cache@v2
-  #     with:
-  #       path: ${{ github.workspace }}/.next/cache
-  #       key: ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}
+    # - id: next-cache-seek
+    #   name: Look up the Next.js build cache
+    #   uses: actions/cache@v2
+    #   with:
+    #     path: ${{ github.workspace }}/.next/cache
+    #     key: ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}
 
-  #   - id: build
-  #     name: Build project
-  #     run: |-
-  #       npm run build
-  #   - id: upload-build-out
-  #     name: Upload Next.js build output
-  #     uses: actions/upload-artifact@v2
-  #     with:
-  #       name: next-build-out
-  #       path: |
-  #         .next/
-  #         !.next/cache
+    - id: build
+      name: Build project
+      run: |-
+        npm run build
+    - id: upload-build-out
+      name: Upload Next.js build output
+      uses: actions/upload-artifact@v2
+      with:
+        name: next-build-out
+        path: |
+          .next/
+          !.next/cache
     # - id: send-to-slack
     #   name: Send failure notification to Slack
     #   if: failure() && github.event_name == 'push'
@@ -77,7 +77,7 @@ jobs:
   build-docker:
     name: Build Docker container
     runs-on: ubuntu-20.04
-    # needs: build
+    needs: build
     steps:
       - id: checkout
         name: Check out source code
