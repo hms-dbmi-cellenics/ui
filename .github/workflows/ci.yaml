@@ -63,16 +63,16 @@ jobs:
         path: |
           .next/
           !.next/cache
-    - id: send-to-slack
-      name: Send failure notification to Slack
-      if: failure() && github.event_name == 'push'
-      env:
-        SLACK_BOT_TOKEN: ${{ secrets.BUILD_STATUS_BOT_TOKEN }}
-      uses: voxmedia/github-action-slack-notify-build@v1
-      with:
-        channel: pipelines
-        status: FAILED
-        color: danger
+    # - id: send-to-slack
+    #   name: Send failure notification to Slack
+    #   if: failure() && github.event_name == 'push'
+    #   env:
+    #     SLACK_BOT_TOKEN: ${{ secrets.BUILD_STATUS_BOT_TOKEN }}
+    #   uses: voxmedia/github-action-slack-notify-build@v1
+    #   with:
+    #     channel: pipelines
+    #     status: FAILED
+    #     color: danger
  
   build-docker:
     name: Build Docker container
@@ -155,16 +155,16 @@ jobs:
         env:
           IMAGE_NAME: ${{ format('{0}/{1}:{2}', steps.login-ecr.outputs.registry, steps.ref.outputs.repo-name, steps.ref.outputs.tag) }}
 
-      - id: send-to-slack
-        name: Send failure notification to Slack
-        if: failure() && github.event_name == 'push'
-        env:
-          SLACK_BOT_TOKEN: ${{ secrets.BUILD_STATUS_BOT_TOKEN }}
-        uses: voxmedia/github-action-slack-notify-build@v1
-        with:
-          channel: pipelines
-          status: FAILED
-          color: danger
+  #     - id: send-to-slack
+  #       name: Send failure notification to Slack
+  #       if: failure() && github.event_name == 'push'
+  #       env:
+  #         SLACK_BOT_TOKEN: ${{ secrets.BUILD_STATUS_BOT_TOKEN }}
+  #       uses: voxmedia/github-action-slack-notify-build@v1
+  #       with:
+  #         channel: pipelines
+  #         status: FAILED
+  #         color: danger
 
   deploy:
     name: Deploy to Kubernetes
@@ -173,7 +173,7 @@ jobs:
     strategy:
       max-parallel: 1
       matrix:
-        environment: ['production', 'staging', 'develop']
+        environment: ['staging']
     steps:
       - id: checkout
         name: Check out source code
