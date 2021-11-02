@@ -1,6 +1,6 @@
 const composeDotPlotWorkBody = (config) => ({
   name: 'DotPlot',
-  markerGenes: config.useMarkerGenes,
+  markerGenes: !config.useCustomGenes,
   input: {
     nGenes: config.nMarkerGenes,
     genes: config.selectedGenes,

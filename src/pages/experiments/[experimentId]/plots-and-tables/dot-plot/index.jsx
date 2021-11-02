@@ -166,7 +166,7 @@ const DotPlotPage = (props) => {
       );
     }
 
-    if (cellSetsLoading || genesFetching || plotData.length === 0) {
+    if (cellSetsLoading || genesFetching || !plotData?.length > 0) {
       return (
         <center>
           <Loader experimentId={experimentId} />
