@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import {
   Row,
   Col,
@@ -9,7 +9,7 @@ import {
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import DotPlot from 'components/plots/DotPlot';
-import { loadPaginatedGeneProperties, loadGeneExpression } from 'redux/actions/genes';
+import { loadPaginatedGeneProperties } from 'redux/actions/genes';
 import { loadCellSets } from 'redux/actions/cellSets';
 import PlotStyling from 'components/plots/styling/PlotStyling';
 import SelectData from 'components/plots/styling/SelectData';
@@ -74,7 +74,12 @@ const DotPlotPage = (props) => {
   const { experimentId } = props;
 
   const dispatch = useDispatch();
-  const { config, plotData } = useSelector((state) => state.componentConfig[plotUuid]) || {};
+  const {
+    config,
+    plotData,
+    loading: plotDataLoading,
+    error: plotDataError,
+  } = useSelector((state) => state.componentConfig[plotUuid]) || {};
 
   const {
     fetching: genesFetching,
@@ -95,30 +100,33 @@ const DotPlotPage = (props) => {
   }, []);
 
   useEffect(() => {
-    if (plotData?.length === 0) dispatch(loadPlotData(experimentId, plotUuid, plotType));
+    if (config) dispatch(loadPlotData(experimentId, plotUuid, plotType));
   }, [config]);
 
-  useEffect(() => {
-    if (config && config.selectedGenes.length === 0 && !genesFetching && !highestDispersionGenes) {
-      const PROPERTIES = ['dispersions'];
-      const tableState = {
-        pagination: {
-          current: 1, pageSize: config.nMarkerGenes, showSizeChanger: true, total: 0,
-        },
-        geneNamesFilter: null,
-        sorter: { field: PROPERTIES[0], columnKey: PROPERTIES[0], order: 'descend' },
-      };
+  const loadInitialCustomGenes = () => {
+    const PROPERTIES = ['dispersions'];
+    const tableState = {
+      pagination: {
+        current: 1, pageSize: config.nMarkerGenes, showSizeChanger: true, total: 0,
+      },
+      geneNamesFilter: null,
+      sorter: { field: PROPERTIES[0], columnKey: PROPERTIES[0], order: 'descend' },
+    };
 
-      dispatch(loadPaginatedGeneProperties(experimentId, PROPERTIES, plotUuid, tableState));
+    dispatch(loadPaginatedGeneProperties(experimentId, PROPERTIES, plotUuid, tableState));
+  };
+
+  useEffect(() => {
+    if (config && config.selectedGenes.length > 0) return;
+
+    if (config?.selectedGenes.length === 0 && highestDispersionGenes?.length === 0 && !genesFetching) {
+      loadInitialCustomGenes();
     }
-  }, [highestDispersionGenes, config, genesFetching]);
 
-  useEffect(() => {
     if (config?.selectedGenes.length === 0 && highestDispersionGenes?.length > 0) {
       updatePlotWithChanges({ selectedGenes: highestDispersionGenes });
-      dispatch(loadGeneExpression(experimentId, highestDispersionGenes, plotUuid));
     }
-  }, [highestDispersionGenes, config]);
+  }, [highestDispersionGenes, config, genesFetching]);
 
   const updatePlotWithChanges = (obj) => {
     dispatch(updatePlotConfig(plotUuid, obj));
@@ -129,14 +137,23 @@ const DotPlotPage = (props) => {
     if (plotData.length === 0) dispatch(loadPlotData(experimentId, plotUuid, plotType));
   };
 
+  const onGeneEnter = (genes) => {
+    updatePlotWithChanges({ selectedGenes: genes });
+  };
+
+  const onReset = () => {
+    onGeneEnter([]);
+    loadInitialCustomGenes();
+  };
+
   const renderExtraPanels = () => (
     <>
       <Panel header='Gene selection' key='gene-selection'>
         <MarkerGeneSelection
           config={config}
           onUpdate={updatePlotWithChanges}
-          onReset={() => updatePlotWithChanges({ selectedGenes: [] })}
-          onGeneEnter={() => {}}
+          onReset={onReset}
+          onGeneEnter={onGeneEnter}
         />
       </Panel>
       <Panel header='Select data' key='15'>
@@ -160,13 +177,24 @@ const DotPlotPage = (props) => {
         <center>
           <PlatformError
             error='Error loading plot data, please rela'
+            onClick={() => loadCellSets(experimentId)}
+          />
+        </center>
+      );
+    }
+
+    if (plotDataError) {
+      return (
+        <center>
+          <PlatformError
+            error='Error loading plot data, please rela'
             onClick={() => reloadPlotData()}
           />
         </center>
       );
     }
 
-    if (cellSetsLoading || genesFetching || !plotData?.length > 0) {
+    if (cellSetsLoading || genesFetching || plotDataLoading) {
       return (
         <center>
           <Loader experimentId={experimentId} />

@@ -753,7 +753,18 @@ const initialPlotConfigStates = {
 const initialComponentConfigStates = {
   interactiveHeatmap: interactiveHeatmapInitialConfig,
 };
-export { initialPlotConfigStates, initialComponentConfigStates };
+
+const initialPlotDataState = {
+  plotData: [],
+  loading: false,
+  error: false,
+};
+
+export {
+  initialPlotConfigStates,
+  initialComponentConfigStates,
+  initialPlotDataState,
+};
 
 const initialState = {};
 export default initialState;
