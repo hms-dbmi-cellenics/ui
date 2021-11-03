@@ -1,15 +1,19 @@
-import React from 'react';
-import {
-  render, screen, fireEvent, waitFor,
-} from '@testing-library/react';
-import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import '@testing-library/jest-dom';
 import 'aws-amplify';
+import '__test__/test-utils/setupTests';
+
+import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from '@testing-library/react';
 
 import FeedbackButton from '../../components/FeedbackButton';
-import pushNotificationMessage from '../../utils/pushNotificationMessage';
+import React from 'react';
 import endUserMessages from '../../utils/endUserMessages';
-import '__test__/test-utils/setupTests';
+import pushNotificationMessage from '../../utils/pushNotificationMessage';
 
 jest.mock('aws-amplify', () => ({
   Auth: {
@@ -67,6 +71,12 @@ describe('FeedbackButton', () => {
     expect(feedbackInput).toHaveValue(feedbackText);
 
     const submitButton = screen.getByText(/Send/i).closest('button');
+
+    // test cancel by closing and opening again
+    const cancelButton = screen.getByText(/Cancel/i).closest('button');
+    fireEvent.click(cancelButton);
+    fireEvent.click(feedbackButton);
+    expect(feedbackInput).toHaveValue(feedbackText);
 
     fireEvent.click(submitButton);
 

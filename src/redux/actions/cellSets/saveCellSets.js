@@ -1,9 +1,9 @@
-import fetchAPI from '../../../utils/fetchAPI';
-import { isServerError, throwIfRequestFailed } from '../../../utils/fetchErrors';
-import endUserMessages from '../../../utils/endUserMessages';
-import pushNotificationMessage from '../../../utils/pushNotificationMessage';
-import composeTree from '../../../utils/composeTree';
-import { CELL_SETS_SAVE } from '../../actionTypes/cellSets';
+import fetchAPI from 'utils/fetchAPI';
+import { isServerError, throwIfRequestFailed } from 'utils/fetchErrors';
+import endUserMessages from 'utils/endUserMessages';
+import pushNotificationMessage from 'utils/pushNotificationMessage';
+import { composeTree } from 'utils/cellSets';
+import { CELL_SETS_SAVE } from 'redux/actionTypes/cellSets';
 
 const saveCellSets = (experimentId) => async (dispatch, getState) => {
   const {

@@ -15,7 +15,7 @@ const HeatmapControls = (props) => {
   } = props;
 
   return (
-    <Collapse defaultActiveKey={['5']} accordion>
+    <Collapse defaultActiveKey='5' accordion>
       <Panel header='Gene selection' key='5'>
         <p>Type in a gene name and hit space or enter to add it to the heatmap.</p>
         <Space direction='vertical' style={{ width: '100%' }}>

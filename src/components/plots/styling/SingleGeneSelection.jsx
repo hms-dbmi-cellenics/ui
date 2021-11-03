@@ -11,20 +11,25 @@ const SingleGeneSelection = (props) => {
     setSearchedGene(geneNameNoSpaces);
   };
 
-  if (config) {
-    return (
-      <Search
-        style={{ width: '100%' }}
-        enterButton='Search'
-        defaultValue={config.shownGene}
-        onSearch={(val) => changeDisplayedGene(val)}
-      />
-    );
+  if (!config) {
+    return <Skeleton.Input style={{ width: 200 }} active />;
   }
-  return (<Skeleton.Input style={{ width: 200 }} active />);
+
+  return (
+    <Search
+      style={{ width: '100%' }}
+      enterButton='Search'
+      defaultValue={config.shownGene}
+      onSearch={(val) => changeDisplayedGene(val)}
+    />
+  );
 };
 SingleGeneSelection.propTypes = {
-  config: PropTypes.object.isRequired,
+  config: PropTypes.object,
   setSearchedGene: PropTypes.func.isRequired,
+};
+
+SingleGeneSelection.defaultProps = {
+  config: null,
 };
 export default SingleGeneSelection;

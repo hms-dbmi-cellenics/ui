@@ -210,7 +210,7 @@ const DotPlotPage = (props) => {
       <Row gutter={16}>
         <Col span={16}>
           <Space direction='vertical' style={{ width: '100%' }}>
-            <Collapse defaultActiveKey={['1']}>
+            <Collapse defaultActiveKey='1'>
               <Panel header='Preview' key='1'>
                 {renderPlot()}
               </Panel>
@@ -224,7 +224,7 @@ const DotPlotPage = (props) => {
               config={config}
               onUpdate={updatePlotWithChanges}
               renderExtraPanels={renderExtraPanels}
-              defaultActiveKey={['gene-selection']}
+              defaultActiveKey='gene-selection'
             />
           </Space>
         </Col>

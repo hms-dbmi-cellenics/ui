@@ -232,7 +232,7 @@ const VolcanoPlot = ({ experimentId }) => {
       <Row gutter={16}>
         <Col span={16}>
           <Space direction='vertical' style={{ width: '100%' }}>
-            <Collapse defaultActiveKey={['1']}>
+            <Collapse defaultActiveKey='1'>
               <Panel header='Preview' key='1' extra={generateExportDropdown()}>
                 <center>{renderPlot()}</center>
               </Panel>
@@ -241,13 +241,13 @@ const VolcanoPlot = ({ experimentId }) => {
         </Col>
         <Col span={8}>
           <Space direction='vertical' style={{ width: '100%' }}>
-            <Collapse defaultActiveKey={['1']} accordion />
+            <Collapse defaultActiveKey='1' accordion />
             <PlotStyling
               formConfig={plotStylingControlsConfig}
               config={config}
               onUpdate={updatePlotWithChanges}
               renderExtraPanels={renderExtraPanels}
-              defaultActiveKey={['1']}
+              defaultActiveKey='1'
             />
           </Space>
         </Col>

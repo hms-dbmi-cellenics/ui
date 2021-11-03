@@ -101,7 +101,7 @@ const CalculationConfig = (props) => {
   };
 
   return (
-    <Collapse defaultActiveKey={['data-integration']}>
+    <Collapse defaultActiveKey='data-integration'>
       <Panel header='Data Integration' key='data-integration'>
         <Space direction='vertical' style={{ width: '100%' }} />
         <Form size='small'>
