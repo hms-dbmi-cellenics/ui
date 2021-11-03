@@ -1,5 +1,5 @@
 import {
-  MARKER_GENES_LOADING, MARKER_GENES_LOADED,
+  MARKER_GENES_ERROR, MARKER_GENES_LOADING, MARKER_GENES_LOADED,
 } from '../../actionTypes/genes';
 
 import { fetchWork } from '../../../utils/work/fetchWork';
@@ -26,24 +26,26 @@ const loadMarkerGenes = (
   const data = await fetchWork(experimentId, body, getState, { timeout });
   const { data: markerGeneExpressions, order } = data;
 
-  dispatch({
-    type: MARKER_GENES_LOADED,
-    payload: {
-      experimentId,
-      genes: order,
-      data: markerGeneExpressions,
-      plotUuid,
-    },
-  });
-  // } catch (e) {
-  //   dispatch({
-  //     type: MARKER_GENES_ERROR,
-  //     payload: {
-  //       experimentId,
-  //       error: e,
-  //     },
-  //   });
-  // }
+  try {
+    dispatch({
+      type: MARKER_GENES_LOADED,
+      payload: {
+        experimentId,
+        genes: order,
+        data: markerGeneExpressions,
+        plotUuid,
+      },
+    });
+  } catch (e) {
+    dispatch({
+      type: MARKER_GENES_ERROR,
+      payload: {
+        experimentId,
+        error: e,
+        stack: e.stack,
+      },
+    });
+  }
 };
 
 export default loadMarkerGenes;
