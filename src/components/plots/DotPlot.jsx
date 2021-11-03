@@ -7,9 +7,10 @@ import { getCellSets, getCellSetsHierarchyByKey } from 'redux/selectors';
 
 import PlatformError from 'components/PlatformError';
 import { fastLoad } from 'components/Loader';
+import { loadCellSets } from 'redux/actions/cellSets';
 
 const DotPlot = (props) => {
-  const { config, plotData } = props;
+  const { experimentId, config, plotData } = props;
 
   const { loading: cellSetsLoading, error: cellSetsError } = useSelector(getCellSets());
   const cellSet = useSelector(getCellSetsHierarchyByKey([config.selectedCellSet]))[0];
@@ -28,10 +29,7 @@ const DotPlot = (props) => {
         <PlatformError
           error={cellSetsError}
           reason={cellSetsError.message}
-          onClick={() => {
-            // This needs to be implemented when implementing the backend
-            // reloadPlotData();
-          }}
+          onClick={() => loadCellSets(experimentId)}
         />
       );
     }
@@ -51,7 +49,13 @@ const DotPlot = (props) => {
 };
 
 DotPlot.propTypes = {
-  config: PropTypes.object.isRequired,
+  experimentId: PropTypes.string.isRequired,
+  config: PropTypes.object,
+  plotData: PropTypes.array.isRequired,
+};
+
+DotPlot.defaultProps = {
+  config: {},
 };
 
 export default DotPlot;

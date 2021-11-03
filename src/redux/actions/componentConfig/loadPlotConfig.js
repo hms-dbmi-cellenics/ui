@@ -1,10 +1,10 @@
 import _ from 'lodash';
-import fetchAPI from '../../../utils/fetchAPI';
-import { isServerError, throwIfRequestFailed } from '../../../utils/fetchErrors';
-import endUserMessages from '../../../utils/endUserMessages';
-import pushNotificationMessage from '../../../utils/pushNotificationMessage';
-import { LOAD_CONFIG } from '../../actionTypes/componentConfig';
-import { initialPlotConfigStates } from '../../reducers/componentConfig/initialState';
+import fetchAPI from 'utils/fetchAPI';
+import { isServerError, throwIfRequestFailed } from 'utils/fetchErrors';
+import endUserMessages from 'utils/endUserMessages';
+import pushNotificationMessage from 'utils/pushNotificationMessage';
+import { LOAD_CONFIG } from 'redux/actionTypes/componentConfig';
+import { initialPlotConfigStates } from 'redux/reducers/componentConfig/initialState';
 
 const loadPlotConfig = (experimentId, plotUuid, plotType) => async (dispatch) => {
   const url = `/v1/experiments/${experimentId}/plots-tables/${plotUuid}`;

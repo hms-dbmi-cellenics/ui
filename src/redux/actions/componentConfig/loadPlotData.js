@@ -5,7 +5,7 @@ import { PLOT_DATA_LOADED, PLOT_DATA_LOADING, PLOT_DATA_ERROR } from 'redux/acti
 import pushNotificationMessage from 'utils/pushNotificationMessage';
 import endUserMessages from 'utils/endUserMessages';
 import generatePlotWorkBody from 'utils/work/generatePlotWorkBody';
-import { fetchWork } from '../../../utils/work/fetchWork';
+import { fetchWork } from 'utils/work/fetchWork';
 
 const loadPlotData = (experimentId, plotUuid, plotType) => async (dispatch, getState) => {
   let config = getState().componentConfig[plotUuid]?.config;
@@ -14,7 +14,7 @@ const loadPlotData = (experimentId, plotUuid, plotType) => async (dispatch, getS
     config = initialComponentConfigStates[plotType];
   }
 
-  const timeout = getTimeoutForWorkerTask(getState(), 'DotPlot');
+  const timeout = getTimeoutForWorkerTask(getState(), plotType);
 
   try {
     const body = generatePlotWorkBody(plotType, config);
@@ -36,8 +36,6 @@ const loadPlotData = (experimentId, plotUuid, plotType) => async (dispatch, getS
       },
     });
   } catch (error) {
-    console.log('*** error', error);
-
     dispatch({
       type: PLOT_DATA_ERROR,
       payload: { plotUuid },

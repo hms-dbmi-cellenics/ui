@@ -1,0 +1,16 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Generate plot work request body Generates the correct work request body for DotPlot 1`] = `
+Object {
+  "input": Object {
+    "genes": Array [],
+    "nGenes": 3,
+  },
+  "markerGenes": false,
+  "name": "dotPlot",
+  "subset": Object {
+    "cellClassKey": "louvain",
+    "cellSetKey": "All",
+  },
+}
+`;

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect } from 'react';
 import {
   Row,
   Col,
@@ -24,9 +24,11 @@ import {
 } from 'redux/actions/componentConfig';
 import PlatformError from 'components/PlatformError';
 
+import plotNames from 'utils/plots/plotNames';
+
 const { Panel } = Collapse;
 const plotUuid = 'dotPlotMain';
-const plotType = 'dotPlot';
+const plotType = plotNames.DOT_PLOT;
 const route = {
   path: 'dot-plot',
   breadcrumbName: 'Dot plot',
@@ -172,22 +174,11 @@ const DotPlotPage = (props) => {
   }
 
   const renderPlot = () => {
-    if (cellSetsError) {
+    if (cellSetsError || plotDataError) {
       return (
         <center>
           <PlatformError
-            error='Error loading plot data, please rela'
-            onClick={() => loadCellSets(experimentId)}
-          />
-        </center>
-      );
-    }
-
-    if (plotDataError) {
-      return (
-        <center>
-          <PlatformError
-            error='Error loading plot data, please rela'
+            error='Error loading plot data, please reload'
             onClick={() => reloadPlotData()}
           />
         </center>
@@ -204,7 +195,7 @@ const DotPlotPage = (props) => {
 
     return (
       <center>
-        <DotPlot config={config} plotData={plotData} />
+        <DotPlot experimentId={experimentId} config={config} plotData={plotData} />
       </center>
     );
   };
