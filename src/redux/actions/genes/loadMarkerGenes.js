@@ -22,11 +22,12 @@ const loadMarkerGenes = (
     type: MARKER_GENES_LOADING,
   });
 
-  const timeout = getTimeoutForWorkerTask(getState(), 'MarkerHeatmap');
-  const data = await fetchWork(experimentId, body, getState, { timeout });
-  const { data: markerGeneExpressions, order } = data;
-
   try {
+    const timeout = getTimeoutForWorkerTask(getState(), 'MarkerHeatmap');
+    const data = await fetchWork(experimentId, body, getState, { timeout });
+
+    const { data: markerGeneExpressions, order } = data;
+
     dispatch({
       type: MARKER_GENES_LOADED,
       payload: {
@@ -42,7 +43,6 @@ const loadMarkerGenes = (
       payload: {
         experimentId,
         error: e,
-        stack: e.stack,
       },
     });
   }
