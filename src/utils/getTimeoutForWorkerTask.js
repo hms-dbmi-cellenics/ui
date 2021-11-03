@@ -36,7 +36,7 @@ const getTimeoutForWorkerTaskUncapped = (state, taskName, options) => {
 };
 
 const getTimeoutForWorkerTask = (state, taskName, options) => (
-  Math.max(getTimeoutForWorkerTaskUncapped(state, taskName, options) + 120, 60)
+  Math.max(getTimeoutForWorkerTaskUncapped(state, taskName, options), 60)
 );
 
 export default getTimeoutForWorkerTask;
