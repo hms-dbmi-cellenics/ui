@@ -33,8 +33,7 @@ const seekFromS3 = async (ETag) => {
     return null;
   }
 
-  // eslint-disable-next-line no-return-await
-  return await unpackResult(storageResp);
+  return unpackResult(storageResp);
 };
 
 const seekFromAPI = async (
