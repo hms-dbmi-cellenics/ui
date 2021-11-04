@@ -27,9 +27,6 @@ const generateVitessceHeatmapTracksData = (trackOrder, hierarchy, properties, ce
     });
   });
 
-  console.log('cellIdsColorsMapDebug');
-  console.log(cellIdsColorsMap);
-
   return cellIdsColorsMap;
 };
 

@@ -263,10 +263,6 @@ const populateHeatmapData = (
       rootNode,
     ));
 
-    generateVitessceHeatmapTracksData(
-      trackOrder, cellSets.hierarchy, cellSets.properties, cells,
-    );
-
     data.trackColorData = trackData.map((datum) => datum.trackColorData).flat();
     data.trackGroupData = trackData.map((datum) => datum.groupData).flat();
     data.clusterSeparationLines = trackData.length > 0 ? trackData[0].clusterSeparationLines : [];

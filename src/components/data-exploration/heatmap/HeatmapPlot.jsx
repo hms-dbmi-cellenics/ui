@@ -178,12 +178,8 @@ const HeatmapPlot = (props) => {
   const buildExpressionMatrix = () => {
     // const oldMap = new Map(heatmapData.trackColorData.map((x) => [`${x.cellId}`, hexToRgb(x.color)]));
 
-    // console.log('oldMapDebug');
-    // console.log(oldMap);
-
+    console.log('heatmapData.trackColorDataDebug');
     console.log(heatmapData.trackColorData);
-
-    // build expressionMatrix items
     setCellColors(heatmapData.trackColorData);
 
     const cellIds = heatmapData.cellOrder.map((x) => `${x}`);
