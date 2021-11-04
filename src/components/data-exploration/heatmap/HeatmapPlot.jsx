@@ -10,17 +10,16 @@ import {
 } from 'antd';
 import _ from 'lodash';
 import { getCellSets } from 'redux/selectors';
-import spec from '../../../utils/heatmapSpec';
-import VegaHeatmap from './VegaHeatmap';
-import PlatformError from '../../PlatformError';
-import { updateCellInfo } from '../../../redux/actions/cellInfo';
-import { loadGeneExpression, loadMarkerGenes } from '../../../redux/actions/genes';
-import { loadCellSets } from '../../../redux/actions/cellSets';
 
-import { loadComponentConfig } from '../../../redux/actions/componentConfig';
-import populateHeatmapData from '../../plots/helpers/populateHeatmapData';
-import Loader from '../../Loader';
-import CellInfo from '../CellInfo';
+import PlatformError from 'components/PlatformError';
+import { updateCellInfo } from 'redux/actions/cellInfo';
+import { loadGeneExpression, loadMarkerGenes } from 'redux/actions/genes';
+import { loadCellSets } from 'redux/actions/cellSets';
+import { loadComponentConfig } from 'redux/actions/componentConfig';
+
+import populateHeatmapData from 'components/plots/helpers/populateHeatmapData';
+import Loader from 'components/Loader';
+import CellInfo from 'components/data-exploration/CellInfo';
 
 import './Heatmap.module.css';
 
@@ -150,7 +149,7 @@ const HeatmapPlot = (props) => {
     currentHeatmapSettings.current = heatmapSettings;
 
     const data = populateHeatmapData(
-      cellSets, heatmapSettings, expressionData, selectedGenes, true,
+      cellSets, heatmapSettings, expressionData, selectedGenes, true, true,
     );
 
     setHeatmapDataWithDebounce(data);
@@ -177,8 +176,14 @@ const HeatmapPlot = (props) => {
   }, [width]);
 
   const buildExpressionMatrix = () => {
+    // const oldMap = new Map(heatmapData.trackColorData.map((x) => [`${x.cellId}`, hexToRgb(x.color)]));
+
+    // console.log('oldMapDebug');
+    // console.log(oldMap);
+
     // build expressionMatrix items
-    setCellColors(new Map(heatmapData.trackColorData.map((x) => [`${x.cellId}`, hexToRgb(x.color)])));
+    setCellColors(heatmapData.trackColorData);
+
     const cellIds = heatmapData.cellOrder.map((x) => `${x}`);
     const genes = heatmapData.geneOrder;
 

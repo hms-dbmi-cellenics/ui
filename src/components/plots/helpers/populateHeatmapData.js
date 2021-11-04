@@ -1,10 +1,12 @@
 import _ from 'lodash';
-import SetOperations from '../../../utils/setOperations';
-import { union } from '../../../utils/cellSetOperations';
+import generateVitessceHeatmapTracksData from 'components/plots/helpers/generateVitessceHeatmapTracksData';
+
+import SetOperations from 'utils/setOperations';
+import { union } from 'utils/cellSetOperations';
 
 const populateHeatmapData = (
   cellSets, heatmapSettings, expression,
-  selectedGenes, downsampling = false,
+  selectedGenes, downsampling = false, vitessce = false,
 ) => {
   const { hierarchy, properties, hidden } = cellSets;
   const {
@@ -252,15 +254,27 @@ const populateHeatmapData = (
     },
   );
 
-  // Directly generate track data.
-  const trackData = trackOrder.map((rootNode) => generateTrackData(
-    new Set(data.cellOrder),
-    rootNode,
-  ));
+  const cells = new Set(data.cellOrder);
 
-  data.trackColorData = trackData.map((datum) => datum.trackColorData).flat();
-  data.trackGroupData = trackData.map((datum) => datum.groupData).flat();
-  data.clusterSeparationLines = trackData.length > 0 ? trackData[0].clusterSeparationLines : [];
+  // Directly generate track data.
+  if (!vitessce) {
+    const trackData = trackOrder.map((rootNode) => generateTrackData(
+      cells,
+      rootNode,
+    ));
+
+    generateVitessceHeatmapTracksData(
+      trackOrder, cellSets.hierarchy, cellSets.properties, cells,
+    );
+
+    data.trackColorData = trackData.map((datum) => datum.trackColorData).flat();
+    data.trackGroupData = trackData.map((datum) => datum.groupData).flat();
+    data.clusterSeparationLines = trackData.length > 0 ? trackData[0].clusterSeparationLines : [];
+  } else {
+    data.trackColorData = generateVitessceHeatmapTracksData(
+      trackOrder, cellSets.hierarchy, cellSets.properties, cells,
+    );
+  }
 
   return data;
 };
