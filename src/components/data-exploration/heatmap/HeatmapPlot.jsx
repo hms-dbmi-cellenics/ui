@@ -298,6 +298,7 @@ const HeatmapPlot = (props) => {
         colormapRange={[0.0, 1.0]}
         expressionMatrix={expressionMatrix}
         cellColors={cellColors}
+        cellColorLabels={Array.from(heatmapSettings.selectedTracks).reverse()}
         transpose
         viewState={viewState}
         setViewState={({ zoom, target }) => { setViewState({ zoom, target }); }}
