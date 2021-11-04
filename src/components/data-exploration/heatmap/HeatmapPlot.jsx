@@ -297,8 +297,6 @@ const HeatmapPlot = (props) => {
         setCellHighlight={setCellHighlight}
         setGeneHighlight={setGeneHighlight}
         updateViewInfo={updateCellCoordinates}
-        variablesTitle={null}
-        observationsTitle={null}
       />
       <div className='cell-info-container'>
 
