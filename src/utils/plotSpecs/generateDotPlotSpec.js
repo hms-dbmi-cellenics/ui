@@ -1,5 +1,8 @@
 // The goal is to minimize space with the largest possible dot size along the larger axis
 const getDotDimensions = (config, numClusters) => {
+  // Radius for 0 data
+  const minArea = 10;
+
   const plotWidth = config.dimensions.width;
   const plotHeight = config.dimensions.height;
   const padding = 1;
@@ -11,15 +14,18 @@ const getDotDimensions = (config, numClusters) => {
   const widthPerDot = plotWidth / (numGenes + 1);
 
   // Use the smaller of the two dimensions to determine the max dot size
-  const radius = Math.floor(Math.min(heightPerDot, widthPerDot) / 2) - padding;
+  const radiusWithoutPadding = Math.floor(Math.min(heightPerDot, widthPerDot) / 2);
+  const totalPadding = padding * (numClusters + 1);
+  const radius = radiusWithoutPadding - totalPadding;
 
   // We have to calculate the area because that is the limit
-  const area = Math.PI * (radius ** 2);
+  const maxArea = minArea + Math.PI * (radius ** 2);
 
   // The expected return value is the area of the circle
   return {
+    minArea,
+    maxArea,
     radius,
-    area,
   };
 };
 
@@ -47,7 +53,6 @@ const generateSpec = (config, plotData, numClusters) => {
         labelFont: config.fontStyle.font,
         titleFont: config.fontStyle.font,
         size: 'dotSize',
-        format: 's',
         symbolType: 'circle',
         symbolFillColor: '#aaaaaa',
         direction: config.legend.direction,
@@ -55,7 +60,7 @@ const generateSpec = (config, plotData, numClusters) => {
     ];
   }
 
-  const { radius, area } = getDotDimensions(config, numClusters);
+  const { minArea, radius, maxArea } = getDotDimensions(config, numClusters);
 
   return {
     $schema: 'https://vega.github.io/schema/vega/v5.json',
@@ -73,7 +78,7 @@ const generateSpec = (config, plotData, numClusters) => {
           {
             type: 'formula',
             as: 'size',
-            expr: 'datum.cellsPercentage * 100',
+            expr: 'datum.cellsPercentage',
           },
         ],
       },
@@ -106,8 +111,8 @@ const generateSpec = (config, plotData, numClusters) => {
           field: 'size',
         },
         range: [
-          0,
-          area,
+          minArea,
+          maxArea,
         ],
       },
       {

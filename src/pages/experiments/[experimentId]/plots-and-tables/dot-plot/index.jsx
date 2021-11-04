@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import {
   Row,
   Col,
@@ -6,6 +6,9 @@ import {
   Collapse,
   Skeleton,
 } from 'antd';
+
+import _ from 'lodash';
+
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import DotPlot from 'components/plots/DotPlot';
@@ -101,8 +104,26 @@ const DotPlotPage = (props) => {
     if (hierarchy.length === 0) dispatch(loadCellSets(experimentId));
   }, []);
 
+  const currentConfig = useRef(null);
+
+  const getCurrentDataProps = (conf) => ({
+    useCustomGenes: conf.useCustomGenes,
+    nMarkerGenes: conf.nMarkerGenes,
+    selectedGenes: conf.selectedGenes,
+    selectedCellSet: conf.selectedCellSet,
+    selectedPoints: conf.selectedPoints,
+  });
+
+  const sameConfig = () => _.isEqual(
+    currentConfig.current,
+    getCurrentDataProps(config),
+  );
+
   useEffect(() => {
-    if (config) dispatch(loadPlotData(experimentId, plotUuid, plotType));
+    if (config && !sameConfig()) {
+      currentConfig.current = getCurrentDataProps(config);
+      dispatch(loadPlotData(experimentId, plotUuid, plotType));
+    }
   }, [config]);
 
   const loadInitialCustomGenes = () => {
