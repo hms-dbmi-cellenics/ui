@@ -60,7 +60,7 @@ const HeatmapPlot = (props) => {
     loading: markerGenesLoading, error: markerGenesLoadingError,
   } = useSelector((state) => state.genes.markers);
 
-  const [selectedGene, setSelectedGene] = useState(null);
+  const [geneHighlight, setGeneHighlight] = useState(null);
 
   const cellSets = useSelector(getCellSets());
   const selectedCell = useSelector((state) => state.cellInfo.cellName);
@@ -80,7 +80,7 @@ const HeatmapPlot = (props) => {
       .configureEmbedding?.clusteringSettings.methodSettings.louvain.resolution,
   );
 
-  const focusedExpression = useSelector((state) => state.genes.expression.data[selectedGene]);
+  const focusedExpression = useSelector((state) => state.genes.expression.data[geneHighlight]);
 
   const {
     legendIsVisible,
@@ -100,7 +100,7 @@ const HeatmapPlot = (props) => {
 
   const updateCellCoordinates = (newView) => {
     if (selectedCell && newView.project) {
-      const [x, y] = newView.project(selectedCell, selectedGene);
+      const [x, y] = newView.project(selectedCell, geneHighlight);
 
       cellCoordinates.current = {
         x,
@@ -276,7 +276,7 @@ const HeatmapPlot = (props) => {
     );
   }
 
-  const updateCellsHover = (cell) => {
+  const setCellHighlight = (cell) => {
     dispatch(updateCellInfo({ cellName: cell }));
   };
 
@@ -294,8 +294,8 @@ const HeatmapPlot = (props) => {
         transpose
         viewState={viewState}
         setViewState={({ zoom, target }) => { setViewState({ zoom, target }); }}
-        setCellHighlight={updateCellsHover}
-        setGeneHighlight={setSelectedGene}
+        setCellHighlight={setCellHighlight}
+        setGeneHighlight={setGeneHighlight}
         updateViewInfo={updateCellCoordinates}
         variablesTitle={null}
         observationsTitle={null}
