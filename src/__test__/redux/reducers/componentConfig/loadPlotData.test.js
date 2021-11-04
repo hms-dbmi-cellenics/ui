@@ -30,7 +30,7 @@ const experimentId = fake.EXPERIMENT_ID;
 let storeState = null;
 
 const plotUuid = 'DotPlotMain';
-const plotType = plotNames.DOT_PLOT;
+const plotType = plotNames.plotType.DOT_PLOT;
 
 describe('plotDataLoaded', () => {
   beforeEach(() => {

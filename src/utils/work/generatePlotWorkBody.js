@@ -1,7 +1,7 @@
 import plotNames from 'utils/plots/plotNames';
 
 const composeDotPlotWorkBody = (config) => ({
-  name: plotNames.DOT_PLOT,
+  name: plotNames.workRequestName.DOT_PLOT,
   markerGenes: !config.useCustomGenes,
   input: {
     nGenes: config.nMarkerGenes,
@@ -15,7 +15,7 @@ const composeDotPlotWorkBody = (config) => ({
 
 const generatePlotWorkBody = (plotType, config) => {
   switch (plotType) {
-    case plotNames.DOT_PLOT:
+    case plotNames.plotType.DOT_PLOT:
       return composeDotPlotWorkBody(config);
     default: {
       throw new Error('Plot type doesn\'t exist');

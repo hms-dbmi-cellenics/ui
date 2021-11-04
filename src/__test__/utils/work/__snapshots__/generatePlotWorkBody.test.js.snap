@@ -7,7 +7,7 @@ Object {
     "nGenes": 3,
   },
   "markerGenes": false,
-  "name": "dotPlot",
+  "name": "DotPlot",
   "subset": Object {
     "cellClassKey": "louvain",
     "cellSetKey": "All",

@@ -5,9 +5,12 @@ import { initialPlotConfigStates } from 'redux/reducers/componentConfig/initialS
 
 describe('Generate plot work request body', () => {
   it('Generates the correct work request body for DotPlot', () => {
-    const workBody = generatePlotWorkBody(plotNames.DOT_PLOT, initialPlotConfigStates.dotPlot);
+    const workBody = generatePlotWorkBody(
+      plotNames.plotType.DOT_PLOT,
+      initialPlotConfigStates.dotPlot,
+    );
 
-    expect(workBody.name).toEqual(plotNames.DOT_PLOT);
+    expect(workBody.name).toEqual(plotNames.workRequestName.DOT_PLOT);
     expect(workBody).toMatchSnapshot();
   });
 });

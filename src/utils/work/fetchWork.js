@@ -143,13 +143,15 @@ const fetchWork = async (
   });
 
   // First, let's try to fetch this information from the local cache.
-  const data = await cache.get(ETag);
-  if (data) {
-    return data;
-  }
+  // const data = await cache.get(ETag);
+  // if (data) {
+  //   return data;
+  // }
 
   // Then, we may be able to find this in S3.
-  let response = await seekFromS3(ETag);
+  // let response = await seekFromS3(ETag);
+
+  let response = null;
 
   // If response cannot be fetched, go to the worker.
   if (!response) {

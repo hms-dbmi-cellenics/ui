@@ -28,7 +28,7 @@ import plotNames from 'utils/plots/plotNames';
 
 const { Panel } = Collapse;
 const plotUuid = 'dotPlotMain';
-const plotType = plotNames.DOT_PLOT;
+const plotType = plotNames.plotType.DOT_PLOT;
 const route = {
   path: 'dot-plot',
   breadcrumbName: 'Dot plot',
@@ -119,13 +119,15 @@ const DotPlotPage = (props) => {
   };
 
   useEffect(() => {
-    if (config && config.selectedGenes.length > 0) return;
-
     if (config?.selectedGenes.length === 0 && highestDispersionGenes?.length === 0 && !genesFetching) {
+      console.error('*** loading initial genes');
+
       loadInitialCustomGenes();
     }
 
     if (config?.selectedGenes.length === 0 && highestDispersionGenes?.length > 0) {
+      console.error('*** updating plot with changes');
+
       updatePlotWithChanges({ selectedGenes: highestDispersionGenes });
     }
   }, [highestDispersionGenes, config, genesFetching]);
