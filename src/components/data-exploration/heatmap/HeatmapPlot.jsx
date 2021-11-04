@@ -181,6 +181,8 @@ const HeatmapPlot = (props) => {
     // console.log('oldMapDebug');
     // console.log(oldMap);
 
+    console.log(heatmapData.trackColorData);
+
     // build expressionMatrix items
     setCellColors(heatmapData.trackColorData);
 

@@ -3,14 +3,9 @@ import _ from 'lodash';
 import { hexToRgb } from 'utils/heatmapPlotHelperFunctions/helpers';
 
 const generateVitessceHeatmapTracksData = (trackOrder, hierarchy, properties, cells) => {
-  console.log('trackOrderDebug');
-  console.log(trackOrder);
-
   const cellIdsColorsMap = new Map();
 
-  // UNCOMMENT TO HAVE MANY TRACKS
-  // trackOrder.forEach((trackKey, trackIndex) => {
-  trackOrder.forEach((trackKey) => {
+  trackOrder.forEach((trackKey, trackIndex) => {
     const childrenCellSets = _.find(hierarchy, ({ key }) => key === trackKey).children;
 
     childrenCellSets.forEach(({ key }) => {
@@ -23,13 +18,11 @@ const generateVitessceHeatmapTracksData = (trackOrder, hierarchy, properties, ce
       // For each cellId, insert the current trackColor into the map
       intersectionSet.forEach((cellId) => {
         // cellColorsByTrack: [rgbForTrackIndex1, rgbForTrackIndex2, rgbForTrackIndex3, ...]
+        const cellColorsByTrack = cellIdsColorsMap.get(`${cellId}`) ?? [];
 
-        // UNCOMMENT TO HAVE MANY TRACKS
-        // const cellColorsByTrack = cellIdsColorsMap.get(`${cellId}`) ?? [];
+        cellColorsByTrack[trackIndex] = hexToRgb(color);
 
-        // cellColorsByTrack[trackIndex] = hexToRgb(color);
-
-        cellIdsColorsMap.set(`${cellId}`, hexToRgb(color));
+        cellIdsColorsMap.set(`${cellId}`, cellColorsByTrack);
       });
     });
   });
