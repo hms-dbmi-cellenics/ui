@@ -1,7 +1,7 @@
 import moment from 'moment';
 import Amplify, { Storage } from 'aws-amplify';
 
-import { decompressSync } from 'fflate';
+import { decompress } from 'fflate';
 
 // eslint-disable-next-line camelcase
 import { JSON_parse } from 'uint8array-json-parser';
@@ -14,9 +14,17 @@ import WorkTimeoutError from '../WorkTimeoutError';
 const unpackResult = async (storageResp) => {
   const arrayBuf = await storageResp.arrayBuffer();
 
-  const decompressed = decompressSync(new Uint8Array(arrayBuf));
+  const resultPromise = new Promise((resolve, reject) => {
+    decompress(new Uint8Array(arrayBuf), (err, decompressed) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(JSON_parse(decompressed));
+      }
+    });
+  });
 
-  return JSON_parse(decompressed);
+  return resultPromise;
 };
 
 const seekFromS3 = async (ETag) => {
