@@ -19,11 +19,11 @@ import { loadComponentConfig } from 'redux/actions/componentConfig';
 
 import populateHeatmapData from 'components/plots/helpers/populateHeatmapData';
 import Loader from 'components/Loader';
-import CellInfo from 'components/data-exploration/CellInfo';
+import HeatmapCellInfo from './HeatmapCellInfo';
 
 import './Heatmap.module.css';
 
-import { listToMatrix, hexToRgb, convertRange } from '../../../utils/heatmapPlotHelperFunctions/helpers';
+import { listToMatrix, convertRange } from '../../../utils/heatmapPlotHelperFunctions/helpers';
 
 const COMPONENT_TYPE = 'interactiveHeatmap';
 const { Text } = Typography;
@@ -62,7 +62,7 @@ const HeatmapPlot = (props) => {
   const [geneHighlight, setGeneHighlight] = useState(null);
 
   const cellSets = useSelector(getCellSets());
-  const selectedCell = useSelector((state) => state.cellInfo.cellName);
+  const cellHighlight = useSelector((state) => state.cellInfo.cellName);
 
   const {
     hierarchy: cellSetsHierarchy,
@@ -81,9 +81,7 @@ const HeatmapPlot = (props) => {
 
   const focusedExpression = useSelector((state) => state.genes.expression.data[geneHighlight]);
 
-  const {
-    legendIsVisible,
-  } = heatmapSettings;
+  const { legendIsVisible } = heatmapSettings;
 
   const { error: expressionDataError } = expressionData;
   const viewError = useSelector((state) => state.genes.expression.views[COMPONENT_TYPE]?.error);
@@ -98,8 +96,8 @@ const HeatmapPlot = (props) => {
   }, 1500, { leading: true }), []);
 
   const updateCellCoordinates = (newView) => {
-    if (selectedCell && newView.project) {
-      const [x, y] = newView.project(selectedCell, geneHighlight);
+    if (cellHighlight && newView.project) {
+      const [x, y] = newView.project(cellHighlight, geneHighlight);
 
       cellCoordinates.current = {
         x,
@@ -302,10 +300,11 @@ const HeatmapPlot = (props) => {
         setGeneHighlight={setGeneHighlight}
         updateViewInfo={updateCellCoordinates}
       />
-      <div className='cell-info-container'>
-
-        <CellInfo
-          componentType='umap'
+      <div>
+        <HeatmapCellInfo
+          cellId={cellHighlight}
+          geneName={geneHighlight}
+          geneExpression={focusedExpression?.rawExpression.expression[cellHighlight]}
           coordinates={cellCoordinates}
         />
       </div>

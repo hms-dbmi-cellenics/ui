@@ -1,0 +1,64 @@
+import React, { useState, useEffect } from 'react';
+import _ from 'lodash';
+import { Card } from 'antd';
+import PropTypes from 'prop-types';
+
+// selectedCell
+// geneHighlight
+// focusedExpression.rawExpression
+
+const HeatmapCellInfo = (props) => {
+  const {
+    cellId, geneName, geneExpression, coordinates,
+  } = props;
+
+  const cellInfoStyle = { fontSize: '0.75rem' };
+
+  const renderCellInfo = () => (
+    <Card
+      size='small'
+      style={{
+        zIndex: 6,
+        border: 0,
+        position: 'absolute',
+        left: `${coordinates.current.x + 20}px`,
+        top: `${coordinates.current.y + 20}px`,
+        pointerEvents: 'none',
+      }}
+    >
+      {cellId ? (
+        <div style={cellInfoStyle}>
+          {`Cell id: ${cellId}`}
+        </div>
+      ) : <></>}
+      {geneName ? (
+        <div style={cellInfoStyle}>
+          {`Gene name: ${geneName}`}
+        </div>
+      ) : <></>}
+      {geneExpression !== undefined ? (
+        <div style={cellInfoStyle}>
+          Expression:&nbsp;
+          {geneExpression}
+        </div>
+      ) : <></>}
+    </Card>
+  );
+
+  if (cellId && Object.keys(coordinates.current).length > 0) {
+    return renderCellInfo();
+  }
+
+  return (<></>);
+};
+
+HeatmapCellInfo.defaultProps = {};
+
+HeatmapCellInfo.propTypes = {
+  cellId: PropTypes.string.isRequired,
+  geneName: PropTypes.string.isRequired,
+  geneExpression: PropTypes.string.isRequired,
+  coordinates: PropTypes.object.isRequired,
+};
+
+export default HeatmapCellInfo;
