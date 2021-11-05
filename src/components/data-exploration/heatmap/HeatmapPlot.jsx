@@ -281,12 +281,14 @@ const HeatmapPlot = (props) => {
     dispatch(updateCellInfo({ cellName: cell }));
   };
 
+  const heatmapRightMargin = 50;
+
   return (
     <div id='heatmap-container'>
       <Heatmap
         uuid='heatmap-0'
         theme='light'
-        width={width}
+        width={width - heatmapRightMargin}
         height={height}
         colormap='plasma'
         colormapRange={[0.0, 1.0]}
