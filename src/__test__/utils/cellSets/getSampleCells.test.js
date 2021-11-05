@@ -1,9 +1,9 @@
-import { getSampleCells } from 'utils/cellSets';
-
 import {
   createHierarchyFromTree,
   createPropertiesFromTree,
 } from 'redux/reducers/cellSets/helpers';
+
+import { getSampleCells } from 'utils/cellSets';
 
 const mockCellSet = require('__test__/data/cell_sets.json');
 
@@ -16,7 +16,7 @@ const sampleKey = 'louvain-0';
 const numCells = cellSets.properties[sampleKey].cellIds.size;
 
 describe('Get sample cells', () => {
-  it('Returns all ids of all cells', () => {
+  it('returns all ids of all cells', () => {
     const allCellIds = getSampleCells(cellSets, 'louvain-0');
     expect(allCellIds.length).toEqual(numCells);
 
@@ -28,12 +28,13 @@ describe('Get sample cells', () => {
     `);
   });
 
-  it('Throws an error if cellSets does not exist', () => {
+  it('does not throw an error if cellSets does not exist', () => {
     const emptyCellSets = {
       properties: {},
       hierarchy: [],
     };
 
-    expect(() => { getSampleCells(emptyCellSets, 'louvain-0'); }).toThrow();
+    expect(() => { getSampleCells(emptyCellSets, 'louvain-0'); }).not.toThrow();
+    expect(getSampleCells(emptyCellSets, 'louvain-0')).toEqual([]);
   });
 });

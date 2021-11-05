@@ -275,7 +275,7 @@ const SamplesTable = forwardRef((props, ref) => {
     setTableData(newData);
   }, [projects, samples, activeProjectUuid]);
 
-  const sampleData = [
+  const exampleDatasets = [
     {
       filename: 'PBMC_3k.zip',
       description: 'Unisample PBMC',
@@ -312,7 +312,7 @@ const SamplesTable = forwardRef((props, ref) => {
           <div style={{ width: 'auto', textAlign: 'left' }}>
             <ul>
               {
-                sampleData.map(({ filename, description }) => (
+                exampleDatasets.map(({ filename, description }) => (
                   <li>
                     <Button
                       type='link'
