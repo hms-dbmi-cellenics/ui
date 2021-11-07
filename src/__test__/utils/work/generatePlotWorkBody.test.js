@@ -13,4 +13,17 @@ describe('Generate plot work request body', () => {
     expect(workBody.name).toEqual(plotNames.workRequestName.DOT_PLOT);
     expect(workBody).toMatchSnapshot();
   });
+
+  it('Throws an error if the wrong plot type is passed in', () => {
+    const nonExistentPlotName = 'NONEXISTENT_PLOT_NAME';
+
+    expect(
+      () => {
+        generatePlotWorkBody(
+          nonExistentPlotName,
+          {},
+        );
+      },
+    ).toThrow();
+  });
 });

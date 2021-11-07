@@ -75,6 +75,14 @@ const plotStylingControlsConfig = [
   },
 ];
 
+const getPlotDataConfig = (conf) => ({
+  useCustomGenes: conf.useCustomGenes,
+  nMarkerGenes: conf.nMarkerGenes,
+  selectedGenes: conf.selectedGenes,
+  selectedCellSet: conf.selectedCellSet,
+  selectedPoints: conf.selectedPoints,
+});
+
 const DotPlotPage = (props) => {
   const { experimentId } = props;
 
@@ -104,24 +112,11 @@ const DotPlotPage = (props) => {
     if (hierarchy.length === 0) dispatch(loadCellSets(experimentId));
   }, []);
 
-  const currentConfig = useRef(null);
-
-  const getCurrentDataProps = (conf) => ({
-    useCustomGenes: conf.useCustomGenes,
-    nMarkerGenes: conf.nMarkerGenes,
-    selectedGenes: conf.selectedGenes,
-    selectedCellSet: conf.selectedCellSet,
-    selectedPoints: conf.selectedPoints,
-  });
-
-  const sameConfig = () => _.isEqual(
-    currentConfig.current,
-    getCurrentDataProps(config),
-  );
+  const currentPlotDataConfig = useRef(null);
 
   useEffect(() => {
-    if (config && !sameConfig()) {
-      currentConfig.current = getCurrentDataProps(config);
+    if (config && !_.isEqual(currentPlotDataConfig.current, getPlotDataConfig(config))) {
+      currentPlotDataConfig.current = getPlotDataConfig(config);
       dispatch(loadPlotData(experimentId, plotUuid, plotType));
     }
   }, [config]);
