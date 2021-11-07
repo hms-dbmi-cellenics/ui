@@ -10,7 +10,7 @@ import { makeStore } from 'redux/store';
 
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 
-import createTestComponentFactory from '__test__/test-utils/componentFactory';
+import createTestComponentFactory from '__test__/test-utils/testComponentFactory';
 import mockAPI, { generateDefaultMockAPIResponses } from '__test__/test-utils/mockAPI';
 import fake from '__test__/test-utils/constants';
 

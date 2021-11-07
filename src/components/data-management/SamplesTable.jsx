@@ -40,6 +40,17 @@ import 'utils/css/data-management.css';
 
 const { Text } = Typography;
 
+const exampleDatasets = [
+  {
+    filename: 'PBMC_3k.zip',
+    description: 'Unisample PBMC',
+  },
+  {
+    filename: 'PBMC_BMMC_17k.zip',
+    description: 'Multisample blood and bone marrow dataset',
+  },
+];
+
 const SamplesTable = forwardRef((props, ref) => {
   const { height } = props;
   const dispatch = useDispatch();
@@ -275,17 +286,6 @@ const SamplesTable = forwardRef((props, ref) => {
     setTableData(newData);
   }, [projects, samples, activeProjectUuid]);
 
-  const exampleDatasets = [
-    {
-      filename: 'PBMC_3k.zip',
-      description: 'Unisample PBMC',
-    },
-    {
-      filename: 'PBMC_BMMC_17k.zip',
-      description: 'Multisample blood and bone marrow dataset',
-    },
-  ];
-
   const downloadPublicDataset = async (filename) => {
     const s3Object = await Storage.get(
       filename,
@@ -313,7 +313,7 @@ const SamplesTable = forwardRef((props, ref) => {
             <ul>
               {
                 exampleDatasets.map(({ filename, description }) => (
-                  <li>
+                  <li key={filename}>
                     <Button
                       type='link'
                       size='small'
@@ -396,3 +396,7 @@ SamplesTable.propTypes = {
 };
 
 export default React.memo(SamplesTable);
+
+export {
+  exampleDatasets,
+};
