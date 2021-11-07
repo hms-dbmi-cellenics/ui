@@ -52,11 +52,7 @@ const saveSamples = (
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          projectUuid,
-          experimentId,
-          samples: payload,
-        }),
+        body: JSON.stringify(payload),
       },
     );
 

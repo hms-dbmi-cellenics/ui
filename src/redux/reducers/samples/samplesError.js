@@ -8,6 +8,7 @@ const samplesError = (state, action) => {
     meta: {
       ...state.meta,
       saving: false,
+      loading: false,
       error,
     },
   };
