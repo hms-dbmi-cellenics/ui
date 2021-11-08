@@ -70,7 +70,6 @@ describe('Dot plot page', () => {
   let storeState = null;
 
   beforeEach(async () => {
-    console.log('*** before test');
     enableFetchMocks();
     fetchMock.resetMocks();
     fetchMock.mockIf(/.*/, mockAPI(defaultMockResponses));
@@ -104,7 +103,6 @@ describe('Dot plot page', () => {
   });
 
   it('Shows a skeleton if config is not loaded', async () => {
-    console.log('*** TEST 2');
     const noConfigResponse = _.merge(
       {},
       defaultMockResponses,
@@ -136,8 +134,6 @@ describe('Dot plot page', () => {
     );
 
     fetchMock.mockIf(/.*/, mockAPI(cellSetsErrorResponse));
-
-    console.log('*** TEST 3');
 
     await act(async () => {
       render(
