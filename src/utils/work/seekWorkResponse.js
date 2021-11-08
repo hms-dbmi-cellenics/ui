@@ -1,31 +1,12 @@
 import moment from 'moment';
 import Amplify, { Storage } from 'aws-amplify';
 
-import { decompress } from 'fflate';
+import connectionPromise from 'utils/socketConnection';
+import WorkResponseError from 'utils/WorkResponseError';
+import getAuthJWT from 'utils/getAuthJWT';
+import WorkTimeoutError from 'utils/WorkTimeoutError';
 
-// eslint-disable-next-line camelcase
-import { JSON_parse } from 'uint8array-json-parser';
-
-import connectionPromise from '../socketConnection';
-import WorkResponseError from '../WorkResponseError';
-import getAuthJWT from '../getAuthJWT';
-import WorkTimeoutError from '../WorkTimeoutError';
-
-const unpackResult = async (storageResp) => {
-  const arrayBuf = await storageResp.arrayBuffer();
-
-  const resultPromise = new Promise((resolve, reject) => {
-    decompress(new Uint8Array(arrayBuf), (err, decompressed) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(JSON_parse(decompressed));
-      }
-    });
-  });
-
-  return resultPromise;
-};
+import unpackResult from 'utils/work/unpackResult';
 
 const seekFromS3 = async (ETag) => {
   const configuredBucket = Amplify.configure().Storage.AWSS3.bucket;
