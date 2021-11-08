@@ -75,20 +75,17 @@ describe('loadPaginatedGeneProperties action', () => {
       // No need to mock the result accurately.
 
       const resolveWith = {
-        data: {
-          total: 2,
-          rows: [
-            {
-              gene_names: 'a',
-              dispersions: 1,
-            },
-            {
-              gene_names: 'b',
-              dispersions: 1,
-            },
-          ],
-        },
-        cacheable: true,
+        total: 2,
+        rows: [
+          {
+            gene_names: 'a',
+            dispersions: 1,
+          },
+          {
+            gene_names: 'b',
+            dispersions: 1,
+          },
+        ],
       };
 
       return new Promise((resolve) => resolve(resolveWith));
