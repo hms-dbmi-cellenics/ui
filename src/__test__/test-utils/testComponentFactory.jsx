@@ -6,8 +6,8 @@ const createTestComponentFactory = (Component, defaultProps) => (customProps = {
   // return a new object without mutating defaultProps
   const props = _.merge(
     {},
-    defaultProps,
-    customProps,
+    _.cloneDeep(defaultProps),
+    _.cloneDeep(customProps),
   );
 
   // eslint-disable-next-line react/jsx-props-no-spreading

@@ -127,6 +127,7 @@ const fetchWork = async (
 
   // First, let's try to fetch this information from the local cache.
   const data = await cache.get(ETag);
+
   if (data) {
     return data;
   }

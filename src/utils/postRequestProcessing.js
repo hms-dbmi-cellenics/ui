@@ -3,6 +3,9 @@ const calculateZScore = (responseData) => {
   Object.keys(responseData).forEach((gene) => {
     const { mean, stdev } = responseData[gene].rawExpression;
 
+    console.log('responseDataDebug');
+    console.log(responseData);
+
     /* eslint-disable no-param-reassign */
     responseData[gene].zScore = [];
     responseData[gene].rawExpression.expression.forEach((x) => {
