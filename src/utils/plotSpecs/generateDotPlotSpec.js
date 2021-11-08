@@ -14,11 +14,14 @@ const getDotDimensions = (config, numClusters) => {
   const widthPerDot = plotWidth / (numGenes + 1);
 
   // Use the smaller of the two dimensions to determine the max dot size
-  const radiusWithoutPadding = Math.floor(Math.min(heightPerDot, widthPerDot) / 2);
-  const totalPadding = padding * (numClusters + 1);
-  const radius = radiusWithoutPadding - totalPadding;
+  // Radius is half the width or height
+  const radiusWithPadding = Math.floor(Math.min(heightPerDot, widthPerDot) / 2);
 
-  // We have to calculate the area because that is the limit
+  // Multiply by 3 because we want extra resolution between dots
+  const paddingBetweenDots = padding * 3;
+  const radius = radiusWithPadding - paddingBetweenDots;
+
+  // We have to calculate the area because that is what is expected Vega's draw function
   const maxArea = minArea + Math.PI * (radius ** 2);
 
   // The expected return value is the area of the circle
@@ -35,7 +38,7 @@ const generateSpec = (config, plotData, numClusters) => {
   if (config.legend.enabled) {
     legend = [
       {
-        title: 'Average expression',
+        title: 'Avg. Expression',
         titleColor: config.colour.masterColour,
         labelColor: config.colour.toggleInvert === '#FFFFFF' ? '#000000' : '#FFFFFF',
         orient: config.legend.position,
@@ -176,6 +179,9 @@ const generateSpec = (config, plotData, numClusters) => {
     marks: [
       {
         type: 'symbol',
+        tooltip: {
+          content: 'plotData',
+        },
         shape: 'circle',
         zindex: 2,
         from: {
@@ -183,6 +189,14 @@ const generateSpec = (config, plotData, numClusters) => {
         },
         encode: {
           enter: {
+            tooltip: {
+              signal: `{
+                'Avg. Expression': format(datum.avgExpression, '.2f'),
+                'Percent Exp.(%)': format(datum.cellsPercentage, '.2f')
+              }`,
+            },
+          },
+          update: {
             xc: {
               scale: 'x',
               field: 'geneName',

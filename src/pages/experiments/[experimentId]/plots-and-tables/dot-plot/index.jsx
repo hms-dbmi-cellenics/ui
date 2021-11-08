@@ -135,15 +135,11 @@ const DotPlotPage = (props) => {
   };
 
   useEffect(() => {
-    if (config?.selectedGenes.length === 0 && highestDispersionGenes?.length === 0 && !genesFetching) {
-      console.error('*** loading initial genes');
-
+    if (config?.selectedGenes.length === 0 && !highestDispersionGenes?.length > 0 && !genesFetching) {
       loadInitialCustomGenes();
     }
 
     if (config?.selectedGenes.length === 0 && highestDispersionGenes?.length > 0) {
-      console.error('*** updating plot with changes');
-
       updatePlotWithChanges({ selectedGenes: highestDispersionGenes });
     }
   }, [highestDispersionGenes, config, genesFetching]);
