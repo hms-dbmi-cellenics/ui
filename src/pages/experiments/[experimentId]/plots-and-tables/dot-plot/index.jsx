@@ -75,23 +75,15 @@ const plotStylingControlsConfig = [
   },
 ];
 
-const getPlotDataConfig = (conf) => ({
-  useCustomGenes: conf.useCustomGenes,
-  nMarkerGenes: conf.nMarkerGenes,
-  selectedGenes: conf.selectedGenes,
-  selectedCellSet: conf.selectedCellSet,
-  selectedPoints: conf.selectedPoints,
-});
-
 const DotPlotPage = (props) => {
   const { experimentId } = props;
 
   const dispatch = useDispatch();
+
   const {
     config,
     plotData,
     loading: plotDataLoading,
-    error: plotDataError,
   } = useSelector((state) => state.componentConfig[plotUuid]) || {};
 
   const {
@@ -113,10 +105,11 @@ const DotPlotPage = (props) => {
   }, []);
 
   const currentPlotDataConfig = useRef(null);
+  const getDataProps = (updatedConfig) => _.pick(updatedConfig, ['useCustomGenes', 'nMarkerGenes', 'selectedGenes', 'selectedCellSet', 'selectedPoints']);
 
   useEffect(() => {
-    if (config && !_.isEqual(currentPlotDataConfig.current, getPlotDataConfig(config))) {
-      currentPlotDataConfig.current = getPlotDataConfig(config);
+    if (config && !_.isEqual(currentPlotDataConfig.current, getDataProps(config))) {
+      currentPlotDataConfig.current = getDataProps(config);
       dispatch(loadPlotData(experimentId, plotUuid, plotType));
     }
   }, [config]);
@@ -146,11 +139,6 @@ const DotPlotPage = (props) => {
 
   const updatePlotWithChanges = (obj) => {
     dispatch(updatePlotConfig(plotUuid, obj));
-  };
-
-  const reloadPlotData = () => {
-    if (hierarchy.length === 0) dispatch(loadCellSets(experimentId));
-    if (plotData.length === 0) dispatch(loadPlotData(experimentId, plotUuid, plotType));
   };
 
   const onGeneEnter = (genes) => {
@@ -188,12 +176,12 @@ const DotPlotPage = (props) => {
   }
 
   const renderPlot = () => {
-    if (cellSetsError || plotDataError) {
+    if (cellSetsError) {
       return (
         <center>
           <PlatformError
-            error='Error loading plot data, please reload'
-            onClick={() => reloadPlotData()}
+            description='Error loading cell sets'
+            onClick={() => dispatch(loadCellSets(experimentId))}
           />
         </center>
       );

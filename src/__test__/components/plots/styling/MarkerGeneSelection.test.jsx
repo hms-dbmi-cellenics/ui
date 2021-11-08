@@ -55,6 +55,7 @@ describe('MarkerGeneSelection', () => {
 
   it('Should show the number of marker genes input', async () => {
     const mockConfig = _.merge(
+      {},
       initialPlotConfigStates.dotPlot,
       {
         useCustomGenes: false,
