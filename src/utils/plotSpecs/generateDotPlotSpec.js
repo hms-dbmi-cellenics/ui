@@ -5,9 +5,11 @@ const getDotDimensions = (config, numClusters) => {
 
   const plotWidth = config.dimensions.width;
   const plotHeight = config.dimensions.height;
-  const padding = 1;
+  const padding = 2;
 
-  const numGenes = config.useCustomGenes ? config.selectedGenes.length : config.nMarkerGenes;
+  const numGenes = config.useCustomGenes
+    ? config.selectedGenes.length
+    : config.nMarkerGenes * numClusters;
 
   // + 1 because there is padding the size of half plots on the left and right
   const heightPerDot = plotHeight / (numClusters + 1);
@@ -18,8 +20,7 @@ const getDotDimensions = (config, numClusters) => {
   const radiusWithPadding = Math.floor(Math.min(heightPerDot, widthPerDot) / 2);
 
   // Multiply by 3 because we want extra resolution between dots
-  const paddingBetweenDots = padding * 3;
-  const radius = radiusWithPadding - paddingBetweenDots;
+  const radius = radiusWithPadding - padding;
 
   // We have to calculate the area because that is what is expected Vega's draw function
   const maxArea = minArea + Math.PI * (radius ** 2);
