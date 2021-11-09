@@ -1,19 +1,28 @@
+const convertedToUIModel = (experiment) => ({
+  ...experiment,
+  id: experiment.experimentId,
+  name: experiment.experimentName,
+  projectUuid: experiment.projectId,
+});
+
 const experimentsLoaded = (state, action) => {
   const { experiments } = action.payload;
 
   const newExperiments = experiments.reduce((acc, curr) => {
     if (!acc.ids.includes(curr.experimentId)) acc.ids.push(curr.experimentId);
 
+    const uiModelExp = convertedToUIModel(curr);
+
     acc[curr.experimentId] = {
-      projectUuid: curr.projectId,
-      name: curr.experimentName,
-      description: curr.description,
-      id: curr.experimentId,
-      createdDate: curr.createdDate,
-      lastViewed: curr.lastViewed,
-      meta: curr.meta,
-      sampleIds: curr.sampleIds,
-      notifyByEmail: curr.notifyByEmail,
+      projectUuid: uiModelExp.projectUuid,
+      name: uiModelExp.name,
+      description: uiModelExp.description,
+      id: uiModelExp.id,
+      createdDate: uiModelExp.createdDate,
+      lastViewed: uiModelExp.lastViewed,
+      meta: uiModelExp.meta,
+      sampleIds: uiModelExp.sampleIds,
+      notifyByEmail: uiModelExp.notifyByEmail,
     };
 
     return acc;

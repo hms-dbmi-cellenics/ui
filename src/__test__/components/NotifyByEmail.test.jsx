@@ -53,7 +53,7 @@ describe('Notify by email component', () => {
   });
 
   it('Renders Correctly', () => {
-    renderNotifyByEmail();
+    await renderNotifyByEmail();
     expect(screen.getByText('Get notified about your pipeline status via email')).toBeInTheDocument();
     const toggle = screen.getByRole('switch');
     expect(toggle).toBeInTheDocument();
