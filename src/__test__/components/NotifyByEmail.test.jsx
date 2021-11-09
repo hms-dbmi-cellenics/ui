@@ -52,7 +52,7 @@ describe('Notify by email component', () => {
     expect(loadExperimentsSpy).toHaveBeenCalledTimes(1);
   });
 
-  it('Renders Correctly', () => {
+  it('Renders Correctly', async () => {
     await renderNotifyByEmail();
     expect(screen.getByText('Get notified about your pipeline status via email')).toBeInTheDocument();
     const toggle = screen.getByRole('switch');
