@@ -29,8 +29,8 @@ const decrypt = (hash) => {
 
 const getWebhookUrl = () => {
   const webhookEndpoint = {
-    iv: '06cc7e997355ede361bae3866cd75723', // pragma: allowlist secret
-    content: '73b948b42d2d91f12dddbb41705110992f3ac6b3ffdbee6aaad336637e1fd97bea63764b88eb08275c784c1d3c36f618bdd52ba8c385543cf9fa666e4d89dcca7d37fab2e76ebced6042ed873af7a4840e', // pragma: allowlist secret
+    iv: '17a763bce89c584a464f0e0fe1e98b7e', // pragma: allowlist secret
+    content: '2106a03efbc5f502923c35a7008d5b1cda6b2308de46135c1f403adf3357f3313b68b445b0bad62aeb9eceea0828754e0d28d5cbc946fba86bf68ac4e6c27d1ea9690e03d7784fe54327ece16d77ae175b', // pragma: allowlist secret
   };
 
   return decrypt(webhookEndpoint);
