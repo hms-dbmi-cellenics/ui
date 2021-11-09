@@ -8,7 +8,6 @@ import { act } from 'react-dom/test-utils';
 import { Provider } from 'react-redux';
 import userEvent from '@testing-library/user-event';
 import * as updateExperiment from 'redux/actions/experiments/updateExperiment';
-import initialExperimentsState from 'redux/reducers/experiments/initialState';
 import * as loadProjects from 'redux/actions/projects/loadProjects';
 import * as loadExperiments from 'redux/actions/experiments/loadExperiments';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
