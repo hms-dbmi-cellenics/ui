@@ -1,11 +1,12 @@
 import _ from 'lodash';
+
 import {
   GENES_EXPRESSION_LOADING, GENES_EXPRESSION_ERROR, GENES_EXPRESSION_LOADED,
-} from '../../actionTypes/genes';
+} from 'redux/actionTypes/genes';
 
-import pushNotificationMessage from '../../../utils/pushNotificationMessage';
-import { fetchWork } from '../../../utils/work/fetchWork';
-import getTimeoutForWorkerTask from '../../../utils/getTimeoutForWorkerTask';
+import pushNotificationMessage from 'utils/pushNotificationMessage';
+import { fetchWork } from 'utils/work/fetchWork';
+import getTimeoutForWorkerTask from 'utils/getTimeoutForWorkerTask';
 
 const loadGeneExpression = (
   experimentId, genes, componentUuid, forceReloadAll = false,

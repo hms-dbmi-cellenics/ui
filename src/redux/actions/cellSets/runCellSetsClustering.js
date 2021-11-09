@@ -1,9 +1,10 @@
-import { fetchWork } from '../../../utils/work/fetchWork';
 import {
   CELL_SETS_ERROR, CELL_SETS_CLUSTERING_UPDATING,
-} from '../../actionTypes/cellSets';
-import updateCellSetsClustering from './updateCellSetsClustering';
-import getTimeoutForWorkerTask from '../../../utils/getTimeoutForWorkerTask';
+} from 'redux/actionTypes/cellSets';
+import updateCellSetsClustering from 'redux/actions/cellSets/updateCellSetsClustering';
+
+import getTimeoutForWorkerTask from 'utils/getTimeoutForWorkerTask';
+import { fetchWork } from 'utils/work/fetchWork';
 
 const runCellSetsClustering = (experimentId, resolution) => async (dispatch, getState) => {
   const {
