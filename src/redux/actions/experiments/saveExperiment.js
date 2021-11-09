@@ -9,31 +9,12 @@ import {
   EXPERIMENTS_SAVED,
 } from '../../actionTypes/experiments';
 
-// There are some differences between the property naming of elements
-// stored in the ui and in the api,
-// this is an attempt to deal with this in one single place (the ui)
-// We should try to converge to one single model to follow
-const convertedToApiModel = (experiment) => {
-  const {
-    id, name, projectUuid, ...restOfExperiment
-  } = experiment;
-
-  const convertedExperiment = {
-    ...restOfExperiment,
-    experimentId: id,
-    experimentName: name,
-    projectId: projectUuid,
-  };
-
-  return convertedExperiment;
-};
-
 const saveExperiment = (
   experimentId,
   newExperiment,
   alreadyExists = true,
 ) => async (dispatch, getState) => {
-  const experimentToSend = newExperiment || getState().experiments[experimentId];
+  const payload = newExperiment || getState().experiments[experimentId];
 
   dispatch({
     type: EXPERIMENTS_SAVING,
@@ -48,7 +29,7 @@ const saveExperiment = (
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(convertedToApiModel(experimentToSend)),
+        body: JSON.stringify(payload),
       },
     );
 
