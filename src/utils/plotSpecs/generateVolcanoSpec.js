@@ -15,14 +15,6 @@ const generateSpec = (configSrc, data) => {
     });
   });
 
-  const logFoldChangeFilterExpr = (config.logFoldChangeDomain)
-    ? `datum.logFC > ${config.logFoldChangeDomain * -1} && datum.logFC < ${config.logFoldChangeDomain}`
-    : 'true';
-
-  const negativeLogpValueFilterExpr = (config.maxNegativeLogpValueDomain)
-    ? `datum.neglogpvalue < ${config.maxNegativeLogpValueDomain}`
-    : 'true';
-
   const logFoldChangeThresholdColor = config.showLogFoldChangeThresholdGuides
     ? config.logFoldChangeThresholdColor
     : '#ffffff00';
@@ -44,13 +36,13 @@ const generateSpec = (configSrc, data) => {
   // interface by deselecting Auto and entering a custom value), use
   // their specified range. If not, scale the plot based on the range of
   // the data in the set.
-  const logFoldChangeDomain = config.logFoldChangeDomain
-    ? [config.logFoldChangeDomain * -1, config.logFoldChangeDomain]
-    : { data: 'data', field: 'logFC' };
+  const logFoldChangeDomain = config.xAxisAuto
+    ? { data: 'data', field: 'logFC' }
+    : [config.logFoldChangeDomain * -1, config.logFoldChangeDomain];
 
-  const maxNegativeLogpValueDomain = config.maxNegativeLogpValueDomain
-    ? [0, config.maxNegativeLogpValueDomain]
-    : { data: 'data', field: 'neglogpvalue' };
+  const maxNegativeLogpValueDomain = config.yAxisAuto
+    ? { data: 'data', field: 'neglogpvalue' }
+    : [0, config.maxNegativeLogpValueDomain];
 
   // adding gene labels above the set Y value only for the significant genes
   const geneLabelsEquation = `datum.logFC !== 'NA' && (datum.neglogpvalue >${config.textThresholdValue} && (datum.status == 'Upregulated' || datum.status == 'Downregulated'))`;
@@ -108,14 +100,6 @@ const generateSpec = (configSrc, data) => {
             as: 'neglogpvalue',
 
             expr: '-(log(datum.p_val_adj) / LN10)',
-          },
-          {
-            type: 'filter',
-            expr: logFoldChangeFilterExpr,
-          },
-          {
-            type: 'filter',
-            expr: negativeLogpValueFilterExpr,
           },
         ],
       },

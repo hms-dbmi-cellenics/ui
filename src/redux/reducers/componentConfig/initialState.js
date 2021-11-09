@@ -114,7 +114,10 @@ const markerHeatmapInitialConfig = {
 // PLOTS & TABLES - Volcano plot
 const volcanoInitialConfig = {
   spec: '1.0.0',
-  legend: legendBaseState,
+  legend: {
+    ...legendBaseState,
+    position: 'bottom-right',
+  },
   dimensions: dimensionsBaseState,
   marker: {
     ...markerBaseState,
@@ -135,8 +138,10 @@ const volcanoInitialConfig = {
   significantUpregulatedColor: '#0000ffaa',
   significantDownregulatedColor: '#ff0000',
 
-  logFoldChangeDomain: 0,
-  maxNegativeLogpValueDomain: 0,
+  xAxisAuto: true,
+  yAxisAuto: true,
+  logFoldChangeDomain: 1,
+  maxNegativeLogpValueDomain: 1,
   negLogpValueThreshold: 4,
   logFoldChangeThreshold: 1,
   logFoldChangeTickCount: 5,

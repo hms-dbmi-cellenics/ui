@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {
-  Slider, Form, Space,
+  Slider, Form, Space, Checkbox,
 } from 'antd';
 import DimensionsRangeEditor from '../DimensionsRangeEditor';
 import useUpdateThrottled from '../../../../utils/customHooks/useUpdateThrottled';
@@ -12,7 +12,7 @@ const VolcanoDimensionsRangeEditor = (props) => {
   } = props;
   const [newConfig, handleChange] = useUpdateThrottled(onUpdate, config);
 
-  const rangeFormatter = (value) => value === 0 ? 'Auto' : value.toString();
+  const rangeFormatter = (value) => (value === 0 ? 'Auto' : value.toString());
 
   return (
     <Space direction='vertical' style={{ width: '80%' }}>
@@ -21,29 +21,48 @@ const VolcanoDimensionsRangeEditor = (props) => {
         onUpdate={onUpdate}
       />
       <Form.Item
-        label='Y-axis Range'
+        label='Y-Axis Range'
       >
+        <Checkbox
+          onChange={() => {
+            onUpdate({ yAxisAuto: !config.yAxisAuto });
+          }}
+          defaultChecked
+          checked={config.yAxisAuto}
+        >
+          Auto
+        </Checkbox>
         <Slider
           value={newConfig.maxNegativeLogpValueDomain}
-          min={0}
+          min={1}
           max={yMax}
-          tipFormatter={rangeFormatter}
           onChange={(value) => {
             handleChange({ maxNegativeLogpValueDomain: value });
           }}
+          disabled={config.yAxisAuto}
         />
       </Form.Item>
       <Form.Item
-        label='X-axis Range'
+        label='X-Axis Range'
       >
+        <Checkbox
+          onChange={() => {
+            onUpdate({ xAxisAuto: !config.xAxisAuto });
+          }}
+          checked={config.xAxisAuto}
+          defaultChecked
+        >
+          Auto
+        </Checkbox>
         <Slider
           value={newConfig.logFoldChangeDomain}
-          min={0}
+          min={1}
           max={xMax}
           tipFormatter={rangeFormatter}
           onChange={(value) => {
             handleChange({ logFoldChangeDomain: value });
           }}
+          disabled={config.xAxisAuto}
         />
       </Form.Item>
 

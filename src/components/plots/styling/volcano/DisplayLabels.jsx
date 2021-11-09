@@ -21,7 +21,7 @@ const DisplayLabels = (props) => {
         <p><strong>Display Gene Labels Above (-log10 pvalue)</strong></p>
 
         <Form.Item
-          label='Width'
+          label='Min. -log10 pvalue'
         >
           <>  </>
           <Slider
