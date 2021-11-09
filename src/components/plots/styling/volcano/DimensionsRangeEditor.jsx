@@ -3,8 +3,8 @@ import PropTypes from 'prop-types';
 import {
   Slider, Form, Space, Checkbox,
 } from 'antd';
-import DimensionsRangeEditor from '../DimensionsRangeEditor';
-import useUpdateThrottled from '../../../../utils/customHooks/useUpdateThrottled';
+import DimensionsRangeEditor from 'components/plots/styling/DimensionsRangeEditor';
+import useUpdateThrottled from 'utils/customHooks/useUpdateThrottled';
 
 const VolcanoDimensionsRangeEditor = (props) => {
   const {
