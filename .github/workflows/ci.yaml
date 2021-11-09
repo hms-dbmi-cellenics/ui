@@ -210,6 +210,7 @@ jobs:
             KUBERNETES_ENV="production"
             IMAGE_TAG="${REF_DASHED/refs-tags-/}"
             IMAGE_GLOB="semver:>=0.0.0"
+            REPLICA_COUNT="4"
           fi
 
           if [ "${{ matrix.environment }}" = "develop" ]; then
@@ -218,6 +219,7 @@ jobs:
             KUBERNETES_ENV="staging"
             IMAGE_TAG="$REF_DASHED-$GITHUB_SHA"
             IMAGE_GLOB="glob:$REF_DASHED-*"
+            REPLICA_COUNT="4"
           fi
 
           if [ "${{ matrix.environment }}" = "staging" ]; then
@@ -226,6 +228,7 @@ jobs:
             KUBERNETES_ENV="staging"
             IMAGE_TAG="$REF_DASHED-$GITHUB_SHA"
             IMAGE_GLOB="glob:$REF_DASHED-*"
+            REPLICA_COUNT="1"
           fi
 
           echo "::set-output name=kubernetes-env::$KUBERNETES_ENV"
@@ -244,6 +247,7 @@ jobs:
           | yq w -d1 - spec.values.image.registry "${{ steps.login-ecr.outputs.registry }}" \
           | yq w -d1 - spec.values.image.repository "$DEPLOYMENT_NAME" \
           | yq w -d1 - spec.values.image.tag "$IMAGE_TAG" \
+          | yq w -d1 - spec.values.replicaCount $REPLICA_COUNT \
           | yq w -d1 - spec.values.serviceAccount.iamRole "arn:aws:iam::${{ steps.setup-aws.outputs.aws-account-id }}:role/ui-role-$KUBERNETES_ENV" \
           > $DEPLOYMENT_NAME-without-host.yaml
 
