@@ -28,13 +28,13 @@ import {
 } from 'redux/actions/samples';
 import { metadataNameToKey, metadataKeyToName, temporaryMetadataKey } from 'utils/data-management/metadataUtils';
 import integrationTestConstants from 'utils/integrationTestConstants';
+import MetadataColumnTitle from 'components/data-management/MetadataColumn';
+import MetadataEditor from 'components/data-management/MetadataEditor';
+import SpeciesSelector from 'components/data-management/SpeciesSelector';
+import MetadataPopover from 'components/data-management/MetadataPopover';
 import {
   UploadCell, SampleNameCell, EditableFieldCell, SpeciesCell,
 } from './SamplesTableCells';
-import MetadataColumnTitle from './MetadataColumn';
-import MetadataEditor from './MetadataEditor';
-import SpeciesSelector from './SpeciesSelector';
-import MetadataPopover from './MetadataPopover';
 
 import 'utils/css/data-management.css';
 

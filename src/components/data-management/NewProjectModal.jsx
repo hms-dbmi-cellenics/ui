@@ -11,9 +11,9 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { ClipLoader } from 'react-spinners';
 import PropTypes from 'prop-types';
-import validateInputs, { rules } from '../../utils/validateInputs';
-import { createProject } from '../../redux/actions/projects';
-import integrationTestConstants from '../../utils/integrationTestConstants';
+import validateInputs, { rules } from 'utils/validateInputs';
+import { createProject } from 'redux/actions/projects';
+import integrationTestConstants from 'utils/integrationTestConstants';
 
 const { Text, Title, Paragraph } = Typography;
 const { TextArea } = Input;
