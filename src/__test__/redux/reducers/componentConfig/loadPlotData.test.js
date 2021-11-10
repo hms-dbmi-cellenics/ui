@@ -27,49 +27,50 @@ jest.mock('utils/work/fetchWork', () => ({
 }));
 
 const experimentId = fake.EXPERIMENT_ID;
-let storeState = null;
+let testStore = null;
 
 const plotUuid = 'DotPlotMain';
 const plotType = plotNames.plotType.DOT_PLOT;
 
 describe('plotDataLoaded', () => {
   beforeEach(() => {
-    storeState = makeStore();
+    jest.clearAllMocks();
+    fetchMock.resetMocks();
 
-    storeState.dispatch(loadPlotConfig(plotUuid, plotType));
+    fetchMock.mockResponse(() => Promise.resolve({ status: 404, body: JSON.stringify('Plot config not found') }));
+
+    testStore = makeStore();
+    testStore.dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
   });
 
   it('Loads plot data into the component properly', async () => {
     await act((async () => {
-      await storeState.dispatch(fetchPlotDataWork(experimentId, plotUuid, plotType));
+      await testStore.dispatch(fetchPlotDataWork(experimentId, plotUuid, plotType));
     }));
 
-    const { plotData } = storeState.getState().componentConfig[plotUuid];
+    const { plotData } = testStore.getState().componentConfig[plotUuid];
+
+    // In the end, loading state should be resolved to false after data is loaded
+    expect(testStore.getState().componentConfig[plotUuid].loading).toEqual(false);
+    expect(testStore.getState().componentConfig[plotUuid].error).toEqual(false);
 
     expect(plotData.length).toBeGreaterThan(0);
   });
 
-  it('Throws an error if there is an error fetching plot data', async () => {
+  it('Displays notification if there is an error fetching plot data', async () => {
     fetchWork.mockImplementation(() => {
       throw new Error('Error fetching work');
     });
 
     await act((async () => {
-      await storeState.dispatch(fetchPlotDataWork(experimentId, plotUuid, plotType));
+      await testStore.dispatch(fetchPlotDataWork(experimentId, plotUuid, plotType));
     }));
 
+    // The test store error should not be false and loading should be resolved
+    expect(testStore.getState().componentConfig[plotUuid].error).toBeTruthy();
+    expect(testStore.getState().componentConfig[plotUuid].loading).toEqual(false);
+
     expect(pushNotificationMessage).toHaveBeenCalledTimes(1);
-  });
-
-  it('Sets up a loading state when waiting for components', () => {
-
-  });
-
-  it('Resolves the loading state if data is successfully loaded', () => {
-
-  });
-
-  it('Resolves the loading state if an error occurs', () => {
-
+    expect(pushNotificationMessage).toHaveBeenCalledWith('error', expect.anything());
   });
 });

@@ -18,8 +18,10 @@ const loadPlotConfig = (experimentId, plotUuid, plotType) => async (dispatch) =>
       dispatch({
         type: LOAD_CONFIG,
         payload: {
-          ...data,
+          experimentId,
+          plotUuid,
           plotType,
+          plotData: data.plotData,
           config,
         },
       });
@@ -30,6 +32,7 @@ const loadPlotConfig = (experimentId, plotUuid, plotType) => async (dispatch) =>
           experimentId,
           plotUuid,
           plotType,
+          plotData: [],
           config: _.cloneDeep(initialPlotConfigStates[plotType]),
         },
       });

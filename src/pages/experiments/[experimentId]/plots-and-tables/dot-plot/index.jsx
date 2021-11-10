@@ -100,8 +100,7 @@ const DotPlotPage = (props) => {
   } = cellSets;
 
   useEffect(() => {
-    dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
-
+    if (!config) dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
     if (hierarchy.length === 0) dispatch(loadCellSets(experimentId));
   }, []);
 
