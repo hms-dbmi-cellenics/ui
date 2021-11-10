@@ -141,7 +141,7 @@ const volcanoInitialConfig = {
   xAxisAuto: true,
   yAxisAuto: true,
   logFoldChangeDomain: 1,
-  maxNegativeLogpValueDomain: 1,
+  maxNegativeLogpValueDomain: 50,
   negLogpValueThreshold: 4,
   logFoldChangeThreshold: 1,
   logFoldChangeTickCount: 5,

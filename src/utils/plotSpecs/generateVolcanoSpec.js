@@ -1,19 +1,7 @@
 import _ from 'lodash';
 
-const generateSpec = (configSrc, data) => {
+const generateSpec = (configSrc) => {
   const config = _.cloneDeep(configSrc);
-
-  let maxNegativeLogpValue = 0;
-
-  data.forEach((o) => {
-    Object.keys(o).forEach((k) => {
-      if (k === 'p_val_adj' && o[k] && o[k] !== 0) {
-        maxNegativeLogpValue = Math.max(
-          maxNegativeLogpValue, -Math.log10(o[k]),
-        );
-      }
-    });
-  });
 
   const logFoldChangeThresholdColor = config.showLogFoldChangeThresholdGuides
     ? config.logFoldChangeThresholdColor
@@ -310,9 +298,7 @@ const generateSpec = (configSrc, data) => {
     legends: legend,
   };
 
-  return {
-    spec, maxNegativeLogpValue,
-  };
+  return spec;
 };
 
 const generateData = () => { };

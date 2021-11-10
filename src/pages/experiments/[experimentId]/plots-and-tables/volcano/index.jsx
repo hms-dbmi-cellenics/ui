@@ -7,16 +7,14 @@ import {
   Skeleton,
   Button, Empty, Typography,
 } from 'antd';
-import _ from 'lodash';
 import moment from 'moment';
 import { CSVLink } from 'react-csv';
 import { useSelector, useDispatch } from 'react-redux';
-import { Vega } from 'react-vega';
 import PropTypes from 'prop-types';
 import loadDifferentialExpression from 'redux/actions/differentialExpression/loadDifferentialExpression';
 import PlotStyling from 'components/plots/styling/PlotStyling';
 import Header from 'components/plots/Header';
-import { generateSpec } from 'utils/plotSpecs/generateVolcanoSpec';
+
 import DiffExprCompute from 'components/data-exploration/differential-expression-tool/DiffExprCompute';
 import {
   updatePlotConfig,
@@ -26,6 +24,8 @@ import PlatformError from 'components/PlatformError';
 import { setComparisonGroup } from 'redux/actions/differentialExpression';
 import Loader from 'components/Loader';
 import calculateVolcanoDataPoints from 'components/plots/helpers/calculateVolcanoDataPoints';
+
+import VolcanoPlot from 'components/plots/VolcanoPlot';
 
 const { Text } = Typography;
 const { Panel } = Collapse;
@@ -38,22 +38,26 @@ const route = {
 const plotUuid = 'volcanoPlotMain';
 const plotType = 'volcano';
 
-const VolcanoPlot = ({ experimentId }) => {
+const volcanoPlotPage = (props) => {
+  const { experimentId } = props;
+
   const dispatch = useDispatch();
   const comparisonCreated = useRef(false);
   const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
   const {
-    loading, data: expressionData, error,
-    cellSets: plotCellSets, comparisonType: plotComparisonType,
+    loading: diffExprLoading,
+    data: diffExprData,
+    error: diffExprError,
+    cellSets: plotCellSets,
+    comparisonType: plotComparisonType,
   } = useSelector(
     (state) => state.differentialExpression.properties,
   );
   const comparison = useSelector((state) => state.differentialExpression.comparison);
+
   const [plotData, setPlotData] = useState([]);
-  const [spec, setSpec] = useState({
-    spec: null,
-    maxNegativeLogpValue: null,
-  });
+  const [maxYAxis, setMaxYAxis] = useState(null);
+
   useEffect(() => {
     if (!config) {
       dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
@@ -65,14 +69,20 @@ const VolcanoPlot = ({ experimentId }) => {
   }, []);
 
   useEffect(() => {
-    if (!config || !expressionData.length) return;
-    setPlotData(calculateVolcanoDataPoints(config, expressionData));
-  }, [config, expressionData]);
+    if (!config || !diffExprData.length) return;
+    setPlotData(calculateVolcanoDataPoints(config, diffExprData));
+  }, [config, diffExprData]);
+
+  const getMaxNegativeLogPValue = (data) => data.reduce((maxNegativeLogPValue, dataEntry) => {
+    if (!dataEntry?.p_val_adj === 0) return maxNegativeLogPValue;
+    return Math.max(maxNegativeLogPValue, -Math.log10(dataEntry.p_val_adj));
+  }, 0);
 
   useEffect(() => {
     if (plotData.length === 0) return;
-    const generatedSpec = generateSpec(config, plotData);
-    setSpec(generatedSpec);
+
+    const maxNegativeLogpValue = getMaxNegativeLogPValue(plotData);
+    setMaxYAxis(Math.round(maxNegativeLogpValue));
   }, [plotData]);
 
   const plotStylingControlsConfig = [
@@ -82,7 +92,7 @@ const VolcanoPlot = ({ experimentId }) => {
         name: 'volcanoDimensions',
         props: {
           xMax: 20,
-          yMax: Math.round(spec.maxNegativeLogpValue) * 2,
+          yMax: maxYAxis * 2,
         },
       }],
       children: [
@@ -118,7 +128,7 @@ const VolcanoPlot = ({ experimentId }) => {
         name: 'volcanoLabels',
         props: {
           min: 0,
-          max: spec.maxNegativeLogpValue + 5,
+          max: maxYAxis + 5,
         },
       },
       ],
@@ -155,10 +165,10 @@ const VolcanoPlot = ({ experimentId }) => {
 
     const date = moment.utc().format('YYYY-MM-DD-HH-mm-ss');
     const fileName = `de_${experimentId}_${cellSet}_vs_${compareWith}_${date}.csv`;
-    const disabled = plotData.length === 0 || loading || _.isEmpty(spec.spec) || error;
+    const disabled = plotData.length === 0 || diffExprLoading || diffExprError;
 
     return (
-      <CSVLink data={expressionData} filename={fileName}>
+      <CSVLink data={diffExprData} filename={fileName}>
         <Button
           disabled={disabled}
           onClick={(e) => e.stopPropagation()}
@@ -169,12 +179,13 @@ const VolcanoPlot = ({ experimentId }) => {
       </CSVLink>
     );
   };
+
   if (!config) {
     return <Skeleton />;
   }
 
   const renderPlot = () => {
-    if (error) {
+    if (diffExprError) {
       return (
         <PlatformError
           description='Could not load differential expression data.'
@@ -190,6 +201,7 @@ const VolcanoPlot = ({ experimentId }) => {
         />
       );
     }
+
     if (!comparisonCreated.current) {
       return (
         <Empty description={(
@@ -203,12 +215,11 @@ const VolcanoPlot = ({ experimentId }) => {
       );
     }
 
-    if (plotData.length === 0 || loading || _.isEmpty(spec.spec)) {
+    if (plotData.length === 0 || diffExprLoading) {
       return <Loader experimentId={experimentId} />;
     }
-    return (
-      <Vega data={{ data: plotData }} spec={spec.spec} renderer='canvas' />
-    );
+
+    return <VolcanoPlot plotData={plotData} config={config} />;
   };
 
   const renderExtraPanels = () => (
@@ -256,8 +267,8 @@ const VolcanoPlot = ({ experimentId }) => {
   );
 };
 
-VolcanoPlot.propTypes = {
+volcanoPlotPage.propTypes = {
   experimentId: PropTypes.string.isRequired,
 };
 
-export default VolcanoPlot;
+export default volcanoPlotPage;

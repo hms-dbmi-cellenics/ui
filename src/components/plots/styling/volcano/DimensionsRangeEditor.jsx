@@ -34,7 +34,7 @@ const VolcanoDimensionsRangeEditor = (props) => {
         </Checkbox>
         <Slider
           value={newConfig.maxNegativeLogpValueDomain}
-          min={1}
+          min={50}
           max={yMax}
           onChange={(value) => {
             handleChange({ maxNegativeLogpValueDomain: value });
