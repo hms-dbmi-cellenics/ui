@@ -9,7 +9,7 @@ import { fetchWork } from 'utils/work/fetchWork';
 
 const fetchWorkerPlotData = (experimentId, plotUuid, plotType) => async (dispatch, getState) => {
   const config = getState().componentConfig[plotUuid]?.config ?? initialPlotConfigStates[plotType];
-  const timeout = getTimeoutForWorkerTask(getState(), plotType);
+  const timeout = getTimeoutForWorkerTask(getState(), 'PlotData');
 
   try {
     const body = generatePlotWorkBody(plotType, config);

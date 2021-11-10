@@ -27,11 +27,11 @@ import {
 } from 'redux/actions/componentConfig';
 import PlatformError from 'components/PlatformError';
 
-import plotNames from 'utils/plots/plotNames';
+import { plotTypes } from 'utils/constants';
 
 const { Panel } = Collapse;
 const plotUuid = 'dotPlotMain';
-const plotType = plotNames.plotType.DOT_PLOT;
+const plotType = plotTypes.DOT_PLOT;
 const route = {
   path: 'dot-plot',
   breadcrumbName: 'Dot plot',

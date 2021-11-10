@@ -1,4 +1,4 @@
-import plotNames from 'utils/plots/plotNames';
+import { plotTypes } from 'utils/constants';
 import generatePlotWorkBody from 'utils/work/generatePlotWorkBody';
 
 import { initialPlotConfigStates } from 'redux/reducers/componentConfig/initialState';
@@ -6,11 +6,11 @@ import { initialPlotConfigStates } from 'redux/reducers/componentConfig/initialS
 describe('Generate plot work request body', () => {
   it('Generates the correct work request body for DotPlot', () => {
     const workBody = generatePlotWorkBody(
-      plotNames.plotType.DOT_PLOT,
-      initialPlotConfigStates.dotPlot,
+      plotTypes.DOT_PLOT,
+      initialPlotConfigStates[plotTypes.DOT_PLOT],
     );
 
-    expect(workBody.name).toEqual(plotNames.workRequestName.DOT_PLOT);
+    expect(workBody.name).toEqual(plotTypes.DOT_PLOT);
     expect(workBody).toMatchSnapshot();
   });
 

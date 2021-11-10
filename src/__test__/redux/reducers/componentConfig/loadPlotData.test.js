@@ -3,7 +3,7 @@ import { act } from 'react-dom/test-utils';
 
 import { makeStore } from 'redux/store';
 
-import plotNames from 'utils/plots/plotNames';
+import { plotTypes } from 'utils/constants';
 import fake from '__test__/test-utils/constants';
 
 import { fetchPlotDataWork, loadPlotConfig } from 'redux/actions/componentConfig';
@@ -30,7 +30,7 @@ const experimentId = fake.EXPERIMENT_ID;
 let testStore = null;
 
 const plotUuid = 'DotPlotMain';
-const plotType = plotNames.plotType.DOT_PLOT;
+const plotType = plotTypes.DOT_PLOT;
 
 describe('plotDataLoaded', () => {
   beforeEach(() => {

@@ -26,11 +26,12 @@ import mockAPI, {
 } from '__test__/test-utils/mockAPI';
 
 import fake from '__test__/test-utils/constants';
+import { plotTypes } from 'utils/constants';
 
 enableFetchMocks();
 
 const defaultProps = {
-  config: initialPlotConfigStates.dotPlot,
+  config: initialPlotConfigStates[plotTypes.DOT_PLOT],
 };
 
 const dotPlotFactory = createTestComponentFactory(DotPlot, defaultProps);

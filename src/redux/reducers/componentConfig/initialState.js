@@ -1,3 +1,5 @@
+import { plotTypes } from 'utils/constants';
+
 import {
   legendBaseState,
   dimensionsBaseState,
@@ -740,7 +742,7 @@ const initialPlotConfigStates = {
   volcano: volcanoInitialConfig,
   markerHeatmap: markerHeatmapInitialConfig,
   violin: violinConfig,
-  dotPlot: dotPlotConfig,
+  [plotTypes.DOT_PLOT]: dotPlotConfig,
   frequency: frequencyInitialConfig,
   embeddingPreviewBySample: embeddingPreviewBySampleInitialConfig,
   embeddingPreviewByCellSets: embeddingPreviewByCellSetsInitialConfig,
