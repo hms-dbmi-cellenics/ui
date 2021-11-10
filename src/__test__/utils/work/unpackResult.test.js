@@ -35,7 +35,7 @@ describe('unpackResult', () => {
 
     const result = await unpackResult(storageResp);
 
-    expect(decompress).toHaveBeenCalled();
+    expect(decompress).toHaveBeenCalledTimes(1);
     expect(JSON_parse).toHaveBeenCalledWith(decompressedUint8);
 
     expect(result).toEqual(decompressedObject);
@@ -50,9 +50,6 @@ describe('unpackResult', () => {
       callback('someError', null);
     });
 
-    // This is necessary to trigger a failure if unpackResult doesn't throw
-    expect.assertions(1);
-
-    unpackResult(storageResp).catch((e) => expect(e).toMatch('someError'));
+    await expect(unpackResult(storageResp)).rejects.toEqual('someError');
   });
 });
