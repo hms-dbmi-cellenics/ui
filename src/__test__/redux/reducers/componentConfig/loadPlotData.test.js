@@ -6,7 +6,7 @@ import { makeStore } from 'redux/store';
 import plotNames from 'utils/plots/plotNames';
 import fake from '__test__/test-utils/constants';
 
-import { loadPlotData, loadPlotConfig } from 'redux/actions/componentConfig';
+import { fetchPlotDataWork, loadPlotConfig } from 'redux/actions/componentConfig';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
 import { fetchWork } from 'utils/work/fetchWork';
 
@@ -41,7 +41,7 @@ describe('plotDataLoaded', () => {
 
   it('Loads plot data into the component properly', async () => {
     await act((async () => {
-      await storeState.dispatch(loadPlotData(experimentId, plotUuid, plotType));
+      await storeState.dispatch(fetchPlotDataWork(experimentId, plotUuid, plotType));
     }));
 
     const { plotData } = storeState.getState().componentConfig[plotUuid];
@@ -55,9 +55,21 @@ describe('plotDataLoaded', () => {
     });
 
     await act((async () => {
-      await storeState.dispatch(loadPlotData(experimentId, plotUuid, plotType));
+      await storeState.dispatch(fetchPlotDataWork(experimentId, plotUuid, plotType));
     }));
 
-    expect(pushNotificationMessage).toHaveBeenCalled();
+    expect(pushNotificationMessage).toHaveBeenCalledTimes(1);
+  });
+
+  it('Sets up a loading state when waiting for components', () => {
+
+  });
+
+  it('Resolves the loading state if data is successfully loaded', () => {
+
+  });
+
+  it('Resolves the loading state if an error occurs', () => {
+
   });
 });

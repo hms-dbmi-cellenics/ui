@@ -1,13 +1,13 @@
 import { initialPlotConfigStates } from 'redux/reducers/componentConfig/initialState';
 import getTimeoutForWorkerTask from 'utils/getTimeoutForWorkerTask';
-import { PLOT_DATA_LOADED, PLOT_DATA_LOADING } from 'redux/actionTypes/componentConfig';
+import { PLOT_DATA_LOADED, PLOT_DATA_LOADING, PLOT_DATA_ERROR } from 'redux/actionTypes/componentConfig';
 
 import pushNotificationMessage from 'utils/pushNotificationMessage';
 import endUserMessages from 'utils/endUserMessages';
 import generatePlotWorkBody from 'utils/work/generatePlotWorkBody';
 import { fetchWork } from 'utils/work/fetchWork';
 
-const loadPlotData = (experimentId, plotUuid, plotType) => async (dispatch, getState) => {
+const fetchWorkerPlotData = (experimentId, plotUuid, plotType) => async (dispatch, getState) => {
   const config = getState().componentConfig[plotUuid]?.config ?? initialPlotConfigStates[plotType];
   const timeout = getTimeoutForWorkerTask(getState(), plotType);
 
@@ -31,8 +31,16 @@ const loadPlotData = (experimentId, plotUuid, plotType) => async (dispatch, getS
       },
     });
   } catch (error) {
+    dispatch({
+      type: PLOT_DATA_ERROR,
+      payload: {
+        plotUuid,
+        error: error.message,
+      },
+    });
+
     pushNotificationMessage('error', endUserMessages.ERROR_FETCHING_PLOT_DATA);
   }
 };
 
-export default loadPlotData;
+export default fetchWorkerPlotData;

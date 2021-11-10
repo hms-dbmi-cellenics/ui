@@ -23,7 +23,7 @@ import Loader from 'components/Loader';
 import {
   updatePlotConfig,
   loadPlotConfig,
-  loadPlotData,
+  fetchPlotDataWork,
 } from 'redux/actions/componentConfig';
 import PlatformError from 'components/PlatformError';
 
@@ -84,6 +84,7 @@ const DotPlotPage = (props) => {
     config,
     plotData,
     loading: plotDataLoading,
+    error: plotDataError,
   } = useSelector((state) => state.componentConfig[plotUuid]) || {};
 
   const {
@@ -110,7 +111,7 @@ const DotPlotPage = (props) => {
   useEffect(() => {
     if (config && !_.isEqual(currentPlotDataConfig.current, getDataProps(config))) {
       currentPlotDataConfig.current = getDataProps(config);
-      dispatch(loadPlotData(experimentId, plotUuid, plotType));
+      dispatch(fetchPlotDataWork(experimentId, plotUuid, plotType));
     }
   }, [config]);
 
@@ -182,6 +183,17 @@ const DotPlotPage = (props) => {
           <PlatformError
             description='Error loading cell sets'
             onClick={() => dispatch(loadCellSets(experimentId))}
+          />
+        </center>
+      );
+    }
+
+    if (plotDataError) {
+      return (
+        <center>
+          <PlatformError
+            description='Error loading plot data'
+            onClick={() => dispatch(fetchPlotDataWork(experimentId, plotUuid, plotType))}
           />
         </center>
       );
