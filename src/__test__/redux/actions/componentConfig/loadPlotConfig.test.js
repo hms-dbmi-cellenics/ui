@@ -6,6 +6,8 @@ import { loadPlotConfig } from 'redux/actions/componentConfig';
 import { initialPlotConfigStates } from 'redux/reducers/componentConfig/initialState';
 import endUserMessages from 'utils/endUserMessages';
 
+import '__test__/test-utils/mockWorkerBackend';
+
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import fake from '__test__/test-utils/constants';
 
