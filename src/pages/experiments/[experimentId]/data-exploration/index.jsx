@@ -43,7 +43,7 @@ const ExplorationViewPage = ({
   const [selectedTab, setSelectedTab] = useState(panel);
   const [addMenuVisible, setAddMenuVisible] = useState(false);
   const { method } = useSelector((state) => (
-    state.experimentSettings.processing?.configureEmbedding?.embeddingSettings || ' '
+    state.experimentSettings.processing?.configureEmbedding?.embeddingSettings
   ));
   useEffect(() => {
     setSelectedTab(panel);
@@ -55,6 +55,7 @@ const ExplorationViewPage = ({
     }
   }, []);
   const methodUppercase = method ? method.toUpperCase() : ' ';
+  const embeddingTitle = `${methodUppercase} Embedding`;
 
   useEffect(() => {
     if (method && windows) {
@@ -64,16 +65,15 @@ const ExplorationViewPage = ({
           ...windows.first,
           first: {
             ...windows.first.first,
-            first: `${methodUppercase} Embedding`,
+            first: methodUppercase,
           },
         },
       }));
     }
   }, [method]);
 
-  const embeddingTileName = `${methodUppercase} Embedding`;
   const TILE_MAP = {
-    [embeddingTileName]: {
+    [embeddingTitle]: {
       toolbarControls: <MosaicCloseButton key='remove-button-embedding' />,
       component: (width, height) => (
         <Embedding
@@ -148,8 +148,8 @@ const ExplorationViewPage = ({
     ],
     Plots: [
       {
-        key: `${embeddingTileName}`,
-        description: `Visualize cells clustered by genetic expression using a ${embeddingTileName}.`,
+        key: `${embeddingTitle}`,
+        description: `Visualize cells clustered by genetic expression using a ${embeddingTitle}.`,
       },
       {
         key: 'Heatmap',

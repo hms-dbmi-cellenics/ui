@@ -1,6 +1,6 @@
 const changeEmbeddingAxesIfNecessary = (config, method, onUpdate) => {
   if (!config || !method) return;
-  const { defaultValues: axesDefaultValues, xAxisText, yAxisText } = config?.axes;
+  const { defaultValues: axesDefaultValues, xAxisText, yAxisText } = config.axes;
 
   if (axesDefaultValues?.length) {
     const methodUppercase = method[0].toUpperCase() + method.slice(1);
