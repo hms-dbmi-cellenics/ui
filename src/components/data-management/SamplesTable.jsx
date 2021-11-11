@@ -319,7 +319,7 @@ const SamplesTable = forwardRef((props, ref) => {
             Start uploading your samples by clicking on Add samples.
           </Paragraph>
           <Text>
-            Don&apos;t have data? Get started using one of our sample datasets:
+            Don&apos;t have data? Get started using one of our example datasets:
           </Text>
           <div style={{ width: 'auto', textAlign: 'left' }}>
             <ul>
