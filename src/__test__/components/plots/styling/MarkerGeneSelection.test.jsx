@@ -57,13 +57,7 @@ describe('MarkerGeneSelection', () => {
   });
 
   it('Should show the number of marker genes input', async () => {
-    const mockConfig = _.merge(
-      {},
-      initialPlotConfigStates[plotType],
-      {
-        useMarkerGenes: true,
-      },
-    );
+    const mockConfig = { ...initialPlotConfigStates[plotType], useMarkerGenes: true };
 
     await act(async () => {
       render(
