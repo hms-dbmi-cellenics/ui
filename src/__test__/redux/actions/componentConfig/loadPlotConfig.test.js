@@ -1,17 +1,17 @@
 import { act } from 'react-dom/test-utils';
 import _ from 'lodash';
 
+import '__test__/test-utils/mockWorkerBackend';
+
+import { makeStore } from 'redux/store';
+
 import pushNotificationMessage from 'utils/pushNotificationMessage';
 import { loadPlotConfig } from 'redux/actions/componentConfig';
 import { initialPlotConfigStates } from 'redux/reducers/componentConfig/initialState';
+
 import endUserMessages from 'utils/endUserMessages';
-
-import '__test__/test-utils/mockWorkerBackend';
-
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import fake from '__test__/test-utils/constants';
-
-import { makeStore } from 'redux/store';
 
 jest.mock('utils/pushNotificationMessage');
 
@@ -95,7 +95,7 @@ describe('loadPlotConfig', () => {
     expect(pushNotificationMessage).toHaveBeenCalledWith('error', endUserMessages.ERROR_FETCHING_PLOT_CONFIG);
   });
 
-  it('Invalid response format to show an error notification', async () => {
+  it('Invalid response format show an error notification', async () => {
     fetchMock.mockResponse(() => Promise.resolve(new Response('a text body')));
 
     await act(async () => {
