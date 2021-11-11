@@ -73,7 +73,7 @@ const ExplorationViewPage = ({
   }, [method]);
 
   const TILE_MAP = {
-    [embeddingTitle]: {
+    [methodUppercase]: {
       toolbarControls: <MosaicCloseButton key='remove-button-embedding' />,
       component: (width, height) => (
         <Embedding
