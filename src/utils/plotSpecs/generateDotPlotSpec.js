@@ -7,9 +7,9 @@ const getDotDimensions = (config, numClusters) => {
   const plotHeight = config.dimensions.height;
   const padding = 2;
 
-  const numGenes = config.useCustomGenes
-    ? config.selectedGenes.length
-    : config.nMarkerGenes * numClusters;
+  const numGenes = config.useMarkerGenes
+    ? config.nMarkerGenes * numClusters
+    : config.selectedGenes.length;
 
   // + 1 because there is padding the size of half plots on the left and right
   const heightPerDot = plotHeight / (numClusters + 1);

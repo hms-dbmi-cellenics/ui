@@ -61,7 +61,7 @@ describe('MarkerGeneSelection', () => {
       {},
       initialPlotConfigStates[plotType],
       {
-        useCustomGenes: false,
+        useMarkerGenes: true,
       },
     );
 

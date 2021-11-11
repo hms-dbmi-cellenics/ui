@@ -1,17 +1,20 @@
 import { plotTypes } from 'utils/constants';
 
-const composeDotPlotWorkBody = (config) => ({
-  name: plotTypes.DOT_PLOT,
-  markerGenes: !config.useCustomGenes,
-  input: {
-    nGenes: config.nMarkerGenes,
-    genes: config.selectedGenes,
-  },
-  subset: {
-    cellClassKey: config.selectedCellSet,
-    cellSetKey: config.selectedPoints,
-  },
-});
+const composeDotPlotWorkBody = (config) => {
+  const [filterGroup, filterKey] = config.selectedPoints.split('/');
+
+  return {
+    name: plotTypes.DOT_PLOT,
+    useMarkerGenes: config.useMarkerGenes,
+    numberOfMarkers: config.nMarkerGenes,
+    customGenesList: config.selectedGenes,
+    groupBy: config.selectedCellSet,
+    filterBy: {
+      group: filterGroup,
+      key: filterKey || null,
+    },
+  };
+};
 
 const generatePlotWorkBody = (plotType, config) => {
   switch (plotType) {

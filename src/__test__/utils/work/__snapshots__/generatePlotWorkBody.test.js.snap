@@ -2,15 +2,14 @@
 
 exports[`Generate plot work request body Generates the correct work request body for DotPlot 1`] = `
 Object {
-  "input": Object {
-    "genes": Array [],
-    "nGenes": 3,
+  "customGenesList": Array [],
+  "filterBy": Object {
+    "group": "All",
+    "key": null,
   },
-  "markerGenes": false,
+  "groupBy": "louvain",
   "name": "DotPlot",
-  "subset": Object {
-    "cellClassKey": "louvain",
-    "cellSetKey": "All",
-  },
+  "numberOfMarkers": 3,
+  "useMarkerGenes": false,
 }
 `;

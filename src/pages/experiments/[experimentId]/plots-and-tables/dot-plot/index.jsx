@@ -105,7 +105,7 @@ const DotPlotPage = (props) => {
   }, []);
 
   const currentPlotDataConfig = useRef(null);
-  const getDataProps = (updatedConfig) => _.pick(updatedConfig, ['useCustomGenes', 'nMarkerGenes', 'selectedGenes', 'selectedCellSet', 'selectedPoints']);
+  const getDataProps = (updatedConfig) => _.pick(updatedConfig, ['useMarkerGenes', 'nMarkerGenes', 'selectedGenes', 'selectedCellSet', 'selectedPoints']);
 
   useEffect(() => {
     if (config && !_.isEqual(currentPlotDataConfig.current, getDataProps(config))) {
