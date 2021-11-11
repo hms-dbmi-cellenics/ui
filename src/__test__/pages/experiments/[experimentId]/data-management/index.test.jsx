@@ -26,7 +26,9 @@ const experimentId = fake.EXPERIMENT_ID;
 const route = 'data-management';
 const defaultProps = { route };
 
-const mockAPIResponse = generateDefaultMockAPIResponses(experimentId);
+const mockAPIResponse = generateDefaultMockAPIResponses(
+  experimentId, fake.PROJECT_WITH_SAMPLES_UUID,
+);
 const dataManagementPageFactory = createTestComponentFactory(DataManagementPage, defaultProps);
 
 let storeState = null;

@@ -395,7 +395,7 @@ SamplesTable.propTypes = {
   height: PropTypes.number.isRequired,
 };
 
-export default React.memo(SamplesTable);
+export default SamplesTable;
 
 export {
   exampleDatasets,

@@ -187,4 +187,4 @@ Header.propTypes = {
   plotUuid: PropTypes.string.isRequired,
 };
 
-export default React.memo(Header);
+export default Header;

@@ -19,11 +19,12 @@ import ProjectMenu from '../../../components/data-management/ProjectMenu';
 
 const projectMenuFactory = createTestComponentFactory(ProjectMenu);
 
-const defaultAPIResponse = generateDefaultMockAPIResponses(fake.EXPERIMENT_ID);
+const defaultAPIResponse = generateDefaultMockAPIResponses(
+  fake.EXPERIMENT_ID,
+  fake.PROJECT_WITH_SAMPLES_UUID,
+);
 
 let storeState = null;
-
-const projectWithoutSampleUuid = '4761594b-mock-test-ba89-c2c812d39bb5';
 
 describe('ProjectMenu', () => {
   beforeEach(async () => {
@@ -37,7 +38,7 @@ describe('ProjectMenu', () => {
     storeState = makeStore();
 
     await storeState.dispatch(loadProjects());
-    await storeState.dispatch(setActiveProject(projectWithoutSampleUuid));
+    await storeState.dispatch(setActiveProject(fake.PROJECT_WITHOUT_SAMPLE_UUID));
   });
 
   it('Renders correctly when there is a project', async () => {

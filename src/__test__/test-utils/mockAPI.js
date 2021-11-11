@@ -34,7 +34,7 @@ const workerResponse = (body, error = false) => promiseResponse(JSON.stringify({
   response: { error },
 }));
 
-const generateDefaultMockAPIResponses = (experimentId) => ({
+const generateDefaultMockAPIResponses = (experimentId, projectId) => ({
   [`experiments/${experimentId}`]: () => promiseResponse(
     JSON.stringify(generateMockExperimentData(experimentId)),
   ),
@@ -53,7 +53,7 @@ const generateDefaultMockAPIResponses = (experimentId) => ({
   '/projects': () => promiseResponse(
     JSON.stringify(projectsData),
   ),
-  'projects/380c53b4-mock-test-8091-4c82336d6d49/samples': () => promiseResponse(
+  [`projects/${projectId}/samples`]: () => promiseResponse(
     JSON.stringify(projectSamples),
   ),
 });

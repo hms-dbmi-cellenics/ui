@@ -156,4 +156,4 @@ const DownloadDataButton = () => {
   );
 };
 
-export default React.memo(DownloadDataButton);
+export default DownloadDataButton;
