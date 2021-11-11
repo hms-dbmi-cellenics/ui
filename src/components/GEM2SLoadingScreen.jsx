@@ -5,7 +5,7 @@ import {
 import { useDispatch } from 'react-redux';
 import Link from 'next/link';
 import PropTypes from 'prop-types';
-
+import NotifyByEmail from './NotifyByEmail';
 import runGem2s from '../redux/actions/pipeline/runGem2s';
 
 const { Title, Text } = Typography;
@@ -103,6 +103,7 @@ const GEM2SLoadingScreen = (props) => {
               <Title level={3}>We&apos;re launching your analysis...</Title>
               <Text type='secondary'>You can wait or leave this screen and check again later</Text>
             </div>
+            <NotifyByEmail experimentId={experimentId} />
           </Space>
         </Col>
       </Row>

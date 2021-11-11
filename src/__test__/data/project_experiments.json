@@ -1,0 +1,27 @@
+{
+  "lastViewed": "2021-11-11T15:14:47.509Z",
+  "apiVersion": "2.0.0-data-ingest-seurat-rds-automated",
+  "createdDate": "2021-11-11T13:38:09.541Z",
+  "meta": {
+    "pipeline": {
+      "stateMachineArn": "arn:aws:states:eu-west-1:000000000000:stateMachine:biomage-qc-development-f2d1997586f1bae0a6d5c5beed65663ec1519de4",
+      "executionArn": "arn:aws:states:eu-west-1:000000000000:execution:biomage-qc-development-f2d1997586f1bae0a6d5c5beed65663ec1519de4:422493f3-68a0-4ecb-8b17-0e8cd7a32ab1"
+    },
+    "gem2s": {
+      "paramsHash": "e72257f90e94eeaa82ee6fb7627110828f2e127f",
+      "stateMachineArn": "arn:aws:states:eu-west-1:000000000000:stateMachine:biomage-gem2s-development-f2d1997586f1bae0a6d5c5beed65663ec1519de4",
+      "executionArn": "arn:aws:states:eu-west-1:000000000000:execution:biomage-gem2s-development-f2d1997586f1bae0a6d5c5beed65663ec1519de4:5f273383-f093-4112-95b0-d76db89631f6"
+    },
+    "organism": null,
+    "type": "10x"
+  },
+  "sampleIds": [
+    "997b3bba-mock-test-9d18-1f794162a392",
+    "32084405-mock-test-930b-338de0d2db79",
+    "e162b6b8-mock-test-b9b3-af5f32f160a2"
+  ],
+  "description": "Analysis description",
+  "experimentId": "testae48e318dab9a1bd0experiment2",
+  "projectId": "380c53b4-mock-test-8091-4c82336d6d49",
+  "experimentName": "Project 1"
+}
