@@ -175,6 +175,7 @@ const DiffExprCompute = (props) => {
           onChange={(cellSet) => onSelectCluster(cellSet, option)}
           value={comparisonGroup[selectedComparison][option] ?? null}
           size='small'
+          aria-label={title}
         >
           {
             option === 'basis' &&

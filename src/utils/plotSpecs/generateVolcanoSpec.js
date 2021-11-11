@@ -1,6 +1,6 @@
 import _ from 'lodash';
 
-const generateSpec = (configSrc) => {
+const generateSpec = (configSrc, plotData) => {
   const config = _.cloneDeep(configSrc);
 
   const logFoldChangeThresholdColor = config.showLogFoldChangeThresholdGuides
@@ -74,10 +74,10 @@ const generateSpec = (configSrc) => {
     $schema: 'https://vega.github.io/schema/vega/v5.json',
     background: config.colour.toggleInvert,
     padding: 5,
-
     data: [
       {
         name: 'data',
+        values: plotData,
         transform: [
           {
             type: 'filter',

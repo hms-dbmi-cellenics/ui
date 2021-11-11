@@ -56,6 +56,8 @@ const loadDifferentialExpression = (
       experimentId, body, getState, { timeout, extras: pagination },
     );
 
+    console.log(data);
+
     let { total } = data;
     const { rows } = data;
 
@@ -63,7 +65,7 @@ const loadDifferentialExpression = (
       total = rows.length;
     }
 
-    return dispatch({
+    dispatch({
       type: DIFF_EXPR_LOADED,
       payload: {
         experimentId,

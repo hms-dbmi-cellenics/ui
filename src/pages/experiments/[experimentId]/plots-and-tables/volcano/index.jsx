@@ -7,15 +7,18 @@ import {
   Skeleton,
   Button, Empty, Typography,
 } from 'antd';
+import { useSelector, useDispatch } from 'react-redux';
 import moment from 'moment';
 import { CSVLink } from 'react-csv';
-import { useSelector, useDispatch } from 'react-redux';
-import PropTypes from 'prop-types';
-import loadDifferentialExpression from 'redux/actions/differentialExpression/loadDifferentialExpression';
-import PlotStyling from 'components/plots/styling/PlotStyling';
-import Header from 'components/plots/Header';
 
+import PropTypes from 'prop-types';
+import Header from 'components/plots/Header';
+import PlotStyling from 'components/plots/styling/PlotStyling';
+import { Vega } from 'react-vega';
+
+import loadDifferentialExpression from 'redux/actions/differentialExpression/loadDifferentialExpression';
 import DiffExprCompute from 'components/data-exploration/differential-expression-tool/DiffExprCompute';
+
 import {
   updatePlotConfig,
   loadPlotConfig,
@@ -23,9 +26,9 @@ import {
 import PlatformError from 'components/PlatformError';
 import { setComparisonGroup } from 'redux/actions/differentialExpression';
 import Loader from 'components/Loader';
-import calculateVolcanoDataPoints from 'components/plots/helpers/calculateVolcanoDataPoints';
 
-import VolcanoPlot from 'components/plots/VolcanoPlot';
+import { generateSpec } from 'utils/plotSpecs/generateVolcanoSpec';
+import calculateVolcanoDataPoints from 'components/plots/helpers/calculateVolcanoDataPoints';
 
 const { Text } = Typography;
 const { Panel } = Collapse;
@@ -38,7 +41,7 @@ const route = {
 const plotUuid = 'volcanoPlotMain';
 const plotType = 'volcano';
 
-const volcanoPlotPage = (props) => {
+const VolcanoPlotPage = (props) => {
   const { experimentId } = props;
 
   const dispatch = useDispatch();
@@ -107,7 +110,7 @@ const volcanoPlotPage = (props) => {
       ],
     },
     {
-      panelTitle: 'Data Thresholding',
+      panelTitle: 'Data thresholding',
       controls: ['volcanoThresholds'],
     },
     {
@@ -219,7 +222,7 @@ const volcanoPlotPage = (props) => {
       return <Loader experimentId={experimentId} />;
     }
 
-    return <VolcanoPlot plotData={plotData} config={config} />;
+    return <Vega spec={generateSpec(config, plotData)} renderer='canvas' />;
   };
 
   const renderExtraPanels = () => (
@@ -267,8 +270,8 @@ const volcanoPlotPage = (props) => {
   );
 };
 
-volcanoPlotPage.propTypes = {
+VolcanoPlotPage.propTypes = {
   experimentId: PropTypes.string.isRequired,
 };
 
-export default volcanoPlotPage;
+export default VolcanoPlotPage;

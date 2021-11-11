@@ -44,6 +44,9 @@ const generateDefaultMockAPIResponses = (experimentId) => ({
   [`experiments/${experimentId}/backendStatus`]: () => promiseResponse(
     JSON.stringify(backendStatusData),
   ),
+  [`experiments/${experimentId}/backendStatus`]: () => promiseResponse(
+    JSON.stringify(backendStatusData),
+  ),
 });
 
 const mockAPI = (apiMapping) => (req) => {
