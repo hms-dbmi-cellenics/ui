@@ -38,7 +38,7 @@ import {
 
 import 'utils/css/data-management.css';
 
-const { Text } = Typography;
+const { Paragraph, Text } = Typography;
 
 const exampleDatasets = [
   {
@@ -286,6 +286,17 @@ const SamplesTable = forwardRef((props, ref) => {
     setTableData(newData);
   }, [projects, samples, activeProjectUuid]);
 
+  const sampleData = [
+    {
+      filename: 'PBMC_3k.zip',
+      description: 'Uni-sample PBMC dataset',
+    },
+    {
+      filename: 'PBMC_BMMC_17k.zip',
+      description: 'Multi-sample blood and bone marrow dataset',
+    },
+  ];
+
   const downloadPublicDataset = async (filename) => {
     const s3Object = await Storage.get(
       filename,
@@ -304,10 +315,11 @@ const SamplesTable = forwardRef((props, ref) => {
       }}
       description={(
         <Space size='middle' direction='vertical'>
-          <Text>
+          <Paragraph>
             Start uploading your samples by clicking on Add samples.
-            <br />
-            Don&apos;t have data? Get started using one of our example datasets:
+          </Paragraph>
+          <Text>
+            Don&apos;t have data? Get started using one of our sample datasets:
           </Text>
           <div style={{ width: 'auto', textAlign: 'left' }}>
             <ul>
