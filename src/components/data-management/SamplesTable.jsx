@@ -43,11 +43,11 @@ const { Paragraph, Text } = Typography;
 const exampleDatasets = [
   {
     filename: 'PBMC_3k.zip',
-    description: 'Unisample PBMC',
+    description: 'Uni-sample PBMC dataset',
   },
   {
     filename: 'PBMC_BMMC_17k.zip',
-    description: 'Multisample blood and bone marrow dataset',
+    description: 'Multi-sample blood and bone marrow dataset',
   },
 ];
 
@@ -285,17 +285,6 @@ const SamplesTable = forwardRef((props, ref) => {
     });
     setTableData(newData);
   }, [projects, samples, activeProjectUuid]);
-
-  const sampleData = [
-    {
-      filename: 'PBMC_3k.zip',
-      description: 'Uni-sample PBMC dataset',
-    },
-    {
-      filename: 'PBMC_BMMC_17k.zip',
-      description: 'Multi-sample blood and bone marrow dataset',
-    },
-  ];
 
   const downloadPublicDataset = async (filename) => {
     const s3Object = await Storage.get(
