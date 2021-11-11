@@ -16,11 +16,12 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { Auth } from 'aws-amplify';
+import PropTypes from 'prop-types';
+import { useRouter } from 'next/router';
 import Error from '../pages/_error';
 import GEM2SLoadingScreen from './GEM2SLoadingScreen';
 import PipelineRedirectToDataProcessing from './PipelineRedirectToDataProcessing';
 import PreloadContent from './PreloadContent';
-import PropTypes from 'prop-types';
 import connectionPromise from '../utils/socketConnection';
 import experimentUpdatesHandler from '../utils/experimentUpdatesHandler';
 import { getBackendStatus } from '../redux/selectors';
@@ -28,7 +29,6 @@ import integrationTestConstants from '../utils/integrationTestConstants';
 import { loadBackendStatus } from '../redux/actions/backendStatus';
 import pipelineStatus from '../utils/pipelineStatusValues';
 import { useAppRouter } from '../utils/AppRouteProvider';
-import { useRouter } from 'next/router';
 
 const { Sider, Footer } = Layout;
 
@@ -254,11 +254,11 @@ const ContentWrapper = (props) => {
       }
 
       if (gem2sRunning || waitingForQcToLaunch) {
-        return <GEM2SLoadingScreen gem2sStatus='running' completedSteps={completedGem2sSteps} />;
+        return <GEM2SLoadingScreen experimentId={experimentId} gem2sStatus='running' completedSteps={completedGem2sSteps} />;
       }
 
       if (gem2sStatusKey === pipelineStatus.NOT_CREATED) {
-        return <GEM2SLoadingScreen gem2sStatus='toBeRun' />;
+        return <GEM2SLoadingScreen experimentId={experimentId} gem2sStatus='toBeRun' />;
       }
 
       if (pipelineRunningError && !route.includes('data-processing')) {
