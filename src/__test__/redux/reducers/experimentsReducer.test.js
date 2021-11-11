@@ -31,6 +31,7 @@ describe('experimentsReducer', () => {
       type: '10x',
     },
     sampleIds: [],
+    notifyByEmail: true,
   };
 
   const rawExperiment2 = {
@@ -45,6 +46,7 @@ describe('experimentsReducer', () => {
       type: '10x',
     },
     sampleIds: [],
+    notifyByEmail: true,
   };
 
   const experiment1 = {

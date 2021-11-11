@@ -13,6 +13,7 @@ const experimentsLoaded = (state, action) => {
       lastViewed: curr.lastViewed,
       meta: curr.meta,
       sampleIds: curr.sampleIds,
+      notifyByEmail: curr.notifyByEmail,
     };
 
     return acc;
