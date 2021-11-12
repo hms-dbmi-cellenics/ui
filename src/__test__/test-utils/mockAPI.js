@@ -1,10 +1,17 @@
 import _ from 'lodash';
 
-// Defaul platform data
+// Default platform data
 import cellSetsData from '__test__/data/cell_sets.json';
 import backendStatusData from '__test__/data/backend_status.json';
 import processingConfigData from '__test__/data/processing_config.json';
-import generateMockExperimentData from '__test__/test-utils/mockExperimentData';
+
+// A ticket has been created to address this : https://biomage.atlassian.net/browse/BIOMAGE-1553
+import {
+  mockProjectsResponse,
+  mockSamplesResponse,
+  mockExperimentResponse,
+  mockExperimentDataResponse,
+} from '__test__/test-utils/mockResponseData';
 
 const promiseResponse = (
   response,
@@ -31,9 +38,9 @@ const workerResponse = (body, error = false) => promiseResponse(JSON.stringify({
   response: { error },
 }));
 
-const generateDefaultMockAPIResponses = (experimentId) => ({
+const generateDefaultMockAPIResponses = (experimentId, projectUuid = null) => ({
   [`experiments/${experimentId}`]: () => promiseResponse(
-    JSON.stringify(generateMockExperimentData(experimentId)),
+    JSON.stringify(mockExperimentDataResponse),
   ),
   [`experiments/${experimentId}/processingConfig`]: () => promiseResponse(
     JSON.stringify(processingConfigData),
@@ -44,8 +51,14 @@ const generateDefaultMockAPIResponses = (experimentId) => ({
   [`experiments/${experimentId}/backendStatus`]: () => promiseResponse(
     JSON.stringify(backendStatusData),
   ),
-  [`experiments/${experimentId}/backendStatus`]: () => promiseResponse(
-    JSON.stringify(backendStatusData),
+  '/projects': () => promiseResponse(
+    JSON.stringify(mockProjectsResponse),
+  ),
+  [`projects/${projectUuid}/samples`]: () => promiseResponse(
+    JSON.stringify(mockSamplesResponse),
+  ),
+  [`/v1/projects/${projectUuid}/experiments`]: () => promiseResponse(
+    JSON.stringify(mockExperimentResponse),
   ),
 });
 

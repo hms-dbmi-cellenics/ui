@@ -111,7 +111,7 @@ Object {
         "shape": "circle",
         "size": 32,
       },
-      "maxNegativeLogpValueDomain": 1,
+      "maxNegativeLogpValueDomain": 50,
       "negLogpValueThreshold": 4,
       "negativeLogpValueTickCount": 5,
       "noDifferenceColor": "#aaaaaa",
