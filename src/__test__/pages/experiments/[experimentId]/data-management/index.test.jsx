@@ -1,4 +1,5 @@
 import React from 'react';
+import _ from 'lodash';
 
 import { render, screen } from '@testing-library/react';
 import { act } from 'react-dom/test-utils';
@@ -9,25 +10,35 @@ import { makeStore } from 'redux/store';
 
 import '__test__/test-utils/mockWorkerBackend';
 import createTestComponentFactory from '__test__/test-utils/testComponentFactory';
-import mockAPI, { generateDefaultMockAPIResponses } from '__test__/test-utils/mockAPI';
-import fake from '__test__/test-utils/constants';
+import mockAPI, { generateDefaultMockAPIResponses, promiseResponse } from '__test__/test-utils/mockAPI';
+import {
+  projectWithoutSamples,
+  projectWithSamples,
+  samples,
+} from '__test__/test-utils/mockResponseData';
 
 import downloadFromUrl from 'utils/data-management/downloadFromUrl';
 
 import DataManagementPage from 'pages/data-management';
 import { exampleDatasets } from 'components/data-management/SamplesTable';
 import userEvent from '@testing-library/user-event';
+import { setActiveProject } from 'redux/actions/projects';
 
 jest.mock('utils/data-management/downloadFromUrl');
 jest.mock('react-resize-detector', () => (props) => props.children({ width: 100, height: 100 }));
 
-const experimentId = fake.EXPERIMENT_ID;
+const experimentIdWithSamples = projectWithSamples.experiments[0];
+const projectIdWithSamples = projectWithSamples.uuid;
+
+const experimentIdWithoutSamples = projectWithoutSamples.experiments[0];
+const projectIdWithoutSamples = projectWithoutSamples.uuid;
 
 const route = 'data-management';
 const defaultProps = { route };
 
-const mockAPIResponse = generateDefaultMockAPIResponses(
-  experimentId, fake.PROJECT_WITH_SAMPLES_UUID,
+const mockAPIResponse = _.merge(
+  generateDefaultMockAPIResponses(experimentIdWithSamples, projectIdWithSamples),
+  generateDefaultMockAPIResponses(experimentIdWithoutSamples, projectIdWithoutSamples),
 );
 const dataManagementPageFactory = createTestComponentFactory(DataManagementPage, defaultProps);
 
@@ -37,13 +48,21 @@ describe('Data Management page', () => {
   beforeEach(() => {
     enableFetchMocks();
     fetchMock.resetMocks();
-    fetchMock.doMock();
     fetchMock.mockIf(/.*/, mockAPI(mockAPIResponse));
 
     storeState = makeStore();
   });
 
-  it('Shows an empty project list', async () => {
+  it('Shows an empty project list if there are no projects', async () => {
+    const noProjectsResponse = {
+      ...mockAPIResponse,
+      '/projects': () => promiseResponse(
+        JSON.stringify([]),
+      ),
+    };
+
+    fetchMock.mockIf(/.*/, mockAPI(noProjectsResponse));
+
     await act(async () => {
       render(
         <Provider store={storeState}>
@@ -86,12 +105,16 @@ describe('Data Management page', () => {
       );
     });
 
+    // Select the project with samples
+    await act(async () => {
+      storeState.dispatch(setActiveProject(projectIdWithSamples));
+    });
+
     expect(screen.getAllByText(/Project Details/i).length).toBeGreaterThan(0);
 
     const addMetadataButton = screen.getByText(/Add Metadata/i).closest('button');
 
     expect(addMetadataButton).toBeInTheDocument();
-    expect(addMetadataButton).toBeDisabled();
 
     // We do this because the instruction to add samples also contain "Add samples"
     const addSamplesElement = screen.getAllByText(/Add Samples/i);
@@ -103,12 +126,10 @@ describe('Data Management page', () => {
     const downloadButton = screen.getByText(/Download/i).closest('button');
 
     expect(downloadButton).toBeInTheDocument();
-    expect(downloadButton).toBeDisabled();
 
     const processProjectButton = screen.getByText(/Process project/i).closest('button');
 
     expect(processProjectButton).toBeInTheDocument();
-    expect(processProjectButton).toBeDisabled();
   });
 
   it('Example datasets are available for download', async () => {
@@ -118,6 +139,11 @@ describe('Data Management page', () => {
           {dataManagementPageFactory()}
         </Provider>,
       );
+    });
+
+    // Select the project without samples
+    await act(async () => {
+      storeState.dispatch(setActiveProject(projectIdWithoutSamples));
     });
 
     const exampleInfo = screen.getByText(/Don't have data\? Get started using one of our example datasets/i);
@@ -149,15 +175,16 @@ describe('Data Management page', () => {
       );
     });
 
-    const projectWithSamples = screen.getByText(/Project with samples/i);
+    // There are 2 elements with the name of the project,  because of how Antd renders the element
+    // so we're only choosing one
+    const projectOption = screen.getAllByText(projectWithSamples.name)[0];
 
     await act(async () => {
-      userEvent.click(projectWithSamples);
+      userEvent.click(projectOption);
     });
 
-    // These are the projects contained in the mock response project_samples.json
-    expect(screen.getByText('WT1')).toBeInTheDocument();
-    expect(screen.getByText('WT2')).toBeInTheDocument();
-    expect(screen.getByText('KO')).toBeInTheDocument();
+    Object.keys(samples).forEach((sample) => {
+      expect(screen.getByText(samples[sample].name)).toBeInTheDocument();
+    });
   });
 });

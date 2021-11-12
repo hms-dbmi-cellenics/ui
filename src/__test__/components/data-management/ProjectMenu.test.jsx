@@ -12,16 +12,19 @@ import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 
 import createTestComponentFactory from '__test__/test-utils/testComponentFactory';
 import mockAPI, { generateDefaultMockAPIResponses } from '__test__/test-utils/mockAPI';
-import fake from '__test__/test-utils/constants';
 
 import { loadProjects, setActiveProject } from 'redux/actions/projects';
+import { projectWithSamples, projectWithoutSamples } from '__test__/test-utils/mockResponseData';
 import ProjectMenu from '../../../components/data-management/ProjectMenu';
 
 const projectMenuFactory = createTestComponentFactory(ProjectMenu);
 
+const experimentWithSamplesId = projectWithSamples.experiments[0];
+const projectWithSamplesId = projectWithSamples.uuid;
+
 const defaultAPIResponse = generateDefaultMockAPIResponses(
-  fake.EXPERIMENT_ID,
-  fake.PROJECT_WITH_SAMPLES_UUID,
+  experimentWithSamplesId,
+  projectWithSamplesId,
 );
 
 let storeState = null;
@@ -38,7 +41,7 @@ describe('ProjectMenu', () => {
     storeState = makeStore();
 
     await storeState.dispatch(loadProjects());
-    await storeState.dispatch(setActiveProject(fake.PROJECT_WITHOUT_SAMPLE_UUID));
+    await storeState.dispatch(setActiveProject(projectWithoutSamples.uuid));
   });
 
   it('Renders correctly when there is a project', async () => {
