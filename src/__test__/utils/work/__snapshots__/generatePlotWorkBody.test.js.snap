@@ -5,7 +5,7 @@ Object {
   "customGenesList": Array [],
   "filterBy": Object {
     "group": "All",
-    "key": null,
+    "key": "All",
   },
   "groupBy": "louvain",
   "name": "DotPlot",
