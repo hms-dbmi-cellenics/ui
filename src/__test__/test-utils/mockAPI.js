@@ -1,10 +1,11 @@
 import _ from 'lodash';
 
-// Defaul platform data
+// Default platform data
 import cellSetsData from '__test__/data/cell_sets.json';
 import backendStatusData from '__test__/data/backend_status.json';
 import processingConfigData from '__test__/data/processing_config.json';
 import generateMockExperimentData from '__test__/test-utils/mockExperimentData';
+import projectsData from '__test__/test-utils/mockProjects';
 
 const promiseResponse = (
   response,
@@ -24,7 +25,7 @@ const delayedResponse = (response, delay = 10000, options = {}) => new Promise((
 
 const workerResponse = (body) => promiseResponse(body);
 
-const generateDefaultMockAPIResponses = (experimentId) => ({
+const generateDefaultMockAPIResponses = (experimentId, projectUuid = false) => ({
   [`experiments/${experimentId}`]: () => promiseResponse(
     JSON.stringify(generateMockExperimentData(experimentId)),
   ),
@@ -36,6 +37,12 @@ const generateDefaultMockAPIResponses = (experimentId) => ({
   ),
   [`experiments/${experimentId}/backendStatus`]: () => promiseResponse(
     JSON.stringify(backendStatusData),
+  ),
+  projects: () => promiseResponse(
+    JSON.stringify(projectsData(experimentId)),
+  ),
+  [`/v1/projects/${projectUuid}/experiments`]: () => promiseResponse(
+    JSON.stringify(generateMockExperimentData(experimentId)),
   ),
 });
 
