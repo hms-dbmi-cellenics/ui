@@ -12,6 +12,7 @@ import '__test__/test-utils/mockWorkerBackend';
 import mockAPI, {
   generateDefaultMockAPIResponses,
   statusResponse,
+  delayedResponse,
   workerResponse,
 } from '__test__/test-utils/mockAPI';
 
@@ -70,13 +71,53 @@ const renderVolcanoPlotPage = async (store) => {
 
 let storeState = null;
 
+const runComparison = async () => {
+  // Choose cell set 1
+  const selectCellSet1 = screen.getByRole('combobox', { name: /Compare cell set/i });
+  await act(async () => {
+    fireEvent.change(selectCellSet1, { target: { value: 'Cluster 0' } });
+  });
+
+  const cellSet1Option = screen.getByText(/Cluster 0/);
+  await act(async () => {
+    fireEvent.click(cellSet1Option);
+  });
+
+  // Select the 2nd cell set
+  const selectCellSet2 = screen.getByRole('combobox', { name: /and cell set/i });
+  await act(async () => {
+    fireEvent.change(selectCellSet2, { target: { value: 'All' } });
+  });
+
+  const cellSet2Option = screen.getByText(/All other cells/);
+  await act(async () => {
+    fireEvent.click(cellSet2Option);
+  });
+
+  // With all samples
+  const selectSampleOrGroup = screen.getByRole('combobox', { name: /within sample/i });
+  await act(async () => {
+    fireEvent.change(selectSampleOrGroup, { target: { value: 'WT1' } });
+  });
+
+  const sampleOrGroupOption = screen.getByText(/WT1/);
+  await act(async () => {
+    fireEvent.click(sampleOrGroupOption);
+  });
+
+  // Run the comparison
+  await act(async () => {
+    userEvent.click(screen.getByText(/Compute/i));
+  });
+};
+
 describe('Volcano plot page', () => {
   beforeEach(async () => {
     fetchMock.resetMocks();
     fetchMock.mockIf(/.*/, mockAPI(defaultResponses));
 
     storeState = makeStore();
-    storeState.dispatch(loadBackendStatus(experimentId));
+    await storeState.dispatch(loadBackendStatus(experimentId));
   });
 
   it('Loads controls and elements', async () => {
@@ -106,9 +147,33 @@ describe('Volcano plot page', () => {
 
     // The plot should show up
     expect(screen.getByRole('graphics-document', { name: 'Vega visualization' })).toBeInTheDocument();
+
+    // The CSV download button should be enabled
+    const csvButton = screen.getByText(/Export as CSV/i).closest('button');
+    expect(csvButton).toBeEnabled();
   });
 
-  it.only('Shows platform error if loading diff expression result failed ', async () => {
+  it('Shows loader if diff expression is still loading', async () => {
+    const slowResponse = {
+      ...defaultResponses,
+      'differential-expression': () => delayedResponse({ body: 'Not found', status: 404 }),
+    };
+
+    fetchMock.mockIf(/.*/, mockAPI(slowResponse));
+
+    await renderVolcanoPlotPage(storeState);
+
+    await runComparison();
+
+    expect(screen.getByText(/We're getting your data/i)).toBeInTheDocument();
+    expect(screen.queryByRole('graphics-document', { name: 'Vega visualization' })).toBeNull();
+
+    // The CSV download button should be disabled
+    const csvButton = screen.getByText(/Export as CSV/i).closest('button');
+    expect(csvButton).toBeDisabled();
+  });
+
+  it('Shows platform error if loading diff expression result failed ', async () => {
     const noDataResponse = {
       ...defaultResponses,
       'differential-expression': () => workerResponse('Not Found', 404),
@@ -122,45 +187,9 @@ describe('Volcano plot page', () => {
 
     expect(screen.getByText(/Could not load differential expression data/i)).toBeInTheDocument();
     expect(screen.queryByRole('graphics-document', { name: 'Vega visualization' })).toBeNull();
+
+    // The CSV download button should be disabled
+    const csvButton = screen.getByText(/Export as CSV/i).closest('button');
+    expect(csvButton).toBeDisabled();
   });
-
-  const runComparison = async () => {
-    // Choose cell set 1
-    const selectCellSet1 = screen.getByRole('combobox', { name: /Compare cell set/i });
-    await act(async () => {
-      fireEvent.change(selectCellSet1, { target: { value: 'Cluster 0' } });
-    });
-
-    const cellSet1Option = screen.getByText(/Cluster 0/);
-    await act(async () => {
-      fireEvent.click(cellSet1Option);
-    });
-
-    // Select the 2nd cell set
-    const selectCellSet2 = screen.getByRole('combobox', { name: /and cell set/i });
-    await act(async () => {
-      fireEvent.change(selectCellSet2, { target: { value: 'All' } });
-    });
-
-    const cellSet2Option = screen.getByText(/All other cells/);
-    await act(async () => {
-      fireEvent.click(cellSet2Option);
-    });
-
-    // With all samples
-    const selectSampleOrGroup = screen.getByRole('combobox', { name: /within sample/i });
-    await act(async () => {
-      fireEvent.change(selectSampleOrGroup, { target: { value: 'WT1' } });
-    });
-
-    const sampleOrGroupOption = screen.getByText(/WT1/);
-    await act(async () => {
-      fireEvent.click(sampleOrGroupOption);
-    });
-
-    // Run the comparison
-    await act(async () => {
-      userEvent.click(screen.getByText(/Compute/i));
-    });
-  };
 });
