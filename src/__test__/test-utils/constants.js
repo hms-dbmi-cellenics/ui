@@ -10,4 +10,5 @@ export default {
   S3_ENDPOINT: 'http://mock.s3.amazonaws.com',
   // pragma: allowlist secret
   JWT_TOKEN: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6Ikpfake.eyJzdWIiOiIxMjM0NTY3ODkwIiwifakeZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTfakeM5MDIyfQ.fakexwRfakeKKF2QT4fwpMeJf36POk6yJV_adQsfake',
+  MOCK_DATETIME: '0000-00-00T00:00:00.000Z',
 };

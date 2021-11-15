@@ -7,10 +7,10 @@ const mockProjectTemplate = (idx) => ({
   experiments: [`${fake.EXPERIMENT_ID}-${idx}`],
   samples: [],
   metadataKeys: [],
-  createdDate: '0000-00-00T00:00:00.000Z',
+  createdDate: fake.MOCK_DATETIME,
   description: `Mock project ${idx}`,
-  lastAnalyzed: '0000-00-00T00:00:00.000Z',
-  lastModified: '0000-00-00T00:00:00.000Z',
+  lastAnalyzed: fake.MOCK_DATETIME,
+  lastModified: fake.MOCK_DATETIME,
 });
 
 const generateMockProjects = (numProjects = 1, attrs = []) => {
