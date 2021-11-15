@@ -11,7 +11,7 @@ const getDotDimensions = (config, numClusters) => {
     ? config.nMarkerGenes * numClusters
     : config.selectedGenes.length;
 
-  // + 2 because there is padding the size of half the dot on the left and right side of the plot
+  // + 2 because there we want the padding at the left and right side to be 1 radius each
   const heightPerDot = plotHeight / (numClusters + 2);
   const widthPerDot = plotWidth / (numGenes + 2);
 
@@ -58,6 +58,7 @@ const generateSpec = (config, plotData, numClusters) => {
         symbolType: 'circle',
         symbolFillColor: '#aaaaaa',
         direction: config.legend.direction,
+        values: [0, 20, 40, 60, 80, 100],
       },
     ];
   }
