@@ -12,7 +12,7 @@ import '__test__/test-utils/setupTests';
 
 const mockStore = configureMockStore([thunk]);
 
-const store = mockStore({});
+const store = mockStore({ experiments: {} });
 
 jest.mock('../../utils/fetchAPI');
 fetchAPI.mockImplementation(() => Promise.resolve(new Response(JSON.stringify({}))));
