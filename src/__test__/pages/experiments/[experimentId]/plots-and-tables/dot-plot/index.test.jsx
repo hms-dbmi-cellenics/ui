@@ -2,7 +2,7 @@ import React from 'react';
 import _ from 'lodash';
 
 import { act } from 'react-dom/test-utils';
-import { render, screen, cleanup } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { Provider } from 'react-redux';
 
@@ -75,7 +75,7 @@ describe('Dot plot page', () => {
     fetchMock.mockIf(/.*/, mockAPI(defaultMockResponses));
     storeState = makeStore();
 
-    await storeState.dispatch(loadBackendStatus(fake.EXPERIMENT_ID));
+    await storeState.dispatch(loadBackendStatus(experimentId));
   });
 
   it('Renders the plot page correctly', async () => {
@@ -103,13 +103,10 @@ describe('Dot plot page', () => {
   });
 
   it('Shows a skeleton if config is not loaded', async () => {
-    const noConfigResponse = _.merge(
-      {},
-      defaultMockResponses,
-      {
-        [`/plots-tables/${plotUuid}`]: () => delayedResponse({ status: 404, body: 'NotFound' }),
-      },
-    );
+    const noConfigResponse = {
+      ...defaultMockResponses,
+      [`/plots-tables/${plotUuid}`]: () => delayedResponse({ status: 404, body: 'NotFound' }),
+    };
 
     fetchMock.mockIf(/.*/, mockAPI(noConfigResponse));
 
@@ -124,14 +121,11 @@ describe('Dot plot page', () => {
     expect(screen.getByRole('list')).toHaveClass('ant-skeleton-paragraph');
   });
 
-  it('Shows error if there are errors loading cell sets', async () => {
-    const cellSetsErrorResponse = _.merge(
-      {},
-      defaultMockResponses,
-      {
-        [`experiments/${experimentId}/cellSets`]: () => statusResponse(404, 'Nothing found'),
-      },
-    );
+  it('Shows an error if there are errors loading cell sets', async () => {
+    const cellSetsErrorResponse = {
+      ...defaultMockResponses,
+      [`experiments/${experimentId}/cellSets`]: () => statusResponse(404, 'Nothing found'),
+    };
 
     fetchMock.mockIf(/.*/, mockAPI(cellSetsErrorResponse));
 
