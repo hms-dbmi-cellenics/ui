@@ -1,10 +1,11 @@
 import _ from 'lodash';
+import fake from '__test__/test-utils/constants';
 
 const projectExperimentTemplate = (projectId, experimentId, experimentName, sampleIds) => (
   {
-    lastViewed: '2021-00-00T00:00:00.000Z',
+    lastViewed: fake.MOCK_DATETIME,
     apiVersion: '2.0.0-data-ingest-seurat-rds-automated',
-    createdDate: '2021-00-00T00:00:00.000Z',
+    createdDate: fake.MOCK_DATETIME,
     meta: {
       pipeline: {
         stateMachineArn: 'arn:aws:states:eu-west-1:000000000000:stateMachine:biomage-qc-development-mock997586f1bae0a6d5c5beed65663ec151test',

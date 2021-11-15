@@ -7,11 +7,8 @@ import processingConfigData from '__test__/data/processing_config.json';
 
 // A ticket has been created to address this : https://biomage.atlassian.net/browse/BIOMAGE-1553
 import {
-  mockProjectsResponse,
-  mockSamplesResponse,
-  mockExperimentResponse,
-  mockExperimentDataResponse,
-} from '__test__/test-utils/mockResponseData';
+  responseData,
+} from '__test__/test-utils/mockData';
 
 const promiseResponse = (
   response,
@@ -40,7 +37,7 @@ const workerResponse = (body, error = false) => promiseResponse(JSON.stringify({
 
 const generateDefaultMockAPIResponses = (experimentId, projectUuid = null) => ({
   [`experiments/${experimentId}`]: () => promiseResponse(
-    JSON.stringify(mockExperimentDataResponse),
+    JSON.stringify(responseData.experimentData),
   ),
   [`experiments/${experimentId}/processingConfig`]: () => promiseResponse(
     JSON.stringify(processingConfigData),
@@ -52,13 +49,13 @@ const generateDefaultMockAPIResponses = (experimentId, projectUuid = null) => ({
     JSON.stringify(backendStatusData),
   ),
   '/projects': () => promiseResponse(
-    JSON.stringify(mockProjectsResponse),
+    JSON.stringify(responseData.projects),
   ),
   [`projects/${projectUuid}/samples`]: () => promiseResponse(
-    JSON.stringify(mockSamplesResponse),
+    JSON.stringify(responseData.samples),
   ),
   [`/v1/projects/${projectUuid}/experiments`]: () => promiseResponse(
-    JSON.stringify(mockExperimentResponse),
+    JSON.stringify(responseData.experiments),
   ),
 });
 

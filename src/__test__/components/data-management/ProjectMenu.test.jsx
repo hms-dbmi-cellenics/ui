@@ -14,10 +14,11 @@ import createTestComponentFactory from '__test__/test-utils/testComponentFactory
 import mockAPI, { generateDefaultMockAPIResponses } from '__test__/test-utils/mockAPI';
 
 import { loadProjects, setActiveProject } from 'redux/actions/projects';
-import { projectWithSamples, projectWithoutSamples } from '__test__/test-utils/mockResponseData';
+import { projects } from '__test__/test-utils/mockData';
 import ProjectMenu from '../../../components/data-management/ProjectMenu';
 
-const projectMenuFactory = createTestComponentFactory(ProjectMenu);
+const projectWithSamples = projects.find((project) => project.samples.length > 0);
+const projectWithoutSamples = projects.find((project) => project.samples.length === 0);
 
 const experimentWithSamplesId = projectWithSamples.experiments[0];
 const projectWithSamplesId = projectWithSamples.uuid;
@@ -28,6 +29,8 @@ const defaultAPIResponse = generateDefaultMockAPIResponses(
 );
 
 let storeState = null;
+
+const projectMenuFactory = createTestComponentFactory(ProjectMenu);
 
 describe('ProjectMenu', () => {
   beforeEach(async () => {

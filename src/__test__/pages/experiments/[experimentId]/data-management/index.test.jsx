@@ -12,10 +12,9 @@ import '__test__/test-utils/mockWorkerBackend';
 import createTestComponentFactory from '__test__/test-utils/testComponentFactory';
 import mockAPI, { generateDefaultMockAPIResponses, promiseResponse } from '__test__/test-utils/mockAPI';
 import {
-  projectWithoutSamples,
-  projectWithSamples,
+  projects,
   samples,
-} from '__test__/test-utils/mockResponseData';
+} from '__test__/test-utils/mockData';
 
 import downloadFromUrl from 'utils/data-management/downloadFromUrl';
 
@@ -27,11 +26,13 @@ import { setActiveProject } from 'redux/actions/projects';
 jest.mock('utils/data-management/downloadFromUrl');
 jest.mock('react-resize-detector', () => (props) => props.children({ width: 100, height: 100 }));
 
-const experimentIdWithSamples = projectWithSamples.experiments[0];
-const projectIdWithSamples = projectWithSamples.uuid;
+const firstProjectWithSamples = projects.find((p) => p.samples.length > 0);
+const projectIdWithSamples = firstProjectWithSamples.uuid;
+const experimentIdWithSamples = firstProjectWithSamples.experiments[0];
 
-const experimentIdWithoutSamples = projectWithoutSamples.experiments[0];
-const projectIdWithoutSamples = projectWithoutSamples.uuid;
+const firstProjectWithoutSamples = projects.find((p) => p.samples.length === 0);
+const projectIdWithoutSamples = firstProjectWithoutSamples.uuid;
+const experimentIdWithoutSamples = firstProjectWithoutSamples.experiments[0];
 
 const route = 'data-management';
 const defaultProps = { route };
@@ -141,9 +142,12 @@ describe('Data Management page', () => {
       );
     });
 
-    // Select the project without samples
+    // There are 2 elements with the name of the project,  because of how Antd renders the element
+    // so we're only choosing one
+    const projectName = screen.getAllByText(firstProjectWithoutSamples.name)[0];
+
     await act(async () => {
-      storeState.dispatch(setActiveProject(projectIdWithoutSamples));
+      userEvent.click(projectName);
     });
 
     const exampleInfo = screen.getByText(/Don't have data\? Get started using one of our example datasets/i);
@@ -177,7 +181,7 @@ describe('Data Management page', () => {
 
     // There are 2 elements with the name of the project,  because of how Antd renders the element
     // so we're only choosing one
-    const projectOption = screen.getAllByText(projectWithSamples.name)[0];
+    const projectOption = screen.getAllByText(firstProjectWithSamples.name)[0];
 
     await act(async () => {
       userEvent.click(projectOption);
