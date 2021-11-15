@@ -5,21 +5,19 @@ const getDotDimensions = (config, numClusters) => {
 
   const plotWidth = config.dimensions.width;
   const plotHeight = config.dimensions.height;
-  const padding = 2;
+  const padding = 1;
 
   const numGenes = config.useMarkerGenes
     ? config.nMarkerGenes * numClusters
     : config.selectedGenes.length;
 
-  // + 1 because there is padding the size of half plots on the left and right
-  const heightPerDot = plotHeight / (numClusters + 1);
-  const widthPerDot = plotWidth / (numGenes + 1);
+  // + 2 because there is padding the size of half the dot on the left and right side of the plot
+  const heightPerDot = plotHeight / (numClusters + 2);
+  const widthPerDot = plotWidth / (numGenes + 2);
 
   // Use the smaller of the two dimensions to determine the max dot size
-  // Radius is half the width or height
+  // Radius is half the width or height. This radius still contain padding that we want to remove
   const radiusWithPadding = Math.floor(Math.min(heightPerDot, widthPerDot) / 2);
-
-  // Multiply by 3 because we want extra resolution between dots
   const radius = radiusWithPadding - padding;
 
   // We have to calculate the area because that is what is expected Vega's draw function

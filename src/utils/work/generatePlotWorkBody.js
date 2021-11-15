@@ -11,7 +11,7 @@ const composeDotPlotWorkBody = (config) => {
     groupBy: config.selectedCellSet,
     filterBy: {
       group: filterGroup,
-      key: filterKey || null,
+      key: filterKey || 'All',
     },
   };
 };
