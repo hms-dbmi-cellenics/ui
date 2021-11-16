@@ -1,11 +1,11 @@
+import { fetchWork } from 'utils/work/fetchWork';
+import getTimeoutForWorkerTask from 'utils/getTimeoutForWorkerTask';
+
 import {
   CELL_META_LOADING,
   CELL_META_LOADED,
   CELL_META_ERROR,
 } from '../../actionTypes/cellMeta';
-
-import { fetchWork } from '../../../utils/work/fetchWork';
-import getTimeoutForWorkerTask from '../../../utils/getTimeoutForWorkerTask';
 
 const loadCellMeta = (
   experimentId, metaName,
