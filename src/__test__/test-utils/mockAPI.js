@@ -4,8 +4,11 @@ import _ from 'lodash';
 import cellSetsData from '__test__/data/cell_sets.json';
 import backendStatusData from '__test__/data/backend_status.json';
 import processingConfigData from '__test__/data/processing_config.json';
-import generateMockExperimentData from '__test__/test-utils/mockExperimentData';
-import projectsData from '__test__/test-utils/mockProjects';
+
+// A ticket has been created to address this : https://biomage.atlassian.net/browse/BIOMAGE-1553
+import {
+  responseData,
+} from '__test__/test-utils/mockData';
 
 const promiseResponse = (
   response,
@@ -25,9 +28,9 @@ const delayedResponse = (response, delay = 10000, options = {}) => new Promise((
 
 const workerResponse = (body) => promiseResponse(body);
 
-const generateDefaultMockAPIResponses = (experimentId, projectUuid = false) => ({
+const generateDefaultMockAPIResponses = (experimentId, projectUuid = null) => ({
   [`experiments/${experimentId}`]: () => promiseResponse(
-    JSON.stringify(generateMockExperimentData(experimentId)),
+    JSON.stringify(responseData.experimentData),
   ),
   [`experiments/${experimentId}/processingConfig`]: () => promiseResponse(
     JSON.stringify(processingConfigData),
@@ -38,11 +41,14 @@ const generateDefaultMockAPIResponses = (experimentId, projectUuid = false) => (
   [`experiments/${experimentId}/backendStatus`]: () => promiseResponse(
     JSON.stringify(backendStatusData),
   ),
-  projects: () => promiseResponse(
-    JSON.stringify(projectsData(experimentId)),
+  '/projects': () => promiseResponse(
+    JSON.stringify(responseData.projects),
+  ),
+  [`projects/${projectUuid}/samples`]: () => promiseResponse(
+    JSON.stringify(responseData.samples),
   ),
   [`/v1/projects/${projectUuid}/experiments`]: () => promiseResponse(
-    JSON.stringify(generateMockExperimentData(experimentId)),
+    JSON.stringify(responseData.experiments),
   ),
 });
 
