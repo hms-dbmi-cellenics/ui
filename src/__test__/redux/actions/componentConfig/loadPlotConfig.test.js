@@ -49,14 +49,6 @@ describe('loadPlotConfig', () => {
 
     const plotConfig = testStore.getState().componentConfig[plotUuid];
 
-    expect(plotConfig.config).toBeDefined();
-    expect(plotConfig.loading).toBeDefined();
-    expect(plotConfig.error).toBeDefined();
-    expect(plotConfig.plotType).toBe(plotType);
-
-    expect(plotConfig.plotData).toBeDefined();
-    expect(_.isEqual(plotConfig.plotData, mockData.plotData)).toBe(true);
-
     expect(plotConfig).toMatchSnapshot();
   });
 
@@ -71,14 +63,6 @@ describe('loadPlotConfig', () => {
     expect(testStore.getState().componentConfig[plotUuid]).toBeDefined();
 
     const plotConfig = testStore.getState().componentConfig[plotUuid];
-
-    expect(plotConfig.config).toBeDefined();
-    expect(plotConfig.loading).toBeDefined();
-    expect(plotConfig.error).toBeDefined();
-    expect(plotConfig.plotType).toBe(plotType);
-
-    expect(plotConfig.plotData).toBeDefined();
-    expect(plotConfig.plotData.length).toEqual(0);
 
     expect(plotConfig).toMatchSnapshot();
   });
