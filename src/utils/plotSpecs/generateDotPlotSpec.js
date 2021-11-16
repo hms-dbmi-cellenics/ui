@@ -11,9 +11,13 @@ const getDotDimensions = (config, numClusters) => {
     ? config.nMarkerGenes * numClusters
     : config.selectedGenes.length;
 
-  // + 2 because there we want the padding at the left and right side to be 1 radius each
-  const heightPerDot = plotHeight / (numClusters + 2);
-  const widthPerDot = plotWidth / (numGenes + 2);
+  // Adjustment is added to counter the blowing up of dot sizes
+  // when there is a small number of data points. The effect of the
+  // adjustment is to make the dot size smaller. Its effect diminishes
+  // as the number of data points increases.
+  const adjustment = 3;
+  const heightPerDot = plotHeight / (numClusters + adjustment);
+  const widthPerDot = plotWidth / (numGenes + adjustment);
 
   // Use the smaller of the two dimensions to determine the max dot size
   // Radius is half the width or height. This radius still contain padding that we want to remove
@@ -58,7 +62,6 @@ const generateSpec = (config, plotData, numClusters) => {
         symbolType: 'circle',
         symbolFillColor: '#aaaaaa',
         direction: config.legend.direction,
-        values: [0, 20, 40, 60, 80, 100],
       },
     ];
   }
