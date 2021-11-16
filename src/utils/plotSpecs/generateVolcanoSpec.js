@@ -235,6 +235,7 @@ const generateSpec = (configSrc, plotData) => {
       },
       {
         type: 'rule',
+        clip: true,
         encode: {
           update: {
             x: {
@@ -255,6 +256,7 @@ const generateSpec = (configSrc, plotData) => {
       },
       {
         type: 'rule',
+        clip: true,
         encode: {
           update: {
             x: {
