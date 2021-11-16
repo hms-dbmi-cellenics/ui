@@ -36,6 +36,7 @@ describe('saveExperiment action', () => {
     description: 'Project',
     createdDate: null,
     lastViewed: null,
+    notifyByEmail: true,
     meta: { organism: null, type: '10x' },
     sampleIds: [],
     experimentId: 'experiment-1',
