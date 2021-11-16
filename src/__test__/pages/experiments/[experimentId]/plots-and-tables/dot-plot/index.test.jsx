@@ -93,6 +93,7 @@ describe('Dot plot page', () => {
     // It has the required dropdown options
     expect(screen.getByText(/Gene selection/i)).toBeInTheDocument();
     expect(screen.getByText(/Select data/i)).toBeInTheDocument();
+    expect(screen.getByText(/Size scale/i)).toBeInTheDocument();
     expect(screen.getByText(/Main schema/i)).toBeInTheDocument();
     expect(screen.getByText(/Axes and margins/i)).toBeInTheDocument();
     expect(screen.getByText(/Colours/i)).toBeInTheDocument();
@@ -138,5 +139,25 @@ describe('Dot plot page', () => {
     });
 
     expect(screen.getByText(/Error loading cell sets/i)).toBeInTheDocument();
+  });
+
+  it('Shows an empty message if there is no data to show in the plot', async () => {
+    const emptyWorkRequest = {
+      ...defaultMockResponses,
+      'dot-plot-data': () => workerResponse([]),
+    };
+
+    fetchMock.mockIf(/.*/, mockAPI(emptyWorkRequest));
+
+    await act(async () => {
+      render(
+        <Provider store={storeState}>
+          {dotPlotPageFactory()}
+        </Provider>,
+      );
+    });
+
+    expect(screen.getByText(/There is no data to show/i)).toBeInTheDocument();
+    expect(screen.getByText(/Select another option from the 'Select data' menu/i)).toBeInTheDocument();
   });
 });

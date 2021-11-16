@@ -57,7 +57,7 @@ describe('fetchWork', () => {
   });
 
   it('changes ETag if caching is disabled', async () => {
-    Storage.prototype.getItem = jest.fn((key) => (key === 'disableCache' ? true : null));
+    Storage.prototype.getItem = jest.fn((key) => (key === 'disableCache' ? 'true' : null));
 
     await fetchWork(
       experimentId,
@@ -69,6 +69,25 @@ describe('fetchWork', () => {
       { timeout: 10 },
     );
 
+    expect(mockSeekFromAPI).not.toHaveBeenCalledWith(
+      expect.anything(), expect.anything(), expect.anything(), GENE_EXPRESSION_ETAG,
+    );
+  });
+
+  it('Generates random ETag if environment is not Production and cache is disabled', async () => {
+    Storage.prototype.getItem = jest.fn((key) => (key === 'disableCache' ? 'true' : null));
+
+    const mockRandom = jest.fn();
+    global.Math.random = mockRandom;
+
+    await fetchWork(
+      experimentId,
+      workRequest,
+      mockReduxState(experimentId),
+      { timeout: 10 },
+    );
+
+    expect(mockRandom).toHaveBeenCalledTimes(1);
     expect(mockSeekFromAPI).not.toHaveBeenCalledWith(
       expect.anything(), expect.anything(), expect.anything(), GENE_EXPRESSION_ETAG,
     );

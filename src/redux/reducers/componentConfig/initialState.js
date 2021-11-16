@@ -249,6 +249,7 @@ const dotPlotConfig = {
   colour: colourBaseState,
   marker: markerBaseState,
   labels: labelBaseState,
+  useAbsoluteScale: true,
   useMarkerGenes: false,
   nMarkerGenes: 3,
   selectedGenes: [],

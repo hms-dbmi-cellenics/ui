@@ -5,6 +5,9 @@ import {
   Space,
   Collapse,
   Skeleton,
+  Empty,
+  Form,
+  Radio,
 } from 'antd';
 
 import _ from 'lodash';
@@ -104,12 +107,20 @@ const DotPlotPage = (props) => {
     if (hierarchy.length === 0) dispatch(loadCellSets(experimentId));
   }, []);
 
-  const currentPlotDataConfig = useRef(null);
-  const getDataProps = (updatedConfig) => _.pick(updatedConfig, ['useMarkerGenes', 'nMarkerGenes', 'selectedGenes', 'selectedCellSet', 'selectedPoints']);
+  const previousComparedConfig = useRef(null);
+  const getComparedConfig = (updatedConfig) => _.pick(
+    updatedConfig,
+    ['useMarkerGenes',
+      'nMarkerGenes',
+      'selectedGenes',
+      'selectedCellSet',
+      'selectedPoints'],
+  );
 
   useEffect(() => {
-    if (config && !_.isEqual(currentPlotDataConfig.current, getDataProps(config))) {
-      currentPlotDataConfig.current = getDataProps(config);
+    const currentComparedConfig = getComparedConfig(config);
+    if (config && !_.isEqual(previousComparedConfig.current, currentComparedConfig)) {
+      previousComparedConfig.current = currentComparedConfig;
       dispatch(fetchPlotDataWork(experimentId, plotUuid, plotType));
     }
   }, [config]);
@@ -168,6 +179,19 @@ const DotPlotPage = (props) => {
           axisName='x'
         />
       </Panel>
+      <Panel header='Size scale' key='absolute-scale'>
+        <Form>
+          <Form.Item>
+            <Radio.Group
+              onChange={(e) => updatePlotWithChanges({ useAbsoluteScale: e.target.value })}
+              value={config.useAbsoluteScale}
+            >
+              <Radio key='absolute' value>Absolute</Radio>
+              <Radio key='relative' value={false}>Relative</Radio>
+            </Radio.Group>
+          </Form.Item>
+        </Form>
+      </Panel>
     </>
   );
 
@@ -202,6 +226,21 @@ const DotPlotPage = (props) => {
       return (
         <center>
           <Loader experimentId={experimentId} />
+        </center>
+      );
+    }
+
+    if (!plotData?.length > 0) {
+      return (
+        <center>
+          <Empty description={(
+            <>
+              There is no data to show.
+              <br />
+              Select another option from the 'Select data' menu
+            </>
+          )}
+          />
         </center>
       );
     }

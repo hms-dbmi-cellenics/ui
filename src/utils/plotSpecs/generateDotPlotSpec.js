@@ -1,8 +1,5 @@
 // The goal is to minimize space with the largest possible dot size along the larger axis
 const getDotDimensions = (config, numClusters) => {
-  // Radius for 0 data
-  const minArea = 10;
-
   const plotWidth = config.dimensions.width;
   const plotHeight = config.dimensions.height;
   const padding = 1;
@@ -15,14 +12,22 @@ const getDotDimensions = (config, numClusters) => {
   // when there is a small number of data points. The effect of the
   // adjustment is to make the dot size smaller. Its effect diminishes
   // as the number of data points increases.
-  const adjustment = 3;
+  const adjustment = 2;
   const heightPerDot = plotHeight / (numClusters + adjustment);
   const widthPerDot = plotWidth / (numGenes + adjustment);
 
   // Use the smaller of the two dimensions to determine the max dot size
   // Radius is half the width or height. This radius still contain padding that we want to remove
   const radiusWithPadding = Math.floor(Math.min(heightPerDot, widthPerDot) / 2);
-  const radius = radiusWithPadding - padding;
+  let radius = radiusWithPadding - padding;
+
+  // Small number of data will cause dots to appear very big. This limits the size
+  // (via the radius) that the dots can be.
+  const maxRadius = 20;
+  radius = Math.min(radius, maxRadius);
+
+  // Radius for 0 data
+  const minArea = 10;
 
   // We have to calculate the area because that is what is expected Vega's draw function
   const maxArea = minArea + Math.PI * (radius ** 2);
@@ -112,7 +117,7 @@ const generateSpec = (config, plotData, numClusters) => {
         name: 'dotSize',
         type: 'pow',
         exponent: 2,
-        domain: {
+        domain: config.useAbsoluteScale ? [0, 100] : {
           data: 'plotData',
           field: 'size',
         },
@@ -135,7 +140,6 @@ const generateSpec = (config, plotData, numClusters) => {
         },
       },
     ],
-
     axes: [
       {
         orient: 'bottom',
