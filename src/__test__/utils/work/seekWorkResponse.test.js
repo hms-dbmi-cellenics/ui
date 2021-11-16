@@ -1,7 +1,9 @@
 import { v4 as uuidv4 } from 'uuid';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import SocketMock from 'socket.io-mock';
-import { seekFromAPI } from '../../../utils/work/seekWorkResponse';
+import { seekFromAPI } from 'utils/work/seekWorkResponse';
+
+import unpackResult from 'utils/work/unpackResult';
 
 /**
  * jest.mock calls are automatically hoisted to the top of the javascript
@@ -9,7 +11,7 @@ import { seekFromAPI } from '../../../utils/work/seekWorkResponse';
  * from jest.mock will be accessible under `socketConnectionMocks`, even
  * if they do not appear in the original file.
  */
-import * as socketConnectionMocks from '../../../utils/socketConnection';
+import * as socketConnectionMocks from 'utils/socketConnection';
 
 enableFetchMocks();
 uuidv4.mockImplementation(() => 'my-random-uuid');
@@ -18,7 +20,7 @@ jest.mock('uuid');
 
 jest.mock('moment', () => () => jest.requireActual('moment')('4022-01-01T00:00:00.000Z'));
 
-jest.mock('../../../utils/socketConnection', () => {
+jest.mock('utils/socketConnection', () => {
   const mockEmit = jest.fn();
   const mockOn = jest.fn();
 
@@ -45,6 +47,8 @@ jest.mock('aws-amplify', () => ({
   },
 }));
 
+jest.mock('utils/work/unpackResult');
+
 describe('seekFromAPI unit tests', () => {
   const experimentId = '1234';
   const timeout = 30;
@@ -61,15 +65,7 @@ describe('seekFromAPI unit tests', () => {
     fetchMock.resetMocks();
     fetchMock.doMock();
 
-    fetchMock.mockResolvedValueOnce(
-      {
-        ok: true,
-        json: () => ({
-          data: { hello: 'world' },
-          cacheable: true,
-        }),
-      },
-    );
+    unpackResult.mockResolvedValueOnce({ hello: 'world' });
 
     const socketMock = new SocketMock();
 
@@ -106,10 +102,7 @@ describe('seekFromAPI unit tests', () => {
     });
 
     expect(socketConnectionMocks.mockOn).toHaveBeenCalledTimes(1);
-    expect(response).toEqual({
-      data: { hello: 'world' },
-      cacheable: true,
-    });
+    expect(response).toEqual({ hello: 'world' });
   });
 
   it('Returns an error if there is error in the response.', async (done) => {
