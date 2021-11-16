@@ -14,6 +14,10 @@ const VolcanoDimensionsRangeEditor = (props) => {
 
   const rangeFormatter = (value) => (value === 0 ? 'Auto' : value.toString());
 
+  // yMin has to be set to reasonable value to avoid plot blowing up
+  // when yMin is too small and the max data value is too high
+  const yMin = Math.round(0.3 * yMax);
+
   return (
     <Space direction='vertical' style={{ width: '80%' }}>
       <DimensionsRangeEditor
@@ -34,7 +38,7 @@ const VolcanoDimensionsRangeEditor = (props) => {
         </Checkbox>
         <Slider
           value={newConfig.maxNegativeLogpValueDomain}
-          min={50}
+          min={yMin}
           max={yMax}
           onChange={(value) => {
             handleChange({ maxNegativeLogpValueDomain: value });

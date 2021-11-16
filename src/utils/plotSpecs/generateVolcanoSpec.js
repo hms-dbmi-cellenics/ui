@@ -56,6 +56,7 @@ const generateSpec = (configSrc, plotData) => {
           symbols: {
             update: {
               stroke: 'transparent',
+              shape: { value: config.marker.shape },
             },
           },
           legend: {
@@ -202,8 +203,8 @@ const generateSpec = (configSrc, plotData) => {
           enter: {
             x: { scale: 'x', field: 'logFC' },
             y: { scale: 'y', field: 'neglogpvalue' },
-            size: config.marker.size,
-            shape: config.marker.shape,
+            size: { value: config.marker.size },
+            shape: { value: config.marker.shape },
             strokeWidth: 1,
             strokeOpacity: config.strokeOpa,
             stroke: {
@@ -237,7 +238,7 @@ const generateSpec = (configSrc, plotData) => {
         type: 'rule',
         clip: true,
         encode: {
-          update: {
+          enter: {
             x: {
               scale: 'x',
               value: config.logFoldChangeThreshold,
@@ -258,7 +259,7 @@ const generateSpec = (configSrc, plotData) => {
         type: 'rule',
         clip: true,
         encode: {
-          update: {
+          enter: {
             x: {
               scale: 'x',
               value: config.logFoldChangeThreshold * -1,
@@ -277,8 +278,9 @@ const generateSpec = (configSrc, plotData) => {
       },
       {
         type: 'rule',
+        clip: true,
         encode: {
-          update: {
+          enter: {
             y: {
               scale: 'y',
               value: config.negLogpValueThreshold,

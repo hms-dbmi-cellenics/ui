@@ -10,6 +10,7 @@ import {
 import { useSelector, useDispatch } from 'react-redux';
 import moment from 'moment';
 import { CSVLink } from 'react-csv';
+import _ from 'lodash';
 
 import PropTypes from 'prop-types';
 import Header from 'components/plots/Header';
@@ -60,6 +61,7 @@ const VolcanoPlotPage = (props) => {
 
   const [plotData, setPlotData] = useState([]);
   const [maxYAxis, setMaxYAxis] = useState(null);
+  const [spec, setSpec] = useState(null);
 
   useEffect(() => {
     if (!config) {
@@ -76,9 +78,9 @@ const VolcanoPlotPage = (props) => {
     setPlotData(calculateVolcanoDataPoints(config, diffExprData));
   }, [config, diffExprData]);
 
-  const getMaxNegativeLogPValue = (data) => data.reduce((maxNegativeLogPValue, dataEntry) => {
-    if (!dataEntry?.p_val_adj === 0) return maxNegativeLogPValue;
-    return Math.max(maxNegativeLogPValue, -Math.log10(dataEntry.p_val_adj));
+  const getMaxNegativeLogPValue = (data) => data.reduce((maxNegativeLogPValue, datum, i) => {
+    if (!datum.p_val_adj || datum.p_val_adj === 0) return maxNegativeLogPValue;
+    return Math.max(maxNegativeLogPValue, -Math.log10(datum.p_val_adj));
   }, 0);
 
   useEffect(() => {
@@ -87,6 +89,16 @@ const VolcanoPlotPage = (props) => {
     const maxNegativeLogpValue = getMaxNegativeLogPValue(plotData);
     setMaxYAxis(Math.round(maxNegativeLogpValue));
   }, [plotData]);
+
+  const currentConfig = useRef(null);
+
+  useEffect(() => {
+    if (config && !_.isEqual(currentConfig.current !== config)) {
+      currentConfig.current = config;
+      console.log('*** update inside');
+      setSpec(generateSpec(config, plotData, maxYAxis));
+    }
+  }, [config]);
 
   const plotStylingControlsConfig = [
     {
@@ -222,7 +234,7 @@ const VolcanoPlotPage = (props) => {
       return <Loader experimentId={experimentId} />;
     }
 
-    return <Vega spec={generateSpec(config, plotData)} renderer='canvas' />;
+    return <Vega spec={spec} renderer='canvas' />;
   };
 
   const renderExtraPanels = () => (
