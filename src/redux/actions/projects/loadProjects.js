@@ -13,7 +13,6 @@ const loadProjects = () => async (dispatch) => {
     });
     const response = await fetchAPI(url);
     let data = await response.json();
-
     throwIfRequestFailed(response, data, endUserMessages.ERROR_FETCHING_PROJECTS);
 
     // filter out "projects" that are actually old experiments without a project

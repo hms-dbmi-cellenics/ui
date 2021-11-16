@@ -22,6 +22,7 @@ const experimentsLoaded = (state, action) => {
       lastViewed: uiModelExp.lastViewed,
       meta: uiModelExp.meta,
       sampleIds: uiModelExp.sampleIds,
+      notifyByEmail: curr.notifyByEmail,
     };
 
     return acc;
