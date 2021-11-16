@@ -28,11 +28,23 @@ jest.mock('aws-amplify', () => ({
     get: async (ETag) => `http://mock.s3.amazonaws.com/${ETag}`,
   },
   Auth: {
+    federatedSignIn: jest.fn(),
+    signOut: jest.fn(),
+    currentAuthenticatedUser: jest.fn().mockImplementation(async () => ({
+      username: 'mockuser',
+      attributes: {
+        email: 'mock@user.name',
+        name: 'Mocked User',
+      },
+    })),
     currentSession: () => ({
       getIdToken: (() => ({
         getJwtToken: () => 'fakeJwtToken',
       })),
     }),
+  },
+  Hub: {
+    listen: jest.fn(),
   },
 }));
 

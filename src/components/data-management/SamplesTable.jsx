@@ -13,7 +13,11 @@ import {
 } from '@ant-design/icons';
 import { sortableHandle, sortableContainer, sortableElement } from 'react-sortable-hoc';
 import { updateExperiment } from 'redux/actions/experiments';
-import { updateProject } from 'redux/actions/projects';
+import {
+  updateProject,
+  deleteMetadataTrack,
+  createMetadataTrack,
+} from 'redux/actions/projects';
 import { Storage } from 'aws-amplify';
 import UploadStatus from 'utils/upload/UploadStatus';
 import { arrayMoveImmutable } from 'utils/array-move';
@@ -21,24 +25,31 @@ import downloadFromUrl from 'utils/data-management/downloadFromUrl';
 import { DEFAULT_NA } from 'redux/reducers/projects/initialState';
 import {
   updateSample,
-} from '../../redux/actions/samples';
-import {
-  deleteMetadataTrack,
-  createMetadataTrack,
-} from '../../redux/actions/projects';
+} from 'redux/actions/samples';
+import { metadataNameToKey, metadataKeyToName, temporaryMetadataKey } from 'utils/data-management/metadataUtils';
+import integrationTestConstants from 'utils/integrationTestConstants';
+import MetadataColumnTitle from 'components/data-management/MetadataColumn';
+import MetadataEditor from 'components/data-management/MetadataEditor';
+import SpeciesSelector from 'components/data-management/SpeciesSelector';
+import MetadataPopover from 'components/data-management/MetadataPopover';
 import {
   UploadCell, SampleNameCell, EditableFieldCell, SpeciesCell,
 } from './SamplesTableCells';
-import MetadataColumnTitle from './MetadataColumn';
-import MetadataEditor from './MetadataEditor';
-import SpeciesSelector from './SpeciesSelector';
-import MetadataPopover from './MetadataPopover';
-import { metadataNameToKey, metadataKeyToName, temporaryMetadataKey } from '../../utils/data-management/metadataUtils';
-import integrationTestConstants from '../../utils/integrationTestConstants';
 
-import '../../utils/css/data-management.css';
+import 'utils/css/data-management.css';
 
-const { Text } = Typography;
+const { Paragraph, Text } = Typography;
+
+const exampleDatasets = [
+  {
+    filename: 'PBMC_3k.zip',
+    description: 'Uni-sample PBMC dataset',
+  },
+  {
+    filename: 'PBMC_BMMC_17k.zip',
+    description: 'Multi-sample blood and bone marrow dataset',
+  },
+];
 
 const SamplesTable = forwardRef((props, ref) => {
   const { height } = props;
@@ -275,12 +286,14 @@ const SamplesTable = forwardRef((props, ref) => {
     setTableData(newData);
   }, [projects, samples, activeProjectUuid]);
 
-  const downloadPublicDataset = async () => {
-    const s3Object = await Storage.get('PBMC_3k.zip',
+  const downloadPublicDataset = async (filename) => {
+    const s3Object = await Storage.get(
+      filename,
       {
         bucket: `biomage-public-datasets-${environment}`,
         contentType: 'multipart/form-data',
-      });
+      },
+    );
     downloadFromUrl(s3Object);
   };
 
@@ -290,23 +303,31 @@ const SamplesTable = forwardRef((props, ref) => {
         height: 60,
       }}
       description={(
-        <>
-          <Text>
+        <Space size='middle' direction='vertical'>
+          <Paragraph>
             Start uploading your samples by clicking on Add samples.
-            <br />
-            Don&apos;t have data? Download our
-          </Text>
-          <Button
-            type='link'
-            size='small'
-            onClick={() => downloadPublicDataset()}
-          >
-            example PBMC data set
-          </Button>
+          </Paragraph>
           <Text>
-            .
+            Don&apos;t have data? Get started using one of our example datasets:
           </Text>
-        </>
+          <div style={{ width: 'auto', textAlign: 'left' }}>
+            <ul>
+              {
+                exampleDatasets.map(({ filename, description }) => (
+                  <li key={filename}>
+                    <Button
+                      type='link'
+                      size='small'
+                      onClick={() => downloadPublicDataset(filename)}
+                    >
+                      {description}
+                    </Button>
+                  </li>
+                ))
+              }
+            </ul>
+          </div>
+        </Space>
       )}
     />
   );
@@ -376,3 +397,7 @@ SamplesTable.propTypes = {
 };
 
 export default React.memo(SamplesTable);
+
+export {
+  exampleDatasets,
+};

@@ -8,12 +8,12 @@ import {
 } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import validateInputs, { rules } from '../../utils/validateInputs';
 
 import { ClipLoader } from 'react-spinners';
 import PropTypes from 'prop-types';
-import { createProject } from '../../redux/actions/projects';
-import integrationTestConstants from '../../utils/integrationTestConstants';
+import validateInputs, { rules } from 'utils/validateInputs';
+import { createProject } from 'redux/actions/projects';
+import integrationTestConstants from 'utils/integrationTestConstants';
 
 const { Text, Title, Paragraph } = Typography;
 const { TextArea } = Input;
@@ -125,6 +125,7 @@ const NewProjectModal = (props) => {
             >
               <Input
                 data-test-id={integrationTestConstants.ids.PROJECT_NAME}
+                aria-label='new project name'
                 onChange={(e) => {
                   setProjectName(e.target.value.trim());
                 }}
@@ -149,6 +150,7 @@ const NewProjectModal = (props) => {
                 placeholder='Type description'
                 autoSize={{ minRows: 3, maxRows: 5 }}
                 disabled={saving}
+                aria-label='new project description'
               />
             </Form.Item>
           </Form>
