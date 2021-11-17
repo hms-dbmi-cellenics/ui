@@ -44,7 +44,8 @@ const ExplorationViewPage = ({
   const [addMenuVisible, setAddMenuVisible] = useState(false);
   const { method } = useSelector((state) => (
     state.experimentSettings.processing?.configureEmbedding?.embeddingSettings
-  ));
+  )) || false;
+
   useEffect(() => {
     setSelectedTab(panel);
   }, [panel]);
@@ -71,7 +72,6 @@ const ExplorationViewPage = ({
       }));
     }
   }, [method]);
-
   const TILE_MAP = {
     [methodUppercase]: {
       toolbarControls: <MosaicCloseButton key='remove-button-embedding' />,
