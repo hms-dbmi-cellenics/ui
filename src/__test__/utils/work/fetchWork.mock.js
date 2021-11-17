@@ -118,7 +118,7 @@ const mockSeekFromAPI = jest.fn((_, body) => {
     returnedBody[gene] = mockData[gene];
   });
 
-  return { data: returnedBody };
+  return returnedBody;
 });
 
 const mockCacheModule = {

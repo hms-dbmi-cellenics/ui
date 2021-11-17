@@ -95,7 +95,6 @@ const VolcanoPlotPage = (props) => {
   useEffect(() => {
     if (config && !_.isEqual(currentConfig.current !== config)) {
       currentConfig.current = config;
-      console.log('*** update inside');
       setSpec(generateSpec(config, plotData, maxYAxis));
     }
   }, [config]);
