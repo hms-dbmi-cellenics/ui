@@ -115,9 +115,10 @@ const ThresholdsGuidesEditor = (props) => {
           <Space>
             <InputNumber
               min={0}
+              step={0.1}
               defaultValue={config.logFoldChangeThreshold}
-              onPressEnter={(e) => {
-                onUpdate({ logFoldChangeThreshold: e.target.value });
+              onChange={(val) => {
+                onUpdate({ logFoldChangeThreshold: val });
               }}
             />
             <Checkbox

@@ -32,6 +32,21 @@ const generateSpec = (configSrc, plotData) => {
     ? { data: 'data', field: 'neglogpvalue' }
     : [0, config.maxNegativeLogpValueDomain];
 
+  // This is done here because it is faster than in Vega
+  const newData = plotData.map((data) => {
+    let status = 'No difference';
+
+    if (data.logFC >= config.logFoldChangeThreshold) {
+      status = 'Upregulated';
+    } else if (data.logFC <= -config.logFoldChangeThreshold) {
+      status = 'Downregulated';
+    }
+
+    // eslint-disable-next-line no-param-reassign
+    data.status = status;
+    return data;
+  });
+
   // adding gene labels above the set Y value only for the significant genes
   const geneLabelsEquation = `datum.logFC !== 'NA' && (datum.neglogpvalue >${config.textThresholdValue} && (datum.status == 'Upregulated' || datum.status == 'Downregulated'))`;
 
@@ -78,7 +93,7 @@ const generateSpec = (configSrc, plotData) => {
     data: [
       {
         name: 'data',
-        values: plotData,
+        values: newData,
         transform: [
           {
             type: 'filter',
@@ -101,7 +116,6 @@ const generateSpec = (configSrc, plotData) => {
             expr: geneLabelsEquation,
           }],
       },
-
     ],
 
     scales: [
@@ -305,6 +319,5 @@ const generateSpec = (configSrc, plotData) => {
   return spec;
 };
 
-const generateData = () => { };
-
-export { generateSpec, generateData };
+// eslint-disable-next-line import/prefer-default-export
+export { generateSpec };
