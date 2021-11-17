@@ -23,8 +23,9 @@ const embeddingCategoricalInitialConfig = {
   },
   axes: {
     ...axesBaseState,
-    xAxisText: 'UMAP 1',
-    yAxisText: 'UMAP 2',
+    xAxisText: '',
+    yAxisText: '',
+    defaultValues: ['x', 'y'],
     offset: 10,
   },
   title: {
@@ -53,8 +54,9 @@ const embeddingContinuousInitialConfig = {
   },
   axes: {
     ...axesBaseState,
-    xAxisText: 'UMAP 1',
-    yAxisText: 'UMAP 2',
+    xAxisText: '',
+    yAxisText: '',
+    defaultValues: ['x', 'y'],
     offset: 10,
   },
   title: {
@@ -268,8 +270,9 @@ const embeddingPreviewBySampleInitialConfig = {
   },
   axes: {
     ...axesBaseState,
-    xAxisText: 'UMAP 1',
-    yAxisText: 'UMAP 2',
+    xAxisText: '',
+    yAxisText: '',
+    defaultValues: ['x', 'y'],
     offset: 10,
   },
   title: {
@@ -301,8 +304,9 @@ const embeddingPreviewByCellSetsInitialConfig = {
   },
   axes: {
     ...axesBaseState,
-    xAxisText: 'UMAP 1',
-    yAxisText: 'UMAP 2',
+    xAxisText: '',
+    yAxisText: '',
+    defaultValues: ['x', 'y'],
     offset: 10,
   },
   title: {
@@ -331,8 +335,9 @@ const embeddingPreviewMitochondrialContentInitialConfig = {
   },
   axes: {
     ...axesBaseState,
-    xAxisText: 'UMAP 1',
-    yAxisText: 'UMAP 2',
+    xAxisText: '',
+    yAxisText: '',
+    defaultValues: ['x', 'y'],
     offset: 10,
   },
   title: {
@@ -359,8 +364,9 @@ const embeddingPreviewDoubletScoreInitialConfig = {
   },
   axes: {
     ...axesBaseState,
-    xAxisText: 'UMAP 1',
-    yAxisText: 'UMAP 2',
+    xAxisText: '',
+    yAxisText: '',
+    defaultValues: ['x', 'y'],
     offset: 10,
   },
   title: {
@@ -625,8 +631,9 @@ const dataIntegrationEmbeddingInitialConfig = {
   },
   axes: {
     ...axesBaseState,
-    xAxisText: 'UMAP 1',
-    yAxisText: 'UMAP 2',
+    xAxisText: '',
+    yAxisText: '',
+    defaultValues: ['x', 'y'],
     offset: 10,
   },
   title: {
