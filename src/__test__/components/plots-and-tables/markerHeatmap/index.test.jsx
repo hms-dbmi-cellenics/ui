@@ -30,8 +30,6 @@ import MarkerHeatmap from 'pages/experiments/[experimentId]/plots-and-tables/mar
 import { loadBackendStatus } from 'redux/actions/backendStatus';
 import { loadGeneExpression } from 'redux/actions/genes';
 
-enableFetchMocks();
-
 // Mock hash so we can control the ETag that is produced by hash.MD5 when fetching work requests
 // EtagParams is the object that's passed to the function which generates ETag in fetchWork
 jest.mock('object-hash', () => {
@@ -77,14 +75,16 @@ const getDisplayedGenes = (container) => {
 };
 
 describe('Marker heatmap plot', () => {
-  beforeEach(async () => {
+  beforeEach(() => {
+    enableFetchMocks();
     fetchMock.resetMocks();
+    fetchMock.doMock();
     fetchMock.mockIf(/.*/, mockAPI(defaultResponses));
 
     storeState = makeStore();
 
     // Set up state for backend status
-    await storeState.dispatch(loadBackendStatus(experimentId));
+    storeState.dispatch(loadBackendStatus(experimentId));
   });
 
   it('Loads controls and elements', async () => {

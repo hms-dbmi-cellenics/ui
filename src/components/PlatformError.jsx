@@ -5,9 +5,9 @@ import {
 import PropTypes from 'prop-types';
 import moment from 'moment';
 
-import WorkResponseError from '../utils/WorkResponseError';
-import WorkGenericError from '../utils/WorkGenericError';
-import WorkTimeoutError from '../utils/WorkTimeoutError';
+import WorkResponseError from 'utils/WorkResponseError';
+import WorkGenericError from 'utils/WorkGenericError';
+import WorkTimeoutError from 'utils/WorkTimeoutError';
 
 const { Text } = Typography;
 
@@ -33,13 +33,11 @@ const PlatformError = (props) => {
   }, []);
 
   const renderMessage = () => {
-    reason = reason || 'That\'s all we know';
+    reason = reason ?? 'That\'s all we know';
 
     if (error instanceof WorkResponseError) {
       reason = 'We had an error on our side while we were completing your request.';
-    }
-
-    if (error instanceof WorkTimeoutError) {
+    } else if (error instanceof WorkTimeoutError) {
       reason = (
         <>
           We were expecting your request to arrive
@@ -50,9 +48,7 @@ const PlatformError = (props) => {
           We stopped waiting so you can try again.
         </>
       );
-    }
-
-    if (error instanceof WorkGenericError) {
+    } else if (error instanceof WorkGenericError) {
       reason = error.message;
     }
 
@@ -87,7 +83,7 @@ const PlatformError = (props) => {
       description={renderMessage(error)}
     >
 
-      { actionable ? (
+      {actionable ? (
 
         <Button
           type='primary'

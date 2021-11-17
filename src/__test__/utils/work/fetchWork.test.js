@@ -57,7 +57,7 @@ describe('fetchWork', () => {
   });
 
   it('changes ETag if caching is disabled', async () => {
-    Storage.prototype.getItem = jest.fn((key) => (key === 'disableCache' ? 'true' : null));
+    Storage.prototype.getItem = jest.fn((key) => (key === 'disableCache' ? true : null));
 
     await fetchWork(
       experimentId,
