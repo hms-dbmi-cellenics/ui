@@ -126,7 +126,7 @@ describe('Select Data', () => {
 
     const cellSetSelect = screen.getByRole('combobox', { name: 'selectCellSets' });
 
-    // Change to samples so taht we can choose Cluster
+    // Change to samples so that we can choose Cluster
     await act(async () => {
       fireEvent.change(cellSetSelect, { target: { value: 'Samples' } });
     });
