@@ -5,6 +5,10 @@ Object {
   "embeddingCategoricalMain": Object {
     "config": Object {
       "axes": Object {
+        "defaultValues": Array [
+          "x",
+          "y",
+        ],
         "domainWidth": 2,
         "gridOpacity": 0,
         "gridWidth": 10,
@@ -12,8 +16,8 @@ Object {
         "offset": 10,
         "titleFontSize": 13,
         "xAxisRotateLabels": false,
-        "xAxisText": "UMAP 1",
-        "yAxisText": "UMAP 2",
+        "xAxisText": "",
+        "yAxisText": "",
       },
       "colour": Object {
         "gradient": "default",
