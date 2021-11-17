@@ -1,13 +1,13 @@
 /* eslint-disable no-param-reassign */
-
 import _ from 'lodash';
+
 import {
   GENES_PROPERTIES_LOADING,
   GENES_PROPERTIES_LOADED_PAGINATED, GENES_PROPERTIES_ERROR,
-} from '../../actionTypes/genes';
+} from 'redux/actionTypes/genes';
 
-import { fetchWork } from '../../../utils/work/fetchWork';
-import getTimeoutForWorkerTask from '../../../utils/getTimeoutForWorkerTask';
+import { fetchWork } from 'utils/work/fetchWork';
+import getTimeoutForWorkerTask from 'utils/getTimeoutForWorkerTask';
 
 const loadPaginatedGeneProperties = (
   experimentId, properties, componentUuid, tableState,
