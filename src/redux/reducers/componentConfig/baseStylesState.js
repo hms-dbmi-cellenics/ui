@@ -43,6 +43,7 @@ const colourBaseState = {
 
 const markerBaseState = {
   shape: 'circle',
+  showOpacity: true,
   opacity: 5,
   size: 5,
 };

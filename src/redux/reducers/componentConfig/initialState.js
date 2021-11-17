@@ -121,6 +121,7 @@ const volcanoInitialConfig = {
   dimensions: dimensionsBaseState,
   marker: {
     ...markerBaseState,
+    showOpacity: false,
     size: 32,
   },
   axes: {
