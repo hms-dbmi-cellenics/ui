@@ -33,7 +33,6 @@ const seekFromAPI = async (
   eventCallback,
   requestProps = {},
 ) => {
-  console.error('seek from api', body);
   const io = await connectionPromise;
 
   const timeoutDate = moment().add(timeout, 's').toISOString();

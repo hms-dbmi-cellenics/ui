@@ -1,11 +1,8 @@
 import { initialEmbeddingState } from './initialState';
 
 const embeddingsLoaded = (state, action) => {
-  const { embeddingType, data: jsonData, reset = false } = action.payload;
+  const { embeddingType, data: jsonData } = action.payload;
 
-  if (reset) {
-    return initialEmbeddingState;
-  }
   const data = new Array(jsonData.length);
 
   jsonData.forEach((value, index) => {

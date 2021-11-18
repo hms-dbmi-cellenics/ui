@@ -33,7 +33,7 @@ const makeStore = () => {
       store.replaceReducer(createNextReducer(rootReducer));
     });
   }
-
+  console.log('CREATING STORE ', store);
   return store;
 };
 
