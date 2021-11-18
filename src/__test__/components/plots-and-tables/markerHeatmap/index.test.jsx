@@ -71,7 +71,7 @@ const getDisplayedGenes = (container) => {
 };
 
 describe('Marker heatmap plot', () => {
-  beforeEach(() => {
+  beforeEach(async () => {
     seekFromAPI.mockClear();
 
     enableFetchMocks();
@@ -82,7 +82,7 @@ describe('Marker heatmap plot', () => {
     storeState = makeStore();
 
     // Set up state for backend status
-    storeState.dispatch(loadBackendStatus(experimentId));
+    await storeState.dispatch(loadBackendStatus(experimentId));
   });
 
   it('Loads controls and elements', async () => {

@@ -1,27 +1,7 @@
 import _ from 'lodash';
 
-const generateSpec = (configSrc, data) => {
+const generateSpec = (configSrc, plotData) => {
   const config = _.cloneDeep(configSrc);
-
-  let maxNegativeLogpValue = 0;
-
-  data.forEach((o) => {
-    Object.keys(o).forEach((k) => {
-      if (k === 'p_val_adj' && o[k] && o[k] !== 0) {
-        maxNegativeLogpValue = Math.max(
-          maxNegativeLogpValue, -Math.log10(o[k]),
-        );
-      }
-    });
-  });
-
-  const logFoldChangeFilterExpr = (config.logFoldChangeDomain)
-    ? `datum.logFC > ${config.logFoldChangeDomain * -1} && datum.logFC < ${config.logFoldChangeDomain}`
-    : 'true';
-
-  const negativeLogpValueFilterExpr = (config.maxNegativeLogpValueDomain)
-    ? `datum.neglogpvalue < ${config.maxNegativeLogpValueDomain}`
-    : 'true';
 
   const logFoldChangeThresholdColor = config.showLogFoldChangeThresholdGuides
     ? config.logFoldChangeThresholdColor
@@ -44,13 +24,28 @@ const generateSpec = (configSrc, data) => {
   // interface by deselecting Auto and entering a custom value), use
   // their specified range. If not, scale the plot based on the range of
   // the data in the set.
-  const logFoldChangeDomain = config.logFoldChangeDomain
-    ? [config.logFoldChangeDomain * -1, config.logFoldChangeDomain]
-    : { data: 'data', field: 'logFC' };
+  const logFoldChangeDomain = config.xAxisAuto
+    ? { data: 'data', field: 'logFC' }
+    : [config.logFoldChangeDomain * -1, config.logFoldChangeDomain];
 
-  const maxNegativeLogpValueDomain = config.maxNegativeLogpValueDomain
-    ? [0, config.maxNegativeLogpValueDomain]
-    : { data: 'data', field: 'neglogpvalue' };
+  const maxNegativeLogpValueDomain = config.yAxisAuto
+    ? { data: 'data', field: 'neglogpvalue' }
+    : [0, config.maxNegativeLogpValueDomain];
+
+  // This is done here because it is faster than in Vega
+  const newData = plotData.map((data) => {
+    let status = 'No difference';
+
+    if (data.logFC >= config.logFoldChangeThreshold) {
+      status = 'Upregulated';
+    } else if (data.logFC <= -config.logFoldChangeThreshold) {
+      status = 'Downregulated';
+    }
+
+    // eslint-disable-next-line no-param-reassign
+    data.status = status;
+    return data;
+  });
 
   // adding gene labels above the set Y value only for the significant genes
   const geneLabelsEquation = `datum.logFC !== 'NA' && (datum.neglogpvalue >${config.textThresholdValue} && (datum.status == 'Upregulated' || datum.status == 'Downregulated'))`;
@@ -76,6 +71,7 @@ const generateSpec = (configSrc, data) => {
           symbols: {
             update: {
               stroke: 'transparent',
+              shape: { value: config.marker.shape },
             },
           },
           legend: {
@@ -94,10 +90,10 @@ const generateSpec = (configSrc, data) => {
     $schema: 'https://vega.github.io/schema/vega/v5.json',
     background: config.colour.toggleInvert,
     padding: 5,
-
     data: [
       {
         name: 'data',
+        values: newData,
         transform: [
           {
             type: 'filter',
@@ -108,14 +104,6 @@ const generateSpec = (configSrc, data) => {
             as: 'neglogpvalue',
 
             expr: '-(log(datum.p_val_adj) / LN10)',
-          },
-          {
-            type: 'filter',
-            expr: logFoldChangeFilterExpr,
-          },
-          {
-            type: 'filter',
-            expr: negativeLogpValueFilterExpr,
           },
         ],
       },
@@ -128,7 +116,6 @@ const generateSpec = (configSrc, data) => {
             expr: geneLabelsEquation,
           }],
       },
-
     ],
 
     scales: [
@@ -230,8 +217,8 @@ const generateSpec = (configSrc, data) => {
           enter: {
             x: { scale: 'x', field: 'logFC' },
             y: { scale: 'y', field: 'neglogpvalue' },
-            size: config.marker.size,
-            shape: config.marker.shape,
+            size: { value: config.marker.size },
+            shape: { value: config.marker.shape },
             strokeWidth: 1,
             strokeOpacity: config.strokeOpa,
             stroke: {
@@ -263,8 +250,9 @@ const generateSpec = (configSrc, data) => {
       },
       {
         type: 'rule',
+        clip: true,
         encode: {
-          update: {
+          enter: {
             x: {
               scale: 'x',
               value: config.logFoldChangeThreshold,
@@ -283,8 +271,9 @@ const generateSpec = (configSrc, data) => {
       },
       {
         type: 'rule',
+        clip: true,
         encode: {
-          update: {
+          enter: {
             x: {
               scale: 'x',
               value: config.logFoldChangeThreshold * -1,
@@ -303,8 +292,9 @@ const generateSpec = (configSrc, data) => {
       },
       {
         type: 'rule',
+        clip: true,
         encode: {
-          update: {
+          enter: {
             y: {
               scale: 'y',
               value: config.negLogpValueThreshold,
@@ -326,11 +316,8 @@ const generateSpec = (configSrc, data) => {
     legends: legend,
   };
 
-  return {
-    spec, maxNegativeLogpValue,
-  };
+  return spec;
 };
 
-const generateData = () => { };
-
-export { generateSpec, generateData };
+// eslint-disable-next-line import/prefer-default-export
+export { generateSpec };

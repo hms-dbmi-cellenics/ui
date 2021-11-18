@@ -1,4 +1,5 @@
 import React from 'react';
+import _ from 'lodash';
 import PropTypes from 'prop-types';
 import {
   Slider, Form, Input, Switch,
@@ -20,7 +21,12 @@ const AxesDesign = (props) => {
         <Input
           value={config.axes.xAxisText}
           onChange={(e) => {
-            handleChange({ axes: { xAxisText: e.target.value } });
+            handleChange({
+              axes: {
+                xAxisText: e.target.value,
+                defaultValues: _.without(config.axes.defaultValues, 'x'),
+              },
+            });
           }}
         />
       </Form.Item>
@@ -29,7 +35,12 @@ const AxesDesign = (props) => {
         <Input
           value={config.axes.yAxisText}
           onChange={(e) => {
-            handleChange({ axes: { yAxisText: e.target.value } });
+            handleChange({
+              axes: {
+                yAxisText: e.target.value,
+                defaultValues: _.without(config.axes.defaultValues, 'y'),
+              },
+            });
           }}
         />
       </Form.Item>

@@ -63,7 +63,7 @@ const loadDifferentialExpression = (
       total = rows.length;
     }
 
-    return dispatch({
+    dispatch({
       type: DIFF_EXPR_LOADED,
       payload: {
         experimentId,
