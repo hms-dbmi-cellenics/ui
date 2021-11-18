@@ -1,6 +1,7 @@
 /* eslint-disable global-require */
-import { fetchWork } from '../../../utils/work/fetchWork';
+import { fetchWork } from 'utils/work/fetchWork';
 import '__test__/test-utils/setupTests';
+import Environment from 'utils/environment';
 
 const {
   mockData, mockCacheKeyMappings, mockCacheGet, mockCacheSet, mockSeekFromAPI, mockReduxState,
@@ -42,7 +43,7 @@ describe('fetchWork', () => {
   });
 
   it('does not change ETag if caching is enabled', async () => {
-    Storage.prototype.getItem = jest.fn((key) => (key === 'disableCache' ? false : null));
+    Storage.prototype.getItem = jest.fn((key) => (key === 'disableCache' ? 'false' : null));
 
     await fetchWork(
       experimentId,
@@ -57,7 +58,7 @@ describe('fetchWork', () => {
   });
 
   it('changes ETag if caching is disabled', async () => {
-    Storage.prototype.getItem = jest.fn((key) => (key === 'disableCache' ? true : null));
+    Storage.prototype.getItem = jest.fn((key) => (key === 'disableCache' ? 'true' : null));
 
     await fetchWork(
       experimentId,
@@ -66,6 +67,22 @@ describe('fetchWork', () => {
         genes: ['A', 'B', 'C', 'D'],
       },
       mockReduxState(experimentId),
+      { timeout: 10 },
+    );
+
+    expect(mockSeekFromAPI).not.toHaveBeenCalledWith(
+      expect.anything(), expect.anything(), expect.anything(), GENE_EXPRESSION_ETAG,
+    );
+  });
+
+  it('Caching is disabled by default if environment is dev', async () => {
+    await fetchWork(
+      experimentId,
+      {
+        name: 'GeneExpression',
+        genes: ['A', 'B', 'C', 'D'],
+      },
+      mockReduxState(experimentId, Environment.DEVELOPMENT),
       { timeout: 10 },
     );
 

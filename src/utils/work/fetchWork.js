@@ -1,12 +1,20 @@
 /* eslint-disable no-underscore-dangle */
 import hash from 'object-hash';
 
-import { getBackendStatus } from '../../redux/selectors';
+import Environment, { isBrowser } from 'utils/environment';
+import { calculateZScore } from 'utils/postRequestProcessing';
+import { getBackendStatus } from 'redux/selectors';
 
-import cache from '../cache';
+import cache from 'utils/cache';
 import { seekFromAPI, seekFromS3 } from './seekWorkResponse';
-import Environment, { isBrowser } from '../environment';
-import { calculateZScore } from '../postRequestProcessing';
+
+const isCachingDisabled = (environment) => {
+  const isDev = environment === Environment.DEVELOPMENT;
+  const notProductionButDisabledCaching = environment !== Environment.PRODUCTION
+    && localStorage.getItem('disableCache') === 'true';
+
+  return isDev || notProductionButDisabledCaching;
+};
 
 const createObjectHash = (object) => hash.MD5(object);
 
@@ -57,7 +65,7 @@ const fetchGeneExpressionWork = async (
   // If caching is disabled, we add an additional randomized key to the hash so we never reuse
   // past results.
   let cacheUniquenessKey = null;
-  if (environment !== Environment.PRODUCTION && localStorage.getItem('disableCache') === true) {
+  if (isCachingDisabled(environment)) {
     cacheUniquenessKey = Math.random();
   }
 
@@ -115,9 +123,9 @@ const fetchWork = async (
   }
 
   // If caching is disabled, we add an additional randomized key to the hash so we never reuse
-  // past results.
+  // past results. Cache is disabled by default in development
   let cacheUniquenessKey = null;
-  if (environment !== Environment.PRODUCTION && localStorage.getItem('disableCache') === true) {
+  if (isCachingDisabled(environment)) {
     cacheUniquenessKey = Math.random();
   }
 
