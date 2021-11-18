@@ -5,6 +5,10 @@ Object {
   "embeddingCategoricalMain": Object {
     "config": Object {
       "axes": Object {
+        "defaultValues": Array [
+          "x",
+          "y",
+        ],
         "domainWidth": 2,
         "gridOpacity": 0,
         "gridWidth": 10,
@@ -12,8 +16,8 @@ Object {
         "offset": 10,
         "titleFontSize": 13,
         "xAxisRotateLabels": false,
-        "xAxisText": "UMAP 1",
-        "yAxisText": "UMAP 2",
+        "xAxisText": "",
+        "yAxisText": "",
       },
       "colour": Object {
         "gradient": "default",
@@ -42,6 +46,7 @@ Object {
       "marker": Object {
         "opacity": 5,
         "shape": "circle",
+        "showOpacity": true,
         "size": 5,
       },
       "selectedCellSet": "louvain",
@@ -103,18 +108,19 @@ Object {
       "legend": Object {
         "colour": "#000000",
         "enabled": true,
-        "position": "top-right",
+        "position": "bottom-right",
       },
-      "logFoldChangeDomain": 0,
+      "logFoldChangeDomain": 1,
       "logFoldChangeThreshold": 1,
       "logFoldChangeThresholdColor": "#ff0000",
       "logFoldChangeTickCount": 5,
       "marker": Object {
         "opacity": 5,
         "shape": "circle",
+        "showOpacity": false,
         "size": 32,
       },
-      "maxNegativeLogpValueDomain": 0,
+      "maxNegativeLogpValueDomain": 50,
       "negLogpValueThreshold": 4,
       "negativeLogpValueTickCount": 5,
       "noDifferenceColor": "#aaaaaa",
@@ -134,6 +140,8 @@ Object {
         "fontSize": 15,
         "text": "",
       },
+      "xAxisAuto": true,
+      "yAxisAuto": true,
     },
     "error": false,
     "experimentId": "1234",

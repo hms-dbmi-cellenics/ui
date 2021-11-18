@@ -7,6 +7,7 @@ import { Mosaic, MosaicWindow } from 'react-mosaic-component';
 import ReactResizeDetector from 'react-resize-detector';
 import { DownOutlined, PictureOutlined, ToolOutlined } from '@ant-design/icons';
 import PropTypes from 'prop-types';
+import { loadProcessingSettings } from 'redux/actions/experimentSettings';
 import Header from '../../../../components/Header';
 
 import CellSetsTool from '../../../../components/data-exploration/cell-sets-tool/CellSetsTool';
@@ -41,18 +42,42 @@ const ExplorationViewPage = ({
   const { windows, panel } = layout;
   const [selectedTab, setSelectedTab] = useState(panel);
   const [addMenuVisible, setAddMenuVisible] = useState(false);
+  const { method } = useSelector((state) => (
+    state.experimentSettings.processing?.configureEmbedding?.embeddingSettings
+  )) || false;
 
   useEffect(() => {
     setSelectedTab(panel);
   }, [panel]);
 
+  useEffect(() => {
+    if (!method) {
+      dispatch(loadProcessingSettings(experimentId));
+    }
+  }, []);
+  const methodUppercase = method ? method.toUpperCase() : ' ';
+  const embeddingTitle = `${methodUppercase} Embedding`;
+
+  useEffect(() => {
+    if (method && windows) {
+      dispatch(updateLayout({
+        ...windows,
+        first: {
+          ...windows.first,
+          first: {
+            ...windows.first.first,
+            first: methodUppercase,
+          },
+        },
+      }));
+    }
+  }, [method]);
   const TILE_MAP = {
-    'UMAP Embedding': {
+    [methodUppercase]: {
       toolbarControls: <MosaicCloseButton key='remove-button-embedding' />,
       component: (width, height) => (
         <Embedding
           experimentId={experimentId}
-          embeddingType='umap'
           width={width}
           height={height}
         />
@@ -123,8 +148,8 @@ const ExplorationViewPage = ({
     ],
     Plots: [
       {
-        key: 'UMAP Embedding',
-        description: 'Visualize cells clustered by genetic expression using a UMAP embedding.',
+        key: `${embeddingTitle}`,
+        description: `Visualize cells clustered by genetic expression using a ${embeddingTitle}.`,
       },
       {
         key: 'Heatmap',

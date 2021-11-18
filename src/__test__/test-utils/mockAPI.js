@@ -26,7 +26,7 @@ const delayedResponse = (response, delay = 10000, options = {}) => new Promise((
   }, delay);
 });
 
-const workerResponse = (body) => promiseResponse(JSON.stringify(body));
+const workerResponse = (body) => promiseResponse(body);
 
 const generateDefaultMockAPIResponses = (experimentId, projectUuid = null) => ({
   [`experiments/${experimentId}`]: () => promiseResponse(

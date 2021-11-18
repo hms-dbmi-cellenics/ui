@@ -113,6 +113,10 @@ const LaunchAnalysisButton = () => {
   const canLaunchAnalysis = useCallback(() => {
     if (activeProject.samples.length === 0) return false;
 
+    // Check that samples is loaded
+    const testSampleUuid = activeProject.samples[0];
+    if (samples[testSampleUuid] === undefined) return false;
+
     const metadataKeysAvailable = activeProject.metadataKeys.length;
 
     const allSampleFilesUploaded = (sample) => {

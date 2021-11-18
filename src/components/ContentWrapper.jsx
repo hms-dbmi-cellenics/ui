@@ -16,12 +16,11 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { Auth } from 'aws-amplify';
-import PropTypes from 'prop-types';
-import { useRouter } from 'next/router';
 import Error from '../pages/_error';
 import GEM2SLoadingScreen from './GEM2SLoadingScreen';
 import PipelineRedirectToDataProcessing from './PipelineRedirectToDataProcessing';
 import PreloadContent from './PreloadContent';
+import PropTypes from 'prop-types';
 import connectionPromise from '../utils/socketConnection';
 import experimentUpdatesHandler from '../utils/experimentUpdatesHandler';
 import { getBackendStatus } from '../redux/selectors';
@@ -29,6 +28,7 @@ import integrationTestConstants from '../utils/integrationTestConstants';
 import { loadBackendStatus } from '../redux/actions/backendStatus';
 import pipelineStatus from '../utils/pipelineStatusValues';
 import { useAppRouter } from '../utils/AppRouteProvider';
+import { useRouter } from 'next/router';
 
 const { Sider, Footer } = Layout;
 
@@ -112,13 +112,13 @@ const ContentWrapper = (props) => {
       style={{
         background: 'linear-gradient(315deg, #5B070A 0%, #8f0b10 30%, #A80D12 100%)',
         paddingLeft: '32px',
-        paddingTop: '8px',
-        paddingBottom: '8px',
+        paddingTop: '15px',
+        paddingBottom: '15px',
         pointerEvents: 'none',
         userSelect: 'none',
       }}
     >
-      <svg xmlns='http://www.w3.org/2000/svg' width={110} height={50}>
+      <svg xmlns='http://www.w3.org/2000/svg' width={110} height={30}>
         <defs id='svg_document_defs'>
           <style id='IBM Plex Sans_Google_Webfont_import'>@import url(https://fonts.googleapis.com/css?family=IBM+Plex+Sans);</style>
         </defs>
@@ -146,11 +146,8 @@ const ContentWrapper = (props) => {
             fontFamily='IBM Plex Sans'
             fill='#aab6c1'
             fontSize='12.80px'
-            y='45px'
             textAnchor='start'
-          >
-            by Biomage
-          </text>
+          />
         </g>
       </svg>
     </div>

@@ -42,6 +42,7 @@ Object {
     "marker": Object {
       "opacity": 5,
       "shape": "circle",
+      "showOpacity": true,
       "size": 5,
     },
     "minCellSize": 10800,
@@ -109,6 +110,7 @@ Object {
     "marker": Object {
       "opacity": 5,
       "shape": "circle",
+      "showOpacity": true,
       "size": 5,
     },
     "minCellSize": 10800,

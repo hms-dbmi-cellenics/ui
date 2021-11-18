@@ -16,12 +16,6 @@ jest.mock('utils/work/seekWorkResponse', () => {
   };
 });
 
-// Bypass packing/unpacking in the UI by using JSON instead
-jest.mock('utils/work/unpackResult', () => async (workResult) => {
-  const response = await workResult;
-  return response.json();
-});
-
 jest.mock('aws-amplify', () => ({
   configure: () => ({
     Storage: {
