@@ -1,4 +1,6 @@
-import React, { useEffect, useRef } from 'react';
+import React, {
+  useState, useEffect, useRef, useMemo,
+} from 'react';
 import {
   Row,
   Col,
@@ -8,6 +10,7 @@ import {
   Empty,
   Form,
   Radio,
+  Typography,
 } from 'antd';
 
 import _ from 'lodash';
@@ -30,9 +33,13 @@ import {
 } from 'redux/actions/componentConfig';
 import PlatformError from 'components/PlatformError';
 
+import { getCellSets } from 'redux/selectors';
+
 import { plotTypes } from 'utils/constants';
 
 const { Panel } = Collapse;
+const { Text, Paragraph } = Typography;
+
 const plotUuid = 'dotPlotMain';
 const plotType = plotTypes.DOT_PLOT;
 const route = {
@@ -95,16 +102,19 @@ const DotPlotPage = (props) => {
     data: highestDispersionGenes,
   } = useSelector((state) => state.genes.properties.views[plotUuid] || {});
 
-  const cellSets = useSelector((state) => state.cellSets);
+  const cellSets = useSelector(getCellSets());
   const {
     loading: cellSetsLoading,
     error: cellSetsError,
-    hierarchy,
+    hierarchy: cellSetHierarcy,
+    properties: cellSetProperties,
   } = cellSets;
+
+  const [moreThanTwoGroups, setMoreThanTwoGroups] = useState(false);
 
   useEffect(() => {
     if (!config) dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
-    if (hierarchy.length === 0) dispatch(loadCellSets(experimentId));
+    if (cellSetHierarcy.length === 0) dispatch(loadCellSets(experimentId));
   }, []);
 
   const previousComparedConfig = useRef(null);
@@ -117,13 +127,56 @@ const DotPlotPage = (props) => {
       'selectedPoints'],
   );
 
+  const hasGroupsToCompare = (baseCluster, filterCluster) => {
+    if (cellSetsLoading || !baseCluster || !filterCluster) return false;
+
+    // filterBy has the shape louvain/louvain-1
+    const [filterRootNode, filterKey] = filterCluster.split('/');
+
+    // If 'All" is chosen for the dropdown, there will always be representation from more than 1 group
+    if (filterRootNode === 'All') return true;
+
+    const filterClusterCellIds = Array.from(cellSetProperties[filterKey].cellIds);
+
+    const baseClusterParent = cellSetHierarcy.find((cellSet) => cellSet.key === baseCluster);
+    const baseClusterKeys = baseClusterParent.children.map((child) => child.key);
+    const baseClusterCellIds = baseClusterKeys.map((key) => cellSetProperties[key].cellIds);
+
+    // Check if there is at least 2 baseClusters with elements common to filterCluster
+    let numIntersections = 0;
+    return baseClusterCellIds.some((baseCellIds) => {
+      if (filterClusterCellIds.some((filterCellId) => baseCellIds.has(filterCellId))) {
+        numIntersections += 1;
+      }
+
+      return numIntersections === 2;
+    });
+  };
+
+  const hasGroups = useMemo(
+    () => hasGroupsToCompare(config?.selectedCellSet, config?.selectedPoints),
+    [config?.selectedCellSet, config?.selectedPoints, cellSetsLoading],
+  );
+
   useEffect(() => {
+    if (cellSetsLoading) return;
+
+    // Marker genes calculation needs that the cellIds in groupBy (refer to fn definition)
+    // be represented by more than one groups in filterBy to enable comparison
+    // if (config?.useMarkerGenes && !hasGroupsToCompare(config.selectedCellSet, config.selectedPoints)) {
+    if (config?.useMarkerGenes && !hasGroups) {
+      setMoreThanTwoGroups(false);
+      return;
+    }
+
+    setMoreThanTwoGroups(true);
+
     const currentComparedConfig = getComparedConfig(config);
     if (config && !_.isEqual(previousComparedConfig.current, currentComparedConfig)) {
       previousComparedConfig.current = currentComparedConfig;
       dispatch(fetchPlotDataWork(experimentId, plotUuid, plotType));
     }
-  }, [config]);
+  }, [config, cellSetProperties]);
 
   const loadInitialCustomGenes = () => {
     const PROPERTIES = ['dispersions'];
@@ -176,7 +229,6 @@ const DotPlotPage = (props) => {
           config={config}
           onUpdate={updatePlotWithChanges}
           cellSets={cellSets}
-          axisName='x'
         />
       </Panel>
       <Panel header='Size scale' key='absolute-scale'>
@@ -235,9 +287,37 @@ const DotPlotPage = (props) => {
         <center>
           <Empty description={(
             <>
-              There is no data to show.
-              <br />
-              Select another option from the 'Select data' menu
+              <Paragraph>
+                There is no data to show.
+              </Paragraph>
+              <Paragraph>
+                Select another option from the 'Select data' menu.
+              </Paragraph>
+            </>
+          )}
+          />
+        </center>
+      );
+    }
+
+    if (!moreThanTwoGroups) {
+      return (
+        <center>
+          <Empty description={(
+            <>
+              <Paragraph>
+                There is no data to show.
+              </Paragraph>
+              <Paragraph>
+                <Text type='secondary'>
+                  The cell set that you have chosen to display is repesented by only one group.
+                  <br />
+                  A comparison can not be run to determine the top marker genes.
+                </Text>
+              </Paragraph>
+              <Paragraph>
+                Select another option from the 'Select data' menu.
+              </Paragraph>
             </>
           )}
           />
