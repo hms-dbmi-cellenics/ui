@@ -48,8 +48,8 @@ jest.mock('utils/work/seekWorkResponse', () => ({
 }));
 
 const mockWorkerResponses = {
-  'paginated-gene-expression': () => paginatedGeneExpressionData,
-  'dot-plot-data': () => dotPlotData,
+  'paginated-gene-expression': paginatedGeneExpressionData,
+  'dot-plot-data': dotPlotData,
 };
 
 const experimentId = fake.EXPERIMENT_ID;
@@ -74,6 +74,11 @@ let storeState = null;
 
 describe('Dot plot page', () => {
   beforeEach(async () => {
+    seekFromAPI.mockClear();
+    seekFromAPI.mockImplementation(
+      (a, b, c, requested) => Promise.resolve(_.cloneDeep(mockWorkerResponses[requested])),
+    );
+
     fetchMock.resetMocks();
     fetchMock.mockIf(/.*/, mockAPI(defaultMockResponses));
 
@@ -108,16 +113,12 @@ describe('Dot plot page', () => {
   });
 
   it('Shows a skeleton if config is not loaded', async () => {
-    seekFromAPI.mockImplementation(
-      () => delayedResponse({ status: 404, body: 'NotFound' }),
-    );
+    const noConfigResponse = {
+      ...defaultMockResponses,
+      [`/plots-tables/${plotUuid}`]: () => delayedResponse({ body: 'Not found', status: 404 }),
+    };
 
-    // const noConfigResponse = {
-    //   ...defaultMockResponses,
-    //   [`/plots-tables/${plotUuid}`]: () => ,
-    // };
-
-    // fetchMock.mockIf(/.*/, mockAPI(noConfigResponse));
+    fetchMock.mockIf(/.*/, mockAPI(noConfigResponse));
 
     await act(async () => {
       render(
@@ -131,18 +132,12 @@ describe('Dot plot page', () => {
   });
 
   it('Shows an error if there are errors loading cell sets', async () => {
-    seekFromAPI.mockImplementation(
-      () => statusResponse(404, 'Nothing found'),
-    );
-    // seekFromAPI.mockImplementation(
-    //   () => delayedResponse({ status: 404, body: 'NotFound' }),
-    // );
-    // const cellSetsErrorResponse = {
-    //   ...defaultMockResponses,
-    //   [`experiments/${experimentId}/cellSets`]: () => statusResponse(404, 'Nothing found'),
-    // };
+    const cellSetsErrorResponse = {
+      ...defaultMockResponses,
+      [`experiments/${experimentId}/cellSets`]: () => statusResponse(404, 'Nothing found'),
+    };
 
-    // fetchMock.mockIf(/.*/, mockAPI(cellSetsErrorResponse));
+    fetchMock.mockIf(/.*/, mockAPI(cellSetsErrorResponse));
 
     await act(async () => {
       render(
@@ -156,16 +151,14 @@ describe('Dot plot page', () => {
   });
 
   it('Shows an empty message if there is no data to show in the plot', async () => {
+    const emptyResponseWorkResponse = {
+      ...mockWorkerResponses,
+      'dot-plot-data': [],
+    };
+
     seekFromAPI.mockImplementation(
-      () => Promise.resolve([]),
+      (a, b, c, requested) => Promise.resolve(_.cloneDeep(emptyResponseWorkResponse[requested])),
     );
-
-    // const emptyWorkRequest = {
-    //   ...defaultMockResponses,
-    //   'dot-plot-data': () => workerResponse([]),
-    // };
-
-    // fetchMock.mockIf(/.*/, mockAPI(emptyWorkRequest));
 
     await act(async () => {
       render(
