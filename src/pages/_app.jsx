@@ -7,20 +7,20 @@ import React, { useEffect, useState } from 'react';
 import Router, { useRouter } from 'next/router';
 
 import AWS from 'aws-sdk';
-import { Credentials } from '@aws-amplify/core';
-import { DefaultSeo } from 'next-seo';
-import NProgress from 'nprogress';
-import PropTypes from 'prop-types';
-import _ from 'lodash';
-import { useSelector } from 'react-redux';
 import AppRouteProvider from '../utils/AppRouteProvider';
 import ContentWrapper from '../components/ContentWrapper';
+import { Credentials } from '@aws-amplify/core';
 import CustomError from '../utils/customError';
+import { DefaultSeo } from 'next-seo';
 import Error from './_error';
+import NProgress from 'nprogress';
 import NotFoundPage from './404';
+import PropTypes from 'prop-types';
 import TagManager from '../components/TagManager';
 import UnauthorizedPage from './401';
+import _ from 'lodash';
 import { initTracking } from '../utils/tracking';
+import { useSelector } from 'react-redux';
 import { wrapper } from '../redux/store';
 
 const mockCredentialsForInframock = () => {
@@ -151,7 +151,7 @@ const WrappedApp = ({ Component, pageProps }) => {
       <DefaultSeo
         titleTemplate='%s &middot; Cellenics'
         defaultTitle='Cellenics'
-        description='Cellenics by Biomage turns your single cell datasets into meaningful biology. It’s free for academic researchers, and you get world-class quality analytical insight: simple data upload, data integration for batch effect correction, beautiful publication-quality figures, and much more.'
+        description='Cellenics turns your single cell datasets into meaningful biology. It’s free for academic researchers, and you get world-class quality analytical insight: simple data upload, data integration for batch effect correction, beautiful publication-quality figures, and much more.'
         twitter={{
           site: '@BiomageLtd',
           cardType: 'summary',
