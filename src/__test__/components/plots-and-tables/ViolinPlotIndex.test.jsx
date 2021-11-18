@@ -282,7 +282,7 @@ describe('ViolinIndex', () => {
     await expectStringInVegaCanvas(newGeneShown, 1);
   });
 
-  it('has an Axis and Margins panel (TO-DO)', async () => {
+  it.skip('has an Axis and Margins panel (TO-DO)', async () => {
     await renderViolinIndex();
 
     const tabs = rtl.screen.getAllByRole('tab');
