@@ -16,7 +16,7 @@ import pipelineStatus from 'utils/pipelineStatusValues';
 import integrationTestConstants from 'utils/integrationTestConstants';
 import generateGem2sParamsHash from 'utils/data-management/generateGem2sParamsHash';
 import { runGem2s } from 'redux/actions/pipeline';
-import { updateExperiment } from 'redux/actions/experiments';
+import { updateExperiment, switchExperiment } from 'redux/actions/experiments';
 
 const LaunchButtonTemplate = (props) => {
   const {
@@ -56,6 +56,7 @@ const LaunchAnalysisButton = () => {
     const lastViewed = moment().toISOString();
     dispatch(updateExperiment(experimentId, { lastViewed }));
     dispatch(updateProject(activeProjectUuid, { lastAnalyzed: lastViewed }));
+    dispatch(switchExperiment());
     dispatch(updateExperimentInfo({
       experimentId,
       experimentName: experiments[experimentId].name,

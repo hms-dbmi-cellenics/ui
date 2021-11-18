@@ -1,7 +1,11 @@
 import { createHierarchyFromTree, createPropertiesFromTree } from './helpers';
+import initialState from './initialState';
 
 const cellSetsLoaded = (state, action) => {
-  const { data } = action.payload;
+  const { data, reset = false } = action.payload;
+  if (reset) {
+    return initialState;
+  }
   const newState = {
     ...state,
     loading: false,
