@@ -8,14 +8,6 @@ import { getBackendStatus } from 'redux/selectors';
 import cache from 'utils/cache';
 import { seekFromAPI, seekFromS3 } from './seekWorkResponse';
 
-const isCachingDisabled = (environment) => {
-  const isDev = environment === Environment.DEVELOPMENT;
-  const notProductionButDisabledCaching = environment !== Environment.PRODUCTION
-    && localStorage.getItem('disableCache') === 'true';
-
-  return isDev || notProductionButDisabledCaching;
-};
-
 const createObjectHash = (object) => hash.MD5(object);
 
 const decomposeBody = async (body, experimentId) => {
@@ -65,7 +57,7 @@ const fetchGeneExpressionWork = async (
   // If caching is disabled, we add an additional randomized key to the hash so we never reuse
   // past results.
   let cacheUniquenessKey = null;
-  if (isCachingDisabled(environment)) {
+  if (environment !== Environment.PRODUCTION && localStorage.getItem('disableCache') === 'true') {
     cacheUniquenessKey = Math.random();
   }
 
@@ -117,15 +109,19 @@ const fetchWork = async (
     throw new Error('Disabling network interaction on server');
   }
 
+  if (environment === Environment.DEVELOPMENT && !localStorage.getItem('disableCache')) {
+    localStorage.setItem('disableCache', 'true');
+  }
+
   const { pipeline: { startDate: qcPipelineStartDate } } = backendStatus;
   if (body.name === 'GeneExpression') {
     return fetchGeneExpressionWork(experimentId, timeout, body, backendStatus, environment, extras);
   }
 
   // If caching is disabled, we add an additional randomized key to the hash so we never reuse
-  // past results. Cache is disabled by default in development
+  // past results.
   let cacheUniquenessKey = null;
-  if (isCachingDisabled(environment)) {
+  if (environment !== Environment.PRODUCTION && localStorage.getItem('disableCache') === 'true') {
     cacheUniquenessKey = Math.random();
   }
 

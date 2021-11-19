@@ -89,5 +89,4 @@ Browser cache enabled by default in production environment. This can be disabled
 
     localStorage.set("disableCache", "true")
 
-Browser cache makes it hard to develop as it can hide changes from the backend, so cache is disabled 
-by default in development.
+Browser cache makes it hard to develop as it can hide changes from the backend, so cache is disabled by default in development. This can be changed by modifying `disableCache` in `localStorage` manually .

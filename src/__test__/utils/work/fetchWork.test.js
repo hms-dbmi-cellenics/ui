@@ -90,4 +90,22 @@ describe('fetchWork', () => {
       expect.anything(), expect.anything(), expect.anything(), GENE_EXPRESSION_ETAG,
     );
   });
+
+  it('Setting cache to false in development enables cache', async () => {
+    Storage.prototype.getItem = jest.fn((key) => (key === 'disableCache' ? 'false' : null));
+
+    await fetchWork(
+      experimentId,
+      {
+        name: 'GeneExpression',
+        genes: ['A', 'B', 'C', 'D'],
+      },
+      mockReduxState(experimentId, Environment.DEVELOPMENT),
+      { timeout: 10 },
+    );
+
+    expect(mockSeekFromAPI).toHaveBeenCalledWith(
+      expect.anything(), expect.anything(), expect.anything(), GENE_EXPRESSION_ETAG,
+    );
+  });
 });
