@@ -85,12 +85,8 @@ describe('saveSamples action', () => {
       `http://localhost:3000/v1/projects/${mockprojectUuid}/${mockProject.experiments[0]}/samples`,
       {
         body: JSON.stringify({
-          projectUuid: mockProject.uuid,
-          experimentId: mockProject.experiments[0],
-          samples: {
-            ...payload,
-            [updatedSample1.uuid]: updatedSample1,
-          },
+          ...payload,
+          [updatedSample1.uuid]: updatedSample1,
         }),
         headers: {
           'Content-Type': 'application/json',
@@ -112,12 +108,8 @@ describe('saveSamples action', () => {
       `http://localhost:3000/v1/projects/${mockprojectUuid}/${mockProject.experiments[0]}/samples`,
       {
         body: JSON.stringify({
-          projectUuid: mockProject.uuid,
-          experimentId: mockProject.experiments[0],
-          samples: {
-            ...payload,
-            [sample2.uuid]: sample2,
-          },
+          ...payload,
+          [sample2.uuid]: sample2,
         }),
         headers: {
           'Content-Type': 'application/json',
@@ -139,11 +131,7 @@ describe('saveSamples action', () => {
     expect(fetchMock).toHaveBeenCalledWith(
       `http://localhost:3000/v1/projects/${mockprojectUuid}/${mockProject.experiments[0]}/samples`,
       {
-        body: JSON.stringify({
-          projectUuid: mockProject.uuid,
-          experimentId: mockProject.experiments[0],
-          samples: newSamplesObject,
-        }),
+        body: JSON.stringify(newSamplesObject),
         headers: {
           'Content-Type': 'application/json',
         },
