@@ -124,13 +124,16 @@ const PlotsTablesHome = ({ experimentId, experimentData, route }) => {
       link: 'violin',
       description: `Last updated: ${lastUpdatedViolin}`,
     },
-    {
-      name: 'Dot Plot',
-      image: dotPlot,
-      key: 'dot-key',
-      link: 'dot-plot',
-      description: `Last updated: ${lastUpdatedDotPlot}`,
-    },
+    /// UNCOMMENT THIS TO ENABLE THE DOTPLOT PR
+    /// WAITING FOR THE DOTPLOT PR TO BE MERGED
+    /// https://github.com/biomage-ltd/worker/pull/209
+    // {
+    //   name: 'Dot Plot',
+    //   image: dotPlot,
+    //   key: 'dot-key',
+    //   link: 'dot-plot',
+    //   description: `Last updated: ${lastUpdatedDotPlot}`,
+    // },
   ];
 
   const [openedPlots, setOpenedPlots] = useState(plots);
