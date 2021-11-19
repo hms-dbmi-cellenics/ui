@@ -2,7 +2,7 @@ import React from 'react';
 import _ from 'lodash';
 
 import { act } from 'react-dom/test-utils';
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { Provider } from 'react-redux';
 
@@ -11,6 +11,7 @@ import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import fake from '__test__/test-utils/constants';
 import mockAPI, {
   generateDefaultMockAPIResponses,
+  promiseResponse,
   statusResponse,
   delayedResponse,
 } from '__test__/test-utils/mockAPI';
@@ -24,7 +25,9 @@ import { loadBackendStatus } from 'redux/actions/backendStatus';
 import DotPlotPage from 'pages/experiments/[experimentId]/plots-and-tables/dot-plot/index';
 
 import paginatedGeneExpressionData from '__test__/data/paginated_gene_expression.json';
+import cellSetsDataWithScratchpad from '__test__/data/cell_sets_with_scratchpad.json';
 import dotPlotData from '__test__/data/dotplot_plotdata.json';
+import userEvent from '@testing-library/user-event';
 
 jest.mock('localforage');
 
@@ -56,6 +59,9 @@ const experimentId = fake.EXPERIMENT_ID;
 const plotUuid = 'dotPlotMain';
 
 const customAPIResponses = {
+  [`experiments/${experimentId}/cellSets`]: () => promiseResponse(
+    JSON.stringify(cellSetsDataWithScratchpad),
+  ),
   [`/plots-tables/${plotUuid}`]: () => statusResponse(404, 'Not Found'),
 };
 
@@ -169,6 +175,57 @@ describe('Dot plot page', () => {
     });
 
     expect(screen.getByText(/There is no data to show/i)).toBeInTheDocument();
+    expect(screen.getByText(/Select another option from the 'Select data' menu/i)).toBeInTheDocument();
+  });
+
+  it('Should show a no data error if user is using marker gene and selected filter sets are not represented in more than 1 group in the base cell set', async () => {
+    await act(async () => {
+      render(
+        <Provider store={storeState}>
+          {dotPlotPageFactory()}
+        </Provider>,
+      );
+    });
+
+    // Use marker genes
+    await act(async () => {
+      userEvent.click(screen.getByText(/Marker genes/i));
+    });
+
+    // Select data
+    await act(async () => {
+      userEvent.click(screen.getByText(/Select data/i));
+    });
+
+    // Select samples
+    const selectBaseCells = screen.getByRole('combobox', { name: 'selectCellSets' });
+
+    await act(async () => {
+      fireEvent.change(selectBaseCells, { target: { value: 'Samples' } });
+    });
+
+    const baseOption = screen.getByText(/Samples/);
+
+    await act(async () => {
+      fireEvent.click(baseOption);
+    });
+
+    // Select the filter sets
+    const selectFilterCells = screen.getByRole('combobox', { name: 'selectPoints' });
+
+    await act(async () => {
+      fireEvent.change(selectFilterCells, { target: { value: 'Samples' } });
+    });
+
+    const filterOption = screen.getByText(/Copied WT2/);
+
+    await act(async () => {
+      fireEvent.click(filterOption);
+    });
+
+    expect(screen.getByText(/There is no data to show/i)).toBeInTheDocument();
+    expect(screen.getByText(/The cell set that you have chosen to display is repesented by only one group/i)).toBeInTheDocument();
+    expect(screen.getByText(/A comparison can not be run to determine the top marker genes/i)).toBeInTheDocument();
     expect(screen.getByText(/Select another option from the 'Select data' menu/i)).toBeInTheDocument();
   });
 });
