@@ -31,19 +31,22 @@ const PointDesign = (props) => {
             marks={{ 1: 1, 100: 100 }}
           />
         </Form.Item>
-        <Form.Item
-          label='Point Fill Opacity'
-        >
-          <Slider
-            value={newConfig.marker.opacity}
-            min={1}
-            max={10}
-            onChange={(value) => {
-              handleChange({ marker: { opacity: value } });
-            }}
-            marks={{ 1: 1, 10: 10 }}
-          />
-        </Form.Item>
+
+        {config.marker.showOpacity ? (
+          <Form.Item
+            label='Point Fill Opacity'
+          >
+            <Slider
+              value={newConfig.marker.opacity}
+              min={1}
+              max={10}
+              onChange={(value) => {
+                handleChange({ marker: { opacity: value } });
+              }}
+              marks={{ 1: 1, 10: 10 }}
+            />
+          </Form.Item>
+        ) : <></>}
 
         <p><strong>Point Shape</strong></p>
         <Form.Item>

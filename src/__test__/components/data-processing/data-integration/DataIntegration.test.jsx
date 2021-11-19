@@ -83,6 +83,7 @@ describe('DataIntegration', () => {
         <DataIntegration
           experimentId='1234'
           onPipelineRun={jest.fn()}
+          onConfigChange={jest.fn()}
         />
       </Provider>,
     );

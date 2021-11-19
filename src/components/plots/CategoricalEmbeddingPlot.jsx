@@ -10,10 +10,11 @@ import { loadEmbedding } from '../../redux/actions/embedding';
 import { loadCellSets } from '../../redux/actions/cellSets';
 import { loadProcessingSettings } from '../../redux/actions/experimentSettings';
 import { getCellSets } from '../../redux/selectors';
+import changeEmbeddingAxesIfNecessary from './helpers/changeEmbeddingAxesIfNecessary';
 
 const CategoricalEmbeddingPlot = (props) => {
   const {
-    experimentId, config, actions,
+    experimentId, config, actions, onUpdate,
   } = props;
   const dispatch = useDispatch();
 
@@ -46,6 +47,10 @@ const CategoricalEmbeddingPlot = (props) => {
       dispatch(loadEmbedding(experimentId, embeddingSettings?.method));
     }
   }, [experimentId, embeddingSettings?.method]);
+
+  useEffect(() => {
+    changeEmbeddingAxesIfNecessary(config, embeddingSettings?.method, onUpdate);
+  }, [config, embeddingSettings?.method]);
 
   useEffect(() => {
     if (!config
@@ -103,6 +108,7 @@ CategoricalEmbeddingPlot.propTypes = {
     PropTypes.bool,
     PropTypes.object,
   ]),
+  onUpdate: PropTypes.func.isRequired,
 };
 
 CategoricalEmbeddingPlot.defaultProps = {
