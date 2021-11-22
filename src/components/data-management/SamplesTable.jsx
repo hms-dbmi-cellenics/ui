@@ -29,11 +29,9 @@ import {
 import { metadataNameToKey, metadataKeyToName, temporaryMetadataKey } from 'utils/data-management/metadataUtils';
 import integrationTestConstants from 'utils/integrationTestConstants';
 import MetadataColumnTitle from 'components/data-management/MetadataColumn';
-import MetadataEditor from 'components/data-management/MetadataEditor';
-import SpeciesSelector from 'components/data-management/SpeciesSelector';
 import MetadataPopover from 'components/data-management/MetadataPopover';
 import {
-  UploadCell, SampleNameCell, EditableFieldCell, SpeciesCell,
+  UploadCell, SampleNameCell, EditableFieldCell,
 } from './SamplesTableCells';
 
 import 'utils/css/data-management.css';
@@ -104,26 +102,6 @@ const SamplesTable = forwardRef((props, ref) => {
       title: 'matrix.mtx',
       dataIndex: 'matrix',
       render: (tableCellData) => <UploadCell columnId='matrix' tableCellData={tableCellData} />,
-    },
-    {
-      index: 5,
-      key: 'species',
-      title: () => (
-        <Space>
-          <Text>Species</Text>
-          <MetadataEditor
-            onReplaceEmpty={(value) => setCells(value, 'species', 'REPLACE_EMPTY')}
-            onReplaceAll={(value) => setCells(value, 'species', 'REPLACE_ALL')}
-            onClearAll={() => setCells(null, 'species', 'CLEAR_ALL')}
-            massEdit
-          >
-            <SpeciesSelector />
-          </MetadataEditor>
-        </Space>
-      ),
-      dataIndex: 'species',
-      render: (organismId, record) => <SpeciesCell organismId={organismId} recordUuid={record.uuid} />,
-      width: 200,
     },
   ];
 
