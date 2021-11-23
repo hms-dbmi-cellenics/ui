@@ -6,6 +6,7 @@ import { Provider } from 'react-redux';
 import { Vega } from 'react-vega';
 
 import { ClipLoader } from 'react-spinners';
+import changeEmbeddingAxesIfNecessary from 'components/plots/helpers/changeEmbeddingAxesIfNecessary';
 
 import CategoricalEmbeddingPlot from '../../../components/plots/CategoricalEmbeddingPlot';
 import { initialEmbeddingState } from '../../../redux/reducers/embeddings/initialState';
@@ -18,6 +19,8 @@ import '__test__/test-utils/setupTests';
 const mockStore = configureStore([thunk]);
 
 const initialExperimentState = generateExperimentSettingsMock([]);
+const mockOnUpdate = jest.fn();
+jest.mock('components/plots/helpers/changeEmbeddingAxesIfNecessary');
 
 describe('Categorical embedding', () => {
   const emptyStore = {
@@ -80,7 +83,10 @@ describe('Categorical embedding', () => {
   };
 
   const config = initialPlotConfigStates.embeddingCategorical;
-
+  beforeEach(() => {
+    jest.clearAllMocks();
+    changeEmbeddingAxesIfNecessary.mockImplementation(() => ({}));
+  });
   it('shows spinner when data is still loading', () => {
     const store = mockStore(emptyStore);
 
@@ -89,6 +95,7 @@ describe('Categorical embedding', () => {
         <CategoricalEmbeddingPlot
           experimentId='asd'
           config={config}
+          onUpdate={mockOnUpdate}
         />
       </Provider>,
     );
@@ -97,6 +104,7 @@ describe('Categorical embedding', () => {
 
     // There should be a spinner for loading state.
     expect(spin.length).toEqual(1);
+    expect(changeEmbeddingAxesIfNecessary).toHaveBeenCalled();
   });
 
   it('renders correctly when data is in the store', () => {
@@ -107,6 +115,7 @@ describe('Categorical embedding', () => {
         <CategoricalEmbeddingPlot
           experimentId='asd'
           config={config}
+          onUpdate={mockOnUpdate}
         />
       </Provider>,
     );
@@ -118,5 +127,6 @@ describe('Categorical embedding', () => {
     // There should be a form loaded.
     const form = component.find(Vega);
     expect(form.length).toBeGreaterThan(0);
+    expect(changeEmbeddingAxesIfNecessary).toHaveBeenCalled();
   });
 });

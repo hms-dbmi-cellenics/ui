@@ -23,8 +23,9 @@ const embeddingCategoricalInitialConfig = {
   },
   axes: {
     ...axesBaseState,
-    xAxisText: 'UMAP 1',
-    yAxisText: 'UMAP 2',
+    xAxisText: '',
+    yAxisText: '',
+    defaultValues: ['x', 'y'],
     offset: 10,
   },
   title: {
@@ -53,8 +54,9 @@ const embeddingContinuousInitialConfig = {
   },
   axes: {
     ...axesBaseState,
-    xAxisText: 'UMAP 1',
-    yAxisText: 'UMAP 2',
+    xAxisText: '',
+    yAxisText: '',
+    defaultValues: ['x', 'y'],
     offset: 10,
   },
   title: {
@@ -114,10 +116,14 @@ const markerHeatmapInitialConfig = {
 // PLOTS & TABLES - Volcano plot
 const volcanoInitialConfig = {
   spec: '1.0.0',
-  legend: legendBaseState,
+  legend: {
+    ...legendBaseState,
+    position: 'bottom-right',
+  },
   dimensions: dimensionsBaseState,
   marker: {
     ...markerBaseState,
+    showOpacity: false,
     size: 32,
   },
   axes: {
@@ -135,8 +141,10 @@ const volcanoInitialConfig = {
   significantUpregulatedColor: '#0000ffaa',
   significantDownregulatedColor: '#ff0000',
 
-  logFoldChangeDomain: 0,
-  maxNegativeLogpValueDomain: 0,
+  xAxisAuto: true,
+  yAxisAuto: true,
+  logFoldChangeDomain: 1,
+  maxNegativeLogpValueDomain: 50,
   negLogpValueThreshold: 4,
   logFoldChangeThreshold: 1,
   logFoldChangeTickCount: 5,
@@ -268,8 +276,9 @@ const embeddingPreviewBySampleInitialConfig = {
   },
   axes: {
     ...axesBaseState,
-    xAxisText: 'UMAP 1',
-    yAxisText: 'UMAP 2',
+    xAxisText: '',
+    yAxisText: '',
+    defaultValues: ['x', 'y'],
     offset: 10,
   },
   title: {
@@ -301,8 +310,9 @@ const embeddingPreviewByCellSetsInitialConfig = {
   },
   axes: {
     ...axesBaseState,
-    xAxisText: 'UMAP 1',
-    yAxisText: 'UMAP 2',
+    xAxisText: '',
+    yAxisText: '',
+    defaultValues: ['x', 'y'],
     offset: 10,
   },
   title: {
@@ -331,8 +341,9 @@ const embeddingPreviewMitochondrialContentInitialConfig = {
   },
   axes: {
     ...axesBaseState,
-    xAxisText: 'UMAP 1',
-    yAxisText: 'UMAP 2',
+    xAxisText: '',
+    yAxisText: '',
+    defaultValues: ['x', 'y'],
     offset: 10,
   },
   title: {
@@ -359,8 +370,9 @@ const embeddingPreviewDoubletScoreInitialConfig = {
   },
   axes: {
     ...axesBaseState,
-    xAxisText: 'UMAP 1',
-    yAxisText: 'UMAP 2',
+    xAxisText: '',
+    yAxisText: '',
+    defaultValues: ['x', 'y'],
     offset: 10,
   },
   title: {
@@ -625,8 +637,9 @@ const dataIntegrationEmbeddingInitialConfig = {
   },
   axes: {
     ...axesBaseState,
-    xAxisText: 'UMAP 1',
-    yAxisText: 'UMAP 2',
+    xAxisText: '',
+    yAxisText: '',
+    defaultValues: ['x', 'y'],
     offset: 10,
   },
   title: {

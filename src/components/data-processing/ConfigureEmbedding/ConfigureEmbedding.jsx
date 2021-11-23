@@ -67,6 +67,7 @@ const ConfigureEmbedding = (props) => {
           experimentId={experimentId}
           config={config}
           actions={actions}
+          onUpdate={updatePlotWithChanges}
         />
       )
       ,
@@ -87,6 +88,7 @@ const ConfigureEmbedding = (props) => {
             selectedCellSet: 'sample',
           }}
           actions={actions}
+          onUpdate={updatePlotWithChanges}
         />
       ),
     },
@@ -104,6 +106,7 @@ const ConfigureEmbedding = (props) => {
           loading={cellMeta.mitochondrialContent.loading}
           error={cellMeta.mitochondrialContent.error}
           reloadPlotData={() => dispatch(loadCellMeta(experimentId, 'mitochondrialContent'))}
+          onUpdate={updatePlotWithChanges}
         />
       ),
     },
@@ -121,6 +124,7 @@ const ConfigureEmbedding = (props) => {
           loading={cellMeta.doubletScores.loading}
           error={cellMeta.doubletScores.error}
           reloadPlotData={() => dispatch(loadCellMeta(experimentId, 'doubletScores'))}
+          onUpdate={updatePlotWithChanges}
         />
       ),
     },

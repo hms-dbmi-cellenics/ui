@@ -1,12 +1,12 @@
 /* eslint-disable no-underscore-dangle */
 import hash from 'object-hash';
 
-import { getBackendStatus } from '../../redux/selectors';
+import Environment, { isBrowser } from 'utils/environment';
+import { calculateZScore } from 'utils/postRequestProcessing';
+import { getBackendStatus } from 'redux/selectors';
 
-import cache from '../cache';
+import cache from 'utils/cache';
 import { seekFromAPI, seekFromS3 } from './seekWorkResponse';
-import Environment, { isBrowser } from '../environment';
-import { calculateZScore } from '../postRequestProcessing';
 
 const createObjectHash = (object) => hash.MD5(object);
 
@@ -57,7 +57,7 @@ const fetchGeneExpressionWork = async (
   // If caching is disabled, we add an additional randomized key to the hash so we never reuse
   // past results.
   let cacheUniquenessKey = null;
-  if (environment !== Environment.PRODUCTION && localStorage.getItem('disableCache') === true) {
+  if (environment !== Environment.PRODUCTION && localStorage.getItem('disableCache') === 'true') {
     cacheUniquenessKey = Math.random();
   }
 
@@ -109,6 +109,10 @@ const fetchWork = async (
     throw new Error('Disabling network interaction on server');
   }
 
+  if (environment === Environment.DEVELOPMENT && !localStorage.getItem('disableCache')) {
+    localStorage.setItem('disableCache', 'true');
+  }
+
   const { pipeline: { startDate: qcPipelineStartDate } } = backendStatus;
   if (body.name === 'GeneExpression') {
     return fetchGeneExpressionWork(experimentId, timeout, body, backendStatus, environment, extras);
@@ -117,7 +121,7 @@ const fetchWork = async (
   // If caching is disabled, we add an additional randomized key to the hash so we never reuse
   // past results.
   let cacheUniquenessKey = null;
-  if (environment !== Environment.PRODUCTION && localStorage.getItem('disableCache') === true) {
+  if (environment !== Environment.PRODUCTION && localStorage.getItem('disableCache') === 'true') {
     cacheUniquenessKey = Math.random();
   }
 
