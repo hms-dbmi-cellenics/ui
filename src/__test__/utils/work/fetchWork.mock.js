@@ -135,9 +135,9 @@ const mockSeekWorkResponseModule = {
   ),
 };
 
-const mockReduxState = (experimentId) => () => ({
+const mockReduxState = (experimentId, environment = 'testing') => () => ({
   networkResources: {
-    environment: 'testing',
+    environment,
   },
   backendStatus: {
     [experimentId]: {

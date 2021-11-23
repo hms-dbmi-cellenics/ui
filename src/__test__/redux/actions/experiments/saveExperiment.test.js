@@ -32,6 +32,18 @@ describe('saveExperiment action', () => {
     },
   };
 
+  const experimentInApiFormat = {
+    description: 'Project',
+    createdDate: null,
+    lastViewed: null,
+    notifyByEmail: true,
+    meta: { organism: null, type: '10x' },
+    sampleIds: [],
+    experimentId: 'experiment-1',
+    experimentName: 'experiment-1',
+    projectId: null,
+  };
+
   beforeEach(() => {
     const response = new Response(JSON.stringify({}));
 
@@ -47,7 +59,7 @@ describe('saveExperiment action', () => {
     expect(fetchMock).toHaveBeenCalledWith(
       `http://localhost:3000/v1/experiments/${mockExperiment.id}`,
       {
-        body: JSON.stringify(mockExperiment),
+        body: JSON.stringify(experimentInApiFormat),
         headers: {
           'Content-Type': 'application/json',
         },
@@ -63,7 +75,7 @@ describe('saveExperiment action', () => {
     expect(fetchMock).toHaveBeenCalledWith(
       `http://localhost:3000/v1/experiments/${mockExperiment.id}`,
       {
-        body: JSON.stringify(mockExperiment),
+        body: JSON.stringify(experimentInApiFormat),
         headers: {
           'Content-Type': 'application/json',
         },
