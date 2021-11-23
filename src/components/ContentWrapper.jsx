@@ -18,7 +18,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Auth } from 'aws-amplify';
 import PropTypes from 'prop-types';
 import { useRouter } from 'next/router';
-import { switchExperiment } from 'redux/actions/experiments';
 import Error from '../pages/_error';
 import GEM2SLoadingScreen from './GEM2SLoadingScreen';
 import PipelineRedirectToDataProcessing from './PipelineRedirectToDataProcessing';
@@ -75,7 +74,6 @@ const ContentWrapper = (props) => {
 
   useEffect(() => {
     if (!experimentId) return;
-    dispatch(switchExperiment());
     if (!backendLoading) dispatch(loadBackendStatus(experimentId));
     (async () => {
       const io = await connectionPromise;
