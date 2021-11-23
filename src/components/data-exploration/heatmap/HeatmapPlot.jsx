@@ -88,8 +88,7 @@ const HeatmapPlot = (props) => {
 
   const [maxCells, setMaxCells] = useState(1000);
 
-  const [cellColors, setCellColors] = useState(null);
-  const [expressionMatrix, setExpressionMatrix] = useState(null);
+  const [vitessceData, setVitessceData] = useState(null);
 
   const setHeatmapDataWithDebounce = useCallback(_.debounce((data) => {
     setHeatmapData(data);
@@ -174,12 +173,6 @@ const HeatmapPlot = (props) => {
   }, [width]);
 
   const buildExpressionMatrix = () => {
-    // const oldMap = new Map(heatmapData.trackColorData.map((x) => [`${x.cellId}`, hexToRgb(x.color)]));
-
-    console.log('heatmapData.trackColorDataDebug');
-    console.log(heatmapData.trackColorData);
-    setCellColors(heatmapData.trackColorData);
-
     const cellIds = heatmapData.cellOrder.map((x) => `${x}`);
     const genes = heatmapData.geneOrder;
 
@@ -202,11 +195,17 @@ const HeatmapPlot = (props) => {
     // accomplish with transpose and flatten
     const cellOrderedExpression = _.unzip(scaledCellByGeneMatrix).flat();
 
-    // construct expressionMatrix object for vitessce Heatmap
-    setExpressionMatrix({
-      cols: genes,
-      rows: cellIds,
-      matrix: Uint8Array.from(cellOrderedExpression),
+    // construct expressionMatrix and track data object for vitessce Heatmap
+    setVitessceData({
+      expressionMatrix: {
+        cols: genes,
+        rows: cellIds,
+        matrix: Uint8Array.from(cellOrderedExpression),
+      },
+      metadataTracks: {
+        dataPoints: heatmapData.trackColorData,
+        labels: Array.from(heatmapSettings.selectedTracks).reverse(),
+      },
     });
   };
 
@@ -292,9 +291,9 @@ const HeatmapPlot = (props) => {
         height={height}
         colormap='plasma'
         colormapRange={[0.0, 1.0]}
-        expressionMatrix={expressionMatrix}
-        cellColors={cellColors}
-        cellColorLabels={Array.from(heatmapSettings.selectedTracks).reverse()}
+        expressionMatrix={vitessceData?.expressionMatrix}
+        cellColors={vitessceData?.metadataTracks.dataPoints}
+        cellColorLabels={vitessceData?.metadataTracks.labels}
         transpose
         viewState={viewState}
         setViewState={({ zoom, target }) => { setViewState({ zoom, target }); }}
