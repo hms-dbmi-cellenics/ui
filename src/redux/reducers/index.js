@@ -35,7 +35,11 @@ const appReducers = combineReducers({
 
 const rootReducer = (state, action) => {
   if (action.type === EXPERIMENTS_SWITCH) {
-    const newState = state.networkResources;
+    const newState = {
+      networkResources: state.networkResources,
+      experimentSettings: state.experimentSettings,
+    };
+    console.log('lmao HEREXDD', newState);
     return appReducers(newState, action);
   }
   return appReducers(state, action);
