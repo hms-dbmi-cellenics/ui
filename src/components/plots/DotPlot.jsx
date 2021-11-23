@@ -20,7 +20,7 @@ const DotPlot = (props) => {
     export: true,
     source: false,
     compiled: false,
-    editor: true,
+    editor: false,
   };
 
   const render = () => {

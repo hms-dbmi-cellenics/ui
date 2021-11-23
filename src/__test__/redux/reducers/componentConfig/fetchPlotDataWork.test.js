@@ -32,7 +32,7 @@ let testStore = null;
 const plotUuid = 'DotPlotMain';
 const plotType = plotTypes.DOT_PLOT;
 
-describe('plotDataLoaded', () => {
+describe('fetchPlotDataWork', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     fetchMock.resetMocks();

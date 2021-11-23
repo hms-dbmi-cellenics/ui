@@ -119,7 +119,7 @@ const fetchWork = async (
   }
 
   // If caching is disabled, we add an additional randomized key to the hash so we never reuse
-  // past results. Use the string 'true' because localStorage only store values as strings
+  // past results.
   let cacheUniquenessKey = null;
   if (environment !== Environment.PRODUCTION && localStorage.getItem('disableCache') === 'true') {
     cacheUniquenessKey = Math.random();
