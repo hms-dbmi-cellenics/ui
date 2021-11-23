@@ -202,5 +202,5 @@ SpeciesCell.propTypes = {
 };
 
 export {
-  UploadCell, EditableFieldCell, SampleNameCell,
+  UploadCell, EditableFieldCell, SampleNameCell, SpeciesCell,
 };
