@@ -56,8 +56,6 @@ const HeatmapPlot = (props) => {
   const currentHeatmapSettingsRef = useRef(null);
   const louvainClustersResolutionRef = useRef(null);
 
-  // const [deckWidth, deckHeight, deckRef] = useDeckCanvasSize();
-
   const expressionData = useSelector((state) => state.genes.expression);
   const {
     loading: markerGenesLoading, error: markerGenesLoadingError,
