@@ -128,16 +128,19 @@ const DotPlotPage = (props) => {
       'selectedPoints'],
   );
 
-  const hasGroupsToCompare = (baseCluster, filterCluster, cellSetsObject) => {
+  const hasGroupsToCompare = (baseCluster, filterCluster) => {
     // filterBy has the shape louvain/louvain-1
     const [filterRootNode, filterKey] = filterCluster.split('/');
+
+    // If sample doesn't exist, return false
+    if (!cellSetProperties[filterKey]) return false;
 
     // If 'All" is chosen for the dropdown, there will always be representation from more than 1 group
     if (filterRootNode === 'All') return true;
 
-    const filterClusterCellIds = Array.from(cellSetsObject.properties[filterKey].cellIds);
+    const filterClusterCellIds = Array.from(cellSetProperties[filterKey].cellIds);
 
-    const baseClusterParent = cellSetsObject.hierarchy.find((cellSet) => cellSet.key === baseCluster);
+    const baseClusterParent = cellSetHierarcy.find((cellSet) => cellSet.key === baseCluster);
     const baseClusterKeys = baseClusterParent.children.map((child) => child.key);
     const baseClusterCellIds = baseClusterKeys.map((key) => cellSetProperties[key].cellIds);
 
@@ -154,10 +157,10 @@ const DotPlotPage = (props) => {
 
   const hasMoreThanTwoGroupsToCompare = useMemo(
     () => {
-      if (cellSets?.loading || cellSets?.error || !config?.selectedCellSet || !config?.selectedPoints) return false;
-      return hasGroupsToCompare(config.selectedCellSet, config.selectedPoints, cellSets);
+      if (cellSetsLoading || cellSetsError || !config?.selectedCellSet || !config?.selectedPoints) return false;
+      return hasGroupsToCompare(config.selectedCellSet, config.selectedPoints);
     },
-    [config?.selectedCellSet, config?.selectedPoints, cellSets?.loading, cellSets?.error],
+    [cellSetsLoading, cellSetsError, config?.selectedCellSet, config?.selectedPoints],
   );
 
   useEffect(() => {
