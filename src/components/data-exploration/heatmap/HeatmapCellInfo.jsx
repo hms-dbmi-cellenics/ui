@@ -3,10 +3,6 @@ import _ from 'lodash';
 import { Card } from 'antd';
 import PropTypes from 'prop-types';
 
-// selectedCell
-// geneHighlight
-// focusedExpression.rawExpression
-
 const HeatmapCellInfo = (props) => {
   const {
     cellId, geneName, geneExpression, coordinates,

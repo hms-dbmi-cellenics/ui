@@ -173,8 +173,6 @@ const HeatmapPlot = (props) => {
   }, [width]);
 
   useEffect(() => {
-    if (!cellHighlight) return;
-
     dispatch(updateCellInfo({ cellName: cellHighlight }));
   }, [cellHighlight]);
 
@@ -288,11 +286,11 @@ const HeatmapPlot = (props) => {
       return;
     }
 
+    dispatch(updateCellInfo({ cellName: info[0] }));
+
     const [cellIndex, trackIndex, mouseX, mouseY] = info;
 
     const trackOrder = Array.from(heatmapSettings.selectedTracks).reverse();
-
-    console.log([trackIndex]);
 
     setHighlightedTrackData({
       cellId: cellIndex,
@@ -318,7 +316,7 @@ const HeatmapPlot = (props) => {
         transpose
         viewState={viewState}
         setViewState={({ zoom, target }) => { setViewState({ zoom, target }); }}
-        setCellHighlight={setCellHighlight}
+        setCellHighlight={(...stuff) => setCellHighlight(...stuff)}
         setGeneHighlight={setGeneHighlight}
         setTrackHighlight={setTrackHighlight}
         updateViewInfo={updateCellCoordinates}
