@@ -51,8 +51,7 @@ const HeatmapPlot = (props) => {
 
   const [highlightedTrackData, setHighlightedTrackData] = useState(null);
 
-  const cellCoordinates = useRef({ x: 200, y: 300 });
-
+  const cellCoordinatesRef = useRef({ x: 200, y: 300 });
   const currentHeatmapSettingsRef = useRef(null);
   const louvainClustersResolutionRef = useRef(null);
 
@@ -100,7 +99,7 @@ const HeatmapPlot = (props) => {
     if (cellHighlight && newView.project) {
       const [x, y] = newView.project(cellHighlight, geneHighlight);
 
-      cellCoordinates.current = {
+      cellCoordinatesRef.current = {
         x,
         y,
         width,
@@ -338,7 +337,7 @@ const HeatmapPlot = (props) => {
               cellId={cellHighlight}
               geneName={geneHighlight}
               geneExpression={focusedExpression?.rawExpression.expression[cellHighlight]}
-              coordinates={cellCoordinates.current}
+              coordinates={cellCoordinatesRef.current}
             />
           )
         }
