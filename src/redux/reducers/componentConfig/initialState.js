@@ -1,3 +1,5 @@
+import { plotTypes } from 'utils/constants';
+
 import {
   legendBaseState,
   dimensionsBaseState,
@@ -107,7 +109,7 @@ const heatmapInitialConfig = {
 // PLOTS & TABLES - Marker heatmap
 const markerHeatmapInitialConfig = {
   ...heatmapInitialConfig,
-  useCustomGenes: true,
+  useMarkerGenes: false,
   guardLines: false,
   nMarkerGenes: 5,
   showGeneLabels: true,
@@ -255,7 +257,8 @@ const dotPlotConfig = {
   colour: colourBaseState,
   marker: markerBaseState,
   labels: labelBaseState,
-  useCustomGenes: true,
+  useAbsoluteScale: true,
+  useMarkerGenes: false,
   nMarkerGenes: 3,
   selectedGenes: [],
   selectedCellSet: 'louvain',
@@ -753,7 +756,7 @@ const initialPlotConfigStates = {
   volcano: volcanoInitialConfig,
   markerHeatmap: markerHeatmapInitialConfig,
   violin: violinConfig,
-  dotPlot: dotPlotConfig,
+  [plotTypes.DOT_PLOT]: dotPlotConfig,
   frequency: frequencyInitialConfig,
   embeddingPreviewBySample: embeddingPreviewBySampleInitialConfig,
   embeddingPreviewByCellSets: embeddingPreviewByCellSetsInitialConfig,
@@ -767,7 +770,18 @@ const initialPlotConfigStates = {
 const initialComponentConfigStates = {
   interactiveHeatmap: interactiveHeatmapInitialConfig,
 };
-export { initialPlotConfigStates, initialComponentConfigStates };
+
+const initialPlotDataState = {
+  plotData: [],
+  loading: false,
+  error: false,
+};
+
+export {
+  initialPlotConfigStates,
+  initialComponentConfigStates,
+  initialPlotDataState,
+};
 
 const initialState = {};
 export default initialState;
