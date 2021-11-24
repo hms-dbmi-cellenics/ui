@@ -9,7 +9,6 @@ import {
   UploadCell,
   EditableFieldCell,
   SampleNameCell,
-  SpeciesCell,
 } from 'components/data-management/SamplesTableCells';
 import UploadStatus, { messageForStatus } from 'utils/upload/UploadStatus';
 import { makeStore } from 'redux/store';
@@ -160,27 +159,5 @@ describe('SampleNameCell', () => {
     );
 
     expect(screen.getByText(mockSampleName)).toBeInTheDocument();
-  });
-});
-
-describe('SpeciesCell', () => {
-  it('Should show the correct species name', async () => {
-    const speciesData = {
-      id: 'mmusculus',
-      display_name: 'Mouse',
-    };
-
-    const storeState = makeStore();
-    const recordUuid = 'mock-uuid';
-
-    await act(async () => (
-      render(
-        <Provider store={storeState}>
-          <SpeciesCell organismId={speciesData.id} recordUuid={recordUuid} />
-        </Provider>,
-      )
-    ));
-
-    expect(screen.getByText(speciesData.display_name)).toBeInTheDocument();
   });
 });

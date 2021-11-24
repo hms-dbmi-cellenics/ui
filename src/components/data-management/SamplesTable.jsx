@@ -198,24 +198,19 @@ const SamplesTable = forwardRef((props, ref) => {
     'CLEAR_ALL',
   ];
 
-  const createUpdateObject = (value, metadataKey) => {
-    const updateObject = metadataKey === 'species' ? { species: value } : { metadata: { [metadataKey]: value } };
-    return updateObject;
-  };
-
   const setCells = (value, metadataKey, actionType) => {
     if (!MASS_EDIT_ACTIONS.includes(actionType)) return;
-    const updateObject = createUpdateObject(value, metadataKey);
+    const updateObject = { metadata: { [metadataKey]: value } };
 
     const canUpdateCell = (sampleUuid, action) => {
       if (action !== 'REPLACE_EMPTY') return true;
 
-      const isSpeciesEmpty = (uuid) => metadataKey === 'species' && !samples[uuid].species;
-      const isMetadataEmpty = (uuid) => metadataKey !== 'species'
-        && (!samples[uuid].metadata[metadataKey]
-          || samples[uuid].metadata[metadataKey] === DEFAULT_NA);
+      const isMetadataEmpty = (uuid) => (
+        !samples[uuid].metadata[metadataKey]
+        || samples[uuid].metadata[metadataKey] === DEFAULT_NA
+      );
 
-      return isMetadataEmpty(sampleUuid) || isSpeciesEmpty(sampleUuid);
+      return isMetadataEmpty(sampleUuid);
     };
 
     activeProject.samples.forEach(
