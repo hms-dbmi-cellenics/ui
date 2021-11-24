@@ -36,7 +36,6 @@ import PlatformError from 'components/PlatformError';
 import { getCellSets } from 'redux/selectors';
 
 import { plotTypes } from 'utils/constants';
-import { getCellSetsHierarchyByKeys } from 'redux/selectors/cellSets';
 
 const { Panel } = Collapse;
 const { Text, Paragraph } = Typography;
@@ -132,11 +131,11 @@ const DotPlotPage = (props) => {
     // filterBy has the shape louvain/louvain-1
     const [filterRootNode, filterKey] = filterCluster.split('/');
 
-    // If sample doesn't exist, return false
-    if (!cellSetProperties[filterKey]) return false;
-
     // If 'All" is chosen for the dropdown, there will always be representation from more than 1 group
     if (filterRootNode === 'All') return true;
+
+    // Ensure that filterKey exists in cellSetProperties
+    if (filterKey && !cellSetProperties[filterKey]) return false;
 
     const filterClusterCellIds = Array.from(cellSetProperties[filterKey].cellIds);
 
@@ -271,7 +270,8 @@ const DotPlotPage = (props) => {
       return (
         <center>
           <PlatformError
-            description='Error loading plot data'
+            description='Error loading plot data.'
+            reason='Check the options that you have selected and try again.'
             onClick={() => dispatch(fetchPlotDataWork(experimentId, plotUuid, plotType))}
           />
         </center>

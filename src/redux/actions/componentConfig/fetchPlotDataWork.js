@@ -31,6 +31,8 @@ const fetchPlotDataWork = (experimentId, plotUuid, plotType) => async (dispatch,
       },
     });
   } catch (error) {
+    console.error(error.message);
+
     dispatch({
       type: PLOT_DATA_ERROR,
       payload: {

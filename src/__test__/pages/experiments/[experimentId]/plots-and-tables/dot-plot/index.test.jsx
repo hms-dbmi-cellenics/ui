@@ -14,6 +14,7 @@ import mockAPI, {
   promiseResponse,
   statusResponse,
   delayedResponse,
+  workerResponse,
 } from '__test__/test-utils/mockAPI';
 
 import { seekFromAPI } from 'utils/work/seekWorkResponse';
@@ -154,6 +155,29 @@ describe('Dot plot page', () => {
     });
 
     expect(screen.getByText(/Error loading cell sets/i)).toBeInTheDocument();
+  });
+
+  it('Shows platform error if there are errors fetching the work', async () => {
+    seekFromAPI.mockImplementation(
+      (a, b, c, requested) => {
+        if (requested === 'dot-plot-data') {
+          return Promise.reject(new Error('error'));
+        }
+
+        return Promise.resolve(_.cloneDeep(mockWorkerResponses[requested]));
+      },
+    );
+
+    await act(async () => {
+      render(
+        <Provider store={storeState}>
+          {dotPlotPageFactory()}
+        </Provider>,
+      );
+    });
+
+    expect(screen.getByText(/Error loading plot data/i)).toBeInTheDocument();
+    expect(screen.getByText(/Check the options that you have selected and try again/i)).toBeInTheDocument();
   });
 
   it('Shows an empty message if there is no data to show in the plot', async () => {
