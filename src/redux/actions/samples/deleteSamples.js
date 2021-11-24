@@ -32,8 +32,6 @@ const sendDeleteSamplesRequest = async (projectUuid, experimentId, sampleUuids) 
     },
   );
 
-  console.log('*** response', response);
-
   if (!response.ok) {
     throw new Error(await response.json().message);
   }
