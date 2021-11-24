@@ -20,6 +20,8 @@ const updateSample = (
   // eslint-disable-next-line no-param-reassign
   diff.lastModified = moment().toISOString();
 
+  console.warn('*** diff', diff);
+
   const newSample = mergeObjectWithArrays(sample, diff);
 
   try {

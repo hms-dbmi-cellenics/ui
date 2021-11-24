@@ -19,7 +19,7 @@ const SpeciesSelector = (props) => {
   const [sortedSpeciesData, setSortedSpeciesData] = useState([]);
 
   useEffect(() => {
-    if (!speciesData) {
+    if (!speciesData || speciesData.length === 0) {
       return;
     }
 
@@ -45,7 +45,7 @@ const SpeciesSelector = (props) => {
     });
 
     setSortedSpeciesData(d);
-  }, [speciesData]);
+  }, [speciesData?.length]);
 
   if (!sortedSpeciesData || sortedSpeciesData.length === 0) {
     return <Skeleton.Input style={{ width: 300 }} size='small' />;

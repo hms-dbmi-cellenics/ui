@@ -58,6 +58,8 @@ const EditableField = (props) => {
   const onChange = (e) => {
     const { value: newValue } = e.target;
 
+    console.log('*** value', value);
+
     if (validationFunc) {
       const valid = value === newValue || validationFunc(newValue);
 
