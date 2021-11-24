@@ -36,6 +36,7 @@ import PlatformError from 'components/PlatformError';
 import { getCellSets } from 'redux/selectors';
 
 import { plotTypes } from 'utils/constants';
+import { getCellSetsHierarchyByKeys } from 'redux/selectors/cellSets';
 
 const { Panel } = Collapse;
 const { Text, Paragraph } = Typography;
@@ -128,8 +129,6 @@ const DotPlotPage = (props) => {
   );
 
   const hasGroupsToCompare = (baseCluster, filterCluster) => {
-    if (cellSetsLoading || !baseCluster || !filterCluster) return false;
-
     // filterBy has the shape louvain/louvain-1
     const [filterRootNode, filterKey] = filterCluster.split('/');
 
@@ -153,8 +152,11 @@ const DotPlotPage = (props) => {
     });
   };
 
-  const hasGroups = useMemo(
-    () => hasGroupsToCompare(config?.selectedCellSet, config?.selectedPoints),
+  const hasMoreThanTwoGroupsToCompare = useMemo(
+    () => {
+      if (cellSetsLoading || !config?.selectedCellSet || !config?.selectedPoints) return false;
+      return hasGroupsToCompare(config.selectedCellSet, config.selectedPoints);
+    },
     [config?.selectedCellSet, config?.selectedPoints, cellSetsLoading],
   );
 
@@ -163,8 +165,7 @@ const DotPlotPage = (props) => {
 
     // Marker genes calculation needs that the cellIds in groupBy (refer to fn definition)
     // be represented by more than one groups in filterBy to enable comparison
-    // if (config?.useMarkerGenes && !hasGroupsToCompare(config.selectedCellSet, config.selectedPoints)) {
-    if (config?.useMarkerGenes && !hasGroups) {
+    if (config?.useMarkerGenes && !hasMoreThanTwoGroupsToCompare) {
       setMoreThanTwoGroups(false);
       return;
     }
