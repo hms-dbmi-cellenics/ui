@@ -1,15 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import _ from 'lodash';
+import React from 'react';
 import { Card } from 'antd';
 import PropTypes from 'prop-types';
 
-// selectedCell
-// geneHighlight
-// focusedExpression.rawExpression
-
-const HeatmapCellInfo = (props) => {
+const HeatmapTracksCellInfo = (props) => {
   const {
-    cellId, geneName, geneExpression, coordinates,
+    cellId, trackName, coordinates,
   } = props;
 
   const cellInfoStyle = { fontSize: '0.75rem' };
@@ -31,15 +26,9 @@ const HeatmapCellInfo = (props) => {
           {`Cell id: ${cellId}`}
         </div>
       ) : <></>}
-      {geneName ? (
+      {trackName ? (
         <div style={cellInfoStyle}>
-          {`Gene name: ${geneName}`}
-        </div>
-      ) : <></>}
-      {geneExpression !== undefined ? (
-        <div style={cellInfoStyle}>
-          Expression:&nbsp;
-          {geneExpression}
+          {`Group name: ${trackName}`}
         </div>
       ) : <></>}
     </Card>
@@ -52,13 +41,12 @@ const HeatmapCellInfo = (props) => {
   return (<></>);
 };
 
-HeatmapCellInfo.defaultProps = {};
+HeatmapTracksCellInfo.defaultProps = {};
 
-HeatmapCellInfo.propTypes = {
+HeatmapTracksCellInfo.propTypes = {
   cellId: PropTypes.string.isRequired,
-  geneName: PropTypes.string.isRequired,
-  geneExpression: PropTypes.string.isRequired,
+  trackName: PropTypes.string.isRequired,
   coordinates: PropTypes.object.isRequired,
 };
 
-export default HeatmapCellInfo;
+export default HeatmapTracksCellInfo;

@@ -17,9 +17,11 @@ import { loadGeneExpression, loadMarkerGenes } from 'redux/actions/genes';
 import { loadCellSets } from 'redux/actions/cellSets';
 import { loadComponentConfig } from 'redux/actions/componentConfig';
 
-import populateHeatmapData from 'components/plots/helpers/populateHeatmapData';
 import Loader from 'components/Loader';
-import HeatmapCellInfo from './HeatmapCellInfo';
+import populateHeatmapData from 'components/plots/helpers/populateHeatmapData';
+
+import HeatmapCellInfo from 'components/data-exploration/heatmap/HeatmapCellInfo';
+import HeatmapTracksCellInfo from 'components/data-exploration/heatmap/HeatmapTracksCellInfo';
 
 import './Heatmap.module.css';
 
@@ -46,10 +48,12 @@ const HeatmapPlot = (props) => {
   const [viewState, setViewState] = useState({ zoom: 0, target: [0, 0] });
   const [heatmapData, setHeatmapData] = useState(null);
   const [isHeatmapGenesLoading, setIsHeatmapGenesLoading] = useState(false);
-  const currentHeatmapSettings = useRef();
+
+  const [highlightedTrackData, setHighlightedTrackData] = useState(null);
 
   const cellCoordinates = useRef({ x: 200, y: 300 });
 
+  const currentHeatmapSettingsRef = useRef(null);
   const louvainClustersResolutionRef = useRef(null);
 
   // const [deckWidth, deckHeight, deckRef] = useDeckCanvasSize();
@@ -60,9 +64,9 @@ const HeatmapPlot = (props) => {
   } = useSelector((state) => state.genes.markers);
 
   const [geneHighlight, setGeneHighlight] = useState(null);
+  const [cellHighlight, setCellHighlight] = useState(null);
 
   const cellSets = useSelector(getCellSets());
-  const cellHighlight = useSelector((state) => state.cellInfo.cellName);
 
   const {
     hierarchy: cellSetsHierarchy,
@@ -138,12 +142,12 @@ const HeatmapPlot = (props) => {
   useEffect(() => {
     if (!selectedGenes?.length > 0
       || cellSetsHierarchy.length === 0
-      || _.isEqual(currentHeatmapSettings, heatmapSettings)
+      || _.isEqual(currentHeatmapSettingsRef, heatmapSettings)
     ) {
       return;
     }
 
-    currentHeatmapSettings.current = heatmapSettings;
+    currentHeatmapSettingsRef.current = heatmapSettings;
 
     const data = populateHeatmapData(
       cellSets, heatmapSettings, expressionData, selectedGenes, true, true,
@@ -171,6 +175,12 @@ const HeatmapPlot = (props) => {
   useEffect(() => {
     setMaxCells(Math.floor(width * 0.8));
   }, [width]);
+
+  useEffect(() => {
+    if (!cellHighlight) return;
+
+    dispatch(updateCellInfo({ cellName: cellHighlight }));
+  }, [cellHighlight]);
 
   const buildExpressionMatrix = () => {
     const cellIds = heatmapData.cellOrder.map((x) => `${x}`);
@@ -276,8 +286,23 @@ const HeatmapPlot = (props) => {
     );
   }
 
-  const setCellHighlight = (cell) => {
-    dispatch(updateCellInfo({ cellName: cell }));
+  const setTrackHighlight = (info) => {
+    if (!info) {
+      setHighlightedTrackData(null);
+      return;
+    }
+
+    const [cellIndex, trackIndex, mouseX, mouseY] = info;
+
+    const trackOrder = Array.from(heatmapSettings.selectedTracks).reverse();
+
+    console.log([trackIndex]);
+
+    setHighlightedTrackData({
+      cellId: cellIndex,
+      trackName: trackOrder[trackIndex],
+      coordinates: { x: mouseX, y: mouseY },
+    });
   };
 
   const heatmapRightMargin = 50;
@@ -299,15 +324,26 @@ const HeatmapPlot = (props) => {
         setViewState={({ zoom, target }) => { setViewState({ zoom, target }); }}
         setCellHighlight={setCellHighlight}
         setGeneHighlight={setGeneHighlight}
+        setTrackHighlight={setTrackHighlight}
         updateViewInfo={updateCellCoordinates}
       />
       <div>
-        <HeatmapCellInfo
-          cellId={cellHighlight}
-          geneName={geneHighlight}
-          geneExpression={focusedExpression?.rawExpression.expression[cellHighlight]}
-          coordinates={cellCoordinates}
-        />
+        {
+          highlightedTrackData ? (
+            <HeatmapTracksCellInfo
+              cellId={highlightedTrackData.cellId}
+              trackName={highlightedTrackData.trackName}
+              coordinates={highlightedTrackData.coordinates}
+            />
+          ) : (
+            <HeatmapCellInfo
+              cellId={cellHighlight}
+              geneName={geneHighlight}
+              geneExpression={focusedExpression?.rawExpression.expression[cellHighlight]}
+              coordinates={cellCoordinates.current}
+            />
+          )
+        }
       </div>
     </div>
   );
