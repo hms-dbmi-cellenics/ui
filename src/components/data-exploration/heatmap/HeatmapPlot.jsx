@@ -47,9 +47,15 @@ const HeatmapPlot = (props) => {
 
   const [viewState, setViewState] = useState({ zoom: 0, target: [0, 0] });
   const [heatmapData, setHeatmapData] = useState(null);
+  const [highlightedTrackData, setHighlightedTrackData] = useState(null);
+
   const [isHeatmapGenesLoading, setIsHeatmapGenesLoading] = useState(false);
 
-  const [highlightedTrackData, setHighlightedTrackData] = useState(null);
+  const [geneHighlight, setGeneHighlight] = useState(null);
+  const [cellHighlight, setCellHighlight] = useState(null);
+
+  const [maxCells, setMaxCells] = useState(1000);
+  const [vitessceData, setVitessceData] = useState(null);
 
   const cellCoordinatesRef = useRef({ x: 200, y: 300 });
   const currentHeatmapSettingsRef = useRef(null);
@@ -59,9 +65,6 @@ const HeatmapPlot = (props) => {
   const {
     loading: markerGenesLoading, error: markerGenesLoadingError,
   } = useSelector((state) => state.genes.markers);
-
-  const [geneHighlight, setGeneHighlight] = useState(null);
-  const [cellHighlight, setCellHighlight] = useState(null);
 
   const cellSets = useSelector(getCellSets());
 
@@ -86,10 +89,6 @@ const HeatmapPlot = (props) => {
 
   const { error: expressionDataError } = expressionData;
   const viewError = useSelector((state) => state.genes.expression.views[COMPONENT_TYPE]?.error);
-
-  const [maxCells, setMaxCells] = useState(1000);
-
-  const [vitessceData, setVitessceData] = useState(null);
 
   const setHeatmapDataWithDebounce = useCallback(_.debounce((data) => {
     setHeatmapData(data);
