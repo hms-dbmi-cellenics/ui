@@ -129,6 +129,8 @@ const DotPlotPage = (props) => {
   );
 
   const hasGroupsToCompare = (baseCluster, filterCluster) => {
+    if (cellSetsLoading || !baseCluster || !filterCluster) return false;
+
     // filterBy has the shape louvain/louvain-1
     const [filterRootNode, filterKey] = filterCluster.split('/');
 
@@ -153,10 +155,7 @@ const DotPlotPage = (props) => {
   };
 
   const hasMoreThanTwoGroupsToCompare = useMemo(
-    () => {
-      if (cellSetsLoading || !config?.selectedCellSet || !config?.selectedPoints) return false;
-      return hasGroupsToCompare(config.selectedCellSet, config.selectedPoints);
-    },
+    () => hasGroupsToCompare(config?.selectedCellSet, config?.selectedPoints),
     [config?.selectedCellSet, config?.selectedPoints, cellSetsLoading],
   );
 
