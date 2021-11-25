@@ -36,16 +36,20 @@ describe('loadProcessingSettings action', () => {
   });
 
   it('Dispatches action on initial state', async () => {
-    const state = _.merge(mockState, {
-      experimentSettings: {
-        processing: {
-          meta: {
-            loading: true,
-            error: false,
+    const state = _.merge(
+      {},
+      mockState,
+      {
+        experimentSettings: {
+          processing: {
+            meta: {
+              loading: true,
+              error: false,
+            },
           },
         },
       },
-    });
+    );
     const store = mockStore(state);
 
     await store.dispatch(loadProcessingSettings(experimentId));
@@ -73,16 +77,20 @@ describe('loadProcessingSettings action', () => {
   });
 
   it('Redispatches if called on error', async () => {
-    const state = _.merge(mockState, {
-      experimentSettings: {
-        processing: {
-          meta: {
-            loading: false,
-            loadingSettingsError: true,
+    const state = _.merge(
+      {},
+      mockState,
+      {
+        experimentSettings: {
+          processing: {
+            meta: {
+              loading: false,
+              loadingSettingsError: true,
+            },
           },
         },
       },
-    });
+    );
 
     const store = mockStore(state);
     await store.dispatch(loadProcessingSettings(experimentId));

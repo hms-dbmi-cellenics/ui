@@ -38,7 +38,7 @@ jest.mock('next/router', () => ({
 jest.mock('aws-amplify', () => ({
   Auth: {
     currentAuthenticatedUser: jest.fn().mockImplementation(async () => true),
-    federatedSignIn: jest.fn().mockImplementation(() => console.log('== HELLO ==')),
+    federatedSignIn: jest.fn(),
   },
 }));
 

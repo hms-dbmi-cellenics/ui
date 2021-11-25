@@ -11,6 +11,7 @@ describe('updateConfig', () => {
       payload: {
         experimentId: '1234',
         plotUuid: 'volcanoPlotMain',
+        plotType: 'volcano',
         config: _.cloneDeep(initialPlotConfigStates.volcano),
         plotData: [],
       },
@@ -30,6 +31,7 @@ describe('updateConfig', () => {
       payload: {
         experimentId: '1234',
         plotUuid: 'embeddingCategoricalMain',
+        plotType: 'embeddingCategorical',
         config: _.cloneDeep(initialPlotConfigStates.embeddingCategorical),
         plotData: [],
       },

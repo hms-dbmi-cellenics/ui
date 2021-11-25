@@ -4,22 +4,39 @@ const getDotDimensions = (config, numClusters) => {
   const plotHeight = config.dimensions.height;
   const padding = 1;
 
-  const numGenes = config.useCustomGenes ? config.selectedGenes.length : config.nMarkerGenes;
+  const numGenes = config.useMarkerGenes
+    ? config.nMarkerGenes * numClusters
+    : config.selectedGenes.length;
 
-  // + 1 because there is padding the size of half plots on the left and right
-  const heightPerDot = plotHeight / (numClusters + 1);
-  const widthPerDot = plotWidth / (numGenes + 1);
+  // Adjustment is added to counter the blowing up of dot sizes
+  // when there is a small number of data points. The effect of the
+  // adjustment is to make the dot size smaller. Its effect diminishes
+  // as the number of data points increases.
+  const adjustment = 2;
+  const heightPerDot = plotHeight / (numClusters + adjustment);
+  const widthPerDot = plotWidth / (numGenes + adjustment);
 
   // Use the smaller of the two dimensions to determine the max dot size
-  const radius = Math.floor(Math.min(heightPerDot, widthPerDot) / 2) - padding;
+  // Radius is half the width or height. This radius still contain padding that we want to remove
+  const radiusWithPadding = Math.floor(Math.min(heightPerDot, widthPerDot) / 2);
+  let radius = radiusWithPadding - padding;
 
-  // We have to calculate the area because that is the limit
-  const area = Math.PI * (radius ** 2);
+  // Small number of data will cause dots to appear very big. This limits the size
+  // (via the radius) that the dots can be.
+  const maxRadius = 20;
+  radius = Math.min(radius, maxRadius);
+
+  // Radius for 0 data
+  const minArea = 10;
+
+  // We have to calculate the area because that is what is expected Vega's draw function
+  const maxArea = minArea + Math.PI * (radius ** 2);
 
   // The expected return value is the area of the circle
   return {
+    minArea,
+    maxArea,
     radius,
-    area,
   };
 };
 
@@ -29,7 +46,7 @@ const generateSpec = (config, plotData, numClusters) => {
   if (config.legend.enabled) {
     legend = [
       {
-        title: 'Average expression',
+        title: 'Avg. Expression',
         titleColor: config.colour.masterColour,
         labelColor: config.colour.toggleInvert === '#FFFFFF' ? '#000000' : '#FFFFFF',
         orient: config.legend.position,
@@ -47,7 +64,6 @@ const generateSpec = (config, plotData, numClusters) => {
         labelFont: config.fontStyle.font,
         titleFont: config.fontStyle.font,
         size: 'dotSize',
-        format: 's',
         symbolType: 'circle',
         symbolFillColor: '#aaaaaa',
         direction: config.legend.direction,
@@ -55,7 +71,7 @@ const generateSpec = (config, plotData, numClusters) => {
     ];
   }
 
-  const { radius, area } = getDotDimensions(config, numClusters);
+  const { minArea, radius, maxArea } = getDotDimensions(config, numClusters);
 
   return {
     $schema: 'https://vega.github.io/schema/vega/v5.json',
@@ -73,7 +89,7 @@ const generateSpec = (config, plotData, numClusters) => {
           {
             type: 'formula',
             as: 'size',
-            expr: 'datum.cellsFraction * 100',
+            expr: 'datum.cellsPercentage',
           },
         ],
       },
@@ -84,7 +100,7 @@ const generateSpec = (config, plotData, numClusters) => {
         name: 'x',
         type: 'point',
         range: 'width',
-        domain: { data: 'plotData', field: 'gene' },
+        domain: { data: 'plotData', field: 'geneName' },
         padding: radius / 2,
       },
       {
@@ -94,20 +110,20 @@ const generateSpec = (config, plotData, numClusters) => {
         padding: radius / 2,
         domain: {
           data: 'plotData',
-          field: 'cluster',
+          field: 'cellSets',
         },
       },
       {
         name: 'dotSize',
         type: 'pow',
         exponent: 2,
-        domain: {
+        domain: config.useAbsoluteScale ? [0, 100] : {
           data: 'plotData',
           field: 'size',
         },
         range: [
-          0,
-          area,
+          minArea,
+          maxArea,
         ],
       },
       {
@@ -115,7 +131,7 @@ const generateSpec = (config, plotData, numClusters) => {
         type: 'linear',
         domain: {
           data: 'plotData',
-          field: 'AvgExpression',
+          field: 'avgExpression',
         },
         range: {
           scheme: config.colour.gradient === 'default'
@@ -124,7 +140,6 @@ const generateSpec = (config, plotData, numClusters) => {
         },
       },
     ],
-
     axes: [
       {
         orient: 'bottom',
@@ -171,6 +186,9 @@ const generateSpec = (config, plotData, numClusters) => {
     marks: [
       {
         type: 'symbol',
+        tooltip: {
+          content: 'plotData',
+        },
         shape: 'circle',
         zindex: 2,
         from: {
@@ -178,13 +196,21 @@ const generateSpec = (config, plotData, numClusters) => {
         },
         encode: {
           enter: {
+            tooltip: {
+              signal: `{
+                'Avg. Expression': format(datum.avgExpression, '.2f'),
+                'Percent Exp.(%)': format(datum.cellsPercentage, '.2f')
+              }`,
+            },
+          },
+          update: {
             xc: {
               scale: 'x',
-              field: 'gene',
+              field: 'geneName',
             },
             yc: {
               scale: 'y',
-              field: 'cluster',
+              field: 'cellSets',
             },
             size: {
               scale: 'dotSize',
@@ -192,7 +218,7 @@ const generateSpec = (config, plotData, numClusters) => {
             },
             fill: {
               scale: 'color',
-              field: 'AvgExpression',
+              field: 'avgExpression',
             },
           },
         },

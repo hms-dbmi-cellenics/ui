@@ -26,12 +26,12 @@ const sampleIds = Object.keys(samples);
 
 projectWithSamples.samples = sampleIds;
 
-responseData.experiments = generateMockExperiment(
+responseData.experiments = [generateMockExperiment(
   projectWithSamples.uuid,
   projectWithSamples.experiments[0],
   projectWithSamples.experiments[0],
   projectWithSamples.samples,
-);
+)];
 
 responseData.experimentData = generateMockExperimentData(
   projectWithSamples.uuid,

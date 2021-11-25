@@ -8,6 +8,8 @@ import mockCellSets from '__test__/data/cell_sets.json';
 import { createHierarchyFromTree, createPropertiesFromTree } from 'redux/reducers/cellSets/helpers';
 import { act } from 'react-dom/test-utils';
 
+import { plotTypes } from 'utils/constants';
+
 const mockOnUpdate = jest.fn();
 
 const mockCellSetsStore = {
@@ -19,7 +21,7 @@ const mockCellSetsStore = {
 
 const defaultProps = {
   onUpdate: mockOnUpdate,
-  config: initialPlotConfigStates.dotPlot,
+  config: initialPlotConfigStates[plotTypes.DOT_PLOT],
   cellSets: mockCellSetsStore,
 };
 

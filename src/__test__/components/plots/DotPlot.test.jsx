@@ -26,15 +26,17 @@ import mockAPI, {
 } from '__test__/test-utils/mockAPI';
 
 import fake from '__test__/test-utils/constants';
+import { plotTypes } from 'utils/constants';
 
 enableFetchMocks();
 
 const defaultProps = {
-  config: initialPlotConfigStates.dotPlot,
+  config: initialPlotConfigStates[plotTypes.DOT_PLOT],
 };
 
 const dotPlotFactory = createTestComponentFactory(DotPlot, defaultProps);
 
+const experimentId = fake.EXPERIMENT_ID;
 const plotUuid = 'dotPlotMain';
 
 const customAPIResponses = {
@@ -42,7 +44,7 @@ const customAPIResponses = {
 };
 
 const mockAPIResponses = _.merge(
-  generateDefaultMockAPIResponses(fake.EXPERIMENT_ID),
+  generateDefaultMockAPIResponses(experimentId),
   customAPIResponses,
 );
 
@@ -81,7 +83,7 @@ describe('DotPlot', () => {
 
     // Load cell sets for the plot
     await act(async () => {
-      storeState.dispatch(loadCellSets(fake.EXPERIMENT_ID));
+      storeState.dispatch(loadCellSets(experimentId));
     });
 
     expect(screen.getByRole('graphics-document', { name: 'Vega visualization' })).toBeInTheDocument();
@@ -90,7 +92,7 @@ describe('DotPlot', () => {
   it('Shows an error if there is an error while loading cellSets', async () => {
     const errorResponse = {
       ...mockAPIResponses,
-      [`experiments/${fake.EXPERIMENT_ID}/cellSets`]: () => statusResponse(500, 'Some random error'),
+      [`experiments/${experimentId}/cellSets`]: () => statusResponse(500, 'Some random error'),
     };
 
     fetchMock.mockIf(/.*/, mockAPI(errorResponse));
@@ -105,7 +107,7 @@ describe('DotPlot', () => {
 
     // Load cell sets for the plot and get error
     await act(async () => {
-      storeState.dispatch(loadCellSets(fake.EXPERIMENT_ID));
+      storeState.dispatch(loadCellSets(experimentId));
     });
 
     // No plot should be rendered
