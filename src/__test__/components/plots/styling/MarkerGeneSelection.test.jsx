@@ -9,6 +9,7 @@ import { act } from 'react-dom/test-utils';
 import { initialPlotConfigStates } from 'redux/reducers/componentConfig/initialState';
 import MarkerGeneSelection from 'components/plots/styling/MarkerGeneSelection';
 import createTestComponentFactory from '__test__/test-utils/testComponentFactory';
+import { plotTypes } from 'utils/constants';
 
 const mockOnUpdate = jest.fn();
 const mockOnReset = jest.fn();
@@ -20,6 +21,8 @@ const defaultProps = {
   onGeneEnter: mockOnGeneEnter,
 };
 
+const plotType = plotTypes.DOT_PLOT;
+
 const markerGeneSelectionFactory = createTestComponentFactory(MarkerGeneSelection, defaultProps);
 
 describe('MarkerGeneSelection', () => {
@@ -28,7 +31,7 @@ describe('MarkerGeneSelection', () => {
   });
 
   it('Should show the custom gene input by default', async () => {
-    const mockConfig = initialPlotConfigStates.dotPlot;
+    const mockConfig = initialPlotConfigStates[plotType];
 
     await act(async () => {
       render(
@@ -54,12 +57,7 @@ describe('MarkerGeneSelection', () => {
   });
 
   it('Should show the number of marker genes input', async () => {
-    const mockConfig = _.merge(
-      initialPlotConfigStates.dotPlot,
-      {
-        useCustomGenes: false,
-      },
-    );
+    const mockConfig = { ...initialPlotConfigStates[plotType], useMarkerGenes: true };
 
     await act(async () => {
       render(

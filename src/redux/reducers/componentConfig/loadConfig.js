@@ -1,10 +1,23 @@
+import { initialPlotDataState } from 'redux/reducers/componentConfig/initialState';
+
 const loadPlotConfig = (state, action) => {
-  const { plotUuid, ...rest } = action.payload;
+  const {
+    experimentId,
+    plotUuid,
+    plotType,
+    plotData,
+    config,
+  } = action.payload;
+
   return {
     ...state,
     [plotUuid]: {
+      ...initialPlotDataState,
       ...state[plotUuid],
-      ...rest,
+      experimentId,
+      plotType,
+      plotData,
+      config,
       outstandingChanges: false,
     },
   };

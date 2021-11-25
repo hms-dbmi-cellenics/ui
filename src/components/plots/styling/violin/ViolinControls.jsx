@@ -26,6 +26,7 @@ const ViolinControls = (props) => {
           config={config}
           onUpdate={onUpdate}
           cellSets={cellSets}
+          axisName='x'
         />
       </Panel>
       <Panel header='Data transformation' key='16'>

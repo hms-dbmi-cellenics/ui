@@ -3,8 +3,13 @@
 exports[`loadPlotConfig Config loaded 1`] = `
 Object {
   "embeddingCategoricalMain": Object {
+    "config": undefined,
+    "error": false,
     "experimentId": "1234",
+    "loading": false,
     "outstandingChanges": false,
+    "plotData": undefined,
+    "plotType": undefined,
   },
 }
 `;

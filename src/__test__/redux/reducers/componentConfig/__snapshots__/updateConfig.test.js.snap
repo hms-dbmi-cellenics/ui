@@ -59,9 +59,12 @@ Object {
         "text": "",
       },
     },
+    "error": false,
     "experimentId": "1234",
+    "loading": false,
     "outstandingChanges": true,
     "plotData": Array [],
+    "plotType": "embeddingCategorical",
   },
 }
 `;
@@ -140,9 +143,12 @@ Object {
       "xAxisAuto": true,
       "yAxisAuto": true,
     },
+    "error": false,
     "experimentId": "1234",
+    "loading": false,
     "outstandingChanges": true,
     "plotData": Array [],
+    "plotType": "volcano",
   },
 }
 `;
