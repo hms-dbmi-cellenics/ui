@@ -299,7 +299,7 @@ const HierarchicalTree = (props) => {
       checkedKeys={checkedKeys}
       onDrop={onDrop}
       switcherIcon={<DownOutlined />}
-
+      style={{ 'overflow-y': 'auto' }}
       // eslint-disable-next-line react/jsx-props-no-spreading
       {...restOfProps}
     />
