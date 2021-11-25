@@ -8,7 +8,8 @@ import {
   Empty, Typography, Skeleton,
 } from 'antd';
 import _ from 'lodash';
-import { getCellSets } from 'redux/selectors';
+import { getCellSets, getCellSetsHierarchyByKeys } from 'redux/selectors';
+import calculateIdealNMarkerGenes from 'utils/calculateIdealNMarkerGenes';
 import spec from '../../../utils/heatmapSpec';
 import VegaHeatmap from './VegaHeatmap';
 import PlatformError from '../../PlatformError';
@@ -48,6 +49,9 @@ const HeatmapPlot = (props) => {
   const hoverCoordinates = useRef({});
 
   const cellSets = useSelector(getCellSets());
+
+  const louvainClusterCount = useSelector(getCellSetsHierarchyByKeys('louvain'))[0]?.children.length ?? 0;
+
   const {
     hierarchy: cellSetsHierarchy,
     loading: cellSetsLoading,
@@ -139,11 +143,17 @@ const HeatmapPlot = (props) => {
   useEffect(() => {
     if (louvainClustersResolution
       && !_.isEqual(louvainClustersResolutionRef.current, louvainClustersResolution)
+      && louvainClusterCount > 0
     ) {
       louvainClustersResolutionRef.current = louvainClustersResolution;
-      dispatch(loadMarkerGenes(experimentId, louvainClustersResolution, COMPONENT_TYPE));
+
+      const nMarkerGenes = calculateIdealNMarkerGenes(louvainClusterCount);
+
+      dispatch(loadMarkerGenes(
+        experimentId, louvainClustersResolution, COMPONENT_TYPE, nMarkerGenes,
+      ));
     }
-  }, [louvainClustersResolution]);
+  }, [louvainClustersResolution, louvainClusterCount]);
 
   useEffect(() => {
     setMaxCells(Math.floor(width * 0.8));
@@ -175,7 +185,12 @@ const HeatmapPlot = (props) => {
       <PlatformError
         error={expressionDataError}
         onClick={() => {
-          dispatch(loadMarkerGenes(experimentId, louvainClustersResolution, COMPONENT_TYPE));
+          const nMarkerGenes = calculateIdealNMarkerGenes(louvainClusterCount);
+
+          dispatch(loadMarkerGenes(
+            experimentId, louvainClustersResolution,
+            COMPONENT_TYPE, nMarkerGenes,
+          ));
         }}
       />
     );
