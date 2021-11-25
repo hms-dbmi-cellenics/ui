@@ -16,7 +16,7 @@ import pipelineStatus from 'utils/pipelineStatusValues';
 import integrationTestConstants from 'utils/integrationTestConstants';
 import generateGem2sParamsHash from 'utils/data-management/generateGem2sParamsHash';
 import { runGem2s } from 'redux/actions/pipeline';
-import { updateExperiment } from 'redux/actions/experiments';
+import { updateExperiment, switchExperiment } from 'redux/actions/experiments';
 
 const LaunchButtonTemplate = (props) => {
   const {
@@ -56,6 +56,7 @@ const LaunchAnalysisButton = () => {
     const lastViewed = moment().toISOString();
     dispatch(updateExperiment(experimentId, { lastViewed }));
     dispatch(updateProject(activeProjectUuid, { lastAnalyzed: lastViewed }));
+    dispatch(switchExperiment());
     dispatch(updateExperimentInfo({
       experimentId,
       experimentName: experiments[experimentId].name,
@@ -123,8 +124,8 @@ const LaunchAnalysisButton = () => {
       // Check if all files for a given tech has been uploaded
       const { fileNames } = sample;
       if (
-        fileUploadSpecifications[sample.type].requiredFiles.every(
-          (file) => !fileNames.includes(file),
+        !fileUploadSpecifications[sample.type].requiredFiles.every(
+          (file) => fileNames.includes(file),
         )
       ) { return false; }
 

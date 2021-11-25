@@ -36,7 +36,6 @@ const DiffExprResults = (props) => {
 
   const columns = [
     {
-      fixed: 'left',
       title: 'logFC',
       key: 'logFC',
       sorter: true,
@@ -63,6 +62,14 @@ const DiffExprResults = (props) => {
       sorter: true,
       showSorterTooltip: {
         title: 'The percentage of cells where the feature is detected in the second group',
+      },
+    },
+    {
+      title: 'AUC',
+      key: 'auc',
+      sorter: true,
+      showSorterTooltip: {
+        title: 'Area under the ROC curve',
       },
     },
   ];
