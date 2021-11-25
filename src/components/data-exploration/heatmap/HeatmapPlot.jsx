@@ -296,7 +296,7 @@ const HeatmapPlot = (props) => {
 
     const cellSetClassKey = trackOrder[trackIndex];
     const cellClassProps = getCellClassProperties(
-      parseInt(cellIndex), cellSetClassKey,
+      cellIndex, cellSetClassKey,
       cellSetsHierarchy, cellSetsProperties,
     );
 
