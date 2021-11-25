@@ -25,7 +25,8 @@ import HeatmapTracksCellInfo from 'components/data-exploration/heatmap/HeatmapTr
 
 import './Heatmap.module.css';
 
-import { listToMatrix, convertRange } from '../../../utils/heatmapPlotHelperFunctions/helpers';
+import { listToMatrix, convertRange } from 'utils/heatmapPlotHelperFunctions/helpers';
+import getCellClassProperties from 'utils/cellSets/getCellClassProperties';
 
 const COMPONENT_TYPE = 'interactiveHeatmap';
 const { Text } = Typography;
@@ -69,6 +70,7 @@ const HeatmapPlot = (props) => {
   const cellSets = useSelector(getCellSets());
 
   const {
+    properties: cellSetsProperties,
     hierarchy: cellSetsHierarchy,
     loading: cellSetsLoading,
     hidden: cellSetsHidden,
@@ -292,9 +294,15 @@ const HeatmapPlot = (props) => {
 
     const trackOrder = Array.from(heatmapSettings.selectedTracks).reverse();
 
+    const cellSetClassKey = trackOrder[trackIndex];
+    const cellClassProps = getCellClassProperties(
+      parseInt(cellIndex), cellSetClassKey,
+      cellSetsHierarchy, cellSetsProperties,
+    );
+
     setHighlightedTrackData({
       cellId: cellIndex,
-      trackName: trackOrder[trackIndex],
+      trackName: cellClassProps?.name,
       coordinates: { x: mouseX, y: mouseY },
     });
   };
