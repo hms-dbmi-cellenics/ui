@@ -50,7 +50,7 @@ const exampleDatasets = [
 ];
 
 const SamplesTable = forwardRef((props, ref) => {
-  const { height } = props;
+  const { tableHeight } = props;
   const dispatch = useDispatch();
   const [tableData, setTableData] = useState([]);
 
@@ -345,7 +345,7 @@ const SamplesTable = forwardRef((props, ref) => {
           size='small'
           scroll={{
             x: 'max-content',
-            y: height - 250,
+            y: tableHeight,
           }}
           bordered
           columns={tableColumns}
@@ -366,7 +366,7 @@ const SamplesTable = forwardRef((props, ref) => {
 });
 
 SamplesTable.propTypes = {
-  height: PropTypes.number.isRequired,
+  tableHeight: PropTypes.number.isRequired,
 };
 
 export default React.memo(SamplesTable);
