@@ -107,7 +107,7 @@ const Classifier = (props) => {
   );
 
   const expConfig = useSelector(
-    (state) => state.experimentSettings.processing[filterName][sampleId].filterSettings,
+    (state) => state.experimentSettings.processing[filterName]?.[sampleId]?.filterSettings,
   );
 
   const selectedPlotData = useSelector(
@@ -174,15 +174,19 @@ const Classifier = (props) => {
                       cursor: 'pointer',
                     }}
                   >
-                    <MiniPlot
-                      experimentId={experimentId}
-                      plotUuid={plotObj.plotUuid}
-                      plotFn={plotObj.plot}
-                      actions={false}
-                    />
-
+                    {!expConfig ? (
+                      <center>
+                        <Skeleton.Image />
+                      </center>
+                    ) : (
+                      <MiniPlot
+                        experimentId={experimentId}
+                        plotUuid={plotObj.plotUuid}
+                        plotFn={plotObj.plot}
+                        actions={false}
+                      />
+                    )}
                   </button>
-
                 ))}
               </Space>
             </Col>
