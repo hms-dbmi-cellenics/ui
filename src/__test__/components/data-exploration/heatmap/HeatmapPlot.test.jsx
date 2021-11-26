@@ -7,18 +7,23 @@ import configureStore from 'redux-mock-store';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import { Empty } from 'antd';
 
-import { MARKER_GENES_LOADING } from '../../../../redux/actionTypes/genes';
+import { MARKER_GENES_LOADING } from 'redux/actionTypes/genes';
 
 // eslint-disable-next-line import/no-named-as-default
-import HeatmapPlot from '../../../../components/data-exploration/heatmap/HeatmapPlot';
-import VegaHeatmap from '../../../../components/data-exploration/heatmap/VegaHeatmap';
-import { getFromApiExpectOK } from '../../../../utils/getDataExpectOK';
+import HeatmapPlot from 'components/data-exploration/heatmap/HeatmapPlot';
+import VegaHeatmap from 'components/data-exploration/heatmap/VegaHeatmap';
 
-import { CELL_SETS_LOADING } from '../../../../redux/actionTypes/cellSets';
+import { getFromApiExpectOK } from 'utils/getDataExpectOK';
+import mockCellSets from 'utils/tests/mockStores/cellSets';
+
+import { CELL_SETS_LOADING } from 'redux/actionTypes/cellSets';
+import { getCellSets, getCellSetsHierarchyByKeys } from 'redux/selectors';
+
 import '__test__/test-utils/setupTests';
 
-jest.mock('../../../../components/data-exploration/heatmap/VegaHeatmap');
-jest.mock('../../../../utils/getDataExpectOK');
+jest.mock('components/data-exploration/heatmap/VegaHeatmap');
+jest.mock('utils/getDataExpectOK');
+jest.mock('redux/selectors');
 
 VegaHeatmap.mockImplementation(() => <div>Mocked Vega Heatmap</div>);
 enableFetchMocks();
@@ -126,6 +131,41 @@ describe('HeatmapPlot', () => {
     fetchMock.resetMocks();
     fetchMock.doMock();
     fetchMock.mockResolvedValue(response);
+
+    getCellSets.mockReturnValue(() => mockCellSets().cellSets);
+
+    getCellSetsHierarchyByKeys.mockReturnValue(() => (
+      [{
+        key: 'louvain',
+        name: 'louvain clusters',
+        type: 'cellSets',
+        children: [
+          {
+            key: 'louvain-0',
+          },
+          {
+            key: 'louvain-1',
+          },
+          {
+            key: 'louvain-2',
+          },
+          {
+            key: 'louvain-3',
+          },
+          {
+            key: 'louvain-4',
+          },
+          {
+            key: 'louvain-5',
+          },
+          {
+            key: 'louvain-6',
+          },
+          {
+            key: 'louvain-7',
+          },
+        ],
+      }]));
   });
 
   afterEach(() => {
@@ -255,16 +295,15 @@ describe('HeatmapPlot', () => {
   });
 
   it('Shows Empty if cell sets is empty', () => {
-    const store = mockStore({
-      ...initialState,
-      cellSets: {
-        ...initialState.cellSets,
-        hierarchy: [],
-        properties: [],
-        loading: false,
-        error: false,
-      },
-    });
+    getCellSets.mockReturnValue(() => ({
+      ...initialState.cellSets,
+      hierarchy: [],
+      properties: [],
+      loading: false,
+      error: false,
+    }));
+
+    const store = mockStore({ ...initialState });
 
     component = mount(
       <Provider store={store}>
