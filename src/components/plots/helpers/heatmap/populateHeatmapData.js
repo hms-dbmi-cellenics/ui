@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import generateVitessceHeatmapTracksData from 'components/plots/helpers/generateVitessceHeatmapTracksData';
+import generateVitessceHeatmapTracksData from 'components/plots/helpers/heatmap/generateVitessceHeatmapTracksData';
 
 import SetOperations from 'utils/setOperations';
 import { union } from 'utils/cellSetOperations';

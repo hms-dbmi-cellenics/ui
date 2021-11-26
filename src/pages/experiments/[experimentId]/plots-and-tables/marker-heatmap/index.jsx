@@ -34,7 +34,7 @@ import { loadGeneExpression, loadMarkerGenes } from 'redux/actions/genes';
 import { loadCellSets } from 'redux/actions/cellSets';
 import PlatformError from 'components/PlatformError';
 import Loader from 'components/Loader';
-import populateHeatmapData from 'components/plots/helpers/populateHeatmapData';
+import populateHeatmapData from 'components/plots/helpers/heatmap/populateHeatmapData';
 
 const { Text } = Typography;
 const { Panel } = Collapse;

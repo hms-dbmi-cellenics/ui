@@ -1,4 +1,4 @@
-import { listToMatrix, hexToRgb, convertRange } from '../../../../utils/heatmapPlotHelperFunctions/helpers';
+import { listToMatrix, hexToRgb, convertRange } from 'components/plots/helpers/heatmap/utils';
 
 describe('hexToRgb', () => {
   it('converts a hex to array of [r, g, b]', () => {

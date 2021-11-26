@@ -9,24 +9,25 @@ import {
   Empty, Typography, Skeleton,
 } from 'antd';
 import _ from 'lodash';
+
 import { getCellSets } from 'redux/selectors';
 
-import PlatformError from 'components/PlatformError';
 import { updateCellInfo } from 'redux/actions/cellInfo';
-import { loadGeneExpression, loadMarkerGenes } from 'redux/actions/genes';
 import { loadCellSets } from 'redux/actions/cellSets';
+import { loadGeneExpression, loadMarkerGenes } from 'redux/actions/genes';
 import { loadComponentConfig } from 'redux/actions/componentConfig';
 
 import Loader from 'components/Loader';
-import populateHeatmapData from 'components/plots/helpers/populateHeatmapData';
+import PlatformError from 'components/PlatformError';
+import populateHeatmapData from 'components/plots/helpers/heatmap/populateHeatmapData';
 
 import HeatmapCellInfo from 'components/data-exploration/heatmap/HeatmapCellInfo';
 import HeatmapTracksCellInfo from 'components/data-exploration/heatmap/HeatmapTracksCellInfo';
 
-import './Heatmap.module.css';
-
-import { listToMatrix, convertRange } from 'utils/heatmapPlotHelperFunctions/helpers';
+import { listToMatrix, convertRange } from 'components/plots/helpers/heatmap/utils';
 import getCellClassProperties from 'utils/cellSets/getCellClassProperties';
+
+import './Heatmap.module.css';
 
 const COMPONENT_TYPE = 'interactiveHeatmap';
 const { Text } = Typography;
@@ -300,11 +301,13 @@ const HeatmapPlot = (props) => {
       cellSetsHierarchy, cellSetsProperties,
     );
 
-    setHighlightedTrackData({
+    const obj = {
       cellId: cellIndexStr,
-      trackName: cellClassProps?.name,
+      trackName: cellClassProps[0]?.name,
       coordinates: { x: mouseX, y: mouseY },
-    });
+    };
+
+    setHighlightedTrackData(obj);
   };
 
   const heatmapRightMargin = 50;
