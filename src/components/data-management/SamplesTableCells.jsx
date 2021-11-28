@@ -16,7 +16,6 @@ import {
 import UploadStatus, { messageForStatus } from '../../utils/upload/UploadStatus';
 import EditableField from '../EditableField';
 import UploadDetailsModal from './UploadDetailsModal';
-import SpeciesSelector from './SpeciesSelector';
 
 const { Text } = Typography;
 
@@ -182,25 +181,6 @@ SampleNameCell.propTypes = {
   cellInfo: PropTypes.object.isRequired,
 };
 
-const SpeciesCell = (props) => {
-  const { organismId, recordUuid } = props;
-  const dispatch = useDispatch();
-
-  return (
-    <SpeciesSelector
-      value={organismId}
-      onChange={(value) => {
-        dispatch(updateSample(recordUuid, { species: value }));
-      }}
-    />
-  );
-};
-
-SpeciesCell.propTypes = {
-  organismId: PropTypes.string.isRequired,
-  recordUuid: PropTypes.string.isRequired,
-};
-
 export {
-  UploadCell, EditableFieldCell, SampleNameCell, SpeciesCell,
+  UploadCell, EditableFieldCell, SampleNameCell,
 };

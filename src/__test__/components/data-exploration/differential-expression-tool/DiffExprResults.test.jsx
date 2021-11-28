@@ -25,19 +25,19 @@ jest.mock('utils/work/fetchWork', () => ({
   fetchWork: jest.fn(() => new Promise((resolve) => resolve({
     rows: [
       {
-        p_val: 1.4969461240347763e-12, p_val_adj: 1.647289002209057e-11, logFC: -1.4274754343649423, gene_names: 'A',
+        p_val: 1.4969461240347763e-12, p_val_adj: 1.647289002209057e-11, logFC: -1.4274754343649423, gene_names: 'A', auc: '0.1',
       },
       {
-        p_val: 2.4969461240347763e-12, p_val_adj: 2.647289002209057e-11, logFC: -2.4274754343649423, gene_names: 'B',
+        p_val: 2.4969461240347763e-12, p_val_adj: 2.647289002209057e-11, logFC: -2.4274754343649423, gene_names: 'B', auc: '0.2',
       },
       {
-        p_val: 3.4969461240347763e-12, p_val_adj: 3.647289002209057e-11, logFC: -3.4274754343649423, gene_names: 'C',
+        p_val: 3.4969461240347763e-12, p_val_adj: 3.647289002209057e-11, logFC: -3.4274754343649423, gene_names: 'C', auc: '0.3',
       },
       {
-        p_val: 4.4969461240347763e-12, p_val_adj: 4.647289002209057e-11, logFC: -4.4274754343649423, gene_names: 'D',
+        p_val: 4.4969461240347763e-12, p_val_adj: 4.647289002209057e-11, logFC: -4.4274754343649423, gene_names: 'D', auc: '0.4',
       },
       {
-        p_val: 5.4969461240347763e-12, p_val_adj: 5.647289002209057e-11, logFC: -5.4274754343649423, gene_names: 'E',
+        p_val: 5.4969461240347763e-12, p_val_adj: 5.647289002209057e-11, logFC: -5.4274754343649423, gene_names: 'E', auc: '0.5',
       },
     ],
     total: 500,
@@ -121,19 +121,19 @@ const resultState = {
     properties: {
       data: [
         {
-          p_val: 1.4969461240347763e-12, p_val_adj: 1.647289002209057e-11, logFC: -1.4274754343649423, gene_names: 'A',
+          p_val: 1.4969461240347763e-12, p_val_adj: 1.647289002209057e-11, logFC: -1.4274754343649423, gene_names: 'A', auc: '0.1',
         },
         {
-          p_val: 2.4969461240347763e-12, p_val_adj: 2.647289002209057e-11, logFC: -2.4274754343649423, gene_names: 'B',
+          p_val: 2.4969461240347763e-12, p_val_adj: 2.647289002209057e-11, logFC: -2.4274754343649423, gene_names: 'B', auc: '0.2',
         },
         {
-          p_val: 3.4969461240347763e-12, p_val_adj: 3.647289002209057e-11, logFC: -3.4274754343649423, gene_names: 'C',
+          p_val: 3.4969461240347763e-12, p_val_adj: 3.647289002209057e-11, logFC: -3.4274754343649423, gene_names: 'C', auc: '0.3',
         },
         {
-          p_val: 4.4969461240347763e-12, p_val_adj: 4.647289002209057e-11, logFC: -4.4274754343649423, gene_names: 'D',
+          p_val: 4.4969461240347763e-12, p_val_adj: 4.647289002209057e-11, logFC: -4.4274754343649423, gene_names: 'D', auc: '0.4',
         },
         {
-          p_val: 5.4969461240347763e-12, p_val_adj: 5.647289002209057e-11, logFC: -5.4274754343649423, gene_names: 'E',
+          p_val: 5.4969461240347763e-12, p_val_adj: 5.647289002209057e-11, logFC: -5.4274754343649423, gene_names: 'E', auc: '0.5',
         },
       ],
       loading: false,
@@ -183,13 +183,14 @@ describe('DiffExprResults', () => {
     const spin = component.find('Table').find(Loader);
     expect(spin.length).toEqual(0);
     expect(table.length).toEqual(1);
-    expect(table.getElement().props.columns.length).toEqual(6);
+    expect(table.getElement().props.columns.length).toEqual(7);
     expect(table.getElement().props.columns[0].key).toEqual('lookup');
     expect(table.getElement().props.columns[1].key).toEqual('gene_names');
     expect(table.getElement().props.columns[2].key).toEqual('logFC');
     expect(table.getElement().props.columns[3].key).toEqual('p_val_adj');
     expect(table.getElement().props.columns[4].key).toEqual('pct_1');
     expect(table.getElement().props.columns[5].key).toEqual('pct_2');
+    expect(table.getElement().props.columns[6].key).toEqual('auc');
 
     expect(table.getElement().props.dataSource.length).toEqual(5);
     expect(table.getElement().props.data.length).toEqual(5);

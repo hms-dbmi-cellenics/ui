@@ -14,8 +14,9 @@ import projectsReducer from './projects';
 import sampleReducer from './samples';
 import networkResourcesReducer from './networkResources';
 import backendStatusReducer from './backendStatus';
+import { EXPERIMENTS_SWITCH } from '../actionTypes/experiments';
 
-export default combineReducers({
+const appReducers = combineReducers({
   cellInfo: cellInfoReducer,
   cellMeta: cellMetaReducer,
   cellSets: cellSetsReducer,
@@ -31,3 +32,20 @@ export default combineReducers({
   samples: sampleReducer,
   networkResources: networkResourcesReducer,
 });
+
+const rootReducer = (state, action) => {
+  let newState = state;
+  if (action.type === EXPERIMENTS_SWITCH) {
+    // we need to keep the old state for these parts of the store
+    newState = {
+      networkResources: state.networkResources,
+      experimentSettings: state.experimentSettings,
+      samples: state.samples,
+      projects: state.projects,
+      backendStatus: state.backendStatus,
+    };
+  }
+  return appReducers(newState, action);
+};
+
+export default rootReducer;

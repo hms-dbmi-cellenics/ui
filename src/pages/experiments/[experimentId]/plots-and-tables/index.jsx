@@ -124,14 +124,13 @@ const PlotsTablesHome = ({ experimentId, experimentData, route }) => {
       link: 'violin',
       description: `Last updated: ${lastUpdatedViolin}`,
     },
-    // == Uncomment the object below when we're ready to show the dot plot
-    // {
-    //   name: 'Dot Plot',
-    //   image: dotPlot,
-    //   key: 'dot-key',
-    //   link: 'dot-plot',
-    //   description: `Last updated: ${lastUpdatedDotPlot}`,
-    // },
+    {
+      name: 'Dot Plot',
+      image: dotPlot,
+      key: 'dot-key',
+      link: 'dot-plot',
+      description: `Last updated: ${lastUpdatedDotPlot}`,
+    },
   ];
 
   const [openedPlots, setOpenedPlots] = useState(plots);
