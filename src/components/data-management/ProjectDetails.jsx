@@ -6,20 +6,22 @@ import {
   Space, Col, Row, Typography, Button,
 } from 'antd';
 import PropTypes from 'prop-types';
-import SamplesTable from './SamplesTable';
-import ProjectMenu from './ProjectMenu';
 import {
   updateProject,
-} from '../../redux/actions/projects';
+} from 'redux/actions/projects';
+import SamplesTable from './SamplesTable';
+import ProjectMenu from './ProjectMenu';
 
 const { Title, Text, Paragraph } = Typography;
 
 const ProjectDetails = ({ width, height }) => {
+  // These constants come from CSS properties and pixel counting on screen
   const PADDING_HEIGHT = 120; // px
   const HEADER_HEIGHT = 100; // px
   const MAX_DESCRIPTION_HEIGHT = 100; // px
   const FONT_SIZE = 16; // px
   const LINE_HEIGHT = 16; // px
+  const DESCRIPTION_PADDING = 2 * FONT_SIZE; // px
 
   const dispatch = useDispatch();
 
@@ -28,9 +30,11 @@ const ProjectDetails = ({ width, height }) => {
 
   const samplesTableRef = useRef();
 
-  const calculateTextHeight = (text, screenWidth) => (Math.floor((text.length * FONT_SIZE) / screenWidth) + 1) * LINE_HEIGHT;
+  const calculateTextHeight = (text, panelWidth) => (Math.floor((text.length * FONT_SIZE) / panelWidth) + 1) * LINE_HEIGHT;
 
-  const descriptionHeight = (text, screenWidth) => Math.min(calculateTextHeight(text, screenWidth), MAX_DESCRIPTION_HEIGHT);
+  const descriptionHeight = (text, panelWidth) => Math.min(calculateTextHeight(text, panelWidth), MAX_DESCRIPTION_HEIGHT);
+
+  const samplesTableHeight = (text, panelHeight, panelWidth) => panelHeight - descriptionHeight(text, panelWidth) - HEADER_HEIGHT - PADDING_HEIGHT;
 
   return (
     <div id='project-details' width={width} height={height}>
@@ -56,7 +60,7 @@ const ProjectDetails = ({ width, height }) => {
               <Text strong>Description:</Text>
               <div style={{
                 overflow: 'auto',
-                width: width - FONT_SIZE * 2,
+                width: width - DESCRIPTION_PADDING,
                 maxHeight: `${descriptionHeight(activeProject.description, width)}px`,
               }}
               >
@@ -74,7 +78,7 @@ const ProjectDetails = ({ width, height }) => {
           </Col>
         </Row>
         <SamplesTable
-          tableHeight={height - descriptionHeight(activeProject.description, width) - HEADER_HEIGHT - PADDING_HEIGHT}
+          tableHeight={samplesTableHeight(activeProject.description, height, width)}
           ref={samplesTableRef}
         />
       </Space>
