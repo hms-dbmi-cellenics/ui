@@ -135,8 +135,8 @@ const LaunchAnalysisButton = () => {
       for (const fileName of fileNames) {
         const checkedFile = sample.files[fileName];
         allUploaded = allUploaded
-        && checkedFile.valid
-        && checkedFile.upload.status === UploadStatus.UPLOADED;
+          && checkedFile.valid
+          && checkedFile.upload.status === UploadStatus.UPLOADED;
 
         if (!allUploaded) break;
       }
@@ -164,20 +164,6 @@ const LaunchAnalysisButton = () => {
 
     if (!backendStatus[experimentId] || backendStatus[experimentId]?.loading) {
       return <LaunchButtonTemplate text='Loading project...' disabled loading />;
-    }
-
-    if (!canLaunchAnalysis()) {
-      return (
-        <Tooltip
-          title='Ensure all samples are uploaded and all metadata are inserted'
-        >
-          {/* disabled button inside tooltip causes tooltip to not function */}
-          {/* https://github.com/react-component/tooltip/issues/18#issuecomment-140078802 */}
-          <span>
-            <LaunchButtonTemplate text={buttonText} disabled />
-          </span>
-        </Tooltip>
-      );
     }
 
     // Popconfirm

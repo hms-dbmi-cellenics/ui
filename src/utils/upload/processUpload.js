@@ -226,7 +226,8 @@ const bundleToFile = async (bundle, technology) => {
     ? _.takeRight(bundle.path.split('/'), 2).join('/')
     : bundle.name;
 
-  const verdict = await inspectFile(bundle, technology);
+  const verdict = true;
+  // const verdict = await inspectFile(bundle, technology);
 
   let error = '';
   if (verdict === Verdict.INVALID_NAME) {
