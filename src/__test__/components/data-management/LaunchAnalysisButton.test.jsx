@@ -7,31 +7,31 @@ import thunk from 'redux-thunk';
 import {
   screen, render, waitFor, fireEvent,
 } from '@testing-library/react';
-import { runGem2s } from '../../../redux/actions/pipeline';
+import { runGem2s } from 'redux/actions/pipeline';
 
-import PipelineStatus from '../../../utils/pipelineStatusValues';
-import LaunchAnalysisButton from '../../../components/data-management/LaunchAnalysisButton';
-import initialProjectState, { projectTemplate } from '../../../redux/reducers/projects/initialState';
-import initialSamplesState, { sampleTemplate } from '../../../redux/reducers/samples/initialState';
-import initialExperimentsState, { experimentTemplate } from '../../../redux/reducers/experiments/initialState';
-import { initialExperimentBackendStatus } from '../../../redux/reducers/backendStatus/initialState';
+import PipelineStatus from 'utils/pipelineStatusValues';
+import LaunchAnalysisButton from 'components/data-management/LaunchAnalysisButton';
+import initialProjectState, { projectTemplate } from 'redux/reducers/projects/initialState';
+import initialSamplesState, { sampleTemplate } from 'redux/reducers/samples/initialState';
+import initialExperimentsState, { experimentTemplate } from 'redux/reducers/experiments/initialState';
+import { initialExperimentBackendStatus } from 'redux/reducers/backendStatus/initialState';
 
-import updateExperimentInfo from '../../../redux/actions/experimentSettings/updateExperimentInfo';
-import updateExperiment from '../../../redux/actions/experiments/updateExperiment';
-import updateProject from '../../../redux/actions/projects/updateProject';
+import updateExperimentInfo from 'redux/actions/experimentSettings/updateExperimentInfo';
+import { switchExperiment, updateExperiment } from 'redux/actions/experiments';
+import updateProject from 'redux/actions/projects/updateProject';
 
-import UploadStatus from '../../../utils/upload/UploadStatus';
-import generateGem2sParamsHash from '../../../utils/data-management/generateGem2sParamsHash';
+import UploadStatus from 'utils/upload/UploadStatus';
+import generateGem2sParamsHash from 'utils/data-management/generateGem2sParamsHash';
 import '__test__/test-utils/setupTests';
 
-jest.mock('../../../utils/data-management/generateGem2sParamsHash');
-jest.mock('../../../redux/actions/experimentSettings/updateExperimentInfo', () => jest.fn().mockReturnValue({ type: 'UPDATE_EXPERIMENT_INFO' }));
-jest.mock('../../../redux/actions/experiments/updateExperiment', () => jest.fn().mockReturnValue({ type: 'UPDATE_EXPERIMENT' }));
-jest.mock('../../../redux/actions/projects/updateProject', () => jest.fn().mockReturnValue({ type: 'UPDATE_PROJECT' }));
-jest.mock('../../../redux/actions/pipeline', () => ({
+jest.mock('utils/data-management/generateGem2sParamsHash');
+jest.mock('redux/actions/experimentSettings/updateExperimentInfo', () => jest.fn().mockReturnValue({ type: 'UPDATE_EXPERIMENT_INFO' }));
+jest.mock('redux/actions/experiments/updateExperiment', () => jest.fn().mockReturnValue({ type: 'UPDATE_EXPERIMENT' }));
+jest.mock('redux/actions/projects/updateProject', () => jest.fn().mockReturnValue({ type: 'UPDATE_PROJECT' }));
+jest.mock('redux/actions/pipeline', () => ({
   runGem2s: jest.fn().mockReturnValue({ type: 'RUN_GEM2S' }),
 }));
-
+jest.mock('redux/actions/experiments/switchExperiment', () => jest.fn().mockReturnValue({ type: 'EXPERIMENT_SWITCH' }));
 jest.mock('next/router', () => ({
   useRouter: () => ({
     push: jest.fn(),
@@ -281,6 +281,7 @@ describe('LaunchAnalysisButton', () => {
     fireEvent.click(screen.getByText('Yes'));
 
     expect(runGem2s).toHaveBeenCalled();
+    expect(switchExperiment).toHaveBeenCalled();
   });
 
   it('Does not dispatch request for GEM2S if there are no changes to the project', async () => {
@@ -294,6 +295,7 @@ describe('LaunchAnalysisButton', () => {
 
     userEvent.click(screen.getByText('Go to Data Processing'));
     expect(runGem2s).not.toHaveBeenCalled();
+    expect(switchExperiment).toHaveBeenCalled();
   });
 
   it('Clicking launch analysis should dispatch the correct actions', () => {
@@ -316,5 +318,8 @@ describe('LaunchAnalysisButton', () => {
 
     // Updates experiment info
     expect(updateExperimentInfo).toHaveBeenCalled();
+
+    // switches experiment
+    expect(switchExperiment).toHaveBeenCalled();
   });
 });

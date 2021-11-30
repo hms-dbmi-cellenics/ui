@@ -1,46 +1,60 @@
 import React from 'react';
 import { screen, render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import configureMockStore from 'redux-mock-store';
 import { Provider } from 'react-redux';
+import { act } from 'react-dom/test-utils';
 import '@testing-library/jest-dom';
-import thunk from 'redux-thunk';
-import initialProjectState, { projectTemplate } from '../../../redux/reducers/projects/initialState';
-import initialBackendStatus from '../../../redux/reducers/backendStatus/initialState';
+import '__test__/test-utils/mockWorkerBackend';
 
+import { makeStore } from 'redux/store';
+
+import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
+
+import createTestComponentFactory from '__test__/test-utils/testComponentFactory';
+import mockAPI, { generateDefaultMockAPIResponses } from '__test__/test-utils/mockAPI';
+
+import { loadProjects, setActiveProject } from 'redux/actions/projects';
+import { projects } from '__test__/test-utils/mockData';
 import ProjectMenu from '../../../components/data-management/ProjectMenu';
-import '__test__/test-utils/setupTests';
 
-const mockStore = configureMockStore([thunk]);
+const projectWithSamples = projects.find((project) => project.samples.length > 0);
+const projectWithoutSamples = projects.find((project) => project.samples.length === 0);
 
-const project1 = {
-  ...projectTemplate,
-  uuid: 'project-1',
-  name: 'project-name',
-};
+const experimentWithSamplesId = projectWithSamples.experiments[0];
+const projectWithSamplesId = projectWithSamples.uuid;
 
-const initialState = {
-  projects: {
-    ...initialProjectState,
-    ids: [project1.uuid],
-    meta: {
-      ...initialProjectState.meta,
-      activeProjectUuid: project1.uuid,
-    },
-    [project1.uuid]: project1,
-  },
-  backendStatus: {
-    ...initialBackendStatus,
-  },
-};
+const defaultAPIResponse = generateDefaultMockAPIResponses(
+  experimentWithSamplesId,
+  projectWithSamplesId,
+);
+
+let storeState = null;
+
+const projectMenuFactory = createTestComponentFactory(ProjectMenu);
 
 describe('ProjectMenu', () => {
-  it('Renders correctly when there is a project', () => {
-    render(
-      <Provider store={mockStore(initialState)}>
-        <ProjectMenu />
-      </Provider>,
-    );
+  beforeEach(async () => {
+    enableFetchMocks();
+    fetchMock.resetMocks();
+    fetchMock.doMock();
+    fetchMock.mockResponse(JSON.stringify({}));
+
+    fetchMock.mockIf(/.*/, mockAPI(defaultAPIResponse));
+
+    storeState = makeStore();
+
+    await storeState.dispatch(loadProjects());
+    await storeState.dispatch(setActiveProject(projectWithoutSamples.uuid));
+  });
+
+  it('Renders correctly when there is a project', async () => {
+    await act(async () => {
+      render(
+        <Provider store={storeState}>
+          {projectMenuFactory()}
+        </Provider>,
+      );
+    });
 
     // Has add samples button
     expect(screen.getByText('Add samples').closest('button')).toBeInTheDocument();
@@ -53,13 +67,19 @@ describe('ProjectMenu', () => {
   });
 
   it('Clicking Add Samples should bring up the add samples modal', async () => {
-    render(
-      <Provider store={mockStore(initialState)}>
-        <ProjectMenu />
-      </Provider>,
-    );
+    await act(async () => {
+      render(
+        <Provider store={storeState}>
+          {projectMenuFactory()}
+        </Provider>,
+      );
+    });
 
-    userEvent.click(screen.getByText('Add samples').closest('button'));
+    const addSamplesButton = screen.getByText('Add samples').closest('button');
+
+    await act(async () => {
+      userEvent.click(addSamplesButton);
+    });
 
     await waitFor(() => expect(screen.getByText('Upload')).toBeInTheDocument());
   });

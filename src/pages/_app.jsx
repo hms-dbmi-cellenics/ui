@@ -27,14 +27,14 @@ const mockCredentialsForInframock = () => {
   Credentials.get = async () => (
     new AWS.Credentials({
       accessKeyId: 'asd',
-      secretAccessKey: 'asfdsa',
+      secretAccessKey: 'asfdsa', // pragma: allowlist secret
     })
   );
 
   Credentials.shear = () => (
     new AWS.Credentials({
       accessKeyId: 'asd',
-      secretAccessKey: 'asfdsa',
+      secretAccessKey: 'asfdsa', // pragma: allowlist secret
     })
   );
 };
@@ -151,7 +151,7 @@ const WrappedApp = ({ Component, pageProps }) => {
       <DefaultSeo
         titleTemplate='%s &middot; Cellenics'
         defaultTitle='Cellenics'
-        description='Cellenics by Biomage turns your single cell datasets into meaningful biology. It’s free for academic researchers, and you get world-class quality analytical insight: simple data upload, data integration for batch effect correction, beautiful publication-quality figures, and much more.'
+        description='Cellenics turns your single cell datasets into meaningful biology. It’s free for academic researchers, and you get world-class quality analytical insight: simple data upload, data integration for batch effect correction, beautiful publication-quality figures, and much more.'
         twitter={{
           site: '@BiomageLtd',
           cardType: 'summary',

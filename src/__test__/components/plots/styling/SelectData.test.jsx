@@ -8,6 +8,8 @@ import mockCellSets from '__test__/data/cell_sets.json';
 import { createHierarchyFromTree, createPropertiesFromTree } from 'redux/reducers/cellSets/helpers';
 import { act } from 'react-dom/test-utils';
 
+import { plotTypes } from 'utils/constants';
+
 const mockOnUpdate = jest.fn();
 
 const mockCellSetsStore = {
@@ -19,7 +21,7 @@ const mockCellSetsStore = {
 
 const defaultProps = {
   onUpdate: mockOnUpdate,
-  config: initialPlotConfigStates.dotPlot,
+  config: initialPlotConfigStates[plotTypes.DOT_PLOT],
   cellSets: mockCellSetsStore,
 };
 
@@ -126,7 +128,7 @@ describe('Select Data', () => {
 
     const cellSetSelect = screen.getByRole('combobox', { name: 'selectCellSets' });
 
-    // Change to samples so taht we can choose Cluster
+    // Change to samples so that we can choose Cluster
     await act(async () => {
       fireEvent.change(cellSetSelect, { target: { value: 'Samples' } });
     });

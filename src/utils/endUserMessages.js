@@ -10,6 +10,7 @@ export default {
   ERROR_FETCHING_CELL_SETS: 'We couldn\'t get the list of cell sets.',
   ERROR_FETCHING_EXPERIMENTS: 'We couldn\'t get the list of experiments.',
   ERROR_FETCHING_PLOT_CONFIG: 'We couldn\'t get the plot settings.',
+  ERROR_FETCHING_PLOT_DATA: 'We couldn\'t get the plot data.',
   ERROR_FETCHING_PROCESSING: 'We couldn\'t get the filter settings.',
   ERROR_FETCHING_PROJECTS: 'We couldn\'t get the list of projects.',
   ERROR_FETCHING_SAMPLES: 'We couln\'t get your samples.',

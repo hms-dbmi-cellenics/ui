@@ -126,12 +126,14 @@ const GeneTable = (props) => {
   const renderColumns = (propColumns) => {
     const baseColumns = [
       {
+        fixed: 'left',
         title: '',
         dataIndex: 'lookup',
         key: 'lookup',
         width: '50px',
       },
       {
+        fixed: 'left',
         title: 'Gene',
         dataIndex: 'gene_names',
         key: 'gene_names',

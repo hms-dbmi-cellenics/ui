@@ -1,24 +1,28 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { Button, Tooltip, Popconfirm } from 'antd';
+import {
+  Button, Tooltip, Popconfirm,
+} from 'antd';
 import { useRouter } from 'next/router';
 import moment from 'moment';
-import { updateExperimentInfo } from '../../redux/actions/experimentSettings';
+import { updateExperimentInfo } from 'redux/actions/experimentSettings';
 import {
   updateProject,
-} from '../../redux/actions/projects';
+} from 'redux/actions/projects';
 
-import fileUploadSpecifications from '../../utils/upload/fileUploadSpecifications';
-import UploadStatus from '../../utils/upload/UploadStatus';
-import pipelineStatus from '../../utils/pipelineStatusValues';
-import integrationTestConstants from '../../utils/integrationTestConstants';
-import generateGem2sParamsHash from '../../utils/data-management/generateGem2sParamsHash';
-import { runGem2s } from '../../redux/actions/pipeline';
-import { updateExperiment } from '../../redux/actions/experiments';
+import fileUploadSpecifications from 'utils/upload/fileUploadSpecifications';
+import UploadStatus from 'utils/upload/UploadStatus';
+import pipelineStatus from 'utils/pipelineStatusValues';
+import integrationTestConstants from 'utils/integrationTestConstants';
+import generateGem2sParamsHash from 'utils/data-management/generateGem2sParamsHash';
+import { runGem2s } from 'redux/actions/pipeline';
+import { updateExperiment, switchExperiment } from 'redux/actions/experiments';
 
 const LaunchButtonTemplate = (props) => {
-  // eslint-disable-next-line react/prop-types
-  const { onClick, disabled, text } = props;
+  const {
+    // eslint-disable-next-line react/prop-types
+    onClick, disabled, text, loading,
+  } = props;
 
   return (
     <Button
@@ -26,6 +30,7 @@ const LaunchButtonTemplate = (props) => {
       type='primary'
       disabled={disabled}
       onClick={onClick}
+      loading={loading}
     >
       {text}
     </Button>
@@ -51,6 +56,7 @@ const LaunchAnalysisButton = () => {
     const lastViewed = moment().toISOString();
     dispatch(updateExperiment(experimentId, { lastViewed }));
     dispatch(updateProject(activeProjectUuid, { lastAnalyzed: lastViewed }));
+    dispatch(switchExperiment());
     dispatch(updateExperimentInfo({
       experimentId,
       experimentName: experiments[experimentId].name,
@@ -108,14 +114,18 @@ const LaunchAnalysisButton = () => {
   const canLaunchAnalysis = useCallback(() => {
     if (activeProject.samples.length === 0) return false;
 
+    // Check that samples is loaded
+    const testSampleUuid = activeProject.samples[0];
+    if (samples[testSampleUuid] === undefined) return false;
+
     const metadataKeysAvailable = activeProject.metadataKeys.length;
 
     const allSampleFilesUploaded = (sample) => {
       // Check if all files for a given tech has been uploaded
       const { fileNames } = sample;
       if (
-        fileUploadSpecifications[sample.type].requiredFiles.every(
-          (file) => !fileNames.includes(file),
+        !fileUploadSpecifications[sample.type].requiredFiles.every(
+          (file) => fileNames.includes(file),
         )
       ) { return false; }
 
@@ -151,6 +161,10 @@ const LaunchAnalysisButton = () => {
 
   const renderLaunchButton = () => {
     const buttonText = !gem2sRerunStatus.rerun ? 'Go to Data Processing' : 'Process project';
+
+    if (!backendStatus[experimentId] || backendStatus[experimentId]?.loading) {
+      return <LaunchButtonTemplate text='Loading project...' disabled loading />;
+    }
 
     if (!canLaunchAnalysis()) {
       return (
