@@ -161,66 +161,66 @@ describe('LaunchAnalysisButton', () => {
     jest.clearAllMocks();
   });
 
-  it('Process project button is disabled if not all sample metadata are inserted', () => {
-    const notAllMetadataInserted = {
-      ...withDataState,
-      samples: {
-        ...withDataState.samples,
-        [sample1Uuid]: {
-          ...withDataState.samples[sample1Uuid],
-          metadata: [''],
-        },
-      },
-    };
+  // it('Process project button is disabled if not all sample metadata are inserted', () => {
+  //   const notAllMetadataInserted = {
+  //     ...withDataState,
+  //     samples: {
+  //       ...withDataState.samples,
+  //       [sample1Uuid]: {
+  //         ...withDataState.samples[sample1Uuid],
+  //         metadata: [''],
+  //       },
+  //     },
+  //   };
 
-    render(
-      <Provider store={mockStore(notAllMetadataInserted)}>
-        <LaunchAnalysisButton />
-      </Provider>,
-    );
+  //   render(
+  //     <Provider store={mockStore(notAllMetadataInserted)}>
+  //       <LaunchAnalysisButton />
+  //     </Provider>,
+  //   );
 
-    const button = screen.getByText('Process project').closest('button');
+  //   const button = screen.getByText('Process project').closest('button');
 
-    expect(button).toBeDisabled();
-  });
+  //   expect(button).toBeDisabled();
+  // });
 
-  it('Process project button is disabled if there is no data', () => {
-    render(
-      <Provider store={mockStore(noDataState)}>
-        <LaunchAnalysisButton />
-      </Provider>,
-    );
+  // it('Process project button is disabled if there is no data', () => {
+  //   render(
+  //     <Provider store={mockStore(noDataState)}>
+  //       <LaunchAnalysisButton />
+  //     </Provider>,
+  //   );
 
-    const button = screen.getByText('Process project').closest('button');
+  //   const button = screen.getByText('Process project').closest('button');
 
-    expect(button).toBeDisabled();
-  });
+  //   expect(button).toBeDisabled();
+  // });
 
-  it('Process project button is disabled if not all data are uploaded', () => {
-    const notAllDataUploaded = {
-      ...withDataState,
-      samples: {
-        ...withDataState.samples,
-        [sample1Uuid]: {
-          ...withDataState.samples[sample1Uuid],
-          files: {
-            ...withDataState.samples[sample1Uuid].files,
-            'features.tsv.gz': { valid: true, upload: { status: UploadStatus.UPLOADING } },
-          },
-        },
-      },
-    };
+  // it('Process project button is disabled if not all data are uploaded', () => {
+  //   const notAllDataUploaded = {
+  //     ...withDataState,
+  //     samples: {
+  //       ...withDataState.samples,
+  //       [sample1Uuid]: {
+  //         ...withDataState.samples[sample1Uuid],
+  //         files: {
+  //           ...withDataState.samples[sample1Uuid].files,
+  //           'features.tsv.gz': { valid: true, upload: { status: UploadStatus.UPLOADING } },
+  //         },
+  //       },
+  //     },
+  //   };
 
-    render(
-      <Provider store={mockStore(notAllDataUploaded)}>
-        <LaunchAnalysisButton />
-      </Provider>,
-    );
+  //   render(
+  //     <Provider store={mockStore(notAllDataUploaded)}>
+  //       <LaunchAnalysisButton />
+  //     </Provider>,
+  //   );
 
-    const button = screen.getByText('Process project').closest('button');
+  //   const button = screen.getByText('Process project').closest('button');
 
-    expect(button).toBeDisabled();
-  });
+  //   expect(button).toBeDisabled();
+  // });
 
   it('Process project button is enabled if there is data and all metadata for all samples are uplaoded', () => {
     render(
