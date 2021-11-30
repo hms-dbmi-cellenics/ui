@@ -144,7 +144,7 @@ const Embedding = (props) => {
     }
 
     if (cellSetProperties) {
-      setCellSetClusters(Object.entries(cellSetProperties).filter(([key, cellSet]) => cellSet.type === 'cellSets'));
+      setCellSetClusters(Object.entries(cellSetProperties).filter(([, cellSet]) => cellSet.type === 'cellSets'));
     }
   }, [cellSetProperties, cellSetHierarchy]);
 
@@ -215,8 +215,8 @@ const Embedding = (props) => {
   }
 
   // The selected gene in can be present in both expression.loading and expression.data.
-  // To make sure that the gene is really loading, we have to check if it exists in the loading array
-  // and is not present in the data array
+  // To make sure that the gene is really loading, we have to check if
+  // it exists in the loading array and is not present in the data array
   if (focusData.store === 'genes'
     && !loadedGenes.includes(focusData.key)
     && expressionLoading.includes(focusData.key)) {

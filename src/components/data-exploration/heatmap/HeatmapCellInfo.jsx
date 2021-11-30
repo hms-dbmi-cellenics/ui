@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import _ from 'lodash';
+import React from 'react';
 import { Card } from 'antd';
 import PropTypes from 'prop-types';
 
