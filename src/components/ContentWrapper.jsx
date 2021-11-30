@@ -18,6 +18,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Auth } from 'aws-amplify';
 import PropTypes from 'prop-types';
 import { useRouter } from 'next/router';
+import { switchExperiment } from 'redux/actions/experiments';
 import Error from '../pages/_error';
 import GEM2SLoadingScreen from './GEM2SLoadingScreen';
 import PipelineRedirectToDataProcessing from './PipelineRedirectToDataProcessing';
@@ -48,7 +49,7 @@ const ContentWrapper = (props) => {
   const experiment = useSelector((state) => state?.experiments[routeExperimentId]);
   const experimentName = experimentData?.experimentName || experiment?.name;
   const currentExperimentRef = useRef(routeExperimentId);
-  const activeProjectUuid = useSelector((state) => state?.projects.meta?.activeProjectUuid);
+  const activeProjectUuid = useSelector((state) => state?.projects?.meta?.activeProjectUuid);
   const activeProjectExperiment = useSelector((state) => (
     state?.projects[activeProjectUuid]?.experiments[0]));
 
@@ -56,7 +57,7 @@ const ContentWrapper = (props) => {
   // and we are in data-management, we don't have experimentId
 
   useEffect(() => {
-    if (routeExperimentId && activeProjectExperiment.current !== routeExperimentId) {
+    if (routeExperimentId && currentExperimentRef.current !== routeExperimentId) {
       currentExperimentRef.current = routeExperimentId;
       return;
     }
@@ -88,9 +89,13 @@ const ContentWrapper = (props) => {
   // and would be set to true only in the `loadBackendStatus` action, the time between the
   // two events would allow pages to load.
   const [backendStatusRequested, setBackendStatusRequested] = useState(false);
-
+  console.log('ROUTE IS ', route);
   useEffect(() => {
     if (!currentExperiment) return;
+    // clear the store only if we navigate to a new experiment from data-management
+    if (route === '/data-management') {
+      dispatch(switchExperiment());
+    }
     if (!backendLoading) dispatch(loadBackendStatus(currentExperiment));
     (async () => {
       const io = await connectionPromise;
