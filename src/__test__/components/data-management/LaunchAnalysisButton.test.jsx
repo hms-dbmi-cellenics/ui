@@ -17,7 +17,7 @@ import initialExperimentsState, { experimentTemplate } from 'redux/reducers/expe
 import { initialExperimentBackendStatus } from 'redux/reducers/backendStatus/initialState';
 
 import updateExperimentInfo from 'redux/actions/experimentSettings/updateExperimentInfo';
-import { switchExperiment, updateExperiment } from 'redux/actions/experiments';
+import { updateExperiment } from 'redux/actions/experiments';
 import updateProject from 'redux/actions/projects/updateProject';
 
 import UploadStatus from 'utils/upload/UploadStatus';
@@ -31,7 +31,6 @@ jest.mock('redux/actions/projects/updateProject', () => jest.fn().mockReturnValu
 jest.mock('redux/actions/pipeline', () => ({
   runGem2s: jest.fn().mockReturnValue({ type: 'RUN_GEM2S' }),
 }));
-jest.mock('redux/actions/experiments/switchExperiment', () => jest.fn().mockReturnValue({ type: 'EXPERIMENT_SWITCH' }));
 jest.mock('next/router', () => ({
   useRouter: () => ({
     push: jest.fn(),
@@ -281,7 +280,7 @@ describe('LaunchAnalysisButton', () => {
     fireEvent.click(screen.getByText('Yes'));
 
     expect(runGem2s).toHaveBeenCalled();
-    expect(switchExperiment).toHaveBeenCalled();
+    expect().toHaveBeenCalled();
   });
 
   it('Does not dispatch request for GEM2S if there are no changes to the project', async () => {
@@ -295,7 +294,7 @@ describe('LaunchAnalysisButton', () => {
 
     userEvent.click(screen.getByText('Go to Data Processing'));
     expect(runGem2s).not.toHaveBeenCalled();
-    expect(switchExperiment).toHaveBeenCalled();
+    expect().toHaveBeenCalled();
   });
 
   it('Clicking launch analysis should dispatch the correct actions', () => {
@@ -320,6 +319,6 @@ describe('LaunchAnalysisButton', () => {
     expect(updateExperimentInfo).toHaveBeenCalled();
 
     // switches experiment
-    expect(switchExperiment).toHaveBeenCalled();
+    expect().toHaveBeenCalled();
   });
 });
