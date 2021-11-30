@@ -89,8 +89,6 @@ const HeatmapPlot = (props) => {
 
   const focusedExpression = useSelector((state) => state.genes.expression.data[geneHighlight]);
 
-  const { legendIsVisible } = heatmapSettings;
-
   const { error: expressionDataError } = expressionData;
   const viewError = useSelector((state) => state.genes.expression.views[COMPONENT_TYPE]?.error);
 
