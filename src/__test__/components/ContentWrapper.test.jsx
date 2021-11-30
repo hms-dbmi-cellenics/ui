@@ -61,6 +61,11 @@ const store = mockStore({
     },
   },
   experiments: { [experimentId]: {} },
+  projects: {
+    meta: {
+      activeProjectUuid: '1234',
+    },
+  },
 });
 
 describe('ContentWrapper', () => {
@@ -210,6 +215,11 @@ describe('ContentWrapper', () => {
         },
         info,
       },
+      projects: {
+        meta: {
+          activeProjectUuid: '1234',
+        },
+      },
       experiments: { [experimentId]: {} },
     });
 
@@ -217,7 +227,7 @@ describe('ContentWrapper', () => {
     const wrapper = await mount(
       <Provider store={testStore}>
         <ContentWrapper
-          experimentId={info.experimentId}
+          routeExperimentId={info.experimentId}
           experimentData={info}
         >
           <></>
