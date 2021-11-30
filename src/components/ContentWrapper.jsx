@@ -89,7 +89,7 @@ const ContentWrapper = (props) => {
   // and would be set to true only in the `loadBackendStatus` action, the time between the
   // two events would allow pages to load.
   const [backendStatusRequested, setBackendStatusRequested] = useState(false);
-  console.log('ROUTE IS ', route);
+
   useEffect(() => {
     if (!currentExperiment) return;
     // clear the store only if we navigate to a new experiment from data-management
