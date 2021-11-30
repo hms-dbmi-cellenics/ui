@@ -280,7 +280,6 @@ describe('LaunchAnalysisButton', () => {
     fireEvent.click(screen.getByText('Yes'));
 
     expect(runGem2s).toHaveBeenCalled();
-    expect().toHaveBeenCalled();
   });
 
   it('Does not dispatch request for GEM2S if there are no changes to the project', async () => {
@@ -294,7 +293,6 @@ describe('LaunchAnalysisButton', () => {
 
     userEvent.click(screen.getByText('Go to Data Processing'));
     expect(runGem2s).not.toHaveBeenCalled();
-    expect().toHaveBeenCalled();
   });
 
   it('Clicking launch analysis should dispatch the correct actions', () => {
@@ -317,8 +315,5 @@ describe('LaunchAnalysisButton', () => {
 
     // Updates experiment info
     expect(updateExperimentInfo).toHaveBeenCalled();
-
-    // switches experiment
-    expect().toHaveBeenCalled();
   });
 });
