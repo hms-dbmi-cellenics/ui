@@ -4,32 +4,13 @@ import { useSelector } from 'react-redux';
 import { Vega } from 'react-vega';
 import { generateSpec } from 'utils/plotSpecs/generateDotPlotSpec';
 import { getCellSets, getCellSetsHierarchyByKeys } from 'redux/selectors';
-
-import PlatformError from 'components/PlatformError';
 import Loader from 'components/Loader';
 
-// Mock data, delete this once we have the real data
-const generateMockData = (numGenes, numClusters) => {
-  const mockPlotData = [];
-
-  for (let gene = 0; gene < numGenes; gene += 1) {
-    for (let cluster = 0; cluster < numClusters; cluster += 1) {
-      mockPlotData.push({
-        gene: `gene${gene}`,
-        cluster: `cluster${cluster}`,
-        AvgExpression: Math.random(),
-        cellsFraction: Math.random(),
-      });
-    }
-  }
-
-  return mockPlotData;
-};
-
-const plotData = generateMockData(3, 14);
+import PlatformError from 'components/PlatformError';
+import { loadCellSets } from 'redux/actions/cellSets';
 
 const DotPlot = (props) => {
-  const { config, experimentId } = props;
+  const { experimentId, config, plotData } = props;
 
   const { loading: cellSetsLoading, error: cellSetsError } = useSelector(getCellSets());
   const cellSet = useSelector(getCellSetsHierarchyByKeys([config.selectedCellSet]))[0];
@@ -48,10 +29,7 @@ const DotPlot = (props) => {
         <PlatformError
           error={cellSetsError}
           reason={cellSetsError.message}
-          onClick={() => {
-            // This needs to be implemented when implementing the backend
-            // reloadPlotData();
-          }}
+          onClick={() => loadCellSets(experimentId)}
         />
       );
     }
@@ -71,7 +49,13 @@ const DotPlot = (props) => {
 };
 
 DotPlot.propTypes = {
-  config: PropTypes.object.isRequired,
+  experimentId: PropTypes.string.isRequired,
+  config: PropTypes.object,
+  plotData: PropTypes.array.isRequired,
+};
+
+DotPlot.defaultProps = {
+  config: {},
 };
 
 export default DotPlot;

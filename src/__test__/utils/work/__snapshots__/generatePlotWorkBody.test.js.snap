@@ -1,0 +1,15 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Generate plot work request body Generates the correct work request body for DotPlot 1`] = `
+Object {
+  "customGenesList": Array [],
+  "filterBy": Object {
+    "group": "All",
+    "key": "All",
+  },
+  "groupBy": "louvain",
+  "name": "DotPlot",
+  "numberOfMarkers": 3,
+  "useMarkerGenes": false,
+}
+`;

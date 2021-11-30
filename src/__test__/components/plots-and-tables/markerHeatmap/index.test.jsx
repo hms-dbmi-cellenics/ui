@@ -73,6 +73,9 @@ const getDisplayedGenes = (container) => {
 describe('Marker heatmap plot', () => {
   beforeEach(async () => {
     seekFromAPI.mockClear();
+    seekFromAPI.mockImplementation(
+      (a, b, c, requested) => Promise.resolve(_.cloneDeep(mockWorkerResponses[requested])),
+    );
 
     enableFetchMocks();
     fetchMock.resetMocks();
@@ -108,10 +111,6 @@ describe('Marker heatmap plot', () => {
   });
 
   it('Loads the plot', async () => {
-    seekFromAPI.mockImplementation(
-      (a, b, c, requested) => Promise.resolve(_.cloneDeep(mockWorkerResponses[requested])),
-    );
-
     await act(async () => (
       render(
         <Provider store={storeState}>
@@ -142,10 +141,6 @@ describe('Marker heatmap plot', () => {
   });
 
   it('loads marker genes on specifying new nunmber of genes per cluster', async () => {
-    seekFromAPI.mockImplementation(
-      (a, b, c, requested) => Promise.resolve(_.cloneDeep(mockWorkerResponses[requested])),
-    );
-
     await act(async () => (
       render(
         <Provider store={storeState}>
@@ -238,10 +233,6 @@ describe('Marker heatmap plot', () => {
   });
 
   it('removing a gene keeps the sorted order without re-sorting', async () => {
-    seekFromAPI.mockImplementation(
-      (a, b, c, requested) => Promise.resolve(_.cloneDeep(mockWorkerResponses[requested])),
-    );
-
     await act(async () => (
       render(
         <Provider store={storeState}>
