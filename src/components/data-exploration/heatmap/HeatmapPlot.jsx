@@ -302,7 +302,7 @@ const HeatmapPlot = (props) => {
 
     const obj = {
       cellId: cellIndexStr,
-      trackName: cellClassProps[0]?.name,
+      trackName: cellClassProps?.name,
       coordinates: { x: mouseX, y: mouseY },
     };
 

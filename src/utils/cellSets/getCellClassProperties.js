@@ -13,15 +13,21 @@ import _ from 'lodash';
 const getCellClassProperties = (cellId, cellSetClassKey, hierarchy, properties) => {
   const childrenCellSets = _.find(hierarchy, ({ key }) => key === cellSetClassKey).children;
 
-  const cellSetsContainingCell = [];
+  let firstCellSetContainingCell = null;
 
-  childrenCellSets.forEach(({ key }) => {
+  childrenCellSets.every(({ key }) => {
     if (properties[key].cellIds.has(cellId)) {
-      cellSetsContainingCell.push(key);
+      firstCellSetContainingCell = key;
+
+      // Break out of the loop
+      return false;
     }
+
+    // Continue looping
+    return true;
   });
 
-  return cellSetsContainingCell.map((cellSetKey) => properties[cellSetKey]);
+  return properties[firstCellSetContainingCell];
 };
 
 export default getCellClassProperties;
