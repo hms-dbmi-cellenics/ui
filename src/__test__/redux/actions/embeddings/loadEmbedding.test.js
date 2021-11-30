@@ -110,10 +110,7 @@ describe('loadEmbedding action', () => {
 
   it('Dispatches on a previously unseen embedding', async () => {
     seekFromAPI.mockImplementation(() => {
-      const resolveWith = {
-        data: [[1, 2], [3, 4]],
-        cacheable: true,
-      };
+      const resolveWith = [[1, 2], [3, 4]];
 
       return new Promise((resolve) => resolve(resolveWith));
     });
@@ -145,10 +142,7 @@ describe('loadEmbedding action', () => {
 
   it('Dispatches on a previous error condition', async () => {
     seekFromAPI.mockImplementation(() => {
-      const resolveWith = {
-        data: [[1, 2], [3, 4]],
-        cacheable: true,
-      };
+      const resolveWith = [[1, 2], [3, 4]];
 
       return new Promise((resolve) => resolve(resolveWith));
     });
@@ -257,10 +251,7 @@ describe('loadEmbedding action', () => {
 
   it('Dispatches on if forceReload is set to true', async () => {
     seekFromAPI.mockImplementation(() => {
-      const resolveWith = {
-        data: [[1, 2], [3, 4]],
-        cacheable: true,
-      };
+      const resolveWith = [[1, 2], [3, 4]];
 
       return new Promise((resolve) => resolve(resolveWith));
     });

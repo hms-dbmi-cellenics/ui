@@ -1,9 +1,9 @@
 import {
   MARKER_GENES_ERROR, MARKER_GENES_LOADING, MARKER_GENES_LOADED,
-} from '../../actionTypes/genes';
+} from 'redux/actionTypes/genes';
 
-import { fetchWork } from '../../../utils/work/fetchWork';
-import getTimeoutForWorkerTask from '../../../utils/getTimeoutForWorkerTask';
+import { fetchWork } from 'utils/work/fetchWork';
+import getTimeoutForWorkerTask from 'utils/getTimeoutForWorkerTask';
 
 const loadMarkerGenes = (
   experimentId, resolution, plotUuid, numGenes = 5, selectedCellSet = 'louvain',
@@ -11,7 +11,6 @@ const loadMarkerGenes = (
   // Disabled linter because we are using == to check for both null and undefined values
   // eslint-disable-next-line eqeqeq
   if (experimentId == null || resolution == null) throw new Error('Null or undefined parameter/s for loadMarkerGenes');
-
   const body = {
     name: 'MarkerHeatmap',
     nGenes: numGenes,
@@ -24,6 +23,7 @@ const loadMarkerGenes = (
 
   try {
     const timeout = getTimeoutForWorkerTask(getState(), 'MarkerHeatmap');
+
     const data = await fetchWork(experimentId, body, getState, { timeout });
 
     const { data: markerGeneExpressions, order } = data;

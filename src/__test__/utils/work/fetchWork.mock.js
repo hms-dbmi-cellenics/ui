@@ -118,7 +118,7 @@ const mockSeekFromAPI = jest.fn((_, body) => {
     returnedBody[gene] = mockData[gene];
   });
 
-  return { data: returnedBody };
+  return returnedBody;
 });
 
 const mockCacheModule = {
@@ -135,9 +135,9 @@ const mockSeekWorkResponseModule = {
   ),
 };
 
-const mockReduxState = (experimentId) => () => ({
+const mockReduxState = (experimentId, environment = 'testing') => () => ({
   networkResources: {
-    environment: 'testing',
+    environment,
   },
   backendStatus: {
     [experimentId]: {

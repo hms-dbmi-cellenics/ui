@@ -6,6 +6,7 @@ import { Provider } from 'react-redux';
 import { Vega } from 'react-vega';
 
 import { ClipLoader } from 'react-spinners';
+import changeEmbeddingAxesIfNecessary from 'components/plots/helpers/changeEmbeddingAxesIfNecessary';
 import ContinuousEmbeddingPlot from '../../../components/plots/ContinuousEmbeddingPlot';
 import { initialEmbeddingState } from '../../../redux/reducers/embeddings/initialState';
 import initialCellSetsState from '../../../redux/reducers/cellSets/initialState';
@@ -16,6 +17,7 @@ import { mockCellSets1 } from '../../test-utils/cellSets.mock';
 
 import '__test__/test-utils/setupTests';
 
+jest.mock('components/plots/helpers/changeEmbeddingAxesIfNecessary');
 const mockCellSets = {
   ...mockCellSets1,
   loading: false,
@@ -25,7 +27,7 @@ const mockCellSets = {
 const mockStore = configureStore([thunk]);
 
 const initialExperimentState = generateExperimentSettingsMock([]);
-
+const mockOnUpdate = jest.fn();
 describe('Continuous embedding plot', () => {
   const config = initialPlotConfigStates.embeddingContinuous;
   const experimentId = 'asd';
@@ -76,7 +78,10 @@ describe('Continuous embedding plot', () => {
       ...initialExperimentState,
     },
   };
-
+  beforeEach(() => {
+    jest.clearAllMocks();
+    changeEmbeddingAxesIfNecessary.mockImplementation(() => ({}));
+  });
   it('shows spinner when data is still loading', () => {
     const store = mockStore(mockedStore);
 
@@ -89,6 +94,7 @@ describe('Continuous embedding plot', () => {
           plotData={mockedStore.genes.expression.data[shownGene].expression}
           loading
           error={mockedStore.genes.expression.error}
+          onUpdate={mockOnUpdate}
         />
       </Provider>,
     );
@@ -97,6 +103,7 @@ describe('Continuous embedding plot', () => {
 
     // There should be a spinner for loading state.
     expect(spin.length).toEqual(1);
+    expect(changeEmbeddingAxesIfNecessary).toHaveBeenCalled();
   });
 
   it('renders correctly when data is in the store', () => {
@@ -111,6 +118,7 @@ describe('Continuous embedding plot', () => {
           plotData={mockedStore.genes.expression.data[shownGene].expression}
           loading={false}
           error={mockedStore.genes.expression.error}
+          onUpdate={mockOnUpdate}
         />
       </Provider>,
     );
@@ -122,5 +130,6 @@ describe('Continuous embedding plot', () => {
     // There should be a form loaded.
     const form = component.find(Vega);
     expect(form.length).toBeGreaterThan(0);
+    expect(changeEmbeddingAxesIfNecessary).toHaveBeenCalled();
   });
 });

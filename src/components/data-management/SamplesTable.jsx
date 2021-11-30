@@ -13,7 +13,11 @@ import {
 } from '@ant-design/icons';
 import { sortableHandle, sortableContainer, sortableElement } from 'react-sortable-hoc';
 import { updateExperiment } from 'redux/actions/experiments';
-import { updateProject } from 'redux/actions/projects';
+import {
+  updateProject,
+  deleteMetadataTrack,
+  createMetadataTrack,
+} from 'redux/actions/projects';
 import { Storage } from 'aws-amplify';
 import UploadStatus from 'utils/upload/UploadStatus';
 import { arrayMoveImmutable } from 'utils/array-move';
@@ -21,24 +25,29 @@ import downloadFromUrl from 'utils/data-management/downloadFromUrl';
 import { DEFAULT_NA } from 'redux/reducers/projects/initialState';
 import {
   updateSample,
-} from '../../redux/actions/samples';
+} from 'redux/actions/samples';
+import { metadataNameToKey, metadataKeyToName, temporaryMetadataKey } from 'utils/data-management/metadataUtils';
+import integrationTestConstants from 'utils/integrationTestConstants';
+import MetadataColumnTitle from 'components/data-management/MetadataColumn';
+import MetadataPopover from 'components/data-management/MetadataPopover';
 import {
-  deleteMetadataTrack,
-  createMetadataTrack,
-} from '../../redux/actions/projects';
-import {
-  UploadCell, SampleNameCell, EditableFieldCell, SpeciesCell,
+  UploadCell, SampleNameCell, EditableFieldCell,
 } from './SamplesTableCells';
-import MetadataColumnTitle from './MetadataColumn';
-import MetadataEditor from './MetadataEditor';
-import SpeciesSelector from './SpeciesSelector';
-import MetadataPopover from './MetadataPopover';
-import { metadataNameToKey, metadataKeyToName, temporaryMetadataKey } from '../../utils/data-management/metadataUtils';
-import integrationTestConstants from '../../utils/integrationTestConstants';
 
-import '../../utils/css/data-management.css';
+import 'utils/css/data-management.css';
 
-const { Text } = Typography;
+const { Paragraph, Text } = Typography;
+
+const exampleDatasets = [
+  {
+    filename: 'PBMC_3k.zip',
+    description: 'Uni-sample PBMC dataset',
+  },
+  {
+    filename: 'PBMC_BMMC_17k.zip',
+    description: 'Multi-sample blood and bone marrow dataset',
+  },
+];
 
 const SamplesTable = forwardRef((props, ref) => {
   const { height } = props;
@@ -93,26 +102,6 @@ const SamplesTable = forwardRef((props, ref) => {
       title: 'matrix.mtx',
       dataIndex: 'matrix',
       render: (tableCellData) => <UploadCell columnId='matrix' tableCellData={tableCellData} />,
-    },
-    {
-      index: 5,
-      key: 'species',
-      title: () => (
-        <Space>
-          <Text>Species</Text>
-          <MetadataEditor
-            onReplaceEmpty={(value) => setCells(value, 'species', 'REPLACE_EMPTY')}
-            onReplaceAll={(value) => setCells(value, 'species', 'REPLACE_ALL')}
-            onClearAll={() => setCells(null, 'species', 'CLEAR_ALL')}
-            massEdit
-          >
-            <SpeciesSelector />
-          </MetadataEditor>
-        </Space>
-      ),
-      dataIndex: 'species',
-      render: (organismId, record) => <SpeciesCell organismId={organismId} recordUuid={record.uuid} />,
-      width: 200,
     },
   ];
 
@@ -209,24 +198,19 @@ const SamplesTable = forwardRef((props, ref) => {
     'CLEAR_ALL',
   ];
 
-  const createUpdateObject = (value, metadataKey) => {
-    const updateObject = metadataKey === 'species' ? { species: value } : { metadata: { [metadataKey]: value } };
-    return updateObject;
-  };
-
   const setCells = (value, metadataKey, actionType) => {
     if (!MASS_EDIT_ACTIONS.includes(actionType)) return;
-    const updateObject = createUpdateObject(value, metadataKey);
+    const updateObject = { metadata: { [metadataKey]: value } };
 
     const canUpdateCell = (sampleUuid, action) => {
       if (action !== 'REPLACE_EMPTY') return true;
 
-      const isSpeciesEmpty = (uuid) => metadataKey === 'species' && !samples[uuid].species;
-      const isMetadataEmpty = (uuid) => metadataKey !== 'species'
-        && (!samples[uuid].metadata[metadataKey]
-          || samples[uuid].metadata[metadataKey] === DEFAULT_NA);
+      const isMetadataEmpty = (uuid) => (
+        !samples[uuid].metadata[metadataKey]
+        || samples[uuid].metadata[metadataKey] === DEFAULT_NA
+      );
 
-      return isMetadataEmpty(sampleUuid) || isSpeciesEmpty(sampleUuid);
+      return isMetadataEmpty(sampleUuid);
     };
 
     activeProject.samples.forEach(
@@ -253,9 +237,9 @@ const SamplesTable = forwardRef((props, ref) => {
       // this situation should be included into the SamplesTable.jsx tests
       const sampleFiles = samples[sampleUuid]?.files || {};
 
-      const barcodesFile = sampleFiles['barcodes.tsv.gz'] ?? { upload: { status: UploadStatus.UPLOADING } };
-      const genesFile = sampleFiles['features.tsv.gz'] ?? { upload: { status: UploadStatus.UPLOADING } };
-      const matrixFile = sampleFiles['matrix.mtx.gz'] ?? { upload: { status: UploadStatus.UPLOADING } };
+      const barcodesFile = sampleFiles['barcodes.tsv.gz'] ?? { upload: { status: UploadStatus.FILE_NOT_FOUND } };
+      const genesFile = sampleFiles['features.tsv.gz'] ?? { upload: { status: UploadStatus.FILE_NOT_FOUND } };
+      const matrixFile = sampleFiles['matrix.mtx.gz'] ?? { upload: { status: UploadStatus.FILE_NOT_FOUND } };
 
       const barcodesData = { sampleUuid, file: barcodesFile };
       const genesData = { sampleUuid, file: genesFile };
@@ -275,12 +259,14 @@ const SamplesTable = forwardRef((props, ref) => {
     setTableData(newData);
   }, [projects, samples, activeProjectUuid]);
 
-  const downloadPublicDataset = async () => {
-    const s3Object = await Storage.get('PBMC_3k.zip',
+  const downloadPublicDataset = async (filename) => {
+    const s3Object = await Storage.get(
+      filename,
       {
         bucket: `biomage-public-datasets-${environment}`,
         contentType: 'multipart/form-data',
-      });
+      },
+    );
     downloadFromUrl(s3Object);
   };
 
@@ -290,23 +276,31 @@ const SamplesTable = forwardRef((props, ref) => {
         height: 60,
       }}
       description={(
-        <>
-          <Text>
+        <Space size='middle' direction='vertical'>
+          <Paragraph>
             Start uploading your samples by clicking on Add samples.
-            <br />
-            Don&apos;t have data? Download our
-          </Text>
-          <Button
-            type='link'
-            size='small'
-            onClick={() => downloadPublicDataset()}
-          >
-            example PBMC data set
-          </Button>
+          </Paragraph>
           <Text>
-            .
+            Don&apos;t have data? Get started using one of our example datasets:
           </Text>
-        </>
+          <div style={{ width: 'auto', textAlign: 'left' }}>
+            <ul>
+              {
+                exampleDatasets.map(({ filename, description }) => (
+                  <li key={filename}>
+                    <Button
+                      type='link'
+                      size='small'
+                      onClick={() => downloadPublicDataset(filename)}
+                    >
+                      {description}
+                    </Button>
+                  </li>
+                ))
+              }
+            </ul>
+          </div>
+        </Space>
       )}
     />
   );
@@ -376,3 +370,7 @@ SamplesTable.propTypes = {
 };
 
 export default React.memo(SamplesTable);
+
+export {
+  exampleDatasets,
+};

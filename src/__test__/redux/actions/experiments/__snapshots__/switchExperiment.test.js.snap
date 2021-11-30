@@ -1,0 +1,595 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`switch experiment  switches the experiment to its initial values 1`] = `
+Object {
+  "backendStatus": Object {
+    "2213badd497c54fb0703ce7bf369c131": Object {
+      "error": false,
+      "loading": false,
+      "status": Object {
+        "gem2s": Object {
+          "completedSteps": Array [
+            "DownloadGem",
+            "PreProcessing",
+            "EmptyDrops",
+            "DoubletScores",
+            "CreateSeurat",
+            "PrepareExperiment",
+            "UploadToAWS",
+          ],
+          "error": false,
+          "paramsHash": "0ec8de4cd12ca902ee0e8fd7cd0a6c146929d64f",
+          "startDate": "2021-11-16T16:07:58.999Z",
+          "status": "SUCCEEDED",
+          "stopDate": "2021-11-16T16:08:54.503Z",
+        },
+        "pipeline": Object {
+          "completedSteps": Array [
+            "ClassifierFilter",
+            "CellSizeDistributionFilter",
+            "MitochondrialContentFilter",
+            "NumGenesVsNumUmisFilter",
+            "DoubletScoresFilter",
+            "DataIntegration",
+            "ConfigureEmbedding",
+          ],
+          "error": false,
+          "startDate": "2021-11-18T12:46:47.922Z",
+          "status": "SUCCEEDED",
+          "stopDate": "2021-11-18T12:47:40.389Z",
+        },
+        "worker": Object {
+          "ready": true,
+          "restartCount": 0,
+          "started": true,
+          "status": "Running",
+        },
+      },
+    },
+  },
+  "cellInfo": Object {
+    "focus": Object {
+      "key": "louvain",
+      "store": "cellSets",
+    },
+    "groupedTrack": "louvain",
+    "selectedTracks": Array [
+      "louvain",
+    ],
+  },
+  "cellMeta": Object {
+    "doubletScores": Object {
+      "data": Array [],
+      "error": false,
+      "loading": true,
+    },
+    "mitochondrialContent": Object {
+      "data": Array [],
+      "error": false,
+      "loading": true,
+    },
+  },
+  "cellSets": Object {
+    "error": false,
+    "hidden": Set {},
+    "hierarchy": Array [],
+    "loading": true,
+    "properties": Object {},
+    "selected": Array [],
+    "updatingClustering": false,
+  },
+  "componentConfig": Object {},
+  "differentialExpression": Object {
+    "comparison": Object {
+      "group": Object {
+        "between": Object {
+          "basis": null,
+          "cellSet": null,
+          "compareWith": null,
+        },
+        "within": Object {
+          "basis": null,
+          "cellSet": null,
+          "compareWith": null,
+        },
+      },
+      "type": "within",
+    },
+    "properties": Object {
+      "cellSets": Object {},
+      "comparisonType": null,
+      "data": Array [],
+      "error": false,
+      "loading": false,
+      "total": 0,
+    },
+  },
+  "embeddings": Object {},
+  "experimentSettings": Object {
+    "info": Object {
+      "experimentId": "2213badd497c54fb0703ce7bf369c131",
+      "experimentName": "XDDDDDDD",
+      "sampleIds": Array [
+        "b195d304-22a7-413a-9a86-0daad288bbac",
+      ],
+    },
+    "originalProcessing": Object {
+      "cellSizeDistribution": Object {
+        "auto": true,
+        "b195d304-22a7-413a-9a86-0daad288bbac": Object {
+          "api_url": "http://api-default.api-default.svc.cluster.local:3000",
+          "auth_JWT": "Bearer eyJraWQiOiJ2TytRZ1lud0lnOU5pT2Y3azJTNEFEY2xvaDBwVlNUbkNNdDJMOU8xQU1RPSIsImFsZyI6IlJTMjU2In0.eyJhdF9oYXNoIjoicGkzSnB4clpBZWhSYTltT1kwZGhyZyIsInN1YiI6IjQ5NDk3N2MwLTIwYjktNGJkYy1hZTE0LTNmMDU4ZTdkZjMyOCIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwiaXNzIjoiaHR0cHM6XC9cL2NvZ25pdG8taWRwLmV1LXdlc3QtMS5hbWF6b25hd3MuY29tXC9ldS13ZXN0LTFfc1ZRTDE1WXh1IiwiY29nbml0bzp1c2VybmFtZSI6IjQ5NDk3N2MwLTIwYjktNGJkYy1hZTE0LTNmMDU4ZTdkZjMyOCIsImF1ZCI6IjFkdTdhaDlwcmlzbzdwNW9hdmhhMmk5bmpoIiwiZXZlbnRfaWQiOiI5ZDI4ZWIzYy1kZTYyLTQ1MTMtYTNjMi1iNzI5YTFiYWIyYTEiLCJ0b2tlbl91c2UiOiJpZCIsImF1dGhfdGltZSI6MTYzNzIzNTQ0MiwibmFtZSI6IlN0ZWZhbiBCYWJ1a292IiwiZXhwIjoxNjM3MjQyNjQ3LCJpYXQiOjE2MzcyMzkwNDcsImVtYWlsIjoic3RlZmFuQGJpb21hZ2UubmV0In0.QbekNN5hw9UWSNPpjsCrTg2M4r0xsdMyTgjlhtkY89wjhRG2feBZqHtDkw-nMJY476BmRGIBd0q-zCKScAvFH0tNyHEE5DP8UZ-LcJ9k-hP5MgCSTYcwMS06b9jZiS_TAL3Jh_OnJZXjusAYYulaxEsbpjZmTTPqORPyWkGHWCvFypI69HEG5pmfoAYD58wJDRkYLVdI9BNq_Iiopw6766jEtRNepygYqwnpGZyaqYPE_JQCLDRy8ZjmwgHg5uwRA08DxlSsVTW80SW9sKaYgSGteOQNqRrPm0JGFtPbLSatcnc4KWPYXSn4kw4Gj4MVIHvkZoyBvldnO2NV8wUT4A",
+          "auto": true,
+          "defaultFilterSettings": Object {
+            "binStep": 200,
+            "minCellSize": 516,
+          },
+          "enabled": false,
+          "filterSettings": Object {
+            "binStep": 200,
+            "minCellSize": 516,
+          },
+        },
+        "enabled": false,
+        "filterSettings": Object {
+          "binStep": 200,
+          "minCellSize": 1080,
+        },
+      },
+      "classifier": Object {
+        "auto": true,
+        "b195d304-22a7-413a-9a86-0daad288bbac": Object {
+          "api_url": "http://api-default.api-default.svc.cluster.local:3000",
+          "auth_JWT": "Bearer eyJraWQiOiJ2TytRZ1lud0lnOU5pT2Y3azJTNEFEY2xvaDBwVlNUbkNNdDJMOU8xQU1RPSIsImFsZyI6IlJTMjU2In0.eyJhdF9oYXNoIjoicGkzSnB4clpBZWhSYTltT1kwZGhyZyIsInN1YiI6IjQ5NDk3N2MwLTIwYjktNGJkYy1hZTE0LTNmMDU4ZTdkZjMyOCIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwiaXNzIjoiaHR0cHM6XC9cL2NvZ25pdG8taWRwLmV1LXdlc3QtMS5hbWF6b25hd3MuY29tXC9ldS13ZXN0LTFfc1ZRTDE1WXh1IiwiY29nbml0bzp1c2VybmFtZSI6IjQ5NDk3N2MwLTIwYjktNGJkYy1hZTE0LTNmMDU4ZTdkZjMyOCIsImF1ZCI6IjFkdTdhaDlwcmlzbzdwNW9hdmhhMmk5bmpoIiwiZXZlbnRfaWQiOiI5ZDI4ZWIzYy1kZTYyLTQ1MTMtYTNjMi1iNzI5YTFiYWIyYTEiLCJ0b2tlbl91c2UiOiJpZCIsImF1dGhfdGltZSI6MTYzNzIzNTQ0MiwibmFtZSI6IlN0ZWZhbiBCYWJ1a292IiwiZXhwIjoxNjM3MjQyNjQ3LCJpYXQiOjE2MzcyMzkwNDcsImVtYWlsIjoic3RlZmFuQGJpb21hZ2UubmV0In0.QbekNN5hw9UWSNPpjsCrTg2M4r0xsdMyTgjlhtkY89wjhRG2feBZqHtDkw-nMJY476BmRGIBd0q-zCKScAvFH0tNyHEE5DP8UZ-LcJ9k-hP5MgCSTYcwMS06b9jZiS_TAL3Jh_OnJZXjusAYYulaxEsbpjZmTTPqORPyWkGHWCvFypI69HEG5pmfoAYD58wJDRkYLVdI9BNq_Iiopw6766jEtRNepygYqwnpGZyaqYPE_JQCLDRy8ZjmwgHg5uwRA08DxlSsVTW80SW9sKaYgSGteOQNqRrPm0JGFtPbLSatcnc4KWPYXSn4kw4Gj4MVIHvkZoyBvldnO2NV8wUT4A",
+          "auto": true,
+          "defaultFilterSettings": Object {
+            "FDR": 0.01,
+          },
+          "enabled": false,
+          "filterSettings": Object {
+            "FDR": 0.01,
+          },
+          "prefiltered": true,
+        },
+        "enabled": false,
+        "filterSettings": Object {
+          "FDR": 0.01,
+        },
+        "prefiltered": true,
+      },
+      "configureEmbedding": Object {
+        "api_url": "http://api-default.api-default.svc.cluster.local:3000",
+        "auth_JWT": "Bearer eyJraWQiOiJ2TytRZ1lud0lnOU5pT2Y3azJTNEFEY2xvaDBwVlNUbkNNdDJMOU8xQU1RPSIsImFsZyI6IlJTMjU2In0.eyJhdF9oYXNoIjoicGkzSnB4clpBZWhSYTltT1kwZGhyZyIsInN1YiI6IjQ5NDk3N2MwLTIwYjktNGJkYy1hZTE0LTNmMDU4ZTdkZjMyOCIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwiaXNzIjoiaHR0cHM6XC9cL2NvZ25pdG8taWRwLmV1LXdlc3QtMS5hbWF6b25hd3MuY29tXC9ldS13ZXN0LTFfc1ZRTDE1WXh1IiwiY29nbml0bzp1c2VybmFtZSI6IjQ5NDk3N2MwLTIwYjktNGJkYy1hZTE0LTNmMDU4ZTdkZjMyOCIsImF1ZCI6IjFkdTdhaDlwcmlzbzdwNW9hdmhhMmk5bmpoIiwiZXZlbnRfaWQiOiI5ZDI4ZWIzYy1kZTYyLTQ1MTMtYTNjMi1iNzI5YTFiYWIyYTEiLCJ0b2tlbl91c2UiOiJpZCIsImF1dGhfdGltZSI6MTYzNzIzNTQ0MiwibmFtZSI6IlN0ZWZhbiBCYWJ1a292IiwiZXhwIjoxNjM3MjQyNjQ3LCJpYXQiOjE2MzcyMzkwNDcsImVtYWlsIjoic3RlZmFuQGJpb21hZ2UubmV0In0.QbekNN5hw9UWSNPpjsCrTg2M4r0xsdMyTgjlhtkY89wjhRG2feBZqHtDkw-nMJY476BmRGIBd0q-zCKScAvFH0tNyHEE5DP8UZ-LcJ9k-hP5MgCSTYcwMS06b9jZiS_TAL3Jh_OnJZXjusAYYulaxEsbpjZmTTPqORPyWkGHWCvFypI69HEG5pmfoAYD58wJDRkYLVdI9BNq_Iiopw6766jEtRNepygYqwnpGZyaqYPE_JQCLDRy8ZjmwgHg5uwRA08DxlSsVTW80SW9sKaYgSGteOQNqRrPm0JGFtPbLSatcnc4KWPYXSn4kw4Gj4MVIHvkZoyBvldnO2NV8wUT4A",
+        "clusteringSettings": Object {
+          "method": "louvain",
+          "methodSettings": Object {
+            "louvain": Object {
+              "resolution": 0.8,
+            },
+          },
+        },
+        "embeddingSettings": Object {
+          "method": "tsne",
+          "methodSettings": Object {
+            "tsne": Object {
+              "learningRate": 200,
+              "perplexity": 9.18,
+            },
+            "umap": Object {
+              "distanceMetric": "cosine",
+              "minimumDistance": 0.3,
+            },
+          },
+        },
+      },
+      "dataIntegration": Object {
+        "api_url": "http://api-default.api-default.svc.cluster.local:3000",
+        "auth_JWT": "Bearer eyJraWQiOiJ2TytRZ1lud0lnOU5pT2Y3azJTNEFEY2xvaDBwVlNUbkNNdDJMOU8xQU1RPSIsImFsZyI6IlJTMjU2In0.eyJhdF9oYXNoIjoicGkzSnB4clpBZWhSYTltT1kwZGhyZyIsInN1YiI6IjQ5NDk3N2MwLTIwYjktNGJkYy1hZTE0LTNmMDU4ZTdkZjMyOCIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwiaXNzIjoiaHR0cHM6XC9cL2NvZ25pdG8taWRwLmV1LXdlc3QtMS5hbWF6b25hd3MuY29tXC9ldS13ZXN0LTFfc1ZRTDE1WXh1IiwiY29nbml0bzp1c2VybmFtZSI6IjQ5NDk3N2MwLTIwYjktNGJkYy1hZTE0LTNmMDU4ZTdkZjMyOCIsImF1ZCI6IjFkdTdhaDlwcmlzbzdwNW9hdmhhMmk5bmpoIiwiZXZlbnRfaWQiOiI5ZDI4ZWIzYy1kZTYyLTQ1MTMtYTNjMi1iNzI5YTFiYWIyYTEiLCJ0b2tlbl91c2UiOiJpZCIsImF1dGhfdGltZSI6MTYzNzIzNTQ0MiwibmFtZSI6IlN0ZWZhbiBCYWJ1a292IiwiZXhwIjoxNjM3MjQyNjQ3LCJpYXQiOjE2MzcyMzkwNDcsImVtYWlsIjoic3RlZmFuQGJpb21hZ2UubmV0In0.QbekNN5hw9UWSNPpjsCrTg2M4r0xsdMyTgjlhtkY89wjhRG2feBZqHtDkw-nMJY476BmRGIBd0q-zCKScAvFH0tNyHEE5DP8UZ-LcJ9k-hP5MgCSTYcwMS06b9jZiS_TAL3Jh_OnJZXjusAYYulaxEsbpjZmTTPqORPyWkGHWCvFypI69HEG5pmfoAYD58wJDRkYLVdI9BNq_Iiopw6766jEtRNepygYqwnpGZyaqYPE_JQCLDRy8ZjmwgHg5uwRA08DxlSsVTW80SW9sKaYgSGteOQNqRrPm0JGFtPbLSatcnc4KWPYXSn4kw4Gj4MVIHvkZoyBvldnO2NV8wUT4A",
+        "dataIntegration": Object {
+          "method": "harmony",
+          "methodSettings": Object {
+            "fastmnn": Object {
+              "normalisation": "logNormalize",
+              "numGenes": 2000,
+            },
+            "harmony": Object {
+              "normalisation": "logNormalize",
+              "numGenes": 2000,
+            },
+            "seuratv4": Object {
+              "normalisation": "logNormalize",
+              "numGenes": 2000,
+            },
+            "unisample": Object {
+              "normalisation": "logNormalize",
+              "numGenes": 2000,
+            },
+          },
+        },
+        "dimensionalityReduction": Object {
+          "excludeGeneCategories": Array [],
+          "method": "rpca",
+          "numPCs": 30,
+        },
+      },
+      "doubletScores": Object {
+        "auto": true,
+        "b195d304-22a7-413a-9a86-0daad288bbac": Object {
+          "api_url": "http://api-default.api-default.svc.cluster.local:3000",
+          "auth_JWT": "Bearer eyJraWQiOiJ2TytRZ1lud0lnOU5pT2Y3azJTNEFEY2xvaDBwVlNUbkNNdDJMOU8xQU1RPSIsImFsZyI6IlJTMjU2In0.eyJhdF9oYXNoIjoicGkzSnB4clpBZWhSYTltT1kwZGhyZyIsInN1YiI6IjQ5NDk3N2MwLTIwYjktNGJkYy1hZTE0LTNmMDU4ZTdkZjMyOCIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwiaXNzIjoiaHR0cHM6XC9cL2NvZ25pdG8taWRwLmV1LXdlc3QtMS5hbWF6b25hd3MuY29tXC9ldS13ZXN0LTFfc1ZRTDE1WXh1IiwiY29nbml0bzp1c2VybmFtZSI6IjQ5NDk3N2MwLTIwYjktNGJkYy1hZTE0LTNmMDU4ZTdkZjMyOCIsImF1ZCI6IjFkdTdhaDlwcmlzbzdwNW9hdmhhMmk5bmpoIiwiZXZlbnRfaWQiOiI5ZDI4ZWIzYy1kZTYyLTQ1MTMtYTNjMi1iNzI5YTFiYWIyYTEiLCJ0b2tlbl91c2UiOiJpZCIsImF1dGhfdGltZSI6MTYzNzIzNTQ0MiwibmFtZSI6IlN0ZWZhbiBCYWJ1a292IiwiZXhwIjoxNjM3MjQyNjQ3LCJpYXQiOjE2MzcyMzkwNDcsImVtYWlsIjoic3RlZmFuQGJpb21hZ2UubmV0In0.QbekNN5hw9UWSNPpjsCrTg2M4r0xsdMyTgjlhtkY89wjhRG2feBZqHtDkw-nMJY476BmRGIBd0q-zCKScAvFH0tNyHEE5DP8UZ-LcJ9k-hP5MgCSTYcwMS06b9jZiS_TAL3Jh_OnJZXjusAYYulaxEsbpjZmTTPqORPyWkGHWCvFypI69HEG5pmfoAYD58wJDRkYLVdI9BNq_Iiopw6766jEtRNepygYqwnpGZyaqYPE_JQCLDRy8ZjmwgHg5uwRA08DxlSsVTW80SW9sKaYgSGteOQNqRrPm0JGFtPbLSatcnc4KWPYXSn4kw4Gj4MVIHvkZoyBvldnO2NV8wUT4A",
+          "auto": true,
+          "defaultFilterSettings": Object {
+            "binStep": 0.05,
+            "probabilityThreshold": 0.7622447,
+          },
+          "enabled": true,
+          "filterSettings": Object {
+            "binStep": 0.05,
+            "probabilityThreshold": 0.7622447,
+          },
+        },
+        "enabled": true,
+        "filterSettings": Object {
+          "binStep": 0.05,
+          "probabilityThreshold": 0.5,
+        },
+      },
+      "mitochondrialContent": Object {
+        "auto": true,
+        "b195d304-22a7-413a-9a86-0daad288bbac": Object {
+          "api_url": "http://api-default.api-default.svc.cluster.local:3000",
+          "auth_JWT": "Bearer eyJraWQiOiJ2TytRZ1lud0lnOU5pT2Y3azJTNEFEY2xvaDBwVlNUbkNNdDJMOU8xQU1RPSIsImFsZyI6IlJTMjU2In0.eyJhdF9oYXNoIjoicGkzSnB4clpBZWhSYTltT1kwZGhyZyIsInN1YiI6IjQ5NDk3N2MwLTIwYjktNGJkYy1hZTE0LTNmMDU4ZTdkZjMyOCIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwiaXNzIjoiaHR0cHM6XC9cL2NvZ25pdG8taWRwLmV1LXdlc3QtMS5hbWF6b25hd3MuY29tXC9ldS13ZXN0LTFfc1ZRTDE1WXh1IiwiY29nbml0bzp1c2VybmFtZSI6IjQ5NDk3N2MwLTIwYjktNGJkYy1hZTE0LTNmMDU4ZTdkZjMyOCIsImF1ZCI6IjFkdTdhaDlwcmlzbzdwNW9hdmhhMmk5bmpoIiwiZXZlbnRfaWQiOiI5ZDI4ZWIzYy1kZTYyLTQ1MTMtYTNjMi1iNzI5YTFiYWIyYTEiLCJ0b2tlbl91c2UiOiJpZCIsImF1dGhfdGltZSI6MTYzNzIzNTQ0MiwibmFtZSI6IlN0ZWZhbiBCYWJ1a292IiwiZXhwIjoxNjM3MjQyNjQ3LCJpYXQiOjE2MzcyMzkwNDcsImVtYWlsIjoic3RlZmFuQGJpb21hZ2UubmV0In0.QbekNN5hw9UWSNPpjsCrTg2M4r0xsdMyTgjlhtkY89wjhRG2feBZqHtDkw-nMJY476BmRGIBd0q-zCKScAvFH0tNyHEE5DP8UZ-LcJ9k-hP5MgCSTYcwMS06b9jZiS_TAL3Jh_OnJZXjusAYYulaxEsbpjZmTTPqORPyWkGHWCvFypI69HEG5pmfoAYD58wJDRkYLVdI9BNq_Iiopw6766jEtRNepygYqwnpGZyaqYPE_JQCLDRy8ZjmwgHg5uwRA08DxlSsVTW80SW9sKaYgSGteOQNqRrPm0JGFtPbLSatcnc4KWPYXSn4kw4Gj4MVIHvkZoyBvldnO2NV8wUT4A",
+          "auto": false,
+          "defaultFilterSettings": Object {
+            "method": "absolute_threshold",
+            "methodSettings": Object {
+              "absolute_threshold": Object {
+                "binStep": 0.05,
+                "maxFraction": 0.1,
+              },
+            },
+          },
+          "enabled": true,
+          "filterSettings": Object {
+            "method": "absolute_threshold",
+            "methodSettings": Object {
+              "absolute_threshold": Object {
+                "binStep": 0.05,
+                "maxFraction": 0.18,
+              },
+            },
+          },
+        },
+        "enabled": true,
+        "filterSettings": Object {
+          "method": "absolute_threshold",
+          "methodSettings": Object {
+            "absolute_threshold": Object {
+              "binStep": 0.05,
+              "maxFraction": 0.1,
+            },
+          },
+        },
+      },
+      "numGenesVsNumUmis": Object {
+        "auto": true,
+        "b195d304-22a7-413a-9a86-0daad288bbac": Object {
+          "api_url": "http://api-default.api-default.svc.cluster.local:3000",
+          "auth_JWT": "Bearer eyJraWQiOiJ2TytRZ1lud0lnOU5pT2Y3azJTNEFEY2xvaDBwVlNUbkNNdDJMOU8xQU1RPSIsImFsZyI6IlJTMjU2In0.eyJhdF9oYXNoIjoicGkzSnB4clpBZWhSYTltT1kwZGhyZyIsInN1YiI6IjQ5NDk3N2MwLTIwYjktNGJkYy1hZTE0LTNmMDU4ZTdkZjMyOCIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwiaXNzIjoiaHR0cHM6XC9cL2NvZ25pdG8taWRwLmV1LXdlc3QtMS5hbWF6b25hd3MuY29tXC9ldS13ZXN0LTFfc1ZRTDE1WXh1IiwiY29nbml0bzp1c2VybmFtZSI6IjQ5NDk3N2MwLTIwYjktNGJkYy1hZTE0LTNmMDU4ZTdkZjMyOCIsImF1ZCI6IjFkdTdhaDlwcmlzbzdwNW9hdmhhMmk5bmpoIiwiZXZlbnRfaWQiOiI5ZDI4ZWIzYy1kZTYyLTQ1MTMtYTNjMi1iNzI5YTFiYWIyYTEiLCJ0b2tlbl91c2UiOiJpZCIsImF1dGhfdGltZSI6MTYzNzIzNTQ0MiwibmFtZSI6IlN0ZWZhbiBCYWJ1a292IiwiZXhwIjoxNjM3MjQyNjQ3LCJpYXQiOjE2MzcyMzkwNDcsImVtYWlsIjoic3RlZmFuQGJpb21hZ2UubmV0In0.QbekNN5hw9UWSNPpjsCrTg2M4r0xsdMyTgjlhtkY89wjhRG2feBZqHtDkw-nMJY476BmRGIBd0q-zCKScAvFH0tNyHEE5DP8UZ-LcJ9k-hP5MgCSTYcwMS06b9jZiS_TAL3Jh_OnJZXjusAYYulaxEsbpjZmTTPqORPyWkGHWCvFypI69HEG5pmfoAYD58wJDRkYLVdI9BNq_Iiopw6766jEtRNepygYqwnpGZyaqYPE_JQCLDRy8ZjmwgHg5uwRA08DxlSsVTW80SW9sKaYgSGteOQNqRrPm0JGFtPbLSatcnc4KWPYXSn4kw4Gj4MVIHvkZoyBvldnO2NV8wUT4A",
+          "auto": true,
+          "defaultFilterSettings": Object {
+            "regressionType": "linear",
+            "regressionTypeSettings": Object {
+              "linear": Object {
+                "p.level": 0.001,
+              },
+              "spline": Object {
+                "p.level": 0.001,
+              },
+            },
+          },
+          "enabled": true,
+          "filterSettings": Object {
+            "regressionType": "linear",
+            "regressionTypeSettings": Object {
+              "linear": Object {
+                "p.level": 0.001,
+              },
+              "spline": Object {
+                "p.level": 0.001,
+              },
+            },
+          },
+        },
+        "enabled": true,
+        "filterSettings": Object {
+          "regressionType": "linear",
+          "regressionTypeSettings": Object {
+            "linear": Object {
+              "p.level": 0.001,
+            },
+            "spline": Object {
+              "p.level": 0.001,
+            },
+          },
+        },
+      },
+    },
+    "processing": Object {
+      "cellSizeDistribution": Object {
+        "auto": true,
+        "b195d304-22a7-413a-9a86-0daad288bbac": Object {
+          "api_url": "http://api-default.api-default.svc.cluster.local:3000",
+          "auth_JWT": "Bearer eyJraWQiOiJ2TytRZ1lud0lnOU5pT2Y3azJTNEFEY2xvaDBwVlNUbkNNdDJMOU8xQU1RPSIsImFsZyI6IlJTMjU2In0.eyJhdF9oYXNoIjoicGkzSnB4clpBZWhSYTltT1kwZGhyZyIsInN1YiI6IjQ5NDk3N2MwLTIwYjktNGJkYy1hZTE0LTNmMDU4ZTdkZjMyOCIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwiaXNzIjoiaHR0cHM6XC9cL2NvZ25pdG8taWRwLmV1LXdlc3QtMS5hbWF6b25hd3MuY29tXC9ldS13ZXN0LTFfc1ZRTDE1WXh1IiwiY29nbml0bzp1c2VybmFtZSI6IjQ5NDk3N2MwLTIwYjktNGJkYy1hZTE0LTNmMDU4ZTdkZjMyOCIsImF1ZCI6IjFkdTdhaDlwcmlzbzdwNW9hdmhhMmk5bmpoIiwiZXZlbnRfaWQiOiI5ZDI4ZWIzYy1kZTYyLTQ1MTMtYTNjMi1iNzI5YTFiYWIyYTEiLCJ0b2tlbl91c2UiOiJpZCIsImF1dGhfdGltZSI6MTYzNzIzNTQ0MiwibmFtZSI6IlN0ZWZhbiBCYWJ1a292IiwiZXhwIjoxNjM3MjQyNjQ3LCJpYXQiOjE2MzcyMzkwNDcsImVtYWlsIjoic3RlZmFuQGJpb21hZ2UubmV0In0.QbekNN5hw9UWSNPpjsCrTg2M4r0xsdMyTgjlhtkY89wjhRG2feBZqHtDkw-nMJY476BmRGIBd0q-zCKScAvFH0tNyHEE5DP8UZ-LcJ9k-hP5MgCSTYcwMS06b9jZiS_TAL3Jh_OnJZXjusAYYulaxEsbpjZmTTPqORPyWkGHWCvFypI69HEG5pmfoAYD58wJDRkYLVdI9BNq_Iiopw6766jEtRNepygYqwnpGZyaqYPE_JQCLDRy8ZjmwgHg5uwRA08DxlSsVTW80SW9sKaYgSGteOQNqRrPm0JGFtPbLSatcnc4KWPYXSn4kw4Gj4MVIHvkZoyBvldnO2NV8wUT4A",
+          "auto": true,
+          "defaultFilterSettings": Object {
+            "binStep": 200,
+            "minCellSize": 516,
+          },
+          "enabled": false,
+          "filterSettings": Object {
+            "binStep": 200,
+            "minCellSize": 516,
+          },
+        },
+        "enabled": false,
+        "filterSettings": Object {
+          "binStep": 200,
+          "minCellSize": 1080,
+        },
+      },
+      "classifier": Object {
+        "auto": true,
+        "b195d304-22a7-413a-9a86-0daad288bbac": Object {
+          "api_url": "http://api-default.api-default.svc.cluster.local:3000",
+          "auth_JWT": "Bearer eyJraWQiOiJ2TytRZ1lud0lnOU5pT2Y3azJTNEFEY2xvaDBwVlNUbkNNdDJMOU8xQU1RPSIsImFsZyI6IlJTMjU2In0.eyJhdF9oYXNoIjoicGkzSnB4clpBZWhSYTltT1kwZGhyZyIsInN1YiI6IjQ5NDk3N2MwLTIwYjktNGJkYy1hZTE0LTNmMDU4ZTdkZjMyOCIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwiaXNzIjoiaHR0cHM6XC9cL2NvZ25pdG8taWRwLmV1LXdlc3QtMS5hbWF6b25hd3MuY29tXC9ldS13ZXN0LTFfc1ZRTDE1WXh1IiwiY29nbml0bzp1c2VybmFtZSI6IjQ5NDk3N2MwLTIwYjktNGJkYy1hZTE0LTNmMDU4ZTdkZjMyOCIsImF1ZCI6IjFkdTdhaDlwcmlzbzdwNW9hdmhhMmk5bmpoIiwiZXZlbnRfaWQiOiI5ZDI4ZWIzYy1kZTYyLTQ1MTMtYTNjMi1iNzI5YTFiYWIyYTEiLCJ0b2tlbl91c2UiOiJpZCIsImF1dGhfdGltZSI6MTYzNzIzNTQ0MiwibmFtZSI6IlN0ZWZhbiBCYWJ1a292IiwiZXhwIjoxNjM3MjQyNjQ3LCJpYXQiOjE2MzcyMzkwNDcsImVtYWlsIjoic3RlZmFuQGJpb21hZ2UubmV0In0.QbekNN5hw9UWSNPpjsCrTg2M4r0xsdMyTgjlhtkY89wjhRG2feBZqHtDkw-nMJY476BmRGIBd0q-zCKScAvFH0tNyHEE5DP8UZ-LcJ9k-hP5MgCSTYcwMS06b9jZiS_TAL3Jh_OnJZXjusAYYulaxEsbpjZmTTPqORPyWkGHWCvFypI69HEG5pmfoAYD58wJDRkYLVdI9BNq_Iiopw6766jEtRNepygYqwnpGZyaqYPE_JQCLDRy8ZjmwgHg5uwRA08DxlSsVTW80SW9sKaYgSGteOQNqRrPm0JGFtPbLSatcnc4KWPYXSn4kw4Gj4MVIHvkZoyBvldnO2NV8wUT4A",
+          "auto": true,
+          "defaultFilterSettings": Object {
+            "FDR": 0.01,
+          },
+          "enabled": false,
+          "filterSettings": Object {
+            "FDR": 0.01,
+          },
+          "prefiltered": true,
+        },
+        "enabled": false,
+        "filterSettings": Object {
+          "FDR": 0.01,
+        },
+        "prefiltered": true,
+      },
+      "configureEmbedding": Object {
+        "api_url": "http://api-default.api-default.svc.cluster.local:3000",
+        "auth_JWT": "Bearer eyJraWQiOiJ2TytRZ1lud0lnOU5pT2Y3azJTNEFEY2xvaDBwVlNUbkNNdDJMOU8xQU1RPSIsImFsZyI6IlJTMjU2In0.eyJhdF9oYXNoIjoicGkzSnB4clpBZWhSYTltT1kwZGhyZyIsInN1YiI6IjQ5NDk3N2MwLTIwYjktNGJkYy1hZTE0LTNmMDU4ZTdkZjMyOCIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwiaXNzIjoiaHR0cHM6XC9cL2NvZ25pdG8taWRwLmV1LXdlc3QtMS5hbWF6b25hd3MuY29tXC9ldS13ZXN0LTFfc1ZRTDE1WXh1IiwiY29nbml0bzp1c2VybmFtZSI6IjQ5NDk3N2MwLTIwYjktNGJkYy1hZTE0LTNmMDU4ZTdkZjMyOCIsImF1ZCI6IjFkdTdhaDlwcmlzbzdwNW9hdmhhMmk5bmpoIiwiZXZlbnRfaWQiOiI5ZDI4ZWIzYy1kZTYyLTQ1MTMtYTNjMi1iNzI5YTFiYWIyYTEiLCJ0b2tlbl91c2UiOiJpZCIsImF1dGhfdGltZSI6MTYzNzIzNTQ0MiwibmFtZSI6IlN0ZWZhbiBCYWJ1a292IiwiZXhwIjoxNjM3MjQyNjQ3LCJpYXQiOjE2MzcyMzkwNDcsImVtYWlsIjoic3RlZmFuQGJpb21hZ2UubmV0In0.QbekNN5hw9UWSNPpjsCrTg2M4r0xsdMyTgjlhtkY89wjhRG2feBZqHtDkw-nMJY476BmRGIBd0q-zCKScAvFH0tNyHEE5DP8UZ-LcJ9k-hP5MgCSTYcwMS06b9jZiS_TAL3Jh_OnJZXjusAYYulaxEsbpjZmTTPqORPyWkGHWCvFypI69HEG5pmfoAYD58wJDRkYLVdI9BNq_Iiopw6766jEtRNepygYqwnpGZyaqYPE_JQCLDRy8ZjmwgHg5uwRA08DxlSsVTW80SW9sKaYgSGteOQNqRrPm0JGFtPbLSatcnc4KWPYXSn4kw4Gj4MVIHvkZoyBvldnO2NV8wUT4A",
+        "clusteringSettings": Object {
+          "method": "louvain",
+          "methodSettings": Object {
+            "louvain": Object {
+              "resolution": 0.8,
+            },
+          },
+        },
+        "embeddingSettings": Object {
+          "method": "tsne",
+          "methodSettings": Object {
+            "tsne": Object {
+              "learningRate": 200,
+              "perplexity": 9.18,
+            },
+            "umap": Object {
+              "distanceMetric": "cosine",
+              "minimumDistance": 0.3,
+            },
+          },
+        },
+      },
+      "dataIntegration": Object {
+        "api_url": "http://api-default.api-default.svc.cluster.local:3000",
+        "auth_JWT": "Bearer eyJraWQiOiJ2TytRZ1lud0lnOU5pT2Y3azJTNEFEY2xvaDBwVlNUbkNNdDJMOU8xQU1RPSIsImFsZyI6IlJTMjU2In0.eyJhdF9oYXNoIjoicGkzSnB4clpBZWhSYTltT1kwZGhyZyIsInN1YiI6IjQ5NDk3N2MwLTIwYjktNGJkYy1hZTE0LTNmMDU4ZTdkZjMyOCIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwiaXNzIjoiaHR0cHM6XC9cL2NvZ25pdG8taWRwLmV1LXdlc3QtMS5hbWF6b25hd3MuY29tXC9ldS13ZXN0LTFfc1ZRTDE1WXh1IiwiY29nbml0bzp1c2VybmFtZSI6IjQ5NDk3N2MwLTIwYjktNGJkYy1hZTE0LTNmMDU4ZTdkZjMyOCIsImF1ZCI6IjFkdTdhaDlwcmlzbzdwNW9hdmhhMmk5bmpoIiwiZXZlbnRfaWQiOiI5ZDI4ZWIzYy1kZTYyLTQ1MTMtYTNjMi1iNzI5YTFiYWIyYTEiLCJ0b2tlbl91c2UiOiJpZCIsImF1dGhfdGltZSI6MTYzNzIzNTQ0MiwibmFtZSI6IlN0ZWZhbiBCYWJ1a292IiwiZXhwIjoxNjM3MjQyNjQ3LCJpYXQiOjE2MzcyMzkwNDcsImVtYWlsIjoic3RlZmFuQGJpb21hZ2UubmV0In0.QbekNN5hw9UWSNPpjsCrTg2M4r0xsdMyTgjlhtkY89wjhRG2feBZqHtDkw-nMJY476BmRGIBd0q-zCKScAvFH0tNyHEE5DP8UZ-LcJ9k-hP5MgCSTYcwMS06b9jZiS_TAL3Jh_OnJZXjusAYYulaxEsbpjZmTTPqORPyWkGHWCvFypI69HEG5pmfoAYD58wJDRkYLVdI9BNq_Iiopw6766jEtRNepygYqwnpGZyaqYPE_JQCLDRy8ZjmwgHg5uwRA08DxlSsVTW80SW9sKaYgSGteOQNqRrPm0JGFtPbLSatcnc4KWPYXSn4kw4Gj4MVIHvkZoyBvldnO2NV8wUT4A",
+        "dataIntegration": Object {
+          "method": "harmony",
+          "methodSettings": Object {
+            "fastmnn": Object {
+              "normalisation": "logNormalize",
+              "numGenes": 2000,
+            },
+            "harmony": Object {
+              "normalisation": "logNormalize",
+              "numGenes": 2000,
+            },
+            "seuratv4": Object {
+              "normalisation": "logNormalize",
+              "numGenes": 2000,
+            },
+            "unisample": Object {
+              "normalisation": "logNormalize",
+              "numGenes": 2000,
+            },
+          },
+        },
+        "dimensionalityReduction": Object {
+          "excludeGeneCategories": Array [],
+          "method": "rpca",
+          "numPCs": 30,
+        },
+      },
+      "doubletScores": Object {
+        "auto": true,
+        "b195d304-22a7-413a-9a86-0daad288bbac": Object {
+          "api_url": "http://api-default.api-default.svc.cluster.local:3000",
+          "auth_JWT": "Bearer eyJraWQiOiJ2TytRZ1lud0lnOU5pT2Y3azJTNEFEY2xvaDBwVlNUbkNNdDJMOU8xQU1RPSIsImFsZyI6IlJTMjU2In0.eyJhdF9oYXNoIjoicGkzSnB4clpBZWhSYTltT1kwZGhyZyIsInN1YiI6IjQ5NDk3N2MwLTIwYjktNGJkYy1hZTE0LTNmMDU4ZTdkZjMyOCIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwiaXNzIjoiaHR0cHM6XC9cL2NvZ25pdG8taWRwLmV1LXdlc3QtMS5hbWF6b25hd3MuY29tXC9ldS13ZXN0LTFfc1ZRTDE1WXh1IiwiY29nbml0bzp1c2VybmFtZSI6IjQ5NDk3N2MwLTIwYjktNGJkYy1hZTE0LTNmMDU4ZTdkZjMyOCIsImF1ZCI6IjFkdTdhaDlwcmlzbzdwNW9hdmhhMmk5bmpoIiwiZXZlbnRfaWQiOiI5ZDI4ZWIzYy1kZTYyLTQ1MTMtYTNjMi1iNzI5YTFiYWIyYTEiLCJ0b2tlbl91c2UiOiJpZCIsImF1dGhfdGltZSI6MTYzNzIzNTQ0MiwibmFtZSI6IlN0ZWZhbiBCYWJ1a292IiwiZXhwIjoxNjM3MjQyNjQ3LCJpYXQiOjE2MzcyMzkwNDcsImVtYWlsIjoic3RlZmFuQGJpb21hZ2UubmV0In0.QbekNN5hw9UWSNPpjsCrTg2M4r0xsdMyTgjlhtkY89wjhRG2feBZqHtDkw-nMJY476BmRGIBd0q-zCKScAvFH0tNyHEE5DP8UZ-LcJ9k-hP5MgCSTYcwMS06b9jZiS_TAL3Jh_OnJZXjusAYYulaxEsbpjZmTTPqORPyWkGHWCvFypI69HEG5pmfoAYD58wJDRkYLVdI9BNq_Iiopw6766jEtRNepygYqwnpGZyaqYPE_JQCLDRy8ZjmwgHg5uwRA08DxlSsVTW80SW9sKaYgSGteOQNqRrPm0JGFtPbLSatcnc4KWPYXSn4kw4Gj4MVIHvkZoyBvldnO2NV8wUT4A",
+          "auto": true,
+          "defaultFilterSettings": Object {
+            "binStep": 0.05,
+            "probabilityThreshold": 0.7622447,
+          },
+          "enabled": true,
+          "filterSettings": Object {
+            "binStep": 0.05,
+            "probabilityThreshold": 0.7622447,
+          },
+        },
+        "enabled": true,
+        "filterSettings": Object {
+          "binStep": 0.05,
+          "probabilityThreshold": 0.5,
+        },
+      },
+      "meta": Object {
+        "changedQCFilters": "Set()",
+        "completingStepError": false,
+        "loading": false,
+        "loadingSettingsError": false,
+        "selectedConfigureEmbeddingPlot": "cellCluster",
+        "stepsDone": "Set()",
+      },
+      "mitochondrialContent": Object {
+        "auto": true,
+        "b195d304-22a7-413a-9a86-0daad288bbac": Object {
+          "api_url": "http://api-default.api-default.svc.cluster.local:3000",
+          "auth_JWT": "Bearer eyJraWQiOiJ2TytRZ1lud0lnOU5pT2Y3azJTNEFEY2xvaDBwVlNUbkNNdDJMOU8xQU1RPSIsImFsZyI6IlJTMjU2In0.eyJhdF9oYXNoIjoicGkzSnB4clpBZWhSYTltT1kwZGhyZyIsInN1YiI6IjQ5NDk3N2MwLTIwYjktNGJkYy1hZTE0LTNmMDU4ZTdkZjMyOCIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwiaXNzIjoiaHR0cHM6XC9cL2NvZ25pdG8taWRwLmV1LXdlc3QtMS5hbWF6b25hd3MuY29tXC9ldS13ZXN0LTFfc1ZRTDE1WXh1IiwiY29nbml0bzp1c2VybmFtZSI6IjQ5NDk3N2MwLTIwYjktNGJkYy1hZTE0LTNmMDU4ZTdkZjMyOCIsImF1ZCI6IjFkdTdhaDlwcmlzbzdwNW9hdmhhMmk5bmpoIiwiZXZlbnRfaWQiOiI5ZDI4ZWIzYy1kZTYyLTQ1MTMtYTNjMi1iNzI5YTFiYWIyYTEiLCJ0b2tlbl91c2UiOiJpZCIsImF1dGhfdGltZSI6MTYzNzIzNTQ0MiwibmFtZSI6IlN0ZWZhbiBCYWJ1a292IiwiZXhwIjoxNjM3MjQyNjQ3LCJpYXQiOjE2MzcyMzkwNDcsImVtYWlsIjoic3RlZmFuQGJpb21hZ2UubmV0In0.QbekNN5hw9UWSNPpjsCrTg2M4r0xsdMyTgjlhtkY89wjhRG2feBZqHtDkw-nMJY476BmRGIBd0q-zCKScAvFH0tNyHEE5DP8UZ-LcJ9k-hP5MgCSTYcwMS06b9jZiS_TAL3Jh_OnJZXjusAYYulaxEsbpjZmTTPqORPyWkGHWCvFypI69HEG5pmfoAYD58wJDRkYLVdI9BNq_Iiopw6766jEtRNepygYqwnpGZyaqYPE_JQCLDRy8ZjmwgHg5uwRA08DxlSsVTW80SW9sKaYgSGteOQNqRrPm0JGFtPbLSatcnc4KWPYXSn4kw4Gj4MVIHvkZoyBvldnO2NV8wUT4A",
+          "auto": false,
+          "defaultFilterSettings": Object {
+            "method": "absolute_threshold",
+            "methodSettings": Object {
+              "absolute_threshold": Object {
+                "binStep": 0.05,
+                "maxFraction": 0.1,
+              },
+            },
+          },
+          "enabled": true,
+          "filterSettings": Object {
+            "method": "absolute_threshold",
+            "methodSettings": Object {
+              "absolute_threshold": Object {
+                "binStep": 0.05,
+                "maxFraction": 0.18,
+              },
+            },
+          },
+        },
+        "enabled": true,
+        "filterSettings": Object {
+          "method": "absolute_threshold",
+          "methodSettings": Object {
+            "absolute_threshold": Object {
+              "binStep": 0.05,
+              "maxFraction": 0.1,
+            },
+          },
+        },
+      },
+      "numGenesVsNumUmis": Object {
+        "auto": true,
+        "b195d304-22a7-413a-9a86-0daad288bbac": Object {
+          "api_url": "http://api-default.api-default.svc.cluster.local:3000",
+          "auth_JWT": "Bearer eyJraWQiOiJ2TytRZ1lud0lnOU5pT2Y3azJTNEFEY2xvaDBwVlNUbkNNdDJMOU8xQU1RPSIsImFsZyI6IlJTMjU2In0.eyJhdF9oYXNoIjoicGkzSnB4clpBZWhSYTltT1kwZGhyZyIsInN1YiI6IjQ5NDk3N2MwLTIwYjktNGJkYy1hZTE0LTNmMDU4ZTdkZjMyOCIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwiaXNzIjoiaHR0cHM6XC9cL2NvZ25pdG8taWRwLmV1LXdlc3QtMS5hbWF6b25hd3MuY29tXC9ldS13ZXN0LTFfc1ZRTDE1WXh1IiwiY29nbml0bzp1c2VybmFtZSI6IjQ5NDk3N2MwLTIwYjktNGJkYy1hZTE0LTNmMDU4ZTdkZjMyOCIsImF1ZCI6IjFkdTdhaDlwcmlzbzdwNW9hdmhhMmk5bmpoIiwiZXZlbnRfaWQiOiI5ZDI4ZWIzYy1kZTYyLTQ1MTMtYTNjMi1iNzI5YTFiYWIyYTEiLCJ0b2tlbl91c2UiOiJpZCIsImF1dGhfdGltZSI6MTYzNzIzNTQ0MiwibmFtZSI6IlN0ZWZhbiBCYWJ1a292IiwiZXhwIjoxNjM3MjQyNjQ3LCJpYXQiOjE2MzcyMzkwNDcsImVtYWlsIjoic3RlZmFuQGJpb21hZ2UubmV0In0.QbekNN5hw9UWSNPpjsCrTg2M4r0xsdMyTgjlhtkY89wjhRG2feBZqHtDkw-nMJY476BmRGIBd0q-zCKScAvFH0tNyHEE5DP8UZ-LcJ9k-hP5MgCSTYcwMS06b9jZiS_TAL3Jh_OnJZXjusAYYulaxEsbpjZmTTPqORPyWkGHWCvFypI69HEG5pmfoAYD58wJDRkYLVdI9BNq_Iiopw6766jEtRNepygYqwnpGZyaqYPE_JQCLDRy8ZjmwgHg5uwRA08DxlSsVTW80SW9sKaYgSGteOQNqRrPm0JGFtPbLSatcnc4KWPYXSn4kw4Gj4MVIHvkZoyBvldnO2NV8wUT4A",
+          "auto": true,
+          "defaultFilterSettings": Object {
+            "regressionType": "linear",
+            "regressionTypeSettings": Object {
+              "linear": Object {
+                "p.level": 0.001,
+              },
+              "spline": Object {
+                "p.level": 0.001,
+              },
+            },
+          },
+          "enabled": true,
+          "filterSettings": Object {
+            "regressionType": "linear",
+            "regressionTypeSettings": Object {
+              "linear": Object {
+                "p.level": 0.001,
+              },
+              "spline": Object {
+                "p.level": 0.001,
+              },
+            },
+          },
+        },
+        "enabled": true,
+        "filterSettings": Object {
+          "regressionType": "linear",
+          "regressionTypeSettings": Object {
+            "linear": Object {
+              "p.level": 0.001,
+            },
+            "spline": Object {
+              "p.level": 0.001,
+            },
+          },
+        },
+      },
+    },
+  },
+  "experiments": Object {
+    "ids": Array [],
+    "meta": Object {
+      "error": false,
+      "loading": false,
+      "saving": false,
+    },
+  },
+  "genes": Object {
+    "expression": Object {
+      "data": Object {},
+      "error": false,
+      "loading": Array [],
+      "views": Object {},
+    },
+    "focused": undefined,
+    "markers": Object {
+      "error": false,
+      "loading": false,
+    },
+    "properties": Object {
+      "data": Object {},
+      "loading": Array [],
+      "views": Object {},
+    },
+    "selected": Array [],
+  },
+  "layout": Object {
+    "panel": "Gene list",
+    "windows": Object {
+      "direction": "row",
+      "first": Object {
+        "direction": "column",
+        "first": Object {
+          "direction": "row",
+          "first": "UMAP",
+          "second": "Data Management",
+          "splitPercentage": 60,
+        },
+        "second": "Heatmap",
+        "splitPercentage": 50,
+      },
+      "second": "Genes",
+      "splitPercentage": 70,
+    },
+  },
+  "networkResources": Object {
+    "environment": "staging",
+  },
+  "projects": Object {
+    "ids": Array [],
+    "meta": Object {
+      "activeProjectUuid": null,
+      "error": false,
+      "loading": true,
+      "saving": false,
+    },
+  },
+  "samples": Object {
+    "meta": Object {
+      "error": false,
+      "loading": false,
+      "saving": false,
+    },
+  },
+}
+`;

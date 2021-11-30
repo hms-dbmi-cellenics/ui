@@ -1,10 +1,12 @@
 import moment from 'moment';
 import Amplify, { Storage } from 'aws-amplify';
 
-import connectionPromise from '../socketConnection';
-import WorkResponseError from '../WorkResponseError';
-import getAuthJWT from '../getAuthJWT';
-import WorkTimeoutError from '../WorkTimeoutError';
+import connectionPromise from 'utils/socketConnection';
+import WorkResponseError from 'utils/WorkResponseError';
+import getAuthJWT from 'utils/getAuthJWT';
+import WorkTimeoutError from 'utils/WorkTimeoutError';
+
+import unpackResult from 'utils/work/unpackResult';
 
 const seekFromS3 = async (ETag) => {
   const configuredBucket = Amplify.configure().Storage.AWSS3.bucket;
@@ -20,9 +22,7 @@ const seekFromS3 = async (ETag) => {
     return null;
   }
 
-  const response = await storageResp.json();
-
-  return response;
+  return unpackResult(storageResp);
 };
 
 const seekFromAPI = async (
