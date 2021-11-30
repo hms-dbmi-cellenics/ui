@@ -132,7 +132,7 @@ const WrappedApp = ({ Component, pageProps }) => {
     return (
       <AppRouteProvider>
         <ContentWrapper
-          experimentId={experimentId}
+          routeExperimentId={experimentId}
           experimentData={experimentData}
         >
           <Component

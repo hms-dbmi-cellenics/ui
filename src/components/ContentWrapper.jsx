@@ -12,7 +12,7 @@ import {
   Typography,
 } from 'antd';
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { Auth } from 'aws-amplify';
@@ -40,20 +40,37 @@ const ContentWrapper = (props) => {
   const [isAuth, setIsAuth] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
 
-  const { experimentId, experimentData, children } = props;
+  const { routeExperimentId, experimentData, children } = props;
   const router = useRouter();
   const route = router?.route || '';
   const navigateTo = useAppRouter();
 
-  const experiment = useSelector((state) => state?.experiments[experimentId]);
+  const experiment = useSelector((state) => state?.experiments[routeExperimentId]);
   const experimentName = experimentData?.experimentName || experiment?.name;
+  const currentExperimentRef = useRef(routeExperimentId);
+  const activeProjectUuid = useSelector((state) => state?.projects.meta?.activeProjectUuid);
+  const activeProjectExperiment = useSelector((state) => (
+    state?.projects[activeProjectUuid]?.experiments[0]));
 
+  // if the current selected project experiment is processed
+  // and we are in data-management, we don't have experimentId
+
+  useEffect(() => {
+    if (routeExperimentId && activeProjectExperiment.current !== routeExperimentId) {
+      currentExperimentRef.current = routeExperimentId;
+      return;
+    }
+    if (!routeExperimentId && currentExperimentRef.current !== activeProjectExperiment) {
+      currentExperimentRef.current = activeProjectExperiment;
+    }
+  }, [routeExperimentId, activeProjectExperiment]);
+
+  const currentExperiment = currentExperimentRef.current;
   const {
     loading: backendLoading,
     error: backendError,
     status: backendStatus,
-  } = useSelector(getBackendStatus(experimentId));
-
+  } = useSelector(getBackendStatus(currentExperiment));
   const backendErrors = [pipelineStatus.FAILED, pipelineStatus.TIMED_OUT, pipelineStatus.ABORTED];
 
   const pipelineStatusKey = backendStatus?.pipeline?.status;
@@ -73,8 +90,8 @@ const ContentWrapper = (props) => {
   const [backendStatusRequested, setBackendStatusRequested] = useState(false);
 
   useEffect(() => {
-    if (!experimentId) return;
-    if (!backendLoading) dispatch(loadBackendStatus(experimentId));
+    if (!currentExperiment) return;
+    if (!backendLoading) dispatch(loadBackendStatus(currentExperiment));
     (async () => {
       const io = await connectionPromise;
       const cb = experimentUpdatesHandler(dispatch);
@@ -83,9 +100,9 @@ const ContentWrapper = (props) => {
       // experiment.
       io.off();
 
-      io.on(`ExperimentUpdates-${experimentId}`, (update) => cb(experimentId, update));
+      io.on(`ExperimentUpdates-${currentExperiment}`, (update) => cb(currentExperiment, update));
     })();
-  }, [experimentId]);
+  }, [currentExperiment]);
 
   useEffect(() => {
     if (backendStatusRequested) {
@@ -235,7 +252,7 @@ const ContentWrapper = (props) => {
     && pipelineStatusKey === pipelineStatus.NOT_CREATED;
 
   const renderContent = () => {
-    if (experimentId) {
+    if (routeExperimentId) {
       if (
         backendLoading || !backendStatusRequested) {
         return <PreloadContent />;
@@ -246,23 +263,23 @@ const ContentWrapper = (props) => {
       }
 
       if (gem2sRunningError) {
-        return <GEM2SLoadingScreen paramsHash={gem2sparamsHash} experimentId={experimentId} gem2sStatus='error' />;
+        return <GEM2SLoadingScreen paramsHash={gem2sparamsHash} experimentId={routeExperimentId} gem2sStatus='error' />;
       }
 
       if (gem2sRunning || waitingForQcToLaunch) {
-        return <GEM2SLoadingScreen experimentId={experimentId} gem2sStatus='running' completedSteps={completedGem2sSteps} />;
+        return <GEM2SLoadingScreen experimentId={routeExperimentId} gem2sStatus='running' completedSteps={completedGem2sSteps} />;
       }
 
       if (gem2sStatusKey === pipelineStatus.NOT_CREATED) {
-        return <GEM2SLoadingScreen experimentId={experimentId} gem2sStatus='toBeRun' />;
+        return <GEM2SLoadingScreen experimentId={routeExperimentId} gem2sStatus='toBeRun' />;
       }
 
       if (pipelineRunningError && !route.includes('data-processing')) {
-        return <PipelineRedirectToDataProcessing experimentId={experimentId} pipelineStatus='error' />;
+        return <PipelineRedirectToDataProcessing experimentId={routeExperimentId} pipelineStatus='error' />;
       }
 
       if (pipelineRunning && !route.includes('data-processing')) {
-        return <PipelineRedirectToDataProcessing experimentId={experimentId} pipelineStatus='running' />;
+        return <PipelineRedirectToDataProcessing experimentId={routeExperimentId} pipelineStatus='running' />;
       }
 
       if (process.env.NODE_ENV === 'development') {
@@ -270,7 +287,7 @@ const ContentWrapper = (props) => {
       }
 
       if (pipelineStatusKey === pipelineStatus.NOT_CREATED && !route.includes('data-processing')) {
-        return <PipelineRedirectToDataProcessing experimentId={experimentId} pipelineStatus='toBeRun' />;
+        return <PipelineRedirectToDataProcessing experimentId={routeExperimentId} pipelineStatus='toBeRun' />;
       }
     }
 
@@ -280,18 +297,25 @@ const ContentWrapper = (props) => {
   const menuItemRender = ({
     path, icon, name, disableIfNoExperiment, disabledByPipelineStatus,
   }) => {
-    const noExperimentDisable = !experimentId ? disableIfNoExperiment : false;
+    const pipelinesCompleted = () => {
+      if (pipelineStatusKey === pipelineStatus.SUCCEEDED
+        && gem2sStatusKey === pipelineStatus.SUCCEEDED) {
+        return true;
+      }
+      return false;
+    };
+    const notProcessedExperimentDisable = routeExperimentId || pipelinesCompleted() ? false : disableIfNoExperiment;
     const pipelineStatusDisable = disabledByPipelineStatus && (
       backendError || gem2sRunning || gem2sRunningError
       || waitingForQcToLaunch || pipelineRunning || pipelineRunningError
     );
 
-    const realPath = path.replace('[experimentId]', experimentId);
+    const realPath = path.replace('[experimentId]', currentExperiment);
 
     return (
       <Menu.Item
         id={path}
-        disabled={noExperimentDisable || pipelineStatusDisable}
+        disabled={notProcessedExperimentDisable || pipelineStatusDisable}
         key={path}
         icon={icon}
         onClick={() => navigateTo(realPath)}
@@ -400,13 +424,13 @@ const ContentWrapper = (props) => {
 };
 
 ContentWrapper.propTypes = {
-  experimentId: PropTypes.string,
+  routeExperimentId: PropTypes.string,
   experimentData: PropTypes.object.isRequired,
   children: PropTypes.node.isRequired,
 };
 
 ContentWrapper.defaultProps = {
-  experimentId: null,
+  routeExperimentId: null,
 };
 
 export default ContentWrapper;

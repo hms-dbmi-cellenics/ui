@@ -74,7 +74,7 @@ describe('ContentWrapper', () => {
     // eslint-disable-next-line require-await
     const wrapper = await mount(
       <Provider store={store}>
-        <ContentWrapper experimentId>
+        <ContentWrapper routeExperimentId={experimentId}>
           <></>
         </ContentWrapper>
       </Provider>,
@@ -258,7 +258,7 @@ describe('ContentWrapper', () => {
     // eslint-disable-next-line require-await
     const wrapper = await mount(
       <Provider store={store}>
-        <ContentWrapper experimentId>
+        <ContentWrapper routeExperimentId={experimentId}>
           <></>
         </ContentWrapper>
       </Provider>,
