@@ -111,7 +111,7 @@ const markerHeatmapInitialConfig = {
   ...heatmapInitialConfig,
   useMarkerGenes: false,
   guardLines: false,
-  nMarkerGenes: 5,
+  nMarkerGenes: 3,
   showGeneLabels: true,
 };
 
