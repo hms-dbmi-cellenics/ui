@@ -3,8 +3,6 @@ import { hexToRgb } from 'components/plots/helpers/heatmap/utils';
 
 const generateVitessceHeatmapTracksData = (trackOrder, hierarchy, properties, cells) => {
   const colorForCell = (cellId, cellClassKey) => {
-    // getCellClassProperties returns all the possible colors this cell could show
-    // Always pick the first one of these so that we always try to resolve with the same logic
     const { color: cellColor = null } = getCellClassProperties(
       cellId,
       cellClassKey,
