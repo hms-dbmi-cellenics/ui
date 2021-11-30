@@ -27,8 +27,6 @@ import HeatmapTracksCellInfo from 'components/data-exploration/heatmap/HeatmapTr
 import { listToMatrix, convertRange } from 'components/plots/helpers/heatmap/utils';
 import getCellClassProperties from 'utils/cellSets/getCellClassProperties';
 
-import './Heatmap.module.css';
-
 const COMPONENT_TYPE = 'interactiveHeatmap';
 const { Text } = Typography;
 
@@ -36,6 +34,9 @@ const Heatmap = dynamic(
   () => import('vitessce/dist/umd/production/heatmap.min').then((mod) => mod.Heatmap),
   { ssr: false },
 );
+
+// To avoid it sticking to the right too much (the left already has some margin)
+const heatmapRightMargin = 50;
 
 const HeatmapPlot = (props) => {
   const {
@@ -309,8 +310,6 @@ const HeatmapPlot = (props) => {
 
     setHighlightedTrackData(obj);
   };
-
-  const heatmapRightMargin = 50;
 
   return (
     <div id='heatmap-container'>

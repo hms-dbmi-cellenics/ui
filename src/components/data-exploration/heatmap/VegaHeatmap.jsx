@@ -2,7 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Vega } from 'react-vega';
 import { Element } from 'react-scroll';
-import './Heatmap.module.css';
 
 const VegaHeatmap = (props) => {
   const {

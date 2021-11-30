@@ -20,8 +20,6 @@ import { loadGeneExpression } from '../../../redux/actions/genes';
 import { updateCellInfo } from '../../../redux/actions/cellInfo';
 import {
   convertCellsData,
-  updateStatus,
-  clearPleaseWait,
   renderCellSetColors,
   colorByGeneExpression,
   colorInterpolator,
@@ -36,6 +34,7 @@ const Scatterplot = dynamic(
   { ssr: false },
 );
 
+const initialZoom = 4.00;
 const cellRadiusFromZoom = (zoom) => zoom ** 3 / 50;
 
 const Embedding = (props) => {
@@ -45,8 +44,8 @@ const Embedding = (props) => {
 
   const dispatch = useDispatch();
 
-  const [view, setView] = useState({ target: [4, -4, 0], zoom: 4.00 });
-  const [cellRadius, setCellRadius] = useState(cellRadiusFromZoom(4.00));
+  const [view, setView] = useState({ target: [4, -4, 0], zoom: initialZoom });
+  const [cellRadius, setCellRadius] = useState(cellRadiusFromZoom(initialZoom));
 
   const selectedCellIds = new Set();
 
@@ -289,7 +288,6 @@ const Embedding = (props) => {
             cellOpacity={0.8}
             cellRadius={cellRadius}
             setCellHighlight={updateCellsHover}
-            // setCellSelection={updateCellsHover}
             theme='light'
             uuid={embeddingType}
             viewState={view}
