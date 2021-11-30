@@ -9,7 +9,7 @@ import fetchAPI from '../fetchAPI';
 
 import UploadStatus from './UploadStatus';
 import loadAndCompressIfNecessary from './loadAndCompressIfNecessary';
-import { inspectFile, Verdict } from './fileInspector';
+import { Verdict } from './fileInspector';
 
 const putInS3 = async (projectUuid, loadedFileData, dispatch, sampleUuid, fileName, metadata) => {
   const baseUrl = `/v1/projects/${projectUuid}/samples/${sampleUuid}/${fileName}/uploadUrl`;
@@ -227,6 +227,7 @@ const bundleToFile = async (bundle, technology) => {
     : bundle.name;
 
   const verdict = true;
+  console.log(technology);
   // const verdict = await inspectFile(bundle, technology);
 
   let error = '';
