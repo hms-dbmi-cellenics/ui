@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-props-no-spreading */
-import React, { useRef } from 'react';
+import React, { useRef, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
 import {
@@ -9,19 +9,20 @@ import PropTypes from 'prop-types';
 import {
   updateProject,
 } from 'redux/actions/projects';
+import { layout } from 'utils/constants';
 import SamplesTable from './SamplesTable';
 import ProjectMenu from './ProjectMenu';
 
 const { Title, Text, Paragraph } = Typography;
 
 const ProjectDetails = ({ width, height }) => {
-  // These constants come from CSS properties and pixel counting on screen
-  const PADDING_HEIGHT = 120; // px
-  const HEADER_HEIGHT = 100; // px
+  // This is the settings for the height
   const MAX_DESCRIPTION_HEIGHT = 100; // px
-  const FONT_SIZE = 16; // px
-  const LINE_HEIGHT = 16; // px
-  const DESCRIPTION_PADDING = 2 * FONT_SIZE; // px
+
+  const { PANEL_HEADING_HEIGHT, PANEL_PADDING } = layout;
+
+  const availableWidth = width - PANEL_PADDING * 2; // * 2 because left and right
+  const availableHeight = height - PANEL_HEADING_HEIGHT - PANEL_PADDING * 2; // * 2 because top and bottom
 
   const dispatch = useDispatch();
 
@@ -30,15 +31,34 @@ const ProjectDetails = ({ width, height }) => {
 
   const samplesTableRef = useRef();
 
-  const calculateTextHeight = (text, panelWidth) => (Math.floor((text.length * FONT_SIZE) / panelWidth) + 1) * LINE_HEIGHT;
+  const getDetailsHeight = (availableHeight) => {
+    const projectDetailsDiv = document.getElementById('project-details');
 
-  const descriptionHeight = (text, panelWidth) => Math.min(calculateTextHeight(text, panelWidth), MAX_DESCRIPTION_HEIGHT);
+    if (!projectDetailsDiv) return 0;
 
-  const samplesTableHeight = (text, panelHeight, panelWidth) => panelHeight - descriptionHeight(text, panelWidth) - HEADER_HEIGHT - PADDING_HEIGHT;
+    const antSpaceContainer = projectDetailsDiv.children[0];
+
+    // Get elements whose heights we want to compute
+    const antItems = Array.from(antSpaceContainer.children);
+    antItems.pop();
+
+    // Get gap to add to the calculation
+    const gapHeightInPx = getComputedStyle(antSpaceContainer, null).getPropertyValue('gap');
+    const GAP_HEIGHT = Number.parseInt(gapHeightInPx.replace('px', ''), 10);
+
+    // get remaining space
+    const totalItemsHeight = antItems.reduce((totalHeight, elem) => totalHeight + elem.offsetHeight + GAP_HEIGHT, 0);
+    return availableHeight - totalItemsHeight;
+  };
+
+  const tableHeight = useMemo(
+    () => getDetailsHeight(availableHeight),
+    [availableHeight, activeProject.title, activeProject.description],
+  );
 
   return (
     <div id='project-details' width={width} height={height}>
-      <Space direction='vertical' style={{ width: '100%', padding: '8px 4px' }}>
+      <Space direction='vertical' style={{ width: '100%' }}>
         <Row>
           <Col span={24} style={{ display: 'flex', justifyContent: 'space-between' }}>
             <Title level={3}>{activeProject.name}</Title>
@@ -60,8 +80,8 @@ const ProjectDetails = ({ width, height }) => {
               <Text strong>Description:</Text>
               <div style={{
                 overflow: 'auto',
-                width: width - DESCRIPTION_PADDING,
-                maxHeight: `${descriptionHeight(activeProject.description, width)}px`,
+                width: availableWidth,
+                maxHeight: `${MAX_DESCRIPTION_HEIGHT}px`,
               }}
               >
                 <Paragraph
@@ -77,10 +97,14 @@ const ProjectDetails = ({ width, height }) => {
             </Space>
           </Col>
         </Row>
-        <SamplesTable
-          tableHeight={samplesTableHeight(activeProject.description, height, width)}
-          ref={samplesTableRef}
-        />
+        <Row>
+          <Col span={24}>
+            <SamplesTable
+              ref={samplesTableRef}
+              height={tableHeight}
+            />
+          </Col>
+        </Row>
       </Space>
     </div>
   );

@@ -10,6 +10,7 @@ import 'react-mosaic-component/react-mosaic-component.css';
 
 import { ClipLoader } from 'react-spinners';
 import NewProjectModal from 'components/data-management/NewProjectModal';
+import { layout } from 'utils/constants';
 import { loadProjects } from '../../redux/actions/projects';
 import { loadExperiments } from '../../redux/actions/experiments';
 
@@ -128,7 +129,7 @@ const DataManagementPage = ({ route }) => {
   const renderWindow = (tile, width, height) => {
     if (tile && height && width) {
       return (
-        <div style={{ padding: '10px' }}>
+        <div style={{ padding: layout.PANEL_PADDING }}>
           {height && width ? tile(width, height) : <></>}
         </div>
       );

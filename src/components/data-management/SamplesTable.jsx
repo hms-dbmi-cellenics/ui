@@ -1,6 +1,6 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React, {
-  useEffect, useState, forwardRef, useImperativeHandle,
+  useEffect, useState, forwardRef, useImperativeHandle, useMemo,
 } from 'react';
 
 import { useSelector, useDispatch } from 'react-redux';
@@ -50,7 +50,7 @@ const exampleDatasets = [
 ];
 
 const SamplesTable = forwardRef((props, ref) => {
-  const { tableHeight } = props;
+  const { height } = props;
   const dispatch = useDispatch();
   const [tableData, setTableData] = useState([]);
 
@@ -338,14 +338,28 @@ const SamplesTable = forwardRef((props, ref) => {
     return <SortableRow index={index} {...otherProps} />;
   };
 
+  const SAMPLES_TABLE_ID = 'samples-table';
+
+  const getHeadingHeight = () => {
+    const table = document.getElementById(SAMPLES_TABLE_ID);
+
+    if (!table) return 0;
+
+    const tableHead = table.querySelector('th');
+    return tableHead.offsetHeight;
+  };
+
+  const HEADING_HEIGHT = useMemo(() => getHeadingHeight(), []);
+
   return (
     <Row>
       <Col>
         <Table
+          id={SAMPLES_TABLE_ID}
           size='small'
           scroll={{
             x: 'max-content',
-            y: tableHeight,
+            y: height - HEADING_HEIGHT,
           }}
           bordered
           columns={tableColumns}
@@ -366,7 +380,7 @@ const SamplesTable = forwardRef((props, ref) => {
 });
 
 SamplesTable.propTypes = {
-  tableHeight: PropTypes.number.isRequired,
+  height: PropTypes.number.isRequired,
 };
 
 export default React.memo(SamplesTable);
