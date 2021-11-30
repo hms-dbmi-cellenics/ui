@@ -1,0 +1,136 @@
+{
+    "cellSets": [
+        {
+            "key": "louvain",
+            "name": "fake louvain clusters",
+            "rootNode": true,
+            "type": "cellSets",
+            "children": [
+                {
+                    "key": "louvain-0",
+                    "name": "Cluster 0",
+                    "rootNode": false,
+                    "type": "cellSets",
+                    "color": "#e377c2",
+                    "cellIds": [
+                        1,
+                        2,
+                        3,
+                        4,
+                        5,
+                        6
+                    ]
+                },
+                {
+                    "key": "louvain-1",
+                    "name": "Cluster 1",
+                    "rootNode": false,
+                    "type": "cellSets",
+                    "color": "#8c564b",
+                    "cellIds": [
+                        7,
+                        8,
+                        9
+                    ]
+                },
+                {
+                    "key": "louvain-2",
+                    "name": "Cluster 2",
+                    "rootNode": false,
+                    "type": "cellSets",
+                    "color": "#d62728",
+                    "cellIds": [
+                        10,
+                        11
+                    ]
+                },
+                {
+                    "key": "louvain-3",
+                    "name": "Cluster 3",
+                    "rootNode": false,
+                    "type": "cellSets",
+                    "color": "#2ca02c",
+                    "cellIds": [
+                        12,
+                        13
+                    ]
+                },
+                {
+                    "key": "louvain-4",
+                    "name": "Cluster 4",
+                    "rootNode": false,
+                    "type": "cellSets",
+                    "color": "#ff7f0e",
+                    "cellIds": [
+                        14,
+                        15
+                    ]
+                }
+            ]
+        },
+        {
+            "key": "scratchpad",
+            "name": "Custom cell sets",
+            "rootNode": true,
+            "children": [
+                {
+                    "key": "d273c823-d395-47e9-b1eb-2e4e1bcc9129",
+                    "name": "Copied WT2",
+                    "color": "#e377c2",
+                    "cellIds": [
+                        1,
+                        2,
+                        3,
+                        4,
+                        5
+                    ]
+                }
+            ],
+            "type": "cellSets"
+        },
+        {
+            "key": "sample",
+            "name": "Samples",
+            "rootNode": true,
+            "children": [
+                {
+                    "key": "98c7a0ed-d086-4df8-bf94-a9ee6edb793f",
+                    "name": "WT2",
+                    "color": "#e377c2",
+                    "cellIds": [
+                        1,
+                        2,
+                        3,
+                        4,
+                        5
+                    ]
+                },
+                {
+                    "key": "b62028a1-ffa0-4f10-823d-93c9ddb88898",
+                    "name": "KO",
+                    "color": "#8c564b",
+                    "cellIds": [
+                        6,
+                        7,
+                        8,
+                        9,
+                        10
+                    ]
+                },
+                {
+                    "key": "ab568662-27fa-462c-9435-625594341314",
+                    "name": "WT1",
+                    "color": "#d62728",
+                    "cellIds": [
+                        11,
+                        12,
+                        13,
+                        14,
+                        15
+                    ]
+                }
+            ],
+            "type": "metadataCategorical"
+        }
+    ]
+}

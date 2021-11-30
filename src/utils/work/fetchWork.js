@@ -1,22 +1,14 @@
 /* eslint-disable no-underscore-dangle */
 import hash from 'object-hash';
 
-import { getBackendStatus } from '../../redux/selectors';
+import Environment, { isBrowser } from 'utils/environment';
+import { calculateZScore } from 'utils/postRequestProcessing';
+import { getBackendStatus } from 'redux/selectors';
 
-import cache from '../cache';
+import cache from 'utils/cache';
 import { seekFromAPI, seekFromS3 } from './seekWorkResponse';
-import Environment, { isBrowser } from '../environment';
-import { calculateZScore } from '../postRequestProcessing';
 
 const createObjectHash = (object) => hash.MD5(object);
-
-const transformToOldMethodIfCachedResponseIsOld = (response) => {
-  if (!response.data) {
-    return { data: JSON.parse(response.results[0].body), cacheable: response.response?.cacheable };
-  }
-
-  return response;
-};
 
 const decomposeBody = async (body, experimentId) => {
   const { genes: requestedGenes } = body;
@@ -65,7 +57,7 @@ const fetchGeneExpressionWork = async (
   // If caching is disabled, we add an additional randomized key to the hash so we never reuse
   // past results.
   let cacheUniquenessKey = null;
-  if (environment !== Environment.PRODUCTION && localStorage.getItem('disableCache') === true) {
+  if (environment !== Environment.PRODUCTION && localStorage.getItem('disableCache') === 'true') {
     cacheUniquenessKey = Math.random();
   }
 
@@ -90,25 +82,16 @@ const fetchGeneExpressionWork = async (
     );
   }
 
-  // transformToOldMethodIfCachedResponseIsOld is to deal with the fact that
-  // users might have the old work response
-  // cached in the browser for 12 hours after the release is made and
-  // we don't want the UI to crash due to this.
-  // This line should eventually be replaced by:
-  // `const { data: responseData } = response;`
-  // (12 hours after the first release should be enough to safely remove the line)
-  const { data: responseData } = transformToOldMethodIfCachedResponseIsOld(response);
-
-  if (!responseData[missingGenes[0]]?.error) {
+  if (!response[missingGenes[0]]?.error) {
     // Preprocessing data before entering cache
-    const processedData = calculateZScore(responseData);
+    const processedData = calculateZScore(response);
 
     Object.keys(missingDataKeys).forEach(async (gene) => {
       await cache.set(missingDataKeys[gene], processedData[gene]);
     });
   }
 
-  return responseData;
+  return response;
 };
 
 const fetchWork = async (
@@ -126,6 +109,10 @@ const fetchWork = async (
     throw new Error('Disabling network interaction on server');
   }
 
+  if (environment === Environment.DEVELOPMENT && !localStorage.getItem('disableCache')) {
+    localStorage.setItem('disableCache', 'true');
+  }
+
   const { pipeline: { startDate: qcPipelineStartDate } } = backendStatus;
   if (body.name === 'GeneExpression') {
     return fetchGeneExpressionWork(experimentId, timeout, body, backendStatus, environment, extras);
@@ -134,7 +121,7 @@ const fetchWork = async (
   // If caching is disabled, we add an additional randomized key to the hash so we never reuse
   // past results.
   let cacheUniquenessKey = null;
-  if (environment !== Environment.PRODUCTION && localStorage.getItem('disableCache') === true) {
+  if (environment !== Environment.PRODUCTION && localStorage.getItem('disableCache') === 'true') {
     cacheUniquenessKey = Math.random();
   }
 
@@ -144,6 +131,7 @@ const fetchWork = async (
 
   // First, let's try to fetch this information from the local cache.
   const data = await cache.get(ETag);
+
   if (data) {
     return data;
   }
@@ -171,20 +159,11 @@ const fetchWork = async (
     return response;
   }
 
-  // transformToOldMethodIfCachedResponseIsOld is to deal with the fact that
-  // users might have the old work response
-  // cached in the browser for 12 hours after the release is made and
-  // we don't want the UI to crash due to this.
-  // This line should eventually be replaced by:
-  // `const { data: responseData, cacheable } = response;`
-  // (12 hours after the first release should be enough to safely remove the line)
-  const { data: responseData, cacheable } = transformToOldMethodIfCachedResponseIsOld(response);
+  // If a work response is in s3, it is cacheable
+  // (the cacheable or not option is managed in the worker)
+  await cache.set(ETag, response);
 
-  if (cacheable) {
-    await cache.set(ETag, responseData);
-  }
-
-  return responseData;
+  return response;
 };
 
 export { fetchWork, fetchGeneExpressionWork };

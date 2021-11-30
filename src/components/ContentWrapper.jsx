@@ -75,7 +75,6 @@ const ContentWrapper = (props) => {
   useEffect(() => {
     if (!experimentId) return;
     if (!backendLoading) dispatch(loadBackendStatus(experimentId));
-
     (async () => {
       const io = await connectionPromise;
       const cb = experimentUpdatesHandler(dispatch);
@@ -112,13 +111,13 @@ const ContentWrapper = (props) => {
       style={{
         background: 'linear-gradient(315deg, #5B070A 0%, #8f0b10 30%, #A80D12 100%)',
         paddingLeft: '32px',
-        paddingTop: '8px',
-        paddingBottom: '8px',
+        paddingTop: '15px',
+        paddingBottom: '15px',
         pointerEvents: 'none',
         userSelect: 'none',
       }}
     >
-      <svg xmlns='http://www.w3.org/2000/svg' width={110} height={50}>
+      <svg xmlns='http://www.w3.org/2000/svg' width={110} height={30}>
         <defs id='svg_document_defs'>
           <style id='IBM Plex Sans_Google_Webfont_import'>@import url(https://fonts.googleapis.com/css?family=IBM+Plex+Sans);</style>
         </defs>
@@ -146,11 +145,8 @@ const ContentWrapper = (props) => {
             fontFamily='IBM Plex Sans'
             fill='#aab6c1'
             fontSize='12.80px'
-            y='45px'
             textAnchor='start'
-          >
-            by Biomage
-          </text>
+          />
         </g>
       </svg>
     </div>

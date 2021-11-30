@@ -1,9 +1,9 @@
 import {
   DIFF_EXPR_LOADING, DIFF_EXPR_LOADED, DIFF_EXPR_ERROR,
-} from '../../actionTypes/differentialExpression';
+} from 'redux/actionTypes/differentialExpression';
 
-import { fetchWork } from '../../../utils/work/fetchWork';
-import getTimeoutForWorkerTask from '../../../utils/getTimeoutForWorkerTask';
+import { fetchWork } from 'utils/work/fetchWork';
+import getTimeoutForWorkerTask from 'utils/getTimeoutForWorkerTask';
 
 const getCellSetName = (name) => (name?.split('/')[1] || name);
 
@@ -63,7 +63,7 @@ const loadDifferentialExpression = (
       total = rows.length;
     }
 
-    return dispatch({
+    dispatch({
       type: DIFF_EXPR_LOADED,
       payload: {
         experimentId,
