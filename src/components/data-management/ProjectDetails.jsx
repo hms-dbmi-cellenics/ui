@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-props-no-spreading */
-import React, { useRef, useMemo } from 'react';
+import React, { useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
 import {
@@ -31,7 +31,7 @@ const ProjectDetails = ({ width, height }) => {
 
   const samplesTableRef = useRef();
 
-  const getDetailsHeight = (availableHeight) => {
+  const getTableHeight = (usableHeight) => {
     const projectDetailsDiv = document.getElementById('project-details');
 
     if (!projectDetailsDiv) return 0;
@@ -42,19 +42,13 @@ const ProjectDetails = ({ width, height }) => {
     const antItems = Array.from(antSpaceContainer.children);
     antItems.pop();
 
-    // Get gap to add to the calculation
+    // Gaps exist between space item elemets and have to be included in the calculation
     const gapHeightInPx = getComputedStyle(antSpaceContainer, null).getPropertyValue('gap');
     const GAP_HEIGHT = Number.parseInt(gapHeightInPx.replace('px', ''), 10);
 
-    // get remaining space
     const totalItemsHeight = antItems.reduce((totalHeight, elem) => totalHeight + elem.offsetHeight + GAP_HEIGHT, 0);
-    return availableHeight - totalItemsHeight;
+    return usableHeight - totalItemsHeight;
   };
-
-  const tableHeight = useMemo(
-    () => getDetailsHeight(availableHeight),
-    [availableHeight, activeProject.title, activeProject.description],
-  );
 
   return (
     <div id='project-details' width={width} height={height}>
@@ -75,7 +69,7 @@ const ProjectDetails = ({ width, height }) => {
         </Row>
         <Row>
           <Col>
-            <Space direction='vertical' size='small' style={{ width }}>
+            <Space direction='vertical' size='small'>
               <Text type='secondary'>{`ID : ${activeProjectUuid}`}</Text>
               <Text strong>Description:</Text>
               <div style={{
@@ -101,7 +95,7 @@ const ProjectDetails = ({ width, height }) => {
           <Col span={24}>
             <SamplesTable
               ref={samplesTableRef}
-              height={tableHeight}
+              height={getTableHeight(availableHeight)}
             />
           </Col>
         </Row>
