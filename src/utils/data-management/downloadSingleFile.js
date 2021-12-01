@@ -1,12 +1,12 @@
 import { saveAs } from 'file-saver';
 import { Storage } from 'aws-amplify';
 
-const downloadSingleFile = async (activeProjectUuid, sampleUuid, fileName, bundleName) => {
+const downloadSingleFile = async (activeProjectUuid, sampleUuid, fileName) => {
   const bucketKey = `${activeProjectUuid}/${sampleUuid}/${fileName}`;
 
   const downloadedS3Object = await Storage.get(bucketKey, { download: true });
 
-  const fileNameToSaveWith = bundleName.endsWith('.gz') ? bundleName : `${bundleName}.gz`;
+  const fileNameToSaveWith = fileName.endsWith('.gz') ? fileName : `${fileName}.gz`;
 
   saveAs(downloadedS3Object.Body, fileNameToSaveWith);
 };

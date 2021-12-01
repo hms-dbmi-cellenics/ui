@@ -48,12 +48,12 @@ const putInS3 = async (projectUuid, loadedFileData, dispatch, sampleUuid, fileNa
   });
 };
 
-const metadataForBundle = (bundle) => {
+const metadataForFile = (file) => {
   const metadata = {};
 
-  if (bundle.name.includes('genes')) {
+  if (file.name.includes('genes')) {
     metadata.cellranger_version = 'v2';
-  } else if (bundle.name.includes('features')) {
+  } else if (file.name.includes('features')) {
     metadata.cellranger_version = 'v3';
   }
 
@@ -96,12 +96,13 @@ const compressAndUploadSingleFile = async (
       sampleUuid, fileName, metadata,
     );
 
+    // fileObject is not needed anymore if have successfully uploaded to S3
     dispatch(
       updateSampleFile(
         sampleUuid,
         fileName,
         {
-          bundle: file.bundle,
+          fileObject: null,
           upload: { status: UploadStatus.UPLOADING, amplifyPromise: uploadPromise },
         },
       ),
@@ -156,9 +157,9 @@ const renameFileIfNeeded = (fileName, type) => {
 };
 
 const uploadSingleFile = (newFile, activeProjectUuid, sampleUuid, dispatch) => {
-  const metadata = metadataForBundle(newFile);
+  const metadata = metadataForFile(newFile);
 
-  const newFileName = renameFileIfNeeded(newFile.bundle.name, newFile.bundle.type);
+  const newFileName = renameFileIfNeeded(newFile.fileObject.name, newFile.fileObject.type);
 
   compressAndUploadSingleFile(
     activeProjectUuid, sampleUuid, newFileName, newFile, dispatch, metadata,
@@ -217,16 +218,16 @@ const processUpload = async (filesList, sampleType, samples, activeProjectUuid, 
   });
 };
 
-const bundleToFile = async (bundle, technology) => {
+const fileObjectToFileRecord = async (fileObject, technology) => {
   // This is the first stage in uploading a file.
 
   // if the file has a path, trim to just the file and its folder.
   // otherwise simply use its name
-  const filename = (bundle.path)
-    ? _.takeRight(bundle.path.split('/'), 2).join('/')
-    : bundle.name;
+  const filename = (fileObject.path)
+    ? _.takeRight(fileObject.path.split('/'), 2).join('/')
+    : fileObject.name;
 
-  const verdict = await inspectFile(bundle, technology);
+  const verdict = await inspectFile(fileObject, technology);
 
   let error = '';
   if (verdict === Verdict.INVALID_NAME) {
@@ -237,7 +238,9 @@ const bundleToFile = async (bundle, technology) => {
 
   return {
     name: filename,
-    bundle,
+    fileObject,
+    size: fileObject.size,
+    path: fileObject.path,
     upload: {
       status: UploadStatus.UPLOADING,
       progress: 0,
@@ -249,7 +252,7 @@ const bundleToFile = async (bundle, technology) => {
 };
 
 export {
-  bundleToFile,
+  fileObjectToFileRecord,
   uploadSingleFile,
   processUpload,
 };

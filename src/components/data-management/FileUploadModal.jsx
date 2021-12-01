@@ -17,7 +17,7 @@ import { CheckCircleTwoTone, CloseCircleTwoTone, DeleteOutlined } from '@ant-des
 import Dropzone from 'react-dropzone';
 import techOptions from '../../utils/upload/fileUploadSpecifications';
 import pushNotificationMessage from '../../utils/pushNotificationMessage';
-import { bundleToFile } from '../../utils/upload/processUpload';
+import { fileObjectToFileRecord } from '../../utils/upload/processUpload';
 
 import integrationTestConstants from '../../utils/integrationTestConstants';
 
@@ -58,7 +58,7 @@ const FileUploadModal = (props) => {
     }
 
     const newFiles = await Promise.all(filteredFiles.map((file) => (
-      bundleToFile(file, selectedTech)
+      fileObjectToFileRecord(file, selectedTech)
     )));
 
     setFilesList([...filesList, ...newFiles]);

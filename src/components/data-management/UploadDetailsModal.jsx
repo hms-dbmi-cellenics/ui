@@ -8,7 +8,7 @@ import {
 } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
 import { useDispatch } from 'react-redux';
-import { uploadSingleFile, bundleToFile } from '../../utils/upload/processUpload';
+import { uploadSingleFile, fileObjectToFileRecord } from '../../utils/upload/processUpload';
 
 import pushNotificationMessage from '../../utils/pushNotificationMessage';
 import UploadStatus, { messageForStatus } from '../../utils/upload/UploadStatus';
@@ -25,11 +25,8 @@ const UploadDetailsModal = (props) => {
   } = props;
   const { fileCategory, sampleUuid } = uploadDetailsModalDataRef.current || false;
   const file = uploadDetailsModalDataRef.current?.file || {};
-  const {
-    upload = {}, bundle = {},
-  } = file;
+  const { upload } = file || {};
   const status = upload?.status;
-  const bundleName = bundle?.name;
   const inputFileRef = useRef(null);
   const [replacementFileBundle, setReplacementFileBundle] = useState(null);
 
@@ -39,7 +36,7 @@ const UploadDetailsModal = (props) => {
 
   useEffect(() => {
     if (replacementFileBundle) {
-      bundleToFile(replacementFileBundle, SELECTED_TECH).then((newFile) => {
+      fileObjectToFileRecord(replacementFileBundle, SELECTED_TECH).then((newFile) => {
         if (newFile.valid) { // && newFile.name === file.name ?
           uploadFileBundle(newFile);
         } else {
@@ -127,7 +124,7 @@ const UploadDetailsModal = (props) => {
       key='retry'
       block
       onClick={() => {
-        downloadSingleFile(activeProjectUuid, sampleUuid, file.name, bundleName);
+        downloadSingleFile(activeProjectUuid, sampleUuid, file.name);
       }}
       style={{ width: '140px', marginBottom: '10px' }}
     >
@@ -183,7 +180,7 @@ const UploadDetailsModal = (props) => {
               <Row style={{ marginTop: '5px', marginBottom: '5px' }}>
                 <Col span={5}>File size</Col>
                 <Col span={10}>
-                  {toMBytes(bundle.size)}
+                  {toMBytes(file.size)}
                   {' '}
                   MB
                 </Col>

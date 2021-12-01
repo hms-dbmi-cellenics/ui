@@ -101,8 +101,8 @@ const mockStore = configureMockStore([thunk]);
 
 jest.mock('../../../utils/upload/loadAndCompressIfNecessary',
   () => jest.fn().mockImplementation(
-    (bundle) => {
-      if (!bundle.valid) {
+    (file) => {
+      if (!file.valid) {
         return Promise.reject(new Error('error'));
       }
       return Promise.resolve('loadedGzippedFile');
