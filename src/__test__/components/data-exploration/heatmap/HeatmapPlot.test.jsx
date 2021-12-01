@@ -1,13 +1,13 @@
+import _ from 'lodash';
 import React from 'react';
 import { mount } from 'enzyme';
 import { Provider } from 'react-redux';
-import thunk from 'redux-thunk';
-import waitForActions from 'redux-mock-store-await-actions';
 import configureStore from 'redux-mock-store';
+import thunk from 'redux-thunk';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import { Empty } from 'antd';
 
-import { MARKER_GENES_LOADING } from 'redux/actionTypes/genes';
+import Environment from 'utils/environment';
 
 // eslint-disable-next-line import/no-named-as-default
 import HeatmapPlot from 'components/data-exploration/heatmap/HeatmapPlot';
@@ -17,13 +17,17 @@ import { getFromApiExpectOK } from 'utils/getDataExpectOK';
 import mockCellSets from 'utils/tests/mockStores/cellSets';
 
 import { CELL_SETS_LOADING } from 'redux/actionTypes/cellSets';
-import { getCellSets, getCellSetsHierarchyByKeys } from 'redux/selectors';
+import { getCellSets, getCellSetsHierarchyByKeys, getBackendStatus } from 'redux/selectors';
+import { loadMarkerGenes } from 'redux/actions/genes';
 
 import '__test__/test-utils/setupTests';
 
 jest.mock('components/data-exploration/heatmap/VegaHeatmap');
 jest.mock('utils/getDataExpectOK');
 jest.mock('redux/selectors');
+
+jest.mock('redux/actions/genes/loadMarkerGenes');
+loadMarkerGenes.mockImplementation(() => async () => { });
 
 VegaHeatmap.mockImplementation(() => <div>Mocked Vega Heatmap</div>);
 enableFetchMocks();
@@ -133,6 +137,12 @@ describe('HeatmapPlot', () => {
     fetchMock.mockResolvedValue(response);
 
     getCellSets.mockReturnValue(() => mockCellSets().cellSets);
+
+    getBackendStatus.mockReturnValue(() => ({
+      loading: false,
+      error: false,
+      status: { pipeline: { completedSteps: [] } },
+    }));
 
     getCellSetsHierarchyByKeys.mockReturnValue(() => (
       [{
@@ -344,6 +354,7 @@ describe('HeatmapPlot', () => {
   it('loads marker genes if it can', async () => {
     const store = mockStore({
       ...initialState,
+      networkResources: { environment: Environment.DEVELOPMENT },
       cellSets: {
         ...initialState.cellSets,
         loading: true,
@@ -376,10 +387,58 @@ describe('HeatmapPlot', () => {
 
     expect(component.find('HeatmapPlot').length).toEqual(1);
 
-    await waitForActions(
-      store,
-      [MARKER_GENES_LOADING],
-      { matcher: waitForActions.matchers.containing },
+    const expectedMarkerGenes = 5;
+
+    expect(loadMarkerGenes).toHaveBeenCalledWith('123', 10, 'interactiveHeatmap', expectedMarkerGenes);
+  });
+
+  it('loads marker genes with a different amount of marker genes if louvain clusters are many', async () => {
+    const store = mockStore({
+      ...initialState,
+      networkResources: { environment: Environment.DEVELOPMENT },
+      cellSets: {
+        ...initialState.cellSets,
+        loading: true,
+        error: false,
+      },
+      genes: {
+        ...initialState.genes,
+        expression: {
+          ...initialState.genes.expression,
+          loading: false,
+          error: 'Some error',
+        },
+      },
+      experimentSettings: {
+        ...initialState.experimentSettings,
+        processing: {
+          ...initialState.processing,
+          configureEmbedding: {
+            clusteringSettings: { methodSettings: { louvain: { resolution: 10 } } },
+          },
+        },
+      },
+    });
+
+    const louvainClusters = _.range(60).map((clusterIndex) => ({ key: `louvain-${clusterIndex}` }));
+    getCellSetsHierarchyByKeys.mockReturnValue(() => (
+      [{
+        key: 'louvain',
+        name: 'louvain clusters',
+        type: 'cellSets',
+        children: louvainClusters,
+      }]));
+
+    component = mount(
+      <Provider store={store}>
+        <HeatmapPlot experimentId={experimentId} width={200} height={200} />
+      </Provider>,
     );
+
+    expect(component.find('HeatmapPlot').length).toEqual(1);
+
+    const expectedMarkerGenes = 3;
+
+    expect(loadMarkerGenes).toHaveBeenCalledWith('123', 10, 'interactiveHeatmap', expectedMarkerGenes);
   });
 });
