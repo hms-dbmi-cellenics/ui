@@ -39,8 +39,6 @@ const HeatmapPlot = (props) => {
   const [isHeatmapGenesLoading, setIsHeatmapGenesLoading] = useState(false);
   const currentHeatmapSettings = useRef();
 
-  const louvainClustersResolutionRef = useRef(null);
-
   const expressionData = useSelector((state) => state.genes.expression);
   const {
     loading: markerGenesLoading, error: markerGenesLoadingError,
@@ -50,7 +48,7 @@ const HeatmapPlot = (props) => {
 
   const cellSets = useSelector(getCellSets());
 
-  const louvainClusterCount = useSelector(getCellSetsHierarchyByKeys('louvain'))[0]?.children.length ?? 0;
+  const louvainClusterCount = useSelector(getCellSetsHierarchyByKeys(['louvain']), _.isEqual)[0]?.children.length ?? 0;
 
   const {
     hierarchy: cellSetsHierarchy,
@@ -141,19 +139,14 @@ const HeatmapPlot = (props) => {
   ]);
 
   useEffect(() => {
-    if (louvainClustersResolution
-      && !_.isEqual(louvainClustersResolutionRef.current, louvainClustersResolution)
-      && louvainClusterCount > 0
-    ) {
-      louvainClustersResolutionRef.current = louvainClustersResolution;
-
+    if (louvainClusterCount > 0) {
       const nMarkerGenes = calculateIdealNMarkerGenes(louvainClusterCount);
 
       dispatch(loadMarkerGenes(
         experimentId, louvainClustersResolution, COMPONENT_TYPE, nMarkerGenes,
       ));
     }
-  }, [louvainClustersResolution, louvainClusterCount]);
+  }, [louvainClusterCount]);
 
   useEffect(() => {
     setMaxCells(Math.floor(width * 0.8));
