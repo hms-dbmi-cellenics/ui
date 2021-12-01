@@ -149,8 +149,8 @@ describe('Marker heatmap plot', () => {
       )
     ));
 
-    // Check that initially there are 2 marker genes - the default
-    markerGenesData2.order.forEach((geneName) => {
+    // Check that initially there are 5 marker genes - the default
+    markerGenesData5.order.forEach((geneName) => {
       expect(screen.getByText(geneName)).toBeInTheDocument();
     });
 
@@ -160,7 +160,7 @@ describe('Marker heatmap plot', () => {
 
     const nGenesInput = screen.getByRole('spinbutton', { name: 'Number of genes input' });
 
-    userEvent.type(nGenesInput, '{backspace}5');
+    userEvent.type(nGenesInput, '{backspace}2');
 
     await act(async () => {
       userEvent.click(screen.getByText('Run'));
@@ -170,7 +170,7 @@ describe('Marker heatmap plot', () => {
     userEvent.click(screen.getByText('Custom genes'));
 
     // The genes in Data 2 should exist
-    markerGenesData5.order.forEach((geneName) => {
+    markerGenesData2.order.forEach((geneName) => {
       expect(screen.getByText(geneName)).toBeInTheDocument();
     });
   });
@@ -190,7 +190,7 @@ describe('Marker heatmap plot', () => {
 
     // Add in a new gene
     // This is done because we can not insert text into the genes list input
-    const genesToLoad = [...markerGenesData2.order, 'FAKEGENE'];
+    const genesToLoad = [...markerGenesData5.order, 'FAKEGENE'];
 
     await act(async () => {
       storeState.dispatch(loadGeneExpression(experimentId, genesToLoad, plotUuid));
@@ -219,7 +219,7 @@ describe('Marker heatmap plot', () => {
       )
     ));
 
-    const genesToLoad = [...markerGenesData2.order, 'FAKEGENE'];
+    const genesToLoad = [...markerGenesData5.order, 'FAKEGENE'];
 
     await act(async () => {
       storeState.dispatch(loadGeneExpression(experimentId, genesToLoad, plotUuid));
@@ -242,7 +242,7 @@ describe('Marker heatmap plot', () => {
     ));
 
     // Setting up so that there is an inserted gene in the list
-    const genesToLoad = [...markerGenesData2.order, 'FAKEGENE'];
+    const genesToLoad = [...markerGenesData5.order, 'FAKEGENE'];
 
     await act(async () => {
       // This is done because we can not insert text into the genes list input
