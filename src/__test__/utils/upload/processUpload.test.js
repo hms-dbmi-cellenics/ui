@@ -15,7 +15,7 @@ enableFetchMocks();
 const validFilesList = [
   {
     name: 'WT13/features.tsv.gz',
-    bundle: {
+    fileObject: {
       name: 'features.tsv.gz',
       path: '/WT13/features.tsv.gz',
       type: 'application/gzip',
@@ -27,7 +27,7 @@ const validFilesList = [
   },
   {
     name: 'WT13/barcodes.tsv.gz',
-    bundle: {
+    fileObject: {
       name: 'barcodes.tsv.gz',
       path: '/WT13/barcodes.tsv.gz',
       type: 'application/gzip',
@@ -39,7 +39,7 @@ const validFilesList = [
   },
   {
     name: 'WT13/matrix.mtx.gz',
-    bundle: {
+    fileObject: {
       name: 'matrix.mtx.gz',
       path: '/WT13/matrix.mtx.gz',
       type: 'application/gzip',
