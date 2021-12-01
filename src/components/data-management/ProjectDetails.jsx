@@ -87,10 +87,13 @@ const ProjectDetails = ({ width, height }) => {
               <Text strong>
                 Description:
               </Text>
-              {' '}
-              <Link onClick={() => setIsDescriptionExpanded(!isDescriptionExpanded)}>
-                { isDescriptionExpanded ? 'Collapse' : 'Expand' }
-              </Link>
+              {activeProject.description.length > 0 ? (
+                <>
+                  <Link onClick={() => setIsDescriptionExpanded(!isDescriptionExpanded)}>
+                    { isDescriptionExpanded ? ' Collapse' : ' Expand' }
+                  </Link>
+                </>
+              ) : <></>}
             </span>
             <Paragraph
               editable={{
