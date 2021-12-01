@@ -74,13 +74,9 @@ const ProjectDetails = ({ width, height }) => {
             <ProjectMenu />
           </Space>
         </div>
-        <div>
-          <Text type='secondary'>
-            {`Project ID: ${activeProjectUuid}`}
-            {' - '}
-            {`Experiment ID: ${activeProject.experiments[0]}`}
-          </Text>
-        </div>
+        <Text type='secondary'>
+          {`Project ID: ${activeProjectUuid}`}
+        </Text>
         <div style={{ overflowY: 'auto', maxHeight: MAX_CONTENT_HEIGHT }}>
           <Space direction='vertical' size='small' style={{ width: availableWidth - 16 }}>
             <span>
