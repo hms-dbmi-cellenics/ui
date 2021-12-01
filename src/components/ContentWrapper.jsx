@@ -48,7 +48,7 @@ const ContentWrapper = (props) => {
 
   const experiment = useSelector((state) => state?.experiments[routeExperimentId]);
   const experimentName = experimentData?.experimentName || experiment?.name;
-  const currentExperimentRef = useRef(routeExperimentId);
+  const currentExperimentIdRef = useRef(routeExperimentId);
   const activeProjectUuid = useSelector((state) => state?.projects?.meta?.activeProjectUuid);
   const activeProjectExperiment = useSelector((state) => (
     state?.projects[activeProjectUuid]?.experiments[0]));
@@ -57,21 +57,21 @@ const ContentWrapper = (props) => {
   // and we are in data-management, we don't have experimentId
 
   useEffect(() => {
-    if (routeExperimentId && currentExperimentRef.current !== routeExperimentId) {
-      currentExperimentRef.current = routeExperimentId;
+    if (routeExperimentId && currentExperimentIdRef.current !== routeExperimentId) {
+      currentExperimentIdRef.current = routeExperimentId;
       return;
     }
-    if (!routeExperimentId && currentExperimentRef.current !== activeProjectExperiment) {
-      currentExperimentRef.current = activeProjectExperiment;
+    if (!routeExperimentId && currentExperimentIdRef.current !== activeProjectExperiment) {
+      currentExperimentIdRef.current = activeProjectExperiment;
     }
   }, [routeExperimentId, activeProjectExperiment]);
 
-  const currentExperiment = currentExperimentRef.current;
+  const currentExperimentId = currentExperimentIdRef.current;
   const {
     loading: backendLoading,
     error: backendError,
     status: backendStatus,
-  } = useSelector(getBackendStatus(currentExperiment));
+  } = useSelector(getBackendStatus(currentExperimentId));
   const backendErrors = [pipelineStatus.FAILED, pipelineStatus.TIMED_OUT, pipelineStatus.ABORTED];
 
   const pipelineStatusKey = backendStatus?.pipeline?.status;
@@ -91,12 +91,12 @@ const ContentWrapper = (props) => {
   const [backendStatusRequested, setBackendStatusRequested] = useState(false);
 
   useEffect(() => {
-    if (!currentExperiment) return;
+    if (!currentExperimentId) return;
     // clear the store only if we navigate to a new experiment from data-management
     if (route === '/data-management') {
       dispatch(switchExperiment());
     }
-    if (!backendLoading) dispatch(loadBackendStatus(currentExperiment));
+    if (!backendLoading) dispatch(loadBackendStatus(currentExperimentId));
     (async () => {
       const io = await connectionPromise;
       const cb = experimentUpdatesHandler(dispatch);
@@ -105,9 +105,9 @@ const ContentWrapper = (props) => {
       // experiment.
       io.off();
 
-      io.on(`ExperimentUpdates-${currentExperiment}`, (update) => cb(currentExperiment, update));
+      io.on(`ExperimentUpdates-${currentExperimentId}`, (update) => cb(currentExperimentId, update));
     })();
-  }, [currentExperiment]);
+  }, [currentExperimentId]);
 
   useEffect(() => {
     if (backendStatusRequested) {
@@ -309,13 +309,13 @@ const ContentWrapper = (props) => {
       }
       return false;
     };
-    const notProcessedExperimentDisable = routeExperimentId || pipelinesCompleted() ? false : disableIfNoExperiment;
+    const notProcessedExperimentDisable = disableIfNoExperiment && (!routeExperimentId && !pipelinesCompleted());
     const pipelineStatusDisable = disabledByPipelineStatus && (
       backendError || gem2sRunning || gem2sRunningError
       || waitingForQcToLaunch || pipelineRunning || pipelineRunningError
     );
 
-    const realPath = path.replace('[experimentId]', currentExperiment);
+    const realPath = path.replace('[experimentId]', currentExperimentId);
 
     return (
       <Menu.Item

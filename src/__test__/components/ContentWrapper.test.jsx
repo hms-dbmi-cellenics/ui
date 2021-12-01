@@ -175,10 +175,13 @@ describe('ContentWrapper', () => {
     const visibleMenuLength = menus.length / 2;
 
     expect(visibleMenuLength).toEqual(4);
-    expect(menus.at(0).props().disabled).toEqual(false);
-    expect(menus.at(1).props().disabled).toEqual(false);
-    expect(menus.at(2).props().disabled).toEqual(false);
-    expect(menus.at(3).props().disabled).toEqual(false);
+    for (let i = 0; i < visibleMenuLength; i += 1) {
+      expect(menus.at(i).props().disabled).toEqual(false);
+    }
+    expect(menus.at(0).text()).toEqual('Data Management');
+    expect(menus.at(1).text()).toEqual('Data Processing');
+    expect(menus.at(2).text()).toEqual('Data Exploration');
+    expect(menus.at(3).text()).toEqual('Plots and Tables');
   });
   it('has the correct sider and layout style when opened / closed', async () => {
     const siderHasWidth = (expectedWidth) => {
