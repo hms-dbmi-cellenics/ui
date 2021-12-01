@@ -19,11 +19,6 @@ const {
 } = Typography;
 
 const ProjectDetails = ({ width, height }) => {
-  const { PANEL_HEADING_HEIGHT, PANEL_PADDING } = layout;
-
-  const availableWidth = width - PANEL_PADDING * 2; // * 2 because left and right
-  const availableHeight = height - PANEL_HEADING_HEIGHT - PANEL_PADDING * 2; // * 2 because top and bottom
-
   const dispatch = useDispatch();
 
   const { activeProjectUuid } = useSelector((state) => state.projects.meta);
@@ -32,81 +27,64 @@ const ProjectDetails = ({ width, height }) => {
   const samplesTableRef = useRef();
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
 
-  const getProjectContentHeight = (container, usableHeight) => {
-    if (!container) return 0;
-
-    const antSpaceContainer = container.children[0];
-
-    // Get elements whose heights we want to compute
-    const antItems = Array.from(antSpaceContainer.children);
-    antItems.pop();
-
-    // Gaps exist between space item elemets and have to be included in the calculation
-    const GAP_HEIGHT = 8;
-
-    const totalItemsHeight = antItems.reduce((totalHeight, elem) => totalHeight + elem.offsetHeight + GAP_HEIGHT, 0);
-
-    return usableHeight - totalItemsHeight;
-  };
-
-  const projectDetailsDiv = document.getElementById('project-details');
-  const MAX_CONTENT_HEIGHT = useMemo(() => getProjectContentHeight(projectDetailsDiv, availableHeight), [!projectDetailsDiv, availableHeight]);
-
   return (
     <div
       id='project-details'
-      width={width}
-      height={height}
       style={{
         padding: layout.PANEL_PADDING,
+        width,
+        height,
       }}
     >
-      <Space direction='vertical' style={{ width: availableWidth }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-          <Title level={3}>{activeProject.name}</Title>
-          <Space>
-            <Button
-              disabled={activeProject.samples?.length === 0}
-              onClick={() => samplesTableRef.current.createMetadataColumn()}
-            >
-              Add metadata
-            </Button>
-            <ProjectMenu />
-          </Space>
+      <div style={{
+        display: 'flex', flexDirection: 'column', height: '100%', width: '100%',
+      }}
+      >
+        <div style={{ flex: 'none', paddingBottom: '1em' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <Title level={3}>{activeProject.name}</Title>
+            <Space>
+              <Button
+                disabled={activeProject.samples?.length === 0}
+                onClick={() => samplesTableRef.current.createMetadataColumn()}
+              >
+                Add metadata
+              </Button>
+              <ProjectMenu />
+            </Space>
+          </div>
+          <Text type='secondary'>
+            {`Project ID: ${activeProjectUuid}`}
+          </Text>
         </div>
-        <Text type='secondary'>
-          {`Project ID: ${activeProjectUuid}`}
-        </Text>
-        <div style={{ overflowY: 'auto', maxHeight: MAX_CONTENT_HEIGHT }}>
-          <Space direction='vertical' size='small' style={{ width: availableWidth - 16 }}>
-            <span>
-              <Text strong>
-                Description:
-              </Text>
-              {activeProject.description.length > 0 ? (
-                <>
-                  <Link onClick={() => setIsDescriptionExpanded(!isDescriptionExpanded)}>
-                    { isDescriptionExpanded ? ' Collapse' : ' Expand' }
-                  </Link>
-                </>
-              ) : <></>}
-            </span>
-            <Paragraph
-              editable={{
-                onChange: (description) => dispatch(
-                  updateProject(activeProjectUuid, { description }),
-                ),
-              }}
-              ellipsis={!isDescriptionExpanded ? { rows: 1 } : false}
-            >
-              {activeProject.description}
-            </Paragraph>
-            <SamplesTable
-              ref={samplesTableRef}
-            />
-          </Space>
+        <div style={{ flex: 1, overflowY: 'auto' }}>
+          <span>
+            <Text strong>
+              Description:
+            </Text>
+            {activeProject.description.length > 0 ? (
+              <>
+                <Link onClick={() => setIsDescriptionExpanded(!isDescriptionExpanded)}>
+                  {isDescriptionExpanded ? ' Collapse' : ' Expand'}
+                </Link>
+              </>
+            ) : <></>}
+          </span>
+          <Paragraph
+            editable={{
+              onChange: (description) => dispatch(
+                updateProject(activeProjectUuid, { description }),
+              ),
+            }}
+            ellipsis={!isDescriptionExpanded ? { rows: 1 } : false}
+          >
+            {activeProject.description}
+          </Paragraph>
+          <SamplesTable
+            ref={samplesTableRef}
+          />
         </div>
-      </Space>
+      </div>
     </div>
   );
 };
