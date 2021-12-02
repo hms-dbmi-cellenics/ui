@@ -18,7 +18,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Auth } from 'aws-amplify';
 import PropTypes from 'prop-types';
 import { useRouter } from 'next/router';
-import { switchExperiment } from 'redux/actions/experiments';
 import Error from '../pages/_error';
 import GEM2SLoadingScreen from './GEM2SLoadingScreen';
 import PipelineRedirectToDataProcessing from './PipelineRedirectToDataProcessing';
@@ -95,10 +94,6 @@ const ContentWrapper = (props) => {
 
   useEffect(() => {
     if (!currentExperimentId) return;
-    // clear the store only if we navigate to a new experiment from data-management
-    if (route === '/data-management') {
-      dispatch(switchExperiment());
-    }
     if (!backendLoading) dispatch(loadBackendStatus(currentExperimentId));
     (async () => {
       const io = await connectionPromise;
@@ -110,7 +105,7 @@ const ContentWrapper = (props) => {
 
       io.on(`ExperimentUpdates-${currentExperimentId}`, (update) => cb(currentExperimentId, update));
     })();
-  }, [currentExperimentId]);
+  }, [routeExperimentId]);
 
   useEffect(() => {
     if (backendStatusRequested) {
@@ -312,7 +307,7 @@ const ContentWrapper = (props) => {
       }
       return false;
     };
-    const notProcessedExperimentDisable = disableIfNoExperiment && (!routeExperimentId && !pipelinesCompleted());
+    const notProcessedExperimentDisable = disableIfNoExperiment && !routeExperimentId && !pipelinesCompleted();
     const pipelineStatusDisable = disabledByPipelineStatus && (
       backendError || gem2sRunning || gem2sRunningError
       || waitingForQcToLaunch || pipelineRunning || pipelineRunningError

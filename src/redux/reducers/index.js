@@ -43,6 +43,7 @@ const rootReducer = (state, action) => {
       samples: state.samples,
       projects: state.projects,
       backendStatus: state.backendStatus,
+      experiments: state.experiments,
     };
   }
   return appReducers(newState, action);
