@@ -5,6 +5,7 @@ import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
+import { act } from 'react-dom/test-utils';
 import { Empty } from 'antd';
 
 import Environment from 'utils/environment';
@@ -274,6 +275,8 @@ describe('HeatmapPlot', () => {
 
     expect(component.find('HeatmapPlot').length).toEqual(1);
     expect(component.find(Empty).length).toEqual(1);
+
+    expect(loadMarkerGenes).not.toHaveBeenCalled();
   });
 
   it('renders error state when the view errors out', () => {
@@ -302,6 +305,8 @@ describe('HeatmapPlot', () => {
 
     expect(component.find('HeatmapPlot').length).toEqual(1);
     expect(component.find(Empty).length).toEqual(1);
+
+    expect(loadMarkerGenes).not.toHaveBeenCalled();
   });
 
   it('Shows Empty if cell sets is empty', () => {
@@ -365,7 +370,7 @@ describe('HeatmapPlot', () => {
         expression: {
           ...initialState.genes.expression,
           loading: false,
-          error: 'Some error',
+          error: false,
         },
       },
       experimentSettings: {
@@ -406,7 +411,7 @@ describe('HeatmapPlot', () => {
         expression: {
           ...initialState.genes.expression,
           loading: false,
-          error: 'Some error',
+          error: false,
         },
       },
       experimentSettings: {
@@ -481,5 +486,64 @@ describe('HeatmapPlot', () => {
     expect(component.find('HeatmapPlot').length).toEqual(1);
 
     expect(loadMarkerGenes).not.toHaveBeenCalled();
+  });
+
+  it.only('shows error if marker genes couldn\'t be loaded', async () => {
+    const store = mockStore({
+      ...initialState,
+      networkResources: { environment: Environment.DEVELOPMENT },
+      cellSets: {
+        ...initialState.cellSets,
+        loading: true,
+        error: false,
+      },
+      genes: {
+        ...initialState.genes,
+        markers: {
+          ...initialState.genes.markers,
+          loading: false,
+          error: 'some marker error, probably something with parsing as always',
+        },
+      },
+      experimentSettings: {
+        ...initialState.experimentSettings,
+        processing: {
+          ...initialState.processing,
+          configureEmbedding: {
+            clusteringSettings: { methodSettings: { louvain: { resolution: 10 } } },
+          },
+        },
+      },
+    });
+
+    const louvainClusters = _.range(60).map((clusterIndex) => ({ key: `louvain-${clusterIndex}` }));
+    getCellSetsHierarchyByKeys.mockReturnValue(() => (
+      [{
+        key: 'louvain',
+        name: 'louvain clusters',
+        type: 'cellSets',
+        children: louvainClusters,
+      }]));
+
+    component = mount(
+      <Provider store={store}>
+        <HeatmapPlot experimentId={experimentId} width={200} height={200} />
+      </Provider>,
+    );
+
+    expect(component.find('HeatmapPlot').length).toEqual(1);
+    expect(loadMarkerGenes).not.toHaveBeenCalled();
+
+    // Shows error component
+    expect(component.find('PlatformError').length).toEqual(1);
+
+    //
+    await act(async () => {
+      component.find('PlatformError').props().onClick();
+    });
+
+    // on clicking platform error button it reloads
+    const expectedMarkerGenes = 3;
+    expect(loadMarkerGenes).toHaveBeenCalledWith('123', 10, 'interactiveHeatmap', expectedMarkerGenes);
   });
 });
