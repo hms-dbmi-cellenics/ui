@@ -15,11 +15,11 @@ import {
 } from 'antd';
 import { CheckCircleTwoTone, CloseCircleTwoTone, DeleteOutlined } from '@ant-design/icons';
 import Dropzone from 'react-dropzone';
-import techOptions from '../../utils/upload/fileUploadSpecifications';
-import pushNotificationMessage from '../../utils/pushNotificationMessage';
-import { fileObjectToFileRecord } from '../../utils/upload/processUpload';
+import techOptions from 'utils/upload/fileUploadSpecifications';
+import pushNotificationMessage from 'utils/pushNotificationMessage';
+import { fileObjectToFileRecord } from 'utils/upload/processUpload';
 
-import integrationTestConstants from '../../utils/integrationTestConstants';
+import integrationTestConstants from 'utils/integrationTestConstants';
 
 const { Text, Title, Paragraph } = Typography;
 const { Option } = Select;
