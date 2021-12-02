@@ -441,4 +441,45 @@ describe('HeatmapPlot', () => {
 
     expect(loadMarkerGenes).toHaveBeenCalledWith('123', 10, 'interactiveHeatmap', expectedMarkerGenes);
   });
+
+  it('doesn\'t load marker genes if it doesn\'t know the louvain clusters', async () => {
+    const store = mockStore({
+      ...initialState,
+      networkResources: { environment: Environment.DEVELOPMENT },
+      cellSets: {
+        ...initialState.cellSets,
+        loading: true,
+        error: false,
+      },
+      genes: {
+        ...initialState.genes,
+        expression: {
+          ...initialState.genes.expression,
+          loading: false,
+          error: 'Some error',
+        },
+      },
+      experimentSettings: {
+        ...initialState.experimentSettings,
+        processing: {
+          ...initialState.processing,
+          configureEmbedding: {
+            clusteringSettings: { methodSettings: { louvain: { resolution: 10 } } },
+          },
+        },
+      },
+    });
+
+    getCellSetsHierarchyByKeys.mockReturnValue(() => []);
+
+    component = mount(
+      <Provider store={store}>
+        <HeatmapPlot experimentId={experimentId} width={200} height={200} />
+      </Provider>,
+    );
+
+    expect(component.find('HeatmapPlot').length).toEqual(1);
+
+    expect(loadMarkerGenes).not.toHaveBeenCalled();
+  });
 });
