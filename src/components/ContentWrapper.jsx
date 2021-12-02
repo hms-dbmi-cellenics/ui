@@ -46,27 +46,30 @@ const ContentWrapper = (props) => {
   const route = router?.route || '';
   const navigateTo = useAppRouter();
 
-  const experiment = useSelector((state) => state?.experiments[routeExperimentId]);
-  const experimentName = experimentData?.experimentName || experiment?.name;
   const currentExperimentIdRef = useRef(routeExperimentId);
   const activeProjectUuid = useSelector((state) => state?.projects?.meta?.activeProjectUuid);
-  const activeProjectExperiment = useSelector((state) => (
+  const activeProjectExperimentID = useSelector((state) => (
     state?.projects[activeProjectUuid]?.experiments[0]));
-
   // if the current selected project experiment is processed
   // and we are in data-management, we don't have experimentId
+  const currentExperimentId = currentExperimentIdRef.current;
 
   useEffect(() => {
+    if (!activeProjectExperimentID && !routeExperimentId) return;
+
     if (routeExperimentId && currentExperimentIdRef.current !== routeExperimentId) {
       currentExperimentIdRef.current = routeExperimentId;
       return;
     }
-    if (!routeExperimentId && currentExperimentIdRef.current !== activeProjectExperiment) {
-      currentExperimentIdRef.current = activeProjectExperiment;
+    if (!routeExperimentId && currentExperimentIdRef.current !== activeProjectExperimentID) {
+      currentExperimentIdRef.current = activeProjectExperimentID;
     }
-  }, [routeExperimentId, activeProjectExperiment]);
+  }, [routeExperimentId, activeProjectExperimentID]);
 
-  const currentExperimentId = currentExperimentIdRef.current;
+  const experiment = useSelector((state) => state?.experiments[currentExperimentId]);
+
+  const experimentName = experimentData?.experimentName || experiment?.name;
+
   const {
     loading: backendLoading,
     error: backendError,
