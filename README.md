@@ -113,4 +113,13 @@ Browser cache enabled by default in production environment. This can be disabled
 
     localStorage.set("disableCache", "true")
 
-Browser cache makes it hard to develop as it can hide changes from the backend, so cache is disabled by default in development. This can be changed by modifying `disableCache` in `localStorage` manually .
+Browser cache makes it hard to develop as it can hide changes from the backend, so cache is disabled by default in development. This can be changed by modifying `disableCache` in `localStorage` manually.
+
+### Troubleshooting
+
+1. `Error: listen EADDRINUSE: address already in use :::5000`
+
+    Starting on macOS 12 (Monterey) [port 5000 is used by Airplay
+    receiver](https://developer.apple.com/forums/thread/682332). To be able
+    to run the UI locally it has to be disabled, going to system Preferences >
+    Sharing and unticking the Airplay Reciever service box.
