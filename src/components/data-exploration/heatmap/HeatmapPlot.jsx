@@ -139,7 +139,7 @@ const HeatmapPlot = (props) => {
   ]);
 
   useEffect(() => {
-    if (louvainClusterCount > 0 && !markerGenesLoadingError && !expressionDataError && !viewError) {
+    if (louvainClusterCount > 0 && !markerGenesLoadingError && !markerGenesLoading) {
       const nMarkerGenes = calculateIdealNMarkerGenes(louvainClusterCount);
 
       dispatch(loadMarkerGenes(

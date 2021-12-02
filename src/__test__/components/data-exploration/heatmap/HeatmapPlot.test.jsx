@@ -275,8 +275,6 @@ describe('HeatmapPlot', () => {
 
     expect(component.find('HeatmapPlot').length).toEqual(1);
     expect(component.find(Empty).length).toEqual(1);
-
-    expect(loadMarkerGenes).not.toHaveBeenCalled();
   });
 
   it('renders error state when the view errors out', () => {
@@ -305,8 +303,6 @@ describe('HeatmapPlot', () => {
 
     expect(component.find('HeatmapPlot').length).toEqual(1);
     expect(component.find(Empty).length).toEqual(1);
-
-    expect(loadMarkerGenes).not.toHaveBeenCalled();
   });
 
   it('Shows Empty if cell sets is empty', () => {
@@ -488,7 +484,7 @@ describe('HeatmapPlot', () => {
     expect(loadMarkerGenes).not.toHaveBeenCalled();
   });
 
-  it.only('shows error if marker genes couldn\'t be loaded', async () => {
+  it('shows error if marker genes couldn\'t be loaded', async () => {
     const store = mockStore({
       ...initialState,
       networkResources: { environment: Environment.DEVELOPMENT },
