@@ -19,7 +19,7 @@ jobs:
 
     - id: test-ci
       name: Testing CI
-      runs:
+      run: |-
         echo "Node version: $(node --version)"
         echo "NPM version: $(npm --version)"
         exit 1
