@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 /* eslint-disable react/jsx-props-no-spreading */
-import React, { useRef, useState, useMemo } from 'react';
+import React, { useRef, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
 import {
@@ -33,7 +33,7 @@ const ProjectDetails = ({ width, height }) => {
       style={{
         padding: layout.PANEL_PADDING,
         width,
-        height,
+        height: height - layout.PANEL_HEADING_HEIGHT,
       }}
     >
       <div style={{
