@@ -1,24 +1,34 @@
+import _ from 'lodash';
 import React from 'react';
 import { mount } from 'enzyme';
 import { Provider } from 'react-redux';
-import thunk from 'redux-thunk';
-import waitForActions from 'redux-mock-store-await-actions';
 import configureStore from 'redux-mock-store';
+import thunk from 'redux-thunk';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
+import { act } from 'react-dom/test-utils';
 import { Empty } from 'antd';
 
-import { MARKER_GENES_LOADING } from '../../../../redux/actionTypes/genes';
+import Environment from 'utils/environment';
 
 // eslint-disable-next-line import/no-named-as-default
-import HeatmapPlot from '../../../../components/data-exploration/heatmap/HeatmapPlot';
-import VegaHeatmap from '../../../../components/data-exploration/heatmap/VegaHeatmap';
-import { getFromApiExpectOK } from '../../../../utils/getDataExpectOK';
+import HeatmapPlot from 'components/data-exploration/heatmap/HeatmapPlot';
+import VegaHeatmap from 'components/data-exploration/heatmap/VegaHeatmap';
 
-import { CELL_SETS_LOADING } from '../../../../redux/actionTypes/cellSets';
+import { getFromApiExpectOK } from 'utils/getDataExpectOK';
+import mockCellSets from 'utils/tests/mockStores/cellSets';
+
+import { CELL_SETS_LOADING } from 'redux/actionTypes/cellSets';
+import { getCellSets, getCellSetsHierarchyByKeys, getBackendStatus } from 'redux/selectors';
+import { loadMarkerGenes } from 'redux/actions/genes';
+
 import '__test__/test-utils/setupTests';
 
-jest.mock('../../../../components/data-exploration/heatmap/VegaHeatmap');
-jest.mock('../../../../utils/getDataExpectOK');
+jest.mock('components/data-exploration/heatmap/VegaHeatmap');
+jest.mock('utils/getDataExpectOK');
+jest.mock('redux/selectors');
+
+jest.mock('redux/actions/genes/loadMarkerGenes');
+loadMarkerGenes.mockImplementation(() => async () => { });
 
 VegaHeatmap.mockImplementation(() => <div>Mocked Vega Heatmap</div>);
 enableFetchMocks();
@@ -126,6 +136,47 @@ describe('HeatmapPlot', () => {
     fetchMock.resetMocks();
     fetchMock.doMock();
     fetchMock.mockResolvedValue(response);
+
+    getCellSets.mockReturnValue(() => mockCellSets().cellSets);
+
+    getBackendStatus.mockReturnValue(() => ({
+      loading: false,
+      error: false,
+      status: { pipeline: { completedSteps: [] } },
+    }));
+
+    getCellSetsHierarchyByKeys.mockReturnValue(() => (
+      [{
+        key: 'louvain',
+        name: 'louvain clusters',
+        type: 'cellSets',
+        children: [
+          {
+            key: 'louvain-0',
+          },
+          {
+            key: 'louvain-1',
+          },
+          {
+            key: 'louvain-2',
+          },
+          {
+            key: 'louvain-3',
+          },
+          {
+            key: 'louvain-4',
+          },
+          {
+            key: 'louvain-5',
+          },
+          {
+            key: 'louvain-6',
+          },
+          {
+            key: 'louvain-7',
+          },
+        ],
+      }]));
   });
 
   afterEach(() => {
@@ -254,16 +305,15 @@ describe('HeatmapPlot', () => {
   });
 
   it('Shows Empty if cell sets is empty', () => {
-    const store = mockStore({
-      ...initialState,
-      cellSets: {
-        ...initialState.cellSets,
-        hierarchy: [],
-        properties: [],
-        loading: false,
-        error: false,
-      },
-    });
+    getCellSets.mockReturnValue(() => ({
+      ...initialState.cellSets,
+      hierarchy: [],
+      properties: [],
+      loading: false,
+      error: false,
+    }));
+
+    const store = mockStore({ ...initialState });
 
     component = mount(
       <Provider store={store}>
@@ -304,6 +354,98 @@ describe('HeatmapPlot', () => {
   it('loads marker genes if it can', async () => {
     const store = mockStore({
       ...initialState,
+      networkResources: { environment: Environment.DEVELOPMENT },
+      cellSets: {
+        ...initialState.cellSets,
+        loading: true,
+        error: false,
+      },
+      genes: {
+        ...initialState.genes,
+        expression: {
+          ...initialState.genes.expression,
+          loading: false,
+          error: false,
+        },
+      },
+      experimentSettings: {
+        ...initialState.experimentSettings,
+        processing: {
+          ...initialState.processing,
+          configureEmbedding: {
+            clusteringSettings: { methodSettings: { louvain: { resolution: 10 } } },
+          },
+        },
+      },
+    });
+
+    component = mount(
+      <Provider store={store}>
+        <HeatmapPlot experimentId={experimentId} width={200} height={200} />
+      </Provider>,
+    );
+
+    expect(component.find('HeatmapPlot').length).toEqual(1);
+
+    const expectedMarkerGenes = 5;
+
+    expect(loadMarkerGenes).toHaveBeenCalledWith('123', 10, 'interactiveHeatmap', expectedMarkerGenes);
+  });
+
+  it('loads marker genes with a different amount of marker genes if louvain clusters are many', async () => {
+    const store = mockStore({
+      ...initialState,
+      networkResources: { environment: Environment.DEVELOPMENT },
+      cellSets: {
+        ...initialState.cellSets,
+        loading: true,
+        error: false,
+      },
+      genes: {
+        ...initialState.genes,
+        expression: {
+          ...initialState.genes.expression,
+          loading: false,
+          error: false,
+        },
+      },
+      experimentSettings: {
+        ...initialState.experimentSettings,
+        processing: {
+          ...initialState.processing,
+          configureEmbedding: {
+            clusteringSettings: { methodSettings: { louvain: { resolution: 10 } } },
+          },
+        },
+      },
+    });
+
+    const louvainClusters = _.range(60).map((clusterIndex) => ({ key: `louvain-${clusterIndex}` }));
+    getCellSetsHierarchyByKeys.mockReturnValue(() => (
+      [{
+        key: 'louvain',
+        name: 'louvain clusters',
+        type: 'cellSets',
+        children: louvainClusters,
+      }]));
+
+    component = mount(
+      <Provider store={store}>
+        <HeatmapPlot experimentId={experimentId} width={200} height={200} />
+      </Provider>,
+    );
+
+    expect(component.find('HeatmapPlot').length).toEqual(1);
+
+    const expectedMarkerGenes = 3;
+
+    expect(loadMarkerGenes).toHaveBeenCalledWith('123', 10, 'interactiveHeatmap', expectedMarkerGenes);
+  });
+
+  it('doesn\'t load marker genes if it doesn\'t know the louvain clusters', async () => {
+    const store = mockStore({
+      ...initialState,
+      networkResources: { environment: Environment.DEVELOPMENT },
       cellSets: {
         ...initialState.cellSets,
         loading: true,
@@ -328,6 +470,8 @@ describe('HeatmapPlot', () => {
       },
     });
 
+    getCellSetsHierarchyByKeys.mockReturnValue(() => []);
+
     component = mount(
       <Provider store={store}>
         <HeatmapPlot experimentId={experimentId} width={200} height={200} />
@@ -336,10 +480,65 @@ describe('HeatmapPlot', () => {
 
     expect(component.find('HeatmapPlot').length).toEqual(1);
 
-    await waitForActions(
-      store,
-      [MARKER_GENES_LOADING],
-      { matcher: waitForActions.matchers.containing },
+    expect(loadMarkerGenes).not.toHaveBeenCalled();
+  });
+
+  it('shows error if marker genes couldn\'t be loaded', async () => {
+    const store = mockStore({
+      ...initialState,
+      networkResources: { environment: Environment.DEVELOPMENT },
+      cellSets: {
+        ...initialState.cellSets,
+        loading: true,
+        error: false,
+      },
+      genes: {
+        ...initialState.genes,
+        markers: {
+          ...initialState.genes.markers,
+          loading: false,
+          error: 'some marker error, probably something with parsing as always',
+        },
+      },
+      experimentSettings: {
+        ...initialState.experimentSettings,
+        processing: {
+          ...initialState.processing,
+          configureEmbedding: {
+            clusteringSettings: { methodSettings: { louvain: { resolution: 10 } } },
+          },
+        },
+      },
+    });
+
+    const louvainClusters = _.range(60).map((clusterIndex) => ({ key: `louvain-${clusterIndex}` }));
+    getCellSetsHierarchyByKeys.mockReturnValue(() => (
+      [{
+        key: 'louvain',
+        name: 'louvain clusters',
+        type: 'cellSets',
+        children: louvainClusters,
+      }]));
+
+    component = mount(
+      <Provider store={store}>
+        <HeatmapPlot experimentId={experimentId} width={200} height={200} />
+      </Provider>,
     );
+
+    expect(component.find('HeatmapPlot').length).toEqual(1);
+    expect(loadMarkerGenes).not.toHaveBeenCalled();
+
+    // Shows error component
+    expect(component.find('PlatformError').length).toEqual(1);
+
+    //
+    await act(async () => {
+      component.find('PlatformError').props().onClick();
+    });
+
+    // on clicking platform error button it reloads
+    const expectedMarkerGenes = 3;
+    expect(loadMarkerGenes).toHaveBeenCalledWith('123', 10, 'interactiveHeatmap', expectedMarkerGenes);
   });
 });
