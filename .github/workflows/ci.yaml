@@ -22,12 +22,6 @@ jobs:
       with:
         node-version: '14'
 
-    - id: test-ci
-      name: Testing CI
-      run: |-
-        echo "Node version: $(node --version)"
-        echo "NPM version: $(npm --version)"
-
     - id: checkout
       name: Check out source code
       uses: actions/checkout@v2
@@ -39,6 +33,10 @@ jobs:
     - id: install
       name: Install dependencies
       run: |-
+        echo "Running CI with "
+        echo "Node version: $(node --version)"
+        echo "NPM version: $(npm --version)"
+        
         git config --global url."https://".insteadOf ssh://
         npm ci
 
