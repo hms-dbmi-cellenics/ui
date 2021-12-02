@@ -23,11 +23,13 @@ jobs:
     - id: cache-seek
       name: Check for npm cache hit
       uses: c-hive/gha-npm-cache@v1
-
-    - id: install
+  
+    - id: setup-node
       uses: actions/setup-node@v2
       with:
         node-version: '14'
+  
+    - id: install
       name: Install dependencies
       run: |-
         git config --global url."https://".insteadOf ssh://
