@@ -229,7 +229,7 @@ const DataIntegration = (props) => {
   }, [selectedPlot]);
 
   useEffect(() => {
-    if (!selectedConfig || !plotData) {
+    if (!selectedConfig) {
       return;
     }
 
