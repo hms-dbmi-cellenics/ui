@@ -62,7 +62,7 @@ const ConfigureEmbedding = (props) => {
       title: 'Colored by CellSets',
       plotUuid: generateDataProcessingPlotUuid(null, filterName, 0),
       plotType: 'embeddingPreviewByCellSets',
-      plot: (config, plotData, actions) => (
+      plot: (config, actions) => (
         <CategoricalEmbeddingPlot
           experimentId={experimentId}
           config={config}
@@ -76,7 +76,7 @@ const ConfigureEmbedding = (props) => {
       title: 'Colored by Samples',
       plotUuid: generateDataProcessingPlotUuid(null, filterName, 1),
       plotType: 'embeddingPreviewBySample',
-      plot: (config, plotData, actions) => (
+      plot: (config, actions) => (
         <CategoricalEmbeddingPlot
           experimentId={experimentId}
           config={{
@@ -96,7 +96,7 @@ const ConfigureEmbedding = (props) => {
       title: 'Mitochondrial fraction reads',
       plotUuid: generateDataProcessingPlotUuid(null, filterName, 2),
       plotType: 'embeddingPreviewMitochondrialContent',
-      plot: (config, plotData, actions) => (
+      plot: (config, actions) => (
         <ContinuousEmbeddingPlot
           experimentId={experimentId}
           config={config}
@@ -114,7 +114,7 @@ const ConfigureEmbedding = (props) => {
       title: 'Cell doublet score',
       plotUuid: generateDataProcessingPlotUuid(null, filterName, 3),
       plotType: 'embeddingPreviewDoubletScore',
-      plot: (config, plotData, actions) => (
+      plot: (config, actions) => (
         <ContinuousEmbeddingPlot
           experimentId={experimentId}
           config={config}
@@ -257,10 +257,6 @@ const ConfigureEmbedding = (props) => {
     return plotConfigsToReturn;
   });
 
-  const plotData = useSelector(
-    (state) => state.componentConfig[plots[selectedPlot].plotUuid]?.plotData,
-  );
-
   const selectedConfig = plotConfigs[plots[selectedPlot].plotUuid];
 
   useEffect(() => {
@@ -281,7 +277,7 @@ const ConfigureEmbedding = (props) => {
   useEffect(() => {
     // Do not update anything if the cell sets are stil loading or if
     // the config does not exist yet.
-    if (!selectedConfig || !plotData) {
+    if (!selectedConfig) {
       return;
     }
 
@@ -296,11 +292,10 @@ const ConfigureEmbedding = (props) => {
       && !cellSets.error
       && !cellSets.updateCellSetsClustering
       && selectedConfig
-      && plotData
     ) {
-      setPlot(plots[selectedPlot].plot(selectedConfig, plotData, plotActions));
+      setPlot(plots[selectedPlot].plot(selectedConfig, plotActions));
     }
-  }, [selectedConfig, cellSets, plotData]);
+  }, [selectedConfig, cellSets]);
 
   useEffect(() => {
     const showPopupWhenUnsaved = (url) => {
