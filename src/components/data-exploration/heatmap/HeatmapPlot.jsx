@@ -58,7 +58,6 @@ const HeatmapPlot = (props) => {
   const [geneHighlight, setGeneHighlight] = useState(null);
   const [cellHighlight, setCellHighlight] = useState(null);
 
-  const [maxCells, setMaxCells] = useState(1000);
   const [vitessceData, setVitessceData] = useState(null);
 
   const cellCoordinatesRef = useRef({ x: 200, y: 300 });
@@ -157,7 +156,6 @@ const HeatmapPlot = (props) => {
   }, [
     selectedGenes,
     heatmapSettings,
-    maxCells,
     markerGenesLoading,
     cellSetsLoading,
     cellSetsHidden,
@@ -172,10 +170,6 @@ const HeatmapPlot = (props) => {
       ));
     }
   }, [louvainClusterCount]);
-
-  useEffect(() => {
-    setMaxCells(Math.floor(width * 0.8));
-  }, [width]);
 
   useEffect(() => {
     dispatch(updateCellInfo({ cellName: cellHighlight }));
