@@ -296,7 +296,6 @@ const ConfigureEmbedding = (props) => {
       && !cellSets.error
       && !cellSets.updateCellSetsClustering
       && selectedConfig
-      && plotData
     ) {
       setPlot(plots[selectedPlot].plot(selectedConfig, plotData, plotActions));
     }

@@ -62,7 +62,6 @@ const DataIntegration = (props) => {
               defaultValues: [],
             },
           }}
-          plotData={plotData}
           actions={actions}
           onUpdate={updatePlotWithChanges}
         />
@@ -238,7 +237,6 @@ const DataIntegration = (props) => {
       && !cellSets.error
       && !cellSets.updateCellSetsClustering
       && selectedConfig
-      && plotData
     ) {
       setPlot(plots[selectedPlot].plot(selectedConfig, plotData, true));
     }
