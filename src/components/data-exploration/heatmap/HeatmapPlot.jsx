@@ -61,7 +61,6 @@ const HeatmapPlot = (props) => {
   const [vitessceData, setVitessceData] = useState(null);
 
   const cellCoordinatesRef = useRef({ x: 200, y: 300 });
-  const currentHeatmapSettingsRef = useRef(null);
 
   const expressionData = useSelector((state) => state.genes.expression);
   const {
@@ -79,9 +78,8 @@ const HeatmapPlot = (props) => {
     hidden: cellSetsHidden,
   } = cellSets;
 
-  const heatmapSettings = useSelector(
-    (state) => state.componentConfig[COMPONENT_TYPE]?.config,
-  ) || {};
+  const heatmapSettings = useSelector((state) => state.componentConfig[COMPONENT_TYPE]?.config,
+    _.isEqual) || {};
 
   const louvainClustersResolution = useSelector(
     (state) => state.experimentSettings.processing
@@ -141,12 +139,9 @@ const HeatmapPlot = (props) => {
   useEffect(() => {
     if (!selectedGenes?.length > 0
       || cellSetsHierarchy.length === 0
-      || _.isEqual(currentHeatmapSettingsRef, heatmapSettings)
     ) {
       return;
     }
-
-    currentHeatmapSettingsRef.current = heatmapSettings;
 
     const data = populateHeatmapData(
       cellSets, heatmapSettings, expressionData, selectedGenes, true, true,
