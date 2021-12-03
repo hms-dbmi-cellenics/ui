@@ -1,14 +1,9 @@
-import { saveAs } from 'file-saver';
-import { Storage } from 'aws-amplify';
+import downloadFromUrl from 'utils/data-management/downloadFromUrl';
+import { getFromApiExpectOK } from 'utils/getDataExpectOK';
 
 const downloadSingleFile = async (activeProjectUuid, sampleUuid, fileName) => {
-  const bucketKey = `${activeProjectUuid}/${sampleUuid}/${fileName}`;
-
-  const downloadedS3Object = await Storage.get(bucketKey, { download: true });
-
-  const fileNameToSaveWith = fileName.endsWith('.gz') ? fileName : `${fileName}.gz`;
-
-  saveAs(downloadedS3Object.Body, fileNameToSaveWith);
+  const downloadUrl = await getFromApiExpectOK(`/v1/projects/${activeProjectUuid}/samples/${sampleUuid}/${fileName}/downloadUrl`);
+  downloadFromUrl(downloadUrl);
 };
 
 export default downloadSingleFile;
