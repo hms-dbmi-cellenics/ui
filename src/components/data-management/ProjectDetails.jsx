@@ -1,21 +1,23 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 /* eslint-disable react/jsx-props-no-spreading */
-import React, { useRef, useState } from 'react';
+import React, { useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
 import {
   Space, Typography, Button,
 } from 'antd';
+
 import PropTypes from 'prop-types';
 import {
   updateProject,
 } from 'redux/actions/projects';
 import { layout } from 'utils/constants';
+import EditablePagrapraph from 'components/EditableParagraph';
 import SamplesTable from './SamplesTable';
 import ProjectMenu from './ProjectMenu';
 
 const {
-  Title, Text, Paragraph, Link,
+  Title, Text,
 } = Typography;
 
 const ProjectDetails = ({ width, height }) => {
@@ -25,7 +27,6 @@ const ProjectDetails = ({ width, height }) => {
   const activeProject = useSelector((state) => state.projects[activeProjectUuid]);
 
   const samplesTableRef = useRef();
-  const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
 
   return (
     <div
@@ -58,28 +59,15 @@ const ProjectDetails = ({ width, height }) => {
           </Text>
         </div>
         <div style={{ flex: 1, overflowY: 'auto' }}>
-          <span>
-            <Text strong>
-              Description:
-            </Text>
-            {activeProject.description.length > 0 ? (
-              <>
-                <Link onClick={() => setIsDescriptionExpanded(!isDescriptionExpanded)}>
-                  {isDescriptionExpanded ? ' Collapse' : ' Expand'}
-                </Link>
-              </>
-            ) : <></>}
-          </span>
-          <Paragraph
-            editable={{
-              onChange: (description) => dispatch(
-                updateProject(activeProjectUuid, { description }),
-              ),
+          <Text strong>
+            Description:
+          </Text>
+          <EditablePagrapraph
+            value={activeProject.description}
+            onUpdate={(text) => {
+              dispatch(updateProject(activeProjectUuid, { description: text }));
             }}
-            ellipsis={!isDescriptionExpanded ? { rows: 1 } : false}
-          >
-            {activeProject.description}
-          </Paragraph>
+          />
           <SamplesTable
             ref={samplesTableRef}
           />
