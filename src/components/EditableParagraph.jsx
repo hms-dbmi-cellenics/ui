@@ -19,18 +19,6 @@ const EditablePagrapraph = (props) => {
     }
   }, [isEditing]);
 
-  const renderEditButton = () => <Button style={{ padding: 0 }} type='link' icon={<EditOutlined />} onClick={() => setIsEditing(true)} />;
-
-  const renderEllipsisLink = (isCurrentlyExpanded) => (
-    <Button
-      type='link'
-      style={{ padding: 0 }}
-      onClick={() => setIsExpanded(!isCurrentlyExpanded)}
-    >
-      { isCurrentlyExpanded ? 'less' : 'more' }
-    </Button>
-  );
-
   const renderEditor = () => (
     // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions
     <p
@@ -54,13 +42,31 @@ const EditablePagrapraph = (props) => {
     </p>
   );
 
-  const renderContent = (isCurrentlyExpanded) => {
-    if (isCurrentlyExpanded) {
+  const renderEditButton = () => <Button style={{ padding: 0 }} type='link' icon={<EditOutlined />} onClick={() => setIsEditing(true)} />;
+
+  const renderEllipsisLink = () => (
+    <Button
+      type='link'
+      style={{ padding: 0 }}
+      onClick={() => setIsExpanded(!isExpanded)}
+    >
+      { isExpanded ? 'less' : 'more' }
+    </Button>
+  );
+
+  const renderControls = () => (
+    <>
+      { renderEditButton() }
+      { value.length ? renderEllipsisLink() : <></>}
+    </>
+  );
+
+  const renderContent = () => {
+    if (isExpanded) {
       return (
         <p>
           { value }
-          { renderEditButton() }
-          { renderEllipsisLink(isCurrentlyExpanded) }
+          { renderControls() }
         </p>
       );
     }
@@ -76,8 +82,7 @@ const EditablePagrapraph = (props) => {
         >
           { value }
         </p>
-        { renderEditButton() }
-        { renderEllipsisLink(isCurrentlyExpanded) }
+        { renderControls() }
       </div>
     );
   };
