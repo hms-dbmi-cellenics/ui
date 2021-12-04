@@ -73,22 +73,23 @@ const EditablePagrapraph = (props) => {
 
     return (
       <div style={{ display: 'flex' }}>
-        <p
+        <div
           style={{
             whiteSpace: 'nowrap',
             overflow: 'hidden',
             textOverflow: 'ellipsis',
+            paddingTop: '0.25em',
           }}
         >
           { value }
-        </p>
+        </div>
         { renderControls() }
       </div>
     );
   };
 
   if (isEditing) return renderEditor();
-  return renderContent(isExpanded);
+  return renderContent();
 };
 
 EditablePagrapraph.propTypes = {
