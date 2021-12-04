@@ -125,16 +125,7 @@ const DataManagementPage = ({ route }) => {
     splitPercentage: 23,
   };
 
-  const renderWindow = (tile, width, height) => {
-    if (tile && height && width) {
-      return (
-        <div style={{ padding: '10px' }}>
-          {height && width ? tile(width, height) : <></>}
-        </div>
-      );
-    }
-    return <></>;
-  };
+  const renderWindow = (tile, width, height) => (tile && height && width ? tile(width, height) : <></>);
 
   return (
     <>
