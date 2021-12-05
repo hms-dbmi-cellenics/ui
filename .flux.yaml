@@ -25,10 +25,6 @@ spec:
     readinessProbe:
       path: "/data-management"
     livenessProbe:
-      probeType: 'exec'
-      command: 
-        - sh
-        - -c
-        - netstat -tulpn | grep LISTEN | grep 5000
+      probeType: tcpSocket
 
     # filled in by CI. do not modify.
