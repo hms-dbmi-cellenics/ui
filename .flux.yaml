@@ -25,6 +25,10 @@ spec:
     readinessProbe:
       path: "/data-management"
     livenessProbe:
-      path: "/data-management"
+      probeType: 'exec'
+      command: 
+        - sh
+        - -c
+        - netstat -tulpn | grep LISTEN | grep 5000
 
     # filled in by CI. do not modify.
