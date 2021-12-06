@@ -1,4 +1,5 @@
 /* eslint-disable no-param-reassign */
+import _ from 'lodash';
 import fetchAPI from '../../../utils/fetchAPI';
 import { isServerError, throwIfRequestFailed } from '../../../utils/fetchErrors';
 import endUserMessages from '../../../utils/endUserMessages';
@@ -15,6 +16,8 @@ const saveSamples = (
 
   let payload;
 
+  const newSampleCopy = _.cloneDeep(newSample);
+
   // add new sample to payload
   if (addSample) {
     const projectSamples = projects[projectUuid].samples.reduce((acc, sampleId) => {
@@ -22,14 +25,20 @@ const saveSamples = (
       return acc;
     }, {});
 
+    // Do not save the fileObject to DynamoDB as it can not be serialized
+    Object.keys(newSampleCopy.files).forEach((file) => {
+      delete newSampleCopy.files[file].fileObject;
+    });
+
     payload = projectSamples;
     payload = {
       ...payload,
-      [newSample.uuid]: newSample,
+      [newSample.uuid]: newSampleCopy,
     };
   } else {
-    payload = newSample;
+    payload = newSampleCopy;
   }
+
   // This is set right now as there is only one experiment per project
   // Should be changed when we support multiple experiments per project
   const experimentId = projects[projectUuid].experiments[0];

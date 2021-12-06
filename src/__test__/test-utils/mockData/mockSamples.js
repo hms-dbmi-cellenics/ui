@@ -11,8 +11,9 @@ const mockFileEntry = (fileName, sampleId) => ({
   name: fileName,
   compressed: true,
   lastModified: fake.MOCK_DATETIME,
-  bundle: {
+  fileObject: {
     path: `${sampleId}/${fileName}`,
+    size: 100,
   },
   errors: '',
 });

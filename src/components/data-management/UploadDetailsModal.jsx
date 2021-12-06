@@ -28,26 +28,27 @@ const UploadDetailsModal = (props) => {
   const { upload } = file || {};
   const status = upload?.status;
   const inputFileRef = useRef(null);
-  const [replacementFileBundle, setReplacementFileBundle] = useState(null);
+  const [replacementFileObject, setReplacementFileObject] = useState(null);
 
   const { activeProjectUuid } = useSelector((state) => state.projects.meta) || false;
   const samples = useSelector((state) => state.samples);
   const sampleName = samples[uploadDetailsModalDataRef.current?.sampleUuid]?.name;
 
   useEffect(() => {
-    if (replacementFileBundle) {
-      fileObjectToFileRecord(replacementFileBundle, SELECTED_TECH).then((newFile) => {
+    if (replacementFileObject) {
+      fileObjectToFileRecord(replacementFileObject, SELECTED_TECH).then((newFile) => {
         if (newFile.valid) { // && newFile.name === file.name ?
-          uploadFileBundle(newFile);
+          uploadFile(newFile);
         } else {
           pushNotificationMessage('error',
             'The selected file name does not match the expected category.', 2);
         }
       });
     }
-  }, [replacementFileBundle]);
+  }, [replacementFileObject]);
 
-  const isSuccessModal = status === UploadStatus.UPLOADED;
+  // const isSuccessModal = status === UploadStatus.UPLOADED;
+  const isSuccessModal = status !== UploadStatus.UPLOADED;
   const isNotUploadedModal = status === UploadStatus.FILE_NOT_FOUND;
 
   const toMBytes = (sizeInBytes) => (sizeInBytes / (1000 * 1000)).toFixed(2);
@@ -63,7 +64,7 @@ const UploadDetailsModal = (props) => {
     return `${weekDayName}, ${fullDate} at ${fullTime}`;
   };
 
-  const uploadFileBundle = (newFile) => {
+  const uploadFile = (newFile) => {
     if (!uploadDetailsModalDataRef.current) {
       return;
     }
@@ -77,7 +78,7 @@ const UploadDetailsModal = (props) => {
       key='retry'
       block
       onClick={() => {
-        uploadFileBundle(bundle);
+        uploadFile(file);
       }}
       style={{ width: '140px', marginBottom: '10px' }}
     >
@@ -98,7 +99,7 @@ const UploadDetailsModal = (props) => {
             if (!newFile) {
               return;
             }
-            setReplacementFileBundle(newFile);
+            setReplacementFileObject(newFile);
           }
         }
       />

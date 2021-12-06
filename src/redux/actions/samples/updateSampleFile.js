@@ -33,9 +33,6 @@ const updateSampleFile = (
 
       const newSample = mergeObjectWithArrays(sample, diffObject);
 
-      // Do not save the fileObject to DynamoDB
-      delete newSample.files[fileName].fileObject;
-
       dispatch(saveSamples(sample.projectUuid, newSample));
     }
 

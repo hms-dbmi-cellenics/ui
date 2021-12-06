@@ -96,13 +96,11 @@ const compressAndUploadSingleFile = async (
       sampleUuid, fileName, metadata,
     );
 
-    // fileObject is not needed anymore if have successfully uploaded to S3
     dispatch(
       updateSampleFile(
         sampleUuid,
         fileName,
         {
-          fileObject: null,
           upload: { status: UploadStatus.UPLOADING, amplifyPromise: uploadPromise },
         },
       ),
