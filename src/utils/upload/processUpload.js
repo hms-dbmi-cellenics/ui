@@ -216,6 +216,13 @@ const processUpload = async (filesList, sampleType, samples, activeProjectUuid, 
   });
 };
 
+/**
+ * This function converts an uploaded File object into a file record that will be inserted under
+ * samples[files] in the redux store.
+ * @param {File} fileObject the File object that is uploaded to the .
+ * @param {string} technology the chosen technology that outputs this file. Used for verification.
+ * @returns {object} fileRecord object that will be associated with a sample.
+ */
 const fileObjectToFileRecord = async (fileObject, technology) => {
   // This is the first stage in uploading a file.
 

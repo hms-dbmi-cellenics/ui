@@ -19,6 +19,7 @@ const validFilesList = [
       name: 'features.tsv.gz',
       path: '/WT13/features.tsv.gz',
       type: 'application/gzip',
+      size: 100,
     },
     upload: { status: UploadStatus.UPLOADING },
     errors: '',
@@ -31,6 +32,7 @@ const validFilesList = [
       name: 'barcodes.tsv.gz',
       path: '/WT13/barcodes.tsv.gz',
       type: 'application/gzip',
+      size: 100,
     },
     upload: { status: UploadStatus.UPLOADING },
     errors: '',
@@ -43,6 +45,7 @@ const validFilesList = [
       name: 'matrix.mtx.gz',
       path: '/WT13/matrix.mtx.gz',
       type: 'application/gzip',
+      size: 100,
     },
     upload: { status: UploadStatus.UPLOADING },
     errors: '',
@@ -99,7 +102,7 @@ const initialState = {
 const flushPromises = () => new Promise(setImmediate);
 const mockStore = configureMockStore([thunk]);
 
-jest.mock('../../../utils/upload/loadAndCompressIfNecessary',
+jest.mock('utils/upload/loadAndCompressIfNecessary',
   () => jest.fn().mockImplementation(
     (file) => {
       if (!file.valid) {
@@ -109,7 +112,7 @@ jest.mock('../../../utils/upload/loadAndCompressIfNecessary',
     },
   ));
 
-jest.mock('../../../redux/actions/samples/saveSamples', () => jest.fn().mockImplementation(() => ({
+jest.mock('redux/actions/samples/saveSamples', () => jest.fn().mockImplementation(() => ({
   type: 'samples/saved',
 })));
 
