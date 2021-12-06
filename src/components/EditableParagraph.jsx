@@ -6,11 +6,11 @@ import {
 } from '@ant-design/icons';
 
 const EditablePagrapraph = (props) => {
-  const { onUpdate, value: inputValue } = props;
+  const { onUpdate, value } = props;
 
   const paragraphEditor = useRef();
 
-  const [value, setValue] = useState(inputValue);
+  const [text, setText] = useState(value);
   const [isExpanded, setIsExpanded] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
 
@@ -23,7 +23,7 @@ const EditablePagrapraph = (props) => {
   const handleUpdate = (e) => {
     const content = e.target.textContent;
 
-    setValue(content);
+    setText(content);
     onUpdate(content);
     setIsEditing(false);
   };
@@ -43,7 +43,7 @@ const EditablePagrapraph = (props) => {
         }
       }}
     >
-      {value}
+      {text}
     </p>
   );
 
@@ -62,7 +62,7 @@ const EditablePagrapraph = (props) => {
   const renderControls = () => (
     <>
       { renderEditButton() }
-      { value.length ? renderEllipsisLink() : <></>}
+      { text.length ? renderEllipsisLink() : <></>}
     </>
   );
 
@@ -70,7 +70,7 @@ const EditablePagrapraph = (props) => {
     if (isExpanded) {
       return (
         <p>
-          { value }
+          { text }
           { renderControls() }
         </p>
       );
@@ -86,7 +86,7 @@ const EditablePagrapraph = (props) => {
             paddingTop: '0.25em',
           }}
         >
-          { value }
+          { text }
         </div>
         { renderControls() }
       </div>
