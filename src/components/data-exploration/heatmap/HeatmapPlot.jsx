@@ -170,10 +170,11 @@ const HeatmapPlot = (props) => {
 
   const buildExpressionMatrix = () => {
     const cellIds = heatmapData.cellOrder.map((x) => `${x}`);
+
     const genes = heatmapData.geneOrder;
 
     // array with shape [gene_1 cell_1, ..., gene_1 cell_n, gene_2 cell_1, ... ]
-    const geneOrderedExpression = heatmapData.heatmapData.map((x) => x.expression);
+    const geneOrderedExpression = heatmapData.geneExpressionsData.map((x) => x.expression);
 
     // first convert to cell by gene matrix
     const cellByGeneMatrix = listToMatrix(geneOrderedExpression, cellIds.length);

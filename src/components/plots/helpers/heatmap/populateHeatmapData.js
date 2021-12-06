@@ -208,7 +208,7 @@ const populateHeatmapData = (
     cellOrder: [],
     geneOrder: selectedGenes,
     trackOrder,
-    heatmapData: [],
+    geneExpressionsData: [],
     trackPositionData: [],
     trackGroupData: [],
   };
@@ -245,7 +245,7 @@ const populateHeatmapData = (
         };
       }
 
-      data.heatmapData.push({
+      data.geneExpressionsData.push({
         cellId,
         gene,
         expression: expressionValues.color[cellId],
