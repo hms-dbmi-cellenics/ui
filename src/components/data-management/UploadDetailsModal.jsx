@@ -47,8 +47,7 @@ const UploadDetailsModal = (props) => {
     }
   }, [replacementFileObject]);
 
-  // const isSuccessModal = status === UploadStatus.UPLOADED;
-  const isSuccessModal = status !== UploadStatus.UPLOADED;
+  const isSuccessModal = status === UploadStatus.UPLOADED;
   const isNotUploadedModal = status === UploadStatus.FILE_NOT_FOUND;
 
   const toMBytes = (sizeInBytes) => (sizeInBytes / (1000 * 1000)).toFixed(2);

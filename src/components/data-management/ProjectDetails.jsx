@@ -65,7 +65,9 @@ const ProjectDetails = ({ width, height }) => {
           <EditablePagrapraph
             value={activeProject.description}
             onUpdate={(text) => {
-              dispatch(updateProject(activeProjectUuid, { description: text }));
+              if (text !== activeProject.description) {
+                dispatch(updateProject(activeProjectUuid, { description: text }));
+              }
             }}
           />
           <SamplesTable
