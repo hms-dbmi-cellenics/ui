@@ -1,4 +1,5 @@
 /* eslint-disable no-param-reassign */
+import _ from 'lodash';
 import { getAllCells, getSampleCells } from 'utils/cellSets';
 
 const generateSpec = (config, plotData, cellSetLegendsData) => {
@@ -208,7 +209,7 @@ const filterCells = (cellSets, sampleKey, groupBy) => {
     return acc;
   }, []);
 
-  const filteredCellSetLegendsData = [];
+  let filteredCellSetLegendsData = [];
   const filteredCellSetLegends = new Set();
 
   filteredCells = filteredCells.map((cell) => {
@@ -221,7 +222,7 @@ const filterCells = (cellSets, sampleKey, groupBy) => {
 
     if (!filteredCellSetLegends.has(key)) {
       filteredCellSetLegends.add(key);
-      filteredCellSetLegendsData.push({ name, color });
+      filteredCellSetLegendsData.push({ key, name, color });
     }
 
     return {
@@ -233,6 +234,14 @@ const filterCells = (cellSets, sampleKey, groupBy) => {
   });
 
   filteredCells = filteredCells.filter((cell) => cell !== null);
+
+  // Sort legends to show
+  const sortedKeys = clusterEnteries.map(({ key }) => key);
+
+  filteredCellSetLegendsData = _.sortBy(
+    filteredCellSetLegendsData,
+    ({ key }) => _.indexOf(sortedKeys, key),
+  );
 
   return { filteredCells, cellSetLegendsData: filteredCellSetLegendsData };
 };
