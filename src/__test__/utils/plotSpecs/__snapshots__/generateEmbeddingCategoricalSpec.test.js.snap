@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`generateEmbeddingCategoricalSpec filterCells generates correct data with all louvain clusters 1`] = `
+exports[`filterCells generates correct data with all louvain clusters 1`] = `
 Object {
   "cellSetLegendsData": Array [
     Object {
@@ -259,7 +259,7 @@ Object {
 }
 `;
 
-exports[`generateEmbeddingCategoricalSpec filterCells generates correct louvain clusters data with one sample in particular 1`] = `
+exports[`filterCells generates correct louvain clusters data with one sample in particular 1`] = `
 Object {
   "cellSetLegendsData": Array [
     Object {
@@ -343,7 +343,7 @@ Object {
 }
 `;
 
-exports[`generateEmbeddingCategoricalSpec filterCells generates correct samples data with one sample in particular 1`] = `
+exports[`filterCells generates correct samples data with one sample in particular 1`] = `
 Object {
   "cellSetLegendsData": Array [
     Object {
@@ -417,7 +417,7 @@ Object {
 }
 `;
 
-exports[`generateEmbeddingCategoricalSpec works correctly with some repeated names in louvain clusters 1`] = `
+exports[`filterCells works correctly with some repeated names in louvain clusters 1`] = `
 Object {
   "cellSetLegendsData": Array [
     Object {
@@ -671,6 +671,316 @@ Object {
       "cellSetKey": "louvain-13",
       "cellSetName": "Cluster 13",
       "color": "#c203c8",
+    },
+  ],
+}
+`;
+
+exports[`generateData generates correct data with 1 cluster 1`] = `
+Object {
+  "cellSetLegendsData": Array [
+    Object {
+      "color": "#1f77b4",
+      "key": "louvain-5",
+      "name": "Cluster 5",
+    },
+  ],
+  "plotData": Array [
+    Object {
+      "cellSetKey": "louvain-5",
+      "cellSetName": "Cluster 5",
+      "color": "#1f77b4",
+      "x": 1,
+      "y": 2,
+    },
+    Object {
+      "cellSetKey": "louvain-5",
+      "cellSetName": "Cluster 5",
+      "color": "#1f77b4",
+      "x": 1,
+      "y": 2,
+    },
+  ],
+}
+`;
+
+exports[`generateData generates correct data with all louvain clusters 1`] = `
+Object {
+  "cellSetLegendsData": Array [
+    Object {
+      "color": "#e377c2",
+      "key": "louvain-0",
+      "name": "Cluster 0",
+    },
+    Object {
+      "color": "#8c564b",
+      "key": "louvain-1",
+      "name": "Cluster 1",
+    },
+    Object {
+      "color": "#d62728",
+      "key": "louvain-2",
+      "name": "Cluster 2",
+    },
+    Object {
+      "color": "#2ca02c",
+      "key": "louvain-3",
+      "name": "Cluster 3",
+    },
+    Object {
+      "color": "#ff7f0e",
+      "key": "louvain-4",
+      "name": "Cluster 4",
+    },
+    Object {
+      "color": "#1f77b4",
+      "key": "louvain-5",
+      "name": "Cluster 5",
+    },
+    Object {
+      "color": "#f8e71c",
+      "key": "louvain-6",
+      "name": "Cluster 6",
+    },
+    Object {
+      "color": "#3957ff",
+      "key": "louvain-7",
+      "name": "Cluster 7",
+    },
+    Object {
+      "color": "#d3fe14",
+      "key": "louvain-8",
+      "name": "Cluster 8",
+    },
+    Object {
+      "color": "#c9080a",
+      "key": "louvain-9",
+      "name": "Cluster 9",
+    },
+    Object {
+      "color": "#fec7f8",
+      "key": "louvain-10",
+      "name": "Cluster 10",
+    },
+    Object {
+      "color": "#0b7b3e",
+      "key": "louvain-11",
+      "name": "Cluster 11",
+    },
+    Object {
+      "color": "#0bf0e9",
+      "key": "louvain-12",
+      "name": "Cluster 12",
+    },
+    Object {
+      "color": "#c203c8",
+      "key": "louvain-13",
+      "name": "Cluster 13",
+    },
+  ],
+  "plotData": Array [
+    Object {
+      "cellSetKey": "louvain-0",
+      "cellSetName": "Cluster 0",
+      "color": "#e377c2",
+      "x": 1,
+      "y": 2,
+    },
+    Object {
+      "cellSetKey": "louvain-0",
+      "cellSetName": "Cluster 0",
+      "color": "#e377c2",
+      "x": 1,
+      "y": 2,
+    },
+    Object {
+      "cellSetKey": "louvain-0",
+      "cellSetName": "Cluster 0",
+      "color": "#e377c2",
+      "x": 1,
+      "y": 2,
+    },
+    Object {
+      "cellSetKey": "louvain-0",
+      "cellSetName": "Cluster 0",
+      "color": "#e377c2",
+      "x": 1,
+      "y": 2,
+    },
+    Object {
+      "cellSetKey": "louvain-0",
+      "cellSetName": "Cluster 0",
+      "color": "#e377c2",
+      "x": 1,
+      "y": 2,
+    },
+    Object {
+      "cellSetKey": "louvain-0",
+      "cellSetName": "Cluster 0",
+      "color": "#e377c2",
+      "x": 1,
+      "y": 2,
+    },
+    Object {
+      "cellSetKey": "louvain-1",
+      "cellSetName": "Cluster 1",
+      "color": "#8c564b",
+      "x": 1,
+      "y": 2,
+    },
+    Object {
+      "cellSetKey": "louvain-1",
+      "cellSetName": "Cluster 1",
+      "color": "#8c564b",
+      "x": 1,
+      "y": 2,
+    },
+    Object {
+      "cellSetKey": "louvain-1",
+      "cellSetName": "Cluster 1",
+      "color": "#8c564b",
+      "x": 1,
+      "y": 2,
+    },
+    Object {
+      "cellSetKey": "louvain-2",
+      "cellSetName": "Cluster 2",
+      "color": "#d62728",
+      "x": 1,
+      "y": 2,
+    },
+    Object {
+      "cellSetKey": "louvain-2",
+      "cellSetName": "Cluster 2",
+      "color": "#d62728",
+      "x": 1,
+      "y": 2,
+    },
+    Object {
+      "cellSetKey": "louvain-3",
+      "cellSetName": "Cluster 3",
+      "color": "#2ca02c",
+      "x": 1,
+      "y": 2,
+    },
+    Object {
+      "cellSetKey": "louvain-3",
+      "cellSetName": "Cluster 3",
+      "color": "#2ca02c",
+      "x": 1,
+      "y": 2,
+    },
+    Object {
+      "cellSetKey": "louvain-4",
+      "cellSetName": "Cluster 4",
+      "color": "#ff7f0e",
+      "x": 1,
+      "y": 2,
+    },
+    Object {
+      "cellSetKey": "louvain-4",
+      "cellSetName": "Cluster 4",
+      "color": "#ff7f0e",
+      "x": 1,
+      "y": 2,
+    },
+    Object {
+      "cellSetKey": "louvain-5",
+      "cellSetName": "Cluster 5",
+      "color": "#1f77b4",
+      "x": 1,
+      "y": 2,
+    },
+    Object {
+      "cellSetKey": "louvain-5",
+      "cellSetName": "Cluster 5",
+      "color": "#1f77b4",
+      "x": 1,
+      "y": 2,
+    },
+    Object {
+      "cellSetKey": "louvain-6",
+      "cellSetName": "Cluster 6",
+      "color": "#f8e71c",
+      "x": 1,
+      "y": 2,
+    },
+    Object {
+      "cellSetKey": "louvain-6",
+      "cellSetName": "Cluster 6",
+      "color": "#f8e71c",
+      "x": 1,
+      "y": 2,
+    },
+    Object {
+      "cellSetKey": "louvain-7",
+      "cellSetName": "Cluster 7",
+      "color": "#3957ff",
+      "x": 1,
+      "y": 2,
+    },
+    Object {
+      "cellSetKey": "louvain-7",
+      "cellSetName": "Cluster 7",
+      "color": "#3957ff",
+      "x": 1,
+      "y": 2,
+    },
+    Object {
+      "cellSetKey": "louvain-8",
+      "cellSetName": "Cluster 8",
+      "color": "#d3fe14",
+      "x": 1,
+      "y": 2,
+    },
+    Object {
+      "cellSetKey": "louvain-8",
+      "cellSetName": "Cluster 8",
+      "color": "#d3fe14",
+      "x": 1,
+      "y": 2,
+    },
+    Object {
+      "cellSetKey": "louvain-9",
+      "cellSetName": "Cluster 9",
+      "color": "#c9080a",
+      "x": 1,
+      "y": 2,
+    },
+    Object {
+      "cellSetKey": "louvain-9",
+      "cellSetName": "Cluster 9",
+      "color": "#c9080a",
+      "x": 1,
+      "y": 2,
+    },
+    Object {
+      "cellSetKey": "louvain-10",
+      "cellSetName": "Cluster 10",
+      "color": "#fec7f8",
+      "x": 1,
+      "y": 2,
+    },
+    Object {
+      "cellSetKey": "louvain-10",
+      "cellSetName": "Cluster 10",
+      "color": "#fec7f8",
+      "x": 1,
+      "y": 2,
+    },
+    Object {
+      "cellSetKey": "louvain-11",
+      "cellSetName": "Cluster 11",
+      "color": "#0b7b3e",
+      "x": 1,
+      "y": 2,
+    },
+    Object {
+      "cellSetKey": "louvain-12",
+      "cellSetName": "Cluster 12",
+      "color": "#0bf0e9",
+      "x": 1,
+      "y": 2,
     },
   ],
 }

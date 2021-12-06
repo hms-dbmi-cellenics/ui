@@ -1,6 +1,6 @@
 import _ from 'lodash';
 
-import { filterCells } from 'utils/plotSpecs/generateEmbeddingCategoricalSpec';
+import { filterCells, generateData } from 'utils/plotSpecs/generateEmbeddingCategoricalSpec';
 
 import {
   createHierarchyFromTree,
@@ -9,7 +9,7 @@ import {
 
 const { cellSets: mockCellSets } = require('__test__/data/cell_sets.json');
 
-describe('generateEmbeddingCategoricalSpec', () => {
+describe('filterCells', () => {
   let mockCellSetsReduxObject;
 
   beforeEach(() => {
@@ -19,7 +19,7 @@ describe('generateEmbeddingCategoricalSpec', () => {
     };
   });
 
-  it('filterCells generates correct data with all louvain clusters', () => {
+  it('generates correct data with all louvain clusters', () => {
     const result = filterCells(mockCellSetsReduxObject, 'All', 'louvain');
 
     const expectedCellSetKeys = mockCellSets
@@ -33,7 +33,7 @@ describe('generateEmbeddingCategoricalSpec', () => {
     expect(result).toMatchSnapshot();
   });
 
-  it('filterCells generates correct louvain clusters data with one sample in particular', () => {
+  it('generates correct louvain clusters data with one sample in particular', () => {
     const result = filterCells(mockCellSetsReduxObject, '98c7a0ed-d086-4df8-bf94-a9ee6edb793f', 'louvain');
 
     const louvainClustersWithinSample = ['louvain-0', 'louvain-1', 'louvain-2'];
@@ -50,7 +50,7 @@ describe('generateEmbeddingCategoricalSpec', () => {
     expect(result).toMatchSnapshot();
   });
 
-  it('filterCells generates correct samples data with one sample in particular', () => {
+  it('generates correct samples data with one sample in particular', () => {
     const sampleKey = 'b62028a1-ffa0-4f10-823d-93c9ddb88898';
 
     const result = filterCells(mockCellSetsReduxObject, sampleKey, 'sample');
@@ -85,6 +85,49 @@ describe('generateEmbeddingCategoricalSpec', () => {
 
     const expectedCellSetKeys = mockCellSetsWithRepeatedClusterNames
       .find(({ key }) => key === 'louvain').children
+      .map(({ key, name, color }) => ({ key, name, color }));
+
+    // Contains all the louvain cellSets (and in the correct order)
+    expect(result.cellSetLegendsData).toEqual(expectedCellSetKeys);
+
+    // CellIds are filtered fine
+    expect(result).toMatchSnapshot();
+  });
+});
+
+describe('generateData', () => {
+  let mockCellSetsReduxObject;
+  let mockEmbeddingData;
+
+  beforeEach(() => {
+    mockCellSetsReduxObject = {
+      properties: createPropertiesFromTree(mockCellSets),
+      hierarchy: createHierarchyFromTree(mockCellSets),
+    };
+
+    mockEmbeddingData = _.range(30).map(() => [1, 2]);
+  });
+
+  it('generates correct data with all louvain clusters', () => {
+    const result = generateData(mockCellSetsReduxObject, 'All', 'louvain', mockEmbeddingData);
+
+    const expectedCellSetKeys = mockCellSets
+      .find(({ key }) => key === 'louvain').children
+      .map(({ key, name, color }) => ({ key, name, color }));
+
+    // Contains all the louvain cellSets (and in the correct order)
+    expect(result.cellSetLegendsData).toEqual(expectedCellSetKeys);
+
+    // CellIds are filtered fine
+    expect(result).toMatchSnapshot();
+  });
+
+  it('generates correct data with 1 cluster', () => {
+    const result = generateData(mockCellSetsReduxObject, 'louvain-5', 'louvain', mockEmbeddingData);
+
+    const expectedCellSetKeys = mockCellSets
+      .find(({ key }) => key === 'louvain').children
+      .filter(({ key }) => key === 'louvain-5')
       .map(({ key, name, color }) => ({ key, name, color }));
 
     // Contains all the louvain cellSets (and in the correct order)
