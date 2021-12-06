@@ -66,13 +66,20 @@ const compressAndUploadSingleFile = async (
 ) => {
   let loadedFile = null;
 
+  const filePropertiesToUpdate = {
+    size: file.size,
+  };
+
   try {
     loadedFile = await loadAndCompressIfNecessary(file, () => (
       dispatch(
         updateSampleFile(
           sampleUuid,
           fileName,
-          { upload: { status: UploadStatus.COMPRESSING } },
+          {
+            ...filePropertiesToUpdate,
+            upload: { status: UploadStatus.COMPRESSING },
+          },
         ),
       )
     ));
@@ -83,7 +90,10 @@ const compressAndUploadSingleFile = async (
       updateSampleFile(
         sampleUuid,
         fileName,
-        { upload: { status: fileErrorStatus } },
+        {
+          ...filePropertiesToUpdate,
+          upload: { status: fileErrorStatus },
+        },
       ),
     );
 
@@ -101,6 +111,7 @@ const compressAndUploadSingleFile = async (
         sampleUuid,
         fileName,
         {
+          ...filePropertiesToUpdate,
           upload: { status: UploadStatus.UPLOADING, amplifyPromise: uploadPromise },
         },
       ),
