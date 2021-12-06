@@ -85,8 +85,6 @@ const generateSpec = (config, plotData, cellSetLegendsData) => {
         type: 'ordinal',
         range: cellSetLegendsData.map(({ color }) => color),
         domain: { data: 'values', field: 'cellSetKey' },
-        // range: { data: 'values', field: colorFieldName },
-        // domain: { data: 'values', field: 'cellSetKey' },
       },
       {
         name: 'sampleToName',
