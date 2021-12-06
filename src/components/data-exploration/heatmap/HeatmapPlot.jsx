@@ -151,8 +151,6 @@ const HeatmapPlot = (props) => {
   }, [
     selectedGenes,
     heatmapSettings,
-    markerGenesLoading,
-    cellSetsLoading,
     cellSetsHidden,
   ]);
 
