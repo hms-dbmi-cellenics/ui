@@ -194,11 +194,14 @@ const filterCells = (cellSets, sampleKey, groupBy) => {
   }
 
   // Get the cell set names
-  const clusterEnteries = cellSets.hierarchy.find(
-    (rootNode) => rootNode.key === groupBy,
-  )?.children || [];
+  const clusterEnteries = cellSets.hierarchy
+    .find(
+      (rootNode) => rootNode.key === groupBy,
+    )?.children || [];
 
-  const colorToCellIdsMap = clusterEnteries.reduce((acc, { key }) => {
+  const cellSetKeys = clusterEnteries.map(({ key }) => key);
+
+  const colorToCellIdsMap = cellSetKeys.reduce((acc, key) => {
     acc.push({
       cellIds: cellSets.properties[key].cellIds,
       key,
@@ -209,8 +212,8 @@ const filterCells = (cellSets, sampleKey, groupBy) => {
     return acc;
   }, []);
 
-  let filteredCellSetLegendsData = [];
-  const filteredCellSetLegends = new Set();
+  let cellSetLegendsData = [];
+  const addedCellSetKeys = new Set();
 
   filteredCells = filteredCells.map((cell) => {
     const inCellSet = colorToCellIdsMap.find((map) => map.cellIds.has(cell.cellId));
@@ -220,9 +223,9 @@ const filterCells = (cellSets, sampleKey, groupBy) => {
 
     const { key, name, color } = inCellSet;
 
-    if (!filteredCellSetLegends.has(key)) {
-      filteredCellSetLegends.add(key);
-      filteredCellSetLegendsData.push({ key, name, color });
+    if (!addedCellSetKeys.has(key)) {
+      addedCellSetKeys.add(key);
+      cellSetLegendsData.push({ key, name, color });
     }
 
     return {
@@ -235,15 +238,13 @@ const filterCells = (cellSets, sampleKey, groupBy) => {
 
   filteredCells = filteredCells.filter((cell) => cell !== null);
 
-  // Sort legends to show
-  const sortedKeys = clusterEnteries.map(({ key }) => key);
-
-  filteredCellSetLegendsData = _.sortBy(
-    filteredCellSetLegendsData,
-    ({ key }) => _.indexOf(sortedKeys, key),
+  // Sort legends to show them in the order that cellSetKeys are stored
+  cellSetLegendsData = _.sortBy(
+    cellSetLegendsData,
+    ({ key }) => _.indexOf(cellSetKeys, key),
   );
 
-  return { filteredCells, cellSetLegendsData: filteredCellSetLegendsData };
+  return { filteredCells, cellSetLegendsData };
 };
 
 // Generate dynamic data from redux store
