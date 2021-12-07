@@ -35,7 +35,7 @@ const mockStore = configureMockstore([thunk]);
 
 const changedFilters = ['filter-1', 'filter-2'];
 const testPath = '/test/path';
-const activeProjectUuid = 'someprojectuuid123asd';
+const activeProjectUuid = 'mock-project-uuid-random-characters';
 
 const experimentInformation = {
   projects: {
@@ -62,7 +62,7 @@ const experimentInformation = {
       status: {
         gem2s: {
           status: 'SUCCEEDED',
-          paramsHash: 'asdlkjeqwe123',
+          paramsHash: 'paramsHash123',
         },
         pipeline: {
           status: 'SUCCEEDED',
@@ -179,6 +179,7 @@ describe('RouteContext', () => {
 
     expect(mockRouter.push).toHaveBeenCalledWith(testPath);
   });
+
   it('Displays DataManagementIntercept if the experiment needs reprocessing again', () => {
     useRouter.mockReturnValue({ pathname: '/data-management', push: jest.fn() });
 
@@ -192,6 +193,7 @@ describe('RouteContext', () => {
     userEvent.click(screen.getByText(buttonText));
     expect(DataManagementIntercept).toHaveBeenCalled();
   });
+
   it('Does not display DataManagementIntercept if the project does not need reprocessing', () => {
     const noProcessingState = {
       ...noFilterChanged,

@@ -19,6 +19,7 @@ const DataManagementIntercept = (props) => {
     <Modal
       title='Changes not applied'
       visible
+      onCancel={() => onDismissIntercept()}
       footer={(
         <Space size='large' style={{ display: 'flex', justifyContent: 'center' }}>
           <Button
@@ -50,9 +51,9 @@ const DataManagementIntercept = (props) => {
     >
       <center>
         <Space direction='vertical'>
-          You have made changes that need to be reprocessed again.
+          You have made changes that require data to be processed again.
           <Text>
-            Would you like to continue to the page or go through processing?
+            Would you like to discard these changes and navigate to the page using old data or re-run sample processing?
           </Text>
         </Space>
       </center>

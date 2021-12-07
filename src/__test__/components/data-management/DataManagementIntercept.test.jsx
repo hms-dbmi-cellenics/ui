@@ -2,7 +2,7 @@ import React from 'react';
 import { screen, render } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { useRouter } from 'next/router';
-
+import fake from '__test__/test-utils/constants';
 import thunk from 'redux-thunk';
 import configureStore from 'redux-mock-store';
 import userEvent from '@testing-library/user-event';
@@ -32,7 +32,7 @@ describe('Data Management Intercept', () => {
           rerunStatus={{ rerun: true }}
           onContinueNavigation={onContinue}
           onDismissIntercept={onDismissIntercept}
-          experimentId='3jklkalsj213experiementtest'
+          experimentId={fake.EXPERIMENT_ID}
         />
       </Provider>,
     );
@@ -51,7 +51,7 @@ describe('Data Management Intercept', () => {
     const reProcessButton = screen.getByText('Re-process');
     userEvent.click(reProcessButton);
     expect(store.getActions()).toEqual([
-      { payload: { experimentId: '3jklkalsj213experiementtest' }, type: 'backendStatus/backendStatusLoading' },
+      { payload: { experimentId: fake.EXPERIMENT_ID }, type: 'backendStatus/backendStatusLoading' },
     ]);
   });
 });
