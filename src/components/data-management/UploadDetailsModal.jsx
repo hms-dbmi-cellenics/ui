@@ -23,9 +23,9 @@ const UploadDetailsModal = (props) => {
   const {
     visible, onCancel, uploadDetailsModalDataRef,
   } = props;
-  const { fileCategory, sampleUuid } = uploadDetailsModalDataRef.current || false;
-  const file = uploadDetailsModalDataRef.current?.file || {};
-  const { upload } = file || {};
+  const { fileCategory, sampleUuid } = uploadDetailsModalDataRef.current ?? {};
+  const file = uploadDetailsModalDataRef.current?.file ?? {};
+  const { upload } = file ?? {};
   const status = upload?.status;
   const inputFileRef = useRef(null);
   const [replacementFileObject, setReplacementFileObject] = useState(null);
@@ -75,6 +75,7 @@ const UploadDetailsModal = (props) => {
     <Button
       type='primary'
       key='retry'
+      disabled={!file?.fileObject}
       block
       onClick={() => {
         uploadFile(file);

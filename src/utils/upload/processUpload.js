@@ -77,9 +77,7 @@ const compressAndUploadSingleFile = async (
         updateSampleFile(
           sampleUuid,
           fileName,
-          {
-            upload: { status: UploadStatus.COMPRESSING },
-          },
+          { upload: { status: UploadStatus.COMPRESSING } },
         ),
       )
     ));
@@ -90,9 +88,7 @@ const compressAndUploadSingleFile = async (
       updateSampleFile(
         sampleUuid,
         fileName,
-        {
-          upload: { status: fileErrorStatus },
-        },
+        { upload: { status: fileErrorStatus } },
       ),
     );
 
@@ -109,9 +105,7 @@ const compressAndUploadSingleFile = async (
       updateSampleFile(
         sampleUuid,
         fileName,
-        {
-          upload: { status: UploadStatus.UPLOADING, amplifyPromise: uploadPromise },
-        },
+        { upload: { status: UploadStatus.UPLOADING, amplifyPromise: uploadPromise } },
       ),
     );
 
@@ -127,7 +121,7 @@ const compressAndUploadSingleFile = async (
     console.log(e.response?.data);
 
     // File size and file object should be available so we can reupload
-    await dispatch(
+    dispatch(
       updateSampleFile(
         sampleUuid,
         fileName,

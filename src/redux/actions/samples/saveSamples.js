@@ -16,7 +16,7 @@ const saveSamples = (
 
   let payload;
 
-  const newSampleCopy = _.cloneDeep(newSample);
+  const newSampleToUpload = _.cloneDeep(newSample);
 
   // add new sample to payload
   if (addSample) {
@@ -26,17 +26,17 @@ const saveSamples = (
     }, {});
 
     // Do not save the fileObject to DynamoDB as it can not be serialized
-    Object.keys(newSampleCopy.files).forEach((file) => {
-      delete newSampleCopy.files[file].fileObject;
+    Object.keys(newSampleToUpload.files).forEach((file) => {
+      delete newSampleToUpload.files[file].fileObject;
     });
 
     payload = projectSamples;
     payload = {
       ...payload,
-      [newSample.uuid]: newSampleCopy,
+      [newSample.uuid]: newSampleToUpload,
     };
   } else {
-    payload = newSampleCopy;
+    payload = newSampleToUpload;
   }
 
   // This is set right now as there is only one experiment per project
