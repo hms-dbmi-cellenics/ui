@@ -1,22 +1,38 @@
 import React from 'react';
 import { screen, render } from '@testing-library/react';
 import { Provider } from 'react-redux';
+import { useRouter } from 'next/router';
+
 import thunk from 'redux-thunk';
 import configureStore from 'redux-mock-store';
 import userEvent from '@testing-library/user-event';
 import DataManagementIntercept from '../../../components/data-management/DataManagementIntercept';
 
-const mockStore = configureStore([thunk]);
+jest.mock('next/router', () => ({
+  __esModule: true,
+  useRouter: jest.fn(),
+}));
 
+const mockRouter = {
+  pathname: '/data-processing',
+  push: jest.fn(),
+};
+useRouter.mockReturnValue(mockRouter);
+
+const mockStore = configureStore([thunk]);
+jest.mock('');
+const store = mockStore({});
 describe('Data Management Intercept', () => {
   const onContinue = jest.fn();
   const onDismissIntercept = jest.fn();
   const renderDataManagementIntercept = () => {
     render(
-      <Provider store={mockStore({})}>
+      <Provider store={store}>
         <DataManagementIntercept
+          rerunStatus={{ rerun: true }}
           onContinueNavigation={onContinue}
           onDismissIntercept={onDismissIntercept}
+          experimentId='3jklkalsj213experiementtest'
         />
       </Provider>,
     );
@@ -29,5 +45,13 @@ describe('Data Management Intercept', () => {
     userEvent.click(continueButton);
     expect(onContinue).toBeCalledTimes(1);
     expect(onDismissIntercept).toBeCalledTimes(1);
+  });
+  it('starts gem2s on request', () => {
+    renderDataManagementIntercept();
+    const reProcessButton = screen.getByText('Re-process');
+    userEvent.click(reProcessButton);
+    expect(store.getActions()).toEqual([
+      { payload: { experimentId: '3jklkalsj213experiementtest' }, type: 'backendStatus/backendStatusLoading' },
+    ]);
   });
 });
