@@ -5,6 +5,8 @@ import { getAllCells, getSampleCells } from 'utils/cellSets';
 const generateSpec = (config, plotData, cellSetLegendsData) => {
   let legend = [];
 
+  const colorFieldName = plotData[0]?.color ? 'color' : 'col';
+
   if (config?.legend.enabled) {
     const positionIsRight = config.legend.position === 'right';
 
@@ -13,7 +15,7 @@ const generateSpec = (config, plotData, cellSetLegendsData) => {
 
     legend = [
       {
-        fill: 'cellSetColors',
+        fill: 'cellSetLabelColors',
         title: config?.legend.title || 'Cluster Name',
         titleColor: config?.colour.masterColour,
         type: 'symbol',
@@ -81,9 +83,15 @@ const generateSpec = (config, plotData, cellSetLegendsData) => {
         range: 'height',
       },
       {
-        name: 'cellSetColors',
+        name: 'cellSetLabelColors',
         type: 'ordinal',
         range: cellSetLegendsData.map(({ color }) => color),
+        domain: { data: 'values', field: 'cellSetKey' },
+      },
+      {
+        name: 'cellSetColors',
+        type: 'ordinal',
+        range: { data: 'values', field: colorFieldName },
         domain: { data: 'values', field: 'cellSetKey' },
       },
       {
