@@ -13,8 +13,12 @@ const bindMiddleware = (middleware) => {
 
   if (process.env.K8S_ENV !== 'production') {
     // eslint-disable-next-line import/no-extraneous-dependencies
-    const { logger } = require('redux-logger');
-    middleware.push(logger);
+    const { createLogger } = require('redux-logger');
+
+    // do not log server-side redux actions
+    middleware.push(createLogger({
+      predicate: () => typeof window !== 'undefined',
+    }));
   }
 
   return composeWithDevTools(applyMiddleware(...middleware));
@@ -36,5 +40,5 @@ const makeStore = () => {
   return store;
 };
 
-const wrapper = createWrapper(makeStore);
+const wrapper = createWrapper(makeStore, { debug: false });
 export { wrapper, makeStore };
