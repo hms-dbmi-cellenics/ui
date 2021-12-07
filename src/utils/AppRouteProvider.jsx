@@ -26,7 +26,9 @@ const AppRouteProvider = (props) => {
       />
     ),
     DATA_MANAGEMENT: (nextRoute, hardNavigate) => (
-      <DataManagementIntercept />
+      <DataManagementIntercept
+        onContinueNavigation={() => continueNavigation(nextRoute, hardNavigate)}
+      />
     ),
   };
 
@@ -41,7 +43,10 @@ const AppRouteProvider = (props) => {
       setRenderIntercept(availableIntercepts.DATA_PROCESSING(nextRoute, hardNavigate));
       return;
     }
-
+    if (previousRoute.match('/data-management')) {
+      setRenderIntercept(availableIntercepts.DATA_MANAGEMENT(nextRoute, hardNavigate));
+      return;
+    }
     continueNavigation(nextRoute, hardNavigate);
   };
 
