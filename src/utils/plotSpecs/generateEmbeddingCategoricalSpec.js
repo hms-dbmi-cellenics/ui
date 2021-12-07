@@ -5,8 +5,6 @@ import { getAllCells, getSampleCells } from 'utils/cellSets';
 const generateSpec = (config, plotData, cellSetLegendsData) => {
   let legend = [];
 
-  const colorFieldName = plotData[0]?.color ? 'color' : 'col';
-
   if (config?.legend.enabled) {
     const positionIsRight = config.legend.position === 'right';
 
@@ -91,7 +89,7 @@ const generateSpec = (config, plotData, cellSetLegendsData) => {
       {
         name: 'cellSetMarkColors',
         type: 'ordinal',
-        range: { data: 'values', field: colorFieldName },
+        range: { data: 'values', field: 'color' },
         domain: { data: 'values', field: 'cellSetKey' },
       },
       {
