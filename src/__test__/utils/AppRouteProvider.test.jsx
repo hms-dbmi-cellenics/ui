@@ -6,9 +6,11 @@ import { useRouter } from 'next/router';
 import { Provider } from 'react-redux';
 import configureMockstore from 'redux-mock-store';
 import thunk from 'redux-thunk';
+import mockSamples from '__test__/test-utils/mockData/mockSamples';
+import fake from '__test__/test-utils/constants';
+import DataManagementIntercept from 'components/data-management/DataManagementIntercept';
 import AppRouteProvider, { useAppRouter } from '../../utils/AppRouteProvider';
 import DataProcessingIntercept from '../../components/data-processing/DataProcessingIntercept';
-
 import initialExperimentSettingsState, { metaInitialState } from '../../redux/reducers/experimentSettings/initialState';
 
 jest.mock('next/router', () => ({
@@ -18,7 +20,8 @@ jest.mock('next/router', () => ({
 
 jest.mock('../../components/data-processing/DataProcessingIntercept',
   () => jest.fn(() => <>Data Processing Intercept</>));
-
+jest.mock('../../components/data-management/DataManagementIntercept',
+  () => jest.fn(() => <>Data Management Intercept</>));
 const buttonText = 'Go';
 
 const mockRouter = {
@@ -32,7 +35,42 @@ const mockStore = configureMockstore([thunk]);
 
 const changedFilters = ['filter-1', 'filter-2'];
 const testPath = '/test/path';
+const activeProjectUuid = 'someprojectuuid123asd';
 
+const experimentInformation = {
+  projects: {
+    meta: {
+      activeProjectUuid,
+    },
+    [activeProjectUuid]: {
+      experiments: [fake.EXPERIMENT_ID],
+      samples: [`${fake.SAMPLE_ID}-0`],
+      metadataKeys: [],
+    },
+  },
+  experiments: {
+    [fake.EXPERIMENT_ID]: {
+      meta: {
+        organism: 'homoSapiens',
+        type: '10x',
+      },
+    },
+  },
+  samples: mockSamples(),
+  backendStatus: {
+    [fake.EXPERIMENT_ID]: {
+      status: {
+        gem2s: {
+          status: 'SUCCEEDED',
+          paramsHash: 'asdlkjeqwe123',
+        },
+        pipeline: {
+          status: 'SUCCEEDED',
+        },
+      },
+    },
+  },
+};
 const noFilterChanged = {
   experimentSettings: {
     ...initialExperimentSettingsState,
@@ -43,6 +81,7 @@ const noFilterChanged = {
       },
     },
   },
+  ...experimentInformation,
 };
 
 const withFiltersChanged = {
@@ -56,6 +95,7 @@ const withFiltersChanged = {
       },
     },
   },
+  ...experimentInformation,
 };
 
 const TestComponent = (props) => {
@@ -129,7 +169,6 @@ describe('RouteContext', () => {
         <AppRouteProvider>
           <TestComponent path={testPath} />
         </AppRouteProvider>
-        ,
       </Provider>,
     );
 
@@ -139,5 +178,45 @@ describe('RouteContext', () => {
     expect(mockRouter.push).toHaveBeenCalled();
 
     expect(mockRouter.push).toHaveBeenCalledWith(testPath);
+  });
+  it('Displays DataManagementIntercept if the experiment needs reprocessing again', () => {
+    useRouter.mockReturnValue({ pathname: '/data-management', push: jest.fn() });
+
+    render(
+      <Provider store={mockStore(noFilterChanged)}>
+        <AppRouteProvider>
+          <TestComponent path='/data-management' />
+        </AppRouteProvider>
+      </Provider>,
+    );
+    userEvent.click(screen.getByText(buttonText));
+    expect(DataManagementIntercept).toHaveBeenCalled();
+  });
+  it('Does not display DataManagementIntercept if the project does not need reprocessing', () => {
+    const noProcessingState = {
+      ...noFilterChanged,
+      backendStatus: {
+        ...experimentInformation.backendStatus,
+        [fake.EXPERIMENT_ID]: {
+          status: {
+            gem2s: {
+              paramsHash: '2dad18d1ffb798f9553bf40898e7e3ff6142c217',
+              status: 'SUCCEEDED',
+            },
+          },
+        },
+      },
+    };
+    useRouter.mockReturnValue({ pathname: '/data-management', push: jest.fn() });
+
+    render(
+      <Provider store={mockStore(noProcessingState)}>
+        <AppRouteProvider>
+          <TestComponent path='/data-management' />
+        </AppRouteProvider>
+      </Provider>,
+    );
+    userEvent.click(screen.getByText(buttonText));
+    expect(DataManagementIntercept).not.toHaveBeenCalled();
   });
 });
