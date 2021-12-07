@@ -4,6 +4,8 @@ import generateVitessceHeatmapTracksData from 'components/plots/helpers/heatmap/
 import generateVegaGeneExpressionsData from 'components/plots/helpers/heatmap/generateVegaHeatmapGeneExpressionsData';
 import generateVegaHeatmapTracksData from 'components/plots/helpers/heatmap/generateVegaHeatmapTracksData';
 
+import { listToMatrix, convertRange } from 'components/plots/helpers/heatmap/utils';
+
 import SetOperations from 'utils/setOperations';
 import { union } from 'utils/cellSetOperations';
 
@@ -145,7 +147,7 @@ const populateHeatmapData = (
   // For now, this is statically defined. In the future, these values are
   // controlled from the settings panel in the heatmap.
 
-  const data = {
+  let data = {
     cellOrder: [],
     geneOrder: selectedGenes,
     trackOrder,
@@ -177,6 +179,42 @@ const populateHeatmapData = (
     data.trackColorData = generateVitessceHeatmapTracksData(
       trackOrder, cellSets.hierarchy, cellSets.properties, cells,
     );
+
+    const cellIds = data.cellOrder.map((x) => `${x}`);
+
+    const { geneOrder } = data;
+
+    // array with shape [gene_1 cell_1, ..., gene_1 cell_n, gene_2 cell_1, ... ]
+    const geneOrderedExpression = data.geneExpressionsData.map((x) => x.expression);
+
+    // first convert to cell by gene matrix
+    const cellByGeneMatrix = listToMatrix(geneOrderedExpression, cellIds.length);
+
+    // scale so that each gene has minimum 0 max 255
+    const scaledCellByGeneMatrix = cellByGeneMatrix.map((row) => {
+      const geneMin = Math.min(...row);
+      const geneMax = Math.max(...row);
+
+      return row.map((x) => convertRange(x, [geneMin, geneMax], [0, 255]));
+    });
+
+    // vitesse Heatmap uses:
+    // array with shape [cell_1 gene_1, ..., cell_1 gene_n, cell_2 gene_1, ... ]
+    // accomplish with transpose and flatten
+    const cellOrderedExpression = _.unzip(scaledCellByGeneMatrix).flat();
+
+    // construct expressionMatrix and track data object for vitessce Heatmap
+    data = {
+      expressionMatrix: {
+        cols: geneOrder,
+        rows: cellIds,
+        matrix: Uint8Array.from(cellOrderedExpression),
+      },
+      metadataTracks: {
+        dataPoints: data.trackColorData,
+        labels: Array.from(heatmapSettings.selectedTracks).reverse(),
+      },
+    };
   }
 
   return data;
