@@ -307,7 +307,9 @@ const ContentWrapper = (props) => {
       }
       return false;
     };
+
     const notProcessedExperimentDisable = disableIfNoExperiment && !routeExperimentId && !pipelinesCompleted();
+
     const pipelineStatusDisable = disabledByPipelineStatus && (
       backendError || gem2sRunning || gem2sRunningError
       || waitingForQcToLaunch || pipelineRunning || pipelineRunningError
