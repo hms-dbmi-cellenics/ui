@@ -171,7 +171,7 @@ const HeatmapPlot = (props) => {
   const buildExpressionMatrix = () => {
     const cellIds = heatmapData.cellOrder.map((x) => `${x}`);
 
-    const genes = heatmapData.geneOrder;
+    const { geneOrder } = heatmapData;
 
     // array with shape [gene_1 cell_1, ..., gene_1 cell_n, gene_2 cell_1, ... ]
     const geneOrderedExpression = heatmapData.geneExpressionsData.map((x) => x.expression);
@@ -195,7 +195,7 @@ const HeatmapPlot = (props) => {
     // construct expressionMatrix and track data object for vitessce Heatmap
     setVitessceData({
       expressionMatrix: {
-        cols: genes,
+        cols: geneOrder,
         rows: cellIds,
         matrix: Uint8Array.from(cellOrderedExpression),
       },
