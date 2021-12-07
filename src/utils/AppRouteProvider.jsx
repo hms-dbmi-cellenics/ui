@@ -3,7 +3,8 @@ import propTypes from 'prop-types';
 import { useRouter } from 'next/router';
 import { useSelector } from 'react-redux';
 
-import DataProcessingIntercept from '../components/data-processing/DataProcessingIntercept';
+import DataProcessingIntercept from 'components/data-processing/DataProcessingIntercept';
+import DataManagementIntercept from 'components/data-processing/DataManagementIntercept';
 
 const AppRouterContext = React.createContext(null);
 
@@ -23,6 +24,9 @@ const AppRouteProvider = (props) => {
         onContinueNavigation={() => continueNavigation(nextRoute, hardNavigate)}
         onDismissIntercept={() => setRenderIntercept(null)}
       />
+    ),
+    DATA_MANAGEMENT: (nextRoute, hardNavigate) => (
+      <DataManagementIntercept />
     ),
   };
 

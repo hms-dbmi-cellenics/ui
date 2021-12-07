@@ -39,7 +39,6 @@ const rootReducer = (state, action) => {
     // we need to keep the old state for these parts of the store
     newState = {
       networkResources: state.networkResources,
-      experimentSettings: state.experimentSettings,
       samples: state.samples,
       projects: state.projects,
       backendStatus: state.backendStatus,
