@@ -4,7 +4,6 @@ import React, {
 } from 'react';
 
 import { useSelector, useDispatch } from 'react-redux';
-import PropTypes from 'prop-types';
 import {
   Table, Row, Col, Typography, Space, Button, Empty,
 } from 'antd';
@@ -50,7 +49,6 @@ const exampleDatasets = [
 ];
 
 const SamplesTable = forwardRef((props, ref) => {
-  const { height } = props;
   const dispatch = useDispatch();
   const [tableData, setTableData] = useState([]);
 
@@ -342,10 +340,10 @@ const SamplesTable = forwardRef((props, ref) => {
     <Row>
       <Col>
         <Table
+          id='samples-table'
           size='small'
           scroll={{
             x: 'max-content',
-            y: height - 250,
           }}
           bordered
           columns={tableColumns}
@@ -364,10 +362,6 @@ const SamplesTable = forwardRef((props, ref) => {
     </Row>
   );
 });
-
-SamplesTable.propTypes = {
-  height: PropTypes.number.isRequired,
-};
 
 export default React.memo(SamplesTable);
 

@@ -10,7 +10,31 @@ Development
 ### Prerequisites
 
 We highly recommend using VSCode for development, if you don't have it, make sure you get it installed. You will also need to install:
-`homebrew`, `docker`, `npm`. You should also install the package `dbaeumer.vscode-eslint` for syntax linting & format errors in VS Code.
+`homebrew`, `docker`, `node` (version 14). You should also install the package `dbaeumer.vscode-eslint` for syntax linting & format errors in VS Code.
+
+#### installing node 14 on macOS
+
+Easiest way to do it is using homebrew. Instructions based on [this SO answer](https://apple.stackexchange.com/a/207883).
+
+```shell
+brew install node@14
+```
+
+If you already have a newer `node` version installed, you have to unlink it, and
+link `node@14`, which creates symlinks in `/usr/local/bin`.
+
+```shell
+brew unlink node
+brew link node@14
+```
+
+You may have to force the linking, with the `--force` and `--overwrite` options.
+(if you want you could use `--dry-run` to check what would be overwritten).
+
+```shell
+brew link node@14 --force --overwrite
+```
+
 
 ### Running locally
 
@@ -89,4 +113,13 @@ Browser cache enabled by default in production environment. This can be disabled
 
     localStorage.set("disableCache", "true")
 
-Browser cache makes it hard to develop as it can hide changes from the backend, so cache is disabled by default in development. This can be changed by modifying `disableCache` in `localStorage` manually .
+Browser cache makes it hard to develop as it can hide changes from the backend, so cache is disabled by default in development. This can be changed by modifying `disableCache` in `localStorage` manually.
+
+### Troubleshooting
+
+1. `Error: listen EADDRINUSE: address already in use :::5000`
+
+    Starting on macOS 12 (Monterey) [port 5000 is used by Airplay
+    receiver](https://developer.apple.com/forums/thread/682332). To be able
+    to run the UI locally it has to be disabled, going to system Preferences >
+    Sharing and unticking the Airplay Reciever service box.
