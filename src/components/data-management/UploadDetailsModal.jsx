@@ -8,7 +8,7 @@ import {
 } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
 import { useDispatch } from 'react-redux';
-import { uploadSingleFile, bundleToFile } from '../../utils/upload/processUpload';
+import { uploadSingleFile, fileObjectToFileRecord } from '../../utils/upload/processUpload';
 
 import pushNotificationMessage from '../../utils/pushNotificationMessage';
 import UploadStatus, { messageForStatus } from '../../utils/upload/UploadStatus';
@@ -23,32 +23,29 @@ const UploadDetailsModal = (props) => {
   const {
     visible, onCancel, uploadDetailsModalDataRef,
   } = props;
-  const { fileCategory, sampleUuid } = uploadDetailsModalDataRef.current || false;
-  const file = uploadDetailsModalDataRef.current?.file || {};
-  const {
-    upload = {}, bundle = {},
-  } = file;
+  const { fileCategory, sampleUuid } = uploadDetailsModalDataRef.current ?? {};
+  const file = uploadDetailsModalDataRef.current?.file ?? {};
+  const { upload } = file ?? {};
   const status = upload?.status;
-  const bundleName = bundle?.name;
   const inputFileRef = useRef(null);
-  const [replacementFileBundle, setReplacementFileBundle] = useState(null);
+  const [replacementFileObject, setReplacementFileObject] = useState(null);
 
   const { activeProjectUuid } = useSelector((state) => state.projects.meta) || false;
   const samples = useSelector((state) => state.samples);
   const sampleName = samples[uploadDetailsModalDataRef.current?.sampleUuid]?.name;
 
   useEffect(() => {
-    if (replacementFileBundle) {
-      bundleToFile(replacementFileBundle, SELECTED_TECH).then((newFile) => {
+    if (replacementFileObject) {
+      fileObjectToFileRecord(replacementFileObject, SELECTED_TECH).then((newFile) => {
         if (newFile.valid) { // && newFile.name === file.name ?
-          uploadFileBundle(newFile);
+          uploadFile(newFile);
         } else {
           pushNotificationMessage('error',
             'The selected file name does not match the expected category.', 2);
         }
       });
     }
-  }, [replacementFileBundle]);
+  }, [replacementFileObject]);
 
   const isSuccessModal = status === UploadStatus.UPLOADED;
   const isNotUploadedModal = status === UploadStatus.FILE_NOT_FOUND;
@@ -66,7 +63,7 @@ const UploadDetailsModal = (props) => {
     return `${weekDayName}, ${fullDate} at ${fullTime}`;
   };
 
-  const uploadFileBundle = (newFile) => {
+  const uploadFile = (newFile) => {
     if (!uploadDetailsModalDataRef.current) {
       return;
     }
@@ -78,9 +75,10 @@ const UploadDetailsModal = (props) => {
     <Button
       type='primary'
       key='retry'
+      disabled={!file?.fileObject}
       block
       onClick={() => {
-        uploadFileBundle(bundle);
+        uploadFile(file);
       }}
       style={{ width: '140px', marginBottom: '10px' }}
     >
@@ -101,7 +99,7 @@ const UploadDetailsModal = (props) => {
             if (!newFile) {
               return;
             }
-            setReplacementFileBundle(newFile);
+            setReplacementFileObject(newFile);
           }
         }
       />
@@ -127,7 +125,7 @@ const UploadDetailsModal = (props) => {
       key='retry'
       block
       onClick={() => {
-        downloadSingleFile(activeProjectUuid, sampleUuid, file.name, bundleName);
+        downloadSingleFile(activeProjectUuid, sampleUuid, file.name);
       }}
       style={{ width: '140px', marginBottom: '10px' }}
     >
@@ -183,7 +181,7 @@ const UploadDetailsModal = (props) => {
               <Row style={{ marginTop: '5px', marginBottom: '5px' }}>
                 <Col span={5}>File size</Col>
                 <Col span={10}>
-                  {toMBytes(bundle.size)}
+                  {toMBytes(file.size)}
                   {' '}
                   MB
                 </Col>
