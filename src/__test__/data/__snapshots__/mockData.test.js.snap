@@ -48,11 +48,12 @@ Object {
     ],
     "files": Object {
       "barcodes.tsv.gz": Object {
-        "bundle": Object {
-          "path": "test9188-d682-test-mock-cb6d644cmock-0/barcodes.tsv.gz",
-        },
         "compressed": true,
         "errors": "",
+        "fileObject": Object {
+          "path": "test9188-d682-test-mock-cb6d644cmock-0/barcodes.tsv.gz",
+          "size": 100,
+        },
         "lastModified": "0000-00-00T00:00:00.000Z",
         "name": "barcodes.tsv.gz",
         "path": "test9188-d682-test-mock-cb6d644cmock-0/barcodes.tsv.gz",
@@ -64,11 +65,12 @@ Object {
         "valid": true,
       },
       "features.tsv.gz": Object {
-        "bundle": Object {
-          "path": "test9188-d682-test-mock-cb6d644cmock-0/features.tsv.gz",
-        },
         "compressed": true,
         "errors": "",
+        "fileObject": Object {
+          "path": "test9188-d682-test-mock-cb6d644cmock-0/features.tsv.gz",
+          "size": 100,
+        },
         "lastModified": "0000-00-00T00:00:00.000Z",
         "name": "features.tsv.gz",
         "path": "test9188-d682-test-mock-cb6d644cmock-0/features.tsv.gz",
@@ -80,11 +82,12 @@ Object {
         "valid": true,
       },
       "matrix.mtx.gz": Object {
-        "bundle": Object {
-          "path": "test9188-d682-test-mock-cb6d644cmock-0/matrix.mtx.gz",
-        },
         "compressed": true,
         "errors": "",
+        "fileObject": Object {
+          "path": "test9188-d682-test-mock-cb6d644cmock-0/matrix.mtx.gz",
+          "size": 100,
+        },
         "lastModified": "0000-00-00T00:00:00.000Z",
         "name": "matrix.mtx.gz",
         "path": "test9188-d682-test-mock-cb6d644cmock-0/matrix.mtx.gz",
@@ -115,11 +118,12 @@ Object {
     ],
     "files": Object {
       "barcodes.tsv.gz": Object {
-        "bundle": Object {
-          "path": "test9188-d682-test-mock-cb6d644cmock-1/barcodes.tsv.gz",
-        },
         "compressed": true,
         "errors": "",
+        "fileObject": Object {
+          "path": "test9188-d682-test-mock-cb6d644cmock-1/barcodes.tsv.gz",
+          "size": 100,
+        },
         "lastModified": "0000-00-00T00:00:00.000Z",
         "name": "barcodes.tsv.gz",
         "path": "test9188-d682-test-mock-cb6d644cmock-1/barcodes.tsv.gz",
@@ -131,11 +135,12 @@ Object {
         "valid": true,
       },
       "features.tsv.gz": Object {
-        "bundle": Object {
-          "path": "test9188-d682-test-mock-cb6d644cmock-1/features.tsv.gz",
-        },
         "compressed": true,
         "errors": "",
+        "fileObject": Object {
+          "path": "test9188-d682-test-mock-cb6d644cmock-1/features.tsv.gz",
+          "size": 100,
+        },
         "lastModified": "0000-00-00T00:00:00.000Z",
         "name": "features.tsv.gz",
         "path": "test9188-d682-test-mock-cb6d644cmock-1/features.tsv.gz",
@@ -147,11 +152,12 @@ Object {
         "valid": true,
       },
       "matrix.mtx.gz": Object {
-        "bundle": Object {
-          "path": "test9188-d682-test-mock-cb6d644cmock-1/matrix.mtx.gz",
-        },
         "compressed": true,
         "errors": "",
+        "fileObject": Object {
+          "path": "test9188-d682-test-mock-cb6d644cmock-1/matrix.mtx.gz",
+          "size": 100,
+        },
         "lastModified": "0000-00-00T00:00:00.000Z",
         "name": "matrix.mtx.gz",
         "path": "test9188-d682-test-mock-cb6d644cmock-1/matrix.mtx.gz",
@@ -182,11 +188,12 @@ Object {
     ],
     "files": Object {
       "barcodes.tsv.gz": Object {
-        "bundle": Object {
-          "path": "test9188-d682-test-mock-cb6d644cmock-2/barcodes.tsv.gz",
-        },
         "compressed": true,
         "errors": "",
+        "fileObject": Object {
+          "path": "test9188-d682-test-mock-cb6d644cmock-2/barcodes.tsv.gz",
+          "size": 100,
+        },
         "lastModified": "0000-00-00T00:00:00.000Z",
         "name": "barcodes.tsv.gz",
         "path": "test9188-d682-test-mock-cb6d644cmock-2/barcodes.tsv.gz",
@@ -198,11 +205,12 @@ Object {
         "valid": true,
       },
       "features.tsv.gz": Object {
-        "bundle": Object {
-          "path": "test9188-d682-test-mock-cb6d644cmock-2/features.tsv.gz",
-        },
         "compressed": true,
         "errors": "",
+        "fileObject": Object {
+          "path": "test9188-d682-test-mock-cb6d644cmock-2/features.tsv.gz",
+          "size": 100,
+        },
         "lastModified": "0000-00-00T00:00:00.000Z",
         "name": "features.tsv.gz",
         "path": "test9188-d682-test-mock-cb6d644cmock-2/features.tsv.gz",
@@ -214,11 +222,12 @@ Object {
         "valid": true,
       },
       "matrix.mtx.gz": Object {
-        "bundle": Object {
-          "path": "test9188-d682-test-mock-cb6d644cmock-2/matrix.mtx.gz",
-        },
         "compressed": true,
         "errors": "",
+        "fileObject": Object {
+          "path": "test9188-d682-test-mock-cb6d644cmock-2/matrix.mtx.gz",
+          "size": 100,
+        },
         "lastModified": "0000-00-00T00:00:00.000Z",
         "name": "matrix.mtx.gz",
         "path": "test9188-d682-test-mock-cb6d644cmock-2/matrix.mtx.gz",
@@ -384,11 +393,12 @@ Array [
         ],
         "files": Object {
           "barcodes.tsv.gz": Object {
-            "bundle": Object {
-              "path": "test9188-d682-test-mock-cb6d644cmock-0/barcodes.tsv.gz",
-            },
             "compressed": true,
             "errors": "",
+            "fileObject": Object {
+              "path": "test9188-d682-test-mock-cb6d644cmock-0/barcodes.tsv.gz",
+              "size": 100,
+            },
             "lastModified": "0000-00-00T00:00:00.000Z",
             "name": "barcodes.tsv.gz",
             "path": "test9188-d682-test-mock-cb6d644cmock-0/barcodes.tsv.gz",
@@ -400,11 +410,12 @@ Array [
             "valid": true,
           },
           "features.tsv.gz": Object {
-            "bundle": Object {
-              "path": "test9188-d682-test-mock-cb6d644cmock-0/features.tsv.gz",
-            },
             "compressed": true,
             "errors": "",
+            "fileObject": Object {
+              "path": "test9188-d682-test-mock-cb6d644cmock-0/features.tsv.gz",
+              "size": 100,
+            },
             "lastModified": "0000-00-00T00:00:00.000Z",
             "name": "features.tsv.gz",
             "path": "test9188-d682-test-mock-cb6d644cmock-0/features.tsv.gz",
@@ -416,11 +427,12 @@ Array [
             "valid": true,
           },
           "matrix.mtx.gz": Object {
-            "bundle": Object {
-              "path": "test9188-d682-test-mock-cb6d644cmock-0/matrix.mtx.gz",
-            },
             "compressed": true,
             "errors": "",
+            "fileObject": Object {
+              "path": "test9188-d682-test-mock-cb6d644cmock-0/matrix.mtx.gz",
+              "size": 100,
+            },
             "lastModified": "0000-00-00T00:00:00.000Z",
             "name": "matrix.mtx.gz",
             "path": "test9188-d682-test-mock-cb6d644cmock-0/matrix.mtx.gz",
@@ -451,11 +463,12 @@ Array [
         ],
         "files": Object {
           "barcodes.tsv.gz": Object {
-            "bundle": Object {
-              "path": "test9188-d682-test-mock-cb6d644cmock-1/barcodes.tsv.gz",
-            },
             "compressed": true,
             "errors": "",
+            "fileObject": Object {
+              "path": "test9188-d682-test-mock-cb6d644cmock-1/barcodes.tsv.gz",
+              "size": 100,
+            },
             "lastModified": "0000-00-00T00:00:00.000Z",
             "name": "barcodes.tsv.gz",
             "path": "test9188-d682-test-mock-cb6d644cmock-1/barcodes.tsv.gz",
@@ -467,11 +480,12 @@ Array [
             "valid": true,
           },
           "features.tsv.gz": Object {
-            "bundle": Object {
-              "path": "test9188-d682-test-mock-cb6d644cmock-1/features.tsv.gz",
-            },
             "compressed": true,
             "errors": "",
+            "fileObject": Object {
+              "path": "test9188-d682-test-mock-cb6d644cmock-1/features.tsv.gz",
+              "size": 100,
+            },
             "lastModified": "0000-00-00T00:00:00.000Z",
             "name": "features.tsv.gz",
             "path": "test9188-d682-test-mock-cb6d644cmock-1/features.tsv.gz",
@@ -483,11 +497,12 @@ Array [
             "valid": true,
           },
           "matrix.mtx.gz": Object {
-            "bundle": Object {
-              "path": "test9188-d682-test-mock-cb6d644cmock-1/matrix.mtx.gz",
-            },
             "compressed": true,
             "errors": "",
+            "fileObject": Object {
+              "path": "test9188-d682-test-mock-cb6d644cmock-1/matrix.mtx.gz",
+              "size": 100,
+            },
             "lastModified": "0000-00-00T00:00:00.000Z",
             "name": "matrix.mtx.gz",
             "path": "test9188-d682-test-mock-cb6d644cmock-1/matrix.mtx.gz",
@@ -518,11 +533,12 @@ Array [
         ],
         "files": Object {
           "barcodes.tsv.gz": Object {
-            "bundle": Object {
-              "path": "test9188-d682-test-mock-cb6d644cmock-2/barcodes.tsv.gz",
-            },
             "compressed": true,
             "errors": "",
+            "fileObject": Object {
+              "path": "test9188-d682-test-mock-cb6d644cmock-2/barcodes.tsv.gz",
+              "size": 100,
+            },
             "lastModified": "0000-00-00T00:00:00.000Z",
             "name": "barcodes.tsv.gz",
             "path": "test9188-d682-test-mock-cb6d644cmock-2/barcodes.tsv.gz",
@@ -534,11 +550,12 @@ Array [
             "valid": true,
           },
           "features.tsv.gz": Object {
-            "bundle": Object {
-              "path": "test9188-d682-test-mock-cb6d644cmock-2/features.tsv.gz",
-            },
             "compressed": true,
             "errors": "",
+            "fileObject": Object {
+              "path": "test9188-d682-test-mock-cb6d644cmock-2/features.tsv.gz",
+              "size": 100,
+            },
             "lastModified": "0000-00-00T00:00:00.000Z",
             "name": "features.tsv.gz",
             "path": "test9188-d682-test-mock-cb6d644cmock-2/features.tsv.gz",
@@ -550,11 +567,12 @@ Array [
             "valid": true,
           },
           "matrix.mtx.gz": Object {
-            "bundle": Object {
-              "path": "test9188-d682-test-mock-cb6d644cmock-2/matrix.mtx.gz",
-            },
             "compressed": true,
             "errors": "",
+            "fileObject": Object {
+              "path": "test9188-d682-test-mock-cb6d644cmock-2/matrix.mtx.gz",
+              "size": 100,
+            },
             "lastModified": "0000-00-00T00:00:00.000Z",
             "name": "matrix.mtx.gz",
             "path": "test9188-d682-test-mock-cb6d644cmock-2/matrix.mtx.gz",
