@@ -1,4 +1,4 @@
-import { listToMatrix, hexToRgb, convertRange } from 'components/plots/helpers/heatmap/utils';
+import { hexToRgb, convertRange } from 'components/plots/helpers/heatmap/utils';
 
 describe('hexToRgb', () => {
   it('converts a hex to array of [r, g, b]', () => {
@@ -28,22 +28,5 @@ describe('convertRange', () => {
   it('returns the original value if input range min and max are equal', () => {
     const res = values.map((value) => convertRange(value, [0, 0], [0, 10]));
     expect(res).toEqual(values);
-  });
-});
-
-describe('listToMatrix', () => {
-  it('converts an array of values to a matrix', () => {
-    const list = [
-      1, 2, 3, 4, 5,
-      6, 7, 8, 9, 10,
-    ];
-
-    const expectedOut = [
-      [1, 2, 3, 4, 5],
-      [6, 7, 8, 9, 10],
-    ];
-
-    const res = listToMatrix(list, 5);
-    expect(res).toEqual(expectedOut);
   });
 });

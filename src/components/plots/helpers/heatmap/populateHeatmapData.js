@@ -1,10 +1,8 @@
 import _ from 'lodash';
 import generateVitessceHeatmapTracksData from 'components/plots/helpers/heatmap/generateVitessceHeatmapTracksData';
 
-import generateVegaGeneExpressionsData from 'components/plots/helpers/heatmap/generateVegaHeatmapGeneExpressionsData';
+import { generateVegaGeneExpressionsData, generateVitessceGeneExpressionsData } from 'components/plots/helpers/heatmap/generateHeatmapGeneExpressionsData';
 import generateVegaHeatmapTracksData from 'components/plots/helpers/heatmap/generateVegaHeatmapTracksData';
-
-import { listToMatrix, convertRange } from 'components/plots/helpers/heatmap/utils';
 
 import SetOperations from 'utils/setOperations';
 import { union } from 'utils/cellSetOperations';
@@ -180,35 +178,19 @@ const populateHeatmapData = (
       trackOrder, cellSets.hierarchy, cellSets.properties, cells,
     );
 
-    const cellIds = data.cellOrder.map((x) => `${x}`);
-
-    const { geneOrder } = data;
-
-    // array with shape [gene_1 cell_1, ..., gene_1 cell_n, gene_2 cell_1, ... ]
-    const geneOrderedExpression = data.geneExpressionsData.map((x) => x.expression);
-
-    // first convert to cell by gene matrix
-    const cellByGeneMatrix = listToMatrix(geneOrderedExpression, cellIds.length);
-
-    // scale so that each gene has minimum 0 max 255
-    const scaledCellByGeneMatrix = cellByGeneMatrix.map((row) => {
-      const geneMin = Math.min(...row);
-      const geneMax = Math.max(...row);
-
-      return row.map((x) => convertRange(x, [geneMin, geneMax], [0, 255]));
-    });
-
     // vitesse Heatmap uses:
     // array with shape [cell_1 gene_1, ..., cell_1 gene_n, cell_2 gene_1, ... ]
     // accomplish with transpose and flatten
-    const cellOrderedExpression = _.unzip(scaledCellByGeneMatrix).flat();
+    const vitessceGeneExp = generateVitessceGeneExpressionsData(data, expression);
+
+    const cellIds = data.cellOrder.map((x) => `${x}`);
 
     // construct expressionMatrix and track data object for vitessce Heatmap
     data = {
       expressionMatrix: {
-        cols: geneOrder,
+        cols: data.geneOrder,
         rows: cellIds,
-        matrix: Uint8Array.from(cellOrderedExpression),
+        matrix: Uint8Array.from(vitessceGeneExp),
       },
       metadataTracks: {
         dataPoints: data.trackColorData,
