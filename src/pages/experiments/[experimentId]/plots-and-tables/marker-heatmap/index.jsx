@@ -1,4 +1,3 @@
-/* eslint-disable import/no-unresolved */
 import React, { useEffect, useState } from 'react';
 import {
   Row,
@@ -68,7 +67,7 @@ const MarkerHeatmap = ({ experimentId }) => {
   const loadedMarkerGenes = useSelector(
     (state) => state.genes.expression.views[plotUuid]?.data,
   ) || [];
-  const experiments = useSelector((state) => state.experiments[experimentId]);
+
   const {
     loading: loadingMarkerGenes,
     error: errorMarkerGenes,
