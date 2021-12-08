@@ -14,9 +14,8 @@ const generateVitessceGeneExpressionsData = (cellOrder, geneOrder, expression) =
   geneOrder.forEach((gene) => {
     if (!expression.data[gene]) return;
 
-    // Pick only the
     const geneExpressions = cellOrder.map(
-      (cellId) => expression.data[gene].truncatedExpression.expression[cellId],
+      (cellId) => expression.data[gene].rawExpression.expression[cellId],
     );
 
     const scaledGeneExpressions = scaledTo255(geneExpressions);

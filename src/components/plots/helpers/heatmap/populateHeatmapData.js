@@ -1,10 +1,7 @@
 import _ from 'lodash';
 
-import generateVegaGeneExpressionsData from 'components/plots/helpers/heatmap/vega/generateVegaGeneExpressionsData';
-import generateVegaHeatmapTracksData from 'components/plots/helpers/heatmap/vega/generateVegaHeatmapTracksData';
-
-import generateVitessceHeatmapTracksData from 'components/plots/helpers/heatmap/vitessce/generateVitessceHeatmapTracksData';
-import generateVitessceHeatmapExpressionsMatrix from 'components/plots/helpers/heatmap/vitessce/generateVitessceHeatmapExpressionsMatrix';
+import generateVegaData from 'components/plots/helpers/heatmap/vega/generateVegaData';
+import generateVitessceData from 'components/plots/helpers/heatmap/vitessce/generateVitessceData';
 
 import SetOperations from 'utils/setOperations';
 import { union } from 'utils/cellSetOperations';
@@ -152,58 +149,17 @@ const populateHeatmapData = (
   const cellOrder = generateCellOrder(groupedTracks);
   const geneOrder = selectedGenes;
 
-  const cells = new Set(cellOrder);
-
   // Directly generate track data.
   if (!vitessce) {
-    const data = {
-      cellOrder,
-      geneOrder,
-      trackOrder,
-      geneExpressionsData: [],
-      trackPositionData: [],
-      trackGroupData: [],
-    };
-
-    data.geneExpressionsData = generateVegaGeneExpressionsData(
-      cellOrder, geneOrder, expression, heatmapSettings,
+    return generateVegaData(
+      cellOrder, geneOrder, trackOrder,
+      expression, heatmapSettings, cellSets,
     );
-
-    const trackData = trackOrder.map((rootNode) => generateVegaHeatmapTracksData(
-      cells,
-      rootNode,
-      cellSets,
-      heatmapSettings,
-    ));
-
-    data.trackColorData = trackData.map((datum) => datum.trackColorData).flat();
-    data.trackGroupData = trackData.map((datum) => datum.groupData).flat();
-    data.clusterSeparationLines = trackData.length > 0 ? trackData[0].clusterSeparationLines : [];
-
-    return data;
   }
 
-  const trackColorData = generateVitessceHeatmapTracksData(
-    trackOrder, cellSets.hierarchy, cellSets.properties, cells,
+  return generateVitessceData(
+    cellOrder, geneOrder, trackOrder,
+    expression, heatmapSettings, cellSets,
   );
-
-  // Data points is an array with shape [cell_1 gene_1, ..., cell_1 gene_n, cell_2 gene_1, ... ]
-  const expressionMatrix = generateVitessceHeatmapExpressionsMatrix(
-    cellOrder,
-    geneOrder,
-    expression,
-  );
-
-  return {
-    expressionMatrix: {
-      cols: geneOrder,
-      rows: cellOrder.map((x) => `${x}`),
-      matrix: Uint8Array.from(expressionMatrix),
-    },
-    metadataTracks: {
-      dataPoints: trackColorData,
-      labels: Array.from(heatmapSettings.selectedTracks).reverse(),
-    },
-  };
 };
 export default populateHeatmapData;
