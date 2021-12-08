@@ -1,10 +1,9 @@
 /* eslint-disable no-param-reassign */
+import _ from 'lodash';
 import { getAllCells, getSampleCells } from 'utils/cellSets';
 
-const generateSpec = (config, plotData, cellSetNames) => {
+const generateSpec = (config, plotData, cellSetLegendsData) => {
   let legend = [];
-
-  const colorFieldName = plotData[0]?.color ? 'color' : 'col';
 
   if (config?.legend.enabled) {
     const positionIsRight = config.legend.position === 'right';
@@ -14,7 +13,7 @@ const generateSpec = (config, plotData, cellSetNames) => {
 
     legend = [
       {
-        fill: 'cellSetColors',
+        fill: 'cellSetLabelColors',
         title: config?.legend.title || 'Cluster Name',
         titleColor: config?.colour.masterColour,
         type: 'symbol',
@@ -82,15 +81,21 @@ const generateSpec = (config, plotData, cellSetNames) => {
         range: 'height',
       },
       {
-        name: 'cellSetColors',
+        name: 'cellSetLabelColors',
         type: 'ordinal',
-        range: { data: 'values', field: colorFieldName },
+        range: cellSetLegendsData.map(({ color }) => color),
+        domain: { data: 'values', field: 'cellSetKey' },
+      },
+      {
+        name: 'cellSetMarkColors',
+        type: 'ordinal',
+        range: { data: 'values', field: 'color' },
         domain: { data: 'values', field: 'cellSetKey' },
       },
       {
         name: 'sampleToName',
         type: 'ordinal',
-        range: cellSetNames,
+        range: cellSetLegendsData.map(({ name }) => name),
       },
     ],
     axes: [
@@ -145,8 +150,8 @@ const generateSpec = (config, plotData, cellSetNames) => {
             x: { scale: 'x', field: 'x' },
             y: { scale: 'y', field: 'y' },
             size: { value: config?.marker.size },
-            stroke: { scale: 'cellSetColors', field: 'cellSetKey' },
-            fill: { scale: 'cellSetColors', field: 'cellSetKey' },
+            stroke: { scale: 'cellSetMarkColors', field: 'cellSetKey' },
+            fill: { scale: 'cellSetMarkColors', field: 'cellSetKey' },
             shape: { value: config?.marker.shape },
             fillOpacity: { value: config?.marker.opacity / 10 },
           },
@@ -193,13 +198,14 @@ const filterCells = (cellSets, sampleKey, groupBy) => {
   }
 
   // Get the cell set names
-  const clusterEnteries = cellSets.hierarchy.find(
-    (rootNode) => rootNode.key === groupBy,
-  )?.children || [];
+  const clusterEnteries = cellSets.hierarchy
+    .find(
+      (rootNode) => rootNode.key === groupBy,
+    )?.children || [];
 
-  const cellSetNames = clusterEnteries.map(({ key }) => cellSets.properties[key].name);
+  const cellSetKeys = clusterEnteries.map(({ key }) => key);
 
-  const colorToCellIdsMap = clusterEnteries.reduce((acc, { key }) => {
+  const colorToCellIdsMap = cellSetKeys.reduce((acc, key) => {
     acc.push({
       cellIds: cellSets.properties[key].cellIds,
       key,
@@ -210,6 +216,9 @@ const filterCells = (cellSets, sampleKey, groupBy) => {
     return acc;
   }, []);
 
+  let cellSetLegendsData = [];
+  const addedCellSetKeys = new Set();
+
   filteredCells = filteredCells.map((cell) => {
     const inCellSet = colorToCellIdsMap.find((map) => map.cellIds.has(cell.cellId));
 
@@ -217,6 +226,11 @@ const filterCells = (cellSets, sampleKey, groupBy) => {
     if (!inCellSet) return null;
 
     const { key, name, color } = inCellSet;
+
+    if (!addedCellSetKeys.has(key)) {
+      addedCellSetKeys.add(key);
+      cellSetLegendsData.push({ key, name, color });
+    }
 
     return {
       ...cell,
@@ -228,12 +242,18 @@ const filterCells = (cellSets, sampleKey, groupBy) => {
 
   filteredCells = filteredCells.filter((cell) => cell !== null);
 
-  return { filteredCells, cellSetNames };
+  // Sort legends to show them in the order that cellSetKeys are stored
+  cellSetLegendsData = _.sortBy(
+    cellSetLegendsData,
+    ({ key }) => _.indexOf(cellSetKeys, key),
+  );
+
+  return { filteredCells, cellSetLegendsData };
 };
 
 // Generate dynamic data from redux store
 const generateData = (cellSets, sampleKey, groupBy, embeddingData) => {
-  const { filteredCells, cellSetNames } = filterCells(cellSets, sampleKey, groupBy);
+  const { filteredCells, cellSetLegendsData } = filterCells(cellSets, sampleKey, groupBy);
 
   const plotData = filteredCells
     .filter((d) => d.cellId < embeddingData.length)
@@ -248,7 +268,7 @@ const generateData = (cellSets, sampleKey, groupBy, embeddingData) => {
       };
     });
 
-  return { plotData, cellSetNames };
+  return { plotData, cellSetLegendsData };
 };
 
 export {
