@@ -1,6 +1,6 @@
 import _ from 'lodash';
 
-import { convertRange } from 'components/plots/helpers/heatmap/utils';
+import { convertRange } from 'utils/plotUtils';
 
 const cartesian = (...array) => (
   array.reduce((acum, value) => (
@@ -10,14 +10,12 @@ const cartesian = (...array) => (
   ))
 );
 
-const generateVegaGeneExpressionsData = (data, expression, heatmapSettings) => {
+const generateVegaGeneExpressionsData = (cellOrder, geneOrder, expression, heatmapSettings) => {
   const { expressionValue, truncatedValues } = heatmapSettings;
 
   const geneExpressionsData = [];
 
-  cartesian(
-    data.geneOrder, data.cellOrder,
-  ).forEach(
+  cartesian(geneOrder, cellOrder).forEach(
     ([gene, cellId]) => {
       const expressionDataForGene = expression.data[gene];
 
@@ -59,14 +57,14 @@ const scaledTo255 = (rowOfExpressions) => {
   return rowOfExpressions.map((value) => convertRange(value, [min, max], [0, 255]));
 };
 
-const generateVitessceGeneExpressionsData = (data, expression) => {
+const generateVitessceGeneExpressionsData = (cellOrder, geneOrder, expression) => {
   const geneExpressionsDataMatrix = [];
 
-  data.geneOrder.forEach((gene) => {
+  geneOrder.forEach((gene) => {
     if (!expression.data[gene]) return;
 
     // Pick only the
-    const geneExpressions = data.cellOrder.map(
+    const geneExpressions = cellOrder.map(
       (cellId) => expression.data[gene].rawExpression.expression[cellId],
     );
 

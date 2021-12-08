@@ -1,5 +1,5 @@
 import getCellClassProperties from 'utils/cellSets/getCellClassProperties';
-import { hexToRgb } from 'components/plots/helpers/heatmap/utils';
+import { hexToRgb } from 'utils/plotUtils';
 
 const generateVitessceHeatmapTracksData = (trackOrder, hierarchy, properties, cells) => {
   const colorForCell = (cellId, cellClassKey) => {

@@ -8,26 +8,28 @@ import PropTypes from 'prop-types';
 import _ from 'lodash';
 import * as vega from 'vega';
 
-import Loader from '../../Loader';
 import 'vitessce/dist/es/production/static/css/index.css';
-import ClusterPopover from './ClusterPopover';
-import CrossHair from './CrossHair';
-import CellInfo from '../CellInfo';
-import { loadEmbedding } from '../../../redux/actions/embedding';
-import { createCellSet } from '../../../redux/actions/cellSets';
-import { loadGeneExpression } from '../../../redux/actions/genes';
 
-import { updateCellInfo } from '../../../redux/actions/cellInfo';
+import ClusterPopover from 'components/data-exploration/embedding/ClusterPopover';
+import CrossHair from 'components/data-exploration/embedding/CrossHair';
+import CellInfo from 'components/data-exploration/CellInfo';
+import PlatformError from 'components/PlatformError';
+import Loader from 'components/Loader';
+
+import { loadEmbedding } from 'redux/actions/embedding';
+import { createCellSet } from 'redux/actions/cellSets';
+import { loadGeneExpression } from 'redux/actions/genes';
+import { updateCellInfo } from 'redux/actions/cellInfo';
+import { loadProcessingSettings } from 'redux/actions/experimentSettings';
+
+import { getCellSets } from 'redux/selectors';
+
 import {
   convertCellsData,
   renderCellSetColors,
   colorByGeneExpression,
   colorInterpolator,
-} from '../../../utils/embeddingPlotHelperFunctions/helpers';
-import PlatformError from '../../PlatformError';
-
-import { loadProcessingSettings } from '../../../redux/actions/experimentSettings';
-import { getCellSets } from '../../../redux/selectors';
+} from 'utils/plotUtils';
 
 const Scatterplot = dynamic(
   () => import('vitessce/dist/umd/production/scatterplot.min').then((mod) => mod.Scatterplot),

@@ -1,4 +1,4 @@
-import { hexToRgb, convertRange } from 'components/plots/helpers/heatmap/utils';
+import { hexToRgb, convertRange } from 'utils/plotUtils';
 
 describe('hexToRgb', () => {
   it('converts a hex to array of [r, g, b]', () => {
