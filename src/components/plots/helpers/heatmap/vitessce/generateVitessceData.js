@@ -11,7 +11,8 @@ const generateVitessceData = (
     trackOrder, cellSets.hierarchy, cellSets.properties, cells,
   );
 
-  // Data points is an array with shape [cell_1 gene_1, ..., cell_1 gene_n, cell_2 gene_1, ... ]
+  // Expression matrix is an array
+  // with shape [cell_1 gene_1, ..., cell_1 gene_n, cell_2 gene_1, ... ]
   const expressionMatrix = generateVitessceHeatmapExpressionsMatrix(
     cellOrder,
     geneOrder,
