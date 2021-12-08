@@ -1,40 +1,53 @@
-import React from 'react';
-import { Button, Select } from 'antd';
-import { mount, shallow } from 'enzyme';
-import { Provider } from 'react-redux';
-import configureMockStore from 'redux-mock-store';
-import thunk from 'redux-thunk';
-import Dropzone from 'react-dropzone';
-import FileUploadModal from '../../../components/data-management/FileUploadModal';
-import '__test__/test-utils/setupTests';
+import {
+  render, screen,
+} from '@testing-library/react';
+import '@testing-library/jest-dom';
+import { act } from 'react-dom/test-utils';
 
-const mockStore = configureMockStore([thunk]);
-const store = mockStore({});
+import techOptions from 'utils/upload/fileUploadSpecifications';
+
+import componentFactory from '__test__/test-utils/testComponentFactory';
+import FileUploadModal from '../../../components/data-management/FileUploadModal';
+
+const defaultProps = {
+  onUpload: jest.fn(),
+  onCancel: jest.fn(),
+};
+
+const FileUploadModalFactory = componentFactory(FileUploadModal, defaultProps);
+
+const chosenTech = Object.keys(techOptions)[0];
+
+const renderFileUploadModal = async (customProps = {}) => {
+  await act(() => {
+    render(FileUploadModalFactory(customProps));
+  });
+};
 
 describe('FileUploadModal', () => {
-  it('renders without options', () => {
-    const component = shallow(
-      <Provider store={store}>
-        <FileUploadModal />
-      </Provider>,
-    );
-    expect(component.exists()).toEqual(true);
-  });
-
-  it('contains required components', () => {
-    const component = mount(
-      <Provider store={store}>
-        <FileUploadModal />
-      </Provider>,
-    );
+  it('contains required components', async () => {
+    await renderFileUploadModal();
 
     // It has a select button to select technology
-    expect(component.find(Select).length).toEqual(1);
+    expect(screen.getByText(chosenTech)).toBeInTheDocument();
 
-    // It has a dropzone
-    expect(component.find(Dropzone).length).toEqual(1);
+    // It contains instructions on what files can be uploaded
+    expect(screen.getByText(/For each sample, upload a folder containing the following/i)).toBeInTheDocument();
+    techOptions[chosenTech].acceptedFiles.forEach((filename) => {
+      expect(screen.getByText(filename)).toBeInTheDocument();
+    });
 
-    // It has a submit button
-    expect(component.find(Button).length).toEqual(1);
+    // It contains information that the sample name can later be changed
+    expect(screen.getByText(/The folder's name will be used to name the sample in it/i)).toBeInTheDocument();
+
+    // It shows direction on drag and drop area
+    expect(screen.getByText(/Drag and drop folders here or click to browse/i)).toBeInTheDocument();
+
+    // It has a disabled upload button if there are no uploaded files
+    // Upload button is the last "Upload" text in the document
+    const uploadButtonText = screen.getAllByText(/Upload/i).pop();
+    const uploadButton = uploadButtonText.closest('button');
+
+    expect(uploadButton).toBeDisabled();
   });
 });
