@@ -180,8 +180,8 @@ const DiffExprResults = (props) => {
         experimentId={experimentId}
         initialTableState={{
           sorter: {
-            field: 'abszscore',
-            columnKey: 'abszscore',
+            field: 'logFC',
+            columnKey: 'logFC',
             order: 'descend',
           },
         }}
