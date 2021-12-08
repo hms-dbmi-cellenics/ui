@@ -1,8 +1,10 @@
 import _ from 'lodash';
-import generateVitessceHeatmapTracksData from 'components/plots/helpers/heatmap/generateVitessceHeatmapTracksData';
 
-import { generateVegaGeneExpressionsData, generateVitessceGeneExpressionsData } from 'components/plots/helpers/heatmap/generateHeatmapGeneExpressionsData';
-import generateVegaHeatmapTracksData from 'components/plots/helpers/heatmap/generateVegaHeatmapTracksData';
+import generateVegaGeneExpressionsData from 'components/plots/helpers/heatmap/vega/generateVegaGeneExpressionsData';
+import generateVegaHeatmapTracksData from 'components/plots/helpers/heatmap/vega/generateVegaHeatmapTracksData';
+
+import generateVitessceHeatmapTracksData from 'components/plots/helpers/heatmap/vitessce/generateVitessceHeatmapTracksData';
+import generateVitessceHeatmapExpressionsMatrix from 'components/plots/helpers/heatmap/vitessce/generateVitessceHeatmapExpressionsMatrix';
 
 import SetOperations from 'utils/setOperations';
 import { union } from 'utils/cellSetOperations';
@@ -186,7 +188,11 @@ const populateHeatmapData = (
   );
 
   // Data points is an array with shape [cell_1 gene_1, ..., cell_1 gene_n, cell_2 gene_1, ... ]
-  const expressionMatrix = generateVitessceGeneExpressionsData(cellOrder, geneOrder, expression);
+  const expressionMatrix = generateVitessceHeatmapExpressionsMatrix(
+    cellOrder,
+    geneOrder,
+    expression,
+  );
 
   return {
     expressionMatrix: {

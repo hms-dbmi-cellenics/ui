@@ -1,7 +1,3 @@
-import _ from 'lodash';
-
-import { convertRange } from 'utils/plotUtils';
-
 const cartesian = (...array) => (
   array.reduce((acum, value) => (
     acum.flatMap((d) => (
@@ -50,32 +46,4 @@ const generateVegaGeneExpressionsData = (cellOrder, geneOrder, expression, heatm
   return geneExpressionsData;
 };
 
-const scaledTo255 = (rowOfExpressions) => {
-  const min = _.min(rowOfExpressions);
-  const max = _.max(rowOfExpressions);
-
-  return rowOfExpressions.map((value) => convertRange(value, [min, max], [0, 255]));
-};
-
-const generateVitessceGeneExpressionsData = (cellOrder, geneOrder, expression) => {
-  const geneExpressionsDataMatrix = [];
-
-  geneOrder.forEach((gene) => {
-    if (!expression.data[gene]) return;
-
-    // Pick only the
-    const geneExpressions = cellOrder.map(
-      (cellId) => expression.data[gene].rawExpression.expression[cellId],
-    );
-
-    const scaledGeneExpressions = scaledTo255(geneExpressions);
-
-    geneExpressionsDataMatrix.push(scaledGeneExpressions);
-  });
-
-  const cellExpressionsData = _.flatten(_.unzip(geneExpressionsDataMatrix));
-
-  return cellExpressionsData;
-};
-
-export { generateVegaGeneExpressionsData, generateVitessceGeneExpressionsData };
+export default generateVegaGeneExpressionsData;
