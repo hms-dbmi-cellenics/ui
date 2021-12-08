@@ -293,7 +293,7 @@ const HeatmapPlot = (props) => {
               trackName={highlightedTrackData.trackName}
               coordinates={highlightedTrackData.coordinates}
             />
-          ) : (cellHighlight && Object.keys(cellCoordinatesRef.current).length > 0) ? (
+          ) : cellHighlight ? (
             <HeatmapCellInfo
               cellId={cellHighlight}
               geneName={geneHighlight}

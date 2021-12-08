@@ -40,7 +40,7 @@ const HeatmapCellInfo = (props) => {
     </Card>
   );
 
-  if (cellId && Object.keys(coordinates).length > 0) {
+  if (cellId) {
     return renderCellInfo();
   }
 
