@@ -4,9 +4,11 @@ import Hex from 'crypto-js/enc-hex';
 import { DEFAULT_NA } from '../../redux/reducers/projects/initialState';
 
 const generateGem2sParamsHash = (project, samples, experiment) => {
+  if (!project || !samples || !experiment) {
+    return false;
+  }
   const projectSamples = Object.entries(samples)
-    .filter(([key, _]) => project.samples.includes(key));
-
+    .filter(([key, _]) => project?.samples?.includes(key));
   const existingSampleIds = projectSamples.map(([_, sample]) => sample.uuid);
 
   // Different sample order should not change the hash.

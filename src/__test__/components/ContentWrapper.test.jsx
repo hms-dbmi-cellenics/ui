@@ -66,6 +66,7 @@ const store = mockStore({
       activeProjectUuid: '1234',
     },
   },
+  backendStatus: {},
 });
 
 describe('ContentWrapper', () => {
@@ -154,6 +155,7 @@ describe('ContentWrapper', () => {
       status: {
         gem2s: {
           status: 'SUCCEEDED',
+          paramsHash: false,
         },
         pipeline: {
           status: 'SUCCEEDED',

@@ -18,6 +18,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Auth } from 'aws-amplify';
 import PropTypes from 'prop-types';
 import { useRouter } from 'next/router';
+import calculateGem2sRerunStatus from 'utils/data-management/calculateGem2sRerunStatus';
+
 import Error from '../pages/_error';
 import GEM2SLoadingScreen from './GEM2SLoadingScreen';
 import PipelineRedirectToDataProcessing from './PipelineRedirectToDataProcessing';
@@ -48,6 +50,8 @@ const ContentWrapper = (props) => {
   const currentExperimentIdRef = useRef(routeExperimentId);
   const activeProjectUuid = useSelector((state) => state?.projects?.meta?.activeProjectUuid);
   const activeProject = useSelector((state) => state.projects[activeProjectUuid]);
+  const samples = useSelector((state) => state.samples);
+
   const activeProjectExperimentID = useSelector((state) => (
     state?.projects[activeProjectUuid]?.experiments[0]));
   // if the current selected project experiment is processed
@@ -75,6 +79,7 @@ const ContentWrapper = (props) => {
     error: backendError,
     status: backendStatus,
   } = useSelector(getBackendStatus(currentExperimentId));
+  const gem2sBackendStatus = backendStatus?.gem2s;
   const backendErrors = [pipelineStatus.FAILED, pipelineStatus.TIMED_OUT, pipelineStatus.ABORTED];
 
   const pipelineStatusKey = backendStatus?.pipeline?.status;
@@ -301,18 +306,9 @@ const ContentWrapper = (props) => {
   const menuItemRender = ({
     path, icon, name, disableIfNoExperiment, disabledByPipelineStatus,
   }) => {
-    const pipelinesCompleted = () => {
-      if (!activeProject?.samples?.length) {
-        return false;
-      }
-      if (pipelineStatusKey === pipelineStatus.SUCCEEDED
-        && gem2sStatusKey === pipelineStatus.SUCCEEDED) {
-        return true;
-      }
-      return false;
-    };
+    const rerunStatus = calculateGem2sRerunStatus(gem2sBackendStatus, activeProject, samples, experiment);
 
-    const notProcessedExperimentDisable = disableIfNoExperiment && !routeExperimentId && !pipelinesCompleted();
+    const notProcessedExperimentDisable = disableIfNoExperiment && !routeExperimentId && rerunStatus.rerun;
 
     const pipelineStatusDisable = disabledByPipelineStatus && (
       backendError || gem2sRunning || gem2sRunningError
