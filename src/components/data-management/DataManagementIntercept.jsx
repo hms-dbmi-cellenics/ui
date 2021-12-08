@@ -29,9 +29,8 @@ const DataManagementIntercept = (props) => {
               onContinueNavigation();
               onDismissIntercept();
             }}
-            style={{ width: '100px' }}
           >
-            Continue
+            Continue with old data
           </Button>
           <Button
             type='primary'
@@ -42,9 +41,8 @@ const DataManagementIntercept = (props) => {
               router.push(analysisPath.replace('[experimentId]', experimentId));
               onDismissIntercept();
             }}
-            style={{ width: '100px' }}
           >
-            Re-process
+            Re-run sample processing
           </Button>
         </Space>
       )}
