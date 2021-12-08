@@ -47,7 +47,7 @@ const ContentWrapper = (props) => {
 
   const currentExperimentIdRef = useRef(routeExperimentId);
   const activeProjectUuid = useSelector((state) => state?.projects?.meta?.activeProjectUuid);
-  const activeProject = useSelector((state) => state.projects[activeProject]);
+  const activeProject = useSelector((state) => state.projects[activeProjectUuid]);
   const activeProjectExperimentID = useSelector((state) => (
     state?.projects[activeProjectUuid]?.experiments[0]));
   // if the current selected project experiment is processed
@@ -302,7 +302,7 @@ const ContentWrapper = (props) => {
     path, icon, name, disableIfNoExperiment, disabledByPipelineStatus,
   }) => {
     const pipelinesCompleted = () => {
-      if (activeProject?.samples?.length !== 3) {
+      if (!activeProject?.samples?.length) {
         return false;
       }
       if (pipelineStatusKey === pipelineStatus.SUCCEEDED
