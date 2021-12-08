@@ -10,6 +10,7 @@ const EditablePagrapraph = (props) => {
 
   const paragraphEditor = useRef();
 
+  const [text, setText] = useState(value);
   const [isExpanded, setIsExpanded] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
 
@@ -19,6 +20,14 @@ const EditablePagrapraph = (props) => {
     }
   }, [isEditing]);
 
+  const handleUpdate = (e) => {
+    const content = e.target.textContent;
+
+    setText(content);
+    onUpdate(content);
+    setIsEditing(false);
+  };
+
   const renderEditor = () => (
     // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions
     <p
@@ -27,18 +36,14 @@ const EditablePagrapraph = (props) => {
       style={{
         backgroundColor: 'white',
       }}
-      onBlur={(e) => {
-        onUpdate(e.target.textContent);
-        setIsEditing(false);
-      }}
+      onBlur={(e) => handleUpdate(e)}
       onKeyDown={(e) => {
         if (e.keyCode === 13) {
-          onUpdate(e.target.textContent);
-          setIsEditing(false);
+          handleUpdate(e);
         }
       }}
     >
-      {value}
+      {text}
     </p>
   );
 
@@ -57,7 +62,7 @@ const EditablePagrapraph = (props) => {
   const renderControls = () => (
     <>
       { renderEditButton() }
-      { value.length ? renderEllipsisLink() : <></>}
+      { text.length ? renderEllipsisLink() : <></>}
     </>
   );
 
@@ -65,7 +70,7 @@ const EditablePagrapraph = (props) => {
     if (isExpanded) {
       return (
         <p>
-          { value }
+          { text }
           { renderControls() }
         </p>
       );
@@ -81,7 +86,7 @@ const EditablePagrapraph = (props) => {
             paddingTop: '0.25em',
           }}
         >
-          { value }
+          { text }
         </div>
         { renderControls() }
       </div>
