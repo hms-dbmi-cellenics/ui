@@ -8,7 +8,7 @@ const scaledTo255 = (rowOfExpressions) => {
   return rowOfExpressions.map((value) => convertRange(value, [min, max], [0, 255]));
 };
 
-const generateVitessceGeneExpressionsData = (cellOrder, geneOrder, expression) => {
+const generateVitessceHeatmapExpressionsMatrix = (cellOrder, geneOrder, expression) => {
   const geneExpressionsDataMatrix = [];
 
   geneOrder.forEach((gene) => {
@@ -28,4 +28,4 @@ const generateVitessceGeneExpressionsData = (cellOrder, geneOrder, expression) =
   return cellExpressionsData;
 };
 
-export default generateVitessceGeneExpressionsData;
+export default generateVitessceHeatmapExpressionsMatrix;

@@ -25,6 +25,7 @@ import HeatmapCellInfo from 'components/data-exploration/heatmap/HeatmapCellInfo
 import HeatmapTracksCellInfo from 'components/data-exploration/heatmap/HeatmapTracksCellInfo';
 
 import getCellClassProperties from 'utils/cellSets/getCellClassProperties';
+import useConditionalEffect from 'utils/customHooks/useConditionalEffect';
 
 const COMPONENT_TYPE = 'interactiveHeatmap';
 const { Text } = Typography;
@@ -134,7 +135,7 @@ const HeatmapPlot = (props) => {
     setIsHeatmapGenesLoading(false);
   }, [selectedGenes, loadingGenes, markerGenesLoading]);
 
-  useEffect(() => {
+  useConditionalEffect(() => {
     if (!selectedGenes?.length > 0
       || cellSetsHierarchy.length === 0
     ) {
@@ -150,6 +151,8 @@ const HeatmapPlot = (props) => {
     selectedGenes,
     heatmapSettings,
     cellSetsHidden,
+    // To reorder tracks when the track is reordered in hierarchy
+    cellSetsHierarchy,
   ]);
 
   useEffect(() => {
