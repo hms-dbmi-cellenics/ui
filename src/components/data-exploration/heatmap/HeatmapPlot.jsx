@@ -90,10 +90,6 @@ const HeatmapPlot = (props) => {
   const { error: expressionDataError } = expressionData;
   const viewError = useSelector((state) => state.genes.expression.views[COMPONENT_TYPE]?.error);
 
-  const setHeatmapDataWithDebounce = useCallback(_.debounce((data) => {
-    setHeatmapData(data);
-  }, 1500, { leading: true }), []);
-
   const updateCellCoordinates = (newView) => {
     if (cellHighlight && newView.project) {
       const [x, y] = newView.project(cellHighlight, geneHighlight);
@@ -146,7 +142,7 @@ const HeatmapPlot = (props) => {
       cellSets, heatmapSettings, expressionData, selectedGenes, true, true,
     );
 
-    setHeatmapDataWithDebounce(data);
+    setHeatmapData(data);
   }, [
     selectedGenes,
     heatmapSettings,
