@@ -152,4 +152,12 @@ describe('HeatmapPlot', () => {
     // Loading screen shows up
     expect(screen.getByText(/We're getting your data.../i)).toBeInTheDocument();
   });
+
+  // Add test for expressionDataError
+
+  // Add test for viewError
+
+  // Add test for markerGenesLoadingError
+
+  // Think more tests
 });
