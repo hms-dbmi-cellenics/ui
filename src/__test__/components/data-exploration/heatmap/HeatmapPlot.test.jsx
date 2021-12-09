@@ -24,6 +24,8 @@ import mockAPI, {
 import HeatmapPlot from 'components/data-exploration/heatmap/HeatmapPlot';
 
 import { loadProcessingSettings } from 'redux/actions/experimentSettings';
+import { loadGeneExpression } from 'redux/actions/genes';
+
 import { loadBackendStatus } from 'redux/actions/backendStatus';
 
 import fake from '__test__/test-utils/constants';
@@ -37,7 +39,7 @@ jest.mock('object-hash', () => {
   const mockWorkResultETag = jest.requireActual('__test__/test-utils/mockWorkResultETag').default;
 
   const mockWorkRequestETag = (ETagParams) => `${ETagParams.body.nGenes}-marker-genes`;
-  const mockGeneExpressionETag = () => 'gene-expression';
+  const mockGeneExpressionETag = (ETagParams) => `${ETagParams.missingGenesBody.genes.join('-')}-expression`;
 
   return mockWorkResultETag(objectHash, mockWorkRequestETag, mockGeneExpressionETag);
 });
@@ -123,6 +125,31 @@ describe('HeatmapPlot', () => {
 
     await loadAndRenderDefaultHeatmap();
 
+    expect(screen.getByText(/We're getting your data.../i)).toBeInTheDocument();
+  });
+
+  it('Shows loader message if the marker genes are loaded but there\'s other selected genes still loading', async () => {
+    fetchMock.mockIf(/.*/, mockAPI(generateDefaultMockAPIResponses(experimentId, fake.PROJECT_ID)));
+
+    const customWorkerResponses = _.merge(
+      _.cloneDeep(mockWorkerResponses),
+      { 'loading_gene_id-expression': () => stalledResponse },
+    );
+
+    seekFromAPI.mockClear();
+    seekFromAPI.mockImplementation((a, b, c, requested) => customWorkerResponses[requested]());
+
+    await loadAndRenderDefaultHeatmap();
+
+    // Renders correctly
+    expect(screen.getByText(/Sup Im a heatmap/i)).toBeInTheDocument();
+
+    // If a new gene suddenly is suddenly selected
+    await act(async () => {
+      storeState.dispatch(loadGeneExpression(experimentId, [...markerGenesData5.order, 'loading_gene_id'], 'interactiveHeatmap'));
+    });
+
+    // Loading screen shows up
     expect(screen.getByText(/We're getting your data.../i)).toBeInTheDocument();
   });
 });

@@ -1,5 +1,5 @@
 import React, {
-  useRef, useEffect, useState, useCallback,
+  useRef, useEffect, useState,
 } from 'react';
 import dynamic from 'next/dynamic';
 import PropTypes from 'prop-types';
