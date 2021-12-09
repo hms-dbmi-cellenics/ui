@@ -1,7 +1,0 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
-
-exports[`HeatmapPlot dispatches loadCellSets action when no cell sets are in the store 1`] = `
-Object {
-  "type": "cellSets/loading",
-}
-`;
