@@ -15,10 +15,11 @@ enableFetchMocks();
 const validFilesList = [
   {
     name: 'WT13/features.tsv.gz',
-    bundle: {
+    fileObject: {
       name: 'features.tsv.gz',
       path: '/WT13/features.tsv.gz',
       type: 'application/gzip',
+      size: 100,
     },
     upload: { status: UploadStatus.UPLOADING },
     errors: '',
@@ -27,10 +28,11 @@ const validFilesList = [
   },
   {
     name: 'WT13/barcodes.tsv.gz',
-    bundle: {
+    fileObject: {
       name: 'barcodes.tsv.gz',
       path: '/WT13/barcodes.tsv.gz',
       type: 'application/gzip',
+      size: 100,
     },
     upload: { status: UploadStatus.UPLOADING },
     errors: '',
@@ -39,10 +41,11 @@ const validFilesList = [
   },
   {
     name: 'WT13/matrix.mtx.gz',
-    bundle: {
+    fileObject: {
       name: 'matrix.mtx.gz',
       path: '/WT13/matrix.mtx.gz',
       type: 'application/gzip',
+      size: 100,
     },
     upload: { status: UploadStatus.UPLOADING },
     errors: '',
@@ -99,17 +102,17 @@ const initialState = {
 const flushPromises = () => new Promise(setImmediate);
 const mockStore = configureMockStore([thunk]);
 
-jest.mock('../../../utils/upload/loadAndCompressIfNecessary',
+jest.mock('utils/upload/loadAndCompressIfNecessary',
   () => jest.fn().mockImplementation(
-    (bundle) => {
-      if (!bundle.valid) {
+    (file) => {
+      if (!file.valid) {
         return Promise.reject(new Error('error'));
       }
       return Promise.resolve('loadedGzippedFile');
     },
   ));
 
-jest.mock('../../../redux/actions/samples/saveSamples', () => jest.fn().mockImplementation(() => ({
+jest.mock('redux/actions/samples/saveSamples', () => jest.fn().mockImplementation(() => ({
   type: 'samples/saved',
 })));
 
