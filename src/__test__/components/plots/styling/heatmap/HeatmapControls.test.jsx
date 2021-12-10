@@ -7,8 +7,6 @@ import HeatmapControls from 'components/plots/styling/heatmap/HeatmapControls';
 
 describe('Heatmap Controls test', () => {
   const onGeneEnter = jest.fn();
-  // onGeneEnter, plotUuid, selectedGenes,
-  // onReset = () => onGeneEnter([]),
   const onReset = jest.fn();
   const renderHeatmapControls = (selectedGenes) => {
     render(<HeatmapControls
