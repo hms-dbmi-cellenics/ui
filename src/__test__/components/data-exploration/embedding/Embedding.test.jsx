@@ -9,7 +9,7 @@ import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import preloadAll from 'jest-next-dynamic';
 // eslint-disable-next-line import/extensions
-import { Scatterplot } from 'vitessce/dist/es/production/scatterplot.min.js';
+import { Scatterplot } from 'vitessce/dist/umd/production/scatterplot.min';
 import Embedding from '../../../../components/data-exploration/embedding/Embedding';
 import CrossHair from '../../../../components/data-exploration/embedding/CrossHair';
 import CellInfo from '../../../../components/data-exploration/CellInfo';
@@ -137,7 +137,7 @@ describe('Embedding', () => {
     );
   });
 
-  it('renders correctly a popover on lasso selection and closes it on cancel', () => {
+  it.only('renders correctly a popover on lasso selection and closes it on cancel', () => {
     const scatterplot = component.find(Scatterplot);
     expect(component.find('ClusterPopover').length).toEqual(0);
 

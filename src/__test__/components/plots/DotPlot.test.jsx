@@ -69,7 +69,7 @@ describe('DotPlot', () => {
       );
     });
 
-    expect(screen.getByText("We're getting your data...")).toBeInTheDocument();
+    expect(screen.getByText("We're getting your data ...")).toBeInTheDocument();
   });
 
   it('Renders a plot', async () => {

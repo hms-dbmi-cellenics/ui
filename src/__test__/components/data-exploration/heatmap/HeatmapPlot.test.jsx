@@ -84,12 +84,13 @@ describe('HeatmapPlot', () => {
     enableFetchMocks();
     fetchMock.resetMocks();
     fetchMock.doMock();
+
+    seekFromAPI.mockClear();
   });
 
   it('Renders the heatmap component by default if everything loads', async () => {
     fetchMock.mockIf(/.*/, mockAPI(generateDefaultMockAPIResponses(experimentId, fake.PROJECT_ID)));
 
-    seekFromAPI.mockClear();
     seekFromAPI.mockImplementation((a, b, c, requested) => mockWorkerResponses[requested]());
 
     await loadAndRenderDefaultHeatmap();
@@ -107,7 +108,7 @@ describe('HeatmapPlot', () => {
 
     await loadAndRenderDefaultHeatmap();
 
-    expect(screen.getByText(/We're getting your data.../i)).toBeInTheDocument();
+    expect(screen.getByText(/We're getting your data .../i)).toBeInTheDocument();
   });
 
   it('Shows loader message if the marker genes are loading', async () => {
@@ -118,12 +119,11 @@ describe('HeatmapPlot', () => {
       { '5-marker-genes': () => stalledResponse },
     );
 
-    seekFromAPI.mockClear();
     seekFromAPI.mockImplementation((a, b, c, requested) => customWorkerResponses[requested]());
 
     await loadAndRenderDefaultHeatmap();
 
-    expect(screen.getByText(/We're getting your data.../i)).toBeInTheDocument();
+    expect(screen.getByText(/We're getting your data .../i)).toBeInTheDocument();
   });
 
   it('Shows loader message if the marker genes are loaded but there\'s other selected genes still loading', async () => {
@@ -134,7 +134,6 @@ describe('HeatmapPlot', () => {
       { 'loading_gene_id-expression': () => stalledResponse },
     );
 
-    seekFromAPI.mockClear();
     seekFromAPI.mockImplementation((a, b, c, requested) => customWorkerResponses[requested]());
 
     await loadAndRenderDefaultHeatmap();
@@ -148,7 +147,7 @@ describe('HeatmapPlot', () => {
     });
 
     // Loading screen shows up
-    expect(screen.getByText(/We're getting your data.../i)).toBeInTheDocument();
+    expect(screen.getByText(/We're getting your data .../i)).toBeInTheDocument();
   });
 
   // Add test for expressionDataError
