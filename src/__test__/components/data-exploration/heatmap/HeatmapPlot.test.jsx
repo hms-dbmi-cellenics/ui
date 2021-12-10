@@ -29,6 +29,7 @@ import { loadBackendStatus } from 'redux/actions/backendStatus';
 import fake from '__test__/test-utils/constants';
 import { setCellSetHiddenStatus } from 'redux/actions/cellSets';
 import { isSubset } from 'utils/arrayUtils';
+import { updatePlotConfig } from 'redux/actions/componentConfig';
 
 const experimentId = fake.EXPERIMENT_ID;
 
@@ -111,7 +112,9 @@ describe('HeatmapPlot', () => {
 
     expect(screen.getByText(/Sup Im a heatmap/i)).toBeInTheDocument();
 
-    expect(vitesscePropsSpy).toMatchSnapshot();
+    // Renders correct cells and genes
+    expect(vitesscePropsSpy.expressionMatrix.rows).toMatchSnapshot();
+    expect(vitesscePropsSpy.expressionMatrix.cols).toMatchSnapshot();
   });
 
   it('Shows loader message if cellSets are loading', async () => {
@@ -206,7 +209,7 @@ describe('HeatmapPlot', () => {
     expect(screen.getByText(/We're sorry, we couldn't load this./i)).toBeInTheDocument();
   });
 
-  it.only('doesn\t display hidden cell sets', async () => {
+  it('Doesn\t display hidden cell sets', async () => {
     fetchMock.mockIf(/.*/, mockAPI(generateDefaultMockAPIResponses(experimentId, fake.PROJECT_ID)));
 
     seekFromAPI.mockImplementation((a, b, c, requested) => mockWorkerResponses[requested]());
@@ -229,7 +232,34 @@ describe('HeatmapPlot', () => {
     // It doesn't show the cells for louvain-3 anymore
     expect(isSubset(cellsInLouvain3, vitesscePropsSpy.expressionMatrix.rows)).toEqual(false);
 
-    expect(vitesscePropsSpy).toMatchSnapshot();
+    // Keeps all the other cells and genes the same
+    expect(vitesscePropsSpy.expressionMatrix.rows).toMatchSnapshot();
+    expect(vitesscePropsSpy.expressionMatrix.cols).toMatchSnapshot();
+  });
+
+  it.only('Reacts to cellClass groupby being changed', async () => {
+    fetchMock.mockIf(/.*/, mockAPI(generateDefaultMockAPIResponses(experimentId, fake.PROJECT_ID)));
+
+    seekFromAPI.mockImplementation((a, b, c, requested) => mockWorkerResponses[requested]());
+
+    await loadAndRenderDefaultHeatmap();
+
+    // Renders correctly
+    expect(screen.getByText(/Sup Im a heatmap/i)).toBeInTheDocument();
+
+    // If groupedTracks change
+    await act(async () => {
+      storeState.dispatch(
+        updatePlotConfig('interactiveHeatmap', {
+          groupedTracks: ['sample', 'louvain'],
+        }),
+      );
+    });
+
+    // It doesn't reorder the genes
+    expect(vitesscePropsSpy.expressionMatrix.rows).toMatchSnapshot();
+    // It reorders correctly
+    expect(vitesscePropsSpy.expressionMatrix.cols).toMatchSnapshot();
   });
 
   it('Responds correctly to vitessce Heatmap callbacks', async () => {
@@ -241,7 +271,9 @@ describe('HeatmapPlot', () => {
 
     expect(screen.getByText(/Sup Im a heatmap/i)).toBeInTheDocument();
 
-    expect(vitesscePropsSpy).toMatchSnapshot();
+    // Renders the correct genes and cells
+    expect(vitesscePropsSpy.expressionMatrix.rows).toMatchSnapshot();
+    expect(vitesscePropsSpy.expressionMatrix.cols).toMatchSnapshot();
 
     // On changing the view state
     const updatedViewState = { zoom: 15, target: [1, 1] };
