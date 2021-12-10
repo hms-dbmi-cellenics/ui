@@ -8,17 +8,17 @@ import ReactResizeDetector from 'react-resize-detector';
 import { DownOutlined, PictureOutlined, ToolOutlined } from '@ant-design/icons';
 import PropTypes from 'prop-types';
 import { loadProcessingSettings } from 'redux/actions/experimentSettings';
-import Header from '../../../../components/Header';
+import Header from 'components/Header';
 
-import CellSetsTool from '../../../../components/data-exploration/cell-sets-tool/CellSetsTool';
-import GeneListTool from '../../../../components/data-exploration/gene-list-tool/GeneListTool';
-import DiffExprManager from '../../../../components/data-exploration/differential-expression-tool/DiffExprManager';
-import Embedding from '../../../../components/data-exploration/embedding/Embedding';
-import HeatmapPlot, { COMPONENT_TYPE } from '../../../../components/data-exploration/heatmap/HeatmapPlot';
-import HeatmapSettings from '../../../../components/data-exploration/heatmap/HeatmapSettings';
-import MosaicCloseButton from '../../../../components/MosaicCloseButton';
-import { updateLayout, addWindow, addToWindow } from '../../../../redux/actions/layout';
-import SearchMenu from '../../../../components/SearchMenu';
+import CellSetsTool from 'components/data-exploration/cell-sets-tool/CellSetsTool';
+import GeneListTool from 'components/data-exploration/gene-list-tool/GeneListTool';
+import DiffExprManager from 'components/data-exploration/differential-expression-tool/DiffExprManager';
+import Embedding from 'components/data-exploration/embedding/Embedding';
+import HeatmapPlot, { COMPONENT_TYPE } from 'components/data-exploration/heatmap/HeatmapPlot';
+import HeatmapSettings from 'components/data-exploration/heatmap/HeatmapSettings';
+import MosaicCloseButton from 'components/MosaicCloseButton';
+import { updateLayout, addWindow, addToWindow } from 'redux/actions/layout';
+import SearchMenu from 'components/SearchMenu';
 import 'react-mosaic-component/react-mosaic-component.css';
 
 const { TabPane } = Tabs;
