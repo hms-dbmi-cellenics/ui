@@ -11,9 +11,8 @@ const { Panel } = Collapse;
 const HeatmapControls = (props) => {
   const {
     onGeneEnter, plotUuid, selectedGenes,
-    onReset = () => onGeneEnter([]),
+    onReset = () => { onGeneEnter([]); },
   } = props;
-
   return (
     <Collapse defaultActiveKey='5' accordion>
       <Panel header='Gene selection' key='5'>
