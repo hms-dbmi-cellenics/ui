@@ -137,14 +137,14 @@ describe('Embedding', () => {
     );
   });
 
-  it.only('renders correctly a popover on lasso selection and closes it on cancel', () => {
+  it('renders correctly a popover on lasso selection and closes it on cancel', () => {
     const scatterplot = component.find(Scatterplot);
     expect(component.find('ClusterPopover').length).toEqual(0);
 
     const selectedCellIds = new Set([1, 2]);
     // lasso select cells 1 and 2
     act(() => {
-      scatterplot.getElement().props.updateCellsSelection(selectedCellIds);
+      scatterplot.getElement().props.setCellSelection(selectedCellIds);
     });
     component.update();
     let popover = component.find('ClusterPopover');
@@ -166,7 +166,7 @@ describe('Embedding', () => {
 
     // lasso select cells 1 and 2
     act(() => {
-      scatterplot.getElement().props.updateCellsSelection(selectedCellIds);
+      scatterplot.getElement().props.setCellSelection(selectedCellIds);
     });
     component.update();
 
@@ -178,7 +178,7 @@ describe('Embedding', () => {
     // lasso select cells 1 and 2
     const selectedCellIds = new Set([1, 2]);
     act(() => {
-      scatterplot.getElement().props.updateCellsSelection(selectedCellIds);
+      scatterplot.getElement().props.setCellSelection(selectedCellIds);
     });
     component.update();
 
@@ -194,7 +194,7 @@ describe('Embedding', () => {
     // lasso select cells 1 and 2
     const selectedCellIds = new Set([1, 2]);
     act(() => {
-      scatterplot.getElement().props.updateCellsSelection(selectedCellIds);
+      scatterplot.getElement().props.setCellSelection(selectedCellIds);
     });
     component.update();
     const popover = component.find('ClusterPopover');
@@ -215,16 +215,14 @@ describe('Embedding', () => {
   it('dispatches an action with updated cell information on hover', () => {
     const scatterplot = component.find(Scatterplot);
 
-    const hoveredCell = { cellId: 1 };
-
     // hover over cells
     act(() => {
-      scatterplot.getElement().props.updateCellsHover(hoveredCell);
+      scatterplot.getElement().props.setCellHighlight(1);
     });
 
     expect(store.getActions().length).toEqual(1);
     expect(store.getActions()[0].type).toEqual(CELL_INFO_UPDATE);
-    expect(store.getActions()[0].payload.cellName).toEqual(hoveredCell.cellId);
+    expect(store.getActions()[0].payload.cellName).toEqual(1);
   });
 
   it('renders CrossHair and CellInfo components when user hovers over cell', () => {

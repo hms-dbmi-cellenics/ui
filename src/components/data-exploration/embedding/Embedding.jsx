@@ -205,7 +205,7 @@ const Embedding = (props) => {
   };
 
   const updateCellsSelection = (selection) => {
-    if (selection.length > 0) {
+    if (Array.from(selection).length > 0) {
       setCreateClusterPopover(true);
       setSelectedIds(selection);
     }
