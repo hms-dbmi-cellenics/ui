@@ -246,9 +246,6 @@ describe('HeatmapPlot', () => {
     expect(screen.queryByText(/Cell id:/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/Gene name:/i)).not.toBeInTheDocument();
 
-    console.log('receivedPropsDebug');
-    console.log(vitesscePropsSpy);
-
     // On hovering over heatmap tracks
     await act(async () => {
       vitesscePropsSpy.setTrackHighlight(['4', 0, 1, 2]);
