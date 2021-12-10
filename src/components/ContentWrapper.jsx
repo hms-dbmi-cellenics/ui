@@ -54,9 +54,6 @@ const ContentWrapper = (props) => {
 
   const activeProjectExperimentID = useSelector((state) => (
     state?.projects[activeProjectUuid]?.experiments[0]));
-  // if the current selected project experiment is processed
-  // and we are in data-management, we don't have experimentId
-  const currentExperimentId = currentExperimentIdRef.current;
 
   useEffect(() => {
     if (!activeProjectExperimentID && !routeExperimentId) return;
@@ -69,6 +66,8 @@ const ContentWrapper = (props) => {
       currentExperimentIdRef.current = activeProjectExperimentID;
     }
   }, [routeExperimentId, activeProjectExperimentID]);
+
+  const currentExperimentId = currentExperimentIdRef.current;
 
   const experiment = useSelector((state) => state?.experiments[currentExperimentId]);
 
