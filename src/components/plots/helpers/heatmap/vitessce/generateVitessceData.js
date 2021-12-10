@@ -19,6 +19,10 @@ const generateVitessceData = (
     expression,
   );
 
+  const metadataTracksLabels = Array.from(heatmapSettings.selectedTracks)
+    .reverse()
+    .map((cellClassKey) => cellSets.properties[cellClassKey].name);
+
   return {
     expressionMatrix: {
       cols: geneOrder,
@@ -27,7 +31,7 @@ const generateVitessceData = (
     },
     metadataTracks: {
       dataPoints: trackColorData,
-      labels: Array.from(heatmapSettings.selectedTracks).reverse(),
+      labels: metadataTracksLabels,
     },
   };
 };
