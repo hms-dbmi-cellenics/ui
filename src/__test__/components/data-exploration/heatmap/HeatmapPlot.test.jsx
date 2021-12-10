@@ -235,9 +235,21 @@ describe('HeatmapPlot', () => {
     // Keeps all the other cells and genes the same
     expect(vitesscePropsSpy.expressionMatrix.rows).toMatchSnapshot();
     expect(vitesscePropsSpy.expressionMatrix.cols).toMatchSnapshot();
+
+    // If a louvain-3 is shown again
+    await act(async () => {
+      storeState.dispatch(setCellSetHiddenStatus(experimentId, 'louvain-3'));
+    });
+
+    // It shows the cells for louvain-3 again
+    expect(isSubset(cellsInLouvain3, vitesscePropsSpy.expressionMatrix.rows)).toEqual(true);
+
+    // Keeps all the other cells and genes the same
+    expect(vitesscePropsSpy.expressionMatrix.rows).toMatchSnapshot();
+    expect(vitesscePropsSpy.expressionMatrix.cols).toMatchSnapshot();
   });
 
-  it.only('Reacts to cellClass groupby being changed', async () => {
+  it('Reacts to cellClass groupby being changed', async () => {
     fetchMock.mockIf(/.*/, mockAPI(generateDefaultMockAPIResponses(experimentId, fake.PROJECT_ID)));
 
     seekFromAPI.mockImplementation((a, b, c, requested) => mockWorkerResponses[requested]());
