@@ -19,8 +19,6 @@ import mockAPI, {
   generateDefaultMockAPIResponses,
 } from '__test__/test-utils/mockAPI';
 
-// import { Heatmap } from 'vitessce/dist/umd/production/heatmap.min';
-// eslint-disable-next-line import/no-named-as-default
 import HeatmapPlot from 'components/data-exploration/heatmap/HeatmapPlot';
 
 import { loadProcessingSettings } from 'redux/actions/experimentSettings';

@@ -278,7 +278,7 @@ const HeatmapPlot = (props) => {
         cellColorLabels={vitessceData?.metadataTracks.labels}
         transpose
         viewState={viewState}
-        setViewState={({ zoom, target }) => { setViewState({ zoom, target }); }}
+        setViewState={setViewState}
         setCellHighlight={setCellHighlight}
         setGeneHighlight={setGeneHighlight}
         setTrackHighlight={setTrackHighlight}
@@ -317,4 +317,4 @@ HeatmapPlot.propTypes = {
 
 export default HeatmapPlot;
 
-export { HeatmapPlot, COMPONENT_TYPE };
+export { COMPONENT_TYPE };
