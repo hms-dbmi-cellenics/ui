@@ -61,6 +61,12 @@ const store = mockStore({
     },
   },
   experiments: { [experimentId]: {} },
+  projects: {
+    meta: {
+      activeProjectUuid: '1234',
+    },
+  },
+  backendStatus: {},
 });
 
 describe('ContentWrapper', () => {
@@ -74,7 +80,7 @@ describe('ContentWrapper', () => {
     // eslint-disable-next-line require-await
     const wrapper = await mount(
       <Provider store={store}>
-        <ContentWrapper experimentId>
+        <ContentWrapper routeExperimentId={experimentId}>
           <></>
         </ContentWrapper>
       </Provider>,
@@ -109,7 +115,6 @@ describe('ContentWrapper', () => {
       status: null,
     }));
 
-    // eslint-disable-next-line require-await
     const wrapper = await mount(
       <Provider store={store}>
         <ContentWrapper backendStatus={{}}>
@@ -143,7 +148,43 @@ describe('ContentWrapper', () => {
     // Plots and Tables link is disabled
     expect(menus.at(3).props().disabled).toEqual(true);
   });
+  it('Links are enabled if the selected project is processed', async () => {
+    getBackendStatus.mockImplementation(() => () => ({
+      loading: false,
+      error: false,
+      status: {
+        gem2s: {
+          status: 'SUCCEEDED',
+          paramsHash: false,
+        },
+        pipeline: {
+          status: 'SUCCEEDED',
+        },
+      },
+    }));
 
+    const wrapper = await mount(
+      <Provider store={store}>
+        <ContentWrapper backendStatus={{}}>
+          <></>
+        </ContentWrapper>
+      </Provider>,
+    );
+    await wrapper.update();
+    const sider = wrapper.find('Sider');
+    expect(sider.length).toEqual(1);
+    const menus = wrapper.find(Menu).children().find(Item);
+    const visibleMenuLength = menus.length / 2;
+
+    expect(visibleMenuLength).toEqual(4);
+    for (let i = 0; i < visibleMenuLength; i += 1) {
+      expect(menus.at(i).props().disabled).toEqual(false);
+    }
+    expect(menus.at(0).text()).toEqual('Data Management');
+    expect(menus.at(1).text()).toEqual('Data Processing');
+    expect(menus.at(2).text()).toEqual('Data Exploration');
+    expect(menus.at(3).text()).toEqual('Plots and Tables');
+  });
   it('has the correct sider and layout style when opened / closed', async () => {
     const siderHasWidth = (expectedWidth) => {
       const sider = wrapper.find('Sider');
@@ -210,6 +251,11 @@ describe('ContentWrapper', () => {
         },
         info,
       },
+      projects: {
+        meta: {
+          activeProjectUuid: '1234',
+        },
+      },
       experiments: { [experimentId]: {} },
     });
 
@@ -217,7 +263,7 @@ describe('ContentWrapper', () => {
     const wrapper = await mount(
       <Provider store={testStore}>
         <ContentWrapper
-          experimentId={info.experimentId}
+          routeExperimentId={info.experimentId}
           experimentData={info}
         >
           <></>
@@ -258,7 +304,7 @@ describe('ContentWrapper', () => {
     // eslint-disable-next-line require-await
     const wrapper = await mount(
       <Provider store={store}>
-        <ContentWrapper experimentId>
+        <ContentWrapper routeExperimentId={experimentId}>
           <></>
         </ContentWrapper>
       </Provider>,
