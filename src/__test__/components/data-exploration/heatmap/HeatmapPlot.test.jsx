@@ -77,7 +77,8 @@ const loadAndRenderDefaultHeatmap = async () => {
   });
 };
 
-const stalledResponse = new Promise(() => { });
+const stalledResponse = () => new Promise(() => { });
+const errorResponse = () => Promise.reject(new Error('Some error idk'));
 
 describe('HeatmapPlot', () => {
   beforeEach(async () => {
@@ -101,7 +102,7 @@ describe('HeatmapPlot', () => {
   it('Shows loader message if cellSets are loading', async () => {
     const mockAPIResponses = _.merge(
       generateDefaultMockAPIResponses(experimentId, fake.PROJECT_ID),
-      { [`experiments/${experimentId}/cellSets`]: () => stalledResponse },
+      { [`experiments/${experimentId}/cellSets`]: stalledResponse },
     );
 
     fetchMock.mockIf(/.*/, mockAPI(mockAPIResponses));
@@ -116,7 +117,7 @@ describe('HeatmapPlot', () => {
 
     const customWorkerResponses = _.merge(
       _.cloneDeep(mockWorkerResponses),
-      { '5-marker-genes': () => stalledResponse },
+      { '5-marker-genes': stalledResponse },
     );
 
     seekFromAPI.mockImplementation((a, b, c, requested) => customWorkerResponses[requested]());
@@ -131,7 +132,7 @@ describe('HeatmapPlot', () => {
 
     const customWorkerResponses = _.merge(
       _.cloneDeep(mockWorkerResponses),
-      { 'loading_gene_id-expression': () => stalledResponse },
+      { 'loading_gene_id-expression': stalledResponse },
     );
 
     seekFromAPI.mockImplementation((a, b, c, requested) => customWorkerResponses[requested]());
@@ -150,11 +151,45 @@ describe('HeatmapPlot', () => {
     expect(screen.getByText(/We're getting your data .../i)).toBeInTheDocument();
   });
 
-  // Add test for expressionDataError
+  it('Handles marker genes loading error correctly', async () => {
+    fetchMock.mockIf(/.*/, mockAPI(generateDefaultMockAPIResponses(experimentId, fake.PROJECT_ID)));
 
-  // Add test for viewError
+    const customWorkerResponses = _.merge(
+      _.cloneDeep(mockWorkerResponses),
+      { '5-marker-genes': errorResponse },
+    );
 
-  // Add test for markerGenesLoadingError
+    seekFromAPI.mockImplementation((a, b, c, requested) => customWorkerResponses[requested]());
+
+    await loadAndRenderDefaultHeatmap();
+
+    // Error screen shows up
+    expect(screen.getByText(/We're sorry, we couldn't load this./i)).toBeInTheDocument();
+  });
+
+  it('Handles expression data loading error correctly', async () => {
+    fetchMock.mockIf(/.*/, mockAPI(generateDefaultMockAPIResponses(experimentId, fake.PROJECT_ID)));
+
+    const customWorkerResponses = _.merge(
+      _.cloneDeep(mockWorkerResponses),
+      { 'loading_gene_id-expression': errorResponse },
+    );
+
+    seekFromAPI.mockImplementation((a, b, c, requested) => customWorkerResponses[requested]());
+
+    await loadAndRenderDefaultHeatmap();
+
+    // Renders correctly
+    expect(screen.getByText(/Sup Im a heatmap/i)).toBeInTheDocument();
+
+    // If a new gene suddenly is suddenly selected
+    await act(async () => {
+      storeState.dispatch(loadGeneExpression(experimentId, [...markerGenesData5.order, 'loading_gene_id'], 'interactiveHeatmap'));
+    });
+
+    // Error screen shows up
+    expect(screen.getByText(/We're sorry, we couldn't load this./i)).toBeInTheDocument();
+  });
 
   // Think more tests
 });
