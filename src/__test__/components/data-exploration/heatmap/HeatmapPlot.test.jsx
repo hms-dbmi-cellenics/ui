@@ -120,7 +120,7 @@ describe('HeatmapPlot', () => {
   it('Shows loader message if cellSets are loading', async () => {
     const mockAPIResponses = _.merge(
       generateDefaultMockAPIResponses(experimentId, fake.PROJECT_ID),
-      { [`experiments / ${experimentId} /cellSets`]: stalledResponse },
+      { [`experiments/${experimentId}/cellSets`]: stalledResponse },
     );
 
     fetchMock.mockIf(/.*/, mockAPI(mockAPIResponses));
