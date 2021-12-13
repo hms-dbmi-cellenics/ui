@@ -15,7 +15,7 @@ const generateVitessceHeatmapExpressionsMatrix = (cellOrder, geneOrder, expressi
     if (!expression.data[gene]) return;
 
     const geneExpressions = cellOrder.map(
-      (cellId) => expression.data[gene].rawExpression.expression[cellId],
+      (cellId) => expression.data[gene].truncatedExpression.expression[cellId],
     );
 
     const scaledGeneExpressions = scaledTo255(geneExpressions);
