@@ -72,7 +72,8 @@ const embeddingContinuousInitialConfig = {
   labels: labelBaseState,
   logEquation: 'datum.expression*1',
   shownGene: null,
-  truncatedValues: false,
+  expressionValue: 'raw',
+  truncatedValues: true,
   selectedSample: 'All',
 };
 
