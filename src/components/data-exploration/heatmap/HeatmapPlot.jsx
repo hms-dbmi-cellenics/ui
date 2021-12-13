@@ -276,6 +276,7 @@ const HeatmapPlot = (props) => {
         expressionMatrix={vitessceData?.expressionMatrix}
         cellColors={vitessceData?.metadataTracks.dataPoints}
         cellColorLabels={vitessceData?.metadataTracks.labels}
+        hideObservationsLabels
         transpose
         viewState={viewState}
         setViewState={setViewState}
