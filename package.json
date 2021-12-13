@@ -17,7 +17,7 @@
   "scripts": {
     "start": "NODE_ENV=development node server.js",
     "build": "next build",
-    "prod": "NODE_ENV=production next start -p 5000",
+    "prod": "NODE_ENV=production node server.js",
     "pretest": "eslint ./src",
     "test": "jest --silent",
     "coverage": "jest --coverage --silent",

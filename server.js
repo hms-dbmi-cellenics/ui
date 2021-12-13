@@ -28,6 +28,11 @@ app.prepare()
   .then(() => {
     const server = express();
 
+    if (!isDev) {
+      console.log('This is not a development environment, adding static path hinting...');
+      server.use(express.static(`${__dirname}/public`));
+    }
+
     server.get('*', (req, res) => handle(req, res));
 
     server.listen(port, (err) => {
