@@ -160,7 +160,7 @@ describe('HeatmapPlot', () => {
     // Renders correctly
     expect(screen.getByText(/Sup Im a heatmap/i)).toBeInTheDocument();
 
-    // If a new gene suddenly is suddenly selected
+    // A new gene is being loaded
     await act(async () => {
       storeState.dispatch(loadGeneExpression(experimentId, [...markerGenesData5.order, 'loading_gene_id'], 'interactiveHeatmap'));
     });
@@ -200,7 +200,7 @@ describe('HeatmapPlot', () => {
     // Renders correctly
     expect(screen.getByText(/Sup Im a heatmap/i)).toBeInTheDocument();
 
-    // If a new gene suddenly is suddenly selected
+    // A new gene is being loaded
     await act(async () => {
       storeState.dispatch(loadGeneExpression(experimentId, [...markerGenesData5.order, 'loading_gene_id'], 'interactiveHeatmap'));
     });
