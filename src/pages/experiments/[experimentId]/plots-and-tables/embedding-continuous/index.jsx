@@ -58,7 +58,7 @@ const ContinuousEmbeddingPage = ({ experimentId }) => {
   const [searchedGene, setSearchedGene] = useState();
 
   useEffect(() => {
-    if (config?.shownGene !== 'notSelected' && config && !searchedGene) {
+    if (config?.shownGene !== null && config && !searchedGene) {
       // if there is a saved gene in the config in the initial loading of the plot
       dispatch(loadGeneExpression(experimentId, [config.shownGene], plotUuid));
     }
@@ -76,12 +76,12 @@ const ContinuousEmbeddingPage = ({ experimentId }) => {
     }
   }, [searchedGene]);
 
-  if (config?.shownGene === 'notSelected' && !fetching && !highestDispersionGene) {
+  if (config?.shownGene === null && !fetching && !highestDispersionGene) {
     dispatch(loadPaginatedGeneProperties(experimentId, PROPERTIES, plotUuid, tableState));
   }
 
   useEffect(() => {
-    if (config?.shownGene === 'notSelected' && highestDispersionGene) {
+    if (config?.shownGene === null && highestDispersionGene) {
       updatePlotWithChanges({ shownGene: highestDispersionGene });
       dispatch(loadGeneExpression(experimentId, [highestDispersionGene], plotUuid));
     }
