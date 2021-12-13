@@ -30,7 +30,7 @@ app.prepare()
 
     if (!isDev) {
       console.log('This is not a development environment, adding static path hinting...');
-      server.use(express.static(`${__dirname}/public`));
+      server.use('/_next', express.static(`${__dirname}/public`));
     }
 
     server.get('*', (req, res) => handle(req, res));
