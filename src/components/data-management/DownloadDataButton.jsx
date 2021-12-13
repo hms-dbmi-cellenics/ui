@@ -70,7 +70,8 @@ const DownloadDataButton = () => {
       if (!experimentId) throw new Error('No experimentId specified');
       if (!downloadTypes.has(type)) throw new Error('Invalid download type');
 
-      const { signedUrl } = await getFromApiExpectOK(`/v1/experiments/${experimentId}/download/${type}`);
+      const signedUrl = await getFromApiExpectOK(`/v1/experiments/${experimentId}/download/${type}`);
+
       downloadFromUrl(signedUrl);
     } catch (e) {
       pushNotificationMessage('error', endUserMessages.ERROR_DOWNLOADING_DATA);
