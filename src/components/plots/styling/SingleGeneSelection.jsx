@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Input, Skeleton } from 'antd';
 
@@ -13,7 +13,13 @@ const SingleGeneSelection = (props) => {
 
   const [localShownGene, setLocalShownGene] = useState(config?.shownGene);
 
-  if (!config) {
+  useEffect(() => {
+    if (!config?.shownGene) return;
+
+    setLocalShownGene(config.shownGene);
+  }, [config?.shownGene]);
+
+  if (!config || !config?.shownGene) {
     return <Skeleton.Input style={{ width: 200 }} active />;
   }
 
