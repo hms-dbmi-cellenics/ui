@@ -24,6 +24,7 @@ spec:
   values:
     readinessProbe:
       path: "/data-management"
+      periodSeconds: 30
     livenessProbe:
       probeType: tcpSocket
 
