@@ -50,8 +50,6 @@
     "@aws-sdk/credential-provider-web-identity": "^3.12.0",
     "@babel/plugin-transform-runtime": "^7.9.0",
     "@babel/polyfill": "^7.8.7",
-    "@blueprintjs/core": "^3.45.0",
-    "@blueprintjs/icons": "^3.26.1",
     "@next/bundle-analyzer": "^10.0.9",
     "@socialgouv/matomo-next": "^1.2.2",
     "@zeit/next-css": "^1.0.1",
