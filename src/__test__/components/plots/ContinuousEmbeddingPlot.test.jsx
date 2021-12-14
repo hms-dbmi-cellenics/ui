@@ -45,12 +45,12 @@ describe('Continuous embedding plot', () => {
       ...initialEmbeddingState,
       umap: {
         data: [
-          [1, 2],
-          [3, 4],
-          [5, 6],
-          [7, 8],
-          [9, 10],
-          [11, 12],
+          [0, 1],
+          [2, 3],
+          [4, 5],
+          [6, 7],
+          [8, 9],
+          [10, 11],
         ],
         loading: false,
         error: false,
@@ -68,7 +68,7 @@ describe('Continuous embedding plot', () => {
             mean: 3.5,
             stdev: 1.870828693387,
             expression: [
-              1, 2, 3, 4, 5, 6,
+              0, 1, 2, 3, 4, 5,
             ],
           },
         },
@@ -78,10 +78,12 @@ describe('Continuous embedding plot', () => {
       ...initialExperimentState,
     },
   };
+
   beforeEach(() => {
     jest.clearAllMocks();
     changeEmbeddingAxesIfNecessary.mockImplementation(() => ({}));
   });
+
   it('shows spinner when data is still loading', () => {
     const store = mockStore(mockedStore);
 
@@ -91,6 +93,7 @@ describe('Continuous embedding plot', () => {
           experimentId={experimentId}
           config={config}
           plotUuid={plotUuid}
+          truncatedPlotData={mockedStore.genes.expression.data[shownGene].expression}
           plotData={mockedStore.genes.expression.data[shownGene].expression}
           loading
           error={mockedStore.genes.expression.error}
@@ -115,6 +118,7 @@ describe('Continuous embedding plot', () => {
           experimentId={experimentId}
           config={config}
           plotUuid={plotUuid}
+          truncatedPlotData={mockedStore.genes.expression.data[shownGene].expression}
           plotData={mockedStore.genes.expression.data[shownGene].expression}
           loading={false}
           error={mockedStore.genes.expression.error}
