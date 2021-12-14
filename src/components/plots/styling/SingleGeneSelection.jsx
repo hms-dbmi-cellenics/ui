@@ -20,7 +20,11 @@ const SingleGeneSelection = (props) => {
   }, [config?.shownGene]);
 
   if (!config || !config?.shownGene) {
-    return <Skeleton.Input style={{ width: 200 }} active />;
+    return (
+      <div data-testid='skeletonInput'>
+        <Skeleton.Input style={{ width: 200 }} active />
+      </div>
+    );
   }
 
   return (
