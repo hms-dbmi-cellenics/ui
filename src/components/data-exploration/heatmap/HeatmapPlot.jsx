@@ -37,6 +37,7 @@ const Heatmap = dynamic(
 
 // To avoid it sticking to the right too much (the left already has some margin)
 const heatmapRightMargin = 50;
+const heatmapBottomMargin = 40;
 
 const HeatmapPlot = (props) => {
   const {
@@ -250,6 +251,7 @@ const HeatmapPlot = (props) => {
     const trackOrder = Array.from(heatmapSettings.selectedTracks).reverse();
 
     const cellSetClassKey = trackOrder[trackIndex];
+
     const cellClassProps = getCellClassProperties(
       parseInt(cellIndexStr, 10), cellSetClassKey,
       cellSetsHierarchy, cellSetsProperties,
@@ -270,7 +272,7 @@ const HeatmapPlot = (props) => {
         uuid='heatmap-0'
         theme='light'
         width={width - heatmapRightMargin}
-        height={height}
+        height={height - heatmapBottomMargin}
         colormap='plasma'
         colormapRange={[0.0, 1.0]}
         expressionMatrix={vitessceData?.expressionMatrix}
