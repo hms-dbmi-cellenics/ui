@@ -12,11 +12,10 @@ import {
 
 import fileUploadSpecifications from 'utils/upload/fileUploadSpecifications';
 import UploadStatus from 'utils/upload/UploadStatus';
-import pipelineStatus from 'utils/pipelineStatusValues';
 import integrationTestConstants from 'utils/integrationTestConstants';
-import generateGem2sParamsHash from 'utils/data-management/generateGem2sParamsHash';
 import { runGem2s } from 'redux/actions/pipeline';
-import { updateExperiment, switchExperiment } from 'redux/actions/experiments';
+import { updateExperiment } from 'redux/actions/experiments';
+import calculateGem2sRerunStatus from 'utils/data-management/calculateGem2sRerunStatus';
 
 const LaunchButtonTemplate = (props) => {
   const {
@@ -50,13 +49,14 @@ const LaunchAnalysisButton = () => {
   const activeProject = projects[activeProjectUuid];
   const experimentId = activeProject.experiments[0];
 
-  const [gem2sRerunStatus, setGem2sRerunStatus] = useState({ rerun: true, paramsHash: null, reasons: [] });
+  const [gem2sRerunStatus, setGem2sRerunStatus] = useState(
+    { rerun: true, paramsHash: null, reasons: [] },
+  );
 
   const launchAnalysis = () => {
     const lastViewed = moment().toISOString();
     dispatch(updateExperiment(experimentId, { lastViewed }));
     dispatch(updateProject(activeProjectUuid, { lastAnalyzed: lastViewed }));
-    dispatch(switchExperiment());
     dispatch(updateExperimentInfo({
       experimentId,
       experimentName: experiments[experimentId].name,
@@ -71,32 +71,6 @@ const LaunchAnalysisButton = () => {
     router.push(analysisPath.replace('[experimentId]', experimentId));
   };
 
-  const calculateGem2sRerunStatus = (gem2sBackendStatus) => {
-    const { status: gem2sStatus, paramsHash: existingParamsHash } = gem2sBackendStatus;
-
-    const newParamsHash = generateGem2sParamsHash(
-      activeProject,
-      samples,
-      experiments[experimentId],
-    );
-
-    const projectHashEqual = existingParamsHash === newParamsHash;
-
-    const gem2sSuccessful = [
-      pipelineStatus.SUCCEEDED, pipelineStatus.RUNNING,
-    ].includes(gem2sStatus);
-
-    const rerunReasons = [];
-    if (!gem2sSuccessful) rerunReasons.push('data has not been processed sucessfully');
-    if (!projectHashEqual) rerunReasons.push('the project samples/metadata have been modified');
-
-    return ({
-      rerun: !gem2sSuccessful || !projectHashEqual,
-      paramsHash: newParamsHash,
-      reasons: rerunReasons,
-    });
-  };
-
   useEffect(() => {
     // The value of backend status is null for new projects that have never run
     const gem2sBackendStatus = backendStatus[experimentId]?.status?.gem2s;
@@ -106,7 +80,9 @@ const LaunchAnalysisButton = () => {
       || !experiments[experimentId]?.sampleIds?.length > 0
     ) return;
 
-    const gem2sStatus = calculateGem2sRerunStatus(gem2sBackendStatus);
+    const gem2sStatus = calculateGem2sRerunStatus(
+      gem2sBackendStatus, activeProject, samples, experiments[experimentId],
+    );
 
     setGem2sRerunStatus(gem2sStatus);
   }, [backendStatus, activeProjectUuid, samples, activeProject]);

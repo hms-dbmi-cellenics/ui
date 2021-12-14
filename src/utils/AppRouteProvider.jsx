@@ -3,7 +3,7 @@ import propTypes from 'prop-types';
 import { useRouter } from 'next/router';
 import { useSelector } from 'react-redux';
 
-import DataProcessingIntercept from '../components/data-processing/DataProcessingIntercept';
+import DataProcessingIntercept from 'components/data-processing/DataProcessingIntercept';
 
 const AppRouterContext = React.createContext(null);
 
@@ -27,7 +27,7 @@ const AppRouteProvider = (props) => {
   };
 
   const continueNavigation = (nextRoute, hardNavigate) => {
-    // Hard navigate, cusing the page to refresh and fetch data from server
+    // Hard navigate, causing the page to refresh and fetch data from server
     if (hardNavigate) window.location.href = nextRoute;
     router.push(nextRoute);
   };
@@ -37,7 +37,6 @@ const AppRouteProvider = (props) => {
       setRenderIntercept(availableIntercepts.DATA_PROCESSING(nextRoute, hardNavigate));
       return;
     }
-
     continueNavigation(nextRoute, hardNavigate);
   };
 
