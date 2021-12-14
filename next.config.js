@@ -9,6 +9,9 @@ const css = require('@zeit/next-css');
 const images = require('next-images');
 
 const lessToJS = require('less-vars-to-js');
+const withBundleAnalyzer = require('@next/bundle-analyzer')({
+  enabled: process.env.ANALYZE === 'true',
+});
 const webpackConfigPlugins = require('./config/webpack/configPlugins');
 const webpackConfigRules = require('./config/webpack/configRules');
 const webpackConfigSourcemaps = require('./config/webpack/configSourcemaps');
@@ -86,6 +89,7 @@ const nextConfig = {
 };
 
 module.exports = withPlugins([
+  [withBundleAnalyzer],
   [images],
   [less, {
     lessLoaderOptions: {

@@ -6,7 +6,6 @@ import Amplify, { Storage, withSSRContext } from 'aws-amplify';
 import React, { useEffect, useState } from 'react';
 import Router, { useRouter } from 'next/router';
 
-import AWS from 'aws-sdk';
 import { Credentials } from '@aws-amplify/core';
 import { DefaultSeo } from 'next-seo';
 import NProgress from 'nprogress';
@@ -25,19 +24,23 @@ import { initTracking } from '../utils/tracking';
 import { wrapper } from '../redux/store';
 
 const mockCredentialsForInframock = () => {
-  Credentials.get = async () => (
-    new AWS.Credentials({
-      accessKeyId: 'asd',
-      secretAccessKey: 'asfdsa', // pragma: allowlist secret
-    })
-  );
+  Credentials.get = async () => ({
+    expired: false,
+    expireTime: null,
+    refreshCallbacks: [],
+    accessKeyId: 'asd',
+    secretAccessKey: 'asfdsa',
+    sessionToken: 'asdfasdf',
+  });
 
-  Credentials.shear = () => (
-    new AWS.Credentials({
-      accessKeyId: 'asd',
-      secretAccessKey: 'asfdsa', // pragma: allowlist secret
-    })
-  );
+  Credentials.shear = async () => ({
+    expired: false,
+    expireTime: null,
+    refreshCallbacks: [],
+    accessKeyId: 'asd',
+    secretAccessKey: 'asfdsa',
+    sessionToken: 'asdfasdf',
+  });
 };
 
 Router.events.on('routeChangeStart', () => NProgress.start());
@@ -191,10 +194,10 @@ WrappedApp.getInitialProps = async ({ Component, ctx }) => {
 
   const promises = [];
 
-  const { default: getEnvironmentInfo } = require('../utils/ssr/getEnvironmentInfo');
+  const { default: getEnvironmentInfo } = (await import('../utils/ssr/getEnvironmentInfo'));
   promises.push(getEnvironmentInfo);
 
-  const { default: getAuthenticationInfo } = require('../utils/ssr/getAuthenticationInfo');
+  const { default: getAuthenticationInfo } = (await import('../utils/ssr/getAuthenticationInfo'));
   promises.push(getAuthenticationInfo);
 
   let results = await Promise.all(promises.map((f) => f(ctx, store)));
@@ -205,7 +208,7 @@ WrappedApp.getInitialProps = async ({ Component, ctx }) => {
     Auth.configure(results.amplifyConfig.Auth);
 
     if (query?.experimentId) {
-      const { default: getExperimentInfo } = require('../utils/ssr/getExperimentInfo');
+      const { default: getExperimentInfo } = (await import('../utils/ssr/getExperimentInfo'));
       const experimentInfo = await getExperimentInfo(ctx, store, Auth);
       results = _.merge(results, experimentInfo);
     }
