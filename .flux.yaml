@@ -23,7 +23,7 @@ spec:
     ref: FILLED_IN_BY_CI
   values:
     readinessProbe:
-      path: "/data-management"
+      path: "/robots.txt"
       periodSeconds: 30
       failureThreshold: 2
     livenessProbe:
