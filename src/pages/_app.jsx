@@ -28,18 +28,18 @@ const mockCredentialsForInframock = () => {
     expired: false,
     expireTime: null,
     refreshCallbacks: [],
-    accessKeyId: 'asd',
-    secretAccessKey: 'asfdsa',
-    sessionToken: 'asdfasdf',
+    accessKeyId: 'asd', // pragma: allowlist secret
+    secretAccessKey: 'asfdsa', // pragma: allowlist secret
+    sessionToken: 'asdfasdf', // pragma: allowlist secret
   });
 
   Credentials.shear = async () => ({
     expired: false,
     expireTime: null,
     refreshCallbacks: [],
-    accessKeyId: 'asd',
-    secretAccessKey: 'asfdsa',
-    sessionToken: 'asdfasdf',
+    accessKeyId: 'asd', // pragma: allowlist secret
+    secretAccessKey: 'asfdsa', // pragma: allowlist secret
+    sessionToken: 'asdfasdf', // pragma: allowlist secret
   });
 };
 
