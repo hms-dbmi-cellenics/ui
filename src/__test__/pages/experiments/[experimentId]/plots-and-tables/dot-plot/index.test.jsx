@@ -14,7 +14,6 @@ import mockAPI, {
   promiseResponse,
   statusResponse,
   delayedResponse,
-  workerResponse,
 } from '__test__/test-utils/mockAPI';
 
 import { seekFromAPI } from 'utils/work/seekWorkResponse';

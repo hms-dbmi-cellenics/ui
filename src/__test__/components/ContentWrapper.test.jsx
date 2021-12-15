@@ -1,6 +1,6 @@
 import { mount } from 'enzyme';
 
-import { Auth } from 'aws-amplify';
+import Auth from '@aws-amplify/auth';
 import { Menu } from 'antd';
 import { Provider } from 'react-redux';
 import React from 'react';
@@ -35,11 +35,9 @@ jest.mock('next/router', () => ({
 
 }));
 
-jest.mock('aws-amplify', () => ({
-  Auth: {
-    currentAuthenticatedUser: jest.fn().mockImplementation(async () => true),
-    federatedSignIn: jest.fn(),
-  },
+jest.mock('@aws-amplify/auth', () => ({
+  currentAuthenticatedUser: jest.fn().mockImplementation(async () => true),
+  federatedSignIn: jest.fn(),
 }));
 
 jest.mock('../../utils/AppRouteProvider', () => ({

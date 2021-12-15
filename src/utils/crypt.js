@@ -1,6 +1,6 @@
 const crypto = require('crypto');
 
-const algorithm = 'aes-256-ctr';
+const ENCRYPTION_ALGORITHM = 'aes-256-ctr';
 const NON_SECURE_SECRET_KEY = 'vOVH6sdmpNWjRRIqCc7rdxs01lwHzfr3'; // pragma: allowlist secret
 const iv = crypto.randomBytes(16);
 
@@ -9,7 +9,7 @@ const iv = crypto.randomBytes(16);
 // See for encrypt: https://attacomsian.com/blog/nodejs-encrypt-decrypt-data
 
 const encrypt = (text) => {
-  const cipher = crypto.createCipheriv(algorithm, NON_SECURE_SECRET_KEY, iv);
+  const cipher = crypto.createCipheriv(ENCRYPTION_ALGORITHM, NON_SECURE_SECRET_KEY, iv);
 
   const encrypted = Buffer.concat([cipher.update(text), cipher.final()]);
 
@@ -20,7 +20,7 @@ const encrypt = (text) => {
 };
 
 const decrypt = (hash) => {
-  const decipher = crypto.createDecipheriv(algorithm, NON_SECURE_SECRET_KEY, Buffer.from(hash.iv, 'hex'));
+  const decipher = crypto.createDecipheriv(ENCRYPTION_ALGORITHM, NON_SECURE_SECRET_KEY, Buffer.from(hash.iv, 'hex'));
 
   const decrpyted = Buffer.concat([decipher.update(Buffer.from(hash.content, 'hex')), decipher.final()]);
 
@@ -36,8 +36,18 @@ const getWebhookUrl = () => {
   return decrypt(webhookEndpoint);
 };
 
+const browserGenerateDigest = async (message, algorithm) => {
+  const msgUint8 = new TextEncoder().encode(message);
+  const hashBuffer = await crypto.subtle.digest(algorithm, msgUint8);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  const hashHex = hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
+
+  return hashHex;
+};
+
 export {
   decrypt,
   encrypt,
+  browserGenerateDigest,
   getWebhookUrl,
 };

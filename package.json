@@ -43,7 +43,9 @@
   "dependencies": {
     "@ant-design/colors": "^6.0.0",
     "@ant-design/icons": "^4.2.1",
-    "@aws-amplify/core": "^3.8.21",
+    "@aws-amplify/auth": "^4.3.18",
+    "@aws-amplify/core": "^4.3.10",
+    "@aws-amplify/storage": "^4.4.11",
     "@aws-sdk/client-cognito-identity": "^3.11.0",
     "@aws-sdk/client-cognito-identity-provider": "^3.11.0",
     "@aws-sdk/client-sts": "^3.12.0",
@@ -62,7 +64,6 @@
     "babel-plugin-lodash": "^3.3.4",
     "buffer": "^6.0.3",
     "cross-env": "^7.0.3",
-    "crypto-js": "^3.3.0",
     "cssnano": "^4.1.10",
     "dotenv": "^8.2.0",
     "es6-promise": "^4.2.5",

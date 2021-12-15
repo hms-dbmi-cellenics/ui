@@ -4,23 +4,21 @@ import {
 } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
-import 'aws-amplify';
+import '@aws-amplify/auth';
 
 import ReferralButton from '../../components/ReferralButton';
 import pushNotificationMessage from '../../utils/pushNotificationMessage';
 import endUserMessages from '../../utils/endUserMessages';
 import '__test__/test-utils/setupTests';
 
-jest.mock('aws-amplify', () => ({
-  Auth: {
-    currentAuthenticatedUser: jest.fn().mockImplementation(async () => ({
-      username: 'mockuser',
-      attributes: {
-        email: 'mock@user.name',
-        name: 'Mocked User',
-      },
-    })),
-  },
+jest.mock('@aws-amplify/auth', () => ({
+  currentAuthenticatedUser: jest.fn().mockImplementation(async () => ({
+    username: 'mockuser',
+    attributes: {
+      email: 'mock@user.name',
+      name: 'Mocked User',
+    },
+  })),
 }));
 
 enableFetchMocks();

@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
+import { act } from 'react-dom/test-utils';
 import {
   screen, render, waitFor, fireEvent,
 } from '@testing-library/react';
@@ -160,7 +161,7 @@ describe('LaunchAnalysisButton', () => {
     jest.clearAllMocks();
   });
 
-  it('Process project button is disabled if not all sample metadata are inserted', () => {
+  it('Process project button is disabled if not all sample metadata are inserted', async () => {
     const notAllMetadataInserted = {
       ...withDataState,
       samples: {
@@ -172,30 +173,34 @@ describe('LaunchAnalysisButton', () => {
       },
     };
 
-    render(
-      <Provider store={mockStore(notAllMetadataInserted)}>
-        <LaunchAnalysisButton />
-      </Provider>,
-    );
+    await act(async () => {
+      render(
+        <Provider store={mockStore(notAllMetadataInserted)}>
+          <LaunchAnalysisButton />
+        </Provider>,
+      );
+    });
 
     const button = screen.getByText('Process project').closest('button');
 
     expect(button).toBeDisabled();
   });
 
-  it('Process project button is disabled if there is no data', () => {
-    render(
-      <Provider store={mockStore(noDataState)}>
-        <LaunchAnalysisButton />
-      </Provider>,
-    );
+  it('Process project button is disabled if there is no data', async () => {
+    await act(async () => {
+      render(
+        <Provider store={mockStore(noDataState)}>
+          <LaunchAnalysisButton />
+        </Provider>,
+      );
+    });
 
     const button = screen.getByText('Process project').closest('button');
 
     expect(button).toBeDisabled();
   });
 
-  it('Process project button is disabled if not all data are uploaded', () => {
+  it('Process project button is disabled if not all data are uploaded', async () => {
     const notAllDataUploaded = {
       ...withDataState,
       samples: {
@@ -210,23 +215,27 @@ describe('LaunchAnalysisButton', () => {
       },
     };
 
-    render(
-      <Provider store={mockStore(notAllDataUploaded)}>
-        <LaunchAnalysisButton />
-      </Provider>,
-    );
+    await act(async () => {
+      render(
+        <Provider store={mockStore(notAllDataUploaded)}>
+          <LaunchAnalysisButton />
+        </Provider>,
+      );
+    });
 
     const button = screen.getByText('Process project').closest('button');
 
     expect(button).toBeDisabled();
   });
 
-  it('Process project button is enabled if there is data and all metadata for all samples are uplaoded', () => {
-    render(
-      <Provider store={mockStore(withDataState)}>
-        <LaunchAnalysisButton />
-      </Provider>,
-    );
+  it('Process project button is enabled if there is data and all metadata for all samples are uplaoded', async () => {
+    await act(async () => {
+      render(
+        <Provider store={mockStore(withDataState)}>
+          <LaunchAnalysisButton />
+        </Provider>,
+      );
+    });
 
     const button = screen.getByText('Process project').closest('button');
 
@@ -236,11 +245,13 @@ describe('LaunchAnalysisButton', () => {
   it('Shows Go to Data Processing if there are no changes to the project (same hash)', async () => {
     generateGem2sParamsHash.mockReturnValueOnce('old-params-hash');
 
-    render(
-      <Provider store={mockStore(withDataState)}>
-        <LaunchAnalysisButton />
-      </Provider>,
-    );
+    await act(async () => {
+      render(
+        <Provider store={mockStore(withDataState)}>
+          <LaunchAnalysisButton />
+        </Provider>,
+      );
+    });
 
     await waitFor(() => {
       expect(screen.getByText('Go to Data Processing')).toBeDefined();
@@ -250,11 +261,13 @@ describe('LaunchAnalysisButton', () => {
   it('Shows Process project if there are changes to the project (different hash)', async () => {
     generateGem2sParamsHash.mockReturnValueOnce('new-params-hash');
 
-    render(
-      <Provider store={mockStore(withDataState)}>
-        <LaunchAnalysisButton />
-      </Provider>,
-    );
+    await act(async () => {
+      render(
+        <Provider store={mockStore(withDataState)}>
+          <LaunchAnalysisButton />
+        </Provider>,
+      );
+    });
 
     await waitFor(() => {
       expect(screen.getByText('Process project')).toBeDefined();
@@ -263,11 +276,14 @@ describe('LaunchAnalysisButton', () => {
 
   it('Dispatches request for GEM2S if there are changes to the project', async () => {
     generateGem2sParamsHash.mockReturnValueOnce('new-params-hash');
-    render(
-      <Provider store={mockStore(withDataState)}>
-        <LaunchAnalysisButton />
-      </Provider>,
-    );
+
+    await act(async () => {
+      render(
+        <Provider store={mockStore(withDataState)}>
+          <LaunchAnalysisButton />
+        </Provider>,
+      );
+    });
 
     userEvent.click(screen.getByText('Process project'));
 
@@ -285,24 +301,28 @@ describe('LaunchAnalysisButton', () => {
   it('Does not dispatch request for GEM2S if there are no changes to the project', async () => {
     generateGem2sParamsHash.mockReturnValueOnce('old-params-hash');
 
-    render(
-      <Provider store={mockStore(withDataState)}>
-        <LaunchAnalysisButton />
-      </Provider>,
-    );
+    await act(async () => {
+      render(
+        <Provider store={mockStore(withDataState)}>
+          <LaunchAnalysisButton />
+        </Provider>,
+      );
+    });
 
     userEvent.click(screen.getByText('Go to Data Processing'));
     expect(runGem2s).not.toHaveBeenCalled();
   });
 
-  it('Clicking launch analysis should dispatch the correct actions', () => {
+  it('Clicking launch analysis should dispatch the correct actions', async () => {
     generateGem2sParamsHash.mockReturnValueOnce('old-params-hash');
 
-    render(
-      <Provider store={mockStore(withDataState)}>
-        <LaunchAnalysisButton />
-      </Provider>,
-    );
+    await act(async () => {
+      render(
+        <Provider store={mockStore(withDataState)}>
+          <LaunchAnalysisButton />
+        </Provider>,
+      );
+    });
 
     userEvent.click(screen.getByText('Go to Data Processing'));
     expect(runGem2s).not.toHaveBeenCalled();

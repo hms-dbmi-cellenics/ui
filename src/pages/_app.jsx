@@ -1,12 +1,11 @@
 import '../../assets/self-styles.less';
 import '../../assets/nprogress.css';
 
-import Amplify, { Storage, withSSRContext } from 'aws-amplify';
+import Amplify, { Credentials } from '@aws-amplify/core';
 /* eslint-disable react/jsx-props-no-spreading */
 import React, { useEffect, useState } from 'react';
 import Router, { useRouter } from 'next/router';
 
-import { Credentials } from '@aws-amplify/core';
 import { DefaultSeo } from 'next-seo';
 import NProgress from 'nprogress';
 import PropTypes from 'prop-types';
@@ -49,13 +48,6 @@ Router.events.on('routeChangeError', () => NProgress.done());
 
 Amplify.configure({
   ssr: true,
-});
-
-// Configure Amplify to not use prefix when uploading to public folder, instead of '/'
-Storage.configure({
-  customPrefix: {
-    public: '',
-  },
 });
 
 const WrappedApp = ({ Component, pageProps }) => {
@@ -204,6 +196,8 @@ WrappedApp.getInitialProps = async ({ Component, ctx }) => {
   results = _.merge(...results);
 
   try {
+    const { withSSRContext } = (await import('aws-amplify'));
+
     const { Auth } = withSSRContext(ctx);
     Auth.configure(results.amplifyConfig.Auth);
 

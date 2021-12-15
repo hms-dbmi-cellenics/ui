@@ -1,5 +1,6 @@
 import moment from 'moment';
-import Amplify, { Storage } from 'aws-amplify';
+import Amplify from '@aws-amplify/core';
+import Storage from '@aws-amplify/storage';
 
 import connectionPromise from 'utils/socketConnection';
 import WorkResponseError from 'utils/WorkResponseError';

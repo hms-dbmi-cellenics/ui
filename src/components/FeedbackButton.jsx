@@ -8,7 +8,7 @@ import {
 import { CommentOutlined, DownOutlined } from '@ant-design/icons';
 import React, { useState } from 'react';
 
-import { Auth } from 'aws-amplify';
+import Auth from '@aws-amplify/auth';
 import endUserMessages from '../utils/endUserMessages';
 import { getWebhookUrl } from '../utils/crypt';
 import pushNotificationMessage from '../utils/pushNotificationMessage';

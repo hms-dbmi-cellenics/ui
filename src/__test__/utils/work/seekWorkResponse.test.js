@@ -34,7 +34,11 @@ jest.mock('utils/socketConnection', () => {
   };
 });
 
-jest.mock('aws-amplify', () => ({
+jest.mock('@aws-amplify/storage', () => ({
+  get: jest.fn().mockImplementation(async () => 'http://clearly-invalid-url'),
+}));
+
+jest.mock('@aws-amplify/core', () => ({
   configure: jest.fn().mockImplementation(() => ({
     Storage: {
       AWSS3: {
@@ -42,10 +46,9 @@ jest.mock('aws-amplify', () => ({
       },
     },
   })),
-  Storage: {
-    get: jest.fn().mockImplementation(async () => 'http://clearly-invalid-url'),
-  },
 }));
+
+jest.mock('@aws-amplify/auth', () => ({}));
 
 jest.mock('utils/work/unpackResult');
 

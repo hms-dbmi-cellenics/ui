@@ -15,7 +15,7 @@ import {
 import React, { useEffect, useState, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { Auth } from 'aws-amplify';
+import Auth from '@aws-amplify/auth';
 import PropTypes from 'prop-types';
 import { useRouter } from 'next/router';
 import calculateGem2sRerunStatus from 'utils/data-management/calculateGem2sRerunStatus';
@@ -119,6 +119,14 @@ const ContentWrapper = (props) => {
 
     setBackendStatusRequested(true);
   }, [backendLoading]);
+
+  const [gem2sRerunStatus, setGem2sRerunStatus] = useState(null);
+
+  useEffect(() => {
+    calculateGem2sRerunStatus(
+      gem2sBackendStatus, activeProject, samples, experiment,
+    ).then((gem2sStatus) => setGem2sRerunStatus(gem2sStatus));
+  }, [gem2sBackendStatus, activeProject, samples, experiment]);
 
   useEffect(() => {
     Auth.currentAuthenticatedUser()
@@ -305,9 +313,8 @@ const ContentWrapper = (props) => {
   const menuItemRender = ({
     path, icon, name, disableIfNoExperiment, disabledByPipelineStatus,
   }) => {
-    const rerunStatus = calculateGem2sRerunStatus(gem2sBackendStatus, activeProject, samples, experiment);
-
-    const notProcessedExperimentDisable = disableIfNoExperiment && !routeExperimentId && rerunStatus.rerun;
+    const notProcessedExperimentDisable = disableIfNoExperiment
+      && !routeExperimentId && (!gem2sRerunStatus || gem2sRerunStatus.rerun);
 
     const pipelineStatusDisable = disabledByPipelineStatus && (
       backendError || gem2sRunning || gem2sRunningError

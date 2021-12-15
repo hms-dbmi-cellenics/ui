@@ -19,10 +19,8 @@ import { loadProjects, setActiveProject } from 'redux/actions/projects';
 import downloadFromUrl from 'utils/data-management/downloadFromUrl';
 import { loadExperiments } from 'redux/actions/experiments';
 
-jest.mock('aws-amplify', () => ({
-  Storage: {
-    get: jest.fn(() => Promise.resolve('https://mock-s3-url.com')),
-  },
+jest.mock('@aws-amplify/storage', () => ({
+  get: jest.fn(() => Promise.resolve('https://mock-s3-url.com')),
 }));
 
 jest.mock('utils/data-management/downloadFromUrl');

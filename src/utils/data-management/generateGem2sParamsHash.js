@@ -1,9 +1,8 @@
 /* eslint-disable no-unused-vars */
-import sha1 from 'crypto-js/sha1';
-import Hex from 'crypto-js/enc-hex';
 import { DEFAULT_NA } from '../../redux/reducers/projects/initialState';
+import { browserGenerateDigest } from '../crypt';
 
-const generateGem2sParamsHash = (project, samples, experiment) => {
+const generateGem2sParamsHash = async (project, samples, experiment) => {
   if (!project || !samples || !experiment) {
     return false;
   }
@@ -33,7 +32,7 @@ const generateGem2sParamsHash = (project, samples, experiment) => {
     }, {});
   }
 
-  return Hex.stringify(sha1(JSON.stringify(hashParams)));
+  return browserGenerateDigest(JSON.stringify(hashParams));
 };
 
 export default generateGem2sParamsHash;
