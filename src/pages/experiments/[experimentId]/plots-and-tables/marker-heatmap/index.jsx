@@ -1,4 +1,3 @@
-/* eslint-disable import/no-unresolved */
 import React, { useEffect, useState } from 'react';
 import {
   Row,
@@ -34,7 +33,7 @@ import { loadGeneExpression, loadMarkerGenes } from 'redux/actions/genes';
 import { loadCellSets } from 'redux/actions/cellSets';
 import PlatformError from 'components/PlatformError';
 import Loader from 'components/Loader';
-import populateHeatmapData from 'components/plots/helpers/populateHeatmapData';
+import populateHeatmapData from 'components/plots/helpers/heatmap/populateHeatmapData';
 
 const { Text } = Typography;
 const { Panel } = Collapse;
@@ -68,7 +67,7 @@ const MarkerHeatmap = ({ experimentId }) => {
   const loadedMarkerGenes = useSelector(
     (state) => state.genes.expression.views[plotUuid]?.data,
   ) || [];
-  const experiments = useSelector((state) => state.experiments[experimentId]);
+
   const {
     loading: loadingMarkerGenes,
     error: errorMarkerGenes,
