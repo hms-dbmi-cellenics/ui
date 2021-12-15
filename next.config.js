@@ -70,6 +70,14 @@ const nextConfig = {
   webpack: (config, params) => {
     const { dev } = params;
 
+    // bn.js occurs a lot in various crypto libraries we have polyfills for
+    // this is a fix that makes sure all versions of bn.js point to the same
+    // version that we install directly, reducing the bundle size
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      'bn.js': path.join(__dirname, 'node_modules/bn.js/lib/bn.js'),
+    };
+
     const final = webpackConfigSourcemaps(
       webpackConfigRules(
         webpackConfigPlugins(

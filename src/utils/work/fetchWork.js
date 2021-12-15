@@ -100,8 +100,6 @@ const fetchWork = async (
   getState,
   optionals = {},
 ) => {
-  throw new Error('hahaha', experimentId, body, getState);
-
   const { extras = undefined, timeout = 180, eventCallback = null } = optionals;
   const backendStatus = getBackendStatus(experimentId)(getState()).status;
 
