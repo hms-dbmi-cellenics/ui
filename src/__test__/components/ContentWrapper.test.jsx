@@ -168,7 +168,13 @@ describe('ContentWrapper', () => {
         </ContentWrapper>
       </Provider>,
     );
+
+    // Run two cycles of updates so "should gem2s rerun" information
+    // can propagate to the render. This should be refactored into a
+    // react-testing-library test when possible.
     await wrapper.update();
+    await wrapper.update();
+
     const sider = wrapper.find('Sider');
     expect(sider.length).toEqual(1);
     const menus = wrapper.find(Menu).children().find(Item);
