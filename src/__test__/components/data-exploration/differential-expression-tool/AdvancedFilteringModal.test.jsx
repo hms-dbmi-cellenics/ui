@@ -8,8 +8,9 @@ import {
 import AdvancedFilteringModal from 'components/data-exploration/differential-expression-tool/AdvancedFilteringModal';
 
 describe('Advanced filtering modal', () => {
+  const onCancel = jest.fn();
+
   const renderAdvancedFilteringModal = () => {
-    const onCancel = jest.fn();
     render(<AdvancedFilteringModal onCancel={onCancel} />);
   };
 
@@ -19,6 +20,9 @@ describe('Advanced filtering modal', () => {
     expect(screen.getByText('Cancel')).toBeInTheDocument();
     expect(screen.getByText('OK')).toBeInTheDocument();
     expect(screen.getByText('Preset filters')).toBeInTheDocument();
+    const closeButton = screen.getAllByLabelText('close')[0];
+    closeButton.click();
+    expect(onCancel).toHaveBeenCalled();
   });
 
   it('Add filter button adds new form items', () => {

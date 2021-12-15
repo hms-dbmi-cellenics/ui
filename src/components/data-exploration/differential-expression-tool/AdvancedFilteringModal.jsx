@@ -35,41 +35,46 @@ const AdvancedFilteringModal = (props) => {
     pValue: [0, 1],
   };
 
-  const renderPresetFilters = (add) => {
-    const presetFilters = {
-      'Up-regulated': {
-        criteria: 'logfc',
-        condition: 'gt',
-        value: 0,
-      },
-      'Down-regulated': {
-        criteria: 'logfc',
-        condition: 'lt',
-        value: 0,
-      },
-      Significant: {
-        criteria: 'pValue',
-        condition: 'lt',
-        value: 0.05,
-      },
-    };
-
-    return (
-      <Menu
-        onClick={(e) => { add(presetFilters[e.key]); }}
-      >
-        {Object.keys(presetFilters).map((filter) => (
-          <Menu.Item key={filter}>
-            {filter}
-          </Menu.Item>
-        ))}
-      </Menu>
-    );
+  const presetFilters = {
+    'Up-regulated': {
+      criteria: 'logfc',
+      condition: 'gt',
+      value: 0,
+    },
+    'Down-regulated': {
+      criteria: 'logfc',
+      condition: 'lt',
+      value: 0,
+    },
+    Significant: {
+      criteria: 'pValue',
+      condition: 'lt',
+      value: 0.05,
+    },
   };
+  const renderPresetFilters = (add) => (
+    <Menu
+      onClick={(e) => {
+        add(presetFilters[e.key]);
+        changeCriteria(presetFilters[e.key].criteria);
+      }}
+    >
+      {Object.keys(presetFilters).map((filter) => (
+        <Menu.Item key={filter}>
+          {filter}
+        </Menu.Item>
+      ))}
+    </Menu>
+  );
 
-  const addCriteria = (criteria, index) => {
+  const changeCriteria = (criteria, index = false) => {
+    let currentIndex = index;
+    if (index === false) {
+      const { filterForm } = form.getFieldsValue();
+      currentIndex = filterForm.length - 1;
+    }
     const currentDomains = valuesDomain;
-    currentDomains[index] = valueRestrictions[criteria];
+    currentDomains[currentIndex] = valueRestrictions[criteria];
     setValuesDomain(currentDomains);
     // without the next line the form does not re-render, so the max and min values are not updated
     form.setFieldsValue({});
@@ -79,7 +84,8 @@ const AdvancedFilteringModal = (props) => {
     <Modal
       visible
       title='Advanced filters'
-      onCancel={() => onCancel()}
+      onCancel={onCancel}
+      okText='Apply filters'
     >
       <Form form={form}>
 
@@ -98,7 +104,7 @@ const AdvancedFilteringModal = (props) => {
                       <Select
                         placeholder='Select criteria'
                         style={{ width: 140 }}
-                        onChange={(value) => addCriteria(value, index)}
+                        onChange={(value) => changeCriteria(value, index)}
                         options={criteriaOptions}
                       />
                     </Form.Item>
@@ -110,7 +116,7 @@ const AdvancedFilteringModal = (props) => {
                       <Select
                         placeholder='Select condition'
                         options={conditionOptions}
-                        style={{ width: 140 }}
+                        style={{ width: 150 }}
                       />
                     </Form.Item>
 
