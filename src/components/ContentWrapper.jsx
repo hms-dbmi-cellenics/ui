@@ -100,7 +100,7 @@ const ContentWrapper = (props) => {
     if (!currentExperimentId) return;
     if (!backendLoading) dispatch(loadBackendStatus(currentExperimentId));
 
-    if (process.browser) {
+    if (process.browser || process.env.NODE_ENV === 'test') {
       import('../utils/socketConnection')
         .then(({ default: connectionPromise }) => connectionPromise)
         .then((io) => {
