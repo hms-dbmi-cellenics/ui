@@ -4,7 +4,7 @@ import { act } from 'react-dom/test-utils';
 import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
-import { Modal, Empty } from 'antd';
+import { Empty } from 'antd';
 import waitForActions from 'redux-mock-store-await-actions';
 import AdvancedFilteringModal from 'components/data-exploration/differential-expression-tool/AdvancedFilteringModal';
 
