@@ -2,22 +2,29 @@ import React from 'react';
 import '@testing-library/jest-dom';
 import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
-import { screen, render } from '@testing-library/react';
+import { screen, render, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import preloadAll from 'jest-next-dynamic';
 
 import { act } from 'react-dom/test-utils';
 import configureMockStore from 'redux-mock-store';
-import DownloadDataButton from '../../../components/data-management/DownloadDataButton';
-import initialProjectState, { projectTemplate } from '../../../redux/reducers/projects/initialState';
-import initialSamplesState from '../../../redux/reducers/samples/initialState';
-import initialExperimentsState from '../../../redux/reducers/experiments/initialState';
-import initialExperimentSettingsState from '../../../redux/reducers/experimentSettings/initialState';
 
-import { getBackendStatus } from '../../../redux/selectors';
-import { initialExperimentBackendStatus } from '../../../redux/reducers/backendStatus/initialState';
+import { getFromApiExpectOK } from 'utils/getDataExpectOK';
+import DownloadDataButton from 'components/data-management/DownloadDataButton';
+import pushNotificationMessage from 'utils/pushNotificationMessage';
+import downloadFromUrl from 'utils/data-management/downloadFromUrl';
 
-jest.mock('../../../redux/selectors');
+import initialProjectState, { projectTemplate } from 'redux/reducers/projects/initialState';
+import initialSamplesState from 'redux/reducers/samples/initialState';
+import initialExperimentsState from 'redux/reducers/experiments/initialState';
+import initialExperimentSettingsState from 'redux/reducers/experimentSettings/initialState';
+
+import { getBackendStatus } from 'redux/selectors';
+
+jest.mock('redux/selectors');
+jest.mock('utils/getDataExpectOK');
+jest.mock('utils/pushNotificationMessage');
+jest.mock('utils/data-management/downloadFromUrl');
 
 const mockStore = configureMockStore([thunk]);
 const projectName = 'Project 1';
@@ -84,19 +91,25 @@ describe('Download data menu', () => {
     jest.clearAllMocks(); // Do not mistake with resetAllMocks()!
   });
 
-  const renderDownloadData = (state) => {
+  const renderDownloadDataButton = async (state) => {
     const store = mockStore(state);
-    render(
-      <Provider store={store}>
-        <DownloadDataButton activeProjectUuid={projectUuid} />
-      </Provider>,
-    );
+    await act(async () => {
+      render(
+        <Provider store={store}>
+          <DownloadDataButton activeProjectUuid={projectUuid} />
+        </Provider>,
+      );
+    });
   };
 
   const getMenuItems = async () => {
     const menu = await screen.getByText('Download');
     expect(menu).not.toBeDisabled();
-    act(() => userEvent.click(menu));
+
+    await act(async () => {
+      userEvent.click(menu);
+    });
+
     const options = await screen.getAllByRole('menuitem');
     return options;
   };
@@ -113,7 +126,7 @@ describe('Download data menu', () => {
       },
     }));
 
-    await renderDownloadData(withDataState);
+    await renderDownloadDataButton(withDataState);
     const options = await getMenuItems();
     expect(options).toHaveLength(3);
     expect(options[0]).toHaveTextContent('Raw Seurat object (.rds)');
@@ -137,7 +150,7 @@ describe('Download data menu', () => {
     }));
 
     const state = { ...withDataState };
-    await renderDownloadData(state);
+    await renderDownloadDataButton(state);
     const options = await getMenuItems();
     expect(options[0]).toHaveAttribute('aria-disabled', 'true');
     expect(options[1]).toHaveAttribute('aria-disabled', 'false');
@@ -158,7 +171,7 @@ describe('Download data menu', () => {
 
     const state = { ...withDataState };
 
-    await renderDownloadData(state);
+    await renderDownloadDataButton(state);
     const options = await getMenuItems();
     expect(options[0]).toHaveAttribute('aria-disabled', 'false');
     expect(options[1]).toHaveAttribute('aria-disabled', 'true');
@@ -188,10 +201,64 @@ describe('Download data menu', () => {
       },
     };
 
-    await renderDownloadData(state);
+    await renderDownloadDataButton(state);
     const options = await getMenuItems();
     expect(options[0]).toHaveAttribute('aria-disabled', 'false');
     expect(options[1]).toHaveAttribute('aria-disabled', 'false');
     expect(options[2]).toHaveAttribute('aria-disabled', 'true');
+  });
+
+  it('Downolods data properly', async () => {
+    getFromApiExpectOK.mockImplementation(() => Promise.resolve('signedUrl'));
+    getBackendStatus.mockImplementation(() => () => ({
+      status: {
+        pipeline: {
+          status: 'SUCCEEDED',
+        },
+        gem2s: {
+          status: 'SUCCEEDED',
+        },
+      },
+    }));
+
+    await renderDownloadDataButton(withDataState);
+
+    // Open the Download dropdown
+    userEvent.click(screen.getByText(/Download/i));
+
+    const downloadButton = screen.getByText(/Raw Seurat object/i);
+
+    await act(async () => {
+      fireEvent.click(downloadButton);
+    });
+
+    expect(downloadFromUrl).toHaveBeenCalledTimes(1);
+  });
+
+  it('Shows an error if there is an error downloading data', async () => {
+    getFromApiExpectOK.mockImplementation(() => Promise.reject(new Error('Something went wrong')));
+    getBackendStatus.mockImplementation(() => () => ({
+      status: {
+        pipeline: {
+          status: 'SUCCEEDED',
+        },
+        gem2s: {
+          status: 'SUCCEEDED',
+        },
+      },
+    }));
+
+    await renderDownloadDataButton(withDataState);
+
+    // Open the Download dropdown
+    userEvent.click(screen.getByText(/Download/i));
+
+    const downloadButton = screen.getByText(/Raw Seurat object/i);
+
+    await act(async () => {
+      fireEvent.click(downloadButton);
+    });
+
+    expect(pushNotificationMessage).toHaveBeenCalledTimes(1);
   });
 });

@@ -1,346 +1,342 @@
+import _ from 'lodash';
 import React from 'react';
-import { mount } from 'enzyme';
-import { Provider } from 'react-redux';
-import thunk from 'redux-thunk';
-import waitForActions from 'redux-mock-store-await-actions';
-import configureStore from 'redux-mock-store';
-import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
-import { Empty } from 'antd';
-
-import { MARKER_GENES_LOADING } from '../../../../redux/actionTypes/genes';
-
-// eslint-disable-next-line import/no-named-as-default
-import HeatmapPlot from '../../../../components/data-exploration/heatmap/HeatmapPlot';
-import VegaHeatmap from '../../../../components/data-exploration/heatmap/VegaHeatmap';
-import { getFromApiExpectOK } from '../../../../utils/getDataExpectOK';
-
-import { CELL_SETS_LOADING } from '../../../../redux/actionTypes/cellSets';
 import '__test__/test-utils/setupTests';
 
-jest.mock('../../../../components/data-exploration/heatmap/VegaHeatmap');
-jest.mock('../../../../utils/getDataExpectOK');
+import { render, screen } from '@testing-library/react';
+import { act } from 'react-dom/test-utils';
 
-VegaHeatmap.mockImplementation(() => <div>Mocked Vega Heatmap</div>);
-enableFetchMocks();
+import { seekFromAPI } from 'utils/work/seekWorkResponse';
 
-getFromApiExpectOK.mockImplementation(() => ({ worker: { started: true, ready: true } }));
+import { Provider } from 'react-redux';
+import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 
-const mockStore = configureStore([thunk]);
+import markerGenesData2 from '__test__/data/marker_genes_2.json';
+import markerGenesData5 from '__test__/data/marker_genes_5.json';
 
-let component;
+import { makeStore } from 'redux/store';
 
-const componentType = 'interactiveHeatmap';
+import mockAPI, {
+  generateDefaultMockAPIResponses,
+} from '__test__/test-utils/mockAPI';
 
-const experimentId = '123';
-const initialState = {
-  genes: {
-    expression: {
-      loading: [],
-      data: {
-        REALGENE: {
-          min: 0,
-          max: 1.6,
-          expression: [0, 0.4, 0.5, 1.6],
-        },
-        REALGENE2: {
-          min: 0,
-          max: 1.6,
-          expression: [0, 0.4, 0.5, 1.6],
-        },
-        REALGENE3: {
-          min: 0,
-          max: 1.6,
-          expression: [0, 0.4, 0.5, 1.6],
-        },
-      },
-      views: {
-        [componentType]: {
-          data: ['REALGENE'],
-          fetching: false,
-          error: false,
-        },
-      },
-    },
-    markers: {
-      loading: false,
-      error: false,
-    },
-  },
-  cellSets: {
-    hierarchy: [
-      {
-        key: 'louvain',
-        children: [
-          {
-            key: 'louvain-0',
-          },
-          {
-            key: 'louvain-1',
-          },
-        ],
-      },
-    ],
-    properties: {
-      louvain: {
-        name: 'louvain clusters',
-      },
-      'louvain-0': {
-        name: 'louvain 0',
-        cellIds: new Set([5, 6, 7]),
-      },
-      'louvain-1': {
-        name: 'louvain 1',
-        cellIds: new Set([1, 2, 3]),
-      },
-    },
-    hidden: new Set([5]),
-  },
-  cellInfo: {},
-  componentConfig: {
-    interactiveHeatmap: {
-      config: {
-        groupedTracks: ['sample'],
-        selectedTracks: ['louvain'],
-      },
-    },
-  },
-  experimentSettings: {
-    info: {
-      sampleIds: [],
-    },
-    processing: {
-      meta: {
-        loading: false,
-      },
-    },
-  },
-  backendStatus: {
-    [experimentId]: { status: {} },
-  },
+import HeatmapPlot from 'components/data-exploration/heatmap/HeatmapPlot';
+
+import { loadProcessingSettings } from 'redux/actions/experimentSettings';
+import { loadGeneExpression } from 'redux/actions/genes';
+
+import { loadBackendStatus } from 'redux/actions/backendStatus';
+
+import fake from '__test__/test-utils/constants';
+import { setCellSetHiddenStatus } from 'redux/actions/cellSets';
+import { isSubset } from 'utils/arrayUtils';
+import { updatePlotConfig } from 'redux/actions/componentConfig';
+
+const experimentId = fake.EXPERIMENT_ID;
+
+// Mock hash so we can control the ETag that is produced by hash.MD5 when fetching work requests
+// EtagParams is the object that's passed to the function which generates ETag in fetchWork
+jest.mock('object-hash', () => {
+  const objectHash = jest.requireActual('object-hash');
+  const mockWorkResultETag = jest.requireActual('__test__/test-utils/mockWorkResultETag').default;
+
+  const mockWorkRequestETag = (ETagParams) => `${ETagParams.body.nGenes}-marker-genes`;
+  const mockGeneExpressionETag = (ETagParams) => `${ETagParams.missingGenesBody.genes.join('-')}-expression`;
+
+  return mockWorkResultETag(objectHash, mockWorkRequestETag, mockGeneExpressionETag);
+});
+
+jest.mock('utils/work/seekWorkResponse', () => ({
+  __esModule: true,
+  seekFromAPI: jest.fn(),
+  seekFromS3: () => Promise.resolve(null),
+}));
+
+let vitesscePropsSpy = null;
+jest.mock('next/dynamic', () => () => (props) => {
+  vitesscePropsSpy = props;
+  return 'Sup Im a heatmap';
+});
+
+jest.mock('lodash/sampleSize', () => ({
+  default: (collection, size) => collection.slice(0, size),
+  __esModule: true,
+}));
+
+// // Worker responses are fetched from S3, so these endpoints are added to fetchMock
+// // the URL for the endpoints are generated by the functions passed to mockETag above
+const mockWorkerResponses = {
+  '5-marker-genes': () => Promise.resolve(_.cloneDeep(markerGenesData5)),
+  '2-marker-genes': () => Promise.resolve(_.cloneDeep(markerGenesData2)),
 };
 
-describe('HeatmapPlot', () => {
-  beforeEach(() => {
-    const response = new Response(JSON.stringify({}));
+let storeState = null;
+const loadAndRenderDefaultHeatmap = async () => {
+  storeState = makeStore();
 
+  storeState.dispatch(loadProcessingSettings(experimentId));
+  storeState.dispatch(loadBackendStatus(experimentId));
+
+  await act(async () => {
+    render(
+      <Provider store={storeState}>
+        <HeatmapPlot
+          experimentId={experimentId}
+          width={50}
+          height={50}
+        />
+      </Provider>,
+    );
+  });
+};
+
+const stalledResponse = () => new Promise(() => { });
+const errorResponse = () => Promise.reject(new Error('Some error idk'));
+
+describe('HeatmapPlot', () => {
+  beforeEach(async () => {
+    enableFetchMocks();
     fetchMock.resetMocks();
     fetchMock.doMock();
-    fetchMock.mockResolvedValue(response);
+
+    seekFromAPI.mockClear();
+
+    vitesscePropsSpy = null;
   });
 
-  afterEach(() => {
-    component.unmount();
-    jest.clearAllMocks();
+  it('Renders the heatmap component by default if everything loads', async () => {
+    fetchMock.mockIf(/.*/, mockAPI(generateDefaultMockAPIResponses(experimentId, fake.PROJECT_ID)));
+
+    seekFromAPI.mockImplementation((a, b, c, requested) => mockWorkerResponses[requested]());
+
+    await loadAndRenderDefaultHeatmap();
+
+    expect(screen.getByText(/Sup Im a heatmap/i)).toBeInTheDocument();
+
+    // Renders correct cells and genes
+    expect(vitesscePropsSpy.expressionMatrix.rows).toMatchSnapshot();
+    expect(vitesscePropsSpy.expressionMatrix.cols).toMatchSnapshot();
   });
 
-  it('renders Empty component when no selected gene', () => {
-    const store = mockStore({
-      ...initialState,
-      genes: {
-        ...initialState.genes,
-        expression: {
-          ...initialState.genes.expression,
-          views: {
-            ...initialState.genes.expression.views,
-            [componentType]: {
-              ...initialState.genes.expression.views[componentType],
-              fetching: false,
-              error: false,
-              data: [],
-            },
-          },
-          loading: [],
-        },
-      },
+  it('Shows loader message if cellSets are loading', async () => {
+    const mockAPIResponses = _.merge(
+      generateDefaultMockAPIResponses(experimentId, fake.PROJECT_ID),
+      { [`experiments/${experimentId}/cellSets`]: stalledResponse },
+    );
+
+    fetchMock.mockIf(/.*/, mockAPI(mockAPIResponses));
+
+    await loadAndRenderDefaultHeatmap();
+
+    expect(screen.getByText(/We're getting your data .../i)).toBeInTheDocument();
+  });
+
+  it('Shows loader message if the marker genes are loading', async () => {
+    fetchMock.mockIf(/.*/, mockAPI(generateDefaultMockAPIResponses(experimentId, fake.PROJECT_ID)));
+
+    const customWorkerResponses = _.merge(
+      _.cloneDeep(mockWorkerResponses),
+      { '5-marker-genes': stalledResponse },
+    );
+
+    seekFromAPI.mockImplementation((a, b, c, requested) => customWorkerResponses[requested]());
+
+    await loadAndRenderDefaultHeatmap();
+
+    expect(screen.getByText(/We're getting your data .../i)).toBeInTheDocument();
+  });
+
+  it('Shows loader message if the marker genes are loaded but there\'s other selected genes still loading', async () => {
+    fetchMock.mockIf(/.*/, mockAPI(generateDefaultMockAPIResponses(experimentId, fake.PROJECT_ID)));
+
+    const customWorkerResponses = _.merge(
+      _.cloneDeep(mockWorkerResponses),
+      { 'loading_gene_id-expression': stalledResponse },
+    );
+
+    seekFromAPI.mockImplementation((a, b, c, requested) => customWorkerResponses[requested]());
+
+    await loadAndRenderDefaultHeatmap();
+
+    // Renders correctly
+    expect(screen.getByText(/Sup Im a heatmap/i)).toBeInTheDocument();
+
+    // A new gene is being loaded
+    await act(async () => {
+      storeState.dispatch(loadGeneExpression(experimentId, [...markerGenesData5.order, 'loading_gene_id'], 'interactiveHeatmap'));
     });
 
-    component = mount(
-      <Provider store={store}>
-        <HeatmapPlot experimentId={experimentId} width={200} height={200} />
-      </Provider>,
-    );
-    expect(component.find('HeatmapPlot').length).toEqual(1);
-    expect(component.find(Empty).length).toEqual(1);
+    // Loading screen shows up
+    expect(screen.getByText(/We're getting your data .../i)).toBeInTheDocument();
   });
 
-  it('renders Spinner when no expression data', () => {
-    const store = mockStore({
-      ...initialState,
-      genes: {
-        ...initialState.genes,
-        expression: {
-          ...initialState.genes.expression,
-          views: {
-            ...initialState.genes.expression.views,
-            [componentType]: {
-              ...initialState.genes.expression.views[componentType],
-              fetching: true,
-              error: false,
-              data: ['REALGENE'],
-            },
-          },
-          loading: ['REALGENE'],
-        },
-      },
+  it('Handles marker genes loading error correctly', async () => {
+    fetchMock.mockIf(/.*/, mockAPI(generateDefaultMockAPIResponses(experimentId, fake.PROJECT_ID)));
+
+    const customWorkerResponses = _.merge(
+      _.cloneDeep(mockWorkerResponses),
+      { '5-marker-genes': errorResponse },
+    );
+
+    seekFromAPI.mockImplementation((a, b, c, requested) => customWorkerResponses[requested]());
+
+    await loadAndRenderDefaultHeatmap();
+
+    // Error screen shows up
+    expect(screen.getByText(/We're sorry, we couldn't load this./i)).toBeInTheDocument();
+  });
+
+  it('Handles expression data loading error correctly', async () => {
+    fetchMock.mockIf(/.*/, mockAPI(generateDefaultMockAPIResponses(experimentId, fake.PROJECT_ID)));
+
+    const customWorkerResponses = _.merge(
+      _.cloneDeep(mockWorkerResponses),
+      { 'loading_gene_id-expression': errorResponse },
+    );
+
+    seekFromAPI.mockImplementation((a, b, c, requested) => customWorkerResponses[requested]());
+
+    await loadAndRenderDefaultHeatmap();
+
+    // Renders correctly
+    expect(screen.getByText(/Sup Im a heatmap/i)).toBeInTheDocument();
+
+    // A new gene is being loaded
+    await act(async () => {
+      storeState.dispatch(loadGeneExpression(experimentId, [...markerGenesData5.order, 'loading_gene_id'], 'interactiveHeatmap'));
     });
 
-    component = mount(
-      <Provider store={store}>
-        <HeatmapPlot experimentId={experimentId} width={200} height={200} />
-      </Provider>,
-    );
-    expect(component.find('HeatmapPlot').length).toEqual(1);
-    expect(component.find('Loader').length).toEqual(2);
+    // Error screen shows up
+    expect(screen.getByText(/We're sorry, we couldn't load this./i)).toBeInTheDocument();
   });
 
-  it('renders Vega heatmap when genes loaded', () => {
-    const store = mockStore(initialState);
-    component = mount(
-      <Provider store={store}>
-        <HeatmapPlot experimentId={experimentId} width={200} height={200} />
-      </Provider>,
-    );
-    expect(component.find('HeatmapPlot').length).toEqual(1);
-    expect(component.find('VegaHeatmap').length).toEqual(1);
-  });
+  it('Doesn\t display hidden cell sets', async () => {
+    fetchMock.mockIf(/.*/, mockAPI(generateDefaultMockAPIResponses(experimentId, fake.PROJECT_ID)));
 
-  it('renders error state when expression data errors out', () => {
-    const store = mockStore({
-      ...initialState,
-      genes: {
-        ...initialState.genes,
-        expression: {
-          ...initialState.genes.expression,
-          error: 'wow, error!',
-        },
-      },
+    seekFromAPI.mockImplementation((a, b, c, requested) => mockWorkerResponses[requested]());
+
+    await loadAndRenderDefaultHeatmap();
+
+    // Renders correctly
+    expect(screen.getByText(/Sup Im a heatmap/i)).toBeInTheDocument();
+
+    const cellsInLouvain3 = ['12', '13'];
+
+    // It shows cells in louvain-3
+    expect(isSubset(cellsInLouvain3, vitesscePropsSpy.expressionMatrix.rows)).toEqual(true);
+
+    // If a louvain-3 is suddenly hidden
+    await act(async () => {
+      storeState.dispatch(setCellSetHiddenStatus(experimentId, 'louvain-3'));
     });
 
-    component = mount(
-      <Provider store={store}>
-        <HeatmapPlot experimentId={experimentId} width={200} height={200} />
-      </Provider>,
-    );
+    // It doesn't show the cells for louvain-3 anymore
+    expect(isSubset(cellsInLouvain3, vitesscePropsSpy.expressionMatrix.rows)).toEqual(false);
 
-    expect(component.find('HeatmapPlot').length).toEqual(1);
-    expect(component.find(Empty).length).toEqual(1);
-  });
+    // Keeps all the other cells and genes the same
+    expect(vitesscePropsSpy.expressionMatrix.rows).toMatchSnapshot();
+    expect(vitesscePropsSpy.expressionMatrix.cols).toMatchSnapshot();
 
-  it('renders error state when the view errors out', () => {
-    const store = mockStore({
-      ...initialState,
-      genes: {
-        ...initialState.genes,
-        expression: {
-          ...initialState.genes.expression,
-          views: {
-            ...initialState.genes.expression.views,
-            [componentType]: {
-              ...initialState.genes.expression.views[componentType],
-              error: true,
-            },
-          },
-        },
-      },
+    // If a louvain-3 is shown again
+    await act(async () => {
+      storeState.dispatch(setCellSetHiddenStatus(experimentId, 'louvain-3'));
     });
 
-    component = mount(
-      <Provider store={store}>
-        <HeatmapPlot experimentId={experimentId} width={200} height={200} />
-      </Provider>,
-    );
+    // It shows the cells for louvain-3 again
+    expect(isSubset(cellsInLouvain3, vitesscePropsSpy.expressionMatrix.rows)).toEqual(true);
 
-    expect(component.find('HeatmapPlot').length).toEqual(1);
-    expect(component.find(Empty).length).toEqual(1);
+    // Keeps all the other cells and genes the same
+    expect(vitesscePropsSpy.expressionMatrix.rows).toMatchSnapshot();
+    expect(vitesscePropsSpy.expressionMatrix.cols).toMatchSnapshot();
   });
 
-  it('Shows Empty if cell sets is empty', () => {
-    const store = mockStore({
-      ...initialState,
-      cellSets: {
-        ...initialState.cellSets,
-        hierarchy: [],
-        properties: [],
-        loading: false,
-        error: false,
-      },
+  it('Reacts to cellClass groupby being changed', async () => {
+    fetchMock.mockIf(/.*/, mockAPI(generateDefaultMockAPIResponses(experimentId, fake.PROJECT_ID)));
+
+    seekFromAPI.mockImplementation((a, b, c, requested) => mockWorkerResponses[requested]());
+
+    await loadAndRenderDefaultHeatmap();
+
+    // Renders correctly
+    expect(screen.getByText(/Sup Im a heatmap/i)).toBeInTheDocument();
+
+    // If groupedTracks change
+    await act(async () => {
+      storeState.dispatch(
+        updatePlotConfig('interactiveHeatmap', {
+          groupedTracks: ['sample', 'louvain'],
+        }),
+      );
     });
 
-    component = mount(
-      <Provider store={store}>
-        <HeatmapPlot experimentId={experimentId} width={200} height={200} />
-      </Provider>,
-    );
-
-    expect(component.find('VegaHeatmap').length).toEqual(0);
-    expect(component.find(Empty).length).toEqual(1);
+    // It doesn't reorder the genes
+    expect(vitesscePropsSpy.expressionMatrix.rows).toMatchSnapshot();
+    // It reorders correctly
+    expect(vitesscePropsSpy.expressionMatrix.cols).toMatchSnapshot();
   });
 
-  it('dispatches loadCellSets action when no cell sets are in the store', () => {
-    const store = mockStore({
-      ...initialState,
-      cellSets: {
-        ...initialState.cellSets,
-        hierarchy: [],
-        properties: [],
-        loading: false,
-        error: true,
-      },
+  it('Responds correctly to vitessce Heatmap callbacks', async () => {
+    fetchMock.mockIf(/.*/, mockAPI(generateDefaultMockAPIResponses(experimentId, fake.PROJECT_ID)));
+
+    seekFromAPI.mockImplementation((a, b, c, requested) => mockWorkerResponses[requested]());
+
+    await loadAndRenderDefaultHeatmap();
+
+    expect(screen.getByText(/Sup Im a heatmap/i)).toBeInTheDocument();
+
+    // Renders the correct genes and cells
+    expect(vitesscePropsSpy.expressionMatrix.rows).toMatchSnapshot();
+    expect(vitesscePropsSpy.expressionMatrix.cols).toMatchSnapshot();
+
+    // On changing the view state
+    const updatedViewState = { zoom: 15, target: [1, 1] };
+    await act(async () => {
+      vitesscePropsSpy.setViewState(updatedViewState);
     });
 
-    component = mount(
-      <Provider store={store}>
-        <HeatmapPlot experimentId={experimentId} width={200} height={200} />
-      </Provider>,
-    );
+    // The viewState vitessce receives is updated
+    expect(vitesscePropsSpy.viewState).toEqual(updatedViewState);
 
-    expect(component.find('HeatmapPlot').length).toEqual(1);
-    expect(store.getActions().length).toEqual(1);
-    const [loadAction] = store.getActions();
-
-    expect(loadAction.type).toBe(CELL_SETS_LOADING);
-    expect(loadAction).toMatchSnapshot();
-  });
-
-  it('loads marker genes if it can', async () => {
-    const store = mockStore({
-      ...initialState,
-      cellSets: {
-        ...initialState.cellSets,
-        loading: true,
-        error: false,
-      },
-      genes: {
-        ...initialState.genes,
-        expression: {
-          ...initialState.genes.expression,
-          loading: false,
-          error: 'Some error',
-        },
-      },
-      experimentSettings: {
-        ...initialState.experimentSettings,
-        processing: {
-          ...initialState.processing,
-          configureEmbedding: {
-            clusteringSettings: { methodSettings: { louvain: { resolution: 10 } } },
-          },
-        },
-      },
+    // On hovering somewhere inside the heatmap
+    const highlightedCell = '2';
+    const highlightedGene = 'S100a4';
+    await act(async () => {
+      vitesscePropsSpy.setCellHighlight(highlightedCell);
+      vitesscePropsSpy.setGeneHighlight(highlightedGene);
     });
 
-    component = mount(
-      <Provider store={store}>
-        <HeatmapPlot experimentId={experimentId} width={200} height={200} />
-      </Provider>,
-    );
+    // It shows the cell info tooltip
+    expect(screen.getByText(/Cell id: 2/i)).toBeInTheDocument();
+    expect(screen.getByText(/Gene name: S100a4/i)).toBeInTheDocument();
 
-    expect(component.find('HeatmapPlot').length).toEqual(1);
+    // On hovering outside
+    await act(async () => {
+      vitesscePropsSpy.setCellHighlight(null);
+      vitesscePropsSpy.setGeneHighlight(null);
+    });
 
-    await waitForActions(
-      store,
-      [MARKER_GENES_LOADING],
-      { matcher: waitForActions.matchers.containing },
-    );
+    // It hides the tooltip
+    expect(screen.queryByText(/Cell id:/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Gene name:/i)).not.toBeInTheDocument();
+
+    // On hovering over heatmap tracks
+    await act(async () => {
+      vitesscePropsSpy.setTrackHighlight(['4', 0, 1, 2]);
+    });
+
+    // It shows the track cell info tooltip
+    expect(screen.getByText(/Cell id: 4/i)).toBeInTheDocument();
+    expect(screen.getByText(/Group name: Cluster 0/i)).toBeInTheDocument();
+
+    // On hovering outside heatmap tracks
+    await act(async () => {
+      vitesscePropsSpy.setTrackHighlight(null);
+    });
+
+    // It hides the track cell info tooltip
+    expect(screen.queryByText(/Cell id:/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Group name:/i)).not.toBeInTheDocument();
+
+    // And doesn't show the normal cell info again
+    expect(screen.queryByText(/Gene name:/i)).not.toBeInTheDocument();
   });
 });

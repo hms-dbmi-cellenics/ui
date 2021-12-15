@@ -1,4 +1,8 @@
-/* eslint-disable import/prefer-default-export */
+const layout = {
+  PANEL_HEADING_HEIGHT: 30,
+  PANEL_PADDING: 10,
+};
+
 const plotTypes = {
   CONTINUOUS_EMBEDDING: 'ContinuousEmbedding',
   CATEGORICAL_EMBEDDING: 'CategoricalEmbedding',
@@ -11,5 +15,6 @@ const plotTypes = {
 };
 
 export {
+  layout,
   plotTypes,
 };

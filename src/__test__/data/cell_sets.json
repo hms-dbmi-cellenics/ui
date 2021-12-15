@@ -133,12 +133,6 @@
             "rootNode": true,
             "children": [
                 {
-                    "key": "98c7a0ed-d086-4df8-bf94-a9ee6edb793f",
-                    "name": "WT2",
-                    "color": "#e377c2",
-                    "cellIds": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-                },
-                {
                     "key": "b62028a1-ffa0-4f10-823d-93c9ddb88898",
                     "name": "KO",
                     "color": "#8c564b",
@@ -149,6 +143,12 @@
                     "name": "WT1",
                     "color": "#d62728",
                     "cellIds": [21, 22, 23, 24, 25, 26, 27, 28, 29, 30]
+                },
+                {
+                    "key": "98c7a0ed-d086-4df8-bf94-a9ee6edb793f",
+                    "name": "WT2",
+                    "color": "#e377c2",
+                    "cellIds": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
                 }
             ],
             "type": "metadataCategorical"

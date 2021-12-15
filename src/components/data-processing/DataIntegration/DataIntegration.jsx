@@ -1,4 +1,3 @@
-/* eslint-disable import/no-unresolved */
 import React, {
   useState, useEffect, useRef, useCallback,
 } from 'react';
@@ -62,7 +61,6 @@ const DataIntegration = (props) => {
               defaultValues: [],
             },
           }}
-          plotData={plotData}
           actions={actions}
           onUpdate={updatePlotWithChanges}
         />
@@ -230,7 +228,7 @@ const DataIntegration = (props) => {
   }, [selectedPlot]);
 
   useEffect(() => {
-    if (!selectedConfig || !plotData) {
+    if (!selectedConfig) {
       return;
     }
 
@@ -238,7 +236,6 @@ const DataIntegration = (props) => {
       && !cellSets.error
       && !cellSets.updateCellSetsClustering
       && selectedConfig
-      && plotData
     ) {
       setPlot(plots[selectedPlot].plot(selectedConfig, plotData, true));
     }

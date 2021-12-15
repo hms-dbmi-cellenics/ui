@@ -25,6 +25,6 @@ spec:
     readinessProbe:
       path: "/data-management"
     livenessProbe:
-      path: "/data-management"
+      probeType: tcpSocket
 
     # filled in by CI. do not modify.

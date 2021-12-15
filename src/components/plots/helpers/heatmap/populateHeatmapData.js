@@ -1,15 +1,17 @@
 import _ from 'lodash';
-import SetOperations from '../../../utils/setOperations';
-import { union } from '../../../utils/cellSetOperations';
+
+import generateVegaData from 'components/plots/helpers/heatmap/vega/generateVegaData';
+import generateVitessceData from 'components/plots/helpers/heatmap/vitessce/generateVitessceData';
+
+import SetOperations from 'utils/setOperations';
+import { union } from 'utils/cellSetOperations';
 
 const populateHeatmapData = (
   cellSets, heatmapSettings, expression,
-  selectedGenes, downsampling = false,
+  selectedGenes, downsampling = false, vitessce = false,
 ) => {
   const { hierarchy, properties, hidden } = cellSets;
-  const {
-    selectedTracks, groupedTracks, expressionValue, truncatedValues,
-  } = heatmapSettings;
+  const { selectedTracks, groupedTracks } = heatmapSettings;
 
   const maxCells = 1000;
   const getCellsInSet = (cellSetName) => properties[cellSetName].cellIds;
@@ -29,67 +31,6 @@ const populateHeatmapData = (
   };
 
   const trackOrder = Array.from(selectedTracks).reverse();
-
-  const getCellClusterFromCellId = (clusters, cellId) => {
-    let cluster;
-    clusters.forEach(({ key }) => {
-      if (properties[key].cellIds.has(cellId)) {
-        cluster = key;
-      }
-    });
-    return cluster;
-  };
-
-  const generateTrackData = (cells, track) => {
-    // Find the `groupBy` root node.
-    const rootNodes = hierarchy.filter((clusters) => clusters.key === track);
-
-    if (!rootNodes.length) {
-      return [];
-    }
-
-    const childrenCellSets = [];
-    rootNodes.forEach((rootNode) => childrenCellSets.push(...rootNode.children));
-
-    const trackColorData = [];
-    const groupData = [];
-    // Iterate over each child node.
-
-    const clusterSeparationLines = [];
-    if (heatmapSettings.guardLines) {
-      let currentCluster = getCellClusterFromCellId(childrenCellSets, cells[0]);
-      cells.forEach((cell) => {
-        const isTheSameCluster = properties[currentCluster]?.cellIds?.has(cell);
-        if (!isTheSameCluster) {
-          currentCluster = getCellClusterFromCellId(childrenCellSets, cell);
-          clusterSeparationLines.push(cell);
-        }
-      });
-    }
-    childrenCellSets.forEach(({ key }) => {
-      const { cellIds, name, color } = properties[key];
-
-      groupData.push({
-        key,
-        track,
-        name,
-        color,
-        trackName: properties[track].name,
-      });
-
-      const intersectionSet = [cellIds, cells].reduce(
-        (acc, curr) => new Set([...acc].filter((x) => curr.has(x))),
-      );
-
-      intersectionSet.forEach((cellId) => trackColorData.push({
-        cellId,
-        key,
-        track,
-        color,
-      }));
-    });
-    return { trackColorData, groupData, clusterSeparationLines };
-  };
 
   const downsampleWithProportions = (buckets, cellIdsLength) => {
     const downsampledCellIds = [];
@@ -138,6 +79,7 @@ const populateHeatmapData = (
 
     return intersectedCellSets;
   };
+
   const getAllEnabledCellIds = () => {
     // we want to avoid displaying elements which are not in a louvain cluster
     // so initially consider as enabled only cells in louvain clusters
@@ -155,6 +97,7 @@ const populateHeatmapData = (
 
     return enabledCellIds;
   };
+
   const splitByCartesianProductIntersections = (groupByRootNodes) => {
     // Beginning with only one set of all the cells that we want to see
     let buckets = [getAllEnabledCellIds()];
@@ -202,66 +145,20 @@ const populateHeatmapData = (
   // For now, this is statically defined. In the future, these values are
   // controlled from the settings panel in the heatmap.
 
-  const data = {
-    cellOrder: [],
-    geneOrder: selectedGenes,
-    trackOrder,
-    heatmapData: [],
-    trackPositionData: [],
-    trackGroupData: [],
-  };
-
   // Do downsampling and return cellIds with their order by groupings.
-  data.cellOrder = generateCellOrder(groupedTracks);
+  const cellOrder = generateCellOrder(groupedTracks);
+  const geneOrder = selectedGenes;
 
-  // eslint-disable-next-line no-shadow
-  const cartesian = (...a) => a.reduce((a, b) => a.flatMap((d) => b.map((e) => [d, e].flat())));
+  if (!vitessce) {
+    return generateVegaData(
+      cellOrder, geneOrder, trackOrder,
+      expression, heatmapSettings, cellSets,
+    );
+  }
 
-  // Directly generate heatmap data.
-  cartesian(
-    data.geneOrder, data.cellOrder,
-  ).forEach(
-    ([gene, cellId]) => {
-      const expressionDataForGene = expression.data[gene];
-
-      if (!expressionDataForGene) {
-        return;
-      }
-
-      let expressionValues = {};
-
-      if (expressionValue === 'zScore') {
-        expressionValues = {
-          color: expressionDataForGene.zScore, display: expressionDataForGene.zScore,
-        };
-      } else {
-        const { rawExpression, truncatedExpression } = expressionDataForGene;
-
-        expressionValues = {
-          color: truncatedValues ? truncatedExpression.expression : rawExpression.expression,
-          display: rawExpression.expression,
-        };
-      }
-
-      data.heatmapData.push({
-        cellId,
-        gene,
-        expression: expressionValues.color[cellId],
-        displayExpression: expressionValues.display[cellId],
-      });
-    },
+  return generateVitessceData(
+    cellOrder, geneOrder, trackOrder,
+    expression, heatmapSettings, cellSets,
   );
-
-  // Directly generate track data.
-  const trackData = trackOrder.map((rootNode) => generateTrackData(
-    new Set(data.cellOrder),
-    rootNode,
-  ));
-
-  data.trackColorData = trackData.map((datum) => datum.trackColorData).flat();
-  data.trackGroupData = trackData.map((datum) => datum.groupData).flat();
-  data.clusterSeparationLines = trackData.length > 0 ? trackData[0].clusterSeparationLines : [];
-
-  return data;
 };
 export default populateHeatmapData;

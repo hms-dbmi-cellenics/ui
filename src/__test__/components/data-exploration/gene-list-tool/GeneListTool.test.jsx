@@ -110,8 +110,8 @@ describe('GeneListTool', () => {
   });
 
   it('renders correctly', () => {
-    const table = component.find('Table Table');
-    const spin = component.find('Table').find(Loader);
+    const table = component.find('Table');
+    const spin = component.find(Loader);
     const genesFilter = component.find('FilterGenes');
     expect(spin.length).toEqual(0);
     expect(table.length).toEqual(1);
@@ -147,7 +147,7 @@ describe('GeneListTool', () => {
       order: 'ascend',
     };
 
-    const table = component.find('Table Table');
+    const table = component.find('Table');
 
     act(() => {
       table.getElement().props.onChange(newPagination, {}, newSorter);
@@ -175,7 +175,7 @@ describe('GeneListTool', () => {
   });
 
   it('All `eye` buttons are initially unfocused.', () => {
-    const table = component.find('Space Table Table');
+    const table = component.find('Table');
 
     table.getElement().props.data.forEach((row) => {
       const lookupComponent = mount(
@@ -193,7 +193,7 @@ describe('GeneListTool', () => {
   });
 
   it('Clicking one of the `eye` buttons triggers appropriate onChange actions.', () => {
-    const table = component.find('Space Table Table');
+    const table = component.find('Table');
 
     // Render the appropriate `lookup` component
     const lookupComponent = mount(
@@ -236,7 +236,7 @@ describe('GeneListTool', () => {
       </Provider>,
     );
 
-    const table = component.find('Space Table Table');
+    const table = component.find('Table');
 
     table.getElement().props.data.forEach((row) => {
       const lookupComponent = mount(

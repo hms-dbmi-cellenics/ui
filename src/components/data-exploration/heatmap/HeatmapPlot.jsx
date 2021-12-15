@@ -1,27 +1,43 @@
-/* eslint-disable import/no-unresolved */
 import React, {
-  useRef, useEffect, useState, useCallback,
+  useRef, useEffect, useState,
 } from 'react';
+import dynamic from 'next/dynamic';
 import PropTypes from 'prop-types';
 import { useSelector, useDispatch } from 'react-redux';
 import {
   Empty, Typography, Skeleton,
 } from 'antd';
 import _ from 'lodash';
-import { getCellSets } from 'redux/selectors';
-import spec from '../../../utils/heatmapSpec';
-import VegaHeatmap from './VegaHeatmap';
-import PlatformError from '../../PlatformError';
-import { updateCellInfo } from '../../../redux/actions/cellInfo';
-import { loadGeneExpression, loadMarkerGenes } from '../../../redux/actions/genes';
-import { loadCellSets } from '../../../redux/actions/cellSets';
 
-import { loadComponentConfig } from '../../../redux/actions/componentConfig';
-import populateHeatmapData from '../../plots/helpers/populateHeatmapData';
-import Loader from '../../Loader';
+import { getCellSets, getCellSetsHierarchyByKeys } from 'redux/selectors';
+import calculateIdealNMarkerGenes from 'utils/calculateIdealNMarkerGenes';
+
+import { loadCellSets } from 'redux/actions/cellSets';
+import { loadGeneExpression, loadMarkerGenes } from 'redux/actions/genes';
+import { loadComponentConfig } from 'redux/actions/componentConfig';
+import { updateCellInfo } from 'redux/actions/cellInfo';
+
+import Loader from 'components/Loader';
+import PlatformError from 'components/PlatformError';
+import populateHeatmapData from 'components/plots/helpers/heatmap/populateHeatmapData';
+
+import HeatmapCellInfo from 'components/data-exploration/heatmap/HeatmapCellInfo';
+import HeatmapTracksCellInfo from 'components/data-exploration/heatmap/HeatmapTracksCellInfo';
+
+import getCellClassProperties from 'utils/cellSets/getCellClassProperties';
+import useConditionalEffect from 'utils/customHooks/useConditionalEffect';
 
 const COMPONENT_TYPE = 'interactiveHeatmap';
 const { Text } = Typography;
+
+const Heatmap = dynamic(
+  () => import('vitessce/dist/umd/production/heatmap.min').then((mod) => mod.Heatmap),
+  { ssr: false },
+);
+
+// To avoid it sticking to the right too much (the left already has some margin)
+const heatmapRightMargin = 50;
+const heatmapBottomMargin = 40;
 
 const HeatmapPlot = (props) => {
   const {
@@ -33,48 +49,60 @@ const HeatmapPlot = (props) => {
   const loadingGenes = useSelector((state) => state.genes.expression.loading);
   const selectedGenes = useSelector((state) => state.genes.expression.views[COMPONENT_TYPE]?.data);
 
-  const [vegaData, setVegaData] = useState(null);
-  const [vegaSpec, setVegaSpec] = useState(spec);
-  const [isHeatmapGenesLoading, setIsHeatmapGenesLoading] = useState(false);
-  const currentHeatmapSettings = useRef();
+  const [viewState, setViewState] = useState({ zoom: 0, target: [0, 0] });
+  const [heatmapData, setHeatmapData] = useState(null);
+  const [highlightedTrackData, setHighlightedTrackData] = useState(null);
 
-  const louvainClustersResolutionRef = useRef(null);
+  const [isHeatmapGenesLoading, setIsHeatmapGenesLoading] = useState(false);
+
+  const [geneHighlight, setGeneHighlight] = useState(null);
+  const [cellHighlight, setCellHighlight] = useState(null);
+
+  const [vitessceData, setVitessceData] = useState(null);
+
+  const cellCoordinatesRef = useRef({ x: 200, y: 300 });
 
   const expressionData = useSelector((state) => state.genes.expression);
   const {
     loading: markerGenesLoading, error: markerGenesLoadingError,
   } = useSelector((state) => state.genes.markers);
 
-  const hoverCoordinates = useRef({});
-
   const cellSets = useSelector(getCellSets());
+
+  const louvainClusterCount = useSelector(getCellSetsHierarchyByKeys(['louvain']), _.isEqual)[0]?.children.length ?? 0;
+
   const {
+    properties: cellSetsProperties,
     hierarchy: cellSetsHierarchy,
     loading: cellSetsLoading,
     hidden: cellSetsHidden,
   } = cellSets;
 
-  const heatmapSettings = useSelector(
-    (state) => state.componentConfig[COMPONENT_TYPE]?.config,
-  ) || {};
+  const heatmapSettings = useSelector((state) => state.componentConfig[COMPONENT_TYPE]?.config,
+    _.isEqual) || {};
 
   const louvainClustersResolution = useSelector(
     (state) => state.experimentSettings.processing
       .configureEmbedding?.clusteringSettings.methodSettings.louvain.resolution,
   );
 
-  const {
-    legendIsVisible,
-  } = heatmapSettings;
+  const focusedExpression = useSelector((state) => state.genes.expression.data[geneHighlight]);
 
   const { error: expressionDataError } = expressionData;
   const viewError = useSelector((state) => state.genes.expression.views[COMPONENT_TYPE]?.error);
 
-  const [maxCells, setMaxCells] = useState(1000);
+  const updateCellCoordinates = (newView) => {
+    if (cellHighlight && newView.project) {
+      const [x, y] = newView.project(cellHighlight, geneHighlight);
 
-  const setVegaDataWithDebounce = useCallback(_.debounce((data) => {
-    setVegaData(data);
-  }, 1500, { leading: true }), []);
+      cellCoordinatesRef.current = {
+        x,
+        y,
+        width,
+        height,
+      };
+    }
+  };
 
   /**
    * Loads cell set on initial render if it does not already exist in the store.
@@ -104,78 +132,57 @@ const HeatmapPlot = (props) => {
     setIsHeatmapGenesLoading(false);
   }, [selectedGenes, loadingGenes, markerGenesLoading]);
 
-  useEffect(() => {
-    if (cellSetsLoading || cellSetsHierarchy.length === 0) {
-      return;
-    }
-
-    const legends = legendIsVisible ? spec.legends : [];
-    setVegaSpec({ ...spec, legends });
-  }, [legendIsVisible]);
-
-  useEffect(() => {
+  useConditionalEffect(() => {
     if (!selectedGenes?.length > 0
       || cellSetsHierarchy.length === 0
-      || _.isEqual(currentHeatmapSettings, heatmapSettings)
     ) {
       return;
     }
 
-    currentHeatmapSettings.current = heatmapSettings;
-
     const data = populateHeatmapData(
-      cellSets, heatmapSettings, expressionData, selectedGenes, true,
+      cellSets, heatmapSettings, expressionData, selectedGenes, true, true,
     );
-    setVegaDataWithDebounce(data);
+
+    setHeatmapData(data);
   }, [
     selectedGenes,
     heatmapSettings,
-    maxCells,
-    markerGenesLoading,
-    cellSetsLoading,
     cellSetsHidden,
+    // To reorder tracks when the track is reordered in hierarchy
+    cellSetsHierarchy,
   ]);
 
   useEffect(() => {
-    if (louvainClustersResolution
-      && !_.isEqual(louvainClustersResolutionRef.current, louvainClustersResolution)
-    ) {
-      louvainClustersResolutionRef.current = louvainClustersResolution;
-      dispatch(loadMarkerGenes(experimentId, louvainClustersResolution, COMPONENT_TYPE));
+    if (louvainClusterCount > 0 && !markerGenesLoadingError && !markerGenesLoading) {
+      const nMarkerGenes = calculateIdealNMarkerGenes(louvainClusterCount);
+
+      dispatch(loadMarkerGenes(
+        experimentId, louvainClustersResolution, COMPONENT_TYPE, nMarkerGenes,
+      ));
     }
-  }, [louvainClustersResolution]);
+  }, [louvainClusterCount]);
 
   useEffect(() => {
-    setMaxCells(Math.floor(width * 0.8));
-  }, [width]);
+    dispatch(updateCellInfo({ cellName: cellHighlight }));
+  }, [cellHighlight]);
 
-  const handleMouseOver = (...args) => {
-    if (args.length < 2) {
-      return;
-    }
+  useEffect(() => {
+    if (!heatmapData) return;
 
-    if ('x' in args[1] && 'y' in args[1]) {
-      hoverCoordinates.current = {
-        x: args[1].x,
-        y: args[1].y,
-      };
-    }
-
-    if (!args[1].datum) {
-      return;
-    }
-
-    const { cellId: cellName } = args[1].datum;
-
-    dispatch(updateCellInfo({ cellName }));
-  };
+    setVitessceData(heatmapData);
+  }, [heatmapData]);
 
   if (markerGenesLoadingError) {
     return (
       <PlatformError
         error={expressionDataError}
         onClick={() => {
-          dispatch(loadMarkerGenes(experimentId, louvainClustersResolution, COMPONENT_TYPE));
+          const nMarkerGenes = calculateIdealNMarkerGenes(louvainClusterCount);
+
+          dispatch(loadMarkerGenes(
+            experimentId, louvainClustersResolution,
+            COMPONENT_TYPE, nMarkerGenes,
+          ));
         }}
       />
     );
@@ -223,7 +230,7 @@ const HeatmapPlot = (props) => {
     );
   }
 
-  if (!vegaData) {
+  if (!heatmapData) {
     return (
       <center style={{ marginTop: height / 2 }}>
         <Skeleton.Image />
@@ -231,21 +238,73 @@ const HeatmapPlot = (props) => {
     );
   }
 
-  const signalListeners = {
-    mouseOver: handleMouseOver,
+  const setTrackHighlight = (info) => {
+    if (!info) {
+      setHighlightedTrackData(null);
+      return;
+    }
+
+    dispatch(updateCellInfo({ cellName: info[0] }));
+
+    const [cellIndexStr, trackIndex, mouseX, mouseY] = info;
+
+    const trackOrder = Array.from(heatmapSettings.selectedTracks).reverse();
+
+    const cellSetClassKey = trackOrder[trackIndex];
+
+    const cellClassProps = getCellClassProperties(
+      parseInt(cellIndexStr, 10), cellSetClassKey,
+      cellSetsHierarchy, cellSetsProperties,
+    );
+
+    const obj = {
+      cellId: cellIndexStr,
+      trackName: cellClassProps?.name,
+      coordinates: { x: mouseX, y: mouseY },
+    };
+
+    setHighlightedTrackData(obj);
   };
 
   return (
-    <div>
-      <VegaHeatmap
-        spec={vegaSpec}
-        data={vegaData}
-        showAxes={selectedGenes?.length <= 30}
-        rowsNumber={selectedGenes.length}
-        signalListeners={signalListeners}
-        width={width}
-        height={height}
+    <div id='heatmap-container'>
+      <Heatmap
+        uuid='heatmap-0'
+        theme='light'
+        width={width - heatmapRightMargin}
+        height={height - heatmapBottomMargin}
+        colormap='plasma'
+        colormapRange={[0.0, 1.0]}
+        expressionMatrix={vitessceData?.expressionMatrix}
+        cellColors={vitessceData?.metadataTracks.dataPoints}
+        cellColorLabels={vitessceData?.metadataTracks.labels}
+        hideTopLabels
+        transpose
+        viewState={viewState}
+        setViewState={setViewState}
+        setCellHighlight={setCellHighlight}
+        setGeneHighlight={setGeneHighlight}
+        setTrackHighlight={setTrackHighlight}
+        updateViewInfo={updateCellCoordinates}
       />
+      <div>
+        {
+          highlightedTrackData ? (
+            <HeatmapTracksCellInfo
+              cellId={highlightedTrackData.cellId}
+              trackName={highlightedTrackData.trackName}
+              coordinates={highlightedTrackData.coordinates}
+            />
+          ) : cellHighlight ? (
+            <HeatmapCellInfo
+              cellId={cellHighlight}
+              geneName={geneHighlight}
+              geneExpression={focusedExpression?.rawExpression.expression[cellHighlight]}
+              coordinates={cellCoordinatesRef.current}
+            />
+          ) : <></>
+        }
+      </div>
     </div>
   );
 };
@@ -261,4 +320,4 @@ HeatmapPlot.propTypes = {
 
 export default HeatmapPlot;
 
-export { HeatmapPlot, COMPONENT_TYPE };
+export { COMPONENT_TYPE };

@@ -1,5 +1,4 @@
 import React from 'react';
-import _ from 'lodash';
 import '__test__/test-utils/setupTests';
 
 import {

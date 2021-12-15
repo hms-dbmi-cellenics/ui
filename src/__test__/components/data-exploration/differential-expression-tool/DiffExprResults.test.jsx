@@ -179,8 +179,8 @@ describe('DiffExprResults', () => {
       </Provider>,
     );
 
-    const table = component.find('Table Table');
-    const spin = component.find('Table').find(Loader);
+    const table = component.find('Table');
+    const spin = component.find(Loader);
     expect(spin.length).toEqual(0);
     expect(table.length).toEqual(1);
     expect(table.getElement().props.columns.length).toEqual(7);
@@ -194,6 +194,22 @@ describe('DiffExprResults', () => {
 
     expect(table.getElement().props.dataSource.length).toEqual(5);
     expect(table.getElement().props.data.length).toEqual(5);
+  });
+
+  it('is sorted by descending logFC by default', () => {
+    const component = mount(
+      <Provider store={withResultStore}>
+        <DiffExprResults experimentId={experimentId} onGoBack={jest.fn()} width={100} height={200} />
+      </Provider>,
+    );
+
+    const table = component.find('Table');
+    expect(table.getElement().props.columns[1].sortOrder).toEqual(null);
+    expect(table.getElement().props.columns[2].sortOrder).toEqual('descend');
+    expect(table.getElement().props.columns[3].sortOrder).toEqual(null);
+    expect(table.getElement().props.columns[4].sortOrder).toEqual(null);
+    expect(table.getElement().props.columns[5].sortOrder).toEqual(null);
+    expect(table.getElement().props.columns[6].sortOrder).toEqual(null);
   });
 
   it('can sort the gene names in alphabetical order', async () => {
@@ -221,7 +237,7 @@ describe('DiffExprResults', () => {
       </Provider>,
     );
 
-    const table = component.find('Table Table');
+    const table = component.find('Table');
 
     act(() => {
       table.getElement().props.onChange(newPagination, {}, newSorter);
@@ -262,7 +278,7 @@ describe('DiffExprResults', () => {
       </Provider>,
     );
 
-    const table = component.find('Space Table Table');
+    const table = component.find('Table');
 
     table.getElement().props.data.forEach((row) => {
       const lookupComponent = mount(
@@ -311,8 +327,8 @@ describe('DiffExprResults', () => {
       </Provider>,
     );
 
-    const spin = component.find('Table').find(Loader);
-    const empty = component.find('Table').find(Empty);
+    const spin = component.find(Loader);
+    const empty = component.find(Empty);
 
     // There should be no loader
     expect(spin.length).toEqual(0);
