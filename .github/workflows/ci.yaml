@@ -36,7 +36,7 @@ jobs:
         echo "Running CI with "
         echo "Node version: $(node --version)"
         echo "NPM version: $(npm --version)"
-        
+
         git config --global url."https://".insteadOf ssh://
         npm ci
 

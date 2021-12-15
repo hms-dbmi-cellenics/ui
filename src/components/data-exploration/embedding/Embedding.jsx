@@ -8,33 +8,36 @@ import PropTypes from 'prop-types';
 import _ from 'lodash';
 import * as vega from 'vega';
 
-import Loader from '../../Loader';
 import 'vitessce/dist/es/production/static/css/index.css';
-import ClusterPopover from './ClusterPopover';
-import CrossHair from './CrossHair';
-import CellInfo from '../CellInfo';
-import { loadEmbedding } from '../../../redux/actions/embedding';
-import { createCellSet } from '../../../redux/actions/cellSets';
-import { loadGeneExpression } from '../../../redux/actions/genes';
 
-import { updateCellInfo } from '../../../redux/actions/cellInfo';
+import ClusterPopover from 'components/data-exploration/embedding/ClusterPopover';
+import CrossHair from 'components/data-exploration/embedding/CrossHair';
+import CellInfo from 'components/data-exploration/CellInfo';
+import PlatformError from 'components/PlatformError';
+import Loader from 'components/Loader';
+
+import { loadEmbedding } from 'redux/actions/embedding';
+import { createCellSet } from 'redux/actions/cellSets';
+import { loadGeneExpression } from 'redux/actions/genes';
+import { updateCellInfo } from 'redux/actions/cellInfo';
+import { loadProcessingSettings } from 'redux/actions/experimentSettings';
+
+import { getCellSets } from 'redux/selectors';
+
 import {
   convertCellsData,
-  updateStatus,
-  clearPleaseWait,
   renderCellSetColors,
   colorByGeneExpression,
   colorInterpolator,
-} from '../../../utils/embeddingPlotHelperFunctions/helpers';
-import PlatformError from '../../PlatformError';
-
-import { loadProcessingSettings } from '../../../redux/actions/experimentSettings';
-import { getCellSets } from '../../../redux/selectors';
+} from 'utils/plotUtils';
 
 const Scatterplot = dynamic(
-  () => import('vitessce/dist/es/production/scatterplot.min.js').then((mod) => mod.Scatterplot),
+  () => import('vitessce/dist/umd/production/scatterplot.min').then((mod) => mod.Scatterplot),
   { ssr: false },
 );
+
+const initialZoom = 4.00;
+const cellRadiusFromZoom = (zoom) => zoom ** 3 / 50;
 
 const Embedding = (props) => {
   const {
@@ -43,7 +46,9 @@ const Embedding = (props) => {
 
   const dispatch = useDispatch();
 
-  const view = { target: [4, -4, 0], zoom: 4.00 };
+  const [view, setView] = useState({ target: [4, -4, 0], zoom: initialZoom });
+  const [cellRadius, setCellRadius] = useState(cellRadiusFromZoom(initialZoom));
+
   const selectedCellIds = new Set();
 
   const embeddingSettings = useSelector(
@@ -141,7 +146,7 @@ const Embedding = (props) => {
     }
 
     if (cellSetProperties) {
-      setCellSetClusters(Object.entries(cellSetProperties).filter(([key, cellSet]) => cellSet.type === 'cellSets'));
+      setCellSetClusters(Object.entries(cellSetProperties).filter(([, cellSet]) => cellSet.type === 'cellSets'));
     }
   }, [cellSetProperties, cellSetHierarchy]);
 
@@ -169,11 +174,11 @@ const Embedding = (props) => {
     if (cell) {
       if (focusData.store === 'genes') {
         const expressionToDispatch = focusedExpression
-          ? focusedExpression.rawExpression.expression[cell.cellId] : undefined;
+          ? focusedExpression.rawExpression.expression[cell] : undefined;
 
         return dispatch(updateCellInfo({
-          cellName: cell.cellId,
-          cellSets: getContainingCellSets(cell.cellId),
+          cellName: cell,
+          cellSets: getContainingCellSets(cell),
           geneName: focusData.key,
           expression: expressionToDispatch,
           componentType: embeddingType,
@@ -181,8 +186,8 @@ const Embedding = (props) => {
       }
 
       return dispatch(updateCellInfo({
-        cellName: cell.cellId,
-        cellSets: getContainingCellSets(cell.cellId),
+        cellName: cell,
+        cellSets: getContainingCellSets(cell),
         geneName: undefined,
         expression: undefined,
         componentType: embeddingType,
@@ -200,7 +205,7 @@ const Embedding = (props) => {
   };
 
   const updateCellsSelection = (selection) => {
-    if (selection.size > 0) {
+    if (Array.from(selection).length > 0) {
       setCreateClusterPopover(true);
       setSelectedIds(selection);
     }
@@ -212,8 +217,8 @@ const Embedding = (props) => {
   }
 
   // The selected gene in can be present in both expression.loading and expression.data.
-  // To make sure that the gene is really loading, we have to check if it exists in the loading array
-  // and is not present in the data array
+  // To make sure that the gene is really loading, we have to check if
+  // it exists in the loading array and is not present in the data array
   if (focusData.store === 'genes'
     && !loadedGenes.includes(focusData.key)
     && expressionLoading.includes(focusData.key)) {
@@ -281,25 +286,31 @@ const Embedding = (props) => {
       {renderExpressionView()}
       {
         data ? (
-
           <Scatterplot
             cellOpacity={0.8}
-            cellRadiusScale={0.1}
+            cellRadius={cellRadius}
+            setCellHighlight={updateCellsHover}
+            theme='light'
             uuid={embeddingType}
-            view={view}
+            viewState={view}
+            updateViewInfo={updateCellCoordinates}
             cells={convertCellsData(data, cellSetHidden, cellSetProperties)}
             mapping='PCA'
-            selectedCellIds={selectedCellIds}
+            cellSelection={selectedCellIds}
             cellColors={
               (selectedCell)
                 ? new Map(Object.entries({ ...cellColors, [selectedCell]: [0, 0, 0] }))
                 : new Map(Object.entries(cellColors))
             }
-            updateStatus={updateStatus}
-            updateCellsSelection={updateCellsSelection}
-            updateCellsHover={updateCellsHover}
-            updateViewInfo={updateCellCoordinates}
-            clearPleaseWait={clearPleaseWait}
+            setViewState={({ zoom, target }) => {
+              setCellRadius(cellRadiusFromZoom(zoom));
+
+              setView({ zoom, target });
+            }}
+            getExpressionValue={() => { }}
+            getCellIsSelected={() => { }}
+            setCellSelection={updateCellsSelection}
+
           />
         ) : ''
       }

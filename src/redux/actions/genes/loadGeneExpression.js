@@ -45,6 +45,7 @@ const loadGeneExpression = (
   const displayedGenes = genesAlreadyLoaded.filter(
     (gene) => upperCaseArray(genes).includes(gene.toUpperCase()),
   );
+
   if (genesToFetch.length === 0) {
     // All genes are already loaded.
     return dispatch({

@@ -13,7 +13,10 @@ const cellSets = {
 };
 
 const sampleCellSet = mockCellSet.cellSets.find(({ key }) => key === 'sample');
-const numCells = sampleCellSet.children.reduce((sum, cellSet) => sum + cellSet.cellIds.length, 0);
+const numCells = sampleCellSet.children.reduce(
+  (sum, cellSet) => sum + cellSet.cellIds.length,
+  0,
+);
 
 describe('Get all cells', () => {
   it('Returns all ids for a cell set', () => {
@@ -22,8 +25,8 @@ describe('Get all cells', () => {
 
     expect(allCellIds[0]).toMatchInlineSnapshot(`
       Object {
-        "cellId": 1,
-        "cellSetKey": "98c7a0ed-d086-4df8-bf94-a9ee6edb793f",
+        "cellId": 11,
+        "cellSetKey": "b62028a1-ffa0-4f10-823d-93c9ddb88898",
       }
     `);
   });
