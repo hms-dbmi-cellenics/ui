@@ -9,8 +9,6 @@ import HeatmapSettings from 'components/data-exploration/heatmap/HeatmapSettings
 
 jest.mock('components/data-exploration/heatmap/HeatmapMetadataTrackSettings', () => () => (<div />));
 jest.mock('components/data-exploration/heatmap/HeatmapGroupBySettings', () => () => (<div />));
-jest.mock('components/data-exploration/heatmap/HeatmapExpressionValuesSettings', () => () => (<div />));
-jest.mock('components/data-exploration/heatmap/HeatmapLegendVisibilitySettings', () => () => (<div />));
 
 describe('HeatmapSettings', () => {
   it('Renders correctly', async () => {
@@ -25,8 +23,6 @@ describe('HeatmapSettings', () => {
     const dropdown = screen.getByRole('button');
     userEvent.click(dropdown);
 
-    screen.getByText(/Expression values/);
-    screen.getByText(/Legend/);
     screen.getByText(/Metadata tracks.../);
     screen.getByText(/Group by/);
   });

@@ -209,7 +209,7 @@ describe('Download data menu', () => {
   });
 
   it('Downolods data properly', async () => {
-    getFromApiExpectOK.mockImplementation(() => Promise.resolve({ signedUrl: 'signedUrl' }));
+    getFromApiExpectOK.mockImplementation(() => Promise.resolve('signedUrl'));
     getBackendStatus.mockImplementation(() => () => ({
       status: {
         pipeline: {
