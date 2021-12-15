@@ -17,7 +17,7 @@ describe('Advanced filtering modal', () => {
     renderAdvancedFilteringModal();
     expect(screen.getByText('Add filter')).toBeInTheDocument();
     expect(screen.getByText('Cancel')).toBeInTheDocument();
-    expect(screen.getByText('OK')).toBeInTheDocument();
+    expect(screen.getByText('Apply filters')).toBeInTheDocument();
     expect(screen.getByText('Preset filters')).toBeInTheDocument();
     const closeButton = screen.getAllByLabelText('close')[0];
     closeButton.click();
