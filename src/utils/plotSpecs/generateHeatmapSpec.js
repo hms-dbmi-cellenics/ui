@@ -116,7 +116,7 @@ const generateSpec = (config, groupName, trackGroupData, plotUuid = false) => {
         values: [],
       },
       {
-        name: 'heatmapData',
+        name: 'geneExpressionsData',
         values: [],
       },
       {
@@ -175,7 +175,7 @@ const generateSpec = (config, groupName, trackGroupData, plotUuid = false) => {
             : config.colour.gradient,
         },
         domain: {
-          data: 'heatmapData',
+          data: 'geneExpressionsData',
           field: 'expression',
         },
         zero: false,
@@ -269,7 +269,7 @@ const generateSpec = (config, groupName, trackGroupData, plotUuid = false) => {
       {
         type: 'rect',
         from: {
-          data: 'heatmapData',
+          data: 'geneExpressionsData',
         },
         encode: {
           enter: {

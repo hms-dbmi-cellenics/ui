@@ -1,4 +1,3 @@
-/* eslint-disable import/no-unresolved */
 import initialCellSetsState from 'redux/reducers/cellSets/initialState';
 import mockCellSets from 'utils/tests/mockStores/cellSets';
 import getCellSets from 'redux/selectors/cellSets/getCellSets';
