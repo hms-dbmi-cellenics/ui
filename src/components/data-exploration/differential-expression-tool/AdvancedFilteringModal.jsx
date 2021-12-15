@@ -25,39 +25,31 @@ const AdvancedFilteringModal = (props) => {
   ];
 
   const renderPresetFilters = (add) => {
-    const presetFilters = [
-      {
-        name: 'Up-regulated',
+    const presetFilters = {
+      'Up-regulated': {
         criteria: 'logfc',
         condition: 'gt',
         value: 0,
       },
-      {
-        name: 'Down-regulated',
+      'Down-regulated': {
         criteria: 'logfc',
         condition: 'lt',
         value: 0,
       },
-      {
-        name: 'Significant',
+      Significant: {
         criteria: 'pValue',
         condition: 'lt',
         value: 0.05,
       },
-    ];
-    const addPresetFilter = (presetFilter) => {
-      const settings = presetFilters.filter((entry) => entry.name === presetFilter.key)[0];
-      delete settings.name;
-      add(settings);
     };
 
     return (
       <Menu
-        onClick={(e) => { addPresetFilter(e); }}
+        onClick={(e) => { add(presetFilters[e.key]); }}
       >
-        {presetFilters.map((filter) => (
-          <Menu.Item key={filter.name}>
-            {filter.name}
+        {Object.keys(presetFilters).map((filter) => (
+          <Menu.Item key={filter}>
+            {filter}
           </Menu.Item>
         ))}
       </Menu>
