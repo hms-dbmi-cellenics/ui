@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Modal, Form, Button, Space, Select, InputNumber, Dropdown, Menu,
 } from 'antd';
@@ -7,6 +7,8 @@ import { CloseOutlined, PlusOutlined } from '@ant-design/icons';
 
 const AdvancedFilteringModal = (props) => {
   const { onCancel } = props;
+  const [form] = Form.useForm();
+  const [valuesDomain, setValuesDomain] = useState([]);
 
   const criteriaOptions = [
     { value: 'logfc', label: 'logFC' },
@@ -15,6 +17,7 @@ const AdvancedFilteringModal = (props) => {
     { value: 'pct2', label: 'Pct2' },
     { value: 'auc', label: 'AUC' },
   ];
+
   const conditionOptions = [{
     value: 'gt',
     label: 'Greater than',
@@ -23,6 +26,14 @@ const AdvancedFilteringModal = (props) => {
     label: 'Less than',
   },
   ];
+
+  const valueRestrictions = {
+    pct1: [0, 100],
+    pct2: [0, 100],
+    logfc: [-50, 50],
+    auc: [0, 1],
+    pValue: [0, 1],
+  };
 
   const renderPresetFilters = (add) => {
     const presetFilters = {
@@ -56,20 +67,28 @@ const AdvancedFilteringModal = (props) => {
     );
   };
 
+  const addCriteria = (criteria, index) => {
+    const currentDomains = valuesDomain;
+    currentDomains[index] = valueRestrictions[criteria];
+    setValuesDomain(currentDomains);
+    // without the next line the form does not re-render, so the max and min values are not updated
+    form.setFieldsValue({});
+  };
+
   return (
     <Modal
       visible
       title='Advanced filters'
       onCancel={() => onCancel()}
     >
-      <Form>
+      <Form form={form}>
 
         <Form.List
           name='filterForm'
         >
           {(fields, { add, remove }) => (
             <>
-              {fields.map((field) => (
+              {fields.map((field, index) => (
                 <Space key={field.key} align='baseline'>
                   <Space direction='horizontal'>
                     <Form.Item
@@ -79,6 +98,7 @@ const AdvancedFilteringModal = (props) => {
                       <Select
                         placeholder='Select criteria'
                         style={{ width: 140 }}
+                        onChange={(value) => addCriteria(value, index)}
                         options={criteriaOptions}
                       />
                     </Form.Item>
@@ -100,6 +120,8 @@ const AdvancedFilteringModal = (props) => {
                     >
                       <InputNumber
                         style={{ width: 140 }}
+                        min={valuesDomain[index] ? valuesDomain[index][0] : 0}
+                        max={valuesDomain[index] ? valuesDomain[index][1] : 0}
                         placeholder='Insert value'
                       />
                     </Form.Item>
