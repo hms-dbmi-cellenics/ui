@@ -11,7 +11,7 @@ import GeneSelectionStatus from '../../../redux/actions/genes/geneSelectionStatu
 import { geneTableUpdateReason } from '../../../utils/geneTable/geneTableUpdateReason';
 import FocusButton from '../../FocusButton';
 import PlatformError from '../../PlatformError';
-import useLazyEffect from '../../../utils/useLazyEffect';
+import useLazyEffect from '../../../utils/customHooks/useLazyEffect';
 import GeneSelectionMenu from './GeneSelectionMenu';
 import Loader from '../../Loader';
 

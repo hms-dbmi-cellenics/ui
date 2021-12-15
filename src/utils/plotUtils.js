@@ -1,6 +1,6 @@
 import * as vega from 'vega';
 
-import { union } from '../cellSetOperations';
+import { union } from 'utils/cellSetOperations';
 
 const colorInterpolator = vega.scheme('purplered');
 
@@ -88,6 +88,14 @@ const convertCellsData = (results, hidden, properties) => {
 const updateStatus = () => { };
 const clearPleaseWait = () => { };
 
+const convertRange = (value, r1, r2) => {
+  // prevent devision by zero
+  if (r1[0] === r1[1]) return value;
+
+  // eslint-disable-next-line no-mixed-operators
+  return (value - r1[0]) * (r2[1] - r2[0]) / (r1[1] - r1[0]) + r2[0];
+};
+
 export {
   renderCellSetColors,
   convertCellsData,
@@ -95,4 +103,6 @@ export {
   clearPleaseWait,
   colorByGeneExpression,
   colorInterpolator,
+  hexToRgb,
+  convertRange,
 };

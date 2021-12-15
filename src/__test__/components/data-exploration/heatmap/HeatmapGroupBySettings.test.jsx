@@ -15,8 +15,6 @@ import HeatmapGroupBySettings from '../../../../components/data-exploration/heat
 import { UPDATE_CONFIG } from '../../../../redux/actionTypes/componentConfig';
 import '__test__/test-utils/setupTests';
 
-jest.mock('../../../../components/data-exploration/heatmap/VegaHeatmap');
-
 const mockStore = configureMockStore([thunk]);
 
 let component;
