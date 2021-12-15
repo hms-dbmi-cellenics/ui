@@ -1,7 +1,7 @@
 /* eslint-disable no-underscore-dangle */
 import hash from 'object-hash';
 
-import Environment, { isBrowser } from 'utils/environment';
+import Environment from 'utils/environment';
 import { calculateZScore } from 'utils/postRequestProcessing';
 import { getBackendStatus } from 'redux/selectors';
 
@@ -100,12 +100,14 @@ const fetchWork = async (
   getState,
   optionals = {},
 ) => {
+  throw new Error('hahaha', experimentId, body, getState);
+
   const { extras = undefined, timeout = 180, eventCallback = null } = optionals;
   const backendStatus = getBackendStatus(experimentId)(getState()).status;
 
   const { environment } = getState().networkResources;
 
-  if (!isBrowser) {
+  if (!process.browser) {
     throw new Error('Disabling network interaction on server');
   }
 

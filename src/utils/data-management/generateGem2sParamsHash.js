@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 import { DEFAULT_NA } from '../../redux/reducers/projects/initialState';
-import { browserGenerateDigest } from '../crypt';
+import { generateDigest } from '../crypt';
 
 const generateGem2sParamsHash = async (project, samples, experiment) => {
   if (!project || !samples || !experiment) {
@@ -32,7 +32,7 @@ const generateGem2sParamsHash = async (project, samples, experiment) => {
     }, {});
   }
 
-  return browserGenerateDigest(JSON.stringify(hashParams));
+  return generateDigest(JSON.stringify(hashParams), 'sha1');
 };
 
 export default generateGem2sParamsHash;

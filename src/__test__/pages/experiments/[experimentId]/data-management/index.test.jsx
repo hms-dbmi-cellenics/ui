@@ -28,7 +28,7 @@ jest.mock('react-resize-detector', () => (props) => props.children({ width: 100,
 
 // Necessary due to LaunchAnalysisButotn being imported.
 jest.mock('utils/crypt', () => ({
-  browserGenerateDigest: () => 'randomhash',
+  generateDigest: () => 'randomhash',
 }));
 
 // Necessary due to storage being used in the default SamplesTable.

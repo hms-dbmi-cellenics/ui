@@ -2,7 +2,6 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable max-classes-per-file */
 import * as localForage from 'localforage';
-import { isBrowser } from './environment';
 
 const currentCacheVersion = 'biomage_0.0.1';
 const previousCacheVersions = ['biomage'];
@@ -34,7 +33,7 @@ class BrowserCache {
   async _init() {
     try {
       if (this.initialised) return;
-      if (!isBrowser) return;
+      if (!process.browser) return;
       localForage.config({
         driver: localForage.INDEXEDDB,
         name: currentCacheVersion,
