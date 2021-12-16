@@ -24,6 +24,7 @@ import Error from '../pages/_error';
 import GEM2SLoadingScreen from './GEM2SLoadingScreen';
 import PipelineRedirectToDataProcessing from './PipelineRedirectToDataProcessing';
 import PreloadContent from './PreloadContent';
+import connectionPromise from '../utils/socketConnection';
 import experimentUpdatesHandler from '../utils/experimentUpdatesHandler';
 import { getBackendStatus } from '../redux/selectors';
 import integrationTestConstants from '../utils/integrationTestConstants';
@@ -99,20 +100,16 @@ const ContentWrapper = (props) => {
   useEffect(() => {
     if (!currentExperimentId) return;
     if (!backendLoading) dispatch(loadBackendStatus(currentExperimentId));
+    (async () => {
+      const io = await connectionPromise;
+      const cb = experimentUpdatesHandler(dispatch);
 
-    if (process.browser || process.env.NODE_ENV === 'test') {
-      import('../utils/socketConnection')
-        .then(({ default: connectionPromise }) => connectionPromise)
-        .then((io) => {
-          const cb = experimentUpdatesHandler(dispatch);
+      // Unload all previous socket.io hooks that may have been created for a different
+      // experiment.
+      io.off();
 
-          // Unload all previous socket.io hooks that may have been created for a different
-          // experiment.
-          io.off();
-
-          io.on(`ExperimentUpdates-${currentExperimentId}`, (update) => cb(currentExperimentId, update));
-        });
-    }
+      io.on(`ExperimentUpdates-${currentExperimentId}`, (update) => cb(currentExperimentId, update));
+    })();
   }, [routeExperimentId]);
 
   useEffect(() => {

@@ -1,3 +1,5 @@
+const isBrowser = typeof window !== 'undefined' && typeof window.document !== 'undefined';
+
 const Environment = {
   DEVELOPMENT: 'development',
   STAGING: 'staging',
@@ -11,7 +13,7 @@ const ssrGetCurrentEnvironment = () => {
     return Environment.DEVELOPMENT;
   }
 
-  if (process.browser) {
+  if (!process.env) {
     throw new Error('ssrGetCurrentEnvironment must be called on the server side. Refer to `store.networkResources.environment` for the actual environment.');
   }
 
@@ -30,5 +32,5 @@ const ssrGetCurrentEnvironment = () => {
   return currentEnvironment;
 };
 
-export { ssrGetCurrentEnvironment };
+export { isBrowser, ssrGetCurrentEnvironment };
 export default Environment;

@@ -1,7 +1,7 @@
 /* eslint-disable no-underscore-dangle */
 import hash from 'object-hash';
 
-import Environment from 'utils/environment';
+import Environment, { isBrowser } from 'utils/environment';
 import { calculateZScore } from 'utils/postRequestProcessing';
 import { getBackendStatus } from 'redux/selectors';
 
@@ -105,7 +105,7 @@ const fetchWork = async (
 
   const { environment } = getState().networkResources;
 
-  if (!process.browser) {
+  if (!isBrowser) {
     throw new Error('Disabling network interaction on server');
   }
 
