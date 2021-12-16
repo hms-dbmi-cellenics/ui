@@ -87,14 +87,16 @@ describe('Continuous embedding plot', () => {
   it('shows spinner when data is still loading', () => {
     const store = mockStore(mockedStore);
 
+    const plotData = mockedStore.genes.expression.data[shownGene].expression;
+
     const component = mount(
       <Provider store={store}>
         <ContinuousEmbeddingPlot
           experimentId={experimentId}
           config={config}
           plotUuid={plotUuid}
-          truncatedPlotData={mockedStore.genes.expression.data[shownGene].expression}
-          plotData={mockedStore.genes.expression.data[shownGene].expression}
+          truncatedPlotData={plotData}
+          plotData={plotData}
           loading
           error={mockedStore.genes.expression.error}
           onUpdate={mockOnUpdate}
@@ -112,14 +114,16 @@ describe('Continuous embedding plot', () => {
   it('renders correctly when data is in the store', () => {
     const store = mockStore(mockedStore);
 
+    const plotData = mockedStore.genes.expression.data[shownGene].expression;
+
     const component = mount(
       <Provider store={store}>
         <ContinuousEmbeddingPlot
           experimentId={experimentId}
           config={config}
           plotUuid={plotUuid}
-          truncatedPlotData={mockedStore.genes.expression.data[shownGene].expression}
-          plotData={mockedStore.genes.expression.data[shownGene].expression}
+          truncatedPlotData={plotData}
+          plotData={plotData}
           loading={false}
           error={mockedStore.genes.expression.error}
           onUpdate={mockOnUpdate}
