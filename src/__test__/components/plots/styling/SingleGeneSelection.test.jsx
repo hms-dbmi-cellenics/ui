@@ -22,9 +22,7 @@ const loadAndRenderSingleGeneSelection = async (config, setSearchedGene) => {
 
 describe('SingleGeneSelection', () => {
   it('Shows gene received in props initially', async () => {
-    await act(async () => {
-      await loadAndRenderSingleGeneSelection(fakeConfig, () => { });
-    });
+    await loadAndRenderSingleGeneSelection(fakeConfig, () => { });
 
     const input = screen.getByRole('textbox');
     expect(input).toHaveAttribute('value', fakeConfig.shownGene);
@@ -49,10 +47,7 @@ describe('SingleGeneSelection', () => {
 
   it('Manages user actions correctly', async () => {
     const callback = jest.fn();
-
-    await act(async () => {
-      await loadAndRenderSingleGeneSelection(fakeConfig, callback);
-    });
+    await loadAndRenderSingleGeneSelection(fakeConfig, callback);
 
     const input = screen.getByRole('textbox');
     expect(input).toHaveAttribute('value', fakeConfig.shownGene);

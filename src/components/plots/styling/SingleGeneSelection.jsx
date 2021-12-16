@@ -19,7 +19,7 @@ const SingleGeneSelection = (props) => {
     setLocalShownGene(config.shownGene);
   }, [config?.shownGene]);
 
-  if (!config || !config?.shownGene) {
+  if (!config?.shownGene) {
     return (
       <div data-testid='skeletonInput'>
         <Skeleton.Input style={{ width: 200 }} active />
