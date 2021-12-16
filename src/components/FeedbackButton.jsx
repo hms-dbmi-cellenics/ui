@@ -10,7 +10,6 @@ import React, { useState } from 'react';
 
 import Auth from '@aws-amplify/auth';
 import endUserMessages from '../utils/endUserMessages';
-import { getWebhookUrl } from '../utils/crypt';
 import pushNotificationMessage from '../utils/pushNotificationMessage';
 
 const { TextArea } = Input;
@@ -89,6 +88,7 @@ const FeedbackButton = () => {
     };
 
     try {
+      const { getWebhookUrl } = await import('../utils/crypt');
       const r = await fetch(getWebhookUrl(), {
         method: 'POST',
         body: JSON.stringify(feedbackData),
