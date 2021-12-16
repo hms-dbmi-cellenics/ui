@@ -67,9 +67,9 @@ const AdvancedFilteringModal = (props) => {
     </Menu>
   );
 
-  const changeCriteria = (criteria, index = false) => {
+  const changeCriteria = (criteria, index = null) => {
     let currentIndex = index;
-    if (index === false) {
+    if (index === null) {
       const { filterForm } = form.getFieldsValue();
       currentIndex = filterForm.length - 1;
     }
@@ -122,7 +122,7 @@ const AdvancedFilteringModal = (props) => {
 
                     <Form.Item
                       name={[field.name, 'value']}
-                      fieldKey={[field.value, 'condition']}
+                      fieldKey={[field.value, 'value']}
                     >
                       <InputNumber
                         style={{ width: 140 }}
@@ -138,7 +138,7 @@ const AdvancedFilteringModal = (props) => {
               ))}
 
               <Space direction='horizontal'>
-                <Button onClick={() => add()} block icon={<PlusOutlined />}>
+                <Button onClick={add} block icon={<PlusOutlined />}>
                   Add filter
                 </Button>
                 <Dropdown overlay={renderPresetFilters(add)}>
