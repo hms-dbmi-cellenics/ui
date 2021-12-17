@@ -58,8 +58,9 @@ const ContinuousEmbeddingPage = ({ experimentId }) => {
   const [searchedGene, setSearchedGene] = useState();
 
   useEffect(() => {
-    if (config?.shownGene !== null && config && !searchedGene) {
-      // if there is a saved gene in the config in the initial loading of the plot
+    if (config?.shownGene !== null && !searchedGene) {
+      // Loads expression for saved gene in the config in the initial loading of the plot
+      // if a new gene wasn't searched for
       dispatch(loadGeneExpression(experimentId, [config.shownGene], plotUuid));
     }
   }, [config?.shownGene]);
