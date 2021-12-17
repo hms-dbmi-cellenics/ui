@@ -22,11 +22,11 @@ spec:
     path: charts/nodejs
     ref: FILLED_IN_BY_CI
   values:
-
     # disable readiness probes as load balancer performs
     # its own health checks/cordoning
     readinessProbe:
-      probeType: none
+      probeType: exec
+      command: exit 0
     loadBalancerHealthCheck:
       path: "/robots.txt"
       periodSeconds: 30
