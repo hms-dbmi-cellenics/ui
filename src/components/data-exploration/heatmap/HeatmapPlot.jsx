@@ -248,7 +248,7 @@ const HeatmapPlot = (props) => {
 
     const [cellIndexStr, trackIndex, mouseX, mouseY] = info;
 
-    const trackOrder = Array.from(heatmapSettings.selectedTracks).reverse();
+    const trackOrder = Array.from(heatmapSettings.selectedTracks);
 
     const cellSetClassKey = trackOrder[trackIndex];
 

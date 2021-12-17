@@ -61,6 +61,7 @@ const HeatmapGroupBySettings = (props) => {
       }),
     );
   }, [cellSetsOrder]);
+
   useEffect(() => {
     if (!_.isEqual(previousGroupedKeys(), groupedTracksKeys)) {
       const newOrder = getCellSetsOrder();

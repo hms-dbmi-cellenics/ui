@@ -10,90 +10,99 @@ import {
   Switch,
 } from 'antd';
 
-import useLazyEffect from 'utils/customHooks/useLazyEffect';
 import { updatePlotConfig } from '../../../redux/actions/componentConfig';
 import ReorderableList from '../../ReorderableList';
 import { getCellSetsHierarchy } from '../../../redux/selectors';
+
+const convertToReorderableListData = (cellClassKeys, selected, hierarchy) => (
+  cellClassKeys.map((key) => {
+    const { name } = _.find(hierarchy, ({ key: currentKey }) => currentKey === key);
+
+    return {
+      key, disabledReorder: !selected, name,
+    };
+  })
+);
 
 const HeatmapMetadataTrackSettings = (props) => {
   const dispatch = useDispatch();
 
   const { componentType } = props;
-  const selectedHierarchy = useSelector(getCellSetsHierarchy());
+  const hierarchy = useSelector(getCellSetsHierarchy());
 
   const selectedTracks = useSelector(
     (state) => state.componentConfig[componentType].config.selectedTracks,
   );
 
-  const getTrackData = () => selectedHierarchy.map(
-    (data) => ({ selected: selectedTracks.includes(data.key), key: data.key }),
-  );
-
-  const [trackData, setTrackData] = useState(getTrackData());
-
-  const getUpdatedTrackData = () => _.unionBy(
-    getTrackData(),
-    trackData,
-    'key',
-  );
-
-  useLazyEffect(() => {
-    const newTrackData = getUpdatedTrackData();
-    if (_.isEqual(trackData, newTrackData)) return;
-
-    setTrackData(newTrackData);
-  }, [selectedHierarchy]);
-
-  const getEnabledTracks = () => trackData.filter((entry) => entry.selected).map((o) => o.key);
+  const [listData, setListData] = useState([]);
 
   useEffect(() => {
-    if (!_.isEqual(getEnabledTracks(), selectedTracks)) {
-      const newTracks = trackData.map((entry) => {
-        if (!selectedTracks.includes(entry.key)) {
-          return { ...entry, selected: false };
-        }
-        return { ...entry, selected: true };
-      });
-      setTrackData(newTracks);
-    }
+    if (hierarchy === null) return;
+
+    const selectedTracksListData = convertToReorderableListData(
+      selectedTracks, true, hierarchy,
+    );
+
+    const unselectedTracks = _.difference(hierarchy.map(({ key }) => key), selectedTracks);
+    const unselectedTracksListData = convertToReorderableListData(
+      unselectedTracks, false, hierarchy,
+    );
+
+    setListData([...selectedTracksListData, ...unselectedTracksListData]);
   }, [selectedTracks]);
 
-  useEffect(() => {
-    if (_.isEqual(getEnabledTracks(), selectedTracks)) {
-      return;
+  const setTrackSelected = (selected, key) => {
+    const newSelectedTracks = [...selectedTracks];
+
+    if (selected) {
+      newSelectedTracks.push(key);
+    } else {
+      _.pull(newSelectedTracks, key);
     }
-    if (trackData.length === 0) {
-      return;
-    }
+
     dispatch(
       updatePlotConfig(componentType, {
-        selectedTracks: getEnabledTracks(),
+        selectedTracks: newSelectedTracks,
       }),
     );
-  }, [trackData]);
+  };
 
-  const leftItem = (trackDataItem, i) => (
+  const setTrackOrder = (reorderedTracks) => {
+    const reorderedSelectedTrackKeys = reorderedTracks
+      .filter(({ disabledReorder }) => !disabledReorder)
+      .map(({ key }) => key);
+
+    dispatch(
+      updatePlotConfig(componentType, {
+        selectedTracks: reorderedSelectedTrackKeys,
+      }),
+    );
+  };
+
+  useEffect(() => {
+  }, [selectedTracks]);
+
+  const leftItem = (trackDataItem) => (
     <Switch
       checkedChildren={<EyeOutlined />}
       unCheckedChildren={<EyeInvisibleOutlined />}
       value={trackDataItem.key}
-      checked={trackDataItem.selected}
-      onChange={(state) => {
-        const newState = [...trackData];
-        newState[i].selected = state;
-        setTrackData(newState);
+      checked={!trackDataItem.disabledReorder}
+      onChange={(selected) => {
+        setTrackSelected(selected, trackDataItem.key);
       }}
     />
   );
+
   const rightItem = (trackDataItem) => (
-    selectedHierarchy.filter((current) => current.key === trackDataItem.key)[0].name
+    hierarchy.filter((current) => current.key === trackDataItem.key)[0].name
   );
 
   return (
     <div style={{ padding: '5px' }}>
       <ReorderableList
-        onChange={setTrackData}
-        listData={trackData}
+        onChange={setTrackOrder}
+        listData={listData}
         leftItem={leftItem}
         rightItem={rightItem}
       />

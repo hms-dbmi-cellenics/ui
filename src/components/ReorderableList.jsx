@@ -54,7 +54,10 @@ const ReorderableList = (props) => {
     <Button
       size='small'
       shape='circle'
-      disabled={currentPosition === 0}
+      disabled={
+        reorderableList[currentPosition].disabledReorder
+        || currentPosition === 0
+      }
       icon={<UpOutlined />}
       style={{ marginLeft: '5px' }}
       onClick={() => {
@@ -67,7 +70,10 @@ const ReorderableList = (props) => {
     <Button
       size='small'
       shape='circle'
-      disabled={currentPosition === reorderableList.length - 1}
+      disabled={
+        reorderableList[currentPosition].disabledReorder
+        || currentPosition === reorderableList.length - 1
+      }
       icon={<DownOutlined />}
       style={{ marginRight: '5px' }}
       onClick={() => {

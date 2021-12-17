@@ -20,7 +20,6 @@ const generateVitessceData = (
   );
 
   const metadataTracksLabels = Array.from(heatmapSettings.selectedTracks)
-    .reverse()
     .map((cellClassKey) => cellSets.properties[cellClassKey].name);
 
   return {

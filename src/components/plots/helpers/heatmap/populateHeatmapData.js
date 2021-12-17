@@ -30,7 +30,7 @@ const populateHeatmapData = (
     return cellIdsInAnyGroupBy;
   };
 
-  const trackOrder = Array.from(selectedTracks).reverse();
+  const trackOrder = Array.from(selectedTracks);
 
   const downsampleWithProportions = (buckets, cellIdsLength) => {
     const downsampledCellIds = [];
