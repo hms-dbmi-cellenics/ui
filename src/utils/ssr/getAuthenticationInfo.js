@@ -14,9 +14,9 @@ import { fromTokenFile } from '@aws-sdk/credential-provider-web-identity';
 import configure from '../amplify-config';
 
 const getAuthenticationInfo = async () => {
+  // We use Node's `global` as a store for caching the results on the server-side.
+  // Once we grab the cognito pool information there is no need to re-fetch again.
   if (global.cachedAuthenticationInfo) {
-    console.log('found cached auth info in global store,', global.cachedAuthenticationInfo, 'returning it...');
-
     return global.cachedAuthenticationInfo;
   }
 
