@@ -248,9 +248,7 @@ const HeatmapPlot = (props) => {
 
     const [cellIndexStr, trackIndex, mouseX, mouseY] = info;
 
-    const trackOrder = Array.from(heatmapSettings.selectedTracks);
-
-    const cellSetClassKey = trackOrder[trackIndex];
+    const cellSetClassKey = heatmapSettings.selectedTracks[trackIndex];
 
     const cellClassProps = getCellClassProperties(
       parseInt(cellIndexStr, 10), cellSetClassKey,

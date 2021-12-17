@@ -30,8 +30,6 @@ const populateHeatmapData = (
     return cellIdsInAnyGroupBy;
   };
 
-  const trackOrder = Array.from(selectedTracks);
-
   const downsampleWithProportions = (buckets, cellIdsLength) => {
     const downsampledCellIds = [];
 
@@ -151,13 +149,13 @@ const populateHeatmapData = (
 
   if (!vitessce) {
     return generateVegaData(
-      cellOrder, geneOrder, trackOrder,
+      cellOrder, geneOrder, selectedTracks,
       expression, heatmapSettings, cellSets,
     );
   }
 
   return generateVitessceData(
-    cellOrder, geneOrder, trackOrder,
+    cellOrder, geneOrder, selectedTracks,
     expression, heatmapSettings, cellSets,
   );
 };
