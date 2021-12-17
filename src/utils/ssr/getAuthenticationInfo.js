@@ -14,6 +14,12 @@ import { fromTokenFile } from '@aws-sdk/credential-provider-web-identity';
 import configure from '../amplify-config';
 
 const getAuthenticationInfo = async () => {
+  if (global.cachedAuthenticationInfo) {
+    console.log('found cached auth info in global store,', global.cachedAuthenticationInfo, 'returning it...');
+
+    return global.cachedAuthenticationInfo;
+  }
+
   let additionalClientParams = {};
 
   if (process.env.NODE_ENV !== 'development') {
@@ -87,9 +93,13 @@ const getAuthenticationInfo = async () => {
     { ...userPoolClientDetails, Domain: `${Domain}.auth.eu-west-1.amazoncognito.com` },
   );
 
-  return {
+  const result = {
     amplifyConfig,
   };
+
+  global.cachedAuthenticationInfo = result;
+
+  return result;
 };
 
 export default getAuthenticationInfo;
