@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import _ from 'lodash';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
@@ -10,6 +10,7 @@ import {
   Switch,
 } from 'antd';
 
+import useLazyEffect from 'utils/customHooks/useLazyEffect';
 import { updatePlotConfig } from '../../../redux/actions/componentConfig';
 import ReorderableList from '../../ReorderableList';
 import { getCellSetsHierarchy } from '../../../redux/selectors';
@@ -28,8 +29,6 @@ const HeatmapMetadataTrackSettings = (props) => {
     (data) => ({ selected: selectedTracks.includes(data.key), key: data.key }),
   );
 
-  const isInitialRenderRef = useRef(true);
-
   const [trackData, setTrackData] = useState(getTrackData());
 
   const getUpdatedTrackData = () => _.unionBy(
@@ -38,10 +37,7 @@ const HeatmapMetadataTrackSettings = (props) => {
     'key',
   );
 
-  useEffect(() => {
-    // Prevent initial dispatch when object appears
-    if (isInitialRenderRef.current) return;
-
+  useLazyEffect(() => {
     const newTrackData = getUpdatedTrackData();
     if (_.isEqual(trackData, newTrackData)) return;
 
@@ -63,8 +59,7 @@ const HeatmapMetadataTrackSettings = (props) => {
   }, [selectedTracks]);
 
   useEffect(() => {
-    // Prevent initial dispatch when object appears
-    if (isInitialRenderRef.current || _.isEqual(getEnabledTracks(), selectedTracks)) {
+    if (_.isEqual(getEnabledTracks(), selectedTracks)) {
       return;
     }
     if (trackData.length === 0) {
@@ -76,10 +71,6 @@ const HeatmapMetadataTrackSettings = (props) => {
       }),
     );
   }, [trackData]);
-
-  useEffect(() => {
-    isInitialRenderRef.current = false;
-  });
 
   const leftItem = (trackDataItem, i) => (
     <Switch
