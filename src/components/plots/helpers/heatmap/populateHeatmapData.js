@@ -147,15 +147,17 @@ const populateHeatmapData = (
   const cellOrder = generateCellOrder(groupedTracks);
   const geneOrder = selectedGenes;
 
+  const trackOrder = selectedTracks.reverse();
+
   if (!vitessce) {
     return generateVegaData(
-      cellOrder, geneOrder, selectedTracks,
+      cellOrder, geneOrder, trackOrder,
       expression, heatmapSettings, cellSets,
     );
   }
 
   return generateVitessceData(
-    cellOrder, geneOrder, selectedTracks,
+    cellOrder, geneOrder, trackOrder,
     expression, heatmapSettings, cellSets,
   );
 };

@@ -20,7 +20,8 @@ const generateVitessceData = (
   );
 
   const metadataTracksLabels = heatmapSettings.selectedTracks
-    .map((cellClassKey) => cellSets.properties[cellClassKey].name);
+    .map((cellClassKey) => cellSets.properties[cellClassKey].name)
+    .reverse();
 
   return {
     expressionMatrix: {
