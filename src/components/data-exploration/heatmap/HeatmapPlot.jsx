@@ -27,6 +27,8 @@ import HeatmapTracksCellInfo from 'components/data-exploration/heatmap/HeatmapTr
 import getCellClassProperties from 'utils/cellSets/getCellClassProperties';
 import useConditionalEffect from 'utils/customHooks/useConditionalEffect';
 
+import { reversed } from 'utils/arrayUtils';
+
 const COMPONENT_TYPE = 'interactiveHeatmap';
 const { Text } = Typography;
 
@@ -248,7 +250,7 @@ const HeatmapPlot = (props) => {
 
     const [cellIndexStr, trackIndex, mouseX, mouseY] = info;
 
-    const trackOrder = heatmapSettings.selectedTracks.reverse();
+    const trackOrder = reversed(heatmapSettings.selectedTracks);
 
     const cellSetClassKey = trackOrder[trackIndex];
 

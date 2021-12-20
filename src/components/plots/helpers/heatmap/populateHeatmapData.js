@@ -147,7 +147,7 @@ const populateHeatmapData = (
   const cellOrder = generateCellOrder(groupedTracks);
   const geneOrder = selectedGenes;
 
-  const trackOrder = selectedTracks.reverse();
+  const trackOrder = selectedTracks;
 
   if (!vitessce) {
     return generateVegaData(
