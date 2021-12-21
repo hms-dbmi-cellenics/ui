@@ -37,7 +37,7 @@ const HeatmapMetadataTrackSettings = (props) => {
   const [listData, setListData] = useState([]);
 
   useEffect(() => {
-    if (hierarchy === null) return;
+    if (hierarchy === null || _.isEmpty(hierarchy)) return;
 
     const selectedTracksListData = convertToReorderableListData(
       selectedTracks, true, hierarchy,

@@ -83,7 +83,7 @@ const ReorderableList = (props) => {
   );
 
   const composeItem = (itemData, i) => (
-    <div key={i}>
+    <div data-testid='reorderableListItem' key={i}>
       {leftItem(itemData, i)}
 
       {upButton(itemData.key, i)}
