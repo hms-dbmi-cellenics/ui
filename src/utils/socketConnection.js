@@ -13,7 +13,7 @@ const connectionPromise = new Promise((resolve, reject) => {
  */
   if (!isBrowser) {
     reject(new Error(
-      'connectionPromise attempted to run on the server. It must be used through a dynamic import. Search for this error for more details.',
+      'connectionPromise attempted to run on the server. It must be used through a dynamic import. Search in the code for this error for more details.',
     ));
     return;
   }
