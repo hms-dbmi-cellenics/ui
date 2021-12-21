@@ -2,7 +2,7 @@
 ui
 ==
 
-The user interface of Cellenics (the Biomage single cell analysis platform).
+The user interface of Cellenics - cloud based Single Cell RNA seq Analysis web platform.
 
 Development
 -----------
@@ -10,7 +10,9 @@ Development
 ### Prerequisites
 
 We highly recommend using VSCode for development, if you don't have it, make sure you get it installed. You will also need to install:
-`homebrew`, `docker`, `node` (version 14). You should also install the package `dbaeumer.vscode-eslint` for syntax linting & format errors in VS Code.
+`homebrew`, `docker`, `node` (version 14). You should also install the following packages:
+- `dbaeumer.vscode-eslint` for syntax linting & format errors in VS Code,
+- `markis.code-coverage` highlights which lines are covered in unit tests and which aren’t.
 
 #### installing node 14 on macOS
 
@@ -51,6 +53,7 @@ To get it running end-to-end locally with mocked dataset, you will need to set u
 - API: https://github.com/biomage-ltd/api
 - Inframock: https://github.com/biomage-ltd/inframock
 - worker: https://github.com/biomage-ltd/worker
+- pipeline: https://github.com/biomage-ltd/pipeline
 
 Just follow the README of each of them for instructions on how to get it to run.
 
