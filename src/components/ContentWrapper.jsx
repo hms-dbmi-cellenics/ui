@@ -305,6 +305,7 @@ const ContentWrapper = (props) => {
   const menuItemRender = ({
     path, icon, name, disableIfNoExperiment, disabledByPipelineStatus,
   }) => {
+    // todo this willl need to be changed, since calculateGem2sRerunStatus is now an async func
     const rerunStatus = calculateGem2sRerunStatus(gem2sBackendStatus, activeProject, samples, experiment);
 
     const notProcessedExperimentDisable = disableIfNoExperiment && !routeExperimentId && rerunStatus.rerun;
