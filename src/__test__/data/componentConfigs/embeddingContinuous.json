@@ -1,0 +1,59 @@
+{
+  "spec": "1.0.0",
+  "legend": {
+      "enabled": true,
+      "position": "top-right",
+      "colour": "#000000"
+  },
+  "dimensions": {
+      "width": 700,
+      "height": 550
+  },
+  "axes": {
+      "xAxisText": "Umap 1",
+      "yAxisText": "Umap 2",
+      "titleFontSize": 13,
+      "labelFontSize": 12,
+      "offset": 10,
+      "gridOpacity": 0,
+      "gridWidth": 10,
+      "domainWidth": 2,
+      "xAxisRotateLabels": false,
+      "defaultValues": [
+          "x",
+          "y"
+      ]
+  },
+  "title": {
+      "text": "",
+      "fontSize": 20,
+      "anchor": "start",
+      "dx": 0
+  },
+  "fontStyle": {
+      "font": "sans-serif",
+      "colour": "#000000"
+  },
+  "colour": {
+      "masterColour": "#000000",
+      "gradient": "default",
+      "toggleInvert": "#FFFFFF",
+      "invert": "standard",
+      "reverseColourBar": false
+  },
+  "marker": {
+      "shape": "circle",
+      "showOpacity": true,
+      "opacity": 5,
+      "size": 5
+  },
+  "labels": {
+      "enabled": true,
+      "size": 18
+  },
+  "logEquation": "datum.expression*1",
+  "shownGene": "Gzma",
+  "expressionValue": "raw",
+  "truncatedValues": true,
+  "selectedSample": "All"
+}
