@@ -341,6 +341,8 @@ const ContentWrapper = (props) => {
     );
   };
 
+  console.log('IVA IVA IVA');
+
   return (
     <Layout style={{ minHeight: '100vh' }}>
       <Sider
@@ -442,11 +444,12 @@ const ContentWrapper = (props) => {
 ContentWrapper.propTypes = {
   routeExperimentId: PropTypes.string,
   experimentData: PropTypes.object.isRequired,
-  children: PropTypes.node.isRequired,
+  children: PropTypes.node,
 };
 
 ContentWrapper.defaultProps = {
   routeExperimentId: null,
+  children: null,
 };
 
 export default ContentWrapper;
