@@ -341,8 +341,6 @@ const ContentWrapper = (props) => {
     );
   };
 
-  console.log('IVA IVA IVA');
-
   return (
     <Layout style={{ minHeight: '100vh' }}>
       <Sider
