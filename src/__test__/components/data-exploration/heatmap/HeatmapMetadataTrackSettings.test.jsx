@@ -61,9 +61,7 @@ describe('HeatmapMetadataTrackSettings', () => {
   });
 
   it('Renders correctly', async () => {
-    await act(async () => {
-      await loadAndRenderDefault();
-    });
+    await loadAndRenderDefault();
 
     const items = screen.getAllByTestId('reorderableListItem');
 
@@ -75,9 +73,7 @@ describe('HeatmapMetadataTrackSettings', () => {
   });
 
   it('Can enable and reorder correctly', async () => {
-    await act(async () => {
-      await loadAndRenderDefault();
-    });
+    await loadAndRenderDefault();
 
     let items = screen.getAllByTestId('reorderableListItem');
 
