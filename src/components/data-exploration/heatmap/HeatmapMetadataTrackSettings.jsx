@@ -79,9 +79,6 @@ const HeatmapMetadataTrackSettings = (props) => {
     );
   };
 
-  useEffect(() => {
-  }, [selectedTracks]);
-
   const leftItem = (trackDataItem) => (
     <Switch
       checkedChildren={<EyeOutlined />}
