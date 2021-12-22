@@ -11,6 +11,9 @@ const configure = (userPoolId, identityPoolId, userPoolClientDetails) => {
         region: 'eu-west-1',
         dangerouslyConnectToHttpEndpointForTesting: currentEnvironment === Environment.DEVELOPMENT,
         identityId: identityPoolId,
+        customPrefix: {
+          public: '',
+        },
       },
     },
   };
