@@ -74,7 +74,7 @@ describe('HeatmapMetadataTrackSettings', () => {
     );
   });
 
-  it.only('Can enable and reorder correctly', async () => {
+  it('Can enable and reorder correctly', async () => {
     await act(async () => {
       loadAndRenderDefault();
     });
