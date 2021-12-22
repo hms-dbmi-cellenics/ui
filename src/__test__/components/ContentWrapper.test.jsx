@@ -36,7 +36,7 @@ jest.mock('next/router', () => ({
 }));
 
 jest.mock('@aws-amplify/auth', () => ({
-  currentAuthenticatedUser: jest.fn(async () => true),
+  currentAuthenticatedUser: jest.fn().mockImplementation(async () => true),
   federatedSignIn: jest.fn(),
 }));
 
@@ -75,74 +75,81 @@ describe('ContentWrapper', () => {
       status: {},
     }));
 
-    const wrapper = mount(
+    const wrapper = await mount(
       <Provider store={store}>
-        <ContentWrapper routeExperimentId={experimentId} experimentData={{}}>
+        <ContentWrapper routeExperimentId={experimentId} experimentData={{ experimentName: 'test experiment' }}>
+          <></>
+        </ContentWrapper>
+      </Provider>,
+    );
+    wrapper.update();
+
+    let sider;
+    act(() => {
+      sider = wrapper.find('Sider');
+    });
+    wrapper.update();
+
+    console.log('**** GETTTING HERE ');
+    expect(sider.length).toEqual(1);
+
+    const menus = wrapper.find(Menu).children().find(Item);
+
+    // Menu item renders twice to support HOC usage (?)
+    // https://ant.design/components/menu/#Why-Menu-children-node-will-render-twice
+    const visibleMenuLength = menus.length / 2;
+
+    expect(visibleMenuLength).toEqual(4);
+
+    expect(menus.at(0).prop('id')).toEqual('/data-management');
+
+    expect(menus.at(1).prop('id')).toEqual('/experiments/[experimentId]/data-processing');
+
+    expect(menus.at(2).prop('id')).toEqual('/experiments/[experimentId]/data-exploration');
+
+    expect(menus.at(3).prop('id')).toEqual('/experiments/[experimentId]/plots-and-tables');
+  });
+
+  it('links are disabled if there is no experimentId', async () => {
+    getBackendStatus.mockImplementation(() => () => ({
+      loading: false,
+      error: false,
+      status: null,
+    }));
+
+    const wrapper = await mount(
+      <Provider store={store}>
+        <ContentWrapper backendStatus={{}}>
           <></>
         </ContentWrapper>
       </Provider>,
     );
 
+    await wrapper.update();
+
     const sider = wrapper.find('Sider');
     expect(sider.length).toEqual(1);
 
-    // const menus = wrapper.find(Menu).children().find(Item);
+    const menus = wrapper.find(Menu).children().find(Item);
 
-    // // Menu item renders twice to support HOC usage (?)
-    // // https://ant.design/components/menu/#Why-Menu-children-node-will-render-twice
-    // const visibleMenuLength = menus.length / 2;
+    // Menu item renders twice to support HOC usage (?)
+    // https://ant.design/components/menu/#Why-Menu-children-node-will-render-twice
+    const visibleMenuLength = menus.length / 2;
 
-    // expect(visibleMenuLength).toEqual(4);
+    expect(visibleMenuLength).toEqual(4);
 
-    // expect(menus.at(0).prop('id')).toEqual('/data-management');
+    // Data Management is not disabled
+    expect(menus.at(0).props().disabled).toEqual(false);
 
-    // expect(menus.at(1).prop('id')).toEqual('/experiments/[experimentId]/data-processing');
+    // Data Processing link is disabled
+    expect(menus.at(1).props().disabled).toEqual(true);
 
-    // expect(menus.at(2).prop('id')).toEqual('/experiments/[experimentId]/data-exploration');
+    // Data Exploration link is disabled
+    expect(menus.at(2).props().disabled).toEqual(true);
 
-    // expect(menus.at(3).prop('id')).toEqual('/experiments/[experimentId]/plots-and-tables');
+    // Plots and Tables link is disabled
+    expect(menus.at(3).props().disabled).toEqual(true);
   });
-
-  // it('links are disabled if there is no experimentId', async () => {
-  //   getBackendStatus.mockImplementation(() => () => ({
-  //     loading: false,
-  //     error: false,
-  //     status: null,
-  //   }));
-
-  //   const wrapper = await mount(
-  //     <Provider store={store}>
-  //       <ContentWrapper backendStatus={{}}>
-  //         <></>
-  //       </ContentWrapper>
-  //     </Provider>,
-  //   );
-
-  //   await wrapper.update();
-
-  //   const sider = wrapper.find('Sider');
-  //   expect(sider.length).toEqual(1);
-
-  //   const menus = wrapper.find(Menu).children().find(Item);
-
-  //   // Menu item renders twice to support HOC usage (?)
-  //   // https://ant.design/components/menu/#Why-Menu-children-node-will-render-twice
-  //   const visibleMenuLength = menus.length / 2;
-
-  //   expect(visibleMenuLength).toEqual(4);
-
-  //   // Data Management is not disabled
-  //   expect(menus.at(0).props().disabled).toEqual(false);
-
-  //   // Data Processing link is disabled
-  //   expect(menus.at(1).props().disabled).toEqual(true);
-
-  //   // Data Exploration link is disabled
-  //   expect(menus.at(2).props().disabled).toEqual(true);
-
-  //   // Plots and Tables link is disabled
-  //   expect(menus.at(3).props().disabled).toEqual(true);
-  // });
   // it('Links are enabled if the selected project is processed', async () => {
   //   getBackendStatus.mockImplementation(() => () => ({
   //     loading: false,
@@ -186,49 +193,49 @@ describe('ContentWrapper', () => {
   //   expect(menus.at(2).text()).toEqual('Data Exploration');
   //   expect(menus.at(3).text()).toEqual('Plots and Tables');
   // });
-  // it('has the correct sider and layout style when opened / closed', async () => {
-  //   const siderHasWidth = (expectedWidth) => {
-  //     const sider = wrapper.find('Sider');
-  //     const expandedComputedStyle = getComputedStyle(sider.getDOMNode()).getPropertyValue('width');
-  //     expect(expandedComputedStyle).toEqual(expectedWidth);
+  it('has the correct sider and layout style when opened / closed', async () => {
+    const siderHasWidth = (expectedWidth) => {
+      const sider = wrapper.find('Sider');
+      const expandedComputedStyle = getComputedStyle(sider.getDOMNode()).getPropertyValue('width');
+      expect(expandedComputedStyle).toEqual(expectedWidth);
 
-  //     const layout = wrapper.find('Layout Layout');
-  //     expect(layout.prop('style')).toEqual(expect.objectContaining({ marginLeft: expectedWidth }));
-  //   };
+      const layout = wrapper.find('Layout Layout');
+      expect(layout.prop('style')).toEqual(expect.objectContaining({ marginLeft: expectedWidth }));
+    };
 
-  //   getBackendStatus.mockImplementation(() => () => ({
-  //     loading: false,
-  //     error: false,
-  //     status: null,
-  //   }));
+    getBackendStatus.mockImplementation(() => () => ({
+      loading: false,
+      error: false,
+      status: null,
+    }));
 
-  //   // eslint-disable-next-line require-await
-  //   const wrapper = await mount(
-  //     <Provider store={store}>
-  //       <ContentWrapper backendStatus={{}}>
-  //         <></>
-  //       </ContentWrapper>
-  //     </Provider>,
-  //   );
-  //   wrapper.update();
+    // eslint-disable-next-line require-await
+    const wrapper = await mount(
+      <Provider store={store}>
+        <ContentWrapper backendStatus={{}}>
+          <></>
+        </ContentWrapper>
+      </Provider>,
+    );
+    wrapper.update();
 
-  //   const expandedWidth = '210px';
-  //   const collapsedWidth = '80px';
+    const expandedWidth = '210px';
+    const collapsedWidth = '80px';
 
-  //   // When the side bar is collapsed
-  //   act(() => {
-  //     wrapper.find('Sider').props().onCollapse(true);
-  //   });
-  //   wrapper.update();
-  //   siderHasWidth(collapsedWidth);
+    // When the side bar is collapsed
+    act(() => {
+      wrapper.find('Sider').props().onCollapse(true);
+    });
+    wrapper.update();
+    siderHasWidth(collapsedWidth);
 
-  //   // When side bar is not collapsed
-  //   act(() => {
-  //     wrapper.find('Sider').props().onCollapse(false);
-  //   });
-  //   wrapper.update();
-  //   siderHasWidth(expandedWidth);
-  // });
+    // When side bar is not collapsed
+    act(() => {
+      wrapper.find('Sider').props().onCollapse(false);
+    });
+    wrapper.update();
+    siderHasWidth(expandedWidth);
+  });
 
   // it('View changes if there is a pipeline run underway', async () => {
   //   getBackendStatus.mockImplementation(() => () => ({
