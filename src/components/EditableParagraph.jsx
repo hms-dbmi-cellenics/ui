@@ -20,6 +20,10 @@ const EditablePagrapraph = (props) => {
     }
   }, [isEditing]);
 
+  useEffect(() => {
+    setText(value);
+  }, [value]);
+
   const handleUpdate = (e) => {
     const content = e.target.textContent;
 
@@ -42,6 +46,7 @@ const EditablePagrapraph = (props) => {
           handleUpdate(e);
         }
       }}
+      suppressContentEditableWarning
     >
       {text}
     </p>
