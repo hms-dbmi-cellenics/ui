@@ -119,7 +119,7 @@ describe('ContentWrapper', () => {
 
     const wrapper = await mount(
       <Provider store={store}>
-        <ContentWrapper backendStatus={{}}>
+        <ContentWrapper>
           <></>
         </ContentWrapper>
       </Provider>,
@@ -150,49 +150,48 @@ describe('ContentWrapper', () => {
     // Plots and Tables link is disabled
     expect(menus.at(3).props().disabled).toEqual(true);
   });
-  // it('Links are enabled if the selected project is processed', async () => {
-  //   getBackendStatus.mockImplementation(() => () => ({
-  //     loading: false,
-  //     error: false,
-  //     status: {
-  //       gem2s: {
-  //         status: 'SUCCEEDED',
-  //         paramsHash: false,
-  //       },
-  //       pipeline: {
-  //         status: 'SUCCEEDED',
-  //       },
-  //     },
-  //   }));
+  it.only('Links are enabled if the selected project is processed', async () => {
+    getBackendStatus.mockImplementation(() => () => ({
+      loading: false,
+      error: false,
+      status: {
+        pipeline: {
+          status: 'SUCCEEDED',
+        },
+        gem2s: {
+          status: 'SUCCEEDED',
+        },
+      },
+    }));
 
-  //   const wrapper = await mount(
-  //     <Provider store={store}>
-  //       <ContentWrapper backendStatus={{}}>
-  //         <></>
-  //       </ContentWrapper>
-  //     </Provider>,
-  //   );
+    const wrapper = await mount(
+      <Provider store={store}>
+        <ContentWrapper>
+          <></>
+        </ContentWrapper>
+      </Provider>,
+    );
 
-  //   // Run two cycles of updates so "should gem2s rerun" information
-  //   // can propagate to the render. This should be refactored into a
-  //   // react-testing-library test when possible.
-  //   await wrapper.update();
-  //   await wrapper.update();
+    // Run two cycles of updates so "should gem2s rerun" information
+    // can propagate to the render. This should be refactored into a
+    // react-testing-library test when possible.
+    await wrapper.update();
+    await wrapper.update();
 
-  //   const sider = wrapper.find('Sider');
-  //   expect(sider.length).toEqual(1);
-  //   const menus = wrapper.find(Menu).children().find(Item);
-  //   const visibleMenuLength = menus.length / 2;
+    const sider = wrapper.find('Sider');
+    expect(sider.length).toEqual(1);
+    const menus = wrapper.find(Menu).children().find(Item);
+    const visibleMenuLength = menus.length / 2;
 
-  //   expect(visibleMenuLength).toEqual(4);
-  //   for (let i = 0; i < visibleMenuLength; i += 1) {
-  //     expect(menus.at(i).props().disabled).toEqual(false);
-  //   }
-  //   expect(menus.at(0).text()).toEqual('Data Management');
-  //   expect(menus.at(1).text()).toEqual('Data Processing');
-  //   expect(menus.at(2).text()).toEqual('Data Exploration');
-  //   expect(menus.at(3).text()).toEqual('Plots and Tables');
-  // });
+    expect(visibleMenuLength).toEqual(4);
+    for (let i = 0; i < visibleMenuLength; i += 1) {
+      expect(menus.at(i).props().disabled).toEqual(false);
+    }
+    expect(menus.at(0).text()).toEqual('Data Management');
+    expect(menus.at(1).text()).toEqual('Data Processing');
+    expect(menus.at(2).text()).toEqual('Data Exploration');
+    expect(menus.at(3).text()).toEqual('Plots and Tables');
+  });
   it('has the correct sider and layout style when opened / closed', async () => {
     const siderHasWidth = (expectedWidth) => {
       const sider = wrapper.find('Sider');
@@ -237,94 +236,94 @@ describe('ContentWrapper', () => {
     siderHasWidth(expandedWidth);
   });
 
-  // it('View changes if there is a pipeline run underway', async () => {
-  //   getBackendStatus.mockImplementation(() => () => ({
-  //     loading: false,
-  //     error: false,
-  //     status: { pipeline: { status: 'RUNNING' } },
-  //   }));
+  it('View changes if there is a pipeline run underway', async () => {
+    getBackendStatus.mockImplementation(() => () => ({
+      loading: false,
+      error: false,
+      status: { pipeline: { status: 'RUNNING' } },
+    }));
 
-  //   const info = {
-  //     experimentId,
-  //     experimentName: 'test experiment',
-  //   };
+    const info = {
+      experimentId,
+      experimentName: 'test experiment',
+    };
 
-  //   const testStore = mockStore({
-  //     notifications: {},
-  //     experimentSettings: {
-  //       processing: {
-  //         meta: {
-  //           changedQCFilters: new Set(),
-  //         },
-  //       },
-  //       info,
-  //     },
-  //     projects: {
-  //       meta: {
-  //         activeProjectUuid: '1234',
-  //       },
-  //     },
-  //     experiments: { [experimentId]: {} },
-  //   });
+    const testStore = mockStore({
+      notifications: {},
+      experimentSettings: {
+        processing: {
+          meta: {
+            changedQCFilters: new Set(),
+          },
+        },
+        info,
+      },
+      projects: {
+        meta: {
+          activeProjectUuid: '1234',
+        },
+      },
+      experiments: { [experimentId]: {} },
+    });
 
-  //   // eslint-disable-next-line require-await
-  //   const wrapper = await mount(
-  //     <Provider store={testStore}>
-  //       <ContentWrapper
-  //         routeExperimentId={info.experimentId}
-  //         experimentData={info}
-  //       >
-  //         <></>
-  //       </ContentWrapper>
-  //     </Provider>,
-  //   );
-  //   await wrapper.update();
+    // eslint-disable-next-line require-await
+    const wrapper = await mount(
+      <Provider store={testStore}>
+        <ContentWrapper
+          routeExperimentId={info.experimentId}
+          experimentData={info}
+        >
+          <></>
+        </ContentWrapper>
+      </Provider>,
+    );
+    await wrapper.update();
 
-  //   const sider = wrapper.find('Sider');
-  //   expect(sider.length).toEqual(1);
+    const sider = wrapper.find('Sider');
+    expect(sider.length).toEqual(1);
 
-  //   const menus = wrapper.find(Menu).children().find(Item);
+    const menus = wrapper.find(Menu).children().find(Item);
 
-  //   // Menu item renders twice to support HOC usage (?)
-  //   // https://ant.design/components/menu/#Why-Menu-children-node-will-render-twice
-  //   const visibleMenuLength = menus.length / 2;
+    // Menu item renders twice to support HOC usage (?)
+    // https://ant.design/components/menu/#Why-Menu-children-node-will-render-twice
+    const visibleMenuLength = menus.length / 2;
 
-  //   expect(visibleMenuLength).toEqual(4);
+    expect(visibleMenuLength).toEqual(4);
 
-  //   const pipelineRedirects = wrapper.find('PipelineRedirectToDataProcessing');
-  //   expect(pipelineRedirects.length).toEqual(1);
-  // });
+    const pipelineRedirects = wrapper.find('PipelineRedirectToDataProcessing');
+    expect(pipelineRedirects.length).toEqual(1);
+  });
 
-  // it('Redirects to login if the user is unauthenticated', async () => {
-  //   getBackendStatus.mockImplementation(() => () => ({
-  //     [experimentId]: {
-  //       loading: false,
-  //       error: false,
-  //       status: {},
-  //     },
-  //   }));
+  it('Redirects to login if the user is unauthenticated', async () => {
+    getBackendStatus.mockImplementation(() => () => ({
+      [experimentId]: {
+        loading: false,
+        error: false,
+        status: {},
+      },
+    }));
 
-  //   Auth.currentAuthenticatedUser
-  //     .mockImplementationOnce(
-  //       async () => { throw new Error('user not signed in'); },
-  //     );
+    Auth.currentAuthenticatedUser
+      .mockImplementationOnce(
+        async () => { throw new Error('user not signed in'); },
+      );
 
-  //   // eslint-disable-next-line require-await
-  //   const wrapper = await mount(
-  //     <Provider store={store}>
-  //       <ContentWrapper routeExperimentId={experimentId}>
-  //         <></>
-  //       </ContentWrapper>
-  //     </Provider>,
-  //   );
-  //   await wrapper.update();
+    // eslint-disable-next-line require-await
+    const wrapper = await mount(
+      <Provider store={store}>
+        <ContentWrapper routeExperimentId={experimentId}>
+          <></>
+        </ContentWrapper>
+      </Provider>,
+    );
+    await wrapper.update();
 
-  //   const sider = wrapper.find('Sider');
-  //   expect(sider.length).toEqual(0);
+    const sider = wrapper.find('Sider');
+    expect(sider.length).toEqual(0);
 
-  //   const menu = wrapper.find(Menu);
-  //   expect(menu.length).toEqual(0);
+    const menu = wrapper.find(Menu);
+    expect(menu.length).toEqual(0);
 
-  //   expect(Auth.federatedSignIn).toHaveBeenCalled();
-  // });
+    expect(Auth.federatedSignIn).toHaveBeenCalled();
+  });
 });
