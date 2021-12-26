@@ -26,6 +26,10 @@ const componentType = 'interactiveHeatmap';
 
 let storeState = null;
 const loadAndRenderDefault = async () => {
+  enableFetchMocks();
+  fetchMock.resetMocks();
+  fetchMock.doMock();
+
   fetchMock.mockIf(/.*/, mockAPI(generateDefaultMockAPIResponses(fake.EXPERIMENT_ID, fake.PROJECT_ID)));
 
   storeState = makeStore();
@@ -54,12 +58,6 @@ const checkReorderableListState = (contentList, enabledList, items) => {
 };
 
 describe('HeatmapMetadataTrackSettings', () => {
-  beforeEach(async () => {
-    enableFetchMocks();
-    fetchMock.resetMocks();
-    fetchMock.doMock();
-  });
-
   it('Renders correctly', async () => {
     await loadAndRenderDefault();
 
