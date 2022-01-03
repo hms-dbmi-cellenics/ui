@@ -8,9 +8,9 @@ import {
 } from 'antd';
 import { DownOutlined, ShareAltOutlined } from '@ant-design/icons';
 import React, { useState } from 'react';
+import Auth from '@aws-amplify/auth';
 import validateInput, { rules } from '../utils/validateInputs';
 
-import { Auth } from 'aws-amplify';
 import endUserMessages from '../utils/endUserMessages';
 import pushNotificationMessage from '../utils/pushNotificationMessage';
 

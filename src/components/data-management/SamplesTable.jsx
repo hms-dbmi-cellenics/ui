@@ -17,7 +17,7 @@ import {
   deleteMetadataTrack,
   createMetadataTrack,
 } from 'redux/actions/projects';
-import { Storage } from 'aws-amplify';
+import Storage from '@aws-amplify/storage';
 import UploadStatus from 'utils/upload/UploadStatus';
 import { arrayMoveImmutable } from 'utils/array-move';
 import downloadFromUrl from 'utils/data-management/downloadFromUrl';

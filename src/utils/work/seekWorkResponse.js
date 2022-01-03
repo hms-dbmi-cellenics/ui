@@ -1,12 +1,12 @@
 import moment from 'moment';
-import Amplify, { Storage } from 'aws-amplify';
+import Amplify from '@aws-amplify/core';
+import Storage from '@aws-amplify/storage';
 
-import connectionPromise from 'utils/socketConnection';
-import WorkResponseError from 'utils/WorkResponseError';
 import getAuthJWT from 'utils/getAuthJWT';
 import WorkTimeoutError from 'utils/WorkTimeoutError';
 
 import unpackResult from 'utils/work/unpackResult';
+import WorkResponseError from 'utils/WorkResponseError';
 
 const seekFromS3 = async (ETag) => {
   const configuredBucket = Amplify.configure().Storage.AWSS3.bucket;
@@ -34,6 +34,7 @@ const seekFromAPI = async (
   requestProps = {},
 ) => {
   console.error('seek from api', body);
+  const { default: connectionPromise } = await import('utils/socketConnection');
   const io = await connectionPromise;
 
   const timeoutDate = moment().add(timeout, 's').toISOString();
