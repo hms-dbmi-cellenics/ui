@@ -1,7 +1,9 @@
 import pipelineStatus from 'utils/pipelineStatusValues';
 import generateGem2sParamsHash from './generateGem2sParamsHash';
 
-const calculateGem2sRerunStatus = (gem2sBackendStatus, activeProject, samples, experiment) => {
+const calculateGem2sRerunStatus = (
+  gem2sBackendStatus, activeProject, samples, experiment,
+) => {
   const gem2sStatus = gem2sBackendStatus?.status;
   const existingParamsHash = gem2sBackendStatus?.paramsHash;
 

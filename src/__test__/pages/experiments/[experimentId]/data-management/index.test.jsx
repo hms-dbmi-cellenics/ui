@@ -26,6 +26,11 @@ import { setActiveProject } from 'redux/actions/projects';
 jest.mock('utils/data-management/downloadFromUrl');
 jest.mock('react-resize-detector', () => (props) => props.children({ width: 100, height: 100 }));
 
+// Necessary due to storage being used in the default SamplesTable.
+jest.mock('@aws-amplify/storage', () => ({
+  get: jest.fn(() => Promise.resolve('https://mock-s3-url.com')),
+}));
+
 const firstProjectWithSamples = projects.find((p) => p.samples.length > 0);
 const projectIdWithSamples = firstProjectWithSamples.uuid;
 const experimentIdWithSamples = firstProjectWithSamples.experiments[0];

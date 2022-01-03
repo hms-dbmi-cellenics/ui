@@ -9,6 +9,9 @@ const css = require('@zeit/next-css');
 const images = require('next-images');
 
 const lessToJS = require('less-vars-to-js');
+const withBundleAnalyzer = require('@next/bundle-analyzer')({
+  enabled: process.env.ANALYZE === 'true',
+});
 const webpackConfigPlugins = require('./config/webpack/configPlugins');
 const webpackConfigRules = require('./config/webpack/configRules');
 const webpackConfigSourcemaps = require('./config/webpack/configSourcemaps');
@@ -67,6 +70,14 @@ const nextConfig = {
   webpack: (config, params) => {
     const { dev } = params;
 
+    // bn.js occurs a lot in various crypto libraries we have polyfills for
+    // this is a fix that makes sure all versions of bn.js point to the same
+    // version that we install directly, reducing the bundle size
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      'bn.js': path.join(__dirname, 'node_modules/bn.js/lib/bn.js'),
+    };
+
     const final = webpackConfigSourcemaps(
       webpackConfigRules(
         webpackConfigPlugins(
@@ -86,6 +97,7 @@ const nextConfig = {
 };
 
 module.exports = withPlugins([
+  [withBundleAnalyzer],
   [images],
   [less, {
     lessLoaderOptions: {
