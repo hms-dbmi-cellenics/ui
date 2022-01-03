@@ -126,17 +126,14 @@ const ContentWrapper = (props) => {
 
   const [gem2sRerunStatus, setGem2sRerunStatus] = useState(null);
 
-  // this useEffect makes the test run forever
   useEffect(() => {
-    // const gem2sStatus = calculateGem2sRerunStatus(
-    //   gem2sBackendStatus, activeProject, samples, experiment,
-    // );
-    const gem2sStatus = 'SUCCEEDED';
-    console.log('******');
+    const gem2sStatus = calculateGem2sRerunStatus(
+      gem2sBackendStatus, activeProject, samples, experiment,
+    );
+
     setGem2sRerunStatus(gem2sStatus);
   }, [gem2sBackendStatus, activeProject, samples, experiment]);
 
-  return (<></>);
   useEffect(() => {
     Auth.currentAuthenticatedUser()
       .then(() => setIsAuth(true))
@@ -322,8 +319,8 @@ const ContentWrapper = (props) => {
   const menuItemRender = ({
     path, icon, name, disableIfNoExperiment, disabledByPipelineStatus,
   }) => {
-    const notProcessedExperimentDisable = disableIfNoExperiment
-      && !routeExperimentId && (!gem2sRerunStatus || gem2sRerunStatus.rerun);
+    const notProcessedExperimentDisable = !routeExperimentId && disableIfNoExperiment
+      && (!gem2sRerunStatus || gem2sRerunStatus.rerun);
 
     const pipelineStatusDisable = disabledByPipelineStatus && (
       backendError || gem2sRunning || gem2sRunningError

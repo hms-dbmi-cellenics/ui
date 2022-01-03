@@ -150,8 +150,11 @@ describe('ContentWrapper', () => {
     // Plots and Tables link is disabled
     expect(menus.at(3).props().disabled).toEqual(true);
   });
+
   it.only('Links are enabled if the selected project is processed', async () => {
-    getBackendStatus.mockImplementation(() => () => ({
+    // The selector gets called on each render, so we must make sure the same object
+    // is returned each time.
+    const mockBackendStatus = {
       loading: false,
       error: false,
       status: {
@@ -160,9 +163,12 @@ describe('ContentWrapper', () => {
         },
         gem2s: {
           status: 'SUCCEEDED',
+          paramsHash: false,
         },
       },
-    }));
+    };
+
+    getBackendStatus.mockImplementation(() => () => mockBackendStatus);
 
     const wrapper = await mount(
       <Provider store={store}>
@@ -179,6 +185,7 @@ describe('ContentWrapper', () => {
     await wrapper.update();
 
     const sider = wrapper.find('Sider');
+
     expect(sider.length).toEqual(1);
     const menus = wrapper.find(Menu).children().find(Item);
     const visibleMenuLength = menus.length / 2;
@@ -192,6 +199,7 @@ describe('ContentWrapper', () => {
     expect(menus.at(2).text()).toEqual('Data Exploration');
     expect(menus.at(3).text()).toEqual('Plots and Tables');
   });
+
   it('has the correct sider and layout style when opened / closed', async () => {
     const siderHasWidth = (expectedWidth) => {
       const sider = wrapper.find('Sider');
