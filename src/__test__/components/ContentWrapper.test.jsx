@@ -151,7 +151,7 @@ describe('ContentWrapper', () => {
     expect(menus.at(3).props().disabled).toEqual(true);
   });
 
-  it.only('Links are enabled if the selected project is processed', async () => {
+  it('Links are enabled if the selected project is processed', async () => {
     // The selector gets called on each render, so we must make sure the same object
     // is returned each time.
     const mockBackendStatus = {
