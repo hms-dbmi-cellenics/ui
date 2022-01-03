@@ -11,6 +11,7 @@ import EditableParagraph from 'components/EditableParagraph';
 const defaultProps = {
   value: '',
   onUpdate: jest.fn(),
+  width: 100,
 };
 
 const editableParagraphFactory = createTestComponentFactory(EditableParagraph, defaultProps);
@@ -75,8 +76,6 @@ describe('EdtableParagraph', () => {
     expect(screen.queryByText(/more/i)).toBeInTheDocument();
   });
 
-  // We can not test if the content will be ellipsized properly because
-  // we are useing CSS to create the ellipsis effect
   it('More and less toggles correctly', () => {
     const moreText = 'more';
     const lessText = 'less';
@@ -110,5 +109,27 @@ describe('EdtableParagraph', () => {
     // Toggles to less
     expect(screen.getByText(lessText)).toBeInTheDocument();
     expect(screen.queryByText(moreText)).toBeNull();
+  });
+
+  it('Should always show less and more if not given width', () => {
+    renderEditableParagraph({
+      value: 'This is a mock content',
+      width: null,
+    });
+
+    // It should show the less / more link
+    expect(screen.getByText(/more/i)).toBeInTheDocument();
+    expect(screen.queryByText(/less/i)).toBeNull();
+  });
+
+  it('Should not show less and more if the element is given width but the content is less than the width', () => {
+    renderEditableParagraph({
+      value: 'Short',
+      width: 1000,
+    });
+
+    // It should show the less / more link
+    expect(screen.queryByText(/more/i)).toBeNull();
+    expect(screen.queryByText(/less/i)).toBeNull();
   });
 });
