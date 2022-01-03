@@ -9,7 +9,7 @@ const iv = importedCrypto.randomBytes(16);
 // See for encrypt: https://attacomsian.com/blog/nodejs-encrypt-decrypt-data
 
 const encrypt = (text) => {
-  const cipher = importedCrypto.createCipheriv(algorithm, NON_SECURE_SECRET_KEY, iv);
+  const cipher = importedCrypto.createCipheriv(ENCRYPTION_ALGORITHM, NON_SECURE_SECRET_KEY, iv);
   const encrypted = Buffer.concat([cipher.update(text), cipher.final()]);
 
   return {
@@ -19,7 +19,7 @@ const encrypt = (text) => {
 };
 
 const decrypt = (hash) => {
-  const decipher = importedCrypto.createDecipheriv(algorithm, NON_SECURE_SECRET_KEY, Buffer.from(hash.iv, 'hex'));
+  const decipher = importedCrypto.createDecipheriv(ENCRYPTION_ALGORITHM, NON_SECURE_SECRET_KEY, Buffer.from(hash.iv, 'hex'));
   const decrpyted = Buffer.concat([decipher.update(Buffer.from(hash.content, 'hex')), decipher.final()]);
 
   return decrpyted.toString();
