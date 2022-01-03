@@ -2,7 +2,7 @@ import { screen, render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { act } from 'react-dom/test-utils';
 
-import { Auth } from 'aws-amplify';
+import Auth from '@aws-amplify/auth';
 
 import UserButton from 'components/UserButton';
 import createTestComponentFactory from '__test__/test-utils/testComponentFactory';
@@ -15,14 +15,7 @@ const renderUserButton = async () => {
   });
 };
 
-jest.mock('aws-amplify', () => {
-  const realAmplify = jest.requireActual('aws-amplify');
-
-  return {
-    ...realAmplify,
-    Auth: jest.fn(),
-  };
-});
+jest.mock('@aws-amplify/auth', () => jest.fn());
 
 const userName = 'Mock user';
 
@@ -37,8 +30,8 @@ describe('UserButton', () => {
     jest.clearAllMocks();
 
     Auth.currentAuthenticatedUser = jest.fn(() => Promise.resolve({ attributes: { name: userName } }));
-    Auth.signOut = jest.fn(() => {});
-    Auth.federatedSignIn = jest.fn(() => {});
+    Auth.signOut = jest.fn(() => { });
+    Auth.federatedSignIn = jest.fn(() => { });
   });
 
   it('Shows sign in by default', async () => {

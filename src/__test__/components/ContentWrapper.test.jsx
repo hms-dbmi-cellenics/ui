@@ -1,6 +1,6 @@
 import { mount } from 'enzyme';
 
-import { Auth } from 'aws-amplify';
+import Auth from '@aws-amplify/auth';
 import { Menu } from 'antd';
 import { Provider } from 'react-redux';
 import React from 'react';
@@ -35,11 +35,9 @@ jest.mock('next/router', () => ({
 
 }));
 
-jest.mock('aws-amplify', () => ({
-  Auth: {
-    currentAuthenticatedUser: jest.fn().mockImplementation(async () => true),
-    federatedSignIn: jest.fn(),
-  },
+jest.mock('@aws-amplify/auth', () => ({
+  currentAuthenticatedUser: jest.fn().mockImplementation(async () => true),
+  federatedSignIn: jest.fn(),
 }));
 
 jest.mock('../../utils/AppRouteProvider', () => ({
@@ -77,18 +75,22 @@ describe('ContentWrapper', () => {
       status: {},
     }));
 
-    // eslint-disable-next-line require-await
     const wrapper = await mount(
       <Provider store={store}>
-        <ContentWrapper routeExperimentId={experimentId}>
+        <ContentWrapper routeExperimentId={experimentId} experimentData={{ experimentName: 'test experiment' }}>
           <></>
         </ContentWrapper>
       </Provider>,
     );
+    wrapper.update();
 
-    await wrapper.update();
+    let sider;
+    act(() => {
+      sider = wrapper.find('Sider');
+    });
+    wrapper.update();
 
-    const sider = wrapper.find('Sider');
+    console.log('**** GETTTING HERE ');
     expect(sider.length).toEqual(1);
 
     const menus = wrapper.find(Menu).children().find(Item);
@@ -117,7 +119,7 @@ describe('ContentWrapper', () => {
 
     const wrapper = await mount(
       <Provider store={store}>
-        <ContentWrapper backendStatus={{}}>
+        <ContentWrapper>
           <></>
         </ContentWrapper>
       </Provider>,
@@ -148,30 +150,42 @@ describe('ContentWrapper', () => {
     // Plots and Tables link is disabled
     expect(menus.at(3).props().disabled).toEqual(true);
   });
+
   it('Links are enabled if the selected project is processed', async () => {
-    getBackendStatus.mockImplementation(() => () => ({
+    // The selector gets called on each render, so we must make sure the same object
+    // is returned each time.
+    const mockBackendStatus = {
       loading: false,
       error: false,
       status: {
+        pipeline: {
+          status: 'SUCCEEDED',
+        },
         gem2s: {
           status: 'SUCCEEDED',
           paramsHash: false,
         },
-        pipeline: {
-          status: 'SUCCEEDED',
-        },
       },
-    }));
+    };
+
+    getBackendStatus.mockImplementation(() => () => mockBackendStatus);
 
     const wrapper = await mount(
       <Provider store={store}>
-        <ContentWrapper backendStatus={{}}>
+        <ContentWrapper>
           <></>
         </ContentWrapper>
       </Provider>,
     );
+
+    // Run two cycles of updates so "should gem2s rerun" information
+    // can propagate to the render. This should be refactored into a
+    // react-testing-library test when possible.
     await wrapper.update();
+    await wrapper.update();
+
     const sider = wrapper.find('Sider');
+
     expect(sider.length).toEqual(1);
     const menus = wrapper.find(Menu).children().find(Item);
     const visibleMenuLength = menus.length / 2;
@@ -185,6 +199,7 @@ describe('ContentWrapper', () => {
     expect(menus.at(2).text()).toEqual('Data Exploration');
     expect(menus.at(3).text()).toEqual('Plots and Tables');
   });
+
   it('has the correct sider and layout style when opened / closed', async () => {
     const siderHasWidth = (expectedWidth) => {
       const sider = wrapper.find('Sider');

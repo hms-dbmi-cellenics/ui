@@ -1,6 +1,6 @@
 const importedCrypto = require('crypto');
 
-const algorithm = 'aes-256-ctr';
+const ENCRYPTION_ALGORITHM = 'aes-256-ctr';
 const NON_SECURE_SECRET_KEY = 'vOVH6sdmpNWjRRIqCc7rdxs01lwHzfr3'; // pragma: allowlist secret
 const iv = importedCrypto.randomBytes(16);
 
@@ -10,7 +10,6 @@ const iv = importedCrypto.randomBytes(16);
 
 const encrypt = (text) => {
   const cipher = importedCrypto.createCipheriv(algorithm, NON_SECURE_SECRET_KEY, iv);
-
   const encrypted = Buffer.concat([cipher.update(text), cipher.final()]);
 
   return {
@@ -21,7 +20,6 @@ const encrypt = (text) => {
 
 const decrypt = (hash) => {
   const decipher = importedCrypto.createDecipheriv(algorithm, NON_SECURE_SECRET_KEY, Buffer.from(hash.iv, 'hex'));
-
   const decrpyted = Buffer.concat([decipher.update(Buffer.from(hash.content, 'hex')), decipher.final()]);
 
   return decrpyted.toString();
