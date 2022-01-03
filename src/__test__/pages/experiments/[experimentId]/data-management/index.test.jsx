@@ -23,6 +23,7 @@ import { exampleDatasets } from 'components/data-management/SamplesTable';
 import userEvent from '@testing-library/user-event';
 import { setActiveProject } from 'redux/actions/projects';
 
+jest.mock('utils/data-management/generateGem2sParamsHash');
 jest.mock('utils/data-management/downloadFromUrl');
 jest.mock('react-resize-detector', () => (props) => props.children({ width: 100, height: 100 }));
 

@@ -127,11 +127,11 @@ const ContentWrapper = (props) => {
   const [gem2sRerunStatus, setGem2sRerunStatus] = useState(null);
 
   useEffect(() => {
-    const gem2sStatus = calculateGem2sRerunStatus(
+    calculateGem2sRerunStatus(
       gem2sBackendStatus, activeProject, samples, experiment,
-    );
-
-    setGem2sRerunStatus(gem2sStatus);
+    ).then((gem2sStatus) => {
+      setGem2sRerunStatus(gem2sStatus);
+    });
   }, [gem2sBackendStatus, activeProject, samples, experiment]);
 
   useEffect(() => {

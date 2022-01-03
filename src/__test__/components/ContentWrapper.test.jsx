@@ -126,6 +126,8 @@ describe('ContentWrapper', () => {
     );
 
     await wrapper.update();
+    await wrapper.update();
+    await wrapper.update();
 
     const sider = wrapper.find('Sider');
     expect(sider.length).toEqual(1);
