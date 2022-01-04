@@ -88,7 +88,6 @@ const AdvancedFilteringModal = (props) => {
                     <Space direction='horizontal'>
                       <Form.Item
                         name={[field.name, 'criteria']}
-                        fieldKey={[field.fieldKey, 'criteria']}
                       >
                         <Select
                           placeholder='Select criteria'
@@ -100,7 +99,6 @@ const AdvancedFilteringModal = (props) => {
 
                       <Form.Item
                         name={[field.name, 'condition']}
-                        fieldKey={[field.fieldKey, 'condition']}
                       >
                         <Select
                           placeholder='Select condition'
@@ -111,8 +109,7 @@ const AdvancedFilteringModal = (props) => {
 
                       <Form.Item
                         name={[field.name, 'value']}
-                        fieldKey={[field.value, 'value']}
-                        key
+
                       >
                         <InputNumber
                           style={{ width: 140 }}
