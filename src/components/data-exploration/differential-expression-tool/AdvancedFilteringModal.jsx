@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   Modal, Form, Button, Space, Select, InputNumber, Dropdown, Menu, Tooltip,
 } from 'antd';
@@ -8,7 +8,6 @@ import { CloseOutlined, PlusOutlined } from '@ant-design/icons';
 const AdvancedFilteringModal = (props) => {
   const { onCancel } = props;
   const [form] = Form.useForm();
-  const [valuesDomain, setValuesDomain] = useState([]);
 
   const criteriaOptions = [
     { value: 'logfc', label: 'logFC' },
@@ -56,7 +55,6 @@ const AdvancedFilteringModal = (props) => {
     <Menu
       onClick={(e) => {
         add(presetFilters[e.key]);
-        changeCriteria(presetFilters[e.key].criteria);
       }}
     >
       {Object.keys(presetFilters).map((filter) => (
@@ -66,19 +64,6 @@ const AdvancedFilteringModal = (props) => {
       ))}
     </Menu>
   );
-
-  const changeCriteria = (criteria, index = null) => {
-    let currentIndex = index;
-    if (index === null) {
-      const { filterForm } = form.getFieldsValue();
-      currentIndex = filterForm.length - 1;
-    }
-    const currentDomains = valuesDomain;
-    currentDomains[currentIndex] = valueRestrictions[criteria];
-    setValuesDomain(currentDomains);
-    // without the next line the form does not re-render, so the max and min values are not updated
-    form.setFieldsValue({});
-  };
 
   return (
     <Modal
@@ -96,48 +81,48 @@ const AdvancedFilteringModal = (props) => {
         >
           {(fields, { add, remove }) => (
             <>
-              {fields.map((field, index) => (
-                <Space key={field.key} align='baseline'>
-                  <Space direction='horizontal'>
-                    <Form.Item
-                      name={[field.name, 'criteria']}
-                      fieldKey={[field.criteria, 'criteria']}
-                    >
-                      <Select
-                        placeholder='Select criteria'
-                        style={{ width: 140 }}
-                        onChange={(value) => changeCriteria(value, index)}
-                        options={criteriaOptions}
-                      />
-                    </Form.Item>
+              {fields.map((field, index) => {
+                const { criteria } = form.getFieldValue('filterForm')[index];
+                return (
+                  <Space key={field.key} align='baseline'>
+                    <Space direction='horizontal'>
+                      <Form.Item
+                        name={[field.name, 'criteria']}
+                      >
+                        <Select
+                          placeholder='Select criteria'
+                          style={{ width: 140 }}
+                          onChange={() => form.setFieldsValue({})}
+                          options={criteriaOptions}
+                        />
+                      </Form.Item>
 
-                    <Form.Item
-                      name={[field.name, 'condition']}
-                      fieldKey={[field.condition, 'condition']}
-                    >
-                      <Select
-                        placeholder='Select condition'
-                        options={conditionOptions}
-                        style={{ width: 150 }}
-                      />
-                    </Form.Item>
+                      <Form.Item
+                        name={[field.name, 'condition']}
+                      >
+                        <Select
+                          placeholder='Select condition'
+                          options={conditionOptions}
+                          style={{ width: 150 }}
+                        />
+                      </Form.Item>
 
-                    <Form.Item
-                      name={[field.name, 'value']}
-                      fieldKey={[field.value, 'value']}
-                    >
-                      <InputNumber
-                        style={{ width: 140 }}
-                        min={valuesDomain[index] ? valuesDomain[index][0] : 0}
-                        max={valuesDomain[index] ? valuesDomain[index][1] : 0}
-                        placeholder='Insert value'
-                      />
-                    </Form.Item>
+                      <Form.Item
+                        name={[field.name, 'value']}
+                      >
+                        <InputNumber
+                          style={{ width: 140 }}
+                          min={criteria ? valueRestrictions[criteria][0] : 0}
+                          max={criteria ? valueRestrictions[criteria][1] : 0}
+                          placeholder='Insert value'
+                        />
+                      </Form.Item>
+                    </Space>
+
+                    <CloseOutlined onClick={() => remove(field.name)} />
                   </Space>
-
-                  <CloseOutlined onClick={() => remove(field.name)} />
-                </Space>
-              ))}
+                );
+              })}
 
               <Space direction='horizontal'>
                 <Button onClick={add} icon={<PlusOutlined />}>
