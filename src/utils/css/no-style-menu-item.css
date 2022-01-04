@@ -1,0 +1,10 @@
+.no-style-menu-item:hover {
+  border-bottom: 0px solid transparent !important;
+  color: inherit !important;
+  background-color: inherit !important;
+}
+
+.no-style-menu-item {
+  margin: 0px;
+  padding: 0px;
+}

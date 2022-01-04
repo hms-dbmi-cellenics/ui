@@ -31,7 +31,8 @@ const HeatmapMetadataTrackSettings = (props) => {
   const hierarchy = useSelector(getCellSetsHierarchy());
 
   const selectedTracks = useSelector(
-    (state) => state.componentConfig[componentType].config.selectedTracks,
+    (state) => state.componentConfig[componentType]?.config?.selectedTracks,
+    _.isEqual,
   );
 
   const [listData, setListData] = useState([]);
