@@ -14,6 +14,7 @@ import loadDifferentialExpression from 'redux/actions/differentialExpression/loa
 import { getCellSets } from 'redux/selectors';
 import { geneTableUpdateReason } from 'utils/geneTable/geneTableUpdateReason';
 import GeneTable from '../generic-gene-table/GeneTable';
+import AdvancedFilteringModal from './AdvancedFilteringModal';
 
 const { Text } = Typography;
 
@@ -33,6 +34,7 @@ const DiffExprResults = (props) => {
   const [dataShown, setDataShown] = useState(data);
   const [exportAlert, setExportAlert] = useState(false);
   const [settingsListed, setSettingsListed] = useState(false);
+  const [advancedFilteringShown, setAdvancedFilteringShown] = useState(false);
 
   const columns = [
     {
@@ -156,12 +158,22 @@ const DiffExprResults = (props) => {
           </span>
         </Button>
         {renderExportAlert()}
-        <Button id='settingsButton' onClick={() => setSettingsListed(!settingsListed)}>
-          {settingsListed ? 'Hide' : 'Show'}
-          {' '}
-          settings
-        </Button>
+        <Space direction='horizontal'>
+          <Button id='settingsButton' onClick={() => setSettingsListed(!settingsListed)}>
+            {settingsListed ? 'Hide' : 'Show'}
+            {' '}
+            settings
+          </Button>
+          <Button onClick={() => setAdvancedFilteringShown(!advancedFilteringShown)}>
+            Advanced filtering
+          </Button>
+        </Space>
       </Space>
+      {advancedFilteringShown && (
+        <AdvancedFilteringModal
+          onCancel={() => setAdvancedFilteringShown(false)}
+        />
+      )}
       {settingsListed
         ? (
           <div id='settingsText'>
