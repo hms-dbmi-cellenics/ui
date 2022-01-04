@@ -5,18 +5,14 @@ import {
   EditOutlined,
 } from '@ant-design/icons';
 
-// Character width depends on the font-size.
-const CHAR_WIDTH = 11; // px;
-
 const EditableParagraph = (props) => {
-  const { onUpdate, value, width } = props;
+  const { onUpdate, value } = props;
 
   const paragraphEditor = useRef();
 
   const [text, setText] = useState(value);
   const [isExpanded, setIsExpanded] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const [charCountBreakpoint, setCharCountBreakpoint] = useState(0);
 
   useEffect(() => {
     if (isEditing) {
@@ -27,11 +23,6 @@ const EditableParagraph = (props) => {
   useEffect(() => {
     setText(value);
   }, [value]);
-
-  useEffect(() => {
-    if (!width) return;
-    setCharCountBreakpoint(width / CHAR_WIDTH);
-  }, [width]);
 
   const handleUpdate = (e) => {
     const content = e.target.textContent;
@@ -76,10 +67,7 @@ const EditableParagraph = (props) => {
   const renderControls = () => (
     <>
       { renderEditButton() }
-      {
-        !charCountBreakpoint ? renderEllipsisLink()
-          : text.length > charCountBreakpoint ? renderEllipsisLink() : <></>
-      }
+      { text.length ? renderEllipsisLink() : <></>}
     </>
   );
 
@@ -117,11 +105,6 @@ const EditableParagraph = (props) => {
 EditableParagraph.propTypes = {
   value: PropTypes.string.isRequired,
   onUpdate: PropTypes.func.isRequired,
-  width: PropTypes.number,
-};
-
-EditableParagraph.defaultProps = {
-  width: null,
 };
 
 export default EditableParagraph;

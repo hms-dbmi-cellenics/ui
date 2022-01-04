@@ -63,7 +63,6 @@ const ProjectDetails = ({ width, height }) => {
             Description:
           </Text>
           <EditableParagraph
-            width={width}
             value={activeProject.description}
             onUpdate={(text) => {
               if (text !== activeProject.description) {
