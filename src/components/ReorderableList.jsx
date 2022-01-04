@@ -57,6 +57,7 @@ const ReorderableList = (props) => {
       disabled={
         reorderableList[currentPosition].disabledReorder
         || currentPosition === 0
+        || reorderableList[currentPosition - 1].disabledReorder
       }
       icon={<UpOutlined />}
       style={{ marginLeft: '5px' }}
@@ -73,6 +74,7 @@ const ReorderableList = (props) => {
       disabled={
         reorderableList[currentPosition].disabledReorder
         || currentPosition === reorderableList.length - 1
+        || reorderableList[currentPosition + 1].disabledReorder
       }
       icon={<DownOutlined />}
       style={{ marginRight: '5px' }}
