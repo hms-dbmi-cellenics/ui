@@ -11,7 +11,6 @@ import EditableParagraph from 'components/EditableParagraph';
 const defaultProps = {
   value: '',
   onUpdate: jest.fn(),
-  width: 100,
 };
 
 const editableParagraphFactory = createTestComponentFactory(EditableParagraph, defaultProps);
