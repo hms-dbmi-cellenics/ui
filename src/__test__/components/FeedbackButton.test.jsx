@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom';
-import 'aws-amplify';
+import Auth from '@aws-amplify/auth';
 import '__test__/test-utils/setupTests';
 
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
@@ -10,21 +10,24 @@ import {
   waitFor,
 } from '@testing-library/react';
 
-import FeedbackButton from '../../components/FeedbackButton';
 import React from 'react';
+import FeedbackButton from '../../components/FeedbackButton';
 import endUserMessages from '../../utils/endUserMessages';
 import pushNotificationMessage from '../../utils/pushNotificationMessage';
 
-jest.mock('aws-amplify', () => ({
-  Auth: {
-    currentAuthenticatedUser: jest.fn().mockImplementation(async () => ({
-      username: 'mockuser',
-      attributes: {
-        email: 'mock@user.name',
-        name: 'Mocked User',
-      },
-    })),
-  },
+jest.mock('', () => ({
+  currentAuthenticatedUser: jest.fn().mockImplementation(async () => true),
+  federatedSignIn: jest.fn(),
+}));
+
+jest.mock('@aws-amplify/auth', () => ({
+  currentAuthenticatedUser: jest.fn().mockImplementation(async () => ({
+    username: 'mockuser',
+    attributes: {
+      email: 'mock@user.name',
+      name: 'Mocked User',
+    },
+  })),
 }));
 
 enableFetchMocks();
