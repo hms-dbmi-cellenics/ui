@@ -140,11 +140,11 @@ const AdvancedFilteringModal = (props) => {
               ))}
 
               <Space direction='horizontal'>
-                <Button onClick={add} block icon={<PlusOutlined />}>
+                <Button onClick={add} icon={<PlusOutlined />}>
                   Add custom filter
                 </Button>
                 <Dropdown overlay={renderPresetFilters(add)}>
-                  <Button>
+                  <Button icon={<PlusOutlined />}>
                     Add preset filter
                   </Button>
                 </Dropdown>
