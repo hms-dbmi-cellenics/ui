@@ -71,7 +71,7 @@ const AdvancedFilteringModal = (props) => {
       title='Advanced filters'
       onCancel={onCancel}
       // remove next line once the functionality is implemented
-      footer={[<Tooltip title='Feature coming soon!'><Button disabled>Apply filters</Button></Tooltip>]}
+      footer={[<Tooltip key='tooltip' title='Feature coming soon!'><Button disabled>Apply filters</Button></Tooltip>]}
       okText='Apply filters'
     >
       <Form form={form}>
@@ -88,6 +88,7 @@ const AdvancedFilteringModal = (props) => {
                     <Space direction='horizontal'>
                       <Form.Item
                         name={[field.name, 'criteria']}
+                        fieldKey={[field.fieldKey, 'criteria']}
                       >
                         <Select
                           placeholder='Select criteria'
@@ -99,6 +100,7 @@ const AdvancedFilteringModal = (props) => {
 
                       <Form.Item
                         name={[field.name, 'condition']}
+                        fieldKey={[field.fieldKey, 'condition']}
                       >
                         <Select
                           placeholder='Select condition'
@@ -109,9 +111,12 @@ const AdvancedFilteringModal = (props) => {
 
                       <Form.Item
                         name={[field.name, 'value']}
+                        fieldKey={[field.value, 'value']}
+                        key
                       >
                         <InputNumber
                           style={{ width: 140 }}
+                          step={criteria ? valueRestrictions[criteria][1] / 100 : 1}
                           min={criteria ? valueRestrictions[criteria][0] : 0}
                           max={criteria ? valueRestrictions[criteria][1] : 0}
                           placeholder='Insert value'
