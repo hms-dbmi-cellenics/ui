@@ -86,7 +86,7 @@ const AdvancedFilteringModal = (props) => {
       title='Advanced filters'
       onCancel={onCancel}
       // remove next line once the functionality is implemented
-      footer={[<Tooltip title='coming soon'><Button disabled>Apply filters</Button></Tooltip>]}
+      footer={[<Tooltip title='Feature coming soon!'><Button disabled>Apply filters</Button></Tooltip>]}
       okText='Apply filters'
     >
       <Form form={form}>
