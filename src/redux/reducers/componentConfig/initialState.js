@@ -71,7 +71,9 @@ const embeddingContinuousInitialConfig = {
   marker: markerBaseState,
   labels: labelBaseState,
   logEquation: 'datum.expression*1',
-  shownGene: 'notSelected',
+  shownGene: null,
+  expressionValue: 'raw',
+  truncatedValues: true,
   selectedSample: 'All',
 };
 
@@ -103,7 +105,7 @@ const heatmapInitialConfig = {
   selectedTracks: ['louvain'],
   groupedTracks: ['sample', 'louvain'],
   expressionValue: 'raw',
-  truncatedValues: false,
+  truncatedValues: true,
 };
 
 // PLOTS & TABLES - Marker heatmap

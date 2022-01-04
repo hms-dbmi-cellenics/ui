@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Auth } from 'aws-amplify';
+import Auth from '@aws-amplify/auth';
 import _ from 'lodash';
 import {
   Form, Input, Empty, PageHeader, Card, Row, Col, Button, Space,
@@ -53,7 +53,7 @@ const ProfileSettings = () => {
       setOldPasswordError(false);
       setNewPasswordError(false);
 
-      //this should be updated in the case of changing the AWS Cognito password strength policy
+      // this should be updated in the case of changing the AWS Cognito password strength policy
       const passwordValidity = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{8,}$/;
 
       if (confirmNewPassword !== newPassword) {

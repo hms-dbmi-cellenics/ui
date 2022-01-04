@@ -45,12 +45,12 @@ describe('Continuous embedding plot', () => {
       ...initialEmbeddingState,
       umap: {
         data: [
-          [1, 2],
-          [3, 4],
-          [5, 6],
-          [7, 8],
-          [9, 10],
-          [11, 12],
+          [0, 1],
+          [2, 3],
+          [4, 5],
+          [6, 7],
+          [8, 9],
+          [10, 11],
         ],
         loading: false,
         error: false,
@@ -68,7 +68,7 @@ describe('Continuous embedding plot', () => {
             mean: 3.5,
             stdev: 1.870828693387,
             expression: [
-              1, 2, 3, 4, 5, 6,
+              0, 1, 2, 3, 4, 5,
             ],
           },
         },
@@ -78,12 +78,16 @@ describe('Continuous embedding plot', () => {
       ...initialExperimentState,
     },
   };
+
   beforeEach(() => {
     jest.clearAllMocks();
     changeEmbeddingAxesIfNecessary.mockImplementation(() => ({}));
   });
+
   it('shows spinner when data is still loading', () => {
     const store = mockStore(mockedStore);
+
+    const plotData = mockedStore.genes.expression.data[shownGene].expression;
 
     const component = mount(
       <Provider store={store}>
@@ -91,7 +95,8 @@ describe('Continuous embedding plot', () => {
           experimentId={experimentId}
           config={config}
           plotUuid={plotUuid}
-          plotData={mockedStore.genes.expression.data[shownGene].expression}
+          truncatedPlotData={plotData}
+          plotData={plotData}
           loading
           error={mockedStore.genes.expression.error}
           onUpdate={mockOnUpdate}
@@ -109,13 +114,16 @@ describe('Continuous embedding plot', () => {
   it('renders correctly when data is in the store', () => {
     const store = mockStore(mockedStore);
 
+    const plotData = mockedStore.genes.expression.data[shownGene].expression;
+
     const component = mount(
       <Provider store={store}>
         <ContinuousEmbeddingPlot
           experimentId={experimentId}
           config={config}
           plotUuid={plotUuid}
-          plotData={mockedStore.genes.expression.data[shownGene].expression}
+          truncatedPlotData={plotData}
+          plotData={plotData}
           loading={false}
           error={mockedStore.genes.expression.error}
           onUpdate={mockOnUpdate}

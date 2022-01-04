@@ -14,6 +14,12 @@ import { fromTokenFile } from '@aws-sdk/credential-provider-web-identity';
 import configure from '../amplify-config';
 
 const getAuthenticationInfo = async () => {
+  // We use Node's `global` as a store for caching the results on the server-side.
+  // Once we grab the cognito pool information there is no need to re-fetch again.
+  if (global.cachedAuthenticationInfo) {
+    return global.cachedAuthenticationInfo;
+  }
+
   let additionalClientParams = {};
 
   if (process.env.NODE_ENV !== 'development') {
@@ -57,12 +63,13 @@ const getAuthenticationInfo = async () => {
    * local development.
    */
   const k8sEnv = process.env.K8S_ENV || 'staging';
+  const userPoolName = `biomage-user-pool-case-insensitive-${k8sEnv}`;
 
   const identityPoolId = IdentityPools.find(
     (pool) => pool.IdentityPoolName.includes(`${k8sEnv}-${sandboxId}`),
   ).IdentityPoolId;
 
-  const userPoolId = UserPools.find((pool) => pool.Name.includes(k8sEnv)).Id;
+  const userPoolId = UserPools.find((pool) => pool.Name === userPoolName).Id;
 
   const { UserPoolClients } = await userPoolClient.send(
     new ListUserPoolClientsCommand({ UserPoolId: userPoolId, MaxResults: 60 }),
@@ -87,9 +94,13 @@ const getAuthenticationInfo = async () => {
     { ...userPoolClientDetails, Domain: `${Domain}.auth.eu-west-1.amazoncognito.com` },
   );
 
-  return {
+  const result = {
     amplifyConfig,
   };
+
+  global.cachedAuthenticationInfo = result;
+
+  return result;
 };
 
 export default getAuthenticationInfo;

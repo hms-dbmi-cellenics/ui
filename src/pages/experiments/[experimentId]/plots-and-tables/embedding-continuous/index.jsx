@@ -1,10 +1,14 @@
 /* eslint-disable no-param-reassign */
 import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
+import { useSelector, useDispatch } from 'react-redux';
+
 import {
   Row, Col, Space, Collapse,
 } from 'antd';
-import { useSelector, useDispatch } from 'react-redux';
-import PropTypes from 'prop-types';
+
+import _ from 'lodash';
+
 import PlotStyling from 'components/plots/styling/PlotStyling';
 import SelectData from 'components/plots/styling/embedding-continuous/SelectData';
 import {
@@ -58,8 +62,9 @@ const ContinuousEmbeddingPage = ({ experimentId }) => {
   const [searchedGene, setSearchedGene] = useState();
 
   useEffect(() => {
-    if (config?.shownGene !== 'notSelected' && config && !searchedGene) {
-      // if there is a saved gene in the config in the initial loading of the plot
+    if (!_.isNil(config?.shownGene) && !searchedGene) {
+      // Loads expression for saved gene in the config in the initial loading of the plot
+      // if a new gene wasn't searched for
       dispatch(loadGeneExpression(experimentId, [config.shownGene], plotUuid));
     }
   }, [config?.shownGene]);
@@ -76,12 +81,12 @@ const ContinuousEmbeddingPage = ({ experimentId }) => {
     }
   }, [searchedGene]);
 
-  if (config?.shownGene === 'notSelected' && !fetching && !highestDispersionGene) {
+  if (config?.shownGene === null && !fetching && !highestDispersionGene) {
     dispatch(loadPaginatedGeneProperties(experimentId, PROPERTIES, plotUuid, tableState));
   }
 
   useEffect(() => {
-    if (config?.shownGene === 'notSelected' && highestDispersionGene) {
+    if (config?.shownGene === null && highestDispersionGene) {
       updatePlotWithChanges({ shownGene: highestDispersionGene });
       dispatch(loadGeneExpression(experimentId, [highestDispersionGene], plotUuid));
     }

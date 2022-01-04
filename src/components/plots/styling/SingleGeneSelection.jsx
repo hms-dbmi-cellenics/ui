@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Input, Skeleton } from 'antd';
 
@@ -11,15 +11,28 @@ const SingleGeneSelection = (props) => {
     setSearchedGene(geneNameNoSpaces);
   };
 
-  if (!config) {
-    return <Skeleton.Input style={{ width: 200 }} active />;
+  const [localShownGene, setLocalShownGene] = useState(config?.shownGene);
+
+  useEffect(() => {
+    if (!config?.shownGene) return;
+
+    setLocalShownGene(config.shownGene);
+  }, [config?.shownGene]);
+
+  if (!config?.shownGene) {
+    return (
+      <div data-testid='skeletonInput'>
+        <Skeleton.Input style={{ width: 200 }} active />
+      </div>
+    );
   }
 
   return (
     <Search
       style={{ width: '100%' }}
       enterButton='Search'
-      defaultValue={config.shownGene}
+      value={localShownGene}
+      onChange={(e) => { setLocalShownGene(e.target.value); }}
       onSearch={(val) => changeDisplayedGene(val)}
     />
   );
