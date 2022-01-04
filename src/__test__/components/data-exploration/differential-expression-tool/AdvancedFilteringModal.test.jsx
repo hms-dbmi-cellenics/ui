@@ -53,6 +53,6 @@ describe('Advanced filtering modal', () => {
     upregulatedButton.click();
     expect(screen.getAllByRole('combobox').length).toEqual(2);
     expect(screen.getByText('logFC')).toBeInTheDocument();
-    expect(screen.getByPlaceholderText('Insert value').value).toEqual('0');
+    expect(screen.getByPlaceholderText('Insert value').value).toEqual('0.0');
   });
 });
