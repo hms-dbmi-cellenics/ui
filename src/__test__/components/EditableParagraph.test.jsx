@@ -75,6 +75,8 @@ describe('EdtableParagraph', () => {
     expect(screen.queryByText(/more/i)).toBeInTheDocument();
   });
 
+  // We can not test if the content will be ellipsized properly because
+  // we are useing CSS to create the ellipsis effect
   it('More and less toggles correctly', () => {
     const moreText = 'more';
     const lessText = 'less';
