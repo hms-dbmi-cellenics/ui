@@ -26,30 +26,17 @@ const componentType = 'interactiveHeatmap';
 
 let storeState = null;
 const loadAndRenderDefault = async () => {
-  console.log('HOLA1');
   enableFetchMocks();
-  console.log('HOLA2');
   fetchMock.resetMocks();
-  console.log('HOLA3');
   fetchMock.doMock();
-
-  console.log('HOLA4');
 
   fetchMock.mockIf(/.*/, mockAPI(generateDefaultMockAPIResponses(fake.EXPERIMENT_ID, fake.PROJECT_ID)));
 
-  console.log('HOLA5');
-
   storeState = makeStore();
-
-  console.log('HOLA6');
 
   await storeState.dispatch(loadCellSets(fake.EXPERIMENT_ID));
 
-  console.log('HOLA7');
-
   await storeState.dispatch(loadComponentConfig(fake.EXPERIMENT_ID, componentType, componentType));
-
-  console.log('HOLA8');
 
   await act(async () => {
     render(
@@ -87,30 +74,20 @@ describe('HeatmapMetadataTrackSettings', () => {
   it('Can enable and reorder correctly', async () => {
     await loadAndRenderDefault();
 
-    console.log('HOLA10');
-
     let items = screen.getAllByTestId('reorderableListItem');
-
-    console.log('HOLA11');
 
     // When samples is enabled
     act(() => {
       userEvent.click(within(items[2]).getByRole('switch'));
     });
 
-    console.log('HOLA12');
-
     items = screen.getAllByTestId('reorderableListItem');
-
-    console.log('HOLA13');
 
     checkReorderableListState(
       ['louvain clusters', 'Samples', 'Custom cell sets'],
       [true, true, false],
       items,
     );
-
-    console.log('HOLA14');
 
     // When louvain is moved down
     act(() => {
@@ -135,8 +112,6 @@ describe('HeatmapMetadataTrackSettings', () => {
 
       userEvent.click(downButton);
     });
-
-    console.log('HOLA15');
 
     items = screen.getAllByTestId('reorderableListItem');
 
