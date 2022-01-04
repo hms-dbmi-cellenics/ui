@@ -15,10 +15,9 @@ describe('Advanced filtering modal', () => {
 
   it('Renders properly', () => {
     renderAdvancedFilteringModal();
-    expect(screen.getByText('Add filter')).toBeInTheDocument();
-    expect(screen.getByText('Cancel')).toBeInTheDocument();
+    expect(screen.getByText('Add custom filter')).toBeInTheDocument();
     expect(screen.getByText('Apply filters')).toBeInTheDocument();
-    expect(screen.getByText('Preset filters')).toBeInTheDocument();
+    expect(screen.getByText('Add preset filter')).toBeInTheDocument();
     const closeButton = screen.getAllByLabelText('close')[0];
     closeButton.click();
     expect(onCancel).toHaveBeenCalled();
@@ -26,7 +25,7 @@ describe('Advanced filtering modal', () => {
 
   it('Add filter button adds new form items', () => {
     renderAdvancedFilteringModal();
-    const addFilterButton = screen.getByText('Add filter');
+    const addFilterButton = screen.getByText('Add custom filter');
     addFilterButton.click();
     expect(screen.getAllByRole('combobox').length).toEqual(2);
     expect(screen.getByPlaceholderText('Insert value')).toBeInTheDocument();
@@ -37,7 +36,7 @@ describe('Advanced filtering modal', () => {
 
   it('Close button removes items from the list', () => {
     renderAdvancedFilteringModal();
-    const addFilterButton = screen.getByText('Add filter');
+    const addFilterButton = screen.getByText('Add custom filter');
     addFilterButton.click();
     addFilterButton.click();
     expect(screen.getAllByRole('combobox').length).toEqual(4);
@@ -48,7 +47,7 @@ describe('Advanced filtering modal', () => {
 
   it('Preset filters button adds a preset filter', async () => {
     renderAdvancedFilteringModal();
-    const presetFiltersButton = screen.getByText('Preset filters');
+    const presetFiltersButton = screen.getByText('Add preset filter');
     fireEvent.mouseOver(presetFiltersButton);
     const upregulatedButton = await waitFor(() => screen.getByText('Up-regulated'));
     upregulatedButton.click();

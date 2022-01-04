@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import {
-  Modal, Form, Button, Space, Select, InputNumber, Dropdown, Menu,
+  Modal, Form, Button, Space, Select, InputNumber, Dropdown, Menu, Tooltip,
 } from 'antd';
 import PropTypes from 'prop-types';
 import { CloseOutlined, PlusOutlined } from '@ant-design/icons';
@@ -85,6 +85,8 @@ const AdvancedFilteringModal = (props) => {
       visible
       title='Advanced filters'
       onCancel={onCancel}
+      // remove next line once the functionality is implemented
+      footer={[<Tooltip title='coming soon'><Button disabled>Apply filters</Button></Tooltip>]}
       okText='Apply filters'
     >
       <Form form={form}>
@@ -139,11 +141,11 @@ const AdvancedFilteringModal = (props) => {
 
               <Space direction='horizontal'>
                 <Button onClick={add} block icon={<PlusOutlined />}>
-                  Add filter
+                  Add custom filter
                 </Button>
                 <Dropdown overlay={renderPresetFilters(add)}>
                   <Button>
-                    Preset filters
+                    Add preset filter
                   </Button>
                 </Dropdown>
               </Space>
