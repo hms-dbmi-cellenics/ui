@@ -1,7 +1,6 @@
 import React from 'react';
 import { mount } from 'enzyme';
 import _ from 'lodash';
-import preloadAll from 'jest-next-dynamic';
 import { Button, Typography } from 'antd';
 import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
@@ -127,8 +126,8 @@ describe('SelectionIndicator', () => {
     const button = component.find(Button);
     const text = component.find(Text);
 
-    // There should be one button.
-    expect(button.length).toEqual(1);
+    // There should be two buttons.
+    expect(button.length).toEqual(2);
 
     // An 'export as csv...' button
     expect(button.at(0).childAt(0).text()).toEqual('Export as CSV ...');
@@ -151,12 +150,12 @@ describe('SelectionIndicator', () => {
       </Provider>,
     );
 
-    const button = component.find(Button);
+    const buttons = component.find(Button);
 
     // There should be one button.
-    expect(button.length).toEqual(1);
+    expect(buttons.length).toEqual(2);
 
-    button.simulate('click');
+    buttons.at(0).simulate('click');
     expect(mockCallback).toHaveBeenCalledTimes(1);
   });
 
@@ -177,7 +176,7 @@ describe('SelectionIndicator', () => {
     const text = component.find(Text);
 
     // There should be four buttons.
-    expect(button.length).toEqual(4);
+    expect(button.length).toEqual(5);
 
     // A clear button
     expect(button.at(0).childAt(0).text()).toEqual('Clear');
