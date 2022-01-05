@@ -10,6 +10,7 @@ import { CheckCircleOutlined } from '@ant-design/icons';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import { changeGeneSelection } from '../../../redux/actions/genes';
 import GeneSelectionStatus from '../../../redux/actions/genes/geneSelectionStatus';
+import PathwayAnalysisModal from '../differential-expression-tool/PathwayAnalysisModal';
 
 const { Text } = Typography;
 
@@ -22,6 +23,7 @@ const SelectionActions = (props) => {
   const selectedGenes = useSelector((state) => state.genes.selected);
   const [copied, setCopied] = useState(false);
   const [listed, setListed] = useState(false);
+  const [pathAnModalShown, setPathAnModalShown] = useState(false);
 
   const clearAll = () => {
     dispatch(changeGeneSelection(experimentId, selectedGenes, GeneSelectionStatus.deselect));
@@ -91,10 +93,13 @@ const SelectionActions = (props) => {
 
       {
         showCSV ? (
-          <Button type='link' size='small' onClick={onExportCSV}>Export as CSV ...</Button>
+          <>
+            <Button type='link' size='small' onClick={onExportCSV}>Export as CSV ...</Button>
+            <Button type='link' size='small' onClick={() => setPathAnModalShown(!pathAnModalShown)}>Pathway analysis</Button>
+          </>
         ) : <></>
       }
-
+      {pathAnModalShown && (<PathwayAnalysisModal onCancel={() => setPathAnModalShown(false)} />)}
     </Space>
   );
 };
