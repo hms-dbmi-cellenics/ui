@@ -172,37 +172,7 @@ const HeatmapPlot = (props) => {
     setVitessceData(heatmapData);
   }, [heatmapData]);
 
-  if (markerGenesLoadingError) {
-    return (
-      <PlatformError
-        error={expressionDataError}
-        onClick={() => {
-          const nMarkerGenes = calculateIdealNMarkerGenes(louvainClusterCount);
-
-          dispatch(loadMarkerGenes(
-            experimentId, louvainClustersResolution,
-            COMPONENT_TYPE, nMarkerGenes,
-          ));
-        }}
-      />
-    );
-  }
-
-  if (expressionDataError || viewError) {
-    return (
-      <PlatformError
-        error={expressionDataError}
-        onClick={async () => {
-          dispatch(loadGeneExpression(experimentId, selectedGenes, COMPONENT_TYPE));
-        }}
-      />
-    );
-  }
-
-  if (
-    isHeatmapGenesLoading
-    || cellSetsLoading
-  ) {
+  if (isHeatmapGenesLoading || cellSetsLoading) {
     return (
       <center>
         <Loader experimentId={experimentId} />
@@ -210,7 +180,29 @@ const HeatmapPlot = (props) => {
     );
   }
 
-  if (!selectedGenes || selectedGenes.length === 0) {
+  if (markerGenesLoadingError || expressionDataError || viewError) {
+    return (
+      <PlatformError
+        error={expressionDataError}
+        onClick={() => {
+          if (markerGenesLoadingError) {
+            const nMarkerGenes = calculateIdealNMarkerGenes(louvainClusterCount);
+
+            dispatch(loadMarkerGenes(
+              experimentId, louvainClustersResolution,
+              COMPONENT_TYPE, nMarkerGenes,
+            ));
+          }
+
+          if ((expressionDataError || viewError) && !_.isNil(selectedGenes)) {
+            dispatch(loadGeneExpression(experimentId, selectedGenes, COMPONENT_TYPE));
+          }
+        }}
+      />
+    );
+  }
+
+  if (selectedGenes?.length === 0) {
     return (
       <Empty
         description={(
@@ -248,9 +240,7 @@ const HeatmapPlot = (props) => {
 
     const [cellIndexStr, trackIndex, mouseX, mouseY] = info;
 
-    const trackOrder = Array.from(heatmapSettings.selectedTracks).reverse();
-
-    const cellSetClassKey = trackOrder[trackIndex];
+    const cellSetClassKey = heatmapSettings.selectedTracks[trackIndex];
 
     const cellClassProps = getCellClassProperties(
       parseInt(cellIndexStr, 10), cellSetClassKey,
@@ -295,7 +285,7 @@ const HeatmapPlot = (props) => {
               trackName={highlightedTrackData.trackName}
               coordinates={highlightedTrackData.coordinates}
             />
-          ) : cellHighlight ? (
+          ) : cellHighlight && geneHighlight ? (
             <HeatmapCellInfo
               cellId={cellHighlight}
               geneName={geneHighlight}

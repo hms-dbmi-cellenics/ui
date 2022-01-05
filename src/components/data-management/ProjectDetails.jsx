@@ -12,7 +12,7 @@ import {
   updateProject,
 } from 'redux/actions/projects';
 import { layout } from 'utils/constants';
-import EditablePagrapraph from 'components/EditableParagraph';
+import EditableParagraph from 'components/EditableParagraph';
 import SamplesTable from './SamplesTable';
 import ProjectMenu from './ProjectMenu';
 
@@ -62,7 +62,7 @@ const ProjectDetails = ({ width, height }) => {
           <Text strong>
             Description:
           </Text>
-          <EditablePagrapraph
+          <EditableParagraph
             value={activeProject.description}
             onUpdate={(text) => {
               if (text !== activeProject.description) {

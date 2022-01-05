@@ -4,7 +4,7 @@ import {
 } from 'antd';
 import PropTypes from 'prop-types';
 import HeatmapGroupBySettings from 'components/data-exploration/heatmap/HeatmapGroupBySettings';
-import HeatmapMetadataTracksSettings from 'components/data-exploration/heatmap/HeatmapMetadataTrackSettings';
+import HeatmapMetadataTrackSettings from 'components/data-exploration/heatmap/HeatmapMetadataTrackSettings';
 
 const { Panel } = Collapse;
 
@@ -37,7 +37,7 @@ const HeatmapControls = (props) => {
         </Space>
       </Panel>
       <Panel header='Metadata tracks' key='metadataTracks'>
-        <HeatmapMetadataTracksSettings componentType={plotUuid} />
+        <HeatmapMetadataTrackSettings componentType={plotUuid} />
       </Panel>
       <Panel header='Group by' key='groupBy'>
         <HeatmapGroupBySettings componentType={plotUuid} />
