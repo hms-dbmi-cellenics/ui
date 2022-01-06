@@ -131,6 +131,7 @@ describe('SelectionIndicator', () => {
 
     // An 'export as csv...' button
     expect(button.at(0).childAt(0).text()).toEqual('Export as CSV ...');
+    expect(button.at(1).childAt(0).text()).toEqual('Pathway analysis');
 
     // No selection text should show.
     expect(text.length).toEqual(0);

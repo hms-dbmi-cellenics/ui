@@ -16,14 +16,14 @@ const { Text } = Typography;
 
 const SelectionActions = (props) => {
   const {
-    experimentId, showCSV, onExportCSV, onListSelected,
+    experimentId, onExportCSV, onListSelected,
   } = props;
   const dispatch = useDispatch();
 
   const selectedGenes = useSelector((state) => state.genes.selected);
   const [copied, setCopied] = useState(false);
   const [listed, setListed] = useState(false);
-  const [pathAnModalShown, setPathAnModalShown] = useState(false);
+  const [pathAnalysisModal, setpathAnalysisModal] = useState(false);
 
   const clearAll = () => {
     dispatch(changeGeneSelection(experimentId, selectedGenes, GeneSelectionStatus.deselect));
@@ -91,15 +91,10 @@ const SelectionActions = (props) => {
         </>
       ) : <></>}
 
-      {
-        showCSV ? (
-          <>
-            <Button type='link' size='small' onClick={onExportCSV}>Export as CSV ...</Button>
-            <Button type='link' size='small' onClick={() => setPathAnModalShown(!pathAnModalShown)}>Pathway analysis</Button>
-          </>
-        ) : <></>
-      }
-      {pathAnModalShown && (<PathwayAnalysisModal onCancel={() => setPathAnModalShown(false)} />)}
+      <Button type='link' size='small' onClick={onExportCSV}>Export as CSV ...</Button>
+      <Button type='link' size='small' onClick={() => setpathAnalysisModal(!pathAnalysisModal)}>Pathway analysis</Button>
+
+      {pathAnalysisModal && (<PathwayAnalysisModal onCancel={() => setpathAnalysisModal(false)} />)}
     </Space>
   );
 };
@@ -111,7 +106,6 @@ SelectionActions.defaultProps = {
 
 SelectionActions.propTypes = {
   experimentId: PropTypes.string.isRequired,
-  showCSV: PropTypes.bool.isRequired,
   onExportCSV: PropTypes.func,
   onListSelected: PropTypes.func,
 };
