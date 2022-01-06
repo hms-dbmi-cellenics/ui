@@ -185,6 +185,15 @@ describe('SelectionIndicator', () => {
     // And an export button
     expect(button.at(3).childAt(0).text()).toEqual('Export as CSV ...');
 
+    // pathway analysis modal should appear
+    button.at(4).simulate('click');
+    expect(component.find('PathwayAnalysisModal').length).toEqual(1);
+
+    // pathway analysis modal should close
+    const closeButton = component.find('.ant-modal-close');
+    closeButton.simulate('click');
+    expect(component.find('PathwayAnalysisModal').length).toEqual(0);
+
     // The text should be loaded.
     expect(text.length).toEqual(1);
     expect(text.childAt(0).text()).toEqual('2 genes selected');
