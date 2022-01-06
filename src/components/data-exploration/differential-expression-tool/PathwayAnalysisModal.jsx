@@ -38,7 +38,7 @@ const PathwayAnalysisModal = (props) => {
       <Modal
         visible
         title='Pathway Analysis'
-        width='50%'
+        width='40%'
         onCancel={onCancel}
         // remove next line once the functionality is implemented
         footer={[<Tooltip key='tooltip' title='Feature coming soon!'><Button disabled>Launch</Button></Tooltip>]}
