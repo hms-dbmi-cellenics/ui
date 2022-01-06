@@ -1,4 +1,4 @@
-[![codecov](https://codecov.io/gh/biomage-ltd/ui/branch/master/graph/badge.svg?token=zI99mV1YZo)](https://codecov.io/gh/biomage-ltd/ui)
+[![codecov](https://codecov.io/gh/hms-dbmi-cellenics/ui/branch/master/graph/badge.svg?token=zI99mV1YZo)](https://codecov.io/gh/hms-dbmi-cellenics/ui)
 ui
 ==
 
@@ -50,10 +50,10 @@ See more available commands like syntax checking with `make help`.
 Note that since the UI is not connected to the backend, you should see an empty screen saying `You are not connected to the backend.`
 To get it running end-to-end locally with mocked dataset, you will need to set up and run each of these:
 
-- API: https://github.com/biomage-ltd/api
-- Inframock: https://github.com/biomage-ltd/inframock
-- worker: https://github.com/biomage-ltd/worker
-- pipeline: https://github.com/biomage-ltd/pipeline
+- API: https://github.com/hms-dbmi-cellenics/api
+- Inframock: https://github.com/hms-dbmi-cellenics/inframock
+- worker: https://github.com/hms-dbmi-cellenics/worker
+- pipeline: https://github.com/hms-dbmi-cellenics/pipeline
 
 Just follow the README of each of them for instructions on how to get it to run.
 

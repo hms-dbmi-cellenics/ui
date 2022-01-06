@@ -41,12 +41,14 @@ const HeatmapTracksCellInfo = (props) => {
   return (<></>);
 };
 
-HeatmapTracksCellInfo.defaultProps = {};
+HeatmapTracksCellInfo.defaultProps = {
+  trackName: null,
+};
 
 HeatmapTracksCellInfo.propTypes = {
   cellId: PropTypes.string.isRequired,
-  trackName: PropTypes.string.isRequired,
   coordinates: PropTypes.object.isRequired,
+  trackName: PropTypes.string,
 };
 
 export default HeatmapTracksCellInfo;
