@@ -128,7 +128,7 @@ describe('SelectionIndicator', () => {
     expect(button.length).toEqual(2);
 
     // An 'export as csv...' button
-    expect(button.at(0).childAt(0).text()).toEqual('Export as CSV ...');
+    expect(button.at(0).childAt(0).text()).toEqual('Export as CSV');
     expect(button.at(1).childAt(0).text()).toEqual('Pathway analysis');
 
     // No selection text should show.
@@ -187,7 +187,7 @@ describe('SelectionIndicator', () => {
     expect(button.at(2).childAt(0).text()).toEqual('List');
 
     // And an export button
-    expect(button.at(3).childAt(0).text()).toEqual('Export as CSV ...');
+    expect(button.at(3).childAt(0).text()).toEqual('Export as CSV');
 
     // pathway analysis modal should appear
     button.at(4).simulate('click');

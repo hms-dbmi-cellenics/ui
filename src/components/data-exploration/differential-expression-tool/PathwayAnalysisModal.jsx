@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import {
-  Modal, Alert, Radio, Space, InputNumber, Select, Tooltip, Button, Checkbox,
+  Modal, Alert, Radio, Space, InputNumber, Select, Tooltip, Button,
 } from 'antd';
 import PropTypes from 'prop-types';
 import AdvancedFilteringModal from './AdvancedFilteringModal';
@@ -78,18 +78,25 @@ const PathwayAnalysisModal = (props) => {
               </Select>
             </Space>
             <Space
-              style={{ 'margin-left': '50%' }}
+              style={{ 'margin-left': '5%' }}
               direction='vertical'
             >
 
               <b>Number of genes</b>
               <Space>
+                <Radio.Group onChange={(e) => setAllGenesToggled(e.target.value)}>
+                  <Space>
+                    <Radio value>all</Radio>
+                    <Radio value={false}>top</Radio>
+                  </Space>
+                </Radio.Group>
                 <InputNumber
                   disabled={allGenesToggled}
+                  size='medium'
+                  style={{ width: '80%' }}
                   min={0}
-
+                  placeholder='# of genes'
                 />
-                <Checkbox onChange={() => setAllGenesToggled(!allGenesToggled)}> All </Checkbox>
               </Space>
             </Space>
           </Space>

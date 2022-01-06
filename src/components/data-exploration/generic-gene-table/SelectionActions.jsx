@@ -94,7 +94,7 @@ const SelectionActions = (props) => {
       {
         showCSV ? (
           <>
-            <Button type='link' size='small' onClick={onExportCSV}>Export as CSV ...</Button>
+            <Button type='link' size='small' onClick={onExportCSV}>Export as CSV</Button>
             <Button type='link' size='small' onClick={() => setpathAnalysisModal(!pathAnalysisModal)}>Pathway analysis</Button>
           </>
         ) : <></>
