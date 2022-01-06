@@ -38,27 +38,22 @@ const initialState = {
 const mockStore = configureMockStore([thunk]);
 
 describe('SelectionIndicator', () => {
-  test('renders correctly with no selected genes and no export ability', () => {
+  test('renders correctly with no selected genes', () => {
     const store = mockStore(initialState);
     const component = mount(
       <Provider store={store}>
         <SelectionActions
           experimentId='test'
-          showCSV={false}
         />
       </Provider>,
     );
-    const button = component.find(Button);
     const text = component.find(Text);
-
-    // There should be no button loaded.
-    expect(button.length).toEqual(0);
 
     // There should be no text loaded.
     expect(text.length).toEqual(0);
   });
 
-  test('renders correctly with selected genes and no export ability', () => {
+  test('renders correctly with selected genes ', () => {
     const state = _.cloneDeep(initialState);
     state.genes.selected = ['CEMIP'];
 
@@ -67,14 +62,13 @@ describe('SelectionIndicator', () => {
       <Provider store={store}>
         <SelectionActions
           experimentId='test'
-          showCSV={false}
         />
       </Provider>,
     );
     const button = component.find(Button);
     const text = component.find(Text);
     // There should be two buttons.
-    expect(button.length).toEqual(3);
+    expect(button.length).toEqual(5);
 
     // A clear button
     expect(button.at(0).childAt(0).text()).toEqual('Clear');
