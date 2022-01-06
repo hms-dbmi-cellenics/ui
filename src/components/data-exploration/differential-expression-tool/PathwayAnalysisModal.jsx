@@ -7,7 +7,9 @@ import AdvancedFilteringModal from './AdvancedFilteringModal';
 
 const PathwayAnalysisModal = (props) => {
   const { onCancel } = props;
-  const [externalService, setExternalService] = useState('pantherdb');
+  const externalServices = { PANTHER: 'pantherdb', ENRICHER: 'enrichr' };
+
+  const [externalService, setExternalService] = useState(externalServices.PANTHER);
   const [advancedFilteringOpen, setAdvancedFilteringOpen] = useState(false);
 
   const speciesOptions = [{
@@ -54,10 +56,14 @@ const PathwayAnalysisModal = (props) => {
           />
 
           <b>External service</b>
+
           <Radio.Group value={externalService} onChange={(e) => setExternalService(e.target.value)}>
-            <Radio value='pantherdb'>pantherdb</Radio>
-            <Radio value='enrichr'>enrichr</Radio>
+            {Object.keys(externalServices).map((service) => {
+              const serviceName = externalServices[service];
+              return (<Radio key={service} value={serviceName}>{serviceName}</Radio>);
+            })}
           </Radio.Group>
+
           <Space>
             <Space direction='vertical'>
               <b>Species</b>
@@ -71,7 +77,7 @@ const PathwayAnalysisModal = (props) => {
             </Space>
 
           </Space>
-          {externalService === 'pantherdb' && (
+          {externalService === externalServices.PANTHER && (
             <p>
               It is
               <b> strongly recommended </b>

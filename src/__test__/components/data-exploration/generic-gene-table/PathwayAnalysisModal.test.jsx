@@ -11,12 +11,16 @@ describe('Pathway analysis modal ', () => {
     render(<PathwayAnalysisModal onCancel={onCancel} />);
   };
 
+  const externalServices = ['pantherdb', 'enrichr'];
+
   it('Renders properly', () => {
     renderPathwayAnalysisModal();
     expect(screen.getByText('You have not performed any filtering on the genes!')).toBeInTheDocument();
-    expect(screen.getByLabelText('pantherdb')).toBeInTheDocument();
+    externalServices.forEach((service) => {
+      expect(screen.getByLabelText(service)).toBeInTheDocument();
+    });
+
     expect(screen.getByLabelText('pantherdb').checked).toEqual(true);
-    expect(screen.getByLabelText('enrichr')).toBeInTheDocument();
     expect(screen.getByRole('combobox')).toBeInTheDocument();
     expect(screen.getByRole('spinbutton')).toBeInTheDocument();
     const closeButton = screen.getAllByLabelText('close')[0];
