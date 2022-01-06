@@ -1,8 +1,8 @@
 import React from 'react';
-import { Provider } from 'react-redux';
+import userEvent from '@testing-library/user-event';
 import PathwayAnalysisModal from 'components/data-exploration/differential-expression-tool/PathwayAnalysisModal';
 import {
-  render, screen, fireEvent, waitFor,
+  render, screen, waitFor,
 } from '@testing-library/react';
 
 describe('Pathway analysis modal ', () => {
@@ -19,14 +19,18 @@ describe('Pathway analysis modal ', () => {
     expect(screen.getByLabelText('enrichr')).toBeInTheDocument();
     expect(screen.getByRole('combobox')).toBeInTheDocument();
     expect(screen.getByRole('spinbutton')).toBeInTheDocument();
+    const closeButton = screen.getAllByLabelText('close')[0];
+    closeButton.click();
+    expect(onCancel).toHaveBeenCalled();
   });
 
   it('Clicking enrichr radio button removes suggestion text', async () => {
     renderPathwayAnalysisModal();
     const enrichrRadioButton = screen.getByLabelText('enrichr');
-    fireEvent.click(enrichrRadioButton);
-    // await waitFor(() => expect(screen.queryByText('You have not performed any filtering on the genes!')).not.toBeInTheDocument());
+    userEvent.click(enrichrRadioButton);
+    await waitFor(() => (
+      expect(screen.queryByText('It is strongly recommended to input', { exact: false })).not.toBeInTheDocument()));
   });
 
-  // todo test if the warning message appears when there was filtering perform
+  // todo test if the warning message appears when there was filtering performed
 });

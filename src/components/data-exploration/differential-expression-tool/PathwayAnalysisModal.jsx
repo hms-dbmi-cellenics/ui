@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import {
-  Modal, Alert, Radio, Space, InputNumber, Select,
+  Modal, Alert, Radio, Space, InputNumber, Select, Tooltip, Button,
 } from 'antd';
 import PropTypes from 'prop-types';
 import AdvancedFilteringModal from './AdvancedFilteringModal';
@@ -33,6 +33,8 @@ const PathwayAnalysisModal = (props) => {
         visible
         title='Pathway Analysis'
         onCancel={onCancel}
+        // remove next line once the functionality is implemented
+        footer={[<Tooltip key='tooltip' title='Feature coming soon!'><Button disabled>Launch</Button></Tooltip>]}
         okText='Launch'
       >
         <Space direction='vertical'>
