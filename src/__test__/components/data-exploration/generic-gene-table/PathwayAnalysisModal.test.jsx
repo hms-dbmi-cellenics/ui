@@ -35,6 +35,4 @@ describe('Pathway analysis modal ', () => {
     await waitFor(() => (
       expect(screen.queryByText('It is strongly recommended to input', { exact: false })).not.toBeInTheDocument()));
   });
-
-  // todo test if the warning message appears when there was filtering performed
 });
