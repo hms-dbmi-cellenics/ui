@@ -86,8 +86,8 @@ const PathwayAnalysisModal = (props) => {
               <Space>
                 <Radio.Group onChange={(e) => setAllGenesToggled(e.target.value)}>
                   <Space>
-                    <Radio value>all</Radio>
-                    <Radio value={false}>top</Radio>
+                    <Radio value>All</Radio>
+                    <Radio value={false}>Top</Radio>
                   </Space>
                 </Radio.Group>
                 <InputNumber
