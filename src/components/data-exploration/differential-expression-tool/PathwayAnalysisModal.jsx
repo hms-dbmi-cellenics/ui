@@ -74,7 +74,7 @@ const PathwayAnalysisModal = (props) => {
               <b>Species</b>
 
               <Select style={{ width: 400 }}>
-                {speciesOptions.map((option) => (<Select.Option><i>{option.label}</i></Select.Option>))}
+                {speciesOptions.map((option) => (<Select.Option value={option.value}><i>{option.label}</i></Select.Option>))}
               </Select>
             </Space>
             <Space
