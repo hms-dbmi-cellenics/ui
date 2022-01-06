@@ -106,7 +106,10 @@ const PathwayAnalysisModal = (props) => {
               <b> strongly recommended </b>
               {' '}
               to input the reference list of genes by setting it in "Reference List"
-              then re-run the pathway analysis in the pantherdb page. You can either
+              then re-run the pathway analysis in the pantherdb page.
+              {' '}
+              <br />
+              You can either
               <a> Download reference genes into file </a>
               {' '}
               or
