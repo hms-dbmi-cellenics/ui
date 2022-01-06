@@ -38,12 +38,13 @@ const PathwayAnalysisModal = (props) => {
       <Modal
         visible
         title='Pathway Analysis'
+        width='50%'
         onCancel={onCancel}
         // remove next line once the functionality is implemented
         footer={[<Tooltip key='tooltip' title='Feature coming soon!'><Button disabled>Launch</Button></Tooltip>]}
         okText='Launch'
       >
-        <Space direction='vertical'>
+        <Space direction='vertical' size='large'>
           {/* display the alert only if there are no filter applied to diff expr */}
           <Alert
             type='warning'
@@ -72,15 +73,22 @@ const PathwayAnalysisModal = (props) => {
             <Space direction='vertical'>
               <b>Species</b>
 
-              <Select style={{ width: 200 }}>
+              <Select style={{ width: 400 }}>
                 {speciesOptions.map((option) => (<Select.Option><i>{option.label}</i></Select.Option>))}
               </Select>
             </Space>
-            <Space direction='vertical'>
+            <Space
+              style={{ 'margin-left': '50%' }}
+              direction='vertical'
+            >
 
               <b>Number of genes</b>
               <Space>
-                <InputNumber disabled={allGenesToggled} min={0} />
+                <InputNumber
+                  disabled={allGenesToggled}
+                  min={0}
+
+                />
                 <Checkbox onChange={() => setAllGenesToggled(!allGenesToggled)}> All </Checkbox>
               </Space>
             </Space>
