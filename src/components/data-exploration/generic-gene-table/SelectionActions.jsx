@@ -16,7 +16,7 @@ const { Text } = Typography;
 
 const SelectionActions = (props) => {
   const {
-    experimentId, onExportCSV, onListSelected,
+    experimentId, showCSV, onExportCSV, onListSelected,
   } = props;
   const dispatch = useDispatch();
 
@@ -91,9 +91,14 @@ const SelectionActions = (props) => {
         </>
       ) : <></>}
 
-      <Button type='link' size='small' onClick={onExportCSV}>Export as CSV ...</Button>
-      <Button type='link' size='small' onClick={() => setpathAnalysisModal(!pathAnalysisModal)}>Pathway analysis</Button>
-
+      {
+        showCSV ? (
+          <>
+            <Button type='link' size='small' onClick={onExportCSV}>Export as CSV ...</Button>
+            <Button type='link' size='small' onClick={() => setpathAnalysisModal(!pathAnalysisModal)}>Pathway analysis</Button>
+          </>
+        ) : <></>
+      }
       {pathAnalysisModal && (<PathwayAnalysisModal onCancel={() => setpathAnalysisModal(false)} />)}
     </Space>
   );
@@ -106,6 +111,7 @@ SelectionActions.defaultProps = {
 
 SelectionActions.propTypes = {
   experimentId: PropTypes.string.isRequired,
+  showCSV: PropTypes.bool.isRequired,
   onExportCSV: PropTypes.func,
   onListSelected: PropTypes.func,
 };

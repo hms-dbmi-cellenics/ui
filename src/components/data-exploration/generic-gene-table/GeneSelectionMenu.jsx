@@ -21,6 +21,7 @@ const GeneSelectionMenu = (props) => {
       <Space direction='vertical' style={{ width: '100%' }}>
         <SelectionActions
           experimentId={experimentId}
+          showCSV={onExportCSV !== null}
           onExportCSV={onExportCSV}
           onListSelected={onListSelected}
         />

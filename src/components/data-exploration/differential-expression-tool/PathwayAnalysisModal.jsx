@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import {
-  Modal, Alert, Radio, Space, InputNumber, Select, Tooltip, Button,
+  Modal, Alert, Radio, Space, InputNumber, Select, Tooltip, Button, Checkbox,
 } from 'antd';
 import PropTypes from 'prop-types';
 import AdvancedFilteringModal from './AdvancedFilteringModal';
@@ -11,22 +11,26 @@ const PathwayAnalysisModal = (props) => {
 
   const [externalService, setExternalService] = useState(externalServices.PANTHER);
   const [advancedFilteringOpen, setAdvancedFilteringOpen] = useState(false);
+  const [allGenesToggled, setAllGenesToggled] = useState(false);
 
   const speciesOptions = [{
-    value: 'humanAndMouse',
-    label: 'Human and Mouse',
+    value: 'musculus',
+    label: 'Mus musculus',
+  }, {
+    value: 'sapiens',
+    label: 'Homo sapiens',
   }, {
     value: 'melanogaster',
-    label: 'D. melanogaster',
+    label: 'Drosophila melanogaster',
   }, {
     value: 'cerevisiae',
-    label: 'S. cerevisiae',
+    label: 'Saccharomyces cerevisiae',
   }, {
     value: 'elegans',
-    label: 'C. elegans',
+    label: 'Caenorhabditis elegans',
   }, {
     value: 'rerio',
-    label: 'D. rerio',
+    label: 'Danio rerio',
   }];
 
   return (
@@ -68,14 +72,18 @@ const PathwayAnalysisModal = (props) => {
             <Space direction='vertical'>
               <b>Species</b>
 
-              <Select style={{ width: 200 }} options={speciesOptions} />
+              <Select style={{ width: 200 }}>
+                {speciesOptions.map((option) => (<Select.Option><i>{option.label}</i></Select.Option>))}
+              </Select>
             </Space>
             <Space direction='vertical'>
 
               <b>Number of genes</b>
-              <InputNumber />
+              <Space>
+                <InputNumber disabled={allGenesToggled} min={0} />
+                <Checkbox onChange={() => setAllGenesToggled(!allGenesToggled)}> All </Checkbox>
+              </Space>
             </Space>
-
           </Space>
           {externalService === externalServices.PANTHER && (
             <p>

@@ -47,7 +47,11 @@ describe('SelectionIndicator', () => {
         />
       </Provider>,
     );
+    const button = component.find(Button);
     const text = component.find(Text);
+
+    // There should be no button loaded.
+    expect(button.length).toEqual(0);
 
     // There should be no text loaded.
     expect(text.length).toEqual(0);
@@ -68,7 +72,7 @@ describe('SelectionIndicator', () => {
     const button = component.find(Button);
     const text = component.find(Text);
     // There should be two buttons.
-    expect(button.length).toEqual(5);
+    expect(button.length).toEqual(3);
 
     // A clear button
     expect(button.at(0).childAt(0).text()).toEqual('Clear');
