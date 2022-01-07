@@ -5,7 +5,7 @@ import {
 import PropTypes from 'prop-types';
 import AdvancedFilteringModal from './AdvancedFilteringModal';
 
-const PathwayAnalysisModal = (props) => {
+const LaunchPathwayAnalysisModal = (props) => {
   const { onCancel } = props;
   const externalServices = { PANTHER: 'pantherdb', ENRICHER: 'enrichr' };
 
@@ -124,7 +124,7 @@ const PathwayAnalysisModal = (props) => {
     </>
   );
 };
-PathwayAnalysisModal.propTypes = {
+LaunchPathwayAnalysisModal.propTypes = {
   onCancel: PropTypes.func.isRequired,
 };
-export default PathwayAnalysisModal;
+export default LaunchPathwayAnalysisModal;

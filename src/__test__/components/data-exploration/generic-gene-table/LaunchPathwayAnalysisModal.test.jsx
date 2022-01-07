@@ -1,6 +1,6 @@
 import React from 'react';
 import userEvent from '@testing-library/user-event';
-import PathwayAnalysisModal from 'components/data-exploration/differential-expression-tool/PathwayAnalysisModal';
+import LaunchPathwayAnalysisModal from 'components/data-exploration/differential-expression-tool/LaunchPathwayAnalysisModal';
 import {
   render, screen, waitFor,
 } from '@testing-library/react';
@@ -8,7 +8,7 @@ import {
 describe('Pathway analysis modal ', () => {
   const onCancel = jest.fn();
   const renderPathwayAnalysisModal = () => {
-    render(<PathwayAnalysisModal onCancel={onCancel} />);
+    render(<LaunchPathwayAnalysisModal onCancel={onCancel} />);
   };
 
   const externalServices = ['pantherdb', 'enrichr'];

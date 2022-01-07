@@ -10,7 +10,7 @@ import { CheckCircleOutlined } from '@ant-design/icons';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import { changeGeneSelection } from '../../../redux/actions/genes';
 import GeneSelectionStatus from '../../../redux/actions/genes/geneSelectionStatus';
-import PathwayAnalysisModal from '../differential-expression-tool/PathwayAnalysisModal';
+import LaunchPathwayAnalysisModal from '../differential-expression-tool/LaunchPathwayAnalysisModal';
 
 const { Text } = Typography;
 
@@ -99,7 +99,7 @@ const SelectionActions = (props) => {
           </>
         ) : <></>
       }
-      {pathAnalysisModal && (<PathwayAnalysisModal onCancel={() => setpathAnalysisModal(false)} />)}
+      {pathAnalysisModal && (<LaunchPathwayAnalysisModal onCancel={() => setpathAnalysisModal(false)} />)}
     </Space>
   );
 };
