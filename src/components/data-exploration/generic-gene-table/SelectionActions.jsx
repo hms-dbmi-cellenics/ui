@@ -23,7 +23,7 @@ const SelectionActions = (props) => {
   const selectedGenes = useSelector((state) => state.genes.selected);
   const [copied, setCopied] = useState(false);
   const [listed, setListed] = useState(false);
-  const [pathAnalysisModal, setpathAnalysisModal] = useState(false);
+  const [pathwayAnalysisModal, setPathwayAnalysisModal] = useState(false);
 
   const clearAll = () => {
     dispatch(changeGeneSelection(experimentId, selectedGenes, GeneSelectionStatus.deselect));
@@ -95,11 +95,11 @@ const SelectionActions = (props) => {
         showCSV ? (
           <>
             <Button type='link' size='small' onClick={onExportCSV}>Export as CSV</Button>
-            <Button type='link' size='small' onClick={() => setpathAnalysisModal(!pathAnalysisModal)}>Pathway analysis</Button>
+            <Button type='link' size='small' onClick={() => setPathwayAnalysisModal(!pathwayAnalysisModal)}>Pathway analysis</Button>
           </>
         ) : <></>
       }
-      {pathAnalysisModal && (<LaunchPathwayAnalysisModal onCancel={() => setpathAnalysisModal(false)} />)}
+      {pathwayAnalysisModal && (<LaunchPathwayAnalysisModal onCancel={() => setPathwayAnalysisModal(false)} />)}
     </Space>
   );
 };
