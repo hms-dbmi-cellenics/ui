@@ -1,9 +1,30 @@
+/* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { useState } from 'react';
 import {
   Modal, Alert, Radio, Space, InputNumber, Select, Tooltip, Button,
 } from 'antd';
 import PropTypes from 'prop-types';
 import AdvancedFilteringModal from './AdvancedFilteringModal';
+
+const speciesOptions = [{
+  value: 'musculus',
+  label: 'Mus musculus',
+}, {
+  value: 'sapiens',
+  label: 'Homo sapiens',
+}, {
+  value: 'melanogaster',
+  label: 'Drosophila melanogaster',
+}, {
+  value: 'cerevisiae',
+  label: 'Saccharomyces cerevisiae',
+}, {
+  value: 'elegans',
+  label: 'Caenorhabditis elegans',
+}, {
+  value: 'rerio',
+  label: 'Danio rerio',
+}];
 
 const LaunchPathwayAnalysisModal = (props) => {
   const { onCancel } = props;
@@ -13,32 +34,12 @@ const LaunchPathwayAnalysisModal = (props) => {
   const [advancedFilteringOpen, setAdvancedFilteringOpen] = useState(false);
   const [allGenesToggled, setAllGenesToggled] = useState(false);
 
-  const speciesOptions = [{
-    value: 'musculus',
-    label: 'Mus musculus',
-  }, {
-    value: 'sapiens',
-    label: 'Homo sapiens',
-  }, {
-    value: 'melanogaster',
-    label: 'Drosophila melanogaster',
-  }, {
-    value: 'cerevisiae',
-    label: 'Saccharomyces cerevisiae',
-  }, {
-    value: 'elegans',
-    label: 'Caenorhabditis elegans',
-  }, {
-    value: 'rerio',
-    label: 'Danio rerio',
-  }];
-
   return (
     <>
       <Modal
         visible
         title='Pathway Analysis'
-        width='40%'
+        width='50%'
         onCancel={onCancel}
         // remove next line once the functionality is implemented
         footer={[<Tooltip key='tooltip' title='Feature coming soon!'><Button disabled>Launch</Button></Tooltip>]}
@@ -52,7 +53,10 @@ const LaunchPathwayAnalysisModal = (props) => {
             message={(
               <p>
                 You have not performed any filtering on the genes!
-                <a onClick={() => setAdvancedFilteringOpen(!advancedFilteringOpen)}>
+                <a
+                  onClick={() => setAdvancedFilteringOpen(!advancedFilteringOpen)}
+                  onKeyPress={() => setAdvancedFilteringOpen(!advancedFilteringOpen)}
+                >
                   {' '}
                   Click here to open the advanced filtering options.
                 </a>
@@ -69,22 +73,25 @@ const LaunchPathwayAnalysisModal = (props) => {
             })}
           </Radio.Group>
 
-          <Space>
+          <Space size='large'>
             <Space direction='vertical'>
               <b>Species</b>
 
               <Select style={{ width: 400 }}>
-                {speciesOptions.map((option) => (<Select.Option value={option.value}><i>{option.label}</i></Select.Option>))}
+                {
+                  speciesOptions.map((option) => (
+                    <Select.Option value={option.value}><i>{option.label}</i></Select.Option>
+                  ))
+                }
               </Select>
             </Space>
             <Space
               style={{ 'margin-left': '5%' }}
               direction='vertical'
             >
-
               <b>Number of genes</b>
               <Space>
-                <Radio.Group onChange={(e) => setAllGenesToggled(e.target.value)}>
+                <Radio.Group value={allGenesToggled} onChange={(e) => setAllGenesToggled(e.target.value)}>
                   <Space>
                     <Radio value>All</Radio>
                     <Radio value={false}>Top</Radio>
@@ -93,7 +100,7 @@ const LaunchPathwayAnalysisModal = (props) => {
                 <InputNumber
                   disabled={allGenesToggled}
                   size='medium'
-                  style={{ width: '80%' }}
+                  style={{ width: '100px' }}
                   min={0}
                   placeholder='# of genes'
                 />
