@@ -1,7 +1,7 @@
 /* eslint-disable jsx-quotes */
 import React, { useState, useEffect } from 'react';
 import {
-  Button, Space, Typography,
+  Button, Space, Typography, Row,
 } from 'antd';
 
 import PropTypes from 'prop-types';
@@ -73,7 +73,7 @@ const SelectionActions = (props) => {
     );
   };
   return (
-    <Space style={{ float: 'left' }}>
+    <Row style={{ float: 'left' }}>
       {selectedGenes.length !== 0 ? (
         <>
           <Text type='secondary'>
@@ -99,8 +99,10 @@ const SelectionActions = (props) => {
           </>
         ) : <></>
       }
-      {pathwayAnalysisModal && (<LaunchPathwayAnalysisModal onCancel={() => setPathwayAnalysisModal(false)} />)}
-    </Space>
+      {pathwayAnalysisModal && (
+        <LaunchPathwayAnalysisModal onCancel={() => setPathwayAnalysisModal(false)} />
+      )}
+    </Row>
   );
 };
 

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import {
-  Space, Select,
+  Space, Select, Divider,
 } from 'antd';
 import { useSelector } from 'react-redux';
 import SelectionActions from './SelectionActions';
@@ -17,7 +17,7 @@ const GeneSelectionMenu = (props) => {
   const onListSelected = (flag) => { setListed(flag); };
 
   return (
-    <>
+    <Space direction='vertical'>
       <Space direction='vertical' style={{ width: '100%' }}>
         <SelectionActions
           experimentId={experimentId}
@@ -26,17 +26,20 @@ const GeneSelectionMenu = (props) => {
           onListSelected={onListSelected}
         />
         {listed ? (
-          <Select
-            value={selectedGenes}
-            mode='multiple'
-            showArrow={false}
-            removeIcon={(<div />)}
-            style={{ width: '100%' }}
-          />
+          <>
+            <Divider type='vertical' />
+            <Select
+              value={selectedGenes}
+              mode='multiple'
+              showArrow={false}
+              removeIcon={(<div />)}
+              style={{ width: '100%' }}
+            />
+          </>
         ) : (<></>)}
       </Space>
       <ComponentActions name='Heatmap' experimentId={experimentId} componentType={COMPONENT_TYPE} />
-    </>
+    </Space>
   );
 };
 
