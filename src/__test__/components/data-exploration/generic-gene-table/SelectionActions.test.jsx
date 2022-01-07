@@ -191,12 +191,12 @@ describe('SelectionIndicator', () => {
 
     // pathway analysis modal should appear
     button.at(4).simulate('click');
-    expect(component.find('PathwayAnalysisModal').length).toEqual(1);
+    expect(component.find('LaunchPathwayAnalysisModal').length).toEqual(1);
 
     // pathway analysis modal should close
     const closeButton = component.find('.ant-modal-close');
     closeButton.simulate('click');
-    expect(component.find('PathwayAnalysisModal').length).toEqual(0);
+    expect(component.find('LaunchPathwayAnalysisModal').length).toEqual(0);
 
     // The text should be loaded.
     expect(text.length).toEqual(1);
