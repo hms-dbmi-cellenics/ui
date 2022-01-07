@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { useState } from 'react';
 import {
   Modal, Alert, Radio, Space, InputNumber, Select, Tooltip, Button,
@@ -53,13 +52,14 @@ const LaunchPathwayAnalysisModal = (props) => {
             message={(
               <p>
                 You have not performed any filtering on the genes!
-                <a
+                <Button
+                  type='link'
+                  size='small'
                   onClick={() => setAdvancedFilteringOpen(!advancedFilteringOpen)}
                   onKeyPress={() => setAdvancedFilteringOpen(!advancedFilteringOpen)}
                 >
-                  {' '}
                   Click here to open the advanced filtering options.
-                </a>
+                </Button>
               </p>
             )}
           />
@@ -91,7 +91,10 @@ const LaunchPathwayAnalysisModal = (props) => {
             >
               <b>Number of genes</b>
               <Space>
-                <Radio.Group value={allGenesToggled} onChange={(e) => setAllGenesToggled(e.target.value)}>
+                <Radio.Group
+                  value={allGenesToggled}
+                  onChange={(e) => setAllGenesToggled(e.target.value)}
+                >
                   <Space>
                     <Radio value>All</Radio>
                     <Radio value={false}>Top</Radio>
