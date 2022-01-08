@@ -71,8 +71,8 @@ describe('SelectionIndicator', () => {
     );
     const button = component.find(Button);
     const text = component.find(Text);
-    // There should be two buttons.
-    expect(button.length).toEqual(3);
+    // There should be 4 buttons.
+    expect(button.length).toEqual(4);
 
     // A clear button
     expect(button.at(0).childAt(0).text()).toEqual('Clear');
@@ -80,8 +80,11 @@ describe('SelectionIndicator', () => {
     // And a copy to clipboard button
     expect(button.at(1).childAt(0).text()).toEqual('Copy');
 
-    // And a list selected button
+    // A list selected button
     expect(button.at(2).childAt(0).text()).toEqual('List');
+
+    // And a Heatmap button
+    expect(button.at(3).childAt(0).text()).toEqual('Heatmap');
 
     // The text should be loaded.
     expect(text.length).toEqual(1);
@@ -174,23 +177,29 @@ describe('SelectionIndicator', () => {
     const button = component.find(Button);
     const text = component.find(Text);
 
-    // There should be four buttons.
-    expect(button.length).toEqual(5);
+    // There should be six buttons.
+    expect(button.length).toEqual(6);
+
+    // An export button
+    expect(button.at(0).childAt(0).text()).toEqual('Export as CSV');
+
+    // A pathway analysis button
+    expect(button.at(1).childAt(0).text()).toEqual('Pathway analysis');
 
     // A clear button
-    expect(button.at(0).childAt(0).text()).toEqual('Clear');
+    expect(button.at(2).childAt(0).text()).toEqual('Clear');
 
     // And a copy to clipboard button
-    expect(button.at(1).childAt(0).text()).toEqual('Copy');
+    expect(button.at(3).childAt(0).text()).toEqual('Copy');
 
-    // And a list button
-    expect(button.at(2).childAt(0).text()).toEqual('List');
+    // A list button
+    expect(button.at(4).childAt(0).text()).toEqual('List');
 
-    // And an export button
-    expect(button.at(3).childAt(0).text()).toEqual('Export as CSV');
+    // And a Heatmap button
+    expect(button.at(5).childAt(0).text()).toEqual('Heatmap');
 
     // pathway analysis modal should appear
-    button.at(4).simulate('click');
+    button.at(1).simulate('click');
     expect(component.find('LaunchPathwayAnalysisModal').length).toEqual(1);
 
     // pathway analysis modal should close
@@ -218,7 +227,7 @@ describe('SelectionIndicator', () => {
         />
       </Provider>,
     );
-    const listSelectedButton = component.find(Button).at(2);
+    const listSelectedButton = component.find(Button).at(4);
     expect(listSelectedButton.childAt(0).text()).toEqual('List');
 
     // click "List"
