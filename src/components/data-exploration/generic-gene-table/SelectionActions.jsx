@@ -1,7 +1,7 @@
 /* eslint-disable jsx-quotes */
 import React, { useState, useEffect } from 'react';
 import {
-  Button, Typography, Row,
+  Button, Typography, Row, Divider,
 } from 'antd';
 
 import PropTypes from 'prop-types';
@@ -78,8 +78,20 @@ const SelectionActions = (props) => {
   };
   return (
     <Row style={{ float: 'left', paddingRight: '50px' }}>
+      {
+        showCSV ? (
+          <>
+            <Button type='link' size='small' onClick={onExportCSV}>Export as CSV</Button>
+            <Button type='link' size='small' onClick={() => setPathwayAnalysisModal(!pathwayAnalysisModal)}>Pathway analysis</Button>
+          </>
+        ) : <></>
+      }
+      {pathwayAnalysisModal && (
+        <LaunchPathwayAnalysisModal onCancel={() => setPathwayAnalysisModal(false)} />
+      )}
       {selectedGenes.length !== 0 ? (
         <>
+          <Divider style={{ height: '1px', marginTop: '5px', marginBottom: '5px' }} />
           <Text type='secondary'>
             {`${selectedGenes.length} gene${selectedGenes.length === 1 ? '' : 's'} selected`}
           </Text>
@@ -92,20 +104,9 @@ const SelectionActions = (props) => {
           >
             {listed ? 'Hide' : 'List'}
           </Button>
+          <ComponentActions name='Heatmap' experimentId={experimentId} componentType={COMPONENT_TYPE} />
         </>
       ) : <></>}
-      <ComponentActions name='Heatmap' experimentId={experimentId} componentType={COMPONENT_TYPE} />
-      {
-        showCSV ? (
-          <>
-            <Button type='link' size='small' onClick={onExportCSV}>Export as CSV</Button>
-            <Button type='link' size='small' onClick={() => setPathwayAnalysisModal(!pathwayAnalysisModal)}>Pathway analysis</Button>
-          </>
-        ) : <></>
-      }
-      {pathwayAnalysisModal && (
-        <LaunchPathwayAnalysisModal onCancel={() => setPathwayAnalysisModal(false)} />
-      )}
     </Row>
   );
 };
