@@ -1,13 +1,10 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import {
-  Space, Select, Divider,
+  Space, Select,
 } from 'antd';
 import { useSelector } from 'react-redux';
 import SelectionActions from './SelectionActions';
-import ComponentActions from './ComponentActions';
-
-import { COMPONENT_TYPE } from '../heatmap/HeatmapPlot';
 
 const GeneSelectionMenu = (props) => {
   const { onExportCSV, experimentId } = props;
@@ -17,28 +14,25 @@ const GeneSelectionMenu = (props) => {
   const onListSelected = (flag) => { setListed(flag); };
 
   return (
-    <Space direction='vertical'>
-      <Space direction='vertical' style={{ width: '100%' }}>
-        <SelectionActions
-          experimentId={experimentId}
-          showCSV={onExportCSV !== null}
-          onExportCSV={onExportCSV}
-          onListSelected={onListSelected}
-        />
-        {listed ? (
-          <>
-            <Divider type='vertical' />
-            <Select
-              value={selectedGenes}
-              mode='multiple'
-              showArrow={false}
-              removeIcon={(<div />)}
-              style={{ width: '100%' }}
-            />
-          </>
-        ) : (<></>)}
-      </Space>
-      <ComponentActions name='Heatmap' experimentId={experimentId} componentType={COMPONENT_TYPE} />
+
+    <Space direction='vertical' style={{ width: '100%' }}>
+      <SelectionActions
+        experimentId={experimentId}
+        showCSV={onExportCSV !== null}
+        onExportCSV={onExportCSV}
+        onListSelected={onListSelected}
+      />
+      {listed ? (
+        <>
+          <Select
+            value={selectedGenes}
+            mode='multiple'
+            showArrow={false}
+            removeIcon={(<div />)}
+            style={{ width: '100%' }}
+          />
+        </>
+      ) : (<></>)}
     </Space>
   );
 };

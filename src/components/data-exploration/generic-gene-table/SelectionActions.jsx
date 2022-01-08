@@ -1,7 +1,7 @@
 /* eslint-disable jsx-quotes */
 import React, { useState, useEffect } from 'react';
 import {
-  Button, Space, Typography, Row,
+  Button, Typography, Row,
 } from 'antd';
 
 import PropTypes from 'prop-types';
@@ -11,6 +11,10 @@ import { CopyToClipboard } from 'react-copy-to-clipboard';
 import { changeGeneSelection } from '../../../redux/actions/genes';
 import GeneSelectionStatus from '../../../redux/actions/genes/geneSelectionStatus';
 import LaunchPathwayAnalysisModal from '../differential-expression-tool/LaunchPathwayAnalysisModal';
+
+import ComponentActions from './ComponentActions';
+
+import { COMPONENT_TYPE } from '../heatmap/HeatmapPlot';
 
 const { Text } = Typography;
 
@@ -73,7 +77,7 @@ const SelectionActions = (props) => {
     );
   };
   return (
-    <Row style={{ float: 'left' }}>
+    <Row style={{ float: 'left', paddingRight: '50px' }}>
       {selectedGenes.length !== 0 ? (
         <>
           <Text type='secondary'>
@@ -90,7 +94,7 @@ const SelectionActions = (props) => {
           </Button>
         </>
       ) : <></>}
-
+      <ComponentActions name='Heatmap' experimentId={experimentId} componentType={COMPONENT_TYPE} />
       {
         showCSV ? (
           <>
