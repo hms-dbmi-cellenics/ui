@@ -127,38 +127,11 @@ describe('SelectionIndicator', () => {
     const button = component.find(Button);
     const text = component.find(Text);
 
-    // There should be two buttons.
-    expect(button.length).toEqual(2);
-
-    // An 'export as csv...' button
-    expect(button.at(0).childAt(0).text()).toEqual('Export as CSV');
-    expect(button.at(1).childAt(0).text()).toEqual('Pathway analysis');
+    // There should be no buttons.
+    expect(button.length).toEqual(0);
 
     // No selection text should show.
     expect(text.length).toEqual(0);
-  });
-
-  test('callback is called when export button is pressed', () => {
-    const store = mockStore(initialState);
-    const mockCallback = jest.fn();
-
-    const component = mount(
-      <Provider store={store}>
-        <SelectionActions
-          experimentId='test'
-          showCSV
-          onExportCSV={mockCallback}
-        />
-      </Provider>,
-    );
-
-    const buttons = component.find(Button);
-
-    // There should be one button.
-    expect(buttons.length).toEqual(2);
-
-    buttons.at(0).simulate('click');
-    expect(mockCallback).toHaveBeenCalledTimes(1);
   });
 
   test('renders correctly with selected genes and export ability', () => {
@@ -178,34 +151,19 @@ describe('SelectionIndicator', () => {
     const text = component.find(Text);
 
     // There should be six buttons.
-    expect(button.length).toEqual(6);
-
-    // An export button
-    expect(button.at(0).childAt(0).text()).toEqual('Export as CSV');
-
-    // A pathway analysis button
-    expect(button.at(1).childAt(0).text()).toEqual('Pathway analysis');
+    expect(button.length).toEqual(4);
 
     // A clear button
-    expect(button.at(2).childAt(0).text()).toEqual('Clear');
+    expect(button.at(0).childAt(0).text()).toEqual('Clear');
 
     // And a copy to clipboard button
-    expect(button.at(3).childAt(0).text()).toEqual('Copy');
+    expect(button.at(1).childAt(0).text()).toEqual('Copy');
 
     // A list button
-    expect(button.at(4).childAt(0).text()).toEqual('List');
+    expect(button.at(2).childAt(0).text()).toEqual('List');
 
     // And a Heatmap button
-    expect(button.at(5).childAt(0).text()).toEqual('Heatmap');
-
-    // pathway analysis modal should appear
-    button.at(1).simulate('click');
-    expect(component.find('LaunchPathwayAnalysisModal').length).toEqual(1);
-
-    // pathway analysis modal should close
-    const closeButton = component.find('.ant-modal-close');
-    closeButton.simulate('click');
-    expect(component.find('LaunchPathwayAnalysisModal').length).toEqual(0);
+    expect(button.at(3).childAt(0).text()).toEqual('Heatmap');
 
     // The text should be loaded.
     expect(text.length).toEqual(1);
@@ -227,7 +185,7 @@ describe('SelectionIndicator', () => {
         />
       </Provider>,
     );
-    const listSelectedButton = component.find(Button).at(4);
+    const listSelectedButton = component.find(Button).at(2);
     expect(listSelectedButton.childAt(0).text()).toEqual('List');
 
     // click "List"
