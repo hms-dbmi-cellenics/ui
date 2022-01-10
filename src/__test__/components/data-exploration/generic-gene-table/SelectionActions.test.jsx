@@ -42,9 +42,7 @@ describe('SelectionIndicator', () => {
     const store = mockStore(initialState);
     const component = mount(
       <Provider store={store}>
-        <SelectionActions
-          experimentId='test'
-        />
+        <SelectionActions experimentId='test' />
       </Provider>,
     );
     const button = component.find(Button);
@@ -64,9 +62,7 @@ describe('SelectionIndicator', () => {
     const store = mockStore(state);
     const component = mount(
       <Provider store={store}>
-        <SelectionActions
-          experimentId='test'
-        />
+        <SelectionActions experimentId='test' />
       </Provider>,
     );
     const button = component.find(Button);
@@ -98,10 +94,7 @@ describe('SelectionIndicator', () => {
     const store = mockStore(state);
     const component = mount(
       <Provider store={store}>
-        <SelectionActions
-          experimentId='test'
-          showCSV={false}
-        />
+        <SelectionActions experimentId='test' />
       </Provider>,
     );
     const clearSelectedButton = component.find(Button).at(0);
@@ -116,11 +109,7 @@ describe('SelectionIndicator', () => {
 
     const component = mount(
       <Provider store={store}>
-        <SelectionActions
-          experimentId='test'
-          showCSV
-          onExportCSV={() => null}
-        />
+        <SelectionActions experimentId='test' />
       </Provider>,
     );
 
@@ -141,10 +130,7 @@ describe('SelectionIndicator', () => {
     const store = mockStore(state);
     const component = mount(
       <Provider store={store}>
-        <SelectionActions
-          experimentId='test'
-          showCSV
-        />
+        <SelectionActions experimentId='test' />
       </Provider>,
     );
     const button = component.find(Button);
@@ -180,7 +166,6 @@ describe('SelectionIndicator', () => {
       <Provider store={store}>
         <SelectionActions
           experimentId='test'
-          showCSV
           onListSelected={mockOnListSelected}
         />
       </Provider>,
@@ -203,5 +188,22 @@ describe('SelectionIndicator', () => {
     expect(mockOnListSelected.mock.calls.length).toEqual(2);
     expect(mockOnListSelected.mock.calls[1]).toEqual([false]);
     expect(listSelectedButton.childAt(0).text()).toEqual('List');
+  });
+
+  test('Shows extraOptions', () => {
+    const state = _.cloneDeep(initialState);
+    state.genes.selected = ['CEMIP', 'TIMP3'];
+
+    const store = mockStore(state);
+    const component = mount(
+      <Provider store={store}>
+        <SelectionActions
+          experimentId='test'
+          extraOptions={<div id='testExtraOption' />}
+        />
+      </Provider>,
+    );
+
+    expect(component.find('#testExtraOption').length).toEqual(1);
   });
 });
