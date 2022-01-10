@@ -15,6 +15,7 @@ import { getCellSets } from 'redux/selectors';
 import { geneTableUpdateReason } from 'utils/geneTable/geneTableUpdateReason';
 import GeneTable from '../generic-gene-table/GeneTable';
 import AdvancedFilteringModal from './AdvancedFilteringModal';
+import LaunchPathwayAnalysisModal from './LaunchPathwayAnalysisModal';
 
 const { Text } = Typography;
 
@@ -31,10 +32,12 @@ const DiffExprResults = (props) => {
   const comparisonGroup = useSelector((state) => state.differentialExpression.comparison.group);
   const comparisonType = useSelector((state) => state.differentialExpression.comparison.type);
   const { properties } = useSelector(getCellSets());
+
   const [dataShown, setDataShown] = useState(data);
   const [exportAlert, setExportAlert] = useState(false);
   const [settingsListed, setSettingsListed] = useState(false);
   const [advancedFilteringShown, setAdvancedFilteringShown] = useState(false);
+  const [pathwayAnalysisModal, setPathwayAnalysisModal] = useState(false);
 
   const columns = [
     {
@@ -200,13 +203,23 @@ const DiffExprResults = (props) => {
         onUpdate={onUpdate}
         columns={columns}
         loading={loading}
-        onExportCSV={() => { setExportAlert(true); }}
         error={error}
         width={width}
         height={height - 70 - (exportAlert ? 70 : 0) - (settingsListed ? 70 : 0)}
         data={dataShown}
         total={total}
+        extraOptions={(
+          <>
+            <Button type='link' size='small' onClick={() => setExportAlert(true)}>Export as CSV</Button>
+            <Button type='link' size='small' onClick={() => setPathwayAnalysisModal(!pathwayAnalysisModal)}>Pathway analysis</Button>
+          </>
+        )}
       />
+      {
+        pathwayAnalysisModal && (
+          <LaunchPathwayAnalysisModal onCancel={() => setPathwayAnalysisModal(false)} />
+        )
+      }
     </Space>
   );
 };

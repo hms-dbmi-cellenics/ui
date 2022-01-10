@@ -10,7 +10,6 @@ import { CheckCircleOutlined } from '@ant-design/icons';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import { changeGeneSelection } from '../../../redux/actions/genes';
 import GeneSelectionStatus from '../../../redux/actions/genes/geneSelectionStatus';
-import LaunchPathwayAnalysisModal from '../differential-expression-tool/LaunchPathwayAnalysisModal';
 
 import ComponentActions from './ComponentActions';
 
@@ -20,14 +19,13 @@ const { Text } = Typography;
 
 const SelectionActions = (props) => {
   const {
-    experimentId, showCSV, onExportCSV, onListSelected,
+    experimentId, onListSelected, extraOptions,
   } = props;
   const dispatch = useDispatch();
 
   const selectedGenes = useSelector((state) => state.genes.selected);
   const [copied, setCopied] = useState(false);
   const [listed, setListed] = useState(false);
-  const [pathwayAnalysisModal, setPathwayAnalysisModal] = useState(false);
 
   const clearAll = () => {
     dispatch(changeGeneSelection(experimentId, selectedGenes, GeneSelectionStatus.deselect));
@@ -78,17 +76,7 @@ const SelectionActions = (props) => {
   };
   return (
     <Row style={{ float: 'left', paddingRight: '50px' }}>
-      {
-        showCSV ? (
-          <>
-            <Button type='link' size='small' onClick={onExportCSV}>Export as CSV</Button>
-            <Button type='link' size='small' onClick={() => setPathwayAnalysisModal(!pathwayAnalysisModal)}>Pathway analysis</Button>
-          </>
-        ) : <></>
-      }
-      {pathwayAnalysisModal && (
-        <LaunchPathwayAnalysisModal onCancel={() => setPathwayAnalysisModal(false)} />
-      )}
+      {extraOptions}
       {selectedGenes.length !== 0 ? (
         <>
           <Divider style={{ height: '1px', marginTop: '5px', marginBottom: '5px' }} />
@@ -112,14 +100,13 @@ const SelectionActions = (props) => {
 };
 
 SelectionActions.defaultProps = {
-  onExportCSV: () => null,
   onListSelected: () => null,
+  extraOptions: <></>,
 };
 
 SelectionActions.propTypes = {
   experimentId: PropTypes.string.isRequired,
-  showCSV: PropTypes.bool.isRequired,
-  onExportCSV: PropTypes.func,
+  extraOptions: PropTypes.node,
   onListSelected: PropTypes.func,
 };
 

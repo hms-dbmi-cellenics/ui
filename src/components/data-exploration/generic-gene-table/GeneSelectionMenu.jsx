@@ -7,7 +7,7 @@ import { useSelector } from 'react-redux';
 import SelectionActions from './SelectionActions';
 
 const GeneSelectionMenu = (props) => {
-  const { onExportCSV, experimentId } = props;
+  const { experimentId, extraOptions } = props;
   const selectedGenes = useSelector((state) => state.genes.selected);
   const [listed, setListed] = useState(false);
 
@@ -18,8 +18,7 @@ const GeneSelectionMenu = (props) => {
     <Space direction='vertical' style={{ width: '100%' }}>
       <SelectionActions
         experimentId={experimentId}
-        showCSV={onExportCSV !== null}
-        onExportCSV={onExportCSV}
+        extraOptions={extraOptions}
         onListSelected={onListSelected}
       />
       {listed ? (
@@ -38,12 +37,12 @@ const GeneSelectionMenu = (props) => {
 };
 
 GeneSelectionMenu.defaultProps = {
-  onExportCSV: () => null,
+  extraOptions: <></>,
 };
 
 GeneSelectionMenu.propTypes = {
   experimentId: PropTypes.string.isRequired,
-  onExportCSV: PropTypes.func,
+  extraOptions: PropTypes.node,
 };
 
 export default GeneSelectionMenu;
