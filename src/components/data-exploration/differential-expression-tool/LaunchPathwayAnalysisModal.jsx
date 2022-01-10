@@ -120,10 +120,13 @@ const LaunchPathwayAnalysisModal = (props) => {
               {' '}
               <br />
               You can either
-              <a> Download reference genes into file </a>
-              {' '}
+              <Button type='link' size='small'>
+                Download reference genes into file
+              </Button>
               or
-              <a> Copy reference genes to clipboard </a>
+              <Button type='link' size='small'>
+                Copy reference genes to clipboard
+              </Button>
             </p>
           )}
         </Space>
