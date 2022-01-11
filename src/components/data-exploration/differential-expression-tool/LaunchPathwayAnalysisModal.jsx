@@ -34,7 +34,7 @@ const LaunchPathwayAnalysisModal = (props) => {
 
   const [externalService, setExternalService] = useState(externalServices.PANTHER);
   const [advancedFilteringOpen, setAdvancedFilteringOpen] = useState(false);
-  const [allGenesToggled, setAllGenesToggled] = useState(false);
+  const [allGenesToggled, setAllGenesToggled] = useState(true);
 
   const marginSpacing = { marginBottom: '20px', marginTop: '20x' };
 
