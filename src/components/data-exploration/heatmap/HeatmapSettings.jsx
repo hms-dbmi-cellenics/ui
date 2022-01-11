@@ -21,7 +21,7 @@ const HeatmapSettings = (props) => {
 
   const renderMenu = () => (
     <Menu size='small'>
-      <SubMenu key='metadataTracks' title='Metadata tracks...' icon={<></>} popupClassName='no-style-menu-item'>
+      <SubMenu key='metadataTracks' title='Metadata tracks' icon={<></>} popupClassName='no-style-menu-item'>
         <NoStyleAntdMenuItem>
           <HeatmapMetadataTrackSettings componentType={componentType} />
         </NoStyleAntdMenuItem>
