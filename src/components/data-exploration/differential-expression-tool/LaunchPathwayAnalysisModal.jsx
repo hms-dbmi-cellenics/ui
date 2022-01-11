@@ -53,7 +53,6 @@ const LaunchPathwayAnalysisModal = (props) => {
           ...marginSpacing,
         }}
         >
-          {/* <Space direction='vertical' size='large'> */}
           {/* display the alert only if there are no filter applied to diff expr */}
           <Paragraph style={{ width: '100%' }}>
             <Alert
@@ -143,7 +142,6 @@ const LaunchPathwayAnalysisModal = (props) => {
             </Button>
           </p>
         )}
-        {/* </Space> */}
       </Modal>
       {
         advancedFilteringOpen && (
