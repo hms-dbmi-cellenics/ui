@@ -332,7 +332,7 @@ const CalculationConfig = (props) => {
                   Louvain and Leiden are graph-based clustering methods which are the most popular
                   clustering algorithm in scRNA-seq data analysis since they have been reported to have outperformed other
                   clustering methods in many situations.
-                  They are also more efficient than other cluster methods which is crucial large scRNA-seq datasets.
+                  They are also more efficient than other cluster methods which is crucial for large scRNA-seq datasets.
                   <a
                     href='https://en.wikipedia.org/wiki/Louvain_method'
                     target='_blank'
@@ -356,11 +356,7 @@ const CalculationConfig = (props) => {
               )}
             >
               <Option value='louvain'>Louvain</Option>
-              <Option value='leiden' disabled>
-                <Tooltip title='Leiden metric is going to be supported on a future version of the platform.'>
-                  Leiden
-                </Tooltip>
-              </Option>
+              <Option value='leiden'>Leiden</Option>
               <Option value='slm' disabled>
                 <Tooltip title='SLM metric is going to be supported on a future version of the platform.'>
                   SLM
