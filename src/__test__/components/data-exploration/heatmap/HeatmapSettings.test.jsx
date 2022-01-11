@@ -23,7 +23,7 @@ describe('HeatmapSettings', () => {
     const dropdown = screen.getByRole('button');
     userEvent.click(dropdown);
 
-    screen.getByText(/Metadata tracks.../);
+    screen.getByText(/Metadata tracks/);
     screen.getByText(/Group by/);
   });
 });

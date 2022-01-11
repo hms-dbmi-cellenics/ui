@@ -52,7 +52,7 @@ HeatmapCellInfo.defaultProps = {};
 HeatmapCellInfo.propTypes = {
   cellId: PropTypes.string.isRequired,
   geneName: PropTypes.string.isRequired,
-  geneExpression: PropTypes.string.isRequired,
+  geneExpression: PropTypes.number.isRequired,
   coordinates: PropTypes.object.isRequired,
 };
 

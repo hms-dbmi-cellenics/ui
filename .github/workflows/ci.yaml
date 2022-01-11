@@ -120,7 +120,7 @@ jobs:
             echo "::set-output name=tag::$REF_ID-$GITHUB_SHA"
           fi
 
-          # This will take a GitHub repo name like `biomage-ltd/iac`
+          # This will take a GitHub repo name like `hms-dbmi-cellenics/iac`
           # and turns it into `iac`. This will be the name of the
           # ECR repository.
           IMAGE_REPO_NAME=$(echo $GITHUB_REPOSITORY | awk -F '/' '{print $2}')
@@ -280,7 +280,7 @@ jobs:
         uses: benjefferies/branch-protection-bot@1.0.7
         with:
           access_token: ${{ secrets.API_TOKEN_GITHUB }}
-          owner: biomage-ltd
+          owner: ${{ github.repository_owner }}
           repo: iac
           enforce_admins: false
           retries: 8
@@ -326,7 +326,7 @@ jobs:
         if: always()
         with:
           access_token: ${{ secrets.API_TOKEN_GITHUB }}
-          owner: biomage-ltd
+          owner: ${{ github.repository_owner }}
           repo: iac
           enforce_admins: true
           retries: 8

@@ -10,6 +10,10 @@ import PropTypes from 'prop-types';
 import HeatmapMetadataTrackSettings from 'components/data-exploration/heatmap/HeatmapMetadataTrackSettings';
 import HeatmapGroupBySettings from 'components/data-exploration/heatmap/HeatmapGroupBySettings';
 
+import NoStyleAntdMenuItem from 'components/NoStyleAntdMenuItem';
+
+import 'utils/css/no-style-menu-item.css';
+
 const { SubMenu } = Menu;
 
 const HeatmapSettings = (props) => {
@@ -17,11 +21,15 @@ const HeatmapSettings = (props) => {
 
   const renderMenu = () => (
     <Menu size='small'>
-      <SubMenu key='metadata-tracks' title='Metadata tracks...' icon={<></>}>
-        <HeatmapMetadataTrackSettings componentType={componentType} />
+      <SubMenu key='metadataTracks' title='Metadata tracks' icon={<></>} popupClassName='no-style-menu-item'>
+        <NoStyleAntdMenuItem>
+          <HeatmapMetadataTrackSettings componentType={componentType} />
+        </NoStyleAntdMenuItem>
       </SubMenu>
-      <SubMenu key='group-by' title='Group by' icon={<></>}>
-        <HeatmapGroupBySettings componentType={componentType} />
+      <SubMenu key='groupBy' title='Group by' icon={<></>}>
+        <NoStyleAntdMenuItem>
+          <HeatmapGroupBySettings componentType={componentType} />
+        </NoStyleAntdMenuItem>
       </SubMenu>
     </Menu>
   );

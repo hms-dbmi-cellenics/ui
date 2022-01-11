@@ -1,21 +1,25 @@
 /* eslint-disable jsx-quotes */
 import React, { useState, useEffect } from 'react';
 import {
-  Button, Space, Typography,
+  Button, Typography, Row, Divider,
 } from 'antd';
 
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 import { CheckCircleOutlined } from '@ant-design/icons';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
-import { changeGeneSelection } from '../../../redux/actions/genes';
-import GeneSelectionStatus from '../../../redux/actions/genes/geneSelectionStatus';
+import { changeGeneSelection } from 'redux/actions/genes';
+import GeneSelectionStatus from 'redux/actions/genes/geneSelectionStatus';
+
+import ComponentActions from 'components/data-exploration/generic-gene-table/ComponentActions';
+
+import { COMPONENT_TYPE } from 'components/data-exploration/heatmap/HeatmapPlot';
 
 const { Text } = Typography;
 
 const SelectionActions = (props) => {
   const {
-    experimentId, showCSV, onExportCSV, onListSelected,
+    experimentId, onListSelected, extraOptions,
   } = props;
   const dispatch = useDispatch();
 
@@ -71,9 +75,11 @@ const SelectionActions = (props) => {
     );
   };
   return (
-    <Space style={{ float: 'left' }}>
+    <Row style={{ float: 'left', paddingRight: '50px' }}>
+      {extraOptions}
       {selectedGenes.length !== 0 ? (
         <>
+          <Divider style={{ height: '1px', marginTop: '5px', marginBottom: '5px' }} />
           <Text type='secondary'>
             {`${selectedGenes.length} gene${selectedGenes.length === 1 ? '' : 's'} selected`}
           </Text>
@@ -86,28 +92,21 @@ const SelectionActions = (props) => {
           >
             {listed ? 'Hide' : 'List'}
           </Button>
+          <ComponentActions name='Heatmap' experimentId={experimentId} componentType={COMPONENT_TYPE} />
         </>
       ) : <></>}
-
-      {
-        showCSV ? (
-          <Button type='link' size='small' onClick={onExportCSV}>Export as CSV ...</Button>
-        ) : <></>
-      }
-
-    </Space>
+    </Row>
   );
 };
 
 SelectionActions.defaultProps = {
-  onExportCSV: () => null,
   onListSelected: () => null,
+  extraOptions: <></>,
 };
 
 SelectionActions.propTypes = {
   experimentId: PropTypes.string.isRequired,
-  showCSV: PropTypes.bool.isRequired,
-  onExportCSV: PropTypes.func,
+  extraOptions: PropTypes.node,
   onListSelected: PropTypes.func,
 };
 
