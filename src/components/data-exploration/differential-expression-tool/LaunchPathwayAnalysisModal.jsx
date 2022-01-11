@@ -131,15 +131,7 @@ const LaunchPathwayAnalysisModal = (props) => {
             to input the reference list of genes by setting it in &quot;Reference List&quot;
             then re-run the pathway analysis in the pantherdb page.
             {' '}
-            <br />
-            You can either
-            <Button type='link' size='small'>
-              Download reference genes into file
-            </Button>
-            or
-            <Button type='link' size='small'>
-              Copy reference genes to clipboard
-            </Button>
+            You can either download reference genes into file or copy reference genes to clipboard.
           </p>
         )}
       </Modal>
