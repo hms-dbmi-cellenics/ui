@@ -1,7 +1,6 @@
 import React from 'react';
 import { mount } from 'enzyme';
 import _ from 'lodash';
-import preloadAll from 'jest-next-dynamic';
 import { Button, Typography } from 'antd';
 import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
@@ -39,14 +38,11 @@ const initialState = {
 const mockStore = configureMockStore([thunk]);
 
 describe('SelectionIndicator', () => {
-  test('renders correctly with no selected genes and no export ability', () => {
+  test('renders correctly with no selected genes', () => {
     const store = mockStore(initialState);
     const component = mount(
       <Provider store={store}>
-        <SelectionActions
-          experimentId='test'
-          showCSV={false}
-        />
+        <SelectionActions experimentId='test' />
       </Provider>,
     );
     const button = component.find(Button);
@@ -59,23 +55,20 @@ describe('SelectionIndicator', () => {
     expect(text.length).toEqual(0);
   });
 
-  test('renders correctly with selected genes and no export ability', () => {
+  test('renders correctly with selected genes ', () => {
     const state = _.cloneDeep(initialState);
     state.genes.selected = ['CEMIP'];
 
     const store = mockStore(state);
     const component = mount(
       <Provider store={store}>
-        <SelectionActions
-          experimentId='test'
-          showCSV={false}
-        />
+        <SelectionActions experimentId='test' />
       </Provider>,
     );
     const button = component.find(Button);
     const text = component.find(Text);
-    // There should be two buttons.
-    expect(button.length).toEqual(3);
+    // There should be 4 buttons.
+    expect(button.length).toEqual(4);
 
     // A clear button
     expect(button.at(0).childAt(0).text()).toEqual('Clear');
@@ -83,8 +76,11 @@ describe('SelectionIndicator', () => {
     // And a copy to clipboard button
     expect(button.at(1).childAt(0).text()).toEqual('Copy');
 
-    // And a list selected button
+    // A list selected button
     expect(button.at(2).childAt(0).text()).toEqual('List');
+
+    // And a Heatmap button
+    expect(button.at(3).childAt(0).text()).toEqual('Heatmap');
 
     // The text should be loaded.
     expect(text.length).toEqual(1);
@@ -98,10 +94,7 @@ describe('SelectionIndicator', () => {
     const store = mockStore(state);
     const component = mount(
       <Provider store={store}>
-        <SelectionActions
-          experimentId='test'
-          showCSV={false}
-        />
+        <SelectionActions experimentId='test' />
       </Provider>,
     );
     const clearSelectedButton = component.find(Button).at(0);
@@ -116,48 +109,18 @@ describe('SelectionIndicator', () => {
 
     const component = mount(
       <Provider store={store}>
-        <SelectionActions
-          experimentId='test'
-          showCSV
-          onExportCSV={() => null}
-        />
+        <SelectionActions experimentId='test' />
       </Provider>,
     );
 
     const button = component.find(Button);
     const text = component.find(Text);
 
-    // There should be one button.
-    expect(button.length).toEqual(1);
-
-    // An 'export as csv...' button
-    expect(button.at(0).childAt(0).text()).toEqual('Export as CSV ...');
+    // There should be no buttons.
+    expect(button.length).toEqual(0);
 
     // No selection text should show.
     expect(text.length).toEqual(0);
-  });
-
-  test('callback is called when export button is pressed', () => {
-    const store = mockStore(initialState);
-    const mockCallback = jest.fn();
-
-    const component = mount(
-      <Provider store={store}>
-        <SelectionActions
-          experimentId='test'
-          showCSV
-          onExportCSV={mockCallback}
-        />
-      </Provider>,
-    );
-
-    const button = component.find(Button);
-
-    // There should be one button.
-    expect(button.length).toEqual(1);
-
-    button.simulate('click');
-    expect(mockCallback).toHaveBeenCalledTimes(1);
   });
 
   test('renders correctly with selected genes and export ability', () => {
@@ -167,16 +130,13 @@ describe('SelectionIndicator', () => {
     const store = mockStore(state);
     const component = mount(
       <Provider store={store}>
-        <SelectionActions
-          experimentId='test'
-          showCSV
-        />
+        <SelectionActions experimentId='test' />
       </Provider>,
     );
     const button = component.find(Button);
     const text = component.find(Text);
 
-    // There should be four buttons.
+    // There should be six buttons.
     expect(button.length).toEqual(4);
 
     // A clear button
@@ -185,11 +145,11 @@ describe('SelectionIndicator', () => {
     // And a copy to clipboard button
     expect(button.at(1).childAt(0).text()).toEqual('Copy');
 
-    // And a list button
+    // A list button
     expect(button.at(2).childAt(0).text()).toEqual('List');
 
-    // And an export button
-    expect(button.at(3).childAt(0).text()).toEqual('Export as CSV ...');
+    // And a Heatmap button
+    expect(button.at(3).childAt(0).text()).toEqual('Heatmap');
 
     // The text should be loaded.
     expect(text.length).toEqual(1);
@@ -206,7 +166,6 @@ describe('SelectionIndicator', () => {
       <Provider store={store}>
         <SelectionActions
           experimentId='test'
-          showCSV
           onListSelected={mockOnListSelected}
         />
       </Provider>,
@@ -229,5 +188,22 @@ describe('SelectionIndicator', () => {
     expect(mockOnListSelected.mock.calls.length).toEqual(2);
     expect(mockOnListSelected.mock.calls[1]).toEqual([false]);
     expect(listSelectedButton.childAt(0).text()).toEqual('List');
+  });
+
+  test('Shows extraOptions', () => {
+    const state = _.cloneDeep(initialState);
+    state.genes.selected = ['CEMIP', 'TIMP3'];
+
+    const store = mockStore(state);
+    const component = mount(
+      <Provider store={store}>
+        <SelectionActions
+          experimentId='test'
+          extraOptions={<div id='testExtraOption' />}
+        />
+      </Provider>,
+    );
+
+    expect(component.find('#testExtraOption').length).toEqual(1);
   });
 });
