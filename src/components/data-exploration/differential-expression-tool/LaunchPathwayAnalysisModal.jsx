@@ -29,7 +29,7 @@ const speciesOptions = [{
 }];
 
 const LaunchPathwayAnalysisModal = (props) => {
-  const { onCancel } = props;
+  const { onCancel, advancedFiltersAdded } = props;
   const externalServices = { PANTHER: 'pantherdb', ENRICHER: 'enrichr' };
 
   const [externalService, setExternalService] = useState(externalServices.PANTHER);
@@ -55,6 +55,7 @@ const LaunchPathwayAnalysisModal = (props) => {
         >
           {/* display the alert only if there are no filter applied to diff expr */}
           <Paragraph style={{ width: '100%' }}>
+            {!advancedFiltersAdded && (
             <Alert
               type='warning'
               showIcon
@@ -72,6 +73,7 @@ const LaunchPathwayAnalysisModal = (props) => {
                 </>
               )}
             />
+            )}
           </Paragraph>
         </Row>
 
@@ -145,5 +147,6 @@ const LaunchPathwayAnalysisModal = (props) => {
 };
 LaunchPathwayAnalysisModal.propTypes = {
   onCancel: PropTypes.func.isRequired,
+  advancedFiltersAdded: PropTypes.bool.isRequired,
 };
 export default LaunchPathwayAnalysisModal;

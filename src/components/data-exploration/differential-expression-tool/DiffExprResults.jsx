@@ -34,6 +34,7 @@ const DiffExprResults = (props) => {
   const error = useSelector((state) => state.differentialExpression.properties.error);
   const comparisonGroup = useSelector((state) => state.differentialExpression.comparison.group);
   const comparisonType = useSelector((state) => state.differentialExpression.comparison.type);
+  const advancedFilters = useSelector((state) => state.differentialExpression.comparison.advancedFilters);
   const { properties } = useSelector(getCellSets());
 
   const [dataShown, setDataShown] = useState(data);
@@ -230,7 +231,10 @@ const DiffExprResults = (props) => {
       />
       {
         pathwayAnalysisModal && (
-          <LaunchPathwayAnalysisModal onCancel={() => setPathwayAnalysisModal(false)} />
+          <LaunchPathwayAnalysisModal
+            onCancel={() => setPathwayAnalysisModal(false)}
+            advancedFiltersAdded={advancedFilters?.length}
+          />
         )
       }
     </Space>

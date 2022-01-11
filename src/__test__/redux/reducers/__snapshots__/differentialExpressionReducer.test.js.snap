@@ -3,6 +3,7 @@
 exports[`differentialExpressionReducer Sets error state on error action 1`] = `
 Object {
   "comparison": Object {
+    "advancedFilters": Array [],
     "group": Object {
       "between": Object {
         "basis": null,
@@ -31,6 +32,7 @@ Object {
 exports[`differentialExpressionReducer Sets loaded state on loaded action 1`] = `
 Object {
   "comparison": Object {
+    "advancedFilters": Array [],
     "group": Object {
       "between": Object {
         "basis": null,
@@ -99,6 +101,7 @@ Object {
 exports[`differentialExpressionReducer Sets loading state on loading action 1`] = `
 Object {
   "comparison": Object {
+    "advancedFilters": undefined,
     "group": Object {
       "between": Object {
         "basis": null,

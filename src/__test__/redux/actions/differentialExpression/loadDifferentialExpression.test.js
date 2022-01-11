@@ -75,6 +75,7 @@ describe('loadDifferentialExpression action', () => {
         basis: 'condition-control',
         name: 'DifferentialExpression',
         experimentId: '1234',
+        filters: [],
       },
       store.getState,
       {
@@ -142,6 +143,7 @@ describe('loadDifferentialExpression action', () => {
         compareWith: 'louvain-1',
         basis: 'condition-control',
         name: 'DifferentialExpression',
+        filters: [],
         experimentId: '1234',
       },
       store.getState,
