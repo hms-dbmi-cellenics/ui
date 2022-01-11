@@ -1,13 +1,17 @@
 import React from 'react';
 import {
-  Modal, Form, Button, Space, Select, InputNumber, Dropdown, Menu, Tooltip,
+  Modal, Form, Button, Space, Select, InputNumber, Dropdown, Menu,
 } from 'antd';
 import PropTypes from 'prop-types';
+import { useDispatch, useSelector } from 'react-redux';
+import { DIFF_EXPR_ADV_FILTERS_SET } from 'redux/actionTypes/differentialExpression';
 import { CloseOutlined, PlusOutlined } from '@ant-design/icons';
 
 const AdvancedFilteringModal = (props) => {
-  const { onCancel } = props;
+  const { onCancel, onLaunch } = props;
+  const dispatch = useDispatch();
   const [form] = Form.useForm();
+  const advancedFilters = useSelector((state) => state.differentialExpression.comparison.advancedFilters) || [];
 
   const criteriaOptions = [
     { value: 'logfc', label: 'logFC' },
@@ -65,19 +69,38 @@ const AdvancedFilteringModal = (props) => {
     </Menu>
   );
 
+  const updateAdvancedFilters = () => {
+    const formValues = form.getFieldsValue('filterForm').filterForm;
+    const formValuesFiltered = formValues.map(
+      ({ condition, criteria, value }) => ({ condition, criteria, value }),
+    );
+    dispatch({
+      type: DIFF_EXPR_ADV_FILTERS_SET,
+      payload: {
+        advancedFilters: formValuesFiltered,
+      },
+    });
+  };
+
+  const applyFilters = () => {
+    updateAdvancedFilters();
+    onLaunch();
+    onCancel();
+  };
+
   return (
     <Modal
       visible
       title='Advanced filters'
-      onCancel={onCancel}
-      // remove next line once the functionality is implemented
-      footer={[<Tooltip key='tooltip' title='Feature coming soon!'><Button disabled>Apply filters</Button></Tooltip>]}
+      onCancel={() => { onCancel(); updateAdvancedFilters(); }}
+      onOk={() => { updateAdvancedFilters(); applyFilters(); }}
       okText='Apply filters'
     >
       <Form form={form}>
 
         <Form.List
           name='filterForm'
+          initialValue={advancedFilters}
         >
           {(fields, { add, remove }) => (
             <>
@@ -125,7 +148,6 @@ const AdvancedFilteringModal = (props) => {
                   </Space>
                 );
               })}
-
               <Space direction='horizontal'>
                 <Button onClick={add} icon={<PlusOutlined />}>
                   Add custom filter
@@ -145,6 +167,7 @@ const AdvancedFilteringModal = (props) => {
 };
 
 AdvancedFilteringModal.propTypes = {
+  onLaunch: PropTypes.func.isRequired,
   onCancel: PropTypes.func.isRequired,
 };
 

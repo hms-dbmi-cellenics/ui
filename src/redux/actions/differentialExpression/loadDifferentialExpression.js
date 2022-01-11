@@ -8,7 +8,7 @@ import getTimeoutForWorkerTask from 'utils/getTimeoutForWorkerTask';
 const getCellSetName = (name) => (name?.split('/')[1] || name);
 
 const loadDifferentialExpression = (
-  experimentId, cellSets, comparisonType, tableState,
+  experimentId, cellSets, comparisonType, tableState, applyAdvancedFilters = false,
 ) => async (dispatch, getState) => {
   dispatch({
     type: DIFF_EXPR_LOADING,
@@ -16,13 +16,17 @@ const loadDifferentialExpression = (
       experimentId,
     },
   });
-
+  console.log('STATE LOL', getState());
+  const advancedFilters = applyAdvancedFilters
+    ? getState().differentialExpression.comparison.advancedFilters : [];
+  console.log('SENDING ADVANCED FILTERS', advancedFilters);
   const body = {
     name: 'DifferentialExpression',
     experimentId,
     cellSet: getCellSetName(cellSets.cellSet),
     compareWith: getCellSetName(cellSets.compareWith),
     basis: getCellSetName(cellSets.basis),
+    filters: advancedFilters,
   };
 
   let pagination = {};

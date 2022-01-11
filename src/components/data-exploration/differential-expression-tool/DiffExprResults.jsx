@@ -145,6 +145,15 @@ const DiffExprResults = (props) => {
       />
     );
   };
+  const applyAdvancedFilters = () => {
+    dispatch(loadDifferentialExpression(
+      experimentId,
+      comparisonGroup[comparisonType],
+      comparisonType,
+      false,
+      true,
+    ));
+  };
 
   return (
     <Space direction='vertical' style={{ width: '100%' }}>
@@ -171,6 +180,7 @@ const DiffExprResults = (props) => {
       </Space>
       {advancedFilteringShown && (
         <AdvancedFilteringModal
+          onLaunch={() => applyAdvancedFilters()}
           onCancel={() => setAdvancedFilteringShown(false)}
         />
       )}
