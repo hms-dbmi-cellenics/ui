@@ -1,9 +1,13 @@
-const differentialExpressionLoading = (state) => ({
+const differentialExpressionLoading = (state, action) => ({
   ...state,
   properties: {
     ...state.properties,
     loading: true,
     error: false,
+  },
+  comparison: {
+    ...state.comparison,
+    advancedFilters: action.payload.advancedFilters,
   },
 });
 

@@ -90,7 +90,6 @@ describe('ContentWrapper', () => {
     });
     wrapper.update();
 
-    console.log('**** GETTTING HERE ');
     expect(sider.length).toEqual(1);
 
     const menus = wrapper.find(Menu).children().find(Item);

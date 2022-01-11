@@ -3,13 +3,11 @@ import {
   Modal, Form, Button, Space, Select, InputNumber, Dropdown, Menu,
 } from 'antd';
 import PropTypes from 'prop-types';
-import { useDispatch, useSelector } from 'react-redux';
-import { DIFF_EXPR_ADV_FILTERS_SET } from 'redux/actionTypes/differentialExpression';
+import { useSelector } from 'react-redux';
 import { CloseOutlined, PlusOutlined } from '@ant-design/icons';
 
 const AdvancedFilteringModal = (props) => {
   const { onCancel, onLaunch } = props;
-  const dispatch = useDispatch();
   const [form] = Form.useForm();
   const advancedFilters = useSelector((state) => state.differentialExpression.comparison.advancedFilters) || [];
 
@@ -69,22 +67,12 @@ const AdvancedFilteringModal = (props) => {
     </Menu>
   );
 
-  const updateAdvancedFilters = () => {
+  const applyFilters = () => {
     const formValues = form.getFieldsValue('filterForm').filterForm;
     const formValuesFiltered = formValues.map(
       ({ condition, criteria, value }) => ({ condition, criteria, value }),
     );
-    dispatch({
-      type: DIFF_EXPR_ADV_FILTERS_SET,
-      payload: {
-        advancedFilters: formValuesFiltered,
-      },
-    });
-  };
-
-  const applyFilters = () => {
-    updateAdvancedFilters();
-    onLaunch();
+    onLaunch(formValuesFiltered);
     onCancel();
   };
 
@@ -92,8 +80,8 @@ const AdvancedFilteringModal = (props) => {
     <Modal
       visible
       title='Advanced filters'
-      onCancel={() => { onCancel(); updateAdvancedFilters(); }}
-      onOk={() => { updateAdvancedFilters(); applyFilters(); }}
+      onCancel={onCancel}
+      onOk={applyFilters}
       okText='Apply filters'
     >
       <Form form={form}>

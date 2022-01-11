@@ -268,6 +268,7 @@ describe('DiffExprResults', () => {
         compareWith: 'cluster-b',
         basis: 'scratchpad-a',
         experimentId: '1234',
+        filters: [],
         name: 'DifferentialExpression',
       },
       withResultStore.getState,

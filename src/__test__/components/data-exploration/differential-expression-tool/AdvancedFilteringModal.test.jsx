@@ -1,5 +1,7 @@
 import React from 'react';
 import '@testing-library/jest-dom';
+import { Provider } from 'react-redux';
+import { makeStore } from 'redux/store';
 
 import {
   render, screen, fireEvent, waitFor,
@@ -10,7 +12,11 @@ describe('Advanced filtering modal', () => {
   const onCancel = jest.fn();
 
   const renderAdvancedFilteringModal = () => {
-    render(<AdvancedFilteringModal onCancel={onCancel} />);
+    render(
+      <Provider store={makeStore()}>
+        <AdvancedFilteringModal onCancel={onCancel} />
+      </Provider>,
+    );
   };
 
   it('Renders properly', () => {
