@@ -15,6 +15,10 @@ Object {
         "compareWith": null,
       },
     },
+    "ordering": Object {
+      "orderBy": "logFC",
+      "orderDirection": "DESC",
+    },
     "type": "within",
   },
   "properties": Object {
@@ -42,6 +46,10 @@ Object {
         "cellSet": null,
         "compareWith": null,
       },
+    },
+    "ordering": Object {
+      "orderBy": "logFC",
+      "orderDirection": "DESC",
     },
     "type": "within",
   },
@@ -110,6 +118,10 @@ Object {
         "cellSet": null,
         "compareWith": null,
       },
+    },
+    "ordering": Object {
+      "orderBy": "logFC",
+      "orderDirection": "DESC",
     },
     "type": "within",
   },
