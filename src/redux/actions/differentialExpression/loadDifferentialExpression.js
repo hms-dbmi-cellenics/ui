@@ -39,7 +39,7 @@ const loadDifferentialExpression = (
       limit: currentPageSize,
       responseKey: 0,
     };
-    if (advancedFilters.length) {
+    if (advancedFilters?.length) {
       pagination.filters = advancedFilters;
     }
     if (tableState.geneNamesFilter) {
@@ -53,16 +53,13 @@ const loadDifferentialExpression = (
   }
 
   const timeout = getTimeoutForWorkerTask(getState(), 'DifferentialExpression');
-
   try {
     const data = await fetchWork(
       experimentId, body, getState, { timeout, extras: pagination },
     );
-
     let { total } = data;
     const { rows } = data;
-
-    if (!total && !Object.keys(pagination).length) {
+    if (!total && !Object.keys(pagination)?.length) {
       total = rows.length;
     }
 

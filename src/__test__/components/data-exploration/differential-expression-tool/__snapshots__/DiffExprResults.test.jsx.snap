@@ -3,7 +3,7 @@
 exports[`DiffExprResults can sort the gene names in alphabetical order 1`] = `
 Object {
   "payload": Object {
-    "advancedFilters": Array [],
+    "advancedFilters": undefined,
     "experimentId": "1234",
   },
   "type": "diffExpr/loading",
