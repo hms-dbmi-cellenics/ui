@@ -10,11 +10,14 @@ import AdvancedFilteringModal from 'components/data-exploration/differential-exp
 
 describe('Advanced filtering modal', () => {
   const onCancel = jest.fn();
-
+  const onLaunch = jest.fn();
   const renderAdvancedFilteringModal = () => {
     render(
       <Provider store={makeStore()}>
-        <AdvancedFilteringModal onCancel={onCancel} />
+        <AdvancedFilteringModal
+          onCancel={onCancel}
+          onLaunch={onLaunch}
+        />
       </Provider>,
     );
   };
@@ -60,5 +63,17 @@ describe('Advanced filtering modal', () => {
     expect(screen.getAllByRole('combobox').length).toEqual(2);
     expect(screen.getByText('logFC')).toBeInTheDocument();
     expect(screen.getByPlaceholderText('Insert value').value).toEqual('0.0');
+  });
+
+  it('Clicking launch the differential expression', async () => {
+    renderAdvancedFilteringModal();
+    const presetFiltersButton = screen.getByText('Add preset filter');
+    fireEvent.mouseOver(presetFiltersButton);
+    const upregulatedButton = await waitFor(() => screen.getByText('Up-regulated'));
+    upregulatedButton.click();
+    const applyButton = screen.getByText('Apply filters');
+    applyButton.click();
+    expect(onLaunch).toHaveBeenCalled();
+    expect(onCancel).toHaveBeenCalled();
   });
 });

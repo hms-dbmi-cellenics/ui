@@ -101,7 +101,12 @@ Object {
 exports[`differentialExpressionReducer Sets loading state on loading action 1`] = `
 Object {
   "comparison": Object {
-    "advancedFilters": undefined,
+    "advancedFilters": Array [
+      Object {
+        "columnName": "foo",
+        "columnValue": "bar",
+      },
+    ],
     "group": Object {
       "between": Object {
         "basis": null,

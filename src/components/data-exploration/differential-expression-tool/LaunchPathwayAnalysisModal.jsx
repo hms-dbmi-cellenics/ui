@@ -29,7 +29,7 @@ const speciesOptions = [{
 }];
 
 const LaunchPathwayAnalysisModal = (props) => {
-  const { onCancel, advancedFiltersAdded } = props;
+  const { onCancel, advancedFiltersAdded, onApplyFilters } = props;
   const externalServices = { PANTHER: 'pantherdb', ENRICHER: 'enrichr' };
 
   const [externalService, setExternalService] = useState(externalServices.PANTHER);
@@ -139,13 +139,17 @@ const LaunchPathwayAnalysisModal = (props) => {
       </Modal>
       {
         advancedFilteringOpen && (
-          <AdvancedFilteringModal onCancel={() => setAdvancedFilteringOpen(false)} />
+          <AdvancedFilteringModal 
+          onLaunch={onApplyFilters} 
+          onCancel={() => setAdvancedFilteringOpen(false)} 
+          />
         )
       }
     </>
   );
 };
 LaunchPathwayAnalysisModal.propTypes = {
+  onApplyFilters: PropTypes.func.isRequired,
   onCancel: PropTypes.func.isRequired,
   advancedFiltersAdded: PropTypes.bool.isRequired,
 };
