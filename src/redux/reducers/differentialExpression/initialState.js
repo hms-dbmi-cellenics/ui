@@ -22,8 +22,8 @@ const initialState = {
       },
     },
     ordering: {
-      orderBy: null,
-      orderDirection: null,
+      orderBy: 'logFC',
+      orderDirection: 'DESC',
     },
   },
 };

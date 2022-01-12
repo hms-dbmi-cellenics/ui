@@ -1,9 +1,14 @@
 import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
 import {
-  Modal, Alert, Radio, Space, InputNumber, Select, Tooltip, Button, Typography, Row,
+  Modal, Alert, Radio, Space, InputNumber, Select, Button, Typography, Row,
 } from 'antd';
 import PropTypes from 'prop-types';
 
+import launchExternalService from 'utils/pathwayAnalysis/launchExternalService';
+
+import getPathwayAnalysisGenes from 'utils/pathwayAnalysis/getPathwayAnalysisGenes';
+import externalServices from 'utils/pathwayAnalysis/externalServices';
 import AdvancedFilteringModal from './AdvancedFilteringModal';
 
 const { Paragraph } = Typography;
@@ -30,13 +35,29 @@ const speciesOptions = [{
 
 const LaunchPathwayAnalysisModal = (props) => {
   const { onCancel } = props;
-  const externalServices = { PANTHER: 'pantherdb', ENRICHER: 'enrichr' };
+
+  const dispatch = useDispatch();
 
   const [externalService, setExternalService] = useState(externalServices.PANTHER);
   const [advancedFilteringOpen, setAdvancedFilteringOpen] = useState(false);
   const [allGenesToggled, setAllGenesToggled] = useState(true);
+  const [numGenes, setNumGenes] = useState(0);
+  const [waitingForExternalService, setWaitingForExternalService] = useState(false);
 
   const marginSpacing = { marginBottom: '20px', marginTop: '20x' };
+
+  const launchPathwayAnalysis = async (serviceName) => {
+    setWaitingForExternalService(true);
+
+    try {
+      const pathwayGenesList = await dispatch(getPathwayAnalysisGenes(allGenesToggled, numGenes));
+      launchExternalService(serviceName, pathwayGenesList);
+    } catch (error) {
+      throw new Error('Error launching pathway analysis', error);
+    } finally {
+      setWaitingForExternalService(false);
+    }
+  };
 
   return (
     <>
@@ -45,9 +66,15 @@ const LaunchPathwayAnalysisModal = (props) => {
         title='Pathway Analysis'
         width='50%'
         onCancel={onCancel}
-        // remove next line once the functionality is implemented
-        footer={[<Tooltip key='tooltip' title='Feature coming soon!'><Button disabled>Launch</Button></Tooltip>]}
-        okText='Launch'
+        footer={[
+          <Button
+            // disabled={waitingForExternalService}
+            type='primary'
+            onClick={() => launchPathwayAnalysis(externalService)}
+          >
+            {waitingForExternalService ? 'Loading...' : 'Launch'}
+          </Button>,
+        ]}
       >
         <Row style={{
           ...marginSpacing,
@@ -99,7 +126,7 @@ const LaunchPathwayAnalysisModal = (props) => {
             </Select>
           </Space>
           <Space
-            style={{ 'margin-left': '5%' }}
+            style={{ marginLeft: '5%' }}
             direction='vertical'
           >
             <b>Number of genes</b>
@@ -114,6 +141,8 @@ const LaunchPathwayAnalysisModal = (props) => {
                 </Space>
               </Radio.Group>
               <InputNumber
+                value={numGenes}
+                onChange={(value) => setNumGenes(value)}
                 disabled={allGenesToggled}
                 size='medium'
                 style={{ width: '100px' }}
