@@ -8,8 +8,11 @@ import getTimeoutForWorkerTask from 'utils/getTimeoutForWorkerTask';
 const getCellSetName = (name) => (name?.split('/')[1] || name);
 
 const loadDifferentialExpression = (
-  experimentId, cellSets, comparisonType, tableState, advancedFilters = [],
+  experimentId, cellSets, comparisonType, tableState, newAdvancedFilters = null,
 ) => async (dispatch, getState) => {
+  const advancedFilters = newAdvancedFilters
+  || getState().differentialExpression.comparison.advancedFilters;
+
   dispatch({
     type: DIFF_EXPR_LOADING,
     payload: {
@@ -24,13 +27,11 @@ const loadDifferentialExpression = (
     cellSet: getCellSetName(cellSets.cellSet),
     compareWith: getCellSetName(cellSets.compareWith),
     basis: getCellSetName(cellSets.basis),
-    filters: advancedFilters,
   };
 
   let pagination = {};
   if (tableState) {
     const currentPageSize = tableState.pagination.pageSize;
-
     pagination = {
       orderBy: tableState.sorter.field,
       orderDirection: (tableState.sorter.order === 'ascend') ? 'ASC' : 'DESC',
@@ -38,7 +39,9 @@ const loadDifferentialExpression = (
       limit: currentPageSize,
       responseKey: 0,
     };
-
+    if (advancedFilters.length) {
+      pagination.filters = advancedFilters;
+    }
     if (tableState.geneNamesFilter) {
       pagination.filters = [{
         columnName: 'gene_names',
@@ -46,7 +49,6 @@ const loadDifferentialExpression = (
         expression: tableState.geneNamesFilter,
       }];
     }
-
     pagination = { pagination };
   }
 

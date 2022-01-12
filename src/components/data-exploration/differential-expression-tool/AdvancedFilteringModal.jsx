@@ -11,45 +11,45 @@ const AdvancedFilteringModal = (props) => {
   const [form] = Form.useForm();
   const advancedFilters = useSelector((state) => state.differentialExpression.comparison.advancedFilters) || [];
 
-  const criteriaOptions = [
-    { value: 'logfc', label: 'logFC' },
-    { value: 'pValue', label: 'adj p-value' },
-    { value: 'pct1', label: 'Pct1' },
-    { value: 'pct2', label: 'Pct2' },
+  const columnNameOptions = [
+    { value: 'logFC', label: 'logFC' },
+    { value: 'p_val_adj', label: 'adj p-value' },
+    { value: 'pct_1', label: 'Pct1' },
+    { value: 'pct_2', label: 'Pct2' },
     { value: 'auc', label: 'AUC' },
   ];
 
-  const conditionOptions = [{
-    value: 'gt',
+  const comparisonOptions = [{
+    value: 'greaterThan',
     label: 'Greater than',
   }, {
-    value: 'lt',
+    value: 'lessThan',
     label: 'Less than',
   },
   ];
 
   const valueRestrictions = {
-    pct1: [0, 100],
-    pct2: [0, 100],
-    logfc: [-50, 50],
+    pct_1: [0, 100],
+    pct_2: [0, 100],
+    logFC: [-50, 50],
     auc: [0, 1],
-    pValue: [0, 1],
+    p_val_adj: [0, 1],
   };
 
   const presetFilters = {
     'Up-regulated': {
-      criteria: 'logfc',
-      condition: 'gt',
+      columnName: 'logFC',
+      comparison: 'greaterThan',
       value: 0,
     },
     'Down-regulated': {
-      criteria: 'logfc',
-      condition: 'lt',
+      columnName: 'logFC',
+      comparison: 'lessThan',
       value: 0,
     },
     Significant: {
-      criteria: 'pValue',
-      condition: 'lt',
+      columnName: 'p_val_adj',
+      comparison: 'lessThan',
       value: 0.05,
     },
   };
@@ -70,8 +70,8 @@ const AdvancedFilteringModal = (props) => {
   const applyFilters = () => {
     const formValues = form.getFieldsValue('filterForm').filterForm;
     const formValuesFiltered = formValues.map(
-      ({ condition, criteria, value }) => ({
-        condition, criteria, value, type: 'numeric',
+      ({ comparison, columnName, value }) => ({
+        comparison, columnName, value, type: 'numeric',
       }),
     );
     onLaunch(formValuesFiltered);
@@ -95,27 +95,27 @@ const AdvancedFilteringModal = (props) => {
           {(fields, { add, remove }) => (
             <>
               {fields.map((field, index) => {
-                const { criteria } = form.getFieldValue('filterForm')[index];
+                const { columnName } = form.getFieldValue('filterForm')[index];
                 return (
                   <Space key={field.key} align='baseline'>
                     <Space direction='horizontal'>
                       <Form.Item
-                        name={[field.name, 'criteria']}
+                        name={[field.name, 'columnName']}
                       >
                         <Select
-                          placeholder='Select criteria'
+                          placeholder='Select columnName'
                           style={{ width: 140 }}
                           onChange={() => form.setFieldsValue({})}
-                          options={criteriaOptions}
+                          options={columnNameOptions}
                         />
                       </Form.Item>
 
                       <Form.Item
-                        name={[field.name, 'condition']}
+                        name={[field.name, 'comparison']}
                       >
                         <Select
-                          placeholder='Select condition'
-                          options={conditionOptions}
+                          placeholder='Select comparison'
+                          options={comparisonOptions}
                           style={{ width: 150 }}
                         />
                       </Form.Item>
@@ -126,9 +126,9 @@ const AdvancedFilteringModal = (props) => {
                       >
                         <InputNumber
                           style={{ width: 140 }}
-                          step={criteria ? valueRestrictions[criteria][1] / 100 : 1}
-                          min={criteria ? valueRestrictions[criteria][0] : 0}
-                          max={criteria ? valueRestrictions[criteria][1] : 0}
+                          step={columnName ? valueRestrictions[columnName][1] / 100 : 1}
+                          min={columnName ? valueRestrictions[columnName][0] : 0}
+                          max={columnName ? valueRestrictions[columnName][1] : 0}
                           placeholder='Insert value'
                         />
                       </Form.Item>

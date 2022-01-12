@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   useSelector,
   useDispatch,
@@ -42,7 +42,7 @@ const DiffExprResults = (props) => {
   const [settingsListed, setSettingsListed] = useState(false);
   const [advancedFilteringShown, setAdvancedFilteringShown] = useState(false);
   const [pathwayAnalysisModal, setPathwayAnalysisModal] = useState(false);
-
+  const geneTableState = useRef({});
   const columns = [
     {
       title: 'logFC',
@@ -95,7 +95,7 @@ const DiffExprResults = (props) => {
     if (reason === geneTableUpdateReason.loaded || reason === geneTableUpdateReason.loading) {
       return;
     }
-
+    geneTableState.current = newState;
     dispatch(
       loadDifferentialExpression(
         experimentId,
@@ -104,6 +104,16 @@ const DiffExprResults = (props) => {
         newState,
       ),
     );
+  };
+
+  const applyAdvancedFilters = (filters) => {
+    dispatch(loadDifferentialExpression(
+      experimentId,
+      comparisonGroup[comparisonType],
+      comparisonType,
+      geneTableState.current,
+      filters,
+    ));
   };
 
   const optionName = (word) => {
@@ -151,15 +161,6 @@ const DiffExprResults = (props) => {
         }}
       />
     );
-  };
-  const applyAdvancedFilters = (filters) => {
-    dispatch(loadDifferentialExpression(
-      experimentId,
-      comparisonGroup[comparisonType],
-      comparisonType,
-      false,
-      filters,
-    ));
   };
 
   return (
