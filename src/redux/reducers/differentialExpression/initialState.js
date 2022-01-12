@@ -21,6 +21,10 @@ const initialState = {
         basis: null,
       },
     },
+    ordering: {
+      orderBy: null,
+      orderDirection: null,
+    },
   },
 };
 
