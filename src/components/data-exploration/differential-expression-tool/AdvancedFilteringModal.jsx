@@ -70,7 +70,9 @@ const AdvancedFilteringModal = (props) => {
   const applyFilters = () => {
     const formValues = form.getFieldsValue('filterForm').filterForm;
     const formValuesFiltered = formValues.map(
-      ({ condition, criteria, value }) => ({ condition, criteria, value }),
+      ({ condition, criteria, value }) => ({
+        condition, criteria, value, type: 'numeric',
+      }),
     );
     onLaunch(formValuesFiltered);
     onCancel();
