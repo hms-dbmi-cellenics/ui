@@ -31,8 +31,6 @@ const getPathwayAnalysisGenes = (getAllGenes, numGenes) => async (dispatch, getS
     { genesOnly: true },
   );
 
-  console.log(body);
-
   const timeout = getTimeoutForWorkerTask(getState(), 'DifferentialExpression');
 
   try {
@@ -42,11 +40,8 @@ const getPathwayAnalysisGenes = (getAllGenes, numGenes) => async (dispatch, getS
 
     const { rows } = data;
 
-    console.log(rows);
-
     return rows;
   } catch (error) {
-    console.log('*** ERROR CUY');
     throw new Error(error);
   }
 };

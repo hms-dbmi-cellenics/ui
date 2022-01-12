@@ -1,9 +1,25 @@
-import externalServices from './externalServices';
+import pathwayServices, { serviceUrls } from './pathwayServices';
 
-function openEnrichr(target, genesList, options) {
+const launchPathwayService = (serviceName, genesList, species) => {
+  let url = null;
+  let params = null;
+
+  switch (serviceName) {
+    case pathwayServices.ENRICHR:
+      url = serviceUrls[pathwayServices.ENRICHR][species];
+      params = {
+        description: `Cellenics ENRICHR run with ${genesList.length} genes`,
+        popup: true,
+      };
+      launchEnrichr(url, genesList.gene_names, params);
+      break;
+    default:
+      throw new Error('No such external service');
+  }
+};
+
+function launchEnrichr(target, genesList, options) {
   const genesInput = genesList.join('\n');
-
-  console.log(genesInput);
 
   const description = options.description || '';
   const popup = options.popup || false;
@@ -33,22 +49,4 @@ function openEnrichr(target, genesList, options) {
   document.body.removeChild(form);
 }
 
-const launchExternalService = (serviceName, genesList) => {
-  let url = null;
-  let params = null;
-
-  switch (serviceName) {
-    case externalServices.ENRICHR:
-      url = 'https://maayanlab.cloud/Enrichr/enrich';
-      params = {
-        description: `ENRICHR run with ${genesList.length} genes`,
-        popup: true,
-      };
-      openEnrichr(url, genesList.gene_names, params);
-      break;
-    default:
-      throw new Error('No such external service');
-  }
-};
-
-export default launchExternalService;
+export default launchPathwayService;

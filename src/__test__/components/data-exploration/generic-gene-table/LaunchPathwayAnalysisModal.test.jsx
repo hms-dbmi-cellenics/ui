@@ -11,12 +11,12 @@ describe('Pathway analysis modal ', () => {
     render(<LaunchPathwayAnalysisModal onCancel={onCancel} />);
   };
 
-  const externalServices = ['pantherdb', 'enrichr'];
+  const pathwayServices = ['pantherdb', 'enrichr'];
 
   it('Renders properly', () => {
     renderPathwayAnalysisModal();
     expect(screen.getByText('You have not performed any filtering on the genes!')).toBeInTheDocument();
-    externalServices.forEach((service) => {
+    pathwayServices.forEach((service) => {
       expect(screen.getByLabelText(service)).toBeInTheDocument();
     });
 

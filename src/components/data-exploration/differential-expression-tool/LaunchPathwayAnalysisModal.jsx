@@ -5,44 +5,26 @@ import {
 } from 'antd';
 import PropTypes from 'prop-types';
 
-import launchExternalService from 'utils/pathwayAnalysis/launchExternalService';
-
+import launchPathwayService from 'utils/pathwayAnalysis/launchPathwayService';
 import getPathwayAnalysisGenes from 'utils/pathwayAnalysis/getPathwayAnalysisGenes';
-import externalServices from 'utils/pathwayAnalysis/externalServices';
+import pathwayServices from 'utils/pathwayAnalysis/pathwayServices';
+import speciesOptions from 'utils/pathwayAnalysis/pathwaySpecies';
+
 import AdvancedFilteringModal from './AdvancedFilteringModal';
 
 const { Paragraph } = Typography;
-
-const speciesOptions = [{
-  value: 'musculus',
-  label: 'Mus musculus',
-}, {
-  value: 'sapiens',
-  label: 'Homo sapiens',
-}, {
-  value: 'melanogaster',
-  label: 'Drosophila melanogaster',
-}, {
-  value: 'cerevisiae',
-  label: 'Saccharomyces cerevisiae',
-}, {
-  value: 'elegans',
-  label: 'Caenorhabditis elegans',
-}, {
-  value: 'rerio',
-  label: 'Danio rerio',
-}];
 
 const LaunchPathwayAnalysisModal = (props) => {
   const { onCancel } = props;
 
   const dispatch = useDispatch();
 
-  const [externalService, setExternalService] = useState(externalServices.PANTHER);
+  const [externalService, setExternalService] = useState(pathwayServices.PANTHER);
   const [advancedFilteringOpen, setAdvancedFilteringOpen] = useState(false);
-  const [allGenesToggled, setAllGenesToggled] = useState(true);
+  const [useAllGenes, setUseAllGenes] = useState(true);
   const [numGenes, setNumGenes] = useState(0);
   const [waitingForExternalService, setWaitingForExternalService] = useState(false);
+  const [species, setSpecies] = useState(speciesOptions[0]?.value);
 
   const marginSpacing = { marginBottom: '20px', marginTop: '20x' };
 
@@ -50,8 +32,8 @@ const LaunchPathwayAnalysisModal = (props) => {
     setWaitingForExternalService(true);
 
     try {
-      const pathwayGenesList = await dispatch(getPathwayAnalysisGenes(allGenesToggled, numGenes));
-      launchExternalService(serviceName, pathwayGenesList);
+      const pathwayGenesList = await dispatch(getPathwayAnalysisGenes(useAllGenes, numGenes));
+      launchPathwayService(serviceName, pathwayGenesList, species);
     } catch (error) {
       throw new Error('Error launching pathway analysis', error);
     } finally {
@@ -68,7 +50,7 @@ const LaunchPathwayAnalysisModal = (props) => {
         onCancel={onCancel}
         footer={[
           <Button
-            // disabled={waitingForExternalService}
+            disabled={waitingForExternalService}
             type='primary'
             onClick={() => launchPathwayAnalysis(externalService)}
           >
@@ -106,8 +88,8 @@ const LaunchPathwayAnalysisModal = (props) => {
 
         <Row style={marginSpacing}>
           <Radio.Group value={externalService} onChange={(e) => setExternalService(e.target.value)}>
-            {Object.keys(externalServices).map((service) => {
-              const serviceName = externalServices[service];
+            {Object.keys(pathwayServices).map((service) => {
+              const serviceName = pathwayServices[service];
               return (<Radio key={service} value={serviceName}>{serviceName}</Radio>);
             })}
           </Radio.Group>
@@ -117,7 +99,7 @@ const LaunchPathwayAnalysisModal = (props) => {
           <Space direction='vertical'>
             <b>Species</b>
 
-            <Select style={{ width: 400 }}>
+            <Select value={species} onChange={(value) => setSpecies(value)} style={{ width: 400 }}>
               {
                 speciesOptions.map((option) => (
                   <Select.Option value={option.value}><i>{option.label}</i></Select.Option>
@@ -132,8 +114,8 @@ const LaunchPathwayAnalysisModal = (props) => {
             <b>Number of genes</b>
             <Space>
               <Radio.Group
-                value={allGenesToggled}
-                onChange={(e) => setAllGenesToggled(e.target.value)}
+                value={useAllGenes}
+                onChange={(e) => setUseAllGenes(e.target.value)}
               >
                 <Space>
                   <Radio value>All</Radio>
@@ -143,7 +125,7 @@ const LaunchPathwayAnalysisModal = (props) => {
               <InputNumber
                 value={numGenes}
                 onChange={(value) => setNumGenes(value)}
-                disabled={allGenesToggled}
+                disabled={useAllGenes}
                 size='medium'
                 style={{ width: '100px' }}
                 min={0}
@@ -152,7 +134,7 @@ const LaunchPathwayAnalysisModal = (props) => {
             </Space>
           </Space>
         </Row>
-        {externalService === externalServices.PANTHER && (
+        {externalService === pathwayServices.PANTHER && (
           <p>
             It is
             <b> strongly recommended </b>
@@ -172,7 +154,9 @@ const LaunchPathwayAnalysisModal = (props) => {
     </>
   );
 };
+
 LaunchPathwayAnalysisModal.propTypes = {
   onCancel: PropTypes.func.isRequired,
 };
+
 export default LaunchPathwayAnalysisModal;
