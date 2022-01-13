@@ -76,10 +76,14 @@ const SelectionActions = (props) => {
   };
   return (
     <Row style={{ float: 'left', paddingRight: '50px' }}>
-      {extraOptions}
+      {extraOptions ?? <></>}
+
+      {extraOptions && selectedGenes.length !== 0 && (
+        <Divider style={{ height: '1px', marginTop: '5px', marginBottom: '5px' }} />
+      )}
+
       {selectedGenes.length !== 0 ? (
         <>
-          <Divider style={{ height: '1px', marginTop: '5px', marginBottom: '5px' }} />
           <Text type='secondary'>
             {`${selectedGenes.length} gene${selectedGenes.length === 1 ? '' : 's'} selected`}
           </Text>
@@ -101,7 +105,7 @@ const SelectionActions = (props) => {
 
 SelectionActions.defaultProps = {
   onListSelected: () => null,
-  extraOptions: <></>,
+  extraOptions: null,
 };
 
 SelectionActions.propTypes = {
