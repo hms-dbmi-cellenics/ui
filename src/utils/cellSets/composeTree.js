@@ -15,6 +15,7 @@ const composeTree = (hierarchy, properties, filterType = null) => {
       (root) => (!type || properties[root.key].type === type),
     ).map(
       (node) => {
+        // eslint-disable-next-line no-unused-vars
         const { parentNodeKey, ...restOfProperties } = properties[node.key];
 
         return ({

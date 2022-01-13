@@ -1,39 +1,25 @@
+/* eslint-disable no-param-reassign */
 import _ from 'lodash';
+import produce, { current } from 'immer';
 
-const cellSetsDelete = (state, action) => {
+import initialState from 'redux/reducers/cellSets/initialState';
+
+const cellSetsDelete = produce((draft, action) => {
   const { key } = action.payload;
+  const { parentNodeKey } = current(draft).properties[key];
 
-  const newState = _.cloneDeep(state);
-  // Modify hierarchy to remove the cell set.
-  newState.hierarchy = newState.hierarchy.filter((rootNode) => {
-    // If it's a root we're removing, delete all its children.
-    if (rootNode.key === key) {
-      // eslint-disable-next-line no-unused-expressions
-      rootNode.children?.forEach((child) => {
-        delete newState.properties[child.key];
-      });
-
-      return false;
-    }
-
-    if (rootNode.children) {
-      // eslint-disable-next-line no-param-reassign
-      rootNode.children = rootNode.children.filter((child) => child.key !== key);
-    }
-
-    return true;
-  });
+  // Remove cellSet from hierarchy
+  const index = draft.hierarchy.findIndex((rootNode) => rootNode.key === parentNodeKey);
+  _.remove(draft.hierarchy[index].children, ({ key: currentKey }) => currentKey === key);
 
   // Delete from the properties as well.
-  delete newState.properties[key];
+  delete draft.properties[key];
 
   // If the key was in the list of selected keys, make sure we remove it from there.
-  newState.selected = newState.selected.cellSets?.filter((selectedKey) => selectedKey !== key);
+  _.remove(draft.selected.cellSets, (currentSelectedKey) => currentSelectedKey === key);
 
   // Delete from hidden if it was selected to be hidden.
-  newState.hidden.delete(key);
-
-  return newState;
-};
+  draft.hidden.delete(key);
+}, initialState);
 
 export default cellSetsDelete;
