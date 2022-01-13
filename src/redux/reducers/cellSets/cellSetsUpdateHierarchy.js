@@ -1,12 +1,14 @@
-import { createHierarchyFromTree } from './helpers';
+/* eslint-disable no-param-reassign */
+import produce from 'immer';
 
-const cellSetsUpdateHierarchy = (state, action) => {
+import { createHierarchyFromTree } from 'redux/reducers/cellSets/helpers';
+
+import initialState from 'redux/reducers/cellSets/initialState';
+
+const cellSetsUpdateHierarchy = produce((draft, action) => {
   const { hierarchy } = action.payload;
 
-  return {
-    ...state,
-    hierarchy: createHierarchyFromTree(hierarchy),
-  };
-};
+  draft.hierarchy = createHierarchyFromTree(hierarchy);
+}, initialState);
 
 export default cellSetsUpdateHierarchy;
