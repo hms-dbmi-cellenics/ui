@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
 import produce from 'immer';
 
-import initialState from './initialState';
+import initialState from 'redux/reducers/differentialExpression/initialState';
 
 const differentialExpressionSetGeneOrdering = produce((draft, action) => {
   const { orderBy, orderDirection } = action.payload;

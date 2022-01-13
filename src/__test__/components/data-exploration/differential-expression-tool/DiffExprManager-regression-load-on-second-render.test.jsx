@@ -95,9 +95,9 @@ describe('DiffExprManager regression test -- diff exp would not reload after `go
       </Provider>,
     );
 
-    const cellSets = { cellSet: 'louvain/cluster-1', compareWith: 'rest', basis: 'all' };
+    const comparisonGroup = { cellSet: 'louvain/cluster-1', compareWith: 'rest', basis: 'all' };
     act(() => {
-      component.find(DiffExprCompute).props().onCompute('between', cellSets);
+      component.find(DiffExprCompute).props().onCompute('between', comparisonGroup);
     });
     component.update();
 
@@ -119,9 +119,9 @@ describe('DiffExprManager regression test -- diff exp would not reload after `go
     );
 
     // Choose a cluster and hit compute.
-    let cellSets = { cellSet: 'louvain/cluster-2', compareWith: 'rest', basis: 'all' };
+    let comparisonGroup = { cellSet: 'louvain/cluster-2', compareWith: 'rest', basis: 'all' };
     act(() => {
-      component.find(DiffExprCompute).props().onCompute('between', cellSets);
+      component.find(DiffExprCompute).props().onCompute('between', comparisonGroup);
     });
     component.update();
 
@@ -146,9 +146,9 @@ describe('DiffExprManager regression test -- diff exp would not reload after `go
     expect(component.find(DiffExprCompute).length).toEqual(1);
 
     // Choose another cell set.
-    cellSets = { cellSet: 'louvain/cluster-3', compareWith: 'rest', basis: 'all' };
+    comparisonGroup = { cellSet: 'louvain/cluster-3', compareWith: 'rest', basis: 'all' };
     act(() => {
-      component.find(DiffExprCompute).props().onCompute('between', cellSets);
+      component.find(DiffExprCompute).props().onCompute('between', comparisonGroup);
     });
     component.update();
 

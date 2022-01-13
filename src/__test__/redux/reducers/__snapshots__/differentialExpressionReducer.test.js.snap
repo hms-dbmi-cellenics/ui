@@ -22,7 +22,7 @@ Object {
     "type": "within",
   },
   "properties": Object {
-    "cellSets": Object {},
+    "comparisonGroup": Object {},
     "comparisonType": null,
     "data": Array [],
     "error": "asd",
@@ -54,10 +54,7 @@ Object {
     "type": "within",
   },
   "properties": Object {
-    "cellSets": Object {
-      "first": "louvain-0",
-      "second": "louvain-1",
-    },
+    "comparisonGroup": undefined,
     "comparisonType": undefined,
     "data": Array [
       Object {
@@ -126,7 +123,7 @@ Object {
     "type": "within",
   },
   "properties": Object {
-    "cellSets": Object {},
+    "comparisonGroup": Object {},
     "comparisonType": null,
     "data": Array [],
     "error": false,

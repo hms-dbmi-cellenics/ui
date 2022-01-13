@@ -12,7 +12,7 @@ Object {
 exports[`DiffExprResults can sort the gene names in alphabetical order 2`] = `
 Object {
   "payload": Object {
-    "cellSets": Object {
+    "comparisonGroup": Object {
       "basis": "scratchpad/scratchpad-a",
       "cellSet": "louvain/cluster-a",
       "compareWith": "louvain/cluster-b",

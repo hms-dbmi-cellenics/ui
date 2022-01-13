@@ -1,7 +1,7 @@
 const initialState = {
   properties: {
     data: [],
-    cellSets: {},
+    comparisonGroup: {},
     comparisonType: null,
     loading: false,
     error: false,

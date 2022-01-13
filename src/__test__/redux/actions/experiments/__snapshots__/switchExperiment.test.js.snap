@@ -100,7 +100,7 @@ Object {
       "type": "within",
     },
     "properties": Object {
-      "cellSets": Object {},
+      "comparisonGroup": Object {},
       "comparisonType": null,
       "data": Array [],
       "error": false,

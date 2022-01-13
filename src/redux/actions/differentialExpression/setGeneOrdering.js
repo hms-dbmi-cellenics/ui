@@ -1,6 +1,6 @@
 import {
   DIFF_EXPR_ORDERING_SET,
-} from '../../actionTypes/differentialExpression';
+} from 'redux/actionTypes/differentialExpression';
 
 const setGeneOrdering = (orderBy, orderDirection) => async (dispatch) => {
   dispatch({

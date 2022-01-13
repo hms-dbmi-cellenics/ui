@@ -69,7 +69,7 @@ const loadDifferentialExpression = (
       payload: {
         experimentId,
         data: rows,
-        cellSets: comparisonGroup,
+        comparisonGroup,
         total,
         comparisonType,
       },
