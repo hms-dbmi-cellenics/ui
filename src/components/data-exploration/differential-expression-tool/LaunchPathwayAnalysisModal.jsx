@@ -139,12 +139,12 @@ const LaunchPathwayAnalysisModal = (props) => {
       </Modal>
       {
         advancedFilteringModalVisible && (
-          <AdvancedFilteringModal 
-          onLaunch={(filters)=>{
-            onApplyFilters(filters); 
-            setAdvancedFilteringModalVisible(false);
-          }} 
-          onCancel={() => setAdvancedFilteringModalVisible(false)} 
+          <AdvancedFilteringModal
+            onLaunch={(filters) => {
+              onApplyFilters(filters);
+              setAdvancedFilteringModalVisible(false);
+            }}
+            onCancel={() => setAdvancedFilteringModalVisible(false)}
           />
         )
       }

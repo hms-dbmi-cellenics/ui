@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  Modal, Form, Button, Space, Select, InputNumber, Dropdown, Menu,
+  Modal, Form, Button, Space, Select, InputNumber, Dropdown, Menu, Divider, Row,
 } from 'antd';
 import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
@@ -70,14 +70,10 @@ const AdvancedFilteringModal = (props) => {
     </Menu>
   );
 
-  const applyFilters = () => {
-    const formValues = form.getFieldsValue('filterForm').filterForm;
-    const formValuesFiltered = formValues.map(
-      ({ comparison, columnName, value }) => ({
-        comparison, columnName, value, type: 'numeric',
-      }),
-    );
-    onLaunch(formValuesFiltered);
+  const applyFilters = (filters) => {
+    const filtersWithType = filters.map((filter) => ({ type: 'numeric', ...filter }));
+
+    onLaunch(filtersWithType);
   };
 
   return (
@@ -85,28 +81,28 @@ const AdvancedFilteringModal = (props) => {
       visible
       title='Advanced filters'
       onCancel={onCancel}
-      onOk={applyFilters}
-      okButtonProps={diffExprLoading ? { disabled: true } : {}}
-      okText='Apply filters'
+      footer={null}
+      width='530px'
     >
-      <Form form={form}>
-
+      <Form form={form} onFinish={({ filterForm }) => applyFilters(filterForm)}>
         <Form.List
           name='filterForm'
           initialValue={advancedFilters}
+
         >
           {(fields, { add, remove }) => (
             <>
-              {fields.map((field, index) => {
-                const { columnName } = form.getFieldValue('filterForm')[index];
-                return (
-                  <Space key={field.key} align='baseline'>
-                    <Space direction='horizontal'>
+              <Row>
+                {fields.map((field, index) => {
+                  const { columnName } = form.getFieldValue('filterForm')[index];
+                  return (
+                    <Space key={field.key} align='baseline'>
                       <Form.Item
                         name={[field.name, 'columnName']}
+                        rules={[{ required: true, message: 'Please select a property' }]}
                       >
                         <Select
-                          placeholder='Select columnName'
+                          placeholder='Select property'
                           style={{ width: 140 }}
                           onChange={() => form.setFieldsValue({})}
                           options={criteriaOptions}
@@ -115,6 +111,7 @@ const AdvancedFilteringModal = (props) => {
 
                       <Form.Item
                         name={[field.name, 'comparison']}
+                        rules={[{ required: true, message: 'Please select a comparison' }]}
                       >
                         <Select
                           placeholder='Select comparison'
@@ -125,7 +122,7 @@ const AdvancedFilteringModal = (props) => {
 
                       <Form.Item
                         name={[field.name, 'value']}
-
+                        rules={[{ required: true, message: 'Please input a value' }]}
                       >
                         <InputNumber
                           style={{ width: 140 }}
@@ -135,22 +132,32 @@ const AdvancedFilteringModal = (props) => {
                           placeholder='Insert value'
                         />
                       </Form.Item>
-                    </Space>
 
-                    <CloseOutlined onClick={() => remove(field.name)} />
-                  </Space>
-                );
-              })}
-              <Space direction='horizontal'>
-                <Button onClick={add} icon={<PlusOutlined />}>
-                  Add custom filter
-                </Button>
-                <Dropdown overlay={renderPresetFilters(add)}>
-                  <Button icon={<PlusOutlined />}>
-                    Add preset filter
+                      <CloseOutlined onClick={() => remove(field.name)} style={{ margin: '8px' }} />
+                    </Space>
+                  );
+                })}
+              </Row>
+              <Row>
+                <Space direction='horizontal'>
+                  <Button onClick={add} icon={<PlusOutlined />}>
+                    Add custom filter
                   </Button>
-                </Dropdown>
-              </Space>
+                  <Dropdown overlay={renderPresetFilters(add)}>
+                    <Button icon={<PlusOutlined />}>
+                      Add preset filter
+                    </Button>
+                  </Dropdown>
+                </Space>
+              </Row>
+              <Divider style={{ marginBottom: '10px' }} />
+              <div align='end' style={{ marginTop: '0px', width: '100%' }}>
+                <Form.Item style={{ marginBottom: '-10px', marginTop: '0px' }}>
+                  <Button type='primary' htmlType='submit' disabled={diffExprLoading}>
+                    Apply filters
+                  </Button>
+                </Form.Item>
+              </div>
             </>
           )}
         </Form.List>
