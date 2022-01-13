@@ -1,6 +1,6 @@
 import launchPathwayService from 'utils/pathwayAnalysis/launchPathwayService';
 
-import pathwayServices from 'utils/pathwayAnalysis/pathwayServices';
+import { pathwayServices } from 'utils/pathwayAnalysis/pathwayConstants';
 
 const genesList = {
   gene_names: ['gene1', 'gene2'],

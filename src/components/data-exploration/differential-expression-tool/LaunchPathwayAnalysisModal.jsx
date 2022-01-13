@@ -7,8 +7,7 @@ import PropTypes from 'prop-types';
 
 import launchPathwayService from 'utils/pathwayAnalysis/launchPathwayService';
 import getPathwayAnalysisGenes from 'utils/pathwayAnalysis/getPathwayAnalysisGenes';
-import pathwayServices from 'utils/pathwayAnalysis/pathwayServices';
-import speciesOptions from 'utils/pathwayAnalysis/pathwaySpecies';
+import { pathwayServices, speciesList } from 'utils/pathwayAnalysis/pathwayConstants';
 
 import AdvancedFilteringModal from './AdvancedFilteringModal';
 
@@ -24,7 +23,7 @@ const LaunchPathwayAnalysisModal = (props) => {
   const [useAllGenes, setUseAllGenes] = useState(true);
   const [numGenes, setNumGenes] = useState(0);
   const [waitingForExternalService, setWaitingForExternalService] = useState(false);
-  const [species, setSpecies] = useState(speciesOptions[0]?.value);
+  const [species, setSpecies] = useState(speciesList[0]?.value);
 
   const marginSpacing = { marginBottom: '20px', marginTop: '20x' };
 
@@ -101,7 +100,7 @@ const LaunchPathwayAnalysisModal = (props) => {
 
             <Select value={species} onChange={(value) => setSpecies(value)} style={{ width: 400 }}>
               {
-                speciesOptions.map((option) => (
+                speciesList.map((option) => (
                   <Select.Option value={option.value}><i>{option.label}</i></Select.Option>
                 ))
               }

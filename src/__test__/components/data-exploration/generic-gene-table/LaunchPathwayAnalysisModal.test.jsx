@@ -10,8 +10,7 @@ import { makeStore } from 'redux/store';
 
 import launchPathwayService from 'utils/pathwayAnalysis/launchPathwayService';
 import getPathwayAnalysisGenes from 'utils/pathwayAnalysis/getPathwayAnalysisGenes';
-import pathwayServices from 'utils/pathwayAnalysis/pathwayServices';
-import speciesOptions from 'utils/pathwayAnalysis/pathwaySpecies';
+import { pathwayServices, speciesList } from 'utils/pathwayAnalysis/pathwayConstants';
 
 jest.mock('utils/pathwayAnalysis/launchPathwayService');
 jest.mock('utils/pathwayAnalysis/getPathwayAnalysisGenes');
@@ -94,7 +93,7 @@ describe('Pathway analysis modal ', () => {
   it('Passes the species key correctly', async () => {
     renderPathwayAnalysisModal();
 
-    const secondSpecies = speciesOptions[speciesOptions.length - 1];
+    const secondSpecies = speciesList[speciesList.length - 1];
 
     await act(async () => {
       userEvent.click(screen.getByRole('combobox'));

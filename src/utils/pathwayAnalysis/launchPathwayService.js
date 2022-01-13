@@ -1,15 +1,16 @@
-import pathwayServices, { serviceUrls } from './pathwayServices';
+import { pathwayServices, serviceUrls } from './pathwayConstants';
 
 const launchPathwayService = (serviceName, genesList, species) => {
   let url = null;
   let params = null;
 
   switch (serviceName) {
+    case pathwayServices.PANTHERDB:
+      break;
     case pathwayServices.ENRICHR:
       url = serviceUrls[pathwayServices.ENRICHR][species];
       params = {
         description: `Cellenics ENRICHR run with ${genesList.length} genes`,
-        popup: true,
       };
       launchEnrichr(url, genesList.gene_names, params);
       break;
@@ -22,16 +23,13 @@ function launchEnrichr(target, genesList, options) {
   const genesInput = genesList.join('\n');
 
   const description = options.description || '';
-  const popup = options.popup || false;
   const form = document.createElement('form');
   const listField = document.createElement('input');
   const descField = document.createElement('input');
 
   form.setAttribute('method', 'post');
   form.setAttribute('action', target);
-  if (popup) {
-    form.setAttribute('target', '_blank');
-  }
+  form.setAttribute('target', '_blank');
   form.setAttribute('enctype', 'multipart/form-data');
 
   listField.setAttribute('type', 'hidden');
