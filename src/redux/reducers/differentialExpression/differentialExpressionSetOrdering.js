@@ -3,13 +3,13 @@ import produce from 'immer';
 
 import initialState from './initialState';
 
-const differentialExpressionSetOrdering = produce((draft, action) => {
+const differentialExpressionSetGeneOrdering = produce((draft, action) => {
   const { orderBy, orderDirection } = action.payload;
 
-  draft.ordering = {
+  draft.comparison.ordering = {
     orderBy,
     orderDirection,
   };
 }, initialState);
 
-export default differentialExpressionSetOrdering;
+export default differentialExpressionSetGeneOrdering;

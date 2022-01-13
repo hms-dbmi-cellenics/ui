@@ -7,7 +7,7 @@ import _ from 'lodash';
 import PropTypes from 'prop-types';
 import FilterGenes from './FilterGenes';
 import { changeGeneSelection } from '../../../redux/actions/genes';
-import { setOrdering } from '../../../redux/actions/differentialExpression';
+import { setGeneOrdering } from '../../../redux/actions/differentialExpression';
 import GeneSelectionStatus from '../../../redux/actions/genes/geneSelectionStatus';
 import { geneTableUpdateReason } from '../../../utils/geneTable/geneTableUpdateReason';
 import FocusButton from '../../FocusButton';
@@ -58,7 +58,7 @@ const GeneTable = (props) => {
 
   const handleTableChange = (newPagination, a, newSorter) => {
     const sortOrder = newSorter.order === 'ascend' ? 'ASC' : 'DESC';
-    dispatch(setOrdering(newSorter.field, sortOrder));
+    dispatch(setGeneOrdering(newSorter.field, sortOrder));
 
     const newTableState = { ...tableState, pagination: newPagination, sorter: newSorter };
 

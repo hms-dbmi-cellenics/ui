@@ -1,11 +1,11 @@
 import loadDifferentialGeneExpression from './loadDifferentialExpression';
 import setComparisonType from './setComparisonType';
 import setComparisonGroup from './setComparisonGroup';
-import setOrdering from './setOrdering';
+import setGeneOrdering from './setGeneOrdering';
 
 export {
   loadDifferentialGeneExpression,
   setComparisonType,
   setComparisonGroup,
-  setOrdering,
+  setGeneOrdering,
 };

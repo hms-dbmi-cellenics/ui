@@ -2,7 +2,7 @@ import {
   DIFF_EXPR_ORDERING_SET,
 } from '../../actionTypes/differentialExpression';
 
-const setOrdering = (orderBy, orderDirection) => async (dispatch) => {
+const setGeneOrdering = (orderBy, orderDirection) => async (dispatch) => {
   dispatch({
     type: DIFF_EXPR_ORDERING_SET,
     payload: {
@@ -12,4 +12,4 @@ const setOrdering = (orderBy, orderDirection) => async (dispatch) => {
   });
 };
 
-export default setOrdering;
+export default setGeneOrdering;

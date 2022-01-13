@@ -2,7 +2,7 @@ import {
   H_SAPIENS, M_MUSCULUS, D_MELANOGASTER, S_CEREVISAE, C_ELEGANS, D_RERIO,
 } from 'utils/pathwayAnalysis/pathwaySpecies';
 
-const pathwayServices = { PANTHER: 'pantherdb', ENRICHR: 'enrichr' };
+const pathwayServices = { PANTHERDB: 'pantherdb', ENRICHR: 'enrichr' };
 
 const serviceUrls = {
   [pathwayServices.ENRICHR]: {

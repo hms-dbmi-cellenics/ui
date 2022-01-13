@@ -38,12 +38,8 @@ describe('Pathway analysis modal ', () => {
     renderPathwayAnalysisModal();
     expect(screen.getByText('You have not performed any filtering on the genes!')).toBeInTheDocument();
 
-    pathwayServices.forEach((serviceKey) => {
-      expect(screen.getByLabelText(pathwayServices[serviceKey])).toBeInTheDocument();
-    });
-
-    speciesOptions.forEach((species) => {
-      expect(screen.getByText(species.label)).toBeInTheDocument();
+    Object.values(pathwayServices).forEach((serviceName) => {
+      expect(screen.getByLabelText(serviceName)).toBeInTheDocument();
     });
 
     expect(screen.getByLabelText(pathwayServices.PANTHERDB).checked).toEqual(true);
@@ -95,7 +91,7 @@ describe('Pathway analysis modal ', () => {
     );
   });
 
-  it.only('Passes the species key correctly', async () => {
+  it('Passes the species key correctly', async () => {
     renderPathwayAnalysisModal();
 
     const secondSpecies = speciesOptions[speciesOptions.length - 1];

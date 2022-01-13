@@ -14,7 +14,7 @@ import differentialExpressionLoaded from './differentialExpressionLoaded';
 import differentialExpressionError from './differentialExpressionError';
 import differentialExpressionSetType from './differentialExpressionSetType';
 import differentialExpressionSetGroup from './differentialExpressionSetGroup';
-import differentialExpressionSetOrdering from './differentialExpressionSetOrdering';
+import differentialExpressionSetGeneOrdering from './differentialExpressionSetOrdering';
 
 const differentialExpressionReducer = (state = initialState, action) => {
   switch (action.type) {
@@ -34,7 +34,7 @@ const differentialExpressionReducer = (state = initialState, action) => {
       return differentialExpressionSetGroup(state, action);
     }
     case DIFF_EXPR_ORDERING_SET: {
-      return differentialExpressionSetOrdering(state, action);
+      return differentialExpressionSetGeneOrdering(state, action);
     }
     case EXPERIMENT_SETTINGS_PIPELINE_START: {
       return initialState;
