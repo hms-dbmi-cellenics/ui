@@ -27,7 +27,7 @@ const deleteCellSetJsonMerger = (cellSetKey, cellClasskey) => (
 
 const deleteCellSet = (experimentId, key) => async (dispatch, getState) => {
   const {
-    loading, error, cellSets,
+    loading, error,
   } = getState().cellSets;
 
   if (loading || error) {
@@ -45,8 +45,6 @@ const deleteCellSet = (experimentId, key) => async (dispatch, getState) => {
   const url = `/v1/experiments/${experimentId}/cellSets`;
 
   try {
-    const cellClassKey = cellSets.properties[key].parentNodeKey;
-
     const response = await fetchAPI(
       url,
       {
@@ -55,7 +53,7 @@ const deleteCellSet = (experimentId, key) => async (dispatch, getState) => {
           'Content-Type': 'application/boschni-json-merger+json',
         },
         body: JSON.stringify(
-          deleteCellSetJsonMerger(key, cellClassKey),
+          deleteCellSetJsonMerger(key, 'scratchpad'),
         ),
       },
     );
