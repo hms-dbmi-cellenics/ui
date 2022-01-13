@@ -19,7 +19,7 @@ const LaunchPathwayAnalysisModal = (props) => {
 
   const dispatch = useDispatch();
 
-  const [externalService, setExternalService] = useState(pathwayServices.PANTHER);
+  const [externalService, setExternalService] = useState(pathwayServices.PANTHERDB);
   const [advancedFilteringOpen, setAdvancedFilteringOpen] = useState(false);
   const [useAllGenes, setUseAllGenes] = useState(true);
   const [numGenes, setNumGenes] = useState(0);
@@ -134,7 +134,7 @@ const LaunchPathwayAnalysisModal = (props) => {
             </Space>
           </Space>
         </Row>
-        {externalService === pathwayServices.PANTHER && (
+        {externalService === pathwayServices.PANTHERDB && (
           <p>
             It is
             <b> strongly recommended </b>
