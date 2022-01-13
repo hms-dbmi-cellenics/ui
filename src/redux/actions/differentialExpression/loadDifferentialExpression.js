@@ -39,7 +39,7 @@ const loadDifferentialExpression = (
       limit: currentPageSize,
       responseKey: 0,
     };
-    if (advancedFilters?.length > 0) {
+    if (advancedFilters.length > 0) {
       pagination.filters = advancedFilters;
     }
     if (tableState.geneNamesFilter) {
