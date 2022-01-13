@@ -4,13 +4,20 @@ import LaunchPathwayAnalysisModal from 'components/data-exploration/differential
 import {
   render, screen, waitFor,
 } from '@testing-library/react';
+import { Provider } from 'react-redux';
+import { makeStore } from 'redux/store';
+
+const onCancel = jest.fn();
+
+const renderPathwayAnalysisModal = () => {
+  render(
+    <Provider store={makeStore()}>
+      <LaunchPathwayAnalysisModal onCancel={onCancel} />
+    </Provider>,
+  );
+};
 
 describe('Pathway analysis modal ', () => {
-  const onCancel = jest.fn();
-  const renderPathwayAnalysisModal = () => {
-    render(<LaunchPathwayAnalysisModal onCancel={onCancel} />);
-  };
-
   const pathwayServices = ['pantherdb', 'enrichr'];
 
   it('Renders properly', () => {

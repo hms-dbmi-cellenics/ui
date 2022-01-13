@@ -93,6 +93,10 @@ Object {
           "compareWith": null,
         },
       },
+      "ordering": Object {
+        "orderBy": "logFC",
+        "orderDirection": "DESC",
+      },
       "type": "within",
     },
     "properties": Object {
