@@ -40,8 +40,8 @@ const DiffExprResults = (props) => {
   const [dataShown, setDataShown] = useState(data);
   const [exportAlert, setExportAlert] = useState(false);
   const [settingsListed, setSettingsListed] = useState(false);
-  const [advancedFilteringShown, setAdvancedFilteringShown] = useState(false);
-  const [pathwayAnalysisModal, setPathwayAnalysisModal] = useState(false);
+  const [advancedFilteringModalVisible, setAdvancedFilteringModalVisible] = useState(false);
+  const [pathwayAnalysisModalVisible, setPathwayAnalysisModalVisible] = useState(false);
   const geneTableState = useRef({});
   const columns = [
     {
@@ -181,18 +181,18 @@ const DiffExprResults = (props) => {
             {' '}
             settings
           </Button>
-          <Button onClick={() => setAdvancedFilteringShown(!advancedFilteringShown)}>
+          <Button onClick={() => setAdvancedFilteringModalVisible(!advancedFilteringModalVisible)}>
             Advanced filtering
           </Button>
         </Space>
       </Space>
-      {advancedFilteringShown && (
+      {advancedFilteringModalVisible && (
         <AdvancedFilteringModal
           onLaunch={(filters) => {
             applyAdvancedFilters(filters);
-            setAdvancedFilteringShown(false);
+            setAdvancedFilteringModalVisible(false);
           }}
-          onCancel={() => setAdvancedFilteringShown(false)}
+          onCancel={() => setAdvancedFilteringModalVisible(false)}
         />
       )}
       {settingsListed
@@ -229,15 +229,15 @@ const DiffExprResults = (props) => {
         extraOptions={(
           <>
             <Button type='link' size='small' onClick={() => setExportAlert(true)}>Export as CSV</Button>
-            <Button type='link' size='small' onClick={() => setPathwayAnalysisModal(!pathwayAnalysisModal)}>Pathway analysis</Button>
+            <Button type='link' size='small' onClick={() => setPathwayAnalysisModalVisible(!pathwayAnalysisModalVisible)}>Pathway analysis</Button>
           </>
         )}
       />
       {
-        pathwayAnalysisModal && (
+        pathwayAnalysisModalVisible && (
           <LaunchPathwayAnalysisModal
             onApplyFilters={applyAdvancedFilters}
-            onCancel={() => setPathwayAnalysisModal(false)}
+            onCancel={() => setPathwayAnalysisModalVisible(false)}
             advancedFiltersAdded={advancedFilters.length > 0}
           />
         )
