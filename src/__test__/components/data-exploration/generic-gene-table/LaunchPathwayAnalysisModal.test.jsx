@@ -10,10 +10,13 @@ import { Provider } from 'react-redux';
 
 describe('Pathway analysis modal ', () => {
   const onCancel = jest.fn();
-  const renderPathwayAnalysisModal = () => {
+  const renderPathwayAnalysisModal = (filtersApplied = false) => {
     render(
       <Provider store={makeStore()}>
-        <LaunchPathwayAnalysisModal onCancel={onCancel} />
+        <LaunchPathwayAnalysisModal
+          onCancel={onCancel}
+          advancedFiltersAdded={filtersApplied}
+        />
       </Provider>,
     );
   };
@@ -48,5 +51,10 @@ describe('Pathway analysis modal ', () => {
     const advancedFilteringButton = screen.getByText('advanced filtering', { exact: false });
     advancedFilteringButton.click();
     await waitFor(() => expect(screen.getByText('Advanced filters')).toBeInTheDocument());
+  });
+
+  it('Apply filters warning message is not there if there are filters', async () => {
+    renderPathwayAnalysisModal(true);
+    expect(screen.queryByText('You have not performed any filtering on the genes!', { exact: false })).not.toBeInTheDocument();
   });
 });
