@@ -16,13 +16,11 @@ const getPathwayAnalysisGenes = (getAllGenes, numGenes) => async (dispatch, getS
   }
 
   const pagination = {
-    pagination: {
-      orderBy: ordering.orderBy,
-      orderDirection: ordering.orderDirection,
-      offset: 0,
-      limit: numGenes,
-      responseKey: 0,
-    },
+    orderBy: ordering.orderBy,
+    orderDirection: ordering.orderDirection,
+    offset: 0,
+    limit: numGenes,
+    responseKey: 0,
   };
 
   const body = generateDiffExprBody(
@@ -35,7 +33,7 @@ const getPathwayAnalysisGenes = (getAllGenes, numGenes) => async (dispatch, getS
 
   try {
     const data = await fetchWork(
-      experimentId, body, getState, { timeout, extras: pagination },
+      experimentId, body, getState, { timeout, extras: { pagination } },
     );
 
     const { rows } = data;

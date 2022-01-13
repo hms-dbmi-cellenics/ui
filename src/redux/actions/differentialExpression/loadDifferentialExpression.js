@@ -48,15 +48,13 @@ const loadDifferentialExpression = (
         expression: tableState.geneNamesFilter,
       }];
     }
-
-    pagination = { pagination };
   }
 
   const timeout = getTimeoutForWorkerTask(getState(), 'DifferentialExpression');
 
   try {
     const data = await fetchWork(
-      experimentId, body, getState, { timeout, extras: pagination },
+      experimentId, body, getState, { timeout, extras: { pagination } },
     );
 
     let { total } = data;
