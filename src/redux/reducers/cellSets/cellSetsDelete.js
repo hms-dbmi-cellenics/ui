@@ -9,8 +9,8 @@ const cellSetsDelete = produce((draft, action) => {
   const { parentNodeKey } = current(draft).properties[key];
 
   // Remove cellSet from hierarchy
-  const index = draft.hierarchy.findIndex((rootNode) => rootNode.key === parentNodeKey);
-  _.remove(draft.hierarchy[index].children, ({ key: currentKey }) => currentKey === key);
+  const cellClassIndex = draft.hierarchy.findIndex((rootNode) => rootNode.key === parentNodeKey);
+  _.remove(draft.hierarchy[cellClassIndex].children, ({ key: currentKey }) => currentKey === key);
 
   // Delete from the properties as well.
   delete draft.properties[key];

@@ -1,27 +1,18 @@
-import _ from 'lodash';
+/* eslint-disable no-param-reassign */
+import produce from 'immer';
 
 // Only works with scratchpad
-const cellSetsCreate = (state, action) => {
+const cellSetsCreate = produce((draft, action) => {
   const {
     key, name, color, cellIds, type,
   } = action.payload;
-  const newState = _.cloneDeep(state);
 
-  newState.hierarchy = newState.hierarchy && newState.hierarchy.map((rootNode) => {
-    if (rootNode.key === 'scratchpad') {
-      // eslint-disable-next-line no-param-reassign
-      rootNode.children = rootNode.children || [];
-      rootNode.children.push({ key });
-    }
+  const scratchpadIndex = draft.hierarchy.findIndex((rootNode) => rootNode.key === 'scratchpad');
+  draft.hierarchy[scratchpadIndex].children.push({ key });
 
-    return rootNode;
-  });
-
-  newState.properties[key] = {
+  draft.properties[key] = {
     key, name, color, cellIds: new Set(cellIds), type, parentNodeKey: 'scratchpad',
   };
-
-  return newState;
-};
+});
 
 export default cellSetsCreate;
