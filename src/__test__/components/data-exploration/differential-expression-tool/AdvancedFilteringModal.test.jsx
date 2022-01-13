@@ -1,11 +1,13 @@
 import React from 'react';
-import '@testing-library/jest-dom';
 import { Provider } from 'react-redux';
 import { makeStore } from 'redux/store';
+
+import '@testing-library/jest-dom';
 
 import {
   render, screen, fireEvent, waitFor,
 } from '@testing-library/react';
+
 import AdvancedFilteringModal from 'components/data-exploration/differential-expression-tool/AdvancedFilteringModal';
 
 describe('Advanced filtering modal', () => {
@@ -80,11 +82,16 @@ describe('Advanced filtering modal', () => {
     const presetFiltersButton = screen.getByText('Add preset filter');
     fireEvent.mouseOver(presetFiltersButton);
     const upregulatedButton = await waitFor(() => screen.getByText('Up-regulated'));
+
     upregulatedButton.click();
+
+    await waitFor(() => screen.getByText('logFC'));
 
     // applying filters and checking if onLaunch was called
     const applyButton = screen.getByText('Apply filters');
+
     applyButton.click();
-    expect(onLaunch).toHaveBeenCalled();
+
+    await waitFor(() => expect(onLaunch).toHaveBeenCalled());
   });
 });
