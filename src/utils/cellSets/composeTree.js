@@ -14,12 +14,16 @@ const composeTree = (hierarchy, properties, filterType = null) => {
     return data.filter(
       (root) => (!type || properties[root.key].type === type),
     ).map(
-      (node) => ({
-        ...node,
-        ...properties[node.key],
-        cellIds: [...properties[node.key]?.cellIds || []],
-        children: node.children ? composeTreeRecursive(node.children, null) : undefined,
-      }),
+      (node) => {
+        const { parentNodeKey, ...restOfProperties } = properties[node.key];
+
+        return ({
+          ...node,
+          ...restOfProperties,
+          cellIds: [...properties[node.key]?.cellIds || []],
+          children: node.children ? composeTreeRecursive(node.children, null) : undefined,
+        });
+      },
     );
   };
   return composeTreeRecursive(hierarchy, filterType);

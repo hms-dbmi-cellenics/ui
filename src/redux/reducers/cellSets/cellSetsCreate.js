@@ -1,5 +1,6 @@
 import _ from 'lodash';
 
+// Only works with scratchpad
 const cellSetsCreate = (state, action) => {
   const {
     key, name, color, cellIds, type,
@@ -17,7 +18,7 @@ const cellSetsCreate = (state, action) => {
   });
 
   newState.properties[key] = {
-    key, name, color, cellIds: new Set(cellIds), type,
+    key, name, color, cellIds: new Set(cellIds), type, parentNodeKey: 'scratchpad',
   };
 
   return newState;

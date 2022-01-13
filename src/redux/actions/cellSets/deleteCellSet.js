@@ -5,10 +5,10 @@ import pushNotificationMessage from 'utils/pushNotificationMessage';
 import endUserMessages from 'utils/endUserMessages';
 import fetchAPI from 'utils/fetchAPI';
 
-const deleteCellSetJsonMerger = (cellSetKey) => (
+const deleteCellSetJsonMerger = (cellSetKey, cellClasskey) => (
   [{
     $match: {
-      query: '$[?(@.key == "scratchpad")]',
+      query: `$[?(@.key == "${cellClasskey}")]`,
       value: {
         children: [
           {
@@ -27,7 +27,7 @@ const deleteCellSetJsonMerger = (cellSetKey) => (
 
 const deleteCellSet = (experimentId, key) => async (dispatch, getState) => {
   const {
-    loading, error,
+    loading, error, cellSets,
   } = getState().cellSets;
 
   if (loading || error) {
@@ -45,6 +45,8 @@ const deleteCellSet = (experimentId, key) => async (dispatch, getState) => {
   const url = `/v1/experiments/${experimentId}/cellSets`;
 
   try {
+    const cellClassKey = cellSets.properties[key].parentNodeKey;
+
     const response = await fetchAPI(
       url,
       {
@@ -53,7 +55,7 @@ const deleteCellSet = (experimentId, key) => async (dispatch, getState) => {
           'Content-Type': 'application/boschni-json-merger+json',
         },
         body: JSON.stringify(
-          deleteCellSetJsonMerger(key),
+          deleteCellSetJsonMerger(key, cellClassKey),
         ),
       },
     );
