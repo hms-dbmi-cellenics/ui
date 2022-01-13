@@ -45,35 +45,46 @@ describe('Advanced filtering modal', () => {
 
   it('Close button removes items from the list', () => {
     renderAdvancedFilteringModal();
+
+    // adding 2 custom filters
     const addFilterButton = screen.getByText('Add custom filter');
     addFilterButton.click();
     addFilterButton.click();
+
+    // checking the number of entries in the row
     expect(screen.getAllByRole('combobox').length).toEqual(4);
     const closeButton = screen.getAllByLabelText('close')[1];
+
+    // clicking close should remove entry
     closeButton.click();
     expect(screen.getAllByRole('combobox').length).toEqual(2);
   });
 
   it('Preset filters button adds a preset filter', async () => {
     renderAdvancedFilteringModal();
+
     const presetFiltersButton = screen.getByText('Add preset filter');
     fireEvent.mouseOver(presetFiltersButton);
     const upregulatedButton = await waitFor(() => screen.getByText('Up-regulated'));
     upregulatedButton.click();
+
     expect(screen.getAllByRole('combobox').length).toEqual(2);
     expect(screen.getByText('logFC')).toBeInTheDocument();
     expect(screen.getByPlaceholderText('Insert value').value).toEqual('0.0');
   });
 
-  it('Clicking launch the differential expression', async () => {
+  it('Clicking apply filters triggers onLaunch', async () => {
     renderAdvancedFilteringModal();
+
+    // adding a filter
     const presetFiltersButton = screen.getByText('Add preset filter');
     fireEvent.mouseOver(presetFiltersButton);
     const upregulatedButton = await waitFor(() => screen.getByText('Up-regulated'));
     upregulatedButton.click();
+
+    // applying filters and checking if onLaunch was called
     const applyButton = screen.getByText('Apply filters');
     applyButton.click();
     expect(onLaunch).toHaveBeenCalled();
-    expect(onCancel).toHaveBeenCalled();
   });
 });

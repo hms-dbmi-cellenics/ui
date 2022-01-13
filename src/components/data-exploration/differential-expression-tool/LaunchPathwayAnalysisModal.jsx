@@ -33,7 +33,7 @@ const LaunchPathwayAnalysisModal = (props) => {
   const externalServices = { PANTHER: 'pantherdb', ENRICHER: 'enrichr' };
 
   const [externalService, setExternalService] = useState(externalServices.PANTHER);
-  const [advancedFilteringOpen, setAdvancedFilteringOpen] = useState(false);
+  const [advancedFilteringModalVisible, setAdvancedFilteringModalVisible] = useState(false);
   const [allGenesToggled, setAllGenesToggled] = useState(true);
 
   const marginSpacing = { marginBottom: '20px', marginTop: '20x' };
@@ -49,33 +49,33 @@ const LaunchPathwayAnalysisModal = (props) => {
         footer={[<Tooltip key='tooltip' title='Feature coming soon!'><Button disabled>Launch</Button></Tooltip>]}
         okText='Launch'
       >
-        <Row style={{
-          ...marginSpacing,
-        }}
-        >
-          {/* display the alert only if there are no filter applied to diff expr */}
-          <Paragraph style={{ width: '100%' }}>
-            {!advancedFiltersAdded && (
-            <Alert
-              type='warning'
-              showIcon
-              message={(
-                <>
-                  You have not performed any filtering on the genes!
-                  <Button
-                    type='link'
-                    size='small'
-                    onClick={() => setAdvancedFilteringOpen(!advancedFilteringOpen)}
-                    onKeyPress={() => setAdvancedFilteringOpen(!advancedFilteringOpen)}
-                  >
-                    Click here to open the advanced filtering options.
-                  </Button>
-                </>
-              )}
-            />
-            )}
-          </Paragraph>
-        </Row>
+        {!advancedFiltersAdded && (
+          <Row style={{
+            ...marginSpacing,
+          }}
+          >
+            {/* display the alert only if there are no filter applied to diff expr */}
+            <Paragraph style={{ width: '100%' }}>
+              <Alert
+                type='warning'
+                showIcon
+                message={(
+                  <>
+                    You have not performed any filtering on the genes!
+                    <Button
+                      type='link'
+                      size='small'
+                      onClick={() => setAdvancedFilteringModalVisible(!advancedFilteringModalVisible)}
+                      onKeyPress={() => setAdvancedFilteringModalVisible(!advancedFilteringModalVisible)}
+                    >
+                      Click here to open the advanced filtering options.
+                    </Button>
+                  </>
+                )}
+              />
+            </Paragraph>
+          </Row>
+        )}
 
         <Row style={marginSpacing}><b>External service</b></Row>
 
@@ -138,10 +138,13 @@ const LaunchPathwayAnalysisModal = (props) => {
         )}
       </Modal>
       {
-        advancedFilteringOpen && (
+        advancedFilteringModalVisible && (
           <AdvancedFilteringModal 
-          onLaunch={onApplyFilters} 
-          onCancel={() => setAdvancedFilteringOpen(false)} 
+          onLaunch={(filters)=>{
+            onApplyFilters(filters); 
+            setAdvancedFilteringModalVisible(false);
+          }} 
+          onCancel={() => setAdvancedFilteringModalVisible(false)} 
           />
         )
       }

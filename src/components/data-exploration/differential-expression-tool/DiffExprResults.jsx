@@ -101,7 +101,7 @@ const DiffExprResults = (props) => {
         experimentId,
         comparisonGroup[comparisonType],
         comparisonType,
-        newState,
+        geneTableState.current,
       ),
     );
   };
@@ -188,7 +188,10 @@ const DiffExprResults = (props) => {
       </Space>
       {advancedFilteringShown && (
         <AdvancedFilteringModal
-          onLaunch={applyAdvancedFilters}
+          onLaunch={(filters) => {
+            applyAdvancedFilters(filters);
+            setAdvancedFilteringShown(false);
+          }}
           onCancel={() => setAdvancedFilteringShown(false)}
         />
       )}
@@ -235,7 +238,7 @@ const DiffExprResults = (props) => {
           <LaunchPathwayAnalysisModal
             onApplyFilters={applyAdvancedFilters}
             onCancel={() => setPathwayAnalysisModal(false)}
-            advancedFiltersAdded={advancedFilters?.length}
+            advancedFiltersAdded={advancedFilters.length > 0}
           />
         )
       }

@@ -10,8 +10,9 @@ const AdvancedFilteringModal = (props) => {
   const { onCancel, onLaunch } = props;
   const [form] = Form.useForm();
   const advancedFilters = useSelector((state) => state.differentialExpression.comparison.advancedFilters) || [];
+  const diffExprLoading = useSelector((state) => state.differentialExpression.properties.loading);
 
-  const columnNameOptions = [
+  const criteriaOptions = [
     { value: 'logFC', label: 'logFC' },
     { value: 'p_val_adj', label: 'adj p-value' },
     { value: 'pct_1', label: 'Pct1' },
@@ -75,7 +76,6 @@ const AdvancedFilteringModal = (props) => {
       }),
     );
     onLaunch(formValuesFiltered);
-    onCancel();
   };
 
   return (
@@ -84,6 +84,7 @@ const AdvancedFilteringModal = (props) => {
       title='Advanced filters'
       onCancel={onCancel}
       onOk={applyFilters}
+      okButtonProps={diffExprLoading ? { disabled: true } : {}}
       okText='Apply filters'
     >
       <Form form={form}>
@@ -106,7 +107,7 @@ const AdvancedFilteringModal = (props) => {
                           placeholder='Select columnName'
                           style={{ width: 140 }}
                           onChange={() => form.setFieldsValue({})}
-                          options={columnNameOptions}
+                          options={criteriaOptions}
                         />
                       </Form.Item>
 

@@ -11,7 +11,7 @@ const loadDifferentialExpression = (
   experimentId, cellSets, comparisonType, tableState, newAdvancedFilters = null,
 ) => async (dispatch, getState) => {
   const advancedFilters = newAdvancedFilters
-  || getState().differentialExpression.comparison.advancedFilters;
+  ?? getState().differentialExpression.comparison.advancedFilters;
 
   dispatch({
     type: DIFF_EXPR_LOADING,
@@ -39,7 +39,7 @@ const loadDifferentialExpression = (
       limit: currentPageSize,
       responseKey: 0,
     };
-    if (advancedFilters?.length) {
+    if (advancedFilters?.length > 0) {
       pagination.filters = advancedFilters;
     }
     if (tableState.geneNamesFilter) {
@@ -59,7 +59,7 @@ const loadDifferentialExpression = (
     );
     let { total } = data;
     const { rows } = data;
-    if (!total && !Object.keys(pagination)?.length) {
+    if (!total && !Object.keys(pagination).length) {
       total = rows.length;
     }
 

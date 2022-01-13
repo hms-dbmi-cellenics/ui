@@ -149,6 +149,7 @@ const resultState = {
           basis: 'scratchpad/scratchpad-a',
         },
       },
+      advancedFilters: [],
     },
   },
   backendStatus,
