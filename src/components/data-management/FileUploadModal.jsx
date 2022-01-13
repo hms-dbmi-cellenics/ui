@@ -102,6 +102,12 @@ const FileUploadModal = (props) => {
         />
       </Col>
       <Col span={24} style={{ padding: '1rem' }}>
+        <Paragraph type='secondary'>
+          <i>
+            Don’t have the data in the accepted format? Email us for help with file conversion (e.g. from Fastq or H5 file):
+            <a href='mailto:hello@biomage.net'> hello@biomage.net</a>
+          </i>
+        </Paragraph>
         <Paragraph>
           The folder&apos;s name will be used to name
           the sample in it. You can change this
@@ -157,7 +163,12 @@ const FileUploadModal = (props) => {
                 ))}
               </Select>
             </Space>
-            <Text type='secondary'><i>Only 10x Chromium datasets are currently supported</i></Text>
+            <Text type='secondary'>
+              <i>
+                Is your dataset generated using another single cell RNA-seq technology (e.g. Nadia, BD Rhapsody, etc.)? Email us to find out if we can support your data:
+                <a href='mailto:hello@biomage.net'> hello@biomage.net</a>
+              </i>
+            </Text>
           </Space>
         </Col>
 
