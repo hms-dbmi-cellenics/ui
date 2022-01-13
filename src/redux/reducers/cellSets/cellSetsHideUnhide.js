@@ -1,4 +1,7 @@
-import initialState from './initialState';
+/* eslint-disable no-param-reassign */
+import produce from 'immer';
+
+import initialState from 'redux/reducers/cellSets/initialState';
 
 const cellSetsHide = (state, action) => {
   const { key } = action.payload;
