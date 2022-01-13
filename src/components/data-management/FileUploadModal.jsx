@@ -101,7 +101,7 @@ const FileUploadModal = (props) => {
           )}
         />
       </Col>
-      <Col span={24} style={{ padding: '1rem' }}>
+      <Col span={24} style={{ padding: '1rem 0' }}>
         <Paragraph type='secondary'>
           <i>
             Don’t have the data in the accepted format? Email us for help with file conversion (e.g. from Fastq or H5 file):
@@ -114,11 +114,11 @@ const FileUploadModal = (props) => {
           name later in Data Management.
         </Paragraph>
         <Paragraph type='secondary'>
-          More guidance on supported file types and formats is available
-          {' '}
-          <a rel='noreferrer' target='_blank' href={guidanceFileLink}>here</a>
-          {' '}
-          (opens in new tab).
+          <i>
+            More guidance on supported file types and formats is available
+            <a rel='noreferrer' target='_blank' href={guidanceFileLink}> here</a>
+            (opens in new tab).
+          </i>
         </Paragraph>
       </Col>
     </>
