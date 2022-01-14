@@ -1,6 +1,7 @@
 import React from 'react';
 import userEvent from '@testing-library/user-event';
 import LaunchPathwayAnalysisModal from 'components/data-exploration/differential-expression-tool/LaunchPathwayAnalysisModal';
+
 import {
   render, screen, waitFor,
 } from '@testing-library/react';
@@ -17,10 +18,13 @@ jest.mock('utils/pathwayAnalysis/getPathwayAnalysisGenes');
 
 const onCancel = jest.fn();
 
-const renderPathwayAnalysisModal = () => {
+const renderPathwayAnalysisModal = (filtersApplied = false) => {
   render(
     <Provider store={makeStore()}>
-      <LaunchPathwayAnalysisModal onCancel={onCancel} />
+      <LaunchPathwayAnalysisModal
+        advancedFiltersAdded={filtersApplied}
+        onCancel={onCancel}
+      />
     </Provider>,
   );
 };
@@ -142,5 +146,17 @@ describe('Pathway analysis modal ', () => {
     // The first option to getPathwayAnalysisGenes is useAllGenes, which is true by default
     expect(getPathwayAnalysisGenes).toHaveBeenCalledTimes(1);
     expect(getPathwayAnalysisGenes).toHaveBeenCalledWith(false, numGenes);
+  });
+
+  it('Opens advanced filters modal if there are no filters', async () => {
+    renderPathwayAnalysisModal();
+    const advancedFilteringButton = screen.getByText('advanced filtering', { exact: false });
+    advancedFilteringButton.click();
+    await waitFor(() => expect(screen.getByText('Advanced filters')).toBeInTheDocument());
+  });
+
+  it('Apply filters warning message is not there if there are filters', async () => {
+    renderPathwayAnalysisModal(true);
+    expect(screen.queryByText('You have not performed any filtering on the genes!', { exact: false })).not.toBeInTheDocument();
   });
 });

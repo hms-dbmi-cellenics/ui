@@ -215,7 +215,7 @@ const GeneTable = (props) => {
 
 GeneTable.defaultProps = {
   initialTableState: {},
-  extraOptions: <></>,
+  extraOptions: null,
 };
 
 GeneTable.propTypes = {

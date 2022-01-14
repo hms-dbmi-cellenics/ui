@@ -3,6 +3,7 @@
 exports[`loadDifferentialExpression action Dispatches appropriately on failure 1`] = `
 Object {
   "payload": Object {
+    "advancedFilters": Array [],
     "experimentId": "1234",
   },
   "type": "diffExpr/loading",
@@ -22,6 +23,7 @@ Object {
 exports[`loadDifferentialExpression action Dispatches appropriately on success 1`] = `
 Object {
   "payload": Object {
+    "advancedFilters": Array [],
     "experimentId": "1234",
   },
   "type": "diffExpr/loading",
