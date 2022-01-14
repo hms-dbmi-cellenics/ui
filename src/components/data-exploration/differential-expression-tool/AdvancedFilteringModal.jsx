@@ -1,56 +1,61 @@
 import React from 'react';
 import {
-  Modal, Form, Button, Space, Select, InputNumber, Dropdown, Menu, Tooltip,
+  Modal, Form, Button, Space, Select, InputNumber, Dropdown, Menu, Divider, Row,
 } from 'antd';
 import PropTypes from 'prop-types';
+import { useSelector } from 'react-redux';
 import { CloseOutlined, PlusOutlined } from '@ant-design/icons';
 
-const AdvancedFilteringModal = (props) => {
-  const { onCancel } = props;
-  const [form] = Form.useForm();
+const criteriaOptions = [
+  { value: 'logFC', label: 'logFC' },
+  { value: 'p_val_adj', label: 'adj p-value' },
+  { value: 'pct_1', label: 'Pct1' },
+  { value: 'pct_2', label: 'Pct2' },
+  { value: 'auc', label: 'AUC' },
+];
 
-  const criteriaOptions = [
-    { value: 'logfc', label: 'logFC' },
-    { value: 'pValue', label: 'adj p-value' },
-    { value: 'pct1', label: 'Pct1' },
-    { value: 'pct2', label: 'Pct2' },
-    { value: 'auc', label: 'AUC' },
-  ];
+const comparisonOptions = [{
+  value: 'greaterThan',
+  label: 'Greater than',
+}, {
+  value: 'lessThan',
+  label: 'Less than',
+},
+];
 
-  const conditionOptions = [{
-    value: 'gt',
-    label: 'Greater than',
-  }, {
-    value: 'lt',
-    label: 'Less than',
+const valueRestrictions = {
+  pct_1: [0, 100],
+  pct_2: [0, 100],
+  logFC: [-50, 50],
+  auc: [0, 1],
+  p_val_adj: [0, 1],
+};
+
+const presetFilters = {
+  'Up-regulated': {
+    columnName: 'logFC',
+    comparison: 'greaterThan',
+    value: 0,
   },
-  ];
+  'Down-regulated': {
+    columnName: 'logFC',
+    comparison: 'lessThan',
+    value: 0,
+  },
+  Significant: {
+    columnName: 'p_val_adj',
+    comparison: 'lessThan',
+    value: 0.05,
+  },
+};
 
-  const valueRestrictions = {
-    pct1: [0, 100],
-    pct2: [0, 100],
-    logfc: [-50, 50],
-    auc: [0, 1],
-    pValue: [0, 1],
-  };
+const AdvancedFilteringModal = (props) => {
+  const { onCancel, onLaunch } = props;
+  const [form] = Form.useForm();
+  const advancedFilters = useSelector((state) => (
+    state.differentialExpression.comparison.advancedFilters)) || [];
+  const diffExprLoading = useSelector((state) => state.differentialExpression.properties.loading);
 
-  const presetFilters = {
-    'Up-regulated': {
-      criteria: 'logfc',
-      condition: 'gt',
-      value: 0,
-    },
-    'Down-regulated': {
-      criteria: 'logfc',
-      condition: 'lt',
-      value: 0,
-    },
-    Significant: {
-      criteria: 'pValue',
-      condition: 'lt',
-      value: 0.05,
-    },
-  };
   const renderPresetFilters = (add) => (
     <Menu
       onClick={(e) => {
@@ -65,32 +70,39 @@ const AdvancedFilteringModal = (props) => {
     </Menu>
   );
 
+  const applyFilters = (filters) => {
+    const filtersWithType = filters.map((filter) => ({ type: 'numeric', ...filter }));
+
+    onLaunch(filtersWithType);
+  };
+
   return (
     <Modal
       visible
       title='Advanced filters'
       onCancel={onCancel}
-      // remove next line once the functionality is implemented
-      footer={[<Tooltip key='tooltip' title='Feature coming soon!'><Button disabled>Apply filters</Button></Tooltip>]}
-      okText='Apply filters'
+      footer={null}
+      width='530px'
     >
-      <Form form={form}>
-
+      <Form form={form} onFinish={({ filterForm }) => applyFilters(filterForm)}>
         <Form.List
           name='filterForm'
+          initialValue={advancedFilters}
+
         >
           {(fields, { add, remove }) => (
             <>
-              {fields.map((field, index) => {
-                const { criteria } = form.getFieldValue('filterForm')[index];
-                return (
-                  <Space key={field.key} align='baseline'>
-                    <Space direction='horizontal'>
+              <Row>
+                {fields.map((field, index) => {
+                  const { columnName } = form.getFieldValue('filterForm')[index];
+                  return (
+                    <Space key={field.key} align='baseline'>
                       <Form.Item
-                        name={[field.name, 'criteria']}
+                        name={[field.name, 'columnName']}
+                        rules={[{ required: true, message: 'Please select a property' }]}
                       >
                         <Select
-                          placeholder='Select criteria'
+                          placeholder='Select property'
                           style={{ width: 140 }}
                           onChange={() => form.setFieldsValue({})}
                           options={criteriaOptions}
@@ -98,44 +110,54 @@ const AdvancedFilteringModal = (props) => {
                       </Form.Item>
 
                       <Form.Item
-                        name={[field.name, 'condition']}
+                        name={[field.name, 'comparison']}
+                        rules={[{ required: true, message: 'Please select a comparison' }]}
                       >
                         <Select
-                          placeholder='Select condition'
-                          options={conditionOptions}
+                          placeholder='Select comparison'
+                          options={comparisonOptions}
                           style={{ width: 150 }}
                         />
                       </Form.Item>
 
                       <Form.Item
                         name={[field.name, 'value']}
-
+                        rules={[{ required: true, message: 'Please input a value' }]}
                       >
                         <InputNumber
                           style={{ width: 140 }}
-                          step={criteria ? valueRestrictions[criteria][1] / 100 : 1}
-                          min={criteria ? valueRestrictions[criteria][0] : 0}
-                          max={criteria ? valueRestrictions[criteria][1] : 0}
+                          step={columnName ? valueRestrictions[columnName][1] / 100 : 1}
+                          min={columnName ? valueRestrictions[columnName][0] : 0}
+                          max={columnName ? valueRestrictions[columnName][1] : 0}
                           placeholder='Insert value'
                         />
                       </Form.Item>
+
+                      <CloseOutlined onClick={() => remove(field.name)} style={{ margin: '8px' }} />
                     </Space>
-
-                    <CloseOutlined onClick={() => remove(field.name)} />
-                  </Space>
-                );
-              })}
-
-              <Space direction='horizontal'>
-                <Button onClick={add} icon={<PlusOutlined />}>
-                  Add custom filter
-                </Button>
-                <Dropdown overlay={renderPresetFilters(add)}>
-                  <Button icon={<PlusOutlined />}>
-                    Add preset filter
+                  );
+                })}
+              </Row>
+              <Row>
+                <Space direction='horizontal'>
+                  <Button onClick={add} icon={<PlusOutlined />}>
+                    Add custom filter
                   </Button>
-                </Dropdown>
-              </Space>
+                  <Dropdown overlay={renderPresetFilters(add)}>
+                    <Button icon={<PlusOutlined />}>
+                      Add preset filter
+                    </Button>
+                  </Dropdown>
+                </Space>
+              </Row>
+              <Divider style={{ marginBottom: '10px' }} />
+              <div align='end' style={{ marginTop: '0px', width: '100%' }}>
+                <Form.Item style={{ marginBottom: '-10px', marginTop: '0px' }}>
+                  <Button type='primary' htmlType='submit' disabled={diffExprLoading}>
+                    Apply filters
+                  </Button>
+                </Form.Item>
+              </div>
             </>
           )}
         </Form.List>
@@ -145,6 +167,7 @@ const AdvancedFilteringModal = (props) => {
 };
 
 AdvancedFilteringModal.propTypes = {
+  onLaunch: PropTypes.func.isRequired,
   onCancel: PropTypes.func.isRequired,
 };
 

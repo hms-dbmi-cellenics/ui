@@ -37,7 +37,7 @@ const GeneSelectionMenu = (props) => {
 };
 
 GeneSelectionMenu.defaultProps = {
-  extraOptions: <></>,
+  extraOptions: null,
 };
 
 GeneSelectionMenu.propTypes = {

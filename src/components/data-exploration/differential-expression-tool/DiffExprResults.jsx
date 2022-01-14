@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   useSelector,
   useDispatch,
@@ -34,14 +34,16 @@ const DiffExprResults = (props) => {
   const error = useSelector((state) => state.differentialExpression.properties.error);
   const comparisonGroup = useSelector((state) => state.differentialExpression.comparison.group);
   const comparisonType = useSelector((state) => state.differentialExpression.comparison.type);
+  const advancedFilters = useSelector((state) => (
+    state.differentialExpression.comparison.advancedFilters));
   const { properties } = useSelector(getCellSets());
 
   const [dataShown, setDataShown] = useState(data);
   const [exportAlert, setExportAlert] = useState(false);
   const [settingsListed, setSettingsListed] = useState(false);
-  const [advancedFilteringShown, setAdvancedFilteringShown] = useState(false);
-  const [pathwayAnalysisModal, setPathwayAnalysisModal] = useState(false);
-
+  const [advancedFilteringModalVisible, setAdvancedFilteringModalVisible] = useState(false);
+  const [pathwayAnalysisModalVisible, setPathwayAnalysisModalVisible] = useState(false);
+  const geneTableState = useRef({});
   const columns = [
     {
       title: 'logFC',
@@ -94,15 +96,25 @@ const DiffExprResults = (props) => {
     if (reason === geneTableUpdateReason.loaded || reason === geneTableUpdateReason.loading) {
       return;
     }
-
+    geneTableState.current = newState;
     dispatch(
       loadDifferentialExpression(
         experimentId,
         comparisonGroup[comparisonType],
         comparisonType,
-        newState,
+        geneTableState.current,
       ),
     );
+  };
+
+  const applyAdvancedFilters = (filters) => {
+    dispatch(loadDifferentialExpression(
+      experimentId,
+      comparisonGroup[comparisonType],
+      comparisonType,
+      geneTableState.current,
+      filters,
+    ));
   };
 
   const optionName = (word) => {
@@ -170,14 +182,18 @@ const DiffExprResults = (props) => {
             {' '}
             settings
           </Button>
-          <Button onClick={() => setAdvancedFilteringShown(!advancedFilteringShown)}>
+          <Button onClick={() => setAdvancedFilteringModalVisible(!advancedFilteringModalVisible)}>
             Advanced filtering
           </Button>
         </Space>
       </Space>
-      {advancedFilteringShown && (
+      {advancedFilteringModalVisible && (
         <AdvancedFilteringModal
-          onCancel={() => setAdvancedFilteringShown(false)}
+          onLaunch={(filters) => {
+            applyAdvancedFilters(filters);
+            setAdvancedFilteringModalVisible(false);
+          }}
+          onCancel={() => setAdvancedFilteringModalVisible(false)}
         />
       )}
       {settingsListed
@@ -214,13 +230,17 @@ const DiffExprResults = (props) => {
         extraOptions={(
           <>
             <Button type='link' size='small' onClick={() => setExportAlert(true)}>Export as CSV</Button>
-            <Button type='link' size='small' onClick={() => setPathwayAnalysisModal(!pathwayAnalysisModal)}>Pathway analysis</Button>
+            <Button type='link' size='small' onClick={() => setPathwayAnalysisModalVisible(!pathwayAnalysisModalVisible)}>Pathway analysis</Button>
           </>
         )}
       />
       {
-        pathwayAnalysisModal && (
-          <LaunchPathwayAnalysisModal onCancel={() => setPathwayAnalysisModal(false)} />
+        pathwayAnalysisModalVisible && (
+          <LaunchPathwayAnalysisModal
+            onApplyFilters={applyAdvancedFilters}
+            onCancel={() => setPathwayAnalysisModalVisible(false)}
+            advancedFiltersAdded={advancedFilters.length > 0}
+          />
         )
       }
     </Space>

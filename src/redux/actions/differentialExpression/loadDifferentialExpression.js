@@ -8,12 +8,16 @@ import getTimeoutForWorkerTask from 'utils/getTimeoutForWorkerTask';
 const getCellSetName = (name) => (name?.split('/')[1] || name);
 
 const loadDifferentialExpression = (
-  experimentId, cellSets, comparisonType, tableState,
+  experimentId, cellSets, comparisonType, tableState, newAdvancedFilters = null,
 ) => async (dispatch, getState) => {
+  const advancedFilters = newAdvancedFilters
+  ?? getState().differentialExpression.comparison.advancedFilters;
+
   dispatch({
     type: DIFF_EXPR_LOADING,
     payload: {
       experimentId,
+      advancedFilters,
     },
   });
 
@@ -26,10 +30,8 @@ const loadDifferentialExpression = (
   };
 
   let pagination = {};
-
   if (tableState) {
     const currentPageSize = tableState.pagination.pageSize;
-
     pagination = {
       orderBy: tableState.sorter.field,
       orderDirection: (tableState.sorter.order === 'ascend') ? 'ASC' : 'DESC',
@@ -37,7 +39,9 @@ const loadDifferentialExpression = (
       limit: currentPageSize,
       responseKey: 0,
     };
-
+    if (advancedFilters.length > 0) {
+      pagination.filters = advancedFilters;
+    }
     if (tableState.geneNamesFilter) {
       pagination.filters = [{
         columnName: 'gene_names',
@@ -45,20 +49,16 @@ const loadDifferentialExpression = (
         expression: tableState.geneNamesFilter,
       }];
     }
-
     pagination = { pagination };
   }
 
   const timeout = getTimeoutForWorkerTask(getState(), 'DifferentialExpression');
-
   try {
     const data = await fetchWork(
       experimentId, body, getState, { timeout, extras: pagination },
     );
-
     let { total } = data;
     const { rows } = data;
-
     if (!total && !Object.keys(pagination).length) {
       total = rows.length;
     }

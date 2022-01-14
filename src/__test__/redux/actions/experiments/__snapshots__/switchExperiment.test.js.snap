@@ -81,6 +81,7 @@ Object {
   "componentConfig": Object {},
   "differentialExpression": Object {
     "comparison": Object {
+      "advancedFilters": Array [],
       "group": Object {
         "between": Object {
           "basis": null,
