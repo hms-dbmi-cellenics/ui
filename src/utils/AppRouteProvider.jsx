@@ -46,7 +46,7 @@ const AppRouteProvider = (props) => {
   ) => handleRouteChange(router.pathname, nextRoute, refreshPage);
 
   return (
-    <AppRouterContext.Provider value={navigateTo}>
+    <AppRouterContext.Provider value={{ navigateTo, router }}>
       {renderIntercept ?? <></>}
       {children}
     </AppRouterContext.Provider>

@@ -61,7 +61,7 @@ const withFiltersChanged = {
 const TestComponent = (props) => {
   // eslint-disable-next-line react/prop-types
   const { path, refreshPage = false } = props;
-  const navigateTo = useAppRouter();
+  const { navigateTo } = useAppRouter();
 
   return (
     <div>

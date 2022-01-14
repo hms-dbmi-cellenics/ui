@@ -1,3 +1,7 @@
+/* eslint-disable jsx-a11y/anchor-is-valid */
+import React, { useEffect, useState, useRef } from 'react';
+import PropTypes from 'prop-types';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   BuildOutlined,
   DatabaseOutlined,
@@ -11,26 +15,25 @@ import {
   Tooltip,
   Typography,
 } from 'antd';
-/* eslint-disable jsx-a11y/anchor-is-valid */
-import React, { useEffect, useState, useRef } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 
 import Auth from '@aws-amplify/auth';
-import PropTypes from 'prop-types';
-import { useRouter } from 'next/router';
-import calculateGem2sRerunStatus from 'utils/data-management/calculateGem2sRerunStatus';
 
-import Error from '../pages/_error';
-import GEM2SLoadingScreen from './GEM2SLoadingScreen';
-import PipelineRedirectToDataProcessing from './PipelineRedirectToDataProcessing';
-import PreloadContent from './PreloadContent';
-import { isBrowser } from '../utils/environment';
-import experimentUpdatesHandler from '../utils/experimentUpdatesHandler';
-import { getBackendStatus } from '../redux/selectors';
-import integrationTestConstants from '../utils/integrationTestConstants';
-import { loadBackendStatus } from '../redux/actions/backendStatus';
-import pipelineStatus from '../utils/pipelineStatusValues';
-import { useAppRouter } from '../utils/AppRouteProvider';
+import { useAppRouter } from 'utils/AppRouteProvider';
+
+import calculateGem2sRerunStatus from 'utils/data-management/calculateGem2sRerunStatus';
+import GEM2SLoadingScreen from 'components/GEM2SLoadingScreen';
+import PipelineRedirectToDataProcessing from 'components/PipelineRedirectToDataProcessing';
+import PreloadContent from 'components/PreloadContent';
+
+import experimentUpdatesHandler from 'utils/experimentUpdatesHandler';
+import { getBackendStatus } from 'redux/selectors';
+import { loadBackendStatus } from 'redux/actions/backendStatus';
+import { isBrowser } from 'utils/environment';
+
+import Error from 'pages/_error';
+
+import integrationTestConstants from 'utils/integrationTestConstants';
+import pipelineStatus from 'utils/pipelineStatusValues';
 
 const { Sider, Footer } = Layout;
 
@@ -43,9 +46,8 @@ const ContentWrapper = (props) => {
   const [collapsed, setCollapsed] = useState(false);
 
   const { routeExperimentId, experimentData, children } = props;
-  const router = useRouter();
+  const { navigateTo, router } = useAppRouter();
   const route = router?.route || '';
-  const navigateTo = useAppRouter();
 
   const currentExperimentIdRef = useRef(routeExperimentId);
   const activeProjectUuid = useSelector((state) => state?.projects?.meta?.activeProjectUuid);
