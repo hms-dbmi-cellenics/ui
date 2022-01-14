@@ -177,8 +177,8 @@ const FileUploadModal = (props) => {
             <span style={{ display: 'block', height: '0.6rem' }} />
             <i>
               More guidance on supported file types and formats is available
-              <a rel='noreferrer' target='_blank' href={guidanceFileLink}> here </a>
-              (opens in new tab).
+              <a rel='noreferrer' target='_blank' href={guidanceFileLink}> here</a>
+              .
             </i>
           </Paragraph>
           <Dropzone onDrop={onDrop} multiple>
