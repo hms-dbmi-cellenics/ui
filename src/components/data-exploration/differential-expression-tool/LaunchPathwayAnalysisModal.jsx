@@ -9,15 +9,14 @@ import launchPathwayService from 'utils/pathwayAnalysis/launchPathwayService';
 import getPathwayAnalysisGenes from 'utils/pathwayAnalysis/getPathwayAnalysisGenes';
 import { pathwayServices, speciesList } from 'utils/pathwayAnalysis/pathwayConstants';
 
-import AdvancedFilteringModal from './AdvancedFilteringModal';
-
 const { Paragraph } = Typography;
 
 const LaunchPathwayAnalysisModal = (props) => {
-  const { onCancel, advancedFiltersAdded, onApplyFilters } = props;
+  const {
+    onCancel, onOpenAdvancedFilters, advancedFiltersAdded,
+  } = props;
 
   const [externalService, setExternalService] = useState(pathwayServices.PANTHERDB);
-  const [advancedFilteringModalVisible, setAdvancedFilteringModalVisible] = useState(false);
   const [useAllGenes, setUseAllGenes] = useState(true);
   const [numGenes, setNumGenes] = useState(0);
   const [waitingForExternalService, setWaitingForExternalService] = useState(false);
@@ -73,8 +72,8 @@ const LaunchPathwayAnalysisModal = (props) => {
                     <Button
                       type='link'
                       size='small'
-                      onClick={() => setAdvancedFilteringModalVisible(!advancedFilteringModalVisible)}
-                      onKeyPress={() => setAdvancedFilteringModalVisible(!advancedFilteringModalVisible)}
+                      onClick={() => onOpenAdvancedFilters()}
+                      onKeyPress={() => onOpenAdvancedFilters()}
                     >
                       Click here to open the advanced filtering options.
                     </Button>
@@ -147,25 +146,19 @@ const LaunchPathwayAnalysisModal = (props) => {
           </p>
         )}
       </Modal>
-      {
-        advancedFilteringModalVisible && (
-          <AdvancedFilteringModal
-            onLaunch={(filters) => {
-              onApplyFilters(filters);
-              setAdvancedFilteringModalVisible(false);
-            }}
-            onCancel={() => setAdvancedFilteringModalVisible(false)}
-          />
-        )
-      }
     </>
   );
 };
 
 LaunchPathwayAnalysisModal.propTypes = {
-  onApplyFilters: PropTypes.func.isRequired,
+  onOpenAdvancedFilters: PropTypes.func,
   onCancel: PropTypes.func.isRequired,
-  advancedFiltersAdded: PropTypes.bool.isRequired,
+  advancedFiltersAdded: PropTypes.bool,
+};
+
+LaunchPathwayAnalysisModal.defaultProps = {
+  onOpenAdvancedFilters: null,
+  advancedFiltersAdded: false,
 };
 
 export default LaunchPathwayAnalysisModal;

@@ -17,6 +17,7 @@ jest.mock('utils/pathwayAnalysis/launchPathwayService');
 jest.mock('utils/pathwayAnalysis/getPathwayAnalysisGenes');
 
 const onCancel = jest.fn();
+const onOpenAdvancedFilters = jest.fn();
 
 const renderPathwayAnalysisModal = (filtersApplied = false) => {
   render(
@@ -24,6 +25,7 @@ const renderPathwayAnalysisModal = (filtersApplied = false) => {
       <LaunchPathwayAnalysisModal
         advancedFiltersAdded={filtersApplied}
         onCancel={onCancel}
+        onOpenAdvancedFilters={onOpenAdvancedFilters}
       />
     </Provider>,
   );
@@ -65,9 +67,8 @@ describe('Pathway analysis modal ', () => {
   it('Clicking advanced filtering modal opens the modal', async () => {
     renderPathwayAnalysisModal();
     userEvent.click(screen.getByText('Click here to open the advanced filtering options.'));
-    await waitFor(() => {
-      expect(screen.getByText('Add custom filter')).toBeInTheDocument();
-    });
+
+    expect(onOpenAdvancedFilters).toHaveBeenCalledTimes(1);
   });
 
   it('Launches the service with enrichr', async () => {
@@ -146,13 +147,6 @@ describe('Pathway analysis modal ', () => {
     // The first option to getPathwayAnalysisGenes is useAllGenes, which is true by default
     expect(getPathwayAnalysisGenes).toHaveBeenCalledTimes(1);
     expect(getPathwayAnalysisGenes).toHaveBeenCalledWith(false, numGenes);
-  });
-
-  it('Opens advanced filters modal if there are no filters', async () => {
-    renderPathwayAnalysisModal();
-    const advancedFilteringButton = screen.getByText('advanced filtering', { exact: false });
-    advancedFilteringButton.click();
-    await waitFor(() => expect(screen.getByText('Advanced filters')).toBeInTheDocument());
   });
 
   it('Apply filters warning message is not there if there are filters', async () => {

@@ -237,7 +237,7 @@ const DiffExprResults = (props) => {
       {
         pathwayAnalysisModalVisible && (
           <LaunchPathwayAnalysisModal
-            onApplyFilters={applyAdvancedFilters}
+            onOpenAdvancedFilters={() => setAdvancedFilteringModalVisible(true)}
             onCancel={() => setPathwayAnalysisModalVisible(false)}
             advancedFiltersAdded={advancedFilters.length > 0}
           />
