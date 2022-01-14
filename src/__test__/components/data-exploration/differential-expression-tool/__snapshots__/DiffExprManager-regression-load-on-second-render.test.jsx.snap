@@ -13,7 +13,7 @@ Object {
 exports[`DiffExprManager regression test -- diff exp would not reload after \`go back\` was hit and a new cluster selected if we then go back and change the parameters again, the new differential expression data should be loading 2`] = `
 Object {
   "payload": Object {
-    "cellSets": Object {
+    "comparisonGroup": Object {
       "basis": "louvain/cluster-a;",
       "cellSet": "condition/condition-treated",
       "compareWith": "condition/condition-control",
@@ -61,17 +61,7 @@ Object {
 exports[`DiffExprManager regression test -- diff exp would not reload after \`go back\` was hit and a new cluster selected if we then go back and change the parameters again, the new differential expression data should be loading 3`] = `
 Object {
   "payload": Object {
-    "advancedFilters": Array [],
-    "experimentId": "1234",
-  },
-  "type": "diffExpr/loading",
-}
-`;
-
-exports[`DiffExprManager regression test -- diff exp would not reload after \`go back\` was hit and a new cluster selected if we then go back and change the parameters again, the new differential expression data should be loading 4`] = `
-Object {
-  "payload": Object {
-    "cellSets": Object {
+    "comparisonGroup": Object {
       "basis": "louvain/cluster-a;",
       "cellSet": "condition/condition-treated",
       "compareWith": "condition/condition-control",
@@ -116,6 +106,16 @@ Object {
 }
 `;
 
+exports[`DiffExprManager regression test -- diff exp would not reload after \`go back\` was hit and a new cluster selected if we then go back and change the parameters again, the new differential expression data should be loading 4`] = `
+Object {
+  "payload": Object {
+    "orderBy": "logFC",
+    "orderDirection": "DESC",
+  },
+  "type": "diffExpr/ordering",
+}
+`;
+
 exports[`DiffExprManager regression test -- diff exp would not reload after \`go back\` was hit and a new cluster selected on click of compute with changed parameters, DiffExprManager calls the results view and dispatches the appropriate actions 1`] = `
 Object {
   "payload": Object {
@@ -129,7 +129,7 @@ Object {
 exports[`DiffExprManager regression test -- diff exp would not reload after \`go back\` was hit and a new cluster selected on click of compute with changed parameters, DiffExprManager calls the results view and dispatches the appropriate actions 2`] = `
 Object {
   "payload": Object {
-    "cellSets": Object {
+    "comparisonGroup": Object {
       "basis": "louvain/cluster-a;",
       "cellSet": "condition/condition-treated",
       "compareWith": "condition/condition-control",

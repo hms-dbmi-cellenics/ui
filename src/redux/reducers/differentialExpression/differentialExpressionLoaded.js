@@ -1,6 +1,6 @@
 const differentialExpressionLoaded = (state, action) => {
   const {
-    data, total, comparisonType, cellSets,
+    data, total, comparisonType, comparisonGroup,
   } = action.payload;
 
   return {
@@ -11,7 +11,7 @@ const differentialExpressionLoaded = (state, action) => {
       data,
       loading: false,
       total,
-      cellSets,
+      comparisonGroup,
       comparisonType,
     },
   };

@@ -7,8 +7,17 @@ import getTimeoutForWorkerTask from 'utils/getTimeoutForWorkerTask';
 
 const getCellSetName = (name) => (name?.split('/')[1] || name);
 
+const generateDiffExprBody = (experimentId, comparisonGroup, extras) => ({
+  name: 'DifferentialExpression',
+  experimentId,
+  cellSet: getCellSetName(comparisonGroup.cellSet),
+  compareWith: getCellSetName(comparisonGroup.compareWith),
+  basis: getCellSetName(comparisonGroup.basis),
+  ...extras,
+});
+
 const loadDifferentialExpression = (
-  experimentId, cellSets, comparisonType, tableState, newAdvancedFilters = null,
+  experimentId, comparisonGroup, comparisonType, tableState, newAdvancedFilters = null,
 ) => async (dispatch, getState) => {
   const advancedFilters = newAdvancedFilters
   ?? getState().differentialExpression.comparison.advancedFilters;
@@ -21,13 +30,7 @@ const loadDifferentialExpression = (
     },
   });
 
-  const body = {
-    name: 'DifferentialExpression',
-    experimentId,
-    cellSet: getCellSetName(cellSets.cellSet),
-    compareWith: getCellSetName(cellSets.compareWith),
-    basis: getCellSetName(cellSets.basis),
-  };
+  const body = generateDiffExprBody(experimentId, comparisonGroup);
 
   let pagination = {};
   if (tableState) {
@@ -49,13 +52,12 @@ const loadDifferentialExpression = (
         expression: tableState.geneNamesFilter,
       }];
     }
-    pagination = { pagination };
   }
 
   const timeout = getTimeoutForWorkerTask(getState(), 'DifferentialExpression');
   try {
     const data = await fetchWork(
-      experimentId, body, getState, { timeout, extras: pagination },
+      experimentId, body, getState, { timeout, extras: { pagination } },
     );
     let { total } = data;
     const { rows } = data;
@@ -68,7 +70,7 @@ const loadDifferentialExpression = (
       payload: {
         experimentId,
         data: rows,
-        cellSets,
+        comparisonGroup,
         total,
         comparisonType,
       },
@@ -85,3 +87,6 @@ const loadDifferentialExpression = (
 };
 
 export default loadDifferentialExpression;
+export {
+  generateDiffExprBody,
+};
