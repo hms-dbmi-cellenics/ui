@@ -1,7 +1,7 @@
 const initialState = {
   properties: {
     data: [],
-    cellSets: {},
+    comparisonGroup: {},
     comparisonType: null,
     loading: false,
     error: false,
@@ -9,6 +9,7 @@ const initialState = {
   },
   comparison: {
     type: 'within',
+    advancedFilters: [],
     group: {
       between: {
         cellSet: null,
@@ -20,6 +21,10 @@ const initialState = {
         compareWith: null,
         basis: null,
       },
+    },
+    ordering: {
+      orderBy: 'logFC',
+      orderDirection: 'DESC',
     },
   },
 };

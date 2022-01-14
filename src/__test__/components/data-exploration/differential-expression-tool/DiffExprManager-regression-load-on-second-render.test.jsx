@@ -12,7 +12,7 @@ import initialState from '../../../../redux/reducers/differentialExpression/init
 import genesInitialState from '../../../../redux/reducers/genes/initialState';
 import cellSetsInitialState from '../../../../redux/reducers/cellSets/initialState';
 
-import { DIFF_EXPR_LOADING, DIFF_EXPR_LOADED } from '../../../../redux/actionTypes/differentialExpression';
+import { DIFF_EXPR_LOADING, DIFF_EXPR_LOADED, DIFF_EXPR_ORDERING_SET } from '../../../../redux/actionTypes/differentialExpression';
 
 import '__test__/test-utils/setupTests';
 
@@ -95,20 +95,20 @@ describe('DiffExprManager regression test -- diff exp would not reload after `go
       </Provider>,
     );
 
-    const cellSets = { cellSet: 'louvain/cluster-1', compareWith: 'rest', basis: 'all' };
+    const comparisonGroup = { cellSet: 'louvain/cluster-1', compareWith: 'rest', basis: 'all' };
     act(() => {
-      component.find(DiffExprCompute).props().onCompute('between', cellSets);
+      component.find(DiffExprCompute).props().onCompute('between', comparisonGroup);
     });
     component.update();
 
     expect(component.find(DiffExprResults).length).toEqual(1);
     expect(component.find(DiffExprCompute).length).toEqual(0);
 
-    await waitForActions(store, [DIFF_EXPR_LOADING, DIFF_EXPR_LOADED]);
+    await waitForActions(store, [DIFF_EXPR_ORDERING_SET, DIFF_EXPR_LOADING, DIFF_EXPR_LOADED]);
 
-    expect(store.getActions().length).toEqual(2);
-    expect(store.getActions()[0]).toMatchSnapshot();
+    expect(store.getActions().length).toEqual(3);
     expect(store.getActions()[1]).toMatchSnapshot();
+    expect(store.getActions()[2]).toMatchSnapshot();
   });
 
   it('if we then go back and change the parameters again, the new differential expression data should be loading', async () => {
@@ -119,9 +119,9 @@ describe('DiffExprManager regression test -- diff exp would not reload after `go
     );
 
     // Choose a cluster and hit compute.
-    let cellSets = { cellSet: 'louvain/cluster-2', compareWith: 'rest', basis: 'all' };
+    let comparisonGroup = { cellSet: 'louvain/cluster-2', compareWith: 'rest', basis: 'all' };
     act(() => {
-      component.find(DiffExprCompute).props().onCompute('between', cellSets);
+      component.find(DiffExprCompute).props().onCompute('between', comparisonGroup);
     });
     component.update();
 
@@ -129,11 +129,11 @@ describe('DiffExprManager regression test -- diff exp would not reload after `go
     expect(component.find(DiffExprCompute).length).toEqual(0);
 
     // Ensure load diff exp was called.
-    await waitForActions(store, [DIFF_EXPR_LOADING, DIFF_EXPR_LOADED]);
+    await waitForActions(store, [DIFF_EXPR_ORDERING_SET, DIFF_EXPR_LOADING, DIFF_EXPR_LOADED]);
 
-    expect(store.getActions().length).toEqual(2);
-    expect(store.getActions()[0]).toMatchSnapshot();
+    expect(store.getActions().length).toEqual(3);
     expect(store.getActions()[1]).toMatchSnapshot();
+    expect(store.getActions()[2]).toMatchSnapshot();
 
     // Go back.
     act(() => {
@@ -146,16 +146,16 @@ describe('DiffExprManager regression test -- diff exp would not reload after `go
     expect(component.find(DiffExprCompute).length).toEqual(1);
 
     // Choose another cell set.
-    cellSets = { cellSet: 'louvain/cluster-3', compareWith: 'rest', basis: 'all' };
+    comparisonGroup = { cellSet: 'louvain/cluster-3', compareWith: 'rest', basis: 'all' };
     act(() => {
-      component.find(DiffExprCompute).props().onCompute('between', cellSets);
+      component.find(DiffExprCompute).props().onCompute('between', comparisonGroup);
     });
     component.update();
 
     // Ensure load diff exp was called again.
-    await waitForActions(store, [DIFF_EXPR_LOADING, DIFF_EXPR_LOADED]);
+    await waitForActions(store, [DIFF_EXPR_ORDERING_SET, DIFF_EXPR_LOADING, DIFF_EXPR_LOADED]);
 
-    expect(store.getActions().length).toEqual(4);
+    expect(store.getActions().length).toEqual(6);
     expect(store.getActions()[2]).toMatchSnapshot();
     expect(store.getActions()[3]).toMatchSnapshot();
   });

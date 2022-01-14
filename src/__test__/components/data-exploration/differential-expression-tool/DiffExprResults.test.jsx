@@ -1,5 +1,5 @@
 import React from 'react';
-import { mount } from 'enzyme';
+import { mount, shallow } from 'enzyme';
 import { act } from 'react-dom/test-utils';
 import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
@@ -10,7 +10,7 @@ import AdvancedFilteringModal from 'components/data-exploration/differential-exp
 
 import DiffExprResults from 'components/data-exploration/differential-expression-tool/DiffExprResults';
 import { fetchWork } from 'utils/work/fetchWork';
-import { DIFF_EXPR_LOADING, DIFF_EXPR_LOADED } from 'redux/actionTypes/differentialExpression';
+import { DIFF_EXPR_LOADING, DIFF_EXPR_LOADED, DIFF_EXPR_ORDERING_SET } from 'redux/actionTypes/differentialExpression';
 import '__test__/test-utils/setupTests';
 
 import Loader from 'components/Loader';
@@ -149,6 +149,7 @@ const resultState = {
           basis: 'scratchpad/scratchpad-a',
         },
       },
+      advancedFilters: [],
     },
   },
   backendStatus,
@@ -175,7 +176,12 @@ describe('DiffExprResults', () => {
   it('renders correctly', () => {
     const component = mount(
       <Provider store={withResultStore}>
-        <DiffExprResults experimentId={experimentId} onGoBack={jest.fn()} width={100} height={200} />
+        <DiffExprResults
+          experimentId={experimentId}
+          onGoBack={jest.fn()}
+          width={100}
+          height={200}
+        />
       </Provider>,
     );
 
@@ -199,7 +205,12 @@ describe('DiffExprResults', () => {
   it('is sorted by descending logFC by default', () => {
     const component = mount(
       <Provider store={withResultStore}>
-        <DiffExprResults experimentId={experimentId} onGoBack={jest.fn()} width={100} height={200} />
+        <DiffExprResults
+          experimentId={experimentId}
+          onGoBack={jest.fn()}
+          width={100}
+          height={200}
+        />
       </Provider>,
     );
 
@@ -233,7 +244,12 @@ describe('DiffExprResults', () => {
 
     const component = mount(
       <Provider store={withResultStore}>
-        <DiffExprResults experimentId={experimentId} onGoBack={jest.fn()} width={100} height={200} />
+        <DiffExprResults
+          experimentId={experimentId}
+          onGoBack={jest.fn()}
+          width={100}
+          height={200}
+        />
       </Provider>,
     );
 
@@ -244,7 +260,7 @@ describe('DiffExprResults', () => {
     });
 
     // // Wait for side-effect to propagate (properties loading and loaded).
-    await waitForActions(withResultStore, [DIFF_EXPR_LOADING, DIFF_EXPR_LOADED]);
+    await waitForActions(withResultStore, [DIFF_EXPR_ORDERING_SET, DIFF_EXPR_LOADING, DIFF_EXPR_LOADED]);
 
     expect(fetchWork).toHaveBeenCalledWith(
       '1234',
@@ -266,15 +282,20 @@ describe('DiffExprResults', () => {
       },
     );
 
-    expect(withResultStore.getActions()[0]).toMatchSnapshot();
     expect(withResultStore.getActions()[1]).toMatchSnapshot();
+    expect(withResultStore.getActions()[2]).toMatchSnapshot();
   });
 
   it('Having a focused gene triggers focused view for `eye` button.', () => {
     // Redefine store from `beforeEach`.
     const component = mount(
       <Provider store={withResultStore}>
-        <DiffExprResults experimentId={experimentId} onGoBack={jest.fn()} width={100} height={200} />
+        <DiffExprResults
+          experimentId={experimentId}
+          onGoBack={jest.fn()}
+          width={100}
+          height={200}
+        />
       </Provider>,
     );
 
@@ -302,7 +323,12 @@ describe('DiffExprResults', () => {
   it('Show comparison settings button works.', () => {
     const component = mount(
       <Provider store={withResultStore}>
-        <DiffExprResults experimentId={experimentId} onGoBack={jest.fn()} width={100} height={200} />
+        <DiffExprResults
+          experimentId={experimentId}
+          onGoBack={jest.fn()}
+          width={100}
+          height={200}
+        />
       </Provider>,
     );
     const button = component.find('#settingsButton').first();
@@ -337,19 +363,59 @@ describe('DiffExprResults', () => {
     expect(empty.length).toEqual(1);
   });
 
-  it('Advanced filter button opens and closes the modal', () => {
+  it('Advanced filter button opens and closes the modal', async () => {
     const component = mount(
       <Provider store={withResultStore}>
-        <DiffExprResults experimentId={experimentId} onGoBack={jest.fn()} width={100} height={200} />
+        <DiffExprResults
+          experimentId={experimentId}
+          onGoBack={jest.fn()}
+          width={100}
+          height={200}
+        />
       </Provider>,
     );
     const buttons = component.find('Button');
     expect(buttons.at(2).text()).toEqual('Advanced filtering');
+
+    // opening the modal
     buttons.at(2).simulate('click');
     expect(component.find(AdvancedFilteringModal).length).toEqual(1);
+
+    // Adding a filter and applying it
+    const dropdown = component.find('Dropdown');
+    const menuInstance = shallow(dropdown.props().overlay);
+    menuInstance.at(0).simulate('click');
+    await waitForActions(withResultStore, [DIFF_EXPR_ORDERING_SET, DIFF_EXPR_LOADING, DIFF_EXPR_LOADED]);
+
     // closing the modal
     const closeButton = component.find('.ant-modal-close');
     closeButton.simulate('click');
     expect(component.find(AdvancedFilteringModal).length).toEqual(0);
+  });
+
+  it('Pathway analysis button opens and closes the modal and dispatches loadDifferentialExpression', async () => {
+    const component = mount(
+      <Provider store={withResultStore}>
+        <DiffExprResults
+          experimentId={experimentId}
+          onGoBack={jest.fn()}
+          width={100}
+          height={200}
+        />
+      </Provider>,
+    );
+
+    // On clicking LaunchPathwayAnalysisModal button
+    const buttons = component.find('span[children="Pathway analysis"]');
+    expect(buttons.at(0).text()).toEqual('Pathway analysis');
+    buttons.at(0).simulate('click');
+
+    // Shows the modal
+    expect(component.find('LaunchPathwayAnalysisModal').length).toEqual(1);
+
+    // closing the modal
+    const closeButton = component.find('.ant-modal-close');
+    closeButton.simulate('click');
+    expect(component.find('LaunchPathwayAnalysisModal').length).toEqual(0);
   });
 });

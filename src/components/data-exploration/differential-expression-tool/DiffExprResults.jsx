@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   useSelector,
   useDispatch,
@@ -10,11 +10,16 @@ import Link from 'next/link';
 import { LeftOutlined } from '@ant-design/icons';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
-import loadDifferentialExpression from 'redux/actions/differentialExpression/loadDifferentialExpression';
+
 import { getCellSets } from 'redux/selectors';
+import loadDifferentialExpression from 'redux/actions/differentialExpression/loadDifferentialExpression';
+
 import { geneTableUpdateReason } from 'utils/geneTable/geneTableUpdateReason';
-import GeneTable from '../generic-gene-table/GeneTable';
-import AdvancedFilteringModal from './AdvancedFilteringModal';
+import GeneTable from 'components/data-exploration/generic-gene-table/GeneTable';
+
+import AdvancedFilteringModal from 'components/data-exploration/differential-expression-tool/AdvancedFilteringModal';
+import LaunchPathwayAnalysisModal from 'components/data-exploration/differential-expression-tool/LaunchPathwayAnalysisModal';
+import { setGeneOrdering } from 'redux/actions/differentialExpression';
 
 const { Text } = Typography;
 
@@ -30,12 +35,16 @@ const DiffExprResults = (props) => {
   const error = useSelector((state) => state.differentialExpression.properties.error);
   const comparisonGroup = useSelector((state) => state.differentialExpression.comparison.group);
   const comparisonType = useSelector((state) => state.differentialExpression.comparison.type);
+  const advancedFilters = useSelector((state) => (
+    state.differentialExpression.comparison.advancedFilters));
   const { properties } = useSelector(getCellSets());
+
   const [dataShown, setDataShown] = useState(data);
   const [exportAlert, setExportAlert] = useState(false);
   const [settingsListed, setSettingsListed] = useState(false);
-  const [advancedFilteringShown, setAdvancedFilteringShown] = useState(false);
-
+  const [advancedFilteringModalVisible, setAdvancedFilteringModalVisible] = useState(false);
+  const [pathwayAnalysisModalVisible, setPathwayAnalysisModalVisible] = useState(false);
+  const geneTableState = useRef({});
   const columns = [
     {
       title: 'logFC',
@@ -89,6 +98,12 @@ const DiffExprResults = (props) => {
       return;
     }
 
+    geneTableState.current = newState;
+    const { sorter } = newState;
+
+    const sortOrder = sorter.order === 'ascend' ? 'ASC' : 'DESC';
+    dispatch(setGeneOrdering(sorter.field, sortOrder));
+
     dispatch(
       loadDifferentialExpression(
         experimentId,
@@ -97,6 +112,16 @@ const DiffExprResults = (props) => {
         newState,
       ),
     );
+  };
+
+  const applyAdvancedFilters = (filters) => {
+    dispatch(loadDifferentialExpression(
+      experimentId,
+      comparisonGroup[comparisonType],
+      comparisonType,
+      geneTableState.current,
+      filters,
+    ));
   };
 
   const optionName = (word) => {
@@ -164,14 +189,18 @@ const DiffExprResults = (props) => {
             {' '}
             settings
           </Button>
-          <Button onClick={() => setAdvancedFilteringShown(!advancedFilteringShown)}>
+          <Button onClick={() => setAdvancedFilteringModalVisible(!advancedFilteringModalVisible)}>
             Advanced filtering
           </Button>
         </Space>
       </Space>
-      {advancedFilteringShown && (
+      {advancedFilteringModalVisible && (
         <AdvancedFilteringModal
-          onCancel={() => setAdvancedFilteringShown(false)}
+          onLaunch={(filters) => {
+            applyAdvancedFilters(filters);
+            setAdvancedFilteringModalVisible(false);
+          }}
+          onCancel={() => setAdvancedFilteringModalVisible(false)}
         />
       )}
       {settingsListed
@@ -200,13 +229,27 @@ const DiffExprResults = (props) => {
         onUpdate={onUpdate}
         columns={columns}
         loading={loading}
-        onExportCSV={() => { setExportAlert(true); }}
         error={error}
         width={width}
         height={height - 70 - (exportAlert ? 70 : 0) - (settingsListed ? 70 : 0)}
         data={dataShown}
         total={total}
+        extraOptions={(
+          <>
+            <Button type='link' size='small' onClick={() => setExportAlert(true)}>Export as CSV</Button>
+            <Button type='link' size='small' onClick={() => setPathwayAnalysisModalVisible(!pathwayAnalysisModalVisible)}>Pathway analysis</Button>
+          </>
+        )}
       />
+      {
+        pathwayAnalysisModalVisible && (
+          <LaunchPathwayAnalysisModal
+            onOpenAdvancedFilters={() => setAdvancedFilteringModalVisible(true)}
+            onCancel={() => setPathwayAnalysisModalVisible(false)}
+            advancedFiltersAdded={advancedFilters.length > 0}
+          />
+        )
+      }
     </Space>
   );
 };

@@ -19,6 +19,7 @@ describe('differentialExpressionReducer', () => {
       type: DIFF_EXPR_LOADING,
       payload: {
         experimentId: '1234',
+        advancedFilters: [{ columnName: 'foo', columnValue: 'bar' }],
       },
     });
 
