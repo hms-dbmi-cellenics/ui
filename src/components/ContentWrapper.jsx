@@ -51,11 +51,12 @@ const ContentWrapper = (props) => {
 
   const currentExperimentIdRef = useRef(routeExperimentId);
   const activeProjectUuid = useSelector((state) => state?.projects?.meta?.activeProjectUuid);
-  const activeProject = useSelector((state) => state.projects[activeProjectUuid]);
-  const samples = useSelector((state) => state.samples);
-
   const activeProjectExperimentID = useSelector((state) => (
     state?.projects[activeProjectUuid]?.experiments[0]));
+
+  const activeProject = useSelector((state) => state.projects[activeProjectUuid]);
+
+  const samples = useSelector((state) => state.samples);
 
   useEffect(() => {
     if (!activeProjectExperimentID && !routeExperimentId) return;

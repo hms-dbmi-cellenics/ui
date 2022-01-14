@@ -3,19 +3,14 @@ import { useSelector, useDispatch } from 'react-redux';
 import {
   Button, Tooltip, Popconfirm,
 } from 'antd';
-import { useRouter } from 'next/router';
-import moment from 'moment';
-import { updateExperimentInfo } from 'redux/actions/experimentSettings';
-import {
-  updateProject,
-} from 'redux/actions/projects';
 
 import fileUploadSpecifications from 'utils/upload/fileUploadSpecifications';
 import UploadStatus from 'utils/upload/UploadStatus';
 import integrationTestConstants from 'utils/integrationTestConstants';
 import { runGem2s } from 'redux/actions/pipeline';
-import { updateExperiment } from 'redux/actions/experiments';
 import calculateGem2sRerunStatus from 'utils/data-management/calculateGem2sRerunStatus';
+
+import { useAppRouter } from 'utils/AppRouteProvider';
 
 const LaunchButtonTemplate = (props) => {
   const {
@@ -38,7 +33,7 @@ const LaunchButtonTemplate = (props) => {
 
 const LaunchAnalysisButton = () => {
   const dispatch = useDispatch();
-  const router = useRouter();
+  const { navigateTo } = useAppRouter();
 
   const experiments = useSelector((state) => state.experiments);
   const samples = useSelector((state) => state.samples);
@@ -54,21 +49,12 @@ const LaunchAnalysisButton = () => {
   );
 
   const launchAnalysis = () => {
-    const lastViewed = moment().toISOString();
-    dispatch(updateExperiment(experimentId, { lastViewed }));
-    dispatch(updateProject(activeProjectUuid, { lastAnalyzed: lastViewed }));
-    dispatch(updateExperimentInfo({
-      experimentId,
-      experimentName: experiments[experimentId].name,
-      sampleIds: experiments[experimentId].sampleIds,
-    }));
-
     if (gem2sRerunStatus.rerun) {
       dispatch(runGem2s(experimentId, gem2sRerunStatus.paramsHash));
     }
 
     const analysisPath = '/experiments/[experimentId]/data-processing';
-    router.push(analysisPath.replace('[experimentId]', experimentId));
+    navigateTo(analysisPath.replace('[experimentId]', experimentId));
   };
 
   useEffect(() => {

@@ -1,7 +1,12 @@
 import React, { useContext, useState } from 'react';
 import propTypes from 'prop-types';
+import { useSelector, useDispatch } from 'react-redux';
 import { useRouter } from 'next/router';
-import { useSelector } from 'react-redux';
+
+import moment from 'moment';
+import { updateExperimentInfo } from 'redux/actions/experimentSettings';
+import { updateProject } from 'redux/actions/projects';
+import { updateExperiment } from 'redux/actions/experiments';
 
 import DataProcessingIntercept from 'components/data-processing/DataProcessingIntercept';
 
@@ -10,9 +15,15 @@ const AppRouterContext = React.createContext(null);
 const AppRouteProvider = (props) => {
   const { children } = props;
   const router = useRouter();
+  const dispatch = useDispatch();
 
   const [renderIntercept, setRenderIntercept] = useState(null);
 
+  const activeProjectUuid = useSelector((state) => state?.projects?.meta?.activeProjectUuid);
+  const experimentId = useSelector((state) => (
+    state?.projects[activeProjectUuid]?.experiments[0]));
+
+  const experiments = useSelector((state) => state.experiments);
   const changedQCFilters = useSelector(
     (state) => state.experimentSettings.processing.meta.changedQCFilters,
   );
@@ -37,6 +48,19 @@ const AppRouteProvider = (props) => {
       setRenderIntercept(availableIntercepts.DATA_PROCESSING(nextRoute, hardNavigate));
       return;
     }
+
+    if (previousRoute.match('/data-management')) {
+      const lastViewed = moment().toISOString();
+
+      dispatch(updateExperiment(experimentId, { lastViewed }));
+      dispatch(updateProject(activeProjectUuid, { lastAnalyzed: lastViewed }));
+      dispatch(updateExperimentInfo({
+        experimentId,
+        experimentName: experiments[experimentId].name,
+        sampleIds: experiments[experimentId].sampleIds,
+      }));
+    }
+
     continueNavigation(nextRoute, hardNavigate);
   };
 
