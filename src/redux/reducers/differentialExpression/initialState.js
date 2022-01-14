@@ -9,6 +9,7 @@ const initialState = {
   },
   comparison: {
     type: 'within',
+    advancedFilters: [],
     group: {
       between: {
         cellSet: null,

@@ -1,5 +1,5 @@
 import React from 'react';
-import { mount } from 'enzyme';
+import { mount, shallow } from 'enzyme';
 import { act } from 'react-dom/test-utils';
 import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
@@ -149,6 +149,7 @@ const resultState = {
           basis: 'scratchpad/scratchpad-a',
         },
       },
+      advancedFilters: [],
     },
   },
   backendStatus,
@@ -362,7 +363,7 @@ describe('DiffExprResults', () => {
     expect(empty.length).toEqual(1);
   });
 
-  it('Advanced filter button opens and closes the modal', () => {
+  it('Advanced filter button opens and closes the modal', async () => {
     const component = mount(
       <Provider store={withResultStore}>
         <DiffExprResults
@@ -375,15 +376,24 @@ describe('DiffExprResults', () => {
     );
     const buttons = component.find('Button');
     expect(buttons.at(2).text()).toEqual('Advanced filtering');
+
+    // opening the modal
     buttons.at(2).simulate('click');
     expect(component.find(AdvancedFilteringModal).length).toEqual(1);
+
+    // Adding a filter and applying it
+    const dropdown = component.find('Dropdown');
+    const menuInstance = shallow(dropdown.props().overlay);
+    menuInstance.at(0).simulate('click');
+    await waitForActions(withResultStore, [DIFF_EXPR_LOADING, DIFF_EXPR_LOADED]);
+
     // closing the modal
     const closeButton = component.find('.ant-modal-close');
     closeButton.simulate('click');
     expect(component.find(AdvancedFilteringModal).length).toEqual(0);
   });
 
-  it('Pathway analysis button opens and closes the modal', () => {
+  it('Pathway analysis button opens and closes the modal and dispatches loadDifferentialExpression', async () => {
     const component = mount(
       <Provider store={withResultStore}>
         <DiffExprResults
@@ -406,6 +416,6 @@ describe('DiffExprResults', () => {
     // closing the modal
     const closeButton = component.find('.ant-modal-close');
     closeButton.simulate('click');
-    expect(component.find(AdvancedFilteringModal).length).toEqual(0);
+    expect(component.find('LaunchPathwayAnalysisModal').length).toEqual(0);
   });
 });
