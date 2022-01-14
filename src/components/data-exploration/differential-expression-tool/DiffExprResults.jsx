@@ -19,7 +19,7 @@ import GeneTable from 'components/data-exploration/generic-gene-table/GeneTable'
 
 import AdvancedFilteringModal from 'components/data-exploration/differential-expression-tool/AdvancedFilteringModal';
 import LaunchPathwayAnalysisModal from 'components/data-exploration/differential-expression-tool/LaunchPathwayAnalysisModal';
-import { setGeneOrdering } from '../../../redux/actions/differentialExpression';
+import { setGeneOrdering } from 'redux/actions/differentialExpression';
 
 const { Text } = Typography;
 

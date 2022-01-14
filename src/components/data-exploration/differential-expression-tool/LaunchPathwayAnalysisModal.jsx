@@ -20,7 +20,7 @@ const LaunchPathwayAnalysisModal = (props) => {
   const [useAllGenes, setUseAllGenes] = useState(true);
   const [numGenes, setNumGenes] = useState(0);
   const [waitingForExternalService, setWaitingForExternalService] = useState(false);
-  const [species, setSpecies] = useState(speciesList[0]?.value);
+  const [species, setSpecies] = useState(speciesList[0].value);
 
   const dispatch = useDispatch();
 
@@ -31,6 +31,9 @@ const LaunchPathwayAnalysisModal = (props) => {
 
     try {
       const pathwayGenesList = await dispatch(getDiffExprGenes(useAllGenes, numGenes));
+
+      console.log('*** genesList', pathwayGenesList);
+
       launchPathwayService(serviceName, pathwayGenesList, species);
     } catch (error) {
       throw new Error('Error launching pathway analysis', error);
