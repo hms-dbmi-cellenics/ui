@@ -4,20 +4,43 @@ import userEvent from '@testing-library/user-event';
 import { Button } from 'antd';
 import { useRouter } from 'next/router';
 import { Provider } from 'react-redux';
-import configureMockstore from 'redux-mock-store';
-import thunk from 'redux-thunk';
-import AppRouteProvider, { useAppRouter } from '../../utils/AppRouteProvider';
-import DataProcessingIntercept from '../../components/data-processing/DataProcessingIntercept';
+import { makeStore } from 'redux/store';
 
-import initialExperimentSettingsState, { metaInitialState } from '../../redux/reducers/experimentSettings/initialState';
+import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
+import mockAPI, {
+  generateDefaultMockAPIResponses,
+} from '__test__/test-utils/mockAPI';
+import fake from '__test__/test-utils/constants';
+import { projects } from '__test__/test-utils/mockData';
+
+import AppRouteProvider, { useAppRouter } from 'utils/AppRouteProvider';
+import DataProcessingIntercept from 'components/data-processing/DataProcessingIntercept';
+
+import addChangedQCFilter from 'redux/actions/experimentSettings/processingConfig/addChangedQCFilter';
+import { updateExperimentInfo } from 'redux/actions/experimentSettings';
+import { loadProjects, updateProject } from 'redux/actions/projects';
+import { loadExperiments, updateExperiment } from 'redux/actions/experiments';
 
 jest.mock('next/router', () => ({
   __esModule: true,
   useRouter: jest.fn(),
 }));
 
-jest.mock('../../components/data-processing/DataProcessingIntercept',
+jest.mock('components/data-processing/DataProcessingIntercept',
   () => jest.fn(() => <>Data Processing Intercept</>));
+
+jest.mock('redux/actions/experimentSettings/updateExperimentInfo');
+jest.mock('redux/actions/projects/updateProject');
+jest.mock('redux/actions/experiments/updateExperiment');
+
+updateExperimentInfo.mockImplementation(() => ({ type: 'MOCK_ACTION ' }));
+updateProject.mockImplementation(() => ({ type: 'MOCK_ACTION ' }));
+updateExperiment.mockImplementation(() => ({ type: 'MOCK_ACTION ' }));
+
+enableFetchMocks();
+
+const projectUuid = projects[0].uuid;
+const defaultResponses = generateDefaultMockAPIResponses(fake.EXPERIMENT_ID, projectUuid);
 
 const buttonText = 'Go';
 
@@ -27,36 +50,10 @@ const mockRouter = {
 };
 
 useRouter.mockReturnValue(mockRouter);
-
-const mockStore = configureMockstore([thunk]);
+let storeState = null;
 
 const changedFilters = ['filter-1', 'filter-2'];
 const testPath = '/test/path';
-
-const noFilterChanged = {
-  experimentSettings: {
-    ...initialExperimentSettingsState,
-    processing: {
-      ...initialExperimentSettingsState.processing,
-      meta: {
-        ...metaInitialState,
-      },
-    },
-  },
-};
-
-const withFiltersChanged = {
-  experimentSettings: {
-    ...noFilterChanged.experimentSettings,
-    processing: {
-      ...noFilterChanged.experimentSettings.processing,
-      meta: {
-        ...noFilterChanged.experimentSettings.processing.meta,
-        changedQCFilters: new Set(changedFilters),
-      },
-    },
-  },
-};
 
 const TestComponent = (props) => {
   // eslint-disable-next-line react/prop-types
@@ -72,14 +69,18 @@ const TestComponent = (props) => {
   );
 };
 
-describe('RouteContext', () => {
+describe('AppRouteProvider', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    storeState = makeStore();
+
+    fetchMock.resetMocks();
+    fetchMock.mockIf(/.*/, mockAPI(defaultResponses));
   });
 
   it('Renders its children correctly', () => {
     render(
-      <Provider store={mockStore(noFilterChanged)}>
+      <Provider store={storeState}>
         <AppRouteProvider>
           <TestComponent />
         </AppRouteProvider>
@@ -91,7 +92,7 @@ describe('RouteContext', () => {
 
   it('Dispatches routes correctly', () => {
     render(
-      <Provider store={mockStore(noFilterChanged)}>
+      <Provider store={storeState}>
         <AppRouteProvider>
           <TestComponent path={testPath} />
         </AppRouteProvider>
@@ -104,16 +105,41 @@ describe('RouteContext', () => {
     expect(mockRouter.push).toHaveBeenCalledWith(testPath);
   });
 
-  it('Displays DataProcessingIntercept correctly', () => {
+  it('Loads projects and experiment info when navigating from DataManagement', async () => {
+    await storeState.dispatch(loadProjects());
+    await storeState.dispatch(loadExperiments(projectUuid));
+
     render(
-      <Provider store={mockStore(withFiltersChanged)}>
+      <Provider store={storeState}>
         <AppRouteProvider>
           <TestComponent path='/data-exploration' />
         </AppRouteProvider>
       </Provider>,
     );
 
-    mockRouter.initalPath = '/data-processing';
+    mockRouter.pathname = '/data-management';
+
+    userEvent.click(screen.getByText(buttonText));
+
+    expect(updateExperimentInfo).toHaveBeenCalledTimes(1);
+    expect(updateProject).toHaveBeenCalledTimes(1);
+    expect(updateExperiment).toHaveBeenCalledTimes(1);
+
+    expect(mockRouter.push).toHaveBeenCalled();
+  });
+
+  it('Displays DataProcessingIntercept correctly', () => {
+    storeState.dispatch(addChangedQCFilter(changedFilters[0]));
+
+    render(
+      <Provider store={storeState}>
+        <AppRouteProvider>
+          <TestComponent path='/data-exploration' />
+        </AppRouteProvider>
+      </Provider>,
+    );
+
+    mockRouter.pathname = '/data-processing';
 
     userEvent.click(screen.getByText(buttonText));
 
@@ -125,7 +151,7 @@ describe('RouteContext', () => {
 
   it('Does not display DataProcessingIntercept if there is no changedQCFilters', () => {
     render(
-      <Provider store={mockStore(noFilterChanged)}>
+      <Provider store={storeState}>
         <AppRouteProvider>
           <TestComponent path={testPath} />
         </AppRouteProvider>

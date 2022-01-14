@@ -33,7 +33,9 @@ jest.mock('components/data-processing/ConfigureEmbedding/ConfigureEmbedding', ()
 const mockNavigateTo = jest.fn();
 
 jest.mock('utils/AppRouteProvider', () => ({
-  useAppRouter: jest.fn(() => mockNavigateTo),
+  useAppRouter: jest.fn(() => ({
+    navigateTo: mockNavigateTo,
+  })),
 }));
 
 jest.mock('redux/selectors');
