@@ -1,4 +1,4 @@
-import getPathwayAnalysisGenes from 'utils/pathwayAnalysis/getPathwayAnalysisGenes';
+import getDiffExprGenes from 'utils/differentialExpression/getDiffExprGenes';
 import { makeStore } from 'redux/store';
 
 import setGeneOrdering from 'redux/actions/differentialExpression/setGeneOrdering';
@@ -7,7 +7,7 @@ import { fetchWork } from 'utils/work/fetchWork';
 
 jest.mock('utils/work/fetchWork');
 
-describe('getPathwayAnalysisGenes test', () => {
+describe('getDiffExpr test', () => {
   beforeEach(async () => {
     jest.clearAllMocks();
     fetchWork.mockImplementation(() => Promise.resolve({
@@ -20,7 +20,7 @@ describe('getPathwayAnalysisGenes test', () => {
 
   it('Dispatch correctly', async () => {
     const store = makeStore();
-    await store.dispatch(getPathwayAnalysisGenes(true, 0));
+    await store.dispatch(getDiffExprGenes(true, 0));
 
     expect(fetchWork).toHaveBeenCalledTimes(1);
 
@@ -41,7 +41,7 @@ describe('getPathwayAnalysisGenes test', () => {
 
     const numGenes = 10;
 
-    await store.dispatch(getPathwayAnalysisGenes(false, numGenes));
+    await store.dispatch(getDiffExprGenes(false, numGenes));
 
     expect(fetchWork).toHaveBeenCalledTimes(1);
 
@@ -65,7 +65,7 @@ describe('getPathwayAnalysisGenes test', () => {
     await store.dispatch(setGeneOrdering(orderBy, orderDirection));
 
     // Then dispatch the action
-    await store.dispatch(getPathwayAnalysisGenes(true, 0));
+    await store.dispatch(getDiffExprGenes(true, 0));
 
     expect(fetchWork).toHaveBeenCalledTimes(1);
 
@@ -86,7 +86,7 @@ describe('getPathwayAnalysisGenes test', () => {
     const store = makeStore();
 
     expect(async () => {
-      await store.dispatch(getPathwayAnalysisGenes(true, 0));
+      await store.dispatch(getDiffExprGenes(true, 0));
     }).rejects.toThrow();
   });
 });

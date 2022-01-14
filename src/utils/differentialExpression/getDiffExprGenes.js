@@ -3,7 +3,7 @@ import { generateDiffExprBody } from 'redux/actions/differentialExpression/loadD
 import { fetchWork } from 'utils/work/fetchWork';
 import getTimeoutForWorkerTask from 'utils/getTimeoutForWorkerTask';
 
-const getPathwayAnalysisGenes = (getAllGenes, numGenes) => async (dispatch, getState) => {
+const getDiffExprGenes = (getAllGenes, numGenes) => async (dispatch, getState) => {
   const { experimentId } = getState().experimentSettings.info;
   const {
     type: comparisonType,
@@ -44,4 +44,4 @@ const getPathwayAnalysisGenes = (getAllGenes, numGenes) => async (dispatch, getS
   }
 };
 
-export default getPathwayAnalysisGenes;
+export default getDiffExprGenes;

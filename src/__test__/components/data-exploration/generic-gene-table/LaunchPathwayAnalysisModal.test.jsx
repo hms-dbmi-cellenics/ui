@@ -10,11 +10,11 @@ import { Provider } from 'react-redux';
 import { makeStore } from 'redux/store';
 
 import launchPathwayService from 'utils/pathwayAnalysis/launchPathwayService';
-import getPathwayAnalysisGenes from 'utils/pathwayAnalysis/getPathwayAnalysisGenes';
+import getDiffExprGenes from 'utils/differentialExpression/getDiffExprGenes';
 import { pathwayServices, speciesList } from 'utils/pathwayAnalysis/pathwayConstants';
 
 jest.mock('utils/pathwayAnalysis/launchPathwayService');
-jest.mock('utils/pathwayAnalysis/getPathwayAnalysisGenes');
+jest.mock('utils/differentialExpression/getDiffExprGenes');
 
 const onCancel = jest.fn();
 const onOpenAdvancedFilters = jest.fn();
@@ -32,7 +32,7 @@ const renderPathwayAnalysisModal = (filtersApplied = false) => {
 };
 
 const genesList = ['gene1', 'gene2'];
-getPathwayAnalysisGenes.mockImplementation(() => async () => Promise.resolve(genesList));
+getDiffExprGenes.mockImplementation(() => async () => Promise.resolve(genesList));
 
 describe('Pathway analysis modal ', () => {
   beforeEach(() => {
@@ -83,9 +83,9 @@ describe('Pathway analysis modal ', () => {
       userEvent.click(screen.getByText('Launch'));
     });
 
-    // The first option to getPathwayAnalysisGenes is useAllGenes, which is true by default
-    expect(getPathwayAnalysisGenes).toHaveBeenCalledTimes(1);
-    expect(getPathwayAnalysisGenes).toHaveBeenCalledWith(true, 0);
+    // The first option to getDiffExpr is useAllGenes, which is true by default
+    expect(getDiffExprGenes).toHaveBeenCalledTimes(1);
+    expect(getDiffExprGenes).toHaveBeenCalledWith(true, 0);
 
     expect(launchPathwayService).toHaveBeenCalledTimes(1);
     expect(launchPathwayService).toHaveBeenCalledWith(
@@ -116,9 +116,9 @@ describe('Pathway analysis modal ', () => {
       userEvent.click(screen.getByText('Launch'));
     });
 
-    // The first option to getPathwayAnalysisGenes is useAllGenes, which is true by default
-    expect(getPathwayAnalysisGenes).toHaveBeenCalledTimes(1);
-    expect(getPathwayAnalysisGenes).toHaveBeenCalledWith(true, 0);
+    // The first option to getDiffExpr is useAllGenes, which is true by default
+    expect(getDiffExprGenes).toHaveBeenCalledTimes(1);
+    expect(getDiffExprGenes).toHaveBeenCalledWith(true, 0);
 
     expect(launchPathwayService).toHaveBeenCalledTimes(1);
     expect(launchPathwayService).toHaveBeenCalledWith(
@@ -144,9 +144,9 @@ describe('Pathway analysis modal ', () => {
       userEvent.click(screen.getByText('Launch'));
     });
 
-    // The first option to getPathwayAnalysisGenes is useAllGenes, which is true by default
-    expect(getPathwayAnalysisGenes).toHaveBeenCalledTimes(1);
-    expect(getPathwayAnalysisGenes).toHaveBeenCalledWith(false, numGenes);
+    // The first option to getDiffExpr is useAllGenes, which is true by default
+    expect(getDiffExprGenes).toHaveBeenCalledTimes(1);
+    expect(getDiffExprGenes).toHaveBeenCalledWith(false, numGenes);
   });
 
   it('Apply filters warning message is not there if there are filters', async () => {

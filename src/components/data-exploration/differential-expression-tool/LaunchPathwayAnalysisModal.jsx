@@ -6,7 +6,7 @@ import {
 import PropTypes from 'prop-types';
 
 import launchPathwayService from 'utils/pathwayAnalysis/launchPathwayService';
-import getPathwayAnalysisGenes from 'utils/pathwayAnalysis/getPathwayAnalysisGenes';
+import getDiffExprGenes from 'utils/differentialExpression/getDiffExprGenes';
 import { pathwayServices, speciesList } from 'utils/pathwayAnalysis/pathwayConstants';
 
 const { Paragraph } = Typography;
@@ -30,7 +30,7 @@ const LaunchPathwayAnalysisModal = (props) => {
     setWaitingForExternalService(true);
 
     try {
-      const pathwayGenesList = await dispatch(getPathwayAnalysisGenes(useAllGenes, numGenes));
+      const pathwayGenesList = await dispatch(getDiffExprGenes(useAllGenes, numGenes));
       launchPathwayService(serviceName, pathwayGenesList, species);
     } catch (error) {
       throw new Error('Error launching pathway analysis', error);
