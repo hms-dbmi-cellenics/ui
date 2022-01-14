@@ -31,9 +31,6 @@ const LaunchPathwayAnalysisModal = (props) => {
 
     try {
       const pathwayGenesList = await dispatch(getDiffExprGenes(useAllGenes, numGenes));
-
-      console.log('*** genesList', pathwayGenesList);
-
       launchPathwayService(serviceName, pathwayGenesList, species);
     } catch (error) {
       throw new Error('Error launching pathway analysis', error);
