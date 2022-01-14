@@ -74,13 +74,16 @@ const FileUploadModal = (props) => {
 
   const renderHelpText = () => (
     <>
-      <Col span={24} style={{ padding: '1rem' }}>
+      <Space direction='vertical' style={{ width: '100%' }}>
         <Paragraph>
-          For each sample, upload a folder containing the following
+          For each sample, upload a folder containing the
           {' '}
-          <Text strong>{techOptions[selectedTech].inputInfo.length}</Text>
+          {techOptions[selectedTech].inputInfo.length}
           {' '}
-          files:
+          count matrix files. The folder&apos;s name will be used to name the sample in it. You can change this name later in Data Management.
+        </Paragraph>
+        <Paragraph>
+          The required files for each sample are:
         </Paragraph>
         <List
           dataSource={techOptions[selectedTech].inputInfo}
@@ -100,21 +103,7 @@ const FileUploadModal = (props) => {
             </List.Item>
           )}
         />
-      </Col>
-      <Col span={24} style={{ padding: '1rem' }}>
-        <Paragraph>
-          The folder&apos;s name will be used to name
-          the sample in it. You can change this
-          name later in Data Management.
-        </Paragraph>
-        <Paragraph type='secondary'>
-          More guidance on supported file types and formats is available
-          {' '}
-          <a rel='noreferrer' target='_blank' href={guidanceFileLink}>here</a>
-          {' '}
-          (opens in new tab).
-        </Paragraph>
-      </Col>
+      </Space>
     </>
   );
 
@@ -157,14 +146,41 @@ const FileUploadModal = (props) => {
                 ))}
               </Select>
             </Space>
-            <Text type='secondary'><i>Only 10x Chromium datasets are currently supported</i></Text>
+            <Text type='secondary'>
+              <i>
+                Is your dataset generated using another single cell RNA-seq technology (e.g. Nadia, BD Rhapsody, etc.)? Email us to find out if we can support your data:
+                <a href='mailto:hello@biomage.net'> hello@biomage.net</a>
+              </i>
+            </Text>
           </Space>
         </Col>
+      </Row>
 
-        {selectedTech && renderHelpText()}
+      <Row style={{ margin: '1rem 0' }}>
+        <Col span={24}>
+          <Title level={4}>
+            File Upload:
+            <span style={{ color: 'red', marginRight: '2em' }}>*</span>
+          </Title>
+          {selectedTech && renderHelpText()}
+        </Col>
+      </Row>
 
+      <Row>
         {/* eslint-disable react/jsx-props-no-spreading */}
         <Col span={24}>
+          <Paragraph type='secondary'>
+            <i>
+              Don’t have the data in the accepted format? Email us for help with file conversion (e.g. from Fastq or H5 file):
+              <a href='mailto:hello@biomage.net'> hello@biomage.net</a>
+            </i>
+            <span style={{ display: 'block', height: '0.6rem' }} />
+            <i>
+              More guidance on supported file types and formats is available
+              <a rel='noreferrer' target='_blank' href={guidanceFileLink}> here</a>
+              .
+            </i>
+          </Paragraph>
           <Dropzone onDrop={onDrop} multiple>
             {({ getRootProps, getInputProps }) => (
               <div
