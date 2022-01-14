@@ -19,6 +19,7 @@ import GeneTable from 'components/data-exploration/generic-gene-table/GeneTable'
 
 import AdvancedFilteringModal from 'components/data-exploration/differential-expression-tool/AdvancedFilteringModal';
 import LaunchPathwayAnalysisModal from 'components/data-exploration/differential-expression-tool/LaunchPathwayAnalysisModal';
+import { setGeneOrdering } from '../../../redux/actions/differentialExpression';
 
 const { Text } = Typography;
 
@@ -96,13 +97,19 @@ const DiffExprResults = (props) => {
     if (reason === geneTableUpdateReason.loaded || reason === geneTableUpdateReason.loading) {
       return;
     }
+
     geneTableState.current = newState;
+    const { sorter } = newState;
+
+    const sortOrder = sorter.order === 'ascend' ? 'ASC' : 'DESC';
+    dispatch(setGeneOrdering(sorter.field, sortOrder));
+
     dispatch(
       loadDifferentialExpression(
         experimentId,
         comparisonGroup[comparisonType],
         comparisonType,
-        geneTableState.current,
+        newState,
       ),
     );
   };
