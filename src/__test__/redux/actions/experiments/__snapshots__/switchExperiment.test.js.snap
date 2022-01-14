@@ -94,10 +94,14 @@ Object {
           "compareWith": null,
         },
       },
+      "ordering": Object {
+        "orderBy": "logFC",
+        "orderDirection": "DESC",
+      },
       "type": "within",
     },
     "properties": Object {
-      "cellSets": Object {},
+      "comparisonGroup": Object {},
       "comparisonType": null,
       "data": Array [],
       "error": false,

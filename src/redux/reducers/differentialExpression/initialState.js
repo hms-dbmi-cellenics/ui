@@ -1,7 +1,7 @@
 const initialState = {
   properties: {
     data: [],
-    cellSets: {},
+    comparisonGroup: {},
     comparisonType: null,
     loading: false,
     error: false,
@@ -21,6 +21,10 @@ const initialState = {
         compareWith: null,
         basis: null,
       },
+    },
+    ordering: {
+      orderBy: 'logFC',
+      orderDirection: 'DESC',
     },
   },
 };

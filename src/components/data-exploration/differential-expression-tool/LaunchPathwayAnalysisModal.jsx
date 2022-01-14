@@ -1,42 +1,43 @@
 import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
 import {
-  Modal, Alert, Radio, Space, InputNumber, Select, Tooltip, Button, Typography, Row,
+  Modal, Alert, Radio, Space, InputNumber, Select, Button, Typography, Row,
 } from 'antd';
 import PropTypes from 'prop-types';
 
-import AdvancedFilteringModal from './AdvancedFilteringModal';
+import launchPathwayService from 'utils/pathwayAnalysis/launchPathwayService';
+import getDiffExprGenes from 'utils/differentialExpression/getDiffExprGenes';
+import { pathwayServices, speciesList } from 'utils/pathwayAnalysis/pathwayConstants';
 
 const { Paragraph } = Typography;
 
-const speciesOptions = [{
-  value: 'musculus',
-  label: 'Mus musculus',
-}, {
-  value: 'sapiens',
-  label: 'Homo sapiens',
-}, {
-  value: 'melanogaster',
-  label: 'Drosophila melanogaster',
-}, {
-  value: 'cerevisiae',
-  label: 'Saccharomyces cerevisiae',
-}, {
-  value: 'elegans',
-  label: 'Caenorhabditis elegans',
-}, {
-  value: 'rerio',
-  label: 'Danio rerio',
-}];
-
 const LaunchPathwayAnalysisModal = (props) => {
-  const { onCancel, advancedFiltersAdded, onApplyFilters } = props;
-  const externalServices = { PANTHER: 'pantherdb', ENRICHER: 'enrichr' };
+  const {
+    onCancel, onOpenAdvancedFilters, advancedFiltersAdded,
+  } = props;
 
-  const [externalService, setExternalService] = useState(externalServices.PANTHER);
-  const [advancedFilteringModalVisible, setAdvancedFilteringModalVisible] = useState(false);
-  const [allGenesToggled, setAllGenesToggled] = useState(true);
+  const [externalService, setExternalService] = useState(pathwayServices.PANTHERDB);
+  const [useAllGenes, setUseAllGenes] = useState(true);
+  const [numGenes, setNumGenes] = useState(0);
+  const [waitingForExternalService, setWaitingForExternalService] = useState(false);
+  const [species, setSpecies] = useState(speciesList[0].value);
+
+  const dispatch = useDispatch();
 
   const marginSpacing = { marginBottom: '20px', marginTop: '20x' };
+
+  const launchPathwayAnalysis = async (serviceName) => {
+    setWaitingForExternalService(true);
+
+    try {
+      const pathwayGenesList = await dispatch(getDiffExprGenes(useAllGenes, numGenes));
+      launchPathwayService(serviceName, pathwayGenesList, species);
+    } catch (error) {
+      throw new Error('Error launching pathway analysis', error);
+    } finally {
+      setWaitingForExternalService(false);
+    }
+  };
 
   return (
     <>
@@ -45,9 +46,15 @@ const LaunchPathwayAnalysisModal = (props) => {
         title='Pathway Analysis'
         width='50%'
         onCancel={onCancel}
-        // remove next line once the functionality is implemented
-        footer={[<Tooltip key='tooltip' title='Feature coming soon!'><Button disabled>Launch</Button></Tooltip>]}
-        okText='Launch'
+        footer={[
+          <Button
+            disabled={waitingForExternalService}
+            type='primary'
+            onClick={() => launchPathwayAnalysis(externalService)}
+          >
+            {waitingForExternalService ? 'Loading...' : 'Launch'}
+          </Button>,
+        ]}
       >
         {!advancedFiltersAdded && (
           <Row style={{
@@ -65,8 +72,8 @@ const LaunchPathwayAnalysisModal = (props) => {
                     <Button
                       type='link'
                       size='small'
-                      onClick={() => setAdvancedFilteringModalVisible(!advancedFilteringModalVisible)}
-                      onKeyPress={() => setAdvancedFilteringModalVisible(!advancedFilteringModalVisible)}
+                      onClick={() => onOpenAdvancedFilters()}
+                      onKeyPress={() => onOpenAdvancedFilters()}
                     >
                       Click here to open the advanced filtering options.
                     </Button>
@@ -81,8 +88,8 @@ const LaunchPathwayAnalysisModal = (props) => {
 
         <Row style={marginSpacing}>
           <Radio.Group value={externalService} onChange={(e) => setExternalService(e.target.value)}>
-            {Object.keys(externalServices).map((service) => {
-              const serviceName = externalServices[service];
+            {Object.keys(pathwayServices).map((service) => {
+              const serviceName = pathwayServices[service];
               return (<Radio key={service} value={serviceName}>{serviceName}</Radio>);
             })}
           </Radio.Group>
@@ -92,23 +99,23 @@ const LaunchPathwayAnalysisModal = (props) => {
           <Space direction='vertical'>
             <b>Species</b>
 
-            <Select style={{ width: 400 }}>
+            <Select value={species} onChange={(value) => setSpecies(value)} style={{ width: 400 }}>
               {
-                speciesOptions.map((option) => (
+                speciesList.map((option) => (
                   <Select.Option value={option.value}><i>{option.label}</i></Select.Option>
                 ))
               }
             </Select>
           </Space>
           <Space
-            style={{ 'margin-left': '5%' }}
+            style={{ marginLeft: '5%' }}
             direction='vertical'
           >
             <b>Number of genes</b>
             <Space>
               <Radio.Group
-                value={allGenesToggled}
-                onChange={(e) => setAllGenesToggled(e.target.value)}
+                value={useAllGenes}
+                onChange={(e) => setUseAllGenes(e.target.value)}
               >
                 <Space>
                   <Radio value>All</Radio>
@@ -116,7 +123,9 @@ const LaunchPathwayAnalysisModal = (props) => {
                 </Space>
               </Radio.Group>
               <InputNumber
-                disabled={allGenesToggled}
+                value={numGenes}
+                onChange={(value) => setNumGenes(value)}
+                disabled={useAllGenes}
                 size='medium'
                 style={{ width: '100px' }}
                 min={0}
@@ -125,7 +134,7 @@ const LaunchPathwayAnalysisModal = (props) => {
             </Space>
           </Space>
         </Row>
-        {externalService === externalServices.PANTHER && (
+        {externalService === pathwayServices.PANTHERDB && (
           <p>
             It is
             <b> strongly recommended </b>
@@ -137,23 +146,19 @@ const LaunchPathwayAnalysisModal = (props) => {
           </p>
         )}
       </Modal>
-      {
-        advancedFilteringModalVisible && (
-          <AdvancedFilteringModal
-            onLaunch={(filters) => {
-              onApplyFilters(filters);
-              setAdvancedFilteringModalVisible(false);
-            }}
-            onCancel={() => setAdvancedFilteringModalVisible(false)}
-          />
-        )
-      }
     </>
   );
 };
+
 LaunchPathwayAnalysisModal.propTypes = {
-  onApplyFilters: PropTypes.func.isRequired,
+  onOpenAdvancedFilters: PropTypes.func,
   onCancel: PropTypes.func.isRequired,
-  advancedFiltersAdded: PropTypes.bool.isRequired,
+  advancedFiltersAdded: PropTypes.bool,
 };
+
+LaunchPathwayAnalysisModal.defaultProps = {
+  onOpenAdvancedFilters: null,
+  advancedFiltersAdded: false,
+};
+
 export default LaunchPathwayAnalysisModal;
