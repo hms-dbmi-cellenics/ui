@@ -171,69 +171,55 @@ const PlotsTablesHome = ({ experimentId, experimentData, route }) => {
   );
 
   return (
-    <div style={{ paddingLeft: 32, paddingRight: 32 }}>
-      <Row gutter={16}>
-        <Col span={18}>
-          <Header
-            experimentId={experimentId}
-            experimentData={experimentData}
-            route={route}
-            title='Plots and Tables'
-            extra={[
-              <Space key='extra-things'>
-                <Dropdown
-                  trigger={['click']}
-                  overlay={searchMenu}
-                  visible={addMenuVisible}
-                  onVisibleChange={(visible) => setAddMenuVisible(visible)}
+    <>
+      <Header
+        experimentId={experimentId}
+        experimentData={experimentData}
+        route={route}
+        title='Plots and Tables'
+        extra={[(
+          <Dropdown
+            trigger={['click']}
+            key='search-menu-dropdown'
+            overlay={searchMenu}
+            visible={addMenuVisible}
+            onVisibleChange={(visible) => setAddMenuVisible(visible)}
+          >
+            <Button type='primary' onClick={() => setAddMenuVisible(!addMenuVisible)}>
+              Add
+              {' '}
+              <DownOutlined />
+            </Button>
+          </Dropdown>
+        )]}
+      />
+      <Space direction='vertical' style={{ width: '100%', padding: '10px' }}>
+        <List
+          grid={{ gutter: 16 }}
+          dataSource={openedPlots}
+          renderItem={(item) => (
+            <List.Item>
+              <Card
+                size='small'
+                hoverable
+                title={item.name}
+                extra={renderExtras(item)}
+                bodyStyle={{ padding: '0' }}
+              >
+                <Link
+                  as={`/experiments/${experimentId}/plots-and-tables/${item.link}`}
+                  href={`/experiments/[experimentId]/plots-and-tables/${item.link}`}
+                  passHref
                 >
-                  <Button
-                    type='primary'
-                    onClick={() => setAddMenuVisible(!addMenuVisible)}
-                  >
-                    Open Existing
-                    {' '}
-                    <DownOutlined />
-                  </Button>
-                </Dropdown>
-                <Tooltip title='Coming soon!'>
-                  <Button type='primary' disabled>
-                    Create
-                  </Button>
-                </Tooltip>
-              </Space>,
-            ]}
-          />
-          <Space direction='vertical' style={{ width: '100%' }}>
-            <h1>Recommended</h1>
-            <List
-              grid={{ gutter: 16, column: 3 }}
-              dataSource={openedPlots}
-              renderItem={(item) => (
-                <List.Item>
-                  <Card
-                    size='small'
-                    hoverable
-                    title={item.name}
-                    extra={renderExtras(item)}
-                    bodyStyle={{ padding: '0' }}
-                  >
-                    <Link
-                      as={`/experiments/${experimentId}/plots-and-tables/${item.link}`}
-                      href={`/experiments/[experimentId]/plots-and-tables/${item.link}`}
-                      passHref
-                    >
-                      <CardItem item={item} />
-                    </Link>
-                  </Card>
-                </List.Item>
-              )}
-            />
-          </Space>
-        </Col>
-        <Col span={7} />
-      </Row>
-    </div>
+                  <CardItem item={item} />
+                </Link>
+              </Card>
+            </List.Item>
+          )}
+        />
+      </Space>
+
+    </>
   );
 };
 
