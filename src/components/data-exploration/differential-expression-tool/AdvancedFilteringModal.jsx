@@ -71,9 +71,11 @@ const AdvancedFilteringModal = (props) => {
   );
 
   const applyFilters = (filters) => {
-    const filtersWithType = filters.map((filter) => ({ type: 'numeric', ...filter }));
+    const filtersDataToRun = filters.map(({ columnName, comparison, value }) => ({
+      type: 'numeric', columnName, comparison, value,
+    }));
 
-    onLaunch(filtersWithType);
+    onLaunch(filtersDataToRun);
   };
 
   return (
