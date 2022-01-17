@@ -6,7 +6,7 @@ import initialState from 'redux/reducers/cellSets/initialState';
 const cellSetsLoading = produce((draft) => {
   draft.loading = true;
   draft.error = false;
-  draft.selected = [];
+  draft.selected = {};
 }, initialState);
 
 export default cellSetsLoading;

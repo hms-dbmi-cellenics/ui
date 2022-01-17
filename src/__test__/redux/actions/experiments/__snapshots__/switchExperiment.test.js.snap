@@ -75,7 +75,7 @@ Object {
     "hierarchy": Array [],
     "loading": true,
     "properties": Object {},
-    "selected": Array [],
+    "selected": Object {},
     "updatingClustering": false,
   },
   "componentConfig": Object {},
