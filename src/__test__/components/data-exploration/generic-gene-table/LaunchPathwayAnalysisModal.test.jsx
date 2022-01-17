@@ -11,7 +11,8 @@ import { makeStore } from 'redux/store';
 
 import launchPathwayService from 'utils/pathwayAnalysis/launchPathwayService';
 import getDiffExprGenes from 'utils/differentialExpression/getDiffExprGenes';
-import { pathwayServices, speciesList } from 'utils/pathwayAnalysis/pathwayConstants';
+import { pathwayServices } from 'utils/pathwayAnalysis/pathwayConstants';
+import enrichrSpecies from 'utils/pathwayAnalysis/enrichrConstants';
 
 jest.mock('utils/pathwayAnalysis/launchPathwayService');
 jest.mock('utils/differentialExpression/getDiffExprGenes');
@@ -98,7 +99,7 @@ describe('Pathway analysis modal ', () => {
   it('Passes the species key correctly', async () => {
     renderPathwayAnalysisModal();
 
-    const secondSpecies = speciesList[speciesList.length - 1];
+    const secondSpecies = enrichrSpecies[enrichrSpecies.length - 1];
 
     await act(async () => {
       userEvent.click(screen.getByRole('combobox'));

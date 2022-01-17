@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import {
   Modal, Alert, Radio, Space, InputNumber, Select, Button, Typography, Row,
@@ -7,24 +7,43 @@ import PropTypes from 'prop-types';
 
 import launchPathwayService from 'utils/pathwayAnalysis/launchPathwayService';
 import getDiffExprGenes from 'utils/differentialExpression/getDiffExprGenes';
-import { pathwayServices, speciesList } from 'utils/pathwayAnalysis/pathwayConstants';
+import enrichrSpecies from 'utils/pathwayAnalysis/enrichrConstants';
+import usePantherDBSpecies from 'utils/pathwayAnalysis/usePantherDBSpecies';
+import { pathwayServices } from 'utils/pathwayAnalysis/pathwayConstants';
 
 const { Paragraph } = Typography;
+
+const marginSpacing = { marginBottom: '20px', marginTop: '20x' };
 
 const LaunchPathwayAnalysisModal = (props) => {
   const {
     onCancel, onOpenAdvancedFilters, advancedFiltersAdded,
   } = props;
 
+  const dispatch = useDispatch();
+
   const [externalService, setExternalService] = useState(pathwayServices.PANTHERDB);
   const [useAllGenes, setUseAllGenes] = useState(true);
   const [numGenes, setNumGenes] = useState(0);
   const [waitingForExternalService, setWaitingForExternalService] = useState(false);
-  const [species, setSpecies] = useState(speciesList[0].value);
+  const [species, setSpecies] = useState(null);
+  const [speciesList, setSpeciesList] = useState({
+    [pathwayServices.PANTHERDB]: [],
+    [pathwayServices.ENRICHR]: enrichrSpecies,
+  });
 
-  const dispatch = useDispatch();
+  const pantherDBSpecies = usePantherDBSpecies();
 
-  const marginSpacing = { marginBottom: '20px', marginTop: '20x' };
+  useEffect(() => {
+    if (pantherDBSpecies.length === 0) return;
+
+    setSpeciesList({
+      ...speciesList,
+      [pathwayServices.PANTHERDB]: pantherDBSpecies,
+    });
+
+    setSpecies(pantherDBSpecies[0].value);
+  }, [pantherDBSpecies.length]);
 
   const launchPathwayAnalysis = async (serviceName) => {
     setWaitingForExternalService(true);
@@ -99,9 +118,14 @@ const LaunchPathwayAnalysisModal = (props) => {
           <Space direction='vertical'>
             <b>Species</b>
 
-            <Select value={species} onChange={(value) => setSpecies(value)} style={{ width: 400 }}>
+            <Select
+              loading={speciesList[externalService].length === 0}
+              value={species}
+              onChange={(value) => setSpecies(value)}
+              style={{ width: 400 }}
+            >
               {
-                speciesList.map((option) => (
+                speciesList[externalService]?.map((option) => (
                   <Select.Option value={option.value}><i>{option.label}</i></Select.Option>
                 ))
               }
