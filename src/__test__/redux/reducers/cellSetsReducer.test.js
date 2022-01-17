@@ -4,7 +4,7 @@ import initialState from '../../../redux/reducers/cellSets/initialState';
 import {
   CELL_SETS_LOADING, CELL_SETS_LOADED,
   CELL_SETS_CREATE,
-  CELL_SETS_UPDATE_PROPERTY, CELL_SETS_UPDATE_HIERARCHY, CELL_SETS_SET_SELECTED,
+  CELL_SETS_UPDATE_PROPERTY, CELL_SETS_SET_SELECTED,
   CELL_SETS_DELETE,
   CELL_SETS_ERROR,
   CELL_SETS_HIDE, CELL_SETS_UNHIDE_ALL, CELL_SETS_UNHIDE,
@@ -113,62 +113,6 @@ describe('cellSetsReducer', () => {
     });
 
     expect(newState.properties['1a']).toMatchSnapshot();
-  });
-
-  it('Hierarchy is updated appropriately', () => {
-    const state = {
-      ...initialState,
-      properties: {
-        1: {
-          name: 'parent 1',
-          color: undefined,
-          cellIds: undefined,
-          rootNode: true,
-        },
-        2: {
-          name: 'parent 2',
-          color: undefined,
-          cellIds: undefined,
-          rootNode: true,
-        },
-        '1a': {
-          name: 'first child',
-          color: '#00FF00',
-          cellIds: undefined,
-          rootNode: undefined,
-        },
-      },
-      hierarchy: [{ key: '1', children: [Array] }, { key: '2', children: [] }],
-    };
-
-    const newState = cellSetsReducer(state, {
-      type: CELL_SETS_UPDATE_HIERARCHY,
-      payload: {
-        hierarchy: [
-          {
-            key: '1',
-            name: 'parent 1',
-            rootNode: true,
-            children: [],
-          },
-          {
-            key: '2',
-            name: 'parent 2',
-            rootNode: true,
-            children: [
-              {
-                key: '1a',
-                name: 'first child',
-                color: '#00FF00',
-              },
-            ],
-          },
-        ],
-        dataUpdated: { name: 'favorite child', color: '#ffffff' },
-      },
-    });
-
-    expect(newState.hierarchy).toMatchSnapshot();
   });
 
   it('Selected cells are maintained', () => {

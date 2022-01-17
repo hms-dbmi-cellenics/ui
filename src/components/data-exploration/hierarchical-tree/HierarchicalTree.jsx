@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
+import _ from 'lodash';
 import {
   Tree, Space, Skeleton,
 } from 'antd';
-import { transform, cloneDeep } from 'lodash';
 import {
   DownOutlined,
 } from '@ant-design/icons';
@@ -24,6 +24,7 @@ const HierarchicalTree = (props) => {
     store,
     experimentId,
     showHideButton,
+    onCellSetReorder,
     ...restOfProps
   } = props;
 
@@ -42,156 +43,31 @@ const HierarchicalTree = (props) => {
   }, []);
 
   const onDrop = useCallback((info) => {
-    /**
-     * The `key` values in the data array passed to the <Tree/> component
-     * which was dragged, and which was dropped. dropKey can either be
-     * the item above or the item below the gap, if it was dropped into a
-     * gap between two items, depending on the precise position where
-     * you drop the item. The relative positions are specified in
-     * `info.node.dragOverGapTop` and `info.node.dragOverGapBottom`.
-     */
-    const dragKey = info.dragNode.props.eventKey;
-    const dropKey = info.node.props.eventKey;
+    const {
+      dragNode, node, dropPosition, dropToGap,
+    } = info;
 
-    /**
-     * Variable to determine if the state should be set to the new one.
-     * If we encounter an illegal drop, we will not update the state
-     * of the component.
-     */
-    let shouldUpdateState = true;
+    // If rootNode, ignore
+    if (dragNode.rootNode) return;
 
-    /**
-     *  Find `needle`, a key in a recursively defined `haystack`, where
-     * `children` is a dictionary of child elements.
-     */
-    const removeAndReturn = (haystack, needle) => {
-      let removed;
+    // pos is a string e.g.: 0-0-1, each number is a position in a tree level
+    const posFromArray = dragNode.pos.split('-');
+    const posToArray = dragNode.pos.split('-');
 
-      const rest = transform(
-        haystack,
-        (result, objValue) => {
-          if (objValue.key !== needle) {
-            if (objValue.children) {
-              const recReturn = removeAndReturn(objValue.children, needle);
+    const fromPosition = parseInt(posFromArray[2], 10);
 
-              // eslint-disable-next-line no-param-reassign
-              objValue.children = recReturn.rest;
-              if (recReturn.removed) {
-                removed = recReturn.removed;
-              }
-            }
-            result.push(objValue);
-          } else {
-            removed = objValue;
-          }
-        },
-        [],
-      );
+    // If not in the same cellClass, ignore
+    if (!_.isEqual(posFromArray[1], posToArray[1])) return;
 
-      return { removed, rest };
-    };
+    // If was dropped in same place, ignore
+    if (fromPosition === dropPosition) return;
 
-    // Clone the state of the curernt tree
-    // eslint-disable-next-line prefer-const
-    let { removed: dragObj, rest: newTreeData } = removeAndReturn(
-      cloneDeep(treeData),
-      dragKey,
-    );
+    // If not dropped in gap, ignore
+    if (!dropToGap && !node.rootNode) return;
 
-    /**
-     * We dropped the item into another item. At this point we want to
-     * make sure the item we drag is not a root node, and the item we
-     * drop it into is a root node.
-     */
-    if (!info.dropToGap) {
-      const addToChildren = (searchData, key) => {
-        searchData.forEach((element) => {
-          if (element.key === key) {
-            if (dragObj.rootNode === true || !element.rootNode) {
-              shouldUpdateState = false;
-            } else {
-              // eslint-disable-next-line no-param-reassign
-              element.children = element.children || [];
-              element.children.push(dragObj);
-            }
-          }
+    const newPosition = dropPosition - (fromPosition < dropPosition ? 1 : 0);
 
-          if (element.children) {
-            addToChildren(element.children, key);
-          }
-        });
-      };
-
-      addToChildren(newTreeData, dropKey);
-    }
-
-    // We dropped the item into a gap between two items.
-    if (info.dropToGap) {
-      // It can either be above or below an element.
-      const dropPosition = info.node.dragOverGapTop ? 'top' : 'bottom';
-
-      const addIntoGap = (haystack, needle) => transform(
-        haystack,
-        (result, objValue) => {
-          // We found the place to insert the dragged element.
-          if (objValue.key === needle) {
-            /**
-               * If a dragged object is a root node, it should only be
-               * droppable in between root nodes.
-               */
-            if (!objValue.rootNode && dragObj.rootNode === true) {
-              shouldUpdateState = false;
-              return false;
-            }
-
-            /**
-               * If a dragged object is not a root node, it should only be
-               * droppable in between non-root nodes.
-               */
-            if (!dragObj.rootNode && objValue.rootNode === true) {
-              shouldUpdateState = false;
-              return false;
-            }
-
-            if (objValue.children) {
-              // eslint-disable-next-line no-param-reassign
-              objValue.children = addIntoGap(objValue.children, needle);
-            }
-
-            /**
-               * Add the drag object into the tree according to where it was
-               * dropped.
-               */
-            if (dropPosition === 'top') {
-              result.push(dragObj);
-              result.push(objValue);
-            } else {
-              result.push(objValue);
-              result.push(dragObj);
-            }
-          } else {
-            /**
-               * We have not found the place to insert the element.
-               * Carry on building the new object until we are there.
-               */
-            if (objValue.children) {
-              // eslint-disable-next-line no-param-reassign
-              objValue.children = addIntoGap(objValue.children, needle);
-            }
-            result.push(objValue);
-          }
-
-          return true;
-        },
-        [],
-      );
-
-      newTreeData = addIntoGap(newTreeData, dropKey);
-    }
-
-    if (shouldUpdateState) {
-      props.onHierarchyUpdate(newTreeData);
-    }
+    onCellSetReorder(dragNode.key, newPosition);
   }, []);
 
   const renderColorPicker = (modified) => {
@@ -309,7 +185,7 @@ HierarchicalTree.defaultProps = {
   onCheck: () => null,
   onNodeUpdate: () => null,
   onNodeDelete: () => null,
-  onHierarchyUpdate: () => null,
+  onCellSetReorder: () => null,
   defaultCheckedKeys: [],
   store: null,
   showHideButton: false,
@@ -319,7 +195,7 @@ HierarchicalTree.propTypes = {
   onCheck: PropTypes.func,
   onNodeUpdate: PropTypes.func,
   onNodeDelete: PropTypes.func,
-  onHierarchyUpdate: PropTypes.func,
+  onCellSetReorder: PropTypes.func,
   defaultCheckedKeys: PropTypes.array,
   treeData: PropTypes.array.isRequired,
   store: PropTypes.string,

@@ -5,7 +5,7 @@ import updateCellSetsClustering from './updateCellSetsClustering';
 
 import loadCellSets from './loadCellSets';
 import saveCellSets from './saveCellSets';
-import updateCellSetHierarchy from './updateCellSetHierarchy';
+import reorderCellSet from './reorderCellSet';
 import updateCellSetProperty from './updateCellSetProperty';
 import updateCellSetSelected from './updateCellSetSelected';
 import setCellSetHiddenStatus from './setCellSetHiddenStatus';
@@ -18,7 +18,7 @@ export {
   updateCellSetsClustering,
   loadCellSets,
   saveCellSets,
-  updateCellSetHierarchy,
+  reorderCellSet,
   updateCellSetSelected,
   updateCellSetProperty,
   setCellSetHiddenStatus,

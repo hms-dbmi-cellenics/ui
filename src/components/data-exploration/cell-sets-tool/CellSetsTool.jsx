@@ -17,7 +17,7 @@ import {
   deleteCellSet,
   loadCellSets,
   unhideAllCellSets,
-  updateCellSetHierarchy,
+  reorderCellSet,
   updateCellSetProperty,
   updateCellSetSelected,
 } from 'redux/actions/cellSets';
@@ -106,8 +106,8 @@ const CellSetsTool = (props) => {
     dispatch(deleteCellSet(experimentId, key));
   }, [experimentId]);
 
-  const onHierarchyUpdate = useCallback((newHierarchy) => {
-    dispatch(updateCellSetHierarchy(experimentId, newHierarchy));
+  const onCellSetReorder = useCallback((cellSetKey, newPosition) => {
+    dispatch(reorderCellSet(experimentId, cellSetKey, newPosition));
   }, [experimentId]);
 
   const onCheck = useCallback((keys) => {
@@ -175,7 +175,7 @@ const CellSetsTool = (props) => {
               experimentId={experimentId}
               onNodeUpdate={onNodeUpdate}
               onNodeDelete={onNodeDelete}
-              onHierarchyUpdate={onHierarchyUpdate}
+              onCellSetReorder={onCellSetReorder}
               defaultExpandAll
               showHideButton
               checkedKeys={selected}
@@ -190,7 +190,7 @@ const CellSetsTool = (props) => {
                 experimentId={experimentId}
                 onNodeUpdate={onNodeUpdate}
                 onNodeDelete={onNodeDelete}
-                onHierarchyUpdate={onHierarchyUpdate}
+                onCellSetReorder={onCellSetReorder}
                 defaultExpandAll
                 showHideButton
                 checkedKeys={selected}
