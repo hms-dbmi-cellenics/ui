@@ -95,7 +95,7 @@ const initialState = {
   differentialExpression: {
     properties: {
       data: [],
-      cellSets: {},
+      comparisonGroup: {},
       loading: false,
       error: false,
       total: 0,
@@ -121,7 +121,7 @@ describe('DiffExprCompute', () => {
       <Provider store={store}>
         <DiffExprCompute
           experimentId='1234'
-          cellSets={{ cellSet: null, compareWith: null, basis: null }}
+          comparisonGroup={{ cellSet: null, compareWith: null, basis: null }}
           onCompute={jest.fn()}
         />
       </Provider>,
@@ -172,7 +172,7 @@ describe('DiffExprCompute', () => {
       <Provider store={store}>
         <DiffExprCompute
           experimentId='1234'
-          cellSets={{ cellSet: null, compareWith: null, basis: null }}
+          comparisonGroup={{ cellSet: null, compareWith: null, basis: null }}
           onCompute={jest.fn()}
         />
       </Provider>,
@@ -215,7 +215,7 @@ describe('DiffExprCompute', () => {
       <Provider store={store}>
         <DiffExprCompute
           experimentId='1234'
-          cellSets={{ cellSet: 'sample/sample-a', compareWith: null, basis: null }}
+          comparisonGroup={{ cellSet: 'sample/sample-a', compareWith: null, basis: null }}
           comparison='Versus rest'
           onCompute={jest.fn()}
         />

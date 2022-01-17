@@ -56,7 +56,7 @@ const GeneTable = (props) => {
   };
 
   const handleTableChange = (newPagination, a, newSorter) => {
-    const newTableState = { ...tableState, pagination: newPagination, sorter: { ...newSorter } };
+    const newTableState = { ...tableState, pagination: newPagination, sorter: newSorter };
 
     onUpdate(newTableState, geneTableUpdateReason.paginated);
     setTableState(newTableState);

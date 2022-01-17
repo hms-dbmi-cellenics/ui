@@ -10,7 +10,7 @@ import AdvancedFilteringModal from 'components/data-exploration/differential-exp
 
 import DiffExprResults from 'components/data-exploration/differential-expression-tool/DiffExprResults';
 import { fetchWork } from 'utils/work/fetchWork';
-import { DIFF_EXPR_LOADING, DIFF_EXPR_LOADED } from 'redux/actionTypes/differentialExpression';
+import { DIFF_EXPR_LOADING, DIFF_EXPR_LOADED, DIFF_EXPR_ORDERING_SET } from 'redux/actionTypes/differentialExpression';
 import '__test__/test-utils/setupTests';
 
 import Loader from 'components/Loader';
@@ -260,7 +260,7 @@ describe('DiffExprResults', () => {
     });
 
     // // Wait for side-effect to propagate (properties loading and loaded).
-    await waitForActions(withResultStore, [DIFF_EXPR_LOADING, DIFF_EXPR_LOADED]);
+    await waitForActions(withResultStore, [DIFF_EXPR_ORDERING_SET, DIFF_EXPR_LOADING, DIFF_EXPR_LOADED]);
 
     expect(fetchWork).toHaveBeenCalledWith(
       '1234',
@@ -282,8 +282,8 @@ describe('DiffExprResults', () => {
       },
     );
 
-    expect(withResultStore.getActions()[0]).toMatchSnapshot();
     expect(withResultStore.getActions()[1]).toMatchSnapshot();
+    expect(withResultStore.getActions()[2]).toMatchSnapshot();
   });
 
   it('Having a focused gene triggers focused view for `eye` button.', () => {
@@ -385,7 +385,7 @@ describe('DiffExprResults', () => {
     const dropdown = component.find('Dropdown');
     const menuInstance = shallow(dropdown.props().overlay);
     menuInstance.at(0).simulate('click');
-    await waitForActions(withResultStore, [DIFF_EXPR_LOADING, DIFF_EXPR_LOADED]);
+    await waitForActions(withResultStore, [DIFF_EXPR_ORDERING_SET, DIFF_EXPR_LOADING, DIFF_EXPR_LOADED]);
 
     // closing the modal
     const closeButton = component.find('.ant-modal-close');

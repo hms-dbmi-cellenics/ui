@@ -32,13 +32,16 @@ describe('FileUploadModal', () => {
     expect(screen.getByText(chosenTech)).toBeInTheDocument();
 
     // It contains instructions on what files can be uploaded
-    expect(screen.getByText(/For each sample, upload a folder containing the following/i)).toBeInTheDocument();
+    expect(screen.getByText(/For each sample, upload a folder containing/i)).toBeInTheDocument();
     techOptions[chosenTech].acceptedFiles.forEach((filename) => {
       expect(screen.getByText(filename)).toBeInTheDocument();
     });
 
-    // It contains information that the sample name can later be changed
+    // Tells the user that the folder's name will be used as the sample name
     expect(screen.getByText(/The folder's name will be used to name the sample in it/i)).toBeInTheDocument();
+
+    // And it can later be changed
+    expect(screen.getByText(/You can change this name later in Data Management/i)).toBeInTheDocument();
 
     // It shows direction on drag and drop area
     expect(screen.getByText(/Drag and drop folders here or click to browse/i)).toBeInTheDocument();
