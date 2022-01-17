@@ -22,8 +22,8 @@ const AppRouteProvider = (props) => {
   const activeProjectUuid = useSelector((state) => state?.projects?.meta?.activeProjectUuid);
   const experimentId = useSelector((state) => (
     state?.projects[activeProjectUuid]?.experiments[0]));
-
   const experiments = useSelector((state) => state.experiments);
+
   const changedQCFilters = useSelector(
     (state) => state.experimentSettings.processing.meta.changedQCFilters,
   );
@@ -35,6 +35,18 @@ const AppRouteProvider = (props) => {
         onDismissIntercept={() => setRenderIntercept(null)}
       />
     ),
+  };
+
+  const updateExperimentInfoOnNavigate = () => {
+    const lastViewed = moment().toISOString();
+
+    dispatch(updateExperiment(experimentId, { lastViewed }));
+    dispatch(updateProject(activeProjectUuid, { lastAnalyzed: lastViewed }));
+    dispatch(updateExperimentInfo({
+      experimentId,
+      experimentName: experiments[experimentId].name,
+      sampleIds: experiments[experimentId].sampleIds,
+    }));
   };
 
   const continueNavigation = (nextRoute, hardNavigate) => {
@@ -50,15 +62,8 @@ const AppRouteProvider = (props) => {
     }
 
     if (previousRoute.match('/data-management')) {
-      const lastViewed = moment().toISOString();
-
-      dispatch(updateExperiment(experimentId, { lastViewed }));
-      dispatch(updateProject(activeProjectUuid, { lastAnalyzed: lastViewed }));
-      dispatch(updateExperimentInfo({
-        experimentId,
-        experimentName: experiments[experimentId].name,
-        sampleIds: experiments[experimentId].sampleIds,
-      }));
+      // Update active project and experiment id when navigating from Data Management
+      updateExperimentInfoOnNavigate();
     }
 
     continueNavigation(nextRoute, hardNavigate);
@@ -70,7 +75,7 @@ const AppRouteProvider = (props) => {
   ) => handleRouteChange(router.pathname, nextRoute, refreshPage);
 
   return (
-    <AppRouterContext.Provider value={{ navigateTo, router }}>
+    <AppRouterContext.Provider value={{ navigateTo }}>
       {renderIntercept ?? <></>}
       {children}
     </AppRouterContext.Provider>

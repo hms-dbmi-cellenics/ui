@@ -2,6 +2,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
+import { useRouter } from 'next/router';
 import {
   BuildOutlined,
   DatabaseOutlined,
@@ -46,7 +47,8 @@ const ContentWrapper = (props) => {
   const [collapsed, setCollapsed] = useState(false);
 
   const { routeExperimentId, experimentData, children } = props;
-  const { navigateTo, router } = useAppRouter();
+  const { navigateTo } = useAppRouter();
+  const router = useRouter();
   const route = router?.route || '';
 
   const currentExperimentIdRef = useRef(routeExperimentId);
