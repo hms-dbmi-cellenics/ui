@@ -1,7 +1,6 @@
-import fetchAPI from 'utils/fetchAPI';
-
 import { CELL_SETS_REORDER } from 'redux/actionTypes/cellSets';
 
+import fetchAPI from 'utils/fetchAPI';
 import endUserMessages from 'utils/endUserMessages';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
 import { isServerError, throwIfRequestFailed } from 'utils/fetchErrors';
