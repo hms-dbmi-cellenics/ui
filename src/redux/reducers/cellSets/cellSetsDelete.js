@@ -2,8 +2,6 @@
 import _ from 'lodash';
 import produce, { current } from 'immer';
 
-import initialState from 'redux/reducers/cellSets/initialState';
-
 const cellSetsDelete = produce((draft, action) => {
   const { key } = action.payload;
   const { parentNodeKey } = current(draft).properties[key];
@@ -20,6 +18,6 @@ const cellSetsDelete = produce((draft, action) => {
 
   // Delete from hidden if it was selected to be hidden.
   draft.hidden.delete(key);
-}, initialState);
+});
 
 export default cellSetsDelete;
