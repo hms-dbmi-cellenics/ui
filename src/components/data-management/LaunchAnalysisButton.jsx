@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import {
   Button, Tooltip, Popconfirm,
 } from 'antd';
+import { paths } from 'utils/constants';
 
 import fileUploadSpecifications from 'utils/upload/fileUploadSpecifications';
 import UploadStatus from 'utils/upload/UploadStatus';
@@ -53,8 +54,8 @@ const LaunchAnalysisButton = () => {
       dispatch(runGem2s(experimentId, gem2sRerunStatus.paramsHash));
     }
 
-    const analysisPath = '/experiments/[experimentId]/data-processing';
-    navigateTo(analysisPath.replace('[experimentId]', experimentId));
+    const analysisPath = paths.DATA_PROCESSING.replace('[experimentId]', experimentId);
+    navigateTo(analysisPath, { projectUuid: activeProjectUuid, experimentId });
   };
 
   useEffect(() => {

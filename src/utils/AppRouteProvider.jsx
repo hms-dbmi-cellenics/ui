@@ -2,11 +2,11 @@ import React, { useContext, useState } from 'react';
 import propTypes from 'prop-types';
 import { useSelector, useDispatch } from 'react-redux';
 import { useRouter } from 'next/router';
+import { pathStubs } from 'utils/constants';
 
 import moment from 'moment';
-import { updateExperimentInfo } from 'redux/actions/experimentSettings';
 import { updateProject } from 'redux/actions/projects';
-import { updateExperiment } from 'redux/actions/experiments';
+import { updateExperiment, switchExperiment } from 'redux/actions/experiments';
 
 import DataProcessingIntercept from 'components/data-processing/DataProcessingIntercept';
 
@@ -32,11 +32,7 @@ const AppRouteProvider = (props) => {
   const dispatch = useDispatch();
 
   const [renderIntercept, setRenderIntercept] = useState(null);
-
-  const activeProjectUuid = useSelector((state) => state?.projects?.meta?.activeProjectUuid);
-  const experimentId = useSelector((state) => (
-    state?.projects[activeProjectUuid]?.experiments[0]));
-  const experiments = useSelector((state) => state.experiments);
+  // const experiments = useSelector((state) => state.experiments);
 
   const changedQCFilters = useSelector(
     (state) => state.experimentSettings.processing.meta.changedQCFilters,
@@ -51,16 +47,12 @@ const AppRouteProvider = (props) => {
     ),
   };
 
-  const updateExperimentInfoOnNavigate = () => {
+  const updateExperimentInfoOnNavigate = (projectUuid, experimentId) => {
     const lastViewed = moment().toISOString();
 
+    dispatch(switchExperiment(experimentId));
     dispatch(updateExperiment(experimentId, { lastViewed }));
-    dispatch(updateProject(activeProjectUuid, { lastAnalyzed: lastViewed }));
-    dispatch(updateExperimentInfo({
-      experimentId,
-      experimentName: experiments[experimentId].name,
-      sampleIds: experiments[experimentId].sampleIds,
-    }));
+    dispatch(updateProject(projectUuid, { lastAnalyzed: lastViewed }));
   };
 
   const continueNavigation = (nextRoute, hardNavigate) => {
@@ -69,15 +61,18 @@ const AppRouteProvider = (props) => {
     router.push(nextRoute);
   };
 
-  const handleRouteChange = (previousRoute, nextRoute, hardNavigate = false) => {
-    if (previousRoute.match('/data-processing') && changedQCFilters.size > 0) {
+  const handleRouteChange = (previousRoute, nextRoute, params, hardNavigate = false) => {
+    console.warn('*** params', params);
+
+    if (previousRoute.match(pathStubs.DATA_PROCESSING) && changedQCFilters.size > 0) {
       setRenderIntercept(availableIntercepts.DATA_PROCESSING(nextRoute, hardNavigate));
       return;
     }
 
-    if (previousRoute.match('/data-management')) {
+    if (previousRoute.match(pathStubs.DATA_MANAGEMENT)) {
       // Update active project and experiment id when navigating from Data Management
-      updateExperimentInfoOnNavigate();
+      const { projectUuid, experimentId } = params;
+      updateExperimentInfoOnNavigate(projectUuid, experimentId);
     }
 
     continueNavigation(nextRoute, hardNavigate);
@@ -85,8 +80,9 @@ const AppRouteProvider = (props) => {
 
   const navigateTo = (
     nextRoute,
+    params = {},
     refreshPage,
-  ) => handleRouteChange(router.pathname, nextRoute, refreshPage);
+  ) => handleRouteChange(router.pathname, nextRoute, params, refreshPage);
 
   return (
     <AppRouterContext.Provider value={{ navigateTo }}>

@@ -16,6 +16,7 @@ import {
   Tooltip,
   Typography,
 } from 'antd';
+import { paths } from 'utils/constants';
 
 import Auth from '@aws-amplify/auth';
 
@@ -246,28 +247,29 @@ const ContentWrapper = (props) => {
 
   const menuLinks = [
     {
-      path: '/data-management',
+      // path: '/data-management',
+      path: paths.DATA_MANAGEMENT,
       icon: <FolderOpenOutlined />,
       name: 'Data Management',
       disableIfNoExperiment: false,
       disabledByPipelineStatus: true,
     },
     {
-      path: '/experiments/[experimentId]/data-processing',
+      path: paths.DATA_PROCESSING,
       icon: <BuildOutlined />,
       name: 'Data Processing',
       disableIfNoExperiment: true,
       disabledByPipelineStatus: false,
     },
     {
-      path: '/experiments/[experimentId]/data-exploration',
+      path: paths.DATA_EXPLORATION,
       icon: <FundViewOutlined />,
       name: 'Data Exploration',
       disableIfNoExperiment: true,
       disabledByPipelineStatus: true,
     },
     {
-      path: '/experiments/[experimentId]/plots-and-tables',
+      path: paths.PLOTS_AND_TABLES,
       icon: <DatabaseOutlined />,
       name: 'Plots and Tables',
       disableIfNoExperiment: true,
@@ -340,7 +342,7 @@ const ContentWrapper = (props) => {
         disabled={notProcessedExperimentDisable || pipelineStatusDisable}
         key={path}
         icon={icon}
-        onClick={() => navigateTo(realPath)}
+        onClick={() => navigateTo(realPath, { projectUuid: activeProjectUuid, experimentId: activeProjectExperimentID })}
       >
         {name}
       </Menu.Item>
