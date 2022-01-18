@@ -8,7 +8,7 @@ import {
   CELL_SETS_UPDATE_PROPERTY, CELL_SETS_SET_SELECTED,
   CELL_SETS_DELETE,
   CELL_SETS_ERROR,
-  CELL_SETS_HIDE, CELL_SETS_UNHIDE_ALL, CELL_SETS_UNHIDE,
+  CELL_SETS_HIDE, CELL_SETS_UNHIDE_ALL, CELL_SETS_UNHIDE, CELL_SETS_REORDER,
 } from 'redux/actionTypes/cellSets';
 
 enableMapSet();
@@ -270,5 +270,51 @@ describe('cellSetsReducer', () => {
     });
 
     expect(newState.hidden).toEqual(initialState.hidden);
+  });
+
+  it('reorders correctly', () => {
+    const state = {
+      ...initialState,
+      properties: {
+        1: {
+          name: 'parent 1',
+          color: undefined,
+          cellIds: undefined,
+          rootNode: true,
+        },
+        2: {
+          name: 'parent 2',
+          color: undefined,
+          cellIds: undefined,
+          rootNode: true,
+        },
+        '1a': {
+          name: 'first child',
+          color: '#00FF00',
+          cellIds: [],
+          rootNode: false,
+        },
+        '1b': {
+          name: 'second child',
+          color: '#00FFFF',
+          cellIds: [],
+          rootNode: false,
+        },
+      },
+      hierarchy: [{ key: '1', children: [{ key: '1a' }, { key: '1b' }] }, { key: '2', children: [] }],
+    };
+
+    const newState = cellSetsReducer(state, {
+      type: CELL_SETS_REORDER,
+      payload: {
+        cellSetKey: '1a',
+        newPosition: '1',
+        cellClassKey: '1',
+      },
+    });
+
+    expect(newState.hierarchy[0].children[1]).toEqual({ key: '1a' });
+
+    expect(newState).toMatchSnapshot();
   });
 });
