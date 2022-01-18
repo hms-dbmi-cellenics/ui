@@ -1,26 +1,13 @@
 import React from 'react';
 import { mount } from 'enzyme';
-import HierarchicalTree from '../../../../components/data-exploration/hierarchical-tree/HierarchicalTree';
-import waitForComponentToPaint from '../../../../utils/tests/waitForComponentToPaint';
+import HierarchicalTree from 'components/data-exploration/hierarchical-tree/HierarchicalTree';
+import waitForComponentToPaint from 'utils/tests/waitForComponentToPaint';
+
 import '__test__/test-utils/setupTests';
 
 const experimentId = 'asd';
 describe('HierarchicalTree', () => {
-  it('tree data can be checked by default by passing defaultCheckedKeys prop', () => {
-    const treeData = [
-      { key: 'louvain', children: [{ key: 'one' }, { key: 'two' }, { key: 'three' }] },
-      { key: 'another-set', children: [{ key: 'four' }, { key: 'five' }, { key: 'six' }] },
-    ];
-    const mockOnCheck = jest.fn();
-
-    waitForComponentToPaint(mount(
-      <HierarchicalTree treeData={treeData} experimentId={experimentId} defaultCheckedKeys={['louvain', 'one', 'two', 'three']} onCheck={mockOnCheck} />,
-    ));
-
-    expect(mockOnCheck).toHaveBeenCalledTimes(1);
-    expect(mockOnCheck).toHaveBeenCalledWith(['louvain', 'one', 'two', 'three']);
-  });
-  it('renders correctly', () => {
+  it('Renders correctly', () => {
     const treeData = [{
       key: '1',
       name: 'my element',
@@ -71,6 +58,7 @@ describe('HierarchicalTree', () => {
     const dropInfo = {
       dragNode: {
         ...firstChild,
+        pos: '0-0-0',
         props: { eventKey: firstChild.key },
       },
       dragNodesKeys: [firstChild.key],
@@ -78,26 +66,33 @@ describe('HierarchicalTree', () => {
       dropToGap: true,
       node: {
         ...thirdChild,
+        pos: '0-0-3',
         props: { eventKey: thirdChild.key },
       },
     };
 
-    const mockOnHierarchyUpdate = jest.fn();
+    const mockOnCellSetReorder = jest.fn();
     const component = mount(
-      <HierarchicalTree experimentId={experimentId} treeData={treeData} onHierarchyUpdate={mockOnHierarchyUpdate} />,
+      <HierarchicalTree
+        experimentId={experimentId}
+        treeData={treeData}
+        onCellSetReorder={mockOnCellSetReorder}
+      />,
     );
     waitForComponentToPaint(component);
     const tree = component.find('HierarchicalTree Tree');
+
     tree.getElement().props.onDrop(dropInfo);
     component.update();
 
-    expect(mockOnHierarchyUpdate).toHaveBeenCalledTimes(1);
-    const firstArgument = mockOnHierarchyUpdate.mock.calls[0][0];
-    const childrenKeys = firstArgument[0].children.map((child) => child.key);
-    expect(childrenKeys).toEqual(['2a', '3a', '1a']);
+    expect(mockOnCellSetReorder).toHaveBeenCalledTimes(1);
+    const [cellSetKey, newPosition] = mockOnCellSetReorder.mock.calls[0];
+
+    expect(cellSetKey).toEqual('1a');
+    expect(newPosition).toEqual(1);
   });
 
-  it('Can have child component change parent', () => {
+  it('Can\'t have child component change parent', () => {
     const child = {
       key: '1a',
       name: 'first child',
@@ -126,6 +121,7 @@ describe('HierarchicalTree', () => {
     const dropInfo = {
       dragNode: {
         ...child,
+        pos: '0-0-0',
         props: { eventKey: child.key },
       },
       dragNodesKeys: [child.key],
@@ -133,24 +129,25 @@ describe('HierarchicalTree', () => {
       dropToGap: false,
       node: {
         ...secondParent,
+        pos: '0-1-2',
         props: { eventKey: secondParent.key },
       },
     };
 
-    const mockOnHierarchyUpdate = jest.fn();
+    const mockOnCellSetReorder = jest.fn();
     const component = mount(
-      <HierarchicalTree treeData={treeData} experimentId={experimentId} onHierarchyUpdate={mockOnHierarchyUpdate} />,
+      <HierarchicalTree
+        treeData={treeData}
+        experimentId={experimentId}
+        onCellSetReorder={mockOnCellSetReorder}
+      />,
     );
     waitForComponentToPaint(component);
     const tree = component.find('HierarchicalTree Tree');
     tree.getElement().props.onDrop(dropInfo);
     component.update();
 
-    expect(mockOnHierarchyUpdate).toHaveBeenCalledTimes(1);
-    const firstArgument = mockOnHierarchyUpdate.mock.calls[0][0];
-
-    expect(firstArgument[0].children.length).toEqual(0);
-    expect(firstArgument[1].children.length).toEqual(1);
+    expect(mockOnCellSetReorder).toHaveBeenCalledTimes(0);
   });
 
   it("Can't drop parent inside node", () => {
@@ -176,6 +173,7 @@ describe('HierarchicalTree', () => {
     const dropInfo = {
       dragNode: {
         ...secondParent,
+        pos: '0-0',
         props: { eventKey: secondParent.key },
       },
       dragNodesKeys: [secondParent.key],
@@ -183,28 +181,37 @@ describe('HierarchicalTree', () => {
       dropToGap: false,
       node: {
         ...firstParent,
+        pos: '0-0-1',
         props: { eventKey: firstParent.key },
       },
     };
 
-    const mockOnHierarchyUpdate = jest.fn();
+    const mockOnCellSetReorder = jest.fn();
 
     const component = mount(
-      <HierarchicalTree treeData={treeData} experimentId={experimentId} onHierarchyUpdate={mockOnHierarchyUpdate} />,
+      <HierarchicalTree
+        treeData={treeData}
+        experimentId={experimentId}
+        onCellSetReorder={mockOnCellSetReorder}
+      />,
     );
     waitForComponentToPaint(component);
     const tree = component.find('HierarchicalTree Tree');
     tree.getElement().props.onDrop(dropInfo);
     component.update();
 
-    expect(mockOnHierarchyUpdate).toHaveBeenCalledTimes(0);
+    expect(mockOnCellSetReorder).toHaveBeenCalledTimes(0);
   });
 
   it('tree data is not checked by default', () => {
     const treeData = [{ key: 'louvain' }];
     const mockOnCheck = jest.fn();
     waitForComponentToPaint(mount(
-      <HierarchicalTree treeData={treeData} experimentId={experimentId} onCheck={mockOnCheck} />,
+      <HierarchicalTree
+        treeData={treeData}
+        experimentId={experimentId}
+        onCheck={mockOnCheck}
+      />,
     ));
     expect(mockOnCheck).toHaveBeenCalledTimes(0);
   });

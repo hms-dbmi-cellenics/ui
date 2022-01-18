@@ -8,12 +8,12 @@ import {
   DownOutlined,
 } from '@ant-design/icons';
 
-import EditableField from '../../EditableField';
-import ColorPicker from '../../ColorPicker';
-import FocusButton from '../../FocusButton';
-import HideButton from '../cell-sets-tool/HideButton';
+import EditableField from 'components/EditableField';
+import ColorPicker from 'components/ColorPicker';
+import FocusButton from 'components/FocusButton';
+import HideButton from 'components/data-exploration/cell-sets-tool/HideButton';
 
-import './hierarchicalTree.css';
+import 'components/data-exploration/hierarchical-tree/hierarchicalTree.css';
 
 const HierarchicalTree = (props) => {
   const {
