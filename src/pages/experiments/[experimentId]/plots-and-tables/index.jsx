@@ -198,7 +198,7 @@ const PlotsTablesHome = ({ experimentId, experimentData, route }) => {
           grid={{ gutter: 16 }}
           dataSource={openedPlots}
           renderItem={(item) => (
-            <List.Item>
+            <List.Item style={{ width: '320px', height: '320px' }}>
               <Card
                 size='small'
                 hoverable
