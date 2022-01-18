@@ -52,7 +52,7 @@ const HierarchicalTree = (props) => {
 
     // pos is a string e.g.: 0-0-1, each number is a position in a tree level
     const posFromArray = dragNode.pos.split('-');
-    const posToArray = dragNode.pos.split('-');
+    const posToArray = node.pos.split('-');
 
     const fromPosition = parseInt(posFromArray[2], 10);
 
