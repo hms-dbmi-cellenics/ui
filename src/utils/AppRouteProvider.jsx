@@ -10,6 +10,20 @@ import { updateExperiment } from 'redux/actions/experiments';
 
 import DataProcessingIntercept from 'components/data-processing/DataProcessingIntercept';
 
+/**
+ * AppRouteProvider provides a context which allows for checking and interception
+ * of navigation between parts of the application. This allows implemenation of middlewares
+ * when navigating between pages.
+ *
+ * AppRouteProvider wraps the application and exposes `useAppRouter`, which returns
+ * an object containing the function `navigateTo`. The function takes in the path to be
+ * go to and performs matching and determine actions which have to be carried out before
+ * navigating to the route.
+ *
+ * Use `navigateTo` when implementing navigation between pages. Do not use `router.push` directly
+ * as it will bypass the route checks and middlewares.
+ */
+
 const AppRouterContext = React.createContext(null);
 
 const AppRouteProvider = (props) => {
