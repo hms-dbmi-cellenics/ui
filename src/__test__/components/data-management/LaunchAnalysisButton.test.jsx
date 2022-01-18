@@ -17,10 +17,6 @@ import initialSamplesState, { sampleTemplate } from 'redux/reducers/samples/init
 import initialExperimentsState, { experimentTemplate } from 'redux/reducers/experiments/initialState';
 import { initialExperimentBackendStatus } from 'redux/reducers/backendStatus/initialState';
 
-import updateExperimentInfo from 'redux/actions/experimentSettings/updateExperimentInfo';
-import { updateExperiment } from 'redux/actions/experiments';
-import updateProject from 'redux/actions/projects/updateProject';
-
 import UploadStatus from 'utils/upload/UploadStatus';
 import generateGem2sParamsHash from 'utils/data-management/generateGem2sParamsHash';
 import '__test__/test-utils/setupTests';

@@ -62,8 +62,6 @@ const AppRouteProvider = (props) => {
   };
 
   const handleRouteChange = (previousRoute, nextRoute, params, hardNavigate = false) => {
-    console.warn('*** params', params);
-
     if (previousRoute.match(pathStubs.DATA_PROCESSING) && changedQCFilters.size > 0) {
       setRenderIntercept(availableIntercepts.DATA_PROCESSING(nextRoute, hardNavigate));
       return;

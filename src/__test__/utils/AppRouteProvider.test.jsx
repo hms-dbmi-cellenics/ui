@@ -17,9 +17,8 @@ import AppRouteProvider, { useAppRouter } from 'utils/AppRouteProvider';
 import DataProcessingIntercept from 'components/data-processing/DataProcessingIntercept';
 
 import addChangedQCFilter from 'redux/actions/experimentSettings/processingConfig/addChangedQCFilter';
-import { updateExperimentInfo } from 'redux/actions/experimentSettings';
 import { loadProjects, updateProject } from 'redux/actions/projects';
-import { loadExperiments, updateExperiment } from 'redux/actions/experiments';
+import { loadExperiments, switchExperiment, updateExperiment } from 'redux/actions/experiments';
 
 jest.mock('next/router', () => ({
   __esModule: true,
@@ -29,11 +28,11 @@ jest.mock('next/router', () => ({
 jest.mock('components/data-processing/DataProcessingIntercept',
   () => jest.fn(() => <>Data Processing Intercept</>));
 
-jest.mock('redux/actions/experimentSettings/updateExperimentInfo');
+jest.mock('redux/actions/experiments/switchExperiment');
 jest.mock('redux/actions/projects/updateProject');
 jest.mock('redux/actions/experiments/updateExperiment');
 
-updateExperimentInfo.mockImplementation(() => ({ type: 'MOCK_ACTION ' }));
+switchExperiment.mockImplementation(() => ({ type: 'MOCK_ACTION ' }));
 updateProject.mockImplementation(() => ({ type: 'MOCK_ACTION ' }));
 updateExperiment.mockImplementation(() => ({ type: 'MOCK_ACTION ' }));
 
@@ -105,7 +104,7 @@ describe('AppRouteProvider', () => {
     expect(mockRouter.push).toHaveBeenCalledWith(testPath);
   });
 
-  it('Loads projects and experiment info when navigating from DataManagement', async () => {
+  it('Switch experiment when navigating from DataManagement', async () => {
     await storeState.dispatch(loadProjects());
     await storeState.dispatch(loadExperiments(projectUuid));
 
@@ -121,7 +120,7 @@ describe('AppRouteProvider', () => {
 
     userEvent.click(screen.getByText(buttonText));
 
-    expect(updateExperimentInfo).toHaveBeenCalledTimes(1);
+    expect(switchExperiment).toHaveBeenCalledTimes(1);
     expect(updateProject).toHaveBeenCalledTimes(1);
     expect(updateExperiment).toHaveBeenCalledTimes(1);
 
