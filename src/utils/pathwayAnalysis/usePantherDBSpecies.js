@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import useSWR from 'swr';
 
 const formatOuput = (data) => {
@@ -13,18 +12,20 @@ const formatOuput = (data) => {
 };
 
 const usePantherDBSpecies = () => {
-  const [speciesList, setSpeciesList] = useState([]);
-
-  useSWR(
+  const { data, error } = useSWR(
     'http://pantherdb.org/services/oai/pantherdb/supportedgenomes',
     async (url) => {
       const response = await fetch(url);
-      const data = await response.json();
-      setSpeciesList(formatOuput(data));
+      const responseData = await response.json();
+      return responseData;
     },
   );
 
-  return speciesList;
+  const formattedData = data ? formatOuput(data) : [];
+  return {
+    data: formattedData,
+    error,
+  };
 };
 
 export default usePantherDBSpecies;

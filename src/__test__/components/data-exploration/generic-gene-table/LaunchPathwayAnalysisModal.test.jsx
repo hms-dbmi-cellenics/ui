@@ -13,23 +13,29 @@ import launchPathwayService from 'utils/pathwayAnalysis/launchPathwayService';
 import getDiffExprGenes from 'utils/differentialExpression/getDiffExprGenes';
 import { pathwayServices } from 'utils/pathwayAnalysis/pathwayConstants';
 import enrichrSpecies from 'utils/pathwayAnalysis/enrichrConstants';
+import usePantherDBSpecies from 'utils/pathwayAnalysis/usePantherDBSpecies';
+import pushNotificationMessage from 'utils/pushNotificationMessage';
 
 jest.mock('utils/pathwayAnalysis/launchPathwayService');
 jest.mock('utils/differentialExpression/getDiffExprGenes');
+jest.mock('utils/pathwayAnalysis/usePantherDBSpecies');
+jest.mock('utils/pushNotificationMessage');
 
 const onCancel = jest.fn();
 const onOpenAdvancedFilters = jest.fn();
 
-const renderPathwayAnalysisModal = (filtersApplied = false) => {
-  render(
-    <Provider store={makeStore()}>
-      <LaunchPathwayAnalysisModal
-        advancedFiltersAdded={filtersApplied}
-        onCancel={onCancel}
-        onOpenAdvancedFilters={onOpenAdvancedFilters}
-      />
-    </Provider>,
-  );
+const renderPathwayAnalysisModal = async (filtersApplied = false) => {
+  await act(async () => {
+    render(
+      <Provider store={makeStore()}>
+        <LaunchPathwayAnalysisModal
+          advancedFiltersAdded={filtersApplied}
+          onCancel={onCancel}
+          onOpenAdvancedFilters={onOpenAdvancedFilters}
+        />
+      </Provider>,
+    );
+  });
 };
 
 const genesList = ['gene1', 'gene2'];
@@ -38,10 +44,14 @@ getDiffExprGenes.mockImplementation(() => async () => Promise.resolve(genesList)
 describe('Pathway analysis modal ', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    usePantherDBSpecies.mockImplementation(() => ({
+      data: [{ value: 'HUMAN', label: 'Human' }],
+      error: undefined,
+    }));
   });
 
-  it('Renders properly', () => {
-    renderPathwayAnalysisModal();
+  it('Renders properly', async () => {
+    await renderPathwayAnalysisModal();
     expect(screen.getByText('You have not performed any filtering on the genes!')).toBeInTheDocument();
 
     Object.values(pathwayServices).forEach((serviceName) => {
@@ -57,7 +67,7 @@ describe('Pathway analysis modal ', () => {
   });
 
   it('Clicking enrichr radio button removes suggestion text', async () => {
-    renderPathwayAnalysisModal();
+    await renderPathwayAnalysisModal();
     const enrichrRadioButton = screen.getByLabelText(pathwayServices.ENRICHR);
     userEvent.click(enrichrRadioButton);
     await waitFor(() => (
@@ -66,14 +76,35 @@ describe('Pathway analysis modal ', () => {
   });
 
   it('Clicking advanced filtering modal opens the modal', async () => {
-    renderPathwayAnalysisModal();
+    await renderPathwayAnalysisModal();
     userEvent.click(screen.getByText('Click here to open the advanced filtering options.'));
 
     expect(onOpenAdvancedFilters).toHaveBeenCalledTimes(1);
   });
 
+  it('Launches the service with PantherDB', async () => {
+    await renderPathwayAnalysisModal();
+
+    const defaultSpecies = 'HUMAN';
+
+    await act(async () => {
+      userEvent.click(screen.getByText('Launch'));
+    });
+
+    // The first option to getDiffExpr is useAllGenes, which is true by default
+    expect(getDiffExprGenes).toHaveBeenCalledTimes(1);
+    expect(getDiffExprGenes).toHaveBeenCalledWith(true, 0);
+
+    expect(launchPathwayService).toHaveBeenCalledTimes(1);
+    expect(launchPathwayService).toHaveBeenCalledWith(
+      pathwayServices.PANTHERDB,
+      genesList,
+      defaultSpecies,
+    );
+  });
+
   it('Launches the service with enrichr', async () => {
-    renderPathwayAnalysisModal();
+    await renderPathwayAnalysisModal();
 
     const defaultSpecies = 'sapiens';
 
@@ -97,16 +128,18 @@ describe('Pathway analysis modal ', () => {
   });
 
   it('Passes the species key correctly', async () => {
-    renderPathwayAnalysisModal();
+    await renderPathwayAnalysisModal();
 
     const secondSpecies = enrichrSpecies[enrichrSpecies.length - 1];
+
+    // Choose enrichr
+    userEvent.click(screen.getByText(pathwayServices.ENRICHR));
 
     await act(async () => {
       userEvent.click(screen.getByRole('combobox'));
     });
 
     // Choose another species
-
     const speciesOption = screen.getAllByText(secondSpecies.label)[0];
     await act(async () => {
       userEvent.click(speciesOption, undefined, { skipPointerEventsCheck: true });
@@ -123,14 +156,14 @@ describe('Pathway analysis modal ', () => {
 
     expect(launchPathwayService).toHaveBeenCalledTimes(1);
     expect(launchPathwayService).toHaveBeenCalledWith(
-      pathwayServices.PANTHERDB,
+      pathwayServices.ENRICHR,
       genesList,
       secondSpecies.value,
     );
   });
 
   it('Passes the number of genes correctly', async () => {
-    renderPathwayAnalysisModal();
+    await renderPathwayAnalysisModal();
 
     const numGenes = 5;
 
@@ -151,7 +184,30 @@ describe('Pathway analysis modal ', () => {
   });
 
   it('Apply filters warning message is not there if there are filters', async () => {
-    renderPathwayAnalysisModal(true);
+    await renderPathwayAnalysisModal(true);
     expect(screen.queryByText('You have not performed any filtering on the genes!', { exact: false })).not.toBeInTheDocument();
+  });
+
+  it('Shows an error if fetching the PantherDB species list throws an error', async () => {
+    usePantherDBSpecies.mockImplementation(() => ({
+      data: [{ value: 'HUMAN', label: 'Human' }],
+      error: 'This is an error',
+    }));
+
+    await renderPathwayAnalysisModal(true);
+
+    expect(pushNotificationMessage).toHaveBeenCalledTimes(1);
+  });
+
+  it('Shows an error if analysis can not be launched', async () => {
+    launchPathwayService.mockImplementation(() => { throw new Error('Error launching analysis'); });
+
+    await renderPathwayAnalysisModal(true);
+
+    await act(async () => {
+      userEvent.click(screen.getByText('Launch'));
+    });
+
+    expect(pushNotificationMessage).toHaveBeenCalledTimes(1);
   });
 });

@@ -5,6 +5,7 @@ import {
 } from 'antd';
 import PropTypes from 'prop-types';
 
+import pushNotificationMessage from 'utils/pushNotificationMessage';
 import launchPathwayService from 'utils/pathwayAnalysis/launchPathwayService';
 import getDiffExprGenes from 'utils/differentialExpression/getDiffExprGenes';
 import enrichrSpecies from 'utils/pathwayAnalysis/enrichrConstants';
@@ -32,7 +33,14 @@ const LaunchPathwayAnalysisModal = (props) => {
     [pathwayServices.ENRICHR]: enrichrSpecies,
   });
 
-  const pantherDBSpecies = usePantherDBSpecies();
+  const { data: pantherDBSpecies, error: pantherDBError } = usePantherDBSpecies();
+
+  // PantherDB and Enrichr species list have different values.
+  // therefore, when switching between the two, we need to update the value to
+  // correspond with a value in the species list.
+  useEffect(() => {
+    setSpecies(speciesList[externalService][0]?.value);
+  }, [externalService]);
 
   useEffect(() => {
     if (pantherDBSpecies.length === 0) return;
@@ -45,6 +53,13 @@ const LaunchPathwayAnalysisModal = (props) => {
     setSpecies(pantherDBSpecies[0].value);
   }, [pantherDBSpecies.length]);
 
+  useEffect(() => {
+    if (pantherDBError) {
+      pushNotificationMessage('error', 'Error getting PantherDB species list. Consider using Enrichr.');
+      console.error(pantherDBError);
+    }
+  }, pantherDBError);
+
   const launchPathwayAnalysis = async (serviceName) => {
     setWaitingForExternalService(true);
 
@@ -52,11 +67,16 @@ const LaunchPathwayAnalysisModal = (props) => {
       const pathwayGenesList = await dispatch(getDiffExprGenes(useAllGenes, numGenes));
       launchPathwayService(serviceName, pathwayGenesList, species);
     } catch (error) {
-      throw new Error('Error launching pathway analysis', error);
+      console.warn('*** in launchPathwayError');
+
+      pushNotificationMessage('error', 'Failed launching pathway analysis');
+      console.error('Error launching pathway analysis', error);
     } finally {
       setWaitingForExternalService(false);
     }
   };
+
+  const canLaunchService = () => !waitingForExternalService && species;
 
   return (
     <>
@@ -67,11 +87,11 @@ const LaunchPathwayAnalysisModal = (props) => {
         onCancel={onCancel}
         footer={[
           <Button
-            disabled={waitingForExternalService}
+            disabled={!canLaunchService()}
             type='primary'
             onClick={() => launchPathwayAnalysis(externalService)}
           >
-            {waitingForExternalService ? 'Loading...' : 'Launch'}
+            {!canLaunchService() ? 'Loading...' : 'Launch'}
           </Button>,
         ]}
       >
@@ -126,7 +146,7 @@ const LaunchPathwayAnalysisModal = (props) => {
             >
               {
                 speciesList[externalService]?.map((option) => (
-                  <Select.Option value={option.value}><i>{option.label}</i></Select.Option>
+                  <Select.Option key={option.value} value={option.value}><i>{option.label}</i></Select.Option>
                 ))
               }
             </Select>
