@@ -13,7 +13,7 @@ import { CSVLink } from 'react-csv';
 import _ from 'lodash';
 
 import PropTypes from 'prop-types';
-import Header from 'components/plots/Header';
+import PlotHeader from 'components/plots/PlotHeader';
 import PlotStyling from 'components/plots/styling/PlotStyling';
 import { Vega } from 'react-vega';
 
@@ -248,36 +248,38 @@ const VolcanoPlotPage = (props) => {
   );
 
   return (
-    <div style={{ paddingLeft: 32, paddingRight: 32 }}>
-      <Header
+    <>
+      <PlotHeader
         plotUuid={plotUuid}
         experimentId={experimentId}
-        finalRoute={route}
       />
-      <Row gutter={16}>
-        <Col span={16}>
-          <Space direction='vertical' style={{ width: '100%' }}>
-            <Collapse defaultActiveKey='1'>
-              <Panel header='Preview' key='1' extra={generateExportDropdown()}>
-                <center>{renderPlot()}</center>
-              </Panel>
-            </Collapse>
-          </Space>
-        </Col>
-        <Col span={8}>
-          <Space direction='vertical' style={{ width: '100%' }}>
-            <Collapse defaultActiveKey='1' accordion />
-            <PlotStyling
-              formConfig={plotStylingControlsConfig}
-              config={config}
-              onUpdate={updatePlotWithChanges}
-              renderExtraPanels={renderExtraPanels}
-              defaultActiveKey='1'
-            />
-          </Space>
-        </Col>
-      </Row>
-    </div>
+      <Space direction='vertical' style={{ width: '100%', padding: '0 10px' }}>
+
+        <Row gutter={16}>
+          <Col span={16}>
+            <Space direction='vertical' style={{ width: '100%' }}>
+              <Collapse defaultActiveKey='1'>
+                <Panel header='Preview' key='1' extra={generateExportDropdown()}>
+                  <center>{renderPlot()}</center>
+                </Panel>
+              </Collapse>
+            </Space>
+          </Col>
+          <Col span={8}>
+            <Space direction='vertical' style={{ width: '100%' }}>
+              <Collapse defaultActiveKey='1' accordion />
+              <PlotStyling
+                formConfig={plotStylingControlsConfig}
+                config={config}
+                onUpdate={updatePlotWithChanges}
+                renderExtraPanels={renderExtraPanels}
+                defaultActiveKey='1'
+              />
+            </Space>
+          </Col>
+        </Row>
+      </Space>
+    </>
   );
 };
 

@@ -23,7 +23,7 @@ import { loadCellSets } from 'redux/actions/cellSets';
 import PlotStyling from 'components/plots/styling/PlotStyling';
 import SelectData from 'components/plots/styling/SelectData';
 import MarkerGeneSelection from 'components/plots/styling/MarkerGeneSelection';
-import Header from 'components/plots/Header';
+import PlotHeader from 'components/plots/PlotHeader';
 import Loader from 'components/Loader';
 
 import {
@@ -337,35 +337,36 @@ const DotPlotPage = (props) => {
   };
 
   return (
-    <div style={{ paddingLeft: 32, paddingRight: 32 }}>
-      <Header
+    <>
+      <PlotHeader
         plotUuid={plotUuid}
         experimentId={experimentId}
-        finalRoute={route}
       />
-      <Row gutter={16}>
-        <Col span={16}>
-          <Space direction='vertical' style={{ width: '100%' }}>
-            <Collapse defaultActiveKey='1'>
-              <Panel header='Preview' key='1'>
-                {renderPlot()}
-              </Panel>
-            </Collapse>
-          </Space>
-        </Col>
-        <Col span={8}>
-          <Space direction='vertical' style={{ width: '100%' }}>
-            <PlotStyling
-              formConfig={plotStylingControlsConfig}
-              config={config}
-              onUpdate={updatePlotWithChanges}
-              renderExtraPanels={renderExtraPanels}
-              defaultActiveKey='gene-selection'
-            />
-          </Space>
-        </Col>
-      </Row>
-    </div>
+      <Space direction='vertical' style={{ width: '100%', padding: '0 10px' }}>
+        <Row gutter={16}>
+          <Col span={16}>
+            <Space direction='vertical' style={{ width: '100%' }}>
+              <Collapse defaultActiveKey='1'>
+                <Panel header='Preview' key='1'>
+                  {renderPlot()}
+                </Panel>
+              </Collapse>
+            </Space>
+          </Col>
+          <Col span={8}>
+            <Space direction='vertical' style={{ width: '100%' }}>
+              <PlotStyling
+                formConfig={plotStylingControlsConfig}
+                config={config}
+                onUpdate={updatePlotWithChanges}
+                renderExtraPanels={renderExtraPanels}
+                defaultActiveKey='gene-selection'
+              />
+            </Space>
+          </Col>
+        </Row>
+      </Space>
+    </>
   );
 };
 

@@ -6,7 +6,7 @@ import * as rtl from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import { initialPlotConfigStates } from '../../../redux/reducers/componentConfig/initialState';
-import Header from '../../../components/plots/Header';
+import PlotHeader from '../../../components/plots/PlotHeader';
 import { LOAD_CONFIG } from '../../../redux/actionTypes/componentConfig';
 import '__test__/test-utils/setupTests';
 
@@ -15,10 +15,6 @@ const mockStore = configureMockStore([thunk]);
 
 describe('Tests for the header in plots and tables ', () => {
   const initialConfig = initialPlotConfigStates.embeddingContinuous;
-  const route = {
-    path: 'embedding-continuous',
-    breadcrumbName: 'Continuous Embedding',
-  };
 
   const store = mockStore({
     componentConfig: {
@@ -41,10 +37,9 @@ describe('Tests for the header in plots and tables ', () => {
     fetchMock.mockResponse(JSON.stringify({ something: 'some value' }));
     rtl.render(
       <Provider store={store}>
-        <Header
+        <PlotHeader
           experimentId='a'
           plotUuid='embeddingContinuousMain'
-          finalRoute={route}
         />
       </Provider>,
     );

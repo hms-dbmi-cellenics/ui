@@ -59,7 +59,7 @@ import { useAppRouter } from 'utils/AppRouteProvider';
 const { Text } = Typography;
 const { Option } = Select;
 
-const DataProcessingPage = ({ experimentId, experimentData, route }) => {
+const DataProcessingPage = ({ experimentId, experimentData }) => {
   const dispatch = useDispatch();
   const navigateTo = useAppRouter();
 
@@ -240,18 +240,18 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
       key: 'doubletScores',
       name: getUserFriendlyQCStepName('doubletScores'),
       description:
-        <span>
-          Droplets may contain more than one cell.
-          In such cases, it is not possible to distinguish which reads came from which cell.
-          Such “cells” cause problems in the downstream analysis as they appear as an intermediate type.
-          “Cells” with a high probability of being a doublet should be excluded.
-          The probability of being a doublet is calculated using ‘scDblFinder’.
-          For each sample, the default threshold tries to minimize both the deviation in the
-          expected number of doublets and the error of a trained classifier. For more details see
-          {' '}
-          <a href='https://bioconductor.org/packages/devel/bioc/vignettes/scDblFinder/inst/doc/scDblFinder.html#thresholding' rel='noreferrer' target='_blank'>scDblFinder thresholding</a>
-          .
-        </span>,
+  <span>
+    Droplets may contain more than one cell.
+    In such cases, it is not possible to distinguish which reads came from which cell.
+    Such “cells” cause problems in the downstream analysis as they appear as an intermediate type.
+    “Cells” with a high probability of being a doublet should be excluded.
+    The probability of being a doublet is calculated using ‘scDblFinder’.
+    For each sample, the default threshold tries to minimize both the deviation in the
+    expected number of doublets and the error of a trained classifier. For more details see
+    {' '}
+    <a href='https://bioconductor.org/packages/devel/bioc/vignettes/scDblFinder/inst/doc/scDblFinder.html#thresholding' rel='noreferrer' target='_blank'>scDblFinder thresholding</a>
+    .
+  </span>,
       multiSample: true,
       render: (key) => (
         <SingleComponentMultipleDataContainer
@@ -439,16 +439,16 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
                               ) : pipelineNotFinished
                                 && !pipelineRunning
                                 && !isStepComplete(key) ? (
-                                <>
-                                  <Text
-                                    type='danger'
-                                    strong
-                                  >
-                                    <WarningOutlined />
-                                  </Text>
-                                  <span style={{ marginLeft: '0.25rem' }}>{text}</span>
-                                </>
-                              ) : <></>}
+                                  <>
+                                    <Text
+                                      type='danger'
+                                      strong
+                                    >
+                                      <WarningOutlined />
+                                    </Text>
+                                    <span style={{ marginLeft: '0.25rem' }}>{text}</span>
+                                  </>
+                                ) : <></>}
                             </Option>
                           );
                         },
@@ -604,44 +604,42 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
   };
 
   return (
-    <div style={{
-      paddingLeft: 32, paddingRight: 32, display: 'flex', flexDirection: 'column', height: '100vh',
-    }}
-    >
+    <>
       <Header
         experimentId={experimentId}
         experimentData={experimentData}
-        route={route}
         title='Data Processing'
       />
-      {runQCModalVisible && (
-        <Modal
-          title='Run data processing with the changed settings'
-          visible
-          onCancel={() => setRunQCModalVisible(false)}
-          onOk={() => onPipelineRun()}
-          okText='Start'
+      <Space direction='vertical' style={{ width: '100%', padding: '0 10px' }}>
+
+        {runQCModalVisible && (
+          <Modal
+            title='Run data processing with the changed settings'
+            visible
+            onCancel={() => setRunQCModalVisible(false)}
+            onOk={() => onPipelineRun()}
+            okText='Start'
+          >
+            <p>
+              This will take several minutes.
+              Your navigation within Cellenics will be restricted during this time.
+              Do you want to start?
+            </p>
+          </Modal>
+        )}
+        <Card
+          title={renderTitle()}
         >
-          <p>
-            This will take several minutes.
-            Your navigation within Cellenics will be restricted during this time.
-            Do you want to start?
-          </p>
-        </Modal>
-      )}
-      <Card
-        title={renderTitle()}
-      >
-        {renderContent()}
-      </Card>
-    </div>
+          {renderContent()}
+        </Card>
+      </Space>
+    </>
   );
 };
 
 DataProcessingPage.propTypes = {
   experimentId: PropTypes.string.isRequired,
   experimentData: PropTypes.object.isRequired,
-  route: PropTypes.string.isRequired,
 };
 
 export default DataProcessingPage;

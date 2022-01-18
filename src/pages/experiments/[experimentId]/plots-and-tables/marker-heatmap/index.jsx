@@ -27,7 +27,7 @@ import MarkerGeneSelection from 'components/plots/styling/MarkerGeneSelection';
 import loadProcessingSettings from 'redux/actions/experimentSettings/processingConfig/loadProcessingSettings';
 import PlotStyling from 'components/plots/styling/PlotStyling';
 import { updatePlotConfig, loadPlotConfig } from 'redux/actions/componentConfig';
-import Header from 'components/plots/Header';
+import PlotHeader from 'components/plots/PlotHeader';
 import { generateSpec } from 'utils/plotSpecs/generateHeatmapSpec';
 import { loadGeneExpression, loadMarkerGenes } from 'redux/actions/genes';
 import { loadCellSets } from 'redux/actions/cellSets';
@@ -424,33 +424,39 @@ const MarkerHeatmap = ({ experimentId }) => {
   );
 
   return (
-    <div style={{ paddingLeft: 32, paddingRight: 32 }}>
-      <Header plotUuid={plotUuid} experimentId={experimentId} finalRoute={route} />
-      <Row gutter={16}>
-        <Col span={16}>
-          <Space direction='vertical' style={{ width: '100%' }}>
-            <Collapse defaultActiveKey='1'>
-              <Panel header='Preview' key='1'>
-                <center>
-                  {renderPlot()}
-                </center>
-              </Panel>
-            </Collapse>
-          </Space>
-        </Col>
-        <Col span={8}>
-          <Space direction='vertical' style={{ width: '100%' }}>
-            <PlotStyling
-              formConfig={plotStylingControlsConfig}
-              config={config}
-              onUpdate={updatePlotWithChanges}
-              defaultActiveKey='gene-selection'
-              renderExtraPanels={renderExtraPanels}
-            />
-          </Space>
-        </Col>
-      </Row>
-    </div>
+    <>
+      <PlotHeader
+        plotUuid={plotUuid}
+        experimentId={experimentId}
+      />
+      <Space direction='vertical' style={{ width: '100%', padding: '0 10px' }}>
+
+        <Row gutter={16}>
+          <Col span={16}>
+            <Space direction='vertical' style={{ width: '100%' }}>
+              <Collapse defaultActiveKey='1'>
+                <Panel header='Preview' key='1'>
+                  <center>
+                    {renderPlot()}
+                  </center>
+                </Panel>
+              </Collapse>
+            </Space>
+          </Col>
+          <Col span={8}>
+            <Space direction='vertical' style={{ width: '100%' }}>
+              <PlotStyling
+                formConfig={plotStylingControlsConfig}
+                config={config}
+                onUpdate={updatePlotWithChanges}
+                defaultActiveKey='gene-selection'
+                renderExtraPanels={renderExtraPanels}
+              />
+            </Space>
+          </Col>
+        </Row>
+      </Space>
+    </>
   );
 };
 

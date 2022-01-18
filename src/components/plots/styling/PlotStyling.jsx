@@ -86,7 +86,7 @@ const PlotStyling = (props) => {
   });
 
   return (
-    <Collapse accordion style={{ marginTop: '-9px' }} defaultActiveKey={defaultActiveKey}>
+    <Collapse accordion defaultActiveKey={defaultActiveKey}>
       {renderExtraPanels()}
       {buildForm(formConfig)}
     </Collapse>

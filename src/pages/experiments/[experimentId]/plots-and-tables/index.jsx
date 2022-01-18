@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import {
-  Row, Col, Space, Button, List, Card, Tooltip, Dropdown,
+  Space, Button, List, Card, Dropdown,
 } from 'antd';
 import { useSelector } from 'react-redux';
 import { CloseOutlined, DownOutlined } from '@ant-design/icons';
@@ -48,7 +48,7 @@ CardItem.propTypes = {
   onClick: PropTypes.func.isRequired,
 };
 
-const PlotsTablesHome = ({ experimentId, experimentData, route }) => {
+const PlotsTablesHome = ({ experimentId, experimentData }) => {
   const lastUpdatedVolcano = useSelector(
     (state) => state.componentConfig.volcanoPlotMain?.lastUpdated || 'never',
   );
@@ -175,10 +175,10 @@ const PlotsTablesHome = ({ experimentId, experimentData, route }) => {
       <Header
         experimentId={experimentId}
         experimentData={experimentData}
-        route={route}
         title='Plots and Tables'
         extra={[(
           <Dropdown
+            style={{ float: 'left' }}
             trigger={['click']}
             key='search-menu-dropdown'
             overlay={searchMenu}
@@ -193,7 +193,7 @@ const PlotsTablesHome = ({ experimentId, experimentData, route }) => {
           </Dropdown>
         )]}
       />
-      <Space direction='vertical' style={{ width: '100%', padding: '10px' }}>
+      <Space direction='vertical' style={{ width: '100%', padding: '0 10px' }}>
         <List
           grid={{ gutter: 16 }}
           dataSource={openedPlots}
@@ -226,7 +226,6 @@ const PlotsTablesHome = ({ experimentId, experimentData, route }) => {
 PlotsTablesHome.propTypes = {
   experimentId: PropTypes.string.isRequired,
   experimentData: PropTypes.object.isRequired,
-  route: PropTypes.string.isRequired,
 };
 
 export default PlotsTablesHome;

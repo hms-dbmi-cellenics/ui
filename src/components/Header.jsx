@@ -8,51 +8,14 @@ import { useSelector } from 'react-redux';
 import UserButton from './UserButton';
 import FeedbackButton from './FeedbackButton';
 import ReferralButton from './ReferralButton';
-import itemRender from '../utils/renderBreadcrumbLinks';
 import integrationTestConstants from '../utils/integrationTestConstants';
 
 const Header = (props) => {
   const {
-    experimentId, experimentData, title, extra, route,
+    experimentId, experimentData, title, extra,
   } = props;
   const experiment = useSelector((state) => state?.experiments[experimentId]);
   const experimentName = experimentData?.experimentName || experiment?.name;
-  const pathInformation = {
-    'data-management': {
-      breadcrumbName: 'Data Management',
-    },
-    'data-processing': {
-      breadcrumbName: 'Data Processing',
-    },
-    experiments: {
-      breadcrumbName: 'Analyses',
-    },
-    '[experimentId]': {
-      breadcrumbName: experimentName,
-      params: experimentId,
-    },
-    'data-exploration': {
-      breadcrumbName: 'Data Exploration',
-    },
-    'plots-and-tables': {
-      breadcrumbName: 'Plots and Tables',
-    },
-  };
-
-  const buildRoutes = (src) => {
-    const pathComponents = src.split('/');
-
-    return pathComponents
-      .filter(
-        (component) => component.length !== 0,
-      )
-      .map(
-        (component) => ({
-          path: component,
-          ...pathInformation[component],
-        }),
-      );
-  };
 
   const truncateText = (text) => (
     (text && text.length > 28) ? `${text.substr(0, 27)}…` : text
@@ -67,7 +30,7 @@ const Header = (props) => {
       <PageHeader
         className={integrationTestConstants.classes.PAGE_HEADER}
         title={title}
-        style={{ width: '100%', paddingTop: '12px', paddingBottom: '6px' }}
+        style={{ width: '100%', paddingTop: '10px', paddingBottom: '10px' }}
         extra={(
           <Space size='large'>
             <Space>
@@ -86,7 +49,6 @@ const Header = (props) => {
 Header.propTypes = {
   experimentId: PropTypes.string,
   experimentData: PropTypes.object,
-  route: PropTypes.string.isRequired,
   title: PropTypes.string.isRequired,
   extra: PropTypes.node,
 };
