@@ -21,10 +21,17 @@ Object {
 exports[`createCellSet action Last action dispatches cellSetSave event 1`] = `
 Object {
   "payload": Object {
+    "cellIds": Set {
+      1,
+      2,
+      3,
+    },
+    "color": "#ff0000",
     "experimentId": "1234",
     "key": "a key",
-    "saved": Object {},
+    "name": "one",
+    "type": "cellSets",
   },
-  "type": "cellSets/save",
+  "type": "cellSets/create",
 }
 `;
