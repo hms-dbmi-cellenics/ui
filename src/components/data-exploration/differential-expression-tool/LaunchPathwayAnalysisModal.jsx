@@ -9,7 +9,7 @@ import pushNotificationMessage from 'utils/pushNotificationMessage';
 import launchPathwayService from 'utils/pathwayAnalysis/launchPathwayService';
 import getDiffExprGenes from 'utils/differentialExpression/getDiffExprGenes';
 import enrichrSpecies from 'utils/pathwayAnalysis/enrichrConstants';
-import getPantherDBSpecies from 'utils/pathwayAnalysis/getPantherDBSpecies';
+import pantherDBSpecies from 'utils/pathwayAnalysis/pantherDBSpecies.json';
 import { pathwayServices } from 'utils/pathwayAnalysis/pathwayConstants';
 
 const { Paragraph } = Typography;
@@ -28,12 +28,10 @@ const LaunchPathwayAnalysisModal = (props) => {
   const [numGenes, setNumGenes] = useState(0);
   const [waitingForExternalService, setWaitingForExternalService] = useState(false);
   const [species, setSpecies] = useState(null);
-  const [speciesList, setSpeciesList] = useState({
-    [pathwayServices.PANTHERDB]: [],
+  const speciesList = {
+    [pathwayServices.PANTHERDB]: pantherDBSpecies,
     [pathwayServices.ENRICHR]: enrichrSpecies,
-  });
-
-  const pantherDBSpecies = getPantherDBSpecies();
+  };
 
   // PantherDB and Enrichr species list have different values.
   // therefore, when switching between the two, we need to update the value to
@@ -41,17 +39,6 @@ const LaunchPathwayAnalysisModal = (props) => {
   useEffect(() => {
     setSpecies(speciesList[externalService][0]?.value);
   }, [externalService]);
-
-  useEffect(() => {
-    if (pantherDBSpecies.length === 0) return;
-
-    setSpeciesList({
-      ...speciesList,
-      [pathwayServices.PANTHERDB]: pantherDBSpecies,
-    });
-
-    setSpecies(pantherDBSpecies[0].value);
-  }, [pantherDBSpecies.length]);
 
   const launchPathwayAnalysis = async (serviceName) => {
     setWaitingForExternalService(true);
@@ -136,7 +123,7 @@ const LaunchPathwayAnalysisModal = (props) => {
               style={{ width: 400 }}
             >
               {
-                speciesList[externalService]?.map((option) => (
+                speciesList[externalService].map((option) => (
                   <Select.Option key={option.value} value={option.value}><i>{option.label}</i></Select.Option>
                 ))
               }
