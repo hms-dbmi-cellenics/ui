@@ -1,0 +1,1009 @@
+{
+  "search": {
+    "output": {
+      "genomes": {
+        "genome": [
+          {
+            "name": "human",
+            "taxon_id": 9606,
+            "short_name": "HUMAN",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Homo sapiens"
+          },
+          {
+            "name": "mouse",
+            "taxon_id": 10090,
+            "short_name": "MOUSE",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Mus musculus"
+          },
+          {
+            "name": "rat",
+            "taxon_id": 10116,
+            "short_name": "RAT",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Rattus norvegicus"
+          },
+          {
+            "name": "chicken",
+            "taxon_id": 9031,
+            "short_name": "CHICK",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Gallus gallus"
+          },
+          {
+            "name": "zebrafish",
+            "taxon_id": 7955,
+            "short_name": "DANRE",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Danio rerio"
+          },
+          {
+            "name": "fruit_fly",
+            "taxon_id": 7227,
+            "short_name": "DROME",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Drosophila melanogaster"
+          },
+          {
+            "name": "nematode_worm",
+            "taxon_id": 6239,
+            "short_name": "CAEEL",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Caenorhabditis elegans"
+          },
+          {
+            "name": "budding_yeast",
+            "taxon_id": 559292,
+            "short_name": "YEAST",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Saccharomyces cerevisiae"
+          },
+          {
+            "name": "fission_yeast",
+            "taxon_id": 284812,
+            "short_name": "SCHPO",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Schizosaccharomyces pombe"
+          },
+          {
+            "name": "dictyostelium",
+            "taxon_id": 44689,
+            "short_name": "DICDI",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Dictyostelium discoideum"
+          },
+          {
+            "name": "arabidopsis",
+            "taxon_id": 3702,
+            "short_name": "ARATH",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Arabidopsis thaliana"
+          },
+          {
+            "name": "e_coli",
+            "taxon_id": 83333,
+            "short_name": "ECOLI",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Escherichia coli"
+          },
+          {
+            "name": "aspergillus",
+            "taxon_id": 227321,
+            "short_name": "EMENI",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Emericella nidulans"
+          },
+          {
+            "name": "Amborella",
+            "taxon_id": 13333,
+            "short_name": "AMBTC",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Amborella trichopoda"
+          },
+          {
+            "name": "lizard",
+            "taxon_id": 28377,
+            "short_name": "ANOCA",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Anolis carolinensis"
+          },
+          {
+            "name": "mosquito",
+            "taxon_id": 7165,
+            "short_name": "ANOGA",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Anopheles gambiae"
+          },
+          {
+            "name": "aquifex",
+            "taxon_id": 224324,
+            "short_name": "AQUAE",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Aquifex aeolicus"
+          },
+          {
+            "name": "ashbya",
+            "taxon_id": 284811,
+            "short_name": "ASHGO",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Ashbya gossypii"
+          },
+          {
+            "name": "bacillus_cereus",
+            "taxon_id": 226900,
+            "short_name": "BACCR",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Bacillus cereus"
+          },
+          {
+            "name": "bacillus_subtilis",
+            "taxon_id": 224308,
+            "short_name": "BACSU",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Bacillus subtilis"
+          },
+          {
+            "name": "bacteroidetes",
+            "taxon_id": 226186,
+            "short_name": "BACTN",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Bacteroides thetaiotaomicron"
+          },
+          {
+            "name": "chytrid",
+            "taxon_id": 684364,
+            "short_name": "BATDJ",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Batrachochytrium dendrobatidis"
+          },
+          {
+            "name": "cow",
+            "taxon_id": 9913,
+            "short_name": "BOVIN",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Bos taurus"
+          },
+          {
+            "name": "purple_false_brome",
+            "taxon_id": 15368,
+            "short_name": "BRADI",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Brachypodium distachyon"
+          },
+          {
+            "name": "bradyrhizobium",
+            "taxon_id": 224911,
+            "short_name": "BRADU",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Bradyrhizobium diazoefficiens"
+          },
+          {
+            "name": "branchiostoma",
+            "taxon_id": 7739,
+            "short_name": "BRAFL",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Branchiostoma floridae"
+          },
+          {
+            "name": "rape",
+            "taxon_id": 3708,
+            "short_name": "BRANA",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Brassica napus"
+          },
+          {
+            "name": "cabbage",
+            "taxon_id": 51351,
+            "short_name": "BRARP",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Brassica rapa subsp. pekinensis"
+          },
+          {
+            "name": "c_briggsae",
+            "taxon_id": 6238,
+            "short_name": "CAEBR",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Caenorhabditis briggsae"
+          },
+          {
+            "name": "candida",
+            "taxon_id": 237561,
+            "short_name": "CANAL",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Candida albicans"
+          },
+          {
+            "name": "dog",
+            "taxon_id": 9615,
+            "short_name": "CANLF",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Canis lupus familiaris"
+          },
+          {
+            "name": "bell pepper",
+            "taxon_id": 4072,
+            "short_name": "CAPAN",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Capsicum annuum"
+          },
+          {
+            "name": "chlamydia",
+            "taxon_id": 272561,
+            "short_name": "CHLTR",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Chlamydia trachomatis"
+          },
+          {
+            "name": "green_algae",
+            "taxon_id": 3055,
+            "short_name": "CHLRE",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Chlamydomonas reinhardtii"
+          },
+          {
+            "name": "chloroflexus",
+            "taxon_id": 324602,
+            "short_name": "CHLAA",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Chloroflexus aurantiacus"
+          },
+          {
+            "name": "ciona",
+            "taxon_id": 7719,
+            "short_name": "CIOIN",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Ciona intestinalis"
+          },
+          {
+            "name": "orange",
+            "taxon_id": 2711,
+            "short_name": "CITSI",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Citrus sinensis"
+          },
+          {
+            "name": "clostridium",
+            "taxon_id": 441771,
+            "short_name": "CLOBH",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Clostridium botulinum"
+          },
+          {
+            "name": "coxiella",
+            "taxon_id": 227377,
+            "short_name": "COXBU",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Coxiella burnetii"
+          },
+          {
+            "name": "cryptococcus",
+            "taxon_id": 214684,
+            "short_name": "CRYNJ",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Cryptococcus neoformans"
+          },
+          {
+            "name": "cucumber",
+            "taxon_id": 3659,
+            "short_name": "CUCSA",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Cucumis sativus"
+          },
+          {
+            "name": "water_flea",
+            "taxon_id": 6669,
+            "short_name": "DAPPU",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Daphnia pulex"
+          },
+          {
+            "name": "deinococcus",
+            "taxon_id": 243230,
+            "short_name": "DEIRA",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Deinococcus radiodurans"
+          },
+          {
+            "name": "dictyoglomus",
+            "taxon_id": 515635,
+            "short_name": "DICTD",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Dictyoglomus turgidum"
+          },
+          {
+            "name": "d_purpureum",
+            "taxon_id": 5786,
+            "short_name": "DICPU",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Dictyostelium purpureum"
+          },
+          {
+            "name": "entamoeba",
+            "taxon_id": 5759,
+            "short_name": "ENTHI",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Entamoeba histolytica"
+          },
+          {
+            "name": "horse",
+            "taxon_id": 9796,
+            "short_name": "HORSE",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Equus caballus"
+          },
+          {
+            "name": "yellow monkey flower",
+            "taxon_id": 4155,
+            "short_name": "ERYGU",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Erythranthe guttata"
+          },
+          {
+            "name": "flooded gum",
+            "taxon_id": 71139,
+            "short_name": "EUCGR",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Eucalyptus grandis"
+          },
+          {
+            "name": "cat",
+            "taxon_id": 9685,
+            "short_name": "FELCA",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Felis catus"
+          },
+          {
+            "name": "fusobacterium",
+            "taxon_id": 190304,
+            "short_name": "FUSNN",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Fusobacterium nucleatum"
+          },
+          {
+            "name": "geobacter",
+            "taxon_id": 243231,
+            "short_name": "GEOSL",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Geobacter sulfurreducens"
+          },
+          {
+            "name": "giardia",
+            "taxon_id": 184922,
+            "short_name": "GIAIC",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Giardia intestinalis"
+          },
+          {
+            "name": "gloeobacter",
+            "taxon_id": 251221,
+            "short_name": "GLOVI",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Gloeobacter violaceus"
+          },
+          {
+            "name": "soybean",
+            "taxon_id": 3847,
+            "short_name": "SOYBN",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Glycine max"
+          },
+          {
+            "name": "gorilla",
+            "taxon_id": 9595,
+            "short_name": "GORGO",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Gorilla gorilla gorilla"
+          },
+          {
+            "name": "cotton",
+            "taxon_id": 3635,
+            "short_name": "GOSHI",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Gossypium hirsutum"
+          },
+          {
+            "name": "h_flu",
+            "taxon_id": 71421,
+            "short_name": "HAEIN",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Haemophilus influenzae"
+          },
+          {
+            "name": "halobacterium",
+            "taxon_id": 64091,
+            "short_name": "HALSA",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Halobacterium salinarum"
+          },
+          {
+            "name": "sunflower",
+            "taxon_id": 4232,
+            "short_name": "HELAN",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Helianthus annuus"
+          },
+          {
+            "name": "h_pylori",
+            "taxon_id": 85962,
+            "short_name": "HELPY",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Helicobacter pylori"
+          },
+          {
+            "name": "barley",
+            "taxon_id": 112509,
+            "short_name": "HORVV",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Hordeum vulgare subsp. vulgare"
+          },
+          {
+            "name": "tick",
+            "taxon_id": 6945,
+            "short_name": "IXOSC",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Ixodes scapularis"
+          },
+          {
+            "name": "english walnut",
+            "taxon_id": 51240,
+            "short_name": "JUGRE",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Juglans regia"
+          },
+          {
+            "name": "korarchaeum",
+            "taxon_id": 374847,
+            "short_name": "KORCO",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Korarchaeum cryptofilum"
+          },
+          {
+            "name": "garden lettuce",
+            "taxon_id": 4236,
+            "short_name": "LACSA",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Lactuca sativa"
+          },
+          {
+            "name": "leishmania",
+            "taxon_id": 5664,
+            "short_name": "LEIMA",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Leishmania major"
+          },
+          {
+            "name": "leptospira",
+            "taxon_id": 189518,
+            "short_name": "LEPIN",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Leptospira interrogans"
+          },
+          {
+            "name": "listeria",
+            "taxon_id": 169963,
+            "short_name": "LISMO",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Listeria monocytogenes"
+          },
+          {
+            "name": "macacque",
+            "taxon_id": 9544,
+            "short_name": "MACMU",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Macaca mulatta"
+          },
+          {
+            "name": "cassava",
+            "taxon_id": 3983,
+            "short_name": "MANES",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Manihot esculenta"
+          },
+          {
+            "name": "barrel medic",
+            "taxon_id": 3880,
+            "short_name": "MEDTR",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Medicago truncatula"
+          },
+          {
+            "name": "methanocaldococcus",
+            "taxon_id": 243232,
+            "short_name": "METJA",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Methanocaldococcus jannaschii"
+          },
+          {
+            "name": "methanosarcina",
+            "taxon_id": 188937,
+            "short_name": "METAC",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Methanosarcina acetivorans"
+          },
+          {
+            "name": "opossum",
+            "taxon_id": 13616,
+            "short_name": "MONDO",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Monodelphis domestica"
+          },
+          {
+            "name": "monosiga",
+            "taxon_id": 81824,
+            "short_name": "MONBE",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Monosiga brevicollis"
+          },
+          {
+            "name": "banana",
+            "taxon_id": 214687,
+            "short_name": "MUSAM",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Musa acuminata subsp. malaccensis"
+          },
+          {
+            "name": "mycobacterium",
+            "taxon_id": 83332,
+            "short_name": "MYCTU",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Mycobacterium tuberculosis"
+          },
+          {
+            "name": "meningococcus",
+            "taxon_id": 122586,
+            "short_name": "NEIMB",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Neisseria meningitidis serogroup b"
+          },
+          {
+            "name": "sacred lotus",
+            "taxon_id": 4432,
+            "short_name": "NELNU",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Nelumbo nucifera"
+          },
+          {
+            "name": "nematostella",
+            "taxon_id": 45351,
+            "short_name": "NEMVE",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Nematostella vectensis"
+          },
+          {
+            "name": "aspergillus",
+            "taxon_id": 330879,
+            "short_name": "ASPFU",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Neosartorya fumigata"
+          },
+          {
+            "name": "neurospora",
+            "taxon_id": 367110,
+            "short_name": "NEUCR",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Neurospora crassa"
+          },
+          {
+            "name": "tobacco",
+            "taxon_id": 4097,
+            "short_name": "TOBAC",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Nicotiana tabacum"
+          },
+          {
+            "name": "nitrosopumilu",
+            "taxon_id": 436308,
+            "short_name": "NITMS",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Nitrosopumilus maritimus"
+          },
+          {
+            "name": "platypus",
+            "taxon_id": 9258,
+            "short_name": "ORNAN",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Ornithorhynchus anatinus"
+          },
+          {
+            "name": "rice",
+            "taxon_id": 39947,
+            "short_name": "ORYSJ",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Oryza sativa"
+          },
+          {
+            "name": "oryzias",
+            "taxon_id": 8090,
+            "short_name": "ORYLA",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Oryzias latipes"
+          },
+          {
+            "name": "Ostreococcus",
+            "taxon_id": 70448,
+            "short_name": "OSTTA",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Ostreococcus tauri"
+          },
+          {
+            "name": "chimpanzee",
+            "taxon_id": 9598,
+            "short_name": "PANTR",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Pan troglodytes"
+          },
+          {
+            "name": "paramecium",
+            "taxon_id": 5888,
+            "short_name": "PARTE",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Paramecium tetraurelia"
+          },
+          {
+            "name": "phaeosphaeria",
+            "taxon_id": 321614,
+            "short_name": "PHANO",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Phaeosphaeria nodorum"
+          },
+          {
+            "name": "date palm",
+            "taxon_id": 42345,
+            "short_name": "PHODC",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Phoenix dactylifera"
+          },
+          {
+            "name": "moss",
+            "taxon_id": 3218,
+            "short_name": "PHYPA",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Physcomitrella patens"
+          },
+          {
+            "name": "phytophthora",
+            "taxon_id": 164328,
+            "short_name": "PHYRM",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Phytophthora ramorum"
+          },
+          {
+            "name": "plasmodium",
+            "taxon_id": 36329,
+            "short_name": "PLAF7",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Plasmodium falciparum"
+          },
+          {
+            "name": "black_cottonwood",
+            "taxon_id": 3694,
+            "short_name": "POPTR",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Populus trichocarpa"
+          },
+          {
+            "name": "pristionchus",
+            "taxon_id": 54126,
+            "short_name": "PRIPA",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Pristionchus pacificus"
+          },
+          {
+            "name": "peach",
+            "taxon_id": 3760,
+            "short_name": "PRUPE",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Prunus persica"
+          },
+          {
+            "name": "pseudomonas",
+            "taxon_id": 208964,
+            "short_name": "PSEAE",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Pseudomonas aeruginosa"
+          },
+          {
+            "name": "puccinia",
+            "taxon_id": 418459,
+            "short_name": "PUCGT",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Puccinia graminis"
+          },
+          {
+            "name": "pyrobaculum",
+            "taxon_id": 178306,
+            "short_name": "PYRAE",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Pyrobaculum aerophilum"
+          },
+          {
+            "name": "rhodopirellula",
+            "taxon_id": 243090,
+            "short_name": "RHOBA",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Rhodopirellula baltica"
+          },
+          {
+            "name": "bean",
+            "taxon_id": 3988,
+            "short_name": "RICCO",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Ricinus communis"
+          },
+          {
+            "name": "salmonella",
+            "taxon_id": 99287,
+            "short_name": "SALTY",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Salmonella typhimurium"
+          },
+          {
+            "name": "sclerotinia",
+            "taxon_id": 665079,
+            "short_name": "SCLS1",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Sclerotinia sclerotiorum"
+          },
+          {
+            "name": "spikemoss",
+            "taxon_id": 88036,
+            "short_name": "SELML",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Selaginella moellendorffii"
+          },
+          {
+            "name": "millet",
+            "taxon_id": 4555,
+            "short_name": "SETIT",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Setaria italica"
+          },
+          {
+            "name": "shewanella",
+            "taxon_id": 211586,
+            "short_name": "SHEON",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Shewanella oneidensis"
+          },
+          {
+            "name": "tomato",
+            "taxon_id": 4081,
+            "short_name": "SOLLC",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Solanum lycopersicum"
+          },
+          {
+            "name": "potato",
+            "taxon_id": 4113,
+            "short_name": "SOLTU",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Solanum tuberosum"
+          },
+          {
+            "name": "sorghum",
+            "taxon_id": 4558,
+            "short_name": "SORBI",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Sorghum bicolor"
+          },
+          {
+            "name": "spinach",
+            "taxon_id": 3562,
+            "short_name": "SPIOL",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Spinacia oleracea"
+          },
+          {
+            "name": "staph",
+            "taxon_id": 93061,
+            "short_name": "STAA8",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Staphylococcus aureus"
+          },
+          {
+            "name": "strep",
+            "taxon_id": 171101,
+            "short_name": "STRR6",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Streptococcus pneumoniae"
+          },
+          {
+            "name": "streptomyces",
+            "taxon_id": 100226,
+            "short_name": "STRCO",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Streptomyces coelicolor"
+          },
+          {
+            "name": "sea_urchin",
+            "taxon_id": 7668,
+            "short_name": "STRPU",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Strongylocentrotus purpuratus"
+          },
+          {
+            "name": "sulfolobus",
+            "taxon_id": 273057,
+            "short_name": "SACS2",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Sulfolobus solfataricus"
+          },
+          {
+            "name": "pig",
+            "taxon_id": 9823,
+            "short_name": "PIG",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Sus scrofa"
+          },
+          {
+            "name": "synechocystis",
+            "taxon_id": 1111708,
+            "short_name": "SYNY3",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Synechocystis"
+          },
+          {
+            "name": "thalassiosira",
+            "taxon_id": 35128,
+            "short_name": "THAPS",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Thalassiosira pseudonana"
+          },
+          {
+            "name": "cacao",
+            "taxon_id": 3641,
+            "short_name": "THECC",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Theobroma cacao"
+          },
+          {
+            "name": "thermococcus",
+            "taxon_id": 69014,
+            "short_name": "THEKO",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Thermococcus kodakaraensis"
+          },
+          {
+            "name": "thermodesulfovibrio",
+            "taxon_id": 289376,
+            "short_name": "THEYD",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Thermodesulfovibrio yellowstonii"
+          },
+          {
+            "name": "thermotoga",
+            "taxon_id": 243274,
+            "short_name": "THEMA",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Thermotoga maritima"
+          },
+          {
+            "name": "tribolium",
+            "taxon_id": 7070,
+            "short_name": "TRICA",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Tribolium castaneum"
+          },
+          {
+            "name": "trichomonas",
+            "taxon_id": 5722,
+            "short_name": "TRIVA",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Trichomonas vaginalis"
+          },
+          {
+            "name": "trichoplax",
+            "taxon_id": 10228,
+            "short_name": "TRIAD",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Trichoplax adhaerens"
+          },
+          {
+            "name": "wheat",
+            "taxon_id": 4565,
+            "short_name": "WHEAT",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Triticum aestivum"
+          },
+          {
+            "name": "t_brucei",
+            "taxon_id": 185431,
+            "short_name": "TRYB2",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Trypanosoma brucei"
+          },
+          {
+            "name": "ustilago",
+            "taxon_id": 237631,
+            "short_name": "USTMA",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Ustilago maydis"
+          },
+          {
+            "name": "cholera",
+            "taxon_id": 243277,
+            "short_name": "VIBCH",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Vibrio cholerae"
+          },
+          {
+            "name": "grape",
+            "taxon_id": 29760,
+            "short_name": "VITVI",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Vitis vinifera"
+          },
+          {
+            "name": "xanthomonas",
+            "taxon_id": 190485,
+            "short_name": "XANCP",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Xanthomonas campestris"
+          },
+          {
+            "name": "frog",
+            "taxon_id": 8364,
+            "short_name": "XENTR",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Xenopus tropicalis"
+          },
+          {
+            "name": "yarrowia",
+            "taxon_id": 284591,
+            "short_name": "YARLI",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Yarrowia lipolytica"
+          },
+          {
+            "name": "yersinia",
+            "taxon_id": 632,
+            "short_name": "YERPE",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Yersinia pestis"
+          },
+          {
+            "name": "maize",
+            "taxon_id": 4577,
+            "short_name": "MAIZE",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Zea mays"
+          },
+          {
+            "name": "eelgrass",
+            "taxon_id": 29655,
+            "short_name": "ZOSMR",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "Zostera marina"
+          },
+          {
+            "name": "helobdella",
+            "taxon_id": 6412,
+            "short_name": "HELRO",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "helobdella robusta"
+          },
+          {
+            "name": "lepisosteudae",
+            "taxon_id": 7918,
+            "short_name": "LEPOC",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "lepisosteus oculatus"
+          },
+          {
+            "name": "m_genitalium",
+            "taxon_id": 243273,
+            "short_name": "MYCGE",
+            "version": "Reference Proteome 2020_04",
+            "long_name": "mycoplasma genitalium"
+          }
+        ]
+      }
+    },
+    "product": {
+      "source": "PANTHERDB",
+      "version": 16
+    },
+    "search_type": "supported genomes information"
+  }
+}

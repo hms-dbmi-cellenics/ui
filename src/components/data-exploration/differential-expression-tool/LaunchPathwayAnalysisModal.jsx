@@ -9,7 +9,7 @@ import pushNotificationMessage from 'utils/pushNotificationMessage';
 import launchPathwayService from 'utils/pathwayAnalysis/launchPathwayService';
 import getDiffExprGenes from 'utils/differentialExpression/getDiffExprGenes';
 import enrichrSpecies from 'utils/pathwayAnalysis/enrichrConstants';
-import usePantherDBSpecies from 'utils/pathwayAnalysis/usePantherDBSpecies';
+import getPantherDBSpecies from 'utils/pathwayAnalysis/getPantherDBSpecies';
 import { pathwayServices } from 'utils/pathwayAnalysis/pathwayConstants';
 
 const { Paragraph } = Typography;
@@ -33,7 +33,7 @@ const LaunchPathwayAnalysisModal = (props) => {
     [pathwayServices.ENRICHR]: enrichrSpecies,
   });
 
-  const { data: pantherDBSpecies, error: pantherDBError } = usePantherDBSpecies();
+  const pantherDBSpecies = getPantherDBSpecies();
 
   // PantherDB and Enrichr species list have different values.
   // therefore, when switching between the two, we need to update the value to
@@ -52,13 +52,6 @@ const LaunchPathwayAnalysisModal = (props) => {
 
     setSpecies(pantherDBSpecies[0].value);
   }, [pantherDBSpecies.length]);
-
-  useEffect(() => {
-    if (pantherDBError) {
-      pushNotificationMessage('error', 'Error getting PantherDB species list. Consider using Enrichr.');
-      console.error(pantherDBError);
-    }
-  }, pantherDBError);
 
   const launchPathwayAnalysis = async (serviceName) => {
     setWaitingForExternalService(true);

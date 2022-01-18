@@ -5,7 +5,6 @@ import Amplify, { Credentials } from '@aws-amplify/core';
 /* eslint-disable react/jsx-props-no-spreading */
 import React, { useEffect, useState } from 'react';
 import Router, { useRouter } from 'next/router';
-import Head from 'next/head';
 
 import { DefaultSeo } from 'next-seo';
 import NProgress from 'nprogress';
@@ -150,9 +149,6 @@ const WrappedApp = ({ Component, pageProps }) => {
 
   return (
     <>
-      <Head>
-        <meta httpEquiv='Content-Security-Policy' content='upgrade-insecure-requests' />
-      </Head>
       <DefaultSeo
         titleTemplate='%s &middot; Cellenics'
         defaultTitle='Cellenics'

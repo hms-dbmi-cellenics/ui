@@ -221,18 +221,6 @@ describe('Pathway analysis modal ', () => {
     expect(screen.queryByText('You have not performed any filtering on the genes!', { exact: false })).not.toBeInTheDocument();
   });
 
-  it('Shows an error if fetching the PantherDB species list throws an error', async () => {
-    fetchMock.mockRejectOnce(new Error('Error launching analysis'));
-
-    await renderPathwayAnalysisModal(true);
-
-    expect(pushNotificationMessage).toHaveBeenCalledTimes(1);
-
-    const pushNotificationMessageParams = pushNotificationMessage.mock.calls[0];
-    expect(pushNotificationMessageParams[0]).toEqual('error');
-    expect(pushNotificationMessageParams[1]).toMatch('Error getting PantherDB species list');
-  });
-
   it('Shows an error if analysis can not be launched', async () => {
     launchPathwayService.mockImplementation(() => { throw new Error('Error launching analysis'); });
 
