@@ -1,23 +1,17 @@
 import moment from 'moment';
-import Amplify from '@aws-amplify/core';
-import Storage from '@aws-amplify/storage';
-
 import getAuthJWT from 'utils/getAuthJWT';
 import WorkTimeoutError from 'utils/WorkTimeoutError';
-
+import fetchAPI from 'utils/fetchAPI';
 import unpackResult from 'utils/work/unpackResult';
 import WorkResponseError from 'utils/WorkResponseError';
 
-const seekFromS3 = async (ETag) => {
-  const configuredBucket = Amplify.configure().Storage.AWSS3.bucket;
-  const storageUrl = await Storage.get(
-    ETag,
-    {
-      bucket: configuredBucket.replace('biomage-originals', 'worker-results'),
-    },
-  );
+const seekFromS3 = async (ETag, experimentId) => {
+  const response = await fetchAPI(`/v1/workResults/${experimentId}/${ETag}`);
 
-  const storageResp = await fetch(storageUrl);
+  const responseJson = await response.json();
+  if (!responseJson.signedUrl) return null;
+
+  const storageResp = await fetch(responseJson.signedUrl);
   if (!storageResp.ok) {
     return null;
   }
@@ -63,7 +57,7 @@ const seekFromAPI = async (
         return eventCallback(error, null);
       }
 
-      seekFromS3(ETag)
+      seekFromS3(ETag, experimentId)
         .then((content) => eventCallback(null, content))
         .catch((e) => eventCallback(e, null));
     });
@@ -87,7 +81,7 @@ const seekFromAPI = async (
 
         // If no error, the reasponse should be ready on S3.
         seekFromS3(
-          ETag,
+          ETag, experimentId,
         ).then((content) => {
           resolve(content);
         }).catch((e) => {
