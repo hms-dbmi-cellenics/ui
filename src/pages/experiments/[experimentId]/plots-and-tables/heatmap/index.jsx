@@ -21,11 +21,6 @@ import { getCellSets } from 'redux/selectors';
 const { Text } = Typography;
 const { Panel } = Collapse;
 
-const route = {
-  path: 'heatmap',
-  breadcrumbName: 'Heatmap',
-};
-
 // TODO: when we want to enable users to create their custom plots,
 // we will need to change this to proper Uuid
 const plotUuid = 'heatmapPlotMain';

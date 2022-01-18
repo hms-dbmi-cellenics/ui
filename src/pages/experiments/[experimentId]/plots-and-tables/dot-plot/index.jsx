@@ -42,10 +42,6 @@ const { Text, Paragraph } = Typography;
 
 const plotUuid = 'dotPlotMain';
 const plotType = plotTypes.DOT_PLOT;
-const route = {
-  path: 'dot-plot',
-  breadcrumbName: 'Dot plot',
-};
 
 const plotStylingControlsConfig = [
   {

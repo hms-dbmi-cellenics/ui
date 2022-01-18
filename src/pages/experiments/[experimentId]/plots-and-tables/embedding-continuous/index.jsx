@@ -24,11 +24,6 @@ import { getCellSets } from 'redux/selectors';
 
 const { Panel } = Collapse;
 
-const route = {
-  path: 'embedding-continuous',
-  breadcrumbName: 'Continuous Embedding',
-};
-
 // TODO: when we want to enable users to create their custom plots,
 // we will need to change this to proper Uuid
 const plotUuid = 'embeddingContinuousMain';

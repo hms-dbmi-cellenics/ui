@@ -31,11 +31,6 @@ const { Panel } = Collapse;
 const plotUuid = 'embeddingCategoricalMain';
 const plotType = 'embeddingCategorical';
 
-const route = {
-  path: 'embedding-categorical',
-  breadcrumbName: 'Categorical Embedding',
-};
-
 const EmbeddingCategoricalPage = ({ experimentId }) => {
   const dispatch = useDispatch();
   const config = useSelector((state) => state.componentConfig[plotUuid]?.config);

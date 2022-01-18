@@ -41,10 +41,6 @@ const { Panel } = Collapse;
 const plotUuid = 'markerHeatmapPlotMain';
 const plotType = 'markerHeatmap';
 
-const route = {
-  path: 'marker-heatmap',
-  breadcrumbName: 'Marker Heatmap',
-};
 const MarkerHeatmap = ({ experimentId }) => {
   const dispatch = useDispatch();
 

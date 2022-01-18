@@ -34,11 +34,6 @@ import calculateVolcanoDataPoints from 'components/plots/helpers/calculateVolcan
 const { Text } = Typography;
 const { Panel } = Collapse;
 
-const route = {
-  path: 'volcano',
-  breadcrumbName: 'Volcano plot',
-};
-
 const plotUuid = 'volcanoPlotMain';
 const plotType = 'volcano';
 

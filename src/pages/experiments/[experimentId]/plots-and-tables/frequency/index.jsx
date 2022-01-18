@@ -31,10 +31,6 @@ import Loader from 'components/Loader';
 const { Panel } = Collapse;
 const plotUuid = 'frequencyPlotMain';
 const plotType = 'frequency';
-const route = {
-  path: 'frequency',
-  breadcrumbName: 'Frequency plot',
-};
 
 const FrequencyPlotPage = ({ experimentId }) => {
   const dispatch = useDispatch();

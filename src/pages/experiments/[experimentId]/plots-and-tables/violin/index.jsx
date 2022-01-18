@@ -25,11 +25,6 @@ import { getCellSets } from 'redux/selectors';
 
 const { Panel } = Collapse;
 
-const route = {
-  path: 'violin',
-  breadcrumbName: 'Violin',
-};
-
 // TODO: when we want to enable users to create their custom plots,
 // we will need to change this to proper Uuid
 const plotUuid = 'ViolinMain';

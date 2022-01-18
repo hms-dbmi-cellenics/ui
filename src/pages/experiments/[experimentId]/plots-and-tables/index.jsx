@@ -176,22 +176,6 @@ const PlotsTablesHome = ({ experimentId, experimentData }) => {
         experimentId={experimentId}
         experimentData={experimentData}
         title='Plots and Tables'
-        extra={[(
-          <Dropdown
-            style={{ float: 'left' }}
-            trigger={['click']}
-            key='search-menu-dropdown'
-            overlay={searchMenu}
-            visible={addMenuVisible}
-            onVisibleChange={(visible) => setAddMenuVisible(visible)}
-          >
-            <Button type='primary' onClick={() => setAddMenuVisible(!addMenuVisible)}>
-              Add
-              {' '}
-              <DownOutlined />
-            </Button>
-          </Dropdown>
-        )]}
       />
       <Space direction='vertical' style={{ width: '100%', padding: '0 10px' }}>
         <List
