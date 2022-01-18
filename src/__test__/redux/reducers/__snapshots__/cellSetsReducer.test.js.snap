@@ -24,6 +24,7 @@ Object {
     "color": "#ff00ff",
     "key": "key2",
     "name": "My Key",
+    "parentNodeKey": "scratchpad",
     "type": "cellSets",
   },
 }
@@ -49,31 +50,7 @@ Set {
 
 exports[`cellSetsReducer Handles unhiding of previously hidden cell sets 1`] = `Set {}`;
 
-exports[`cellSetsReducer Hierarchy is updated appropriately 1`] = `
-Array [
-  Object {
-    "children": Array [],
-    "key": "1",
-  },
-  Object {
-    "children": Array [
-      Object {
-        "key": "1a",
-      },
-    ],
-    "key": "2",
-  },
-]
-`;
-
-exports[`cellSetsReducer Removes cell sets and their children if root node is removed 1`] = `
-Object {
-  "children": Array [],
-  "key": "2",
-}
-`;
-
-exports[`cellSetsReducer Removes only child, not parent, when child is removed 1`] = `
+exports[`cellSetsReducer Removes child correctly 1`] = `
 Array [
   Object {
     "children": Array [],
@@ -120,6 +97,7 @@ Object {
     "cellIds": Set {},
     "color": "#00FF00",
     "name": "first child",
+    "parentNodeKey": "1",
     "rootNode": undefined,
     "type": undefined,
   },
