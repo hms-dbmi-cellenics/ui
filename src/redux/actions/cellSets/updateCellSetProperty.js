@@ -1,3 +1,5 @@
+import _ from 'lodash';
+
 import { CELL_SETS_UPDATE_PROPERTY } from 'redux/actionTypes/cellSets';
 
 import fetchAPI from 'utils/fetchAPI';
@@ -32,6 +34,19 @@ const updateCellClassPropertyJsonMerger = (cellClassKey, dataUpdated) => (
   }]
 );
 
+const cellClassAllowedKeys = ['name'];
+const cellSetAllowedKeys = ['name', 'color'];
+
+const updatesAreAllowed = (dataUpdated, rootNode) => {
+  const allowedPropertyKeys = rootNode
+    ? cellClassAllowedKeys
+    : cellSetAllowedKeys;
+
+  const dataUpdatedKeys = Object.keys(dataUpdated);
+
+  return _.intersection(dataUpdatedKeys, allowedPropertyKeys).length === dataUpdatedKeys.length;
+};
+
 const updateCellSetProperty = (
   experimentId, key, dataUpdated,
 ) => async (dispatch, getState) => {
@@ -44,6 +59,10 @@ const updateCellSetProperty = (
   }
 
   const { parentNodeKey, rootNode } = properties[key];
+
+  if (!updatesAreAllowed(dataUpdated, rootNode)) {
+    throw new Error('Invalid cell set update');
+  }
 
   const jsonMergerUpdateObject = rootNode
     ? updateCellClassPropertyJsonMerger(key, dataUpdated)
