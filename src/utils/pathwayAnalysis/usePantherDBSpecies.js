@@ -1,3 +1,4 @@
+import { serviceUrls } from 'utils/pathwayAnalysis/pathwayConstants';
 import useSWR from 'swr';
 
 const formatOuput = (data) => {
@@ -13,7 +14,7 @@ const formatOuput = (data) => {
 
 const usePantherDBSpecies = () => {
   const { data, error } = useSWR(
-    'http://pantherdb.org/services/oai/pantherdb/supportedgenomes',
+    serviceUrls.pantherDBSpecies,
     async (url) => {
       const response = await fetch(url);
       const responseData = await response.json();

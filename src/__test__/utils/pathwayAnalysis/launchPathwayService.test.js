@@ -18,16 +18,16 @@ describe('LaunchPathwayService test', () => {
 
   it('Launches the pantherDB service', () => {
     // If the launch goes well, it should return undefined
-    expect(
-      launchPathwayService(pathwayServices.ENRICHR, genesList, enrichrSpecies),
-    ).toBe(undefined);
+    expect(() => {
+      launchPathwayService(pathwayServices.ENRICHR, genesList, enrichrSpecies);
+    }).not.toThrow();
   });
 
   it('Launches the enricher service', () => {
     // If the lalunch goes well, it should return undefined
-    expect(
-      launchPathwayService(pathwayServices.PANTHERDB, genesList, pantherDBSpecies),
-    ).toBe(undefined);
+    expect(() => {
+      launchPathwayService(pathwayServices.PANTHERDB, genesList, pantherDBSpecies);
+    }).not.toThrow();
   });
 
   it('Throws an error if the given service name is invalid', () => {

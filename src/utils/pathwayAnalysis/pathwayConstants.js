@@ -14,6 +14,7 @@ const serviceUrls = {
     [C_ELEGANS.value]: 'https://maayanlab.cloud/WormEnrichr/enrich',
     [D_RERIO.value]: 'https://maayanlab.cloud/FishEnrichr/enrich',
   },
+  pantherDBSpecies: 'http://pantherdb.org/services/oai/pantherdb/supportedgenomes',
 };
 
 export {

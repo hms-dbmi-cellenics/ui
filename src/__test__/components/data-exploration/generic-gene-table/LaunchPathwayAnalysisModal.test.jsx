@@ -2,38 +2,73 @@ import React from 'react';
 import userEvent from '@testing-library/user-event';
 import LaunchPathwayAnalysisModal from 'components/data-exploration/differential-expression-tool/LaunchPathwayAnalysisModal';
 
+import { SWRConfig } from 'swr';
 import {
   render, screen, waitFor,
 } from '@testing-library/react';
 import { act } from 'react-dom/test-utils';
 import { Provider } from 'react-redux';
 import { makeStore } from 'redux/store';
+import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 
 import launchPathwayService from 'utils/pathwayAnalysis/launchPathwayService';
 import getDiffExprGenes from 'utils/differentialExpression/getDiffExprGenes';
 import { pathwayServices } from 'utils/pathwayAnalysis/pathwayConstants';
 import enrichrSpecies from 'utils/pathwayAnalysis/enrichrConstants';
-import usePantherDBSpecies from 'utils/pathwayAnalysis/usePantherDBSpecies';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
 
 jest.mock('utils/pathwayAnalysis/launchPathwayService');
 jest.mock('utils/differentialExpression/getDiffExprGenes');
-jest.mock('utils/pathwayAnalysis/usePantherDBSpecies');
 jest.mock('utils/pushNotificationMessage');
 
 const onCancel = jest.fn();
 const onOpenAdvancedFilters = jest.fn();
 
+enableFetchMocks();
+
+const pantherDBResponse = {
+  search: {
+    output: {
+      genomes: {
+        genome: [
+          {
+            name: 'human',
+            taxon_id: 9606,
+            short_name: 'HUMAN',
+            version: 'Reference Proteome 2020_04',
+            long_name: 'Homo sapiens',
+          },
+          {
+            name: 'mouse',
+            taxon_id: 10090,
+            short_name: 'MOUSE',
+            version: 'Reference Proteome 2020_04',
+            long_name: 'Mus musculus',
+          },
+          {
+            name: 'rat',
+            taxon_id: 10116,
+            short_name: 'RAT',
+            version: 'Reference Proteome 2020_04',
+            long_name: 'Rattus norvegicus',
+          }],
+      },
+    },
+  },
+};
+
 const renderPathwayAnalysisModal = async (filtersApplied = false) => {
   await act(async () => {
     render(
-      <Provider store={makeStore()}>
-        <LaunchPathwayAnalysisModal
-          advancedFiltersAdded={filtersApplied}
-          onCancel={onCancel}
-          onOpenAdvancedFilters={onOpenAdvancedFilters}
-        />
-      </Provider>,
+      <SWRConfig value={{ provider: () => new Map() }}>
+        <Provider store={makeStore()}>
+          <LaunchPathwayAnalysisModal
+            advancedFiltersAdded={filtersApplied}
+            onCancel={onCancel}
+            onOpenAdvancedFilters={onOpenAdvancedFilters}
+          />
+        </Provider>
+      </SWRConfig>,
     );
   });
 };
@@ -42,12 +77,10 @@ const genesList = ['gene1', 'gene2'];
 getDiffExprGenes.mockImplementation(() => async () => Promise.resolve(genesList));
 
 describe('Pathway analysis modal ', () => {
-  beforeEach(() => {
+  beforeEach(async () => {
     jest.clearAllMocks();
-    usePantherDBSpecies.mockImplementation(() => ({
-      data: [{ value: 'HUMAN', label: 'Human' }],
-      error: undefined,
-    }));
+    fetchMock.resetMocks();
+    fetchMock.doMock(JSON.stringify(pantherDBResponse));
   });
 
   it('Renders properly', async () => {
@@ -189,14 +222,15 @@ describe('Pathway analysis modal ', () => {
   });
 
   it('Shows an error if fetching the PantherDB species list throws an error', async () => {
-    usePantherDBSpecies.mockImplementation(() => ({
-      data: [{ value: 'HUMAN', label: 'Human' }],
-      error: 'This is an error',
-    }));
+    fetchMock.mockRejectOnce(new Error('Error launching analysis'));
 
     await renderPathwayAnalysisModal(true);
 
     expect(pushNotificationMessage).toHaveBeenCalledTimes(1);
+
+    const pushNotificationMessageParams = pushNotificationMessage.mock.calls[0];
+    expect(pushNotificationMessageParams[0]).toEqual('error');
+    expect(pushNotificationMessageParams[1]).toMatch('Error getting PantherDB species list');
   });
 
   it('Shows an error if analysis can not be launched', async () => {
