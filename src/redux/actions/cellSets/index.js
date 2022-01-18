@@ -4,7 +4,6 @@ import runCellSetsClustering from './runCellSetsClustering';
 import updateCellSetsClustering from './updateCellSetsClustering';
 
 import loadCellSets from './loadCellSets';
-import saveCellSets from './saveCellSets';
 import reorderCellSet from './reorderCellSet';
 import updateCellSetProperty from './updateCellSetProperty';
 import updateCellSetSelected from './updateCellSetSelected';
@@ -17,7 +16,6 @@ export {
   runCellSetsClustering,
   updateCellSetsClustering,
   loadCellSets,
-  saveCellSets,
   reorderCellSet,
   updateCellSetSelected,
   updateCellSetProperty,
