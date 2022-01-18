@@ -5,7 +5,7 @@ import endUserMessages from 'utils/endUserMessages';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
 import { isServerError, throwIfRequestFailed } from 'utils/fetchErrors';
 
-const updatePropertyJsonMerger = (cellSetKey, dataUpdated, cellClassKey) => (
+const updateCellSetPropertyJsonMerger = (cellSetKey, dataUpdated, cellClassKey) => (
   [{
     $match: {
       query: `$[?(@.key == "${cellClassKey}")]`,
@@ -23,21 +23,33 @@ const updatePropertyJsonMerger = (cellSetKey, dataUpdated, cellClassKey) => (
   }]
 );
 
+const updateCellClassPropertyJsonMerger = (cellClassKey, dataUpdated) => (
+  [{
+    $match: {
+      query: `$[?(@.key == "${cellClassKey}")]`,
+      value: { ...dataUpdated },
+    },
+  }]
+);
+
 const updateCellSetProperty = (
-  experimentId, cellSetKey, dataUpdated,
+  experimentId, key, dataUpdated,
 ) => async (dispatch, getState) => {
   const {
     loading, error, properties,
   } = getState().cellSets;
 
-  const { parentNodeKey } = properties[cellSetKey];
-
   if (loading || error) {
     return null;
   }
 
-  const url = `/v1/experiments/${experimentId}/cellSets`;
+  const { parentNodeKey, rootNode } = properties[key];
 
+  const jsonMergerUpdateObject = rootNode
+    ? updateCellClassPropertyJsonMerger(key, dataUpdated)
+    : updateCellSetPropertyJsonMerger(key, dataUpdated, parentNodeKey);
+
+  const url = `/v1/experiments/${experimentId}/cellSets`;
   try {
     const response = await fetchAPI(
       url,
@@ -46,9 +58,7 @@ const updateCellSetProperty = (
         headers: {
           'Content-Type': 'application/boschni-json-merger+json',
         },
-        body: JSON.stringify(
-          updatePropertyJsonMerger(cellSetKey, dataUpdated, parentNodeKey),
-        ),
+        body: JSON.stringify(jsonMergerUpdateObject),
       },
     );
 
@@ -66,7 +76,7 @@ const updateCellSetProperty = (
     type: CELL_SETS_UPDATE_PROPERTY,
     payload: {
       experimentId,
-      cellSetKey,
+      cellSetKey: key,
       dataUpdated,
     },
   });
