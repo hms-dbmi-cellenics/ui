@@ -56,8 +56,6 @@ const ComponentActions = (props) => {
     <Dropdown arrow type='link' size='small' overlay={menu} trigger={['click']}>
       <Button type='link' size='small'>
         {name}
-        {' '}
-        ...
       </Button>
     </Dropdown>
   );

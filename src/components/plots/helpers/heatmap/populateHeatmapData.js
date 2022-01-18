@@ -5,6 +5,7 @@ import generateVitessceData from 'components/plots/helpers/heatmap/vitessce/gene
 
 import SetOperations from 'utils/setOperations';
 import { union } from 'utils/cellSetOperations';
+import { reversed } from 'utils/arrayUtils';
 
 const populateHeatmapData = (
   cellSets, heatmapSettings, expression,
@@ -29,8 +30,6 @@ const populateHeatmapData = (
     });
     return cellIdsInAnyGroupBy;
   };
-
-  const trackOrder = Array.from(selectedTracks).reverse();
 
   const downsampleWithProportions = (buckets, cellIdsLength) => {
     const downsampledCellIds = [];
@@ -151,13 +150,13 @@ const populateHeatmapData = (
 
   if (!vitessce) {
     return generateVegaData(
-      cellOrder, geneOrder, trackOrder,
+      cellOrder, geneOrder, reversed(selectedTracks),
       expression, heatmapSettings, cellSets,
     );
   }
 
   return generateVitessceData(
-    cellOrder, geneOrder, trackOrder,
+    cellOrder, geneOrder, selectedTracks,
     expression, heatmapSettings, cellSets,
   );
 };

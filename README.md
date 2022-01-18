@@ -1,8 +1,8 @@
-[![codecov](https://codecov.io/gh/biomage-ltd/ui/branch/master/graph/badge.svg?token=zI99mV1YZo)](https://codecov.io/gh/biomage-ltd/ui)
+[![codecov](https://codecov.io/gh/hms-dbmi-cellenics/ui/branch/master/graph/badge.svg?token=zI99mV1YZo)](https://codecov.io/gh/hms-dbmi-cellenics/ui)
 ui
 ==
 
-The user interface of Cellenics (the Biomage single cell analysis platform).
+The user interface of Cellenics - cloud based Single Cell RNA seq Analysis web platform.
 
 Development
 -----------
@@ -10,7 +10,9 @@ Development
 ### Prerequisites
 
 We highly recommend using VSCode for development, if you don't have it, make sure you get it installed. You will also need to install:
-`homebrew`, `docker`, `node` (version 14). You should also install the package `dbaeumer.vscode-eslint` for syntax linting & format errors in VS Code.
+`homebrew`, `docker`, `node` (version 14). You should also install the following packages:
+- `dbaeumer.vscode-eslint` for syntax linting & format errors in VS Code,
+- `markis.code-coverage` highlights which lines are covered in unit tests and which aren’t.
 
 #### installing node 14 on macOS
 
@@ -48,9 +50,10 @@ See more available commands like syntax checking with `make help`.
 Note that since the UI is not connected to the backend, you should see an empty screen saying `You are not connected to the backend.`
 To get it running end-to-end locally with mocked dataset, you will need to set up and run each of these:
 
-- API: https://github.com/biomage-ltd/api
-- Inframock: https://github.com/biomage-ltd/inframock
-- worker: https://github.com/biomage-ltd/worker
+- API: https://github.com/hms-dbmi-cellenics/api
+- Inframock: https://github.com/hms-dbmi-cellenics/inframock
+- worker: https://github.com/hms-dbmi-cellenics/worker
+- pipeline: https://github.com/hms-dbmi-cellenics/pipeline
 
 Just follow the README of each of them for instructions on how to get it to run.
 

@@ -75,7 +75,6 @@ const LaunchAnalysisButton = () => {
     const gem2sStatus = calculateGem2sRerunStatus(
       gem2sBackendStatus, activeProject, samples, experiments[experimentId],
     );
-
     setGem2sRerunStatus(gem2sStatus);
   }, [backendStatus, activeProjectUuid, samples, activeProject]);
 
@@ -103,8 +102,8 @@ const LaunchAnalysisButton = () => {
       for (const fileName of fileNames) {
         const checkedFile = sample.files[fileName];
         allUploaded = allUploaded
-        && checkedFile.valid
-        && checkedFile.upload.status === UploadStatus.UPLOADED;
+          && checkedFile.valid
+          && checkedFile.upload.status === UploadStatus.UPLOADED;
 
         if (!allUploaded) break;
       }

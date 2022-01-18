@@ -54,7 +54,11 @@ const ReorderableList = (props) => {
     <Button
       size='small'
       shape='circle'
-      disabled={currentPosition === 0}
+      disabled={
+        reorderableList[currentPosition].disabledReorder
+        || currentPosition === 0
+        || reorderableList[currentPosition - 1].disabledReorder
+      }
       icon={<UpOutlined />}
       style={{ marginLeft: '5px' }}
       onClick={() => {
@@ -67,7 +71,11 @@ const ReorderableList = (props) => {
     <Button
       size='small'
       shape='circle'
-      disabled={currentPosition === reorderableList.length - 1}
+      disabled={
+        reorderableList[currentPosition].disabledReorder
+        || currentPosition === reorderableList.length - 1
+        || reorderableList[currentPosition + 1].disabledReorder
+      }
       icon={<DownOutlined />}
       style={{ marginRight: '5px' }}
       onClick={() => {
@@ -77,7 +85,7 @@ const ReorderableList = (props) => {
   );
 
   const composeItem = (itemData, i) => (
-    <div key={i}>
+    <div data-testid='reorderableListItem' key={i}>
       {leftItem(itemData, i)}
 
       {upButton(itemData.key, i)}

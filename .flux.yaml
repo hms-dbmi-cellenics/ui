@@ -18,12 +18,18 @@ metadata:
 spec:
   releaseName: FILLED_IN_BY_CI
   chart:
-    git: git@github.com:biomage-ltd/iac
+    git: git@github.com:hms-dbmi-cellenics/iac
     path: charts/nodejs
     ref: FILLED_IN_BY_CI
   values:
+    # disable readiness probes as load balancer performs
+    # its own health checks/cordoning
     readinessProbe:
-      path: "/data-management"
+      probeType: exec
+      command: ["echo", "0"]
+    loadBalancerHealthCheck:
+      path: "/robots.txt"
+      periodSeconds: 30
     livenessProbe:
       probeType: tcpSocket
 

@@ -18,7 +18,7 @@ import Loader from '../../Loader';
 const GeneTable = (props) => {
   const {
     experimentId, onUpdate, error, loading, columns, data,
-    total, initialTableState, width, height, onExportCSV,
+    total, initialTableState, width, height, extraOptions,
   } = props;
 
   const dispatch = useDispatch();
@@ -56,7 +56,7 @@ const GeneTable = (props) => {
   };
 
   const handleTableChange = (newPagination, a, newSorter) => {
-    const newTableState = { ...tableState, pagination: newPagination, sorter: { ...newSorter } };
+    const newTableState = { ...tableState, pagination: newPagination, sorter: newSorter };
 
     onUpdate(newTableState, geneTableUpdateReason.paginated);
     setTableState(newTableState);
@@ -182,7 +182,7 @@ const GeneTable = (props) => {
     >
       {loading ? <></> : (
         <>
-          <GeneSelectionMenu onExportCSV={onExportCSV} experimentId={experimentId} />
+          <GeneSelectionMenu extraOptions={extraOptions} experimentId={experimentId} />
           <FilterGenes
             onFilter={filterGenes}
             defaultFilterOption={geneNameFilterState.filterOption}
@@ -211,7 +211,7 @@ const GeneTable = (props) => {
 
 GeneTable.defaultProps = {
   initialTableState: {},
-  onExportCSV: null,
+  extraOptions: null,
 };
 
 GeneTable.propTypes = {
@@ -228,7 +228,7 @@ GeneTable.propTypes = {
   loading: PropTypes.bool.isRequired,
   onUpdate: PropTypes.func.isRequired,
   initialTableState: PropTypes.object,
-  onExportCSV: PropTypes.func,
+  extraOptions: PropTypes.node,
   width: PropTypes.number.isRequired,
   height: PropTypes.number.isRequired,
 };

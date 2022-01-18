@@ -3,6 +3,7 @@
 exports[`differentialExpressionReducer Sets error state on error action 1`] = `
 Object {
   "comparison": Object {
+    "advancedFilters": Array [],
     "group": Object {
       "between": Object {
         "basis": null,
@@ -15,10 +16,14 @@ Object {
         "compareWith": null,
       },
     },
+    "ordering": Object {
+      "orderBy": "logFC",
+      "orderDirection": "DESC",
+    },
     "type": "within",
   },
   "properties": Object {
-    "cellSets": Object {},
+    "comparisonGroup": Object {},
     "comparisonType": null,
     "data": Array [],
     "error": "asd",
@@ -31,6 +36,7 @@ Object {
 exports[`differentialExpressionReducer Sets loaded state on loaded action 1`] = `
 Object {
   "comparison": Object {
+    "advancedFilters": Array [],
     "group": Object {
       "between": Object {
         "basis": null,
@@ -43,13 +49,14 @@ Object {
         "compareWith": null,
       },
     },
+    "ordering": Object {
+      "orderBy": "logFC",
+      "orderDirection": "DESC",
+    },
     "type": "within",
   },
   "properties": Object {
-    "cellSets": Object {
-      "first": "louvain-0",
-      "second": "louvain-1",
-    },
+    "comparisonGroup": undefined,
     "comparisonType": undefined,
     "data": Array [
       Object {
@@ -99,6 +106,12 @@ Object {
 exports[`differentialExpressionReducer Sets loading state on loading action 1`] = `
 Object {
   "comparison": Object {
+    "advancedFilters": Array [
+      Object {
+        "columnName": "foo",
+        "columnValue": "bar",
+      },
+    ],
     "group": Object {
       "between": Object {
         "basis": null,
@@ -111,10 +124,14 @@ Object {
         "compareWith": null,
       },
     },
+    "ordering": Object {
+      "orderBy": "logFC",
+      "orderDirection": "DESC",
+    },
     "type": "within",
   },
   "properties": Object {
-    "cellSets": Object {},
+    "comparisonGroup": Object {},
     "comparisonType": null,
     "data": Array [],
     "error": false,

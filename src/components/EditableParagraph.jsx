@@ -5,7 +5,7 @@ import {
   EditOutlined,
 } from '@ant-design/icons';
 
-const EditablePagrapraph = (props) => {
+const EditableParagraph = (props) => {
   const { onUpdate, value } = props;
 
   const paragraphEditor = useRef();
@@ -19,6 +19,10 @@ const EditablePagrapraph = (props) => {
       paragraphEditor.current.focus();
     }
   }, [isEditing]);
+
+  useEffect(() => {
+    setText(value);
+  }, [value]);
 
   const handleUpdate = (e) => {
     const content = e.target.textContent;
@@ -42,6 +46,7 @@ const EditablePagrapraph = (props) => {
           handleUpdate(e);
         }
       }}
+      suppressContentEditableWarning
     >
       {text}
     </p>
@@ -97,9 +102,9 @@ const EditablePagrapraph = (props) => {
   return renderContent();
 };
 
-EditablePagrapraph.propTypes = {
+EditableParagraph.propTypes = {
   value: PropTypes.string.isRequired,
   onUpdate: PropTypes.func.isRequired,
 };
 
-export default EditablePagrapraph;
+export default EditableParagraph;

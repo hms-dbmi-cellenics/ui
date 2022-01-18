@@ -15,7 +15,7 @@ import {
 import React, { useEffect, useState, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { Auth } from 'aws-amplify';
+import Auth from '@aws-amplify/auth';
 import PropTypes from 'prop-types';
 import { useRouter } from 'next/router';
 import calculateGem2sRerunStatus from 'utils/data-management/calculateGem2sRerunStatus';
@@ -24,7 +24,7 @@ import Error from '../pages/_error';
 import GEM2SLoadingScreen from './GEM2SLoadingScreen';
 import PipelineRedirectToDataProcessing from './PipelineRedirectToDataProcessing';
 import PreloadContent from './PreloadContent';
-import connectionPromise from '../utils/socketConnection';
+import { isBrowser } from '../utils/environment';
 import experimentUpdatesHandler from '../utils/experimentUpdatesHandler';
 import { getBackendStatus } from '../redux/selectors';
 import integrationTestConstants from '../utils/integrationTestConstants';
@@ -100,16 +100,20 @@ const ContentWrapper = (props) => {
   useEffect(() => {
     if (!currentExperimentId) return;
     if (!backendLoading) dispatch(loadBackendStatus(currentExperimentId));
-    (async () => {
-      const io = await connectionPromise;
-      const cb = experimentUpdatesHandler(dispatch);
 
-      // Unload all previous socket.io hooks that may have been created for a different
-      // experiment.
-      io.off();
+    if (isBrowser) {
+      import('../utils/socketConnection')
+        .then(({ default: connectionPromise }) => connectionPromise)
+        .then((io) => {
+          const cb = experimentUpdatesHandler(dispatch);
 
-      io.on(`ExperimentUpdates-${currentExperimentId}`, (update) => cb(currentExperimentId, update));
-    })();
+          // Unload all previous socket.io hooks that may have been created for a different
+          // experiment.
+          io.off();
+
+          io.on(`ExperimentUpdates-${currentExperimentId}`, (update) => cb(currentExperimentId, update));
+        });
+    }
   }, [routeExperimentId]);
 
   useEffect(() => {
@@ -119,6 +123,16 @@ const ContentWrapper = (props) => {
 
     setBackendStatusRequested(true);
   }, [backendLoading]);
+
+  const [gem2sRerunStatus, setGem2sRerunStatus] = useState(null);
+
+  useEffect(() => {
+    const gem2sStatus = calculateGem2sRerunStatus(
+      gem2sBackendStatus, activeProject, samples, experiment,
+    );
+
+    setGem2sRerunStatus(gem2sStatus);
+  }, [gem2sBackendStatus, activeProject, samples, experiment]);
 
   useEffect(() => {
     Auth.currentAuthenticatedUser()
@@ -305,9 +319,8 @@ const ContentWrapper = (props) => {
   const menuItemRender = ({
     path, icon, name, disableIfNoExperiment, disabledByPipelineStatus,
   }) => {
-    const rerunStatus = calculateGem2sRerunStatus(gem2sBackendStatus, activeProject, samples, experiment);
-
-    const notProcessedExperimentDisable = disableIfNoExperiment && !routeExperimentId && rerunStatus.rerun;
+    const notProcessedExperimentDisable = !routeExperimentId && disableIfNoExperiment
+      && (!gem2sRerunStatus || gem2sRerunStatus.rerun);
 
     const pipelineStatusDisable = disabledByPipelineStatus && (
       backendError || gem2sRunning || gem2sRunningError
@@ -429,12 +442,14 @@ const ContentWrapper = (props) => {
 
 ContentWrapper.propTypes = {
   routeExperimentId: PropTypes.string,
-  experimentData: PropTypes.object.isRequired,
-  children: PropTypes.node.isRequired,
+  experimentData: PropTypes.object,
+  children: PropTypes.node,
 };
 
 ContentWrapper.defaultProps = {
   routeExperimentId: null,
+  experimentData: null,
+  children: null,
 };
 
 export default ContentWrapper;
