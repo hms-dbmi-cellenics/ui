@@ -247,7 +247,6 @@ const ContentWrapper = (props) => {
 
   const menuLinks = [
     {
-      // path: '/data-management',
       path: paths.DATA_MANAGEMENT,
       icon: <FolderOpenOutlined />,
       name: 'Data Management',

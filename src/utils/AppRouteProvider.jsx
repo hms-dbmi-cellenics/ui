@@ -32,7 +32,6 @@ const AppRouteProvider = (props) => {
   const dispatch = useDispatch();
 
   const [renderIntercept, setRenderIntercept] = useState(null);
-  // const experiments = useSelector((state) => state.experiments);
 
   const changedQCFilters = useSelector(
     (state) => state.experimentSettings.processing.meta.changedQCFilters,
