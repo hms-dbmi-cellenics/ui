@@ -11,18 +11,34 @@ import { Provider } from 'react-redux';
 import { makeStore } from 'redux/store';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 
+import { setComparisonType, setComparisonGroup } from 'redux/actions/differentialExpression';
+import pushNotificationMessage from 'utils/pushNotificationMessage';
+import downloadFromUrl from 'utils/data-management/downloadFromUrl';
+import writeToFile from 'utils/writeToFileURL';
+
 import launchPathwayService from 'utils/pathwayAnalysis/launchPathwayService';
 import getDiffExprGenes from 'utils/differentialExpression/getDiffExprGenes';
+import getBackgroundExpressedGenes from 'utils/differentialExpression/getBackgroundExpressedGenes';
 import { pathwayServices } from 'utils/pathwayAnalysis/pathwayConstants';
 import enrichrSpecies from 'utils/pathwayAnalysis/enrichrConstants';
-import pushNotificationMessage from 'utils/pushNotificationMessage';
 
 jest.mock('utils/pathwayAnalysis/launchPathwayService');
 jest.mock('utils/differentialExpression/getDiffExprGenes');
+jest.mock('utils/differentialExpression/getBackgroundExpressedGenes');
+
 jest.mock('utils/pushNotificationMessage');
+jest.mock('utils/data-management/downloadFromUrl');
+jest.mock('utils/writeToFileURL');
 
 const onCancel = jest.fn();
 const onOpenAdvancedFilters = jest.fn();
+const mockClipboard = jest.fn();
+
+Object.defineProperty(navigator, 'clipboard', {
+  value: {
+    writeText: mockClipboard,
+  },
+});
 
 enableFetchMocks();
 
@@ -57,11 +73,11 @@ const pantherDBResponse = {
   },
 };
 
-const renderPathwayAnalysisModal = async (filtersApplied = false) => {
+const renderPathwayAnalysisModal = async (store, filtersApplied = false) => {
   await act(async () => {
     render(
       <SWRConfig value={{ provider: () => new Map() }}>
-        <Provider store={makeStore()}>
+        <Provider store={store}>
           <LaunchPathwayAnalysisModal
             advancedFiltersAdded={filtersApplied}
             onCancel={onCancel}
@@ -75,16 +91,21 @@ const renderPathwayAnalysisModal = async (filtersApplied = false) => {
 
 const genesList = ['gene1', 'gene2'];
 getDiffExprGenes.mockImplementation(() => async () => Promise.resolve(genesList));
+getBackgroundExpressedGenes.mockImplementation(() => async () => Promise.resolve(genesList));
+
+let store = null;
 
 describe('Pathway analysis modal ', () => {
   beforeEach(async () => {
     jest.clearAllMocks();
+
+    store = makeStore();
     fetchMock.resetMocks();
     fetchMock.doMock(JSON.stringify(pantherDBResponse));
   });
 
   it('Renders properly', async () => {
-    await renderPathwayAnalysisModal();
+    await renderPathwayAnalysisModal(store);
     expect(screen.getByText('You have not performed any filtering on the genes!')).toBeInTheDocument();
 
     Object.values(pathwayServices).forEach((serviceName) => {
@@ -100,7 +121,7 @@ describe('Pathway analysis modal ', () => {
   });
 
   it('Clicking enrichr radio button removes suggestion text', async () => {
-    await renderPathwayAnalysisModal();
+    await renderPathwayAnalysisModal(store);
     const enrichrRadioButton = screen.getByLabelText(pathwayServices.ENRICHR);
     userEvent.click(enrichrRadioButton);
     await waitFor(() => (
@@ -109,14 +130,14 @@ describe('Pathway analysis modal ', () => {
   });
 
   it('Clicking advanced filtering modal opens the modal', async () => {
-    await renderPathwayAnalysisModal();
+    await renderPathwayAnalysisModal(store);
     userEvent.click(screen.getByText('Click here to open the advanced filtering options.'));
 
     expect(onOpenAdvancedFilters).toHaveBeenCalledTimes(1);
   });
 
   it('Launches the service with PantherDB', async () => {
-    await renderPathwayAnalysisModal();
+    await renderPathwayAnalysisModal(store);
 
     const defaultSpecies = 'HUMAN';
 
@@ -137,7 +158,7 @@ describe('Pathway analysis modal ', () => {
   });
 
   it('Launches the service with enrichr', async () => {
-    await renderPathwayAnalysisModal();
+    await renderPathwayAnalysisModal(store);
 
     const defaultSpecies = 'sapiens';
 
@@ -161,7 +182,7 @@ describe('Pathway analysis modal ', () => {
   });
 
   it('Passes the species key correctly', async () => {
-    await renderPathwayAnalysisModal();
+    await renderPathwayAnalysisModal(store);
 
     const secondSpecies = enrichrSpecies[enrichrSpecies.length - 1];
 
@@ -196,7 +217,7 @@ describe('Pathway analysis modal ', () => {
   });
 
   it('Passes the number of genes correctly', async () => {
-    await renderPathwayAnalysisModal();
+    await renderPathwayAnalysisModal(store);
 
     const numGenes = 5;
 
@@ -217,19 +238,83 @@ describe('Pathway analysis modal ', () => {
   });
 
   it('Apply filters warning message is not there if there are filters', async () => {
-    await renderPathwayAnalysisModal(true);
+    await renderPathwayAnalysisModal(store, true);
     expect(screen.queryByText('You have not performed any filtering on the genes!', { exact: false })).not.toBeInTheDocument();
   });
 
   it('Shows an error if analysis can not be launched', async () => {
     launchPathwayService.mockImplementation(() => { throw new Error('Error launching analysis'); });
 
-    await renderPathwayAnalysisModal(true);
+    await renderPathwayAnalysisModal(store);
 
     await act(async () => {
       userEvent.click(screen.getByText('Launch'));
     });
 
     expect(pushNotificationMessage).toHaveBeenCalledTimes(1);
+  });
+
+  it('Clicking on download link downloads the gene list', async () => {
+    await renderPathwayAnalysisModal(store);
+
+    await act(async () => {
+      userEvent.click(screen.getByText(/download reference genes/i));
+    });
+
+    expect(getBackgroundExpressedGenes).toHaveBeenCalledTimes(1);
+    expect(writeToFile).toHaveBeenCalledTimes(1);
+
+    expect(writeToFile).toHaveBeenCalledWith(genesList.join('\n'));
+
+    expect(downloadFromUrl).toHaveBeenCalledTimes(1);
+
+    // Clicking on the download link again should not cause another work request
+    expect(getBackgroundExpressedGenes).toHaveBeenCalledTimes(1);
+  });
+
+  it('Clicking on copy button copies the gene list', async () => {
+    await renderPathwayAnalysisModal(store);
+
+    await act(async () => {
+      userEvent.click(screen.getByText(/copy reference genes/i));
+    });
+
+    expect(getBackgroundExpressedGenes).toHaveBeenCalledTimes(1);
+    expect(mockClipboard).toHaveBeenCalledTimes(1);
+
+    expect(mockClipboard).toHaveBeenCalledWith(genesList.join('\n'));
+
+    expect(pushNotificationMessage).toHaveBeenCalledTimes(1);
+    expect(pushNotificationMessage).toHaveBeenCalledWith('success', 'Copied to clipboard');
+
+    // Clicking on the copy link again should not cause another work request
+    expect(getBackgroundExpressedGenes).toHaveBeenCalledTimes(1);
+  });
+
+  it('Reference genes list should change if the compared group is different', async () => {
+    await renderPathwayAnalysisModal(store);
+
+    await act(async () => {
+      userEvent.click(screen.getByText(/copy reference genes/i));
+    });
+
+    expect(getBackgroundExpressedGenes).toHaveBeenCalledTimes(1);
+
+    // Change the compared type and group
+    await act(async () => {
+      store.dispatch(setComparisonType('between'));
+      store.dispatch(setComparisonGroup({
+        type: 'between',
+        cellSet: 'group1',
+        compareWith: 'group2',
+        basis: 'louvain/louvain-1',
+      }));
+    });
+
+    await act(async () => {
+      userEvent.click(screen.getByText(/copy reference genes/i));
+    });
+
+    expect(getBackgroundExpressedGenes).toHaveBeenCalledTimes(2);
   });
 });

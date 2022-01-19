@@ -8,7 +8,7 @@ import PropTypes from 'prop-types';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
 import launchPathwayService from 'utils/pathwayAnalysis/launchPathwayService';
 import getDiffExprGenes from 'utils/differentialExpression/getDiffExprGenes';
-import writeToFile from 'utils/writeToFile';
+import writeToFileURL from 'utils/writeToFileURL';
 import downloadFromUrl from 'utils/data-management/downloadFromUrl';
 
 import getBackgroundExpressedGenes from 'utils/differentialExpression/getBackgroundExpressedGenes';
@@ -21,9 +21,7 @@ const { Paragraph } = Typography;
 const marginSpacing = { marginBottom: '20px', marginTop: '20x' };
 const inlineButtonStyle = { padding: 0, height: '1rem' };
 
-const calculateGenesListHash = (type, group) => {
-  JSON.stringify({ type, group });
-};
+const calculateGenesListHash = (type, group) => JSON.stringify({ type, group });
 
 const LaunchPathwayAnalysisModal = (props) => {
   const {
@@ -205,7 +203,7 @@ const LaunchPathwayAnalysisModal = (props) => {
               style={inlineButtonStyle}
               onClick={async () => {
                 const genesList = await getBackgroundGenesList();
-                const fileUrl = writeToFile(genesList);
+                const fileUrl = writeToFileURL(genesList);
                 downloadFromUrl(fileUrl, 'genes_list.txt');
               }}
             >
