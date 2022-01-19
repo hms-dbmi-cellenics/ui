@@ -4,7 +4,6 @@ import PropTypes from 'prop-types';
 import {
   Space, List, Card,
 } from 'antd';
-import { useSelector } from 'react-redux';
 import Link from 'next/link';
 import Header from 'components/Header';
 
@@ -32,9 +31,6 @@ const CardItem = React.forwardRef(({ onClick, item, href }, ref) => (
         height: '250px', width: '100%', align: 'center', padding: '8px',
       }}
     />
-    <div style={{ paddingBottom: '8px' }}>
-      {item.description}
-    </div>
   </Card.Grid>
 ));
 
@@ -47,87 +43,54 @@ CardItem.propTypes = {
 };
 
 const PlotsTablesHome = ({ experimentId, experimentData }) => {
-  const lastUpdatedVolcano = useSelector(
-    (state) => state.componentConfig.volcanoPlotMain?.lastUpdated || 'never',
-  );
-  const lastUpdatedContinuous = useSelector(
-    (state) => state.componentConfig.embeddingContinuousMain?.lastUpdated || 'never',
-  );
-  const lastUpdatedCategorical = useSelector(
-    (state) => state.componentConfig.embeddingCategoricalMain?.lastUpdated || 'never',
-  );
-  const lastUpdatedHeatmap = useSelector(
-    (state) => state.componentConfig.heatmapPlotMain?.lastUpdated || 'never',
-  );
-  const lastUpdatedFrequency = useSelector(
-    (state) => state.componentConfig.frequencyPlotMain?.lastUpdated || 'never',
-  );
-  const lastUpdatedViolin = useSelector(
-    (state) => state.componentConfig.violinPlotMain?.lastUpdated || 'never',
-  );
-  const lastUpdatedMarkerHeatmap = useSelector(
-    (state) => state.componentConfig.markerHeatmapPlotMain?.lastUpdated || 'never',
-  );
-  const lastUpdatedDotPlot = useSelector(
-    (state) => state.componentConfig.dotPlotMain?.lastUpdated || 'never',
-  );
-
   const plots = [
     {
       name: 'Continuous Embedding',
       image: embeddingContinuous,
       key: 'embedding-continuous-key',
       link: 'embedding-continuous',
-      description: `Last updated: ${lastUpdatedContinuous}`,
     },
     {
       name: 'Categorical Embedding',
       image: embeddingCategorical,
       key: 'embedding-categorical-key',
       link: 'embedding-categorical',
-      description: `Last updated: ${lastUpdatedCategorical}`,
     },
     {
       name: 'Custom Heatmap',
       image: heatmap,
       key: 'heatmap-key',
       link: 'heatmap',
-      description: `Last updated: ${lastUpdatedHeatmap}`,
     },
     {
       name: 'Marker Heatmap',
       image: markerHeatmap,
       key: 'marker-heatmap-key',
       link: 'marker-heatmap',
-      description: `Last updated: ${lastUpdatedMarkerHeatmap}`,
     },
     {
       name: 'Volcano plot',
       image: volcano,
       key: 'volcano-key',
       link: 'volcano',
-      description: `Last updated: ${lastUpdatedVolcano}`,
     },
     {
       name: 'Frequency Plot',
       image: frequency,
       key: 'frequency-key',
       link: 'frequency',
-      description: `Last updated: ${lastUpdatedFrequency}`,
     },
     {
       name: 'Violin Plot',
       image: violin,
       key: 'violin-key',
       link: 'violin',
-      description: `Last updated: ${lastUpdatedViolin}`,
     },
     {
       name: 'Dot Plot',
       image: dotPlot,
       key: 'dot-key',
       link: 'dot-plot',
-      description: `Last updated: ${lastUpdatedDotPlot}`,
     },
   ];
 
