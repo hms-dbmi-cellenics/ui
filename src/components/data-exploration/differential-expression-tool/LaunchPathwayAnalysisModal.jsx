@@ -9,6 +9,8 @@ import launchPathwayService from 'utils/pathwayAnalysis/launchPathwayService';
 import getDiffExprGenes from 'utils/differentialExpression/getDiffExprGenes';
 import getBackgroundExpressedGenes from 'utils/differentialExpression/getBackgroundExpressedGenes';
 import { pathwayServices, speciesList } from 'utils/pathwayAnalysis/pathwayConstants';
+import writeToFile from 'utils/writeToFile';
+import downloadFromUrl from 'utils/data-management/downloadFromUrl';
 
 const { Paragraph } = Typography;
 
@@ -147,8 +149,10 @@ const LaunchPathwayAnalysisModal = (props) => {
             {' '}
             <Button
               type='link'
-              onClick={() => {
-                dispatch(getBackgroundExpressedGenes());
+              onClick={async () => {
+                const genesList = await dispatch(getBackgroundExpressedGenes());
+                const fileUrl = writeToFile(genesList.join('\n'));
+                downloadFromUrl(fileUrl, 'genes_list.txt');
               }}
             >
               download reference genes into file
