@@ -15,15 +15,19 @@ const mockStore = configureStore([thunk]);
 
 describe('updateCellSetProperty action', () => {
   const experimentId = '1234';
-  const key = 'node';
+  const rootKey = 'root';
+  const childKey = 'child';
   const property = { name: 'Some node!' };
 
-  const cellSetsState = {
+  const cellSetsNodeState = {
     ...initialState,
     properties: {
-      [key]: {
+      [rootKey]: {
+        rootNode: true,
+      },
+      [childKey]: {
         rootNode: false,
-        parentNodeKey: 'someParentNodeKey',
+        parentNodeKey: 'root',
       },
     },
   };
@@ -37,25 +41,51 @@ describe('updateCellSetProperty action', () => {
   });
 
   it('Does not dispatch on loading state', async () => {
-    const store = mockStore({ cellSets: { ...cellSetsState, loading: true, error: false } });
-    store.dispatch(updateCellSetProperty(experimentId, key, property));
+    const store = mockStore({ cellSets: { ...cellSetsNodeState, loading: true, error: false } });
+    store.dispatch(updateCellSetProperty(experimentId, rootKey, property));
 
     expect(store.getActions().length).toEqual(0);
   });
 
   it('Does not dispatch on error state', async () => {
-    const store = mockStore({ cellSets: { ...cellSetsState, loading: false, error: true } });
-    store.dispatch(updateCellSetProperty(experimentId, key, property));
+    const store = mockStore({ cellSets: { ...cellSetsNodeState, loading: false, error: true } });
+    store.dispatch(updateCellSetProperty(experimentId, rootKey, property));
     expect(store.getActions().length).toEqual(0);
   });
 
-  it('Dispatches an action to update property to the reducer', async () => {
-    const store = mockStore({ cellSets: { ...cellSetsState, loading: false } });
-    store.dispatch(updateCellSetProperty(experimentId, key, property));
+  it('Dispatches an action to update property to the reducer when using a root node', async () => {
+    const store = mockStore({ cellSets: { ...cellSetsNodeState, loading: false } });
+    store.dispatch(updateCellSetProperty(experimentId, rootKey, property));
 
     await waitForActions(store, [CELL_SETS_UPDATE_PROPERTY]);
 
     const firstAction = store.getActions()[0];
     expect(firstAction).toMatchSnapshot();
+  });
+
+  it('Dispatches an action to update property to the reducer when not using a root node', async () => {
+    const store = mockStore({ cellSets: { ...cellSetsNodeState, loading: false } });
+    store.dispatch(updateCellSetProperty(experimentId, childKey, property));
+
+    await waitForActions(store, [CELL_SETS_UPDATE_PROPERTY]);
+
+    const firstAction = store.getActions()[0];
+    expect(firstAction).toMatchSnapshot();
+  });
+
+  it('Throws when we are updating an invalid prop in root node', async () => {
+    const store = mockStore({ cellSets: { ...cellSetsNodeState, loading: false } });
+
+    expect(async () => {
+      await store.dispatch(updateCellSetProperty(experimentId, rootKey, { children: [] }));
+    }).rejects.toThrow();
+  });
+
+  it('Throws when we are updating an invalid prop in child node', async () => {
+    const store = mockStore({ cellSets: { ...cellSetsNodeState, loading: false } });
+
+    expect(async () => {
+      await store.dispatch(updateCellSetProperty(experimentId, childKey, { parentNodeKey: 'someOtherParent' }));
+    }).rejects.toThrow();
   });
 });

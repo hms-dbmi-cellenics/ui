@@ -38,9 +38,7 @@ const cellClassAllowedKeys = ['name'];
 const cellSetAllowedKeys = ['name', 'color'];
 
 const updatesAreAllowed = (dataUpdated, rootNode) => {
-  const allowedPropertyKeys = rootNode
-    ? cellClassAllowedKeys
-    : cellSetAllowedKeys;
+  const allowedPropertyKeys = rootNode ? cellClassAllowedKeys : cellSetAllowedKeys;
 
   const dataUpdatedKeys = Object.keys(dataUpdated);
 
