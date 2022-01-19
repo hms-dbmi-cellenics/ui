@@ -21,6 +21,7 @@ import PlotHeader from 'components/plots/PlotHeader';
 import ContinuousEmbeddingPlot from 'components/plots/ContinuousEmbeddingPlot';
 import SingleGeneSelection from 'components/plots/styling/SingleGeneSelection';
 import { getCellSets } from 'redux/selectors';
+import { plotNames } from 'utils/constants';
 
 const { Panel } = Collapse;
 
@@ -150,6 +151,7 @@ const ContinuousEmbeddingPage = ({ experimentId }) => {
   return (
     <>
       <PlotHeader
+        title={plotNames.CONTINUOUS_EMBEDDING}
         plotUuid={plotUuid}
         experimentId={experimentId}
       />

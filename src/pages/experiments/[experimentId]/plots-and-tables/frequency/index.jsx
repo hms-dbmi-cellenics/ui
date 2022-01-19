@@ -27,8 +27,10 @@ import loadCellSets from 'redux/actions/cellSets/loadCellSets';
 
 import FrequencyPlot from 'components/plots/FrequencyPlot';
 import Loader from 'components/Loader';
+import { plotNames } from 'utils/constants';
 
 const { Panel } = Collapse;
+
 const plotUuid = 'frequencyPlotMain';
 const plotType = 'frequency';
 
@@ -158,6 +160,7 @@ const FrequencyPlotPage = ({ experimentId }) => {
   return (
     <>
       <PlotHeader
+        title={plotNames.FREQUENCY_PLOT}
         plotUuid={plotUuid}
         experimentId={experimentId}
       />

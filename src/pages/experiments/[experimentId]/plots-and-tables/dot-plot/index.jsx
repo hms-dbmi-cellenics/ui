@@ -35,7 +35,7 @@ import PlatformError from 'components/PlatformError';
 
 import { getCellSets } from 'redux/selectors';
 
-import { plotTypes } from 'utils/constants';
+import { plotNames, plotTypes } from 'utils/constants';
 
 const { Panel } = Collapse;
 const { Text, Paragraph } = Typography;
@@ -335,6 +335,7 @@ const DotPlotPage = (props) => {
   return (
     <>
       <PlotHeader
+        title={plotNames.DOT_PLOT}
         plotUuid={plotUuid}
         experimentId={experimentId}
       />

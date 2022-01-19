@@ -30,6 +30,7 @@ import Loader from 'components/Loader';
 
 import { generateSpec } from 'utils/plotSpecs/generateVolcanoSpec';
 import calculateVolcanoDataPoints from 'components/plots/helpers/calculateVolcanoDataPoints';
+import { plotNames } from 'utils/constants';
 
 const { Text } = Typography;
 const { Panel } = Collapse;
@@ -245,11 +246,11 @@ const VolcanoPlotPage = (props) => {
   return (
     <>
       <PlotHeader
+        title={plotNames.VOLCANO_PLOT}
         plotUuid={plotUuid}
         experimentId={experimentId}
       />
       <Space direction='vertical' style={{ width: '100%', padding: '0 10px' }}>
-
         <Row gutter={16}>
           <Col span={16}>
             <Space direction='vertical' style={{ width: '100%' }}>
@@ -261,16 +262,14 @@ const VolcanoPlotPage = (props) => {
             </Space>
           </Col>
           <Col span={8}>
-            <Space direction='vertical' style={{ width: '100%' }}>
-              <Collapse defaultActiveKey='1' accordion />
-              <PlotStyling
-                formConfig={plotStylingControlsConfig}
-                config={config}
-                onUpdate={updatePlotWithChanges}
-                renderExtraPanels={renderExtraPanels}
-                defaultActiveKey='1'
-              />
-            </Space>
+            {/* <Collapse defaultActiveKey='1' accordion /> */}
+            <PlotStyling
+              formConfig={plotStylingControlsConfig}
+              config={config}
+              onUpdate={updatePlotWithChanges}
+              renderExtraPanels={renderExtraPanels}
+              defaultActiveKey='1'
+            />
           </Col>
         </Row>
       </Space>

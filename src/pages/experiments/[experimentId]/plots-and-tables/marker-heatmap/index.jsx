@@ -34,10 +34,10 @@ import { loadCellSets } from 'redux/actions/cellSets';
 import PlatformError from 'components/PlatformError';
 import Loader from 'components/Loader';
 import populateHeatmapData from 'components/plots/helpers/heatmap/populateHeatmapData';
+import { plotNames } from 'utils/constants';
 
 const { Text } = Typography;
 const { Panel } = Collapse;
-
 const plotUuid = 'markerHeatmapPlotMain';
 const plotType = 'markerHeatmap';
 
@@ -422,6 +422,7 @@ const MarkerHeatmap = ({ experimentId }) => {
   return (
     <>
       <PlotHeader
+        title={plotNames.MARKER_HEATMAP}
         plotUuid={plotUuid}
         experimentId={experimentId}
       />

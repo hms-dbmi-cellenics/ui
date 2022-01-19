@@ -22,9 +22,9 @@ import { loadCellSets } from 'redux/actions/cellSets';
 import PlotHeader from 'components/plots/PlotHeader';
 import ViolinPlot from 'components/plots/ViolinPlot';
 import { getCellSets } from 'redux/selectors';
+import { plotNames } from 'utils/constants';
 
 const { Panel } = Collapse;
-
 // TODO: when we want to enable users to create their custom plots,
 // we will need to change this to proper Uuid
 const plotUuid = 'ViolinMain';
@@ -100,6 +100,7 @@ const ViolinIndex = ({ experimentId }) => {
   return (
     <>
       <PlotHeader
+        title={plotNames.VIOLIN_PLOT}
         plotUuid={plotUuid}
         experimentId={experimentId}
       />

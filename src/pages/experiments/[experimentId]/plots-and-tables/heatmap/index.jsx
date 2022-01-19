@@ -17,6 +17,7 @@ import Loader from 'components/Loader';
 import populateHeatmapData from 'components/plots/helpers/heatmap/populateHeatmapData';
 import HeatmapControls from 'components/plots/styling/heatmap/HeatmapControls';
 import { getCellSets } from 'redux/selectors';
+import { plotNames } from 'utils/constants';
 
 const { Text } = Typography;
 const { Panel } = Collapse;
@@ -181,6 +182,7 @@ const HeatmapPlot = ({ experimentId }) => {
   return (
     <>
       <PlotHeader
+        title={plotNames.HEATMAP}
         plotUuid={plotUuid}
         experimentId={experimentId}
       />

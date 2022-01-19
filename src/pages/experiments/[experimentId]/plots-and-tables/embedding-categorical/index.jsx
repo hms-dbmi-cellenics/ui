@@ -23,6 +23,7 @@ import PlotHeader from 'components/plots/PlotHeader';
 import { loadCellSets } from 'redux/actions/cellSets';
 import CategoricalEmbeddingPlot from 'components/plots/CategoricalEmbeddingPlot';
 import SelectData from 'components/plots/styling/embedding-continuous/SelectData';
+import { plotNames } from 'utils/constants';
 
 const { Panel } = Collapse;
 
@@ -135,6 +136,7 @@ const EmbeddingCategoricalPage = ({ experimentId }) => {
   return (
     <>
       <PlotHeader
+        title={plotNames.CATEGORICAL_EMBEDDING}
         plotUuid={plotUuid}
         experimentId={experimentId}
       />

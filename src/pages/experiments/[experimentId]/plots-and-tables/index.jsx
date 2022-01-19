@@ -2,10 +2,10 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import {
-  Space, Button, List, Card, Dropdown,
+  Space, Button, List, Card,
 } from 'antd';
 import { useSelector } from 'react-redux';
-import { CloseOutlined, DownOutlined } from '@ant-design/icons';
+import { CloseOutlined } from '@ant-design/icons';
 import Link from 'next/link';
 import SearchMenu from 'components/SearchMenu';
 import Header from 'components/Header';
