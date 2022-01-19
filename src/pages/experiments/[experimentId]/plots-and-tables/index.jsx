@@ -1,13 +1,11 @@
 /* eslint-disable import/no-duplicates */
-import React, { useState } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import {
-  Space, Button, List, Card,
+  Space, List, Card,
 } from 'antd';
 import { useSelector } from 'react-redux';
-import { CloseOutlined } from '@ant-design/icons';
 import Link from 'next/link';
-import SearchMenu from 'components/SearchMenu';
 import Header from 'components/Header';
 
 import heatmap from '../../../../../public/static/media/heatmap.png';
@@ -133,43 +131,6 @@ const PlotsTablesHome = ({ experimentId, experimentData }) => {
     },
   ];
 
-  const [openedPlots, setOpenedPlots] = useState(plots);
-  const [addMenuVisible, setAddMenuVisible] = useState(false);
-
-  const openPlot = (key) => {
-    if (openedPlots.find((obj) => obj.key === key)) {
-      return;
-    }
-    const plotToRender = plots.find((obj) => obj.key === key);
-    openedPlots.unshift(plotToRender);
-    setOpenedPlots(openedPlots);
-  };
-
-  const renderExtras = (item) => (
-    <Space>
-      <Button
-        icon={<CloseOutlined />}
-        type='text'
-        size='small'
-        onClick={(event) => {
-          const newOpenedPlots = openedPlots.filter((obj) => obj.key !== item.key);
-          setOpenedPlots(newOpenedPlots);
-          event.stopPropagation();
-        }}
-      />
-    </Space>
-  );
-
-  const searchMenu = (
-    <SearchMenu
-      options={{ Plots: plots }}
-      onSelect={(key) => {
-        openPlot(key);
-        setAddMenuVisible(false);
-      }}
-    />
-  );
-
   return (
     <>
       <Header
@@ -180,14 +141,14 @@ const PlotsTablesHome = ({ experimentId, experimentData }) => {
       <Space direction='vertical' style={{ width: '100%', padding: '0 10px' }}>
         <List
           grid={{ gutter: 16 }}
-          dataSource={openedPlots}
+          dataSource={plots}
           renderItem={(item) => (
+
             <List.Item style={{ width: '320px', height: '320px' }}>
               <Card
                 size='small'
                 hoverable
                 title={item.name}
-                extra={renderExtras(item)}
                 bodyStyle={{ padding: '0' }}
               >
                 <Link
