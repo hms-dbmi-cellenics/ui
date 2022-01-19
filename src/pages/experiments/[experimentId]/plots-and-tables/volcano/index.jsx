@@ -262,7 +262,6 @@ const VolcanoPlotPage = (props) => {
             </Space>
           </Col>
           <Col span={8}>
-            {/* <Collapse defaultActiveKey='1' accordion /> */}
             <PlotStyling
               formConfig={plotStylingControlsConfig}
               config={config}
