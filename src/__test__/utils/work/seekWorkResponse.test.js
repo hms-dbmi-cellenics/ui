@@ -2,6 +2,8 @@ import { v4 as uuidv4 } from 'uuid';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import SocketMock from 'socket.io-mock';
 import { seekFromAPI } from 'utils/work/seekWorkResponse';
+import fake from '__test__/test-utils/constants';
+import mockAPI, { generateDefaultMockAPIResponses } from '__test__/test-utils/mockAPI';
 
 import unpackResult from 'utils/work/unpackResult';
 
@@ -67,6 +69,7 @@ describe('seekFromAPI unit tests', () => {
   beforeEach(() => {
     fetchMock.resetMocks();
     fetchMock.doMock();
+    fetchMock.mockIf(/.*/, mockAPI(generateDefaultMockAPIResponses(fake.EXPERIMENT_ID)));
 
     unpackResult.mockResolvedValueOnce({ hello: 'world' });
 
@@ -92,10 +95,11 @@ describe('seekFromAPI unit tests', () => {
   });
 
   it('Sends work to the backend when called and returns valid response.', async () => {
+    fetchMock.mockResponse(JSON.stringify({ signedUrl: 'http://www.apiUrl:portNum/path/blabla' }));
+
     const response = await seekFromAPI(
       experimentId, body, timeout, 'facefeed',
     );
-
     expect(socketConnectionMocks.mockEmit).toHaveBeenCalledWith('WorkRequest', {
       ETag: 'facefeed',
       socketId: '5678',
