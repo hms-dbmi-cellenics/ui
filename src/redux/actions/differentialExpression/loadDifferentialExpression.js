@@ -31,7 +31,7 @@ const loadDifferentialExpression = (
   });
 
   const body = generateDiffExprBody(experimentId, comparisonGroup);
-
+  let extras = {};
   let pagination = {};
   if (tableState) {
     const currentPageSize = tableState.pagination.pageSize;
@@ -52,12 +52,14 @@ const loadDifferentialExpression = (
         expression: tableState.geneNamesFilter,
       }];
     }
+    extras = { pagination };
   }
 
   const timeout = getTimeoutForWorkerTask(getState(), 'DifferentialExpression');
+
   try {
     const data = await fetchWork(
-      experimentId, body, getState, { timeout, extras: { pagination } },
+      experimentId, body, getState, { timeout, extras },
     );
     let { total } = data;
     const { rows } = data;
