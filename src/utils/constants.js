@@ -14,23 +14,15 @@ const plotTypes = {
   DOT_PLOT: 'DotPlot',
 };
 
-const pathStubs = {
-  DATA_MANAGEMENT: '/data-management',
-  DATA_PROCESSING: '/data-processing',
-  DATA_EXPLORATION: '/data-exploration',
-  PLOTS_AND_TABLES: '/plots-and-tables',
-};
-
-const paths = {
-  DATA_MANAGEMENT: pathStubs.DATA_MANAGEMENT,
-  DATA_PROCESSING: `/experiments/[experimentId]${pathStubs.DATA_PROCESSING}`,
-  DATA_EXPLORATION: `/experiments/[experimentId]${pathStubs.DATA_EXPLORATION}`,
-  PLOTS_AND_TABLES: `/experiments/[experimentId]${pathStubs.PLOTS_AND_TABLES}`,
+const modules = {
+  DATA_MANAGEMENT: 'DATA_MANAGEMENT',
+  DATA_PROCESSING: 'DATA_PROCESSING',
+  DATA_EXPLORATION: 'DATA_EXPLORATION',
+  PLOTS_AND_TABLES: 'PLOTS_AND_TABLES',
 };
 
 export {
   layout,
   plotTypes,
-  paths,
-  pathStubs,
+  modules,
 };

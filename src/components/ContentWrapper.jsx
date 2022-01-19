@@ -16,7 +16,7 @@ import {
   Tooltip,
   Typography,
 } from 'antd';
-import { paths } from 'utils/constants';
+import { modules } from 'utils/constants';
 
 import Auth from '@aws-amplify/auth';
 
@@ -247,28 +247,28 @@ const ContentWrapper = (props) => {
 
   const menuLinks = [
     {
-      path: paths.DATA_MANAGEMENT,
+      module: modules.DATA_MANAGEMENT,
       icon: <FolderOpenOutlined />,
       name: 'Data Management',
       disableIfNoExperiment: false,
       disabledByPipelineStatus: true,
     },
     {
-      path: paths.DATA_PROCESSING,
+      module: modules.DATA_PROCESSING,
       icon: <BuildOutlined />,
       name: 'Data Processing',
       disableIfNoExperiment: true,
       disabledByPipelineStatus: false,
     },
     {
-      path: paths.DATA_EXPLORATION,
+      module: modules.DATA_EXPLORATION,
       icon: <FundViewOutlined />,
       name: 'Data Exploration',
       disableIfNoExperiment: true,
       disabledByPipelineStatus: true,
     },
     {
-      path: paths.PLOTS_AND_TABLES,
+      module: modules.PLOTS_AND_TABLES,
       icon: <DatabaseOutlined />,
       name: 'Plots and Tables',
       disableIfNoExperiment: true,
@@ -323,7 +323,7 @@ const ContentWrapper = (props) => {
   };
 
   const menuItemRender = ({
-    path, icon, name, disableIfNoExperiment, disabledByPipelineStatus,
+    module, icon, name, disableIfNoExperiment, disabledByPipelineStatus,
   }) => {
     const notProcessedExperimentDisable = !routeExperimentId && disableIfNoExperiment
       && (!gem2sRerunStatus || gem2sRerunStatus.rerun);
@@ -333,15 +333,16 @@ const ContentWrapper = (props) => {
       || waitingForQcToLaunch || pipelineRunning || pipelineRunningError
     );
 
-    const realPath = path.replace('[experimentId]', currentExperimentId);
-
     return (
       <Menu.Item
-        id={path}
+        id={module}
         disabled={notProcessedExperimentDisable || pipelineStatusDisable}
-        key={path}
+        key={module}
         icon={icon}
-        onClick={() => navigateTo(realPath, { projectUuid: activeProjectUuid, experimentId: activeProjectExperimentID })}
+        onClick={() => navigateTo(
+          module,
+          { projectUuid: activeProjectUuid, experimentId: activeProjectExperimentID },
+        )}
       >
         {name}
       </Menu.Item>

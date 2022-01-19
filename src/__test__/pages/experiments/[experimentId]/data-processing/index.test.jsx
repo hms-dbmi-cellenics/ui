@@ -19,6 +19,7 @@ import '__test__/test-utils/setupTests';
 
 import { runPipeline } from 'redux/actions/pipeline';
 import generateExperimentSettingsMock from '__test__/test-utils/experimentSettings.mock';
+import { modules } from 'utils/constants';
 
 jest.mock('components/UserButton', () => () => <></>);
 
@@ -190,7 +191,7 @@ describe('DataProcessingPage', () => {
     expect(mockNavigateTo).toHaveBeenCalled();
 
     const url = mockNavigateTo.mock.calls[0][0];
-    expect(url).toMatch('data-exploration');
+    expect(url).toEqual(modules.DATA_EXPLORATION);
   });
 
   it('Triggers the pipeline on click run filter', () => {

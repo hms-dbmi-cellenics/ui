@@ -2,7 +2,7 @@ import React, { useContext, useState } from 'react';
 import propTypes from 'prop-types';
 import { useSelector, useDispatch } from 'react-redux';
 import { useRouter } from 'next/router';
-import { pathStubs } from 'utils/constants';
+import { modules } from 'utils/constants';
 
 import moment from 'moment';
 import { updateProject } from 'redux/actions/projects';
@@ -23,6 +23,20 @@ import DataProcessingIntercept from 'components/data-processing/DataProcessingIn
  * Use `navigateTo` when implementing navigation between pages. Do not use `router.push` directly
  * as it will bypass the route checks and middlewares.
  */
+
+const PATH_STUBS = {
+  [modules.DATA_MANAGEMENT]: '/data-management',
+  [modules.DATA_PROCESSING]: '/data-processing',
+  [modules.DATA_EXPLORATION]: '/data-exploration',
+  [modules.PLOTS_AND_TABLES]: '/plots-and-tables',
+};
+
+const PATHS = {
+  [modules.DATA_MANAGEMENT]: `${PATH_STUBS[modules.DATA_PROCESSING]}`,
+  [modules.DATA_PROCESSING]: `/experiments/[experimentId]${PATH_STUBS[modules.DATA_PROCESSING]}`,
+  [modules.DATA_EXPLORATION]: `/experiments/[experimentId]${PATH_STUBS[modules.DATA_EXPLORATION]}`,
+  [modules.PLOTS_AND_TABLES]: `/experiments/[experimentId]${PATH_STUBS[modules.PLOTS_AND_TABLES]}`,
+};
 
 const AppRouterContext = React.createContext(null);
 
@@ -60,13 +74,15 @@ const AppRouteProvider = (props) => {
     router.push(nextRoute);
   };
 
-  const handleRouteChange = (previousRoute, nextRoute, params, hardNavigate = false) => {
-    if (previousRoute.match(pathStubs.DATA_PROCESSING) && changedQCFilters.size > 0) {
+  const handleRouteChange = (previousRoute, module, params, hardNavigate = false) => {
+    const nextRoute = PATHS[module].replace('[experimentId]', params.experimentId);
+
+    if (previousRoute.match(PATH_STUBS.DATA_PROCESSING) && changedQCFilters.size > 0) {
       setRenderIntercept(availableIntercepts.DATA_PROCESSING(nextRoute, hardNavigate));
       return;
     }
 
-    if (previousRoute.match(pathStubs.DATA_MANAGEMENT)) {
+    if (previousRoute.match(PATH_STUBS.DATA_MANAGEMENT)) {
       // Update active project and experiment id when navigating from Data Management
       const { projectUuid, experimentId } = params;
       updateExperimentInfoOnNavigate(projectUuid, experimentId);
@@ -76,10 +92,10 @@ const AppRouteProvider = (props) => {
   };
 
   const navigateTo = (
-    nextRoute,
+    module,
     params = {},
     refreshPage,
-  ) => handleRouteChange(router.pathname, nextRoute, params, refreshPage);
+  ) => handleRouteChange(router.pathname, module, params, refreshPage);
 
   return (
     <AppRouterContext.Provider value={{ navigateTo }}>
@@ -95,5 +111,5 @@ AppRouteProvider.propTypes = {
 
 const useAppRouter = () => useContext(AppRouterContext);
 
-export { useAppRouter };
+export { useAppRouter, PATHS };
 export default AppRouteProvider;
