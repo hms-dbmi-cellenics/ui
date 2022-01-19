@@ -5,6 +5,7 @@ import {
 } from 'antd';
 import PropTypes from 'prop-types';
 
+import pushNotificationMessage from 'utils/pushNotificationMessage';
 import launchPathwayService from 'utils/pathwayAnalysis/launchPathwayService';
 import getDiffExprGenes from 'utils/differentialExpression/getDiffExprGenes';
 import getBackgroundExpressedGenes from 'utils/differentialExpression/getBackgroundExpressedGenes';
@@ -194,6 +195,7 @@ const LaunchPathwayAnalysisModal = (props) => {
               onClick={async () => {
                 const genesList = await getBackgroundGenesList();
                 navigator.clipboard.writeText(genesList);
+                pushNotificationMessage('success', 'Copied to clipboard');
               }}
             >
               copy reference genes to clipboard
