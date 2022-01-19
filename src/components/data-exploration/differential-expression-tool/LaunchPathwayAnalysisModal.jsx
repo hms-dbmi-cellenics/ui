@@ -7,6 +7,7 @@ import PropTypes from 'prop-types';
 
 import launchPathwayService from 'utils/pathwayAnalysis/launchPathwayService';
 import getDiffExprGenes from 'utils/differentialExpression/getDiffExprGenes';
+import getBackgroundExpressedGenes from 'utils/differentialExpression/getBackgroundExpressedGenes';
 import { pathwayServices, speciesList } from 'utils/pathwayAnalysis/pathwayConstants';
 
 const { Paragraph } = Typography;
@@ -140,9 +141,23 @@ const LaunchPathwayAnalysisModal = (props) => {
             <b> strongly recommended </b>
             {' '}
             to input the reference list of genes by setting it in &quot;Reference List&quot;
-            then re-run the pathway analysis in the pantherdb page.
+            then re-run the pathway analysis in the PantherDB page.
             {' '}
-            You can either download reference genes into file or copy reference genes to clipboard.
+            You can either
+            {' '}
+            <Button
+              type='link'
+              onClick={() => {
+                dispatch(getBackgroundExpressedGenes());
+              }}
+            >
+              download reference genes into file
+            </Button>
+            {' '}
+            or
+            {' '}
+            <Button type='link'>copy reference genes to clipboard</Button>
+            .
           </p>
         )}
       </Modal>
