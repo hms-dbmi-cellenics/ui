@@ -55,9 +55,19 @@ const loadDifferentialExpression = (
   }
 
   const timeout = getTimeoutForWorkerTask(getState(), 'DifferentialExpression');
+
+  const getExtras = (currentPagination) => {
+    if (Object.keys(currentPagination).length > 0) {
+      return {
+        pagination: currentPagination,
+      };
+    }
+    return null;
+  };
+
   try {
     const data = await fetchWork(
-      experimentId, body, getState, { timeout, extras: { pagination } },
+      experimentId, body, getState, { timeout, extras: getExtras(pagination) },
     );
     let { total } = data;
     const { rows } = data;
