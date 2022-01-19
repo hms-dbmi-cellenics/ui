@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
+import React, { useState, useRef } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   Modal, Alert, Radio, Space, InputNumber, Select, Button, Typography, Row,
 } from 'antd';
@@ -14,16 +14,43 @@ import downloadFromUrl from 'utils/data-management/downloadFromUrl';
 
 const { Paragraph } = Typography;
 
+const inlineButtonStyle = { padding: 0, height: '1rem' };
+
+const calculateGenesListHash = (type, group) => {
+  JSON.stringify({ type, group });
+};
+
 const LaunchPathwayAnalysisModal = (props) => {
   const {
     onCancel, onOpenAdvancedFilters, advancedFiltersAdded,
   } = props;
+
+  const backgroundGenesListHash = useRef(null);
 
   const [externalService, setExternalService] = useState(pathwayServices.PANTHERDB);
   const [useAllGenes, setUseAllGenes] = useState(true);
   const [numGenes, setNumGenes] = useState(0);
   const [waitingForExternalService, setWaitingForExternalService] = useState(false);
   const [species, setSpecies] = useState(speciesList[0].value);
+  const [backgroundGenesList, setBackgroundGenesList] = useState(null);
+
+  const { type, group } = useSelector((state) => state.differentialExpression.comparison);
+
+  const getBackgroundGenesList = async () => {
+    const genesListHash = calculateGenesListHash(type, group);
+
+    if (backgroundGenesListHash.current === genesListHash) {
+      return backgroundGenesList;
+    }
+
+    backgroundGenesListHash.current = genesListHash;
+
+    const genesList = await dispatch(getBackgroundExpressedGenes());
+    const cleanList = genesList.join('\n');
+    setBackgroundGenesList(cleanList);
+
+    return cleanList;
+  };
 
   const dispatch = useDispatch();
 
@@ -149,9 +176,10 @@ const LaunchPathwayAnalysisModal = (props) => {
             {' '}
             <Button
               type='link'
+              style={inlineButtonStyle}
               onClick={async () => {
-                const genesList = await dispatch(getBackgroundExpressedGenes());
-                const fileUrl = writeToFile(genesList.join('\n'));
+                const genesList = await getBackgroundGenesList();
+                const fileUrl = writeToFile(genesList);
                 downloadFromUrl(fileUrl, 'genes_list.txt');
               }}
             >
@@ -160,7 +188,16 @@ const LaunchPathwayAnalysisModal = (props) => {
             {' '}
             or
             {' '}
-            <Button type='link'>copy reference genes to clipboard</Button>
+            <Button
+              type='link'
+              style={inlineButtonStyle}
+              onClick={async () => {
+                const genesList = await getBackgroundGenesList();
+                navigator.clipboard.writeText(genesList);
+              }}
+            >
+              copy reference genes to clipboard
+            </Button>
             .
           </p>
         )}
