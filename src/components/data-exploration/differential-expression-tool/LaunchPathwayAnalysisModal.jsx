@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   Modal, Alert, Radio, Space, InputNumber, Select, Button, Typography, Row,
@@ -8,13 +8,17 @@ import PropTypes from 'prop-types';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
 import launchPathwayService from 'utils/pathwayAnalysis/launchPathwayService';
 import getDiffExprGenes from 'utils/differentialExpression/getDiffExprGenes';
-import getBackgroundExpressedGenes from 'utils/differentialExpression/getBackgroundExpressedGenes';
-import { pathwayServices, speciesList } from 'utils/pathwayAnalysis/pathwayConstants';
 import writeToFile from 'utils/writeToFile';
 import downloadFromUrl from 'utils/data-management/downloadFromUrl';
 
+import getBackgroundExpressedGenes from 'utils/differentialExpression/getBackgroundExpressedGenes';
+import enrichrSpecies from 'utils/pathwayAnalysis/enrichrConstants';
+import pantherDBSpecies from 'utils/pathwayAnalysis/pantherDBSpecies.json';
+import { pathwayServices } from 'utils/pathwayAnalysis/pathwayConstants';
+
 const { Paragraph } = Typography;
 
+const marginSpacing = { marginBottom: '20px', marginTop: '20x' };
 const inlineButtonStyle = { padding: 0, height: '1rem' };
 
 const calculateGenesListHash = (type, group) => {
@@ -27,13 +31,18 @@ const LaunchPathwayAnalysisModal = (props) => {
   } = props;
 
   const backgroundGenesListHash = useRef(null);
+  const dispatch = useDispatch();
 
   const [externalService, setExternalService] = useState(pathwayServices.PANTHERDB);
   const [useAllGenes, setUseAllGenes] = useState(true);
   const [numGenes, setNumGenes] = useState(0);
   const [waitingForExternalService, setWaitingForExternalService] = useState(false);
-  const [species, setSpecies] = useState(speciesList[0].value);
+  const [species, setSpecies] = useState(null);
   const [backgroundGenesList, setBackgroundGenesList] = useState(null);
+  const speciesList = {
+    [pathwayServices.PANTHERDB]: pantherDBSpecies,
+    [pathwayServices.ENRICHR]: enrichrSpecies,
+  };
 
   const { type, group } = useSelector((state) => state.differentialExpression.comparison);
 
@@ -53,9 +62,12 @@ const LaunchPathwayAnalysisModal = (props) => {
     return cleanList;
   };
 
-  const dispatch = useDispatch();
-
-  const marginSpacing = { marginBottom: '20px', marginTop: '20x' };
+  // PantherDB and Enrichr species list have different values.
+  // therefore, when switching between the two, we need to update the value to
+  // correspond with a value in the species list.
+  useEffect(() => {
+    setSpecies(speciesList[externalService][0]?.value);
+  }, [externalService]);
 
   const launchPathwayAnalysis = async (serviceName) => {
     setWaitingForExternalService(true);
@@ -64,11 +76,14 @@ const LaunchPathwayAnalysisModal = (props) => {
       const pathwayGenesList = await dispatch(getDiffExprGenes(useAllGenes, numGenes));
       launchPathwayService(serviceName, pathwayGenesList, species);
     } catch (error) {
-      throw new Error('Error launching pathway analysis', error);
+      pushNotificationMessage('error', 'Failed launching pathway analysis');
+      console.error('Error launching pathway analysis', error);
     } finally {
       setWaitingForExternalService(false);
     }
   };
+
+  const canLaunchService = () => !waitingForExternalService && species;
 
   return (
     <>
@@ -79,11 +94,11 @@ const LaunchPathwayAnalysisModal = (props) => {
         onCancel={onCancel}
         footer={[
           <Button
-            disabled={waitingForExternalService}
+            disabled={!canLaunchService()}
             type='primary'
             onClick={() => launchPathwayAnalysis(externalService)}
           >
-            {waitingForExternalService ? 'Loading...' : 'Launch'}
+            {!canLaunchService() ? 'Loading...' : 'Launch'}
           </Button>,
         ]}
       >
@@ -130,10 +145,20 @@ const LaunchPathwayAnalysisModal = (props) => {
           <Space direction='vertical'>
             <b>Species</b>
 
-            <Select value={species} onChange={(value) => setSpecies(value)} style={{ width: 400 }}>
+            <Select
+              loading={speciesList[externalService].length === 0}
+              value={species}
+              onChange={(value) => setSpecies(value)}
+              style={{ width: 400 }}
+            >
               {
-                speciesList.map((option) => (
-                  <Select.Option value={option.value}><i>{option.label}</i></Select.Option>
+                speciesList[externalService].map((option) => (
+                  <Select.Option
+                    key={option.value}
+                    value={option.value}
+                  >
+                    <i>{option.label}</i>
+                  </Select.Option>
                 ))
               }
             </Select>
