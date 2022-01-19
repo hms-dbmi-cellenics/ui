@@ -7,11 +7,10 @@ import WorkResponseError from 'utils/WorkResponseError';
 
 const seekFromS3 = async (ETag, experimentId) => {
   const response = await fetchAPI(`/v1/workResults/${experimentId}/${ETag}`);
+  const { signedUrl } = await response.json();
 
-  const responseJson = await response.json();
-  if (!responseJson.signedUrl) return null;
-
-  const storageResp = await fetch(responseJson.signedUrl);
+  if (!signedUrl) return null;
+  const storageResp = await fetch(signedUrl);
   if (!storageResp.ok) {
     return null;
   }
