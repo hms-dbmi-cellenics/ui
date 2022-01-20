@@ -7,11 +7,11 @@ import React from 'react';
 import { act } from 'react-dom/test-utils';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
-import { getBackendStatus } from '../../redux/selectors';
-import ContentWrapper from '../../components/ContentWrapper';
+import { getBackendStatus } from 'redux/selectors';
+import ContentWrapper from 'components/ContentWrapper';
 import '__test__/test-utils/setupTests';
 
-jest.mock('../../redux/selectors');
+jest.mock('redux/selectors');
 
 const { Item } = Menu;
 
@@ -40,7 +40,7 @@ jest.mock('@aws-amplify/auth', () => ({
   federatedSignIn: jest.fn(),
 }));
 
-jest.mock('../../utils/AppRouteProvider', () => ({
+jest.mock('utils/AppRouteProvider', () => ({
   useAppRouter: jest.fn().mockReturnValue(() => { }),
 }));
 
@@ -100,13 +100,10 @@ describe('ContentWrapper', () => {
 
     expect(visibleMenuLength).toEqual(4);
 
-    expect(menus.at(0).prop('id')).toEqual('/data-management');
-
-    expect(menus.at(1).prop('id')).toEqual('/experiments/[experimentId]/data-processing');
-
-    expect(menus.at(2).prop('id')).toEqual('/experiments/[experimentId]/data-exploration');
-
-    expect(menus.at(3).prop('id')).toEqual('/experiments/[experimentId]/plots-and-tables');
+    expect(menus.at(0).text()).toEqual('Data Management');
+    expect(menus.at(1).text()).toEqual('Data Processing');
+    expect(menus.at(2).text()).toEqual('Data Exploration');
+    expect(menus.at(3).text()).toEqual('Plots and Tables');
   });
 
   it('links are disabled if there is no experimentId', async () => {

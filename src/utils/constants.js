@@ -25,8 +25,16 @@ const plotNames = {
   DOT_PLOT: 'Dot Plot',
 };
 
+const modules = {
+  DATA_MANAGEMENT: 'DATA_MANAGEMENT',
+  DATA_PROCESSING: 'DATA_PROCESSING',
+  DATA_EXPLORATION: 'DATA_EXPLORATION',
+  PLOTS_AND_TABLES: 'PLOTS_AND_TABLES',
+};
+
 export {
   layout,
   plotNames,
   plotTypes,
+  modules,
 };

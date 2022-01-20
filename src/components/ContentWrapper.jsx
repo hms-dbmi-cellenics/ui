@@ -1,3 +1,8 @@
+/* eslint-disable jsx-a11y/anchor-is-valid */
+import React, { useEffect, useState, useRef } from 'react';
+import PropTypes from 'prop-types';
+import { useDispatch, useSelector } from 'react-redux';
+import { useRouter } from 'next/router';
 import {
   BuildOutlined,
   DatabaseOutlined,
@@ -11,26 +16,26 @@ import {
   Tooltip,
   Typography,
 } from 'antd';
-/* eslint-disable jsx-a11y/anchor-is-valid */
-import React, { useEffect, useState, useRef } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { modules } from 'utils/constants';
 
 import Auth from '@aws-amplify/auth';
-import PropTypes from 'prop-types';
-import { useRouter } from 'next/router';
-import calculateGem2sRerunStatus from 'utils/data-management/calculateGem2sRerunStatus';
 
-import Error from '../pages/_error';
-import GEM2SLoadingScreen from './GEM2SLoadingScreen';
-import PipelineRedirectToDataProcessing from './PipelineRedirectToDataProcessing';
-import PreloadContent from './PreloadContent';
-import { isBrowser } from '../utils/environment';
-import experimentUpdatesHandler from '../utils/experimentUpdatesHandler';
-import { getBackendStatus } from '../redux/selectors';
-import integrationTestConstants from '../utils/integrationTestConstants';
-import { loadBackendStatus } from '../redux/actions/backendStatus';
-import pipelineStatus from '../utils/pipelineStatusValues';
-import { useAppRouter } from '../utils/AppRouteProvider';
+import { useAppRouter } from 'utils/AppRouteProvider';
+
+import calculateGem2sRerunStatus from 'utils/data-management/calculateGem2sRerunStatus';
+import GEM2SLoadingScreen from 'components/GEM2SLoadingScreen';
+import PipelineRedirectToDataProcessing from 'components/PipelineRedirectToDataProcessing';
+import PreloadContent from 'components/PreloadContent';
+
+import experimentUpdatesHandler from 'utils/experimentUpdatesHandler';
+import { getBackendStatus } from 'redux/selectors';
+import { loadBackendStatus } from 'redux/actions/backendStatus';
+import { isBrowser } from 'utils/environment';
+
+import Error from 'pages/_error';
+
+import integrationTestConstants from 'utils/integrationTestConstants';
+import pipelineStatus from 'utils/pipelineStatusValues';
 
 const { Sider, Footer } = Layout;
 
@@ -43,17 +48,18 @@ const ContentWrapper = (props) => {
   const [collapsed, setCollapsed] = useState(false);
 
   const { routeExperimentId, experimentData, children } = props;
+  const { navigateTo } = useAppRouter();
   const router = useRouter();
   const route = router?.route || '';
-  const navigateTo = useAppRouter();
 
   const currentExperimentIdRef = useRef(routeExperimentId);
   const activeProjectUuid = useSelector((state) => state?.projects?.meta?.activeProjectUuid);
-  const activeProject = useSelector((state) => state.projects[activeProjectUuid]);
-  const samples = useSelector((state) => state.samples);
-
   const activeProjectExperimentID = useSelector((state) => (
     state?.projects[activeProjectUuid]?.experiments[0]));
+
+  const activeProject = useSelector((state) => state.projects[activeProjectUuid]);
+
+  const samples = useSelector((state) => state.samples);
 
   useEffect(() => {
     if (!activeProjectExperimentID && !routeExperimentId) return;
@@ -241,28 +247,28 @@ const ContentWrapper = (props) => {
 
   const menuLinks = [
     {
-      path: '/data-management',
+      module: modules.DATA_MANAGEMENT,
       icon: <FolderOpenOutlined />,
       name: 'Data Management',
       disableIfNoExperiment: false,
       disabledByPipelineStatus: true,
     },
     {
-      path: '/experiments/[experimentId]/data-processing',
+      module: modules.DATA_PROCESSING,
       icon: <BuildOutlined />,
       name: 'Data Processing',
       disableIfNoExperiment: true,
       disabledByPipelineStatus: false,
     },
     {
-      path: '/experiments/[experimentId]/data-exploration',
+      module: modules.DATA_EXPLORATION,
       icon: <FundViewOutlined />,
       name: 'Data Exploration',
       disableIfNoExperiment: true,
       disabledByPipelineStatus: true,
     },
     {
-      path: '/experiments/[experimentId]/plots-and-tables',
+      module: modules.PLOTS_AND_TABLES,
       icon: <DatabaseOutlined />,
       name: 'Plots and Tables',
       disableIfNoExperiment: true,
@@ -317,7 +323,7 @@ const ContentWrapper = (props) => {
   };
 
   const menuItemRender = ({
-    path, icon, name, disableIfNoExperiment, disabledByPipelineStatus,
+    module, icon, name, disableIfNoExperiment, disabledByPipelineStatus,
   }) => {
     const notProcessedExperimentDisable = !routeExperimentId && disableIfNoExperiment
       && (!gem2sRerunStatus || gem2sRerunStatus.rerun);
@@ -327,15 +333,16 @@ const ContentWrapper = (props) => {
       || waitingForQcToLaunch || pipelineRunning || pipelineRunningError
     );
 
-    const realPath = path.replace('[experimentId]', currentExperimentId);
-
     return (
       <Menu.Item
-        id={path}
+        id={module}
         disabled={notProcessedExperimentDisable || pipelineStatusDisable}
-        key={path}
+        key={module}
         icon={icon}
-        onClick={() => navigateTo(realPath)}
+        onClick={() => navigateTo(
+          module,
+          { projectUuid: activeProjectUuid, experimentId: activeProjectExperimentID },
+        )}
       >
         {name}
       </Menu.Item>

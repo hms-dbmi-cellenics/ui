@@ -55,18 +55,14 @@ import { loadCellSets } from 'redux/actions/cellSets';
 import { loadSamples } from 'redux/actions/samples';
 import { runPipeline } from 'redux/actions/pipeline';
 import { useAppRouter } from 'utils/AppRouteProvider';
+import { modules } from 'utils/constants';
 
 const { Text } = Typography;
 const { Option } = Select;
 
 const DataProcessingPage = ({ experimentId, experimentData }) => {
   const dispatch = useDispatch();
-  const navigateTo = useAppRouter();
-
-  const completedPath = useMemo(() => {
-    const pathAfterQC = '/experiments/[experimentId]/data-exploration';
-    return pathAfterQC.replace('[experimentId]', experimentId);
-  }, [experimentId]);
+  const { navigateTo } = useAppRouter();
 
   const pipelineStatus = useSelector(getBackendStatus(experimentId))?.status?.pipeline;
 
@@ -529,7 +525,7 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
                             && !isStepComplete(steps[stepIdx + 1].key)}
                           icon={<CheckOutlined />}
                           size='small'
-                          onClick={() => navigateTo(completedPath)}
+                          onClick={() => navigateTo(modules.DATA_EXPLORATION, { experimentId })}
                         />
                       </Tooltip>
                     )}
