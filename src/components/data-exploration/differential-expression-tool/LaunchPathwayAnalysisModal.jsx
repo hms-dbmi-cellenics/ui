@@ -34,7 +34,8 @@ const LaunchPathwayAnalysisModal = (props) => {
   const [externalService, setExternalService] = useState(pathwayServices.PANTHERDB);
   const [useAllGenes, setUseAllGenes] = useState(true);
   const [numGenes, setNumGenes] = useState(0);
-  const [waitingForExternalService, setWaitingForExternalService] = useState(false);
+  const [gettingBackgroundGenes, setGettingBackgroundGenes] = useState(false);
+  const [launchingPathwayAnalysis, setLaunchingPathwayAnalysis] = useState(false);
   const [species, setSpecies] = useState(null);
   const [backgroundGenesList, setBackgroundGenesList] = useState(null);
   const speciesList = {
@@ -45,6 +46,7 @@ const LaunchPathwayAnalysisModal = (props) => {
   const { type, group } = useSelector((state) => state.differentialExpression.comparison);
 
   const getBackgroundGenesList = async () => {
+    setGettingBackgroundGenes(true);
     const genesListHash = calculateGenesListHash(type, group);
 
     if (backgroundGenesListHash.current === genesListHash) {
@@ -52,10 +54,18 @@ const LaunchPathwayAnalysisModal = (props) => {
     }
 
     backgroundGenesListHash.current = genesListHash;
+    let cleanList = null;
 
-    const genesList = await dispatch(getBackgroundExpressedGenes());
-    const cleanList = genesList.join('\n');
-    setBackgroundGenesList(cleanList);
+    try {
+      const genesList = await dispatch(getBackgroundExpressedGenes());
+      cleanList = genesList.join('\n');
+      setBackgroundGenesList(cleanList);
+    } catch (error) {
+      pushNotificationMessage('error', 'Failed getting background gene expression');
+      console.error('Error launching pathway analysis', error);
+    } finally {
+      setGettingBackgroundGenes(false);
+    }
 
     return cleanList;
   };
@@ -68,7 +78,7 @@ const LaunchPathwayAnalysisModal = (props) => {
   }, [externalService]);
 
   const launchPathwayAnalysis = async (serviceName) => {
-    setWaitingForExternalService(true);
+    setLaunchingPathwayAnalysis(true);
 
     try {
       const pathwayGenesList = await dispatch(getDiffExprGenes(useAllGenes, numGenes));
@@ -77,11 +87,11 @@ const LaunchPathwayAnalysisModal = (props) => {
       pushNotificationMessage('error', 'Failed launching pathway analysis');
       console.error('Error launching pathway analysis', error);
     } finally {
-      setWaitingForExternalService(false);
+      setLaunchingPathwayAnalysis(false);
     }
   };
 
-  const canLaunchService = () => !waitingForExternalService && species;
+  const canLaunchService = () => !gettingBackgroundGenes && species;
 
   return (
     <>
@@ -93,6 +103,7 @@ const LaunchPathwayAnalysisModal = (props) => {
         footer={(
           <Button
             disabled={!canLaunchService()}
+            loading={launchingPathwayAnalysis}
             type='primary'
             onClick={() => launchPathwayAnalysis(externalService)}
           >
@@ -196,6 +207,8 @@ const LaunchPathwayAnalysisModal = (props) => {
             {' '}
             <Button
               type='link'
+              disabled={gettingBackgroundGenes}
+              loading={gettingBackgroundGenes}
               style={inlineButtonStyle}
               onClick={async () => {
                 const genesList = await getBackgroundGenesList();
@@ -210,6 +223,8 @@ const LaunchPathwayAnalysisModal = (props) => {
             {' '}
             <Button
               type='link'
+              disabled={gettingBackgroundGenes}
+              loading={gettingBackgroundGenes}
               style={inlineButtonStyle}
               onClick={async () => {
                 const genesList = await getBackgroundGenesList();

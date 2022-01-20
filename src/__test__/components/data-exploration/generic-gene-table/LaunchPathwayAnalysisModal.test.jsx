@@ -243,7 +243,7 @@ describe('Pathway analysis modal ', () => {
   });
 
   it('Shows an error if analysis can not be launched', async () => {
-    launchPathwayService.mockImplementation(() => { throw new Error('Error launching analysis'); });
+    launchPathwayService.mockImplementation(() => { throw new Error('Failed launching pathway analysis'); });
 
     await renderPathwayAnalysisModal(store);
 
@@ -252,6 +252,7 @@ describe('Pathway analysis modal ', () => {
     });
 
     expect(pushNotificationMessage).toHaveBeenCalledTimes(1);
+    expect(pushNotificationMessage).toHaveBeenCalledWith('error', 'Failed launching pathway analysis');
   });
 
   it('Clicking on download link downloads the gene list', async () => {
@@ -316,5 +317,18 @@ describe('Pathway analysis modal ', () => {
     });
 
     expect(getBackgroundExpressedGenes).toHaveBeenCalledTimes(2);
+  });
+
+  it('It shows an error if getting background expressed genes fail', async () => {
+    getBackgroundExpressedGenes.mockImplementation(() => { throw new Error('Failed getting background gene expression'); });
+
+    await renderPathwayAnalysisModal(store);
+
+    await act(async () => {
+      userEvent.click(screen.getByText(/download reference genes/i));
+    });
+
+    expect(pushNotificationMessage).toHaveBeenCalledTimes(1);
+    expect(pushNotificationMessage).toHaveBeenCalledWith('error', 'Failed getting background gene expression');
   });
 });
