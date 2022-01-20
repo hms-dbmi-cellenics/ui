@@ -130,8 +130,6 @@ describe('AppRouteProvider', () => {
     userEvent.click(screen.getByText(buttonText));
 
     expect(switchExperiment).toHaveBeenCalledTimes(1);
-    expect(updateProject).toHaveBeenCalledTimes(1);
-    expect(updateExperiment).toHaveBeenCalledTimes(1);
 
     expect(mockRouter.push).toHaveBeenCalled();
   });

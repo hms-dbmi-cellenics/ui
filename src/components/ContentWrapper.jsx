@@ -341,7 +341,7 @@ const ContentWrapper = (props) => {
         icon={icon}
         onClick={() => navigateTo(
           module,
-          { projectUuid: activeProjectUuid, experimentId: activeProjectExperimentID },
+          { experimentId: activeProjectExperimentID },
         )}
       >
         {name}

@@ -56,7 +56,7 @@ const LaunchAnalysisButton = () => {
       dispatch(runGem2s(experimentId, gem2sRerunStatus.paramsHash));
     }
 
-    navigateTo(modules.DATA_PROCESSING, { projectUuid: activeProjectUuid, experimentId });
+    navigateTo(modules.DATA_PROCESSING, { experimentId });
   };
 
   useEffect(() => {

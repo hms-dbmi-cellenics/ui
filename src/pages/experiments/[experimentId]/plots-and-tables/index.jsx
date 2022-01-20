@@ -28,7 +28,7 @@ const CardItem = React.forwardRef(({ onClick, item, href }, ref) => (
       alt={item.name}
       src={item.image}
       style={{
-        height: '250px', width: '100%', align: 'center', padding: '8px',
+        height: '280px', width: '310px', align: 'center', padding: '10px',
       }}
     />
   </Card.Grid>
@@ -107,7 +107,7 @@ const PlotsTablesHome = ({ experimentId, experimentData }) => {
           dataSource={plots}
           renderItem={(item) => (
 
-            <List.Item style={{ width: '320px', height: '320px' }}>
+            <List.Item>
               <Card
                 size='small'
                 hoverable

@@ -3,15 +3,12 @@ import React, {
   useEffect, useCallback, useState,
 } from 'react';
 import useSWR from 'swr';
-import { Button, Skeleton, Space } from 'antd';
+import { Button, Skeleton } from 'antd';
 import { useSelector, useDispatch } from 'react-redux';
 import { useRouter } from 'next/router';
 import PropTypes from 'prop-types';
-import moment from 'moment';
 import { useBeforeunload } from 'react-beforeunload';
 import Header from 'components/Header';
-import FeedbackButton from '../FeedbackButton';
-import ReferralButton from '../ReferralButton';
 import { savePlotConfig } from '../../redux/actions/componentConfig/index';
 import { getFromApiExpectOK } from '../../utils/getDataExpectOK';
 import { LOAD_CONFIG } from '../../redux/actionTypes/componentConfig';
@@ -20,7 +17,6 @@ import { initialPlotConfigStates } from '../../redux/reducers/componentConfig/in
 const PlotHeader = ({ title, experimentId, plotUuid }) => {
   const dispatch = useDispatch();
   const saved = !useSelector((state) => state.componentConfig[plotUuid]?.outstandingChanges);
-  const lastUpdated = useSelector((state) => state.componentConfig[plotUuid]?.lastUpdated);
   const router = useRouter();
   const plotType = useSelector((state) => state.componentConfig[plotUuid]?.plotType);
   const { config } = useSelector((state) => state.componentConfig[plotUuid]) || {};
@@ -111,12 +107,6 @@ const PlotHeader = ({ title, experimentId, plotUuid }) => {
     return <Skeleton active paragraph={{ rows: 1 }} title={{ width: 500 }} />;
   }
 
-  const saveString = lastUpdated
-    ? moment(lastUpdated)
-      .fromNow()
-      .toLowerCase()
-    : 'never';
-
   const onClickReset = () => {
     dispatch({
       type: LOAD_CONFIG,
@@ -134,16 +124,14 @@ const PlotHeader = ({ title, experimentId, plotUuid }) => {
     <Header
       title={title}
       extra={(
-        <Space>
-          <Button
-            key='reset'
-            type='primary'
-            onClick={onClickReset}
-            disabled={resetDisabled}
-          >
-            Reset
-          </Button>
-        </Space>
+        <Button
+          key='reset'
+          type='primary'
+          onClick={onClickReset}
+          disabled={resetDisabled}
+        >
+          Reset
+        </Button>
       )}
     />
   );
