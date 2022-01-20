@@ -22,7 +22,7 @@ import mockAPI, {
   generateDefaultMockAPIResponses,
 } from '__test__/test-utils/mockAPI';
 
-import fake from '__test__/test-utils/constants';
+import { projects } from '__test__/test-utils/mockData';
 
 jest.mock('redux/selectors');
 
@@ -38,8 +38,9 @@ jest.mock('@aws-amplify/auth', () => ({
 
 enableFetchMocks();
 
-const experimentId = fake.EXPERIMENT_ID;
-const projectUuid = fake.PROJECT_ID;
+const projectWithSamples = projects.find((project) => project.samples.length > 0);
+const experimentId = projectWithSamples.experiments[0];
+const projectUuid = projectWithSamples.uuid;
 
 const experimentName = 'test experiment';
 const experimentData = {

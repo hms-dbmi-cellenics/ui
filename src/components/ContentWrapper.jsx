@@ -55,9 +55,11 @@ const ContentWrapper = (props) => {
     state?.projects[activeProjectUuid]?.experiments[0]));
 
   const activeProject = useSelector((state) => state.projects[activeProjectUuid]);
-
   const samples = useSelector((state) => state.samples);
 
+  // This use effect block is used to get the active experiment ID in cases where experimentId is not evident in the route
+  // This happens in data-management, where we set the active experimentId to be the experimentId of the project
+  // ExperimentId in the route is used as a higher priority
   useEffect(() => {
     if (!activeProjectExperimentID && !routeExperimentId) return;
 
@@ -338,7 +340,7 @@ const ContentWrapper = (props) => {
         icon={icon}
         onClick={() => navigateTo(
           module,
-          { projectUuid: activeProjectUuid, experimentId: activeProjectExperimentID },
+          { projectUuid: activeProjectUuid, experimentId: currentExperimentId },
         )}
       >
         {name}
