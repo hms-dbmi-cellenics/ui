@@ -3,30 +3,20 @@ import React, {
   useEffect, useCallback, useState,
 } from 'react';
 import useSWR from 'swr';
-import {
-  PageHeader, Row, Col, Button, Skeleton, Space,
-} from 'antd';
+import { Button, Skeleton } from 'antd';
 import { useSelector, useDispatch } from 'react-redux';
 import { useRouter } from 'next/router';
 import PropTypes from 'prop-types';
-import moment from 'moment';
 import { useBeforeunload } from 'react-beforeunload';
-import FeedbackButton from '../FeedbackButton';
-import ReferralButton from '../ReferralButton';
+import Header from 'components/Header';
 import { savePlotConfig } from '../../redux/actions/componentConfig/index';
-import itemRender from '../../utils/renderBreadcrumbLinks';
 import { getFromApiExpectOK } from '../../utils/getDataExpectOK';
 import { LOAD_CONFIG } from '../../redux/actionTypes/componentConfig';
 import { initialPlotConfigStates } from '../../redux/reducers/componentConfig/initialState';
 
-const Header = (props) => {
-  const {
-    experimentId, plotUuid, finalRoute,
-  } = props;
-
+const PlotHeader = ({ title, experimentId, plotUuid }) => {
   const dispatch = useDispatch();
   const saved = !useSelector((state) => state.componentConfig[plotUuid]?.outstandingChanges);
-  const lastUpdated = useSelector((state) => state.componentConfig[plotUuid]?.lastUpdated);
   const router = useRouter();
   const plotType = useSelector((state) => state.componentConfig[plotUuid]?.plotType);
   const { config } = useSelector((state) => state.componentConfig[plotUuid]) || {};
@@ -117,29 +107,6 @@ const Header = (props) => {
     return <Skeleton active paragraph={{ rows: 1 }} title={{ width: 500 }} />;
   }
 
-  const baseRoutes = [
-    {
-      path: 'experiments',
-      breadcrumbName: 'Analyses',
-    },
-    {
-      path: '[experimentId]',
-      params: data?.experimentId,
-      breadcrumbName: data?.experimentName,
-    },
-    {
-      path: 'plots-and-tables',
-      breadcrumbName: 'Plots and Tables',
-    },
-    finalRoute,
-  ];
-
-  const saveString = lastUpdated
-    ? moment(lastUpdated)
-      .fromNow()
-      .toLowerCase()
-    : 'never';
-
   const onClickReset = () => {
     dispatch({
       type: LOAD_CONFIG,
@@ -154,37 +121,26 @@ const Header = (props) => {
     setResetDisabled(true);
   };
   return (
-    <Row>
-      <Col span={16}>
-        <PageHeader
-          style={{ width: '100%', paddingTop: '12px', paddingBottom: '6px' }}
-          title='Edit collection'
-          breadcrumb={{ routes: baseRoutes, itemRender }}
-          subTitle={`Last saved: ${saveString}`}
-          extra={(
-            <Space>
-              <FeedbackButton />
-              <ReferralButton />
-              <Button
-                key='reset'
-                type='primary'
-                onClick={onClickReset}
-                disabled={resetDisabled}
-              >
-                Reset
-              </Button>
-            </Space>
-          )}
-        />
-      </Col>
-    </Row>
+    <Header
+      title={title}
+      extra={(
+        <Button
+          key='reset'
+          type='primary'
+          onClick={onClickReset}
+          disabled={resetDisabled}
+        >
+          Reset
+        </Button>
+      )}
+    />
   );
 };
 
-Header.propTypes = {
-  finalRoute: PropTypes.object.isRequired,
+PlotHeader.propTypes = {
+  title: PropTypes.string.isRequired,
   experimentId: PropTypes.string.isRequired,
   plotUuid: PropTypes.string.isRequired,
 };
 
-export default React.memo(Header);
+export default React.memo(PlotHeader);

@@ -13,7 +13,6 @@ const projectUuid = '12345';
 const projectName = 'Test Project';
 const samplesIdsArray = new Array(13).fill(null).map((_, i) => (`sample-${i}`));
 const createdDate = moment().subtract(30, 'days').format();
-const lastAnalyzed = moment().subtract(6, 'hours').format();
 const lastModified = moment().subtract(30, 'minutes').format();
 
 const projectState = {
@@ -26,7 +25,6 @@ const projectState = {
       uuid: projectUuid,
       samples: samplesIdsArray,
       createdDate,
-      lastAnalyzed,
       lastModified,
     },
   },
@@ -50,9 +48,6 @@ describe('ProjectCard', () => {
 
     // Created date is shown
     expect(screen.getByText(moment(createdDate).fromNow())).toBeInTheDocument();
-
-    // Last analyized is shown
-    expect(screen.getByText(moment(lastAnalyzed).fromNow())).toBeInTheDocument();
 
     // Last modified is shown
     expect(screen.getByText(moment(lastModified).fromNow())).toBeInTheDocument();

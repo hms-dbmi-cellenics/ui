@@ -60,7 +60,7 @@ import { modules } from 'utils/constants';
 const { Text } = Typography;
 const { Option } = Select;
 
-const DataProcessingPage = ({ experimentId, experimentData, route }) => {
+const DataProcessingPage = ({ experimentId, experimentData }) => {
   const dispatch = useDispatch();
   const { navigateTo } = useAppRouter();
 
@@ -600,44 +600,42 @@ const DataProcessingPage = ({ experimentId, experimentData, route }) => {
   };
 
   return (
-    <div style={{
-      paddingLeft: 32, paddingRight: 32, display: 'flex', flexDirection: 'column', height: '100vh',
-    }}
-    >
+    <>
       <Header
         experimentId={experimentId}
         experimentData={experimentData}
-        route={route}
         title='Data Processing'
       />
-      {runQCModalVisible && (
-        <Modal
-          title='Run data processing with the changed settings'
-          visible
-          onCancel={() => setRunQCModalVisible(false)}
-          onOk={() => onPipelineRun()}
-          okText='Start'
+      <Space direction='vertical' style={{ width: '100%', padding: '0 10px' }}>
+
+        {runQCModalVisible && (
+          <Modal
+            title='Run data processing with the changed settings'
+            visible
+            onCancel={() => setRunQCModalVisible(false)}
+            onOk={() => onPipelineRun()}
+            okText='Start'
+          >
+            <p>
+              This will take several minutes.
+              Your navigation within Cellenics will be restricted during this time.
+              Do you want to start?
+            </p>
+          </Modal>
+        )}
+        <Card
+          title={renderTitle()}
         >
-          <p>
-            This will take several minutes.
-            Your navigation within Cellenics will be restricted during this time.
-            Do you want to start?
-          </p>
-        </Modal>
-      )}
-      <Card
-        title={renderTitle()}
-      >
-        {renderContent()}
-      </Card>
-    </div>
+          {renderContent()}
+        </Card>
+      </Space>
+    </>
   );
 };
 
 DataProcessingPage.propTypes = {
   experimentId: PropTypes.string.isRequired,
   experimentData: PropTypes.object.isRequired,
-  route: PropTypes.string.isRequired,
 };
 
 export default DataProcessingPage;

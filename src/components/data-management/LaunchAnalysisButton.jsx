@@ -3,6 +3,8 @@ import { useSelector, useDispatch } from 'react-redux';
 import {
   Button, Tooltip, Popconfirm,
 } from 'antd';
+import { useRouter } from 'next/router';
+import { updateExperimentInfo } from 'redux/actions/experimentSettings';
 import { modules } from 'utils/constants';
 
 import fileUploadSpecifications from 'utils/upload/fileUploadSpecifications';
@@ -54,7 +56,7 @@ const LaunchAnalysisButton = () => {
       dispatch(runGem2s(experimentId, gem2sRerunStatus.paramsHash));
     }
 
-    navigateTo(modules.DATA_PROCESSING, { projectUuid: activeProjectUuid, experimentId });
+    navigateTo(modules.DATA_PROCESSING, { experimentId });
   };
 
   useEffect(() => {

@@ -28,9 +28,11 @@ import paginatedGeneExpressionData from '__test__/data/paginated_gene_expression
 import cellSetsDataWithScratchpad from '__test__/data/cell_sets_with_scratchpad.json';
 import dotPlotData from '__test__/data/dotplot_plotdata.json';
 import userEvent from '@testing-library/user-event';
+import { plotNames } from 'utils/constants';
 
 jest.mock('localforage');
 
+jest.mock('components/UserButton', () => () => <></>);
 jest.mock('object-hash', () => {
   const objectHash = jest.requireActual('object-hash');
   const mockWorkResultETag = jest.requireActual('__test__/test-utils/mockWorkResultETag').default;
@@ -103,7 +105,7 @@ describe('Dot plot page', () => {
     });
 
     // There is the text Dot plot show in the breadcrumbs
-    expect(screen.getByText(/Dot plot/i)).toBeInTheDocument();
+    expect(screen.getByText(new RegExp(plotNames.DOT_PLOT, 'i'))).toBeInTheDocument();
 
     // It has the required dropdown options
     expect(screen.getByText(/Gene selection/i)).toBeInTheDocument();

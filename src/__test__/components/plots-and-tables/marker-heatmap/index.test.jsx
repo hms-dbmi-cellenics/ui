@@ -97,8 +97,6 @@ describe('Marker heatmap plot', () => {
       )
     ));
 
-    expect(screen.getByText(/Marker heatmap/i)).toBeInTheDocument();
-
     expect(screen.getByText(/Gene selection/i)).toBeInTheDocument();
     expect(screen.getByText(/Select data/i)).toBeInTheDocument();
     expect(screen.getByText(/Cluster guardlines/i)).toBeInTheDocument();

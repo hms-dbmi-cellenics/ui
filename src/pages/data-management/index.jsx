@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import PropTypes from 'prop-types';
 import { Mosaic, MosaicWindow } from 'react-mosaic-component';
 import {
   Button, Space, Empty, Typography,
@@ -21,7 +20,7 @@ import loadBackendStatus from '../../redux/actions/backendStatus/loadBackendStat
 
 const { Text } = Typography;
 
-const DataManagementPage = ({ route }) => {
+const DataManagementPage = () => {
   const dispatch = useDispatch();
   const projectsList = useSelector(((state) => state.projects));
 
@@ -130,7 +129,6 @@ const DataManagementPage = ({ route }) => {
   return (
     <>
       <Header
-        route={route}
         title='Data Management'
       />
       {projectSaving || sampleSaving ? (
@@ -177,10 +175,6 @@ const DataManagementPage = ({ route }) => {
       </div>
     </>
   );
-};
-
-DataManagementPage.propTypes = {
-  route: PropTypes.string.isRequired,
 };
 
 export default DataManagementPage;
