@@ -136,8 +136,6 @@ const PlotHeader = ({ title, experimentId, plotUuid }) => {
       subTitle={`Last saved: ${saveString}`}
       extra={(
         <Space>
-          <FeedbackButton />
-          <ReferralButton />
           <Button
             key='reset'
             type='primary'
