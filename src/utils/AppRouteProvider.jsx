@@ -52,9 +52,9 @@ const AppRouteProvider = (props) => {
   );
 
   const availableIntercepts = {
-    DATA_PROCESSING: (nextRoute, hardNavigate) => (
+    DATA_PROCESSING: (nextRoute) => (
       <DataProcessingIntercept
-        onContinueNavigation={() => continueNavigation(nextRoute, hardNavigate)}
+        onContinueNavigation={() => router.push(nextRoute)}
         onDismissIntercept={() => setRenderIntercept(null)}
       />
     ),
@@ -68,17 +68,11 @@ const AppRouteProvider = (props) => {
     dispatch(updateProject(projectUuid, { lastAnalyzed: lastViewed }));
   };
 
-  const continueNavigation = (nextRoute, hardNavigate) => {
-    // Hard navigate, causing the page to refresh and fetch data from server
-    if (hardNavigate) window.location.href = nextRoute;
-    router.push(nextRoute);
-  };
-
-  const handleRouteChange = (previousRoute, module, params, hardNavigate = false) => {
+  const handleRouteChange = (previousRoute, module, params) => {
     const nextRoute = PATHS[module].replace('[experimentId]', params.experimentId);
 
     if (previousRoute.match(PATH_STUBS.DATA_PROCESSING) && changedQCFilters.size > 0) {
-      setRenderIntercept(availableIntercepts.DATA_PROCESSING(nextRoute, hardNavigate));
+      setRenderIntercept(availableIntercepts.DATA_PROCESSING(nextRoute));
       return;
     }
 
@@ -88,7 +82,7 @@ const AppRouteProvider = (props) => {
       updateExperimentInfoOnNavigate(projectUuid, experimentId);
     }
 
-    continueNavigation(nextRoute, hardNavigate);
+    router.push(nextRoute);
   };
 
   const navigateTo = (
