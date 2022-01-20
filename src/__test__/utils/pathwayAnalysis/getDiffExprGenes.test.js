@@ -1,9 +1,13 @@
-import getDiffExprGenes from 'utils/differentialExpression/getDiffExprGenes';
+import {
+  DIFF_EXPR_LOADING,
+} from 'redux/actionTypes/differentialExpression';
 import { makeStore } from 'redux/store';
+import { fetchWork } from 'utils/work/fetchWork';
 
 import setGeneOrdering from 'redux/actions/differentialExpression/setGeneOrdering';
+import getDiffExprGenes from 'utils/differentialExpression/getDiffExprGenes';
 
-import { fetchWork } from 'utils/work/fetchWork';
+import fake from '__test__/test-utils/constants';
 
 jest.mock('utils/work/fetchWork');
 
@@ -76,6 +80,48 @@ describe('getDiffExpr test', () => {
       expect.objectContaining({
         orderBy,
         orderDirection,
+      }),
+    );
+  });
+
+  it('Should pass filters into the request', async () => {
+    const store = makeStore();
+    const advancedFilters = [
+      {
+        type: 'numeric',
+        columnName: 'logFC',
+        comparison: 'greaterThan',
+        value: 0,
+      },
+      {
+        type: 'numeric',
+        columnName: 'p_val_adj',
+        comparison: 'greaterThan',
+        value: 0.5,
+      },
+    ];
+
+    // Explicitly set the filters
+
+    store.dispatch({
+      type: DIFF_EXPR_LOADING,
+      payload: {
+        experimentId: fake.EXPERIMENT_ID,
+        advancedFilters,
+      },
+    });
+
+    // Then dispatch the action
+    await store.dispatch(getDiffExprGenes(true, 0));
+
+    expect(fetchWork).toHaveBeenCalledTimes(1);
+
+    const args = fetchWork.mock.calls[0];
+    const { pagination } = args[3].extras;
+
+    expect(pagination).toEqual(
+      expect.objectContaining({
+        filters: advancedFilters,
       }),
     );
   });

@@ -1,13 +1,18 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import {
-  Modal, Alert, Radio, Space, InputNumber, Select, Button, Typography, Row,
+  Modal, Alert, Radio, Space, InputNumber, Select, Button, Row, Typography,
 } from 'antd';
 import PropTypes from 'prop-types';
 
+import pushNotificationMessage from 'utils/pushNotificationMessage';
 import launchPathwayService from 'utils/pathwayAnalysis/launchPathwayService';
 import getDiffExprGenes from 'utils/differentialExpression/getDiffExprGenes';
-import { pathwayServices, speciesList } from 'utils/pathwayAnalysis/pathwayConstants';
+import enrichrSpecies from 'utils/pathwayAnalysis/enrichrConstants';
+import pantherDBSpecies from 'utils/pathwayAnalysis/pantherDBSpecies.json';
+import { pathwayServices } from 'utils/pathwayAnalysis/pathwayConstants';
+
+const marginSpacing = { marginBottom: '20px', marginTop: '20x' };
 
 const { Paragraph } = Typography;
 
@@ -16,15 +21,24 @@ const LaunchPathwayAnalysisModal = (props) => {
     onCancel, onOpenAdvancedFilters, advancedFiltersAdded,
   } = props;
 
+  const dispatch = useDispatch();
+
   const [externalService, setExternalService] = useState(pathwayServices.PANTHERDB);
   const [useAllGenes, setUseAllGenes] = useState(true);
   const [numGenes, setNumGenes] = useState(0);
   const [waitingForExternalService, setWaitingForExternalService] = useState(false);
-  const [species, setSpecies] = useState(speciesList[0].value);
+  const [species, setSpecies] = useState(null);
+  const speciesList = {
+    [pathwayServices.PANTHERDB]: pantherDBSpecies,
+    [pathwayServices.ENRICHR]: enrichrSpecies,
+  };
 
-  const dispatch = useDispatch();
-
-  const marginSpacing = { marginBottom: '20px', marginTop: '20x' };
+  // PantherDB and Enrichr species list have different values.
+  // therefore, when switching between the two, we need to update the value to
+  // correspond with a value in the species list.
+  useEffect(() => {
+    setSpecies(speciesList[externalService][0]?.value);
+  }, [externalService]);
 
   const launchPathwayAnalysis = async (serviceName) => {
     setWaitingForExternalService(true);
@@ -33,11 +47,14 @@ const LaunchPathwayAnalysisModal = (props) => {
       const pathwayGenesList = await dispatch(getDiffExprGenes(useAllGenes, numGenes));
       launchPathwayService(serviceName, pathwayGenesList, species);
     } catch (error) {
-      throw new Error('Error launching pathway analysis', error);
+      pushNotificationMessage('error', 'Failed launching pathway analysis');
+      console.error('Error launching pathway analysis', error);
     } finally {
       setWaitingForExternalService(false);
     }
   };
+
+  const canLaunchService = () => !waitingForExternalService && species;
 
   return (
     <>
@@ -46,42 +63,38 @@ const LaunchPathwayAnalysisModal = (props) => {
         title='Pathway Analysis'
         width='50%'
         onCancel={onCancel}
-        footer={[
+        footer={(
           <Button
-            disabled={waitingForExternalService}
+            disabled={!canLaunchService()}
             type='primary'
             onClick={() => launchPathwayAnalysis(externalService)}
           >
-            {waitingForExternalService ? 'Loading...' : 'Launch'}
-          </Button>,
-        ]}
+            {!canLaunchService() ? 'Loading...' : 'Launch'}
+          </Button>
+        )}
       >
         {!advancedFiltersAdded && (
-          <Row style={{
-            ...marginSpacing,
-          }}
-          >
-            {/* display the alert only if there are no filter applied to diff expr */}
-            <Paragraph style={{ width: '100%' }}>
-              <Alert
-                type='warning'
-                showIcon
-                message={(
-                  <>
-                    You have not performed any filtering on the genes!
-                    <Button
-                      type='link'
-                      size='small'
-                      onClick={() => onOpenAdvancedFilters()}
-                      onKeyPress={() => onOpenAdvancedFilters()}
-                    >
-                      Click here to open the advanced filtering options.
-                    </Button>
-                  </>
-                )}
-              />
-            </Paragraph>
-          </Row>
+          <Alert
+            type='warning'
+            showIcon
+            style={{
+              ...marginSpacing,
+              width: '100%',
+            }}
+            message={(
+              <>
+                You have not performed any filtering on the genes!
+                <Button
+                  type='link'
+                  size='small'
+                  onClick={() => onOpenAdvancedFilters()}
+                  onKeyPress={() => onOpenAdvancedFilters()}
+                >
+                  Click here to open the advanced filtering options.
+                </Button>
+              </>
+            )}
+          />
         )}
 
         <Row style={marginSpacing}><b>External service</b></Row>
@@ -99,10 +112,15 @@ const LaunchPathwayAnalysisModal = (props) => {
           <Space direction='vertical'>
             <b>Species</b>
 
-            <Select value={species} onChange={(value) => setSpecies(value)} style={{ width: 400 }}>
+            <Select
+              loading={speciesList[externalService].length === 0}
+              value={species}
+              onChange={(value) => setSpecies(value)}
+              style={{ width: 400 }}
+            >
               {
-                speciesList.map((option) => (
-                  <Select.Option value={option.value}><i>{option.label}</i></Select.Option>
+                speciesList[externalService].map((option) => (
+                  <Select.Option key={option.value} value={option.value}><i>{option.label}</i></Select.Option>
                 ))
               }
             </Select>
@@ -135,7 +153,7 @@ const LaunchPathwayAnalysisModal = (props) => {
           </Space>
         </Row>
         {externalService === pathwayServices.PANTHERDB && (
-          <p>
+          <Paragraph>
             It is
             <b> strongly recommended </b>
             {' '}
@@ -143,8 +161,44 @@ const LaunchPathwayAnalysisModal = (props) => {
             then re-run the pathway analysis in the pantherdb page.
             {' '}
             You can either download reference genes into file or copy reference genes to clipboard.
-          </p>
+          </Paragraph>
+
         )}
+
+        <Alert
+          type='warning'
+          style={{
+            width: '100%',
+          }}
+          message={(
+            <>
+              <Paragraph
+                style={{
+                  margin: 0,
+                }}
+              >
+                You will be redirected to an external service to carry out pathway analysis. The
+                {' '}
+                <b>list of genes</b>
+                {' '}
+                and
+                {' '}
+                <b>species</b>
+                {' '}
+                will be submitted. No other information about you or your project will be sent.
+              </Paragraph>
+              {externalService === pathwayServices.PANTHERDB && (
+                <Paragraph
+                  style={{
+                    margin: '1rem 0 0 0',
+                  }}
+                >
+                  PantherDB is hosted in an unsecured server (HTTP). You will see a warning when you launch the service. Click “Send Anyway” to continue.
+                </Paragraph>
+              )}
+            </>
+          )}
+        />
       </Modal>
     </>
   );

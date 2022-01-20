@@ -9,6 +9,7 @@ const getDiffExprGenes = (getAllGenes, numGenes) => async (dispatch, getState) =
     type: comparisonType,
     group: comparisonGroup,
     ordering,
+    advancedFilters,
   } = getState().differentialExpression.comparison;
 
   if (getAllGenes) {
@@ -22,6 +23,10 @@ const getDiffExprGenes = (getAllGenes, numGenes) => async (dispatch, getState) =
     limit: numGenes,
     responseKey: 0,
   };
+
+  if (advancedFilters.length > 0) {
+    pagination.filters = advancedFilters;
+  }
 
   const body = generateDiffExprBody(
     experimentId,
