@@ -220,7 +220,7 @@ const LaunchPathwayAnalysisModal = (props) => {
               copy reference genes to clipboard
             </Button>
             .
-          </p>
+          </Paragraph>
         )}
 
         <Alert
