@@ -133,7 +133,6 @@ const PlotHeader = ({ title, experimentId, plotUuid }) => {
   return (
     <Header
       title={title}
-      subTitle={`Last saved: ${saveString}`}
       extra={(
         <Space>
           <Button

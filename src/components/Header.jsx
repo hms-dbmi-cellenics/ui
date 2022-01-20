@@ -12,7 +12,7 @@ import integrationTestConstants from '../utils/integrationTestConstants';
 
 const Header = (props) => {
   const {
-    experimentId, experimentData, title, subTitle, extra,
+    experimentId, experimentData, title, extra,
   } = props;
   const experiment = useSelector((state) => state?.experiments[experimentId]);
   const experimentName = experimentData?.experimentName || experiment?.name;
@@ -30,7 +30,6 @@ const Header = (props) => {
       <PageHeader
         className={integrationTestConstants.classes.PAGE_HEADER}
         title={title}
-        subTitle={subTitle}
         style={{ width: '100%', paddingTop: '10px', paddingBottom: '10px' }}
         extra={(
           <Space size='large'>
@@ -51,14 +50,12 @@ Header.propTypes = {
   experimentId: PropTypes.string,
   experimentData: PropTypes.object,
   title: PropTypes.string.isRequired,
-  subTitle: PropTypes.string,
   extra: PropTypes.node,
 };
 
 Header.defaultProps = {
   experimentId: null,
   experimentData: null,
-  subTitle: '',
   extra: <></>,
 };
 

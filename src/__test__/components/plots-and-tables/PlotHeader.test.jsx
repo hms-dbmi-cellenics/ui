@@ -46,7 +46,6 @@ describe('Tests for the header in plots and tables ', () => {
         <Provider store={store}>
           <PlotHeader
             title={plotNames.CONTINUOUS_EMBEDDING}
-            subtitle='random sub'
             plotUuid='embeddingContinuousMain'
             extra={<></>}
           />
