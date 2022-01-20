@@ -5,13 +5,12 @@ import {
   Space,
   Collapse,
   Skeleton,
-  Button, Empty, Typography,
+  Empty, Typography,
 } from 'antd';
 import { useSelector, useDispatch } from 'react-redux';
 import moment from 'moment';
-import { CSVLink } from 'react-csv';
 import _ from 'lodash';
-
+import ExportAsCSV from 'components/plots/ExportAsCSV';
 import PropTypes from 'prop-types';
 import Header from 'components/plots/Header';
 import PlotStyling from 'components/plots/styling/PlotStyling';
@@ -182,15 +181,11 @@ const VolcanoPlotPage = (props) => {
     const disabled = plotData.length === 0 || diffExprLoading || diffExprError;
 
     return (
-      <CSVLink data={diffExprData} filename={fileName}>
-        <Button
-          disabled={disabled}
-          onClick={(e) => e.stopPropagation()}
-          size='small'
-        >
-          Export as CSV...
-        </Button>
-      </CSVLink>
+      <ExportAsCSV
+        data={diffExprData}
+        filename={fileName}
+        disabled={disabled}
+      />
     );
   };
 

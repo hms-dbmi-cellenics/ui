@@ -1,6 +1,6 @@
 /* eslint-disable import/no-unresolved */
 /* eslint-disable no-param-reassign */
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import {
   Row,
@@ -12,8 +12,9 @@ import {
   Alert,
 } from 'antd';
 import { useSelector, useDispatch } from 'react-redux';
+import ExportAsCSV from 'components/plots/ExportAsCSV';
 import PropTypes from 'prop-types';
-import { getCellSets } from 'redux/selectors';
+import { getCellSets, getCellSetsHierarchyByKeys } from 'redux/selectors';
 import SelectCellSets from 'components/plots/styling/frequency/SelectCellSets';
 import Header from 'components/plots/Header';
 
@@ -44,7 +45,10 @@ const FrequencyPlotPage = ({ experimentId }) => {
     loading: cellSetsLoading,
     error: cellSetsError,
   } = cellSets;
-
+  const louvainClusters = useSelector(getCellSetsHierarchyByKeys('louvain'));
+  const experimentName = useSelector((state) => state.experimentSettings.info.experimentName);
+  const [csvData, setCsvData] = useState([]);
+  const [csvFilename, setCsvFilename] = useState('');
   useEffect(() => {
     dispatch(loadCellSets(experimentId));
     dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
@@ -101,7 +105,23 @@ const FrequencyPlotPage = ({ experimentId }) => {
   if (!config) {
     return <Skeleton />;
   }
+  const formatCSVData = (plotData) => {
+    const newCsvData = [];
 
+    louvainClusters[0].children.forEach((cluster) => {
+      const entriesForCluster = plotData.filter((entry) => entry.yCellSetKey === cluster.key);
+      const cellSetName = cellSets.properties[cluster.key].name;
+      const newEntry = { 'Louvain Cluster': cellSetName };
+      entriesForCluster.forEach((entry) => {
+        const sampleName = cellSets.properties[entry.x].name;
+        newEntry[sampleName] = entry.y;
+      });
+      newCsvData.push(newEntry);
+    });
+
+    setCsvFilename(`${experimentName.replace(/ /g, '_')}-freq-plot-${config.frequencyType}`);
+    setCsvData(newCsvData);
+  };
   const renderPlot = () => {
     if (cellSetsError) {
       return (
@@ -124,6 +144,7 @@ const FrequencyPlotPage = ({ experimentId }) => {
         <FrequencyPlot
           experimentId={experimentId}
           config={config}
+          formatCSVData={formatCSVData}
         />
       </center>
     );
@@ -138,7 +159,7 @@ const FrequencyPlotPage = ({ experimentId }) => {
       updatePlotWithChanges({ axes: { yAxisText: 'Count' } });
     }
   };
-
+  const renderCSVbutton = () => (<ExportAsCSV data={csvData} filename={csvFilename} disabled={false} />);
   const renderExtraPanels = () => (
     <>
       <Panel header='Select data' key='20'>
@@ -170,7 +191,11 @@ const FrequencyPlotPage = ({ experimentId }) => {
         <Col span={16}>
           <Space direction='vertical' style={{ width: '100%' }}>
             <Collapse defaultActiveKey='1'>
-              <Panel header='Preview' key='1'>
+              <Panel
+                header='Preview'
+                key='1'
+                extra={renderCSVbutton()}
+              >
                 {renderPlot()}
               </Panel>
             </Collapse>

@@ -10,7 +10,7 @@ import { generateSpec, generateData } from '../../utils/plotSpecs/generateFreque
 
 const FrequencyPlot = (props) => {
   const {
-    experimentId, config, actions,
+    experimentId, config, actions, formatCSVData,
   } = props;
 
   const dispatch = useDispatch();
@@ -32,7 +32,7 @@ const FrequencyPlot = (props) => {
         yNamesToDisplay,
         plotData,
       } = generateData(hierarchy, properties, config);
-
+      formatCSVData(plotData);
       setPlotSpec(generateSpec(config, plotData, xNamesToDisplay, yNamesToDisplay));
     }
   }, [hierarchy, properties, config]);
@@ -51,10 +51,12 @@ FrequencyPlot.propTypes = {
     PropTypes.object,
   ]),
   experimentId: PropTypes.string.isRequired,
+  formatCSVData: PropTypes.func,
 };
 
 FrequencyPlot.defaultProps = {
   actions: true,
+  formatCSVData: () => {},
 };
 
 export default FrequencyPlot;
