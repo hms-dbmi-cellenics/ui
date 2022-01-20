@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import {
-  Modal, Alert, Radio, Space, InputNumber, Select, Button, Typography, Row,
+  Modal, Alert, Radio, Space, InputNumber, Select, Button, Row, Typography,
 } from 'antd';
 import PropTypes from 'prop-types';
 
@@ -12,9 +12,9 @@ import enrichrSpecies from 'utils/pathwayAnalysis/enrichrConstants';
 import pantherDBSpecies from 'utils/pathwayAnalysis/pantherDBSpecies.json';
 import { pathwayServices } from 'utils/pathwayAnalysis/pathwayConstants';
 
-const { Paragraph } = Typography;
-
 const marginSpacing = { marginBottom: '20px', marginTop: '20x' };
+
+const { Paragraph } = Typography;
 
 const LaunchPathwayAnalysisModal = (props) => {
   const {
@@ -63,42 +63,38 @@ const LaunchPathwayAnalysisModal = (props) => {
         title='Pathway Analysis'
         width='50%'
         onCancel={onCancel}
-        footer={[
+        footer={(
           <Button
             disabled={!canLaunchService()}
             type='primary'
             onClick={() => launchPathwayAnalysis(externalService)}
           >
             {!canLaunchService() ? 'Loading...' : 'Launch'}
-          </Button>,
-        ]}
+          </Button>
+        )}
       >
         {!advancedFiltersAdded && (
-          <Row style={{
-            ...marginSpacing,
-          }}
-          >
-            {/* display the alert only if there are no filter applied to diff expr */}
-            <Paragraph style={{ width: '100%' }}>
-              <Alert
-                type='warning'
-                showIcon
-                message={(
-                  <>
-                    You have not performed any filtering on the genes!
-                    <Button
-                      type='link'
-                      size='small'
-                      onClick={() => onOpenAdvancedFilters()}
-                      onKeyPress={() => onOpenAdvancedFilters()}
-                    >
-                      Click here to open the advanced filtering options.
-                    </Button>
-                  </>
-                )}
-              />
-            </Paragraph>
-          </Row>
+          <Alert
+            type='warning'
+            showIcon
+            style={{
+              ...marginSpacing,
+              width: '100%',
+            }}
+            message={(
+              <>
+                You have not performed any filtering on the genes!
+                <Button
+                  type='link'
+                  size='small'
+                  onClick={() => onOpenAdvancedFilters()}
+                  onKeyPress={() => onOpenAdvancedFilters()}
+                >
+                  Click here to open the advanced filtering options.
+                </Button>
+              </>
+            )}
+          />
         )}
 
         <Row style={marginSpacing}><b>External service</b></Row>
@@ -157,7 +153,7 @@ const LaunchPathwayAnalysisModal = (props) => {
           </Space>
         </Row>
         {externalService === pathwayServices.PANTHERDB && (
-          <p>
+          <Paragraph>
             It is
             <b> strongly recommended </b>
             {' '}
@@ -165,8 +161,44 @@ const LaunchPathwayAnalysisModal = (props) => {
             then re-run the pathway analysis in the pantherdb page.
             {' '}
             You can either download reference genes into file or copy reference genes to clipboard.
-          </p>
+          </Paragraph>
+
         )}
+
+        <Alert
+          type='warning'
+          style={{
+            width: '100%',
+          }}
+          message={(
+            <>
+              <Paragraph
+                style={{
+                  margin: 0,
+                }}
+              >
+                You will be redirected to an external service to carry out pathway analysis. The
+                {' '}
+                <b>list of genes</b>
+                {' '}
+                and
+                {' '}
+                <b>species</b>
+                {' '}
+                will be submitted. No other information about you or your project will be sent.
+              </Paragraph>
+              {externalService === pathwayServices.PANTHERDB && (
+                <Paragraph
+                  style={{
+                    margin: '1rem 0 0 0',
+                  }}
+                >
+                  PantherDB is hosted in an unsecured server (HTTP). You will see a warning when you launch the service. Click “Send Anyway” to continue.
+                </Paragraph>
+              )}
+            </>
+          )}
+        />
       </Modal>
     </>
   );
