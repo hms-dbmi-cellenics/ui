@@ -1,4 +1,6 @@
-import React, { useContext, useState } from 'react';
+import React, {
+  useContext, useState, useEffect, useRef,
+} from 'react';
 import propTypes from 'prop-types';
 import { useSelector, useDispatch } from 'react-redux';
 import { useRouter } from 'next/router';
@@ -91,8 +93,27 @@ const AppRouteProvider = (props) => {
     refreshPage,
   ) => handleRouteChange(router.pathname, module, params, refreshPage);
 
+  const useCurrentModuleName = () => {
+    const pathLookup = useRef(Object.entries(PATH_STUBS));
+    const [currentModule, setCurrentModule] = useState(module.DATA_MANAGEMENT);
+
+    const { pathname } = router;
+
+    useEffect(() => {
+      pathLookup.current.find(([moduleName, path]) => {
+        if (pathname.match(path)) {
+          setCurrentModule(moduleName);
+          return true;
+        }
+        return false;
+      });
+    }, [pathname]);
+
+    return currentModule;
+  };
+
   return (
-    <AppRouterContext.Provider value={{ navigateTo }}>
+    <AppRouterContext.Provider value={{ navigateTo, useCurrentModuleName }}>
       {renderIntercept ?? <></>}
       {children}
     </AppRouterContext.Provider>

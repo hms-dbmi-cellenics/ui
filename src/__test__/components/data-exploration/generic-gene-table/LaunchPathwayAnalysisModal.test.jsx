@@ -2,7 +2,6 @@ import React from 'react';
 import userEvent from '@testing-library/user-event';
 import LaunchPathwayAnalysisModal from 'components/data-exploration/differential-expression-tool/LaunchPathwayAnalysisModal';
 
-import { SWRConfig } from 'swr';
 import {
   render, screen, waitFor,
 } from '@testing-library/react';
@@ -60,15 +59,13 @@ const pantherDBResponse = {
 const renderPathwayAnalysisModal = async (filtersApplied = false) => {
   await act(async () => {
     render(
-      <SWRConfig value={{ provider: () => new Map() }}>
-        <Provider store={makeStore()}>
-          <LaunchPathwayAnalysisModal
-            advancedFiltersAdded={filtersApplied}
-            onCancel={onCancel}
-            onOpenAdvancedFilters={onOpenAdvancedFilters}
-          />
-        </Provider>
-      </SWRConfig>,
+      <Provider store={makeStore()}>
+        <LaunchPathwayAnalysisModal
+          advancedFiltersAdded={filtersApplied}
+          onCancel={onCancel}
+          onOpenAdvancedFilters={onOpenAdvancedFilters}
+        />
+      </Provider>,
     );
   });
 };

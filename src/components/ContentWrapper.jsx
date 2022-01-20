@@ -2,7 +2,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
-import { useRouter } from 'next/router';
 import {
   BuildOutlined,
   DatabaseOutlined,
@@ -48,9 +47,9 @@ const ContentWrapper = (props) => {
   const [collapsed, setCollapsed] = useState(false);
 
   const { routeExperimentId, experimentData, children } = props;
-  const { navigateTo } = useAppRouter();
-  const router = useRouter();
-  const route = router?.route || '';
+  const { navigateTo, useCurrentModuleName } = useAppRouter();
+
+  const currentModule = useCurrentModuleName();
 
   const currentExperimentIdRef = useRef(routeExperimentId);
   const activeProjectUuid = useSelector((state) => state?.projects?.meta?.activeProjectUuid);
@@ -302,11 +301,11 @@ const ContentWrapper = (props) => {
         return <GEM2SLoadingScreen experimentId={routeExperimentId} gem2sStatus='toBeRun' />;
       }
 
-      if (pipelineRunningError && !route.includes('data-processing')) {
+      if (pipelineRunningError && currentModule !== modules.DATA_PROCESSING) {
         return <PipelineRedirectToDataProcessing experimentId={routeExperimentId} pipelineStatus='error' />;
       }
 
-      if (pipelineRunning && !route.includes('data-processing')) {
+      if (pipelineRunning && currentModule !== modules.DATA_PROCESSING) {
         return <PipelineRedirectToDataProcessing experimentId={routeExperimentId} pipelineStatus='running' />;
       }
 
@@ -314,7 +313,7 @@ const ContentWrapper = (props) => {
         return children;
       }
 
-      if (pipelineStatusKey === pipelineStatus.NOT_CREATED && !route.includes('data-processing')) {
+      if (pipelineStatusKey === pipelineStatus.NOT_CREATED && !currentModule === modules.DATA_PROCESSING) {
         return <PipelineRedirectToDataProcessing experimentId={routeExperimentId} pipelineStatus='toBeRun' />;
       }
     }
@@ -370,8 +369,8 @@ const ContentWrapper = (props) => {
             theme='dark'
             selectedKeys={
               menuLinks
-                .filter(({ path }) => route.includes(path))
-                .map(({ path }) => path)
+                .filter(({ module }) => module === currentModule)
+                .map(({ module }) => module)
             }
             mode='inline'
           >
