@@ -17,6 +17,14 @@ import { loadProjects, setActiveProject } from 'redux/actions/projects';
 import { projects } from '__test__/test-utils/mockData';
 import ProjectMenu from '../../../components/data-management/ProjectMenu';
 
+const mockNavigateTo = jest.fn();
+
+jest.mock('utils/AppRouteProvider', () => ({
+  useAppRouter: jest.fn(() => ({
+    navigateTo: mockNavigateTo,
+  })),
+}));
+
 const projectWithSamples = projects.find((project) => project.samples.length > 0);
 const projectWithoutSamples = projects.find((project) => project.samples.length === 0);
 
