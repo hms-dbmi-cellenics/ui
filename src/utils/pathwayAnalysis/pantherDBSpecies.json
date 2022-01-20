@@ -1,0 +1,570 @@
+[
+  {
+      "label": "Homo sapiens",
+      "value": "HUMAN"
+  },
+  {
+      "label": "Mus musculus",
+      "value": "MOUSE"
+  },
+  {
+      "label": "Rattus norvegicus",
+      "value": "RAT"
+  },
+  {
+      "label": "Gallus gallus",
+      "value": "CHICK"
+  },
+  {
+      "label": "Danio rerio",
+      "value": "DANRE"
+  },
+  {
+      "label": "Drosophila melanogaster",
+      "value": "DROME"
+  },
+  {
+      "label": "Caenorhabditis elegans",
+      "value": "CAEEL"
+  },
+  {
+      "label": "Saccharomyces cerevisiae",
+      "value": "YEAST"
+  },
+  {
+      "label": "Schizosaccharomyces pombe",
+      "value": "SCHPO"
+  },
+  {
+      "label": "Dictyostelium discoideum",
+      "value": "DICDI"
+  },
+  {
+      "label": "Arabidopsis thaliana",
+      "value": "ARATH"
+  },
+  {
+      "label": "Escherichia coli",
+      "value": "ECOLI"
+  },
+  {
+      "label": "Emericella nidulans",
+      "value": "EMENI"
+  },
+  {
+      "label": "Amborella trichopoda",
+      "value": "AMBTC"
+  },
+  {
+      "label": "Anolis carolinensis",
+      "value": "ANOCA"
+  },
+  {
+      "label": "Anopheles gambiae",
+      "value": "ANOGA"
+  },
+  {
+      "label": "Aquifex aeolicus",
+      "value": "AQUAE"
+  },
+  {
+      "label": "Ashbya gossypii",
+      "value": "ASHGO"
+  },
+  {
+      "label": "Bacillus cereus",
+      "value": "BACCR"
+  },
+  {
+      "label": "Bacillus subtilis",
+      "value": "BACSU"
+  },
+  {
+      "label": "Bacteroides thetaiotaomicron",
+      "value": "BACTN"
+  },
+  {
+      "label": "Batrachochytrium dendrobatidis",
+      "value": "BATDJ"
+  },
+  {
+      "label": "Bos taurus",
+      "value": "BOVIN"
+  },
+  {
+      "label": "Brachypodium distachyon",
+      "value": "BRADI"
+  },
+  {
+      "label": "Bradyrhizobium diazoefficiens",
+      "value": "BRADU"
+  },
+  {
+      "label": "Branchiostoma floridae",
+      "value": "BRAFL"
+  },
+  {
+      "label": "Brassica napus",
+      "value": "BRANA"
+  },
+  {
+      "label": "Brassica rapa subsp. pekinensis",
+      "value": "BRARP"
+  },
+  {
+      "label": "Caenorhabditis briggsae",
+      "value": "CAEBR"
+  },
+  {
+      "label": "Candida albicans",
+      "value": "CANAL"
+  },
+  {
+      "label": "Canis lupus familiaris",
+      "value": "CANLF"
+  },
+  {
+      "label": "Capsicum annuum",
+      "value": "CAPAN"
+  },
+  {
+      "label": "Chlamydia trachomatis",
+      "value": "CHLTR"
+  },
+  {
+      "label": "Chlamydomonas reinhardtii",
+      "value": "CHLRE"
+  },
+  {
+      "label": "Chloroflexus aurantiacus",
+      "value": "CHLAA"
+  },
+  {
+      "label": "Ciona intestinalis",
+      "value": "CIOIN"
+  },
+  {
+      "label": "Citrus sinensis",
+      "value": "CITSI"
+  },
+  {
+      "label": "Clostridium botulinum",
+      "value": "CLOBH"
+  },
+  {
+      "label": "Coxiella burnetii",
+      "value": "COXBU"
+  },
+  {
+      "label": "Cryptococcus neoformans",
+      "value": "CRYNJ"
+  },
+  {
+      "label": "Cucumis sativus",
+      "value": "CUCSA"
+  },
+  {
+      "label": "Daphnia pulex",
+      "value": "DAPPU"
+  },
+  {
+      "label": "Deinococcus radiodurans",
+      "value": "DEIRA"
+  },
+  {
+      "label": "Dictyoglomus turgidum",
+      "value": "DICTD"
+  },
+  {
+      "label": "Dictyostelium purpureum",
+      "value": "DICPU"
+  },
+  {
+      "label": "Entamoeba histolytica",
+      "value": "ENTHI"
+  },
+  {
+      "label": "Equus caballus",
+      "value": "HORSE"
+  },
+  {
+      "label": "Erythranthe guttata",
+      "value": "ERYGU"
+  },
+  {
+      "label": "Eucalyptus grandis",
+      "value": "EUCGR"
+  },
+  {
+      "label": "Felis catus",
+      "value": "FELCA"
+  },
+  {
+      "label": "Fusobacterium nucleatum",
+      "value": "FUSNN"
+  },
+  {
+      "label": "Geobacter sulfurreducens",
+      "value": "GEOSL"
+  },
+  {
+      "label": "Giardia intestinalis",
+      "value": "GIAIC"
+  },
+  {
+      "label": "Gloeobacter violaceus",
+      "value": "GLOVI"
+  },
+  {
+      "label": "Glycine max",
+      "value": "SOYBN"
+  },
+  {
+      "label": "Gorilla gorilla gorilla",
+      "value": "GORGO"
+  },
+  {
+      "label": "Gossypium hirsutum",
+      "value": "GOSHI"
+  },
+  {
+      "label": "Haemophilus influenzae",
+      "value": "HAEIN"
+  },
+  {
+      "label": "Halobacterium salinarum",
+      "value": "HALSA"
+  },
+  {
+      "label": "Helianthus annuus",
+      "value": "HELAN"
+  },
+  {
+      "label": "Helicobacter pylori",
+      "value": "HELPY"
+  },
+  {
+      "label": "Hordeum vulgare subsp. vulgare",
+      "value": "HORVV"
+  },
+  {
+      "label": "Ixodes scapularis",
+      "value": "IXOSC"
+  },
+  {
+      "label": "Juglans regia",
+      "value": "JUGRE"
+  },
+  {
+      "label": "Korarchaeum cryptofilum",
+      "value": "KORCO"
+  },
+  {
+      "label": "Lactuca sativa",
+      "value": "LACSA"
+  },
+  {
+      "label": "Leishmania major",
+      "value": "LEIMA"
+  },
+  {
+      "label": "Leptospira interrogans",
+      "value": "LEPIN"
+  },
+  {
+      "label": "Listeria monocytogenes",
+      "value": "LISMO"
+  },
+  {
+      "label": "Macaca mulatta",
+      "value": "MACMU"
+  },
+  {
+      "label": "Manihot esculenta",
+      "value": "MANES"
+  },
+  {
+      "label": "Medicago truncatula",
+      "value": "MEDTR"
+  },
+  {
+      "label": "Methanocaldococcus jannaschii",
+      "value": "METJA"
+  },
+  {
+      "label": "Methanosarcina acetivorans",
+      "value": "METAC"
+  },
+  {
+      "label": "Monodelphis domestica",
+      "value": "MONDO"
+  },
+  {
+      "label": "Monosiga brevicollis",
+      "value": "MONBE"
+  },
+  {
+      "label": "Musa acuminata subsp. malaccensis",
+      "value": "MUSAM"
+  },
+  {
+      "label": "Mycobacterium tuberculosis",
+      "value": "MYCTU"
+  },
+  {
+      "label": "Neisseria meningitidis serogroup b",
+      "value": "NEIMB"
+  },
+  {
+      "label": "Nelumbo nucifera",
+      "value": "NELNU"
+  },
+  {
+      "label": "Nematostella vectensis",
+      "value": "NEMVE"
+  },
+  {
+      "label": "Neosartorya fumigata",
+      "value": "ASPFU"
+  },
+  {
+      "label": "Neurospora crassa",
+      "value": "NEUCR"
+  },
+  {
+      "label": "Nicotiana tabacum",
+      "value": "TOBAC"
+  },
+  {
+      "label": "Nitrosopumilus maritimus",
+      "value": "NITMS"
+  },
+  {
+      "label": "Ornithorhynchus anatinus",
+      "value": "ORNAN"
+  },
+  {
+      "label": "Oryza sativa",
+      "value": "ORYSJ"
+  },
+  {
+      "label": "Oryzias latipes",
+      "value": "ORYLA"
+  },
+  {
+      "label": "Ostreococcus tauri",
+      "value": "OSTTA"
+  },
+  {
+      "label": "Pan troglodytes",
+      "value": "PANTR"
+  },
+  {
+      "label": "Paramecium tetraurelia",
+      "value": "PARTE"
+  },
+  {
+      "label": "Phaeosphaeria nodorum",
+      "value": "PHANO"
+  },
+  {
+      "label": "Phoenix dactylifera",
+      "value": "PHODC"
+  },
+  {
+      "label": "Physcomitrella patens",
+      "value": "PHYPA"
+  },
+  {
+      "label": "Phytophthora ramorum",
+      "value": "PHYRM"
+  },
+  {
+      "label": "Plasmodium falciparum",
+      "value": "PLAF7"
+  },
+  {
+      "label": "Populus trichocarpa",
+      "value": "POPTR"
+  },
+  {
+      "label": "Pristionchus pacificus",
+      "value": "PRIPA"
+  },
+  {
+      "label": "Prunus persica",
+      "value": "PRUPE"
+  },
+  {
+      "label": "Pseudomonas aeruginosa",
+      "value": "PSEAE"
+  },
+  {
+      "label": "Puccinia graminis",
+      "value": "PUCGT"
+  },
+  {
+      "label": "Pyrobaculum aerophilum",
+      "value": "PYRAE"
+  },
+  {
+      "label": "Rhodopirellula baltica",
+      "value": "RHOBA"
+  },
+  {
+      "label": "Ricinus communis",
+      "value": "RICCO"
+  },
+  {
+      "label": "Salmonella typhimurium",
+      "value": "SALTY"
+  },
+  {
+      "label": "Sclerotinia sclerotiorum",
+      "value": "SCLS1"
+  },
+  {
+      "label": "Selaginella moellendorffii",
+      "value": "SELML"
+  },
+  {
+      "label": "Setaria italica",
+      "value": "SETIT"
+  },
+  {
+      "label": "Shewanella oneidensis",
+      "value": "SHEON"
+  },
+  {
+      "label": "Solanum lycopersicum",
+      "value": "SOLLC"
+  },
+  {
+      "label": "Solanum tuberosum",
+      "value": "SOLTU"
+  },
+  {
+      "label": "Sorghum bicolor",
+      "value": "SORBI"
+  },
+  {
+      "label": "Spinacia oleracea",
+      "value": "SPIOL"
+  },
+  {
+      "label": "Staphylococcus aureus",
+      "value": "STAA8"
+  },
+  {
+      "label": "Streptococcus pneumoniae",
+      "value": "STRR6"
+  },
+  {
+      "label": "Streptomyces coelicolor",
+      "value": "STRCO"
+  },
+  {
+      "label": "Strongylocentrotus purpuratus",
+      "value": "STRPU"
+  },
+  {
+      "label": "Sulfolobus solfataricus",
+      "value": "SACS2"
+  },
+  {
+      "label": "Sus scrofa",
+      "value": "PIG"
+  },
+  {
+      "label": "Synechocystis",
+      "value": "SYNY3"
+  },
+  {
+      "label": "Thalassiosira pseudonana",
+      "value": "THAPS"
+  },
+  {
+      "label": "Theobroma cacao",
+      "value": "THECC"
+  },
+  {
+      "label": "Thermococcus kodakaraensis",
+      "value": "THEKO"
+  },
+  {
+      "label": "Thermodesulfovibrio yellowstonii",
+      "value": "THEYD"
+  },
+  {
+      "label": "Thermotoga maritima",
+      "value": "THEMA"
+  },
+  {
+      "label": "Tribolium castaneum",
+      "value": "TRICA"
+  },
+  {
+      "label": "Trichomonas vaginalis",
+      "value": "TRIVA"
+  },
+  {
+      "label": "Trichoplax adhaerens",
+      "value": "TRIAD"
+  },
+  {
+      "label": "Triticum aestivum",
+      "value": "WHEAT"
+  },
+  {
+      "label": "Trypanosoma brucei",
+      "value": "TRYB2"
+  },
+  {
+      "label": "Ustilago maydis",
+      "value": "USTMA"
+  },
+  {
+      "label": "Vibrio cholerae",
+      "value": "VIBCH"
+  },
+  {
+      "label": "Vitis vinifera",
+      "value": "VITVI"
+  },
+  {
+      "label": "Xanthomonas campestris",
+      "value": "XANCP"
+  },
+  {
+      "label": "Xenopus tropicalis",
+      "value": "XENTR"
+  },
+  {
+      "label": "Yarrowia lipolytica",
+      "value": "YARLI"
+  },
+  {
+      "label": "Yersinia pestis",
+      "value": "YERPE"
+  },
+  {
+      "label": "Zea mays",
+      "value": "MAIZE"
+  },
+  {
+      "label": "Zostera marina",
+      "value": "ZOSMR"
+  },
+  {
+      "label": "helobdella robusta",
+      "value": "HELRO"
+  },
+  {
+      "label": "lepisosteus oculatus",
+      "value": "LEPOC"
+  },
+  {
+      "label": "mycoplasma genitalium",
+      "value": "MYCGE"
+  }
+]
