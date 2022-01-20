@@ -26,6 +26,14 @@ import { setActiveProject } from 'redux/actions/projects';
 jest.mock('utils/data-management/downloadFromUrl');
 jest.mock('react-resize-detector', () => (props) => props.children({ width: 100, height: 100 }));
 
+const mockNavigateTo = jest.fn();
+
+jest.mock('utils/AppRouteProvider', () => ({
+  useAppRouter: jest.fn(() => ({
+    navigateTo: mockNavigateTo,
+  })),
+}));
+
 // Necessary due to storage being used in the default SamplesTable.
 jest.mock('@aws-amplify/storage', () => ({
   get: jest.fn(() => Promise.resolve('https://mock-s3-url.com')),

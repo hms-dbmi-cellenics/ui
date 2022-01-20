@@ -20,6 +20,14 @@ import { initialExperimentBackendStatus } from '../../../redux/reducers/backendS
 import UploadStatus from '../../../utils/upload/UploadStatus';
 import '__test__/test-utils/setupTests';
 
+const mockNavigateTo = jest.fn();
+
+jest.mock('utils/AppRouteProvider', () => ({
+  useAppRouter: jest.fn(() => ({
+    navigateTo: mockNavigateTo,
+  })),
+}));
+
 const mockStore = configureStore([thunk]);
 const width = 600;
 const height = 400;
