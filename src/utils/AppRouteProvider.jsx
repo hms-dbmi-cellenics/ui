@@ -32,7 +32,7 @@ const PATH_STUBS = {
 };
 
 const PATHS = {
-  [modules.DATA_MANAGEMENT]: `${PATH_STUBS[modules.DATA_PROCESSING]}`,
+  [modules.DATA_MANAGEMENT]: `${PATH_STUBS[modules.DATA_MANAGEMENT]}`,
   [modules.DATA_PROCESSING]: `/experiments/[experimentId]${PATH_STUBS[modules.DATA_PROCESSING]}`,
   [modules.DATA_EXPLORATION]: `/experiments/[experimentId]${PATH_STUBS[modules.DATA_EXPLORATION]}`,
   [modules.PLOTS_AND_TABLES]: `/experiments/[experimentId]${PATH_STUBS[modules.PLOTS_AND_TABLES]}`,
