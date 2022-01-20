@@ -6,27 +6,40 @@ import waitForComponentToPaint from 'utils/tests/waitForComponentToPaint';
 import '__test__/test-utils/setupTests';
 
 const experimentId = 'asd';
+
+const firstChild = {
+  key: '1a',
+  name: 'first child',
+  color: '#00FF00',
+};
+
+const secondChild = {
+  key: '2a',
+  name: 'second child',
+  color: '#00FF00',
+};
+
+const childInSecondParent = {
+  key: '3a',
+  name: 'third child',
+  color: '#00FF00',
+};
+
+const firstParent = {
+  key: '1',
+  name: 'parent 1',
+  rootNode: true,
+  children: [firstChild, secondChild],
+};
+
+const secondParent = {
+  key: '2',
+  name: 'parent 2',
+  rootNode: true,
+  children: [childInSecondParent],
+};
+
 describe('HierarchicalTree', () => {
-  const child = {
-    key: '1a',
-    name: 'first child',
-    color: '#00FF00',
-  };
-
-  const firstParent = {
-    key: '1',
-    name: 'parent 1',
-    rootNode: true,
-    children: [],
-  };
-
-  const secondParent = {
-    key: '2',
-    name: 'parent 2',
-    rootNode: true,
-    children: [],
-  };
-
   it('Renders correctly', () => {
     const treeData = [{
       key: '1',
@@ -44,24 +57,6 @@ describe('HierarchicalTree', () => {
   });
 
   it('can drag first component at the last position', () => {
-    const firstChild = {
-      key: '1a',
-      name: 'first child',
-      color: '#00FF00',
-    };
-
-    const secondChild = {
-      key: '2a',
-      name: 'second child',
-      color: '#00FF00',
-    };
-
-    const thirdChild = {
-      key: '3a',
-      name: 'third child',
-      color: '#00FF00',
-    };
-
     const treeData = [
       {
         key: '1',
@@ -70,7 +65,7 @@ describe('HierarchicalTree', () => {
         children: [
           firstChild,
           secondChild,
-          thirdChild,
+          childInSecondParent,
         ],
       },
     ];
@@ -80,11 +75,10 @@ describe('HierarchicalTree', () => {
         ...firstChild,
         pos: '0-0-0',
       },
-      dragNodesKeys: [firstChild.key],
       dropPosition: 2,
       dropToGap: true,
       node: {
-        ...thirdChild,
+        ...childInSecondParent,
         pos: '0-0-3',
       },
     };
@@ -117,7 +111,7 @@ describe('HierarchicalTree', () => {
         name: 'parent 1',
         rootNode: true,
         children: [
-          child,
+          firstChild,
         ],
       },
       secondParent,
@@ -125,10 +119,9 @@ describe('HierarchicalTree', () => {
 
     const dropInfo = {
       dragNode: {
-        ...child,
+        ...firstChild,
         pos: '0-0-0',
       },
-      dragNodesKeys: [child.key],
       dropPosition: 1,
       dropToGap: true,
       node: {
@@ -164,7 +157,6 @@ describe('HierarchicalTree', () => {
         ...secondParent,
         pos: '0-0',
       },
-      dragNodesKeys: [secondParent.key],
       dropPosition: 1,
       dropToGap: true,
       node: {
@@ -198,10 +190,9 @@ describe('HierarchicalTree', () => {
 
     const dropInfo = {
       dragNode: {
-        ...child,
+        ...firstChild,
         pos: '0-0-1',
       },
-      dragNodesKeys: [secondParent.key],
       dropPosition: 4,
       dropToGap: true,
       node: {
@@ -236,14 +227,13 @@ describe('HierarchicalTree', () => {
 
     const dropInfo = {
       dragNode: {
-        ...child,
+        ...firstChild,
         pos: '0-0-1',
       },
-      dragNodesKeys: [secondParent.key],
       dropPosition: 1,
       dropToGap: true,
       node: {
-        ...child,
+        ...firstChild,
         key: '1b',
         pos: '0-0-1',
       },
@@ -275,14 +265,13 @@ describe('HierarchicalTree', () => {
 
     const dropInfo = {
       dragNode: {
-        ...child,
+        ...firstChild,
         pos: '0-0-1',
       },
-      dragNodesKeys: [secondParent.key],
       dropPosition: 4,
       dropToGap: false,
       node: {
-        ...child,
+        ...firstChild,
         key: '1b',
         pos: '0-0-5',
       },
