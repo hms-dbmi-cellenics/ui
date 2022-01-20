@@ -47,7 +47,19 @@ const AppRouteProvider = (props) => {
   const router = useRouter();
   const dispatch = useDispatch();
 
+  const pathLookup = useRef(Object.entries(PATH_STUBS));
+
   const [renderIntercept, setRenderIntercept] = useState(null);
+  const [currentModule, setCurrentModule] = useState(module.DATA_MANAGEMENT);
+
+  useEffect(() => {
+    pathLookup.current.find(([moduleName, path]) => {
+      if (!router.pathname.match(path)) return false;
+
+      setCurrentModule(moduleName);
+      return true;
+    });
+  }, [router.pathname]);
 
   const changedQCFilters = useSelector(
     (state) => state.experimentSettings.processing.meta.changedQCFilters,
@@ -93,27 +105,8 @@ const AppRouteProvider = (props) => {
     refreshPage,
   ) => handleRouteChange(router.pathname, module, params, refreshPage);
 
-  const useCurrentModuleName = () => {
-    const pathLookup = useRef(Object.entries(PATH_STUBS));
-    const [currentModule, setCurrentModule] = useState(module.DATA_MANAGEMENT);
-
-    const { pathname } = router;
-
-    useEffect(() => {
-      pathLookup.current.find(([moduleName, path]) => {
-        if (pathname.match(path)) {
-          setCurrentModule(moduleName);
-          return true;
-        }
-        return false;
-      });
-    }, [pathname]);
-
-    return currentModule;
-  };
-
   return (
-    <AppRouterContext.Provider value={{ navigateTo, useCurrentModuleName }}>
+    <AppRouterContext.Provider value={{ navigateTo, currentModule }}>
       {renderIntercept ?? <></>}
       {children}
     </AppRouterContext.Provider>

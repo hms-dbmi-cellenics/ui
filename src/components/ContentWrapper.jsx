@@ -47,9 +47,7 @@ const ContentWrapper = (props) => {
   const [collapsed, setCollapsed] = useState(false);
 
   const { routeExperimentId, experimentData, children } = props;
-  const { navigateTo, useCurrentModuleName } = useAppRouter();
-
-  const currentModule = useCurrentModuleName();
+  const { navigateTo, currentModule } = useAppRouter();
 
   const currentExperimentIdRef = useRef(routeExperimentId);
   const activeProjectUuid = useSelector((state) => state?.projects?.meta?.activeProjectUuid);
@@ -313,7 +311,7 @@ const ContentWrapper = (props) => {
         return children;
       }
 
-      if (pipelineStatusKey === pipelineStatus.NOT_CREATED && !currentModule === modules.DATA_PROCESSING) {
+      if (pipelineStatusKey === pipelineStatus.NOT_CREATED && currentModule !== modules.DATA_PROCESSING) {
         return <PipelineRedirectToDataProcessing experimentId={routeExperimentId} pipelineStatus='toBeRun' />;
       }
     }
