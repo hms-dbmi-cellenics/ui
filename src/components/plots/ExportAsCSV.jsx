@@ -13,7 +13,7 @@ const ExportAsCSV = (props) => {
         onClick={(e) => e.stopPropagation()}
         size='small'
       >
-        Export as CSV...
+        Export as CSV
       </Button>
     </CSVLink>
   );

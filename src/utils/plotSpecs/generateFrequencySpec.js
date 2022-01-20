@@ -185,7 +185,7 @@ const generateData = (hierarchy, properties, config) => {
 
   // Get cell sets under the nodes.
   const cellSets = _.mapValues(cellSetGroupByRoots, (key) => (
-    hierarchy.find((rootNode) => rootNode.key === key)?.children
+    hierarchy.find((rootNode) => rootNode.key === key)?.children || []
   ));
 
   if (config.frequencyType === 'proportional') {

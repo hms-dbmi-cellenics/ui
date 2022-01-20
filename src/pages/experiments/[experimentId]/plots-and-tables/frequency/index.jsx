@@ -45,10 +45,13 @@ const FrequencyPlotPage = ({ experimentId }) => {
     loading: cellSetsLoading,
     error: cellSetsError,
   } = cellSets;
-  const louvainClusters = useSelector(getCellSetsHierarchyByKeys('louvain'));
+
+  const cellSetClusters = useSelector(getCellSetsHierarchyByKeys(config?.proportionGrouping || ''));
   const experimentName = useSelector((state) => state.experimentSettings.info.experimentName);
+
   const [csvData, setCsvData] = useState([]);
   const [csvFilename, setCsvFilename] = useState('');
+
   useEffect(() => {
     dispatch(loadCellSets(experimentId));
     dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
@@ -108,10 +111,13 @@ const FrequencyPlotPage = ({ experimentId }) => {
   const formatCSVData = (plotData) => {
     const newCsvData = [];
 
-    louvainClusters[0].children.forEach((cluster) => {
+    cellSetClusters[0].children.forEach((cluster) => {
       const entriesForCluster = plotData.filter((entry) => entry.yCellSetKey === cluster.key);
+
       const cellSetName = cellSets.properties[cluster.key].name;
-      const newEntry = { 'Louvain Cluster': cellSetName };
+      const rootCellSetName = cellSets.properties[config.proportionGrouping].name;
+      const newEntry = { [rootCellSetName]: cellSetName };
+
       entriesForCluster.forEach((entry) => {
         const sampleName = cellSets.properties[entry.x].name;
         newEntry[sampleName] = entry.y;
@@ -149,6 +155,7 @@ const FrequencyPlotPage = ({ experimentId }) => {
       </center>
     );
   };
+
   const changePlotType = (value) => {
     updatePlotWithChanges({
       frequencyType: value.target.value,
@@ -159,7 +166,11 @@ const FrequencyPlotPage = ({ experimentId }) => {
       updatePlotWithChanges({ axes: { yAxisText: 'Count' } });
     }
   };
-  const renderCSVbutton = () => (<ExportAsCSV data={csvData} filename={csvFilename} disabled={false} />);
+
+  const renderCSVbutton = () => (
+    <ExportAsCSV data={csvData} filename={csvFilename} disabled={false} />
+  );
+
   const renderExtraPanels = () => (
     <>
       <Panel header='Select data' key='20'>
