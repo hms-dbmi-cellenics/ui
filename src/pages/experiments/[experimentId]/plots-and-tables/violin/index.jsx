@@ -19,17 +19,12 @@ import {
   loadPlotConfig,
 } from 'redux/actions/componentConfig/index';
 import { loadCellSets } from 'redux/actions/cellSets';
-import Header from 'components/plots/Header';
+import PlotHeader from 'components/plots/PlotHeader';
 import ViolinPlot from 'components/plots/ViolinPlot';
 import { getCellSets } from 'redux/selectors';
+import { plotNames } from 'utils/constants';
 
 const { Panel } = Collapse;
-
-const route = {
-  path: 'violin',
-  breadcrumbName: 'Violin',
-};
-
 // TODO: when we want to enable users to create their custom plots,
 // we will need to change this to proper Uuid
 const plotUuid = 'ViolinMain';
@@ -103,26 +98,28 @@ const ViolinIndex = ({ experimentId }) => {
   );
 
   return (
-    <div style={{ paddingLeft: 32, paddingRight: 32 }}>
-      <Header
+    <>
+      <PlotHeader
+        title={plotNames.VIOLIN_PLOT}
         plotUuid={plotUuid}
         experimentId={experimentId}
-        finalRoute={route}
       />
-      <Row gutter={16}>
-        <Col span={16}>
-          <Space direction='vertical' style={{ width: '100%' }}>
-            <Collapse defaultActiveKey='1'>
-              <Panel
-                header='Preview'
-                key='1'
-                extra={(
-                  <Tooltip title='In order to rename existing clusters or create new ones, use the cell set tool, located in the Data Exploration page.'>
-                    <Button icon={<InfoCircleOutlined />} />
-                  </Tooltip>
-                )}
-              >
-                {config
+      <Space direction='vertical' style={{ width: '100%', padding: '0 10px' }}>
+
+        <Row gutter={16}>
+          <Col span={16}>
+            <Space direction='vertical' style={{ width: '100%' }}>
+              <Collapse defaultActiveKey='1'>
+                <Panel
+                  header='Preview'
+                  key='1'
+                  extra={(
+                    <Tooltip title='In order to rename existing clusters or create new ones, use the cell set tool, located in the Data Exploration page.'>
+                      <Button icon={<InfoCircleOutlined />} />
+                    </Tooltip>
+                  )}
+                >
+                  {config
                   && (
                     <ViolinPlot
                       searchedGene={searchedGene}
@@ -131,23 +128,24 @@ const ViolinIndex = ({ experimentId }) => {
                       plotUuid={plotUuid}
                     />
                   )}
-              </Panel>
-            </Collapse>
-          </Space>
-        </Col>
-        <Col span={8}>
-          <Space direction='vertical' style={{ width: '100%' }}>
-            <PlotStyling
-              formConfig={plotStylingControlsConfig}
-              config={config}
-              onUpdate={updatePlotWithChanges}
-              renderExtraPanels={renderExtraPanels}
-              defaultActiveKey='gene-selection'
-            />
-          </Space>
-        </Col>
-      </Row>
-    </div>
+                </Panel>
+              </Collapse>
+            </Space>
+          </Col>
+          <Col span={8}>
+            <Space direction='vertical' style={{ width: '100%' }}>
+              <PlotStyling
+                formConfig={plotStylingControlsConfig}
+                config={config}
+                onUpdate={updatePlotWithChanges}
+                renderExtraPanels={renderExtraPanels}
+                defaultActiveKey='gene-selection'
+              />
+            </Space>
+          </Col>
+        </Row>
+      </Space>
+    </>
   );
 };
 

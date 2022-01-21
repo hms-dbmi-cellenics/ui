@@ -1,12 +1,12 @@
-import React, { useContext, useState } from 'react';
+import React, {
+  useContext, useState, useEffect,
+} from 'react';
 import propTypes from 'prop-types';
 import { useSelector, useDispatch } from 'react-redux';
 import { useRouter } from 'next/router';
 import { modules } from 'utils/constants';
 
-import moment from 'moment';
-import { updateProject } from 'redux/actions/projects';
-import { updateExperiment, switchExperiment } from 'redux/actions/experiments';
+import { switchExperiment } from 'redux/actions/experiments';
 
 import DataProcessingIntercept from 'components/data-processing/DataProcessingIntercept';
 
@@ -29,6 +29,7 @@ const PATH_STUBS = {
   [modules.DATA_PROCESSING]: '/data-processing',
   [modules.DATA_EXPLORATION]: '/data-exploration',
   [modules.PLOTS_AND_TABLES]: '/plots-and-tables',
+  [modules.SETTINGS]: '/settings',
 };
 
 const PATHS = {
@@ -36,6 +37,7 @@ const PATHS = {
   [modules.DATA_PROCESSING]: `/experiments/[experimentId]${PATH_STUBS[modules.DATA_PROCESSING]}`,
   [modules.DATA_EXPLORATION]: `/experiments/[experimentId]${PATH_STUBS[modules.DATA_EXPLORATION]}`,
   [modules.PLOTS_AND_TABLES]: `/experiments/[experimentId]${PATH_STUBS[modules.PLOTS_AND_TABLES]}`,
+  [modules.SETTINGS]: `${PATH_STUBS[modules.DATA_MANAGEMENT]}/[settingsName]`,
 };
 
 const AppRouterContext = React.createContext(null);
@@ -46,6 +48,15 @@ const AppRouteProvider = (props) => {
   const dispatch = useDispatch();
 
   const [renderIntercept, setRenderIntercept] = useState(null);
+  const [currentModule, setCurrentModule] = useState(module.DATA_MANAGEMENT);
+
+  useEffect(() => {
+    const [moduleName] = Object.entries(PATH_STUBS).find(
+      ([module, path]) => router.pathname.match(path),
+    );
+
+    setCurrentModule(moduleName);
+  }, [router.pathname]);
 
   const changedQCFilters = useSelector(
     (state) => state.experimentSettings.processing.meta.changedQCFilters,
@@ -60,12 +71,8 @@ const AppRouteProvider = (props) => {
     ),
   };
 
-  const updateExperimentInfoOnNavigate = (projectUuid, experimentId) => {
-    const lastViewed = moment().toISOString();
-
+  const updateExperimentInfoOnNavigate = (experimentId) => {
     dispatch(switchExperiment(experimentId));
-    dispatch(updateExperiment(experimentId, { lastViewed }));
-    dispatch(updateProject(projectUuid, { lastAnalyzed: lastViewed }));
   };
 
   const handleRouteChange = (previousRoute, module, params) => {
@@ -78,8 +85,8 @@ const AppRouteProvider = (props) => {
 
     if (previousRoute.match(PATH_STUBS.DATA_MANAGEMENT)) {
       // Update active project and experiment id when navigating from Data Management
-      const { projectUuid, experimentId } = params;
-      updateExperimentInfoOnNavigate(projectUuid, experimentId);
+      const { experimentId } = params;
+      updateExperimentInfoOnNavigate(experimentId);
     }
 
     router.push(nextRoute);
@@ -92,7 +99,7 @@ const AppRouteProvider = (props) => {
   ) => handleRouteChange(router.pathname, module, params, refreshPage);
 
   return (
-    <AppRouterContext.Provider value={{ navigateTo }}>
+    <AppRouterContext.Provider value={{ navigateTo, currentModule }}>
       {renderIntercept ?? <></>}
       {children}
     </AppRouterContext.Provider>

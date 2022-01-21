@@ -13,7 +13,7 @@ import { CSVLink } from 'react-csv';
 import _ from 'lodash';
 
 import PropTypes from 'prop-types';
-import Header from 'components/plots/Header';
+import PlotHeader from 'components/plots/PlotHeader';
 import PlotStyling from 'components/plots/styling/PlotStyling';
 import { Vega } from 'react-vega';
 
@@ -30,14 +30,10 @@ import Loader from 'components/Loader';
 
 import { generateSpec } from 'utils/plotSpecs/generateVolcanoSpec';
 import calculateVolcanoDataPoints from 'components/plots/helpers/calculateVolcanoDataPoints';
+import { plotNames } from 'utils/constants';
 
 const { Text } = Typography;
 const { Panel } = Collapse;
-
-const route = {
-  path: 'volcano',
-  breadcrumbName: 'Volcano plot',
-};
 
 const plotUuid = 'volcanoPlotMain';
 const plotType = 'volcano';
@@ -248,25 +244,24 @@ const VolcanoPlotPage = (props) => {
   );
 
   return (
-    <div style={{ paddingLeft: 32, paddingRight: 32 }}>
-      <Header
+    <>
+      <PlotHeader
+        title={plotNames.VOLCANO_PLOT}
         plotUuid={plotUuid}
         experimentId={experimentId}
-        finalRoute={route}
       />
-      <Row gutter={16}>
-        <Col span={16}>
-          <Space direction='vertical' style={{ width: '100%' }}>
-            <Collapse defaultActiveKey='1'>
-              <Panel header='Preview' key='1' extra={generateExportDropdown()}>
-                <center>{renderPlot()}</center>
-              </Panel>
-            </Collapse>
-          </Space>
-        </Col>
-        <Col span={8}>
-          <Space direction='vertical' style={{ width: '100%' }}>
-            <Collapse defaultActiveKey='1' accordion />
+      <Space direction='vertical' style={{ width: '100%', padding: '0 10px' }}>
+        <Row gutter={16}>
+          <Col span={16}>
+            <Space direction='vertical' style={{ width: '100%' }}>
+              <Collapse defaultActiveKey='1'>
+                <Panel header='Preview' key='1' extra={generateExportDropdown()}>
+                  <center>{renderPlot()}</center>
+                </Panel>
+              </Collapse>
+            </Space>
+          </Col>
+          <Col span={8}>
             <PlotStyling
               formConfig={plotStylingControlsConfig}
               config={config}
@@ -274,10 +269,10 @@ const VolcanoPlotPage = (props) => {
               renderExtraPanels={renderExtraPanels}
               defaultActiveKey='1'
             />
-          </Space>
-        </Col>
-      </Row>
-    </div>
+          </Col>
+        </Row>
+      </Space>
+    </>
   );
 };
 
