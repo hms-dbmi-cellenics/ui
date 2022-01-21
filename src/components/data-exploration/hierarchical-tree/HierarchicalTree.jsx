@@ -18,14 +18,14 @@ import 'components/data-exploration/hierarchical-tree/hierarchicalTree.css';
 const HierarchicalTree = (props) => {
   const {
     onCheck: propOnCheck,
-    onNodeUpdate: propOnNodeUpdate,
     defaultCheckedKeys: propDefaultCheckedKeys,
     treeData,
     store,
     experimentId,
     showHideButton,
     onCellSetReorder,
-    ...restOfProps
+    onNodeUpdate,
+    onNodeDelete,
   } = props;
 
   const [checkedKeys, setCheckedKeys] = useState(propDefaultCheckedKeys);
@@ -76,7 +76,7 @@ const HierarchicalTree = (props) => {
         <ColorPicker
           color={modified.color || '#ffffff'}
           onColorChange={(e) => {
-            props.onNodeUpdate(modified.key, { color: e });
+            onNodeUpdate(modified.key, { color: e });
           }}
         />
       );
@@ -87,10 +87,10 @@ const HierarchicalTree = (props) => {
   const renderEditableField = (modified, parentKey) => (
     <EditableField
       onAfterSubmit={(e) => {
-        props.onNodeUpdate(modified.key, { name: e });
+        onNodeUpdate(modified.key, { name: e });
       }}
       onDelete={() => {
-        props.onNodeDelete(modified.key);
+        onNodeDelete(modified.key);
       }}
       value={modified.name}
       showEdit={modified.key !== 'scratchpad'}
@@ -175,8 +175,7 @@ const HierarchicalTree = (props) => {
       checkedKeys={checkedKeys}
       onDrop={onDrop}
       switcherIcon={<DownOutlined />}
-      // eslint-disable-next-line react/jsx-props-no-spreading
-      {...restOfProps}
+      defaultExpandAll
     />
   );
 };

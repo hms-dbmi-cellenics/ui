@@ -176,7 +176,6 @@ const CellSetsTool = (props) => {
               onNodeUpdate={onNodeUpdate}
               onNodeDelete={onNodeDelete}
               onCellSetReorder={onCellSetReorder}
-              defaultExpandAll
               showHideButton
               checkedKeys={selected}
             />
@@ -191,7 +190,6 @@ const CellSetsTool = (props) => {
                 onNodeUpdate={onNodeUpdate}
                 onNodeDelete={onNodeDelete}
                 onCellSetReorder={onCellSetReorder}
-                defaultExpandAll
                 showHideButton
                 checkedKeys={selected}
               />
