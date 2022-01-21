@@ -5,7 +5,6 @@ import {
   Form, Input, Empty, Row, Col, Button, Space,
 } from 'antd';
 import { useRouter } from 'next/router';
-import FeedbackButton from 'components/FeedbackButton';
 import Header from 'components/Header';
 import endUserMessages from 'utils/endUserMessages';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
@@ -85,9 +84,6 @@ const ProfileSettings = () => {
       <>
         <Header
           title='Profile'
-          extra={(
-            <FeedbackButton />
-          )}
         />
         <Space direction='vertical' style={{ width: '100%', padding: '20px', background: ' white' }}>
           <Row type='flex'>
