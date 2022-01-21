@@ -4,9 +4,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useRouter } from 'next/router';
 import { modules } from 'utils/constants';
 
-import moment from 'moment';
-import { updateProject } from 'redux/actions/projects';
-import { updateExperiment, switchExperiment } from 'redux/actions/experiments';
+import { switchExperiment } from 'redux/actions/experiments';
 
 import DataProcessingIntercept from 'components/data-processing/DataProcessingIntercept';
 
@@ -60,12 +58,8 @@ const AppRouteProvider = (props) => {
     ),
   };
 
-  const updateExperimentInfoOnNavigate = (projectUuid, experimentId) => {
-    const lastViewed = moment().toISOString();
-
+  const updateExperimentInfoOnNavigate = (experimentId) => {
     dispatch(switchExperiment(experimentId));
-    dispatch(updateExperiment(experimentId, { lastViewed }));
-    dispatch(updateProject(projectUuid, { lastAnalyzed: lastViewed }));
   };
 
   const handleRouteChange = (previousRoute, module, params) => {
@@ -78,8 +72,8 @@ const AppRouteProvider = (props) => {
 
     if (previousRoute.match(PATH_STUBS.DATA_MANAGEMENT)) {
       // Update active project and experiment id when navigating from Data Management
-      const { projectUuid, experimentId } = params;
-      updateExperimentInfoOnNavigate(projectUuid, experimentId);
+      const { experimentId } = params;
+      updateExperimentInfoOnNavigate(experimentId);
     }
 
     router.push(nextRoute);

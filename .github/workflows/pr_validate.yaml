@@ -1,0 +1,215 @@
+name: Validate pull request
+on:
+  pull_request:
+    types: [ opened, reopened, edited ]
+jobs:
+  # BEWARE: GitHub uses Microsoft-style line endings (CRLF)
+  # instead of Unix-style (LF) interally for things like PR text.
+  #
+  # You MUST check for `\r\n` as the line separator instead of `\n`
+  # in this workflow.
+  lint-pr-body:
+    name: Lint pull request body
+    runs-on: ubuntu-20.04
+    concurrency: 
+      group: ${{ github.head_ref }}
+      cancel-in-progress: true
+    outputs:
+      is-staging-na: ${{ steps.extract-staging.outputs.is-staging-na }}
+      sandbox: ${{ steps.extract-staging.outputs.sandbox }}
+      is-e2e-box-checked: ${{ steps.check-e2e-checkbox.outcome }}
+    steps:
+      - id: install
+        name: Install requirements
+        run: |-
+          sudo apt-get update -y
+          sudo apt-get install -y pcregrep
+
+      - id: check-issue-url
+        name: Check issue URL
+        run: |-
+          REGEX="#### URL to issue\s?\r\n(https:\/\/biomage\.atlassian\.net\/browse\/BIOMAGE-[0-9]+|N\/A)"
+
+          echo "REGEX to test against:"
+          echo $REGEX
+          echo "Now looking at regex result:"
+
+          pcregrep -o1 -M "$REGEX" <<\EOF
+          ${{ github.event.pull_request.body }}
+          EOF
+
+      - id: extract-staging
+        name: Check staging URL
+        run: |-
+          REGEX="#### Link to staging deployment URL \(or set N\/A\)\s?\r\n(https:\/\/ui-(.+)\.scp-staging\.biomage\.net|N\/A)"
+
+          echo "REGEX to test against:"
+          echo $REGEX
+          echo "Now looking at regex result:"
+
+          URL=$(pcregrep -o1 -M "$REGEX" <<\EOF
+          ${{ github.event.pull_request.body }}
+          EOF
+          )
+
+          IS_STAGING_NA='false'
+
+          if [ $URL = 'N/A' ]; then
+            IS_STAGING_NA='true'
+          fi
+
+          echo "Is staging N/A?"
+          echo $IS_STAGING_NA
+          echo "::set-output name=is-staging-na::$IS_STAGING_NA"
+
+          echo "Full URL:"
+          echo $URL
+          echo "::set-output name=url::$URL"
+
+          SANDBOX=$(pcregrep -o2 -M "$REGEX" <<\EOF
+          ${{ github.event.pull_request.body }}
+          EOF
+          )
+          echo "Extracted sandbox:"
+          echo $SANDBOX
+          echo "::set-output name=sandbox::$SANDBOX"
+
+      - id: reach-staging
+        if: steps.extract-staging.outputs.url != 'N/A'
+        name: Attempt to reach staging environments
+        uses: nick-invision/retry@v2
+        with:
+          timeout_seconds: 30
+          max_attempts: 5
+          retry_on: error
+          command: curl -f ${{ steps.extract-staging.outputs.url }}
+          # Add jitter to break up correlated events.
+          on_retry_command: sleep $[($RANDOM % 10) + 5]s
+
+      - id: check-e2e-checkbox
+        name: Check if E2E testing is checked
+        continue-on-error: true
+        run: |-
+          REGEX="\[[Xx]\] Started end-to-end tests on the latest commit\."
+    
+          pcregrep -o1 -M "$REGEX" <<\EOF
+          ${{ github.event.pull_request.body }}
+          EOF
+
+  run-integration-tests:
+    name: Run integration tests
+    runs-on: ubuntu-20.04
+    needs: lint-pr-body
+    concurrency: 
+      group: ${{ github.sha }}
+    steps:
+      
+      - id: check-e2e-run
+        name: Check if E2E should run
+        run: |-
+          SHOULD_RUN_E2E='true'
+          SHOULD_CANCEL_E2E='false'
+
+          echo "Should E2E cancel?"
+          if [ "${{ needs.lint-pr-body.outputs.is-staging-na}}" = "false" ] && [ "${{ needs.lint-pr-body.outputs.is-e2e-box-checked }}" != "success" ]; then
+            SHOULD_CANCEL_E2E='true'
+          fi
+          echo $SHOULD_CANCEL_E2E
+          
+          echo "Should E2E be run?"
+          if [ "${{ needs.lint-pr-body.outputs.is-staging-na}}" = 'true' ]; then
+            SHOULD_RUN_E2E='false'
+          fi
+          echo $SHOULD_RUN_E2E
+
+          echo "::set-output name=should-e2e-cancel::$SHOULD_CANCEL_E2E"
+          echo "::set-output name=should-e2e-run::$SHOULD_RUN_E2E"
+        
+      - id: cancel
+        name: Cancel if staging is not N/A and box is not checked
+        if: steps.check-e2e-run.outputs.should-e2e-cancel == 'true'
+        uses: andymckay/cancel-action@0.2
+
+      - id: install
+        if: steps.check-e2e-run.outputs.should-e2e-run == 'true'
+        name: Install requirements
+        run: |-
+          sudo apt-get update -y
+          sudo apt-get install -y pcregrep
+
+      - id: extract-commit-details
+        if: steps.check-e2e-run.outputs.should-e2e-run == 'true'
+        name: Get details of last commit
+        run: |-
+          echo "SHA of GitHub merge commit:"
+          echo $GITHUB_SHA
+          echo "::set-output name=github_sha::$GITHUB_SHA"
+
+          REPO_NAME=$(echo $GITHUB_REPOSITORY | awk -F '/' '{print $2}')
+          echo "Repo name:"
+          echo $REPO_NAME
+          echo "::set-output name=repo_name::$REPO_NAME"
+
+      - id: extract-integration-test-ref
+        if: steps.check-e2e-run.outputs.should-e2e-run == 'true'
+        name: Get integration test ref
+        run: |-
+          REGEX="#### Integration test branch\s?\r\n(.+)\s?\r\n"
+
+          echo "REGEX to test against:"
+          echo $REGEX
+          echo "Now looking at regex result:"
+
+          INTEGRATION_TEST_REF=$(pcregrep -o1 -M "$REGEX" <<\EOF
+          ${{ github.event.pull_request.body }}
+          EOF
+          )
+
+          echo "Ref given is $INTEGRATION_TEST_REF, setting it as is."
+          echo "::set-output name=ref::$INTEGRATION_TEST_REF"
+
+      - id: run-integration-test
+        if: steps.check-e2e-run.outputs.should-e2e-run == 'true'
+        name: Run integration tests
+        uses: aurelien-baudet/workflow-dispatch@v2
+        with:
+          workflow: Run end-to-end tests
+          repo: hms-dbmi-cellenics/testing
+          token: ${{ secrets.API_TOKEN_GITHUB }}
+          ref: ${{ steps.extract-integration-test-ref.outputs.ref }}
+          inputs: '{ "environment": "staging", "ref": "${{ steps.extract-integration-test-ref.outputs.ref }}", "sandboxId": "${{needs.lint-pr-body.outputs.sandbox}}", "image_sha" : "${{ steps.extract-commit-details.outputs.github_sha }}", "namespace": "${{steps.extract-commit-details.outputs.repo_name}}-${{needs.lint-pr-body.outputs.sandbox}}" }'
+
+      - id: get-pr-body
+        if: failure()
+        name: Get the current PR body
+        uses: jwalton/gh-find-current-pr@v1
+        with:
+          state: open
+          
+      - id: create-unchecked-pr-body
+        if: failure()
+        name: Create unchecked PR body
+        run: |-
+          UNCHECKED_BODY=$(sed 's/- \[[Xx]\] Started end-to-end tests on the latest commit\./- \[ \] Started end-to-end tests on the latest commit\./' <<\EOF
+          ${{ steps.get-pr-body.outputs.body }}
+          EOF
+          )
+
+          UNCHECKED_BODY="${UNCHECKED_BODY//'%'/'%25'}"
+          UNCHECKED_BODY="${UNCHECKED_BODY//$'\n'/'%0A'}"
+          UNCHECKED_BODY="${UNCHECKED_BODY//$'\r'/'%0D'}"
+
+          echo "Unchecked PR body"
+          echo $UNCHECKED_BODY
+
+          echo "::set-output name=body::$UNCHECKED_BODY"
+
+      - id: uncheck-integration-checkbox
+        if: failure()
+        name: Uncheck the integration checkbox
+        uses: tzkhan/pr-update-action@v2
+        with:
+          repo-token: "${{ secrets.API_TOKEN_GITHUB }}"
+          head-branch-regex: '${{ github.head_ref }}'
+          body-template: "${{  steps.create-unchecked-pr-body.outputs.body }}"
+          body-update-action: 'replace'

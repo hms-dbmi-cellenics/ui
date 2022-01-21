@@ -19,10 +19,11 @@ import {
   updatePlotConfig,
   loadPlotConfig,
 } from 'redux/actions/componentConfig/index';
-import Header from 'components/plots/Header';
+import PlotHeader from 'components/plots/PlotHeader';
 import { loadCellSets } from 'redux/actions/cellSets';
 import CategoricalEmbeddingPlot from 'components/plots/CategoricalEmbeddingPlot';
 import SelectData from 'components/plots/styling/embedding-continuous/SelectData';
+import { plotNames } from 'utils/constants';
 
 const { Panel } = Collapse;
 
@@ -30,11 +31,6 @@ const { Panel } = Collapse;
 // we will need to change this to proper Uuid
 const plotUuid = 'embeddingCategoricalMain';
 const plotType = 'embeddingCategorical';
-
-const route = {
-  path: 'embedding-categorical',
-  breadcrumbName: 'Categorical Embedding',
-};
 
 const EmbeddingCategoricalPage = ({ experimentId }) => {
   const dispatch = useDispatch();
@@ -138,48 +134,51 @@ const EmbeddingCategoricalPage = ({ experimentId }) => {
   );
 
   return (
-    <div style={{ paddingLeft: 32, paddingRight: 32 }}>
-      <Header
+    <>
+      <PlotHeader
+        title={plotNames.CATEGORICAL_EMBEDDING}
         plotUuid={plotUuid}
         experimentId={experimentId}
-        finalRoute={route}
       />
-      <Row gutter={16}>
-        <Col span={16}>
-          <Space direction='vertical' style={{ width: '100%' }}>
-            <Collapse defaultActiveKey='1'>
-              <Panel
-                header='Preview'
-                key='1'
-                extra={(
-                  <Tooltip title='In order to rename existing clusters or create new ones, use the cell set tool, located in the Data Exploration page.'>
-                    <Button icon={<InfoCircleOutlined />} />
-                  </Tooltip>
-                )}
-              >
-                <CategoricalEmbeddingPlot
-                  experimentId={experimentId}
-                  config={config}
-                  plotUuid={plotUuid}
-                  onUpdate={updatePlotWithChanges}
-                />
-              </Panel>
-            </Collapse>
-          </Space>
-        </Col>
-        <Col span={8}>
-          <Space direction='vertical' style={{ width: '100%' }}>
-            <PlotStyling
-              formConfig={plotStylingControlsConfig}
-              config={config}
-              onUpdate={updatePlotWithChanges}
-              renderExtraPanels={renderExtraPanels}
-              defaultActiveKey='1'
-            />
-          </Space>
-        </Col>
-      </Row>
-    </div>
+      <Space direction='vertical' style={{ width: '100%', padding: '0 10px' }}>
+
+        <Row gutter={16}>
+          <Col span={16}>
+            <Space direction='vertical' style={{ width: '100%' }}>
+              <Collapse defaultActiveKey='1'>
+                <Panel
+                  header='Preview'
+                  key='1'
+                  extra={(
+                    <Tooltip title='In order to rename existing clusters or create new ones, use the cell set tool, located in the Data Exploration page.'>
+                      <Button icon={<InfoCircleOutlined />} />
+                    </Tooltip>
+                  )}
+                >
+                  <CategoricalEmbeddingPlot
+                    experimentId={experimentId}
+                    config={config}
+                    plotUuid={plotUuid}
+                    onUpdate={updatePlotWithChanges}
+                  />
+                </Panel>
+              </Collapse>
+            </Space>
+          </Col>
+          <Col span={8}>
+            <Space direction='vertical' style={{ width: '100%' }}>
+              <PlotStyling
+                formConfig={plotStylingControlsConfig}
+                config={config}
+                onUpdate={updatePlotWithChanges}
+                renderExtraPanels={renderExtraPanels}
+                defaultActiveKey='1'
+              />
+            </Space>
+          </Col>
+        </Row>
+      </Space>
+    </>
   );
 };
 EmbeddingCategoricalPage.propTypes = {

@@ -25,6 +25,7 @@ import mockDiffExprResult from '__test__/data/differential_expression_0_All_WT1.
 import createTestComponentFactory from '__test__/test-utils/testComponentFactory';
 import fake from '__test__/test-utils/constants';
 import { seekFromAPI } from 'utils/work/seekWorkResponse';
+import { plotNames } from 'utils/constants';
 
 enableFetchMocks();
 
@@ -32,6 +33,7 @@ const experimentId = fake.EXPERIMENT_ID;
 const plotUuid = 'volcanoPlotMain';
 const defaultProps = { experimentId };
 
+jest.mock('components/UserButton', () => () => <></>);
 jest.mock('object-hash', () => {
   const objectHash = jest.requireActual('object-hash');
   const mockWorkResultETag = jest.requireActual('__test__/test-utils/mockWorkResultETag').default;
@@ -129,8 +131,10 @@ describe('Volcano plot page', () => {
     await storeState.dispatch(loadBackendStatus(experimentId));
   });
 
-  it('Loads controls and elements', async () => {
+  it.only('Loads controls and elements', async () => {
     await renderVolcanoPlotPage(storeState);
+
+    expect(screen.getByText(new RegExp(plotNames.VOLCANO_PLOT, 'i'))).toBeInTheDocument();
 
     expect(screen.getByText(/Differential expression/i)).toBeInTheDocument();
     expect(screen.getByText(/Main schema/i)).toBeInTheDocument();
