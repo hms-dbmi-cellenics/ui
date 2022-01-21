@@ -23,7 +23,7 @@ import { expectStringInVegaCanvas } from '../../test-utils/vega-utils';
 import '__test__/test-utils/setupTests';
 
 enableFetchMocks();
-jest.mock('../../../components/plots/Header', () => () => <div />);
+jest.mock('../../../components/plots/PlotHeader', () => () => <div />);
 jest.mock('../../../utils/socketConnection', () => ({
   __esModule: true,
   default: new Promise((resolve) => {

@@ -23,8 +23,6 @@ import '__test__/test-utils/setupTests';
 
 jest.mock('utils/data-management/generateGem2sParamsHash');
 jest.mock('redux/actions/experimentSettings/updateExperimentInfo', () => jest.fn().mockReturnValue({ type: 'UPDATE_EXPERIMENT_INFO' }));
-jest.mock('redux/actions/experiments/updateExperiment', () => jest.fn().mockReturnValue({ type: 'UPDATE_EXPERIMENT' }));
-jest.mock('redux/actions/projects/updateProject', () => jest.fn().mockReturnValue({ type: 'UPDATE_PROJECT' }));
 jest.mock('redux/actions/pipeline', () => ({
   runGem2s: jest.fn().mockReturnValue({ type: 'RUN_GEM2S' }),
 }));

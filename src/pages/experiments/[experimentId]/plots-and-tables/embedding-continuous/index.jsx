@@ -17,17 +17,13 @@ import {
 } from 'redux/actions/componentConfig/index';
 import { loadCellSets } from 'redux/actions/cellSets';
 import { loadGeneExpression, loadPaginatedGeneProperties } from 'redux/actions/genes';
-import Header from 'components/plots/Header';
+import PlotHeader from 'components/plots/PlotHeader';
 import ContinuousEmbeddingPlot from 'components/plots/ContinuousEmbeddingPlot';
 import SingleGeneSelection from 'components/plots/styling/SingleGeneSelection';
 import { getCellSets } from 'redux/selectors';
+import { plotNames } from 'utils/constants';
 
 const { Panel } = Collapse;
-
-const route = {
-  path: 'embedding-continuous',
-  breadcrumbName: 'Continuous Embedding',
-};
 
 // TODO: when we want to enable users to create their custom plots,
 // we will need to change this to proper Uuid
@@ -153,51 +149,54 @@ const ContinuousEmbeddingPage = ({ experimentId }) => {
   );
 
   return (
-    <div style={{ paddingLeft: 32, paddingRight: 32 }}>
-      <Header
+    <>
+      <PlotHeader
+        title={plotNames.CONTINUOUS_EMBEDDING}
         plotUuid={plotUuid}
         experimentId={experimentId}
-        finalRoute={route}
       />
-      <Row gutter={16}>
-        <Col span={16}>
-          <Space direction='vertical' style={{ width: '100%' }}>
-            <Collapse defaultActiveKey='1'>
-              <Panel header='Preview' key='1'>
-                <ContinuousEmbeddingPlot
-                  experimentId={experimentId}
-                  config={config}
-                  plotUuid={plotUuid}
-                  plotData={
+      <Space direction='vertical' style={{ width: '100%', padding: '0 10px' }}>
+
+        <Row gutter={16}>
+          <Col span={16}>
+            <Space direction='vertical' style={{ width: '100%' }}>
+              <Collapse defaultActiveKey='1'>
+                <Panel header='Preview' key='1'>
+                  <ContinuousEmbeddingPlot
+                    experimentId={experimentId}
+                    config={config}
+                    plotUuid={plotUuid}
+                    plotData={
                     geneExpression.data[config?.shownGene]?.rawExpression.expression
-                  }
-                  truncatedPlotData={
+                    }
+                    truncatedPlotData={
                     geneExpression.data[config?.shownGene]?.truncatedExpression.expression
-                  }
-                  loading={geneExpression.loading.length > 0}
-                  error={geneExpression.error}
-                  reloadPlotData={() => loadGeneExpression(
-                    experimentId, [config?.shownGene], plotUuid,
-                  )}
-                  onUpdate={updatePlotWithChanges}
-                />
-              </Panel>
-            </Collapse>
-          </Space>
-        </Col>
-        <Col span={8}>
-          <Space direction='vertical' style={{ width: '100%' }}>
-            <PlotStyling
-              formConfig={plotStylingControlsConfig}
-              config={config}
-              onUpdate={updatePlotWithChanges}
-              renderExtraPanels={renderExtraPanels}
-              defaultActiveKey='gene-selection'
-            />
-          </Space>
-        </Col>
-      </Row>
-    </div>
+                    }
+                    loading={geneExpression.loading.length > 0}
+                    error={geneExpression.error}
+                    reloadPlotData={() => loadGeneExpression(
+                      experimentId, [config?.shownGene], plotUuid,
+                    )}
+                    onUpdate={updatePlotWithChanges}
+                  />
+                </Panel>
+              </Collapse>
+            </Space>
+          </Col>
+          <Col span={8}>
+            <Space direction='vertical' style={{ width: '100%' }}>
+              <PlotStyling
+                formConfig={plotStylingControlsConfig}
+                config={config}
+                onUpdate={updatePlotWithChanges}
+                renderExtraPanels={renderExtraPanels}
+                defaultActiveKey='gene-selection'
+              />
+            </Space>
+          </Col>
+        </Row>
+      </Space>
+    </>
   );
 };
 

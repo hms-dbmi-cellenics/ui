@@ -135,7 +135,7 @@ describe('DataProcessingPage', () => {
     const titles = screen.getAllByText('Data Processing');
 
     // One for breadcrumb, one for title
-    expect(titles).toHaveLength(2);
+    expect(titles).toHaveLength(1);
 
     // It shows the first filter step - Classifier filter
     expect(screen.getByText(/Classifier/i)).toBeInTheDocument();
