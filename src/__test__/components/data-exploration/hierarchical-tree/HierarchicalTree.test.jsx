@@ -58,7 +58,7 @@ describe('HierarchicalTree', () => {
     );
     waitForComponentToPaint(component);
     const tree = component.find('HierarchicalTree Tree');
-    expect(tree.length).toEqual(1);
+    expect(tree).toHaveLength(1);
   });
 
   it('can drag first component at the last position', () => {
@@ -349,7 +349,7 @@ describe('HierarchicalTree', () => {
     await waitForComponentToPaint(component);
 
     // Only 2 color pickers are shown
-    expect(component.find('ColorPicker').length).toHaveLength(2);
+    expect(component.find('ColorPicker')).toHaveLength(2);
 
     // On changing one color
     const childColorPicker = component.find('ColorPicker').at(0);
@@ -382,10 +382,10 @@ describe('HierarchicalTree', () => {
     const parentEditableField = component.find('EditableField').at(2);
 
     // The child node can be edited
-    expect(childEditableField.find(EditOutlined).length).toEqual(1);
+    expect(childEditableField.find(EditOutlined)).toHaveLength(1);
 
     // The root node scratchpad can't be edited
-    expect(parentEditableField.find(EditOutlined).length).toEqual(0);
+    expect(parentEditableField.find(EditOutlined)).toHaveLength(0);
 
     // When we edit
     childEditableField.getElement().props.onAfterSubmit('New name');
@@ -417,10 +417,10 @@ describe('HierarchicalTree', () => {
     const parentEditableField = component.find('EditableField').at(2);
 
     // The child node can be edited
-    expect(childEditableField.find(DeleteOutlined).length).toEqual(1);
+    expect(childEditableField.find(DeleteOutlined)).toHaveLength(1);
 
     // The root node scratchpad can't be deleted
-    expect(parentEditableField.find(DeleteOutlined).length).toEqual(0);
+    expect(parentEditableField.find(DeleteOutlined)).toHaveLength(0);
 
     childEditableField.getElement().props.onDelete();
     component.update();
