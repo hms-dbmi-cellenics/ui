@@ -74,7 +74,6 @@ const fetchGeneExpressionWork = async (
       missingGenesBody,
       timeout,
       ETag,
-      null,
       {
         ETagPipelineRun: qcPipelineStartDate,
         ...extras,
@@ -140,8 +139,9 @@ const fetchWork = async (
   let response = await seekFromS3(ETag, experimentId);
 
   // If response cannot be fetched, go to the worker.
+  let workResultReady = false;
   if (!response) {
-    response = await seekFromAPI(
+    workResultReady = await seekFromAPI(
       experimentId,
       body,
       timeout,
@@ -154,10 +154,12 @@ const fetchWork = async (
     );
   }
 
-  if (!response) {
+  if (!workResultReady) {
     console.debug(`No response immediately resolved for ${body} (ETag: ${ETag}) -- this is probably an event subscription.`);
     return response;
   }
+
+  response = await seekFromS3(ETag, experimentId);
 
   // If a work response is in s3, it is cacheable
   // (the cacheable or not option is managed in the worker)
