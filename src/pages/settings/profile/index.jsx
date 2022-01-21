@@ -98,9 +98,9 @@ const ProfileSettings = () => {
             <FeedbackButton />
           )}
         />
-        <Space direction='vertical' style={{ width: '100%', padding: '20px 10px', background: ' white' }}>
-          <Row type='flex' justify='center' align='center'>
-            <Col style={{ width: '40%' }}>
+        <Space direction='vertical' style={{ width: '100%', padding: '20px', background: ' white' }}>
+          <Row type='flex'>
+            <Col xl={{ span: 12, offset: 6 }} span={24}>
 
               <Form
                 layout='horizontal'
