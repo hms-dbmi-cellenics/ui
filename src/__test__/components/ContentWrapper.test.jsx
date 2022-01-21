@@ -48,6 +48,11 @@ jest.mock('utils/socketConnection', () => ({
   }),
 }));
 
+const chromeUA = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36';
+const firefoxUA = '"Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:96.0) Gecko/20100101 Firefox/96.0"';
+
+Object.defineProperty(navigator, 'userAgent', { value: chromeUA, writable: true });
+
 enableFetchMocks();
 
 generateGem2sParamsHash.mockImplementation(() => 'mockParamsHash');
@@ -104,6 +109,14 @@ describe('ContentWrapper', () => {
 
     store = makeStore();
 
+    navigator.userAgent = chromeUA;
+
+    getBackendStatus.mockImplementation(() => () => ({
+      loading: false,
+      error: false,
+      status: null,
+    }));
+
     await store.dispatch(loadProjects());
     await store.dispatch(loadExperiments(projectUuid));
     await store.dispatch(setActiveProject(projectUuid));
@@ -128,12 +141,6 @@ describe('ContentWrapper', () => {
   });
 
   it('links are disabled if there is no experimentId', async () => {
-    getBackendStatus.mockImplementation(() => () => ({
-      loading: false,
-      error: false,
-      status: null,
-    }));
-
     await renderContentWrapper();
 
     // Data Management is not disabled
@@ -192,12 +199,6 @@ describe('ContentWrapper', () => {
       expect(content.getAttribute('style')).toMatch(`margin-left: ${expectedWidth}`);
     };
 
-    getBackendStatus.mockImplementation(() => () => ({
-      loading: false,
-      error: false,
-      status: null,
-    }));
-
     const { container } = await renderContentWrapper();
 
     const expandedWidth = '210px';
@@ -245,5 +246,19 @@ describe('ContentWrapper', () => {
 
     expect(screen.queryByText('Data Management')).not.toBeInTheDocument();
     expect(Auth.federatedSignIn).toHaveBeenCalled();
+  });
+
+  it.only('Shows browser banner if users are not using chrome', async () => {
+    navigator.userAgent = firefoxUA;
+
+    await renderContentWrapper(experimentId, experimentData);
+
+    expect(screen.getByText(/Browser not supported/)).toBeInTheDocument();
+  });
+
+  it('Does not show browser banner if users are not using chrome', async () => {
+    await renderContentWrapper(experimentId, experimentData);
+
+    expect(screen.queryByText(/Browser not supported/)).not.toBeInTheDocument();
   });
 });
