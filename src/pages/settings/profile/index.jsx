@@ -2,10 +2,11 @@ import React, { useEffect, useState } from 'react';
 import Auth from '@aws-amplify/auth';
 import _ from 'lodash';
 import {
-  Form, Input, Empty, PageHeader, Card, Row, Col, Button, Space,
+  Form, Input, Empty, Row, Col, Button, Space,
 } from 'antd';
 import { useRouter } from 'next/router';
-import FeedbackButton from '../../../components/FeedbackButton';
+import FeedbackButton from 'components/FeedbackButton';
+import Header from 'components/Header';
 import endUserMessages from '../../../utils/endUserMessages';
 import pushNotificationMessage from '../../../utils/pushNotificationMessage';
 
@@ -23,6 +24,15 @@ const ProfileSettings = () => {
   };
   const [newAttributes, setNewAttributes] = useState(initialState);
   const { changedPasswordAttributes, changedUserAttributes } = newAttributes;
+
+  const formItemLayout = {
+    labelCol: {
+      span: 6,
+    },
+    wrapperCol: {
+      span: 18,
+    },
+  };
 
   const setChanges = (object) => {
     const newChanges = _.cloneDeep(newAttributes);
@@ -82,19 +92,21 @@ const ProfileSettings = () => {
   if (user) {
     return (
       <>
-        <PageHeader
+        <Header
           title='Profile'
           extra={(
             <FeedbackButton />
           )}
         />
-        <Card>
-
+        <Space direction='vertical' style={{ width: '100%', padding: '20px 10px', background: ' white' }}>
           <Row type='flex' justify='center' align='center'>
             <Col style={{ width: '40%' }}>
 
-              <Form layout='horizontal'>
-                <h2>Profile settings:</h2>
+              <Form
+                layout='horizontal'
+                {...formItemLayout}
+              >
+                <h2 style={{ marginTop: '16px' }}>Profile settings:</h2>
                 <Form.Item label='Full name'>
                   <Input
                     onChange={(e) => setChanges({ changedUserAttributes: { name: e.target.value } })}
@@ -118,7 +130,8 @@ const ProfileSettings = () => {
                 <Form.Item label='Institution:'>
                   <Input disabled placeholder={user.attributes.institution} />
                 </Form.Item>
-                <h2>Password settings:</h2>
+
+                <h2 style={{ marginTop: '40px' }}>Password settings:</h2>
                 <Form.Item
                   label='Current password:' // pragma: allowlist secret
                   validateStatus={oldPasswordError ? 'error' : 'success'}
@@ -150,11 +163,14 @@ const ProfileSettings = () => {
                   />
                 </Form.Item>
               </Form>
-              <Space>
-                <Button onClick={() => router.back()}>
+              <Space style={{ marginTop: '24px' }}>
+                <Button
+                  onClick={() => router.back()}
+                >
                   Cancel
                 </Button>
                 <Button
+                  type='primary'
                   onClick={() => updateDetails()}
                 >
                   Save changes
@@ -162,7 +178,7 @@ const ProfileSettings = () => {
               </Space>
             </Col>
           </Row>
-        </Card>
+        </Space>
 
       </>
     );
