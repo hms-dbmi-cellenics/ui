@@ -169,10 +169,10 @@ const CellSetsTool = (props) => {
         >
           <TabPane tab='Cell sets' key='cellSets'>
             <HierarchicalTree
-              treeData={cellSetTreeData}
-              onCheck={onCheck}
-              store={FOCUS_TYPE}
               experimentId={experimentId}
+              treeData={cellSetTreeData}
+              store={FOCUS_TYPE}
+              onCheck={onCheck}
               onNodeUpdate={onNodeUpdate}
               onNodeDelete={onNodeDelete}
               onCellSetReorder={onCellSetReorder}
@@ -183,10 +183,10 @@ const CellSetsTool = (props) => {
           <TabPane tab='Metadata' key='metadataCategorical'>
             {metadataTreeData?.length > 0 ? (
               <HierarchicalTree
-                treeData={metadataTreeData}
-                onCheck={onCheck}
-                store={FOCUS_TYPE}
                 experimentId={experimentId}
+                treeData={metadataTreeData}
+                store={FOCUS_TYPE}
+                onCheck={onCheck}
                 onNodeUpdate={onNodeUpdate}
                 onNodeDelete={onNodeDelete}
                 onCellSetReorder={onCellSetReorder}

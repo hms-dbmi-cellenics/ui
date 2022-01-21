@@ -24,7 +24,7 @@ const secondChild = {
   color: '#00FF00',
 };
 
-const childInSecondParent = {
+const thirdChild = {
   key: '3a',
   name: 'third child',
   color: '#00FF00',
@@ -41,7 +41,7 @@ const secondParent = {
   key: '2',
   name: 'parent 2',
   rootNode: true,
-  children: [childInSecondParent],
+  children: [thirdChild],
 };
 
 describe('HierarchicalTree', () => {
@@ -70,7 +70,7 @@ describe('HierarchicalTree', () => {
         children: [
           firstChild,
           secondChild,
-          childInSecondParent,
+          thirdChild,
         ],
       },
     ];
@@ -83,7 +83,7 @@ describe('HierarchicalTree', () => {
       dropPosition: 2,
       dropToGap: true,
       node: {
-        ...childInSecondParent,
+        ...thirdChild,
         pos: '0-0-3',
       },
     };
@@ -427,5 +427,50 @@ describe('HierarchicalTree', () => {
 
     expect(mockOnNodeDelete).toHaveBeenCalledTimes(1);
     expect(mockOnNodeDelete).toHaveBeenCalledWith('1a');
+  });
+
+  it('Doesn\'t crash if callbacks aren\'t defined', async () => {
+    const treeData = [
+      firstParent,
+    ];
+
+    const component = mount(
+      <HierarchicalTree
+        treeData={treeData}
+        experimentId={experimentId}
+      />,
+    );
+
+    const childEditableField = component.find('EditableField').at(0);
+    const childColorPicker = component.find('ColorPicker').at(0);
+    const tree = component.find('HierarchicalTree Tree');
+
+    childEditableField.getElement().props.onDelete();
+    component.update();
+
+    childEditableField.getElement().props.onAfterSubmit();
+    component.update();
+
+    childColorPicker.getElement().props.onColorChange();
+    component.update();
+
+    tree.getElement().props.onCheck();
+    component.update();
+
+    const dropInfo = {
+      dragNode: {
+        ...firstChild,
+        pos: '0-0-0',
+      },
+      dropPosition: 2,
+      dropToGap: true,
+      node: {
+        ...secondChild,
+        pos: '0-0-1',
+      },
+    };
+
+    tree.getElement().props.onDrop(dropInfo);
+    component.update();
   });
 });
