@@ -12,7 +12,7 @@ const BrowserAlert = () => {
           <>
             <b>Browser not supported.</b>
             {' '}
-            We recommend switching to Google Chrome for the best Cellenics experience.`
+            We recommend switching to Google Chrome for the best Cellenics experience.
           </>
         )}
         banner
