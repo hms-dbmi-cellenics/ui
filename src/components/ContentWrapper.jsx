@@ -35,7 +35,7 @@ import Error from 'pages/_error';
 
 import integrationTestConstants from 'utils/integrationTestConstants';
 import pipelineStatus from 'utils/pipelineStatusValues';
-import BrowserAlert from './BrowserAlert';
+import BrowserAlert from 'components/BrowserAlert';
 
 const { Sider, Footer } = Layout;
 

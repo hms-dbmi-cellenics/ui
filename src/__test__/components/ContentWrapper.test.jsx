@@ -248,7 +248,7 @@ describe('ContentWrapper', () => {
     expect(Auth.federatedSignIn).toHaveBeenCalled();
   });
 
-  it.only('Shows browser banner if users are not using chrome', async () => {
+  it('Shows browser banner if users are not using chrome', async () => {
     navigator.userAgent = firefoxUA;
 
     await renderContentWrapper(experimentId, experimentData);
