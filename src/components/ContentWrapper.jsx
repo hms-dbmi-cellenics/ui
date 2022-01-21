@@ -57,21 +57,19 @@ const ContentWrapper = (props) => {
   const activeProject = useSelector((state) => state.projects[activeProjectUuid]);
   const samples = useSelector((state) => state.samples);
 
-  // This use effect block is used to get the active experiment ID in cases where experimentId is not evident in the route
-  // This happens in data-management, where we set the active experimentId to be the experimentId of the project
-  // ExperimentId in the route is used as a higher priority
+  // Use the project's experiment ID in data management
   useEffect(() => {
     if (!activeProjectExperimentID && !routeExperimentId) return;
 
-    if (routeExperimentId && currentExperimentIdRef.current !== routeExperimentId) {
-      currentExperimentIdRef.current = routeExperimentId;
+    if (currentModule === modules.DATA_MANAGEMENT) {
+      currentExperimentIdRef.current = activeProjectExperimentID;
       return;
     }
 
-    if (!routeExperimentId && currentExperimentIdRef.current !== activeProjectExperimentID) {
-      currentExperimentIdRef.current = activeProjectExperimentID;
-    }
-  }, [routeExperimentId, activeProjectExperimentID]);
+    if (currentExperimentIdRef.current === routeExperimentId) return;
+
+    currentExperimentIdRef.current = routeExperimentId;
+  }, [currentModule, activeProjectExperimentID, routeExperimentId]);
 
   const currentExperimentId = currentExperimentIdRef.current;
   const experiment = useSelector((state) => state?.experiments[currentExperimentId]);
