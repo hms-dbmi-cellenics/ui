@@ -2,7 +2,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
-import { useRouter } from 'next/router';
 import {
   BuildOutlined,
   DatabaseOutlined,
@@ -48,9 +47,7 @@ const ContentWrapper = (props) => {
   const [collapsed, setCollapsed] = useState(false);
 
   const { routeExperimentId, experimentData, children } = props;
-  const { navigateTo } = useAppRouter();
-  const router = useRouter();
-  const route = router?.route || '';
+  const { navigateTo, currentModule } = useAppRouter();
 
   const currentExperimentIdRef = useRef(routeExperimentId);
   const activeProjectUuid = useSelector((state) => state?.projects?.meta?.activeProjectUuid);
@@ -58,23 +55,23 @@ const ContentWrapper = (props) => {
     state?.projects[activeProjectUuid]?.experiments[0]));
 
   const activeProject = useSelector((state) => state.projects[activeProjectUuid]);
-
   const samples = useSelector((state) => state.samples);
 
+  // Use the project's experiment ID in data management
   useEffect(() => {
     if (!activeProjectExperimentID && !routeExperimentId) return;
 
-    if (routeExperimentId && currentExperimentIdRef.current !== routeExperimentId) {
-      currentExperimentIdRef.current = routeExperimentId;
+    if (currentModule === modules.DATA_MANAGEMENT) {
+      currentExperimentIdRef.current = activeProjectExperimentID;
       return;
     }
-    if (!routeExperimentId && currentExperimentIdRef.current !== activeProjectExperimentID) {
-      currentExperimentIdRef.current = activeProjectExperimentID;
-    }
-  }, [routeExperimentId, activeProjectExperimentID]);
+
+    if (currentExperimentIdRef.current === routeExperimentId) return;
+
+    currentExperimentIdRef.current = routeExperimentId;
+  }, [currentModule, activeProjectExperimentID, routeExperimentId]);
 
   const currentExperimentId = currentExperimentIdRef.current;
-
   const experiment = useSelector((state) => state?.experiments[currentExperimentId]);
 
   const experimentName = experimentData?.experimentName || experiment?.name;
@@ -108,7 +105,7 @@ const ContentWrapper = (props) => {
     if (!backendLoading) dispatch(loadBackendStatus(currentExperimentId));
 
     if (isBrowser) {
-      import('../utils/socketConnection')
+      import('utils/socketConnection')
         .then(({ default: connectionPromise }) => connectionPromise)
         .then((io) => {
           const cb = experimentUpdatesHandler(dispatch);
@@ -302,11 +299,11 @@ const ContentWrapper = (props) => {
         return <GEM2SLoadingScreen experimentId={routeExperimentId} gem2sStatus='toBeRun' />;
       }
 
-      if (pipelineRunningError && !route.includes('data-processing')) {
+      if (pipelineRunningError && currentModule !== modules.DATA_PROCESSING) {
         return <PipelineRedirectToDataProcessing experimentId={routeExperimentId} pipelineStatus='error' />;
       }
 
-      if (pipelineRunning && !route.includes('data-processing')) {
+      if (pipelineRunning && currentModule !== modules.DATA_PROCESSING) {
         return <PipelineRedirectToDataProcessing experimentId={routeExperimentId} pipelineStatus='running' />;
       }
 
@@ -314,7 +311,7 @@ const ContentWrapper = (props) => {
         return children;
       }
 
-      if (pipelineStatusKey === pipelineStatus.NOT_CREATED && !route.includes('data-processing')) {
+      if (pipelineStatusKey === pipelineStatus.NOT_CREATED && currentModule !== modules.DATA_PROCESSING) {
         return <PipelineRedirectToDataProcessing experimentId={routeExperimentId} pipelineStatus='toBeRun' />;
       }
     }
@@ -341,7 +338,7 @@ const ContentWrapper = (props) => {
         icon={icon}
         onClick={() => navigateTo(
           module,
-          { experimentId: activeProjectExperimentID },
+          { experimentId: currentExperimentId },
         )}
       >
         {name}
@@ -370,8 +367,8 @@ const ContentWrapper = (props) => {
             theme='dark'
             selectedKeys={
               menuLinks
-                .filter(({ path }) => route.includes(path))
-                .map(({ path }) => path)
+                .filter(({ module }) => module === currentModule)
+                .map(({ module }) => module)
             }
             mode='inline'
           >
