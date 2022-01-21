@@ -73,6 +73,20 @@ describe('updateCellSetProperty action', () => {
     expect(firstAction).toMatchSnapshot();
   });
 
+  it('Send fetch to the api', async () => {
+    const store = mockStore({ cellSets: { ...cellSetsNodeState, loading: false } });
+    await store.dispatch(updateCellSetProperty(experimentId, childKey, property));
+
+    await waitForActions(store, [CELL_SETS_UPDATE_PROPERTY]);
+
+    expect(fetch).toHaveBeenCalledTimes(1);
+
+    const [url, body] = fetch.mock.calls[0];
+
+    expect(url).toEqual('http://localhost:3000/v1/experiments/1234/cellSets');
+    expect(body).toMatchSnapshot();
+  });
+
   it('Throws when we are updating an invalid prop in root node', async () => {
     const store = mockStore({ cellSets: { ...cellSetsNodeState, loading: false } });
 

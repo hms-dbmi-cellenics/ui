@@ -25,3 +25,13 @@ Object {
   "type": "cellSets/updateProperty",
 }
 `;
+
+exports[`updateCellSetProperty action Send fetch to the api 1`] = `
+Object {
+  "body": "[{\\"$match\\":{\\"query\\":\\"$[?(@.key == \\\\\\"root\\\\\\")]\\",\\"value\\":{\\"children\\":[{\\"$match\\":{\\"query\\":\\"$[?(@.key == \\\\\\"child\\\\\\")]\\",\\"value\\":{\\"name\\":\\"Some node!\\"}}}]}}}]",
+  "headers": Object {
+    "Content-Type": "application/boschni-json-merger+json",
+  },
+  "method": "PATCH",
+}
+`;
