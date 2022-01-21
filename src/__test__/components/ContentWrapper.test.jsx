@@ -7,6 +7,7 @@ import { Provider } from 'react-redux';
 import Auth from '@aws-amplify/auth';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import { useRouter } from 'next/router';
+import preloadAll from 'jest-next-dynamic';
 
 import ContentWrapper from 'components/ContentWrapper';
 import AppRouteProvider from 'utils/AppRouteProvider';
@@ -25,6 +26,7 @@ import mockAPI, {
 import { projects } from '__test__/test-utils/mockData';
 
 jest.mock('redux/selectors');
+jest.mock('utils/socketConnection');
 jest.mock('utils/data-management/generateGem2sParamsHash');
 
 jest.mock('next/router', () => ({
@@ -35,6 +37,15 @@ jest.mock('next/router', () => ({
 jest.mock('@aws-amplify/auth', () => ({
   currentAuthenticatedUser: jest.fn().mockImplementation(async () => true),
   federatedSignIn: jest.fn(),
+}));
+
+jest.mock('utils/socketConnection', () => ({
+  __esModule: true,
+  default: new Promise((resolve) => {
+    resolve({
+      emit: jest.fn(), on: jest.fn(), off: jest.fn(), id: '5678',
+    });
+  }),
 }));
 
 enableFetchMocks();
@@ -77,6 +88,10 @@ const renderContentWrapper = async (expId, expData) => {
 };
 
 describe('ContentWrapper', () => {
+  beforeAll(async () => {
+    await preloadAll();
+  });
+
   beforeEach(async () => {
     jest.clearAllMocks();
 
@@ -95,11 +110,12 @@ describe('ContentWrapper', () => {
     await store.dispatch(updateExperimentInfo({ experimentId, experimentName, sampleIds }));
   });
 
+  // PROBLEMATIC
   it('renders correctly', async () => {
     getBackendStatus.mockImplementation(() => () => ({
       loading: false,
       error: false,
-      status: {},
+      status: null,
     }));
 
     await renderContentWrapper(experimentId, experimentData);
@@ -198,6 +214,7 @@ describe('ContentWrapper', () => {
     siderHasWidth(container, expandedWidth);
   });
 
+  // PROBLEMATIC
   it('View changes if there is a pipeline run underway', async () => {
     getBackendStatus.mockImplementation(() => () => ({
       loading: false,

@@ -105,7 +105,7 @@ const ContentWrapper = (props) => {
     if (!backendLoading) dispatch(loadBackendStatus(currentExperimentId));
 
     if (isBrowser) {
-      import('../utils/socketConnection')
+      import('utils/socketConnection')
         .then(({ default: connectionPromise }) => connectionPromise)
         .then((io) => {
           const cb = experimentUpdatesHandler(dispatch);
