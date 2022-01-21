@@ -11,12 +11,12 @@ import { useRouter } from 'next/router';
 import ContentWrapper from 'components/ContentWrapper';
 import AppRouteProvider from 'utils/AppRouteProvider';
 
+import { makeStore } from 'redux/store';
 import { getBackendStatus } from 'redux/selectors';
 import { loadProjects, setActiveProject } from 'redux/actions/projects';
 import { loadExperiments } from 'redux/actions/experiments';
 import { updateExperimentInfo } from 'redux/actions/experimentSettings';
-
-import { makeStore } from 'redux/store';
+import generateGem2sParamsHash from 'utils/data-management/generateGem2sParamsHash';
 
 import mockAPI, {
   generateDefaultMockAPIResponses,
@@ -25,6 +25,7 @@ import mockAPI, {
 import { projects } from '__test__/test-utils/mockData';
 
 jest.mock('redux/selectors');
+jest.mock('utils/data-management/generateGem2sParamsHash');
 
 jest.mock('next/router', () => ({
   __esModule: true,
@@ -38,9 +39,12 @@ jest.mock('@aws-amplify/auth', () => ({
 
 enableFetchMocks();
 
+generateGem2sParamsHash.mockImplementation(() => 'mockParamsHash');
+
 const projectWithSamples = projects.find((project) => project.samples.length > 0);
 const experimentId = projectWithSamples.experiments[0];
 const projectUuid = projectWithSamples.uuid;
+const sampleIds = projectWithSamples.samples;
 
 const experimentName = 'test experiment';
 const experimentData = {
@@ -60,7 +64,7 @@ const renderContentWrapper = async (expId, expData) => {
       <Provider store={store}>
         <AppRouteProvider>
           <ContentWrapper routeExperimentId={expId} experimentData={expData}>
-            <></>
+            <>Test</>
           </ContentWrapper>
         </AppRouteProvider>
       </Provider>,
@@ -80,7 +84,7 @@ describe('ContentWrapper', () => {
     fetchMock.mockIf(/.*/, mockAPI(mockAPIResponses));
 
     useRouter.mockImplementation(() => ({
-      pathname: `/experiments/${experimentId}/data-exploration`,
+      pathname: '/data-management',
     }));
 
     store = makeStore();
@@ -88,7 +92,7 @@ describe('ContentWrapper', () => {
     await store.dispatch(loadProjects());
     await store.dispatch(loadExperiments(projectUuid));
     await store.dispatch(setActiveProject(projectUuid));
-    await store.dispatch(updateExperimentInfo({ experimentId, experimentName, sampleIds: [] }));
+    await store.dispatch(updateExperimentInfo({ experimentId, experimentName, sampleIds }));
   });
 
   it('renders correctly', async () => {
@@ -139,7 +143,7 @@ describe('ContentWrapper', () => {
         },
         gem2s: {
           status: 'SUCCEEDED',
-          paramsHash: false,
+          paramsHash: 'mockParamsHash',
         },
       },
     };

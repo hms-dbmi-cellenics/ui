@@ -67,13 +67,13 @@ const ContentWrapper = (props) => {
       currentExperimentIdRef.current = routeExperimentId;
       return;
     }
+
     if (!routeExperimentId && currentExperimentIdRef.current !== activeProjectExperimentID) {
       currentExperimentIdRef.current = activeProjectExperimentID;
     }
   }, [routeExperimentId, activeProjectExperimentID]);
 
   const currentExperimentId = currentExperimentIdRef.current;
-
   const experiment = useSelector((state) => state?.experiments[currentExperimentId]);
 
   const experimentName = experimentData?.experimentName || experiment?.name;
