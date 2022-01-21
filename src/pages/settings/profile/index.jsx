@@ -7,8 +7,8 @@ import {
 import { useRouter } from 'next/router';
 import FeedbackButton from 'components/FeedbackButton';
 import Header from 'components/Header';
-import endUserMessages from '../../../utils/endUserMessages';
-import pushNotificationMessage from '../../../utils/pushNotificationMessage';
+import endUserMessages from 'utils/endUserMessages';
+import pushNotificationMessage from 'utils/pushNotificationMessage';
 
 const ProfileSettings = () => {
   const router = useRouter();
@@ -24,15 +24,6 @@ const ProfileSettings = () => {
   };
   const [newAttributes, setNewAttributes] = useState(initialState);
   const { changedPasswordAttributes, changedUserAttributes } = newAttributes;
-
-  const formItemLayout = {
-    labelCol: {
-      span: 6,
-    },
-    wrapperCol: {
-      span: 18,
-    },
-  };
 
   const setChanges = (object) => {
     const newChanges = _.cloneDeep(newAttributes);
@@ -104,7 +95,8 @@ const ProfileSettings = () => {
 
               <Form
                 layout='horizontal'
-                {...formItemLayout}
+                labelCol={{ span: '6' }}
+                wrapperCol={{ span: '18' }}
               >
                 <h2 style={{ marginTop: '16px' }}>Profile settings:</h2>
                 <Form.Item label='Full name'>
@@ -163,19 +155,25 @@ const ProfileSettings = () => {
                   />
                 </Form.Item>
               </Form>
-              <Space style={{ marginTop: '24px' }}>
-                <Button
-                  onClick={() => router.back()}
-                >
-                  Cancel
-                </Button>
-                <Button
-                  type='primary'
-                  onClick={() => updateDetails()}
-                >
-                  Save changes
-                </Button>
-              </Space>
+            </Col>
+          </Row>
+          <Row>
+            <Col xl={{ span: 12, offset: 6 }} span={24}>
+              <Row justify='end'>
+                <Space>
+                  <Button
+                    onClick={() => router.back()}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    type='primary'
+                    onClick={() => updateDetails()}
+                  >
+                    Save changes
+                  </Button>
+                </Space>
+              </Row>
             </Col>
           </Row>
         </Space>
