@@ -10,16 +10,6 @@ Object {
 }
 `;
 
-exports[`deleteCellSet action Last action dispatches cellSetSave event 1`] = `
-Object {
-  "payload": Object {
-    "experimentId": "1234",
-    "key": "my-key",
-  },
-  "type": "cellSets/delete",
-}
-`;
-
 exports[`deleteCellSet action Send fetch to the api 1`] = `
 Object {
   "body": "[{\\"$match\\":{\\"query\\":\\"$[?(@.key == \\\\\\"scratchpad\\\\\\")]\\",\\"value\\":{\\"children\\":[{\\"$match\\":{\\"query\\":\\"$[?(@.key == \\\\\\"my-key\\\\\\")]\\",\\"value\\":{\\"$remove\\":true}}}]}}}]",
