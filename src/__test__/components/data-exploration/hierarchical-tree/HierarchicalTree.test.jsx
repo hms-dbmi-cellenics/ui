@@ -309,16 +309,95 @@ describe('HierarchicalTree', () => {
     expect(mockOnCellSetReorder).toHaveBeenCalledTimes(1);
   });
 
-  it('tree data is not checked by default', () => {
+  it('tree data is not checked by default', async () => {
     const treeData = [{ key: 'louvain' }];
     const mockOnCheck = jest.fn();
-    waitForComponentToPaint(mount(
+
+    const component = mount(
       <HierarchicalTree
         treeData={treeData}
         experimentId={experimentId}
         onCheck={mockOnCheck}
       />,
-    ));
+    );
+
+    await waitForComponentToPaint(component);
+
     expect(mockOnCheck).toHaveBeenCalledTimes(0);
+  });
+
+  it('triggers onNodeUpdate if a color was changed', async () => {
+    const treeData = [
+      firstParent,
+    ];
+
+    const mockOnNodeUpdate = jest.fn();
+
+    const component = mount(
+      <HierarchicalTree
+        treeData={treeData}
+        experimentId={experimentId}
+        onNodeUpdate={mockOnNodeUpdate}
+      />,
+    );
+
+    await waitForComponentToPaint(component);
+
+    const childColorPicker = component.find('ColorPicker').at(0);
+    childColorPicker.getElement().props.onColorChange('white');
+    component.update();
+
+    expect(mockOnNodeUpdate).toHaveBeenCalledTimes(1);
+    expect(mockOnNodeUpdate).toHaveBeenCalledWith('1a', { color: 'white' });
+  });
+
+  it('triggers onNodeUpdate if a name was changed', async () => {
+    const treeData = [
+      firstParent,
+    ];
+
+    const mockOnNodeUpdate = jest.fn();
+
+    const component = mount(
+      <HierarchicalTree
+        treeData={treeData}
+        experimentId={experimentId}
+        onNodeUpdate={mockOnNodeUpdate}
+      />,
+    );
+
+    await waitForComponentToPaint(component);
+
+    const childEditableField = component.find('EditableField').at(0);
+    childEditableField.getElement().props.onAfterSubmit('New name');
+    component.update();
+
+    expect(mockOnNodeUpdate).toHaveBeenCalledTimes(1);
+    expect(mockOnNodeUpdate).toHaveBeenCalledWith('1a', { name: 'New name' });
+  });
+
+  it('triggers onNodeDelete if a node was deleted', async () => {
+    const treeData = [
+      firstParent,
+    ];
+
+    const mockOnNodeDelete = jest.fn();
+
+    const component = mount(
+      <HierarchicalTree
+        treeData={treeData}
+        experimentId={experimentId}
+        onNodeDelete={mockOnNodeDelete}
+      />,
+    );
+
+    await waitForComponentToPaint(component);
+
+    const childEditableField = component.find('EditableField').at(0);
+    childEditableField.getElement().props.onDelete();
+    component.update();
+
+    expect(mockOnNodeDelete).toHaveBeenCalledTimes(1);
+    expect(mockOnNodeDelete).toHaveBeenCalledWith('1a');
   });
 });
