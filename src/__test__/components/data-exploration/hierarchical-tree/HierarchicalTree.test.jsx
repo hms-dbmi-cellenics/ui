@@ -1,5 +1,10 @@
 import React from 'react';
 import { mount } from 'enzyme';
+
+import {
+  EditOutlined, DeleteOutlined, // , CheckOutlined, CloseOutlined,
+} from '@ant-design/icons';
+
 import HierarchicalTree from 'components/data-exploration/hierarchical-tree/HierarchicalTree';
 import waitForComponentToPaint from 'utils/tests/waitForComponentToPaint';
 
@@ -26,7 +31,7 @@ const childInSecondParent = {
 };
 
 const firstParent = {
-  key: '1',
+  key: 'scratchpad',
   name: 'parent 1',
   rootNode: true,
   children: [firstChild, secondChild],
@@ -343,10 +348,15 @@ describe('HierarchicalTree', () => {
 
     await waitForComponentToPaint(component);
 
+    // Only 2 color pickers are shown
+    expect(component.find('ColorPicker').length).toHaveLength(2);
+
+    // On changing one color
     const childColorPicker = component.find('ColorPicker').at(0);
     childColorPicker.getElement().props.onColorChange('white');
     component.update();
 
+    // The callback is triggered
     expect(mockOnNodeUpdate).toHaveBeenCalledTimes(1);
     expect(mockOnNodeUpdate).toHaveBeenCalledWith('1a', { color: 'white' });
   });
@@ -369,9 +379,19 @@ describe('HierarchicalTree', () => {
     await waitForComponentToPaint(component);
 
     const childEditableField = component.find('EditableField').at(0);
+    const parentEditableField = component.find('EditableField').at(2);
+
+    // The child node can be edited
+    expect(childEditableField.find(EditOutlined).length).toEqual(1);
+
+    // The root node scratchpad can't be edited
+    expect(parentEditableField.find(EditOutlined).length).toEqual(0);
+
+    // When we edit
     childEditableField.getElement().props.onAfterSubmit('New name');
     component.update();
 
+    // Callback is triggered
     expect(mockOnNodeUpdate).toHaveBeenCalledTimes(1);
     expect(mockOnNodeUpdate).toHaveBeenCalledWith('1a', { name: 'New name' });
   });
@@ -394,6 +414,14 @@ describe('HierarchicalTree', () => {
     await waitForComponentToPaint(component);
 
     const childEditableField = component.find('EditableField').at(0);
+    const parentEditableField = component.find('EditableField').at(2);
+
+    // The child node can be edited
+    expect(childEditableField.find(DeleteOutlined).length).toEqual(1);
+
+    // The root node scratchpad can't be deleted
+    expect(parentEditableField.find(DeleteOutlined).length).toEqual(0);
+
     childEditableField.getElement().props.onDelete();
     component.update();
 
