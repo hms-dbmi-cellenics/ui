@@ -18,7 +18,7 @@ const seekFromS3 = async (ETag, experimentId) => {
   return unpackResult(storageResp);
 };
 
-const seekFromAPI = async (
+const dispatchWorkRequest = async (
   experimentId,
   body,
   timeout,
@@ -72,4 +72,4 @@ const seekFromAPI = async (
   return result;
 };
 
-export { seekFromAPI, seekFromS3 };
+export { dispatchWorkRequest, seekFromS3 };

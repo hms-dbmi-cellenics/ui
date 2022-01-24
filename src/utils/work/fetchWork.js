@@ -6,7 +6,7 @@ import { calculateZScore } from 'utils/postRequestProcessing';
 import { getBackendStatus } from 'redux/selectors';
 
 import cache from 'utils/cache';
-import { seekFromAPI, seekFromS3 } from './seekWorkResponse';
+import { dispatchWorkRequest, seekFromS3 } from './seekWorkResponse';
 
 const createObjectHash = (object) => hash.MD5(object);
 
@@ -69,7 +69,7 @@ const fetchGeneExpressionWork = async (
   let response = await seekFromS3(ETag, experimentId);
 
   if (!response) {
-    response = await seekFromAPI(
+    response = await dispatchWorkRequest(
       experimentId,
       missingGenesBody,
       timeout,
@@ -141,12 +141,11 @@ const fetchWork = async (
   // If response cannot be fetched, go to the worker.
   let workResultReady = false;
   if (!response) {
-    workResultReady = await seekFromAPI(
+    workResultReady = await dispatchWorkRequest(
       experimentId,
       body,
       timeout,
       ETag,
-      eventCallback,
       {
         PipelineRunETag: qcPipelineStartDate,
         ...extras,
@@ -164,6 +163,10 @@ const fetchWork = async (
   // If a work response is in s3, it is cacheable
   // (the cacheable or not option is managed in the worker)
   await cache.set(ETag, response);
+
+  if (eventCallback) {
+    eventCallback(response);
+  }
 
   return response;
 };
