@@ -5,9 +5,9 @@ import produce from 'immer';
 import initialState from 'redux/reducers/cellSets/initialState';
 
 const cellSetsUpdateProperty = produce((draft, action) => {
-  const { key, dataUpdated } = action.payload;
+  const { cellSetKey, dataUpdated } = action.payload;
 
-  _.merge(draft.properties[key], dataUpdated);
+  _.merge(draft.properties[cellSetKey], dataUpdated);
 }, initialState);
 
 export default cellSetsUpdateProperty;

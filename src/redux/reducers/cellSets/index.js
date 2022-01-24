@@ -6,22 +6,22 @@ import {
   CELL_SETS_HIDE, CELL_SETS_UNHIDE, CELL_SETS_UNHIDE_ALL,
   CELL_SETS_ERROR,
   CELL_SETS_CLUSTERING_UPDATING, CELL_SETS_CLUSTERING_UPDATED, CELL_SETS_REORDER,
-} from '../../actionTypes/cellSets';
-import { EXPERIMENT_SETTINGS_PIPELINE_START } from '../../actionTypes/experimentSettings';
+} from 'redux/actionTypes/cellSets';
+import { EXPERIMENT_SETTINGS_PIPELINE_START } from 'redux/actionTypes/experimentSettings';
 
-import initialState from './initialState';
+import initialState from 'redux/reducers/cellSets/initialState';
 
-import cellSetsLoading from './cellSetsLoading';
-import cellSetsLoaded from './cellSetsLoaded';
-import cellSetsUpdateProperty from './cellSetsUpdateProperty';
-import cellSetsDelete from './cellSetsDelete';
-import cellSetsReorder from './cellSetsReorder';
-import cellSetsCreate from './cellSetsCreate';
-import cellSetsSetSelected from './cellSetsSetSelected';
-import cellSetsError from './cellSetsError';
-import { cellSetsHide, cellSetsUnhide, cellSetsUnhideAll } from './cellSetsHideUnhide';
-import cellSetsClusteringUpdating from './cellSetsClusteringUpdating';
-import cellSetsClusteringUpdated from './cellSetsClusteringUpdated';
+import cellSetsLoading from 'redux/reducers/cellSets/cellSetsLoading';
+import cellSetsLoaded from 'redux/reducers/cellSets/cellSetsLoaded';
+import cellSetsUpdateProperty from 'redux/reducers/cellSets/cellSetsUpdateProperty';
+import cellSetsDelete from 'redux/reducers/cellSets/cellSetsDelete';
+import cellSetsReorder from 'redux/reducers/cellSets/cellSetsReorder';
+import cellSetsCreate from 'redux/reducers/cellSets/cellSetsCreate';
+import cellSetsSetSelected from 'redux/reducers/cellSets/cellSetsSetSelected';
+import cellSetsError from 'redux/reducers/cellSets/cellSetsError';
+import { cellSetsHide, cellSetsUnhide, cellSetsUnhideAll } from 'redux/reducers/cellSets/cellSetsHideUnhide';
+import cellSetsClusteringUpdating from 'redux/reducers/cellSets/cellSetsClusteringUpdating';
+import cellSetsClusteringUpdated from 'redux/reducers/cellSets/cellSetsClusteringUpdated';
 
 const cellSetsReducer = (state = initialState, action) => {
   switch (action.type) {
