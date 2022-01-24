@@ -8,8 +8,6 @@ import {
 import HierarchicalTree from 'components/data-exploration/hierarchical-tree/HierarchicalTree';
 import waitForComponentToPaint from 'utils/tests/waitForComponentToPaint';
 
-import '__test__/test-utils/setupTests';
-
 const experimentId = 'asd';
 
 const firstChild = {
