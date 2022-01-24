@@ -58,7 +58,7 @@ describe('reorderCellSet action', () => {
     expect(body).toMatchSnapshot();
   });
 
-  it('Does not dispatch on fetch error', async () => {
+  it('Does not dispatch the reorder action on fetch error', async () => {
     fetchMock.mockRejectOnce(() => Promise.reject(new Error('Some error')));
 
     const store = mockStore({ cellSets: { ...cellSetsNodeState, loading: false } });
@@ -69,5 +69,7 @@ describe('reorderCellSet action', () => {
     const pushNotificationMessageParams = pushNotificationMessage.mock.calls[0];
 
     expect(pushNotificationMessageParams).toEqual(['error', 'We couldn\'t save your data.']);
+
+    expect(store.getActions()).toHaveLength(0);
   });
 });
