@@ -2,12 +2,12 @@ import React, { useEffect, useState } from 'react';
 import Auth from '@aws-amplify/auth';
 import _ from 'lodash';
 import {
-  Form, Input, Empty, PageHeader, Card, Row, Col, Button, Space,
+  Form, Input, Empty, Row, Col, Button, Space,
 } from 'antd';
 import { useRouter } from 'next/router';
-import FeedbackButton from '../../../components/FeedbackButton';
-import endUserMessages from '../../../utils/endUserMessages';
-import pushNotificationMessage from '../../../utils/pushNotificationMessage';
+import Header from 'components/Header';
+import endUserMessages from 'utils/endUserMessages';
+import pushNotificationMessage from 'utils/pushNotificationMessage';
 
 const ProfileSettings = () => {
   const router = useRouter();
@@ -82,19 +82,19 @@ const ProfileSettings = () => {
   if (user) {
     return (
       <>
-        <PageHeader
+        <Header
           title='Profile'
-          extra={(
-            <FeedbackButton />
-          )}
         />
-        <Card>
+        <Space direction='vertical' style={{ width: '100%', padding: '20px', background: ' white' }}>
+          <Row type='flex'>
+            <Col xl={{ span: 12, offset: 6 }} span={24}>
 
-          <Row type='flex' justify='center' align='center'>
-            <Col style={{ width: '40%' }}>
-
-              <Form layout='horizontal'>
-                <h2>Profile settings:</h2>
+              <Form
+                layout='horizontal'
+                labelCol={{ span: '6' }}
+                wrapperCol={{ span: '18' }}
+              >
+                <h2 style={{ marginTop: '16px' }}>Profile settings:</h2>
                 <Form.Item label='Full name'>
                   <Input
                     onChange={(e) => setChanges({ changedUserAttributes: { name: e.target.value } })}
@@ -118,7 +118,8 @@ const ProfileSettings = () => {
                 <Form.Item label='Institution:'>
                   <Input disabled placeholder={user.attributes.institution} />
                 </Form.Item>
-                <h2>Password settings:</h2>
+
+                <h2 style={{ marginTop: '40px' }}>Password settings:</h2>
                 <Form.Item
                   label='Current password:' // pragma: allowlist secret
                   validateStatus={oldPasswordError ? 'error' : 'success'}
@@ -150,19 +151,28 @@ const ProfileSettings = () => {
                   />
                 </Form.Item>
               </Form>
-              <Space>
-                <Button onClick={() => router.back()}>
-                  Cancel
-                </Button>
-                <Button
-                  onClick={() => updateDetails()}
-                >
-                  Save changes
-                </Button>
-              </Space>
             </Col>
           </Row>
-        </Card>
+          <Row>
+            <Col xl={{ span: 12, offset: 6 }} span={24}>
+              <Row justify='end'>
+                <Space>
+                  <Button
+                    onClick={() => router.back()}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    type='primary'
+                    onClick={() => updateDetails()}
+                  >
+                    Save changes
+                  </Button>
+                </Space>
+              </Row>
+            </Col>
+          </Row>
+        </Space>
 
       </>
     );
