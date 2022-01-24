@@ -131,7 +131,7 @@ describe('Volcano plot page', () => {
     await storeState.dispatch(loadBackendStatus(experimentId));
   });
 
-  it.only('Loads controls and elements', async () => {
+  it('Loads controls and elements', async () => {
     await renderVolcanoPlotPage(storeState);
 
     expect(screen.getByText(new RegExp(plotNames.VOLCANO_PLOT, 'i'))).toBeInTheDocument();

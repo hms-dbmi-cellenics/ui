@@ -1,38 +1,37 @@
-import { mount } from 'enzyme';
-
-import Auth from '@aws-amplify/auth';
-import { Menu } from 'antd';
-import { Provider } from 'react-redux';
 import React from 'react';
+import { screen, render } from '@testing-library/react';
 import { act } from 'react-dom/test-utils';
-import configureMockStore from 'redux-mock-store';
-import thunk from 'redux-thunk';
-import { getBackendStatus } from 'redux/selectors';
+import '@testing-library/jest-dom';
+import userEvent from '@testing-library/user-event';
+import { Provider } from 'react-redux';
+import Auth from '@aws-amplify/auth';
+import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
+import { useRouter } from 'next/router';
+import preloadAll from 'jest-next-dynamic';
+
 import ContentWrapper from 'components/ContentWrapper';
-import '__test__/test-utils/setupTests';
+import AppRouteProvider from 'utils/AppRouteProvider';
+
+import { makeStore } from 'redux/store';
+import { getBackendStatus } from 'redux/selectors';
+import { loadProjects, setActiveProject } from 'redux/actions/projects';
+import { loadExperiments } from 'redux/actions/experiments';
+import { updateExperimentInfo } from 'redux/actions/experimentSettings';
+import generateGem2sParamsHash from 'utils/data-management/generateGem2sParamsHash';
+
+import mockAPI, {
+  generateDefaultMockAPIResponses,
+} from '__test__/test-utils/mockAPI';
+
+import { projects } from '__test__/test-utils/mockData';
 
 jest.mock('redux/selectors');
-
-const { Item } = Menu;
-
-const experimentId = '1234';
+jest.mock('utils/socketConnection');
+jest.mock('utils/data-management/generateGem2sParamsHash');
 
 jest.mock('next/router', () => ({
-  useRouter: jest.fn()
-    .mockImplementationOnce(() => ({ // test 1
-      query: {
-        experimentId: '1234',
-      },
-    }))
-    .mockImplementationOnce(() => ({ // test 2
-      query: {
-        experimentId: '1234',
-      },
-    }))
-    .mockImplementationOnce(() => ({ // test 3
-      query: {},
-    })),
-
+  __esModule: true,
+  useRouter: jest.fn(),
 }));
 
 jest.mock('@aws-amplify/auth', () => ({
@@ -40,116 +39,124 @@ jest.mock('@aws-amplify/auth', () => ({
   federatedSignIn: jest.fn(),
 }));
 
-jest.mock('utils/AppRouteProvider', () => ({
-  useAppRouter: jest.fn().mockReturnValue(() => { }),
+jest.mock('utils/socketConnection', () => ({
+  __esModule: true,
+  default: new Promise((resolve) => {
+    resolve({
+      emit: jest.fn(), on: jest.fn(), off: jest.fn(), id: '5678',
+    });
+  }),
 }));
 
-const mockStore = configureMockStore([thunk]);
-const store = mockStore({
-  notifications: {},
-  experimentSettings: {
-    processing: {
-      meta: {
-        changedQCFilters: new Set(),
-      },
-    },
-    info: {
-      experimentId,
-      experimentName: 'test experiment',
-    },
-  },
-  experiments: { [experimentId]: {} },
-  projects: {
-    meta: {
-      activeProjectUuid: '1234',
-    },
-  },
-  backendStatus: {},
-});
+const chromeUA = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36';
+const firefoxUA = '"Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:96.0) Gecko/20100101 Firefox/96.0"';
 
-describe('ContentWrapper', () => {
-  it('renders correctly', async () => {
-    getBackendStatus.mockImplementation(() => () => ({
-      loading: false,
-      error: false,
-      status: {},
-    }));
+Object.defineProperty(navigator, 'userAgent', { value: chromeUA, writable: true });
 
-    const wrapper = await mount(
+enableFetchMocks();
+
+generateGem2sParamsHash.mockImplementation(() => 'mockParamsHash');
+
+const projectWithSamples = projects.find((project) => project.samples.length > 0);
+const experimentId = projectWithSamples.experiments[0];
+const projectUuid = projectWithSamples.uuid;
+const sampleIds = projectWithSamples.samples;
+
+const experimentName = 'test experiment';
+const experimentData = {
+  experimentId,
+  experimentName,
+};
+
+const mockAPIResponses = generateDefaultMockAPIResponses(experimentId, projectUuid);
+
+let store = null;
+
+const renderContentWrapper = async (expId, expData) => {
+  let result = {};
+
+  await act(async () => {
+    const output = render(
       <Provider store={store}>
-        <ContentWrapper routeExperimentId={experimentId} experimentData={{ experimentName: 'test experiment' }}>
-          <></>
-        </ContentWrapper>
+        <AppRouteProvider>
+          <ContentWrapper routeExperimentId={expId} experimentData={expData}>
+            <>Test</>
+          </ContentWrapper>
+        </AppRouteProvider>
       </Provider>,
     );
-    wrapper.update();
 
-    let sider;
-    act(() => {
-      sider = wrapper.find('Sider');
-    });
-    wrapper.update();
-
-    expect(sider.length).toEqual(1);
-
-    const menus = wrapper.find(Menu).children().find(Item);
-
-    // Menu item renders twice to support HOC usage (?)
-    // https://ant.design/components/menu/#Why-Menu-children-node-will-render-twice
-    const visibleMenuLength = menus.length / 2;
-
-    expect(visibleMenuLength).toEqual(4);
-
-    expect(menus.at(0).text()).toEqual('Data Management');
-    expect(menus.at(1).text()).toEqual('Data Processing');
-    expect(menus.at(2).text()).toEqual('Data Exploration');
-    expect(menus.at(3).text()).toEqual('Plots and Tables');
+    result = output;
   });
 
-  it('links are disabled if there is no experimentId', async () => {
+  return result;
+};
+
+describe('ContentWrapper', () => {
+  beforeAll(async () => {
+    await preloadAll();
+  });
+
+  beforeEach(async () => {
+    jest.clearAllMocks();
+
+    fetchMock.resetMocks();
+    fetchMock.mockIf(/.*/, mockAPI(mockAPIResponses));
+
+    useRouter.mockImplementation(() => ({
+      pathname: '/data-management',
+    }));
+
+    store = makeStore();
+
+    navigator.userAgent = chromeUA;
+
     getBackendStatus.mockImplementation(() => () => ({
       loading: false,
       error: false,
       status: null,
     }));
 
-    const wrapper = await mount(
-      <Provider store={store}>
-        <ContentWrapper>
-          <></>
-        </ContentWrapper>
-      </Provider>,
-    );
+    await store.dispatch(loadProjects());
+    await store.dispatch(loadExperiments(projectUuid));
+    await store.dispatch(setActiveProject(projectUuid));
+    await store.dispatch(updateExperimentInfo({ experimentId, experimentName, sampleIds }));
+  });
 
-    await wrapper.update();
+  // PROBLEMATIC
+  it('renders correctly', async () => {
+    getBackendStatus.mockImplementation(() => () => ({
+      loading: false,
+      error: false,
+      status: null,
+    }));
 
-    const sider = wrapper.find('Sider');
-    expect(sider.length).toEqual(1);
+    await renderContentWrapper(experimentId, experimentData);
 
-    const menus = wrapper.find(Menu).children().find(Item);
+    expect(screen.getByText('Data Management')).toBeInTheDocument();
+    expect(screen.getByText(experimentName)).toBeInTheDocument();
+    expect(screen.getByText('Data Processing')).toBeInTheDocument();
+    expect(screen.getByText('Data Exploration')).toBeInTheDocument();
+    expect(screen.getByText('Plots and Tables')).toBeInTheDocument();
+  });
 
-    // Menu item renders twice to support HOC usage (?)
-    // https://ant.design/components/menu/#Why-Menu-children-node-will-render-twice
-    const visibleMenuLength = menus.length / 2;
-
-    expect(visibleMenuLength).toEqual(4);
+  it('links are disabled if there is no experimentId', async () => {
+    await renderContentWrapper();
 
     // Data Management is not disabled
-    expect(menus.at(0).props().disabled).toEqual(false);
+    expect(screen.getByText('Data Management').closest('li')).toHaveAttribute('aria-disabled', 'false');
 
     // Data Processing link is disabled
-    expect(menus.at(1).props().disabled).toEqual(true);
+    expect(screen.getByText('Data Processing').closest('li')).toHaveAttribute('aria-disabled', 'true');
 
     // Data Exploration link is disabled
-    expect(menus.at(2).props().disabled).toEqual(true);
+    expect(screen.getByText('Data Exploration').closest('li')).toHaveAttribute('aria-disabled', 'true');
 
     // Plots and Tables link is disabled
-    expect(menus.at(3).props().disabled).toEqual(true);
+    expect(screen.getByText('Plots and Tables').closest('li')).toHaveAttribute('aria-disabled', 'true');
   });
 
   it('Links are enabled if the selected project is processed', async () => {
-    // The selector gets called on each render, so we must make sure the same object
-    // is returned each time.
     const mockBackendStatus = {
       loading: false,
       error: false,
@@ -159,87 +166,56 @@ describe('ContentWrapper', () => {
         },
         gem2s: {
           status: 'SUCCEEDED',
-          paramsHash: false,
+          paramsHash: 'mockParamsHash',
         },
       },
     };
 
     getBackendStatus.mockImplementation(() => () => mockBackendStatus);
 
-    const wrapper = await mount(
-      <Provider store={store}>
-        <ContentWrapper>
-          <></>
-        </ContentWrapper>
-      </Provider>,
-    );
+    await renderContentWrapper();
 
-    // Run two cycles of updates so "should gem2s rerun" information
-    // can propagate to the render. This should be refactored into a
-    // react-testing-library test when possible.
-    await wrapper.update();
-    await wrapper.update();
+    // Data Management is not disabled
+    expect(screen.getByText('Data Management').closest('li')).toHaveAttribute('aria-disabled', 'false');
 
-    const sider = wrapper.find('Sider');
+    // Data Processing link is not disabled
+    expect(screen.getByText('Data Processing').closest('li')).toHaveAttribute('aria-disabled', 'false');
 
-    expect(sider.length).toEqual(1);
-    const menus = wrapper.find(Menu).children().find(Item);
-    const visibleMenuLength = menus.length / 2;
+    // Data Exploration link is not disabled
+    expect(screen.getByText('Data Exploration').closest('li')).toHaveAttribute('aria-disabled', 'false');
 
-    expect(visibleMenuLength).toEqual(4);
-    for (let i = 0; i < visibleMenuLength; i += 1) {
-      expect(menus.at(i).props().disabled).toEqual(false);
-    }
-    expect(menus.at(0).text()).toEqual('Data Management');
-    expect(menus.at(1).text()).toEqual('Data Processing');
-    expect(menus.at(2).text()).toEqual('Data Exploration');
-    expect(menus.at(3).text()).toEqual('Plots and Tables');
+    // Plots and Tables link is not disabled
+    expect(screen.getByText('Plots and Tables').closest('li')).toHaveAttribute('aria-disabled', 'false');
   });
 
   it('has the correct sider and layout style when opened / closed', async () => {
-    const siderHasWidth = (expectedWidth) => {
-      const sider = wrapper.find('Sider');
-      const expandedComputedStyle = getComputedStyle(sider.getDOMNode()).getPropertyValue('width');
-      expect(expandedComputedStyle).toEqual(expectedWidth);
+    const siderHasWidth = (container, expectedWidth) => {
+      const div = container.firstChild;
 
-      const layout = wrapper.find('Layout Layout');
-      expect(layout.prop('style')).toEqual(expect.objectContaining({ marginLeft: expectedWidth }));
+      const [sidebar, content] = Array.from(div.children);
+
+      const expandedComputedStyle = getComputedStyle(sidebar).getPropertyValue('width');
+      expect(expandedComputedStyle).toEqual(expectedWidth);
+      expect(content.getAttribute('style')).toMatch(`margin-left: ${expectedWidth}`);
     };
 
-    getBackendStatus.mockImplementation(() => () => ({
-      loading: false,
-      error: false,
-      status: null,
-    }));
-
-    // eslint-disable-next-line require-await
-    const wrapper = await mount(
-      <Provider store={store}>
-        <ContentWrapper backendStatus={{}}>
-          <></>
-        </ContentWrapper>
-      </Provider>,
-    );
-    wrapper.update();
+    const { container } = await renderContentWrapper();
 
     const expandedWidth = '210px';
     const collapsedWidth = '80px';
 
-    // When the side bar is collapsed
-    act(() => {
-      wrapper.find('Sider').props().onCollapse(true);
-    });
-    wrapper.update();
-    siderHasWidth(collapsedWidth);
+    // Click so the sidebar collapse
+    userEvent.click(screen.getByLabelText('left'));
 
-    // When side bar is not collapsed
-    act(() => {
-      wrapper.find('Sider').props().onCollapse(false);
-    });
-    wrapper.update();
-    siderHasWidth(expandedWidth);
+    siderHasWidth(container, collapsedWidth);
+
+    // Click so the sidebar open
+    userEvent.click(screen.getByLabelText('right'));
+
+    siderHasWidth(container, expandedWidth);
   });
 
+  // PROBLEMATIC
   it('View changes if there is a pipeline run underway', async () => {
     getBackendStatus.mockImplementation(() => () => ({
       loading: false,
@@ -247,55 +223,9 @@ describe('ContentWrapper', () => {
       status: { pipeline: { status: 'RUNNING' } },
     }));
 
-    const info = {
-      experimentId,
-      experimentName: 'test experiment',
-    };
+    await renderContentWrapper(experimentId, experimentData);
 
-    const testStore = mockStore({
-      notifications: {},
-      experimentSettings: {
-        processing: {
-          meta: {
-            changedQCFilters: new Set(),
-          },
-        },
-        info,
-      },
-      projects: {
-        meta: {
-          activeProjectUuid: '1234',
-        },
-      },
-      experiments: { [experimentId]: {} },
-    });
-
-    // eslint-disable-next-line require-await
-    const wrapper = await mount(
-      <Provider store={testStore}>
-        <ContentWrapper
-          routeExperimentId={info.experimentId}
-          experimentData={info}
-        >
-          <></>
-        </ContentWrapper>
-      </Provider>,
-    );
-    await wrapper.update();
-
-    const sider = wrapper.find('Sider');
-    expect(sider.length).toEqual(1);
-
-    const menus = wrapper.find(Menu).children().find(Item);
-
-    // Menu item renders twice to support HOC usage (?)
-    // https://ant.design/components/menu/#Why-Menu-children-node-will-render-twice
-    const visibleMenuLength = menus.length / 2;
-
-    expect(visibleMenuLength).toEqual(4);
-
-    const pipelineRedirects = wrapper.find('PipelineRedirectToDataProcessing');
-    expect(pipelineRedirects.length).toEqual(1);
+    expect(screen.getByText(/We're working on your project.../i)).toBeInTheDocument();
   });
 
   it('Redirects to login if the user is unauthenticated', async () => {
@@ -312,22 +242,23 @@ describe('ContentWrapper', () => {
         async () => { throw new Error('user not signed in'); },
       );
 
-    // eslint-disable-next-line require-await
-    const wrapper = await mount(
-      <Provider store={store}>
-        <ContentWrapper routeExperimentId={experimentId}>
-          <></>
-        </ContentWrapper>
-      </Provider>,
-    );
-    await wrapper.update();
+    await renderContentWrapper(experimentId, experimentData);
 
-    const sider = wrapper.find('Sider');
-    expect(sider.length).toEqual(0);
-
-    const menu = wrapper.find(Menu);
-    expect(menu.length).toEqual(0);
-
+    expect(screen.queryByText('Data Management')).not.toBeInTheDocument();
     expect(Auth.federatedSignIn).toHaveBeenCalled();
+  });
+
+  it('Shows browser banner if users are not using chrome', async () => {
+    navigator.userAgent = firefoxUA;
+
+    await renderContentWrapper(experimentId, experimentData);
+
+    expect(screen.getByText(/Browser not supported/)).toBeInTheDocument();
+  });
+
+  it('Does not show browser banner if users are not using chrome', async () => {
+    await renderContentWrapper(experimentId, experimentData);
+
+    expect(screen.queryByText(/Browser not supported/)).not.toBeInTheDocument();
   });
 });
