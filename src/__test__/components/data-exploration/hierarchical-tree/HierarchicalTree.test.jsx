@@ -8,7 +8,7 @@ import {
 import HierarchicalTree from 'components/data-exploration/hierarchical-tree/HierarchicalTree';
 import waitForComponentToPaint from 'utils/tests/waitForComponentToPaint';
 
-const experimentId = 'asd';
+import fake from '__test__/test-utils/constants';
 
 const firstChild = {
   key: '1a',
@@ -52,7 +52,7 @@ describe('HierarchicalTree', () => {
     }];
 
     const component = mount(
-      <HierarchicalTree treeData={treeData} experimentId={experimentId} />,
+      <HierarchicalTree treeData={treeData} experimentId={fake.EXPERIMENT_ID} />,
     );
     waitForComponentToPaint(component);
     const tree = component.find('HierarchicalTree Tree');
@@ -89,7 +89,7 @@ describe('HierarchicalTree', () => {
     const mockOnCellSetReorder = jest.fn();
     const component = mount(
       <HierarchicalTree
-        experimentId={experimentId}
+        experimentId={fake.EXPERIMENT_ID}
         treeData={treeData}
         onCellSetReorder={mockOnCellSetReorder}
       />,
@@ -137,7 +137,7 @@ describe('HierarchicalTree', () => {
     const component = mount(
       <HierarchicalTree
         treeData={treeData}
-        experimentId={experimentId}
+        experimentId={fake.EXPERIMENT_ID}
         onCellSetReorder={mockOnCellSetReorder}
       />,
     );
@@ -173,7 +173,7 @@ describe('HierarchicalTree', () => {
     const component = mount(
       <HierarchicalTree
         treeData={treeData}
-        experimentId={experimentId}
+        experimentId={fake.EXPERIMENT_ID}
         onCellSetReorder={mockOnCellSetReorder}
       />,
     );
@@ -209,7 +209,7 @@ describe('HierarchicalTree', () => {
     const component = mount(
       <HierarchicalTree
         treeData={treeData}
-        experimentId={experimentId}
+        experimentId={fake.EXPERIMENT_ID}
         onCellSetReorder={mockOnCellSetReorder}
       />,
     );
@@ -247,7 +247,7 @@ describe('HierarchicalTree', () => {
     const component = mount(
       <HierarchicalTree
         treeData={treeData}
-        experimentId={experimentId}
+        experimentId={fake.EXPERIMENT_ID}
         onCellSetReorder={mockOnCellSetReorder}
       />,
     );
@@ -285,7 +285,7 @@ describe('HierarchicalTree', () => {
     const component = mount(
       <HierarchicalTree
         treeData={treeData}
-        experimentId={experimentId}
+        experimentId={fake.EXPERIMENT_ID}
         onCellSetReorder={mockOnCellSetReorder}
       />,
     );
@@ -319,7 +319,7 @@ describe('HierarchicalTree', () => {
     const component = mount(
       <HierarchicalTree
         treeData={treeData}
-        experimentId={experimentId}
+        experimentId={fake.EXPERIMENT_ID}
         onCheck={mockOnCheck}
       />,
     );
@@ -339,7 +339,7 @@ describe('HierarchicalTree', () => {
     const component = mount(
       <HierarchicalTree
         treeData={treeData}
-        experimentId={experimentId}
+        experimentId={fake.EXPERIMENT_ID}
         onNodeUpdate={mockOnNodeUpdate}
       />,
     );
@@ -369,7 +369,7 @@ describe('HierarchicalTree', () => {
     const component = mount(
       <HierarchicalTree
         treeData={treeData}
-        experimentId={experimentId}
+        experimentId={fake.EXPERIMENT_ID}
         onNodeUpdate={mockOnNodeUpdate}
       />,
     );
@@ -404,7 +404,7 @@ describe('HierarchicalTree', () => {
     const component = mount(
       <HierarchicalTree
         treeData={treeData}
-        experimentId={experimentId}
+        experimentId={fake.EXPERIMENT_ID}
         onNodeDelete={mockOnNodeDelete}
       />,
     );
@@ -435,7 +435,7 @@ describe('HierarchicalTree', () => {
     const component = mount(
       <HierarchicalTree
         treeData={treeData}
-        experimentId={experimentId}
+        experimentId={fake.EXPERIMENT_ID}
       />,
     );
 
