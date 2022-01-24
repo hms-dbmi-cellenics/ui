@@ -38,10 +38,7 @@ const loadCellSets = (experimentId, forceReload = false) => async (dispatch, get
     }
     dispatch({
       type: CELL_SETS_ERROR,
-      payload: {
-        experimentId,
-        error: e,
-      },
+      payload: { error: e },
     });
   }
 };

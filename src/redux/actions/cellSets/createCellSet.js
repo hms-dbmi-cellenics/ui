@@ -50,10 +50,7 @@ const createCellSet = (experimentId, name, color, cellIds) => async (dispatch, g
 
   dispatch({
     type: CELL_SETS_CREATE,
-    payload: {
-      experimentId,
-      ...data,
-    },
+    payload: { ...data },
   });
 
   const url = `/v1/experiments/${experimentId}/cellSets`;

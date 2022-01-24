@@ -12,7 +12,6 @@ const updateCellSetSelected = (experimentId, keys, tab) => async (dispatch, getS
   await dispatch({
     type: CELL_SETS_SET_SELECTED,
     payload: {
-      experimentId,
       keys,
       tab,
     },

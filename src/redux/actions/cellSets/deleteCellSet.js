@@ -34,14 +34,6 @@ const deleteCellSet = (experimentId, key) => async (dispatch, getState) => {
     return null;
   }
 
-  await dispatch({
-    type: CELL_SETS_DELETE,
-    payload: {
-      experimentId,
-      key,
-    },
-  });
-
   const url = `/v1/experiments/${experimentId}/cellSets`;
 
   try {
@@ -67,6 +59,11 @@ const deleteCellSet = (experimentId, key) => async (dispatch, getState) => {
 
     pushNotificationMessage('error', endUserMessages.ERROR_SAVING);
   }
+
+  await dispatch({
+    type: CELL_SETS_DELETE,
+    payload: { key },
+  });
 };
 
 export default deleteCellSet;

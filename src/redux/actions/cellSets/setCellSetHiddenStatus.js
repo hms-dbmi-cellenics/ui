@@ -8,18 +8,12 @@ const setCellSetHiddenStatus = (
   if (getState().cellSets.hidden.has(key)) {
     dispatch({
       type: CELL_SETS_UNHIDE,
-      payload: {
-        experimentId,
-        key,
-      },
+      payload: { key },
     });
   } else {
     dispatch({
       type: CELL_SETS_HIDE,
-      payload: {
-        experimentId,
-        key,
-      },
+      payload: { key },
     });
   }
 };

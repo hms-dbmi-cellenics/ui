@@ -59,7 +59,6 @@ const reorderCellSet = (
   await dispatch({
     type: CELL_SETS_REORDER,
     payload: {
-      experimentId,
       cellSetKey,
       newPosition,
       cellClassKey: parentNodeKey,

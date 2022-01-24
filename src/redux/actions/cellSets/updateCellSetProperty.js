@@ -92,7 +92,6 @@ const updateCellSetProperty = (
   await dispatch({
     type: CELL_SETS_UPDATE_PROPERTY,
     payload: {
-      experimentId,
       cellSetKey: key,
       dataUpdated,
     },
