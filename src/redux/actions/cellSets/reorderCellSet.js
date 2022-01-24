@@ -48,6 +48,15 @@ const reorderCellSet = (
 
     const json = await response.json();
     throwIfRequestFailed(response, json, endUserMessages.ERROR_SAVING);
+
+    await dispatch({
+      type: CELL_SETS_REORDER,
+      payload: {
+        cellSetKey,
+        newPosition,
+        cellClassKey: parentNodeKey,
+      },
+    });
   } catch (e) {
     if (!isServerError(e)) {
       console.error(`fetch ${url} error ${e.message}`);
@@ -55,15 +64,6 @@ const reorderCellSet = (
 
     pushNotificationMessage('error', endUserMessages.ERROR_SAVING);
   }
-
-  await dispatch({
-    type: CELL_SETS_REORDER,
-    payload: {
-      cellSetKey,
-      newPosition,
-      cellClassKey: parentNodeKey,
-    },
-  });
 };
 
 export default reorderCellSet;

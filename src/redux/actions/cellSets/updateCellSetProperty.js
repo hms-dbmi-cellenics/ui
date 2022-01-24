@@ -81,6 +81,14 @@ const updateCellSetProperty = (
 
     const json = await response.json();
     throwIfRequestFailed(response, json, endUserMessages.ERROR_SAVING);
+
+    await dispatch({
+      type: CELL_SETS_UPDATE_PROPERTY,
+      payload: {
+        cellSetKey: key,
+        dataUpdated,
+      },
+    });
   } catch (e) {
     if (!isServerError(e)) {
       console.error(`fetch ${url} error ${e.message}`);
@@ -88,14 +96,6 @@ const updateCellSetProperty = (
 
     pushNotificationMessage('error', endUserMessages.ERROR_SAVING);
   }
-
-  await dispatch({
-    type: CELL_SETS_UPDATE_PROPERTY,
-    payload: {
-      cellSetKey: key,
-      dataUpdated,
-    },
-  });
 };
 
 export default updateCellSetProperty;

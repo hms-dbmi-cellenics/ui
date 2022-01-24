@@ -52,6 +52,11 @@ const deleteCellSet = (experimentId, key) => async (dispatch, getState) => {
 
     const json = await response.json();
     throwIfRequestFailed(response, json, endUserMessages.ERROR_SAVING);
+
+    await dispatch({
+      type: CELL_SETS_DELETE,
+      payload: { key },
+    });
   } catch (e) {
     if (!isServerError(e)) {
       console.error(`fetch ${url} error ${e.message}`);
@@ -59,11 +64,6 @@ const deleteCellSet = (experimentId, key) => async (dispatch, getState) => {
 
     pushNotificationMessage('error', endUserMessages.ERROR_SAVING);
   }
-
-  await dispatch({
-    type: CELL_SETS_DELETE,
-    payload: { key },
-  });
 };
 
 export default deleteCellSet;
