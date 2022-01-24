@@ -51,7 +51,7 @@ describe('createCellSet action', () => {
     expect(firstAction).toMatchSnapshot();
   });
 
-  it('Send fetch to the api', async () => {
+  it('Sends fetch to the API when creating cell set', async () => {
     const store = mockStore({ cellSets: { ...initialState, loading: false } });
     await store.dispatch(createCellSet(experimentId, cellSet.name, cellSet.color, cellSet.cellIds));
 

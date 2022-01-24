@@ -41,7 +41,7 @@ describe('deleteCellSet action', () => {
     expect(firstAction).toMatchSnapshot();
   });
 
-  it('Send fetch to the api', async () => {
+  it('Sends fetch to the API when a cell set is deleted', async () => {
     const store = mockStore({ cellSets: { ...initialState, loading: false } });
     await store.dispatch(deleteCellSet(experimentId, key));
 

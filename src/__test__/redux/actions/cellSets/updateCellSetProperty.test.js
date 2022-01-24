@@ -73,7 +73,7 @@ describe('updateCellSetProperty action', () => {
     expect(firstAction).toMatchSnapshot();
   });
 
-  it('Send fetch to the api', async () => {
+  it('Sends fetch to the API when a cell set\'s property is updated', async () => {
     const store = mockStore({ cellSets: { ...cellSetsNodeState, loading: false } });
     await store.dispatch(updateCellSetProperty(experimentId, childKey, property));
 
