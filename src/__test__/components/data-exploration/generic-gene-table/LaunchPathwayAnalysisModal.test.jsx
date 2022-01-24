@@ -75,7 +75,7 @@ const pantherDBResponse = {
 const renderPathwayAnalysisModal = async (store, filtersApplied = false) => {
   await act(async () => {
     render(
-      <Provider store={makeStore()}>
+      <Provider store={store}>
         <LaunchPathwayAnalysisModal
           advancedFiltersAdded={filtersApplied}
           onCancel={onCancel}
@@ -289,7 +289,7 @@ describe('Pathway analysis modal ', () => {
     expect(getBackgroundExpressedGenes).toHaveBeenCalledTimes(1);
   });
 
-  it('Reference genes list should change if the compared group is different', async () => {
+  it.only('Reference genes list should change if the compared group is different', async () => {
     await renderPathwayAnalysisModal(store);
 
     await act(async () => {
