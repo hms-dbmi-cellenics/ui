@@ -10,8 +10,6 @@ import pushNotificationMessage from 'utils/pushNotificationMessage';
 
 import initialState from 'redux/reducers/cellSets/initialState';
 
-import '__test__/test-utils/setupTests';
-
 enableFetchMocks();
 const mockStore = configureStore([thunk]);
 
@@ -19,7 +17,6 @@ describe('reorderCellSet action', () => {
   const experimentId = '1234';
   const rootKey = 'root';
   const cellSetKey = 'child';
-  // const property = { name: 'Some node!' };
 
   const cellSetsNodeState = {
     ...initialState,
