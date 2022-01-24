@@ -1,9 +1,9 @@
 import React from 'react';
-import '__test__/test-utils/setupTests';
 
 import {
-  render, screen, fireEvent,
+  render, screen, fireEvent, waitFor,
 } from '@testing-library/react';
+
 import userEvent from '@testing-library/user-event';
 import { act } from 'react-dom/test-utils';
 
@@ -17,6 +17,8 @@ import { makeStore } from 'redux/store';
 import CellSetsTool from 'components/data-exploration/cell-sets-tool/CellSetsTool';
 import { createCellSet } from 'redux/actions/cellSets';
 import { loadGeneExpression } from 'redux/actions/genes';
+
+import '__test__/test-utils/setupTests';
 
 jest.mock('utils/work/fetchWork');
 
@@ -37,6 +39,8 @@ const getClusterByName = (clusterName) => {
     if (storeState.getState().cellSets.properties[key].name === clusterName) {
       return key;
     }
+
+    return undefined;
   });
   return clusterKey;
 };
@@ -454,7 +458,7 @@ describe('CellSetsTool', () => {
     // Clicking on one of the buttons...
     userEvent.click(deleteButtons[0]);
 
-    expect(screen.queryByText('New Cluster')).toBeNull();
+    await waitFor(() => expect(screen.queryByText('New Cluster')).toBeNull());
   });
 
   it('calculates filtered cell indices correctly', async () => {
