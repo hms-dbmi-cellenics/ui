@@ -5,7 +5,6 @@ Object {
   "payload": Object {
     "cellClassKey": "root",
     "cellSetKey": "child",
-    "experimentId": "1234",
     "newPosition": 5,
   },
   "type": "cellSets/reorder",

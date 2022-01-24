@@ -110,7 +110,7 @@ describe('cellSetsReducer', () => {
     const newState = cellSetsReducer(state, {
       type: CELL_SETS_UPDATE_PROPERTY,
       payload: {
-        key: '1a',
+        cellSetKey: '1a',
         dataUpdated: { name: 'favorite child', color: '#ffffff' },
       },
     });

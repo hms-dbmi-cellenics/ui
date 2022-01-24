@@ -3,7 +3,6 @@
 exports[`updateCellSetSelected action Dispatches an action to update property to the reducer 1`] = `
 Object {
   "payload": Object {
-    "experimentId": "1234",
     "keys": Array [
       1,
       3,

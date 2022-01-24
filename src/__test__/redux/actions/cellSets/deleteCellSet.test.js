@@ -1,8 +1,12 @@
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
-import deleteCellSet from '../../../../redux/actions/cellSets/deleteCellSet';
-import initialState from '../../../../redux/reducers/cellSets/initialState';
+
+import waitForActions from 'redux-mock-store-await-actions';
+
+import { CELL_SETS_DELETE } from 'redux/actionTypes/cellSets';
+import initialState from 'redux/reducers/cellSets/initialState';
+import deleteCellSet from 'redux/actions/cellSets/deleteCellSet';
 
 import '__test__/test-utils/setupTests';
 
@@ -37,7 +41,10 @@ describe('deleteCellSet action', () => {
     const store = mockStore({ cellSets: { ...initialState, loading: false } });
     store.dispatch(deleteCellSet(experimentId, key));
 
+    await waitForActions(store, [CELL_SETS_DELETE]);
+
     const firstAction = store.getActions()[0];
+
     expect(firstAction).toMatchSnapshot();
   });
 

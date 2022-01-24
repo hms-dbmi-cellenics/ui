@@ -7,7 +7,6 @@ Object {
     "dataUpdated": Object {
       "name": "Some node!",
     },
-    "experimentId": "1234",
   },
   "type": "cellSets/updateProperty",
 }
@@ -20,13 +19,12 @@ Object {
     "dataUpdated": Object {
       "name": "Some node!",
     },
-    "experimentId": "1234",
   },
   "type": "cellSets/updateProperty",
 }
 `;
 
-exports[`updateCellSetProperty action Send fetch to the api 1`] = `
+exports[`updateCellSetProperty action Sends fetch to the API when a cell set's property is updated 1`] = `
 Object {
   "body": "[{\\"$match\\":{\\"query\\":\\"$[?(@.key == \\\\\\"root\\\\\\")]\\",\\"value\\":{\\"children\\":[{\\"$match\\":{\\"query\\":\\"$[?(@.key == \\\\\\"child\\\\\\")]\\",\\"value\\":{\\"name\\":\\"Some node!\\"}}}]}}}]",
   "headers": Object {

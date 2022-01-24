@@ -9,7 +9,6 @@ Object {
       3,
     },
     "color": "#ff0000",
-    "experimentId": "1234",
     "key": "a key",
     "name": "one",
     "type": "cellSets",
@@ -18,7 +17,7 @@ Object {
 }
 `;
 
-exports[`createCellSet action Send fetch to the api 1`] = `
+exports[`createCellSet action Sends fetch to the API when creating cell set 1`] = `
 Object {
   "body": "[{\\"$match\\":{\\"query\\":\\"$[?(@.key == \\\\\\"scratchpad\\\\\\")]\\",\\"value\\":{\\"children\\":[{\\"$insert\\":{\\"index\\":\\"-\\",\\"value\\":{\\"key\\":\\"some-uuid\\",\\"name\\":\\"one\\",\\"color\\":\\"#ff0000\\",\\"cellIds\\":{},\\"type\\":\\"cellSets\\"}}}]}}}]",
   "headers": Object {
