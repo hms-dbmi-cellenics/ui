@@ -63,6 +63,8 @@ const HierarchicalTree = (props) => {
     if (fromPosition === dropPosition) return;
 
     // If not dropped in gap, ignore
+    // (only allow dropToGap when the destination node is rootNode
+    // because it can have children nodes)
     if (!dropToGap && !node.rootNode) return;
 
     const newPosition = dropPosition - (fromPosition < dropPosition ? 1 : 0);
