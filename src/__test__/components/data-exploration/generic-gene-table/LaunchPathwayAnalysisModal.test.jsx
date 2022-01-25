@@ -269,25 +269,6 @@ describe('Pathway analysis modal ', () => {
     expect(getBackgroundExpressedGenes).toHaveBeenCalledTimes(1);
   });
 
-  it('Clicking on copy button copies the gene list', async () => {
-    await renderPathwayAnalysisModal(store);
-
-    await act(async () => {
-      userEvent.click(screen.getByText(/copy reference genes/i));
-    });
-
-    expect(getBackgroundExpressedGenes).toHaveBeenCalledTimes(1);
-    expect(mockClipboard).toHaveBeenCalledTimes(1);
-
-    expect(mockClipboard).toHaveBeenCalledWith(genesList.join('\n'));
-
-    expect(pushNotificationMessage).toHaveBeenCalledTimes(1);
-    expect(pushNotificationMessage).toHaveBeenCalledWith('success', 'Copied to clipboard');
-
-    // Clicking on the copy link again should not cause another work request
-    expect(getBackgroundExpressedGenes).toHaveBeenCalledTimes(1);
-  });
-
   it('It shows an error if getting background expressed genes fail', async () => {
     getBackgroundExpressedGenes.mockImplementation(() => { throw new Error('Failed getting background gene expression'); });
 

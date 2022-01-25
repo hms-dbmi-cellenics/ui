@@ -203,22 +203,6 @@ const LaunchPathwayAnalysisModal = (props) => {
             >
               download reference genes into file
             </Button>
-            {' '}
-            or
-            {' '}
-            <Button
-              type='link'
-              disabled={gettingBackgroundGenes}
-              loading={gettingBackgroundGenes}
-              style={inlineButtonStyle}
-              onClick={async () => {
-                const genesList = await getBackgroundGenesList();
-                navigator.clipboard.writeText(genesList);
-                pushNotificationMessage('success', 'Copied to clipboard');
-              }}
-            >
-              copy reference genes to clipboard
-            </Button>
             .
           </Paragraph>
         )}
