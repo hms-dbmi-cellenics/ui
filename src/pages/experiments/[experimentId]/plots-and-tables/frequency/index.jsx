@@ -17,7 +17,7 @@ import PropTypes from 'prop-types';
 import { getCellSets, getCellSetsHierarchyByKeys } from 'redux/selectors';
 import SelectCellSets from 'components/plots/styling/frequency/SelectCellSets';
 import Header from 'components/plots/Header';
-
+import { frequencyPlotCsvName } from 'utils/fileNames';
 import PlotStyling from 'components/plots/styling/PlotStyling';
 import {
   updatePlotConfig,
@@ -125,7 +125,7 @@ const FrequencyPlotPage = ({ experimentId }) => {
       newCsvData.push(newEntry);
     });
 
-    setCsvFilename(`${experimentName.replace(/ /g, '_')}-freq-plot-${config.frequencyType}`);
+    setCsvFilename(frequencyPlotCsvName(experimentName, config.frequencyType));
     setCsvData(newCsvData);
   };
   const renderPlot = () => {

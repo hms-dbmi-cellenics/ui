@@ -188,6 +188,10 @@ const generateData = (hierarchy, properties, config) => {
     hierarchy.find((rootNode) => rootNode.key === key)?.children || []
   ));
 
+  if (!cellSets.x || !cellSets.y) {
+    return [];
+  }
+
   if (config.frequencyType === 'proportional') {
     // Get the total number of cells in each cell set.
     cellSets.x.forEach((xCellSet, indx) => {
@@ -199,10 +203,6 @@ const generateData = (hierarchy, properties, config) => {
       });
       cellSets.x[indx].totalY = total;
     });
-  }
-
-  if (!cellSets.x || !cellSets.y) {
-    return [];
   }
 
   // eslint-disable-next-line no-shadow
@@ -217,7 +217,7 @@ const generateData = (hierarchy, properties, config) => {
     let y = sum;
     if (config.frequencyType === 'proportional') {
       const { totalY } = cellSets.x.filter((xCellSet) => xCellSet.key === xCellSetKey)[0];
-      y = (sum / totalY) * 100;
+      y = ((sum / totalY) * 100).toFixed(3);
     }
 
     return {
