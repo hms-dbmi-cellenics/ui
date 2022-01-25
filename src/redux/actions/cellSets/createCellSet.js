@@ -26,7 +26,7 @@ const createCellSetJsonMerger = (newCellSet, cellClassKey) => (
   }]
 );
 
-const createCellSet = (experimentId, name, color, cellIds) => async (dispatch, getState) => {
+const createCellSet = (experimentId, name, color, cellIdsSet) => async (dispatch, getState) => {
   const {
     loading, error,
   } = getState().cellSets;
@@ -39,28 +39,34 @@ const createCellSet = (experimentId, name, color, cellIds) => async (dispatch, g
     key: uuidv4(),
     name,
     color,
-    cellIds: new Set([...cellIds].map((id) => parseInt(id, 10))),
     type: 'cellSets',
   };
 
-  if (data.cellIds.size === 0) {
+  // cellIds are stored as an integer set in redux, so we need to convert it
+  const dataForRedux = {
+    ...data,
+    cellIds: cellIdsSet,
+  };
+
+  // cellIds are stored as an array in S3
+  const dataForUpload = {
+    ...data,
+    cellIds: Array.from(cellIdsSet),
+  };
+
+  if (dataForRedux.cellIds.size === 0) {
     pushNotificationMessage('info', endUserMessages.EMPTY_CLUSTER_NOT_CREATED);
     return;
   }
 
   dispatch({
     type: CELL_SETS_CREATE,
-    payload: { ...data },
+    payload: dataForRedux,
   });
 
   const url = `/v1/experiments/${experimentId}/cellSets`;
 
   try {
-    const dataForUpload = {
-      ...data,
-      cellIds,
-    };
-
     const response = await fetchAPI(
       url,
       {

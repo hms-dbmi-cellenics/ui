@@ -72,7 +72,7 @@ const Embedding = (props) => {
 
   const cellCoordintes = useRef({ x: 200, y: 300 });
   const [createClusterPopover, setCreateClusterPopover] = useState(false);
-  const [selectedIds, setSelectedIds] = useState([]);
+  const [selectedIds, setSelectedIds] = useState(new Set());
   const [cellColors, setCellColors] = useState({});
   const [clusterKeyToNameMap, setClusterKeyToNameMap] = useState({});
   const [cellSetClusters, setCellSetClusters] = useState({});
@@ -197,7 +197,14 @@ const Embedding = (props) => {
 
   const onCreateCluster = (clusterName, clusterColor) => {
     setCreateClusterPopover(false);
-    dispatch(createCellSet(experimentId, clusterName, clusterColor, selectedIds));
+    dispatch(
+      createCellSet(
+        experimentId,
+        clusterName,
+        clusterColor,
+        selectedIds,
+      ),
+    );
   };
 
   const onCancelCreateCluster = () => {
@@ -207,7 +214,8 @@ const Embedding = (props) => {
   const updateCellsSelection = (selection) => {
     if (Array.from(selection).length > 0) {
       setCreateClusterPopover(true);
-      setSelectedIds(selection);
+      const selectedIdsToInt = new Set(Array.from(selection).map((id) => parseInt(id, 10)));
+      setSelectedIds(selectedIdsToInt);
     }
   };
 
