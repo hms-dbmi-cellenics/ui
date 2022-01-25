@@ -35,7 +35,7 @@ const renderWindow = (tile, width, height) => {
 };
 
 const ExplorationViewPage = ({
-  experimentId, experimentData, route,
+  experimentId, experimentData,
 }) => {
   const dispatch = useDispatch();
   const layout = useSelector((state) => state.layout);
@@ -183,7 +183,6 @@ const ExplorationViewPage = ({
       <Header
         experimentId={experimentId}
         experimentData={experimentData}
-        route={route}
         title='Data Exploration'
         extra={[(
           <Dropdown
@@ -235,7 +234,6 @@ const ExplorationViewPage = ({
 ExplorationViewPage.propTypes = {
   experimentId: PropTypes.string.isRequired,
   experimentData: PropTypes.object.isRequired,
-  route: PropTypes.string.isRequired,
 };
 
 export default ExplorationViewPage;

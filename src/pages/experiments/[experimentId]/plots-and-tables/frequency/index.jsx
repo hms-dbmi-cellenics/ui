@@ -16,8 +16,9 @@ import ExportAsCSV from 'components/plots/ExportAsCSV';
 import PropTypes from 'prop-types';
 import { getCellSets, getCellSetsHierarchyByKeys } from 'redux/selectors';
 import SelectCellSets from 'components/plots/styling/frequency/SelectCellSets';
-import Header from 'components/plots/Header';
+import PlotHeader from 'components/plots/PlotHeader';
 import { frequencyPlotCsvName } from 'utils/fileNames';
+
 import PlotStyling from 'components/plots/styling/PlotStyling';
 import {
   updatePlotConfig,
@@ -28,14 +29,12 @@ import loadCellSets from 'redux/actions/cellSets/loadCellSets';
 
 import FrequencyPlot from 'components/plots/FrequencyPlot';
 import Loader from 'components/Loader';
+import { plotNames } from 'utils/constants';
 
 const { Panel } = Collapse;
+
 const plotUuid = 'frequencyPlotMain';
 const plotType = 'frequency';
-const route = {
-  path: 'frequency',
-  breadcrumbName: 'Frequency plot',
-};
 
 const FrequencyPlotPage = ({ experimentId }) => {
   const dispatch = useDispatch();
@@ -192,38 +191,36 @@ const FrequencyPlotPage = ({ experimentId }) => {
   );
 
   return (
-    <div style={{ paddingLeft: 32, paddingRight: 32 }}>
-      <Header
+    <>
+      <PlotHeader
+        title={plotNames.FREQUENCY_PLOT}
         plotUuid={plotUuid}
         experimentId={experimentId}
-        finalRoute={route}
       />
-      <Row gutter={16}>
-        <Col span={16}>
-          <Space direction='vertical' style={{ width: '100%' }}>
-            <Collapse defaultActiveKey='1'>
-              <Panel
-                header='Preview'
-                key='1'
-                extra={renderCSVbutton()}
-              >
-                {renderPlot()}
-              </Panel>
-            </Collapse>
-          </Space>
-        </Col>
-        <Col span={8}>
-          <Space direction='vertical' style={{ width: '100%' }}>
-            <PlotStyling
-              formConfig={plotStylingControlsConfig}
-              config={config}
-              onUpdate={updatePlotWithChanges}
-              renderExtraPanels={renderExtraPanels}
-            />
-          </Space>
-        </Col>
-      </Row>
-    </div>
+      <Space direction='vertical' style={{ width: '100%', padding: '0 10px' }}>
+        <Row gutter={16}>
+          <Col span={16}>
+            <Space direction='vertical' style={{ width: '100%' }}>
+              <Collapse defaultActiveKey='1'>
+                <Panel header='Preview' key='1' extra={renderCSVbutton()}>
+                  {renderPlot()}
+                </Panel>
+              </Collapse>
+            </Space>
+          </Col>
+          <Col span={8}>
+            <Space direction='vertical' style={{ width: '100%' }}>
+              <PlotStyling
+                formConfig={plotStylingControlsConfig}
+                config={config}
+                onUpdate={updatePlotWithChanges}
+                renderExtraPanels={renderExtraPanels}
+              />
+            </Space>
+          </Col>
+        </Row>
+      </Space>
+    </>
   );
 };
 

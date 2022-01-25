@@ -127,14 +127,6 @@ const ProjectCard = (props) => {
             <PrettyTime isoTime={project.lastModified} />
 
           </Item>
-          <Item
-            labelStyle={itemTextStyle}
-            label='Last analyzed'
-          >
-            {project.lastAnalyzed ? (
-              <PrettyTime isoTime={project.lastAnalyzed} />
-            ) : ('never')}
-          </Item>
         </Descriptions>
       </Card>
     </>

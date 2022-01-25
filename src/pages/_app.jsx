@@ -10,8 +10,7 @@ import { DefaultSeo } from 'next-seo';
 import NProgress from 'nprogress';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
-import { useSelector, useDispatch } from 'react-redux';
-import { switchExperiment } from 'redux/actions/experiments';
+import { useSelector } from 'react-redux';
 import AppRouteProvider from '../utils/AppRouteProvider';
 import ContentWrapper from '../components/ContentWrapper';
 import CustomError from '../utils/customError';
@@ -42,6 +41,7 @@ const mockCredentialsForInframock = () => {
   });
 };
 
+NProgress.configure({ showSpinner: false });
 Router.events.on('routeChangeStart', () => NProgress.start());
 Router.events.on('routeChangeComplete', () => NProgress.done());
 Router.events.on('routeChangeError', () => NProgress.done());
@@ -53,7 +53,6 @@ Amplify.configure({
 const WrappedApp = ({ Component, pageProps }) => {
   const { httpError, amplifyConfig } = pageProps;
   const router = useRouter();
-  const dispatch = useDispatch();
   const { experimentId } = router.query;
   const experimentData = useSelector(
     (state) => (experimentId ? state.experimentSettings.info : {}),
@@ -78,12 +77,6 @@ const WrappedApp = ({ Component, pageProps }) => {
       setAmplifyConfigured(true);
     }
   }, [amplifyConfig]);
-  useEffect(() => {
-    // clear the store only if we navigate to a new experiment from data-management
-    if (router.route === '/data-management') {
-      dispatch(switchExperiment());
-    }
-  }, [experimentId]);
   if (!amplifyConfigured) {
     return <></>;
   }
@@ -139,7 +132,6 @@ const WrappedApp = ({ Component, pageProps }) => {
           <Component
             experimentId={experimentId}
             experimentData={experimentData}
-            route={router.route}
             {...pageProps}
           />
         </ContentWrapper>

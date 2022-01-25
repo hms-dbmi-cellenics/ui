@@ -1,4 +1,4 @@
-import { pathwayServices, serviceUrls } from './pathwayConstants';
+import { pathwayServices, serviceUrls } from 'utils/pathwayAnalysis/pathwayConstants';
 
 const launchPathwayService = (serviceName, genesList, species) => {
   let url = null;
@@ -6,41 +6,52 @@ const launchPathwayService = (serviceName, genesList, species) => {
 
   switch (serviceName) {
     case pathwayServices.PANTHERDB:
+      url = serviceUrls[pathwayServices.PANTHERDB];
+      params = {
+        correction: 'fdr',
+        format: 'html',
+        resource: 'PANTHER',
+        ontology: 'biological_process',
+        input: genesList.gene_id.join('\n'),
+        species,
+      };
+      postFormRequest(url, params);
       break;
     case pathwayServices.ENRICHR:
       url = serviceUrls[pathwayServices.ENRICHR][species];
       params = {
-        description: `Cellenics ENRICHR run with ${genesList.length} genes`,
+        list: genesList.gene_names.join('\n'),
+        description: `Cellenics ENRICHR run with ${genesList.gene_names.length} genes`,
       };
-      launchEnrichr(url, genesList.gene_names, params);
+      postFormRequest(url, params, { enctype: 'multipart/form-data' });
       break;
     default:
       throw new Error('No such external service');
   }
 };
 
-function launchEnrichr(target, genesList, options) {
-  const genesInput = genesList.join('\n');
-
-  const description = options.description || '';
+function postFormRequest(url, params, formOptions = {}) {
   const form = document.createElement('form');
-  const listField = document.createElement('input');
-  const descField = document.createElement('input');
+  form.action = url;
 
-  form.setAttribute('method', 'post');
-  form.setAttribute('action', target);
-  form.setAttribute('target', '_blank');
-  form.setAttribute('enctype', 'multipart/form-data');
+  const appliedFormOptions = {
+    target: '_blank',
+    method: 'POST',
+    style: { display: 'none' },
+    ...formOptions,
+  };
 
-  listField.setAttribute('type', 'hidden');
-  listField.setAttribute('name', 'list');
-  listField.setAttribute('value', genesInput);
-  form.appendChild(listField);
+  Object.keys(appliedFormOptions).forEach((key) => {
+    form[key] = appliedFormOptions[key];
+  });
 
-  descField.setAttribute('type', 'hidden');
-  descField.setAttribute('name', 'description');
-  descField.setAttribute('value', description);
-  form.appendChild(descField);
+  Object.keys(params).forEach((key) => {
+    const input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = key;
+    input.value = params[key];
+    form.appendChild(input);
+  });
 
   document.body.appendChild(form);
   form.submit();

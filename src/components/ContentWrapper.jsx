@@ -1,3 +1,7 @@
+/* eslint-disable jsx-a11y/anchor-is-valid */
+import React, { useEffect, useState, useRef } from 'react';
+import PropTypes from 'prop-types';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   BuildOutlined,
   DatabaseOutlined,
@@ -11,26 +15,27 @@ import {
   Tooltip,
   Typography,
 } from 'antd';
-/* eslint-disable jsx-a11y/anchor-is-valid */
-import React, { useEffect, useState, useRef } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { modules } from 'utils/constants';
 
 import Auth from '@aws-amplify/auth';
-import PropTypes from 'prop-types';
-import { useRouter } from 'next/router';
-import calculateGem2sRerunStatus from 'utils/data-management/calculateGem2sRerunStatus';
 
-import Error from '../pages/_error';
-import GEM2SLoadingScreen from './GEM2SLoadingScreen';
-import PipelineRedirectToDataProcessing from './PipelineRedirectToDataProcessing';
-import PreloadContent from './PreloadContent';
-import { isBrowser } from '../utils/environment';
-import experimentUpdatesHandler from '../utils/experimentUpdatesHandler';
-import { getBackendStatus } from '../redux/selectors';
-import integrationTestConstants from '../utils/integrationTestConstants';
-import { loadBackendStatus } from '../redux/actions/backendStatus';
-import pipelineStatus from '../utils/pipelineStatusValues';
-import { useAppRouter } from '../utils/AppRouteProvider';
+import { useAppRouter } from 'utils/AppRouteProvider';
+
+import calculateGem2sRerunStatus from 'utils/data-management/calculateGem2sRerunStatus';
+import GEM2SLoadingScreen from 'components/GEM2SLoadingScreen';
+import PipelineRedirectToDataProcessing from 'components/PipelineRedirectToDataProcessing';
+import PreloadContent from 'components/PreloadContent';
+
+import experimentUpdatesHandler from 'utils/experimentUpdatesHandler';
+import { getBackendStatus } from 'redux/selectors';
+import { loadBackendStatus } from 'redux/actions/backendStatus';
+import { isBrowser } from 'utils/environment';
+
+import Error from 'pages/_error';
+
+import integrationTestConstants from 'utils/integrationTestConstants';
+import pipelineStatus from 'utils/pipelineStatusValues';
+import BrowserAlert from 'components/BrowserAlert';
 
 const { Sider, Footer } = Layout;
 
@@ -43,32 +48,31 @@ const ContentWrapper = (props) => {
   const [collapsed, setCollapsed] = useState(false);
 
   const { routeExperimentId, experimentData, children } = props;
-  const router = useRouter();
-  const route = router?.route || '';
-  const navigateTo = useAppRouter();
+  const { navigateTo, currentModule } = useAppRouter();
 
   const currentExperimentIdRef = useRef(routeExperimentId);
   const activeProjectUuid = useSelector((state) => state?.projects?.meta?.activeProjectUuid);
-  const activeProject = useSelector((state) => state.projects[activeProjectUuid]);
-  const samples = useSelector((state) => state.samples);
-
   const activeProjectExperimentID = useSelector((state) => (
     state?.projects[activeProjectUuid]?.experiments[0]));
 
+  const activeProject = useSelector((state) => state.projects[activeProjectUuid]);
+  const samples = useSelector((state) => state.samples);
+
+  // Use the project's experiment ID in data management
   useEffect(() => {
     if (!activeProjectExperimentID && !routeExperimentId) return;
 
-    if (routeExperimentId && currentExperimentIdRef.current !== routeExperimentId) {
-      currentExperimentIdRef.current = routeExperimentId;
+    if (currentModule === modules.DATA_MANAGEMENT) {
+      currentExperimentIdRef.current = activeProjectExperimentID;
       return;
     }
-    if (!routeExperimentId && currentExperimentIdRef.current !== activeProjectExperimentID) {
-      currentExperimentIdRef.current = activeProjectExperimentID;
-    }
-  }, [routeExperimentId, activeProjectExperimentID]);
+
+    if (currentExperimentIdRef.current === routeExperimentId) return;
+
+    currentExperimentIdRef.current = routeExperimentId;
+  }, [currentModule, activeProjectExperimentID, routeExperimentId]);
 
   const currentExperimentId = currentExperimentIdRef.current;
-
   const experiment = useSelector((state) => state?.experiments[currentExperimentId]);
 
   const experimentName = experimentData?.experimentName || experiment?.name;
@@ -102,7 +106,7 @@ const ContentWrapper = (props) => {
     if (!backendLoading) dispatch(loadBackendStatus(currentExperimentId));
 
     if (isBrowser) {
-      import('../utils/socketConnection')
+      import('utils/socketConnection')
         .then(({ default: connectionPromise }) => connectionPromise)
         .then((io) => {
           const cb = experimentUpdatesHandler(dispatch);
@@ -241,28 +245,28 @@ const ContentWrapper = (props) => {
 
   const menuLinks = [
     {
-      path: '/data-management',
+      module: modules.DATA_MANAGEMENT,
       icon: <FolderOpenOutlined />,
       name: 'Data Management',
       disableIfNoExperiment: false,
       disabledByPipelineStatus: true,
     },
     {
-      path: '/experiments/[experimentId]/data-processing',
+      module: modules.DATA_PROCESSING,
       icon: <BuildOutlined />,
       name: 'Data Processing',
       disableIfNoExperiment: true,
       disabledByPipelineStatus: false,
     },
     {
-      path: '/experiments/[experimentId]/data-exploration',
+      module: modules.DATA_EXPLORATION,
       icon: <FundViewOutlined />,
       name: 'Data Exploration',
       disableIfNoExperiment: true,
       disabledByPipelineStatus: true,
     },
     {
-      path: '/experiments/[experimentId]/plots-and-tables',
+      module: modules.PLOTS_AND_TABLES,
       icon: <DatabaseOutlined />,
       name: 'Plots and Tables',
       disableIfNoExperiment: true,
@@ -296,11 +300,11 @@ const ContentWrapper = (props) => {
         return <GEM2SLoadingScreen experimentId={routeExperimentId} gem2sStatus='toBeRun' />;
       }
 
-      if (pipelineRunningError && !route.includes('data-processing')) {
+      if (pipelineRunningError && currentModule !== modules.DATA_PROCESSING) {
         return <PipelineRedirectToDataProcessing experimentId={routeExperimentId} pipelineStatus='error' />;
       }
 
-      if (pipelineRunning && !route.includes('data-processing')) {
+      if (pipelineRunning && currentModule !== modules.DATA_PROCESSING) {
         return <PipelineRedirectToDataProcessing experimentId={routeExperimentId} pipelineStatus='running' />;
       }
 
@@ -308,7 +312,7 @@ const ContentWrapper = (props) => {
         return children;
       }
 
-      if (pipelineStatusKey === pipelineStatus.NOT_CREATED && !route.includes('data-processing')) {
+      if (pipelineStatusKey === pipelineStatus.NOT_CREATED && currentModule !== modules.DATA_PROCESSING) {
         return <PipelineRedirectToDataProcessing experimentId={routeExperimentId} pipelineStatus='toBeRun' />;
       }
     }
@@ -317,7 +321,7 @@ const ContentWrapper = (props) => {
   };
 
   const menuItemRender = ({
-    path, icon, name, disableIfNoExperiment, disabledByPipelineStatus,
+    module, icon, name, disableIfNoExperiment, disabledByPipelineStatus,
   }) => {
     const notProcessedExperimentDisable = !routeExperimentId && disableIfNoExperiment
       && (!gem2sRerunStatus || gem2sRerunStatus.rerun);
@@ -327,116 +331,119 @@ const ContentWrapper = (props) => {
       || waitingForQcToLaunch || pipelineRunning || pipelineRunningError
     );
 
-    const realPath = path.replace('[experimentId]', currentExperimentId);
-
     return (
       <Menu.Item
-        id={path}
+        id={module}
         disabled={notProcessedExperimentDisable || pipelineStatusDisable}
-        key={path}
+        key={module}
         icon={icon}
-        onClick={() => navigateTo(realPath)}
+        onClick={() => navigateTo(
+          module,
+          { experimentId: currentExperimentId },
+        )}
       >
         {name}
       </Menu.Item>
     );
   };
-
   return (
-    <Layout style={{ minHeight: '100vh' }}>
-      <Sider
-        style={{
-          overflow: 'auto', height: '100vh', position: 'fixed', left: 0,
-        }}
-        width={210}
-        theme='dark'
-        mode='inline'
-        collapsible
-        collapsed={collapsed}
-        onCollapse={(collapse) => setCollapsed(collapse)}
-      >
-        <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-          {!collapsed && <BigLogo />}
-          {collapsed && <SmallLogo />}
-          <Menu
-            data-test-id={integrationTestConstants.ids.NAVIGATION_MENU}
-            theme='dark'
-            selectedKeys={
-              menuLinks
-                .filter(({ path }) => route.includes(path))
-                .map(({ path }) => path)
-            }
-            mode='inline'
-          >
-            {menuLinks.filter((item) => !item.disableIfNoExperiment).map(menuItemRender)}
-
-            <Menu.ItemGroup
-              title={!collapsed && (
-                <Tooltip title={experimentName} placement='right'>
-                  <Space direction='vertical' style={{ width: '100%', cursor: 'default' }}>
-                    <Text
-                      style={{
-                        width: '100%',
-                        color: '#999999',
-                      }}
-                      strong
-                      ellipsis
-                    >
-                      {experimentName || 'No analysis'}
-                    </Text>
-                    {experimentName && (
-                      <Text style={{ color: '#999999' }}>
-                        Current analysis
-                      </Text>
-                    )}
-                  </Space>
-                </Tooltip>
-
-              )}
+    <>
+      <BrowserAlert />
+      <Layout style={{ minHeight: '100vh' }}>
+        <Sider
+          style={{
+            overflow: 'auto', height: '100vh', position: 'fixed', left: 0,
+          }}
+          width={210}
+          theme='dark'
+          mode='inline'
+          collapsible
+          collapsed={collapsed}
+          onCollapse={(collapse) => setCollapsed(collapse)}
+        >
+          <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+            {!collapsed && <BigLogo />}
+            {collapsed && <SmallLogo />}
+            <Menu
+              data-test-id={integrationTestConstants.ids.NAVIGATION_MENU}
+              theme='dark'
+              selectedKeys={
+                menuLinks
+                  .filter(({ module }) => module === currentModule)
+                  .map(({ module }) => module)
+              }
+              mode='inline'
             >
-              {menuLinks.filter((item) => item.disableIfNoExperiment).map(menuItemRender)}
-            </Menu.ItemGroup>
+              {menuLinks.filter((item) => !item.disableIfNoExperiment).map(menuItemRender)}
 
-          </Menu>
-          {
-            !collapsed && (
-              <Footer style={{
-                backgroundColor: 'inherit',
-                marginTop: 'auto',
-                paddingLeft: 24,
-                paddingRight: 24,
-              }}
+              <Menu.ItemGroup
+                title={!collapsed && (
+                  <Tooltip title={experimentName} placement='right'>
+                    <Space direction='vertical' style={{ width: '100%', cursor: 'default' }}>
+                      <Text
+                        style={{
+                          width: '100%',
+                          color: '#999999',
+                        }}
+                        strong
+                        ellipsis
+                      >
+                        {experimentName || 'No analysis'}
+                      </Text>
+                      {experimentName && (
+                        <Text style={{ color: '#999999' }}>
+                          Current analysis
+                        </Text>
+                      )}
+                    </Space>
+                  </Tooltip>
+
+                )}
               >
-                <Paragraph ellipsis={{ rows: 10 }} style={{ color: '#999999' }}>
-                  <a href='//www.biomage.net/our-team'>Team</a>
+                {menuLinks.filter((item) => item.disableIfNoExperiment).map(menuItemRender)}
+              </Menu.ItemGroup>
+
+            </Menu>
+            {
+              !collapsed && (
+                <Footer style={{
+                  backgroundColor: 'inherit',
+                  marginTop: 'auto',
+                  paddingLeft: 24,
+                  paddingRight: 24,
+                }}
+                >
+                  <Paragraph ellipsis={{ rows: 10 }} style={{ color: '#999999' }}>
+                    <a href='//www.biomage.net/our-team'>Team</a>
                   &nbsp;&middot;&nbsp;
-                  <a href='//www.biomage.net/careers'>Careers</a>
+                    <a href='//www.biomage.net/careers'>Careers</a>
                   &nbsp;&middot;&nbsp;
-                  <a href='mailto:hello@biomage.net'>Contact</a>
-                </Paragraph>
+                    <a href='mailto:hello@biomage.net'>Contact</a>
+                  </Paragraph>
 
-                <Paragraph ellipsis={{ rows: 10 }} style={{ color: '#999999' }}>
-                  &copy;
-                  {' '}
-                  {new Date().getFullYear()}
-                  {' '}
-                  Biomage Ltd,
-                  <br />
-                  affiliates &amp; contributors.
-                </Paragraph>
+                  <Paragraph ellipsis={{ rows: 10 }} style={{ color: '#999999' }}>
+                    &copy;
+                    {' '}
+                    {new Date().getFullYear()}
+                    {' '}
+                    Biomage Ltd,
+                    <br />
+                    affiliates &amp; contributors.
+                  </Paragraph>
 
-              </Footer>
-            )
-          }
-        </div>
+                </Footer>
+              )
+            }
+          </div>
 
-      </Sider>
-      <Layout
-        style={!collapsed ? { marginLeft: '210px' } : { marginLeft: '80px' }} // this is the collapsed width for our sider
-      >
-        {renderContent()}
+        </Sider>
+        <Layout
+          style={!collapsed ? { marginLeft: '210px' } : { marginLeft: '80px' }} // this is the collapsed width for our sider
+        >
+          {renderContent()}
+        </Layout>
       </Layout>
-    </Layout>
+    </>
   );
 };
 

@@ -17,25 +17,22 @@ import initialSamplesState, { sampleTemplate } from 'redux/reducers/samples/init
 import initialExperimentsState, { experimentTemplate } from 'redux/reducers/experiments/initialState';
 import { initialExperimentBackendStatus } from 'redux/reducers/backendStatus/initialState';
 
-import updateExperimentInfo from 'redux/actions/experimentSettings/updateExperimentInfo';
-import { updateExperiment } from 'redux/actions/experiments';
-import updateProject from 'redux/actions/projects/updateProject';
-
 import UploadStatus from 'utils/upload/UploadStatus';
 import generateGem2sParamsHash from 'utils/data-management/generateGem2sParamsHash';
 import '__test__/test-utils/setupTests';
 
 jest.mock('utils/data-management/generateGem2sParamsHash');
 jest.mock('redux/actions/experimentSettings/updateExperimentInfo', () => jest.fn().mockReturnValue({ type: 'UPDATE_EXPERIMENT_INFO' }));
-jest.mock('redux/actions/experiments/updateExperiment', () => jest.fn().mockReturnValue({ type: 'UPDATE_EXPERIMENT' }));
-jest.mock('redux/actions/projects/updateProject', () => jest.fn().mockReturnValue({ type: 'UPDATE_PROJECT' }));
 jest.mock('redux/actions/pipeline', () => ({
   runGem2s: jest.fn().mockReturnValue({ type: 'RUN_GEM2S' }),
 }));
-jest.mock('next/router', () => ({
-  useRouter: () => ({
-    push: jest.fn(),
-  }),
+
+const mockNavigateTo = jest.fn();
+
+jest.mock('utils/AppRouteProvider', () => ({
+  useAppRouter: jest.fn(() => ({
+    navigateTo: mockNavigateTo,
+  })),
 }));
 
 const mockStore = configureMockStore([thunk]);
@@ -313,7 +310,7 @@ describe('LaunchAnalysisButton', () => {
     expect(runGem2s).not.toHaveBeenCalled();
   });
 
-  it('Clicking launch analysis should dispatch the correct actions', async () => {
+  it('Going to Data Processing should dispatch the correct actions', async () => {
     generateGem2sParamsHash.mockReturnValueOnce('old-params-hash');
 
     await act(async () => {
@@ -327,13 +324,7 @@ describe('LaunchAnalysisButton', () => {
     userEvent.click(screen.getByText('Go to Data Processing'));
     expect(runGem2s).not.toHaveBeenCalled();
 
-    // Updates experiments
-    expect(updateProject).toHaveBeenCalled();
-
-    // Updates project
-    expect(updateExperiment).toHaveBeenCalled();
-
-    // Updates experiment info
-    expect(updateExperimentInfo).toHaveBeenCalled();
+    // Call on navigation to go
+    expect(mockNavigateTo).toHaveBeenCalled();
   });
 });

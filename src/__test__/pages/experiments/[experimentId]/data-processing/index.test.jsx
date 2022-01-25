@@ -19,6 +19,7 @@ import '__test__/test-utils/setupTests';
 
 import { runPipeline } from 'redux/actions/pipeline';
 import generateExperimentSettingsMock from '__test__/test-utils/experimentSettings.mock';
+import { modules } from 'utils/constants';
 
 jest.mock('components/UserButton', () => () => <></>);
 
@@ -33,7 +34,9 @@ jest.mock('components/data-processing/ConfigureEmbedding/ConfigureEmbedding', ()
 const mockNavigateTo = jest.fn();
 
 jest.mock('utils/AppRouteProvider', () => ({
-  useAppRouter: jest.fn(() => mockNavigateTo),
+  useAppRouter: jest.fn(() => ({
+    navigateTo: mockNavigateTo,
+  })),
 }));
 
 jest.mock('redux/selectors');
@@ -132,7 +135,7 @@ describe('DataProcessingPage', () => {
     const titles = screen.getAllByText('Data Processing');
 
     // One for breadcrumb, one for title
-    expect(titles).toHaveLength(2);
+    expect(titles).toHaveLength(1);
 
     // It shows the first filter step - Classifier filter
     expect(screen.getByText(/Classifier/i)).toBeInTheDocument();
@@ -188,7 +191,7 @@ describe('DataProcessingPage', () => {
     expect(mockNavigateTo).toHaveBeenCalled();
 
     const url = mockNavigateTo.mock.calls[0][0];
-    expect(url).toMatch('data-exploration');
+    expect(url).toEqual(modules.DATA_EXPLORATION);
   });
 
   it('Triggers the pipeline on click run filter', () => {
