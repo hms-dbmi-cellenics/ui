@@ -10,7 +10,6 @@ import { Provider } from 'react-redux';
 import { makeStore } from 'redux/store';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 
-import { setComparisonType, setComparisonGroup } from 'redux/actions/differentialExpression';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
 import downloadFromUrl from 'utils/data-management/downloadFromUrl';
 import writeToFile from 'utils/writeToFileURL';
@@ -287,33 +286,6 @@ describe('Pathway analysis modal ', () => {
 
     // Clicking on the copy link again should not cause another work request
     expect(getBackgroundExpressedGenes).toHaveBeenCalledTimes(1);
-  });
-
-  it.only('Reference genes list should change if the compared group is different', async () => {
-    await renderPathwayAnalysisModal(store);
-
-    await act(async () => {
-      userEvent.click(screen.getByText(/copy reference genes/i));
-    });
-
-    expect(getBackgroundExpressedGenes).toHaveBeenCalledTimes(1);
-
-    // Change the compared type and group
-    await act(async () => {
-      store.dispatch(setComparisonType('between'));
-      store.dispatch(setComparisonGroup({
-        type: 'between',
-        cellSet: 'group1',
-        compareWith: 'group2',
-        basis: 'louvain/louvain-1',
-      }));
-    });
-
-    await act(async () => {
-      userEvent.click(screen.getByText(/copy reference genes/i));
-    });
-
-    expect(getBackgroundExpressedGenes).toHaveBeenCalledTimes(2);
   });
 
   it('It shows an error if getting background expressed genes fail', async () => {

@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React, { useState, useEffect } from 'react';
+import { useDispatch } from 'react-redux';
 import {
   Modal, Alert, Radio, Space, InputNumber, Select, Button, Row, Typography,
 } from 'antd';
@@ -19,8 +19,6 @@ import { pathwayServices } from 'utils/pathwayAnalysis/pathwayConstants';
 const marginSpacing = { marginBottom: '20px', marginTop: '20x' };
 const inlineButtonStyle = { padding: 0, height: '1rem' };
 
-const calculateGenesListHash = (type, group) => JSON.stringify({ type, group });
-
 const { Paragraph } = Typography;
 
 const LaunchPathwayAnalysisModal = (props) => {
@@ -28,7 +26,6 @@ const LaunchPathwayAnalysisModal = (props) => {
     onCancel, onOpenAdvancedFilters, advancedFiltersAdded,
   } = props;
 
-  const backgroundGenesListHash = useRef(null);
   const dispatch = useDispatch();
 
   const [externalService, setExternalService] = useState(pathwayServices.PANTHERDB);
@@ -37,29 +34,18 @@ const LaunchPathwayAnalysisModal = (props) => {
   const [gettingBackgroundGenes, setGettingBackgroundGenes] = useState(false);
   const [launchingPathwayAnalysis, setLaunchingPathwayAnalysis] = useState(false);
   const [species, setSpecies] = useState(null);
-  const [backgroundGenesList, setBackgroundGenesList] = useState(null);
   const speciesList = {
     [pathwayServices.PANTHERDB]: pantherDBSpecies,
     [pathwayServices.ENRICHR]: enrichrSpecies,
   };
 
-  const { type, group } = useSelector((state) => state.differentialExpression.comparison);
-
   const getBackgroundGenesList = async () => {
     setGettingBackgroundGenes(true);
-    const genesListHash = calculateGenesListHash(type, group);
-
-    if (backgroundGenesListHash.current === genesListHash) {
-      return backgroundGenesList;
-    }
-
-    backgroundGenesListHash.current = genesListHash;
     let cleanList = null;
 
     try {
       const genesList = await dispatch(getBackgroundExpressedGenes());
       cleanList = genesList.join('\n');
-      setBackgroundGenesList(cleanList);
     } catch (error) {
       pushNotificationMessage('error', 'Failed getting background gene expression');
       console.error('Error launching pathway analysis', error);
@@ -91,7 +77,7 @@ const LaunchPathwayAnalysisModal = (props) => {
     }
   };
 
-  const canLaunchService = () => !gettingBackgroundGenes && species;
+  const canLaunchService = () => !launchingPathwayAnalysis && species;
 
   return (
     <>
@@ -126,7 +112,6 @@ const LaunchPathwayAnalysisModal = (props) => {
                   type='link'
                   size='small'
                   onClick={() => onOpenAdvancedFilters()}
-                  onKeyPress={() => onOpenAdvancedFilters()}
                 >
                   Click here to open the advanced filtering options.
                 </Button>
@@ -213,7 +198,7 @@ const LaunchPathwayAnalysisModal = (props) => {
               onClick={async () => {
                 const genesList = await getBackgroundGenesList();
                 const fileUrl = writeToFileURL(genesList);
-                downloadFromUrl(fileUrl, 'genes_list.txt');
+                downloadFromUrl(fileUrl, 'reference_genes_list.txt');
               }}
             >
               download reference genes into file
