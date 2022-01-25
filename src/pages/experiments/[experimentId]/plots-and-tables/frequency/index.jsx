@@ -167,7 +167,7 @@ const FrequencyPlotPage = ({ experimentId }) => {
   };
 
   const renderCSVbutton = () => (
-    <ExportAsCSV data={csvData} filename={csvFilename} disabled={false} />
+    <ExportAsCSV data={csvData} filename={csvFilename} />
   );
 
   const renderExtraPanels = () => (
