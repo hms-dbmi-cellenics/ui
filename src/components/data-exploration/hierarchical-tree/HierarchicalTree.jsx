@@ -116,10 +116,7 @@ const HierarchicalTree = (props) => {
   const renderHideButton = (modified) => {
     if (!modified.rootNode && showHideButton) {
       return (
-        <HideButton
-          experimentId={experimentId}
-          cellSetKey={modified.key}
-        />
+        <HideButton cellSetKey={modified.key} />
       );
     }
 

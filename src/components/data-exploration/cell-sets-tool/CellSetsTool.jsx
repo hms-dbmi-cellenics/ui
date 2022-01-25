@@ -111,7 +111,7 @@ const CellSetsTool = (props) => {
   }, [experimentId]);
 
   const onCheck = useCallback((keys) => {
-    dispatch(updateCellSetSelected(experimentId, keys, activeTab));
+    dispatch(updateCellSetSelected(keys, activeTab));
   }, [experimentId, activeTab]);
 
   /**

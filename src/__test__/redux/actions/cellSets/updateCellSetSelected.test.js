@@ -8,7 +8,6 @@ enableFetchMocks();
 const mockStore = configureStore([thunk]);
 
 describe('updateCellSetSelected action', () => {
-  const experimentId = '1234';
   const keys = [1, 3, 4, 5];
   const tab = 'sampleTab';
 
@@ -22,19 +21,19 @@ describe('updateCellSetSelected action', () => {
 
   it('Does not dispatch on loading state', async () => {
     const store = mockStore({ cellSets: { loading: true, error: false } });
-    store.dispatch(updateCellSetSelected(experimentId, keys, tab));
+    store.dispatch(updateCellSetSelected(keys, tab));
     expect(store.getActions().length).toEqual(0);
   });
 
   it('Does not dispatch on error state', async () => {
     const store = mockStore({ cellSets: { loading: false, error: true } });
-    store.dispatch(updateCellSetSelected(experimentId, keys, tab));
+    store.dispatch(updateCellSetSelected(keys, tab));
     expect(store.getActions().length).toEqual(0);
   });
 
   it('Dispatches an action to update property to the reducer', async () => {
     const store = mockStore({ cellSets: { ...initialState, loading: false } });
-    store.dispatch(updateCellSetSelected(experimentId, keys, tab));
+    store.dispatch(updateCellSetSelected(keys, tab));
 
     const firstAction = store.getActions()[0];
     expect(firstAction).toMatchSnapshot();

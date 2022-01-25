@@ -1,6 +1,6 @@
 import { CELL_SETS_SET_SELECTED } from '../../actionTypes/cellSets';
 
-const updateCellSetSelected = (experimentId, keys, tab) => async (dispatch, getState) => {
+const updateCellSetSelected = (keys, tab) => async (dispatch, getState) => {
   const {
     loading, error,
   } = getState().cellSets;
