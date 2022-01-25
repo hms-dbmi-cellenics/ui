@@ -43,7 +43,7 @@ const runCellSetsClustering = (experimentId, resolution) => async (dispatch, get
           throw err;
         }
 
-        dispatch(updateCellSetsClustering());
+        dispatch(updateCellSetsClustering(experimentId));
       },
     });
   } catch (e) {
