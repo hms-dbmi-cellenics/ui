@@ -19,7 +19,7 @@ Object {
 
 exports[`createCellSet action Sends fetch to the API when creating cell set 1`] = `
 Object {
-  "body": "[{\\"$match\\":{\\"query\\":\\"$[?(@.key == \\\\\\"scratchpad\\\\\\")]\\",\\"value\\":{\\"children\\":[{\\"$insert\\":{\\"index\\":\\"-\\",\\"value\\":{\\"key\\":\\"some-uuid\\",\\"name\\":\\"one\\",\\"color\\":\\"#ff0000\\",\\"cellIds\\":{},\\"type\\":\\"cellSets\\"}}}]}}}]",
+  "body": "[{\\"$match\\":{\\"query\\":\\"$[?(@.key == \\\\\\"scratchpad\\\\\\")]\\",\\"value\\":{\\"children\\":[{\\"$insert\\":{\\"index\\":\\"-\\",\\"value\\":{\\"key\\":\\"some-uuid\\",\\"name\\":\\"one\\",\\"color\\":\\"#ff0000\\",\\"type\\":\\"cellSets\\",\\"cellIds\\":[1,2,3]}}}]}}}]",
   "headers": Object {
     "Content-Type": "application/boschni-json-merger+json",
   },
