@@ -255,7 +255,7 @@ describe('Pathway analysis modal ', () => {
     await renderPathwayAnalysisModal(store);
 
     await act(async () => {
-      userEvent.click(screen.getByText(/download reference genes/i));
+      userEvent.click(screen.getByText(/dowload the reference genes/i));
     });
 
     expect(getBackgroundExpressedGenes).toHaveBeenCalledTimes(1);
@@ -275,7 +275,7 @@ describe('Pathway analysis modal ', () => {
     await renderPathwayAnalysisModal(store);
 
     await act(async () => {
-      userEvent.click(screen.getByText(/download reference genes/i));
+      userEvent.click(screen.getByText(/dowload the reference genes/i));
     });
 
     expect(pushNotificationMessage).toHaveBeenCalledTimes(1);
