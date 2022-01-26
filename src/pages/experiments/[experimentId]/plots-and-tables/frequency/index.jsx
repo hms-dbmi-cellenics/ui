@@ -124,7 +124,7 @@ const FrequencyPlotPage = ({ experimentId }) => {
       newCsvData.push(newEntry);
     });
 
-    setCsvFilename(plotCsvFilename(experimentName, plotType, config.frequencyType));
+    setCsvFilename(plotCsvFilename(experimentName, 'FREQUENCY_PLOT', [config.frequencyType]));
     setCsvData(newCsvData);
   };
   const renderPlot = () => {
