@@ -1,14 +1,11 @@
-
 import { plotNames } from 'utils/constants';
 
 const plotCsvFilename = (experimentName, plotType, extras) => {
+  const cleanExperimentName = experimentName.replace(/ /g, '_');
+  const cleanPlotName = plotNames[plotType].replace(/ /g, '_').toLowerCase();
+  const extrasClean = extras.join('-').replace(/ /g, '_');
 
-const cleanExperimentName = experimentName.replace(/ /g, '_');
-const cleanPlotName = plotNames[plotType].replace(/ /g, '_').toLowerCase();
-const extras = extras.join('-').replace(/ /g, '_');
+  return `${cleanExperimentName}-${cleanPlotName}-${extrasClean}`;
+};
 
-return `${clearnExperimentName}-${cleanPlotName}-${extras}`;
-}
-
-// eslint-disable-next-line import/prefer-default-export
-export plotCsvFilename;
+export default plotCsvFilename;

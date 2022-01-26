@@ -18,7 +18,7 @@ import { plotNames } from 'utils/constants';
 import ExportAsCSV from 'components/plots/ExportAsCSV';
 
 jest.mock('localforage');
-jest.mock('components/plots/ExportAsCSV', () => jest.fn((data) => { console.log('DATA IS ', data); return (<></>); }));
+jest.mock('components/plots/ExportAsCSV', () => jest.fn(() => (<></>)));
 
 describe('Frequency plots and tables index page', () => {
   let storeState = null;
