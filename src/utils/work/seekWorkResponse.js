@@ -7,12 +7,19 @@ import WorkResponseError from 'utils/WorkResponseError';
 
 const seekFromS3 = async (ETag, experimentId) => {
   const response = await fetchAPI(`/v1/workResults/${experimentId}/${ETag}`);
-  const { signedUrl } = await response.json();
 
-  if (!signedUrl) return null;
+  if (!response.ok) {
+    if (response.status === 404) return null;
+
+    // If there is some other error
+    throw new Error(response.text);
+  }
+
+  const { signedUrl } = await response.json();
   const storageResp = await fetch(signedUrl);
+
   if (!storageResp.ok) {
-    return null;
+    throw new Error(storageResp.text);
   }
 
   return unpackResult(storageResp);
@@ -25,7 +32,7 @@ const dispatchWorkRequest = async (
   ETag,
   requestProps = {},
 ) => {
-  console.error('seek from api', body);
+  console.error('dispatching work request', body);
   const { default: connectionPromise } = await import('utils/socketConnection');
   const io = await connectionPromise;
 
