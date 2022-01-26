@@ -1,5 +1,5 @@
 /* eslint-disable no-underscore-dangle */
-import hash from 'object-hash';
+import { MD5 } from 'object-hash';
 
 import Environment, { isBrowser } from 'utils/environment';
 import { calculateZScore } from 'utils/postRequestProcessing';
@@ -8,7 +8,7 @@ import { getBackendStatus } from 'redux/selectors';
 import cache from 'utils/cache';
 import { dispatchWorkRequest, seekFromS3 } from './seekWorkResponse';
 
-const createObjectHash = (object) => hash.MD5(object);
+const createObjectHash = (object) => MD5(object);
 
 const decomposeBody = async (body, experimentId) => {
   const { genes: requestedGenes } = body;
@@ -68,8 +68,10 @@ const fetchGeneExpressionWork = async (
   // Then, we may be able to find this in S3.
   let response = await seekFromS3(ETag, experimentId);
 
+  // If there is no response in S3, dispatch workRequest via the worker
+  let workResultReady = false;
   if (!response) {
-    response = await dispatchWorkRequest(
+    workResultReady = await dispatchWorkRequest(
       experimentId,
       missingGenesBody,
       timeout,
@@ -80,6 +82,13 @@ const fetchGeneExpressionWork = async (
       },
     );
   }
+
+  if (!workResultReady) {
+    console.debug(`No response immediately resolved for ${body} (ETag: ${ETag}) -- this is probably an event subscription.`);
+    return response;
+  }
+
+  response = await seekFromS3(ETag, experimentId);
 
   if (!response[missingGenes[0]]?.error) {
     // Preprocessing data before entering cache
@@ -138,7 +147,7 @@ const fetchWork = async (
   // Then, we may be able to find this in S3.
   let response = await seekFromS3(ETag, experimentId);
 
-  // If response cannot be fetched, go to the worker.
+  // If there is no response in S3, dispatch workRequest via the worker
   let workResultReady = false;
   if (!response) {
     workResultReady = await dispatchWorkRequest(
