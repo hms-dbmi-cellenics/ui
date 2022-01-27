@@ -27,10 +27,7 @@ describe('HideButton', () => {
   test('renders correctly', () => {
     const component = mount(
       <Provider store={store}>
-        <HideButton
-          cellSetKey='not-hidden'
-          experimentId='a'
-        />
+        <HideButton cellSetKey='not-hidden' />
       </Provider>,
     );
 
@@ -44,10 +41,7 @@ describe('HideButton', () => {
   test('renders correctly when not hidden', () => {
     const component = mount(
       <Provider store={store}>
-        <HideButton
-          cellSetKey='not-hidden'
-          experimentId='a'
-        />
+        <HideButton cellSetKey='not-hidden' />
       </Provider>,
     );
 
@@ -58,10 +52,7 @@ describe('HideButton', () => {
   test('renders correctly when hidden', () => {
     const component = mount(
       <Provider store={store}>
-        <HideButton
-          cellSetKey={HIDDEN_KEY}
-          experimentId='a'
-        />
+        <HideButton cellSetKey={HIDDEN_KEY} />
       </Provider>,
     );
 
@@ -72,10 +63,7 @@ describe('HideButton', () => {
   test('clicking on hidden state triggers unhide action', () => {
     const component = mount(
       <Provider store={store}>
-        <HideButton
-          cellSetKey={HIDDEN_KEY}
-          experimentId='a'
-        />
+        <HideButton cellSetKey={HIDDEN_KEY} />
       </Provider>,
     );
 
@@ -93,10 +81,7 @@ describe('HideButton', () => {
   test('clicking on visible state triggers hide acction', () => {
     const component = mount(
       <Provider store={store}>
-        <HideButton
-          cellSetKey='not-hidden'
-          experimentId='a'
-        />
+        <HideButton cellSetKey='not-hidden' />
       </Provider>,
     );
 

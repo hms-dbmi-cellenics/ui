@@ -1,5 +1,4 @@
 /* eslint-disable react/jsx-props-no-spreading */
-import _ from 'lodash';
 import { screen, render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';

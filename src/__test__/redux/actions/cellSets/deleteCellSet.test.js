@@ -1,8 +1,12 @@
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
-import deleteCellSet from '../../../../redux/actions/cellSets/deleteCellSet';
-import initialState from '../../../../redux/reducers/cellSets/initialState';
+
+import waitForActions from 'redux-mock-store-await-actions';
+
+import { CELL_SETS_DELETE } from 'redux/actionTypes/cellSets';
+import initialState from 'redux/reducers/cellSets/initialState';
+import deleteCellSet from 'redux/actions/cellSets/deleteCellSet';
 
 import '__test__/test-utils/setupTests';
 
@@ -37,17 +41,22 @@ describe('deleteCellSet action', () => {
     const store = mockStore({ cellSets: { ...initialState, loading: false } });
     store.dispatch(deleteCellSet(experimentId, key));
 
+    await waitForActions(store, [CELL_SETS_DELETE]);
+
     const firstAction = store.getActions()[0];
+
     expect(firstAction).toMatchSnapshot();
   });
 
-  it('Last action dispatches cellSetSave event', async () => {
+  it('Sends fetch to the API when a cell set is deleted', async () => {
     const store = mockStore({ cellSets: { ...initialState, loading: false } });
-    store.dispatch(deleteCellSet(experimentId, key));
+    await store.dispatch(deleteCellSet(experimentId, key));
 
-    const lastActionID = store.getActions().length - 1;
-    const lastAction = store.getActions()[lastActionID];
+    expect(fetch).toHaveBeenCalledTimes(1);
 
-    expect(lastAction).toMatchSnapshot();
+    const [url, body] = fetch.mock.calls[0];
+
+    expect(url).toEqual('http://localhost:3000/v1/experiments/1234/cellSets');
+    expect(body).toMatchSnapshot();
   });
 });

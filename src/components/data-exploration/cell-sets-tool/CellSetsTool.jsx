@@ -17,7 +17,7 @@ import {
   deleteCellSet,
   loadCellSets,
   unhideAllCellSets,
-  updateCellSetHierarchy,
+  reorderCellSet,
   updateCellSetProperty,
   updateCellSetSelected,
 } from 'redux/actions/cellSets';
@@ -106,12 +106,12 @@ const CellSetsTool = (props) => {
     dispatch(deleteCellSet(experimentId, key));
   }, [experimentId]);
 
-  const onHierarchyUpdate = useCallback((newHierarchy) => {
-    dispatch(updateCellSetHierarchy(experimentId, newHierarchy));
+  const onCellSetReorder = useCallback((cellSetKey, newPosition) => {
+    dispatch(reorderCellSet(experimentId, cellSetKey, newPosition));
   }, [experimentId]);
 
   const onCheck = useCallback((keys) => {
-    dispatch(updateCellSetSelected(experimentId, keys, activeTab));
+    dispatch(updateCellSetSelected(keys, activeTab));
   }, [experimentId, activeTab]);
 
   /**
@@ -169,14 +169,13 @@ const CellSetsTool = (props) => {
         >
           <TabPane tab='Cell sets' key='cellSets'>
             <HierarchicalTree
-              treeData={cellSetTreeData}
-              onCheck={onCheck}
-              store={FOCUS_TYPE}
               experimentId={experimentId}
+              treeData={cellSetTreeData}
+              store={FOCUS_TYPE}
+              onCheck={onCheck}
               onNodeUpdate={onNodeUpdate}
               onNodeDelete={onNodeDelete}
-              onHierarchyUpdate={onHierarchyUpdate}
-              defaultExpandAll
+              onCellSetReorder={onCellSetReorder}
               showHideButton
               checkedKeys={selected}
             />
@@ -184,14 +183,13 @@ const CellSetsTool = (props) => {
           <TabPane tab='Metadata' key='metadataCategorical'>
             {metadataTreeData?.length > 0 ? (
               <HierarchicalTree
-                treeData={metadataTreeData}
-                onCheck={onCheck}
-                store={FOCUS_TYPE}
                 experimentId={experimentId}
+                treeData={metadataTreeData}
+                store={FOCUS_TYPE}
+                onCheck={onCheck}
                 onNodeUpdate={onNodeUpdate}
                 onNodeDelete={onNodeDelete}
-                onHierarchyUpdate={onHierarchyUpdate}
-                defaultExpandAll
+                onCellSetReorder={onCellSetReorder}
                 showHideButton
                 checkedKeys={selected}
               />

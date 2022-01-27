@@ -1,12 +1,18 @@
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
-import createCellSet from '../../../../redux/actions/cellSets/createCellSet';
-import initialState from '../../../../redux/reducers/cellSets/initialState';
+import createCellSet from 'redux/actions/cellSets/createCellSet';
+import initialState from 'redux/reducers/cellSets/initialState';
+
+import uuid from 'uuid';
 
 import '__test__/test-utils/setupTests';
 
 enableFetchMocks();
+
+jest.mock('uuid', () => jest.fn());
+uuid.v4 = jest.fn(() => 'some-uuid');
+
 const mockStore = configureStore([thunk]);
 
 describe('createCellSet action', () => {
@@ -45,14 +51,15 @@ describe('createCellSet action', () => {
     expect(firstAction).toMatchSnapshot();
   });
 
-  it('Last action dispatches cellSetSave event', async () => {
+  it('Sends fetch to the API when creating cell set', async () => {
     const store = mockStore({ cellSets: { ...initialState, loading: false } });
     await store.dispatch(createCellSet(experimentId, cellSet.name, cellSet.color, cellSet.cellIds));
 
-    const cellSetSaveActionID = store.getActions().length - 1;
-    const cellSetSaveAction = store.getActions()[cellSetSaveActionID];
-    cellSetSaveAction.payload.key = 'a key';
+    expect(fetch).toHaveBeenCalledTimes(1);
 
-    expect(cellSetSaveAction).toMatchSnapshot();
+    const [url, body] = fetch.mock.calls[0];
+
+    expect(url).toEqual('http://localhost:3000/v1/experiments/1234/cellSets');
+    expect(body).toMatchSnapshot();
   });
 });

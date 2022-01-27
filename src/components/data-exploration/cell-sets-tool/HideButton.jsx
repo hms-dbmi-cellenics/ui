@@ -10,7 +10,7 @@ import { setCellSetHiddenStatus } from '../../../redux/actions/cellSets';
 import { getCellSets } from '../../../redux/selectors';
 
 const HideButton = (props) => {
-  const { experimentId, cellSetKey } = props;
+  const { cellSetKey } = props;
 
   const dispatch = useDispatch();
   const buttonRef = useRef(null);
@@ -37,7 +37,7 @@ const HideButton = (props) => {
           // Lose focus so the button changes color from blue to black when you click on it.
           buttonRef.current.blur();
 
-          dispatch(setCellSetHiddenStatus(experimentId, cellSetKey));
+          dispatch(setCellSetHiddenStatus(cellSetKey));
         }}
       >
         {buttonString}
@@ -47,7 +47,6 @@ const HideButton = (props) => {
 };
 
 HideButton.propTypes = {
-  experimentId: PropTypes.string.isRequired,
   cellSetKey: PropTypes.string.isRequired,
 };
 

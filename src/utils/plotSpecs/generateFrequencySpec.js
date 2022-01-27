@@ -192,6 +192,8 @@ const generateData = (hierarchy, properties, config) => {
     return [];
   }
 
+  const totalYDict = {};
+
   if (config.frequencyType === 'proportional') {
     // Get the total number of cells in each cell set.
     cellSets.x.forEach((xCellSet, indx) => {
@@ -201,7 +203,8 @@ const generateData = (hierarchy, properties, config) => {
         const xCellSetIds = Array.from(properties[xCellSet.key].cellIds);
         total += xCellSetIds.filter((id) => yCellSetIds.includes(id)).length;
       });
-      cellSets.x[indx].totalY = total;
+
+      totalYDict[cellSets.x[indx].key] = total;
     });
   }
 
@@ -216,7 +219,8 @@ const generateData = (hierarchy, properties, config) => {
 
     let y = sum;
     if (config.frequencyType === 'proportional') {
-      const { totalY } = cellSets.x.filter((xCellSet) => xCellSet.key === xCellSetKey)[0];
+      const { key } = cellSets.x.filter((xCellSet) => xCellSet.key === xCellSetKey)[0];
+      const totalY = totalYDict[key];
       y = ((sum / totalY) * 100).toFixed(3);
     }
 
