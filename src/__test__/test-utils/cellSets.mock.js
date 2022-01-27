@@ -61,7 +61,7 @@ const mockCellSets1 = {
       rootNode: true,
     },
     sample: {
-      cellIds: new Set(),
+      cellIds: new Set([6, 7, 8]),
       name: 'Samples',
       key: 'sample',
       type: 'metadataCategorical',
