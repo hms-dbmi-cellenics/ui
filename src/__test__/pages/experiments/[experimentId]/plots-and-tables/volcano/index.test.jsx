@@ -24,7 +24,7 @@ import mockDiffExprResult from '__test__/data/differential_expression_0_All_WT1.
 
 import createTestComponentFactory from '__test__/test-utils/testComponentFactory';
 import fake from '__test__/test-utils/constants';
-import { seekFromAPI } from 'utils/work/seekWorkResponse';
+import { dispatchWorkRequest, seekFromS3 } from 'utils/work/seekWorkResponse';
 import { plotNames } from 'utils/constants';
 
 enableFetchMocks();
@@ -45,8 +45,8 @@ jest.mock('object-hash', () => {
 
 jest.mock('utils/work/seekWorkResponse', () => ({
   __esModule: true,
-  seekFromAPI: jest.fn(),
-  seekFromS3: () => Promise.resolve(null),
+  dispatchWorkRequest: jest.fn(() => true),
+  seekFromS3: jest.fn(),
 }));
 
 jest.mock('@aws-amplify/auth', () => ({}));
@@ -122,10 +122,15 @@ const runComparison = async () => {
 
 describe('Volcano plot page', () => {
   beforeEach(async () => {
-    seekFromAPI.mockClear();
+    dispatchWorkRequest.mockClear();
 
     fetchMock.resetMocks();
     fetchMock.mockIf(/.*/, mockAPI(defaultResponses));
+
+    seekFromS3
+      .mockReset()
+      .mockImplementationOnce(() => null)
+      .mockImplementationOnce(() => mockWorkerResponses['differential-expression']);
 
     storeState = makeStore();
     await storeState.dispatch(loadBackendStatus(experimentId));
@@ -154,10 +159,6 @@ describe('Volcano plot page', () => {
   });
 
   it('Loads the plot when user has made comparisons', async () => {
-    seekFromAPI.mockImplementation(
-      (a, b, c, requested) => Promise.resolve(_.cloneDeep(mockWorkerResponses[requested])),
-    );
-
     await renderVolcanoPlotPage(storeState);
 
     await runComparison();
@@ -171,7 +172,10 @@ describe('Volcano plot page', () => {
   });
 
   it('Shows loader if diff expression is still loading', async () => {
-    seekFromAPI.mockImplementation(() => delayedResponse({ body: 'Not found', status: 404 }));
+    seekFromS3
+      .mockReset()
+      .mockImplementationOnce(() => null)
+      .mockImplementationOnce(() => delayedResponse({ body: 'Not found', status: 404 }));
 
     await renderVolcanoPlotPage(storeState);
 
@@ -186,7 +190,10 @@ describe('Volcano plot page', () => {
   });
 
   it('Shows platform error if loading diff expression result failed ', async () => {
-    seekFromAPI.mockImplementation(() => workerResponse('Not Found', 404));
+    seekFromS3
+      .mockReset()
+      .mockImplementationOnce(() => null)
+      .mockImplementationOnce(() => workerResponse('Not Found', 404));
 
     await renderVolcanoPlotPage(storeState);
 
