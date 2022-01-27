@@ -42,22 +42,22 @@ jobs:
         name: Uncheck the integration checkbox
         uses: tzkhan/pr-update-action@v2
         with:
-          repo-token: "${{ secrets.API_TOKEN_GITHUB }}"
-          head-branch-regex: "${{ github.head_ref }}"
+          repo-token: ${{ secrets.API_TOKEN_GITHUB }}
+          head-branch-regex: ${{ github.head_ref }}
           lowercase-branch: false
-          body-template: "${{  steps.create-unchecked-pr-body.outputs.body }}"
-          body-update-action: "replace"
+          body-template: ${{  steps.create-unchecked-pr-body.outputs.body }}
+          body-update-action: replace
 
   build:
     name: Build website
     runs-on: ubuntu-20.04
     env:
-      CI: "true"
+      CI: true
     steps:
       - id: setup-node
         uses: actions/setup-node@v2
         with:
-          node-version: "14"
+          node-version: '14'
 
       - id: checkout
         name: Check out source code
@@ -81,10 +81,10 @@ jobs:
         name: Run unit tests
         uses: mattallty/jest-github-action@v1
         env:
-          AWS_DEFAULT_REGION: "eu-west-1"
+          AWS_DEFAULT_REGION: eu-west-1
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          test-command: "npm run coverage"
+          test-command: 'npm run coverage'
           coverage-comment: false
 
       - id: upload-coverage
@@ -194,7 +194,7 @@ jobs:
           platforms: linux/amd64
           tags: ${{ format('{0}/{1}:{2}', steps.login-ecr.outputs.registry, steps.ref.outputs.repo-name, steps.ref.outputs.tag) }}
           push: false
-          build-args: "READONLY_API_TOKEN_GITHUB=${{ secrets.READONLY_API_TOKEN_GITHUB }}"
+          build-args: READONLY_API_TOKEN_GITHUB=${{ secrets.READONLY_API_TOKEN_GITHUB }}
 
       - id: push
         name: Push docker image to ECR
@@ -222,7 +222,7 @@ jobs:
     strategy:
       max-parallel: 1
       matrix:
-        environment: ["production", "staging", "develop"]
+        environment: ['production', 'staging', 'develop']
     steps:
       - id: checkout
         name: Check out source code
@@ -327,11 +327,11 @@ jobs:
         env:
           API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
         with:
-          source_file: "${{ steps.fill-metadata.outputs.deployment-name }}.yaml"
-          destination_repo: "${{ github.repository_owner }}/iac"
-          destination_folder: "releases/${{ steps.fill-metadata.outputs.kubernetes-env }}"
-          user_email: "ci@biomage.net"
-          user_name: "Biomage CI/CD"
+          source_file: ${{ steps.fill-metadata.outputs.deployment-name }}.yaml
+          destination_repo: ${{ github.repository_owner }}/iac
+          destination_folder: releases/${{ steps.fill-metadata.outputs.kubernetes-env }}
+          user_email: ci@biomage.net
+          user_name: Biomage CI/CD
 
       - name: Change name of deployment file for staging deployment
         if: (github.event_name == 'pull_request' || github.event_name == 'push') && matrix.environment == 'staging'
@@ -347,11 +347,11 @@ jobs:
         env:
           API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
         with:
-          source_file: "${{ steps.fill-metadata.outputs.ref-dashed }}.yaml"
-          destination_repo: "${{ github.repository_owner }}/iac"
-          destination_folder: "releases/staging-candidates/${{ steps.fill-metadata.outputs.deployment-name }}"
-          user_email: "ci@biomage.net"
-          user_name: "Biomage CI/CD"
+          source_file: ${{ steps.fill-metadata.outputs.ref-dashed }}.yaml
+          destination_repo: ${{ github.repository_owner }}/iac
+          destination_folder: releases/staging-candidates/${{ steps.fill-metadata.outputs.deployment-name }}
+          user_email: ci@biomage.net
+          user_name: 'Biomage CI/CD'
 
       - id: enable-admin-enforcement
         name: Re-enable admin enforcement
