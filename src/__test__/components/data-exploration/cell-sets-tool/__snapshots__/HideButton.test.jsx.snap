@@ -3,7 +3,6 @@
 exports[`HideButton clicking on hidden state triggers unhide action 1`] = `
 Object {
   "payload": Object {
-    "experimentId": "a",
     "key": "random-hidden-key",
   },
   "type": "cellSets/unhide",
@@ -13,7 +12,6 @@ Object {
 exports[`HideButton clicking on visible state triggers hide acction 1`] = `
 Object {
   "payload": Object {
-    "experimentId": "a",
     "key": "not-hidden",
   },
   "type": "cellSets/hide",

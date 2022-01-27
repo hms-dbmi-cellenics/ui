@@ -4,7 +4,7 @@ import thunk from 'redux-thunk';
 import { createWrapper } from 'next-redux-wrapper';
 import { enableMapSet } from 'immer';
 
-import rootReducer from './reducers/index';
+import rootReducer from 'redux/reducers/index';
 
 enableMapSet();
 

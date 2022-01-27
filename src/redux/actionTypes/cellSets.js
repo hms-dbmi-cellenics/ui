@@ -22,9 +22,9 @@ const CELL_SETS_CREATE = `${CELL_SETS}/create`;
 const CELL_SETS_UPDATE_PROPERTY = `${CELL_SETS}/updateProperty`;
 
 /**
- * Updates the cell set hierarchy.
+ * Cell sets were reordered
  */
-const CELL_SETS_UPDATE_HIERARCHY = `${CELL_SETS}/updateHierarchy`;
+const CELL_SETS_REORDER = `${CELL_SETS}/reorder`;
 
 /**
  * Updates the list of selected cell sets.
@@ -74,7 +74,7 @@ const CELL_SETS_ERROR = `${CELL_SETS}/error`;
 export {
   CELL_SETS_LOADING, CELL_SETS_LOADED,
   CELL_SETS_CREATE,
-  CELL_SETS_UPDATE_PROPERTY, CELL_SETS_UPDATE_HIERARCHY, CELL_SETS_SET_SELECTED,
+  CELL_SETS_UPDATE_PROPERTY, CELL_SETS_REORDER, CELL_SETS_SET_SELECTED,
   CELL_SETS_DELETE,
   CELL_SETS_SAVE,
   CELL_SETS_HIDE, CELL_SETS_UNHIDE, CELL_SETS_UNHIDE_ALL,
