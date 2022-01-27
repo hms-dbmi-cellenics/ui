@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`HeatmapPlot Doesn	 display hidden cell sets 1`] = `
+exports[`HeatmapPlot Does not display hidden cell sets 1`] = `
 Array [
   "1",
   "2",
@@ -33,7 +33,7 @@ Array [
 ]
 `;
 
-exports[`HeatmapPlot Doesn	 display hidden cell sets 2`] = `
+exports[`HeatmapPlot Does not display hidden cell sets 2`] = `
 Array [
   "S100a4",
   "Tmem176a",
@@ -108,7 +108,7 @@ Array [
 ]
 `;
 
-exports[`HeatmapPlot Doesn	 display hidden cell sets 3`] = `
+exports[`HeatmapPlot Does not display hidden cell sets 3`] = `
 Array [
   "1",
   "2",
@@ -143,7 +143,7 @@ Array [
 ]
 `;
 
-exports[`HeatmapPlot Doesn	 display hidden cell sets 4`] = `
+exports[`HeatmapPlot Does not display hidden cell sets 4`] = `
 Array [
   "S100a4",
   "Tmem176a",

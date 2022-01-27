@@ -6,7 +6,7 @@ import { calculateZScore } from 'utils/postRequestProcessing';
 import { getBackendStatus } from 'redux/selectors';
 
 import cache from 'utils/cache';
-import { dispatchWorkRequest, seekFromS3 } from './seekWorkResponse';
+import { dispatchWorkRequest, seekFromS3 } from 'utils/work/seekWorkResponse';
 
 const createObjectHash = (object) => MD5(object);
 
