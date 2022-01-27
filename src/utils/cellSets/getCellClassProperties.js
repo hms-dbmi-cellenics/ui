@@ -12,26 +12,23 @@ import _ from 'lodash';
 
 const getCellClassProperties = (cellId, cellSetClassKey, cellSets) => {
   const { properties, hierarchy } = cellSets;
-  console.log('cell colour ', cellSetClassKey, cellSets);
 
   let childrenCellSets = hierarchy.filter(({ key }) => cellSetClassKey.includes(key))
-    .reduce((prev, curr) => prev.children.concat(curr.children)).children;
-  console.log('yaaaaay', childrenCellSets);
+    .reduce((prev, curr) => prev.children.concat(curr.children));
   const cellSetsContainingCell = [];
-  childrenCellSets = _.isArray(childrenCellSets) ? childrenCellSets : [childrenCellSets];
+  childrenCellSets = _.isArray(childrenCellSets) ? childrenCellSets : childrenCellSets.children;
 
   childrenCellSets.forEach(({ key }) => {
-    if (properties[key].cellIds.has(cellId)) {
+    if (properties[key].cellIds.has(parseInt(cellId, 10))) {
       cellSetsContainingCell.push(key);
     }
   });
-  // console.log('CONTAINING CELLSET')
+
   const clusterProperties = cellSetsContainingCell.map((clusterKey) => {
-    const rootClusterName = hierarchy.filter(({ children }) => children.filter((child) => child.key === clusterKey).length > 0)[0].key;
-    console.log(properties[clusterKey], 'hi :))');
+    const rootClusterName = hierarchy.filter(({ children }) => (
+      children.filter((child) => child.key === clusterKey).length > 0))[0].key;
     return { ...properties[clusterKey], rootClusterName: _.capitalize(rootClusterName) };
   });
-  console.log('childrenCellSets2', clusterProperties);
 
   return clusterProperties;
 };

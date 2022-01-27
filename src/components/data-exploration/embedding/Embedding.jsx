@@ -5,10 +5,10 @@ import {
   useSelector, useDispatch,
 } from 'react-redux';
 import PropTypes from 'prop-types';
-import _ from 'lodash';
 import * as vega from 'vega';
 
 import 'vitessce/dist/es/production/static/css/index.css';
+import getCellClassProperties from 'utils/cellSets/getCellClassProperties';
 
 import ClusterPopover from 'components/data-exploration/embedding/ClusterPopover';
 import CrossHair from 'components/data-exploration/embedding/CrossHair';
@@ -60,11 +60,12 @@ const Embedding = (props) => {
 
   const focusData = useSelector((state) => state.cellInfo.focus);
   const focusedExpression = useSelector((state) => state.genes.expression.data[focusData.key]);
+  const cellSets = useSelector(getCellSets());
   const {
     properties: cellSetProperties,
     hierarchy: cellSetHierarchy,
     hidden: cellSetHidden,
-  } = useSelector(getCellSets());
+  } = cellSets;
 
   const selectedCell = useSelector((state) => state.cellInfo.cellName);
   const expressionLoading = useSelector((state) => state.genes.expression.loading);
@@ -74,8 +75,6 @@ const Embedding = (props) => {
   const [createClusterPopover, setCreateClusterPopover] = useState(false);
   const [selectedIds, setSelectedIds] = useState([]);
   const [cellColors, setCellColors] = useState({});
-  const [clusterKeyToNameMap, setClusterKeyToNameMap] = useState({});
-  const [cellSetClusters, setCellSetClusters] = useState({});
   const [cellInfoVisible, setCellInfoVisible] = useState(true);
 
   // Load embedding settings if they aren't already.
@@ -131,25 +130,6 @@ const Embedding = (props) => {
     setCellColors(colorByGeneExpression(focusedExpression));
   }, [focusedExpression]);
 
-  useEffect(() => {
-    if (cellSetHierarchy) {
-      const mapping = cellSetHierarchy.reduce((keyToClusterNameMap, rootHierarchy) => {
-        if (rootHierarchy.children.length > 0) {
-          rootHierarchy.children.forEach((child) => {
-            // eslint-disable-next-line no-param-reassign
-            keyToClusterNameMap[child.key] = _.capitalize(rootHierarchy.key);
-          });
-        }
-        return keyToClusterNameMap;
-      }, {});
-      setClusterKeyToNameMap(mapping);
-    }
-
-    if (cellSetProperties) {
-      setCellSetClusters(Object.entries(cellSetProperties).filter(([, cellSet]) => cellSet.type === 'cellSets'));
-    }
-  }, [cellSetProperties, cellSetHierarchy]);
-
   const updateCellCoordinates = (newView) => {
     if (selectedCell && newView.project) {
       const [x, y] = newView.project(selectedCell);
@@ -162,24 +142,18 @@ const Embedding = (props) => {
     }
   };
 
-  const getContainingCellSets = (cellId) => {
-    const prefixedCellSetNames = cellSetClusters
-      .filter(([, cellSet]) => cellSet.cellIds.has(Number.parseInt(cellId, 10)))
-      .map(([key, containingCellset]) => `${clusterKeyToNameMap[key]}: ${containingCellset.name}`);
-
-    return prefixedCellSetNames;
-  };
-
   const updateCellsHover = (cell) => {
     if (cell) {
-      console.log('updaint with cellsets ', getContainingCellSets(cell), cell);
+      const prefixedCellSetNames = getCellClassProperties(cell, ['louvain', 'scratchpad'], cellSets)
+        .map(({ name, rootClusterName }) => `${rootClusterName} : ${name}`);
+
       if (focusData.store === 'genes') {
         const expressionToDispatch = focusedExpression
           ? focusedExpression.rawExpression.expression[cell] : undefined;
 
         return dispatch(updateCellInfo({
           cellName: cell,
-          cellSets: getContainingCellSets(cell),
+          cellSets: prefixedCellSetNames,
           geneName: focusData.key,
           expression: expressionToDispatch,
           componentType: embeddingType,
@@ -188,7 +162,7 @@ const Embedding = (props) => {
 
       return dispatch(updateCellInfo({
         cellName: cell,
-        cellSets: getContainingCellSets(cell),
+        cellSets: prefixedCellSetNames,
         geneName: undefined,
         expression: undefined,
         componentType: embeddingType,
