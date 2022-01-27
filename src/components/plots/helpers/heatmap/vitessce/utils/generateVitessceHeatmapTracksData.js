@@ -1,15 +1,13 @@
 import getCellClassProperties from 'utils/cellSets/getCellClassProperties';
 import { hexToRgb } from 'utils/plotUtils';
 
-const generateVitessceHeatmapTracksData = (trackOrder, hierarchy, properties, cells) => {
+const generateVitessceHeatmapTracksData = (trackOrder, cellSets, cells) => {
   const colorForCell = (cellId, cellClassKey) => {
     const { color: cellColor = null } = getCellClassProperties(
       cellId,
-      cellClassKey,
-      hierarchy,
-      properties,
-    ) ?? {};
-
+      [cellClassKey],
+      cellSets,
+    )[0] ?? {};
     return hexToRgb(cellColor) ?? hexToRgb('#f5f8fa');
   };
 

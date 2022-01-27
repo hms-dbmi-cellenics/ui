@@ -172,6 +172,7 @@ const Embedding = (props) => {
 
   const updateCellsHover = (cell) => {
     if (cell) {
+      console.log('updaint with cellsets ', getContainingCellSets(cell), cell);
       if (focusData.store === 'genes') {
         const expressionToDispatch = focusedExpression
           ? focusedExpression.rawExpression.expression[cell] : undefined;

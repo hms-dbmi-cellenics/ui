@@ -163,7 +163,12 @@ const HeatmapPlot = (props) => {
   }, [louvainClusterCount]);
 
   useEffect(() => {
-    dispatch(updateCellInfo({ cellName: cellHighlight }));
+    if (cellHighlight) {
+      const containingClusters = getCellClassProperties(parseInt(cellHighlight, 10), ['louvain', 'scratchpad'], cellSets)
+        .map(({ name, rootClusterName }) => `${rootClusterName} : ${name}`);
+
+      dispatch(updateCellInfo({ cellName: cellHighlight, cellSets: containingClusters }));
+    }
   }, [cellHighlight]);
 
   useEffect(() => {
@@ -229,24 +234,21 @@ const HeatmapPlot = (props) => {
       </center>
     );
   }
-
   const setTrackHighlight = (info) => {
     if (!info) {
       setHighlightedTrackData(null);
       return;
     }
-
     dispatch(updateCellInfo({ cellName: info[0] }));
 
     const [cellIndexStr, trackIndex, mouseX, mouseY] = info;
 
     const cellSetClassKey = heatmapSettings.selectedTracks[trackIndex];
-
+    [cellSetClassKey].forEach(() => console.log('hi'));
     const cellClassProps = getCellClassProperties(
-      parseInt(cellIndexStr, 10), cellSetClassKey,
-      cellSetsHierarchy, cellSetsProperties,
-    );
-
+      parseInt(cellIndexStr, 10), [cellSetClassKey],
+      cellSets,
+    )[0];
     const obj = {
       cellId: cellIndexStr,
       trackName: cellClassProps?.name,
