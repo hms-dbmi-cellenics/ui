@@ -10,18 +10,33 @@ import { Provider } from 'react-redux';
 import { makeStore } from 'redux/store';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 
+import pushNotificationMessage from 'utils/pushNotificationMessage';
+import downloadFromUrl from 'utils/data-management/downloadFromUrl';
+import writeToFile from 'utils/writeToFileURL';
+
 import launchPathwayService from 'utils/pathwayAnalysis/launchPathwayService';
 import getDiffExprGenes from 'utils/differentialExpression/getDiffExprGenes';
+import getBackgroundExpressedGenes from 'utils/differentialExpression/getBackgroundExpressedGenes';
 import { pathwayServices } from 'utils/pathwayAnalysis/pathwayConstants';
 import enrichrSpecies from 'utils/pathwayAnalysis/enrichrConstants';
-import pushNotificationMessage from 'utils/pushNotificationMessage';
 
 jest.mock('utils/pathwayAnalysis/launchPathwayService');
 jest.mock('utils/differentialExpression/getDiffExprGenes');
+jest.mock('utils/differentialExpression/getBackgroundExpressedGenes');
+
 jest.mock('utils/pushNotificationMessage');
+jest.mock('utils/data-management/downloadFromUrl');
+jest.mock('utils/writeToFileURL');
 
 const onCancel = jest.fn();
 const onOpenAdvancedFilters = jest.fn();
+const mockClipboard = jest.fn();
+
+Object.defineProperty(navigator, 'clipboard', {
+  value: {
+    writeText: mockClipboard,
+  },
+});
 
 enableFetchMocks();
 
@@ -56,10 +71,10 @@ const pantherDBResponse = {
   },
 };
 
-const renderPathwayAnalysisModal = async (filtersApplied = false) => {
+const renderPathwayAnalysisModal = async (store, filtersApplied = false) => {
   await act(async () => {
     render(
-      <Provider store={makeStore()}>
+      <Provider store={store}>
         <LaunchPathwayAnalysisModal
           advancedFiltersAdded={filtersApplied}
           onCancel={onCancel}
@@ -72,16 +87,21 @@ const renderPathwayAnalysisModal = async (filtersApplied = false) => {
 
 const genesList = ['gene1', 'gene2'];
 getDiffExprGenes.mockImplementation(() => async () => Promise.resolve(genesList));
+getBackgroundExpressedGenes.mockImplementation(() => async () => Promise.resolve(genesList));
+
+let store = null;
 
 describe('Pathway analysis modal ', () => {
   beforeEach(async () => {
     jest.clearAllMocks();
+
+    store = makeStore();
     fetchMock.resetMocks();
     fetchMock.doMock(JSON.stringify(pantherDBResponse));
   });
 
   it('Renders properly', async () => {
-    await renderPathwayAnalysisModal();
+    await renderPathwayAnalysisModal(store);
     expect(screen.getByText('You have not performed any filtering on the genes!')).toBeInTheDocument();
 
     Object.values(pathwayServices).forEach((serviceName) => {
@@ -97,7 +117,7 @@ describe('Pathway analysis modal ', () => {
   });
 
   it('Clicking enrichr radio button removes suggestion text', async () => {
-    await renderPathwayAnalysisModal();
+    await renderPathwayAnalysisModal(store);
     const enrichrRadioButton = screen.getByLabelText(pathwayServices.ENRICHR);
     userEvent.click(enrichrRadioButton);
     await waitFor(() => (
@@ -106,14 +126,14 @@ describe('Pathway analysis modal ', () => {
   });
 
   it('Clicking advanced filtering modal opens the modal', async () => {
-    await renderPathwayAnalysisModal();
+    await renderPathwayAnalysisModal(store);
     userEvent.click(screen.getByText('Click here to open the advanced filtering options.'));
 
     expect(onOpenAdvancedFilters).toHaveBeenCalledTimes(1);
   });
 
   it('Launches the service with PantherDB', async () => {
-    await renderPathwayAnalysisModal();
+    await renderPathwayAnalysisModal(store);
 
     const defaultSpecies = 'HUMAN';
 
@@ -134,7 +154,7 @@ describe('Pathway analysis modal ', () => {
   });
 
   it('Launches the service with enrichr', async () => {
-    await renderPathwayAnalysisModal();
+    await renderPathwayAnalysisModal(store);
 
     const defaultSpecies = 'sapiens';
 
@@ -158,7 +178,7 @@ describe('Pathway analysis modal ', () => {
   });
 
   it('Passes the species key correctly', async () => {
-    await renderPathwayAnalysisModal();
+    await renderPathwayAnalysisModal(store);
 
     const secondSpecies = enrichrSpecies[enrichrSpecies.length - 1];
 
@@ -193,7 +213,7 @@ describe('Pathway analysis modal ', () => {
   });
 
   it('Passes the number of genes correctly', async () => {
-    await renderPathwayAnalysisModal();
+    await renderPathwayAnalysisModal(store);
 
     const numGenes = 5;
 
@@ -214,19 +234,51 @@ describe('Pathway analysis modal ', () => {
   });
 
   it('Apply filters warning message is not there if there are filters', async () => {
-    await renderPathwayAnalysisModal(true);
+    await renderPathwayAnalysisModal(store, true);
     expect(screen.queryByText('You have not performed any filtering on the genes!', { exact: false })).not.toBeInTheDocument();
   });
 
   it('Shows an error if analysis can not be launched', async () => {
-    launchPathwayService.mockImplementation(() => { throw new Error('Error launching analysis'); });
+    launchPathwayService.mockImplementation(() => { throw new Error('Failed launching pathway analysis'); });
 
-    await renderPathwayAnalysisModal(true);
+    await renderPathwayAnalysisModal(store);
 
     await act(async () => {
       userEvent.click(screen.getByText('Launch'));
     });
 
     expect(pushNotificationMessage).toHaveBeenCalledTimes(1);
+    expect(pushNotificationMessage).toHaveBeenCalledWith('error', 'Failed launching pathway analysis');
+  });
+
+  it('Clicking on download link downloads the gene list', async () => {
+    await renderPathwayAnalysisModal(store);
+
+    await act(async () => {
+      userEvent.click(screen.getByText(/dowload the reference genes/i));
+    });
+
+    expect(getBackgroundExpressedGenes).toHaveBeenCalledTimes(1);
+    expect(writeToFile).toHaveBeenCalledTimes(1);
+
+    expect(writeToFile).toHaveBeenCalledWith(genesList.join('\n'));
+
+    expect(downloadFromUrl).toHaveBeenCalledTimes(1);
+
+    // Clicking on the download link again should not cause another work request
+    expect(getBackgroundExpressedGenes).toHaveBeenCalledTimes(1);
+  });
+
+  it('It shows an error if getting background expressed genes fail', async () => {
+    getBackgroundExpressedGenes.mockImplementation(() => { throw new Error('Failed getting background gene expression'); });
+
+    await renderPathwayAnalysisModal(store);
+
+    await act(async () => {
+      userEvent.click(screen.getByText(/dowload the reference genes/i));
+    });
+
+    expect(pushNotificationMessage).toHaveBeenCalledTimes(1);
+    expect(pushNotificationMessage).toHaveBeenCalledWith('error', 'Failed getting background gene expression');
   });
 });

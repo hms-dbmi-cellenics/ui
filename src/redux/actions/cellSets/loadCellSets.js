@@ -24,6 +24,7 @@ const loadCellSets = (experimentId, forceReload = false) => async (dispatch, get
   try {
     const response = await fetchAPI(url);
     const json = await response.json();
+
     throwIfRequestFailed(response, json, endUserMessages.ERROR_FETCHING_CELL_SETS);
     dispatch({
       type: CELL_SETS_LOADED,
@@ -38,10 +39,7 @@ const loadCellSets = (experimentId, forceReload = false) => async (dispatch, get
     }
     dispatch({
       type: CELL_SETS_ERROR,
-      payload: {
-        experimentId,
-        error: e,
-      },
+      payload: { error: e },
     });
   }
 };

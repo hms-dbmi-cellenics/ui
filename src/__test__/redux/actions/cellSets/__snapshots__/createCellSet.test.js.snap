@@ -9,7 +9,6 @@ Object {
       3,
     },
     "color": "#ff0000",
-    "experimentId": "1234",
     "key": "a key",
     "name": "one",
     "type": "cellSets",
@@ -18,13 +17,12 @@ Object {
 }
 `;
 
-exports[`createCellSet action Last action dispatches cellSetSave event 1`] = `
+exports[`createCellSet action Sends fetch to the API when creating cell set 1`] = `
 Object {
-  "payload": Object {
-    "experimentId": "1234",
-    "key": "a key",
-    "saved": Object {},
+  "body": "[{\\"$match\\":{\\"query\\":\\"$[?(@.key == \\\\\\"scratchpad\\\\\\")]\\",\\"value\\":{\\"children\\":[{\\"$insert\\":{\\"index\\":\\"-\\",\\"value\\":{\\"key\\":\\"some-uuid\\",\\"name\\":\\"one\\",\\"color\\":\\"#ff0000\\",\\"type\\":\\"cellSets\\",\\"cellIds\\":[1,2,3]}}}]}}}]",
+  "headers": Object {
+    "Content-Type": "application/boschni-json-merger+json",
   },
-  "type": "cellSets/save",
+  "method": "PATCH",
 }
 `;

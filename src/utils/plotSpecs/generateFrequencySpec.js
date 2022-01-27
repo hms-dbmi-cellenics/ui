@@ -41,17 +41,6 @@ const generateSpec = (config, plotData, xNamesToDisplay, yNamesToDisplay) => {
     ];
   }
 
-  const additionalTransform = config.frequencyType === 'proportional' ? [
-    {
-      type: 'joinaggregate',
-      groupby: ['x'],
-      ops: ['sum'],
-      fields: ['y'],
-      as: ['totalY'],
-    },
-    { type: 'formula', as: 'y', expr: '(datum.y / datum.totalY) * 100' },
-  ] : [];
-
   return {
     $schema: 'https://vega.github.io/schema/vega/v5.json',
     width: config.dimensions.width,
@@ -65,7 +54,6 @@ const generateSpec = (config, plotData, xNamesToDisplay, yNamesToDisplay) => {
         name: 'plotData',
         values: plotData,
         transform: [
-          ...additionalTransform,
           {
             type: 'stack',
             groupby: ['x'],
@@ -197,11 +185,27 @@ const generateData = (hierarchy, properties, config) => {
 
   // Get cell sets under the nodes.
   const cellSets = _.mapValues(cellSetGroupByRoots, (key) => (
-    hierarchy.find((rootNode) => rootNode.key === key)?.children
+    hierarchy.find((rootNode) => rootNode.key === key)?.children || []
   ));
 
   if (!cellSets.x || !cellSets.y) {
     return [];
+  }
+
+  const totalYDict = {};
+
+  if (config.frequencyType === 'proportional') {
+    // Get the total number of cells in each cell set.
+    cellSets.x.forEach((xCellSet, indx) => {
+      let total = 0;
+      cellSets.y.forEach((yCellSet) => {
+        const yCellSetIds = Array.from(properties[yCellSet.key].cellIds);
+        const xCellSetIds = Array.from(properties[xCellSet.key].cellIds);
+        total += xCellSetIds.filter((id) => yCellSetIds.includes(id)).length;
+      });
+
+      totalYDict[cellSets.x[indx].key] = total;
+    });
   }
 
   // eslint-disable-next-line no-shadow
@@ -211,12 +215,18 @@ const generateData = (hierarchy, properties, config) => {
 
   const plotData = cellSetCombinations.map(([{ key: xCellSetKey }, { key: yCellSetKey }]) => {
     const yCellSet = properties[yCellSetKey];
-
     const sum = intersection([xCellSetKey, yCellSetKey], properties).size;
+
+    let y = sum;
+    if (config.frequencyType === 'proportional') {
+      const { key } = cellSets.x.filter((xCellSet) => xCellSet.key === xCellSetKey)[0];
+      const totalY = totalYDict[key];
+      y = ((sum / totalY) * 100).toFixed(3);
+    }
 
     return {
       x: xCellSetKey,
-      y: sum,
+      y,
       yCellSetKey,
       color: yCellSet.color,
     };
@@ -224,7 +234,6 @@ const generateData = (hierarchy, properties, config) => {
 
   const yNamesToDisplay = cellSets.y.map(({ key }) => properties[key].name);
   const xNamesToDisplay = cellSets.x.map(({ key }) => properties[key].name);
-
   return { xNamesToDisplay, yNamesToDisplay, plotData };
 };
 

@@ -1,32 +1,16 @@
-import initialState from './initialState';
+/* eslint-disable no-param-reassign */
+import produce from 'immer';
 
-const cellSetsHide = (state, action) => {
-  const { key } = action.payload;
+const cellSetsHide = produce((draft, action) => {
+  draft.hidden.add(action.payload.key);
+});
 
-  const newSet = new Set(state.hidden);
-  newSet.add(key);
+const cellSetsUnhide = produce((draft, action) => {
+  draft.hidden.delete(action.payload.key);
+});
 
-  return {
-    ...state,
-    hidden: newSet,
-  };
-};
-
-const cellSetsUnhide = (state, action) => {
-  const { key } = action.payload;
-
-  const newSet = new Set(state.hidden);
-  newSet.delete(key);
-
-  return {
-    ...state,
-    hidden: newSet,
-  };
-};
-
-const cellSetsUnhideAll = (state) => ({
-  ...state,
-  hidden: initialState.hidden,
+const cellSetsUnhideAll = produce((draft) => {
+  draft.hidden = new Set();
 });
 
 export { cellSetsHide, cellSetsUnhide, cellSetsUnhideAll };

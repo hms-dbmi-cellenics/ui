@@ -24,6 +24,7 @@ Object {
     "color": "#ff00ff",
     "key": "key2",
     "name": "My Key",
+    "parentNodeKey": "scratchpad",
     "type": "cellSets",
   },
 }
@@ -49,31 +50,7 @@ Set {
 
 exports[`cellSetsReducer Handles unhiding of previously hidden cell sets 1`] = `Set {}`;
 
-exports[`cellSetsReducer Hierarchy is updated appropriately 1`] = `
-Array [
-  Object {
-    "children": Array [],
-    "key": "1",
-  },
-  Object {
-    "children": Array [
-      Object {
-        "key": "1a",
-      },
-    ],
-    "key": "2",
-  },
-]
-`;
-
-exports[`cellSetsReducer Removes cell sets and their children if root node is removed 1`] = `
-Object {
-  "children": Array [],
-  "key": "2",
-}
-`;
-
-exports[`cellSetsReducer Removes only child, not parent, when child is removed 1`] = `
+exports[`cellSetsReducer Removes child correctly 1`] = `
 Array [
   Object {
     "children": Array [],
@@ -120,6 +97,7 @@ Object {
     "cellIds": Set {},
     "color": "#00FF00",
     "name": "first child",
+    "parentNodeKey": "1",
     "rootNode": undefined,
     "type": undefined,
   },
@@ -139,5 +117,58 @@ Object {
   "color": "#ffffff",
   "name": "favorite child",
   "rootNode": undefined,
+}
+`;
+
+exports[`cellSetsReducer reorders correctly 1`] = `
+Object {
+  "error": false,
+  "hidden": Set {},
+  "hierarchy": Array [
+    Object {
+      "children": Array [
+        Object {
+          "key": "1b",
+        },
+        Object {
+          "key": "1a",
+        },
+      ],
+      "key": "1",
+    },
+    Object {
+      "children": Array [],
+      "key": "2",
+    },
+  ],
+  "loading": true,
+  "properties": Object {
+    "1": Object {
+      "cellIds": undefined,
+      "color": undefined,
+      "name": "parent 1",
+      "rootNode": true,
+    },
+    "1a": Object {
+      "cellIds": Array [],
+      "color": "#00FF00",
+      "name": "first child",
+      "rootNode": false,
+    },
+    "1b": Object {
+      "cellIds": Array [],
+      "color": "#00FFFF",
+      "name": "second child",
+      "rootNode": false,
+    },
+    "2": Object {
+      "cellIds": undefined,
+      "color": undefined,
+      "name": "parent 2",
+      "rootNode": true,
+    },
+  },
+  "selected": Object {},
+  "updatingClustering": false,
 }
 `;

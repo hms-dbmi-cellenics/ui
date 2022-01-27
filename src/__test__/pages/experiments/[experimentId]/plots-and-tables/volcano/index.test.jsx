@@ -144,6 +144,7 @@ describe('Volcano plot page', () => {
     expect(screen.getByText(/Markers/i)).toBeInTheDocument();
     expect(screen.getByText(/Add labels/i)).toBeInTheDocument();
     expect(screen.getByText(/Legend/i)).toBeInTheDocument();
+    expect(screen.getByText(/Export as CSV/i)).toBeInTheDocument();
   });
 
   it('Asks the user to make comparison to get started', async () => {

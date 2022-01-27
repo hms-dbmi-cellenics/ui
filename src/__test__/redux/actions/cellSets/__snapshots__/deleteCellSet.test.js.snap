@@ -3,19 +3,18 @@
 exports[`deleteCellSet action Dispatches an action to delete cell set to the reducer 1`] = `
 Object {
   "payload": Object {
-    "experimentId": "1234",
     "key": "my-key",
   },
   "type": "cellSets/delete",
 }
 `;
 
-exports[`deleteCellSet action Last action dispatches cellSetSave event 1`] = `
+exports[`deleteCellSet action Sends fetch to the API when a cell set is deleted 1`] = `
 Object {
-  "payload": Object {
-    "experimentId": "1234",
-    "key": "my-key",
+  "body": "[{\\"$match\\":{\\"query\\":\\"$[?(@.key == \\\\\\"scratchpad\\\\\\")]\\",\\"value\\":{\\"children\\":[{\\"$match\\":{\\"query\\":\\"$[?(@.key == \\\\\\"my-key\\\\\\")]\\",\\"value\\":{\\"$remove\\":true}}}]}}}]",
+  "headers": Object {
+    "Content-Type": "application/boschni-json-merger+json",
   },
-  "type": "cellSets/delete",
+  "method": "PATCH",
 }
 `;

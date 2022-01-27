@@ -1,7 +1,7 @@
 import { enableMapSet } from 'immer';
-import experimentSettingsReducer from '../../../redux/reducers/experimentSettings';
-import initialState from '../../../redux/reducers/experimentSettings/initialState';
-import generateExperimentSettingsMock from '../../test-utils/experimentSettings.mock';
+import experimentSettingsReducer from 'redux/reducers/experimentSettings';
+import initialState from 'redux/reducers/experimentSettings/initialState';
+import generateExperimentSettingsMock from '__test__/test-utils/experimentSettings.mock';
 
 import {
   EXPERIMENT_SETTINGS_NON_SAMPLE_FILTER_UPDATE,
@@ -9,9 +9,9 @@ import {
   EXPERIMENT_SETTINGS_PROCESSING_ERROR,
   EXPERIMENT_SETTINGS_SAMPLE_FILTER_UPDATE,
   EXPERIMENT_SETTINGS_SET_QC_STEP_ENABLED,
-} from '../../../redux/actionTypes/experimentSettings';
+} from 'redux/actionTypes/experimentSettings';
 
-import errorTypes from '../../../redux/actions/experimentSettings/errorTypes';
+import errorTypes from 'redux/actions/experimentSettings/errorTypes';
 
 enableMapSet();
 
