@@ -244,11 +244,12 @@ const HeatmapPlot = (props) => {
     const [cellIndexStr, trackIndex, mouseX, mouseY] = info;
 
     const cellSetClassKey = heatmapSettings.selectedTracks[trackIndex];
-    [cellSetClassKey].forEach(() => console.log('hi'));
+
     const cellClassProps = getCellClassProperties(
       cellIndexStr, [cellSetClassKey],
       cellSets,
     )[0];
+
     const obj = {
       cellId: cellIndexStr,
       trackName: cellClassProps?.name,
