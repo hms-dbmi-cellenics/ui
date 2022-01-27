@@ -42,6 +42,7 @@ const EditableField = (props) => {
   }, [editing]);
 
   const deleteEditableField = (e) => {
+    e.stopPropagation();
     props.onDelete(e, editedValue);
   };
 
