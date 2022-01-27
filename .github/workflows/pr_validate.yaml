@@ -1,7 +1,7 @@
 name: Validate pull request
 on:
   pull_request:
-    types: [ opened, reopened, edited ]
+    types: [opened, reopened, edited]
 jobs:
   # BEWARE: GitHub uses Microsoft-style line endings (CRLF)
   # instead of Unix-style (LF) interally for things like PR text.
@@ -11,7 +11,7 @@ jobs:
   lint-pr-body:
     name: Lint pull request body
     runs-on: ubuntu-20.04
-    concurrency: 
+    concurrency:
       group: ${{ github.head_ref }}
       cancel-in-progress: true
     outputs:
@@ -91,7 +91,7 @@ jobs:
         continue-on-error: true
         run: |-
           REGEX="\[[Xx]\] Started end-to-end tests on the latest commit\."
-    
+
           pcregrep -o1 -M "$REGEX" <<\EOF
           ${{ github.event.pull_request.body }}
           EOF
@@ -100,10 +100,9 @@ jobs:
     name: Run integration tests
     runs-on: ubuntu-20.04
     needs: lint-pr-body
-    concurrency: 
+    concurrency:
       group: ${{ github.sha }}
     steps:
-      
       - id: check-e2e-run
         name: Check if E2E should run
         run: |-
@@ -115,7 +114,7 @@ jobs:
             SHOULD_CANCEL_E2E='true'
           fi
           echo $SHOULD_CANCEL_E2E
-          
+
           echo "Should E2E be run?"
           if [ "${{ needs.lint-pr-body.outputs.is-staging-na}}" = 'true' ]; then
             SHOULD_RUN_E2E='false'
@@ -124,7 +123,7 @@ jobs:
 
           echo "::set-output name=should-e2e-cancel::$SHOULD_CANCEL_E2E"
           echo "::set-output name=should-e2e-run::$SHOULD_RUN_E2E"
-        
+
       - id: cancel
         name: Cancel if staging is not N/A and box is not checked
         if: steps.check-e2e-run.outputs.should-e2e-cancel == 'true'
@@ -185,7 +184,7 @@ jobs:
         uses: jwalton/gh-find-current-pr@v1
         with:
           state: open
-          
+
       - id: create-unchecked-pr-body
         if: failure()
         name: Create unchecked PR body
@@ -210,6 +209,7 @@ jobs:
         uses: tzkhan/pr-update-action@v2
         with:
           repo-token: "${{ secrets.API_TOKEN_GITHUB }}"
-          head-branch-regex: '${{ github.head_ref }}'
+          head-branch-regex: "${{ github.head_ref }}"
+          lowercase-branch: false
           body-template: "${{  steps.create-unchecked-pr-body.outputs.body }}"
-          body-update-action: 'replace'
+          body-update-action: "replace"
