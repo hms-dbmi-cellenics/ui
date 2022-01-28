@@ -46,6 +46,7 @@ const mockedStore = mockStore({
       error: false,
     },
   },
+  cellSets: mockCellSets().cellSets,
   experimentSettings: {
     ...initialExperimentState,
   },

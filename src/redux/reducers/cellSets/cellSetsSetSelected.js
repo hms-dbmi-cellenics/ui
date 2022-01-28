@@ -1,13 +1,10 @@
-const cellSetsSetSelected = (state, action) => {
+/* eslint-disable no-param-reassign */
+import produce from 'immer';
+
+const cellSetsSetSelected = produce((draft, action) => {
   const { keys, tab } = action.payload;
 
-  return {
-    ...state,
-    selected: {
-      ...state.selected,
-      [tab]: keys,
-    },
-  };
-};
+  draft.selected[tab] = keys;
+});
 
 export default cellSetsSetSelected;

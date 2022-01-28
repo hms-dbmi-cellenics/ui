@@ -1,13 +1,13 @@
+/* eslint-disable no-param-reassign */
 import _ from 'lodash';
+import produce from 'immer';
 
-const cellSetsUpdateProperty = (state, action) => {
-  const { key, dataUpdated } = action.payload;
+import initialState from 'redux/reducers/cellSets/initialState';
 
-  const newState = _.cloneDeep(state);
+const cellSetsUpdateProperty = produce((draft, action) => {
+  const { cellSetKey, dataUpdated } = action.payload;
 
-  _.merge(newState.properties[key], dataUpdated);
-
-  return newState;
-};
+  _.merge(draft.properties[cellSetKey], dataUpdated);
+}, initialState);
 
 export default cellSetsUpdateProperty;

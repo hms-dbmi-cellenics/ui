@@ -8,11 +8,16 @@ import PropTypes from 'prop-types';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
 import launchPathwayService from 'utils/pathwayAnalysis/launchPathwayService';
 import getDiffExprGenes from 'utils/differentialExpression/getDiffExprGenes';
+import writeToFileURL from 'utils/writeToFileURL';
+import downloadFromUrl from 'utils/data-management/downloadFromUrl';
+
+import getBackgroundExpressedGenes from 'utils/differentialExpression/getBackgroundExpressedGenes';
 import enrichrSpecies from 'utils/pathwayAnalysis/enrichrConstants';
 import pantherDBSpecies from 'utils/pathwayAnalysis/pantherDBSpecies.json';
 import { pathwayServices } from 'utils/pathwayAnalysis/pathwayConstants';
 
 const marginSpacing = { marginBottom: '20px', marginTop: '20x' };
+const inlineButtonStyle = { padding: 0, height: '1rem' };
 
 const { Paragraph } = Typography;
 
@@ -26,11 +31,29 @@ const LaunchPathwayAnalysisModal = (props) => {
   const [externalService, setExternalService] = useState(pathwayServices.PANTHERDB);
   const [useAllGenes, setUseAllGenes] = useState(true);
   const [numGenes, setNumGenes] = useState(0);
-  const [waitingForExternalService, setWaitingForExternalService] = useState(false);
+  const [gettingBackgroundGenes, setGettingBackgroundGenes] = useState(false);
+  const [launchingPathwayAnalysis, setLaunchingPathwayAnalysis] = useState(false);
   const [species, setSpecies] = useState(null);
   const speciesList = {
     [pathwayServices.PANTHERDB]: pantherDBSpecies,
     [pathwayServices.ENRICHR]: enrichrSpecies,
+  };
+
+  const getBackgroundGenesList = async () => {
+    setGettingBackgroundGenes(true);
+    let cleanList = null;
+
+    try {
+      const genesList = await dispatch(getBackgroundExpressedGenes());
+      cleanList = genesList.join('\n');
+    } catch (error) {
+      pushNotificationMessage('error', 'Failed getting background gene expression');
+      console.error('Error launching pathway analysis', error);
+    } finally {
+      setGettingBackgroundGenes(false);
+    }
+
+    return cleanList;
   };
 
   // PantherDB and Enrichr species list have different values.
@@ -41,7 +64,7 @@ const LaunchPathwayAnalysisModal = (props) => {
   }, [externalService]);
 
   const launchPathwayAnalysis = async (serviceName) => {
-    setWaitingForExternalService(true);
+    setLaunchingPathwayAnalysis(true);
 
     try {
       const pathwayGenesList = await dispatch(getDiffExprGenes(useAllGenes, numGenes));
@@ -50,11 +73,11 @@ const LaunchPathwayAnalysisModal = (props) => {
       pushNotificationMessage('error', 'Failed launching pathway analysis');
       console.error('Error launching pathway analysis', error);
     } finally {
-      setWaitingForExternalService(false);
+      setLaunchingPathwayAnalysis(false);
     }
   };
 
-  const canLaunchService = () => !waitingForExternalService && species;
+  const canLaunchService = () => !launchingPathwayAnalysis && species;
 
   return (
     <>
@@ -66,6 +89,7 @@ const LaunchPathwayAnalysisModal = (props) => {
         footer={(
           <Button
             disabled={!canLaunchService()}
+            loading={launchingPathwayAnalysis}
             type='primary'
             onClick={() => launchPathwayAnalysis(externalService)}
           >
@@ -88,7 +112,6 @@ const LaunchPathwayAnalysisModal = (props) => {
                   type='link'
                   size='small'
                   onClick={() => onOpenAdvancedFilters()}
-                  onKeyPress={() => onOpenAdvancedFilters()}
                 >
                   Click here to open the advanced filtering options.
                 </Button>
@@ -120,7 +143,12 @@ const LaunchPathwayAnalysisModal = (props) => {
             >
               {
                 speciesList[externalService].map((option) => (
-                  <Select.Option key={option.value} value={option.value}><i>{option.label}</i></Select.Option>
+                  <Select.Option
+                    key={option.value}
+                    value={option.value}
+                  >
+                    <i>{option.label}</i>
+                  </Select.Option>
                 ))
               }
             </Select>
@@ -157,12 +185,24 @@ const LaunchPathwayAnalysisModal = (props) => {
             It is
             <b> strongly recommended </b>
             {' '}
-            to input the reference list of genes by setting it in &quot;Reference List&quot;
-            then re-run the pathway analysis in the pantherdb page.
+            to input the reference list of genes by setting it in &quot;Reference List&quot; in the PantherDB results page
+            and re-run the pathway analysis.
             {' '}
-            You can either download reference genes into file or copy reference genes to clipboard.
+            <Button
+              type='link'
+              disabled={gettingBackgroundGenes}
+              loading={gettingBackgroundGenes}
+              style={inlineButtonStyle}
+              onClick={async () => {
+                const genesList = await getBackgroundGenesList();
+                const fileUrl = writeToFileURL(genesList);
+                downloadFromUrl(fileUrl, 'reference_genes_list.txt');
+              }}
+            >
+              Click here the dowload the reference genes list
+            </Button>
+            .
           </Paragraph>
-
         )}
 
         <Alert
