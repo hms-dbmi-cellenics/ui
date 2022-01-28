@@ -11,8 +11,6 @@ import {
 
 import { seekFromS3 } from 'utils/work/seekWorkResponse';
 
-import '__test__/test-utils/setupTests';
-
 jest.mock('utils/getTimeoutForWorkerTask', () => ({
   __esModule: true, // this property makes it work
   default: () => 60,

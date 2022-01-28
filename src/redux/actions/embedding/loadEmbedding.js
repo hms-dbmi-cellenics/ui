@@ -35,7 +35,6 @@ const loadEmbedding = (
     },
   });
 
-  // TODO: this `embeddingType` will be changed to an embedding ID created during pre-processing.
   const body = {
     name: 'GetEmbedding',
     type: embeddingType,
