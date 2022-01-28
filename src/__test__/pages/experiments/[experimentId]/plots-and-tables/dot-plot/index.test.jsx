@@ -16,7 +16,7 @@ import mockAPI, {
   delayedResponse,
 } from '__test__/test-utils/mockAPI';
 
-import { seekFromAPI } from 'utils/work/seekWorkResponse';
+import { seekFromS3 } from 'utils/work/seekWorkResponse';
 
 import createTestComponentFactory from '__test__/test-utils/testComponentFactory';
 import { makeStore } from 'redux/store';
@@ -48,13 +48,13 @@ jest.mock('object-hash', () => {
 
 jest.mock('utils/work/seekWorkResponse', () => ({
   __esModule: true,
-  seekFromAPI: jest.fn(),
-  seekFromS3: () => Promise.resolve(null),
+  dispatchWorkRequest: jest.fn(() => true),
+  seekFromS3: jest.fn(),
 }));
 
 const mockWorkerResponses = {
-  'paginated-gene-expression': paginatedGeneExpressionData,
-  'dot-plot-data': dotPlotData,
+  'paginated-gene-expression': () => paginatedGeneExpressionData,
+  'dot-plot-data': () => dotPlotData,
 };
 
 const experimentId = fake.EXPERIMENT_ID;
@@ -67,14 +67,23 @@ const customAPIResponses = {
   [`/plots-tables/${plotUuid}`]: () => statusResponse(404, 'Not Found'),
 };
 
-const defaultMockResponses = _.merge(
+const mockAPIResponse = _.merge(
   generateDefaultMockAPIResponses(experimentId),
   customAPIResponses,
-  mockWorkerResponses,
 );
 
 const defaultProps = { experimentId };
 const dotPlotPageFactory = createTestComponentFactory(DotPlotPage, defaultProps);
+
+const renderDotPlot = async (store) => {
+  await act(async () => {
+    render(
+      <Provider store={store}>
+        {dotPlotPageFactory()}
+      </Provider>,
+    );
+  });
+};
 
 enableFetchMocks();
 
@@ -82,13 +91,19 @@ let storeState = null;
 
 describe('Dot plot page', () => {
   beforeEach(async () => {
-    seekFromAPI.mockClear();
-    seekFromAPI.mockImplementation(
-      (a, b, c, requested) => Promise.resolve(_.cloneDeep(mockWorkerResponses[requested])),
-    );
+    jest.clearAllMocks();
+
+    seekFromS3
+      .mockReset()
+      // 1st call to list genes
+      .mockImplementationOnce(() => null)
+      .mockImplementationOnce((Etag) => mockWorkerResponses[Etag]())
+      // 2nd call to paginated gene expression
+      .mockImplementationOnce(() => null)
+      .mockImplementationOnce((Etag) => mockWorkerResponses[Etag]());
 
     fetchMock.resetMocks();
-    fetchMock.mockIf(/.*/, mockAPI(defaultMockResponses));
+    fetchMock.mockIf(/.*/, mockAPI(mockAPIResponse));
 
     storeState = makeStore();
 
@@ -96,13 +111,7 @@ describe('Dot plot page', () => {
   });
 
   it('Renders the plot page correctly', async () => {
-    await act(async () => {
-      render(
-        <Provider store={storeState}>
-          {dotPlotPageFactory()}
-        </Provider>,
-      );
-    });
+    await renderDotPlot(storeState);
 
     // There is the text Dot plot show in the breadcrumbs
     expect(screen.getByText(new RegExp(plotNames.DOT_PLOT, 'i'))).toBeInTheDocument();
@@ -122,95 +131,82 @@ describe('Dot plot page', () => {
 
   it('Shows a skeleton if config is not loaded', async () => {
     const noConfigResponse = {
-      ...defaultMockResponses,
+      ...mockAPIResponse,
       [`/plots-tables/${plotUuid}`]: () => delayedResponse({ body: 'Not found', status: 404 }),
     };
 
     fetchMock.mockIf(/.*/, mockAPI(noConfigResponse));
 
-    await act(async () => {
-      render(
-        <Provider store={storeState}>
-          {dotPlotPageFactory()}
-        </Provider>,
-      );
-    });
+    await renderDotPlot(storeState);
 
     expect(screen.getByRole('list')).toHaveClass('ant-skeleton-paragraph');
   });
 
   it('Shows an error if there are errors loading cell sets', async () => {
     const cellSetsErrorResponse = {
-      ...defaultMockResponses,
+      ...mockAPIResponse,
       [`experiments/${experimentId}/cellSets`]: () => statusResponse(404, 'Nothing found'),
     };
 
     fetchMock.mockIf(/.*/, mockAPI(cellSetsErrorResponse));
 
-    await act(async () => {
-      render(
-        <Provider store={storeState}>
-          {dotPlotPageFactory()}
-        </Provider>,
-      );
-    });
+    await renderDotPlot(storeState);
 
     expect(screen.getByText(/Error loading cell sets/i)).toBeInTheDocument();
   });
 
   it('Shows platform error if there are errors fetching the work', async () => {
-    seekFromAPI.mockImplementation(
-      (a, b, c, requested) => {
-        if (requested === 'dot-plot-data') {
-          return Promise.reject(new Error('error'));
-        }
+    const errorResponse = {
+      ...mockWorkerResponses,
+      'dot-plot-data': () => { throw new Error('error'); },
+    };
 
-        return Promise.resolve(_.cloneDeep(mockWorkerResponses[requested]));
-      },
-    );
+    seekFromS3
+      .mockReset()
+      .mockImplementationOnce(() => null)
+      .mockImplementationOnce((Etag) => errorResponse[Etag]())
+      .mockImplementationOnce(() => null)
+      .mockImplementationOnce((Etag) => errorResponse[Etag]());
 
-    await act(async () => {
-      render(
-        <Provider store={storeState}>
-          {dotPlotPageFactory()}
-        </Provider>,
-      );
-    });
+    await renderDotPlot(storeState);
 
     expect(screen.getByText(/Error loading plot data/i)).toBeInTheDocument();
     expect(screen.getByText(/Check the options that you have selected and try again/i)).toBeInTheDocument();
   });
 
   it('Shows an empty message if there is no data to show in the plot', async () => {
-    const emptyResponseWorkResponse = {
+    const emptyResponse = {
       ...mockWorkerResponses,
-      'dot-plot-data': [],
+      'dot-plot-data': () => [],
     };
 
-    seekFromAPI.mockImplementation(
-      (a, b, c, requested) => Promise.resolve(_.cloneDeep(emptyResponseWorkResponse[requested])),
-    );
+    seekFromS3
+      .mockReset()
+      .mockImplementationOnce(() => null)
+      .mockImplementationOnce((Etag) => emptyResponse[Etag]())
+      .mockImplementationOnce(() => null)
+      .mockImplementationOnce((Etag) => emptyResponse[Etag]());
 
-    await act(async () => {
-      render(
-        <Provider store={storeState}>
-          {dotPlotPageFactory()}
-        </Provider>,
-      );
-    });
+    await renderDotPlot(storeState);
 
     expect(screen.getByText(/There is no data to show/i)).toBeInTheDocument();
     expect(screen.getByText(/Select another option from the 'Select data' menu/i)).toBeInTheDocument();
   });
 
   it('Should show a no data error if user is using marker gene and selected filter sets are not represented in more than 1 group in the base cell set', async () => {
-    await act(async () => {
-      render(
-        <Provider store={storeState}>
-          {dotPlotPageFactory()}
-        </Provider>,
-      );
-    });
+    await renderDotPlot(storeState);
+
+    seekFromS3
+      .mockReset()
+      // 1st call to list genes
+      .mockImplementationOnce(() => null)
+      .mockImplementationOnce((Etag) => mockWorkerResponses[Etag]())
+      // 2nd call to load dot plot
+      .mockImplementationOnce(() => null)
+      .mockImplementationOnce((Etag) => mockWorkerResponses[Etag]())
+      // 3nd call to load dot plot
+      .mockImplementationOnce(() => null)
+      .mockImplementationOnce((Etag) => mockWorkerResponses[Etag]());
 
     // Use marker genes
     await act(async () => {

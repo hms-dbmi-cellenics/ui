@@ -160,6 +160,8 @@ const DotPlotPage = (props) => {
 
   useEffect(() => {
     if (cellSetsLoading) return;
+    if (config?.useMarkerGenes && config.nMarkerGenes === 0) return;
+    if (config?.useMarkerGenes === false && config.selectedGenes.length === 0) return;
 
     // Marker genes calculation needs that the cellIds in groupBy (refer to fn definition)
     // be represented by more than one groups in filterBy to enable comparison
