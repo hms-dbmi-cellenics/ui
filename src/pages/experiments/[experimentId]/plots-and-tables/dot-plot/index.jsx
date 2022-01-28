@@ -159,17 +159,17 @@ const DotPlotPage = (props) => {
   );
 
   useEffect(() => {
-    if (cellSetsLoading) return;
-
-    // If using marker genes, check that the selected number is more than 0
-    if (config?.useMarkerGenes && config.nMarkerGenes === 0) return;
+    if (cellSetsLoading || !config) return;
 
     // If using custom genes, check that there are genes in the list
-    if (config?.useMarkerGenes === false && config.selectedGenes.length === 0) return;
+    if (!config.useMarkerGenes && config.selectedGenes.length === 0) return;
+
+    // If using marker genes, check that the selected number is more than 0
+    if (config.useMarkerGenes && config.nMarkerGenes === 0) return;
 
     // Marker genes calculation needs that the cellIds in groupBy (refer to fn definition)
     // be represented by more than one groups in filterBy to enable comparison
-    if (config?.useMarkerGenes && !hasMoreThanTwoGroupsToCompare) {
+    if (config.useMarkerGenes && !hasMoreThanTwoGroupsToCompare) {
       setMoreThanTwoGroups(false);
       return;
     }
