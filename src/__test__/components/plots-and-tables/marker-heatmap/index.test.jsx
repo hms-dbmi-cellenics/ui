@@ -6,8 +6,6 @@ import MarkerHeatmap from 'pages/experiments/[experimentId]/plots-and-tables/mar
 import React from 'react';
 import { act } from 'react-dom/test-utils';
 import { Provider } from 'react-redux';
-import { loadPlotConfig } from 'redux/actions/componentConfig';
-import { loadCellSets } from 'redux/actions/cellSets';
 import { loadBackendStatus } from 'redux/actions/backendStatus';
 import { loadGeneExpression } from 'redux/actions/genes';
 import { makeStore } from 'redux/store';
@@ -51,7 +49,6 @@ const mockWorkerResponses = {
 
 const experimentId = fake.EXPERIMENT_ID;
 const plotUuid = 'markerHeatmapPlotMain';
-const plotType = 'markerHeatmap';
 let storeState = null;
 
 const customAPIResponses = {
@@ -105,8 +102,6 @@ describe('Marker heatmap plot', () => {
 
     // Set up state for backend status
     await storeState.dispatch(loadBackendStatus(experimentId));
-    await storeState.dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
-    await storeState.dispatch(loadCellSets(experimentId));
   });
 
   it('Loads controls and elements', async () => {
