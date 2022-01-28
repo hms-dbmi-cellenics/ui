@@ -69,9 +69,8 @@ const fetchGeneExpressionWork = async (
   let response = await seekFromS3(ETag, experimentId);
 
   // If there is no response in S3, dispatch workRequest via the worker
-  let workResultReady = false;
   if (!response) {
-    workResultReady = await dispatchWorkRequest(
+    await dispatchWorkRequest(
       experimentId,
       missingGenesBody,
       timeout,
@@ -81,11 +80,6 @@ const fetchGeneExpressionWork = async (
         ...extras,
       },
     );
-  }
-
-  if (!workResultReady) {
-    console.debug(`No response immediately resolved for ${body} (ETag: ${ETag}) -- this is probably an event subscription.`);
-    return response;
   }
 
   response = await seekFromS3(ETag, experimentId);
@@ -148,9 +142,8 @@ const fetchWork = async (
   let response = await seekFromS3(ETag, experimentId);
 
   // If there is no response in S3, dispatch workRequest via the worker
-  let workResultReady = false;
   if (!response) {
-    workResultReady = await dispatchWorkRequest(
+    await dispatchWorkRequest(
       experimentId,
       body,
       timeout,
@@ -160,11 +153,6 @@ const fetchWork = async (
         ...extras,
       },
     );
-  }
-
-  if (!workResultReady) {
-    console.debug(`No response immediately resolved for ${body} (ETag: ${ETag}) -- this is probably an event subscription.`);
-    return response;
   }
 
   response = await seekFromS3(ETag, experimentId);

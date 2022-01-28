@@ -160,7 +160,11 @@ const DotPlotPage = (props) => {
 
   useEffect(() => {
     if (cellSetsLoading) return;
+
+    // If using marker genes, check that the selected number is more than 0
     if (config?.useMarkerGenes && config.nMarkerGenes === 0) return;
+
+    // If using custom genes, check that there are genes in the list
     if (config?.useMarkerGenes === false && config.selectedGenes.length === 0) return;
 
     // Marker genes calculation needs that the cellIds in groupBy (refer to fn definition)
