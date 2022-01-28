@@ -114,11 +114,6 @@ describe('loadEmbedding action', () => {
   });
 
   it('Dispatches on a previously unseen embedding', async () => {
-    seekFromS3
-      .mockReset()
-      .mockImplementationOnce(() => null)
-      .mockImplementationOnce(() => Promise.reject(new Error('random error!')));
-
     const store = mockStore(
       {
         backendStatus,
@@ -186,7 +181,7 @@ describe('loadEmbedding action', () => {
     seekFromS3
       .mockReset()
       .mockImplementationOnce(() => null)
-      .mockImplementationOnce(() => Promise.reject(new Error('random error!')));
+      .mockImplementationOnce(() => { throw new Error('random error!'); });
 
     await store.dispatch(loadEmbedding(experimentId, embeddingType));
 
