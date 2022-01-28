@@ -6,7 +6,11 @@ Object {
 }
 `;
 
-exports[`runCellSetsClustering action Dispatches all required actions to update cell sets clustering. 2`] = `undefined`;
+exports[`runCellSetsClustering action Dispatches all required actions to update cell sets clustering. 2`] = `
+Object {
+  "type": "cellSets/clusteringUpdated",
+}
+`;
 
 exports[`runCellSetsClustering action Dispatches all required actions to update cell sets clustering. 3`] = `undefined`;
 
