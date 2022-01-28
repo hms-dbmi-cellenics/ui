@@ -5,21 +5,24 @@ import fetchAPI from 'utils/fetchAPI';
 import unpackResult from 'utils/work/unpackResult';
 import WorkResponseError from 'utils/WorkResponseError';
 
+const throwResponseError = (response) => {
+  throw new Error(`Error ${response.status}: ${response.text}`, { cause: response });
+};
+
 const seekFromS3 = async (ETag, experimentId) => {
   const response = await fetchAPI(`/v1/workResults/${experimentId}/${ETag}`);
 
   if (!response.ok) {
     if (response.status === 404) return null;
 
-    // If there is some other error
-    throw new Error(response.text);
+    throwResponseError(response);
   }
 
   const { signedUrl } = await response.json();
   const storageResp = await fetch(signedUrl);
 
   if (!storageResp.ok) {
-    throw new Error(storageResp.text);
+    throwResponseError(storageResp);
   }
 
   return unpackResult(storageResp);
