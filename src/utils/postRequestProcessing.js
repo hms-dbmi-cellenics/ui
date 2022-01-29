@@ -1,7 +1,7 @@
 const calculateZScore = (responseData) => {
   const dataWithZScore = Object.entries(responseData).reduce((acc, [gene, value]) => {
     const { mean, stdev, expression } = value.rawExpression;
-    const zScore = expression.map((x) => (x === null ? null : ((x - mean) / stdev)));
+    const zScore = expression.map((x) => (x !== null ? ((x - mean) / stdev) : null));
 
     acc[gene] = {
       ...value,
