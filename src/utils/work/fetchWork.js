@@ -70,16 +70,21 @@ const fetchGeneExpressionWork = async (
 
   // If there is no response in S3, dispatch workRequest via the worker
   if (!response) {
-    await dispatchWorkRequest(
-      experimentId,
-      missingGenesBody,
-      timeout,
-      ETag,
-      {
-        ETagPipelineRun: qcPipelineStartDate,
-        ...extras,
-      },
-    );
+    try {
+      await dispatchWorkRequest(
+        experimentId,
+        missingGenesBody,
+        timeout,
+        ETag,
+        {
+          ETagPipelineRun: qcPipelineStartDate,
+          ...extras,
+        },
+      );
+    } catch (error) {
+      console.error('Error dispatching work request: ', error);
+      throw error;
+    }
   }
 
   response = await seekFromS3(ETag, experimentId);
@@ -143,16 +148,21 @@ const fetchWork = async (
 
   // If there is no response in S3, dispatch workRequest via the worker
   if (!response) {
-    await dispatchWorkRequest(
-      experimentId,
-      body,
-      timeout,
-      ETag,
-      {
-        PipelineRunETag: qcPipelineStartDate,
-        ...extras,
-      },
-    );
+    try {
+      await dispatchWorkRequest(
+        experimentId,
+        body,
+        timeout,
+        ETag,
+        {
+          PipelineRunETag: qcPipelineStartDate,
+          ...extras,
+        },
+      );
+    } catch (error) {
+      console.error('Error dispatching work request', error);
+      throw error;
+    }
   }
 
   response = await seekFromS3(ETag, experimentId);
