@@ -7,12 +7,13 @@ import getTimeoutForWorkerTask from 'utils/getTimeoutForWorkerTask';
 
 const getCellSetName = (name) => (name?.split('/')[1] || name);
 
-const generateDiffExprBody = (experimentId, comparisonGroup, extras) => ({
+const generateDiffExprBody = (experimentId, comparisonGroup, comparisonType, extras) => ({
   name: 'DifferentialExpression',
   experimentId,
   cellSet: getCellSetName(comparisonGroup.cellSet),
   compareWith: getCellSetName(comparisonGroup.compareWith),
   basis: getCellSetName(comparisonGroup.basis),
+  comparisonType,
   ...extras,
 });
 
@@ -20,7 +21,7 @@ const loadDifferentialExpression = (
   experimentId, comparisonGroup, comparisonType, tableState, newAdvancedFilters = null,
 ) => async (dispatch, getState) => {
   const advancedFilters = newAdvancedFilters
-  ?? getState().differentialExpression.comparison.advancedFilters;
+    ?? getState().differentialExpression.comparison.advancedFilters;
 
   dispatch({
     type: DIFF_EXPR_LOADING,
@@ -30,7 +31,7 @@ const loadDifferentialExpression = (
     },
   });
 
-  const body = generateDiffExprBody(experimentId, comparisonGroup);
+  const body = generateDiffExprBody(experimentId, comparisonGroup, comparisonType);
   let extras = {};
   let pagination = {};
   if (tableState) {

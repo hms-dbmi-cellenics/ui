@@ -31,6 +31,7 @@ const getDiffExprGenes = (getAllGenes, numGenes) => async (dispatch, getState) =
   const body = generateDiffExprBody(
     experimentId,
     comparisonGroup[comparisonType],
+    comparisonType,
     { genesOnly: true },
   );
 

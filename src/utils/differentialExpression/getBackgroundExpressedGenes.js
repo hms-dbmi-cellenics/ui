@@ -13,6 +13,7 @@ const getBackgroundExpressedGenes = () => async (dispatch, getState) => {
   const body = generateDiffExprBody(
     experimentId,
     comparisonGroup[comparisonType],
+    comparisonType,
     { name: 'GetBackgroundExpressedGenes' },
   );
 
