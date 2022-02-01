@@ -45,7 +45,7 @@ const MitochondrialConfig = (props) => {
           max={10}
           value={config.methodSettings[activeMethod].binStep}
           onUpdate={(newValue) => updateSettingsForActiveMethod({ binStep: newValue })}
-          disabled={disabled}
+          disabled={disabled || plotType === 'logHistogram'}
         />
       </Form.Item>
     </>
