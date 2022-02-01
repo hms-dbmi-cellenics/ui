@@ -1,13 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {
-  Slider,
   Form,
 } from 'antd';
 
 import SliderWithInput from '../../SliderWithInput';
 
-const MitochondrialConfig = (props) => {
+const CalculationConfig = (props) => {
   const {
     config, disabled, plotType, updateSettings,
   } = props;
@@ -52,11 +51,11 @@ const MitochondrialConfig = (props) => {
   );
 };
 
-MitochondrialConfig.propTypes = {
+CalculationConfig.propTypes = {
   updateSettings: PropTypes.func.isRequired,
   config: PropTypes.object.isRequired,
   plotType: PropTypes.string.isRequired,
   disabled: PropTypes.bool.isRequired,
 };
 
-export default MitochondrialConfig;
+export default CalculationConfig;
