@@ -26,7 +26,10 @@ const getCellClassProperties = (cellId, cellSetClassKeys, cellSets) => {
   const clusterProperties = cellSetsContainingCell.map((clusterKey) => {
     const rootClusterName = hierarchy.filter(({ children }) => (
       children.filter((child) => child.key === clusterKey).length > 0))[0].key;
-    return { ...properties[clusterKey], rootClusterName: _.capitalize(rootClusterName) };
+    return {
+      ...properties[clusterKey],
+      clusterName: `${_.capitalize(rootClusterName)} : ${properties[clusterKey].name}`,
+    };
   });
 
   return clusterProperties;

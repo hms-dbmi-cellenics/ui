@@ -145,7 +145,7 @@ const Embedding = (props) => {
   const updateCellsHover = (cell) => {
     if (cell) {
       const prefixedCellSetNames = getCellClassProperties(cell, ['louvain', 'scratchpad'], cellSets)
-        .map(({ name, rootClusterName }) => `${rootClusterName} : ${name}`);
+        .map(({ clusterName }) => clusterName);
 
       if (focusData.store === 'genes') {
         const expressionToDispatch = focusedExpression
