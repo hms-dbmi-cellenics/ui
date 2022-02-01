@@ -268,6 +268,7 @@ describe('DiffExprResults', () => {
         cellSet: 'cluster-a',
         compareWith: 'cluster-b',
         basis: 'scratchpad-a',
+        comparisonType: 'between',
         experimentId: '1234',
         name: 'DifferentialExpression',
       },
