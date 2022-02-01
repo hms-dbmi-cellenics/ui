@@ -150,6 +150,8 @@ const HeatmapPlot = (props) => {
     cellSetsHidden,
     // To reorder tracks when the track is reordered in hierarchy
     cellSetsHierarchy,
+    // For when tracks colors change
+    cellSetsProperties,
   ]);
 
   useEffect(() => {

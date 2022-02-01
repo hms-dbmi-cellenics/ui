@@ -1,3 +1,5 @@
+import _ from 'lodash';
+
 const createHierarchyFromTree = (data) => data && data.map((rootNode) => {
   const rootNodeObject = {
     key: rootNode.key,
@@ -13,7 +15,7 @@ const createPropertiesFromTree = (data) => {
   // Create object of properties.
   const properties = {};
 
-  const traverseProperties = ((nodes) => {
+  const traverseProperties = ((nodes, parentNode) => {
     if (nodes) {
       nodes.forEach((node) => {
         const {
@@ -28,14 +30,18 @@ const createPropertiesFromTree = (data) => {
           type,
         };
 
+        if (!rootNode && !_.isNil(parentNode)) {
+          properties[key].parentNodeKey = parentNode.key;
+        }
+
         if (node.children) {
-          traverseProperties(node.children);
+          traverseProperties(node.children, node);
         }
       });
     }
   });
 
-  traverseProperties(data);
+  traverseProperties(data, null);
 
   return properties;
 };

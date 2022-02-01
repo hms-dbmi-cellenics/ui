@@ -226,7 +226,7 @@ describe('HeatmapPlot', () => {
 
     // If a louvain-3 is suddenly hidden
     await act(async () => {
-      storeState.dispatch(setCellSetHiddenStatus(experimentId, 'louvain-3'));
+      storeState.dispatch(setCellSetHiddenStatus('louvain-3'));
     });
 
     // It doesn't show the cells for louvain-3 anymore
@@ -238,7 +238,7 @@ describe('HeatmapPlot', () => {
 
     // If a louvain-3 is shown again
     await act(async () => {
-      storeState.dispatch(setCellSetHiddenStatus(experimentId, 'louvain-3'));
+      storeState.dispatch(setCellSetHiddenStatus('louvain-3'));
     });
 
     // It shows the cells for louvain-3 again
