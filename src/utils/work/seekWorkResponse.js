@@ -33,7 +33,7 @@ const dispatchWorkRequest = async (
   body,
   timeout,
   ETag,
-  requestProps = {},
+  requestProps,
 ) => {
   console.error('dispatching work request', body);
   const { default: connectionPromise } = await import('utils/socketConnection');
@@ -41,7 +41,7 @@ const dispatchWorkRequest = async (
 
   const timeoutDate = moment().add(timeout, 's').toISOString();
   const authJWT = await getAuthJWT();
-  const socketId = io.id;
+  const socketId = requestProps.broadcast ? 'broadcast' : io.id;
 
   const request = {
     ETag,

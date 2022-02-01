@@ -1,7 +1,6 @@
 import {
   CELL_SETS_ERROR, CELL_SETS_CLUSTERING_UPDATING,
 } from 'redux/actionTypes/cellSets';
-import updateCellSetsClustering from 'redux/actions/cellSets/updateCellSetsClustering';
 
 import getTimeoutForWorkerTask from 'utils/getTimeoutForWorkerTask';
 import { fetchWork } from 'utils/work/fetchWork';
@@ -36,16 +35,15 @@ const runCellSetsClustering = (experimentId, resolution) => async (dispatch, get
   const timeout = getTimeoutForWorkerTask(getState(), 'ClusterCells');
 
   try {
-    await fetchWork(experimentId, body, getState, {
-      timeout,
-      eventCallback: (err) => {
-        if (err) {
-          throw err;
-        }
-
-        dispatch(updateCellSetsClustering(experimentId));
+    await fetchWork(
+      experimentId,
+      body,
+      getState,
+      {
+        timeout,
+        broadcast: true,
       },
-    });
+    );
   } catch (e) {
     dispatch({
       type: CELL_SETS_ERROR,

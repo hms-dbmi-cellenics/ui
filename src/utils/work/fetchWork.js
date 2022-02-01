@@ -38,6 +38,7 @@ const fetchGeneExpressionWork = async (
   body,
   backendStatus,
   environment,
+  broadcast,
   extras,
 ) => {
   // Get only genes that are not already found in local storage.
@@ -78,6 +79,7 @@ const fetchGeneExpressionWork = async (
         ETag,
         {
           ETagPipelineRun: qcPipelineStartDate,
+          broadcast,
           ...extras,
         },
       );
@@ -107,8 +109,12 @@ const fetchWork = async (
   getState,
   optionals = {},
 ) => {
-  const { extras = undefined, timeout = 180, eventCallback = null } = optionals;
+  const { extras = undefined, timeout = 180, broadcast = false } = optionals;
   const backendStatus = getBackendStatus(experimentId)(getState()).status;
+
+  console.log('*** body', body.name);
+  console.log('*** optionals', optionals);
+  console.log('*** broadcast', broadcast);
 
   const { environment } = getState().networkResources;
 
@@ -122,7 +128,9 @@ const fetchWork = async (
 
   const { pipeline: { startDate: qcPipelineStartDate } } = backendStatus;
   if (body.name === 'GeneExpression') {
-    return fetchGeneExpressionWork(experimentId, timeout, body, backendStatus, environment, extras);
+    return fetchGeneExpressionWork(
+      experimentId, timeout, body, backendStatus, environment, broadcast, extras,
+    );
   }
 
   // If caching is disabled, we add an additional randomized key to the hash so we never reuse
@@ -156,6 +164,7 @@ const fetchWork = async (
         ETag,
         {
           PipelineRunETag: qcPipelineStartDate,
+          broadcast,
           ...extras,
         },
       );
@@ -170,11 +179,6 @@ const fetchWork = async (
   // If a work response is in s3, it is cacheable
   // (the cacheable or not option is managed in the worker)
   await cache.set(ETag, response);
-
-  if (eventCallback) {
-    eventCallback(response);
-  }
-
   return response;
 };
 
