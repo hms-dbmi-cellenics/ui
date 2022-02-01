@@ -1,19 +1,18 @@
 import _ from 'lodash';
 
 /**
- * Returns the properties of the first of the cellSets that contains the cellId
+ * Returns the properties of the cellSets that contains the cellId
  * (by the order specified in hierarchy children)
  * @param {int} cellId The id of the cell we are searching for.
- * @param {string} cellSetClassKey The cellSetClass we are searcing inside of
+ * @param {array} cellSetClassKeys The cellSetClass we are searching inside of
  *  (e.g.: sample, louvain, scratchpad, etc..).
- * @param {array} hierarchy CellSets hierarchy.
- * @param {object} properties CellSets properties.
+ * @param {object} cellSets  cellSets for the experiment.
  */
 
-const getCellClassProperties = (cellId, cellSetClassKey, cellSets) => {
+const getCellClassProperties = (cellId, cellSetClassKeys, cellSets) => {
   const { properties, hierarchy } = cellSets;
 
-  let childrenCellSets = hierarchy.filter(({ key }) => cellSetClassKey.includes(key))
+  let childrenCellSets = hierarchy.filter(({ key }) => cellSetClassKeys.includes(key))
     .reduce((prev, curr) => prev.children.concat(curr.children));
   const cellSetsContainingCell = [];
   childrenCellSets = _.isArray(childrenCellSets) ? childrenCellSets : childrenCellSets.children;

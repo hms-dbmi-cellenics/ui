@@ -8,7 +8,6 @@ import PropTypes from 'prop-types';
 import * as vega from 'vega';
 
 import 'vitessce/dist/es/production/static/css/index.css';
-import getCellClassProperties from 'utils/cellSets/getCellClassProperties';
 
 import ClusterPopover from 'components/data-exploration/embedding/ClusterPopover';
 import CrossHair from 'components/data-exploration/embedding/CrossHair';
@@ -30,6 +29,7 @@ import {
   colorByGeneExpression,
   colorInterpolator,
 } from 'utils/plotUtils';
+import getCellClassProperties from 'utils/cellSets/getCellClassProperties';
 
 const Scatterplot = dynamic(
   () => import('vitessce/dist/umd/production/scatterplot.min').then((mod) => mod.Scatterplot),

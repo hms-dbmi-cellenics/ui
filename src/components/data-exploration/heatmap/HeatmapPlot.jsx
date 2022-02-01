@@ -164,7 +164,7 @@ const HeatmapPlot = (props) => {
 
   useEffect(() => {
     if (cellHighlight) {
-      const containingClusters = getCellClassProperties(parseInt(cellHighlight, 10), ['louvain', 'scratchpad'], cellSets)
+      const containingClusters = getCellClassProperties(cellHighlight, ['louvain', 'scratchpad'], cellSets)
         .map(({ name, rootClusterName }) => `${rootClusterName} : ${name}`);
 
       dispatch(updateCellInfo({ cellName: cellHighlight, cellSets: containingClusters }));
