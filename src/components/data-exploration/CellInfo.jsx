@@ -1,19 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import _ from 'lodash';
-import {
-  useSelector,
-} from 'react-redux';
 import { Card } from 'antd';
 import PropTypes from 'prop-types';
 
 const CellInfo = (props) => {
-  const { coordinates, componentType } = props;
+  const { coordinates, componentType, cellInfoRef: cellInfo } = props;
 
-  const cellInfo = useSelector((state) => state.cellInfo);
   const [cellInfoVisible, setCellInfoVisible] = useState(false);
 
   useEffect(() => {
-    if (!cellInfo.cellName) {
+    if (!cellInfo) {
       return;
     }
     if (cellInfo.componentType !== componentType) {
@@ -73,6 +69,7 @@ CellInfo.defaultProps = {};
 CellInfo.propTypes = {
   coordinates: PropTypes.object.isRequired,
   componentType: PropTypes.string.isRequired,
+  cellInfoRef: PropTypes.object.isRequired,
 };
 
 export default CellInfo;

@@ -6,7 +6,7 @@ import {
 } from 'react-redux';
 import PropTypes from 'prop-types';
 import * as vega from 'vega';
-
+import _ from 'lodash';
 import 'vitessce/dist/es/production/static/css/index.css';
 
 import ClusterPopover from 'components/data-exploration/embedding/ClusterPopover';
@@ -72,6 +72,7 @@ const Embedding = (props) => {
   const loadedGenes = useSelector((state) => Object.keys(state.genes.expression.data));
 
   const cellCoordintes = useRef({ x: 200, y: 300 });
+  const cellInfoTooltip = useRef();
   const [createClusterPopover, setCreateClusterPopover] = useState(false);
   const [selectedIds, setSelectedIds] = useState(new Set());
   const [cellColors, setCellColors] = useState({});
@@ -130,6 +131,32 @@ const Embedding = (props) => {
     setCellColors(colorByGeneExpression(focusedExpression));
   }, [focusedExpression]);
 
+  useEffect(() => {
+    if (selectedCell) {
+      let extras = {};
+      if (focusData.store === 'genes') {
+        const expressionToDispatch = focusedExpression
+          ? focusedExpression.rawExpression.expression[selectedCell] : undefined;
+        extras = { geneName: focusData.key, expression: expressionToDispatch };
+      }
+
+      const cellProperties = getCellClassProperties(selectedCell, ['louvain', 'scratchpad'], cellSets);
+      const prefixedCellSetNames = [];
+      Object.entries(cellProperties).forEach(([key, clusterProperties]) => {
+        clusterProperties.forEach(({ name, parentNodeKey }) => {
+          prefixedCellSetNames.push(`${_.capitalize(parentNodeKey)} : ${name}`);
+        });
+      });
+
+      cellInfoTooltip.current = {
+        cellSets: prefixedCellSetNames,
+        cellName: selectedCell,
+        componentType: embeddingType,
+        ...extras,
+      };
+    }
+  }, [selectedCell]);
+
   const updateCellCoordinates = (newView) => {
     if (selectedCell && newView.project) {
       const [x, y] = newView.project(selectedCell);
@@ -142,33 +169,10 @@ const Embedding = (props) => {
     }
   };
 
-  const updateCellsHover = (cell) => {
-    if (cell) {
-      const prefixedCellSetNames = getCellClassProperties(cell, ['louvain', 'scratchpad'], cellSets)
-        .map(({ clusterName }) => clusterName);
+  const updateCellsHover = (cell) => dispatch(updateCellInfo({
+    cellName: cell,
 
-      if (focusData.store === 'genes') {
-        const expressionToDispatch = focusedExpression
-          ? focusedExpression.rawExpression.expression[cell] : undefined;
-
-        return dispatch(updateCellInfo({
-          cellName: cell,
-          cellSets: prefixedCellSetNames,
-          geneName: focusData.key,
-          expression: expressionToDispatch,
-          componentType: embeddingType,
-        }));
-      }
-
-      return dispatch(updateCellInfo({
-        cellName: cell,
-        cellSets: prefixedCellSetNames,
-        geneName: undefined,
-        expression: undefined,
-        componentType: embeddingType,
-      }));
-    }
-  };
+  }));
 
   const onCreateCluster = (clusterName, clusterColor) => {
     setCreateClusterPopover(false);
@@ -312,6 +316,7 @@ const Embedding = (props) => {
                 <CellInfo
                   componentType={embeddingType}
                   coordinates={cellCoordintes}
+                  cellInfoRef={cellInfoTooltip.current}
                 />
                 <CrossHair
                   componentType={embeddingType}

@@ -7,7 +7,8 @@ const generateVitessceHeatmapTracksData = (trackOrder, cellSets, cells) => {
       cellId,
       [cellClassKey],
       cellSets,
-    )[0] ?? {};
+    )[cellClassKey][0] ?? {};
+
     return hexToRgb(cellColor) ?? hexToRgb('#f5f8fa');
   };
 

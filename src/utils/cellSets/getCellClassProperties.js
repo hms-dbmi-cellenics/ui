@@ -1,5 +1,3 @@
-import _ from 'lodash';
-
 /**
  * Returns the properties of the cellSets that contains the cellId
  * (by the order specified in hierarchy children)
@@ -11,28 +9,21 @@ import _ from 'lodash';
 
 const getCellClassProperties = (cellId, cellSetClassKeys, cellSets) => {
   const { properties, hierarchy } = cellSets;
+  const cellClassProperties = {};
+  const cellIdInt = parseInt(cellId, 10);
 
-  let childrenCellSets = hierarchy.filter(({ key }) => cellSetClassKeys.includes(key))
-    .reduce((prev, curr) => prev.children.concat(curr.children));
-  const cellSetsContainingCell = [];
-  childrenCellSets = _.isArray(childrenCellSets) ? childrenCellSets : childrenCellSets.children;
+  cellSetClassKeys.forEach((rootCluster) => {
+    cellClassProperties[rootCluster] = [];
+    const childrenCellSets = hierarchy.filter(({ key }) => rootCluster === key)[0]?.children || [];
 
-  childrenCellSets.forEach(({ key }) => {
-    if (properties[key].cellIds.has(parseInt(cellId, 10))) {
-      cellSetsContainingCell.push(key);
-    }
+    childrenCellSets.forEach(({ key }) => {
+      if (properties[key].cellIds.has(cellIdInt)) {
+        cellClassProperties[rootCluster].push(properties[key]);
+      }
+    });
   });
 
-  const clusterProperties = cellSetsContainingCell.map((clusterKey) => {
-    const rootClusterName = hierarchy.filter(({ children }) => (
-      children.filter((child) => child.key === clusterKey).length > 0))[0].key;
-    return {
-      ...properties[clusterKey],
-      clusterName: `${_.capitalize(rootClusterName)} : ${properties[clusterKey].name}`,
-    };
-  });
-
-  return clusterProperties;
+  return cellClassProperties;
 };
 
 export default getCellClassProperties;
