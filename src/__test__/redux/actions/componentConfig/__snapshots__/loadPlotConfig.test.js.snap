@@ -1,0 +1,130 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`loadPlotConfig Loads config properly 1`] = `
+Object {
+  "config": Object {
+    "axes": Object {
+      "domainWidth": 2,
+      "gridOpacity": 0,
+      "gridWidth": 10,
+      "labelFontSize": 12,
+      "offset": 0,
+      "titleFontSize": 13,
+      "xAxisRotateLabels": false,
+      "xAxisText": "#UMIs in cell",
+      "yAxisText": "#UMIs * #Cells",
+    },
+    "colour": Object {
+      "gradient": "default",
+      "invert": "standard",
+      "masterColour": "#000000",
+      "reverseColourBar": false,
+      "toggleInvert": "#FFFFFF",
+    },
+    "dimensions": Object {
+      "height": 400,
+      "width": 530,
+    },
+    "fontStyle": Object {
+      "colour": "#000000",
+      "font": "sans-serif",
+    },
+    "labels": Object {
+      "enabled": true,
+      "size": 18,
+    },
+    "legend": Object {
+      "colour": "#000000",
+      "enabled": true,
+      "position": "top-left",
+    },
+    "marker": Object {
+      "opacity": 5,
+      "shape": "circle",
+      "showOpacity": true,
+      "size": 5,
+    },
+    "minCellSize": 10800,
+    "spec": "1.0.0",
+    "title": Object {
+      "anchor": "start",
+      "dx": 10,
+      "fontSize": 20,
+      "text": "",
+    },
+  },
+  "error": false,
+  "experimentId": "testae48e318dab9a1bd0bexperiment",
+  "loading": false,
+  "outstandingChanges": false,
+  "plotData": Array [
+    1,
+    2,
+    3,
+    4,
+  ],
+  "plotType": "cellSizeDistributionHistogram",
+}
+`;
+
+exports[`loadPlotConfig Loads default initial config for plots if plot config is not found 1`] = `
+Object {
+  "config": Object {
+    "axes": Object {
+      "domainWidth": 2,
+      "gridOpacity": 0,
+      "gridWidth": 10,
+      "labelFontSize": 12,
+      "offset": 0,
+      "titleFontSize": 13,
+      "xAxisRotateLabels": false,
+      "xAxisText": "#UMIs in cell",
+      "yAxisText": "#UMIs * #Cells",
+    },
+    "colour": Object {
+      "gradient": "default",
+      "invert": "standard",
+      "masterColour": "#000000",
+      "reverseColourBar": false,
+      "toggleInvert": "#FFFFFF",
+    },
+    "dimensions": Object {
+      "height": 400,
+      "width": 530,
+    },
+    "fontStyle": Object {
+      "colour": "#000000",
+      "font": "sans-serif",
+    },
+    "labels": Object {
+      "enabled": true,
+      "size": 18,
+    },
+    "legend": Object {
+      "colour": "#000000",
+      "enabled": true,
+      "position": "top-left",
+    },
+    "marker": Object {
+      "opacity": 5,
+      "shape": "circle",
+      "showOpacity": true,
+      "size": 5,
+    },
+    "minCellSize": 10800,
+    "spec": "1.0.0",
+    "title": Object {
+      "anchor": "start",
+      "dx": 10,
+      "fontSize": 20,
+      "text": "",
+    },
+  },
+  "error": false,
+  "experimentId": "testae48e318dab9a1bd0bexperiment",
+  "loading": false,
+  "outstandingChanges": false,
+  "plotData": Array [],
+  "plotType": "cellSizeDistributionHistogram",
+}
+`;
