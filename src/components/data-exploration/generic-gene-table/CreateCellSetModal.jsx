@@ -1,14 +1,14 @@
 import React from 'react';
 import {
-  Modal, Form, Button, Space, Select, InputNumber, Dropdown, Menu, Divider, Row,
+  Modal, Form, Button, Space, Select, InputNumber, Typography, Divider, Row, Alert,
 } from 'antd';// import PropTypes from 'prop-types';
 import PropTypes from 'prop-types';
-import { CloseOutlined } from '@ant-design/icons';
+
+const { Title } = Typography;
 
 const CreateCellSetModal = (props) => {
   const { selectedGenes, onCancel } = props;
   const [form] = Form.useForm();
-  const geneOptionsSelect = selectedGenes.map((gene) => ({ value: gene, label: gene }));
   const intialFormValues = selectedGenes.map((gene) => ({ selectedGenes: gene }));
   const createCellSet = (filterForm) => {
     console.log('filter form is ', filterForm);
@@ -21,6 +21,7 @@ const CreateCellSetModal = (props) => {
     label: 'Less than',
   },
   ];
+  const formHeight = selectedGenes.length < 5 ? selectedGenes.length * 75 : 300;
   return (
     <Modal
       visible
@@ -29,36 +30,35 @@ const CreateCellSetModal = (props) => {
       footer={null}
       width='530px'
     >
-      <Form form={form} onFinish={({ filterForm }) => createCellSet(filterForm)}>
+      <Form
+        form={form}
+        onFinish={({ filterForm }) => createCellSet(filterForm)}
+        size='middle'
+      >
         <Form.List
           name='filterForm'
           initialValue={intialFormValues}
         >
-          {(fields, { add, remove }) => (
+          {(fields) => (
             <>
-              <Row>
+              <Row style={{ overflow: 'scroll', height: formHeight }}>
                 {fields.map((field, index) => {
                   const { selectedGenes: formSelectedGenes } = form.getFieldValue('filterForm')[index];
-                  console.log('Selected genes are ', formSelectedGenes);
                   return (
                     <Space key={field.key} align='baseline'>
                       <Form.Item
                         name={[field.name, 'selectedGenes']}
-                        rules={[{ required: true, message: 'Please select a property' }]}
+                        style={{ width: 70, height: 40 }}
                       >
-                        <Select
-                          style={{ width: 140 }}
-                          onChange={() => form.setFieldsValue({})}
-                          options={geneOptionsSelect}
-                        />
+                        <Title level={5}>{formSelectedGenes}</Title>
                       </Form.Item>
-
                       <Form.Item
                         name={[field.name, 'comparison']}
-                        rules={[{ required: true, message: 'Please select a comparison' }]}
+                        style={{ width: 150 }}
                       >
                         <Select
                           placeholder='Select comparison'
+                          defaultValue='greaterThan'
                           options={comparisonOptions}
                           style={{ width: 150 }}
                         />
@@ -66,22 +66,21 @@ const CreateCellSetModal = (props) => {
 
                       <Form.Item
                         name={[field.name, 'value']}
-                        rules={[{ required: true, message: 'Please input a value' }]}
                       >
                         <InputNumber
                           style={{ width: 140 }}
+                          defaultValue={0}
                           step={1}
                           min={0}
                           max={100}
                           placeholder='Insert value'
                         />
                       </Form.Item>
-
-                      <CloseOutlined onClick={() => remove(field.name)} style={{ margin: '8px' }} />
                     </Space>
                   );
                 })}
               </Row>
+              <Alert type='info' message='To edit the list of genes, return to the gene list and change your selection.' />
               <Divider style={{ marginBottom: '10px' }} />
               <div align='end' style={{ marginTop: '0px', width: '100%' }}>
                 <Form.Item style={{ marginBottom: '-10px', marginTop: '0px' }}>
