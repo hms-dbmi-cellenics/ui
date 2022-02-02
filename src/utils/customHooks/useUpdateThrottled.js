@@ -7,7 +7,6 @@ import {
 
 const useUpdateThrottled = (onUpdate, value, throttleTime = 1000) => {
   const updateThrottled = useCallback(_.throttle((obj) => onUpdate(obj), throttleTime), []);
-  // const updateThrottled = useCallback((obj) => onUpdate(obj), []);
   const [newValue, setNewValue] = useState(value);
 
   // if the plot is reset - update the newConfig too

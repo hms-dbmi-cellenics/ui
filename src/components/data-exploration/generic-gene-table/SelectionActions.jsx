@@ -10,10 +10,10 @@ import { CheckCircleOutlined } from '@ant-design/icons';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import { changeGeneSelection } from 'redux/actions/genes';
 import GeneSelectionStatus from 'redux/actions/genes/geneSelectionStatus';
-
 import ComponentActions from 'components/data-exploration/generic-gene-table/ComponentActions';
 
 import { COMPONENT_TYPE } from 'components/data-exploration/heatmap/HeatmapPlot';
+import CreateCellSetModal from './CreateCellSetModal';
 
 const { Text } = Typography;
 
@@ -26,6 +26,7 @@ const SelectionActions = (props) => {
   const selectedGenes = useSelector((state) => state.genes.selected);
   const [copied, setCopied] = useState(false);
   const [listed, setListed] = useState(false);
+  const [createCellSetModalVisible, setCreateCellSetModalVisible] = useState(false);
 
   const clearAll = () => {
     dispatch(changeGeneSelection(experimentId, selectedGenes, GeneSelectionStatus.deselect));
@@ -97,6 +98,15 @@ const SelectionActions = (props) => {
             {listed ? 'Hide' : 'List'}
           </Button>
           <ComponentActions name='Heatmap' experimentId={experimentId} componentType={COMPONENT_TYPE} />
+          <Button type='link' onClick={() => setCreateCellSetModalVisible}>cellset</Button>
+          {
+            createCellSetModalVisible && (
+              <CreateCellSetModal
+                selectedGenes={selectedGenes}
+                onCancel={() => setCreateCellSetModalVisible(false)}
+              />
+            )
+          }
         </>
       ) : <></>}
     </Row>
