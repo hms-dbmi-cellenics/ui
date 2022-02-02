@@ -140,7 +140,13 @@ const Embedding = (props) => {
         extras = { geneName: focusData.key, expression: expressionToDispatch };
       }
 
-      const cellProperties = getCellClassProperties(selectedCell, ['louvain', 'scratchpad'], cellSets);
+      // getting the root nodes which are of type cellSets
+      const rootClusterNodes = cellSetHierarchy.map(({ key }) => key)
+        .filter((key) => cellSetProperties[key].type === 'cellSets');
+
+      // getting the cluster properties for every cluster that has the cellId
+      const cellProperties = getCellClassProperties(selectedCell, rootClusterNodes, cellSets);
+
       const prefixedCellSetNames = [];
       Object.entries(cellProperties).forEach(([key, clusterProperties]) => {
         clusterProperties.forEach(({ name, parentNodeKey }) => {
