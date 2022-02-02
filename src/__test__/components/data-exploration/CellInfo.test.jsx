@@ -14,14 +14,16 @@ const cellInfo = {
 describe('CellInfo', () => {
   test('renders correctly when hovering over the same component', () => {
     const coordinates = {
-      x: 100,
-      y: 200,
-      width: 500,
-      height: 500,
+      current: {
+        x: 100,
+        y: 200,
+        width: 500,
+        height: 500,
+      },
     };
 
     const component = mount(
-      <CellInfo componentType='heatmap' coordinates={coordinates} cellInfoRef={cellInfo} />,
+      <CellInfo componentType='heatmap' coordinates={coordinates} cellInfo={cellInfo} />,
     );
 
     expect(component.find(Card).length).toEqual(1);
@@ -29,14 +31,16 @@ describe('CellInfo', () => {
 
   test('does not show when hovering over different component', () => {
     const coordinates = {
-      x: 100,
-      y: 200,
-      width: 500,
-      height: 500,
+      current: {
+        x: 100,
+        y: 200,
+        width: 500,
+        height: 500,
+      },
     };
 
     const component = mount(
-      <CellInfo componentType='umap' coordinates={coordinates} cellInfoRef={cellInfo} />,
+      <CellInfo componentType='umap' coordinates={coordinates} cellInfo={cellInfo} />,
     );
 
     expect(component.find(Card).length).toEqual(0);
@@ -53,7 +57,7 @@ describe('CellInfo', () => {
     };
 
     const component = mount(
-      <CellInfo componentType='heatmap' coordinates={coordinates} cellInfoRef={{}} />,
+      <CellInfo componentType='heatmap' coordinates={coordinates} cellInfo={{}} />,
     );
 
     expect(component.find(Card).length).toEqual(0);
