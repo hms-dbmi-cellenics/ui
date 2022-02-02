@@ -25,7 +25,7 @@ const CreateCellSetModal = (props) => {
   return (
     <Modal
       visible
-      title='Advanced filters'
+      title='Create a new cell set based on gene expression'
       onCancel={onCancel}
       footer={null}
       width='530px'
