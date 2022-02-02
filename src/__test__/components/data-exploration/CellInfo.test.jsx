@@ -14,12 +14,10 @@ const cellInfo = {
 describe('CellInfo', () => {
   test('renders correctly when hovering over the same component', () => {
     const coordinates = {
-      current: {
-        x: 100,
-        y: 200,
-        width: 500,
-        height: 500,
-      },
+      x: 100,
+      y: 200,
+      width: 500,
+      height: 500,
     };
 
     const component = mount(
@@ -31,12 +29,10 @@ describe('CellInfo', () => {
 
   test('does not show when hovering over different component', () => {
     const coordinates = {
-      current: {
-        x: 100,
-        y: 200,
-        width: 500,
-        height: 500,
-      },
+      x: 100,
+      y: 200,
+      width: 500,
+      height: 500,
     };
 
     const component = mount(
