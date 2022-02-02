@@ -8,7 +8,7 @@ import { loadCellSets } from '../redux/actions/cellSets';
 const updateTypes = {
   QC: 'qc',
   GEM2S: 'gem2s',
-  WORK_RESPONSE: 'WworkResponse',
+  WORK_RESPONSE: 'WorkResponse',
 };
 
 const experimentUpdatesHandler = (dispatch) => (experimentId, update) => {

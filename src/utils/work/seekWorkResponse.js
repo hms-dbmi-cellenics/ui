@@ -72,7 +72,7 @@ const dispatchWorkRequest = async (
 
       // If no error, the response should be ready on S3.
       // In this case, return true
-      return resolve(true);
+      return resolve();
     });
   });
 

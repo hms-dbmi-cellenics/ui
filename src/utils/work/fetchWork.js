@@ -112,10 +112,6 @@ const fetchWork = async (
   const { extras = undefined, timeout = 180, broadcast = false } = optionals;
   const backendStatus = getBackendStatus(experimentId)(getState()).status;
 
-  console.log('*** body', body.name);
-  console.log('*** optionals', optionals);
-  console.log('*** broadcast', broadcast);
-
   const { environment } = getState().networkResources;
 
   if (!isBrowser) {
