@@ -68,7 +68,7 @@ describe('SelectionIndicator', () => {
     const button = component.find(Button);
     const text = component.find(Text);
     // There should be 4 buttons.
-    expect(button.length).toEqual(4);
+    expect(button.length).toEqual(5);
 
     // A clear button
     expect(button.at(0).childAt(0).text()).toEqual('Clear');
@@ -81,6 +81,8 @@ describe('SelectionIndicator', () => {
 
     // And a Heatmap button
     expect(button.at(3).childAt(0).text()).toEqual('Heatmap');
+
+    expect(button.at(4).childAt(0).text()).toEqual('cellset');
 
     // The text should be loaded.
     expect(text.length).toEqual(1);
@@ -121,39 +123,6 @@ describe('SelectionIndicator', () => {
 
     // No selection text should show.
     expect(text.length).toEqual(0);
-  });
-
-  test('renders correctly with selected genes and export ability', () => {
-    const state = _.cloneDeep(initialState);
-    state.genes.selected = ['CEMIP', 'TIMP3'];
-
-    const store = mockStore(state);
-    const component = mount(
-      <Provider store={store}>
-        <SelectionActions experimentId='test' />
-      </Provider>,
-    );
-    const button = component.find(Button);
-    const text = component.find(Text);
-
-    // There should be six buttons.
-    expect(button.length).toEqual(4);
-
-    // A clear button
-    expect(button.at(0).childAt(0).text()).toEqual('Clear');
-
-    // And a copy to clipboard button
-    expect(button.at(1).childAt(0).text()).toEqual('Copy');
-
-    // A list button
-    expect(button.at(2).childAt(0).text()).toEqual('List');
-
-    // And a Heatmap button
-    expect(button.at(3).childAt(0).text()).toEqual('Heatmap');
-
-    // The text should be loaded.
-    expect(text.length).toEqual(1);
-    expect(text.childAt(0).text()).toEqual('2 genes selected');
   });
 
   test('List selected button changes from list to hide and back correctly', () => {
