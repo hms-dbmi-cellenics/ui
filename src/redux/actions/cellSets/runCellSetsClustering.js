@@ -3,15 +3,20 @@ import {
 } from 'redux/actionTypes/cellSets';
 
 import getTimeoutForWorkerTask from 'utils/getTimeoutForWorkerTask';
-import { fetchWork } from 'utils/work/fetchWork';
+import { createObjectHash } from 'utils/work/fetchWork';
+import { dispatchWorkRequest } from 'utils/work/seekWorkResponse';
+import { getBackendStatus } from 'redux/selectors';
 
 const runCellSetsClustering = (experimentId, resolution) => async (dispatch, getState) => {
   const {
     error, updatingClustering, loading,
   } = getState().cellSets;
 
-  const { experimentSettings } = getState();
-  const { processing } = experimentSettings;
+  const { experimentSettings: { processing } } = getState();
+
+  const backendStatus = getBackendStatus(experimentId)(getState()).status;
+  const { pipeline: { startDate: qcPipelineStartDate } } = backendStatus;
+
   const { method } = processing.configureEmbedding.clusteringSettings;
 
   if ((loading && updatingClustering) || error) {
@@ -32,15 +37,19 @@ const runCellSetsClustering = (experimentId, resolution) => async (dispatch, get
     type: CELL_SETS_CLUSTERING_UPDATING,
   });
 
+  const ETag = createObjectHash({
+    experimentId, body, qcPipelineStartDate,
+  });
+
   const timeout = getTimeoutForWorkerTask(getState(), 'ClusterCells');
 
   try {
-    await fetchWork(
+    await dispatchWorkRequest(
       experimentId,
       body,
-      getState,
+      timeout,
+      ETag,
       {
-        timeout,
         broadcast: true,
       },
     );

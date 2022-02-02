@@ -178,4 +178,4 @@ const fetchWork = async (
   return response;
 };
 
-export { fetchWork, fetchGeneExpressionWork };
+export { fetchWork, fetchGeneExpressionWork, createObjectHash };
