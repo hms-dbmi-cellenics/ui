@@ -66,6 +66,7 @@ describe('fetchWork', () => {
     expect(mockCacheSet).toHaveBeenCalledTimes(1);
     expect(mockCacheSet).toHaveBeenCalledWith(mockCacheKeyMappings.D, mockGeneExpressionData.D);
     expect(res).toEqual({ D: mockGeneExpressionData.D });
+    expect(mockSeekFromS3).toHaveBeenCalledTimes(2);
   });
 
   it('runs correctly for non gene expression work request', async () => {
@@ -86,7 +87,25 @@ describe('fetchWork', () => {
     expect(mockCacheGet).toHaveBeenCalledTimes(1);
     expect(mockCacheSet).toHaveBeenCalledTimes(1);
     expect(mockCacheSet).toHaveBeenCalledWith(NON_GENE_EXPRESSION_ETAG, mockGenesListData);
+    expect(mockSeekFromS3).toHaveBeenCalledTimes(2);
     expect(res).toEqual(mockGenesListData);
+  });
+
+  it('Throws an error if the dispatched work request throws an error', async () => {
+    mockDispatchWorkRequest.mockImplementationOnce(() => { throw new Error('Worker timeout'); });
+
+    await expect(fetchWork(
+      experimentId,
+      nonGeneExpressionWorkRequest,
+      mockReduxState(experimentId),
+      { timeout: 10 },
+    )).rejects.toThrow();
+
+    expect(mockCacheGet).toHaveBeenCalledTimes(1);
+    expect(mockCacheSet).not.toHaveBeenCalled();
+
+    // Only called once when checking for the work result in S3
+    expect(mockSeekFromS3).toHaveBeenCalledTimes(1);
   });
 
   it('does not change ETag if caching is enabled', async () => {

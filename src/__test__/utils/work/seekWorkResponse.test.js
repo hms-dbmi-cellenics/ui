@@ -73,10 +73,10 @@ describe('dispatchWorkRequest unit tests', () => {
     });
   });
 
-  it('Sends work to the backend when called and returns true if successful.', async () => {
+  it('Sends work to the backend when called', async () => {
     fetchMock.mockResponse(JSON.stringify({ signedUrl: 'http://www.apiUrl:portNum/path/blabla' }));
 
-    const response = await dispatchWorkRequest(
+    await dispatchWorkRequest(
       experimentId, body, timeout, 'facefeed',
     );
     expect(socketConnectionMocks.mockEmit).toHaveBeenCalledWith('WorkRequest', {
@@ -88,28 +88,18 @@ describe('dispatchWorkRequest unit tests', () => {
     });
 
     expect(socketConnectionMocks.mockOn).toHaveBeenCalledTimes(1);
-    expect(response).toEqual(true);
   });
 
   it('Returns an error if there is error in the response.', async () => {
-    const flushPromises = () => new Promise(setImmediate);
-
     socketConnectionMocks.mockOn.mockImplementation(async (x, f) => {
       f({
         response: { error: 'The backend returned an error' },
       });
     });
 
-    expect(dispatchWorkRequest(experimentId, body, timeout, 'facefeed')).rejects.toEqual(new Error('The backend returned an error'));
-    await flushPromises();
-
-    expect(socketConnectionMocks.mockEmit).toHaveBeenCalledWith('WorkRequest', {
-      ETag: 'facefeed',
-      socketId: '5678',
-      experimentId: '1234',
-      timeout: '4022-01-01T00:00:30.000Z',
-      body: { name: 'ImportantTask', type: 'fake task' },
-    });
+    expect(async () => {
+      await dispatchWorkRequest(experimentId, body, timeout, 'facefeed');
+    }).rejects.toEqual(new Error('The backend returned an error'));
   });
 });
 

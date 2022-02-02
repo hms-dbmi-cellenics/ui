@@ -41,7 +41,7 @@ const dispatchWorkRequest = async (
 
   const timeoutDate = moment().add(timeout, 's').toISOString();
   const authJWT = await getAuthJWT();
-  const socketId = requestProps.broadcast ? 'broadcast' : io.id;
+  const socketId = requestProps?.broadcast ? 'broadcast' : io.id;
 
   const request = {
     ETag,
