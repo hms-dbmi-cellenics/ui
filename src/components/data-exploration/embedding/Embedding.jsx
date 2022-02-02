@@ -29,7 +29,7 @@ import {
   colorByGeneExpression,
   colorInterpolator,
 } from 'utils/plotUtils';
-import getCellClassProperties from 'utils/cellSets/getCellClassProperties';
+import getContainingCellSetsProperties from 'utils/cellSets/getContainingCellSetsProperties';
 
 const Scatterplot = dynamic(
   () => import('vitessce/dist/umd/production/scatterplot.min').then((mod) => mod.Scatterplot),
@@ -133,24 +133,20 @@ const Embedding = (props) => {
 
   useEffect(() => {
     if (selectedCell) {
-      let extras = {};
-      if (focusData.store === 'genes') {
-        const expressionToDispatch = focusedExpression
-          ? focusedExpression.rawExpression.expression[selectedCell] : undefined;
-        extras = { geneName: focusData.key, expression: expressionToDispatch };
-      }
+      const expressionToDispatch = focusedExpression
+        ? focusedExpression.rawExpression.expression[selectedCell] : undefined;
 
       // getting the root nodes which are of type cellSets
       const rootClusterNodes = cellSetHierarchy.map(({ key }) => key)
         .filter((key) => cellSetProperties[key].type === 'cellSets');
 
       // getting the cluster properties for every cluster that has the cellId
-      const cellProperties = getCellClassProperties(selectedCell, rootClusterNodes, cellSets);
+      const cellProperties = getContainingCellSetsProperties(Number.parseInt(selectedCell, 10), rootClusterNodes, cellSets);
 
       const prefixedCellSetNames = [];
       Object.entries(cellProperties).forEach(([key, clusterProperties]) => {
         clusterProperties.forEach(({ name, parentNodeKey }) => {
-          prefixedCellSetNames.push(`${_.capitalize(parentNodeKey)} : ${name}`);
+          prefixedCellSetNames.push(`${cellSetProperties[parentNodeKey].name} : ${name}`);
         });
       });
 
@@ -158,7 +154,8 @@ const Embedding = (props) => {
         cellSets: prefixedCellSetNames,
         cellName: selectedCell,
         componentType: embeddingType,
-        ...extras,
+        expression: expressionToDispatch,
+        geneName: focusData?.key,
       };
     }
   }, [selectedCell]);
@@ -322,7 +319,7 @@ const Embedding = (props) => {
                 <CellInfo
                   componentType={embeddingType}
                   coordinates={cellCoordintes}
-                  cellInfoRef={cellInfoTooltip.current}
+                  cellInfo={cellInfoTooltip.current}
                 />
                 <CrossHair
                   componentType={embeddingType}

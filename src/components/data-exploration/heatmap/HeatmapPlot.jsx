@@ -24,7 +24,7 @@ import populateHeatmapData from 'components/plots/helpers/heatmap/populateHeatma
 import HeatmapCellInfo from 'components/data-exploration/heatmap/HeatmapCellInfo';
 import HeatmapTracksCellInfo from 'components/data-exploration/heatmap/HeatmapTracksCellInfo';
 
-import getCellClassProperties from 'utils/cellSets/getCellClassProperties';
+import getContainingCellSetsProperties from 'utils/cellSets/getContainingCellSetsProperties';
 import useConditionalEffect from 'utils/customHooks/useConditionalEffect';
 
 const COMPONENT_TYPE = 'interactiveHeatmap';
@@ -244,8 +244,8 @@ const HeatmapPlot = (props) => {
 
     const cellSetClassKey = heatmapSettings.selectedTracks[trackIndex];
 
-    const cellClassProps = getCellClassProperties(
-      cellIndexStr, [cellSetClassKey],
+    const cellClassProps = getContainingCellSetsProperties(
+      parseInt(cellIndexStr, 10), [cellSetClassKey],
       cellSets,
     )[cellSetClassKey][0];
 

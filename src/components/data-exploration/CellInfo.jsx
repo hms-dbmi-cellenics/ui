@@ -4,7 +4,7 @@ import { Card } from 'antd';
 import PropTypes from 'prop-types';
 
 const CellInfo = (props) => {
-  const { coordinates, componentType, cellInfoRef: cellInfo } = props;
+  const { coordinates, componentType, cellInfo } = props;
 
   const [cellInfoVisible, setCellInfoVisible] = useState(false);
 
@@ -69,7 +69,7 @@ CellInfo.defaultProps = {};
 CellInfo.propTypes = {
   coordinates: PropTypes.object.isRequired,
   componentType: PropTypes.string.isRequired,
-  cellInfoRef: PropTypes.object.isRequired,
+  cellInfo: PropTypes.object.isRequired,
 };
 
 export default CellInfo;

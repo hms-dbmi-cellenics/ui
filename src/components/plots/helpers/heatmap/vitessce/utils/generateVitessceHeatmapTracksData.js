@@ -1,9 +1,9 @@
-import getCellClassProperties from 'utils/cellSets/getCellClassProperties';
+import getContainingCellSetsProperties from 'utils/cellSets/getContainingCellSetsProperties';
 import { hexToRgb } from 'utils/plotUtils';
 
 const generateVitessceHeatmapTracksData = (trackOrder, cellSets, cells) => {
   const colorForCell = (cellId, cellClassKey) => {
-    const { color: cellColor = null } = getCellClassProperties(
+    const { color: cellColor = null } = getContainingCellSetsProperties(
       cellId,
       [cellClassKey],
       cellSets,

@@ -7,18 +7,17 @@
  * @param {object} cellSets  cellSets for the experiment.
  */
 
-const getCellClassProperties = (cellId, cellSetClassKeys, cellSets) => {
+const getContainingCellSetsProperties = (cellId, cellSetClassKeys, cellSets) => {
   const { properties, hierarchy } = cellSets;
   const cellClassProperties = {};
-  const cellIdInt = parseInt(cellId, 10);
 
-  cellSetClassKeys.forEach((rootCluster) => {
-    cellClassProperties[rootCluster] = [];
-    const childrenCellSets = hierarchy.filter(({ key }) => rootCluster === key)[0]?.children || [];
+  cellSetClassKeys.forEach((rootNode) => {
+    cellClassProperties[rootNode] = [];
+    const childrenCellSets = hierarchy.filter(({ key }) => rootNode === key)[0]?.children || [];
 
     childrenCellSets.forEach(({ key }) => {
-      if (properties[key].cellIds.has(cellIdInt)) {
-        cellClassProperties[rootCluster].push(properties[key]);
+      if (properties[key].cellIds.has(cellId)) {
+        cellClassProperties[rootNode].push(properties[key]);
       }
     });
   });
@@ -26,4 +25,4 @@ const getCellClassProperties = (cellId, cellSetClassKeys, cellSets) => {
   return cellClassProperties;
 };
 
-export default getCellClassProperties;
+export default getContainingCellSetsProperties;
