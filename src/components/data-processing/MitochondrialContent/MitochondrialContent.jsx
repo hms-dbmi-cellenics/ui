@@ -208,7 +208,7 @@ const MitochondrialContent = (props) => {
                 sampleId={sampleId}
                 sampleIds={sampleIds}
                 onConfigChange={onConfigChange}
-                plotType='bin step'
+                plotType={selectedPlot}
                 stepDisabled={stepDisabled}
               >
                 <CalculationConfig />
