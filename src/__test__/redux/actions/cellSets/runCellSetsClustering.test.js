@@ -119,7 +119,10 @@ describe('runCellSetsClustering action', () => {
       },
       60,
       'mock-hash',
-      { broadcast: true },
+      {
+        PipelineRunETag: backendStatus[experimentId].status.pipeline.startDate,
+        broadcast: true,
+      },
     );
   });
 
@@ -145,7 +148,10 @@ describe('runCellSetsClustering action', () => {
       },
       60,
       'mock-hash',
-      { broadcast: true },
+      {
+        PipelineRunETag: backendStatus[experimentId].status.pipeline.startDate,
+        broadcast: true,
+      },
     );
   });
 });
