@@ -98,7 +98,12 @@ const SelectionActions = (props) => {
             {listed ? 'Hide' : 'List'}
           </Button>
           <ComponentActions name='Heatmap' experimentId={experimentId} componentType={COMPONENT_TYPE} />
-          <Button type='link' onClick={() => setCreateCellSetModalVisible(!createCellSetModalVisible)}>cellset</Button>
+          <Button
+            type='link'
+            onClick={() => setCreateCellSetModalVisible(!createCellSetModalVisible)}
+          >
+            Cellset
+          </Button>
           {
             createCellSetModalVisible && (
               <CreateCellSetModal

@@ -10,9 +10,11 @@ const CreateCellSetModal = (props) => {
   const { selectedGenes, onCancel } = props;
   const [form] = Form.useForm();
   const intialFormValues = selectedGenes.map((gene) => ({ selectedGenes: gene }));
+
   const createCellSet = (filterForm) => {
     console.log('filter form is ', filterForm);
   };
+
   const comparisonOptions = [{
     value: 'greaterThan',
     label: 'Greater than',
@@ -21,6 +23,7 @@ const CreateCellSetModal = (props) => {
     label: 'Less than',
   },
   ];
+
   const formHeight = selectedGenes.length < 5 ? selectedGenes.length * 75 : 300;
   return (
     <Modal
