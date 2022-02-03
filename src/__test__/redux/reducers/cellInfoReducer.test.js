@@ -1,32 +1,8 @@
-import cellInfoReducer from '../../../redux/reducers/cellInfo';
-import initialState from '../../../redux/reducers/cellInfo/initialState';
+import cellInfoReducer from 'redux/reducers/cellInfo';
+import initialState from 'redux/reducers/cellInfo/initialState';
 import {
   CELL_INFO_UPDATE, CELL_INFO_FOCUS, CELL_INFO_UNFOCUS,
-} from '../../../redux/actionTypes/cellInfo';
-
-/*
-
-import reducers from '../../../redux/reducers';
-import * as types from '../../../redux/actionTypes';
-
-describe('cellInfoReducer', () => {
-  it('Reduces the correct state', () => expect(
-    reducers({}, {
-      payload: {
-        cellName: 'C1',
-        geneName: 'G1',
-        expression: 1,
-      },
-      type: types.UPDATE_CELL_INFO,
-    }).cellInfo,
-  ).toEqual({
-    cellName: 'C1',
-    geneName: 'G1',
-    expression: 1,
-  }));
-});
-
-*/
+} from 'redux/actionTypes/cellInfo';
 
 // Unfocused state
 const unfocusedState = {
@@ -47,7 +23,7 @@ describe('cellInfoReducer', () => {
 
   it('Updates cell info state on update action', () => {
     const payload = {
-      cellName: 'C1',
+      cellId: 'C1',
       geneName: 'G1',
       expression: 1,
     };

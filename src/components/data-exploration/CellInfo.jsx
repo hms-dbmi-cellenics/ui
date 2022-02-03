@@ -1,31 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import _ from 'lodash';
-import {
-  useSelector,
-} from 'react-redux';
 import { Card } from 'antd';
 import PropTypes from 'prop-types';
 
 const CellInfo = (props) => {
-  const { coordinates, componentType } = props;
-
-  const cellInfo = useSelector((state) => state.cellInfo);
-  const [cellInfoVisible, setCellInfoVisible] = useState(false);
-
-  useEffect(() => {
-    if (!cellInfo.cellName) {
-      return;
-    }
-    if (cellInfo.componentType !== componentType) {
-      setCellInfoVisible(false);
-    } else {
-      setCellInfoVisible(true);
-    }
-  }, [cellInfo]);
+  const { coordinates, cellInfo } = props;
 
   const cellInfoStyle = { fontSize: '0.75rem' };
 
-  const renderCellInfo = () => (
+  return (
     <Card
       size='small'
       style={{
@@ -37,11 +20,9 @@ const CellInfo = (props) => {
         pointerEvents: 'none',
       }}
     >
-      {cellInfo.cellName ? (
-        <div style={cellInfoStyle}>
-          {`Cell id: ${cellInfo.cellName}`}
-        </div>
-      ) : <></>}
+      <div style={cellInfoStyle}>
+        {`Cell id: ${cellInfo.cellId}`}
+      </div>
       {cellInfo.geneName ? (
         <div style={cellInfoStyle}>
           {`Gene name: ${cellInfo.geneName}`}
@@ -60,19 +41,13 @@ const CellInfo = (props) => {
       )) : <></>}
     </Card>
   );
-
-  if (cellInfoVisible && cellInfo.cellName && Object.keys(coordinates.current).length > 0) {
-    return renderCellInfo();
-  }
-
-  return (<></>);
 };
 
 CellInfo.defaultProps = {};
 
 CellInfo.propTypes = {
   coordinates: PropTypes.object.isRequired,
-  componentType: PropTypes.string.isRequired,
+  cellInfo: PropTypes.object.isRequired,
 };
 
 export default CellInfo;

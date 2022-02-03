@@ -8,7 +8,7 @@ const generateVitessceData = (
   const cells = new Set(cellOrder);
 
   const trackColorData = generateVitessceHeatmapTracksData(
-    trackOrder, cellSets.hierarchy, cellSets.properties, cells,
+    trackOrder, cellSets, cells,
   );
 
   // Expression matrix is an array
