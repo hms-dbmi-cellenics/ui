@@ -1,7 +1,7 @@
 import React from 'react';
 import {
-  Modal, Form, Button, Space, Select, InputNumber, Typography, Divider, Row, Alert,
-} from 'antd';// import PropTypes from 'prop-types';
+  Modal, Form, Button, Space, Select, InputNumber, Typography, Row, Alert,
+} from 'antd';
 import PropTypes from 'prop-types';
 
 const { Title } = Typography;
