@@ -157,7 +157,6 @@ const Embedding = (props) => {
         expression: expressionToDispatch,
         geneName: focusData?.key,
       };
-      console.log('SETTING THAT TOOLTIP ', cellInfoTooltip.current);
     }
   }, [selectedCell]);
 
