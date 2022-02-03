@@ -16,12 +16,11 @@ import PlatformError from 'components/PlatformError';
 import Loader from 'components/Loader';
 
 import { loadEmbedding } from 'redux/actions/embedding';
+import { getCellSetsHierarchyByType, getCellSets } from 'redux/selectors';
 import { createCellSet } from 'redux/actions/cellSets';
 import { loadGeneExpression } from 'redux/actions/genes';
 import { updateCellInfo } from 'redux/actions/cellInfo';
 import { loadProcessingSettings } from 'redux/actions/experimentSettings';
-
-import { getCellSets } from 'redux/selectors';
 
 import {
   convertCellsData,
@@ -48,6 +47,7 @@ const Embedding = (props) => {
 
   const [view, setView] = useState({ target: [4, -4, 0], zoom: initialZoom });
   const [cellRadius, setCellRadius] = useState(cellRadiusFromZoom(initialZoom));
+  const rootClusterNodes = useSelector(getCellSetsHierarchyByType('cellSets')).map(({ key }) => key);
 
   const selectedCellIds = new Set();
 
@@ -135,10 +135,6 @@ const Embedding = (props) => {
     if (selectedCell) {
       const expressionToDispatch = focusedExpression
         ? focusedExpression.rawExpression.expression[selectedCell] : undefined;
-
-      // getting the root nodes which are of type cellSets
-      const rootClusterNodes = cellSetHierarchy.map(({ key }) => key)
-        .filter((key) => cellSetProperties[key].type === 'cellSets');
 
       // getting the cluster properties for every cluster that has the cellId
       const cellProperties = getContainingCellSetsProperties(Number.parseInt(selectedCell, 10), rootClusterNodes, cellSets);

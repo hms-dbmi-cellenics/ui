@@ -109,7 +109,10 @@ describe('Embedding', () => {
           3: [255, 0, 0],
         }),
       ),
+
     );
+    // cell info is not rendered when there is no cell information
+    expect(component.find(CellInfo).length).toEqual(0);
 
     expect(scatterplot.getElement().props.cells).toEqual(
       {

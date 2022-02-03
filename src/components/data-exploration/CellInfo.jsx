@@ -8,7 +8,7 @@ const CellInfo = (props) => {
 
   const cellInfoStyle = { fontSize: '0.75rem' };
 
-  const renderCellInfo = () => (
+  return (
     <Card
       size='small'
       style={{
@@ -43,12 +43,6 @@ const CellInfo = (props) => {
       )) : <></>}
     </Card>
   );
-
-  if (cellInfo.cellId && Object.keys(coordinates.current).length > 0) {
-    return renderCellInfo();
-  }
-
-  return (<></>);
 };
 
 CellInfo.defaultProps = {};

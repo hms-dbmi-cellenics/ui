@@ -21,10 +21,10 @@ const coordinates = {
 describe('CellInfo', () => {
   it('renders cell info card with properties', () => {
     render(<CellInfo coordinates={coordinates} cellInfo={cellInfo} />);
-    expect(screen.getByText('Gene name: DOK3')).toBeInTheDocument();
-    expect(screen.getByText('Cell id: 1904')).toBeInTheDocument();
-    expect(screen.getByText('Expression Level: 0')).toBeInTheDocument();
-    expect(screen.getByText('Louvain : cluster1')).toBeInTheDocument();
-    expect(screen.getByText('anotherRootCluster : cluster2')).toBeInTheDocument();
+    expect(screen.getByText(`Gene name: ${cellInfo.geneName}`)).toBeInTheDocument();
+    expect(screen.getByText(`Cell id: ${cellInfo.cellId}`)).toBeInTheDocument();
+    expect(screen.getByText(`Expression Level: ${cellInfo.expression}`)).toBeInTheDocument();
+    expect(screen.getByText(cellInfo.cellSets[0])).toBeInTheDocument();
+    expect(screen.getByText(cellInfo.cellSets[1])).toBeInTheDocument();
   });
 });
