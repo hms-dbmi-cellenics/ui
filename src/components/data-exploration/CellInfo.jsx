@@ -20,11 +20,9 @@ const CellInfo = (props) => {
         pointerEvents: 'none',
       }}
     >
-      {cellInfo.cellId ? (
-        <div style={cellInfoStyle}>
-          {`Cell id: ${cellInfo.cellId}`}
-        </div>
-      ) : <></>}
+      <div style={cellInfoStyle}>
+        {`Cell id: ${cellInfo.cellId}`}
+      </div>
       {cellInfo.geneName ? (
         <div style={cellInfoStyle}>
           {`Gene name: ${cellInfo.geneName}`}

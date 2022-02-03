@@ -133,8 +133,13 @@ const Embedding = (props) => {
 
   useEffect(() => {
     if (selectedCell) {
-      const expressionToDispatch = focusedExpression
-        ? focusedExpression.rawExpression.expression[selectedCell] : undefined;
+      let expressionToDispatch;
+      let geneName;
+
+      if (focusedExpression) {
+        geneName = focusData.key;
+        expressionToDispatch = focusedExpression.rawExpression.expression[selectedCell];
+      }
 
       // getting the cluster properties for every cluster that has the cellId
       const cellProperties = getContainingCellSetsProperties(Number.parseInt(selectedCell, 10), rootClusterNodes, cellSets);
@@ -151,7 +156,7 @@ const Embedding = (props) => {
         cellId: selectedCell,
         componentType: embeddingType,
         expression: expressionToDispatch,
-        geneName: focusData?.key,
+        geneName,
       };
     }
   }, [selectedCell]);
