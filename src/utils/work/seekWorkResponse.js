@@ -41,11 +41,10 @@ const dispatchWorkRequest = async (
 
   const timeoutDate = moment().add(timeout, 's').toISOString();
   const authJWT = await getAuthJWT();
-  const socketId = requestProps?.broadcast ? 'broadcast' : io.id;
 
   const request = {
     ETag,
-    socketId,
+    socketId: io.id,
     experimentId,
     ...(authJWT && { Authorization: `Bearer ${authJWT}` }),
     timeout: timeoutDate,
