@@ -1,65 +1,30 @@
 import React from 'react';
-import { mount } from 'enzyme';
-import { Card } from 'antd';
-import CellInfo from '../../../components/data-exploration/CellInfo';
-import '__test__/test-utils/setupTests';
+import { render, screen } from '@testing-library/react';
+import CellInfo from 'components/data-exploration/CellInfo';
 
 const cellInfo = {
   cellId: 1904,
-  componentType: 'heatmap',
   expression: 0,
   geneName: 'DOK3',
+  cellSets: ['Louvain : cluster1', 'anotherRootCluster : cluster2'],
+};
+
+const coordinates = {
+  current: {
+    x: 100,
+    y: 200,
+    width: 500,
+    height: 500,
+  },
 };
 
 describe('CellInfo', () => {
-  test('renders correctly when hovering over the same component', () => {
-    const coordinates = {
-      current: {
-        x: 100,
-        y: 200,
-        width: 500,
-        height: 500,
-      },
-    };
-
-    const component = mount(
-      <CellInfo componentType='heatmap' coordinates={coordinates} cellInfo={cellInfo} />,
-    );
-
-    expect(component.find(Card).length).toEqual(1);
-  });
-
-  test('does not show when hovering over different component', () => {
-    const coordinates = {
-      current: {
-        x: 100,
-        y: 200,
-        width: 500,
-        height: 500,
-      },
-    };
-
-    const component = mount(
-      <CellInfo componentType='umap' coordinates={coordinates} cellInfo={cellInfo} />,
-    );
-
-    expect(component.find(Card).length).toEqual(0);
-  });
-
-  test('does not render when there is no cell information', () => {
-    const coordinates = {
-      current: {
-        x: 100,
-        y: 200,
-        width: 500,
-        height: 500,
-      },
-    };
-
-    const component = mount(
-      <CellInfo componentType='heatmap' coordinates={coordinates} cellInfo={{}} />,
-    );
-
-    expect(component.find(Card).length).toEqual(0);
+  it('renders cell info card with properties', () => {
+    render(<CellInfo coordinates={coordinates} cellInfo={cellInfo} />);
+    expect(screen.getByText('Gene name: DOK3')).toBeInTheDocument();
+    expect(screen.getByText('Cell id: 1904')).toBeInTheDocument();
+    expect(screen.getByText('Expression Level: 0')).toBeInTheDocument();
+    expect(screen.getByText('Louvain : cluster1')).toBeInTheDocument();
+    expect(screen.getByText('anotherRootCluster : cluster2')).toBeInTheDocument();
   });
 });

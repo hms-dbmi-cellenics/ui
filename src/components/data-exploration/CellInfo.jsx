@@ -1,23 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import _ from 'lodash';
 import { Card } from 'antd';
 import PropTypes from 'prop-types';
 
 const CellInfo = (props) => {
-  const { coordinates, componentType, cellInfo } = props;
-
-  const [cellInfoVisible, setCellInfoVisible] = useState(false);
-
-  useEffect(() => {
-    if (!cellInfo) {
-      return;
-    }
-    if (cellInfo.componentType !== componentType) {
-      setCellInfoVisible(false);
-    } else {
-      setCellInfoVisible(true);
-    }
-  }, [cellInfo]);
+  const { coordinates, cellInfo } = props;
 
   const cellInfoStyle = { fontSize: '0.75rem' };
 
@@ -57,7 +44,7 @@ const CellInfo = (props) => {
     </Card>
   );
 
-  if (cellInfoVisible && cellInfo.cellId && Object.keys(coordinates.current).length > 0) {
+  if (cellInfo.cellId && Object.keys(coordinates.current).length > 0) {
     return renderCellInfo();
   }
 
@@ -68,7 +55,6 @@ CellInfo.defaultProps = {};
 
 CellInfo.propTypes = {
   coordinates: PropTypes.object.isRequired,
-  componentType: PropTypes.string.isRequired,
   cellInfo: PropTypes.object.isRequired,
 };
 

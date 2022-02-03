@@ -1,8 +1,8 @@
-import cellInfoReducer from '../../../redux/reducers/cellInfo';
-import initialState from '../../../redux/reducers/cellInfo/initialState';
+import cellInfoReducer from 'redux/reducers/cellInfo';
+import initialState from 'redux/reducers/cellInfo/initialState';
 import {
   CELL_INFO_UPDATE, CELL_INFO_FOCUS, CELL_INFO_UNFOCUS,
-} from '../../../redux/actionTypes/cellInfo';
+} from 'redux/actionTypes/cellInfo';
 
 // Unfocused state
 const unfocusedState = {

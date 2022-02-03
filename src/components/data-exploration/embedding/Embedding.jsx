@@ -157,6 +157,7 @@ const Embedding = (props) => {
         expression: expressionToDispatch,
         geneName: focusData?.key,
       };
+      console.log('SETTING THAT TOOLTIP ', cellInfoTooltip.current);
     }
   }, [selectedCell]);
 
@@ -311,7 +312,7 @@ const Embedding = (props) => {
               onCancel={onCancelCreateCluster}
             />
           ) : (
-            cellInfoVisible ? (
+            (cellInfoVisible && cellInfoTooltip.current) ? (
               <div>
                 <CellInfo
                   componentType={embeddingType}

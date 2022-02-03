@@ -3,7 +3,7 @@ import { Provider } from 'react-redux';
 import { mount } from 'enzyme';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
-import CrossHair from '../../../../components/data-exploration/embedding/CrossHair';
+import CrossHair from 'components/data-exploration/embedding/CrossHair';
 
 const mockStore = configureMockStore([thunk]);
 

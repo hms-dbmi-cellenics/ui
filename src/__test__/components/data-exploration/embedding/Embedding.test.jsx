@@ -10,13 +10,13 @@ import thunk from 'redux-thunk';
 import preloadAll from 'jest-next-dynamic';
 // eslint-disable-next-line import/extensions
 import { Scatterplot } from 'vitessce/dist/umd/production/scatterplot.min';
-import Embedding from '../../../../components/data-exploration/embedding/Embedding';
-import CrossHair from '../../../../components/data-exploration/embedding/CrossHair';
-import CellInfo from '../../../../components/data-exploration/CellInfo';
-import { CELL_SETS_CREATE } from '../../../../redux/actionTypes/cellSets';
-import { initialEmbeddingState } from '../../../../redux/reducers/embeddings/initialState';
-import generateExperimentSettingsMock from '../../../test-utils/experimentSettings.mock';
-import { CELL_INFO_UPDATE } from '../../../../redux/actionTypes/cellInfo';
+import Embedding from 'components/data-exploration/embedding/Embedding';
+import CrossHair from 'components/data-exploration/embedding/CrossHair';
+import CellInfo from 'components/data-exploration/CellInfo';
+import { CELL_SETS_CREATE } from 'redux/actionTypes/cellSets';
+import { initialEmbeddingState } from 'redux/reducers/embeddings/initialState';
+import generateExperimentSettingsMock from '__test__/test-utils/experimentSettings.mock';
+import { CELL_INFO_UPDATE } from 'redux/actionTypes/cellInfo';
 import '__test__/test-utils/setupTests';
 
 const mockStore = configureMockStore([thunk]);
