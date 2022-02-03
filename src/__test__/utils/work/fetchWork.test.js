@@ -1,45 +1,111 @@
 /* eslint-disable global-require */
 import { fetchWork } from 'utils/work/fetchWork';
-import '__test__/test-utils/setupTests';
 import Environment from 'utils/environment';
 
 const {
-  mockData, mockCacheKeyMappings, mockCacheGet, mockCacheSet, mockSeekFromAPI, mockReduxState,
-} = require('./fetchWork.mock');
+  mockGeneExpressionData,
+  mockGenesListData,
+  mockCacheKeyMappings,
+  mockCacheGet,
+  mockCacheSet,
+  mockDispatchWorkRequest,
+  mockSeekFromS3,
+  mockReduxState,
+} = require('__test__/utils/work/fetchWork.mock');
 
-jest.mock('../../../utils/cache', () => require('./fetchWork.mock').mockCacheModule);
-jest.mock('../../../utils/work/seekWorkResponse', () => require('./fetchWork.mock').mockSeekWorkResponseModule);
+jest.mock('utils/cache', () => require('__test__/utils/work/fetchWork.mock').mockCacheModule);
+jest.mock('utils/work/seekWorkResponse', () => require('__test__/utils/work/fetchWork.mock').mockSeekWorkResponseModule);
+
+const experimentId = '1234';
+const NON_GENE_EXPRESSION_ETAG = '013c3026bb7156d222ccd18919745195'; // pragma: allowlist secret
+const GENE_EXPRESSION_ETAG = '34c05c9d07fd24ce0c22d2bec7fd7437'; // pragma: allowlist secret
+const timeout = 10;
+
+const nonGeneExpressionWorkRequest = {
+  name: 'ListGenes',
+};
+
+const geneExpressionWorkRequest = {
+  name: 'GeneExpression',
+  genes: ['A', 'B', 'C', 'D'],
+};
 
 describe('fetchWork', () => {
-  const experimentId = '1234';
-  const GENE_EXPRESSION_ETAG = '34c05c9d07fd24ce0c22d2bec7fd7437'; // pragma: allowlist secret
-
-  const workRequest = {
-    name: 'GeneExpression',
-    genes: ['A', 'B', 'C', 'D'],
-  };
-
-  beforeEach(() => {
+  beforeEach(async () => {
     Storage.prototype.setItem = jest.fn();
-  });
 
-  afterEach(() => {
     jest.clearAllMocks();
+
+    mockSeekFromS3
+      .mockReset()
+      .mockImplementationOnce(() => null)
+      .mockImplementationOnce(() => mockGenesListData);
   });
 
-  it('runs correctly', async () => {
+  it('runs correctly for gene expression work request', async () => {
+    mockSeekFromS3
+      .mockReset()
+      .mockImplementationOnce(() => null)
+      .mockImplementation(() => ({ D: mockGeneExpressionData.D }));
+
     const res = await fetchWork(
       experimentId,
-      workRequest,
+      geneExpressionWorkRequest,
+      mockReduxState(experimentId),
+      { timeout },
+    );
+
+    expect(mockDispatchWorkRequest).toHaveBeenCalledWith(
+      experimentId,
+      { name: 'GeneExpression', genes: ['D'] },
+      timeout,
+      GENE_EXPRESSION_ETAG,
+      expect.anything(),
+    );
+    expect(mockCacheGet).toHaveBeenCalledTimes(4);
+    expect(mockCacheSet).toHaveBeenCalledTimes(1);
+    expect(mockCacheSet).toHaveBeenCalledWith(mockCacheKeyMappings.D, mockGeneExpressionData.D);
+    expect(res).toEqual({ D: mockGeneExpressionData.D });
+    expect(mockSeekFromS3).toHaveBeenCalledTimes(2);
+  });
+
+  it('runs correctly for non gene expression work request', async () => {
+    const res = await fetchWork(
+      experimentId,
+      nonGeneExpressionWorkRequest,
       mockReduxState(experimentId),
       { timeout: 10 },
     );
 
-    expect(mockSeekFromAPI).toHaveBeenCalledWith(experimentId, { name: 'GeneExpression', genes: ['D'] }, 10, expect.anything());
-    expect(mockCacheGet).toHaveBeenCalledTimes(4);
+    expect(mockDispatchWorkRequest).toHaveBeenCalledWith(
+      experimentId,
+      nonGeneExpressionWorkRequest,
+      timeout,
+      NON_GENE_EXPRESSION_ETAG,
+      expect.anything(),
+    );
+    expect(mockCacheGet).toHaveBeenCalledTimes(1);
     expect(mockCacheSet).toHaveBeenCalledTimes(1);
-    expect(mockCacheSet).toHaveBeenCalledWith(mockCacheKeyMappings.D, mockData.D);
-    expect(res).toEqual({ D: mockData.D });
+    expect(mockCacheSet).toHaveBeenCalledWith(NON_GENE_EXPRESSION_ETAG, mockGenesListData);
+    expect(mockSeekFromS3).toHaveBeenCalledTimes(2);
+    expect(res).toEqual(mockGenesListData);
+  });
+
+  it('Throws an error if the dispatched work request throws an error', async () => {
+    mockDispatchWorkRequest.mockImplementationOnce(() => { throw new Error('Worker timeout'); });
+
+    await expect(fetchWork(
+      experimentId,
+      nonGeneExpressionWorkRequest,
+      mockReduxState(experimentId),
+      { timeout: 10 },
+    )).rejects.toThrow();
+
+    expect(mockCacheGet).toHaveBeenCalledTimes(1);
+    expect(mockCacheSet).not.toHaveBeenCalled();
+
+    // Only called once when checking for the work result in S3
+    expect(mockSeekFromS3).toHaveBeenCalledTimes(1);
   });
 
   it('does not change ETag if caching is enabled', async () => {
@@ -47,13 +113,17 @@ describe('fetchWork', () => {
 
     await fetchWork(
       experimentId,
-      workRequest,
+      nonGeneExpressionWorkRequest,
       mockReduxState(experimentId),
-      { timeout: 10 },
+      { timeout },
     );
 
-    expect(mockSeekFromAPI).toHaveBeenCalledWith(
-      expect.anything(), expect.anything(), expect.anything(), GENE_EXPRESSION_ETAG,
+    expect(mockDispatchWorkRequest).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.anything(),
+      expect.anything(),
+      NON_GENE_EXPRESSION_ETAG,
+      expect.anything(),
     );
   });
 
@@ -62,32 +132,34 @@ describe('fetchWork', () => {
 
     await fetchWork(
       experimentId,
-      {
-        name: 'GeneExpression',
-        genes: ['A', 'B', 'C', 'D'],
-      },
+      nonGeneExpressionWorkRequest,
       mockReduxState(experimentId),
-      { timeout: 10 },
+      { timeout },
     );
 
-    expect(mockSeekFromAPI).not.toHaveBeenCalledWith(
-      expect.anything(), expect.anything(), expect.anything(), GENE_EXPRESSION_ETAG,
+    expect(mockDispatchWorkRequest).not.toHaveBeenCalledWith(
+      expect.anything(),
+      expect.anything(),
+      expect.anything(),
+      NON_GENE_EXPRESSION_ETAG,
+      expect.anything(),
     );
   });
 
   it('Caching is disabled by default if environment is dev', async () => {
     await fetchWork(
       experimentId,
-      {
-        name: 'GeneExpression',
-        genes: ['A', 'B', 'C', 'D'],
-      },
+      nonGeneExpressionWorkRequest,
       mockReduxState(experimentId, Environment.DEVELOPMENT),
-      { timeout: 10 },
+      { timeout },
     );
 
-    expect(mockSeekFromAPI).not.toHaveBeenCalledWith(
-      expect.anything(), expect.anything(), expect.anything(), GENE_EXPRESSION_ETAG,
+    expect(mockDispatchWorkRequest).not.toHaveBeenCalledWith(
+      expect.anything(),
+      expect.anything(),
+      expect.anything(),
+      NON_GENE_EXPRESSION_ETAG,
+      expect.anything(),
     );
   });
 
@@ -96,16 +168,17 @@ describe('fetchWork', () => {
 
     await fetchWork(
       experimentId,
-      {
-        name: 'GeneExpression',
-        genes: ['A', 'B', 'C', 'D'],
-      },
+      nonGeneExpressionWorkRequest,
       mockReduxState(experimentId, Environment.DEVELOPMENT),
-      { timeout: 10 },
+      { timeout },
     );
 
-    expect(mockSeekFromAPI).toHaveBeenCalledWith(
-      expect.anything(), expect.anything(), expect.anything(), GENE_EXPRESSION_ETAG,
+    expect(mockDispatchWorkRequest).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.anything(),
+      expect.anything(),
+      NON_GENE_EXPRESSION_ETAG,
+      expect.anything(),
     );
   });
 });

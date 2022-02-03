@@ -158,12 +158,24 @@ const DotPlotPage = (props) => {
     [cellSetsLoading, cellSetsError, config?.selectedCellSet, config?.selectedPoints],
   );
 
+  const shouldFetchPlotData = () => {
+    if (cellSetsLoading || !config) return false;
+
+    // If using custom genes, check that there are genes in the list
+    if (!config.useMarkerGenes && config.selectedGenes.length === 0) return false;
+
+    // If using marker genes, check that the selected number is more than 0
+    if (config.useMarkerGenes && config.nMarkerGenes === 0) return false;
+
+    return true;
+  };
+
   useEffect(() => {
-    if (cellSetsLoading) return;
+    if (!shouldFetchPlotData()) return;
 
     // Marker genes calculation needs that the cellIds in groupBy (refer to fn definition)
     // be represented by more than one groups in filterBy to enable comparison
-    if (config?.useMarkerGenes && !hasMoreThanTwoGroupsToCompare) {
+    if (config.useMarkerGenes && !hasMoreThanTwoGroupsToCompare) {
       setMoreThanTwoGroups(false);
       return;
     }

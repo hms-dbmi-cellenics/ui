@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import SocketMock from 'socket.io-mock';
-import { seekFromAPI } from 'utils/work/seekWorkResponse';
+import { dispatchWorkRequest, seekFromS3 } from 'utils/work/seekWorkResponse';
 import fake from '__test__/test-utils/constants';
 import mockAPI, { generateDefaultMockAPIResponses } from '__test__/test-utils/mockAPI';
 
@@ -36,25 +36,9 @@ jest.mock('utils/socketConnection', () => {
   };
 });
 
-jest.mock('@aws-amplify/storage', () => ({
-  get: jest.fn().mockImplementation(async () => 'http://clearly-invalid-url'),
-}));
-
-jest.mock('@aws-amplify/core', () => ({
-  configure: jest.fn().mockImplementation(() => ({
-    Storage: {
-      AWSS3: {
-        bucket: 'biomage-originals-test',
-      },
-    },
-  })),
-}));
-
-jest.mock('@aws-amplify/auth', () => ({}));
-
 jest.mock('utils/work/unpackResult');
 
-describe('seekFromAPI unit tests', () => {
+describe('dispatchWorkRequest unit tests', () => {
   const experimentId = '1234';
   const timeout = 30;
   const body = {
@@ -62,16 +46,11 @@ describe('seekFromAPI unit tests', () => {
     type: 'fake task',
   };
 
-  afterEach(() => {
+  beforeEach(async () => {
     jest.clearAllMocks();
-  });
 
-  beforeEach(() => {
     fetchMock.resetMocks();
-    fetchMock.doMock();
     fetchMock.mockIf(/.*/, mockAPI(generateDefaultMockAPIResponses(fake.EXPERIMENT_ID)));
-
-    unpackResult.mockResolvedValueOnce({ hello: 'world' });
 
     const socketMock = new SocketMock();
 
@@ -94,10 +73,10 @@ describe('seekFromAPI unit tests', () => {
     });
   });
 
-  it('Sends work to the backend when called and returns valid response.', async () => {
+  it('Sends work to the backend when called', async () => {
     fetchMock.mockResponse(JSON.stringify({ signedUrl: 'http://www.apiUrl:portNum/path/blabla' }));
 
-    const response = await seekFromAPI(
+    await dispatchWorkRequest(
       experimentId, body, timeout, 'facefeed',
     );
     expect(socketConnectionMocks.mockEmit).toHaveBeenCalledWith('WorkRequest', {
@@ -109,29 +88,85 @@ describe('seekFromAPI unit tests', () => {
     });
 
     expect(socketConnectionMocks.mockOn).toHaveBeenCalledTimes(1);
-    expect(response).toEqual({ hello: 'world' });
   });
 
-  it('Returns an error if there is error in the response.', async (done) => {
-    const flushPromises = () => new Promise(setImmediate);
-
+  it('Returns an error if there is error in the response.', async () => {
     socketConnectionMocks.mockOn.mockImplementation(async (x, f) => {
       f({
         response: { error: 'The backend returned an error' },
       });
     });
 
-    expect(seekFromAPI(experimentId, body, timeout, 'facefeed')).rejects.toEqual(new Error('The backend returned an error'));
-    await flushPromises();
+    expect(async () => {
+      await dispatchWorkRequest(experimentId, body, timeout, 'facefeed');
+    }).rejects.toEqual(new Error('The backend returned an error'));
+  });
+});
 
-    expect(socketConnectionMocks.mockEmit).toHaveBeenCalledWith('WorkRequest', {
-      ETag: 'facefeed',
-      socketId: '5678',
-      experimentId: '1234',
-      timeout: '4022-01-01T00:00:30.000Z',
-      body: { name: 'ImportantTask', type: 'fake task' },
+describe('seekFromS3 unit tests', () => {
+  const experimentId = '1234';
+  const result = 'someResult';
+
+  const validResultPath = 'validResultPath';
+  const nonExistentResultPath = 'nonExistentResultPath';
+  const APIErrorPath = 'APIErrorPath';
+  const S3ErrorPath = 'S3ErrorPath';
+
+  const validSignedUrl = 'https://s3.mock/validSignedUrl';
+  const invalidSignedUrl = 'https://s3.mock/invalidSignedUrl';
+
+  const mockSignedUrl = { signedUrl: validSignedUrl };
+  const mockErrorSignedUrl = { signedUrl: invalidSignedUrl };
+
+  beforeAll(async () => {
+    fetchMock.mockIf(/.*/, (req) => {
+      const path = req.url;
+
+      if (path.endsWith(validResultPath)) return Promise.resolve(JSON.stringify(mockSignedUrl));
+      if (path.endsWith(validSignedUrl)) return Promise.resolve(result);
+
+      if (path.endsWith(nonExistentResultPath)) return Promise.resolve(new Response('Not Found', { status: 404 }));
+      if (path.endsWith(APIErrorPath)) return Promise.resolve(new Response('Server error', { status: 500 }));
+
+      if (path.endsWith(S3ErrorPath)) return Promise.resolve(JSON.stringify(mockErrorSignedUrl));
+      if (path.endsWith(invalidSignedUrl)) return Promise.resolve(new Response('Forbidden', { status: 403 }));
+
+      return {
+        status: 500,
+        body: 'Something eror with test',
+      };
     });
+  });
 
-    done();
+  beforeEach(async () => {
+    jest.clearAllMocks();
+  });
+
+  it('Should return results correctly', async () => {
+    await seekFromS3(validResultPath, experimentId);
+
+    expect(unpackResult).toHaveBeenCalledTimes(1);
+
+    const response = unpackResult.mock.calls[0][0];
+    const mockResponsePayload = await response.text();
+
+    expect(mockResponsePayload).toEqual(result);
+  });
+
+  it('Should return null if the work results is not found', async () => {
+    const response = await seekFromS3(nonExistentResultPath, experimentId);
+    expect(response).toEqual(null);
+  });
+
+  it('Should throw an error if the API returned an error (except 404)', async () => {
+    expect(async () => {
+      await seekFromS3(APIErrorPath, experimentId);
+    }).rejects.toThrow();
+  });
+
+  it('should throw an error if fetching to S3 returns an error', async () => {
+    expect(async () => {
+      await seekFromS3(S3ErrorPath, experimentId);
+    }).rejects.toThrow();
   });
 });

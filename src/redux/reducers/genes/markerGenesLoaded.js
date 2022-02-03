@@ -1,9 +1,8 @@
 /* eslint-disable no-param-reassign */
 import produce from 'immer';
 
-import initialState from './initialState';
-
-import { calculateZScore } from '../../../utils/postRequestProcessing';
+import { calculateZScore } from 'utils/postRequestProcessing';
+import initialState from 'redux/reducers/genes/initialState';
 
 const markerGenesLoaded = produce((draft, action) => {
   const { data, genes, plotUuid } = action.payload;

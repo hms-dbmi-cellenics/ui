@@ -1,27 +1,25 @@
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
-import { loadEmbedding } from '../../../../redux/actions/embedding';
-import { initialEmbeddingState } from '../../../../redux/reducers/embeddings/initialState';
-import generateExperimentSettingsMock from '../../../test-utils/experimentSettings.mock';
+import { loadEmbedding } from 'redux/actions/embedding';
+import { initialEmbeddingState } from 'redux/reducers/embeddings/initialState';
+import generateExperimentSettingsMock from '__test__/test-utils/experimentSettings.mock';
 
 import {
   EMBEDDINGS_ERROR,
   EMBEDDINGS_LOADING,
-} from '../../../../redux/actionTypes/embeddings';
+} from 'redux/actionTypes/embeddings';
 
-import { seekFromAPI } from '../../../../utils/work/seekWorkResponse';
+import { seekFromS3 } from 'utils/work/seekWorkResponse';
 
-import '__test__/test-utils/setupTests';
-
-jest.mock('../../../../utils/getTimeoutForWorkerTask', () => ({
+jest.mock('utils/getTimeoutForWorkerTask', () => ({
   __esModule: true, // this property makes it work
   default: () => 60,
 }));
 
-jest.mock('../../../../utils/work/seekWorkResponse', () => ({
+jest.mock('utils/work/seekWorkResponse', () => ({
   __esModule: true, // this property makes it work
-  seekFromAPI: jest.fn(),
-  seekFromS3: jest.fn(() => new Promise((resolve) => { resolve(null); })),
+  dispatchWorkRequest: jest.fn(() => true),
+  seekFromS3: jest.fn(),
 }));
 
 const mockStore = configureStore([thunk]);
@@ -54,8 +52,13 @@ describe('loadEmbedding action', () => {
     },
   };
 
-  afterEach(() => {
+  beforeEach(async () => {
     jest.clearAllMocks();
+
+    seekFromS3
+      .mockReset()
+      .mockImplementationOnce(() => null)
+      .mockImplementationOnce(() => Promise.resolve([[1, 2], [3, 4]]));
   });
 
   it('Dispatches if not loaded', async () => {
@@ -109,12 +112,6 @@ describe('loadEmbedding action', () => {
   });
 
   it('Dispatches on a previously unseen embedding', async () => {
-    seekFromAPI.mockImplementation(() => {
-      const resolveWith = [[1, 2], [3, 4]];
-
-      return new Promise((resolve) => resolve(resolveWith));
-    });
-
     const store = mockStore(
       {
         backendStatus,
@@ -141,12 +138,6 @@ describe('loadEmbedding action', () => {
   });
 
   it('Dispatches on a previous error condition', async () => {
-    seekFromAPI.mockImplementation(() => {
-      const resolveWith = [[1, 2], [3, 4]];
-
-      return new Promise((resolve) => resolve(resolveWith));
-    });
-
     const store = mockStore(
       {
         backendStatus,
@@ -185,7 +176,10 @@ describe('loadEmbedding action', () => {
       },
     );
 
-    seekFromAPI.mockImplementation(() => new Promise((resolve, reject) => reject(new Error('random error!'))));
+    seekFromS3
+      .mockReset()
+      .mockImplementationOnce(() => null)
+      .mockImplementationOnce(() => { throw new Error('random error!'); });
 
     await store.dispatch(loadEmbedding(experimentId, embeddingType));
 
@@ -250,12 +244,6 @@ describe('loadEmbedding action', () => {
   });
 
   it('Dispatches on if forceReload is set to true', async () => {
-    seekFromAPI.mockImplementation(() => {
-      const resolveWith = [[1, 2], [3, 4]];
-
-      return new Promise((resolve) => resolve(resolveWith));
-    });
-
     const store = mockStore(
       {
         networkResources: {

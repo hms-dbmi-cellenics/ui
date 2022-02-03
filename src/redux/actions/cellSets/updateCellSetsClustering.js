@@ -8,7 +8,7 @@ const updateCellSetsClustering = (experimentId) => async (dispatch) => {
   try {
     dispatch({ type: CELL_SETS_CLUSTERING_UPDATED });
 
-    dispatch(loadCellSets(experimentId));
+    dispatch(loadCellSets(experimentId, true));
   } catch (e) {
     dispatch({
       type: CELL_SETS_ERROR,
