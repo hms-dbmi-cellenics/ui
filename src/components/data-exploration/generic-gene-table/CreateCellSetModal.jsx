@@ -11,10 +11,6 @@ const CreateCellSetModal = (props) => {
   const [form] = Form.useForm();
   const intialFormValues = selectedGenes.map((gene) => ({ selectedGenes: gene }));
 
-  const createCellSet = (filterForm) => {
-    console.log('filter form is ', filterForm);
-  };
-
   const comparisonOptions = [{
     value: 'greaterThan',
     label: 'Greater than',
@@ -30,12 +26,10 @@ const CreateCellSetModal = (props) => {
       visible
       title='Create a new cell set based on gene expression'
       onCancel={onCancel}
-      footer={null}
-      // min-width='530px'
+      footer={[<Button>Create</Button>]}
     >
       <Form
         form={form}
-        onFinish={({ filterForm }) => createCellSet(filterForm)}
         size='middle'
       >
         <Form.List
@@ -84,14 +78,6 @@ const CreateCellSetModal = (props) => {
                 })}
               </Row>
               <Alert type='info' message='To edit the list of genes, return to the gene list and change your selection.' />
-              <Divider style={{ marginBottom: '10px' }} />
-              <div align='end' style={{ marginTop: '0px', width: '100%' }}>
-                <Form.Item style={{ marginBottom: '-10px', marginTop: '0px' }}>
-                  <Button type='primary' htmlType='submit'>
-                    Create
-                  </Button>
-                </Form.Item>
-              </div>
             </>
           )}
         </Form.List>
