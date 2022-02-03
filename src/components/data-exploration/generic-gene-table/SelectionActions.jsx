@@ -13,7 +13,7 @@ import GeneSelectionStatus from 'redux/actions/genes/geneSelectionStatus';
 import ComponentActions from 'components/data-exploration/generic-gene-table/ComponentActions';
 
 import { COMPONENT_TYPE } from 'components/data-exploration/heatmap/HeatmapPlot';
-import CreateCellSetModal from './CreateCellSetModal';
+import CreateCellSetModal from 'components/data-exploration/generic-gene-table/CreateCellSetModal';
 
 const { Text } = Typography;
 
@@ -100,6 +100,7 @@ const SelectionActions = (props) => {
           <ComponentActions name='Heatmap' experimentId={experimentId} componentType={COMPONENT_TYPE} />
           <Button
             type='link'
+            size='small'
             onClick={() => setCreateCellSetModalVisible(!createCellSetModalVisible)}
           >
             Cellset

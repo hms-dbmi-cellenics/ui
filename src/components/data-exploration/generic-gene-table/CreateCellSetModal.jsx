@@ -31,7 +31,7 @@ const CreateCellSetModal = (props) => {
       title='Create a new cell set based on gene expression'
       onCancel={onCancel}
       footer={null}
-      width='530px'
+      // min-width='530px'
     >
       <Form
         form={form}
@@ -44,7 +44,7 @@ const CreateCellSetModal = (props) => {
         >
           {(fields) => (
             <>
-              <Row style={{ overflow: 'scroll', height: formHeight }}>
+              <Row style={{ 'overflow-y': 'auto', height: formHeight }}>
                 {fields.map((field, index) => {
                   const { selectedGenes: formSelectedGenes } = form.getFieldValue('filterForm')[index];
                   return (
