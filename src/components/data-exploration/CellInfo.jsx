@@ -33,9 +33,9 @@ const CellInfo = (props) => {
         pointerEvents: 'none',
       }}
     >
-      {cellInfo.cellName ? (
+      {cellInfo.cellId ? (
         <div style={cellInfoStyle}>
-          {`Cell id: ${cellInfo.cellName}`}
+          {`Cell id: ${cellInfo.cellId}`}
         </div>
       ) : <></>}
       {cellInfo.geneName ? (
@@ -57,7 +57,7 @@ const CellInfo = (props) => {
     </Card>
   );
 
-  if (cellInfoVisible && cellInfo.cellName && Object.keys(coordinates.current).length > 0) {
+  if (cellInfoVisible && cellInfo.cellId && Object.keys(coordinates.current).length > 0) {
     return renderCellInfo();
   }
 

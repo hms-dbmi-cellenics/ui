@@ -10,7 +10,7 @@ const mockStore = configureStore([thunk]);
 
 describe('updateCellInfo action', () => {
   const updatePayload = {
-    cellName: 'C1',
+    cellId: 'C1',
     geneName: 'G1',
     expression: 1,
     componentType: 'heatmap',

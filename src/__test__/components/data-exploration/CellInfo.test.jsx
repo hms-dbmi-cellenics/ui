@@ -5,7 +5,7 @@ import CellInfo from '../../../components/data-exploration/CellInfo';
 import '__test__/test-utils/setupTests';
 
 const cellInfo = {
-  cellName: 1904,
+  cellId: 1904,
   componentType: 'heatmap',
   expression: 0,
   geneName: 'DOK3',

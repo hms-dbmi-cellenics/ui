@@ -67,7 +67,7 @@ const Embedding = (props) => {
     hidden: cellSetHidden,
   } = cellSets;
 
-  const selectedCell = useSelector((state) => state.cellInfo.cellName);
+  const selectedCell = useSelector((state) => state.cellInfo.cellId);
   const expressionLoading = useSelector((state) => state.genes.expression.loading);
   const loadedGenes = useSelector((state) => Object.keys(state.genes.expression.data));
 
@@ -152,7 +152,7 @@ const Embedding = (props) => {
 
       cellInfoTooltip.current = {
         cellSets: prefixedCellSetNames,
-        cellName: selectedCell,
+        cellId: selectedCell,
         componentType: embeddingType,
         expression: expressionToDispatch,
         geneName: focusData?.key,
@@ -172,10 +172,7 @@ const Embedding = (props) => {
     }
   };
 
-  const updateCellsHover = (cell) => dispatch(updateCellInfo({
-    cellName: cell,
-
-  }));
+  const updateCellsHover = (cell) => dispatch(updateCellInfo({ cellId: cell }));
 
   const onCreateCluster = (clusterName, clusterColor) => {
     setCreateClusterPopover(false);

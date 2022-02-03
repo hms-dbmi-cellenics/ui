@@ -11,7 +11,7 @@ describe('CrossHair', () => {
   test('renders correctly', () => {
     const store = mockStore({
       cellInfo: {
-        cellName: 1904,
+        cellId: 1904,
         componentType: 'heatmap',
         expression: 0,
         geneName: 'DOK3',

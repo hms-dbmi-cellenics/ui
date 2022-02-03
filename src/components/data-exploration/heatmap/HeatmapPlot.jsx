@@ -166,7 +166,7 @@ const HeatmapPlot = (props) => {
 
   useEffect(() => {
     if (cellHighlight) {
-      dispatch(updateCellInfo({ cellName: cellHighlight }));
+      dispatch(updateCellInfo({ cellId: cellHighlight }));
     }
   }, [cellHighlight]);
 
@@ -238,7 +238,7 @@ const HeatmapPlot = (props) => {
       setHighlightedTrackData(null);
       return;
     }
-    dispatch(updateCellInfo({ cellName: info[0] }));
+    dispatch(updateCellInfo({ cellId: info[0] }));
 
     const [cellIndexStr, trackIndex, mouseX, mouseY] = info;
 

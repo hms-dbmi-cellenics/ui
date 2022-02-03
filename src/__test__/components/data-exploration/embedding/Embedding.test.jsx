@@ -63,7 +63,7 @@ describe('Embedding', () => {
       },
     },
     cellInfo: {
-      cellName: 2,
+      cellId: 2,
       focus: {
         store: 'cellSets',
         key: 'louvain',
@@ -222,7 +222,7 @@ describe('Embedding', () => {
 
     expect(store.getActions().length).toEqual(1);
     expect(store.getActions()[0].type).toEqual(CELL_INFO_UPDATE);
-    expect(store.getActions()[0].payload.cellName).toEqual(1);
+    expect(store.getActions()[0].payload.cellId).toEqual(1);
   });
 
   it('renders CrossHair and CellInfo components when user hovers over cell', () => {
@@ -253,7 +253,7 @@ describe('Embedding', () => {
     const cellInfo = component.find(CellInfo);
 
     expect(mockProject).toHaveBeenCalledTimes(1);
-    expect(mockProject).toHaveBeenCalledWith(store.getState().cellInfo.cellName);
+    expect(mockProject).toHaveBeenCalledWith(store.getState().cellInfo.cellId);
     expect(crossHairs.length).toEqual(1);
     expect(crossHairs.props().coordinates.current).toEqual(
       {
@@ -296,7 +296,7 @@ describe('Embedding', () => {
     const cellInfo = component.find(CellInfo);
 
     expect(mockProject).toHaveBeenCalledTimes(1);
-    expect(mockProject).toHaveBeenCalledWith(store.getState().cellInfo.cellName);
+    expect(mockProject).toHaveBeenCalledWith(store.getState().cellInfo.cellId);
     expect(crossHairs.length).toEqual(0);
     expect(cellInfo.length).toEqual(0);
   });

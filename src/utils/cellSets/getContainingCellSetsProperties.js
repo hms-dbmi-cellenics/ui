@@ -5,6 +5,8 @@
  * @param {array} cellSetClassKeys The cellSetClass we are searching inside of
  *  (e.g.: sample, louvain, scratchpad, etc..).
  * @param {object} cellSets  cellSets for the experiment.
+ *
+ * @returns {object} The properties of the cellSets that contain the cellId
  */
 
 const getContainingCellSetsProperties = (cellId, cellSetClassKeys, cellSets) => {
