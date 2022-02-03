@@ -26,7 +26,7 @@ const CreateCellSetModal = (props) => {
       visible
       title='Create a new cell set based on gene expression'
       onCancel={onCancel}
-      footer={[<Button>Create</Button>]}
+      footer={[<Button type='primary'>Create</Button>]}
     >
       <Form
         form={form}
