@@ -86,7 +86,6 @@ const loadAndRenderDefaultHeatmap = async (storeState) => {
 
 const mockAPIResponses = generateDefaultMockAPIResponses(experimentId, fake.PROJECT_ID);
 
-const stalledResponse = () => delayedResponse({ body: 'Not found', status: 404 }, 4000);
 const errorResponse = () => Promise.reject(new Error('Some error idk'));
 
 let storeState = null;
@@ -130,7 +129,7 @@ describe('HeatmapPlot', () => {
   it('Shows loader message if cellSets are loading', async () => {
     const mockLoadingAPIResponses = {
       ...mockWorkerResponses,
-      [`experiments/${experimentId}/cellSets`]: stalledResponse,
+      [`experiments/${experimentId}/cellSets`]: () => delayedResponse({ body: 'Not found', status: 404 }, 4000),
     };
 
     fetchMock.mockIf(/.*/, mockAPI(mockLoadingAPIResponses));
@@ -143,7 +142,7 @@ describe('HeatmapPlot', () => {
   it('Shows loader message if the marker genes are loading', async () => {
     const customWorkerResponses = {
       ...mockWorkerResponses,
-      '5-marker-genes': stalledResponse,
+      '5-marker-genes': () => delayedResponse({ body: 'Not found', status: 404 }, 4000),
     };
 
     seekFromS3
@@ -159,7 +158,7 @@ describe('HeatmapPlot', () => {
   it('Shows loader message if the marker genes are loaded but there\'s other selected genes still loading', async (done) => {
     const customWorkerResponses = {
       ...mockWorkerResponses,
-      'loading_gene_id-expression': stalledResponse,
+      'loading_gene_id-expression': () => delayedResponse({ body: 'Not found', status: 404 }, 4000),
     };
 
     seekFromS3
