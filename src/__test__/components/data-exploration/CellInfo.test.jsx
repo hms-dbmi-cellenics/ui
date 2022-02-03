@@ -1,91 +1,30 @@
 import React from 'react';
-import { Provider } from 'react-redux';
-import { mount } from 'enzyme';
-import configureMockStore from 'redux-mock-store';
-import thunk from 'redux-thunk';
-import { Card } from 'antd';
-import CellInfo from '../../../components/data-exploration/CellInfo';
-import '__test__/test-utils/setupTests';
+import { render, screen } from '@testing-library/react';
+import CellInfo from 'components/data-exploration/CellInfo';
 
-const mockStore = configureMockStore([thunk]);
+const cellInfo = {
+  cellId: 1904,
+  expression: 0,
+  geneName: 'DOK3',
+  cellSets: ['Louvain : cluster1', 'anotherRootCluster : cluster2'],
+};
+
+const coordinates = {
+  current: {
+    x: 100,
+    y: 200,
+    width: 500,
+    height: 500,
+  },
+};
 
 describe('CellInfo', () => {
-  test('renders correctly when hovering over the same component', () => {
-    const store = mockStore({
-      cellInfo: {
-        cellName: 1904,
-        componentType: 'heatmap',
-        expression: 0,
-        geneName: 'DOK3',
-      },
-    });
-
-    const coordinates = {
-      current: {
-        x: 100,
-        y: 200,
-        width: 500,
-        height: 500,
-      },
-    };
-
-    const component = mount(
-      <Provider store={store}>
-        <CellInfo componentType='heatmap' coordinates={coordinates} />
-      </Provider>,
-    );
-
-    expect(component.find(Card).length).toEqual(1);
-  });
-
-  test('does not show when hovering over different component', () => {
-    const store = mockStore({
-      cellInfo: {
-        cellName: 1904,
-        componentType: 'heatmap',
-        expression: 0,
-        geneName: 'DOK3',
-      },
-    });
-
-    const coordinates = {
-      current: {
-        x: 100,
-        y: 200,
-        width: 500,
-        height: 500,
-      },
-    };
-
-    const component = mount(
-      <Provider store={store}>
-        <CellInfo componentType='umap' coordinates={coordinates} />
-      </Provider>,
-    );
-
-    expect(component.find(Card).length).toEqual(0);
-  });
-
-  test('does not render when there is no cell information', () => {
-    const store = mockStore({
-      cellInfo: {},
-    });
-
-    const coordinates = {
-      current: {
-        x: 100,
-        y: 200,
-        width: 500,
-        height: 500,
-      },
-    };
-
-    const component = mount(
-      <Provider store={store}>
-        <CellInfo componentType='heatmap' coordinates={coordinates} />
-      </Provider>,
-    );
-
-    expect(component.find(Card).length).toEqual(0);
+  it('renders cell info card with properties', () => {
+    render(<CellInfo coordinates={coordinates} cellInfo={cellInfo} />);
+    expect(screen.getByText(`Gene name: ${cellInfo.geneName}`)).toBeInTheDocument();
+    expect(screen.getByText(`Cell id: ${cellInfo.cellId}`)).toBeInTheDocument();
+    expect(screen.getByText(`Expression Level: ${cellInfo.expression}`)).toBeInTheDocument();
+    expect(screen.getByText(cellInfo.cellSets[0])).toBeInTheDocument();
+    expect(screen.getByText(cellInfo.cellSets[1])).toBeInTheDocument();
   });
 });

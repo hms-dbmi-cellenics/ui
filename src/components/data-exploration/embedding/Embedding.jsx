@@ -5,9 +5,8 @@ import {
   useSelector, useDispatch,
 } from 'react-redux';
 import PropTypes from 'prop-types';
-import _ from 'lodash';
 import * as vega from 'vega';
-
+import _ from 'lodash';
 import 'vitessce/dist/es/production/static/css/index.css';
 
 import ClusterPopover from 'components/data-exploration/embedding/ClusterPopover';
@@ -17,12 +16,11 @@ import PlatformError from 'components/PlatformError';
 import Loader from 'components/Loader';
 
 import { loadEmbedding } from 'redux/actions/embedding';
+import { getCellSetsHierarchyByType, getCellSets } from 'redux/selectors';
 import { createCellSet } from 'redux/actions/cellSets';
 import { loadGeneExpression } from 'redux/actions/genes';
 import { updateCellInfo } from 'redux/actions/cellInfo';
 import { loadProcessingSettings } from 'redux/actions/experimentSettings';
-
-import { getCellSets } from 'redux/selectors';
 
 import {
   convertCellsData,
@@ -30,6 +28,7 @@ import {
   colorByGeneExpression,
   colorInterpolator,
 } from 'utils/plotUtils';
+import getContainingCellSetsProperties from 'utils/cellSets/getContainingCellSetsProperties';
 
 const Scatterplot = dynamic(
   () => import('vitessce/dist/umd/production/scatterplot.min').then((mod) => mod.Scatterplot),
@@ -48,6 +47,7 @@ const Embedding = (props) => {
 
   const [view, setView] = useState({ target: [4, -4, 0], zoom: initialZoom });
   const [cellRadius, setCellRadius] = useState(cellRadiusFromZoom(initialZoom));
+  const rootClusterNodes = useSelector(getCellSetsHierarchyByType('cellSets')).map(({ key }) => key);
 
   const selectedCellIds = new Set();
 
@@ -60,22 +60,22 @@ const Embedding = (props) => {
 
   const focusData = useSelector((state) => state.cellInfo.focus);
   const focusedExpression = useSelector((state) => state.genes.expression.data[focusData.key]);
+  const cellSets = useSelector(getCellSets());
   const {
     properties: cellSetProperties,
     hierarchy: cellSetHierarchy,
     hidden: cellSetHidden,
-  } = useSelector(getCellSets());
+  } = cellSets;
 
-  const selectedCell = useSelector((state) => state.cellInfo.cellName);
+  const selectedCell = useSelector((state) => state.cellInfo.cellId);
   const expressionLoading = useSelector((state) => state.genes.expression.loading);
   const loadedGenes = useSelector((state) => Object.keys(state.genes.expression.data));
 
   const cellCoordintes = useRef({ x: 200, y: 300 });
+  const cellInfoTooltip = useRef();
   const [createClusterPopover, setCreateClusterPopover] = useState(false);
   const [selectedIds, setSelectedIds] = useState(new Set());
   const [cellColors, setCellColors] = useState({});
-  const [clusterKeyToNameMap, setClusterKeyToNameMap] = useState({});
-  const [cellSetClusters, setCellSetClusters] = useState({});
   const [cellInfoVisible, setCellInfoVisible] = useState(true);
 
   // Load embedding settings if they aren't already.
@@ -132,23 +132,34 @@ const Embedding = (props) => {
   }, [focusedExpression]);
 
   useEffect(() => {
-    if (cellSetHierarchy) {
-      const mapping = cellSetHierarchy.reduce((keyToClusterNameMap, rootHierarchy) => {
-        if (rootHierarchy.children.length > 0) {
-          rootHierarchy.children.forEach((child) => {
-            // eslint-disable-next-line no-param-reassign
-            keyToClusterNameMap[child.key] = _.capitalize(rootHierarchy.key);
-          });
-        }
-        return keyToClusterNameMap;
-      }, {});
-      setClusterKeyToNameMap(mapping);
-    }
+    if (selectedCell) {
+      let expressionToDispatch;
+      let geneName;
 
-    if (cellSetProperties) {
-      setCellSetClusters(Object.entries(cellSetProperties).filter(([, cellSet]) => cellSet.type === 'cellSets'));
+      if (focusedExpression) {
+        geneName = focusData.key;
+        expressionToDispatch = focusedExpression.rawExpression.expression[selectedCell];
+      }
+
+      // getting the cluster properties for every cluster that has the cellId
+      const cellProperties = getContainingCellSetsProperties(Number.parseInt(selectedCell, 10), rootClusterNodes, cellSets);
+
+      const prefixedCellSetNames = [];
+      Object.entries(cellProperties).forEach(([key, clusterProperties]) => {
+        clusterProperties.forEach(({ name, parentNodeKey }) => {
+          prefixedCellSetNames.push(`${cellSetProperties[parentNodeKey].name} : ${name}`);
+        });
+      });
+
+      cellInfoTooltip.current = {
+        cellSets: prefixedCellSetNames,
+        cellId: selectedCell,
+        componentType: embeddingType,
+        expression: expressionToDispatch,
+        geneName,
+      };
     }
-  }, [cellSetProperties, cellSetHierarchy]);
+  }, [selectedCell]);
 
   const updateCellCoordinates = (newView) => {
     if (selectedCell && newView.project) {
@@ -162,38 +173,7 @@ const Embedding = (props) => {
     }
   };
 
-  const getContainingCellSets = (cellId) => {
-    const prefixedCellSetNames = cellSetClusters
-      .filter(([, cellSet]) => cellSet.cellIds.has(Number.parseInt(cellId, 10)))
-      .map(([key, containingCellset]) => `${clusterKeyToNameMap[key]}: ${containingCellset.name}`);
-
-    return prefixedCellSetNames;
-  };
-
-  const updateCellsHover = (cell) => {
-    if (cell) {
-      if (focusData.store === 'genes') {
-        const expressionToDispatch = focusedExpression
-          ? focusedExpression.rawExpression.expression[cell] : undefined;
-
-        return dispatch(updateCellInfo({
-          cellName: cell,
-          cellSets: getContainingCellSets(cell),
-          geneName: focusData.key,
-          expression: expressionToDispatch,
-          componentType: embeddingType,
-        }));
-      }
-
-      return dispatch(updateCellInfo({
-        cellName: cell,
-        cellSets: getContainingCellSets(cell),
-        geneName: undefined,
-        expression: undefined,
-        componentType: embeddingType,
-      }));
-    }
-  };
+  const updateCellsHover = (cell) => dispatch(updateCellInfo({ cellId: cell }));
 
   const onCreateCluster = (clusterName, clusterColor) => {
     setCreateClusterPopover(false);
@@ -332,11 +312,12 @@ const Embedding = (props) => {
               onCancel={onCancelCreateCluster}
             />
           ) : (
-            cellInfoVisible ? (
+            (cellInfoVisible && cellInfoTooltip.current) ? (
               <div>
                 <CellInfo
                   componentType={embeddingType}
                   coordinates={cellCoordintes}
+                  cellInfo={cellInfoTooltip.current}
                 />
                 <CrossHair
                   componentType={embeddingType}

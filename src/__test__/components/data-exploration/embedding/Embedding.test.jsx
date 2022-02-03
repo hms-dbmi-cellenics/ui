@@ -10,13 +10,13 @@ import thunk from 'redux-thunk';
 import preloadAll from 'jest-next-dynamic';
 // eslint-disable-next-line import/extensions
 import { Scatterplot } from 'vitessce/dist/umd/production/scatterplot.min';
-import Embedding from '../../../../components/data-exploration/embedding/Embedding';
-import CrossHair from '../../../../components/data-exploration/embedding/CrossHair';
-import CellInfo from '../../../../components/data-exploration/CellInfo';
-import { CELL_SETS_CREATE } from '../../../../redux/actionTypes/cellSets';
-import { initialEmbeddingState } from '../../../../redux/reducers/embeddings/initialState';
-import generateExperimentSettingsMock from '../../../test-utils/experimentSettings.mock';
-import { CELL_INFO_UPDATE } from '../../../../redux/actionTypes/cellInfo';
+import Embedding from 'components/data-exploration/embedding/Embedding';
+import CrossHair from 'components/data-exploration/embedding/CrossHair';
+import CellInfo from 'components/data-exploration/CellInfo';
+import { CELL_SETS_CREATE } from 'redux/actionTypes/cellSets';
+import { initialEmbeddingState } from 'redux/reducers/embeddings/initialState';
+import generateExperimentSettingsMock from '__test__/test-utils/experimentSettings.mock';
+import { CELL_INFO_UPDATE } from 'redux/actionTypes/cellInfo';
 import '__test__/test-utils/setupTests';
 
 const mockStore = configureMockStore([thunk]);
@@ -63,7 +63,7 @@ describe('Embedding', () => {
       },
     },
     cellInfo: {
-      cellName: 2,
+      cellId: 2,
       focus: {
         store: 'cellSets',
         key: 'louvain',
@@ -109,7 +109,10 @@ describe('Embedding', () => {
           3: [255, 0, 0],
         }),
       ),
+
     );
+    // cell info is not rendered when there is no cell information
+    expect(component.find(CellInfo).length).toEqual(0);
 
     expect(scatterplot.getElement().props.cells).toEqual(
       {
@@ -222,7 +225,7 @@ describe('Embedding', () => {
 
     expect(store.getActions().length).toEqual(1);
     expect(store.getActions()[0].type).toEqual(CELL_INFO_UPDATE);
-    expect(store.getActions()[0].payload.cellName).toEqual(1);
+    expect(store.getActions()[0].payload.cellId).toEqual(1);
   });
 
   it('renders CrossHair and CellInfo components when user hovers over cell', () => {
@@ -253,7 +256,7 @@ describe('Embedding', () => {
     const cellInfo = component.find(CellInfo);
 
     expect(mockProject).toHaveBeenCalledTimes(1);
-    expect(mockProject).toHaveBeenCalledWith(store.getState().cellInfo.cellName);
+    expect(mockProject).toHaveBeenCalledWith(store.getState().cellInfo.cellId);
     expect(crossHairs.length).toEqual(1);
     expect(crossHairs.props().coordinates.current).toEqual(
       {
@@ -296,7 +299,7 @@ describe('Embedding', () => {
     const cellInfo = component.find(CellInfo);
 
     expect(mockProject).toHaveBeenCalledTimes(1);
-    expect(mockProject).toHaveBeenCalledWith(store.getState().cellInfo.cellName);
+    expect(mockProject).toHaveBeenCalledWith(store.getState().cellInfo.cellId);
     expect(crossHairs.length).toEqual(0);
     expect(cellInfo.length).toEqual(0);
   });
