@@ -5,6 +5,7 @@ import { Button, Typography } from 'antd';
 import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
 import configureMockStore from 'redux-mock-store';
+import CreateCellSetModal from 'components/data-exploration/generic-gene-table/CreateCellSetModal';
 import SelectionActions from '../../../../components/data-exploration/generic-gene-table/SelectionActions';
 import { GENES_DESELECT } from '../../../../redux/actionTypes/genes';
 import '__test__/test-utils/setupTests';
@@ -82,7 +83,7 @@ describe('SelectionIndicator', () => {
     // And a Heatmap button
     expect(button.at(3).childAt(0).text()).toEqual('Heatmap');
 
-    expect(button.at(4).childAt(0).text()).toEqual('cellset');
+    expect(button.at(4).childAt(0).text()).toEqual('Cellset');
 
     // The text should be loaded.
     expect(text.length).toEqual(1);
@@ -174,5 +175,31 @@ describe('SelectionIndicator', () => {
     );
 
     expect(component.find('#testExtraOption').length).toEqual(1);
+  });
+
+  test('opens and closes create cell set modal', () => {
+    const state = _.cloneDeep(initialState);
+    state.genes.selected = ['CEMIP', 'TIMP3'];
+
+    const store = mockStore(state);
+    const component = mount(
+      <Provider store={store}>
+        <SelectionActions
+          experimentId='test'
+          extraOptions={<div id='testExtraOption' />}
+        />
+      </Provider>,
+    );
+
+    const button = component.find(Button).at(4);
+    button.simulate('click');
+    expect(component.find(CreateCellSetModal).length).toEqual(1);
+
+    // check if the genes are passed
+    expect(component.find(CreateCellSetModal).prop('selectedGenes')).toStrictEqual(['CEMIP', 'TIMP3']);
+
+    const closeButton = component.find('.ant-modal-close');
+    closeButton.simulate('click');
+    expect(component.find(CreateCellSetModal).length).toEqual(0);
   });
 });
