@@ -1,24 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Mosaic, MosaicWindow } from 'react-mosaic-component';
-import {
-  Button, Space, Empty, Typography,
-} from 'antd';
+import { Button, Space, Empty } from 'antd';
 import ReactResizeDetector from 'react-resize-detector';
 import 'react-mosaic-component/react-mosaic-component.css';
 
-import { ClipLoader } from 'react-spinners';
 import NewProjectModal from 'components/data-management/NewProjectModal';
-import { loadProjects } from '../../redux/actions/projects';
-import { loadExperiments } from '../../redux/actions/experiments';
+import { loadProjects } from 'redux/actions/projects';
+import { loadExperiments } from 'redux/actions/experiments';
 
-import Header from '../../components/Header';
-import ProjectsListContainer from '../../components/data-management/ProjectsListContainer';
-import ProjectDetails from '../../components/data-management/ProjectDetails';
-import { loadProcessingSettings } from '../../redux/actions/experimentSettings';
-import loadBackendStatus from '../../redux/actions/backendStatus/loadBackendStatus';
-
-const { Text } = Typography;
+import Header from 'components/Header';
+import ProjectsListContainer from 'components/data-management/ProjectsListContainer';
+import ProjectDetails from 'components/data-management/ProjectDetails';
+import { loadProcessingSettings } from 'redux/actions/experimentSettings';
+import loadBackendStatus from 'redux/actions/backendStatus/loadBackendStatus';
 
 const DataManagementPage = () => {
   const dispatch = useDispatch();
@@ -106,6 +101,7 @@ const DataManagementPage = () => {
           return (
             <Empty
               description='You have no projects yet.'
+              style={{ marginTop: '4em' }}
             >
               <Button type='primary' onClick={() => setNewProjectModalVisible(true)}>Get started</Button>
             </Empty>
@@ -130,20 +126,8 @@ const DataManagementPage = () => {
     <>
       <Header
         title='Data Management'
+        loader={projectSaving || sampleSaving}
       />
-      {projectSaving || sampleSaving ? (
-        <center>
-          <Space direction='vertical'>
-            <ClipLoader
-              size={50}
-              color='#8f0b10'
-            />
-            <Text>
-              Loading...
-            </Text>
-          </Space>
-        </center>
-      ) : (<></>)}
       {newProjectModalVisible ? (
         <NewProjectModal
           onCancel={() => { setNewProjectModalVisible(false); }}

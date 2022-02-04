@@ -5,14 +5,15 @@ import {
 import PropTypes from 'prop-types';
 import { NextSeo } from 'next-seo';
 import { useSelector } from 'react-redux';
-import UserButton from './UserButton';
-import FeedbackButton from './FeedbackButton';
-import ReferralButton from './ReferralButton';
-import integrationTestConstants from '../utils/integrationTestConstants';
+import UserButton from 'components/UserButton';
+import FeedbackButton from 'components/FeedbackButton';
+import ReferralButton from 'components/ReferralButton';
+import integrationTestConstants from 'utils/integrationTestConstants';
+import { ClipLoader } from 'react-spinners';
 
 const Header = (props) => {
   const {
-    experimentId, experimentData, title, extra,
+    experimentId, experimentData, title, extra, loader,
   } = props;
   const experiment = useSelector((state) => state?.experiments[experimentId]);
   const experimentName = experimentData?.experimentName || experiment?.name;
@@ -32,7 +33,14 @@ const Header = (props) => {
         title={title}
         style={{ width: '100%', paddingTop: '10px', paddingBottom: '10px' }}
         extra={(
-          <Space size='large'>
+          <Space size='large' align='center'>
+            { loader
+              ? (
+                <ClipLoader
+                  size={24}
+                  color='#8f0b10'
+                />
+              ) : <></>}
             <Space>
               <FeedbackButton />
               <ReferralButton />
@@ -51,12 +59,14 @@ Header.propTypes = {
   experimentData: PropTypes.object,
   title: PropTypes.string.isRequired,
   extra: PropTypes.node,
+  loader: PropTypes.bool,
 };
 
 Header.defaultProps = {
   experimentId: null,
   experimentData: null,
   extra: <></>,
+  loader: false,
 };
 
 export default Header;
