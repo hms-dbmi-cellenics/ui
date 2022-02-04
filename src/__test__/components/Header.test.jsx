@@ -41,9 +41,11 @@ const renderHeader = async (store, props = {}) => render(
   </Provider>,
 );
 
+const loaderClass = "span[class='css-zog0u6']";
+
 describe('Page Header', () => {
-  it('renders properly', async () => {
-    await renderHeader(storeState);
+  it('Renders properly', async () => {
+    const { container } = await renderHeader(storeState);
 
     // It contains the page title
     expect(screen.getByText(pageTitle));
@@ -56,12 +58,25 @@ describe('Page Header', () => {
 
     // It contains the user button
     expect(screen.getByText(/User Button/));
+
+    // It should not have the loader by default
+    const loader = container.querySelector(loaderClass);
+    expect(loader).not.toBeInTheDocument();
   });
 
-  it('shows the loader bar if loading', async () => {
-    const { container } = await renderHeader(storeState);
+  it('Shows the loader bar if loading', async () => {
+    const { container } = await renderHeader(storeState, { loading: true });
 
     // It contains the loader SVG
-    expect(container.querySelector("span[class='css-zog0u6']")).not.toBeUndefined();
+    const loader = container.querySelector("span[class='css-zog0u6']");
+    expect(loader).toBeInTheDocument();
+  });
+
+  it('Should render extra elements passed into it', async () => {
+    const extraText = 'Extra element';
+    await renderHeader(storeState, { extra: <>{extraText}</> });
+
+    // It contains the loader SVG
+    expect(screen.getByText(extraText)).toBeInTheDocument();
   });
 });
