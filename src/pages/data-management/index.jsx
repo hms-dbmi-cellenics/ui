@@ -126,7 +126,7 @@ const DataManagementPage = () => {
     <>
       <Header
         title='Data Management'
-        loader={projectSaving || sampleSaving}
+        loading={projectSaving || sampleSaving}
       />
       {newProjectModalVisible ? (
         <NewProjectModal

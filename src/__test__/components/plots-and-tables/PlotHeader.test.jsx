@@ -8,12 +8,11 @@ import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import { plotNames } from 'utils/constants';
 import { act } from 'react-dom/test-utils';
 import fake from '__test__/test-utils/constants';
-import { initialPlotConfigStates } from '../../../redux/reducers/componentConfig/initialState';
-import PlotHeader from '../../../components/plots/PlotHeader';
-import { LOAD_CONFIG } from '../../../redux/actionTypes/componentConfig';
-import '__test__/test-utils/setupTests';
+import { initialPlotConfigStates } from 'redux/reducers/componentConfig/initialState';
+import PlotHeader from 'components/plots/PlotHeader';
+import { LOAD_CONFIG } from 'redux/actionTypes/componentConfig';
 
-jest.mock('components/UserButton', () => () => <></>);
+jest.mock('components/UserButton', () => () => <>User Button</>);
 
 enableFetchMocks();
 const mockStore = configureMockStore([thunk]);

@@ -9,10 +9,10 @@ import {
 import { DownOutlined, ShareAltOutlined } from '@ant-design/icons';
 import React, { useState } from 'react';
 import Auth from '@aws-amplify/auth';
-import validateInput, { rules } from '../utils/validateInputs';
+import validateInput, { rules } from 'utils/validateInputs';
 
-import endUserMessages from '../utils/endUserMessages';
-import pushNotificationMessage from '../utils/pushNotificationMessage';
+import endUserMessages from 'utils/endUserMessages';
+import pushNotificationMessage from 'utils/pushNotificationMessage';
 
 const { TextArea } = Input;
 
