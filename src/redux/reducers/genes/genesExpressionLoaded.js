@@ -1,34 +1,26 @@
-import _ from 'lodash';
-import { initialViewState } from './initialState';
+/* eslint-disable no-param-reassign */
+import produce from 'immer';
 
-const genesExpressionLoaded = (state, action) => {
-  const upperCaseArray = (array) => (array?.map((element) => element.toUpperCase()));
+import { calculateZScore } from 'utils/postRequestProcessing';
+import initialState from 'redux/reducers/genes/initialState';
+import { difference as _difference } from 'lodash';
 
-  const {
-    data, componentUuid, genes,
-    loadingStatus = _.difference(upperCaseArray(state.expression.loading), upperCaseArray(genes)),
-  } = action.payload;
-  return {
-    ...state,
-    expression: {
-      ...state.expression,
-      views: {
-        ...state.expression.views,
-        [componentUuid]: {
-          ...initialViewState,
-          ...state.expression.views[componentUuid],
-          fetching: false,
-          error: false,
-          data: genes,
-        },
-      },
-      data: {
-        ...state.expression.data,
-        ...data,
-      },
-      loading: loadingStatus,
-    },
-  };
-};
+const upperCaseArray = (array) => (array?.map((element) => element.toUpperCase()));
+
+const genesExpressionLoaded = produce((draft, action) => {
+  const { data, componentUuid, genes } = action.payload;
+
+  let { loadingStatus } = action.payload;
+
+  if (loadingStatus === undefined) {
+    loadingStatus = _difference(upperCaseArray(draft.expression.loading), upperCaseArray(genes));
+  }
+
+  const dataWithZScore = calculateZScore(data);
+  draft.expression.views[componentUuid] = { fetching: false, error: false, data: genes };
+
+  draft.expression.data = { ...draft.expression.data, ...dataWithZScore };
+  draft.expression.loading = loadingStatus;
+}, initialState);
 
 export default genesExpressionLoaded;

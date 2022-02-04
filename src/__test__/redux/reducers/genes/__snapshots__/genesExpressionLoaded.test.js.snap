@@ -1,0 +1,33 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`genesExpressionLoaded reducer returns correct state 1`] = `
+Object {
+  "expression": Object {
+    "data": Object {
+      "geneA": Object {
+        "rawExpression": Object {
+          "expression": Array [
+            1,
+          ],
+          "mean": 1,
+          "stdev": 1,
+        },
+        "zScore": Array [
+          0,
+        ],
+      },
+    },
+    "loading": Array [],
+    "views": Object {
+      "undefined": Object {
+        "data": Array [
+          "geneA",
+        ],
+        "error": false,
+        "fetching": false,
+      },
+    },
+  },
+  "markers": Object {},
+}
+`;
