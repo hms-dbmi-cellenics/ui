@@ -58,15 +58,6 @@ const mockGeneExpressionData = {
     },
   },
   D: {
-    zScore: [
-      -0.6468175894669735,
-      -0.6468175894669735,
-      -0.6468175894669735,
-      -0.04620125639049807,
-      -0.6468175894669735,
-      1.971253605994586,
-      0.6622180082638063,
-    ],
     rawExpression: {
       min: 0,
       max: 6.8,
@@ -80,18 +71,23 @@ const mockGeneExpressionData = {
       mean: 1.68,
       stdev: 2.597331964,
       expression: [0, 0, 0, 1.56, 0, 6.8, 3.4],
-      zScore: [
-        -0.6468175894669735,
-        -0.6468175894669735,
-        -0.6468175894669735,
-        -0.04620125639049807,
-        -0.6468175894669735,
-        1.971253605994586,
-        0.6622180082638063,
-      ],
     },
   },
   E: { hello: 'world' },
+};
+
+const mockGeneExpressionDataZScore = {
+  D: {
+    zScore: [
+      -0.6468175894669735,
+      -0.6468175894669735,
+      -0.6468175894669735,
+      -0.04620125639049807,
+      -0.6468175894669735,
+      1.971253605994586,
+      0.6622180082638063,
+    ],
+  },
 };
 
 const mockCacheGet = jest.fn((x) => {
@@ -144,7 +140,8 @@ const mockReduxState = (experimentId, environment = 'testing') => () => ({
 });
 
 export {
-  mockGeneExpressionData, mockGenesListData,
+  mockGeneExpressionData, mockGeneExpressionDataZScore,
+  mockGenesListData,
   mockCacheKeyMappings,
   mockCacheGet, mockCacheSet,
   mockDispatchWorkRequest, mockSeekFromS3,

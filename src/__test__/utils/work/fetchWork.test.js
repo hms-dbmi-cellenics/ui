@@ -4,6 +4,7 @@ import Environment from 'utils/environment';
 
 const {
   mockGeneExpressionData,
+  mockGeneExpressionDataZScore,
   mockGenesListData,
   mockCacheKeyMappings,
   mockCacheGet,
@@ -62,10 +63,19 @@ describe('fetchWork', () => {
       GENE_EXPRESSION_ETAG,
       expect.anything(),
     );
+
+    // The expected response should contain the ZScore
+    const expectedResponse = {
+      D: {
+        ...mockGeneExpressionData.D,
+        ...mockGeneExpressionDataZScore.D,
+      },
+    };
+
     expect(mockCacheGet).toHaveBeenCalledTimes(4);
     expect(mockCacheSet).toHaveBeenCalledTimes(1);
-    expect(mockCacheSet).toHaveBeenCalledWith(mockCacheKeyMappings.D, mockGeneExpressionData.D);
-    expect(res).toEqual({ D: mockGeneExpressionData.D });
+    expect(mockCacheSet).toHaveBeenCalledWith(mockCacheKeyMappings.D, expectedResponse.D);
+    expect(res).toEqual(expectedResponse);
     expect(mockSeekFromS3).toHaveBeenCalledTimes(2);
   });
 
