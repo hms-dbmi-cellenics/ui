@@ -43,6 +43,9 @@ const fetchGeneExpressionWork = async (
 ) => {
   // Get only genes that are not already found in local storage.
   const { missingDataKeys, cachedData } = await decomposeBody(body, experimentId);
+
+  console.log('*** print here');
+
   const missingGenes = Object.keys(missingDataKeys);
 
   if (missingGenes.length === 0) {
@@ -54,6 +57,8 @@ const fetchGeneExpressionWork = async (
   const { pipeline: { startDate: qcPipelineStartDate } } = backendStatus;
 
   const missingGenesBody = { ...body, genes: missingGenes };
+
+  console.log('*** missing genes body', missingGenesBody);
 
   // If caching is disabled, we add an additional randomized key to the hash so we never reuse
   // past results.
@@ -90,15 +95,11 @@ const fetchGeneExpressionWork = async (
   }
 
   response = await seekFromS3(ETag, experimentId);
+  response = calculateZScore(response);
 
-  if (!response[missingGenes[0]]?.error) {
-    // Preprocessing data before entering cache
-    const processedData = calculateZScore(response);
-
-    Object.keys(missingDataKeys).forEach(async (gene) => {
-      await cache.set(missingDataKeys[gene], processedData[gene]);
-    });
-  }
+  Object.keys(missingDataKeys).forEach(async (gene) => {
+    await cache.set(missingDataKeys[gene], response[gene]);
+  });
 
   return response;
 };
