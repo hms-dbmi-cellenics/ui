@@ -1,10 +1,10 @@
 import React from 'react';
 import {
-  Modal, Form, Button, Space, Select, InputNumber, Typography, Row, Alert,
+  Modal, Form, Button, Select, InputNumber, Row, Alert, Col,
 } from 'antd';
 import PropTypes from 'prop-types';
 
-const { Title } = Typography;
+const formItemStyle = { margin: '0.375rem 0' };
 
 const CreateCellSetModal = (props) => {
   const { selectedGenes, onCancel } = props;
@@ -20,7 +20,6 @@ const CreateCellSetModal = (props) => {
   },
   ];
 
-  const formHeight = selectedGenes.length < 5 ? selectedGenes.length * 75 : 300;
   return (
     <Modal
       visible
@@ -31,41 +30,44 @@ const CreateCellSetModal = (props) => {
       <Form
         form={form}
         size='middle'
+        style={{ marginBottom: '1rem' }}
       >
         <Form.List
           name='filterForm'
           initialValue={intialFormValues}
         >
           {(fields) => (
-            <>
-              <Row style={{ 'overflow-y': 'auto', height: formHeight }}>
-                {fields.map((field, index) => {
-                  const { selectedGenes: formSelectedGenes } = form.getFieldValue('filterForm')[index];
-                  return (
-                    <Space key={field.key} align='baseline'>
+            <div style={{ maxHeight: '60vh', overflowY: 'auto', overflowX: 'hidden' }}>
+              {fields.map((field, index) => {
+                const { selectedGenes: formSelectedGenes } = form.getFieldValue('filterForm')[index];
+                return (
+                  <Row gutter={8}>
+                    <Col flex='auto'>
                       <Form.Item
                         name={[field.name, 'selectedGenes']}
-                        style={{ width: 70, height: 40 }}
+                        style={formItemStyle}
                       >
-                        <Title level={5}>{formSelectedGenes}</Title>
+                        <strong>{formSelectedGenes}</strong>
                       </Form.Item>
+                    </Col>
+                    <Col>
                       <Form.Item
                         name={[field.name, 'comparison']}
-                        style={{ width: 150 }}
+                        style={formItemStyle}
                       >
                         <Select
                           placeholder='Select comparison'
                           defaultValue='greaterThan'
                           options={comparisonOptions}
-                          style={{ width: 150 }}
                         />
                       </Form.Item>
-
+                    </Col>
+                    <Col>
                       <Form.Item
                         name={[field.name, 'value']}
+                        style={formItemStyle}
                       >
                         <InputNumber
-                          style={{ width: 140 }}
                           defaultValue={0}
                           step={1}
                           min={0}
@@ -73,18 +75,19 @@ const CreateCellSetModal = (props) => {
                           placeholder='Insert value'
                         />
                       </Form.Item>
-                    </Space>
-                  );
-                })}
-              </Row>
-              <Alert type='info' message='To edit the list of genes, return to the gene list and change your selection.' />
-            </>
+                    </Col>
+                  </Row>
+                );
+              })}
+            </div>
           )}
         </Form.List>
       </Form>
+      <Alert type='info' message='To edit the list of genes, return to the gene list and change your selection.' />
     </Modal>
   );
 };
+
 CreateCellSetModal.propTypes = {
   selectedGenes: PropTypes.arrayOf(PropTypes.string).isRequired,
   onCancel: PropTypes.func.isRequired,
