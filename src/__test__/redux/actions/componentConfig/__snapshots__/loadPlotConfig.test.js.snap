@@ -14,7 +14,6 @@ Object {
       "xAxisText": "#UMIs in cell",
       "yAxisText": "#UMIs * #Cells",
     },
-    "binStep": 200,
     "colour": Object {
       "gradient": "default",
       "invert": "standard",
@@ -82,7 +81,6 @@ Object {
       "xAxisText": "#UMIs in cell",
       "yAxisText": "#UMIs * #Cells",
     },
-    "binStep": 200,
     "colour": Object {
       "gradient": "default",
       "invert": "standard",
