@@ -1,9 +1,9 @@
 import { getCellSetsHierarchyByType } from 'redux/selectors';
-import mockCellSets from 'utils/tests/mockStores/cellSets';
+import { mockCellSets1 } from '__test__/test-utils/cellSets.mock';
 
 describe('Get cell sets hierarchy selector by type test', () => {
   it('returns correctly by one key', () => {
-    const returnedHierarchy = getCellSetsHierarchyByType('firstType')(mockCellSets());
+    const returnedHierarchy = getCellSetsHierarchyByType('firstType')(mockCellSets1);
     expect(returnedHierarchy).toMatchSnapshot();
   });
 });
