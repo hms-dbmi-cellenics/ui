@@ -176,32 +176,33 @@ describe('SelectionIndicator', () => {
     expect(component.find('#testExtraOption').length).toEqual(1);
   });
 
-  // uncomment following test when the create cell set modal is openable again
+  test('opens and closes create cell set modal', () => {
+    const state = _.cloneDeep(initialState);
+    state.genes.selected = ['CEMIP', 'TIMP3'];
 
-  // test('opens and closes create cell set modal', () => {
-  //   const state = _.cloneDeep(initialState);
-  //   state.genes.selected = ['CEMIP', 'TIMP3'];
+    const store = mockStore(state);
+    const component = mount(
+      <Provider store={store}>
+        <SelectionActions
+          experimentId='test'
+          extraOptions={<div id='testExtraOption' />}
+        />
+      </Provider>,
+    );
 
-  //   const store = mockStore(state);
-  //   const component = mount(
-  //     <Provider store={store}>
-  //       <SelectionActions
-  //         experimentId='test'
-  //         extraOptions={<div id='testExtraOption' />}
-  //       />
-  //     </Provider>,
-  //   );
+    const button = component.find(Button).at(4);
+    // button should be disabled
+    expect(button.prop('disabled')).toEqual(true);
 
-  //   const button = component.find(Button).at(4);
-  //   button.simulate('click');
-  //   expect(component.find(CreateCellSetModal).length).toEqual(1);
+    // button.simulate('click');
+    // expect(component.find(CreateCellSetModal).length).toEqual(1);
 
-  //   // check if the genes are passed
-  //   expect(component.find(CreateCellSetModal).prop('selectedGenes'))
-  //      .toStrictEqual(['CEMIP', 'TIMP3']);
+    // // check if the genes are passed
+    // expect(component.find(CreateCellSetModal).prop('selectedGenes'))
+    //    .toStrictEqual(['CEMIP', 'TIMP3']);
 
-  //   const closeButton = component.find('.ant-modal-close');
-  //   closeButton.simulate('click');
-  //   expect(component.find(CreateCellSetModal).length).toEqual(0);
-  // });
+    // const closeButton = component.find('.ant-modal-close');
+    // closeButton.simulate('click');
+    // expect(component.find(CreateCellSetModal).length).toEqual(0);
+  });
 });

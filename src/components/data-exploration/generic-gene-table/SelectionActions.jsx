@@ -111,7 +111,6 @@ const SelectionActions = (props) => {
           {
             createCellSetModalVisible && (
               <CreateCellSetModal
-                selectedGenes={selectedGenes}
                 onCancel={() => setCreateCellSetModalVisible(false)}
               />
             )

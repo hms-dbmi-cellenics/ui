@@ -1,5 +1,6 @@
 /* eslint-disable react/no-array-index-key */
 import React from 'react';
+import { useSelector } from 'react-redux';
 import {
   Modal, Form, Button, Select, InputNumber, Row, Alert, Col,
 } from 'antd';
@@ -8,7 +9,8 @@ import PropTypes from 'prop-types';
 const formItemStyle = { margin: '0.375rem 0' };
 
 const CreateCellSetModal = (props) => {
-  const { selectedGenes, onCancel } = props;
+  const { onCancel } = props;
+  const selectedGenes = useSelector((state) => state.genes.selected);
   const [form] = Form.useForm();
   const comparisonOptions = [{
     value: 'greaterThan',
@@ -92,7 +94,6 @@ const CreateCellSetModal = (props) => {
 };
 
 CreateCellSetModal.propTypes = {
-  selectedGenes: PropTypes.arrayOf(PropTypes.string).isRequired,
   onCancel: PropTypes.func.isRequired,
 };
 
