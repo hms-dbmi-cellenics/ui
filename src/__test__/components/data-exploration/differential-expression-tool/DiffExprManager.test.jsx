@@ -4,12 +4,16 @@ import { act } from 'react-dom/test-utils';
 import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
+
 import DiffExprManager from 'components/data-exploration/differential-expression-tool/DiffExprManager';
 import DiffExprCompute from 'components/data-exploration/differential-expression-tool/DiffExprCompute';
 import DiffExprResults from 'components/data-exploration/differential-expression-tool/DiffExprResults';
+
 import initialState from 'redux/reducers/differentialExpression/initialState';
 import genesInitialState from 'redux/reducers/genes/initialState';
 import cellSetsInitialState from 'redux/reducers/cellSets/initialState';
+
+import { mockCellSets1 } from '__test__/test-utils/cellSets.mock';
 
 const mockStore = configureMockStore([thunk]);
 
@@ -48,73 +52,7 @@ const filledState = {
       key: 'C',
     },
   },
-  cellSets: {
-    loading: false,
-    error: false,
-    selected: [],
-    properties: {
-      'cluster-a': {
-        name: 'Name of Cluster A',
-        key: 'cluster-a',
-        cellIds: new Set([1, 2]),
-        color: '#00FF00',
-      },
-      'cluster-b': {
-        name: 'Name of Cluster B',
-        key: 'cluster-b',
-        cellIds: new Set([2, 3, 4, 5]),
-        color: '#FF0000',
-      },
-      'scratchpad-a': {
-        cellIds: new Set([3]),
-        key: 'scratchpad-a',
-        name: 'Name of Scratchpad A',
-        color: '#ff00ff',
-      },
-      louvain: {
-        cellIds: new Set(),
-        name: 'Louvain clusters',
-        key: 'louvain',
-        type: 'cellSets',
-        rootNode: true,
-      },
-      scratchpad: {
-        cellIds: new Set(),
-        name: 'Custom selections',
-        key: 'scratchpad',
-        type: 'cellSets',
-        rootNode: true,
-      },
-      sample: {
-        cellIds: new Set(),
-        name: 'Sample',
-        key: 'sample',
-        type: 'metadataCategorical',
-        rootNode: true,
-      },
-      'sample-a': {
-        cellIds: new Set([1, 2, 3, 4, 5]),
-        key: 'sample-a',
-        name: 'Name of Sample A',
-        type: undefined,
-        color: '#ff00ff',
-      },
-    },
-    hierarchy: [
-      {
-        key: 'louvain',
-        children: [{ key: 'cluster-a' }, { key: 'cluster-b' }],
-      },
-      {
-        key: 'scratchpad',
-        children: [{ key: 'scratchpad-a' }],
-      },
-      {
-        key: 'sample',
-        children: [{ key: 'sample-a' }],
-      },
-    ],
-  },
+  cellSets: mockCellSets1,
   differentialExpression: {
     properties: {
       data: [

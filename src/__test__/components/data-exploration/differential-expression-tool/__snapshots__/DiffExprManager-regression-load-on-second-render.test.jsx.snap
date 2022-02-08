@@ -14,7 +14,7 @@ exports[`DiffExprManager regression test -- diff exp would not reload after \`go
 Object {
   "payload": Object {
     "comparisonGroup": Object {
-      "basis": "sample/sample-a",
+      "basis": "scratchpad/scratchpad-a",
       "cellSet": "louvain/cluster-a",
       "compareWith": "louvain/cluster-b",
     },
@@ -77,7 +77,7 @@ exports[`DiffExprManager regression test -- diff exp would not reload after \`go
 Object {
   "payload": Object {
     "comparisonGroup": Object {
-      "basis": "sample/sample-a",
+      "basis": "scratchpad/scratchpad-a",
       "cellSet": "louvain/cluster-a",
       "compareWith": "louvain/cluster-b",
     },
@@ -160,7 +160,7 @@ exports[`DiffExprManager regression test -- diff exp would not reload after \`go
 Object {
   "payload": Object {
     "comparisonGroup": Object {
-      "basis": "sample/sample-a",
+      "basis": "scratchpad/scratchpad-a",
       "cellSet": "louvain/cluster-a",
       "compareWith": "louvain/cluster-b",
     },

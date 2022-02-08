@@ -11,7 +11,8 @@ import AdvancedFilteringModal from 'components/data-exploration/differential-exp
 import DiffExprResults from 'components/data-exploration/differential-expression-tool/DiffExprResults';
 import { fetchWork } from 'utils/work/fetchWork';
 import { DIFF_EXPR_LOADING, DIFF_EXPR_LOADED, DIFF_EXPR_ORDERING_SET } from 'redux/actionTypes/differentialExpression';
-import '__test__/test-utils/setupTests';
+
+import { mockCellSets1 } from '__test__/test-utils/cellSets.mock';
 
 import Loader from 'components/Loader';
 
@@ -68,55 +69,7 @@ const resultState = {
       key: 'C',
     },
   },
-  cellSets: {
-    loading: false,
-    error: false,
-    selected: [],
-    properties: {
-      'cluster-a': {
-        name: 'Name of Cluster A',
-        key: 'cluster-a',
-        cellIds: new Set([1, 2]),
-        color: '#00FF00',
-      },
-      'cluster-b': {
-        name: 'Name of Cluster B',
-        key: 'cluster-b',
-        cellIds: new Set([2, 3, 4, 5]),
-        color: '#FF0000',
-      },
-      'scratchpad-a': {
-        cellIds: new Set([3]),
-        key: 'scratchpad-a',
-        name: 'Name of Scratchpad A',
-        color: '#ff00ff',
-      },
-      louvain: {
-        cellIds: new Set(),
-        name: 'Louvain clusters',
-        key: 'louvain',
-        type: 'cellSets',
-        rootNode: true,
-      },
-      scratchpad: {
-        cellIds: new Set(),
-        name: 'Custom selections',
-        key: 'scratchpad',
-        type: 'cellSets',
-        rootNode: true,
-      },
-    },
-    hierarchy: [
-      {
-        key: 'louvain',
-        children: [{ key: 'cluster-a' }, { key: 'cluster-b' }],
-      },
-      {
-        key: 'scratchpad',
-        children: [{ key: 'scratchpad-a' }],
-      },
-    ],
-  },
+  cellSets: mockCellSets1,
   differentialExpression: {
     properties: {
       data: [
@@ -339,7 +292,7 @@ describe('DiffExprResults', () => {
 
     const div = component.find('#settingsText');
     // Should display name of cluster instead of ID
-    expect(div.text()).toEqual('Name of Cluster A vs. Name of Cluster B in Name of Scratchpad A');
+    expect(div.text()).toEqual('cluster a vs. cluster b in New Cluster');
     button.simulate('click');
     expect(button.childAt(0).text()).toEqual('Show settings');
     expect(!div);
