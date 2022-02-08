@@ -25,19 +25,19 @@ jest.mock('utils/work/fetchWork', () => ({
   fetchWork: jest.fn(() => new Promise((resolve) => resolve({
     rows: [
       {
-        p_val: 1.4969461240347763e-12, p_val_adj: 1.647289002209057e-11, logFC: -1.4274754343649423, gene_names: 'A', auc: '0.1',
+        p_val: 1.496, p_val_adj: 1.647, logFC: -1.427, gene_names: 'A', auc: '0.1', pct_1: '100', pct_2: '100',
       },
       {
-        p_val: 2.4969461240347763e-12, p_val_adj: 2.647289002209057e-11, logFC: -2.4274754343649423, gene_names: 'B', auc: '0.2',
+        p_val: 2.496, p_val_adj: 2.647, logFC: -2.427, gene_names: 'B', auc: '0.2', pct_1: '90', pct_2: '90',
       },
       {
-        p_val: 3.4969461240347763e-12, p_val_adj: 3.647289002209057e-11, logFC: -3.4274754343649423, gene_names: 'C', auc: '0.3',
+        p_val: 3.496, p_val_adj: 3.647, logFC: -3.427, gene_names: 'C', auc: '0.3', pct_1: '80', pct_2: '80',
       },
       {
-        p_val: 4.4969461240347763e-12, p_val_adj: 4.647289002209057e-11, logFC: -4.4274754343649423, gene_names: 'D', auc: '0.4',
+        p_val: 4.496, p_val_adj: 4.647, logFC: -4.427, gene_names: 'D', auc: '0.4', pct_1: '70', pct_2: '70',
       },
       {
-        p_val: 5.4969461240347763e-12, p_val_adj: 5.647289002209057e-11, logFC: -5.4274754343649423, gene_names: 'E', auc: '0.5',
+        p_val: 5.496, p_val_adj: 5.647, logFC: -5.427, gene_names: 'E', auc: '0.5', pct_1: '60', pct_2: '60',
       },
     ],
     total: 500,
@@ -121,19 +121,19 @@ const resultState = {
     properties: {
       data: [
         {
-          p_val: 1.4969461240347763e-12, p_val_adj: 1.647289002209057e-11, logFC: -1.4274754343649423, gene_names: 'A', auc: '0.1',
+          p_val: 1.496, p_val_adj: 1.647, logFC: -1.427, gene_names: 'A', auc: '0.1', pct_1: '100', pct_2: '100',
         },
         {
-          p_val: 2.4969461240347763e-12, p_val_adj: 2.647289002209057e-11, logFC: -2.4274754343649423, gene_names: 'B', auc: '0.2',
+          p_val: 2.496, p_val_adj: 2.647, logFC: -2.427, gene_names: 'B', auc: '0.2', pct_1: '90', pct_2: '90',
         },
         {
-          p_val: 3.4969461240347763e-12, p_val_adj: 3.647289002209057e-11, logFC: -3.4274754343649423, gene_names: 'C', auc: '0.3',
+          p_val: 3.496, p_val_adj: 3.647, logFC: -3.427, gene_names: 'C', auc: '0.3', pct_1: '80', pct_2: '80',
         },
         {
-          p_val: 4.4969461240347763e-12, p_val_adj: 4.647289002209057e-11, logFC: -4.4274754343649423, gene_names: 'D', auc: '0.4',
+          p_val: 4.496, p_val_adj: 4.647, logFC: -4.427, gene_names: 'D', auc: '0.4', pct_1: '70', pct_2: '70',
         },
         {
-          p_val: 5.4969461240347763e-12, p_val_adj: 5.647289002209057e-11, logFC: -5.4274754343649423, gene_names: 'E', auc: '0.5',
+          p_val: 5.496, p_val_adj: 5.647, logFC: -5.427, gene_names: 'E', auc: '0.5', pct_1: '60', pct_2: '60',
         },
       ],
       loading: false,
@@ -345,7 +345,7 @@ describe('DiffExprResults', () => {
     expect(!div);
   });
 
-  it("Doesn't show loading indicator if there is no data returned", () => {
+  it('Does not show loading indicator if there is no data returned', () => {
     const component = mount(
       <Provider store={noResultStore}>
         <DiffExprResults

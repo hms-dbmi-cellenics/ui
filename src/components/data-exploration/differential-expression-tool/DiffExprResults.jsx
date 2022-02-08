@@ -46,9 +46,11 @@ const DiffExprResults = (props) => {
   const geneTableState = useRef({});
 
   // When data changes, update rows.
-  useEffect(() => {
-    if (!data || !properties) return null;
+  const buildColumns = (rowData) => columnDefinitions
+    .filter(({ key }) => rowData[0][key] !== undefined);
 
+  useEffect(() => {
+    if (!data.length || !Object.keys(properties).length) return null;
     setDataShown(data);
     setColumns(buildColumns(data));
   }, [data, properties]);
@@ -215,25 +217,21 @@ const DiffExprResults = (props) => {
   );
 };
 
-const buildColumns = (rowData) => Object.keys(rowData[0])
-  .map((key) => columnDefinitions[key])
-  .filter((definition) => definition !== undefined);
-
-const columnDefinitions = {
-  logFC: {
+const columnDefinitions = [
+  {
     title: 'logFC',
     key: 'logFC',
     sorter: true,
     showSorterTooltip: false,
   },
-  p_val_adj: {
+  {
     title: 'adj p-value',
     key: 'p_val_adj',
     sorter: true,
     showSorterTooltip: false,
     render: (score, record) => <Tooltip title={`adj p-value: ${record.p_val_adj}`}>{score}</Tooltip>,
   },
-  pct_1: {
+  {
     title: 'Pct 1',
     key: 'pct_1',
     sorter: true,
@@ -241,7 +239,7 @@ const columnDefinitions = {
       title: 'The percentage of cells where the feature is detected in the first group',
     },
   },
-  pct_2: {
+  {
     title: 'Pct 2',
     key: 'pct_2',
     sorter: true,
@@ -249,7 +247,7 @@ const columnDefinitions = {
       title: 'The percentage of cells where the feature is detected in the second group',
     },
   },
-  auc: {
+  {
     title: 'AUC',
     key: 'auc',
     sorter: true,
@@ -257,7 +255,7 @@ const columnDefinitions = {
       title: 'Area under the ROC curve',
     },
   },
-};
+];
 
 DiffExprResults.defaultProps = {};
 
