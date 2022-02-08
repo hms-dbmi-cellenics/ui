@@ -4,7 +4,7 @@ import {
   useDispatch,
 } from 'react-redux';
 import {
-  Space, Button, Alert, Tooltip, Typography,
+  Space, Button, Alert, Tooltip,
 } from 'antd';
 import Link from 'next/link';
 import { LeftOutlined } from '@ant-design/icons';
@@ -21,22 +21,20 @@ import AdvancedFilteringModal from 'components/data-exploration/differential-exp
 import LaunchPathwayAnalysisModal from 'components/data-exploration/differential-expression-tool/LaunchPathwayAnalysisModal';
 import { setGeneOrdering } from 'redux/actions/differentialExpression';
 
-const { Text } = Typography;
-
 const DiffExprResults = (props) => {
   const {
     experimentId, onGoBack, width, height,
   } = props;
 
   const dispatch = useDispatch();
-  const loading = useSelector((state) => state.differentialExpression.properties.loading);
-  const data = useSelector((state) => state.differentialExpression.properties.data);
-  const total = useSelector((state) => state.differentialExpression.properties.total);
-  const error = useSelector((state) => state.differentialExpression.properties.error);
-  const comparisonGroup = useSelector((state) => state.differentialExpression.comparison.group);
-  const comparisonType = useSelector((state) => state.differentialExpression.comparison.type);
-  const advancedFilters = useSelector((state) => (
-    state.differentialExpression.comparison.advancedFilters));
+  const {
+    data, total, error, loading,
+  } = useSelector((state) => state.differentialExpression.properties);
+  const {
+    type: comparisonType,
+    group: comparisonGroup,
+    advancedFilters,
+  } = useSelector((state) => state.differentialExpression.comparison);
   const { properties } = useSelector(getCellSets());
 
   const [dataShown, setDataShown] = useState(data);
@@ -44,52 +42,15 @@ const DiffExprResults = (props) => {
   const [settingsListed, setSettingsListed] = useState(false);
   const [advancedFilteringModalVisible, setAdvancedFilteringModalVisible] = useState(false);
   const [pathwayAnalysisModalVisible, setPathwayAnalysisModalVisible] = useState(false);
+  const [columns, setColumns] = useState([]);
   const geneTableState = useRef({});
-  const columns = [
-    {
-      title: 'logFC',
-      key: 'logFC',
-      sorter: true,
-      showSorterTooltip: false,
-    },
-    {
-      title: 'adj p-value',
-      key: 'p_val_adj',
-      sorter: true,
-      showSorterTooltip: false,
-      render: (score, record) => <Tooltip title={`adj p-value: ${record.p_val_adj}`}>{score}</Tooltip>,
-    },
-    {
-      title: 'Pct 1',
-      key: 'pct_1',
-      sorter: true,
-      showSorterTooltip: {
-        title: 'The percentage of cells where the feature is detected in the first group',
-      },
-    },
-    {
-      title: 'Pct 2',
-      key: 'pct_2',
-      sorter: true,
-      showSorterTooltip: {
-        title: 'The percentage of cells where the feature is detected in the second group',
-      },
-    },
-    {
-      title: 'AUC',
-      key: 'auc',
-      sorter: true,
-      showSorterTooltip: {
-        title: 'Area under the ROC curve',
-      },
-    },
-  ];
 
   // When data changes, update rows.
   useEffect(() => {
-    if (data && properties) {
-      setDataShown(data);
-    }
+    if (!data || !properties) return null;
+
+    setDataShown(data);
+    setColumns(buildColumns(data));
   }, [data, properties]);
 
   const onUpdate = (newState, reason) => {
@@ -137,7 +98,7 @@ const DiffExprResults = (props) => {
       printString = properties[clusterName]?.name || _.capitalize(clusterName);
     }
 
-    return <Text strong>{printString}</Text>;
+    return <strong>{printString}</strong>;
   };
 
   const { basis, cellSet, compareWith } = comparisonGroup[comparisonType];
@@ -252,6 +213,50 @@ const DiffExprResults = (props) => {
       }
     </Space>
   );
+};
+
+const buildColumns = (rowData) => Object.keys(rowData[0])
+  .map((key) => columnDefinitions[key])
+  .filter((definition) => definition !== undefined);
+
+const columnDefinitions = {
+  logFC: {
+    title: 'logFC',
+    key: 'logFC',
+    sorter: true,
+    showSorterTooltip: false,
+  },
+  p_val_adj: {
+    title: 'adj p-value',
+    key: 'p_val_adj',
+    sorter: true,
+    showSorterTooltip: false,
+    render: (score, record) => <Tooltip title={`adj p-value: ${record.p_val_adj}`}>{score}</Tooltip>,
+  },
+  pct_1: {
+    title: 'Pct 1',
+    key: 'pct_1',
+    sorter: true,
+    showSorterTooltip: {
+      title: 'The percentage of cells where the feature is detected in the first group',
+    },
+  },
+  pct_2: {
+    title: 'Pct 2',
+    key: 'pct_2',
+    sorter: true,
+    showSorterTooltip: {
+      title: 'The percentage of cells where the feature is detected in the second group',
+    },
+  },
+  auc: {
+    title: 'AUC',
+    key: 'auc',
+    sorter: true,
+    showSorterTooltip: {
+      title: 'Area under the ROC curve',
+    },
+  },
 };
 
 DiffExprResults.defaultProps = {};
