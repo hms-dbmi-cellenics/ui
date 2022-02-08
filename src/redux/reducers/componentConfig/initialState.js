@@ -425,7 +425,6 @@ const cellSizeDistributionHistogram = {
   marker: markerBaseState,
   labels: labelBaseState,
   minCellSize: 10800,
-  binStep: 200,
 };
 
 // CELL SIZE DISTRIBUTION - Cell Size Distribution Knee Plot
@@ -482,7 +481,6 @@ const mitochondrialFractionHistogram = {
   colour: colourBaseState,
   marker: markerBaseState,
   labels: labelBaseState,
-  binStep: 0.3,
   maxFraction: 0.1,
 };
 
@@ -512,7 +510,6 @@ const mitochondrialFractionLogHistogram = {
   colour: colourBaseState,
   marker: markerBaseState,
   labels: labelBaseState,
-  binStep: 0.05,
   maxFraction: 0.2,
 };
 
@@ -624,7 +621,6 @@ const doubletScoreHistogram = {
   colour: colourBaseState,
   marker: markerBaseState,
   labels: labelBaseState,
-  binStep: 0.02,
   probThreshold: 0.2,
 };
 
