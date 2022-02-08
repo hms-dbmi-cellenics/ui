@@ -1,3 +1,4 @@
+/* eslint-disable react/no-array-index-key */
 import React from 'react';
 import {
   Modal, Form, Button, Select, InputNumber, Row, Alert, Col,
@@ -9,8 +10,6 @@ const formItemStyle = { margin: '0.375rem 0' };
 const CreateCellSetModal = (props) => {
   const { selectedGenes, onCancel } = props;
   const [form] = Form.useForm();
-  const intialFormValues = selectedGenes.map((gene) => ({ selectedGenes: gene }));
-
   const comparisonOptions = [{
     value: 'greaterThan',
     label: 'Greater than',
@@ -20,12 +19,18 @@ const CreateCellSetModal = (props) => {
   },
   ];
 
+  const intialFormValues = selectedGenes.map((gene) => ({
+    selectedGenes: gene,
+    value: 0,
+    comparison: comparisonOptions[0].value,
+  }));
+
   return (
     <Modal
       visible
       title='Create a new cell set based on gene expression'
       onCancel={onCancel}
-      footer={[<Button type='primary'>Create</Button>]}
+      footer={[<Button key='createCellSet' type='primary'>Create</Button>]}
     >
       <Form
         form={form}
@@ -41,7 +46,7 @@ const CreateCellSetModal = (props) => {
               {fields.map((field, index) => {
                 const { selectedGenes: formSelectedGenes } = form.getFieldValue('filterForm')[index];
                 return (
-                  <Row gutter={8}>
+                  <Row gutter={8} key={`geneComparison-${index}`}>
                     <Col flex='auto'>
                       <Form.Item
                         name={[field.name, 'selectedGenes']}
@@ -57,7 +62,6 @@ const CreateCellSetModal = (props) => {
                       >
                         <Select
                           placeholder='Select comparison'
-                          defaultValue='greaterThan'
                           options={comparisonOptions}
                         />
                       </Form.Item>
@@ -68,7 +72,6 @@ const CreateCellSetModal = (props) => {
                         style={formItemStyle}
                       >
                         <InputNumber
-                          defaultValue={0}
                           step={1}
                           min={0}
                           max={100}

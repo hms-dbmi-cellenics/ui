@@ -5,9 +5,8 @@ import { Button, Typography } from 'antd';
 import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
 import configureMockStore from 'redux-mock-store';
-import CreateCellSetModal from 'components/data-exploration/generic-gene-table/CreateCellSetModal';
-import SelectionActions from '../../../../components/data-exploration/generic-gene-table/SelectionActions';
-import { GENES_DESELECT } from '../../../../redux/actionTypes/genes';
+import SelectionActions from 'components/data-exploration/generic-gene-table/SelectionActions';
+import { GENES_DESELECT } from 'redux/actionTypes/genes';
 import '__test__/test-utils/setupTests';
 
 const { Text } = Typography;
@@ -177,29 +176,32 @@ describe('SelectionIndicator', () => {
     expect(component.find('#testExtraOption').length).toEqual(1);
   });
 
-  test('opens and closes create cell set modal', () => {
-    const state = _.cloneDeep(initialState);
-    state.genes.selected = ['CEMIP', 'TIMP3'];
+  // uncomment following test when the create cell set modal is openable again
 
-    const store = mockStore(state);
-    const component = mount(
-      <Provider store={store}>
-        <SelectionActions
-          experimentId='test'
-          extraOptions={<div id='testExtraOption' />}
-        />
-      </Provider>,
-    );
+  // test('opens and closes create cell set modal', () => {
+  //   const state = _.cloneDeep(initialState);
+  //   state.genes.selected = ['CEMIP', 'TIMP3'];
 
-    const button = component.find(Button).at(4);
-    button.simulate('click');
-    expect(component.find(CreateCellSetModal).length).toEqual(1);
+  //   const store = mockStore(state);
+  //   const component = mount(
+  //     <Provider store={store}>
+  //       <SelectionActions
+  //         experimentId='test'
+  //         extraOptions={<div id='testExtraOption' />}
+  //       />
+  //     </Provider>,
+  //   );
 
-    // check if the genes are passed
-    expect(component.find(CreateCellSetModal).prop('selectedGenes')).toStrictEqual(['CEMIP', 'TIMP3']);
+  //   const button = component.find(Button).at(4);
+  //   button.simulate('click');
+  //   expect(component.find(CreateCellSetModal).length).toEqual(1);
 
-    const closeButton = component.find('.ant-modal-close');
-    closeButton.simulate('click');
-    expect(component.find(CreateCellSetModal).length).toEqual(0);
-  });
+  //   // check if the genes are passed
+  //   expect(component.find(CreateCellSetModal).prop('selectedGenes'))
+  //      .toStrictEqual(['CEMIP', 'TIMP3']);
+
+  //   const closeButton = component.find('.ant-modal-close');
+  //   closeButton.simulate('click');
+  //   expect(component.find(CreateCellSetModal).length).toEqual(0);
+  // });
 });

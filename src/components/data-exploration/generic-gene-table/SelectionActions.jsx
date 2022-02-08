@@ -1,7 +1,7 @@
 /* eslint-disable jsx-quotes */
 import React, { useState, useEffect } from 'react';
 import {
-  Button, Typography, Row, Divider,
+  Button, Typography, Row, Divider, Tooltip,
 } from 'antd';
 
 import PropTypes from 'prop-types';
@@ -98,13 +98,16 @@ const SelectionActions = (props) => {
             {listed ? 'Hide' : 'List'}
           </Button>
           <ComponentActions name='Heatmap' experimentId={experimentId} componentType={COMPONENT_TYPE} />
-          <Button
-            type='link'
-            size='small'
-            onClick={() => setCreateCellSetModalVisible(!createCellSetModalVisible)}
-          >
-            Cellset
-          </Button>
+          <Tooltip title='Feature coming soon!'>
+            <Button
+              type='link'
+              size='small'
+              disabled
+              onClick={() => setCreateCellSetModalVisible(!createCellSetModalVisible)}
+            >
+              Cellset
+            </Button>
+          </Tooltip>
           {
             createCellSetModalVisible && (
               <CreateCellSetModal
