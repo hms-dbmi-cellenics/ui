@@ -51,8 +51,8 @@ const DiffExprResults = (props) => {
 
   useEffect(() => {
     if (!data.length || !Object.keys(properties).length) return null;
-    setDataShown(data);
     setColumns(buildColumns(data));
+    setDataShown(data);
   }, [data, properties]);
 
   const onUpdate = (newState, reason) => {
