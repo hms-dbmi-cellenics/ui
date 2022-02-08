@@ -28,7 +28,7 @@ Object {
 
 exports[`cellInfoReducer Updates cell info state on update action 1`] = `
 Object {
-  "cellName": "C1",
+  "cellId": "C1",
   "expression": 1,
   "focus": Object {
     "key": "louvain",

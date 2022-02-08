@@ -1,0 +1,16 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`get cell class properties tests returns information for a passed cellId 1`] = `
+Object {
+  "test": Array [
+    Object {
+      "cellIds": Set {
+        1,
+        2,
+        3,
+      },
+      "name": "Test-1",
+    },
+  ],
+}
+`;

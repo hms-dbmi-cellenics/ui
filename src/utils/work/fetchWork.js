@@ -1,14 +1,14 @@
 /* eslint-disable no-underscore-dangle */
-import hash from 'object-hash';
+import { MD5 } from 'object-hash';
 
 import Environment, { isBrowser } from 'utils/environment';
 import { calculateZScore } from 'utils/postRequestProcessing';
 import { getBackendStatus } from 'redux/selectors';
 
 import cache from 'utils/cache';
-import { seekFromAPI, seekFromS3 } from './seekWorkResponse';
+import { dispatchWorkRequest, seekFromS3 } from 'utils/work/seekWorkResponse';
 
-const createObjectHash = (object) => hash.MD5(object);
+const createObjectHash = (object) => MD5(object);
 
 const decomposeBody = async (body, experimentId) => {
   const { genes: requestedGenes } = body;
@@ -38,10 +38,12 @@ const fetchGeneExpressionWork = async (
   body,
   backendStatus,
   environment,
+  broadcast,
   extras,
 ) => {
   // Get only genes that are not already found in local storage.
   const { missingDataKeys, cachedData } = await decomposeBody(body, experimentId);
+
   const missingGenes = Object.keys(missingDataKeys);
 
   if (missingGenes.length === 0) {
@@ -68,28 +70,32 @@ const fetchGeneExpressionWork = async (
   // Then, we may be able to find this in S3.
   let response = await seekFromS3(ETag, experimentId);
 
+  // If there is no response in S3, dispatch workRequest via the worker
   if (!response) {
-    response = await seekFromAPI(
-      experimentId,
-      missingGenesBody,
-      timeout,
-      ETag,
-      null,
-      {
-        ETagPipelineRun: qcPipelineStartDate,
-        ...extras,
-      },
-    );
+    try {
+      await dispatchWorkRequest(
+        experimentId,
+        missingGenesBody,
+        timeout,
+        ETag,
+        {
+          ETagPipelineRun: qcPipelineStartDate,
+          broadcast,
+          ...extras,
+        },
+      );
+    } catch (error) {
+      console.error('Error dispatching work request: ', error);
+      throw error;
+    }
   }
 
-  if (!response[missingGenes[0]]?.error) {
-    // Preprocessing data before entering cache
-    const processedData = calculateZScore(response);
+  response = await seekFromS3(ETag, experimentId);
+  response = calculateZScore(response);
 
-    Object.keys(missingDataKeys).forEach(async (gene) => {
-      await cache.set(missingDataKeys[gene], processedData[gene]);
-    });
-  }
+  Object.keys(missingDataKeys).forEach(async (gene) => {
+    await cache.set(missingDataKeys[gene], response[gene]);
+  });
 
   return response;
 };
@@ -100,7 +106,7 @@ const fetchWork = async (
   getState,
   optionals = {},
 ) => {
-  const { extras = undefined, timeout = 180, eventCallback = null } = optionals;
+  const { extras = undefined, timeout = 180, broadcast = false } = optionals;
   const backendStatus = getBackendStatus(experimentId)(getState()).status;
 
   const { environment } = getState().networkResources;
@@ -115,11 +121,14 @@ const fetchWork = async (
 
   const { pipeline: { startDate: qcPipelineStartDate } } = backendStatus;
   if (body.name === 'GeneExpression') {
-    return fetchGeneExpressionWork(experimentId, timeout, body, backendStatus, environment, extras);
+    return fetchGeneExpressionWork(
+      experimentId, timeout, body, backendStatus, environment, broadcast, extras,
+    );
   }
 
   // If caching is disabled, we add an additional randomized key to the hash so we never reuse
   // past results.
+
   let cacheUniquenessKey = null;
   if (environment !== Environment.PRODUCTION && localStorage.getItem('disableCache') === 'true') {
     cacheUniquenessKey = Math.random();
@@ -139,31 +148,32 @@ const fetchWork = async (
   // Then, we may be able to find this in S3.
   let response = await seekFromS3(ETag, experimentId);
 
-  // If response cannot be fetched, go to the worker.
+  // If there is no response in S3, dispatch workRequest via the worker
   if (!response) {
-    response = await seekFromAPI(
-      experimentId,
-      body,
-      timeout,
-      ETag,
-      eventCallback,
-      {
-        PipelineRunETag: qcPipelineStartDate,
-        ...extras,
-      },
-    );
+    try {
+      await dispatchWorkRequest(
+        experimentId,
+        body,
+        timeout,
+        ETag,
+        {
+          PipelineRunETag: qcPipelineStartDate,
+          broadcast,
+          ...extras,
+        },
+      );
+    } catch (error) {
+      console.error('Error dispatching work request', error);
+      throw error;
+    }
   }
 
-  if (!response) {
-    console.debug(`No response immediately resolved for ${body} (ETag: ${ETag}) -- this is probably an event subscription.`);
-    return response;
-  }
+  response = await seekFromS3(ETag, experimentId);
 
   // If a work response is in s3, it is cacheable
   // (the cacheable or not option is managed in the worker)
   await cache.set(ETag, response);
-
   return response;
 };
 
-export { fetchWork, fetchGeneExpressionWork };
+export { fetchWork, fetchGeneExpressionWork, createObjectHash };

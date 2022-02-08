@@ -69,36 +69,26 @@ Object {
 `;
 
 exports[`loadPaginatedGeneProperties action Dispatches appropriately on success condition 3`] = `
-[MockFunction] {
-  "calls": Array [
-    Array [
-      "1234",
-      Object {
-        "limit": 20,
-        "name": "ListGenes",
-        "offset": 20,
-        "orderBy": "gene_names",
-        "orderDirection": "ASC",
-        "selectFields": Array [
-          "gene_names",
-          "a",
-          "b",
-          "c",
-        ],
-      },
-      60,
-      "97ad02a589a9066c83a355836f1c667e",
-      null,
-      Object {
-        "PipelineRunETag": "2021-01-01T01:01:01.000Z",
-      },
+Array [
+  "1234",
+  Object {
+    "limit": 20,
+    "name": "ListGenes",
+    "offset": 20,
+    "orderBy": "gene_names",
+    "orderDirection": "ASC",
+    "selectFields": Array [
+      "gene_names",
+      "a",
+      "b",
+      "c",
     ],
-  ],
-  "results": Array [
-    Object {
-      "type": "return",
-      "value": Promise {},
-    },
-  ],
-}
+  },
+  60,
+  "97ad02a589a9066c83a355836f1c667e",
+  Object {
+    "PipelineRunETag": "2021-01-01T01:01:01.000Z",
+    "broadcast": false,
+  },
+]
 `;

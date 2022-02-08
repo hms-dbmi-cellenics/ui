@@ -24,7 +24,7 @@ import populateHeatmapData from 'components/plots/helpers/heatmap/populateHeatma
 import HeatmapCellInfo from 'components/data-exploration/heatmap/HeatmapCellInfo';
 import HeatmapTracksCellInfo from 'components/data-exploration/heatmap/HeatmapTracksCellInfo';
 
-import getCellClassProperties from 'utils/cellSets/getCellClassProperties';
+import getContainingCellSetsProperties from 'utils/cellSets/getContainingCellSetsProperties';
 import useConditionalEffect from 'utils/customHooks/useConditionalEffect';
 
 const COMPONENT_TYPE = 'interactiveHeatmap';
@@ -165,7 +165,9 @@ const HeatmapPlot = (props) => {
   }, [louvainClusterCount]);
 
   useEffect(() => {
-    dispatch(updateCellInfo({ cellName: cellHighlight }));
+    if (cellHighlight) {
+      dispatch(updateCellInfo({ cellId: cellHighlight }));
+    }
   }, [cellHighlight]);
 
   useEffect(() => {
@@ -231,23 +233,21 @@ const HeatmapPlot = (props) => {
       </center>
     );
   }
-
   const setTrackHighlight = (info) => {
     if (!info) {
       setHighlightedTrackData(null);
       return;
     }
-
-    dispatch(updateCellInfo({ cellName: info[0] }));
+    dispatch(updateCellInfo({ cellId: info[0] }));
 
     const [cellIndexStr, trackIndex, mouseX, mouseY] = info;
 
     const cellSetClassKey = heatmapSettings.selectedTracks[trackIndex];
 
-    const cellClassProps = getCellClassProperties(
-      parseInt(cellIndexStr, 10), cellSetClassKey,
-      cellSetsHierarchy, cellSetsProperties,
-    );
+    const cellClassProps = getContainingCellSetsProperties(
+      parseInt(cellIndexStr, 10), [cellSetClassKey],
+      cellSets,
+    )[cellSetClassKey][0];
 
     const obj = {
       cellId: cellIndexStr,

@@ -6,7 +6,9 @@ const mockCacheKeyMappings = {
   E: '33faa711a94a2028b5bae1778126aec0', // pragma: allowlist secret
 };
 
-const mockData = {
+const mockGenesListData = ['A', 'B', 'C', 'D'];
+
+const mockGeneExpressionData = {
   A: {
     rawExpression: {
       min: 0,
@@ -56,15 +58,6 @@ const mockData = {
     },
   },
   D: {
-    zScore: [
-      -0.6468175894669735,
-      -0.6468175894669735,
-      -0.6468175894669735,
-      -0.04620125639049807,
-      -0.6468175894669735,
-      1.971253605994586,
-      0.6622180082638063,
-    ],
     rawExpression: {
       min: 0,
       max: 6.8,
@@ -78,18 +71,23 @@ const mockData = {
       mean: 1.68,
       stdev: 2.597331964,
       expression: [0, 0, 0, 1.56, 0, 6.8, 3.4],
-      zScore: [
-        -0.6468175894669735,
-        -0.6468175894669735,
-        -0.6468175894669735,
-        -0.04620125639049807,
-        -0.6468175894669735,
-        1.971253605994586,
-        0.6622180082638063,
-      ],
     },
   },
   E: { hello: 'world' },
+};
+
+const mockGeneExpressionDataZScore = {
+  D: {
+    zScore: [
+      -0.6468175894669735,
+      -0.6468175894669735,
+      -0.6468175894669735,
+      -0.04620125639049807,
+      -0.6468175894669735,
+      1.971253605994586,
+      0.6622180082638063,
+    ],
+  },
 };
 
 const mockCacheGet = jest.fn((x) => {
@@ -101,7 +99,7 @@ const mockCacheGet = jest.fn((x) => {
   };
 
   if (x in mockCacheContents) {
-    return mockData[mockCacheContents[x]];
+    return mockGeneExpressionData[mockCacheContents[x]];
   }
 
   return null;
@@ -109,17 +107,9 @@ const mockCacheGet = jest.fn((x) => {
 const mockCacheSet = jest.fn();
 const mockCacheRemove = jest.fn();
 
-const mockSeekFromAPI = jest.fn((_, body) => {
-  const wantedGenes = body.genes;
-  const returnedBody = {};
+const mockDispatchWorkRequest = jest.fn(() => true);
 
-  wantedGenes.forEach((gene) => {
-    // eslint-disable-next-line no-param-reassign
-    returnedBody[gene] = mockData[gene];
-  });
-
-  return returnedBody;
-});
+const mockSeekFromS3 = jest.fn();
 
 const mockCacheModule = {
   get: jest.fn((x) => mockCacheGet(x)),
@@ -129,10 +119,8 @@ const mockCacheModule = {
 
 const mockSeekWorkResponseModule = {
   __esModule: true,
-  seekFromS3: jest.fn(() => new Promise((resolve) => { resolve(null); })),
-  seekFromAPI: jest.fn(
-    (experimentId, body, timeout, ETag) => mockSeekFromAPI(experimentId, body, timeout, ETag),
-  ),
+  seekFromS3: mockSeekFromS3,
+  dispatchWorkRequest: mockDispatchWorkRequest,
 };
 
 const mockReduxState = (experimentId, environment = 'testing') => () => ({
@@ -152,8 +140,11 @@ const mockReduxState = (experimentId, environment = 'testing') => () => ({
 });
 
 export {
-  mockData, mockCacheKeyMappings,
-  mockCacheGet, mockCacheSet, mockSeekFromAPI,
+  mockGeneExpressionData, mockGeneExpressionDataZScore,
+  mockGenesListData,
+  mockCacheKeyMappings,
+  mockCacheGet, mockCacheSet,
+  mockDispatchWorkRequest, mockSeekFromS3,
   mockReduxState,
   mockCacheModule, mockSeekWorkResponseModule,
 };

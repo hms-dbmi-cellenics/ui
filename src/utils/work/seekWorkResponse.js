@@ -5,38 +5,46 @@ import fetchAPI from 'utils/fetchAPI';
 import unpackResult from 'utils/work/unpackResult';
 import WorkResponseError from 'utils/WorkResponseError';
 
+const throwResponseError = (response) => {
+  throw new Error(`Error ${response.status}: ${response.text}`, { cause: response });
+};
+
 const seekFromS3 = async (ETag, experimentId) => {
   const response = await fetchAPI(`/v1/workResults/${experimentId}/${ETag}`);
-  const { signedUrl } = await response.json();
 
-  if (!signedUrl) return null;
+  if (!response.ok) {
+    if (response.status === 404) return null;
+
+    throwResponseError(response);
+  }
+
+  const { signedUrl } = await response.json();
   const storageResp = await fetch(signedUrl);
+
   if (!storageResp.ok) {
-    return null;
+    throwResponseError(storageResp);
   }
 
   return unpackResult(storageResp);
 };
 
-const seekFromAPI = async (
+const dispatchWorkRequest = async (
   experimentId,
   body,
   timeout,
   ETag,
-  eventCallback,
-  requestProps = {},
+  requestProps,
 ) => {
-  console.error('seek from api', body);
+  console.error('dispatching work request', body);
   const { default: connectionPromise } = await import('utils/socketConnection');
   const io = await connectionPromise;
 
   const timeoutDate = moment().add(timeout, 's').toISOString();
   const authJWT = await getAuthJWT();
-  const socketId = !eventCallback ? io.id : 'broadcast';
 
   const request = {
     ETag,
-    socketId,
+    socketId: io.id,
     experimentId,
     ...(authJWT && { Authorization: `Bearer ${authJWT}` }),
     timeout: timeoutDate,
@@ -44,56 +52,33 @@ const seekFromAPI = async (
     ...requestProps,
   };
 
-  let result = null;
+  const timeoutPromise = new Promise((resolve, reject) => {
+    const id = setTimeout(() => {
+      clearTimeout(id);
+      reject(new WorkTimeoutError(timeoutDate, request));
+    }, timeout * 1000);
+  });
 
-  if (eventCallback) {
-    io.off(`${experimentId}-${body.name}`);
-
-    io.on(`${experimentId}-${body.name}`, (res) => {
+  const responsePromise = new Promise((resolve, reject) => {
+    io.on(`WorkResponse-${ETag}`, (res) => {
       const { response: { error } } = res;
 
       if (error) {
-        return eventCallback(error, null);
+        return reject(
+          new WorkResponseError(error, request),
+        );
       }
 
-      seekFromS3(ETag, experimentId)
-        .then((content) => eventCallback(null, content))
-        .catch((e) => eventCallback(e, null));
+      // If no error, the response should be ready on S3.
+      // In this case, return true
+      return resolve();
     });
-  } else {
-    const timeoutPromise = new Promise((resolve, reject) => {
-      const id = setTimeout(() => {
-        clearTimeout(id);
-        reject(new WorkTimeoutError(timeoutDate, request));
-      }, timeout * 1000);
-    });
+  });
 
-    const responsePromise = new Promise((resolve, reject) => {
-      io.on(`WorkResponse-${ETag}`, (res) => {
-        const { response: { error } } = res;
-
-        if (error) {
-          return reject(
-            new WorkResponseError(error, request),
-          );
-        }
-
-        // If no error, the reasponse should be ready on S3.
-        seekFromS3(
-          ETag, experimentId,
-        ).then((content) => {
-          resolve(content);
-        }).catch((e) => {
-          reject(e);
-        });
-      });
-    });
-
-    result = Promise.race([timeoutPromise, responsePromise]);
-  }
+  const result = Promise.race([timeoutPromise, responsePromise]);
 
   io.emit('WorkRequest', request);
   return result;
 };
 
-export { seekFromAPI, seekFromS3 };
+export { dispatchWorkRequest, seekFromS3 };

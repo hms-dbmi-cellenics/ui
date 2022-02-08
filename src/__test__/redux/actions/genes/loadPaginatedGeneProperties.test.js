@@ -1,46 +1,52 @@
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
-import loadPaginatedGeneProperties from '../../../../redux/actions/genes/loadPaginatedGeneProperties';
-import initialState from '../../../../redux/reducers/genes/initialState';
+import loadPaginatedGeneProperties from 'redux/actions/genes/loadPaginatedGeneProperties';
+import initialState from 'redux/reducers/genes/initialState';
 
-import { seekFromAPI } from '../../../../utils/work/seekWorkResponse';
+import { dispatchWorkRequest, seekFromS3 } from 'utils/work/seekWorkResponse';
 
 import {
   GENES_PROPERTIES_LOADING,
   GENES_PROPERTIES_LOADED_PAGINATED,
   GENES_PROPERTIES_ERROR,
-} from '../../../../redux/actionTypes/genes';
+} from 'redux/actionTypes/genes';
 
-import '__test__/test-utils/setupTests';
-
-jest.mock('../../../../utils/work/seekWorkResponse', () => ({
+jest.mock('utils/work/seekWorkResponse', () => ({
   __esModule: true, // this property makes it work
-  seekFromAPI: jest.fn(),
+  dispatchWorkRequest: jest.fn(() => true),
   seekFromS3: jest.fn(() => new Promise((resolve) => { resolve(null); })),
 }));
 
-jest.mock('../../../../utils/getTimeoutForWorkerTask', () => ({
+jest.mock('utils/getTimeoutForWorkerTask', () => ({
   __esModule: true, // this property makes it work
   default: () => 60,
 }));
 
 const mockStore = configureStore([thunk]);
 
-describe('loadPaginatedGeneProperties action', () => {
-  const experimentId = '1234';
-  const properties = ['a', 'b', 'c'];
-  const componentUuid = 'asd';
+const experimentId = '1234';
+const properties = ['a', 'b', 'c'];
+const componentUuid = 'asd';
 
-  const backendStatus = {
-    [experimentId]: {
-      status: {
-        pipeline: {
-          status: 'SUCCEEDED',
-          startDate: '2021-01-01T01:01:01.000Z',
-        },
+const backendStatus = {
+  [experimentId]: {
+    status: {
+      pipeline: {
+        status: 'SUCCEEDED',
+        startDate: '2021-01-01T01:01:01.000Z',
       },
     },
-  };
+  },
+};
+
+describe('loadPaginatedGeneProperties action', () => {
+  beforeEach(async () => {
+    jest.clearAllMocks();
+
+    seekFromS3
+      .mockReset()
+      .mockImplementation(() => null);
+  });
 
   it('Does not dispatch when some of the properties are already loading', async () => {
     const store = mockStore({
@@ -71,10 +77,10 @@ describe('loadPaginatedGeneProperties action', () => {
       },
     });
 
-    seekFromAPI.mockImplementation(() => {
-      // No need to mock the result accurately.
-
-      const resolveWith = {
+    seekFromS3
+      .mockReset()
+      .mockImplementationOnce(() => null)
+      .mockImplementation(() => Promise.resolve({
         total: 2,
         rows: [
           {
@@ -86,10 +92,7 @@ describe('loadPaginatedGeneProperties action', () => {
             dispersions: 1,
           },
         ],
-      };
-
-      return new Promise((resolve) => resolve(resolveWith));
-    });
+      }));
 
     const tableState = {
       sorter: {
@@ -116,7 +119,8 @@ describe('loadPaginatedGeneProperties action', () => {
     expect(loadedAction).toMatchSnapshot();
     expect(loadedAction.type).toEqual(GENES_PROPERTIES_LOADED_PAGINATED);
 
-    expect(seekFromAPI).toMatchSnapshot();
+    const dispatchParams = dispatchWorkRequest.mock.calls[0];
+    expect(dispatchParams).toMatchSnapshot();
   });
 
   it('Dispatches appropriately on error condition', async () => {
@@ -131,7 +135,10 @@ describe('loadPaginatedGeneProperties action', () => {
       },
     });
 
-    seekFromAPI.mockImplementation(() => new Promise((resolve, reject) => reject(new Error('random error!'))));
+    seekFromS3
+      .mockReset()
+      .mockImplementationOnce(() => null)
+      .mockImplementation(() => Promise.reject(new Error('random error!')));
 
     const tableState = {
       sorter: {

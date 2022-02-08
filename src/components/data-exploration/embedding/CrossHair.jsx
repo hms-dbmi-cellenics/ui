@@ -13,11 +13,11 @@ const CrossHair = (props) => {
   const crosshairWidth = 1;
 
   useEffect(() => {
-    if (!cellInfo.cellName && crossHairsVisible) {
+    if (!cellInfo.cellId && crossHairsVisible) {
       setCrossHairsVisible(false);
       return;
     }
-    if (cellInfo.cellName) {
+    if (cellInfo.cellId) {
       if (!crossHairsVisible) {
         setCrossHairsVisible(true);
       }

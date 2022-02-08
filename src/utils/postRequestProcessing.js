@@ -1,20 +1,17 @@
-// Calculate ZScore
 const calculateZScore = (responseData) => {
-  Object.keys(responseData).forEach((gene) => {
-    const { mean, stdev } = responseData[gene].rawExpression;
+  const dataWithZScore = Object.entries(responseData).reduce((acc, [gene, value]) => {
+    const { mean, stdev, expression } = value.rawExpression;
+    const zScore = expression.map((x) => (x !== null ? ((x - mean) / stdev) : null));
 
-    /* eslint-disable no-param-reassign */
-    responseData[gene].zScore = [];
-    responseData[gene].rawExpression.expression.forEach((x) => {
-      if (x === null) {
-        return responseData[gene].zScore.push(null);
-      }
+    acc[gene] = {
+      ...value,
+      zScore,
+    };
 
-      responseData[gene].zScore.push((x - mean) / stdev);
-    });
-  });
+    return acc;
+  }, {});
 
-  return responseData;
+  return dataWithZScore;
 };
 
 // eslint-disable-next-line import/prefer-default-export
