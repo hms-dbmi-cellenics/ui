@@ -6,7 +6,7 @@ import {
 } from '@ant-design/icons';
 
 import HierarchicalTree from 'components/data-exploration/hierarchical-tree/HierarchicalTree';
-import waitForComponentToPaint from 'utils/tests/waitForComponentToPaint';
+import waitForComponentToPaint from '__test__/test-utils/waitForComponentToPaint';
 
 import fake from '__test__/test-utils/constants';
 
