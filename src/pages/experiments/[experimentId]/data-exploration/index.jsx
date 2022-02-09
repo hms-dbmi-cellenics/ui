@@ -134,7 +134,6 @@ const ExplorationViewPage = ({
       {
         description: 'Create and manage interesting groupings of cells.',
         key: 'Data Management',
-        group: 'Genes',
       },
       {
         description: 'Find, organize, and annotate genes in your data set.',
@@ -149,7 +148,7 @@ const ExplorationViewPage = ({
     ],
     Plots: [
       {
-        key: `${embeddingTitle}`,
+        key: `${methodUppercase}`,
         description: `Visualize cells clustered by genetic expression using a ${embeddingTitle}.`,
       },
       {
@@ -169,12 +168,13 @@ const ExplorationViewPage = ({
       options={categoryItems}
       categoryInfo={categoryInfo}
       onSelect={(key, category, belongsToGroup) => {
-        console.log('hahah xdd ', key, belongsToGroup);
         if (belongsToGroup) {
           dispatch(addToWindow(key, belongsToGroup));
         } else {
           dispatch(addWindow(key));
         }
+        dispatch(addToWindow(key, belongsToGroup));
+
         setAddMenuVisible(false);
       }}
     />
