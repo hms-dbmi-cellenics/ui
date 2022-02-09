@@ -17,6 +17,7 @@ const getMultipleWindowsConfig = (first, second) => ({
 });
 
 const updateLayout = (layout) => (dispatch) => {
+  console.log('LAYOUT', layout);
   if (!layout) {
     return dispatch({
       type: UPDATE_LAYOUT,
@@ -42,7 +43,7 @@ const updateLayout = (layout) => (dispatch) => {
 const addWindow = (window) => (dispatch, getState) => {
   const { layout } = getState();
   let newLayout;
-
+  console.log('WINDOW IS ', window);
   if (Object.keys(layout).length === 0) {
     newLayout = {
       windows: getSinglewindowConfig(window),
@@ -63,6 +64,16 @@ const addWindow = (window) => (dispatch, getState) => {
   });
 };
 
+// const addWindowRework = (window) =>(dispatch,getState)=>{
+//   // traverse through the layout tree to find unset window
+//   // if unset window is found, set it to the window
+//   const  {layout} = getState();
+//   let newLayout;
+//   Object.keys(_.omit(layout,['direction'])).forEach((key)=>{
+//     if
+//   })
+// }
+
 const addToWindow = (panel, window) => (dispatch, getState) => {
   const { layout } = getState();
 
@@ -71,11 +82,11 @@ const addToWindow = (panel, window) => (dispatch, getState) => {
     newLayout = {
       windows: getSinglewindowConfig(window),
     };
-    newLayout.panel = panel;
+    // newLayout.panel = panel;
   } else {
     newLayout = _.cloneDeep(layout);
     const allWindows = JSON.stringify(newLayout.windows);
-    newLayout.panel = panel;
+    // newLayout.panel = panel;
     if (allWindows.includes(window) || allWindows.includes(panel)) {
       return dispatch({
         type: UPDATE_LAYOUT,

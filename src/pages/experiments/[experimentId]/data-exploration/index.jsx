@@ -72,6 +72,7 @@ const ExplorationViewPage = ({
       }));
     }
   }, [method]);
+
   const TILE_MAP = {
     [methodUppercase]: {
       toolbarControls: <MosaicCloseButton key='remove-button-embedding' />,
@@ -168,6 +169,7 @@ const ExplorationViewPage = ({
       options={categoryItems}
       categoryInfo={categoryInfo}
       onSelect={(key, category, belongsToGroup) => {
+        console.log('hahah xdd ', key, belongsToGroup);
         if (belongsToGroup) {
           dispatch(addToWindow(key, belongsToGroup));
         } else {

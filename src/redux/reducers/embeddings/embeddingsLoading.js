@@ -1,17 +1,13 @@
-import { initialEmbeddingState } from './initialState';
+/* eslint-disable no-param-reassign */
+import produce from 'immer';
+import initialState from './initialState';
 
-const embeddingsLoading = (state, action) => {
+const embeddingsLoading = produce((draft, action) => {
   const { embeddingType } = action.payload;
-
-  return {
-    ...state,
-    [embeddingType]: {
-      ...initialEmbeddingState,
-      ...state[embeddingType],
-      loading: true,
-      error: false,
-    },
+  draft[embeddingType] = {
+    loading: true,
+    error: false,
   };
-};
+}, initialState);
 
 export default embeddingsLoading;
