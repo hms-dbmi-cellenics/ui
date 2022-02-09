@@ -5,6 +5,7 @@ import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import { Empty } from 'antd';
+import _ from 'lodash';
 import waitForActions from 'redux-mock-store-await-actions';
 import AdvancedFilteringModal from 'components/data-exploration/differential-expression-tool/AdvancedFilteringModal';
 
@@ -59,6 +60,24 @@ const backendStatus = {
   },
 };
 
+const mockGeneExpressionData = [
+  {
+    p_val: 1.496, p_val_adj: 1.647, logFC: -1.427, gene_names: 'A', auc: '0.1', pct_1: '100', pct_2: '100',
+  },
+  {
+    p_val: 2.496, p_val_adj: 2.647, logFC: -2.427, gene_names: 'B', auc: '0.2', pct_1: '90', pct_2: '90',
+  },
+  {
+    p_val: 3.496, p_val_adj: 3.647, logFC: -3.427, gene_names: 'C', auc: '0.3', pct_1: '80', pct_2: '80',
+  },
+  {
+    p_val: 4.496, p_val_adj: 4.647, logFC: -4.427, gene_names: 'D', auc: '0.4', pct_1: '70', pct_2: '70',
+  },
+  {
+    p_val: 5.496, p_val_adj: 5.647, logFC: -5.427, gene_names: 'E', auc: '0.5', pct_1: '60', pct_2: '60',
+  },
+];
+
 const resultState = {
   genes: {
     selected: [],
@@ -72,23 +91,7 @@ const resultState = {
   cellSets: mockCellSets1,
   differentialExpression: {
     properties: {
-      data: [
-        {
-          p_val: 1.496, p_val_adj: 1.647, logFC: -1.427, gene_names: 'A', auc: '0.1', pct_1: '100', pct_2: '100',
-        },
-        {
-          p_val: 2.496, p_val_adj: 2.647, logFC: -2.427, gene_names: 'B', auc: '0.2', pct_1: '90', pct_2: '90',
-        },
-        {
-          p_val: 3.496, p_val_adj: 3.647, logFC: -3.427, gene_names: 'C', auc: '0.3', pct_1: '80', pct_2: '80',
-        },
-        {
-          p_val: 4.496, p_val_adj: 4.647, logFC: -4.427, gene_names: 'D', auc: '0.4', pct_1: '70', pct_2: '70',
-        },
-        {
-          p_val: 5.496, p_val_adj: 5.647, logFC: -5.427, gene_names: 'E', auc: '0.5', pct_1: '60', pct_2: '60',
-        },
-      ],
+      data: mockGeneExpressionData,
       loading: false,
       error: false,
       total: 5,
@@ -108,6 +111,28 @@ const resultState = {
   backendStatus,
 };
 
+// State with less gene expression fields
+const partialState = _.cloneDeep(resultState);
+const partialGeneExpData = mockGeneExpressionData.map((data) => {
+  const { pct_1, pct_2, ...remaining } = data;
+  return remaining;
+});
+partialState.differentialExpression.properties.data = partialGeneExpData;
+
+// State with more gene expression fields
+const extraState = _.cloneDeep(resultState);
+const extraGeneExpData = mockGeneExpressionData.map((data, idx) => {
+  const newData = {
+    ...data,
+    extra_field: idx,
+    more_extra_field: idx + 1,
+  };
+
+  return newData;
+});
+extraState.differentialExpression.properties.data = extraGeneExpData;
+
+// State with no results
 const noResultState = {
   ...resultState,
   differentialExpression: {
@@ -123,6 +148,8 @@ const noResultState = {
 };
 
 const withResultStore = mockStore(resultState);
+const partialResultStore = mockStore(partialState);
+const extraResultStore = mockStore(extraState);
 const noResultStore = mockStore(noResultState);
 
 describe('DiffExprResults', () => {
@@ -371,5 +398,87 @@ describe('DiffExprResults', () => {
     const closeButton = component.find('.ant-modal-close');
     closeButton.simulate('click');
     expect(component.find('LaunchPathwayAnalysisModal').length).toEqual(0);
+  });
+
+  it('Columns without corresponding data are not shown', async () => {
+    const component = mount(
+      <Provider store={partialResultStore}>
+        <DiffExprResults
+          experimentId={experimentId}
+          onGoBack={jest.fn()}
+          width={100}
+          height={200}
+        />
+      </Provider>,
+    );
+
+    const table = component.find('Table');
+    expect(table.getElement().props.columns.length).toEqual(5);
+    expect(table.getElement().props.columns[0].key).toEqual('lookup');
+    expect(table.getElement().props.columns[1].key).toEqual('gene_names');
+    expect(table.getElement().props.columns[2].key).toEqual('logFC');
+    expect(table.getElement().props.columns[3].key).toEqual('p_val_adj');
+    expect(table.getElement().props.columns[4].key).toEqual('auc');
+  });
+
+  it('Data without corresponding columns are not shown', async () => {
+    const component = mount(
+      <Provider store={extraResultStore}>
+        <DiffExprResults
+          experimentId={experimentId}
+          onGoBack={jest.fn()}
+          width={100}
+          height={200}
+        />
+      </Provider>,
+    );
+
+    const table = component.find('Table');
+
+    expect(table.getElement().props.columns.length).toEqual(7);
+    expect(table.getElement().props.columns[0].key).toEqual('lookup');
+    expect(table.getElement().props.columns[1].key).toEqual('gene_names');
+    expect(table.getElement().props.columns[2].key).toEqual('logFC');
+    expect(table.getElement().props.columns[3].key).toEqual('p_val_adj');
+    expect(table.getElement().props.columns[4].key).toEqual('pct_1');
+    expect(table.getElement().props.columns[5].key).toEqual('pct_2');
+    expect(table.getElement().props.columns[6].key).toEqual('auc');
+  });
+
+  it('The export as CSV alert opens and closes properly', async () => {
+    const component = mount(
+      <Provider store={withResultStore}>
+        <DiffExprResults
+          experimentId={experimentId}
+          onGoBack={jest.fn()}
+          width={100}
+          height={200}
+        />
+      </Provider>,
+    );
+
+    // Clicking the CSV button opens the modal
+    const csvButton = component.find('span[children="Export as CSV"]');
+    expect(csvButton.length).toEqual(1);
+
+    act(() => {
+      csvButton.simulate('click');
+    });
+    component.update();
+
+    const csvModal = component.find('Alert');
+    expect(csvModal.length).toEqual(1);
+
+    // Clicking the close button closes the CSV modal
+    const closeCsvModalButton = csvModal.find('button');
+    expect(closeCsvModalButton.length).toEqual(1);
+
+    act(() => {
+      closeCsvModalButton.simulate('click');
+    });
+    component.update();
+
+    // Expect CSV modal to not be shown anymore
+    expect(component.find('Alert').length).toEqual(0);
   });
 });

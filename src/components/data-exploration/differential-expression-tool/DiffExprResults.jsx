@@ -45,12 +45,13 @@ const DiffExprResults = (props) => {
   const [columns, setColumns] = useState([]);
   const geneTableState = useRef({});
 
-  // When data changes, update rows.
-  const buildColumns = (rowData) => columnDefinitions
-    .filter(({ key }) => rowData[0][key] !== undefined);
+  const buildColumns = (rowData) => {
+    const objectKeys = Object.keys(rowData[0]);
+    return columnDefinitions.filter(({ key }) => objectKeys.includes(key));
+  };
 
   useEffect(() => {
-    if (!data.length || !Object.keys(properties).length) return null;
+    if (!data.length || !Object.keys(properties).length) return;
     setColumns(buildColumns(data));
     setDataShown(data);
   }, [data, properties]);
@@ -125,9 +126,9 @@ const DiffExprResults = (props) => {
           </span>
         )}
         type='info'
-        closable
         showIcon
-        afterClose={() => {
+        closable
+        onClose={() => {
           setExportAlert(false);
         }}
       />
