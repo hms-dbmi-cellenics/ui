@@ -13,7 +13,7 @@ import initialState from 'redux/reducers/differentialExpression/initialState';
 import genesInitialState from 'redux/reducers/genes/initialState';
 import cellSetsInitialState from 'redux/reducers/cellSets/initialState';
 
-import { mockCellSets1 } from '__test__/test-utils/cellSets.mock';
+import { mockCellSets } from '__test__/test-utils/cellSets.mock';
 
 const mockStore = configureMockStore([thunk]);
 
@@ -52,7 +52,7 @@ const filledState = {
       key: 'C',
     },
   },
-  cellSets: mockCellSets1,
+  cellSets: mockCellSets,
   differentialExpression: {
     properties: {
       data: [

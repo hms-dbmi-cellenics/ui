@@ -13,7 +13,7 @@ import DiffExprResults from 'components/data-exploration/differential-expression
 import { fetchWork } from 'utils/work/fetchWork';
 import { DIFF_EXPR_LOADING, DIFF_EXPR_LOADED, DIFF_EXPR_ORDERING_SET } from 'redux/actionTypes/differentialExpression';
 
-import { mockCellSets1 } from '__test__/test-utils/cellSets.mock';
+import { mockCellSets } from '__test__/test-utils/cellSets.mock';
 
 import Loader from 'components/Loader';
 
@@ -88,7 +88,7 @@ const resultState = {
       key: 'C',
     },
   },
-  cellSets: mockCellSets1,
+  cellSets: mockCellSets,
   differentialExpression: {
     properties: {
       data: mockGeneExpressionData,

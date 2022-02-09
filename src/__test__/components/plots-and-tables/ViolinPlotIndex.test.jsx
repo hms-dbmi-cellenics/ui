@@ -18,7 +18,7 @@ import * as loadConfig from '../../../redux/reducers/componentConfig/loadConfig'
 import ViolinIndex from '../../../pages/experiments/[experimentId]/plots-and-tables/violin/index';
 import * as generateViolinSpec from '../../../utils/plotSpecs/generateViolinSpec';
 import { fetchWork } from '../../../utils/work/fetchWork';
-import { mockCellSets1 as cellSets } from '../../test-utils/cellSets.mock';
+import { mockCellSets as cellSets } from '../../test-utils/cellSets.mock';
 import { expectStringInVegaCanvas } from '../../test-utils/vega-utils';
 import '__test__/test-utils/setupTests';
 

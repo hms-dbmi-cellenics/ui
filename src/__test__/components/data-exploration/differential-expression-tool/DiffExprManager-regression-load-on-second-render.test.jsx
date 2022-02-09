@@ -10,7 +10,7 @@ import DiffExprManager from 'components/data-exploration/differential-expression
 import DiffExprCompute from 'components/data-exploration/differential-expression-tool/DiffExprCompute';
 import DiffExprResults from 'components/data-exploration/differential-expression-tool/DiffExprResults';
 
-import { mockCellSets1 } from '__test__/test-utils/cellSets.mock';
+import { mockCellSets } from '__test__/test-utils/cellSets.mock';
 
 import { DIFF_EXPR_LOADING, DIFF_EXPR_LOADED, DIFF_EXPR_ORDERING_SET } from 'redux/actionTypes/differentialExpression';
 
@@ -62,7 +62,7 @@ const storeState = {
       key: 'C',
     },
   },
-  cellSets: mockCellSets1,
+  cellSets: mockCellSets,
   differentialExpression: {
     properties: {
       data: [

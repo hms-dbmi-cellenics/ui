@@ -46,8 +46,8 @@ const DiffExprResults = (props) => {
   const geneTableState = useRef({});
 
   const buildColumns = (rowData) => {
-    const objectKeys = Object.keys(rowData[0]);
-    return columnDefinitions.filter(({ key }) => objectKeys.includes(key));
+    const rowDataKeys = Object.keys(rowData[0]);
+    return columnDefinitions.filter(({ key }) => rowDataKeys.includes(key));
   };
 
   useEffect(() => {

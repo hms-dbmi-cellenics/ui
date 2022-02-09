@@ -4,7 +4,7 @@ import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import { Vega } from 'react-vega';
-import { mockCellSets1 } from '__test__/test-utils/cellSets.mock';
+import { mockCellSets } from '__test__/test-utils/cellSets.mock';
 
 import DataIntegration from 'components/data-processing/DataIntegration/DataIntegration';
 import CalculationConfig from 'components/data-processing/DataIntegration/CalculationConfig';
@@ -46,7 +46,7 @@ const mockedStore = mockStore({
       error: false,
     },
   },
-  cellSets: mockCellSets1,
+  cellSets: mockCellSets,
   experimentSettings: {
     ...initialExperimentState,
   },
@@ -68,7 +68,7 @@ const mockedStore = mockStore({
 
 describe('DataIntegration', () => {
   beforeEach(() => {
-    getCellSets.mockReturnValue(() => (mockCellSets1));
+    getCellSets.mockReturnValue(() => (mockCellSets));
   });
 
   it('renders correctly', () => {
