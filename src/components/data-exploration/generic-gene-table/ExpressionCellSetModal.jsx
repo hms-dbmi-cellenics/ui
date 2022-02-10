@@ -44,7 +44,7 @@ const ExpressionCellSetModal = (props) => {
     setIsCreatingCellSet(true);
     try {
       await dispatch(getCellSetsByExpression(experimentId, formValues));
-      dispatch(loadCellSets(experimentId));
+      onCancel();
     } catch (e) {
       console.error(e);
     } finally {
