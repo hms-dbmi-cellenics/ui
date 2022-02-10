@@ -17,7 +17,7 @@ import Embedding from 'components/data-exploration/embedding/Embedding';
 import HeatmapPlot, { COMPONENT_TYPE } from 'components/data-exploration/heatmap/HeatmapPlot';
 import HeatmapSettings from 'components/data-exploration/heatmap/HeatmapSettings';
 import MosaicCloseButton from 'components/MosaicCloseButton';
-import { updateLayout, addWindow, addToWindow } from 'redux/actions/layout';
+import { updateLayout, addWindow } from 'redux/actions/layout/index';
 import SearchMenu from 'components/SearchMenu';
 import 'react-mosaic-component/react-mosaic-component.css';
 
@@ -168,13 +168,7 @@ const ExplorationViewPage = ({
       options={categoryItems}
       categoryInfo={categoryInfo}
       onSelect={(key, category, belongsToGroup) => {
-        if (belongsToGroup) {
-          dispatch(addToWindow(key, belongsToGroup));
-        } else {
-          dispatch(addWindow(key));
-        }
-        dispatch(addToWindow(key, belongsToGroup));
-
+        dispatch(addWindow(key, belongsToGroup));
         setAddMenuVisible(false);
       }}
     />
