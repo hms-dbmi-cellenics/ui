@@ -7,8 +7,7 @@ import {
 } from 'antd';
 
 import getCellSetsByExpression from 'redux/actions/cellSets/getExpressionCellSets';
-import { createCellSet } from 'redux/actions/cellSets';
-import colorProvider from 'utils/colorProvider';
+import { loadCellSets } from 'redux/actions/cellSets';
 
 const formItemStyle = { margin: '0.375rem 0' };
 const FORM_NAME = 'filterForm';
@@ -40,24 +39,17 @@ const ExpressionCellSetModal = (props) => {
     thresholdValue: 0,
   }));
 
-  const buildCellSetName = (formValues) => formValues.map(
-    ({ geneName, comparisonType, thresholdValue }) => geneName
-      + (comparisonType === 'greaterThan' ? '>' : '<')
-      + thresholdValue,
-  )
-    .join('; ');
-
   const createExpressionCellSet = async () => {
     const formValues = form.getFieldValue(FORM_NAME);
     setIsCreatingCellSet(true);
-
-    const expressionCellSet = await dispatch(getCellSetsByExpression(experimentId, formValues));
-    const defaultCellSetName = buildCellSetName(formValues);
-
-    await dispatch(
-      createCellSet(experimentId, defaultCellSetName, colorProvider.getColor(), expressionCellSet),
-    );
-    setIsCreatingCellSet(false);
+    try {
+      await dispatch(getCellSetsByExpression(experimentId, formValues));
+      dispatch(loadCellSets(experimentId));
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setIsCreatingCellSet(false);
+    }
   };
 
   return (

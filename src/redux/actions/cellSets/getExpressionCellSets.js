@@ -9,7 +9,7 @@ const getCellSetsByExpression = (experimentId, selectedGenes) => async (dispatch
   };
 
   try {
-    const result = await fetchWork(experimentId, body, getState);
+    const result = await fetchWork(experimentId, body, getState, { broadcast: true });
     return result;
   } catch (e) {
     console.error(e);

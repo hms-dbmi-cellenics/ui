@@ -70,7 +70,7 @@ const onGEM2SUpdate = (update, dispatch, experimentId) => {
 const onWorkResponseUpdate = (update, dispatch, experimentId) => {
   const { request, response: { error } } = update;
 
-  if (request.body.name === 'ClusterCells') {
+  if (['ClusterCells', 'GetExpressionCellSets'].includes(request.body.name)) {
     if (error) throw new Error(error);
 
     dispatch(updateCellSetsClustering(experimentId));
