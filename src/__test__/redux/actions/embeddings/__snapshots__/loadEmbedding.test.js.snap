@@ -4,7 +4,6 @@ exports[`loadEmbedding action Dispatches error action on unsuccessful loading 1`
 Object {
   "payload": Object {
     "embeddingType": "umap",
-    "experimentId": "1234",
   },
   "type": "embeddings/loading",
 }
@@ -25,7 +24,6 @@ exports[`loadEmbedding action Dispatches on a previous error condition 1`] = `
 Object {
   "payload": Object {
     "embeddingType": "umap",
-    "experimentId": "1234",
   },
   "type": "embeddings/loading",
 }
@@ -55,7 +53,6 @@ exports[`loadEmbedding action Dispatches on a previously unseen embedding 1`] = 
 Object {
   "payload": Object {
     "embeddingType": "umap",
-    "experimentId": "1234",
   },
   "type": "embeddings/loading",
 }
@@ -85,7 +82,6 @@ exports[`loadEmbedding action Dispatches on if forceReload is set to true 1`] = 
 Object {
   "payload": Object {
     "embeddingType": "umap",
-    "experimentId": "1234",
   },
   "type": "embeddings/loading",
 }
