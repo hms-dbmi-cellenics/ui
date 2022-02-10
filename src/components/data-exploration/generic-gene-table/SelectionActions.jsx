@@ -79,11 +79,11 @@ const SelectionActions = (props) => {
     <Row style={{ float: 'left', paddingRight: '50px' }}>
       {extraOptions ?? <></>}
 
-      {extraOptions && selectedGenes.length !== 0 && (
+      {extraOptions && selectedGenes.length > 0 && (
         <Divider style={{ height: '1px', marginTop: '5px', marginBottom: '5px' }} />
       )}
 
-      {selectedGenes.length !== 0 ? (
+      {selectedGenes.length > 0 ? (
         <>
           <Text type='secondary'>
             {`${selectedGenes.length} gene${selectedGenes.length === 1 ? '' : 's'} selected`}

@@ -6,7 +6,6 @@ import {
   Modal, Form, Button, Select, InputNumber, Row, Alert, Col,
 } from 'antd';
 
-import pushNotificationMessage from 'utils/pushNotificationMessage';
 import getCellSetsByExpression from 'redux/actions/cellSets/getExpressionCellSets';
 import { createCellSet } from 'redux/actions/cellSets';
 import colorProvider from 'utils/colorProvider';
