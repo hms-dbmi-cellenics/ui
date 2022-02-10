@@ -1,5 +1,5 @@
 /* eslint-disable react/no-array-index-key */
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 import {
@@ -16,6 +16,8 @@ const FORM_NAME = 'filterForm';
 
 const ExpressionCellSetModal = (props) => {
   const { onCancel } = props;
+
+  const [isCreatingCellSet, setIsCreatingCellSet] = useState(false);
 
   const selectedGenes = useSelector((state) => state.genes.selected);
   const { experimentId } = useSelector((state) => state.experimentSettings.info);
@@ -48,14 +50,15 @@ const ExpressionCellSetModal = (props) => {
 
   const createExpressionCellSet = async () => {
     const formValues = form.getFieldValue(FORM_NAME);
-    try {
-      const expressionCellSet = await dispatch(getCellSetsByExpression(experimentId, formValues));
-      const defaultCellSetName = buildCellSetName(formValues);
+    setIsCreatingCellSet(true);
 
-      dispatch(createCellSet(experimentId, defaultCellSetName, colorProvider.getColor(), expressionCellSet));
-    } catch (e) {
-      pushNotificationMessage('error', 'Error creating cell set. Please try again or notify us via the feedback button.');
-    }
+    const expressionCellSet = await dispatch(getCellSetsByExpression(experimentId, formValues));
+    const defaultCellSetName = buildCellSetName(formValues);
+
+    await dispatch(
+      createCellSet(experimentId, defaultCellSetName, colorProvider.getColor(), expressionCellSet),
+    );
+    setIsCreatingCellSet(false);
   };
 
   return (
@@ -63,7 +66,17 @@ const ExpressionCellSetModal = (props) => {
       visible
       title='Create a new cell set based on gene expression'
       onCancel={onCancel}
-      footer={[<Button key='createExpressionCellSet' type='primary' onClick={() => createExpressionCellSet()}>Create</Button>]}
+      footer={[
+        <Button
+          key='createExpressionCellSet'
+          type='primary'
+          loading={isCreatingCellSet}
+          disabled={isCreatingCellSet}
+          onClick={createExpressionCellSet}
+        >
+          {isCreatingCellSet ? 'Creating cell set...' : 'Create'}
+        </Button>,
+      ]}
     >
       <Form
         form={form}
@@ -111,10 +124,10 @@ const ExpressionCellSetModal = (props) => {
                         }}
                       >
                         <InputNumber
-                          step={1}
-                          min={0}
-                          max={100}
-                          defaultValue={0}
+                          step={0.01}
+                          min={-100.00}
+                          max={100.00}
+                          defaultValue={0.00}
                           placeholder='Insert threshold value'
                           style={{ width: '100%' }}
                         />
