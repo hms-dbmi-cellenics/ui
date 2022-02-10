@@ -3,7 +3,7 @@ import { render, screen } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { GENES_SELECT } from 'redux/actionTypes/genes';
 import fake from '__test__/test-utils/constants';
-import CreateCellSetModal from 'components/data-exploration/generic-gene-table/CreateCellSetModal';
+import ExpressionCellSetModal from 'components/data-exploration/generic-gene-table/ExpressionCellSetModal';
 import { makeStore } from 'redux/store';
 
 describe('Create cell set modal', () => {
@@ -24,7 +24,7 @@ describe('Create cell set modal', () => {
 
   it('renders correctly', () => {
     const onCancel = jest.fn();
-    render(<Provider store={storeState}><CreateCellSetModal onCancel={onCancel} /></Provider>);
+    render(<Provider store={storeState}><ExpressionCellSetModal onCancel={onCancel} /></Provider>);
 
     expect(screen.getAllByText('Create a new cell set based on gene expression')).toHaveLength(1);
     expect(screen.getByText('DOK3')).toBeInTheDocument();
