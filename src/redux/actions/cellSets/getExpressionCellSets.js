@@ -2,7 +2,9 @@ import { fetchWork } from 'utils/work/fetchWork';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
 import endUserMessages from 'utils/endUserMessages';
 
-const getCellSetsByExpression = (experimentId, selectedGenes) => async (dispatch, getState) => {
+const newCellSetsByExpression = (
+  experimentId, selectedGenes,
+) => async (dispatch, getState) => {
   const body = {
     name: 'GetExpressionCellSets',
     genesConfig: selectedGenes,
@@ -17,4 +19,4 @@ const getCellSetsByExpression = (experimentId, selectedGenes) => async (dispatch
   }
 };
 
-export default getCellSetsByExpression;
+export default newCellSetsByExpression;

@@ -6,8 +6,7 @@ import {
   Modal, Form, Button, Select, InputNumber, Row, Alert, Col,
 } from 'antd';
 
-import getCellSetsByExpression from 'redux/actions/cellSets/getExpressionCellSets';
-import { loadCellSets } from 'redux/actions/cellSets';
+import newCellSetsByExpression from 'redux/actions/cellSets/getExpressionCellSets';
 
 const formItemStyle = { margin: '0.375rem 0' };
 const FORM_NAME = 'filterForm';
@@ -43,7 +42,7 @@ const ExpressionCellSetModal = (props) => {
     const formValues = form.getFieldValue(FORM_NAME);
     setIsCreatingCellSet(true);
     try {
-      await dispatch(getCellSetsByExpression(experimentId, formValues));
+      await dispatch(newCellSetsByExpression(experimentId, formValues));
       onCancel();
     } catch (e) {
       console.error(e);
