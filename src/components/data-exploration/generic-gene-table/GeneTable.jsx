@@ -5,15 +5,15 @@ import {
 } from 'antd';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
-import FilterGenes from './FilterGenes';
-import { changeGeneSelection } from '../../../redux/actions/genes';
-import GeneSelectionStatus from '../../../redux/actions/genes/geneSelectionStatus';
-import { geneTableUpdateReason } from '../../../utils/geneTable/geneTableUpdateReason';
-import FocusButton from '../../FocusButton';
-import PlatformError from '../../PlatformError';
-import useLazyEffect from '../../../utils/customHooks/useLazyEffect';
-import GeneSelectionMenu from './GeneSelectionMenu';
-import Loader from '../../Loader';
+import { changeGeneSelection } from 'redux/actions/genes';
+import GeneSelectionStatus from 'redux/actions/genes/geneSelectionStatus';
+import { geneTableUpdateReason } from 'utils/geneTable/geneTableUpdateReason';
+import FocusButton from 'components/FocusButton';
+import PlatformError from 'components/PlatformError';
+import useLazyEffect from 'utils/customHooks/useLazyEffect';
+import GeneSelectionMenu from 'components/data-exploration/generic-gene-table/GeneSelectionMenu';
+import FilterGenes from 'components/data-exploration/generic-gene-table/FilterGenes';
+import Loader from 'components/Loader';
 
 const GeneTable = (props) => {
   const {

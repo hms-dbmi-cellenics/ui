@@ -3,8 +3,6 @@ import { useSelector, useDispatch } from 'react-redux';
 import {
   Button, Tooltip, Popconfirm,
 } from 'antd';
-import { useRouter } from 'next/router';
-import { updateExperimentInfo } from 'redux/actions/experimentSettings';
 import { modules } from 'utils/constants';
 
 import fileUploadSpecifications from 'utils/upload/fileUploadSpecifications';

@@ -13,16 +13,11 @@ import initialCellSetsState from '../../../redux/reducers/cellSets/initialState'
 import initialGeneExpressionState from '../../../redux/reducers/genes/initialState';
 import generateExperimentSettingsMock from '../../test-utils/experimentSettings.mock';
 import { initialPlotConfigStates } from '../../../redux/reducers/componentConfig/initialState';
-import { mockCellSets1 } from '../../test-utils/cellSets.mock';
+import { mockCellSets } from '../../test-utils/cellSets.mock';
 
 import '__test__/test-utils/setupTests';
 
 jest.mock('components/plots/helpers/changeEmbeddingAxesIfNecessary');
-const mockCellSets = {
-  ...mockCellSets1,
-  loading: false,
-  error: false,
-};
 
 const mockStore = configureStore([thunk]);
 
@@ -37,6 +32,8 @@ describe('Continuous embedding plot', () => {
     cellSets: {
       ...initialCellSetsState,
       ...mockCellSets,
+      loading: false,
+      error: false,
     },
     componentConfig: {
       [plotUuid]: config,
