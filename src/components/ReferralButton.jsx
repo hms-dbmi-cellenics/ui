@@ -16,7 +16,7 @@ import pushNotificationMessage from '../utils/pushNotificationMessage';
 
 const { TextArea } = Input;
 
-const initialMessage = 'Hi,\n\nCheck out Cellenics from Biomage. It will make your single-cell analysis easier.';
+const initialMessage = 'Hi,\n\nCheck out Cellenics. It will make your single-cell analysis easier.';
 
 const ReferralButton = () => {
   const [visible, setVisible] = useState(false);
