@@ -80,7 +80,7 @@ const onWorkResponseUpdate = (update, dispatch, experimentId) => {
   }
 
   if (body.name === 'GetExpressionCellSets') {
-    dispatch(loadCellSets(experimentId));
+    dispatch(loadCellSets(experimentId, true));
     pushNotificationMessage('success', endUserMessages.SUCCESS_NEW_CLUSTER_CREATED);
   }
 };

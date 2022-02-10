@@ -2,7 +2,7 @@ import { fetchWork } from 'utils/work/fetchWork';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
 import endUserMessages from 'utils/endUserMessages';
 
-const newCellSetsByExpression = (
+const createCellSetByExpression = (
   experimentId, selectedGenes,
 ) => async (dispatch, getState) => {
   const body = {
@@ -16,7 +16,8 @@ const newCellSetsByExpression = (
   } catch (e) {
     console.error(e);
     pushNotificationMessage('error', endUserMessages.ERROR_FETCHING_CELL_SETS);
+    throw new Error(e);
   }
 };
 
-export default newCellSetsByExpression;
+export default createCellSetByExpression;
