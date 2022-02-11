@@ -71,6 +71,11 @@ const ExpressionCellSetModal = (props) => {
         form={form}
         size='middle'
         style={{ marginBottom: '1rem' }}
+        initialValues={{
+          geneName: '',
+          comparisonType: 'greaterThan',
+          thresholdValue: 0,
+        }}
       >
         <Form.List
           name={FORM_NAME}
@@ -114,9 +119,7 @@ const ExpressionCellSetModal = (props) => {
                       >
                         <InputNumber
                           step={0.01}
-                          min={-100.00}
-                          max={100.00}
-                          initialValues={0.00}
+                          min={0}
                           placeholder='Insert threshold value'
                           style={{ width: '100%' }}
                         />
