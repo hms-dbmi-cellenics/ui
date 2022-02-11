@@ -1,4 +1,4 @@
-const mockCellSets1 = {
+const mockCellSets = {
   hierarchy: [
     {
       key: 'louvain',
@@ -79,5 +79,5 @@ const mockCellSets1 = {
 
 export {
   // eslint-disable-next-line import/prefer-default-export
-  mockCellSets1,
+  mockCellSets,
 };

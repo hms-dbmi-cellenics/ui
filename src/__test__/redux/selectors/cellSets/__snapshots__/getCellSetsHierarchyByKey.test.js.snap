@@ -1,50 +1,5 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Get cell sets hierarchy selector by key test returns correctly by more than one key 1`] = `
-Array [
-  Object {
-    "children": Array [
-      Object {
-        "key": "test-1",
-      },
-      Object {
-        "key": "test-2",
-      },
-    ],
-    "key": "test",
-    "name": "Test",
-    "type": "firstType",
-  },
-  Object {
-    "children": Array [
-      Object {
-        "key": "anotherTest-1",
-      },
-      Object {
-        "key": "anotherTest-2",
-      },
-    ],
-    "key": "anotherTest",
-    "name": "AnotherTest",
-    "type": "anotherType",
-  },
-]
-`;
+exports[`Get cell sets hierarchy selector by key test returns correctly by more than one key 1`] = `Array []`;
 
-exports[`Get cell sets hierarchy selector by key test returns correctly by one key 1`] = `
-Array [
-  Object {
-    "children": Array [
-      Object {
-        "key": "anotherTest-1",
-      },
-      Object {
-        "key": "anotherTest-2",
-      },
-    ],
-    "key": "anotherTest",
-    "name": "AnotherTest",
-    "type": "anotherType",
-  },
-]
-`;
+exports[`Get cell sets hierarchy selector by key test returns correctly by one key 1`] = `Array []`;
