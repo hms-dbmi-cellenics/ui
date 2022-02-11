@@ -106,10 +106,6 @@ const fetchWork = async (
   getState,
   optionals = {},
 ) => {
-  if (body.name === 'GetExpressionCellSets') {
-    throw new Error('test');
-  }
-
   const { extras = undefined, timeout = 180, broadcast = false } = optionals;
   const backendStatus = getBackendStatus(experimentId)(getState()).status;
 

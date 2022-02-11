@@ -87,7 +87,7 @@ describe('ExpressionCellSetModal', () => {
 
     userEvent.click(screen.getByText('Less than'), undefined, { skipPointerEventsCheck: true });
 
-    // Input another value
+    // Input another threshold value
     userEvent.type(screen.getAllByRole('spinbutton')[0], '{backspace}5');
 
     await act(async () => {
