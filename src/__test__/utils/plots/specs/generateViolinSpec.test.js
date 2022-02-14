@@ -1,7 +1,7 @@
 import _ from 'lodash';
 
 import { generateData } from '../../../../utils/plotSpecs/generateViolinSpec';
-import { mockCellSets1 as cellSets } from '../../../test-utils/cellSets.mock';
+import { mockCellSets as cellSets } from '../../../test-utils/cellSets.mock';
 
 describe('generateData', () => {
   const MOCK_RANDOM = 0.1;
