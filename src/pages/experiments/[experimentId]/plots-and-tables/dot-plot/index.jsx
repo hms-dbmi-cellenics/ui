@@ -25,7 +25,8 @@ import SelectData from 'components/plots/styling/SelectData';
 import MarkerGeneSelection from 'components/plots/styling/MarkerGeneSelection';
 import PlotHeader from 'components/plots/PlotHeader';
 import Loader from 'components/Loader';
-
+import ExportAsCSV from 'components/plots/ExportAsCSV';
+import fileNames from 'utils/fileNames';
 import {
   updatePlotConfig,
   loadPlotConfig,
@@ -107,6 +108,7 @@ const DotPlotPage = (props) => {
   } = cellSets;
 
   const [moreThanTwoGroups, setMoreThanTwoGroups] = useState(false);
+  const csvFileName = fileNames(experimentId, 'DOT_PLOT', [config?.selectedCellSet]);
 
   useEffect(() => {
     if (!config) dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
@@ -211,6 +213,15 @@ const DotPlotPage = (props) => {
       updatePlotWithChanges({ selectedGenes: highestDispersionGenes });
     }
   }, [highestDispersionGenes, config, genesFetching]);
+
+  const getCSVData = () => plotData?.map(({
+    avgExpression, cellsPercentage, geneName, cellSets: clusterName,
+  }) => ({
+    Gene: geneName,
+    Cluster: clusterName,
+    'Average expression': avgExpression,
+    'Proportion of cells expressing gene': cellsPercentage,
+  })) || [];
 
   const updatePlotWithChanges = (obj) => {
     dispatch(updatePlotConfig(plotUuid, obj));
@@ -344,6 +355,8 @@ const DotPlotPage = (props) => {
     );
   };
 
+  const renderCSVbutton = () => (<ExportAsCSV data={getCSVData()} filename={csvFileName} />);
+
   return (
     <>
       <PlotHeader
@@ -356,7 +369,7 @@ const DotPlotPage = (props) => {
           <Col span={16}>
             <Space direction='vertical' style={{ width: '100%' }}>
               <Collapse defaultActiveKey='1'>
-                <Panel header='Preview' key='1'>
+                <Panel header='Preview' key='1' extra={renderCSVbutton()}>
                   {renderPlot()}
                 </Panel>
               </Collapse>
