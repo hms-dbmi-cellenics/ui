@@ -18,6 +18,10 @@ const getMultipleWindowsConfig = (first, second) => ({
 const addWindow = (panel, window) => (dispatch, getState) => {
   const { layout } = getState();
   let newLayout;
+  console.log('panel and window are', panel, window);
+
+  // only use panel if window is passed too
+  const panelExtra = (panel && window) ? panel : undefined;
 
   if (!layout.windows) {
     newLayout = {
@@ -32,12 +36,12 @@ const addWindow = (panel, window) => (dispatch, getState) => {
 
     // if the window exists - update it
     if (allWindows.includes(window)) {
-      return dispatch(updateLayout(newLayout.windows, panel));
+      return dispatch(updateLayout(newLayout.windows, panelExtra));
     }
 
     newLayout.windows.first = getMultipleWindowsConfig(layout.windows.first, window || panel);
   }
-  return dispatch(updateLayout(newLayout.windows, panel));
+  return dispatch(updateLayout(newLayout.windows, panelExtra));
 };
 
 export default addWindow;

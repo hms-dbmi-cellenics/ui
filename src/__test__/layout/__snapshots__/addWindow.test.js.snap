@@ -1,0 +1,41 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`add window adds a new window if layout is empty 1`] = `
+Object {
+  "payload": Object {
+    "panel": "newPanel",
+    "windows": Object {
+      "direction": "row",
+      "first": "newWindow",
+      "second": "",
+      "splitPercentage": 100,
+    },
+  },
+  "type": "UPDATE_LAYOUT",
+}
+`;
+
+exports[`add window adds a window to existing ones 1`] = `
+Object {
+  "payload": Object {
+    "panel": "newPanel",
+    "windows": Object {
+      "direction": "row",
+      "first": Object {
+        "direction": "row",
+        "first": Object {
+          "direction": "row",
+          "first": "samplewindow",
+          "second": "secondFirstwindow",
+          "splitPercentage": 100,
+        },
+        "second": "newWindow",
+        "splitPercentage": 60,
+      },
+      "second": "secondWindow",
+      "splitPercentage": 60,
+    },
+  },
+  "type": "UPDATE_LAYOUT",
+}
+`;
