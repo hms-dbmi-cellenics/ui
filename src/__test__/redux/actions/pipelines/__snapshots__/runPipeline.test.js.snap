@@ -42,7 +42,6 @@ Array [
   Object {
     "payload": Object {
       "embeddingType": "umap",
-      "experimentId": "experiment-id",
     },
     "type": "embeddings/loading",
   },

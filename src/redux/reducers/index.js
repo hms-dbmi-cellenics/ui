@@ -9,7 +9,7 @@ import embeddingsReducer from './embeddings';
 import experimentsReducer from './experiments';
 import experimentSettingsReducer from './experimentSettings';
 import genesReducer from './genes';
-import layoutReducer from './layout/layout';
+import layoutReducer from './layout';
 import projectsReducer from './projects';
 import sampleReducer from './samples';
 import networkResourcesReducer from './networkResources';

@@ -4,24 +4,17 @@ import {
 } from '../../actionTypes/networkResources';
 
 import initialState from './initialState';
-import networkResourcesLoadEnvironment from './networkResourcesLoadEnvironment';
+import loadEnvironment from './loadEnvironment';
+import environmentHydrate from './environmentHydrate';
 
 const networkResourcesReducer = (state = initialState, action) => {
   switch (action.type) {
     case NETWORK_RESOURCES_LOAD_ENVIRONMENT: {
-      return networkResourcesLoadEnvironment(state, action);
+      return loadEnvironment(state, action);
     }
 
     case HYDRATE: {
-      const { environment } = action.payload.networkResources;
-
-      let newState = { ...state };
-
-      if (environment) {
-        newState = { ...newState, environment };
-      }
-
-      return newState;
+      return environmentHydrate(state, action);
     }
 
     default: {
