@@ -189,7 +189,7 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
     {
       key: 'mitochondrialContent',
       name: getUserFriendlyQCStepName('mitochondrialContent'),
-      description: 'A high percentage of mitochondrial reads is an indicator of cell death. UMIs mapped to mitochondrial genes are calculated as a percentage of total UMIs. The percentage of mitochondrial reads depends on the cell type. The typical cut-off range is 10-50%, with the default cut-off set to 10%.',
+      description: 'A high percentage of mitochondrial reads is an indicator of cell death. UMIs mapped to mitochondrial genes are calculated as a percentage of total UMIs. The percentage of mitochondrial reads depends on the cell type. The typical cut-off range is 10-50%, with the default cut-off set to 3 median absolute deviations above the median.',
       multiSample: true,
       render: (key) => (
         <SingleComponentMultipleDataContainer
@@ -244,10 +244,10 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
           The probability of being a doublet is calculated using ‘scDblFinder’.
           For each sample, the default threshold tries to minimize both the deviation in the
           expected number of doublets and the error of a trained classifier. For more details see
-          {' '}
+    {' '}
           <a href='https://bioconductor.org/packages/devel/bioc/vignettes/scDblFinder/inst/doc/scDblFinder.html#thresholding' rel='noreferrer' target='_blank'>scDblFinder thresholding</a>
-          .
-        </span>,
+    .
+  </span>,
       multiSample: true,
       render: (key) => (
         <SingleComponentMultipleDataContainer
