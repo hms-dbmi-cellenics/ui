@@ -141,8 +141,8 @@ jobs:
         name: Get details of last commit
         run: |-
           echo "SHA of last commit:"
-          echo ${{github.event.pull_request.head.sha}}"
-          echo "::set-output name=github_sha::${{github.event.pull_request.head.sha}}""
+          echo $GITHUB_SHA
+          echo "::set-output name=github_sha::$GITHUB_SHA"
 
           REPO_NAME=$(echo $GITHUB_REPOSITORY | awk -F '/' '{print $2}')
           echo "Repo name:"
