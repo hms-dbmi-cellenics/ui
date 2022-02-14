@@ -1,0 +1,86 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`add window adds a new window if layout is empty 1`] = `
+Object {
+  "payload": Object {
+    "panel": undefined,
+    "windows": Object {
+      "direction": "row",
+      "first": Object {
+        "direction": "row",
+        "first": Object {
+          "direction": "column",
+          "first": Object {
+            "direction": "row",
+            "first": "UMAP",
+            "second": "Data Management",
+            "splitPercentage": 60,
+          },
+          "second": "Heatmap",
+          "splitPercentage": 50,
+        },
+        "second": "newPanel",
+        "splitPercentage": 60,
+      },
+      "second": "Genes",
+      "splitPercentage": 70,
+    },
+  },
+  "type": "UPDATE_LAYOUT",
+}
+`;
+
+exports[`add window adds a window to existing ones 1`] = `
+Object {
+  "payload": Object {
+    "panel": "newPanel",
+    "windows": Object {
+      "direction": "row",
+      "first": Object {
+        "direction": "row",
+        "first": Object {
+          "direction": "column",
+          "first": Object {
+            "direction": "row",
+            "first": "UMAP",
+            "second": "Data Management",
+            "splitPercentage": 60,
+          },
+          "second": "Heatmap",
+          "splitPercentage": 50,
+        },
+        "second": "newWindow",
+        "splitPercentage": 60,
+      },
+      "second": "Genes",
+      "splitPercentage": 70,
+    },
+  },
+  "type": "UPDATE_LAYOUT",
+}
+`;
+
+exports[`add window updates panel if window exists 1`] = `
+Object {
+  "payload": Object {
+    "panel": "Differential expression",
+    "windows": Object {
+      "direction": "row",
+      "first": Object {
+        "direction": "column",
+        "first": Object {
+          "direction": "row",
+          "first": "UMAP",
+          "second": "Data Management",
+          "splitPercentage": 60,
+        },
+        "second": "Heatmap",
+        "splitPercentage": 50,
+      },
+      "second": "Genes",
+      "splitPercentage": 70,
+    },
+  },
+  "type": "UPDATE_LAYOUT",
+}
+`;

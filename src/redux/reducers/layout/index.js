@@ -1,12 +1,12 @@
-import { UPDATE_LAYOUT } from '../../actionTypes/layout';
+import { UPDATE_LAYOUT } from 'redux/actionTypes/layout';
 import initialState from './initialState';
+import updateLayout from './updateLayout';
 
 const layoutReducer = (state = initialState, action) => {
   switch (action.type) {
     case UPDATE_LAYOUT:
-      return {
-        ...action.data,
-      };
+      return updateLayout(state, action);
+
     default:
       return state;
   }

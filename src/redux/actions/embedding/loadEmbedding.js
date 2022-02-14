@@ -27,10 +27,9 @@ const loadEmbedding = (
   const { methodSettings } = embeddingState;
 
   // Set up loading state.
-  await dispatch({
+  dispatch({
     type: EMBEDDINGS_LOADING,
     payload: {
-      experimentId,
       embeddingType,
     },
   });

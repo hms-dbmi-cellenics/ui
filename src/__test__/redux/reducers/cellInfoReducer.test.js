@@ -24,8 +24,6 @@ describe('cellInfoReducer', () => {
   it('Updates cell info state on update action', () => {
     const payload = {
       cellId: 'C1',
-      geneName: 'G1',
-      expression: 1,
     };
 
     const newState = cellInfoReducer(initialState, {

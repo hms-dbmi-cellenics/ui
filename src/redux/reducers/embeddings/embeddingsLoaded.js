@@ -1,25 +1,22 @@
-import { initialEmbeddingState } from './initialState';
+/* eslint-disable no-param-reassign */
+import produce from 'immer';
+import initialState, { initialEmbeddingState } from './initialState';
 
-const embeddingsLoaded = (state, action) => {
+const embeddingsLoaded = produce((draft, action) => {
   const { embeddingType, data: jsonData } = action.payload;
 
-  const data = new Array(jsonData.length);
+  draft[embeddingType] = {
+    ...initialEmbeddingState,
+    loading: false,
+  };
 
+  const data = [];
   jsonData.forEach((value, index) => {
     if (value) {
       data[index] = value;
     }
   });
-
-  return {
-    ...state,
-    [embeddingType]: {
-      ...initialEmbeddingState,
-      ...state[embeddingType],
-      loading: false,
-      data,
-    },
-  };
-};
+  draft[embeddingType].data = data;
+}, initialState);
 
 export default embeddingsLoaded;
