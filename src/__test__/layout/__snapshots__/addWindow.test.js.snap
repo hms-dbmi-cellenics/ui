@@ -3,12 +3,27 @@
 exports[`add window adds a new window if layout is empty 1`] = `
 Object {
   "payload": Object {
-    "panel": "newPanel",
+    "panel": undefined,
     "windows": Object {
       "direction": "row",
-      "first": "newWindow",
-      "second": "",
-      "splitPercentage": 100,
+      "first": Object {
+        "direction": "row",
+        "first": Object {
+          "direction": "column",
+          "first": Object {
+            "direction": "row",
+            "first": "UMAP",
+            "second": "Data Management",
+            "splitPercentage": 60,
+          },
+          "second": "Heatmap",
+          "splitPercentage": 50,
+        },
+        "second": "newPanel",
+        "splitPercentage": 60,
+      },
+      "second": "Genes",
+      "splitPercentage": 70,
     },
   },
   "type": "UPDATE_LAYOUT",
@@ -24,16 +39,46 @@ Object {
       "first": Object {
         "direction": "row",
         "first": Object {
-          "direction": "row",
-          "first": "samplewindow",
-          "second": "secondFirstwindow",
-          "splitPercentage": 100,
+          "direction": "column",
+          "first": Object {
+            "direction": "row",
+            "first": "UMAP",
+            "second": "Data Management",
+            "splitPercentage": 60,
+          },
+          "second": "Heatmap",
+          "splitPercentage": 50,
         },
         "second": "newWindow",
         "splitPercentage": 60,
       },
-      "second": "secondWindow",
-      "splitPercentage": 60,
+      "second": "Genes",
+      "splitPercentage": 70,
+    },
+  },
+  "type": "UPDATE_LAYOUT",
+}
+`;
+
+exports[`add window updates panel if window exists 1`] = `
+Object {
+  "payload": Object {
+    "panel": "Differential expression",
+    "windows": Object {
+      "direction": "row",
+      "first": Object {
+        "direction": "column",
+        "first": Object {
+          "direction": "row",
+          "first": "UMAP",
+          "second": "Data Management",
+          "splitPercentage": 60,
+        },
+        "second": "Heatmap",
+        "splitPercentage": 50,
+      },
+      "second": "Genes",
+      "splitPercentage": 70,
     },
   },
   "type": "UPDATE_LAYOUT",
