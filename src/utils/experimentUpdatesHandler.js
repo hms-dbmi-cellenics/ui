@@ -70,16 +70,23 @@ const onGEM2SUpdate = (update, dispatch, experimentId) => {
 };
 
 const onWorkResponseUpdate = (update, dispatch, experimentId) => {
-  const { request: { body }, response: { error } } = update;
+  const { request: { body: { name: workRequestName } }, response: { error, data } } = update;
 
   if (error) throw new Error(error);
 
-  if (body.name === 'ClusterCells') {
+  if (workRequestName === 'ClusterCells') {
     dispatch(updateCellSetsClustering(experimentId));
     pushNotificationMessage('success', endUserMessages.SUCCESS_CELL_SETS_RECLUSTERED);
   }
 
-  if (body.name === 'GetExpressionCellSets') {
+  if (workRequestName === 'GetExpressionCellSets') {
+    const { numCells } = data;
+
+    if (numCells === 0) {
+      pushNotificationMessage('error', endUserMessages.EMPTY_CLUSTER_NOT_CREATED);
+      return;
+    }
+
     dispatch(loadCellSets(experimentId, true));
     pushNotificationMessage('success', endUserMessages.SUCCESS_NEW_CLUSTER_CREATED);
   }
