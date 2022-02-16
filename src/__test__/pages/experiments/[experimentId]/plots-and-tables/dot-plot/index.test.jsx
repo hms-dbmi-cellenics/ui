@@ -23,7 +23,9 @@ import { makeStore } from 'redux/store';
 
 import { loadBackendStatus } from 'redux/actions/backendStatus';
 import DotPlotPage from 'pages/experiments/[experimentId]/plots-and-tables/dot-plot/index';
-
+import {
+  EXPERIMENT_SETTINGS_INFO_UPDATE,
+} from 'redux/actionTypes/experimentSettings';
 import paginatedGeneExpressionData from '__test__/data/paginated_gene_expression.json';
 import cellSetsDataWithScratchpad from '__test__/data/cell_sets_with_scratchpad.json';
 import dotPlotData from '__test__/data/dotplot_plotdata.json';
@@ -108,6 +110,14 @@ describe('Dot plot page', () => {
     storeState = makeStore();
 
     await storeState.dispatch(loadBackendStatus(experimentId));
+
+    storeState.dispatch({
+      type: EXPERIMENT_SETTINGS_INFO_UPDATE,
+      payload: {
+        experimentId: fake.EXPERIMENT_ID,
+        experimentName: fake.EXPERIMENT_NAME,
+      },
+    });
   });
 
   it('Renders the plot page correctly', async () => {

@@ -108,7 +108,8 @@ const DotPlotPage = (props) => {
   } = cellSets;
 
   const [moreThanTwoGroups, setMoreThanTwoGroups] = useState(false);
-  const csvFileName = fileNames(experimentId, 'DOT_PLOT', [config?.selectedCellSet]);
+  const experimentName = useSelector((state) => state.experimentSettings.info.experimentName);
+  const csvFileName = fileNames(experimentName, 'DOT_PLOT', [config?.selectedCellSet, config?.selectedPoints]);
 
   useEffect(() => {
     if (!config) dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
@@ -214,14 +215,19 @@ const DotPlotPage = (props) => {
     }
   }, [highestDispersionGenes, config, genesFetching]);
 
-  const getCSVData = () => plotData?.map(({
-    avgExpression, cellsPercentage, geneName, cellSets: clusterName,
-  }) => ({
-    Gene: geneName,
-    Cluster: clusterName,
-    'Average expression': avgExpression,
-    'Proportion of cells expressing gene': cellsPercentage,
-  })) || [];
+  const getCSVData = () => {
+    const newData = plotData?.map(({
+      avgExpression, cellsPercentage, geneName, cellSets: clusterName,
+    }) => ({
+      Gene: geneName,
+      Cluster: clusterName,
+      'Average expression': avgExpression,
+      'Proportion of cells expressing gene': cellsPercentage,
+    }));
+    if (!newData) return [];
+    const newDataSorted = _.orderBy(newData, ['Gene'], ['asc']);
+    return newDataSorted;
+  };
 
   const updatePlotWithChanges = (obj) => {
     dispatch(updatePlotConfig(plotUuid, obj));
