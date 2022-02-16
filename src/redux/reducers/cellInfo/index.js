@@ -2,14 +2,14 @@ import { CELL_INFO_UPDATE, CELL_INFO_FOCUS, CELL_INFO_UNFOCUS } from '../../acti
 import { EXPERIMENT_SETTINGS_PIPELINE_START } from '../../actionTypes/experimentSettings';
 
 import initialState from './initialState';
-import cellInfoUpdate from './cellInfoUpdate';
+import updateCellInfo from './updateCellInfo';
 import cellInfoFocus from './cellInfoFocus';
 import cellInfoUnfocus from './cellInfoUnfocus';
 
 const cellInfoReducer = (state = initialState, action) => {
   switch (action.type) {
     case CELL_INFO_UPDATE: {
-      return cellInfoUpdate(state, action);
+      return updateCellInfo(state, action);
     }
     case CELL_INFO_FOCUS: {
       return cellInfoFocus(state, action);

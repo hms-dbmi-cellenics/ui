@@ -1,16 +1,11 @@
+import produce from 'immer';
 import initialState from './initialState';
+/* eslint-disable no-param-reassign */
 
-const cellInfoFocus = (state, action) => {
+const cellInfoFocus = produce((draft, action) => {
   const { store, key } = action.payload;
-
-  return {
-    ...state,
-    focus: {
-      ...initialState.focus,
-      store,
-      key,
-    },
-  };
-};
+  draft.focus.store = store;
+  draft.focus.key = key;
+}, initialState);
 
 export default cellInfoFocus;

@@ -17,7 +17,7 @@ import Embedding from 'components/data-exploration/embedding/Embedding';
 import HeatmapPlot, { COMPONENT_TYPE } from 'components/data-exploration/heatmap/HeatmapPlot';
 import HeatmapSettings from 'components/data-exploration/heatmap/HeatmapSettings';
 import MosaicCloseButton from 'components/MosaicCloseButton';
-import { updateLayout, addWindow, addToWindow } from 'redux/actions/layout';
+import { updateLayout, addWindow } from 'redux/actions/layout/index';
 import SearchMenu from 'components/SearchMenu';
 import 'react-mosaic-component/react-mosaic-component.css';
 
@@ -72,6 +72,7 @@ const ExplorationViewPage = ({
       }));
     }
   }, [method]);
+
   const TILE_MAP = {
     [methodUppercase]: {
       toolbarControls: <MosaicCloseButton key='remove-button-embedding' />,
@@ -133,7 +134,6 @@ const ExplorationViewPage = ({
       {
         description: 'Create and manage interesting groupings of cells.',
         key: 'Data Management',
-        group: 'Genes',
       },
       {
         description: 'Find, organize, and annotate genes in your data set.',
@@ -148,7 +148,7 @@ const ExplorationViewPage = ({
     ],
     Plots: [
       {
-        key: `${embeddingTitle}`,
+        key: `${methodUppercase}`,
         description: `Visualize cells clustered by genetic expression using a ${embeddingTitle}.`,
       },
       {
@@ -168,11 +168,7 @@ const ExplorationViewPage = ({
       options={categoryItems}
       categoryInfo={categoryInfo}
       onSelect={(key, category, belongsToGroup) => {
-        if (belongsToGroup) {
-          dispatch(addToWindow(key, belongsToGroup));
-        } else {
-          dispatch(addWindow(key));
-        }
+        dispatch(addWindow(key, belongsToGroup));
         setAddMenuVisible(false);
       }}
     />
