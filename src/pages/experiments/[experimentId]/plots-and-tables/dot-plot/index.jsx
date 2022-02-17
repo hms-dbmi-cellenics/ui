@@ -216,15 +216,15 @@ const DotPlotPage = (props) => {
   }, [highestDispersionGenes, config, genesFetching]);
 
   const getCSVData = () => {
+    if (!plotData) return [];
     const newData = plotData?.map(({
       avgExpression, cellsPercentage, geneName, cellSets: clusterName,
     }) => ({
       Gene: geneName,
       Cluster: clusterName,
       'Average expression': avgExpression,
-      'Proportion of cells expressing gene': cellsPercentage,
+      'Fraction of cells expressing gene': cellsPercentage,
     }));
-    if (!newData) return [];
     const newDataSorted = _.orderBy(newData, ['Gene'], ['asc']);
     return newDataSorted;
   };

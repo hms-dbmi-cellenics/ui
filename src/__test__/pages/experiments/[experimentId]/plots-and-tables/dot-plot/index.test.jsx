@@ -31,9 +31,10 @@ import cellSetsDataWithScratchpad from '__test__/data/cell_sets_with_scratchpad.
 import dotPlotData from '__test__/data/dotplot_plotdata.json';
 import userEvent from '@testing-library/user-event';
 import { plotNames } from 'utils/constants';
+import ExportAsCSV from 'components/plots/ExportAsCSV';
 
 jest.mock('localforage');
-
+jest.mock('components/plots/ExportAsCSV', () => jest.fn(() => (<></>)));
 jest.mock('components/UserButton', () => () => <></>);
 jest.mock('object-hash', () => {
   const objectHash = jest.requireActual('object-hash');
@@ -137,6 +138,9 @@ describe('Dot plot page', () => {
 
     // It shows the plot
     expect(screen.getByRole('graphics-document', { name: 'Vega visualization' })).toBeInTheDocument();
+
+    // csv data is passed correctly
+    expect(ExportAsCSV.mock.calls).toMatchSnapshot();
   });
 
   it('Shows a skeleton if config is not loaded', async () => {
