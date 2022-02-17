@@ -70,7 +70,7 @@ const onGEM2SUpdate = (update, dispatch, experimentId) => {
 };
 
 const onWorkResponseUpdate = (update, dispatch, experimentId) => {
-  const { request: { body: { name: workRequestName } }, response: { error, data } } = update;
+  const { request: { body: { name: workRequestName } }, response: { error } } = update;
 
   if (error) throw new Error(error);
 
@@ -80,13 +80,6 @@ const onWorkResponseUpdate = (update, dispatch, experimentId) => {
   }
 
   if (workRequestName === 'GetExpressionCellSets') {
-    const { numCells } = data;
-
-    if (numCells === 0) {
-      pushNotificationMessage('error', endUserMessages.EMPTY_CLUSTER_NOT_CREATED);
-      return;
-    }
-
     dispatch(loadCellSets(experimentId, true));
     pushNotificationMessage('success', endUserMessages.SUCCESS_NEW_CLUSTER_CREATED);
   }
