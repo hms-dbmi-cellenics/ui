@@ -29,12 +29,10 @@ Object {
 exports[`cellInfoReducer Updates cell info state on update action 1`] = `
 Object {
   "cellId": "C1",
-  "expression": 1,
   "focus": Object {
     "key": "louvain",
     "store": "cellSets",
   },
-  "geneName": "G1",
   "groupedTrack": "louvain",
   "selectedTracks": Array [
     "louvain",
