@@ -186,7 +186,8 @@ describe('SelectionIndicator', () => {
     expect(component.find('#testExtraOption').length).toEqual(1);
   });
 
-  it('opens and closes create cell set modal', () => {
+  // Enable this test (remove .skip) when cell set creation by expression is enabled
+  it.skip('opens and closes create cell set modal', () => {
     const state = _.cloneDeep(initialState);
     state.genes.selected = ['CEMIP', 'TIMP3'];
 

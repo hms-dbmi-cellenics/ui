@@ -98,13 +98,16 @@ const SelectionActions = (props) => {
             {listed ? 'Hide' : 'List'}
           </Button>
           <ComponentActions name='Heatmap' experimentId={experimentId} componentType={COMPONENT_TYPE} />
-          <Button
-            type='link'
-            size='small'
-            onClick={() => setExpressionCellSetModalVisible(!expressionCellSetModalVisible)}
-          >
-            Cellset
-          </Button>
+          <Tooltip title='Feature coming soon!'>
+            <Button
+              type='link'
+              size='small'
+              disabled
+              onClick={() => setExpressionCellSetModalVisible(!expressionCellSetModalVisible)}
+            >
+              Cellset
+            </Button>
+          </Tooltip>
           {
             expressionCellSetModalVisible && (
               <ExpresssionCellSetModal
