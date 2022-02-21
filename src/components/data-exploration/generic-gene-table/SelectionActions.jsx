@@ -13,7 +13,7 @@ import GeneSelectionStatus from 'redux/actions/genes/geneSelectionStatus';
 import ComponentActions from 'components/data-exploration/generic-gene-table/ComponentActions';
 
 import { COMPONENT_TYPE } from 'components/data-exploration/heatmap/HeatmapPlot';
-import CreateCellSetModal from 'components/data-exploration/generic-gene-table/CreateCellSetModal';
+import ExpresssionCellSetModal from 'components/data-exploration/generic-gene-table/ExpressionCellSetModal';
 
 const { Text } = Typography;
 
@@ -26,7 +26,7 @@ const SelectionActions = (props) => {
   const selectedGenes = useSelector((state) => state.genes.selected);
   const [copied, setCopied] = useState(false);
   const [listed, setListed] = useState(false);
-  const [createCellSetModalVisible, setCreateCellSetModalVisible] = useState(false);
+  const [expressionCellSetModalVisible, setExpressionCellSetModalVisible] = useState(false);
 
   const clearAll = () => {
     dispatch(changeGeneSelection(experimentId, selectedGenes, GeneSelectionStatus.deselect));
@@ -79,11 +79,11 @@ const SelectionActions = (props) => {
     <Row style={{ float: 'left', paddingRight: '50px' }}>
       {extraOptions ?? <></>}
 
-      {extraOptions && selectedGenes.length !== 0 && (
+      {extraOptions && selectedGenes.length > 0 && (
         <Divider style={{ height: '1px', marginTop: '5px', marginBottom: '5px' }} />
       )}
 
-      {selectedGenes.length !== 0 ? (
+      {selectedGenes.length > 0 ? (
         <>
           <Text type='secondary'>
             {`${selectedGenes.length} gene${selectedGenes.length === 1 ? '' : 's'} selected`}
@@ -103,15 +103,15 @@ const SelectionActions = (props) => {
               type='link'
               size='small'
               disabled
-              onClick={() => setCreateCellSetModalVisible(!createCellSetModalVisible)}
+              onClick={() => setExpressionCellSetModalVisible(!expressionCellSetModalVisible)}
             >
               Cellset
             </Button>
           </Tooltip>
           {
-            createCellSetModalVisible && (
-              <CreateCellSetModal
-                onCancel={() => setCreateCellSetModalVisible(false)}
+            expressionCellSetModalVisible && (
+              <ExpresssionCellSetModal
+                onCancel={() => setExpressionCellSetModalVisible(false)}
               />
             )
           }
