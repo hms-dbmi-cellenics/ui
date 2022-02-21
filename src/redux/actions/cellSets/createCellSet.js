@@ -83,7 +83,7 @@ const createCellSet = (experimentId, name, color, cellIdsSet) => async (dispatch
     const json = await response.json();
     throwIfRequestFailed(response, json, endUserMessages.ERROR_SAVING);
 
-    pushNotificationMessage('info', endUserMessages.NEW_CLUSTER_CREATED);
+    pushNotificationMessage('info', endUserMessages.SUCCESS_NEW_CLUSTER_CREATED);
   } catch (e) {
     if (!isServerError(e)) {
       console.error(`fetch ${url} error ${e.message}`);

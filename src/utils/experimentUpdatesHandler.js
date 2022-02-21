@@ -1,9 +1,11 @@
 import updateCellSetsClustering from 'redux/actions/cellSets/updateCellSetsClustering';
-import { updateProcessingSettingsFromQC, loadedProcessingConfig } from '../redux/actions/experimentSettings';
-import { updateBackendStatus } from '../redux/actions/backendStatus';
-import updatePlotData from '../redux/actions/componentConfig/updatePlotData';
+import { updateProcessingSettingsFromQC, loadedProcessingConfig } from 'redux/actions/experimentSettings';
+import { updateBackendStatus } from 'redux/actions/backendStatus';
+import updatePlotData from 'redux/actions/componentConfig/updatePlotData';
+import pushNotificationMessage from 'utils/pushNotificationMessage';
 
-import { loadCellSets } from '../redux/actions/cellSets';
+import { loadCellSets } from 'redux/actions/cellSets';
+import endUserMessages from './endUserMessages';
 
 const updateTypes = {
   QC: 'qc',
@@ -68,12 +70,18 @@ const onGEM2SUpdate = (update, dispatch, experimentId) => {
 };
 
 const onWorkResponseUpdate = (update, dispatch, experimentId) => {
-  const { request, response: { error } } = update;
+  const { request: { body: { name: workRequestName } }, response: { error } } = update;
 
-  if (request.body.name === 'ClusterCells') {
-    if (error) throw new Error(error);
+  if (error) throw new Error(error);
 
+  if (workRequestName === 'ClusterCells') {
     dispatch(updateCellSetsClustering(experimentId));
+    pushNotificationMessage('success', endUserMessages.SUCCESS_CELL_SETS_RECLUSTERED);
+  }
+
+  if (workRequestName === 'GetExpressionCellSets') {
+    dispatch(loadCellSets(experimentId, true));
+    pushNotificationMessage('success', endUserMessages.SUCCESS_NEW_CLUSTER_CREATED);
   }
 };
 

@@ -23,15 +23,18 @@ import { makeStore } from 'redux/store';
 
 import { loadBackendStatus } from 'redux/actions/backendStatus';
 import DotPlotPage from 'pages/experiments/[experimentId]/plots-and-tables/dot-plot/index';
-
+import {
+  EXPERIMENT_SETTINGS_INFO_UPDATE,
+} from 'redux/actionTypes/experimentSettings';
 import paginatedGeneExpressionData from '__test__/data/paginated_gene_expression.json';
 import cellSetsDataWithScratchpad from '__test__/data/cell_sets_with_scratchpad.json';
 import dotPlotData from '__test__/data/dotplot_plotdata.json';
 import userEvent from '@testing-library/user-event';
 import { plotNames } from 'utils/constants';
+import ExportAsCSV from 'components/plots/ExportAsCSV';
 
 jest.mock('localforage');
-
+jest.mock('components/plots/ExportAsCSV', () => jest.fn(() => (<></>)));
 jest.mock('components/UserButton', () => () => <></>);
 jest.mock('object-hash', () => {
   const objectHash = jest.requireActual('object-hash');
@@ -108,6 +111,14 @@ describe('Dot plot page', () => {
     storeState = makeStore();
 
     await storeState.dispatch(loadBackendStatus(experimentId));
+
+    storeState.dispatch({
+      type: EXPERIMENT_SETTINGS_INFO_UPDATE,
+      payload: {
+        experimentId: fake.EXPERIMENT_ID,
+        experimentName: fake.EXPERIMENT_NAME,
+      },
+    });
   });
 
   it('Renders the plot page correctly', async () => {
@@ -127,6 +138,9 @@ describe('Dot plot page', () => {
 
     // It shows the plot
     expect(screen.getByRole('graphics-document', { name: 'Vega visualization' })).toBeInTheDocument();
+
+    // csv data is passed correctly
+    expect(ExportAsCSV.mock.calls).toMatchSnapshot();
   });
 
   it('Shows a skeleton if config is not loaded', async () => {
