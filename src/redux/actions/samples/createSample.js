@@ -66,17 +66,19 @@ const createSample = (
 
     throwIfRequestFailed(response, json, endUserMessages.ERROR_SAVING);
 
-    dispatch({
+    await dispatch({
       type: SAMPLES_CREATE,
       payload: { sample: newSample, experimentId },
     });
 
     dispatch(saveExperiment(experimentId));
+
+    return newSampleUuid;
   } catch (e) {
     let { message } = e;
     if (!isServerError(e)) {
       console.error(`fetch ${url} error ${message}`);
-      message = endUserMessages.ERROR_SAVING;
+      message = `${endUserMessages.ERROR_SAVING}. Please reupload sample '${name}'`;
     }
 
     dispatch({
@@ -88,10 +90,8 @@ const createSample = (
 
     pushNotificationMessage('error', message);
 
-    return Promise.reject(message);
+    return Promise.reject(new Error(message));
   }
-
-  return newSampleUuid;
 };
 
 export default createSample;

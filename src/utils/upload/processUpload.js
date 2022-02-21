@@ -209,17 +209,28 @@ const processUpload = async (filesList, sampleType, samples, activeProjectUuid, 
   }, {});
 
   Object.entries(samplesMap).forEach(async ([name, sample]) => {
-    // Create sample if not exists
-    sample.uuid ??= await dispatch(createSample(activeProjectUuid, name, sampleType));
+    // Create sample if not exists.
+    try {
+      sample.uuid ??= await dispatch(createSample(activeProjectUuid, name, sampleType));
+    } catch (e) {
+      // If sample creation fails, sample should not be created
+      return;
+    }
 
     sample.files = compressAndUpload(sample, activeProjectUuid, dispatch);
 
     Object.values(sample.files).forEach((file) => {
       // Create files
-      dispatch(updateSampleFile(sample.uuid, file.name, {
-        ...file,
-        path: `${activeProjectUuid}/${file.name.replace(name, sample.uuid)}`,
-      }));
+      dispatch(
+        updateSampleFile(
+          sample.uuid,
+          file.name,
+          {
+            ...file,
+            path: `${activeProjectUuid}/${file.name.replace(name, sample.uuid)}`,
+          },
+        ),
+      );
     });
   });
 };
