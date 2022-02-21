@@ -113,6 +113,8 @@ const LaunchAnalysisButton = () => {
     };
 
     const canLaunch = activeProject.samples.every((sampleUuid) => {
+      if (!samples[sampleUuid]) return false;
+
       const checkedSample = samples[sampleUuid];
       return allSampleFilesUploaded(checkedSample)
         && allSampleMetadataInserted(checkedSample);

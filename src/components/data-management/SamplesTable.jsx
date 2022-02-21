@@ -2,6 +2,7 @@
 import React, {
   useEffect, useState, forwardRef, useImperativeHandle,
 } from 'react';
+import Storage from '@aws-amplify/storage';
 
 import { useSelector, useDispatch } from 'react-redux';
 import {
@@ -11,27 +12,28 @@ import {
   MenuOutlined,
 } from '@ant-design/icons';
 import { sortableHandle, sortableContainer, sortableElement } from 'react-sortable-hoc';
-import { updateExperiment } from 'redux/actions/experiments';
+
+import MetadataColumnTitle from 'components/data-management/MetadataColumn';
+import MetadataPopover from 'components/data-management/MetadataPopover';
+import {
+  UploadCell, SampleNameCell, EditableFieldCell,
+} from 'components/data-management/SamplesTableCells';
+
 import {
   updateProject,
   deleteMetadataTrack,
   createMetadataTrack,
 } from 'redux/actions/projects';
-import Storage from '@aws-amplify/storage';
+import { DEFAULT_NA } from 'redux/reducers/projects/initialState';
+import { sampleTemplate } from 'redux/reducers/samples/initialState';
+import { updateExperiment } from 'redux/actions/experiments';
+import { updateSample } from 'redux/actions/samples';
+
 import UploadStatus from 'utils/upload/UploadStatus';
 import { arrayMoveImmutable } from 'utils/array-move';
 import downloadFromUrl from 'utils/data-management/downloadFromUrl';
-import { DEFAULT_NA } from 'redux/reducers/projects/initialState';
-import {
-  updateSample,
-} from 'redux/actions/samples';
 import { metadataNameToKey, metadataKeyToName, temporaryMetadataKey } from 'utils/data-management/metadataUtils';
 import integrationTestConstants from 'utils/integrationTestConstants';
-import MetadataColumnTitle from 'components/data-management/MetadataColumn';
-import MetadataPopover from 'components/data-management/MetadataPopover';
-import {
-  UploadCell, SampleNameCell, EditableFieldCell,
-} from './SamplesTableCells';
 
 import 'utils/css/data-management.css';
 
@@ -233,7 +235,22 @@ const SamplesTable = forwardRef((props, ref) => {
       // this a temporary fix so that the whole UI doesn't crash preventing the
       // user from removing the dataset or uploading another one.
       // this situation should be included into the SamplesTable.jsx tests
-      const sampleFiles = samples[sampleUuid]?.files || {};
+
+      // If a sample exists in projects but not in the samples file, this means there is an error
+      // We should show an error then
+
+      const sampleUploadErrorTemplate = {
+        ...sampleTemplate,
+        name: 'UPLOAD ERROR : Please reupload sample',
+        sampleFiles: {
+          'barcodes.tsv.gz': { upload: { status: UploadStatus.FILE_NOT_FOUND } },
+          'features.tsv.gz': { upload: { status: UploadStatus.FILE_NOT_FOUND } },
+          'matrix.mtx.gz': { upload: { status: UploadStatus.FILE_NOT_FOUND } },
+        },
+      };
+
+      const sampleData = samples[sampleUuid] || sampleUploadErrorTemplate;
+      const sampleFiles = sampleData.files;
 
       const barcodesFile = sampleFiles['barcodes.tsv.gz'] ?? { upload: { status: UploadStatus.FILE_NOT_FOUND } };
       const genesFile = sampleFiles['features.tsv.gz'] ?? { upload: { status: UploadStatus.FILE_NOT_FOUND } };
@@ -245,13 +262,13 @@ const SamplesTable = forwardRef((props, ref) => {
 
       return {
         key: idx,
-        name: samples[sampleUuid].name,
+        name: sampleData.name,
         uuid: sampleUuid,
         barcodes: barcodesData,
         genes: genesData,
         matrix: matrixData,
-        species: samples[sampleUuid].species || DEFAULT_NA,
-        ...samples[sampleUuid].metadata,
+        species: sampleData.species || DEFAULT_NA,
+        ...sampleData.metadata,
       };
     });
     setTableData(newData);
