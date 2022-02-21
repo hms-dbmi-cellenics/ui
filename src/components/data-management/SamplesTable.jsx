@@ -50,6 +50,18 @@ const exampleDatasets = [
   },
 ];
 
+// If a sample exists in projects but not in the samples file,
+// there is an error uploading the sample. We should show an error for that sample.
+const sampleUploadErrorTemplate = {
+  ...sampleTemplate,
+  name: 'UPLOAD ERROR: Please reupload sample',
+  sampleFiles: {
+    'barcodes.tsv.gz': { upload: { status: UploadStatus.FILE_NOT_FOUND } },
+    'features.tsv.gz': { upload: { status: UploadStatus.FILE_NOT_FOUND } },
+    'matrix.mtx.gz': { upload: { status: UploadStatus.FILE_NOT_FOUND } },
+  },
+};
+
 const SamplesTable = forwardRef((props, ref) => {
   const dispatch = useDispatch();
   const [tableData, setTableData] = useState([]);
@@ -223,32 +235,12 @@ const SamplesTable = forwardRef((props, ref) => {
   };
 
   useEffect(() => {
-    if (!samples[activeProject.samples[0]]) {
+    if (activeProject.samples.length === 0) {
       setTableData([]);
       return;
     }
 
-    // Set table data
     const newData = activeProject.samples.map((sampleUuid, idx) => {
-      // upload problems sometimes lead to partial updates and incosistent states
-      // in this situation it's possible that the sampleUuid does not exist
-      // this a temporary fix so that the whole UI doesn't crash preventing the
-      // user from removing the dataset or uploading another one.
-      // this situation should be included into the SamplesTable.jsx tests
-
-      // If a sample exists in projects but not in the samples file, this means there is an error
-      // We should show an error then
-
-      const sampleUploadErrorTemplate = {
-        ...sampleTemplate,
-        name: 'UPLOAD ERROR : Please reupload sample',
-        sampleFiles: {
-          'barcodes.tsv.gz': { upload: { status: UploadStatus.FILE_NOT_FOUND } },
-          'features.tsv.gz': { upload: { status: UploadStatus.FILE_NOT_FOUND } },
-          'matrix.mtx.gz': { upload: { status: UploadStatus.FILE_NOT_FOUND } },
-        },
-      };
-
       const sampleData = samples[sampleUuid] || sampleUploadErrorTemplate;
       const sampleFiles = sampleData.files;
 
