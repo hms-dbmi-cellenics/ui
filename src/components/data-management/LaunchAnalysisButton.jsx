@@ -132,7 +132,7 @@ const LaunchAnalysisButton = () => {
     if (!canLaunchAnalysis()) {
       return (
         <Tooltip
-          title='Ensure all samples are uploaded and all metadata are inserted'
+          title='Ensure that all samples are uploaded successfully and all relevant metadata inserted.'
         >
           {/* disabled button inside tooltip causes tooltip to not function */}
           {/* https://github.com/react-component/tooltip/issues/18#issuecomment-140078802 */}

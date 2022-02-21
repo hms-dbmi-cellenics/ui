@@ -3,13 +3,13 @@ import _ from 'lodash';
 
 import axios from 'axios';
 
-import { createSample, updateSampleFile } from '../../redux/actions/samples';
+import { createSample, updateSampleFile } from 'redux/actions/samples';
 
-import fetchAPI from '../fetchAPI';
+import fetchAPI from 'utils/fetchAPI';
 
-import UploadStatus from './UploadStatus';
-import loadAndCompressIfNecessary from './loadAndCompressIfNecessary';
-import { inspectFile, Verdict } from './fileInspector';
+import UploadStatus from 'utils/upload/UploadStatus';
+import loadAndCompressIfNecessary from 'utils/upload/loadAndCompressIfNecessary';
+import { inspectFile, Verdict } from 'utils/upload/fileInspector';
 
 const putInS3 = async (projectUuid, loadedFileData, dispatch, sampleUuid, fileName, metadata) => {
   const baseUrl = `/v1/projects/${projectUuid}/samples/${sampleUuid}/${fileName}/uploadUrl`;
