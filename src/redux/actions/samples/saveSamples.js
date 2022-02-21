@@ -31,10 +31,7 @@ const saveSamples = (
     });
 
     payload = projectSamples;
-    payload = {
-      ...payload,
-      [newSample.uuid]: newSampleToUpload,
-    };
+    payload[newSample.uuid] = newSampleToUpload;
   } else {
     payload = newSampleToUpload;
   }
