@@ -13,8 +13,6 @@ import saveExperiment from 'redux/actions/experiments/saveExperiment';
 
 import pushNotificationMessage from 'utils/pushNotificationMessage';
 
-import '__test__/test-utils/setupTests';
-
 jest.mock('redux/actions/experiments/saveExperiment');
 saveExperiment.mockImplementation(() => async () => { });
 
@@ -77,7 +75,7 @@ describe('createSample action', () => {
   it('Runs correctly', async () => {
     fetchMock.mockResponse(JSON.stringify({}), { url: 'mockedUrl', status: 200 });
 
-    await store.dispatch(createSample(projectUuid, sampleName, mockType));
+    const newUuid = await store.dispatch(createSample(projectUuid, sampleName, mockType));
 
     // Fetch call is made
     const fetchMockFirstCall = fetchMock.mock.calls[0];
@@ -96,19 +94,24 @@ describe('createSample action', () => {
 
     // Calls update experiment on success of fetch
     expect(saveExperiment).toHaveBeenCalledWith(experimentId);
+
+    // Returns a new sampleUuid
+    expect(newUuid).toEqual(sampleUuid);
   });
 
-  it('Shows error message when there was a fetch error', async () => {
+  it('Shows error message and throw an error when there is a fetch error', async () => {
     const fetchErrorMessage = 'someFetchError';
 
     fetchMock.mockResponse(JSON.stringify({ message: fetchErrorMessage }), { url: 'mockedUrl', status: 400 });
 
+    let newUuid;
+
     // Fails with error message we sent in response to fetch
-    await expect(
-      store.dispatch(
+    await expect(async () => {
+      newUuid = await store.dispatch(
         createSample(projectUuid, sampleName, mockType),
-      ),
-    ).rejects.toEqual(fetchErrorMessage);
+      );
+    }).rejects.toThrowError(fetchErrorMessage);
 
     // Sends correct actions
     const actions = store.getActions();
@@ -120,5 +123,8 @@ describe('createSample action', () => {
     expect(actions).toHaveLength(2);
 
     expect(pushNotificationMessage).toHaveBeenCalledWith('error', fetchErrorMessage);
+
+    // It should not return a uuid
+    expect(newUuid).toBeUndefined();
   });
 });

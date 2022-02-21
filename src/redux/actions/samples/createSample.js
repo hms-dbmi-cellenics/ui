@@ -90,7 +90,7 @@ const createSample = (
 
     pushNotificationMessage('error', message);
 
-    return Promise.reject(new Error(message));
+    throw new Error(message);
   }
 };
 
