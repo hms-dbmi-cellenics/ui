@@ -64,6 +64,9 @@ const dispatchWorkRequest = async (
       const { response: { error } } = res;
 
       if (error) {
+        console.warn('*** ERROR: error_code ***', res.response?.errorCode);
+        console.warn('*** ERROR: user_message ***', res.response?.userMessage);
+
         return reject(
           new WorkResponseError(error, request),
         );

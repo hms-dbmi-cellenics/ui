@@ -72,6 +72,9 @@ const onGEM2SUpdate = (update, dispatch, experimentId) => {
 const onWorkResponseUpdate = (update, dispatch, experimentId) => {
   const { request: { body: { name: workRequestName } }, response: { error } } = update;
 
+  console.warn('*** ERROR: error_code ***', update.response?.errorCode);
+  console.warn('*** ERROR: user_message ***', update.response?.userMessage);
+
   if (error) throw new Error(error);
 
   if (workRequestName === 'ClusterCells') {
