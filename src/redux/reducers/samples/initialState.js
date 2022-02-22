@@ -3,7 +3,6 @@ const sampleTemplate = {
   projectUuid: null,
   uuid: null,
   type: null,
-  species: null,
   createdDate: null,
   lastModified: null,
   complete: false,

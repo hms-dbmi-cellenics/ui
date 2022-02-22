@@ -18,6 +18,7 @@ export default {
   ERROR_FETCHING_BACKEND_STATUS: 'We couldn\'t get the status of processing the experiment\'s processing run.',
   ERROR_NOT_SIGNED_IN: 'You need to sign in first. Click Sign in on the top right to begin.',
   ERROR_SAVING: 'We couldn\'t save your data.',
+  ERROR_CREATING_SAMPLE: 'We couldn\'t save your data. Please reupload sample:',
   ERROR_STARTING_PIPLELINE: 'We couldn\'t start working on your data.',
   ERROR_SIGN_IN: 'We couldn\'t sign you in. Please try again.',
   FEEDBACK_ERROR: 'We couldn\'t process your feedback. Please try submitting again.',
