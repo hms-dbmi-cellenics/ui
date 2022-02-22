@@ -282,24 +282,32 @@ const DiffExprCompute = (props) => {
             Compute
           </Button>
           <Tooltip overlay={(
-            <span>
-              Differential expression is calculated using the presto implementation of the Wilcoxon rank sum test and auROC analysis. For more information see the
-              {' '}
-              <a
-                href='http://htmlpreview.github.io/?https://github.com/immunogenomics/presto/blob/master/docs/getting-started.html'
+            <div>
+              <p>
+                Marker genes for cell set comparisons are determined using the Wilcoxon rank sum test from <a
+                  href='http://htmlpreview.github.io/?https://github.com/immunogenomics/presto/blob/master/docs/getting-started.html'
+                  target='_blank'
+                  rel='noreferrer'
+                >
+                  presto
+              </a>.
+              </p>
+              <p> Differential expression analysis between samples/groups uses a pseudobulk <a
+                href='http://bioconductor.org/books/3.14/OSCA.workflows/segerstolpe-human-pancreas-smart-seq2.html#segerstolpe-comparison'
                 target='_blank'
                 rel='noreferrer'
               >
-                presto vignette
+                limma-voom workflow
               </a>.
-            </span>
+            </p>
+            </div>
           )}
           >
             <InfoCircleOutlined />
           </Tooltip>
         </Space>
-      </Form.Item>
-    </Form>
+      </Form.Item >
+    </Form >
   );
 };
 
