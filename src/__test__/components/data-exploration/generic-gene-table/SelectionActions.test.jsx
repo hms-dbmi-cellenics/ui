@@ -1,17 +1,27 @@
 import React from 'react';
 import { mount } from 'enzyme';
 import _ from 'lodash';
-import { Button, Typography } from 'antd';
-import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
 import configureMockStore from 'redux-mock-store';
 import SelectionActions from 'components/data-exploration/generic-gene-table/SelectionActions';
+
+import { Provider } from 'react-redux';
+import { Button, Typography } from 'antd';
+
+import ExpressionCellSetModal from 'components/data-exploration/generic-gene-table/ExpressionCellSetModal';
+
+import fake from '__test__/test-utils/constants';
+
 import { GENES_DESELECT } from 'redux/actionTypes/genes';
-import '__test__/test-utils/setupTests';
 
 const { Text } = Typography;
 
 const initialState = {
+  experimentSettings: {
+    info: {
+      experimentId: fake.EXPERIMENT_ID,
+    },
+  },
   genes: {
     properties: {
       loading: [],
@@ -38,7 +48,7 @@ const initialState = {
 const mockStore = configureMockStore([thunk]);
 
 describe('SelectionIndicator', () => {
-  test('renders correctly with no selected genes', () => {
+  it('renders correctly with no selected genes', () => {
     const store = mockStore(initialState);
     const component = mount(
       <Provider store={store}>
@@ -55,7 +65,7 @@ describe('SelectionIndicator', () => {
     expect(text.length).toEqual(0);
   });
 
-  test('renders correctly with selected genes ', () => {
+  it('renders correctly with selected genes ', () => {
     const state = _.cloneDeep(initialState);
     state.genes.selected = ['CEMIP'];
 
@@ -89,7 +99,7 @@ describe('SelectionIndicator', () => {
     expect(text.childAt(0).text()).toEqual('1 gene selected');
   });
 
-  test('selected genes are cleared when clear button is pressed', () => {
+  it('selected genes are cleared when clear button is pressed', () => {
     const state = _.cloneDeep(initialState);
     state.genes.selected = ['CEMIP', 'TIMP3'];
 
@@ -106,7 +116,7 @@ describe('SelectionIndicator', () => {
     expect(firstAction).toMatchSnapshot();
   });
 
-  test('renders correctly with no selected genes and export ability', () => {
+  it('renders correctly with no selected genes and export ability', () => {
     const store = mockStore(initialState);
 
     const component = mount(
@@ -125,7 +135,7 @@ describe('SelectionIndicator', () => {
     expect(text.length).toEqual(0);
   });
 
-  test('List selected button changes from list to hide and back correctly', () => {
+  it('List selected button changes from list to hide and back correctly', () => {
     const state = _.cloneDeep(initialState);
     state.genes.selected = ['CEMIP', 'TIMP3'];
 
@@ -159,7 +169,7 @@ describe('SelectionIndicator', () => {
     expect(listSelectedButton.childAt(0).text()).toEqual('List');
   });
 
-  test('Shows extraOptions', () => {
+  it('Shows extraOptions', () => {
     const state = _.cloneDeep(initialState);
     state.genes.selected = ['CEMIP', 'TIMP3'];
 
@@ -176,7 +186,7 @@ describe('SelectionIndicator', () => {
     expect(component.find('#testExtraOption').length).toEqual(1);
   });
 
-  test('opens and closes create cell set modal', () => {
+  it('opens and closes create cell set modal', () => {
     const state = _.cloneDeep(initialState);
     state.genes.selected = ['CEMIP', 'TIMP3'];
 
@@ -185,24 +195,17 @@ describe('SelectionIndicator', () => {
       <Provider store={store}>
         <SelectionActions
           experimentId='test'
-          extraOptions={<div id='testExtraOption' />}
         />
       </Provider>,
     );
 
     const button = component.find(Button).at(4);
-    // button should be disabled
-    expect(button.prop('disabled')).toEqual(true);
 
-    // button.simulate('click');
-    // expect(component.find(CreateCellSetModal).length).toEqual(1);
+    button.simulate('click');
+    expect(component.find(ExpressionCellSetModal).length).toEqual(1);
 
-    // // check if the genes are passed
-    // expect(component.find(CreateCellSetModal).prop('selectedGenes'))
-    //    .toStrictEqual(['CEMIP', 'TIMP3']);
-
-    // const closeButton = component.find('.ant-modal-close');
-    // closeButton.simulate('click');
-    // expect(component.find(CreateCellSetModal).length).toEqual(0);
+    const closeButton = component.find('.ant-modal-close');
+    closeButton.simulate('click');
+    expect(component.find(ExpressionCellSetModal).length).toEqual(0);
   });
 });
