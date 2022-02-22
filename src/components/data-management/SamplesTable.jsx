@@ -52,10 +52,10 @@ const exampleDatasets = [
 
 // If a sample exists in projects but not in the samples file,
 // there is an error uploading the sample. We should show an error for that sample.
-const sampleUploadErrorTemplate = {
+const sampleCreateErrorTemplate = {
   ...sampleTemplate,
   name: 'UPLOAD ERROR: Please reupload sample',
-  sampleFiles: {
+  files: {
     'barcodes.tsv.gz': { upload: { status: UploadStatus.FILE_NOT_FOUND } },
     'features.tsv.gz': { upload: { status: UploadStatus.FILE_NOT_FOUND } },
     'matrix.mtx.gz': { upload: { status: UploadStatus.FILE_NOT_FOUND } },
@@ -241,7 +241,7 @@ const SamplesTable = forwardRef((props, ref) => {
     }
 
     const newData = activeProject.samples.map((sampleUuid, idx) => {
-      const sampleData = samples[sampleUuid] || sampleUploadErrorTemplate;
+      const sampleData = samples[sampleUuid] || sampleCreateErrorTemplate;
       const sampleFiles = sampleData.files;
 
       const barcodesFile = sampleFiles['barcodes.tsv.gz'] ?? { upload: { status: UploadStatus.FILE_NOT_FOUND } };
@@ -259,7 +259,6 @@ const SamplesTable = forwardRef((props, ref) => {
         barcodes: barcodesData,
         genes: genesData,
         matrix: matrixData,
-        species: sampleData.species || DEFAULT_NA,
         ...sampleData.metadata,
       };
     });
