@@ -14,7 +14,6 @@ import pushNotificationMessage from 'utils/pushNotificationMessage';
 import { isServerError, throwIfRequestFailed } from 'utils/fetchErrors';
 
 import { sampleTemplate } from 'redux/reducers/samples/initialState';
-import saveExperiment from 'redux/actions/experiments/saveExperiment';
 
 const createSample = (
   projectUuid,
@@ -22,11 +21,8 @@ const createSample = (
   type,
 ) => async (dispatch, getState) => {
   const project = getState().projects[projectUuid];
-
   const createdDate = moment().toISOString();
-
   const experimentId = project.experiments[0];
-
   const newSampleUuid = uuidv4();
 
   const newSample = {
@@ -70,8 +66,6 @@ const createSample = (
       type: SAMPLES_CREATE,
       payload: { sample: newSample, experimentId },
     });
-
-    dispatch(saveExperiment(experimentId));
 
     return newSampleUuid;
   } catch (e) {
