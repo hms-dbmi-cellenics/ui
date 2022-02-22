@@ -9,12 +9,8 @@ import initialProjectState, { projectTemplate } from 'redux/reducers/projects/in
 import initialExperimentState, { experimentTemplate } from 'redux/reducers/experiments/initialState';
 
 import { SAMPLES_CREATE, SAMPLES_SAVING, SAMPLES_ERROR } from 'redux/actionTypes/samples';
-import saveExperiment from 'redux/actions/experiments/saveExperiment';
 
 import pushNotificationMessage from 'utils/pushNotificationMessage';
-
-jest.mock('redux/actions/experiments/saveExperiment');
-saveExperiment.mockImplementation(() => async () => { });
 
 pushNotificationMessage.mockImplementation(() => async () => { });
 
@@ -91,9 +87,6 @@ describe('createSample action', () => {
 
     expect(actions[0].type).toEqual(SAMPLES_SAVING);
     expect(actions[1].type).toEqual(SAMPLES_CREATE);
-
-    // Calls update experiment on success of fetch
-    expect(saveExperiment).toHaveBeenCalledWith(experimentId);
 
     // Returns a new sampleUuid
     expect(newUuid).toEqual(sampleUuid);

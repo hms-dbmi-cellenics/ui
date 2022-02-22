@@ -1,17 +1,18 @@
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import waitForActions from 'redux-mock-store-await-actions';
-import uuid from 'uuid';
 import axios from 'axios';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
-import { SAMPLES_FILE_UPDATE } from '../../../redux/actionTypes/samples';
-import initialSampleState, { sampleTemplate } from '../../../redux/reducers/samples/initialState';
-import initialProjectState, { projectTemplate } from '../../../redux/reducers/projects/initialState';
-import initialExperimentState, { experimentTemplate } from '../../../redux/reducers/experiments/initialState';
-import { processUpload } from '../../../utils/upload/processUpload';
-import UploadStatus from '../../../utils/upload/UploadStatus';
+import { SAMPLES_FILE_UPDATE } from 'redux/actionTypes/samples';
+import initialSampleState, { sampleTemplate } from 'redux/reducers/samples/initialState';
+import initialProjectState, { projectTemplate } from 'redux/reducers/projects/initialState';
+import initialExperimentState, { experimentTemplate } from 'redux/reducers/experiments/initialState';
+import { processUpload } from 'utils/upload/processUpload';
+import UploadStatus from 'utils/upload/UploadStatus';
+import { waitFor } from '@testing-library/dom';
 
 enableFetchMocks();
+
 const validFilesList = [
   {
     name: 'WT13/features.tsv.gz',
@@ -53,12 +54,12 @@ const validFilesList = [
     valid: true,
   },
 ];
+
 const sampleType = '10X Chromium';
 const mockSampleUuid = 'sample-uuid';
 const mockProjectUuid = 'project-uuid';
 const mockExperimentId = 'experiment-id';
-jest.mock('uuid', () => jest.fn());
-uuid.v4 = jest.fn(() => 'sample-uuid');
+
 const initialState = {
   projects: {
     ...initialProjectState,
@@ -116,28 +117,39 @@ jest.mock('redux/actions/samples/saveSamples', () => jest.fn().mockImplementatio
   type: 'samples/saved',
 })));
 
-describe('processUpload', () => {
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
+jest.mock('uuid', () => ({
+  v4: jest.fn(() => 'sample-uuid'),
+}));
 
+jest.mock('axios', () => ({
+  request: jest.fn(),
+}));
+
+jest.mock('redux/actions/samples/deleteSamples', () => ({
+  sendDeleteSamplesRequest: jest.fn(),
+}));
+
+let store = null;
+
+describe('processUpload', () => {
   beforeEach(() => {
+    jest.clearAllMocks();
+
     fetchMock.resetMocks();
     fetchMock.doMock();
     fetchMock.mockResponse(JSON.stringify('theSignedUrl'), { status: 200 });
+
+    store = mockStore(initialState);
   });
 
   it('Uploads and updates redux correctly when there are no errors', async () => {
-    const store = mockStore(initialState);
-
     const mockAxiosCalls = [];
     const uploadSuccess = (params) => {
       mockAxiosCalls.push(params);
       return Promise.resolve('Resolved');
     };
 
-    axios.request = jest.fn()
-      .mockImplementationOnce(uploadSuccess)
+    axios.request.mockImplementationOnce(uploadSuccess)
       .mockImplementationOnce(uploadSuccess)
       .mockImplementationOnce(uploadSuccess);
 
@@ -189,10 +201,9 @@ describe('processUpload', () => {
   });
 
   it('Updates redux correctly when there are file load and compress errors', async () => {
-    const store = mockStore(initialState);
     const invalidFiles = validFilesList.map((file) => ({ ...file, valid: false }));
 
-    processUpload(
+    await processUpload(
       invalidFiles,
       sampleType,
       store.getState().samples,
@@ -234,20 +245,18 @@ describe('processUpload', () => {
   });
 
   it('Updates redux correctly when there are file upload errors', async () => {
-    const store = mockStore(initialState);
-
     const mockAxiosCalls = [];
+
     const uploadError = (params) => {
       mockAxiosCalls.push(params);
       return Promise.reject(new Error('Error'));
     };
 
-    axios.request = jest.fn()
-      .mockImplementationOnce(uploadError)
+    axios.request.mockImplementationOnce(uploadError)
       .mockImplementationOnce(uploadError)
       .mockImplementationOnce(uploadError);
 
-    processUpload(
+    await processUpload(
       validFilesList,
       sampleType,
       store.getState().samples,
@@ -292,6 +301,23 @@ describe('processUpload', () => {
     // Upload end deletes aws promise (if there was one)
     errorFileProperties.forEach(({ amplifyPromise }) => {
       expect(amplifyPromise).toBeNull();
+    });
+  });
+
+  it('Should not upload files if there are errors creating samples in DynamoDB', async () => {
+    fetchMock.mockReject(new Error('Error'));
+
+    await processUpload(
+      validFilesList,
+      sampleType,
+      store.getState().samples,
+      mockProjectUuid,
+      store.dispatch,
+    );
+
+    // We do not expect uploads to happen
+    await waitFor(() => {
+      expect(axios.request).not.toHaveBeenCalled();
     });
   });
 });
