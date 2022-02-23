@@ -13,6 +13,8 @@ import { projects, samples } from '__test__/test-utils/mockData';
 
 import SamplesTable, { exampleDatasets } from 'components/data-management/SamplesTable';
 import { makeStore } from 'redux/store';
+import configureMockStore from 'redux-mock-store';
+import thunk from 'redux-thunk';
 import createTestComponentFactory from '__test__/test-utils/testComponentFactory';
 
 import { loadProjects, setActiveProject } from 'redux/actions/projects';
@@ -30,6 +32,15 @@ const defaultProps = {
 };
 
 const samplesTableFactory = createTestComponentFactory(SamplesTable, defaultProps);
+const renderSamplesTable = async (store) => {
+  await act(async () => {
+    render(
+      <Provider store={store}>
+        {samplesTableFactory()}
+      </Provider>,
+    );
+  });
+};
 
 enableFetchMocks();
 
@@ -73,13 +84,7 @@ describe('Samples table', () => {
   });
 
   it('Shows option to download datasets if there are no samples', async () => {
-    await act(async () => {
-      render(
-        <Provider store={storeState}>
-          {samplesTableFactory()}
-        </Provider>,
-      );
-    });
+    await renderSamplesTable(storeState);
 
     // Load project without samples
     storeState.dispatch(setActiveProject(projectIdWithoutSamples));
@@ -103,30 +108,38 @@ describe('Samples table', () => {
   });
 
   it('Should not show option to download datasets if samples are available', async () => {
-    await act(async () => {
-      render(
-        <Provider store={storeState}>
-          {samplesTableFactory()}
-        </Provider>,
-      );
-    });
+    await renderSamplesTable(storeState);
 
     expect(screen.queryByText(/Start uploading your samples by clicking on Add samples./i)).toBeNull();
     expect(screen.queryByText(/Don't have data\? Get started using one of our example datasets:/i)).toBeNull();
   });
 
   it('Should show all the samples', async () => {
-    await act(async () => {
-      render(
-        <Provider store={storeState}>
-          {samplesTableFactory()}
-        </Provider>,
-      );
-    });
+    await renderSamplesTable(storeState);
 
     Object.values(samples).forEach((sample) => {
       expect(screen.getByText(sample.name)).toBeInTheDocument();
     });
+  });
+
+  it('Should show an error if a sample fails to upload', async () => {
+    const missingSampleState = _.cloneDeep(storeState.getState());
+    const createMockStore = configureMockStore([thunk]);
+
+    // Delete one of the samples
+    const deletedSampleUuid = Object.keys(missingSampleState.samples).find((key) => key !== 'meta');
+    const deletedSampleObject = missingSampleState.samples[deletedSampleUuid];
+    delete missingSampleState.samples[deletedSampleUuid];
+
+    const missingSampleStore = createMockStore(missingSampleState);
+
+    await renderSamplesTable(missingSampleStore);
+
+    // The sample name should not be in the document
+    expect(screen.queryByText(deletedSampleObject.name)).toBeNull();
+
+    // There should be an error entry for the missing sample
+    expect(screen.getByText(/UPLOAD ERROR: Please reupload sample/i)).toBeInTheDocument();
   });
 
   it('Renaming the sample renames the sample', async () => {
@@ -135,13 +148,7 @@ describe('Samples table', () => {
     const sampleNames = Object.values(samples).map((sample) => sample.name);
     const sampleNameToChange = sampleNames.shift();
 
-    await act(async () => {
-      render(
-        <Provider store={storeState}>
-          {samplesTableFactory()}
-        </Provider>,
-      );
-    });
+    await renderSamplesTable(storeState);
 
     const firstSampleEditButton = screen.getAllByLabelText(/Edit/i)[0];
 
@@ -180,13 +187,7 @@ describe('Samples table', () => {
   });
 
   it('Clicking delete deletes the sample', async () => {
-    await act(async () => {
-      render(
-        <Provider store={storeState}>
-          {samplesTableFactory()}
-        </Provider>,
-      );
-    });
+    await renderSamplesTable(storeState);
 
     const firstSampleDeleteButton = screen.getAllByLabelText(/Delete/i)[0];
 

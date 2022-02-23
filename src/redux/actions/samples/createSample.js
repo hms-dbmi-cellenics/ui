@@ -7,14 +7,12 @@ import {
 import {
   DEFAULT_NA,
 } from 'redux/reducers/projects/initialState';
-
+import { throwIfRequestFailed } from 'utils/fetchErrors';
 import fetchAPI from 'utils/fetchAPI';
 import endUserMessages from 'utils/endUserMessages';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
-import { isServerError, throwIfRequestFailed } from 'utils/fetchErrors';
 
 import { sampleTemplate } from 'redux/reducers/samples/initialState';
-import saveExperiment from 'redux/actions/experiments/saveExperiment';
 
 const createSample = (
   projectUuid,
@@ -22,11 +20,8 @@ const createSample = (
   type,
 ) => async (dispatch, getState) => {
   const project = getState().projects[projectUuid];
-
   const createdDate = moment().toISOString();
-
   const experimentId = project.experiments[0];
-
   const newSampleUuid = uuidv4();
 
   const newSample = {
@@ -66,18 +61,15 @@ const createSample = (
 
     throwIfRequestFailed(response, json, endUserMessages.ERROR_SAVING);
 
-    dispatch({
+    await dispatch({
       type: SAMPLES_CREATE,
       payload: { sample: newSample, experimentId },
     });
 
-    dispatch(saveExperiment(experimentId));
+    return newSampleUuid;
   } catch (e) {
-    let { message } = e;
-    if (!isServerError(e)) {
-      console.error(`fetch ${url} error ${message}`);
-      message = endUserMessages.ERROR_SAVING;
-    }
+    const { message } = e;
+    console.error(e);
 
     dispatch({
       type: SAMPLES_ERROR,
@@ -86,12 +78,10 @@ const createSample = (
       },
     });
 
-    pushNotificationMessage('error', message);
+    pushNotificationMessage('error', endUserMessages.ERROR_CREATING_SAMPLE);
 
-    return Promise.reject(message);
+    throw new Error(message);
   }
-
-  return newSampleUuid;
 };
 
 export default createSample;
