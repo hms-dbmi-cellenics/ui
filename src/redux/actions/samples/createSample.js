@@ -7,11 +7,10 @@ import {
 import {
   DEFAULT_NA,
 } from 'redux/reducers/projects/initialState';
-
+import { throwIfRequestFailed } from 'utils/fetchErrors';
 import fetchAPI from 'utils/fetchAPI';
 import endUserMessages from 'utils/endUserMessages';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
-import { isServerError, throwIfRequestFailed } from 'utils/fetchErrors';
 
 import { sampleTemplate } from 'redux/reducers/samples/initialState';
 
@@ -69,11 +68,8 @@ const createSample = (
 
     return newSampleUuid;
   } catch (e) {
-    let { message } = e;
-    if (!isServerError(e)) {
-      console.error(`fetch ${url} error ${message}`);
-      message = endUserMessages.ERROR_CREATING_SAMPLE;
-    }
+    const { message } = e;
+    console.error(e);
 
     dispatch({
       type: SAMPLES_ERROR,
@@ -82,7 +78,7 @@ const createSample = (
       },
     });
 
-    pushNotificationMessage('error', message);
+    pushNotificationMessage('error', endUserMessages.ERROR_CREATING_SAMPLE);
 
     throw new Error(message);
   }
