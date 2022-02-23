@@ -25,7 +25,6 @@ import {
   createMetadataTrack,
 } from 'redux/actions/projects';
 import { DEFAULT_NA } from 'redux/reducers/projects/initialState';
-import { sampleTemplate } from 'redux/reducers/samples/initialState';
 import { updateExperiment } from 'redux/actions/experiments';
 import { updateSample } from 'redux/actions/samples';
 
@@ -49,18 +48,6 @@ const exampleDatasets = [
     description: 'Multi-sample blood and bone marrow dataset',
   },
 ];
-
-// If a sample exists in projects but not in the samples file,
-// there is an error uploading the sample. We should show an error for that sample.
-const sampleCreateErrorTemplate = {
-  ...sampleTemplate,
-  name: 'UPLOAD ERROR: Please reupload sample',
-  files: {
-    'barcodes.tsv.gz': { upload: { status: UploadStatus.FILE_NOT_FOUND } },
-    'features.tsv.gz': { upload: { status: UploadStatus.FILE_NOT_FOUND } },
-    'matrix.mtx.gz': { upload: { status: UploadStatus.FILE_NOT_FOUND } },
-  },
-};
 
 const SamplesTable = forwardRef((props, ref) => {
   const dispatch = useDispatch();
@@ -241,8 +228,8 @@ const SamplesTable = forwardRef((props, ref) => {
     }
 
     const newData = activeProject.samples.map((sampleUuid, idx) => {
-      const sampleData = samples[sampleUuid] || sampleCreateErrorTemplate;
-      const sampleFiles = sampleData.files;
+      const sampleData = samples[sampleUuid];
+      const sampleFiles = sampleData?.files || {};
 
       const barcodesFile = sampleFiles['barcodes.tsv.gz'] ?? { upload: { status: UploadStatus.FILE_NOT_FOUND } };
       const genesFile = sampleFiles['features.tsv.gz'] ?? { upload: { status: UploadStatus.FILE_NOT_FOUND } };
@@ -254,12 +241,12 @@ const SamplesTable = forwardRef((props, ref) => {
 
       return {
         key: idx,
-        name: sampleData.name,
+        name: sampleData?.name || 'UPLOAD ERROR: Please reupload sample',
         uuid: sampleUuid,
         barcodes: barcodesData,
         genes: genesData,
         matrix: matrixData,
-        ...sampleData.metadata,
+        ...sampleData?.metadata || {},
       };
     });
     setTableData(newData);
