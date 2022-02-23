@@ -7,6 +7,7 @@ import createSample from 'redux/actions/samples/createSample';
 import initialSampleState from 'redux/reducers/samples/initialState';
 import initialProjectState, { projectTemplate } from 'redux/reducers/projects/initialState';
 import initialExperimentState, { experimentTemplate } from 'redux/reducers/experiments/initialState';
+import endUserMessages from 'utils/endUserMessages';
 
 import { SAMPLES_CREATE, SAMPLES_SAVING, SAMPLES_ERROR } from 'redux/actionTypes/samples';
 
@@ -115,7 +116,7 @@ describe('createSample action', () => {
     // Check no other action was sent
     expect(actions).toHaveLength(2);
 
-    expect(pushNotificationMessage).toHaveBeenCalledWith('error', fetchErrorMessage);
+    expect(pushNotificationMessage).toHaveBeenCalledWith('error', endUserMessages.ERROR_CREATING_SAMPLE);
 
     // It should not return a uuid
     expect(newUuid).toBeUndefined();
