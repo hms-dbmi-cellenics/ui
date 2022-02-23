@@ -92,7 +92,7 @@ describe('createSample action', () => {
     expect(newUuid).toEqual(sampleUuid);
   });
 
-  it('Shows error message and throw an error when there is a fetch error', async () => {
+  it('Shows error message and throws an error when there is a fetch error', async () => {
     const fetchErrorMessage = 'someFetchError';
 
     fetchMock.mockResponse(JSON.stringify({ message: fetchErrorMessage }), { url: 'mockedUrl', status: 400 });

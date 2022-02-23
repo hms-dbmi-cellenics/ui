@@ -72,7 +72,7 @@ const createSample = (
     let { message } = e;
     if (!isServerError(e)) {
       console.error(`fetch ${url} error ${message}`);
-      message = `${endUserMessages.ERROR_CREATING_SAMPLE} ${name}`;
+      message = endUserMessages.ERROR_CREATING_SAMPLE;
     }
 
     dispatch({
