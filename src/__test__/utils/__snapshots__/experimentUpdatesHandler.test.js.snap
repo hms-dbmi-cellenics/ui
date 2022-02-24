@@ -1,5 +1,42 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`ExperimentUpdatesHandler Loads cell sets if QC pipeline completes  1`] = `
+Array [
+  "mockTaskName",
+  Object {
+    "processingConfigUpdate": Object {
+      "mockProcessingConfigUpdate": "mockProcessingConfigUpdate",
+    },
+  },
+  "mockSampleUuid",
+  false,
+]
+`;
+
+exports[`ExperimentUpdatesHandler Loads cell sets if QC pipeline completes  2`] = `
+Array [
+  "mockPlotUuid",
+  "mockPlotData",
+]
+`;
+
+exports[`ExperimentUpdatesHandler Loads cell sets if QC pipeline completes  3`] = `
+Array [
+  "testae48e318dab9a1bd0bexperiment",
+  true,
+]
+`;
+
+exports[`ExperimentUpdatesHandler Triggers properly for GEM2S updates  1`] = `
+Array [
+  "testae48e318dab9a1bd0bexperiment",
+  Object {
+    "mockProcessingConfig": "mockProcessingConfig",
+  },
+  true,
+]
+`;
+
 exports[`ExperimentUpdatesHandler Triggers properly for QC updates  1`] = `
 Array [
   "mockTaskName",
@@ -20,9 +57,4 @@ Array [
 ]
 `;
 
-exports[`ExperimentUpdatesHandler Triggers properly for QC updates  3`] = `
-Array [
-  "testae48e318dab9a1bd0bexperiment",
-  true,
-]
-`;
+exports[`ExperimentUpdatesHandler Triggers properly for backend status updates 1`] = `undefined`;

@@ -1,8 +1,9 @@
-import loadPlotConfig from './loadPlotConfig';
-import loadComponentConfig from './loadComponentConfig';
-import updatePlotConfig from './updatePlotConfig';
-import savePlotConfig from './savePlotConfig';
-import fetchPlotDataWork from './fetchPlotDataWork';
+import loadPlotConfig from 'redux/actions/componentConfig/loadPlotConfig';
+import loadComponentConfig from 'redux/actions/componentConfig/loadComponentConfig';
+import updatePlotConfig from 'redux/actions/componentConfig/updatePlotConfig';
+import savePlotConfig from 'redux/actions/componentConfig/savePlotConfig';
+import fetchPlotDataWork from 'redux/actions/componentConfig/fetchPlotDataWork';
+import updatePlotData from 'redux/actions/componentConfig/updatePlotData';
 
 export {
   loadPlotConfig,
@@ -10,4 +11,5 @@ export {
   updatePlotConfig,
   savePlotConfig,
   fetchPlotDataWork,
+  updatePlotData,
 };
