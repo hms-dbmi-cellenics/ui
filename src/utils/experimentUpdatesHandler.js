@@ -1,8 +1,7 @@
-import updateCellSetsClustering from 'redux/actions/cellSets/updateCellSetsClustering';
+import { updateCellSetsClustering, loadCellSets } from 'redux/actions/cellSets';
 import { updateProcessingSettingsFromQC, loadedProcessingConfig } from 'redux/actions/experimentSettings';
 import { updateBackendStatus } from 'redux/actions/backendStatus';
-import updatePlotData from 'redux/actions/componentConfig/updatePlotData';
-import { loadCellSets } from 'redux/actions/cellSets';
+import { updatePlotData } from 'redux/actions/componentConfig';
 
 import pushNotificationMessage from 'utils/pushNotificationMessage';
 
@@ -38,13 +37,10 @@ const experimentUpdatesHandler = (dispatch) => (experimentId, update) => {
 const onQCUpdate = (update, dispatch, experimentId) => {
   const { input, output, response: { error, errorCode, userMessage } } = update;
 
-  console.warn('*** error', error);
-  console.warn('*** errorCode', error);
-  console.warn('*** userMessage', error);
-
   if (error) {
     console.log(errorCode, userMessage);
     pushNotificationMessage('error', userMessage);
+    return;
   }
 
   const processingConfigUpdate = output.config;
@@ -74,6 +70,7 @@ const onGEM2SUpdate = (update, dispatch, experimentId) => {
   if (error) {
     console.log(errorCode, userMessage);
     pushNotificationMessage('error', userMessage);
+    return;
   }
 
   const processingConfig = update.item?.processingConfig;
@@ -89,6 +86,8 @@ const onWorkResponseUpdate = (update, dispatch, experimentId) => {
   } = update;
 
   if (error) {
+    console.log(errorCode, userMessage);
+
     if (workRequestName === 'GetExpressionCellSets') {
       switch (errorCode) {
         case 'R_WORKER_EMPTY_CELL_SET':
