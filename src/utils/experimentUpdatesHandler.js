@@ -14,6 +14,10 @@ const updateTypes = {
 };
 
 const experimentUpdatesHandler = (dispatch) => (experimentId, update) => {
+  if (update.status) {
+    dispatch(updateBackendStatus(experimentId, update.status));
+  }
+
   switch (update.type) {
     case updateTypes.QC: {
       return onQCUpdate(update, dispatch, experimentId);
@@ -28,18 +32,29 @@ const experimentUpdatesHandler = (dispatch) => (experimentId, update) => {
       console.log(`Error, unrecognized message type ${update.type}`);
     }
   }
+};
 
-  if (update.status) {
-    dispatch(updateBackendStatus(experimentId, update.status));
+const onGEM2SUpdate = (update, dispatch, experimentId) => {
+  const { response } = update;
+
+  if (response?.error) {
+    console.error(response.error);
+    pushNotificationMessage('error', endUserMessages.ERROR_RUNNING_PIPELINE);
+    return;
+  }
+
+  const processingConfig = update.item?.processingConfig;
+  if (processingConfig) {
+    dispatch(loadedProcessingConfig(experimentId, processingConfig, true));
   }
 };
 
 const onQCUpdate = (update, dispatch, experimentId) => {
-  const { input, output, response: { error, errorCode, userMessage } } = update;
+  const { input, output, response } = update;
 
-  if (error) {
-    console.log(errorCode, userMessage);
-    pushNotificationMessage('error', userMessage);
+  if (response?.error) {
+    console.error(response.error);
+    pushNotificationMessage('error', endUserMessages.ERROR_RUNNING_PIPELINE);
     return;
   }
 
@@ -64,21 +79,6 @@ const onQCUpdate = (update, dispatch, experimentId) => {
   }
 };
 
-const onGEM2SUpdate = (update, dispatch, experimentId) => {
-  const { response: { error, errorCode, userMessage } } = update;
-
-  if (error) {
-    console.log(errorCode, userMessage);
-    pushNotificationMessage('error', userMessage);
-    return;
-  }
-
-  const processingConfig = update.item?.processingConfig;
-  if (processingConfig) {
-    dispatch(loadedProcessingConfig(experimentId, processingConfig, true));
-  }
-};
-
 const onWorkResponseUpdate = (update, dispatch, experimentId) => {
   const {
     request: { body: { name: workRequestName } },
@@ -86,7 +86,7 @@ const onWorkResponseUpdate = (update, dispatch, experimentId) => {
   } = update;
 
   if (error) {
-    console.log(errorCode, userMessage);
+    console.error(errorCode, userMessage);
 
     if (workRequestName === 'GetExpressionCellSets') {
       switch (errorCode) {

@@ -20,6 +20,7 @@ export default {
   ERROR_SAVING: 'We couldn\'t save your data.',
   ERROR_CREATING_SAMPLE: 'We couldn\'t create your sample. Please try uploading it again',
   ERROR_STARTING_PIPLELINE: 'We couldn\'t start working on your data.',
+  ERROR_RUNNING_PIPELINE: 'There was an error running your pipeline.',
   ERROR_SIGN_IN: 'We couldn\'t sign you in. Please try again.',
   FEEDBACK_ERROR: 'We couldn\'t process your feedback. Please try submitting again.',
   FEEDBACK_SUCCESSFUL: 'Your feedback has been successfully sent. Thank you!',
