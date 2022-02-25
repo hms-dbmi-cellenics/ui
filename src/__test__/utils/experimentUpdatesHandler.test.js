@@ -32,6 +32,12 @@ const mockError = {
   userMessage: 'mockUserMessage',
 };
 
+const mockBackendStatusError = {
+  pipeline: {
+    status: 'ERROR',
+  },
+};
+
 const mockQcUpdate = {
   type: updateTypes.QC,
   input: {
@@ -60,9 +66,6 @@ const mockQcUpdate = {
 
 const mockGem2sUpdate = {
   type: updateTypes.GEM2S,
-  response: {
-    error: false,
-  },
   item: {
     processingConfig: {
       mockProcessingConfig: 'mockProcessingConfig',
@@ -92,22 +95,46 @@ describe('ExperimentUpdatesHandler', () => {
     jest.clearAllMocks();
   });
 
-  it('Triggers properly for backend status updates', () => {
-    const mockBackendStatusUpdate = {
-      status: {
-        pipeline: 'mockPipelinStatus',
-        gem2s: 'mockGem2sStatus',
-        worker: 'mockWorkerStatus',
-      },
-    };
-    triggerExperimentUpdate(mockBackendStatusUpdate);
+  it('Triggers properly for GEM2S updates ', () => {
+    const mockUpdate = mockGem2sUpdate;
 
+    triggerExperimentUpdate(mockUpdate);
+
+    // Dispatch 1 - Update backend status
     expect(updateBackendStatus).toHaveBeenCalledTimes(1);
-    const backendStatus = updateProcessingSettingsFromQC.mock.calls[0];
+    const backendStatus = updateBackendStatus.mock.calls[0];
     expect(backendStatus).toMatchSnapshot();
 
-    expect(mockDispatch).toHaveBeenCalledTimes(1);
+    // Dispatch 2 - Loaded processingConfig
+    const updateParams = loadedProcessingConfig.mock.calls[1];
+    expect(updateParams).toMatchSnapshot();
+
+    expect(mockDispatch).toHaveBeenCalledTimes(2);
     expect(pushNotificationMessage).not.toHaveBeenCalled();
+  });
+
+  it('Throws error if there are errors in GEM2S updates ', () => {
+    const mockUpdate = {
+      ...mockGem2sUpdate,
+      response: mockError,
+      status: mockBackendStatusError,
+    };
+
+    triggerExperimentUpdate(mockUpdate);
+
+    // Dispatch 1 - Update backend status
+    expect(updateBackendStatus).toHaveBeenCalledTimes(1);
+    const backendStatus = updateBackendStatus.mock.calls[0];
+    expect(backendStatus).toMatchSnapshot();
+    expect(mockDispatch).toHaveBeenCalledTimes(1);
+
+    expect(loadedProcessingConfig).not.toHaveBeenCalled();
+
+    expect(pushNotificationMessage).toHaveBeenCalledTimes(1);
+    expect(pushNotificationMessage).toHaveBeenCalledWith(
+      'error',
+      endUserMessages.ERROR_RUNNING_PIPELINE,
+    );
   });
 
   it('Triggers properly for QC updates ', () => {
@@ -115,17 +142,22 @@ describe('ExperimentUpdatesHandler', () => {
 
     triggerExperimentUpdate(mockUpdate);
 
-    // Dispatch 1 - update processin settings
+    // Dispatch 1 - Update backend status
+    expect(updateBackendStatus).toHaveBeenCalledTimes(1);
+    const backendStatus = updateBackendStatus.mock.calls[0];
+    expect(backendStatus).toMatchSnapshot();
+
+    // Dispatch 2 - update processin settings
     expect(updateProcessingSettingsFromQC).toHaveBeenCalledTimes(1);
     const updateParams = updateProcessingSettingsFromQC.mock.calls[0];
     expect(updateParams).toMatchSnapshot();
 
-    // Dispatch 2 - update plot data
+    // Dispatch 3 - update plot data
     expect(updatePlotData).toHaveBeenCalledTimes(1);
     const plotDataParams = updatePlotData.mock.calls[0];
     expect(plotDataParams).toMatchSnapshot();
 
-    expect(mockDispatch).toHaveBeenCalledTimes(2);
+    expect(mockDispatch).toHaveBeenCalledTimes(3);
 
     // Does not load cell sets
     expect(loadCellSets).not.toHaveBeenCalled();
@@ -145,10 +177,10 @@ describe('ExperimentUpdatesHandler', () => {
 
     triggerExperimentUpdate(mockUpdate);
 
-    // Dispatch 1 - update processin settings
-    expect(updateProcessingSettingsFromQC).toHaveBeenCalledTimes(1);
-    const updateParams = updateProcessingSettingsFromQC.mock.calls[0];
-    expect(updateParams).toMatchSnapshot();
+    // Dispatch 1 - Update backend status
+    expect(updateBackendStatus).toHaveBeenCalledTimes(1);
+    const backendStatus = updateBackendStatus.mock.calls[0];
+    expect(backendStatus).toMatchSnapshot();
 
     // Dispatch 2 - update plot data
     expect(updatePlotData).toHaveBeenCalledTimes(1);
@@ -160,7 +192,7 @@ describe('ExperimentUpdatesHandler', () => {
     const loadCellSetsParams = loadCellSets.mock.calls[0];
     expect(loadCellSetsParams).toMatchSnapshot();
 
-    expect(mockDispatch).toHaveBeenCalledTimes(3);
+    expect(mockDispatch).toHaveBeenCalledTimes(4);
     expect(pushNotificationMessage).not.toHaveBeenCalled();
   });
 
@@ -168,11 +200,17 @@ describe('ExperimentUpdatesHandler', () => {
     const mockUpdate = {
       ...mockQcUpdate,
       response: mockError,
+      status: mockBackendStatusError,
     };
 
     triggerExperimentUpdate(mockUpdate);
 
-    expect(mockDispatch).not.toHaveBeenCalled();
+    // Dispatch 1 - Update backend status
+    expect(updateBackendStatus).toHaveBeenCalledTimes(1);
+    const backendStatus = updateBackendStatus.mock.calls[0];
+    expect(backendStatus).toMatchSnapshot();
+    expect(mockDispatch).toHaveBeenCalledTimes(1);
+
     expect(updateProcessingSettingsFromQC).not.toHaveBeenCalled();
     expect(updatePlotData).not.toHaveBeenCalled();
     expect(loadCellSets).not.toHaveBeenCalled();
@@ -180,39 +218,7 @@ describe('ExperimentUpdatesHandler', () => {
     expect(pushNotificationMessage).toHaveBeenCalledTimes(1);
     expect(pushNotificationMessage).toHaveBeenCalledWith(
       'error',
-      mockError.userMessage,
-    );
-  });
-
-  it('Triggers properly for GEM2S updates ', () => {
-    const mockUpdate = mockGem2sUpdate;
-
-    triggerExperimentUpdate(mockUpdate);
-
-    // Dispatch 1 - Loaded processingConfig
-    expect(loadedProcessingConfig).toHaveBeenCalledTimes(1);
-    const updateParams = loadedProcessingConfig.mock.calls[0];
-    expect(updateParams).toMatchSnapshot();
-
-    expect(mockDispatch).toHaveBeenCalledTimes(1);
-    expect(pushNotificationMessage).not.toHaveBeenCalled();
-  });
-
-  it('Throws error if there are errors in GEM2S updates ', () => {
-    const mockUpdate = {
-      ...mockGem2sUpdate,
-      response: mockError,
-    };
-
-    triggerExperimentUpdate(mockUpdate);
-
-    expect(mockDispatch).not.toHaveBeenCalled();
-    expect(loadedProcessingConfig).not.toHaveBeenCalled();
-
-    expect(pushNotificationMessage).toHaveBeenCalledTimes(1);
-    expect(pushNotificationMessage).toHaveBeenCalledWith(
-      'error',
-      mockError.userMessage,
+      endUserMessages.ERROR_RUNNING_PIPELINE,
     );
   });
 
@@ -269,8 +275,6 @@ describe('ExperimentUpdatesHandler', () => {
     };
 
     triggerExperimentUpdate(mockUpdate);
-
-    expect(mockDispatch).not.toHaveBeenCalled();
 
     expect(pushNotificationMessage).toHaveBeenCalledTimes(1);
     expect(pushNotificationMessage).toHaveBeenCalledWith(

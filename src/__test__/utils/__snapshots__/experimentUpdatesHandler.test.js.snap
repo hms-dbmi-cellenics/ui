@@ -2,14 +2,12 @@
 
 exports[`ExperimentUpdatesHandler Loads cell sets if QC pipeline completes  1`] = `
 Array [
-  "mockTaskName",
+  "testae48e318dab9a1bd0bexperiment",
   Object {
-    "processingConfigUpdate": Object {
-      "mockProcessingConfigUpdate": "mockProcessingConfigUpdate",
+    "pipeline": Object {
+      "status": "SUCCEEDED",
     },
   },
-  "mockSampleUuid",
-  false,
 ]
 `;
 
@@ -27,17 +25,53 @@ Array [
 ]
 `;
 
+exports[`ExperimentUpdatesHandler Throws error if there are errors in GEM2S updates  1`] = `
+Array [
+  "testae48e318dab9a1bd0bexperiment",
+  Object {
+    "pipeline": Object {
+      "status": "ERROR",
+    },
+  },
+]
+`;
+
+exports[`ExperimentUpdatesHandler Throws error if there are errors in QC updates  1`] = `
+Array [
+  "testae48e318dab9a1bd0bexperiment",
+  Object {
+    "pipeline": Object {
+      "status": "ERROR",
+    },
+  },
+]
+`;
+
 exports[`ExperimentUpdatesHandler Triggers properly for GEM2S updates  1`] = `
 Array [
   "testae48e318dab9a1bd0bexperiment",
   Object {
-    "mockProcessingConfig": "mockProcessingConfig",
+    "pipeline": Object {
+      "status": "RUNNING",
+    },
   },
-  true,
 ]
 `;
 
+exports[`ExperimentUpdatesHandler Triggers properly for GEM2S updates  2`] = `undefined`;
+
 exports[`ExperimentUpdatesHandler Triggers properly for QC updates  1`] = `
+Array [
+  "testae48e318dab9a1bd0bexperiment",
+  Object {
+    "pipeline": Object {
+      "status": "RUNNING",
+    },
+  },
+]
+`;
+
+exports[`ExperimentUpdatesHandler Triggers properly for QC updates  2`] = `
 Array [
   "mockTaskName",
   Object {
@@ -50,11 +84,9 @@ Array [
 ]
 `;
 
-exports[`ExperimentUpdatesHandler Triggers properly for QC updates  2`] = `
+exports[`ExperimentUpdatesHandler Triggers properly for QC updates  3`] = `
 Array [
   "mockPlotUuid",
   "mockPlotData",
 ]
 `;
-
-exports[`ExperimentUpdatesHandler Triggers properly for backend status updates 1`] = `undefined`;
