@@ -1,7 +1,8 @@
 class WorkResponseError extends Error {
-  constructor(error, request) {
-    super(error);
-
+  constructor(errorCode, userMessage, request) {
+    super(`${errorCode}: ${userMessage}`);
+    this.errorCode = errorCode;
+    this.userMessage = userMessage;
     this.request = request;
   }
 }
