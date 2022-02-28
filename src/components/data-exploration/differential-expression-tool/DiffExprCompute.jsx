@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import {
   useSelector, useDispatch,
 } from 'react-redux';
 
 import {
-  Button, Form, Select, Radio, Tooltip, Space,
+  Button, Form, Select, Radio, Tooltip, Space, Alert
 } from 'antd';
 
 import { InfoCircleOutlined } from '@ant-design/icons';
@@ -12,7 +12,7 @@ import { InfoCircleOutlined } from '@ant-design/icons';
 import PropTypes from 'prop-types';
 import { loadCellSets } from 'redux/actions/cellSets';
 import { setComparisonGroup, setComparisonType } from 'redux/actions/differentialExpression';
-import { getCellSets } from 'redux/selectors';
+import { getCellSets, getCellSetsHierarchyByKeys } from 'redux/selectors';
 import { composeTree } from 'utils/cellSets';
 
 const { Option, OptGroup } = Select;
@@ -31,12 +31,59 @@ const DiffExprCompute = (props) => {
   const [numSamples, setNumSamples] = useState(1);
   const comparisonGroup = useSelector((state) => state.differentialExpression.comparison.group);
   const selectedComparison = useSelector((state) => state.differentialExpression.comparison.type);
-
+  const { basis, cellSet, compareWith } = comparisonGroup?.[selectedComparison] || {};
+  const sampleKeys = useSelector(getCellSetsHierarchyByKeys(['sample']))[0].children.map(obj => obj.key)
 
   // Metadata marks whether cells belong to the same sample/group
   // Therefore `between samples/groups` analysis makes no sense if there is no metadata.
   // In the base state, assume there is no metadata. A check for this is done in a useEffect block below.
   const [hasMetadata, setHasMetadata] = useState(false);
+
+  const cellIdToSampleMap = useMemo(() => {
+    const mapping = [];
+    sampleKeys.forEach((key, idx) => {
+      const cellIds = properties[key].cellIds;
+      cellIds.forEach(cellId => mapping[cellId] = idx);
+    });
+
+    return mapping;
+  }, [numSamples]);
+
+  const canRunDifferentialExpression = useCallback(() => {
+    if (!basis || !cellSet || !compareWith || !cellIdToSampleMap.length > 0) { return false; }
+
+    const basisCellSetKey = basis.split("/")[1];
+    const group1CellSetKey = cellSet.split("/")[1];
+    const group2CellSetKey = compareWith.split("/")[1];
+
+    // Handle rest and all
+    const basisCellSet = properties[basisCellSetKey].cellIds;
+    const group1CellSet = properties[group1CellSetKey].cellIds;
+    const group2CellSet = properties[group2CellSetKey].cellIds;
+
+    const group1CellIds = [...group1CellSet].filter(cellId => basisCellSet.has(cellId));
+    const group2CellIds = [...group2CellSet].filter(cellId => basisCellSet.has(cellId));
+
+    const group1Samples = new Array(numSamples).fill(0);
+    const group2Samples = new Array(numSamples).fill(0);
+
+    group1CellIds
+      .forEach(cellId => {
+        const sampleIdx = cellIdToSampleMap[cellId];
+        group1Samples[sampleIdx] += 1;
+      });
+
+    group2CellIds
+      .forEach(cellId => {
+        const sampleIdx = cellIdToSampleMap[cellId];
+        group2Samples[sampleIdx] += 1;
+      });
+
+    const group1Passes = group1Samples.find(numCells => numCells > 10);
+    const group2Passes = group2Samples.find(numCells => numCells > 10);
+
+    return group1Passes && group2Passes;
+  }, [basis, cellSet, compareWith, numSamples]);
 
   /**
    * Loads cell set on initial render if it does not already exist in the store.
@@ -95,17 +142,17 @@ const DiffExprCompute = (props) => {
 
   const validateForm = () => {
 
-    if (!comparisonGroup[selectedComparison]?.cellSet) {
+    if (!cellSet) {
       setIsFormValid(false);
       return;
     }
 
-    if (!comparisonGroup[selectedComparison]?.compareWith) {
+    if (!compareWith) {
       setIsFormValid(false);
       return;
     }
 
-    if (!comparisonGroup[selectedComparison]?.basis) {
+    if (!basis) {
       setIsFormValid(false);
       return;
     }
@@ -272,31 +319,41 @@ const DiffExprCompute = (props) => {
         )}
 
       <Form.Item>
-        <Space direction='horizontal'>
-
-          <Button
-            size='small'
-            disabled={!isFormValid}
-            onClick={() => onCompute()}
-          >
-            Compute
-          </Button>
-          <Tooltip overlay={(
-            <span>
-              Differential expression is calculated using the presto implementation of the Wilcoxon rank sum test and auROC analysis. For more information see the
-              {' '}
-              <a
-                href='http://htmlpreview.github.io/?https://github.com/immunogenomics/presto/blob/master/docs/getting-started.html'
-                target='_blank'
-                rel='noreferrer'
-              >
-                presto vignette
-              </a>.
-            </span>
-          )}
-          >
-            <InfoCircleOutlined />
-          </Tooltip>
+        <Space direction='vertical'>
+          {
+            !canRunDifferentialExpression() ?
+              <Alert
+                message="Error"
+                description="One or more of the selected samples/groups does not contain enough cells in the selected cell set. Therefore, the analysis can not be run. Select other cell set(s) or samples/groups to compare."
+                type="error"
+                showIcon
+              /> : <></>
+          }
+          <Space direction='horizontal'>
+            <Button
+              size='small'
+              disabled={!isFormValid}
+              onClick={() => onCompute()}
+            >
+              Compute
+            </Button>
+            <Tooltip overlay={(
+              <span>
+                Differential expression is calculated using the presto implementation of the Wilcoxon rank sum test and auROC analysis. For more information see the
+                {' '}
+                <a
+                  href='http://htmlpreview.github.io/?https://github.com/immunogenomics/presto/blob/master/docs/getting-started.html'
+                  target='_blank'
+                  rel='noreferrer'
+                >
+                  presto vignette
+                </a>.
+              </span>
+            )}
+            >
+              <InfoCircleOutlined />
+            </Tooltip>
+          </Space>
         </Space>
       </Form.Item>
     </Form>
