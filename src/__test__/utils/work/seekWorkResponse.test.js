@@ -93,13 +93,17 @@ describe('dispatchWorkRequest unit tests', () => {
   it('Returns an error if there is error in the response.', async () => {
     socketConnectionMocks.mockOn.mockImplementation(async (x, f) => {
       f({
-        response: { error: 'The backend returned an error' },
+        response: {
+          error: true,
+          errorCode: 'MOCK_ERROR_CODE',
+          userMessage: 'Mock worker error message',
+        },
       });
     });
 
     expect(async () => {
       await dispatchWorkRequest(experimentId, body, timeout, 'facefeed');
-    }).rejects.toEqual(new Error('The backend returned an error'));
+    }).rejects.toEqual(new Error('MOCK_ERROR_CODE: Mock worker error message'));
   });
 });
 

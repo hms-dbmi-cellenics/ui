@@ -61,11 +61,14 @@ const dispatchWorkRequest = async (
 
   const responsePromise = new Promise((resolve, reject) => {
     io.on(`WorkResponse-${ETag}`, (res) => {
-      const { response: { error } } = res;
+      const { response } = res;
 
-      if (error) {
+      if (response?.error) {
+        const { errorCode, userMessage } = response;
+        console.error(errorCode, userMessage);
+
         return reject(
-          new WorkResponseError(error, request),
+          new WorkResponseError(errorCode, userMessage, request),
         );
       }
 
