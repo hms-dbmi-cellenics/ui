@@ -25,26 +25,47 @@ Array [
 ]
 `;
 
-exports[`ExperimentUpdatesHandler Throws error if there are errors in GEM2S updates  1`] = `
-Array [
-  "testae48e318dab9a1bd0bexperiment",
-  Object {
-    "pipeline": Object {
-      "status": "ERROR",
+exports[`ExperimentUpdatesHandler Logs error if there is an error returned as an experiment update 1`] = `
+[MockFunction] {
+  "calls": Array [
+    Array [
+      "Experiment updates error:",
+      Object {
+        "input": Object {
+          "sampleUuid": "mockSampleUuid",
+          "taskName": "mockTaskName",
+        },
+        "output": Object {
+          "config": Object {
+            "processingConfigUpdate": Object {
+              "mockProcessingConfigUpdate": "mockProcessingConfigUpdate",
+            },
+          },
+          "plotData": Object {
+            "mockPlotUuid": "mockPlotData",
+          },
+        },
+        "response": Object {
+          "error": true,
+          "errorCode": "MOCK_ERROR_CODE",
+          "userMessage": "mockUserMessage",
+        },
+        "status": Object {
+          "pipeline": Object {
+            "status": "ERROR",
+          },
+        },
+        "type": "qc",
+      },
+    ],
+  ],
+  "results": Array [
+    Object {
+      "type": "return",
+      "value": undefined,
     },
-  },
-]
-`;
-
-exports[`ExperimentUpdatesHandler Throws error if there are errors in QC updates  1`] = `
-Array [
-  "testae48e318dab9a1bd0bexperiment",
-  Object {
-    "pipeline": Object {
-      "status": "ERROR",
-    },
-  },
-]
+  ],
+}
 `;
 
 exports[`ExperimentUpdatesHandler Triggers properly for GEM2S updates  1`] = `

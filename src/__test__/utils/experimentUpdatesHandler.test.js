@@ -18,6 +18,7 @@ jest.mock('redux/actions/componentConfig/updatePlotData');
 jest.mock('redux/actions/cellSets/loadCellSets');
 
 jest.mock('utils/pushNotificationMessage');
+jest.spyOn(global.console, 'error');
 
 const mockDispatch = jest.fn();
 
@@ -95,6 +96,19 @@ describe('ExperimentUpdatesHandler', () => {
     jest.clearAllMocks();
   });
 
+  it('Logs error if there is an error returned as an experiment update', () => {
+    const mockUpdate = {
+      ...mockQcUpdate,
+      response: mockError,
+      status: mockBackendStatusError,
+    };
+
+    triggerExperimentUpdate(mockUpdate);
+
+    expect(global.console.error).toHaveBeenCalledTimes(1);
+    expect(global.console.error).toMatchSnapshot();
+  });
+
   it('Triggers properly for GEM2S updates ', () => {
     const mockUpdate = mockGem2sUpdate;
 
@@ -111,30 +125,6 @@ describe('ExperimentUpdatesHandler', () => {
 
     expect(mockDispatch).toHaveBeenCalledTimes(2);
     expect(pushNotificationMessage).not.toHaveBeenCalled();
-  });
-
-  it('Throws error if there are errors in GEM2S updates ', () => {
-    const mockUpdate = {
-      ...mockGem2sUpdate,
-      response: mockError,
-      status: mockBackendStatusError,
-    };
-
-    triggerExperimentUpdate(mockUpdate);
-
-    // Dispatch 1 - Update backend status
-    expect(updateBackendStatus).toHaveBeenCalledTimes(1);
-    const backendStatus = updateBackendStatus.mock.calls[0];
-    expect(backendStatus).toMatchSnapshot();
-    expect(mockDispatch).toHaveBeenCalledTimes(1);
-
-    expect(loadedProcessingConfig).not.toHaveBeenCalled();
-
-    expect(pushNotificationMessage).toHaveBeenCalledTimes(1);
-    expect(pushNotificationMessage).toHaveBeenCalledWith(
-      'error',
-      endUserMessages.ERROR_RUNNING_PIPELINE,
-    );
   });
 
   it('Triggers properly for QC updates ', () => {
@@ -196,32 +186,6 @@ describe('ExperimentUpdatesHandler', () => {
     expect(pushNotificationMessage).not.toHaveBeenCalled();
   });
 
-  it('Throws error if there are errors in QC updates ', () => {
-    const mockUpdate = {
-      ...mockQcUpdate,
-      response: mockError,
-      status: mockBackendStatusError,
-    };
-
-    triggerExperimentUpdate(mockUpdate);
-
-    // Dispatch 1 - Update backend status
-    expect(updateBackendStatus).toHaveBeenCalledTimes(1);
-    const backendStatus = updateBackendStatus.mock.calls[0];
-    expect(backendStatus).toMatchSnapshot();
-    expect(mockDispatch).toHaveBeenCalledTimes(1);
-
-    expect(updateProcessingSettingsFromQC).not.toHaveBeenCalled();
-    expect(updatePlotData).not.toHaveBeenCalled();
-    expect(loadCellSets).not.toHaveBeenCalled();
-
-    expect(pushNotificationMessage).toHaveBeenCalledTimes(1);
-    expect(pushNotificationMessage).toHaveBeenCalledWith(
-      'error',
-      endUserMessages.ERROR_RUNNING_PIPELINE,
-    );
-  });
-
   it('Triggers properly for WorkResponse - ClusterCells updates ', () => {
     const mockUpdate = {
       ...mockWorkResponseUpdate,
@@ -265,47 +229,6 @@ describe('ExperimentUpdatesHandler', () => {
     expect(pushNotificationMessage).toHaveBeenCalledWith(
       'success',
       endUserMessages.SUCCESS_NEW_CLUSTER_CREATED,
-    );
-  });
-
-  it('Throws error if there are errors in WorkResponse updates ', () => {
-    const mockUpdate = {
-      ...mockWorkResponseUpdate,
-      response: mockError,
-    };
-
-    triggerExperimentUpdate(mockUpdate);
-
-    expect(pushNotificationMessage).toHaveBeenCalledTimes(1);
-    expect(pushNotificationMessage).toHaveBeenCalledWith(
-      'error',
-      mockError.userMessage,
-    );
-  });
-
-  it('Throws specific error if GetExpressionCellSets returns empty cell set', () => {
-    const mockUpdate = {
-      ...mockWorkResponseUpdate,
-      request: {
-        body: {
-          name: 'GetExpressionCellSets',
-        },
-      },
-      response: {
-        error: true,
-        errorCode: 'R_WORKER_EMPTY_CELL_SET',
-        userMessage: 'Can not create empty cell set',
-      },
-    };
-
-    triggerExperimentUpdate(mockUpdate);
-
-    expect(mockDispatch).not.toHaveBeenCalled();
-
-    expect(pushNotificationMessage).toHaveBeenCalledTimes(1);
-    expect(pushNotificationMessage).toHaveBeenCalledWith(
-      'error',
-      endUserMessages.EMPTY_CLUSTER_NOT_CREATED,
     );
   });
 });
