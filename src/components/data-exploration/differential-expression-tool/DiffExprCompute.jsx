@@ -52,17 +52,51 @@ const DiffExprCompute = (props) => {
   const canRunDifferentialExpression = useCallback(() => {
     if (!basis || !cellSet || !compareWith || !cellIdToSampleMap.length > 0) { return false; }
 
-    const basisCellSetKey = basis.split("/")[1];
+    let basisCellSetKey = 'all'
+    if (basis !== "all") {
+      basisCellSetKey = basis.split("/")[1];
+    }
+
+    // Group 1 is from cellSet
+    // Group 2 is from compareWith
     const group1CellSetKey = cellSet.split("/")[1];
-    const group2CellSetKey = compareWith.split("/")[1];
 
-    // Handle rest and all
-    const basisCellSet = properties[basisCellSetKey].cellIds;
-    const group1CellSet = properties[group1CellSetKey].cellIds;
-    const group2CellSet = properties[group2CellSetKey].cellIds;
+    let group2CellSetKey = 'background';
+    if (compareWith !== "background") {
+      group2CellSetKey = compareWith.split("/")[1];
+    }
 
-    const group1CellIds = [...group1CellSet].filter(cellId => basisCellSet.has(cellId));
-    const group2CellIds = [...group2CellSet].filter(cellId => basisCellSet.has(cellId));
+    let basisCellSet = [];
+    if (basisCellSetKey === 'all') {
+      const allCellIds = sampleKeys.reduce((acc, key) => {
+        const cellIds = properties[key].cellIds;
+        acc.concat(Array.from(cellIds));
+        return acc;
+      }, []);
+
+      basisCellSet = new Set(allCellIds);
+    } else {
+      basisCellSet = properties[basisCellSetKey].cellIds;
+    }
+
+    const group1CellSet = Array.from(properties[group1CellSetKey].cellIds);
+
+    let group2CellSet = [];
+    if (['rest', 'background'].includes(group2CellSetKey)) {
+      const parent = cellSet.split("/")[0];
+
+      const otherGroupKeys = hierarchy.find(obj => obj.key === parent)
+        .children.filter(child => child.key !== group1CellSetKey);
+
+      group2CellSet = otherGroupKeys.reduce((acc, child) => {
+        return acc.concat(Array.from(properties[child.key].cellIds));
+      }, []);
+    } else {
+      group2CellSet = Array.from(properties[group2CellSetKey].cellIds);
+    }
+
+    const group1CellIds = group1CellSet.filter(cellId => basisCellSet.has(cellId));
+    const group2CellIds = group2CellSet.filter(cellId => basisCellSet.has(cellId));
 
     const group1Samples = new Array(numSamples).fill(0);
     const group2Samples = new Array(numSamples).fill(0);
@@ -157,6 +191,14 @@ const DiffExprCompute = (props) => {
       return;
     }
 
+    if (
+      (compareWith !== 'background' || compareWith !== 'rest')
+      && cellSet.split("/")[0] !== compareWith.split("/")[0]
+    ) {
+      setIsFormValid(false);
+      return;
+    }
+
     setIsFormValid(true);
   };
 
@@ -185,7 +227,7 @@ const DiffExprCompute = (props) => {
   const renderClusterSelectorItem = ({
     title, option, filterType,
   }) => {
-    // Dependiung on the cell set type specified, set the default name
+    // Depending on the cell set type specified, set the default name
     const placeholder = filterType === 'metadataCategorical' ? 'sample/group' : 'cell set';
 
     const tree = composeTree(hierarchy, properties, filterType);
@@ -198,16 +240,22 @@ const DiffExprCompute = (props) => {
         children.unshift({ key: `rest`, name: `Rest of ${properties[rootKey].name}` });
       }
 
-      const shouldDisable = (key) => {
+      const shouldDisable = (rootKey, key) => {
         // Should always disable something already selected.
-        return Object.values(comparisonGroup[selectedComparison]).includes(key);
+        const isAlreadySelected = Object.values(comparisonGroup[selectedComparison]).includes(`${rootKey}/${key}`);
+
+        // or a cell set that is not in the same group as selected previously in `cellSet`
+        const parentGroup = comparisonGroup[selectedComparison]?.cellSet?.split('/')[0];
+        const isNotInTheSameGroup = rootKey !== parentGroup;
+
+        return isAlreadySelected || (option === 'compareWith' && isNotInTheSameGroup);
       }
 
       if (comparisonGroup[selectedComparison]) {
         return children.map(({ key, name }) => {
           const uniqueKey = `${rootKey}/${key}`;
 
-          return <Option key={uniqueKey} disabled={shouldDisable(uniqueKey)}>
+          return <Option key={uniqueKey} disabled={shouldDisable(rootKey, key)}>
             {name}
           </Option>
         });
@@ -274,29 +322,8 @@ const DiffExprCompute = (props) => {
         </Radio>
       </Radio.Group>
 
-      {selectedComparison === ComparisonType.between
+      {selectedComparison === ComparisonType.within
         ? (
-          <>
-            {renderClusterSelectorItem({
-              title: 'Compare cell set:',
-              option: 'basis',
-              filterType: 'cellSets',
-            })}
-
-            {renderClusterSelectorItem({
-              title: 'between sample/group:',
-              option: 'cellSet',
-              filterType: 'metadataCategorical',
-            })}
-
-            {renderClusterSelectorItem({
-              title: 'and sample/group:',
-              option: 'compareWith',
-              filterType: 'metadataCategorical',
-            })}
-          </>
-        )
-        : (
           <>
             {renderClusterSelectorItem({
               title: 'Compare cell set:',
@@ -316,46 +343,65 @@ const DiffExprCompute = (props) => {
               filterType: 'metadataCategorical',
             })}
           </>
-        )}
+        ) : (
+          <>
+            {renderClusterSelectorItem({
+              title: 'Compare cell set:',
+              option: 'basis',
+              filterType: 'cellSets',
+            })}
 
-      <Form.Item>
-        <Space direction='vertical'>
-          {
+            {renderClusterSelectorItem({
+              title: 'between sample/group:',
+              option: 'cellSet',
+              filterType: 'metadataCategorical',
+            })}
+
+            {renderClusterSelectorItem({
+              title: 'and sample/group:',
+              option: 'compareWith',
+              filterType: 'metadataCategorical',
+            })}
+          </>
+        )}
+      <Space direction='vertical'>
+        {
+          selectedComparison === ComparisonType.between &&
+            isFormValid &&
             !canRunDifferentialExpression() ?
-              <Alert
-                message="Error"
-                description="One or more of the selected samples/groups does not contain enough cells in the selected cell set. Therefore, the analysis can not be run. Select other cell set(s) or samples/groups to compare."
-                type="error"
-                showIcon
-              /> : <></>
-          }
-          <Space direction='horizontal'>
-            <Button
-              size='small'
-              disabled={!isFormValid}
-              onClick={() => onCompute()}
-            >
-              Compute
-            </Button>
-            <Tooltip overlay={(
-              <span>
-                Differential expression is calculated using the presto implementation of the Wilcoxon rank sum test and auROC analysis. For more information see the
-                {' '}
-                <a
-                  href='http://htmlpreview.github.io/?https://github.com/immunogenomics/presto/blob/master/docs/getting-started.html'
-                  target='_blank'
-                  rel='noreferrer'
-                >
-                  presto vignette
-                </a>.
-              </span>
-            )}
-            >
-              <InfoCircleOutlined />
-            </Tooltip>
-          </Space>
+            <Alert
+              message="Error"
+              description="One or more of the selected samples/groups does not contain enough cells in the selected cell set. Therefore, the analysis can not be run. Select other cell set(s) or samples/groups to compare."
+              type="error"
+              showIcon
+            /> : <></>
+        }
+        <Space direction='horizontal'>
+          <Button
+            size='small'
+            disabled={!isFormValid}
+            onClick={() => onCompute()}
+          >
+            Compute
+          </Button>
+          <Tooltip overlay={(
+            <span>
+              Differential expression is calculated using the presto implementation of the Wilcoxon rank sum test and auROC analysis. For more information see the
+              {' '}
+              <a
+                href='http://htmlpreview.github.io/?https://github.com/immunogenomics/presto/blob/master/docs/getting-started.html'
+                target='_blank'
+                rel='noreferrer'
+              >
+                presto vignette
+              </a>.
+            </span>
+          )}
+          >
+            <InfoCircleOutlined />
+          </Tooltip>
         </Space>
-      </Form.Item>
+      </Space>
     </Form>
   );
 };
