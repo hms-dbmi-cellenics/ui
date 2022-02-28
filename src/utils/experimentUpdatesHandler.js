@@ -88,18 +88,7 @@ const onWorkResponseUpdate = (update, dispatch, experimentId) => {
   if (error) {
     console.error(errorCode, userMessage);
 
-    if (workRequestName === 'GetExpressionCellSets') {
-      switch (errorCode) {
-        case 'R_WORKER_EMPTY_CELL_SET':
-          pushNotificationMessage('error', endUserMessages.EMPTY_CLUSTER_NOT_CREATED);
-          return;
-
-        default:
-          break;
-      }
-    }
-
-    pushNotificationMessage('error', userMessage);
+    handleWorkResponseError(workRequestName, errorCode, userMessage);
     return;
   }
 
@@ -112,6 +101,25 @@ const onWorkResponseUpdate = (update, dispatch, experimentId) => {
     dispatch(loadCellSets(experimentId, true));
     pushNotificationMessage('success', endUserMessages.SUCCESS_NEW_CLUSTER_CREATED);
   }
+};
+
+const handleWorkResponseError = (workRequestName, errorCode, userMessage) => {
+  const workResponseErrorHandler = {
+    GetExpressionCellSets: {
+      R_WORKER_EMPTY_CELL_SET: () => pushNotificationMessage('error', endUserMessages.EMPTY_CLUSTER_NOT_CREATED),
+    },
+  };
+
+  const errorHandler = workResponseErrorHandler[workRequestName]?.[errorCode];
+
+  console.warn('*** error', errorHandler);
+
+  if (!errorHandler) {
+    pushNotificationMessage('error', userMessage);
+    return;
+  }
+
+  errorHandler();
 };
 
 export default experimentUpdatesHandler;

@@ -54,7 +54,7 @@ const ExpressionCellSetModal = (props) => {
     <Modal
       visible
       title='Create a new cell set based on gene expression'
-      onCancel={onCancel}
+      onCancel={isCreatingCellSet ? null : onCancel}
       footer={[
         <Button
           key='createExpressionCellSet'
