@@ -99,10 +99,7 @@ const DiffExprCompute = (props) => {
 
     if (!basis || !cellSet || !compareWith || !cellIdToSampleMap.length > 0) { return false; }
 
-    let basisCellSetKey = 'all'
-    if (basis !== "all") {
-      basisCellSetKey = getCellSetName(basis);
-    }
+    const basisCellSetKey = getCellSetName(basis);
 
     // Group 1 is from cellSet
     // Group 2 is from compareWith
@@ -120,42 +117,53 @@ const DiffExprCompute = (props) => {
       basisCellSet = properties[basisCellSetKey].cellIds;
     }
 
-    const group1CellSet = Array.from(properties[group1CellSetKey].cellIds);
+    const group1CellIds = Array.from(properties[group1CellSetKey].cellIds);
 
-    let group2CellSet = [];
+    let group2CellIds = [];
     if (['rest', 'background'].includes(group2CellSetKey)) {
-      const parent = getRootKey(cellSet);
+      const parentGroup = getRootKey(cellSet);
 
-      const otherGroupKeys = hierarchy.find(obj => obj.key === parent)
+      const otherGroupKeys = hierarchy.find(obj => obj.key === parentGroup)
         .children.filter(child => child.key !== group1CellSetKey);
 
-      group2CellSet = otherGroupKeys.reduce((acc, child) => {
+      group2CellIds = otherGroupKeys.reduce((acc, child) => {
         return acc.concat(Array.from(properties[child.key].cellIds));
       }, []);
     } else {
-      group2CellSet = Array.from(properties[group2CellSetKey].cellIds);
+      group2CellIds = Array.from(properties[group2CellSetKey].cellIds);
     }
 
-    const group1CellIds = group1CellSet.filter(cellId => basisCellSet.has(cellId));
-    const group2CellIds = group2CellSet.filter(cellId => basisCellSet.has(cellId));
+    // Intersect the basis cell set with each group cell set
+    const filteredGroup1CellIds = group1CellIds.filter(cellId => basisCellSet.has(cellId));
+    const filteredGroup2CellIds = group2CellIds.filter(cellId => basisCellSet.has(cellId));
 
-    const group1Samples = new Array(numSamples).fill(0);
-    const group2Samples = new Array(numSamples).fill(0);
+    // Prepare an array of length sampleIds to hold tally of cells for each sapmple in each group
+    const cellsInGroup1Samples = new Array(numSamples).fill(0);
+    const cellsInGroup2Samples = new Array(numSamples).fill(0);
 
-    group1CellIds
+    // Count the number of cells in each sample
+    filteredGroup1CellIds
       .forEach(cellId => {
         const sampleIdx = cellIdToSampleMap[cellId];
-        group1Samples[sampleIdx] += 1;
+        cellsInGroup1Samples[sampleIdx] += 1;
       });
 
-    group2CellIds
+    filteredGroup2CellIds
       .forEach(cellId => {
         const sampleIdx = cellIdToSampleMap[cellId];
-        group2Samples[sampleIdx] += 1;
+        cellsInGroup2Samples[sampleIdx] += 1;
       });
 
-    const group1Passes = group1Samples.find(numCells => numCells > 10);
-    const group2Passes = group2Samples.find(numCells => numCells > 10);
+    console.log("cellsInGroup1Samples", cellsInGroup1Samples)
+    console.log("cellsInGroup2Samples", cellsInGroup2Samples)
+
+    // The samples in the two groups will always be exclusive, i.e. presence of a cell in a sample
+    // in group1 means there are no cells in group2 in that sample. Therefore, finding the first
+    // sample with the minimum number of cells in each will be enough to determine if there are at least 2
+    // different samples to compare with.
+    const MIN_NUM_CELLS = 10;
+    const group1Passes = cellsInGroup1Samples.find(numCells => numCells > MIN_NUM_CELLS);
+    const group2Passes = cellsInGroup2Samples.find(numCells => numCells > MIN_NUM_CELLS);
 
     return group1Passes && group2Passes;
   }, [basis, cellSet, compareWith, numSamples]);
