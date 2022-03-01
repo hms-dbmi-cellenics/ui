@@ -1,11 +1,11 @@
 import updateCellSetsClustering from 'redux/actions/cellSets/updateCellSetsClustering';
 import { updateProcessingSettingsFromQC, loadedProcessingConfig } from 'redux/actions/experimentSettings';
 import { updateBackendStatus } from 'redux/actions/backendStatus';
-import updatePlotData from 'redux/actions/componentConfig/updatePlotData';
+import { updatePlotData } from 'redux/actions/componentConfig';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
 
 import { loadCellSets } from 'redux/actions/cellSets';
-import endUserMessages from './endUserMessages';
+import endUserMessages from 'utils/endUserMessages';
 
 const updateTypes = {
   QC: 'qc',
@@ -19,6 +19,7 @@ const experimentUpdatesHandler = (dispatch) => (experimentId, update) => {
   }
 
   if (update.response?.error) {
+    console.error('Experiment updates error:', update);
     return;
   }
 
@@ -70,9 +71,9 @@ const onGEM2SUpdate = (update, dispatch, experimentId) => {
 };
 
 const onWorkResponseUpdate = (update, dispatch, experimentId) => {
-  const { request: { body: { name: workRequestName } }, response: { error } } = update;
-
-  if (error) throw new Error(error);
+  const {
+    request: { body: { name: workRequestName } },
+  } = update;
 
   if (workRequestName === 'ClusterCells') {
     dispatch(updateCellSetsClustering(experimentId));
@@ -86,3 +87,4 @@ const onWorkResponseUpdate = (update, dispatch, experimentId) => {
 };
 
 export default experimentUpdatesHandler;
+export { updateTypes };
