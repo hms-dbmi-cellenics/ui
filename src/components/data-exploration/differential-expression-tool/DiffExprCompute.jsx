@@ -12,12 +12,12 @@ import { InfoCircleOutlined } from '@ant-design/icons';
 import PropTypes from 'prop-types';
 import { loadCellSets } from 'redux/actions/cellSets';
 import { setComparisonGroup, setComparisonType } from 'redux/actions/differentialExpression';
-import { getCellSets, getCellSetsHierarchyByKeys } from 'redux/selectors';
+import { getCellSets } from 'redux/selectors';
 import { composeTree } from 'utils/cellSets';
 
 const { Option, OptGroup } = Select;
 
-const ComparisonType = Object.freeze({ between: 'between', within: 'within' });
+const ComparisonType = Object.freeze({ BETWEEN: 'between', WITHIN: 'within' });
 const getCellSetName = (name) => (name?.split('/')[1] || name)
 
 const DiffExprCompute = (props) => {
@@ -29,10 +29,10 @@ const DiffExprCompute = (props) => {
   const { properties, hierarchy } = useSelector(getCellSets());
   const [isFormValid, setIsFormValid] = useState(false);
   const [numSamples, setNumSamples] = useState(1);
+  const [sampleKeys, setSampleKeys] = useState([])
   const comparisonGroup = useSelector((state) => state.differentialExpression.comparison.group);
   const selectedComparison = useSelector((state) => state.differentialExpression.comparison.type);
   const { basis, cellSet, compareWith } = comparisonGroup?.[selectedComparison] || {};
-  const sampleKeys = useSelector(getCellSetsHierarchyByKeys(['sample']))[0].children.map(obj => obj.key)
 
   // Metadata marks whether cells belong to the same sample/group
   // Therefore `between samples/groups` analysis makes no sense if there is no metadata.
@@ -49,7 +49,10 @@ const DiffExprCompute = (props) => {
     return mapping;
   }, [numSamples]);
 
-  const canRunDifferentialExpression = useCallback(() => {
+  const canRunDiffExpr = useCallback(() => {
+
+    if (selectedComparison === ComparisonType.WITHIN) return true;
+
     if (!basis || !cellSet || !compareWith || !cellIdToSampleMap.length > 0) { return false; }
 
     let basisCellSetKey = 'all'
@@ -70,10 +73,8 @@ const DiffExprCompute = (props) => {
     if (basisCellSetKey === 'all') {
       const allCellIds = sampleKeys.reduce((acc, key) => {
         const cellIds = properties[key].cellIds;
-        acc.concat(Array.from(cellIds));
-        return acc;
+        return acc.concat(Array.from(cellIds));
       }, []);
-
       basisCellSet = new Set(allCellIds);
     } else {
       basisCellSet = properties[basisCellSetKey].cellIds;
@@ -133,7 +134,7 @@ const DiffExprCompute = (props) => {
     const numMetadata = Object.values(properties).filter((o) => o.type === 'metadataCategorical').length;
 
     if (!numMetadata) {
-      dispatch(setComparisonType(ComparisonType.within));
+      dispatch(setComparisonType(ComparisonType.WITHIN));
     }
     setHasMetadata(numMetadata > 0);
 
@@ -172,6 +173,8 @@ const DiffExprCompute = (props) => {
       comparisonGroup[selectedComparison]['basis'] = `sample/${samples[0].key}`
     }
 
+    setSampleKeys(samples.map(sample => sample.key));
+
   }, [hierarchy, properties]);
 
   const validateForm = () => {
@@ -192,7 +195,7 @@ const DiffExprCompute = (props) => {
     }
 
     if (
-      (compareWith !== 'background' || compareWith !== 'rest')
+      selectedComparison === ComparisonType.BETWEEN
       && cellSet.split("/")[0] !== compareWith.split("/")[0]
     ) {
       setIsFormValid(false);
@@ -310,19 +313,19 @@ const DiffExprCompute = (props) => {
       }} defaultValue={selectedComparison}>
         <Radio
           style={radioStyle}
-          value={ComparisonType.within}>
+          value={ComparisonType.WITHIN}>
           Compare cell sets within a sample/group
         </Radio>
         <Radio
           style={radioStyle}
-          value={ComparisonType.between}
+          value={ComparisonType.BETWEEN}
           disabled={!hasMetadata || numSamples === 1}
         >
           Compare a selected cell set between samples/groups
         </Radio>
       </Radio.Group>
 
-      {selectedComparison === ComparisonType.within
+      {selectedComparison === ComparisonType.WITHIN
         ? (
           <>
             {renderClusterSelectorItem({
@@ -366,12 +369,15 @@ const DiffExprCompute = (props) => {
         )}
       <Space direction='vertical'>
         {
-          selectedComparison === ComparisonType.between &&
-            isFormValid &&
-            !canRunDifferentialExpression() ?
+          isFormValid && !canRunDiffExpr() ?
             <Alert
               message="Error"
-              description="One or more of the selected samples/groups does not contain enough cells in the selected cell set. Therefore, the analysis can not be run. Select other cell set(s) or samples/groups to compare."
+              description={
+                <>
+                  One or more of the selected samples/groups does not contain enough cells in the selected cell set.
+                  Therefore, the analysis can not be run. Select other cell set(s) or samples/groups to compare.
+                </>
+              }
               type="error"
               showIcon
             /> : <></>
@@ -379,7 +385,7 @@ const DiffExprCompute = (props) => {
         <Space direction='horizontal'>
           <Button
             size='small'
-            disabled={!isFormValid}
+            disabled={!isFormValid || !canRunDiffExpr()}
             onClick={() => onCompute()}
           >
             Compute
