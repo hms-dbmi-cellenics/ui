@@ -3,7 +3,7 @@ module.exports = {
     '<rootDir>/src',
   ],
   collectCoverageFrom: [
-    '**/*.jsx',
+    '**/*.{js, jsx}',
   ],
   setupFiles: [
     'react-app-polyfill/jsdom',
