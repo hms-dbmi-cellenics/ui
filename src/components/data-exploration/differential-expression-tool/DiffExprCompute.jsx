@@ -18,7 +18,8 @@ import { composeTree } from 'utils/cellSets';
 const { Option, OptGroup } = Select;
 
 const ComparisonType = Object.freeze({ BETWEEN: 'between', WITHIN: 'within' });
-const getCellSetName = (name) => (name?.split('/')[1] || name)
+const getCellSetName = (name) => (name?.split('/')[1] || name);
+const getRootKey = (name) => name?.split('/')[0];
 
 const DiffExprCompute = (props) => {
   const {
@@ -57,17 +58,13 @@ const DiffExprCompute = (props) => {
 
     let basisCellSetKey = 'all'
     if (basis !== "all") {
-      basisCellSetKey = basis.split("/")[1];
+      basisCellSetKey = getCellSetName(basis);
     }
 
     // Group 1 is from cellSet
     // Group 2 is from compareWith
-    const group1CellSetKey = cellSet.split("/")[1];
-
-    let group2CellSetKey = 'background';
-    if (compareWith !== "background") {
-      group2CellSetKey = compareWith.split("/")[1];
-    }
+    const group1CellSetKey = getCellSetName(cellSet);
+    const group2CellSetKey = getCellSetName(compareWith);
 
     let basisCellSet = [];
     if (basisCellSetKey === 'all') {
@@ -84,7 +81,7 @@ const DiffExprCompute = (props) => {
 
     let group2CellSet = [];
     if (['rest', 'background'].includes(group2CellSetKey)) {
-      const parent = cellSet.split("/")[0];
+      const parent = getRootKey(cellSet);
 
       const otherGroupKeys = hierarchy.find(obj => obj.key === parent)
         .children.filter(child => child.key !== group1CellSetKey);
@@ -196,7 +193,7 @@ const DiffExprCompute = (props) => {
 
     if (
       selectedComparison === ComparisonType.BETWEEN
-      && cellSet.split("/")[0] !== compareWith.split("/")[0]
+      && getRootKey(cellSet) !== getRootKey(compareWith)
     ) {
       setIsFormValid(false);
       return;
@@ -248,7 +245,7 @@ const DiffExprCompute = (props) => {
         const isAlreadySelected = Object.values(comparisonGroup[selectedComparison]).includes(`${rootKey}/${key}`);
 
         // or a cell set that is not in the same group as selected previously in `cellSet`
-        const parentGroup = comparisonGroup[selectedComparison]?.cellSet?.split('/')[0];
+        const parentGroup = getRootKey(comparisonGroup[selectedComparison]?.cellSet);
         const isNotInTheSameGroup = rootKey !== parentGroup;
 
         return isAlreadySelected || (option === 'compareWith' && isNotInTheSameGroup);
