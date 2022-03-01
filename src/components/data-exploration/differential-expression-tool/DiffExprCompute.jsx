@@ -35,10 +35,53 @@ const DiffExprCompute = (props) => {
   const selectedComparison = useSelector((state) => state.differentialExpression.comparison.type);
   const { basis, cellSet, compareWith } = comparisonGroup?.[selectedComparison] || {};
 
-  // Metadata marks whether cells belong to the same sample/group
-  // Therefore `between samples/groups` analysis makes no sense if there is no metadata.
-  // In the base state, assume there is no metadata. A check for this is done in a useEffect block below.
-  const [hasMetadata, setHasMetadata] = useState(false);
+  /**
+   * Loads cell set on initial render if it does not already exist in the store.
+   */
+  useEffect(() => {
+    dispatch(loadCellSets(experimentId));
+  }, []);
+
+  useEffect(() => {
+    if (hierarchy && hierarchy.length === 0) return;
+
+    // If any selected option is deleted, set the option to null
+    Object.keys(comparisonGroup).forEach((type) => {
+      const deleteKeys = {};
+
+      Object.entries(comparisonGroup[type]).forEach(([comparisonKey, selectedCell]) => {
+        selectedCell = getCellSetName(selectedCell)
+        if (selectedCell && !properties.hasOwnProperty(selectedCell)) deleteKeys[comparisonKey] = null
+      });
+
+      if (Object.keys(deleteKeys).length) {
+
+        dispatch(
+          setComparisonGroup({
+            type,
+            ...comparisonGroup[type],
+            ...deleteKeys,
+          }),
+        );
+      }
+
+    });
+
+    // Calculate the number of sampleIds.
+    // if there is only 1 sample, set sample using sample name
+    const samples = hierarchy?.find(
+      (rootNode) => (rootNode.key === 'sample'),
+    )?.children;
+
+    setNumSamples(samples.length)
+
+    if (samples.length === 1) {
+      comparisonGroup[selectedComparison]['basis'] = `sample/${samples[0].key}`
+    }
+
+    setSampleKeys(samples.map(sample => sample.key));
+
+  }, [hierarchy, properties]);
 
   const cellIdToSampleMap = useMemo(() => {
     const mapping = [];
@@ -117,76 +160,8 @@ const DiffExprCompute = (props) => {
     return group1Passes && group2Passes;
   }, [basis, cellSet, compareWith, numSamples]);
 
-  /**
-   * Loads cell set on initial render if it does not already exist in the store.
-   */
-  useEffect(() => {
-    dispatch(loadCellSets(experimentId));
-  }, []);
-
-  useEffect(() => {
-    if (hierarchy && hierarchy.length === 0) return;
-
-    // Make sure we are not rendering metadata-related options if there is no metadata in the data set.
-    const numMetadata = Object.values(properties).filter((o) => o.type === 'metadataCategorical').length;
-
-    if (!numMetadata) {
-      dispatch(setComparisonType(ComparisonType.WITHIN));
-    }
-    setHasMetadata(numMetadata > 0);
-
-
-    // If any selected option is deleted, set the option to null
-    Object.keys(comparisonGroup).forEach((type) => {
-      const deleteKeys = {};
-
-      Object.entries(comparisonGroup[type]).forEach(([comparisonKey, selectedCell]) => {
-        selectedCell = getCellSetName(selectedCell)
-        if (selectedCell && !properties.hasOwnProperty(selectedCell)) deleteKeys[comparisonKey] = null
-      });
-
-      if (Object.keys(deleteKeys).length) {
-
-        dispatch(
-          setComparisonGroup({
-            type,
-            ...comparisonGroup[type],
-            ...deleteKeys,
-          }),
-        );
-      }
-
-    });
-
-    // Calculate the number of sampleIds.
-    // if there is only 1 sample, set sample using sample name
-    const samples = hierarchy?.find(
-      (rootNode) => (rootNode.key === 'sample'),
-    )?.children;
-
-    setNumSamples(samples.length)
-
-    if (samples.length === 1) {
-      comparisonGroup[selectedComparison]['basis'] = `sample/${samples[0].key}`
-    }
-
-    setSampleKeys(samples.map(sample => sample.key));
-
-  }, [hierarchy, properties]);
-
   const validateForm = () => {
-
-    if (!cellSet) {
-      setIsFormValid(false);
-      return;
-    }
-
-    if (!compareWith) {
-      setIsFormValid(false);
-      return;
-    }
-
-    if (!basis) {
+    if (!cellSet || !compareWith || !basis) {
       setIsFormValid(false);
       return;
     }
@@ -316,7 +291,7 @@ const DiffExprCompute = (props) => {
         <Radio
           style={radioStyle}
           value={ComparisonType.BETWEEN}
-          disabled={!hasMetadata || numSamples === 1}
+          disabled={numSamples === 1}
         >
           Compare a selected cell set between samples/groups
         </Radio>
