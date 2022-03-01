@@ -63,7 +63,7 @@ const dispatchWorkRequest = async (
     io.on(`WorkResponse-${ETag}`, (res) => {
       const { response } = res;
 
-      if (response?.error) {
+      if (response.error) {
         const { errorCode, userMessage } = response;
         console.error(errorCode, userMessage);
 
