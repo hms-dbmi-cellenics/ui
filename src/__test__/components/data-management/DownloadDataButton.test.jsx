@@ -82,7 +82,7 @@ const withDataState = {
     },
   },
 };
-describe('Download data menu', () => {
+describe('DownloadDataButton', () => {
   beforeAll(async () => {
     await preloadAll();
   });
@@ -260,5 +260,21 @@ describe('Download data menu', () => {
     });
 
     expect(pushNotificationMessage).toHaveBeenCalledTimes(1);
+  });
+
+  it.only('Has options disabled if backend status is still loading', async () => {
+    getBackendStatus.mockImplementation(() => () => ({
+      loading: true,
+      error: false,
+      status: null,
+    }));
+
+    const state = { ...withDataState };
+    await renderDownloadDataButton(state);
+    const options = await getMenuItems();
+
+    expect(options[0]).toHaveAttribute('aria-disabled', 'true');
+    expect(options[1]).toHaveAttribute('aria-disabled', 'true');
+    expect(options[2]).toHaveAttribute('aria-disabled', 'true');
   });
 });
