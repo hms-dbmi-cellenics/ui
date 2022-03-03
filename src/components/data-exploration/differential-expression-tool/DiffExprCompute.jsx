@@ -18,7 +18,7 @@ import { composeTree } from 'utils/cellSets';
 const { Option, OptGroup } = Select;
 
 const ComparisonType = Object.freeze({ BETWEEN: 'between', WITHIN: 'within' });
-const getCellSetName = (name) => (name?.split('/')[1] || name);
+const getCellSetKey = (name) => (name?.split('/')[1] || name);
 const getRootKey = (name) => name?.split('/')[0];
 
 const MIN_NUM_CELLS_IN_GROUP = 10;
@@ -52,7 +52,7 @@ const DiffExprCompute = (props) => {
       const deleteKeys = {};
 
       Object.entries(comparisonGroup[type]).forEach(([comparisonKey, selectedCell]) => {
-        selectedCell = getCellSetName(selectedCell)
+        selectedCell = getCellSetKey(selectedCell)
         if (selectedCell && !properties.hasOwnProperty(selectedCell)) deleteKeys[comparisonKey] = null
       });
 
@@ -95,22 +95,24 @@ const DiffExprCompute = (props) => {
     return mapping;
   }, [numSamples]);
 
+  // This function will return true if each of the compared groups is made up of at least
+  // 1 sample of with a enough cells (> MIN_NUM_CELLS_IN_GROUP).
   const canRunDiffExpr = useCallback(() => {
 
     if (selectedComparison === ComparisonType.WITHIN) return true;
 
     if (!basis || !cellSet || !compareWith || !cellIdToSampleMap.length > 0) { return false; }
 
-    const basisCellSetKey = getCellSetName(basis);
+    const basisCellSetKey = getCellSetKey(basis);
 
-    const cellSetKey = getCellSetName(cellSet);
-    const compareWithKey = getCellSetName(compareWith);
+    const cellSetKey = getCellSetKey(cellSet);
+    const compareWithKey = getCellSetKey(compareWith);
 
     let basisCellSet = [];
     if (basisCellSetKey === 'all') {
-      const allCellIds = sampleKeys.reduce((acc, key) => {
+      const allCellIds = sampleKeys.reduce((cumulativeCellIds, key) => {
         const cellIds = properties[key].cellIds;
-        return acc.concat(Array.from(cellIds));
+        return cumulativeCellIds.concat(Array.from(cellIds));
       }, []);
       basisCellSet = new Set(allCellIds);
     } else {
@@ -134,30 +136,27 @@ const DiffExprCompute = (props) => {
     }
 
     // Intersect the basis cell set with each group cell set
-    const filteredGroup1CellIds = cellSetCellIds.filter(cellId => basisCellSet.has(cellId));
-    const filteredGroup2CellIds = compareWithCellIds.filter(cellId => basisCellSet.has(cellId));
+    const filteredCellSetIds = cellSetCellIds.filter(cellId => basisCellSet.has(cellId));
+    const filteredCompareWithCellIds = compareWithCellIds.filter(cellId => basisCellSet.has(cellId));
 
-    // Prepare an array of length sampleIds to hold tally of cells for each sample in each group
-    const cellSetSamples = new Array(numSamples).fill(0);
-    const compareWithSamples = new Array(numSamples).fill(0);
+    const hasSampleWithEnoughCells = (cellSet) => {
+      // Prepare an array of length sampleIds to hold tally of cells for each sample in each group
+      const numCellsPerSampleInCellSet = new Array(numSamples).fill(0);
 
-    // Count the number of cells in each sample
-    filteredGroup1CellIds
-      .forEach(cellId => {
-        const sampleIdx = cellIdToSampleMap[cellId];
-        cellSetSamples[sampleIdx] += 1;
-      });
+      // Count the number of cells in each sample
+      cellSet
+        .forEach(cellId => {
+          const sampleIdx = cellIdToSampleMap[cellId];
+          numCellsPerSampleInCellSet[sampleIdx] += 1;
+        });
 
-    filteredGroup2CellIds
-      .forEach(cellId => {
-        const sampleIdx = cellIdToSampleMap[cellId];
-        compareWithSamples[sampleIdx] += 1;
-      });
+      return numCellsPerSampleInCellSet.find(numCells => numCells > MIN_NUM_CELLS_IN_GROUP)
+    }
 
-    const cellSetHasMoreThanMinNumCells = cellSetSamples.find(numCells => numCells > MIN_NUM_CELLS_IN_GROUP);
-    const compareWithHasMoreThanMinNumCells = compareWithSamples.find(numCells => numCells > MIN_NUM_CELLS_IN_GROUP);
+    const cellSetHasSampleWithEnoughCells = hasSampleWithEnoughCells(filteredCellSetIds)
+    const compareWithHasSampleWithEnoughCells = hasSampleWithEnoughCells(filteredCompareWithCellIds)
 
-    return cellSetHasMoreThanMinNumCells && compareWithHasMoreThanMinNumCells;
+    return cellSetHasSampleWithEnoughCells && compareWithHasSampleWithEnoughCells;
   }, [basis, cellSet, compareWith, numSamples]);
 
   const validateForm = () => {
