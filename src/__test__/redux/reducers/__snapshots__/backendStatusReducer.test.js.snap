@@ -17,12 +17,11 @@ Object {
     "loading": false,
     "status": Object {
       "gem2s": Object {
-        "status": "Running",
-      },
-      "pipeline": Object {
         "status": "NotCreated",
       },
-      "worker": undefined,
+      "pipeline": Object {
+        "status": "Running",
+      },
     },
   },
 }
@@ -34,6 +33,23 @@ Object {
     "error": false,
     "loading": true,
     "status": null,
+  },
+}
+`;
+
+exports[`backendStatusReducer.test.js updates backend status on updated properly 1`] = `
+Object {
+  "1234": Object {
+    "error": false,
+    "loading": true,
+    "status": Object {
+      "gem2s": Object {
+        "status": "Running",
+      },
+      "pipeline": Object {
+        "status": "NotCreated",
+      },
+    },
   },
 }
 `;
