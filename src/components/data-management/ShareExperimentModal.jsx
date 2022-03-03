@@ -35,11 +35,11 @@ const ShareExperimentModal = (props) => {
   const changeSelectedUsers = (selectedUsers) => {
     const newUser = selectedUsers[selectedUsers.length - 1];
     // check if the entry is in a valid email address format
-    const validEmail = newUser.toLowerCase()
+    const invalidEmail = newUser && !newUser?.toLowerCase()
       .match(
         /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
       );
-    if (validEmail) {
+    if (!invalidEmail) {
       setAddedUsers(selectedUsers);
     }
   };
