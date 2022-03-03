@@ -7,15 +7,13 @@ import { Vega } from 'react-vega';
 
 import { ClipLoader } from 'react-spinners';
 import changeEmbeddingAxesIfNecessary from 'components/plots/helpers/changeEmbeddingAxesIfNecessary';
-import ContinuousEmbeddingPlot from '../../../components/plots/ContinuousEmbeddingPlot';
-import { initialEmbeddingState } from '../../../redux/reducers/embeddings/initialState';
-import initialCellSetsState from '../../../redux/reducers/cellSets/initialState';
-import initialGeneExpressionState from '../../../redux/reducers/genes/initialState';
-import generateExperimentSettingsMock from '../../test-utils/experimentSettings.mock';
-import { initialPlotConfigStates } from '../../../redux/reducers/componentConfig/initialState';
-import { mockCellSets } from '../../test-utils/cellSets.mock';
-
-import '__test__/test-utils/setupTests';
+import ContinuousEmbeddingPlot from 'components/plots/ContinuousEmbeddingPlot';
+import { initialEmbeddingState } from 'redux/reducers/embeddings/initialState';
+import initialCellSetsState from 'redux/reducers/cellSets/initialState';
+import initialGeneExpressionState from 'redux/reducers/genes/initialState';
+import generateExperimentSettingsMock from '__test__/test-utils/experimentSettings.mock';
+import { initialPlotConfigStates } from 'redux/reducers/componentConfig/initialState';
+import { mockCellSets } from '__test__/test-utils/cellSets.mock';
 
 jest.mock('components/plots/helpers/changeEmbeddingAxesIfNecessary');
 
