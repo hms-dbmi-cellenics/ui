@@ -415,9 +415,9 @@ const ContentWrapper = (props) => {
                 >
                   <Paragraph ellipsis={{ rows: 10 }} style={{ color: '#999999' }}>
                     <a href='//www.biomage.net/our-team'>Team</a>
-                  &nbsp;&middot;&nbsp;
+                    &nbsp;&middot;&nbsp;
                     <a href='//www.biomage.net/careers'>Careers</a>
-                  &nbsp;&middot;&nbsp;
+                    &nbsp;&middot;&nbsp;
                     <a href='mailto:hello@biomage.net'>Contact</a>
                   </Paragraph>
 
