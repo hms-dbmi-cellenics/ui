@@ -14,9 +14,10 @@ import changeEmbeddingAxesIfNecessary from './helpers/changeEmbeddingAxesIfNeces
 
 const ContinuousEmbeddingPlot = (props) => {
   const {
-    experimentId, config, plotUuid,
+    experimentId, config,
     plotData, truncatedPlotData,
-    actions, loading, error, reloadPlotData, onUpdate,
+    actions, loading, error,
+    reloadPlotData, onUpdate,
   } = props;
   const dispatch = useDispatch();
 
@@ -33,9 +34,6 @@ const ContinuousEmbeddingPlot = (props) => {
   const cellSets = useSelector(getCellSets());
 
   const [plotSpec, setPlotSpec] = useState({});
-  const plotComponent = useSelector(
-    (state) => state.componentConfig[plotUuid],
-  );
 
   useEffect(() => {
     if (cellSets.loading && !cellSets.error) {
@@ -82,17 +80,33 @@ const ContinuousEmbeddingPlot = (props) => {
       return (
         <PlatformError
           error={error}
-          onClick={() => {
-            reloadPlotData();
-          }}
+          onClick={() => { reloadPlotData(); }}
+        />
+      );
+    }
+
+    if (cellSets.error) {
+      return (
+        <PlatformError
+          error={error}
+          onClick={() => { loadCellSets(experimentId); }}
+        />
+      );
+    }
+
+    if (embeddingError) {
+      return (
+        <PlatformError
+          error={error}
+          onClick={() => { loadEmbedding(experimentId, embeddingSettings?.method); }}
         />
       );
     }
 
     if (!config
       || loading
+      || cellSets.loading
       || embeddingLoading
-      || !plotComponent
       || Object.keys(plotSpec).length === 0) {
       return (
         <center>
@@ -125,7 +139,6 @@ ContinuousEmbeddingPlot.propTypes = {
   config: PropTypes.object,
   plotData: PropTypes.array,
   truncatedPlotData: PropTypes.array,
-  plotUuid: PropTypes.string.isRequired,
   actions: PropTypes.oneOfType([
     PropTypes.bool,
     PropTypes.object,
