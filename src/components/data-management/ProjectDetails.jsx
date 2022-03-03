@@ -46,11 +46,15 @@ const ProjectDetails = ({ width, height }) => {
           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
             <Title level={3}>{activeProject.name}</Title>
             <Space>
-              <Button onClick={() => setShareExperimentModalVisible(!shareExperimentModalVisible)}>Share</Button>
+              <Button
+                onClick={() => setShareExperimentModalVisible(!shareExperimentModalVisible)}
+              >
+                Share
+              </Button>
               {shareExperimentModalVisible && (
                 <ShareExperimentModal
                   onCancel={() => setShareExperimentModalVisible(false)}
-                  experimentId={activeProject.experiments[0]}
+                  activeProject={activeProject}
                 />
               )}
               <Button
