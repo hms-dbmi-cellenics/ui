@@ -95,7 +95,7 @@ const CategoricalEmbeddingPlot = (props) => {
 
     return (
       <center>
-        <Vega spec={plotSpec} renderer='canvas' actions={actions} />
+        <Vega spec={plotSpec} renderer='canvas' actions={actions} scaleFactor={2} />
       </center>
     );
   };
