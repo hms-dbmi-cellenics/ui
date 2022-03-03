@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { UserAddOutlined } from '@ant-design/icons';
+import { UserAddOutlined, MenuOutlined } from '@ant-design/icons';
 import {
   Modal, Button, Space, Row, Col, Card, Avatar, Select, Typography,
 } from 'antd';
@@ -109,7 +109,12 @@ const ShareExperimentModal = (props) => {
       okButtonText='Done'
       footer={(
         <Space direction='horizontal'>
-          <p style={{ textAlign: 'left' }}>{experimentName}</p>
+          <Button
+            shape='round'
+            icon={<MenuOutlined />}
+          >
+            {experimentName}
+          </Button>
           {cancelButton}
           <Button onClick={() => inviteUsers()} type='primary'>{okButtonText}</Button>
         </Space>
