@@ -21,6 +21,8 @@ const ComparisonType = Object.freeze({ BETWEEN: 'between', WITHIN: 'within' });
 const getCellSetName = (name) => (name?.split('/')[1] || name);
 const getRootKey = (name) => name?.split('/')[0];
 
+const MIN_NUM_CELLS_IN_GROUP = 10;
+
 const DiffExprCompute = (props) => {
   const {
     experimentId, onCompute,
@@ -101,10 +103,8 @@ const DiffExprCompute = (props) => {
 
     const basisCellSetKey = getCellSetName(basis);
 
-    // Group 1 is from cellSet
-    // Group 2 is from compareWith
-    const group1CellSetKey = getCellSetName(cellSet);
-    const group2CellSetKey = getCellSetName(compareWith);
+    const cellSetKey = getCellSetName(cellSet);
+    const compareWithKey = getCellSetName(compareWith);
 
     let basisCellSet = [];
     if (basisCellSetKey === 'all') {
@@ -117,55 +117,47 @@ const DiffExprCompute = (props) => {
       basisCellSet = properties[basisCellSetKey].cellIds;
     }
 
-    const group1CellIds = Array.from(properties[group1CellSetKey].cellIds);
+    const cellSetCellIds = Array.from(properties[cellSetKey].cellIds);
 
-    let group2CellIds = [];
-    if (['rest', 'background'].includes(group2CellSetKey)) {
+    let compareWithCellIds = [];
+    if (['rest', 'background'].includes(compareWithKey)) {
       const parentGroup = getRootKey(cellSet);
 
       const otherGroupKeys = hierarchy.find(obj => obj.key === parentGroup)
-        .children.filter(child => child.key !== group1CellSetKey);
+        .children.filter(child => child.key !== cellSetKey);
 
-      group2CellIds = otherGroupKeys.reduce((acc, child) => {
+      compareWithCellIds = otherGroupKeys.reduce((acc, child) => {
         return acc.concat(Array.from(properties[child.key].cellIds));
       }, []);
     } else {
-      group2CellIds = Array.from(properties[group2CellSetKey].cellIds);
+      compareWithCellIds = Array.from(properties[compareWithKey].cellIds);
     }
 
     // Intersect the basis cell set with each group cell set
-    const filteredGroup1CellIds = group1CellIds.filter(cellId => basisCellSet.has(cellId));
-    const filteredGroup2CellIds = group2CellIds.filter(cellId => basisCellSet.has(cellId));
+    const filteredGroup1CellIds = cellSetCellIds.filter(cellId => basisCellSet.has(cellId));
+    const filteredGroup2CellIds = compareWithCellIds.filter(cellId => basisCellSet.has(cellId));
 
-    // Prepare an array of length sampleIds to hold tally of cells for each sapmple in each group
-    const cellsInGroup1Samples = new Array(numSamples).fill(0);
-    const cellsInGroup2Samples = new Array(numSamples).fill(0);
+    // Prepare an array of length sampleIds to hold tally of cells for each sample in each group
+    const cellSetSamples = new Array(numSamples).fill(0);
+    const compareWithSamples = new Array(numSamples).fill(0);
 
     // Count the number of cells in each sample
     filteredGroup1CellIds
       .forEach(cellId => {
         const sampleIdx = cellIdToSampleMap[cellId];
-        cellsInGroup1Samples[sampleIdx] += 1;
+        cellSetSamples[sampleIdx] += 1;
       });
 
     filteredGroup2CellIds
       .forEach(cellId => {
         const sampleIdx = cellIdToSampleMap[cellId];
-        cellsInGroup2Samples[sampleIdx] += 1;
+        compareWithSamples[sampleIdx] += 1;
       });
 
-    console.log("cellsInGroup1Samples", cellsInGroup1Samples)
-    console.log("cellsInGroup2Samples", cellsInGroup2Samples)
+    const cellSetHasMoreThanMinNumCells = cellSetSamples.find(numCells => numCells > MIN_NUM_CELLS_IN_GROUP);
+    const compareWithHasMoreThanMinNumCells = compareWithSamples.find(numCells => numCells > MIN_NUM_CELLS_IN_GROUP);
 
-    // The samples in the two groups will always be exclusive, i.e. presence of a cell in a sample
-    // in group1 means there are no cells in group2 in that sample. Therefore, finding the first
-    // sample with the minimum number of cells in each will be enough to determine if there are at least 2
-    // different samples to compare with.
-    const MIN_NUM_CELLS = 10;
-    const group1Passes = cellsInGroup1Samples.find(numCells => numCells > MIN_NUM_CELLS);
-    const group2Passes = cellsInGroup2Samples.find(numCells => numCells > MIN_NUM_CELLS);
-
-    return group1Passes && group2Passes;
+    return cellSetHasMoreThanMinNumCells && compareWithHasMoreThanMinNumCells;
   }, [basis, cellSet, compareWith, numSamples]);
 
   const validateForm = () => {
