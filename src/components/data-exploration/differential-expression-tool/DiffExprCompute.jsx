@@ -140,10 +140,10 @@ const DiffExprCompute = (props) => {
     const filteredCompareWithCellIds = compareWithCellIds.filter(cellId => basisCellSet.has(cellId));
 
     const hasSampleWithEnoughCells = (cellSet) => {
-      // Prepare an array of length sampleIds to hold tally of cells for each sample in each group
+      // Prepare an array of length sampleIds to hold the number of cells for each sample
       const numCellsPerSampleInCellSet = new Array(numSamples).fill(0);
 
-      // Count the number of cells in each sample
+      // Count the number of cells in each sample and assign them into numCellsPerSampleInCellSet
       cellSet
         .forEach(cellId => {
           const sampleIdx = cellIdToSampleMap[cellId];
