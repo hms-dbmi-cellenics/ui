@@ -9,12 +9,13 @@ import CategoricalEmbeddingPlot from 'components/plots/CategoricalEmbeddingPlot'
 
 import { initialPlotConfigStates } from 'redux/reducers/componentConfig/initialState';
 
-import mockAPI, { generateDefaultMockAPIResponses } from '__test__/test-utils/mockAPI';
+import mockAPI, { generateDefaultMockAPIResponses, statusResponse, delayedResponse } from '__test__/test-utils/mockAPI';
 import createTestComponentFactory from '__test__/test-utils/testComponentFactory';
 import fake from '__test__/test-utils/constants';
 import mockEmbedding from '__test__/data/embedding.json';
 import { seekFromS3 } from 'utils/work/seekWorkResponse';
 import { loadBackendStatus } from 'redux/actions/backendStatus';
+import WorkResponseError from 'utils/WorkResponseError';
 
 enableFetchMocks();
 
@@ -46,7 +47,7 @@ const defaultAPIResponse = generateDefaultMockAPIResponses(experimentId);
 const defaultProps = {
   experimentId,
   config: initialPlotConfigStates.embeddingCategorical,
-  actions: true,
+  actions: false,
   onUpdate: jest.fn(),
 };
 
@@ -87,14 +88,68 @@ describe('Categorical embedding plot', () => {
     expect(screen.getByRole('graphics-document', { name: 'Vega visualization' })).toBeInTheDocument();
   });
 
-  // it.only('Shows a loader if there is no config', async () => {
-  //   const emptyConfig = {
-  //     config: {},
-  //   };
+  it('Shows a loader if there is no config', async () => {
+    await act(async () => {
+      render(
+        <Provider store={storeState}>
+          <CategoricalEmbeddingPlot experimentId={experimentId} config={null} />
+        </Provider>,
+      );
+    });
 
-  //   await renderCategoricalEmbeddingPlot(storeState, emptyConfig);
+    expect(screen.getByText(/We're getting your data/i)).toBeInTheDocument();
+    expect(screen.queryByRole('graphics-document', { name: 'Vega visualization' })).toBeNull();
+  });
 
-  //   expect(screen.getByText(/We're getting your data/i)).toBeInTheDocument();
-  //   expect(screen.queryByRole('graphics-document', { name: 'Vega visualization' })).toBeInTheDocument();
-  // });
+  it('Shows a loader if cell sets is loading', async () => {
+    const cellSetErrorResponse = {
+      ...defaultAPIResponse,
+      [`experiments/${experimentId}/cellSets`]: () => delayedResponse({ body: 'Not found', status: 404 }, 4000),
+    };
+
+    fetchMock.mockIf(/.*/, mockAPI(cellSetErrorResponse));
+
+    await renderCategoricalEmbeddingPlot(storeState);
+
+    expect(screen.getByText(/We're getting your data/i)).toBeInTheDocument();
+    expect(screen.queryByRole('graphics-document', { name: 'Vega visualization' })).toBeNull();
+  });
+
+  it('Shows an error if fetching cell sets throw an error', async () => {
+    const cellSetErrorResponse = {
+      ...defaultAPIResponse,
+      [`experiments/${experimentId}/cellSets`]: () => statusResponse(500, 'some random error'),
+    };
+
+    fetchMock.mockIf(/.*/, mockAPI(cellSetErrorResponse));
+
+    await renderCategoricalEmbeddingPlot(storeState);
+
+    expect(screen.getByText(/We're sorry, we couldn't load this/i)).toBeInTheDocument();
+    expect(screen.queryByRole('graphics-document', { name: 'Vega visualization' })).toBeNull();
+  });
+
+  it('Shows a loader if embedding data is loading', async () => {
+    seekFromS3
+      .mockReset()
+      .mockImplementationOnce(() => null)
+      .mockImplementationOnce(() => delayedResponse({ body: 'Not found', status: 404 }, 4000));
+
+    await renderCategoricalEmbeddingPlot(storeState);
+
+    expect(screen.getByText(/We're getting your data/i)).toBeInTheDocument();
+    expect(screen.queryByRole('graphics-document', { name: 'Vega visualization' })).toBeNull();
+  });
+
+  it('Shows an error if there is an error fetching embedding', async () => {
+    seekFromS3
+      .mockReset()
+      .mockImplementationOnce(() => null)
+      .mockImplementationOnce(() => Promise.reject(new WorkResponseError('some random error')));
+
+    await renderCategoricalEmbeddingPlot(storeState);
+
+    expect(screen.getByText(/We had an error on our side while we were completing your request/i)).toBeInTheDocument();
+    expect(screen.queryByRole('graphics-document', { name: 'Vega visualization' })).toBeNull();
+  });
 });

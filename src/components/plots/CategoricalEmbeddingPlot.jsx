@@ -2,15 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Vega } from 'react-vega';
-import Loader from '../Loader';
 
-import PlatformError from '../PlatformError';
-import { generateSpec, generateData } from '../../utils/plotSpecs/generateEmbeddingCategoricalSpec';
-import { loadEmbedding } from '../../redux/actions/embedding';
-import { loadCellSets } from '../../redux/actions/cellSets';
-import { loadProcessingSettings } from '../../redux/actions/experimentSettings';
-import { getCellSets } from '../../redux/selectors';
-import changeEmbeddingAxesIfNecessary from './helpers/changeEmbeddingAxesIfNecessary';
+import { generateSpec, generateData } from 'utils/plotSpecs/generateEmbeddingCategoricalSpec';
+import { loadEmbedding } from 'redux/actions/embedding';
+import { loadCellSets } from 'redux/actions/cellSets';
+import { loadProcessingSettings } from 'redux/actions/experimentSettings';
+import { getCellSets } from 'redux/selectors';
+import PlatformError from 'components/PlatformError';
+import Loader from 'components/Loader';
+import changeEmbeddingAxesIfNecessary from 'components/plots/helpers/changeEmbeddingAxesIfNecessary';
 
 const CategoricalEmbeddingPlot = (props) => {
   const {
@@ -70,7 +70,7 @@ const CategoricalEmbeddingPlot = (props) => {
   }, [config, cellSets, embeddingData, config]);
 
   const render = () => {
-    if (embeddingError) {
+    if (embeddingError || cellSets.error) {
       return (
         <PlatformError
           error={embeddingError}
