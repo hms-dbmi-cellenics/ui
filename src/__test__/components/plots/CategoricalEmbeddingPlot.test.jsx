@@ -1,9 +1,9 @@
 import React from 'react';
+import { act } from 'react-dom/test-utils';
 import { screen, render } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { makeStore } from 'redux/store';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
-import { act } from 'react-dom/test-utils';
 
 import CategoricalEmbeddingPlot from 'components/plots/CategoricalEmbeddingPlot';
 

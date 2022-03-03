@@ -70,7 +70,16 @@ const CategoricalEmbeddingPlot = (props) => {
   }, [config, cellSets, embeddingData, config]);
 
   const render = () => {
-    if (embeddingError || cellSets.error) {
+    if (cellSets.error) {
+      return (
+        <PlatformError
+          error={cellSets.error}
+          onClick={() => { dispatch(loadCellSets(experimentId)); }}
+        />
+      );
+    }
+
+    if (embeddingError) {
       return (
         <PlatformError
           error={embeddingError}
