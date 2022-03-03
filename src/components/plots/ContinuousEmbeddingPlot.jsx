@@ -89,7 +89,11 @@ const ContinuousEmbeddingPlot = (props) => {
       );
     }
 
-    if (!config || loading || embeddingLoading || !plotComponent) {
+    if (!config
+      || loading
+      || embeddingLoading
+      || !plotComponent
+      || Object.keys(plotSpec).length === 0) {
       return (
         <center>
           <Loader experimentId={experimentId} />

@@ -79,7 +79,13 @@ const CategoricalEmbeddingPlot = (props) => {
       );
     }
 
-    if (!config || cellSets.loading || !embeddingData || embeddingLoading || !config) {
+    if (!config
+      || cellSets.loading
+      || !embeddingData
+      || embeddingLoading
+      || !config
+      || Object.keys(plotSpec).length === 0
+    ) {
       return (
         <center>
           <Loader experimentId={experimentId} />
