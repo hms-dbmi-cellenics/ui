@@ -135,6 +135,7 @@ describe('ExperimentUpdatesHandler', () => {
     // Dispatch 1 - Update backend status
     expect(updateBackendStatus).toHaveBeenCalledTimes(1);
     const backendStatus = updateBackendStatus.mock.calls[0];
+
     expect(backendStatus).toMatchSnapshot();
 
     // Dispatch 2 - update processin settings

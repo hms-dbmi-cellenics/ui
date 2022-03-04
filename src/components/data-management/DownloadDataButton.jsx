@@ -77,13 +77,14 @@ const DownloadDataButton = () => {
       pushNotificationMessage('error', endUserMessages.ERROR_DOWNLOADING_DATA);
     }
   };
+
   return (
     <Dropdown
       overlay={() => (
         <Menu>
           <Menu.Item
             key='download-raw-seurat'
-            disabled={!gem2sHasRun}
+            disabled={!gem2sHasRun || backendLoading}
             onClick={() => {
               downloadExperimentData('raw_seurat_object');
             }}
@@ -101,9 +102,7 @@ const DownloadDataButton = () => {
           </Menu.Item>
           <Menu.Item
             key='download-processed-seurat'
-            disabled={
-              !qcHasRun
-            }
+            disabled={!qcHasRun || backendLoading}
             onClick={() => {
               // Change if we have more than one experiment per project
               downloadExperimentData('processed_seurat_object');
@@ -121,7 +120,7 @@ const DownloadDataButton = () => {
             </Tooltip>
           </Menu.Item>
           <Menu.Item
-            disabled={!allSamplesAnalysed}
+            disabled={!allSamplesAnalysed || backendLoading}
             key='download-processing-settings'
             onClick={() => {
               const config = _.omit(experimentSettings.processing, ['meta']);
