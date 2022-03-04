@@ -269,7 +269,7 @@ describe('DownloadDataButton', () => {
     expect(pushNotificationMessage).toHaveBeenCalledTimes(1);
   });
 
-  it.only('Has options disabled if backend status is still loading', async () => {
+  it('Has options disabled if backend status is still loading', async () => {
     getBackendStatus.mockImplementation(() => () => ({
       loading: true,
       error: false,
