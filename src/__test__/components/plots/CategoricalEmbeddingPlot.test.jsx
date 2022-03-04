@@ -1,15 +1,11 @@
 import React from 'react';
 import { act } from 'react-dom/test-utils';
 import { screen, render } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import { Provider } from 'react-redux';
 import { makeStore } from 'redux/store';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 
-import { seekFromS3 } from 'utils/work/seekWorkResponse';
-import { loadBackendStatus } from 'redux/actions/backendStatus';
-
-import ContinuousEmbeddingPlot from 'components/plots/ContinuousEmbeddingPlot';
+import CategoricalEmbeddingPlot from 'components/plots/CategoricalEmbeddingPlot';
 
 import { initialPlotConfigStates } from 'redux/reducers/componentConfig/initialState';
 
@@ -17,7 +13,8 @@ import mockAPI, { generateDefaultMockAPIResponses, statusResponse, delayedRespon
 import createTestComponentFactory from '__test__/test-utils/testComponentFactory';
 import fake from '__test__/test-utils/constants';
 import mockEmbedding from '__test__/data/embedding.json';
-import mockGeneExpression from '__test__/data/gene_expression.json';
+import { seekFromS3 } from 'utils/work/seekWorkResponse';
+import { loadBackendStatus } from 'redux/actions/backendStatus';
 import WorkResponseError from 'utils/WorkResponseError';
 
 enableFetchMocks();
@@ -47,39 +44,29 @@ const mockWorkerResponses = {
 
 const defaultAPIResponse = generateDefaultMockAPIResponses(experimentId);
 
-const {
-  truncatedExpression: { expression: truncatedPlotData },
-  rawExpression: { expression: plotData },
-} = mockGeneExpression.TestGene;
-
 const defaultProps = {
   experimentId,
-  config: initialPlotConfigStates.embeddingContinuous,
+  config: initialPlotConfigStates.embeddingCategorical,
   actions: false,
-  plotData,
-  truncatedPlotData,
-  loading: false,
-  error: false,
-  reloadPlotData: jest.fn(),
   onUpdate: jest.fn(),
 };
 
-const continuousEmbeddingPlotFactory = createTestComponentFactory(
-  ContinuousEmbeddingPlot, defaultProps,
+const categoricalEmbeddingPlotFactory = createTestComponentFactory(
+  CategoricalEmbeddingPlot, defaultProps,
 );
 
-const renderContinuousEmbeddingPlot = async (store, props) => {
+const renderCategoricalEmbeddingPlot = async (store, props) => {
   await act(async () => {
     render(
       <Provider store={store}>
-        {continuousEmbeddingPlotFactory(props)}
+        {categoricalEmbeddingPlotFactory(props)}
       </Provider>,
     );
   });
 };
 
 let storeState = null;
-describe('Continuous embedding plot', () => {
+describe('Categorical embedding plot', () => {
   beforeEach(async () => {
     jest.clearAllMocks();
 
@@ -96,7 +83,7 @@ describe('Continuous embedding plot', () => {
   });
 
   it('Renders correctly with data', async () => {
-    await renderContinuousEmbeddingPlot(storeState);
+    await renderCategoricalEmbeddingPlot(storeState);
 
     expect(screen.getByRole('graphics-document', { name: 'Vega visualization' })).toBeInTheDocument();
   });
@@ -105,30 +92,12 @@ describe('Continuous embedding plot', () => {
     await act(async () => {
       render(
         <Provider store={storeState}>
-          <ContinuousEmbeddingPlot experimentId={experimentId} config={null} />
+          <CategoricalEmbeddingPlot experimentId={experimentId} config={null} />
         </Provider>,
       );
     });
 
     expect(screen.getByText(/We're getting your data/i)).toBeInTheDocument();
-    expect(screen.queryByRole('graphics-document', { name: 'Vega visualization' })).toBeNull();
-  });
-
-  it('Shows a loader if the plot data is still loading', async () => {
-    await renderContinuousEmbeddingPlot(storeState, {
-      loading: true,
-    });
-
-    expect(screen.getByText(/We're getting your data/i)).toBeInTheDocument();
-    expect(screen.queryByRole('graphics-document', { name: 'Vega visualization' })).toBeNull();
-  });
-
-  it('Shows an error if the plot data has an error', async () => {
-    await renderContinuousEmbeddingPlot(storeState, {
-      error: true,
-    });
-
-    expect(screen.getByText(/We're sorry, we couldn't load this/i)).toBeInTheDocument();
     expect(screen.queryByRole('graphics-document', { name: 'Vega visualization' })).toBeNull();
   });
 
@@ -140,7 +109,7 @@ describe('Continuous embedding plot', () => {
 
     fetchMock.mockIf(/.*/, mockAPI(cellSetErrorResponse));
 
-    await renderContinuousEmbeddingPlot(storeState);
+    await renderCategoricalEmbeddingPlot(storeState);
 
     expect(screen.getByText(/We're getting your data/i)).toBeInTheDocument();
     expect(screen.queryByRole('graphics-document', { name: 'Vega visualization' })).toBeNull();
@@ -154,7 +123,7 @@ describe('Continuous embedding plot', () => {
 
     fetchMock.mockIf(/.*/, mockAPI(cellSetErrorResponse));
 
-    await renderContinuousEmbeddingPlot(storeState);
+    await renderCategoricalEmbeddingPlot(storeState);
 
     expect(screen.getByText(/We're sorry, we couldn't load this/i)).toBeInTheDocument();
     expect(screen.queryByRole('graphics-document', { name: 'Vega visualization' })).toBeNull();
@@ -166,7 +135,7 @@ describe('Continuous embedding plot', () => {
       .mockImplementationOnce(() => null)
       .mockImplementationOnce(() => delayedResponse({ body: 'Not found', status: 404 }, 4000));
 
-    await renderContinuousEmbeddingPlot(storeState);
+    await renderCategoricalEmbeddingPlot(storeState);
 
     expect(screen.getByText(/We're getting your data/i)).toBeInTheDocument();
     expect(screen.queryByRole('graphics-document', { name: 'Vega visualization' })).toBeNull();
@@ -178,9 +147,9 @@ describe('Continuous embedding plot', () => {
       .mockImplementationOnce(() => null)
       .mockImplementationOnce(() => Promise.reject(new WorkResponseError('some random error')));
 
-    await renderContinuousEmbeddingPlot(storeState);
+    await renderCategoricalEmbeddingPlot(storeState);
 
-    expect(screen.getByText(/We're sorry, we couldn't load this/i)).toBeInTheDocument();
+    expect(screen.getByText(/We had an error on our side while we were completing your request/i)).toBeInTheDocument();
     expect(screen.queryByRole('graphics-document', { name: 'Vega visualization' })).toBeNull();
   });
 });
