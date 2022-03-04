@@ -36,7 +36,7 @@ const DiffExprComputeFactory = createTestComponentFactory(DiffExprCompute, defau
 const mockAPIresponses = generateDefaultMockAPIResponses(experimentId);
 
 const renderDiffExprCompute = async (store) => {
-  await act(() => {
+  await act(async () => {
     render(
       <Provider store={store}>
         {DiffExprComputeFactory()}
