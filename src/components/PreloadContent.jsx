@@ -5,7 +5,7 @@ import {
 
 const PreloadContent = () => (
   <>
-    <div style={{ padding: '20px 0' }}>
+    <div data-testid='preloadContent' style={{ padding: '20px 0' }}>
       <Row gutter={32}>
         <Col className='gutter-row' span={14} offset={2}>
           <div className='preloadContextSkeleton' style={{ padding: '16px 0px' }}>
