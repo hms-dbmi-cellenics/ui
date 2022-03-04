@@ -4,9 +4,7 @@ import React, {
 import dynamic from 'next/dynamic';
 import PropTypes from 'prop-types';
 import { useSelector, useDispatch } from 'react-redux';
-import {
-  Empty, Typography, Skeleton,
-} from 'antd';
+import { Empty } from 'antd';
 import _ from 'lodash';
 
 import { getCellSets, getCellSetsHierarchyByKeys } from 'redux/selectors';
@@ -28,7 +26,6 @@ import getContainingCellSetsProperties from 'utils/cellSets/getContainingCellSet
 import useConditionalEffect from 'utils/customHooks/useConditionalEffect';
 
 const COMPONENT_TYPE = 'interactiveHeatmap';
-const { Text } = Typography;
 
 const Heatmap = dynamic(
   () => import('vitessce/dist/umd/production/heatmap.min').then((mod) => mod.Heatmap),
@@ -176,7 +173,7 @@ const HeatmapPlot = (props) => {
     );
   }
 
-  if (markerGenesLoadingError || expressionDataError || viewError) {
+  if (markerGenesLoadingError || expressionDataError || viewError || !heatmapData) {
     return (
       <PlatformError
         error={expressionDataError}
@@ -198,30 +195,14 @@ const HeatmapPlot = (props) => {
     );
   }
 
-  let description = '';
-  const allCellsHidden = heatmapData?.expressionMatrix.matrix.length === 0;
-  const noSelectedGenes = selectedGenes?.length === 0;
-  const noClusters = cellSetsHierarchy.length === 0;
-
-  if (allCellsHidden) description = 'Unhide some cell sets to show the heatmap.';
-  if (noSelectedGenes) description = 'Add some genes to this heatmap to get started.';
-  if (noClusters) description = 'Configure your embedding in Data Processing to load this plot.';
-
-  if (allCellsHidden || noSelectedGenes || noClusters) {
+  if (heatmapData.expressionMatrix.matrix.length === 0) {
     return (
       <center>
-        <Empty description={description} />
+        <Empty description='Unhide some cell sets to show the heatmap' />
       </center>
     );
   }
 
-  if (!heatmapData) {
-    return (
-      <center style={{ marginTop: height / 2 }}>
-        <Skeleton.Image />
-      </center>
-    );
-  }
   const setTrackHighlight = (info) => {
     if (!info) {
       setHighlightedTrackData(null);
