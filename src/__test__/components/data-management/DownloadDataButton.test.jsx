@@ -18,6 +18,7 @@ import initialProjectState, { projectTemplate } from 'redux/reducers/projects/in
 import initialSamplesState from 'redux/reducers/samples/initialState';
 import initialExperimentsState from 'redux/reducers/experiments/initialState';
 import initialExperimentSettingsState from 'redux/reducers/experimentSettings/initialState';
+import { initialExperimentBackendStatus } from 'redux/reducers/backendStatus/initialState';
 
 import { getBackendStatus } from 'redux/selectors';
 
@@ -116,6 +117,7 @@ describe('DownloadDataButton', () => {
 
   it('should render the download data menu', async () => {
     getBackendStatus.mockImplementation(() => () => ({
+      ...initialExperimentBackendStatus,
       status: {
         pipeline: {
           status: 'SUCCEEDED',
@@ -139,6 +141,7 @@ describe('DownloadDataButton', () => {
 
   it('Raw seurat object option is disabled if gem2s has not ran', async () => {
     getBackendStatus.mockImplementation(() => () => ({
+      ...initialExperimentBackendStatus,
       status: {
         pipeline: {
           status: 'SUCCEEDED',
@@ -159,6 +162,7 @@ describe('DownloadDataButton', () => {
 
   it('Processed Seurat object option is disabled if qc has not ran', async () => {
     getBackendStatus.mockImplementation(() => () => ({
+      ...initialExperimentBackendStatus,
       status: {
         pipeline: {
           status: 'DEFINETELY NOT SUCCEEDED',
@@ -180,6 +184,7 @@ describe('DownloadDataButton', () => {
 
   it('Data procesing settings option is disabled if a step misses a sample', async () => {
     getBackendStatus.mockImplementation(() => () => ({
+      ...initialExperimentBackendStatus,
       status: {
         pipeline: {
           status: 'SUCCEEDED',
@@ -211,6 +216,7 @@ describe('DownloadDataButton', () => {
   it('Downolods data properly', async () => {
     getFromApiExpectOK.mockImplementation(() => Promise.resolve('signedUrl'));
     getBackendStatus.mockImplementation(() => () => ({
+      ...initialExperimentBackendStatus,
       status: {
         pipeline: {
           status: 'SUCCEEDED',
@@ -238,6 +244,7 @@ describe('DownloadDataButton', () => {
   it('Shows an error if there is an error downloading data', async () => {
     getFromApiExpectOK.mockImplementation(() => Promise.reject(new Error('Something went wrong')));
     getBackendStatus.mockImplementation(() => () => ({
+      ...initialExperimentBackendStatus,
       status: {
         pipeline: {
           status: 'SUCCEEDED',
