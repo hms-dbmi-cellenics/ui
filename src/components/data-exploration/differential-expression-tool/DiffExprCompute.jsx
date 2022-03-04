@@ -95,8 +95,8 @@ const DiffExprCompute = (props) => {
     return mapping;
   }, [numSamples]);
 
-  // This function will return true if each of the compared groups is made up of at least
-  // 1 sample of with a enough cells (> MIN_NUM_CELLS_IN_GROUP).
+  // Returns true if each of the compared groups is made up of at least
+  // 1 sample with more cells than a given minimum threshold.
   const canRunDiffExpr = useCallback(() => {
 
     if (selectedComparison === ComparisonType.WITHIN) return true;
@@ -108,24 +108,24 @@ const DiffExprCompute = (props) => {
     const cellSetKey = getCellSetKey(cellSet);
     const compareWithKey = getCellSetKey(compareWith);
 
-    let basisCellSet = [];
+    let basisCellIds = [];
     if (basisCellSetKey === 'all') {
       const allCellIds = sampleKeys.reduce((cumulativeCellIds, key) => {
         const cellIds = properties[key].cellIds;
         return cumulativeCellIds.concat(Array.from(cellIds));
       }, []);
-      basisCellSet = new Set(allCellIds);
+      basisCellIds = new Set(allCellIds);
     } else {
-      basisCellSet = properties[basisCellSetKey].cellIds;
+      basisCellIds = properties[basisCellSetKey].cellIds;
     }
 
     const cellSetCellIds = Array.from(properties[cellSetKey].cellIds);
 
     let compareWithCellIds = [];
     if (['rest', 'background'].includes(compareWithKey)) {
-      const parentGroup = getRootKey(cellSet);
+      const parentKey = getRootKey(cellSet);
 
-      const otherGroupKeys = hierarchy.find(obj => obj.key === parentGroup)
+      const otherGroupKeys = hierarchy.find(obj => obj.key === parentKey)
         .children.filter(child => child.key !== cellSetKey);
 
       compareWithCellIds = otherGroupKeys.reduce((acc, child) => {
@@ -136,8 +136,8 @@ const DiffExprCompute = (props) => {
     }
 
     // Intersect the basis cell set with each group cell set
-    const filteredCellSetIds = cellSetCellIds.filter(cellId => basisCellSet.has(cellId));
-    const filteredCompareWithCellIds = compareWithCellIds.filter(cellId => basisCellSet.has(cellId));
+    const filteredCellSetCellIds = cellSetCellIds.filter(cellId => basisCellIds.has(cellId));
+    const filteredCompareWithCellIds = compareWithCellIds.filter(cellId => basisCellIds.has(cellId));
 
     const hasSampleWithEnoughCells = (cellSet) => {
       // Prepare an array of length sampleIds to hold the number of cells for each sample
@@ -153,7 +153,7 @@ const DiffExprCompute = (props) => {
       return numCellsPerSampleInCellSet.find(numCells => numCells > MIN_NUM_CELLS_IN_GROUP)
     }
 
-    const cellSetHasSampleWithEnoughCells = hasSampleWithEnoughCells(filteredCellSetIds)
+    const cellSetHasSampleWithEnoughCells = hasSampleWithEnoughCells(filteredCellSetCellIds)
     const compareWithHasSampleWithEnoughCells = hasSampleWithEnoughCells(filteredCompareWithCellIds)
 
     return cellSetHasSampleWithEnoughCells && compareWithHasSampleWithEnoughCells;
