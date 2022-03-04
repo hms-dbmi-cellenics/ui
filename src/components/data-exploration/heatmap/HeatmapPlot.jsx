@@ -58,8 +58,6 @@ const HeatmapPlot = (props) => {
   const [geneHighlight, setGeneHighlight] = useState(null);
   const [cellHighlight, setCellHighlight] = useState(null);
 
-  const [vitessceData, setVitessceData] = useState(null);
-
   const cellCoordinatesRef = useRef({ x: 200, y: 300 });
 
   const expressionData = useSelector((state) => state.genes.expression);
@@ -170,12 +168,6 @@ const HeatmapPlot = (props) => {
     }
   }, [cellHighlight]);
 
-  useEffect(() => {
-    if (!heatmapData) return;
-
-    setVitessceData(heatmapData);
-  }, [heatmapData]);
-
   if (isHeatmapGenesLoading || cellSetsLoading) {
     return (
       <center>
@@ -206,23 +198,20 @@ const HeatmapPlot = (props) => {
     );
   }
 
-  if (selectedGenes?.length === 0) {
-    return (
-      <Empty
-        description={(
-          <Text>Add some genes to this heatmap to get started.</Text>
-        )}
-      />
-    );
-  }
+  let description = '';
+  const allCellsHidden = heatmapData?.expressionMatrix.matrix.length === 0;
+  const noSelectedGenes = selectedGenes?.length === 0;
+  const noClusters = cellSetsHierarchy.length === 0;
 
-  if (cellSetsHierarchy.length === 0) {
+  if (allCellsHidden) description = 'Unhide some cell sets to show the heatmap.';
+  if (noSelectedGenes) description = 'Add some genes to this heatmap to get started.';
+  if (noClusters) description = 'Configure your embedding in Data Processing to load this plot.';
+
+  if (allCellsHidden || noSelectedGenes || noClusters) {
     return (
-      <Empty
-        description={(
-          <Text>Configure your embedding in Data Processing to load this plot.</Text>
-        )}
-      />
+      <center>
+        <Empty description={description} />
+      </center>
     );
   }
 
@@ -267,9 +256,9 @@ const HeatmapPlot = (props) => {
         height={height - heatmapBottomMargin}
         colormap='plasma'
         colormapRange={[0.0, 1.0]}
-        expressionMatrix={vitessceData?.expressionMatrix}
-        cellColors={vitessceData?.metadataTracks.dataPoints}
-        cellColorLabels={vitessceData?.metadataTracks.labels}
+        expressionMatrix={heatmapData.expressionMatrix}
+        cellColors={heatmapData.metadataTracks.dataPoints}
+        cellColorLabels={heatmapData.metadataTracks.labels}
         hideTopLabels
         transpose
         viewState={viewState}
