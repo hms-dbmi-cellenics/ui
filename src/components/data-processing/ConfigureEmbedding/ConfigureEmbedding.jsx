@@ -7,38 +7,33 @@ import {
 } from 'antd';
 
 import { isUnisample } from 'utils/experimentPredicates';
-import CalculationConfig from './CalculationConfig';
-import MiniPlot from '../../plots/MiniPlot';
+import MiniPlot from 'components/plots/MiniPlot';
 
-import CategoricalEmbeddingPlot from '../../plots/CategoricalEmbeddingPlot';
-import ContinuousEmbeddingPlot from '../../plots/ContinuousEmbeddingPlot';
+import CategoricalEmbeddingPlot from 'components/plots/CategoricalEmbeddingPlot';
+import ContinuousEmbeddingPlot from 'components/plots/ContinuousEmbeddingPlot';
 
 import {
   updatePlotConfig,
   loadPlotConfig,
   savePlotConfig,
-} from '../../../redux/actions/componentConfig';
+} from 'redux/actions/componentConfig';
 
-import PlotStyling from '../../plots/styling/PlotStyling';
-import { updateFilterSettings } from '../../../redux/actions/experimentSettings';
-import loadCellMeta from '../../../redux/actions/cellMeta';
-import generateDataProcessingPlotUuid from '../../../utils/generateDataProcessingPlotUuid';
-import Loader from '../../Loader';
-import { getCellSets } from '../../../redux/selectors';
+import PlotStyling from 'components/plots/styling/PlotStyling';
+import loadCellMeta from 'redux/actions/cellMeta';
+import generateDataProcessingPlotUuid from 'utils/generateDataProcessingPlotUuid';
+import Loader from 'components/Loader';
+import { getCellSets } from 'redux/selectors';
+import CalculationConfig from 'components/data-processing/ConfigureEmbedding/CalculationConfig';
 
 const { Panel } = Collapse;
 
 const ConfigureEmbedding = (props) => {
   const { experimentId, onConfigChange } = props;
   const [plot, setPlot] = useState(null);
+  const filterName = 'configureEmbedding';
   const cellSets = useSelector(getCellSets());
   const cellMeta = useSelector((state) => state.cellMeta);
-
-  const { selectedConfigureEmbeddingPlot: selectedPlot } = useSelector(
-    (state) => state.experimentSettings.processing.meta,
-  );
-
-  const filterName = 'configureEmbedding';
+  const [selectedPlot, setSelectedPlot] = useState('cellCluster');
 
   const dispatch = useDispatch();
   const debounceSave = useCallback(
@@ -281,11 +276,7 @@ const ConfigureEmbedding = (props) => {
 
     const plotActions = {
       export: true,
-      source: false,
-      compiled: false,
-      editor: false,
     };
-
     if (!cellSets.loading
       && !cellSets.error
       && !cellSets.updateCellSetsClustering
@@ -344,12 +335,7 @@ const ConfigureEmbedding = (props) => {
               <button
                 type='button'
                 key={key}
-                onClick={() => dispatch(
-                  updateFilterSettings(
-                    'meta',
-                    { selectedConfigureEmbeddingPlot: key },
-                  ),
-                )}
+                onClick={() => setSelectedPlot(key)}
                 style={{
                   margin: 0,
                   backgroundColor: 'transparent',
