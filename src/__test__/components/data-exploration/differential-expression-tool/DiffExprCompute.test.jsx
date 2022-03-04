@@ -1,244 +1,286 @@
 import React from 'react';
-import { mount } from 'enzyme';
-import '__test__/test-utils/setupTests';
+import {
+  render, screen, fireEvent, waitFor,
+} from '@testing-library/react';
+import { act } from 'react-dom/test-utils';
+import userEvent from '@testing-library/user-event';
+import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
-import {
-  Form, Radio, Button, Select,
-} from 'antd';
-import DiffExprCompute from '../../../../components/data-exploration/differential-expression-tool/DiffExprCompute';
-import {
-  DIFF_EXPR_COMPARISON_TYPE_SET,
-} from '../../../../redux/actionTypes/differentialExpression';
+import { makeStore } from 'redux/store';
 
-const { Item } = Form;
+import DiffExprCompute from 'components/data-exploration/differential-expression-tool/DiffExprCompute';
+import { loadCellSets } from 'redux/actions/cellSets';
+import initialCellsetsState from 'redux/reducers/cellSets/initialState';
+import initialDiffExprState from 'redux/reducers/differentialExpression/initialState';
 
-const mockStore = configureMockStore([thunk]);
+import createTestComponentFactory from '__test__/test-utils/testComponentFactory';
 
-const initialState = {
-  cellSets: {
-    properties: {
-      'cluster-a': {
-        name: 'cluster a',
-        key: 'cluster-a',
-        cellIds: new Set([1, 2]),
-        color: '#00FF00',
-      },
-      'cluster-b': {
-        name: 'cluster b',
-        key: 'cluster-b',
-        cellIds: new Set([3, 4, 5]),
-        color: '#FF0000',
-      },
-      'cluster-c': {
-        name: 'cluster c',
-        key: 'cluster-c',
-        cellIds: new Set([6]),
-        color: '#0000FF',
-      },
-      'sample-a': {
-        name: 'sample a',
-        key: 'sample-a',
-        cellIds: new Set([1, 2]),
-        color: '#00FF00',
-      },
-      'sample-b': {
-        name: 'sample b',
-        key: 'sample-b',
-        cellIds: new Set([3, 4, 5]),
-        color: '#FF0000',
-      },
-      'sample-c': {
-        name: 'sample c',
-        key: 'sample-c',
-        cellIds: new Set([6]),
-        color: '#0000FF',
-      },
-      louvain: {
-        name: 'Louvain clusters',
-        key: 'louvain',
-        type: 'cellSets',
-        cellIds: new Set(),
-        rootNode: true,
-      },
-      scratchpad: {
-        name: 'Custom selections',
-        key: 'scratchpad',
-        type: 'cellSets',
-        cellIds: new Set(),
-        rootNode: true,
-      },
-      sample: {
-        name: 'Samples',
-        key: 'sample',
-        type: 'metadataCategorical',
-        cellIds: new Set(),
-        rootNode: true,
-      },
-    },
-    hierarchy: [
-      {
-        key: 'louvain',
-        children: [{ key: 'cluster-a' }, { key: 'cluster-b' }, { key: 'cluster-c' }],
-      },
-      {
-        key: 'sample',
-        children: [{ key: 'sample-a' }, { key: 'sample-b' }, { key: 'sample-c' }],
-      },
-      {
-        key: 'scratchpad',
-        children: [],
-      },
-    ],
-  },
-  differentialExpression: {
-    properties: {
-      data: [],
-      comparisonGroup: {},
-      loading: false,
-      error: false,
-      total: 0,
-    },
-    comparison: {
-      type: 'between',
-      group: {
-        between: {
-          cellSet: null,
-          compareWith: null,
-          basis: null,
-        },
-      },
-    },
-  },
+import mockAPI, { generateDefaultMockAPIResponses } from '__test__/test-utils/mockAPI';
+import fake from '__test__/test-utils/constants';
+
+enableFetchMocks();
+
+const createMockStore = configureMockStore([thunk]);
+
+const mockOnCompute = jest.fn();
+const experimentId = fake.EXPERIMENT_ID;
+
+const defaultProps = {
+  experimentId,
+  onCompute: mockOnCompute,
+};
+const DiffExprComputeFactory = createTestComponentFactory(DiffExprCompute, defaultProps);
+
+const mockAPIresponses = generateDefaultMockAPIResponses(experimentId);
+
+const renderDiffExprCompute = async (store) => {
+  await act(async () => {
+    render(
+      <Provider store={store}>
+        {DiffExprComputeFactory()}
+      </Provider>,
+    );
+  });
 };
 
+let storeState = null;
+
 describe('DiffExprCompute', () => {
-  it('renders correctly with no comparison method', () => {
-    const store = mockStore(initialState);
+  beforeEach(async () => {
+    jest.clearAllMocks();
 
-    const component = mount(
-      <Provider store={store}>
-        <DiffExprCompute
-          experimentId='1234'
-          comparisonGroup={{ cellSet: null, compareWith: null, basis: null }}
-          onCompute={jest.fn()}
-        />
-      </Provider>,
-    );
+    fetchMock.resetMocks();
+    fetchMock.mockIf(/.*/, mockAPI(mockAPIresponses));
 
-    const form = component.find(Form);
-
-    // There should be one form.
-    expect(form.length).toEqual(1);
-
-    // It should have a radio button group at the top
-    expect(form.find(Radio.Group).length).toEqual(1);
-
-    // It should have four items with the particular values.
-    expect(form.find(Item).length).toEqual(4);
-    expect(form.find(Item).at(0).getElement().props.label).toEqual('Compare cell set:');
-    expect(form.find(Item).at(1).getElement().props.label).toEqual('between sample/group:');
-    expect(form.find(Item).at(2).getElement().props.label).toEqual('and sample/group:');
-
-    // The second one should be a disabled button.
-    const button = form.find(Button);
-    expect(button.length).toEqual(1);
-    expect(button.getElement().props.disabled).toEqual(true);
+    storeState = makeStore();
+    await storeState.dispatch(loadCellSets(experimentId));
   });
 
-  it('clicking on the second comparison option changes items in form', () => {
-    // MockStore can not update state, therefore the store here reflects changes after click
-    // and click is checked by action
-    const store = mockStore(() => ({
-      ...initialState,
-      differentialExpression: {
-        ...initialState.differentialExpression,
-        comparison: {
-          ...initialState.differentialExpression.comparison,
-          type: 'within',
-          group: {
-            within: {
-              cellSet: null,
-              compareWith: null,
-              basis: null,
-            },
+  it('Renders correctly with no comparison method', async () => {
+    await renderDiffExprCompute(storeState);
+
+    // Should show radio buttons to choose from
+    expect(screen.getByText(/Compare cell sets within a sample\/group/i)).toBeInTheDocument();
+    expect(screen.getByText(/Compare a selected cell set between samples\/groups/i)).toBeInTheDocument();
+
+    // Should show the "within" group comparison first
+    expect(screen.getByText(/Compare cell set:/i)).toBeInTheDocument();
+    expect(screen.getByText(/and cell set:/i)).toBeInTheDocument();
+    expect(screen.getByText(/within sample\/group:/i)).toBeInTheDocument();
+
+    // And show "between" groups comparison after changing the radio button
+    userEvent.click(screen.getByText('Compare a selected cell set between samples/groups'));
+
+    expect(screen.getByText(/Compare cell set:/i)).toBeInTheDocument();
+    expect(screen.getByText(/between sample\/group:/i)).toBeInTheDocument();
+    expect(screen.getByText(/and sample\/group:/i)).toBeInTheDocument();
+
+    // Button should be disabled
+    expect(screen.getByText(/Compute/i)).toBeInTheDocument();
+    expect(screen.getByText(/Compute/i).closest('button')).toBeDisabled();
+  });
+
+  it('Option to compare between groups should be disabled if there is only one sample', async () => {
+    const oneSampleState = {
+      differentialExpression: initialDiffExprState,
+      cellSets: {
+        ...initialCellsetsState,
+        properties: {
+          louvain: {
+            name: 'Louvain clusters',
+            key: 'louvain',
+            type: 'cellSets',
+            cellIds: new Set(),
+            rootNode: true,
+          },
+          'cluster-a': {
+            name: 'cluster a',
+            key: 'cluster-a',
+            cellIds: new Set([1, 2]),
+            color: '#00FF00',
+          },
+          sample: {
+            name: 'Samples',
+            key: 'sample',
+            type: 'metadataCategorical',
+            cellIds: new Set(),
+            rootNode: true,
+          },
+          'sample-a': {
+            name: 'sample a',
+            key: 'sample-a',
+            cellIds: new Set([1, 2]),
+            color: '#00FF00',
           },
         },
+        hierarchy: [
+          {
+            key: 'louvain',
+            children: [{ key: 'cluster-a' }],
+          },
+          {
+            key: 'sample',
+            children: [{ key: 'sample-a' }],
+          },
+        ],
       },
-    }));
+    };
 
-    const component = mount(
-      <Provider store={store}>
-        <DiffExprCompute
-          experimentId='1234'
-          comparisonGroup={{ cellSet: null, compareWith: null, basis: null }}
-          onCompute={jest.fn()}
-        />
-      </Provider>,
-    );
+    await renderDiffExprCompute(createMockStore(oneSampleState));
 
-    const form = component.find(Form);
+    // Get the input radio button element for the selection
+    const withinRadioButton = screen.getByText(/Compare cell sets within a sample\/group/i)
+      .previousSibling.firstChild;
+    expect(withinRadioButton).toBeEnabled();
 
-    // There should be one form.
-    expect(form.length).toEqual(1);
-
-    // It should have a radio button group at the top
-    expect(form.find(Radio.Group).length).toEqual(1);
-
-    // Clicking on the second one should re-render the tool.
-    const { onChange } = form.find(Radio.Group).getElement().props;
-
-    onChange({ target: { value: 'within' } });
-
-    // Check if the correct actions are fired
-    expect(store.getActions()[0].type).toEqual(DIFF_EXPR_COMPARISON_TYPE_SET);
-
-    // The form should still have four items.
-    expect(form.find(Item).length).toEqual(4);
-
-    // It should have four items with different labels.
-    expect(form.find(Item).at(0).getElement().props.label).toEqual('Compare cell set:');
-    expect(form.find(Item).at(1).getElement().props.label).toEqual('and cell set:');
-    expect(form.find(Item).at(2).getElement().props.label).toEqual('within sample/group:');
-
-    // The second one should be a disabled button.
-    const button = form.find(Button);
-    expect(button.length).toEqual(1);
-    expect(button.getElement().props.disabled).toEqual(true);
+    const betweenRadioButton = screen.getByText(/Compare a selected cell set between samples\/groups/i)
+      .previousSibling.firstChild;
+    expect(betweenRadioButton).toBeDisabled();
   });
 
-  it('the `versus` option renders correctly when a set is already selected', () => {
-    const store = mockStore(initialState);
+  it('Compute button should be enabled if all the options are chosen', async () => {
+    await renderDiffExprCompute(storeState);
 
-    const component = mount(
-      <Provider store={store}>
-        <DiffExprCompute
-          experimentId='1234'
-          comparisonGroup={{ cellSet: 'sample/sample-a', compareWith: null, basis: null }}
-          comparison='Versus rest'
-          onCompute={jest.fn()}
-        />
-      </Provider>,
-    );
+    // Choose cell set 1
+    const selectCellSet1 = screen.getByRole('combobox', { name: /Compare cell set/i });
+    await act(async () => {
+      fireEvent.change(selectCellSet1, { target: { value: 'Cluster 0' } });
+    });
 
-    // Find the option groups
-    const selectField = component.find(Select).at(2).getElement().props.children;
-    expect(selectField.length).toEqual(3);
+    const cellSet1Option = screen.getByText(/Cluster 0/);
+    await act(async () => {
+      fireEvent.click(cellSet1Option);
+    });
 
-    // The first one should not be rendered.
-    expect(selectField[0]).toEqual(false);
+    // Select the 2nd cell set
+    const selectCellSet2 = screen.getByRole('combobox', { name: /and cell set/i });
+    await act(async () => {
+      fireEvent.change(selectCellSet2, { target: { value: 'All' } });
+    });
 
-    // The second one should be the 'background' option.
-    expect(selectField[1].key).toEqual('background');
+    const cellSet2Option = screen.getByText(/All other cells/);
+    await act(async () => {
+      fireEvent.click(cellSet2Option);
+    });
 
-    // The third one should be the other metadata.
-    const metadata = selectField[2];
+    // With all samples
+    const selectSampleOrGroup = screen.getByRole('combobox', { name: /within sample/i });
+    await act(async () => {
+      fireEvent.change(selectSampleOrGroup, { target: { value: 'WT1' } });
+    });
 
-    // The hierarchy should match.
-    metadata.forEach((rootNode, i) => {
-      expect(rootNode.key === store.getState().cellSets.hierarchy[i]);
-      expect(rootNode.props.label === store.getState().cellSets.properties[rootNode.key].name);
+    const sampleOrGroupOption = screen.getByText(/WT1/);
+    await act(async () => {
+      fireEvent.click(sampleOrGroupOption);
+    });
+
+    // Compute button should be enabled
+    await waitFor(() => {
+      expect(screen.getByText(/Compute/i).closest('button')).not.toBeDisabled();
+    });
+
+    // Run the comparison
+    userEvent.click(screen.getByText(/Compute/i).closest('button'));
+
+    await waitFor(() => {
+      expect(mockOnCompute).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  it('Should show warning if there are not enough cell sets for comparison', async () => {
+    await renderDiffExprCompute(storeState);
+
+    // Select compare between groups
+    userEvent.click(screen.getByText('Compare a selected cell set between samples/groups'));
+
+    // Choose cell set
+    const selectCellSet = screen.getByRole('combobox', { name: /Compare cell set/i });
+    await act(async () => {
+      fireEvent.change(selectCellSet, { target: { value: 'Cluster 0' } });
+    });
+
+    const cellSetOption = screen.getByText(/Cluster 0/);
+    await act(async () => {
+      fireEvent.click(cellSetOption);
+    });
+
+    // Select the 1st group
+    const selectGroup1 = screen.getByRole('combobox', { name: /between sample\/group/i });
+    await act(async () => {
+      fireEvent.change(selectGroup1, { target: { value: 'WT1' } });
+    });
+
+    const group1Option = screen.getByText(/WT1/);
+    await act(async () => {
+      fireEvent.click(group1Option);
+    });
+
+    // Select the 2nd group
+    const selectGroup2 = screen.getByRole('combobox', { name: /and sample\/group/i });
+    await act(async () => {
+      fireEvent.change(selectGroup2, { target: { value: 'Rest of Samples' } });
+    });
+
+    const group2Option = screen.getByText(/Rest of Samples/);
+    await act(async () => {
+      fireEvent.click(group2Option);
+    });
+
+    // There should be a warning
+    await waitFor(() => {
+      expect(screen.getByText(/does not contain enough cells/i)).toBeInTheDocument();
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText(/Compute/i).closest('button')).toBeDisabled();
+    });
+  });
+
+  it('There should be no warning if there are enough cell for comparison', async () => {
+    await renderDiffExprCompute(storeState);
+
+    // Select compare between groups
+    userEvent.click(screen.getByText('Compare a selected cell set between samples/groups'));
+
+    // Choose cell set
+    const selectCellSet = screen.getByRole('combobox', { name: /Compare cell set/i });
+    await act(async () => {
+      fireEvent.change(selectCellSet, { target: { value: 'All' } });
+    });
+
+    const cellSetOption = screen.getByText(/All/);
+    await act(async () => {
+      fireEvent.click(cellSetOption);
+    });
+
+    // Select the 1st group
+    const selectGroup1 = screen.getByRole('combobox', { name: /between sample\/group/i });
+    await act(async () => {
+      fireEvent.change(selectGroup1, { target: { value: 'WT1' } });
+    });
+
+    const group1Option = screen.getByText(/WT1/);
+    await act(async () => {
+      fireEvent.click(group1Option);
+    });
+
+    // Select the 2nd group
+    const selectGroup2 = screen.getByRole('combobox', { name: /and sample\/group/i });
+    await act(async () => {
+      fireEvent.change(selectGroup2, { target: { value: 'Rest of Samples' } });
+    });
+
+    const group2Option = screen.getByText(/Rest of Samples/);
+    await act(async () => {
+      fireEvent.click(group2Option);
+    });
+
+    // There should not be a warning and button should be enabled
+    waitFor(() => {
+      expect(screen.queryByText(/does not contain enough cells/i)).toBeNull();
+      expect(screen.getByText(/Compute/i).closest('button')).not.toBeDisabled();
     });
   });
 });
