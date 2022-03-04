@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import DiffExprCompute from './DiffExprCompute';
-import DiffExprResults from './DiffExprResults';
+import DiffExprCompute from 'components/data-exploration/differential-expression-tool/DiffExprCompute';
+import DiffExprResults from 'components/data-exploration/differential-expression-tool/DiffExprResults';
 
 const DiffExprView = {
-  results: 'results',
-  compute: 'compute',
+  RESULTS: 'results',
+  COMPUTE: 'compute',
 };
 
 const DiffExprManager = (props) => {
@@ -16,14 +16,14 @@ const DiffExprManager = (props) => {
   const [currentView, setCurrentView] = useState(view);
 
   const onCompute = () => {
-    setCurrentView(DiffExprView.results);
+    setCurrentView(DiffExprView.RESULTS);
   };
 
   const onGoBack = () => {
-    setCurrentView(DiffExprView.compute);
+    setCurrentView(DiffExprView.COMPUTE);
   };
 
-  if (currentView === DiffExprView.compute) {
+  if (currentView === DiffExprView.COMPUTE) {
     return (
       <DiffExprCompute
         experimentId={experimentId}
@@ -31,7 +31,7 @@ const DiffExprManager = (props) => {
       />
     );
   }
-  if (currentView === DiffExprView.results) {
+  if (currentView === DiffExprView.RESULTS) {
     return (
       <DiffExprResults
         onGoBack={onGoBack}
@@ -44,7 +44,7 @@ const DiffExprManager = (props) => {
 };
 
 DiffExprManager.defaultProps = {
-  view: DiffExprView.compute,
+  view: DiffExprView.COMPUTE,
 };
 
 DiffExprManager.propTypes = {
