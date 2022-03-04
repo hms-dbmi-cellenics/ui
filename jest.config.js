@@ -3,7 +3,8 @@ module.exports = {
     '<rootDir>/src',
   ],
   collectCoverageFrom: [
-    '**/*.{js, jsx}',
+    '**/*.js',
+    '**/*.jsx',
   ],
   setupFiles: [
     'react-app-polyfill/jsdom',
@@ -18,6 +19,7 @@ module.exports = {
     '<rootDir>/src/**/*.{spec,test}.{js,jsx,ts,tsx}',
   ],
   coveragePathIgnorePatterns: [
+    '__test__/test-utils',
     'redux/.*/index\\.js',
     'endUserMessages\\.js',
     'pipelineStatusValues\\.js',
