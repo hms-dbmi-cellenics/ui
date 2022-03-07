@@ -1,4 +1,5 @@
 import moment from 'moment';
+import _ from 'lodash';
 
 import {
   PROJECTS_UPDATE,
@@ -13,7 +14,7 @@ const updateProject = (
   projectUuid,
   diff,
 ) => async (dispatch, getState) => {
-  const currentProject = getState().projects[projectUuid];
+  const currentProject = _.cloneDeep(getState().projects[projectUuid]);
 
   // eslint-disable-next-line no-param-reassign
   diff.lastModified = moment().toISOString();
@@ -27,7 +28,7 @@ const updateProject = (
       type: PROJECTS_UPDATE,
       payload: {
         projectUuid,
-        diff,
+        project: newProject,
       },
     });
   } catch (e) {
