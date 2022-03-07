@@ -65,14 +65,13 @@ const EditableField = (props) => {
       // Validation func may not return false on invalid
       setIsValid(valid === true);
     }
-
-    setEditedValue(newValue);
   };
 
   const onSubmit = (e) => {
     e.stopPropagation();
     if (!isValid) return null;
-    onAfterSubmit(editedValue);
+
+    onAfterSubmit(e.target.value);
     toggleEditing(e);
   };
 

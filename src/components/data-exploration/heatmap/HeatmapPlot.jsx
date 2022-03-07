@@ -4,9 +4,7 @@ import React, {
 import dynamic from 'next/dynamic';
 import PropTypes from 'prop-types';
 import { useSelector, useDispatch } from 'react-redux';
-import {
-  Empty, Typography, Skeleton,
-} from 'antd';
+import { Empty } from 'antd';
 import _ from 'lodash';
 
 import { getCellSets, getCellSetsHierarchyByKeys } from 'redux/selectors';
@@ -28,7 +26,6 @@ import getContainingCellSetsProperties from 'utils/cellSets/getContainingCellSet
 import useConditionalEffect from 'utils/customHooks/useConditionalEffect';
 
 const COMPONENT_TYPE = 'interactiveHeatmap';
-const { Text } = Typography;
 
 const Heatmap = dynamic(
   () => import('vitessce/dist/umd/production/heatmap.min').then((mod) => mod.Heatmap),
@@ -57,8 +54,6 @@ const HeatmapPlot = (props) => {
 
   const [geneHighlight, setGeneHighlight] = useState(null);
   const [cellHighlight, setCellHighlight] = useState(null);
-
-  const [vitessceData, setVitessceData] = useState(null);
 
   const cellCoordinatesRef = useRef({ x: 200, y: 300 });
 
@@ -170,12 +165,6 @@ const HeatmapPlot = (props) => {
     }
   }, [cellHighlight]);
 
-  useEffect(() => {
-    if (!heatmapData) return;
-
-    setVitessceData(heatmapData);
-  }, [heatmapData]);
-
   if (isHeatmapGenesLoading || cellSetsLoading) {
     return (
       <center>
@@ -184,7 +173,7 @@ const HeatmapPlot = (props) => {
     );
   }
 
-  if (markerGenesLoadingError || expressionDataError || viewError) {
+  if (markerGenesLoadingError || expressionDataError || viewError || !heatmapData) {
     return (
       <PlatformError
         error={expressionDataError}
@@ -206,33 +195,14 @@ const HeatmapPlot = (props) => {
     );
   }
 
-  if (selectedGenes?.length === 0) {
+  if (heatmapData.expressionMatrix.matrix.length === 0) {
     return (
-      <Empty
-        description={(
-          <Text>Add some genes to this heatmap to get started.</Text>
-        )}
-      />
-    );
-  }
-
-  if (cellSetsHierarchy.length === 0) {
-    return (
-      <Empty
-        description={(
-          <Text>Configure your embedding in Data Processing to load this plot.</Text>
-        )}
-      />
-    );
-  }
-
-  if (!heatmapData) {
-    return (
-      <center style={{ marginTop: height / 2 }}>
-        <Skeleton.Image />
+      <center>
+        <Empty description='Unhide some cell sets to show the heatmap' />
       </center>
     );
   }
+
   const setTrackHighlight = (info) => {
     if (!info) {
       setHighlightedTrackData(null);
@@ -267,9 +237,9 @@ const HeatmapPlot = (props) => {
         height={height - heatmapBottomMargin}
         colormap='plasma'
         colormapRange={[0.0, 1.0]}
-        expressionMatrix={vitessceData?.expressionMatrix}
-        cellColors={vitessceData?.metadataTracks.dataPoints}
-        cellColorLabels={vitessceData?.metadataTracks.labels}
+        expressionMatrix={heatmapData.expressionMatrix}
+        cellColors={heatmapData.metadataTracks.dataPoints}
+        cellColorLabels={heatmapData.metadataTracks.labels}
         hideTopLabels
         transpose
         viewState={viewState}
