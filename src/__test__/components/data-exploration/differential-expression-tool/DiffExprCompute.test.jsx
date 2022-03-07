@@ -189,7 +189,7 @@ describe('DiffExprCompute', () => {
     });
   });
 
-  it.only('Should show warning if there are not enough cell sets to show ', async () => {
+  it('Should show warning if there are not enough cell sets to show ', async () => {
     await renderDiffExprCompute(storeState);
 
     // Select compare between groups
