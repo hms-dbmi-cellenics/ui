@@ -285,14 +285,60 @@ const DiffExprCompute = (props) => {
         <Radio
           style={radioStyle}
           value={ComparisonType.WITHIN}>
-          Compare cell sets within a sample/group
+          <Space>
+            Compare cell sets within a sample/group
+            <Tooltip overlay={(
+              <span>
+                This is useful for finding differentially expressed genes when comparing cell sets (e.g. for finding marker genes that distinguish one cluster from another). The calculation uses the presto implementation of the Wilcoxon rank sum test and auROC analysis. For more information see the
+                {' '}
+                <a
+                  href='http://htmlpreview.github.io/?https://github.com/immunogenomics/presto/blob/master/docs/getting-started.html'
+                  target='_blank'
+                  rel='noreferrer'
+                >
+                  presto vignette
+                </a>.
+              </span>
+            )}
+            >
+              <InfoCircleOutlined />
+            </Tooltip>
+          </Space>
         </Radio>
         <Radio
           style={radioStyle}
           value={ComparisonType.BETWEEN}
           disabled={numSamples === 1}
         >
-          Compare a selected cell set between samples/groups
+          <Space>
+            {
+              numSamples === 1 ? (
+                <Tooltip
+                  overlay={(<span>Comparison between samples/groups is not possible with a dataset that contains only 1 sample</span>)}
+                >
+                  Compare a selected cell set between samples/groups
+                </Tooltip>
+              ) : (
+                'Compare a selected cell set between samples/groups'
+              )
+            }
+            <Tooltip overlay={(
+              <span>
+                This is useful for finding differentially expressed genes when comparing two experimental groups or two samples. This analysis uses the voom workflow from the limma R package. For more information see the
+                {' '}
+                <a
+                  href='https://www.bioconductor.org/packages/devel/bioc/vignettes/limma/inst/doc/usersguide.pdf'
+                  target='_blank'
+                  rel='noreferrer'
+                >
+                  limma vignette
+                </a>.
+              </span>
+            )}
+            >
+              <InfoCircleOutlined />
+            </Tooltip>
+          </Space>
         </Radio>
       </Radio.Group>
 
@@ -361,22 +407,6 @@ const DiffExprCompute = (props) => {
           >
             Compute
           </Button>
-          <Tooltip overlay={(
-            <span>
-              Differential expression is calculated using the presto implementation of the Wilcoxon rank sum test and auROC analysis. For more information see the
-              {' '}
-              <a
-                href='http://htmlpreview.github.io/?https://github.com/immunogenomics/presto/blob/master/docs/getting-started.html'
-                target='_blank'
-                rel='noreferrer'
-              >
-                presto vignette
-              </a>.
-            </span>
-          )}
-          >
-            <InfoCircleOutlined />
-          </Tooltip>
         </Space>
       </Space>
     </Form>
