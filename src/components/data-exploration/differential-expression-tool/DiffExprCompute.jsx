@@ -270,11 +270,6 @@ const DiffExprCompute = (props) => {
     );
   };
 
-  const radioStyle = {
-    display: 'block',
-    height: '30px',
-    lineHeight: '30px',
-  };
 
   return (
     <Form size='small' layout='vertical'>
@@ -283,7 +278,6 @@ const DiffExprCompute = (props) => {
         dispatch(setComparisonType(e.target.value));
       }} defaultValue={selectedComparison}>
         <Radio
-          style={radioStyle}
           value={ComparisonType.WITHIN}>
           <Space>
             Compare cell sets within a sample/group
@@ -306,7 +300,6 @@ const DiffExprCompute = (props) => {
           </Space>
         </Radio>
         <Radio
-          style={radioStyle}
           value={ComparisonType.BETWEEN}
           disabled={numSamples === 1}
         >
