@@ -1,10 +1,10 @@
 import {
-  BACKEND_STATUS_LOADED,
+  BACKEND_STATUS_UPDATED,
 } from '../../actionTypes/backendStatus';
 
 const updateBackendStatus = (experimentId, status) => async (dispatch) => {
   dispatch({
-    type: BACKEND_STATUS_LOADED,
+    type: BACKEND_STATUS_UPDATED,
     payload: { experimentId, status },
   });
 };

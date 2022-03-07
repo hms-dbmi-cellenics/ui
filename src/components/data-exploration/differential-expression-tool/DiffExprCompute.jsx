@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import {
   useSelector, useDispatch,
 } from 'react-redux';
 
 import {
-  Button, Form, Select, Radio, Tooltip, Space,
+  Button, Form, Select, Radio, Tooltip, Space, Alert
 } from 'antd';
 
 import { InfoCircleOutlined } from '@ant-design/icons';
@@ -17,8 +17,11 @@ import { composeTree } from 'utils/cellSets';
 
 const { Option, OptGroup } = Select;
 
-const ComparisonType = Object.freeze({ between: 'between', within: 'within' });
-const getCellSetName = (name) => (name?.split('/')[1] || name)
+const ComparisonType = Object.freeze({ BETWEEN: 'between', WITHIN: 'within' });
+const getCellSetKey = (name) => (name?.split('/')[1] || name);
+const getRootKey = (name) => name?.split('/')[0];
+
+const MIN_NUM_CELLS_IN_GROUP = 10;
 
 const DiffExprCompute = (props) => {
   const {
@@ -29,14 +32,10 @@ const DiffExprCompute = (props) => {
   const { properties, hierarchy } = useSelector(getCellSets());
   const [isFormValid, setIsFormValid] = useState(false);
   const [numSamples, setNumSamples] = useState(1);
+  const [sampleKeys, setSampleKeys] = useState([])
   const comparisonGroup = useSelector((state) => state.differentialExpression.comparison.group);
   const selectedComparison = useSelector((state) => state.differentialExpression.comparison.type);
-
-
-  // Metadata marks whether cells belong to the same sample/group
-  // Therefore `between samples/groups` analysis makes no sense if there is no metadata.
-  // In the base state, assume there is no metadata. A check for this is done in a useEffect block below.
-  const [hasMetadata, setHasMetadata] = useState(false);
+  const { basis, cellSet, compareWith } = comparisonGroup?.[selectedComparison] || {};
 
   /**
    * Loads cell set on initial render if it does not already exist in the store.
@@ -48,21 +47,12 @@ const DiffExprCompute = (props) => {
   useEffect(() => {
     if (hierarchy && hierarchy.length === 0) return;
 
-    // Make sure we are not rendering metadata-related options if there is no metadata in the data set.
-    const numMetadata = Object.values(properties).filter((o) => o.type === 'metadataCategorical').length;
-
-    if (!numMetadata) {
-      dispatch(setComparisonType(ComparisonType.within));
-    }
-    setHasMetadata(numMetadata > 0);
-
-
     // If any selected option is deleted, set the option to null
     Object.keys(comparisonGroup).forEach((type) => {
       const deleteKeys = {};
 
       Object.entries(comparisonGroup[type]).forEach(([comparisonKey, selectedCell]) => {
-        selectedCell = getCellSetName(selectedCell)
+        selectedCell = getCellSetKey(selectedCell)
         if (selectedCell && !properties.hasOwnProperty(selectedCell)) deleteKeys[comparisonKey] = null
       });
 
@@ -91,21 +81,94 @@ const DiffExprCompute = (props) => {
       comparisonGroup[selectedComparison]['basis'] = `sample/${samples[0].key}`
     }
 
+    setSampleKeys(samples.map(sample => sample.key));
+
   }, [hierarchy, properties]);
 
+  const cellIdToSampleMap = useMemo(() => {
+    const mapping = [];
+    sampleKeys.forEach((key, idx) => {
+      const cellIds = properties[key].cellIds;
+      cellIds.forEach(cellId => mapping[cellId] = idx);
+    });
+
+    return mapping;
+  }, [numSamples]);
+
+  // Returns true if each of the compared groups is made up of at least
+  // 1 sample with more cells than a given minimum threshold.
+  const canRunDiffExpr = useCallback(() => {
+
+    if (selectedComparison === ComparisonType.WITHIN) return true;
+
+    if (!basis || !cellSet || !compareWith || !cellIdToSampleMap.length > 0) { return false; }
+
+    const basisCellSetKey = getCellSetKey(basis);
+
+    const cellSetKey = getCellSetKey(cellSet);
+    const compareWithKey = getCellSetKey(compareWith);
+
+    let basisCellIds = [];
+    if (basisCellSetKey === 'all') {
+      const allCellIds = sampleKeys.reduce((cumulativeCellIds, key) => {
+        const cellIds = properties[key].cellIds;
+        return cumulativeCellIds.concat(Array.from(cellIds));
+      }, []);
+      basisCellIds = new Set(allCellIds);
+    } else {
+      basisCellIds = properties[basisCellSetKey].cellIds;
+    }
+
+    const cellSetCellIds = Array.from(properties[cellSetKey].cellIds);
+
+    let compareWithCellIds = [];
+    if (['rest', 'background'].includes(compareWithKey)) {
+      const parentKey = getRootKey(cellSet);
+
+      const otherGroupKeys = hierarchy.find(obj => obj.key === parentKey)
+        .children.filter(child => child.key !== cellSetKey);
+
+      compareWithCellIds = otherGroupKeys.reduce((acc, child) => {
+        return acc.concat(Array.from(properties[child.key].cellIds));
+      }, []);
+    } else {
+      compareWithCellIds = Array.from(properties[compareWithKey].cellIds);
+    }
+
+    // Intersect the basis cell set with each group cell set
+    const filteredCellSetCellIds = cellSetCellIds.filter(cellId => basisCellIds.has(cellId));
+    const filteredCompareWithCellIds = compareWithCellIds.filter(cellId => basisCellIds.has(cellId));
+
+    const hasSampleWithEnoughCells = (cellSet) => {
+      // Prepare an array of length sampleIds to hold the number of cells for each sample
+      const numCellsPerSampleInCellSet = new Array(numSamples).fill(0);
+
+      // Count the number of cells in each sample and assign them into numCellsPerSampleInCellSet
+      cellSet
+        .forEach(cellId => {
+          const sampleIdx = cellIdToSampleMap[cellId];
+          numCellsPerSampleInCellSet[sampleIdx] += 1;
+        });
+
+      return numCellsPerSampleInCellSet.find(numCells => numCells > MIN_NUM_CELLS_IN_GROUP)
+    }
+
+    const cellSetHasSampleWithEnoughCells = hasSampleWithEnoughCells(filteredCellSetCellIds)
+    const compareWithHasSampleWithEnoughCells = hasSampleWithEnoughCells(filteredCompareWithCellIds)
+
+    return cellSetHasSampleWithEnoughCells && compareWithHasSampleWithEnoughCells;
+  }, [basis, cellSet, compareWith, numSamples]);
+
   const validateForm = () => {
-
-    if (!comparisonGroup[selectedComparison]?.cellSet) {
+    if (!cellSet || !compareWith || !basis) {
       setIsFormValid(false);
       return;
     }
 
-    if (!comparisonGroup[selectedComparison]?.compareWith) {
-      setIsFormValid(false);
-      return;
-    }
-
-    if (!comparisonGroup[selectedComparison]?.basis) {
+    if (
+      selectedComparison === ComparisonType.BETWEEN
+      && getRootKey(cellSet) !== getRootKey(compareWith)
+    ) {
       setIsFormValid(false);
       return;
     }
@@ -138,7 +201,7 @@ const DiffExprCompute = (props) => {
   const renderClusterSelectorItem = ({
     title, option, filterType,
   }) => {
-    // Dependiung on the cell set type specified, set the default name
+    // Depending on the cell set type specified, set the default name
     const placeholder = filterType === 'metadataCategorical' ? 'sample/group' : 'cell set';
 
     const tree = composeTree(hierarchy, properties, filterType);
@@ -151,16 +214,22 @@ const DiffExprCompute = (props) => {
         children.unshift({ key: `rest`, name: `Rest of ${properties[rootKey].name}` });
       }
 
-      const shouldDisable = (key) => {
+      const shouldDisable = (rootKey, key) => {
         // Should always disable something already selected.
-        return Object.values(comparisonGroup[selectedComparison]).includes(key);
+        const isAlreadySelected = Object.values(comparisonGroup[selectedComparison]).includes(`${rootKey}/${key}`);
+
+        // or a cell set that is not in the same group as selected previously in `cellSet`
+        const parentGroup = getRootKey(comparisonGroup[selectedComparison]?.cellSet);
+        const isNotInTheSameGroup = rootKey !== parentGroup;
+
+        return isAlreadySelected || (option === 'compareWith' && isNotInTheSameGroup);
       }
 
       if (comparisonGroup[selectedComparison]) {
         return children.map(({ key, name }) => {
           const uniqueKey = `${rootKey}/${key}`;
 
-          return <Option key={uniqueKey} disabled={shouldDisable(uniqueKey)}>
+          return <Option key={uniqueKey} disabled={shouldDisable(rootKey, key)}>
             {name}
           </Option>
         });
@@ -215,41 +284,20 @@ const DiffExprCompute = (props) => {
       }} defaultValue={selectedComparison}>
         <Radio
           style={radioStyle}
-          value={ComparisonType.within}>
+          value={ComparisonType.WITHIN}>
           Compare cell sets within a sample/group
         </Radio>
         <Radio
           style={radioStyle}
-          value={ComparisonType.between}
-          disabled={!hasMetadata || numSamples === 1}
+          value={ComparisonType.BETWEEN}
+          disabled={numSamples === 1}
         >
           Compare a selected cell set between samples/groups
         </Radio>
       </Radio.Group>
 
-      {selectedComparison === ComparisonType.between
+      {selectedComparison === ComparisonType.WITHIN
         ? (
-          <>
-            {renderClusterSelectorItem({
-              title: 'Compare cell set:',
-              option: 'basis',
-              filterType: 'cellSets',
-            })}
-
-            {renderClusterSelectorItem({
-              title: 'between sample/group:',
-              option: 'cellSet',
-              filterType: 'metadataCategorical',
-            })}
-
-            {renderClusterSelectorItem({
-              title: 'and sample/group:',
-              option: 'compareWith',
-              filterType: 'metadataCategorical',
-            })}
-          </>
-        )
-        : (
           <>
             {renderClusterSelectorItem({
               title: 'Compare cell set:',
@@ -269,14 +317,46 @@ const DiffExprCompute = (props) => {
               filterType: 'metadataCategorical',
             })}
           </>
+        ) : (
+          <>
+            {renderClusterSelectorItem({
+              title: 'Compare cell set:',
+              option: 'basis',
+              filterType: 'cellSets',
+            })}
+
+            {renderClusterSelectorItem({
+              title: 'between sample/group:',
+              option: 'cellSet',
+              filterType: 'metadataCategorical',
+            })}
+
+            {renderClusterSelectorItem({
+              title: 'and sample/group:',
+              option: 'compareWith',
+              filterType: 'metadataCategorical',
+            })}
+          </>
         )}
-
-      <Form.Item>
+      <Space direction='vertical'>
+        {
+          isFormValid && !canRunDiffExpr() ?
+            <Alert
+              message="Error"
+              description={
+                <>
+                  One or more of the selected samples/groups does not contain enough cells in the selected cell set.
+                  Therefore, the analysis can not be run. Select other cell set(s) or samples/groups to compare.
+                </>
+              }
+              type="error"
+              showIcon
+            /> : <></>
+        }
         <Space direction='horizontal'>
-
           <Button
             size='small'
-            disabled={!isFormValid}
+            disabled={!isFormValid || !canRunDiffExpr()}
             onClick={() => onCompute()}
           >
             Compute
@@ -298,7 +378,7 @@ const DiffExprCompute = (props) => {
             <InfoCircleOutlined />
           </Tooltip>
         </Space>
-      </Form.Item>
+      </Space>
     </Form>
   );
 };

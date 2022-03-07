@@ -27,7 +27,6 @@ const generateSpec = (config, plotData) => {
   }
   return {
     $schema: 'https://vega.github.io/schema/vega/v5.json',
-    description: 'A basic scatter plot example depicting gene expression in the context of UMAP.',
     width: config.dimensions.width,
     height: config.dimensions.height,
     autosize: { type: 'fit', resize: true },
