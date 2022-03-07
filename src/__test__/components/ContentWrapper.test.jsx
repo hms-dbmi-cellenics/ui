@@ -261,4 +261,32 @@ describe('ContentWrapper', () => {
 
     expect(screen.queryByText(/Browser not supported/)).not.toBeInTheDocument();
   });
+
+  it('Shows preload if backend status is still loading', async () => {
+    getBackendStatus.mockImplementation(() => () => ({
+      loading: true,
+      error: false,
+      status: {},
+    }));
+
+    await renderContentWrapper(experimentId, experimentData);
+
+    expect(screen.queryByTestId('preloadContent')).toBeInTheDocument();
+
+    expect(screen.queryByText(/Test/)).not.toBeInTheDocument();
+  });
+
+  it('Shows browser banner if users are not using chrome', async () => {
+    navigator.userAgent = firefoxUA;
+
+    await renderContentWrapper(experimentId, experimentData);
+
+    expect(screen.getByText(/Browser not supported/)).toBeInTheDocument();
+  });
+
+  it('Does not show browser banner if users are not using chrome', async () => {
+    await renderContentWrapper(experimentId, experimentData);
+
+    expect(screen.queryByText(/Browser not supported/)).not.toBeInTheDocument();
+  });
 });

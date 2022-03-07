@@ -23,7 +23,6 @@ import {
 import React, {
   useCallback,
   useEffect,
-  useMemo,
   useState,
 } from 'react';
 import {
@@ -244,10 +243,10 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
           The probability of being a doublet is calculated using ‘scDblFinder’.
           For each sample, the default threshold tries to minimize both the deviation in the
           expected number of doublets and the error of a trained classifier. For more details see
-    {' '}
+          {' '}
           <a href='https://bioconductor.org/packages/devel/bioc/vignettes/scDblFinder/inst/doc/scDblFinder.html#thresholding' rel='noreferrer' target='_blank'>scDblFinder thresholding</a>
-    .
-  </span>,
+          .
+        </span>,
       multiSample: true,
       render: (key) => (
         <SingleComponentMultipleDataContainer
