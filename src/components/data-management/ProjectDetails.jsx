@@ -44,16 +44,13 @@ const ProjectDetails = ({ width, height }) => {
           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
             <Title level={3}>{activeProject.name}</Title>
             <Space>
-
               <Button
                 disabled={activeProject.samples?.length === 0}
                 onClick={() => samplesTableRef.current.createMetadataColumn()}
               >
                 Add metadata
               </Button>
-
               <ProjectMenu />
-
             </Space>
           </div>
           <Text type='secondary'>

@@ -23,7 +23,6 @@ const ShareExperimentModal = (props) => {
     const response = await fetchAPI(`/v1/access/${experimentId}`);
     const responseJson = await response.json();
     const getCurrentUser = await Auth.currentAuthenticatedUser();
-
     setCurrentUser(getCurrentUser.attributes.email);
     setUsersWithAccess(responseJson);
   };
@@ -71,10 +70,8 @@ const ShareExperimentModal = (props) => {
         )));
 
     responses.forEach((response, indx) => {
-      if (response.error) {
-        pushNotificationMessage('error', response.error);
-      } else if (response.message === 'User does not exist.') {
-        pushNotificationMessage('error', `Account with email ${addedUsers[indx]} is not registered.`);
+      if (!response.ok) {
+        pushNotificationMessage('error', response.message);
       } else {
         pushNotificationMessage('success', `${addedUsers[indx]} added to ${experimentName}, they should have been notified.`);
       }
@@ -127,18 +124,18 @@ const ShareExperimentModal = (props) => {
               style={{ width: '100%' }}
               mode='tags'
               placeholder='Input valid email addresses with enter'
-              onChange={(val) => changeSelectedUsers(val)}
+              onChange={changeSelectedUsers}
             />
           </Col>
           <Col span={6}>
             <Select defaultValue='explorer' onChange={(val) => setRole(val)}>
-              <Select.Option value='explorer'> Explorer </Select.Option>
+              <Select.Option key='explorer' value='explorer'> Explorer </Select.Option>
             </Select>
           </Col>
         </Row>
 
         <Row>
-          <Card style={{ width: '100%', height: '25rem', 'overflow-y': 'auto' }}>
+          <Card key='users' style={{ width: '100%', height: '25rem', overflowY: 'auto' }}>
             {
               usersWithAccess.map((user) => (
                 <Row gutter={10}>
