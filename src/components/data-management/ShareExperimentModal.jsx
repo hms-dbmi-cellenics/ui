@@ -101,7 +101,7 @@ const ShareExperimentModal = (props) => {
   return (
     <Modal
       visible
-      title={[<UserAddOutlined />, ' Share with collaborators']}
+      title={[<UserAddOutlined />, 'Share with collaborators']}
       onCancel={onCancel}
       okButtonText='Done'
       footer={(
