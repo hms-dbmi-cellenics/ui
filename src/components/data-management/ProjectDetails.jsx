@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 /* eslint-disable react/jsx-props-no-spreading */
-import React, { useRef, useState } from 'react';
+import React, { useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
 import {
@@ -15,7 +15,6 @@ import { layout } from 'utils/constants';
 import EditableParagraph from 'components/EditableParagraph';
 import SamplesTable from './SamplesTable';
 import ProjectMenu from './ProjectMenu';
-import ShareExperimentModal from './ShareExperimentModal';
 
 const {
   Title, Text,
@@ -26,7 +25,6 @@ const ProjectDetails = ({ width, height }) => {
 
   const { activeProjectUuid } = useSelector((state) => state.projects.meta);
   const activeProject = useSelector((state) => state.projects[activeProjectUuid]);
-  const [shareExperimentModalVisible, setShareExperimentModalVisible] = useState(false);
   const samplesTableRef = useRef();
 
   return (
@@ -46,24 +44,16 @@ const ProjectDetails = ({ width, height }) => {
           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
             <Title level={3}>{activeProject.name}</Title>
             <Space>
-              <Button
-                onClick={() => setShareExperimentModalVisible(!shareExperimentModalVisible)}
-              >
-                Share
-              </Button>
-              {shareExperimentModalVisible && (
-                <ShareExperimentModal
-                  onCancel={() => setShareExperimentModalVisible(false)}
-                  activeProject={activeProject}
-                />
-              )}
+
               <Button
                 disabled={activeProject.samples?.length === 0}
                 onClick={() => samplesTableRef.current.createMetadataColumn()}
               >
                 Add metadata
               </Button>
+
               <ProjectMenu />
+
             </Space>
           </div>
           <Text type='secondary'>

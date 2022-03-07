@@ -104,17 +104,11 @@ const ShareExperimentModal = (props) => {
   return (
     <Modal
       visible
-      title={[<UserAddOutlined />, ' Share with people']}
+      title={[<UserAddOutlined />, ' Share with collaborators']}
       onCancel={onCancel}
       okButtonText='Done'
       footer={(
         <Space direction='horizontal'>
-          <Button
-            shape='round'
-            icon={<MenuOutlined />}
-          >
-            {experimentName}
-          </Button>
           {cancelButton}
           <Button onClick={() => inviteUsers()} type='primary'>{okButtonText}</Button>
         </Space>
@@ -122,7 +116,11 @@ const ShareExperimentModal = (props) => {
       width='600px'
     >
       <Space direction='vertical' style={{ width: '100%' }}>
+        <Text strong>
+          {experimentName}
+        </Text>
         <Row gutter={10} style={{ width: '110%' }}>
+
           <Col span={18}>
             <Select
               value={addedUsers}
@@ -183,10 +181,9 @@ const ShareExperimentModal = (props) => {
           </Card>
           <Text>
             <b>Explorer: </b>
-            the user will be able to use data exploration and plots and tables modules,
-            but will not be able to make any changes to samples or metadata in data management
-            or re-run the data processing pipeline. They will be able to clone
-            the experiment into his own account to get full permissions.
+            the user will be able to use Data Exploration and Plots and Tables modules,
+            but will not be able to make any changes to samples or metadata in Data Management or
+            re-run the pipeline in the Data Processing module.
           </Text>
         </Row>
       </Space>
