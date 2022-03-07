@@ -22,6 +22,15 @@ const getCellSetKey = (name) => (name?.split('/')[1] || name);
 const getRootKey = (name) => name?.split('/')[0];
 
 const MIN_NUM_CELLS_IN_GROUP = 10;
+const MIN_NUM_SAMPLES_SHOW_ERROR = 2;
+const MIN_NUM_SAMPLES_SHOW_WARNING = 3;
+
+const canRunDiffExprResults = {
+  TRUE: 'TRUE',
+  FALSE: 'FALSE',
+  WARNING: 'WARNING',
+  ERROR: 'ERROR'
+}
 
 const DiffExprCompute = (props) => {
   const {
@@ -99,9 +108,9 @@ const DiffExprCompute = (props) => {
   // 1 sample with more cells than a given minimum threshold.
   const canRunDiffExpr = useCallback(() => {
 
-    if (selectedComparison === ComparisonType.WITHIN) return true;
+    if (selectedComparison === ComparisonType.WITHIN) return canRunDiffExprResults.TRUE;
 
-    if (!basis || !cellSet || !compareWith || !cellIdToSampleMap.length > 0) { return false; }
+    if (!basis || !cellSet || !compareWith || !cellIdToSampleMap.length > 0) { return canRunDiffExprResults.FALSE; }
 
     const basisCellSetKey = getCellSetKey(basis);
 
@@ -139,7 +148,7 @@ const DiffExprCompute = (props) => {
     const filteredCellSetCellIds = cellSetCellIds.filter(cellId => basisCellIds.has(cellId));
     const filteredCompareWithCellIds = compareWithCellIds.filter(cellId => basisCellIds.has(cellId));
 
-    const hasSampleWithEnoughCells = (cellSet) => {
+    const numSampleWithEnoughCells = (cellSet) => {
       // Prepare an array of length sampleIds to hold the number of cells for each sample
       const numCellsPerSampleInCellSet = new Array(numSamples).fill(0);
 
@@ -150,13 +159,22 @@ const DiffExprCompute = (props) => {
           numCellsPerSampleInCellSet[sampleIdx] += 1;
         });
 
-      return numCellsPerSampleInCellSet.find(numCells => numCells > MIN_NUM_CELLS_IN_GROUP)
+      return numCellsPerSampleInCellSet.filter(numCells => numCells >= MIN_NUM_CELLS_IN_GROUP).length;
     }
 
-    const cellSetHasSampleWithEnoughCells = hasSampleWithEnoughCells(filteredCellSetCellIds)
-    const compareWithHasSampleWithEnoughCells = hasSampleWithEnoughCells(filteredCompareWithCellIds)
+    const numCellSetSampleWithEnoughCells = numSampleWithEnoughCells(filteredCellSetCellIds)
+    const numCompareWithSampleWithEnoughCells = numSampleWithEnoughCells(filteredCompareWithCellIds)
 
-    return cellSetHasSampleWithEnoughCells && compareWithHasSampleWithEnoughCells;
+
+    if (numCellSetSampleWithEnoughCells === 0 || numCompareWithSampleWithEnoughCells === 0) return canRunDiffExprResults.ERROR;
+
+    const sumComparedSamples = numCellSetSampleWithEnoughCells + numCompareWithSampleWithEnoughCells;
+
+    if (sumComparedSamples < MIN_NUM_SAMPLES_SHOW_WARNING) return canRunDiffExprResults.WARNING;
+    if (sumComparedSamples < MIN_NUM_SAMPLES_SHOW_ERROR) return canRunDiffExprResults.ERROR;
+
+    return canRunDiffExprResults.TRUE;
+
   }, [basis, cellSet, compareWith, numSamples]);
 
   const validateForm = () => {
@@ -167,6 +185,7 @@ const DiffExprCompute = (props) => {
 
     if (
       selectedComparison === ComparisonType.BETWEEN
+      && compareWith !== 'background'
       && getRootKey(cellSet) !== getRootKey(compareWith)
     ) {
       setIsFormValid(false);
@@ -270,25 +289,17 @@ const DiffExprCompute = (props) => {
     );
   };
 
-  const radioStyle = {
-    display: 'block',
-    height: '30px',
-    lineHeight: '30px',
-  };
-
   return (
     <Form size='small' layout='vertical'>
-
-      <Radio.Group onChange={(e) => {
-        dispatch(setComparisonType(e.target.value));
-      }} defaultValue={selectedComparison}>
+      <Radio.Group
+        onChange={(e) => {
+          dispatch(setComparisonType(e.target.value));
+        }} defaultValue={selectedComparison}>
         <Radio
-          style={radioStyle}
           value={ComparisonType.WITHIN}>
           Compare cell sets within a sample/group
         </Radio>
         <Radio
-          style={radioStyle}
           value={ComparisonType.BETWEEN}
           disabled={numSamples === 1}
         >
@@ -340,7 +351,7 @@ const DiffExprCompute = (props) => {
         )}
       <Space direction='vertical'>
         {
-          isFormValid && !canRunDiffExpr() ?
+          isFormValid && canRunDiffExpr() === canRunDiffExprResults.ERROR ?
             <Alert
               message="Error"
               description={
@@ -351,12 +362,31 @@ const DiffExprCompute = (props) => {
               }
               type="error"
               showIcon
-            /> : <></>
+            /> :
+            isFormValid && canRunDiffExpr() === canRunDiffExprResults.WARNING ?
+              <Alert
+                message="Warning"
+                description={
+                  <>
+                    In the selected samples/groups, less than 3 samples contain enough cells to be compared.
+                    The differential expression analysis can be computed, but the adjusted p-value can not be calculated.
+                  </>
+                }
+                type="warning"
+                showIcon
+              />
+              :
+              <></>
         }
         <Space direction='horizontal'>
           <Button
             size='small'
-            disabled={!isFormValid || !canRunDiffExpr()}
+            disabled={!isFormValid ||
+              [
+                canRunDiffExprResults.FALSE,
+                canRunDiffExprResults.ERROR
+              ].includes(canRunDiffExpr())
+            }
             onClick={() => onCompute()}
           >
             Compute
