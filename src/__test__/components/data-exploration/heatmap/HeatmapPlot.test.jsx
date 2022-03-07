@@ -12,6 +12,7 @@ import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 
 import markerGenesData2 from '__test__/data/marker_genes_2.json';
 import markerGenesData5 from '__test__/data/marker_genes_5.json';
+import cellSetsData from '__test__/data/cell_sets.json';
 
 import { makeStore } from 'redux/store';
 
@@ -269,6 +270,29 @@ describe('HeatmapPlot', () => {
     // Keeps all the other cells and genes the same
     expect(vitesscePropsSpy.expressionMatrix.rows).toMatchSnapshot();
     expect(vitesscePropsSpy.expressionMatrix.cols).toMatchSnapshot();
+  });
+
+  it('Shows an empty message when all cell sets are hidden ', async () => {
+    await loadAndRenderDefaultHeatmap(storeState);
+
+    // Renders correctly
+    expect(screen.getByText(/Sup Im a heatmap/i)).toBeInTheDocument();
+
+    // If all cell sets are hidden
+    const louvainClusterKeys = cellSetsData
+      .cellSets.find(({ key: parentKey }) => parentKey === 'louvain')
+      .children.map(({ key: cellSetKey }) => cellSetKey);
+
+    const hideAllCellsPromise = louvainClusterKeys.map(async (cellSetKey) => {
+      storeState.dispatch(setCellSetHiddenStatus(cellSetKey));
+    });
+
+    await act(async () => {
+      await Promise.all(hideAllCellsPromise);
+    });
+
+    // The plots shows an empty message
+    screen.getByText(/Unhide some cell sets to show the heatmap/i);
   });
 
   it('Reacts to cellClass groupby being changed', async () => {
