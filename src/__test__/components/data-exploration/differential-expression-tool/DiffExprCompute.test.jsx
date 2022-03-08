@@ -232,13 +232,11 @@ describe('DiffExprCompute', () => {
 
     // There should be a warning
     await waitFor(() => {
-      expect(screen.getByText(/less than 3 samples contain enough cells to be compared/i)).toBeInTheDocument();
+      expect(screen.getByText(/fewer than 3 samples with the recommended minimum number of cells/i)).toBeInTheDocument();
     });
 
-    const computeButton = screen.queryAllByText(/Compute/i)[1].closest('button');
-
     await waitFor(() => {
-      expect(computeButton).not.toBeDisabled();
+      expect(screen.getByText(/Compute/i).closest('button')).not.toBeDisabled();
     });
   });
 

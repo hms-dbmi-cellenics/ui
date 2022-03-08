@@ -22,14 +22,14 @@ const getCellSetKey = (name) => (name?.split('/')[1] || name);
 const getRootKey = (name) => name?.split('/')[0];
 
 const MIN_NUM_CELLS_IN_GROUP = 10;
-const MIN_NUM_SAMPLES_SHOW_ERROR = 2;
-const MIN_NUM_SAMPLES_SHOW_WARNING = 3;
+const NUM_SAMPLES_SHOW_ERROR = 1;
+const NUM_SAMPLES_SHOW_WARNING = 2;
 
 const canRunDiffExprResults = {
   TRUE: 'TRUE',
   FALSE: 'FALSE',
-  WARNING: 'WARNING',
-  ERROR: 'ERROR'
+  INSUFFICIENT_CELLS_WARNING: 'INSUFFICIENT_CELLS_WARNING',
+  INSUFFCIENT_CELLS_ERROR: 'INSUFFCIENT_CELLS_ERROR'
 }
 
 const DiffExprCompute = (props) => {
@@ -165,13 +165,12 @@ const DiffExprCompute = (props) => {
     const numCellSetSampleWithEnoughCells = numSampleWithEnoughCells(filteredCellSetCellIds)
     const numCompareWithSampleWithEnoughCells = numSampleWithEnoughCells(filteredCompareWithCellIds)
 
-
-    if (numCellSetSampleWithEnoughCells === 0 || numCompareWithSampleWithEnoughCells === 0) return canRunDiffExprResults.ERROR;
+    if (numCellSetSampleWithEnoughCells === 0 || numCompareWithSampleWithEnoughCells === 0) return canRunDiffExprResults.INSUFFCIENT_CELLS_ERROR;
 
     const sumComparedSamples = numCellSetSampleWithEnoughCells + numCompareWithSampleWithEnoughCells;
 
-    if (sumComparedSamples < MIN_NUM_SAMPLES_SHOW_WARNING) return canRunDiffExprResults.WARNING;
-    if (sumComparedSamples < MIN_NUM_SAMPLES_SHOW_ERROR) return canRunDiffExprResults.ERROR;
+    if (sumComparedSamples <= NUM_SAMPLES_SHOW_ERROR) return canRunDiffExprResults.INSUFFCIENT_CELLS_ERROR;
+    if (sumComparedSamples <= NUM_SAMPLES_SHOW_WARNING) return canRunDiffExprResults.INSUFFICIENT_CELLS_WARNING;
 
     return canRunDiffExprResults.TRUE;
 
@@ -289,6 +288,8 @@ const DiffExprCompute = (props) => {
     );
   };
 
+  console.log(canRunDiffExpr());
+
   return (
     <Form size='small' layout='vertical'>
       <Radio.Group
@@ -397,7 +398,7 @@ const DiffExprCompute = (props) => {
         )}
       <Space direction='vertical'>
         {
-          isFormValid && canRunDiffExpr() === canRunDiffExprResults.ERROR ?
+          isFormValid && canRunDiffExpr() === canRunDiffExprResults.INSUFFCIENT_CELLS_ERROR ?
             <Alert
               message="Error"
               description={
@@ -409,13 +410,13 @@ const DiffExprCompute = (props) => {
               type="error"
               showIcon
             /> :
-            isFormValid && canRunDiffExpr() === canRunDiffExprResults.WARNING ?
+            isFormValid && canRunDiffExpr() === canRunDiffExprResults.INSUFFICIENT_CELLS_WARNING ?
               <Alert
                 message="Warning"
                 description={
                   <>
-                    In the selected samples/groups, less than 3 samples contain enough cells to be compared.
-                    The differential expression analysis can be computed, but the adjusted p-value can not be calculated.
+                    For the selected comparison, there are fewer than 3 samples with the recommended minimum number of cells (10).
+                    Only logFC values will be calculated and results should be used for exploratory purposes only.
                   </>
                 }
                 type="warning"
@@ -430,7 +431,7 @@ const DiffExprCompute = (props) => {
             disabled={!isFormValid ||
               [
                 canRunDiffExprResults.FALSE,
-                canRunDiffExprResults.ERROR
+                canRunDiffExprResults.INSUFFCIENT_CELLS_ERROR
               ].includes(canRunDiffExpr())
             }
             onClick={() => onCompute()}

@@ -30,6 +30,10 @@ jest.mock('utils/socketConnection', () => ({
 }));
 
 const cellSetsData = require('__test__/data/cell_sets.json');
+
+const louvainClusters = cellSetsData.cellSets.find(({ key }) => key === 'louvain').children;
+const sampleList = cellSetsData.cellSets.find(({ key }) => key === 'sample').children;
+
 const geneExpressionData = require('__test__/data/gene_expression.json');
 
 const experimentId = '1234';
@@ -182,8 +186,12 @@ describe('CellSetsTool', () => {
     screen.getByText('New Cluster');
     const newClusterKey = getClusterByName('New Cluster');
 
+    const cluster3CellIds = louvainClusters.find(({ name }) => name === 'Cluster 3').cellIds;
+    const cluster4CellIds = louvainClusters.find(({ name }) => name === 'Cluster 4').cellIds;
+    const unionCellIds = [...cluster3CellIds, ...cluster4CellIds];
+
     // test the union cellSet function
-    const expecteddUnion = new Set([12, 13, 14, 15]);
+    const expecteddUnion = new Set(unionCellIds);
 
     // get the cell ids of the new cluster that got created as the union of those clusters
     const actualUnion = storeState.getState().cellSets.properties[newClusterKey].cellIds;
@@ -346,16 +354,19 @@ describe('CellSetsTool', () => {
     screen.getByText('New Cluster');
     const newClusterKey = getClusterByName('New Cluster');
 
+    const cluster0CellIds = louvainClusters.find(({ name }) => name === 'Cluster 0').cellIds;
+    const allCellIds = sampleList.reduce((sumCellIds, { cellIds }) => sumCellIds.concat(cellIds), []);
+
     const actualComplement = storeState.getState().cellSets.properties[newClusterKey].cellIds;
     const expectedComplement = new Set(
-      [7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30],
+      allCellIds.filter((cellId) => !cluster0CellIds.includes(cellId)),
     );
 
     // complement = the whole dataset - first cluster
     expect(actualComplement).toEqual(expectedComplement);
   });
 
-  it('cell set operations take into an account only clusters that are in the current tab', async () => {
+  it('cell set operations take into account only clusters that are in the current tab', async () => {
     await act(async () => {
       render(
         <Provider store={storeState}>
@@ -398,8 +409,10 @@ describe('CellSetsTool', () => {
     screen.getByText('New Cluster');
     const newClusterKey = getClusterByName('New Cluster');
 
+    const WT1CEllIds = sampleList.find(({ name }) => name === 'WT1').cellIds;
+
     // test the union cellSet function. It should not include the cluster 0 cells
-    const expectedUnion = new Set([21, 22, 23, 24, 25, 26, 27, 28, 29, 30]);
+    const expectedUnion = new Set(WT1CEllIds);
 
     // get the cell ids of the new cluster that got created as the union of those clusters
     const actualUnion = storeState.getState().cellSets.properties[newClusterKey].cellIds;
@@ -420,7 +433,9 @@ describe('CellSetsTool', () => {
     const louvain0Cluster = screen.getByText('Cluster 0');
     userEvent.click(louvain0Cluster);
 
-    screen.getByText('6 cells selected');
+    const numCellsCluster0 = louvainClusters.find(({ name }) => name === 'Cluster 0').cellIds.length;
+
+    screen.getByText(`${numCellsCluster0} cells selected`);
 
     // go to the metadata tab
     const metadataTabButton = screen.getByText(/Metadata/i);
@@ -432,7 +447,11 @@ describe('CellSetsTool', () => {
     const wt2Cluster = screen.getByText('WT2');
     userEvent.click(wt2Cluster);
 
-    screen.getByText('20 cells selected');
+    const numCellsWT1 = sampleList.find(({ name }) => name === 'WT1').cellIds.length;
+    const numCellsWT2 = sampleList.find(({ name }) => name === 'WT2').cellIds.length;
+    const numCellsTotal = numCellsWT1 + numCellsWT2;
+
+    screen.getByText(`${numCellsTotal} cells selected`);
   });
 
   it('Scratchpad cluster deletion works ', async () => {
@@ -480,7 +499,7 @@ describe('CellSetsTool', () => {
     const louvain0Cluster = screen.getByText('Cluster 0');
     userEvent.click(louvain0Cluster);
 
-    screen.getByText(/4 cells selected/);
+    screen.getByText('24 cells selected');
   });
 
   it('Displays a cell set hidden message when cluster is hidden', async () => {
