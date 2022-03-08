@@ -132,11 +132,13 @@ describe('DiffExprCompute', () => {
 
     // Get the input radio button element for the selection
     const withinRadioButton = screen.getByText(/Compare cell sets within a sample\/group/i)
-      .previousSibling.firstChild;
+      .closest('label').querySelector("input[type='radio']");
+
     expect(withinRadioButton).toBeEnabled();
 
     const betweenRadioButton = screen.getByText(/Compare a selected cell set between samples\/groups/i)
-      .previousSibling.firstChild;
+      .closest('label').querySelector("input[type='radio']");
+
     expect(betweenRadioButton).toBeDisabled();
   });
 
