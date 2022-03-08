@@ -60,5 +60,14 @@ describe('updateExperiment', () => {
     expect(actions[2].type).toEqual(EXPERIMENTS_SAVED);
 
     expect(actions).toMatchSnapshot();
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      'http://localhost:3000/v1/experiments/experiment-1',
+      expect.objectContaining({
+        method: 'PUT',
+      }),
+    );
+
+    expect(fetchMock.mock.calls[0][1].body).toMatchSnapshot();
   });
 });

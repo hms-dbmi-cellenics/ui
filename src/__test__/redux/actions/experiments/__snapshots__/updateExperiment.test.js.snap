@@ -30,3 +30,5 @@ Array [
   },
 ]
 `;
+
+exports[`updateExperiment Dispatches actions when called 2`] = `"{\\"description\\":\\"Analysis description\\",\\"notifyByEmail\\":true,\\"meta\\":{\\"organism\\":null,\\"type\\":\\"10x\\"},\\"sampleIds\\":[],\\"experimentId\\":\\"experiment-1\\",\\"experimentName\\":\\"updated-experiment\\"}"`;
