@@ -288,8 +288,6 @@ const DiffExprCompute = (props) => {
     );
   };
 
-  console.log(canRunDiffExpr());
-
   return (
     <Form size='small' layout='vertical'>
       <Radio.Group
