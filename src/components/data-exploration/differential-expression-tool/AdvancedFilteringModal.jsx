@@ -31,30 +31,36 @@ const valueRestrictions = {
   p_val_adj: [0, 1],
 };
 
-const presetFilters = {
-  'Up-regulated': {
+const presetFilters = [
+  {
+    label: 'Up-regulated',
     columnName: 'logFC',
     comparison: 'greaterThan',
     value: 0,
-  },
-  'Down-regulated': {
+  }, {
+    label: 'Down-regulated',
     columnName: 'logFC',
     comparison: 'lessThan',
     value: 0,
-  },
-  Significant: {
+  }, {
+    label: 'Significant',
     columnName: 'p_val_adj',
     comparison: 'lessThan',
     value: 0.05,
   },
-};
+];
 
 const AdvancedFilteringModal = (props) => {
   const { onCancel, onLaunch } = props;
   const [form] = Form.useForm();
   const advancedFilters = useSelector((state) => (
     state.differentialExpression.comparison.advancedFilters)) || [];
-  const diffExprLoading = useSelector((state) => state.differentialExpression.properties.loading);
+  const {
+    loading: diffExprLoading,
+    data: diffExprData,
+  } = useSelector((state) => state.differentialExpression.properties);
+
+  const tableColumns = Object.keys(diffExprData[0] || {});
 
   const renderPresetFilters = (add) => (
     <Menu
@@ -62,9 +68,10 @@ const AdvancedFilteringModal = (props) => {
         add(presetFilters[e.key]);
       }}
     >
-      {Object.keys(presetFilters).map((filter) => (
-        <Menu.Item key={filter}>
-          {filter}
+      {presetFilters.filter((option) => tableColumns.includes(option.columnName)).map((filter, index) => (
+        // eslint-disable-next-line react/no-array-index-key
+        <Menu.Item key={index}>
+          {filter.label}
         </Menu.Item>
       ))}
     </Menu>
@@ -107,7 +114,7 @@ const AdvancedFilteringModal = (props) => {
                           placeholder='Select property'
                           style={{ width: 140 }}
                           onChange={() => form.setFieldsValue({})}
-                          options={criteriaOptions}
+                          options={criteriaOptions.filter((option) => tableColumns.includes(option.value))}
                         />
                       </Form.Item>
 
