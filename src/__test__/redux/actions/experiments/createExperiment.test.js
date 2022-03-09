@@ -1,11 +1,11 @@
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
-import {
-  EXPERIMENTS_CREATED,
-} from '../../../../redux/actionTypes/experiments';
-import { createExperiment, saveExperiment } from '../../../../redux/actions/experiments';
-import initialExperimentState from '../../../../redux/reducers/experiments/initialState';
-import initialProjectState, { projectTemplate } from '../../../../redux/reducers/projects/initialState';
+import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
+
+import { EXPERIMENTS_SAVING, EXPERIMENTS_CREATED, EXPERIMENTS_SAVED } from 'redux/actionTypes/experiments';
+import { createExperiment, saveExperiment } from 'redux/actions/experiments';
+import initialExperimentState from 'redux/reducers/experiments/initialState';
+import initialProjectState, { projectTemplate } from 'redux/reducers/projects/initialState';
 
 import '__test__/test-utils/setupTests';
 
@@ -13,6 +13,8 @@ jest.mock('../../../../redux/actions/experiments/saveExperiment');
 saveExperiment.mockImplementation(() => async () => { });
 
 const mockStore = configureStore([thunk]);
+
+enableFetchMocks();
 
 describe('createExperiment', () => {
   const projectUuid = 'project-1';
@@ -31,18 +33,24 @@ describe('createExperiment', () => {
     },
   };
 
+  beforeEach(() => {
+    const response = new Response(JSON.stringify({}));
+
+    fetchMock.resetMocks();
+    fetchMock.doMock();
+    fetchMock.mockResolvedValueOnce(response);
+  });
+
   it('Dispatches action when called', async () => {
     const store = mockStore(mockState);
     await store.dispatch(createExperiment(projectUuid));
 
-    const action = store.getActions();
-    expect(action[0].type).toEqual(EXPERIMENTS_CREATED);
-  });
+    const actions = store.getActions();
 
-  it('Dispatches call to save experiment', async () => {
-    const store = mockStore(mockState);
-    await store.dispatch(createExperiment(projectUuid));
+    expect(actions[0].type).toEqual(EXPERIMENTS_SAVING);
+    expect(actions[1].type).toEqual(EXPERIMENTS_CREATED);
+    expect(actions[2].type).toEqual(EXPERIMENTS_SAVED);
 
-    expect(saveExperiment).toHaveBeenCalled();
+    expect(actions[1].payload).toMatchSnapshot();
   });
 });

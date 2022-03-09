@@ -1,0 +1,20 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`createExperiment Dispatches action when called 1`] = `
+Object {
+  "experiment": Object {
+    "createdDate": "2022-03-09T19:03:18.816Z",
+    "description": "Analysis description",
+    "id": "2e3c28f6644c70df462e79598f7b8299",
+    "lastViewed": null,
+    "meta": Object {
+      "organism": null,
+      "type": "10x",
+    },
+    "name": undefined,
+    "notifyByEmail": true,
+    "projectUuid": "project-1",
+    "sampleIds": Array [],
+  },
+}
+`;
