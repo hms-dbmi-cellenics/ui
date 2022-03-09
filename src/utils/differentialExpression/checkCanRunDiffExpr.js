@@ -25,7 +25,6 @@ const mapCellIdToSample = _.memoize(
 const checkCanRunDiffExpr = (
   properties,
   hierarchy,
-  numSamples,
   sampleKeys,
   comparisonGroup,
   selectedComparison,
@@ -43,7 +42,6 @@ const checkCanRunDiffExpr = (
   ) { return canRunDiffExprResults.FALSE; }
 
   const basisCellSetKey = getCellSetKey(basis);
-
   const cellSetKey = getCellSetKey(cellSet);
   const compareWithKey = getCellSetKey(compareWith);
 
@@ -84,7 +82,7 @@ const checkCanRunDiffExpr = (
 
   const numSampleWithEnoughCells = (filteredCellSet) => {
     // Prepare an array of length sampleIds to hold the number of cells for each sample
-    const numCellsPerSampleInCellSet = new Array(numSamples).fill(0);
+    const numCellsPerSampleInCellSet = new Array(sampleKeys.length).fill(0);
 
     // Count the number of cells in each sample and assign them into numCellsPerSampleInCellSet
     filteredCellSet
