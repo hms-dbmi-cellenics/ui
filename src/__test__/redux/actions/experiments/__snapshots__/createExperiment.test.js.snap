@@ -3,9 +3,9 @@
 exports[`createExperiment Dispatches action when called 1`] = `
 Object {
   "experiment": Object {
-    "createdDate": "2022-03-09T19:03:18.816Z",
+    "createdDate": "2020-01-01T00:00:00.000Z",
     "description": "Analysis description",
-    "id": "2e3c28f6644c70df462e79598f7b8299",
+    "id": "b3f6c0ca86ec045c84f380cd5016972e",
     "lastViewed": null,
     "meta": Object {
       "organism": null,
@@ -18,3 +18,5 @@ Object {
   },
 }
 `;
+
+exports[`createExperiment Dispatches action when called 2`] = `"{\\"description\\":\\"Analysis description\\",\\"createdDate\\":\\"2020-01-01T00:00:00.000Z\\",\\"lastViewed\\":null,\\"notifyByEmail\\":true,\\"meta\\":{\\"organism\\":null,\\"type\\":\\"10x\\"},\\"sampleIds\\":[],\\"experimentId\\":\\"b3f6c0ca86ec045c84f380cd5016972e\\",\\"projectId\\":\\"project-1\\"}"`;

@@ -36,6 +36,9 @@ describe('createExperiment', () => {
     fetchMock.resetMocks();
     fetchMock.doMock();
     fetchMock.mockResolvedValueOnce(response);
+
+    jest.clearAllMocks();
+    jest.useFakeTimers('modern').setSystemTime(new Date('2020-01-01').getTime());
   });
 
   it('Dispatches action when called', async () => {
@@ -49,5 +52,15 @@ describe('createExperiment', () => {
     expect(actions[2].type).toEqual(EXPERIMENTS_SAVED);
 
     expect(actions[1].payload).toMatchSnapshot();
+
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(fetchMock).toHaveBeenCalledWith(
+      'http://localhost:3000/v1/experiments/b3f6c0ca86ec045c84f380cd5016972e',
+      expect.objectContaining({
+        method: 'POST',
+      }),
+    );
+
+    expect(fetchMock.mock.calls[0][1].body).toMatchSnapshot();
   });
 });
