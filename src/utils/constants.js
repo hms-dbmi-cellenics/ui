@@ -33,9 +33,18 @@ const modules = {
   SETTINGS: 'SETTINGS',
 };
 
+const api = {
+  CURRENT_VERSION: 'v1',
+  possibleVersions: {
+    V1: 'v1',
+    V2: 'v2',
+  },
+};
+
 export {
   layout,
   plotNames,
   plotTypes,
   modules,
+  api,
 };
