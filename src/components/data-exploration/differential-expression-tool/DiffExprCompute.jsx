@@ -14,16 +14,13 @@ import { loadCellSets } from 'redux/actions/cellSets';
 import { setComparisonGroup, setComparisonType } from 'redux/actions/differentialExpression';
 import { getCellSets } from 'redux/selectors';
 import { composeTree } from 'utils/cellSets';
+import checkCanRunDiffExpr from 'utils/differentialExpression/checkCanRunDiffExpr';
 
 const { Option, OptGroup } = Select;
 
 const ComparisonType = Object.freeze({ BETWEEN: 'between', WITHIN: 'within' });
 const getCellSetKey = (name) => (name?.split('/')[1] || name);
 const getRootKey = (name) => name?.split('/')[0];
-
-const MIN_NUM_CELLS_IN_GROUP = 10;
-const NUM_SAMPLES_SHOW_ERROR = 1;
-const NUM_SAMPLES_SHOW_WARNING = 2;
 
 const canRunDiffExprResults = {
   TRUE: 'TRUE',
@@ -106,73 +103,22 @@ const DiffExprCompute = (props) => {
 
   // Returns true if each of the compared groups is made up of at least
   // 1 sample with more cells than a given minimum threshold.
+
   const canRunDiffExpr = useCallback(() => {
 
     if (selectedComparison === ComparisonType.WITHIN) return canRunDiffExprResults.TRUE;
-
     if (!basis || !cellSet || !compareWith || !cellIdToSampleMap.length > 0) { return canRunDiffExprResults.FALSE; }
 
-    const basisCellSetKey = getCellSetKey(basis);
-
-    const cellSetKey = getCellSetKey(cellSet);
-    const compareWithKey = getCellSetKey(compareWith);
-
-    let basisCellIds = [];
-    if (basisCellSetKey === 'all') {
-      const allCellIds = sampleKeys.reduce((cumulativeCellIds, key) => {
-        const cellIds = properties[key].cellIds;
-        return cumulativeCellIds.concat(Array.from(cellIds));
-      }, []);
-      basisCellIds = new Set(allCellIds);
-    } else {
-      basisCellIds = properties[basisCellSetKey].cellIds;
-    }
-
-    const cellSetCellIds = Array.from(properties[cellSetKey].cellIds);
-
-    let compareWithCellIds = [];
-    if (['rest', 'background'].includes(compareWithKey)) {
-      const parentKey = getRootKey(cellSet);
-
-      const otherGroupKeys = hierarchy.find(obj => obj.key === parentKey)
-        .children.filter(child => child.key !== cellSetKey);
-
-      compareWithCellIds = otherGroupKeys.reduce((acc, child) => {
-        return acc.concat(Array.from(properties[child.key].cellIds));
-      }, []);
-    } else {
-      compareWithCellIds = Array.from(properties[compareWithKey].cellIds);
-    }
-
-    // Intersect the basis cell set with each group cell set
-    const filteredCellSetCellIds = cellSetCellIds.filter(cellId => basisCellIds.has(cellId));
-    const filteredCompareWithCellIds = compareWithCellIds.filter(cellId => basisCellIds.has(cellId));
-
-    const numSampleWithEnoughCells = (cellSet) => {
-      // Prepare an array of length sampleIds to hold the number of cells for each sample
-      const numCellsPerSampleInCellSet = new Array(numSamples).fill(0);
-
-      // Count the number of cells in each sample and assign them into numCellsPerSampleInCellSet
-      cellSet
-        .forEach(cellId => {
-          const sampleIdx = cellIdToSampleMap[cellId];
-          numCellsPerSampleInCellSet[sampleIdx] += 1;
-        });
-
-      return numCellsPerSampleInCellSet.filter(numCells => numCells >= MIN_NUM_CELLS_IN_GROUP).length;
-    }
-
-    const numCellSetSampleWithEnoughCells = numSampleWithEnoughCells(filteredCellSetCellIds)
-    const numCompareWithSampleWithEnoughCells = numSampleWithEnoughCells(filteredCompareWithCellIds)
-
-    if (numCellSetSampleWithEnoughCells === 0 || numCompareWithSampleWithEnoughCells === 0) return canRunDiffExprResults.INSUFFCIENT_CELLS_ERROR;
-
-    const sumComparedSamples = numCellSetSampleWithEnoughCells + numCompareWithSampleWithEnoughCells;
-
-    if (sumComparedSamples <= NUM_SAMPLES_SHOW_ERROR) return canRunDiffExprResults.INSUFFCIENT_CELLS_ERROR;
-    if (sumComparedSamples <= NUM_SAMPLES_SHOW_WARNING) return canRunDiffExprResults.INSUFFICIENT_CELLS_WARNING;
-
-    return canRunDiffExprResults.TRUE;
+    return checkCanRunDiffExpr(
+      properties,
+      hierarchy,
+      numSamples,
+      sampleKeys,
+      cellIdToSampleMap,
+      comparisonGroup,
+      selectedComparison,
+      canRunDiffExprResults
+    );
 
   }, [basis, cellSet, compareWith, numSamples]);
 
