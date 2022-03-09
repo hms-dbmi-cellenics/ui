@@ -14,20 +14,13 @@ import { loadCellSets } from 'redux/actions/cellSets';
 import { setComparisonGroup, setComparisonType } from 'redux/actions/differentialExpression';
 import { getCellSets } from 'redux/selectors';
 import { composeTree } from 'utils/cellSets';
-import checkCanRunDiffExpr from 'utils/differentialExpression/checkCanRunDiffExpr';
+import checkCanRunDiffExpr, { canRunDiffExprResults } from 'utils/differentialExpression/checkCanRunDiffExpr';
 
 const { Option, OptGroup } = Select;
 
 const ComparisonType = Object.freeze({ BETWEEN: 'between', WITHIN: 'within' });
 const getCellSetKey = (name) => (name?.split('/')[1] || name);
 const getRootKey = (name) => name?.split('/')[0];
-
-const canRunDiffExprResults = {
-  TRUE: 'TRUE',
-  FALSE: 'FALSE',
-  INSUFFICIENT_CELLS_WARNING: 'INSUFFICIENT_CELLS_WARNING',
-  INSUFFCIENT_CELLS_ERROR: 'INSUFFCIENT_CELLS_ERROR'
-}
 
 const DiffExprCompute = (props) => {
   const {
@@ -105,10 +98,6 @@ const DiffExprCompute = (props) => {
   // 1 sample with more cells than a given minimum threshold.
 
   const canRunDiffExpr = useCallback(() => {
-
-    if (selectedComparison === ComparisonType.WITHIN) return canRunDiffExprResults.TRUE;
-    if (!basis || !cellSet || !compareWith || !cellIdToSampleMap.length > 0) { return canRunDiffExprResults.FALSE; }
-
     return checkCanRunDiffExpr(
       properties,
       hierarchy,
@@ -117,9 +106,8 @@ const DiffExprCompute = (props) => {
       cellIdToSampleMap,
       comparisonGroup,
       selectedComparison,
-      canRunDiffExprResults
-    );
-
+      ComparisonType
+    )
   }, [basis, cellSet, compareWith, numSamples]);
 
   const validateForm = () => {

@@ -13,9 +13,17 @@ const checkCanRunDiffExpr = (
   cellIdToSampleMap,
   comparisonGroup,
   selectedComparison,
-  canRunDiffExprResults,
+  ComparisonType,
 ) => {
+  if (selectedComparison === ComparisonType.WITHIN) return canRunDiffExprResults.TRUE;
+
   const { basis, cellSet, compareWith } = comparisonGroup?.[selectedComparison] || {};
+
+  if (!basis
+    || !cellSet
+    || !compareWith
+    || !cellIdToSampleMap.length > 0
+  ) { return canRunDiffExprResults.FALSE; }
 
   const basisCellSetKey = getCellSetKey(basis);
 
@@ -93,4 +101,12 @@ const checkCanRunDiffExpr = (
   return canRunDiffExprResults.TRUE;
 };
 
+const canRunDiffExprResults = {
+  TRUE: 'TRUE',
+  FALSE: 'FALSE',
+  INSUFFICIENT_CELLS_WARNING: 'INSUFFICIENT_CELLS_WARNING',
+  INSUFFCIENT_CELLS_ERROR: 'INSUFFCIENT_CELLS_ERROR',
+};
+
 export default checkCanRunDiffExpr;
+export { canRunDiffExprResults };
