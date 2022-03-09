@@ -7,9 +7,9 @@ import initialSampleState, { sampleTemplate } from '../../../../redux/reducers/s
 import initialProjectState, { projectTemplate } from '../../../../redux/reducers/projects/initialState';
 
 import { saveProject } from '../../../../redux/actions/projects';
-import { SAMPLES_DELETE, SAMPLES_SAVED } from '../../../../redux/actionTypes/samples';
+import { SAMPLES_DELETE, SAMPLES_SAVED, SAMPLES_SAVING } from '../../../../redux/actionTypes/samples';
 import { PROJECTS_UPDATE } from '../../../../redux/actionTypes/projects';
-import { EXPERIMENTS_UPDATED } from '../../../../redux/actionTypes/experiments';
+import { EXPERIMENTS_SAVED, EXPERIMENTS_SAVING, EXPERIMENTS_UPDATED } from '../../../../redux/actionTypes/experiments';
 
 enableFetchMocks();
 
@@ -61,16 +61,24 @@ describe('deleteSample action', () => {
 
     expect(saveProject).toHaveBeenCalled();
 
+    expect(actions[0].type).toEqual(SAMPLES_SAVING);
+
     // Update project
     expect(actions[1].type).toEqual(PROJECTS_UPDATE);
 
     // Delete sample
     expect(actions[2].type).toEqual(SAMPLES_DELETE);
 
-    // Resolve loading state
-    expect(actions[3].type).toEqual(EXPERIMENTS_UPDATED);
+    // Experiments being saved
+    expect(actions[3].type).toEqual(EXPERIMENTS_SAVING);
+
+    // Experiments received an update
+    expect(actions[4].type).toEqual(EXPERIMENTS_UPDATED);
+
+    // Experiment is no longer saving
+    expect(actions[5].type).toEqual(EXPERIMENTS_SAVED);
 
     // Resolve loading state
-    expect(actions[4].type).toEqual(SAMPLES_SAVED);
+    expect(actions[6].type).toEqual(SAMPLES_SAVED);
   });
 });

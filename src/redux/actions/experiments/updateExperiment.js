@@ -52,7 +52,7 @@ const updateExperiment = (
         type: EXPERIMENTS_UPDATED,
         payload: {
           experimentId,
-          experimentDiff,
+          experiment: experimentDiff,
         },
       });
 
