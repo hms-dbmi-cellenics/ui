@@ -70,7 +70,7 @@ const ShareExperimentModal = (props) => {
         )));
 
     responses.forEach((response, indx) => {
-      if (!response?.data?.code === 200) {
+      if (response?.data?.code === 200) {
         pushNotificationMessage('success', `${addedUsers[indx]} added to ${experimentName}, they should have been notified.`);
       } else {
         pushNotificationMessage('error', response.message);
