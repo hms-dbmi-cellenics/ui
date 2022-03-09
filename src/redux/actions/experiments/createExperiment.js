@@ -23,16 +23,15 @@ const createExperiment = (
 ) => async (dispatch, getState) => {
   const createdDate = moment().toISOString();
 
+  const experimentId = hash.MD5(createdDate);
+
   const newExperiment = {
     ...experimentTemplate,
-    id: hash.MD5(createdDate),
+    id: experimentId,
     name: newExperimentName,
     projectUuid,
     createdDate,
   };
-
-  const experimentId = newExperiment.id;
-  const alreadyExists = false;
 
   let url;
   let experimentToSend;
@@ -51,18 +50,18 @@ const createExperiment = (
       const { id, name, description } = newExperiment || getState().experiments[experimentId];
       experimentToSend = { id, name, description };
 
-      dispatch({
-        type: EXPERIMENTS_SAVING,
-      });
-
       url = `/v2/experiments/${experimentId}`;
     }
+
+    dispatch({
+      type: EXPERIMENTS_SAVING,
+    });
 
     try {
       const response = await fetchAPI(
         url,
         {
-          method: alreadyExists ? 'PUT' : 'POST',
+          method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
