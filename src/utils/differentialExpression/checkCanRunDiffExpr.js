@@ -1,3 +1,5 @@
+import _ from 'lodash';
+
 const MIN_NUM_CELLS_IN_GROUP = 10;
 const NUM_SAMPLES_SHOW_ERROR = 1;
 const NUM_SAMPLES_SHOW_WARNING = 2;
@@ -5,12 +7,24 @@ const NUM_SAMPLES_SHOW_WARNING = 2;
 const getCellSetKey = (name) => (name?.split('/')[1] || name);
 const getRootKey = (name) => name?.split('/')[0];
 
+const mapCellIdToSample = _.memoize(
+  (sampleKeys, properties) => {
+    const mapping = [];
+    sampleKeys.forEach((key, idx) => {
+      const { cellIds } = properties[key];
+      cellIds.forEach((cellId) => { mapping[cellId] = idx; });
+    });
+
+    return mapping;
+  },
+  (sampleKeys) => sampleKeys,
+);
+
 const checkCanRunDiffExpr = (
   properties,
   hierarchy,
   numSamples,
   sampleKeys,
-  cellIdToSampleMap,
   comparisonGroup,
   selectedComparison,
   ComparisonType,
@@ -18,6 +32,8 @@ const checkCanRunDiffExpr = (
   if (selectedComparison === ComparisonType.WITHIN) return canRunDiffExprResults.TRUE;
 
   const { basis, cellSet, compareWith } = comparisonGroup?.[selectedComparison] || {};
+
+  const cellIdToSampleMap = mapCellIdToSample(sampleKeys, properties);
 
   if (!basis
     || !cellSet

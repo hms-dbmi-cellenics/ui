@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   useSelector, useDispatch,
 } from 'react-redux';
@@ -84,26 +84,14 @@ const DiffExprCompute = (props) => {
 
   }, [hierarchy, properties]);
 
-  const cellIdToSampleMap = useMemo(() => {
-    const mapping = [];
-    sampleKeys.forEach((key, idx) => {
-      const cellIds = properties[key].cellIds;
-      cellIds.forEach(cellId => mapping[cellId] = idx);
-    });
-
-    return mapping;
-  }, [numSamples]);
-
-  // Returns true if each of the compared groups is made up of at least
-  // 1 sample with more cells than a given minimum threshold.
-
+  // Evaluate if the selected comparisons can be run. Returns results
+  // that can be used to display appropriate warnings and errors if it cannot be run.
   const canRunDiffExpr = useCallback(() => {
     return checkCanRunDiffExpr(
       properties,
       hierarchy,
       numSamples,
       sampleKeys,
-      cellIdToSampleMap,
       comparisonGroup,
       selectedComparison,
       ComparisonType
