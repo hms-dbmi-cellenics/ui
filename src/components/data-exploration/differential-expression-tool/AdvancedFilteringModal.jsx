@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Modal, Form, Button, Space, Select, InputNumber, Dropdown, Menu, Divider, Row,
 } from 'antd';
@@ -52,6 +52,10 @@ const presetFilters = [
 
 const AdvancedFilteringModal = (props) => {
   const { onCancel, onLaunch } = props;
+
+  const [availablePresetFilters, setAvailablePresetFilters] = useState(presetFilters);
+  const [availableCriteriaOptions, setAvailableCriteriaOptions] = useState(criteriaOptions);
+
   const [form] = Form.useForm();
   const advancedFilters = useSelector((state) => (
     state.differentialExpression.comparison.advancedFilters)) || [];
@@ -60,17 +64,33 @@ const AdvancedFilteringModal = (props) => {
     data: diffExprData,
   } = useSelector((state) => state.differentialExpression.properties);
 
-  const tableColumns = Object.keys(diffExprData[0] || {});
+  useEffect(() => {
+    if (!diffExprData[0]) return;
+
+    const availableColumns = Object.keys(diffExprData[0]);
+
+    const filteredPresetFilters = presetFilters
+      .filter((filter) => availableColumns.includes(filter.columnName));
+
+    const filteredCriteriaOptions = criteriaOptions
+      .filter((option) => availableColumns.includes(option.value));
+
+    console.log('*** filteredPresetFilters', filteredPresetFilters);
+    console.log('*** filteredCriteriaOptions', filteredCriteriaOptions);
+
+    setAvailablePresetFilters(filteredPresetFilters);
+    setAvailableCriteriaOptions(filteredCriteriaOptions);
+  }, [diffExprData.length]);
 
   const renderPresetFilters = (add) => (
     <Menu
       onClick={(e) => {
-        add(presetFilters[e.key]);
+        const selectedFilter = availablePresetFilters.find((filter) => filter.label === e.key);
+        add(selectedFilter);
       }}
     >
-      {presetFilters.filter((option) => tableColumns.includes(option.columnName)).map((filter, index) => (
-        // eslint-disable-next-line react/no-array-index-key
-        <Menu.Item key={index}>
+      {availablePresetFilters.map((filter) => (
+        <Menu.Item key={filter.label}>
           {filter.label}
         </Menu.Item>
       ))}
@@ -114,7 +134,7 @@ const AdvancedFilteringModal = (props) => {
                           placeholder='Select property'
                           style={{ width: 140 }}
                           onChange={() => form.setFieldsValue({})}
-                          options={criteriaOptions.filter((option) => tableColumns.includes(option.value))}
+                          options={availableCriteriaOptions}
                         />
                       </Form.Item>
 
