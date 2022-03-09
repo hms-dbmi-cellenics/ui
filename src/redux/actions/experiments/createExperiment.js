@@ -92,7 +92,7 @@ const createExperiment = (
 
     pushNotificationMessage(
       'error',
-      message,
+      endUserMessages.ERROR_SAVING,
     );
   }
 
