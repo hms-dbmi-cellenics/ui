@@ -6,6 +6,25 @@ import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
 import { CloseOutlined, PlusOutlined } from '@ant-design/icons';
 
+const presetFilters = [
+  {
+    label: 'Up-regulated',
+    columnName: 'logFC',
+    comparison: 'greaterThan',
+    value: 0,
+  }, {
+    label: 'Down-regulated',
+    columnName: 'logFC',
+    comparison: 'lessThan',
+    value: 0,
+  }, {
+    label: 'Significant',
+    columnName: 'p_val_adj',
+    comparison: 'lessThan',
+    value: 0.05,
+  },
+];
+
 const criteriaOptions = [
   { value: 'logFC', label: 'logFC' },
   { value: 'p_val_adj', label: 'adj p-value' },
@@ -30,25 +49,6 @@ const valueRestrictions = {
   auc: [0, 1],
   p_val_adj: [0, 1],
 };
-
-const presetFilters = [
-  {
-    label: 'Up-regulated',
-    columnName: 'logFC',
-    comparison: 'greaterThan',
-    value: 0,
-  }, {
-    label: 'Down-regulated',
-    columnName: 'logFC',
-    comparison: 'lessThan',
-    value: 0,
-  }, {
-    label: 'Significant',
-    columnName: 'p_val_adj',
-    comparison: 'lessThan',
-    value: 0.05,
-  },
-];
 
 const AdvancedFilteringModal = (props) => {
   const { onCancel, onLaunch } = props;
