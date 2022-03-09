@@ -145,7 +145,6 @@ jobs:
           # This will take a ref like `refs/heads/master`
           # and turn it into `refs-heads-master`
           REF_ID=$(echo $GITHUB_REF | sed 's/\//-/g')
-          GITHUB_SHA=$(cat $GITHUB_EVENT_PATH | jq -r .merge_commit_sha)
 
           # the final tag is something like:
           # refs-heads-master-a4f8bc313dae
