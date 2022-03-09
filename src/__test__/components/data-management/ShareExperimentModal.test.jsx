@@ -8,7 +8,6 @@ import fake from '__test__/test-utils/constants';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import mockAPI, {
 } from '__test__/test-utils/mockAPI';
-// import '@testing-library/jest-dom';
 
 import ShareExperimentModal from 'components/data-management/ShareExperimentModal';
 
