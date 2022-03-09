@@ -64,10 +64,10 @@ const AdvancedFilteringModal = (props) => {
     data: diffExprData,
   } = useSelector((state) => state.differentialExpression.properties);
 
-  useEffect(() => {
-    if (!diffExprData[0]) return;
+  const availableColumns = Object.keys(diffExprData[0] || {});
 
-    const availableColumns = Object.keys(diffExprData[0]);
+  useEffect(() => {
+    if (!availableColumns.length) return;
 
     const filteredPresetFilters = presetFilters
       .filter((filter) => availableColumns.includes(filter.columnName));
@@ -75,12 +75,9 @@ const AdvancedFilteringModal = (props) => {
     const filteredCriteriaOptions = criteriaOptions
       .filter((option) => availableColumns.includes(option.value));
 
-    console.log('*** filteredPresetFilters', filteredPresetFilters);
-    console.log('*** filteredCriteriaOptions', filteredCriteriaOptions);
-
     setAvailablePresetFilters(filteredPresetFilters);
     setAvailableCriteriaOptions(filteredCriteriaOptions);
-  }, [diffExprData.length]);
+  }, [availableColumns.length]);
 
   const renderPresetFilters = (add) => (
     <Menu
