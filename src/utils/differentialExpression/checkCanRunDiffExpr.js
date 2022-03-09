@@ -22,10 +22,13 @@ const mapCellIdToSample = _.memoize(
   (sampleKeys) => sampleKeys.length,
 );
 
+const getSampleKeys = (hierarchy) => hierarchy?.find(
+  (rootNode) => (rootNode.key === 'sample'),
+)?.children.map((sample) => sample.key);
+
 const checkCanRunDiffExpr = (
   properties,
   hierarchy,
-  sampleKeys,
   comparisonGroup,
   selectedComparison,
 ) => {
@@ -33,6 +36,7 @@ const checkCanRunDiffExpr = (
 
   const { basis, cellSet, compareWith } = comparisonGroup?.[selectedComparison] || {};
 
+  const sampleKeys = getSampleKeys(hierarchy);
   const cellIdToSampleMap = mapCellIdToSample(sampleKeys, properties);
 
   if (!basis

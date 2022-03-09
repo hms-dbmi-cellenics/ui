@@ -30,12 +30,10 @@ const DiffExprCompute = (props) => {
   const dispatch = useDispatch();
   const { properties, hierarchy } = useSelector(getCellSets());
   const [isFormValid, setIsFormValid] = useState(false);
-  const [sampleKeys, setSampleKeys] = useState([])
+  const [numSamples, setNumSamples] = useState(1)
   const comparisonGroup = useSelector((state) => state.differentialExpression.comparison.group);
   const selectedComparison = useSelector((state) => state.differentialExpression.comparison.type);
   const { basis, cellSet, compareWith } = comparisonGroup?.[selectedComparison] || {};
-
-  const numSamples = sampleKeys.length
 
   /**
    * Loads cell set on initial render if it does not already exist in the store.
@@ -75,11 +73,11 @@ const DiffExprCompute = (props) => {
       (rootNode) => (rootNode.key === 'sample'),
     )?.children;
 
+    setNumSamples(samples.length);
+
     if (samples.length === 1) {
       comparisonGroup[selectedComparison]['basis'] = `sample/${samples[0].key}`
     }
-
-    setSampleKeys(samples.map(sample => sample.key));
 
   }, [hierarchy, properties]);
 
@@ -89,7 +87,6 @@ const DiffExprCompute = (props) => {
     return checkCanRunDiffExpr(
       properties,
       hierarchy,
-      sampleKeys,
       comparisonGroup,
       selectedComparison
     )
