@@ -93,8 +93,7 @@ const DiffExprCompute = (props) => {
       numSamples,
       sampleKeys,
       comparisonGroup,
-      selectedComparison,
-      ComparisonType
+      selectedComparison
     )
   }, [basis, cellSet, compareWith, numSamples]);
 
@@ -370,3 +369,4 @@ DiffExprCompute.propTypes = {
 };
 
 export default DiffExprCompute;
+export { ComparisonType }

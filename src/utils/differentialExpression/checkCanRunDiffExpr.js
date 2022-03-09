@@ -1,5 +1,7 @@
 import _ from 'lodash';
 
+import { ComparisonType } from 'components/data-exploration/differential-expression-tool/DiffExprCompute';
+
 const MIN_NUM_CELLS_IN_GROUP = 10;
 const NUM_SAMPLES_SHOW_ERROR = 1;
 const NUM_SAMPLES_SHOW_WARNING = 2;
@@ -27,7 +29,6 @@ const checkCanRunDiffExpr = (
   sampleKeys,
   comparisonGroup,
   selectedComparison,
-  ComparisonType,
 ) => {
   if (selectedComparison === ComparisonType.WITHIN) return canRunDiffExprResults.TRUE;
 
