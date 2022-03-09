@@ -3,14 +3,11 @@ import thunk from 'redux-thunk';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 
 import { EXPERIMENTS_SAVING, EXPERIMENTS_CREATED, EXPERIMENTS_SAVED } from 'redux/actionTypes/experiments';
-import { createExperiment, saveExperiment } from 'redux/actions/experiments';
+import { createExperiment } from 'redux/actions/experiments';
 import initialExperimentState from 'redux/reducers/experiments/initialState';
 import initialProjectState, { projectTemplate } from 'redux/reducers/projects/initialState';
 
 import '__test__/test-utils/setupTests';
-
-jest.mock('../../../../redux/actions/experiments/saveExperiment');
-saveExperiment.mockImplementation(() => async () => { });
 
 const mockStore = configureStore([thunk]);
 
