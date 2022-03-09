@@ -41,10 +41,6 @@ const createExperiment = (
       experimentToSend = newExperiment || getState().experiments[experimentId];
       experimentToSend = experimentConvertedToApiModel(experimentToSend);
 
-      dispatch({
-        type: EXPERIMENTS_SAVING,
-      });
-
       url = `/v1/experiments/${experimentId}`;
     } else if (api.CURRENT_VERSION === api.possibleVersions.V2) {
       const { id, name, description } = newExperiment || getState().experiments[experimentId];
@@ -57,42 +53,19 @@ const createExperiment = (
       type: EXPERIMENTS_SAVING,
     });
 
-    try {
-      const response = await fetchAPI(
-        url,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(experimentToSend),
+    const response = await fetchAPI(
+      url,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
         },
-      );
+        body: JSON.stringify(experimentToSend),
+      },
+    );
 
-      const json = await response.json();
-      throwIfRequestFailed(response, json, endUserMessages.ERROR_SAVING);
-
-      dispatch({
-        type: EXPERIMENTS_SAVED,
-      });
-    } catch (e) {
-      let { message } = e;
-      if (!isServerError(e)) {
-        console.error(`fetch ${url} error ${message}`);
-        message = endUserMessages.CONNECTION_ERROR;
-      }
-      dispatch({
-        type: EXPERIMENTS_ERROR,
-        payload: {
-          error: message,
-        },
-      });
-
-      pushNotificationMessage(
-        'error',
-        message,
-      );
-    }
+    const json = await response.json();
+    throwIfRequestFailed(response, json, endUserMessages.ERROR_SAVING);
 
     dispatch({
       type: EXPERIMENTS_CREATED,
@@ -100,15 +73,27 @@ const createExperiment = (
         experiment: newExperiment,
       },
     });
-  } catch (e) {
-    pushNotificationMessage('error', endUserMessages.ERROR_SAVING);
 
+    dispatch({
+      type: EXPERIMENTS_SAVED,
+    });
+  } catch (e) {
+    let { message } = e;
+    if (!isServerError(e)) {
+      console.error(`fetch ${url} error ${message}`);
+      message = endUserMessages.CONNECTION_ERROR;
+    }
     dispatch({
       type: EXPERIMENTS_ERROR,
       payload: {
-        error: endUserMessages.ERROR_SAVING,
+        error: message,
       },
     });
+
+    pushNotificationMessage(
+      'error',
+      message,
+    );
   }
 
   return Promise.resolve(newExperiment);
