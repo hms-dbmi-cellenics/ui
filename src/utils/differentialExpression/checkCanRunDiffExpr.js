@@ -17,7 +17,7 @@ const mapCellIdToSample = _.memoize(
 
     return mapping;
   },
-  (sampleKeys) => sampleKeys,
+  (sampleKeys) => sampleKeys.length,
 );
 
 const checkCanRunDiffExpr = (
