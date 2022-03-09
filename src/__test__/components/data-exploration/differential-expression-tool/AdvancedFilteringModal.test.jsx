@@ -136,8 +136,6 @@ describe('Advanced filtering modal', () => {
       fireEvent.change(propertyDropdown, { target: { value: 'LogFC' } });
     });
 
-    screen.debug(null, Infinity);
-
     // Get all available options
     const listOptionContainer = screen.getByText('AUC').closest('div[class=rc-virtual-list]');
     const options = listOptionContainer.querySelectorAll('div[class=ant-select-item-option-content]');
