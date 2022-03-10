@@ -19,31 +19,18 @@ describe('filterCells', () => {
     };
   });
 
-  it('generates correct data with all louvain clusters', () => {
-    const result = filterCells(mockCellSetsReduxObject, 'All', 'louvain');
-
-    const expectedCellSetKeys = mockCellSets
-      .find(({ key }) => key === 'louvain').children
-      .map(({ key, name, color }) => ({ key, name, color }));
-
-    // Contains all the louvain cellSets (and in the correct order)
-    expect(result.cellSetLegendsData).toEqual(expectedCellSetKeys);
-
-    // CellIds are filtered fine
-    expect(result).toMatchSnapshot();
-  });
-
   it('generates correct louvain clusters data with one sample in particular', () => {
-    const result = filterCells(mockCellSetsReduxObject, '98c7a0ed-d086-4df8-bf94-a9ee6edb793f', 'louvain');
+    const sampleKey = 'b62028a1-ffa0-4f10-823d-93c9ddb88898';
+    const louvainClustersWithinSample = ['louvain-0', 'louvain-1'];
 
-    const louvainClustersWithinSample = ['louvain-0', 'louvain-1', 'louvain-2'];
+    const result = filterCells(mockCellSetsReduxObject, sampleKey, 'louvain');
 
     const expectedCellSetKeys = mockCellSets
       .find(({ key }) => key === 'louvain').children
       .filter(({ key }) => louvainClustersWithinSample.includes(key))
       .map(({ key, name, color }) => ({ key, name, color }));
 
-    // Contains the 3 expected louvain cellSets
+    // Contains the 2 expected louvain cellSets
     expect(result.cellSetLegendsData).toEqual(expectedCellSetKeys);
 
     // CellIds are filtered fine
