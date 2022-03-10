@@ -95,11 +95,12 @@ const runPipeline = (experimentId) => async (dispatch, getState) => {
       console.error(`fetch ${url} error ${message}`);
       message = endUserMessages.CONNECTION_ERROR;
     }
+
     dispatch({
       type: BACKEND_STATUS_ERROR,
       payload: {
-        error: 'Could not start the pipeline.',
-        errorType: message,
+        experimentId,
+        error: `Could not start the pipeline. ${message}`,
       },
     });
   }
