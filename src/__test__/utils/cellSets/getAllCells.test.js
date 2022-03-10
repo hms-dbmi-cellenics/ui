@@ -25,7 +25,7 @@ describe('Get all cells', () => {
 
     expect(allCellIds[0]).toMatchInlineSnapshot(`
       Object {
-        "cellId": 11,
+        "cellId": 1,
         "cellSetKey": "b62028a1-ffa0-4f10-823d-93c9ddb88898",
       }
     `);

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   useSelector, useDispatch,
 } from 'react-redux';
@@ -14,14 +14,13 @@ import { loadCellSets } from 'redux/actions/cellSets';
 import { setComparisonGroup, setComparisonType } from 'redux/actions/differentialExpression';
 import { getCellSets } from 'redux/selectors';
 import { composeTree } from 'utils/cellSets';
+import checkCanRunDiffExpr, { canRunDiffExprResults } from 'utils/differentialExpression/checkCanRunDiffExpr';
 
 const { Option, OptGroup } = Select;
 
 const ComparisonType = Object.freeze({ BETWEEN: 'between', WITHIN: 'within' });
 const getCellSetKey = (name) => (name?.split('/')[1] || name);
 const getRootKey = (name) => name?.split('/')[0];
-
-const MIN_NUM_CELLS_IN_GROUP = 10;
 
 const DiffExprCompute = (props) => {
   const {
@@ -31,8 +30,7 @@ const DiffExprCompute = (props) => {
   const dispatch = useDispatch();
   const { properties, hierarchy } = useSelector(getCellSets());
   const [isFormValid, setIsFormValid] = useState(false);
-  const [numSamples, setNumSamples] = useState(1);
-  const [sampleKeys, setSampleKeys] = useState([])
+  const [numSamples, setNumSamples] = useState(1)
   const comparisonGroup = useSelector((state) => state.differentialExpression.comparison.group);
   const selectedComparison = useSelector((state) => state.differentialExpression.comparison.type);
   const { basis, cellSet, compareWith } = comparisonGroup?.[selectedComparison] || {};
@@ -75,88 +73,23 @@ const DiffExprCompute = (props) => {
       (rootNode) => (rootNode.key === 'sample'),
     )?.children;
 
-    setNumSamples(samples.length)
+    setNumSamples(samples.length);
 
     if (samples.length === 1) {
       comparisonGroup[selectedComparison]['basis'] = `sample/${samples[0].key}`
     }
 
-    setSampleKeys(samples.map(sample => sample.key));
-
   }, [hierarchy, properties]);
 
-  const cellIdToSampleMap = useMemo(() => {
-    const mapping = [];
-    sampleKeys.forEach((key, idx) => {
-      const cellIds = properties[key].cellIds;
-      cellIds.forEach(cellId => mapping[cellId] = idx);
-    });
-
-    return mapping;
-  }, [numSamples]);
-
-  // Returns true if each of the compared groups is made up of at least
-  // 1 sample with more cells than a given minimum threshold.
+  // Evaluate if the selected comparisons can be run. Returns results
+  // that can be used to display appropriate warnings and errors if it cannot be run.
   const canRunDiffExpr = useCallback(() => {
-
-    if (selectedComparison === ComparisonType.WITHIN) return true;
-
-    if (!basis || !cellSet || !compareWith || !cellIdToSampleMap.length > 0) { return false; }
-
-    const basisCellSetKey = getCellSetKey(basis);
-
-    const cellSetKey = getCellSetKey(cellSet);
-    const compareWithKey = getCellSetKey(compareWith);
-
-    let basisCellIds = [];
-    if (basisCellSetKey === 'all') {
-      const allCellIds = sampleKeys.reduce((cumulativeCellIds, key) => {
-        const cellIds = properties[key].cellIds;
-        return cumulativeCellIds.concat(Array.from(cellIds));
-      }, []);
-      basisCellIds = new Set(allCellIds);
-    } else {
-      basisCellIds = properties[basisCellSetKey].cellIds;
-    }
-
-    const cellSetCellIds = Array.from(properties[cellSetKey].cellIds);
-
-    let compareWithCellIds = [];
-    if (['rest', 'background'].includes(compareWithKey)) {
-      const parentKey = getRootKey(cellSet);
-
-      const otherGroupKeys = hierarchy.find(obj => obj.key === parentKey)
-        .children.filter(child => child.key !== cellSetKey);
-
-      compareWithCellIds = otherGroupKeys.reduce((acc, child) => {
-        return acc.concat(Array.from(properties[child.key].cellIds));
-      }, []);
-    } else {
-      compareWithCellIds = Array.from(properties[compareWithKey].cellIds);
-    }
-
-    // Intersect the basis cell set with each group cell set
-    const filteredCellSetCellIds = cellSetCellIds.filter(cellId => basisCellIds.has(cellId));
-    const filteredCompareWithCellIds = compareWithCellIds.filter(cellId => basisCellIds.has(cellId));
-
-    const hasSampleWithEnoughCells = (cellSet) => {
-      // Prepare an array of length sampleIds to hold the number of cells for each sample
-      const numCellsPerSampleInCellSet = new Array(numSamples).fill(0);
-
-      // Count the number of cells in each sample and assign them into numCellsPerSampleInCellSet
-      cellSet
-        .forEach(cellId => {
-          const sampleIdx = cellIdToSampleMap[cellId];
-          numCellsPerSampleInCellSet[sampleIdx] += 1;
-        });
-
-      return numCellsPerSampleInCellSet.find(numCells => numCells > MIN_NUM_CELLS_IN_GROUP)
-    }
-
-    const cellSetHasSampleWithEnoughCells = hasSampleWithEnoughCells(filteredCellSetCellIds)
-    const compareWithHasSampleWithEnoughCells = hasSampleWithEnoughCells(filteredCompareWithCellIds)
-
-    return cellSetHasSampleWithEnoughCells && compareWithHasSampleWithEnoughCells;
+    return checkCanRunDiffExpr(
+      properties,
+      hierarchy,
+      comparisonGroup,
+      selectedComparison
+    )
   }, [basis, cellSet, compareWith, numSamples]);
 
   const validateForm = () => {
@@ -167,6 +100,7 @@ const DiffExprCompute = (props) => {
 
     if (
       selectedComparison === ComparisonType.BETWEEN
+      && compareWith !== 'background'
       && getRootKey(cellSet) !== getRootKey(compareWith)
     ) {
       setIsFormValid(false);
@@ -270,13 +204,12 @@ const DiffExprCompute = (props) => {
     );
   };
 
-
   return (
     <Form size='small' layout='vertical'>
-
-      <Radio.Group onChange={(e) => {
-        dispatch(setComparisonType(e.target.value));
-      }} defaultValue={selectedComparison}>
+      <Radio.Group
+        onChange={(e) => {
+          dispatch(setComparisonType(e.target.value));
+        }} defaultValue={selectedComparison}>
         <Radio
           value={ComparisonType.WITHIN}>
           <Space>
@@ -379,7 +312,7 @@ const DiffExprCompute = (props) => {
         )}
       <Space direction='vertical'>
         {
-          isFormValid && !canRunDiffExpr() ?
+          isFormValid && canRunDiffExpr() === canRunDiffExprResults.INSUFFCIENT_CELLS_ERROR ?
             <Alert
               message="Error"
               description={
@@ -390,12 +323,31 @@ const DiffExprCompute = (props) => {
               }
               type="error"
               showIcon
-            /> : <></>
+            /> :
+            isFormValid && canRunDiffExpr() === canRunDiffExprResults.INSUFFICIENT_CELLS_WARNING ?
+              <Alert
+                message="Warning"
+                description={
+                  <>
+                    For the selected comparison, there are fewer than 3 samples with the recommended minimum number of cells (10).
+                    Only logFC values will be calculated and results should be used for exploratory purposes only.
+                  </>
+                }
+                type="warning"
+                showIcon
+              />
+              :
+              <></>
         }
         <Space direction='horizontal'>
           <Button
             size='small'
-            disabled={!isFormValid || !canRunDiffExpr()}
+            disabled={!isFormValid ||
+              [
+                canRunDiffExprResults.FALSE,
+                canRunDiffExprResults.INSUFFCIENT_CELLS_ERROR
+              ].includes(canRunDiffExpr())
+            }
             onClick={() => onCompute()}
           >
             Compute
@@ -412,3 +364,4 @@ DiffExprCompute.propTypes = {
 };
 
 export default DiffExprCompute;
+export { ComparisonType }
