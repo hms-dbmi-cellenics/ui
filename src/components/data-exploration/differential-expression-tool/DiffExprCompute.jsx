@@ -49,22 +49,25 @@ const DiffExprCompute = (props) => {
     Object.keys(comparisonGroup).forEach((type) => {
       const deleteKeys = {};
 
-      Object.entries(comparisonGroup[type]).forEach(([comparisonKey, selectedCell]) => {
-        selectedCell = getCellSetKey(selectedCell)
-        if (selectedCell && !properties.hasOwnProperty(selectedCell)) deleteKeys[comparisonKey] = null
+      Object.entries(comparisonGroup[type]).forEach(([comparisonKey, cellSetKey]) => {
+
+        if (!cellSetKey) return;
+
+        const sampleKey = getCellSetKey(cellSetKey);
+
+        if (['all', 'background', 'rest'].includes(sampleKey)) return;
+        if (!properties[sampleKey]) deleteKeys[comparisonKey] = null;
       });
 
-      if (Object.keys(deleteKeys).length) {
+      if (!Object.keys(deleteKeys).length) return;
 
-        dispatch(
-          setComparisonGroup({
-            type,
-            ...comparisonGroup[type],
-            ...deleteKeys,
-          }),
-        );
-      }
-
+      dispatch(
+        setComparisonGroup({
+          type,
+          ...comparisonGroup[type],
+          ...deleteKeys,
+        }),
+      );
     });
 
     // Calculate the number of sampleIds.
@@ -74,12 +77,7 @@ const DiffExprCompute = (props) => {
     )?.children;
 
     setNumSamples(samples.length);
-
-    if (samples.length === 1) {
-      comparisonGroup[selectedComparison]['basis'] = `sample/${samples[0].key}`
-    }
-
-  }, [hierarchy, properties]);
+  }, [properties.length]);
 
   // Evaluate if the selected comparisons can be run. Returns results
   // that can be used to display appropriate warnings and errors if it cannot be run.
