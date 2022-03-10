@@ -1,0 +1,47 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`PostErrorToSlack Posts requests correctly 1`] = `
+Array [
+  "https://slack.com/api/files.upload",
+  Object {
+    "body": FormData {},
+    "method": "POST",
+  },
+]
+`;
+
+exports[`PostErrorToSlack Posts requests correctly 2`] = `"UI Error at 2020-01-01T00:00:00.000Z"`;
+
+exports[`PostErrorToSlack Posts requests correctly 3`] = `
+"
+  ⚠  Uncaught UI Error - ExpID null - 2020-01-01T00:00:00.000Z
+  URL: http://localhost/
+
+  User: John Doe
+  Email: fake@email.com
+  User ID: 5152fake-eb52-474c-user-mocke8c8user
+  Experiment ID: null"
+`;
+
+exports[`PostErrorToSlack Posts requests correctly 4`] = `"error-logs"`;
+
+exports[`PostErrorToSlack Posts requests correctly 5`] = `"UI-error-null-2020-01-01T00:00:00.000Z.log"`;
+
+exports[`PostErrorToSlack Posts requests correctly 6`] = `
+"
+    Uncaught UI Error - Exp ID null - 2020-01-01T00:00:00.000Z
+
+    === DETAILS ===
+    Name: John Doe
+    Email: fake@email.com
+    UserID: 5152fake-eb52-474c-user-mocke8c8user
+    ExperimentID: null
+    URL: http://localhost/
+    Timestamp: 2020-01-01T00:00:00.000Z
+
+    ===== ERROR =====
+    Mock error stack
+
+    ===== COMPONENT STACK =====
+    Mock component stack"
+`;

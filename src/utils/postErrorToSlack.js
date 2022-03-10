@@ -59,13 +59,17 @@ const postError = async (errorLog, context) => {
     formData.append(fieldName, value);
   });
 
-  const res = await fetch('https://slack.com/api/files.upload', {
-    method: 'POST',
-    body: formData,
-  });
+  try {
+    const res = await fetch('https://slack.com/api/files.upload', {
+      method: 'POST',
+      body: formData,
+    });
 
-  if (!res.ok) {
-    throw new Error('Failed sending to slack');
+    if (!res.ok) {
+      console.error('Failed sending error to slack');
+    }
+  } catch (err) {
+    console.error(err);
   }
 };
 
@@ -85,12 +89,7 @@ const postErrorToSlack = async (error, info) => {
   };
 
   const errorLog = buildErrorMessage(error, componentStack, context);
-
-  try {
-    await postError(errorLog, context);
-  } catch (err) {
-    console.error(err);
-  }
+  await postError(errorLog, context);
 };
 
 export default postErrorToSlack;
