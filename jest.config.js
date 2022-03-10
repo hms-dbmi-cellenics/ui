@@ -15,8 +15,8 @@ module.exports = {
     '<rootDir>/src/__test__/test-utils/setupTests.js',
   ],
   testMatch: [
-    '<rootDir>/src/**/__test__/**/*.{js,jsx,ts,tsx}',
-    '<rootDir>/src/**/*.{spec,test}.{js,jsx,ts,tsx}',
+    '<rootDir>/src/**/__test__/**/*.test.js',
+    '<rootDir>/src/**/__test__/**/*.test.jsx',
   ],
   coveragePathIgnorePatterns: [
     '__test__/test-utils',

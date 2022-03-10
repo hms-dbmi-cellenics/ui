@@ -1,31 +1,47 @@
 import React from 'react';
-import { Provider } from 'react-redux';
-import { makeStore } from 'redux/store';
-
+import { act } from 'react-dom/test-utils';
 import '@testing-library/jest-dom';
-
 import {
   render, screen, fireEvent, waitFor,
 } from '@testing-library/react';
+import { Provider } from 'react-redux';
+import { makeStore } from 'redux/store';
+
+import configureMockStore from 'redux-mock-store';
+import thunk from 'redux-thunk';
+import initialState from 'redux/reducers/differentialExpression/initialState';
 
 import AdvancedFilteringModal from 'components/data-exploration/differential-expression-tool/AdvancedFilteringModal';
 
-describe('Advanced filtering modal', () => {
-  const onCancel = jest.fn();
-  const onLaunch = jest.fn();
-  const renderAdvancedFilteringModal = () => {
+const mockStore = configureMockStore([thunk]);
+
+const renderAdvancedFilteringModal = async (store) => {
+  await act(async () => {
     render(
-      <Provider store={makeStore()}>
+      <Provider store={store}>
         <AdvancedFilteringModal
           onCancel={onCancel}
           onLaunch={onLaunch}
         />
       </Provider>,
     );
-  };
+  });
+};
 
-  it('Renders properly', () => {
-    renderAdvancedFilteringModal();
+let storeState = null;
+
+const onCancel = jest.fn();
+const onLaunch = jest.fn();
+
+describe('Advanced filtering modal', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+
+    storeState = makeStore();
+  });
+
+  it('Renders properly', async () => {
+    await renderAdvancedFilteringModal(storeState);
     expect(screen.getByText('Add custom filter')).toBeInTheDocument();
     expect(screen.getByText('Apply filters')).toBeInTheDocument();
     expect(screen.getByText('Add preset filter')).toBeInTheDocument();
@@ -34,8 +50,8 @@ describe('Advanced filtering modal', () => {
     expect(onCancel).toHaveBeenCalled();
   });
 
-  it('Add filter button adds new form items', () => {
-    renderAdvancedFilteringModal();
+  it('Add filter button adds new form items', async () => {
+    await renderAdvancedFilteringModal(storeState);
     const addFilterButton = screen.getByText('Add custom filter');
     addFilterButton.click();
     expect(screen.getAllByRole('combobox').length).toEqual(2);
@@ -45,8 +61,8 @@ describe('Advanced filtering modal', () => {
     expect(screen.getAllByPlaceholderText('Insert value').length).toEqual(2);
   });
 
-  it('Close button removes items from the list', () => {
-    renderAdvancedFilteringModal();
+  it('Close button removes items from the list', async () => {
+    await renderAdvancedFilteringModal(storeState);
 
     // adding 2 custom filters
     const addFilterButton = screen.getByText('Add custom filter');
@@ -63,7 +79,7 @@ describe('Advanced filtering modal', () => {
   });
 
   it('Preset filters button adds a preset filter', async () => {
-    renderAdvancedFilteringModal();
+    await renderAdvancedFilteringModal(storeState);
 
     const presetFiltersButton = screen.getByText('Add preset filter');
     fireEvent.mouseOver(presetFiltersButton);
@@ -76,7 +92,7 @@ describe('Advanced filtering modal', () => {
   });
 
   it('Clicking apply filters triggers onLaunch', async () => {
-    renderAdvancedFilteringModal();
+    await renderAdvancedFilteringModal(storeState);
 
     // adding a filter
     const presetFiltersButton = screen.getByText('Add preset filter');
@@ -93,5 +109,98 @@ describe('Advanced filtering modal', () => {
     applyButton.click();
 
     await waitFor(() => expect(onLaunch).toHaveBeenCalled());
+  });
+
+  it('Should show all preset and filer options by default', async () => {
+    await renderAdvancedFilteringModal(storeState);
+
+    // adding a filter
+    const presetFiltersButton = screen.getByText('Add preset filter');
+    fireEvent.mouseOver(presetFiltersButton);
+
+    await waitFor(() => {
+      expect(screen.getByText('Up-regulated')).toBeInTheDocument();
+      expect(screen.getByText('Down-regulated')).toBeInTheDocument();
+      expect(screen.queryByText('Significant')).toBeInTheDocument();
+    });
+
+    // Add a filter
+    const addFilterButton = screen.getByText('Add custom filter');
+    addFilterButton.click();
+
+    // Open the combobox
+    const propertyDropdown = screen.getAllByRole('combobox')[0];
+    fireEvent.mouseMove(propertyDropdown);
+
+    await act(async () => {
+      fireEvent.change(propertyDropdown, { target: { value: 'LogFC' } });
+    });
+
+    // Get all available options
+    const listOptionContainer = screen.getByText('AUC').closest('div[class=rc-virtual-list]');
+    const options = listOptionContainer.querySelectorAll('div[class=ant-select-item-option-content]');
+
+    const expectedFilterOptions = ['logFC', 'adj p-value', 'Pct1', 'Pct2', 'AUC'];
+
+    expect(options.length).toEqual(expectedFilterOptions.length);
+    options.forEach((el) => {
+      expect(expectedFilterOptions).toContain(el.textContent);
+    });
+  });
+
+  it('Filters are shown according to the available columns in DE table', async () => {
+    // This option appears if there is not more than 2 samples in a between comparison
+    const limitedOptionState = {
+      differentialExpression: {
+        ...initialState,
+        properties: {
+          ...initialState.properties,
+          data: [
+            {
+              logFC: '0.0',
+            },
+          ],
+        },
+      },
+    };
+
+    const limitedOptionStore = mockStore(limitedOptionState);
+
+    await renderAdvancedFilteringModal(limitedOptionStore);
+
+    // adding a filter
+    const presetFiltersButton = screen.getByText('Add preset filter');
+    fireEvent.mouseOver(presetFiltersButton);
+
+    // The "Significant" preset option should not be there because it needs p_val_adj
+    await waitFor(() => {
+      expect(screen.getByText('Up-regulated')).toBeInTheDocument();
+      expect(screen.getByText('Down-regulated')).toBeInTheDocument();
+      expect(screen.queryByText('Significant')).toBeNull();
+    });
+
+    // Add a filter
+    const addFilterButton = screen.getByText('Add custom filter');
+    addFilterButton.click();
+
+    // Open the combobox
+    const propertyDropdown = screen.getAllByRole('combobox')[0];
+    fireEvent.mouseMove(propertyDropdown);
+
+    await act(async () => {
+      fireEvent.change(propertyDropdown, { target: { value: 'LogFC' } });
+    });
+
+    // Get all available options
+    const listOptionContainer = screen.queryAllByText('logFC')[1].closest('div[class=rc-virtual-list]');
+    const options = listOptionContainer.querySelectorAll('div[class=ant-select-item-option-content]');
+
+    const expectedFilterOptions = ['logFC'];
+
+    // Only logFC should be available
+    expect(options.length).toEqual(expectedFilterOptions.length);
+    options.forEach((el) => {
+      expect(expectedFilterOptions).toContain(el.textContent);
+    });
   });
 });

@@ -1,10 +1,29 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Modal, Form, Button, Space, Select, InputNumber, Dropdown, Menu, Divider, Row,
 } from 'antd';
 import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
 import { CloseOutlined, PlusOutlined } from '@ant-design/icons';
+
+const presetFilters = [
+  {
+    label: 'Up-regulated',
+    columnName: 'logFC',
+    comparison: 'greaterThan',
+    value: 0,
+  }, {
+    label: 'Down-regulated',
+    columnName: 'logFC',
+    comparison: 'lessThan',
+    value: 0,
+  }, {
+    label: 'Significant',
+    columnName: 'p_val_adj',
+    comparison: 'lessThan',
+    value: 0.05,
+  },
+];
 
 const criteriaOptions = [
   { value: 'logFC', label: 'logFC' },
@@ -31,40 +50,45 @@ const valueRestrictions = {
   p_val_adj: [0, 1],
 };
 
-const presetFilters = {
-  'Up-regulated': {
-    columnName: 'logFC',
-    comparison: 'greaterThan',
-    value: 0,
-  },
-  'Down-regulated': {
-    columnName: 'logFC',
-    comparison: 'lessThan',
-    value: 0,
-  },
-  Significant: {
-    columnName: 'p_val_adj',
-    comparison: 'lessThan',
-    value: 0.05,
-  },
-};
-
 const AdvancedFilteringModal = (props) => {
   const { onCancel, onLaunch } = props;
+
+  const [availablePresetFilters, setAvailablePresetFilters] = useState(presetFilters);
+  const [availableCriteriaOptions, setAvailableCriteriaOptions] = useState(criteriaOptions);
+
   const [form] = Form.useForm();
   const advancedFilters = useSelector((state) => (
     state.differentialExpression.comparison.advancedFilters)) || [];
-  const diffExprLoading = useSelector((state) => state.differentialExpression.properties.loading);
+  const {
+    loading: diffExprLoading,
+    data: diffExprData,
+  } = useSelector((state) => state.differentialExpression.properties);
+
+  const availableColumns = Object.keys(diffExprData[0] || {});
+
+  useEffect(() => {
+    if (!availableColumns.length) return;
+
+    const filteredPresetFilters = presetFilters
+      .filter((filter) => availableColumns.includes(filter.columnName));
+
+    const filteredCriteriaOptions = criteriaOptions
+      .filter((option) => availableColumns.includes(option.value));
+
+    setAvailablePresetFilters(filteredPresetFilters);
+    setAvailableCriteriaOptions(filteredCriteriaOptions);
+  }, [availableColumns.length]);
 
   const renderPresetFilters = (add) => (
     <Menu
       onClick={(e) => {
-        add(presetFilters[e.key]);
+        const selectedFilter = availablePresetFilters.find((filter) => filter.label === e.key);
+        add(selectedFilter);
       }}
     >
-      {Object.keys(presetFilters).map((filter) => (
-        <Menu.Item key={filter}>
-          {filter}
+      {availablePresetFilters.map((filter) => (
+        <Menu.Item key={filter.label}>
+          {filter.label}
         </Menu.Item>
       ))}
     </Menu>
@@ -107,7 +131,7 @@ const AdvancedFilteringModal = (props) => {
                           placeholder='Select property'
                           style={{ width: 140 }}
                           onChange={() => form.setFieldsValue({})}
-                          options={criteriaOptions}
+                          options={availableCriteriaOptions}
                         />
                       </Form.Item>
 
