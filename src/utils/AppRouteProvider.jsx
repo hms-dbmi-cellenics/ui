@@ -30,6 +30,7 @@ const PATH_STUBS = {
   [modules.DATA_EXPLORATION]: '/data-exploration',
   [modules.PLOTS_AND_TABLES]: '/plots-and-tables',
   [modules.SETTINGS]: '/settings',
+  [modules.DEFAULT]: '/',
 };
 
 const PATHS = {
