@@ -2,7 +2,7 @@ import Auth from '@aws-amplify/auth';
 import { getLoggerBotToken } from 'utils/crypt';
 
 const extractExperimentId = (url) => {
-  const match = url.match(/experiments\/([^\/]+)/i);
+  const match = url.match(/experiments\/([^/]+)/i);
   return match ? match[1] : null;
 };
 
@@ -36,7 +36,7 @@ const postError = async (errorLog, context) => {
   } = context;
 
   const message = `
-  \u2757\u2757\u2757 Uncaught UI Error - ExpID ${experimentId} - ${timestamp} \u26A0
+  \u26A0  Uncaught UI Error - ExpID ${experimentId} - ${timestamp}
   URL: ${url}
 
   User: ${user.attributes.name}
