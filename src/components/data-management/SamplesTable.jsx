@@ -158,7 +158,7 @@ const SamplesTable = forwardRef((props, ref) => {
     const newMetadataColumn = createInitializedMetadataColumn(name);
 
     setTableColumns([...tableColumns, newMetadataColumn]);
-    dispatch(createMetadataTrack(name, activeProjectUuid));
+    dispatch(createMetadataTrack(name, activeProjectUuid)).catch((err) => console.log('errr', err));
   };
 
   useImperativeHandle(ref, () => ({

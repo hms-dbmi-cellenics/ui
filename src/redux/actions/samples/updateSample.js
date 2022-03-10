@@ -23,15 +23,14 @@ const updateSample = (
   const newSample = mergeObjectWithArrays(sample, diff);
 
   try {
-    dispatch(saveSamples(sample.projectUuid, newSample));
-
-    dispatch({
-      type: SAMPLES_UPDATE,
-      payload: {
-        sampleUuid,
-        sample: diff,
-      },
-    });
+    dispatch(saveSamples(sample.projectUuid, newSample))
+      .then(() => dispatch({
+        type: SAMPLES_UPDATE,
+        payload: {
+          sampleUuid,
+          sample: diff,
+        },
+      }));
   } catch (e) {
     pushNotificationMessage('error', endUserMessages.ERROR_SAVING);
   }

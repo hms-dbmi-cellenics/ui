@@ -34,11 +34,11 @@ const ShareExperimentModal = (props) => {
   const changeSelectedUsers = (selectedUsers) => {
     const newUser = selectedUsers[selectedUsers.length - 1];
     // check if the entry is in a valid email address format
-    const invalidEmail = newUser && !newUser?.toLowerCase()
+    const isEmailInvalid = newUser && !newUser?.toLowerCase()
       .match(
         /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
       );
-    if (!invalidEmail) {
+    if (!isEmailInvalid) {
       setAddedUsers(selectedUsers);
     }
   };
@@ -71,7 +71,7 @@ const ShareExperimentModal = (props) => {
 
     responses.forEach((response, indx) => {
       if (response?.data?.code === 200) {
-        pushNotificationMessage('success', `${addedUsers[indx]} added to ${experimentName}, they should have been notified.`);
+        pushNotificationMessage('success', `User ${addedUsers[indx]} has been successfully invited to view ${experimentName}.`);
       } else {
         pushNotificationMessage('error', response.message);
       }
@@ -91,7 +91,7 @@ const ShareExperimentModal = (props) => {
     });
 
     if (!response.ok) {
-      pushNotificationMessage('error', 'Error revoking access. You may not have permissions to do this.');
+      pushNotificationMessage('error', 'Error removing user. You may not have permissions to remove users.');
     } else {
       pushNotificationMessage('success', `${userEmail} removed from ${experimentName}.`);
     }
@@ -123,7 +123,7 @@ const ShareExperimentModal = (props) => {
               value={addedUsers}
               style={{ width: '100%' }}
               mode='tags'
-              placeholder='Input valid email addresses with enter'
+              placeholder='Separate multiple email addressed with enter'
               onChange={changeSelectedUsers}
             />
           </Col>

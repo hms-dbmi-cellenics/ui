@@ -23,6 +23,7 @@ jest.mock('@aws-amplify/auth', () => ({
 
 describe('Share expeirment modal', () => {
   const onCancel = jest.fn();
+  enableFetchMocks();
 
   const customAPIResponse = {
     [`/access/${fake.EXPERIMENT_ID}`]: () => Promise.resolve(new Response(JSON.stringify([{
@@ -39,7 +40,6 @@ describe('Share expeirment modal', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    enableFetchMocks();
     fetchMock.resetMocks();
     fetchMock.doMock();
     fetchMock.mockIf(/.*/, mockAPI(customAPIResponse));
@@ -62,7 +62,7 @@ describe('Share expeirment modal', () => {
     await renderShareExperimentModal();
     expect(screen.getByText('Share with collaborators')).toBeInTheDocument();
     expect(screen.getByText(fake.PROJECT_NAME)).toBeInTheDocument();
-    expect(screen.getByText('Input valid email addresses with enter')).toBeInTheDocument();
+    expect(screen.getByText('Separate multiple email addressed with enter')).toBeInTheDocument();
     expect(screen.getAllByRole('combobox').length).toEqual(2);
     expect(screen.getByText('bob@bob.com')).toBeInTheDocument();
     expect(screen.getByText('Done')).toBeInTheDocument();
@@ -81,8 +81,8 @@ describe('Share expeirment modal', () => {
 
     await waitFor(() => expect(screen.getByText('Add')).toBeInTheDocument());
     const inviteButton = screen.getByText('Add');
-    act(() => fireEvent.click(inviteButton));
-    await waitFor(() => expect(fetchMock.mock.calls.length).toEqual(2));
+    await act(() => fireEvent.click(inviteButton));
+    expect(fetchMock.mock.calls.length).toEqual(2);
     expect(fetchMock.mock.calls[1]).toMatchSnapshot();
   });
 
@@ -90,7 +90,7 @@ describe('Share expeirment modal', () => {
     await renderShareExperimentModal();
     const revokeButton = screen.getAllByText('Revoke');
     expect(screen.getByText('bob@bob.com')).toBeInTheDocument();
-    act(() => userEvent.click(revokeButton[0]));
+    await act(() => userEvent.click(revokeButton[0]));
     await waitFor(() => expect(onCancel).toHaveBeenCalled());
   });
 });

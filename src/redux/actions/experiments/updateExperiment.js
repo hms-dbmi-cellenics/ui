@@ -6,9 +6,9 @@ import {
 } from 'redux/actionTypes/experiments';
 import endUserMessages from 'utils/endUserMessages';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
-import { isServerError, throwIfRequestFailed } from '../../../utils/fetchErrors';
+import { isServerError, throwIfRequestFailed } from 'utils/fetchErrors';
 
-const convertedToApiModel = (experiment) => {
+const convertToApiModel = (experiment) => {
   const {
     id = null, name = null, projectUuid = null, ...restOfExperiment
   } = experiment;
@@ -41,7 +41,7 @@ const updateExperiment = (
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify(convertedToApiModel(experimentDiff)),
+          body: JSON.stringify(convertToApiModel(experimentDiff)),
         },
       );
 

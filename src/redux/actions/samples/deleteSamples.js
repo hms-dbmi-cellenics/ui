@@ -5,18 +5,18 @@ import {
   SAMPLES_ERROR,
   SAMPLES_SAVING,
   SAMPLES_SAVED,
-} from '../../actionTypes/samples';
+} from 'redux/actionTypes/samples';
 
 import {
   PROJECTS_UPDATE,
-} from '../../actionTypes/projects';
+} from 'redux/actionTypes/projects';
 
-import saveProject from '../projects/saveProject';
+import saveProject from 'redux/actions/projects/saveProject';
 
-import endUserMessages from '../../../utils/endUserMessages';
-import pushNotificationMessage from '../../../utils/pushNotificationMessage';
-import fetchAPI from '../../../utils/fetchAPI';
-import { updateExperiment } from '../experiments';
+import endUserMessages from 'utils/endUserMessages';
+import pushNotificationMessage from 'utils/pushNotificationMessage';
+import fetchAPI from 'utils/fetchAPI';
+import { updateExperiment } from 'redux/actions/experiments';
 
 const sendDeleteSamplesRequest = async (projectUuid, experimentId, sampleUuids) => {
   const response = await fetchAPI(
@@ -91,6 +91,7 @@ const deleteSamples = (
         // This is set right now as there is only one experiment per project
         // Should be changed when we support multiple experiments per project
         const experimentId = projects[projectUuid].experiments[0];
+        await sendDeleteSamplesRequest(projectUuid, experimentId, sampleUuids);
 
         dispatch(saveProject(projectUuid, newProject, false));
 
@@ -110,8 +111,6 @@ const deleteSamples = (
         });
 
         dispatch(updateExperiment(experimentId, { sampleIds: newSamples }));
-
-        await sendDeleteSamplesRequest(projectUuid, experimentId, sampleUuids);
       },
     );
 

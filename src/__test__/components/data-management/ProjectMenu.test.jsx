@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  screen, render, waitFor,
+  screen, render,
 } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Provider } from 'react-redux';
@@ -48,16 +48,21 @@ const defaultAPIResponse = generateDefaultMockAPIResponses(
   projectWithSamplesId,
 );
 const responses = _.merge(defaultAPIResponse, {
-  [`/v1/access/${fake.EXPERIMENT_ID}-1`]: () => Promise.resolve(new Response(JSON.stringify([{
-    name: 'Bob',
-    email: 'bob@bob.com',
-    role: 'explorer',
-  },
-  {
-    name: 'Mocked User',
-    email: 'mock@user.name',
-    role: 'owner',
-  }]))),
+  [`/v1/access/${fake.EXPERIMENT_ID}-1`]: () => (
+    Promise.resolve(
+      new Response(JSON.stringify(
+        [{
+          name: 'Bob',
+          email: 'bob@bob.com',
+          role: 'explorer',
+        },
+        {
+          name: 'Mocked User',
+          email: 'mock@user.name',
+          role: 'owner',
+        }],
+      )),
+    )),
 });
 let storeState = null;
 
@@ -115,7 +120,7 @@ describe('ProjectMenu', () => {
       userEvent.click(addSamplesButton);
     });
 
-    await waitFor(() => expect(screen.getByText('Upload')).toBeInTheDocument());
+    expect(screen.getByText('Upload')).toBeInTheDocument();
   });
 
   it('Clicking on Share button opens share experiment modal', async () => {
@@ -133,13 +138,13 @@ describe('ProjectMenu', () => {
       userEvent.click(shareButton);
     });
 
-    await waitFor(() => expect(screen.getByText('Share with collaborators')).toBeInTheDocument());
+    expect(screen.getByText('Share with collaborators')).toBeInTheDocument();
 
     // closing works
     const closeButton = screen.getByLabelText('Close').closest('button');
     await act(async () => {
       userEvent.click(closeButton);
     });
-    await waitFor(() => expect(screen.queryByText('Share with collaborators')).not.toBeInTheDocument());
+    expect(screen.queryByText('Share with collaborators')).not.toBeInTheDocument();
   });
 });

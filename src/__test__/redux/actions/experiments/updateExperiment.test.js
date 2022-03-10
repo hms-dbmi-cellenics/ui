@@ -6,9 +6,9 @@ import {
   EXPERIMENTS_SAVED,
   EXPERIMENTS_SAVING,
   EXPERIMENTS_UPDATED,
-} from '../../../../redux/actionTypes/experiments';
-import { updateExperiment } from '../../../../redux/actions/experiments';
-import initialExperimentState, { experimentTemplate } from '../../../../redux/reducers/experiments/initialState';
+} from 'redux/actionTypes/experiments';
+import { updateExperiment } from 'redux/actions/experiments';
+import initialExperimentState, { experimentTemplate } from 'redux/reducers/experiments/initialState';
 
 import '__test__/test-utils/setupTests';
 
