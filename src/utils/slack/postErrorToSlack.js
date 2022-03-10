@@ -58,41 +58,51 @@ const getUserContext = async () => {
 
 const buildErrorMessage = (error, info) => [
   {
-    type: 'mrkdwn',
-    text: '*Error:*',
+    type: 'section',
+    text: {
+      type: 'mrkdwn',
+      text: '*Unhandled error occured:*',
+    },
   },
   {
-    type: 'mrkdwn',
-    text: error.message,
+    type: 'section',
+    text: {
+      type: 'mrkdwn',
+      text: '*Unhandled UI error occured:*',
+    },
   },
   {
-    type: 'mrkdwn',
-    text: `\`\`\`${error.stack}\`\`\``,
+    type: 'section',
+    text: {
+      type: 'mrkdwn',
+      text: `\`\`\`${error.stack}\`\`\``,
+    },
   },
   {
-    type: 'mrkdwn',
-    text: '*the above error occured in: *',
+    type: 'section',
+    text: {
+      type: 'mrkdwn',
+      text: '*the above error occured in: *',
+    },
   },
   {
-    type: 'mrkdwn',
-    text: `\`\`\`${info.ComponentStack}\`\`\``,
+    type: 'section',
+    text: {
+      type: 'mrkdwn',
+      text: `\`\`\`${info.componentStack}\`\`\``,
+    },
   },
 ];
 
 const postErrorToSlack = async (error, info) => {
   const pageContext = getPageContext();
   const userContext = await getUserContext();
-  const errorMessage = buildErrorMessage(error, info);
+
+  const errorMessages = buildErrorMessage(error, info);
 
   const messageData = {
     blocks: [
-      {
-        type: 'section',
-        text: {
-          type: 'plain_text',
-          text: errorMessage,
-        },
-      },
+      ...errorMessages,
       {
         type: 'context',
         elements: [

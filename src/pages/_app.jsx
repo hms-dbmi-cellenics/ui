@@ -131,6 +131,7 @@ const WrappedApp = ({ Component, pageProps }) => {
       <ErrorBoundary
         FallbackComponent={Error}
         onError={(error, info) => {
+          if (process.env.NODE_ENV !== 'production') return;
           postErrorToSlack(error, info);
         }}
       >
