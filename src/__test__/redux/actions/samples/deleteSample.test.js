@@ -9,7 +9,7 @@ import initialProjectState, { projectTemplate } from '../../../../redux/reducers
 import { saveProject } from '../../../../redux/actions/projects';
 import { SAMPLES_DELETE, SAMPLES_SAVED, SAMPLES_SAVING } from '../../../../redux/actionTypes/samples';
 import { PROJECTS_UPDATE } from '../../../../redux/actionTypes/projects';
-import { EXPERIMENTS_SAVED, EXPERIMENTS_SAVING, EXPERIMENTS_UPDATED } from '../../../../redux/actionTypes/experiments';
+import { EXPERIMENTS_SAVING } from '../../../../redux/actionTypes/experiments';
 
 enableFetchMocks();
 
@@ -72,13 +72,7 @@ describe('deleteSample action', () => {
     // Experiments being saved
     expect(actions[3].type).toEqual(EXPERIMENTS_SAVING);
 
-    // Experiments received an update
-    expect(actions[4].type).toEqual(EXPERIMENTS_UPDATED);
-
-    // Experiment is no longer saving
-    expect(actions[5].type).toEqual(EXPERIMENTS_SAVED);
-
     // Resolve loading state
-    expect(actions[6].type).toEqual(SAMPLES_SAVED);
+    expect(actions[4].type).toEqual(SAMPLES_SAVED);
   });
 });

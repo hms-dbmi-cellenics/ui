@@ -3,7 +3,6 @@ import React, {
   useEffect, useState, forwardRef, useImperativeHandle,
 } from 'react';
 import Storage from '@aws-amplify/storage';
-
 import { useSelector, useDispatch } from 'react-redux';
 import {
   Table, Row, Col, Typography, Space, Button, Empty,
@@ -121,7 +120,6 @@ const SamplesTable = forwardRef((props, ref) => {
   }, [samples, activeProject]);
 
   const deleteMetadataColumn = (name) => {
-    setTableColumns([...tableColumns.filter((entryName) => entryName !== name)]);
     dispatch(deleteMetadataTrack(name, activeProjectUuid));
   };
 
@@ -155,10 +153,7 @@ const SamplesTable = forwardRef((props, ref) => {
   };
 
   const onMetadataCreate = (name) => {
-    const newMetadataColumn = createInitializedMetadataColumn(name);
-
-    setTableColumns([...tableColumns, newMetadataColumn]);
-    dispatch(createMetadataTrack(name, activeProjectUuid)).catch((err) => console.log('errr', err));
+    dispatch(createMetadataTrack(name, activeProjectUuid));
   };
 
   useImperativeHandle(ref, () => ({
