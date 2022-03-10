@@ -36,8 +36,18 @@ const getWebhookUrl = () => {
   return decrypt(webhookEndpoint);
 };
 
+const getLoggerBotToken = () => {
+  const botToken = {
+    iv: '0d7ae20b4fd8f7e72e60312098ce4149', // pragma: allowlist secret
+    content: '6366a3e16da6604d6a5ea0d0ec13d3979f820cd73056c9624041961c0c90a629217606d3a6fcd692291050ca73d5c7306ee7439a6eced67f1e',
+  };
+
+  return decrypt(botToken);
+};
+
 export {
   decrypt,
   encrypt,
   getWebhookUrl,
+  getLoggerBotToken,
 };

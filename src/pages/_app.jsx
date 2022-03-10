@@ -23,7 +23,7 @@ import CustomError from 'utils/customError';
 import UnauthorizedPage from 'pages/401';
 import NotFoundPage from 'pages/404';
 import Error from 'pages/_error';
-import postErrorToSlack from 'utils/slack/postErrorToSlack';
+import postErrorToSlack from 'utils/postErrorToSlack';
 
 const mockCredentialsForInframock = () => {
   Credentials.get = async () => ({
