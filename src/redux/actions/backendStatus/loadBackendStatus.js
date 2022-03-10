@@ -39,8 +39,7 @@ const loadBackendStatus = (experimentId) => async (dispatch) => {
       type: BACKEND_STATUS_ERROR,
       payload: {
         experimentId,
-        error: 'Could not get the status of the backend.',
-        errorType: e,
+        error: `Could not get the status of the backend. ${e}`,
       },
     });
   }
