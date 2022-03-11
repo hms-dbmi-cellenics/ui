@@ -96,6 +96,11 @@ const runPipeline = (experimentId) => async (dispatch, getState) => {
       message = endUserMessages.CONNECTION_ERROR;
     }
 
+    console.log(`error run pipeline ${e}`);
+    // temporarily give the user more info if the error is permission denied
+    if (message.includes('does not have access to experiment')) {
+      message += ' Refresh the page to continue with your analysis.';
+    }
     dispatch({
       type: BACKEND_STATUS_ERROR,
       payload: {
