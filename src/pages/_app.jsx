@@ -12,7 +12,7 @@ import { DefaultSeo } from 'next-seo';
 import { ErrorBoundary } from 'react-error-boundary';
 
 import { wrapper } from 'redux/store';
-import { useSelector } from 'react-redux';
+import { useSelector, useStore } from 'react-redux';
 
 import AppRouteProvider from 'utils/AppRouteProvider';
 import ContentWrapper from 'components/ContentWrapper';
@@ -61,6 +61,7 @@ const WrappedApp = ({ Component, pageProps }) => {
   const experimentData = useSelector(
     (state) => (experimentId ? state.experimentSettings.info : {}),
   );
+  const store = useStore();
 
   const [amplifyConfigured, setAmplifyConfigured] = useState(!amplifyConfig);
 
@@ -131,8 +132,10 @@ const WrappedApp = ({ Component, pageProps }) => {
       <ErrorBoundary
         FallbackComponent={Error}
         onError={(error, info) => {
+          // Only log errors to Slack if not in production.
           if (process.env.NODE_ENV !== 'production') return;
-          postErrorToSlack(error, info);
+          const reduxDump = store.getState();
+          postErrorToSlack(error, info, reduxDump);
         }}
       >
         <AppRouteProvider>

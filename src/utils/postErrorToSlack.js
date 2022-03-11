@@ -6,7 +6,9 @@ const extractExperimentId = (url) => {
   return match ? match[1] : null;
 };
 
-const buildErrorMessage = (error, componentStack, context) => {
+const takeNumLines = (string, numLines) => string.split('\n').slice(0, numLines).join('\n');
+
+const buildErrorMessage = (error, componentStack, reduxDump, context) => {
   const {
     user, timestamp, experimentId, url,
   } = context;
@@ -23,10 +25,11 @@ const buildErrorMessage = (error, componentStack, context) => {
     Timestamp: ${timestamp}
 
     ===== ERROR =====
-    ${error.stack}
+    ${error.toString()}
+    ${takeNumLines(componentStack, 11)}
 
-    ===== COMPONENT STACK =====
-    ${componentStack}`
+    ===== REDUX STATE =====
+    ${JSON.stringify(reduxDump, null, 2)}`
   );
 };
 
@@ -73,7 +76,7 @@ const postError = async (errorLog, context) => {
   }
 };
 
-const postErrorToSlack = async (error, info) => {
+const postErrorToSlack = async (error, info, reduxDump) => {
   const user = await Auth.currentAuthenticatedUser();
 
   const timestamp = new Date().toISOString();
@@ -88,7 +91,7 @@ const postErrorToSlack = async (error, info) => {
     url,
   };
 
-  const errorLog = buildErrorMessage(error, componentStack, context);
+  const errorLog = buildErrorMessage(error, componentStack, reduxDump, context);
   await postError(errorLog, context);
 };
 

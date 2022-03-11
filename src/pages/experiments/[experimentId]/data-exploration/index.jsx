@@ -77,11 +77,12 @@ const ExplorationViewPage = ({
     [methodUppercase]: {
       toolbarControls: <MosaicCloseButton key='remove-button-embedding' />,
       component: (width, height) => (
-        <Embedding
-          experimentId={experimentId}
-          width={width}
-          height={height}
-        />
+        <></>
+        // <Embedding
+        //   experimentId={experimentId}
+        //   width={width}
+        //   height={height}
+        // />
       ),
     },
     Heatmap: {
@@ -92,7 +93,8 @@ const ExplorationViewPage = ({
         </>
       ),
       component: (width, height) => (
-        <HeatmapPlot experimentId={experimentId} width={width} height={height} />
+        <></>
+        // <HeatmapPlot experimentId={experimentId} width={width} height={height} />
       ),
     },
     Genes: {
@@ -120,11 +122,12 @@ const ExplorationViewPage = ({
     'Data Management': {
       toolbarControls: <MosaicCloseButton key='remove-button-data-management' />,
       component: (width, height) => (
-        <CellSetsTool
-          experimentId={experimentId}
-          width={width}
-          height={height}
-        />
+        <></>
+        // <CellSetsTool
+        //   experimentId={experimentId}
+        //   width={width}
+        //   height={height}
+        // />
       ),
     },
   };

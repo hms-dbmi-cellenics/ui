@@ -5,6 +5,30 @@ enableFetchMocks();
 
 const mockError = { stack: 'Mock error stack' };
 const mockInfo = { componentStack: 'Mock component stack' };
+const mockReduxDump = {
+  cellInfo: {
+    focus: {
+      store: 'cellSets',
+      key: 'louvain',
+    },
+    groupedTrack: 'louvain',
+    selectedTracks: [
+      'louvain',
+    ],
+  },
+  cellMeta: {
+    mitochondrialContent: {
+      loading: true,
+      error: false,
+      data: [],
+    },
+    doubletScores: {
+      loading: true,
+      error: false,
+      data: [],
+    },
+  },
+};
 
 jest.useFakeTimers('modern').setSystemTime(new Date('2020-01-01').getTime());
 window.location.href = jest.fn('http://localhost:3000/experiments/testae48e318dab9a1bd0bexperiment/data-exploration');
@@ -27,7 +51,7 @@ describe('PostErrorToSlack', () => {
   });
 
   it('Posts requests correctly', async () => {
-    await postErrorToSlack(mockError, mockInfo);
+    await postErrorToSlack(mockError, mockInfo, mockReduxDump);
 
     expect(fetchMock).toHaveBeenCalledTimes(1);
     expect(fetchMock.mock.calls[0]).toMatchSnapshot();
@@ -47,7 +71,7 @@ describe('PostErrorToSlack', () => {
     fetchMock.mockIf(/.*/, () => Promise.reject(new Error('Some random error')));
 
     expect(async () => {
-      await postErrorToSlack(mockError, mockInfo);
+      await postErrorToSlack(mockError, mockInfo, mockReduxDump);
     }).not.toThrow();
   });
 });

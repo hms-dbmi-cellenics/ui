@@ -40,8 +40,32 @@ exports[`PostErrorToSlack Posts requests correctly 6`] = `
     Timestamp: 2020-01-01T00:00:00.000Z
 
     ===== ERROR =====
-    Mock error stack
+    [object Object]
+    Mock component stack
 
-    ===== COMPONENT STACK =====
-    Mock component stack"
+    ===== REDUX STATE =====
+    {
+  \\"cellInfo\\": {
+    \\"focus\\": {
+      \\"store\\": \\"cellSets\\",
+      \\"key\\": \\"louvain\\"
+    },
+    \\"groupedTrack\\": \\"louvain\\",
+    \\"selectedTracks\\": [
+      \\"louvain\\"
+    ]
+  },
+  \\"cellMeta\\": {
+    \\"mitochondrialContent\\": {
+      \\"loading\\": true,
+      \\"error\\": false,
+      \\"data\\": []
+    },
+    \\"doubletScores\\": {
+      \\"loading\\": true,
+      \\"error\\": false,
+      \\"data\\": []
+    }
+  }
+}"
 `;
