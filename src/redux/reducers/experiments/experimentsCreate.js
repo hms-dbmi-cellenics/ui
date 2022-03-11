@@ -5,6 +5,10 @@ const experimentCreate = (state, action) => {
     ...state,
     ids: [...state.ids, experiment.id],
     [experiment.id]: experiment,
+    meta: {
+      ...state.meta,
+      saving: false,
+    },
   };
 };
 

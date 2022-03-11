@@ -2,7 +2,7 @@ import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 
-import { EXPERIMENTS_SAVING, EXPERIMENTS_CREATED, EXPERIMENTS_SAVED } from 'redux/actionTypes/experiments';
+import { EXPERIMENTS_SAVING, EXPERIMENTS_CREATED } from 'redux/actionTypes/experiments';
 import { createExperiment } from 'redux/actions/experiments';
 import initialExperimentState from 'redux/reducers/experiments/initialState';
 import initialProjectState, { projectTemplate } from 'redux/reducers/projects/initialState';
@@ -49,7 +49,6 @@ describe('createExperiment', () => {
 
     expect(actions[0].type).toEqual(EXPERIMENTS_SAVING);
     expect(actions[1].type).toEqual(EXPERIMENTS_CREATED);
-    expect(actions[2].type).toEqual(EXPERIMENTS_SAVED);
 
     expect(actions[1].payload).toMatchSnapshot();
 

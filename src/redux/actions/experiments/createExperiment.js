@@ -9,7 +9,6 @@ import {
   EXPERIMENTS_CREATED,
   EXPERIMENTS_ERROR,
   EXPERIMENTS_SAVING,
-  EXPERIMENTS_SAVED,
 } from 'redux/actionTypes/experiments';
 import { experimentTemplate } from 'redux/reducers/experiments/initialState';
 
@@ -72,10 +71,6 @@ const createExperiment = (
       payload: {
         experiment: newExperiment,
       },
-    });
-
-    dispatch({
-      type: EXPERIMENTS_SAVED,
     });
   } catch (e) {
     let { message } = e;
