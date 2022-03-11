@@ -110,7 +110,7 @@ const ShareExperimentModal = (props) => {
           <Button onClick={() => inviteUsers()} type='primary'>{okButtonText}</Button>
         </Space>
       )}
-      width='600px'
+      width='650px'
     >
       <Space direction='vertical' style={{ width: '100%' }}>
         <Text strong>
@@ -135,53 +135,56 @@ const ShareExperimentModal = (props) => {
         </Row>
 
         <Row>
-          <Card key='users' style={{ width: '100%', height: '25rem', overflowY: 'auto' }}>
-            {
-              usersWithAccess.map((user) => (
-                <Row gutter={10}>
-                  <Col span={4}>
-                    <Avatar
-                      style={{
-                        backgroundColor: '#f56a00',
-                      }}
-                      size='large'
-                    >
-                      {user.name[0].toUpperCase()}
-                    </Avatar>
-                  </Col>
-                  <Col span={13} flex='auto'>
-                    <p>
-                      {user.name}
-                      {' '}
-                      {user.email === currentUser ? '(You)' : ''}
-                      <br />
-                      <span style={{ color: 'grey' }}>{user.email}</span>
-                    </p>
-                  </Col>
-                  <Col span={3}>
-                    <p>{user.role}</p>
-                  </Col>
-                  <Col span={2}>
-                    <Button
-                      type='primary'
-                      danger
-                      onClick={() => revokeRole(user.email)}
-                      disabled={user.email === currentUser}
-                    >
-                      Revoke
-                    </Button>
-                  </Col>
-                </Row>
-              ))
-            }
-            <Row gutter={10} />
-          </Card>
-          <Text>
-            <b>Explorer: </b>
-            the user will be able to use Data Exploration and Plots and Tables modules,
-            but will not be able to make any changes to samples or metadata in Data Management or
-            re-run the pipeline in the Data Processing module.
-          </Text>
+          <Space direction='vertical' style={{ width: '100%' }} size='large'>
+
+            <Card key='users' style={{ width: '100%', height: '20rem', overflowY: 'auto' }}>
+              {
+                usersWithAccess.map((user) => (
+                  <Row gutter={10}>
+                    <Col span={3}>
+                      <Avatar
+                        style={{
+                          backgroundColor: '#f56a00',
+                        }}
+                        size='large'
+                      >
+                        {user.name[0].toUpperCase()}
+                      </Avatar>
+                    </Col>
+                    <Col span={13} flex='auto'>
+                      <p>
+                        {user.name}
+                        {' '}
+                        {user.email === currentUser ? '(You)' : ''}
+                        <br />
+                        <span style={{ color: 'grey' }}>{user.email}</span>
+                      </p>
+                    </Col>
+                    <Col span={4}>
+                      <p style={{ marginTop: '0.5em' }}>{user.role}</p>
+                    </Col>
+                    <Col span={2}>
+                      <Button
+                        type='primary'
+                        danger
+                        onClick={() => revokeRole(user.email)}
+                        disabled={user.email === currentUser}
+                      >
+                        Revoke
+                      </Button>
+                    </Col>
+                  </Row>
+                ))
+              }
+              <Row gutter={10} />
+            </Card>
+            <Text>
+              <b>Explorer: </b>
+              the user will be able to use Data Exploration and Plots and Tables modules,
+              but will not be able to make any changes to samples or metadata in Data Management or
+              re-run the pipeline in the Data Processing module.
+            </Text>
+          </Space>
         </Row>
       </Space>
     </Modal>
