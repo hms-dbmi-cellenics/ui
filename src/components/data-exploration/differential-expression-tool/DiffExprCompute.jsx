@@ -19,7 +19,6 @@ import checkCanRunDiffExpr, { canRunDiffExprResults } from 'utils/differentialEx
 const { Option, OptGroup } = Select;
 
 const ComparisonType = Object.freeze({ BETWEEN: 'between', WITHIN: 'within' });
-const getCellSetKey = (name) => (name?.split('/')[1] || name);
 const getRootKey = (name) => name?.split('/')[0];
 
 const DiffExprCompute = (props) => {
@@ -46,29 +45,13 @@ const DiffExprCompute = (props) => {
     if (hierarchy && hierarchy.length === 0) return;
 
     // If any selected option is deleted, set the option to null
-    Object.keys(comparisonGroup).forEach((type) => {
-      const deleteKeys = {};
-
-      Object.entries(comparisonGroup[type]).forEach(([comparisonKey, cellSetKey]) => {
-
-        if (!cellSetKey) return;
-
-        const sampleKey = getCellSetKey(cellSetKey);
-
-        if (['all', 'background', 'rest'].includes(sampleKey)) return;
-        if (!properties[sampleKey]) deleteKeys[comparisonKey] = null;
-      });
-
-      if (!Object.keys(deleteKeys).length) return;
-
-      dispatch(
-        setComparisonGroup({
-          type,
-          ...comparisonGroup[type],
-          ...deleteKeys,
-        }),
-      );
-    });
+    Object.keys(comparisonGroup).forEach(
+      (comparisonType) => unselectDeletedOption(
+        comparisonGroup,
+        comparisonType,
+        properties,
+        dispatch
+      ));
 
     // Calculate the number of sampleIds.
     // if there is only 1 sample, set sample using sample name
