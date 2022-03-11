@@ -25,7 +25,6 @@ const ProjectDetails = ({ width, height }) => {
 
   const { activeProjectUuid } = useSelector((state) => state.projects.meta);
   const activeProject = useSelector((state) => state.projects[activeProjectUuid]);
-
   const samplesTableRef = useRef();
 
   return (

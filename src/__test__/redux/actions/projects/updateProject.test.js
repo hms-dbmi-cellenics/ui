@@ -54,7 +54,8 @@ describe('updateProject action', () => {
     const originalModifiedDate = updatedProject.lastModified;
     await store.dispatch(updateProject(mockUuid, updatedProject));
 
-    const { diff } = store.getActions()[0].payload;
+    const { project: diff } = store.getActions()[0].payload;
+
     expect(diff.lastModified).not.toEqual(originalModifiedDate);
     expect(_.omit(diff, 'lastModified')).toEqual(_.omit(updatedProject, 'lastModified'));
   });

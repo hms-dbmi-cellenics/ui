@@ -71,7 +71,9 @@ const EditableField = (props) => {
 
   const onSubmit = (e) => {
     e.stopPropagation();
+
     if (!isValid) return null;
+
     onAfterSubmit(editedValue);
     toggleEditing(e);
   };
@@ -102,7 +104,16 @@ const EditableField = (props) => {
           />
 
           <Tooltip placement='top' title='Save' mouseLeaveDelay={0} ref={saveButton}>
-            <Button aria-label='Save' size='small' shape='circle' icon={<CheckOutlined />} onClick={(e) => { saveButton.current.onMouseLeave(); onSubmit(e); }} />
+            <Button
+              aria-label='Save'
+              size='small'
+              shape='circle'
+              icon={<CheckOutlined />}
+              onClick={(e) => {
+                saveButton.current.onMouseLeave();
+                onSubmit(e);
+              }}
+            />
           </Tooltip>
 
           <Tooltip placement='top' title='Cancel' mouseLeaveDelay={0}>
@@ -115,12 +126,21 @@ const EditableField = (props) => {
 
     return (
       <>
-        {renderBold ? <strong>{editedValue}</strong> : <span>{editedValue}</span>}
+        {renderBold ? <strong>{value}</strong> : <span>{value}</span>}
         {
           showEdit
             ? (
               <Tooltip placement='top' title='Edit' mouseLeaveDelay={0} ref={editButton}>
-                <Button aria-label='Edit' size='small' shape='circle' icon={<EditOutlined />} onClick={(e) => { editButton.current.onMouseLeave(); toggleEditing(e); }} />
+                <Button
+                  aria-label='Edit'
+                  size='small'
+                  shape='circle'
+                  icon={<EditOutlined />}
+                  onClick={(e) => {
+                    editButton.current.onMouseLeave();
+                    toggleEditing(e);
+                  }}
+                />
               </Tooltip>
             ) : <></>
         }
