@@ -72,22 +72,20 @@ const createExperiment = (
       },
     });
   } catch (e) {
-    let { message } = e;
-
-    if (!isServerError(e)) {
-      console.error(`fetch ${url} error ${message}`);
-      message = endUserMessages.CONNECTION_ERROR;
-    }
     dispatch({
       type: EXPERIMENTS_ERROR,
       payload: {
-        error: message,
+        error: e.message,
       },
     });
 
+    const userMessage = isServerError(e)
+      ? endUserMessages.ERROR_SAVING
+      : endUserMessages.CONNECTION_ERROR;
+
     pushNotificationMessage(
       'error',
-      endUserMessages.ERROR_SAVING,
+      userMessage,
     );
   }
 
