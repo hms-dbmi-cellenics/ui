@@ -216,7 +216,7 @@ const DiffExprCompute = (props) => {
             Compare cell sets within a sample/group
             <Tooltip overlay={(
               <span>
-                This is useful for finding marker genes that distinguish one cluster from another. The calculation uses the presto implementation of the Wilcoxon rank sum test and auROC analysis. For more information see the
+                For finding marker genes that distinguish one cluster from another. The calculation uses the presto implementation of the Wilcoxon rank sum test and auROC analysis. For more information see the
                 {' '}
                 <a
                   href='http://htmlpreview.github.io/?https://github.com/immunogenomics/presto/blob/master/docs/getting-started.html'
@@ -250,7 +250,7 @@ const DiffExprCompute = (props) => {
             }
             <Tooltip overlay={(
               <span>
-                This is useful for finding differentially expressed genes when comparing two experimental groups. This analysis uses a
+                For finding genes that are differentially expressed between two experimental groups. This analysis uses a
                 {' '}
                 <a
                   href='http://bioconductor.org/books/3.14/OSCA.workflows/segerstolpe-human-pancreas-smart-seq2.html#segerstolpe-comparison'
