@@ -11,15 +11,16 @@ import { InfoCircleOutlined } from '@ant-design/icons';
 
 import PropTypes from 'prop-types';
 import { loadCellSets } from 'redux/actions/cellSets';
-import { setComparisonGroup, setComparisonType } from 'redux/actions/differentialExpression';
 import { getCellSets } from 'redux/selectors';
 import { composeTree } from 'utils/cellSets';
+import { setComparisonGroup, setComparisonType } from 'redux/actions/differentialExpression';
 import checkCanRunDiffExpr, { canRunDiffExprResults } from 'utils/differentialExpression/checkCanRunDiffExpr';
+import unselectDeletedOption from 'utils/differentialExpression/unselectDeletedOption';
+import { getRootKey } from 'utils/cellSets';
 
 const { Option, OptGroup } = Select;
 
 const ComparisonType = Object.freeze({ BETWEEN: 'between', WITHIN: 'within' });
-const getRootKey = (name) => name?.split('/')[0];
 
 const DiffExprCompute = (props) => {
   const {

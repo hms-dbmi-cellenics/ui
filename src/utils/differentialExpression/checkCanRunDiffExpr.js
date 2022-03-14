@@ -1,13 +1,11 @@
 import _ from 'lodash';
 
 import { ComparisonType } from 'components/data-exploration/differential-expression-tool/DiffExprCompute';
+import { getCellSetKey, getRootKey } from 'utils/cellSets';
 
 const MIN_NUM_CELLS_IN_GROUP = 10;
 const NUM_SAMPLES_SHOW_ERROR = 1;
 const NUM_SAMPLES_SHOW_WARNING = 2;
-
-const getCellSetKey = (name) => (name?.split('/')[1] || name);
-const getRootKey = (name) => name?.split('/')[0];
 
 const mapCellIdToSample = _.memoize(
   (sampleKeys, properties) => {
