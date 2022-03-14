@@ -19,7 +19,7 @@ import experimentConvertedToApiModel from 'utils/convertExperimentToApiModel';
 
 const createExperiment = (
   projectUuid, newExperimentName,
-) => async (dispatch, getState) => {
+) => async (dispatch) => {
   const createdDate = moment().toISOString();
 
   const experimentId = hash.MD5(createdDate);
@@ -37,12 +37,11 @@ const createExperiment = (
 
   try {
     if (api.CURRENT_VERSION === api.possibleVersions.V1) {
-      experimentToSend = newExperiment || getState().experiments[experimentId];
-      experimentToSend = experimentConvertedToApiModel(experimentToSend);
+      experimentToSend = experimentConvertedToApiModel(newExperiment);
 
       url = `/v1/experiments/${experimentId}`;
     } else if (api.CURRENT_VERSION === api.possibleVersions.V2) {
-      const { id, name, description } = newExperiment || getState().experiments[experimentId];
+      const { id, name, description } = newExperiment;
       experimentToSend = { id, name, description };
 
       url = `/v2/experiments/${experimentId}`;
