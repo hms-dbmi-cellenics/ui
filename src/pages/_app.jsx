@@ -132,7 +132,7 @@ const WrappedApp = ({ Component, pageProps }) => {
       <ErrorBoundary
         FallbackComponent={Error}
         onError={(error, info) => {
-          // Only log errors to Slack if not in production.
+          // Only log errors to Slack if in production.
           if (process.env.NODE_ENV !== 'production') return;
           const reduxDump = store.getState();
           postErrorToSlack(error, info, reduxDump);
