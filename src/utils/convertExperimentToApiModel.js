@@ -2,7 +2,7 @@
 // stored in the ui and in the api,
 // this is an attempt to deal with this in one single place (the ui)
 // We should try to converge to one single model to follow
-const experimentConvertedToApiModel = (experiment) => {
+const convertExperimentToApiModel = (experiment) => {
   const {
     id, name, projectUuid, ...restOfExperiment
   } = experiment;
@@ -17,4 +17,4 @@ const experimentConvertedToApiModel = (experiment) => {
   return convertedExperiment;
 };
 
-export default experimentConvertedToApiModel;
+export default convertExperimentToApiModel;

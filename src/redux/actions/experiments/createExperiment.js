@@ -15,7 +15,7 @@ import { experimentTemplate } from 'redux/reducers/experiments/initialState';
 import endUserMessages from 'utils/endUserMessages';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
 import { isServerError, throwIfRequestFailed } from 'utils/fetchErrors';
-import experimentConvertedToApiModel from 'utils/convertExperimentToApiModel';
+import convertExperimentToApiModel from 'utils/convertExperimentToApiModel';
 
 const createExperiment = (
   projectUuid, newExperimentName,
@@ -37,7 +37,7 @@ const createExperiment = (
 
   try {
     if (api.CURRENT_VERSION === api.possibleVersions.V1) {
-      experimentToSend = experimentConvertedToApiModel(newExperiment);
+      experimentToSend = convertExperimentToApiModel(newExperiment);
 
       url = `/v1/experiments/${experimentId}`;
     } else if (api.CURRENT_VERSION === api.possibleVersions.V2) {
@@ -73,6 +73,7 @@ const createExperiment = (
     });
   } catch (e) {
     let { message } = e;
+
     if (!isServerError(e)) {
       console.error(`fetch ${url} error ${message}`);
       message = endUserMessages.CONNECTION_ERROR;
