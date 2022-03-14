@@ -40,6 +40,12 @@ const DiffExprCompute = (props) => {
    */
   useEffect(() => {
     dispatch(loadCellSets(experimentId));
+
+    const samples = hierarchy?.find(
+      (rootNode) => (rootNode.key === 'sample'),
+    )?.children;
+
+    setNumSamples(samples.length);
   }, []);
 
   useEffect(() => {
@@ -54,14 +60,7 @@ const DiffExprCompute = (props) => {
         dispatch
       ));
 
-    // Calculate the number of sampleIds.
-    // if there is only 1 sample, set sample using sample name
-    const samples = hierarchy?.find(
-      (rootNode) => (rootNode.key === 'sample'),
-    )?.children;
-
-    setNumSamples(samples.length);
-  }, [properties.length]);
+  }, [Object.keys(properties).length]);
 
   // Evaluate if the selected comparisons can be run. Returns results
   // that can be used to display appropriate warnings and errors if it cannot be run.
