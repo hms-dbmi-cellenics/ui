@@ -35,22 +35,22 @@ const createExperiment = (
   let url;
   let experimentToSend;
 
+  if (api.CURRENT_VERSION === api.possibleVersions.V1) {
+    experimentToSend = convertExperimentToApiModel(newExperiment);
+
+    url = `/v1/experiments/${experimentId}`;
+  } else if (api.CURRENT_VERSION === api.possibleVersions.V2) {
+    const { id, name, description } = newExperiment;
+    experimentToSend = { id, name, description };
+
+    url = `/v2/experiments/${experimentId}`;
+  }
+
+  dispatch({
+    type: EXPERIMENTS_SAVING,
+  });
+
   try {
-    if (api.CURRENT_VERSION === api.possibleVersions.V1) {
-      experimentToSend = convertExperimentToApiModel(newExperiment);
-
-      url = `/v1/experiments/${experimentId}`;
-    } else if (api.CURRENT_VERSION === api.possibleVersions.V2) {
-      const { id, name, description } = newExperiment;
-      experimentToSend = { id, name, description };
-
-      url = `/v2/experiments/${experimentId}`;
-    }
-
-    dispatch({
-      type: EXPERIMENTS_SAVING,
-    });
-
     const response = await fetchAPI(
       url,
       {
