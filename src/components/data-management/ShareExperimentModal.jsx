@@ -123,7 +123,7 @@ const ShareExperimentModal = (props) => {
               value={addedUsers}
               style={{ width: '100%' }}
               mode='tags'
-              placeholder='Separate multiple email addressed with enter'
+              placeholder='Input separate email addresses with enter'
               onChange={changeSelectedUsers}
             />
           </Col>
