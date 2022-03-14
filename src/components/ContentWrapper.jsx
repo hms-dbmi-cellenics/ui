@@ -285,7 +285,7 @@ const ContentWrapper = (props) => {
       }
 
       if (backendError) {
-        return <Error errorText='Could not get backend settings.' />;
+        return <Error errorText={backendError} />;
       }
 
       if (gem2sRunningError) {
