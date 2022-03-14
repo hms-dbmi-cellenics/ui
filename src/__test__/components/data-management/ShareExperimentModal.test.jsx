@@ -62,7 +62,7 @@ describe('Share expeirment modal', () => {
     await renderShareExperimentModal();
     expect(screen.getByText('Share with collaborators')).toBeInTheDocument();
     expect(screen.getByText(fake.PROJECT_NAME)).toBeInTheDocument();
-    expect(screen.getByText('Input an email address.Add multiple addresses with enter.')).toBeInTheDocument();
+    expect(screen.getByText('Input an email address. Add multiple addresses with enter.')).toBeInTheDocument();
     expect(screen.getAllByRole('combobox').length).toEqual(2);
     expect(screen.getByText('bob@bob.com')).toBeInTheDocument();
     expect(screen.getByText('Done')).toBeInTheDocument();
