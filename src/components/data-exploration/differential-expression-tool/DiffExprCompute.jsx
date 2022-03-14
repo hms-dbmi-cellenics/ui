@@ -329,7 +329,7 @@ const DiffExprCompute = (props) => {
                 message="Warning"
                 description={
                   <>
-                    For the selected comparison, there are fewer than 3 samples with the recommended minimum number of cells (10).
+                    For the selected comparison, there are fewer than 3 samples with the minimum number of cells (10).
                     Only logFC values will be calculated and results should be used for exploratory purposes only.
                   </>
                 }
