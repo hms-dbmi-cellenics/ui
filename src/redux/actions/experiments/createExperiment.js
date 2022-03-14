@@ -15,7 +15,7 @@ import { experimentTemplate } from 'redux/reducers/experiments/initialState';
 import endUserMessages from 'utils/endUserMessages';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
 import { isServerError, throwIfRequestFailed } from 'utils/fetchErrors';
-import convertExperimentToApiModel from 'utils/convertExperimentToApiModel';
+import convertExperimentToApiV1Model from 'utils/convertExperimentToApiV1Model';
 
 const createExperiment = (
   projectUuid, newExperimentName,
@@ -36,7 +36,7 @@ const createExperiment = (
   let experimentToSend;
 
   if (api.CURRENT_VERSION === api.possibleVersions.V1) {
-    experimentToSend = convertExperimentToApiModel(newExperiment);
+    experimentToSend = convertExperimentToApiV1Model(newExperiment);
 
     url = `/v1/experiments/${experimentId}`;
   } else if (api.CURRENT_VERSION === api.possibleVersions.V2) {

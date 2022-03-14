@@ -9,7 +9,7 @@ import {
   EXPERIMENTS_SAVED,
 } from 'redux/actionTypes/experiments';
 
-import convertExperimentToApiModel from 'utils/convertExperimentToApiModel';
+import convertExperimentToApiV1Model from 'utils/convertExperimentToApiV1Model';
 
 const saveExperiment = (
   experimentId,
@@ -31,7 +31,7 @@ const saveExperiment = (
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(convertExperimentToApiModel(experimentToSend)),
+        body: JSON.stringify(convertExperimentToApiV1Model(experimentToSend)),
       },
     );
 
