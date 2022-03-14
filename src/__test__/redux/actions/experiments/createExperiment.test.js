@@ -7,8 +7,6 @@ import { createExperiment } from 'redux/actions/experiments';
 import initialExperimentState from 'redux/reducers/experiments/initialState';
 import initialProjectState, { projectTemplate } from 'redux/reducers/projects/initialState';
 
-import '__test__/test-utils/setupTests';
-
 const mockStore = configureStore([thunk]);
 
 enableFetchMocks();
