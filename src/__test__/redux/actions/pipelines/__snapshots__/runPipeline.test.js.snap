@@ -25,8 +25,8 @@ Array [
   },
   Object {
     "payload": Object {
-      "error": "Could not start the pipeline.",
-      "errorType": "some weird error that happened",
+      "error": "Could not start the pipeline. some weird error that happened",
+      "experimentId": "experiment-id",
     },
     "type": "backendStatus/backendStatusError",
   },

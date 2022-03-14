@@ -26,6 +26,15 @@ const createMetadataTrack = (
   const newProject = _.cloneDeep(project);
   newProject.metadataKeys.push(metadataKey);
   try {
+    const { samples: updatedSamples } = getState();
+
+    const samplesWithMetadata = project.samples.reduce((samplesObject, sampleUuid) => {
+      // eslint-disable-next-line no-param-reassign
+      samplesObject[sampleUuid] = _.clone(updatedSamples[sampleUuid]);
+      return samplesObject;
+    }, {});
+    dispatch(saveSamples(projectUuid, samplesWithMetadata, false, false));
+
     await dispatch(saveProject(projectUuid, newProject));
 
     dispatch({
@@ -50,19 +59,7 @@ const createMetadataTrack = (
       },
     })));
 
-    const { samples: updatedSamples } = getState();
-
     // Get updated samples in an object
-    const samplesWithMetadata = project.samples.reduce((samplesObject, sampleUuid) => {
-      // eslint-disable-next-line no-param-reassign
-      samplesObject[sampleUuid] = _.clone(updatedSamples[sampleUuid]);
-      return samplesObject;
-    }, {});
-
-    // Temporary fix because right now we send the whole samples object
-    // to the API to update samples. Once we can update with PATCH
-    // action, this has to be redone
-    dispatch(saveSamples(projectUuid, samplesWithMetadata, false, false));
   } catch (e) {
     pushNotificationMessage('error', endUserMessages.ERROR_SAVING);
   }

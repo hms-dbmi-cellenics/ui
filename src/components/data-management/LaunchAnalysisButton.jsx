@@ -53,7 +53,6 @@ const LaunchAnalysisButton = () => {
     if (gem2sRerunStatus.rerun) {
       dispatch(runGem2s(experimentId, gem2sRerunStatus.paramsHash));
     }
-
     navigateTo(modules.DATA_PROCESSING, { experimentId });
   };
 

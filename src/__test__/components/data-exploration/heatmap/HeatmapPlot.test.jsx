@@ -242,7 +242,12 @@ describe('HeatmapPlot', () => {
     // Renders correctly
     expect(screen.getByText(/Sup Im a heatmap/i)).toBeInTheDocument();
 
-    const cellsInLouvain3 = ['12', '13'];
+    // Cell ids stored in expression matrix is string, whereas cell ids stored in the store are number
+    // So we need to convert them to string to be able to compare the values
+    const cellsInLouvain3 = cellSetsData
+      .cellSets.find(({ key }) => key === 'louvain')
+      .children.find(({ name }) => name === 'Cluster 3')
+      .cellIds.map((cellId) => cellId.toString());
 
     // It shows cells in louvain-3
     expect(isSubset(cellsInLouvain3, vitesscePropsSpy.expressionMatrix.rows)).toEqual(true);

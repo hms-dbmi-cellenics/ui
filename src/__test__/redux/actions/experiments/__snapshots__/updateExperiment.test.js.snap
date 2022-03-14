@@ -1,7 +1,10 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`updateExperiment Dispatches action when called 1`] = `
+exports[`updateExperiment Dispatches actions when called 1`] = `
 Array [
+  Object {
+    "type": "experiments/saving",
+  },
   Object {
     "payload": Object {
       "experiment": Object {
@@ -22,5 +25,10 @@ Array [
     },
     "type": "experiments/updated",
   },
+  Object {
+    "type": "experiments/saved",
+  },
 ]
 `;
+
+exports[`updateExperiment Dispatches actions when called 2`] = `"{\\"description\\":\\"Analysis description\\",\\"notifyByEmail\\":true,\\"meta\\":{\\"organism\\":null,\\"type\\":\\"10x\\"},\\"sampleIds\\":[],\\"experimentId\\":\\"experiment-1\\",\\"experimentName\\":\\"updated-experiment\\"}"`;

@@ -89,10 +89,9 @@ describe('createMetadataTrack action', () => {
 
     const actions = store.getActions();
 
-    expect(saveProject).toHaveBeenCalled();
-
     // It creates the new metadata
     expect(actions[0].type).toEqual(PROJECTS_METADATA_CREATE);
+    expect(saveProject).toHaveBeenCalled();
   });
 
   it('Does not create metadata if save fails', async () => {
@@ -101,11 +100,10 @@ describe('createMetadataTrack action', () => {
     const store = mockStore(oneProjectState);
     await store.dispatch(createMetadataTrack('Test track', project1.uuid));
 
-    // It fires saves project
-    expect(saveProject).toHaveBeenCalled();
-
     // Expect there is a notification
     expect(pushNotificationMessage).toHaveBeenCalled();
+    // It fires saves project
+    expect(saveProject).toHaveBeenCalled();
   });
 
   it('Only save samples for the project', async () => {

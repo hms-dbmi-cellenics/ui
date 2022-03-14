@@ -8,12 +8,15 @@ import LaunchAnalysisButton from './LaunchAnalysisButton';
 import FileUploadModal from './FileUploadModal';
 import integrationTestConstants from '../../utils/integrationTestConstants';
 import { processUpload } from '../../utils/upload/processUpload';
+import ShareExperimentModal from './ShareExperimentModal';
 
 const ProjectMenu = () => {
   const dispatch = useDispatch();
   const samples = useSelector((state) => state.samples);
   const activeProjectUuid = useSelector((state) => state.projects.meta.activeProjectUuid);
   const [uploadModalVisible, setUploadModalVisible] = useState(false);
+  const [shareExperimentModalVisible, setShareExperimentModalVisible] = useState(false);
+  const activeProject = useSelector((state) => state.projects[activeProjectUuid]);
 
   const uploadFiles = (filesList, sampleType) => {
     processUpload(filesList, sampleType, samples, activeProjectUuid, dispatch);
@@ -30,6 +33,18 @@ const ProjectMenu = () => {
           Add samples
         </Button>
         <DownloadDataButton />
+        <Button
+          onClick={() => setShareExperimentModalVisible(!shareExperimentModalVisible)}
+        >
+          Share
+        </Button>
+
+        {shareExperimentModalVisible && (
+          <ShareExperimentModal
+            onCancel={() => setShareExperimentModalVisible(false)}
+            activeProject={activeProject}
+          />
+        )}
         <LaunchAnalysisButton />
       </Space>
       {uploadModalVisible ? (

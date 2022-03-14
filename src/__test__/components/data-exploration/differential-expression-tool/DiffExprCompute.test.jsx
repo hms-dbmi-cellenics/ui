@@ -191,7 +191,56 @@ describe('DiffExprCompute', () => {
     });
   });
 
-  it('Should show warning if there are not enough cell sets for comparison', async () => {
+  it('Should show warning if there are not enough cell sets to show ', async () => {
+    await renderDiffExprCompute(storeState);
+
+    // Select compare between groups
+    userEvent.click(screen.getByText('Compare a selected cell set between samples/groups'));
+
+    // Choose cell set
+    const selectCellSet = screen.getByRole('combobox', { name: /Compare cell set/i });
+    await act(async () => {
+      fireEvent.change(selectCellSet, { target: { value: 'Cluster 1' } });
+    });
+
+    const cellSetOption = screen.getByText(/Cluster 1/);
+    await act(async () => {
+      fireEvent.click(cellSetOption);
+    });
+
+    // Select the 1st group
+    const selectGroup1 = screen.getByRole('combobox', { name: /between sample\/group/i });
+    await act(async () => {
+      fireEvent.change(selectGroup1, { target: { value: 'KO' } });
+    });
+
+    const group1Option = screen.getByText(/KO/);
+    await act(async () => {
+      fireEvent.click(group1Option);
+    });
+
+    // Select the 2nd group
+    const selectGroup2 = screen.getByRole('combobox', { name: /and sample\/group/i });
+    await act(async () => {
+      fireEvent.change(selectGroup2, { target: { value: 'WT1' } });
+    });
+
+    const group2Option = screen.queryAllByText(/WT1/)[1];
+    await act(async () => {
+      fireEvent.click(group2Option);
+    });
+
+    // There should be a warning
+    await waitFor(() => {
+      expect(screen.getByText(/fewer than 3 samples with the recommended minimum number of cells/i)).toBeInTheDocument();
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText(/Compute/i).closest('button')).not.toBeDisabled();
+    });
+  });
+
+  it('Should show error if there are not enough cell sets for comparison', async () => {
     await renderDiffExprCompute(storeState);
 
     // Select compare between groups
@@ -230,7 +279,7 @@ describe('DiffExprCompute', () => {
       fireEvent.click(group2Option);
     });
 
-    // There should be a warning
+    // There should be an error message
     await waitFor(() => {
       expect(screen.getByText(/does not contain enough cells/i)).toBeInTheDocument();
     });

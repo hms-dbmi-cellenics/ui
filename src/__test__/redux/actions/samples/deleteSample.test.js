@@ -7,9 +7,9 @@ import initialSampleState, { sampleTemplate } from '../../../../redux/reducers/s
 import initialProjectState, { projectTemplate } from '../../../../redux/reducers/projects/initialState';
 
 import { saveProject } from '../../../../redux/actions/projects';
-import { SAMPLES_DELETE, SAMPLES_SAVED } from '../../../../redux/actionTypes/samples';
+import { SAMPLES_DELETE, SAMPLES_SAVED, SAMPLES_SAVING } from '../../../../redux/actionTypes/samples';
 import { PROJECTS_UPDATE } from '../../../../redux/actionTypes/projects';
-import { EXPERIMENTS_UPDATED } from '../../../../redux/actionTypes/experiments';
+import { EXPERIMENTS_SAVING } from '../../../../redux/actionTypes/experiments';
 
 enableFetchMocks();
 
@@ -61,14 +61,16 @@ describe('deleteSample action', () => {
 
     expect(saveProject).toHaveBeenCalled();
 
+    expect(actions[0].type).toEqual(SAMPLES_SAVING);
+
     // Update project
     expect(actions[1].type).toEqual(PROJECTS_UPDATE);
 
     // Delete sample
     expect(actions[2].type).toEqual(SAMPLES_DELETE);
 
-    // Resolve loading state
-    expect(actions[3].type).toEqual(EXPERIMENTS_UPDATED);
+    // Experiments being saved
+    expect(actions[3].type).toEqual(EXPERIMENTS_SAVING);
 
     // Resolve loading state
     expect(actions[4].type).toEqual(SAMPLES_SAVED);
