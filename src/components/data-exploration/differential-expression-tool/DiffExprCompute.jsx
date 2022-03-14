@@ -257,7 +257,7 @@ const DiffExprCompute = (props) => {
                   target='_blank'
                   rel='noreferrer'
                 >
-                  limma-voom workflow
+                  pseudobulk limma-voom workflow
                 </a>.
               </span>
             )}
