@@ -12,6 +12,7 @@ const loadProjects = () => async (dispatch) => {
       type: PROJECTS_LOADING,
     });
     const response = await fetchAPI(url);
+
     let data = await response.json();
     throwIfRequestFailed(response, data, endUserMessages.ERROR_FETCHING_PROJECTS);
 

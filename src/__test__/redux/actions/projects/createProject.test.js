@@ -12,6 +12,12 @@ import {
 } from 'redux/actionTypes/projects';
 import '__test__/test-utils/setupTests';
 
+import { api } from 'utils/constants';
+
+import config from 'config';
+
+jest.mock('config');
+
 const mockStore = configureStore([thunk]);
 
 jest.mock('uuid');
@@ -51,6 +57,8 @@ describe('createProject action', () => {
   const experimentName = 'mockExperimentName';
 
   it('Works correctly when there are no errors', async () => {
+    config.currentApiVersion = api.V1;
+
     fetchMock.mockResponse(JSON.stringify({}), { url: 'mockedUrl', status: 200 });
 
     await store.dispatch(
@@ -77,7 +85,22 @@ describe('createProject action', () => {
     expect(actions[1].payload).toMatchSnapshot();
   });
 
+  it('Skips when using v2', async () => {
+    config.currentApiVersion = api.V2;
+
+    await store.dispatch(
+      createProject(projectName, projectDescription, experimentName),
+    );
+
+    expect(createExperiment).toHaveBeenCalledWith(projectUuid, experimentName);
+
+    const actions = store.getActions();
+    expect(actions.length).toEqual(0);
+  });
+
   it('Shows error message when there was a fetch error', async () => {
+    config.currentApiVersion = api.V1;
+
     const fetchErrorMessage = 'someFetchError';
 
     fetchMock.mockResponse(JSON.stringify({ message: fetchErrorMessage }), { url: 'mockedUrl', status: 400 });
