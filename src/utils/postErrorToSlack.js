@@ -9,18 +9,27 @@ const extractExperimentId = (url) => {
 const takeNumLines = (string, numLines) => string.split('\n').slice(0, numLines).join('\n');
 
 // Truncates data arrays so that it doesn't produce large logs
-const ARRAY_TRUNCATE_LENGTH = 20;
-const trimOutput = (key, item) => {
-  if (item !== null && typeof item === 'object') {
-    Object.keys(item).forEach((childKey) => {
-      trimOutput(childKey, item[childKey]);
-    });
-  }
+const ARRAY_TRUNCATE_LENGTH = 21;
+const truncateCollection = (arr) => {
+  if (arr.length < ARRAY_TRUNCATE_LENGTH) return arr;
 
-  if (Array.isArray(item) && item.length > ARRAY_TRUNCATE_LENGTH) {
-    const replacementArr = item.slice(0, ARRAY_TRUNCATE_LENGTH);
-    replacementArr.push('...');
-    return replacementArr;
+  const truncatedArr = arr.slice(0, ARRAY_TRUNCATE_LENGTH);
+  truncatedArr.push('...');
+  return truncatedArr;
+};
+
+const trimOutput = (key, item) => {
+  if (Array.isArray(item)) return truncateCollection(item);
+  if (item instanceof Set) return new Set(truncateCollection(Array.from(item)));
+
+  if (item !== null && typeof item === 'object') {
+    const newItem = Object.keys(item).reduce((newObject, childKey) => {
+      // eslint-disable-next-line no-param-reassign
+      newObject[childKey] = trimOutput(childKey, item[childKey]);
+      return newObject;
+    }, {});
+
+    return newItem;
   }
 
   return item;

@@ -53,7 +53,7 @@ const Error = ({ errorText, statusCode }) => (
       <center>
         <Space>
           <FeedbackButton />
-          <Button type='primary' onClick={() => window.location.reload()}>Go Back</Button>
+          <Button type='primary' onClick={() => window.location.reload()}>Reload Page</Button>
         </Space>
       </center>
     )}
