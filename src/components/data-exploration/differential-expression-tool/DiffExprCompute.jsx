@@ -30,7 +30,7 @@ const DiffExprCompute = (props) => {
   const dispatch = useDispatch();
   const { properties, hierarchy } = useSelector(getCellSets());
   const [isFormValid, setIsFormValid] = useState(false);
-  const [numSamples, setNumSamples] = useState(1)
+  const [numSamples, setNumSamples] = useState(0);
   const comparisonGroup = useSelector((state) => state.differentialExpression.comparison.group);
   const selectedComparison = useSelector((state) => state.differentialExpression.comparison.type);
   const { basis, cellSet, compareWith } = comparisonGroup?.[selectedComparison] || {};
@@ -40,12 +40,6 @@ const DiffExprCompute = (props) => {
    */
   useEffect(() => {
     dispatch(loadCellSets(experimentId));
-
-    const samples = hierarchy?.find(
-      (rootNode) => (rootNode.key === 'sample'),
-    )?.children;
-
-    setNumSamples(samples.length);
   }, []);
 
   useEffect(() => {
@@ -59,6 +53,21 @@ const DiffExprCompute = (props) => {
         properties,
         dispatch
       ));
+
+    const samples = hierarchy?.find(
+      (rootNode) => (rootNode.key === 'sample'),
+    )?.children;
+
+    setNumSamples(samples.length);
+
+    // Auto select the only sample if there is only one sample
+    if (samples.length === 1) {
+      const theOnlySampleOption = {
+        type: ComparisonType.WITHIN,
+        basis: `sample/${samples[0].key}`
+      }
+      dispatch(setComparisonGroup(theOnlySampleOption));
+    }
 
   }, [Object.keys(properties).length]);
 
