@@ -1,5 +1,6 @@
 import React from 'react';
-import postErrortoSlack from 'utils/postErrorToSlack';
+import PropTypes from 'prop-types';
+import postErrorToSlack from 'utils/postErrorToSlack';
 import { connect } from 'react-redux';
 import Error from 'pages/_error';
 
@@ -9,23 +10,25 @@ class ErrorBoundary extends React.Component {
     this.state = { hasError: false };
   }
 
-  static getDerivedStateFromError(error) {
+  static getDerivedStateFromError() {
     // Update state so the next render will show the fallback UI.
     return { hasError: true };
   }
 
   componentDidCatch(error, errorInfo) {
     // You can also log the error to an error reporting service
-    postErrortoSlack(error, errorInfo, this.props.reduxDump);
+
+    const { reduxDump } = this.props;
+    postErrorToSlack(error, errorInfo, reduxDump);
   }
 
   render() {
-    if (this.state.hasError) {
-      // You can render any custom fallback UI
-      return <Error />;
-    }
+    const { hasError } = this.state;
+    const { children } = this.props;
 
-    return this.props.children;
+    if (hasError) return <Error />;
+
+    return children;
   }
 }
 
@@ -34,5 +37,14 @@ function mapStateToProps(state) {
     reduxDump: state,
   };
 }
+
+ErrorBoundary.propTypes = {
+  reduxDump: PropTypes.object,
+  children: PropTypes.node.isRequired,
+};
+
+ErrorBoundary.defaultProps = {
+  reduxDump: {},
+};
 
 export default connect(mapStateToProps)(ErrorBoundary);

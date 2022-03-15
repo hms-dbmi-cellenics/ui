@@ -8,6 +8,24 @@ const extractExperimentId = (url) => {
 
 const takeNumLines = (string, numLines) => string.split('\n').slice(0, numLines).join('\n');
 
+// Truncates data arrays so that it doesn't produce large logs
+const ARRAY_TRUNCATE_LENGTH = 20;
+const trimOutput = (key, item) => {
+  if (item !== null && typeof item === 'object') {
+    Object.keys(item).forEach((childKey) => {
+      trimOutput(childKey, item[childKey]);
+    });
+  }
+
+  if (Array.isArray(item) && item.length > ARRAY_TRUNCATE_LENGTH) {
+    const replacementArr = item.slice(0, ARRAY_TRUNCATE_LENGTH);
+    replacementArr.push('...');
+    return replacementArr;
+  }
+
+  return item;
+};
+
 const buildErrorMessage = (error, componentStack, reduxDump, context) => {
   const {
     user, timestamp, experimentId, url,
@@ -27,7 +45,7 @@ const buildErrorMessage = (error, componentStack, reduxDump, context) => {
     ${takeNumLines(componentStack, 11)}
 
     ===== REDUX STATE =====
-    ${JSON.stringify(reduxDump, null, 2)}`
+    ${JSON.stringify(reduxDump, trimOutput, 2)}`
   );
 };
 
@@ -63,8 +81,6 @@ const postError = async (errorLog, context) => {
       method: 'POST',
       body: formData,
     });
-
-    console.log('res', res);
 
     if (!res.ok) {
       throw new Error(
