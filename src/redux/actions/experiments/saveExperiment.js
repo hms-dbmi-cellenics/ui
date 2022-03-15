@@ -1,32 +1,15 @@
 /* eslint-disable no-param-reassign */
-import fetchAPI from '../../../utils/fetchAPI';
-import { isServerError, throwIfRequestFailed } from '../../../utils/fetchErrors';
-import endUserMessages from '../../../utils/endUserMessages';
-import pushNotificationMessage from '../../../utils/pushNotificationMessage';
+import fetchAPI from 'utils/fetchAPI';
+import { isServerError, throwIfRequestFailed } from 'utils/fetchErrors';
+import endUserMessages from 'utils/endUserMessages';
+import pushNotificationMessage from 'utils/pushNotificationMessage';
 import {
   EXPERIMENTS_ERROR,
   EXPERIMENTS_SAVING,
   EXPERIMENTS_SAVED,
-} from '../../actionTypes/experiments';
+} from 'redux/actionTypes/experiments';
 
-// There are some differences between the property naming of elements
-// stored in the ui and in the api,
-// this is an attempt to deal with this in one single place (the ui)
-// We should try to converge to one single model to follow
-const convertedToApiModel = (experiment) => {
-  const {
-    id, name, projectUuid, ...restOfExperiment
-  } = experiment;
-
-  const convertedExperiment = {
-    ...restOfExperiment,
-    experimentId: id,
-    experimentName: name,
-    projectId: projectUuid,
-  };
-
-  return convertedExperiment;
-};
+import convertExperimentToApiV1Model from 'utils/convertExperimentToApiV1Model';
 
 const saveExperiment = (
   experimentId,
@@ -48,7 +31,7 @@ const saveExperiment = (
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(convertedToApiModel(experimentToSend)),
+        body: JSON.stringify(convertExperimentToApiV1Model(experimentToSend)),
       },
     );
 

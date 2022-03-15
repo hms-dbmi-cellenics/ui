@@ -33,9 +33,15 @@ const modules = {
   SETTINGS: 'SETTINGS',
 };
 
+const api = {
+  V1: 'v1',
+  V2: 'v2',
+};
+
 export {
   layout,
   plotNames,
   plotTypes,
   modules,
+  api,
 };
