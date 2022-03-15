@@ -64,8 +64,10 @@ const postError = async (errorLog, context) => {
       body: formData,
     });
 
+    console.log('res', res);
+
     if (!res.ok) {
-      console.error(
+      throw new Error(
         `Failed sending error message to Slack: ${res.status}`, res.statusText,
       );
     }

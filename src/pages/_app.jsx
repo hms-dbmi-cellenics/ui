@@ -9,9 +9,10 @@ import NProgress from 'nprogress';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 import { DefaultSeo } from 'next-seo';
+import ErrorBoundary from 'components/ErrorBoundary';
 
 import { wrapper } from 'redux/store';
-import { useSelector, useStore } from 'react-redux';
+import { useSelector } from 'react-redux';
 
 import AppRouteProvider from 'utils/AppRouteProvider';
 import ContentWrapper from 'components/ContentWrapper';
@@ -59,7 +60,6 @@ const WrappedApp = ({ Component, pageProps }) => {
   const experimentData = useSelector(
     (state) => (experimentId ? state.experimentSettings.info : {}),
   );
-  const store = useStore();
 
   const [amplifyConfigured, setAmplifyConfigured] = useState(!amplifyConfig);
 
@@ -127,18 +127,20 @@ const WrappedApp = ({ Component, pageProps }) => {
 
     // Otherwise, load the page inside the content wrapper.
     return (
-      <AppRouteProvider>
-        <ContentWrapper
-          routeExperimentId={experimentId}
-          experimentData={experimentData}
-        >
-          <Component
-            experimentId={experimentId}
+      <ErrorBoundary>
+        <AppRouteProvider>
+          <ContentWrapper
+            routeExperimentId={experimentId}
             experimentData={experimentData}
-            {...pageProps}
-          />
-        </ContentWrapper>
-      </AppRouteProvider>
+          >
+            <Component
+              experimentId={experimentId}
+              experimentData={experimentData}
+              {...pageProps}
+            />
+          </ContentWrapper>
+        </AppRouteProvider>
+      </ErrorBoundary>
     );
   };
 

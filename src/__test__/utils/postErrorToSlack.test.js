@@ -31,7 +31,11 @@ const mockReduxDump = {
 };
 
 jest.useFakeTimers('modern').setSystemTime(new Date('2020-01-01').getTime());
-window.location.href = jest.fn('http://localhost:3000/experiments/testae48e318dab9a1bd0bexperiment/data-exploration');
+
+delete window.location;
+window.location = {
+  href: 'http://localhost:3000/experiments/testae48e318dab9a1bd0bexperiment/data-exploration',
+};
 
 jest.mock('@aws-amplify/auth', () => ({
   currentAuthenticatedUser: () => Promise.resolve({
@@ -47,7 +51,17 @@ describe('PostErrorToSlack', () => {
   beforeEach(() => {
     jest.clearAllMocks();
 
+    process.env.NODE_ENV = 'production';
     fetchMock.resetMocks();
+    fetchMock.doMock();
+  });
+
+  it('Should not post if environment is not production', async () => {
+    process.env.NODE_ENV = 'staging';
+
+    await postErrorToSlack(mockError, mockInfo, mockReduxDump);
+
+    expect(fetchMock).not.toHaveBeenCalled();
   });
 
   it('Posts requests correctly', async () => {
@@ -68,10 +82,12 @@ describe('PostErrorToSlack', () => {
   });
 
   it('Should not throw an error if POSTing fails', async () => {
-    fetchMock.mockIf(/.*/, () => Promise.reject(new Error('Some random error')));
+    fetchMock.mockIf(/.*/, () => new Response('Server error', { status: 500 }));
 
-    expect(async () => {
+    await expect(async () => {
       await postErrorToSlack(mockError, mockInfo, mockReduxDump);
     }).not.toThrow();
+
+    expect(fetchMock).toHaveBeenCalledTimes(1);
   });
 });
