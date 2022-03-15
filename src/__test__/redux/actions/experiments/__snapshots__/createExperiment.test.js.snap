@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`createExperiment Dispatches action when called 1`] = `
+exports[`createExperiment Works correctly with v2 1`] = `
 Object {
   "experiment": Object {
     "createdDate": "2020-01-01T00:00:00.000Z",
@@ -19,4 +19,25 @@ Object {
 }
 `;
 
-exports[`createExperiment Dispatches action when called 2`] = `"{\\"description\\":\\"Analysis description\\",\\"createdDate\\":\\"2020-01-01T00:00:00.000Z\\",\\"lastViewed\\":null,\\"notifyByEmail\\":true,\\"meta\\":{\\"organism\\":null,\\"type\\":\\"10x\\"},\\"sampleIds\\":[],\\"experimentId\\":\\"b3f6c0ca86ec045c84f380cd5016972e\\",\\"projectId\\":\\"project-1\\"}"`;
+exports[`createExperiment Works correctly with v2 2`] = `"{\\"id\\":\\"b3f6c0ca86ec045c84f380cd5016972e\\",\\"description\\":\\"Analysis description\\"}"`;
+
+exports[`createExperiment Works well with v1 1`] = `
+Object {
+  "experiment": Object {
+    "createdDate": "2020-01-01T00:00:00.000Z",
+    "description": "Analysis description",
+    "id": "b3f6c0ca86ec045c84f380cd5016972e",
+    "lastViewed": null,
+    "meta": Object {
+      "organism": null,
+      "type": "10x",
+    },
+    "name": undefined,
+    "notifyByEmail": true,
+    "projectUuid": "project-1",
+    "sampleIds": Array [],
+  },
+}
+`;
+
+exports[`createExperiment Works well with v1 2`] = `"{\\"description\\":\\"Analysis description\\",\\"createdDate\\":\\"2020-01-01T00:00:00.000Z\\",\\"lastViewed\\":null,\\"notifyByEmail\\":true,\\"meta\\":{\\"organism\\":null,\\"type\\":\\"10x\\"},\\"sampleIds\\":[],\\"experimentId\\":\\"b3f6c0ca86ec045c84f380cd5016972e\\",\\"projectId\\":\\"project-1\\"}"`;
