@@ -1,6 +1,8 @@
 import moment from 'moment';
 import { v4 as uuidv4 } from 'uuid';
 
+import config from 'config';
+
 import fetchAPI from 'utils/fetchAPI';
 import { isServerError, throwIfRequestFailed } from 'utils/fetchErrors';
 import { api } from 'utils/constants';
@@ -25,7 +27,7 @@ const createProject = (
 
   const newProjectUuid = uuidv4();
 
-  if (api.CURRENT_VERSION === api.possibleVersions.V2) {
+  if (config.currentApiVersion === api.V2) {
     await dispatch(createExperiment(newProjectUuid, newExperimentName));
 
     // Project doesn't exist in v2, so we are done

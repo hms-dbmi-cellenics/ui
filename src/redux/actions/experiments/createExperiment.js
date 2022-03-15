@@ -3,6 +3,7 @@ import fetchAPI from 'utils/fetchAPI';
 import moment from 'moment';
 import hash from 'object-hash';
 
+import config from 'config';
 import { api } from 'utils/constants';
 
 import {
@@ -35,11 +36,11 @@ const createExperiment = (
   let url;
   let experimentToSend;
 
-  if (api.CURRENT_VERSION === api.possibleVersions.V1) {
+  if (config.currentApiVersion === api.V1) {
     experimentToSend = convertExperimentToApiV1Model(newExperiment);
 
     url = `/v1/experiments/${experimentId}`;
-  } else if (api.CURRENT_VERSION === api.possibleVersions.V2) {
+  } else if (config.currentApiVersion === api.V2) {
     const { id, name, description } = newExperiment;
     experimentToSend = { id, name, description };
 
