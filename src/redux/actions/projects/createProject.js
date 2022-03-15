@@ -28,6 +28,7 @@ const createProject = (
   if (api.CURRENT_VERSION === api.possibleVersions.V2) {
     await dispatch(createExperiment(newProjectUuid, newExperimentName));
 
+    // Project doesn't exist in v2, so we are done
     return;
   }
 
