@@ -1,19 +1,22 @@
 import moment from 'moment';
 import { v4 as uuidv4 } from 'uuid';
 
-import fetchAPI from '../../../utils/fetchAPI';
-import { isServerError, throwIfRequestFailed } from '../../../utils/fetchErrors';
+import config from 'config';
+
+import fetchAPI from 'utils/fetchAPI';
+import { isServerError, throwIfRequestFailed } from 'utils/fetchErrors';
+import { api } from 'utils/constants';
 
 import {
   PROJECTS_ERROR,
   PROJECTS_CREATE,
   PROJECTS_SAVING,
-} from '../../actionTypes/projects';
+} from 'redux/actionTypes/projects';
 
-import { projectTemplate } from '../../reducers/projects/initialState';
-import createExperiment from '../experiments/createExperiment';
-import endUserMessages from '../../../utils/endUserMessages';
-import pushNotificationMessage from '../../../utils/pushNotificationMessage';
+import { projectTemplate } from 'redux/reducers/projects/initialState';
+import createExperiment from 'redux/actions/experiments/createExperiment';
+import endUserMessages from 'utils/endUserMessages';
+import pushNotificationMessage from 'utils/pushNotificationMessage';
 
 const createProject = (
   projectName,
@@ -24,8 +27,13 @@ const createProject = (
 
   const newProjectUuid = uuidv4();
 
-  // Always create an experiment for a new project
-  // required because samples DynamoDB require experimentId
+  if (config.currentApiVersion === api.V2) {
+    await dispatch(createExperiment(newProjectUuid, newExperimentName));
+
+    // Project doesn't exist in v2, so we are done
+    return;
+  }
+
   const newExperiment = await dispatch(createExperiment(newProjectUuid, newExperimentName));
 
   dispatch({
