@@ -17,9 +17,7 @@ const buildErrorMessage = (error, componentStack, reduxDump, context) => {
     Uncaught UI Error - Exp ID ${experimentId} - ${timestamp}
 
     === DETAILS ===
-    Name: ${user.attributes.name}
-    Email: ${user.attributes.email}
-    UserID: ${user.username}
+    User: ${user.attributes.name} <${user.attributes.email}> ${user.username}
     ExperimentID: ${experimentId}
     URL: ${url}
     Timestamp: ${timestamp}
@@ -42,9 +40,7 @@ const postError = async (errorLog, context) => {
   \u26A0  Uncaught UI Error - ExpID ${experimentId} - ${timestamp}
   URL: ${url}
 
-  User: ${user.attributes.name}
-  Email: ${user.attributes.email}
-  User ID: ${user.username}
+  User: ${user.attributes.name} <${user.attributes.email}> ${user.username}
   Experiment ID: ${experimentId}`;
 
   const formData = new FormData();
@@ -69,7 +65,9 @@ const postError = async (errorLog, context) => {
     });
 
     if (!res.ok) {
-      console.error('Failed sending error to slack');
+      console.error(
+        `Failed sending error message to Slack: ${res.status}`, res.statusText,
+      );
     }
   } catch (err) {
     console.error(err);
@@ -77,6 +75,9 @@ const postError = async (errorLog, context) => {
 };
 
 const postErrorToSlack = async (error, info, reduxDump) => {
+  // Only log errors to Slack if in production.
+  if (process.env.NODE_ENV !== 'production') return;
+
   const user = await Auth.currentAuthenticatedUser();
 
   const timestamp = new Date().toISOString();

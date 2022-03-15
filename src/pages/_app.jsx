@@ -9,7 +9,6 @@ import NProgress from 'nprogress';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 import { DefaultSeo } from 'next-seo';
-import { ErrorBoundary } from 'react-error-boundary';
 
 import { wrapper } from 'redux/store';
 import { useSelector, useStore } from 'react-redux';
@@ -23,7 +22,6 @@ import CustomError from 'utils/customError';
 import UnauthorizedPage from 'pages/401';
 import NotFoundPage from 'pages/404';
 import Error from 'pages/_error';
-import postErrorToSlack from 'utils/postErrorToSlack';
 
 const mockCredentialsForInframock = () => {
   Credentials.get = async () => ({
@@ -129,28 +127,18 @@ const WrappedApp = ({ Component, pageProps }) => {
 
     // Otherwise, load the page inside the content wrapper.
     return (
-      <ErrorBoundary
-        FallbackComponent={Error}
-        onError={(error, info) => {
-          // Only log errors to Slack if in production.
-          if (process.env.NODE_ENV !== 'production') return;
-          const reduxDump = store.getState();
-          postErrorToSlack(error, info, reduxDump);
-        }}
-      >
-        <AppRouteProvider>
-          <ContentWrapper
-            routeExperimentId={experimentId}
+      <AppRouteProvider>
+        <ContentWrapper
+          routeExperimentId={experimentId}
+          experimentData={experimentData}
+        >
+          <Component
+            experimentId={experimentId}
             experimentData={experimentData}
-          >
-            <Component
-              experimentId={experimentId}
-              experimentData={experimentData}
-              {...pageProps}
-            />
-          </ContentWrapper>
-        </AppRouteProvider>
-      </ErrorBoundary>
+            {...pageProps}
+          />
+        </ContentWrapper>
+      </AppRouteProvider>
     );
   };
 

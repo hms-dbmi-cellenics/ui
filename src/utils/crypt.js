@@ -36,10 +36,12 @@ const getWebhookUrl = () => {
   return decrypt(webhookEndpoint);
 };
 
+// Token for Logger bot to post errors as file
+// Required becuase webhook doesn't suport file uploads
 const getLoggerBotToken = () => {
   const botToken = {
     iv: '0d7ae20b4fd8f7e72e60312098ce4149', // pragma: allowlist secret
-    content: '6366a3e16da6604d6a5ea0d0ec13d3979f820cd73056c9624041961c0c90a629217606d3a6fcd692291050ca73d5c7306ee7439a6eced67f1e',
+    content: '6366a3e16da6604d6a5ea0d0ec13d3979f820cd73056c9624041961c0c90a629217606d3a6fcd692291050ca73d5c7306ee7439a6eced67f1e', // pragma: allowlist secret
   };
 
   return decrypt(botToken);
