@@ -1,5 +1,5 @@
 import Auth from '@aws-amplify/auth';
-import { getLoggerBotToken } from 'utils/crypt';
+import { getLoggerBotToken } from 'utils/slack/creds';
 
 const extractExperimentId = (url) => {
   const match = url.match(/experiments\/([^/]+)/i);
@@ -9,11 +9,11 @@ const extractExperimentId = (url) => {
 const takeNumLines = (string, numLines) => string.split('\n').slice(0, numLines).join('\n');
 
 // Truncates data arrays so that it doesn't produce large logs
-const ARRAY_TRUNCATE_LENGTH = 21;
+const NUM_DATA_TO_SHOW = 20;
 const truncateCollection = (arr) => {
-  if (arr.length < ARRAY_TRUNCATE_LENGTH) return arr;
+  if (arr.length < NUM_DATA_TO_SHOW) return arr;
 
-  const truncatedArr = arr.slice(0, ARRAY_TRUNCATE_LENGTH);
+  const truncatedArr = arr.slice(0, NUM_DATA_TO_SHOW);
   truncatedArr.push('...');
   return truncatedArr;
 };
@@ -102,9 +102,6 @@ const postError = async (errorLog, context) => {
 };
 
 const postErrorToSlack = async (error, info, reduxDump) => {
-  // Only log errors to Slack if in production.
-  if (process.env.NODE_ENV !== 'production') return;
-
   const user = await Auth.currentAuthenticatedUser();
 
   const timestamp = new Date().toISOString();

@@ -1,4 +1,4 @@
-import postErrorToSlack from 'utils/postErrorToSlack';
+import postErrorToSlack from 'utils/slack/postErrorToSlack';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 
 enableFetchMocks();
@@ -50,18 +50,8 @@ jest.mock('@aws-amplify/auth', () => ({
 describe('PostErrorToSlack', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-
-    process.env.NODE_ENV = 'production';
     fetchMock.resetMocks();
     fetchMock.doMock();
-  });
-
-  it('Should not post if environment is not production', async () => {
-    process.env.NODE_ENV = 'staging';
-
-    await postErrorToSlack(mockError, mockInfo, mockReduxDump);
-
-    expect(fetchMock).not.toHaveBeenCalled();
   });
 
   it('Posts requests correctly', async () => {
@@ -82,7 +72,7 @@ describe('PostErrorToSlack', () => {
   });
 
   it('Should not throw an error if POSTing fails', async () => {
-    fetchMock.mockIf(/.*/, () => new Response('Server error', { status: 500 }));
+    fetchMock.mockIf(/.*/, () => Promise.resolve(new Response('Server error', { status: 500 })));
 
     await expect(async () => {
       await postErrorToSlack(mockError, mockInfo, mockReduxDump);

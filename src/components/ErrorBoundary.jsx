@@ -1,9 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import postErrorToSlack from 'utils/postErrorToSlack';
+import postErrorToSlack from 'utils/slack/postErrorToSlack';
 import { connect } from 'react-redux';
 import Error from 'pages/_error';
 
+// Implementation of https://reactjs.org/docs/error-boundaries.html
 class ErrorBoundary extends React.Component {
   constructor(props) {
     super(props);
@@ -16,8 +17,8 @@ class ErrorBoundary extends React.Component {
   }
 
   componentDidCatch(error, errorInfo) {
-    // You can also log the error to an error reporting service
-
+    // Act on the error inside this function
+    if (process.env.NODE_ENV !== 'production') return;
     const { reduxDump } = this.props;
     postErrorToSlack(error, errorInfo, reduxDump);
   }
