@@ -1,7 +1,7 @@
-import composeTree from './composeTree';
-import getAllCells from './getAllCells';
-import getSampleCells from './getSampleCells';
-import { getCellSetKey, getRootKey } from './getCellSetNames';
+import composeTree from 'utils/cellSets/composeTree';
+import getAllCells from 'utils/cellSets/getAllCells';
+import getSampleCells from 'utils/cellSets/getSampleCells';
+import { getCellSetKey, getRootKey } from 'utils/cellSets/getCellSetKeys';
 
 export {
   composeTree,
