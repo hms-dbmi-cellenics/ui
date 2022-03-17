@@ -1,7 +1,9 @@
 import React from 'react';
-import { Result, Typography, Space } from 'antd';
+import {
+  Result, Typography, Space, Button,
+} from 'antd';
 import PropTypes from 'prop-types';
-import FeedbackButton from '../components/FeedbackButton';
+import FeedbackButton from 'components/FeedbackButton';
 
 const { Title, Text } = Typography;
 
@@ -48,9 +50,12 @@ const Error = ({ errorText, statusCode }) => (
       </>
     )}
     extra={(
-      <Space direction='vertical' style={{ width: '100%' }}>
-        <FeedbackButton />
-      </Space>
+      <center>
+        <Space>
+          <FeedbackButton />
+          <Button type='primary' onClick={() => window.location.reload()}>Reload Page</Button>
+        </Space>
+      </center>
     )}
   />
 );

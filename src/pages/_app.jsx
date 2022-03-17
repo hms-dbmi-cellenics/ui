@@ -5,21 +5,24 @@ import Amplify, { Credentials } from '@aws-amplify/core';
 /* eslint-disable react/jsx-props-no-spreading */
 import React, { useEffect, useState } from 'react';
 import Router, { useRouter } from 'next/router';
-
-import { DefaultSeo } from 'next-seo';
 import NProgress from 'nprogress';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
+import { DefaultSeo } from 'next-seo';
+import ErrorBoundary from 'components/ErrorBoundary';
+
+import { wrapper } from 'redux/store';
 import { useSelector } from 'react-redux';
-import AppRouteProvider from '../utils/AppRouteProvider';
-import ContentWrapper from '../components/ContentWrapper';
-import CustomError from '../utils/customError';
-import Error from './_error';
-import NotFoundPage from './404';
-import TagManager from '../components/TagManager';
-import UnauthorizedPage from './401';
-import { initTracking } from '../utils/tracking';
-import { wrapper } from '../redux/store';
+
+import AppRouteProvider from 'utils/AppRouteProvider';
+import ContentWrapper from 'components/ContentWrapper';
+import TagManager from 'components/TagManager';
+import { initTracking } from 'utils/tracking';
+
+import CustomError from 'utils/customError';
+import UnauthorizedPage from 'pages/401';
+import NotFoundPage from 'pages/404';
+import Error from 'pages/_error';
 
 const mockCredentialsForInframock = () => {
   Credentials.get = async () => ({
@@ -124,18 +127,20 @@ const WrappedApp = ({ Component, pageProps }) => {
 
     // Otherwise, load the page inside the content wrapper.
     return (
-      <AppRouteProvider>
-        <ContentWrapper
-          routeExperimentId={experimentId}
-          experimentData={experimentData}
-        >
-          <Component
-            experimentId={experimentId}
+      <ErrorBoundary>
+        <AppRouteProvider>
+          <ContentWrapper
+            routeExperimentId={experimentId}
             experimentData={experimentData}
-            {...pageProps}
-          />
-        </ContentWrapper>
-      </AppRouteProvider>
+          >
+            <Component
+              experimentId={experimentId}
+              experimentData={experimentData}
+              {...pageProps}
+            />
+          </ContentWrapper>
+        </AppRouteProvider>
+      </ErrorBoundary>
     );
   };
 
