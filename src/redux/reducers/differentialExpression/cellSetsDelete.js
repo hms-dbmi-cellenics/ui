@@ -6,8 +6,8 @@ const differentialExpressionUnselectDeletedOption = produce((draft, action) => {
   const { key: deletedKey } = action.payload;
 
   Object.values(draft.comparison.group).forEach((comparisonGroup) => {
-    Object.keys(comparisonGroup).forEach((comparisonKey) => {
-      if (getCellSetKey(comparisonGroup[comparisonKey]) !== deletedKey) return;
+    Object.entries(comparisonGroup).forEach(([comparisonKey, comparisonValue]) => {
+      if (getCellSetKey(comparisonValue) !== deletedKey) return;
       comparisonGroup[comparisonKey] = null;
     });
   });

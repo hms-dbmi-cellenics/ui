@@ -335,7 +335,7 @@ describe('DiffExprCompute', () => {
     });
   });
 
-  it('Unselect deleted option', async () => {
+  it('Choosing cell set from different groups will disable the compute button', async () => {
     const selectionBoxDivParentSelector = "div[class='ant-select-selector']";
     const selectionBoxPlaceholderSelector = "span[class='ant-select-selection-placeholder']";
     const selectionBoxItemSelector = "span[class='ant-select-selection-item']";

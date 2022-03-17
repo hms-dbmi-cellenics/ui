@@ -79,15 +79,6 @@ const DiffExprCompute = (props) => {
       return;
     }
 
-    if (
-      selectedComparison === ComparisonType.BETWEEN
-      && compareWith !== 'background'
-      && getCellSetClassKey(cellSet) !== getCellSetClassKey(compareWith)
-    ) {
-      setIsFormValid(false);
-      return;
-    }
-
     setIsFormValid(true);
   };
 
