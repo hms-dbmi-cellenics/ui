@@ -15,7 +15,7 @@ import differentialExpressionError from 'redux/reducers/differentialExpression/d
 import differentialExpressionSetType from 'redux/reducers/differentialExpression/differentialExpressionSetType';
 import differentialExpressionSetGroup from 'redux/reducers/differentialExpression/differentialExpressionSetGroup';
 import differentialExpressionSetGeneOrdering from 'redux/reducers/differentialExpression/differentialExpressionSetOrdering';
-import differentialExpressionUnselectDeletedOption from 'redux/reducers/differentialExpression/differentialExpressionUnselectDeletedOption';
+import cellSetsDelete from 'redux/reducers/differentialExpression/cellSetsDelete';
 import initialState from 'redux/reducers/differentialExpression/initialState';
 
 const differentialExpressionReducer = (state = initialState, action) => {
@@ -42,7 +42,7 @@ const differentialExpressionReducer = (state = initialState, action) => {
       return initialState;
     }
     case CELL_SETS_DELETE: {
-      return differentialExpressionUnselectDeletedOption(state, action);
+      return cellSetsDelete(state, action);
     }
     default: {
       return state;
