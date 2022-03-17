@@ -114,7 +114,7 @@ The script will produce HTML artifacts that will open in your default browser as
 Browser cache enabled by default in production environment. This can be disabled by adding the entry 
 "disableCache" to "true" via the console using the command:
 
-    localStorage.set("disableCache", "true")
+    localStorage.setItem("disableCache", "true")
 
 Browser cache makes it hard to develop as it can hide changes from the backend, so cache is disabled by default in development. This can be changed by modifying `disableCache` in `localStorage` manually.
 

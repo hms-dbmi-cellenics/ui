@@ -9,8 +9,8 @@ import { CommentOutlined, DownOutlined } from '@ant-design/icons';
 import React, { useState } from 'react';
 
 import Auth from '@aws-amplify/auth';
-import endUserMessages from '../utils/endUserMessages';
-import pushNotificationMessage from '../utils/pushNotificationMessage';
+import endUserMessages from 'utils/endUserMessages';
+import pushNotificationMessage from 'utils/pushNotificationMessage';
 
 const { TextArea } = Input;
 
@@ -88,7 +88,7 @@ const FeedbackButton = () => {
     };
 
     try {
-      const { getWebhookUrl } = await import('../utils/crypt');
+      const { getWebhookUrl } = await import('utils/slack');
       const r = await fetch(getWebhookUrl(), {
         method: 'POST',
         body: JSON.stringify(feedbackData),
