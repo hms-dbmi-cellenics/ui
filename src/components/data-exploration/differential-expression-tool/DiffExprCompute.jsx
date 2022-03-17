@@ -16,7 +16,7 @@ import { composeTree } from 'utils/cellSets';
 import { setComparisonGroup, setComparisonType } from 'redux/actions/differentialExpression';
 import checkCanRunDiffExpr, { canRunDiffExprResults } from 'utils/differentialExpression/checkCanRunDiffExpr';
 import unselectDeletedOption from 'utils/differentialExpression/unselectDeletedOption';
-import { getRootKey } from 'utils/cellSets';
+import { getCellSetClassKey } from 'utils/cellSets';
 
 const { Option, OptGroup } = Select;
 
@@ -45,15 +45,6 @@ const DiffExprCompute = (props) => {
   useEffect(() => {
     if (hierarchy && hierarchy.length === 0) return;
 
-    // If any selected option is deleted, set the option to null
-    Object.keys(comparisonGroup).forEach(
-      (comparisonType) => unselectDeletedOption(
-        comparisonGroup,
-        comparisonType,
-        properties,
-        dispatch
-      ));
-
     const samples = hierarchy?.find(
       (rootNode) => (rootNode.key === 'sample'),
     )?.children;
@@ -63,6 +54,7 @@ const DiffExprCompute = (props) => {
     // Auto select the only sample if there is only one sample
     if (samples.length === 1) {
       const theOnlySampleOption = {
+        ...comparisonGroup[ComparisonType.WITHIN],
         type: ComparisonType.WITHIN,
         basis: `sample/${samples[0].key}`
       }
@@ -91,7 +83,7 @@ const DiffExprCompute = (props) => {
     if (
       selectedComparison === ComparisonType.BETWEEN
       && compareWith !== 'background'
-      && getRootKey(cellSet) !== getRootKey(compareWith)
+      && getCellSetClassKey(cellSet) !== getCellSetClassKey(compareWith)
     ) {
       setIsFormValid(false);
       return;
@@ -143,7 +135,7 @@ const DiffExprCompute = (props) => {
         const isAlreadySelected = Object.values(comparisonGroup[selectedComparison]).includes(`${rootKey}/${key}`);
 
         // or a cell set that is not in the same group as selected previously in `cellSet`
-        const parentGroup = getRootKey(comparisonGroup[selectedComparison]?.cellSet);
+        const parentGroup = getCellSetClassKey(comparisonGroup[selectedComparison]?.cellSet);
         const isNotInTheSameGroup = rootKey !== parentGroup;
 
         return isAlreadySelected || (option === 'compareWith' && isNotInTheSameGroup);

@@ -1,7 +1,7 @@
 import _ from 'lodash';
 
 import { ComparisonType } from 'components/data-exploration/differential-expression-tool/DiffExprCompute';
-import { getCellSetKey, getRootKey } from 'utils/cellSets';
+import { getCellSetKey, getCellSetClassKey } from 'utils/cellSets';
 
 const MIN_NUM_CELLS_IN_GROUP = 10;
 const NUM_SAMPLES_SHOW_ERROR = 1;
@@ -62,7 +62,7 @@ const checkCanRunDiffExpr = (
 
   let compareWithCellIds = [];
   if (['rest', 'background'].includes(compareWithKey)) {
-    const parentKey = getRootKey(cellSet);
+    const parentKey = getCellSetClassKey(cellSet);
 
     const otherGroupKeys = hierarchy.find((obj) => obj.key === parentKey)
       .children.filter((child) => child.key !== cellSetKey);

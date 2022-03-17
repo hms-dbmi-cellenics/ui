@@ -1,4 +1,4 @@
-import initialState from './initialState';
+import { CELL_SETS_DELETE } from 'redux/actionTypes/cellSets';
 import {
   DIFF_EXPR_LOADING,
   DIFF_EXPR_LOADED,
@@ -6,15 +6,17 @@ import {
   DIFF_EXPR_COMPARISON_TYPE_SET,
   DIFF_EXPR_COMPARISON_GROUP_SET,
   DIFF_EXPR_ORDERING_SET,
-} from '../../actionTypes/differentialExpression';
-import { EXPERIMENT_SETTINGS_PIPELINE_START } from '../../actionTypes/experimentSettings';
+} from 'redux/actionTypes/differentialExpression';
+import { EXPERIMENT_SETTINGS_PIPELINE_START } from 'redux/actionTypes/experimentSettings';
 
-import differentialExpressionLoading from './differentialExpressionLoading';
-import differentialExpressionLoaded from './differentialExpressionLoaded';
-import differentialExpressionError from './differentialExpressionError';
-import differentialExpressionSetType from './differentialExpressionSetType';
-import differentialExpressionSetGroup from './differentialExpressionSetGroup';
-import differentialExpressionSetGeneOrdering from './differentialExpressionSetOrdering';
+import differentialExpressionLoading from 'redux/reducers/differentialExpression/differentialExpressionLoading';
+import differentialExpressionLoaded from 'redux/reducers/differentialExpression/differentialExpressionLoaded';
+import differentialExpressionError from 'redux/reducers/differentialExpression/differentialExpressionError';
+import differentialExpressionSetType from 'redux/reducers/differentialExpression/differentialExpressionSetType';
+import differentialExpressionSetGroup from 'redux/reducers/differentialExpression/differentialExpressionSetGroup';
+import differentialExpressionSetGeneOrdering from 'redux/reducers/differentialExpression/differentialExpressionSetOrdering';
+import differentialExpressionUnselectDeletedOption from 'redux/reducers/differentialExpression/differentialExpressionUnselectDeletedOption';
+import initialState from 'redux/reducers/differentialExpression/initialState';
 
 const differentialExpressionReducer = (state = initialState, action) => {
   switch (action.type) {
@@ -38,6 +40,9 @@ const differentialExpressionReducer = (state = initialState, action) => {
     }
     case EXPERIMENT_SETTINGS_PIPELINE_START: {
       return initialState;
+    }
+    case CELL_SETS_DELETE: {
+      return differentialExpressionUnselectDeletedOption(state, action);
     }
     default: {
       return state;
