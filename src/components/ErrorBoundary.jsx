@@ -6,6 +6,8 @@ import { connect } from 'react-redux';
 import Error from 'pages/_error';
 
 // Implementation of https://reactjs.org/docs/error-boundaries.html
+// Using React class because it's not yet supported for functional components
+// according to https://stackoverflow.com/a/68075800/1940886
 class ErrorBoundary extends React.Component {
   constructor(props) {
     super(props);
