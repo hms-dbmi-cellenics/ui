@@ -5,10 +5,10 @@ Array [
   [Error: test],
   Object {
     "componentStack": "
-    in ThrowError (at ErrorBoundary.test.jsx:30)
+    in ThrowError (at ErrorBoundary.test.jsx:31)
     in ErrorBoundary (created by Connect(ErrorBoundary))
-    in Connect(ErrorBoundary) (at ErrorBoundary.test.jsx:29)
-    in Provider (at ErrorBoundary.test.jsx:28)",
+    in Connect(ErrorBoundary) (at ErrorBoundary.test.jsx:30)
+    in Provider (at ErrorBoundary.test.jsx:29)",
   },
   Object {
     "backendStatus": Object {},
@@ -138,7 +138,7 @@ Array [
       },
     },
     "networkResources": Object {
-      "environment": undefined,
+      "environment": "production",
     },
     "projects": Object {
       "ids": Array [],

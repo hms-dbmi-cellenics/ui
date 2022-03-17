@@ -6,6 +6,7 @@ import { makeStore } from 'redux/store';
 import postErrorToSlack from 'utils/postErrorToSlack';
 
 import ErrorBoundary from 'components/ErrorBoundary';
+import loadEnvironment from 'redux/actions/networkResources/loadEnvironment';
 
 const content = 'Some content';
 
@@ -38,9 +39,8 @@ let storeState = null;
 describe('ErrorBoundary', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-
-    process.env.NODE_ENV = 'production';
     storeState = makeStore();
+    storeState.dispatch(loadEnvironment('production'));
   });
 
   it('Does not render if there is no error', () => {
@@ -66,8 +66,7 @@ describe('ErrorBoundary', () => {
   });
 
   it('Should not post error if environment is not production', async () => {
-    process.env.NODE_ENV = 'staging';
-
+    storeState.dispatch(loadEnvironment('staging'));
     renderErrorBoundary(storeState);
 
     expect(postErrorToSlack).not.toHaveBeenCalled();
