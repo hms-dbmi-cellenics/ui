@@ -2,7 +2,7 @@
 import produce from 'immer';
 import { getCellSetKey } from 'utils/cellSets';
 
-const differentialExpressionUnselectDeletedOption = produce((draft, action) => {
+const cellSetsDelete = produce((draft, action) => {
   const { key: deletedKey } = action.payload;
 
   Object.values(draft.comparison.group).forEach((comparisonGroup) => {
@@ -13,4 +13,4 @@ const differentialExpressionUnselectDeletedOption = produce((draft, action) => {
   });
 });
 
-export default differentialExpressionUnselectDeletedOption;
+export default cellSetsDelete;
