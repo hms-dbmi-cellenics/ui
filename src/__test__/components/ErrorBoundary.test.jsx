@@ -3,7 +3,7 @@ import { screen, render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Provider } from 'react-redux';
 import { makeStore } from 'redux/store';
-import postErrorToSlack from 'utils/slack/postErrorToSlack';
+import postErrorToSlack from 'utils/postErrorToSlack';
 
 import ErrorBoundary from 'components/ErrorBoundary';
 
@@ -13,7 +13,7 @@ const content = 'Some content';
 // This is a string contained in the `_error.jsx component to test if the component is rendered.
 const errorText = /Sorry, something went wrong on our end/i;
 
-jest.mock('utils/slack/postErrorToSlack');
+jest.mock('utils/postErrorToSlack');
 
 delete window.location;
 window.location = { reload: jest.fn() };

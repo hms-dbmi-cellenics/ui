@@ -1,4 +1,4 @@
-import postErrorToSlack from 'utils/slack/postErrorToSlack';
+import postErrorToSlack from 'utils/postErrorToSlack';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 
 enableFetchMocks();
@@ -51,7 +51,6 @@ describe('PostErrorToSlack', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     fetchMock.resetMocks();
-    fetchMock.doMock();
   });
 
   it('Posts requests correctly', async () => {

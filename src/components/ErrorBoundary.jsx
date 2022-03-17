@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import postErrorToSlack from 'utils/slack/postErrorToSlack';
+import postErrorToSlack from 'utils/postErrorToSlack';
 import { connect } from 'react-redux';
 import Error from 'pages/_error';
 

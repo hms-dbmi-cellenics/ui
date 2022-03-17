@@ -1,5 +1,5 @@
 import Auth from '@aws-amplify/auth';
-import { getLoggerBotToken } from 'utils/slack/creds';
+import { getLoggerBotToken } from 'utils/slack';
 
 const extractExperimentId = (url) => {
   const match = url.match(/experiments\/([^/]+)/i);
