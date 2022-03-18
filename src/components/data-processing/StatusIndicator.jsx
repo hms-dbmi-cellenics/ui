@@ -28,11 +28,13 @@ const StatusIndicator = (props) => {
     experimentId, allSteps, currentStep, completedSteps,
   } = props;
 
-  const { status: backendStatus } = useSelector(getBackendStatus(experimentId));
+  const {
+    status: { pipeline },
+  } = useSelector(getBackendStatus(experimentId));
 
   const {
     startDate, stopDate, status, error,
-  } = backendStatus?.pipeline || {};
+  } = pipeline;
 
   const statusIndicators = {
     [pipelineStatus.NOT_CREATED]: {
