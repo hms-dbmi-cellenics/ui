@@ -1,5 +1,5 @@
 import React from 'react';
-import { screen, render } from '@testing-library/react';
+import { screen, render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Provider } from 'react-redux';
 import { makeStore } from 'redux/store';
@@ -20,7 +20,7 @@ delete window.location;
 window.location = { reload: jest.fn() };
 
 const ThrowError = ({ hasError }) => {
-  if (hasError) throw new Error('test');
+  if (hasError) setTimeout(() => { throw new Error('test'); }, 2000);
   return content;
 };
 
@@ -50,19 +50,25 @@ describe('ErrorBoundary', () => {
     expect(screen.queryByText(errorText)).toBeNull();
   });
 
-  it('Renders the error page if there is an error', () => {
+  it('Still render the UI if there is an error', () => {
     renderErrorBoundary(storeState);
 
-    expect(screen.queryByText(content)).toBeNull();
-    expect(screen.getByText(errorText)).toBeInTheDocument();
+    expect(screen.getByText(content)).toBeInTheDocument();
+    expect(screen.queryByText(errorText)).toBeNull();
+
+    waitFor(() => {
+      expect(postErrorToSlack).toHaveBeenCalledTimes(1);
+    }, { timeout: 3000 });
   });
 
   it('Should post error if environment is production', async () => {
     renderErrorBoundary(storeState);
 
-    expect(postErrorToSlack).toHaveBeenCalledTimes(1);
-    const payload = postErrorToSlack.mock.calls[0];
-    expect(payload).toMatchSnapshot();
+    waitFor(() => {
+      expect(postErrorToSlack).toHaveBeenCalledTimes(1);
+      const payload = postErrorToSlack.mock.calls[0];
+      expect(payload).toMatchSnapshot();
+    }, { timeout: 3000 });
   });
 
   it('Should not post error if environment is not production', async () => {
@@ -70,12 +76,5 @@ describe('ErrorBoundary', () => {
     renderErrorBoundary(storeState);
 
     expect(postErrorToSlack).not.toHaveBeenCalled();
-  });
-
-  it('Clicking reload page reloads the page', () => {
-    renderErrorBoundary(storeState);
-
-    userEvent.click(screen.getByText(/Reload/i));
-    expect(window.location.reload).toHaveBeenCalledTimes(1);
   });
 });
