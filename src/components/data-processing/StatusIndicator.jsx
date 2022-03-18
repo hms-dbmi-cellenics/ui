@@ -15,12 +15,11 @@ import {
   CheckCircleOutlined,
 } from '@ant-design/icons';
 
-import { getBackendStatus } from '../../redux/selectors';
-
-import PrettyTime from '../PrettyTime';
-import StepsIndicator from './StepsIndicator';
-import pipelineStatus from '../../utils/pipelineStatusValues';
-import integrationTestConstants from '../../utils/integrationTestConstants';
+import PrettyTime from 'components/PrettyTime';
+import StepsIndicator from 'components/data-processing/StepsIndicator';
+import pipelineStatus from 'utils/pipelineStatusValues';
+import integrationTestConstants from 'utils/integrationTestConstants';
+import { getBackendStatus } from 'redux/selectors';
 
 const { Text, Paragraph } = Typography;
 
@@ -29,13 +28,11 @@ const StatusIndicator = (props) => {
     experimentId, allSteps, currentStep, completedSteps,
   } = props;
 
-  const {
-    status: { pipeline },
-  } = useSelector(getBackendStatus(experimentId));
+  const { status: backendStatus } = useSelector(getBackendStatus(experimentId));
 
   const {
     startDate, stopDate, status, error,
-  } = pipeline;
+  } = backendStatus?.pipeline || {};
 
   const statusIndicators = {
     [pipelineStatus.NOT_CREATED]: {
@@ -118,7 +115,7 @@ const StatusIndicator = (props) => {
         <Text strong>
           Your data processing is
           {' '}
-          {statusIndicators[status].title}
+          {!status ? 'loading' : statusIndicators[status].title}
           .
         </Text>
       </Paragraph>
