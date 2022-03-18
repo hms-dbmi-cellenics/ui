@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { screen, render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Provider } from 'react-redux';
@@ -19,16 +19,28 @@ jest.mock('utils/postErrorToSlack');
 delete window.location;
 window.location = { reload: jest.fn() };
 
-const ThrowError = ({ hasError }) => {
-  if (hasError) setTimeout(() => { throw new Error('test'); }, 2000);
-  return content;
+const throwError = () => {
+  screen.getByText('Throw').click();
+};
+
+const TestComponent = () => {
+  const [hasError, setHasError] = useState(false);
+
+  if (hasError) throw new Error('Error');
+
+  return (
+    <>
+      <button type='button' onClick={() => setHasError(true)}>Throw</button>
+      <div>{content}</div>
+    </>
+  );
 };
 
 const renderErrorBoundary = (store, hasError = true) => {
   render(
     <Provider store={store}>
       <ErrorBoundary>
-        <ThrowError hasError={hasError} />
+        <TestComponent hasError={hasError} />
       </ErrorBoundary>
     </Provider>,
   );
@@ -50,30 +62,36 @@ describe('ErrorBoundary', () => {
     expect(screen.queryByText(errorText)).toBeNull();
   });
 
-  it('Still render the UI if there is an error', () => {
+  it('Still render the UI if there is an error', async () => {
     renderErrorBoundary(storeState);
+
+    throwError();
+
+    await waitFor(() => {
+      expect(postErrorToSlack).toHaveBeenCalledTimes(1);
+    });
 
     expect(screen.getByText(content)).toBeInTheDocument();
     expect(screen.queryByText(errorText)).toBeNull();
-
-    waitFor(() => {
-      expect(postErrorToSlack).toHaveBeenCalledTimes(1);
-    }, { timeout: 3000 });
   });
 
   it('Should post error if environment is production', async () => {
     renderErrorBoundary(storeState);
 
-    waitFor(() => {
+    throwError();
+
+    await waitFor(() => {
       expect(postErrorToSlack).toHaveBeenCalledTimes(1);
       const payload = postErrorToSlack.mock.calls[0];
       expect(payload).toMatchSnapshot();
-    }, { timeout: 3000 });
+    });
   });
 
   it('Should not post error if environment is not production', async () => {
     storeState.dispatch(loadEnvironment('staging'));
     renderErrorBoundary(storeState);
+
+    throwError();
 
     expect(postErrorToSlack).not.toHaveBeenCalled();
   });
