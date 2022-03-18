@@ -5,14 +5,14 @@ import {
 import { fetchWork } from 'utils/work/fetchWork';
 import getTimeoutForWorkerTask from 'utils/getTimeoutForWorkerTask';
 
-const getCellSetName = (name) => (name?.split('/')[1] || name);
+import { getCellSetKey } from 'utils/cellSets';
 
 const generateDiffExprBody = (experimentId, comparisonGroup, comparisonType, extras) => ({
   name: 'DifferentialExpression',
   experimentId,
-  cellSet: getCellSetName(comparisonGroup.cellSet),
-  compareWith: getCellSetName(comparisonGroup.compareWith),
-  basis: getCellSetName(comparisonGroup.basis),
+  cellSet: getCellSetKey(comparisonGroup.cellSet),
+  compareWith: getCellSetKey(comparisonGroup.compareWith),
+  basis: getCellSetKey(comparisonGroup.basis),
   comparisonType,
   ...extras,
 });
