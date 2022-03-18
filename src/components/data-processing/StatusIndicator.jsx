@@ -115,7 +115,7 @@ const StatusIndicator = (props) => {
         <Text strong>
           Your data processing is
           {' '}
-          {!status ? 'loading' : statusIndicators[status].title}
+          {statusIndicators[status]?.title || 'loading'}
           .
         </Text>
       </Paragraph>
@@ -123,7 +123,7 @@ const StatusIndicator = (props) => {
         <Text>{`${completedSteps.length} of ${allSteps.length} steps complete`}</Text>
       </Paragraph>
       <Paragraph>
-        {statusIndicators[status].description}
+        {statusIndicators[status]?.description}
       </Paragraph>
     </Card>
   );
@@ -144,7 +144,7 @@ const StatusIndicator = (props) => {
             completedSteps={completedSteps.length}
           />
           <div style={{ display: 'inline-block' }}>
-            {statusIndicators[status].icon}
+            {statusIndicators[status]?.icon}
           </div>
         </Space>
       </Button>
