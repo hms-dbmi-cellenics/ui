@@ -11,16 +11,15 @@ import { InfoCircleOutlined } from '@ant-design/icons';
 
 import PropTypes from 'prop-types';
 import { loadCellSets } from 'redux/actions/cellSets';
-import { setComparisonGroup, setComparisonType } from 'redux/actions/differentialExpression';
 import { getCellSets } from 'redux/selectors';
 import { composeTree } from 'utils/cellSets';
+import { setComparisonGroup, setComparisonType } from 'redux/actions/differentialExpression';
 import checkCanRunDiffExpr, { canRunDiffExprResults } from 'utils/differentialExpression/checkCanRunDiffExpr';
+import { getCellSetClassKey } from 'utils/cellSets';
 
 const { Option, OptGroup } = Select;
 
 const ComparisonType = Object.freeze({ BETWEEN: 'between', WITHIN: 'within' });
-const getCellSetKey = (name) => (name?.split('/')[1] || name);
-const getRootKey = (name) => name?.split('/')[0];
 
 const DiffExprCompute = (props) => {
   const {
@@ -30,7 +29,7 @@ const DiffExprCompute = (props) => {
   const dispatch = useDispatch();
   const { properties, hierarchy } = useSelector(getCellSets());
   const [isFormValid, setIsFormValid] = useState(false);
-  const [numSamples, setNumSamples] = useState(1)
+  const [numSamples, setNumSamples] = useState(0);
   const comparisonGroup = useSelector((state) => state.differentialExpression.comparison.group);
   const selectedComparison = useSelector((state) => state.differentialExpression.comparison.type);
   const { basis, cellSet, compareWith } = comparisonGroup?.[selectedComparison] || {};
@@ -45,41 +44,23 @@ const DiffExprCompute = (props) => {
   useEffect(() => {
     if (hierarchy && hierarchy.length === 0) return;
 
-    // If any selected option is deleted, set the option to null
-    Object.keys(comparisonGroup).forEach((type) => {
-      const deleteKeys = {};
-
-      Object.entries(comparisonGroup[type]).forEach(([comparisonKey, selectedCell]) => {
-        selectedCell = getCellSetKey(selectedCell)
-        if (selectedCell && !properties.hasOwnProperty(selectedCell)) deleteKeys[comparisonKey] = null
-      });
-
-      if (Object.keys(deleteKeys).length) {
-
-        dispatch(
-          setComparisonGroup({
-            type,
-            ...comparisonGroup[type],
-            ...deleteKeys,
-          }),
-        );
-      }
-
-    });
-
-    // Calculate the number of sampleIds.
-    // if there is only 1 sample, set sample using sample name
     const samples = hierarchy?.find(
       (rootNode) => (rootNode.key === 'sample'),
     )?.children;
 
     setNumSamples(samples.length);
 
+    // Auto select the only sample if there is only one sample
     if (samples.length === 1) {
-      comparisonGroup[selectedComparison]['basis'] = `sample/${samples[0].key}`
+      const theOnlySampleOption = {
+        ...comparisonGroup[ComparisonType.WITHIN],
+        type: ComparisonType.WITHIN,
+        basis: `sample/${samples[0].key}`
+      }
+      dispatch(setComparisonGroup(theOnlySampleOption));
     }
 
-  }, [hierarchy, properties]);
+  }, [Object.keys(properties).length]);
 
   // Evaluate if the selected comparisons can be run. Returns results
   // that can be used to display appropriate warnings and errors if it cannot be run.
@@ -94,15 +75,6 @@ const DiffExprCompute = (props) => {
 
   const validateForm = () => {
     if (!cellSet || !compareWith || !basis) {
-      setIsFormValid(false);
-      return;
-    }
-
-    if (
-      selectedComparison === ComparisonType.BETWEEN
-      && compareWith !== 'background'
-      && getRootKey(cellSet) !== getRootKey(compareWith)
-    ) {
       setIsFormValid(false);
       return;
     }
@@ -153,7 +125,7 @@ const DiffExprCompute = (props) => {
         const isAlreadySelected = Object.values(comparisonGroup[selectedComparison]).includes(`${rootKey}/${key}`);
 
         // or a cell set that is not in the same group as selected previously in `cellSet`
-        const parentGroup = getRootKey(comparisonGroup[selectedComparison]?.cellSet);
+        const parentGroup = getCellSetClassKey(comparisonGroup[selectedComparison]?.cellSet);
         const isNotInTheSameGroup = rootKey !== parentGroup;
 
         return isAlreadySelected || (option === 'compareWith' && isNotInTheSameGroup);
