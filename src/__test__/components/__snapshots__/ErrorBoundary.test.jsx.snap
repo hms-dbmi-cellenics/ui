@@ -5,10 +5,10 @@ Array [
   [Error: Error],
   Object {
     "componentStack": "
-    in TestComponent (at ErrorBoundary.test.jsx:43)
+    in TestComponent (at ErrorBoundary.test.jsx:44)
     in ErrorBoundary (created by Connect(ErrorBoundary))
-    in Connect(ErrorBoundary) (at ErrorBoundary.test.jsx:42)
-    in Provider (at ErrorBoundary.test.jsx:41)",
+    in Connect(ErrorBoundary) (at ErrorBoundary.test.jsx:43)
+    in Provider (at ErrorBoundary.test.jsx:42)",
   },
   Object {
     "backendStatus": Object {},

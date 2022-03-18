@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { screen, render, waitFor } from '@testing-library/react';
+import { screen, render } from '@testing-library/react';
+import { act } from 'react-dom/test-utils';
 import userEvent from '@testing-library/user-event';
 import { Provider } from 'react-redux';
 import { makeStore } from 'redux/store';
@@ -20,7 +21,7 @@ delete window.location;
 window.location = { reload: jest.fn() };
 
 const throwError = () => {
-  screen.getByText('Throw').click();
+  userEvent.click(screen.getByText('Throw'));
 };
 
 const TestComponent = () => {
@@ -62,36 +63,32 @@ describe('ErrorBoundary', () => {
     expect(screen.queryByText(errorText)).toBeNull();
   });
 
-  it('Still render the UI if there is an error', async () => {
+  it('Still render the UI if there is an error', () => {
     renderErrorBoundary(storeState);
 
-    throwError();
+    act(() => { throwError(); });
 
-    await waitFor(() => {
-      expect(postErrorToSlack).toHaveBeenCalledTimes(1);
-    });
+    expect(postErrorToSlack).toHaveBeenCalledTimes(1);
 
     expect(screen.getByText(content)).toBeInTheDocument();
     expect(screen.queryByText(errorText)).toBeNull();
   });
 
-  it('Should post error if environment is production', async () => {
+  it('Should post error if environment is production', () => {
     renderErrorBoundary(storeState);
 
-    throwError();
+    act(() => { throwError(); });
 
-    await waitFor(() => {
-      expect(postErrorToSlack).toHaveBeenCalledTimes(1);
-      const payload = postErrorToSlack.mock.calls[0];
-      expect(payload).toMatchSnapshot();
-    });
+    expect(postErrorToSlack).toHaveBeenCalledTimes(1);
+    const payload = postErrorToSlack.mock.calls[0];
+    expect(payload).toMatchSnapshot();
   });
 
-  it('Should not post error if environment is not production', async () => {
+  it('Should not post error if environment is not production', () => {
     storeState.dispatch(loadEnvironment('staging'));
     renderErrorBoundary(storeState);
 
-    throwError();
+    act(() => { throwError(); });
 
     expect(postErrorToSlack).not.toHaveBeenCalled();
   });
