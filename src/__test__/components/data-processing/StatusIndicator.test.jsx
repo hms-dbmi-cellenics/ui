@@ -47,7 +47,12 @@ const openDropdown = () => fireEvent.mouseOver(screen.getByText(/Status/i));
 
 const emptyState = {
   backendStatus: {
-    [experimentId]: initialBackendStatusState,
+    [experimentId]: {
+      ...initialBackendStatusState,
+      status: {
+        pipeline: {},
+      },
+    },
   },
 };
 
