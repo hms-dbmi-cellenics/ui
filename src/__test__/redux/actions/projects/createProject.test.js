@@ -27,10 +27,12 @@ uuidv4.mockImplementation(() => projectUuid);
 jest.mock('redux/actions/projects/saveProject');
 saveProject.mockImplementation(() => async () => { });
 
+const experimentId = 'random-experiment-uuid';
 jest.mock('redux/actions/experiments/createExperiment');
 createExperiment.mockImplementation((uuid, name) => async () => ({
   name,
-  uuid,
+  projectUuid: uuid,
+  id: experimentId,
 }));
 
 pushNotificationMessage.mockImplementation(() => async () => { });
@@ -85,7 +87,7 @@ describe('createProject action', () => {
     expect(actions[1].payload).toMatchSnapshot();
   });
 
-  it('Skips when using v2', async () => {
+  it('Still creates project when using v2', async () => {
     config.currentApiVersion = api.V2;
 
     await store.dispatch(
@@ -94,8 +96,15 @@ describe('createProject action', () => {
 
     expect(createExperiment).toHaveBeenCalledWith(projectUuid, experimentName);
 
+    // Sends correct actions
     const actions = store.getActions();
-    expect(actions.length).toEqual(0);
+    expect(actions[0].type).toEqual(PROJECTS_SAVING);
+    expect(actions[1].type).toEqual(PROJECTS_CREATE);
+
+    // No other action was sent
+    expect(actions).toHaveLength(2);
+
+    expect(actions[1].payload).toMatchSnapshot();
   });
 
   it('Shows error message when there was a fetch error', async () => {
