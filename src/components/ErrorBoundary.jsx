@@ -8,16 +8,16 @@ import { connect } from 'react-redux';
 // Using React class because it's not yet supported for functional components
 // according to https://stackoverflow.com/a/68075800/1940886
 class ErrorBoundary extends React.Component {
+  // The parent constructor needs to be called so that the
+  // proper functions are setup and views can be rendered
+  // eslint-disable-next-line no-useless-constructor
   constructor(props) {
     super(props);
-    // eslint-disable-next-line react/no-unused-state
-    this.state = { hasError: false };
   }
 
-  static getDerivedStateFromError() {
-    // Update state so the next render will show the fallback UI.
-    return { hasError: true };
-  }
+  // This function needs to still be defined even if empty
+  // so that the Component can render a view even when there are errors
+  static getDerivedStateFromError() { }
 
   componentDidCatch(error, errorInfo) {
     // Act on the error inside this function
