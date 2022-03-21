@@ -27,13 +27,6 @@ const createProject = (
 
   const newProjectUuid = uuidv4();
 
-  if (config.currentApiVersion === api.V2) {
-    await dispatch(createExperiment(newProjectUuid, newExperimentName));
-
-    // Project doesn't exist in v2, so we are done
-    return;
-  }
-
   const newExperiment = await dispatch(createExperiment(newProjectUuid, newExperimentName));
 
   dispatch({
@@ -53,40 +46,46 @@ const createProject = (
     lastModified: createdDate,
   };
 
-  const url = `/v1/projects/${newProjectUuid}`;
+  if (config.currentApiVersion === api.V2) {
+    // If using api v2, we can replace projectUuid with experimentId
+    newProject.uuid = newExperiment.id;
+  } else if (config.currentApiVersion === api.V1) {
+    // Send projects create request if we are in api v1
+    const url = `/v1/projects/${newProjectUuid}`;
 
-  try {
-    const response = await fetchAPI(
-      url,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
+    try {
+      const response = await fetchAPI(
+        url,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(newProject),
         },
-        body: JSON.stringify(newProject),
-      },
-    );
+      );
 
-    const json = await response.json();
+      const json = await response.json();
 
-    throwIfRequestFailed(response, json, endUserMessages.ERROR_SAVING);
-  } catch (e) {
-    let { message } = e;
+      throwIfRequestFailed(response, json, endUserMessages.ERROR_SAVING);
+    } catch (e) {
+      let { message } = e;
 
-    if (!isServerError(e)) {
-      console.error(`fetch ${url} error ${message}`);
-      message = endUserMessages.ERROR_SAVING;
+      if (!isServerError(e)) {
+        console.error(`fetch ${url} error ${message}`);
+        message = endUserMessages.ERROR_SAVING;
+      }
+
+      dispatch({
+        type: PROJECTS_ERROR,
+        payload: {
+          error: message,
+        },
+      });
+
+      pushNotificationMessage('error', message);
+      return Promise.reject(message);
     }
-
-    dispatch({
-      type: PROJECTS_ERROR,
-      payload: {
-        error: message,
-      },
-    });
-
-    pushNotificationMessage('error', message);
-    return Promise.reject(message);
   }
 
   dispatch({
