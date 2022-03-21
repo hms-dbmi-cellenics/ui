@@ -12,6 +12,12 @@ import {
 } from 'redux/actionTypes/projects';
 import '__test__/test-utils/setupTests';
 
+import { api } from 'utils/constants';
+
+import config from 'config';
+
+jest.mock('config');
+
 const mockStore = configureStore([thunk]);
 
 jest.mock('uuid');
@@ -21,10 +27,12 @@ uuidv4.mockImplementation(() => projectUuid);
 jest.mock('redux/actions/projects/saveProject');
 saveProject.mockImplementation(() => async () => { });
 
+const experimentId = 'random-experiment-uuid';
 jest.mock('redux/actions/experiments/createExperiment');
 createExperiment.mockImplementation((uuid, name) => async () => ({
   name,
-  uuid,
+  projectUuid: uuid,
+  id: experimentId,
 }));
 
 pushNotificationMessage.mockImplementation(() => async () => { });
@@ -51,6 +59,8 @@ describe('createProject action', () => {
   const experimentName = 'mockExperimentName';
 
   it('Works correctly when there are no errors', async () => {
+    config.currentApiVersion = api.V1;
+
     fetchMock.mockResponse(JSON.stringify({}), { url: 'mockedUrl', status: 200 });
 
     await store.dispatch(
@@ -77,7 +87,29 @@ describe('createProject action', () => {
     expect(actions[1].payload).toMatchSnapshot();
   });
 
+  it('Still creates project when using v2', async () => {
+    config.currentApiVersion = api.V2;
+
+    await store.dispatch(
+      createProject(projectName, projectDescription, experimentName),
+    );
+
+    expect(createExperiment).toHaveBeenCalledWith(projectUuid, experimentName);
+
+    // Sends correct actions
+    const actions = store.getActions();
+    expect(actions[0].type).toEqual(PROJECTS_SAVING);
+    expect(actions[1].type).toEqual(PROJECTS_CREATE);
+
+    // No other action was sent
+    expect(actions).toHaveLength(2);
+
+    expect(actions[1].payload).toMatchSnapshot();
+  });
+
   it('Shows error message when there was a fetch error', async () => {
+    config.currentApiVersion = api.V1;
+
     const fetchErrorMessage = 'someFetchError';
 
     fetchMock.mockResponse(JSON.stringify({ message: fetchErrorMessage }), { url: 'mockedUrl', status: 400 });

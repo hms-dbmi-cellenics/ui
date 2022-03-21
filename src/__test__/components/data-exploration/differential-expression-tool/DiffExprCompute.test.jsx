@@ -11,7 +11,7 @@ import thunk from 'redux-thunk';
 import { makeStore } from 'redux/store';
 
 import DiffExprCompute from 'components/data-exploration/differential-expression-tool/DiffExprCompute';
-import { loadCellSets } from 'redux/actions/cellSets';
+import { loadCellSets, deleteCellSet } from 'redux/actions/cellSets';
 import initialCellsetsState from 'redux/reducers/cellSets/initialState';
 import initialDiffExprState from 'redux/reducers/differentialExpression/initialState';
 
@@ -333,5 +333,67 @@ describe('DiffExprCompute', () => {
       expect(screen.queryByText(/does not contain enough cells/i)).toBeNull();
       expect(screen.getByText(/Compute/i).closest('button')).not.toBeDisabled();
     });
+  });
+
+  it('Choosing cell set from different groups will disable the compute button', async () => {
+    const selectionBoxDivParentSelector = "div[class='ant-select-selector']";
+    const selectionBoxPlaceholderSelector = "span[class='ant-select-selection-placeholder']";
+    const selectionBoxItemSelector = "span[class='ant-select-selection-item']";
+
+    await renderDiffExprCompute(storeState);
+
+    // Choose cell set 1
+    const selectCellSet1 = screen.getByRole('combobox', { name: /Compare cell set/i });
+    await act(async () => {
+      fireEvent.change(selectCellSet1, { target: { value: 'Cluster 0' } });
+    });
+
+    const cellSet1Option = screen.getByText(/Cluster 0/);
+    await act(async () => {
+      fireEvent.click(cellSet1Option);
+    });
+
+    // Select the 2nd cell set
+    const selectCellSet2 = screen.getByRole('combobox', { name: /and cell set/i });
+    await act(async () => {
+      fireEvent.change(selectCellSet2, { target: { value: 'Cluster 2' } });
+    });
+
+    // There are 2 'Cluster 2' options because we have 2 cell set dropdowns
+    // Choose the 2nd one.
+    const cellSet2Option = screen.getAllByText(/Cluster 2/)[1];
+    await act(async () => {
+      fireEvent.click(cellSet2Option);
+    });
+
+    // With all samples
+    const selectSampleOrGroup = screen.getByRole('combobox', { name: /within sample/i });
+    await act(async () => {
+      fireEvent.change(selectSampleOrGroup, { target: { value: 'WT1' } });
+    });
+
+    const sampleOrGroupOption = screen.getByText(/WT1/);
+    await act(async () => {
+      fireEvent.click(sampleOrGroupOption);
+    });
+
+    // Delete the cell set delected in the first option
+    await act(async () => {
+      await storeState.dispatch(deleteCellSet(experimentId, 'louvain-0'));
+    });
+
+    // We have to query the HTML elements and check the containing text directly
+    // because Antd does not directly store the selection values in the value attribue of the input element
+    const cellSet1Selection = selectCellSet1.closest(selectionBoxDivParentSelector);
+    const cellSet2Selection = selectCellSet2.closest(selectionBoxDivParentSelector);
+    const sampleOrGroupSelection = selectSampleOrGroup.closest(selectionBoxDivParentSelector);
+
+    // The first cell set should show the placeholder
+    expect(cellSet1Selection.querySelector(selectionBoxItemSelector)).toBeNull();
+    expect(cellSet1Selection.querySelector(selectionBoxPlaceholderSelector)).toHaveTextContent(/Select a cell set.../i);
+
+    // The other options should still be the same
+    expect(cellSet2Selection.querySelector(selectionBoxItemSelector)).toHaveTextContent(/Cluster 2/i);
+    expect(sampleOrGroupSelection.querySelector(selectionBoxItemSelector)).toHaveTextContent(/WT1/);
   });
 });

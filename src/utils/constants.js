@@ -31,6 +31,12 @@ const modules = {
   DATA_EXPLORATION: 'DATA_EXPLORATION',
   PLOTS_AND_TABLES: 'PLOTS_AND_TABLES',
   SETTINGS: 'SETTINGS',
+  DEFAULT: '',
+};
+
+const api = {
+  V1: 'v1',
+  V2: 'v2',
 };
 
 export {
@@ -38,4 +44,5 @@ export {
   plotNames,
   plotTypes,
   modules,
+  api,
 };

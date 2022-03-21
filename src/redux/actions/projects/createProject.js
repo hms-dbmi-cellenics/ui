@@ -1,19 +1,22 @@
 import moment from 'moment';
 import { v4 as uuidv4 } from 'uuid';
 
-import fetchAPI from '../../../utils/fetchAPI';
-import { isServerError, throwIfRequestFailed } from '../../../utils/fetchErrors';
+import config from 'config';
+
+import fetchAPI from 'utils/fetchAPI';
+import { isServerError, throwIfRequestFailed } from 'utils/fetchErrors';
+import { api } from 'utils/constants';
 
 import {
   PROJECTS_ERROR,
   PROJECTS_CREATE,
   PROJECTS_SAVING,
-} from '../../actionTypes/projects';
+} from 'redux/actionTypes/projects';
 
-import { projectTemplate } from '../../reducers/projects/initialState';
-import createExperiment from '../experiments/createExperiment';
-import endUserMessages from '../../../utils/endUserMessages';
-import pushNotificationMessage from '../../../utils/pushNotificationMessage';
+import { projectTemplate } from 'redux/reducers/projects/initialState';
+import createExperiment from 'redux/actions/experiments/createExperiment';
+import endUserMessages from 'utils/endUserMessages';
+import pushNotificationMessage from 'utils/pushNotificationMessage';
 
 const createProject = (
   projectName,
@@ -24,8 +27,6 @@ const createProject = (
 
   const newProjectUuid = uuidv4();
 
-  // Always create an experiment for a new project
-  // required because samples DynamoDB require experimentId
   const newExperiment = await dispatch(createExperiment(newProjectUuid, newExperimentName));
 
   dispatch({
@@ -45,40 +46,46 @@ const createProject = (
     lastModified: createdDate,
   };
 
-  const url = `/v1/projects/${newProjectUuid}`;
+  if (config.currentApiVersion === api.V2) {
+    // If using api v2, we can replace projectUuid with experimentId
+    newProject.uuid = newExperiment.id;
+  } else if (config.currentApiVersion === api.V1) {
+    // Send projects create request if we are in api v1
+    const url = `/v1/projects/${newProjectUuid}`;
 
-  try {
-    const response = await fetchAPI(
-      url,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
+    try {
+      const response = await fetchAPI(
+        url,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(newProject),
         },
-        body: JSON.stringify(newProject),
-      },
-    );
+      );
 
-    const json = await response.json();
+      const json = await response.json();
 
-    throwIfRequestFailed(response, json, endUserMessages.ERROR_SAVING);
-  } catch (e) {
-    let { message } = e;
+      throwIfRequestFailed(response, json, endUserMessages.ERROR_SAVING);
+    } catch (e) {
+      let { message } = e;
 
-    if (!isServerError(e)) {
-      console.error(`fetch ${url} error ${message}`);
-      message = endUserMessages.ERROR_SAVING;
+      if (!isServerError(e)) {
+        console.error(`fetch ${url} error ${message}`);
+        message = endUserMessages.ERROR_SAVING;
+      }
+
+      dispatch({
+        type: PROJECTS_ERROR,
+        payload: {
+          error: message,
+        },
+      });
+
+      pushNotificationMessage('error', message);
+      return Promise.reject(message);
     }
-
-    dispatch({
-      type: PROJECTS_ERROR,
-      payload: {
-        error: message,
-      },
-    });
-
-    pushNotificationMessage('error', message);
-    return Promise.reject(message);
   }
 
   dispatch({
