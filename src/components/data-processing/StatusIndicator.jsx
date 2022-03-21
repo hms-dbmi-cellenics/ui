@@ -117,7 +117,7 @@ const StatusIndicator = (props) => {
     const renderOverlayContent = () => {
       if (loadingBackendStatus) { return (<Text>Loading run status...</Text>); }
       if (errorLoadingBackendStatus) {
-        return (<Text>Error loading run status. Please refresh the page.</Text>);
+        return (<Text>Failed loading run status. Please refresh the page.</Text>);
       }
 
       return (

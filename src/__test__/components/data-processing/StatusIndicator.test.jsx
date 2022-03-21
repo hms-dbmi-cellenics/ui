@@ -56,11 +56,12 @@ const emptyState = {
   },
 };
 
-const generateState = (pipelineState = {}) => ({
+const generateState = (pipelineState = {}, fetchingState = {}) => ({
   backendStatus: {
     ...emptyState.backendStatus,
     [experimentId]: {
       ...emptyState.backendStatus[experimentId],
+      ...fetchingState,
       status: {
         pipeline: {
           startDate: '2022-01-01T01:01:01.000Z',
@@ -161,6 +162,32 @@ describe('StatusIndicator', () => {
     expect(screen.getByRole('img', { name: 'check-circle' })).toBeInTheDocument();
     await waitFor(() => {
       expect(screen.getByText(/and finished/i)).toBeInTheDocument();
+    });
+  });
+
+  it('Shows loading text when status is loading', async () => {
+    const fetchingState = { loading: true };
+
+    renderStatusIndicator(mockStore(generateState({}, fetchingState)));
+
+    openDropdown();
+
+    expect(screen.getByText(/loading/i)).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText(/Loading run status/i)).toBeInTheDocument();
+    });
+  });
+
+  it('Shows error text when there is an error', async () => {
+    const fetchErrorState = { loading: false, error: true };
+
+    renderStatusIndicator(mockStore(generateState({}, fetchErrorState)));
+
+    openDropdown();
+
+    expect(screen.getByText(/error/i)).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText(/Failed loading run status./i)).toBeInTheDocument();
     });
   });
 });
