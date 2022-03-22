@@ -3,6 +3,7 @@ import saveExperiment from './saveExperiment';
 import updateExperiment from './updateExperiment';
 import loadExperiments from './loadExperiments';
 import switchExperiment from './switchExperiment';
+import reorderSamples from './reorderSamples';
 
 export {
   createExperiment,
@@ -10,4 +11,5 @@ export {
   updateExperiment,
   loadExperiments,
   switchExperiment,
+  reorderSamples,
 };

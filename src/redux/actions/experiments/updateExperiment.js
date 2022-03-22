@@ -53,29 +53,24 @@ const updateExperiment = (
       const json = await response.json();
       throwIfRequestFailed(response, json, endUserMessages.ERROR_SAVING);
     } else if (config.currentApiVersion === api.V2) {
-      url = `/v2/experiments/${experimentId}`;
+      if (_.isUndefined(experimentDiff.sampleIds)) {
+        // If updating the samples, then reorderSamples should implement this
+        url = `/v2/experiments/${experimentId}`;
 
-      if (!_.isUndefined(experimentDiff.sampleIds)) {
-        // IMPLEMENT SAMPLE REORDERING
-        // experimentDiff.samplesOrder = _.clone(experimentDiff.sampleIds);
-        return;
-      }
-
-      console.log();
-
-      const response = await fetchAPI(
-        url,
-        {
-          method: 'PATCH',
-          headers: {
-            'Content-Type': 'application/json',
+        const response = await fetchAPI(
+          url,
+          {
+            method: 'PATCH',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(experimentDiff),
           },
-          body: JSON.stringify(experimentDiff),
-        },
-      );
+        );
 
-      const json = await response.json();
-      throwIfRequestFailed(response, json, endUserMessages.ERROR_SAVING);
+        const json = await response.json();
+        throwIfRequestFailed(response, json, endUserMessages.ERROR_SAVING);
+      }
     }
 
     dispatch({
