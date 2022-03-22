@@ -77,7 +77,7 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
   const pipelineHadErrors = pipelineErrors.includes(pipelineStatusKey);
   const pipelineNotFinished = pipelineRunning || pipelineHadErrors;
 
-  const completedSteps = pipelineStatus?.completedSteps;
+  const completedSteps = pipelineStatus?.completedSteps || [];
 
   const changedQCFilters = useSelector(
     (state) => state.experimentSettings.processing.meta.changedQCFilters,

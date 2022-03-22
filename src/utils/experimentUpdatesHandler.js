@@ -42,7 +42,7 @@ const experimentUpdatesHandler = (dispatch) => (experimentId, update) => {
 const onQCUpdate = (update, dispatch, experimentId) => {
   const { input, output } = update;
 
-  const processingConfigUpdate = output.config;
+  const processingConfigUpdate = output?.config;
 
   if (processingConfigUpdate) {
     dispatch(updateProcessingSettingsFromQC(

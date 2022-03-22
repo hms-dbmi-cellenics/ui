@@ -2,13 +2,13 @@
 
 exports[`ErrorBoundary Should post error if environment is production 1`] = `
 Array [
-  [Error: test],
+  [Error: Error],
   Object {
     "componentStack": "
-    in ThrowError (at ErrorBoundary.test.jsx:31)
+    in TestComponent (at ErrorBoundary.test.jsx:44)
     in ErrorBoundary (created by Connect(ErrorBoundary))
-    in Connect(ErrorBoundary) (at ErrorBoundary.test.jsx:30)
-    in Provider (at ErrorBoundary.test.jsx:29)",
+    in Connect(ErrorBoundary) (at ErrorBoundary.test.jsx:43)
+    in Provider (at ErrorBoundary.test.jsx:42)",
   },
   Object {
     "backendStatus": Object {},

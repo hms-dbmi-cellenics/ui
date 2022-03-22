@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { screen, render } from '@testing-library/react';
+import { act } from 'react-dom/test-utils';
 import userEvent from '@testing-library/user-event';
 import { Provider } from 'react-redux';
 import { makeStore } from 'redux/store';
@@ -19,16 +20,28 @@ jest.mock('utils/postErrorToSlack');
 delete window.location;
 window.location = { reload: jest.fn() };
 
-const ThrowError = ({ hasError }) => {
-  if (hasError) throw new Error('test');
-  return content;
+const throwError = () => {
+  userEvent.click(screen.getByText('Throw'));
+};
+
+const TestComponent = () => {
+  const [hasError, setHasError] = useState(false);
+
+  if (hasError) throw new Error('Error');
+
+  return (
+    <>
+      <button type='button' onClick={() => setHasError(true)}>Throw</button>
+      <div>{content}</div>
+    </>
+  );
 };
 
 const renderErrorBoundary = (store, hasError = true) => {
   render(
     <Provider store={store}>
       <ErrorBoundary>
-        <ThrowError hasError={hasError} />
+        <TestComponent hasError={hasError} />
       </ErrorBoundary>
     </Provider>,
   );
@@ -50,32 +63,33 @@ describe('ErrorBoundary', () => {
     expect(screen.queryByText(errorText)).toBeNull();
   });
 
-  it('Renders the error page if there is an error', () => {
+  it('Still render the UI if there is an error', () => {
     renderErrorBoundary(storeState);
 
-    expect(screen.queryByText(content)).toBeNull();
-    expect(screen.getByText(errorText)).toBeInTheDocument();
+    act(() => { throwError(); });
+
+    expect(postErrorToSlack).toHaveBeenCalledTimes(1);
+
+    expect(screen.getByText(content)).toBeInTheDocument();
+    expect(screen.queryByText(errorText)).toBeNull();
   });
 
-  it('Should post error if environment is production', async () => {
+  it('Should post error if environment is production', () => {
     renderErrorBoundary(storeState);
+
+    act(() => { throwError(); });
 
     expect(postErrorToSlack).toHaveBeenCalledTimes(1);
     const payload = postErrorToSlack.mock.calls[0];
     expect(payload).toMatchSnapshot();
   });
 
-  it('Should not post error if environment is not production', async () => {
+  it('Should not post error if environment is not production', () => {
     storeState.dispatch(loadEnvironment('staging'));
     renderErrorBoundary(storeState);
 
+    act(() => { throwError(); });
+
     expect(postErrorToSlack).not.toHaveBeenCalled();
-  });
-
-  it('Clicking reload page reloads the page', () => {
-    renderErrorBoundary(storeState);
-
-    userEvent.click(screen.getByText(/Reload/i));
-    expect(window.location.reload).toHaveBeenCalledTimes(1);
   });
 });
