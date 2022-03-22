@@ -1,6 +1,9 @@
 import moment from 'moment';
 import _ from 'lodash';
 
+import config from 'config';
+import { api } from 'utils/constants';
+
 import {
   PROJECTS_UPDATE,
 } from '../../actionTypes/projects';
@@ -22,7 +25,11 @@ const updateProject = (
   const newProject = mergeObjectWithArrays(currentProject, diff);
 
   try {
-    await dispatch(saveProject(projectUuid, newProject));
+    if (config.currentApiVersion === api.V1) {
+      await dispatch(saveProject(projectUuid, newProject));
+    } else if (config.currentApiVersion === api.V2) {
+      // Dont do any fetch, updating the experiment is enough
+    }
 
     dispatch({
       type: PROJECTS_UPDATE,
