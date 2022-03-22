@@ -1,5 +1,8 @@
 import _ from 'lodash';
 
+import config from 'config';
+import { api } from 'utils/constants';
+
 import fetchAPI from 'utils/fetchAPI';
 import {
   EXPERIMENTS_UPDATED, EXPERIMENTS_SAVING, EXPERIMENTS_SAVED, EXPERIMENTS_ERROR,
@@ -27,13 +30,15 @@ const updateExperiment = (
   experimentId,
   experimentDiff,
 ) => async (dispatch) => {
-  try {
-    dispatch({
-      type: EXPERIMENTS_SAVING,
-    });
+  dispatch({
+    type: EXPERIMENTS_SAVING,
+  });
 
-    const url = `/v1/experiments/${experimentId}`;
-    try {
+  let url;
+  try {
+    if (config.currentApiVersion === api.V1) {
+      url = `/v1/experiments/${experimentId}`;
+
       const response = await fetchAPI(
         url,
         {
@@ -47,38 +52,60 @@ const updateExperiment = (
 
       const json = await response.json();
       throwIfRequestFailed(response, json, endUserMessages.ERROR_SAVING);
+    } else if (config.currentApiVersion === api.V2) {
+      url = `/v2/experiments/${experimentId}`;
 
-      dispatch({
-        type: EXPERIMENTS_UPDATED,
-        payload: {
-          experimentId,
-          experiment: experimentDiff,
-        },
-      });
-
-      dispatch({
-        type: EXPERIMENTS_SAVED,
-      });
-    } catch (e) {
-      let { message } = e;
-      if (!isServerError(e)) {
-        console.error(`fetch ${url} error ${message}`);
-        message = endUserMessages.CONNECTION_ERROR;
+      if (!_.isUndefined(experimentDiff.sampleIds)) {
+        // IMPLEMENT SAMPLE REORDERING
+        // experimentDiff.samplesOrder = _.clone(experimentDiff.sampleIds);
+        return;
       }
-      dispatch({
-        type: EXPERIMENTS_ERROR,
-        payload: {
-          error: message,
-        },
-      });
 
-      pushNotificationMessage(
-        'error',
-        message,
+      console.log();
+
+      const response = await fetchAPI(
+        url,
+        {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(experimentDiff),
+        },
       );
+
+      const json = await response.json();
+      throwIfRequestFailed(response, json, endUserMessages.ERROR_SAVING);
     }
+
+    dispatch({
+      type: EXPERIMENTS_UPDATED,
+      payload: {
+        experimentId,
+        experiment: experimentDiff,
+      },
+    });
+
+    dispatch({
+      type: EXPERIMENTS_SAVED,
+    });
   } catch (e) {
-    pushNotificationMessage('error', endUserMessages.ERROR_SAVING);
+    let { message } = e;
+    if (!isServerError(e)) {
+      console.error(`fetch ${url} error ${message}`);
+      message = endUserMessages.CONNECTION_ERROR;
+    }
+    dispatch({
+      type: EXPERIMENTS_ERROR,
+      payload: {
+        error: message,
+      },
+    });
+
+    pushNotificationMessage(
+      'error',
+      message,
+    );
   }
 };
 
