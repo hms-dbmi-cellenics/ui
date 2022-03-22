@@ -15,12 +15,11 @@ import {
   CheckCircleOutlined,
 } from '@ant-design/icons';
 
-import { getBackendStatus } from '../../redux/selectors';
-
-import PrettyTime from '../PrettyTime';
-import StepsIndicator from './StepsIndicator';
-import pipelineStatus from '../../utils/pipelineStatusValues';
-import integrationTestConstants from '../../utils/integrationTestConstants';
+import PrettyTime from 'components/PrettyTime';
+import StepsIndicator from 'components/data-processing/StepsIndicator';
+import pipelineStatus from 'utils/pipelineStatusValues';
+import integrationTestConstants from 'utils/integrationTestConstants';
+import { getBackendStatus } from 'redux/selectors';
 
 const { Text, Paragraph } = Typography;
 
@@ -31,6 +30,8 @@ const StatusIndicator = (props) => {
 
   const {
     status: { pipeline },
+    loading: loadingBackendStatus,
+    error: errorLoadingBackendStatus,
   } = useSelector(getBackendStatus(experimentId));
 
   const {
@@ -112,24 +113,57 @@ const StatusIndicator = (props) => {
     },
   };
 
-  const renderOverlay = () => (
-    <Card style={{ width: 300, padding: 16 }}>
-      <Paragraph>
-        <Text strong>
-          Your data processing is
-          {' '}
-          {statusIndicators[status].title}
-          .
-        </Text>
-      </Paragraph>
-      <Paragraph>
-        <Text>{`${completedSteps.length} of ${allSteps.length} steps complete`}</Text>
-      </Paragraph>
-      <Paragraph>
-        {statusIndicators[status].description}
-      </Paragraph>
-    </Card>
-  );
+  const renderOverlay = () => {
+    const renderOverlayContent = () => {
+      if (loadingBackendStatus) { return (<Text>Loading run status...</Text>); }
+      if (errorLoadingBackendStatus) {
+        return (<Text>Failed loading run status. Please refresh the page.</Text>);
+      }
+
+      return (
+        <>
+          <Paragraph>
+            <Text strong>
+              Your data processing is
+              {' '}
+              {statusIndicators[status].title}
+              .
+            </Text>
+          </Paragraph>
+          <Paragraph>
+            <Text>{`${completedSteps.length} of ${allSteps.length} steps complete`}</Text>
+          </Paragraph>
+          <Paragraph>
+            {statusIndicators[status]?.description}
+          </Paragraph>
+        </>
+      );
+    };
+
+    return (
+      <Card style={{ width: 300, padding: 16 }}>
+        {renderOverlayContent()}
+      </Card>
+    );
+  };
+
+  const renderIndicator = () => {
+    if (loadingBackendStatus) { return (<Text>loading</Text>); }
+    if (errorLoadingBackendStatus) { return (<Text>error</Text>); }
+
+    return (
+      <>
+        <StepsIndicator
+          allSteps={allSteps}
+          currentStep={currentStep}
+          completedSteps={completedSteps.length}
+        />
+        <div style={{ display: 'inline-block' }}>
+          {statusIndicators[status]?.icon}
+        </div>
+      </>
+    );
+  };
 
   return (
     <Dropdown overlay={renderOverlay}>
@@ -141,14 +175,7 @@ const StatusIndicator = (props) => {
           <Text strong style={{ fontSize: '0.9rem' }}>
             Status:
           </Text>
-          <StepsIndicator
-            allSteps={allSteps}
-            currentStep={currentStep}
-            completedSteps={completedSteps.length}
-          />
-          <div style={{ display: 'inline-block' }}>
-            {statusIndicators[status].icon}
-          </div>
+          {renderIndicator()}
         </Space>
       </Button>
     </Dropdown>
