@@ -1,24 +1,30 @@
 import moment from 'moment';
 import getAuthJWT from 'utils/getAuthJWT';
-import WorkTimeoutError from 'utils/WorkTimeoutError';
-import fetchAPI from 'utils/fetchAPI';
+import WorkTimeoutError from 'utils/http/errors/WorkTimeoutError';
+import fetchAPI from 'utils/http/fetchAPI';
 import unpackResult from 'utils/work/unpackResult';
-import WorkResponseError from 'utils/WorkResponseError';
+import WorkResponseError from 'utils/http/errors/WorkResponseError';
+import httpStatusCodes from 'utils/http/httpStatusCodes';
+import handleError from 'utils/http/handleError';
 
 const throwResponseError = (response) => {
   throw new Error(`Error ${response.status}: ${response.text}`, { cause: response });
 };
 
 const seekFromS3 = async (ETag, experimentId) => {
-  const response = await fetchAPI(`/v1/workResults/${experimentId}/${ETag}`);
-
-  if (!response.ok) {
-    if (response.status === 404) return null;
-
-    throwResponseError(response);
+  let response;
+  try {
+    response = await fetchAPI(`/v1/workResults/${experimentId}/${ETag}`);
+  } catch (e) {
+    if (e.statusCode === httpStatusCodes.NOT_FOUND) {
+      return null;
+    }
+    // REVIEW: do we want to show a notification to the user
+    // when we can't fetch from s3? (and it's not a 404)
+    handleError(e);
   }
 
-  const { signedUrl } = await response.json();
+  const { signedUrl } = response;
   const storageResp = await fetch(signedUrl);
 
   if (!storageResp.ok) {

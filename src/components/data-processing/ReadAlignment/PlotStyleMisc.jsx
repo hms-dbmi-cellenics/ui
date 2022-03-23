@@ -4,7 +4,7 @@ import {
   Slider, Form,
 } from 'antd';
 
-import useUpdateThrottled from '../../../utils/customHooks/useUpdateThrottled';
+import useUpdateThrottled from 'utils/customHooks/useUpdateThrottled';
 
 const BandwidthOrBinstep = (props) => {
   const {

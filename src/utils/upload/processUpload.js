@@ -5,7 +5,7 @@ import axios from 'axios';
 
 import { createSample, updateSampleFile } from 'redux/actions/samples';
 
-import fetchAPI from 'utils/fetchAPI';
+import fetchAPI from 'utils/http/fetchAPI';
 
 import UploadStatus from 'utils/upload/UploadStatus';
 import loadAndCompressIfNecessary from 'utils/upload/loadAndCompressIfNecessary';
@@ -19,14 +19,12 @@ const putInS3 = async (projectUuid, loadedFileData, dispatch, sampleUuid, fileNa
 
   const url = `${baseUrl}${urlParamsStr}`;
 
-  const signedUrlResponse = await fetchAPI(
+  const signedUrl = await fetchAPI(
     url,
     {
       method: 'GET',
     },
   );
-
-  const signedUrl = await signedUrlResponse.json();
 
   return axios.request({
     method: 'put',
@@ -208,7 +206,10 @@ const processUpload = async (filesList, sampleType, samples, activeProjectUuid, 
     };
   }, {});
 
+  console.log('samplesMap', samplesMap);
+  console.log(samplesMap);
   Object.entries(samplesMap).forEach(async ([name, sample]) => {
+    console.log(`lcs sample ${name}`, sample);
     // Create sample if not exists.
     try {
       sample.uuid ??= await dispatch(createSample(activeProjectUuid, name, sampleType));

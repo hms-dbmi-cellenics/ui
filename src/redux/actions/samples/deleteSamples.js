@@ -14,12 +14,12 @@ import {
 import saveProject from 'redux/actions/projects/saveProject';
 
 import endUserMessages from 'utils/endUserMessages';
-import pushNotificationMessage from 'utils/pushNotificationMessage';
-import fetchAPI from 'utils/fetchAPI';
+import fetchAPI from 'utils/http/fetchAPI';
 import { updateExperiment } from 'redux/actions/experiments';
+import handleError from 'utils/http/handleError';
 
 const sendDeleteSamplesRequest = async (projectUuid, experimentId, sampleUuids) => {
-  const response = await fetchAPI(
+  await fetchAPI(
     `/v1/projects/${projectUuid}/${experimentId}/samples`,
     {
       method: 'DELETE',
@@ -31,10 +31,6 @@ const sendDeleteSamplesRequest = async (projectUuid, experimentId, sampleUuids) 
       }),
     },
   );
-
-  if (!response.ok) {
-    throw new Error(await response.json().message);
-  }
 };
 
 const cancelUploads = async (files) => {
@@ -113,14 +109,13 @@ const deleteSamples = (
         dispatch(updateExperiment(experimentId, { sampleIds: newSamples }));
       },
     );
-
     await Promise.all(deleteSamplesPromise);
 
     dispatch({
       type: SAMPLES_SAVED,
     });
   } catch (e) {
-    pushNotificationMessage('error', endUserMessages.ERROR_DELETING_SAMPLES);
+    handleError(e, endUserMessages.ERROR_DELETING_SAMPLES);
 
     dispatch({
       type: SAMPLES_ERROR,

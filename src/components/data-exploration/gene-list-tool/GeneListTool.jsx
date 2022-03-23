@@ -5,8 +5,8 @@ import {
 import _ from 'lodash';
 import PropTypes from 'prop-types';
 import { v4 as uuidv4 } from 'uuid';
+import { geneTableUpdateReason } from 'utils/geneTable/geneTableUpdateReason';
 import GeneTable from '../generic-gene-table/GeneTable';
-import { geneTableUpdateReason } from '../../../utils/geneTable/geneTableUpdateReason';
 
 import { loadPaginatedGeneProperties } from '../../../redux/actions/genes';
 
@@ -62,7 +62,7 @@ const GeneListTool = (props) => {
       key: 'dispersions',
       sorter: true,
       showSorterTooltip: {
-        title: `Dispersion describes how much the variance deviates from the mean. 
+        title: `Dispersion describes how much the variance deviates from the mean.
       Genes with high dispersion have a high level of variation between cells in the dataset.`,
       },
       render: (num) => parseFloat(num.toFixed(3)),
