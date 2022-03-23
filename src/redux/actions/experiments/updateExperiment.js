@@ -53,24 +53,26 @@ const updateExperiment = (
       const json = await response.json();
       throwIfRequestFailed(response, json, endUserMessages.ERROR_SAVING);
     } else if (config.currentApiVersion === api.V2) {
-      if (_.isUndefined(experimentDiff.sampleIds)) {
-        // If updating the samples, then reorderSamples should implement this
-        url = `/v2/experiments/${experimentId}`;
-
-        const response = await fetchAPI(
-          url,
-          {
-            method: 'PATCH',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(experimentDiff),
-          },
-        );
-
-        const json = await response.json();
-        throwIfRequestFailed(response, json, endUserMessages.ERROR_SAVING);
+      if (experimentDiff.sampleIds) {
+        throw new Error('SampleIds in v2 shouldn\'t be updated in this action creator');
       }
+
+      // If updating the samples, then reorderSamples should implement this
+      url = `/v2/experiments/${experimentId}`;
+
+      const response = await fetchAPI(
+        url,
+        {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(experimentDiff),
+        },
+      );
+
+      const json = await response.json();
+      throwIfRequestFailed(response, json, endUserMessages.ERROR_SAVING);
     }
 
     dispatch({
