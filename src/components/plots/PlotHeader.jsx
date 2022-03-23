@@ -9,9 +9,9 @@ import { useRouter } from 'next/router';
 import PropTypes from 'prop-types';
 import { useBeforeunload } from 'react-beforeunload';
 import Header from 'components/Header';
+import fetchAPI from 'utils/http/fetchAPI';
+import { LOAD_CONFIG } from 'redux/actionTypes/componentConfig';
 import { savePlotConfig } from '../../redux/actions/componentConfig/index';
-import { getFromApiExpectOK } from '../../utils/getDataExpectOK';
-import { LOAD_CONFIG } from '../../redux/actionTypes/componentConfig';
 import { initialPlotConfigStates } from '../../redux/reducers/componentConfig/initialState';
 
 const PlotHeader = ({ title, experimentId, plotUuid }) => {
@@ -100,7 +100,7 @@ const PlotHeader = ({ title, experimentId, plotUuid }) => {
 
   const { data } = useSWR(
     `/v1/experiments/${experimentId}`,
-    getFromApiExpectOK,
+    fetchAPI,
   );
 
   if (!data || !config) {

@@ -1,5 +1,7 @@
 import _ from 'lodash';
-import { metadataNameToKey } from '../../../utils/data-management/metadataUtils';
+import { metadataNameToKey } from 'utils/data-management/metadataUtils';
+import endUserMessages from 'utils/endUserMessages';
+import pushNotificationMessage from 'utils/pushNotificationMessage';
 import {
   PROJECTS_METADATA_UPDATE,
 } from '../../actionTypes/projects';
@@ -8,8 +10,6 @@ import {
   SAMPLES_UPDATE,
   SAMPLES_METADATA_DELETE,
 } from '../../actionTypes/samples';
-import endUserMessages from '../../../utils/endUserMessages';
-import pushNotificationMessage from '../../../utils/pushNotificationMessage';
 import saveSamples from '../samples/saveSamples';
 import saveProject from './saveProject';
 
@@ -40,8 +40,12 @@ const updateMetadataTrack = (
   }, {});
 
   try {
-    await dispatch(saveProject(projectUuid, newProject, false));
-    await dispatch(saveSamples(projectUuid, newSamples, false, false));
+    const notifyUser = false;
+    console.log('calling save project');
+    await dispatch(saveProject(projectUuid, newProject, false, notifyUser));
+    console.log('calling save samples');
+    await dispatch(saveSamples(projectUuid, newSamples, false, false, notifyUser));
+    console.log('call after save samples');
 
     dispatch({
       type: PROJECTS_METADATA_UPDATE,

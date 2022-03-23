@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import {
   Radio, Form, Slider,
 } from 'antd';
-import useUpdateThrottled from '../../../utils/customHooks/useUpdateThrottled';
+import useUpdateThrottled from 'utils/customHooks/useUpdateThrottled';
 
 const LabelsDesign = (props) => {
   const { config, onUpdate } = props;

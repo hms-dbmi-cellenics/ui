@@ -19,10 +19,10 @@ import {
 
 import _ from 'lodash';
 
+import generateDataProcessingPlotUuid from 'utils/generateDataProcessingPlotUuid';
 import NormalisationOptions from './NormalisationOptions';
 
 import { updateFilterSettings } from '../../../redux/actions/experimentSettings';
-import generateDataProcessingPlotUuid from '../../../utils/generateDataProcessingPlotUuid';
 
 const { Option } = Select;
 const { Text } = Typography;

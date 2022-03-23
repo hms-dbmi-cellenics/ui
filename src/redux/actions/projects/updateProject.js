@@ -1,14 +1,14 @@
 import moment from 'moment';
 import _ from 'lodash';
 
+import endUserMessages from 'utils/endUserMessages';
+import mergeObjectWithArrays from 'utils/mergeObjectWithArrays';
+import handleError from 'utils/http/handleError';
+import saveProject from './saveProject';
+
 import {
   PROJECTS_UPDATE,
 } from '../../actionTypes/projects';
-import pushNotificationMessage from '../../../utils/pushNotificationMessage';
-import endUserMessages from '../../../utils/endUserMessages';
-import saveProject from './saveProject';
-
-import mergeObjectWithArrays from '../../../utils/mergeObjectWithArrays';
 
 const updateProject = (
   projectUuid,
@@ -22,7 +22,8 @@ const updateProject = (
   const newProject = mergeObjectWithArrays(currentProject, diff);
 
   try {
-    await dispatch(saveProject(projectUuid, newProject));
+    const notifyUser = false;
+    await dispatch(saveProject(projectUuid, newProject, true, notifyUser));
 
     dispatch({
       type: PROJECTS_UPDATE,
@@ -32,7 +33,7 @@ const updateProject = (
       },
     });
   } catch (e) {
-    pushNotificationMessage('error', endUserMessages.ERROR_SAVING);
+    handleError(e, endUserMessages.ERROR_SAVING);
   }
 };
 

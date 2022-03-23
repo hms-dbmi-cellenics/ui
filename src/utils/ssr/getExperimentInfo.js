@@ -1,5 +1,5 @@
-import updateExperimentInfo from '../../redux/actions/experimentSettings/updateExperimentInfo';
-import { getFromApiExpectOK } from '../getDataExpectOK';
+import fetchAPI from 'utils/http/fetchAPI';
+import updateExperimentInfo from 'redux/actions/experimentSettings/updateExperimentInfo';
 
 const getExperimentInfo = async (context, store, Auth) => {
   const { req, query } = context;
@@ -15,7 +15,7 @@ const getExperimentInfo = async (context, store, Auth) => {
   const jwt = user.getSignInUserSession().getIdToken().getJwtToken();
 
   const url = `${req.protocol}://${req.get('host')}${req.originalUrl}`;
-  const experimentData = await getFromApiExpectOK(`/v1/experiments/${experimentId}`,
+  const experimentData = await fetchAPI(`/v1/experiments/${experimentId}`,
     {}, { uiUrl: url, jwt });
 
   store.dispatch(updateExperimentInfo(experimentData));

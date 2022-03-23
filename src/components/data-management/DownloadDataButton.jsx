@@ -8,7 +8,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { saveAs } from 'file-saver';
 
 import downloadTypes from 'utils/data-management/downloadTypes';
-import { getFromApiExpectOK } from 'utils/getDataExpectOK';
+import fetchAPI from 'utils/http/fetchAPI';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
 import endUserMessages from 'utils/endUserMessages';
 import downloadFromUrl from 'utils/data-management/downloadFromUrl';
@@ -70,7 +70,7 @@ const DownloadDataButton = () => {
       if (!experimentId) throw new Error('No experimentId specified');
       if (!downloadTypes.has(type)) throw new Error('Invalid download type');
 
-      const signedUrl = await getFromApiExpectOK(`/v1/experiments/${experimentId}/download/${type}`);
+      const signedUrl = await fetchAPI(`/v1/experiments/${experimentId}/download/${type}`);
 
       downloadFromUrl(signedUrl);
     } catch (e) {
