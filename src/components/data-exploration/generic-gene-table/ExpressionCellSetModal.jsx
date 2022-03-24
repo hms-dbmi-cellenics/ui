@@ -132,7 +132,19 @@ const ExpressionCellSetModal = (props) => {
           )}
         </Form.List>
       </Form>
-      <Alert type='info' message='To edit the list of genes, return to the gene list and change your selection.' />
+      <Alert type='info' message='To edit the list of genes, return to the gene list and change your selection.' style={{ margin: '0.5em 0' }} />
+      <Alert
+        type='warning'
+        message={(
+          <>
+            Due to
+            {' '}
+            <a href='https://www.nature.com/articles/s41467-020-14976-9' target='_blank' rel='noreferrer'>high dropout</a>
+            {' '}
+            in scRNA-seq, cell sets defined using only a few genes are potentially misleading. We recommend using these cell sets for exploratory purposes only and to use computed clusters for comparisons.
+          </>
+        )}
+      />
     </Modal>
   );
 };
