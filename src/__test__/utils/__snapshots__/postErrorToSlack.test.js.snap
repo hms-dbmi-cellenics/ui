@@ -53,16 +53,40 @@ exports[`PostErrorToSlack Posts requests correctly 6`] = `
       \\"louvain\\"
     ]
   },
+  \\"cellSets\\": {
+    \\"properies\\": {
+      \\"louvain-0\\": {
+        \\"cellIds\\": {}
+      }
+    }
+  },
   \\"cellMeta\\": {
     \\"mitochondrialContent\\": {
       \\"loading\\": true,
       \\"error\\": false,
-      \\"data\\": []
-    },
-    \\"doubletScores\\": {
-      \\"loading\\": true,
-      \\"error\\": false,
-      \\"data\\": []
+      \\"data\\": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        \\"...\\"
+      ]
     }
   }
 }"
