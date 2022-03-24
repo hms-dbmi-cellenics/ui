@@ -36,7 +36,6 @@ exports[`PostErrorToSlack Posts requests correctly 6`] = `
     Timestamp: 2020-01-01T00:00:00.000Z
 
     ===== ERROR =====
-    [object Object]
     Mock error stack
 
     ===== COMPONENT STACK =====

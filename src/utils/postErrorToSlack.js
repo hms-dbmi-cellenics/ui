@@ -48,7 +48,6 @@ const buildErrorMessage = (error, componentStack, reduxDump, context) => {
     Timestamp: ${timestamp}
 
     ===== ERROR =====
-    ${error.toString()}
     ${error.stack}
 
     ===== COMPONENT STACK =====
