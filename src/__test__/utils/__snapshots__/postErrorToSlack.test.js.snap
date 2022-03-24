@@ -37,6 +37,9 @@ exports[`PostErrorToSlack Posts requests correctly 6`] = `
 
     ===== ERROR =====
     [object Object]
+    Mock error stack
+
+    ===== COMPONENT STACK =====
     Mock component stack
 
     ===== REDUX STATE =====
