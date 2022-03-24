@@ -419,8 +419,8 @@ const generateData = (
 ) => {
   const shouldBeDisplayed = (
     (cellId) => (
-      cellSetToDisplayId === 'All'
-      || cellSets.properties[cellSetToDisplayId]?.cellIds.has(cellId))
+      cellSets.properties[cellSetToDisplayId]?.cellIds.has(cellId))
+      || cellSetToDisplayId === 'All'
   );
 
   // Format of the generated plotData:
