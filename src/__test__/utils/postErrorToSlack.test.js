@@ -16,16 +16,18 @@ const mockReduxDump = {
       'louvain',
     ],
   },
+  cellSets: {
+    properies: {
+      'louvain-0': {
+        cellIds: new Set(Array(25).fill(0)),
+      },
+    },
+  },
   cellMeta: {
     mitochondrialContent: {
       loading: true,
       error: false,
-      data: [],
-    },
-    doubletScores: {
-      loading: true,
-      error: false,
-      data: [],
+      data: new Array(25).fill(0),
     },
   },
 };
