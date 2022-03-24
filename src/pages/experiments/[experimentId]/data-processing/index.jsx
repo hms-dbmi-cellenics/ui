@@ -243,10 +243,10 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
           The probability of being a doublet is calculated using ‘scDblFinder’.
           For each sample, the default threshold tries to minimize both the deviation in the
           expected number of doublets and the error of a trained classifier. For more details see
-          {' '}
+    {' '}
           <a href='https://bioconductor.org/packages/devel/bioc/vignettes/scDblFinder/inst/doc/scDblFinder.html#thresholding' rel='noreferrer' target='_blank'>scDblFinder thresholding</a>
-          .
-        </span>,
+    .
+  </span>,
       multiSample: true,
       render: (key) => (
         <SingleComponentMultipleDataContainer
@@ -434,16 +434,16 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
                               ) : pipelineNotFinished
                                 && !pipelineRunning
                                 && !isStepComplete(key) ? (
-                                <>
-                                  <Text
-                                    type='danger'
-                                    strong
-                                  >
-                                    <WarningOutlined />
-                                  </Text>
-                                  <span style={{ marginLeft: '0.25rem' }}>{text}</span>
-                                </>
-                              ) : <></>}
+                                        <>
+                                          <Text
+                                            type='danger'
+                                            strong
+                                          >
+                                            <WarningOutlined />
+                                          </Text>
+                                          <span style={{ marginLeft: '0.25rem' }}>{text}</span>
+                                        </>
+                                      ) : <></>}
                             </Option>
                           );
                         },
@@ -460,11 +460,20 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
                       <Button
                         disabled={prefiltered}
                         data-testid='enableFilterButton'
-                        onClick={() => {
-                          dispatch(setQCStepEnabled(
-                            currentStep.key, !stepEnabled,
-                          ));
-                          dispatch(saveProcessingSettings(experimentId, currentStep.key));
+                        onClick={async () => {
+                          console.log('**** IVA 1');
+                          dispatch(saveProcessingSettings(experimentId, currentStep.key)).then((e) => {
+                            console.log('Almost finished ', e);
+                            if (processingConfig.meta.saveSettingsError === false) {
+                              dispatch(setQCStepEnabled(
+                                currentStep.key, !stepEnabled,
+                              ));
+                              console.log('I should be finished', processingConfig.meta.saveSettingsError);
+                            } else {
+                              console.log('I am not gonna do anything ', processingConfig.meta.saveSettingsError);
+                            }
+                          });
+                          console.log('**** IVA 3');
                         }}
                       >
                         {
