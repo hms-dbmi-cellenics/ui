@@ -224,18 +224,16 @@ describe('Samples table', () => {
     });
   });
 
-  it('Reorder samples works in api v2', async () => {
+  it('Reorder samples send correct request in api v2', async () => {
     config.currentApiVersion = api.V2;
 
     let onSortEndProp;
     reactSortableHoc.sortableContainer.mockImplementationOnce(() => (...params) => {
       onSortEndProp = params[0].onSortEnd;
-      return (<></>);
+      return <></>;
     });
 
     await renderSamplesTable(storeState);
-
-    // const firstSample = screen.getByText(Object.values(samples)[0].name);
 
     await act(async () => {
       onSortEndProp({ oldIndex: 0, newIndex: 5 });
