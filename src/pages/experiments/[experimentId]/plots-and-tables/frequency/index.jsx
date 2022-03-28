@@ -105,6 +105,7 @@ const FrequencyPlotPage = ({ experimentId }) => {
   ];
 
   if (!config) {
+    console.log('no config lcs');
     return <Skeleton />;
   }
   const formatCSVData = (plotData) => {

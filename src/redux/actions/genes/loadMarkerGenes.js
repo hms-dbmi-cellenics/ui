@@ -4,6 +4,7 @@ import {
 
 import { fetchWork } from 'utils/work/fetchWork';
 import getTimeoutForWorkerTask from 'utils/getTimeoutForWorkerTask';
+import handleError from 'utils/http/handleError';
 
 const loadMarkerGenes = (
   experimentId, resolution, plotUuid, numGenes = 5, selectedCellSet = 'louvain',
@@ -24,9 +25,11 @@ const loadMarkerGenes = (
   try {
     const timeout = getTimeoutForWorkerTask(getState(), 'MarkerHeatmap');
 
+    console.log('1. lcs load marker genes');
     const data = await fetchWork(experimentId, body, getState, { timeout });
-
+    console.log('marker genes data loaded ', data);
     const { data: markerGeneExpressions, order } = data;
+    console.log('marker genes data unst');
 
     dispatch({
       type: MARKER_GENES_LOADED,
@@ -37,12 +40,15 @@ const loadMarkerGenes = (
         plotUuid,
       },
     });
+    console.log('marker genes data loaded acked');
   } catch (e) {
+    const errorMessage = handleError(e, undefined, false);
+    console.log('2. lcs marker genes error ', e);
     dispatch({
       type: MARKER_GENES_ERROR,
       payload: {
         experimentId,
-        error: e,
+        error: errorMessage,
       },
     });
   }
