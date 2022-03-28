@@ -19,6 +19,7 @@ import preloadAll from 'jest-next-dynamic';
 import fake from '__test__/test-utils/constants';
 import mockAPI, {
   generateDefaultMockAPIResponses,
+  promiseResponse,
   statusResponse,
 } from '__test__/test-utils/mockAPI';
 import createTestComponentFactory from '__test__/test-utils/testComponentFactory';
@@ -54,7 +55,10 @@ const plotUuid = 'markerHeatmapPlotMain';
 let storeState = null;
 
 const customAPIResponses = {
-  [`/plots-tables/${plotUuid}`]: () => statusResponse(404, 'Not Found'),
+  [`/plots-tables/${plotUuid}`]: (req) => {
+    if (req.method === 'PUT') return promiseResponse(JSON.stringify('OK'));
+    return statusResponse(404, 'Not Found');
+  },
 };
 
 const defaultResponses = _.merge(
@@ -158,9 +162,7 @@ describe('Marker heatmap plot', () => {
 
     const nGenesInput = screen.getByRole('spinbutton', { name: 'Number of genes input' });
 
-    await act(async () => {
-      userEvent.type(nGenesInput, '{backspace}2');
-    });
+    userEvent.type(nGenesInput, '{backspace}2');
 
     await act(async () => {
       userEvent.click(screen.getByText('Run'));
