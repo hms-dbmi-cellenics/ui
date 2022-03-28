@@ -11,6 +11,7 @@ import React, { useState } from 'react';
 import Auth from '@aws-amplify/auth';
 import endUserMessages from 'utils/endUserMessages';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
+import handleError from 'utils/http/handleError';
 
 const { TextArea } = Input;
 
@@ -99,8 +100,8 @@ const FeedbackButton = () => {
       }
       setFeedbackText('');
       pushNotificationMessage('success', endUserMessages.FEEDBACK_SUCCESSFUL);
-    } catch {
-      pushNotificationMessage('error', endUserMessages.FEEDBACK_ERROR);
+    } catch (e) {
+      handleError(e, endUserMessages.FEEDBACK_ERROR);
     }
   };
 

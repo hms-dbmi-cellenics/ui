@@ -14,7 +14,7 @@ const mockStore = configureMockStore([thunk]);
 
 const store = mockStore({ experiments: {} });
 
-jest.mock('../../utils/fetchAPI');
+jest.mock('../../utils/http/fetchAPI');
 fetchAPI.mockImplementation(() => Promise.resolve(new Response(JSON.stringify({}))));
 
 describe('GEM2SLoadingScreen', () => {

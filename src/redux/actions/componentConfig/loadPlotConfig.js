@@ -23,8 +23,10 @@ const loadPlotConfig = (experimentId, plotUuid, plotType) => async (dispatch) =>
       },
     });
   } catch (e) {
+    console.log('error lcs ', e);
     // load default plot config if it not found
     if (e.statusCode === httpStatusCodes.NOT_FOUND) {
+      console.log('returning defaul initial config lcs');
       dispatch({
         type: LOAD_CONFIG,
         payload: {

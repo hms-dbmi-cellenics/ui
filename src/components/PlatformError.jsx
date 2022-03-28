@@ -101,7 +101,7 @@ const PlatformError = (props) => {
 PlatformError.propTypes = {
   description: PropTypes.string,
   error: PropTypes.oneOfType([
-    PropTypes.string, PropTypes.object,
+    PropTypes.string, PropTypes.object, PropTypes.bool,
   ]),
   actionable: PropTypes.bool,
   onClick: PropTypes.func,

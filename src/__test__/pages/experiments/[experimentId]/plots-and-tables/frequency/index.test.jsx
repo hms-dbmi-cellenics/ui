@@ -32,7 +32,7 @@ describe('Frequency plots and tables index page', () => {
     generateDefaultMockAPIResponses(fake.EXPERIMENT_ID), customAPIResponses,
   );
 
-  beforeEach(() => {
+  beforeEach(async () => {
     enableFetchMocks();
     fetchMock.resetMocks();
     fetchMock.doMock();
@@ -40,7 +40,7 @@ describe('Frequency plots and tables index page', () => {
     storeState = makeStore();
 
     // getting the experiment info which is otherwise done by the SSR
-    storeState.dispatch({
+    await storeState.dispatch({
       type: EXPERIMENT_SETTINGS_INFO_UPDATE,
       payload: {
         experimentId: fake.EXPERIMENT_ID,
@@ -72,6 +72,6 @@ describe('Frequency plots and tables index page', () => {
     expect(screen.getByRole('graphics-document', { name: 'Vega visualization' })).toBeInTheDocument();
 
     // csv data should be passed correctly
-    expect(ExportAsCSV.mock.calls).toMatchSnapshot();
+    expect(ExportAsCSV.mock.calls.slice(-1)[0]).toMatchSnapshot();
   });
 });

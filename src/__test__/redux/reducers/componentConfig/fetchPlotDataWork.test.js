@@ -6,7 +6,7 @@ import { makeStore } from 'redux/store';
 import { plotTypes } from 'utils/constants';
 import fake from '__test__/test-utils/constants';
 
-import { fetchPlotDataWork, loadPlotConfig } from 'redux/actions/componentConfig';
+import { fetchPlotDataWork } from 'redux/actions/componentConfig';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
 import { fetchWork } from 'utils/work/fetchWork';
 
@@ -33,14 +33,13 @@ const plotUuid = 'DotPlotMain';
 const plotType = plotTypes.DOT_PLOT;
 
 describe('fetchPlotDataWork', () => {
-  beforeEach(() => {
+  beforeEach(async () => {
     jest.clearAllMocks();
     fetchMock.resetMocks();
 
     fetchMock.mockResponse(() => Promise.resolve({ status: 404, body: JSON.stringify('Plot config not found') }));
 
     testStore = makeStore();
-    testStore.dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
   });
 
   it('Loads plot data into the component properly', async () => {

@@ -41,6 +41,8 @@ const saveProcessingSettings = (experimentId, settingName) => async (dispatch, g
         error: errorMessage,
       },
     });
+
+    // throw e;
     Promise.reject(errorMessage);
   }
 };
