@@ -1,4 +1,3 @@
-/* eslint-disable import/no-duplicates */
 import React from 'react';
 import PropTypes from 'prop-types';
 import {
@@ -6,6 +5,8 @@ import {
 } from 'antd';
 import Link from 'next/link';
 import Header from 'components/Header';
+
+import { plotNames } from 'utils/constants';
 
 import heatmap from '../../../../../public/static/media/heatmap.png';
 import embeddingContinuous from '../../../../../public/static/media/embeddingContinuous.png';
@@ -42,7 +43,6 @@ CardItem.propTypes = {
 };
 
 const PlotsTablesHome = ({ experimentId, experimentData }) => {
-  const ROW_STYLE = { margin: '0.5em' };
   const GUTTER_STYLE = {
     xs: 4, sm: 8, md: 12, lg: 16,
   };
@@ -53,7 +53,7 @@ const PlotsTablesHome = ({ experimentId, experimentData }) => {
       title: 'Cell sets & metadata',
       plots: [
         {
-          name: 'Categorical Embedding',
+          name: plotNames.CATEGORICAL_EMBEDDING,
           image: embeddingCategorical,
           key: 'embedding-categorical-key',
           link: 'embedding-categorical',
@@ -70,31 +70,31 @@ const PlotsTablesHome = ({ experimentId, experimentData }) => {
       title: 'Gene expression',
       plots: [
         {
-          name: 'Continuous Embedding',
+          name: plotNames.CONTINUOUS_EMBEDDING,
           image: embeddingContinuous,
           key: 'embedding-continuous-key',
           link: 'embedding-continuous',
         },
         {
-          name: 'Marker Heatmap',
+          name: plotNames.MARKER_HEATMAP,
           image: markerHeatmap,
           key: 'marker-heatmap-key',
           link: 'marker-heatmap',
         },
         {
-          name: 'Custom Heatmap',
+          name: plotNames.HEATMAP,
           image: heatmap,
           key: 'heatmap-key',
           link: 'heatmap',
         },
         {
-          name: 'Violin Plot',
+          name: plotNames.VIOLIN_PLOT,
           image: violin,
           key: 'violin-key',
           link: 'violin',
         },
         {
-          name: 'Dot Plot',
+          name: plotNames.DOT_PLOT,
           image: dotPlot,
           key: 'dot-key',
           link: 'dot-plot',
@@ -105,7 +105,7 @@ const PlotsTablesHome = ({ experimentId, experimentData }) => {
       title: 'Differential expression',
       plots: [
         {
-          name: 'Volcano plot',
+          name: plotNames.VOLCANO_PLOT,
           image: volcano,
           key: 'volcano-key',
           link: 'volcano',
@@ -122,10 +122,9 @@ const PlotsTablesHome = ({ experimentId, experimentData }) => {
         experimentData={experimentData}
         title='Plots and Tables'
       />
-      <Space style={{ padding: '1em' }} direction='vertical'>
+      <Space style={{ padding: '0 1em' }} direction='vertical'>
         <Row
           gutter={GUTTER_STYLE}
-          style={ROW_STYLE}
         >
           <Col span={24}>
             <Divider
@@ -158,7 +157,6 @@ const PlotsTablesHome = ({ experimentId, experimentData }) => {
 
         <Row
           gutter={GUTTER_STYLE}
-          style={ROW_STYLE}
         >
           <Col span={24}>
             <Divider orientation='left'><strong>{plots['gene-expression'].title}</strong></Divider>
@@ -186,7 +184,6 @@ const PlotsTablesHome = ({ experimentId, experimentData }) => {
 
         <Row
           gutter={GUTTER_STYLE}
-          style={ROW_STYLE}
         >
           <Col span={24}>
             <Divider orientation='left'><strong>{plots['differential-expression'].title}</strong></Divider>
