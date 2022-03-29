@@ -12,6 +12,7 @@ const plotTypes = {
   FREQUENCY_PLOT: 'FrequencyPlot',
   VIOLIN_PLOT: 'ViolinPlot',
   DOT_PLOT: 'DotPlot',
+  IMG_PLOT: 'ImgPlot',
 };
 
 const plotNames = {

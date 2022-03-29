@@ -7,7 +7,9 @@ import endUserMessages from 'utils/endUserMessages';
 import generatePlotWorkBody from 'utils/work/generatePlotWorkBody';
 import { fetchWork } from 'utils/work/fetchWork';
 
-const fetchPlotDataWork = (experimentId, plotUuid, plotType) => async (dispatch, getState) => {
+const fetchPlotDataWork = (
+  experimentId, plotUuid, plotType, fetchS3Data = true,
+) => async (dispatch, getState) => {
   const config = getState().componentConfig[plotUuid]?.config ?? initialPlotConfigStates[plotType];
   const timeout = getTimeoutForWorkerTask(getState(), 'PlotData');
 
@@ -20,7 +22,7 @@ const fetchPlotDataWork = (experimentId, plotUuid, plotType) => async (dispatch,
     });
 
     const data = await fetchWork(
-      experimentId, body, getState, { timeout },
+      experimentId, body, getState, { timeout, fetchS3Data },
     );
 
     dispatch({

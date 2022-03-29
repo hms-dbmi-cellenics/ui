@@ -7,6 +7,7 @@ import initialState from './initialState';
 import loadConfig from './loadConfig';
 import updateConfig from './updateConfig';
 import saveConfig from './saveConfig';
+
 import plotDataLoaded from './plotDataLoaded';
 import plotDataLoading from './plotDataLoading';
 import plotDataError from './plotDataError';

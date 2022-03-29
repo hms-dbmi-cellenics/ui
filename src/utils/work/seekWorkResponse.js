@@ -9,7 +9,7 @@ const throwResponseError = (response) => {
   throw new Error(`Error ${response.status}: ${response.text}`, { cause: response });
 };
 
-const seekFromS3 = async (ETag, experimentId) => {
+const seekFromS3 = async (ETag, experimentId, fetchS3Data = true) => {
   const response = await fetchAPI(`/v1/workResults/${experimentId}/${ETag}`);
 
   if (!response.ok) {
@@ -19,6 +19,11 @@ const seekFromS3 = async (ETag, experimentId) => {
   }
 
   const { signedUrl } = await response.json();
+
+  if (!fetchS3Data) {
+    return signedUrl;
+  }
+
   const storageResp = await fetch(signedUrl);
 
   if (!storageResp.ok) {

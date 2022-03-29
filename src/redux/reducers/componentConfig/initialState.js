@@ -739,6 +739,9 @@ const dataIntegrationElbowPlotInitialConfig = {
   ],
 };
 
+const genericPlotConfig = {
+};
+
 const initialPlotConfigStates = {
   cellSizeDistributionHistogram,
   cellSizeDistributionKneePlot,
@@ -763,6 +766,7 @@ const initialPlotConfigStates = {
   dataIntegrationEmbedding: dataIntegrationEmbeddingInitialConfig,
   dataIntegrationFrequency: dataIntegrationFrequencyInitialConfig,
   dataIntegrationElbow: dataIntegrationElbowPlotInitialConfig,
+  genericPlot: genericPlotConfig,
 };
 
 const initialComponentConfigStates = {

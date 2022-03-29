@@ -16,10 +16,16 @@ const composeDotPlotWorkBody = (config) => {
   };
 };
 
+const composeImgPlotWorkBody = () => ({
+  name: plotTypes.IMG_PLOT,
+});
+
 const generatePlotWorkBody = (plotType, config) => {
   switch (plotType) {
     case plotTypes.DOT_PLOT:
       return composeDotPlotWorkBody(config);
+    case plotTypes.IMG_PLOT:
+      return composeImgPlotWorkBody(config);
     default: {
       throw new Error('Plot type doesn\'t exist');
     }
