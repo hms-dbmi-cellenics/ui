@@ -1,11 +1,12 @@
-/* eslint-disable import/no-duplicates */
 import React from 'react';
 import PropTypes from 'prop-types';
 import {
-  Space, List, Card,
+  Space, Divider, Card, Row, Col,
 } from 'antd';
 import Link from 'next/link';
 import Header from 'components/Header';
+
+import { plotNames } from 'utils/constants';
 
 import heatmap from '../../../../../public/static/media/heatmap.png';
 import embeddingContinuous from '../../../../../public/static/media/embeddingContinuous.png';
@@ -16,10 +17,10 @@ import volcano from '../../../../../public/static/media/volcano.png';
 import frequency from '../../../../../public/static/media/frequency.png';
 import markerHeatmap from '../../../../../public/static/media/marker_heatmap.png';
 
-const CardItem = React.forwardRef(({ onClick, item, href }, ref) => (
+const CARD_STYLE = { marginBottom: '1em' };
+const CardItem = (({ onClick, item, href }) => (
   <Card.Grid
     href={href}
-    ref={ref}
     onClick={onClick}
     hoverable={false}
     style={{ textAlign: 'center', width: '100%', padding: '0' }}
@@ -28,7 +29,7 @@ const CardItem = React.forwardRef(({ onClick, item, href }, ref) => (
       alt={item.name}
       src={item.image}
       style={{
-        height: '280px', width: '310px', align: 'center', padding: '10px',
+        height: '200px', width: '250px', align: 'center', padding: '10px',
       }}
     />
   </Card.Grid>
@@ -45,52 +46,67 @@ CardItem.propTypes = {
 const PlotsTablesHome = ({ experimentId, experimentData }) => {
   const plots = [
     {
-      name: 'Continuous Embedding',
-      image: embeddingContinuous,
-      key: 'embedding-continuous-key',
-      link: 'embedding-continuous',
+      title: 'Cell sets & metadata',
+      plots: [
+        {
+          name: plotNames.CATEGORICAL_EMBEDDING,
+          image: embeddingCategorical,
+          key: 'embedding-categorical-key',
+          link: 'embedding-categorical',
+        },
+        {
+          name: 'Frequency Plot',
+          image: frequency,
+          key: 'frequency-key',
+          link: 'frequency',
+        },
+      ],
     },
     {
-      name: 'Categorical Embedding',
-      image: embeddingCategorical,
-      key: 'embedding-categorical-key',
-      link: 'embedding-categorical',
+      title: 'Gene expression',
+      plots: [
+        {
+          name: plotNames.CONTINUOUS_EMBEDDING,
+          image: embeddingContinuous,
+          key: 'embedding-continuous-key',
+          link: 'embedding-continuous',
+        },
+        {
+          name: plotNames.MARKER_HEATMAP,
+          image: markerHeatmap,
+          key: 'marker-heatmap-key',
+          link: 'marker-heatmap',
+        },
+        {
+          name: plotNames.HEATMAP,
+          image: heatmap,
+          key: 'heatmap-key',
+          link: 'heatmap',
+        },
+        {
+          name: plotNames.VIOLIN_PLOT,
+          image: violin,
+          key: 'violin-key',
+          link: 'violin',
+        },
+        {
+          name: plotNames.DOT_PLOT,
+          image: dotPlot,
+          key: 'dot-key',
+          link: 'dot-plot',
+        },
+      ],
     },
     {
-      name: 'Custom Heatmap',
-      image: heatmap,
-      key: 'heatmap-key',
-      link: 'heatmap',
-    },
-    {
-      name: 'Marker Heatmap',
-      image: markerHeatmap,
-      key: 'marker-heatmap-key',
-      link: 'marker-heatmap',
-    },
-    {
-      name: 'Volcano plot',
-      image: volcano,
-      key: 'volcano-key',
-      link: 'volcano',
-    },
-    {
-      name: 'Frequency Plot',
-      image: frequency,
-      key: 'frequency-key',
-      link: 'frequency',
-    },
-    {
-      name: 'Violin Plot',
-      image: violin,
-      key: 'violin-key',
-      link: 'violin',
-    },
-    {
-      name: 'Dot Plot',
-      image: dotPlot,
-      key: 'dot-key',
-      link: 'dot-plot',
+      title: 'Differential expression',
+      plots: [
+        {
+          name: plotNames.VOLCANO_PLOT,
+          image: volcano,
+          key: 'volcano-key',
+          link: 'volcano',
+        },
+      ],
     },
   ];
 
@@ -101,32 +117,39 @@ const PlotsTablesHome = ({ experimentId, experimentData }) => {
         experimentData={experimentData}
         title='Plots and Tables'
       />
-      <Space direction='vertical' style={{ width: '100%', padding: '0 10px' }}>
-        <List
-          grid={{ gutter: 16 }}
-          dataSource={plots}
-          renderItem={(item) => (
-
-            <List.Item>
-              <Card
-                size='small'
-                hoverable
-                title={item.name}
-                bodyStyle={{ padding: '0' }}
+      <Space style={{ padding: '0 1em' }} direction='vertical'>
+        {plots.map((section) => (
+          <Row gutter='16'>
+            <Col span={24}>
+              <Divider
+                orientation='left'
+                orientationMargin='0'
               >
-                <Link
-                  as={`/experiments/${experimentId}/plots-and-tables/${item.link}`}
-                  href={`/experiments/[experimentId]/plots-and-tables/${item.link}`}
-                  passHref
+                <strong>{section.title}</strong>
+              </Divider>
+            </Col>
+            {section.plots.map((item) => (
+              <Col className='plot-card'>
+                <Card
+                  size='small'
+                  hoverable
+                  title={item.name}
+                  bodyStyle={{ padding: '0' }}
+                  style={CARD_STYLE}
                 >
-                  <CardItem item={item} />
-                </Link>
-              </Card>
-            </List.Item>
-          )}
-        />
+                  <Link
+                    as={`/experiments/${experimentId}/plots-and-tables/${item.link}`}
+                    href={`/experiments/[experimentId]/plots-and-tables/${item.link}`}
+                    passHref
+                  >
+                    <CardItem item={item} />
+                  </Link>
+                </Card>
+              </Col>
+            ))}
+          </Row>
+        ))}
       </Space>
-
     </>
   );
 };
