@@ -16,8 +16,8 @@ import dotPlot from '../../../../../public/static/media/dotplot.png';
 import volcano from '../../../../../public/static/media/volcano.png';
 import frequency from '../../../../../public/static/media/frequency.png';
 import markerHeatmap from '../../../../../public/static/media/marker_heatmap.png';
-import 'utils/css/plots-and-tables.css';
 
+const CARD_STYLE = { marginBottom: '1em' };
 const CardItem = (({ onClick, item, href }) => (
   <Card.Grid
     href={href}
@@ -44,13 +44,8 @@ CardItem.propTypes = {
 };
 
 const PlotsTablesHome = ({ experimentId, experimentData }) => {
-  const GUTTER_STYLE = {
-    xs: 4, sm: 8, md: 12, lg: 16,
-  };
-  const CARD_STYLE = { marginBottom: '1em' };
-
-  const plots = {
-    cellsets: {
+  const plots = [
+    {
       title: 'Cell sets & metadata',
       plots: [
         {
@@ -67,7 +62,7 @@ const PlotsTablesHome = ({ experimentId, experimentData }) => {
         },
       ],
     },
-    'gene-expression': {
+    {
       title: 'Gene expression',
       plots: [
         {
@@ -102,7 +97,7 @@ const PlotsTablesHome = ({ experimentId, experimentData }) => {
         },
       ],
     },
-    'differential-expression': {
+    {
       title: 'Differential expression',
       plots: [
         {
@@ -113,8 +108,7 @@ const PlotsTablesHome = ({ experimentId, experimentData }) => {
         },
       ],
     },
-
-  };
+  ];
 
   return (
     <>
@@ -124,91 +118,37 @@ const PlotsTablesHome = ({ experimentId, experimentData }) => {
         title='Plots and Tables'
       />
       <Space style={{ padding: '0 1em' }} direction='vertical'>
-        <Row
-          gutter={GUTTER_STYLE}
-        >
-          <Col span={24}>
-            <Divider
-              orientation='left'
-              orientationMargin='0'
-            >
-              <strong>{plots.cellsets.title}</strong>
-            </Divider>
-          </Col>
-          {plots.cellsets.plots.map((item) => (
-            <Col className='plot-card'>
-              <Card
-                size='small'
-                hoverable
-                title={item.name}
-                bodyStyle={{ padding: '0' }}
-                style={CARD_STYLE}
+        {plots.map((section) => (
+          <Row gutter='16'>
+            <Col span={24}>
+              <Divider
+                orientation='left'
+                orientationMargin='0'
               >
-                <Link
-                  as={`/experiments/${experimentId}/plots-and-tables/${item.link}`}
-                  href={`/experiments/[experimentId]/plots-and-tables/${item.link}`}
-                  passHref
-                >
-                  <CardItem item={item} />
-                </Link>
-              </Card>
+                <strong>{section.title}</strong>
+              </Divider>
             </Col>
-          ))}
-        </Row>
-
-        <Row
-          gutter={GUTTER_STYLE}
-        >
-          <Col span={24}>
-            <Divider orientation='left'><strong>{plots['gene-expression'].title}</strong></Divider>
-          </Col>
-          {plots['gene-expression'].plots.map((item) => (
-            <Col className='plot-card'>
-              <Card
-                size='small'
-                hoverable
-                title={item.name}
-                bodyStyle={{ padding: '0' }}
-                style={CARD_STYLE}
-              >
-                <Link
-                  as={`/experiments/${experimentId}/plots-and-tables/${item.link}`}
-                  href={`/experiments/[experimentId]/plots-and-tables/${item.link}`}
-                  passHref
+            {section.plots.map((item) => (
+              <Col className='plot-card'>
+                <Card
+                  size='small'
+                  hoverable
+                  title={item.name}
+                  bodyStyle={{ padding: '0' }}
+                  style={CARD_STYLE}
                 >
-                  <CardItem item={item} />
-                </Link>
-              </Card>
-            </Col>
-          ))}
-        </Row>
-
-        <Row
-          gutter={GUTTER_STYLE}
-        >
-          <Col span={24}>
-            <Divider orientation='left'><strong>{plots['differential-expression'].title}</strong></Divider>
-          </Col>
-          {plots['differential-expression'].plots.map((item) => (
-            <Col className='plot-card'>
-              <Card
-                size='small'
-                hoverable
-                title={item.name}
-                bodyStyle={{ padding: '0' }}
-                style={CARD_STYLE}
-              >
-                <Link
-                  as={`/experiments/${experimentId}/plots-and-tables/${item.link}`}
-                  href={`/experiments/[experimentId]/plots-and-tables/${item.link}`}
-                  passHref
-                >
-                  <CardItem item={item} />
-                </Link>
-              </Card>
-            </Col>
-          ))}
-        </Row>
+                  <Link
+                    as={`/experiments/${experimentId}/plots-and-tables/${item.link}`}
+                    href={`/experiments/[experimentId]/plots-and-tables/${item.link}`}
+                    passHref
+                  >
+                    <CardItem item={item} />
+                  </Link>
+                </Card>
+              </Col>
+            ))}
+          </Row>
+        ))}
       </Space>
     </>
   );
