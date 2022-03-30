@@ -100,8 +100,8 @@ const ViolinIndex = ({ experimentId }) => {
         <Row gutter={16}>
           <Col span={16}>
             <PlotContainer
-              header='Preview'
-              key='1'
+              plotType={plotType}
+              plotUuid={plotUuid}
               extra={(
                 <Tooltip title='In order to rename existing clusters or create new ones, use the cell set tool, located in the Data Exploration page.'>
                   <Button icon={<InfoCircleOutlined />} />
