@@ -16,7 +16,6 @@ import dotPlot from '../../../../../public/static/media/dotplot.png';
 import volcano from '../../../../../public/static/media/volcano.png';
 import frequency from '../../../../../public/static/media/frequency.png';
 import markerHeatmap from '../../../../../public/static/media/marker_heatmap.png';
-import 'utils/css/plots-and-tables.css';
 
 const CARD_STYLE = { marginBottom: '1em' };
 const CardItem = (({ onClick, item, href }) => (
