@@ -14,13 +14,13 @@ import _ from 'lodash';
 
 const { Panel } = Collapse;
 
-const ResetButton = ({ onClickReset, resetDisabled }) => (
+const ResetButton = ({ onClickReset, disabled }) => (
   <Button
     key='reset'
     type='primary'
     size='small'
     onClick={onClickReset}
-    disabled={resetDisabled}
+    disabled={disabled}
   >
     Reset
   </Button>
@@ -28,13 +28,13 @@ const ResetButton = ({ onClickReset, resetDisabled }) => (
 
 ResetButton.propTypes = {
   onClickReset: PropTypes.func.isRequired,
-  resetDisabled: PropTypes.bool.isRequired,
+  disabled: PropTypes.bool.isRequired,
 };
 
 const PlotContainer = (props) => {
   const {
     experimentId, plotUuid, plotType,
-    extra, disableReset, children,
+    extra, showReset, children,
   } = props;
 
   const dispatch = useDispatch();
@@ -52,16 +52,16 @@ const PlotContainer = (props) => {
       markerHeatmap: ['selectedGenes'],
     };
 
-    const hasDifferentValue = Object.keys(initialConfig).some((key) => {
-      if (ignoredFields[plotType]?.includes(key)) return false;
+    const areAllValuesTheSame = Object.keys(initialConfig).every((key) => {
+      if (ignoredFields[plotType]?.includes(key)) return true;
       if (typeof currentConfig[key] === 'object') {
         return JSON.stringify(currentConfig[key]) === JSON.stringify(initialConfig[key]);
       }
 
-      return currentConfig[key] !== initialConfig[key];
+      return currentConfig[key] === initialConfig[key];
     });
 
-    return hasDifferentValue;
+    return areAllValuesTheSame;
   };
 
   useEffect(() => {
@@ -70,10 +70,11 @@ const PlotContainer = (props) => {
     }
 
     if (_.isEqualWith(config, initialPlotConfigStates[plotType], checkConfigEquality)) {
-      setEnableReset(true);
+      setEnableReset(false);
+      return;
     }
 
-    setEnableReset(false);
+    setEnableReset(true);
   }, [config]);
 
   const onClickReset = (event) => {
@@ -98,7 +99,7 @@ const PlotContainer = (props) => {
   const renderExtra = () => (
     <Space>
       {extra}
-      {!disableReset ? (
+      {!showReset ? (
         <ResetButton
           key='reset'
           onClickReset={onClickReset}
@@ -123,13 +124,13 @@ PlotContainer.propTypes = {
   plotType: PropTypes.string.isRequired,
   extra: PropTypes.node || PropTypes.arrayOf(PropTypes.node),
   children: PropTypes.node,
-  disableReset: PropTypes.bool,
+  showReset: PropTypes.bool,
 };
 
 PlotContainer.defaultProps = {
   extra: null,
   children: null,
-  disableReset: false,
+  showReset: false,
 };
 
 export default PlotContainer;
