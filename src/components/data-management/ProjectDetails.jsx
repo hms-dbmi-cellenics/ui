@@ -31,8 +31,7 @@ const ProjectDetails = ({ width, height }) => {
     <div
       id='project-details'
       style={{
-        padding: layout.PANEL_PADDING,
-        width,
+        width: width - (layout.PANEL_PADDING * 2),
         height: height - layout.PANEL_HEADING_HEIGHT,
       }}
     >

@@ -3,8 +3,6 @@ import { useSelector, useDispatch } from 'react-redux';
 import {
   Tabs, Button, Dropdown,
 } from 'antd';
-import { Mosaic, MosaicWindow } from 'react-mosaic-component';
-import ReactResizeDetector from 'react-resize-detector';
 import { DownOutlined, PictureOutlined, ToolOutlined } from '@ant-design/icons';
 import PropTypes from 'prop-types';
 import { loadProcessingSettings } from 'redux/actions/experimentSettings';
@@ -20,19 +18,9 @@ import MosaicCloseButton from 'components/MosaicCloseButton';
 import { updateLayout, addWindow } from 'redux/actions/layout/index';
 import SearchMenu from 'components/SearchMenu';
 import 'react-mosaic-component/react-mosaic-component.css';
+import ContentContainer from 'components/ContentContainer';
 
 const { TabPane } = Tabs;
-
-const renderWindow = (tile, width, height) => {
-  if (tile) {
-    return (
-      <div style={{ padding: '10px' }}>
-        {height && width ? tile(width, height) : <></>}
-      </div>
-    );
-  }
-  return <></>;
-};
 
 const ExplorationViewPage = ({
   experimentId, experimentData,
@@ -196,33 +184,10 @@ const ExplorationViewPage = ({
           </Dropdown>
         )]}
       />
-      <div style={{ height: '100%', width: '100%', margin: 0 }}>
-        <Mosaic
-          renderTile={(id, path) => (
-            <ReactResizeDetector
-              handleWidth
-              handleHeight
-              refreshMode='throttle'
-              refreshRate={500}
-            >
-              {({ width, height }) => (
-                <MosaicWindow
-                  path={path}
-                  title={id}
-                  toolbarControls={TILE_MAP[id]?.toolbarControls}
-                  key={id}
-                >
-                  {renderWindow(TILE_MAP[id]?.component, width, height)}
-                </MosaicWindow>
-              )}
-            </ReactResizeDetector>
-          )}
-          onRelease={(changedLayout) => {
-            dispatch(updateLayout(changedLayout));
-          }}
-          initialValue={windows}
-        />
-      </div>
+      <ContentContainer
+        tileMap={TILE_MAP}
+        initialArrangement={windows}
+      />
     </>
   );
 };

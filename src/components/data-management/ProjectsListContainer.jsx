@@ -3,7 +3,6 @@ import {
   Space, Button,
 } from 'antd';
 import PropTypes from 'prop-types';
-import { layout } from 'utils/constants';
 
 import ProjectSearchBox from './ProjectSearchBox';
 import ProjectsList from './ProjectsList';
@@ -16,7 +15,7 @@ const ProjectsListContainer = (props) => {
   const [filterParam, setFilterParam] = useState(new RegExp('.*', 'i'));
 
   return (
-    <Space direction='vertical' style={{ width: '100%', padding: layout.PANEL_PADDING }}>
+    <Space direction='vertical' style={{ width: '100%' }}>
       <Button
         data-test-id={integrationTestConstants.ids.CREATE_NEW_PROJECT_BUTTON}
         type='primary'
