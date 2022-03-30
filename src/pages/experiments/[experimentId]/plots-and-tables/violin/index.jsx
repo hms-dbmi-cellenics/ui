@@ -3,8 +3,6 @@ import React, { useEffect, useState } from 'react';
 import {
   Row,
   Col,
-  Space,
-  Collapse,
   Tooltip,
   Button,
 } from 'antd';
@@ -19,14 +17,12 @@ import {
   loadPlotConfig,
 } from 'redux/actions/componentConfig/index';
 import { loadCellSets } from 'redux/actions/cellSets';
-import PlotHeader from 'components/plots/PlotHeader';
+import Header from 'components/Header';
+import PlotContainer from 'components/plots/PlotContainer';
 import ViolinPlot from 'components/plots/ViolinPlot';
 import { getCellSets } from 'redux/selectors';
 import { plotNames } from 'utils/constants';
 
-const { Panel } = Collapse;
-// TODO: when we want to enable users to create their custom plots,
-// we will need to change this to proper Uuid
 const plotUuid = 'ViolinMain';
 const plotType = 'violin';
 
@@ -99,52 +95,41 @@ const ViolinIndex = ({ experimentId }) => {
 
   return (
     <>
-      <PlotHeader
-        title={plotNames.VIOLIN_PLOT}
-        plotUuid={plotUuid}
-        experimentId={experimentId}
-      />
-      <Space direction='vertical' style={{ width: '100%', padding: '0 10px' }}>
-
+      <Header title={plotNames.VIOLIN_PLOT} />
+      <div style={{ width: '100%', padding: '0 16px' }}>
         <Row gutter={16}>
           <Col span={16}>
-            <Space direction='vertical' style={{ width: '100%' }}>
-              <Collapse defaultActiveKey='1'>
-                <Panel
-                  header='Preview'
-                  key='1'
-                  extra={(
-                    <Tooltip title='In order to rename existing clusters or create new ones, use the cell set tool, located in the Data Exploration page.'>
-                      <Button icon={<InfoCircleOutlined />} />
-                    </Tooltip>
-                  )}
-                >
-                  {config
-                  && (
-                    <ViolinPlot
-                      searchedGene={searchedGene}
-                      experimentId={experimentId}
-                      config={config}
-                      plotUuid={plotUuid}
-                    />
-                  )}
-                </Panel>
-              </Collapse>
-            </Space>
+            <PlotContainer
+              header='Preview'
+              key='1'
+              extra={(
+                <Tooltip title='In order to rename existing clusters or create new ones, use the cell set tool, located in the Data Exploration page.'>
+                  <Button icon={<InfoCircleOutlined />} />
+                </Tooltip>
+              )}
+            >
+              {config
+                && (
+                  <ViolinPlot
+                    searchedGene={searchedGene}
+                    experimentId={experimentId}
+                    config={config}
+                    plotUuid={plotUuid}
+                  />
+                )}
+            </PlotContainer>
           </Col>
           <Col span={8}>
-            <Space direction='vertical' style={{ width: '100%' }}>
-              <PlotStyling
-                formConfig={plotStylingControlsConfig}
-                config={config}
-                onUpdate={updatePlotWithChanges}
-                renderExtraPanels={renderExtraPanels}
-                defaultActiveKey='gene-selection'
-              />
-            </Space>
+            <PlotStyling
+              formConfig={plotStylingControlsConfig}
+              config={config}
+              onUpdate={updatePlotWithChanges}
+              renderExtraPanels={renderExtraPanels}
+              defaultActiveKey='gene-selection'
+            />
           </Col>
         </Row>
-      </Space>
+      </div>
     </>
   );
 };
