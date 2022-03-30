@@ -151,40 +151,30 @@ const HeatmapPlot = ({ experimentId }) => {
   const renderPlot = () => {
     if (!config || loading.length > 0 || cellSets.loading) {
       return (
-        <center>
-          <Loader experimentId={experimentId} />
-        </center>
+        <Loader experimentId={experimentId} />
       );
     }
 
     if (error) {
       return (
-        <center>
-          <PlatformError
-            description='Could not load gene expression data.'
-            error={error}
-            onClick={() => dispatch(loadGeneExpression(experimentId, selectedGenes, plotUuid))}
-          />
-        </center>
+        <PlatformError
+          description='Could not load gene expression data.'
+          error={error}
+          onClick={() => dispatch(loadGeneExpression(experimentId, selectedGenes, plotUuid))}
+        />
       );
     }
 
     if (selectedGenes.length === 0) {
       return (
-        <center>
-          <Empty description={(
-            <Text>Add some genes to this heatmap to get started.</Text>
-          )}
-          />
-        </center>
+        <Empty description={(
+          <Text>Add some genes to this heatmap to get started.</Text>
+        )}
+        />
       );
     }
     if (vegaSpec) {
-      return (
-        <center>
-          <Vega spec={vegaSpec} renderer='canvas' />
-        </center>
-      );
+      return <Vega spec={vegaSpec} renderer='canvas' />;
     }
   };
 
@@ -204,7 +194,9 @@ const HeatmapPlot = ({ experimentId }) => {
               plotUuid={plotUuid}
               plotType={plotType}
             >
-              {renderPlot()}
+              <center>
+                {renderPlot()}
+              </center>
             </PlotContainer>
           </Col>
           <Col span={8}>

@@ -27,7 +27,8 @@ import MarkerGeneSelection from 'components/plots/styling/MarkerGeneSelection';
 import loadProcessingSettings from 'redux/actions/experimentSettings/processingConfig/loadProcessingSettings';
 import PlotStyling from 'components/plots/styling/PlotStyling';
 import { updatePlotConfig, loadPlotConfig } from 'redux/actions/componentConfig';
-import PlotHeader from 'components/plots/PlotHeader';
+import Header from 'components/Header';
+import PlotContainer from 'components/plots/PlotContainer';
 import { generateSpec } from 'utils/plotSpecs/generateHeatmapSpec';
 import { loadGeneExpression, loadMarkerGenes } from 'redux/actions/genes';
 import { loadCellSets } from 'redux/actions/cellSets';
@@ -421,38 +422,31 @@ const MarkerHeatmap = ({ experimentId }) => {
 
   return (
     <>
-      <PlotHeader
-        title={plotNames.MARKER_HEATMAP}
-        plotUuid={plotUuid}
-        experimentId={experimentId}
-      />
-      <Space direction='vertical' style={{ width: '100%', padding: '0 10px' }}>
-
+      <Header title={plotNames.MARKER_HEATMAP} />
+      <div style={{ width: '100%', padding: '0 16px' }}>
         <Row gutter={16}>
           <Col span={16}>
-            <Space direction='vertical' style={{ width: '100%' }}>
-              <Collapse defaultActiveKey='1'>
-                <Panel header='Preview' key='1'>
-                  <center>
-                    {renderPlot()}
-                  </center>
-                </Panel>
-              </Collapse>
-            </Space>
+            <PlotContainer
+              experimentId={experimentId}
+              plotUuid={plotUuid}
+              plotType={plotType}
+            >
+              <center>
+                {renderPlot()}
+              </center>
+            </PlotContainer>
           </Col>
           <Col span={8}>
-            <Space direction='vertical' style={{ width: '100%' }}>
-              <PlotStyling
-                formConfig={plotStylingControlsConfig}
-                config={config}
-                onUpdate={updatePlotWithChanges}
-                defaultActiveKey='gene-selection'
-                renderExtraPanels={renderExtraPanels}
-              />
-            </Space>
+            <PlotStyling
+              formConfig={plotStylingControlsConfig}
+              config={config}
+              onUpdate={updatePlotWithChanges}
+              defaultActiveKey='gene-selection'
+              renderExtraPanels={renderExtraPanels}
+            />
           </Col>
         </Row>
-      </Space>
+      </div>
     </>
   );
 };
