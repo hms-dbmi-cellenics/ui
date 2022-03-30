@@ -16,6 +16,7 @@ import dotPlot from '../../../../../public/static/media/dotplot.png';
 import volcano from '../../../../../public/static/media/volcano.png';
 import frequency from '../../../../../public/static/media/frequency.png';
 import markerHeatmap from '../../../../../public/static/media/marker_heatmap.png';
+import 'utils/css/plots-and-tables.css';
 
 const CardItem = (({ onClick, item, href }) => (
   <Card.Grid
@@ -28,7 +29,7 @@ const CardItem = (({ onClick, item, href }) => (
       alt={item.name}
       src={item.image}
       style={{
-        height: '280px', width: '310px', align: 'center', padding: '10px',
+        height: '200px', width: '250px', align: 'center', padding: '10px',
       }}
     />
   </Card.Grid>
@@ -135,7 +136,7 @@ const PlotsTablesHome = ({ experimentId, experimentData }) => {
             </Divider>
           </Col>
           {plots.cellsets.plots.map((item) => (
-            <Col xs={24} md={12} xl={6}>
+            <Col className='plot-card'>
               <Card
                 size='small'
                 hoverable
@@ -162,7 +163,7 @@ const PlotsTablesHome = ({ experimentId, experimentData }) => {
             <Divider orientation='left'><strong>{plots['gene-expression'].title}</strong></Divider>
           </Col>
           {plots['gene-expression'].plots.map((item) => (
-            <Col xs={24} md={12} xl={6}>
+            <Col className='plot-card'>
               <Card
                 size='small'
                 hoverable
@@ -189,7 +190,7 @@ const PlotsTablesHome = ({ experimentId, experimentData }) => {
             <Divider orientation='left'><strong>{plots['differential-expression'].title}</strong></Divider>
           </Col>
           {plots['differential-expression'].plots.map((item) => (
-            <Col xs={24} md={12} xl={6}>
+            <Col className='plot-card'>
               <Card
                 size='small'
                 hoverable

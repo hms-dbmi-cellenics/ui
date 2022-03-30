@@ -1,0 +1,23 @@
+@media only screen and (max-width: 576px) {
+    .plot-container {
+        width: 100%;
+    }
+}
+
+@media only screen and (max-width: 768px) {
+    .plot-container {
+        width: 50%;
+    }
+}
+
+@media only screen and (max-width: 992px) {
+    .plot-container {
+        width: 25%;
+    }
+}
+
+@media only screen and (max-width: 1200px) {
+    .plot-container {
+        width: 20%;
+    }
+}
