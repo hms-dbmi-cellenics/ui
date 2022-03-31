@@ -200,12 +200,18 @@ const HeatmapPlot = ({ experimentId }) => {
             </PlotContainer>
           </Col>
           <Col span={8}>
-            <HeatmapControls
-              selectedGenes={selectedGenes}
-              plotUuid={plotUuid}
-              onGeneEnter={onGeneEnter}
+            <PlotStyling
+              formConfig={plotStylingControlsConfig}
+              config={config}
+              onUpdate={updatePlotWithChanges}
+              renderExtraPanels={() => (
+                <HeatmapControls
+                  selectedGenes={selectedGenes}
+                  plotUuid={plotUuid}
+                  onGeneEnter={onGeneEnter}
+                />
+              )}
             />
-            <PlotStyling formConfig={plotStylingControlsConfig} config={config} onUpdate={updatePlotWithChanges} defaultActiveKey='5' />
           </Col>
         </Row>
       </div>

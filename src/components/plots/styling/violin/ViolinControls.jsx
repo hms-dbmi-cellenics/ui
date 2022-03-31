@@ -15,13 +15,13 @@ const ViolinControls = (props) => {
 
   return (
     <Collapse>
-      <Panel header='Gene selection' key='1'>
+      <Panel header='Gene selection' key='Gene selection'>
         <SingleGeneSelection
           config={config}
           setSearchedGene={setSearchedGene}
         />
       </Panel>
-      <Panel header='Select data' key='15'>
+      <Panel header='Select data' key='Select data'>
         <SelectData
           config={config}
           onUpdate={onUpdate}

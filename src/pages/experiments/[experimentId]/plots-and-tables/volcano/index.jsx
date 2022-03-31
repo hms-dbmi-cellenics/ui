@@ -222,7 +222,7 @@ const VolcanoPlotPage = (props) => {
 
   const renderExtraPanels = () => (
     <>
-      <Panel header='Differential Expression' key='1'>
+      <Panel header='Differential expression' key='Differential expression'>
         <DiffExprCompute
           experimentId={experimentId}
           onCompute={onComputeDiffExp}
@@ -252,7 +252,7 @@ const VolcanoPlotPage = (props) => {
               config={config}
               onUpdate={updatePlotWithChanges}
               renderExtraPanels={renderExtraPanels}
-              defaultActiveKey='1'
+              defaultActivePanel='Differential expression'
             />
           </Col>
         </Row>

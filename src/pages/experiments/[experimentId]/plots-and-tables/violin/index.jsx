@@ -125,7 +125,7 @@ const ViolinIndex = ({ experimentId }) => {
               config={config}
               onUpdate={updatePlotWithChanges}
               renderExtraPanels={renderExtraPanels}
-              defaultActiveKey='gene-selection'
+              defaultActivePanel='Gene selection'
             />
           </Col>
         </Row>
