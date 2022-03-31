@@ -47,12 +47,16 @@ const PlotContainer = (props) => {
       // config fields that are set dynamically on component render
       // should not be compared to their initial values
       frequency: ['proportionGrouping', 'xAxisGrouping'],
-      embeddingContinuous: ['shownGene'],
+      embeddingCategorical: ['axes'],
+      embeddingContinuous: ['shownGene', 'axes'],
       violin: ['shownGene'],
-      markerHeatmap: ['selectedGenes'],
+      markerHeatmap: ['selectedGenes', 'groupedTracks'],
+      DotPlot: ['selectedGenes'],
     };
 
     const areAllValuesTheSame = Object.keys(initialConfig).every((key) => {
+      // By pass plot data because we want to compare settings not data
+      if (key === 'plotData') return true;
       if (ignoredFields[plotType]?.includes(key)) return true;
       if (typeof currentConfig[key] === 'object') {
         return JSON.stringify(currentConfig[key]) === JSON.stringify(initialConfig[key]);
