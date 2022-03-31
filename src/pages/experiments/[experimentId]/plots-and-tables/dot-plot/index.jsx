@@ -384,7 +384,7 @@ const DotPlotPage = (props) => {
               config={config}
               onUpdate={updatePlotWithChanges}
               renderExtraPanels={renderExtraPanels}
-              defaultActivePanel='Gene Selection'
+              defaultActivePanel='Gene selection'
             />
           </Col>
         </Row>

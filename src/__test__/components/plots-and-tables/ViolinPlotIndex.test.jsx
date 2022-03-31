@@ -194,7 +194,7 @@ describe('ViolinIndex', () => {
   it('has a Markers panel', async () => {
     await renderViolinIndex();
 
-    const tabs = rtl.screen.getAllByRole('tab');
+    const tabs = rtl.screen.getAllByRole('button');
     const markers = tabs.find((tab) => tab.textContent === 'Markers');
     const panelContainer = markers.parentElement;
     userEvent.click(markers);
@@ -219,7 +219,7 @@ describe('ViolinIndex', () => {
   it('has a Legend panel', async () => {
     await renderViolinIndex();
 
-    const tabs = rtl.screen.getAllByRole('tab');
+    const tabs = rtl.screen.getAllByRole('button');
     const markers = tabs.find((tab) => tab.textContent === 'Legend');
     const panelContainer = markers.parentElement;
     userEvent.click(markers);
@@ -249,10 +249,10 @@ describe('ViolinIndex', () => {
     await renderViolinIndex();
     await rtl.waitFor(() => expect(generateSpecSpy).toHaveBeenCalledTimes(2));
 
-    let tabs = rtl.screen.getAllByRole('tab');
+    let tabs = rtl.screen.getAllByRole('button');
     const mainSchema = tabs.find((tab) => tab.textContent === 'Main schema');
     userEvent.click(mainSchema);
-    tabs = rtl.screen.getAllByRole('tab');
+    tabs = rtl.screen.getAllByRole('button');
     const titleTab = tabs.find((tab) => tab.textContent === 'Title');
     userEvent.click(titleTab);
     let panelContainer = mainSchema.parentElement;
@@ -284,7 +284,7 @@ describe('ViolinIndex', () => {
   it.skip('has an Axis and Margins panel (TO-DO)', async () => {
     await renderViolinIndex();
 
-    const tabs = rtl.screen.getAllByRole('tab');
+    const tabs = rtl.screen.getAllByRole('button');
     const markers = tabs.find((tab) => tab.textContent === 'Axes and margins');
     const panelContainer = markers.parentElement;
     userEvent.click(markers);
