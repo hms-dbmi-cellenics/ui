@@ -248,28 +248,24 @@ const ContentWrapper = (props) => {
       module: modules.DATA_MANAGEMENT,
       icon: <FolderOpenOutlined />,
       name: 'Data Management',
-      disableIfNoExperiment: false,
       disabledByPipelineStatus: true,
     },
     {
       module: modules.DATA_PROCESSING,
       icon: <BuildOutlined />,
       name: 'Data Processing',
-      disableIfNoExperiment: true,
       disabledByPipelineStatus: false,
     },
     {
       module: modules.DATA_EXPLORATION,
       icon: <FundViewOutlined />,
       name: 'Data Exploration',
-      disableIfNoExperiment: true,
       disabledByPipelineStatus: true,
     },
     {
       module: modules.PLOTS_AND_TABLES,
       icon: <DatabaseOutlined />,
       name: 'Plots and Tables',
-      disableIfNoExperiment: true,
       disabledByPipelineStatus: true,
     },
   ];
@@ -279,6 +275,11 @@ const ContentWrapper = (props) => {
 
   const renderContent = () => {
     if (routeExperimentId) {
+      // if (currentModule === modules.DATA_PROCESSING && dataProcessingDisable()) {
+      //   console.log('****** ', dataProcessingDisable());
+      //   return <GEM2SLoadingScreen experimentId={routeExperimentId} gem2sStatus='toBeRun' />;
+      // }
+
       if (
         backendLoading || !backendStatusRequested) {
         return <PreloadContent />;
@@ -320,12 +321,15 @@ const ContentWrapper = (props) => {
     return children;
   };
 
-  const menuItemRender = ({
-    module, icon, name, disableIfNoExperiment, disabledByPipelineStatus,
-  }) => {
-    const notProcessedExperimentDisable = !routeExperimentId && disableIfNoExperiment
-      && (!gem2sRerunStatus || gem2sRerunStatus.rerun);
+  const dataProcessingDisable = () => {
+    console.log('****** ', gem2sRerunStatus);
+    if (gem2sRerunStatus.rerun) return true;
+    return false;
+  };
 
+  const menuItemRender = ({
+    module, icon, name, disabledByPipelineStatus,
+  }) => {
     const pipelineStatusDisable = disabledByPipelineStatus && (
       backendError || gem2sRunning || gem2sRunningError
       || waitingForQcToLaunch || pipelineRunning || pipelineRunningError
@@ -334,7 +338,7 @@ const ContentWrapper = (props) => {
     return (
       <Menu.Item
         id={module}
-        disabled={notProcessedExperimentDisable || pipelineStatusDisable}
+        disabled={(!gem2sRerunStatus || gem2sRerunStatus.rerun) || pipelineStatusDisable}
         key={module}
         icon={icon}
         onClick={() => navigateTo(
@@ -374,7 +378,17 @@ const ContentWrapper = (props) => {
               }
               mode='inline'
             >
-              {menuLinks.filter((item) => !item.disableIfNoExperiment).map(menuItemRender)}
+              <Menu.Item
+                id={modules.DATA_MANAGEMENT}
+                key={modules.DATA_MANAGEMENT}
+                icon={<FolderOpenOutlined />}
+                onClick={() => navigateTo(
+                  modules.DATA_MANAGEMENT,
+                  { experimentId: currentExperimentId },
+                )}
+              >
+                Data Management
+              </Menu.Item>
 
               <Menu.ItemGroup
                 title={!collapsed && (
@@ -400,7 +414,8 @@ const ContentWrapper = (props) => {
 
                 )}
               >
-                {menuLinks.filter((item) => item.disableIfNoExperiment).map(menuItemRender)}
+                {console.log('I am doing this')}
+                {menuLinks.filter((item) => item.module !== modules.DATA_MANAGEMENT).map(menuItemRender)}
               </Menu.ItemGroup>
 
             </Menu>
