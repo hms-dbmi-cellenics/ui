@@ -4,8 +4,6 @@ import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useSelector, useDispatch } from 'react-redux';
 import {
-  Row,
-  Col,
   Collapse,
   Skeleton,
   Radio,
@@ -16,7 +14,6 @@ import Link from 'next/link';
 import Header from 'components/Header';
 import Loader from 'components/Loader';
 import PlatformError from 'components/PlatformError';
-import PlotContainer from 'components/plots/PlotContainer';
 import FrequencyPlot from 'components/plots/FrequencyPlot';
 import ExportAsCSV from 'components/plots/ExportAsCSV';
 
@@ -29,6 +26,8 @@ import loadCellSets from 'redux/actions/cellSets/loadCellSets';
 
 import plotCsvFilename from 'utils/fileNames';
 import { plotNames } from 'utils/constants';
+import MultiTileContainer from 'components/MultiTileContainer';
+import ResetButton from 'components/plots/PlotResetButton';
 
 const { Panel } = Collapse;
 
@@ -137,10 +136,6 @@ const FrequencyPlotPage = ({ experimentId }) => {
     }
   };
 
-  const renderCSVbutton = () => (
-    <ExportAsCSV data={csvData} filename={csvFilename} />
-  );
-
   const renderExtraPanels = () => (
     <>
       <Panel header='Select data' key='Select data'>
@@ -189,32 +184,46 @@ const FrequencyPlotPage = ({ experimentId }) => {
     );
   };
 
+  const PLOT = 'Plot';
+  const CONTROLS = 'Controls';
+
+  const TILE_MAP = {
+    [PLOT]: {
+      toolbarControls: [
+        <ExportAsCSV data={csvData} filename={csvFilename} />,
+        <ResetButton />,
+      ],
+      component: () => renderPlot(),
+    },
+    [CONTROLS]: {
+      toolbarControls: [],
+      component: () => (
+        <PlotStyling
+          formConfig={plotStylingControlsConfig}
+          config={config}
+          onUpdate={updatePlotWithChanges}
+          renderExtraPanels={renderExtraPanels}
+          defaultActivePanel='Select data'
+        />
+      ),
+    },
+  };
+
+  const windows = {
+    direction: 'row',
+    first: PLOT,
+    second: CONTROLS,
+    splitPercentage: 75,
+  };
+
   return (
     <>
       <Header title={plotNames.FREQUENCY_PLOT} />
-      <div style={{ width: '100%', padding: '0 16px' }}>
-        <Row gutter={16}>
-          <Col span={16}>
-            <PlotContainer
-              experimentId={experimentId}
-              plotUuid={plotUuid}
-              plotType={plotType}
-              extra={renderCSVbutton()}
-            >
-              {renderPlot()}
-            </PlotContainer>
-          </Col>
-          <Col span={8}>
-            <PlotStyling
-              formConfig={plotStylingControlsConfig}
-              config={config}
-              onUpdate={updatePlotWithChanges}
-              renderExtraPanels={renderExtraPanels}
-              defaultActivePanel='Select data'
-            />
-          </Col>
-        </Row>
-      </div>
+      <MultiTileContainer
+        style={{ backgroundColor: 'white' }}
+        tileMap={TILE_MAP}
+        initialArrangement={windows}
+      />
     </>
   );
 };

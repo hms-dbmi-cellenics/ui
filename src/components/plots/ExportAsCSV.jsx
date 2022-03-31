@@ -8,9 +8,10 @@ const ExportAsCSV = (props) => {
   return (
     <CSVLink data={data} filename={filename}>
       <Button
+        type='text'
+        className='bp3-button bp3-minimal'
         disabled={disabled}
         onClick={(e) => e.stopPropagation()}
-        size='small'
       >
         Export as CSV
       </Button>

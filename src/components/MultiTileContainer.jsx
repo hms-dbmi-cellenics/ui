@@ -8,7 +8,12 @@ import { layout } from 'utils/constants';
 const renderWindow = (tile, width, height) => {
   if (tile) {
     return (
-      <div style={{ padding: layout.PANEL_PADDING }}>
+      <div style={{
+        padding: layout.PANEL_PADDING,
+        height: height - layout.PANEL_HEADING_HEIGHT,
+        overflow: 'auto',
+      }}
+      >
         {height && width ? tile(width, height) : <></>}
       </div>
     );
