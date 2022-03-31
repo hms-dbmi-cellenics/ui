@@ -2,8 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Header from 'components/Header';
 
-import ContentContainer from 'components/ContentContainer';
 import PlotsTablesContainer from 'pages/experiments/[experimentId]/plots-and-tables/PlotsTablesContainer';
+import SingleTileContainer from 'components/SingleTileContainer';
 
 const PLOTS_TABLES = 'Select Plot';
 
@@ -30,7 +30,7 @@ const PlotsTablesHome = ({ experimentId, experimentData }) => {
         experimentData={experimentData}
         title='Plots and Tables'
       />
-      <ContentContainer
+      <SingleTileContainer
         tileMap={TILE_MAP}
         initialArrangement={windows}
       />

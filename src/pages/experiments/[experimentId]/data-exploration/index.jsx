@@ -18,7 +18,7 @@ import MosaicCloseButton from 'components/MosaicCloseButton';
 import { updateLayout, addWindow } from 'redux/actions/layout/index';
 import SearchMenu from 'components/SearchMenu';
 import 'react-mosaic-component/react-mosaic-component.css';
-import ContentContainer from 'components/ContentContainer';
+import MultiTileContainer from 'components/MultiTileContainer';
 
 const { TabPane } = Tabs;
 
@@ -184,7 +184,7 @@ const ExplorationViewPage = ({
           </Dropdown>
         )]}
       />
-      <ContentContainer
+      <MultiTileContainer
         tileMap={TILE_MAP}
         initialArrangement={windows}
       />

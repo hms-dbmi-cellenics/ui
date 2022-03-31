@@ -16,7 +16,7 @@ const renderWindow = (tile, width, height) => {
   return <></>;
 };
 
-const ContentContainer = ({ tileMap, initialArrangement }) => (
+const MultiTileContainer = ({ tileMap, initialArrangement }) => (
   <div style={{ height: '100%', width: '100%', margin: 0 }}>
     <Mosaic
       renderTile={(id, path) => (
@@ -42,9 +42,12 @@ const ContentContainer = ({ tileMap, initialArrangement }) => (
   </div>
 );
 
-ContentContainer.propTypes = {
+MultiTileContainer.propTypes = {
   tileMap: PropTypes.object.isRequired,
-  initialArrangement: PropTypes.object.isRequired,
+  initialArrangement: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.object,
+  ]).isRequired,
 };
 
-export default ContentContainer;
+export default MultiTileContainer;

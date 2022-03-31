@@ -6,16 +6,16 @@ import {
 } from 'antd';
 
 import { ClipLoader } from 'react-spinners';
-import NewProjectModal from 'components/data-management/NewProjectModal';
-import ContentContainer from 'components/ContentContainer';
-import { loadProjects } from '../../redux/actions/projects';
-import { loadExperiments } from '../../redux/actions/experiments';
+import { loadProjects } from 'redux/actions/projects';
+import { loadExperiments } from 'redux/actions/experiments';
 
-import Header from '../../components/Header';
-import ProjectsListContainer from '../../components/data-management/ProjectsListContainer';
-import ProjectDetails from '../../components/data-management/ProjectDetails';
-import { loadProcessingSettings } from '../../redux/actions/experimentSettings';
-import loadBackendStatus from '../../redux/actions/backendStatus/loadBackendStatus';
+import Header from 'components/Header';
+import MultiTileContainer from 'components/MultiTileContainer';
+import NewProjectModal from 'components/data-management/NewProjectModal';
+import ProjectsListContainer from 'components/data-management/ProjectsListContainer';
+import ProjectDetails from 'components/data-management/ProjectDetails';
+import { loadProcessingSettings } from 'redux/actions/experimentSettings';
+import loadBackendStatus from 'redux/actions/backendStatus/loadBackendStatus';
 
 const DataManagementPage = () => {
   const dispatch = useDispatch();
@@ -136,7 +136,7 @@ const DataManagementPage = () => {
           onCreate={() => { setNewProjectModalVisible(false); }}
         />
       ) : (<></>)}
-      <ContentContainer
+      <MultiTileContainer
         tileMap={TILE_MAP}
         initialArrangement={windows}
       />
