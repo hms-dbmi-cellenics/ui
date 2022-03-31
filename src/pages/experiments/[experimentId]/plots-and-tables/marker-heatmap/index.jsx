@@ -365,7 +365,7 @@ const MarkerHeatmap = ({ experimentId }) => {
 
   const renderExtraPanels = () => (
     <>
-      <Panel header='Gene selection' key='gene-selection'>
+      <Panel header='Gene selection' key='Gene selection'>
         <Space direction='vertical' size='small'>
           <MarkerGeneSelection
             config={config}
@@ -387,7 +387,7 @@ const MarkerHeatmap = ({ experimentId }) => {
           </div>
         </Space>
       </Panel>
-      <Panel header='Select data' key='selectData'>
+      <Panel header='Select data' key='Select data'>
         <Space direction='vertical' size='small'>
           <p>Select the cell sets to show markers for:</p>
           <Select
@@ -402,7 +402,7 @@ const MarkerHeatmap = ({ experimentId }) => {
           />
         </Space>
       </Panel>
-      <Panel header='Cluster guardlines' key='clusterGuardlines'>
+      <Panel header='Cluster guardlines' key='Cluster guardlines'>
         <Radio.Group
           value={config.guardLines}
           onChange={(e) => updatePlotWithChanges({ guardLines: e.target.value })}
@@ -441,8 +441,8 @@ const MarkerHeatmap = ({ experimentId }) => {
               formConfig={plotStylingControlsConfig}
               config={config}
               onUpdate={updatePlotWithChanges}
-              defaultActiveKey='gene-selection'
               renderExtraPanels={renderExtraPanels}
+              defaultActivePanel='Gene selection'
             />
           </Col>
         </Row>

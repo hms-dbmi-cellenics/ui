@@ -134,13 +134,13 @@ const ContinuousEmbeddingPage = ({ experimentId }) => {
 
   const renderExtraPanels = () => (
     <>
-      <Panel header='Gene selection' key='gene-selection'>
+      <Panel header='Gene selection' key='Gene Selection'>
         <SingleGeneSelection
           config={config}
           setSearchedGene={setSearchedGene}
         />
       </Panel>
-      <Panel header='Select data' key='select-data'>
+      <Panel header='Select data' key='Select data'>
         <SelectData
           config={config}
           onUpdate={updatePlotWithChanges}
@@ -186,7 +186,7 @@ const ContinuousEmbeddingPage = ({ experimentId }) => {
               config={config}
               onUpdate={updatePlotWithChanges}
               renderExtraPanels={renderExtraPanels}
-              defaultActiveKey='gene-selection'
+              defaultActivePanel={['Gene Selection', 'Select data']}
             />
           </Col>
         </Row>

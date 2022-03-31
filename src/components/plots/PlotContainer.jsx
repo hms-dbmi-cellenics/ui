@@ -111,7 +111,7 @@ const PlotContainer = (props) => {
 
   return (
     <Collapse defaultActiveKey='plot'>
-      <Panel header='Preview' key='plot' extra={renderExtra()}>
+      <Panel key='plot' extra={renderExtra()} collapsible='disabled' ghost showArrow={false}>
         {children}
       </Panel>
     </Collapse>

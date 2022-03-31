@@ -244,7 +244,7 @@ const DotPlotPage = (props) => {
 
   const renderExtraPanels = () => (
     <>
-      <Panel header='Gene selection' key='gene-selection'>
+      <Panel header='Gene selection' key='Gene selection'>
         <MarkerGeneSelection
           config={config}
           onUpdate={updatePlotWithChanges}
@@ -259,7 +259,7 @@ const DotPlotPage = (props) => {
           cellSets={cellSets}
         />
       </Panel>
-      <Panel header='Size scale' key='absolute-scale'>
+      <Panel header='Size scale' key='Size scale'>
         <Form>
           <Form.Item>
             <Radio.Group
@@ -384,7 +384,7 @@ const DotPlotPage = (props) => {
               config={config}
               onUpdate={updatePlotWithChanges}
               renderExtraPanels={renderExtraPanels}
-              defaultActiveKey='gene-selection'
+              defaultActivePanel='Gene Selection'
             />
           </Col>
         </Row>

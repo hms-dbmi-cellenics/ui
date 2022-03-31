@@ -29,7 +29,7 @@ import VolcanoDisplayLabels from './volcano/DisplayLabels';
 const { Panel } = Collapse;
 const PlotStyling = (props) => {
   const {
-    formConfig, config, onUpdate, renderExtraPanels, defaultActiveKey,
+    formConfig, config, onUpdate, renderExtraPanels, defaultActivePanel,
   } = props;
 
   const ComponentMapping = {
@@ -71,7 +71,7 @@ const PlotStyling = (props) => {
             Object.getOwnPropertyDescriptor(el, 'children')
               && el.children.length > 0
               ? (
-                <Collapse accordion>
+                <Collapse>
                   {buildForm(el.children)}
                 </Collapse>
               )
@@ -86,7 +86,7 @@ const PlotStyling = (props) => {
   });
 
   return (
-    <Collapse accordion defaultActiveKey={defaultActiveKey}>
+    <Collapse defaultActiveKey={defaultActivePanel}>
       {renderExtraPanels()}
       {buildForm(formConfig)}
     </Collapse>
@@ -98,7 +98,7 @@ PlotStyling.propTypes = {
   config: PropTypes.object,
   onUpdate: PropTypes.func.isRequired,
   renderExtraPanels: PropTypes.func,
-  defaultActiveKey: PropTypes.oneOfType([
+  defaultActivePanel: PropTypes.oneOfType([
     PropTypes.string,
     PropTypes.array,
   ]),
@@ -108,7 +108,7 @@ PlotStyling.defaultProps = {
   formConfig: [],
   config: {},
   renderExtraPanels: () => { },
-  defaultActiveKey: [],
+  defaultActivePanel: [],
 };
 
 export default PlotStyling;
