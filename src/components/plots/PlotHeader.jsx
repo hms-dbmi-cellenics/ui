@@ -9,6 +9,8 @@ import { useRouter } from 'next/router';
 import PropTypes from 'prop-types';
 import { useBeforeunload } from 'react-beforeunload';
 import Header from 'components/Header';
+import config from 'config';
+import { api } from 'utils/constants';
 import { savePlotConfig } from '../../redux/actions/componentConfig/index';
 import { getFromApiExpectOK } from '../../utils/getDataExpectOK';
 import { LOAD_CONFIG } from '../../redux/actionTypes/componentConfig';
@@ -98,10 +100,14 @@ const PlotHeader = ({ title, experimentId, plotUuid }) => {
     };
   }, [router?.asPath, router?.events, saved]);
 
-  const { data } = useSWR(
-    `/v1/experiments/${experimentId}`,
-    getFromApiExpectOK,
-  );
+  let url;
+  if (config.currentApiVersion === api.V1) {
+    url = `/v1/experiments/${experimentId}`;
+  } else {
+    url = `/v2/experiments/${experimentId}`;
+  }
+
+  const { data } = useSWR(url, getFromApiExpectOK);
 
   if (!data || !config) {
     return <Skeleton active paragraph={{ rows: 1 }} title={{ width: 500 }} />;
