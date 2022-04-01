@@ -5,7 +5,6 @@ import {
   EXPERIMENTS_LOADED,
   EXPERIMENTS_LOADING,
   EXPERIMENTS_ERROR,
-  EXPERIMENTS_SAVED,
   EXPERIMENTS_SAVING,
   EXPERIMENTS_DELETED,
 } from '../../actionTypes/experiments';
@@ -21,7 +20,6 @@ import experimentsLoading from './experimentsLoading';
 import experimentsLoaded from './experimentsLoaded';
 import experimentsError from './experimentsError';
 import experimentsSaving from './experimentsSaving';
-import exprimentsSaved from './experimentsSaved';
 import samplesCreate from './samplesCreate';
 
 const experimentsReducer = (state = initialState, action) => {
@@ -52,10 +50,6 @@ const experimentsReducer = (state = initialState, action) => {
 
     case EXPERIMENTS_SAVING: {
       return experimentsSaving(state, action);
-    }
-
-    case EXPERIMENTS_SAVED: {
-      return exprimentsSaved(state, action);
     }
 
     case SAMPLES_CREATE: {

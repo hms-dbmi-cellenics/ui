@@ -3,7 +3,7 @@ import _ from 'lodash';
 import fetchAPI from 'utils/http/fetchAPI';
 import handleError from 'utils/http/handleError';
 import {
-  EXPERIMENTS_UPDATED, EXPERIMENTS_SAVING, EXPERIMENTS_SAVED, EXPERIMENTS_ERROR,
+  EXPERIMENTS_UPDATED, EXPERIMENTS_SAVING, EXPERIMENTS_ERROR,
 } from 'redux/actionTypes/experiments';
 import endUserMessages from 'utils/endUserMessages';
 
@@ -49,10 +49,6 @@ const updateExperiment = (
         experimentId,
         experiment: experimentDiff,
       },
-    });
-
-    dispatch({
-      type: EXPERIMENTS_SAVED,
     });
   } catch (e) {
     const errorMessage = handleError(e, endUserMessages.ERROR_SAVING);
