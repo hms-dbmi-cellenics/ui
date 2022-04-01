@@ -68,6 +68,9 @@ const loadProjects = () => async (dispatch) => {
 
       data = toApiV1(data);
 
+      // This section commented out because we going to use it
+      // when samples loading is implemented in api v2
+
       // await Promise.all(data
       //   .filter((entry) => entry.samples.length)
       //   .map((entry) => dispatch(loadSamples(false, entry.uuid))));
