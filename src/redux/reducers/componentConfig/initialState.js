@@ -739,7 +739,10 @@ const dataIntegrationElbowPlotInitialConfig = {
   ],
 };
 
-const genericPlotConfig = {
+const imgPlotConfig = {
+  plotType: 'ImgPlot',
+  shownGene: 'GZMA',
+  PlotSubType: 'ridgePlot',
 };
 
 const initialPlotConfigStates = {
@@ -766,7 +769,7 @@ const initialPlotConfigStates = {
   dataIntegrationEmbedding: dataIntegrationEmbeddingInitialConfig,
   dataIntegrationFrequency: dataIntegrationFrequencyInitialConfig,
   dataIntegrationElbow: dataIntegrationElbowPlotInitialConfig,
-  genericPlot: genericPlotConfig,
+  ImgPlot: imgPlotConfig,
 };
 
 const initialComponentConfigStates = {

@@ -93,10 +93,10 @@ const PlotsTablesHome = ({ experimentId, experimentData }) => {
       link: 'dot-plot',
     },
     {
-      name: 'Generic Plot',
+      name: 'Image Plot',
       image: dotPlot,
-      key: 'generic-plot-key',
-      link: 'generic-plot',
+      key: 'img-plot-key',
+      link: 'img-plot',
     },
   ];
 

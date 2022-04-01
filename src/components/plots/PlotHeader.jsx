@@ -18,12 +18,16 @@ const PlotHeader = ({ title, experimentId, plotUuid }) => {
   const dispatch = useDispatch();
   const saved = !useSelector((state) => state.componentConfig[plotUuid]?.outstandingChanges);
   const router = useRouter();
-  const plotType = useSelector((state) => state.componentConfig[plotUuid]?.plotType);
+  const plotType = useSelector((state) => { console.log('debugdebug', state.componentConfig); return state.componentConfig[plotUuid]?.plotType; });
   const { config } = useSelector((state) => state.componentConfig[plotUuid]) || {};
   const debounceSave = useCallback(
     _.debounce(() => dispatch(savePlotConfig(experimentId, plotUuid)), 2000), [],
   );
   const [resetDisabled, setResetDisabled] = useState(true);
+  console.log(title);
+  console.log(experimentId);
+  console.log(plotUuid);
+  console.log(plotType);
 
   useBeforeunload((e) => {
     if (!saved) {

@@ -20,14 +20,14 @@ const seekFromS3 = async (ETag, experimentId, fetchS3Data = true) => {
 
   const { signedUrl } = await response.json();
 
-  if (!fetchS3Data) {
-    return signedUrl;
-  }
-
   const storageResp = await fetch(signedUrl);
 
   if (!storageResp.ok) {
     throwResponseError(storageResp);
+  }
+
+  if (!fetchS3Data) {
+    return signedUrl;
   }
 
   return unpackResult(storageResp);

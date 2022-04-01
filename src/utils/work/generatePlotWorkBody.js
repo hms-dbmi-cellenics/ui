@@ -16,8 +16,11 @@ const composeDotPlotWorkBody = (config) => {
   };
 };
 
-const composeImgPlotWorkBody = () => ({
-  name: plotTypes.IMG_PLOT,
+const composeImgPlotWorkBody = (config) => ({
+  name: 'GetImgPlot',
+  type: 'ridgePlot',
+  features: config.shownGene,
+  plotSubType: config.PlotSubType,
 });
 
 const generatePlotWorkBody = (plotType, config) => {

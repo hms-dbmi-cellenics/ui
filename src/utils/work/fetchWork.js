@@ -147,9 +147,10 @@ const fetchWork = async (
     return data;
   }
 
+  console.log('BEFORE SEEK');
   // Then, we may be able to find this in S3.
   let response = await seekFromS3(ETag, experimentId, fetchS3Data);
-
+  console.log('AFTER SEEK');
   // If there is no response in S3, dispatch workRequest via the worker
   if (!response) {
     try {

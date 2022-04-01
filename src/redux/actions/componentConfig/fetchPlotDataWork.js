@@ -34,7 +34,7 @@ const fetchPlotDataWork = (
     });
   } catch (error) {
     console.error(error.message);
-
+    console.log('Error');
     dispatch({
       type: PLOT_DATA_ERROR,
       payload: {
