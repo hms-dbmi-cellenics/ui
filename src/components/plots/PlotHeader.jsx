@@ -11,6 +11,7 @@ import { useBeforeunload } from 'react-beforeunload';
 import Header from 'components/Header';
 import fetchAPI from 'utils/http/fetchAPI';
 import { LOAD_CONFIG } from 'redux/actionTypes/componentConfig';
+import { api } from 'utils/constants';
 import { savePlotConfig } from '../../redux/actions/componentConfig/index';
 import { initialPlotConfigStates } from '../../redux/reducers/componentConfig/initialState';
 
@@ -98,10 +99,14 @@ const PlotHeader = ({ title, experimentId, plotUuid }) => {
     };
   }, [router?.asPath, router?.events, saved]);
 
-  const { data } = useSWR(
-    `/v1/experiments/${experimentId}`,
-    fetchAPI,
-  );
+  let url;
+  if (config.currentApiVersion === api.V1) {
+    url = `/v1/experiments/${experimentId}`;
+  } else {
+    url = `/v2/experiments/${experimentId}`;
+  }
+
+  const { data } = useSWR(url, fetchAPI);
 
   if (!data || !config) {
     return <Skeleton active paragraph={{ rows: 1 }} title={{ width: 500 }} />;

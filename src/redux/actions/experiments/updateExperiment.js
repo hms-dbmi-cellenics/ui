@@ -2,6 +2,10 @@ import _ from 'lodash';
 
 import fetchAPI from 'utils/http/fetchAPI';
 import handleError from 'utils/http/handleError';
+import { api } from 'utils/constants';
+
+import config from 'config';
+
 import {
   EXPERIMENTS_UPDATED, EXPERIMENTS_SAVING, EXPERIMENTS_SAVED, EXPERIMENTS_ERROR,
 } from 'redux/actionTypes/experiments';
@@ -29,19 +33,43 @@ const updateExperiment = (
   dispatch({
     type: EXPERIMENTS_SAVING,
   });
+
+  let url;
   try {
-    const url = `/v1/experiments/${experimentId}`;
-    await fetchAPI(
-      url,
-      {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
+    if (config.currentApiVersion === api.V1) {
+      url = `/v1/experiments/${experimentId}`;
+
+      await fetchAPI(
+        url,
+        {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(convertToApiModel(experimentDiff)),
         },
-        body: JSON.stringify(convertToApiModel(experimentDiff)),
-      },
-      false,
-    );
+        false,
+      );
+    } else if (config.currentApiVersion === api.V2) {
+      if (experimentDiff.sampleIds) {
+        throw new Error('SampleIds in v2 shouldn\'t be updated in this action creator');
+      }
+
+      // If updating the samples, then reorderSamples should implement this
+      url = `/v2/experiments/${experimentId}`;
+
+      await fetchAPI(
+        url,
+        {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(experimentDiff),
+        },
+        false,
+      );
+    }
 
     dispatch({
       type: EXPERIMENTS_UPDATED,

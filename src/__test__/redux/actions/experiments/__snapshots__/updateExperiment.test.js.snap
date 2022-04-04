@@ -32,3 +32,39 @@ Array [
 `;
 
 exports[`updateExperiment Dispatches actions when called 2`] = `"{\\"description\\":\\"Analysis description\\",\\"notifyByEmail\\":true,\\"meta\\":{\\"organism\\":null,\\"type\\":\\"10x\\"},\\"sampleIds\\":[],\\"experimentId\\":\\"experiment-1\\",\\"experimentName\\":\\"updated-experiment\\"}"`;
+
+exports[`updateExperiment Errors out and doesn't send request if an attempt to update sampleIds with this action creator is made 1`] = `
+Array [
+  Object {
+    "type": "experiments/saving",
+  },
+  Object {
+    "payload": Object {
+      "error": "We couldn't save your data.",
+    },
+    "type": "experiments/error",
+  },
+]
+`;
+
+exports[`updateExperiment Updates properties with api v2 correctly 1`] = `
+Array [
+  Object {
+    "type": "experiments/saving",
+  },
+  Object {
+    "payload": Object {
+      "experiment": Object {
+        "name": "newName",
+      },
+      "experimentId": "experiment-1",
+    },
+    "type": "experiments/updated",
+  },
+  Object {
+    "type": "experiments/saved",
+  },
+]
+`;
+
+exports[`updateExperiment Updates properties with api v2 correctly 2`] = `"{\\"name\\":\\"newName\\"}"`;
