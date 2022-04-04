@@ -108,50 +108,51 @@ const PlotsTablesHome = ({ experimentId, experimentData }) => {
         },
       ],
     },
-  ];
 
-  return (
-    <>
-      <Header
-        experimentId={experimentId}
-        experimentData={experimentData}
-        title='Plots and Tables'
-      />
-      <Space style={{ padding: '0 1em' }} direction='vertical'>
-        {plots.map((section) => (
-          <Row gutter='16'>
-            <Col span={24}>
-              <Divider
-                orientation='left'
-                orientationMargin='0'
+  };
+
+return (
+  <>
+    <Header
+      experimentId={experimentId}
+      experimentData={experimentData}
+      title='Plots and Tables'
+    />
+    <Space style={{ padding: '0 1em' }} direction='vertical'>
+      {plots.map((section) => (
+        <Row gutter='16'>
+          <Col span={24}>
+            <Divider
+              orientation='left'
+              orientationMargin='0'
+            >
+              <strong>{section.title}</strong>
+            </Divider>
+          </Col>
+          {section.plots.map((item) => (
+            <Col className='plot-card'>
+              <Card
+                size='small'
+                hoverable
+                title={item.name}
+                bodyStyle={{ padding: '0' }}
+                style={CARD_STYLE}
               >
-                <strong>{section.title}</strong>
-              </Divider>
-            </Col>
-            {section.plots.map((item) => (
-              <Col className='plot-card'>
-                <Card
-                  size='small'
-                  hoverable
-                  title={item.name}
-                  bodyStyle={{ padding: '0' }}
-                  style={CARD_STYLE}
+                <Link
+                  as={`/experiments/${experimentId}/plots-and-tables/${item.link}`}
+                  href={`/experiments/[experimentId]/plots-and-tables/${item.link}`}
+                  passHref
                 >
-                  <Link
-                    as={`/experiments/${experimentId}/plots-and-tables/${item.link}`}
-                    href={`/experiments/[experimentId]/plots-and-tables/${item.link}`}
-                    passHref
-                  >
-                    <CardItem item={item} />
-                  </Link>
-                </Card>
-              </Col>
-            ))}
-          </Row>
-        ))}
-      </Space>
-    </>
-  );
+                  <CardItem item={item} />
+                </Link>
+              </Card>
+            </Col>
+          ))}
+        </Row>
+      ))}
+    </Space>
+  </>
+);
 };
 
 PlotsTablesHome.propTypes = {
