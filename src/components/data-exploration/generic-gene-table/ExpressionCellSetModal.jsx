@@ -38,11 +38,11 @@ const ExpressionCellSetModal = (props) => {
     thresholdValue: 0,
   }));
 
-  const createExpressionCellSet = async () => {
+  const createExpressionCellSet = () => {
     const formValues = form.getFieldValue(FORM_NAME);
     setIsCreatingCellSet(true);
     try {
-      await dispatch(createCellSetByExpression(experimentId, formValues));
+      dispatch(createCellSetByExpression(experimentId, formValues));
       setIsCreatingCellSet(false);
       onCancel();
     } catch (e) {
