@@ -53,7 +53,7 @@ const runGem2s = (experimentId, paramsHash) => async (dispatch) => {
       type: BACKEND_STATUS_ERROR,
       payload: {
         experimentId,
-        error: `Could not start gem2s. ${errorMessage}`,
+        error: errorMessage,
       },
     });
   }

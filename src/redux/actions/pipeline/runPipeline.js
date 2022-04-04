@@ -70,7 +70,7 @@ const runPipeline = (experimentId) => async (dispatch, getState) => {
 
     // We don't need to manually save any processing config because it is done by
     // the api once the pipeline finishes successfully
-    fetchAPI(
+    await fetchAPI(
       url,
       {
         method: 'POST',
@@ -103,7 +103,7 @@ const runPipeline = (experimentId) => async (dispatch, getState) => {
       type: BACKEND_STATUS_ERROR,
       payload: {
         experimentId,
-        error: `Could not start QC pipeline. ${errorMessage}`,
+        error: errorMessage,
       },
     });
   }

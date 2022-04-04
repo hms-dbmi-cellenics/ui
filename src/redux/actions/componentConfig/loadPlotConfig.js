@@ -40,7 +40,7 @@ const loadPlotConfig = (experimentId, plotUuid, plotType) => async (dispatch) =>
       return;
     }
 
-    handleError(e, endUserMessages.CONNECTION_ERROR);
+    handleError(e, endUserMessages.ERROR_FETCHING_PLOT_CONFIG);
   }
 };
 

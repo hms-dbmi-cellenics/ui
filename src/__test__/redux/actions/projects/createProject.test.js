@@ -15,6 +15,7 @@ import '__test__/test-utils/setupTests';
 import { api } from 'utils/constants';
 
 import config from 'config';
+import endUserMessages from 'utils/endUserMessages';
 
 jest.mock('config');
 
@@ -110,7 +111,7 @@ describe('createProject action', () => {
   it('Shows error message when there was a fetch error', async () => {
     config.currentApiVersion = api.V1;
 
-    const fetchErrorMessage = 'someFetchError';
+    const fetchErrorMessage = endUserMessages.ERROR_CREATING_PROJECT;
 
     fetchMock.mockResponse(JSON.stringify({ message: fetchErrorMessage }), { url: 'mockedUrl', status: 400 });
 

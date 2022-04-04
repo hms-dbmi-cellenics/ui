@@ -71,7 +71,7 @@ describe('saveProject action', () => {
     try {
       await store.dispatch(saveProject(mockProject.uuid, mockProject));
     } catch (e) {
-      expect(e).toEqual(errorMsg);
+      expect(e.statusCode).toEqual(400);
     }
 
     const actions = store.getActions();

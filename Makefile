@@ -15,7 +15,7 @@ check: ## Checks code for linting/construct errors
 	@npm run lint
 	@npm run detect-secrets
 	@echo "    [✓]\n"
-run: build ## Runs the UI 
+run: ## Runs the UI 
 	@npm start
 .PHONY:install build check run help
 clean: ## Cleans up temporary files
