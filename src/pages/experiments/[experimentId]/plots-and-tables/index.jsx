@@ -16,6 +16,7 @@ import dotPlot from '../../../../../public/static/media/dotplot.png';
 import volcano from '../../../../../public/static/media/volcano.png';
 import frequency from '../../../../../public/static/media/frequency.png';
 import markerHeatmap from '../../../../../public/static/media/marker_heatmap.png';
+import 'utils/css/plots-and-tables.css';
 
 const CARD_STYLE = { marginBottom: '1em' };
 const CardItem = (({ onClick, item, href }) => (
@@ -108,51 +109,50 @@ const PlotsTablesHome = ({ experimentId, experimentData }) => {
         },
       ],
     },
+  ];
 
-  };
-
-return (
-  <>
-    <Header
-      experimentId={experimentId}
-      experimentData={experimentData}
-      title='Plots and Tables'
-    />
-    <Space style={{ padding: '0 1em' }} direction='vertical'>
-      {plots.map((section) => (
-        <Row gutter='16'>
-          <Col span={24}>
-            <Divider
-              orientation='left'
-              orientationMargin='0'
-            >
-              <strong>{section.title}</strong>
-            </Divider>
-          </Col>
-          {section.plots.map((item) => (
-            <Col className='plot-card'>
-              <Card
-                size='small'
-                hoverable
-                title={item.name}
-                bodyStyle={{ padding: '0' }}
-                style={CARD_STYLE}
+  return (
+    <>
+      <Header
+        experimentId={experimentId}
+        experimentData={experimentData}
+        title='Plots and Tables'
+      />
+      <Space style={{ padding: '0 1em' }} direction='vertical'>
+        {plots.map((section) => (
+          <Row gutter='16'>
+            <Col span={24}>
+              <Divider
+                orientation='left'
+                orientationMargin='0'
               >
-                <Link
-                  as={`/experiments/${experimentId}/plots-and-tables/${item.link}`}
-                  href={`/experiments/[experimentId]/plots-and-tables/${item.link}`}
-                  passHref
-                >
-                  <CardItem item={item} />
-                </Link>
-              </Card>
+                <strong>{section.title}</strong>
+              </Divider>
             </Col>
-          ))}
-        </Row>
-      ))}
-    </Space>
-  </>
-);
+            {section.plots.map((item) => (
+              <Col className='plot-card'>
+                <Card
+                  size='small'
+                  hoverable
+                  title={item.name}
+                  bodyStyle={{ padding: '0' }}
+                  style={CARD_STYLE}
+                >
+                  <Link
+                    as={`/experiments/${experimentId}/plots-and-tables/${item.link}`}
+                    href={`/experiments/[experimentId]/plots-and-tables/${item.link}`}
+                    passHref
+                  >
+                    <CardItem item={item} />
+                  </Link>
+                </Card>
+              </Col>
+            ))}
+          </Row>
+        ))}
+      </Space>
+    </>
+  );
 };
 
 PlotsTablesHome.propTypes = {
