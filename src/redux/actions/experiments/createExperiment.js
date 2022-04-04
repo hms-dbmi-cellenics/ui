@@ -2,10 +2,6 @@
 import fetchAPI from 'utils/fetchAPI';
 import moment from 'moment';
 import hash from 'object-hash';
-
-import config from 'config';
-import { api } from 'utils/constants';
-
 import {
   EXPERIMENTS_CREATED,
   EXPERIMENTS_ERROR,
@@ -16,7 +12,11 @@ import { experimentTemplate } from 'redux/reducers/experiments/initialState';
 import endUserMessages from 'utils/endUserMessages';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
 import { isServerError, throwIfRequestFailed } from 'utils/fetchErrors';
+
 import convertExperimentToApiV1Model from 'utils/convertExperimentToApiV1Model';
+
+import config from 'config';
+import { api } from 'utils/constants';
 
 const createExperiment = (
   projectUuid, newExperimentName,
