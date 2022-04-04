@@ -21,6 +21,7 @@ export default {
   ERROR_FETCHING_STATUS: 'We couldn\'t get the status of pending jobs.',
   ERROR_FETCHING_BACKEND_STATUS: 'We couldn\'t get the status of the experiment\'s data processing.',
   ERROR_FETCH_BACKGROUND_GENE_EXP: 'We couldn\'t get the background gene expression',
+  ERROR_FETCH_MARKER_GENES: 'We couldn\'t get the marker genes',
   ERROR_FILE_CATEGORY: 'The selected file name does not match the expected category.',
   ERROR_FILES_FOLDER: 'Only files contained in a folder are accepted',
   ERROR_NOT_SIGNED_IN: 'You need to sign in first. Click Sign in on the top right to begin.',

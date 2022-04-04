@@ -5,6 +5,7 @@ import {
 import { fetchWork } from 'utils/work/fetchWork';
 import getTimeoutForWorkerTask from 'utils/getTimeoutForWorkerTask';
 import handleError from 'utils/http/handleError';
+import endUserMessages from 'utils/endUserMessages';
 
 const loadMarkerGenes = (
   experimentId, resolution, plotUuid, numGenes = 5, selectedCellSet = 'louvain',
@@ -42,7 +43,7 @@ const loadMarkerGenes = (
     });
     console.log('marker genes data loaded acked');
   } catch (e) {
-    const errorMessage = handleError(e, undefined, false);
+    const errorMessage = handleError(e, endUserMessages.ERROR_FETCH_MARKER_GENES, undefined, false);
     console.log('2. lcs marker genes error ', e);
     dispatch({
       type: MARKER_GENES_ERROR,

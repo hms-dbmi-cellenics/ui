@@ -64,7 +64,7 @@ const createProject = (
         false,
       );
     } catch (e) {
-      const errorMessage = handleError(e, endUserMessages.ERRO);
+      const errorMessage = handleError(e, endUserMessages.ERROR_CREATING_PROJECT);
       dispatch({
         type: PROJECTS_ERROR,
         payload: {

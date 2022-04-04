@@ -58,10 +58,13 @@ const ProjectCard = (props) => {
   };
 
   const updateProjectName = (newName) => {
-    dispatch(updateProject(project.uuid, { name: newName.trim() }));
-
-    // Before multiple experiment support, use project name for analysis name
-    dispatch(updateExperiment(projectExperiment, { name: newName.trim() }));
+    dispatch(updateProject(project.uuid, { name: newName.trim() })).then((e) => {
+      console.log('Almost finished ', e);
+      if (projects.meta.saveSettingsError === false) {
+        // Before multiple experiment support, use project name for analysis name
+        dispatch(updateExperiment(projectExperiment, { name: newName.trim() }));
+      }
+    });
   };
 
   const deleteProject = () => {

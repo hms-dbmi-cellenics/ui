@@ -151,7 +151,7 @@ describe('saveSamples action', () => {
     try {
       await store.dispatch(saveSamples(mockprojectUuid, updatedSample1));
     } catch (e) {
-      expect(e).toEqual(errorMsg);
+      expect(e.statusCode).toEqual(400);
     }
 
     const actions = store.getActions();

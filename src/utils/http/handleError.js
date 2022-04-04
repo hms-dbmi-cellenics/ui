@@ -46,8 +46,8 @@ const handleGenericErrors = (error, message, notifyUser) => {
 };
 
 const handleError = (error, message, notifyUser = true) => {
-  console.log('error lcs he:', error);
-  console.log(error);
+  console.log('error lcs notify? :', notifyUser, error);
+  console.log();
   let errorMessage;
 
   if (error && error.statusCode) {
