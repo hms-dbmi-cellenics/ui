@@ -71,7 +71,7 @@ const PlotStyling = (props) => {
             Object.getOwnPropertyDescriptor(el, 'children')
               && el.children.length > 0
               ? (
-                <Collapse>
+                <Collapse accordion>
                   {buildForm(el.children)}
                 </Collapse>
               )
@@ -86,7 +86,7 @@ const PlotStyling = (props) => {
   });
 
   return (
-    <Collapse defaultActiveKey={defaultActivePanel}>
+    <Collapse accordion defaultActiveKey={defaultActivePanel}>
       {renderExtraPanels()}
       {buildForm(formConfig)}
     </Collapse>
