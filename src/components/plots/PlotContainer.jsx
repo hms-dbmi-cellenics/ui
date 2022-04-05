@@ -48,11 +48,9 @@ const PlotContainer = (props) => {
     const ignoredFields = {
       // config fields that are set dynamically on component render
       // should not be compared to their initial values
-      frequency: ['proportionGrouping', 'xAxisGrouping'],
-      embeddingCategorical: ['axes'],
-      embeddingContinuous: ['shownGene', 'axes'],
+      embeddingContinuous: ['shownGene'],
       violin: ['shownGene'],
-      markerHeatmap: ['selectedGenes', 'groupedTracks'],
+      markerHeatmap: ['selectedGenes'],
       DotPlot: ['selectedGenes'],
     };
 

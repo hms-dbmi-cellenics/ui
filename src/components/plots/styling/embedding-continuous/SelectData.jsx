@@ -55,7 +55,7 @@ const SelectData = (props) => {
       </div>
       <Form.Item>
         <Select
-          defaultValue={config.selectedSample}
+          value={config.selectedSample}
           style={{ width: 200 }}
           onChange={(value) => {
             handleChange(value);
