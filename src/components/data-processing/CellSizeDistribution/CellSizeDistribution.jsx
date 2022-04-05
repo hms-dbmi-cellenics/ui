@@ -18,7 +18,7 @@ import {
   updatePlotConfig,
   loadPlotConfig,
   savePlotConfig,
-} from '../../../redux/actions/componentConfig';
+} from 'redux/actions/componentConfig';
 
 import CellSizeDistributionHistogram from '../../plots/CellSizeDistributionHistogram';
 import CellSizeDistributionKneePlot from '../../plots/CellSizeDistributionKneePlot';

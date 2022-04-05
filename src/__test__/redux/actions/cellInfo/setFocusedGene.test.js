@@ -1,8 +1,8 @@
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
-import initialState from '../../../../redux/reducers/cellInfo/initialState';
-import setCellInfoFocus from '../../../../redux/actions/cellInfo/setCellInfoFocus';
-import { CELL_INFO_FOCUS, CELL_INFO_UNFOCUS } from '../../../../redux/actionTypes/cellInfo';
+import initialState from 'redux/reducers/cellInfo/initialState';
+import setCellInfoFocus from 'redux/actions/cellInfo/setCellInfoFocus';
+import { CELL_INFO_FOCUS, CELL_INFO_UNFOCUS } from 'redux/actionTypes/cellInfo';
 
 const mockStore = configureStore([thunk]);
 

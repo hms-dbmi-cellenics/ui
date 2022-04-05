@@ -1,19 +1,19 @@
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
+import pushNotificationMessage from 'utils/pushNotificationMessage';
 import initialProjectState, {
   projectTemplate,
-} from '../../../../redux/reducers/projects/initialState';
+} from 'redux/reducers/projects/initialState';
 import initialSampleState, {
   sampleTemplate,
-} from '../../../../redux/reducers/samples/initialState';
-import { saveSamples } from '../../../../redux/actions/samples';
+} from 'redux/reducers/samples/initialState';
+import { saveSamples } from 'redux/actions/samples';
 import {
   SAMPLES_ERROR,
   SAMPLES_SAVED,
   SAMPLES_SAVING,
-} from '../../../../redux/actionTypes/samples';
-import pushNotificationMessage from '../../../../utils/pushNotificationMessage';
+} from 'redux/actionTypes/samples';
 import '__test__/test-utils/setupTests';
 
 enableFetchMocks();

@@ -9,9 +9,9 @@ import _ from 'lodash';
 import {
   initialComponentConfigStates,
   initialPlotConfigStates,
-} from '../../../redux/reducers/componentConfig/initialState';
-import initialExperimentState from '../../../redux/reducers/experimentSettings/initialState';
-import genes from '../../../redux/reducers/genes/initialState';
+} from 'redux/reducers/componentConfig/initialState';
+import initialExperimentState from 'redux/reducers/experimentSettings/initialState';
+import genes from 'redux/reducers/genes/initialState';
 import ViolinPlot from '../../../components/plots/ViolinPlot';
 import '__test__/test-utils/setupTests';
 

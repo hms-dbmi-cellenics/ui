@@ -1,9 +1,9 @@
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
-import { PROJECTS_LOADED, PROJECTS_ERROR } from '../../../../redux/actionTypes/projects';
-import { projectTemplate } from '../../../../redux/reducers/projects/initialState';
-import { loadProjects } from '../../../../redux/actions/projects';
+import { PROJECTS_LOADED, PROJECTS_ERROR } from 'redux/actionTypes/projects';
+import { projectTemplate } from 'redux/reducers/projects/initialState';
+import { loadProjects } from 'redux/actions/projects';
 
 enableFetchMocks();
 

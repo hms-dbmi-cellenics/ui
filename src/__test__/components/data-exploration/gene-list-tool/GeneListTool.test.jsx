@@ -8,20 +8,20 @@ import thunk from 'redux-thunk';
 import _ from 'lodash';
 import { Empty } from 'antd';
 import waitForActions from 'redux-mock-store-await-actions';
+import { GENES_PROPERTIES_LOADING, GENES_PROPERTIES_LOADED_PAGINATED } from 'redux/actionTypes/genes';
+import { fetchWork } from 'utils/work/fetchWork';
 import GeneListTool from '../../../../components/data-exploration/gene-list-tool/GeneListTool';
-import { fetchWork } from '../../../../utils/work/fetchWork';
 
 import Loader from '../../../../components/Loader';
 
-import { GENES_PROPERTIES_LOADING, GENES_PROPERTIES_LOADED_PAGINATED } from '../../../../redux/actionTypes/genes';
 import '__test__/test-utils/setupTests';
 
-jest.mock('../../../../utils/getTimeoutForWorkerTask', () => ({
+jest.mock('utils/getTimeoutForWorkerTask', () => ({
   __esModule: true, // this property makes it work
   default: () => 60,
 }));
 
-jest.mock('../../../../utils/work/fetchWork', () => ({
+jest.mock('utils/work/fetchWork', () => ({
   fetchWork: jest.fn(() => new Promise((resolve) => resolve({
     rows: [{
       gene_names: 'R3ALG3N3',

@@ -8,7 +8,7 @@ import {
   EditOutlined, DeleteOutlined, CheckOutlined, CloseOutlined,
 } from '@ant-design/icons';
 
-import integrationTestConstants from '../utils/integrationTestConstants';
+import integrationTestConstants from 'utils/integrationTestConstants';
 
 const { Text } = Typography;
 

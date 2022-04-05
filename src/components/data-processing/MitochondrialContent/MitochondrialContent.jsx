@@ -11,7 +11,7 @@ import {
   updatePlotConfig,
   loadPlotConfig,
   savePlotConfig,
-} from '../../../redux/actions/componentConfig';
+} from 'redux/actions/componentConfig';
 
 import MitochondrialFractionHistogram from '../../plots/MitochondrialFractionHistogram';
 import MitochondrialFractionScatterplot from '../../plots/MitochondrialFractionScatterplot';

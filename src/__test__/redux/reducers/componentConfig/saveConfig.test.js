@@ -1,4 +1,4 @@
-import saveReducer from '../../../../redux/reducers/componentConfig/saveConfig';
+import saveReducer from 'redux/reducers/componentConfig/saveConfig';
 
 describe('saveconfig', () => {
   it('Last updated date is set', () => {

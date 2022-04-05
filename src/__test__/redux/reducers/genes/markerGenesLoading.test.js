@@ -1,4 +1,4 @@
-import markerGenesLoadingReducer from '../../../../redux/reducers/genes/markerGenesLoading';
+import markerGenesLoadingReducer from 'redux/reducers/genes/markerGenesLoading';
 
 describe('markerGenesLoading', () => {
   it('returns correct state', () => {

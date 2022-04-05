@@ -10,9 +10,9 @@ import {
 } from '@testing-library/react';
 
 import React from 'react';
+import endUserMessages from 'utils/endUserMessages';
+import pushNotificationMessage from 'utils/pushNotificationMessage';
 import FeedbackButton from '../../components/FeedbackButton';
-import endUserMessages from '../../utils/endUserMessages';
-import pushNotificationMessage from '../../utils/pushNotificationMessage';
 
 jest.mock('', () => ({
   currentAuthenticatedUser: jest.fn().mockImplementation(async () => true),

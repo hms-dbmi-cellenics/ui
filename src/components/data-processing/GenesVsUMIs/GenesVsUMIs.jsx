@@ -10,7 +10,7 @@ import {
   updatePlotConfig,
   loadPlotConfig,
   savePlotConfig,
-} from '../../../redux/actions/componentConfig';
+} from 'redux/actions/componentConfig';
 
 import FeaturesVsUMIsScatterplot from '../../plots/FeaturesVsUMIsScatterplot';
 
