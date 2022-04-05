@@ -10,10 +10,10 @@ import { UploadOutlined } from '@ant-design/icons';
 import { useDispatch } from 'react-redux';
 import endUserMessages from 'utils/endUserMessages';
 import handleError from 'utils/http/handleError';
-import { uploadSingleFile, fileObjectToFileRecord } from '../../utils/upload/processUpload';
+import { uploadSingleFile, fileObjectToFileRecord } from 'utils/upload/processUpload';
 
-import UploadStatus, { messageForStatus } from '../../utils/upload/UploadStatus';
-import downloadSingleFile from '../../utils/data-management/downloadSingleFile';
+import UploadStatus, { messageForStatus } from 'utils/upload/UploadStatus';
+import downloadSingleFile from 'utils/data-management/downloadSingleFile';
 
 // we'll need to remove the hard-coded 10x tech type once we start
 // supporting other types and save the chosen tech type in redux

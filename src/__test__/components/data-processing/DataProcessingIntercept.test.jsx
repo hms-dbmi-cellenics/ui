@@ -3,14 +3,14 @@ import { screen, render } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
 import configureStore from 'redux-mock-store';
+import initialExperimentSettingsState, { metaInitialState } from 'redux/reducers/experimentSettings/initialState';
 import DataProcessingIntercept from '../../../components/data-processing/DataProcessingIntercept';
-import initialExperimentSettingsState, { metaInitialState } from '../../../redux/reducers/experimentSettings/initialState';
 
 import ChangesNotAppliedModal from '../../../components/data-processing/ChangesNotAppliedModal';
 
 const mockStore = configureStore([thunk]);
 
-jest.mock('../../../utils/qcSteps', () => ({
+jest.mock('utils/qcSteps', () => ({
   getUserFriendlyQCStepName: jest.fn().mockImplementation((step) => {
     switch (step) {
       case 'step-1':

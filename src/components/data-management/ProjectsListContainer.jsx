@@ -5,10 +5,9 @@ import {
 import PropTypes from 'prop-types';
 import { layout } from 'utils/constants';
 
+import integrationTestConstants from 'utils/integrationTestConstants';
 import ProjectSearchBox from './ProjectSearchBox';
 import ProjectsList from './ProjectsList';
-
-import integrationTestConstants from '../../utils/integrationTestConstants';
 
 const ProjectsListContainer = (props) => {
   const { height, onCreateNewProject } = props;

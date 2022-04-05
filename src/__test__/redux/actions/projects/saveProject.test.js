@@ -1,14 +1,14 @@
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
-import initialProjectState from '../../../../redux/reducers/projects/initialState';
-import { saveProject } from '../../../../redux/actions/projects';
+import pushNotificationMessage from 'utils/pushNotificationMessage';
+import initialProjectState from 'redux/reducers/projects/initialState';
+import { saveProject } from 'redux/actions/projects';
 import {
   PROJECTS_ERROR,
   PROJECTS_SAVED,
   PROJECTS_SAVING,
-} from '../../../../redux/actionTypes/projects';
-import pushNotificationMessage from '../../../../utils/pushNotificationMessage';
+} from 'redux/actionTypes/projects';
 import '__test__/test-utils/setupTests';
 
 enableFetchMocks();

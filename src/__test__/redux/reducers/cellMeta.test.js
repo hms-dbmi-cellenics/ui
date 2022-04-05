@@ -1,11 +1,11 @@
-import cellMetaReducer from '../../../redux/reducers/cellMeta';
-import initialState from '../../../redux/reducers/cellMeta/initialState';
+import cellMetaReducer from 'redux/reducers/cellMeta';
+import initialState from 'redux/reducers/cellMeta/initialState';
 
 import {
   CELL_META_ERROR,
   CELL_META_LOADED,
   CELL_META_LOADING,
-} from '../../../redux/actionTypes/cellMeta';
+} from 'redux/actionTypes/cellMeta';
 
 describe('cellMeta', () => {
   const metaName = 'mitochondrialContent';

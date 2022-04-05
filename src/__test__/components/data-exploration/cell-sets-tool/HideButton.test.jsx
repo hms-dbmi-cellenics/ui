@@ -4,9 +4,9 @@ import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 
+import { CELL_SETS_HIDE, CELL_SETS_UNHIDE } from 'redux/actionTypes/cellSets';
+import initialState from 'redux/reducers/cellSets/initialState';
 import HideButton from '../../../../components/data-exploration/cell-sets-tool/HideButton';
-import { CELL_SETS_HIDE, CELL_SETS_UNHIDE } from '../../../../redux/actionTypes/cellSets';
-import initialState from '../../../../redux/reducers/cellSets/initialState';
 import '__test__/test-utils/setupTests';
 
 const eventStub = {

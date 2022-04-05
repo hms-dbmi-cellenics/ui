@@ -4,11 +4,11 @@ import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 
+import { initialPlotConfigStates } from 'redux/reducers/componentConfig/initialState';
+import generateDataProcessingPlotUuid from 'utils/generateDataProcessingPlotUuid';
 import GenesVsUMIs from '../../../../components/data-processing/GenesVsUMIs/GenesVsUMIs';
 import generateExperimentSettingsMock from '../../../test-utils/experimentSettings.mock';
 
-import { initialPlotConfigStates } from '../../../../redux/reducers/componentConfig/initialState';
-import generateDataProcessingPlotUuid from '../../../../utils/generateDataProcessingPlotUuid';
 import filterStatisticsMock from '../../../test-utils/plotData.mock';
 
 import '__test__/test-utils/setupTests';

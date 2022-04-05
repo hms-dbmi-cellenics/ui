@@ -12,8 +12,8 @@ import Header from 'components/Header';
 import fetchAPI from 'utils/http/fetchAPI';
 import { LOAD_CONFIG } from 'redux/actionTypes/componentConfig';
 import { api } from 'utils/constants';
-import { savePlotConfig } from '../../redux/actions/componentConfig/index';
-import { initialPlotConfigStates } from '../../redux/reducers/componentConfig/initialState';
+import { savePlotConfig } from 'redux/actions/componentConfig/index';
+import { initialPlotConfigStates } from 'redux/reducers/componentConfig/initialState';
 
 const PlotHeader = ({ title, experimentId, plotUuid }) => {
   const dispatch = useDispatch();
