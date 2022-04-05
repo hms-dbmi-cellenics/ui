@@ -12,6 +12,9 @@ import {
 } from '@ant-design/icons';
 import { sortableHandle, sortableContainer, sortableElement } from 'react-sortable-hoc';
 
+import config from 'config';
+import { api } from 'utils/constants';
+
 import MetadataColumnTitle from 'components/data-management/MetadataColumn';
 import MetadataPopover from 'components/data-management/MetadataPopover';
 import {
@@ -24,7 +27,7 @@ import {
   createMetadataTrack,
 } from 'redux/actions/projects';
 import { DEFAULT_NA } from 'redux/reducers/projects/initialState';
-import { updateExperiment } from 'redux/actions/experiments';
+import { reorderSamples, updateExperiment } from 'redux/actions/experiments';
 import { updateSample } from 'redux/actions/samples';
 
 import UploadStatus from 'utils/upload/UploadStatus';
@@ -306,7 +309,12 @@ const SamplesTable = forwardRef((props, ref) => {
       const newSampleOrder = newData.map((sample) => sample.uuid);
 
       dispatch(updateProject(activeProjectUuid, { samples: newSampleOrder }));
-      dispatch(updateExperiment(experimentId, { sampleIds: newSampleOrder }));
+
+      if (config.currentApiVersion === api.V1) {
+        dispatch(updateExperiment(experimentId, { sampleIds: newSampleOrder }));
+      } else if (config.currentApiVersion === api.V2) {
+        dispatch(reorderSamples(activeProjectUuid, oldIndex, newIndex, newSampleOrder));
+      }
       setTableData(newData);
     }
   };

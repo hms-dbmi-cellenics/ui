@@ -21,11 +21,24 @@ import { loadProjects, setActiveProject } from 'redux/actions/projects';
 import downloadFromUrl from 'utils/data-management/downloadFromUrl';
 import { loadExperiments } from 'redux/actions/experiments';
 
+import reactSortableHoc from 'react-sortable-hoc';
+
+import { api } from 'utils/constants';
+import config from 'config';
+
+jest.mock('config');
+
 jest.mock('@aws-amplify/storage', () => ({
   get: jest.fn(() => Promise.resolve('https://mock-s3-url.com')),
 }));
 
 jest.mock('utils/data-management/downloadFromUrl');
+
+jest.mock('react-sortable-hoc', () => ({
+  sortableContainer: jest.fn(jest.requireActual('react-sortable-hoc').sortableContainer),
+  sortableHandle: jest.fn(jest.requireActual('react-sortable-hoc').sortableHandle),
+  sortableElement: jest.fn(jest.requireActual('react-sortable-hoc').sortableElement),
+}));
 
 const defaultProps = {
   height: 100,
@@ -56,6 +69,7 @@ const experimentIdWithoutSamples = firstProjectWithoutSamples.experiments[0];
 const customResponses = {
   [`/projects/${projectIdWithSamples}`]: () => statusResponse(200, JSON.stringify('OK')),
   [`/projects/${projectIdWithSamples}/${experimentIdWithSamples}/samples`]: () => statusResponse(200, 'OK'),
+  [`/v2/experiments/${projectIdWithSamples}/samples/position`]: () => statusResponse(200, 'OK'),
 };
 
 const mockAPIResponse = _.merge(
@@ -70,6 +84,8 @@ describe('Samples table', () => {
   beforeEach(async () => {
     fetchMock.mockClear();
     fetchMock.mockIf(/.*/, mockAPI(mockAPIResponse));
+
+    config.currentApiVersion = api.V1;
 
     storeState = makeStore();
 
@@ -206,5 +222,30 @@ describe('Samples table', () => {
     sampleNames.forEach((sampleName) => {
       expect(screen.getByText(sampleName)).toBeInTheDocument();
     });
+  });
+
+  it('Reorder samples send correct request in api v2', async () => {
+    config.currentApiVersion = api.V2;
+
+    let onSortEndProp;
+    reactSortableHoc.sortableContainer.mockImplementationOnce(() => (...params) => {
+      onSortEndProp = params[0].onSortEnd;
+      return <></>;
+    });
+
+    await renderSamplesTable(storeState);
+
+    await act(async () => {
+      onSortEndProp({ oldIndex: 0, newIndex: 5 });
+    });
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      `http://localhost:3000/v2/experiments/${projectIdWithSamples}/samples/position`,
+      {
+        method: 'PUT',
+        headers: expect.anything(),
+        body: '{"oldPosition":0,"newPosition":5}',
+      },
+    );
   });
 });

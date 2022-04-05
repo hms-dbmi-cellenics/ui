@@ -6,8 +6,6 @@ const extractExperimentId = (url) => {
   return match ? match[1] : null;
 };
 
-const takeNumLines = (string, numLines) => string.split('\n').slice(0, numLines).join('\n');
-
 // Truncates data arrays so that it doesn't produce large logs
 const NUM_DATA_TO_SHOW = 20;
 const truncateCollection = (arr) => {
@@ -50,8 +48,10 @@ const buildErrorMessage = (error, componentStack, reduxDump, context) => {
     Timestamp: ${timestamp}
 
     ===== ERROR =====
-    ${error.toString()}
-    ${takeNumLines(componentStack, 11)}
+    ${error.stack}
+
+    ===== COMPONENT STACK =====
+    ${componentStack}
 
     ===== REDUX STATE =====
     ${JSON.stringify(reduxDump, trimOutput, 2)}`
