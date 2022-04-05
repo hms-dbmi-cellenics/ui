@@ -143,11 +143,7 @@ const EmbeddingCategoricalPage = ({ experimentId }) => {
               experimentId={experimentId}
               plotUuid={plotUuid}
               plotType={plotType}
-              extra={(
-                <Tooltip title='In order to rename existing clusters or create new ones, use the cell set tool, located in the Data Exploration page.'>
-                  <Button size='small' icon={<InfoCircleOutlined />} />
-                </Tooltip>
-              )}
+              plotInfo='In order to rename existing clusters or create new ones, use the cell set tool, located in the Data Exploration page.'
             >
               <CategoricalEmbeddingPlot
                 experimentId={experimentId}

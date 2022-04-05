@@ -3,8 +3,9 @@ import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 
 import {
-  Collapse, Button, Skeleton, Space,
+  Collapse, Button, Skeleton, Space, Tooltip,
 } from 'antd';
+import { InfoCircleOutlined } from '@ant-design/icons';
 
 import { LOAD_CONFIG } from 'redux/actionTypes/componentConfig';
 
@@ -33,7 +34,8 @@ ResetButton.propTypes = {
 
 const PlotContainer = (props) => {
   const {
-    experimentId, plotUuid, plotType,
+    experimentId,
+    plotUuid, plotType, plotInfo,
     extra, showReset, children,
   } = props;
 
@@ -110,6 +112,11 @@ const PlotContainer = (props) => {
           disabled={!enableReset}
         />
       ) : ''}
+      {plotInfo ? (
+        <Tooltip title={plotInfo}>
+          <Button size='small' icon={<InfoCircleOutlined />} />
+        </Tooltip>
+      ) : ''}
     </Space>
   );
 
@@ -126,12 +133,14 @@ PlotContainer.propTypes = {
   experimentId: PropTypes.string.isRequired,
   plotUuid: PropTypes.string.isRequired,
   plotType: PropTypes.string.isRequired,
+  plotInfo: PropTypes.string,
   extra: PropTypes.node || PropTypes.arrayOf(PropTypes.node),
   children: PropTypes.node,
   showReset: PropTypes.bool,
 };
 
 PlotContainer.defaultProps = {
+  plotInfo: null,
   extra: null,
   children: null,
   showReset: false,
