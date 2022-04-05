@@ -50,7 +50,7 @@ describe('Frequency plots and tables index page', () => {
   });
 
   const renderFrequencyIndex = async () => {
-    await act(async () => render(
+    act(async () => render(
       <Provider store={storeState}>
         <FrequencyIndex
           experimentId={fake.EXPERIMENT_ID}
