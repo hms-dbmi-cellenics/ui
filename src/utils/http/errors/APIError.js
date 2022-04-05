@@ -10,7 +10,7 @@ class APIError extends Error {
     this.statusCode = statusCode;
     this.userMessage = message;
     this.errors = errors;
-    // Error.captureStackTrace(this);
+    Error.captureStackTrace(this);
   }
 }
 module.exports = APIError;
