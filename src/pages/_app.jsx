@@ -19,10 +19,10 @@ import ContentWrapper from 'components/ContentWrapper';
 import TagManager from 'components/TagManager';
 import { initTracking } from 'utils/tracking';
 
-import CustomError from 'utils/customError';
 import UnauthorizedPage from 'pages/401';
 import NotFoundPage from 'pages/404';
 import Error from 'pages/_error';
+import APIError from 'utils/http/errors/APIError';
 
 const mockCredentialsForInframock = () => {
   Credentials.get = async () => ({
@@ -206,25 +206,13 @@ WrappedApp.getInitialProps = async ({ Component, ctx }) => {
 
     return { pageProps: { ...pageProps, ...results } };
   } catch (e) {
-    console.log('error lcs get experiment info: ', e);
-    if (e === 'The user is not authenticated') {
-      console.error(`User not authenticated ${req.url}`);
+    if (!(e instanceof APIError)) {
       // eslint-disable-next-line no-ex-assign
-      e = new CustomError(e, res);
-      e.payload.status = 401;
+      e = new APIError(500);
     }
-    if (e instanceof CustomError) {
-      if (res && e.payload.status) {
-        res.statusCode = e.payload.status;
-      } else {
-        res.statusCode = 500;
-      }
+    res.statusCode = e.statusCode;
 
-      return { pageProps: { ...pageProps, ...results, httpError: e.payload.status || true } };
-    }
-    console.error('Error in WrappedApp.getInitialProps', e);
-
-    throw e;
+    return { pageProps: { ...pageProps, ...results, httpError: e.statusCode || true } };
   }
 };
 /* eslint-enable global-require */
