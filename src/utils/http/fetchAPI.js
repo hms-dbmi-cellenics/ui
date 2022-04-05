@@ -1,4 +1,4 @@
-import APIError from 'utils/http/errors/ApiError';
+import APIError from 'utils/http/errors/APIError';
 import getApiEndpoint from '../apiEndpoint';
 import getAuthJWT from '../getAuthJWT';
 import FetchError from './errors/FetchError';

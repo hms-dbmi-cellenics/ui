@@ -1,6 +1,6 @@
 const http = require('http');
 
-class ApiError extends Error {
+class APIError extends Error {
   constructor(statusCode, message, errors) {
     const name = http.STATUS_CODES[statusCode];
     super(`${statusCode} ${name}`);
@@ -13,4 +13,4 @@ class ApiError extends Error {
     // Error.captureStackTrace(this);
   }
 }
-module.exports = ApiError;
+module.exports = APIError;
