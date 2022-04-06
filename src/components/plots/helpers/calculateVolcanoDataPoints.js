@@ -48,10 +48,6 @@ const calculateVolcanoDataPoints = (config, data) => {
         && logFC <= config.logFoldChangeThreshold * -1
       ) {
         status = 'Downregulated';
-      } else if (
-        p_val_adj > pvalueThreshold
-        && datum.logFC >= config.logFoldChangeThreshold
-      ) {
       } else {
         status = 'No difference';
       }
