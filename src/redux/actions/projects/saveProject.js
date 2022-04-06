@@ -54,10 +54,7 @@ const saveProject = (
       },
     });
 
-    // TODO I think this will lead to duplicated error messages but it might be needed.
-    // return Promise.reject(errorMessage);
     throw e;
-    // throw new Error(errorMessage);
   }
 };
 

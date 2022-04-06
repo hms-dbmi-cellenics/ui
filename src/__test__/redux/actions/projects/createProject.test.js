@@ -116,11 +116,9 @@ describe('createProject action', () => {
     fetchMock.mockResponse(JSON.stringify({ message: fetchErrorMessage }), { url: 'mockedUrl', status: 400 });
 
     // Fails with error message we sent in response to fetch
-    await expect(
-      store.dispatch(
-        createProject(projectName, projectDescription, experimentName),
-      ),
-    ).rejects.toEqual(fetchErrorMessage);
+    await store.dispatch(
+      createProject(projectName, projectDescription, experimentName),
+    );
 
     // Sends correct actions
     const actions = store.getActions();

@@ -15,7 +15,7 @@ import {
   EXPERIMENT_SETTINGS_NON_SAMPLE_FILTER_UPDATE,
 } from 'redux/actionTypes/experimentSettings';
 import generateDataProcessingPlotUuid from 'utils/generateDataProcessingPlotUuid';
-import CalculationConfig from '../../../../components/data-processing/DataIntegration/CalculationConfig';
+import CalculationConfig from 'components/data-processing/DataIntegration/CalculationConfig';
 import generateExperimentSettingsMock from '../../../test-utils/experimentSettings.mock';
 import '__test__/test-utils/setupTests';
 

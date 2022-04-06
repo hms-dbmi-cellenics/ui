@@ -8,7 +8,7 @@ import '@aws-amplify/auth';
 
 import pushNotificationMessage from 'utils/pushNotificationMessage';
 import endUserMessages from 'utils/endUserMessages';
-import ReferralButton from '../../components/ReferralButton';
+import ReferralButton from 'components/ReferralButton';
 import '__test__/test-utils/setupTests';
 
 jest.mock('@aws-amplify/auth', () => ({

@@ -71,13 +71,9 @@ const createProject = (
           error: errorMessage,
         },
       });
-
-      // REVIEW I assume that we need to reject this so the UI component
-      // NewProjectModal will stop the execution and won't run next lin
-      return Promise.reject(errorMessage);
+      return;
     }
   }
-
   dispatch({
     type: PROJECTS_CREATE,
     payload: { project: newProject },
