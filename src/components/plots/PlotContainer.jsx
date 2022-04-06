@@ -49,7 +49,7 @@ const PlotContainer = (props) => {
       // config fields that are set dynamically on component render
       // should not be compared to their initial values
       embeddingContinuous: ['shownGene'],
-      violin: ['shownGene'],
+      violin: ['shownGene', 'title'],
       markerHeatmap: ['selectedGenes'],
       DotPlot: ['selectedGenes'],
     };

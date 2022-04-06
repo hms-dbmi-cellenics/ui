@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import {
   Form, InputNumber, Checkbox, Space, Select, Typography,
 } from 'antd';
+import _ from 'lodash';
 import ColorPicker from '../../../ColorPicker';
 
 const { Option } = Select;
@@ -59,6 +60,8 @@ const ThresholdsGuidesEditor = (props) => {
     },
   ];
 
+  const debouncedUpdate = _.debounce((update) => { onUpdate(update); }, 300);
+
   return (
     <>
       <Form
@@ -78,13 +81,10 @@ const ThresholdsGuidesEditor = (props) => {
             <Space>
               <InputNumber
                 min={0}
-                defaultValue={config.negLogpValueThreshold}
+                value={config.negLogpValueThreshold}
                 step={1}
                 type='number'
-                onPressEnter={(e) => {
-                  const value = parseFloat(e.target.value);
-                  onUpdate({ negLogpValueThreshold: value });
-                }}
+                onChange={(val) => debouncedUpdate({ negLogpValueThreshold: val })}
               />
               <Checkbox
                 checked={config.showpvalueThresholdGuides}
@@ -138,10 +138,9 @@ const ThresholdsGuidesEditor = (props) => {
         >
           <InputNumber
             min={1}
-            defaultValue={config.thresholdGuideWidth}
-            onPressEnter={(e) => {
-              onUpdate({ thresholdGuideWidth: e.target.value });
-            }}
+            value={config.thresholdGuideWidth}
+            type='number'
+            onChange={(val) => debouncedUpdate({ thresholdGuideWidth: val })}
           />
         </Form.Item>
         <Form.Item

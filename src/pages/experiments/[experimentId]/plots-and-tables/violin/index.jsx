@@ -3,10 +3,7 @@ import React, { useEffect, useState } from 'react';
 import {
   Row,
   Col,
-  Tooltip,
-  Button,
 } from 'antd';
-import { InfoCircleOutlined } from '@ant-design/icons';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import ViolinControls from 'components/plots/styling/violin/ViolinControls';
