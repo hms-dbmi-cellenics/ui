@@ -204,19 +204,6 @@ Object {
 }
 `;
 
-exports[`experimentsReducer Returns state if experiment does not exist when updating 1`] = `
-Object {
-  "ids": Array [
-    "experiment-1",
-  ],
-  "meta": Object {
-    "error": false,
-    "loading": false,
-    "saving": false,
-  },
-}
-`;
-
 exports[`experimentsReducer Updates an experiment correctly 1`] = `
 Object {
   "experiment-1": Object {

@@ -206,27 +206,6 @@ describe('experimentsReducer', () => {
     expect(newState).toMatchSnapshot();
   });
 
-  it('Returns state if experiment does not exist when updating', () => {
-    const invalidExperimentState = {
-      ...oneExperimentState,
-    };
-
-    delete invalidExperimentState[experimentId1];
-
-    const newState = experimentsReducer(invalidExperimentState, {
-      type: EXPERIMENTS_UPDATED,
-      payload: {
-        experimentId: experiment1.id,
-        experiment: updatedExperiment,
-      },
-    });
-
-    expect(newState.ids).toEqual([experiment1.id]);
-    expect(newState[experiment1.id]).toBe(undefined);
-    expect(newState).toEqual(invalidExperimentState);
-    expect(newState).toMatchSnapshot();
-  });
-
   it('Adds new sampleId when sample is created', () => {
     const newState = experimentsReducer(oneExperimentState, {
       type: SAMPLES_CREATE,
