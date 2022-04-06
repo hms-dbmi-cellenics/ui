@@ -2,6 +2,7 @@ import {
   SAMPLES_CREATE,
   SAMPLES_UPDATE,
   SAMPLES_DELETE,
+  SAMPLES_DELETE_API_V1,
   SAMPLES_FILE_UPDATE,
   SAMPLES_LOADED,
   SAMPLES_SAVING,
@@ -33,6 +34,10 @@ const samplesReducer = (state = initialState, action) => {
     }
 
     case SAMPLES_DELETE: {
+      return samplesDelete(state, action);
+    }
+
+    case SAMPLES_DELETE_API_V1: {
       return samplesDelete(state, action);
     }
 

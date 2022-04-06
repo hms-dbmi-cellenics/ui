@@ -5,6 +5,7 @@ import {
   SAMPLES_ERROR,
   SAMPLES_SAVING,
   SAMPLES_SAVED,
+  SAMPLES_DELETE_API_V1,
 } from 'redux/actionTypes/samples';
 
 import {
@@ -18,22 +19,43 @@ import pushNotificationMessage from 'utils/pushNotificationMessage';
 import fetchAPI from 'utils/fetchAPI';
 import { updateExperiment } from 'redux/actions/experiments';
 
-const sendDeleteSamplesRequest = async (projectUuid, experimentId, sampleUuids) => {
-  const response = await fetchAPI(
-    `/v1/projects/${projectUuid}/${experimentId}/samples`,
-    {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        ids: sampleUuids,
-      }),
-    },
-  );
+import config from 'config';
+import { api } from 'utils/constants';
 
-  if (!response.ok) {
-    throw new Error(await response.json().message);
+const sendDeleteSamplesRequest = async (projectUuid, experimentId, sampleUuids) => {
+  if (config.currentApiVersion === api.V1) {
+    const response = await fetchAPI(
+      `/v1/projects/${projectUuid}/${experimentId}/samples`,
+      {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ids: sampleUuids,
+        }),
+      },
+    );
+
+    if (!response.ok) {
+      throw new Error(await response.json().message);
+    }
+  } else if (config.currentApiVersion === api.V2) {
+    await Promise.all(sampleUuids.map(async (sampleUuid) => {
+      const response = await fetchAPI(
+        `/v2/experiments/${experimentId}/samples/${sampleUuid}`,
+        {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error(await response.json().message);
+      }
+    }));
   }
 };
 
@@ -93,24 +115,31 @@ const deleteSamples = (
         const experimentId = projects[projectUuid].experiments[0];
         await sendDeleteSamplesRequest(projectUuid, experimentId, sampleUuids);
 
-        dispatch(saveProject(projectUuid, newProject, false));
+        if (config.currentApiVersion === api.V1) {
+          dispatch(saveProject(projectUuid, newProject, false));
 
-        dispatch({
-          type: PROJECTS_UPDATE,
-          payload: {
-            projectUuid,
-            project: {
-              samples: newSamples,
+          dispatch({
+            type: PROJECTS_UPDATE,
+            payload: {
+              projectUuid,
+              project: {
+                samples: newSamples,
+              },
             },
-          },
-        });
+          });
 
-        dispatch({
-          type: SAMPLES_DELETE,
-          payload: { sampleUuids: samplesToDelete },
-        });
+          dispatch({
+            type: SAMPLES_DELETE_API_V1,
+            payload: { sampleUuids: samplesToDelete },
+          });
 
-        dispatch(updateExperiment(experimentId, { sampleIds: newSamples }));
+          dispatch(updateExperiment(experimentId, { sampleIds: newSamples }));
+        } else if (config.currentApiVersion === api.V2) {
+          dispatch({
+            type: SAMPLES_DELETE,
+            payload: { projectUuid, experimentId, sampleUuids: samplesToDelete },
+          });
+        }
       },
     );
 
