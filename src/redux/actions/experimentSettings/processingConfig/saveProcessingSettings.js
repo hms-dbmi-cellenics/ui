@@ -6,13 +6,14 @@ import {
 import endUserMessages from 'utils/endUserMessages';
 import fetchAPI from 'utils/http/fetchAPI';
 import handleError from 'utils/http/handleError';
+import errorTypes from '../errorTypes';
 
 const saveProcessingSettings = (experimentId, settingName) => async (dispatch, getState) => {
   const content = getState().experimentSettings.processing[settingName];
 
   const url = `/v1/experiments/${experimentId}/processingConfig`;
   try {
-    const res = await fetchAPI(
+    await fetchAPI(
       url,
       {
         method: 'PUT',
@@ -24,7 +25,7 @@ const saveProcessingSettings = (experimentId, settingName) => async (dispatch, g
           body: content,
         }]),
       },
-      // false,
+      false,
     );
 
     dispatch({
@@ -32,7 +33,6 @@ const saveProcessingSettings = (experimentId, settingName) => async (dispatch, g
       payload:
         { experimentId, settingName },
     });
-    return res;
   } catch (e) {
     const errorMessage = handleError(e, endUserMessages.ERROR_SAVING);
 
@@ -40,11 +40,9 @@ const saveProcessingSettings = (experimentId, settingName) => async (dispatch, g
       type: EXPERIMENT_SETTINGS_PROCESSING_ERROR,
       payload: {
         error: errorMessage,
+        errorType: errorTypes.SAVE_PROCESSING_SETTINGS,
       },
     });
-
-    // throw e;
-    Promise.reject(errorMessage);
   }
 };
 

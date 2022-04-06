@@ -7,7 +7,7 @@ import {
 } from '@testing-library/react';
 import configureMockStore from 'redux-mock-store';
 import initialProjectState from 'redux/reducers/projects/initialState';
-import ProjectDeleteModal from '../../../components/data-management/ProjectDeleteModal';
+import ProjectDeleteModal from 'components/data-management/ProjectDeleteModal';
 
 const mockStore = configureMockStore([thunk]);
 const projectName = 'super cool project';

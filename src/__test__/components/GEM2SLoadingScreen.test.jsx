@@ -7,7 +7,7 @@ import {
 } from 'antd';
 import configureMockStore from 'redux-mock-store';
 import fetchAPI from 'utils/http/fetchAPI';
-import GEM2SLoadingScreen from '../../components/GEM2SLoadingScreen';
+import GEM2SLoadingScreen from 'components/GEM2SLoadingScreen';
 import '__test__/test-utils/setupTests';
 
 const mockStore = configureMockStore([thunk]);

@@ -10,9 +10,9 @@ import { Empty } from 'antd';
 import waitForActions from 'redux-mock-store-await-actions';
 import { GENES_PROPERTIES_LOADING, GENES_PROPERTIES_LOADED_PAGINATED } from 'redux/actionTypes/genes';
 import { fetchWork } from 'utils/work/fetchWork';
-import GeneListTool from '../../../../components/data-exploration/gene-list-tool/GeneListTool';
+import GeneListTool from 'components/data-exploration/gene-list-tool/GeneListTool';
 
-import Loader from '../../../../components/Loader';
+import Loader from 'components/Loader';
 
 import '__test__/test-utils/setupTests';
 

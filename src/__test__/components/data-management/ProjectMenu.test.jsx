@@ -19,7 +19,7 @@ import mockAPI, { generateDefaultMockAPIResponses } from '__test__/test-utils/mo
 
 import { loadProjects, setActiveProject } from 'redux/actions/projects';
 import { projects } from '__test__/test-utils/mockData';
-import ProjectMenu from '../../../components/data-management/ProjectMenu';
+import ProjectMenu from 'components/data-management/ProjectMenu';
 
 const mockNavigateTo = jest.fn();
 jest.mock('@aws-amplify/auth', () => ({

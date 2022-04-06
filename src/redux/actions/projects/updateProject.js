@@ -38,8 +38,6 @@ const updateProject = (
         project: newProject,
       },
     });
-
-    return newProject;
   } catch (e) {
     handleError(e, endUserMessages.ERROR_SAVING);
   }
