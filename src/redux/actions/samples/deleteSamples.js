@@ -23,40 +23,40 @@ import config from 'config';
 import { api } from 'utils/constants';
 
 const sendDeleteSamplesRequest = async (projectUuid, experimentId, sampleUuids) => {
-  if (config.currentApiVersion === api.V1) {
+  const response = await fetchAPI(
+    `/v1/projects/${projectUuid}/${experimentId}/samples`,
+    {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        ids: sampleUuids,
+      }),
+    },
+  );
+
+  if (!response.ok) {
+    throw new Error(await response.json().message);
+  }
+};
+
+const sendDeleteSamplesRequestApiV2 = async (experimentId, sampleUuids) => {
+  await Promise.all(sampleUuids.map(async (sampleUuid) => {
     const response = await fetchAPI(
-      `/v1/projects/${projectUuid}/${experimentId}/samples`,
+      `/v2/experiments/${experimentId}/samples/${sampleUuid}`,
       {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          ids: sampleUuids,
-        }),
       },
     );
 
     if (!response.ok) {
       throw new Error(await response.json().message);
     }
-  } else if (config.currentApiVersion === api.V2) {
-    await Promise.all(sampleUuids.map(async (sampleUuid) => {
-      const response = await fetchAPI(
-        `/v2/experiments/${experimentId}/samples/${sampleUuid}`,
-        {
-          method: 'DELETE',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        },
-      );
-
-      if (!response.ok) {
-        throw new Error(await response.json().message);
-      }
-    }));
-  }
+  }));
 };
 
 const cancelUploads = async (files) => {
@@ -113,9 +113,10 @@ const deleteSamples = (
         // This is set right now as there is only one experiment per project
         // Should be changed when we support multiple experiments per project
         const experimentId = projects[projectUuid].experiments[0];
-        await sendDeleteSamplesRequest(projectUuid, experimentId, sampleUuids);
 
         if (config.currentApiVersion === api.V1) {
+          await sendDeleteSamplesRequest(projectUuid, experimentId, sampleUuids);
+
           dispatch(saveProject(projectUuid, newProject, false));
 
           dispatch({
@@ -135,6 +136,8 @@ const deleteSamples = (
 
           dispatch(updateExperiment(experimentId, { sampleIds: newSamples }));
         } else if (config.currentApiVersion === api.V2) {
+          await sendDeleteSamplesRequestApiV2(experimentId, sampleUuids);
+
           dispatch({
             type: SAMPLES_DELETE,
             payload: { projectUuid, experimentId, sampleUuids: samplesToDelete },
