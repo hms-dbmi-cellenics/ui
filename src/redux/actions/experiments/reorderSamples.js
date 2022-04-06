@@ -1,6 +1,6 @@
 import fetchAPI from 'utils/fetchAPI';
 import {
-  EXPERIMENTS_UPDATED, EXPERIMENTS_SAVING, EXPERIMENTS_SAVED, EXPERIMENTS_ERROR,
+  EXPERIMENTS_UPDATED, EXPERIMENTS_SAVING, EXPERIMENTS_ERROR,
 } from 'redux/actionTypes/experiments';
 import endUserMessages from 'utils/endUserMessages';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
@@ -46,10 +46,6 @@ const reorderSamples = (
         experimentId,
         experiment: { sampleIds: newSampleOrder },
       },
-    });
-
-    dispatch({
-      type: EXPERIMENTS_SAVED,
     });
   } catch (e) {
     let { message } = e;

@@ -25,10 +25,9 @@ const updateProject = (
   const newProject = mergeObjectWithArrays(currentProject, diff);
 
   try {
+    // if config.currentApiVersion === api.V2 dont do any fetch, updating the experiment is enough
     if (config.currentApiVersion === api.V1) {
       await dispatch(saveProject(projectUuid, newProject));
-    } else if (config.currentApiVersion === api.V2) {
-      // Dont do any fetch, updating the experiment is enough
     }
 
     dispatch({
