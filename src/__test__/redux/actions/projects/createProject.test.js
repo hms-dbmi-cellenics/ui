@@ -2,7 +2,7 @@ import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import { v4 as uuidv4 } from 'uuid';
-import pushNotificationMessage from 'utils/pushNotificationMessage';
+import handleError from 'utils/http/handleError';
 import createProject from 'redux/actions/projects/createProject';
 import initialProjectsState from 'redux/reducers/projects';
 import { saveProject } from 'redux/actions/projects';
@@ -15,9 +15,9 @@ import '__test__/test-utils/setupTests';
 import { api } from 'utils/constants';
 
 import config from 'config';
-import endUserMessages from 'utils/endUserMessages';
 
 jest.mock('config');
+jest.mock('utils/http/handleError');
 
 const mockStore = configureStore([thunk]);
 
@@ -35,8 +35,6 @@ createExperiment.mockImplementation((uuid, name) => async () => ({
   projectUuid: uuid,
   id: experimentId,
 }));
-
-pushNotificationMessage.mockImplementation(() => async () => { });
 
 enableFetchMocks();
 
@@ -129,6 +127,6 @@ describe('createProject action', () => {
     // Check no other action was sent
     expect(actions).toHaveLength(2);
 
-    expect(pushNotificationMessage).toHaveBeenCalledWith('error', endUserMessages.ERROR_CREATING_PROJECT);
+    expect(handleError).toHaveBeenCalledTimes(1);
   });
 });

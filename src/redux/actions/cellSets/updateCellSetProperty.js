@@ -76,7 +76,6 @@ const updateCellSetProperty = (
         },
         body: JSON.stringify(jsonMergerUpdateObject),
       },
-      false,
     );
 
     await dispatch({

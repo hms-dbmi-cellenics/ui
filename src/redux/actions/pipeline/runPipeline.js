@@ -81,7 +81,6 @@ const runPipeline = (experimentId) => async (dispatch, getState) => {
           processingConfig: changesToProcessingConfig,
         }),
       },
-      false,
     );
 
     dispatch({

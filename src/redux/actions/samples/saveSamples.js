@@ -60,7 +60,6 @@ const saveSamples = (
         },
         body: JSON.stringify(payload),
       },
-      false,
     );
 
     if (notifySave) {
