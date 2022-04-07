@@ -9,7 +9,7 @@ import { useRouter } from 'next/router';
 import PropTypes from 'prop-types';
 import { useBeforeunload } from 'react-beforeunload';
 import Header from 'components/Header';
-import config from 'config';
+import apiConfig from 'config';
 import { api } from 'utils/constants';
 import { savePlotConfig } from '../../redux/actions/componentConfig/index';
 import { getFromApiExpectOK } from '../../utils/getDataExpectOK';
@@ -101,7 +101,7 @@ const PlotHeader = ({ title, experimentId, plotUuid }) => {
   }, [router?.asPath, router?.events, saved]);
 
   let url;
-  if (config.currentApiVersion === api.V1) {
+  if (apiConfig.currentApiVersion === api.V1) {
     url = `/v1/experiments/${experimentId}`;
   } else {
     url = `/v2/experiments/${experimentId}`;
