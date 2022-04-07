@@ -78,7 +78,6 @@ const createCellSet = (experimentId, name, color, cellIdsSet) => async (dispatch
           createCellSetJsonMerger(dataForUpload, 'scratchpad'),
         ),
       },
-      false,
     );
 
     pushNotificationMessage('info', endUserMessages.SUCCESS_NEW_CLUSTER_CREATED);

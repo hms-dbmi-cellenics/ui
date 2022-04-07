@@ -48,7 +48,6 @@ const updateExperiment = (
           },
           body: JSON.stringify(convertToApiModel(experimentDiff)),
         },
-        false,
       );
     } else if (config.currentApiVersion === api.V2) {
       if (experimentDiff.sampleIds) {
@@ -67,7 +66,6 @@ const updateExperiment = (
           },
           body: JSON.stringify(experimentDiff),
         },
-        false,
       );
     }
 

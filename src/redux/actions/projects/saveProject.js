@@ -36,7 +36,6 @@ const saveProject = (
         },
         body: JSON.stringify(project),
       },
-      false,
     );
 
     if (notifySave) {

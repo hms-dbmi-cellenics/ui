@@ -61,7 +61,6 @@ const createProject = (
           },
           body: JSON.stringify(newProject),
         },
-        false,
       );
     } catch (e) {
       const errorMessage = handleError(e, endUserMessages.ERROR_CREATING_PROJECT);

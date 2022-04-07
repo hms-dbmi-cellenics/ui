@@ -31,7 +31,6 @@ const runGem2s = (experimentId, paramsHash) => async (dispatch) => {
         },
         body: JSON.stringify({ paramsHash }),
       },
-      false,
     );
 
     dispatch({

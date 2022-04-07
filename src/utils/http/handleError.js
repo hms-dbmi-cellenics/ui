@@ -50,7 +50,6 @@ const handleGenericErrors = (error, message, notifyUser) => {
 const handleError = (error, message, notifyUser = true) => {
   let errorMessage;
 
-  console.log('elcs error', error);
   if (error && error.statusCode) {
     errorMessage = handleCodedErrors(error, message, notifyUser);
   } else {
