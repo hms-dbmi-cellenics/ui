@@ -58,9 +58,7 @@ const ProjectCard = (props) => {
 
   const updateProjectName = (newName) => {
     dispatch(updateProject(project.uuid, { name: newName.trim() }));
-    console.log('projects.meta: ', projects.meta);
     if (projects.meta.error === false) {
-      console.log('go for it');
       dispatch(updateExperiment(projectExperiment, { name: newName.trim() }));
     }
   };
