@@ -25,39 +25,45 @@ saveProject.mockImplementation(() => async () => { });
 
 const mockStore = configureStore([thunk]);
 
+const mockSampleUuid = 'sample-1';
+const mockProjectUuid = 'project-1';
+const mockExperimentId = 'experimentId';
+
+const mockSample = {
+  ...sampleTemplate,
+  name: 'test sample',
+  projectUuid: mockProjectUuid,
+  uuid: mockSampleUuid,
+};
+
+const mockProject = {
+  ...projectTemplate,
+  name: 'test project',
+  uuid: mockProjectUuid,
+  samples: [mockSampleUuid],
+  experiments: [mockExperimentId],
+};
+
+const initialState = {
+  samples: {
+    ...initialSampleState,
+    [mockSampleUuid]: mockSample,
+  },
+  projects: {
+    ...initialProjectState,
+    ids: [mockProjectUuid],
+    [mockProjectUuid]: mockProject,
+  },
+};
+
 describe('deleteSample action', () => {
-  const mockSampleUuid = 'sample-1';
-  const mockProjectUuid = 'project-1';
+  beforeEach(() => {
+    jest.clearAllMocks();
 
-  const mockSample = {
-    ...sampleTemplate,
-    name: 'test sample',
-    projectUuid: mockProjectUuid,
-    uuid: mockSampleUuid,
-  };
-
-  const mockProject = {
-    ...projectTemplate,
-    name: 'test project',
-    uuid: mockProjectUuid,
-    samples: [mockSampleUuid],
-  };
-
-  const initialState = {
-    samples: {
-      ...initialSampleState,
-      [mockSampleUuid]: mockSample,
-    },
-    projects: {
-      ...initialProjectState,
-      ids: [mockProjectUuid],
-      [mockProjectUuid]: mockProject,
-    },
-  };
-
-  fetchMock.resetMocks();
-  fetchMock.doMock();
-  fetchMock.mockResolvedValue(new Response('{}'));
+    fetchMock.resetMocks();
+    fetchMock.doMock();
+    fetchMock.mockResolvedValue(new Response('{}'));
+  });
 
   it('Dispatches event correctly', async () => {
     const store = mockStore(initialState);
@@ -81,6 +87,28 @@ describe('deleteSample action', () => {
 
     // Resolve loading state
     expect(actions[4].type).toEqual(SAMPLES_SAVED);
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      'http://localhost:3000/v1/projects/project-1/experimentId/samples',
+      {
+        body: '{"ids":["sample-1"]}',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        method: 'DELETE',
+      },
+    );
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      'http://localhost:3000/v1/experiments/experimentId',
+      {
+        body: '{"sampleIds":[]}',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        method: 'PUT',
+      },
+    );
   });
 
   it('Dispatches event correctly for api v2', async () => {
@@ -92,8 +120,6 @@ describe('deleteSample action', () => {
     // Sets up loading state for saving project
     const actions = store.getActions();
 
-    expect(saveProject).toHaveBeenCalled();
-
     expect(actions[0].type).toEqual(SAMPLES_SAVING);
 
     // Delete sample
@@ -101,5 +127,13 @@ describe('deleteSample action', () => {
 
     // Resolve loading state
     expect(actions[2].type).toEqual(SAMPLES_SAVED);
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      `http://localhost:3000/v2/experiments/${mockExperimentId}/samples/sample-1`,
+      {
+        headers: { 'Content-Type': 'application/json' },
+        method: 'DELETE',
+      },
+    );
   });
 });
