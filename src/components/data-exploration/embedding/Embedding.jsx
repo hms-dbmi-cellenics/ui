@@ -126,19 +126,7 @@ const Embedding = (props) => {
     setCellColors(colorByGeneExpression(focusedExpression));
   }, [focusedExpression]);
 
-  const updateCellCoordinates = (newView) => {
-    if (selectedCell && newView.project) {
-      const [x, y] = newView.project(selectedCell);
-      cellCoordinates.current = {
-        x,
-        y,
-        width,
-        height,
-      };
-    }
-  };
-
-  const updateCellsHover = (cell) => dispatch(updateCellInfo({ cellId: cell }));
+  const updateCellsHover = (cell) => dispatch(updateCellInfo({ component: 'embedding', cellId: cell }));
 
   const onCreateCluster = (clusterName, clusterColor) => {
     setCreateClusterPopover(false);
@@ -246,7 +234,7 @@ const Embedding = (props) => {
             theme='light'
             uuid={embeddingType}
             viewState={view}
-            updateViewInfo={updateCellCoordinates}
+            // updateViewInfo={updateCellCoordinates}
             cells={convertCellsData(data, cellSetHidden, cellSetProperties)}
             mapping='PCA'
             cellSelection={selectedCellIds}

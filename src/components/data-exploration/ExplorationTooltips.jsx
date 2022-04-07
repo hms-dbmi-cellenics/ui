@@ -1,21 +1,25 @@
 import React, { useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
+import _ from 'lodash';
 
 import CellInfo from 'components/data-exploration/CellInfo';
 import getContainingCellSetsProperties from 'utils/cellSets/getContainingCellSetsProperties';
 import { getCellSetsHierarchyByType, getCellSets } from 'redux/selectors';
 
 const ExplorationTooltips = () => {
-  const cellCoordinates = useRef(null);
+  const cellCoordinates = useRef({ x: 0, y: 0 });
   const cellInfoTooltip = useRef(null);
 
-  const cellInfo = useSelector((state) => state.cellInfo);
-  const selectedCell = useSelector((state) => state.cellInfo.cellId);
-  const focusData = useSelector((state) => state.cellInfo.focus);
-  const focusedExpression = useSelector((state) => state.genes.expression.data[focusData.key]);
+  const {
+    cellId,
+    geneName,
+    trackCluster,
+  } = useSelector((state) => state.cellInfo);
 
   const cellSets = useSelector(getCellSets());
   const rootClusterNodes = useSelector(getCellSetsHierarchyByType('cellSets')).map(({ key }) => key);
+
+  const focusedExpression = useSelector((state) => state.genes.expression.data[geneName]);
 
   useEffect(() => {
     document.addEventListener('mousemove', (e) => {
@@ -27,45 +31,40 @@ const ExplorationTooltips = () => {
   }, []);
 
   useEffect(() => {
-    if (selectedCell) {
-      let expressionToDispatch;
-      let geneName;
+    if (!cellId) return;
 
-      if (focusedExpression) {
-        geneName = focusData.key;
-        expressionToDispatch = focusedExpression.rawExpression.expression[selectedCell];
-      }
+    // getting the cluster properties for every cluster that has the cellId
+    const searchCellsets = trackCluster?.length ? trackCluster : rootClusterNodes;
+    const cellProperties = getContainingCellSetsProperties(Number.parseInt(cellId, 10), searchCellsets, cellSets);
 
-      // getting the cluster properties for every cluster that has the cellId
-      const cellProperties = getContainingCellSetsProperties(Number.parseInt(selectedCell, 10), rootClusterNodes, cellSets);
-
-      const prefixedCellSetNames = [];
-      Object.values(cellProperties).forEach((clusterProperties) => {
-        clusterProperties.forEach(({ name, parentNodeKey }) => {
-          prefixedCellSetNames.push(`${cellSets.properties[parentNodeKey].name} : ${name}`);
-        });
+    const prefixedCellSetNames = [];
+    Object.values(cellProperties).forEach((clusterProperties) => {
+      clusterProperties.forEach(({ name, parentNodeKey }) => {
+        prefixedCellSetNames.push(`${_.capitalize(cellSets.properties[parentNodeKey].name)}: ${name}`);
       });
+    });
 
-      cellInfoTooltip.current = {
-        cellId: selectedCell,
-        cellSets: prefixedCellSetNames,
-        expression: expressionToDispatch,
-        geneName,
-      };
-    }
-  }, [selectedCell]);
+    cellInfoTooltip.current = {
+      cellId,
+      cellSets: prefixedCellSetNames,
+      expression: focusedExpression?.rawExpression.expression[cellId],
+      geneName,
+    };
+  }, [cellId]);
 
   return (
     <div style={{
       position: 'fixed', left: 0, top: 0, zIndex: 1000,
     }}
     >
-      {cellInfo.cellId && cellInfoTooltip.current ? (
-        <CellInfo
-          coordinates={cellCoordinates}
-          cellInfo={cellInfoTooltip.current}
-        />
-      ) : <></>}
+      {
+        cellId && cellInfoTooltip.current ? (
+          <CellInfo
+            coordinates={cellCoordinates.current}
+            cellInfo={cellInfoTooltip.current}
+          />
+        ) : <></>
+      }
     </div>
   );
 };

@@ -4,39 +4,38 @@ import PropTypes from 'prop-types';
 
 const CellInfo = (props) => {
   const { coordinates, cellInfo } = props;
+  const { geneName, expression, cellSets } = cellInfo;
 
   const cellInfoStyle = { fontSize: '0.75rem', display: 'inlineBlock' };
 
   return (
     <div
       style={{
-        minWidth: '125px',
+        minWidth: '175px',
         padding: '0.5em',
-        background: 'white',
+        background: '#FEFEFE',
         position: 'absolute',
-        left: `${coordinates.current.x + 8}px`,
-        top: `${coordinates.current.y + 8}px`,
+        left: `${coordinates.x + 8}px`,
+        top: `${coordinates.y + 8}px`,
         pointerEvents: 'none',
       }}
     >
       <div style={cellInfoStyle}>
         {`Cell id: ${cellInfo.cellId}`}
       </div>
-      {cellInfo.geneName ? (
+      {geneName ? (
         <div style={cellInfoStyle}>
-          {`Gene name: ${cellInfo.geneName}`}
+          {`Gene name: ${geneName}`}
         </div>
       ) : <></>}
-      {cellInfo.expression !== undefined ? (
+      {expression ? (
         <div style={cellInfoStyle}>
           Expression Level:&nbsp;
-          {parseFloat(cellInfo.expression.toFixed(3))}
+          {parseFloat(expression.toFixed(3))}
         </div>
       ) : <></>}
-      {cellInfo.cellSets?.length > 0 ? cellInfo.cellSets.map((cellSetName) => (
-        <div style={cellInfoStyle}>
-          {_.truncate(cellSetName)}
-        </div>
+      {cellSets?.length > 0 ? cellSets.map((cellSetName) => (
+        <div style={cellInfoStyle}>{cellSetName}</div>
       )) : <></>}
     </div>
   );

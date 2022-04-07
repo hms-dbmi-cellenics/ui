@@ -1,4 +1,8 @@
 const initialState = {
+  component: null,
+  cellId: null,
+  geneName: null,
+  trackCluster: null,
   focus: {
     store: 'cellSets',
     key: 'louvain',
