@@ -111,7 +111,7 @@ describe('createProject action', () => {
   it('Shows error message when there was a fetch error', async () => {
     config.currentApiVersion = api.V1;
 
-    const fetchErrorMessage = endUserMessages.ERROR_CREATING_PROJECT;
+    const fetchErrorMessage = 'some error';
 
     fetchMock.mockResponse(JSON.stringify({ message: fetchErrorMessage }), { url: 'mockedUrl', status: 400 });
 
@@ -129,6 +129,6 @@ describe('createProject action', () => {
     // Check no other action was sent
     expect(actions).toHaveLength(2);
 
-    expect(pushNotificationMessage).toHaveBeenCalledWith('error', fetchErrorMessage);
+    expect(pushNotificationMessage).toHaveBeenCalledWith('error', endUserMessages.ERROR_CREATING_PROJECT);
   });
 });

@@ -16,17 +16,11 @@ const seekFromS3 = async (ETag, experimentId) => {
   try {
     response = await fetchAPI(`/v1/workResults/${experimentId}/${ETag}`);
   } catch (e) {
-    console.log('raised error lcs', e);
     if (e.statusCode === httpStatusCodes.NOT_FOUND) {
       return null;
     }
-    // REVIEW: do we want to show a notification to the user
-    // when we can't fetch from s3? (and it's not a 404)
-    // handleError(e);
-    // throwResponseError(response);
 
     throw e;
-    // throw new Error(`Error ${e.statusCode}: ${response.text}`, { cause: response });
   }
 
   const { signedUrl } = response;
