@@ -6,17 +6,15 @@ import {
 } from 'react-redux';
 import PropTypes from 'prop-types';
 import * as vega from 'vega';
-import _ from 'lodash';
 import 'vitessce/dist/es/production/static/css/index.css';
 
 import ClusterPopover from 'components/data-exploration/embedding/ClusterPopover';
 import CrossHair from 'components/data-exploration/embedding/CrossHair';
-import CellInfo from 'components/data-exploration/CellInfo';
 import PlatformError from 'components/PlatformError';
 import Loader from 'components/Loader';
 
 import { loadEmbedding } from 'redux/actions/embedding';
-import { getCellSetsHierarchyByType, getCellSets } from 'redux/selectors';
+import { getCellSets } from 'redux/selectors';
 import { createCellSet } from 'redux/actions/cellSets';
 import { loadGeneExpression } from 'redux/actions/genes';
 import { updateCellInfo } from 'redux/actions/cellInfo';
@@ -28,7 +26,6 @@ import {
   colorByGeneExpression,
   colorInterpolator,
 } from 'utils/plotUtils';
-import getContainingCellSetsProperties from 'utils/cellSets/getContainingCellSetsProperties';
 
 const Scatterplot = dynamic(
   () => import('vitessce/dist/umd/production/scatterplot.min').then((mod) => mod.Scatterplot),
@@ -47,7 +44,6 @@ const Embedding = (props) => {
 
   const [view, setView] = useState({ target: [4, -4, 0], zoom: initialZoom });
   const [cellRadius, setCellRadius] = useState(cellRadiusFromZoom(initialZoom));
-  const rootClusterNodes = useSelector(getCellSetsHierarchyByType('cellSets')).map(({ key }) => key);
 
   const selectedCellIds = new Set();
 
@@ -71,8 +67,7 @@ const Embedding = (props) => {
   const expressionLoading = useSelector((state) => state.genes.expression.loading);
   const loadedGenes = useSelector((state) => Object.keys(state.genes.expression.data));
 
-  const cellCoordintes = useRef({ x: 200, y: 300 });
-  const cellInfoTooltip = useRef();
+  const cellCoordinates = useRef({ x: 200, y: 300 });
   const [createClusterPopover, setCreateClusterPopover] = useState(false);
   const [selectedIds, setSelectedIds] = useState(new Set());
   const [cellColors, setCellColors] = useState({});
@@ -131,40 +126,10 @@ const Embedding = (props) => {
     setCellColors(colorByGeneExpression(focusedExpression));
   }, [focusedExpression]);
 
-  useEffect(() => {
-    if (selectedCell) {
-      let expressionToDispatch;
-      let geneName;
-
-      if (focusedExpression) {
-        geneName = focusData.key;
-        expressionToDispatch = focusedExpression.rawExpression.expression[selectedCell];
-      }
-
-      // getting the cluster properties for every cluster that has the cellId
-      const cellProperties = getContainingCellSetsProperties(Number.parseInt(selectedCell, 10), rootClusterNodes, cellSets);
-
-      const prefixedCellSetNames = [];
-      Object.entries(cellProperties).forEach(([key, clusterProperties]) => {
-        clusterProperties.forEach(({ name, parentNodeKey }) => {
-          prefixedCellSetNames.push(`${cellSetProperties[parentNodeKey].name} : ${name}`);
-        });
-      });
-
-      cellInfoTooltip.current = {
-        cellSets: prefixedCellSetNames,
-        cellId: selectedCell,
-        componentType: embeddingType,
-        expression: expressionToDispatch,
-        geneName,
-      };
-    }
-  }, [selectedCell]);
-
   const updateCellCoordinates = (newView) => {
     if (selectedCell && newView.project) {
       const [x, y] = newView.project(selectedCell);
-      cellCoordintes.current = {
+      cellCoordinates.current = {
         x,
         y,
         width,
@@ -307,24 +272,12 @@ const Embedding = (props) => {
           ? (
             <ClusterPopover
               visible
-              popoverPosition={cellCoordintes}
+              popoverPosition={cellCoordinates}
               onCreate={onCreateCluster}
               onCancel={onCancelCreateCluster}
             />
           ) : (
-            (cellInfoVisible && cellInfoTooltip.current) ? (
-              <div>
-                <CellInfo
-                  componentType={embeddingType}
-                  coordinates={cellCoordintes}
-                  cellInfo={cellInfoTooltip.current}
-                />
-                <CrossHair
-                  componentType={embeddingType}
-                  coordinates={cellCoordintes}
-                />
-              </div>
-            ) : <></>
+            cellInfoVisible ? <CrossHair coordinates={cellCoordinates} /> : <></>
           )
       }
     </div>
@@ -338,4 +291,5 @@ Embedding.propTypes = {
   height: PropTypes.number.isRequired,
   experimentId: PropTypes.string.isRequired,
 };
+
 export default Embedding;

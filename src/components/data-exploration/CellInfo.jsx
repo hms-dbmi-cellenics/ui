@@ -1,22 +1,21 @@
 import React from 'react';
 import _ from 'lodash';
-import { Card } from 'antd';
 import PropTypes from 'prop-types';
 
 const CellInfo = (props) => {
   const { coordinates, cellInfo } = props;
 
-  const cellInfoStyle = { fontSize: '0.75rem' };
+  const cellInfoStyle = { fontSize: '0.75rem', display: 'inlineBlock' };
 
   return (
-    <Card
-      size='small'
+    <div
       style={{
-        zIndex: 6,
-        border: 0,
+        minWidth: '125px',
+        padding: '0.5em',
+        background: 'white',
         position: 'absolute',
-        left: `${coordinates.current.x + 20}px`,
-        top: `${coordinates.current.y + 20}px`,
+        left: `${coordinates.current.x + 8}px`,
+        top: `${coordinates.current.y + 8}px`,
         pointerEvents: 'none',
       }}
     >
@@ -39,7 +38,7 @@ const CellInfo = (props) => {
           {_.truncate(cellSetName)}
         </div>
       )) : <></>}
-    </Card>
+    </div>
   );
 };
 
