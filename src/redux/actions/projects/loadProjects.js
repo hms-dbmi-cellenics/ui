@@ -58,7 +58,7 @@ const loadProjects = () => async (dispatch) => {
 
       await Promise.all(data
         .filter((entry) => entry.samples.length)
-        .map((entry) => dispatch(loadSamples(false, entry.uuid))));
+        .map((entry) => dispatch(loadSamples(null, entry.uuid))));
     } else if (config.currentApiVersion === api.V2) {
       url = '/v2/experiments';
       const response = await fetchAPI(url);
@@ -71,9 +71,9 @@ const loadProjects = () => async (dispatch) => {
       // This section commented out because we going to use it
       // when samples loading is implemented in api v2
 
-      // await Promise.all(data
-      //   .filter((entry) => entry.samples.length)
-      //   .map((entry) => dispatch(loadSamples(false, entry.uuid))));
+      await Promise.all(data
+        .filter((entry) => entry.samples.length)
+        .map((entry) => dispatch(loadSamples(null, entry.uuid))));
     }
 
     const ids = data.map((project) => project.uuid);
