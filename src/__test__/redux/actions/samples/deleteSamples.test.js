@@ -9,7 +9,7 @@ import initialProjectState, { projectTemplate } from 'redux/reducers/projects/in
 import { saveProject } from 'redux/actions/projects';
 
 import {
-  SAMPLES_DELETE, SAMPLES_DELETE_API_V1, SAMPLES_SAVED, SAMPLES_SAVING,
+  SAMPLES_DELETE, SAMPLES_DELETE_API_V1, SAMPLES_SAVED, SAMPLES_SAVING, SAMPLES_ERROR,
 } from 'redux/actionTypes/samples';
 import { PROJECTS_UPDATE } from 'redux/actionTypes/projects';
 import { EXPERIMENTS_SAVING } from 'redux/actionTypes/experiments';
@@ -127,6 +127,30 @@ describe('deleteSamples', () => {
 
     // Resolve loading state
     expect(actions[2].type).toEqual(SAMPLES_SAVED);
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      `http://localhost:3000/v2/experiments/${mockExperimentId}/samples/sample-1`,
+      {
+        headers: { 'Content-Type': 'application/json' },
+        method: 'DELETE',
+      },
+    );
+  });
+
+  it('Dispatches error correctly for api v2 if fetch fails', async () => {
+    config.currentApiVersion = api.V2;
+
+    fetchMock.mockReject(new Error('Api error'));
+
+    const store = mockStore(initialState);
+    await store.dispatch(deleteSamples([mockSampleUuid]));
+
+    const actions = store.getActions();
+
+    expect(actions[0].type).toEqual(SAMPLES_SAVING);
+
+    // Delete sample
+    expect(actions[1].type).toEqual(SAMPLES_ERROR);
 
     expect(fetchMock).toHaveBeenCalledWith(
       `http://localhost:3000/v2/experiments/${mockExperimentId}/samples/sample-1`,
