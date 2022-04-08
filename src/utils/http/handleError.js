@@ -8,7 +8,8 @@ import httpStatusCodes from 'utils/http/httpStatusCodes';
 const env = ssrGetCurrentEnvironment();
 
 const handleCodedErrors = (error, message, notifyUser) => {
-  let errorMessage = [message, error.userMessage].filter((x) => x).join(' ');
+  let errorMessage = message;
+  // let errorMessage = [message, error.userMessage].filter((x) => x).join(' ');
 
   // We might want to override the API message for some errors to make them
   // more user friendly like the FORBIDDEN no permissions.
@@ -27,9 +28,6 @@ const handleCodedErrors = (error, message, notifyUser) => {
 };
 
 const handleGenericErrors = (error, message, notifyUser) => {
-  // TODO this should probably be a console log, or just caught by error boundary
-  // probably not, just to slack
-  // decide not to include error in the user notification
   if (notifyUser) {
     pushNotificationMessage('error', `${message}`);
   }

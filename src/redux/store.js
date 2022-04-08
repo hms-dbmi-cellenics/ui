@@ -5,23 +5,19 @@ import { createWrapper } from 'next-redux-wrapper';
 import { enableMapSet } from 'immer';
 
 import rootReducer from 'redux/reducers/index';
-import Environment, { ssrGetCurrentEnvironment } from 'utils/environment';
 
 enableMapSet();
 
 const bindMiddleware = (middleware) => {
   const { composeWithDevTools } = require('redux-devtools-extension');
-  const env = ssrGetCurrentEnvironment();
 
-  if (env !== Environment.PRODUCTION) {
-    // eslint-disable-next-line import/no-extraneous-dependencies
-    const { createLogger } = require('redux-logger');
+  // eslint-disable-next-line import/no-extraneous-dependencies
+  const { createLogger } = require('redux-logger');
 
-    // do not log server-side redux actions
-    middleware.push(createLogger({
-      predicate: () => typeof window !== 'undefined',
-    }));
-  }
+  // do not log server-side redux actions
+  middleware.push(createLogger({
+    predicate: () => typeof window !== 'undefined',
+  }));
 
   return composeWithDevTools(applyMiddleware(...middleware));
 };
