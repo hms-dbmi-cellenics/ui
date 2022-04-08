@@ -1,27 +1,30 @@
 import {
   CELL_INFO_FOCUS, CELL_INFO_UNFOCUS,
-} from '../../actionTypes/cellInfo';
+} from 'redux/actionTypes/cellInfo';
 
 const setCellInfoFocus = (
   experimentId, store, key,
 ) => (dispatch, getState) => {
-  if (getState().cellInfo.focus.store === store && getState().cellInfo.focus.key === key) {
+  const { store: currentStore, key: currentKey } = getState().cellInfo.focus;
+
+  if (store === currentStore && key === currentKey) {
     dispatch({
       type: CELL_INFO_UNFOCUS,
       payload: {
         experimentId,
       },
     });
-  } else {
-    dispatch({
-      type: CELL_INFO_FOCUS,
-      payload: {
-        experimentId,
-        store,
-        key,
-      },
-    });
+    return;
   }
+
+  dispatch({
+    type: CELL_INFO_FOCUS,
+    payload: {
+      experimentId,
+      store,
+      key,
+    },
+  });
 };
 
 export default setCellInfoFocus;

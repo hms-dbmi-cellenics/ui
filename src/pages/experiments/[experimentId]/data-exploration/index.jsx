@@ -20,7 +20,7 @@ import MosaicCloseButton from 'components/MosaicCloseButton';
 import { updateLayout, addWindow } from 'redux/actions/layout/index';
 import SearchMenu from 'components/SearchMenu';
 import 'react-mosaic-component/react-mosaic-component.css';
-import ExplorationTooltips from 'components/data-exploration/ExplorationTooltips';
+import ExplorationTooltip from 'components/data-exploration/ExplorationTooltip';
 
 const { TabPane } = Tabs;
 
@@ -198,7 +198,7 @@ const ExplorationViewPage = ({
         )]}
       />
       <div style={{ height: '100%', width: '100%', margin: 0 }}>
-        <ExplorationTooltips />
+        <ExplorationTooltip />
         <Mosaic
           renderTile={(id, path) => (
             <ReactResizeDetector

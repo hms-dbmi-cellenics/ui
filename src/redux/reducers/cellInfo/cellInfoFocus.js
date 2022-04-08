@@ -1,5 +1,5 @@
 import produce from 'immer';
-import initialState from './initialState';
+import initialState from 'redux/reducers/cellInfo/initialState';
 /* eslint-disable no-param-reassign */
 
 const cellInfoFocus = produce((draft, action) => {

@@ -6,7 +6,7 @@ import CellInfo from 'components/data-exploration/CellInfo';
 import getContainingCellSetsProperties from 'utils/cellSets/getContainingCellSetsProperties';
 import { getCellSetsHierarchyByType, getCellSets } from 'redux/selectors';
 
-const ExplorationTooltips = () => {
+const ExplorationTooltip = () => {
   const cellCoordinates = useRef({ x: 0, y: 0 });
   const cellInfoTooltip = useRef(null);
 
@@ -14,12 +14,13 @@ const ExplorationTooltips = () => {
     cellId,
     geneName,
     trackCluster,
+    focus,
   } = useSelector((state) => state.cellInfo);
 
   const cellSets = useSelector(getCellSets());
   const rootClusterNodes = useSelector(getCellSetsHierarchyByType('cellSets')).map(({ key }) => key);
 
-  const focusedExpression = useSelector((state) => state.genes.expression.data[geneName]);
+  const geneExpression = useSelector((state) => state.genes.expression.data);
 
   useEffect(() => {
     document.addEventListener('mousemove', (e) => {
@@ -33,9 +34,9 @@ const ExplorationTooltips = () => {
   useEffect(() => {
     if (!cellId) return;
 
-    // getting the cluster properties for every cluster that has the cellId
-    const searchCellsets = trackCluster?.length ? trackCluster : rootClusterNodes;
-    const cellProperties = getContainingCellSetsProperties(Number.parseInt(cellId, 10), searchCellsets, cellSets);
+    // getting the cluster properties for the cluster in searchCellsets
+    const searchCellSets = trackCluster?.length ? trackCluster : rootClusterNodes;
+    const cellProperties = getContainingCellSetsProperties(Number.parseInt(cellId, 10), searchCellSets, cellSets);
 
     const prefixedCellSetNames = [];
     Object.values(cellProperties).forEach((clusterProperties) => {
@@ -44,17 +45,26 @@ const ExplorationTooltips = () => {
       });
     });
 
+    let gene = null;
+    let expressionName = geneName;
+    if (geneName) {
+      gene = geneExpression[geneName];
+    } else if (focus.store === 'genes') {
+      expressionName = focus.key;
+      gene = geneExpression[expressionName];
+    }
+
     cellInfoTooltip.current = {
       cellId,
       cellSets: prefixedCellSetNames,
-      expression: focusedExpression?.rawExpression.expression[cellId],
-      geneName,
+      expression: gene?.rawExpression.expression[cellId],
+      geneName: expressionName,
     };
   }, [cellId]);
 
   return (
     <div style={{
-      position: 'fixed', left: 0, top: 0, zIndex: 1000,
+      position: 'fixed', left: 0, top: 0, zIndex: 1e10,
     }}
     >
       {
@@ -69,4 +79,4 @@ const ExplorationTooltips = () => {
   );
 };
 
-export default ExplorationTooltips;
+export default ExplorationTooltip;
