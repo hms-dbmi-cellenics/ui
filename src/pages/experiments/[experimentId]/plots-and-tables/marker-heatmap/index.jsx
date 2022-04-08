@@ -365,7 +365,7 @@ const MarkerHeatmap = ({ experimentId }) => {
 
   const renderExtraPanels = () => (
     <>
-      <Panel header='Gene selection' key='Gene selection'>
+      <Panel header='Gene selection' key='gene-selection'>
         <Space direction='vertical' size='small'>
           <MarkerGeneSelection
             config={config}
@@ -387,7 +387,7 @@ const MarkerHeatmap = ({ experimentId }) => {
           </div>
         </Space>
       </Panel>
-      <Panel header='Select data' key='Select data'>
+      <Panel header='Select data' key='select-data'>
         <Space direction='vertical' size='small'>
           <p>Select the cell sets to show markers for:</p>
           <Select
@@ -402,7 +402,7 @@ const MarkerHeatmap = ({ experimentId }) => {
           />
         </Space>
       </Panel>
-      <Panel header='Cluster guardlines' key='Cluster guardlines'>
+      <Panel header='Cluster guardlines' key='cluster-guardlines'>
         <Radio.Group
           value={config.guardLines}
           onChange={(e) => updatePlotWithChanges({ guardLines: e.target.value })}
@@ -411,10 +411,10 @@ const MarkerHeatmap = ({ experimentId }) => {
           <Radio value={false}>Hide</Radio>
         </Radio.Group>
       </Panel>
-      <Panel header='Metadata tracks' key='metadataTracks'>
+      <Panel header='Metadata tracks' key='metadata-tracks'>
         <HeatmapMetadataTracksSettings componentType={plotUuid} />
       </Panel>
-      <Panel header='Group by' key='groupBy'>
+      <Panel header='Group by' key='group-by'>
         <HeatmapGroupBySettings componentType={plotUuid} />
       </Panel>
     </>
@@ -442,7 +442,7 @@ const MarkerHeatmap = ({ experimentId }) => {
               config={config}
               onUpdate={updatePlotWithChanges}
               renderExtraPanels={renderExtraPanels}
-              defaultActivePanel='Gene selection'
+              defaultActivePanelKey='gene-selection'
             />
           </Col>
         </Row>

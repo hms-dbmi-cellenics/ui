@@ -143,13 +143,13 @@ const FrequencyPlotPage = ({ experimentId }) => {
 
   const renderExtraPanels = () => (
     <>
-      <Panel header='Select data' key='Select data'>
+      <Panel header='Select data' key='select-data'>
         <SelectCellSets
           config={config}
           onUpdate={updatePlotWithChanges}
         />
       </Panel>
-      <Panel header='Plot type' key='Plot type'>
+      <Panel header='Plot type' key='plot-type'>
         <Radio.Group
           onChange={(value) => changePlotType(value)}
           value={config.frequencyType}
@@ -210,7 +210,7 @@ const FrequencyPlotPage = ({ experimentId }) => {
               config={config}
               onUpdate={updatePlotWithChanges}
               renderExtraPanels={renderExtraPanels}
-              defaultActivePanel='Select data'
+              defaultActivePanelKey='select-data'
             />
           </Col>
         </Row>

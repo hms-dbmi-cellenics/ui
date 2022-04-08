@@ -104,14 +104,14 @@ const EmbeddingCategoricalPage = ({ experimentId }) => {
 
   const renderExtraPanels = () => (
     <>
-      <Panel header='Select data' key='Select data'>
+      <Panel header='Select data' key='select-data'>
         <SelectData
           config={config}
           onUpdate={updatePlotWithChanges}
           cellSets={cellSets}
         />
       </Panel>
-      <Panel header='Group by' key='Group by'>
+      <Panel header='Group by' key='group-by'>
         <p>
           Select the cell set category you would like to group cells by.
         </p>
@@ -156,7 +156,7 @@ const EmbeddingCategoricalPage = ({ experimentId }) => {
               config={config}
               onUpdate={updatePlotWithChanges}
               renderExtraPanels={renderExtraPanels}
-              defaultActivePanel='Group by'
+              defaultActivePanelKey='group-by'
             />
           </Col>
         </Row>

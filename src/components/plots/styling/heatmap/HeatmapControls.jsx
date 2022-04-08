@@ -14,8 +14,8 @@ const HeatmapControls = (props) => {
     onReset = () => { onGeneEnter([]); },
   } = props;
   return (
-    <Collapse accordion defaultActiveKey='Gene selection'>
-      <Panel header='Gene selection' key='Gene selection'>
+    <Collapse accordion defaultActiveKey='gene-selection'>
+      <Panel header='Gene selection' key='gene-selection'>
         <p>Type in a gene name and hit space or enter to add it to the heatmap.</p>
         <Space direction='vertical' style={{ width: '100%' }}>
           <Select
@@ -36,10 +36,10 @@ const HeatmapControls = (props) => {
           </Button>
         </Space>
       </Panel>
-      <Panel header='Metadata tracks' key='Metadata tracks'>
+      <Panel header='Metadata tracks' key='metadata-tracks'>
         <HeatmapMetadataTrackSettings componentType={plotUuid} />
       </Panel>
-      <Panel header='Group by' key='Group by'>
+      <Panel header='Group by' key='group-by'>
         <HeatmapGroupBySettings componentType={plotUuid} />
       </Panel>
     </Collapse>

@@ -27,9 +27,12 @@ import VolcanoMarkersEditor from './volcano/MarkersEditor';
 import VolcanoDisplayLabels from './volcano/DisplayLabels';
 
 const { Panel } = Collapse;
+
+const formatPanelKey = (key) => key.trim().toLowerCase().replace(' ', '-');
+
 const PlotStyling = (props) => {
   const {
-    formConfig, config, onUpdate, renderExtraPanels, defaultActivePanel,
+    formConfig, config, onUpdate, renderExtraPanels, defaultActivePanelKey,
   } = props;
 
   const ComponentMapping = {
@@ -56,7 +59,7 @@ const PlotStyling = (props) => {
 
     if (Object.getOwnPropertyDescriptor(el, 'controls') && el.controls.length > 0) {
       return (
-        <Panel header={el.panelTitle} key={el.panelTitle}>
+        <Panel header={el.panelTitle} key={formatPanelKey(el.panelTitle)}>
           {el.header}
           {el.controls.map((control) => {
             // If control is a string, no prop is passed
@@ -86,7 +89,7 @@ const PlotStyling = (props) => {
   });
 
   return (
-    <Collapse accordion defaultActiveKey={defaultActivePanel}>
+    <Collapse accordion defaultActiveKey={defaultActivePanelKey}>
       {renderExtraPanels()}
       {buildForm(formConfig)}
     </Collapse>
@@ -98,7 +101,7 @@ PlotStyling.propTypes = {
   config: PropTypes.object,
   onUpdate: PropTypes.func.isRequired,
   renderExtraPanels: PropTypes.func,
-  defaultActivePanel: PropTypes.oneOfType([
+  defaultActivePanelKey: PropTypes.oneOfType([
     PropTypes.string,
     PropTypes.array,
   ]),
@@ -108,7 +111,7 @@ PlotStyling.defaultProps = {
   formConfig: [],
   config: {},
   renderExtraPanels: () => { },
-  defaultActivePanel: [],
+  defaultActivePanelKey: [],
 };
 
 export default PlotStyling;

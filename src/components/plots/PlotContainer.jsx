@@ -15,23 +15,6 @@ import _ from 'lodash';
 
 const { Panel } = Collapse;
 
-const ResetButton = ({ onClickReset, disabled }) => (
-  <Button
-    key='reset'
-    type='primary'
-    size='small'
-    onClick={onClickReset}
-    disabled={disabled}
-  >
-    Reset
-  </Button>
-);
-
-ResetButton.propTypes = {
-  onClickReset: PropTypes.func.isRequired,
-  disabled: PropTypes.bool.isRequired,
-};
-
 const PlotContainer = (props) => {
   const {
     experimentId,
@@ -104,11 +87,15 @@ const PlotContainer = (props) => {
     <Space>
       {extra}
       {!showReset ? (
-        <ResetButton
+        <Button
           key='reset'
+          type='primary'
+          size='small'
           onClickReset={onClickReset}
           disabled={!enableReset}
-        />
+        >
+          Reset
+        </Button>
       ) : ''}
       {plotInfo ? (
         <Tooltip title={plotInfo}>
