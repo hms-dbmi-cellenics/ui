@@ -6,12 +6,9 @@ import {
   Collapse, Button, Skeleton, Space, Tooltip,
 } from 'antd';
 import { InfoCircleOutlined } from '@ant-design/icons';
-
-import { LOAD_CONFIG } from 'redux/actionTypes/componentConfig';
-
-import { savePlotConfig } from 'redux/actions/componentConfig/index';
 import { initialPlotConfigStates } from 'redux/reducers/componentConfig/initialState';
 import _ from 'lodash';
+import { resetPlotConfig } from 'redux/actions/componentConfig';
 
 const { Panel } = Collapse;
 
@@ -66,16 +63,7 @@ const PlotContainer = (props) => {
 
   const onClickReset = (event) => {
     event.stopPropagation();
-    dispatch({
-      type: LOAD_CONFIG,
-      payload: {
-        experimentId,
-        plotUuid,
-        plotType,
-        config: _.cloneDeep(initialPlotConfigStates[plotType]),
-      },
-    });
-    dispatch(savePlotConfig(experimentId, plotUuid));
+    dispatch(resetPlotConfig(experimentId, plotUuid, plotType));
     setEnableReset(false);
   };
 

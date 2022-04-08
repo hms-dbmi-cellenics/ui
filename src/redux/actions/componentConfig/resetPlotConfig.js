@@ -1,19 +1,12 @@
+import _ from 'lodash';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
 import endUserMessages from 'utils/endUserMessages';
+import { RESET_CONFIG, SAVE_CONFIG } from 'redux/actionTypes/componentConfig';
+import { initialPlotConfigStates } from 'redux/reducers/componentConfig/initialState';
 import fetchAPI from 'utils/fetchAPI';
-import { SAVE_CONFIG } from 'redux/actionTypes/componentConfig';
 
-const savePlotConfig = (experimentId, plotUuid) => async (dispatch, getState) => {
-  // Do not save the 'outstandingChanges' state to the database.
-  // Do not save the 'plotData' state to the database because it is not managed by the UI.
-  // Do not save loading and error as it they are states in the UI.
-  const {
-    outstandingChanges,
-    plotData,
-    loading,
-    error,
-    ...content
-  } = getState().componentConfig[plotUuid];
+const resetPlotConfig = (experimentId, plotUuid, plotType) => async (dispatch) => {
+  const defaultConfig = _.cloneDeep(initialPlotConfigStates[plotType]);
 
   try {
     await fetchAPI(
@@ -23,13 +16,22 @@ const savePlotConfig = (experimentId, plotUuid) => async (dispatch, getState) =>
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(content),
+        body: JSON.stringify(defaultConfig),
       },
     );
 
     dispatch({
+      type: RESET_CONFIG,
+      payload: {
+        plotUuid,
+        config: defaultConfig,
+      },
+    });
+
+    dispatch({
       type: SAVE_CONFIG,
-      payload: { plotUuid, success: true },
+      payload:
+      { plotUuid, success: true },
     });
   } catch {
     pushNotificationMessage('error', endUserMessages.ERROR_SAVING_PLOT_CONFIG);
@@ -42,4 +44,4 @@ const savePlotConfig = (experimentId, plotUuid) => async (dispatch, getState) =>
   }
 };
 
-export default savePlotConfig;
+export default resetPlotConfig;
