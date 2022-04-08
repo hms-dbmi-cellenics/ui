@@ -25,17 +25,21 @@ const fetchAPI = async (path, params = {}, extras = {}) => {
     throw new FetchError(e);
   }
 
-  const data = await response.json();
-
   if (!response.ok) {
+    let data;
+    try {
+      data = await response.json();
+    } catch (e) {
+      // if we can't get extra error info from the response we don't want to fail
+      // just return the error code, this happens in many tests
+      // where we mock a string response instead of proper json
+    }
     // data.message & data.errors follow error formatting defined in:
     // HTTPError.v1.yaml
     throw new APIError(response.status, data?.message, data?.errors);
   }
 
-  // only parse response into JSON if needed because
-  // most patch / put reqs do not need a response
-  return data;
+  return await response.json();
 };
 
 export default fetchAPI;

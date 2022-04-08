@@ -5,7 +5,6 @@ import fetchAPI from 'utils/http/fetchAPI';
 import unpackResult from 'utils/work/unpackResult';
 import WorkResponseError from 'utils/http/errors/WorkResponseError';
 import httpStatusCodes from 'utils/http/httpStatusCodes';
-// import handleError from 'utils/http/handleError';
 
 const throwResponseError = (response) => {
   throw new Error(`Error ${response.status}: ${response.text}`, { cause: response });
