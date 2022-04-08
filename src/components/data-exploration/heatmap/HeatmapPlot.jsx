@@ -141,6 +141,7 @@ const HeatmapPlot = (props) => {
         cellId: cellHighlight,
         geneName: geneHighlight,
       }));
+      return;
     }
 
     if (highlightedTrackData?.cellId) {
@@ -148,7 +149,10 @@ const HeatmapPlot = (props) => {
         cellId: highlightedTrackData.cellId,
         trackCluster: highlightedTrackData.trackCluster,
       }));
+      return;
     }
+
+    dispatch(updateCellInfo({}));
   }, [cellHighlight, highlightedTrackData?.cellId]);
 
   if (isHeatmapGenesLoading || cellSetsLoading) {
