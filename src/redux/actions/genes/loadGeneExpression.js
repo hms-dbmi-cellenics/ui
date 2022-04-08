@@ -66,14 +66,11 @@ const loadGeneExpression = (
   const timeout = getTimeoutForWorkerTask(getState(), 'GeneExpression');
 
   try {
-    console.log('0 lcs fetch work');
     const data = await fetchWork(
       experimentId, body, getState, { timeout },
     );
-    console.log('0.1 lcs fech work');
 
     if (data[genesToFetch[0]]?.error) {
-      console.log('1 lcs error genes laready loaded');
       pushNotificationMessage('error', data[genesToFetch[0]].message);
       dispatch({
         type: GENES_EXPRESSION_LOADED,
@@ -84,7 +81,6 @@ const loadGeneExpression = (
         },
       });
     } else {
-      console.log('1 lcs genes loaded successfully');
       const fetchedGenes = _.concat(displayedGenes, Object.keys(data));
       dispatch({
         type: GENES_EXPRESSION_LOADED,
@@ -97,7 +93,6 @@ const loadGeneExpression = (
       });
     }
   } catch (error) {
-    console.log(`1 lcs genes load exception ${error}`);
     dispatch({
       type: GENES_EXPRESSION_ERROR,
       payload: {
