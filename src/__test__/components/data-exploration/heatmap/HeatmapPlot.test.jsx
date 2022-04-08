@@ -2,7 +2,7 @@ import _ from 'lodash';
 import React from 'react';
 import preloadAll from 'jest-next-dynamic';
 
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import { act } from 'react-dom/test-utils';
 
 import { dispatchWorkRequest, seekFromS3 } from 'utils/work/seekWorkResponse';
@@ -25,11 +25,14 @@ import HeatmapPlot from 'components/data-exploration/heatmap/HeatmapPlot';
 
 import { loadProcessingSettings } from 'redux/actions/experimentSettings';
 import { loadGeneExpression } from 'redux/actions/genes';
-
 import { loadBackendStatus } from 'redux/actions/backendStatus';
 
 import fake from '__test__/test-utils/constants';
 import { setCellSetHiddenStatus } from 'redux/actions/cellSets';
+import { updateCellInfo } from 'redux/actions/cellInfo';
+
+import { CELL_INFO_UPDATE } from 'redux/actionTypes/cellInfo';
+
 import { isSubset } from 'utils/arrayUtils';
 import { updatePlotConfig } from 'redux/actions/componentConfig';
 
@@ -62,6 +65,10 @@ jest.mock('next/dynamic', () => () => (props) => {
 jest.mock('lodash/sampleSize', () => ({
   default: (collection, size) => collection.slice(0, size),
   __esModule: true,
+}));
+
+jest.mock('redux/actions/cellInfo', () => ({
+  updateCellInfo: jest.fn(() => ({ type: CELL_INFO_UPDATE })),
 }));
 
 enableFetchMocks();
@@ -321,7 +328,7 @@ describe('HeatmapPlot', () => {
     expect(vitesscePropsSpy.expressionMatrix.cols).toMatchSnapshot();
   });
 
-  it('Responds correctly to vitessce Heatmap callbacks', async (done) => {
+  it.only('Responds correctly to vitessce Heatmap callbacks', async () => {
     await loadAndRenderDefaultHeatmap(storeState);
 
     expect(screen.getByText(/Sup Im a heatmap/i)).toBeInTheDocument();
@@ -332,8 +339,8 @@ describe('HeatmapPlot', () => {
 
     // On changing the view state
     const updatedViewState = { zoom: 15, target: [1, 1] };
-    await act(async () => {
-      await vitesscePropsSpy.setViewState(updatedViewState);
+    act(() => {
+      vitesscePropsSpy.setViewState(updatedViewState);
     });
 
     // The viewState vitessce receives is updated
@@ -342,45 +349,51 @@ describe('HeatmapPlot', () => {
     // On hovering somewhere inside the heatmap
     const highlightedCell = '2';
     const highlightedGene = 'S100a4';
-    await act(async () => {
-      await vitesscePropsSpy.setCellHighlight(highlightedCell);
-      await vitesscePropsSpy.setGeneHighlight(highlightedGene);
+    act(() => {
+      vitesscePropsSpy.setCellHighlight(highlightedCell);
+      vitesscePropsSpy.setGeneHighlight(highlightedGene);
     });
 
-    // It shows the cell info tooltip
-    expect(screen.getByText(/Cell id: 2/i)).toBeInTheDocument();
-    expect(screen.getByText(/Gene name: S100a4/i)).toBeInTheDocument();
-
-    // On hovering outside
-    await act(async () => {
-      await vitesscePropsSpy.setCellHighlight(null);
-      await vitesscePropsSpy.setGeneHighlight(null);
+    // It should dispatch an update to cellInfo store
+    await waitFor(() => {
+      expect(updateCellInfo).toHaveBeenCalledWith({
+        cellId: highlightedCell,
+        geneName: highlightedGene,
+      });
     });
 
-    // It hides the tooltip
-    expect(screen.queryByText(/Cell id:/i)).not.toBeInTheDocument();
-    expect(screen.queryByText(/Gene name:/i)).not.toBeInTheDocument();
+    // On hovering outside the graph
+    act(() => {
+      vitesscePropsSpy.setCellHighlight(null);
+      vitesscePropsSpy.setGeneHighlight(null);
+    });
+
+    // Should reset CellInfo in the store
+    await waitFor(() => {
+      expect(updateCellInfo).toHaveBeenCalledWith({});
+    });
 
     // On hovering over heatmap tracks
-    await act(async () => {
-      await vitesscePropsSpy.setTrackHighlight(['4', 0, 1, 2]);
+    act(() => {
+      vitesscePropsSpy.setTrackHighlight(['4', 0, 1, 2]);
     });
 
-    // It shows the track cell info tooltip
-    expect(screen.getByText(/Cell id: 4/i)).toBeInTheDocument();
-    expect(screen.getByText(/Group name: Cluster 0/i)).toBeInTheDocument();
+    // It should dispatch an update to cellInfo store
+    await waitFor(() => {
+      expect(updateCellInfo).toHaveBeenCalledWith({
+        cellId: '4',
+        trackCluster: ['louvain'], // this is because the default track 0 is louvain
+      });
+    });
 
     // On hovering outside heatmap tracks
-    await act(async () => {
-      await vitesscePropsSpy.setTrackHighlight(null);
+    act(() => {
+      vitesscePropsSpy.setTrackHighlight(null);
     });
 
-    // It hides the track cell info tooltip
-    expect(screen.queryByText(/Cell id:/i)).not.toBeInTheDocument();
-    expect(screen.queryByText(/Group name:/i)).not.toBeInTheDocument();
-
-    // And doesn't show the normal cell info again
-    expect(screen.queryByText(/Gene name:/i)).not.toBeInTheDocument();
-    done();
+    // Should reset CellInfo in the store
+    await waitFor(() => {
+      expect(updateCellInfo).toHaveBeenCalledWith({});
+    });
   });
 });
