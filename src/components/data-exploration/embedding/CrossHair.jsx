@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import {
   useSelector,
 } from 'react-redux';
@@ -8,44 +8,31 @@ const CrossHair = (props) => {
   const { coordinates } = props;
 
   const cellInfo = useSelector((state) => state.cellInfo);
-  const [crossHairsVisible, setCrossHairsVisible] = useState(false);
 
   const crosshairWidth = 1;
-
-  useEffect(() => {
-    if (!cellInfo.cellId && crossHairsVisible) {
-      setCrossHairsVisible(false);
-      return;
-    }
-    if (cellInfo.cellId) {
-      if (!crossHairsVisible) {
-        setCrossHairsVisible(true);
-      }
-    }
-  }, [cellInfo]);
 
   const commonStyle = {
     position: 'absolute',
     backgroundColor: 'gray',
   };
 
-  if (crossHairsVisible && Object.keys(coordinates.current).length > 0) {
+  if (cellInfo.cellId && coordinates.x && coordinates.y) {
     return (
       <div>
         <div style={{
           ...commonStyle,
           top: 0,
           width: '1px',
-          left: `${coordinates.current.x - crosshairWidth / 2}px`,
-          height: `${coordinates.current.height}px`,
+          left: `${coordinates.x - crosshairWidth / 2}px`,
+          height: `${coordinates.height}px`,
         }}
         />
         <div style={{
           ...commonStyle,
           left: 0,
           height: '1px',
-          top: `${coordinates.current.y - crosshairWidth / 2}px`,
-          width: `${coordinates.current.width}px`,
+          top: `${coordinates.y - crosshairWidth / 2}px`,
+          width: `${coordinates.width}px`,
         }}
         />
       </div>

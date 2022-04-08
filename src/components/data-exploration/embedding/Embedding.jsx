@@ -1,5 +1,5 @@
 // eslint-disable-file import/no-extraneous-dependencies
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import {
   useSelector, useDispatch,
@@ -67,11 +67,10 @@ const Embedding = (props) => {
   const expressionLoading = useSelector((state) => state.genes.expression.loading);
   const loadedGenes = useSelector((state) => Object.keys(state.genes.expression.data));
 
-  const cellCoordinates = useRef({ x: 200, y: 300 });
+  const [cellCoordinates, setCellCoordinates] = useState({ x: null, y: null });
   const [createClusterPopover, setCreateClusterPopover] = useState(false);
   const [selectedIds, setSelectedIds] = useState(new Set());
   const [cellColors, setCellColors] = useState({});
-  const [cellInfoVisible, setCellInfoVisible] = useState(true);
 
   // Load embedding settings if they aren't already.
   useEffect(() => {
@@ -97,21 +96,18 @@ const Embedding = (props) => {
       // we need to wait for the thing to load in first.
       case 'genes': {
         dispatch(loadGeneExpression(experimentId, [key], 'embedding'));
-        setCellInfoVisible(false);
         return;
       }
 
       // Cell sets are easy, just return the appropriate color and set them up.
       case 'cellSets': {
         setCellColors(renderCellSetColors(key, cellSetHierarchy, cellSetProperties));
-        setCellInfoVisible(false);
         return;
       }
 
       // If there is no focus, we can just delete all the colors.
       default: {
         setCellColors({});
-        setCellInfoVisible(false);
         break;
       }
     }
@@ -176,6 +172,22 @@ const Embedding = (props) => {
     );
   }
 
+  const updateCellCoordinates = (newView) => {
+    if (!selectedCell) return;
+    if (!newView.project) return;
+
+    const [x, y] = newView.project(selectedCell);
+
+    if (cellCoordinates.x === x && cellCoordinates.y === y) return;
+
+    setCellCoordinates({
+      x,
+      y,
+      width,
+      height,
+    });
+  };
+
   const renderExpressionView = () => {
     if (focusData.store === 'genes') {
       const colorScale = vega.scale('sequential')()
@@ -215,13 +227,8 @@ const Embedding = (props) => {
   return (
     <div
       className='vitessce-container vitessce-theme-light'
-      style={{ width, height, position: 'relative' }}
-      // make sure that the crosshairs don't break zooming in and out of the embedding
-      onWheel={() => { setCellInfoVisible(false); }}
-      onMouseMove={() => {
-        if (!cellInfoVisible) {
-          setCellInfoVisible(true);
-        }
+      style={{
+        width, height, position: 'relative',
       }}
     >
       {renderExpressionView()}
@@ -234,7 +241,7 @@ const Embedding = (props) => {
             theme='light'
             uuid={embeddingType}
             viewState={view}
-            // updateViewInfo={updateCellCoordinates}
+            updateViewInfo={updateCellCoordinates}
             cells={convertCellsData(data, cellSetHidden, cellSetProperties)}
             mapping='PCA'
             cellSelection={selectedCellIds}
@@ -265,7 +272,7 @@ const Embedding = (props) => {
               onCancel={onCancelCreateCluster}
             />
           ) : (
-            cellInfoVisible ? <CrossHair coordinates={cellCoordinates} /> : <></>
+            selectedCell ? <CrossHair coordinates={cellCoordinates} /> : <></>
           )
       }
     </div>

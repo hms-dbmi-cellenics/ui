@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Popover } from 'antd';
-import EditableField from '../../EditableField';
-import colorProvider from '../../../utils/colorProvider';
+import EditableField from 'components/EditableField';
+import colorProvider from 'utils/colorProvider';
 
 const ClusterPopover = (props) => {
   const {
@@ -27,7 +27,7 @@ const ClusterPopover = (props) => {
 
   let style = {};
   if (popoverPosition) {
-    style = { position: 'absolute', left: popoverPosition.current.x + 20, top: popoverPosition.current.y + 20 };
+    style = { position: 'absolute', left: popoverPosition.x + 20, top: popoverPosition.y + 20 };
   }
 
   /* eslint-disable react/jsx-props-no-spreading */
