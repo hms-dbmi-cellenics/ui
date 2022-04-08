@@ -8,10 +8,9 @@ import {
 import {
   DEFAULT_NA,
 } from 'redux/reducers/projects/initialState';
-import { throwIfRequestFailed } from 'utils/fetchErrors';
-import fetchAPI from 'utils/fetchAPI';
+import fetchAPI from 'utils/http/fetchAPI';
+import handleError from 'utils/http/handleError';
 import endUserMessages from 'utils/endUserMessages';
-import pushNotificationMessage from 'utils/pushNotificationMessage';
 
 import { sampleTemplate } from 'redux/reducers/samples/initialState';
 
@@ -68,7 +67,7 @@ const createSample = (
   }
 
   try {
-    const response = await fetchAPI(
+    await fetchAPI(
       url,
       {
         method: 'POST',
@@ -79,31 +78,25 @@ const createSample = (
       },
     );
 
-    const json = await response.json();
+    await dispatch({
+      type: SAMPLES_CREATE,
+      payload: { sample: newSample, experimentId },
+    });
 
-    throwIfRequestFailed(response, json, endUserMessages.ERROR_SAVING);
+    return newSampleUuid;
   } catch (e) {
-    const { message } = e;
-    console.error(e);
+    const errorMessage = handleError(e, endUserMessages.ERROR_CREATING_SAMPLE);
 
     dispatch({
       type: SAMPLES_ERROR,
       payload: {
-        error: message,
+        error: errorMessage,
       },
     });
 
-    pushNotificationMessage('error', endUserMessages.ERROR_CREATING_SAMPLE);
-
-    throw new Error(message);
+    // throw again the error so `processUpload` won't upload the sample
+    throw new Error(errorMessage);
   }
-
-  await dispatch({
-    type: SAMPLES_CREATE,
-    payload: { sample: newSample, experimentId },
-  });
-
-  return newSampleUuid;
 };
 
 export default createSample;

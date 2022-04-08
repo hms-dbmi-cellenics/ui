@@ -5,22 +5,22 @@ import thunk from 'redux-thunk';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import waitForActions from 'redux-mock-store-await-actions';
 
-import loadBackendStatus from '../../../../redux/actions/backendStatus/loadBackendStatus';
-import saveProcessingSettings from '../../../../redux/actions/experimentSettings/processingConfig/saveProcessingSettings';
+import loadBackendStatus from 'redux/actions/backendStatus/loadBackendStatus';
+import saveProcessingSettings from 'redux/actions/experimentSettings/processingConfig/saveProcessingSettings';
 
 import {
   EXPERIMENT_SETTINGS_PIPELINE_START,
   EXPERIMENT_SETTINGS_DISCARD_CHANGED_QC_FILTERS,
-} from '../../../../redux/actionTypes/experimentSettings';
+} from 'redux/actionTypes/experimentSettings';
 
 import {
   BACKEND_STATUS_ERROR,
   BACKEND_STATUS_LOADING,
-} from '../../../../redux/actionTypes/backendStatus';
+} from 'redux/actionTypes/backendStatus';
 
-import { EMBEDDINGS_LOADING } from '../../../../redux/actionTypes/embeddings';
+import { EMBEDDINGS_LOADING } from 'redux/actionTypes/embeddings';
 
-import { runPipeline } from '../../../../redux/actions/pipeline';
+import { runPipeline } from 'redux/actions/pipeline';
 
 import generateExperimentSettingsMock from '../../../test-utils/experimentSettings.mock';
 
@@ -30,10 +30,10 @@ const mockStore = configureStore([thunk]);
 
 enableFetchMocks();
 
-jest.mock('../../../../redux/actions/backendStatus/loadBackendStatus',
+jest.mock('redux/actions/backendStatus/loadBackendStatus',
   () => jest.fn().mockImplementation(() => async () => { }));
 
-jest.mock('../../../../redux/actions/experimentSettings/processingConfig/saveProcessingSettings');
+jest.mock('redux/actions/experimentSettings/processingConfig/saveProcessingSettings');
 
 const experimentId = 'experiment-id';
 

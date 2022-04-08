@@ -10,7 +10,7 @@ import { Hub } from '@aws-amplify/core';
 import Auth from '@aws-amplify/auth';
 import endUserMessages from 'utils/endUserMessages';
 import { resetTrackingId } from 'utils/tracking';
-import pushNotificationMessage from 'utils/pushNotificationMessage';
+import handleError from 'utils/http/handleError';
 
 const UserButton = () => {
   const [user, setUser] = useState();
@@ -32,7 +32,7 @@ const UserButton = () => {
           break;
         case 'signIn_failure':
         case 'cognitoHostedUI_failure':
-          pushNotificationMessage('error', endUserMessages.ERROR_SIGN_IN);
+          handleError('error', endUserMessages.ERROR_SIGN_IN);
           break;
         default:
           break;

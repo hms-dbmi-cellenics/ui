@@ -71,7 +71,6 @@ describe('createSample action', () => {
 
   it('Runs correctly', async () => {
     fetchMock.mockResponse(JSON.stringify({}), { url: 'mockedUrl', status: 200 });
-
     const newUuid = await store.dispatch(createSample(projectUuid, sampleName, mockType));
 
     // Fetch call is made
@@ -94,9 +93,7 @@ describe('createSample action', () => {
   });
 
   it('Shows error message and throws an error when there is a fetch error', async () => {
-    const fetchErrorMessage = 'someFetchError';
-
-    fetchMock.mockResponse(JSON.stringify({ message: fetchErrorMessage }), { url: 'mockedUrl', status: 400 });
+    fetchMock.mockResponse(JSON.stringify({ message: 'error' }), { url: 'mockedUrl', status: 400 });
 
     let newUuid;
 
@@ -105,7 +102,7 @@ describe('createSample action', () => {
       newUuid = await store.dispatch(
         createSample(projectUuid, sampleName, mockType),
       );
-    }).rejects.toThrowError(fetchErrorMessage);
+    }).rejects.toThrow(endUserMessages.ERROR_CREATING_SAMPLE);
 
     // Sends correct actions
     const actions = store.getActions();

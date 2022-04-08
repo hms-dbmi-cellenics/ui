@@ -1,4 +1,4 @@
-import fetchAPI from 'utils/fetchAPI';
+import fetchAPI from 'utils/http/fetchAPI';
 import {
   EXPERIMENTS_UPDATED, EXPERIMENTS_SAVING, EXPERIMENTS_ERROR,
 } from 'redux/actionTypes/experiments';

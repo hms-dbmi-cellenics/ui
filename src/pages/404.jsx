@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Result, Button, Typography } from 'antd';
-import FeedbackButton from '../components/FeedbackButton';
+import FeedbackButton from 'components/FeedbackButton';
 
 const { Title } = Typography;
 

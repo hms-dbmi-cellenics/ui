@@ -1,5 +1,5 @@
-import samplesReducer from '../../../redux/reducers/samples';
-import initialState, { sampleTemplate, sampleFileTemplate } from '../../../redux/reducers/samples/initialState';
+import samplesReducer from 'redux/reducers/samples';
+import initialState, { sampleTemplate, sampleFileTemplate } from 'redux/reducers/samples/initialState';
 
 import {
   SAMPLES_CREATE,
@@ -11,7 +11,7 @@ import {
   SAMPLES_SAVING,
   SAMPLES_SAVED,
   SAMPLES_METADATA_DELETE,
-} from '../../../redux/actionTypes/samples';
+} from 'redux/actionTypes/samples';
 
 describe('samplesReducer', () => {
   const mockUuid1 = 'asd123';

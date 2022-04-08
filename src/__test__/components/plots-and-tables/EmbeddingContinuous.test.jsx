@@ -5,8 +5,8 @@ import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import { Vega } from 'react-vega';
 
-import { generateSpec, generateData } from '../../../utils/plotSpecs/generateEmbeddingContinuousSpec';
-import { initialPlotConfigStates } from '../../../redux/reducers/componentConfig/initialState';
+import { initialPlotConfigStates } from 'redux/reducers/componentConfig/initialState';
+import { generateSpec, generateData } from 'utils/plotSpecs/generateEmbeddingContinuousSpec';
 
 const mockStore = configureMockStore([thunk]);
 const cellSets = {

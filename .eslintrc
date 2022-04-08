@@ -16,6 +16,8 @@
   "rules":{
     "no-console":0,
     "import/no-extraneous-dependencies": ["error", {"devDependencies": true}],
+    // no-return-await disabled because of https://stackoverflow.com/a/44806230
+    "no-return-await": "off",
     "indent": [
       2,
       2,

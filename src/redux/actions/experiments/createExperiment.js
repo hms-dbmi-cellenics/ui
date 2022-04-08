@@ -1,5 +1,5 @@
 /* eslint-disable no-param-reassign */
-import fetchAPI from 'utils/fetchAPI';
+import fetchAPI from 'utils/http/fetchAPI';
 import moment from 'moment';
 import hash from 'object-hash';
 import {
@@ -10,10 +10,9 @@ import {
 import { experimentTemplate } from 'redux/reducers/experiments/initialState';
 
 import endUserMessages from 'utils/endUserMessages';
-import pushNotificationMessage from 'utils/pushNotificationMessage';
-import { isServerError, throwIfRequestFailed } from 'utils/fetchErrors';
 
 import convertExperimentToApiV1Model from 'utils/convertExperimentToApiV1Model';
+import handleError from 'utils/http/handleError';
 
 import config from 'config';
 import { api } from 'utils/constants';
@@ -52,7 +51,7 @@ const createExperiment = (
   });
 
   try {
-    const response = await fetchAPI(
+    await fetchAPI(
       url,
       {
         method: 'POST',
@@ -63,9 +62,6 @@ const createExperiment = (
       },
     );
 
-    const json = await response.json();
-    throwIfRequestFailed(response, json, endUserMessages.ERROR_SAVING);
-
     dispatch({
       type: EXPERIMENTS_CREATED,
       payload: {
@@ -73,21 +69,14 @@ const createExperiment = (
       },
     });
   } catch (e) {
+    const errorMessage = handleError(e, endUserMessages.ERROR_SAVING);
+
     dispatch({
       type: EXPERIMENTS_ERROR,
       payload: {
-        error: e.message,
+        error: errorMessage,
       },
     });
-
-    const userMessage = isServerError(e)
-      ? endUserMessages.ERROR_SAVING
-      : endUserMessages.CONNECTION_ERROR;
-
-    pushNotificationMessage(
-      'error',
-      userMessage,
-    );
   }
 
   return Promise.resolve(newExperiment);

@@ -12,11 +12,11 @@ import NewProjectModal from 'components/data-management/NewProjectModal';
 import { loadProjects } from 'redux/actions/projects';
 import { loadExperiments } from 'redux/actions/experiments';
 
+import { loadProcessingSettings } from 'redux/actions/experimentSettings';
+import loadBackendStatus from 'redux/actions/backendStatus/loadBackendStatus';
 import Header from 'components/Header';
 import ProjectsListContainer from 'components/data-management/ProjectsListContainer';
 import ProjectDetails from 'components/data-management/ProjectDetails';
-import { loadProcessingSettings } from 'redux/actions/experimentSettings';
-import loadBackendStatus from 'redux/actions/backendStatus/loadBackendStatus';
 
 const { Text } = Typography;
 

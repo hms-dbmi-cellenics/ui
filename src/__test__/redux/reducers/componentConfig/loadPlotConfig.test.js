@@ -1,4 +1,4 @@
-import loadReducer from '../../../../redux/reducers/componentConfig/loadConfig';
+import loadReducer from 'redux/reducers/componentConfig/loadConfig';
 
 describe('loadPlotConfig', () => {
   it('Config loaded', () => {

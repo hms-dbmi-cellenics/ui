@@ -7,6 +7,7 @@ import initialSampleState, { sampleTemplate } from 'redux/reducers/samples/initi
 import initialProjectState, { projectTemplate } from 'redux/reducers/projects/initialState';
 
 import { saveProject } from 'redux/actions/projects';
+
 import {
   SAMPLES_DELETE, SAMPLES_DELETE_API_V1, SAMPLES_SAVED, SAMPLES_SAVING,
 } from 'redux/actionTypes/samples';
