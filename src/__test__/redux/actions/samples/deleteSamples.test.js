@@ -57,13 +57,13 @@ const initialState = {
   },
 };
 
-describe('deleteSample action', () => {
+describe('deleteSamples', () => {
   beforeEach(() => {
     jest.clearAllMocks();
 
     fetchMock.resetMocks();
     fetchMock.doMock();
-    fetchMock.mockResolvedValue(new Response('{}'));
+    fetchMock.mockResolvedValue(new Response(JSON.stringify({})));
   });
 
   it('Dispatches event correctly', async () => {
@@ -118,7 +118,6 @@ describe('deleteSample action', () => {
     const store = mockStore(initialState);
     await store.dispatch(deleteSamples([mockSampleUuid]));
 
-    // Sets up loading state for saving project
     const actions = store.getActions();
 
     expect(actions[0].type).toEqual(SAMPLES_SAVING);

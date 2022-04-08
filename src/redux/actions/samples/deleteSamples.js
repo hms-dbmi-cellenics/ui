@@ -39,7 +39,7 @@ const sendDeleteSamplesRequest = async (projectUuid, experimentId, sampleUuids) 
 
 const sendDeleteSamplesRequestApiV2 = async (experimentId, sampleUuids) => {
   await Promise.all(sampleUuids.map(async (sampleUuid) => {
-    const response = await fetchAPI(
+    await fetchAPI(
       `/v2/experiments/${experimentId}/samples/${sampleUuid}`,
       {
         method: 'DELETE',
@@ -48,10 +48,6 @@ const sendDeleteSamplesRequestApiV2 = async (experimentId, sampleUuids) => {
         },
       },
     );
-
-    if (!response.ok) {
-      throw new Error(await response.json().message);
-    }
   }));
 };
 
