@@ -7,7 +7,7 @@ import { useSelector, useDispatch } from 'react-redux';
 
 import _ from 'lodash';
 import { PlusOutlined, RedoOutlined, MinusOutlined } from '@ant-design/icons';
-import { loadGeneExpression } from '../../../redux/actions/genes';
+import { loadGeneExpression } from 'redux/actions/genes';
 
 const geneOperations = {
   ADD: 'add',

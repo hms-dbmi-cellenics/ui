@@ -10,7 +10,7 @@ Array [
   },
   Object {
     "payload": Object {
-      "error": "some weird error that happened",
+      "error": "We couldn't save your data.",
     },
     "type": "projects/error",
   },

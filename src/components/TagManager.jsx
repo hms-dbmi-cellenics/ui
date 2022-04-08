@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import Head from 'next/head';
-import { getTrackingDetails } from '../utils/tracking';
+import { getTrackingDetails } from 'utils/tracking';
 
 const TagManager = ({ environment }) => {
   const { enabled, containerId } = getTrackingDetails(environment);

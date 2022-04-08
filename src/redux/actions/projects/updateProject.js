@@ -1,17 +1,16 @@
 import moment from 'moment';
 import _ from 'lodash';
 
+import endUserMessages from 'utils/endUserMessages';
+import mergeObjectWithArrays from 'utils/mergeObjectWithArrays';
+import handleError from 'utils/http/handleError';
 import config from 'config';
 import { api } from 'utils/constants';
+import saveProject from './saveProject';
 
 import {
   PROJECTS_UPDATE,
 } from '../../actionTypes/projects';
-import pushNotificationMessage from '../../../utils/pushNotificationMessage';
-import endUserMessages from '../../../utils/endUserMessages';
-import saveProject from './saveProject';
-
-import mergeObjectWithArrays from '../../../utils/mergeObjectWithArrays';
 
 const updateProject = (
   projectUuid,
@@ -27,7 +26,8 @@ const updateProject = (
   try {
     // if config.currentApiVersion === api.V2 dont do any fetch, updating the experiment is enough
     if (config.currentApiVersion === api.V1) {
-      await dispatch(saveProject(projectUuid, newProject));
+      const notifyUser = false;
+      await dispatch(saveProject(projectUuid, newProject, true, notifyUser));
     }
 
     dispatch({
@@ -38,7 +38,7 @@ const updateProject = (
       },
     });
   } catch (e) {
-    pushNotificationMessage('error', endUserMessages.ERROR_SAVING);
+    handleError(e, endUserMessages.ERROR_SAVING);
   }
 };
 

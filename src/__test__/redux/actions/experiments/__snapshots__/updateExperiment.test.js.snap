@@ -37,7 +37,7 @@ Array [
   },
   Object {
     "payload": Object {
-      "error": "Could not connect to the server. Check your internet connection and refresh the page.",
+      "error": "We couldn't save your data.",
     },
     "type": "experiments/error",
   },

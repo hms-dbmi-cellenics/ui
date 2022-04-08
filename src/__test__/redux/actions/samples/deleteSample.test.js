@@ -2,18 +2,18 @@ import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 
-import deleteSamples from '../../../../redux/actions/samples/deleteSamples';
-import initialSampleState, { sampleTemplate } from '../../../../redux/reducers/samples/initialState';
-import initialProjectState, { projectTemplate } from '../../../../redux/reducers/projects/initialState';
+import deleteSamples from 'redux/actions/samples/deleteSamples';
+import initialSampleState, { sampleTemplate } from 'redux/reducers/samples/initialState';
+import initialProjectState, { projectTemplate } from 'redux/reducers/projects/initialState';
 
-import { saveProject } from '../../../../redux/actions/projects';
-import { SAMPLES_DELETE, SAMPLES_SAVED, SAMPLES_SAVING } from '../../../../redux/actionTypes/samples';
-import { PROJECTS_UPDATE } from '../../../../redux/actionTypes/projects';
-import { EXPERIMENTS_SAVING } from '../../../../redux/actionTypes/experiments';
+import { saveProject } from 'redux/actions/projects';
+import { SAMPLES_DELETE, SAMPLES_SAVED, SAMPLES_SAVING } from 'redux/actionTypes/samples';
+import { PROJECTS_UPDATE } from 'redux/actionTypes/projects';
+import { EXPERIMENTS_SAVING } from 'redux/actionTypes/experiments';
 
 enableFetchMocks();
 
-jest.mock('../../../../redux/actions/projects/saveProject');
+jest.mock('redux/actions/projects/saveProject');
 saveProject.mockImplementation(() => async () => { });
 
 const mockStore = configureStore([thunk]);

@@ -1,14 +1,14 @@
 import _ from 'lodash';
 
-import backendStatusReducer from '../../../redux/reducers/backendStatus';
-import initialState, { initialExperimentBackendStatus } from '../../../redux/reducers/backendStatus/initialState';
+import backendStatusReducer from 'redux/reducers/backendStatus';
+import initialState, { initialExperimentBackendStatus } from 'redux/reducers/backendStatus/initialState';
 
 import {
   BACKEND_STATUS_LOADING,
   BACKEND_STATUS_ERROR,
   BACKEND_STATUS_LOADED,
   BACKEND_STATUS_UPDATED,
-} from '../../../redux/actionTypes/backendStatus';
+} from 'redux/actionTypes/backendStatus';
 
 /* eslint-disable max-len */
 describe('backendStatusReducer.test.js', () => {

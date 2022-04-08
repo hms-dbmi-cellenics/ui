@@ -1,12 +1,11 @@
-import fetchAPI from 'utils/fetchAPI';
-import pushNotificationMessage from 'utils/pushNotificationMessage';
+import fetchAPI from 'utils/http/fetchAPI';
+import handleError from 'utils/http/handleError';
 import endUserMessages from 'utils/endUserMessages';
-import { isServerError, throwIfRequestFailed } from 'utils/fetchErrors';
+import { PROJECTS_ERROR, PROJECTS_LOADED, PROJECTS_LOADING } from 'redux/actionTypes/projects';
 
 import config from 'config';
 import { api } from 'utils/constants';
 
-import { PROJECTS_ERROR, PROJECTS_LOADED, PROJECTS_LOADING } from 'redux/actionTypes/projects';
 import loadSamples from 'redux/actions/samples/loadSamples';
 
 const toApiV1 = (experimentListV2) => {
@@ -47,11 +46,7 @@ const loadProjects = () => async (dispatch) => {
 
     if (config.currentApiVersion === api.V1) {
       url = '/v1/projects';
-      const response = await fetchAPI(url);
-
-      data = await response.json();
-
-      throwIfRequestFailed(response, data, endUserMessages.ERROR_FETCHING_PROJECTS);
+      data = await fetchAPI(url);
 
       // filter out "projects" that are actually old experiments without a project
       data = data.filter((project) => project.name !== project.uuid);
@@ -61,10 +56,7 @@ const loadProjects = () => async (dispatch) => {
         .map((entry) => dispatch(loadSamples(false, entry.uuid))));
     } else if (config.currentApiVersion === api.V2) {
       url = '/v2/experiments';
-      const response = await fetchAPI(url);
-
-      data = await response.json();
-      throwIfRequestFailed(response, data, endUserMessages.ERROR_FETCHING_PROJECTS);
+      data = await fetchAPI(url);
 
       data = toApiV1(data);
 
@@ -86,18 +78,14 @@ const loadProjects = () => async (dispatch) => {
       },
     });
   } catch (e) {
-    let { message } = e;
-    if (!isServerError(e)) {
-      console.error(`fetch ${url} error ${message}`);
-      message = endUserMessages.CONNECTION_ERROR;
-    }
+    const errorMessage = handleError(e, endUserMessages.ERROR_LOADING_PROJECT);
+
     dispatch({
       type: PROJECTS_ERROR,
       payload: {
-        error: message,
+        error: errorMessage,
       },
     });
-    pushNotificationMessage('error', message);
   }
 };
 export default loadProjects;

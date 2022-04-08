@@ -8,29 +8,29 @@ import _ from 'lodash';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import {
   initialComponentConfigStates,
-} from '../../../redux/reducers/componentConfig/initialState';
-import { updatePlotConfig } from '../../../redux/actions/componentConfig/index';
+} from 'redux/reducers/componentConfig/initialState';
+import { updatePlotConfig } from 'redux/actions/componentConfig/index';
 
-import initialExperimentState from '../../../redux/reducers/experimentSettings/initialState';
-import rootReducer from '../../../redux/reducers/index';
-import genes from '../../../redux/reducers/genes/initialState';
-import * as loadConfig from '../../../redux/reducers/componentConfig/loadConfig';
+import initialExperimentState from 'redux/reducers/experimentSettings/initialState';
+import rootReducer from 'redux/reducers/index';
+import genes from 'redux/reducers/genes/initialState';
+import * as loadConfig from 'redux/reducers/componentConfig/loadConfig';
+import * as generateViolinSpec from 'utils/plotSpecs/generateViolinSpec';
+import { fetchWork } from 'utils/work/fetchWork';
 import ViolinIndex from '../../../pages/experiments/[experimentId]/plots-and-tables/violin/index';
-import * as generateViolinSpec from '../../../utils/plotSpecs/generateViolinSpec';
-import { fetchWork } from '../../../utils/work/fetchWork';
 import { mockCellSets as cellSets } from '../../test-utils/cellSets.mock';
 import { expectStringInVegaCanvas } from '../../test-utils/vega-utils';
 import '__test__/test-utils/setupTests';
 
 enableFetchMocks();
-jest.mock('../../../components/plots/PlotHeader', () => () => <div />);
-jest.mock('../../../utils/socketConnection', () => ({
+jest.mock('components/plots/PlotHeader', () => () => <div />);
+jest.mock('utils/socketConnection', () => ({
   __esModule: true,
   default: new Promise((resolve) => {
     resolve({ emit: jest.fn(), on: jest.fn(), id: '5678' });
   }),
 }));
-jest.mock('../../../utils/work/fetchWork', () => ({
+jest.mock('utils/work/fetchWork', () => ({
   fetchWork: jest.fn().mockImplementation((expId, body) => {
     if (body.name === 'ListGenes') {
       return new Promise((resolve) => resolve({

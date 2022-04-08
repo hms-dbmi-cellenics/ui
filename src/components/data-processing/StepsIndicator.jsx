@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import integrationTestConstants from '../../utils/integrationTestConstants';
+import integrationTestConstants from 'utils/integrationTestConstants';
 
 const StepsIndicator = (props) => {
   const { allSteps, completedSteps, currentStep } = props;

@@ -4,6 +4,8 @@ import {
 
 import { fetchWork } from 'utils/work/fetchWork';
 import getTimeoutForWorkerTask from 'utils/getTimeoutForWorkerTask';
+import handleError from 'utils/http/handleError';
+import endUserMessages from 'utils/endUserMessages';
 
 const loadMarkerGenes = (
   experimentId, resolution, plotUuid, numGenes = 5, selectedCellSet = 'louvain',
@@ -25,7 +27,6 @@ const loadMarkerGenes = (
     const timeout = getTimeoutForWorkerTask(getState(), 'MarkerHeatmap');
 
     const data = await fetchWork(experimentId, body, getState, { timeout });
-
     const { data: markerGeneExpressions, order } = data;
 
     dispatch({
@@ -38,11 +39,12 @@ const loadMarkerGenes = (
       },
     });
   } catch (e) {
+    const errorMessage = handleError(e, endUserMessages.ERROR_FETCH_MARKER_GENES, undefined, false);
     dispatch({
       type: MARKER_GENES_ERROR,
       payload: {
         experimentId,
-        error: e,
+        error: errorMessage,
       },
     });
   }

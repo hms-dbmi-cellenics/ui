@@ -6,15 +6,15 @@ import {
   Collapse, Row, Col, Space, Skeleton, Divider,
 } from 'antd';
 
+import generateDataProcessingPlotUuid from 'utils/generateDataProcessingPlotUuid';
 import {
   updatePlotConfig,
   loadPlotConfig,
   savePlotConfig,
-} from '../../../redux/actions/componentConfig';
+} from 'redux/actions/componentConfig';
 
 import ClassifierEmptyDropsPlot from '../../plots/ClassifierEmptyDropsPlot';
 import ClassifierKneePlot from '../../plots/ClassifierKneePlot';
-import generateDataProcessingPlotUuid from '../../../utils/generateDataProcessingPlotUuid';
 
 import PlotStyling from '../../plots/styling/PlotStyling';
 import MiniPlot from '../../plots/MiniPlot';
