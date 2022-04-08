@@ -146,7 +146,6 @@ describe('Marker heatmap plot', () => {
   });
 
   it('loads marker genes on specifying new nunmber of genes per cluster', async () => {
-    console.log('loads test');
     await renderHeatmapPage(storeState);
 
     // Check that initially there are 5 marker genes - the default

@@ -206,10 +206,7 @@ const processUpload = async (filesList, sampleType, samples, activeProjectUuid, 
     };
   }, {});
 
-  console.log('samplesMap', samplesMap);
-  console.log(samplesMap);
   Object.entries(samplesMap).forEach(async ([name, sample]) => {
-    console.log(`lcs sample ${name}`, sample);
     // Create sample if not exists.
     try {
       sample.uuid ??= await dispatch(createSample(activeProjectUuid, name, sampleType));

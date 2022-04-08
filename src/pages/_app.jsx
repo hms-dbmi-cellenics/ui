@@ -206,7 +206,6 @@ WrappedApp.getInitialProps = async ({ Component, ctx }) => {
 
     return { pageProps: { ...pageProps, ...results } };
   } catch (e) {
-    console.log('failing on app.jsx lcs: ', e);
     if (!(e instanceof APIError)) {
       // eslint-disable-next-line no-ex-assign
       e = new APIError(500);
