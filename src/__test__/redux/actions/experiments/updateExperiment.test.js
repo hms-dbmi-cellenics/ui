@@ -4,6 +4,7 @@ import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 
 import {
   EXPERIMENTS_ERROR,
+  EXPERIMENTS_SAVED,
   EXPERIMENTS_SAVING,
   EXPERIMENTS_UPDATED,
 } from 'redux/actionTypes/experiments';
@@ -63,6 +64,9 @@ describe('updateExperiment', () => {
     // Updates the experiments
     expect(actions[1].type).toEqual(EXPERIMENTS_UPDATED);
 
+    // Switches the loading to false
+    expect(actions[2].type).toEqual(EXPERIMENTS_SAVED);
+
     expect(actions).toMatchSnapshot();
 
     expect(fetchMock).toHaveBeenCalledWith(
@@ -101,6 +105,9 @@ describe('updateExperiment', () => {
 
     // Updates the experiments
     expect(actions[1].type).toEqual(EXPERIMENTS_UPDATED);
+
+    // Switches the loading to false
+    expect(actions[2].type).toEqual(EXPERIMENTS_SAVED);
 
     expect(actions).toMatchSnapshot();
 
