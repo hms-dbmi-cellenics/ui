@@ -4,8 +4,6 @@ import _ from 'lodash';
 import endUserMessages from 'utils/endUserMessages';
 import mergeObjectWithArrays from 'utils/mergeObjectWithArrays';
 import handleError from 'utils/http/handleError';
-import config from 'config';
-import { api } from 'utils/constants';
 import saveProject from './saveProject';
 
 import {
@@ -24,11 +22,8 @@ const updateProject = (
   const newProject = mergeObjectWithArrays(currentProject, diff);
 
   try {
-    // if config.currentApiVersion === api.V2 dont do any fetch, updating the experiment is enough
-    if (config.currentApiVersion === api.V1) {
-      const notifyUser = false;
-      await dispatch(saveProject(projectUuid, newProject, true, notifyUser));
-    }
+    const notifyUser = false;
+    await dispatch(saveProject(projectUuid, newProject, true, notifyUser));
 
     dispatch({
       type: PROJECTS_UPDATE,
