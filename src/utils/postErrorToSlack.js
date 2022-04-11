@@ -33,12 +33,12 @@ const trimOutput = (key, item) => {
   return item;
 };
 
-const buildErrorMessage = (error, info, reduxDump, context) => {
+const buildErrorMessage = (error, componentStack, reduxDump, context) => {
   const {
     user, timestamp, experimentId, url,
   } = context;
 
-  let message = `
+  return (`
     Uncaught UI Error - Exp ID ${experimentId} - ${timestamp}
 
     === DETAILS ===
@@ -50,20 +50,12 @@ const buildErrorMessage = (error, info, reduxDump, context) => {
     ===== ERROR =====
     ${error.stack}
 
-    `;
+    ===== COMPONENT STACK =====
+    ${componentStack}
 
-  if (info?.componentStack) {
-    message += `===== COMPONENT STACK =====
-    ${info.componentStack}
-
-    `;
-  }
-
-  if (reduxDump) {
-    message += `===== REDUX STATE =====
-    ${JSON.stringify(reduxDump, trimOutput, 2)}`;
-  }
-  return message;
+    ===== REDUX STATE =====
+    ${JSON.stringify(reduxDump, trimOutput, 2)}`
+  );
 };
 
 const postError = async (errorLog, context) => {
@@ -115,6 +107,7 @@ const postErrorToSlack = async (error, info, reduxDump) => {
   const timestamp = new Date().toISOString();
   const url = window.location.href;
   const experimentId = extractExperimentId(url);
+  const { componentStack } = info;
 
   const context = {
     user,
@@ -123,7 +116,7 @@ const postErrorToSlack = async (error, info, reduxDump) => {
     url,
   };
 
-  const errorLog = buildErrorMessage(error, info, reduxDump, context);
+  const errorLog = buildErrorMessage(error, componentStack, reduxDump, context);
   await postError(errorLog, context);
 };
 

@@ -190,6 +190,8 @@ describe('Marker heatmap plot', () => {
       .mockImplementation((ETag) => mockWorkerResponses[ETag]);
 
     await renderHeatmapPage(storeState);
+    // await renderHeatmapPage(storeState);
+    // await renderHeatmapPage(storeState);
 
     // Add in a new gene
     // This is done because we can not insert text into the genes list input

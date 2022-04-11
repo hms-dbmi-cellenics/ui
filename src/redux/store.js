@@ -11,15 +11,15 @@ enableMapSet();
 const bindMiddleware = (middleware) => {
   const { composeWithDevTools } = require('redux-devtools-extension');
 
-  if (process.env.K8S_ENV !== 'test') {
-    // eslint-disable-next-line import/no-extraneous-dependencies
-    const { createLogger } = require('redux-logger');
+  // if (process.env.K8S_ENV !== 'test') {
+  //   // eslint-disable-next-line import/no-extraneous-dependencies
+  //   const { createLogger } = require('redux-logger');
 
-    // do not log server-side redux actions
-    middleware.push(createLogger({
-      predicate: () => typeof window !== 'undefined',
-    }));
-  }
+  //   // do not log server-side redux actions
+  //   middleware.push(createLogger({
+  //     predicate: () => typeof window !== 'undefined',
+  //   }));
+  // }
 
   return composeWithDevTools(applyMiddleware(...middleware));
 };

@@ -125,6 +125,7 @@ const fetchWork = async (
   if (environment === Environment.DEVELOPMENT && !localStorage.getItem('disableCache')) {
     localStorage.setItem('disableCache', 'true');
   }
+  console.log('lcs fetch work 2');
 
   const { pipeline: { startDate: qcPipelineStartDate } } = backendStatus;
   if (body.name === 'GeneExpression') {
@@ -132,6 +133,7 @@ const fetchWork = async (
       experimentId, timeout, body, backendStatus, environment, broadcast, extras,
     );
   }
+  console.log('lcs fetch work 3');
 
   // If caching is disabled, we add an additional randomized key to the hash so we never reuse
   // past results.
