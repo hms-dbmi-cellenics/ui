@@ -62,10 +62,9 @@ describe('Frequency plots and tables index page', () => {
   it('Renders all control panels', async () => {
     await renderFrequencyIndex();
     expect(screen.getByText(new RegExp(plotNames.FREQUENCY_PLOT, 'i'))).toBeInTheDocument();
-    expect(screen.getByText(/Preview/i)).toBeInTheDocument();
 
     expect(screen.getByText(/Select data/i)).toBeInTheDocument();
-    expect(screen.getByText(/Plot Type/i)).toBeInTheDocument();
+    expect(screen.getByText(/Plot type/i)).toBeInTheDocument();
     expect(screen.getByText(/Main schema/i)).toBeInTheDocument();
     expect(screen.getByText(/Axes and margins/i)).toBeInTheDocument();
     expect(screen.getByText(/Legend/i)).toBeInTheDocument();

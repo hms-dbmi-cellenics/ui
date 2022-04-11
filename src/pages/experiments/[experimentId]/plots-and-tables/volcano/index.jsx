@@ -2,17 +2,17 @@ import React, { useEffect, useState, useRef } from 'react';
 import {
   Row,
   Col,
-  Space,
   Collapse,
   Skeleton,
-  Empty, Typography,
+  Empty,
 } from 'antd';
 import { useSelector, useDispatch } from 'react-redux';
 import moment from 'moment';
 import _ from 'lodash';
 import ExportAsCSV from 'components/plots/ExportAsCSV';
 import PropTypes from 'prop-types';
-import PlotHeader from 'components/plots/PlotHeader';
+import Header from 'components/Header';
+import PlotContainer from 'components/plots/PlotContainer';
 import PlotStyling from 'components/plots/styling/PlotStyling';
 import { Vega } from 'react-vega';
 
@@ -32,7 +32,6 @@ import { generateSpec } from 'utils/plotSpecs/generateVolcanoSpec';
 import calculateVolcanoDataPoints from 'components/plots/helpers/calculateVolcanoDataPoints';
 import { plotNames } from 'utils/constants';
 
-const { Text } = Typography;
 const { Panel } = Collapse;
 
 const plotUuid = 'volcanoPlotMain';
@@ -210,14 +209,7 @@ const VolcanoPlotPage = (props) => {
 
     if (!comparisonCreated.current) {
       return (
-        <Empty description={(
-          <>
-            <p>
-              <Text>Create a comparison to get started.</Text>
-            </p>
-          </>
-        )}
-        />
+        <Empty description='Create a comparison to get started' />
       );
     }
 
@@ -230,7 +222,7 @@ const VolcanoPlotPage = (props) => {
 
   const renderExtraPanels = () => (
     <>
-      <Panel header='Differential Expression' key='1'>
+      <Panel header='Differential expression' key='differential-expression'>
         <DiffExprCompute
           experimentId={experimentId}
           onCompute={onComputeDiffExp}
@@ -241,21 +233,18 @@ const VolcanoPlotPage = (props) => {
 
   return (
     <>
-      <PlotHeader
-        title={plotNames.VOLCANO_PLOT}
-        plotUuid={plotUuid}
-        experimentId={experimentId}
-      />
-      <Space direction='vertical' style={{ width: '100%', padding: '0 10px' }}>
+      <Header title={plotNames.VOLCANO_PLOT} />
+      <div style={{ width: '100%', padding: '0 16px' }}>
         <Row gutter={16}>
           <Col span={16}>
-            <Space direction='vertical' style={{ width: '100%' }}>
-              <Collapse defaultActiveKey='1'>
-                <Panel header='Preview' key='1' extra={generateExportDropdown()}>
-                  <center>{renderPlot()}</center>
-                </Panel>
-              </Collapse>
-            </Space>
+            <PlotContainer
+              experimentId={experimentId}
+              plotUuid={plotUuid}
+              plotType={plotType}
+              extra={generateExportDropdown()}
+            >
+              <center>{renderPlot()}</center>
+            </PlotContainer>
           </Col>
           <Col span={8}>
             <PlotStyling
@@ -263,11 +252,11 @@ const VolcanoPlotPage = (props) => {
               config={config}
               onUpdate={updatePlotWithChanges}
               renderExtraPanels={renderExtraPanels}
-              defaultActiveKey='1'
+              defaultActivePanelKey='differential-expression'
             />
           </Col>
         </Row>
-      </Space>
+      </div>
     </>
   );
 };

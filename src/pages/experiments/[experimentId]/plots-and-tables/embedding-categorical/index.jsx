@@ -3,14 +3,10 @@ import React, { useEffect } from 'react';
 import {
   Row,
   Col,
-  Space,
   Collapse,
   Select,
-  Tooltip,
-  Button,
   Skeleton,
 } from 'antd';
-import { InfoCircleOutlined } from '@ant-design/icons';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import { getCellSets, getCellSetsHierarchy } from 'redux/selectors';
@@ -19,9 +15,10 @@ import {
   updatePlotConfig,
   loadPlotConfig,
 } from 'redux/actions/componentConfig/index';
-import PlotHeader from 'components/plots/PlotHeader';
+import Header from 'components/Header';
 import { loadCellSets } from 'redux/actions/cellSets';
 import CategoricalEmbeddingPlot from 'components/plots/CategoricalEmbeddingPlot';
+import PlotContainer from 'components/plots/PlotContainer';
 import SelectData from 'components/plots/styling/embedding-continuous/SelectData';
 import { plotNames } from 'utils/constants';
 
@@ -107,14 +104,14 @@ const EmbeddingCategoricalPage = ({ experimentId }) => {
 
   const renderExtraPanels = () => (
     <>
-      <Panel header='Select data' key='15'>
+      <Panel header='Select data' key='select-data'>
         <SelectData
           config={config}
           onUpdate={updatePlotWithChanges}
           cellSets={cellSets}
         />
       </Panel>
-      <Panel header='Group by' key='1'>
+      <Panel header='Group by' key='group-by'>
         <p>
           Select the cell set category you would like to group cells by.
         </p>
@@ -135,49 +132,35 @@ const EmbeddingCategoricalPage = ({ experimentId }) => {
 
   return (
     <>
-      <PlotHeader
-        title={plotNames.CATEGORICAL_EMBEDDING}
-        plotUuid={plotUuid}
-        experimentId={experimentId}
-      />
-      <Space direction='vertical' style={{ width: '100%', padding: '0 10px' }}>
-
+      <Header title={plotNames.CATEGORICAL_EMBEDDING} />
+      <div style={{ width: '100%', padding: '0 16px' }}>
         <Row gutter={16}>
           <Col span={16}>
-            <Space direction='vertical' style={{ width: '100%' }}>
-              <Collapse defaultActiveKey='1'>
-                <Panel
-                  header='Preview'
-                  key='1'
-                  extra={(
-                    <Tooltip title='In order to rename existing clusters or create new ones, use the cell set tool, located in the Data Exploration page.'>
-                      <Button icon={<InfoCircleOutlined />} />
-                    </Tooltip>
-                  )}
-                >
-                  <CategoricalEmbeddingPlot
-                    experimentId={experimentId}
-                    config={config}
-                    plotUuid={plotUuid}
-                    onUpdate={updatePlotWithChanges}
-                  />
-                </Panel>
-              </Collapse>
-            </Space>
+            <PlotContainer
+              experimentId={experimentId}
+              plotUuid={plotUuid}
+              plotType={plotType}
+              plotInfo='In order to rename existing clusters or create new ones, use the cell set tool, located in the Data Exploration page.'
+            >
+              <CategoricalEmbeddingPlot
+                experimentId={experimentId}
+                config={config}
+                plotUuid={plotUuid}
+                onUpdate={updatePlotWithChanges}
+              />
+            </PlotContainer>
           </Col>
           <Col span={8}>
-            <Space direction='vertical' style={{ width: '100%' }}>
-              <PlotStyling
-                formConfig={plotStylingControlsConfig}
-                config={config}
-                onUpdate={updatePlotWithChanges}
-                renderExtraPanels={renderExtraPanels}
-                defaultActiveKey='1'
-              />
-            </Space>
+            <PlotStyling
+              formConfig={plotStylingControlsConfig}
+              config={config}
+              onUpdate={updatePlotWithChanges}
+              renderExtraPanels={renderExtraPanels}
+              defaultActivePanelKey='group-by'
+            />
           </Col>
         </Row>
-      </Space>
+      </div>
     </>
   );
 };

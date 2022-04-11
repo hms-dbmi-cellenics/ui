@@ -1,5 +1,7 @@
-import fetchAPI from 'utils/http/fetchAPI';
 import { SAVE_CONFIG } from 'redux/actionTypes/componentConfig';
+import fetchAPI from 'utils/http/fetchAPI';
+import handleError from 'utils/http/handleError';
+import endUserMessages from 'utils/endUserMessages';
 
 const savePlotConfig = (experimentId, plotUuid) => async (dispatch, getState) => {
   // Do not save the 'outstandingChanges' state to the database.
@@ -13,22 +15,31 @@ const savePlotConfig = (experimentId, plotUuid) => async (dispatch, getState) =>
     ...content
   } = getState().componentConfig[plotUuid];
 
-  const { lastUpdated } = await fetchAPI(
-    `/v1/experiments/${experimentId}/plots-tables/${plotUuid}`,
-    {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
+  try {
+    await fetchAPI(
+      `/v1/experiments/${experimentId}/plots-tables/${plotUuid}`,
+      {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(content),
       },
-      body: JSON.stringify(content),
-    },
-  );
+    );
 
-  dispatch({
-    type: SAVE_CONFIG,
-    payload:
-      { plotUuid, lastUpdated },
-  });
+    dispatch({
+      type: SAVE_CONFIG,
+      payload: { plotUuid, success: true },
+    });
+  } catch (e) {
+    handleError(e, endUserMessages.ERROR_SAVING_PLOT_CONFIG);
+
+    dispatch({
+      type: SAVE_CONFIG,
+      payload:
+      { plotUuid, success: false },
+    });
+  }
 };
 
 export default savePlotConfig;

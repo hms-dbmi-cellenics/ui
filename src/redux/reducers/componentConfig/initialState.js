@@ -25,8 +25,8 @@ const embeddingCategoricalInitialConfig = {
   },
   axes: {
     ...axesBaseState,
-    xAxisText: '',
-    yAxisText: '',
+    xAxisText: 'Umap 1',
+    yAxisText: 'Umap 2',
     defaultValues: ['x', 'y'],
     offset: 10,
   },
@@ -56,8 +56,8 @@ const embeddingContinuousInitialConfig = {
   },
   axes: {
     ...axesBaseState,
-    xAxisText: '',
-    yAxisText: '',
+    xAxisText: 'Umap 1',
+    yAxisText: 'Umap 2',
     defaultValues: ['x', 'y'],
     offset: 10,
   },

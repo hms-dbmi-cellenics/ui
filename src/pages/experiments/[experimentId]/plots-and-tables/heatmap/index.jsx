@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import {
-  Row, Col, Space, Collapse, Skeleton, Empty, Typography,
+  Row, Col, Skeleton, Empty, Typography,
 } from 'antd';
 import _ from 'lodash';
 import { useSelector, useDispatch } from 'react-redux';
@@ -8,7 +8,8 @@ import { Vega } from 'react-vega';
 import PropTypes from 'prop-types';
 import PlotStyling from 'components/plots/styling/PlotStyling';
 import { updatePlotConfig, loadPlotConfig } from 'redux/actions/componentConfig';
-import PlotHeader from 'components/plots/PlotHeader';
+import Header from 'components/Header';
+import PlotContainer from 'components/plots/PlotContainer';
 import { generateSpec } from 'utils/plotSpecs/generateHeatmapSpec';
 import { loadGeneExpression } from 'redux/actions/genes';
 import { loadCellSets } from 'redux/actions/cellSets';
@@ -20,7 +21,6 @@ import { getCellSets } from 'redux/selectors';
 import { plotNames } from 'utils/constants';
 
 const { Text } = Typography;
-const { Panel } = Collapse;
 
 // TODO: when we want to enable users to create their custom plots,
 // we will need to change this to proper Uuid
@@ -106,35 +106,7 @@ const HeatmapPlot = ({ experimentId }) => {
 
   const onGeneEnter = (genes) => {
     // updating the selected genes in the config too so they are saved in dynamodb
-
     dispatch(loadGeneExpression(experimentId, genes, plotUuid));
-  };
-  const renderPlot = () => {
-    if (!config || loading.length > 0 || cellSets.loading) {
-      return (<Loader experimentId={experimentId} />);
-    }
-
-    if (error) {
-      return (
-        <PlatformError
-          description='Could not load gene expression data.'
-          error={error}
-          onClick={() => dispatch(loadGeneExpression(experimentId, selectedGenes, plotUuid))}
-        />
-      );
-    }
-
-    if (selectedGenes.length === 0) {
-      return (
-        <Empty description={(
-          <Text>Add some genes to this heatmap to get started.</Text>
-        )}
-        />
-      );
-    }
-    if (vegaSpec) {
-      return <Vega spec={vegaSpec} renderer='canvas' />;
-    }
   };
 
   const plotStylingControlsConfig = [
@@ -175,43 +147,73 @@ const HeatmapPlot = ({ experimentId }) => {
     },
   ];
 
+  const renderPlot = () => {
+    if (!config || loading.length > 0 || cellSets.loading) {
+      return (
+        <Loader experimentId={experimentId} />
+      );
+    }
+
+    if (error) {
+      return (
+        <PlatformError
+          description='Could not load gene expression data.'
+          error={error}
+          onClick={() => dispatch(loadGeneExpression(experimentId, selectedGenes, plotUuid))}
+        />
+      );
+    }
+
+    if (selectedGenes.length === 0) {
+      return (
+        <Empty description={(
+          <Text>Add some genes to this heatmap to get started.</Text>
+        )}
+        />
+      );
+    }
+    if (vegaSpec) {
+      return <Vega spec={vegaSpec} renderer='canvas' />;
+    }
+  };
+
   if (!config || cellSets.loading) {
     return (<Skeleton />);
   }
 
   return (
     <>
-      <PlotHeader
-        title={plotNames.HEATMAP}
-        plotUuid={plotUuid}
-        experimentId={experimentId}
-      />
-      <Space direction='vertical' style={{ width: '100%', padding: '0 10px' }}>
+      <Header title={plotNames.HEATMAP} />
+      <div style={{ width: '100%', padding: '0 16px' }}>
 
         <Row gutter={16}>
           <Col span={16}>
-            <Space direction='vertical' style={{ width: '100%' }}>
-              <Collapse defaultActiveKey='1'>
-                <Panel header='Preview' key='1'>
-                  <center>
-                    {renderPlot()}
-                  </center>
-                </Panel>
-              </Collapse>
-            </Space>
+            <PlotContainer
+              experimentId={experimentId}
+              plotUuid={plotUuid}
+              plotType={plotType}
+            >
+              <center>
+                {renderPlot()}
+              </center>
+            </PlotContainer>
           </Col>
           <Col span={8}>
-            <Space direction='vertical' style={{ width: '100%' }}>
-              <HeatmapControls
-                selectedGenes={selectedGenes}
-                plotUuid={plotUuid}
-                onGeneEnter={onGeneEnter}
-              />
-              <PlotStyling formConfig={plotStylingControlsConfig} config={config} onUpdate={updatePlotWithChanges} defaultActiveKey='5' />
-            </Space>
+            <PlotStyling
+              formConfig={plotStylingControlsConfig}
+              config={config}
+              onUpdate={updatePlotWithChanges}
+              renderExtraPanels={() => (
+                <HeatmapControls
+                  selectedGenes={selectedGenes}
+                  plotUuid={plotUuid}
+                  onGeneEnter={onGeneEnter}
+                />
+              )}
+            />
           </Col>
         </Row>
-      </Space>
+      </div>
     </>
   );
 };
