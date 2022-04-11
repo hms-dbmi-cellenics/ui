@@ -22,7 +22,7 @@ import handleError from 'utils/http/handleError';
 import config from 'config';
 import { api } from 'utils/constants';
 
-const sendDeleteSamplesRequest = async (projectUuid, experimentId, sampleUuids) => {
+const sendDeleteSamplesRequestApiV1 = async (projectUuid, experimentId, sampleUuids) => {
   await fetchAPI(
     `/v1/projects/${projectUuid}/${experimentId}/samples`,
     {
@@ -107,7 +107,7 @@ const deleteSamples = (
         const experimentId = projects[projectUuid].experiments[0];
 
         if (config.currentApiVersion === api.V1) {
-          await sendDeleteSamplesRequest(projectUuid, experimentId, sampleUuids);
+          await sendDeleteSamplesRequestApiV1(projectUuid, experimentId, sampleUuids);
 
           dispatch(saveProject(projectUuid, newProject, false));
 
