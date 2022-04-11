@@ -206,7 +206,6 @@ WrappedApp.getInitialProps = async ({ Component, ctx }) => {
 
     return { pageProps: { ...pageProps, ...results } };
   } catch (e) {
-    console.log('error lcs get experiment info: ', e);
     if (e === 'The user is not authenticated') {
       console.error(`User not authenticated ${req.url}`);
       // eslint-disable-next-line no-ex-assign

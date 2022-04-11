@@ -1,7 +1,7 @@
 const httpStatusCodes = require('../httpStatusCodes');
-const APIError = require('./APIError');
+const BaseError = require('./ApiError');
 
-class NotFoundAPIError extends APIError {
+class NotFoundApiError extends BaseError {
   constructor(
     name,
     statusCode = httpStatusCodes.NOT_FOUND,
@@ -12,4 +12,4 @@ class NotFoundAPIError extends APIError {
   }
 }
 
-module.exports = NotFoundAPIError;
+module.exports = NotFoundApiError;
