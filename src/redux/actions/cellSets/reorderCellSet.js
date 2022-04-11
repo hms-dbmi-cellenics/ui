@@ -42,6 +42,7 @@ const reorderCellSet = (
           reorderCellSetJsonMerger(cellSetKey, newPosition, parentNodeKey),
         ),
       },
+      false,
     );
 
     await dispatch({

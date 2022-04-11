@@ -3,7 +3,7 @@ import FetchError from 'utils/http/errors/FetchError';
 import getApiEndpoint from 'utils/apiEndpoint';
 import getAuthJWT from 'utils/getAuthJWT';
 
-const fetchAPI = async (path, params = {}, extras = {}) => {
+const fetchAPI = async (path, params = {}, extras = {}, returnValue = true) => {
   const headers = params.headers ? params.headers : {};
   const authJWT = extras.jwt || await getAuthJWT();
 
@@ -25,9 +25,10 @@ const fetchAPI = async (path, params = {}, extras = {}) => {
     throw new FetchError(e);
   }
 
-  const data = await response.json();
-
+  // if the response is not OK, parse json an return API error message
   if (!response.ok) {
+    const isJson = response.headers.get('content-type')?.includes('application/json');
+    const data = isJson ? await response.json() : null;
     // data.message & data.errors follow error formatting defined in:
     // HTTPError.v1.yaml
     throw new APIError(response.status, data?.message, data?.errors);
@@ -35,7 +36,7 @@ const fetchAPI = async (path, params = {}, extras = {}) => {
 
   // only parse response into JSON if needed because
   // most patch / put reqs do not need a response
-  return data;
+  if (returnValue) return response.json();
 };
 
 export default fetchAPI;

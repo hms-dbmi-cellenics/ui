@@ -25,6 +25,7 @@ const saveProcessingSettings = (experimentId, settingName) => async (dispatch, g
           body: content,
         }]),
       },
+      false,
     );
 
     dispatch({
