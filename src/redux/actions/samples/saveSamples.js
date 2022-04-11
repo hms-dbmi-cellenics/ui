@@ -68,6 +68,11 @@ const saveSamples = (
       });
     }
   } catch (e) {
+    // REVIEW is the payload in SAMPLES_ERROR needed?
+    // the exception handling & user notification will
+    // be called in the calling function
+    // ideally this next line should be removed
+    console.log(`catching exception and notify? ${notifyUser}`);
     const errorMessage = handleError(e, endUserMessages.ERROR_SAVING, notifyUser);
 
     dispatch({
@@ -77,6 +82,7 @@ const saveSamples = (
       },
     });
 
+    // return Promise.reject(errorMessage);
     throw e;
   }
 };

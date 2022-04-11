@@ -41,8 +41,11 @@ const updateMetadataTrack = (
 
   try {
     const notifyUser = false;
+    console.log('calling save project');
     await dispatch(saveProject(projectUuid, newProject, false, notifyUser));
+    console.log('calling save samples');
     await dispatch(saveSamples(projectUuid, newSamples, false, false, notifyUser));
+    console.log('call after save samples');
 
     dispatch({
       type: PROJECTS_METADATA_UPDATE,

@@ -92,6 +92,7 @@ const runPipeline = (experimentId) => async (dispatch, getState) => {
   } catch (e) {
     let errorMessage = handleError(e, endUserMessages.ERROR_STARTING_PIPLELINE);
 
+    console.log(`error run gem2s ${e}`);
     // temporarily give the user more info if the error is permission denied
     if (errorMessage.includes('does not have access to experiment')) {
       errorMessage += ' Refresh the page to continue with your analysis.';

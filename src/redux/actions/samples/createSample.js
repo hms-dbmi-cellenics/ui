@@ -65,6 +65,7 @@ const createSample = (
   } catch (e) {
     const errorMessage = handleError(e, endUserMessages.ERROR_CREATING_SAMPLE);
 
+    console.log('failed to create sample');
     dispatch({
       type: SAMPLES_ERROR,
       payload: {

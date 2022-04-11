@@ -67,8 +67,10 @@ const fetchGeneExpressionWork = async (
     experimentId, missingGenesBody, qcPipelineStartDate, extras, cacheUniquenessKey,
   });
 
+  console.log('lcs fetchGeneExpressionWork 1');
   // Then, we may be able to find this in S3.
   let response = await seekFromS3(ETag, experimentId);
+  console.log('lcs fetchGeneExpressionWork 2');
 
   // If there is no response in S3, dispatch workRequest via the worker
   if (!response) {
@@ -90,8 +92,12 @@ const fetchGeneExpressionWork = async (
     }
   }
 
+  console.log('lcs fetchGeneExpressionWork 3');
+
   response = await seekFromS3(ETag, experimentId);
+  console.log('lcs fetchGeneExpressionWork 4 ', response);
   response = calculateZScore(response);
+  console.log('lcs fetchGeneExpressionWork 5');
 
   Object.keys(missingDataKeys).forEach(async (gene) => {
     await cache.set(missingDataKeys[gene], response[gene]);
@@ -106,6 +112,7 @@ const fetchWork = async (
   getState,
   optionals = {},
 ) => {
+  console.log('lcs starting fetch work');
   const { extras = undefined, timeout = 180, broadcast = false } = optionals;
   const backendStatus = getBackendStatus(experimentId)(getState()).status;
 
@@ -138,16 +145,20 @@ const fetchWork = async (
     experimentId, body, qcPipelineStartDate, extras, cacheUniquenessKey,
   });
 
+  console.log('lcs fetch from cache');
   // First, let's try to fetch this information from the local cache.
   const data = await cache.get(ETag);
 
+  console.log('lcs fetch from cache data', data);
   if (data) {
     return data;
   }
 
+  console.log('lcs seeking from s3');
   // Then, we may be able to find this in S3.
   let response = await seekFromS3(ETag, experimentId);
 
+  console.log('lcs seeking from s3 response: ', response !== null);
   // If there is no response in S3, dispatch workRequest via the worker
   if (!response) {
     try {
@@ -168,11 +179,14 @@ const fetchWork = async (
     }
   }
 
+  console.log('lcs seeking from s3 2');
   response = await seekFromS3(ETag, experimentId);
+  console.log('lcs seeking from s3 2 response: ', response !== null);
 
   // If a work response is in s3, it is cacheable
   // (the cacheable or not option is managed in the worker)
   await cache.set(ETag, response);
+  console.log('lcs set cache: ', response !== null);
   return response;
 };
 
