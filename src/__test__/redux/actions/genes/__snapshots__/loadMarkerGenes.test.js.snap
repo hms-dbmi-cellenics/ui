@@ -9,7 +9,7 @@ Object {
 exports[`loadMarkerGenes action dispatches appropriately on error 2`] = `
 Object {
   "payload": Object {
-    "error": "We couldn't get the marker genes",
+    "error": [Error: random error!],
     "experimentId": "1234",
   },
   "type": "genes/markerGenesError",

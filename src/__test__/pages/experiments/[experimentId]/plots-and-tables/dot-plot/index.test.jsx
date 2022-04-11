@@ -67,10 +67,7 @@ const customAPIResponses = {
   [`experiments/${experimentId}/cellSets`]: () => promiseResponse(
     JSON.stringify(cellSetsDataWithScratchpad),
   ),
-  [`/plots-tables/${plotUuid}`]: (req) => {
-    if (req.method === 'PUT') return promiseResponse(JSON.stringify('OK'));
-    return statusResponse(404, 'Not Found');
-  },
+  [`/plots-tables/${plotUuid}`]: () => statusResponse(404, 'Not Found'),
 };
 
 const mockAPIResponse = _.merge(

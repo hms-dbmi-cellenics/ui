@@ -25,7 +25,7 @@ Array [
   },
   Object {
     "payload": Object {
-      "error": "We couldn't start working on your data.",
+      "error": "Could not start gem2s. some weird error that happened",
       "experimentId": "experiment-id",
     },
     "type": "backendStatus/backendStatusError",

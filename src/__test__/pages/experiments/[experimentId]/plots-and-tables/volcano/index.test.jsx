@@ -9,7 +9,6 @@ import _ from 'lodash';
 
 import mockAPI, {
   generateDefaultMockAPIResponses,
-  promiseResponse,
   statusResponse,
   delayedResponse,
   workerResponse,
@@ -59,10 +58,7 @@ const mockWorkerResponses = {
 };
 
 const customAPIResponses = {
-  [`/plots-tables/${plotUuid}`]: (req) => {
-    if (req.method === 'PUT') return promiseResponse(JSON.stringify('OK'));
-    return statusResponse(404, 'Not Found');
-  },
+  [`/plots-tables/${plotUuid}`]: () => statusResponse(404, 'Not Found'),
 };
 
 const defaultResponses = _.merge(
