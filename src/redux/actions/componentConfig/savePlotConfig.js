@@ -1,7 +1,7 @@
-import fetchAPI from 'utils/http/fetchAPI';
-import { SAVE_CONFIG } from 'redux/actionTypes/componentConfig';
-import handleError from 'utils/http/handleError';
+import pushNotificationMessage from 'utils/pushNotificationMessage';
 import endUserMessages from 'utils/endUserMessages';
+import fetchAPI from 'utils/fetchAPI';
+import { SAVE_CONFIG } from 'redux/actionTypes/componentConfig';
 
 const savePlotConfig = (experimentId, plotUuid) => async (dispatch, getState) => {
   // Do not save the 'outstandingChanges' state to the database.
@@ -31,8 +31,8 @@ const savePlotConfig = (experimentId, plotUuid) => async (dispatch, getState) =>
       type: SAVE_CONFIG,
       payload: { plotUuid, success: true },
     });
-  } catch (e) {
-    handleError(e, endUserMessages.ERROR_SAVING_PLOT_CONFIG);
+  } catch {
+    pushNotificationMessage('error', endUserMessages.ERROR_SAVING_PLOT_CONFIG);
 
     dispatch({
       type: SAVE_CONFIG,

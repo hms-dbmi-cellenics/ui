@@ -1,7 +1,5 @@
 import _ from 'lodash';
-import { metadataNameToKey } from 'utils/data-management/metadataUtils';
-import endUserMessages from 'utils/endUserMessages';
-import handleError from 'utils/http/handleError';
+import { metadataNameToKey } from '../../../utils/data-management/metadataUtils';
 import {
   PROJECTS_METADATA_DELETE,
 } from '../../actionTypes/projects';
@@ -9,6 +7,8 @@ import {
 import {
   SAMPLES_METADATA_DELETE,
 } from '../../actionTypes/samples';
+import endUserMessages from '../../../utils/endUserMessages';
+import pushNotificationMessage from '../../../utils/pushNotificationMessage';
 import saveSamples from '../samples/saveSamples';
 import saveProject from './saveProject';
 
@@ -34,9 +34,8 @@ const deleteMetadataTrack = (
   }, {});
 
   try {
-    const notifyUser = false;
-    await dispatch(saveProject(projectUuid, newProject, false, notifyUser));
-    await dispatch(saveSamples(projectUuid, newSamples, false, false, notifyUser));
+    await dispatch(saveProject(projectUuid, newProject, false));
+    await dispatch(saveSamples(projectUuid, newSamples, false, false));
 
     dispatch({
       type: PROJECTS_METADATA_DELETE,
@@ -54,7 +53,7 @@ const deleteMetadataTrack = (
       },
     }));
   } catch (e) {
-    handleError(e, endUserMessages.ERROR_SAVING);
+    pushNotificationMessage('error', endUserMessages.ERROR_SAVING);
   }
 };
 

@@ -37,6 +37,7 @@ const DoubletScoresConfig = (props) => {
 DoubletScoresConfig.propTypes = {
   updateSettings: PropTypes.func.isRequired,
   config: PropTypes.object.isRequired,
+  plotType: PropTypes.string.isRequired,
   disabled: PropTypes.bool.isRequired,
 };
 

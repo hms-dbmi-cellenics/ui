@@ -1,8 +1,9 @@
-import fetchAPI from 'utils/http/fetchAPI';
-import handleError from 'utils/http/handleError';
+import fetchAPI from '../../../utils/fetchAPI';
+import { isServerError, throwIfRequestFailed } from '../../../utils/fetchErrors';
+import endUserMessages from '../../../utils/endUserMessages';
 import {
   CELL_SETS_LOADED, CELL_SETS_LOADING, CELL_SETS_ERROR,
-} from 'redux/actionTypes/cellSets';
+} from '../../actionTypes/cellSets';
 
 const loadCellSets = (experimentId, forceReload = false) => async (dispatch, getState) => {
   const {
@@ -21,21 +22,24 @@ const loadCellSets = (experimentId, forceReload = false) => async (dispatch, get
 
   const url = `/v1/experiments/${experimentId}/cellSets`;
   try {
-    const data = await fetchAPI(url);
+    const response = await fetchAPI(url);
+    const json = await response.json();
 
+    throwIfRequestFailed(response, json, endUserMessages.ERROR_FETCHING_CELL_SETS);
     dispatch({
       type: CELL_SETS_LOADED,
       payload: {
         experimentId,
-        data: data.cellSets,
+        data: json.cellSets,
       },
     });
   } catch (e) {
-    const errorMessage = handleError(e);
-
+    if (!isServerError(e)) {
+      console.error(`fetch ${url} error ${e.message}`);
+    }
     dispatch({
       type: CELL_SETS_ERROR,
-      payload: { error: errorMessage },
+      payload: { error: e },
     });
   }
 };

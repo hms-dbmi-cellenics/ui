@@ -1,14 +1,15 @@
 import moment from 'moment';
 import _ from 'lodash';
 
-import endUserMessages from 'utils/endUserMessages';
+import saveSamples from './saveSamples';
 
-import mergeObjectWithArrays from 'utils/mergeObjectWithArrays';
-import handleError from 'utils/http/handleError';
 import {
   SAMPLES_UPDATE,
 } from '../../actionTypes/samples';
-import saveSamples from './saveSamples';
+import endUserMessages from '../../../utils/endUserMessages';
+import pushNotificationMessage from '../../../utils/pushNotificationMessage';
+
+import mergeObjectWithArrays from '../../../utils/mergeObjectWithArrays';
 
 const updateSample = (
   sampleUuid,
@@ -22,8 +23,7 @@ const updateSample = (
   const newSample = mergeObjectWithArrays(sample, diff);
 
   try {
-    const notifyUser = false;
-    await dispatch(saveSamples(sample.projectUuid, newSample, true, true, notifyUser))
+    dispatch(saveSamples(sample.projectUuid, newSample))
       .then(() => dispatch({
         type: SAMPLES_UPDATE,
         payload: {
@@ -32,7 +32,7 @@ const updateSample = (
         },
       }));
   } catch (e) {
-    handleError(e, endUserMessages.ERROR_SAVING);
+    pushNotificationMessage('error', endUserMessages.ERROR_SAVING);
   }
 };
 

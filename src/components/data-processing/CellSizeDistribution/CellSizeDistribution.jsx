@@ -13,7 +13,6 @@ import {
   Divider,
 } from 'antd';
 
-import generateDataProcessingPlotUuid from 'utils/generateDataProcessingPlotUuid';
 import {
   updatePlotConfig,
   loadPlotConfig,
@@ -22,6 +21,7 @@ import {
 
 import CellSizeDistributionHistogram from '../../plots/CellSizeDistributionHistogram';
 import CellSizeDistributionKneePlot from '../../plots/CellSizeDistributionKneePlot';
+import generateDataProcessingPlotUuid from '../../../utils/generateDataProcessingPlotUuid';
 
 import PlotStyling from '../../plots/styling/PlotStyling';
 import MiniPlot from '../../plots/MiniPlot';

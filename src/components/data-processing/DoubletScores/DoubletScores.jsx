@@ -5,7 +5,6 @@ import PropTypes from 'prop-types';
 import {
   Collapse, Row, Col, Space, Skeleton, Divider,
 } from 'antd';
-import generateDataProcessingPlotUuid from 'utils/generateDataProcessingPlotUuid';
 import {
   updatePlotConfig,
   loadPlotConfig,
@@ -13,6 +12,7 @@ import {
 } from '../../../redux/actions/componentConfig';
 
 import DoubletScoreHistogram from '../../plots/DoubletScoreHistogram';
+import generateDataProcessingPlotUuid from '../../../utils/generateDataProcessingPlotUuid';
 
 import PlotStyling from '../../plots/styling/PlotStyling';
 import CalculationConfigContainer from '../CalculationConfigContainer';

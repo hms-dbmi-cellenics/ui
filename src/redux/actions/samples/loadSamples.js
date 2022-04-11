@@ -1,11 +1,11 @@
-import fetchAPI from 'utils/http/fetchAPI';
-import handleError from 'utils/http/handleError';
-
+import fetchAPI from '../../../utils/fetchAPI';
+import { isServerError, throwIfRequestFailed } from '../../../utils/fetchErrors';
+import endUserMessages from '../../../utils/endUserMessages';
 import {
   SAMPLES_LOADED,
   SAMPLES_ERROR,
   SAMPLES_LOADING,
-} from 'redux/actionTypes/samples';
+} from '../../actionTypes/samples';
 
 const loadSamples = (
   experimentId = null, projectUuid = null,
@@ -15,8 +15,8 @@ const loadSamples = (
     dispatch({
       type: SAMPLES_LOADING,
     });
-
-    const data = await fetchAPI(url);
+    const response = await fetchAPI(url);
+    const data = await response.json();
 
     let samples;
 
@@ -28,7 +28,7 @@ const loadSamples = (
     // This has to be changed when we support multiple experiments per project.
     if (projectUuid) [{ samples }] = data;
 
-    // throwIfRequestFailed(response, data, endUserMessages.ERROR_FETCHING_SAMPLES);
+    throwIfRequestFailed(response, data, endUserMessages.ERROR_FETCHING_SAMPLES);
 
     dispatch({
       type: SAMPLES_LOADED,
@@ -37,13 +37,13 @@ const loadSamples = (
       },
     });
   } catch (e) {
-    // TODO we were not raising notifications here, validate whether raising or not now is ok
-    const errorMessage = handleError(e);
-
+    if (!isServerError(e)) {
+      console.error(`fetch ${url} error ${e.message}`);
+    }
     dispatch({
       type: SAMPLES_ERROR,
       payload: {
-        error: errorMessage,
+        error: e,
       },
     });
   }

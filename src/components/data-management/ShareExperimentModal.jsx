@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { UserAddOutlined } from '@ant-design/icons';
+import { UserAddOutlined, MenuOutlined } from '@ant-design/icons';
 import {
   Modal, Button, Space, Row, Col, Card, Avatar, Select, Typography,
 } from 'antd';
 import Auth from '@aws-amplify/auth';
-import fetchAPI from 'utils/http/fetchAPI';
+import fetchAPI from 'utils/fetchAPI';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
-import handleError from 'utils/http/handleError';
 
 const { Text } = Typography;
 
@@ -21,7 +20,8 @@ const ShareExperimentModal = (props) => {
   const [role, setRole] = useState('explorer');
   const [currentUser, setCurrentUser] = useState(null);
   const loadRoles = async () => {
-    const responseJson = await fetchAPI(`/v1/access/${experimentId}`);
+    const response = await fetchAPI(`/v1/access/${experimentId}`);
+    const responseJson = await response.json();
     const getCurrentUser = await Auth.currentAuthenticatedUser();
     setCurrentUser(getCurrentUser.attributes.email);
     setUsersWithAccess(responseJson);
@@ -50,45 +50,50 @@ const ShareExperimentModal = (props) => {
   const inviteUsers = async () => {
     if (!addedUsers.length) return;
 
-    const requests = addedUsers.map(async (user) => {
-      try {
-        await fetchAPI(`/v1/access/${experimentId}`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            projectUuid: activeProjectUuid,
-            role,
-            userEmail: user,
-          }),
-        });
-        pushNotificationMessage('success', `User ${user} has been successfully invited to view ${experimentName}.`);
-      } catch (e) {
-        handleError(e);
-      }
-    });
-
-    await Promise.all(requests);
-
-    onCancel();
-  };
-
-  const revokeRole = async (userEmail) => {
-    try {
-      await fetchAPI(`/v1/access/${experimentId}`, {
-        method: 'DELETE',
+    const requests = addedUsers.map((user) => (
+      fetchAPI(`/v1/access/${experimentId}`, {
+        method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          userEmail,
+          projectUuid: activeProjectUuid,
+          role,
+          userEmail: user,
         }),
-      });
+      })));
 
+    const responses = await Promise.all(requests)
+      .then((res) => (
+        Promise.all(
+          res.map((data) => data.json()),
+        )));
+
+    responses.forEach((response, indx) => {
+      if (response?.data?.code === 200) {
+        pushNotificationMessage('success', `User ${addedUsers[indx]} has been successfully invited to view ${experimentName}.`);
+      } else {
+        pushNotificationMessage('error', response.message);
+      }
+    });
+    onCancel();
+  };
+
+  const revokeRole = async (userEmail) => {
+    const response = await fetchAPI(`/v1/access/${experimentId}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        userEmail,
+      }),
+    });
+
+    if (!response.ok) {
+      pushNotificationMessage('error', 'Error removing user. You may not have permissions to remove users.');
+    } else {
       pushNotificationMessage('success', `${userEmail} removed from ${experimentName}.`);
-    } catch (e) {
-      handleError(e, 'Error removing user.');
     }
     onCancel();
   };

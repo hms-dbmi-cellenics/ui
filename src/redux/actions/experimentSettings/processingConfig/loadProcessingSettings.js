@@ -1,17 +1,23 @@
-import handleError from 'utils/http/handleError';
-import fetchAPI from 'utils/http/fetchAPI';
-
-import endUserMessages from 'utils/endUserMessages';
+import fetchAPI from '../../../../utils/fetchAPI';
 import {
   EXPERIMENT_SETTINGS_PROCESSING_CONFIG_LOADED,
   EXPERIMENT_SETTINGS_PROCESSING_ERROR,
-} from 'redux/actionTypes/experimentSettings';
+} from '../../../actionTypes/experimentSettings';
+
+import { isServerError, throwIfRequestFailed } from '../../../../utils/fetchErrors';
+import endUserMessages from '../../../../utils/endUserMessages';
+import pushNotificationMessage from '../../../../utils/pushNotificationMessage';
+import errorTypes from '../errorTypes';
 
 const loadProcessingSettings = (experimentId) => async (dispatch) => {
   const url = `/v1/experiments/${experimentId}/processingConfig`;
 
   try {
-    const data = await fetchAPI(url);
+    const response = await fetchAPI(url);
+
+    const data = await response.json();
+
+    throwIfRequestFailed(response, data, endUserMessages.ERROR_FETCHING_PROCESSING);
 
     dispatch({
       type: EXPERIMENT_SETTINGS_PROCESSING_CONFIG_LOADED,
@@ -22,12 +28,21 @@ const loadProcessingSettings = (experimentId) => async (dispatch) => {
 
     return;
   } catch (e) {
-    const errorMessage = handleError(e, endUserMessages.ERROR_FETCHING_DATA_PROCESSING_SETTINGS);
+    let { message } = e;
+    if (!isServerError(e)) {
+      console.error(`fetch ${url} error ${message}`);
+      message = endUserMessages.CONNECTION_ERROR;
+    }
+    pushNotificationMessage(
+      'error',
+      message,
+    );
 
     dispatch({
       type: EXPERIMENT_SETTINGS_PROCESSING_ERROR,
       payload: {
-        error: errorMessage,
+        error: message,
+        errorType: errorTypes.LOADING_PROCESSING_SETTINGS,
       },
     });
   }

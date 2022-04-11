@@ -1,11 +1,12 @@
-import fetchAPI from 'utils/http/fetchAPI';
-import handleError from 'utils/http/handleError';
-
+import fetchAPI from '../../../utils/fetchAPI';
+import { isServerError, throwIfRequestFailed } from '../../../utils/fetchErrors';
+import endUserMessages from '../../../utils/endUserMessages';
+import pushNotificationMessage from '../../../utils/pushNotificationMessage';
 import {
   EXPERIMENTS_LOADED,
   EXPERIMENTS_ERROR,
   EXPERIMENTS_LOADING,
-} from 'redux/actionTypes/experiments';
+} from '../../actionTypes/experiments';
 
 const loadExperiments = (
   projectUuid,
@@ -16,7 +17,9 @@ const loadExperiments = (
 
   const url = `/v1/projects/${projectUuid}/experiments`;
   try {
-    const data = await fetchAPI(url);
+    const response = await fetchAPI(url);
+    const data = await response.json();
+    throwIfRequestFailed(response, data, endUserMessages.ERROR_FETCHING_EXPERIMENTS);
 
     dispatch({
       type: EXPERIMENTS_LOADED,
@@ -25,14 +28,19 @@ const loadExperiments = (
       },
     });
   } catch (e) {
-    const errorMessage = handleError(e);
-
+    let { message } = e;
+    if (!isServerError(e)) {
+      console.error(`fetch ${url} error ${message}`);
+      message = endUserMessages.CONNECTION_ERROR;
+    }
     dispatch({
       type: EXPERIMENTS_ERROR,
       payload: {
-        error: errorMessage,
+        error: message,
       },
     });
+
+    pushNotificationMessage('error', message);
   }
 };
 

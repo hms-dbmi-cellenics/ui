@@ -18,7 +18,7 @@ import createTestComponentFactory from '__test__/test-utils/testComponentFactory
 import fake from '__test__/test-utils/constants';
 import mockEmbedding from '__test__/data/embedding.json';
 import mockGeneExpression from '__test__/data/gene_expression.json';
-import WorkResponseError from 'utils/http/errors/WorkResponseError';
+import WorkResponseError from 'utils/WorkResponseError';
 
 enableFetchMocks();
 

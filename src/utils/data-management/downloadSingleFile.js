@@ -1,8 +1,8 @@
 import downloadFromUrl from 'utils/data-management/downloadFromUrl';
-import fetchAPI from 'utils/http/fetchAPI';
+import { getFromApiExpectOK } from 'utils/getDataExpectOK';
 
 const downloadSingleFile = async (activeProjectUuid, sampleUuid, fileName) => {
-  const downloadUrl = await fetchAPI(`/v1/projects/${activeProjectUuid}/samples/${sampleUuid}/${fileName}/downloadUrl`);
+  const downloadUrl = await getFromApiExpectOK(`/v1/projects/${activeProjectUuid}/samples/${sampleUuid}/${fileName}/downloadUrl`);
   downloadFromUrl(downloadUrl);
 };
 

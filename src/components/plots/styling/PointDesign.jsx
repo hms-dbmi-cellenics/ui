@@ -4,7 +4,7 @@ import {
   Slider, Form,
   Radio, Space,
 } from 'antd';
-import useUpdateThrottled from 'utils/customHooks/useUpdateThrottled';
+import useUpdateThrottled from '../../../utils/customHooks/useUpdateThrottled';
 
 const PointDesign = (props) => {
   const { onUpdate, config } = props;

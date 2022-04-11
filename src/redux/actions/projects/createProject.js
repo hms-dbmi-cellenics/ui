@@ -3,8 +3,8 @@ import { v4 as uuidv4 } from 'uuid';
 
 import config from 'config';
 
-import fetchAPI from 'utils/http/fetchAPI';
-import handleError from 'utils/http/handleError';
+import fetchAPI from 'utils/fetchAPI';
+import { isServerError, throwIfRequestFailed } from 'utils/fetchErrors';
 import { api } from 'utils/constants';
 
 import {
@@ -16,6 +16,7 @@ import {
 import { projectTemplate } from 'redux/reducers/projects/initialState';
 import createExperiment from 'redux/actions/experiments/createExperiment';
 import endUserMessages from 'utils/endUserMessages';
+import pushNotificationMessage from 'utils/pushNotificationMessage';
 
 const createProject = (
   projectName,
@@ -49,10 +50,11 @@ const createProject = (
     // If using api v2, we can replace projectUuid with experimentId
     newProject.uuid = newExperiment.id;
   } else if (config.currentApiVersion === api.V1) {
+    // Send projects create request if we are in api v1
     const url = `/v1/projects/${newProjectUuid}`;
 
     try {
-      await fetchAPI(
+      const response = await fetchAPI(
         url,
         {
           method: 'POST',
@@ -61,20 +63,28 @@ const createProject = (
           },
           body: JSON.stringify(newProject),
         },
-        false,
       );
+
+      const json = await response.json();
+
+      throwIfRequestFailed(response, json, endUserMessages.ERROR_SAVING);
     } catch (e) {
-      const errorMessage = handleError(e, endUserMessages.ERRO);
+      let { message } = e;
+
+      if (!isServerError(e)) {
+        console.error(`fetch ${url} error ${message}`);
+        message = endUserMessages.ERROR_SAVING;
+      }
+
       dispatch({
         type: PROJECTS_ERROR,
         payload: {
-          error: errorMessage,
+          error: message,
         },
       });
 
-      // REVIEW I assume that we need to reject this so the UI component
-      // NewProjectModal will stop the execution and won't run next lin
-      return Promise.reject(errorMessage);
+      pushNotificationMessage('error', message);
+      return Promise.reject(message);
     }
   }
 

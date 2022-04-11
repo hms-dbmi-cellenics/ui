@@ -2,9 +2,10 @@ import _ from 'lodash';
 
 import { CELL_SETS_UPDATE_PROPERTY } from 'redux/actionTypes/cellSets';
 
-import fetchAPI from 'utils/http/fetchAPI';
+import fetchAPI from 'utils/fetchAPI';
 import endUserMessages from 'utils/endUserMessages';
-import handleError from 'utils/http/handleError';
+import pushNotificationMessage from 'utils/pushNotificationMessage';
+import { isServerError, throwIfRequestFailed } from 'utils/fetchErrors';
 
 const updateCellSetPropertyJsonMerger = (cellSetKey, dataUpdated, cellClassKey) => (
   [{
@@ -67,7 +68,7 @@ const updateCellSetProperty = (
 
   const url = `/v1/experiments/${experimentId}/cellSets`;
   try {
-    await fetchAPI(
+    const response = await fetchAPI(
       url,
       {
         method: 'PATCH',
@@ -76,8 +77,10 @@ const updateCellSetProperty = (
         },
         body: JSON.stringify(jsonMergerUpdateObject),
       },
-      false,
     );
+
+    const json = await response.json();
+    throwIfRequestFailed(response, json, endUserMessages.ERROR_SAVING);
 
     await dispatch({
       type: CELL_SETS_UPDATE_PROPERTY,
@@ -87,7 +90,11 @@ const updateCellSetProperty = (
       },
     });
   } catch (e) {
-    handleError(e, endUserMessages.ERROR_SAVING);
+    if (!isServerError(e)) {
+      console.error(`fetch ${url} error ${e.message}`);
+    }
+
+    pushNotificationMessage('error', endUserMessages.ERROR_SAVING);
   }
 };
 

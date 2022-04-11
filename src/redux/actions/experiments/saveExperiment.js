@@ -1,5 +1,8 @@
-import fetchAPI from 'utils/http/fetchAPI';
-import handleError from 'utils/http/handleError';
+/* eslint-disable no-param-reassign */
+import fetchAPI from 'utils/fetchAPI';
+import { isServerError, throwIfRequestFailed } from 'utils/fetchErrors';
+import endUserMessages from 'utils/endUserMessages';
+import pushNotificationMessage from 'utils/pushNotificationMessage';
 import {
   EXPERIMENTS_ERROR,
   EXPERIMENTS_SAVING,
@@ -21,7 +24,7 @@ const saveExperiment = (
 
   const url = `/v1/experiments/${experimentId}`;
   try {
-    await fetchAPI(
+    const response = await fetchAPI(
       url,
       {
         method: alreadyExists ? 'PUT' : 'POST',
@@ -30,21 +33,31 @@ const saveExperiment = (
         },
         body: JSON.stringify(convertExperimentToApiV1Model(experimentToSend)),
       },
-      false,
     );
+
+    const json = await response.json();
+    throwIfRequestFailed(response, json, endUserMessages.ERROR_SAVING);
 
     dispatch({
       type: EXPERIMENTS_SAVED,
     });
   } catch (e) {
-    const errorMessage = handleError(e);
-
+    let { message } = e;
+    if (!isServerError(e)) {
+      console.error(`fetch ${url} error ${message}`);
+      message = endUserMessages.CONNECTION_ERROR;
+    }
     dispatch({
       type: EXPERIMENTS_ERROR,
       payload: {
-        error: errorMessage,
+        error: message,
       },
     });
+
+    pushNotificationMessage(
+      'error',
+      message,
+    );
   }
 };
 

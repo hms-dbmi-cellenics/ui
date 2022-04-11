@@ -1,15 +1,15 @@
-import fetchAPI from 'utils/http/fetchAPI';
-import handleError from 'utils/http/handleError';
-import endUserMessages from 'utils/endUserMessages';
+import fetchAPI from '../../../utils/fetchAPI';
+import { isServerError, throwIfRequestFailed } from '../../../utils/fetchErrors';
+import endUserMessages from '../../../utils/endUserMessages';
 import {
   EXPERIMENT_SETTINGS_PIPELINE_START,
   EXPERIMENT_SETTINGS_DISCARD_CHANGED_QC_FILTERS,
-} from 'redux/actionTypes/experimentSettings';
+} from '../../actionTypes/experimentSettings';
 
 import {
   BACKEND_STATUS_LOADING,
   BACKEND_STATUS_ERROR,
-} from 'redux/actionTypes/backendStatus';
+} from '../../actionTypes/backendStatus';
 
 import { saveProcessingSettings } from '../experimentSettings';
 import { loadBackendStatus } from '../backendStatus';
@@ -70,7 +70,7 @@ const runPipeline = (experimentId) => async (dispatch, getState) => {
 
     // We don't need to manually save any processing config because it is done by
     // the api once the pipeline finishes successfully
-    fetchAPI(
+    const response = await fetchAPI(
       url,
       {
         method: 'POST',
@@ -81,29 +81,31 @@ const runPipeline = (experimentId) => async (dispatch, getState) => {
           processingConfig: changesToProcessingConfig,
         }),
       },
-      false,
     );
-
+    const json = await response.json();
+    throwIfRequestFailed(response, json, endUserMessages.ERROR_STARTING_PIPLELINE);
     dispatch({
       type: EXPERIMENT_SETTINGS_PIPELINE_START,
       payload: {},
     });
-
     dispatch(loadBackendStatus(experimentId));
   } catch (e) {
-    let errorMessage = handleError(e, endUserMessages.ERROR_STARTING_PIPLELINE);
-
-    console.log(`error run gem2s ${e}`);
-    // temporarily give the user more info if the error is permission denied
-    if (errorMessage.includes('does not have access to experiment')) {
-      errorMessage += ' Refresh the page to continue with your analysis.';
+    let { message } = e;
+    if (!isServerError(e)) {
+      console.error(`fetch ${url} error ${message}`);
+      message = endUserMessages.CONNECTION_ERROR;
     }
-    // TODO refactor this better once everything is working
+
+    console.log(`error run pipeline ${e}`);
+    // temporarily give the user more info if the error is permission denied
+    if (message.includes('does not have access to experiment')) {
+      message += ' Refresh the page to continue with your analysis.';
+    }
     dispatch({
       type: BACKEND_STATUS_ERROR,
       payload: {
         experimentId,
-        error: `Could not start QC pipeline. ${errorMessage}`,
+        error: `Could not start the pipeline. ${message}`,
       },
     });
   }

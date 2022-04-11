@@ -1,7 +1,7 @@
 import { fetchWork } from 'utils/work/fetchWork';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
 import endUserMessages from 'utils/endUserMessages';
-import WorkResponseError from 'utils/http/errors/WorkResponseError';
+import WorkResponseError from 'utils/WorkResponseError';
 
 const createCellSetByExpression = (
   experimentId, selectedGenes,

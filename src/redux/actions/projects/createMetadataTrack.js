@@ -1,7 +1,5 @@
 import _ from 'lodash';
-import { metadataNameToKey } from 'utils/data-management/metadataUtils';
-import endUserMessages from 'utils/endUserMessages';
-import handleError from 'utils/http/handleError';
+import { metadataNameToKey } from '../../../utils/data-management/metadataUtils';
 import {
   PROJECTS_METADATA_CREATE,
 } from '../../actionTypes/projects';
@@ -12,6 +10,8 @@ import {
   DEFAULT_NA,
 } from '../../reducers/projects/initialState';
 
+import pushNotificationMessage from '../../../utils/pushNotificationMessage';
+import endUserMessages from '../../../utils/endUserMessages';
 import saveProject from './saveProject';
 import saveSamples from '../samples/saveSamples';
 
@@ -33,10 +33,9 @@ const createMetadataTrack = (
       samplesObject[sampleUuid] = _.clone(updatedSamples[sampleUuid]);
       return samplesObject;
     }, {});
-    const notifyUser = false;
+    dispatch(saveSamples(projectUuid, samplesWithMetadata, false, false));
 
-    await dispatch(saveSamples(projectUuid, samplesWithMetadata, false, false, notifyUser));
-    await dispatch(saveProject(projectUuid, newProject, true, notifyUser));
+    await dispatch(saveProject(projectUuid, newProject));
 
     dispatch({
       type: PROJECTS_METADATA_CREATE,
@@ -62,7 +61,7 @@ const createMetadataTrack = (
 
     // Get updated samples in an object
   } catch (e) {
-    handleError(e, endUserMessages.ERROR_SAVING);
+    pushNotificationMessage('error', endUserMessages.ERROR_SAVING);
   }
 };
 

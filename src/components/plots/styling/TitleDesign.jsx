@@ -4,7 +4,7 @@ import {
   Slider, Form,
   Radio, Input, Space,
 } from 'antd';
-import useUpdateThrottled from 'utils/customHooks/useUpdateThrottled';
+import useUpdateThrottled from '../../../utils/customHooks/useUpdateThrottled';
 
 const TitleDesign = (props) => {
   const {

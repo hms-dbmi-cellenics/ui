@@ -1,7 +1,8 @@
 /* eslint-disable no-param-reassign */
-import fetchAPI from 'utils/http/fetchAPI';
-import handleError from 'utils/http/handleError';
-import endUserMessages from 'utils/endUserMessages';
+import fetchAPI from '../../../utils/fetchAPI';
+import { isServerError, throwIfRequestFailed } from '../../../utils/fetchErrors';
+import endUserMessages from '../../../utils/endUserMessages';
+import pushNotificationMessage from '../../../utils/pushNotificationMessage';
 import {
   PROJECTS_ERROR,
   PROJECTS_SAVING,
@@ -12,7 +13,6 @@ const saveProject = (
   projectUuid,
   newProject,
   notifySave = true,
-  notifyUser = true,
 ) => async (dispatch, getState) => {
   const project = newProject ?? getState().projects[projectUuid];
 
@@ -27,7 +27,7 @@ const saveProject = (
 
   const url = `/v1/projects/${projectUuid}`;
   try {
-    await fetchAPI(
+    const response = await fetchAPI(
       url,
       {
         method: 'PUT',
@@ -36,8 +36,10 @@ const saveProject = (
         },
         body: JSON.stringify(project),
       },
-      false,
     );
+
+    const json = await response.json();
+    throwIfRequestFailed(response, json, endUserMessages.ERROR_SAVING);
 
     if (notifySave) {
       dispatch({
@@ -45,19 +47,19 @@ const saveProject = (
       });
     }
   } catch (e) {
-    const errorMessage = handleError(e, endUserMessages.ERROR_SAVING, notifyUser);
-
+    let { message } = e;
+    if (!isServerError(e)) {
+      console.error(`fetch ${url} error ${message}`);
+      message = endUserMessages.ERROR_SAVING;
+    }
     dispatch({
       type: PROJECTS_ERROR,
       payload: {
-        error: errorMessage,
+        error: message,
       },
     });
-
-    // TODO I think this will lead to duplicated error messages but it might be needed.
-    // return Promise.reject(errorMessage);
-    throw e;
-    // throw new Error(errorMessage);
+    pushNotificationMessage('error', message);
+    return Promise.reject(message);
   }
 };
 

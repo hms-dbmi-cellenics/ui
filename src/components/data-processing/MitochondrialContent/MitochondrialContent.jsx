@@ -6,7 +6,6 @@ import {
   Collapse, Row, Col, Space, Skeleton, Divider,
 } from 'antd';
 
-import generateDataProcessingPlotUuid from 'utils/generateDataProcessingPlotUuid';
 import {
   updatePlotConfig,
   loadPlotConfig,
@@ -15,6 +14,7 @@ import {
 
 import MitochondrialFractionHistogram from '../../plots/MitochondrialFractionHistogram';
 import MitochondrialFractionScatterplot from '../../plots/MitochondrialFractionScatterplot';
+import generateDataProcessingPlotUuid from '../../../utils/generateDataProcessingPlotUuid';
 
 import PlotStyling from '../../plots/styling/PlotStyling';
 import MiniPlot from '../../plots/MiniPlot';
