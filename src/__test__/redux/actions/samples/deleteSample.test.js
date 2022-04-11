@@ -2,6 +2,8 @@ import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 
+import { api } from 'utils/constants';
+import config from 'config';
 import deleteSamples from '../../../../redux/actions/samples/deleteSamples';
 import initialSampleState, { sampleTemplate } from '../../../../redux/reducers/samples/initialState';
 import initialProjectState, { projectTemplate } from '../../../../redux/reducers/projects/initialState';
@@ -53,6 +55,7 @@ describe('deleteSample action', () => {
   fetchMock.mockResolvedValue(new Response('{}'));
 
   it('Dispatches event correctly', async () => {
+    config.currentApiVersion = api.V1;
     const store = mockStore(initialState);
     await store.dispatch(deleteSamples([mockSampleUuid]));
 

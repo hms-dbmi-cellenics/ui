@@ -1,3 +1,5 @@
+import config from 'config';
+import { api } from 'utils/constants';
 import fetchAPI from '../../../../utils/fetchAPI';
 import {
   EXPERIMENT_SETTINGS_PROCESSING_CONFIG_LOADED,
@@ -10,7 +12,12 @@ import pushNotificationMessage from '../../../../utils/pushNotificationMessage';
 import errorTypes from '../errorTypes';
 
 const loadProcessingSettings = (experimentId) => async (dispatch) => {
-  const url = `/v1/experiments/${experimentId}/processingConfig`;
+  let url;
+  if (config.currentApiVersion === api.V1) {
+    url = `/v1/experiments/${experimentId}/processingConfig`;
+  } else if (config.currentApiVersion === api.V2) {
+    url = `/v2/experiments/${experimentId}/processingConfig`;
+  }
 
   try {
     const response = await fetchAPI(url);

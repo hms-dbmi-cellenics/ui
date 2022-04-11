@@ -1,19 +1,25 @@
+import config from 'config';
+import { api } from 'utils/constants';
 import fetchAPI from '../../../../utils/fetchAPI';
 import {
   EXPERIMENT_SETTINGS_PROCESSING_SAVE,
   EXPERIMENT_SETTINGS_PROCESSING_ERROR,
 } from '../../../actionTypes/experimentSettings';
-
 import { isServerError, throwIfRequestFailed } from '../../../../utils/fetchErrors';
 import endUserMessages from '../../../../utils/endUserMessages';
 import pushNotificationMessage from '../../../../utils/pushNotificationMessage';
-
 import errorTypes from '../errorTypes';
 
 const saveProcessingSettings = (experimentId, settingName) => async (dispatch, getState) => {
   const content = getState().experimentSettings.processing[settingName];
 
-  const url = `/v1/experiments/${experimentId}/processingConfig`;
+  let url;
+  if (config.currentApiVersion === api.V1) {
+    url = `/v1/experiments/${experimentId}/processingConfig`;
+  } else if (config.currentApiVersion === api.V2) {
+    url = `/v2/experiments/${experimentId}/processingConfig`;
+  }
+
   try {
     const response = await fetchAPI(
       url,
