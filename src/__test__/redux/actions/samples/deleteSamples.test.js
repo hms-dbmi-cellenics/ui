@@ -9,7 +9,7 @@ import initialProjectState, { projectTemplate } from 'redux/reducers/projects/in
 import { saveProject } from 'redux/actions/projects';
 
 import {
-  SAMPLES_DELETE, SAMPLES_DELETE_API_V1, SAMPLES_SAVED, SAMPLES_SAVING, SAMPLES_ERROR,
+  SAMPLES_DELETE_API_V2, SAMPLES_DELETE_API_V1, SAMPLES_SAVED, SAMPLES_SAVING, SAMPLES_ERROR,
 } from 'redux/actionTypes/samples';
 import { PROJECTS_UPDATE } from 'redux/actionTypes/projects';
 import { EXPERIMENTS_SAVING } from 'redux/actionTypes/experiments';
@@ -123,7 +123,7 @@ describe('deleteSamples', () => {
     expect(actions[0].type).toEqual(SAMPLES_SAVING);
 
     // Delete sample
-    expect(actions[1].type).toEqual(SAMPLES_DELETE);
+    expect(actions[1].type).toEqual(SAMPLES_DELETE_API_V2);
 
     // Resolve loading state
     expect(actions[2].type).toEqual(SAMPLES_SAVED);

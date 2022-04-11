@@ -7,7 +7,7 @@ import {
   SAMPLES_FILE_UPDATE,
   SAMPLES_LOADED,
   SAMPLES_ERROR,
-  SAMPLES_DELETE,
+  SAMPLES_DELETE_API_V2,
   SAMPLES_SAVING,
   SAMPLES_SAVED,
   SAMPLES_METADATA_DELETE,
@@ -117,7 +117,7 @@ describe('samplesReducer', () => {
 
   it('Delete samples correctly', () => {
     const newState = samplesReducer(twoSamplesState, {
-      type: SAMPLES_DELETE,
+      type: SAMPLES_DELETE_API_V2,
       payload: {
         sampleUuids: [sample2.uuid],
       },

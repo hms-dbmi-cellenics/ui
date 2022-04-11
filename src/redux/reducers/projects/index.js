@@ -28,7 +28,7 @@ import projectsLoaded from './projectsLoaded';
 import projectsLoading from './projectsLoading';
 
 import {
-  SAMPLES_CREATE, SAMPLES_DELETE,
+  SAMPLES_CREATE, SAMPLES_DELETE_API_V2,
 } from '../../actionTypes/samples';
 
 import samplesCreate from './samplesCreate';
@@ -88,7 +88,7 @@ const projectsReducer = (state = initialState, action) => {
       return samplesCreate(state, action);
     }
 
-    case SAMPLES_DELETE: {
+    case SAMPLES_DELETE_API_V2: {
       return samplesDelete(state, action);
     }
 

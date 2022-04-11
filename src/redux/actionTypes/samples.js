@@ -13,7 +13,7 @@ const SAMPLES_UPDATE = `${SAMPLES}/update`;
 /**
  * Delete sample.
  */
-const SAMPLES_DELETE = `${SAMPLES}/delete`;
+const SAMPLES_DELETE_API_V2 = `${SAMPLES}/deleteApiV2`;
 
 /**
  * Delete sample following apiv1 version, remove when doing the final step of cleaning up v1 code.
@@ -54,7 +54,7 @@ const SAMPLES_LOADING = `${SAMPLES}/loading`;
 export {
   SAMPLES_CREATE,
   SAMPLES_UPDATE,
-  SAMPLES_DELETE,
+  SAMPLES_DELETE_API_V2,
   SAMPLES_DELETE_API_V1,
   SAMPLES_FILE_UPDATE,
   SAMPLES_LOADED,

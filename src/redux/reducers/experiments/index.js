@@ -10,7 +10,7 @@ import {
 } from '../../actionTypes/experiments';
 
 import {
-  SAMPLES_CREATE, SAMPLES_DELETE,
+  SAMPLES_CREATE, SAMPLES_DELETE_API_V2,
 } from '../../actionTypes/samples';
 
 import experimentsCreate from './experimentsCreate';
@@ -58,7 +58,7 @@ const experimentsReducer = (state = initialState, action) => {
       return samplesCreate(state, action);
     }
 
-    case SAMPLES_DELETE: {
+    case SAMPLES_DELETE_API_V2: {
       return samplesDelete(state, action);
     }
 

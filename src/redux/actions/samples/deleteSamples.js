@@ -1,7 +1,7 @@
 import _ from 'lodash';
 
 import {
-  SAMPLES_DELETE,
+  SAMPLES_DELETE_API_V2,
   SAMPLES_ERROR,
   SAMPLES_SAVING,
   SAMPLES_SAVED,
@@ -131,7 +131,7 @@ const deleteSamples = (
           await sendDeleteSamplesRequestApiV2(experimentId, sampleUuids);
 
           dispatch({
-            type: SAMPLES_DELETE,
+            type: SAMPLES_DELETE_API_V2,
             payload: { projectUuid, experimentId, sampleUuids: samplesToDelete },
           });
         }
