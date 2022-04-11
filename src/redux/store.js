@@ -5,15 +5,13 @@ import { createWrapper } from 'next-redux-wrapper';
 import { enableMapSet } from 'immer';
 
 import rootReducer from 'redux/reducers/index';
-import Environment, { ssrGetCurrentEnvironment } from 'utils/environment';
 
 enableMapSet();
 
 const bindMiddleware = (middleware) => {
   const { composeWithDevTools } = require('redux-devtools-extension');
-  const env = ssrGetCurrentEnvironment();
 
-  if (env !== Environment.PRODUCTION) {
+  if (process.env.K8S_ENV !== 'test') {
     // eslint-disable-next-line import/no-extraneous-dependencies
     const { createLogger } = require('redux-logger');
 
