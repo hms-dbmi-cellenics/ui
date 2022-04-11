@@ -8,10 +8,9 @@ import {
 } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
 import { useDispatch } from 'react-redux';
-import endUserMessages from 'utils/endUserMessages';
-import handleError from 'utils/http/handleError';
 import { uploadSingleFile, fileObjectToFileRecord } from '../../utils/upload/processUpload';
 
+import pushNotificationMessage from '../../utils/pushNotificationMessage';
 import UploadStatus, { messageForStatus } from '../../utils/upload/UploadStatus';
 import downloadSingleFile from '../../utils/data-management/downloadSingleFile';
 
@@ -41,7 +40,8 @@ const UploadDetailsModal = (props) => {
         if (newFile.valid) { // && newFile.name === file.name ?
           uploadFile(newFile);
         } else {
-          handleError('error', endUserMessages.ERROR_FILE_CATEGORY);
+          pushNotificationMessage('error',
+            'The selected file name does not match the expected category.', 2);
         }
       });
     }

@@ -9,7 +9,6 @@ import {
 import { DownOutlined, ShareAltOutlined } from '@ant-design/icons';
 import React, { useState } from 'react';
 import Auth from '@aws-amplify/auth';
-import handleError from 'utils/http/handleError';
 import validateInput, { rules } from '../utils/validateInputs';
 
 import endUserMessages from '../utils/endUserMessages';
@@ -108,7 +107,7 @@ const ReferralButton = () => {
       setCustomMessage(initialMessage);
       pushNotificationMessage('success', endUserMessages.REFERRAL_SUCCESSFUL);
     } catch (e) {
-      handleError(e, endUserMessages.REFERRAL_ERROR);
+      pushNotificationMessage('error', endUserMessages.REFERRAL_ERROR);
     }
   };
 

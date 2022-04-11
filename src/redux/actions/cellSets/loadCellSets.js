@@ -3,7 +3,6 @@ import handleError from 'utils/http/handleError';
 import {
   CELL_SETS_LOADED, CELL_SETS_LOADING, CELL_SETS_ERROR,
 } from 'redux/actionTypes/cellSets';
-import endUserMessages from 'utils/endUserMessages';
 
 const loadCellSets = (experimentId, forceReload = false) => async (dispatch, getState) => {
   const {
@@ -23,7 +22,7 @@ const loadCellSets = (experimentId, forceReload = false) => async (dispatch, get
   const url = `/v1/experiments/${experimentId}/cellSets`;
   try {
     const data = await fetchAPI(url);
-    console.log('cell sets loaded lcs');
+
     dispatch({
       type: CELL_SETS_LOADED,
       payload: {
@@ -32,8 +31,7 @@ const loadCellSets = (experimentId, forceReload = false) => async (dispatch, get
       },
     });
   } catch (e) {
-    const errorMessage = handleError(e, endUserMessages.ERROR_FETCHING_CELL_SETS);
-    console.log(`cell sets failed to load lcs message ${errorMessage}`);
+    const errorMessage = handleError(e);
 
     dispatch({
       type: CELL_SETS_ERROR,

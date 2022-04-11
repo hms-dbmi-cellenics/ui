@@ -23,8 +23,6 @@ import mockAPI, {
 } from '__test__/test-utils/mockAPI';
 import createTestComponentFactory from '__test__/test-utils/testComponentFactory';
 
-jest.mock('components/UserButton', () => () => <></>);
-
 // Mock hash so we can control the ETag that is produced by hash.MD5 when fetching work requests
 // EtagParams is the object that's passed to the function which generates ETag in fetchWork
 jest.mock('object-hash', () => {
@@ -120,29 +118,28 @@ describe('Marker heatmap plot', () => {
     expect(screen.getByText(/Legend/i)).toBeInTheDocument();
   });
 
-  // it('Loads the plot', async () => {
-  //   await renderHeatmapPage(storeState);
+  it('Loads the plot', async () => {
+    await renderHeatmapPage(storeState);
 
-  //   expect(screen.getByRole('graphics-document', { name: 'Vega visualization' })).toBeInTheDocument();
-  // });
+    expect(screen.getByRole('graphics-document', { name: 'Vega visualization' })).toBeInTheDocument();
+  });
 
-  // it('Shows an error message if marker genes failed to load', async () => {
-  //   seekFromS3
-  //     .mockReset()
-  //     .mockImplementationOnce(() => null)
-  //     .mockImplementationOnce(() => { throw new Error('Not found'); });
+  it('Shows an error message if marker genes failed to load', async () => {
+    seekFromS3
+      .mockReset()
+      .mockImplementationOnce(() => null)
+      .mockImplementationOnce(() => { throw new Error('Not found'); });
 
-  //   await renderHeatmapPage(storeState);
+    await renderHeatmapPage(storeState);
 
-  //   // It shouldn't show the plot
-  //   expect(screen.queryByRole('graphics-document', { name: 'Vega visualization' })).toBeNull();
+    // It shouldn't show the plot
+    expect(screen.queryByRole('graphics-document', { name: 'Vega visualization' })).toBeNull();
 
-  //   // There is an error message
-  //   expect(screen.getByText(/Could not load marker genes/i)).toBeInTheDocument();
-  // });
+    // There is an error message
+    expect(screen.getByText(/Could not load marker genes/i)).toBeInTheDocument();
+  });
 
   it('loads marker genes on specifying new nunmber of genes per cluster', async () => {
-    console.log('loads test');
     await renderHeatmapPage(storeState);
 
     // Check that initially there are 5 marker genes - the default
@@ -150,26 +147,20 @@ describe('Marker heatmap plot', () => {
       expect(screen.getByText(geneName)).toBeInTheDocument();
     });
 
-    await act(async () => {
-      userEvent.click(screen.getByText('Marker genes'));
-    });
+    userEvent.click(screen.getByText('Marker genes'));
 
     expect(screen.getByText('Number of marker genes per cluster')).toBeInTheDocument();
 
     const nGenesInput = screen.getByRole('spinbutton', { name: 'Number of genes input' });
 
-    await act(async () => {
-      userEvent.type(nGenesInput, '{backspace}2');
-    });
+    userEvent.type(nGenesInput, '{backspace}2');
 
     await act(async () => {
       userEvent.click(screen.getByText('Run'));
     });
 
     // Go back to "Custom Genes" and check the number of genes
-    await act(async () => {
-      userEvent.click(screen.getByText('Custom genes'));
-    });
+    userEvent.click(screen.getByText('Custom genes'));
 
     // The genes in Data 2 should exist
     markerGenesData2.order.forEach((geneName) => {
@@ -177,98 +168,96 @@ describe('Marker heatmap plot', () => {
     });
   });
 
-  // it('adds genes correctly into the plot', async () => {
-  //   seekFromS3
-  //     .mockReset()
-  //     // 1st load
-  //     .mockImplementationOnce(() => null)
-  //     .mockImplementationOnce((ETag) => mockWorkerResponses[ETag])
-  //     // 2nd load
-  //     .mockImplementationOnce(() => null)
-  //     .mockImplementation((ETag) => mockWorkerResponses[ETag]);
+  it('adds genes correctly into the plot', async () => {
+    seekFromS3
+      .mockReset()
+      // 1st load
+      .mockImplementationOnce(() => null)
+      .mockImplementationOnce((ETag) => mockWorkerResponses[ETag])
+      // 2nd load
+      .mockImplementationOnce(() => null)
+      .mockImplementationOnce((ETag) => mockWorkerResponses[ETag]);
 
-  //   await renderHeatmapPage(storeState);
-  //   // await renderHeatmapPage(storeState);
-  //   // await renderHeatmapPage(storeState);
+    await renderHeatmapPage(storeState);
 
-  //   // Add in a new gene
-  //   // This is done because we can not insert text into the genes list input
-  //   const genesToLoad = [...markerGenesData5.order, 'FAKEGENE'];
+    // Add in a new gene
+    // This is done because we can not insert text into the genes list input
+    const genesToLoad = [...markerGenesData5.order, 'FAKEGENE'];
 
-  //   await act(async () => {
-  //     await storeState.dispatch(loadGeneExpression(experimentId, genesToLoad, plotUuid));
-  //   });
+    await act(async () => {
+      await storeState.dispatch(loadGeneExpression(experimentId, genesToLoad, plotUuid));
+    });
 
-  //   expect(screen.getByText('FAKEGENE')).toBeInTheDocument();
+    expect(screen.getByText('FAKEGENE')).toBeInTheDocument();
 
-  //   // The returned value is a HTML NodeList
-  //   const genesContainer = screen.getByText('FAKEGENE').closest('div[class*=selector]');
+    // The returned value is a HTML NodeList
+    const genesContainer = screen.getByText('FAKEGENE').closest('div[class*=selector]');
 
-  //   const displayedGenesList = getDisplayedGenes(genesContainer);
+    const displayedGenesList = getDisplayedGenes(genesContainer);
 
-  //   // Check that the genes is ordered correctly.
-  //   // This means that FAKEGENE should not be the last in the genes list
-  //   expect(_.isEqual(displayedGenesList, genesToLoad)).toEqual(false);
-  // });
+    // Check that the genes is ordered correctly.
+    // This means that FAKEGENE should not be the last in the genes list
+    expect(_.isEqual(displayedGenesList, genesToLoad)).toEqual(false);
+  });
 
-  // it('Shows an error message if gene expression fails to load', async () => {
-  //   seekFromS3
-  //     .mockReset()
-  //     .mockImplementationOnce(() => null)
-  //     .mockImplementationOnce(() => { throw new Error('Not found'); });
+  it('Shows an error message if gene expression fails to load', async () => {
+    seekFromS3
+      .mockReset()
+      .mockImplementationOnce(() => null)
+      .mockImplementationOnce(() => { throw new Error('Not found'); });
 
-  //   await renderHeatmapPage(storeState);
+    await renderHeatmapPage(storeState);
 
-  //   const genesToLoad = [...markerGenesData5.order, 'FAKEGENE'];
+    const genesToLoad = [...markerGenesData5.order, 'FAKEGENE'];
 
-  //   await act(async () => {
-  //     await storeState.dispatch(loadGeneExpression(experimentId, genesToLoad, plotUuid));
-  //   });
+    await act(async () => {
+      await storeState.dispatch(loadGeneExpression(experimentId, genesToLoad, plotUuid));
+    });
 
-  //   // It shouldn't show the plot
-  //   expect(screen.queryByRole('graphics-document', { name: 'Vega visualization' })).toBeNull();
+    // It shouldn't show the plot
+    expect(screen.queryByRole('graphics-document', { name: 'Vega visualization' })).toBeNull();
 
-  //   // There is an error message
-  //   expect(screen.getByText(/Could not load gene expression data/i)).toBeInTheDocument();
-  // });
+    // There is an error message
+    expect(screen.getByText(/Could not load gene expression data/i)).toBeInTheDocument();
+  });
 
-  // it('removing a gene keeps the sorted order without re-sorting', async () => {
-  //   seekFromS3
-  //     .mockReset()
-  //     // 1st load
-  //     .mockImplementationOnce(() => null)
-  //     .mockImplementationOnce((ETag) => mockWorkerResponses[ETag])
-  //     // 2nd load
-  //     .mockImplementationOnce(() => null)
-  //     .mockImplementationOnce((ETag) => mockWorkerResponses[ETag]);
+  it('removing a gene keeps the sorted order without re-sorting', async () => {
+    seekFromS3
+      .mockReset()
+      // 1st load
+      .mockImplementationOnce(() => null)
+      .mockImplementationOnce((ETag) => mockWorkerResponses[ETag])
+      // 2nd load
+      .mockImplementationOnce(() => null)
+      .mockImplementationOnce((ETag) => mockWorkerResponses[ETag]);
 
-  //   await renderHeatmapPage(storeState);
+    await renderHeatmapPage(storeState);
 
-  //   // Setting up so that there is an inserted gene in the list
-  //   const genesToLoad = [...markerGenesData5.order, 'FAKEGENE'];
+    // Setting up so that there is an inserted gene in the list
+    const genesToLoad = [...markerGenesData5.order, 'FAKEGENE'];
 
-  //   await act(async () => {
-  //     // This is done because we can not insert text into the genes list input
-  //     await storeState.dispatch(loadGeneExpression(experimentId, genesToLoad, plotUuid));
-  //   });
+    await act(async () => {
+      // This is done because we can not insert text into the genes list input
+      await storeState.dispatch(loadGeneExpression(experimentId, genesToLoad, plotUuid));
+    });
 
-  //   expect(screen.getByText('FAKEGENE')).toBeInTheDocument();
+    expect(screen.getByText('FAKEGENE')).toBeInTheDocument();
 
-  //   // The returned value is a HTML NodeList
-  //   const genesContainer = screen.getByText('FAKEGENE').closest('div[class*=selector]');
-  //   const genesListBeforeRemoval = getDisplayedGenes(genesContainer);
+    // The returned value is a HTML NodeList
+    const genesContainer = screen.getByText('FAKEGENE').closest('div[class*=selector]');
+    const genesListBeforeRemoval = getDisplayedGenes(genesContainer);
 
-  //   // Removing the 5th gene from the list
-  //   // genesListBeforeRemoval is modified - splice removes the item from the list
-  //   const geneToRemove = genesListBeforeRemoval.splice(5, 1);
-  //   const geneRemoveButton = screen.getByText(geneToRemove).nextSibling;
+    // Removing the 5th gene from the list
+    // genesListBeforeRemoval is modified - splice removes the item from the list
+    const geneToRemove = genesListBeforeRemoval.splice(5, 1);
+    const geneRemoveButton = screen.getByText(geneToRemove).nextSibling;
 
-  //   userEvent.click(geneRemoveButton);
+    userEvent.click(geneRemoveButton);
 
-  //   // Get newly displayed genes after the removal
-  //   const genesListAfterRemoval = getDisplayedGenes(genesContainer);
+    // Get newly displayed genes after the removal
+    const genesListAfterRemoval = getDisplayedGenes(genesContainer);
 
-  //   // The list of displayed genes should be in the same order as the displayed genes
-  //   expect(_.isEqual(genesListAfterRemoval, genesListBeforeRemoval)).toEqual(true);
-  // });
+    // The list of displayed genes should be in the same order as the displayed genes
+    expect(_.isEqual(genesListAfterRemoval, genesListBeforeRemoval)).toEqual(true);
+  });
 });

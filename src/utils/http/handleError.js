@@ -4,8 +4,7 @@ import endUserMessages from '../endUserMessages';
 const httpStatusCodes = require('./httpStatusCodes');
 
 const handleCodedErrors = (error, message, notifyUser) => {
-  console.log(`elcs ${message}, ${error.userMessage}`);
-  let errorMessage = [message, error.userMessage].filter((x) => x).join(' ');
+  let errorMessage = `${message} ${error.userMessage}`;
 
   // we might want to override some errors to make them more user friendly
   // like the UNAUTHORIZED
@@ -42,11 +41,12 @@ const handleGenericErrors = (error, message, notifyUser) => {
   }
 
   console.log(`${message} ${error}`);
-  return message;
 };
 
 const handleError = (error, message, notifyUser = true) => {
-  console.log('error lcs he:', error);
+  console.log('error');
+  console.log(Object.prototype.toString.call(error));
+
   console.log(error);
   let errorMessage;
 

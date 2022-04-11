@@ -9,6 +9,7 @@ import preloadAll from 'jest-next-dynamic';
 import { act } from 'react-dom/test-utils';
 import configureMockStore from 'redux-mock-store';
 
+import { getFromApiExpectOK } from 'utils/getDataExpectOK';
 import DownloadDataButton from 'components/data-management/DownloadDataButton';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
 import downloadFromUrl from 'utils/data-management/downloadFromUrl';
@@ -20,11 +21,10 @@ import initialExperimentSettingsState from 'redux/reducers/experimentSettings/in
 import { initialExperimentBackendStatus } from 'redux/reducers/backendStatus/initialState';
 
 import { getBackendStatus } from 'redux/selectors';
-import fetchAPI from 'utils/http/fetchAPI';
 
 jest.mock('redux/selectors');
+jest.mock('utils/getDataExpectOK');
 jest.mock('utils/pushNotificationMessage');
-jest.mock('utils/http/fetchAPI');
 jest.mock('utils/data-management/downloadFromUrl');
 
 const mockStore = configureMockStore([thunk]);
@@ -214,7 +214,7 @@ describe('DownloadDataButton', () => {
   });
 
   it('Downolods data properly', async () => {
-    fetchAPI.mockImplementation(() => Promise.resolve('signedUrl'));
+    getFromApiExpectOK.mockImplementation(() => Promise.resolve('signedUrl'));
     getBackendStatus.mockImplementation(() => () => ({
       ...initialExperimentBackendStatus,
       status: {
@@ -242,7 +242,7 @@ describe('DownloadDataButton', () => {
   });
 
   it('Shows an error if there is an error downloading data', async () => {
-    fetchAPI.mockImplementation(() => Promise.reject(new Error('Something went wrong')));
+    getFromApiExpectOK.mockImplementation(() => Promise.reject(new Error('Something went wrong')));
     getBackendStatus.mockImplementation(() => () => ({
       ...initialExperimentBackendStatus,
       status: {

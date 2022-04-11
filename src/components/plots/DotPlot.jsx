@@ -28,7 +28,7 @@ const DotPlot = (props) => {
       return (
         <PlatformError
           error={cellSetsError}
-          reason={cellSetsError}
+          reason={cellSetsError.message}
           onClick={() => loadCellSets(experimentId)}
         />
       );

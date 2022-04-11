@@ -8,7 +8,6 @@ import { useRouter } from 'next/router';
 import Header from 'components/Header';
 import endUserMessages from 'utils/endUserMessages';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
-import handleError from 'utils/http/handleError';
 
 const ProfileSettings = () => {
   const router = useRouter();
@@ -47,8 +46,8 @@ const ProfileSettings = () => {
     if (name || email) {
       setEmailError(false);
       await Auth.updateUserAttributes(user, changedUserAttributes)
-        .then(() => pushNotificationMessage('success', endUserMessages.ACCOUNT_DETAILS_UPDATED, 3))
-        .catch(() => setEmailError(true));
+        .then((response) => pushNotificationMessage('success', endUserMessages.ACCOUNT_DETAILS_UPDATED, 3))
+        .catch((e) => setEmailError(true));
     }
     if (oldPassword || newPassword || confirmNewPassword) {
       setOldPasswordError(false);
@@ -65,12 +64,12 @@ const ProfileSettings = () => {
         setNewPasswordError('Password should include at least 8 characters, a number, special character, uppercase letter, lowercase letter.');
       } else {
         await Auth.changePassword(user, oldPassword, newPassword)
-          .then(() => pushNotificationMessage('success', endUserMessages.ACCOUNT_DETAILS_UPDATED, 3))
-          .catch((e) => {
-            if (invalidPasswordErrors.includes(e.code)) {
+          .then((response) => pushNotificationMessage('success', endUserMessages.ACCOUNT_DETAILS_UPDATED, 3))
+          .catch((error) => {
+            if (invalidPasswordErrors.includes(error.code)) {
               setOldPasswordError("Doesn't match old password.");
             } else {
-              handleError(e, e.message);
+              pushNotificationMessage('error', error.message, 3);
             }
           });
       }

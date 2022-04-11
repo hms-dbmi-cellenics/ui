@@ -24,14 +24,14 @@ const fetchAPI = async (path, params = {}, extras = {}, returnValue = true) => {
     throw new FetchError(e);
   }
 
-  // console.log('response');
-  // console.log(response);
+  console.log('response');
+  console.log(response);
   // if the response is not OK, parse json an return API error message
   if (!response.ok) {
     const data = await response.json();
     // data.message & data.errors follow error formatting defined in:
     // HTTPError.v1.yaml
-    console.log('response not ok, raising APIError, ', data);
+    console.log('response not ok, raising APIError');
     throw new APIError(response.status, data.message, data.errors);
   }
 

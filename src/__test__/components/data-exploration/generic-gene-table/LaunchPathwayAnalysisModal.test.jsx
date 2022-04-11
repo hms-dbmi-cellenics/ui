@@ -10,7 +10,7 @@ import { Provider } from 'react-redux';
 import { makeStore } from 'redux/store';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 
-import handleError from 'utils/http/handleError';
+import pushNotificationMessage from 'utils/pushNotificationMessage';
 import downloadFromUrl from 'utils/data-management/downloadFromUrl';
 import writeToFile from 'utils/writeToFileURL';
 
@@ -19,13 +19,12 @@ import getDiffExprGenes from 'utils/differentialExpression/getDiffExprGenes';
 import getBackgroundExpressedGenes from 'utils/differentialExpression/getBackgroundExpressedGenes';
 import { pathwayServices } from 'utils/pathwayAnalysis/pathwayConstants';
 import enrichrSpecies from 'utils/pathwayAnalysis/enrichrConstants';
-import endUserMessages from 'utils/endUserMessages';
 
 jest.mock('utils/pathwayAnalysis/launchPathwayService');
 jest.mock('utils/differentialExpression/getDiffExprGenes');
 jest.mock('utils/differentialExpression/getBackgroundExpressedGenes');
 
-jest.mock('utils/http/handleError');
+jest.mock('utils/pushNotificationMessage');
 jest.mock('utils/data-management/downloadFromUrl');
 jest.mock('utils/writeToFileURL');
 
@@ -240,8 +239,7 @@ describe('Pathway analysis modal ', () => {
   });
 
   it('Shows an error if analysis can not be launched', async () => {
-    const e = new Error();
-    launchPathwayService.mockImplementation(() => { throw e; });
+    launchPathwayService.mockImplementation(() => { throw new Error('Failed launching pathway analysis'); });
 
     await renderPathwayAnalysisModal(store);
 
@@ -249,8 +247,8 @@ describe('Pathway analysis modal ', () => {
       userEvent.click(screen.getByText('Launch'));
     });
 
-    expect(handleError).toHaveBeenCalledTimes(1);
-    expect(handleError).toHaveBeenCalledWith(e, endUserMessages.ERROR_LAUNCH_PATHWAY);
+    expect(pushNotificationMessage).toHaveBeenCalledTimes(1);
+    expect(pushNotificationMessage).toHaveBeenCalledWith('error', 'Failed launching pathway analysis');
   });
 
   it('Clicking on download link downloads the gene list', async () => {
@@ -272,8 +270,7 @@ describe('Pathway analysis modal ', () => {
   });
 
   it('It shows an error if getting background expressed genes fail', async () => {
-    const e = new Error();
-    getBackgroundExpressedGenes.mockImplementation(() => { throw e; });
+    getBackgroundExpressedGenes.mockImplementation(() => { throw new Error('Failed getting background gene expression'); });
 
     await renderPathwayAnalysisModal(store);
 
@@ -281,7 +278,7 @@ describe('Pathway analysis modal ', () => {
       userEvent.click(screen.getByText(/download the reference genes/i));
     });
 
-    expect(handleError).toHaveBeenCalledTimes(1);
-    expect(handleError).toHaveBeenCalledWith(e, endUserMessages.ERROR_FETCH_BACKGROUND_GENE_EXP);
+    expect(pushNotificationMessage).toHaveBeenCalledTimes(1);
+    expect(pushNotificationMessage).toHaveBeenCalledWith('error', 'Failed getting background gene expression');
   });
 });

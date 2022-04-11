@@ -461,13 +461,14 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
                         disabled={prefiltered}
                         data-testid='enableFilterButton'
                         onClick={async () => {
-                          dispatch(saveProcessingSettings(experimentId, currentStep.key)).then(() => {
-                            if (processingConfig.meta.saveSettingsError === false) {
-                              dispatch(setQCStepEnabled(
-                                currentStep.key, !stepEnabled,
-                              ));
-                            }
-                          });
+                          try {
+                            dispatch(saveProcessingSettings(experimentId, currentStep.key));
+                            dispatch(setQCStepEnabled(
+                              currentStep.key, !stepEnabled,
+                            ));
+                          } catch (e) {
+                            console.log('empty catch');
+                          }
                         }}
                       >
                         {

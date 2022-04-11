@@ -2,95 +2,111 @@
 
 exports[`Frequency plots and tables index page Renders all control panels 1`] = `
 Array [
-  Object {
-    "data": Array [
-      Object {
-        "KO": "75.000",
-        "WT1": "0.000",
-        "WT2": "0.000",
-        "fake louvain clusters": "Cluster 0",
-      },
-      Object {
-        "KO": "25.000",
-        "WT1": "28.571",
-        "WT2": "0.000",
-        "fake louvain clusters": "Cluster 1",
-      },
-      Object {
-        "KO": "0.000",
-        "WT1": "28.571",
-        "WT2": "0.000",
-        "fake louvain clusters": "Cluster 2",
-      },
-      Object {
-        "KO": "0.000",
-        "WT1": "14.286",
-        "WT2": "0.000",
-        "fake louvain clusters": "Cluster 3",
-      },
-      Object {
-        "KO": "0.000",
-        "WT1": "14.286",
-        "WT2": "0.000",
-        "fake louvain clusters": "Cluster 4",
-      },
-      Object {
-        "KO": "0.000",
-        "WT1": "14.286",
-        "WT2": "0.000",
-        "fake louvain clusters": "Cluster 5",
-      },
-      Object {
-        "KO": "0.000",
-        "WT1": "0.000",
-        "WT2": "20.000",
-        "fake louvain clusters": "Cluster 6",
-      },
-      Object {
-        "KO": "0.000",
-        "WT1": "0.000",
-        "WT2": "20.000",
-        "fake louvain clusters": "Cluster 7",
-      },
-      Object {
-        "KO": "0.000",
-        "WT1": "0.000",
-        "WT2": "20.000",
-        "fake louvain clusters": "Cluster 8",
-      },
-      Object {
-        "KO": "0.000",
-        "WT1": "0.000",
-        "WT2": "12.000",
-        "fake louvain clusters": "Cluster 9",
-      },
-      Object {
-        "KO": "0.000",
-        "WT1": "0.000",
-        "WT2": "8.000",
-        "fake louvain clusters": "Cluster 10",
-      },
-      Object {
-        "KO": "0.000",
-        "WT1": "0.000",
-        "WT2": "8.000",
-        "fake louvain clusters": "Cluster 11",
-      },
-      Object {
-        "KO": "0.000",
-        "WT1": "0.000",
-        "WT2": "8.000",
-        "fake louvain clusters": "Cluster 12",
-      },
-      Object {
-        "KO": "0.000",
-        "WT1": "0.000",
-        "WT2": "4.000",
-        "fake louvain clusters": "Cluster 13",
-      },
-    ],
-    "filename": "Test_Experiment-frequency_plot-proportional",
-  },
-  Object {},
+  Array [
+    Object {
+      "data": Array [],
+      "filename": "",
+    },
+    Object {},
+  ],
+  Array [
+    Object {
+      "data": Array [],
+      "filename": "",
+    },
+    Object {},
+  ],
+  Array [
+    Object {
+      "data": Array [
+        Object {
+          "KO": "75.000",
+          "WT1": "0.000",
+          "WT2": "0.000",
+          "fake louvain clusters": "Cluster 0",
+        },
+        Object {
+          "KO": "25.000",
+          "WT1": "28.571",
+          "WT2": "0.000",
+          "fake louvain clusters": "Cluster 1",
+        },
+        Object {
+          "KO": "0.000",
+          "WT1": "28.571",
+          "WT2": "0.000",
+          "fake louvain clusters": "Cluster 2",
+        },
+        Object {
+          "KO": "0.000",
+          "WT1": "14.286",
+          "WT2": "0.000",
+          "fake louvain clusters": "Cluster 3",
+        },
+        Object {
+          "KO": "0.000",
+          "WT1": "14.286",
+          "WT2": "0.000",
+          "fake louvain clusters": "Cluster 4",
+        },
+        Object {
+          "KO": "0.000",
+          "WT1": "14.286",
+          "WT2": "0.000",
+          "fake louvain clusters": "Cluster 5",
+        },
+        Object {
+          "KO": "0.000",
+          "WT1": "0.000",
+          "WT2": "20.000",
+          "fake louvain clusters": "Cluster 6",
+        },
+        Object {
+          "KO": "0.000",
+          "WT1": "0.000",
+          "WT2": "20.000",
+          "fake louvain clusters": "Cluster 7",
+        },
+        Object {
+          "KO": "0.000",
+          "WT1": "0.000",
+          "WT2": "20.000",
+          "fake louvain clusters": "Cluster 8",
+        },
+        Object {
+          "KO": "0.000",
+          "WT1": "0.000",
+          "WT2": "12.000",
+          "fake louvain clusters": "Cluster 9",
+        },
+        Object {
+          "KO": "0.000",
+          "WT1": "0.000",
+          "WT2": "8.000",
+          "fake louvain clusters": "Cluster 10",
+        },
+        Object {
+          "KO": "0.000",
+          "WT1": "0.000",
+          "WT2": "8.000",
+          "fake louvain clusters": "Cluster 11",
+        },
+        Object {
+          "KO": "0.000",
+          "WT1": "0.000",
+          "WT2": "8.000",
+          "fake louvain clusters": "Cluster 12",
+        },
+        Object {
+          "KO": "0.000",
+          "WT1": "0.000",
+          "WT2": "4.000",
+          "fake louvain clusters": "Cluster 13",
+        },
+      ],
+      "filename": "Test_Experiment-frequency_plot-proportional",
+    },
+    Object {},
+  ],
 ]
 `;

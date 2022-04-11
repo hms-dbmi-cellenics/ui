@@ -9,6 +9,7 @@ import { saveAs } from 'file-saver';
 
 import downloadTypes from 'utils/data-management/downloadTypes';
 import fetchAPI from 'utils/http/fetchAPI';
+import pushNotificationMessage from 'utils/pushNotificationMessage';
 import endUserMessages from 'utils/endUserMessages';
 import downloadFromUrl from 'utils/data-management/downloadFromUrl';
 import pipelineStatus from 'utils/pipelineStatusValues';
@@ -17,7 +18,6 @@ import { exportQCParameters, filterQCParameters } from 'utils/data-management/ex
 import { loadBackendStatus } from 'redux/actions/backendStatus/index';
 
 import { getBackendStatus } from 'redux/selectors';
-import handleError from 'utils/http/handleError';
 
 const DownloadDataButton = () => {
   const dispatch = useDispatch();
@@ -74,7 +74,7 @@ const DownloadDataButton = () => {
 
       downloadFromUrl(signedUrl);
     } catch (e) {
-      handleError(e, endUserMessages.ERROR_DOWNLOADING_DATA);
+      pushNotificationMessage('error', endUserMessages.ERROR_DOWNLOADING_DATA);
     }
   };
 
