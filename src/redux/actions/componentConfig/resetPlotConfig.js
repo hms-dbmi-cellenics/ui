@@ -15,7 +15,7 @@ const resetPlotConfig = (experimentId, plotUuid, plotType) => async (dispatch) =
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(defaultConfig),
+        body: JSON.stringify({ config: defaultConfig }),
       },
     );
 

@@ -10,7 +10,6 @@ import {
   Empty,
   Form,
   Radio,
-  Typography,
 } from 'antd';
 
 import _ from 'lodash';

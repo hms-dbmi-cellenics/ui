@@ -25,19 +25,10 @@ const PlotContainer = (props) => {
   const { config } = useSelector((state) => state.componentConfig[plotUuid] || {});
 
   const checkConfigEquality = (currentConfig, initialConfig) => {
-    const ignoredFields = {
-      // config fields that are set dynamically on component render
-      // should not be compared to their initial values
-      embeddingContinuous: ['shownGene'],
-      violin: ['shownGene', 'title'],
-      markerHeatmap: ['selectedGenes'],
-      DotPlot: ['selectedGenes'],
-    };
-
-    const areAllValuesTheSame = Object.keys(initialConfig).every((key) => {
+    const isConfigEqual = Object.keys(initialConfig).every((key) => {
       // By pass plot data because we want to compare settings not data
       if (key === 'plotData') return true;
-      if (ignoredFields[plotType]?.includes(key)) return true;
+      if (initialConfig.keepValuesOnReset?.includes(key)) return true;
       if (typeof currentConfig[key] === 'object') {
         return JSON.stringify(currentConfig[key]) === JSON.stringify(initialConfig[key]);
       }
@@ -45,7 +36,7 @@ const PlotContainer = (props) => {
       return currentConfig[key] === initialConfig[key];
     });
 
-    return areAllValuesTheSame;
+    return isConfigEqual;
   };
 
   useEffect(() => {
@@ -79,7 +70,7 @@ const PlotContainer = (props) => {
           key='reset'
           type='primary'
           size='small'
-          onClickReset={onClickReset}
+          onClick={onClickReset}
           disabled={!enableReset}
         >
           Reset

@@ -8,6 +8,7 @@ const savePlotConfig = (experimentId, plotUuid) => async (dispatch, getState) =>
   // Do not save the 'plotData' state to the database because it is not managed by the UI.
   // Do not save loading and error as it they are states in the UI.
   const {
+    keepValuesOnReset,
     outstandingChanges,
     plotData,
     loading,
