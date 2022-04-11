@@ -260,6 +260,7 @@ const MarkerHeatmap = ({ experimentId }) => {
     }
 
     if (errorMarkerGenes) {
+      console.log('error maker genes lcs ', errorMarkerGenes);
       return (
         <PlatformError
           description='Could not load marker genes.'

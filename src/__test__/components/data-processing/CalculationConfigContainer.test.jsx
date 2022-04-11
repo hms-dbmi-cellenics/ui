@@ -10,7 +10,7 @@ import _ from 'lodash';
 import rootReducer from 'redux/reducers/index';
 import '__test__/test-utils/setupTests';
 
-import CalculationConfigContainer from 'components/data-processing/CalculationConfigContainer';
+import CalculationConfigContainer from '../../../components/data-processing/CalculationConfigContainer';
 import generateExperimentSettingsMock from '../../test-utils/experimentSettings.mock';
 
 const koSampleId = 'sample-WT1';

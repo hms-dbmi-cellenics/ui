@@ -7,7 +7,7 @@ import { act } from 'react-dom/test-utils';
 import techOptions from 'utils/upload/fileUploadSpecifications';
 
 import componentFactory from '__test__/test-utils/testComponentFactory';
-import FileUploadModal from 'components/data-management/FileUploadModal';
+import FileUploadModal from '../../../components/data-management/FileUploadModal';
 
 const defaultProps = {
   onUpload: jest.fn(),

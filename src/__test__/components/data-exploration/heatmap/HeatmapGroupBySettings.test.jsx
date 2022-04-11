@@ -12,7 +12,7 @@ import {
   Button, Dropdown,
 } from 'antd';
 import { UPDATE_CONFIG } from 'redux/actionTypes/componentConfig';
-import HeatmapGroupBySettings from 'components/data-exploration/heatmap/HeatmapGroupBySettings';
+import HeatmapGroupBySettings from '../../../../components/data-exploration/heatmap/HeatmapGroupBySettings';
 import '__test__/test-utils/setupTests';
 
 const mockStore = configureMockStore([thunk]);

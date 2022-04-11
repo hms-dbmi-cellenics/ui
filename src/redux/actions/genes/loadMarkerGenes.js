@@ -26,8 +26,11 @@ const loadMarkerGenes = (
   try {
     const timeout = getTimeoutForWorkerTask(getState(), 'MarkerHeatmap');
 
+    console.log('1. lcs load marker genes');
     const data = await fetchWork(experimentId, body, getState, { timeout });
+    console.log('marker genes data loaded ', data);
     const { data: markerGeneExpressions, order } = data;
+    console.log('marker genes data unst');
 
     dispatch({
       type: MARKER_GENES_LOADED,
@@ -38,8 +41,10 @@ const loadMarkerGenes = (
         plotUuid,
       },
     });
+    console.log('marker genes data loaded acked');
   } catch (e) {
     const errorMessage = handleError(e, endUserMessages.ERROR_FETCH_MARKER_GENES, undefined, false);
+    console.log('2. lcs marker genes error ', e);
     dispatch({
       type: MARKER_GENES_ERROR,
       payload: {

@@ -1,6 +1,6 @@
 import React from 'react';
 import { mount } from 'enzyme';
-import EditableField from 'components/EditableField';
+import EditableField from '../../components/EditableField';
 import '__test__/test-utils/setupTests';
 
 const eventStub = {

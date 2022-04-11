@@ -12,7 +12,7 @@ import { act } from 'react-dom/test-utils';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 
 import { initialEmbeddingState } from 'redux/reducers/embeddings/initialState';
-import CalculationConfig from 'components/data-processing/ConfigureEmbedding/CalculationConfig';
+import CalculationConfig from '../../../../components/data-processing/ConfigureEmbedding/CalculationConfig';
 import generateExperimentSettingsMock from '../../../test-utils/experimentSettings.mock';
 import '__test__/test-utils/setupTests';
 

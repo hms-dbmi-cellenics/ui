@@ -8,8 +8,8 @@ import { Table } from 'antd';
 
 import { initialPlotConfigStates } from 'redux/reducers/componentConfig/initialState';
 import generateDataProcessingPlotUuid from 'utils/generateDataProcessingPlotUuid';
-import CellSizeDistribution from 'components/data-processing/CellSizeDistribution/CellSizeDistribution';
-import CalculationConfig from 'components/data-processing/CellSizeDistribution/CalculationConfig';
+import CellSizeDistribution from '../../../../components/data-processing/CellSizeDistribution/CellSizeDistribution';
+import CalculationConfig from '../../../../components/data-processing/CellSizeDistribution/CalculationConfig';
 import generateExperimentSettingsMock from '../../../test-utils/experimentSettings.mock';
 
 import filterStatisticsMock from '../../../test-utils/plotData.mock';

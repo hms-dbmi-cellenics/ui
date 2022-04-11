@@ -74,6 +74,7 @@ const createSample = (
     });
 
     // throw again the error so `processUpload` won't upload the sample
+    // Promise.reject(errorMessage);
     throw new Error(errorMessage);
   }
 };

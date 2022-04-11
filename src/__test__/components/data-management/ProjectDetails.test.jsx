@@ -17,7 +17,7 @@ import initialExperimentSettingsState from 'redux/reducers/experimentSettings/in
 import { initialExperimentBackendStatus } from 'redux/reducers/backendStatus/initialState';
 import PipelineStatus from 'utils/pipelineStatusValues';
 import UploadStatus from 'utils/upload/UploadStatus';
-import ProjectDetails from 'components/data-management/ProjectDetails';
+import ProjectDetails from '../../../components/data-management/ProjectDetails';
 import '__test__/test-utils/setupTests';
 
 const mockNavigateTo = jest.fn();

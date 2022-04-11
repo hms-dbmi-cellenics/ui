@@ -8,8 +8,8 @@ import { Vega } from 'react-vega';
 import { Table } from 'antd';
 import { initialPlotConfigStates } from 'redux/reducers/componentConfig/initialState';
 import generateDataProcessingPlotUuid from 'utils/generateDataProcessingPlotUuid';
-import Classifier from 'components/data-processing/Classifier/Classifier';
-import CalculationConfig from 'components/data-processing/Classifier/CalculationConfig';
+import Classifier from '../../../../components/data-processing/Classifier/Classifier';
+import CalculationConfig from '../../../../components/data-processing/Classifier/CalculationConfig';
 import generateExperimentSettingsMock from '../../../test-utils/experimentSettings.mock';
 
 import filterStatisticsMock from '../../../test-utils/plotData.mock';
