@@ -2,14 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Vega } from 'react-vega';
-
-import { loadCellSets } from 'redux/actions/cellSets';
-import { loadEmbedding } from 'redux/actions/embedding';
-import { loadProcessingSettings } from 'redux/actions/experimentSettings';
-import { getCellSets } from 'redux/selectors';
-import { generateSpec, generateData } from 'utils/plotSpecs/generateEmbeddingContinuousSpec';
-import PlatformError from '../PlatformError';
 import Loader from '../Loader';
+
+import PlatformError from '../PlatformError';
+import { generateSpec, generateData } from '../../utils/plotSpecs/generateEmbeddingContinuousSpec';
+import { loadCellSets } from '../../redux/actions/cellSets';
+import { loadEmbedding } from '../../redux/actions/embedding';
+import { loadProcessingSettings } from '../../redux/actions/experimentSettings';
+import { getCellSets } from '../../redux/selectors';
 import changeEmbeddingAxesIfNecessary from './helpers/changeEmbeddingAxesIfNecessary';
 
 const ContinuousEmbeddingPlot = (props) => {

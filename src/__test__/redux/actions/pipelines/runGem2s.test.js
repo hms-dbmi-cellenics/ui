@@ -1,25 +1,25 @@
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
-import initialExperimentsState, { experimentTemplate } from 'redux/reducers/experiments/initialState';
-import loadBackendStatus from 'redux/actions/backendStatus/loadBackendStatus';
-import initialBackendState from 'redux/reducers/backendStatus';
+import initialExperimentsState, { experimentTemplate } from '../../../../redux/reducers/experiments/initialState';
+import loadBackendStatus from '../../../../redux/actions/backendStatus/loadBackendStatus';
+import initialBackendState from '../../../../redux/reducers/backendStatus';
 
 import {
   EXPERIMENT_SETTINGS_PIPELINE_START,
-} from 'redux/actionTypes/experimentSettings';
+} from '../../../../redux/actionTypes/experimentSettings';
 
 import {
   BACKEND_STATUS_LOADING,
   BACKEND_STATUS_ERROR,
-} from 'redux/actionTypes/backendStatus';
+} from '../../../../redux/actionTypes/backendStatus';
 
-import { runGem2s } from 'redux/actions/pipeline';
+import { runGem2s } from '../../../../redux/actions/pipeline';
 
 const mockStore = configureStore([thunk]);
 enableFetchMocks();
 
-jest.mock('redux/actions/backendStatus/loadBackendStatus',
+jest.mock('../../../../redux/actions/backendStatus/loadBackendStatus',
   () => jest.fn().mockImplementation(() => async () => { }));
 
 const experimentId = 'experiment-id';

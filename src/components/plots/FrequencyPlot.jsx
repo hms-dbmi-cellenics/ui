@@ -3,10 +3,10 @@ import { useSelector, useDispatch } from 'react-redux';
 import { Vega } from 'react-vega';
 import PropTypes from 'prop-types';
 
-import loadCellSets from 'redux/actions/cellSets/loadCellSets';
-import { getCellSets } from 'redux/selectors';
+import loadCellSets from '../../redux/actions/cellSets/loadCellSets';
+import { getCellSets } from '../../redux/selectors';
 
-import { generateSpec, generateData } from 'utils/plotSpecs/generateFrequencySpec';
+import { generateSpec, generateData } from '../../utils/plotSpecs/generateFrequencySpec';
 
 const FrequencyPlot = (props) => {
   const {

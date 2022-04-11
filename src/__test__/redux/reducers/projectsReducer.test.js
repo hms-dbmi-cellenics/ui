@@ -1,5 +1,5 @@
-import projectsReducer from 'redux/reducers/projects';
-import initialState, { projectTemplate } from 'redux/reducers/projects/initialState';
+import projectsReducer from '../../../redux/reducers/projects';
+import initialState, { projectTemplate } from '../../../redux/reducers/projects/initialState';
 
 import {
   PROJECTS_CREATE,
@@ -13,7 +13,7 @@ import {
   PROJECTS_METADATA_UPDATE,
   PROJECTS_METADATA_DELETE,
   PROJECTS_LOADED,
-} from 'redux/actionTypes/projects';
+} from '../../../redux/actionTypes/projects';
 
 describe('projectsReducer', () => {
   const projectUuid1 = 'project-1';

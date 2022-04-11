@@ -1,5 +1,5 @@
-import loadEnvironment from 'redux/actions/networkResources/loadEnvironment';
 import { ssrGetCurrentEnvironment } from '../environment';
+import loadEnvironment from '../../redux/actions/networkResources/loadEnvironment';
 
 const getAuthenticationInfo = async (context, store) => {
   if (

@@ -1,9 +1,9 @@
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
-import changeGeneSelection from 'redux/actions/genes/changeGeneSelection';
-import initialState from 'redux/reducers/genes/initialState';
+import changeGeneSelection from '../../../../redux/actions/genes/changeGeneSelection';
+import initialState from '../../../../redux/reducers/genes/initialState';
 
-import { GENES_SELECT, GENES_DESELECT } from 'redux/actionTypes/genes';
+import { GENES_SELECT, GENES_DESELECT } from '../../../../redux/actionTypes/genes';
 
 const mockStore = configureStore([thunk]);
 

@@ -11,9 +11,9 @@ import {
 } from 'antd';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
-import { updatePlotConfig } from 'redux/actions/componentConfig';
-import { getCellSetsHierarchy } from 'redux/selectors';
+import { updatePlotConfig } from '../../../redux/actions/componentConfig';
 import ReorderableList from '../../ReorderableList';
+import { getCellSetsHierarchy } from '../../../redux/selectors';
 
 const HeatmapGroupBySettings = (props) => {
   const dispatch = useDispatch();

@@ -1,9 +1,9 @@
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
-import setActiveProject from 'redux/actions/projects/setActiveProject';
-import initialState, { projectTemplate } from 'redux/reducers/projects/initialState';
+import setActiveProject from '../../../../redux/actions/projects/setActiveProject';
+import initialState, { projectTemplate } from '../../../../redux/reducers/projects/initialState';
 
-import { PROJECTS_SET_ACTIVE } from 'redux/actionTypes/projects';
+import { PROJECTS_SET_ACTIVE } from '../../../../redux/actionTypes/projects';
 
 const mockStore = configureStore([thunk]);
 

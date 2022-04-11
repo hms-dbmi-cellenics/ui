@@ -3,8 +3,8 @@ import { mount } from 'enzyme';
 import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
-import { CELL_INFO_FOCUS, CELL_INFO_UNFOCUS } from 'redux/actionTypes/cellInfo';
 import FocusButton from '../../components/FocusButton';
+import { CELL_INFO_FOCUS, CELL_INFO_UNFOCUS } from '../../redux/actionTypes/cellInfo';
 import '__test__/test-utils/setupTests';
 
 const eventStub = {

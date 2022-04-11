@@ -20,8 +20,9 @@ import {
 import _ from 'lodash';
 
 import generateDataProcessingPlotUuid from 'utils/generateDataProcessingPlotUuid';
-import { updateFilterSettings } from 'redux/actions/experimentSettings';
 import NormalisationOptions from './NormalisationOptions';
+
+import { updateFilterSettings } from '../../../redux/actions/experimentSettings';
 
 const { Option } = Select;
 const { Text } = Typography;

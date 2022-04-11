@@ -1,11 +1,11 @@
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
-import loadCellMeta from 'redux/actions/cellMeta';
-import initialState from 'redux/reducers/cellMeta/initialState';
+import loadCellMeta from '../../../../redux/actions/cellMeta';
+import initialState from '../../../../redux/reducers/cellMeta/initialState';
 import '__test__/test-utils/setupTests';
 
-jest.mock('utils/work/fetchWork');
+jest.mock('../../../../utils/work/fetchWork');
 
 enableFetchMocks();
 const mockStore = configureStore([thunk]);

@@ -2,14 +2,15 @@ import React from 'react';
 import { Space, Input } from 'antd';
 import { useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
-import { DEFAULT_NA } from 'redux/reducers/projects/initialState';
-import {
-  updateMetadataTrack,
-} from 'redux/actions/projects';
-import validateInputs, { rules } from 'utils/validateInputs';
-import { metadataNameToKey } from 'utils/data-management/metadataUtils';
+import validateInputs, { rules } from '../../utils/validateInputs';
 import EditableField from '../EditableField';
 import MetadataEditor from './MetadataEditor';
+import { DEFAULT_NA } from '../../redux/reducers/projects/initialState';
+import { metadataNameToKey } from '../../utils/data-management/metadataUtils';
+
+import {
+  updateMetadataTrack,
+} from '../../redux/actions/projects';
 
 const MetadataColumnTitle = (props) => {
   const {

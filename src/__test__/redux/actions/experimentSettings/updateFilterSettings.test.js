@@ -2,8 +2,8 @@ import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import {
   EXPERIMENT_SETTINGS_NON_SAMPLE_FILTER_UPDATE,
-} from 'redux/actionTypes/experimentSettings';
-import updateFilterSettings from 'redux/actions/experimentSettings/processingConfig/updateFilterSettings';
+} from '../../../../redux/actionTypes/experimentSettings';
+import updateFilterSettings from '../../../../redux/actions/experimentSettings/processingConfig/updateFilterSettings';
 import generateExperimentSettingsMock from '../../../test-utils/experimentSettings.mock';
 
 import '__test__/test-utils/setupTests';

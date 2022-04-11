@@ -1,13 +1,13 @@
 import _ from 'lodash';
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
-import updateSample from 'redux/actions/samples/updateSample';
-import initialState, { sampleTemplate } from 'redux/reducers/samples/initialState';
-import { saveSamples } from 'redux/actions/samples';
+import updateSample from '../../../../redux/actions/samples/updateSample';
+import initialState, { sampleTemplate } from '../../../../redux/reducers/samples/initialState';
+import { saveSamples } from '../../../../redux/actions/samples';
 
-import { SAMPLES_UPDATE } from 'redux/actionTypes/samples';
+import { SAMPLES_UPDATE } from '../../../../redux/actionTypes/samples';
 
-jest.mock('redux/actions/samples/saveSamples');
+jest.mock('../../../../redux/actions/samples/saveSamples');
 saveSamples.mockImplementation(() => async () => { });
 
 const mockStore = configureStore([thunk]);

@@ -1,11 +1,11 @@
-import genesReducer from 'redux/reducers/genes';
-import initialState from 'redux/reducers/genes/initialState';
+import genesReducer from '../../../redux/reducers/genes';
+import initialState from '../../../redux/reducers/genes/initialState';
 
 import {
   GENES_EXPRESSION_LOADING, GENES_EXPRESSION_LOADED, GENES_EXPRESSION_ERROR,
   GENES_SELECT, GENES_DESELECT,
   GENES_PROPERTIES_LOADING, GENES_PROPERTIES_ERROR, GENES_PROPERTIES_LOADED_PAGINATED,
-} from 'redux/actionTypes/genes';
+} from '../../../redux/actionTypes/genes';
 
 describe('genesReducer', () => {
   it('Reduces identical state on unknown action', () => expect(

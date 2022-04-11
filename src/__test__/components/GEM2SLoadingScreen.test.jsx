@@ -6,15 +6,15 @@ import {
   Result, Button, Progress,
 } from 'antd';
 import configureMockStore from 'redux-mock-store';
-import fetchAPI from 'utils/http/fetchAPI';
 import GEM2SLoadingScreen from '../../components/GEM2SLoadingScreen';
+import fetchAPI from '../../utils/http/fetchAPI';
 import '__test__/test-utils/setupTests';
 
 const mockStore = configureMockStore([thunk]);
 
 const store = mockStore({ experiments: {} });
 
-jest.mock('utils/http/fetchAPI');
+jest.mock('../../utils/http/fetchAPI');
 fetchAPI.mockImplementation(() => Promise.resolve(new Response(JSON.stringify({}))));
 
 describe('GEM2SLoadingScreen', () => {

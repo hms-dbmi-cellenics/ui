@@ -1,6 +1,6 @@
 import _ from 'lodash';
 
-import { generateData } from 'utils/plotSpecs/generateViolinSpec';
+import { generateData } from '../../../../utils/plotSpecs/generateViolinSpec';
 import { mockCellSets as cellSets } from '../../../test-utils/cellSets.mock';
 
 describe('generateData', () => {

@@ -1,7 +1,7 @@
-import { inspectFile, Verdict } from 'utils/upload/fileInspector';
-import readFileToBuffer from 'utils/upload/readFileToBuffer';
+import { inspectFile, Verdict } from '../../../utils/upload/fileInspector';
+import readFileToBuffer from '../../../utils/upload/readFileToBuffer';
 
-jest.mock('utils/upload/readFileToBuffer');
+jest.mock('../../../utils/upload/readFileToBuffer');
 
 describe('fileInspector', () => {
   it('Detects invalid filenames', async () => {

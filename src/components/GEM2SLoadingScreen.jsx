@@ -5,8 +5,8 @@ import {
 import { useDispatch } from 'react-redux';
 import Link from 'next/link';
 import PropTypes from 'prop-types';
-import runGem2s from 'redux/actions/pipeline/runGem2s';
 import NotifyByEmail from './NotifyByEmail';
+import runGem2s from '../redux/actions/pipeline/runGem2s';
 
 const { Title, Text } = Typography;
 

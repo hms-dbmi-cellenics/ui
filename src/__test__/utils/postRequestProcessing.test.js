@@ -1,4 +1,4 @@
-import { calculateZScore } from 'utils/postRequestProcessing';
+import { calculateZScore } from '../../utils/postRequestProcessing';
 
 describe('calculateZScore correctly', () => {
   it('Should not break when there is no data', () => {

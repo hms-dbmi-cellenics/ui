@@ -10,7 +10,7 @@ import {
   EXPERIMENTS_UPDATED,
   EXPERIMENTS_ERROR,
   EXPERIMENTS_DELETED,
-} from 'redux/actionTypes/experiments';
+} from '../../../redux/actionTypes/experiments';
 
 describe('experimentsReducer', () => {
   const experimentId1 = 'experiment-1';

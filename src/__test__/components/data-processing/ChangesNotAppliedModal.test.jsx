@@ -6,10 +6,10 @@ import thunk from 'redux-thunk';
 import configureMockStore from 'redux-mock-store';
 
 import { getBackendStatus } from 'redux/selectors';
-import experimentSettingsInitialState, { metaInitialState } from 'redux/reducers/experimentSettings/initialState';
 import ChangesNotAppliedModal from '../../../components/data-processing/ChangesNotAppliedModal';
+import experimentSettingsInitialState, { metaInitialState } from '../../../redux/reducers/experimentSettings/initialState';
 
-jest.mock('utils/qcSteps', () => ({
+jest.mock('../../../utils/qcSteps', () => ({
   getUserFriendlyQCStepName: jest.fn().mockImplementation((step) => {
     switch (step) {
       case 'step-1':
@@ -22,7 +22,7 @@ jest.mock('utils/qcSteps', () => ({
   }),
 }));
 
-jest.mock('redux/selectors');
+jest.mock('../../../redux/selectors');
 
 getBackendStatus.mockImplementation(() => () => ({
   status: {

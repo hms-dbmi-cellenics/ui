@@ -1,13 +1,13 @@
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
-import UploadStatus from 'utils/upload/UploadStatus';
-import updateSampleFile from 'redux/actions/samples/updateSampleFile';
-import initialState, { sampleTemplate, sampleFileTemplate } from 'redux/reducers/samples/initialState';
-import { saveSamples } from 'redux/actions/samples';
+import updateSampleFile from '../../../../redux/actions/samples/updateSampleFile';
+import initialState, { sampleTemplate, sampleFileTemplate } from '../../../../redux/reducers/samples/initialState';
+import { saveSamples } from '../../../../redux/actions/samples';
+import UploadStatus from '../../../../utils/upload/UploadStatus';
 
-import { SAMPLES_FILE_UPDATE } from 'redux/actionTypes/samples';
+import { SAMPLES_FILE_UPDATE } from '../../../../redux/actionTypes/samples';
 
-jest.mock('redux/actions/samples/saveSamples');
+jest.mock('../../../../redux/actions/samples/saveSamples');
 saveSamples.mockImplementation(() => async () => { });
 
 const mockStartTime = '4022-01-01T00:00:00.000Z';

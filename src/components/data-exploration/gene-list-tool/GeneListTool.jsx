@@ -6,8 +6,9 @@ import _ from 'lodash';
 import PropTypes from 'prop-types';
 import { v4 as uuidv4 } from 'uuid';
 import { geneTableUpdateReason } from 'utils/geneTable/geneTableUpdateReason';
-import { loadPaginatedGeneProperties } from 'redux/actions/genes';
 import GeneTable from '../generic-gene-table/GeneTable';
+
+import { loadPaginatedGeneProperties } from '../../../redux/actions/genes';
 
 const GeneListTool = (props) => {
   const {

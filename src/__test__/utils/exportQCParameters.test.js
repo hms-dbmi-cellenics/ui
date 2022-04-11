@@ -1,8 +1,8 @@
 import {
   exportQCParameters,
   filterQCParameters,
-} from 'utils/data-management/exportQCParameters';
-import { qcSteps } from 'utils/qcSteps';
+} from '../../utils/data-management/exportQCParameters';
+import { qcSteps } from '../../utils/qcSteps';
 
 describe('Export of QC parameters', () => {
   const projectSamples = ['sample1'];

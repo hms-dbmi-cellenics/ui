@@ -3,11 +3,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import {
   Space, Button,
 } from 'antd';
-import integrationTestConstants from 'utils/integrationTestConstants';
-import { processUpload } from 'utils/upload/processUpload';
 import DownloadDataButton from './DownloadDataButton';
 import LaunchAnalysisButton from './LaunchAnalysisButton';
 import FileUploadModal from './FileUploadModal';
+import integrationTestConstants from '../../utils/integrationTestConstants';
+import { processUpload } from '../../utils/upload/processUpload';
 import ShareExperimentModal from './ShareExperimentModal';
 
 const ProjectMenu = () => {

@@ -1,10 +1,10 @@
-import differentialExpressionReducer from 'redux/reducers/differentialExpression';
-import initialState from 'redux/reducers/differentialExpression/initialState';
+import differentialExpressionReducer from '../../../redux/reducers/differentialExpression';
+import initialState from '../../../redux/reducers/differentialExpression/initialState';
 
 import {
   DIFF_EXPR_LOADING, DIFF_EXPR_LOADED, DIFF_EXPR_ERROR,
   DIFF_EXPR_COMPARISON_TYPE_SET, DIFF_EXPR_COMPARISON_GROUP_SET,
-} from 'redux/actionTypes/differentialExpression';
+} from '../../../redux/actionTypes/differentialExpression';
 
 describe('differentialExpressionReducer', () => {
   it('Reduces identical state on unknown action', () => expect(

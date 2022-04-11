@@ -8,7 +8,7 @@ import {
   Radio,
 } from 'antd';
 
-import { updateFilterSettings, copyFilterSettingsToAllSamples, setSampleFilterSettingsAuto } from 'redux/actions/experimentSettings';
+import { updateFilterSettings, copyFilterSettingsToAllSamples, setSampleFilterSettingsAuto } from '../../redux/actions/experimentSettings';
 
 const CalculationConfigContainer = (props) => {
   const {

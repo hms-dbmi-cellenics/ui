@@ -6,9 +6,9 @@ import userEvent from '@testing-library/user-event';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import '@aws-amplify/auth';
 
-import pushNotificationMessage from 'utils/pushNotificationMessage';
-import endUserMessages from 'utils/endUserMessages';
 import ReferralButton from '../../components/ReferralButton';
+import pushNotificationMessage from '../../utils/pushNotificationMessage';
+import endUserMessages from '../../utils/endUserMessages';
 import '__test__/test-utils/setupTests';
 
 jest.mock('@aws-amplify/auth', () => ({

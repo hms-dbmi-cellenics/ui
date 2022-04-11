@@ -2,7 +2,7 @@ import {
   metadataKeyToName,
   metadataNameToKey,
   temporaryMetadataKey,
-} from 'utils/data-management/metadataUtils';
+} from '../../utils/data-management/metadataUtils';
 
 describe('metadataUtils', () => {
   it('metadataKeyToName converts name correctly', () => {

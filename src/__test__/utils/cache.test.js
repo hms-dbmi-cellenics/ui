@@ -1,6 +1,6 @@
 /* eslint-disable no-underscore-dangle */
 import * as localForage from 'localforage';
-import cache from 'utils/cache';
+import cache from '../../utils/cache';
 
 jest.mock('localforage', () => ({
   ready: jest.fn(() => new Promise((resolve) => resolve())),

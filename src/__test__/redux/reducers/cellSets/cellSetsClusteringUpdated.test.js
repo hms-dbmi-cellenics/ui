@@ -1,5 +1,5 @@
-import cellSetsClusteringUpdatedReducer from 'redux/reducers/cellSets/cellSetsClusteringUpdated';
-import initialState from 'redux/reducers/cellSets/initialState';
+import cellSetsClusteringUpdatedReducer from '../../../../redux/reducers/cellSets/cellSetsClusteringUpdated';
+import initialState from '../../../../redux/reducers/cellSets/initialState';
 
 describe('cellSetsClusteringUpdated', () => {
   it('Sets loading and error indicators appropriately', () => {

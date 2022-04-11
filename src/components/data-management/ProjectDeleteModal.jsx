@@ -4,8 +4,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import {
   Modal, Button, Input, Space, Typography, Form, Alert,
 } from 'antd';
-import deleteProject from 'redux/actions/projects/deleteProject';
-import integrationTestConstants from 'utils/integrationTestConstants';
+import integrationTestConstants from '../../utils/integrationTestConstants';
+import deleteProject from '../../redux/actions/projects/deleteProject';
 
 const { Text, Paragraph } = Typography;
 

@@ -6,16 +6,17 @@ import waitForActions from 'redux-mock-store-await-actions';
 import thunk from 'redux-thunk';
 import preloadAll from 'jest-next-dynamic';
 import configureMockStore from 'redux-mock-store';
-import { GENES_EXPRESSION_LOADING, GENES_EXPRESSION_LOADED } from 'redux/actionTypes/genes';
-import { fetchWork } from 'utils/work/fetchWork';
 import ComponentActions from '../../../../components/data-exploration/generic-gene-table/ComponentActions';
+import { fetchWork } from '../../../../utils/work/fetchWork';
 
-jest.mock('utils/getTimeoutForWorkerTask', () => ({
+import { GENES_EXPRESSION_LOADING, GENES_EXPRESSION_LOADED } from '../../../../redux/actionTypes/genes';
+
+jest.mock('../../../../utils/getTimeoutForWorkerTask', () => ({
   __esModule: true, // this property makes it work
   default: () => 60,
 }));
 
-jest.mock('utils/work/fetchWork', () => ({
+jest.mock('../../../../utils/work/fetchWork', () => ({
   fetchWork: jest.fn(() => new Promise((resolve) => resolve({
     A: {
       min: 0,

@@ -7,7 +7,7 @@ import thunk from 'redux-thunk';
 import { createStore, applyMiddleware } from 'redux';
 import { Button } from 'antd';
 import _ from 'lodash';
-import rootReducer from 'redux/reducers/index';
+import rootReducer from '../../../redux/reducers/index';
 import '__test__/test-utils/setupTests';
 
 import CalculationConfigContainer from '../../../components/data-processing/CalculationConfigContainer';

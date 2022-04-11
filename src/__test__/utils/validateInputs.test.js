@@ -1,6 +1,6 @@
 import validateInputs, {
   rules, errorMessages,
-} from 'utils/validateInputs';
+} from '../../utils/validateInputs';
 
 describe('validateUnit unit test', () => {
   it('Defaults to true if not given checks', () => {

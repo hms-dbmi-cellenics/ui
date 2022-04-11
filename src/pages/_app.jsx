@@ -183,10 +183,10 @@ WrappedApp.getInitialProps = async ({ Component, ctx }) => {
 
   const promises = [];
 
-  const { default: getEnvironmentInfo } = (await import('utils/ssr/getEnvironmentInfo'));
+  const { default: getEnvironmentInfo } = (await import('../utils/ssr/getEnvironmentInfo'));
   promises.push(getEnvironmentInfo);
 
-  const { default: getAuthenticationInfo } = (await import('utils/ssr/getAuthenticationInfo'));
+  const { default: getAuthenticationInfo } = (await import('../utils/ssr/getAuthenticationInfo'));
   promises.push(getAuthenticationInfo);
 
   let results = await Promise.all(promises.map((f) => f(ctx, store)));
@@ -199,7 +199,7 @@ WrappedApp.getInitialProps = async ({ Component, ctx }) => {
     Auth.configure(results.amplifyConfig.Auth);
 
     if (query?.experimentId) {
-      const { default: getExperimentInfo } = (await import('utils/ssr/getExperimentInfo'));
+      const { default: getExperimentInfo } = (await import('../utils/ssr/getExperimentInfo'));
       const experimentInfo = await getExperimentInfo(ctx, store, Auth);
       results = _.merge(results, experimentInfo);
     }

@@ -1,25 +1,25 @@
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
-import { metadataNameToKey } from 'utils/data-management/metadataUtils';
-import pushNotificationMessage from 'utils/pushNotificationMessage';
-import deleteMetadataTrack from 'redux/actions/projects/deleteMetadataTrack';
-import initialProjectState from 'redux/reducers/projects';
-import initialSampleState from 'redux/reducers/samples';
+import { metadataNameToKey } from '../../../../utils/data-management/metadataUtils';
+import deleteMetadataTrack from '../../../../redux/actions/projects/deleteMetadataTrack';
+import initialProjectState from '../../../../redux/reducers/projects';
+import initialSampleState from '../../../../redux/reducers/samples';
 
-import { saveProject } from 'redux/actions/projects';
-import { saveSamples } from 'redux/actions/samples';
+import { saveProject } from '../../../../redux/actions/projects';
+import { saveSamples } from '../../../../redux/actions/samples';
 import '__test__/test-utils/setupTests';
 
 import {
   PROJECTS_METADATA_DELETE,
-} from 'redux/actionTypes/projects';
+} from '../../../../redux/actionTypes/projects';
+import pushNotificationMessage from '../../../../utils/pushNotificationMessage';
 
 const mockStore = configureStore([thunk]);
 
-jest.mock('redux/actions/projects/saveProject');
+jest.mock('../../../../redux/actions/projects/saveProject');
 saveProject.mockImplementation(() => async () => { });
 
-jest.mock('redux/actions/samples/saveSamples');
+jest.mock('../../../../redux/actions/samples/saveSamples');
 saveSamples.mockImplementation(() => async () => { });
 
 describe('deleteMetadataTrack action', () => {

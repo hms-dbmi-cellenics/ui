@@ -6,12 +6,12 @@ import thunk from 'redux-thunk';
 import { Vega } from 'react-vega';
 
 import { Table } from 'antd';
-import { initialPlotConfigStates } from 'redux/reducers/componentConfig/initialState';
-import generateDataProcessingPlotUuid from 'utils/generateDataProcessingPlotUuid';
 import Classifier from '../../../../components/data-processing/Classifier/Classifier';
 import CalculationConfig from '../../../../components/data-processing/Classifier/CalculationConfig';
 import generateExperimentSettingsMock from '../../../test-utils/experimentSettings.mock';
 
+import { initialPlotConfigStates } from '../../../../redux/reducers/componentConfig/initialState';
+import generateDataProcessingPlotUuid from '../../../../utils/generateDataProcessingPlotUuid';
 import filterStatisticsMock from '../../../test-utils/plotData.mock';
 
 import '__test__/test-utils/setupTests';
