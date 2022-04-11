@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import {
   Slider, Form, Space,
 } from 'antd';
-import useUpdateThrottled from '../../../utils/customHooks/useUpdateThrottled';
+import useUpdateThrottled from 'utils/customHooks/useUpdateThrottled';
 
 const DimensionsRangeEditor = (props) => {
   const {

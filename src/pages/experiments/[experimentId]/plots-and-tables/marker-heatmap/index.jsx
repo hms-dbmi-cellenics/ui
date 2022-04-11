@@ -14,7 +14,7 @@ import _ from 'lodash';
 import { useSelector, useDispatch } from 'react-redux';
 import { Vega } from 'react-vega';
 import PropTypes from 'prop-types';
-import pushNotificationMessage from 'utils/pushNotificationMessage';
+import handleError from 'utils/http/handleError';
 import endUserMessages from 'utils/endUserMessages';
 
 import { getCellSets, getCellSetsHierarchyByKeys, getCellSetsHierarchyByType } from 'redux/selectors';
@@ -93,7 +93,7 @@ const MarkerHeatmap = ({ experimentId }) => {
           plotUuid, config.nMarkerGenes, config.selectedCellSet,
         ));
       } else {
-        pushNotificationMessage('error', endUserMessages.NO_CLUSTERS);
+        handleError('error', endUserMessages.NO_CLUSTERS);
       }
     }
   }, [config?.selectedCellSet, config?.nMarkerGenes, hierarchy]);

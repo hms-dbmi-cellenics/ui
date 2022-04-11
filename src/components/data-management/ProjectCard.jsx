@@ -5,15 +5,14 @@ import {
 } from 'antd';
 import { blue } from '@ant-design/colors';
 import { useSelector, useDispatch } from 'react-redux';
+import { setActiveProject, updateProject } from 'redux/actions/projects';
+import { updateExperiment } from 'redux/actions/experiments';
+import validateInputs, { rules } from 'utils/validateInputs';
+import integrationTestConstants from 'utils/integrationTestConstants';
 import EditableField from '../EditableField';
 import PrettyTime from '../PrettyTime';
 
-import validateInputs, { rules } from '../../utils/validateInputs';
 import ProjectDeleteModal from './ProjectDeleteModal';
-import { setActiveProject, updateProject } from '../../redux/actions/projects';
-import { updateExperiment } from '../../redux/actions/experiments';
-
-import integrationTestConstants from '../../utils/integrationTestConstants';
 
 const { Item } = Descriptions;
 
@@ -59,9 +58,9 @@ const ProjectCard = (props) => {
 
   const updateProjectName = (newName) => {
     dispatch(updateProject(project.uuid, { name: newName.trim() }));
-
-    // Before multiple experiment support, use project name for analysis name
-    dispatch(updateExperiment(projectExperiment, { name: newName.trim() }));
+    if (projects.meta.error === false) {
+      dispatch(updateExperiment(projectExperiment, { name: newName.trim() }));
+    }
   };
 
   const deleteProject = () => {

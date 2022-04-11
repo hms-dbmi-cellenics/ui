@@ -8,11 +8,12 @@ import {
 } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
 import { useDispatch } from 'react-redux';
-import { uploadSingleFile, fileObjectToFileRecord } from '../../utils/upload/processUpload';
+import endUserMessages from 'utils/endUserMessages';
+import handleError from 'utils/http/handleError';
+import { uploadSingleFile, fileObjectToFileRecord } from 'utils/upload/processUpload';
 
-import pushNotificationMessage from '../../utils/pushNotificationMessage';
-import UploadStatus, { messageForStatus } from '../../utils/upload/UploadStatus';
-import downloadSingleFile from '../../utils/data-management/downloadSingleFile';
+import UploadStatus, { messageForStatus } from 'utils/upload/UploadStatus';
+import downloadSingleFile from 'utils/data-management/downloadSingleFile';
 
 // we'll need to remove the hard-coded 10x tech type once we start
 // supporting other types and save the chosen tech type in redux
@@ -40,8 +41,7 @@ const UploadDetailsModal = (props) => {
         if (newFile.valid) { // && newFile.name === file.name ?
           uploadFile(newFile);
         } else {
-          pushNotificationMessage('error',
-            'The selected file name does not match the expected category.', 2);
+          handleError('error', endUserMessages.ERROR_FILE_CATEGORY);
         }
       });
     }

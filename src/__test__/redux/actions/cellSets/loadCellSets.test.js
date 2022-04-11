@@ -1,8 +1,8 @@
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
-import loadCellSets from '../../../../redux/actions/cellSets/loadCellSets';
-import initialState from '../../../../redux/reducers/cellSets/initialState';
+import loadCellSets from 'redux/actions/cellSets/loadCellSets';
+import initialState from 'redux/reducers/cellSets/initialState';
 
 import '__test__/test-utils/setupTests';
 

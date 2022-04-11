@@ -2,7 +2,7 @@ import React from 'react';
 import { Table, Empty } from 'antd';
 import { mount } from 'enzyme';
 
-import FilterResultTable from '../../../components/data-processing/FilterResultTable';
+import FilterResultTable from 'components/data-processing/FilterResultTable';
 import '__test__/test-utils/setupTests';
 
 const correctInput = {

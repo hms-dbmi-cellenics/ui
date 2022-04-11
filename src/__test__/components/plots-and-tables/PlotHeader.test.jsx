@@ -8,9 +8,9 @@ import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import { plotNames } from 'utils/constants';
 import { act } from 'react-dom/test-utils';
 import fake from '__test__/test-utils/constants';
-import { initialPlotConfigStates } from '../../../redux/reducers/componentConfig/initialState';
-import PlotHeader from '../../../components/plots/PlotHeader';
-import { LOAD_CONFIG } from '../../../redux/actionTypes/componentConfig';
+import PlotHeader from 'components/plots/PlotHeader';
+import { initialPlotConfigStates } from 'redux/reducers/componentConfig/initialState';
+import { LOAD_CONFIG } from 'redux/actionTypes/componentConfig';
 import '__test__/test-utils/setupTests';
 
 jest.mock('components/UserButton', () => () => <></>);
@@ -47,6 +47,7 @@ describe('Tests for the header in plots and tables ', () => {
           <PlotHeader
             title={plotNames.CONTINUOUS_EMBEDDING}
             plotUuid='embeddingContinuousMain'
+            experimentId='empty'
             extra={<></>}
           />
         </Provider>,

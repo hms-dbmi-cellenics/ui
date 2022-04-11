@@ -2,7 +2,7 @@ import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import { v4 as uuidv4 } from 'uuid';
-import pushNotificationMessage from 'utils/pushNotificationMessage';
+import handleError from 'utils/http/handleError';
 import createProject from 'redux/actions/projects/createProject';
 import initialProjectsState from 'redux/reducers/projects';
 import { saveProject } from 'redux/actions/projects';
@@ -17,6 +17,7 @@ import { api } from 'utils/constants';
 import config from 'config';
 
 jest.mock('config');
+jest.mock('utils/http/handleError');
 
 const mockStore = configureStore([thunk]);
 
@@ -34,8 +35,6 @@ createExperiment.mockImplementation((uuid, name) => async () => ({
   projectUuid: uuid,
   id: experimentId,
 }));
-
-pushNotificationMessage.mockImplementation(() => async () => { });
 
 enableFetchMocks();
 
@@ -110,16 +109,14 @@ describe('createProject action', () => {
   it('Shows error message when there was a fetch error', async () => {
     config.currentApiVersion = api.V1;
 
-    const fetchErrorMessage = 'someFetchError';
+    const fetchErrorMessage = 'some error';
 
     fetchMock.mockResponse(JSON.stringify({ message: fetchErrorMessage }), { url: 'mockedUrl', status: 400 });
 
     // Fails with error message we sent in response to fetch
-    await expect(
-      store.dispatch(
-        createProject(projectName, projectDescription, experimentName),
-      ),
-    ).rejects.toEqual(fetchErrorMessage);
+    await store.dispatch(
+      createProject(projectName, projectDescription, experimentName),
+    );
 
     // Sends correct actions
     const actions = store.getActions();
@@ -130,6 +127,6 @@ describe('createProject action', () => {
     // Check no other action was sent
     expect(actions).toHaveLength(2);
 
-    expect(pushNotificationMessage).toHaveBeenCalledWith('error', fetchErrorMessage);
+    expect(handleError).toHaveBeenCalledTimes(1);
   });
 });

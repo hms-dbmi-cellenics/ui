@@ -1,5 +1,5 @@
-import fetchAPI from '../../../utils/fetchAPI';
-import { SAVE_CONFIG } from '../../actionTypes/componentConfig';
+import fetchAPI from 'utils/http/fetchAPI';
+import { SAVE_CONFIG } from 'redux/actionTypes/componentConfig';
 
 const savePlotConfig = (experimentId, plotUuid) => async (dispatch, getState) => {
   // Do not save the 'outstandingChanges' state to the database.
@@ -13,7 +13,7 @@ const savePlotConfig = (experimentId, plotUuid) => async (dispatch, getState) =>
     ...content
   } = getState().componentConfig[plotUuid];
 
-  const response = await fetchAPI(
+  const { lastUpdated } = await fetchAPI(
     `/v1/experiments/${experimentId}/plots-tables/${plotUuid}`,
     {
       method: 'PUT',
@@ -23,7 +23,6 @@ const savePlotConfig = (experimentId, plotUuid) => async (dispatch, getState) =>
       body: JSON.stringify(content),
     },
   );
-  const { lastUpdated } = await response.json();
 
   dispatch({
     type: SAVE_CONFIG,
