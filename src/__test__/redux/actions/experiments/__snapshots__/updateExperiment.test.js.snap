@@ -25,6 +25,9 @@ Array [
     },
     "type": "experiments/updated",
   },
+  Object {
+    "type": "experiments/saved",
+  },
 ]
 `;
 
@@ -57,6 +60,9 @@ Array [
       "experimentId": "experiment-1",
     },
     "type": "experiments/updated",
+  },
+  Object {
+    "type": "experiments/saved",
   },
 ]
 `;
