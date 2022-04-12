@@ -52,12 +52,14 @@ const PlotStyling = (props) => {
     volcanoLabels: (attr) => <VolcanoDisplayLabels key='volcanoLabels' config={config} onUpdate={onUpdate} {...attr} />,
   };
 
+  const formatPanelKey = (key) => key.trim().toLowerCase().replace(' ', '-');
+
   const buildForm = (configObj) => configObj.map((el) => {
     // Build component object from component
 
     if (Object.getOwnPropertyDescriptor(el, 'controls') && el.controls.length > 0) {
       return (
-        <Panel header={el.panelTitle} key={_.kebabCase(el.panelTitle)}>
+        <Panel header={el.panelTitle} key={formatPanelKey(el.panelTitle)}>
           {el.header}
           {el.controls.map((control) => {
             // If control is a string, no prop is passed
