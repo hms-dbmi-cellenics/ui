@@ -210,7 +210,7 @@ const FrequencyPlotPage = ({ experimentId }) => {
               config={config}
               onUpdate={updatePlotWithChanges}
               renderExtraPanels={renderExtraPanels}
-              defaultActivePanelKey='select-data'
+              defaultActiveKey='select-data'
             />
           </Col>
         </Row>

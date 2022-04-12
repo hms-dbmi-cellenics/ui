@@ -442,7 +442,7 @@ const MarkerHeatmap = ({ experimentId }) => {
               config={config}
               onUpdate={updatePlotWithChanges}
               renderExtraPanels={renderExtraPanels}
-              defaultActivePanelKey='gene-selection'
+              defaultActiveKey='gene-selection'
             />
           </Col>
         </Row>

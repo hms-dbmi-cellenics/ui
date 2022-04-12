@@ -156,7 +156,7 @@ const EmbeddingCategoricalPage = ({ experimentId }) => {
               config={config}
               onUpdate={updatePlotWithChanges}
               renderExtraPanels={renderExtraPanels}
-              defaultActivePanelKey='group-by'
+              defaultActiveKey='group-by'
             />
           </Col>
         </Row>

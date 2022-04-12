@@ -252,7 +252,7 @@ const VolcanoPlotPage = (props) => {
               config={config}
               onUpdate={updatePlotWithChanges}
               renderExtraPanels={renderExtraPanels}
-              defaultActivePanelKey='differential-expression'
+              defaultActiveKey='differential-expression'
             />
           </Col>
         </Row>

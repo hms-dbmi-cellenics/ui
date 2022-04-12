@@ -32,7 +32,7 @@ const formatPanelKey = (key) => key.trim().toLowerCase().replace(' ', '-');
 
 const PlotStyling = (props) => {
   const {
-    formConfig, config, onUpdate, renderExtraPanels, defaultActivePanelKey,
+    formConfig, config, onUpdate, renderExtraPanels, defaultActiveKey,
   } = props;
 
   const ComponentMapping = {
@@ -89,7 +89,7 @@ const PlotStyling = (props) => {
   });
 
   return (
-    <Collapse accordion defaultActiveKey={defaultActivePanelKey}>
+    <Collapse accordion defaultActiveKey={defaultActiveKey}>
       {renderExtraPanels()}
       {buildForm(formConfig)}
     </Collapse>
@@ -101,7 +101,7 @@ PlotStyling.propTypes = {
   config: PropTypes.object,
   onUpdate: PropTypes.func.isRequired,
   renderExtraPanels: PropTypes.func,
-  defaultActivePanelKey: PropTypes.oneOfType([
+  defaultActiveKey: PropTypes.oneOfType([
     PropTypes.string,
     PropTypes.array,
   ]),
@@ -111,7 +111,7 @@ PlotStyling.defaultProps = {
   formConfig: [],
   config: {},
   renderExtraPanels: () => { },
-  defaultActivePanelKey: [],
+  defaultActiveKey: [],
 };
 
 export default PlotStyling;
