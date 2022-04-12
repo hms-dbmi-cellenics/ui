@@ -97,6 +97,7 @@ const ViolinIndex = ({ experimentId }) => {
         <Row gutter={16}>
           <Col span={16}>
             <PlotContainer
+              experimentId={experimentId}
               plotType={plotType}
               plotUuid={plotUuid}
               plotInfo='In order to rename existing clusters or create new ones, use the cell set tool, located in the Data Exploration page.'
