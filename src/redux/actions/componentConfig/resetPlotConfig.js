@@ -26,12 +26,6 @@ const resetPlotConfig = (experimentId, plotUuid, plotType) => async (dispatch) =
         config: defaultConfig,
       },
     });
-
-    dispatch({
-      type: SAVE_CONFIG,
-      payload:
-      { plotUuid, success: true },
-    });
   } catch (e) {
     handleError(e, endUserMessages.ERROR_SAVING_PLOT_CONFIG);
 
