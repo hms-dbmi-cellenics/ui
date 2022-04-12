@@ -5,13 +5,14 @@ import ReactResizeDetector from 'react-resize-detector';
 import 'react-mosaic-component/react-mosaic-component.css';
 import { layout } from 'utils/constants';
 
-const renderWindow = (tile, width, height) => {
+const renderWindow = (tile, width, height, style) => {
   if (tile) {
     return (
       <div style={{
         padding: layout.PANEL_PADDING,
         height: height - layout.PANEL_HEADING_HEIGHT,
         overflow: 'auto',
+        ...style,
       }}
       >
         {height && width ? tile(width, height) : <></>}
@@ -37,7 +38,7 @@ const MultiTileContainer = ({ tileMap, initialArrangement }) => (
               title={id}
               toolbarControls={tileMap[id]?.toolbarControls}
             >
-              {renderWindow(tileMap[id]?.component, width, height)}
+              {renderWindow(tileMap[id]?.component, width, height, tileMap[id]?.style)}
             </MosaicWindow>
           )}
         </ReactResizeDetector>

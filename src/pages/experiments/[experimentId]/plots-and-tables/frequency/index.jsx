@@ -49,10 +49,17 @@ const FrequencyPlotPage = ({ experimentId }) => {
 
   const [csvData, setCsvData] = useState([]);
   const [csvFilename, setCsvFilename] = useState('');
+  const [tileDirection, setTileDirection] = useState('column');
+
+  const handleResize = () => {
+    const direction = window.innerWidth > 1024 ? 'row' : 'column';
+    if (tileDirection !== direction) setTileDirection(direction);
+  };
 
   useEffect(() => {
     dispatch(loadCellSets(experimentId));
     dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
+    window.addEventListener('resize', handleResize);
   }, []);
 
   const updatePlotWithChanges = (obj) => {
@@ -194,6 +201,7 @@ const FrequencyPlotPage = ({ experimentId }) => {
         <ResetButton />,
       ],
       component: () => renderPlot(),
+      style: { backgroundColor: 'white' },
     },
     [CONTROLS]: {
       toolbarControls: [],
@@ -206,11 +214,12 @@ const FrequencyPlotPage = ({ experimentId }) => {
           defaultActivePanel='Select data'
         />
       ),
+      style: { margin: '-10px' },
     },
   };
 
   const windows = {
-    direction: 'row',
+    direction: tileDirection,
     first: PLOT,
     second: CONTROLS,
     splitPercentage: 75,
