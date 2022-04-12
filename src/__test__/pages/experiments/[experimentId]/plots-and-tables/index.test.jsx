@@ -16,7 +16,7 @@ const plotsAndTablesPageFactory = createTestComponentFactory(PlotsTablesHome);
 
 let storeState = null;
 
-describe('Data Management page', () => {
+describe('Plots and Tables page', () => {
   beforeEach(() => {
     storeState = makeStore();
   });
