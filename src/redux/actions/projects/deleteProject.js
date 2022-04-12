@@ -10,7 +10,7 @@ import {
 } from '../../actionTypes/projects';
 
 import {
-  SAMPLES_DELETE_API_V2,
+  SAMPLES_DELETE_API_V1,
 } from '../../actionTypes/samples';
 
 import {
@@ -61,7 +61,7 @@ const deleteProject = (
     });
 
     dispatch({
-      type: SAMPLES_DELETE_API_V2,
+      type: SAMPLES_DELETE_API_V1,
       payload: {
         sampleUuids: projects[projectUuid].samples,
       },
