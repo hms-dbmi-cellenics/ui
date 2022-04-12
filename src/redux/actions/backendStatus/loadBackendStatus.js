@@ -5,6 +5,9 @@ import {
   BACKEND_STATUS_LOADED,
   BACKEND_STATUS_ERROR,
 } from 'redux/actionTypes/backendStatus';
+
+import config from 'config';
+import { api } from 'utils/constants';
 import endUserMessages from 'utils/endUserMessages';
 
 const loadBackendStatus = (experimentId) => async (dispatch) => {
@@ -15,7 +18,14 @@ const loadBackendStatus = (experimentId) => async (dispatch) => {
     },
   });
 
-  const url = `/v1/experiments/${experimentId}/backendStatus`;
+  let url;
+
+  if (config.currentApiVersion === api.V1) {
+    url = `/v1/experiments/${experimentId}/backendStatus`;
+  } else if (config.currentApiVersion === api.V2) {
+    url = `/v2/experiments/${experimentId}/backendStatus`;
+  }
+
   try {
     const status = await fetchAPI(url);
     dispatch({
