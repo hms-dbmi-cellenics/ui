@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import moment from 'moment';
 import { v4 as uuidv4 } from 'uuid';
 import {
@@ -13,6 +14,9 @@ import endUserMessages from 'utils/endUserMessages';
 
 import { sampleTemplate } from 'redux/reducers/samples/initialState';
 
+import config from 'config';
+import { api } from 'utils/constants';
+
 const createSample = (
   projectUuid,
   name,
@@ -22,6 +26,16 @@ const createSample = (
   const createdDate = moment().toISOString();
   const experimentId = project.experiments[0];
   const newSampleUuid = uuidv4();
+
+  dispatch({
+    type: SAMPLES_SAVING,
+    payload: {
+      message: endUserMessages.SAVING_SAMPLE,
+    },
+  });
+
+  let url;
+  let body;
 
   const newSample = {
     ...sampleTemplate,
@@ -35,14 +49,22 @@ const createSample = (
       .reduce((acc, curr) => ({ ...acc, [curr]: DEFAULT_NA }), {}) || {},
   };
 
-  dispatch({
-    type: SAMPLES_SAVING,
-    payload: {
-      message: endUserMessages.SAVING_SAMPLE,
-    },
-  });
+  if (config.currentApiVersion === api.V1) {
+    url = `/v1/projects/${projectUuid}/${experimentId}/samples`;
 
-  const url = `/v1/projects/${projectUuid}/${experimentId}/samples`;
+    body = _.clone(newSample);
+  } else if (config.currentApiVersion === api.V2) {
+    url = `/v2/experiments/${experimentId}/samples/${newSampleUuid}`;
+
+    let sampleTechnology;
+    if (type === '10X Chromium') {
+      sampleTechnology = '10x';
+    } else {
+      throw new Error(`Sample type ${type} is not implemented`);
+    }
+
+    body = { name, sampleTechnology };
+  }
 
   try {
     await fetchAPI(
@@ -52,7 +74,7 @@ const createSample = (
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(newSample),
+        body: JSON.stringify(body),
       },
     );
 
