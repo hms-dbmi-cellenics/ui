@@ -5,6 +5,7 @@ import { Vega } from 'react-vega';
 import { generateSpec } from 'utils/plotSpecs/generateDotPlotSpec';
 import { getCellSets, getCellSetsHierarchyByKeys } from 'redux/selectors';
 import Loader from 'components/Loader';
+import _ from 'lodash';
 
 import PlatformError from 'components/PlatformError';
 import { loadCellSets } from 'redux/actions/cellSets';
@@ -42,7 +43,8 @@ const DotPlot = (props) => {
       );
     }
 
-    return <Vega spec={generateSpec(config, plotData, numClusters)} renderer='canvas' actions={actions} />;
+    // PlotData has to be cloned for this plot because Immer freezes plotData meanwhile the plot needs to modify it to work
+    return <Vega spec={generateSpec(config, _.cloneDeep(plotData), numClusters)} renderer='canvas' actions={actions} />;
   };
 
   return render();
