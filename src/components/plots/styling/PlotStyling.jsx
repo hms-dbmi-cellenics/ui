@@ -28,8 +28,6 @@ import VolcanoDisplayLabels from './volcano/DisplayLabels';
 
 const { Panel } = Collapse;
 
-const formatPanelKey = (key) => key.trim().toLowerCase().replace(' ', '-');
-
 const PlotStyling = (props) => {
   const {
     formConfig, config, onUpdate, renderExtraPanels, defaultActiveKey,
@@ -59,7 +57,7 @@ const PlotStyling = (props) => {
 
     if (Object.getOwnPropertyDescriptor(el, 'controls') && el.controls.length > 0) {
       return (
-        <Panel header={el.panelTitle} key={formatPanelKey(el.panelTitle)}>
+        <Panel header={el.panelTitle} key={_.kebabCase(el.panelTitle)}>
           {el.header}
           {el.controls.map((control) => {
             // If control is a string, no prop is passed
