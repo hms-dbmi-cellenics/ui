@@ -224,34 +224,6 @@ const FrequencyPlotPage = ({ experimentId }) => {
     splitPercentage: 75,
   };
 
-  const renderPlot = () => {
-    if (cellSetsError) {
-      return (
-        <PlatformError
-          description={cellSetsError}
-          onClick={() => loadCellSets(experimentId)}
-        />
-      );
-    }
-    if (!config || cellSetsLoading) {
-      return (
-        <center>
-          <Loader experimentId={experimentId} />
-        </center>
-      );
-    }
-
-    return (
-      <center>
-        <FrequencyPlot
-          experimentId={experimentId}
-          config={config}
-          formatCSVData={formatCSVData}
-        />
-      </center>
-    );
-  };
-
   return (
     <>
       <Header title={plotNames.FREQUENCY_PLOT} />
