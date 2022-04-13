@@ -93,7 +93,7 @@ const DataManagementPage = () => {
     },
     [PROJECT_DETAILS]: {
       toolbarControls: [],
-      component: (width, height) => {
+      component: () => {
         if (!activeProjectUuid) {
           return (
             <Empty
@@ -104,7 +104,7 @@ const DataManagementPage = () => {
           );
         }
 
-        return (<ProjectDetails width={width} height={height} />);
+        return (<ProjectDetails />);
       },
     },
   };
