@@ -15,15 +15,14 @@ import initialExperimentState from 'redux/reducers/experimentSettings/initialSta
 import rootReducer from 'redux/reducers/index';
 import genes from 'redux/reducers/genes/initialState';
 import * as loadConfig from 'redux/reducers/componentConfig/loadConfig';
+import ViolinIndex from 'pages/experiments/[experimentId]/plots-and-tables/violin/index';
 import * as generateViolinSpec from 'utils/plotSpecs/generateViolinSpec';
 import { fetchWork } from 'utils/work/fetchWork';
-import ViolinIndex from '../../../pages/experiments/[experimentId]/plots-and-tables/violin/index';
 import { mockCellSets as cellSets } from '../../test-utils/cellSets.mock';
 import { expectStringInVegaCanvas } from '../../test-utils/vega-utils';
 import '__test__/test-utils/setupTests';
 
 enableFetchMocks();
-jest.mock('components/plots/PlotHeader', () => () => <div />);
 jest.mock('utils/socketConnection', () => ({
   __esModule: true,
   default: new Promise((resolve) => {

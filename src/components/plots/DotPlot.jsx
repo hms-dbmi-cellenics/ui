@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
 import { Vega } from 'react-vega';
@@ -15,6 +15,13 @@ const DotPlot = (props) => {
   const { loading: cellSetsLoading, error: cellSetsError } = useSelector(getCellSets());
   const cellSet = useSelector(getCellSetsHierarchyByKeys([config.selectedCellSet]))[0];
   const numClusters = cellSet ? cellSet.children.length : 0;
+  const data = useRef(plotData);
+
+  useEffect(() => {
+    if (data.current !== plotData) {
+      data.current = plotData;
+    }
+  }, [plotData]);
 
   const actions = {
     export: true,
@@ -42,7 +49,8 @@ const DotPlot = (props) => {
       );
     }
 
-    return <Vega spec={generateSpec(config, plotData, numClusters)} renderer='canvas' actions={actions} />;
+    // PlotData has to be cloned for this plot because Immer freezes plotData meanwhile the plot needs to modify it to work
+    return <Vega spec={generateSpec(config, data.current, numClusters)} renderer='canvas' actions={actions} />;
   };
 
   return render();
