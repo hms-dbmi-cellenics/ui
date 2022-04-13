@@ -106,7 +106,6 @@ const HeatmapPlot = ({ experimentId }) => {
 
   const onGeneEnter = (genes) => {
     // updating the selected genes in the config too so they are saved in dynamodb
-
     dispatch(loadGeneExpression(experimentId, genes, plotUuid));
   };
 

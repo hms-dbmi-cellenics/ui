@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import transformOldFeaturesVsUMIsPlotData from '../../../../components/plots/helpers/transformOldFeaturesVsUMIsPlotData';
+import transformOldFeaturesVsUMIsPlotData from 'components/plots/helpers/transformOldFeaturesVsUMIsPlotData';
 
 const oldPlotData = [
   {

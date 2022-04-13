@@ -2,9 +2,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Popover } from 'antd';
+import { metadataKeyToName, metadataNameToKey } from 'utils/data-management/metadataUtils';
+import validateInputs, { rules } from 'utils/validateInputs';
 import EditableField from '../EditableField';
-import { metadataKeyToName, metadataNameToKey } from '../../utils/data-management/metadataUtils';
-import validateInputs, { rules } from '../../utils/validateInputs';
 
 const validationChecks = [
   rules.MIN_1_CHAR,

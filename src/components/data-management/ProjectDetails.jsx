@@ -2,15 +2,14 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React, { useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-
+import PropTypes from 'prop-types';
 import {
   Space, Typography, Button,
 } from 'antd';
 
-import PropTypes from 'prop-types';
-import {
-  updateProject,
-} from 'redux/actions/projects';
+import { updateProject } from 'redux/actions/projects';
+import { updateExperiment } from 'redux/actions/experiments';
+
 import { layout } from 'utils/constants';
 import EditableParagraph from 'components/EditableParagraph';
 import SamplesTable from './SamplesTable';
@@ -65,6 +64,7 @@ const ProjectDetails = ({ width, height }) => {
             onUpdate={(text) => {
               if (text !== activeProject.description) {
                 dispatch(updateProject(activeProjectUuid, { description: text }));
+                dispatch(updateExperiment(activeProject.experiments[0], { description: text }));
               }
             }}
           />

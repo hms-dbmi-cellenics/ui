@@ -131,7 +131,6 @@ const FrequencyPlotPage = ({ experimentId }) => {
     setCsvFilename(plotCsvFilename(experimentName, 'FREQUENCY_PLOT', [config.frequencyType]));
     setCsvData(newCsvData);
   };
-
   const changePlotType = (value) => {
     updatePlotWithChanges({
       frequencyType: value.target.value,
@@ -223,6 +222,34 @@ const FrequencyPlotPage = ({ experimentId }) => {
     first: PLOT,
     second: CONTROLS,
     splitPercentage: 75,
+  };
+
+  const renderPlot = () => {
+    if (cellSetsError) {
+      return (
+        <PlatformError
+          description={cellSetsError}
+          onClick={() => loadCellSets(experimentId)}
+        />
+      );
+    }
+    if (!config || cellSetsLoading) {
+      return (
+        <center>
+          <Loader experimentId={experimentId} />
+        </center>
+      );
+    }
+
+    return (
+      <center>
+        <FrequencyPlot
+          experimentId={experimentId}
+          config={config}
+          formatCSVData={formatCSVData}
+        />
+      </center>
+    );
   };
 
   return (

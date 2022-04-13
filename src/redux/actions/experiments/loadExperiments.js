@@ -1,12 +1,48 @@
-import fetchAPI from '../../../utils/fetchAPI';
-import { isServerError, throwIfRequestFailed } from '../../../utils/fetchErrors';
-import endUserMessages from '../../../utils/endUserMessages';
-import pushNotificationMessage from '../../../utils/pushNotificationMessage';
+import fetchAPI from 'utils/http/fetchAPI';
+import handleError from 'utils/http/handleError';
+
 import {
   EXPERIMENTS_LOADED,
   EXPERIMENTS_ERROR,
   EXPERIMENTS_LOADING,
-} from '../../actionTypes/experiments';
+} from 'redux/actionTypes/experiments';
+
+import config from 'config';
+import { api } from 'utils/constants';
+
+const toApiV1 = (experimentV2) => {
+  const {
+    id,
+    name,
+    description,
+    samplesOrder,
+    notifyByEmail,
+    processingConfig,
+    createdAt,
+    pipelines,
+  } = experimentV2;
+
+  const experimentV1 = {
+    experimentId: id,
+    projectId: id,
+    description,
+    experimentName: name,
+    processingConfig,
+    createdDate: createdAt,
+    notifyByEmail,
+    sampleIds: samplesOrder,
+    // lastViewed: ignored, it isn\'t being used in the UI,
+    meta: {
+      // This is always 10x and organism so we can just generate them here
+      organism: null,
+      type: '10x',
+      gem2s: pipelines.gem2s ?? undefined,
+      pipeline: pipelines.qc ?? undefined,
+    },
+  };
+
+  return experimentV1;
+};
 
 const loadExperiments = (
   projectUuid,
@@ -15,11 +51,19 @@ const loadExperiments = (
     type: EXPERIMENTS_LOADING,
   });
 
-  const url = `/v1/projects/${projectUuid}/experiments`;
+  let url;
   try {
-    const response = await fetchAPI(url);
-    const data = await response.json();
-    throwIfRequestFailed(response, data, endUserMessages.ERROR_FETCHING_EXPERIMENTS);
+    let data;
+
+    if (config.currentApiVersion === api.V1) {
+      url = `/v1/projects/${projectUuid}/experiments`;
+      data = await fetchAPI(url);
+    } else if (config.currentApiVersion === api.V2) {
+      url = `/v2/experiments/${projectUuid}`;
+      data = await fetchAPI(url);
+
+      data = [toApiV1(data)];
+    }
 
     dispatch({
       type: EXPERIMENTS_LOADED,
@@ -28,19 +72,14 @@ const loadExperiments = (
       },
     });
   } catch (e) {
-    let { message } = e;
-    if (!isServerError(e)) {
-      console.error(`fetch ${url} error ${message}`);
-      message = endUserMessages.CONNECTION_ERROR;
-    }
+    const errorMessage = handleError(e);
+
     dispatch({
       type: EXPERIMENTS_ERROR,
       payload: {
-        error: message,
+        error: errorMessage,
       },
     });
-
-    pushNotificationMessage('error', message);
   }
 };
 

@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 import sha1 from 'crypto-js/sha1';
 import Hex from 'crypto-js/enc-hex';
-import { DEFAULT_NA } from '../../redux/reducers/projects/initialState';
+import { DEFAULT_NA } from 'redux/reducers/projects/initialState';
 
 const generateGem2sParamsHash = (project, samples, experiment) => {
   if (!project || !samples || !experiment) {

@@ -6,8 +6,8 @@ import configureMockStore from 'redux-mock-store';
 import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
 import moment from 'moment';
-import initialState, { projectTemplate } from '../../../redux/reducers/projects/initialState';
-import ProjectCard from '../../../components/data-management/ProjectCard';
+import initialState, { projectTemplate } from 'redux/reducers/projects/initialState';
+import ProjectCard from 'components/data-management/ProjectCard';
 
 const projectUuid = '12345';
 const projectName = 'Test Project';

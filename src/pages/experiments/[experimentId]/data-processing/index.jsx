@@ -243,10 +243,10 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
           The probability of being a doublet is calculated using ‘scDblFinder’.
           For each sample, the default threshold tries to minimize both the deviation in the
           expected number of doublets and the error of a trained classifier. For more details see
-          {' '}
+    {' '}
           <a href='https://bioconductor.org/packages/devel/bioc/vignettes/scDblFinder/inst/doc/scDblFinder.html#thresholding' rel='noreferrer' target='_blank'>scDblFinder thresholding</a>
-          .
-        </span>,
+    .
+  </span>,
       multiSample: true,
       render: (key) => (
         <SingleComponentMultipleDataContainer
@@ -434,16 +434,16 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
                               ) : pipelineNotFinished
                                 && !pipelineRunning
                                 && !isStepComplete(key) ? (
-                                <>
-                                  <Text
-                                    type='danger'
-                                    strong
-                                  >
-                                    <WarningOutlined />
-                                  </Text>
-                                  <span style={{ marginLeft: '0.25rem' }}>{text}</span>
-                                </>
-                              ) : <></>}
+                                        <>
+                                          <Text
+                                            type='danger'
+                                            strong
+                                          >
+                                            <WarningOutlined />
+                                          </Text>
+                                          <span style={{ marginLeft: '0.25rem' }}>{text}</span>
+                                        </>
+                                      ) : <></>}
                             </Option>
                           );
                         },
@@ -460,11 +460,13 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
                       <Button
                         disabled={prefiltered}
                         data-testid='enableFilterButton'
-                        onClick={() => {
-                          dispatch(setQCStepEnabled(
-                            currentStep.key, !stepEnabled,
-                          ));
+                        onClick={async () => {
                           dispatch(saveProcessingSettings(experimentId, currentStep.key));
+                          if (!processingConfig.meta.saveSettingsError) {
+                            dispatch(setQCStepEnabled(
+                              currentStep.key, !stepEnabled,
+                            ));
+                          }
                         }}
                       >
                         {
@@ -616,7 +618,7 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
             okText='Start'
           >
             <p>
-              This will take several minutes.
+              This might take several minutes.
               Your navigation within Cellenics will be restricted during this time.
               Do you want to start?
             </p>

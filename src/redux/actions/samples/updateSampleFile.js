@@ -1,13 +1,13 @@
 import moment from 'moment';
-import saveSamples from './saveSamples';
 
+import endUserMessages from 'utils/endUserMessages';
+import mergeObjectWithArrays from 'utils/mergeObjectWithArrays';
+import UploadStatus from 'utils/upload/UploadStatus';
+import handleError from 'utils/http/handleError';
 import {
   SAMPLES_FILE_UPDATE,
 } from '../../actionTypes/samples';
-import endUserMessages from '../../../utils/endUserMessages';
-import pushNotificationMessage from '../../../utils/pushNotificationMessage';
-import mergeObjectWithArrays from '../../../utils/mergeObjectWithArrays';
-import UploadStatus from '../../../utils/upload/UploadStatus';
+import saveSamples from './saveSamples';
 
 const updateSampleFile = (
   sampleUuid,
@@ -33,7 +33,8 @@ const updateSampleFile = (
 
       const newSample = mergeObjectWithArrays(sample, diffObject);
 
-      dispatch(saveSamples(sample.projectUuid, newSample));
+      const notifyUser = false;
+      await dispatch(saveSamples(sample.projectUuid, newSample, true, true, notifyUser));
     }
 
     dispatch({
@@ -46,7 +47,7 @@ const updateSampleFile = (
       },
     });
   } catch (e) {
-    pushNotificationMessage('error', endUserMessages.ERROR_SAVING);
+    handleError(e, endUserMessages.ERROR_SAVING);
   }
 };
 

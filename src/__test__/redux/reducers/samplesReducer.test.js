@@ -1,5 +1,5 @@
-import samplesReducer from '../../../redux/reducers/samples';
-import initialState, { sampleTemplate, sampleFileTemplate } from '../../../redux/reducers/samples/initialState';
+import samplesReducer from 'redux/reducers/samples';
+import initialState, { sampleTemplate, sampleFileTemplate } from 'redux/reducers/samples/initialState';
 
 import {
   SAMPLES_CREATE,
@@ -7,11 +7,11 @@ import {
   SAMPLES_FILE_UPDATE,
   SAMPLES_LOADED,
   SAMPLES_ERROR,
-  SAMPLES_DELETE,
+  SAMPLES_DELETE_API_V2,
   SAMPLES_SAVING,
   SAMPLES_SAVED,
   SAMPLES_METADATA_DELETE,
-} from '../../../redux/actionTypes/samples';
+} from 'redux/actionTypes/samples';
 
 describe('samplesReducer', () => {
   const mockUuid1 = 'asd123';
@@ -117,7 +117,7 @@ describe('samplesReducer', () => {
 
   it('Delete samples correctly', () => {
     const newState = samplesReducer(twoSamplesState, {
-      type: SAMPLES_DELETE,
+      type: SAMPLES_DELETE_API_V2,
       payload: {
         sampleUuids: [sample2.uuid],
       },

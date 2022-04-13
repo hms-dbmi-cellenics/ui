@@ -5,10 +5,10 @@ import {
 import PropTypes from 'prop-types';
 import { NextSeo } from 'next-seo';
 import { useSelector } from 'react-redux';
+import integrationTestConstants from 'utils/integrationTestConstants';
 import UserButton from './UserButton';
 import FeedbackButton from './FeedbackButton';
 import ReferralButton from './ReferralButton';
-import integrationTestConstants from '../utils/integrationTestConstants';
 
 const Header = (props) => {
   const {

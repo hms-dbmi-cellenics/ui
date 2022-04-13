@@ -5,7 +5,6 @@ import {
 } from 'antd';
 import PropTypes from 'prop-types';
 
-import pushNotificationMessage from 'utils/pushNotificationMessage';
 import launchPathwayService from 'utils/pathwayAnalysis/launchPathwayService';
 import getDiffExprGenes from 'utils/differentialExpression/getDiffExprGenes';
 import writeToFileURL from 'utils/writeToFileURL';
@@ -15,6 +14,8 @@ import getBackgroundExpressedGenes from 'utils/differentialExpression/getBackgro
 import enrichrSpecies from 'utils/pathwayAnalysis/enrichrConstants';
 import pantherDBSpecies from 'utils/pathwayAnalysis/pantherDBSpecies.json';
 import { pathwayServices } from 'utils/pathwayAnalysis/pathwayConstants';
+import handleError from 'utils/http/handleError';
+import endUserMessages from 'utils/endUserMessages';
 
 const marginSpacing = { marginBottom: '20px', marginTop: '20x' };
 const inlineButtonStyle = { padding: 0, height: '1rem' };
@@ -46,9 +47,8 @@ const LaunchPathwayAnalysisModal = (props) => {
     try {
       const genesList = await dispatch(getBackgroundExpressedGenes());
       cleanList = genesList.join('\n');
-    } catch (error) {
-      pushNotificationMessage('error', 'Failed getting background gene expression');
-      console.error('Error launching pathway analysis', error);
+    } catch (e) {
+      handleError(e, endUserMessages.ERROR_FETCH_BACKGROUND_GENE_EXP);
     } finally {
       setGettingBackgroundGenes(false);
     }
@@ -69,9 +69,8 @@ const LaunchPathwayAnalysisModal = (props) => {
     try {
       const pathwayGenesList = await dispatch(getDiffExprGenes(useAllGenes, numGenes));
       launchPathwayService(serviceName, pathwayGenesList, species);
-    } catch (error) {
-      pushNotificationMessage('error', 'Failed launching pathway analysis');
-      console.error('Error launching pathway analysis', error);
+    } catch (e) {
+      handleError(e, endUserMessages.ERROR_LAUNCH_PATHWAY);
     } finally {
       setLaunchingPathwayAnalysis(false);
     }

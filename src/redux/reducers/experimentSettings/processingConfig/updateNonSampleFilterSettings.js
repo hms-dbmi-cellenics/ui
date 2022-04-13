@@ -2,8 +2,8 @@ import _ from 'lodash';
 /* eslint-disable no-param-reassign */
 import produce, { current } from 'immer';
 
+import mergeObjectWithArrays from 'utils/mergeObjectWithArrays';
 import initialState from '../initialState';
-import mergeObjectWithArrays from '../../../../utils/mergeObjectWithArrays';
 
 const updateNonSampleFilterSettings = produce((draft, action) => {
   const { step, configChange, isALocalChange } = action.payload;

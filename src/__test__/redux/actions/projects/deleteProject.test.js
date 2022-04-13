@@ -1,18 +1,18 @@
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
-import deleteProject from '../../../../redux/actions/projects/deleteProject';
+import deleteProject from 'redux/actions/projects/deleteProject';
 
-import initialSampleState, { sampleTemplate } from '../../../../redux/reducers/samples/initialState';
-import initialProjectState, { projectTemplate } from '../../../../redux/reducers/projects/initialState';
+import initialSampleState, { sampleTemplate } from 'redux/reducers/samples/initialState';
+import initialProjectState, { projectTemplate } from 'redux/reducers/projects/initialState';
 
-import { SAMPLES_DELETE } from '../../../../redux/actionTypes/samples';
+import { SAMPLES_DELETE_API_V1 } from 'redux/actionTypes/samples';
 import {
   PROJECTS_DELETE, PROJECTS_SAVED, PROJECTS_SAVING, PROJECTS_SET_ACTIVE,
-} from '../../../../redux/actionTypes/projects';
-import { EXPERIMENTS_DELETED } from '../../../../redux/actionTypes/experiments';
+} from 'redux/actionTypes/projects';
+import { EXPERIMENTS_DELETED } from 'redux/actionTypes/experiments';
 
-jest.mock('../../../../redux/actions/projects/saveProject', () => { });
+jest.mock('redux/actions/projects/saveProject', () => { });
 
 enableFetchMocks();
 
@@ -105,7 +105,7 @@ describe('deleteProject action', () => {
     expect(actions[1].type).toEqual(EXPERIMENTS_DELETED);
 
     // Delete sample
-    expect(actions[2].type).toEqual(SAMPLES_DELETE);
+    expect(actions[2].type).toEqual(SAMPLES_DELETE_API_V1);
 
     // Delete project
     expect(actions[3].type).toEqual(PROJECTS_DELETE);
@@ -126,7 +126,7 @@ describe('deleteProject action', () => {
     expect(actions[1].type).toEqual(EXPERIMENTS_DELETED);
 
     // Delete sample
-    expect(actions[2].type).toEqual(SAMPLES_DELETE);
+    expect(actions[2].type).toEqual(SAMPLES_DELETE_API_V1);
 
     // Delete project
     expect(actions[3].type).toEqual(PROJECTS_DELETE);
@@ -150,7 +150,7 @@ describe('deleteProject action', () => {
     expect(actions[2].type).toEqual(EXPERIMENTS_DELETED);
 
     // Delete sample
-    expect(actions[3].type).toEqual(SAMPLES_DELETE);
+    expect(actions[3].type).toEqual(SAMPLES_DELETE_API_V1);
 
     // Delete project
     expect(actions[4].type).toEqual(PROJECTS_DELETE);

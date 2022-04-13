@@ -10,9 +10,9 @@ import {
   Switch,
 } from 'antd';
 
-import { updatePlotConfig } from '../../../redux/actions/componentConfig';
+import { updatePlotConfig } from 'redux/actions/componentConfig';
+import { getCellSetsHierarchy } from 'redux/selectors';
 import ReorderableList from '../../ReorderableList';
-import { getCellSetsHierarchy } from '../../../redux/selectors';
 
 const convertToReorderableListData = (cellClassKeys, selected, hierarchy) => (
   cellClassKeys.map((key) => {

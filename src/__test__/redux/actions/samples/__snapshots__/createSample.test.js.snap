@@ -11,7 +11,14 @@ Object {
   "metadata": Object {},
   "name": "test sample",
   "projectUuid": "qwe234",
-  "type": "10x Chromium",
+  "type": "10X Chromium",
   "uuid": "abc123",
+}
+`;
+
+exports[`createSample action Works correctly for api v2 1`] = `
+Object {
+  "name": "test sample",
+  "sampleTechnology": "10x",
 }
 `;

@@ -252,14 +252,14 @@ const DotPlotPage = (props) => {
           onGeneEnter={onGeneEnter}
         />
       </Panel>
-      <Panel header='Select data' key='15'>
+      <Panel header='Select data' key='select-data'>
         <SelectData
           config={config}
           onUpdate={updatePlotWithChanges}
           cellSets={cellSets}
         />
       </Panel>
-      <Panel header='Size scale' key='Size scale'>
+      <Panel header='Size scale' key='size-scale'>
         <Form>
           <Form.Item>
             <Radio.Group
@@ -384,7 +384,7 @@ const DotPlotPage = (props) => {
               config={config}
               onUpdate={updatePlotWithChanges}
               renderExtraPanels={renderExtraPanels}
-              defaultActivePanel='Gene selection'
+              defaultActiveKey='gene-selection'
             />
           </Col>
         </Row>

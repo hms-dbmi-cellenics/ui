@@ -15,13 +15,13 @@ const ViolinControls = (props) => {
 
   return (
     <Collapse>
-      <Panel header='Gene selection' key='Gene selection'>
+      <Panel header='Gene selection' key='gene-selection'>
         <SingleGeneSelection
           config={config}
           setSearchedGene={setSearchedGene}
         />
       </Panel>
-      <Panel header='Select data' key='Select data'>
+      <Panel header='Select data' key='select-data'>
         <SelectData
           config={config}
           onUpdate={onUpdate}
@@ -29,7 +29,7 @@ const ViolinControls = (props) => {
           axisName='x'
         />
       </Panel>
-      <Panel header='Data transformation' key='16'>
+      <Panel header='Data transformation' key='data-transformation'>
         {config ? (
           <div>
             <Form.Item>

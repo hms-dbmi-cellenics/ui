@@ -13,6 +13,11 @@ import { SAMPLES_CREATE, SAMPLES_SAVING, SAMPLES_ERROR } from 'redux/actionTypes
 
 import pushNotificationMessage from 'utils/pushNotificationMessage';
 
+import config from 'config';
+import { api } from 'utils/constants';
+
+jest.mock('config');
+
 pushNotificationMessage.mockImplementation(() => async () => { });
 
 enableFetchMocks();
@@ -29,7 +34,7 @@ describe('createSample action', () => {
   const projectUuid = 'qwe234';
   const experimentId = 'exp234';
 
-  const mockType = '10x Chromium';
+  const mockType = '10X Chromium';
 
   const mockProject = {
     ...projectTemplate,
@@ -71,7 +76,6 @@ describe('createSample action', () => {
 
   it('Runs correctly', async () => {
     fetchMock.mockResponse(JSON.stringify({}), { url: 'mockedUrl', status: 200 });
-
     const newUuid = await store.dispatch(createSample(projectUuid, sampleName, mockType));
 
     // Fetch call is made
@@ -94,9 +98,7 @@ describe('createSample action', () => {
   });
 
   it('Shows error message and throws an error when there is a fetch error', async () => {
-    const fetchErrorMessage = 'someFetchError';
-
-    fetchMock.mockResponse(JSON.stringify({ message: fetchErrorMessage }), { url: 'mockedUrl', status: 400 });
+    fetchMock.mockResponse(JSON.stringify({ message: 'error' }), { url: 'mockedUrl', status: 400 });
 
     let newUuid;
 
@@ -105,7 +107,7 @@ describe('createSample action', () => {
       newUuid = await store.dispatch(
         createSample(projectUuid, sampleName, mockType),
       );
-    }).rejects.toThrowError(fetchErrorMessage);
+    }).rejects.toThrow(endUserMessages.ERROR_CREATING_SAMPLE);
 
     // Sends correct actions
     const actions = store.getActions();
@@ -120,5 +122,30 @@ describe('createSample action', () => {
 
     // It should not return a uuid
     expect(newUuid).toBeUndefined();
+  });
+
+  it('Works correctly for api v2', async () => {
+    config.currentApiVersion = api.V2;
+    fetchMock.mockResponse(JSON.stringify({}), { url: 'mockedUrl', status: 200 });
+
+    const newUuid = await store.dispatch(createSample(projectUuid, sampleName, mockType));
+
+    // Fetch call is made
+    const fetchMockFirstCall = fetchMock.mock.calls[0];
+
+    const { body: fetchBody, method: fetchMethod } = fetchMockFirstCall[1];
+    expect(fetchMockFirstCall[0]).toEqual(`http://localhost:3000/v2/experiments/${mockProject.experiments[0]}/samples/${sampleUuid}`);
+
+    expect(fetchMethod).toEqual('POST');
+    expect(JSON.parse(fetchBody)).toMatchSnapshot();
+
+    // Sends correct actions
+    const actions = store.getActions();
+
+    expect(actions[0].type).toEqual(SAMPLES_SAVING);
+    expect(actions[1].type).toEqual(SAMPLES_CREATE);
+
+    // Returns a new sampleUuid
+    expect(newUuid).toEqual(sampleUuid);
   });
 });

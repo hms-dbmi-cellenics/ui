@@ -6,8 +6,8 @@ import {
 import {
   useSelector, useDispatch,
 } from 'react-redux';
-import { setCellSetHiddenStatus } from '../../../redux/actions/cellSets';
-import { getCellSets } from '../../../redux/selectors';
+import { setCellSetHiddenStatus } from 'redux/actions/cellSets';
+import { getCellSets } from 'redux/selectors';
 
 const HideButton = (props) => {
   const { cellSetKey } = props;

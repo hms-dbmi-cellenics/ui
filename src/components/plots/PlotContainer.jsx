@@ -3,37 +3,19 @@ import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 
 import {
-  Collapse, Button, Skeleton, Space,
+  Collapse, Button, Skeleton, Space, Tooltip,
 } from 'antd';
-
-import { LOAD_CONFIG } from 'redux/actionTypes/componentConfig';
-
-import { savePlotConfig } from 'redux/actions/componentConfig/index';
+import { InfoCircleOutlined } from '@ant-design/icons';
 import { initialPlotConfigStates } from 'redux/reducers/componentConfig/initialState';
 import _ from 'lodash';
+import { resetPlotConfig } from 'redux/actions/componentConfig';
 
 const { Panel } = Collapse;
 
-const ResetButton = ({ onClickReset, disabled }) => (
-  <Button
-    key='reset'
-    type='primary'
-    size='small'
-    onClick={onClickReset}
-    disabled={disabled}
-  >
-    Reset
-  </Button>
-);
-
-ResetButton.propTypes = {
-  onClickReset: PropTypes.func.isRequired,
-  disabled: PropTypes.bool.isRequired,
-};
-
 const PlotContainer = (props) => {
   const {
-    experimentId, plotUuid, plotType,
+    experimentId,
+    plotUuid, plotType, plotInfo,
     extra, showReset, children,
   } = props;
 
@@ -43,21 +25,10 @@ const PlotContainer = (props) => {
   const { config } = useSelector((state) => state.componentConfig[plotUuid] || {});
 
   const checkConfigEquality = (currentConfig, initialConfig) => {
-    const ignoredFields = {
-      // config fields that are set dynamically on component render
-      // should not be compared to their initial values
-      frequency: ['proportionGrouping', 'xAxisGrouping'],
-      embeddingCategorical: ['axes'],
-      embeddingContinuous: ['shownGene', 'axes'],
-      violin: ['shownGene'],
-      markerHeatmap: ['selectedGenes', 'groupedTracks'],
-      DotPlot: ['selectedGenes'],
-    };
-
-    const areAllValuesTheSame = Object.keys(initialConfig).every((key) => {
+    const isConfigEqual = Object.keys(initialConfig).every((key) => {
       // By pass plot data because we want to compare settings not data
       if (key === 'plotData') return true;
-      if (ignoredFields[plotType]?.includes(key)) return true;
+      if (initialConfig.keepValuesOnReset?.includes(key)) return true;
       if (typeof currentConfig[key] === 'object') {
         return JSON.stringify(currentConfig[key]) === JSON.stringify(initialConfig[key]);
       }
@@ -65,7 +36,7 @@ const PlotContainer = (props) => {
       return currentConfig[key] === initialConfig[key];
     });
 
-    return areAllValuesTheSame;
+    return isConfigEqual;
   };
 
   useEffect(() => {
@@ -83,16 +54,7 @@ const PlotContainer = (props) => {
 
   const onClickReset = (event) => {
     event.stopPropagation();
-    dispatch({
-      type: LOAD_CONFIG,
-      payload: {
-        experimentId,
-        plotUuid,
-        plotType,
-        config: _.cloneDeep(initialPlotConfigStates[plotType]),
-      },
-    });
-    dispatch(savePlotConfig(experimentId, plotUuid));
+    dispatch(resetPlotConfig(experimentId, plotUuid, plotType));
     setEnableReset(false);
   };
 
@@ -104,11 +66,20 @@ const PlotContainer = (props) => {
     <Space>
       {extra}
       {!showReset ? (
-        <ResetButton
+        <Button
           key='reset'
-          onClickReset={onClickReset}
+          type='primary'
+          size='small'
+          onClick={onClickReset}
           disabled={!enableReset}
-        />
+        >
+          Reset
+        </Button>
+      ) : ''}
+      {plotInfo ? (
+        <Tooltip title={plotInfo}>
+          <Button size='small' icon={<InfoCircleOutlined />} />
+        </Tooltip>
       ) : ''}
     </Space>
   );
