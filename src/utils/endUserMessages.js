@@ -28,6 +28,7 @@ export default {
   ERROR_NO_PERMISSIONS: 'You do not have permissions to perform that action.',
   ERROR_LAUNCH_PATHWAY: 'We couldn\'t launch pathway analysis',
   ERROR_SAVING: 'We couldn\'t save your data.',
+  ERROR_SAVING_PLOT_CONFIG: 'We couldn\'t save your plot configuration.',
   ERROR_STARTING_PIPLELINE: 'We couldn\'t start working on your data.',
   ERROR_SIGN_IN: 'We couldn\'t sign you in. Please try again.',
   FEEDBACK_ERROR: 'We couldn\'t process your feedback. Please try submitting again.',
