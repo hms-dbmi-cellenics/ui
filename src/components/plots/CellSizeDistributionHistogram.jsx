@@ -14,7 +14,6 @@ const CellSizeDistributionHistogram = (props) => {
 
   useEffect(() => {
     if (config && plotData) {
-      console.log('*** config', config);
       setPlotSpec(generateSpec(config, plotData, highestUmi));
     }
   }, [config, plotData]);
