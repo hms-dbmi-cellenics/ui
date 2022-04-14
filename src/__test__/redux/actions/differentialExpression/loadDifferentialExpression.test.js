@@ -1,19 +1,19 @@
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
-import loadDifferentialExpression from '../../../../redux/actions/differentialExpression/loadDifferentialExpression';
+import { fetchWork } from 'utils/work/fetchWork';
+import loadDifferentialExpression from 'redux/actions/differentialExpression/loadDifferentialExpression';
 
-import initialState from '../../../../redux/reducers/differentialExpression/initialState';
-import { fetchWork } from '../../../../utils/work/fetchWork';
+import initialState from 'redux/reducers/differentialExpression/initialState';
 
 import {
   DIFF_EXPR_LOADING, DIFF_EXPR_LOADED, DIFF_EXPR_ERROR,
-} from '../../../../redux/actionTypes/differentialExpression';
+} from 'redux/actionTypes/differentialExpression';
 
 import '__test__/test-utils/setupTests';
 
-jest.mock('../../../../utils/work/fetchWork');
+jest.mock('utils/work/fetchWork');
 
-jest.mock('../../../../utils/getTimeoutForWorkerTask', () => ({
+jest.mock('utils/getTimeoutForWorkerTask', () => ({
   __esModule: true, // this property makes it work
   default: () => 60,
 }));

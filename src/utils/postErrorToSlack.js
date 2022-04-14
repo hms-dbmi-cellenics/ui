@@ -6,8 +6,6 @@ const extractExperimentId = (url) => {
   return match ? match[1] : null;
 };
 
-const takeNumLines = (string, numLines) => string.split('\n').slice(0, numLines).join('\n');
-
 // Truncates data arrays so that it doesn't produce large logs
 const NUM_DATA_TO_SHOW = 20;
 const truncateCollection = (arr) => {
@@ -35,12 +33,12 @@ const trimOutput = (key, item) => {
   return item;
 };
 
-const buildErrorMessage = (error, componentStack, reduxDump, context) => {
+const buildErrorMessage = (error, info, reduxDump, context) => {
   const {
     user, timestamp, experimentId, url,
   } = context;
 
-  return (`
+  let message = `
     Uncaught UI Error - Exp ID ${experimentId} - ${timestamp}
 
     === DETAILS ===
@@ -50,12 +48,22 @@ const buildErrorMessage = (error, componentStack, reduxDump, context) => {
     Timestamp: ${timestamp}
 
     ===== ERROR =====
-    ${error.toString()}
-    ${takeNumLines(componentStack, 11)}
+    ${error.stack}
 
-    ===== REDUX STATE =====
-    ${JSON.stringify(reduxDump, trimOutput, 2)}`
-  );
+    `;
+
+  if (info?.componentStack) {
+    message += `===== COMPONENT STACK =====
+    ${info.componentStack}
+
+    `;
+  }
+
+  if (reduxDump) {
+    message += `===== REDUX STATE =====
+    ${JSON.stringify(reduxDump, trimOutput, 2)}`;
+  }
+  return message;
 };
 
 const postError = async (errorLog, context) => {
@@ -107,7 +115,6 @@ const postErrorToSlack = async (error, info, reduxDump) => {
   const timestamp = new Date().toISOString();
   const url = window.location.href;
   const experimentId = extractExperimentId(url);
-  const { componentStack } = info;
 
   const context = {
     user,
@@ -116,7 +123,7 @@ const postErrorToSlack = async (error, info, reduxDump) => {
     url,
   };
 
-  const errorLog = buildErrorMessage(error, componentStack, reduxDump, context);
+  const errorLog = buildErrorMessage(error, info, reduxDump, context);
   await postError(errorLog, context);
 };
 

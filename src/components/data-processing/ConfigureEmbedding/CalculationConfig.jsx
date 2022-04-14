@@ -8,11 +8,11 @@ import {
 } from 'antd';
 import PropTypes from 'prop-types';
 import { QuestionCircleOutlined } from '@ant-design/icons';
+
+import { updateFilterSettings, saveProcessingSettings } from 'redux/actions/experimentSettings';
+
+import { runCellSetsClustering } from 'redux/actions/cellSets';
 import PreloadContent from '../../PreloadContent';
-
-import { updateFilterSettings, saveProcessingSettings } from '../../../redux/actions/experimentSettings';
-
-import { runCellSetsClustering } from '../../../redux/actions/cellSets';
 
 import SliderWithInput from '../../SliderWithInput';
 

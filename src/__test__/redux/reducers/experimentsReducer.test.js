@@ -10,7 +10,7 @@ import {
   EXPERIMENTS_UPDATED,
   EXPERIMENTS_ERROR,
   EXPERIMENTS_DELETED,
-} from '../../../redux/actionTypes/experiments';
+} from 'redux/actionTypes/experiments';
 
 describe('experimentsReducer', () => {
   const experimentId1 = 'experiment-1';
@@ -203,27 +203,6 @@ describe('experimentsReducer', () => {
 
     expect(newState.ids).toEqual([experiment1.id]);
     expect(newState).toEqual(oneExperimentState);
-    expect(newState).toMatchSnapshot();
-  });
-
-  it('Returns state if experiment does not exist when updating', () => {
-    const invalidExperimentState = {
-      ...oneExperimentState,
-    };
-
-    delete invalidExperimentState[experimentId1];
-
-    const newState = experimentsReducer(invalidExperimentState, {
-      type: EXPERIMENTS_UPDATED,
-      payload: {
-        experimentId: experiment1.id,
-        experiment: updatedExperiment,
-      },
-    });
-
-    expect(newState.ids).toEqual([experiment1.id]);
-    expect(newState[experiment1.id]).toBe(undefined);
-    expect(newState).toEqual(invalidExperimentState);
     expect(newState).toMatchSnapshot();
   });
 

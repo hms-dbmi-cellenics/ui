@@ -1,7 +1,6 @@
-import fetchAPI from '../../../utils/fetchAPI';
-import { isServerError, throwIfRequestFailed } from '../../../utils/fetchErrors';
-import endUserMessages from '../../../utils/endUserMessages';
-import pushNotificationMessage from '../../../utils/pushNotificationMessage';
+import fetchAPI from 'utils/http/fetchAPI';
+import handleError from 'utils/http/handleError';
+import endUserMessages from 'utils/endUserMessages';
 import {
   PROJECTS_DELETE,
   PROJECTS_SET_ACTIVE,
@@ -11,7 +10,7 @@ import {
 } from '../../actionTypes/projects';
 
 import {
-  SAMPLES_DELETE,
+  SAMPLES_DELETE_API_V1,
 } from '../../actionTypes/samples';
 
 import {
@@ -34,7 +33,7 @@ const deleteProject = (
 
   const url = `/v1/projects/${projectUuid}`;
   try {
-    const response = await fetchAPI(
+    await fetchAPI(
       url,
       {
         method: 'DELETE',
@@ -43,9 +42,6 @@ const deleteProject = (
         },
       },
     );
-
-    const json = await response.json();
-    throwIfRequestFailed(response, json, endUserMessages.ERROR_SAVING);
 
     // If deleted project is the same as the active project, choose another project
     if (projectUuid === activeProjectUuid) {
@@ -65,7 +61,7 @@ const deleteProject = (
     });
 
     dispatch({
-      type: SAMPLES_DELETE,
+      type: SAMPLES_DELETE_API_V1,
       payload: {
         sampleUuids: projects[projectUuid].samples,
       },
@@ -80,15 +76,12 @@ const deleteProject = (
       type: PROJECTS_SAVED,
     });
   } catch (e) {
-    if (!isServerError(e)) {
-      console.error(`fetch ${url} error ${e.message}`);
-    }
-    pushNotificationMessage('error', endUserMessages.ERROR_DELETING_PROJECT);
+    const errorMessage = handleError(e, endUserMessages.ERROR_DELETING_PROJECT);
 
     dispatch({
       type: PROJECTS_ERROR,
       payload: {
-        error: endUserMessages.ERROR_DELETING_PROJECT,
+        error: errorMessage,
       },
     });
   }

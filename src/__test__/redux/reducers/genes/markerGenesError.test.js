@@ -1,4 +1,4 @@
-import markerGenesErrorReducer from '../../../../redux/reducers/genes/markerGenesError';
+import markerGenesErrorReducer from 'redux/reducers/genes/markerGenesError';
 
 describe('markerGenesError', () => {
   it('returns correct state', () => {

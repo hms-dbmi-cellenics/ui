@@ -19,9 +19,12 @@ import preloadAll from 'jest-next-dynamic';
 import fake from '__test__/test-utils/constants';
 import mockAPI, {
   generateDefaultMockAPIResponses,
+  promiseResponse,
   statusResponse,
 } from '__test__/test-utils/mockAPI';
 import createTestComponentFactory from '__test__/test-utils/testComponentFactory';
+
+jest.mock('components/UserButton', () => () => <></>);
 
 // Mock hash so we can control the ETag that is produced by hash.MD5 when fetching work requests
 // EtagParams is the object that's passed to the function which generates ETag in fetchWork
@@ -52,7 +55,10 @@ const plotUuid = 'markerHeatmapPlotMain';
 let storeState = null;
 
 const customAPIResponses = {
-  [`/plots-tables/${plotUuid}`]: () => statusResponse(404, 'Not Found'),
+  [`/plots-tables/${plotUuid}`]: (req) => {
+    if (req.method === 'PUT') return promiseResponse(JSON.stringify('OK'));
+    return statusResponse(404, 'Not Found');
+  },
 };
 
 const defaultResponses = _.merge(
@@ -147,7 +153,9 @@ describe('Marker heatmap plot', () => {
       expect(screen.getByText(geneName)).toBeInTheDocument();
     });
 
-    userEvent.click(screen.getByText('Marker genes'));
+    await act(async () => {
+      userEvent.click(screen.getByText('Marker genes'));
+    });
 
     expect(screen.getByText('Number of marker genes per cluster')).toBeInTheDocument();
 
@@ -160,7 +168,9 @@ describe('Marker heatmap plot', () => {
     });
 
     // Go back to "Custom Genes" and check the number of genes
-    userEvent.click(screen.getByText('Custom genes'));
+    await act(async () => {
+      userEvent.click(screen.getByText('Custom genes'));
+    });
 
     // The genes in Data 2 should exist
     markerGenesData2.order.forEach((geneName) => {
@@ -176,7 +186,7 @@ describe('Marker heatmap plot', () => {
       .mockImplementationOnce((ETag) => mockWorkerResponses[ETag])
       // 2nd load
       .mockImplementationOnce(() => null)
-      .mockImplementationOnce((ETag) => mockWorkerResponses[ETag]);
+      .mockImplementation((ETag) => mockWorkerResponses[ETag]);
 
     await renderHeatmapPage(storeState);
 

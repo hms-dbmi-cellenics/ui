@@ -7,7 +7,7 @@ import {
   useSelector, useDispatch,
 } from 'react-redux';
 
-import { setCellInfoFocus } from '../redux/actions/cellInfo';
+import { setCellInfoFocus } from 'redux/actions/cellInfo';
 
 const FocusButton = (props) => {
   const { store, lookupKey, experimentId } = props;

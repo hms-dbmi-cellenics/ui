@@ -1,6 +1,6 @@
-import getBackendStatus from '../../../../redux/selectors/backendStatus/getBackendStatus';
+import getBackendStatus from 'redux/selectors/backendStatus/getBackendStatus';
 
-import { initialExperimentBackendStatus } from '../../../../redux/reducers/backendStatus/initialState';
+import { initialExperimentBackendStatus } from 'redux/reducers/backendStatus/initialState';
 
 describe('getBackendStatus', () => {
   const mockExperimentId = 'testExperimentId';
