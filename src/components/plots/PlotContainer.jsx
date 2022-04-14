@@ -18,7 +18,7 @@ import MultiTileContainer from 'components/MultiTileContainer';
 
 const PLOT = 'Plot';
 const CONTROLS = 'Controls';
-const DEFAULT_ORIENTATION = 'column';
+const DEFAULT_ORIENTATION = 'row';
 
 const PlotContainer = (props) => {
   const {
@@ -88,7 +88,7 @@ const PlotContainer = (props) => {
   }
 
   const renderPlotToolbarControls = () => (
-    <Space>
+    <Space style={{ marginRight: '0.5em' }}>
       {extraToolbarControls}
       {!enableReset ? (
         <Button
@@ -112,7 +112,7 @@ const PlotContainer = (props) => {
   const TILE_MAP = {
     [PLOT]: {
       toolbarControls: renderPlotToolbarControls(),
-      component: () => children,
+      component: () => <center>{children}</center>,
       style: { backgroundColor: 'white' },
     },
     [CONTROLS]: {

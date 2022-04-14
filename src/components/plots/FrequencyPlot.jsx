@@ -37,11 +37,7 @@ const FrequencyPlot = (props) => {
     }
   }, [hierarchy, properties, config]);
 
-  return (
-    <center>
-      <Vega spec={plotSpec} renderer='canvas' actions={actions} />
-    </center>
-  );
+  return <Vega spec={plotSpec} renderer='canvas' actions={actions} />;
 };
 
 FrequencyPlot.propTypes = {
@@ -56,7 +52,7 @@ FrequencyPlot.propTypes = {
 
 FrequencyPlot.defaultProps = {
   actions: true,
-  formatCSVData: () => {},
+  formatCSVData: () => { },
 };
 
 export default FrequencyPlot;

@@ -135,7 +135,7 @@ const FrequencyPlotPage = ({ experimentId }) => {
 
   const renderExtraPanels = () => (
     <>
-      <Panel header='Select data' key='Select data'>
+      <Panel header='Select data' key='select-data'>
         <SelectCellSets
           config={config}
           onUpdate={updatePlotWithChanges}

@@ -302,7 +302,7 @@ const MarkerHeatmap = ({ experimentId }) => {
 
   const renderExtraPanels = () => (
     <>
-      <Panel header='Gene selection' key='Gene selection'>
+      <Panel header='Gene selection' key='gene-selection'>
         <Space direction='vertical' size='small'>
           <MarkerGeneSelection
             config={config}

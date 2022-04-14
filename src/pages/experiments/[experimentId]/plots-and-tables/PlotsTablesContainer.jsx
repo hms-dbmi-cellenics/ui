@@ -156,9 +156,14 @@ const PlotsTablesContainer = (props) => {
 };
 
 PlotsTablesContainer.propTypes = {
-  width: PropTypes.number.isRequired,
-  height: PropTypes.number.isRequired,
   experimentId: PropTypes.string.isRequired,
+  width: PropTypes.number,
+  height: PropTypes.number,
+};
+
+PlotsTablesContainer.defaultProps = {
+  width: null,
+  height: null,
 };
 
 export default PlotsTablesContainer;

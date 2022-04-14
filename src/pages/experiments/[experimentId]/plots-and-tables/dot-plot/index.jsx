@@ -239,7 +239,7 @@ const DotPlotPage = (props) => {
 
   const renderExtraPanels = () => (
     <>
-      <Panel header='Gene selection' key='Gene selection'>
+      <Panel header='Gene selection' key='gene-selection'>
         <MarkerGeneSelection
           config={config}
           onUpdate={updatePlotWithChanges}
