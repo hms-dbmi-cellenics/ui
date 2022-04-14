@@ -51,6 +51,13 @@ const generateSpec = (config, plotData, cellSetLegendsData) => {
       {
         name: 'values',
         values: plotData,
+        // Vega internally modifies objects during data transforms. If the plot data is frozen,
+        // Vega is not able to carry out the transform and will throw an error.
+        // https://github.com/vega/vega/issues/2453#issuecomment-604516777
+        format: {
+          type: 'json',
+          copy: true,
+        },
       },
       {
         name: 'labels',
