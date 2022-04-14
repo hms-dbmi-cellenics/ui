@@ -1,7 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
 import {
-  Row,
-  Col,
   Collapse,
   Skeleton,
   Empty,
@@ -13,7 +11,6 @@ import ExportAsCSV from 'components/plots/ExportAsCSV';
 import PropTypes from 'prop-types';
 import Header from 'components/Header';
 import PlotContainer from 'components/plots/PlotContainer';
-import PlotStyling from 'components/plots/styling/PlotStyling';
 import { Vega } from 'react-vega';
 
 import loadDifferentialExpression from 'redux/actions/differentialExpression/loadDifferentialExpression';
@@ -94,7 +91,7 @@ const VolcanoPlotPage = (props) => {
     }
   }, [config, plotData]);
 
-  const plotStylingControlsConfig = [
+  const plotStylingConfig = [
     {
       panelTitle: 'Main schema',
       controls: [{
@@ -234,29 +231,17 @@ const VolcanoPlotPage = (props) => {
   return (
     <>
       <Header title={plotNames.VOLCANO_PLOT} />
-      <div style={{ width: '100%', padding: '0 16px' }}>
-        <Row gutter={16}>
-          <Col span={16}>
-            <PlotContainer
-              experimentId={experimentId}
-              plotUuid={plotUuid}
-              plotType={plotType}
-              extra={generateExportDropdown()}
-            >
-              <center>{renderPlot()}</center>
-            </PlotContainer>
-          </Col>
-          <Col span={8}>
-            <PlotStyling
-              formConfig={plotStylingControlsConfig}
-              config={config}
-              onUpdate={updatePlotWithChanges}
-              renderExtraPanels={renderExtraPanels}
-              defaultActiveKey='differential-expression'
-            />
-          </Col>
-        </Row>
-      </div>
+      <PlotContainer
+        experimentId={experimentId}
+        plotUuid={plotUuid}
+        plotType={plotType}
+        plotStylingConfig={plotStylingConfig}
+        extraToolbarControls={generateExportDropdown()}
+        extraControlPanels={renderExtraPanels()}
+        defaultActiveKey='differential-expression'
+      >
+        {renderPlot()}
+      </PlotContainer>
     </>
   );
 };
