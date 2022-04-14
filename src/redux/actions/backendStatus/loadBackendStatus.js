@@ -28,6 +28,7 @@ const loadBackendStatus = (experimentId) => async (dispatch) => {
 
   try {
     const status = await fetchAPI(url);
+
     dispatch({
       type: BACKEND_STATUS_LOADED,
       payload: {
