@@ -8,7 +8,6 @@ import {
 } from 'antd';
 import { InfoCircleOutlined } from '@ant-design/icons';
 import { initialPlotConfigStates } from 'redux/reducers/componentConfig/initialState';
-import _ from 'lodash';
 import {
   updatePlotConfig,
   resetPlotConfig,
@@ -41,8 +40,8 @@ const PlotContainer = (props) => {
     dispatch(updatePlotConfig(plotUuid, obj));
   };
 
-  const checkConfigEquality = (currentConfig, initialConfig) => {
-    const isConfigEqual = Object.keys(initialConfig).every((key) => {
+  const isConfigEqual = (currentConfig, initialConfig) => {
+    const isEqual = Object.keys(initialConfig).every((key) => {
       // By pass plot data because we want to compare settings not data
       if (key === 'plotData') return true;
       if (initialConfig.keepValuesOnReset?.includes(key)) return true;
@@ -53,7 +52,7 @@ const PlotContainer = (props) => {
       return currentConfig[key] === initialConfig[key];
     });
 
-    return isConfigEqual;
+    return isEqual;
   };
 
   const handleResize = () => {
@@ -70,7 +69,7 @@ const PlotContainer = (props) => {
       return;
     }
 
-    if (_.isEqualWith(config, initialPlotConfigStates[plotType], checkConfigEquality)) {
+    if (isConfigEqual(config, initialPlotConfigStates[plotType])) {
       setEnableReset(false);
       return;
     }
@@ -152,7 +151,8 @@ PlotContainer.propTypes = {
   plotUuid: PropTypes.string.isRequired,
   plotType: PropTypes.string.isRequired,
   plotInfo: PropTypes.string,
-  plotStylingConfig: PropTypes.arrayOf(PropTypes.Object),
+  plotStylingConfig: PropTypes.arrayOf(PropTypes.object),
+  defaultActiveKey: PropTypes.string || PropTypes.arrayOf(PropTypes.string),
   extraToolbarControls: PropTypes.node || PropTypes.arrayOf(PropTypes.node),
   extraControlPanels: PropTypes.node || PropTypes.arrayOf(PropTypes.node),
   children: PropTypes.node,

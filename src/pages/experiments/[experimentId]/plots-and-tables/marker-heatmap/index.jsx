@@ -1,12 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import {
-  Row,
-  Col,
   Space,
   Collapse,
   Skeleton,
   Empty,
-  Typography,
   Select,
   Radio,
 } from 'antd';
@@ -25,7 +22,6 @@ import HeatmapMetadataTracksSettings from 'components/data-exploration/heatmap/H
 
 import MarkerGeneSelection from 'components/plots/styling/MarkerGeneSelection';
 import loadProcessingSettings from 'redux/actions/experimentSettings/processingConfig/loadProcessingSettings';
-import PlotStyling from 'components/plots/styling/PlotStyling';
 import { updatePlotConfig, loadPlotConfig } from 'redux/actions/componentConfig';
 import Header from 'components/Header';
 import PlotContainer from 'components/plots/PlotContainer';
@@ -37,7 +33,6 @@ import Loader from 'components/Loader';
 import populateHeatmapData from 'components/plots/helpers/heatmap/populateHeatmapData';
 import { plotNames } from 'utils/constants';
 
-const { Text } = Typography;
 const { Panel } = Collapse;
 const plotUuid = 'markerHeatmapPlotMain';
 const plotType = 'markerHeatmap';
@@ -248,6 +243,126 @@ const MarkerHeatmap = ({ experimentId }) => {
     dispatch(updatePlotConfig(plotUuid, updatedField));
   };
 
+  const plotStylingConfig = [
+    {
+      panelTitle: 'Expression values',
+      controls: ['expressionValuesType', 'expressionValuesCapping'],
+    },
+    {
+      panelTitle: 'Main schema',
+      controls: ['dimensions'],
+      children: [
+        {
+          panelTitle: 'Title',
+          controls: ['title'],
+        },
+        {
+          panelTitle: 'Font',
+          controls: ['font'],
+        },
+      ],
+    },
+    {
+      panelTitle: 'Colours',
+      controls: ['colourScheme'],
+    },
+    {
+      panelTitle: 'Legend',
+      controls: [
+        {
+          name: 'legend',
+          props: {
+            option: {
+              positions: 'horizontal-vertical',
+            },
+          },
+        },
+      ],
+    },
+  ];
+  const onGeneEnter = (genes) => {
+    dispatch(loadGeneExpression(experimentId, genes, plotUuid));
+  };
+
+  const onReset = () => {
+    onGeneEnter([]);
+    dispatch(loadMarkerGenes(
+      experimentId,
+      louvainClustersResolution,
+      plotUuid,
+      config.nMarkerGenes,
+      config.selectedCellSet,
+    ));
+  };
+
+  if (!config || cellSets.loading || hierarchy.length === 0) {
+    return (<Skeleton />);
+  }
+
+  const clustersForSelect = getSelectOptions(cellOptions);
+
+  const changeClusters = (option) => {
+    const newValue = option.value.toLowerCase();
+    updatePlotWithChanges({ selectedCellSet: newValue });
+  };
+
+  const renderExtraPanels = () => (
+    <>
+      <Panel header='Gene selection' key='Gene selection'>
+        <Space direction='vertical' size='small'>
+          <MarkerGeneSelection
+            config={config}
+            onUpdate={updatePlotWithChanges}
+            onGeneEnter={onGeneEnter}
+            onReset={onReset}
+          />
+          <div>
+            <p>Gene labels:</p>
+            <Radio.Group
+              onChange={
+                (e) => updatePlotWithChanges({ showGeneLabels: e.target.value })
+              }
+              value={config.showGeneLabels}
+            >
+              <Radio value>Show</Radio>
+              <Radio value={false}>Hide</Radio>
+            </Radio.Group>
+          </div>
+        </Space>
+      </Panel>
+      <Panel header='Select data' key='select-data'>
+        <Space direction='vertical' size='small'>
+          <p>Select the cell sets to show markers for:</p>
+          <Select
+            value={{
+              value: config.selectedCellSet,
+            }}
+            onChange={changeClusters}
+            labelInValue
+            style={{ width: '100%' }}
+            placeholder='Select cell set...'
+            options={clustersForSelect}
+          />
+        </Space>
+      </Panel>
+      <Panel header='Cluster guardlines' key='cluster-guardlines'>
+        <Radio.Group
+          value={config.guardLines}
+          onChange={(e) => updatePlotWithChanges({ guardLines: e.target.value })}
+        >
+          <Radio value>Show</Radio>
+          <Radio value={false}>Hide</Radio>
+        </Radio.Group>
+      </Panel>
+      <Panel header='Metadata tracks' key='metadata-tracks'>
+        <HeatmapMetadataTracksSettings componentType={plotUuid} />
+      </Panel>
+      <Panel header='Group by' key='group-by'>
+        <HeatmapGroupBySettings componentType={plotUuid} />
+      </Panel>
+    </>
+  );
+
   const renderPlot = () => {
     if (error) {
       return (
@@ -286,10 +401,7 @@ const MarkerHeatmap = ({ experimentId }) => {
 
     if (loadedMarkerGenes.length === 0) {
       return (
-        <Empty description={(
-          <Text>Add some genes to this heatmap to get started.</Text>
-        )}
-        />
+        <Empty description='Add some genes to this heatmap to get started.' />
       );
     }
 
@@ -298,155 +410,19 @@ const MarkerHeatmap = ({ experimentId }) => {
     }
   };
 
-  const onGeneEnter = (genes) => {
-    dispatch(loadGeneExpression(experimentId, genes, plotUuid));
-  };
-
-  const onReset = () => {
-    onGeneEnter([]);
-    dispatch(loadMarkerGenes(
-      experimentId,
-      louvainClustersResolution,
-      plotUuid,
-      config.nMarkerGenes,
-      config.selectedCellSet,
-    ));
-  };
-
-  const plotStylingControlsConfig = [
-    {
-      panelTitle: 'Expression values',
-      controls: ['expressionValuesType', 'expressionValuesCapping'],
-    },
-    {
-      panelTitle: 'Main schema',
-      controls: ['dimensions'],
-      children: [
-        {
-          panelTitle: 'Title',
-          controls: ['title'],
-        },
-        {
-          panelTitle: 'Font',
-          controls: ['font'],
-        },
-      ],
-    },
-    {
-      panelTitle: 'Colours',
-      controls: ['colourScheme'],
-    },
-    {
-      panelTitle: 'Legend',
-      controls: [
-        {
-          name: 'legend',
-          props: {
-            option: {
-              positions: 'horizontal-vertical',
-            },
-          },
-        },
-      ],
-    },
-  ];
-
-  if (!config || cellSets.loading || hierarchy.length === 0) {
-    return (<Skeleton />);
-  }
-
-  const changeClusters = (option) => {
-    const newValue = option.value.toLowerCase();
-
-    updatePlotWithChanges({ selectedCellSet: newValue });
-  };
-
-  const clustersForSelect = getSelectOptions(cellOptions);
-
-  const renderExtraPanels = () => (
-    <>
-      <Panel header='Gene selection' key='Gene selection'>
-        <Space direction='vertical' size='small'>
-          <MarkerGeneSelection
-            config={config}
-            onUpdate={updatePlotWithChanges}
-            onGeneEnter={onGeneEnter}
-            onReset={onReset}
-          />
-          <div>
-            <p>Gene labels:</p>
-            <Radio.Group
-              onChange={
-                (e) => updatePlotWithChanges({ showGeneLabels: e.target.value })
-              }
-              value={config.showGeneLabels}
-            >
-              <Radio value>Show</Radio>
-              <Radio value={false}>Hide</Radio>
-            </Radio.Group>
-          </div>
-        </Space>
-      </Panel> 
-      <Panel header='Select data' key='select-data'>
-        <Space direction='vertical' size='small'>
-          <p>Select the cell sets to show markers for:</p>
-          <Select
-            value={{
-              value: config.selectedCellSet,
-            }}
-            onChange={changeClusters}
-            labelInValue
-            style={{ width: '100%' }}
-            placeholder='Select cell set...'
-            options={clustersForSelect}
-          />
-        </Space>
-      </Panel>
-      <Panel header='Cluster guardlines' key='cluster-guardlines'>
-        <Radio.Group
-          value={config.guardLines}
-          onChange={(e) => updatePlotWithChanges({ guardLines: e.target.value })}
-        >
-          <Radio value>Show</Radio>
-          <Radio value={false}>Hide</Radio>
-        </Radio.Group>
-      </Panel>
-      <Panel header='Metadata tracks' key='metadata-tracks'>
-        <HeatmapMetadataTracksSettings componentType={plotUuid} />
-      </Panel>
-      <Panel header='Group by' key='group-by'>
-        <HeatmapGroupBySettings componentType={plotUuid} />
-      </Panel>
-    </>
-  );
-
   return (
     <>
       <Header title={plotNames.MARKER_HEATMAP} />
-      <div style={{ width: '100%', padding: '0 16px' }}>
-        <Row gutter={16}>
-          <Col span={16}>
-            <PlotContainer
-              experimentId={experimentId}
-              plotUuid={plotUuid}
-              plotType={plotType}
-            >
-              <center>
-                {renderPlot()}
-              </center>
-            </PlotContainer>
-          </Col>
-          <Col span={8}>
-            <PlotStyling
-              formConfig={plotStylingControlsConfig}
-              config={config}
-              onUpdate={updatePlotWithChanges}
-              renderExtraPanels={renderExtraPanels}
-              defaultActiveKey='gene-selection'
-            />
-          </Col>
-        </Row>
-      </div>
+      <PlotContainer
+        experimentId={experimentId}
+        plotUuid={plotUuid}
+        plotType={plotType}
+        plotStylingConfig={plotStylingConfig}
+        extraControlPanels={renderExtraPanels()}
+        defaultActiveKey='gene-selection'
+      >
+        {renderPlot()}
+      </PlotContainer>
     </>
   );
 };

@@ -100,7 +100,7 @@ PlotStyling.propTypes = {
   formConfig: PropTypes.array,
   config: PropTypes.object,
   onUpdate: PropTypes.func.isRequired,
-  extraPanels: PropTypes.arrayOf(PropTypes.node),
+  extraPanels: PropTypes.node,
   defaultActiveKey: PropTypes.oneOfType([
     PropTypes.string,
     PropTypes.array,
@@ -110,7 +110,7 @@ PlotStyling.propTypes = {
 PlotStyling.defaultProps = {
   formConfig: [],
   config: {},
-  extraPanels: [],
+  extraPanels: {},
   defaultActiveKey: [],
 };
 
