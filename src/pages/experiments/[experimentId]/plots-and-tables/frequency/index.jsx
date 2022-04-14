@@ -20,14 +20,12 @@ import ExportAsCSV from 'components/plots/ExportAsCSV';
 import { getCellSets, getCellSetsHierarchyByKeys } from 'redux/selectors';
 import SelectCellSets from 'components/plots/styling/frequency/SelectCellSets';
 
-import PlotStyling from 'components/plots/styling/PlotStyling';
 import { updatePlotConfig, loadPlotConfig } from 'redux/actions/componentConfig';
 import loadCellSets from 'redux/actions/cellSets/loadCellSets';
 
 import plotCsvFilename from 'utils/fileNames';
 import { plotNames } from 'utils/constants';
-import MultiTileContainer from 'components/MultiTileContainer';
-import ResetButton from 'components/plots/PlotResetButton';
+import PlotContainer from 'components/plots/PlotContainer';
 
 const { Panel } = Collapse;
 
@@ -49,24 +47,13 @@ const FrequencyPlotPage = ({ experimentId }) => {
 
   const [csvData, setCsvData] = useState([]);
   const [csvFilename, setCsvFilename] = useState('');
-  const [tileDirection, setTileDirection] = useState('column');
-
-  const handleResize = () => {
-    const direction = window.innerWidth > 1024 ? 'row' : 'column';
-    if (tileDirection !== direction) setTileDirection(direction);
-  };
 
   useEffect(() => {
-    dispatch(loadCellSets(experimentId));
     dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
-    window.addEventListener('resize', handleResize);
+    dispatch(loadCellSets(experimentId));
   }, []);
 
-  const updatePlotWithChanges = (obj) => {
-    dispatch(updatePlotConfig(plotUuid, obj));
-  };
-
-  const plotStylingControlsConfig = [
+  const plotStylingConfig = [
     {
       panelTitle: 'Main schema',
       controls: ['dimensions'],
@@ -111,6 +98,7 @@ const FrequencyPlotPage = ({ experimentId }) => {
   if (!config) {
     return <Skeleton />;
   }
+
   const formatCSVData = (plotData) => {
     const newCsvData = [];
 
@@ -131,15 +119,18 @@ const FrequencyPlotPage = ({ experimentId }) => {
     setCsvFilename(plotCsvFilename(experimentName, 'FREQUENCY_PLOT', [config.frequencyType]));
     setCsvData(newCsvData);
   };
+
+  const updatePlotWithChanges = (obj) => {
+    dispatch(updatePlotConfig(plotUuid, obj));
+  };
+
   const changePlotType = (value) => {
+    const chosenType = value.target.value;
+
     updatePlotWithChanges({
-      frequencyType: value.target.value,
+      frequencyType: chosenType,
+      axes: { yAxisText: chosenType === 'proportional' ? 'Proportion' : 'Count' },
     });
-    if (value.target.value === 'proportional') {
-      updatePlotWithChanges({ axes: { yAxisText: 'Proportion' } });
-    } else {
-      updatePlotWithChanges({ axes: { yAxisText: 'Count' } });
-    }
   };
 
   const renderExtraPanels = () => (
@@ -190,48 +181,19 @@ const FrequencyPlotPage = ({ experimentId }) => {
     );
   };
 
-  const PLOT = 'Plot';
-  const CONTROLS = 'Controls';
-
-  const TILE_MAP = {
-    [PLOT]: {
-      toolbarControls: [
-        <ExportAsCSV data={csvData} filename={csvFilename} />,
-        <ResetButton />,
-      ],
-      component: () => renderPlot(),
-      style: { backgroundColor: 'white' },
-    },
-    [CONTROLS]: {
-      toolbarControls: [],
-      component: () => (
-        <PlotStyling
-          formConfig={plotStylingControlsConfig}
-          config={config}
-          onUpdate={updatePlotWithChanges}
-          renderExtraPanels={renderExtraPanels}
-          defaultActivePanel='Select data'
-        />
-      ),
-      style: { margin: '-10px' },
-    },
-  };
-
-  const windows = {
-    direction: tileDirection,
-    first: PLOT,
-    second: CONTROLS,
-    splitPercentage: 75,
-  };
-
   return (
     <>
       <Header title={plotNames.FREQUENCY_PLOT} />
-      <MultiTileContainer
-        style={{ backgroundColor: 'white' }}
-        tileMap={TILE_MAP}
-        initialArrangement={windows}
-      />
+      <PlotContainer
+        experimentId={experimentId}
+        plotUuid={plotUuid}
+        plotType={plotType}
+        plotStylingConfig={plotStylingConfig}
+        extraToolbarControls={<ExportAsCSV data={csvData} filename={csvFilename} />}
+        extraControlPanels={renderExtraPanels()}
+      >
+        {renderPlot()}
+      </PlotContainer>
     </>
   );
 };

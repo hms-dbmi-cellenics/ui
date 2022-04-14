@@ -30,7 +30,7 @@ const { Panel } = Collapse;
 
 const PlotStyling = (props) => {
   const {
-    formConfig, config, onUpdate, renderExtraPanels, defaultActivePanel,
+    formConfig, config, onUpdate, extraPanels, defaultActivePanel,
   } = props;
 
   const ComponentMapping = {
@@ -90,7 +90,7 @@ const PlotStyling = (props) => {
 
   return (
     <Collapse defaultActiveKey={defaultActivePanel}>
-      {renderExtraPanels()}
+      {extraPanels}
       {buildForm(formConfig)}
     </Collapse>
   );
@@ -100,7 +100,7 @@ PlotStyling.propTypes = {
   formConfig: PropTypes.array,
   config: PropTypes.object,
   onUpdate: PropTypes.func.isRequired,
-  renderExtraPanels: PropTypes.func,
+  extraPanels: PropTypes.arrayOf(PropTypes.node),
   defaultActivePanel: PropTypes.oneOfType([
     PropTypes.string,
     PropTypes.array,
@@ -110,7 +110,7 @@ PlotStyling.propTypes = {
 PlotStyling.defaultProps = {
   formConfig: [],
   config: {},
-  renderExtraPanels: () => { },
+  extraPanels: [],
   defaultActivePanel: [],
 };
 
