@@ -25,7 +25,7 @@ const PlotContainer = (props) => {
   const {
     experimentId,
     plotUuid, plotType, plotInfo,
-    plotStylingConfig,
+    plotStylingConfig, defaultActiveKey,
     extraToolbarControls, extraControlPanels,
     enableReset,
     children,
@@ -124,7 +124,7 @@ const PlotContainer = (props) => {
           config={config}
           onUpdate={updatePlotWithChanges}
           extraPanels={extraControlPanels}
-          defaultActivePanel='Select data'
+          defaultActiveKey={defaultActiveKey}
         />
       ),
       style: { margin: '-10px' },
