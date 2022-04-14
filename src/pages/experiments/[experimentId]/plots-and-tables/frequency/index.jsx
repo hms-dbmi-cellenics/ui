@@ -191,6 +191,7 @@ const FrequencyPlotPage = ({ experimentId }) => {
         plotStylingConfig={plotStylingConfig}
         extraToolbarControls={<ExportAsCSV data={csvData} filename={csvFilename} />}
         extraControlPanels={renderExtraPanels()}
+        defaultActiveKey='select-data'
       >
         {renderPlot()}
       </PlotContainer>
