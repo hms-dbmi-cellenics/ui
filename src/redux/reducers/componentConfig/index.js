@@ -1,15 +1,16 @@
 import {
-  UPDATE_CONFIG, SAVE_CONFIG, LOAD_CONFIG,
+  UPDATE_CONFIG, SAVE_CONFIG, LOAD_CONFIG, RESET_CONFIG,
   PLOT_DATA_LOADED, PLOT_DATA_LOADING, PLOT_DATA_ERROR,
 } from 'redux/actionTypes/componentConfig';
 
-import initialState from './initialState';
-import loadConfig from './loadConfig';
-import updateConfig from './updateConfig';
-import saveConfig from './saveConfig';
-import plotDataLoaded from './plotDataLoaded';
-import plotDataLoading from './plotDataLoading';
-import plotDataError from './plotDataError';
+import initialState from 'redux/reducers/componentConfig/initialState';
+import loadConfig from 'redux/reducers/componentConfig/loadConfig';
+import updateConfig from 'redux/reducers/componentConfig/updateConfig';
+import saveConfig from 'redux/reducers/componentConfig/saveConfig';
+import resetConfig from 'redux/reducers/componentConfig/resetConfig';
+import plotDataLoaded from 'redux/reducers/componentConfig/plotDataLoaded';
+import plotDataLoading from 'redux/reducers/componentConfig/plotDataLoading';
+import plotDataError from 'redux/reducers/componentConfig/plotDataError';
 
 const plotsReducer = (state = initialState, action) => {
   switch (action.type) {
@@ -17,6 +18,8 @@ const plotsReducer = (state = initialState, action) => {
       return loadConfig(state, action);
     case UPDATE_CONFIG:
       return updateConfig(state, action);
+    case RESET_CONFIG:
+      return resetConfig(state, action);
     case SAVE_CONFIG:
       return saveConfig(state, action);
     case PLOT_DATA_LOADED:

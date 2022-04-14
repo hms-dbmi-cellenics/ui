@@ -16,8 +16,8 @@ Object {
         "offset": 10,
         "titleFontSize": 13,
         "xAxisRotateLabels": false,
-        "xAxisText": "",
-        "yAxisText": "",
+        "xAxisText": "Umap 1",
+        "yAxisText": "Umap 2",
       },
       "colour": Object {
         "gradient": "default",

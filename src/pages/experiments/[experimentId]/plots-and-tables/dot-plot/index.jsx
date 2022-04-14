@@ -4,13 +4,12 @@ import React, {
 import {
   Row,
   Col,
-  Space,
+  Typography,
   Collapse,
   Skeleton,
   Empty,
   Form,
   Radio,
-  Typography,
 } from 'antd';
 
 import _ from 'lodash';
@@ -23,7 +22,8 @@ import { loadCellSets } from 'redux/actions/cellSets';
 import PlotStyling from 'components/plots/styling/PlotStyling';
 import SelectData from 'components/plots/styling/SelectData';
 import MarkerGeneSelection from 'components/plots/styling/MarkerGeneSelection';
-import PlotHeader from 'components/plots/PlotHeader';
+import Header from 'components/Header';
+import PlotContainer from 'components/plots/PlotContainer';
 import Loader from 'components/Loader';
 import ExportAsCSV from 'components/plots/ExportAsCSV';
 import fileNames from 'utils/fileNames';
@@ -252,14 +252,14 @@ const DotPlotPage = (props) => {
           onGeneEnter={onGeneEnter}
         />
       </Panel>
-      <Panel header='Select data' key='15'>
+      <Panel header='Select data' key='select-data'>
         <SelectData
           config={config}
           onUpdate={updatePlotWithChanges}
           cellSets={cellSets}
         />
       </Panel>
-      <Panel header='Size scale' key='absolute-scale'>
+      <Panel header='Size scale' key='size-scale'>
         <Form>
           <Form.Item>
             <Radio.Group
@@ -365,35 +365,30 @@ const DotPlotPage = (props) => {
 
   return (
     <>
-      <PlotHeader
-        title={plotNames.DOT_PLOT}
-        plotUuid={plotUuid}
-        experimentId={experimentId}
-      />
-      <Space direction='vertical' style={{ width: '100%', padding: '0 10px' }}>
+      <Header title={plotNames.DOT_PLOT} />
+      <div style={{ width: '100%', padding: '0 16px' }}>
         <Row gutter={16}>
           <Col span={16}>
-            <Space direction='vertical' style={{ width: '100%' }}>
-              <Collapse defaultActiveKey='1'>
-                <Panel header='Preview' key='1' extra={renderCSVbutton()}>
-                  {renderPlot()}
-                </Panel>
-              </Collapse>
-            </Space>
+            <PlotContainer
+              experimentId={experimentId}
+              plotUuid={plotUuid}
+              plotType={plotType}
+              extra={renderCSVbutton()}
+            >
+              {renderPlot()}
+            </PlotContainer>
           </Col>
           <Col span={8}>
-            <Space direction='vertical' style={{ width: '100%' }}>
-              <PlotStyling
-                formConfig={plotStylingControlsConfig}
-                config={config}
-                onUpdate={updatePlotWithChanges}
-                renderExtraPanels={renderExtraPanels}
-                defaultActiveKey='gene-selection'
-              />
-            </Space>
+            <PlotStyling
+              formConfig={plotStylingControlsConfig}
+              config={config}
+              onUpdate={updatePlotWithChanges}
+              renderExtraPanels={renderExtraPanels}
+              defaultActiveKey='gene-selection'
+            />
           </Col>
         </Row>
-      </Space>
+      </div>
     </>
   );
 };
