@@ -89,7 +89,7 @@ const PlotStyling = (props) => {
   });
 
   return (
-    <Collapse defaultActiveKey={defaultActiveKey}>
+    <Collapse defaultActiveKey={defaultActiveKey} accordion>
       {extraPanels}
       {buildForm(formConfig)}
     </Collapse>
