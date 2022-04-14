@@ -1,7 +1,7 @@
 import { api } from 'utils/constants';
 
 const config = {
-  currentApiVersion: api.V2,
+  currentApiVersion: api.V1,
 };
 
 export default config;
