@@ -1,12 +1,9 @@
 import React, { useEffect, useState, useRef } from 'react';
-import {
-  Row, Col, Skeleton, Empty, Typography,
-} from 'antd';
+import { Skeleton, Empty } from 'antd';
 import _ from 'lodash';
 import { useSelector, useDispatch } from 'react-redux';
 import { Vega } from 'react-vega';
 import PropTypes from 'prop-types';
-import PlotStyling from 'components/plots/styling/PlotStyling';
 import { updatePlotConfig, loadPlotConfig } from 'redux/actions/componentConfig';
 import Header from 'components/Header';
 import PlotContainer from 'components/plots/PlotContainer';
@@ -20,10 +17,6 @@ import HeatmapControls from 'components/plots/styling/heatmap/HeatmapControls';
 import { getCellSets } from 'redux/selectors';
 import { plotNames } from 'utils/constants';
 
-const { Text } = Typography;
-
-// TODO: when we want to enable users to create their custom plots,
-// we will need to change this to proper Uuid
 const plotUuid = 'heatmapPlotMain';
 const plotType = 'heatmap';
 
@@ -36,10 +29,12 @@ const HeatmapPlot = ({ experimentId }) => {
   const selectedGenes = useSelector((state) => state.genes.expression.views[plotUuid]?.data) || [];
   const [vegaSpec, setVegaSpec] = useState();
   const displaySavedGenes = useRef(true);
+
   useEffect(() => {
     dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
     dispatch(loadCellSets(experimentId));
   }, []);
+
   useEffect(() => {
     if (!config || _.isEmpty(expressionData)) {
       return;
@@ -72,32 +67,14 @@ const HeatmapPlot = ({ experimentId }) => {
     }
 
     const data = populateHeatmapData(cellSets, config, expressionData, selectedGenes);
-    const spec = generateSpec(config, 'Cluster ID', data.trackGroupData);
-    const newVegaSpec = {
-      ...spec,
-      axes: [...spec.axes, ...displayLabels()],
-      data: spec.data.map((datum) => ({
-        ...datum,
-        values: data[datum.name],
-      })),
-    };
-    setVegaSpec(newVegaSpec);
-  }, [expressionData, config, cellSets]);
+    const displayLabels = selectedGenes.length <= 53;
+    const spec = generateSpec(config, 'Cluster ID', data, displayLabels);
 
-  const displayLabels = () => {
-    // if there are more than 53 genes - do not display the labels axe
-    const labels = [
-      {
-        domain: false,
-        orient: 'left',
-        scale: 'y',
-      },
-    ];
-    if (selectedGenes.length <= 53) {
-      return labels;
-    }
-    return [];
-  };
+    const extraMarks = { type: 'rule' };
+    spec.marks.push(extraMarks);
+
+    setVegaSpec(spec);
+  }, [expressionData, config, cellSets]);
 
   // updatedField is a subset of what default config has and contains only the things we want change
   const updatePlotWithChanges = (updatedField) => {
@@ -109,7 +86,7 @@ const HeatmapPlot = ({ experimentId }) => {
     dispatch(loadGeneExpression(experimentId, genes, plotUuid));
   };
 
-  const plotStylingControlsConfig = [
+  const plotStylingConfig = [
     {
       panelTitle: 'Expression values',
       controls: ['expressionValuesType', 'expressionValuesCapping'],
@@ -147,6 +124,14 @@ const HeatmapPlot = ({ experimentId }) => {
     },
   ];
 
+  const renderExtraPanels = () => (
+    <HeatmapControls
+      selectedGenes={selectedGenes}
+      plotUuid={plotUuid}
+      onGeneEnter={onGeneEnter}
+    />
+  );
+
   const renderPlot = () => {
     if (!config || loading.length > 0 || cellSets.loading) {
       return (
@@ -166,10 +151,7 @@ const HeatmapPlot = ({ experimentId }) => {
 
     if (selectedGenes.length === 0) {
       return (
-        <Empty description={(
-          <Text>Add some genes to this heatmap to get started.</Text>
-        )}
-        />
+        <Empty description='Add some genes to this heatmap to get started.' />
       );
     }
     if (vegaSpec) {
@@ -184,36 +166,16 @@ const HeatmapPlot = ({ experimentId }) => {
   return (
     <>
       <Header title={plotNames.HEATMAP} />
-      <div style={{ width: '100%', padding: '0 16px' }}>
-
-        <Row gutter={16}>
-          <Col span={16}>
-            <PlotContainer
-              experimentId={experimentId}
-              plotUuid={plotUuid}
-              plotType={plotType}
-            >
-              <center>
-                {renderPlot()}
-              </center>
-            </PlotContainer>
-          </Col>
-          <Col span={8}>
-            <PlotStyling
-              formConfig={plotStylingControlsConfig}
-              config={config}
-              onUpdate={updatePlotWithChanges}
-              renderExtraPanels={() => (
-                <HeatmapControls
-                  selectedGenes={selectedGenes}
-                  plotUuid={plotUuid}
-                  onGeneEnter={onGeneEnter}
-                />
-              )}
-            />
-          </Col>
-        </Row>
-      </div>
+      <PlotContainer
+        experimentId={experimentId}
+        plotUuid={plotUuid}
+        plotType={plotType}
+        plotStylingConfig={plotStylingConfig}
+        extraControlPanels={renderExtraPanels()}
+        defaultActiveKey='select-data'
+      >
+        {renderPlot()}
+      </PlotContainer>
     </>
   );
 };

@@ -209,34 +209,28 @@ const MarkerHeatmap = ({ experimentId }) => {
     }
 
     const data = populateHeatmapData(cellSets, config, expressionData, config.selectedGenes, true);
+    const spec = generateSpec(config, 'Cluster ID', data, true);
 
-    const spec = generateSpec(config, 'Cluster ID', data.trackGroupData, plotUuid);
-
-    const newVegaSpec = {
-      ...spec,
-      axes: [...spec.axes, ...displayLabels()],
-      data: spec.data.map((datum) => ({
-        ...datum,
-        values: data[datum.name],
-      })),
-    };
-    setVegaSpec(newVegaSpec);
-  }, [config, cellSets]);
-
-  const displayLabels = () => {
-    // if there are more than 53 genes - do not display the labels axe
-    const labels = [
-      {
-        domain: false,
-        orient: 'left',
-        scale: 'y',
+    const extraMarks = {
+      type: 'rule',
+      from: { data: 'clusterSeparationLines' },
+      encode: {
+        enter: {
+          stroke: { value: 'white' },
+        },
+        update: {
+          x: { scale: 'x', field: 'data' },
+          y: 0,
+          y2: { field: { group: 'height' } },
+          strokeWidth: { value: 1 },
+          strokeOpacity: { value: 1 },
+        },
       },
-    ];
-    if (config.showGeneLabels) {
-      return labels;
-    }
-    return [];
-  };
+    };
+    spec.marks.push(extraMarks);
+
+    setVegaSpec(spec);
+  }, [config, cellSets]);
 
   // updatedField is a subset of what default config has and contains only the things we want change
   const updatePlotWithChanges = (updatedField) => {
