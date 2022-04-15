@@ -14,6 +14,8 @@ const ClassifierConfig = (props) => {
     config, disabled, updateSettings,
   } = props;
 
+  console.log('**** using the props ', config, disabled, updateSettings);
+
   return (
     <>
       <Form.Item label='FDR'>

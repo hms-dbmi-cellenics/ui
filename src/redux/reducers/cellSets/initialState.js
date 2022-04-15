@@ -1,7 +1,7 @@
 const initialState = {
   properties: {},
   hierarchy: [],
-  selected: {},
+  selected: [],
   loading: true,
   error: false,
   updatingClustering: false,

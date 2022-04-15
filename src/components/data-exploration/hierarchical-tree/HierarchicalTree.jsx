@@ -29,7 +29,6 @@ const HierarchicalTree = (props) => {
   } = props;
 
   const [checkedKeys, setCheckedKeys] = useState(propDefaultCheckedKeys);
-  const [expandedKeys, setExpandedKeys] = useState(propDefaultCheckedKeys);
 
   useEffect(() => {
     if (checkedKeys.length > 0) {
@@ -155,7 +154,6 @@ const HierarchicalTree = (props) => {
       return;
     }
 
-    setExpandedKeys(treeData.map((n) => n.key));
     setRenderedTreeData(renderTitlesRecursive(treeData));
   }, [treeData]);
 
@@ -165,10 +163,6 @@ const HierarchicalTree = (props) => {
     <Tree
       checkable
       draggable
-      onExpand={(keys) => {
-        setExpandedKeys(keys);
-      }}
-      expandedKeys={expandedKeys}
       onCheck={onCheck}
       treeData={renderedTreeData}
       checkedKeys={checkedKeys}

@@ -76,14 +76,8 @@ describe('CellSetsTool', () => {
       );
     });
 
-    // There should be a tab for cell sets
-    screen.getByText(/Cell sets/);
-
-    // // There should be a tab for metadata
-    screen.getByText(/Metadata/i);
-
     const editButtons = screen.getAllByLabelText(/Edit/);
-    expect(editButtons.length).toEqual(15);
+    expect(editButtons.length).toEqual(2);
 
     // There should be no delete buttons.
     const deleteButtons = screen.queryByText(/Delete/);
@@ -103,12 +97,6 @@ describe('CellSetsTool', () => {
     await act(async () => {
       storeState.dispatch(createCellSet(experimentId, 'New Cluster', '#3957ff', new Set([1, 2, 3, 4, 5])));
     });
-
-    // There should be a tab for cell sets
-    screen.getByText(/Cell sets/);
-
-    // // There should be a tab for metadata
-    screen.getByText(/Metadata/);
 
     // There should be delete buttons for clusters under Custom cell sets.
     const deleteButtons = screen.getAllByLabelText(/Delete/);

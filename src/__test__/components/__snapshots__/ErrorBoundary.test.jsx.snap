@@ -40,7 +40,7 @@ Array [
       "hierarchy": Array [],
       "loading": true,
       "properties": Object {},
-      "selected": Object {},
+      "selected": Array [],
       "updatingClustering": false,
     },
     "componentConfig": Object {},
