@@ -42,6 +42,7 @@ const generateSpec = (config, plotData, cellSetLegendsData) => {
   }
   return {
     $schema: 'https://vega.github.io/schema/vega/v5.json',
+    description: 'Categorical embedding plot',
     width: config?.dimensions.width,
     height: config?.dimensions.height,
     autosize: { type: 'fit', resize: true },
