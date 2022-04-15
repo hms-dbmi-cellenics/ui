@@ -1,6 +1,6 @@
-import getTimeoutForWorkerTask from '../../utils/getTimeoutForWorkerTask';
+import getTimeoutForWorkerTask from 'utils/getTimeoutForWorkerTask';
 
-jest.mock('../../redux/selectors/getNumberOfCellsInGrouping', () => ({
+jest.mock('redux/selectors/getNumberOfCellsInGrouping', () => ({
   __esModule: true, // this property makes it work
   default: () => 20,
 }));

@@ -2,9 +2,9 @@ import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 
-import initialSampleState from '../../../../redux/reducers/samples/initialState';
-import { SAMPLES_ERROR, SAMPLES_LOADED } from '../../../../redux/actionTypes/samples';
-import { loadSamples } from '../../../../redux/actions/samples';
+import initialSampleState from 'redux/reducers/samples/initialState';
+import { SAMPLES_ERROR, SAMPLES_LOADED } from 'redux/actionTypes/samples';
+import { loadSamples } from 'redux/actions/samples';
 
 enableFetchMocks();
 

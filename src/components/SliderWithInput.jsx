@@ -6,7 +6,7 @@ import {
 
 import _ from 'lodash';
 
-import useUpdateThrottled from '../utils/customHooks/useUpdateThrottled';
+import useUpdateThrottled from 'utils/customHooks/useUpdateThrottled';
 
 const SliderWithInput = (props) => {
   const {

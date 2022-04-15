@@ -1,10 +1,10 @@
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
-import setComparisonType from '../../../../redux/actions/differentialExpression/setComparisonType';
+import setComparisonType from 'redux/actions/differentialExpression/setComparisonType';
 
-import { DIFF_EXPR_COMPARISON_TYPE_SET } from '../../../../redux/actionTypes/differentialExpression';
+import { DIFF_EXPR_COMPARISON_TYPE_SET } from 'redux/actionTypes/differentialExpression';
 
-import initialState from '../../../../redux/reducers/differentialExpression/initialState';
+import initialState from 'redux/reducers/differentialExpression/initialState';
 
 import '__test__/test-utils/setupTests';
 

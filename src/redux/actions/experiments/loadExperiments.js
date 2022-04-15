@@ -1,7 +1,6 @@
-import fetchAPI from 'utils/fetchAPI';
-import { isServerError, throwIfRequestFailed } from 'utils/fetchErrors';
-import endUserMessages from 'utils/endUserMessages';
-import pushNotificationMessage from 'utils/pushNotificationMessage';
+import fetchAPI from 'utils/http/fetchAPI';
+import handleError from 'utils/http/handleError';
+
 import {
   EXPERIMENTS_LOADED,
   EXPERIMENTS_ERROR,
@@ -58,18 +57,12 @@ const loadExperiments = (
 
     if (config.currentApiVersion === api.V1) {
       url = `/v1/projects/${projectUuid}/experiments`;
-      const response = await fetchAPI(url);
-      data = await response.json();
-
-      throwIfRequestFailed(response, data, endUserMessages.ERROR_FETCHING_EXPERIMENTS);
+      data = await fetchAPI(url);
     } else if (config.currentApiVersion === api.V2) {
       url = `/v2/experiments/${projectUuid}`;
-      const response = await fetchAPI(url);
-      const dataV2 = await response.json();
+      data = await fetchAPI(url);
 
-      throwIfRequestFailed(response, data, endUserMessages.ERROR_FETCHING_EXPERIMENTS);
-
-      data = [toApiV1(dataV2)];
+      data = [toApiV1(data)];
     }
 
     dispatch({
@@ -79,19 +72,14 @@ const loadExperiments = (
       },
     });
   } catch (e) {
-    let { message } = e;
-    if (!isServerError(e)) {
-      console.error(`fetch ${url} error ${message}`);
-      message = endUserMessages.CONNECTION_ERROR;
-    }
+    const errorMessage = handleError(e);
+
     dispatch({
       type: EXPERIMENTS_ERROR,
       payload: {
-        error: message,
+        error: errorMessage,
       },
     });
-
-    pushNotificationMessage('error', message);
   }
 };
 

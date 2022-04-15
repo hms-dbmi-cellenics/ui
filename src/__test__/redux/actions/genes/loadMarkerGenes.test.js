@@ -1,15 +1,15 @@
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
-import loadMarkerGenes from '../../../../redux/actions/genes/loadMarkerGenes';
-import { MARKER_GENES_ERROR, MARKER_GENES_LOADED, MARKER_GENES_LOADING } from '../../../../redux/actionTypes/genes';
-import initialState from '../../../../redux/reducers/genes/initialState';
-import { fetchWork } from '../../../../utils/work/fetchWork';
+import { fetchWork } from 'utils/work/fetchWork';
+import loadMarkerGenes from 'redux/actions/genes/loadMarkerGenes';
+import { MARKER_GENES_ERROR, MARKER_GENES_LOADED, MARKER_GENES_LOADING } from 'redux/actionTypes/genes';
+import initialState from 'redux/reducers/genes/initialState';
 
 import '__test__/test-utils/setupTests';
 
-jest.mock('../../../../utils/work/fetchWork');
+jest.mock('utils/work/fetchWork');
 
-jest.mock('../../../../utils/getTimeoutForWorkerTask', () => ({
+jest.mock('utils/getTimeoutForWorkerTask', () => ({
   __esModule: true, // this property makes it work
   default: () => 60,
 }));

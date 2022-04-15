@@ -1,8 +1,10 @@
+import fetchAPI from 'utils/http/fetchAPI';
 import updateExperimentInfo from 'redux/actions/experimentSettings/updateExperimentInfo';
-import { getFromApiExpectOK } from 'utils/getDataExpectOK';
 
 import config from 'config';
 import { api } from 'utils/constants';
+import APIError from 'utils/http/errors/APIError';
+import httpStatusCodes from 'utils/http/httpStatusCodes';
 
 const toApiV1 = (experimentV2) => {
   const {
@@ -42,20 +44,29 @@ const getExperimentInfo = async (context, store, Auth) => {
     return;
   }
 
-  const user = await Auth.currentAuthenticatedUser();
+  let user;
+  try {
+    user = await Auth.currentAuthenticatedUser();
+  } catch (e) {
+    if (e === 'The user is not authenticated') {
+      throw new APIError(httpStatusCodes.UNAUTHORIZED);
+    }
+    throw e;
+  }
+
   const jwt = user.getSignInUserSession().getIdToken().getJwtToken();
 
   const url = `${req.protocol}://${req.get('host')}${req.originalUrl}`;
 
   let experimentData;
   if (config.currentApiVersion === api.V1) {
-    experimentData = await getFromApiExpectOK(
+    experimentData = await fetchAPI(
       `/v1/experiments/${experimentId}`,
       {},
       { uiUrl: url, jwt },
     );
   } else if (config.currentApiVersion === api.V2) {
-    const experimentDataV2 = await getFromApiExpectOK(
+    const experimentDataV2 = await fetchAPI(
       `/v2/experiments/${experimentId}`,
       {},
       { uiUrl: url, jwt },

@@ -1,16 +1,16 @@
 /* eslint-disable no-param-reassign */
 import _ from 'lodash';
-import fetchAPI from '../../../utils/fetchAPI';
-import { isServerError, throwIfRequestFailed } from '../../../utils/fetchErrors';
-import endUserMessages from '../../../utils/endUserMessages';
-import pushNotificationMessage from '../../../utils/pushNotificationMessage';
-import { SAMPLES_ERROR, SAMPLES_SAVING, SAMPLES_SAVED } from '../../actionTypes/samples';
+import fetchAPI from 'utils/http/fetchAPI';
+import { SAMPLES_ERROR, SAMPLES_SAVING, SAMPLES_SAVED } from 'redux/actionTypes/samples';
+import endUserMessages from 'utils/endUserMessages';
+import handleError from 'utils/http/handleError';
 
 const saveSamples = (
   projectUuid,
   newSample,
   addSample = true,
   notifySave = true,
+  notifyUser = true,
 ) => async (dispatch, getState) => {
   const { projects, samples } = getState();
 
@@ -51,7 +51,7 @@ const saveSamples = (
 
   const url = `/v1/projects/${projectUuid}/${experimentId}/samples`;
   try {
-    const response = await fetchAPI(
+    await fetchAPI(
       url,
       {
         method: 'PUT',
@@ -62,28 +62,22 @@ const saveSamples = (
       },
     );
 
-    const json = await response.json();
-    throwIfRequestFailed(response, json, endUserMessages.ERROR_SAVING);
-
     if (notifySave) {
       dispatch({
         type: SAMPLES_SAVED,
       });
     }
   } catch (e) {
-    let { message } = e;
-    if (!isServerError(e)) {
-      console.error(`fetch ${url} error ${message}`);
-      message = endUserMessages.ERROR_SAVING;
-    }
+    const errorMessage = handleError(e, endUserMessages.ERROR_SAVING, notifyUser);
+
     dispatch({
       type: SAMPLES_ERROR,
       payload: {
-        error: message,
+        error: errorMessage,
       },
     });
-    pushNotificationMessage('error', message);
-    return Promise.reject(message);
+
+    throw e;
   }
 };
 

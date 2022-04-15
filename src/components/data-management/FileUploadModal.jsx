@@ -16,10 +16,11 @@ import {
 import { CheckCircleTwoTone, CloseCircleTwoTone, DeleteOutlined } from '@ant-design/icons';
 import Dropzone from 'react-dropzone';
 import techOptions from 'utils/upload/fileUploadSpecifications';
-import pushNotificationMessage from 'utils/pushNotificationMessage';
+import handleError from 'utils/http/handleError';
 import { fileObjectToFileRecord } from 'utils/upload/processUpload';
 
 import integrationTestConstants from 'utils/integrationTestConstants';
+import endUserMessages from 'utils/endUserMessages';
 
 const { Text, Title, Paragraph } = Typography;
 const { Option } = Select;
@@ -53,8 +54,7 @@ const FileUploadModal = (props) => {
       });
 
     if (filesNotInFolder) {
-      pushNotificationMessage('error',
-        'Only files contained in a folder are accepted');
+      handleError('error', endUserMessages.ERROR_FILES_FOLDER);
     }
 
     const newFiles = await Promise.all(filteredFiles.map((file) => (

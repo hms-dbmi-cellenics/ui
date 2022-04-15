@@ -5,9 +5,9 @@ import {
 import PropTypes from 'prop-types';
 import moment from 'moment';
 
-import WorkResponseError from 'utils/WorkResponseError';
-import WorkGenericError from 'utils/WorkGenericError';
-import WorkTimeoutError from 'utils/WorkTimeoutError';
+import WorkResponseError from 'utils/http/errors/WorkResponseError';
+import WorkGenericError from 'utils/http/errors/WorkGenericError';
+import WorkTimeoutError from 'utils/http/errors/WorkTimeoutError';
 
 const { Text } = Typography;
 
@@ -101,7 +101,7 @@ const PlatformError = (props) => {
 PlatformError.propTypes = {
   description: PropTypes.string,
   error: PropTypes.oneOfType([
-    PropTypes.string, PropTypes.object,
+    PropTypes.string, PropTypes.object, PropTypes.bool,
   ]),
   actionable: PropTypes.bool,
   onClick: PropTypes.func,

@@ -4,7 +4,7 @@ import { ClipLoader, BounceLoader } from 'react-spinners';
 import { Typography } from 'antd';
 import useSWR from 'swr';
 
-import { getFromApiExpectOK } from '../utils/getDataExpectOK';
+import fetchAPI from 'utils/http/fetchAPI';
 
 const { Text } = Typography;
 
@@ -51,7 +51,7 @@ const fastLoad = (message) => (
 const Loader = ({ experimentId }) => {
   const { data: workerStatus } = useSWR(
     () => (experimentId ? `/v1/experiments/${experimentId}/backendStatus` : null),
-    getFromApiExpectOK,
+    fetchAPI,
   );
 
   if (!workerStatus) {

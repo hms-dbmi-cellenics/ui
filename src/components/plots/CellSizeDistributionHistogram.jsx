@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Vega } from 'react-vega';
 
+import generateSpec from 'utils/plotSpecs/generateCellSizeDistributionHistogram';
 import EmptyPlot from './helpers/EmptyPlot';
-import generateSpec from '../../utils/plotSpecs/generateCellSizeDistributionHistogram';
 
 const CellSizeDistributionHistogram = (props) => {
   const {

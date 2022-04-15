@@ -3,8 +3,8 @@ import thunk from 'redux-thunk';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import {
   EXPERIMENT_SETTINGS_PROCESSING_SAVE,
-} from '../../../../redux/actionTypes/experimentSettings';
-import saveProcessingSettings from '../../../../redux/actions/experimentSettings/processingConfig/saveProcessingSettings';
+} from 'redux/actionTypes/experimentSettings';
+import saveProcessingSettings from 'redux/actions/experimentSettings/processingConfig/saveProcessingSettings';
 import generateExperimentSettingsMock from '../../../test-utils/experimentSettings.mock';
 
 import '__test__/test-utils/setupTests';

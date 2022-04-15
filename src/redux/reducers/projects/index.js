@@ -28,10 +28,11 @@ import projectsLoaded from './projectsLoaded';
 import projectsLoading from './projectsLoading';
 
 import {
-  SAMPLES_CREATE,
+  SAMPLES_CREATE, SAMPLES_DELETE_API_V2,
 } from '../../actionTypes/samples';
 
 import samplesCreate from './samplesCreate';
+import samplesDelete from './samplesDelete';
 
 const projectsReducer = (state = initialState, action) => {
   switch (action.type) {
@@ -85,6 +86,10 @@ const projectsReducer = (state = initialState, action) => {
 
     case SAMPLES_CREATE: {
       return samplesCreate(state, action);
+    }
+
+    case SAMPLES_DELETE_API_V2: {
+      return samplesDelete(state, action);
     }
 
     default: {
