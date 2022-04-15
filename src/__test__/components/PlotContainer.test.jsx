@@ -17,6 +17,12 @@ import { act } from 'react-dom/test-utils';
 
 enableFetchMocks();
 
+jest.mock('react-resize-detector', () => (props) => {
+  // eslint-disable-next-line react/prop-types
+  const { children } = props;
+  return children({ width: 800, height: 800 });
+});
+
 const plotType = plotTypes.DOT_PLOT;
 const plotUuid = 'DotPlotMain';
 const experimentId = fake.EXPERIMENT_ID;
@@ -65,10 +71,24 @@ describe('PlotContainer', () => {
     expect(screen.getByText('Reset')).toBeInTheDocument();
   });
 
-  it('Renders extra elements', async () => {
-    renderPlotContainer(store, { extra: <div>Extra element</div> });
+  it('Renders extra toolbar button', async () => {
+    const toolbarText = 'Extra toolbar button';
+    renderPlotContainer(store, { extraToolbarControls: <div>{toolbarText}</div> });
 
-    expect(screen.getByText('Extra element')).toBeInTheDocument();
+    expect(screen.getByText(toolbarText)).toBeInTheDocument();
+  });
+
+  it('Renders extra control panels', async () => {
+    const controlPanelText = 'control panel text';
+    renderPlotContainer(store, { extraControlPanels: <div>{controlPanelText}</div> });
+
+    expect(screen.getByText(controlPanelText)).toBeInTheDocument();
+  });
+
+  it('Not showing reset removes the reset button', async () => {
+    renderPlotContainer(store, { showReset: false });
+
+    expect(screen.queryByText('Reset')).toBeNull();
   });
 
   it('Renders tooltips', async () => {
@@ -86,7 +106,7 @@ describe('PlotContainer', () => {
     });
   });
 
-  it.only('Clicking reset button resets the plot config', async () => {
+  it('Clicking reset button resets the plot config', async () => {
     const defaultWidth = initialPlotConfigStates[plotType].dimensions.width;
 
     renderPlotContainer(store);

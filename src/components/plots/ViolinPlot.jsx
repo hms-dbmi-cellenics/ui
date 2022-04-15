@@ -130,6 +130,7 @@ const ViolinPlot = (props) => {
         />
       );
     }
+
     if (!selectedCellSetClassAvailable) {
       return (
         <PlatformError
@@ -139,6 +140,7 @@ const ViolinPlot = (props) => {
         />
       );
     }
+
     if (highestDispersionError) {
       return (
         <PlatformError
@@ -151,6 +153,7 @@ const ViolinPlot = (props) => {
         />
       );
     }
+
     if (geneExpression.error) {
       return (
         <PlatformError

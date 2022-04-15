@@ -71,6 +71,7 @@ const HeatmapPlot = ({ experimentId }) => {
     const spec = generateSpec(config, 'Cluster ID', data, displayLabels);
 
     const extraMarks = { type: 'rule' };
+    spec.description = 'Heatmap';
     spec.marks.push(extraMarks);
 
     setVegaSpec(spec);

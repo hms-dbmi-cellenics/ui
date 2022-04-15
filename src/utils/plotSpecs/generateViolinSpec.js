@@ -8,7 +8,7 @@ const generateSpec = (config, plotData) => {
 
   const spec = {
     $schema: 'https://vega.github.io/schema/vega/v5.json',
-    description: 'A set of violin plot depicting gene expression accross groupings.',
+    description: 'Violin plot',
     width: config.dimensions.width,
     height: config.dimensions.height,
     autosize: { type: 'fit', resize: true },

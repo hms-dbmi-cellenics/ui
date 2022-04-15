@@ -26,13 +26,13 @@ const PlotContainer = (props) => {
     plotUuid, plotType, plotInfo,
     plotStylingConfig, defaultActiveKey,
     extraToolbarControls, extraControlPanels,
-    enableReset,
+    showReset,
     children,
   } = props;
 
   const dispatch = useDispatch();
 
-  const [resetEnabled, setEnableReset] = useState(enableReset);
+  const [resetDisabled, setResetDisabled] = useState(true);
   const [tileDirection, setTileDirection] = useState(DEFAULT_ORIENTATION);
   const { config } = useSelector((state) => state.componentConfig[plotUuid] || {});
 
@@ -70,17 +70,17 @@ const PlotContainer = (props) => {
     }
 
     if (isConfigEqual(config, initialPlotConfigStates[plotType])) {
-      setEnableReset(false);
+      setResetDisabled(true);
       return;
     }
 
-    setEnableReset(true);
+    setResetDisabled(false);
   }, [config]);
 
   const onClickReset = (event) => {
     event.stopPropagation();
     dispatch(resetPlotConfig(experimentId, plotUuid, plotType));
-    setEnableReset(false);
+    setResetDisabled(true);
   };
 
   if (!config) {
@@ -90,13 +90,13 @@ const PlotContainer = (props) => {
   const renderPlotToolbarControls = () => (
     <Space style={{ marginRight: '0.5em' }}>
       {extraToolbarControls}
-      {!enableReset ? (
+      {showReset ? (
         <Button
           key='reset'
           type='primary'
           size='small'
           onClick={onClickReset}
-          disabled={!resetEnabled}
+          disabled={resetDisabled}
         >
           Reset
         </Button>
@@ -156,7 +156,7 @@ PlotContainer.propTypes = {
   extraToolbarControls: PropTypes.node || PropTypes.arrayOf(PropTypes.node),
   extraControlPanels: PropTypes.node || PropTypes.arrayOf(PropTypes.node),
   children: PropTypes.node,
-  enableReset: PropTypes.bool,
+  showReset: PropTypes.bool,
 };
 
 PlotContainer.defaultProps = {
@@ -164,7 +164,7 @@ PlotContainer.defaultProps = {
   extraToolbarControls: null,
   extraControlPanels: null,
   children: null,
-  enableReset: false,
+  showReset: true,
 };
 
 export default PlotContainer;

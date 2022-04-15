@@ -211,6 +211,8 @@ const MarkerHeatmap = ({ experimentId }) => {
     const data = populateHeatmapData(cellSets, config, expressionData, config.selectedGenes, true);
     const spec = generateSpec(config, 'Cluster ID', data, true);
 
+    spec.description = 'Marker heatmap';
+
     const extraMarks = {
       type: 'rule',
       from: { data: 'clusterSeparationLines' },

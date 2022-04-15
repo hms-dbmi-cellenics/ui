@@ -6,20 +6,19 @@ import 'react-mosaic-component/react-mosaic-component.css';
 import { layout } from 'utils/constants';
 
 const renderWindow = (tile, width, height, style) => {
-  if (tile) {
-    return (
-      <div style={{
-        padding: layout.PANEL_PADDING,
-        height: height - layout.PANEL_HEADING_HEIGHT,
-        overflow: 'auto',
-        ...style,
-      }}
-      >
-        {height && width ? tile(width, height) : <></>}
-      </div>
-    );
-  }
-  return <></>;
+  if (!tile) return <></>;
+
+  return (
+    <div style={{
+      padding: layout.PANEL_PADDING,
+      height: height - layout.PANEL_HEADING_HEIGHT,
+      overflow: 'auto',
+      ...style,
+    }}
+    >
+      {height && width ? tile(width, height) : <></>}
+    </div>
+  );
 };
 
 const MultiTileContainer = ({ tileMap, initialArrangement }) => (
