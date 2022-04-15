@@ -4,7 +4,7 @@ import _ from 'lodash';
 import endUserMessages from 'utils/endUserMessages';
 
 import {
-  SAMPLES_UPDATE, SAMPLES_SAVING, SAMPLES_SAVED,
+  SAMPLES_UPDATE, SAMPLES_SAVING, SAMPLES_SAVED, SAMPLES_ERROR,
 } from 'redux/actionTypes/samples';
 import saveSamples from 'redux/actions/samples/saveSamples';
 
@@ -26,16 +26,29 @@ const sendApiV2Request = async (experimentId, sampleId, diff, dispatch) => {
     },
   });
 
-  await fetchAPI(
-    url,
-    {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
+  try {
+    await fetchAPI(
+      url,
+      {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(body),
       },
-      body: JSON.stringify(body),
-    },
-  );
+    );
+  } catch (e) {
+    const errorMessage = handleError(e, endUserMessages.ERROR_SAVING, false);
+
+    dispatch({
+      type: SAMPLES_ERROR,
+      payload: {
+        error: errorMessage,
+      },
+    });
+
+    throw e;
+  }
 
   dispatch({
     type: SAMPLES_SAVED,
@@ -65,22 +78,22 @@ const updateSample = (
 
       const notifyUser = false;
       await dispatch(saveSamples(sample.projectUuid, newSample, true, true, notifyUser));
+
+      dispatch({
+        type: SAMPLES_UPDATE,
+        payload: {
+          sampleUuid,
+          sample: diff,
+        },
+      });
     } else if (config.currentApiVersion === api.V2) {
       if (_.isNil(diff.name) || diff.metadata) {
         throw new Error('This action shouldn\'t be used to update metadata with api v2');
       }
 
       // in api v2 projectUuid is actually experimentId
-      sendApiV2Request(sample.projectUuid, sampleUuid, diff, dispatch);
+      await sendApiV2Request(sample.projectUuid, sampleUuid, diff, dispatch);
     }
-
-    dispatch({
-      type: SAMPLES_UPDATE,
-      payload: {
-        sampleUuid,
-        sample: diff,
-      },
-    });
   } catch (e) {
     handleError(e, endUserMessages.ERROR_SAVING);
   }
