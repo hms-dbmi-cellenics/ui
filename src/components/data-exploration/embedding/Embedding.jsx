@@ -6,7 +6,6 @@ import {
 } from 'react-redux';
 import PropTypes from 'prop-types';
 import * as vega from 'vega';
-import _ from 'lodash';
 import 'vitessce/dist/es/production/static/css/index.css';
 
 import ClusterPopover from 'components/data-exploration/embedding/ClusterPopover';
@@ -318,6 +317,7 @@ const Embedding = (props) => {
                   componentType={embeddingType}
                   coordinates={cellCoordintes}
                   cellInfo={cellInfoTooltip.current}
+                  invert={cellCoordintes.current.x + 200 > width}
                 />
                 <CrossHair
                   componentType={embeddingType}

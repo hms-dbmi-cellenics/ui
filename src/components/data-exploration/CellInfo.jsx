@@ -4,19 +4,23 @@ import { Card } from 'antd';
 import PropTypes from 'prop-types';
 
 const CellInfo = (props) => {
-  const { coordinates, cellInfo } = props;
+  const { coordinates, cellInfo, invert } = props;
 
   const cellInfoStyle = { fontSize: '0.75rem' };
+
+  const left = invert ? coordinates.current.x - 210 : coordinates.current.x + 20;
+  const top = invert ? coordinates.current.y - 70 : coordinates.current.y + 20;
 
   return (
     <Card
       size='small'
       style={{
+        width: 200,
         zIndex: 6,
         border: 0,
         position: 'absolute',
-        left: `${coordinates.current.x + 20}px`,
-        top: `${coordinates.current.y + 20}px`,
+        left: `${left}px`,
+        top: `${top}px`,
         pointerEvents: 'none',
       }}
     >
@@ -48,6 +52,7 @@ CellInfo.defaultProps = {};
 CellInfo.propTypes = {
   coordinates: PropTypes.object.isRequired,
   cellInfo: PropTypes.object.isRequired,
+  invert: PropTypes.bool.isRequired,
 };
 
 export default CellInfo;
