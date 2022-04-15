@@ -7,6 +7,7 @@ import loadCellSets from 'redux/actions/cellSets/loadCellSets';
 import { getCellSets } from 'redux/selectors';
 
 import { generateSpec, generateData } from 'utils/plotSpecs/generateFrequencySpec';
+import Loader from 'react-spinners/BarLoader';
 
 const FrequencyPlot = (props) => {
   const {
@@ -32,10 +33,21 @@ const FrequencyPlot = (props) => {
         yNamesToDisplay,
         plotData,
       } = generateData(hierarchy, properties, config);
+
       formatCSVData(plotData);
       setPlotSpec(generateSpec(config, plotData, xNamesToDisplay, yNamesToDisplay));
     }
   }, [hierarchy, properties, config]);
+
+  // If the plotSpec is empty, then don't render it, this avoids a bug where
+  //  vega doesn't remove the initial plot if it was created with an empty plotSpec
+  if (Object.keys(plotSpec).length === 0) {
+    return (
+      <center>
+        <Loader experimentId={experimentId} />
+      </center>
+    );
+  }
 
   return (
     <center>
@@ -56,7 +68,7 @@ FrequencyPlot.propTypes = {
 
 FrequencyPlot.defaultProps = {
   actions: true,
-  formatCSVData: () => {},
+  formatCSVData: () => { },
 };
 
 export default FrequencyPlot;
