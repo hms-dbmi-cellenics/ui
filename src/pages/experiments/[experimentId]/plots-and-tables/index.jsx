@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Header from 'components/Header';
 
-import PlotsTablesContainer from 'pages/experiments/[experimentId]/plots-and-tables/PlotsTablesContainer';
+import PlotsTablesContainer from 'components/plots/PlotsTablesContainer';
 import SingleTileContainer from 'components/SingleTileContainer';
 
 const PlotsTablesHome = (props) => {
@@ -15,7 +15,7 @@ const PlotsTablesHome = (props) => {
         experimentData={experimentData}
         title='Plots and Tables'
       />
-      <SingleTileContainer title='Select Plot'>
+      <SingleTileContainer>
         <PlotsTablesContainer experimentId={experimentId} />
       </SingleTileContainer>
     </>

@@ -16,9 +16,12 @@ const SingleTileContainer = (props) => {
           }}
         >
           <div className='mosaic-window'>
-            <div className='mosaic-window-toolbar'>
-              <div title='Projects' className='mosaic-window-title'>{title}</div>
-            </div>
+            {title
+              ? (
+                <div className='mosaic-window-toolbar'>
+                  <div title='Projects' className='mosaic-window-title'>{title}</div>
+                </div>
+              ) : <></>}
             <div className='mosaic-window-body' style={{ overflow: 'auto' }}>
               {children}
             </div>
@@ -35,7 +38,7 @@ SingleTileContainer.propTypes = {
 };
 
 SingleTileContainer.defaultProps = {
-  title: '',
+  title: null,
   children: <></>,
 };
 

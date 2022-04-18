@@ -6,14 +6,14 @@ import {
 import Link from 'next/link';
 
 import { plotNames, layout } from 'utils/constants';
-import heatmap from '../../../../../public/static/media/heatmap.png';
-import embeddingContinuous from '../../../../../public/static/media/embeddingContinuous.png';
-import embeddingCategorical from '../../../../../public/static/media/embeddingCategorical.png';
-import violin from '../../../../../public/static/media/violin.png';
-import dotPlot from '../../../../../public/static/media/dotplot.png';
-import volcano from '../../../../../public/static/media/volcano.png';
-import frequency from '../../../../../public/static/media/frequency.png';
-import markerHeatmap from '../../../../../public/static/media/marker_heatmap.png';
+import heatmap from '../../../public/static/media/heatmap.png';
+import embeddingContinuous from '../../../public/static/media/embeddingContinuous.png';
+import embeddingCategorical from '../../../public/static/media/embeddingCategorical.png';
+import violin from '../../../public/static/media/violin.png';
+import dotPlot from '../../../public/static/media/dotplot.png';
+import volcano from '../../../public/static/media/volcano.png';
+import frequency from '../../../public/static/media/frequency.png';
+import markerHeatmap from '../../../public/static/media/marker_heatmap.png';
 
 const CARD_STYLE = { marginBottom: '1em' };
 const CardItem = (({ onClick, item, href }) => (
