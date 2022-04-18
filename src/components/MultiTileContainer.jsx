@@ -11,7 +11,6 @@ const renderWindow = (tile, width, height, style) => {
   return (
     <div style={{
       padding: layout.PANEL_PADDING,
-      height: height - layout.PANEL_HEADING_HEIGHT,
       overflow: 'auto',
       ...style,
     }}
