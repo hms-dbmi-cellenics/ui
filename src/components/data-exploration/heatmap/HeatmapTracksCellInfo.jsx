@@ -2,15 +2,16 @@ import React from 'react';
 import { Card } from 'antd';
 import PropTypes from 'prop-types';
 
+const EM = 16; // px
+
 const HeatmapTracksCellInfo = (props) => {
   const {
-    width, cellId, trackName, coordinates, invertX, invertY,
+    width, cellId, trackName, coordinates, invertX,
   } = props;
 
   const cellInfoStyle = { fontSize: '0.75rem' };
 
-  const left = invertX ? coordinates.x - 210 : coordinates.x + 20;
-  const top = invertY ? coordinates.y - 70 : coordinates.y + 20;
+  const left = invertX ? coordinates.x - (width + EM) : coordinates.x + EM;
 
   const renderCellInfo = () => (
     <Card
@@ -21,7 +22,7 @@ const HeatmapTracksCellInfo = (props) => {
         width,
         position: 'absolute',
         left,
-        top,
+        top: '20px',
         pointerEvents: 'none',
       }}
     >
@@ -49,13 +50,11 @@ HeatmapTracksCellInfo.defaultProps = {
   trackName: null,
   width: 200,
   invertX: false,
-  invertY: false,
 };
 
 HeatmapTracksCellInfo.propTypes = {
   width: PropTypes.number,
   invertX: PropTypes.bool,
-  invertY: PropTypes.bool,
   cellId: PropTypes.string.isRequired,
   coordinates: PropTypes.object.isRequired,
   trackName: PropTypes.string,

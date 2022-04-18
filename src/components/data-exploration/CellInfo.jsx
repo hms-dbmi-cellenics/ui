@@ -1,17 +1,19 @@
 import React from 'react';
-import truncate from 'lodash/truncate';
 import { Card } from 'antd';
 import PropTypes from 'prop-types';
 
+const EM = 16; // px
+const Y_PADDING = 5 * EM;
+
 const CellInfo = (props) => {
   const {
-    width, coordinates, cellInfo, invertX, invertY,
+    width, coordinates, cellInfo, invertX, invertY, numTextRows,
   } = props;
 
   const cellInfoStyle = { fontSize: '0.75rem' };
 
-  const left = invertX ? coordinates.x - 210 : coordinates.x + 20;
-  const top = invertY ? coordinates.y - 70 : coordinates.y + 20;
+  const left = invertX ? coordinates.x - (width + EM) : coordinates.x + EM;
+  const top = invertY ? coordinates.y - (numTextRows * EM + Y_PADDING) : coordinates.y + EM;
 
   return (
     <Card
@@ -42,7 +44,7 @@ const CellInfo = (props) => {
       ) : <></>}
       {cellInfo.cellSets?.length > 0 ? cellInfo.cellSets.map((cellSetName) => (
         <div style={cellInfoStyle}>
-          {truncate(cellSetName)}
+          {cellSetName}
         </div>
       )) : <></>}
     </Card>
@@ -55,12 +57,14 @@ CellInfo.propTypes = {
   cellInfo: PropTypes.object.isRequired,
   invertX: PropTypes.bool,
   invertY: PropTypes.bool,
+  numTextRows: PropTypes.number,
 };
 
 CellInfo.defaultProps = {
   width: 200,
   invertX: false,
   invertY: false,
+  numTextRows: 0,
 };
 
 export default CellInfo;
