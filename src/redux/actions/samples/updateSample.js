@@ -39,16 +39,16 @@ const updateSampleApiV1 = (sampleUuid, diff) => async (dispatch, getState) => {
   }
 };
 
-const updateSampleApiV2 = (sampleId, diff) => async (dispatch, getState) => {
+const updateSampleApiV2 = (sampleUuid, diff) => async (dispatch, getState) => {
   // In api v2 projectUuid and experimentId are the same
-  const experimentId = getState().samples[sampleId].projectUuid;
+  const experimentId = getState().samples[sampleUuid].projectUuid;
 
   try {
     if (_.isNil(diff.name) || diff.metadata) {
       throw new Error('This action can be used to update only the name in sample');
     }
 
-    const url = `/v2/experiments/${experimentId}/samples/${sampleId}`;
+    const url = `/v2/experiments/${experimentId}/samples/${sampleUuid}`;
     const body = diff;
 
     dispatch({
@@ -89,7 +89,7 @@ const updateSampleApiV2 = (sampleId, diff) => async (dispatch, getState) => {
     dispatch({
       type: SAMPLES_UPDATE,
       payload: {
-        sampleId,
+        sampleUuid,
         sample: diff,
       },
     });
