@@ -43,44 +43,31 @@ const updateSampleApiV2 = (sampleUuid, diff) => async (dispatch, getState) => {
   // In api v2 projectUuid and experimentId are the same
   const experimentId = getState().samples[sampleUuid].projectUuid;
 
+  if (_.isNil(diff.name) || diff.metadata) {
+    throw new Error('This action can be used to update only the name in sample');
+  }
+
+  const url = `/v2/experiments/${experimentId}/samples/${sampleUuid}`;
+  const body = diff;
+
+  dispatch({
+    type: SAMPLES_SAVING,
+    payload: {
+      message: endUserMessages.SAVING_SAMPLE,
+    },
+  });
+
   try {
-    if (_.isNil(diff.name) || diff.metadata) {
-      throw new Error('This action can be used to update only the name in sample');
-    }
-
-    const url = `/v2/experiments/${experimentId}/samples/${sampleUuid}`;
-    const body = diff;
-
-    dispatch({
-      type: SAMPLES_SAVING,
-      payload: {
-        message: endUserMessages.SAVING_SAMPLE,
+    await fetchAPI(
+      url,
+      {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(body),
       },
-    });
-
-    try {
-      await fetchAPI(
-        url,
-        {
-          method: 'PATCH',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(body),
-        },
-      );
-    } catch (e) {
-      const errorMessage = handleError(e, endUserMessages.ERROR_SAVING, false);
-
-      dispatch({
-        type: SAMPLES_ERROR,
-        payload: {
-          error: errorMessage,
-        },
-      });
-
-      throw e;
-    }
+    );
 
     dispatch({
       type: SAMPLES_SAVED,
@@ -94,7 +81,14 @@ const updateSampleApiV2 = (sampleUuid, diff) => async (dispatch, getState) => {
       },
     });
   } catch (e) {
-    handleError(e, endUserMessages.ERROR_SAVING);
+    const errorMessage = handleError(e, endUserMessages.ERROR_SAVING);
+
+    dispatch({
+      type: SAMPLES_ERROR,
+      payload: {
+        error: errorMessage,
+      },
+    });
   }
 };
 
