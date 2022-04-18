@@ -44,7 +44,7 @@ describe('Frequency plot tests', () => {
     expect(updateCSV).toHaveBeenCalled();
   });
 
-  it.only('Renders Loader instead of vega plot if  is being loaded', async () => {
+  it('Renders Loader instead of vega plot if  is being loaded', async () => {
     const cellSetErrorResponse = {
       ...generateDefaultMockAPIResponses(fake.EXPERIMENT_ID),
       [`experiments/${fake.EXPERIMENT_ID}/cellSets`]: () => delayedResponse({ body: 'Not found', status: 404 }, 4000),
