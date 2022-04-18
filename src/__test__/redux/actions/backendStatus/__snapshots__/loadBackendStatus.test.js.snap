@@ -1,0 +1,91 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`loadBackendStatus Dispatches error if fetch fails 1`] = `
+Array [
+  Object {
+    "experimentId": "1234",
+  },
+  Object {
+    "error": "We couldn't get the status of the experiment's data processing.",
+    "experimentId": "1234",
+  },
+]
+`;
+
+exports[`loadBackendStatus Dispatches error if fetch fails for api v2 1`] = `
+Array [
+  Object {
+    "experimentId": "1234",
+  },
+  Object {
+    "error": "We couldn't get the status of the experiment's data processing.",
+    "experimentId": "1234",
+  },
+]
+`;
+
+exports[`loadBackendStatus Works well if fetch works 1`] = `
+Array [
+  Object {
+    "experimentId": "1234",
+  },
+  Object {
+    "experimentId": "1234",
+    "status": Object {
+      "gem2s": Object {
+        "completedSteps": Array [],
+        "error": false,
+        "startDate": null,
+        "status": "NOT_CREATED",
+        "stopDate": null,
+      },
+      "pipeline": Object {
+        "completedSteps": Array [],
+        "error": false,
+        "startDate": null,
+        "status": "NOT_CREATED",
+        "stopDate": null,
+      },
+      "worker": Object {
+        "ready": true,
+        "restartCount": 0,
+        "started": true,
+        "status": "Running",
+      },
+    },
+  },
+]
+`;
+
+exports[`loadBackendStatus Works well if fetch works for api v2 1`] = `
+Array [
+  Object {
+    "experimentId": "1234",
+  },
+  Object {
+    "experimentId": "1234",
+    "status": Object {
+      "gem2s": Object {
+        "completedSteps": Array [],
+        "error": false,
+        "startDate": null,
+        "status": "NOT_CREATED",
+        "stopDate": null,
+      },
+      "pipeline": Object {
+        "completedSteps": Array [],
+        "error": false,
+        "startDate": null,
+        "status": "NOT_CREATED",
+        "stopDate": null,
+      },
+      "worker": Object {
+        "ready": true,
+        "restartCount": 0,
+        "started": true,
+        "status": "Running",
+      },
+    },
+  },
+]
+`;
