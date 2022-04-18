@@ -266,10 +266,8 @@ const HeatmapPlot = (props) => {
               trackName={highlightedTrackData.trackName}
               coordinates={highlightedTrackData.coordinates}
               invertX={highlightedTrackData.coordinates.x + TOOLTIP_WIDTH > width}
-              // The tracks are always positioned at the top, so the tooltip most probably will always be at the bottom
-              invertY
             />
-          ) : cellHighlight && geneHighlight && cellCoordinatesRef.current ? (
+          ) : cellHighlight && geneHighlight ? (
             <HeatmapCellInfo
               width={TOOLTIP_WIDTH}
               cellId={cellHighlight}
