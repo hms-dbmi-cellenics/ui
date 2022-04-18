@@ -26,6 +26,7 @@ import getContainingCellSetsProperties from 'utils/cellSets/getContainingCellSet
 import useConditionalEffect from 'utils/customHooks/useConditionalEffect';
 
 const COMPONENT_TYPE = 'interactiveHeatmap';
+const CELLINFO_WIDTH = 200; // px
 
 const Heatmap = dynamic(
   () => import('vitessce/dist/umd/production/heatmap.min').then((mod) => mod.Heatmap),
@@ -253,16 +254,22 @@ const HeatmapPlot = (props) => {
         {
           highlightedTrackData ? (
             <HeatmapTracksCellInfo
+              width={CELLINFO_WIDTH}
               cellId={highlightedTrackData.cellId}
               trackName={highlightedTrackData.trackName}
               coordinates={highlightedTrackData.coordinates}
+              invertX={highlightedTrackData.coordinates.x + CELLINFO_WIDTH > width}
+              invertY={highlightedTrackData.coordinates.y + CELLINFO_WIDTH > height}
             />
-          ) : cellHighlight && geneHighlight ? (
+          ) : cellHighlight && geneHighlight && cellCoordinatesRef.current ? (
             <HeatmapCellInfo
+              width={CELLINFO_WIDTH}
               cellId={cellHighlight}
               geneName={geneHighlight}
               geneExpression={focusedExpression?.rawExpression.expression[cellHighlight]}
               coordinates={cellCoordinatesRef.current}
+              invertX={cellCoordinatesRef.current.x + CELLINFO_WIDTH > width}
+              invertY={cellCoordinatesRef.current.y + CELLINFO_WIDTH > height}
             />
           ) : <></>
         }

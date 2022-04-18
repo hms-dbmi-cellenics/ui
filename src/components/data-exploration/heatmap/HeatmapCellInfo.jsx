@@ -4,10 +4,13 @@ import PropTypes from 'prop-types';
 
 const HeatmapCellInfo = (props) => {
   const {
-    cellId, geneName, geneExpression, coordinates,
+    width, cellId, geneName, geneExpression, coordinates, invertX, invertY,
   } = props;
 
   const cellInfoStyle = { fontSize: '0.75rem' };
+
+  const left = invertX ? coordinates.x - 210 : coordinates.x + 20;
+  const top = invertY ? coordinates.y - 70 : coordinates.y + 20;
 
   const renderCellInfo = () => (
     <Card
@@ -15,9 +18,10 @@ const HeatmapCellInfo = (props) => {
       style={{
         zIndex: 6,
         border: 0,
+        width,
         position: 'absolute',
-        left: `${coordinates.x + 20}px`,
-        top: `${coordinates.y + 20}px`,
+        left,
+        top,
         pointerEvents: 'none',
       }}
     >
@@ -47,9 +51,16 @@ const HeatmapCellInfo = (props) => {
   return (<></>);
 };
 
-HeatmapCellInfo.defaultProps = {};
+HeatmapCellInfo.defaultProps = {
+  width: 200,
+  invertX: false,
+  invertY: false,
+};
 
 HeatmapCellInfo.propTypes = {
+  width: PropTypes.number,
+  invertX: PropTypes.bool,
+  invertY: PropTypes.bool,
   cellId: PropTypes.string.isRequired,
   geneName: PropTypes.string.isRequired,
   geneExpression: PropTypes.number.isRequired,

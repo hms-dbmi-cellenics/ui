@@ -34,8 +34,10 @@ const Scatterplot = dynamic(
   { ssr: false },
 );
 
-const initialZoom = 4.00;
+const INITIAL_ZOOM = 4.00;
 const cellRadiusFromZoom = (zoom) => zoom ** 3 / 50;
+
+const CELLINFO_WIDTH = 200; // px
 
 const Embedding = (props) => {
   const {
@@ -44,8 +46,8 @@ const Embedding = (props) => {
 
   const dispatch = useDispatch();
 
-  const [view, setView] = useState({ target: [4, -4, 0], zoom: initialZoom });
-  const [cellRadius, setCellRadius] = useState(cellRadiusFromZoom(initialZoom));
+  const [view, setView] = useState({ target: [4, -4, 0], zoom: INITIAL_ZOOM });
+  const [cellRadius, setCellRadius] = useState(cellRadiusFromZoom(INITIAL_ZOOM));
   const rootClusterNodes = useSelector(getCellSetsHierarchyByType('cellSets')).map(({ key }) => key);
 
   const selectedCellIds = new Set();
@@ -70,7 +72,7 @@ const Embedding = (props) => {
   const expressionLoading = useSelector((state) => state.genes.expression.loading);
   const loadedGenes = useSelector((state) => Object.keys(state.genes.expression.data));
 
-  const cellCoordintes = useRef({ x: 200, y: 300 });
+  const cellCoordinates = useRef({ x: 200, y: 300 });
   const cellInfoTooltip = useRef();
   const [createClusterPopover, setCreateClusterPopover] = useState(false);
   const [selectedIds, setSelectedIds] = useState(new Set());
@@ -163,7 +165,7 @@ const Embedding = (props) => {
   const updateCellCoordinates = (newView) => {
     if (selectedCell && newView.project) {
       const [x, y] = newView.project(selectedCell);
-      cellCoordintes.current = {
+      cellCoordinates.current = {
         x,
         y,
         width,
@@ -306,7 +308,7 @@ const Embedding = (props) => {
           ? (
             <ClusterPopover
               visible
-              popoverPosition={cellCoordintes}
+              popoverPosition={cellCoordinates}
               onCreate={onCreateCluster}
               onCancel={onCancelCreateCluster}
             />
@@ -314,14 +316,16 @@ const Embedding = (props) => {
             (cellInfoVisible && cellInfoTooltip.current) ? (
               <div>
                 <CellInfo
+                  width={CELLINFO_WIDTH}
                   componentType={embeddingType}
-                  coordinates={cellCoordintes}
+                  coordinates={cellCoordinates.current}
                   cellInfo={cellInfoTooltip.current}
-                  invert={cellCoordintes.current.x + 200 > width}
+                  invertX={cellCoordinates.current.x + CELLINFO_WIDTH > width}
+                  invertY={cellCoordinates.current.y + CELLINFO_WIDTH > height}
                 />
                 <CrossHair
                   componentType={embeddingType}
-                  coordinates={cellCoordintes}
+                  coordinates={cellCoordinates}
                 />
               </div>
             ) : <></>
