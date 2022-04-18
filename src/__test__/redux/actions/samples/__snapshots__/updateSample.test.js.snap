@@ -10,7 +10,7 @@ Array [
     "sample": Object {
       "name": "updated name",
     },
-    "sampleId": "asd123",
+    "sampleUuid": "asd123",
   },
 ]
 `;
