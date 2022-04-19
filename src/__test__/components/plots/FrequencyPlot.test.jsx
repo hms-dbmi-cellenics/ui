@@ -31,6 +31,8 @@ describe('Frequency plot tests', () => {
     );
   };
   beforeEach(() => {
+    jest.clearAllMocks();
+
     enableFetchMocks();
     fetchMock.resetMocks();
     storeState = makeStore();
@@ -39,8 +41,11 @@ describe('Frequency plot tests', () => {
     fetchMock.mockIf(/.*/, mockAPI(generateDefaultMockAPIResponses(fake.EXPERIMENT_ID)));
   });
 
-  it('Updates CSV data on render', () => {
-    renderFrequencyPlot();
+  it('Updates CSV data on render', async () => {
+    await act(async () => {
+      renderFrequencyPlot();
+    });
+
     expect(updateCSV).toHaveBeenCalled();
   });
 
