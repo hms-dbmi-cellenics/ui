@@ -3,15 +3,17 @@ import { Card } from 'antd';
 import PropTypes from 'prop-types';
 
 const EM = 16; // px
+const TOOLTIP_WIDTH = 200; // px
+const cellInfoStyle = { fontSize: '0.75rem' };
 
 const HeatmapTracksCellInfo = (props) => {
   const {
-    width, cellId, trackName, coordinates, invertX,
+    containerWidth, cellId, trackName, coordinates,
   } = props;
 
-  const cellInfoStyle = { fontSize: '0.75rem' };
+  const invertX = () => coordinates.x + TOOLTIP_WIDTH > containerWidth;
 
-  const left = invertX ? coordinates.x - (width + EM) : coordinates.x + EM;
+  const left = invertX() ? coordinates.x - (TOOLTIP_WIDTH + EM) : coordinates.x + EM;
 
   const renderCellInfo = () => (
     <Card
@@ -19,7 +21,7 @@ const HeatmapTracksCellInfo = (props) => {
       style={{
         zIndex: 6,
         border: 0,
-        width,
+        width: TOOLTIP_WIDTH,
         position: 'absolute',
         left,
         top: '20px',
@@ -48,13 +50,10 @@ const HeatmapTracksCellInfo = (props) => {
 
 HeatmapTracksCellInfo.defaultProps = {
   trackName: null,
-  width: 200,
-  invertX: false,
 };
 
 HeatmapTracksCellInfo.propTypes = {
-  width: PropTypes.number,
-  invertX: PropTypes.bool,
+  containerWidth: PropTypes.number.isRequired,
   cellId: PropTypes.string.isRequired,
   coordinates: PropTypes.object.isRequired,
   trackName: PropTypes.string,

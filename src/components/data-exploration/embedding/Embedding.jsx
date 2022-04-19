@@ -37,10 +37,6 @@ const Scatterplot = dynamic(
 const INITIAL_ZOOM = 4.00;
 const cellRadiusFromZoom = (zoom) => zoom ** 3 / 50;
 
-const EM = 16; // px
-const CELLINFO_WIDTH = 300; // px
-const CELLINFO_Y_PADDING = 6 * EM;
-
 const Embedding = (props) => {
   const {
     experimentId, height, width,
@@ -69,11 +65,6 @@ const Embedding = (props) => {
     hierarchy: cellSetHierarchy,
     hidden: cellSetHidden,
   } = cellSets;
-
-  // These are calculated to correctly position the popup according to the number of text rows in the popup
-  // There are 2 default rows: cellId and louvain clusters
-  const numCustomCellSets = cellSetHierarchy.children?.length || 0;
-  const numCellInfoTextRows = numCustomCellSets + 2;
 
   const selectedCell = useSelector((state) => state.cellInfo.cellId);
   const expressionLoading = useSelector((state) => state.genes.expression.loading);
@@ -323,13 +314,11 @@ const Embedding = (props) => {
             (cellInfoVisible && cellInfoTooltip.current) ? (
               <div>
                 <CellInfo
-                  width={CELLINFO_WIDTH}
+                  containerWidth={width}
+                  containerHeight={height}
                   componentType={embeddingType}
                   coordinates={cellCoordinates.current}
                   cellInfo={cellInfoTooltip.current}
-                  numTextRows={numCellInfoTextRows}
-                  invertX={cellCoordinates.current.x + CELLINFO_WIDTH > width}
-                  invertY={cellCoordinates.current.y + (numCellInfoTextRows * EM) + CELLINFO_Y_PADDING > height}
                 />
                 <CrossHair
                   componentType={embeddingType}

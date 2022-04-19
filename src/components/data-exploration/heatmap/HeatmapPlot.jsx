@@ -26,9 +26,6 @@ import getContainingCellSetsProperties from 'utils/cellSets/getContainingCellSet
 import useConditionalEffect from 'utils/customHooks/useConditionalEffect';
 
 const COMPONENT_TYPE = 'interactiveHeatmap';
-const EM = 16; // px
-const TOOLTIP_WIDTH = 300; // px
-const TOOLTIP_Y_PADDING = 6 * EM;
 
 const Heatmap = dynamic(
   () => import('vitessce/dist/umd/production/heatmap.min').then((mod) => mod.Heatmap),
@@ -75,11 +72,6 @@ const HeatmapPlot = (props) => {
     loading: cellSetsLoading,
     hidden: cellSetsHidden,
   } = cellSets;
-
-  // These are calculated to correctly position the popup according to the number of text rows in the popup
-  // There are 2 default rows: cellId and louvain clusters
-  const numCustomCellSets = cellSetsHierarchy.children?.length || 0;
-  const numCellInfoTextRows = numCustomCellSets + 2;
 
   const heatmapSettings = useSelector((state) => state.componentConfig[COMPONENT_TYPE]?.config,
     _.isEqual) || {};
@@ -261,22 +253,19 @@ const HeatmapPlot = (props) => {
         {
           highlightedTrackData ? (
             <HeatmapTracksCellInfo
-              width={TOOLTIP_WIDTH}
+              containerWidth={width}
               cellId={highlightedTrackData.cellId}
               trackName={highlightedTrackData.trackName}
               coordinates={highlightedTrackData.coordinates}
-              invertX={highlightedTrackData.coordinates.x + TOOLTIP_WIDTH > width}
             />
           ) : cellHighlight && geneHighlight ? (
             <HeatmapCellInfo
-              width={TOOLTIP_WIDTH}
+              containerWidth={width}
+              containerHeight={height}
               cellId={cellHighlight}
               geneName={geneHighlight}
               geneExpression={focusedExpression?.rawExpression.expression[cellHighlight]}
               coordinates={cellCoordinatesRef.current}
-              numTextRows={numCellInfoTextRows}
-              invertX={cellCoordinatesRef.current.x + TOOLTIP_WIDTH > width}
-              invertY={cellCoordinatesRef.current.y + (numCellInfoTextRows * EM) + TOOLTIP_Y_PADDING > height}
             />
           ) : <></>
         }

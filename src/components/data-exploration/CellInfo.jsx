@@ -3,28 +3,35 @@ import { Card } from 'antd';
 import PropTypes from 'prop-types';
 
 const EM = 16; // px
-const Y_PADDING = 5 * EM;
+const CELLINFO_WIDTH = 200; // px
+const CELLINFO_Y_PADDING = 6 * EM;
+const Y_PADDING = 2 * EM;
+
+const cellInfoStyle = { fontSize: '0.75rem' };
 
 const CellInfo = (props) => {
   const {
-    width, coordinates, cellInfo, invertX, invertY, numTextRows,
+    containerWidth, containerHeight, coordinates, cellInfo,
   } = props;
 
-  const cellInfoStyle = { fontSize: '0.75rem' };
+  const numTextRows = (cellInfo.cellSets?.length || 0) + 2;
 
-  const left = invertX ? coordinates.x - (width + EM) : coordinates.x + EM;
-  const top = invertY ? coordinates.y - (numTextRows * EM + Y_PADDING) : coordinates.y + EM;
+  const invertX = () => coordinates.x + CELLINFO_WIDTH > containerWidth;
+  const invertY = () => coordinates.y + (numTextRows * EM) + CELLINFO_Y_PADDING > containerHeight;
+
+  const left = invertX() ? coordinates.x - (CELLINFO_WIDTH + EM) : coordinates.x + EM;
+  const top = invertY() ? coordinates.y - (numTextRows * EM + Y_PADDING) : coordinates.y + EM;
 
   return (
     <Card
       size='small'
       style={{
-        width,
+        width: CELLINFO_WIDTH,
         zIndex: 6,
         border: 0,
         position: 'absolute',
-        left: `${left}px`,
-        top: `${top}px`,
+        left,
+        top,
         pointerEvents: 'none',
       }}
     >
@@ -52,19 +59,10 @@ const CellInfo = (props) => {
 };
 
 CellInfo.propTypes = {
-  width: PropTypes.number,
+  containerWidth: PropTypes.number.isRequired,
+  containerHeight: PropTypes.number.isRequired,
   coordinates: PropTypes.object.isRequired,
   cellInfo: PropTypes.object.isRequired,
-  invertX: PropTypes.bool,
-  invertY: PropTypes.bool,
-  numTextRows: PropTypes.number,
-};
-
-CellInfo.defaultProps = {
-  width: 200,
-  invertX: false,
-  invertY: false,
-  numTextRows: 0,
 };
 
 export default CellInfo;

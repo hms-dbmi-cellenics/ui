@@ -3,17 +3,22 @@ import { Card } from 'antd';
 import PropTypes from 'prop-types';
 
 const EM = 16; // px
-const Y_PADDING = 4 * EM;
+const Y_PADDING = 2 * EM;
+const TOOLTIP_WIDTH = 200; // px
+const TOOLTIP_Y_PADDING = 6 * EM;
+
+const cellInfoStyle = { fontSize: '0.75rem' };
 
 const HeatmapCellInfo = (props) => {
   const {
-    width, cellId, geneName, geneExpression, coordinates, invertX, invertY, numTextRows,
+    containerWidth, containerHeight, cellId, geneName, geneExpression, coordinates,
   } = props;
 
-  const cellInfoStyle = { fontSize: '0.75rem' };
+  const invertX = () => coordinates.x + TOOLTIP_WIDTH > containerWidth;
+  const invertY = () => coordinates.y + (3 * EM) + TOOLTIP_Y_PADDING > containerHeight;
 
-  const left = invertX ? coordinates.x - (width + EM) : coordinates.x + EM;
-  const top = invertY ? coordinates.y - (numTextRows * EM + Y_PADDING) : coordinates.y + EM;
+  const left = invertX() ? coordinates.x - (TOOLTIP_WIDTH + EM) : coordinates.x + EM;
+  const top = invertY() ? coordinates.y - (3 * EM + Y_PADDING) : coordinates.y + EM;
 
   const renderCellInfo = () => (
     <Card
@@ -21,7 +26,7 @@ const HeatmapCellInfo = (props) => {
       style={{
         zIndex: 6,
         border: 0,
-        width,
+        width: TOOLTIP_WIDTH,
         position: 'absolute',
         left,
         top,
@@ -54,18 +59,9 @@ const HeatmapCellInfo = (props) => {
   return (<></>);
 };
 
-HeatmapCellInfo.defaultProps = {
-  width: 200,
-  invertX: false,
-  invertY: false,
-  numTextRows: 0,
-};
-
 HeatmapCellInfo.propTypes = {
-  width: PropTypes.number,
-  invertX: PropTypes.bool,
-  invertY: PropTypes.bool,
-  numTextRows: PropTypes.number,
+  containerWidth: PropTypes.number.isRequired,
+  containerHeight: PropTypes.number.isRequired,
   cellId: PropTypes.string.isRequired,
   geneName: PropTypes.string.isRequired,
   geneExpression: PropTypes.number.isRequired,
