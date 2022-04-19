@@ -7,6 +7,7 @@ import loadCellSets from 'redux/actions/cellSets/loadCellSets';
 import { getCellSets } from 'redux/selectors';
 
 import { generateSpec, generateData } from 'utils/plotSpecs/generateFrequencySpec';
+import Loader from 'components/Loader';
 
 const FrequencyPlot = (props) => {
   const {
@@ -15,27 +16,40 @@ const FrequencyPlot = (props) => {
 
   const dispatch = useDispatch();
 
-  const { hierarchy, properties } = useSelector(getCellSets()) || {};
+  const cellSets = useSelector(getCellSets());
+
+  const { hierarchy, properties } = cellSets;
 
   const [plotSpec, setPlotSpec] = useState({});
 
   useEffect(() => {
-    if (!hierarchy || !properties.length) {
+    if (cellSets.loading && !cellSets.error) {
       dispatch(loadCellSets(experimentId));
     }
   }, []);
 
   useEffect(() => {
-    if (hierarchy && properties && config) {
-      const {
-        xNamesToDisplay,
-        yNamesToDisplay,
-        plotData,
-      } = generateData(hierarchy, properties, config);
-      formatCSVData(plotData);
-      setPlotSpec(generateSpec(config, plotData, xNamesToDisplay, yNamesToDisplay));
-    }
+    if (!config || cellSets.loading || cellSets.error) { return; }
+
+    const {
+      xNamesToDisplay,
+      yNamesToDisplay,
+      plotData,
+    } = generateData(hierarchy, properties, config);
+
+    formatCSVData(plotData);
+    setPlotSpec(generateSpec(config, plotData, xNamesToDisplay, yNamesToDisplay));
   }, [hierarchy, properties, config]);
+
+  // If the plotSpec is empty then don't render it, this avoids a bug where
+  //  vega doesn't remove the initial plot if it was created with an empty plotSpec
+  if (Object.keys(plotSpec).length === 0) {
+    return (
+      <center>
+        <Loader experimentId={experimentId} />
+      </center>
+    );
+  }
 
   return (
     <center>
@@ -56,7 +70,7 @@ FrequencyPlot.propTypes = {
 
 FrequencyPlot.defaultProps = {
   actions: true,
-  formatCSVData: () => {},
+  formatCSVData: () => { },
 };
 
 export default FrequencyPlot;
