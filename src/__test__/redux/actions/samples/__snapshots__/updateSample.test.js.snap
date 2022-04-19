@@ -1,0 +1,27 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`updateSample action Dispatches events correctly for api v2 1`] = `
+Array [
+  Object {
+    "message": "Saving sample...",
+  },
+  undefined,
+  Object {
+    "sample": Object {
+      "name": "updated name",
+    },
+    "sampleUuid": "asd123",
+  },
+]
+`;
+
+exports[`updateSample action Error handling for api v2 works 1`] = `
+Array [
+  Object {
+    "message": "Saving sample...",
+  },
+  Object {
+    "error": "We couldn't save your data.",
+  },
+]
+`;
