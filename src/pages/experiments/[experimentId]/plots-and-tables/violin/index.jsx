@@ -26,7 +26,7 @@ const ViolinIndex = ({ experimentId }) => {
   const [searchedGene, setSearchedGene] = useState(config?.shownGene);
 
   useEffect(() => {
-    dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
+    if (!config) dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
     dispatch(loadCellSets(experimentId));
   }, []);
 

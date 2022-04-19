@@ -56,9 +56,8 @@ const VolcanoPlotPage = (props) => {
   const [spec, setSpec] = useState(null);
 
   useEffect(() => {
-    if (!config) {
-      dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
-    }
+    if (!config) dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
+
     setComparisonGroup({
       ...plotCellSets,
       type: plotComparisonType,

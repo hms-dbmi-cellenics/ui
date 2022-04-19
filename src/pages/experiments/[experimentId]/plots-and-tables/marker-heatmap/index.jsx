@@ -71,14 +71,9 @@ const MarkerHeatmap = ({ experimentId }) => {
   ) || false;
 
   useEffect(() => {
-    if (!louvainClustersResolution) {
-      dispatch(loadProcessingSettings(experimentId));
-    }
-
-    dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
-    if (!hierarchy?.length) {
-      dispatch(loadCellSets(experimentId));
-    }
+    if (!louvainClustersResolution) dispatch(loadProcessingSettings(experimentId));
+    if (!config) dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
+    if (!hierarchy?.length) dispatch(loadCellSets(experimentId));
   }, []);
 
   useEffect(() => {

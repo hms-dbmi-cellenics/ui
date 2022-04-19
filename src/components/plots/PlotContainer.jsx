@@ -77,8 +77,7 @@ const PlotContainer = (props) => {
     setResetDisabled(false);
   }, [config]);
 
-  const onClickReset = (event) => {
-    event.stopPropagation();
+  const onClickReset = () => {
     dispatch(resetPlotConfig(experimentId, plotUuid, plotType));
     setResetDisabled(true);
   };
@@ -112,8 +111,14 @@ const PlotContainer = (props) => {
   const TILE_MAP = {
     [PLOT]: {
       toolbarControls: renderPlotToolbarControls(),
-      component: () => <center>{children}</center>,
-      style: { backgroundColor: 'white' },
+      component: () => children,
+      style: {
+        display: 'flex',
+        backgroundColor: 'white',
+        justifyContent: 'center',
+        alignContent: 'center',
+        height: '100%',
+      },
     },
     [CONTROLS]: {
       toolbarControls: [],

@@ -49,7 +49,7 @@ const FrequencyPlotPage = ({ experimentId }) => {
   const [csvFilename, setCsvFilename] = useState('');
 
   useEffect(() => {
-    dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
+    if (!config) dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
     dispatch(loadCellSets(experimentId));
   }, []);
 

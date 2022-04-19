@@ -31,8 +31,8 @@ const EmbeddingCategoricalPage = ({ experimentId }) => {
   const hierarchy = useSelector(getCellSetsHierarchy());
 
   useEffect(() => {
+    if (!config) dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
     dispatch(loadCellSets(experimentId));
-    dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
   }, []);
 
   const generateGroupByOptions = () => {

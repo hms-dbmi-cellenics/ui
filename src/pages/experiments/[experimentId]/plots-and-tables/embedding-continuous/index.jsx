@@ -50,7 +50,7 @@ const ContinuousEmbeddingPage = ({ experimentId }) => {
   const [searchedGene, setSearchedGene] = useState();
 
   useEffect(() => {
-    dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
+    if (!config) dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
     dispatch(loadCellSets(experimentId));
   }, []);
 

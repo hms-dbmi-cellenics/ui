@@ -59,14 +59,10 @@ const ViolinControls = (props) => {
 };
 
 ViolinControls.propTypes = {
-  config: PropTypes.object,
+  config: PropTypes.object.isRequired,
   onUpdate: PropTypes.func.isRequired,
   setSearchedGene: PropTypes.func.isRequired,
   cellSets: PropTypes.object.isRequired,
-};
-
-ViolinControls.defaultProps = {
-  config: null,
 };
 
 export default ViolinControls;

@@ -31,7 +31,7 @@ const HeatmapPlot = ({ experimentId }) => {
   const displaySavedGenes = useRef(true);
 
   useEffect(() => {
-    dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
+    if (!config) dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
     dispatch(loadCellSets(experimentId));
   }, []);
 
