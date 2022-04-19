@@ -19,7 +19,7 @@ const SingleTileContainer = (props) => {
             {title
               ? (
                 <div className='mosaic-window-toolbar'>
-                  <div title='Projects' className='mosaic-window-title'>{title}</div>
+                  <div className='mosaic-window-title'>{title}</div>
                 </div>
               ) : <></>}
             <div className='mosaic-window-body' style={{ overflow: 'auto' }}>

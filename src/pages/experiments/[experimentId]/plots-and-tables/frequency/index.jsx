@@ -141,7 +141,7 @@ const FrequencyPlotPage = ({ experimentId }) => {
           onUpdate={updatePlotWithChanges}
         />
       </Panel>
-      <Panel header='Plot type' key='Plot type'>
+      <Panel header='Plot type' key='plot-type'>
         <Radio.Group
           onChange={(value) => changePlotType(value)}
           value={config.frequencyType}
