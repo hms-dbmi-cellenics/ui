@@ -19,16 +19,18 @@ describe('Frequency plot tests', () => {
   const updateCSV = jest.fn();
   let storeState = null;
 
-  const renderFrequencyPlot = () => {
-    render(
-      <Provider store={storeState}>
-        <FrequencyPlot
-          formatCSVData={updateCSV}
-          config={initialPlotConfigStates.frequency}
-          experimentId={fake.EXPERIMENT_ID}
-        />
-      </Provider>,
-    );
+  const renderFrequencyPlot = async () => {
+    await act(async () => {
+      render(
+        <Provider store={storeState}>
+          <FrequencyPlot
+            formatCSVData={updateCSV}
+            config={initialPlotConfigStates.frequency}
+            experimentId={fake.EXPERIMENT_ID}
+          />
+        </Provider>,
+      );
+    });
   };
   beforeEach(() => {
     jest.clearAllMocks();
@@ -42,9 +44,7 @@ describe('Frequency plot tests', () => {
   });
 
   it('Updates CSV data on render', async () => {
-    await act(async () => {
-      renderFrequencyPlot();
-    });
+    await renderFrequencyPlot();
 
     expect(updateCSV).toHaveBeenCalled();
   });
@@ -57,9 +57,7 @@ describe('Frequency plot tests', () => {
 
     fetchMock.mockIf(/.*/, mockAPI(cellSetErrorResponse));
 
-    await act(async () => {
-      renderFrequencyPlot();
-    });
+    await renderFrequencyPlot();
 
     expect(screen.getByText(/We're getting your data/i)).toBeInTheDocument();
     expect(screen.queryByRole('graphics-document', { name: 'Vega visualization' })).toBeNull();
