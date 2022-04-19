@@ -17,8 +17,13 @@ import { makeStore } from 'redux/store';
 import { plotNames } from 'utils/constants';
 import ExportAsCSV from 'components/plots/ExportAsCSV';
 
-jest.mock('localforage');
 jest.mock('components/plots/ExportAsCSV', () => jest.fn(() => (<></>)));
+jest.mock('components/UserButton', () => () => <></>);
+jest.mock('react-resize-detector', () => (props) => {
+  // eslint-disable-next-line react/prop-types
+  const { children } = props;
+  return children({ width: 800, height: 800 });
+});
 
 describe('Frequency plots and tables index page', () => {
   let storeState = null;
