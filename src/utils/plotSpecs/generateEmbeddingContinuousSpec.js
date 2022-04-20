@@ -27,6 +27,7 @@ const generateSpec = (config, plotData) => {
   }
   return {
     $schema: 'https://vega.github.io/schema/vega/v5.json',
+    description: 'Continuous embedding plot',
     width: config.dimensions.width,
     height: config.dimensions.height,
     autosize: { type: 'fit', resize: true },

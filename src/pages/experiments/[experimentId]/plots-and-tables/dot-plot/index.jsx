@@ -2,9 +2,6 @@ import React, {
   useState, useEffect, useRef, useMemo,
 } from 'react';
 import {
-  Row,
-  Col,
-  Typography,
   Collapse,
   Skeleton,
   Empty,
@@ -19,7 +16,6 @@ import PropTypes from 'prop-types';
 import DotPlot from 'components/plots/DotPlot';
 import { loadPaginatedGeneProperties } from 'redux/actions/genes';
 import { loadCellSets } from 'redux/actions/cellSets';
-import PlotStyling from 'components/plots/styling/PlotStyling';
 import SelectData from 'components/plots/styling/SelectData';
 import MarkerGeneSelection from 'components/plots/styling/MarkerGeneSelection';
 import Header from 'components/Header';
@@ -39,12 +35,11 @@ import { getCellSets } from 'redux/selectors';
 import { plotNames, plotTypes } from 'utils/constants';
 
 const { Panel } = Collapse;
-const { Text, Paragraph } = Typography;
 
 const plotUuid = 'dotPlotMain';
 const plotType = plotTypes.DOT_PLOT;
 
-const plotStylingControlsConfig = [
+const plotStylingConfig = [
   {
     panelTitle: 'Main schema',
     controls: ['dimensions'],
@@ -316,12 +311,12 @@ const DotPlotPage = (props) => {
         <center>
           <Empty description={(
             <>
-              <Paragraph>
+              <p>
                 There is no data to show.
-              </Paragraph>
-              <Paragraph>
+              </p>
+              <p>
                 Select another option from the 'Select data' menu.
-              </Paragraph>
+              </p>
             </>
           )}
           />
@@ -334,19 +329,17 @@ const DotPlotPage = (props) => {
         <center>
           <Empty description={(
             <>
-              <Paragraph>
+              <p>
                 There is no data to show.
-              </Paragraph>
-              <Paragraph>
-                <Text type='secondary'>
-                  The cell set that you have chosen to display is repesented by only one group.
-                  <br />
-                  A comparison can not be run to determine the top marker genes.
-                </Text>
-              </Paragraph>
-              <Paragraph>
+              </p>
+              <p>
+                The cell set that you have chosen to display is repesented by only one group.
+                <br />
+                A comparison can not be run to determine the top marker genes.
+              </p>
+              <p>
                 Select another option from the 'Select data' menu.
-              </Paragraph>
+              </p>
             </>
           )}
           />
@@ -361,34 +354,20 @@ const DotPlotPage = (props) => {
     );
   };
 
-  const renderCSVbutton = () => (<ExportAsCSV data={getCSVData()} filename={csvFileName} />);
-
   return (
     <>
       <Header title={plotNames.DOT_PLOT} />
-      <div style={{ width: '100%', padding: '0 16px' }}>
-        <Row gutter={16}>
-          <Col span={16}>
-            <PlotContainer
-              experimentId={experimentId}
-              plotUuid={plotUuid}
-              plotType={plotType}
-              extra={renderCSVbutton()}
-            >
-              {renderPlot()}
-            </PlotContainer>
-          </Col>
-          <Col span={8}>
-            <PlotStyling
-              formConfig={plotStylingControlsConfig}
-              config={config}
-              onUpdate={updatePlotWithChanges}
-              renderExtraPanels={renderExtraPanels}
-              defaultActiveKey='gene-selection'
-            />
-          </Col>
-        </Row>
-      </div>
+      <PlotContainer
+        experimentId={experimentId}
+        plotUuid={plotUuid}
+        plotType={plotType}
+        plotStylingConfig={plotStylingConfig}
+        extraToolbarControls={<ExportAsCSV data={getCSVData()} filename={csvFileName} />}
+        extraControlPanels={renderExtraPanels()}
+        defaultActiveKey='gene-selection'
+      >
+        {renderPlot()}
+      </PlotContainer>
     </>
   );
 };
