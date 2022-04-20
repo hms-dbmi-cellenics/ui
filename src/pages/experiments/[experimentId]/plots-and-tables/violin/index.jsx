@@ -1,13 +1,9 @@
 /* eslint-disable no-param-reassign */
 import React, { useEffect, useState } from 'react';
-import {
-  Row,
-  Col,
-} from 'antd';
+import Loader from 'components/Loader';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import ViolinControls from 'components/plots/styling/violin/ViolinControls';
-import PlotStyling from 'components/plots/styling/PlotStyling';
 
 import {
   updatePlotConfig,
@@ -30,7 +26,7 @@ const ViolinIndex = ({ experimentId }) => {
   const [searchedGene, setSearchedGene] = useState(config?.shownGene);
 
   useEffect(() => {
-    dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
+    if (!config) dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
     dispatch(loadCellSets(experimentId));
   }, []);
 
@@ -39,7 +35,7 @@ const ViolinIndex = ({ experimentId }) => {
     dispatch(updatePlotConfig(plotUuid, updateField));
   };
 
-  const plotStylingControlsConfig = [
+  const plotStylingConfig = [
     {
       panelTitle: 'Main schema',
       controls: ['dimensions'],
@@ -90,40 +86,39 @@ const ViolinIndex = ({ experimentId }) => {
     />
   );
 
+  const renderPlot = () => {
+    if (!config) {
+      return (
+        <center>
+          <Loader experimentId={experimentId} />
+        </center>
+      );
+    }
+
+    return (
+      <ViolinPlot
+        searchedGene={searchedGene}
+        experimentId={experimentId}
+        config={config}
+        plotUuid={plotUuid}
+      />
+    );
+  };
+
   return (
     <>
       <Header title={plotNames.VIOLIN_PLOT} />
-      <div style={{ width: '100%', padding: '0 16px' }}>
-        <Row gutter={16}>
-          <Col span={16}>
-            <PlotContainer
-              experimentId={experimentId}
-              plotType={plotType}
-              plotUuid={plotUuid}
-              plotInfo='In order to rename existing clusters or create new ones, use the cell set tool, located in the Data Exploration page.'
-            >
-              {config
-                && (
-                  <ViolinPlot
-                    searchedGene={searchedGene}
-                    experimentId={experimentId}
-                    config={config}
-                    plotUuid={plotUuid}
-                  />
-                )}
-            </PlotContainer>
-          </Col>
-          <Col span={8}>
-            <PlotStyling
-              formConfig={plotStylingControlsConfig}
-              config={config}
-              onUpdate={updatePlotWithChanges}
-              renderExtraPanels={renderExtraPanels}
-              defaultActiveKey='gene-selection'
-            />
-          </Col>
-        </Row>
-      </div>
+      <PlotContainer
+        experimentId={experimentId}
+        plotUuid={plotUuid}
+        plotType={plotType}
+        plotStylingConfig={plotStylingConfig}
+        plotInfo='In order to rename existing clusters or create new ones, use the cell set tool, located in the Data Exploration page.'
+        extraControlPanels={renderExtraPanels()}
+        defaultActiveKey='gene-selection'
+      >
+        {renderPlot()}
+      </PlotContainer>
     </>
   );
 };

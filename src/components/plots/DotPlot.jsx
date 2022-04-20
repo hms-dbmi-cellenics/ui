@@ -34,13 +34,7 @@ const DotPlot = (props) => {
       );
     }
 
-    if (cellSetsLoading) {
-      return (
-        <center>
-          <Loader experimentId={experimentId} />
-        </center>
-      );
-    }
+    if (cellSetsLoading) return <Loader experimentId={experimentId} />;
 
     // PlotData has to be cloned for this plot because Immer freezes plotData meanwhile the plot needs to modify it to work
     return <Vega spec={generateSpec(config, plotData, numClusters)} renderer='canvas' actions={actions} />;

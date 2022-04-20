@@ -4,8 +4,6 @@ import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useSelector, useDispatch } from 'react-redux';
 import {
-  Row,
-  Col,
   Collapse,
   Skeleton,
   Radio,
@@ -16,19 +14,18 @@ import Link from 'next/link';
 import Header from 'components/Header';
 import Loader from 'components/Loader';
 import PlatformError from 'components/PlatformError';
-import PlotContainer from 'components/plots/PlotContainer';
 import FrequencyPlot from 'components/plots/FrequencyPlot';
 import ExportAsCSV from 'components/plots/ExportAsCSV';
 
 import { getCellSets, getCellSetsHierarchyByKeys } from 'redux/selectors';
 import SelectCellSets from 'components/plots/styling/frequency/SelectCellSets';
 
-import PlotStyling from 'components/plots/styling/PlotStyling';
 import { updatePlotConfig, loadPlotConfig } from 'redux/actions/componentConfig';
 import loadCellSets from 'redux/actions/cellSets/loadCellSets';
 
 import plotCsvFilename from 'utils/fileNames';
 import { plotNames } from 'utils/constants';
+import PlotContainer from 'components/plots/PlotContainer';
 
 const { Panel } = Collapse;
 
@@ -52,15 +49,11 @@ const FrequencyPlotPage = ({ experimentId }) => {
   const [csvFilename, setCsvFilename] = useState('');
 
   useEffect(() => {
+    if (!config) dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
     dispatch(loadCellSets(experimentId));
-    dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
   }, []);
 
-  const updatePlotWithChanges = (obj) => {
-    dispatch(updatePlotConfig(plotUuid, obj));
-  };
-
-  const plotStylingControlsConfig = [
+  const plotStylingConfig = [
     {
       panelTitle: 'Main schema',
       controls: ['dimensions'],
@@ -105,6 +98,7 @@ const FrequencyPlotPage = ({ experimentId }) => {
   if (!config) {
     return <Skeleton />;
   }
+
   const formatCSVData = (plotData) => {
     const newCsvData = [];
 
@@ -126,20 +120,18 @@ const FrequencyPlotPage = ({ experimentId }) => {
     setCsvData(newCsvData);
   };
 
-  const changePlotType = (value) => {
-    updatePlotWithChanges({
-      frequencyType: value.target.value,
-    });
-    if (value.target.value === 'proportional') {
-      updatePlotWithChanges({ axes: { yAxisText: 'Proportion' } });
-    } else {
-      updatePlotWithChanges({ axes: { yAxisText: 'Count' } });
-    }
+  const updatePlotWithChanges = (obj) => {
+    dispatch(updatePlotConfig(plotUuid, obj));
   };
 
-  const renderCSVbutton = () => (
-    <ExportAsCSV data={csvData} filename={csvFilename} />
-  );
+  const changePlotType = (value) => {
+    const chosenType = value.target.value;
+
+    updatePlotWithChanges({
+      frequencyType: chosenType,
+      axes: { yAxisText: chosenType === 'proportional' ? 'Proportion' : 'Count' },
+    });
+  };
 
   const renderExtraPanels = () => (
     <>
@@ -192,29 +184,17 @@ const FrequencyPlotPage = ({ experimentId }) => {
   return (
     <>
       <Header title={plotNames.FREQUENCY_PLOT} />
-      <div style={{ width: '100%', padding: '0 16px' }}>
-        <Row gutter={16}>
-          <Col span={16}>
-            <PlotContainer
-              experimentId={experimentId}
-              plotUuid={plotUuid}
-              plotType={plotType}
-              extra={renderCSVbutton()}
-            >
-              {renderPlot()}
-            </PlotContainer>
-          </Col>
-          <Col span={8}>
-            <PlotStyling
-              formConfig={plotStylingControlsConfig}
-              config={config}
-              onUpdate={updatePlotWithChanges}
-              renderExtraPanels={renderExtraPanels}
-              defaultActiveKey='select-data'
-            />
-          </Col>
-        </Row>
-      </div>
+      <PlotContainer
+        experimentId={experimentId}
+        plotUuid={plotUuid}
+        plotType={plotType}
+        plotStylingConfig={plotStylingConfig}
+        extraToolbarControls={<ExportAsCSV data={csvData} filename={csvFilename} />}
+        extraControlPanels={renderExtraPanels()}
+        defaultActiveKey='select-data'
+      >
+        {renderPlot()}
+      </PlotContainer>
     </>
   );
 };
