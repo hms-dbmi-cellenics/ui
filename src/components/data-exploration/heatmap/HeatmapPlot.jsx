@@ -254,6 +254,7 @@ const HeatmapPlot = (props) => {
           highlightedTrackData ? (
             <HeatmapTracksCellInfo
               containerWidth={width}
+              containerHeight={height}
               cellId={highlightedTrackData.cellId}
               trackName={highlightedTrackData.trackName}
               coordinates={highlightedTrackData.coordinates}

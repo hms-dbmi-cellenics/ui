@@ -1,11 +1,7 @@
-import React from 'react';
+import React, { useState, useCallback } from 'react';
 import { Card } from 'antd';
 import PropTypes from 'prop-types';
-
-const EM = 16; // px
-const Y_PADDING = 2 * EM;
-const TOOLTIP_WIDTH = 200; // px
-const TOOLTIP_Y_PADDING = 6 * EM;
+import getCellInfoCoordinates from 'utils/data-exploration/getCellInfoCoordinates';
 
 const cellInfoStyle = { fontSize: '0.75rem' };
 
@@ -14,42 +10,50 @@ const HeatmapCellInfo = (props) => {
     containerWidth, containerHeight, cellId, geneName, geneExpression, coordinates,
   } = props;
 
-  const invertX = () => coordinates.x + TOOLTIP_WIDTH > containerWidth;
-  const invertY = () => coordinates.y + (3 * EM) + TOOLTIP_Y_PADDING > containerHeight;
+  const [tooltipEl, setTooltipEl] = useState(null);
 
-  const left = invertX() ? coordinates.x - (TOOLTIP_WIDTH + EM) : coordinates.x + EM;
-  const top = invertY() ? coordinates.y - (3 * EM + Y_PADDING) : coordinates.y + EM;
+  const getTooltipElement = useCallback((el) => {
+    if (el) setTooltipEl(el?.firstChild);
+  }, []);
+
+  const { left, top } = getCellInfoCoordinates(
+    coordinates,
+    tooltipEl,
+    containerWidth,
+    containerHeight,
+  );
 
   const renderCellInfo = () => (
-    <Card
-      size='small'
-      style={{
-        zIndex: 6,
-        border: 0,
-        width: TOOLTIP_WIDTH,
-        position: 'absolute',
-        left,
-        top,
-        pointerEvents: 'none',
-      }}
-    >
-      {cellId ? (
-        <div style={cellInfoStyle}>
-          {`Cell id: ${cellId}`}
-        </div>
-      ) : <></>}
-      {geneName ? (
-        <div style={cellInfoStyle}>
-          {`Gene name: ${geneName}`}
-        </div>
-      ) : <></>}
-      {geneExpression !== undefined ? (
-        <div style={cellInfoStyle}>
-          Expression:&nbsp;
-          {geneExpression}
-        </div>
-      ) : <></>}
-    </Card>
+    <div ref={getTooltipElement}>
+      <Card
+        size='small'
+        style={{
+          zIndex: 6,
+          border: 0,
+          position: 'absolute',
+          left,
+          top,
+          pointerEvents: 'none',
+        }}
+      >
+        {cellId ? (
+          <div style={cellInfoStyle}>
+            {`Cell id: ${cellId}`}
+          </div>
+        ) : <></>}
+        {geneName ? (
+          <div style={cellInfoStyle}>
+            {`Gene name: ${geneName}`}
+          </div>
+        ) : <></>}
+        {geneExpression !== undefined ? (
+          <div style={cellInfoStyle}>
+            Expression:&nbsp;
+            {geneExpression}
+          </div>
+        ) : <></>}
+      </Card>
+    </div>
   );
 
   if (cellId) {

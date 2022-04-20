@@ -1,44 +1,53 @@
-import React from 'react';
+import React, { useState, useCallback } from 'react';
 import { Card } from 'antd';
 import PropTypes from 'prop-types';
+import getCellInfoCoordinates from 'utils/data-exploration/getCellInfoCoordinates';
 
-const EM = 16; // px
-const TOOLTIP_WIDTH = 200; // px
 const cellInfoStyle = { fontSize: '0.75rem' };
 
 const HeatmapTracksCellInfo = (props) => {
   const {
-    containerWidth, cellId, trackName, coordinates,
+    containerWidth, containerHeight, cellId, trackName, coordinates,
   } = props;
 
-  const invertX = () => coordinates.x + TOOLTIP_WIDTH > containerWidth;
+  const [tooltipEl, setTooltipEl] = useState(null);
 
-  const left = invertX() ? coordinates.x - (TOOLTIP_WIDTH + EM) : coordinates.x + EM;
+  const getTooltipElement = useCallback((el) => {
+    if (el) setTooltipEl(el?.firstChild);
+  }, []);
+
+  const { left } = getCellInfoCoordinates(
+    coordinates,
+    tooltipEl,
+    containerWidth,
+    containerHeight,
+  );
 
   const renderCellInfo = () => (
-    <Card
-      size='small'
-      style={{
-        zIndex: 6,
-        border: 0,
-        width: TOOLTIP_WIDTH,
-        position: 'absolute',
-        left,
-        top: '20px',
-        pointerEvents: 'none',
-      }}
-    >
-      {cellId ? (
-        <div style={cellInfoStyle}>
-          {`Cell id: ${cellId}`}
-        </div>
-      ) : <></>}
-      {trackName ? (
-        <div style={cellInfoStyle}>
-          {`Group name: ${trackName}`}
-        </div>
-      ) : <></>}
-    </Card>
+    <div display='inline-block' ref={getTooltipElement}>
+      <Card
+        size='small'
+        style={{
+          zIndex: 6,
+          border: 0,
+          position: 'absolute',
+          left,
+          top: '20px',
+          pointerEvents: 'none',
+        }}
+      >
+        {cellId ? (
+          <div style={cellInfoStyle}>
+            {`Cell id: ${cellId}`}
+          </div>
+        ) : <></>}
+        {trackName ? (
+          <div style={cellInfoStyle}>
+            {`Group name: ${trackName}`}
+          </div>
+        ) : <></>}
+      </Card>
+    </div>
   );
 
   if (cellId) {
@@ -48,15 +57,12 @@ const HeatmapTracksCellInfo = (props) => {
   return (<></>);
 };
 
-HeatmapTracksCellInfo.defaultProps = {
-  trackName: null,
-};
-
 HeatmapTracksCellInfo.propTypes = {
   containerWidth: PropTypes.number.isRequired,
+  containerHeight: PropTypes.number.isRequired,
   cellId: PropTypes.string.isRequired,
   coordinates: PropTypes.object.isRequired,
-  trackName: PropTypes.string,
+  trackName: PropTypes.string.isRequired,
 };
 
 export default HeatmapTracksCellInfo;
