@@ -10,15 +10,20 @@ const HeatmapTracksCellInfo = (props) => {
     containerWidth, containerHeight, cellId, trackName, coordinates,
   } = props;
 
-  const [tooltipEl, setTooltipEl] = useState(null);
+  const [tooltipDimensions, setTooltipDimensions] = useState({ width: 0, height: 0 });
 
   const getTooltipElement = useCallback((el) => {
-    if (el) setTooltipEl(el?.firstChild);
+    if (!el) return;
+
+    setTooltipDimensions({
+      width: el.firstChild.offsetWidth,
+      height: el.firstChild.offsetHeight,
+    });
   }, []);
 
   const { left } = getCellInfoCoordinates(
     coordinates,
-    tooltipEl,
+    tooltipDimensions,
     containerWidth,
     containerHeight,
   );

@@ -1,15 +1,26 @@
-const EM = 16; // px
-const CELLINFO_Y_PADDING = 2 * EM;
+const PDDG_TOP = 16; // px
+const PDDG_BOTTOM = 16; // px
+const PDDG_RIGHT = 16; // px
 
-const getCellInfoCoordinates = (coordinates, el, boundingX, boundingY) => {
-  const popupWidth = el?.offsetWidth || 0;
-  const popupHeight = el?.offsetHeight || 0;
+const getCellInfoCoordinates = (coordinates, dimensions, boundingX, boundingY) => {
+  const {
+    width: popupWidth,
+    height: popupHeight,
+  } = dimensions;
 
-  const invertX = () => coordinates.x + popupWidth > boundingX;
-  const invertY = () => coordinates.y + popupHeight + CELLINFO_Y_PADDING > boundingY;
+  const {
+    x: cursorX,
+    y: cursorY,
+  } = coordinates;
 
-  const left = invertX() ? coordinates.x - (popupWidth + EM) : coordinates.x + EM;
-  const top = invertY() ? coordinates.y - (popupHeight + EM) : coordinates.y + EM;
+  const invertX = () => cursorX + popupWidth > boundingX;
+
+  // Padding bottom is removed from boundingY because the embedding
+  // has a padding at the top part of the embedding
+  const invertY = () => cursorY + popupHeight + PDDG_TOP + PDDG_BOTTOM > boundingY - PDDG_BOTTOM;
+
+  const left = invertX() ? cursorX - (popupWidth + PDDG_RIGHT) : cursorX + PDDG_RIGHT;
+  const top = invertY() ? cursorY - (popupHeight + PDDG_BOTTOM) : cursorY + PDDG_BOTTOM;
 
   return { left, top };
 };

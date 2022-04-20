@@ -7,18 +7,25 @@ const cellInfoStyle = { fontSize: '0.75rem' };
 
 const HeatmapCellInfo = (props) => {
   const {
-    containerWidth, containerHeight, cellId, geneName, geneExpression, coordinates,
+    containerWidth, containerHeight,
+    cellId, geneName,
+    geneExpression, coordinates,
   } = props;
 
-  const [tooltipEl, setTooltipEl] = useState(null);
+  const [tooltipDimensions, setTooltipDimensions] = useState({ width: 0, height: 0 });
 
   const getTooltipElement = useCallback((el) => {
-    if (el) setTooltipEl(el?.firstChild);
+    if (!el) return;
+
+    setTooltipDimensions({
+      width: el.firstChild.offsetWidth,
+      height: el.firstChild.offsetHeight,
+    });
   }, []);
 
   const { left, top } = getCellInfoCoordinates(
     coordinates,
-    tooltipEl,
+    tooltipDimensions,
     containerWidth,
     containerHeight,
   );
