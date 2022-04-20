@@ -26,7 +26,7 @@ const CellInfo = (props) => {
   return (
     // We have to wrap the <Card> in a <div> because Antd does not correctly set the ref
     // https://github.com/ant-design/ant-design/issues/28582
-    <div style={{ display: 'inline-block' }} ref={getTooltipElement}>
+    <div ref={getTooltipElement}>
       <Card
         size='small'
         style={{
