@@ -98,6 +98,10 @@ describe('CellSetsTool', () => {
       storeState.dispatch(createCellSet(experimentId, 'New Cluster', '#3957ff', new Set([1, 2, 3, 4, 5])));
     });
 
+    // expand custom cell sets tree
+    const customCellSetsGroup = screen.getAllByRole('img', { name: 'down' })[1];
+    userEvent.click(customCellSetsGroup);
+
     // There should be delete buttons for clusters under Custom cell sets.
     const deleteButtons = screen.getAllByLabelText(/Delete/);
     expect(deleteButtons.length).toEqual(1);
@@ -127,6 +131,10 @@ describe('CellSetsTool', () => {
       );
     });
 
+    // expand the louvain clusters tree
+    const louvainCLustersGroup = screen.getAllByRole('img', { name: 'down' })[0];
+    userEvent.click(louvainCLustersGroup);
+
     // select the third louvain cluster
     const louvain3Cluster = screen.getByText('Cluster 3');
     userEvent.click(louvain3Cluster);
@@ -145,6 +153,10 @@ describe('CellSetsTool', () => {
         </Provider>,
       );
     });
+
+    // expand the louvain clusters tree
+    const louvainCLustersGroup = screen.getAllByRole('img', { name: 'down' })[0];
+    userEvent.click(louvainCLustersGroup);
 
     // select the third louvain cluster
     const louvain3Cluster = screen.getByText('Cluster 3');
@@ -170,6 +182,10 @@ describe('CellSetsTool', () => {
         }),
       );
     });
+
+    // expand custom cell sets tree
+    const customCellSetsGroup = screen.getAllByRole('img', { name: 'down' })[1];
+    userEvent.click(customCellSetsGroup);
 
     screen.getByText('New Cluster');
     const newClusterKey = getClusterByName('New Cluster');
@@ -203,9 +219,18 @@ describe('CellSetsTool', () => {
     await act(async () => {
       storeState.dispatch(createCellSet(experimentId, 'test cluster', '#3957ff', new Set([1, 2, 3, 4])));
     });
+
+    // expand custom cell sets tree
+    const customCellSetsGroup = screen.getAllByRole('img', { name: 'down' })[1];
+    userEvent.click(customCellSetsGroup);
+
     // select the newly created cluster
     const scratchpadCluster = screen.getByText('test cluster');
     userEvent.click(scratchpadCluster);
+
+    // expand the louvain clusters tree
+    const louvainCLustersGroup = screen.getAllByRole('img', { name: 'down' })[0];
+    userEvent.click(louvainCLustersGroup);
 
     // select the first louvain cluster
     const louvain0Cluster = screen.getByText('Cluster 0');
@@ -249,6 +274,11 @@ describe('CellSetsTool', () => {
     await act(async () => {
       storeState.dispatch(createCellSet(experimentId, 'test cluster', '#3957ff', new Set([1, 2, 3, 4])));
     });
+
+    // expand custom cell sets tree
+    const customCellSetsGroup = screen.getAllByRole('img', { name: 'down' })[1];
+    userEvent.click(customCellSetsGroup);
+
     // select the newly created cluster
     const scratchpadCluster = screen.getByText('test cluster');
     userEvent.click(scratchpadCluster);
