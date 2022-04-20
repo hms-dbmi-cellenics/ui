@@ -20,6 +20,9 @@ import loadBackendStatus from 'redux/actions/backendStatus/loadBackendStatus';
 const DataManagementPage = () => {
   const dispatch = useDispatch();
   const projectsList = useSelector(((state) => state.projects));
+  const [throwError, setThrowError] = useState(false);
+
+  if (throwError) throw new Error('Some error');
 
   const {
     saving: projectSaving,
@@ -119,6 +122,7 @@ const DataManagementPage = () => {
   return (
     <>
       <Header title='Data Management' />
+      <button type='button' onClick={() => setThrowError(true)}>Throw error</button>
       {projectSaving || sampleSaving ? (
         <center>
           <Space direction='vertical'>
