@@ -168,7 +168,7 @@ const WrappedApp = ({ Component, pageProps }) => {
 /* eslint-disable global-require */
 WrappedApp.getInitialProps = async ({ Component, ctx }) => {
   const {
-    store, req, query, res,
+    store, req, query, res, err,
   } = ctx;
 
   // Do nothing if not server-side
@@ -201,7 +201,11 @@ WrappedApp.getInitialProps = async ({ Component, ctx }) => {
       results = _.merge(results, experimentInfo);
     }
 
-    return { pageProps: { ...pageProps, ...results } };
+    return {
+      pageProps: {
+        ...pageProps, ...results, ctx, err,
+      },
+    };
   } catch (e) {
     if (!(e instanceof APIError)) {
       // eslint-disable-next-line no-ex-assign
