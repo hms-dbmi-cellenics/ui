@@ -47,7 +47,9 @@ const ContentWrapper = (props) => {
   const [isAuth, setIsAuth] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
 
-  const { routeExperimentId, experimentData, children } = props;
+  const {
+    routeExperimentId, experimentData, children, fromApp, appCtxKeys,
+  } = props;
   const { navigateTo, currentModule } = useAppRouter();
 
   const currentExperimentIdRef = useRef(routeExperimentId);
@@ -285,7 +287,7 @@ const ContentWrapper = (props) => {
       }
 
       if (backendError) {
-        return <Error errorText={backendError} />;
+        return <Error fromApp={fromApp} appCtxKeys={appCtxKeys} errorText='This error is from ContentWrapper' />;
       }
 
       if (gem2sRunningError) {
@@ -450,6 +452,8 @@ const ContentWrapper = (props) => {
 ContentWrapper.propTypes = {
   routeExperimentId: PropTypes.string,
   experimentData: PropTypes.object,
+  fromApp: PropTypes.object,
+  appCtxKeys: PropTypes.any,
   children: PropTypes.node,
 };
 
@@ -457,6 +461,8 @@ ContentWrapper.defaultProps = {
   routeExperimentId: null,
   experimentData: null,
   children: null,
+  fromApp: null,
+  appCtxKeys: null,
 };
 
 export default ContentWrapper;

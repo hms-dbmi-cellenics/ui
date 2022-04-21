@@ -53,7 +53,9 @@ Amplify.configure({
 });
 
 const WrappedApp = ({ Component, pageProps }) => {
-  const { httpError, amplifyConfig } = pageProps;
+  const {
+    httpError, amplifyConfig, fromApp, appCtxKeys,
+  } = pageProps;
   const router = useRouter();
   const { experimentId } = router.query;
   const experimentData = useSelector(
@@ -124,12 +126,16 @@ const WrappedApp = ({ Component, pageProps }) => {
       return <Error statusCode={httpError} />;
     }
 
+    console.log('*** page Props', pageProps);
+
     // Otherwise, load the page inside the content wrapper.
     return (
       <AppRouteProvider>
         <ContentWrapper
           routeExperimentId={experimentId}
           experimentData={experimentData}
+          fromApp={fromApp}
+          appCtxKeys={appCtxKeys}
         >
           <Component
             experimentId={experimentId}
