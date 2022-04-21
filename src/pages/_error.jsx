@@ -8,14 +8,9 @@ import FeedbackButton from 'components/FeedbackButton';
 const { Title, Text } = Typography;
 
 const Error = (props) => {
-  console.log('*** update 13.54');
   const {
-    errorText, statusCode, fromApp, appCtxKeys,
+    errorText, statusCode, err,
   } = props;
-
-  console.log('*** fromApp', fromApp);
-  console.log('*** appCtxKeys', appCtxKeys);
-  console.log('*** props', props);
 
   return (
     <Result
@@ -47,11 +42,11 @@ const Error = (props) => {
 
             {statusCode && <Text type='secondary'>{`HTTP ${statusCode}`}</Text>}
 
-            {errorText && (
+            {(errorText || err.message) && (
               <>
                 <span>
                   <Text type='secondary'>The error is reported as:&nbsp;</Text>
-                  <Text code>{errorText}</Text>
+                  <Text code>{errorText || err.message}</Text>
                 </span>
               </>
             )}
@@ -74,22 +69,20 @@ const Error = (props) => {
 Error.defaultProps = {
   statusCode: null,
   errorText: null,
-  fromApp: null,
-  appCtxKeys: null,
+  err: null,
 };
 
 Error.propTypes = {
   statusCode: PropTypes.number,
   errorText: PropTypes.string,
-  fromApp: PropTypes.any,
-  appCtxKeys: PropTypes.any,
+  err: PropTypes.object,
 };
 
 Error.getInitialProps = (props) => {
   const { res, err } = props;
 
   const statusCode = res ? res.statusCode : err ? err.statusCode : 404;
-  return { statusCode, fromError: 'this is from _error', errorPropKeys: Object.keys(props) };
+  return { statusCode };
 };
 
 export default Error;

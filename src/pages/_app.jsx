@@ -179,11 +179,12 @@ WrappedApp.getInitialProps = async ({ Component, ctx }) => {
   } = ctx;
 
   // Do nothing if not server-side
-  if (!req) { return { pageProps: { fromApp: 'this is from req_return', err } }; }
+  if (err) return { pageProps: { err } };
+  if (!req) return {};
 
   const pageProps = App.getInitialProps
     ? await Component.getInitialProps(ctx)
-    : { fromApp: 'this is from pageProps_return', err };
+    : {};
 
   const promises = [];
 
@@ -210,7 +211,7 @@ WrappedApp.getInitialProps = async ({ Component, ctx }) => {
 
     return {
       pageProps: {
-        ...pageProps, ...results, fromApp: 'this is from_app', err,
+        ...pageProps, ...results,
       },
     };
   } catch (e) {
