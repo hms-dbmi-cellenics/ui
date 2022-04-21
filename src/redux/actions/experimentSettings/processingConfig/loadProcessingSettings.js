@@ -22,7 +22,7 @@ const loadProcessingSettings = (experimentId) => async (dispatch) => {
     dispatch({
       type: EXPERIMENT_SETTINGS_PROCESSING_CONFIG_LOADED,
       payload: {
-        data: data.processingConfig,
+        data: data.processingConfig || data,
       },
     });
 
