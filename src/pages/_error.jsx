@@ -7,9 +7,10 @@ import FeedbackButton from 'components/FeedbackButton';
 
 const { Title, Text } = Typography;
 
-const Error = ({ errorText, statusCode }) => {
+const Error = ({ errorText, err, statusCode }) => {
   console.log('*** error', errorText);
   console.log('*** statusCode', statusCode);
+  console.log('*** err', err);
 
   return (
     <Result
@@ -68,19 +69,22 @@ const Error = ({ errorText, statusCode }) => {
 Error.defaultProps = {
   statusCode: null,
   errorText: null,
+  err: null,
 };
 
 Error.propTypes = {
   statusCode: PropTypes.number,
   errorText: PropTypes.string,
+  err: PropTypes.object,
 };
 
-Error.getInitialProps = ({ res, err }) => {
-  console.log('*** res', res);
-  console.log('*** err', err);
+Error.getInitialProps = (props) => {
+  const { res, err } = props;
+
+  console.log('*** props', props);
 
   const statusCode = res ? res.statusCode : err ? err.statusCode : 404;
-  return { statusCode };
+  return { err, statusCode };
 };
 
 export default Error;
