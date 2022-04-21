@@ -8,6 +8,7 @@ import Router, { useRouter } from 'next/router';
 import NProgress from 'nprogress';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
+import App from 'next/app';
 import { DefaultSeo } from 'next-seo';
 
 import { wrapper } from 'redux/store';
@@ -174,15 +175,15 @@ const WrappedApp = ({ Component, pageProps }) => {
 /* eslint-disable global-require */
 WrappedApp.getInitialProps = async ({ Component, ctx }) => {
   const {
-    store, req, query, res,
+    store, req, query, res, err,
   } = ctx;
 
   // Do nothing if not server-side
-  if (!req) { return { pageProps: {} }; }
+  if (!req) { return { pageProps: { fromApp: 'this is from req_return', err } }; }
 
-  const pageProps = Component.getInitialProps
+  const pageProps = App.getInitialProps
     ? await Component.getInitialProps(ctx)
-    : {};
+    : { fromApp: 'this is from pageProps_return', err };
 
   const promises = [];
 
@@ -209,7 +210,7 @@ WrappedApp.getInitialProps = async ({ Component, ctx }) => {
 
     return {
       pageProps: {
-        ...pageProps, ...results, fromApp: 'this is from_app', appCtxKeys: Object.keys(ctx),
+        ...pageProps, ...results, fromApp: 'this is from_app', err,
       },
     };
   } catch (e) {
