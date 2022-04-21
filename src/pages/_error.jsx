@@ -8,8 +8,10 @@ import FeedbackButton from 'components/FeedbackButton';
 const { Title, Text } = Typography;
 
 const Error = (props) => {
-  console.log('*** update 12.11');
+  console.log('*** update 12.57');
   const { errorText, statusCode } = props;
+
+  console.log('*** props', props);
 
   return (
     <Result
