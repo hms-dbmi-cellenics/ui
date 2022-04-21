@@ -168,7 +168,7 @@ const WrappedApp = ({ Component, pageProps }) => {
 /* eslint-disable global-require */
 WrappedApp.getInitialProps = async ({ Component, ctx }) => {
   const {
-    store, req, query, res, err,
+    store, req, query, res, err: ctxErr,
   } = ctx;
 
   // Do nothing if not server-side
@@ -203,7 +203,7 @@ WrappedApp.getInitialProps = async ({ Component, ctx }) => {
 
     return {
       pageProps: {
-        ...pageProps, ...results, ctx, err,
+        ...pageProps, ...results, ctxErr,
       },
     };
   } catch (e) {

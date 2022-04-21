@@ -8,11 +8,12 @@ import FeedbackButton from 'components/FeedbackButton';
 const { Title, Text } = Typography;
 
 const Error = (props) => {
+  console.log('*** update 11.31');
   console.log('*** props', props);
 
-  const { ctx, errorText, statusCode } = props;
+  const { err, errorText, statusCode } = props;
 
-  console.log('*** ctx', ctx);
+  console.log('*** err', err);
   console.log('*** error', errorText);
   console.log('*** statusCode', statusCode);
 
@@ -73,13 +74,13 @@ const Error = (props) => {
 Error.defaultProps = {
   statusCode: null,
   errorText: null,
-  ctx: null,
+  err: null,
 };
 
 Error.propTypes = {
   statusCode: PropTypes.number,
   errorText: PropTypes.string,
-  ctx: PropTypes.object,
+  err: PropTypes.any,
 };
 
 Error.getInitialProps = (props) => {
