@@ -42,7 +42,7 @@ const Error = (props) => {
 
             {statusCode && <Text type='secondary'>{`HTTP ${statusCode}`}</Text>}
 
-            {(errorText || err.message) && (
+            {(errorText || err) && (
               <>
                 <span>
                   <Text type='secondary'>The error is reported as:&nbsp;</Text>
