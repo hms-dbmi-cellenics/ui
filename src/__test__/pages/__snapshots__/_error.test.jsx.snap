@@ -6,6 +6,29 @@ Array [
     "message": "Some error message",
   },
   Object {
+    "backendStatus": Object {},
+    "cellInfo": Object {
+      "focus": Object {
+        "key": "louvain",
+        "store": "cellSets",
+      },
+      "groupedTrack": "louvain",
+      "selectedTracks": Array [
+        "louvain",
+      ],
+    },
+    "cellMeta": Object {
+      "doubletScores": Object {
+        "data": Array [],
+        "error": false,
+        "loading": true,
+      },
+      "mitochondrialContent": Object {
+        "data": Array [],
+        "error": false,
+        "loading": true,
+      },
+    },
     "cellSets": Object {
       "error": false,
       "hidden": Set {},
@@ -15,8 +38,118 @@ Array [
       "selected": Object {},
       "updatingClustering": false,
     },
+    "componentConfig": Object {},
+    "differentialExpression": Object {
+      "comparison": Object {
+        "advancedFilters": Array [],
+        "group": Object {
+          "between": Object {
+            "basis": null,
+            "cellSet": null,
+            "compareWith": null,
+          },
+          "within": Object {
+            "basis": null,
+            "cellSet": null,
+            "compareWith": null,
+          },
+        },
+        "ordering": Object {
+          "orderBy": "logFC",
+          "orderDirection": "DESC",
+        },
+        "type": "within",
+      },
+      "properties": Object {
+        "comparisonGroup": Object {},
+        "comparisonType": null,
+        "data": Array [],
+        "error": false,
+        "loading": false,
+        "total": 0,
+      },
+    },
+    "embeddings": Object {},
+    "experimentSettings": Object {
+      "info": Object {
+        "experimentId": null,
+        "experimentName": null,
+        "sampleIds": Array [],
+      },
+      "originalProcessing": Object {},
+      "processing": Object {
+        "meta": Object {
+          "changedQCFilters": Set {},
+          "completingStepError": false,
+          "loading": false,
+          "loadingSettingsError": false,
+        },
+      },
+    },
+    "experiments": Object {
+      "ids": Array [],
+      "meta": Object {
+        "error": false,
+        "loading": false,
+        "saving": false,
+      },
+    },
+    "genes": Object {
+      "expression": Object {
+        "data": Object {},
+        "error": false,
+        "loading": Array [],
+        "views": Object {},
+      },
+      "focused": undefined,
+      "markers": Object {
+        "error": false,
+        "loading": false,
+      },
+      "properties": Object {
+        "data": Object {},
+        "loading": Array [],
+        "views": Object {},
+      },
+      "selected": Array [],
+    },
+    "layout": Object {
+      "panel": "Gene list",
+      "windows": Object {
+        "direction": "row",
+        "first": Object {
+          "direction": "column",
+          "first": Object {
+            "direction": "row",
+            "first": "UMAP",
+            "second": "Data Management",
+            "splitPercentage": 60,
+          },
+          "second": "Heatmap",
+          "splitPercentage": 50,
+        },
+        "second": "Genes",
+        "splitPercentage": 70,
+      },
+    },
     "networkResources": Object {
       "environment": "staging",
+    },
+    "projects": Object {
+      "ids": Array [],
+      "meta": Object {
+        "activeProjectUuid": null,
+        "error": false,
+        "loading": true,
+        "saving": false,
+      },
+    },
+    "samples": Object {
+      "meta": Object {
+        "error": false,
+        "loading": false,
+        "saving": false,
+      },
     },
   },
 ]
