@@ -33,7 +33,7 @@ const trimOutput = (key, item) => {
   return item;
 };
 
-const buildErrorMessage = (error, info, reduxDump, context) => {
+const buildErrorMessage = (error, reduxDump, context) => {
   const {
     user, timestamp, experimentId, url,
   } = context;
@@ -51,13 +51,6 @@ const buildErrorMessage = (error, info, reduxDump, context) => {
     ${error.stack}
 
     `;
-
-  if (info?.componentStack) {
-    message += `===== COMPONENT STACK =====
-    ${info.componentStack}
-
-    `;
-  }
 
   if (reduxDump) {
     message += `===== REDUX STATE =====
@@ -109,7 +102,7 @@ const postError = async (errorLog, context) => {
   }
 };
 
-const postErrorToSlack = async (error, info, reduxDump) => {
+const postErrorToSlack = async (error, reduxDump) => {
   const user = await Auth.currentAuthenticatedUser();
 
   const timestamp = new Date().toISOString();
@@ -123,7 +116,7 @@ const postErrorToSlack = async (error, info, reduxDump) => {
     url,
   };
 
-  const errorLog = buildErrorMessage(error, info, reduxDump, context);
+  const errorLog = buildErrorMessage(error, reduxDump, context);
   await postError(errorLog, context);
 };
 

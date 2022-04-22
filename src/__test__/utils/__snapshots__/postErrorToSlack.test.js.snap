@@ -38,9 +38,6 @@ exports[`PostErrorToSlack Posts requests correctly 6`] = `
     ===== ERROR =====
     Mock error stack
 
-    ===== COMPONENT STACK =====
-    Mock component stack
-
     ===== REDUX STATE =====
     {
   \\"cellInfo\\": {
