@@ -29,6 +29,9 @@ const mockReduxDump = {
       data: new Array(25).fill(0),
     },
   },
+  networkResources: {
+    environment: 'test',
+  },
 };
 
 jest.useFakeTimers('modern').setSystemTime(new Date('2020-01-01').getTime());

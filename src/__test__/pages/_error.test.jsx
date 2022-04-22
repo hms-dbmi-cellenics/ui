@@ -78,8 +78,17 @@ describe('ErrorPage', () => {
     expect(postErrorToSlack.mock.calls[0]).toMatchSnapshot();
   });
 
-  it('Should not post error to Slack if environment is not production', () => {
+  it('Should post error to Slack if environment is staging', () => {
     storeState.dispatch(loadEnvironment('staging'));
+
+    renderErrorPage(mockErrorProp, storeState);
+
+    expect(postErrorToSlack).toHaveBeenCalledTimes(1);
+    expect(postErrorToSlack.mock.calls[0]).toMatchSnapshot();
+  });
+
+  it('Should not post error to Slack if environment is not production', () => {
+    storeState.dispatch(loadEnvironment('development'));
 
     renderErrorPage(mockErrorProp, storeState);
 

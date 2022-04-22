@@ -15,7 +15,12 @@ const Error = (props) => {
   const environment = useSelector((state) => state.networkResources.environment);
   const reduxState = useSelector((state) => state);
 
-  if (errorObject && environment === 'production') postErrorToSlack(errorObject, reduxState);
+  if (
+    errorObject
+    && ['production', 'staging'].includes(environment)
+  ) {
+    postErrorToSlack(errorObject, reduxState);
+  }
 
   return (
     <Result
