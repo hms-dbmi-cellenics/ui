@@ -60,7 +60,7 @@ const createSample = (
     if (type === '10X Chromium') {
       sampleTechnology = '10x';
     } else {
-      throw new Error(`Sample type ${type} is not implemented`);
+      throw new Error(`Sample technology ${type} is not recognized`);
     }
 
     body = { name, sampleTechnology };
