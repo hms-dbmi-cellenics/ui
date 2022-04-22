@@ -1,0 +1,23 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ErrorPage Should post error to Slack if environment is production 1`] = `
+Array [
+  Object {
+    "message": "Some error message",
+  },
+  Object {
+    "cellSets": Object {
+      "error": false,
+      "hidden": Set {},
+      "hierarchy": Array [],
+      "loading": true,
+      "properties": Object {},
+      "selected": Object {},
+      "updatingClustering": false,
+    },
+    "networkResources": Object {
+      "environment": "staging",
+    },
+  },
+]
+`;
