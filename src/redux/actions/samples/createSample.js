@@ -2,7 +2,7 @@ import _ from 'lodash';
 import moment from 'moment';
 import { v4 as uuidv4 } from 'uuid';
 import {
-  SAMPLES_CREATE, SAMPLES_ERROR, SAMPLES_SAVING,
+  SAMPLES_CREATE, SAMPLES_ERROR, SAMPLES_SAVED, SAMPLES_SAVING,
 } from 'redux/actionTypes/samples';
 
 import {
@@ -80,6 +80,11 @@ const createSample = (
 
     await dispatch({
       type: SAMPLES_CREATE,
+      payload: { sample: newSample, experimentId },
+    });
+
+    await dispatch({
+      type: SAMPLES_SAVED,
       payload: { sample: newSample, experimentId },
     });
 

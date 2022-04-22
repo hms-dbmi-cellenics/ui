@@ -101,16 +101,23 @@ const createAndUploadSingleFile = async (file, projectId, sampleId, dispatch) =>
   const metadata = getMetadata(file);
   const fileType = getFileType(file.fileObject.name, file.fileObject.type);
 
-  const signedUrl = await dispatch(
-    createSampleFileV2(
-      projectId,
-      sampleId,
-      fileType,
-      file.size,
-      metadata,
-      file,
-    ),
-  );
+  let signedUrl;
+  try {
+    signedUrl = await dispatch(
+      createSampleFileV2(
+        projectId,
+        sampleId,
+        fileType,
+        file.size,
+        metadata,
+        file,
+      ),
+    );
+  } catch (e) {
+    // If there was an error we can't continue the process, so return
+    // (the action creator handles the other consequences of the error)
+    return;
+  }
 
   await prepareAndUploadFileToS3(projectId, sampleId, fileType, file, signedUrl, dispatch);
 };

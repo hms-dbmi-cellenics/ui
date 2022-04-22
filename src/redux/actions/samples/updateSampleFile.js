@@ -47,6 +47,15 @@ const updateSampleFile = (
       },
     });
   } catch (e) {
+    dispatch({
+      type: SAMPLES_FILE_UPDATE,
+      payload: {
+        sampleUuid,
+        lastModified: updatedAt,
+        fileName,
+        fileDiff,
+      },
+    });
     handleError(e, endUserMessages.ERROR_SAVING);
   }
 };

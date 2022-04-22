@@ -8,6 +8,8 @@ import { v4 as uuidv4 } from 'uuid';
 
 import fetchAPI from 'utils/http/fetchAPI';
 import { SAMPLES_FILE_UPDATE } from 'redux/actionTypes/samples';
+import handleError from 'utils/http/handleError';
+import endUserMessages from 'utils/endUserMessages';
 
 const fileNameForApiV1 = {
   matrix10x: 'matrix.mtx.gz',
@@ -23,14 +25,16 @@ const createSampleFileV2 = (
   metadata,
   fileForApiV1,
 ) => async (dispatch) => {
-  const payload = {
-    sampleFileId: uuidv4(),
-    size,
-    metadata,
-  };
+  const updatedAt = moment().toISOString();
 
-  const url = `/v2/experiments/${experimentId}/samples/${sampleId}/sampleFiles/${type}`;
   try {
+    const url = `/v2/experiments/${experimentId}/samples/${sampleId}/sampleFiles/${type}`;
+    const body = {
+      sampleFileId: uuidv4(),
+      size,
+      metadata,
+    };
+
     const signedUrl = await fetchAPI(
       url,
       {
@@ -38,11 +42,9 @@ const createSampleFileV2 = (
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(payload),
+        body: JSON.stringify(body),
       },
     );
-
-    const updatedAt = moment().toISOString();
 
     dispatch({
       type: SAMPLES_FILE_UPDATE,
@@ -56,7 +58,10 @@ const createSampleFileV2 = (
 
     return signedUrl;
   } catch (e) {
-    // const errorMessage = handleError(e, endUserMessages.ERROR_SAVING);
+    // Can't update the upload status becuase we didn't even get to create the sample file
+    handleError(e, endUserMessages.ERROR_BEGIN_SAMPLE_FILE_UPLOAD);
+
+    throw e;
   }
 };
 
