@@ -16,7 +16,6 @@ exports[`PostErrorToSlack Posts requests correctly 3`] = `
 "
   ⚠  Uncaught UI Error - ExpID testae48e318dab9a1bd0bexperiment - 2020-01-01T00:00:00.000Z
   URL: http://localhost:3000/experiments/testae48e318dab9a1bd0bexperiment/data-exploration
-
   User: John Doe <fake@email.com> 5152fake-eb52-474c-user-mocke8c8user
   Experiment ID: testae48e318dab9a1bd0bexperiment"
 `;
@@ -28,19 +27,13 @@ exports[`PostErrorToSlack Posts requests correctly 5`] = `"UI-error-testae48e318
 exports[`PostErrorToSlack Posts requests correctly 6`] = `
 "
     Uncaught UI Error - Exp ID testae48e318dab9a1bd0bexperiment - 2020-01-01T00:00:00.000Z
-
     === DETAILS ===
     User: John Doe <fake@email.com> 5152fake-eb52-474c-user-mocke8c8user
     ExperimentID: testae48e318dab9a1bd0bexperiment
     URL: http://localhost:3000/experiments/testae48e318dab9a1bd0bexperiment/data-exploration
     Timestamp: 2020-01-01T00:00:00.000Z
-
     ===== ERROR =====
     Mock error stack
-
-    ===== COMPONENT STACK =====
-    Mock component stack
-
     ===== REDUX STATE =====
     {
   \\"cellInfo\\": {

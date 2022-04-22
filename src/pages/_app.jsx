@@ -8,7 +8,6 @@ import Router, { useRouter } from 'next/router';
 import NProgress from 'nprogress';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
-import App from 'next/app';
 import { DefaultSeo } from 'next-seo';
 
 import { wrapper } from 'redux/store';
@@ -54,9 +53,7 @@ Amplify.configure({
 });
 
 const WrappedApp = ({ Component, pageProps }) => {
-  const {
-    httpError, amplifyConfig, fromApp, appCtxKeys,
-  } = pageProps;
+  const { httpError, amplifyConfig } = pageProps;
   const router = useRouter();
   const { experimentId } = router.query;
   const experimentData = useSelector(
@@ -127,16 +124,12 @@ const WrappedApp = ({ Component, pageProps }) => {
       return <Error statusCode={httpError} />;
     }
 
-    console.log('*** page Props', pageProps);
-
     // Otherwise, load the page inside the content wrapper.
     return (
       <AppRouteProvider>
         <ContentWrapper
           routeExperimentId={experimentId}
           experimentData={experimentData}
-          fromApp={fromApp}
-          appCtxKeys={appCtxKeys}
         >
           <Component
             experimentId={experimentId}
@@ -178,9 +171,12 @@ WrappedApp.getInitialProps = async ({ Component, ctx }) => {
     store, req, query, res, err,
   } = ctx;
 
+  // If a render error occurs, NextJS bypasses the normal page rendering
+  // and returns `_error.jsx` instead, returning these parameters
+  if (err) { return { pageProps: { errorObject: err } }; }
+
   // Do nothing if not server-side
-  if (err) return { pageProps: { err } };
-  if (!req) return {};
+  if (!req) { return { pageProps: {} }; }
 
   const pageProps = Component.getInitialProps
     ? await Component.getInitialProps(ctx)
@@ -209,11 +205,7 @@ WrappedApp.getInitialProps = async ({ Component, ctx }) => {
       results = _.merge(results, experimentInfo);
     }
 
-    return {
-      pageProps: {
-        ...pageProps, ...results,
-      },
-    };
+    return { pageProps: { ...pageProps, ...results } };
   } catch (e) {
     if (!(e instanceof APIError)) {
       // eslint-disable-next-line no-ex-assign

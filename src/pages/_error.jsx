@@ -1,16 +1,25 @@
 import React from 'react';
+import PropTypes from 'prop-types';
+import { useSelector } from 'react-redux';
 import {
   Result, Typography, Space, Button,
 } from 'antd';
-import PropTypes from 'prop-types';
 import FeedbackButton from 'components/FeedbackButton';
+import postErrorToSlack from 'utils/postErrorToSlack';
 
 const { Title, Text } = Typography;
 
 const Error = (props) => {
-  const {
-    errorText, statusCode, err,
-  } = props;
+  const { errorText, statusCode, errorObject } = props;
+
+  const environment = useSelector((state) => state.networkResources.environment);
+  const reduxState = useSelector((state) => state);
+
+  console.log('*** environment', environment);
+  console.log('*** reduxState', reduxState);
+  console.log('*** errorObject', errorObject);
+
+  if (errorObject && environment === 'staging') postErrorToSlack(errorObject, reduxState);
 
   return (
     <Result
@@ -42,11 +51,11 @@ const Error = (props) => {
 
             {statusCode && <Text type='secondary'>{`HTTP ${statusCode}`}</Text>}
 
-            {(errorText || err) && (
+            {errorText && (
               <>
                 <span>
                   <Text type='secondary'>The error is reported as:&nbsp;</Text>
-                  <Text code>{errorText || err.message}</Text>
+                  <Text code>{errorText}</Text>
                 </span>
               </>
             )}
@@ -69,18 +78,16 @@ const Error = (props) => {
 Error.defaultProps = {
   statusCode: null,
   errorText: null,
-  err: null,
+  errorObject: null,
 };
 
 Error.propTypes = {
   statusCode: PropTypes.number,
   errorText: PropTypes.string,
-  err: PropTypes.object,
+  errorObject: PropTypes.object,
 };
 
-Error.getInitialProps = (props) => {
-  const { res, err } = props;
-
+Error.getInitialProps = ({ res, err }) => {
   const statusCode = res ? res.statusCode : err ? err.statusCode : 404;
   return { statusCode };
 };

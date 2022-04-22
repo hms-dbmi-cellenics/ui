@@ -22,7 +22,7 @@ const DataManagementPage = () => {
   const projectsList = useSelector(((state) => state.projects));
   const [throwError, setThrowError] = useState(false);
 
-  if (throwError) throw new Error('Some error');
+  if (throwError) throw new Error('Agi is testing this error');
 
   const {
     saving: projectSaving,

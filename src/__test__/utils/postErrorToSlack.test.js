@@ -4,7 +4,6 @@ import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 enableFetchMocks();
 
 const mockError = { stack: 'Mock error stack' };
-const mockInfo = { componentStack: 'Mock component stack' };
 const mockReduxDump = {
   cellInfo: {
     focus: {
@@ -56,7 +55,7 @@ describe('PostErrorToSlack', () => {
   });
 
   it('Posts requests correctly', async () => {
-    await postErrorToSlack(mockError, mockInfo, mockReduxDump);
+    await postErrorToSlack(mockError, mockReduxDump);
 
     expect(fetchMock).toHaveBeenCalledTimes(1);
     expect(fetchMock.mock.calls[0]).toMatchSnapshot();
@@ -76,7 +75,7 @@ describe('PostErrorToSlack', () => {
     fetchMock.mockIf(/.*/, () => Promise.resolve(new Response('Server error', { status: 500 })));
 
     await expect(async () => {
-      await postErrorToSlack(mockError, mockInfo, mockReduxDump);
+      await postErrorToSlack(mockError, mockReduxDump);
     }).not.toThrow();
 
     expect(fetchMock).toHaveBeenCalledTimes(1);
