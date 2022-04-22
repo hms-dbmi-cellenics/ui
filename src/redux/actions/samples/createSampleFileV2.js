@@ -1,11 +1,6 @@
 import moment from 'moment';
 import { v4 as uuidv4 } from 'uuid';
 
-// import endUserMessages from 'utils/endUserMessages';
-// import mergeObjectWithArrays from 'utils/mergeObjectWithArrays';
-// import UploadStatus from 'utils/upload/UploadStatus';
-// import handleError from 'utils/http/handleError';
-
 import fetchAPI from 'utils/http/fetchAPI';
 import { SAMPLES_FILE_UPDATE } from 'redux/actionTypes/samples';
 import handleError from 'utils/http/handleError';
