@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
@@ -9,7 +10,9 @@ import initialProjectState, { projectTemplate } from 'redux/reducers/projects/in
 import initialExperimentState, { experimentTemplate } from 'redux/reducers/experiments/initialState';
 import endUserMessages from 'utils/endUserMessages';
 
-import { SAMPLES_CREATE, SAMPLES_SAVING, SAMPLES_ERROR } from 'redux/actionTypes/samples';
+import {
+  SAMPLES_CREATE, SAMPLES_SAVING, SAMPLES_ERROR, SAMPLES_SAVED,
+} from 'redux/actionTypes/samples';
 
 import pushNotificationMessage from 'utils/pushNotificationMessage';
 
@@ -124,11 +127,14 @@ describe('createSample action', () => {
     expect(newUuid).toBeUndefined();
   });
 
-  it('Works correctly for api v2', async () => {
+  it('Works correctly for api v2 with one file being uploaded', async () => {
     config.currentApiVersion = api.V2;
     fetchMock.mockResponse(JSON.stringify({}), { url: 'mockedUrl', status: 200 });
 
-    const newUuid = await store.dispatch(createSample(projectUuid, sampleName, mockType, []));
+    const newUuid = await store.dispatch(createSample(projectUuid, sampleName, mockType, ['matrix.tsv.gz']));
+
+    // Returns a new sampleUuid
+    expect(newUuid).toEqual(sampleUuid);
 
     // Fetch call is made
     const fetchMockFirstCall = fetchMock.mock.calls[0];
@@ -141,11 +147,31 @@ describe('createSample action', () => {
 
     // Sends correct actions
     const actions = store.getActions();
+    expect(_.map(actions, 'type')).toEqual([SAMPLES_SAVING, SAMPLES_CREATE, SAMPLES_SAVED]);
+    expect(_.map(actions, 'payload')).toMatchSnapshot();
+  });
 
-    expect(actions[0].type).toEqual(SAMPLES_SAVING);
-    expect(actions[1].type).toEqual(SAMPLES_CREATE);
+  it('Works correctly for api v2 with many files being uploaded', async () => {
+    config.currentApiVersion = api.V2;
+    fetchMock.mockResponse(JSON.stringify({}), { url: 'mockedUrl', status: 200 });
+
+    const newUuid = await store.dispatch(createSample(projectUuid, sampleName, mockType, ['matrix.tsv.gz', 'features.tsv.gz', 'barcodes.tsv.gz']));
 
     // Returns a new sampleUuid
     expect(newUuid).toEqual(sampleUuid);
+
+    // Fetch call is made
+    const fetchMockFirstCall = fetchMock.mock.calls[0];
+
+    const { body: fetchBody, method: fetchMethod } = fetchMockFirstCall[1];
+    expect(fetchMockFirstCall[0]).toEqual(`http://localhost:3000/v2/experiments/${mockProject.experiments[0]}/samples/${sampleUuid}`);
+
+    expect(fetchMethod).toEqual('POST');
+    expect(JSON.parse(fetchBody)).toMatchSnapshot();
+
+    // Sends correct actions
+    const actions = store.getActions();
+    expect(_.map(actions, 'type')).toEqual([SAMPLES_SAVING, SAMPLES_CREATE, SAMPLES_SAVED]);
+    expect(_.map(actions, 'payload')).toMatchSnapshot();
   });
 });
