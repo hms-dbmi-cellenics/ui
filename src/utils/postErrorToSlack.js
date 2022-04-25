@@ -35,20 +35,18 @@ const trimOutput = (key, item) => {
 
 const buildErrorMessage = (errorObject, reduxState, context) => {
   const {
-    user, timestamp, experimentId, url, environment,
+    user, timestamp, experimentId, url,
   } = context;
 
   let message = `
-    [${environment.toUpperCase()}] Uncaught UI Error - Exp ${experimentId} - ${timestamp}
+    ===== ERROR STACK =====
+    ${errorObject.stack}
 
     === DETAILS ===
     User: ${user.attributes.name} <${user.attributes.email}> ${user.username}
     ExperimentID: ${experimentId}
     URL: ${url}
     Timestamp: ${timestamp}
-
-    ===== ERROR =====
-    ${errorObject.stack}
 
     `;
 
