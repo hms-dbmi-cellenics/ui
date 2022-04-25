@@ -212,8 +212,13 @@ describe('CellSetsTool', () => {
       );
     });
 
-    // ensure that initially we have 0 custom cell sets
-    expect(screen.queryByText('New Cluster')).toBeNull();
+    // expand the louvain clusters tree
+    const louvainCLustersGroup = screen.getAllByRole('img', { name: 'down' })[0];
+    userEvent.click(louvainCLustersGroup);
+
+    // select the third louvain cluster
+    const louvain3Cluster = screen.getByText('Cluster 3');
+    userEvent.click(louvain3Cluster);
 
     // create a new cluster with some cells that will overlap:
     await act(async () => {
@@ -228,14 +233,6 @@ describe('CellSetsTool', () => {
     const scratchpadCluster = screen.getByText('test cluster');
     userEvent.click(scratchpadCluster);
 
-    // expand the louvain clusters tree
-    const louvainCLustersGroup = screen.getAllByRole('img', { name: 'down' })[0];
-    userEvent.click(louvainCLustersGroup);
-
-    // select the first louvain cluster
-    const louvain0Cluster = screen.getByText('Cluster 0');
-    userEvent.click(louvain0Cluster);
-
     const intersectOperation = screen.getByLabelText(/Intersection of selected$/i);
     userEvent.click(intersectOperation);
 
@@ -249,6 +246,9 @@ describe('CellSetsTool', () => {
         }),
       );
     });
+
+    // maybe expand custom cell sets tree, but doesn't work. There is nothing in redux either
+    screen.debug(null, Infinity);
 
     screen.getByText('New Cluster');
     const newClusterKey = getClusterByName('New Cluster');
@@ -267,8 +267,13 @@ describe('CellSetsTool', () => {
       );
     });
 
-    // ensure that initially we have 0 custom cell sets
-    expect(screen.queryByText('New Cluster')).toBeNull();
+    // expand the louvain clusters tree
+    const louvainCLustersGroup = screen.getAllByRole('img', { name: 'down' })[0];
+    userEvent.click(louvainCLustersGroup);
+
+    // select the first louvain cluster
+    const louvain0Cluster = screen.getByText('Cluster 0');
+    userEvent.click(louvain0Cluster);
 
     // create a new cluster with some cells that will overlap:
     await act(async () => {
@@ -282,10 +287,6 @@ describe('CellSetsTool', () => {
     // select the newly created cluster
     const scratchpadCluster = screen.getByText('test cluster');
     userEvent.click(scratchpadCluster);
-
-    // select the first louvain cluster
-    const louvain0Cluster = screen.getByText('Cluster 0');
-    userEvent.click(louvain0Cluster);
 
     const intersectOperation = screen.getByLabelText(/Intersection of selected$/i);
     userEvent.click(intersectOperation);
@@ -311,6 +312,10 @@ describe('CellSetsTool', () => {
         </Provider>,
       );
     });
+
+    // expand the louvain clusters tree
+    const louvainCLustersGroup = screen.getAllByRole('img', { name: 'down' })[0];
+    userEvent.click(louvainCLustersGroup);
 
     // select the first louvain cluster
     const louvain0Cluster = screen.getByText('Cluster 0');
@@ -349,6 +354,10 @@ describe('CellSetsTool', () => {
       );
     });
 
+    // expand the louvain clusters tree
+    const louvainCLustersGroup = screen.getAllByRole('img', { name: 'down' })[0];
+    userEvent.click(louvainCLustersGroup);
+
     // select the first louvain cluster
     const louvain0Cluster = screen.getByText('Cluster 0');
     userEvent.click(louvain0Cluster);
@@ -369,6 +378,10 @@ describe('CellSetsTool', () => {
       );
     });
 
+    // expand custom cell sets tree
+    const customCellSetsGroup = screen.getAllByRole('img', { name: 'down' })[1];
+    userEvent.click(customCellSetsGroup);
+
     screen.getByText('New Cluster');
     const newClusterKey = getClusterByName('New Cluster');
 
@@ -384,7 +397,7 @@ describe('CellSetsTool', () => {
     expect(actualComplement).toEqual(expectedComplement);
   });
 
-  it('cell set operations take into account only clusters that are in the current tab', async () => {
+  it('selected number of cell sets is correct', async () => {
     await act(async () => {
       render(
         <Provider store={storeState}>
@@ -393,59 +406,9 @@ describe('CellSetsTool', () => {
       );
     });
 
-    // select the first louvain cluster
-    const louvain0Cluster = screen.getByText('Cluster 0');
-    userEvent.click(louvain0Cluster);
-
-    // go to the metadata tab
-    const metadataTabButton = screen.getByText(/Metadata/i);
-    userEvent.click(metadataTabButton);
-
-    // select a sample cluster
-    const wt1Cluster = screen.getByText('WT1');
-    userEvent.click(wt1Cluster);
-
-    // now compute union while still in the metadata tab
-    const unionOperation = screen.getByLabelText(/Union of selected$/i);
-    userEvent.click(unionOperation);
-
-    const saveButton = screen.getByLabelText(/Save/i);
-    await act(async () => {
-      fireEvent(
-        saveButton,
-        new MouseEvent('click', {
-          bubbles: true,
-          cancelable: true,
-        }),
-      );
-    });
-
-    // go to the cell sets tab
-    const cellSetsTabButton = screen.getByText('Cell sets');
-    userEvent.click(cellSetsTabButton);
-
-    screen.getByText('New Cluster');
-    const newClusterKey = getClusterByName('New Cluster');
-
-    const WT1CEllIds = sampleList.find(({ name }) => name === 'WT1').cellIds;
-
-    // test the union cellSet function. It should not include the cluster 0 cells
-    const expectedUnion = new Set(WT1CEllIds);
-
-    // get the cell ids of the new cluster that got created as the union of those clusters
-    const actualUnion = storeState.getState().cellSets.properties[newClusterKey].cellIds;
-
-    expect(actualUnion).toEqual(expectedUnion);
-  });
-
-  it('selected cell sets show selected in both tabs', async () => {
-    await act(async () => {
-      render(
-        <Provider store={storeState}>
-          {cellSetsToolFactory()}
-        </Provider>,
-      );
-    });
+    // expand the louvain clusters tree
+    const louvainCLustersGroup = screen.getAllByRole('img', { name: 'down' })[0];
+    userEvent.click(louvainCLustersGroup);
 
     // select the first louvain cluster
     const louvain0Cluster = screen.getByText('Cluster 0');
@@ -454,22 +417,6 @@ describe('CellSetsTool', () => {
     const numCellsCluster0 = louvainClusters.find(({ name }) => name === 'Cluster 0').cellIds.length;
 
     screen.getByText(`${numCellsCluster0} cells selected`);
-
-    // go to the metadata tab
-    const metadataTabButton = screen.getByText(/Metadata/i);
-    userEvent.click(metadataTabButton);
-
-    // select some sample clusters
-    const wt1Cluster = screen.getByText('WT1');
-    userEvent.click(wt1Cluster);
-    const wt2Cluster = screen.getByText('WT2');
-    userEvent.click(wt2Cluster);
-
-    const numCellsWT1 = sampleList.find(({ name }) => name === 'WT1').cellIds.length;
-    const numCellsWT2 = sampleList.find(({ name }) => name === 'WT2').cellIds.length;
-    const numCellsTotal = numCellsWT1 + numCellsWT2;
-
-    screen.getByText(`${numCellsTotal} cells selected`);
   });
 
   it('Scratchpad cluster deletion works ', async () => {
@@ -485,6 +432,10 @@ describe('CellSetsTool', () => {
     await act(async () => {
       storeState.dispatch(createCellSet(experimentId, 'New Cluster', '#3957ff', new Set([1, 2, 3, 4, 5])));
     });
+
+    // expand custom cell sets tree
+    const customCellSetsGroup = screen.getAllByRole('img', { name: 'down' })[1];
+    userEvent.click(customCellSetsGroup);
 
     screen.getByText('New Cluster');
 
