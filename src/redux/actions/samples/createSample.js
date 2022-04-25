@@ -16,11 +16,13 @@ import { sampleTemplate } from 'redux/reducers/samples/initialState';
 
 import config from 'config';
 import { api } from 'utils/constants';
+import UploadStatus from 'utils/upload/UploadStatus';
 
 const createSample = (
   projectUuid,
   name,
   type,
+  filesToUpload,
 ) => async (dispatch, getState) => {
   const project = getState().projects[projectUuid];
   const createdDate = moment().toISOString();
@@ -38,7 +40,7 @@ const createSample = (
   let body;
 
   const newSample = {
-    ...sampleTemplate,
+    ..._.cloneDeep(sampleTemplate),
     name,
     type,
     projectUuid,
@@ -62,6 +64,10 @@ const createSample = (
     } else {
       throw new Error(`Sample technology ${type} is not recognized`);
     }
+
+    filesToUpload.forEach((fileName) => {
+      newSample.files[fileName] = { upload: { status: UploadStatus.UPLOADING } };
+    });
 
     body = { name, sampleTechnology };
   }

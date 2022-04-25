@@ -157,9 +157,13 @@ const processUpload = async (filesList, sampleType, samples, activeProjectUuid, 
   }, {});
 
   Object.entries(samplesMap).forEach(async ([name, sample]) => {
+    const filesToUploadForSample = Object.keys(sample.files);
+
     // Create sample if not exists.
     try {
-      sample.uuid ??= await dispatch(createSample(activeProjectUuid, name, sampleType));
+      sample.uuid ??= await dispatch(
+        createSample(activeProjectUuid, name, sampleType, filesToUploadForSample),
+      );
     } catch (e) {
       // If sample creation fails, sample should not be created
       return;
