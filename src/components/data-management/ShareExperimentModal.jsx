@@ -5,9 +5,8 @@ import {
   Modal, Button, Space, Row, Col, Card, Avatar, Select, Typography,
 } from 'antd';
 import Auth from '@aws-amplify/auth';
-import fetchAPI from 'utils/http/fetchAPI';
-import pushNotificationMessage from 'utils/pushNotificationMessage';
-import handleError from 'utils/http/handleError';
+import loadRoles from 'utils/data-management/loadRoles';
+import { sendInvites, revokeRole } from 'utils/data-management/shareExperiment';
 
 const { Text } = Typography;
 
@@ -20,15 +19,13 @@ const ShareExperimentModal = (props) => {
   const [addedUsers, setAddedUsers] = useState([]);
   const [role, setRole] = useState('explorer');
   const [currentUser, setCurrentUser] = useState(null);
-  const loadRoles = async () => {
-    const responseJson = await fetchAPI(`/v1/access/${experimentId}`);
-    const getCurrentUser = await Auth.currentAuthenticatedUser();
-    setCurrentUser(getCurrentUser.attributes.email);
-    setUsersWithAccess(responseJson);
-  };
 
   useEffect(() => {
-    loadRoles();
+    Auth.currentAuthenticatedUser().then((user) => {
+      setCurrentUser(user.attributes.email);
+    });
+
+    loadRoles(experimentId).then((userRole) => setUsersWithAccess(userRole));
   }, []);
 
   const changeSelectedUsers = (selectedUsers) => {
@@ -50,46 +47,16 @@ const ShareExperimentModal = (props) => {
   const inviteUsers = async () => {
     if (!addedUsers.length) return;
 
-    const requests = addedUsers.map(async (user) => {
-      try {
-        await fetchAPI(`/v1/access/${experimentId}`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            projectUuid: activeProjectUuid,
-            role,
-            userEmail: user,
-          }),
-        });
-        pushNotificationMessage('success', `User ${user} has been successfully invited to view ${experimentName}.`);
-      } catch (e) {
-        handleError(e);
-      }
-    });
+    await sendInvites(
+      addedUsers,
+      {
+        experimentId,
+        experimentName,
+        activeProjectUuid,
+        role,
+      },
+    );
 
-    await Promise.all(requests);
-
-    onCancel();
-  };
-
-  const revokeRole = async (userEmail) => {
-    try {
-      await fetchAPI(`/v1/access/${experimentId}`, {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          userEmail,
-        }),
-      });
-
-      pushNotificationMessage('success', `${userEmail} removed from ${experimentName}.`);
-    } catch (e) {
-      handleError(e, 'Error removing user.');
-    }
     onCancel();
   };
 
@@ -162,7 +129,14 @@ const ShareExperimentModal = (props) => {
                       <Button
                         type='primary'
                         danger
-                        onClick={() => revokeRole(user.email)}
+                        onClick={() => {
+                          revokeRole(user.email,
+                            {
+                              experimentId,
+                              experimentName,
+                            });
+                          onCancel();
+                        }}
                         disabled={user.email === currentUser}
                       >
                         Revoke
