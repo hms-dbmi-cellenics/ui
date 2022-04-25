@@ -185,6 +185,7 @@ describe('processUploadV2', () => {
 
     // Wait until all put promises are resolved
     await flushPromises();
+
     const fileUpdateActions = store.getActions().filter(
       (action) => action.type === SAMPLES_FILE_UPDATE,
     );
@@ -196,14 +197,10 @@ describe('processUploadV2', () => {
       ({ status }) => status === UploadStatus.UPLOADED,
     );
 
-    // There are 6 files actions with status uploading
-    expect(uploadingStatusProperties.length).toEqual(6);
+    // There are 3 files actions with status uploading
+    expect(uploadingStatusProperties.length).toEqual(3);
     // There are 3 files actions with status uploaded
     expect(uploadedStatusProperties.length).toEqual(3);
-    // After uploading ends successfully the upload promises are removed
-    uploadedStatusProperties.forEach(({ amplifyPromise }) => {
-      expect(amplifyPromise).toBeNull();
-    });
   });
 
   it('Updates redux correctly when there are file load and compress errors', async () => {
@@ -299,15 +296,11 @@ describe('processUploadV2', () => {
     );
 
     // There are 3 files actions with status uploading
-    expect(uploadingFileProperties.length).toEqual(6);
+    expect(uploadingFileProperties.length).toEqual(3);
     // There are 3 files actions with status upload error
     expect(errorFileProperties.length).toEqual(3);
     // There are no file actions with status successfully uploaded
     expect(uploadedFileProperties.length).toEqual(0);
-    // Upload end deletes aws promise (if there was one)
-    errorFileProperties.forEach(({ amplifyPromise }) => {
-      expect(amplifyPromise).toBeNull();
-    });
   });
 
   it('Should not upload files if there are errors creating samples in DynamoDB', async () => {

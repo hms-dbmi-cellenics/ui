@@ -38,7 +38,7 @@ const prepareAndUploadFileToS3 = async (
   }
 
   try {
-    const uploadPromise = putInS3(loadedFile, signedUrl, (progress) => {
+    await putInS3(loadedFile, signedUrl, (progress) => {
       const percentProgress = Math.round((progress.loaded / progress.total) * 100);
 
       dispatch(
@@ -47,8 +47,6 @@ const prepareAndUploadFileToS3 = async (
         ),
       );
     });
-
-    await uploadPromise;
   } catch (e) {
     console.log('uploadError');
     console.log(e);
@@ -60,6 +58,8 @@ const prepareAndUploadFileToS3 = async (
     console.log(e.response?.data);
 
     dispatch(updateSampleFileUploadV2(projectId, sampleId, fileType, UploadStatus.UPLOAD_ERROR));
+
+    return;
   }
 
   dispatch(updateSampleFileUploadV2(projectId, sampleId, fileType, UploadStatus.UPLOADED));
