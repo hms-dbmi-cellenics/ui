@@ -189,7 +189,7 @@ const CellSetsTool = (props) => {
         position: 'relative',
         height: `${height - 40}px`,
         width: `${width - 8}px`,
-        overflow: 'scroll',
+        overflow: 'auto',
         paddingLeft: '5px',
         paddingRight: '5px',
       }}

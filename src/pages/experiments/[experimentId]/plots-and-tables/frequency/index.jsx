@@ -1,40 +1,37 @@
 /* eslint-disable import/no-unresolved */
 /* eslint-disable no-param-reassign */
 import React, { useEffect, useState } from 'react';
-import Link from 'next/link';
+import PropTypes from 'prop-types';
+import { useSelector, useDispatch } from 'react-redux';
 import {
-  Row,
-  Col,
-  Space,
   Collapse,
   Skeleton,
   Radio,
   Alert,
 } from 'antd';
-import { useSelector, useDispatch } from 'react-redux';
+import Link from 'next/link';
+
+import Header from 'components/Header';
+import Loader from 'components/Loader';
+import PlatformError from 'components/PlatformError';
+import FrequencyPlot from 'components/plots/FrequencyPlot';
 import ExportAsCSV from 'components/plots/ExportAsCSV';
-import PropTypes from 'prop-types';
+
 import { getCellSets, getCellSetsHierarchyByKeys } from 'redux/selectors';
 import SelectCellSets from 'components/plots/styling/frequency/SelectCellSets';
-import PlotHeader from 'components/plots/PlotHeader';
-import plotCsvFilename from 'utils/fileNames';
 
-import PlotStyling from 'components/plots/styling/PlotStyling';
-import {
-  updatePlotConfig,
-  loadPlotConfig,
-} from 'redux/actions/componentConfig';
-import PlatformError from 'components/PlatformError';
+import { updatePlotConfig, loadPlotConfig } from 'redux/actions/componentConfig';
 import loadCellSets from 'redux/actions/cellSets/loadCellSets';
 
-import FrequencyPlot from 'components/plots/FrequencyPlot';
-import Loader from 'components/Loader';
+import plotCsvFilename from 'utils/fileNames';
 import { plotNames } from 'utils/constants';
+import PlotContainer from 'components/plots/PlotContainer';
 
 const { Panel } = Collapse;
 
 const plotUuid = 'frequencyPlotMain';
 const plotType = 'frequency';
+const dataExplorationPath = '/experiments/[experimentId]/data-exploration';
 
 const FrequencyPlotPage = ({ experimentId }) => {
   const dispatch = useDispatch();
@@ -52,17 +49,11 @@ const FrequencyPlotPage = ({ experimentId }) => {
   const [csvFilename, setCsvFilename] = useState('');
 
   useEffect(() => {
+    if (!config) dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
     dispatch(loadCellSets(experimentId));
-    dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
   }, []);
 
-  const dataExplorationPath = '/experiments/[experimentId]/data-exploration';
-
-  const updatePlotWithChanges = (obj) => {
-    dispatch(updatePlotConfig(plotUuid, obj));
-  };
-
-  const plotStylingControlsConfig = [
+  const plotStylingConfig = [
     {
       panelTitle: 'Main schema',
       controls: ['dimensions'],
@@ -107,6 +98,7 @@ const FrequencyPlotPage = ({ experimentId }) => {
   if (!config) {
     return <Skeleton />;
   }
+
   const formatCSVData = (plotData) => {
     const newCsvData = [];
 
@@ -127,6 +119,40 @@ const FrequencyPlotPage = ({ experimentId }) => {
     setCsvFilename(plotCsvFilename(experimentName, 'FREQUENCY_PLOT', [config.frequencyType]));
     setCsvData(newCsvData);
   };
+
+  const updatePlotWithChanges = (obj) => {
+    dispatch(updatePlotConfig(plotUuid, obj));
+  };
+
+  const changePlotType = (value) => {
+    const chosenType = value.target.value;
+
+    updatePlotWithChanges({
+      frequencyType: chosenType,
+      axes: { yAxisText: chosenType === 'proportional' ? 'Proportion' : 'Count' },
+    });
+  };
+
+  const renderExtraPanels = () => (
+    <>
+      <Panel header='Select data' key='select-data'>
+        <SelectCellSets
+          config={config}
+          onUpdate={updatePlotWithChanges}
+        />
+      </Panel>
+      <Panel header='Plot type' key='plot-type'>
+        <Radio.Group
+          onChange={(value) => changePlotType(value)}
+          value={config.frequencyType}
+        >
+          <Radio value='proportional'>Proportional</Radio>
+          <Radio value='count'>Count</Radio>
+        </Radio.Group>
+      </Panel>
+    </>
+  );
+
   const renderPlot = () => {
     if (cellSetsError) {
       return (
@@ -155,71 +181,20 @@ const FrequencyPlotPage = ({ experimentId }) => {
     );
   };
 
-  const changePlotType = (value) => {
-    updatePlotWithChanges({
-      frequencyType: value.target.value,
-    });
-    if (value.target.value === 'proportional') {
-      updatePlotWithChanges({ axes: { yAxisText: 'Proportion' } });
-    } else {
-      updatePlotWithChanges({ axes: { yAxisText: 'Count' } });
-    }
-  };
-
-  const renderCSVbutton = () => (
-    <ExportAsCSV data={csvData} filename={csvFilename} />
-  );
-
-  const renderExtraPanels = () => (
-    <>
-      <Panel header='Select data' key='20'>
-        <SelectCellSets
-          config={config}
-          onUpdate={updatePlotWithChanges}
-        />
-      </Panel>
-      <Panel header='Plot Type' key='1'>
-        <Radio.Group
-          onChange={(value) => changePlotType(value)}
-          value={config.frequencyType}
-        >
-          <Radio value='proportional'>Proportional</Radio>
-          <Radio value='count'>Count</Radio>
-        </Radio.Group>
-      </Panel>
-    </>
-  );
-
   return (
     <>
-      <PlotHeader
-        title={plotNames.FREQUENCY_PLOT}
-        plotUuid={plotUuid}
+      <Header title={plotNames.FREQUENCY_PLOT} />
+      <PlotContainer
         experimentId={experimentId}
-      />
-      <Space direction='vertical' style={{ width: '100%', padding: '0 10px' }}>
-        <Row gutter={16}>
-          <Col span={16}>
-            <Space direction='vertical' style={{ width: '100%' }}>
-              <Collapse defaultActiveKey='1'>
-                <Panel header='Preview' key='1' extra={renderCSVbutton()}>
-                  {renderPlot()}
-                </Panel>
-              </Collapse>
-            </Space>
-          </Col>
-          <Col span={8}>
-            <Space direction='vertical' style={{ width: '100%' }}>
-              <PlotStyling
-                formConfig={plotStylingControlsConfig}
-                config={config}
-                onUpdate={updatePlotWithChanges}
-                renderExtraPanels={renderExtraPanels}
-              />
-            </Space>
-          </Col>
-        </Row>
-      </Space>
+        plotUuid={plotUuid}
+        plotType={plotType}
+        plotStylingConfig={plotStylingConfig}
+        extraToolbarControls={<ExportAsCSV data={csvData} filename={csvFilename} />}
+        extraControlPanels={renderExtraPanels()}
+        defaultActiveKey='select-data'
+      >
+        {renderPlot()}
+      </PlotContainer>
     </>
   );
 };

@@ -253,12 +253,16 @@ const HeatmapPlot = (props) => {
         {
           highlightedTrackData ? (
             <HeatmapTracksCellInfo
+              containerWidth={width}
+              containerHeight={height}
               cellId={highlightedTrackData.cellId}
               trackName={highlightedTrackData.trackName}
               coordinates={highlightedTrackData.coordinates}
             />
           ) : cellHighlight && geneHighlight ? (
             <HeatmapCellInfo
+              containerWidth={width}
+              containerHeight={height}
               cellId={cellHighlight}
               geneName={geneHighlight}
               geneExpression={focusedExpression?.rawExpression.expression[cellHighlight]}

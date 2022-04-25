@@ -1,6 +1,7 @@
 import handleError from 'utils/http/handleError';
 import fetchAPI from 'utils/http/fetchAPI';
-
+import config from 'config';
+import { api } from 'utils/constants';
 import endUserMessages from 'utils/endUserMessages';
 import {
   EXPERIMENT_SETTINGS_PROCESSING_CONFIG_LOADED,
@@ -8,7 +9,12 @@ import {
 } from 'redux/actionTypes/experimentSettings';
 
 const loadProcessingSettings = (experimentId) => async (dispatch) => {
-  const url = `/v1/experiments/${experimentId}/processingConfig`;
+  let url;
+  if (config.currentApiVersion === api.V1) {
+    url = `/v1/experiments/${experimentId}/processingConfig`;
+  } else if (config.currentApiVersion === api.V2) {
+    url = `/v2/experiments/${experimentId}/processingConfig`;
+  }
 
   try {
     const data = await fetchAPI(url);
@@ -16,7 +22,7 @@ const loadProcessingSettings = (experimentId) => async (dispatch) => {
     dispatch({
       type: EXPERIMENT_SETTINGS_PROCESSING_CONFIG_LOADED,
       payload: {
-        data: data.processingConfig,
+        data: data.processingConfig || data,
       },
     });
 

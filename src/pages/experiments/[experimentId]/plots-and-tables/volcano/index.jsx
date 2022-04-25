@@ -1,19 +1,16 @@
 import React, { useEffect, useState, useRef } from 'react';
 import {
-  Row,
-  Col,
-  Space,
   Collapse,
   Skeleton,
-  Empty, Typography,
+  Empty,
 } from 'antd';
 import { useSelector, useDispatch } from 'react-redux';
 import moment from 'moment';
 import _ from 'lodash';
 import ExportAsCSV from 'components/plots/ExportAsCSV';
 import PropTypes from 'prop-types';
-import PlotHeader from 'components/plots/PlotHeader';
-import PlotStyling from 'components/plots/styling/PlotStyling';
+import Header from 'components/Header';
+import PlotContainer from 'components/plots/PlotContainer';
 import { Vega } from 'react-vega';
 
 import loadDifferentialExpression from 'redux/actions/differentialExpression/loadDifferentialExpression';
@@ -32,7 +29,6 @@ import { generateSpec } from 'utils/plotSpecs/generateVolcanoSpec';
 import calculateVolcanoDataPoints from 'components/plots/helpers/calculateVolcanoDataPoints';
 import { plotNames } from 'utils/constants';
 
-const { Text } = Typography;
 const { Panel } = Collapse;
 
 const plotUuid = 'volcanoPlotMain';
@@ -60,9 +56,8 @@ const VolcanoPlotPage = (props) => {
   const [spec, setSpec] = useState(null);
 
   useEffect(() => {
-    if (!config) {
-      dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
-    }
+    if (!config) dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
+
     setComparisonGroup({
       ...plotCellSets,
       type: plotComparisonType,
@@ -95,7 +90,7 @@ const VolcanoPlotPage = (props) => {
     }
   }, [config, plotData]);
 
-  const plotStylingControlsConfig = [
+  const plotStylingConfig = [
     {
       panelTitle: 'Main schema',
       controls: [{
@@ -210,14 +205,7 @@ const VolcanoPlotPage = (props) => {
 
     if (!comparisonCreated.current) {
       return (
-        <Empty description={(
-          <>
-            <p>
-              <Text>Create a comparison to get started.</Text>
-            </p>
-          </>
-        )}
-        />
+        <Empty description='Create a comparison to get started' />
       );
     }
 
@@ -230,7 +218,7 @@ const VolcanoPlotPage = (props) => {
 
   const renderExtraPanels = () => (
     <>
-      <Panel header='Differential Expression' key='1'>
+      <Panel header='Differential expression' key='differential-expression'>
         <DiffExprCompute
           experimentId={experimentId}
           onCompute={onComputeDiffExp}
@@ -241,33 +229,18 @@ const VolcanoPlotPage = (props) => {
 
   return (
     <>
-      <PlotHeader
-        title={plotNames.VOLCANO_PLOT}
-        plotUuid={plotUuid}
+      <Header title={plotNames.VOLCANO_PLOT} />
+      <PlotContainer
         experimentId={experimentId}
-      />
-      <Space direction='vertical' style={{ width: '100%', padding: '0 10px' }}>
-        <Row gutter={16}>
-          <Col span={16}>
-            <Space direction='vertical' style={{ width: '100%' }}>
-              <Collapse defaultActiveKey='1'>
-                <Panel header='Preview' key='1' extra={generateExportDropdown()}>
-                  <center>{renderPlot()}</center>
-                </Panel>
-              </Collapse>
-            </Space>
-          </Col>
-          <Col span={8}>
-            <PlotStyling
-              formConfig={plotStylingControlsConfig}
-              config={config}
-              onUpdate={updatePlotWithChanges}
-              renderExtraPanels={renderExtraPanels}
-              defaultActiveKey='1'
-            />
-          </Col>
-        </Row>
-      </Space>
+        plotUuid={plotUuid}
+        plotType={plotType}
+        plotStylingConfig={plotStylingConfig}
+        extraToolbarControls={generateExportDropdown()}
+        extraControlPanels={renderExtraPanels()}
+        defaultActiveKey='differential-expression'
+      >
+        {renderPlot()}
+      </PlotContainer>
     </>
   );
 };

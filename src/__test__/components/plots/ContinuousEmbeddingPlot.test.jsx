@@ -98,7 +98,7 @@ describe('Continuous embedding plot', () => {
   it('Renders correctly with data', async () => {
     await renderContinuousEmbeddingPlot(storeState);
 
-    expect(screen.getByRole('graphics-document', { name: 'Vega visualization' })).toBeInTheDocument();
+    expect(screen.getByRole('graphics-document', { name: 'Continuous embedding plot' })).toBeInTheDocument();
   });
 
   it('Shows a loader if there is no config', async () => {
@@ -111,7 +111,7 @@ describe('Continuous embedding plot', () => {
     });
 
     expect(screen.getByText(/We're getting your data/i)).toBeInTheDocument();
-    expect(screen.queryByRole('graphics-document', { name: 'Vega visualization' })).toBeNull();
+    expect(screen.queryByRole('graphics-document', { name: 'Continuous embedding plot' })).toBeNull();
   });
 
   it('Shows a loader if the plot data is still loading', async () => {
@@ -120,7 +120,7 @@ describe('Continuous embedding plot', () => {
     });
 
     expect(screen.getByText(/We're getting your data/i)).toBeInTheDocument();
-    expect(screen.queryByRole('graphics-document', { name: 'Vega visualization' })).toBeNull();
+    expect(screen.queryByRole('graphics-document', { name: 'Continuous embedding plot' })).toBeNull();
   });
 
   it('Shows an error if the plot data has an error', async () => {
@@ -129,7 +129,7 @@ describe('Continuous embedding plot', () => {
     });
 
     expect(screen.getByText(/We're sorry, we couldn't load this/i)).toBeInTheDocument();
-    expect(screen.queryByRole('graphics-document', { name: 'Vega visualization' })).toBeNull();
+    expect(screen.queryByRole('graphics-document', { name: 'Continuous embedding plot' })).toBeNull();
   });
 
   it('Shows a loader if cell sets is loading', async () => {
@@ -143,7 +143,7 @@ describe('Continuous embedding plot', () => {
     await renderContinuousEmbeddingPlot(storeState);
 
     expect(screen.getByText(/We're getting your data/i)).toBeInTheDocument();
-    expect(screen.queryByRole('graphics-document', { name: 'Vega visualization' })).toBeNull();
+    expect(screen.queryByRole('graphics-document', { name: 'Continuous embedding plot' })).toBeNull();
   });
 
   it('Shows an error if fetching cell sets throw an error', async () => {
@@ -157,7 +157,7 @@ describe('Continuous embedding plot', () => {
     await renderContinuousEmbeddingPlot(storeState);
 
     expect(screen.getByText(/We're sorry, we couldn't load this/i)).toBeInTheDocument();
-    expect(screen.queryByRole('graphics-document', { name: 'Vega visualization' })).toBeNull();
+    expect(screen.queryByRole('graphics-document', { name: 'Continuous embedding plot' })).toBeNull();
   });
 
   it('Shows a loader if embedding data is loading', async () => {
@@ -169,7 +169,7 @@ describe('Continuous embedding plot', () => {
     await renderContinuousEmbeddingPlot(storeState);
 
     expect(screen.getByText(/We're getting your data/i)).toBeInTheDocument();
-    expect(screen.queryByRole('graphics-document', { name: 'Vega visualization' })).toBeNull();
+    expect(screen.queryByRole('graphics-document', { name: 'Continuous embedding plot' })).toBeNull();
   });
 
   it('Shows an error if there is an error fetching embedding', async () => {
@@ -181,6 +181,6 @@ describe('Continuous embedding plot', () => {
     await renderContinuousEmbeddingPlot(storeState);
 
     expect(screen.getByText(/We're sorry, we couldn't load this/i)).toBeInTheDocument();
-    expect(screen.queryByRole('graphics-document', { name: 'Vega visualization' })).toBeNull();
+    expect(screen.queryByRole('graphics-document', { name: 'Continuous embedding plot' })).toBeNull();
   });
 });

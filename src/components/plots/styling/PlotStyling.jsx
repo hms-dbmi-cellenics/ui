@@ -27,9 +27,10 @@ import VolcanoMarkersEditor from './volcano/MarkersEditor';
 import VolcanoDisplayLabels from './volcano/DisplayLabels';
 
 const { Panel } = Collapse;
+
 const PlotStyling = (props) => {
   const {
-    formConfig, config, onUpdate, renderExtraPanels, defaultActiveKey,
+    formConfig, config, onUpdate, extraPanels, defaultActiveKey,
   } = props;
 
   const ComponentMapping = {
@@ -51,12 +52,14 @@ const PlotStyling = (props) => {
     volcanoLabels: (attr) => <VolcanoDisplayLabels key='volcanoLabels' config={config} onUpdate={onUpdate} {...attr} />,
   };
 
+  const formatPanelKey = (key) => key.trim().toLowerCase().replace(' ', '-');
+
   const buildForm = (configObj) => configObj.map((el) => {
     // Build component object from component
 
     if (Object.getOwnPropertyDescriptor(el, 'controls') && el.controls.length > 0) {
       return (
-        <Panel header={el.panelTitle} key={el.panelTitle}>
+        <Panel header={el.panelTitle} key={formatPanelKey(el.panelTitle)}>
           {el.header}
           {el.controls.map((control) => {
             // If control is a string, no prop is passed
@@ -71,7 +74,7 @@ const PlotStyling = (props) => {
             Object.getOwnPropertyDescriptor(el, 'children')
               && el.children.length > 0
               ? (
-                <Collapse accordion>
+                <Collapse>
                   {buildForm(el.children)}
                 </Collapse>
               )
@@ -86,8 +89,8 @@ const PlotStyling = (props) => {
   });
 
   return (
-    <Collapse accordion defaultActiveKey={defaultActiveKey}>
-      {renderExtraPanels()}
+    <Collapse defaultActiveKey={defaultActiveKey} accordion>
+      {extraPanels}
       {buildForm(formConfig)}
     </Collapse>
   );
@@ -97,7 +100,7 @@ PlotStyling.propTypes = {
   formConfig: PropTypes.array,
   config: PropTypes.object,
   onUpdate: PropTypes.func.isRequired,
-  renderExtraPanels: PropTypes.func,
+  extraPanels: PropTypes.node,
   defaultActiveKey: PropTypes.oneOfType([
     PropTypes.string,
     PropTypes.array,
@@ -107,7 +110,7 @@ PlotStyling.propTypes = {
 PlotStyling.defaultProps = {
   formConfig: [],
   config: {},
-  renderExtraPanels: () => { },
+  extraPanels: {},
   defaultActiveKey: [],
 };
 

@@ -6,7 +6,6 @@ import {
 } from 'react-redux';
 import PropTypes from 'prop-types';
 import * as vega from 'vega';
-import _ from 'lodash';
 import 'vitessce/dist/es/production/static/css/index.css';
 
 import ClusterPopover from 'components/data-exploration/embedding/ClusterPopover';
@@ -35,7 +34,7 @@ const Scatterplot = dynamic(
   { ssr: false },
 );
 
-const initialZoom = 4.00;
+const INITIAL_ZOOM = 4.00;
 const cellRadiusFromZoom = (zoom) => zoom ** 3 / 50;
 
 const Embedding = (props) => {
@@ -45,8 +44,8 @@ const Embedding = (props) => {
 
   const dispatch = useDispatch();
 
-  const [view, setView] = useState({ target: [4, -4, 0], zoom: initialZoom });
-  const [cellRadius, setCellRadius] = useState(cellRadiusFromZoom(initialZoom));
+  const [view, setView] = useState({ target: [4, -4, 0], zoom: INITIAL_ZOOM });
+  const [cellRadius, setCellRadius] = useState(cellRadiusFromZoom(INITIAL_ZOOM));
   const rootClusterNodes = useSelector(getCellSetsHierarchyByType('cellSets')).map(({ key }) => key);
 
   const selectedCellIds = new Set();
@@ -71,7 +70,7 @@ const Embedding = (props) => {
   const expressionLoading = useSelector((state) => state.genes.expression.loading);
   const loadedGenes = useSelector((state) => Object.keys(state.genes.expression.data));
 
-  const cellCoordintes = useRef({ x: 200, y: 300 });
+  const cellCoordinates = useRef({ x: 200, y: 300 });
   const cellInfoTooltip = useRef();
   const [createClusterPopover, setCreateClusterPopover] = useState(false);
   const [selectedIds, setSelectedIds] = useState(new Set());
@@ -145,7 +144,7 @@ const Embedding = (props) => {
       const cellProperties = getContainingCellSetsProperties(Number.parseInt(selectedCell, 10), rootClusterNodes, cellSets);
 
       const prefixedCellSetNames = [];
-      Object.entries(cellProperties).forEach(([key, clusterProperties]) => {
+      Object.values(cellProperties).forEach((clusterProperties) => {
         clusterProperties.forEach(({ name, parentNodeKey }) => {
           prefixedCellSetNames.push(`${cellSetProperties[parentNodeKey].name} : ${name}`);
         });
@@ -164,7 +163,7 @@ const Embedding = (props) => {
   const updateCellCoordinates = (newView) => {
     if (selectedCell && newView.project) {
       const [x, y] = newView.project(selectedCell);
-      cellCoordintes.current = {
+      cellCoordinates.current = {
         x,
         y,
         width,
@@ -307,7 +306,7 @@ const Embedding = (props) => {
           ? (
             <ClusterPopover
               visible
-              popoverPosition={cellCoordintes}
+              popoverPosition={cellCoordinates}
               onCreate={onCreateCluster}
               onCancel={onCancelCreateCluster}
             />
@@ -315,13 +314,15 @@ const Embedding = (props) => {
             (cellInfoVisible && cellInfoTooltip.current) ? (
               <div>
                 <CellInfo
+                  containerWidth={width}
+                  containerHeight={height}
                   componentType={embeddingType}
-                  coordinates={cellCoordintes}
+                  coordinates={cellCoordinates.current}
                   cellInfo={cellInfoTooltip.current}
                 />
                 <CrossHair
                   componentType={embeddingType}
-                  coordinates={cellCoordintes}
+                  coordinates={cellCoordinates}
                 />
               </div>
             ) : <></>

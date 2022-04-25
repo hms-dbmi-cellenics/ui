@@ -1,24 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Mosaic, MosaicWindow } from 'react-mosaic-component';
+
 import {
-  Button, Space, Empty, Typography,
+  Button, Space, Empty,
 } from 'antd';
-import ReactResizeDetector from 'react-resize-detector';
-import 'react-mosaic-component/react-mosaic-component.css';
 
 import { ClipLoader } from 'react-spinners';
-import NewProjectModal from 'components/data-management/NewProjectModal';
 import { loadProjects } from 'redux/actions/projects';
 import { loadExperiments } from 'redux/actions/experiments';
 
-import { loadProcessingSettings } from 'redux/actions/experimentSettings';
-import loadBackendStatus from 'redux/actions/backendStatus/loadBackendStatus';
 import Header from 'components/Header';
+import MultiTileContainer from 'components/MultiTileContainer';
+import NewProjectModal from 'components/data-management/NewProjectModal';
 import ProjectsListContainer from 'components/data-management/ProjectsListContainer';
 import ProjectDetails from 'components/data-management/ProjectDetails';
-
-const { Text } = Typography;
+import { loadProcessingSettings } from 'redux/actions/experimentSettings';
+import loadBackendStatus from 'redux/actions/backendStatus/loadBackendStatus';
 
 const DataManagementPage = () => {
   const dispatch = useDispatch();
@@ -88,15 +85,10 @@ const DataManagementPage = () => {
     [PROJECTS_LIST]: {
       toolbarControls: [],
       component: (width, height) => (
-        <Space
-          direction='vertical'
-          style={{ width: '100%' }}
-        >
-          <ProjectsListContainer
-            height={height}
-            onCreateNewProject={() => setNewProjectModalVisible(true)}
-          />
-        </Space>
+        <ProjectsListContainer
+          height={height}
+          onCreateNewProject={() => setNewProjectModalVisible(true)}
+        />
       ),
     },
     [PROJECT_DETAILS]: {
@@ -112,7 +104,12 @@ const DataManagementPage = () => {
           );
         }
 
-        return (<ProjectDetails width={width} height={height} />);
+        return (
+          <ProjectDetails
+            width={width}
+            height={height}
+          />
+        );
       },
     },
   };
@@ -124,13 +121,9 @@ const DataManagementPage = () => {
     splitPercentage: 23,
   };
 
-  const renderWindow = (tile, width, height) => (tile && height && width ? tile(width, height) : <></>);
-
   return (
     <>
-      <Header
-        title='Data Management'
-      />
+      <Header title='Data Management' />
       {projectSaving || sampleSaving ? (
         <center>
           <Space direction='vertical'>
@@ -138,9 +131,7 @@ const DataManagementPage = () => {
               size={50}
               color='#8f0b10'
             />
-            <Text>
-              Loading...
-            </Text>
+            Loading...
           </Space>
         </center>
       ) : (<></>)}
@@ -150,29 +141,10 @@ const DataManagementPage = () => {
           onCreate={() => { setNewProjectModalVisible(false); }}
         />
       ) : (<></>)}
-      <div style={{ height: '100%', width: '100%', margin: 0 }}>
-        <Mosaic
-          renderTile={(id, path) => (
-            <ReactResizeDetector
-              handleWidth
-              handleHeight
-              refreshMode='throttle'
-              refreshRate={500}
-            >
-              {({ width, height }) => (
-                <MosaicWindow
-                  path={path}
-                  title={id}
-                  toolbarControls={TILE_MAP[id].toolbarControls}
-                >
-                  {renderWindow(TILE_MAP[id].component, width, height)}
-                </MosaicWindow>
-              )}
-            </ReactResizeDetector>
-          )}
-          initialValue={windows}
-        />
-      </div>
+      <MultiTileContainer
+        tileMap={TILE_MAP}
+        initialArrangement={windows}
+      />
     </>
   );
 };

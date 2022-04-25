@@ -17,8 +17,13 @@ import { makeStore } from 'redux/store';
 import { plotNames } from 'utils/constants';
 import ExportAsCSV from 'components/plots/ExportAsCSV';
 
-jest.mock('localforage');
 jest.mock('components/plots/ExportAsCSV', () => jest.fn(() => (<></>)));
+jest.mock('components/UserButton', () => () => <></>);
+jest.mock('react-resize-detector', () => (props) => {
+  // eslint-disable-next-line react/prop-types
+  const { children } = props;
+  return children({ width: 800, height: 800 });
+});
 
 describe('Frequency plots and tables index page', () => {
   let storeState = null;
@@ -62,10 +67,9 @@ describe('Frequency plots and tables index page', () => {
   it('Renders all control panels', async () => {
     await renderFrequencyIndex();
     expect(screen.getByText(new RegExp(plotNames.FREQUENCY_PLOT, 'i'))).toBeInTheDocument();
-    expect(screen.getByText(/Preview/i)).toBeInTheDocument();
 
     expect(screen.getByText(/Select data/i)).toBeInTheDocument();
-    expect(screen.getByText(/Plot Type/i)).toBeInTheDocument();
+    expect(screen.getByText(/Plot type/i)).toBeInTheDocument();
     expect(screen.getByText(/Main schema/i)).toBeInTheDocument();
     expect(screen.getByText(/Axes and margins/i)).toBeInTheDocument();
     expect(screen.getByText(/Legend/i)).toBeInTheDocument();

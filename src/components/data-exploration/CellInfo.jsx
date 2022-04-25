@@ -1,51 +1,75 @@
-import React from 'react';
-import _ from 'lodash';
+import React, { useCallback, useState } from 'react';
 import { Card } from 'antd';
 import PropTypes from 'prop-types';
+import getCellInfoCoordinates from 'utils/data-exploration/getCellInfoCoordinates';
+
+const cellInfoStyle = { fontSize: '0.75rem' };
 
 const CellInfo = (props) => {
-  const { coordinates, cellInfo } = props;
+  const {
+    containerWidth, containerHeight, coordinates, cellInfo,
+  } = props;
 
-  const cellInfoStyle = { fontSize: '0.75rem' };
+  const [tooltipDimensions, setTooltipDimensions] = useState({ width: 0, height: 0 });
+
+  const getTooltipElement = useCallback((el) => {
+    if (!el) return;
+
+    setTooltipDimensions({
+      width: el.firstChild.offsetWidth,
+      height: el.firstChild.offsetHeight,
+    });
+  }, []);
+
+  const { left, top } = getCellInfoCoordinates(
+    coordinates,
+    tooltipDimensions,
+    containerWidth,
+    containerHeight,
+  );
 
   return (
-    <Card
-      size='small'
-      style={{
-        zIndex: 6,
-        border: 0,
-        position: 'absolute',
-        left: `${coordinates.current.x + 20}px`,
-        top: `${coordinates.current.y + 20}px`,
-        pointerEvents: 'none',
-      }}
-    >
-      <div style={cellInfoStyle}>
-        {`Cell id: ${cellInfo.cellId}`}
-      </div>
-      {cellInfo.geneName ? (
+    // We have to wrap the <Card> in a <div> because Antd does not correctly set the ref
+    // https://github.com/ant-design/ant-design/issues/28582
+    <div ref={getTooltipElement}>
+      <Card
+        size='small'
+        style={{
+          zIndex: 6,
+          border: 0,
+          position: 'absolute',
+          left,
+          top,
+          pointerEvents: 'none',
+        }}
+      >
         <div style={cellInfoStyle}>
-          {`Gene name: ${cellInfo.geneName}`}
+          {`Cell id: ${cellInfo.cellId}`}
         </div>
-      ) : <></>}
-      {cellInfo.expression !== undefined ? (
-        <div style={cellInfoStyle}>
-          Expression Level:&nbsp;
-          {parseFloat(cellInfo.expression.toFixed(3))}
-        </div>
-      ) : <></>}
-      {cellInfo.cellSets?.length > 0 ? cellInfo.cellSets.map((cellSetName) => (
-        <div style={cellInfoStyle}>
-          {_.truncate(cellSetName)}
-        </div>
-      )) : <></>}
-    </Card>
+        {cellInfo.geneName ? (
+          <div style={cellInfoStyle}>
+            {`Gene name: ${cellInfo.geneName}`}
+          </div>
+        ) : <></>}
+        {cellInfo.expression !== undefined ? (
+          <div style={cellInfoStyle}>
+            Expression Level:&nbsp;
+            {parseFloat(cellInfo.expression.toFixed(3))}
+          </div>
+        ) : <></>}
+        {cellInfo.cellSets?.length > 0 ? cellInfo.cellSets.map((cellSetName) => (
+          <div style={cellInfoStyle}>
+            {cellSetName}
+          </div>
+        )) : <></>}
+      </Card>
+    </div>
   );
 };
 
-CellInfo.defaultProps = {};
-
 CellInfo.propTypes = {
+  containerWidth: PropTypes.number.isRequired,
+  containerHeight: PropTypes.number.isRequired,
   coordinates: PropTypes.object.isRequired,
   cellInfo: PropTypes.object.isRequired,
 };

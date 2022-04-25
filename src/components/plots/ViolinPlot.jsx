@@ -130,6 +130,7 @@ const ViolinPlot = (props) => {
         />
       );
     }
+
     if (!selectedCellSetClassAvailable) {
       return (
         <PlatformError
@@ -139,6 +140,7 @@ const ViolinPlot = (props) => {
         />
       );
     }
+
     if (highestDispersionError) {
       return (
         <PlatformError
@@ -151,6 +153,7 @@ const ViolinPlot = (props) => {
         />
       );
     }
+
     if (geneExpression.error) {
       return (
         <PlatformError
@@ -166,25 +169,13 @@ const ViolinPlot = (props) => {
       geneExpression.loading.length
       || cellSets.loading
       || highestDispersionLoading) {
-      return (
-        <center>
-          <Loader experimentId={experimentId} />
-        </center>
-      );
+      return <Loader experimentId={experimentId} />;
     }
 
-    return (
-      <center>
-        <Vega spec={plotSpec} renderer='canvas' />
-      </center>
-    );
+    return <Vega spec={plotSpec} renderer='canvas' />;
   };
 
-  return (
-    <>
-      {render()}
-    </>
-  );
+  return render();
 };
 
 ViolinPlot.propTypes = {
