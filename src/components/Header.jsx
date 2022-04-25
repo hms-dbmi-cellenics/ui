@@ -6,9 +6,9 @@ import PropTypes from 'prop-types';
 import { NextSeo } from 'next-seo';
 import { useSelector } from 'react-redux';
 import integrationTestConstants from 'utils/integrationTestConstants';
-import UserButton from 'components/UserButton';
-import FeedbackButton from 'components/FeedbackButton';
-import ReferralButton from 'components/ReferralButton';
+import UserButton from 'components/header/UserButton';
+import FeedbackButton from 'components/header/FeedbackButton';
+import ReferralButton from 'components/header/ReferralButton';
 import HelpButton from 'components/header/HelpButton';
 
 const Header = (props) => {

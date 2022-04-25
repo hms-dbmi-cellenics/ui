@@ -3,7 +3,7 @@ import {
   Result, Typography, Space, Button,
 } from 'antd';
 import PropTypes from 'prop-types';
-import FeedbackButton from 'components/FeedbackButton';
+import FeedbackButton from 'components/header/FeedbackButton';
 
 const { Title, Text } = Typography;
 
