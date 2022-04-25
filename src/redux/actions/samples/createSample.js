@@ -22,7 +22,7 @@ const createSample = (
   projectUuid,
   name,
   type,
-  filesToUpload,
+  filesToUploadV2Only,
 ) => async (dispatch, getState) => {
   const project = getState().projects[projectUuid];
   const createdDate = moment().toISOString();
@@ -65,7 +65,7 @@ const createSample = (
       throw new Error(`Sample technology ${type} is not recognized`);
     }
 
-    filesToUpload.forEach((fileName) => {
+    filesToUploadV2Only.forEach((fileName) => {
       newSample.files[fileName] = { upload: { status: UploadStatus.UPLOADING } };
     });
 

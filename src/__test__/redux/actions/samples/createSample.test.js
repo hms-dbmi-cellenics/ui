@@ -128,7 +128,7 @@ describe('createSample action', () => {
     config.currentApiVersion = api.V2;
     fetchMock.mockResponse(JSON.stringify({}), { url: 'mockedUrl', status: 200 });
 
-    const newUuid = await store.dispatch(createSample(projectUuid, sampleName, mockType));
+    const newUuid = await store.dispatch(createSample(projectUuid, sampleName, mockType, []));
 
     // Fetch call is made
     const fetchMockFirstCall = fetchMock.mock.calls[0];
