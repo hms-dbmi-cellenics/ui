@@ -1,22 +1,46 @@
+import React from 'react';
 import Error from 'pages/_error';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { Provider } from 'react-redux';
+import { makeStore } from 'redux/store';
+
+import postErrorToSlack from 'utils/postErrorToSlack';
+import loadEnvironment from 'redux/actions/networkResources/loadEnvironment';
 
 import createTestComponentFactory from '__test__/test-utils/testComponentFactory';
+
+jest.mock('utils/postErrorToSlack');
+
+const mockErrorProp = {
+  errorObject: { message: 'Some error message' },
+};
 
 const defaultProps = {};
 const renderErrorFactory = createTestComponentFactory(Error, defaultProps);
 
-const renderErrorPage = (newProps) => {
-  render(renderErrorFactory(newProps));
+const renderErrorPage = (newProps, store = storeState) => {
+  render(
+    <Provider store={store}>
+      {renderErrorFactory(newProps)}
+    </Provider>,
+  );
 };
 
 delete window.location;
 window.location = { reload: jest.fn() };
 
+let storeState = null;
+
 describe('ErrorPage', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    storeState = makeStore();
+    storeState.dispatch(loadEnvironment('production'));
+  });
+
   it('Renders properly without props', () => {
-    renderErrorPage();
+    renderErrorPage({}, storeState);
 
     expect(screen.getByText(/Sorry, something went wrong on our end./i)).toBeInTheDocument();
 
@@ -29,7 +53,7 @@ describe('ErrorPage', () => {
     renderErrorPage({
       statusCode: 404,
       errorText: 'Not Found',
-    });
+    }, storeState);
 
     expect(screen.getByText(/404/)).toBeInTheDocument();
 
@@ -43,5 +67,31 @@ describe('ErrorPage', () => {
     userEvent.click(screen.getByText(/Reload page/i));
 
     expect(window.location.reload).toHaveBeenCalledTimes(1);
+  });
+
+  it('Should post error to Slack if environment is production', () => {
+    storeState.dispatch(loadEnvironment('production'));
+
+    renderErrorPage(mockErrorProp, storeState);
+
+    expect(postErrorToSlack).toHaveBeenCalledTimes(1);
+    expect(postErrorToSlack.mock.calls[0]).toMatchSnapshot();
+  });
+
+  it('Should post error to Slack if environment is staging', () => {
+    storeState.dispatch(loadEnvironment('staging'));
+
+    renderErrorPage(mockErrorProp, storeState);
+
+    expect(postErrorToSlack).toHaveBeenCalledTimes(1);
+    expect(postErrorToSlack.mock.calls[0]).toMatchSnapshot();
+  });
+
+  it('Should not post error to Slack if environment is not production', () => {
+    storeState.dispatch(loadEnvironment('development'));
+
+    renderErrorPage(mockErrorProp, storeState);
+
+    expect(postErrorToSlack).not.toHaveBeenCalled();
   });
 });

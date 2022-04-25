@@ -33,13 +33,15 @@ const trimOutput = (key, item) => {
   return item;
 };
 
-const buildErrorMessage = (error, info, reduxDump, context) => {
+const buildErrorMessage = (errorObject, reduxState, context) => {
   const {
     user, timestamp, experimentId, url,
   } = context;
 
+  const { networkResources: { environment } } = reduxState;
+
   let message = `
-    Uncaught UI Error - Exp ID ${experimentId} - ${timestamp}
+    [${environment.toUpperCase()}] Uncaught UI Error - Exp ${experimentId} - ${timestamp}
 
     === DETAILS ===
     User: ${user.attributes.name} <${user.attributes.email}> ${user.username}
@@ -48,20 +50,13 @@ const buildErrorMessage = (error, info, reduxDump, context) => {
     Timestamp: ${timestamp}
 
     ===== ERROR =====
-    ${error.stack}
+    ${errorObject.stack}
 
     `;
 
-  if (info?.componentStack) {
-    message += `===== COMPONENT STACK =====
-    ${info.componentStack}
-
-    `;
-  }
-
-  if (reduxDump) {
+  if (reduxState) {
     message += `===== REDUX STATE =====
-    ${JSON.stringify(reduxDump, trimOutput, 2)}`;
+    ${JSON.stringify(reduxState, trimOutput, 2)}`;
   }
   return message;
 };
@@ -109,7 +104,7 @@ const postError = async (errorLog, context) => {
   }
 };
 
-const postErrorToSlack = async (error, info, reduxDump) => {
+const postErrorToSlack = async (errorObject, reduxState) => {
   const user = await Auth.currentAuthenticatedUser();
 
   const timestamp = new Date().toISOString();
@@ -123,7 +118,7 @@ const postErrorToSlack = async (error, info, reduxDump) => {
     url,
   };
 
-  const errorLog = buildErrorMessage(error, info, reduxDump, context);
+  const errorLog = buildErrorMessage(errorObject, reduxState, context);
   await postError(errorLog, context);
 };
 
