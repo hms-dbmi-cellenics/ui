@@ -6,9 +6,10 @@ import PropTypes from 'prop-types';
 import { NextSeo } from 'next-seo';
 import { useSelector } from 'react-redux';
 import integrationTestConstants from 'utils/integrationTestConstants';
-import UserButton from './UserButton';
-import FeedbackButton from './FeedbackButton';
-import ReferralButton from './ReferralButton';
+import UserButton from 'components/header/UserButton';
+import FeedbackButton from 'components/header/FeedbackButton';
+import ReferralButton from 'components/header/ReferralButton';
+import HelpButton from 'components/header/HelpButton';
 
 const Header = (props) => {
   const {
@@ -34,6 +35,7 @@ const Header = (props) => {
         extra={(
           <Space size='large'>
             <Space>
+              <HelpButton />
               <FeedbackButton />
               <ReferralButton />
               {extra}
