@@ -7,9 +7,12 @@ import { SAMPLES_FILE_UPDATE } from 'redux/actionTypes/samples';
 import initialSampleState, { sampleTemplate } from 'redux/reducers/samples/initialState';
 import initialProjectState, { projectTemplate } from 'redux/reducers/projects/initialState';
 import initialExperimentState, { experimentTemplate } from 'redux/reducers/experiments/initialState';
-import processUploadV1 from 'utils/upload/processUploadV1';
 import UploadStatus from 'utils/upload/UploadStatus';
 import { waitFor } from '@testing-library/dom';
+
+import processUpload from 'utils/upload/processUpload';
+
+jest.mock('config', () => ({ currentApiVersion: 'v1' }));
 
 enableFetchMocks();
 
@@ -153,7 +156,7 @@ describe('processUploadV1', () => {
       .mockImplementationOnce(uploadSuccess)
       .mockImplementationOnce(uploadSuccess);
 
-    await processUploadV1(
+    await processUpload(
       validFilesList,
       sampleType,
       store.getState().samples,
@@ -203,7 +206,7 @@ describe('processUploadV1', () => {
   it('Updates redux correctly when there are file load and compress errors', async () => {
     const invalidFiles = validFilesList.map((file) => ({ ...file, valid: false }));
 
-    await processUploadV1(
+    await processUpload(
       invalidFiles,
       sampleType,
       store.getState().samples,
@@ -256,7 +259,7 @@ describe('processUploadV1', () => {
       .mockImplementationOnce(uploadError)
       .mockImplementationOnce(uploadError);
 
-    await processUploadV1(
+    await processUpload(
       validFilesList,
       sampleType,
       store.getState().samples,
@@ -307,7 +310,7 @@ describe('processUploadV1', () => {
   it('Should not upload files if there are errors creating samples in DynamoDB', async () => {
     fetchMock.mockReject(new Error('Error'));
 
-    await processUploadV1(
+    await processUpload(
       validFilesList,
       sampleType,
       store.getState().samples,
