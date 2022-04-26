@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 import {
   Result, Typography, Space, Button,
 } from 'antd';
-import FeedbackButton from 'components/FeedbackButton';
+import FeedbackButton from 'components/header/FeedbackButton';
 import postErrorToSlack from 'utils/postErrorToSlack';
 
 const { Title, Text } = Typography;
