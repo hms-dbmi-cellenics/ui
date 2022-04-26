@@ -38,19 +38,15 @@ const buildErrorMessage = (errorObject, reduxState, context) => {
     user, timestamp, experimentId, url,
   } = context;
 
-  const { networkResources: { environment } } = reduxState;
-
   let message = `
-    [${environment.toUpperCase()}] Uncaught UI Error - Exp ${experimentId} - ${timestamp}
+    ===== ERROR STACK =====
+    ${errorObject.stack}
 
     === DETAILS ===
     User: ${user.attributes.name} <${user.attributes.email}> ${user.username}
     ExperimentID: ${experimentId}
     URL: ${url}
     Timestamp: ${timestamp}
-
-    ===== ERROR =====
-    ${errorObject.stack}
 
     `;
 
@@ -63,11 +59,11 @@ const buildErrorMessage = (errorObject, reduxState, context) => {
 
 const postError = async (errorLog, context) => {
   const {
-    user, timestamp, experimentId, url,
+    user, timestamp, experimentId, url, environment,
   } = context;
 
   const message = `
-  \u26A0  Uncaught UI Error - ExpID ${experimentId} - ${timestamp}
+  \u26A0  [${environment.toUpperCase()}] Uncaught UI Error - ExpID ${experimentId} - ${timestamp}
   URL: ${url}
 
   User: ${user.attributes.name} <${user.attributes.email}> ${user.username}
@@ -110,12 +106,14 @@ const postErrorToSlack = async (errorObject, reduxState) => {
   const timestamp = new Date().toISOString();
   const url = window.location.href;
   const experimentId = extractExperimentId(url);
+  const { networkResources: { environment } } = reduxState;
 
   const context = {
     user,
     timestamp,
     experimentId,
     url,
+    environment,
   };
 
   const errorLog = buildErrorMessage(errorObject, reduxState, context);
