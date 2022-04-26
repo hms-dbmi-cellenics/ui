@@ -48,17 +48,7 @@ const prepareAndUploadFileToS3 = async (
       );
     });
   } catch (e) {
-    console.log('uploadError');
-    console.log(e);
-
-    console.log('uploadErrorResponse');
-    console.log(e.response);
-
-    console.log('uploadErrorResponseData');
-    console.log(e.response?.data);
-
     dispatch(updateSampleFileUploadV2(projectId, sampleId, fileType, UploadStatus.UPLOAD_ERROR));
-
     return;
   }
 

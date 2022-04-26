@@ -12,6 +12,8 @@ import { waitFor } from '@testing-library/dom';
 
 import processUpload from 'utils/upload/processUpload';
 
+import loadAndCompressIfNecessary from 'utils/upload/loadAndCompressIfNecessary';
+
 jest.mock('config', () => ({ currentApiVersion: 'v2' }));
 
 enableFetchMocks();
@@ -199,6 +201,22 @@ describe('processUploadV2', () => {
     expect(uploadingStatusProperties.length).toEqual(3);
     // There are 3 files actions with status uploaded
     expect(uploadedStatusProperties.length).toEqual(3);
+
+    // Calls to loadAndCompressIfNecessary are done correctly
+    expect(loadAndCompressIfNecessary.mock.calls.map((calls) => calls[0])).toMatchSnapshot();
+
+    // If we trigger onCompression then an action to update uploadStatus to COMPRESSING is made
+    const onCompression = loadAndCompressIfNecessary.mock.calls[0][1];
+    onCompression();
+
+    await waitForActions(
+      store,
+      [{
+        type: SAMPLES_FILE_UPDATE,
+        payload: { fileDiff: { upload: { status: UploadStatus.COMPRESSING } } },
+      }],
+      { matcher: waitForActions.matchers.containing },
+    );
   });
 
   it('Updates redux correctly when there are file load and compress errors', async () => {

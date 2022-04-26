@@ -109,15 +109,6 @@ const compressAndUploadSingleFile = async (
 
     await uploadPromise;
   } catch (e) {
-    console.log('uploadError');
-    console.log(e);
-
-    console.log('uploadErrorResponse');
-    console.log(e.response);
-
-    console.log('uploadErrorResponseData');
-    console.log(e.response?.data);
-
     // File size and file object should be available so we can reupload
     dispatch(
       updateSampleFile(
