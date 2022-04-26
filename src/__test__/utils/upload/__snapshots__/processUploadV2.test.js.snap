@@ -49,3 +49,35 @@ Array [
   },
 ]
 `;
+
+exports[`processUploadV2 Uploads and updates redux correctly when there are no errors 2`] = `
+Array [
+  Object {
+    "data": "loadedGzippedFile",
+    "headers": Object {
+      "Content-Type": "application/octet-stream",
+    },
+    "method": "put",
+    "onUploadProgress": [Function],
+    "url": "theSignedUrl",
+  },
+  Object {
+    "data": "loadedGzippedFile",
+    "headers": Object {
+      "Content-Type": "application/octet-stream",
+    },
+    "method": "put",
+    "onUploadProgress": [Function],
+    "url": "theSignedUrl",
+  },
+  Object {
+    "data": "loadedGzippedFile",
+    "headers": Object {
+      "Content-Type": "application/octet-stream",
+    },
+    "method": "put",
+    "onUploadProgress": [Function],
+    "url": "theSignedUrl",
+  },
+]
+`;

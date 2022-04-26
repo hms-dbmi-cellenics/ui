@@ -217,6 +217,21 @@ describe('processUploadV2', () => {
       }],
       { matcher: waitForActions.matchers.containing },
     );
+
+    // axios request calls are correct
+    expect(axios.request.mock.calls.map((call) => call[0])).toMatchSnapshot();
+
+    // If we trigger axios onUploadProgress it updates the progress correctly
+    axios.request.mock.calls[0][0].onUploadProgress({ loaded: 20, total: 40 });
+
+    await waitForActions(
+      store,
+      [{
+        type: SAMPLES_FILE_UPDATE,
+        payload: { fileDiff: { upload: { status: UploadStatus.UPLOADING, progress: 50 } } },
+      }],
+      { matcher: waitForActions.matchers.containing },
+    );
   });
 
   it('Updates redux correctly when there are file load and compress errors', async () => {
