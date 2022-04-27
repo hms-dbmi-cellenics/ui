@@ -80,7 +80,7 @@ const compressAndUploadSingleFile = async (
       )
     ));
   } catch (e) {
-    const fileErrorStatus = e === 'aborted' ? UploadStatus.FILE_READ_ABORTED : UploadStatus.FILE_READ_ERROR;
+    const fileErrorStatus = e.message === 'aborted' ? UploadStatus.FILE_READ_ABORTED : UploadStatus.FILE_READ_ERROR;
 
     dispatch(
       updateSampleFile(
