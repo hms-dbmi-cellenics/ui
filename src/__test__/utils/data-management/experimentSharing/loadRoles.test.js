@@ -1,7 +1,7 @@
 import fetchAPI from 'utils/http/fetchAPI';
 import config from 'config';
 
-import loadRoles from 'utils/data-management/loadRoles';
+import loadRoles from 'utils/data-management/experimentSharing/loadRoles';
 import { api } from 'utils/constants';
 
 jest.mock('utils/http/fetchAPI');

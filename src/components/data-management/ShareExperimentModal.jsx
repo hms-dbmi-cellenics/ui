@@ -5,8 +5,9 @@ import {
   Modal, Button, Space, Row, Col, Card, Avatar, Select, Typography,
 } from 'antd';
 import Auth from '@aws-amplify/auth';
-import loadRoles from 'utils/data-management/loadRoles';
-import { sendInvites, revokeRole } from 'utils/data-management/shareExperiment';
+import loadRoles from 'utils/data-management/experimentSharing/loadRoles';
+import sendInvites from 'utils/data-management/experimentSharing/sendInvites';
+import revokeRole from 'utils/data-management/experimentSharing/revokeRole';
 
 const { Text } = Typography;
 
@@ -130,11 +131,7 @@ const ShareExperimentModal = (props) => {
                         type='primary'
                         danger
                         onClick={() => {
-                          revokeRole(user.email,
-                            {
-                              experimentId,
-                              experimentName,
-                            });
+                          revokeRole(user.email, { experimentId, experimentName });
                           onCancel();
                         }}
                         disabled={user.email === currentUser}

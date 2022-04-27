@@ -29,24 +29,4 @@ const sendInvites = async (addedUsers, experimentInfo) => {
   return Promise.all(requests);
 };
 
-const revokeRole = async (userEmail, experimentInfo) => {
-  const { experimentId, experimentName } = experimentInfo;
-
-  try {
-    await fetchAPI(`/v1/access/${experimentId}`, {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        userEmail,
-      }),
-    });
-
-    pushNotificationMessage('success', `${userEmail} removed from ${experimentName}.`);
-  } catch (e) {
-    handleError(e, 'Error removing user.');
-  }
-};
-
-export { sendInvites, revokeRole };
+export default sendInvites;
