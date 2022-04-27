@@ -21,12 +21,16 @@ const ShareExperimentModal = (props) => {
   const [role, setRole] = useState('explorer');
   const [currentUser, setCurrentUser] = useState(null);
 
-  useEffect(() => {
-    Auth.currentAuthenticatedUser().then((user) => {
-      setCurrentUser(user.attributes.email);
-    });
+  const fetchRoles = async () => {
+    const getCurrentUser = await Auth.currentAuthenticatedUser();
+    setCurrentUser(getCurrentUser.attributes.email);
 
-    loadRoles(experimentId).then((userRole) => setUsersWithAccess(userRole));
+    const userRole = await loadRoles(experimentId);
+    setUsersWithAccess(userRole);
+  };
+
+  useEffect(() => {
+    fetchRoles();
   }, []);
 
   const changeSelectedUsers = (selectedUsers) => {
