@@ -66,12 +66,15 @@ const samplesReducer = (state = initialState, action) => {
     case SAMPLES_METADATA_DELETE: {
       return samplesMetadataDelete(state, action);
     }
+
     case SAMPLES_LOADING: {
       return samplesLoading(state);
     }
+
     case SAMPLES_VALUE_IN_METADATA_TRACK_UPDATED_API_V2: {
       return samplesValueInMetadataTrackUpdated(state, action);
     }
+
     default: {
       return state;
     }
