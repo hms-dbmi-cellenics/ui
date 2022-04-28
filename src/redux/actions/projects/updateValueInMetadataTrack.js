@@ -8,19 +8,16 @@ import fetchAPI from 'utils/http/fetchAPI';
 import handleError from 'utils/http/handleError';
 
 import endUserMessages from 'utils/endUserMessages';
-import { metadataNameToKey } from 'utils/data-management/metadataUtils';
 
 import config from 'config';
 import { api } from 'utils/constants';
 
 const updateValueInMetadataTrack = (
-  experimentId, sampleId, metadataName, value,
+  experimentId, sampleId, metadataTrackKey, value,
 ) => async (dispatch) => {
   if (config.currentApiVersion !== api.V2) {
     throw new Error('This action only works with api v2');
   }
-
-  const key = metadataNameToKey(metadataName);
 
   dispatch({ type: SAMPLES_SAVING, payload: { message: endUserMessages.SAVING_SAMPLE } });
 
@@ -28,7 +25,7 @@ const updateValueInMetadataTrack = (
     const body = { value };
 
     await fetchAPI(
-      `/v2/experiments/${experimentId}/samples/${sampleId}/metadataTracks/${key}`,
+      `/v2/experiments/${experimentId}/samples/${sampleId}/metadataTracks/${metadataTrackKey}`,
       {
         method: 'PATCH',
         headers: {
@@ -42,7 +39,7 @@ const updateValueInMetadataTrack = (
       type: SAMPLES_VALUE_IN_METADATA_TRACK_UPDATED,
       payload: {
         sampleUuid: sampleId,
-        key,
+        key: metadataTrackKey,
         value,
       },
     });

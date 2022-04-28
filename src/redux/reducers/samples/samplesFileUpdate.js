@@ -18,8 +18,6 @@ const samplesFileUpdate = (state, action) => {
     newFile = _.mergeWith(oldFile, fileDiff, overwriteIfArray);
   }
 
-  newFile.lastModified = lastModified;
-
   const newFileNames = _.cloneDeep(state[sampleUuid].fileNames);
   if (!newFileNames.includes(fileName)) {
     newFileNames.push(fileName);
@@ -32,7 +30,10 @@ const samplesFileUpdate = (state, action) => {
       fileNames: newFileNames,
       files: {
         ...state[sampleUuid].files,
-        [fileName]: newFile,
+        [fileName]: {
+          ...newFile,
+          lastModified,
+        },
       },
       lastModified,
     },

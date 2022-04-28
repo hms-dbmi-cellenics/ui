@@ -46,7 +46,7 @@ const deleteMetadataTrack = (
       await dispatch(saveSamples(projectUuid, newSamples, false, false, notifyUser));
     } else if (config.currentApiVersion === api.V2) {
       await fetchAPI(
-        `/v2/experiments/${projectUuid}/metadataTracks/${name}`,
+        `/v2/experiments/${projectUuid}/metadataTracks/${metadataKey}`,
         {
           method: 'DELETE',
           headers: {

@@ -47,7 +47,7 @@ const createMetadataTrack = (
       await dispatch(saveProject(projectUuid, newProject, true, notifyUser));
     } else if (config.currentApiVersion === api.V2) {
       await fetchAPI(
-        `/v2/experiments/${projectUuid}/metadataTracks/${name}`,
+        `/v2/experiments/${projectUuid}/metadataTracks/${metadataKey}`,
         {
           method: 'POST',
           headers: {
