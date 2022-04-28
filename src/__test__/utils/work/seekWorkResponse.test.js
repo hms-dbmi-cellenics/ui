@@ -87,7 +87,7 @@ describe('dispatchWorkRequest unit tests', () => {
       body: { name: 'ImportantTask', type: 'fake task' },
     });
 
-    expect(socketConnectionMocks.mockOn).toHaveBeenCalledTimes(1);
+    expect(socketConnectionMocks.mockOn).toHaveBeenCalledTimes(2);
   });
 
   it('Returns an error if there is error in the response.', async () => {

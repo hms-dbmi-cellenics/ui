@@ -57,10 +57,25 @@ const dispatchWorkRequest = async (
   };
 
   const timeoutPromise = new Promise((resolve, reject) => {
-    const id = setTimeout(() => {
+    let id = setTimeout(() => {
+      console.log('lcs clearing id: ', id);
       clearTimeout(id);
       reject(new WorkTimeoutError(timeoutDate, request));
     }, timeout * 1000);
+    io.on(`WorkerInfo-${experimentId}`, (res) => {
+      const { response: { podInfo: { name, creationTimestamp, phase } } } = res;
+      console.log('podInfo: ', name, creationTimestamp, phase);
+      console.log('refreshing timeout because worker is spinning up');
+      const maxWorkerSpinUpTime = 300 * 1000; // 5 minutos
+      if (phase === 'Pending') {
+        console.log('pending worker, adding extra wait time');
+        id = setTimeout(() => {
+          console.log('lcs clearing id: ', id);
+          clearTimeout(id);
+          reject(new WorkTimeoutError(timeoutDate, request));
+        }, timeout * 1000 + maxWorkerSpinUpTime);
+      }
+    });
   });
 
   const responsePromise = new Promise((resolve, reject) => {
