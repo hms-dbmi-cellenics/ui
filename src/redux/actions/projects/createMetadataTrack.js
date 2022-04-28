@@ -13,13 +13,14 @@ import {
 import saveProject from 'redux/actions/projects/saveProject';
 import saveSamples from 'redux/actions/samples/saveSamples';
 
-import { metadataNameToKey } from 'utils/data-management/metadataUtils';
-import endUserMessages from 'utils/endUserMessages';
+import fetchAPI from 'utils/http/fetchAPI';
 import handleError from 'utils/http/handleError';
+
+import endUserMessages from 'utils/endUserMessages';
+import { metadataNameToKey } from 'utils/data-management/metadataUtils';
 
 import config from 'config';
 import { api } from 'utils/constants';
-import fetchAPI from 'utils/http/fetchAPI';
 
 const createMetadataTrack = (
   name, projectUuid,

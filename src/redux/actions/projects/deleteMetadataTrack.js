@@ -1,16 +1,22 @@
 import _ from 'lodash';
-import { metadataNameToKey } from 'utils/data-management/metadataUtils';
-import endUserMessages from 'utils/endUserMessages';
-import handleError from 'utils/http/handleError';
-import {
-  PROJECTS_METADATA_DELETE,
-} from '../../actionTypes/projects';
 
 import {
+  PROJECTS_METADATA_DELETE,
+} from 'redux/actionTypes/projects';
+import {
   SAMPLES_METADATA_DELETE,
-} from '../../actionTypes/samples';
-import saveSamples from '../samples/saveSamples';
-import saveProject from './saveProject';
+} from 'redux/actionTypes/samples';
+import saveSamples from 'redux/actions/samples/saveSamples';
+import saveProject from 'redux/actions/projects/saveProject';
+
+import fetchAPI from 'utils/http/fetchAPI';
+import handleError from 'utils/http/handleError';
+
+import endUserMessages from 'utils/endUserMessages';
+import { metadataNameToKey } from 'utils/data-management/metadataUtils';
+
+import config from 'config';
+import { api } from 'utils/constants';
 
 const deleteMetadataTrack = (
   name, projectUuid,
@@ -34,9 +40,21 @@ const deleteMetadataTrack = (
   }, {});
 
   try {
-    const notifyUser = false;
-    await dispatch(saveProject(projectUuid, newProject, false, notifyUser));
-    await dispatch(saveSamples(projectUuid, newSamples, false, false, notifyUser));
+    if (config.currentApiVersion === api.V1) {
+      const notifyUser = false;
+      await dispatch(saveProject(projectUuid, newProject, false, notifyUser));
+      await dispatch(saveSamples(projectUuid, newSamples, false, false, notifyUser));
+    } else if (config.currentApiVersion === api.V2) {
+      await fetchAPI(
+        `/v2/experiments/${projectUuid}/metadataTracks/${name}`,
+        {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      );
+    }
 
     dispatch({
       type: PROJECTS_METADATA_DELETE,
