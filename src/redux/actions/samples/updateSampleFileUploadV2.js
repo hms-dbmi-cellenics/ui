@@ -15,6 +15,8 @@ const fileNameForApiV1 = {
 const updateSampleFileUploadV2 = (
   experimentId, sampleId, type, uploadStatus, uploadProgress,
 ) => async (dispatch) => {
+  const updatedAt = moment().toISOString();
+
   // Don't send an api update whenever the progress bar is updated, only for uploadStatus changes
   // TODO: move progress to not even be a part of redux, manage it in a different way
   if (uploadStatus !== UploadStatus.UPLOADING) {
@@ -33,16 +35,22 @@ const updateSampleFileUploadV2 = (
         },
       );
     } catch (e) {
-      // This error means that we couldn't update the api on the state of the upload
-      // Should we block the upload from continuing? The upload itself isn't necessarily compromised
+      dispatch({
+        type: SAMPLES_FILE_UPDATE,
+        payload: {
+          sampleUuid: sampleId,
+          lastModified: updatedAt,
+          fileName: fileNameForApiV1[type],
+          fileDiff: { upload: { status: UploadStatus.UPLOAD_ERROR } },
+        },
+      });
+
       handleError(e, endUserMessages.ERROR_UPDATE_SERVER_ON_UPLOAD_STATE);
+
+      return;
     }
   }
 
-  const updatedAt = moment().toISOString();
-
-  // Even if we failed to persist the update in the api it is still
-  // valid information so we should dispatch the action anyways
   dispatch({
     type: SAMPLES_FILE_UPDATE,
     payload: {

@@ -9,7 +9,6 @@ import UploadStatus from 'utils/upload/UploadStatus';
 import loadAndCompressIfNecessary from 'utils/upload/loadAndCompressIfNecessary';
 import { inspectFile, Verdict } from 'utils/upload/fileInspector';
 
-// const putInS3 = async (loadedFileData, signedUrl, sampleUuid, fileType, onUploadProgress) => (
 const putInS3 = async (loadedFileData, signedUrl, onUploadProgress) => (
   await axios.request({
     method: 'put',
@@ -19,7 +18,8 @@ const putInS3 = async (loadedFileData, signedUrl, onUploadProgress) => (
       'Content-Type': 'application/octet-stream',
     },
     onUploadProgress,
-  }));
+  })
+);
 
 const prepareAndUploadFileToS3 = async (
   projectId, sampleId, fileType, file, signedUrl, dispatch,
