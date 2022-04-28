@@ -174,4 +174,15 @@ describe('createSample action', () => {
     expect(_.map(actions, 'type')).toEqual([SAMPLES_SAVING, SAMPLES_CREATE, SAMPLES_SAVED]);
     expect(_.map(actions, 'payload')).toMatchSnapshot();
   });
+
+  it('Throws if technology is not identified', async () => {
+    config.currentApiVersion = api.V2;
+    fetchMock.mockResponse(JSON.stringify({}), { url: 'mockedUrl', status: 200 });
+
+    await expect(
+      store.dispatch(
+        createSample(projectUuid, sampleName, 'unrecognizable type', ['matrix.tsv.gz', 'features.tsv.gz', 'barcodes.tsv.gz']),
+      ),
+    ).rejects.toThrow('Sample technology unrecognizable type is not recognized');
+  });
 });
