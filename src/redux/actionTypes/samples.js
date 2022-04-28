@@ -53,7 +53,7 @@ const SAMPLES_METADATA_DELETE = `${SAMPLES}/metadataDelete`;
 /**
  * Value in a metadata track was updated for a sample.
  */
-const SAMPLES_VALUE_IN_METADATA_TRACK_UPDATED = `${SAMPLES}/valueInMetadataTrackUpdated`;
+const SAMPLES_VALUE_IN_METADATA_TRACK_UPDATED_API_V2 = `${SAMPLES}/valueInMetadataTrackUpdated`;
 
 const SAMPLES_LOADING = `${SAMPLES}/loading`;
 
@@ -68,6 +68,6 @@ export {
   SAMPLES_ERROR,
   SAMPLES_SAVED,
   SAMPLES_METADATA_DELETE,
-  SAMPLES_VALUE_IN_METADATA_TRACK_UPDATED,
+  SAMPLES_VALUE_IN_METADATA_TRACK_UPDATED_API_V2,
   SAMPLES_LOADING,
 };
