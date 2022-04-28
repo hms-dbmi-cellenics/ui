@@ -2,7 +2,7 @@ import _ from 'lodash';
 import moment from 'moment';
 import { v4 as uuidv4 } from 'uuid';
 import {
-  SAMPLES_CREATE, SAMPLES_ERROR, SAMPLES_SAVING,
+  SAMPLES_CREATE, SAMPLES_ERROR, SAMPLES_SAVED, SAMPLES_SAVING,
 } from 'redux/actionTypes/samples';
 
 import {
@@ -16,11 +16,13 @@ import { sampleTemplate } from 'redux/reducers/samples/initialState';
 
 import config from 'config';
 import { api } from 'utils/constants';
+import UploadStatus from 'utils/upload/UploadStatus';
 
 const createSample = (
   projectUuid,
   name,
   type,
+  filesToUploadV2Only,
 ) => async (dispatch, getState) => {
   const project = getState().projects[projectUuid];
   const createdDate = moment().toISOString();
@@ -38,7 +40,7 @@ const createSample = (
   let body;
 
   const newSample = {
-    ...sampleTemplate,
+    ..._.cloneDeep(sampleTemplate),
     name,
     type,
     projectUuid,
@@ -60,8 +62,12 @@ const createSample = (
     if (type === '10X Chromium') {
       sampleTechnology = '10x';
     } else {
-      throw new Error(`Sample type ${type} is not implemented`);
+      throw new Error(`Sample technology ${type} is not recognized`);
     }
+
+    filesToUploadV2Only.forEach((fileName) => {
+      newSample.files[fileName] = { upload: { status: UploadStatus.UPLOADING } };
+    });
 
     body = { name, sampleTechnology };
   }
@@ -80,6 +86,11 @@ const createSample = (
 
     await dispatch({
       type: SAMPLES_CREATE,
+      payload: { sample: newSample, experimentId },
+    });
+
+    await dispatch({
+      type: SAMPLES_SAVED,
       payload: { sample: newSample, experimentId },
     });
 
