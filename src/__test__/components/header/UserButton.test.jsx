@@ -4,7 +4,7 @@ import { act } from 'react-dom/test-utils';
 
 import Auth from '@aws-amplify/auth';
 
-import UserButton from 'components/UserButton';
+import UserButton from 'components/header/UserButton';
 import createTestComponentFactory from '__test__/test-utils/testComponentFactory';
 
 const UserButtonFactory = createTestComponentFactory(UserButton);
