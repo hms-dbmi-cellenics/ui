@@ -15,7 +15,7 @@ const toApiV2 = (samples) => {
   const buildApiv1FilesObject = (fileObject) => {
     const fileNames = [];
     const apiV1FileObject = {};
-    
+
     Object.keys(fileObject).forEach((key) => {
       const fileName = fileObject[key].s3Path.split('/').pop();
       fileNames.push(fileName);
@@ -32,7 +32,7 @@ const toApiV2 = (samples) => {
     });
     return { apiV1FileObject, fileNames };
   };
-  
+
   const sampleTechnologyConvert = (technology) => {
     switch (technology) {
       case '10x': return '10X Chromium';
