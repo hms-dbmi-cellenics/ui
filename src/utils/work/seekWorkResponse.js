@@ -19,9 +19,9 @@ const getRemainingWorkerStartTime = (creationTimestamp) => {
 
   // we assume a worker takes up to 5 minutes to start
   const totalStartup = 5 * 60;
-  const reaminingTime = totalStartup - elapsed;
+  const remainingTime = totalStartup - elapsed;
   // add an extra minute just in case
-  return reaminingTime + 60;
+  return remainingTime + 60;
 };
 
 const seekFromS3 = async (ETag, experimentId) => {
