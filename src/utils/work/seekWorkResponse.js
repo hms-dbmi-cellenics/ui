@@ -74,16 +74,14 @@ const dispatchWorkRequest = async (
     const id = setTimeout(() => {
       reject(new WorkTimeoutError(timeoutDate, request));
     }, timeout * 1000);
+
     io.on(`WorkerInfo-${experimentId}`, (res) => {
       const { response: { podInfo: { name, creationTimestamp, phase } } } = res;
 
       const extraTime = getRemainingWorkerStartTime(creationTimestamp);
-      console.log('podInfo: ', name, creationTimestamp, phase);
-      console.log('adding extra time because worker is spinning up: ', extraTime);
       if (phase === 'Pending' && extraTime > 0) {
-        console.log('pending worker, adding extra wait time');
+        console.log(`worker ${name} started at ${creationTimestamp}. Adding ${extraTime} seconds to timeout.`);
         clearTimeout(id);
-        console.log('lcs clearing id: ', id);
         setTimeout(() => {
           reject(new WorkTimeoutError(timeoutDate, request));
         }, (timeout + extraTime) * 1000);
@@ -110,7 +108,6 @@ const dispatchWorkRequest = async (
     });
   });
 
-  console.log('work request: ', request);
   const result = Promise.race([timeoutPromise, responsePromise]);
 
   io.emit('WorkRequest', request);
