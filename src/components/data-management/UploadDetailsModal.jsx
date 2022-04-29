@@ -67,6 +67,7 @@ const UploadDetailsModal = (props) => {
     if (!uploadDetailsModalDataRef.current) {
       return;
     }
+
     uploadSingleFile(newFile, activeProjectUuid, sampleUuid, dispatch);
     onCancel();
   };
