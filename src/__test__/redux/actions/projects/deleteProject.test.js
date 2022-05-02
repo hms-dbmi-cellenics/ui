@@ -12,6 +12,11 @@ import {
 } from 'redux/actionTypes/projects';
 import { EXPERIMENTS_DELETED } from 'redux/actionTypes/experiments';
 
+import config from 'config';
+import { api } from 'utils/constants';
+
+jest.mock('config');
+
 jest.mock('redux/actions/projects/saveProject', () => { });
 
 enableFetchMocks();
@@ -168,6 +173,26 @@ describe('deleteProject action', () => {
 
     expect(fetchMock).toHaveBeenCalledWith(
       `http://localhost:3000/v1/projects/${mockProject.uuid}`,
+      {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      },
+    );
+  });
+
+  it('Dispatches fetch correctly in api v2', async () => {
+    config.currentApiVersion = api.V2;
+
+    const response = new Response(JSON.stringify({}));
+    fetchMock.mockResolvedValueOnce(response);
+
+    const store = mockStore(initialStateUniSample);
+    await store.dispatch(deleteProject(mockProjectUuid1));
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      `http://localhost:3000/v2/experiments/${mockProject.uuid}`,
       {
         method: 'DELETE',
         headers: {
