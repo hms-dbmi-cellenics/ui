@@ -66,4 +66,16 @@ describe('updateValueInMetadataTrack action', () => {
     expect(_.map(actions, 'type')).toEqual([SAMPLES_SAVING, SAMPLES_ERROR]);
     expect(_.map(actions, 'payload')).toMatchSnapshot();
   });
+
+  it('Doesnt work in api v1', async () => {
+    config.currentApiVersion = api.V1;
+
+    const store = mockStore();
+
+    await expect(store.dispatch(
+      updateValueInMetadataTrack(experimentId, sampleId, metadataTrackKeyRCompatible, value),
+    )).rejects.toThrow(new Error('This action only works with api v2'));
+
+    expect(store.getActions()).toHaveLength(0);
+  });
 });
