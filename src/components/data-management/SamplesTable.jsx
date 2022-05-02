@@ -308,9 +308,8 @@ const SamplesTable = forwardRef((props, ref) => {
       const newData = arrayMoveImmutable(tableData, oldIndex, newIndex).filter((el) => !!el);
       const newSampleOrder = newData.map((sample) => sample.uuid);
 
-      dispatch(updateProject(activeProjectUuid, { samples: newSampleOrder }));
-
       if (config.currentApiVersion === api.V1) {
+        dispatch(updateProject(activeProjectUuid, { samples: newSampleOrder }));
         dispatch(updateExperiment(experimentId, { sampleIds: newSampleOrder }));
       } else if (config.currentApiVersion === api.V2) {
         dispatch(reorderSamples(activeProjectUuid, oldIndex, newIndex, newSampleOrder));
