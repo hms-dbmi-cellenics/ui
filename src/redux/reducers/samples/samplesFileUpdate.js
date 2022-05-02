@@ -5,17 +5,11 @@ const samplesFileUpdate = (state, action) => {
     sampleUuid, fileName, fileDiff, lastModified,
   } = action.payload;
 
-  const overwriteIfArray = (objValue, srcValue) => {
-    if (_.isArray(objValue) && srcValue) {
-      return srcValue;
-    }
-  };
-
   const oldFile = state[sampleUuid].files?.[fileName];
   let newFile = fileDiff;
 
   if (oldFile) {
-    newFile = _.mergeWith(oldFile, fileDiff, overwriteIfArray);
+    newFile = _.merge(oldFile, fileDiff);
   }
 
   const newFileNames = _.cloneDeep(state[sampleUuid].fileNames);

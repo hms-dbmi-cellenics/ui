@@ -131,25 +131,6 @@ describe('samplesReducer', () => {
     expect(newState).toMatchSnapshot();
   });
 
-  it('Updates sample files correctly', () => {
-    const newState = samplesReducer(oneSampleState, {
-      type: SAMPLES_FILE_UPDATE,
-      payload: {
-        sampleUuid: mockUuid1,
-        fileName,
-        fileDiff: mockFile,
-        lastModified: 'newLastModified',
-      },
-    });
-
-    expect(newState[sample1.uuid].fileNames).toEqual([fileName]);
-    expect(newState[sample1.uuid].files[fileName]).toEqual({
-      ...mockFile,
-      lastModified: 'newLastModified',
-    });
-    expect(newState).toMatchSnapshot();
-  });
-
   it('Loads samples correctly', () => {
     const newState = samplesReducer(initialState, {
       type: SAMPLES_LOADED,
