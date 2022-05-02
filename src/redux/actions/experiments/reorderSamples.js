@@ -4,7 +4,7 @@ import {
 } from 'redux/actionTypes/experiments';
 import endUserMessages from 'utils/endUserMessages';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
-import { isServerError, throwIfRequestFailed } from 'utils/fetchErrors';
+import { isServerError } from 'utils/fetchErrors';
 
 const reorderSamples = (
   experimentId,
@@ -26,7 +26,7 @@ const reorderSamples = (
       newPosition: newIndex,
     };
 
-    const response = await fetchAPI(
+    await fetchAPI(
       url,
       {
         method: 'PUT',
@@ -36,9 +36,6 @@ const reorderSamples = (
         body: JSON.stringify(body),
       },
     );
-
-    const json = await response.json();
-    throwIfRequestFailed(response, json, endUserMessages.ERROR_SAVING);
 
     dispatch({
       type: EXPERIMENTS_UPDATED,
