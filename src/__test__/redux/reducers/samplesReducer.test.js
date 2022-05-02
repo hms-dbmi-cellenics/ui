@@ -11,6 +11,7 @@ import {
   SAMPLES_SAVING,
   SAMPLES_SAVED,
   SAMPLES_METADATA_DELETE,
+  SAMPLES_VALUE_IN_METADATA_TRACK_UPDATED_API_V2,
 } from 'redux/actionTypes/samples';
 
 describe('samplesReducer', () => {
@@ -302,6 +303,32 @@ describe('samplesReducer', () => {
     });
 
     expect(newState[mockUuid1].metadata[metadataKey]).toBeUndefined();
+    expect(newState).toMatchSnapshot();
+  });
+
+  it('Handles samplesValueInMetadataTrackUpdated correctly', () => {
+    const metadataKey = 'metadata-test';
+    const metadataOldValue = 'old-value';
+    const metadataNewValue = 'new-value';
+
+    const sampleWithMetadata = {
+      ...oneSampleState,
+      [mockUuid1]: {
+        metadata: {
+          [metadataKey]: metadataOldValue,
+        },
+      },
+    };
+
+    const newState = samplesReducer(sampleWithMetadata, {
+      type: SAMPLES_VALUE_IN_METADATA_TRACK_UPDATED_API_V2,
+      payload: {
+        sampleUuid: mockUuid1,
+        key: metadataKey,
+        value: metadataNewValue,
+      },
+    });
+
     expect(newState).toMatchSnapshot();
   });
 });

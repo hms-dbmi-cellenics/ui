@@ -87,6 +87,21 @@ Object {
 }
 `;
 
+exports[`samplesReducer Handles samplesValueInMetadataTrackUpdated correctly 1`] = `
+Object {
+  "asd123": Object {
+    "metadata": Object {
+      "metadata-test": "new-value",
+    },
+  },
+  "meta": Object {
+    "error": false,
+    "loading": false,
+    "saving": false,
+  },
+}
+`;
+
 exports[`samplesReducer Inserts a new sample correctly 1`] = `
 Object {
   "asd123": Object {
