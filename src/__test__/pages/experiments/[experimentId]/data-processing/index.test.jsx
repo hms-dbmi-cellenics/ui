@@ -21,7 +21,7 @@ import { runPipeline } from 'redux/actions/pipeline';
 import generateExperimentSettingsMock from '__test__/test-utils/experimentSettings.mock';
 import { modules } from 'utils/constants';
 
-jest.mock('components/UserButton', () => () => <></>);
+jest.mock('components/header/UserButton', () => () => <></>);
 
 // Mock all filter components
 jest.mock('components/data-processing/CellSizeDistribution/CellSizeDistribution', () => () => <></>);

@@ -4,7 +4,7 @@ import {
   Space, Button,
 } from 'antd';
 import integrationTestConstants from 'utils/integrationTestConstants';
-import { processUpload } from 'utils/upload/processUpload';
+import processUpload from 'utils/upload/processUpload';
 import DownloadDataButton from './DownloadDataButton';
 import LaunchAnalysisButton from './LaunchAnalysisButton';
 import FileUploadModal from './FileUploadModal';

@@ -9,7 +9,6 @@ import NProgress from 'nprogress';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 import { DefaultSeo } from 'next-seo';
-import ErrorBoundary from 'components/ErrorBoundary';
 
 import { wrapper } from 'redux/store';
 import { useSelector } from 'react-redux';
@@ -127,20 +126,18 @@ const WrappedApp = ({ Component, pageProps }) => {
 
     // Otherwise, load the page inside the content wrapper.
     return (
-      <ErrorBoundary>
-        <AppRouteProvider>
-          <ContentWrapper
-            routeExperimentId={experimentId}
+      <AppRouteProvider>
+        <ContentWrapper
+          routeExperimentId={experimentId}
+          experimentData={experimentData}
+        >
+          <Component
+            experimentId={experimentId}
             experimentData={experimentData}
-          >
-            <Component
-              experimentId={experimentId}
-              experimentData={experimentData}
-              {...pageProps}
-            />
-          </ContentWrapper>
-        </AppRouteProvider>
-      </ErrorBoundary>
+            {...pageProps}
+          />
+        </ContentWrapper>
+      </AppRouteProvider>
     );
   };
 
@@ -171,8 +168,12 @@ const WrappedApp = ({ Component, pageProps }) => {
 /* eslint-disable global-require */
 WrappedApp.getInitialProps = async ({ Component, ctx }) => {
   const {
-    store, req, query, res,
+    store, req, query, res, err,
   } = ctx;
+
+  // If a render error occurs, NextJS bypasses the normal page rendering
+  // and returns `_error.jsx` instead, returning these parameters
+  if (err) { return { pageProps: { errorObject: err } }; }
 
   // Do nothing if not server-side
   if (!req) { return { pageProps: {} }; }

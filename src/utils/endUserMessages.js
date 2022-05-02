@@ -28,6 +28,8 @@ export default {
   ERROR_NO_PERMISSIONS: 'You do not have permissions to perform that action.',
   ERROR_LAUNCH_PATHWAY: 'We couldn\'t launch pathway analysis',
   ERROR_SAVING: 'We couldn\'t save your data.',
+  ERROR_BEGIN_SAMPLE_FILE_UPLOAD: 'We couldn\'t begin the files upload',
+  ERROR_UPDATE_SERVER_ON_UPLOAD_STATE: 'We couldn\'t update the upload state in our servers. Try refreshing the page.',
   ERROR_SAVING_PLOT_CONFIG: 'We couldn\'t save your plot configuration.',
   ERROR_STARTING_PIPLELINE: 'We couldn\'t start working on your data.',
   ERROR_SIGN_IN: 'We couldn\'t sign you in. Please try again.',
