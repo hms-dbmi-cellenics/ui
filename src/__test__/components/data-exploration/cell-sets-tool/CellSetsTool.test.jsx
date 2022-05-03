@@ -247,8 +247,12 @@ describe('CellSetsTool', () => {
       );
     });
 
-    // maybe expand custom cell sets tree, but doesn't work. There is nothing in redux either
-    screen.debug(null, Infinity);
+    // // maybe expand custom cell sets tree, but doesn't work. There is nothing in redux either
+    // screen.debug(null, Infinity);
+
+    // expand custom cell sets tree
+    const bla = screen.getAllByRole('img', { name: 'down' })[1];
+    userEvent.click(bla);
 
     screen.getByText('New Cluster');
     const newClusterKey = getClusterByName('New Cluster');
@@ -464,6 +468,10 @@ describe('CellSetsTool', () => {
       storeState.dispatch(loadGeneExpression(experimentId, ['TestGene'], '1234'));
     });
 
+    // expand custom cell sets tree
+    const customCellSetsGroup = screen.getAllByRole('img', { name: 'down' })[1];
+    userEvent.click(customCellSetsGroup);
+
     // select the first louvain cluster
     const louvain0Cluster = screen.getByText('Cluster 0');
     userEvent.click(louvain0Cluster);
@@ -479,6 +487,9 @@ describe('CellSetsTool', () => {
         </Provider>,
       );
     });
+    // expand custom cell sets tree
+    const customCellSetsGroup = screen.getAllByRole('img', { name: 'down' })[1];
+    userEvent.click(customCellSetsGroup);
 
     // hide the first cluster
     const hideButtons = screen.getAllByText('Hide');
@@ -497,13 +508,15 @@ describe('CellSetsTool', () => {
       );
     });
 
-    // hide the first cluster
-    let hideButtons = screen.getAllByText('Hide');
-    userEvent.click(hideButtons[0]);
+    // expand custom cell sets tree
+    const customCellSetsGroup = screen.getAllByRole('img', { name: 'down' })[1];
+    userEvent.click(customCellSetsGroup);
 
-    // hide the second cluster
-    hideButtons = screen.getAllByText('Hide');
-    userEvent.click(hideButtons[0]);
+    // hide the first and second cluster
+    const hideButtonFirst = screen.getAllByText('Hide')[0];
+    const hideButtonSecond = screen.getAllByText('Hide')[1];
+    userEvent.click(hideButtonFirst);
+    userEvent.click(hideButtonSecond);
 
     screen.getByText(/2 cell sets are currently hidden./);
 
@@ -526,6 +539,10 @@ describe('CellSetsTool', () => {
         </Provider>,
       );
     });
+
+    // expand custom cell sets tree
+    const customCellSetsGroup = screen.getAllByRole('img', { name: 'down' })[1];
+    userEvent.click(customCellSetsGroup);
 
     let hideButtons = screen.getAllByText('Hide');
     expect(hideButtons.length).toEqual(14);
