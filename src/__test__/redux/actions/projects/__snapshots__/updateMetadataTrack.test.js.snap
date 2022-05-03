@@ -1,0 +1,23 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`updateMetadataTrack action Works correctly in api v2 1`] = `
+Array [
+  Object {
+    "newKey": "New_track",
+    "oldKey": "Old_track",
+    "projectUuid": "project-1234",
+  },
+  Object {
+    "sample": Object {
+      "metadata": Object {
+        "New_track": "value",
+      },
+    },
+    "sampleUuid": "sample-1234",
+  },
+  Object {
+    "metadataKey": "Old_track",
+    "sampleUuid": "sample-1234",
+  },
+]
+`;
