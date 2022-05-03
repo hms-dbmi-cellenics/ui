@@ -341,6 +341,7 @@ describe('HierarchicalTree', () => {
         treeData={treeData}
         experimentId={fake.EXPERIMENT_ID}
         onNodeUpdate={mockOnNodeUpdate}
+        shouldExpandKeys
       />,
     );
 
@@ -348,7 +349,6 @@ describe('HierarchicalTree', () => {
 
     // Only 2 color pickers are shown
     expect(component.find('ColorPicker')).toHaveLength(2);
-
     // On changing one color
     const childColorPicker = component.find('ColorPicker').at(0);
     childColorPicker.getElement().props.onColorChange('white');
@@ -371,6 +371,7 @@ describe('HierarchicalTree', () => {
         treeData={treeData}
         experimentId={fake.EXPERIMENT_ID}
         onNodeUpdate={mockOnNodeUpdate}
+        shouldExpandKeys
       />,
     );
 
@@ -406,6 +407,7 @@ describe('HierarchicalTree', () => {
         treeData={treeData}
         experimentId={fake.EXPERIMENT_ID}
         onNodeDelete={mockOnNodeDelete}
+        shouldExpandKeys
       />,
     );
 
@@ -436,6 +438,7 @@ describe('HierarchicalTree', () => {
       <HierarchicalTree
         treeData={treeData}
         experimentId={fake.EXPERIMENT_ID}
+        shouldExpandKeys
       />,
     );
 

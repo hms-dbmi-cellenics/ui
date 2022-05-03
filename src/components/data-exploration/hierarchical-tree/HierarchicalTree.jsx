@@ -26,9 +26,11 @@ const HierarchicalTree = (props) => {
     onCellSetReorder,
     onNodeUpdate,
     onNodeDelete,
+    shouldExpandKeys,
   } = props;
 
   const [checkedKeys, setCheckedKeys] = useState(propDefaultCheckedKeys);
+  const [expandedKeys, setExpandedKeys] = useState([]);
 
   useEffect(() => {
     if (checkedKeys.length > 0) {
@@ -153,7 +155,9 @@ const HierarchicalTree = (props) => {
     if (!treeData) {
       return;
     }
-
+    if (shouldExpandKeys) {
+      setExpandedKeys(treeData.map((n) => n.key));
+    }
     setRenderedTreeData(renderTitlesRecursive(treeData));
   }, [treeData]);
 
@@ -167,7 +171,11 @@ const HierarchicalTree = (props) => {
       treeData={renderedTreeData}
       checkedKeys={checkedKeys}
       onDrop={onDrop}
+      onExpand={(keys) => {
+        setExpandedKeys(keys);
+      }}
       switcherIcon={<DownOutlined />}
+      expandedKeys={expandedKeys}
       defaultExpandAll
     />
   );
@@ -181,6 +189,7 @@ HierarchicalTree.defaultProps = {
   defaultCheckedKeys: [],
   store: null,
   showHideButton: false,
+  shouldExpandKeys: false,
 };
 
 HierarchicalTree.propTypes = {
@@ -193,6 +202,7 @@ HierarchicalTree.propTypes = {
   store: PropTypes.string,
   experimentId: PropTypes.string.isRequired,
   showHideButton: PropTypes.bool,
+  shouldExpandKeys: PropTypes.bool,
 };
 
 export default HierarchicalTree;
