@@ -58,6 +58,9 @@ const reorderSamples = (
       'error',
       errorMessage,
     );
+
+    // Throwing so we can stop ui updates
+    throw e;
   }
 };
 
