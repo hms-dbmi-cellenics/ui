@@ -87,6 +87,21 @@ Object {
 }
 `;
 
+exports[`samplesReducer Handles samplesValueInMetadataTrackUpdated correctly 1`] = `
+Object {
+  "asd123": Object {
+    "metadata": Object {
+      "metadata-test": "new-value",
+    },
+  },
+  "meta": Object {
+    "error": false,
+    "loading": false,
+    "saving": false,
+  },
+}
+`;
+
 exports[`samplesReducer Inserts a new sample correctly 1`] = `
 Object {
   "asd123": Object {
@@ -271,46 +286,6 @@ Object {
 `;
 
 exports[`samplesReducer Updates sample files correctly 1`] = `
-Object {
-  "asd123": Object {
-    "complete": false,
-    "createdDate": "2021-01-01T14:48:00.000Z",
-    "error": false,
-    "fileNames": Array [
-      "features.tsv",
-    ],
-    "files": Object {
-      "features.tsv": Object {
-        "error": false,
-        "lastModified": "newLastModified",
-        "mime": "",
-        "name": "features.tsv",
-        "objectKey": "",
-        "path": "",
-        "size": 0,
-        "success": false,
-        "upload": Object {
-          "amplifyPromise": null,
-          "status": null,
-        },
-      },
-    },
-    "lastModified": "newLastModified",
-    "metadata": Object {},
-    "name": "test sample",
-    "projectUuid": null,
-    "type": null,
-    "uuid": "asd123",
-  },
-  "meta": Object {
-    "error": false,
-    "loading": false,
-    "saving": false,
-  },
-}
-`;
-
-exports[`samplesReducer Updates sample files correctly 2`] = `
 Object {
   "asd123": Object {
     "complete": false,
