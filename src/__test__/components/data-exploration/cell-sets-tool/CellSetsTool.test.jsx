@@ -195,12 +195,11 @@ describe('CellSetsTool', () => {
     const unionCellIds = [...cluster3CellIds, ...cluster4CellIds];
 
     // test the union cellSet function
-    const expecteddUnion = new Set(unionCellIds);
+    const expectedUnion = new Set(unionCellIds);
 
     // get the cell ids of the new cluster that got created as the union of those clusters
     const actualUnion = storeState.getState().cellSets.properties[newClusterKey].cellIds;
-
-    expect(actualUnion).toEqual(expecteddUnion);
+    expect(actualUnion).toEqual(expectedUnion);
   });
 
   it('can compute an intersection of 2 cell sets', async () => {
@@ -217,7 +216,7 @@ describe('CellSetsTool', () => {
     userEvent.click(louvainCLustersGroup);
 
     // select the third louvain cluster
-    const louvain3Cluster = screen.getByText('Cluster 3');
+    const louvain3Cluster = screen.getByText('Cluster 0');
     userEvent.click(louvain3Cluster);
 
     // create a new cluster with some cells that will overlap:
@@ -247,17 +246,8 @@ describe('CellSetsTool', () => {
       );
     });
 
-    // // maybe expand custom cell sets tree, but doesn't work. There is nothing in redux either
-    // screen.debug(null, Infinity);
-
-    // expand custom cell sets tree
-    const bla = screen.getAllByRole('img', { name: 'down' })[1];
-    userEvent.click(bla);
-
-    screen.getByText('New Cluster');
     const newClusterKey = getClusterByName('New Cluster');
     const actualIntersection = storeState.getState().cellSets.properties[newClusterKey].cellIds;
-
     const expectedIntersection = new Set([1, 2, 3, 4]);
     expect(actualIntersection).toEqual(expectedIntersection);
   });
