@@ -22,7 +22,9 @@ const toApiV1 = (samples) => {
         barcodes10x: 'barcodes.tsv.gz',
         matrix10x: 'matrix.mtx.gz',
       };
-      const fileType = files[key].sampleFileType;
+      const fileType = files[key]?.sampleFileType;
+      if (!fileType) throw new Error('No sample file found');
+
       const fileName = fileNameConvert[fileType];
 
       fileNames.push(fileNameConvert[fileType]);
