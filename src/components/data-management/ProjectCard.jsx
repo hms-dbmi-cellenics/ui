@@ -9,10 +9,13 @@ import { setActiveProject, updateProject } from 'redux/actions/projects';
 import { updateExperiment } from 'redux/actions/experiments';
 import validateInputs, { rules } from 'utils/validateInputs';
 import integrationTestConstants from 'utils/integrationTestConstants';
-import EditableField from '../EditableField';
-import PrettyTime from '../PrettyTime';
+import EditableField from 'components/EditableField';
+import PrettyTime from 'components/PrettyTime';
 
-import ProjectDeleteModal from './ProjectDeleteModal';
+import ProjectDeleteModal from 'components/data-management/ProjectDeleteModal';
+
+import config from 'config';
+import { api } from 'utils/constants';
 
 const { Item } = Descriptions;
 
@@ -58,7 +61,11 @@ const ProjectCard = (props) => {
 
   const updateProjectName = (newName) => {
     dispatch(updateProject(project.uuid, { name: newName.trim() }));
-    if (projects.meta.error === false) {
+
+    if (
+      (config.currentApiVersion === api.V1 && projects.meta.error === false)
+      || config.currentApiVersion === api.V2
+    ) {
       dispatch(updateExperiment(projectExperiment, { name: newName.trim() }));
     }
   };
