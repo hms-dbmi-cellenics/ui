@@ -12,42 +12,47 @@ import {
 const toApiV2 = (samples) => {
   const apiV2Samples = [{ samples: {} }];
 
-  const buildApiv1FilesObject = (fileObject) => {
+  const buildApiv1Files = (files) => {
     const fileNames = [];
-    const apiV1FileObject = {};
+    const apiV1Files = {};
 
-    Object.keys(fileObject).forEach((key) => {
-      const fileName = fileObject[key].s3Path.split('/').pop();
+    Object.keys(files).forEach((key) => {
+      const fileType = files[key].sampleFileType;
+      let fileName = '';
+      if (fileType.includes('features')) {
+        fileName = 'features.tsv.gz';
+      } else if (fileType.includes('barcodes')) {
+        fileName = 'barcodes.tsv.gz';
+      } else if (fileType.includes('matrix')) {
+        fileName = 'matrix.mtx.gz';
+      }
       fileNames.push(fileName);
 
-      apiV1FileObject[fileName] = {
-        path: fileObject[key].s3Path,
-        size: fileObject[key].size,
-        valid: fileObject[key].valid,
+      apiV1Files[fileName] = {
+        size: files[key].size,
+        valid: true,
         name: fileName,
         upload: {
-          status: fileObject[key].uploadStatus,
+          status: files[key].uploadStatus,
         },
       };
     });
-    return { apiV1FileObject, fileNames };
+    return { apiV1Files, fileNames };
   };
 
   const sampleTechnologyConvert = (technology) => {
-    switch (technology) {
-      case '10x': return '10X Chromium';
-      default: return technology;
-    }
+    if (technology === '10x') return '10X Chromium';
+    return technology;
   };
 
-  samples.data.message.forEach((sample) => {
-    const { apiV1FileObject, fileNames } = buildApiv1FilesObject(sample.files);
+  samples.forEach((sample) => {
+    const { apiV1Files, fileNames } = buildApiv1Files(sample.files);
     apiV2Samples[0].samples[sample.id] = {
       metadata: sample.metadata,
       createdDate: sample.createdAt,
       name: sample.name,
       lastModified: sample.updatedAt,
-      files: apiV1FileObject,
+      files: apiV1Files,
       type: sampleTechnologyConvert(sample.sampleTechnology),
       fileNames,
       uuid: sample.id,
