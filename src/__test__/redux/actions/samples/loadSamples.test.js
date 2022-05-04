@@ -63,24 +63,21 @@ describe('loadSample action', () => {
     // mock new response from apiv2
     const responseV2 = new Response(
       JSON.stringify(
-        {
-          data: {
-            message: [{
-              id: 'e03ef6ea-5014-4e57-aecd-59964ac9172c',
-              experimentId: 'fd8d5f24-a2d9-da28-2ffd-725b99b1127b',
-              name: 'BLp7',
-              sampleTechnology: '10x',
-              createdAt: '2021-12-07 17:36:27.773+00',
-              updatedAt: '2021-12-07 17:38:42.036+00',
-              metadata: { age: 'BL', timePoint: 'BL' },
-              files: {
-                matrix10X: { uploadStatus: 'uploaded', s3Path: 'someidhere/anotherpath/matrix.tsv.gz' },
-                barcodes10X: { uploadStatus: 'uploaded', s3Path: 'someidhere/anotherpath/barcodes.tsv.gz' },
-                features10X: { uploadStatus: 'uploaded', s3Path: 'someidhere/anotherpath/features.tsv.gz' },
-              },
-            }],
+        [{
+          id: 'e03ef6ea-5014-4e57-aecd-59964ac9172c',
+          experimentId: 'fd8d5f24-a2d9-da28-2ffd-725b99b1127b',
+          name: 'BLp7',
+          sampleTechnology: '10x',
+          createdAt: '2021-12-07 17:36:27.773+00',
+          updatedAt: '2021-12-07 17:38:42.036+00',
+          metadata: { age: 'BL', timePoint: 'BL' },
+          files: {
+            matrix10X: { uploadStatus: 'uploaded', sampleFileType: 'matrix10x' },
+            barcodes10X: { uploadStatus: 'uploaded', sampleFileType: 'barcodes10x' },
+            features10X: { uploadStatus: 'uploaded', sampleFileType: 'features10x' },
           },
-        },
+        }],
+
       ),
     );
     fetchMock.resetMocks();

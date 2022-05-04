@@ -8,37 +8,34 @@ Object {
         "e03ef6ea-5014-4e57-aecd-59964ac9172c": Object {
           "createdDate": "2021-12-07 17:36:27.773+00",
           "fileNames": Array [
-            "matrix.tsv.gz",
+            "matrix.mtx.gz",
             "barcodes.tsv.gz",
             "features.tsv.gz",
           ],
           "files": Object {
             "barcodes.tsv.gz": Object {
               "name": "barcodes.tsv.gz",
-              "path": "someidhere/anotherpath/barcodes.tsv.gz",
               "size": undefined,
               "upload": Object {
                 "status": "uploaded",
               },
-              "valid": undefined,
+              "valid": true,
             },
             "features.tsv.gz": Object {
               "name": "features.tsv.gz",
-              "path": "someidhere/anotherpath/features.tsv.gz",
               "size": undefined,
               "upload": Object {
                 "status": "uploaded",
               },
-              "valid": undefined,
+              "valid": true,
             },
-            "matrix.tsv.gz": Object {
-              "name": "matrix.tsv.gz",
-              "path": "someidhere/anotherpath/matrix.tsv.gz",
+            "matrix.mtx.gz": Object {
+              "name": "matrix.mtx.gz",
               "size": undefined,
               "upload": Object {
                 "status": "uploaded",
               },
-              "valid": undefined,
+              "valid": true,
             },
           },
           "lastModified": "2021-12-07 17:38:42.036+00",
