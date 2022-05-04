@@ -68,8 +68,14 @@ const loadSamples = (
   experimentId = null, projectUuid = null,
 ) => async (dispatch) => {
   const { currentApiVersion } = config;
-  const url = experimentId ? `/${currentApiVersion}/experiments/${experimentId}/samples`
-    : `/${currentApiVersion}/projects/${projectUuid}/samples`;
+  let url;
+
+  if (currentApiVersion === api.V1) {
+    url = experimentId ? `/${currentApiVersion}/experiments/${experimentId}/samples`
+      : `/${currentApiVersion}/projects/${projectUuid}/samples`;
+  } else if (currentApiVersion === api.V2) {
+    url = `/${currentApiVersion}/experiments/${experimentId ?? projectUuid}/samples`;
+  }
 
   try {
     dispatch({
