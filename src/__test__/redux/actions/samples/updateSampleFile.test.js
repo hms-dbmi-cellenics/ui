@@ -90,6 +90,9 @@ describe('updateSampleFile action', () => {
 
     await store.dispatch(updateSampleFile(mockUuid, mockFile.name, successFile));
 
+    // Dispatches sample file update action too
+    expect(store.getActions()).toMatchSnapshot();
+
     expect(saveSamples).toHaveBeenCalled();
   });
 

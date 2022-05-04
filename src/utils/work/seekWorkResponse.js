@@ -10,6 +10,20 @@ const throwResponseError = (response) => {
   throw new Error(`Error ${response.status}: ${response.text}`, { cause: response });
 };
 
+// getRemainingWorkerStartTime returns how many more seconds the worker is expected to
+// need to be running with an extra 1 minute for a bit of leeway
+const getRemainingWorkerStartTime = (creationTimestamp) => {
+  const now = new Date();
+  const creationTime = new Date(creationTimestamp);
+  const elapsed = parseInt((now - creationTime) / (1000), 10); // gives second difference
+
+  // we assume a worker takes up to 5 minutes to start
+  const totalStartup = 5 * 60;
+  const remainingTime = totalStartup - elapsed;
+  // add an extra minute just in case
+  return remainingTime + 60;
+};
+
 const seekFromS3 = async (ETag, experimentId) => {
   let response;
   try {
@@ -58,9 +72,21 @@ const dispatchWorkRequest = async (
 
   const timeoutPromise = new Promise((resolve, reject) => {
     const id = setTimeout(() => {
-      clearTimeout(id);
       reject(new WorkTimeoutError(timeoutDate, request));
     }, timeout * 1000);
+
+    io.on(`WorkerInfo-${experimentId}`, (res) => {
+      const { response: { podInfo: { name, creationTimestamp, phase } } } = res;
+
+      const extraTime = getRemainingWorkerStartTime(creationTimestamp);
+      if (phase === 'Pending' && extraTime > 0) {
+        console.log(`worker ${name} started at ${creationTimestamp}. Adding ${extraTime} seconds to timeout.`);
+        clearTimeout(id);
+        setTimeout(() => {
+          reject(new WorkTimeoutError(timeoutDate, request));
+        }, (timeout + extraTime) * 1000);
+      }
+    });
   });
 
   const responsePromise = new Promise((resolve, reject) => {

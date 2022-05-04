@@ -11,6 +11,7 @@ import {
   SAMPLES_SAVING,
   SAMPLES_SAVED,
   SAMPLES_METADATA_DELETE,
+  SAMPLES_VALUE_IN_METADATA_TRACK_UPDATED_API_V2,
 } from 'redux/actionTypes/samples';
 
 describe('samplesReducer', () => {
@@ -111,7 +112,10 @@ describe('samplesReducer', () => {
     });
 
     expect(newState[sample1.uuid].fileNames).toEqual([fileName]);
-    expect(newState[sample1.uuid].files[fileName]).toEqual(mockFile);
+    expect(newState[sample1.uuid].files[fileName]).toEqual({
+      ...mockFile,
+      lastModified: 'newLastModified',
+    });
     expect(newState).toMatchSnapshot();
   });
 
@@ -124,22 +128,6 @@ describe('samplesReducer', () => {
     });
 
     expect(newState[sample2.uuid]).toBeUndefined();
-    expect(newState).toMatchSnapshot();
-  });
-
-  it('Updates sample files correctly', () => {
-    const newState = samplesReducer(oneSampleState, {
-      type: SAMPLES_FILE_UPDATE,
-      payload: {
-        sampleUuid: mockUuid1,
-        fileName,
-        fileDiff: mockFile,
-        lastModified: 'newLastModified',
-      },
-    });
-
-    expect(newState[sample1.uuid].fileNames).toEqual([fileName]);
-    expect(newState[sample1.uuid].files[fileName]).toEqual(mockFile);
     expect(newState).toMatchSnapshot();
   });
 
@@ -296,6 +284,32 @@ describe('samplesReducer', () => {
     });
 
     expect(newState[mockUuid1].metadata[metadataKey]).toBeUndefined();
+    expect(newState).toMatchSnapshot();
+  });
+
+  it('Handles samplesValueInMetadataTrackUpdated correctly', () => {
+    const metadataKey = 'metadata-test';
+    const metadataOldValue = 'old-value';
+    const metadataNewValue = 'new-value';
+
+    const sampleWithMetadata = {
+      ...oneSampleState,
+      [mockUuid1]: {
+        metadata: {
+          [metadataKey]: metadataOldValue,
+        },
+      },
+    };
+
+    const newState = samplesReducer(sampleWithMetadata, {
+      type: SAMPLES_VALUE_IN_METADATA_TRACK_UPDATED_API_V2,
+      payload: {
+        sampleUuid: mockUuid1,
+        key: metadataKey,
+        value: metadataNewValue,
+      },
+    });
+
     expect(newState).toMatchSnapshot();
   });
 });
