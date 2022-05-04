@@ -17,16 +17,15 @@ const toApiV1 = (samples) => {
     const apiV1Files = {};
 
     Object.keys(files).forEach((key) => {
+      const fileNameConvert = {
+        features10x: 'features.tsv.gz',
+        barcodes10x: 'barcodes.tsv.gz',
+        matrix10x: 'matrix.mtx.gz',
+      };
       const fileType = files[key].sampleFileType;
-      let fileName = '';
-      if (fileType === 'features10x') {
-        fileName = 'features.tsv.gz';
-      } else if (fileType === 'barcodes10x') {
-        fileName = 'barcodes.tsv.gz';
-      } else if (fileType === 'matrix10x') {
-        fileName = 'matrix.mtx.gz';
-      }
-      fileNames.push(fileName);
+      const fileName = fileNameConvert[fileType];
+
+      fileNames.push(fileNameConvert[fileType]);
 
       apiV1Files[fileName] = {
         size: files[key].size,
