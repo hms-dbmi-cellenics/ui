@@ -126,7 +126,7 @@ describe('updateMetadataTrack action', () => {
     expect(_.map(actions, 'payload')).toMatchSnapshot();
 
     expect(fetchMock).toHaveBeenCalledWith(
-      `http://localhost:3000/v2/experiments/${mockProject.uuid}/metadataTracks/${oldMetadataTrack}`,
+      `http://localhost:3000/v2/experiments/${mockProject.uuid}/metadataTracks/${oldMetadataTrackKey}`,
       {
         body: JSON.stringify({ key: newMetadataTrack }),
         headers: { 'Content-Type': 'application/json' },
