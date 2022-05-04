@@ -9,7 +9,7 @@ import {
   SAMPLES_LOADING,
 } from 'redux/actionTypes/samples';
 
-const toApiV1 = (samples) => {
+const toApiV1 = (samples, experimentId) => {
   const apiV1Samples = [{ samples: {} }];
 
   const buildApiv1Files = (files) => {
@@ -50,6 +50,7 @@ const toApiV1 = (samples) => {
   samples.forEach((sample) => {
     const { apiV1Files, fileNames } = buildApiv1Files(sample.files);
     apiV1Samples[0].samples[sample.id] = {
+      projectUuid: experimentId,
       metadata: sample.metadata,
       createdDate: sample.createdAt,
       name: sample.name,
@@ -85,7 +86,7 @@ const loadSamples = (
     let data = await fetchAPI(url);
 
     if (currentApiVersion === api.V2) {
-      data = toApiV1(data);
+      data = toApiV1(data, experimentId ?? projectUuid);
     }
 
     let samples;
