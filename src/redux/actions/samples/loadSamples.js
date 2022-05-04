@@ -9,8 +9,8 @@ import {
   SAMPLES_LOADING,
 } from 'redux/actionTypes/samples';
 
-const toApiV2 = (samples) => {
-  const apiV2Samples = [{ samples: {} }];
+const toApiV1 = (samples) => {
+  const apiV1Samples = [{ samples: {} }];
 
   const buildApiv1Files = (files) => {
     const fileNames = [];
@@ -19,11 +19,11 @@ const toApiV2 = (samples) => {
     Object.keys(files).forEach((key) => {
       const fileType = files[key].sampleFileType;
       let fileName = '';
-      if (fileType.includes('features')) {
+      if (fileType === 'features10x') {
         fileName = 'features.tsv.gz';
-      } else if (fileType.includes('barcodes')) {
+      } else if (fileType === 'barcodes10x') {
         fileName = 'barcodes.tsv.gz';
-      } else if (fileType.includes('matrix')) {
+      } else if (fileType === 'matrix10x') {
         fileName = 'matrix.mtx.gz';
       }
       fileNames.push(fileName);
@@ -42,12 +42,13 @@ const toApiV2 = (samples) => {
 
   const sampleTechnologyConvert = (technology) => {
     if (technology === '10x') return '10X Chromium';
-    return technology;
+
+    throw new Error('Unknown sample technology');
   };
 
   samples.forEach((sample) => {
     const { apiV1Files, fileNames } = buildApiv1Files(sample.files);
-    apiV2Samples[0].samples[sample.id] = {
+    apiV1Samples[0].samples[sample.id] = {
       metadata: sample.metadata,
       createdDate: sample.createdAt,
       name: sample.name,
@@ -59,7 +60,7 @@ const toApiV2 = (samples) => {
     };
   });
 
-  return apiV2Samples;
+  return apiV1Samples;
 };
 
 const loadSamples = (
@@ -77,7 +78,7 @@ const loadSamples = (
     let data = await fetchAPI(url);
 
     if (currentApiVersion === api.V2) {
-      data = toApiV2(data);
+      data = toApiV1(data);
     }
 
     let samples;
