@@ -54,7 +54,7 @@ const updateMetadataTrack = (
       const body = { key: newName };
 
       await fetchAPI(
-        `/v2/experiments/${projectUuid}/metadataTracks/${oldName}`,
+        `/v2/experiments/${projectUuid}/metadataTracks/${oldMetadataKey}`,
         {
           method: 'PATCH',
           headers: {
