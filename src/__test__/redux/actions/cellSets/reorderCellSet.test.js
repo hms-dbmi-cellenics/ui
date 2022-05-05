@@ -4,6 +4,9 @@ import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import waitForActions from 'redux-mock-store-await-actions';
 import { waitFor } from '@testing-library/react';
 
+import config from 'config';
+import { api } from 'utils/constants';
+
 import reorderCellSet from 'redux/actions/cellSets/reorderCellSet';
 import { CELL_SETS_REORDER } from 'redux/actionTypes/cellSets';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
@@ -11,6 +14,9 @@ import pushNotificationMessage from 'utils/pushNotificationMessage';
 import initialState from 'redux/reducers/cellSets/initialState';
 
 enableFetchMocks();
+
+jest.mock('config');
+
 const mockStore = configureStore([thunk]);
 
 describe('reorderCellSet action', () => {
@@ -36,6 +42,8 @@ describe('reorderCellSet action', () => {
   beforeEach(() => {
     jest.resetAllMocks();
 
+    config.currentApiVersion = api.V1;
+
     fetchMock.resetMocks();
     fetchMock.doMock();
   });
@@ -51,10 +59,10 @@ describe('reorderCellSet action', () => {
     expect(store.getActions()[0]).toMatchSnapshot();
 
     // Fetch was called correctly
-    expect(fetch).toHaveBeenCalledTimes(1);
+    expect(fetchMock).toHaveBeenCalledTimes(1);
 
-    const [url, body] = fetch.mock.calls[0];
-    expect(url).toEqual('http://localhost:3000/v1/experiments/1234/cellSets');
+    const [url, body] = fetchMock.mock.calls[0];
+    expect(url).toMatch(/v1\/experiments\/.*\/cellSets/);
     expect(body).toMatchSnapshot();
   });
 
@@ -71,5 +79,19 @@ describe('reorderCellSet action', () => {
     expect(pushNotificationMessageParams).toEqual(['error', 'We couldn\'t save your data.']);
 
     expect(store.getActions()).toHaveLength(0);
+  });
+
+  it('Uses V2 URL when using API version V2', async () => {
+    config.currentApiVersion = api.V2;
+
+    const store = mockStore({ cellSets: { ...cellSetsNodeState, loading: false } });
+    await store.dispatch(reorderCellSet(experimentId, cellSetKey, 5));
+
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+
+    const [url, body] = fetch.mock.calls[0];
+
+    expect(url).toMatch(/v2\/experiments\/.*\/cellSets/);
+    expect(body).toMatchSnapshot();
   });
 });
