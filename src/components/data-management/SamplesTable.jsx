@@ -308,7 +308,7 @@ const SamplesTable = forwardRef((props, ref) => {
     />
   );
 
-  const onSortEnd = ({ oldIndex, newIndex }) => {
+  const onSortEnd = async ({ oldIndex, newIndex }) => {
     if (oldIndex !== newIndex) {
       // This can be done because there is only one experiment per project
       // Has to be changed when we support multiple experiments per project
@@ -322,8 +322,14 @@ const SamplesTable = forwardRef((props, ref) => {
       if (config.currentApiVersion === api.V1) {
         dispatch(updateExperiment(experimentId, { sampleIds: newSampleOrder }));
       } else if (config.currentApiVersion === api.V2) {
-        dispatch(reorderSamples(activeProjectUuid, oldIndex, newIndex, newSampleOrder));
+        try {
+          await dispatch(reorderSamples(activeProjectUuid, oldIndex, newIndex, newSampleOrder));
+        } catch (e) {
+          // If the fetch fails, avoid doing setTableData(newData)
+          return;
+        }
       }
+
       setTableData(newData);
     }
   };
