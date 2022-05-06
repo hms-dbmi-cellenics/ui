@@ -289,7 +289,6 @@ jobs:
           | yq w -d1 - metadata.labels.sandboxId "$SANDBOX_ID" \
           | yq w -d1 - "metadata.annotations[filter.fluxcd.io/chart-image]" "$IMAGE_GLOB" \
           | yq w -d1 - spec.releaseName "$DEPLOYMENT_NAME" \
-          | yq w -d1 - spec.chart.ref "$CHART_REF" \
           | yq w -d1 - spec.values.kubernetes.env "$KUBERNETES_ENV" \
           | yq w -d1 - spec.values.biomageCi.repo "$GITHUB_REPOSITORY" \
           | yq w -d1 - spec.values.biomageCi.sandboxId "$SANDBOX_ID" \
