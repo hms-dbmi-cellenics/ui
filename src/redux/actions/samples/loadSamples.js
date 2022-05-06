@@ -10,8 +10,6 @@ import {
 } from 'redux/actionTypes/samples';
 
 const toApiV1 = (samples, experimentId) => {
-  const apiV1Samples = [{ samples: {} }];
-
   const buildApiv1Files = (files) => {
     const fileNames = [];
     const apiV1Files = {};
@@ -47,9 +45,9 @@ const toApiV1 = (samples, experimentId) => {
     throw new Error('Unknown sample technology');
   };
 
-  samples.forEach((sample) => {
+  const apiV1Samples = samples.reduce((acc, sample) => {
     const { apiV1Files, fileNames } = buildApiv1Files(sample.files);
-    apiV1Samples[0].samples[sample.id] = {
+    acc[sample.id] = {
       projectUuid: experimentId,
       metadata: sample.metadata,
       createdDate: sample.createdAt,
@@ -60,7 +58,9 @@ const toApiV1 = (samples, experimentId) => {
       fileNames,
       uuid: sample.id,
     };
-  });
+
+    return acc;
+  }, {});
 
   return apiV1Samples;
 };
