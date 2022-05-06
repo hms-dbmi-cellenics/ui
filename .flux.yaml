@@ -19,7 +19,7 @@ spec:
   releaseName: FILLED_IN_BY_CI
   chart:
     git: git@github.com:hms-dbmi-cellenics/iac
-    path: charts/nodejs
+    path: charts/ivaNodejsTest
     ref: FILLED_IN_BY_CI
   values:
     # disable readiness probes as load balancer performs
@@ -32,5 +32,8 @@ spec:
       periodSeconds: 30
     livenessProbe:
       probeType: tcpSocket
-
+  valuesFrom:
+    - kind: ConfigMap
+      name: cluster-config
+      valuesKey: values 
     # filled in by CI. do not modify.
