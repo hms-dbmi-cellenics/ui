@@ -2,54 +2,50 @@
 
 exports[`loadSample action works with apiv2 1`] = `
 Object {
-  "samples": Array [
-    Object {
-      "samples": Object {
-        "e03ef6ea-5014-4e57-aecd-59964ac9172c": Object {
-          "createdDate": "2021-12-07 17:36:27.773+00",
-          "fileNames": Array [
-            "matrix.mtx.gz",
-            "barcodes.tsv.gz",
-            "features.tsv.gz",
-          ],
-          "files": Object {
-            "barcodes.tsv.gz": Object {
-              "name": "barcodes.tsv.gz",
-              "size": undefined,
-              "upload": Object {
-                "status": "uploaded",
-              },
-              "valid": true,
-            },
-            "features.tsv.gz": Object {
-              "name": "features.tsv.gz",
-              "size": undefined,
-              "upload": Object {
-                "status": "uploaded",
-              },
-              "valid": true,
-            },
-            "matrix.mtx.gz": Object {
-              "name": "matrix.mtx.gz",
-              "size": undefined,
-              "upload": Object {
-                "status": "uploaded",
-              },
-              "valid": true,
-            },
+  "samples": Object {
+    "e03ef6ea-5014-4e57-aecd-59964ac9172c": Object {
+      "createdDate": "2021-12-07 17:36:27.773+00",
+      "fileNames": Array [
+        "matrix.mtx.gz",
+        "barcodes.tsv.gz",
+        "features.tsv.gz",
+      ],
+      "files": Object {
+        "barcodes.tsv.gz": Object {
+          "name": "barcodes.tsv.gz",
+          "size": undefined,
+          "upload": Object {
+            "status": "uploaded",
           },
-          "lastModified": "2021-12-07 17:38:42.036+00",
-          "metadata": Object {
-            "age": "BL",
-            "timePoint": "BL",
+          "valid": true,
+        },
+        "features.tsv.gz": Object {
+          "name": "features.tsv.gz",
+          "size": undefined,
+          "upload": Object {
+            "status": "uploaded",
           },
-          "name": "BLp7",
-          "projectUuid": "1234",
-          "type": "10X Chromium",
-          "uuid": "e03ef6ea-5014-4e57-aecd-59964ac9172c",
+          "valid": true,
+        },
+        "matrix.mtx.gz": Object {
+          "name": "matrix.mtx.gz",
+          "size": undefined,
+          "upload": Object {
+            "status": "uploaded",
+          },
+          "valid": true,
         },
       },
+      "lastModified": "2021-12-07 17:38:42.036+00",
+      "metadata": Object {
+        "age": "BL",
+        "timePoint": "BL",
+      },
+      "name": "BLp7",
+      "projectUuid": "1234",
+      "type": "10X Chromium",
+      "uuid": "e03ef6ea-5014-4e57-aecd-59964ac9172c",
     },
-  ],
+  },
 }
 `;

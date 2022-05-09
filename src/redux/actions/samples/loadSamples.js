@@ -10,7 +10,7 @@ import {
 } from 'redux/actionTypes/samples';
 
 const toApiV1 = (samples, experimentId) => {
-  const apiV1Samples = [{ samples: {} }];
+  const apiV1Samples = {};
 
   const buildApiv1Files = (files) => {
     const fileNames = [];
@@ -49,7 +49,7 @@ const toApiV1 = (samples, experimentId) => {
 
   samples.forEach((sample) => {
     const { apiV1Files, fileNames } = buildApiv1Files(sample.files);
-    apiV1Samples[0].samples[sample.id] = {
+    apiV1Samples[sample.id] = {
       projectUuid: experimentId,
       metadata: sample.metadata,
       createdDate: sample.createdAt,
@@ -83,21 +83,21 @@ const loadSamples = (
       type: SAMPLES_LOADING,
     });
 
-    let data = await fetchAPI(url);
-
-    if (currentApiVersion === api.V2) {
-      data = toApiV1(data, experimentId ?? projectUuid);
-    }
+    const data = await fetchAPI(url);
 
     let samples;
 
-    // Querying using experimentId returns an object with a `samples` key
-    if (experimentId) samples = data;
+    if (currentApiVersion === api.V2) {
+      samples = toApiV1(data, experimentId ?? projectUuid);
+    } else {
+      // Querying using experimentId returns an object with a `samples` key
+      if (experimentId) samples = data;
 
-    // Querying using projectUuid returns an array with oh objects with of `samples` key
-    // Data[0] because 1 project contains only 1 experiment right now.
-    // This has to be changed when we support multiple experiments per project.
-    if (projectUuid) [{ samples }] = data;
+      // Querying using projectUuid returns an array with oh objects with of `samples` key
+      // Data[0] because 1 project contains only 1 experiment right now.
+      // This has to be changed when we support multiple experiments per project.
+      if (projectUuid) [{ samples }] = data;
+    }
 
     // throwIfRequestFailed(response, data, endUserMessages.ERROR_FETCHING_SAMPLES);
 
