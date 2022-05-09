@@ -6,6 +6,9 @@ import useSWR from 'swr';
 
 import fetchAPI from 'utils/http/fetchAPI';
 
+import config from 'config';
+import { api } from 'utils/constants';
+
 const { Text } = Typography;
 
 const slowLoad = () => (
@@ -49,8 +52,15 @@ const fastLoad = (message) => (
 );
 
 const Loader = ({ experimentId }) => {
+  let url;
+  if (config.currentApiVersion === api.V1) {
+    url = `/v1/experiments/${experimentId}/backendStatus`;
+  } else if (config.currentApiVersion === api.V2) {
+    url = `/v2/experiments/${experimentId}/backendStatus`;
+  }
+
   const { data: workerStatus } = useSWR(
-    () => (experimentId ? `/v1/experiments/${experimentId}/backendStatus` : null),
+    () => (experimentId ? url : null),
     fetchAPI,
   );
 
