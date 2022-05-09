@@ -110,7 +110,7 @@ PlotStyling.propTypes = {
 PlotStyling.defaultProps = {
   formConfig: [],
   config: {},
-  extraPanels: {},
+  extraPanels: null,
   defaultActiveKey: [],
 };
 
