@@ -62,7 +62,7 @@ describe('reorderCellSet action', () => {
     expect(fetchMock).toHaveBeenCalledTimes(1);
 
     const [url, body] = fetchMock.mock.calls[0];
-    expect(url).toMatch(/v1\/experiments\/.*\/cellSets/);
+    expect(url).toEqual('http://localhost:3000/v1/experiments/1234/cellSets');
     expect(body).toMatchSnapshot();
   });
 
@@ -91,7 +91,7 @@ describe('reorderCellSet action', () => {
 
     const [url, body] = fetch.mock.calls[0];
 
-    expect(url).toMatch(/v2\/experiments\/.*\/cellSets/);
+    expect(url).toEqual('http://localhost:3000/v2/experiments/1234/cellSets');
     expect(body).toMatchSnapshot();
   });
 });

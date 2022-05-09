@@ -93,6 +93,6 @@ describe('loadCellSets action', () => {
 
     const fetchUrl = fetchMock.mock.calls[0][0];
 
-    expect(fetchUrl).toMatch(/v2\/experiments\/.*\/cellSets/);
+    expect(fetchUrl).toEqual('http://localhost:3000/v2/experiments/1234/cellSets');
   });
 });
