@@ -276,7 +276,7 @@ const generateData = (cellSets, sampleKey, groupBy, embeddingData) => {
       };
     });
 
-  return { plotData, cellSetLegendsData };
+  return { plotData: _.shuffle(plotData), cellSetLegendsData };
 };
 
 export {
