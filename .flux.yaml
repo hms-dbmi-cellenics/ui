@@ -33,7 +33,8 @@ spec:
     livenessProbe:
       probeType: tcpSocket
   valuesFrom:
-    - kind: ConfigMap
-      name: cluster-config
-      valuesKey: values 
+  - configMapKeyRef:
+      name: accountid-config
+      namespace: flux
+      key: cluster-config.yaml
     # filled in by CI. do not modify.
