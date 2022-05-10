@@ -34,7 +34,7 @@ spec:
       probeType: tcpSocket
   valuesFrom:
   - configMapKeyRef:
-      name: accountid-config
+      name: account-config
       namespace: flux
-      key: cluster-config.yaml
+      key: account-config.yaml
     # filled in by CI. do not modify.
