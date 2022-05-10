@@ -5,6 +5,9 @@ import {
 } from 'redux/actionTypes/cellSets';
 import endUserMessages from 'utils/endUserMessages';
 
+import config from 'config';
+import { api } from 'utils/constants';
+
 const loadCellSets = (experimentId, forceReload = false) => async (dispatch, getState) => {
   const {
     loading, error, updatingClustering,
@@ -20,7 +23,13 @@ const loadCellSets = (experimentId, forceReload = false) => async (dispatch, get
     });
   }
 
-  const url = `/v1/experiments/${experimentId}/cellSets`;
+  let url;
+
+  if (config.currentApiVersion === api.V1) {
+    url = `/v1/experiments/${experimentId}/cellSets`;
+  } else if (config.currentApiVersion === api.V2) {
+    url = `/v2/experiments/${experimentId}/cellSets`;
+  }
   try {
     const data = await fetchAPI(url);
     dispatch({
