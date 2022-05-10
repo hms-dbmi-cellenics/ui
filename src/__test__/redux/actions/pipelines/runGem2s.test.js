@@ -22,6 +22,7 @@ import { api } from 'utils/constants';
 const mockStore = configureStore([thunk]);
 enableFetchMocks();
 
+jest.mock('config');
 jest.mock('redux/actions/backendStatus/loadBackendStatus',
   () => jest.fn().mockImplementation(() => async () => { }));
 
