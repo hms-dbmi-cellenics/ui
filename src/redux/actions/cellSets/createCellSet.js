@@ -8,6 +8,9 @@ import endUserMessages from 'utils/endUserMessages';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
 import handleError from 'utils/http/handleError';
 
+import config from 'config';
+import { api } from 'utils/constants';
+
 const createCellSetJsonMerger = (newCellSet, cellClassKey) => (
   [{
     $match: {
@@ -64,7 +67,13 @@ const createCellSet = (experimentId, name, color, cellIdsSet) => async (dispatch
     payload: dataForRedux,
   });
 
-  const url = `/v1/experiments/${experimentId}/cellSets`;
+  let url;
+
+  if (config.currentApiVersion === api.V1) {
+    url = `/v1/experiments/${experimentId}/cellSets`;
+  } else if (config.currentApiVersion === api.V2) {
+    url = `/v2/experiments/${experimentId}/cellSets`;
+  }
 
   try {
     await fetchAPI(

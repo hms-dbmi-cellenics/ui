@@ -33,3 +33,13 @@ Object {
   "method": "PATCH",
 }
 `;
+
+exports[`updateCellSetProperty action Uses V2 URL when using API version V2 1`] = `
+Object {
+  "body": "[{\\"$match\\":{\\"query\\":\\"$[?(@.key == \\\\\\"root\\\\\\")]\\",\\"value\\":{\\"children\\":[{\\"$match\\":{\\"query\\":\\"$[?(@.key == \\\\\\"child\\\\\\")]\\",\\"value\\":{\\"name\\":\\"Some node!\\"}}}]}}}]",
+  "headers": Object {
+    "Content-Type": "application/boschni-json-merger+json",
+  },
+  "method": "PATCH",
+}
+`;
