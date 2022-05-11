@@ -33,6 +33,11 @@ import { setCellSetHiddenStatus } from 'redux/actions/cellSets';
 import { isSubset } from 'utils/arrayUtils';
 import { updatePlotConfig } from 'redux/actions/componentConfig';
 
+import config from 'config';
+import { api } from 'utils/constants';
+
+jest.mock('config');
+
 const experimentId = fake.EXPERIMENT_ID;
 
 // Mock hash so we can control the ETag that is produced by hash.MD5 when fetching work requests
@@ -128,6 +133,21 @@ describe('HeatmapPlot', () => {
   });
 
   it('Shows loader message if cellSets are loading', async () => {
+    const mockLoadingAPIResponses = {
+      ...mockWorkerResponses,
+      [`experiments/${experimentId}/cellSets`]: () => delayedResponse({ body: 'Not found', status: 404 }, 4000),
+    };
+
+    fetchMock.mockIf(/.*/, mockAPI(mockLoadingAPIResponses));
+
+    await loadAndRenderDefaultHeatmap(storeState);
+
+    expect(screen.getByText(/We're getting your data .../i)).toBeInTheDocument();
+  });
+
+  it('Shows loader message if cellSets are loading in v2', async () => {
+    config.currentApiVersion = 'v2';
+
     const mockLoadingAPIResponses = {
       ...mockWorkerResponses,
       [`experiments/${experimentId}/cellSets`]: () => delayedResponse({ body: 'Not found', status: 404 }, 4000),

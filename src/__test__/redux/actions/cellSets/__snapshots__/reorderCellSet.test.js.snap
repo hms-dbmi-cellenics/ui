@@ -1,5 +1,15 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`reorderCellSet action Uses V2 URL when using API version V2 1`] = `
+Object {
+  "body": "[{\\"$match\\":{\\"query\\":\\"$[?(@.key == \\\\\\"root\\\\\\")]\\",\\"value\\":{\\"children\\":[{\\"$match\\":{\\"query\\":\\"$[?(@.key == \\\\\\"child\\\\\\")]\\",\\"value\\":{\\"$move\\":5}}}]}}}]",
+  "headers": Object {
+    "Content-Type": "application/boschni-json-merger+json",
+  },
+  "method": "PATCH",
+}
+`;
+
 exports[`reorderCellSet action Works correctly 1`] = `
 Object {
   "payload": Object {
