@@ -5,6 +5,7 @@ import fetchAPI from 'utils/http/fetchAPI';
 import unpackResult from 'utils/work/unpackResult';
 import WorkResponseError from 'utils/http/errors/WorkResponseError';
 import httpStatusCodes from 'utils/http/httpStatusCodes';
+import config from 'config';
 
 const throwResponseError = (response) => {
   throw new Error(`Error ${response.status}: ${response.text}`, { cause: response });
@@ -27,7 +28,7 @@ const getRemainingWorkerStartTime = (creationTimestamp) => {
 const seekFromS3 = async (ETag, experimentId) => {
   let response;
   try {
-    response = await fetchAPI(`/v1/workResults/${experimentId}/${ETag}`);
+    response = await fetchAPI(`/${config.currentApiVersion}/workResults/${experimentId}/${ETag}`);
   } catch (e) {
     if (e.statusCode === httpStatusCodes.NOT_FOUND) {
       return null;
