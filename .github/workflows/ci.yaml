@@ -284,6 +284,7 @@ jobs:
           echo "::set-output name=kubernetes-env::$KUBERNETES_ENV"
 
           yq w -d1 .flux.yaml metadata.name "$DEPLOYMENT_NAME" \
+          | yq w -d1 - spec.chart.ref "$CHART_REF" \
           | yq w -d1 - metadata.namespace "$DEPLOYMENT_NAME-$SANDBOX_ID" \
           | yq w -d0 - metadata.name "$DEPLOYMENT_NAME-$SANDBOX_ID" \
           | yq w -d0 - metadata.labels.sandboxId "$SANDBOX_ID" \
