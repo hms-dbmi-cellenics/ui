@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Vega } from 'react-vega';
+import shuffle from 'lodash/shuffle';
 
 import { generateSpec, generateData } from 'utils/plotSpecs/generateEmbeddingCategoricalSpec';
 import { loadEmbedding } from 'redux/actions/embedding';
@@ -65,7 +66,7 @@ const CategoricalEmbeddingPlot = (props) => {
         cellSetLegendsData,
       } = generateData(cellSets, config.selectedSample, config.selectedCellSet, embeddingData);
 
-      setPlotSpec(generateSpec(config, plotData, cellSetLegendsData));
+      setPlotSpec(generateSpec(config, shuffle(plotData), cellSetLegendsData));
     }
   }, [config, cellSets, embeddingData, config]);
 

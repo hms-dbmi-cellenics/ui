@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Vega } from 'react-vega';
+import shuffle from 'lodash/shuffle';
 
 import { loadCellSets } from 'redux/actions/cellSets';
 import { loadEmbedding } from 'redux/actions/embedding';
@@ -61,17 +62,14 @@ const ContinuousEmbeddingPlot = (props) => {
       && !cellSets.loading
       && !cellSets.error
       && embeddingData?.length) {
-      setPlotSpec(
-        generateSpec(
-          config,
-          generateData(
-            cellSets,
-            config.selectedSample,
-            config.truncatedValues ? truncatedPlotData : plotData,
-            embeddingData,
-          ),
-        ),
+      const dataPoints = generateData(
+        cellSets,
+        config.selectedSample,
+        config.truncatedValues ? truncatedPlotData : plotData,
+        embeddingData,
       );
+
+      setPlotSpec(generateSpec(config, shuffle(dataPoints)));
     }
   }, [config, plotData, embeddingData, cellSets, embeddingLoading]);
 
