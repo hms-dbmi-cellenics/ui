@@ -5,7 +5,7 @@ import _ from 'lodash';
  * We can't use the original _.merge because it merges arrays by adding the different values
  * in their respective positions
  */
-const mergeObjectWithArrays = (source, diff) => {
+const mergeObjectReplacingArrays = (source, diff) => {
   const arrayMerge = (originalArray, resultingArray) => {
     if (_.isArray(originalArray) && resultingArray) {
       return resultingArray;
@@ -19,4 +19,4 @@ const mergeObjectWithArrays = (source, diff) => {
   );
 };
 
-export default mergeObjectWithArrays;
+export default mergeObjectReplacingArrays;
