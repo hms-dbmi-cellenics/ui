@@ -7,7 +7,6 @@ import {
 import PropTypes from 'prop-types';
 import * as vega from 'vega';
 import 'vitessce/dist/es/production/static/css/index.css';
-import { shuffle } from 'lodash';
 
 import ClusterPopover from 'components/data-exploration/embedding/ClusterPopover';
 import CrossHair from 'components/data-exploration/embedding/CrossHair';
@@ -282,7 +281,7 @@ const Embedding = (props) => {
             uuid={embeddingType}
             viewState={view}
             updateViewInfo={updateCellCoordinates}
-            cells={shuffle(convertCellsData(data, cellSetHidden, cellSetProperties))}
+            cells={convertCellsData(data, cellSetHidden, cellSetProperties)}
             mapping='PCA'
             cellSelection={selectedCellIds}
             cellColors={
