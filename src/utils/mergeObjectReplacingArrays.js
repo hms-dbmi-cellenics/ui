@@ -1,9 +1,8 @@
 import _ from 'lodash';
 
 /**
- * When this merge runs into objects, it replaces the original array with the new one,
- * We can't use the original _.merge because it merges arrays by adding the different values
- * in their respective positions
+  This function merges objects replacing old arrays in its properties with
+  the new ones unlike _.merge which combines old and new arrays.
  */
 const mergeObjectReplacingArrays = (source, diff) => {
   const arrayMerge = (originalArray, resultingArray) => {
