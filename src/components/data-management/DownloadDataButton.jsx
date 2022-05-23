@@ -88,7 +88,7 @@ const DownloadDataButton = () => {
             key='download-raw-seurat'
             disabled={!gem2sHasRun || backendLoading}
             onClick={() => {
-              downloadExperimentData('raw_seurat_object');
+              downloadExperimentData('biomage-source');
             }}
           >
             <Tooltip
@@ -106,8 +106,7 @@ const DownloadDataButton = () => {
             key='download-processed-seurat'
             disabled={!qcHasRun || backendLoading}
             onClick={() => {
-              // Change if we have more than one experiment per project
-              downloadExperimentData('processed_seurat_object');
+              downloadExperimentData('processed-matrix');
             }}
           >
             <Tooltip
