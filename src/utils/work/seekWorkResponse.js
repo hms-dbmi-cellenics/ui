@@ -6,6 +6,7 @@ import unpackResult from 'utils/work/unpackResult';
 import WorkResponseError from 'utils/http/errors/WorkResponseError';
 import httpStatusCodes from 'utils/http/httpStatusCodes';
 import config from 'config';
+import { api } from 'utils/constants';
 
 const throwResponseError = (response) => {
   throw new Error(`Error ${response.status}: ${response.text}`, { cause: response });
@@ -111,7 +112,11 @@ const dispatchWorkRequest = async (
 
   const result = Promise.race([timeoutPromise, responsePromise]);
 
-  io.emit('WorkRequest', request);
+  if (config.currentApiVersion === api.V2) {
+    io.emit('WorkRequest-v2', request);
+  } else {
+    io.emit('WorkRequest', request);
+  }
   return result;
 };
 
