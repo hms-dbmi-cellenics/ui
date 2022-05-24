@@ -1,2 +1,2 @@
-const downloadTypes = new Set(['processed_seurat_object', 'raw_seurat_object']);
+const downloadTypes = new Set(['biomage-source', 'processed-matrix']);
 export default downloadTypes;
