@@ -122,14 +122,16 @@ const PlotContainer = (props) => {
     },
     [CONTROLS]: {
       toolbarControls: [],
-      component: () => (
-        <PlotStyling
-          formConfig={plotStylingConfig}
-          config={config}
-          onUpdate={updatePlotWithChanges}
-          extraPanels={extraControlPanels}
-          defaultActiveKey={defaultActiveKey}
-        />
+      component: (width, height) => (
+        <div style={{ height, overflowY: 'auto' }}>
+          <PlotStyling
+            formConfig={plotStylingConfig}
+            config={config}
+            onUpdate={updatePlotWithChanges}
+            extraPanels={extraControlPanels}
+            defaultActiveKey={defaultActiveKey}
+          />
+        </div>
       ),
       style: { margin: '-10px' },
     },
