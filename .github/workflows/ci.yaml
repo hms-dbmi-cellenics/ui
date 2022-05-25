@@ -84,7 +84,7 @@ jobs:
           AWS_DEFAULT_REGION: eu-west-1
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          test-command: 'npm run coverage'
+          # test-command: 'npm run coverage'
           coverage-comment: false
 
       - id: upload-coverage
