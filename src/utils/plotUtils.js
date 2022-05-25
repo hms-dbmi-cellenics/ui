@@ -1,4 +1,5 @@
 import * as vega from 'vega';
+import shuffle from 'lodash/shuffle';
 
 import { union } from 'utils/cellSetOperations';
 
@@ -96,6 +97,33 @@ const convertRange = (value, r1, r2) => {
   return (value - r1[0]) * (r2[1] - r2[0]) / (r1[1] - r1[0]) + r2[0];
 };
 
+const generateCellIdMapping = (cellIds) => {
+  const shuffledCellIds = shuffle(cellIds);
+
+  const forwardMap = {};
+  const reverseMap = {};
+
+  cellIds.forEach((val, idx) => {
+    forwardMap[val] = shuffledCellIds[idx];
+    reverseMap[shuffledCellIds[idx]] = val;
+  });
+
+  return {
+    forwardMap,
+    reverseMap,
+  };
+};
+
+const reorderObjectValues = (obj, mapping) => {
+  const result = {};
+
+  Object.keys(obj).forEach((key) => {
+    result[mapping[key]] = obj[key];
+  });
+
+  return result;
+};
+
 export {
   renderCellSetColors,
   convertCellsData,
@@ -105,4 +133,6 @@ export {
   colorInterpolator,
   hexToRgb,
   convertRange,
+  generateCellIdMapping,
+  reorderObjectValues,
 };

@@ -1,5 +1,7 @@
 // eslint-disable-file import/no-extraneous-dependencies
-import React, { useState, useEffect, useRef } from 'react';
+import React, {
+  useState, useEffect, useRef,
+} from 'react';
 import dynamic from 'next/dynamic';
 import {
   useSelector, useDispatch,
@@ -15,7 +17,7 @@ import PlatformError from 'components/PlatformError';
 import Loader from 'components/Loader';
 
 import { loadEmbedding } from 'redux/actions/embedding';
-import { getCellSetsHierarchyByType, getCellSets } from 'redux/selectors';
+import { getCellSetsHierarchyByType, getCellSetsHierarchyByKeys, getCellSets } from 'redux/selectors';
 import { createCellSet } from 'redux/actions/cellSets';
 import { loadGeneExpression } from 'redux/actions/genes';
 import { updateCellInfo } from 'redux/actions/cellInfo';
@@ -26,6 +28,8 @@ import {
   renderCellSetColors,
   colorByGeneExpression,
   colorInterpolator,
+  generateCellIdMapping,
+  reorderObjectValues,
 } from 'utils/plotUtils';
 import getContainingCellSetsProperties from 'utils/cellSets/getContainingCellSetsProperties';
 
@@ -47,6 +51,7 @@ const Embedding = (props) => {
   const [view, setView] = useState({ target: [4, -4, 0], zoom: INITIAL_ZOOM });
   const [cellRadius, setCellRadius] = useState(cellRadiusFromZoom(INITIAL_ZOOM));
   const rootClusterNodes = useSelector(getCellSetsHierarchyByType('cellSets')).map(({ key }) => key);
+  const sampleKeys = useSelector(getCellSetsHierarchyByKeys(['sample']))[0]?.children.map(({ key }) => key);
 
   const selectedCellIds = new Set();
 
@@ -76,6 +81,9 @@ const Embedding = (props) => {
   const [selectedIds, setSelectedIds] = useState(new Set());
   const [cellColors, setCellColors] = useState({});
   const [cellInfoVisible, setCellInfoVisible] = useState(true);
+  const [cellIndexMapping, setCellIndexMapping] = useState(null);
+  const [getCellSetCellId, setGetCellSetCellId] = useState(null);
+  const [getEmbeddingCellIdx, setGetEmbeddingCellIdx] = useState(null);
 
   // Load embedding settings if they aren't already.
   useEffect(() => {
@@ -83,6 +91,20 @@ const Embedding = (props) => {
       dispatch(loadProcessingSettings(experimentId));
     }
   }, []);
+
+  useEffect(() => {
+    if (!sampleKeys?.length) return;
+
+    const allCellIds = sampleKeys
+      .reduce((acc, sampleKey) => [...acc, ...cellSetProperties[sampleKey].cellIds], [])
+      .filter((cellId) => cellId !== undefined);
+
+    const { forwardMap, reverseMap } = generateCellIdMapping(allCellIds);
+
+    setGetCellSetCellId(() => (embeddingCellIdx) => reverseMap[embeddingCellIdx]);
+    setGetEmbeddingCellIdx(() => (cellSetCellId) => forwardMap[cellSetCellId]);
+    setCellIndexMapping(forwardMap);
+  }, [sampleKeys?.length]);
 
   // Then, try to load the embedding with the appropriate data.
   useEffect(() => {
@@ -94,6 +116,8 @@ const Embedding = (props) => {
   // Handle focus change (e.g. a cell set or gene or metadata got selected).
   // Also handle here when the cell set properties or hierarchy change.
   useEffect(() => {
+    if (!cellIndexMapping) return;
+
     const { store, key } = focusData;
 
     switch (store) {
@@ -107,7 +131,12 @@ const Embedding = (props) => {
 
       // Cell sets are easy, just return the appropriate color and set them up.
       case 'cellSets': {
-        setCellColors(renderCellSetColors(key, cellSetHierarchy, cellSetProperties));
+        const shuffledColors = reorderObjectValues(
+          renderCellSetColors(key, cellSetHierarchy, cellSetProperties),
+          cellIndexMapping,
+        );
+
+        setCellColors(shuffledColors);
         setCellInfoVisible(false);
         return;
       }
@@ -119,7 +148,7 @@ const Embedding = (props) => {
         break;
       }
     }
-  }, [focusData, cellSetHierarchy, cellSetProperties]);
+  }, [focusData, cellSetHierarchy, cellSetProperties, cellIndexMapping]);
 
   // Handle loading of expression for focused gene.
   useEffect(() => {
@@ -131,48 +160,48 @@ const Embedding = (props) => {
   }, [focusedExpression]);
 
   useEffect(() => {
-    if (selectedCell) {
-      let expressionToDispatch;
-      let geneName;
+    if (!selectedCell || !cellIndexMapping) return;
 
-      if (focusedExpression) {
-        geneName = focusData.key;
-        expressionToDispatch = focusedExpression.rawExpression.expression[selectedCell];
-      }
+    let expressionToDispatch;
+    let geneName;
 
-      // getting the cluster properties for every cluster that has the cellId
-      const cellProperties = getContainingCellSetsProperties(Number.parseInt(selectedCell, 10), rootClusterNodes, cellSets);
-
-      const prefixedCellSetNames = [];
-      Object.values(cellProperties).forEach((clusterProperties) => {
-        clusterProperties.forEach(({ name, parentNodeKey }) => {
-          prefixedCellSetNames.push(`${cellSetProperties[parentNodeKey].name} : ${name}`);
-        });
-      });
-
-      cellInfoTooltip.current = {
-        cellSets: prefixedCellSetNames,
-        cellId: selectedCell,
-        componentType: embeddingType,
-        expression: expressionToDispatch,
-        geneName,
-      };
+    if (focusedExpression) {
+      geneName = focusData.key;
+      expressionToDispatch = focusedExpression.rawExpression.expression[selectedCell];
     }
-  }, [selectedCell]);
+
+    // getting the cluster properties for every cluster that has the cellId
+    const cellProperties = getContainingCellSetsProperties(Number.parseInt(selectedCell, 10), rootClusterNodes, cellSets);
+
+    const prefixedCellSetNames = [];
+    Object.values(cellProperties).forEach((clusterProperties) => {
+      clusterProperties.forEach(({ name, parentNodeKey }) => {
+        prefixedCellSetNames.push(`${cellSetProperties[parentNodeKey].name} : ${name}`);
+      });
+    });
+
+    cellInfoTooltip.current = {
+      cellSets: prefixedCellSetNames,
+      cellId: selectedCell,
+      componentType: embeddingType,
+      expression: expressionToDispatch,
+      geneName,
+    };
+  }, [selectedCell, cellIndexMapping]);
 
   const updateCellCoordinates = (newView) => {
-    if (selectedCell && newView.project) {
-      const [x, y] = newView.project(selectedCell);
-      cellCoordinates.current = {
-        x,
-        y,
-        width,
-        height,
-      };
-    }
+    if (!selectedCell || !newView?.project) return;
+
+    const [x, y] = newView.project(getEmbeddingCellIdx(selectedCell));
+    cellCoordinates.current = {
+      x,
+      y,
+      width,
+      height,
+    };
   };
 
-  const updateCellsHover = (cell) => dispatch(updateCellInfo({ cellId: cell }));
+  const updateCellsHover = (embeddingCellIdx) => dispatch(updateCellInfo({ cellId: getCellSetCellId(embeddingCellIdx) }));
 
   const onCreateCluster = (clusterName, clusterColor) => {
     setCreateClusterPopover(false);
@@ -190,12 +219,15 @@ const Embedding = (props) => {
     setCreateClusterPopover(false);
   };
 
-  const updateCellsSelection = (selection) => {
-    if (Array.from(selection).length > 0) {
-      setCreateClusterPopover(true);
-      const selectedIdsToInt = new Set(Array.from(selection).map((id) => parseInt(id, 10)));
-      setSelectedIds(selectedIdsToInt);
-    }
+  const updateCellsSelection = (embeddingCells) => {
+    const selectionCellIds = Array.from(embeddingCells)
+      .map((embeddingCellId) => getCellSetCellId(embeddingCellId));
+
+    if (!selectionCellIds.length) return;
+
+    setCreateClusterPopover(true);
+    const selectedIdsToInt = new Set(selectionCellIds.map((id) => parseInt(id, 10)));
+    setSelectedIds(selectedIdsToInt);
   };
 
   // Embedding data is loading.
@@ -272,7 +304,7 @@ const Embedding = (props) => {
     >
       {renderExpressionView()}
       {
-        data ? (
+        data && cellIndexMapping ? (
           <Scatterplot
             cellOpacity={0.8}
             cellRadius={cellRadius}
@@ -281,12 +313,17 @@ const Embedding = (props) => {
             uuid={embeddingType}
             viewState={view}
             updateViewInfo={updateCellCoordinates}
-            cells={convertCellsData(data, cellSetHidden, cellSetProperties)}
+            cells={
+              reorderObjectValues(
+                convertCellsData(data, cellSetHidden, cellSetProperties),
+                cellIndexMapping,
+              )
+            }
             mapping='PCA'
             cellSelection={selectedCellIds}
             cellColors={
               (selectedCell)
-                ? new Map(Object.entries({ ...cellColors, [selectedCell]: [0, 0, 0] }))
+                ? new Map(Object.entries({ ...cellColors, [getEmbeddingCellIdx(selectedCell)]: [0, 0, 0] }))
                 : new Map(Object.entries(cellColors))
             }
             setViewState={({ zoom, target }) => {
@@ -297,7 +334,6 @@ const Embedding = (props) => {
             getExpressionValue={() => { }}
             getCellIsSelected={() => { }}
             setCellSelection={updateCellsSelection}
-
           />
         ) : ''
       }

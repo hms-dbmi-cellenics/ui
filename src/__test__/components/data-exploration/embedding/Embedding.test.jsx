@@ -18,6 +18,7 @@ import { initialEmbeddingState } from 'redux/reducers/embeddings/initialState';
 import generateExperimentSettingsMock from '__test__/test-utils/experimentSettings.mock';
 import { CELL_INFO_UPDATE } from 'redux/actionTypes/cellInfo';
 import '__test__/test-utils/setupTests';
+import shuffle from 'lodash/shuffle';
 
 const mockStore = configureMockStore([thunk]);
 let component;
@@ -27,6 +28,8 @@ const width = 100;
 const height = 200;
 
 const initialExperimentState = generateExperimentSettingsMock([]);
+
+jest.mock('lodash/shuffle', () => jest.fn((x) => x));
 
 describe('Embedding', () => {
   const initialState = {
@@ -47,11 +50,23 @@ describe('Embedding', () => {
           color: '#ff0000',
           cellIds: new Set([2, 3]),
         },
+        sample1: {
+          color: '#ff0000',
+          cellIds: new Set([0, 1]),
+        },
+        sample2: {
+          color: '#ff0000',
+          cellIds: new Set([2, 3]),
+        },
       },
       hierarchy: [
         {
           key: 'louvain',
           children: [{ key: 'cluster1' }],
+        },
+        {
+          key: 'sample',
+          children: [{ key: 'sample1' }, { key: 'sample2' }],
         },
       ],
       hidden: new Set(),
@@ -95,6 +110,8 @@ describe('Embedding', () => {
 
   it('renders correctly a PCA embedding', () => {
     const scatterplot = component.find(Scatterplot);
+
+    expect(shuffle).toHaveBeenCalledTimes(1);
 
     expect(component.find('Embedding').length).toEqual(1);
     expect(scatterplot.length).toEqual(1);
