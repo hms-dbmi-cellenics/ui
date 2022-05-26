@@ -1,7 +1,7 @@
 import moment from 'moment';
 
 import endUserMessages from 'utils/endUserMessages';
-import mergeObjectWithArrays from 'utils/mergeObjectWithArrays';
+import mergeObjectReplacingArrays from 'utils/mergeObjectReplacingArrays';
 import UploadStatus from 'utils/upload/UploadStatus';
 import handleError from 'utils/http/handleError';
 import {
@@ -31,7 +31,7 @@ const updateSampleFile = (
         },
       };
 
-      const newSample = mergeObjectWithArrays(sample, diffObject);
+      const newSample = mergeObjectReplacingArrays(sample, diffObject);
 
       const notifyUser = false;
       await dispatch(saveSamples(sample.projectUuid, newSample, true, true, notifyUser));
