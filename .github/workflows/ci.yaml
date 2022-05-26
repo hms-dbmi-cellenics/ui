@@ -297,7 +297,7 @@ jobs:
           | yq w -d1 - spec.values.image.repository "$DEPLOYMENT_NAME" \
           | yq w -d1 - spec.values.image.tag "$IMAGE_TAG" \
           | yq w -d1 - spec.values.replicaCount $REPLICA_COUNT \
-          | yq w -d1 - spec.values.serviceAccount.iamRole "arn:aws:iam::${{ steps.setup-aws.outputs.aws-account-id }}:role/ui-role-$KUBERNETES_ENV" \
+          | yq w -d1 - spec.values.serviceAccount.iamRole "ui-role-$KUBERNETES_ENV" \
           > $DEPLOYMENT_NAME-without-host.yaml
 
           if [ "${{ matrix.environment }}" = "production" ]
