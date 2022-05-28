@@ -4,6 +4,9 @@ import fetchAPI from 'utils/http/fetchAPI';
 import handleError from 'utils/http/handleError';
 import endUserMessages from 'utils/endUserMessages';
 
+import config from 'config';
+import { api } from 'utils/constants';
+
 const reorderCellSetJsonMerger = (cellSetKey, newPosition, cellClassKey) => (
   [{
     $match: {
@@ -27,8 +30,15 @@ const reorderCellSetJsonMerger = (cellSetKey, newPosition, cellClassKey) => (
 const reorderCellSet = (
   experimentId, cellSetKey, newPosition,
 ) => async (dispatch, getState) => {
-  const url = `/v1/experiments/${experimentId}/cellSets`;
   const { parentNodeKey } = getState().cellSets.properties[cellSetKey];
+
+  let url;
+
+  if (config.currentApiVersion === api.V1) {
+    url = `/v1/experiments/${experimentId}/cellSets`;
+  } else if (config.currentApiVersion === api.V2) {
+    url = `/v2/experiments/${experimentId}/cellSets`;
+  }
 
   try {
     await fetchAPI(

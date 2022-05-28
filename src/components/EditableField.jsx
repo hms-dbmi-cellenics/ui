@@ -96,6 +96,7 @@ const EditableField = (props) => {
       return (
         <>
           <Input
+            data-testid='editableFieldInput'
             autoFocus
             onChange={onChange}
             size='small'

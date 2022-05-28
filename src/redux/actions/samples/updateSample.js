@@ -8,7 +8,7 @@ import {
 } from 'redux/actionTypes/samples';
 import saveSamples from 'redux/actions/samples/saveSamples';
 
-import mergeObjectWithArrays from 'utils/mergeObjectWithArrays';
+import mergeObjectReplacingArrays from 'utils/mergeObjectReplacingArrays';
 import handleError from 'utils/http/handleError';
 import fetchAPI from 'utils/http/fetchAPI';
 
@@ -22,7 +22,7 @@ const updateSampleApiV1 = (sampleUuid, diff) => async (dispatch, getState) => {
     // eslint-disable-next-line no-param-reassign
     diff.lastModified = moment().toISOString();
 
-    const newSample = mergeObjectWithArrays(sample, diff);
+    const newSample = mergeObjectReplacingArrays(sample, diff);
 
     const notifyUser = false;
     await dispatch(saveSamples(sample.projectUuid, newSample, true, true, notifyUser));

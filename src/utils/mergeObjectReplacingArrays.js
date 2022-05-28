@@ -1,6 +1,10 @@
 import _ from 'lodash';
 
-const mergeObjectWithArrays = (source, diff) => {
+/**
+  This function merges objects replacing old arrays in its properties with
+  the new ones unlike _.merge which combines old and new arrays.
+ */
+const mergeObjectReplacingArrays = (source, diff) => {
   const arrayMerge = (originalArray, resultingArray) => {
     if (_.isArray(originalArray) && resultingArray) {
       return resultingArray;
@@ -14,4 +18,4 @@ const mergeObjectWithArrays = (source, diff) => {
   );
 };
 
-export default mergeObjectWithArrays;
+export default mergeObjectReplacingArrays;

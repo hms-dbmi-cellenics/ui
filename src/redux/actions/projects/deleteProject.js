@@ -1,21 +1,25 @@
 import fetchAPI from 'utils/http/fetchAPI';
 import handleError from 'utils/http/handleError';
 import endUserMessages from 'utils/endUserMessages';
+
 import {
   PROJECTS_DELETE,
   PROJECTS_SET_ACTIVE,
   PROJECTS_ERROR,
   PROJECTS_SAVING,
   PROJECTS_SAVED,
-} from '../../actionTypes/projects';
+} from 'redux/actionTypes/projects';
 
 import {
   SAMPLES_DELETE_API_V1,
-} from '../../actionTypes/samples';
+} from 'redux/actionTypes/samples';
 
 import {
   EXPERIMENTS_DELETED,
-} from '../../actionTypes/experiments';
+} from 'redux/actionTypes/experiments';
+
+import config from 'config';
+import { api } from 'utils/constants';
 
 const deleteProject = (
   projectUuid,
@@ -31,17 +35,28 @@ const deleteProject = (
     },
   });
 
-  const url = `/v1/projects/${projectUuid}`;
   try {
-    await fetchAPI(
-      url,
-      {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
+    if (config.currentApiVersion === api.V1) {
+      await fetchAPI(
+        `/v1/projects/${projectUuid}`,
+        {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+          },
         },
-      },
-    );
+      );
+    } else if (config.currentApiVersion === api.V2) {
+      await fetchAPI(
+        `/v2/experiments/${projectUuid}`,
+        {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      );
+    }
 
     // If deleted project is the same as the active project, choose another project
     if (projectUuid === activeProjectUuid) {
