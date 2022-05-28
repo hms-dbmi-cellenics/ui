@@ -413,7 +413,7 @@ describe('CellSetsTool', () => {
     screen.getByText(`${numCellsCluster0} cells selected`);
   });
 
-  it('Scratchpad cluster deletion works ', async () => {
+  fit('Scratchpad cluster deletion works ', async () => {
     await act(async () => {
       render(
         <Provider store={storeState}>
@@ -443,7 +443,7 @@ describe('CellSetsTool', () => {
     await waitFor(() => expect(screen.queryByText('New Cluster')).toBeNull());
   });
 
-  it('calculates filtered cell indices correctly', async () => {
+  it('Calculates filtered cell indices correctly', async () => {
     await act(async () => {
       render(
         <Provider store={storeState}>
@@ -459,8 +459,8 @@ describe('CellSetsTool', () => {
     });
 
     // expand custom cell sets tree
-    const customCellSetsGroup = screen.getAllByRole('img', { name: 'down' })[1];
-    userEvent.click(customCellSetsGroup);
+    const louvainCLustersGroup = screen.getAllByRole('img', { name: 'down' })[0];
+    userEvent.click(louvainCLustersGroup);
 
     // select the first louvain cluster
     const louvain0Cluster = screen.getByText('Cluster 0');
@@ -530,34 +530,36 @@ describe('CellSetsTool', () => {
       );
     });
 
-    // expand custom cell sets tree
-    const customCellSetsGroup = screen.getAllByRole('img', { name: 'down' })[1];
-    userEvent.click(customCellSetsGroup);
+    // expand louvain clusters tree
+    const louvainCLustersGroup = screen.getAllByRole('img', { name: 'down' })[0];
+    userEvent.click(louvainCLustersGroup);
 
-    let hideButtons = screen.getAllByText('Hide');
+    const hideButtons = screen.getAllByText('Hide');
     expect(hideButtons.length).toEqual(14);
 
-    // hide the first cluster
-    userEvent.click(hideButtons[0]);
+    // hide the first and second cluster
+    const hideButtonFirst = screen.getAllByText('Hide')[0];
+    const hideButtonSecond = screen.getAllByText('Hide')[1];
+    userEvent.click(hideButtonFirst);
+    userEvent.click(hideButtonSecond);
 
-    hideButtons = screen.getAllByText('Hide');
-    expect(hideButtons.length).toEqual(13);
+    await screen.findByText(/2 cell sets are currently hidden./);
 
-    // hide the second cluster
-    userEvent.click(hideButtons[0]);
-
-    screen.getByText(/2 cell sets are currently hidden./);
-
-    const unhideAllButton = screen.getAllByText('Unhide all');
+    const unhideAllButton = await screen.findAllByText('Unhide all');
     expect(unhideAllButton.length).toEqual(1);
 
-    const unhideButtons = screen.getAllByText('Unhide');
-    expect(unhideButtons.length).toEqual(2);
-
     // now unhide all clusters
-    userEvent.click(unhideAllButton[0]);
+    await act(async () => {
+      fireEvent(
+        unhideAllButton[0],
+        new MouseEvent('click', {
+          bubbles: true,
+          cancelable: true,
+        }),
+      );
+    });
 
     expect(screen.queryByText(/2 cell sets are currently hidden./)).toBeNull();
-    expect(screen.queryByText('Unhide')).toBeNull();
+    expect(screen.queryByText('Unhide all')).toBeNull();
   });
 });

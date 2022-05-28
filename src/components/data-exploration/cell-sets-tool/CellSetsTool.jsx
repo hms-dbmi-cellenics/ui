@@ -152,7 +152,7 @@ const CellSetsTool = (props) => {
       );
     }
     return (
-      <>
+      <Space direction='vertical'>
         {operations}
         <HierarchicalTree
           experimentId={experimentId}
@@ -165,7 +165,7 @@ const CellSetsTool = (props) => {
           showHideButton
           checkedKeys={selected}
         />
-      </>
+      </Space>
     );
   };
 
@@ -194,7 +194,7 @@ const CellSetsTool = (props) => {
         paddingRight: '5px',
       }}
     >
-      <Space direction='vertical'>
+      <div style={{ marginBottom: '5px' }}>
         {hidden.size > 0 ? (
           <Alert
             message={`${hidden.size} cell set${hidden.size > 1 ? 's are' : ' is'} currently hidden.`}
@@ -202,8 +202,8 @@ const CellSetsTool = (props) => {
             action={<Button type='link' size='small' onClick={() => dispatch(unhideAllCellSets(experimentId))}>Unhide all</Button>}
           />
         ) : (<></>)}
-        {renderContent()}
-      </Space>
+      </div>
+      {renderContent()}
     </Element>
   );
 };
