@@ -2,7 +2,7 @@ import moment from 'moment';
 import _ from 'lodash';
 
 import endUserMessages from 'utils/endUserMessages';
-import mergeObjectWithArrays from 'utils/mergeObjectWithArrays';
+import mergeObjectReplacingArrays from 'utils/mergeObjectReplacingArrays';
 import handleError from 'utils/http/handleError';
 import config from 'config';
 import { api } from 'utils/constants';
@@ -21,7 +21,7 @@ const updateProject = (
   // eslint-disable-next-line no-param-reassign
   diff.lastModified = moment().toISOString();
 
-  const newProject = mergeObjectWithArrays(currentProject, diff);
+  const newProject = mergeObjectReplacingArrays(currentProject, diff);
 
   try {
     // if config.currentApiVersion === api.V2 dont do any fetch, updating the experiment is enough

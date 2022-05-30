@@ -32,5 +32,9 @@ spec:
       periodSeconds: 30
     livenessProbe:
       probeType: tcpSocket
-
+  valuesFrom:
+  - configMapKeyRef:
+      name: account-config
+      namespace: flux
+      key: account-config.yaml
     # filled in by CI. do not modify.
