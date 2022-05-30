@@ -232,8 +232,8 @@ const filterCells = (cellSets, sampleKey, groupBy) => {
 
     const inCellSet = colorToCellIdsMap.find((map) => map.cellIds.has(cell.cellId));
 
-    // If cell is not in the cell set, then return null
-    if (!inCellSet) return null;
+    // If cell is not in the cell set, then return
+    if (!inCellSet) return acc;
 
     const { key, name, color } = inCellSet;
 
