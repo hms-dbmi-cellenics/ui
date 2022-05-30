@@ -30,7 +30,7 @@ const { Panel } = Collapse;
 
 const PlotStyling = (props) => {
   const {
-    formConfig, config, onUpdate, renderExtraPanels, defaultActiveKey,
+    formConfig, config, onUpdate, extraPanels, defaultActiveKey,
   } = props;
 
   const ComponentMapping = {
@@ -74,7 +74,7 @@ const PlotStyling = (props) => {
             Object.getOwnPropertyDescriptor(el, 'children')
               && el.children.length > 0
               ? (
-                <Collapse accordion>
+                <Collapse>
                   {buildForm(el.children)}
                 </Collapse>
               )
@@ -89,8 +89,8 @@ const PlotStyling = (props) => {
   });
 
   return (
-    <Collapse accordion defaultActiveKey={defaultActiveKey}>
-      {renderExtraPanels()}
+    <Collapse defaultActiveKey={defaultActiveKey} accordion>
+      {extraPanels}
       {buildForm(formConfig)}
     </Collapse>
   );
@@ -100,7 +100,7 @@ PlotStyling.propTypes = {
   formConfig: PropTypes.array,
   config: PropTypes.object,
   onUpdate: PropTypes.func.isRequired,
-  renderExtraPanels: PropTypes.func,
+  extraPanels: PropTypes.node,
   defaultActiveKey: PropTypes.oneOfType([
     PropTypes.string,
     PropTypes.array,
@@ -110,7 +110,7 @@ PlotStyling.propTypes = {
 PlotStyling.defaultProps = {
   formConfig: [],
   config: {},
-  renderExtraPanels: () => { },
+  extraPanels: null,
   defaultActiveKey: [],
 };
 

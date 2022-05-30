@@ -1,5 +1,9 @@
+import _ from 'lodash';
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
+
+import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
+
 import pushNotificationMessage from 'utils/pushNotificationMessage';
 import createMetadataTrack from 'redux/actions/projects/createMetadataTrack';
 import initialProjectState, { projectTemplate } from 'redux/reducers/projects/initialState';
@@ -10,6 +14,10 @@ import {
 import { saveProject } from 'redux/actions/projects';
 import { saveSamples } from 'redux/actions/samples';
 import '__test__/test-utils/setupTests';
+
+import config from 'config';
+import { api } from 'utils/constants';
+import { SAMPLES_UPDATE } from 'redux/actionTypes/samples';
 
 const mockStore = configureStore([thunk]);
 
@@ -83,6 +91,12 @@ describe('createMetadataTrack action', () => {
     },
   };
 
+  beforeEach(() => {
+    enableFetchMocks();
+    fetchMock.resetMocks();
+    fetchMock.doMock();
+  });
+
   it('Dispatches event correctly', async () => {
     const store = mockStore(oneProjectState);
     await store.dispatch(createMetadataTrack('Test track', project1.uuid));
@@ -123,5 +137,29 @@ describe('createMetadataTrack action', () => {
     // The call parameter should only include sample 1
     expect(Object.keys(callParams[1]).includes(sample1uuid)).toEqual(true);
     expect(Object.keys(callParams[1]).includes(sample2uuid)).toEqual(false);
+  });
+
+  it('Works correctly in api v2', async () => {
+    config.currentApiVersion = api.V2;
+
+    const store = mockStore(oneProjectState);
+
+    fetchMock.mockResolvedValue(new Response(JSON.stringify({})));
+
+    await store.dispatch(createMetadataTrack('Test track', project1.uuid));
+
+    const trackKeyRCompatible = 'Test_track';
+
+    const actions = store.getActions();
+    expect(_.map(actions, 'type')).toEqual([PROJECTS_METADATA_CREATE, SAMPLES_UPDATE]);
+    expect(_.map(actions, 'payload')).toMatchSnapshot();
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      `http://localhost:3000/v2/experiments/${project1.uuid}/metadataTracks/${trackKeyRCompatible}`,
+      {
+        headers: { 'Content-Type': 'application/json' },
+        method: 'POST',
+      },
+    );
   });
 });

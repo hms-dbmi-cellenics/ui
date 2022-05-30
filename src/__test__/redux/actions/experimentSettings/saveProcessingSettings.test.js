@@ -4,6 +4,9 @@ import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import {
   EXPERIMENT_SETTINGS_PROCESSING_SAVE,
 } from 'redux/actionTypes/experimentSettings';
+import { api } from 'utils/constants';
+import config from 'config';
+
 import saveProcessingSettings from 'redux/actions/experimentSettings/processingConfig/saveProcessingSettings';
 import generateExperimentSettingsMock from '../../../test-utils/experimentSettings.mock';
 
@@ -40,5 +43,13 @@ describe('saveProcessingSettings', () => {
     const action = store.getActions();
     expect(action.length).toEqual(1);
     expect(action[0].type).toEqual(EXPERIMENT_SETTINGS_PROCESSING_SAVE);
+  });
+
+  it('Works with apiv2', async () => {
+    config.currentApiVersion = api.V2;
+    const store = mockStore(mockState);
+    await store.dispatch(saveProcessingSettings(experimentId, settingName));
+    expect(fetchMock).toHaveBeenCalledWith(`http://localhost:3000/v2/experiments/${experimentId}/processingConfig`,
+      { body: `[{"name":"${settingName}"}]`, headers: { 'Content-Type': 'application/json' }, method: 'PUT' });
   });
 });

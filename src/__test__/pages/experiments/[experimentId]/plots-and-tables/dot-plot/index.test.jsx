@@ -33,9 +33,14 @@ import userEvent from '@testing-library/user-event';
 import { plotNames } from 'utils/constants';
 import ExportAsCSV from 'components/plots/ExportAsCSV';
 
-jest.mock('localforage');
 jest.mock('components/plots/ExportAsCSV', () => jest.fn(() => (<></>)));
-jest.mock('components/UserButton', () => () => <></>);
+jest.mock('components/header/UserButton', () => () => <></>);
+jest.mock('react-resize-detector', () => (props) => {
+  // eslint-disable-next-line react/prop-types
+  const { children } = props;
+  return children({ width: 800, height: 800 });
+});
+
 jest.mock('object-hash', () => {
   const objectHash = jest.requireActual('object-hash');
   const mockWorkResultETag = jest.requireActual('__test__/test-utils/mockWorkResultETag').default;

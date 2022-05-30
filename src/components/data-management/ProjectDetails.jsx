@@ -19,6 +19,11 @@ const {
   Title, Text,
 } = Typography;
 
+const paddingTop = layout.PANEL_PADDING;
+const paddingBottom = layout.PANEL_PADDING;
+const paddingRight = layout.PANEL_PADDING;
+const paddingLeft = layout.PANEL_PADDING;
+
 const ProjectDetails = ({ width, height }) => {
   const dispatch = useDispatch();
 
@@ -27,12 +32,12 @@ const ProjectDetails = ({ width, height }) => {
   const samplesTableRef = useRef();
 
   return (
+    // The height of this div has to be fixed to enable sample scrolling
     <div
       id='project-details'
       style={{
-        padding: layout.PANEL_PADDING,
-        width,
-        height: height - layout.PANEL_HEADING_HEIGHT,
+        width: width - paddingLeft - paddingRight,
+        height: height - layout.PANEL_HEADING_HEIGHT - paddingTop - paddingBottom,
       }}
     >
       <div style={{

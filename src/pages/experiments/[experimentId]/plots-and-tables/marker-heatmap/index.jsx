@@ -1,12 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import {
-  Row,
-  Col,
   Space,
   Collapse,
   Skeleton,
   Empty,
-  Typography,
   Select,
   Radio,
 } from 'antd';
@@ -25,7 +22,6 @@ import HeatmapMetadataTracksSettings from 'components/data-exploration/heatmap/H
 
 import MarkerGeneSelection from 'components/plots/styling/MarkerGeneSelection';
 import loadProcessingSettings from 'redux/actions/experimentSettings/processingConfig/loadProcessingSettings';
-import PlotStyling from 'components/plots/styling/PlotStyling';
 import { updatePlotConfig, loadPlotConfig } from 'redux/actions/componentConfig';
 import Header from 'components/Header';
 import PlotContainer from 'components/plots/PlotContainer';
@@ -37,7 +33,6 @@ import Loader from 'components/Loader';
 import populateHeatmapData from 'components/plots/helpers/heatmap/populateHeatmapData';
 import { plotNames } from 'utils/constants';
 
-const { Text } = Typography;
 const { Panel } = Collapse;
 const plotUuid = 'markerHeatmapPlotMain';
 const plotType = 'markerHeatmap';
@@ -76,14 +71,9 @@ const MarkerHeatmap = ({ experimentId }) => {
   ) || false;
 
   useEffect(() => {
-    if (!louvainClustersResolution) {
-      dispatch(loadProcessingSettings(experimentId));
-    }
-
-    dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
-    if (!hierarchy?.length) {
-      dispatch(loadCellSets(experimentId));
-    }
+    if (!louvainClustersResolution) dispatch(loadProcessingSettings(experimentId));
+    if (!config) dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
+    if (!hierarchy?.length) dispatch(loadCellSets(experimentId));
   }, []);
 
   useEffect(() => {
@@ -214,106 +204,37 @@ const MarkerHeatmap = ({ experimentId }) => {
     }
 
     const data = populateHeatmapData(cellSets, config, expressionData, config.selectedGenes, true);
+    const spec = generateSpec(config, 'Cluster ID', data, true);
 
-    const spec = generateSpec(config, 'Cluster ID', data.trackGroupData, plotUuid);
+    spec.description = 'Marker heatmap';
 
-    const newVegaSpec = {
-      ...spec,
-      axes: [...spec.axes, ...displayLabels()],
-      data: spec.data.map((datum) => ({
-        ...datum,
-        values: data[datum.name],
-      })),
-    };
-    setVegaSpec(newVegaSpec);
-  }, [config, cellSets]);
-
-  const displayLabels = () => {
-    // if there are more than 53 genes - do not display the labels axe
-    const labels = [
-      {
-        domain: false,
-        orient: 'left',
-        scale: 'y',
+    const extraMarks = {
+      type: 'rule',
+      from: { data: 'clusterSeparationLines' },
+      encode: {
+        enter: {
+          stroke: { value: 'white' },
+        },
+        update: {
+          x: { scale: 'x', field: 'data' },
+          y: 0,
+          y2: { field: { group: 'height' } },
+          strokeWidth: { value: 1 },
+          strokeOpacity: { value: 1 },
+        },
       },
-    ];
-    if (config.showGeneLabels) {
-      return labels;
-    }
-    return [];
-  };
+    };
+    spec.marks.push(extraMarks);
+
+    setVegaSpec(spec);
+  }, [config, cellSets]);
 
   // updatedField is a subset of what default config has and contains only the things we want change
   const updatePlotWithChanges = (updatedField) => {
     dispatch(updatePlotConfig(plotUuid, updatedField));
   };
 
-  const renderPlot = () => {
-    if (error) {
-      return (
-        <PlatformError
-          description='Could not load gene expression data.'
-          error={error}
-          onClick={() => dispatch(loadGeneExpression(experimentId, config.selectedGenes, plotUuid))}
-        />
-      );
-    }
-
-    if (errorMarkerGenes) {
-      return (
-        <PlatformError
-          description='Could not load marker genes.'
-          error={errorMarkerGenes}
-          onClick={
-            () => dispatch(
-              loadMarkerGenes(
-                experimentId, louvainClustersResolution,
-                plotUuid, config.nMarkerGenes, config.selectedCellSet,
-              ),
-            )
-          }
-        />
-      );
-    }
-
-    if (!config
-      || loading.length > 0
-      || cellSets.loading
-      || loadingMarkerGenes
-      || !config.selectedGenes.length) {
-      return (<Loader experimentId={experimentId} />);
-    }
-
-    if (loadedMarkerGenes.length === 0) {
-      return (
-        <Empty description={(
-          <Text>Add some genes to this heatmap to get started.</Text>
-        )}
-        />
-      );
-    }
-
-    if (vegaSpec) {
-      return <Vega spec={vegaSpec} renderer='canvas' />;
-    }
-  };
-
-  const onGeneEnter = (genes) => {
-    dispatch(loadGeneExpression(experimentId, genes, plotUuid));
-  };
-
-  const onReset = () => {
-    onGeneEnter([]);
-    dispatch(loadMarkerGenes(
-      experimentId,
-      louvainClustersResolution,
-      plotUuid,
-      config.nMarkerGenes,
-      config.selectedCellSet,
-    ));
-  };
-
-  const plotStylingControlsConfig = [
+  const plotStylingConfig = [
     {
       panelTitle: 'Expression values',
       controls: ['expressionValuesType', 'expressionValuesCapping'],
@@ -350,18 +271,31 @@ const MarkerHeatmap = ({ experimentId }) => {
       ],
     },
   ];
+  const onGeneEnter = (genes) => {
+    dispatch(loadGeneExpression(experimentId, genes, plotUuid));
+  };
+
+  const onReset = () => {
+    onGeneEnter([]);
+    dispatch(loadMarkerGenes(
+      experimentId,
+      louvainClustersResolution,
+      plotUuid,
+      config.nMarkerGenes,
+      config.selectedCellSet,
+    ));
+  };
 
   if (!config || cellSets.loading || hierarchy.length === 0) {
     return (<Skeleton />);
   }
 
+  const clustersForSelect = getSelectOptions(cellOptions);
+
   const changeClusters = (option) => {
     const newValue = option.value.toLowerCase();
-
     updatePlotWithChanges({ selectedCellSet: newValue });
   };
-
-  const clustersForSelect = getSelectOptions(cellOptions);
 
   const renderExtraPanels = () => (
     <>
@@ -420,33 +354,66 @@ const MarkerHeatmap = ({ experimentId }) => {
     </>
   );
 
+  const renderPlot = () => {
+    if (error) {
+      return (
+        <PlatformError
+          description='Could not load gene expression data.'
+          error={error}
+          onClick={() => dispatch(loadGeneExpression(experimentId, config.selectedGenes, plotUuid))}
+        />
+      );
+    }
+
+    if (errorMarkerGenes) {
+      return (
+        <PlatformError
+          description='Could not load marker genes.'
+          error={errorMarkerGenes}
+          onClick={
+            () => dispatch(
+              loadMarkerGenes(
+                experimentId, louvainClustersResolution,
+                plotUuid, config.nMarkerGenes, config.selectedCellSet,
+              ),
+            )
+          }
+        />
+      );
+    }
+
+    if (!config
+      || loading.length > 0
+      || cellSets.loading
+      || loadingMarkerGenes
+      || !config.selectedGenes.length) {
+      return (<Loader experimentId={experimentId} />);
+    }
+
+    if (loadedMarkerGenes.length === 0) {
+      return (
+        <Empty description='Add some genes to this heatmap to get started.' />
+      );
+    }
+
+    if (vegaSpec) {
+      return <Vega spec={vegaSpec} renderer='canvas' />;
+    }
+  };
+
   return (
     <>
       <Header title={plotNames.MARKER_HEATMAP} />
-      <div style={{ width: '100%', padding: '0 16px' }}>
-        <Row gutter={16}>
-          <Col span={16}>
-            <PlotContainer
-              experimentId={experimentId}
-              plotUuid={plotUuid}
-              plotType={plotType}
-            >
-              <center>
-                {renderPlot()}
-              </center>
-            </PlotContainer>
-          </Col>
-          <Col span={8}>
-            <PlotStyling
-              formConfig={plotStylingControlsConfig}
-              config={config}
-              onUpdate={updatePlotWithChanges}
-              renderExtraPanels={renderExtraPanels}
-              defaultActiveKey='gene-selection'
-            />
-          </Col>
-        </Row>
-      </div>
+      <PlotContainer
+        experimentId={experimentId}
+        plotUuid={plotUuid}
+        plotType={plotType}
+        plotStylingConfig={plotStylingConfig}
+        extraControlPanels={renderExtraPanels()}
+        defaultActiveKey='gene-selection'
+      >
+        {renderPlot()}
+      </PlotContainer>
     </>
   );
 };

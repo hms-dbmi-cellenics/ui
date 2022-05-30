@@ -1,17 +1,23 @@
 import _ from 'lodash';
-import { metadataNameToKey } from 'utils/data-management/metadataUtils';
-import endUserMessages from 'utils/endUserMessages';
-import pushNotificationMessage from 'utils/pushNotificationMessage';
+
 import {
   PROJECTS_METADATA_UPDATE,
-} from '../../actionTypes/projects';
-
+} from 'redux/actionTypes/projects';
 import {
   SAMPLES_UPDATE,
   SAMPLES_METADATA_DELETE,
-} from '../../actionTypes/samples';
-import saveSamples from '../samples/saveSamples';
-import saveProject from './saveProject';
+} from 'redux/actionTypes/samples';
+import saveSamples from 'redux/actions/samples/saveSamples';
+import saveProject from 'redux/actions/projects/saveProject';
+
+import fetchAPI from 'utils/http/fetchAPI';
+
+import { metadataNameToKey } from 'utils/data-management/metadataUtils';
+import endUserMessages from 'utils/endUserMessages';
+import pushNotificationMessage from 'utils/pushNotificationMessage';
+
+import config from 'config';
+import { api } from 'utils/constants';
 
 const updateMetadataTrack = (
   oldName, newName, projectUuid,
@@ -40,9 +46,24 @@ const updateMetadataTrack = (
   }, {});
 
   try {
-    const notifyUser = false;
-    await dispatch(saveProject(projectUuid, newProject, false, notifyUser));
-    await dispatch(saveSamples(projectUuid, newSamples, false, false, notifyUser));
+    if (config.currentApiVersion === api.V1) {
+      const notifyUser = false;
+      await dispatch(saveProject(projectUuid, newProject, false, notifyUser));
+      await dispatch(saveSamples(projectUuid, newSamples, false, false, notifyUser));
+    } else if (config.currentApiVersion === api.V2) {
+      const body = { key: newName };
+
+      await fetchAPI(
+        `/v2/experiments/${projectUuid}/metadataTracks/${oldMetadataKey}`,
+        {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(body),
+        },
+      );
+    }
 
     dispatch({
       type: PROJECTS_METADATA_UPDATE,

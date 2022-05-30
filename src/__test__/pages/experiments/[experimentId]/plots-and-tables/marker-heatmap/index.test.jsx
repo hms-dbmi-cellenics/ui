@@ -24,7 +24,12 @@ import mockAPI, {
 } from '__test__/test-utils/mockAPI';
 import createTestComponentFactory from '__test__/test-utils/testComponentFactory';
 
-jest.mock('components/UserButton', () => () => <></>);
+jest.mock('components/header/UserButton', () => () => <></>);
+jest.mock('react-resize-detector', () => (props) => {
+  // eslint-disable-next-line react/prop-types
+  const { children } = props;
+  return children({ width: 800, height: 800 });
+});
 
 // Mock hash so we can control the ETag that is produced by hash.MD5 when fetching work requests
 // EtagParams is the object that's passed to the function which generates ETag in fetchWork
@@ -127,7 +132,7 @@ describe('Marker heatmap plot', () => {
   it('Loads the plot', async () => {
     await renderHeatmapPage(storeState);
 
-    expect(screen.getByRole('graphics-document', { name: 'Vega visualization' })).toBeInTheDocument();
+    expect(screen.getByRole('graphics-document', { name: 'Marker heatmap' })).toBeInTheDocument();
   });
 
   it('Shows an error message if marker genes failed to load', async () => {
@@ -139,7 +144,7 @@ describe('Marker heatmap plot', () => {
     await renderHeatmapPage(storeState);
 
     // It shouldn't show the plot
-    expect(screen.queryByRole('graphics-document', { name: 'Vega visualization' })).toBeNull();
+    expect(screen.queryByRole('graphics-document', { name: 'Marker heatmap' })).toBeNull();
 
     // There is an error message
     expect(screen.getByText(/Could not load marker genes/i)).toBeInTheDocument();
@@ -225,7 +230,7 @@ describe('Marker heatmap plot', () => {
     });
 
     // It shouldn't show the plot
-    expect(screen.queryByRole('graphics-document', { name: 'Vega visualization' })).toBeNull();
+    expect(screen.queryByRole('graphics-document', { name: 'Marker heatmap' })).toBeNull();
 
     // There is an error message
     expect(screen.getByText(/Could not load gene expression data/i)).toBeInTheDocument();

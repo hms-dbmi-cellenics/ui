@@ -2,9 +2,9 @@ import fetchAPI from 'utils/http/fetchAPI';
 import {
   EXPERIMENTS_UPDATED, EXPERIMENTS_SAVING, EXPERIMENTS_ERROR,
 } from 'redux/actionTypes/experiments';
-import endUserMessages from 'utils/endUserMessages';
+
 import pushNotificationMessage from 'utils/pushNotificationMessage';
-import { isServerError, throwIfRequestFailed } from 'utils/fetchErrors';
+import handleError from 'utils/http/handleError';
 
 const reorderSamples = (
   experimentId,
@@ -26,7 +26,7 @@ const reorderSamples = (
       newPosition: newIndex,
     };
 
-    const response = await fetchAPI(
+    await fetchAPI(
       url,
       {
         method: 'PUT',
@@ -37,9 +37,6 @@ const reorderSamples = (
       },
     );
 
-    const json = await response.json();
-    throwIfRequestFailed(response, json, endUserMessages.ERROR_SAVING);
-
     dispatch({
       type: EXPERIMENTS_UPDATED,
       payload: {
@@ -48,22 +45,22 @@ const reorderSamples = (
       },
     });
   } catch (e) {
-    let { message } = e;
-    if (!isServerError(e)) {
-      console.error(`fetch ${url} error ${message}`);
-      message = endUserMessages.CONNECTION_ERROR;
-    }
+    const errorMessage = handleError(e);
+
     dispatch({
       type: EXPERIMENTS_ERROR,
       payload: {
-        error: message,
+        error: errorMessage,
       },
     });
 
     pushNotificationMessage(
       'error',
-      message,
+      errorMessage,
     );
+
+    // Throwing so we can stop ui updates
+    throw e;
   }
 };
 

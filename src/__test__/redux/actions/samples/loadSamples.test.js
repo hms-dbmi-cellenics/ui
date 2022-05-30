@@ -5,6 +5,8 @@ import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import initialSampleState from 'redux/reducers/samples/initialState';
 import { SAMPLES_ERROR, SAMPLES_LOADED } from 'redux/actionTypes/samples';
 import { loadSamples } from 'redux/actions/samples';
+import config from 'config';
+import { api } from 'utils/constants';
 
 enableFetchMocks();
 
@@ -54,5 +56,39 @@ describe('loadSample action', () => {
     // LOAD SAMPLE
     const action1 = store.getActions()[1];
     expect(action1.type).toEqual(SAMPLES_ERROR);
+  });
+
+  it('works with apiv2', async () => {
+    config.currentApiVersion = api.V2;
+    // mock new response from apiv2
+    const responseV2 = new Response(
+      JSON.stringify(
+        [{
+          id: 'e03ef6ea-5014-4e57-aecd-59964ac9172c',
+          experimentId: 'fd8d5f24-a2d9-da28-2ffd-725b99b1127b',
+          name: 'BLp7',
+          sampleTechnology: '10x',
+          createdAt: '2021-12-07 17:36:27.773+00',
+          updatedAt: '2021-12-07 17:38:42.036+00',
+          metadata: { age: 'BL', timePoint: 'BL' },
+          files: {
+            matrix10X: { uploadStatus: 'uploaded', sampleFileType: 'matrix10x' },
+            barcodes10X: { uploadStatus: 'uploaded', sampleFileType: 'barcodes10x' },
+            features10X: { uploadStatus: 'uploaded', sampleFileType: 'features10x' },
+          },
+        }],
+
+      ),
+    );
+    fetchMock.resetMocks();
+    fetchMock.doMock();
+    fetchMock.mockResolvedValue(responseV2);
+
+    const store = mockStore(initialState);
+    await store.dispatch(loadSamples(experimentId));
+
+    const action1 = store.getActions()[1];
+    expect(action1.type).toEqual(SAMPLES_LOADED);
+    expect(action1.payload).toMatchSnapshot();
   });
 });

@@ -1,5 +1,15 @@
-const generateSpec = (config, groupName, trackGroupData, plotUuid = false) => {
-  const cellSetNames = trackGroupData.map(({ name }) => name);
+const generateSpec = (config, groupName, data, displayLabels = true) => {
+  const cellSetNames = data.trackGroupData.map(({ name }) => name);
+
+  // Do not display gene labels by default if thre are more than 53
+  // as the gene names will squash up
+  const extraLabels = displayLabels ? [
+    {
+      domain: false,
+      orient: 'left',
+      scale: 'y',
+    },
+  ] : [];
 
   let legend = [
     {
@@ -75,25 +85,6 @@ const generateSpec = (config, groupName, trackGroupData, plotUuid = false) => {
     legend = null;
   }
 
-  // drawing the guard lines between every cellSet
-  const extraMarks = plotUuid === 'markerHeatmapPlotMain'
-    ? {
-      type: 'rule',
-      from: { data: 'clusterSeparationLines' },
-      encode: {
-        enter: {
-          stroke: { value: 'white' },
-        },
-        update: {
-          x: { scale: 'x', field: 'data' },
-          y: 0,
-          y2: { field: { group: 'height' } },
-          strokeWidth: { value: 1 },
-          strokeOpacity: { value: 1 },
-        },
-      },
-    } : { type: 'rule' };
-
   return {
     $schema: 'https://vega.github.io/schema/vega/v5.json',
     width: config.dimensions.width,
@@ -103,33 +94,33 @@ const generateSpec = (config, groupName, trackGroupData, plotUuid = false) => {
     data: [
       {
         name: 'cellOrder',
-        values: [],
+        values: data.cellOrder,
         copy: true,
       },
       {
         name: 'geneOrder',
-        values: [],
+        values: data.geneOrder,
         copy: true,
       },
       {
         name: 'trackOrder',
-        values: [],
+        values: data.trackOrder,
       },
       {
         name: 'geneExpressionsData',
-        values: [],
+        values: data.geneExpressionsData,
       },
       {
         name: 'trackColorData',
-        values: [],
+        values: data.trackColorData,
       },
       {
         name: 'trackGroupData',
-        values: [],
+        values: data.trackGroupData,
       },
       {
         name: 'clusterSeparationLines',
-        values: [],
+        values: data.clusterSeparationLines,
         sort: 'ascending',
       },
     ],
@@ -228,6 +219,7 @@ const generateSpec = (config, groupName, trackGroupData, plotUuid = false) => {
           },
         },
       },
+      ...extraLabels,
     ],
 
     legends: legend,
@@ -305,7 +297,6 @@ const generateSpec = (config, groupName, trackGroupData, plotUuid = false) => {
           },
         },
       },
-      extraMarks,
     ],
     title:
     {

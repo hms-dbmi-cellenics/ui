@@ -64,4 +64,5 @@ ViolinControls.propTypes = {
   setSearchedGene: PropTypes.func.isRequired,
   cellSets: PropTypes.object.isRequired,
 };
+
 export default ViolinControls;

@@ -25,6 +25,7 @@ import {
   updateProject,
   deleteMetadataTrack,
   createMetadataTrack,
+  updateValueInMetadataTrack,
 } from 'redux/actions/projects';
 import { DEFAULT_NA } from 'redux/reducers/projects/initialState';
 import { reorderSamples, updateExperiment } from 'redux/actions/experiments';
@@ -148,7 +149,11 @@ const SamplesTable = forwardRef((props, ref) => {
           dataIndex={key}
           rowIdx={rowIdx}
           onAfterSubmit={(newValue) => {
-            dispatch(updateSample(record.uuid, { metadata: { [key]: newValue } }));
+            if (config.currentApiVersion === api.V1) {
+              dispatch(updateSample(record.uuid, { metadata: { [key]: newValue } }));
+            } else if (config.currentApiVersion === api.V2) {
+              dispatch(updateValueInMetadataTrack(activeProjectUuid, record.uuid, key, newValue));
+            }
           }}
         />
       ),
@@ -213,7 +218,11 @@ const SamplesTable = forwardRef((props, ref) => {
     activeProject.samples.forEach(
       (sampleUuid) => {
         if (canUpdateCell(sampleUuid, actionType)) {
-          dispatch(updateSample(sampleUuid, updateObject));
+          if (config.currentApiVersion === api.V1) {
+            dispatch(updateSample(sampleUuid, updateObject));
+          } else if (config.currentApiVersion === api.V2) {
+            dispatch(updateValueInMetadataTrack(activeProjectUuid, sampleUuid, metadataKey, value));
+          }
         }
       },
     );
@@ -299,7 +308,7 @@ const SamplesTable = forwardRef((props, ref) => {
     />
   );
 
-  const onSortEnd = ({ oldIndex, newIndex }) => {
+  const onSortEnd = async ({ oldIndex, newIndex }) => {
     if (oldIndex !== newIndex) {
       // This can be done because there is only one experiment per project
       // Has to be changed when we support multiple experiments per project
@@ -313,8 +322,14 @@ const SamplesTable = forwardRef((props, ref) => {
       if (config.currentApiVersion === api.V1) {
         dispatch(updateExperiment(experimentId, { sampleIds: newSampleOrder }));
       } else if (config.currentApiVersion === api.V2) {
-        dispatch(reorderSamples(activeProjectUuid, oldIndex, newIndex, newSampleOrder));
+        try {
+          await dispatch(reorderSamples(activeProjectUuid, oldIndex, newIndex, newSampleOrder));
+        } catch (e) {
+          // If the fetch fails, avoid doing setTableData(newData)
+          return;
+        }
       }
+
       setTableData(newData);
     }
   };

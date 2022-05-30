@@ -34,7 +34,13 @@ const experimentId = fake.EXPERIMENT_ID;
 const plotUuid = 'volcanoPlotMain';
 const defaultProps = { experimentId };
 
-jest.mock('components/UserButton', () => () => <></>);
+jest.mock('components/header/UserButton', () => () => <></>);
+jest.mock('react-resize-detector', () => (props) => {
+  // eslint-disable-next-line react/prop-types
+  const { children } = props;
+  return children({ width: 800, height: 800 });
+});
+
 jest.mock('object-hash', () => {
   const objectHash = jest.requireActual('object-hash');
   const mockWorkResultETag = jest.requireActual('__test__/test-utils/mockWorkResultETag').default;

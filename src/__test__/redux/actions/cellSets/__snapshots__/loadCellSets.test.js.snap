@@ -1,6 +1,18 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`loadCellSets action Dispatches a loaded action when run with the initial state. 1`] = `undefined`;
+exports[`loadCellSets action Dispatches a loaded action when run with the initial state. 1`] = `
+Object {
+  "payload": Object {
+    "data": Object {
+      "cellIds": Object {},
+      "color": "#ff0000",
+      "name": "one",
+    },
+    "experimentId": "1234",
+  },
+  "type": "cellSets/loaded",
+}
+`;
 
 exports[`loadCellSets action Dispatches a loading action when run after an error condition. 1`] = `
 Object {
@@ -8,4 +20,11 @@ Object {
 }
 `;
 
-exports[`loadCellSets action Dispatches an error condition if fetch fails 1`] = `undefined`;
+exports[`loadCellSets action Dispatches an error condition if fetch fails 1`] = `
+Object {
+  "payload": Object {
+    "error": "We couldn't get the list of cell sets.",
+  },
+  "type": "cellSets/error",
+}
+`;
