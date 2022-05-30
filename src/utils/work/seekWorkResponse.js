@@ -29,7 +29,13 @@ const getRemainingWorkerStartTime = (creationTimestamp) => {
 const seekFromS3 = async (ETag, experimentId) => {
   let response;
   try {
-    response = await fetchAPI(`/${config.currentApiVersion}/workResults/${experimentId}/${ETag}`);
+    let url;
+    if (config.currentApiVersion === api.V2) {
+      url = `/v2/workResults/${experimentId}/${ETag}`;
+    } else {
+      url = `/v1/workResults/${experimentId}/${ETag}`;
+    }
+    response = await fetchAPI(url);
   } catch (e) {
     if (e.statusCode === httpStatusCodes.NOT_FOUND) {
       return null;
