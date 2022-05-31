@@ -302,7 +302,7 @@ jobs:
 
           if [ "${{ matrix.environment }}" = "production" ]
           then
-            yq w -d1 $DEPLOYMENT_NAME-without-host.yaml spec.values.service.additionalHosts[+] "scp.biomage.net" > $DEPLOYMENT_NAME.yaml
+            yq w -d1 $DEPLOYMENT_NAME-without-host.yaml spec.values.service.additionalHosts "true" > $DEPLOYMENT_NAME.yaml
           else
             mv $DEPLOYMENT_NAME-without-host.yaml $DEPLOYMENT_NAME.yaml
           fi
