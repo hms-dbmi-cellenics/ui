@@ -42,9 +42,9 @@ const generateProcessingConfigMock = (sampleIds) => ({
       auto: true,
       enabled: true,
       filterSettings: {
-        method: 'absolute_threshold',
+        method: 'absoluteThreshold',
         methodSettings: {
-          absolute_threshold: {
+          absoluteThreshold: {
             maxFraction: 0.1,
             binStep: 200,
           },

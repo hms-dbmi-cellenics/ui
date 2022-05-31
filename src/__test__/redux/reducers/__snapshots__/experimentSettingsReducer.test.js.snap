@@ -168,9 +168,9 @@ Object {
         "auto": true,
         "enabled": true,
         "filterSettings": Object {
-          "method": "absolute_threshold",
+          "method": "absoluteThreshold",
           "methodSettings": Object {
-            "absolute_threshold": Object {
+            "absoluteThreshold": Object {
               "binStep": 200,
               "maxFraction": 0.1,
             },
@@ -291,9 +291,9 @@ Object {
         "auto": true,
         "enabled": true,
         "filterSettings": Object {
-          "method": "absolute_threshold",
+          "method": "absoluteThreshold",
           "methodSettings": Object {
-            "absolute_threshold": Object {
+            "absoluteThreshold": Object {
               "binStep": 200,
               "maxFraction": 0.1,
             },
@@ -452,9 +452,9 @@ Object {
         "auto": true,
         "enabled": true,
         "filterSettings": Object {
-          "method": "absolute_threshold",
+          "method": "absoluteThreshold",
           "methodSettings": Object {
-            "absolute_threshold": Object {
+            "absoluteThreshold": Object {
               "binStep": 200,
               "maxFraction": 0.1,
             },
@@ -573,9 +573,9 @@ Object {
         "auto": true,
         "enabled": true,
         "filterSettings": Object {
-          "method": "absolute_threshold",
+          "method": "absoluteThreshold",
           "methodSettings": Object {
-            "absolute_threshold": Object {
+            "absoluteThreshold": Object {
               "binStep": 200,
               "maxFraction": 0.1,
             },
