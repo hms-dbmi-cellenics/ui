@@ -201,10 +201,10 @@ const CalculationConfig = (props) => {
                 <Tooltip overlay={(
                   <span>
                     To integrate data, dimensional reduction is performed to find so called "anchors".
-                    cross-dataset pairs of cells that are in a matched biological state (‘anchors’), can are both to correct for technical
+                    cross-dataset pairs of cells that are in a matched biological state (‘anchors’), are both to correct for technical
                     differences between datasets
                     (i.e. batch effect correction), and to perform comparative scRNA-seq analysis across experimental conditions.
-                    CCA is well-suitedn cell types are conserved, but there are very substantial differences
+                    CCA is well-suited when cell types are conserved, but there are very substantial differences
                     in gene expression across experiments.
                     However, CCA-based integration may also lead to overcorrection, especially when a large proportion of cells are
                     non-overlapping across datasets.
