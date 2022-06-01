@@ -9,6 +9,9 @@ import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import mockAPI, {
 } from '__test__/test-utils/mockAPI';
 
+import config from 'config';
+import { api } from 'utils/constants';
+
 import ShareExperimentModal from 'components/data-management/ShareExperimentModal';
 
 jest.mock('@aws-amplify/auth', () => ({
@@ -86,7 +89,31 @@ describe('Share expeirment modal', () => {
     expect(fetchMock.mock.calls[1]).toMatchSnapshot();
   });
 
-  it('Revoke access', async () => {
+  it('Revoke access works', async () => {
+    await renderShareExperimentModal();
+    const revokeButton = screen.getAllByText('Revoke');
+    expect(screen.getByText('bob@bob.com')).toBeInTheDocument();
+    await act(() => userEvent.click(revokeButton[0]));
+    await waitFor(() => expect(onCancel).toHaveBeenCalled());
+  });
+
+  it('Inviting users works for v2', async () => {
+    config.currentApiVersion = api.V2;
+
+    await renderShareExperimentModal();
+    const input = screen.getAllByRole('combobox');
+    userEvent.type(input[0], 'asd@asd.com{enter}');
+
+    await waitFor(() => expect(screen.getByText('Add')).toBeInTheDocument());
+    const inviteButton = screen.getByText('Add');
+    await act(() => fireEvent.click(inviteButton));
+    expect(fetchMock.mock.calls.length).toEqual(2);
+    expect(fetchMock.mock.calls[1]).toMatchSnapshot();
+  });
+
+  it('Revoke access works for v2', async () => {
+    config.currentApiVersion = api.V2;
+
     await renderShareExperimentModal();
     const revokeButton = screen.getAllByText('Revoke');
     expect(screen.getByText('bob@bob.com')).toBeInTheDocument();
