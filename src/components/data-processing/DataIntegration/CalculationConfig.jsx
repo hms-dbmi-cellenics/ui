@@ -186,11 +186,10 @@ const CalculationConfig = (props) => {
                   { dimensionalityReduction: { excludeGeneCategories: val } },
                 )}
                 value={dimensionalityReduction.excludeGeneCategories}
-                disabled
               >
                 <Space direction='vertical'>
-                  <Checkbox value='ribosomal'>ribosomal</Checkbox>
-                  <Checkbox value='mitochondrial'>mitochondrial</Checkbox>
+                  <Checkbox disabled value='ribosomal'>ribosomal</Checkbox>
+                  <Checkbox disabled value='mitochondrial'>mitochondrial</Checkbox>
                   <Checkbox value='cellCycle'>cell cycle</Checkbox>
                 </Space>
               </Checkbox.Group>
