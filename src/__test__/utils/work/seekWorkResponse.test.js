@@ -186,7 +186,7 @@ describe('seekFromS3 unit tests', () => {
       };
     });
   });
-
+  config.currentApiVersion = api.V1;
   beforeEach(async () => {
     jest.clearAllMocks();
   });
