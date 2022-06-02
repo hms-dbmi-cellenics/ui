@@ -304,6 +304,7 @@ jobs:
           then
             yq w -d1 $DEPLOYMENT_NAME-without-host.yaml spec.values.service.additionalHosts "true" > $DEPLOYMENT_NAME.yaml
           else
+            yq w -d1 $DEPLOYMENT_NAME-without-host.yaml spec.values.service.additionalHosts "true" > $DEPLOYMENT_NAME.yaml
             mv $DEPLOYMENT_NAME-without-host.yaml $DEPLOYMENT_NAME.yaml
           fi
 
