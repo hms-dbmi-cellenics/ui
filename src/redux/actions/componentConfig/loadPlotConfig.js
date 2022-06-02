@@ -6,12 +6,22 @@ import { initialPlotConfigStates } from 'redux/reducers/componentConfig/initialS
 import handleError from 'utils/http/handleError';
 import httpStatusCodes from 'utils/http/httpStatusCodes';
 
+import config from 'config';
+import { api } from 'utils/constants';
+
 const loadPlotConfig = (experimentId, plotUuid, plotType) => async (dispatch) => {
-  const url = `/v1/experiments/${experimentId}/plots-tables/${plotUuid}`;
+  let url;
+
+  if (config.currentApiVersion === api.V1) {
+    url = `/v1/experiments/${experimentId}/plots-tables/${plotUuid}`;
+  } else if (config.currentApiVersion === api.V2) {
+    url = `/v2/experiments/${experimentId}/plots/${plotUuid}`;
+  }
+
   try {
     const data = await fetchAPI(url);
 
-    const config = _.merge({}, initialPlotConfigStates[plotType], data.config);
+    const plotConfig = _.merge({}, initialPlotConfigStates[plotType], data.config);
     dispatch({
       type: LOAD_CONFIG,
       payload: {
@@ -19,7 +29,7 @@ const loadPlotConfig = (experimentId, plotUuid, plotType) => async (dispatch) =>
         plotUuid,
         plotType,
         plotData: data.plotData,
-        config,
+        config: plotConfig,
       },
     });
   } catch (e) {
