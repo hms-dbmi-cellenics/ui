@@ -47,3 +47,31 @@ Array [
   },
 ]
 `;
+
+exports[`runPipeline action Works well with api v2 1`] = `
+Array [
+  Object {
+    "payload": Object {
+      "experimentId": "experiment-id",
+    },
+    "type": "backendStatus/backendStatusLoading",
+  },
+  Object {
+    "payload": Object {},
+    "type": "experimentSettings/startPipeline",
+  },
+]
+`;
+
+exports[`runPipeline action Works well with api v2 2`] = `
+Array [
+  "http://localhost:3000/v2/experiments/experiment-id/qc",
+  Object {
+    "body": "{\\"processingConfig\\":[{\\"name\\":\\"cellSizeDistribution\\",\\"body\\":{\\"enabled\\":true,\\"sample1, sample2\\":{\\"auto\\":true,\\"enabled\\":true,\\"filterSettings\\":{\\"minCellSize\\":10800,\\"binStep\\":200}}}}]}",
+    "headers": Object {
+      "Content-Type": "application/json",
+    },
+    "method": "POST",
+  },
+]
+`;
