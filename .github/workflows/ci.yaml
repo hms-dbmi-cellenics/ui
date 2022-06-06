@@ -48,172 +48,172 @@ jobs:
           body-template: ${{  steps.create-unchecked-pr-body.outputs.body }}
           body-update-action: replace
 
-  build:
-    name: Build website
-    runs-on: ubuntu-20.04
-    env:
-      CI: true
-    steps:
-      - id: setup-node
-        uses: actions/setup-node@v2
-        with:
-          node-version: '14'
+  # build:
+  #   name: Build website
+  #   runs-on: ubuntu-20.04
+  #   env:
+  #     CI: true
+  #   steps:
+  #     - id: setup-node
+  #       uses: actions/setup-node@v2
+  #       with:
+  #         node-version: '14'
 
-      - id: checkout
-        name: Check out source code
-        uses: actions/checkout@v2
+  #     - id: checkout
+  #       name: Check out source code
+  #       uses: actions/checkout@v2
 
-      - id: cache-seek
-        name: Check for npm cache hit
-        uses: c-hive/gha-npm-cache@v1
+  #     - id: cache-seek
+  #       name: Check for npm cache hit
+  #       uses: c-hive/gha-npm-cache@v1
 
-      - id: install
-        name: Install dependencies
-        run: |-
-          echo "Running CI with "
-          echo "Node version: $(node --version)"
-          echo "NPM version: $(npm --version)"
+  #     - id: install
+  #       name: Install dependencies
+  #       run: |-
+  #         echo "Running CI with "
+  #         echo "Node version: $(node --version)"
+  #         echo "NPM version: $(npm --version)"
 
-          git config --global url."https://".insteadOf ssh://
-          npm ci
+  #         git config --global url."https://".insteadOf ssh://
+  #         npm ci
 
-      - id: test
-        name: Run unit tests
-        uses: mattallty/jest-github-action@v1
-        env:
-          AWS_DEFAULT_REGION: eu-west-1
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          test-command: 'npm run coverage'
-          coverage-comment: false
+  #     - id: test
+  #       name: Run unit tests
+  #       uses: mattallty/jest-github-action@v1
+  #       env:
+  #         AWS_DEFAULT_REGION: eu-west-1
+  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #       with:
+  #         test-command: 'npm run coverage'
+  #         coverage-comment: false
 
-      - id: upload-coverage
-        name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v1
+  #     - id: upload-coverage
+  #       name: Upload coverage to Codecov
+  #       uses: codecov/codecov-action@v1
 
-      - id: next-cache-seek
-        name: Look up the Next.js build cache
-        uses: actions/cache@v2
-        with:
-          path: ${{ github.workspace }}/.next/cache
-          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}
+  #     - id: next-cache-seek
+  #       name: Look up the Next.js build cache
+  #       uses: actions/cache@v2
+  #       with:
+  #         path: ${{ github.workspace }}/.next/cache
+  #         key: ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}
 
-      - id: build
-        name: Build project
-        run: |-
-          npm run build
+  #     - id: build
+  #       name: Build project
+  #       run: |-
+  #         npm run build
 
-      - id: upload-build-out
-        name: Upload Next.js build output
-        uses: actions/upload-artifact@v2
-        with:
-          name: next-build-out
-          path: |
-            .next/
-            !.next/cache
+  #     - id: upload-build-out
+  #       name: Upload Next.js build output
+  #       uses: actions/upload-artifact@v2
+  #       with:
+  #         name: next-build-out
+  #         path: |
+  #           .next/
+  #           !.next/cache
 
-      - id: send-to-slack
-        name: Send failure notification to Slack
-        if: failure() && github.event_name == 'push'
-        env:
-          SLACK_BOT_TOKEN: ${{ secrets.BUILD_STATUS_BOT_TOKEN }}
-        uses: voxmedia/github-action-slack-notify-build@v1
-        with:
-          channel: pipelines
-          status: FAILED
-          color: danger
+  #     - id: send-to-slack
+  #       name: Send failure notification to Slack
+  #       if: failure() && github.event_name == 'push'
+  #       env:
+  #         SLACK_BOT_TOKEN: ${{ secrets.BUILD_STATUS_BOT_TOKEN }}
+  #       uses: voxmedia/github-action-slack-notify-build@v1
+  #       with:
+  #         channel: pipelines
+  #         status: FAILED
+  #         color: danger
 
-  build-docker:
-    name: Build Docker container
-    runs-on: ubuntu-20.04
-    needs: build
-    steps:
-      - id: checkout
-        name: Check out source code
-        uses: actions/checkout@v2
+  # build-docker:
+  #   name: Build Docker container
+  #   runs-on: ubuntu-20.04
+  #   needs: build
+  #   steps:
+  #     - id: checkout
+  #       name: Check out source code
+  #       uses: actions/checkout@v2
 
-      - id: download-build-out
-        name: Download Next.js build output
-        uses: actions/download-artifact@v2
-        with:
-          name: next-build-out
-          path: .next/
+  #     - id: download-build-out
+  #       name: Download Next.js build output
+  #       uses: actions/download-artifact@v2
+  #       with:
+  #         name: next-build-out
+  #         path: .next/
 
-      - id: ref
-        name: Format docker tag and repository name.
-        run: |-
-          # This will take a ref like `refs/heads/master`
-          # and turn it into `refs-heads-master`
-          REF_ID=$(echo $GITHUB_REF | sed 's/\//-/g')
+  #     - id: ref
+  #       name: Format docker tag and repository name.
+  #       run: |-
+  #         # This will take a ref like `refs/heads/master`
+  #         # and turn it into `refs-heads-master`
+  #         REF_ID=$(echo $GITHUB_REF | sed 's/\//-/g')
 
-          # the final tag is something like:
-          # refs-heads-master-a4f8bc313dae
-          # this is what we push to ECR
-          # we will also take semver'd tags like `1.0.0` and use them for releases
+  #         # the final tag is something like:
+  #         # refs-heads-master-a4f8bc313dae
+  #         # this is what we push to ECR
+  #         # we will also take semver'd tags like `1.0.0` and use them for releases
 
-          if [ "${{ github.event_name }}" = "release" ] && [ "${{ github.event.action }}" = "released" ]; then
-            echo "::set-output name=tag::${REF_ID/refs-tags-/}"
-          else
-            echo "::set-output name=tag::$REF_ID-$GITHUB_SHA"
-          fi
+  #         if [ "${{ github.event_name }}" = "release" ] && [ "${{ github.event.action }}" = "released" ]; then
+  #           echo "::set-output name=tag::${REF_ID/refs-tags-/}"
+  #         else
+  #           echo "::set-output name=tag::$REF_ID-$GITHUB_SHA"
+  #         fi
 
-          # This will take a GitHub repo name like `hms-dbmi-cellenics/iac`
-          # and turns it into `iac`. This will be the name of the
-          # ECR repository.
-          IMAGE_REPO_NAME=$(echo $GITHUB_REPOSITORY | awk -F '/' '{print $2}')
-          echo "::set-output name=repo-name::$IMAGE_REPO_NAME"
+  #         # This will take a GitHub repo name like `hms-dbmi-cellenics/iac`
+  #         # and turns it into `iac`. This will be the name of the
+  #         # ECR repository.
+  #         IMAGE_REPO_NAME=$(echo $GITHUB_REPOSITORY | awk -F '/' '{print $2}')
+  #         echo "::set-output name=repo-name::$IMAGE_REPO_NAME"
 
-      - id: set-up-creds
-        name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: eu-west-1
+  #     - id: set-up-creds
+  #       name: Configure AWS credentials
+  #       uses: aws-actions/configure-aws-credentials@v1
+  #       with:
+  #         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  #         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  #         aws-region: eu-west-1
 
-      - id: login-ecr
-        name: Login to Amazon ECR
-        uses: aws-actions/amazon-ecr-login@v1
+  #     - id: login-ecr
+  #       name: Login to Amazon ECR
+  #       uses: aws-actions/amazon-ecr-login@v1
 
-      - id: create-ecr-registry
-        name: Create an ECR repository (if needed)
-        # This will fail if the registry already exists, which is fine. If there is some other
-        # error, the `push` step will fail instead.
-        continue-on-error: true
-        run: |-
-          aws ecr create-repository --repository-name $REPO_NAME --image-tag-mutability IMMUTABLE
-        env:
-          REPO_NAME: ${{ steps.ref.outputs.repo-name }}
+  #     - id: create-ecr-registry
+  #       name: Create an ECR repository (if needed)
+  #       # This will fail if the registry already exists, which is fine. If there is some other
+  #       # error, the `push` step will fail instead.
+  #       continue-on-error: true
+  #       run: |-
+  #         aws ecr create-repository --repository-name $REPO_NAME --image-tag-mutability IMMUTABLE
+  #       env:
+  #         REPO_NAME: ${{ steps.ref.outputs.repo-name }}
 
-      - id: build
-        name: Build Docker image
-        uses: docker/build-push-action@v2
-        with:
-          context: .
-          file: ./Dockerfile
-          platforms: linux/amd64
-          tags: ${{ format('{0}/{1}:{2}', steps.login-ecr.outputs.registry, steps.ref.outputs.repo-name, steps.ref.outputs.tag) }}
-          push: false
-          build-args: READONLY_API_TOKEN_GITHUB=${{ secrets.READONLY_API_TOKEN_GITHUB }}
+  #     - id: build
+  #       name: Build Docker image
+  #       uses: docker/build-push-action@v2
+  #       with:
+  #         context: .
+  #         file: ./Dockerfile
+  #         platforms: linux/amd64
+  #         tags: ${{ format('{0}/{1}:{2}', steps.login-ecr.outputs.registry, steps.ref.outputs.repo-name, steps.ref.outputs.tag) }}
+  #         push: false
+  #         build-args: READONLY_API_TOKEN_GITHUB=${{ secrets.READONLY_API_TOKEN_GITHUB }}
 
-      - id: push
-        name: Push docker image to ECR
-        run: |-
-          echo Pushing image $IMAGE_NAME to ECR.
-          docker push $IMAGE_NAME
-        env:
-          IMAGE_NAME: ${{ format('{0}/{1}:{2}', steps.login-ecr.outputs.registry, steps.ref.outputs.repo-name, steps.ref.outputs.tag) }}
+  #     - id: push
+  #       name: Push docker image to ECR
+  #       run: |-
+  #         echo Pushing image $IMAGE_NAME to ECR.
+  #         docker push $IMAGE_NAME
+  #       env:
+  #         IMAGE_NAME: ${{ format('{0}/{1}:{2}', steps.login-ecr.outputs.registry, steps.ref.outputs.repo-name, steps.ref.outputs.tag) }}
 
-      - id: send-to-slack
-        name: Send failure notification to Slack
-        if: failure() && github.event_name == 'push'
-        env:
-          SLACK_BOT_TOKEN: ${{ secrets.BUILD_STATUS_BOT_TOKEN }}
-        uses: voxmedia/github-action-slack-notify-build@v1
-        with:
-          channel: pipelines
-          status: FAILED
-          color: danger
+  #     - id: send-to-slack
+  #       name: Send failure notification to Slack
+  #       if: failure() && github.event_name == 'push'
+  #       env:
+  #         SLACK_BOT_TOKEN: ${{ secrets.BUILD_STATUS_BOT_TOKEN }}
+  #       uses: voxmedia/github-action-slack-notify-build@v1
+  #       with:
+  #         channel: pipelines
+  #         status: FAILED
+  #         color: danger
 
   deploy:
     name: Deploy to Kubernetes
