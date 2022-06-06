@@ -218,7 +218,7 @@ jobs:
   deploy:
     name: Deploy to Kubernetes
     runs-on: ubuntu-20.04
-    needs: build-docker
+    # needs: build-docker
     strategy:
       max-parallel: 1
       matrix:
