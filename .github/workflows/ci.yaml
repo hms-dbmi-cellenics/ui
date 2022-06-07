@@ -222,7 +222,7 @@ jobs:
     strategy:
       max-parallel: 1
       matrix:
-        environment: ['staging']
+        environment: ['production', 'staging', 'develop']
     steps:
       - id: checkout
         name: Check out source code
