@@ -43,6 +43,10 @@ const { Paragraph, Text } = Typography;
 
 const exampleDatasets = [
   {
+    filename: 'workshop_covid19_gse188376_v2.zip',
+    description: 'Workshop dataset: GSE183716 - Covid19 MISC',
+  },
+  {
     filename: 'PBMC_3k.zip',
     description: 'Uni-sample PBMC dataset',
   },
