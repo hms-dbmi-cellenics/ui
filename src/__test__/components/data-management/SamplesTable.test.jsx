@@ -5,13 +5,15 @@ import { act } from 'react-dom/test-utils';
 import '@testing-library/jest-dom';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 
+import Storage from '@aws-amplify/storage';
+
 import _ from 'lodash';
 import { Provider } from 'react-redux';
 
 import mockAPI, { generateDefaultMockAPIResponses, statusResponse } from '__test__/test-utils/mockAPI';
 import { projects, samples } from '__test__/test-utils/mockData';
 
-import SamplesTable, { exampleDatasets } from 'components/data-management/SamplesTable';
+import SamplesTable from 'components/data-management/SamplesTable';
 import { makeStore } from 'redux/store';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
@@ -19,6 +21,7 @@ import createTestComponentFactory from '__test__/test-utils/testComponentFactory
 
 import { loadProjects, setActiveProject } from 'redux/actions/projects';
 import downloadFromUrl from 'utils/data-management/downloadFromUrl';
+import loadEnvironment from 'redux/actions/networkResources/loadEnvironment';
 import { loadExperiments } from 'redux/actions/experiments';
 
 import reactSortableHoc from 'react-sortable-hoc';
@@ -28,9 +31,25 @@ import config from 'config';
 
 jest.mock('config');
 
-jest.mock('@aws-amplify/storage', () => ({
-  get: jest.fn(() => Promise.resolve('https://mock-s3-url.com')),
+jest.mock('@aws-amplify/auth', () => ({
+  currentAuthenticatedUser: jest.fn(() => Promise.resolve({ attributes: { name: 'mockUserName' } })),
+  federatedSignIn: jest.fn(),
 }));
+
+// Necessary due to storage being used in the default SamplesTable.
+jest.mock('@aws-amplify/storage', () => ({
+  configure: jest.fn(),
+  get: jest.fn(() => Promise.resolve('https://mock-s3-url.com')),
+  list: jest.fn(() => Promise.resolve([
+    { key: 'Example_1.zip' },
+    { key: 'Another-Example_2.zip' },
+  ])),
+}));
+
+const expectedSampleNames = [
+  'Example 1',
+  'Another-Example 2',
+];
 
 jest.mock('utils/data-management/downloadFromUrl');
 
@@ -97,6 +116,8 @@ describe('Samples table', () => {
 
     // Defaults to project with samples
     await storeState.dispatch(setActiveProject(projectIdWithSamples));
+
+    await storeState.dispatch(loadEnvironment('test'));
   });
 
   it('Shows option to download datasets if there are no samples', async () => {
@@ -109,12 +130,12 @@ describe('Samples table', () => {
     expect(screen.getByText(/Don't have data\? Get started using one of our example datasets:/i)).toBeInTheDocument();
 
     // There should be n number of example datasets
-    exampleDatasets.forEach((dataset) => {
-      expect(screen.getByText(dataset.description)).toBeInTheDocument();
+    expectedSampleNames.forEach((name) => {
+      expect(screen.getByText(name)).toBeInTheDocument();
     });
 
     // Clicking on one of the samples downloads the file
-    const exampleFileLink = exampleDatasets[0].description;
+    const exampleFileLink = expectedSampleNames[0];
 
     await act(async () => {
       userEvent.click(screen.getByText(exampleFileLink));
@@ -123,10 +144,25 @@ describe('Samples table', () => {
     expect(downloadFromUrl).toHaveBeenCalledTimes(1);
   });
 
-  it('Should not show option to download datasets if samples are available', async () => {
+  it('Does not show prompt to upload datasets if samples are available', async () => {
     await renderSamplesTable(storeState);
 
     expect(screen.queryByText(/Start uploading your samples by clicking on Add samples./i)).toBeNull();
+    expect(screen.queryByText(/Don't have data\? Get started using one of our example datasets:/i)).toBeNull();
+  });
+
+  it('Does not show option to download sample dataset if there are none available in S3 bucket', async () => {
+    Storage.list.mockImplementationOnce(() => Promise.resolve([]));
+
+    await renderSamplesTable(storeState);
+
+    // Load project without samples
+    storeState.dispatch(setActiveProject(projectIdWithoutSamples));
+
+    // This prompt to upload samples is still visible
+    expect(screen.getByText(/Start uploading your samples by clicking on Add samples./i)).toBeInTheDocument();
+
+    // But the prompt to download data is not shown anymore
     expect(screen.queryByText(/Don't have data\? Get started using one of our example datasets:/i)).toBeNull();
   });
 
