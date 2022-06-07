@@ -4,12 +4,23 @@ import fetchAPI from 'utils/http/fetchAPI';
 import handleError from 'utils/http/handleError';
 import endUserMessages from 'utils/endUserMessages';
 
+import config from 'config';
+import { api } from 'utils/constants';
+
 const resetPlotConfig = (experimentId, plotUuid, plotType) => async (dispatch) => {
   const defaultConfig = initialPlotConfigStates[plotType];
 
+  let url;
+
+  if (config.currentApiVersion === api.V1) {
+    url = `/v1/experiments/${experimentId}/plots-tables/${plotUuid}`;
+  } else if (config.currentApiVersion === api.V2) {
+    url = `/v2/experiments/${experimentId}/plots/${plotUuid}`;
+  }
+
   try {
     await fetchAPI(
-      `/v1/experiments/${experimentId}/plots-tables/${plotUuid}`,
+      url,
       {
         method: 'PUT',
         headers: {
