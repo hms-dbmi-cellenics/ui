@@ -41,24 +41,10 @@ import 'utils/css/data-management.css';
 
 const { Paragraph, Text } = Typography;
 
-const exampleDatasets = [
-  {
-    filename: 'workshop_covid19_gse188376_v2.zip',
-    description: 'Workshop dataset: GSE183716 - Covid19 MISC',
-  },
-  {
-    filename: 'PBMC_3k.zip',
-    description: 'Uni-sample PBMC dataset',
-  },
-  {
-    filename: 'PBMC_BMMC_17k.zip',
-    description: 'Multi-sample blood and bone marrow dataset',
-  },
-];
-
 const SamplesTable = forwardRef((props, ref) => {
   const dispatch = useDispatch();
   const [tableData, setTableData] = useState([]);
+  const [exampleDatasets, setExampleDatasets] = useState([]);
 
   const projects = useSelector((state) => state.projects);
   const samples = useSelector((state) => state.samples);
@@ -266,6 +252,35 @@ const SamplesTable = forwardRef((props, ref) => {
     setTableData(newData);
   }, [projects, samples, activeProjectUuid]);
 
+  const getPublicDatasets = async () => {
+    Storage.configure({
+      bucket: `biomage-public-datasets-${environment}`,
+      customPrefix: {
+        public: '',
+      },
+    });
+
+    const datasets = await Storage.list('');
+
+    const parseFileName = (name) => {
+      console.log('*** test', name.replace(/_/g, ' ').split('.')[0]);
+      return name.replace(/_/g, ' ').split('.')[0];
+    };
+
+    const result = datasets.map((data) => ({
+      filename: data.key,
+      description: parseFileName(data.key),
+    }));
+
+    return result;
+  };
+
+  useEffect(() => {
+    if (!environment) return;
+
+    getPublicDatasets().then((datasets) => { setExampleDatasets(datasets); });
+  }, [environment]);
+
   const downloadPublicDataset = async (filename) => {
     const s3Object = await Storage.get(
       filename,
@@ -287,26 +302,32 @@ const SamplesTable = forwardRef((props, ref) => {
           <Paragraph>
             Start uploading your samples by clicking on Add samples.
           </Paragraph>
-          <Text>
-            Don&apos;t have data? Get started using one of our example datasets:
-          </Text>
-          <div style={{ width: 'auto', textAlign: 'left' }}>
-            <ul>
-              {
-                exampleDatasets.map(({ filename, description }) => (
-                  <li key={filename}>
-                    <Button
-                      type='link'
-                      size='small'
-                      onClick={() => downloadPublicDataset(filename)}
-                    >
-                      {description}
-                    </Button>
-                  </li>
-                ))
-              }
-            </ul>
-          </div>
+          {
+            exampleDatasets.length > 0 && (
+              <>
+                <Text>
+                  Don&apos;t have data? Get started using one of our example datasets:
+                </Text>
+                <div style={{ width: 'auto', textAlign: 'left' }}>
+                  <ul>
+                    {
+                      exampleDatasets.map(({ filename, description }) => (
+                        <li key={filename}>
+                          <Button
+                            type='link'
+                            size='small'
+                            onClick={() => downloadPublicDataset(filename)}
+                          >
+                            {description}
+                          </Button>
+                        </li>
+                      ))
+                    }
+                  </ul>
+                </div>
+              </>
+            )
+          }
         </Space>
       )}
     />
@@ -384,7 +405,3 @@ const SamplesTable = forwardRef((props, ref) => {
 });
 
 export default React.memo(SamplesTable);
-
-export {
-  exampleDatasets,
-};
