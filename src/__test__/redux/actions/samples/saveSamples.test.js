@@ -16,6 +16,11 @@ import {
 } from 'redux/actionTypes/samples';
 import '__test__/test-utils/setupTests';
 
+import config from 'config';
+import { api } from 'utils/constants';
+
+jest.mock('config');
+
 enableFetchMocks();
 const mockStore = configureStore([thunk]);
 
@@ -71,6 +76,8 @@ describe('saveSamples action', () => {
     fetchMock.resetMocks();
     fetchMock.doMock();
     fetchMock.mockResolvedValueOnce(response);
+
+    config.currentApiVersion = api.V1;
   });
 
   it('Dispatches fetch correctly', async () => {
@@ -82,7 +89,7 @@ describe('saveSamples action', () => {
     delete payload.meta;
 
     expect(fetchMock).toHaveBeenCalledWith(
-      `http://localhost:3000/v2/projects/${mockprojectUuid}/${mockProject.experiments[0]}/samples`,
+      `http://localhost:3000/v1/projects/${mockprojectUuid}/${mockProject.experiments[0]}/samples`,
       {
         body: JSON.stringify({
           ...payload,
@@ -105,7 +112,7 @@ describe('saveSamples action', () => {
     delete payload.meta;
 
     expect(fetchMock).toHaveBeenCalledWith(
-      `http://localhost:3000/v2/projects/${mockprojectUuid}/${mockProject.experiments[0]}/samples`,
+      `http://localhost:3000/v1/projects/${mockprojectUuid}/${mockProject.experiments[0]}/samples`,
       {
         body: JSON.stringify({
           ...payload,
@@ -129,7 +136,7 @@ describe('saveSamples action', () => {
     await store.dispatch(saveSamples(mockprojectUuid, newSamplesObject, false, false));
 
     expect(fetchMock).toHaveBeenCalledWith(
-      `http://localhost:3000/v2/projects/${mockprojectUuid}/${mockProject.experiments[0]}/samples`,
+      `http://localhost:3000/v1/projects/${mockprojectUuid}/${mockProject.experiments[0]}/samples`,
       {
         body: JSON.stringify(newSamplesObject),
         headers: {
