@@ -67,6 +67,8 @@ const updateExperiment = (
           body: JSON.stringify(experimentDiff),
         },
       );
+
+      console.log('aeoifneroin');
     }
 
     dispatch({

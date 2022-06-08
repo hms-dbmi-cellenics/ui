@@ -1,3 +1,5 @@
+import _ from 'lodash';
+
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
@@ -30,11 +32,6 @@ describe('updateExperiment', () => {
     id: experimentId,
   };
 
-  const updatedExperiment = {
-    ...mockExperiment,
-    name: 'updated-experiment',
-  };
-
   const mockState = {
     experiments: {
       ...initialExperimentState,
@@ -43,56 +40,17 @@ describe('updateExperiment', () => {
   };
 
   beforeEach(() => {
-    const response = new Response(JSON.stringify({}));
-
     fetchMock.resetMocks();
     fetchMock.doMock();
+  });
+
+  it('Works correctly', async () => {
+    config.currentApiVersion = api.V2;
+
+    const store = mockStore(mockState);
+    const response = new Response(JSON.stringify({}));
     fetchMock.mockResolvedValueOnce(response);
-  });
 
-  it('Dispatches actions when called', async () => {
-    config.currentApiVersion = api.V1;
-
-    const store = mockStore(mockState);
-    await store.dispatch(updateExperiment(experimentId, updatedExperiment));
-
-    const actions = store.getActions();
-
-    expect(actions[0].type).toEqual(EXPERIMENTS_SAVING);
-
-    // Updates the experiments
-    expect(actions[1].type).toEqual(EXPERIMENTS_UPDATED);
-
-    expect(actions).toMatchSnapshot();
-
-    expect(fetchMock).toHaveBeenCalledWith(
-      'http://localhost:3000/v2/experiments/experiment-1',
-      expect.objectContaining({
-        method: 'PUT',
-      }),
-    );
-
-    expect(fetchMock.mock.calls[0][1].body).toMatchSnapshot();
-  });
-
-  it('Errors out and doesn\'t send request if an attempt to update sampleIds with this action creator is made', async () => {
-    config.currentApiVersion = api.V2;
-
-    const store = mockStore(mockState);
-    await store.dispatch(updateExperiment(experimentId, { sampleIds: ['1', '2', '4'] }));
-
-    const actions = store.getActions();
-    expect(actions[0].type).toEqual(EXPERIMENTS_SAVING);
-    expect(actions[1].type).toEqual(EXPERIMENTS_ERROR);
-    expect(actions).toMatchSnapshot();
-
-    expect(fetchMock).not.toHaveBeenCalled();
-  });
-
-  it('Updates properties with api v2 correctly', async () => {
-    config.currentApiVersion = api.V2;
-
-    const store = mockStore(mockState);
     await store.dispatch(updateExperiment(experimentId, { name: 'newName' }));
 
     const actions = store.getActions();
@@ -112,5 +70,19 @@ describe('updateExperiment', () => {
     );
 
     expect(fetchMock.mock.calls[0][1].body).toMatchSnapshot();
+  });
+
+  it('Handles error if api request fails', async () => {
+    config.currentApiVersion = api.V2;
+
+    const store = mockStore(mockState);
+
+    fetchMock.mockRejectOnce(new Error('Api error'));
+
+    await store.dispatch(updateExperiment(experimentId, { name: 'newName' }));
+
+    const actions = store.getActions();
+    expect(_.map(actions, 'type')).toEqual([EXPERIMENTS_SAVING, EXPERIMENTS_ERROR]);
+    expect(_.map(actions, 'payload')).toMatchSnapshot();
   });
 });
