@@ -12,6 +12,9 @@ import {
 } from 'redux/actionTypes/projects';
 import '__test__/test-utils/setupTests';
 
+import config from 'config';
+import { api } from 'utils/constants';
+
 jest.mock('config');
 jest.mock('utils/http/handleError');
 
@@ -54,6 +57,10 @@ describe('createProject action', () => {
   const experimentName = 'mockExperimentName';
 
   it('Works corectly project when there are no errors', async () => {
+    config.currentApiVersion = api.V1;
+
+    fetchMock.mockResponse(JSON.stringify({}));
+
     await store.dispatch(
       createProject(projectName, projectDescription, experimentName),
     );
@@ -72,6 +79,7 @@ describe('createProject action', () => {
   });
 
   it('Shows error when there was a fetch error', async () => {
+    config.currentApiVersion = api.V1;
     const fetchErrorMessage = 'some error';
 
     fetchMock.mockResponse(JSON.stringify({ message: fetchErrorMessage }), { url: 'mockedUrl', status: 400 });
