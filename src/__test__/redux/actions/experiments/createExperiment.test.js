@@ -60,7 +60,7 @@ describe('createExperiment', () => {
 
     expect(fetchMock).toHaveBeenCalledTimes(1);
     expect(fetchMock).toHaveBeenCalledWith(
-      'http://localhost:3000/v1/experiments/b3f6c0ca86ec045c84f380cd5016972e',
+      'http://localhost:3000/v2/experiments/b3f6c0ca86ec045c84f380cd5016972e',
       expect.objectContaining({
         method: 'POST',
       }),

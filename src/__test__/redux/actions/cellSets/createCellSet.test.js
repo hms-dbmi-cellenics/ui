@@ -66,7 +66,7 @@ describe('createCellSet action', () => {
 
     const [url, body] = fetch.mock.calls[0];
 
-    expect(url).toEqual('http://localhost:3000/v1/experiments/1234/cellSets');
+    expect(url).toEqual('http://localhost:3000/v2/experiments/1234/cellSets');
     expect(body).toMatchSnapshot();
   });
 

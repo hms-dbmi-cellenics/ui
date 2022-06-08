@@ -66,7 +66,7 @@ describe('updateExperiment', () => {
     expect(actions).toMatchSnapshot();
 
     expect(fetchMock).toHaveBeenCalledWith(
-      'http://localhost:3000/v1/experiments/experiment-1',
+      'http://localhost:3000/v2/experiments/experiment-1',
       expect.objectContaining({
         method: 'PUT',
       }),

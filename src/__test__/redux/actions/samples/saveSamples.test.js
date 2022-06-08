@@ -82,7 +82,7 @@ describe('saveSamples action', () => {
     delete payload.meta;
 
     expect(fetchMock).toHaveBeenCalledWith(
-      `http://localhost:3000/v1/projects/${mockprojectUuid}/${mockProject.experiments[0]}/samples`,
+      `http://localhost:3000/v2/projects/${mockprojectUuid}/${mockProject.experiments[0]}/samples`,
       {
         body: JSON.stringify({
           ...payload,
@@ -105,7 +105,7 @@ describe('saveSamples action', () => {
     delete payload.meta;
 
     expect(fetchMock).toHaveBeenCalledWith(
-      `http://localhost:3000/v1/projects/${mockprojectUuid}/${mockProject.experiments[0]}/samples`,
+      `http://localhost:3000/v2/projects/${mockprojectUuid}/${mockProject.experiments[0]}/samples`,
       {
         body: JSON.stringify({
           ...payload,
@@ -129,7 +129,7 @@ describe('saveSamples action', () => {
     await store.dispatch(saveSamples(mockprojectUuid, newSamplesObject, false, false));
 
     expect(fetchMock).toHaveBeenCalledWith(
-      `http://localhost:3000/v1/projects/${mockprojectUuid}/${mockProject.experiments[0]}/samples`,
+      `http://localhost:3000/v2/projects/${mockprojectUuid}/${mockProject.experiments[0]}/samples`,
       {
         body: JSON.stringify(newSamplesObject),
         headers: {

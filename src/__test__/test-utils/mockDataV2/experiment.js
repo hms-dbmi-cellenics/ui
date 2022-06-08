@@ -1,6 +1,6 @@
 const experimentsListV2 = [
   {
-    id: '03a9af8d-17ae-9caf-ace5-1152f4241eb2',
+    id: 'testae48e318dab9a1bd0bexperiment-0',
     name: 'Bone marrow analysis',
     description: '',
     samplesOrder: [

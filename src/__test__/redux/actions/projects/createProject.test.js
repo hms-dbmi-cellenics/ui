@@ -70,7 +70,7 @@ describe('createProject action', () => {
     const fetchMockFirstCall = fetchMock.mock.calls[0];
 
     const { body: fetchBody, method: fetchMethod } = fetchMockFirstCall[1];
-    expect(fetchMockFirstCall[0]).toEqual(`http://localhost:3000/v1/projects/${projectUuid}`);
+    expect(fetchMockFirstCall[0]).toEqual(`http://localhost:3000/v2/projects/${projectUuid}`);
 
     expect(fetchMethod).toEqual('POST');
     expect(JSON.parse(fetchBody)).toMatchSnapshot();

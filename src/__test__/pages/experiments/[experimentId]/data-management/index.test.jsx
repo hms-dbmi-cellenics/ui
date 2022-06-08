@@ -70,9 +70,12 @@ describe('Data Management page', () => {
   it('Shows an empty project list if there are no projects', async () => {
     const noProjectsResponse = {
       ...mockAPIResponse,
-      '/projects': () => promiseResponse(
+      '/experiments': () => promiseResponse(
         JSON.stringify([]),
       ),
+      // '/projects': () => promiseResponse(
+      //   JSON.stringify([]),
+      // ),
     };
 
     fetchMock.mockIf(/.*/, mockAPI(noProjectsResponse));

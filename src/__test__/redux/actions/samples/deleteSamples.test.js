@@ -90,7 +90,7 @@ describe('deleteSamples', () => {
     expect(actions[4].type).toEqual(SAMPLES_SAVED);
 
     expect(fetchMock).toHaveBeenCalledWith(
-      'http://localhost:3000/v1/projects/project-1/experimentId/samples',
+      'http://localhost:3000/v2/projects/project-1/experimentId/samples',
       {
         body: '{"ids":["sample-1"]}',
         headers: {
@@ -101,7 +101,7 @@ describe('deleteSamples', () => {
     );
 
     expect(fetchMock).toHaveBeenCalledWith(
-      'http://localhost:3000/v1/experiments/experimentId',
+      'http://localhost:3000/v2/experiments/experimentId',
       {
         body: '{"sampleIds":[]}',
         headers: {

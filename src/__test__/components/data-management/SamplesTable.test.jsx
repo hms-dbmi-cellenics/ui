@@ -9,7 +9,7 @@ import _ from 'lodash';
 import { Provider } from 'react-redux';
 
 import mockAPI, { generateDefaultMockAPIResponses, statusResponse } from '__test__/test-utils/mockAPI';
-import { projects, samples } from '__test__/test-utils/mockData';
+import { experiments, samples } from '__test__/test-utils/mockData';
 
 import SamplesTable, { exampleDatasets } from 'components/data-management/SamplesTable';
 import { makeStore } from 'redux/store';
@@ -19,12 +19,9 @@ import createTestComponentFactory from '__test__/test-utils/testComponentFactory
 
 import { loadProjects, setActiveProject } from 'redux/actions/projects';
 import downloadFromUrl from 'utils/data-management/downloadFromUrl';
-import { loadExperiments } from 'redux/actions/experiments';
 
 import reactSortableHoc from 'react-sortable-hoc';
-
-import { api } from 'utils/constants';
-import config from 'config';
+import { loadExperiments } from 'redux/actions/experiments';
 
 jest.mock('config');
 
@@ -57,24 +54,24 @@ const renderSamplesTable = async (store) => {
 
 enableFetchMocks();
 
-const firstProjectWithSamples = projects.find((p) => p.samples.length > 0);
-const projectIdWithSamples = firstProjectWithSamples.uuid;
-const experimentIdWithSamples = firstProjectWithSamples.experiments[0];
+const experimentWithSamples = experiments.find((experiment) => experiment.samplesOrder.length > 0);
+const experimentWithoutSamples = experiments.find(
+  (experiment) => experiment.samplesOrder.length === 0,
+);
 
-const firstProjectWithoutSamples = projects.find((p) => p.samples.length === 0);
-const projectIdWithoutSamples = firstProjectWithoutSamples.uuid;
-const experimentIdWithoutSamples = firstProjectWithoutSamples.experiments[0];
+const experimentWithSamplesId = experimentWithSamples.id;
+const experimentWithoutSamplesId = experimentWithoutSamples.id;
 
 // Mocking samples update / delete routes
 const customResponses = {
-  [`/projects/${projectIdWithSamples}`]: () => statusResponse(200, JSON.stringify('OK')),
-  [`/projects/${projectIdWithSamples}/${experimentIdWithSamples}/samples`]: () => statusResponse(200, 'OK'),
-  [`/v2/experiments/${projectIdWithSamples}/samples/position`]: () => statusResponse(200, 'OK'),
+  // [`experiments/${experimentWithSamplesId}`]: () => statusResponse(200, JSON.stringify('OK')),
+  [`experiments/${experimentWithSamplesId}/samples/${experimentWithSamples.samplesOrder[0]}`]: () => statusResponse(200, 'OK'),
+  [`experiments/${experimentWithSamplesId}/samples/position`]: () => statusResponse(200, 'OK'),
 };
 
 const mockAPIResponse = _.merge(
-  generateDefaultMockAPIResponses(experimentIdWithSamples, projectIdWithSamples),
-  generateDefaultMockAPIResponses(experimentIdWithoutSamples, projectIdWithoutSamples),
+  generateDefaultMockAPIResponses(experimentWithSamplesId),
+  generateDefaultMockAPIResponses(experimentWithoutSamplesId),
   customResponses,
 );
 
@@ -85,25 +82,23 @@ describe('Samples table', () => {
     fetchMock.mockClear();
     fetchMock.mockIf(/.*/, mockAPI(mockAPIResponse));
 
-    config.currentApiVersion = api.V1;
-
     storeState = makeStore();
 
     await storeState.dispatch(loadProjects());
 
     // Loading experiment is usually called in Data Management, so we have to load them manually
-    await storeState.dispatch(loadExperiments(projectIdWithSamples));
-    await storeState.dispatch(loadExperiments(projectIdWithoutSamples));
+    await storeState.dispatch(loadExperiments(experimentWithSamplesId));
+    await storeState.dispatch(loadExperiments(experimentWithoutSamplesId));
 
     // Defaults to project with samples
-    await storeState.dispatch(setActiveProject(projectIdWithSamples));
+    await storeState.dispatch(setActiveProject(experimentWithSamplesId));
   });
 
   it('Shows option to download datasets if there are no samples', async () => {
     await renderSamplesTable(storeState);
 
     // Load project without samples
-    storeState.dispatch(setActiveProject(projectIdWithoutSamples));
+    storeState.dispatch(setActiveProject(experimentWithoutSamplesId));
 
     expect(screen.getByText(/Start uploading your samples by clicking on Add samples./i)).toBeInTheDocument();
     expect(screen.getByText(/Don't have data\? Get started using one of our example datasets:/i)).toBeInTheDocument();
@@ -225,8 +220,6 @@ describe('Samples table', () => {
   });
 
   it('Reorder samples send correct request in api v2', async () => {
-    config.currentApiVersion = api.V2;
-
     let onSortEndProp;
     reactSortableHoc.sortableContainer.mockImplementationOnce(() => (...params) => {
       onSortEndProp = params[0].onSortEnd;
@@ -240,7 +233,7 @@ describe('Samples table', () => {
     });
 
     expect(fetchMock).toHaveBeenCalledWith(
-      `http://localhost:3000/v2/experiments/${projectIdWithSamples}/samples/position`,
+      `http://localhost:3000/v2/experiments/${experimentWithSamplesId}/samples/position`,
       {
         method: 'PUT',
         headers: expect.anything(),
