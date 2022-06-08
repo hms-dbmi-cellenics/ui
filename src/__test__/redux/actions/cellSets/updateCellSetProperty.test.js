@@ -3,9 +3,6 @@ import thunk from 'redux-thunk';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import waitForActions from 'redux-mock-store-await-actions';
 
-import config from 'config';
-import { api } from 'utils/constants';
-
 import updateCellSetProperty from 'redux/actions/cellSets/updateCellSetProperty';
 
 import { CELL_SETS_UPDATE_PROPERTY } from 'redux/actionTypes/cellSets';
@@ -40,8 +37,6 @@ describe('updateCellSetProperty action', () => {
 
   beforeEach(() => {
     const response = new Response(JSON.stringify({}));
-
-    config.currentApiVersion = api.V1;
 
     fetchMock.resetMocks();
     fetchMock.doMock();
@@ -111,19 +106,19 @@ describe('updateCellSetProperty action', () => {
     }).rejects.toThrow();
   });
 
-  it('Uses V2 URL when using API version V2', async () => {
-    config.currentApiVersion = api.V2;
+  // it('Uses V2 URL when using API version V2', async () => {
+  //   config.currentApiVersion = api.V2;
 
-    const store = mockStore({ cellSets: { ...cellSetsNodeState, loading: false } });
-    await store.dispatch(updateCellSetProperty(experimentId, childKey, property));
+  //   const store = mockStore({ cellSets: { ...cellSetsNodeState, loading: false } });
+  //   await store.dispatch(updateCellSetProperty(experimentId, childKey, property));
 
-    await waitForActions(store, [CELL_SETS_UPDATE_PROPERTY]);
+  //   await waitForActions(store, [CELL_SETS_UPDATE_PROPERTY]);
 
-    expect(fetchMock).toHaveBeenCalledTimes(1);
+  //   expect(fetchMock).toHaveBeenCalledTimes(1);
 
-    const [url, body] = fetchMock.mock.calls[0];
+  //   const [url, body] = fetchMock.mock.calls[0];
 
-    expect(url).toEqual('http://localhost:3000/v2/experiments/1234/cellSets');
-    expect(body).toMatchSnapshot();
-  });
+  //   expect(url).toEqual('http://localhost:3000/v2/experiments/1234/cellSets');
+  //   expect(body).toMatchSnapshot();
+  // });
 });
