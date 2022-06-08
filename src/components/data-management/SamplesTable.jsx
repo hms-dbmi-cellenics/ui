@@ -252,6 +252,25 @@ const SamplesTable = forwardRef((props, ref) => {
     setTableData(newData);
   }, [projects, samples, activeProjectUuid]);
 
+  // Name of file is 1.Example-File_Name.zip
+  // The naming starts from 1
+  const parseFileName = (name) => {
+    const parts = name.split('.');
+
+    // The first part of the file name is the order
+    const order = Number.parseInt(parts[0], 10);
+    if (!order) {
+      console.warn('Invalid dataset file:', name);
+      return null;
+    }
+
+    // Filename may contain dots, so we need to join them
+    const rawFileName = parts.slice(1, parts.length - 1).join('.');
+    const filename = rawFileName.replace(/_/g, ' ');
+
+    return { order, filename };
+  };
+
   const getPublicDatasets = async () => {
     Storage.configure({
       bucket: `biomage-public-datasets-${environment}`,
@@ -262,17 +281,23 @@ const SamplesTable = forwardRef((props, ref) => {
 
     const datasets = await Storage.list('');
 
-    const parseFileName = (name) => {
-      console.log('*** test', name.replace(/_/g, ' ').split('.')[0]);
-      return name.replace(/_/g, ' ').split('.')[0];
-    };
+    // Properly order the datasets
+    const result = new Array(datasets.length).fill(null);
 
-    const result = datasets.map((data) => ({
-      filename: data.key,
-      description: parseFileName(data.key),
-    }));
+    datasets.forEach((data) => {
+      const parsed = parseFileName(data.key);
 
-    return result;
+      if (!parsed) return;
+
+      // Order begins from 1, but array index begins from 0
+      const insertionIndex = parsed.order - 1;
+      result[insertionIndex] = {
+        filename: data.key,
+        description: parsed.filename,
+      };
+    });
+
+    return result.filter((data) => data !== null);
   };
 
   useEffect(() => {

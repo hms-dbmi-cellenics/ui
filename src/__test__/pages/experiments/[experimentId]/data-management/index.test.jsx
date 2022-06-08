@@ -45,14 +45,14 @@ jest.mock('@aws-amplify/storage', () => ({
   configure: jest.fn(),
   get: jest.fn(() => Promise.resolve('https://mock-s3-url.com')),
   list: jest.fn(() => Promise.resolve([
-    { key: 'Example_1.zip' },
-    { key: 'Another-Example_2.zip' },
+    { key: '1.Example_1.zip' },
+    { key: '2.Another-Example_no.2.zip' },
   ])),
 }));
 
 const expectedSampleNames = [
   'Example 1',
-  'Another-Example 2',
+  'Another-Example no.2',
 ];
 
 const firstProjectWithSamples = projects.find((p) => p.samples.length > 0);
@@ -180,14 +180,9 @@ describe('Data Management page', () => {
       userEvent.click(projectName);
     });
 
-    // const exampleInfo = screen.getByText(/Don't have data\? Get started using one of our example datasets/i);
-
     await waitFor(() => {
       expect(screen.getByText(/Don't have data\? Get started using one of our example datasets/i)).toBeInTheDocument();
     });
-
-    // Example information exists
-    // expect(exampleInfo).toBeInTheDocument();
 
     const downloadPromises = expectedSampleNames.map(async (sampleName) => {
       const fileDownloadLink = screen.getByText(sampleName);

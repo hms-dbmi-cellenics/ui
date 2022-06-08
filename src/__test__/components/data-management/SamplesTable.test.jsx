@@ -41,14 +41,14 @@ jest.mock('@aws-amplify/storage', () => ({
   configure: jest.fn(),
   get: jest.fn(() => Promise.resolve('https://mock-s3-url.com')),
   list: jest.fn(() => Promise.resolve([
-    { key: 'Example_1.zip' },
-    { key: 'Another-Example_2.zip' },
+    { key: '2.Another-Example_no.2.zip' },
+    { key: '1.Example_1.zip' },
   ])),
 }));
 
 const expectedSampleNames = [
   'Example 1',
-  'Another-Example 2',
+  'Another-Example no.2',
 ];
 
 jest.mock('utils/data-management/downloadFromUrl');
@@ -129,10 +129,11 @@ describe('Samples table', () => {
     expect(screen.getByText(/Start uploading your samples by clicking on Add samples./i)).toBeInTheDocument();
     expect(screen.getByText(/Don't have data\? Get started using one of our example datasets:/i)).toBeInTheDocument();
 
-    // There should be n number of example datasets
-    expectedSampleNames.forEach((name) => {
-      expect(screen.getByText(name)).toBeInTheDocument();
-    });
+    // There should be n number of example datasets in the correct order
+    const linksContainer = screen.getByText(expectedSampleNames[0]).closest('ul');
+    const links = Array.from(linksContainer.children).map((el) => el.textContent);
+
+    expect(links.join(' ')).toEqual(expectedSampleNames.join(' '));
 
     // Clicking on one of the samples downloads the file
     const exampleFileLink = expectedSampleNames[0];
@@ -164,6 +165,26 @@ describe('Samples table', () => {
 
     // But the prompt to download data is not shown anymore
     expect(screen.queryByText(/Don't have data\? Get started using one of our example datasets:/i)).toBeNull();
+  });
+
+  it('Should not show example datasets with incorrect names', async () => {
+    Storage.list.mockImplementationOnce(() => Promise.resolve([
+      { key: '2.Another-Example_no.2.zip' },
+      { key: '1.Example_1.zip' },
+      { key: 'Dataset_with_no_order.zip' },
+      { key: 'Invalid_key.Dataset.zip' },
+      { key: 'Invalid_key.Dataset_no_extension' },
+    ]));
+
+    await renderSamplesTable(storeState);
+
+    // Load project without samples
+    storeState.dispatch(setActiveProject(projectIdWithoutSamples));
+
+    const linksContainer = screen.getByText(expectedSampleNames[0]).closest('ul');
+    const links = Array.from(linksContainer.children).map((el) => el.textContent);
+
+    expect(links.join(' ')).toEqual(expectedSampleNames.join(' '));
   });
 
   it('Should show all the samples', async () => {
