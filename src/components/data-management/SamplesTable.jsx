@@ -266,7 +266,7 @@ const SamplesTable = forwardRef((props, ref) => {
     const s3Object = await Storage.get(
       filename,
       {
-        bucket: `biomage-public-datasets-${environment}`,
+        bucket: `biomage-public-datasets-${environment}-242905224710`,
         contentType: 'multipart/form-data',
       },
     );
