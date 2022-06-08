@@ -12,19 +12,19 @@ import {
   EXPERIMENT_SETTINGS_PIPELINE_START,
   EXPERIMENT_SETTINGS_DISCARD_CHANGED_QC_FILTERS,
 } from 'redux/actionTypes/experimentSettings';
-
 import {
   BACKEND_STATUS_ERROR,
   BACKEND_STATUS_LOADING,
 } from 'redux/actionTypes/backendStatus';
-
 import { EMBEDDINGS_LOADING } from 'redux/actionTypes/embeddings';
 
 import { runPipeline } from 'redux/actions/pipeline';
 
-import generateExperimentSettingsMock from '../../../test-utils/experimentSettings.mock';
-
+import generateExperimentSettingsMock from '__test__/test-utils/experimentSettings.mock';
 import '__test__/test-utils/setupTests';
+
+import config from 'config';
+import { api } from 'utils/constants';
 
 const mockStore = configureStore([thunk]);
 
@@ -121,5 +121,22 @@ describe('runPipeline action', () => {
     expect(actions[1].type).toEqual(EMBEDDINGS_LOADING);
 
     expect(actions).toMatchSnapshot();
+  });
+
+  it('Works well with api v2', async () => {
+    config.currentApiVersion = api.V2;
+
+    const store = mockStore(initialState);
+    await store.dispatch(runPipeline(experimentId));
+
+    const actions = store.getActions();
+
+    expect(actions[0].type).toEqual(BACKEND_STATUS_LOADING);
+    expect(actions[1].type).toEqual(EXPERIMENT_SETTINGS_PIPELINE_START);
+    expect(loadBackendStatus).toHaveBeenCalled();
+
+    expect(actions).toMatchSnapshot();
+
+    expect(fetchMock.mock.calls[0]).toMatchSnapshot();
   });
 });

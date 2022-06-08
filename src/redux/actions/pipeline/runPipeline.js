@@ -11,9 +11,12 @@ import {
   BACKEND_STATUS_ERROR,
 } from 'redux/actionTypes/backendStatus';
 
-import { saveProcessingSettings } from '../experimentSettings';
-import { loadBackendStatus } from '../backendStatus';
-import { loadEmbedding } from '../embedding';
+import { saveProcessingSettings } from 'redux/actions/experimentSettings';
+import { loadBackendStatus } from 'redux/actions/backendStatus';
+import { loadEmbedding } from 'redux/actions/embedding';
+
+import config from 'config';
+import { api } from 'utils/constants';
 
 const runOnlyConfigureEmbedding = async (experimentId, embeddingMethod, dispatch) => {
   await dispatch(saveProcessingSettings(experimentId, 'configureEmbedding'));
@@ -62,7 +65,13 @@ const runPipeline = (experimentId) => async (dispatch, getState) => {
     };
   });
 
-  const url = `/v1/experiments/${experimentId}/pipelines`;
+  let url;
+  if (config.currentApiVersion === api.V1) {
+    url = `/v1/experiments/${experimentId}/pipelines`;
+  } else if (config.currentApiVersion === api.V2) {
+    url = `/v2/experiments/${experimentId}/qc`;
+  }
+
   try {
     // We are only sending the configuration that we know changed
     // with respect to the one that is already persisted in dynamodb
