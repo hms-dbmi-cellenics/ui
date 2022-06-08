@@ -56,7 +56,7 @@ describe('saveProject action', () => {
     await store.dispatch(saveProject(mockProject.uuid, mockProject));
 
     expect(fetchMock).toHaveBeenCalledWith(
-      `http://localhost:3000/v2/projects/${mockProject.uuid}`,
+      `http://localhost:3000/v1/projects/${mockProject.uuid}`,
       {
         body: JSON.stringify(mockProject),
         headers: {
