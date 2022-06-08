@@ -12,10 +12,6 @@ import {
 } from 'redux/actionTypes/projects';
 import '__test__/test-utils/setupTests';
 
-import { api } from 'utils/constants';
-
-import config from 'config';
-
 jest.mock('config');
 jest.mock('utils/http/handleError');
 
@@ -57,38 +53,7 @@ describe('createProject action', () => {
   const projectDescription = 'test project description';
   const experimentName = 'mockExperimentName';
 
-  it('Works correctly when there are no errors', async () => {
-    config.currentApiVersion = api.V1;
-
-    fetchMock.mockResponse(JSON.stringify({}), { url: 'mockedUrl', status: 200 });
-
-    await store.dispatch(
-      createProject(projectName, projectDescription, experimentName),
-    );
-
-    // Fetch call is made
-    const fetchMockFirstCall = fetchMock.mock.calls[0];
-
-    const { body: fetchBody, method: fetchMethod } = fetchMockFirstCall[1];
-    expect(fetchMockFirstCall[0]).toEqual(`http://localhost:3000/v2/projects/${projectUuid}`);
-
-    expect(fetchMethod).toEqual('POST');
-    expect(JSON.parse(fetchBody)).toMatchSnapshot();
-
-    expect(createExperiment).toHaveBeenCalledWith(projectUuid, experimentName);
-
-    const actions = store.getActions();
-
-    expect(actions[0].type).toEqual(PROJECTS_SAVING);
-    expect(actions[1].type).toEqual(PROJECTS_CREATE);
-
-    // Created project is correct
-    expect(actions[1].payload).toMatchSnapshot();
-  });
-
-  it('Still creates project when using v2', async () => {
-    config.currentApiVersion = api.V2;
-
+  it('Works corectly project when there are no errors', async () => {
     await store.dispatch(
       createProject(projectName, projectDescription, experimentName),
     );
@@ -106,17 +71,16 @@ describe('createProject action', () => {
     expect(actions[1].payload).toMatchSnapshot();
   });
 
-  it('Shows error message when there was a fetch error', async () => {
-    config.currentApiVersion = api.V1;
-
+  it('Shows error when there was a fetch error', async () => {
     const fetchErrorMessage = 'some error';
 
     fetchMock.mockResponse(JSON.stringify({ message: fetchErrorMessage }), { url: 'mockedUrl', status: 400 });
 
-    // Fails with error message we sent in response to fetch
     await store.dispatch(
       createProject(projectName, projectDescription, experimentName),
     );
+
+    expect(createExperiment).toHaveBeenCalledWith(projectUuid, experimentName);
 
     // Sends correct actions
     const actions = store.getActions();
