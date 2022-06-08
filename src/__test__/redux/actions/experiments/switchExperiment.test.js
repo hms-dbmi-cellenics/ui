@@ -1,5 +1,5 @@
 // import { switchExperiment, loadExperiments } from 'redux/actions/experiments';
-import { switchExperiment } from 'redux/actions/experiments';
+import { loadExperiments, switchExperiment } from 'redux/actions/experiments';
 import _ from 'lodash';
 import mockAPI, {
   generateDefaultMockAPIResponses,
@@ -20,8 +20,8 @@ const experimentWithoutSamples = experiments.find(
   (experiment) => experiment.samplesOrder.length === 0,
 );
 
-const experimentWithSamplesId = experimentWithSamples[0].id;
-const experimentWithoutSamplesId = experimentWithoutSamples[0].id;
+const experimentWithSamplesId = experimentWithSamples.id;
+const experimentWithoutSamplesId = experimentWithoutSamples.id;
 
 enableFetchMocks();
 
@@ -38,8 +38,8 @@ describe('switch experiment ', () => {
 
     store = makeStore();
     await store.dispatch(loadProjects());
-    // await store.dispatch(loadExperiments(projectWithSamplesId));
-    // await store.dispatch(loadExperiments(projectWithoutSamplesId));
+    await store.dispatch(loadExperiments(experimentWithSamplesId));
+    await store.dispatch(loadExperiments(experimentWithoutSamplesId));
     await store.dispatch(setActiveProject(experimentWithoutSamplesId));
   });
 
