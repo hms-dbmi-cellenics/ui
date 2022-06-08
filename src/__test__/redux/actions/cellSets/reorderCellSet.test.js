@@ -4,9 +4,6 @@ import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import waitForActions from 'redux-mock-store-await-actions';
 import { waitFor } from '@testing-library/react';
 
-import config from 'config';
-import { api } from 'utils/constants';
-
 import reorderCellSet from 'redux/actions/cellSets/reorderCellSet';
 import { CELL_SETS_REORDER } from 'redux/actionTypes/cellSets';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
@@ -41,8 +38,6 @@ describe('reorderCellSet action', () => {
 
   beforeEach(() => {
     jest.resetAllMocks();
-
-    config.currentApiVersion = api.V1;
 
     fetchMock.resetMocks();
     fetchMock.doMock();
@@ -82,8 +77,6 @@ describe('reorderCellSet action', () => {
   });
 
   it('Uses V2 URL when using API version V2', async () => {
-    config.currentApiVersion = api.V2;
-
     const store = mockStore({ cellSets: { ...cellSetsNodeState, loading: false } });
     await store.dispatch(reorderCellSet(experimentId, cellSetKey, 5));
 
