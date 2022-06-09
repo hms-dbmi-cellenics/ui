@@ -1,3 +1,5 @@
+const _ = require('lodash');
+
 const fileTypes = {
   matrix: 'matrix10x',
   barcodes: 'barcodes10x',
@@ -8,7 +10,7 @@ const fileTypes = {
 const getFileTypeV2 = (fileName) => {
   let fileType;
 
-  Object.entries(fileTypes).forEach(([name, type]) => {
+  _.forEach(Object.entries(fileTypes), ([name, type]) => {
     if (fileName.includes(name)) {
       fileType = type;
       return false;

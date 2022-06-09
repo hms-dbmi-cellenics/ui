@@ -12,9 +12,6 @@ const downloadSingleFile = async (activeProjectUuid, sampleUuid, fileName) => {
     requestUrl = `/v1/projects/${activeProjectUuid}/samples/${sampleUuid}/${fileName}/downloadUrl`;
   } else if (config.currentApiVersion === api.V2) {
     const fileType = getFileTypeV2(fileName);
-
-    // Content-Disposition: attachment; filename="foo.bar"
-
     requestUrl = `/v2/experiments/${activeProjectUuid}/samples/${sampleUuid}/files/${fileType}/downloadUrl`;
   }
 
