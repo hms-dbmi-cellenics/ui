@@ -1,4 +1,3 @@
-// import { switchExperiment, loadExperiments } from 'redux/actions/experiments';
 import { loadExperiments, switchExperiment } from 'redux/actions/experiments';
 import _ from 'lodash';
 import mockAPI, {
@@ -7,7 +6,6 @@ import mockAPI, {
 } from '__test__/test-utils/mockAPI';
 import { makeStore } from 'redux/store';
 import { loadProjects, setActiveProject } from 'redux/actions/projects';
-// import { projects } from '__test__/test-utils/mockData';
 import { responseData } from '__test__/test-utils/mockData';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 

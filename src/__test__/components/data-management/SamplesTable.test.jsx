@@ -83,7 +83,6 @@ const experimentWithoutSamplesId = experimentWithoutSamples.id;
 
 // Mocking samples update / delete routes
 const customResponses = {
-  // [`experiments/${experimentWithSamplesId}`]: () => statusResponse(200, JSON.stringify('OK')),
   [`experiments/${experimentWithSamplesId}/samples/${experimentWithSamples.samplesOrder[0]}`]: () => statusResponse(200, 'OK'),
   [`experiments/${experimentWithSamplesId}/samples/position`]: () => statusResponse(200, 'OK'),
 };

@@ -105,20 +105,4 @@ describe('updateCellSetProperty action', () => {
       await store.dispatch(updateCellSetProperty(experimentId, childKey, { parentNodeKey: 'someOtherParent' }));
     }).rejects.toThrow();
   });
-
-  // it('Uses V2 URL when using API version V2', async () => {
-  //   config.currentApiVersion = api.V2;
-
-  //   const store = mockStore({ cellSets: { ...cellSetsNodeState, loading: false } });
-  //   await store.dispatch(updateCellSetProperty(experimentId, childKey, property));
-
-  //   await waitForActions(store, [CELL_SETS_UPDATE_PROPERTY]);
-
-  //   expect(fetchMock).toHaveBeenCalledTimes(1);
-
-  //   const [url, body] = fetchMock.mock.calls[0];
-
-  //   expect(url).toEqual('http://localhost:3000/v2/experiments/1234/cellSets');
-  //   expect(body).toMatchSnapshot();
-  // });
 });

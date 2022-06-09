@@ -52,19 +52,10 @@ const generateDefaultMockAPIResponses = (experimentId) => ({
 const mockAPI = (apiMapping) => (req) => {
   const path = req.url;
 
-  console.log('pathDebug');
-  console.log(path);
-
   const key = _.find(
     Object.keys(apiMapping),
     (urlStub) => path.endsWith(urlStub),
   );
-
-  console.log('keyDebug');
-  console.log(key);
-
-  console.log('apiMappingDebug');
-  console.log(apiMapping);
 
   if (!key) {
     return statusResponse({
