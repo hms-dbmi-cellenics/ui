@@ -1,7 +1,7 @@
 import React from 'react';
 import _ from 'lodash';
 
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import { act } from 'react-dom/test-utils';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import { Provider } from 'react-redux';
@@ -19,8 +19,9 @@ import {
 import downloadFromUrl from 'utils/data-management/downloadFromUrl';
 
 import DataManagementPage from 'pages/data-management';
-import { exampleDatasets } from 'components/data-management/SamplesTable';
 import userEvent from '@testing-library/user-event';
+
+import loadEnvironment from 'redux/actions/networkResources/loadEnvironment';
 import { setActiveProject } from 'redux/actions/projects';
 
 jest.mock('utils/data-management/downloadFromUrl');
@@ -34,15 +35,30 @@ jest.mock('utils/AppRouteProvider', () => ({
   })),
 }));
 
+jest.mock('@aws-amplify/auth', () => ({
+  currentAuthenticatedUser: jest.fn(() => Promise.resolve({ attributes: { name: 'mockUserName' } })),
+  federatedSignIn: jest.fn(),
+}));
+
 // Necessary due to storage being used in the default SamplesTable.
 jest.mock('@aws-amplify/storage', () => ({
+  configure: jest.fn(),
   get: jest.fn(() => Promise.resolve('https://mock-s3-url.com')),
+  list: jest.fn(() => Promise.resolve([
+    { key: '1.Example_1.zip' },
+    { key: '2.Another-Example_no.2.zip' },
+  ])),
 }));
 
 const experimentWithSamples = experiments.find((experiment) => experiment.samplesOrder.length > 0);
 const experimentWithoutSamples = experiments.find(
   (experiment) => experiment.samplesOrder.length === 0,
 );
+
+const expectedSampleNames = [
+  'Example 1',
+  'Another-Example no.2',
+];
 
 const experimentWithSamplesId = experimentWithSamples.id;
 const experimentWithoutSamplesId = experimentWithoutSamples.id;
@@ -65,6 +81,7 @@ describe('Data Management page', () => {
     fetchMock.mockIf(/.*/, mockAPI(mockAPIResponse));
 
     storeState = makeStore();
+    storeState.dispatch(loadEnvironment('test'));
   });
 
   it('Shows an empty project list if there are no projects', async () => {
@@ -163,13 +180,12 @@ describe('Data Management page', () => {
       userEvent.click(projectName);
     });
 
-    const exampleInfo = screen.getByText(/Don't have data\? Get started using one of our example datasets/i);
+    await waitFor(() => {
+      expect(screen.getByText(/Don't have data\? Get started using one of our example datasets/i)).toBeInTheDocument();
+    });
 
-    // Example information exists
-    expect(exampleInfo).toBeInTheDocument();
-
-    const downloadPromises = exampleDatasets.map(async ({ description }) => {
-      const fileDownloadLink = screen.getByText(description);
+    const downloadPromises = expectedSampleNames.map(async (sampleName) => {
+      const fileDownloadLink = screen.getByText(sampleName);
 
       expect(fileDownloadLink).toBeInTheDocument();
 
@@ -179,7 +195,7 @@ describe('Data Management page', () => {
 
     await Promise.all(downloadPromises);
 
-    expect(downloadFromUrl).toHaveBeenCalledTimes(exampleDatasets.length);
+    expect(downloadFromUrl).toHaveBeenCalledTimes(expectedSampleNames.length);
   });
 
   it('Shows samples table if project contain samples', async () => {
