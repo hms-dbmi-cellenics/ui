@@ -268,7 +268,7 @@ jobs:
             KUBERNETES_ENV="staging"
             IMAGE_TAG="$REF_DASHED-$GITHUB_SHA"
             IMAGE_GLOB="glob:$REF_DASHED-*"
-            REPLICA_COUNT="4"
+            REPLICA_COUNT="2"
           fi
 
           if [ "${{ matrix.environment }}" = "staging" ]; then
