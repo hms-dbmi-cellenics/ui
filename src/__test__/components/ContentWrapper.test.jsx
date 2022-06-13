@@ -189,7 +189,7 @@ describe('ContentWrapper', () => {
 
   it('has the correct sider and layout style when opened / closed', async () => {
     const siderHasWidth = (container, expectedWidth) => {
-      const div = container.firstChild;
+      const div = container.children[1];
 
       const [sidebar, content] = Array.from(div.children);
 
