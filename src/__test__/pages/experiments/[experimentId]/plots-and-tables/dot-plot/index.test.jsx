@@ -72,7 +72,7 @@ const customAPIResponses = {
   [`experiments/${experimentId}/cellSets`]: () => promiseResponse(
     JSON.stringify(cellSetsDataWithScratchpad),
   ),
-  [`/plots/${plotUuid}`]: (req) => {
+  [`/plots-tables/${plotUuid}`]: (req) => {
     if (req.method === 'PUT') return promiseResponse(JSON.stringify('OK'));
     return statusResponse(404, 'Not Found');
   },
@@ -154,7 +154,7 @@ describe('Dot plot page', () => {
   it('Shows a skeleton if config is not loaded', async () => {
     const noConfigResponse = {
       ...mockAPIResponse,
-      [`/plots/${plotUuid}`]: () => delayedResponse({ body: 'Not found', status: 404 }),
+      [`/plots-tables/${plotUuid}`]: () => delayedResponse({ body: 'Not found', status: 404 }),
     };
 
     fetchMock.mockIf(/.*/, mockAPI(noConfigResponse));

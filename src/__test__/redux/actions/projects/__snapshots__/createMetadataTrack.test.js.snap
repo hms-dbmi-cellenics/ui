@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`createMetadataTrack action Works correctly 1`] = `
+exports[`createMetadataTrack action Works correctly in api v2 1`] = `
 Array [
   Object {
     "key": "Test_track",

@@ -43,7 +43,7 @@ const resetPlotConfig = (experimentId, plotUuid, plotType) => async (dispatch) =
     dispatch({
       type: SAVE_CONFIG,
       payload:
-        { plotUuid, success: false },
+      { plotUuid, success: false },
     });
   }
 };

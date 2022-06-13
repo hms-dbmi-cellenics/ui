@@ -11,11 +11,6 @@ import {
 } from 'redux/actionTypes/projects';
 import '__test__/test-utils/setupTests';
 
-import config from 'config';
-import { api } from 'utils/constants';
-
-jest.mock('config');
-
 enableFetchMocks();
 const mockStore = configureStore([thunk]);
 
@@ -47,8 +42,6 @@ describe('saveProject action', () => {
     fetchMock.resetMocks();
     fetchMock.doMock();
     fetchMock.mockResolvedValueOnce(response);
-
-    config.currentApiVersion = api.V1;
   });
 
   it('Dispatches fetch correctly.', async () => {

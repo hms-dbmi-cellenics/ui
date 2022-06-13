@@ -9,8 +9,10 @@ import initialProjectState, { projectTemplate } from 'redux/reducers/projects/in
 import { saveProject } from 'redux/actions/projects';
 
 import {
-  SAMPLES_DELETE_API_V2, SAMPLES_SAVED, SAMPLES_SAVING, SAMPLES_ERROR,
+  SAMPLES_DELETE_API_V2, SAMPLES_DELETE_API_V1, SAMPLES_SAVED, SAMPLES_SAVING, SAMPLES_ERROR,
 } from 'redux/actionTypes/samples';
+import { PROJECTS_UPDATE } from 'redux/actionTypes/projects';
+import { EXPERIMENTS_SAVING } from 'redux/actionTypes/experiments';
 
 import config from 'config';
 import { api } from 'utils/constants';
@@ -65,6 +67,52 @@ describe('deleteSamples', () => {
   });
 
   it('Dispatches event correctly', async () => {
+    const store = mockStore(initialState);
+    await store.dispatch(deleteSamples([mockSampleUuid]));
+
+    // Sets up loading state for saving project
+    const actions = store.getActions();
+
+    expect(saveProject).toHaveBeenCalled();
+
+    expect(actions[0].type).toEqual(SAMPLES_SAVING);
+
+    // Update project
+    expect(actions[1].type).toEqual(PROJECTS_UPDATE);
+
+    // Delete sample
+    expect(actions[2].type).toEqual(SAMPLES_DELETE_API_V1);
+
+    // Experiments being saved
+    expect(actions[3].type).toEqual(EXPERIMENTS_SAVING);
+
+    // Resolve loading state
+    expect(actions[4].type).toEqual(SAMPLES_SAVED);
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      'http://localhost:3000/v1/projects/project-1/experimentId/samples',
+      {
+        body: '{"ids":["sample-1"]}',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        method: 'DELETE',
+      },
+    );
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      'http://localhost:3000/v1/experiments/experimentId',
+      {
+        body: '{"sampleIds":[]}',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        method: 'PUT',
+      },
+    );
+  });
+
+  it('Dispatches event correctly for api v2', async () => {
     config.currentApiVersion = api.V2;
 
     const store = mockStore(initialState);
@@ -89,7 +137,7 @@ describe('deleteSamples', () => {
     );
   });
 
-  it('Dispatches error correctly if fetch fails', async () => {
+  it('Dispatches error correctly for api v2 if fetch fails', async () => {
     config.currentApiVersion = api.V2;
 
     fetchMock.mockReject(new Error('Api error'));

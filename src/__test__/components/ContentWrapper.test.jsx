@@ -15,6 +15,7 @@ import AppRouteProvider from 'utils/AppRouteProvider';
 import { makeStore } from 'redux/store';
 import { getBackendStatus } from 'redux/selectors';
 import { loadProjects, setActiveProject } from 'redux/actions/projects';
+import { loadExperiments } from 'redux/actions/experiments';
 import { updateExperimentInfo } from 'redux/actions/experimentSettings';
 import generateGem2sParamsHash from 'utils/data-management/generateGem2sParamsHash';
 
@@ -22,7 +23,7 @@ import mockAPI, {
   generateDefaultMockAPIResponses,
 } from '__test__/test-utils/mockAPI';
 
-import { experiments } from '__test__/test-utils/mockData';
+import { projects } from '__test__/test-utils/mockData';
 
 jest.mock('redux/selectors');
 jest.mock('utils/socketConnection');
@@ -56,11 +57,10 @@ enableFetchMocks();
 
 generateGem2sParamsHash.mockImplementation(() => 'mockParamsHash');
 
-const experimentWithSamples = experiments.find((experiment) => experiment.samplesOrder.length > 0);
-
-const sampleIds = experimentWithSamples.samplesOrder;
-
-const experimentId = experimentWithSamples.id;
+const projectWithSamples = projects.find((project) => project.samples.length > 0);
+const experimentId = projectWithSamples.experiments[0];
+const projectUuid = projectWithSamples.uuid;
+const sampleIds = projectWithSamples.samples;
 
 const experimentName = 'test experiment';
 const experimentData = {
@@ -68,7 +68,7 @@ const experimentData = {
   experimentName,
 };
 
-const mockAPIResponses = generateDefaultMockAPIResponses(experimentId);
+const mockAPIResponses = generateDefaultMockAPIResponses(experimentId, projectUuid);
 
 let store = null;
 
@@ -118,7 +118,8 @@ describe('ContentWrapper', () => {
     }));
 
     await store.dispatch(loadProjects());
-    await store.dispatch(setActiveProject(experimentId));
+    await store.dispatch(loadExperiments(projectUuid));
+    await store.dispatch(setActiveProject(projectUuid));
     await store.dispatch(updateExperimentInfo({ experimentId, experimentName, sampleIds }));
   });
 
@@ -187,9 +188,15 @@ describe('ContentWrapper', () => {
     expect(screen.getByText('Plots and Tables').closest('li')).toHaveAttribute('aria-disabled', 'false');
   });
 
+  it('Shows the maintenance alert', async () => {
+    await renderContentWrapper();
+
+    expect(screen.getByText(/Cellenics scheduled downtime/i)).toBeInTheDocument();
+  });
+
   it('has the correct sider and layout style when opened / closed', async () => {
     const siderHasWidth = (container, expectedWidth) => {
-      const div = container.firstChild;
+      const div = container.children[1];
 
       const [sidebar, content] = Array.from(div.children);
 

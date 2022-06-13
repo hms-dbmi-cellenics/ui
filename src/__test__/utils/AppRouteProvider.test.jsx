@@ -12,13 +12,14 @@ import mockAPI, {
   generateDefaultMockAPIResponses,
 } from '__test__/test-utils/mockAPI';
 import fake from '__test__/test-utils/constants';
+import { projects } from '__test__/test-utils/mockData';
 
 import AppRouteProvider, { useAppRouter, PATHS } from 'utils/AppRouteProvider';
 import DataProcessingIntercept from 'components/data-processing/DataProcessingIntercept';
 
 import addChangedQCFilter from 'redux/actions/experimentSettings/processingConfig/addChangedQCFilter';
 import { loadProjects, updateProject } from 'redux/actions/projects';
-import { switchExperiment, updateExperiment } from 'redux/actions/experiments';
+import { loadExperiments, switchExperiment, updateExperiment } from 'redux/actions/experiments';
 
 jest.mock('next/router', () => ({
   __esModule: true,
@@ -39,7 +40,8 @@ updateExperiment.mockImplementation(() => ({ type: 'MOCK_ACTION ' }));
 enableFetchMocks();
 
 const experimentId = fake.EXPERIMENT_ID;
-const defaultResponses = generateDefaultMockAPIResponses(experimentId);
+const projectUuid = projects[0].uuid;
+const defaultResponses = generateDefaultMockAPIResponses(experimentId, projectUuid);
 
 const buttonText = 'Go';
 
@@ -62,7 +64,7 @@ const TestComponent = (props) => {
 
   const testParams = {
     experimentId,
-    projectUuid: experimentId,
+    projectUuid,
     ...params,
   };
 
@@ -113,6 +115,7 @@ describe('AppRouteProvider', () => {
 
   it('Switch experiment when navigating from DataManagement', async () => {
     await storeState.dispatch(loadProjects());
+    await storeState.dispatch(loadExperiments(projectUuid));
 
     render(
       <Provider store={storeState}>
