@@ -187,6 +187,12 @@ describe('ContentWrapper', () => {
     expect(screen.getByText('Plots and Tables').closest('li')).toHaveAttribute('aria-disabled', 'false');
   });
 
+  it('Shows the maintenance alert', async () => {
+    await renderContentWrapper();
+
+    expect(screen.getByText(/Cellenics scheduled downtime/i)).toBeInTheDocument();
+  });
+
   it('has the correct sider and layout style when opened / closed', async () => {
     const siderHasWidth = (container, expectedWidth) => {
       const div = container.children[1];
