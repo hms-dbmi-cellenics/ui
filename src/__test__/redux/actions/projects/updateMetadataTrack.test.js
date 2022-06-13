@@ -36,6 +36,7 @@ const oldMetadataTrack = 'Old track';
 const oldMetadataTrackKey = metadataNameToKey(oldMetadataTrack);
 
 const newMetadataTrack = 'New track';
+const newMetadataTrackKey = metadataNameToKey(newMetadataTrack);
 
 const mockProject = {
   ...initialProjectState,
@@ -91,7 +92,7 @@ describe('updateMetadataTrack action', () => {
     expect(fetchMock).toHaveBeenCalledWith(
       `http://localhost:3000/v2/experiments/${mockProject.uuid}/metadataTracks/${oldMetadataTrackKey}`,
       {
-        body: JSON.stringify({ key: newMetadataTrack }),
+        body: JSON.stringify({ key: newMetadataTrackKey }),
         headers: { 'Content-Type': 'application/json' },
         method: 'PATCH',
       },
