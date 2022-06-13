@@ -30,8 +30,10 @@ const loadCellSets = (experimentId, forceReload = false) => async (dispatch, get
   } else if (config.currentApiVersion === api.V2) {
     url = `/v2/experiments/${experimentId}/cellSets`;
   }
+
   try {
     const data = await fetchAPI(url);
+
     dispatch({
       type: CELL_SETS_LOADED,
       payload: {

@@ -12,7 +12,7 @@ import '__test__/test-utils/mockWorkerBackend';
 import createTestComponentFactory from '__test__/test-utils/testComponentFactory';
 import mockAPI, { generateDefaultMockAPIResponses, promiseResponse } from '__test__/test-utils/mockAPI';
 import {
-  projects,
+  experiments,
   samples,
 } from '__test__/test-utils/mockData';
 
@@ -50,25 +50,25 @@ jest.mock('@aws-amplify/storage', () => ({
   ])),
 }));
 
+const experimentWithSamples = experiments.find((experiment) => experiment.samplesOrder.length > 0);
+const experimentWithoutSamples = experiments.find(
+  (experiment) => experiment.samplesOrder.length === 0,
+);
+
 const expectedSampleNames = [
   'Example 1',
   'Another-Example no.2',
 ];
 
-const firstProjectWithSamples = projects.find((p) => p.samples.length > 0);
-const projectIdWithSamples = firstProjectWithSamples.uuid;
-const experimentIdWithSamples = firstProjectWithSamples.experiments[0];
-
-const firstProjectWithoutSamples = projects.find((p) => p.samples.length === 0);
-const projectIdWithoutSamples = firstProjectWithoutSamples.uuid;
-const experimentIdWithoutSamples = firstProjectWithoutSamples.experiments[0];
+const experimentWithSamplesId = experimentWithSamples.id;
+const experimentWithoutSamplesId = experimentWithoutSamples.id;
 
 const route = 'data-management';
 const defaultProps = { route };
 
 const mockAPIResponse = _.merge(
-  generateDefaultMockAPIResponses(experimentIdWithSamples, projectIdWithSamples),
-  generateDefaultMockAPIResponses(experimentIdWithoutSamples, projectIdWithoutSamples),
+  generateDefaultMockAPIResponses(experimentWithSamplesId),
+  generateDefaultMockAPIResponses(experimentWithoutSamplesId),
 );
 const dataManagementPageFactory = createTestComponentFactory(DataManagementPage, defaultProps);
 
@@ -87,7 +87,7 @@ describe('Data Management page', () => {
   it('Shows an empty project list if there are no projects', async () => {
     const noProjectsResponse = {
       ...mockAPIResponse,
-      '/projects': () => promiseResponse(
+      '/experiments': () => promiseResponse(
         JSON.stringify([]),
       ),
     };
@@ -138,7 +138,7 @@ describe('Data Management page', () => {
 
     // Select the project with samples
     await act(async () => {
-      storeState.dispatch(setActiveProject(projectIdWithSamples));
+      storeState.dispatch(setActiveProject(experimentWithSamplesId));
     });
 
     expect(screen.getAllByText(/Project Details/i).length).toBeGreaterThan(0);
@@ -174,7 +174,7 @@ describe('Data Management page', () => {
 
     // There are 2 elements with the name of the project,  because of how Antd renders the element
     // so we're only choosing one
-    const projectName = screen.getAllByText(firstProjectWithoutSamples.name)[0];
+    const projectName = screen.getAllByText(experimentWithoutSamples.name)[0];
 
     await act(async () => {
       userEvent.click(projectName);
@@ -210,7 +210,7 @@ describe('Data Management page', () => {
 
     // There are 2 elements with the name of the project,  because of how Antd renders the element
     // so we're only choosing one
-    const projectOption = screen.getAllByText(firstProjectWithSamples.name)[0];
+    const projectOption = screen.getAllByText(experimentWithSamples.name)[0];
 
     await act(async () => {
       userEvent.click(projectOption);
