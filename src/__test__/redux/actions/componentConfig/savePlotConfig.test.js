@@ -49,7 +49,7 @@ describe('loadPlotConfig', () => {
     });
 
     const url = fetchMock.mock.calls[0][0];
-    expect(url).toEqual(`http://localhost:3000/v2/experiments/${experimentId}/plots/${plotUuid}`);
+    expect(url).toEqual(`http://localhost:3000/v1/experiments/${experimentId}/plots-tables/${plotUuid}`);
   });
 
   it('Shows an error notification if saving fails', async () => {

@@ -20,7 +20,7 @@ describe('loadRoles', () => {
 
     const mockCalls = fetchAPI.mock.calls[0][0];
 
-    expect(mockCalls).toMatch(`/v1/access/${experimentId}`);
+    expect(mockCalls).toMatch('/v1/access/');
   });
 
   it('Uses V2 URL when using API version V2', async () => {
