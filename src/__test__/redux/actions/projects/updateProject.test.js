@@ -59,15 +59,4 @@ describe('updateProject action', () => {
     expect(diff.lastModified).not.toEqual(originalModifiedDate);
     expect(_.omit(diff, 'lastModified')).toEqual(_.omit(updatedProject, 'lastModified'));
   });
-
-  it('Dispatches call to save project', async () => {
-    store = mockStore({
-      projects: {
-        [initialState.uuid]: initialState,
-      },
-    });
-    await store.dispatch(saveProject(mockProject));
-
-    expect(saveProject).toHaveBeenCalled();
-  });
 });

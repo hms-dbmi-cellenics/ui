@@ -73,8 +73,6 @@ const v2Experiment = {
 };
 
 describe('loadExperiment', () => {
-  const projectUuid = 'project-1';
-
   beforeEach(() => {
     jest.clearAllMocks();
 
@@ -83,33 +81,6 @@ describe('loadExperiment', () => {
   });
 
   it('Dispatches the correct actions when called', async () => {
-    const response = new Response(JSON.stringify({}));
-    fetchMock.mockResolvedValue(response);
-
-    const store = mockStore();
-    await store.dispatch(loadExperiments(projectUuid));
-
-    const actions = store.getActions();
-    expect(actions[0].type).toEqual(EXPERIMENTS_LOADING);
-
-    expect(actions[1].type).toEqual(EXPERIMENTS_LOADED);
-  });
-
-  it('Dispatches notifications when error', async () => {
-    fetchMock.mockReject(new Error('some weird error that happened'));
-
-    const store = mockStore();
-    await store.dispatch(loadExperiments(projectUuid));
-
-    const actions = store.getActions();
-    expect(actions[0].type).toEqual(EXPERIMENTS_LOADING);
-
-    expect(actions[1].type).toEqual(EXPERIMENTS_ERROR);
-
-    expect(pushNotificationMessage).toHaveBeenCalled();
-  });
-
-  it('Dispatches the correct actions when called in api v2', async () => {
     config.currentApiVersion = api.V2;
     const experimentId = 'experiment-1';
 
@@ -125,7 +96,7 @@ describe('loadExperiment', () => {
     expect(actions[1].payload.experiments).toEqual(v1Experiment);
   });
 
-  it('Dispatches notifications when error in api v2', async () => {
+  it('Dispatches notifications when error', async () => {
     config.currentApiVersion = api.V2;
     const experimentId = 'experiment-1';
 

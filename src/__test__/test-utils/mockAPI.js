@@ -28,9 +28,9 @@ const delayedResponse = (response, delay = 10000, options = {}) => new Promise((
 
 const workerResponse = (body) => promiseResponse(body);
 
-const generateDefaultMockAPIResponses = (experimentId, projectUuid = null) => ({
+const generateDefaultMockAPIResponses = (experimentId) => ({
   [`experiments/${experimentId}`]: () => promiseResponse(
-    JSON.stringify(responseData.experimentData),
+    JSON.stringify(responseData.experiments.find(({ id }) => id === experimentId)),
   ),
   [`experiments/${experimentId}/processingConfig`]: () => promiseResponse(
     JSON.stringify(processingConfigData),
@@ -41,14 +41,11 @@ const generateDefaultMockAPIResponses = (experimentId, projectUuid = null) => ({
   [`experiments/${experimentId}/backendStatus`]: () => promiseResponse(
     JSON.stringify(backendStatusData),
   ),
-  '/projects': () => promiseResponse(
-    JSON.stringify(responseData.projects),
-  ),
-  [`projects/${projectUuid}/samples`]: () => promiseResponse(
-    JSON.stringify(responseData.samples),
-  ),
-  [`/v1/projects/${projectUuid}/experiments`]: () => promiseResponse(
+  experiments: () => promiseResponse(
     JSON.stringify(responseData.experiments),
+  ),
+  [`experiments/${experimentId}/samples`]: () => promiseResponse(
+    JSON.stringify(responseData.samples[0]),
   ),
 });
 

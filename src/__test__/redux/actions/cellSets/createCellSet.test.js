@@ -4,16 +4,11 @@ import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import createCellSet from 'redux/actions/cellSets/createCellSet';
 import initialState from 'redux/reducers/cellSets/initialState';
 
-import config from 'config';
-import { api } from 'utils/constants';
-
 import uuid from 'uuid';
 
 import '__test__/test-utils/setupTests';
 
 enableFetchMocks();
-
-jest.mock('config');
 
 jest.mock('uuid', () => jest.fn());
 uuid.v4 = jest.fn(() => 'some-uuid');
@@ -29,8 +24,6 @@ describe('createCellSet action', () => {
 
   beforeEach(() => {
     const response = new Response(JSON.stringify({}));
-
-    config.currentApiVersion = api.V1;
 
     fetchMock.resetMocks();
     fetchMock.doMock();
@@ -66,13 +59,11 @@ describe('createCellSet action', () => {
 
     const [url, body] = fetch.mock.calls[0];
 
-    expect(url).toEqual('http://localhost:3000/v1/experiments/1234/cellSets');
+    expect(url).toEqual('http://localhost:3000/v2/experiments/1234/cellSets');
     expect(body).toMatchSnapshot();
   });
 
   it('Uses V2 URL when using API version V2', async () => {
-    config.currentApiVersion = api.V2;
-
     const store = mockStore({ cellSets: { ...initialState, loading: false } });
     await store.dispatch(createCellSet(experimentId, cellSet.name, cellSet.color, cellSet.cellIds));
 
