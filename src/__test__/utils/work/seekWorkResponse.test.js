@@ -92,7 +92,7 @@ describe('dispatchWorkRequest unit tests', () => {
     await dispatchWorkRequest(
       experimentId, body, timeout, 'facefeed',
     );
-    expect(socketConnectionMocks.mockEmit).toHaveBeenCalledWith('WorkRequest-v2', {
+    expect(socketConnectionMocks.mockEmit).toHaveBeenCalledWith('WorkRequest', {
       ETag: 'facefeed',
       socketId: '5678',
       experimentId: fake.EXPERIMENT_ID,
@@ -109,7 +109,7 @@ describe('dispatchWorkRequest unit tests', () => {
     await dispatchWorkRequest(
       experimentId, body, timeout, 'facefeed',
     );
-    expect(socketConnectionMocks.mockEmit).toHaveBeenCalledWith('WorkRequest-v2', {
+    expect(socketConnectionMocks.mockEmit).toHaveBeenCalledWith('WorkRequest', {
       ETag: 'facefeed',
       socketId: '5678',
       experimentId: fake.EXPERIMENT_ID,

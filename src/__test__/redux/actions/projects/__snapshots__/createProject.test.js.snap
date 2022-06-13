@@ -1,6 +1,40 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`createProject action Works corectly project when there are no errors 1`] = `
+exports[`createProject action Still creates project when using v2 1`] = `
+Object {
+  "project": Object {
+    "createdDate": "2020-01-01T00:00:00.000Z",
+    "description": "test project description",
+    "experiments": Array [
+      "random-experiment-uuid",
+    ],
+    "lastAnalyzed": null,
+    "lastModified": "2020-01-01T00:00:00.000Z",
+    "metadataKeys": Array [],
+    "name": "test project",
+    "samples": Array [],
+    "uuid": "random-experiment-uuid",
+  },
+}
+`;
+
+exports[`createProject action Works correctly when there are no errors 1`] = `
+Object {
+  "createdDate": "2020-01-01T00:00:00.000Z",
+  "description": "test project description",
+  "experiments": Array [
+    "random-experiment-uuid",
+  ],
+  "lastAnalyzed": null,
+  "lastModified": "2020-01-01T00:00:00.000Z",
+  "metadataKeys": Array [],
+  "name": "test project",
+  "samples": Array [],
+  "uuid": "random-project-uuid",
+}
+`;
+
+exports[`createProject action Works correctly when there are no errors 2`] = `
 Object {
   "project": Object {
     "createdDate": "2020-01-01T00:00:00.000Z",

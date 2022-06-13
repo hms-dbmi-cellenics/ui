@@ -1,15 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`loadSample action Dispatches error correctly 1`] = `
-Array [
-  undefined,
-  Object {
-    "error": undefined,
-  },
-]
-`;
-
-exports[`loadSample action Works correctly 1`] = `
+exports[`loadSample action works with apiv2 1`] = `
 Object {
   "samples": Object {
     "e03ef6ea-5014-4e57-aecd-59964ac9172c": Object {

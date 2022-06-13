@@ -65,7 +65,7 @@ const mockWorkerResponses = {
 };
 
 const customAPIResponses = {
-  [`/plots/${plotUuid}`]: (req) => {
+  [`/plots-tables/${plotUuid}`]: (req) => {
     if (req.method === 'PUT') return promiseResponse(JSON.stringify('OK'));
     return statusResponse(404, 'Not Found');
   },

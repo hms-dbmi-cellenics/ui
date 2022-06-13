@@ -38,7 +38,6 @@ const toApiV1 = (samples, experimentId) => {
         },
       };
     });
-
     return { apiV1Files, fileNames };
   };
 

@@ -40,7 +40,7 @@ const experimentId = fake.EXPERIMENT_ID;
 const plotUuid = 'dotPlotMain';
 
 const customAPIResponses = {
-  [`/plots/${plotUuid}`]: () => statusResponse(404, 'Not found'),
+  [`/plots-tables/${plotUuid}`]: () => statusResponse(404, 'Not found'),
 };
 
 const mockAPIResponses = _.merge(
