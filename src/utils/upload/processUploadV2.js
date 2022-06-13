@@ -9,6 +9,8 @@ import UploadStatus from 'utils/upload/UploadStatus';
 import loadAndCompressIfNecessary from 'utils/upload/loadAndCompressIfNecessary';
 import { inspectFile, Verdict } from 'utils/upload/fileInspector';
 
+import getFileTypeV2 from 'utils/getFileTypeV2';
+
 const putInS3 = async (loadedFileData, signedUrl, onUploadProgress) => (
   await axios.request({
     method: 'put',
@@ -55,26 +57,6 @@ const prepareAndUploadFileToS3 = async (
   dispatch(updateSampleFileUploadV2(projectId, sampleId, fileType, UploadStatus.UPLOADED));
 };
 
-const fileTypes = {
-  matrix: 'matrix10x',
-  barcodes: 'barcodes10x',
-  features: 'features10x',
-  genes: 'features10x',
-};
-
-const getFileType = (fileName) => {
-  let fileType;
-
-  _.forEach(Object.entries(fileTypes), ([name, type]) => {
-    if (fileName.includes(name)) {
-      fileType = type;
-      return false;
-    }
-  });
-
-  return fileType;
-};
-
 const getMetadata = (file) => {
   const metadata = {};
 
@@ -89,7 +71,7 @@ const getMetadata = (file) => {
 
 const createAndUploadSingleFile = async (file, projectId, sampleId, dispatch) => {
   const metadata = getMetadata(file);
-  const fileType = getFileType(file.fileObject.name, file.fileObject.type);
+  const fileType = getFileTypeV2(file.fileObject.name, file.fileObject.type);
 
   let signedUrl;
   try {

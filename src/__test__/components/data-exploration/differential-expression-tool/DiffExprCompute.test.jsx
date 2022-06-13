@@ -26,7 +26,6 @@ const createMockStore = configureMockStore([thunk]);
 
 const mockOnCompute = jest.fn();
 const experimentId = fake.EXPERIMENT_ID;
-
 const defaultProps = {
   experimentId,
   onCompute: mockOnCompute,

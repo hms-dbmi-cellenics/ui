@@ -1,7 +1,9 @@
+import _ from 'lodash';
+
 const samplesMetadataDelete = (state, action) => {
   const { sampleUuid, metadataKey } = action.payload;
 
-  const newMetadata = state[sampleUuid].metadata;
+  const newMetadata = _.cloneDeep(state[sampleUuid].metadata);
   delete newMetadata[metadataKey];
 
   return {

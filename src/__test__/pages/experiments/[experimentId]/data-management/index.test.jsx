@@ -1,7 +1,7 @@
 import React from 'react';
 import _ from 'lodash';
 
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import { act } from 'react-dom/test-utils';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import { Provider } from 'react-redux';
@@ -12,15 +12,16 @@ import '__test__/test-utils/mockWorkerBackend';
 import createTestComponentFactory from '__test__/test-utils/testComponentFactory';
 import mockAPI, { generateDefaultMockAPIResponses, promiseResponse } from '__test__/test-utils/mockAPI';
 import {
-  projects,
+  experiments,
   samples,
 } from '__test__/test-utils/mockData';
 
 import downloadFromUrl from 'utils/data-management/downloadFromUrl';
 
 import DataManagementPage from 'pages/data-management';
-import { exampleDatasets } from 'components/data-management/SamplesTable';
 import userEvent from '@testing-library/user-event';
+
+import loadEnvironment from 'redux/actions/networkResources/loadEnvironment';
 import { setActiveProject } from 'redux/actions/projects';
 
 jest.mock('utils/data-management/downloadFromUrl');
@@ -34,25 +35,40 @@ jest.mock('utils/AppRouteProvider', () => ({
   })),
 }));
 
-// Necessary due to storage being used in the default SamplesTable.
-jest.mock('@aws-amplify/storage', () => ({
-  get: jest.fn(() => Promise.resolve('https://mock-s3-url.com')),
+jest.mock('@aws-amplify/auth', () => ({
+  currentAuthenticatedUser: jest.fn(() => Promise.resolve({ attributes: { name: 'mockUserName' } })),
+  federatedSignIn: jest.fn(),
 }));
 
-const firstProjectWithSamples = projects.find((p) => p.samples.length > 0);
-const projectIdWithSamples = firstProjectWithSamples.uuid;
-const experimentIdWithSamples = firstProjectWithSamples.experiments[0];
+// Necessary due to storage being used in the default SamplesTable.
+jest.mock('@aws-amplify/storage', () => ({
+  configure: jest.fn(),
+  get: jest.fn(() => Promise.resolve('https://mock-s3-url.com')),
+  list: jest.fn(() => Promise.resolve([
+    { key: '1.Example_1.zip' },
+    { key: '2.Another-Example_no.2.zip' },
+  ])),
+}));
 
-const firstProjectWithoutSamples = projects.find((p) => p.samples.length === 0);
-const projectIdWithoutSamples = firstProjectWithoutSamples.uuid;
-const experimentIdWithoutSamples = firstProjectWithoutSamples.experiments[0];
+const experimentWithSamples = experiments.find((experiment) => experiment.samplesOrder.length > 0);
+const experimentWithoutSamples = experiments.find(
+  (experiment) => experiment.samplesOrder.length === 0,
+);
+
+const expectedSampleNames = [
+  'Example 1',
+  'Another-Example no.2',
+];
+
+const experimentWithSamplesId = experimentWithSamples.id;
+const experimentWithoutSamplesId = experimentWithoutSamples.id;
 
 const route = 'data-management';
 const defaultProps = { route };
 
 const mockAPIResponse = _.merge(
-  generateDefaultMockAPIResponses(experimentIdWithSamples, projectIdWithSamples),
-  generateDefaultMockAPIResponses(experimentIdWithoutSamples, projectIdWithoutSamples),
+  generateDefaultMockAPIResponses(experimentWithSamplesId),
+  generateDefaultMockAPIResponses(experimentWithoutSamplesId),
 );
 const dataManagementPageFactory = createTestComponentFactory(DataManagementPage, defaultProps);
 
@@ -65,12 +81,13 @@ describe('Data Management page', () => {
     fetchMock.mockIf(/.*/, mockAPI(mockAPIResponse));
 
     storeState = makeStore();
+    storeState.dispatch(loadEnvironment('test'));
   });
 
   it('Shows an empty project list if there are no projects', async () => {
     const noProjectsResponse = {
       ...mockAPIResponse,
-      '/projects': () => promiseResponse(
+      '/experiments': () => promiseResponse(
         JSON.stringify([]),
       ),
     };
@@ -121,7 +138,7 @@ describe('Data Management page', () => {
 
     // Select the project with samples
     await act(async () => {
-      storeState.dispatch(setActiveProject(projectIdWithSamples));
+      storeState.dispatch(setActiveProject(experimentWithSamplesId));
     });
 
     expect(screen.getAllByText(/Project Details/i).length).toBeGreaterThan(0);
@@ -157,19 +174,18 @@ describe('Data Management page', () => {
 
     // There are 2 elements with the name of the project,  because of how Antd renders the element
     // so we're only choosing one
-    const projectName = screen.getAllByText(firstProjectWithoutSamples.name)[0];
+    const projectName = screen.getAllByText(experimentWithoutSamples.name)[0];
 
     await act(async () => {
       userEvent.click(projectName);
     });
 
-    const exampleInfo = screen.getByText(/Don't have data\? Get started using one of our example datasets/i);
+    await waitFor(() => {
+      expect(screen.getByText(/Don't have data\? Get started using one of our example datasets/i)).toBeInTheDocument();
+    });
 
-    // Example information exists
-    expect(exampleInfo).toBeInTheDocument();
-
-    const downloadPromises = exampleDatasets.map(async ({ description }) => {
-      const fileDownloadLink = screen.getByText(description);
+    const downloadPromises = expectedSampleNames.map(async (sampleName) => {
+      const fileDownloadLink = screen.getByText(sampleName);
 
       expect(fileDownloadLink).toBeInTheDocument();
 
@@ -179,7 +195,7 @@ describe('Data Management page', () => {
 
     await Promise.all(downloadPromises);
 
-    expect(downloadFromUrl).toHaveBeenCalledTimes(exampleDatasets.length);
+    expect(downloadFromUrl).toHaveBeenCalledTimes(expectedSampleNames.length);
   });
 
   it('Shows samples table if project contain samples', async () => {
@@ -194,7 +210,7 @@ describe('Data Management page', () => {
 
     // There are 2 elements with the name of the project,  because of how Antd renders the element
     // so we're only choosing one
-    const projectOption = screen.getAllByText(firstProjectWithSamples.name)[0];
+    const projectOption = screen.getAllByText(experimentWithSamples.name)[0];
 
     await act(async () => {
       userEvent.click(projectOption);

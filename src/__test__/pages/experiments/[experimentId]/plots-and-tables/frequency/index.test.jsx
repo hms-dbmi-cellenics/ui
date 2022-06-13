@@ -31,7 +31,7 @@ describe('Frequency plots and tables index page', () => {
 
   // simulating intial load of plot
   const customAPIResponses = {
-    [`/plots-tables/${plotUuid}`]: () => statusResponse(404, 'Not Found'),
+    [`/plots/${plotUuid}`]: () => statusResponse(404, 'Not Found'),
   };
   const mockApiResponses = _.merge(
     generateDefaultMockAPIResponses(fake.EXPERIMENT_ID), customAPIResponses,
