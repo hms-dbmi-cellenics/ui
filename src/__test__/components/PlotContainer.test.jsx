@@ -50,7 +50,7 @@ let store = null;
 fetchMock.mockIf(/.*/, (req) => {
   const path = req.url;
   // Saving config, return 200
-  if (path.match(`/v2/experiments/${experimentId}/plots/${plotUuid}`)) {
+  if (path.match(`/v1/experiments/${experimentId}/plots-tables/${plotUuid}`)) {
     return Promise.resolve({ body: JSON.stringify('Plot saved') });
   }
   return Promise.resolve({ status: 404, body: JSON.stringify('Plot config not found') });

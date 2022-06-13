@@ -172,7 +172,7 @@ describe('deleteProject action', () => {
     await store.dispatch(deleteProject(mockProjectUuid1));
 
     expect(fetchMock).toHaveBeenCalledWith(
-      `http://localhost:3000/v2/experiments/${mockProject.uuid}`,
+      `http://localhost:3000/v1/projects/${mockProject.uuid}`,
       {
         method: 'DELETE',
         headers: {

@@ -2,6 +2,9 @@ import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 
+import config from 'config';
+import { api } from 'utils/constants';
+
 import waitForActions from 'redux-mock-store-await-actions';
 
 import { CELL_SETS_DELETE } from 'redux/actionTypes/cellSets';
@@ -12,6 +15,8 @@ import '__test__/test-utils/setupTests';
 
 enableFetchMocks();
 
+jest.mock('config');
+
 const mockStore = configureStore([thunk]);
 
 describe('deleteCellSet action', () => {
@@ -20,6 +25,8 @@ describe('deleteCellSet action', () => {
 
   beforeEach(() => {
     const response = new Response(JSON.stringify({}));
+
+    config.currentApiVersion = api.V1;
 
     fetchMock.resetMocks();
     fetchMock.doMock();
@@ -57,11 +64,13 @@ describe('deleteCellSet action', () => {
 
     const [url, body] = fetch.mock.calls[0];
 
-    expect(url).toEqual('http://localhost:3000/v2/experiments/1234/cellSets');
+    expect(url).toEqual('http://localhost:3000/v1/experiments/1234/cellSets');
     expect(body).toMatchSnapshot();
   });
 
   it('Uses V2 URL when using API version V2', async () => {
+    config.currentApiVersion = api.V2;
+
     const store = mockStore({ cellSets: { ...initialState, loading: false } });
     await store.dispatch(deleteCellSet(experimentId, key));
 

@@ -16,11 +16,6 @@ import {
 } from 'redux/actionTypes/samples';
 import '__test__/test-utils/setupTests';
 
-import config from 'config';
-import { api } from 'utils/constants';
-
-jest.mock('config');
-
 enableFetchMocks();
 const mockStore = configureStore([thunk]);
 
@@ -76,8 +71,6 @@ describe('saveSamples action', () => {
     fetchMock.resetMocks();
     fetchMock.doMock();
     fetchMock.mockResolvedValueOnce(response);
-
-    config.currentApiVersion = api.V1;
   });
 
   it('Dispatches fetch correctly', async () => {

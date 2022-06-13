@@ -27,6 +27,11 @@ describe('updateSample action', () => {
     uuid: mockUuid,
   };
 
+  const updatedSample = {
+    ...mockSample,
+    name: 'updated name',
+  };
+
   const mockState = {
     samples: {
       ...initialState,
@@ -44,7 +49,32 @@ describe('updateSample action', () => {
     fetchMock.doMock();
   });
 
-  it('Works correctly', async () => {
+  it('Dispatches event correctly', async () => {
+    const store = mockStore(mockState);
+    await store.dispatch(updateSample(mockUuid, updatedSample));
+
+    const firstAction = store.getActions()[0];
+    expect(firstAction.type).toEqual(SAMPLES_UPDATE);
+  });
+
+  it('Updates the lastModified field', async () => {
+    const originalModifiedDate = mockSample.lastModified;
+    const store = mockStore(mockState);
+    await store.dispatch(updateSample(mockUuid, updatedSample));
+
+    const { sample } = store.getActions()[0].payload;
+    expect(sample.lastModified).not.toEqual(originalModifiedDate);
+    expect(_.omit(sample, 'lastModified')).toEqual(_.omit(updatedSample, 'lastModified'));
+  });
+
+  it('Dispatches call to save sample', async () => {
+    const store = mockStore(mockState);
+    await store.dispatch(updateSample(mockUuid, updatedSample));
+
+    expect(saveSamples).toHaveBeenCalled();
+  });
+
+  it('Dispatches events correctly for api v2', async () => {
     config.currentApiVersion = api.V2;
     fetchMock.mockResponseOnce(() => Promise.resolve(JSON.stringify({})));
 
@@ -71,7 +101,7 @@ describe('updateSample action', () => {
     expect(saveSamples).not.toHaveBeenCalled();
   });
 
-  it('Error handling works', async () => {
+  it('Error handling for api v2 works', async () => {
     config.currentApiVersion = api.V2;
 
     fetchMock.mockRejectOnce(() => Promise.reject(new Error('Api error')));
