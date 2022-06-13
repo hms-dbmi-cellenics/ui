@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import {
   Space,
+  Card,
   Collapse,
   Skeleton,
   Empty,
@@ -20,6 +21,7 @@ import getSelectOptions from 'utils/plots/getSelectOptions';
 import HeatmapGroupBySettings from 'components/data-exploration/heatmap/HeatmapGroupBySettings';
 import HeatmapMetadataTracksSettings from 'components/data-exploration/heatmap/HeatmapMetadataTrackSettings';
 
+import CellSetsTool from 'components/data-exploration/cell-sets-tool/CellSetsTool';
 import MarkerGeneSelection from 'components/plots/styling/MarkerGeneSelection';
 import loadProcessingSettings from 'redux/actions/experimentSettings/processingConfig/loadProcessingSettings';
 import { updatePlotConfig, loadPlotConfig } from 'redux/actions/componentConfig';
@@ -32,6 +34,8 @@ import PlatformError from 'components/PlatformError';
 import Loader from 'components/Loader';
 import populateHeatmapData from 'components/plots/helpers/heatmap/populateHeatmapData';
 import { plotNames } from 'utils/constants';
+
+import HierarchicalTreeGenes from 'components/plots/HierarchicalTreeGenes/HierarchicalTreeGenes';
 
 const { Panel } = Collapse;
 const plotUuid = 'markerHeatmapPlotMain';
@@ -229,6 +233,20 @@ const MarkerHeatmap = ({ experimentId }) => {
     setVegaSpec(spec);
   }, [config, cellSets]);
 
+  const composeGeneTree = () => {
+    const data = [];
+    Object.entries(loadedMarkerGenes).forEach(([key, value]) => {
+      data.push({ key: `${key}`, title: `${value}` });
+    });
+    return data;
+  };
+
+  const [geneTreeData, setGeneTreeData] = useState(null);
+
+  useEffect(() => {
+    setGeneTreeData(composeGeneTree());
+  }, [loadedMarkerGenes]);
+
   // updatedField is a subset of what default config has and contains only the things we want change
   const updatePlotWithChanges = (updatedField) => {
     dispatch(updatePlotConfig(plotUuid, updatedField));
@@ -319,20 +337,20 @@ const MarkerHeatmap = ({ experimentId }) => {
               <Radio value={false}>Hide</Radio>
             </Radio.Group>
           </div>
+          <Card title='Reorder Genes'>
+            <HierarchicalTreeGenes
+              treeData={geneTreeData}
+              experimentId={experimentId}
+              plotType={plotType}
+            />
+          </Card>
         </Space>
       </Panel>
       <Panel header='Select data' key='select-data'>
         <Space direction='vertical' size='small'>
           <p>Select the cell sets to show markers for:</p>
-          <Select
-            value={{
-              value: config.selectedCellSet,
-            }}
-            onChange={changeClusters}
-            labelInValue
-            style={{ width: '100%' }}
-            placeholder='Select cell set...'
-            options={clustersForSelect}
+          <CellSetsTool
+            experimentId={experimentId}
           />
         </Space>
       </Panel>
