@@ -3,6 +3,8 @@ import FetchError from 'utils/http/errors/FetchError';
 import getApiEndpoint from 'utils/apiEndpoint';
 import getAuthJWT from 'utils/getAuthJWT';
 
+import pushNotificationMessage from 'utils/pushNotificationMessage';
+
 const fetchAPI = async (path, params = {}, extras = {}) => {
   const headers = params.headers ? params.headers : {};
   const authJWT = extras.jwt || await getAuthJWT();
@@ -34,6 +36,11 @@ const fetchAPI = async (path, params = {}, extras = {}) => {
       // just return the error code, this happens in many tests
       // where we mock a string response instead of proper json
     }
+
+    if (response.status === 503 && data?.message === 'Maintenance mode') {
+      pushNotificationMessage('error', 'The system is undergoing scheduled maintenance, the platform may not be accessible for a few hours.', 0);
+    }
+
     // data.message & data.errors follow error formatting defined in:
     // HTTPError.v1.yaml
     throw new APIError(response.status, data?.message, data?.errors);
