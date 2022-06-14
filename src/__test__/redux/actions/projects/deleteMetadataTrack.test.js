@@ -73,35 +73,6 @@ describe('deleteMetadataTrack action', () => {
     fetchMock.doMock();
   });
 
-  it('Dispatches event correctly', async () => {
-    const store = mockStore(initialState);
-    await store.dispatch(deleteMetadataTrack(metadataTrack, mockProject.uuid));
-
-    const actions = store.getActions();
-
-    // It fires save project and save samples
-    expect(saveProject).toHaveBeenCalled();
-    expect(saveSamples).toHaveBeenCalled();
-
-    // It deletes metadata in samples
-    expect(actions[0].type).toEqual(PROJECTS_METADATA_DELETE);
-  });
-
-  it('Does not update metadata if save fails', async () => {
-    saveProject.mockImplementation(() => async () => { throw new Error('some weird error'); });
-
-    const store = mockStore(initialState);
-    await store.dispatch(deleteMetadataTrack(metadataTrack, mockProject.uuid));
-
-    // It fires save project and save samples
-    expect(saveProject).toHaveBeenCalled();
-    expect(saveSamples).toHaveBeenCalled();
-
-    // It fires project error
-    // Expect there is a notification
-    expect(pushNotificationMessage).toHaveBeenCalled();
-  });
-
   it('Works correctly in api v2', async () => {
     config.currentApiVersion = api.V2;
 
@@ -122,5 +93,19 @@ describe('deleteMetadataTrack action', () => {
         method: 'DELETE',
       },
     );
+  });
+
+  it('Does not update metadata if save fails', async () => {
+    saveProject.mockImplementation(() => async () => { throw new Error('some weird error'); });
+
+    const store = mockStore(initialState);
+    await store.dispatch(deleteMetadataTrack(metadataTrack, mockProject.uuid));
+
+    const actions = store.getActions();
+    expect(actions).toHaveLength(0);
+
+    // It fires project error
+    // Expect there is a notification
+    expect(pushNotificationMessage).toHaveBeenCalled();
   });
 });

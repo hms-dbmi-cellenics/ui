@@ -4,12 +4,7 @@ import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import loadCellSets from 'redux/actions/cellSets/loadCellSets';
 import initialState from 'redux/reducers/cellSets/initialState';
 
-import config from 'config';
-import { api } from 'utils/constants';
-
 import '__test__/test-utils/setupTests';
-
-jest.mock('config');
 
 enableFetchMocks();
 const mockStore = configureStore([thunk]);
@@ -29,8 +24,6 @@ describe('loadCellSets action', () => {
 
   beforeEach(() => {
     const response = new Response(JSON.stringify({ cellSets }));
-
-    config.currentApiVersion = api.V1;
 
     fetchMock.resetMocks();
     fetchMock.doMock();
@@ -86,8 +79,6 @@ describe('loadCellSets action', () => {
   });
 
   it('Uses V2 URL when using API version V2', async () => {
-    config.currentApiVersion = api.V2;
-
     const store = mockStore({ cellSets: initialState, experimentSettings });
     await store.dispatch(loadCellSets(experimentId));
 
