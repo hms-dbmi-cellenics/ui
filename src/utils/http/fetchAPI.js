@@ -38,7 +38,7 @@ const fetchAPI = async (path, params = {}, extras = {}) => {
     }
 
     if (response.status === 503 && data?.message === 'Maintenance mode') {
-      pushNotificationMessage('error', 'The system is undergoing scheduled maintenance, the platform may not be accessible for a few hours.');
+      pushNotificationMessage('error', 'The system is undergoing scheduled maintenance, the platform may not be accessible for a few hours.', 0);
     }
 
     // data.message & data.errors follow error formatting defined in:
