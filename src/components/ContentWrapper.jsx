@@ -35,9 +35,7 @@ import Error from 'pages/_error';
 
 import integrationTestConstants from 'utils/integrationTestConstants';
 import pipelineStatus from 'utils/pipelineStatusValues';
-
-import BrowserAlert from 'components/alerts/BrowserAlert';
-import MaintenanceAlert from 'components/alerts/MaintenanceAlert';
+import BrowserAlert from 'components/BrowserAlert';
 
 const { Sider, Footer } = Layout;
 
@@ -351,7 +349,6 @@ const ContentWrapper = (props) => {
   return (
     <>
       <BrowserAlert />
-      <MaintenanceAlert />
       <Layout style={{ minHeight: '100vh' }}>
         <Sider
           style={{
