@@ -32,12 +32,10 @@ const CalculationConfig = (props) => {
     onConfigChange, disabled, disableDataIntegration,
   } = props;
   const FILTER_UUID = 'dataIntegration';
-
   const dispatch = useDispatch();
   const { dataIntegration, dimensionalityReduction } = useSelector(
     (state) => state.experimentSettings.processing.dataIntegration,
   );
-
   const elbowPlotUuid = generateDataProcessingPlotUuid(null, FILTER_UUID, 1);
   const data = useSelector((state) => state.componentConfig[elbowPlotUuid]?.plotData);
 
@@ -51,6 +49,7 @@ const CalculationConfig = (props) => {
       value: 'seuratv4',
       text: 'Seurat v4',
       disabled: false,
+      enableDimReductionMethod: true,
     },
     {
       value: 'fastmnn',
@@ -98,6 +97,8 @@ const CalculationConfig = (props) => {
 
     return _.round(variationExplained * 100, roundingPrecision);
   };
+
+  const selectedMethod = methods.find((element) => element.value === dataIntegration.method);
 
   return (
     <Collapse defaultActiveKey='data-integration'>
@@ -229,9 +230,9 @@ const CalculationConfig = (props) => {
             )}
             >
               <Select
-                value={dimensionalityReduction.method}
+                value={selectedMethod.enableDimReductionMethod ? dimensionalityReduction.method : 'N/A'}
                 onChange={(val) => updateSettings({ dimensionalityReduction: { method: val } })}
-                disabled={disabled}
+                disabled={disabled || !selectedMethod.enableDimReductionMethod}
               >
                 <Option key='rpca' value='rpca'>Reciprocal PCA (RPCA)</Option>
                 <Option key='cca' value='cca'>Canonical Correlation Analysis (CCA)</Option>
