@@ -100,6 +100,52 @@ const CalculationConfig = (props) => {
 
   const selectedMethod = methods.find((element) => element.value === dataIntegration.method);
 
+  const renderDimReductionMethod = () => (
+    <Form.Item label={(
+      <span>
+        Method&nbsp;
+        <Tooltip overlay={(
+          <span>
+            To integrate data, dimensional reduction is performed to find so called "anchors".
+            cross-dataset pairs of cells that are in a matched biological state (‘anchors’), are both to correct for technical
+            differences between datasets
+            (i.e. batch effect correction), and to perform comparative scRNA-seq analysis across experimental conditions.
+            CCA is well-suited when cell types are conserved, but there are very substantial differences
+            in gene expression across experiments.
+            However, CCA-based integration may also lead to overcorrection, especially when a large proportion of cells are
+            non-overlapping across datasets.
+
+            RPCA-based integration runs significantly faster, and also represents a more conservative approach where
+            cells in different biological states are less likely to ‘align’ after integration.
+            More info
+            <a
+              href='https://satijalab.org/seurat/articles/integration_rpca.html'
+              target='_blank'
+              rel='noreferrer'
+            >
+              {' '}
+              <code>here</code>
+            </a>
+          </span>
+        )}
+        >
+          <QuestionCircleOutlined />
+        </Tooltip>
+      </span>
+    )}
+    >
+
+      <Select
+        value={dimensionalityReduction.method}
+        onChange={(val) => updateSettings({ dimensionalityReduction: { method: val } })}
+        disabled={disabled}
+      >
+        <Option key='rpca' value='rpca'>Reciprocal PCA (RPCA)</Option>
+        <Option key='cca' value='cca'>Canonical Correlation Analysis (CCA)</Option>
+      </Select>
+    </Form.Item>
+  );
+
   return (
     <Collapse defaultActiveKey='data-integration'>
       <Panel header='Data Integration' key='data-integration'>
@@ -196,49 +242,9 @@ const CalculationConfig = (props) => {
                 </Space>
               </Checkbox.Group>
             </Form.Item>
-            <Form.Item label={(
-              <span>
-                Method&nbsp;
-                <Tooltip overlay={(
-                  <span>
-                    To integrate data, dimensional reduction is performed to find so called "anchors".
-                    cross-dataset pairs of cells that are in a matched biological state (‘anchors’), are both to correct for technical
-                    differences between datasets
-                    (i.e. batch effect correction), and to perform comparative scRNA-seq analysis across experimental conditions.
-                    CCA is well-suited when cell types are conserved, but there are very substantial differences
-                    in gene expression across experiments.
-                    However, CCA-based integration may also lead to overcorrection, especially when a large proportion of cells are
-                    non-overlapping across datasets.
 
-                    RPCA-based integration runs significantly faster, and also represents a more conservative approach where
-                    cells in different biological states are less likely to ‘align’ after integration.
-                    More info
-                    <a
-                      href='https://satijalab.org/seurat/articles/integration_rpca.html'
-                      target='_blank'
-                      rel='noreferrer'
-                    >
-                      {' '}
-                      <code>here</code>
-                    </a>
-                  </span>
-                )}
-                >
-                  <QuestionCircleOutlined />
-                </Tooltip>
-              </span>
-            )}
-            >
-              <Select
-                value={selectedMethod.enableDimReductionMethod ? dimensionalityReduction.method : 'N/A'}
-                onChange={(val) => updateSettings({ dimensionalityReduction: { method: val } })}
-                disabled={disabled || !selectedMethod.enableDimReductionMethod}
-              >
-                <Option key='rpca' value='rpca'>Reciprocal PCA (RPCA)</Option>
-                <Option key='cca' value='cca'>Canonical Correlation Analysis (CCA)</Option>
-              </Select>
+            {selectedMethod.enableDimReductionMethod ? renderDimReductionMethod() : (<></>)}
 
-            </Form.Item>
           </div>
         </Form>
       </Panel>
