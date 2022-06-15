@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   Space,
   Card,
@@ -8,7 +8,7 @@ import {
   Select,
   Radio,
 } from 'antd';
-import _ from 'lodash';
+import _, { update } from 'lodash';
 import { useSelector, useDispatch } from 'react-redux';
 import { Vega } from 'react-vega';
 import PropTypes from 'prop-types';
@@ -36,6 +36,8 @@ import populateHeatmapData from 'components/plots/helpers/heatmap/populateHeatma
 import { plotNames } from 'utils/constants';
 
 import HierarchicalTreeGenes from 'components/plots/HierarchicalTreeGenes/HierarchicalTreeGenes';
+
+import { arrayMoveImmutable } from 'utils/array-move';
 
 const { Panel } = Collapse;
 const plotUuid = 'markerHeatmapPlotMain';
@@ -187,11 +189,13 @@ const MarkerHeatmap = ({ experimentId }) => {
       return;
     }
     if (loadedMarkerGenes.length && !config.selectedGenes.length) {
+      console.log('1');
       updatePlotWithChanges({ selectedGenes: loadedMarkerGenes });
       return;
     }
 
     if (loadedMarkerGenes.length !== config.selectedGenes.length) {
+      console.log('2');
       const newOrder = reSortGenes();
       updatePlotWithChanges({ selectedGenes: newOrder });
     }
@@ -232,20 +236,33 @@ const MarkerHeatmap = ({ experimentId }) => {
 
     setVegaSpec(spec);
   }, [config, cellSets]);
-
-  const composeGeneTree = () => {
-    const data = [];
-    Object.entries(loadedMarkerGenes).forEach(([key, value]) => {
-      data.push({ key: `${key}`, title: `${value}` });
-    });
-    return data;
+  
+  const composeGeneTree = (treeGenes) => {
+    if (treeGenes) {
+      const data = [];
+      Object.entries(treeGenes).forEach(([key, value]) => {
+        data.push({ key: `${key}`, title: `${value}` });
+      });
+      return data;
+    }
+    return [];
   };
 
-  const [geneTreeData, setGeneTreeData] = useState(null);
+  const [geneTreeData, setGeneTreeData] = useState(composeGeneTree(loadedMarkerGenes));
 
   useEffect(() => {
-    setGeneTreeData(composeGeneTree());
-  }, [loadedMarkerGenes]);
+    setGeneTreeData(composeGeneTree(config?.selectedGenes));
+    console.log('test');
+  }, [config?.selectedGenes]);
+
+  const onGeneReorder = (geneKey, newPosition) => {
+    const oldOrder = geneTreeData.map((treeNode) => treeNode.title);
+    const newOrder = arrayMoveImmutable(Object.values(oldOrder), geneKey, newPosition - 1);
+
+    console.log(newOrder);
+
+    dispatch(updatePlotConfig(plotUuid, { selectedGenes: newOrder }));
+  };
 
   // updatedField is a subset of what default config has and contains only the things we want change
   const updatePlotWithChanges = (updatedField) => {
@@ -340,8 +357,7 @@ const MarkerHeatmap = ({ experimentId }) => {
           <Card title='Reorder Genes'>
             <HierarchicalTreeGenes
               treeData={geneTreeData}
-              experimentId={experimentId}
-              plotType={plotType}
+              onGeneReorder={onGeneReorder}
             />
           </Card>
         </Space>
@@ -349,8 +365,15 @@ const MarkerHeatmap = ({ experimentId }) => {
       <Panel header='Select data' key='select-data'>
         <Space direction='vertical' size='small'>
           <p>Select the cell sets to show markers for:</p>
-          <CellSetsTool
-            experimentId={experimentId}
+          <Select
+            value={{
+              value: config.selectedCellSet,
+            }}
+            onChange={changeClusters}
+            labelInValue
+            style={{ width: '100%' }}
+            placeholder='Select cell set...'
+            options={clustersForSelect}
           />
         </Space>
       </Panel>
