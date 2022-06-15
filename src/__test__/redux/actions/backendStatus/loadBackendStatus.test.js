@@ -61,7 +61,7 @@ describe('loadBackendStatus', () => {
     expect(_.map(actions, 'payload')).toMatchSnapshot();
 
     expect(fetchMock).toHaveBeenCalledWith(
-      'http://localhost:3000/v1/experiments/1234/backendStatus',
+      'http://localhost:3000/v2/experiments/1234/backendStatus',
       { headers: {} },
     );
   });
@@ -77,7 +77,7 @@ describe('loadBackendStatus', () => {
     expect(_.map(actions, 'payload')).toMatchSnapshot();
 
     expect(fetchMock).toHaveBeenCalledWith(
-      'http://localhost:3000/v1/experiments/1234/backendStatus',
+      'http://localhost:3000/v2/experiments/1234/backendStatus',
       { headers: {} },
     );
   });
