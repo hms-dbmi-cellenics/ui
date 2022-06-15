@@ -138,6 +138,7 @@ const fetchWork = async (
     experimentId, body, qcPipelineStartDate, extras, cacheUniquenessKey,
   });
 
+  console.log('*** body', body);
   console.log('*** environment', environment);
   console.log('*** localStorage', localStorage.getItem('disableCache'));
   console.log('*** cacheUniquenessKey', cacheUniquenessKey);
