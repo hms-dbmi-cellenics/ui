@@ -21,7 +21,6 @@ import getSelectOptions from 'utils/plots/getSelectOptions';
 import HeatmapGroupBySettings from 'components/data-exploration/heatmap/HeatmapGroupBySettings';
 import HeatmapMetadataTracksSettings from 'components/data-exploration/heatmap/HeatmapMetadataTrackSettings';
 
-import CellSetsTool from 'components/data-exploration/cell-sets-tool/CellSetsTool';
 import MarkerGeneSelection from 'components/plots/styling/MarkerGeneSelection';
 import loadProcessingSettings from 'redux/actions/experimentSettings/processingConfig/loadProcessingSettings';
 import { updatePlotConfig, loadPlotConfig } from 'redux/actions/componentConfig';
@@ -35,9 +34,9 @@ import Loader from 'components/Loader';
 import populateHeatmapData from 'components/plots/helpers/heatmap/populateHeatmapData';
 import { plotNames } from 'utils/constants';
 
-import HierarchicalTreeGenes from 'components/plots/HierarchicalTreeGenes/HierarchicalTreeGenes';
-
-import { arrayMoveImmutable } from 'utils/array-move';
+import GeneReorderTool from 'components/plots/gene-reorder-tool/GeneReorderTool';
+import { Element } from 'react-scroll';
+import TabCard from 'components/plots/tab-card/TabCard';
 
 const { Panel } = Collapse;
 const plotUuid = 'markerHeatmapPlotMain';
@@ -189,13 +188,11 @@ const MarkerHeatmap = ({ experimentId }) => {
       return;
     }
     if (loadedMarkerGenes.length && !config.selectedGenes.length) {
-      console.log('1');
       updatePlotWithChanges({ selectedGenes: loadedMarkerGenes });
       return;
     }
 
     if (loadedMarkerGenes.length !== config.selectedGenes.length) {
-      console.log('2');
       const newOrder = reSortGenes();
       updatePlotWithChanges({ selectedGenes: newOrder });
     }
@@ -236,33 +233,6 @@ const MarkerHeatmap = ({ experimentId }) => {
 
     setVegaSpec(spec);
   }, [config, cellSets]);
-  
-  const composeGeneTree = (treeGenes) => {
-    if (treeGenes) {
-      const data = [];
-      Object.entries(treeGenes).forEach(([key, value]) => {
-        data.push({ key: `${key}`, title: `${value}` });
-      });
-      return data;
-    }
-    return [];
-  };
-
-  const [geneTreeData, setGeneTreeData] = useState(composeGeneTree(loadedMarkerGenes));
-
-  useEffect(() => {
-    setGeneTreeData(composeGeneTree(config?.selectedGenes));
-    console.log('test');
-  }, [config?.selectedGenes]);
-
-  const onGeneReorder = (geneKey, newPosition) => {
-    const oldOrder = geneTreeData.map((treeNode) => treeNode.title);
-    const newOrder = arrayMoveImmutable(Object.values(oldOrder), geneKey, newPosition - 1);
-
-    console.log(newOrder);
-
-    dispatch(updatePlotConfig(plotUuid, { selectedGenes: newOrder }));
-  };
 
   // updatedField is a subset of what default config has and contains only the things we want change
   const updatePlotWithChanges = (updatedField) => {
@@ -332,34 +302,48 @@ const MarkerHeatmap = ({ experimentId }) => {
     updatePlotWithChanges({ selectedCellSet: newValue });
   };
 
+  // definitions of the tabs moved outside renderExtraPanels for clarity
+  // previous functionality is the addGenesTab
+  const addGenesTab = (
+    <Element>
+      <MarkerGeneSelection
+        config={config}
+        onUpdate={updatePlotWithChanges}
+        onGeneEnter={onGeneEnter}
+        onReset={onReset}
+      />
+      <div>
+        <p>Gene labels:</p>
+        <Radio.Group
+          onChange={
+            (e) => updatePlotWithChanges({ showGeneLabels: e.target.value })
+          }
+          value={config.showGeneLabels}
+        >
+          <Radio value>Show</Radio>
+          <Radio value={false}>Hide</Radio>
+        </Radio.Group>
+      </div>
+    </Element>
+  );
+
+  // new tab for reordering genes
+  const reorderGenesTab = (
+    <GeneReorderTool
+      plotUuid={plotUuid}
+      updatePlotConfig={updatePlotConfig}
+      loadedMarkerGenes={loadedMarkerGenes}
+      config={config}
+    />
+  );
   const renderExtraPanels = () => (
     <>
       <Panel header='Gene selection' key='gene-selection'>
         <Space direction='vertical' size='small'>
-          <MarkerGeneSelection
-            config={config}
-            onUpdate={updatePlotWithChanges}
-            onGeneEnter={onGeneEnter}
-            onReset={onReset}
+          <TabCard
+            addGenesTab={addGenesTab}
+            reorderGenesTab={reorderGenesTab}
           />
-          <div>
-            <p>Gene labels:</p>
-            <Radio.Group
-              onChange={
-                (e) => updatePlotWithChanges({ showGeneLabels: e.target.value })
-              }
-              value={config.showGeneLabels}
-            >
-              <Radio value>Show</Radio>
-              <Radio value={false}>Hide</Radio>
-            </Radio.Group>
-          </div>
-          <Card title='Reorder Genes'>
-            <HierarchicalTreeGenes
-              treeData={geneTreeData}
-              onGeneReorder={onGeneReorder}
-            />
-          </Card>
         </Space>
       </Panel>
       <Panel header='Select data' key='select-data'>
