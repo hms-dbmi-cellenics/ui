@@ -138,6 +138,11 @@ const fetchWork = async (
     experimentId, body, qcPipelineStartDate, extras, cacheUniquenessKey,
   });
 
+  console.log('*** environment', environment);
+  console.log('*** localStorage', localStorage.getItem('disableCache'));
+  console.log('*** cacheUniquenessKey', cacheUniquenessKey);
+  console.log('*** ETag', ETag);
+
   // First, let's try to fetch this information from the local cache.
   const data = await cache.get(ETag);
 
@@ -147,6 +152,8 @@ const fetchWork = async (
 
   // Then, we may be able to find this in S3.
   let response = await seekFromS3(ETag, experimentId);
+
+  console.log('*** seekFromS3 response', response);
 
   // If there is no response in S3, dispatch workRequest via the worker
   if (!response) {
