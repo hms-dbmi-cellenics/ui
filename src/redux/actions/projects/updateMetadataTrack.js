@@ -51,7 +51,7 @@ const updateMetadataTrack = (
       await dispatch(saveProject(projectUuid, newProject, false, notifyUser));
       await dispatch(saveSamples(projectUuid, newSamples, false, false, notifyUser));
     } else if (config.currentApiVersion === api.V2) {
-      const body = { key: newName };
+      const body = { key: newMetadataKey };
 
       await fetchAPI(
         `/v2/experiments/${projectUuid}/metadataTracks/${oldMetadataKey}`,
