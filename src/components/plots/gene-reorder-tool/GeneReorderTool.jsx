@@ -1,21 +1,23 @@
 import React, {
   useEffect, useState,
 } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 
-import { arrayMoveImmutable } from 'utils/array-move'
+import { arrayMoveImmutable } from 'utils/array-move';
+import { updatePlotConfig } from 'redux/actions/componentConfig';
 import HierarchicalTreeGenes from '../hierarchical-tree-genes/HierarchicalTreeGenes';
 
 const GeneReorderTool = (props) => {
-  const {
-    plotUuid,
-    updatePlotConfig,
-    loadedMarkerGenes,
-    config,
-  } = (props);
+  const { plotUuid } = (props);
 
   const dispatch = useDispatch();
+
+  const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
+
+  const loadedMarkerGenes = useSelector(
+    (state) => state.genes.expression.views[plotUuid]?.data,
+  ) || [];
 
   // Tree from antd requires format [{key: , title: }], made from gene names from loadedMarkerGenes and config
   const composeGeneTree = (treeGenes) => {
@@ -34,15 +36,14 @@ const GeneReorderTool = (props) => {
 
   useEffect(() => {
     setGeneTreeData(composeGeneTree(config?.selectedGenes));
-    console.log(geneTreeData);
   }, [config?.selectedGenes]);
 
   // geneKey is equivalent to it's index, moves a gene from pos geneKey to newPosition
   // dispatches an action to update selectedGenes in config
   const onGeneReorder = (geneKey, newPosition) => {
     const oldOrder = geneTreeData.map((treeNode) => treeNode.title);
-    console.log(oldOrder);
-    const newOrder = arrayMoveImmutable(Object.values(oldOrder), geneKey, newPosition - 1);
+
+    const newOrder = arrayMoveImmutable(Object.values(oldOrder), geneKey, newPosition);
 
     dispatch(updatePlotConfig(plotUuid, { selectedGenes: newOrder }));
   };
@@ -61,9 +62,6 @@ GeneReorderTool.defaultProps = {};
 
 GeneReorderTool.propTypes = {
   plotUuid: PropTypes.string.isRequired,
-  updatePlotConfig: PropTypes.func.isRequired,
-  loadedMarkerGenes: PropTypes.array.isRequired,
-  config: PropTypes.any.isRequired,
 };
 
 export default GeneReorderTool;

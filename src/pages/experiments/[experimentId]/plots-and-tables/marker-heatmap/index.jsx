@@ -331,9 +331,6 @@ const MarkerHeatmap = ({ experimentId }) => {
   const reorderGenesTab = (
     <GeneReorderTool
       plotUuid={plotUuid}
-      updatePlotConfig={updatePlotConfig}
-      loadedMarkerGenes={loadedMarkerGenes}
-      config={config}
     />
   );
   const renderExtraPanels = () => (
