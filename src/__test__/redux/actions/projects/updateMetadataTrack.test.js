@@ -5,7 +5,6 @@ import thunk from 'redux-thunk';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 
 import { metadataNameToKey } from 'utils/data-management/metadataUtils';
-import pushNotificationMessage from 'utils/pushNotificationMessage';
 import updateMetadataTrack from 'redux/actions/projects/updateMetadataTrack';
 import initialProjectState from 'redux/reducers/projects';
 import initialSampleState from 'redux/reducers/samples';
@@ -37,6 +36,7 @@ const oldMetadataTrack = 'Old track';
 const oldMetadataTrackKey = metadataNameToKey(oldMetadataTrack);
 
 const newMetadataTrack = 'New track';
+const newMetadataTrackKey = metadataNameToKey(newMetadataTrack);
 
 const mockProject = {
   ...initialProjectState,
@@ -76,42 +76,6 @@ describe('updateMetadataTrack action', () => {
     fetchMock.doMock();
   });
 
-  it('Dispatches event correctly', async () => {
-    const store = mockStore(initialState);
-    await store.dispatch(updateMetadataTrack(
-      oldMetadataTrack,
-      newMetadataTrack,
-      mockProject.uuid,
-    ));
-
-    const actions = store.getActions();
-
-    // It fires save project and save samples
-    expect(saveProject).toHaveBeenCalled();
-    expect(saveSamples).toHaveBeenCalled();
-
-    // It creates the new metadata
-    expect(actions[0].type).toEqual(PROJECTS_METADATA_UPDATE);
-  });
-
-  it('Does not update metadata if save fails', async () => {
-    const store = mockStore(initialState);
-
-    saveProject.mockImplementation(() => async () => { throw new Error('some weird error'); });
-
-    await store.dispatch(updateMetadataTrack(
-      oldMetadataTrack,
-      newMetadataTrack,
-      mockProject.uuid,
-    ));
-
-    // It fires saves project
-    expect(saveProject).toHaveBeenCalled();
-
-    // Expect there is a notification
-    expect(pushNotificationMessage).toHaveBeenCalled();
-  });
-
   it('Works correctly in api v2', async () => {
     config.currentApiVersion = api.V2;
 
@@ -128,10 +92,26 @@ describe('updateMetadataTrack action', () => {
     expect(fetchMock).toHaveBeenCalledWith(
       `http://localhost:3000/v2/experiments/${mockProject.uuid}/metadataTracks/${oldMetadataTrackKey}`,
       {
-        body: JSON.stringify({ key: newMetadataTrack }),
+        body: JSON.stringify({ key: newMetadataTrackKey }),
         headers: { 'Content-Type': 'application/json' },
         method: 'PATCH',
       },
     );
+  });
+
+  it('Does not update metadata if save fails', async () => {
+    const store = mockStore(initialState);
+
+    saveProject.mockImplementation(() => async () => { throw new Error('some weird error'); });
+
+    await store.dispatch(updateMetadataTrack(
+      oldMetadataTrack,
+      newMetadataTrack,
+      mockProject.uuid,
+    ));
+
+    const actions = store.getActions();
+
+    expect(actions).toHaveLength(0);
   });
 });
