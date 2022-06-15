@@ -49,7 +49,6 @@ const CalculationConfig = (props) => {
       value: 'seuratv4',
       text: 'Seurat v4',
       disabled: false,
-      enableDimReductionMethod: true,
     },
     {
       value: 'fastmnn',
@@ -97,8 +96,6 @@ const CalculationConfig = (props) => {
 
     return _.round(variationExplained * 100, roundingPrecision);
   };
-
-  const selectedMethod = methods.find((element) => element.value === dataIntegration.method);
 
   const renderDimReductionMethod = () => (
     <Form.Item label={(
@@ -243,7 +240,7 @@ const CalculationConfig = (props) => {
               </Checkbox.Group>
             </Form.Item>
 
-            {selectedMethod.enableDimReductionMethod ? renderDimReductionMethod() : (<></>)}
+            {dataIntegration.method === 'seuratv4' ? renderDimReductionMethod() : <></>}
 
           </div>
         </Form>
