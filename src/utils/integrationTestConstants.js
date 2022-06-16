@@ -2,6 +2,7 @@
 
 const ids = {
   NAVIGATION_MENU: 'navigation-menu',
+  PROJECTS_LIST: 'projects-list',
   CONFIRM_CREATE_NEW_PROJECT: 'confirm-create-new-project',
   CREATE_NEW_PROJECT_BUTTON: 'create-new-project-button',
   PROJECT_NAME: 'project-name',

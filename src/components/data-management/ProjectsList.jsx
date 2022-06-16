@@ -3,6 +3,7 @@ import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Space, Skeleton } from 'antd';
 
+import integrationTestConstants from 'utils/integrationTestConstants';
 import ProjectCard from './ProjectCard';
 
 // This makes sure that all the projects can be viewed properly inside the list
@@ -19,7 +20,11 @@ const ProjectsList = (props) => {
   }
 
   return (
-    <Space direction='vertical' style={{ height: height - windowMargin, overflowY: 'auto' }}>
+    <Space
+      data-test-id={integrationTestConstants.ids.PROJECTS_LIST}
+      direction='vertical'
+      style={{ height: height - windowMargin, overflowY: 'auto' }}
+    >
       {
         projects.ids.map((projectUuid) => {
           const project = projects[projectUuid];
