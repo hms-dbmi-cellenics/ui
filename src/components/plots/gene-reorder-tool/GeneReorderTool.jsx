@@ -6,6 +6,7 @@ import PropTypes from 'prop-types';
 
 import { arrayMoveImmutable } from 'utils/array-move';
 import { updatePlotConfig } from 'redux/actions/componentConfig';
+import { loadGeneExpression } from 'redux/actions/genes';
 import HierarchicalTreeGenes from '../hierarchical-tree-genes/HierarchicalTreeGenes';
 
 const GeneReorderTool = (props) => {
@@ -14,6 +15,8 @@ const GeneReorderTool = (props) => {
   const dispatch = useDispatch();
 
   const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
+
+  const experimentId = useSelector((state) => state.componentConfig[plotUuid]?.experimentId);
 
   const loadedMarkerGenes = useSelector(
     (state) => state.genes.expression.views[plotUuid]?.data,
@@ -48,11 +51,20 @@ const GeneReorderTool = (props) => {
     dispatch(updatePlotConfig(plotUuid, { selectedGenes: newOrder }));
   };
 
+  const onNodeDelete = (geneKey) => {
+    // const newGenes = _.omit({ ...geneTreeData }, geneKey);
+    const genes = geneTreeData.map((treeNode) => treeNode.title);
+    genes.splice(geneKey, 1);
+
+    dispatch(loadGeneExpression(experimentId, genes, plotUuid));
+  };
+
   return (
     <>
       <HierarchicalTreeGenes
         treeData={geneTreeData}
         onGeneReorder={onGeneReorder}
+        onNodeDelete={onNodeDelete}
       />
     </>
   );

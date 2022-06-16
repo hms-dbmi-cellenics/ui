@@ -16,11 +16,11 @@ const TabCard = (props) => {
   const tabList = [
     {
       key: 'tab1',
-      tab: 'Add/remove genes',
+      tab: 'Add/Remove genes',
     },
     {
       key: 'tab2',
-      tab: 'Reorder genes',
+      tab: 'Re-order genes',
     },
   ];
 

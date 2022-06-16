@@ -1,13 +1,18 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import {
-  Tree, Skeleton,
+  Tree, Skeleton, Button, Space,
 } from 'antd';
+
+import { CloseOutlined } from '@ant-design/icons';
+
+import 'components/plots/hierarchical-tree-genes/HierarchicalTreeGenes.css';
 
 const HierarchicalTreeGenes = (props) => {
   const {
     treeData,
     onGeneReorder,
+    onNodeDelete,
   } = props;
 
   const onDrop = (info) => {
@@ -28,12 +33,44 @@ const HierarchicalTreeGenes = (props) => {
     onGeneReorder(dragNode.key, newPosition);
   };
 
+  const renderXButton = (geneKey) => (
+    <Button
+      type='text'
+      onClick={() => {
+        onNodeDelete(geneKey);
+      }}
+    >
+      <CloseOutlined />
+    </Button>
+  );
+
+  const renderTitles = (data) => {
+    const toRender = data.map((e) => {
+      // modified needs to be a copy of a given gene
+      const modified = { ...e };
+      modified.title = (
+        <Space>
+          {modified.title}
+          {renderXButton(modified.key)}
+        </Space>
+      );
+      return modified;
+    });
+    return toRender;
+  };
+
+  const [renderedTreeData, setRenderedTreeData] = useState([]);
+
+  useEffect(() => {
+    setRenderedTreeData(renderTitles(treeData));
+  }, [treeData]);
+
   if (!treeData) return <Skeleton active />;
 
   return (
     <Tree
       draggable
-      treeData={treeData}
+      treeData={renderedTreeData}
       onDrop={onDrop}
     />
   );
@@ -44,6 +81,7 @@ HierarchicalTreeGenes.defaultProps = {};
 HierarchicalTreeGenes.propTypes = {
   treeData: PropTypes.array.isRequired,
   onGeneReorder: PropTypes.func.isRequired,
+  onNodeDelete: PropTypes.func.isRequired,
 };
 
 export default HierarchicalTreeGenes;
