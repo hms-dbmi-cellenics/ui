@@ -1,13 +1,11 @@
-import React, {
-  useEffect, useState,
-} from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 
 import { arrayMoveImmutable } from 'utils/array-move';
 import { updatePlotConfig } from 'redux/actions/componentConfig';
 import { loadGeneExpression } from 'redux/actions/genes';
-import HierarchicalTreeGenes from '../hierarchical-tree-genes/HierarchicalTreeGenes';
+import HierarchicalTreeGenes from 'components/plots/hierarchical-tree-genes/HierarchicalTreeGenes';
 
 const GeneReorderTool = (props) => {
   const { plotUuid } = (props);
@@ -48,11 +46,10 @@ const GeneReorderTool = (props) => {
 
     const newOrder = arrayMoveImmutable(Object.values(oldOrder), geneKey, newPosition);
 
-    dispatch(updatePlotConfig(plotUuid, { selectedGenes: newOrder }));
+    dispatch(updatePlotConfig(plotUuid, { selectedGenes: newOrder }));;
   };
 
   const onNodeDelete = (geneKey) => {
-    // const newGenes = _.omit({ ...geneTreeData }, geneKey);
     const genes = geneTreeData.map((treeNode) => treeNode.title);
     genes.splice(geneKey, 1);
 
@@ -60,13 +57,11 @@ const GeneReorderTool = (props) => {
   };
 
   return (
-    <>
-      <HierarchicalTreeGenes
-        treeData={geneTreeData}
-        onGeneReorder={onGeneReorder}
-        onNodeDelete={onNodeDelete}
-      />
-    </>
+    <HierarchicalTreeGenes
+      treeData={geneTreeData}
+      onGeneReorder={onGeneReorder}
+      onNodeDelete={onNodeDelete}
+    />
   );
 };
 

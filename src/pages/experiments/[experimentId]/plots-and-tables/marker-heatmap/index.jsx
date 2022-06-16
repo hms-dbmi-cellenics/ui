@@ -1,7 +1,6 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Space,
-  Card,
   Collapse,
   Skeleton,
   Empty,
@@ -34,9 +33,9 @@ import Loader from 'components/Loader';
 import populateHeatmapData from 'components/plots/helpers/heatmap/populateHeatmapData';
 import { plotNames } from 'utils/constants';
 
-import GeneReorderTool from 'components/plots/gene-reorder-tool/GeneReorderTool';
+import GeneReorderTool from 'components/plots/GeneReorderTool';
 import { Element } from 'react-scroll';
-import TabCard from 'components/plots/tab-card/TabCard';
+import TabCard from 'components/plots/TabCard';
 
 const { Panel } = Collapse;
 const plotUuid = 'markerHeatmapPlotMain';
