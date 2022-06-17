@@ -1,7 +1,7 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
-import _ from 'lodash';
+import _, { drop } from 'lodash';
 import MarkerHeatmap from 'pages/experiments/[experimentId]/plots-and-tables/marker-heatmap/index';
 import React from 'react';
 import { act } from 'react-dom/test-utils';
@@ -274,5 +274,58 @@ describe('Marker heatmap plot', () => {
 
     // The list of displayed genes should be in the same order as the displayed genes
     expect(_.isEqual(genesListAfterRemoval, genesListBeforeRemoval)).toEqual(true);
+  });
+
+  it('loads the tabs under gene selection', async () => {
+    await renderHeatmapPage(storeState);
+
+    expect(screen.getByText(/Add\/Remove genes/i)).toBeInTheDocument();
+    expect(screen.getByText(/Re-order genes/i)).toBeInTheDocument();
+  });
+
+  it('switches tabs, re-orders and removes genes using the tree', async () => {
+    seekFromS3
+      .mockReset()
+      // 1st load
+      .mockImplementationOnce(() => null)
+      .mockImplementationOnce((ETag) => mockWorkerResponses[ETag])
+      // 2nd load
+      .mockImplementationOnce(() => null)
+      .mockImplementation((ETag) => mockWorkerResponses[ETag]);
+
+    await renderHeatmapPage(storeState);
+
+    await act(async () => {
+      userEvent.click(screen.getByText('Re-order genes'));
+    });
+
+    // Check that initially there are 5 marker genes - the default
+    markerGenesData5.order.forEach((geneName) => {
+      expect(screen.getByText(geneName)).toBeInTheDocument();
+    });
+
+    const geneToMove = screen.getByText(markerGenesData5.order[1]);
+    const geneToDropAt = screen.getByText(markerGenesData5.order[4]);
+
+    // Re-order genes using drag and drop
+    await act(async () => {
+      fireEvent.drag(geneToMove, { to: geneToDropAt });
+    });
+
+    // Find order of displayed genes and check that it changed
+    const genesContainer = geneToMove.closest('div');
+    const displayedGenesList = getDisplayedGenes(genesContainer);
+
+    expect(_.isEqual(displayedGenesList, markerGenesData5.order)).toEqual(false);
+
+    // Remove a gene using the X button
+    const geneRemoveButton = geneToMove.nextSibling;
+
+    userEvent.click(geneRemoveButton);
+
+    const genesListAfterRemoval = getDisplayedGenes(genesContainer);
+
+    // The list of displayed genes should be in the same order as the displayed genes
+    expect(_.isEqual(genesListAfterRemoval, displayedGenesList)).toEqual(true);
   });
 });
