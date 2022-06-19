@@ -46,7 +46,7 @@ const GeneReorderTool = (props) => {
 
     const newOrder = arrayMoveImmutable(Object.values(oldOrder), geneKey, newPosition);
 
-    dispatch(updatePlotConfig(plotUuid, { selectedGenes: newOrder }));;
+    dispatch(updatePlotConfig(plotUuid, { selectedGenes: newOrder }));
   };
 
   const onNodeDelete = (geneKey) => {
