@@ -1,8 +1,7 @@
-import { render, screen, fireEvent } from '@testing-library/react';
-import { within } from '@testing-library/dom';
+import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
-import _, { drop } from 'lodash';
+import _ from 'lodash';
 import MarkerHeatmap from 'pages/experiments/[experimentId]/plots-and-tables/marker-heatmap/index';
 import React from 'react';
 import { act } from 'react-dom/test-utils';
@@ -24,10 +23,6 @@ import mockAPI, {
   statusResponse,
 } from '__test__/test-utils/mockAPI';
 import createTestComponentFactory from '__test__/test-utils/testComponentFactory';
-
-import { arrayMoveImmutable, arrayMoveMutable } from 'utils/array-move';
-import { array } from 'vega';
-import { string } from 'prop-types';
 
 jest.mock('components/header/UserButton', () => () => <></>);
 jest.mock('react-resize-detector', () => (props) => {
@@ -308,10 +303,6 @@ describe('Marker heatmap plot', () => {
 
     const geneTree = screen.getByRole('tree');
 
-    // Introduce testing for drag and drop if possible
-    // In Jest (jsdom) DragEvent and properties to do with rendering (widths, coordinates)
-    // don't exist -> not possible to test?
-
     // Remove a gene using the X button
     const genesListBeforeRemoval = getTreeGenes(geneTree);
 
@@ -322,8 +313,11 @@ describe('Marker heatmap plot', () => {
     userEvent.click(geneRemoveButton);
 
     const genesListAfterRemoval = getTreeGenes(geneTree);
+
+    // remove element from list manually to compare
+    genesListBeforeRemoval.splice(1, 1);
     
     // The gene should be deleted from the list
-    expect(_.isEqual(genesListAfterRemoval.length, genesListBeforeRemoval.length)).toEqual(false);
+    expect(_.isEqual(genesListAfterRemoval, genesListBeforeRemoval)).toEqual(true);
   });
 });

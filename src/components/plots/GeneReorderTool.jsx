@@ -18,7 +18,7 @@ const GeneReorderTool = (props) => {
 
   const loadedMarkerGenes = useSelector(
     (state) => state.genes.expression.views[plotUuid]?.data,
-  ) || [];
+  );
 
   // Tree from antd requires format [{key: , title: }], made from gene names from loadedMarkerGenes and config
   const composeGeneTree = (treeGenes) => {

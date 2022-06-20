@@ -7,7 +7,7 @@ import {
   Select,
   Radio,
 } from 'antd';
-import _, { update } from 'lodash';
+import _ from 'lodash';
 import { useSelector, useDispatch } from 'react-redux';
 import { Vega } from 'react-vega';
 import PropTypes from 'prop-types';

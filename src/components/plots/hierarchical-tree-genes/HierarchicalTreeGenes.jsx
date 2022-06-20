@@ -33,25 +33,22 @@ const HierarchicalTreeGenes = (props) => {
     onGeneReorder(dragNode.key, newPosition);
   };
 
-  const renderXButton = (geneKey) => (
-    <Button
-      type='text'
-      onClick={() => {
-        onNodeDelete(geneKey);
-      }}
-    >
-      <CloseOutlined />
-    </Button>
-  );
-
   const renderTitles = (data) => {
+    // replace every title (gene name) in tree data with a modified title (name + button)
     const toRender = data.map((e) => {
       // modified needs to be a copy of a given gene
       const modified = { ...e };
       modified.title = (
         <Space>
-          {modified.title}
-          {renderXButton(modified.key)}
+          {e.title}
+          <Button
+            type='text'
+            onClick={() => {
+              onNodeDelete(e.key);
+            }}
+          >
+            <CloseOutlined />
+          </Button>
         </Space>
       );
       return modified;
