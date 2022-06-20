@@ -16,6 +16,7 @@ import ProjectsListContainer from 'components/data-management/ProjectsListContai
 import ProjectDetails from 'components/data-management/ProjectDetails';
 import { loadProcessingSettings } from 'redux/actions/experimentSettings';
 import loadBackendStatus from 'redux/actions/backendStatus/loadBackendStatus';
+import { loadSamples } from 'redux/actions/samples';
 
 const DataManagementPage = () => {
   const dispatch = useDispatch();
@@ -57,6 +58,7 @@ const DataManagementPage = () => {
     const activeExperimentId = projectsList[activeProjectUuid].experiments[0];
 
     dispatch(loadProcessingSettings(activeExperimentId));
+    if (activeProject.samples.length) dispatch(loadSamples(null, activeProjectUuid));
 
     if (!experimentsAreLoaded) {
       dispatch(loadExperiments(activeProjectUuid)).then(() => updateRunStatus(activeExperimentId));

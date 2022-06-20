@@ -39,6 +39,8 @@ import integrationTestConstants from 'utils/integrationTestConstants';
 
 import 'utils/css/data-management.css';
 
+import { fastLoad } from 'components/Loader';
+
 const { Paragraph, Text } = Typography;
 
 const SamplesTable = forwardRef((props, ref) => {
@@ -48,6 +50,7 @@ const SamplesTable = forwardRef((props, ref) => {
 
   const projects = useSelector((state) => state.projects);
   const samples = useSelector((state) => state.samples);
+  const areSamplesLoading = useSelector((state) => state.samples.meta.loading);
 
   const { activeProjectUuid } = useSelector((state) => state.projects.meta) || false;
   const activeProject = useSelector((state) => state.projects[activeProjectUuid]) || false;
@@ -416,7 +419,11 @@ const SamplesTable = forwardRef((props, ref) => {
           dataSource={tableData}
           sticky
           pagination={false}
-          locale={{ emptyText: noDataText }}
+          loading={{
+            spinning: areSamplesLoading,
+            indicator: fastLoad("We're getting your samples"),
+          }}
+          locale={{ emptyText: areSamplesLoading ? (<></>) : noDataText }}
           components={{
             body: {
               wrapper: DragContainer,
