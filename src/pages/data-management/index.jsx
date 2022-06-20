@@ -51,11 +51,9 @@ const DataManagementPage = () => {
     dispatch(loadBackendStatus(experimentId));
   };
 
-  const areSamplesLoaded = () => {
-    console.log(activeProject.samples);
-    console.log(Object.keys(loadedSamples));
-    return !activeProject.samples.length || activeProject.samples.every((sample) => Object.keys(loadedSamples).includes(sample));
-  };
+  const areSamplesLoaded = () => !activeProject.samples.length
+    || activeProject.samples.every((sample) => Object.keys(loadedSamples).includes(sample));
+
   useEffect(() => {
     if (!activeProjectUuid) return;
 
