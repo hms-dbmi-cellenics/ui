@@ -22,7 +22,9 @@ const generateGem2sParamsHash = (project, samples, experiment) => {
   };
 
   if (project.metadataKeys.length) {
-    hashParams.metadata = project.metadataKeys.sort().reduce((acc, key) => {
+    const orderInvariantProjectMetadataKeys = [...project.metadataKeys].sort();
+
+    hashParams.metadata = orderInvariantProjectMetadataKeys.reduce((acc, key) => {
       // Make sure the key does not contain '-' as it will cause failure in GEM2S
       const sanitizedKey = key.replace(/-+/g, '_');
 
