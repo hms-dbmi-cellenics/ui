@@ -1,9 +1,10 @@
 import Environment, { ssrGetCurrentEnvironment } from './environment';
-import accountId from './getAccountId';
+import getAccountId from './getAccountId';
 
 const configure = (userPoolId, identityPoolId, userPoolClientDetails) => {
   const currentEnvironment = ssrGetCurrentEnvironment();
-  const bucketName = `biomage-originals-${currentEnvironment}-${accountId()}`;
+  const accountId = getAccountId(currentEnvironment);
+  const bucketName = `biomage-originals-${currentEnvironment}-${accountId}`;
 
   const storageConfig = {
     Storage: {

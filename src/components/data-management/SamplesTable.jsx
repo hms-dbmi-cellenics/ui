@@ -272,7 +272,7 @@ const SamplesTable = forwardRef((props, ref) => {
   };
 
   const getPublicDatasets = async () => {
-    const accountId = getAccountId();
+    const accountId = getAccountId(environment);
     Storage.configure({
       bucket: `biomage-public-datasets-${environment}-${accountId}`,
       customPrefix: {
@@ -308,7 +308,7 @@ const SamplesTable = forwardRef((props, ref) => {
   }, [environment]);
 
   const downloadPublicDataset = async (filename) => {
-    const accountId = getAccountId();
+    const accountId = getAccountId(environment);
     const s3Object = await Storage.get(
       filename,
       {
