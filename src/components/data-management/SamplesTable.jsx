@@ -38,13 +38,14 @@ import { metadataNameToKey, metadataKeyToName, temporaryMetadataKey } from 'util
 import integrationTestConstants from 'utils/integrationTestConstants';
 import getAccountId from 'utils/getAccountId';
 import 'utils/css/data-management.css';
+import fetchAPI from 'utils/http/fetchAPI';
 
 const { Paragraph, Text } = Typography;
 
 const SamplesTable = forwardRef((props, ref) => {
   const dispatch = useDispatch();
   const [tableData, setTableData] = useState([]);
-  const [exampleDatasets, setExampleDatasets] = useState([]);
+  const [exampleDatasets, setExampleExperiments] = useState([]);
 
   const projects = useSelector((state) => state.projects);
   const samples = useSelector((state) => state.samples);
@@ -252,59 +253,12 @@ const SamplesTable = forwardRef((props, ref) => {
     setTableData(newData);
   }, [projects, samples, activeProjectUuid]);
 
-  // Name of file is 1.Example-File_Name.zip
-  // The naming starts from 1
-  const parseFileName = (name) => {
-    const parts = name.split('.');
-
-    // The first part of the file name is the order
-    const order = Number.parseInt(parts[0], 10);
-    if (!order) {
-      console.warn('Invalid dataset file:', name);
-      return null;
-    }
-
-    // Filename may contain dots, so we need to join them
-    const rawFileName = parts.slice(1, parts.length - 1).join('.');
-    const filename = rawFileName.replace(/_/g, ' ');
-
-    return { order, filename };
-  };
-
-  const getPublicDatasets = async () => {
-    const accountId = getAccountId(environment);
-    Storage.configure({
-      bucket: `biomage-public-datasets-${environment}-${accountId}`,
-      customPrefix: {
-        public: '',
-      },
-    });
-
-    const datasets = await Storage.list('');
-
-    // Properly order the datasets
-    const result = new Array(datasets.length).fill(null);
-
-    datasets.forEach((data) => {
-      const parsed = parseFileName(data.key);
-
-      if (!parsed) return;
-
-      // Order begins from 1, but array index begins from 0
-      const insertionIndex = parsed.order - 1;
-      result[insertionIndex] = {
-        filename: data.key,
-        description: parsed.filename,
-      };
-    });
-
-    return result.filter((data) => data !== null);
-  };
-
   useEffect(() => {
     if (!environment) return;
 
-    getPublicDatasets().then((datasets) => { setExampleDatasets(datasets); });
+    fetchAPI('/v2/experiments/examples').then((experiments) => {
+      setExampleExperiments(experiments);
+    });
   }, [environment]);
 
   const downloadPublicDataset = async (filename) => {
@@ -338,14 +292,14 @@ const SamplesTable = forwardRef((props, ref) => {
                 <div style={{ width: 'auto', textAlign: 'left' }}>
                   <ul>
                     {
-                      exampleDatasets.map(({ filename, description }) => (
-                        <li key={filename}>
+                      exampleDatasets.map(({ name }) => (
+                        <li key={name}>
                           <Button
                             type='link'
                             size='small'
-                            onClick={() => downloadPublicDataset(filename)}
+                            onClick={() => downloadPublicDataset(name)}
                           >
-                            {description}
+                            {name}
                           </Button>
                         </li>
                       ))
