@@ -12,7 +12,7 @@ coverage:
         target: auto
         # don't allow new commits to decrease coverage
         # Temporary to merge pr https://github.com/hms-dbmi-cellenics/ui/pull/723
-        threshold: 1%
+        threshold: 0.01%
 
     patch:                    # measuring the coverage of new changes
       default:
