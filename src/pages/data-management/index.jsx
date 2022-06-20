@@ -37,6 +37,7 @@ const DataManagementPage = () => {
   const [newProjectModalVisible, setNewProjectModalVisible] = useState(false);
   const [justLoggedIn, setJustLoggedIn] = useState(true);
   const activeProject = projectsList[activeProjectUuid];
+  const loadedSamples = useSelector((state) => state.samples);
 
   const experimentIds = new Set(experiments.ids);
   const experimentsAreLoaded = activeProject?.experiments
@@ -50,6 +51,11 @@ const DataManagementPage = () => {
     dispatch(loadBackendStatus(experimentId));
   };
 
+  const areSamplesLoaded = () => {
+    console.log(activeProject.samples);
+    console.log(Object.keys(loadedSamples));
+    return !activeProject.samples.length || activeProject.samples.every((sample) => Object.keys(loadedSamples).includes(sample));
+  };
   useEffect(() => {
     if (!activeProjectUuid) return;
 
@@ -58,7 +64,9 @@ const DataManagementPage = () => {
     const activeExperimentId = projectsList[activeProjectUuid].experiments[0];
 
     dispatch(loadProcessingSettings(activeExperimentId));
-    if (activeProject.samples.length) dispatch(loadSamples(null, activeProjectUuid));
+
+    console.log(areSamplesLoaded());
+    if (!areSamplesLoaded()) dispatch(loadSamples(null, activeProjectUuid));
 
     if (!experimentsAreLoaded) {
       dispatch(loadExperiments(activeProjectUuid)).then(() => updateRunStatus(activeExperimentId));

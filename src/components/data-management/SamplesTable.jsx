@@ -415,8 +415,8 @@ const SamplesTable = forwardRef((props, ref) => {
             x: 'max-content',
           }}
           bordered
-          columns={tableColumns}
-          dataSource={tableData}
+          columns={areSamplesLoading ? [] : tableColumns}
+          dataSource={areSamplesLoading ? [] : tableData}
           sticky
           pagination={false}
           loading={{
