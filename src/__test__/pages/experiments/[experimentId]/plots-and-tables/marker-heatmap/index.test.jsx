@@ -1,4 +1,5 @@
 import { render, screen } from '@testing-library/react';
+import { within } from '@testing-library/dom';
 import userEvent from '@testing-library/user-event';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import _ from 'lodash';
@@ -295,18 +296,20 @@ describe('Marker heatmap plot', () => {
     await act(async () => {
       userEvent.click(screen.getByText('Re-order genes'));
     });
-
-    // Check that initially there are 5 marker genes - the default
-    markerGenesData5.order.forEach((geneName) => {
-      expect(screen.getByText(geneName)).toBeInTheDocument();
-    });
+    // note: clicking another tab doesn't remove previous tab from screen
+    // screen.getByText will find multiples of the same gene -> use within(geneTree)
 
     const geneTree = screen.getByRole('tree');
+
+    // The genes in Data 5 should be in the tree
+    markerGenesData5.order.forEach((geneName) => {
+      expect(within(geneTree).getByText(geneName)).toBeInTheDocument();
+    });
 
     // Remove a gene using the X button
     const genesListBeforeRemoval = getTreeGenes(geneTree);
 
-    const geneToRemove = screen.getByText(genesListBeforeRemoval[1]);
+    const geneToRemove = within(geneTree).getByText(genesListBeforeRemoval[1]);
     
     const geneRemoveButton = geneToRemove.nextSibling.firstChild;
 
