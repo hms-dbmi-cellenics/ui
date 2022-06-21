@@ -38,7 +38,7 @@ describe('switch experiment ', () => {
     store = makeStore();
     await store.dispatch(loadProjects());
     await store.dispatch(loadExperiments(experimentWithSamplesId));
-    await store.dispatch(loadSamples(null, experimentWithSamplesId));
+    await store.dispatch(loadSamples(experimentWithSamplesId));
     await store.dispatch(loadExperiments(experimentWithoutSamplesId));
     await store.dispatch(setActiveProject(experimentWithoutSamplesId));
   });

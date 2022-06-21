@@ -108,7 +108,7 @@ describe('Samples table', () => {
     // Loading experiment is usually called in Data Management, so we have to load them manually
     await storeState.dispatch(loadExperiments(experimentWithSamplesId));
     await storeState.dispatch(loadExperiments(experimentWithoutSamplesId));
-    await storeState.dispatch(loadSamples(null, experimentWithSamplesId));
+    await storeState.dispatch(loadSamples(experimentWithSamplesId));
 
     // Defaults to project with samples
     await storeState.dispatch(setActiveProject(experimentWithSamplesId));
