@@ -1,0 +1,44 @@
+[
+  {
+      "id": "840ad7454b1ad68af8c237b3320c7d3a",
+      "name": "Example2",
+      "description": "Analysis description",
+      "samplesOrder": [
+          "3eb4e715-03f1-4dc7-aac8-69d566103fd8"
+      ],
+      "notifyByEmail": false,
+      "createdAt": "2022-06-21 18:23:02.688117+00",
+      "updatedAt": "2022-06-21 18:23:02.688117+00",
+      "metadataKeys": [
+          "Track2"
+      ]
+  },
+  {
+      "id": "a88e9bc2032867a96bf4166369c44b33",
+      "name": "Example0",
+      "description": "Analysis description",
+      "samplesOrder": [
+          "4580cdae-3107-438e-bf8a-3fe28b6ec0a5"
+      ],
+      "notifyByEmail": true,
+      "createdAt": "2022-06-21 18:22:57.868439+00",
+      "updatedAt": "2022-06-21 18:22:57.868439+00",
+      "metadataKeys": [
+          "Track0"
+      ]
+  },
+  {
+      "id": "b6cb756f851e1c9310cc5f3bc0cdcb73",
+      "name": "Example1",
+      "description": "Analysis description",
+      "samplesOrder": [
+          "af808bf4-1cd3-4646-966a-0a253063d2b2"
+      ],
+      "notifyByEmail": true,
+      "createdAt": "2022-06-21 18:22:53.1091+00",
+      "updatedAt": "2022-06-21 18:22:53.1091+00",
+      "metadataKeys": [
+          "Track1"
+      ]
+  }
+]
