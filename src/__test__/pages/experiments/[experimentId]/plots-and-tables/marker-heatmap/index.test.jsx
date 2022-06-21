@@ -352,10 +352,22 @@ describe('Marker heatmap plot', () => {
     component.update();
 
     // this finds the tree and tree nodes
-    const tree = component.find('div.ant-tree');
-    const treeNodes = component.find('div.ant-tree-treenode');
+    // const tree = component.find('div.ant-tree');
+    // const treeNodes = component.find('div.ant-tree-treenode');
 
-    console.log(tree.props());
+    const tree = component.find({ 'data-testid': 'HierachicalTreeGenesTree' });
+
+    console.log('treeDebug');
+    console.log(tree.debug());
+    console.log('-------------treeDebug-------------');
+    // console.log(tree.debug());
+    // console.log(tree.getElement());
+
+    console.log(tree.at(0).props.onDrop);
+    console.log(tree.at(0).getElement().props.onDrop);
+
+    tree.at(0).getElement().props.onDrop();
+    // console.log(tree.props());
 
     // The default data should be in the tree
     // markerGenesData5.order.forEach((geneName) => {
@@ -363,7 +375,6 @@ describe('Marker heatmap plot', () => {
     // });
 
     // const expectedOrder = arrayMoveImmutable(markerGenesData5.order, 1, 4);
-    
 
     // const newOrder = [];
     // treeNodes.forEach((node) => {
