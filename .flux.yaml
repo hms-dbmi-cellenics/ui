@@ -32,6 +32,8 @@ spec:
       periodSeconds: 30
     livenessProbe:
       probeType: tcpSocket
+    service:
+      additionalHosts: FILLED_IN_BY_CI
   valuesFrom:
   - configMapKeyRef:
       name: account-config

@@ -16,6 +16,7 @@ import ProjectsListContainer from 'components/data-management/ProjectsListContai
 import ProjectDetails from 'components/data-management/ProjectDetails';
 import { loadProcessingSettings } from 'redux/actions/experimentSettings';
 import loadBackendStatus from 'redux/actions/backendStatus/loadBackendStatus';
+import { loadSamples } from 'redux/actions/samples';
 
 const DataManagementPage = () => {
   const dispatch = useDispatch();
@@ -36,6 +37,7 @@ const DataManagementPage = () => {
   const [newProjectModalVisible, setNewProjectModalVisible] = useState(false);
   const [justLoggedIn, setJustLoggedIn] = useState(true);
   const activeProject = projectsList[activeProjectUuid];
+  const loadedSamples = useSelector((state) => state.samples);
 
   const experimentIds = new Set(experiments.ids);
   const experimentsAreLoaded = activeProject?.experiments
@@ -49,6 +51,9 @@ const DataManagementPage = () => {
     dispatch(loadBackendStatus(experimentId));
   };
 
+  const areSamplesLoaded = () => !activeProject.samples.length
+    || activeProject.samples.every((sample) => Object.keys(loadedSamples).includes(sample));
+
   useEffect(() => {
     if (!activeProjectUuid) return;
 
@@ -57,6 +62,8 @@ const DataManagementPage = () => {
     const activeExperimentId = projectsList[activeProjectUuid].experiments[0];
 
     dispatch(loadProcessingSettings(activeExperimentId));
+
+    if (!areSamplesLoaded()) dispatch(loadSamples(activeProjectUuid));
 
     if (!experimentsAreLoaded) {
       dispatch(loadExperiments(activeProjectUuid)).then(() => updateRunStatus(activeExperimentId));

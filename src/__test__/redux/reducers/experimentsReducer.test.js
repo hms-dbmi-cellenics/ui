@@ -1,4 +1,3 @@
-import { SAMPLES_CREATE } from 'redux/actionTypes/samples';
 import experimentsReducer from 'redux/reducers/experiments';
 import initialState, { experimentTemplate } from 'redux/reducers/experiments/initialState';
 import { sampleTemplate } from 'redux/reducers/samples/initialState';
@@ -11,6 +10,8 @@ import {
   EXPERIMENTS_ERROR,
   EXPERIMENTS_DELETED,
 } from 'redux/actionTypes/experiments';
+
+import { SAMPLES_CREATE, SAMPLES_DELETE_API_V2 } from 'redux/actionTypes/samples';
 
 describe('experimentsReducer', () => {
   const experimentId1 = 'experiment-1';
@@ -237,6 +238,19 @@ describe('experimentsReducer', () => {
     });
 
     expect(newState[experiment1.id].sampleIds).toEqual([sampleId, anotherSample.uuid]);
+    expect(newState).toMatchSnapshot();
+  });
+
+  it('Deletes samples in v2 correctly', () => {
+    const newState = experimentsReducer(oneExperimentWithSampleState, {
+      type: SAMPLES_DELETE_API_V2,
+      payload: {
+        experimentId: experiment1.id,
+        sampleUuids: [sampleId],
+      },
+    });
+
+    expect(newState[experiment1.id].sampleIds).toHaveLength(0);
     expect(newState).toMatchSnapshot();
   });
 });

@@ -5,6 +5,8 @@ import fetchAPI from 'utils/http/fetchAPI';
 import unpackResult from 'utils/work/unpackResult';
 import WorkResponseError from 'utils/http/errors/WorkResponseError';
 import httpStatusCodes from 'utils/http/httpStatusCodes';
+import config from 'config';
+import { api } from 'utils/constants';
 
 const throwResponseError = (response) => {
   throw new Error(`Error ${response.status}: ${response.text}`, { cause: response });
@@ -27,7 +29,13 @@ const getRemainingWorkerStartTime = (creationTimestamp) => {
 const seekFromS3 = async (ETag, experimentId) => {
   let response;
   try {
-    response = await fetchAPI(`/v1/workResults/${experimentId}/${ETag}`);
+    let url;
+    if (config.currentApiVersion === api.V2) {
+      url = `/v2/workResults/${experimentId}/${ETag}`;
+    } else {
+      url = `/v1/workResults/${experimentId}/${ETag}`;
+    }
+    response = await fetchAPI(url);
   } catch (e) {
     if (e.statusCode === httpStatusCodes.NOT_FOUND) {
       return null;
@@ -110,7 +118,11 @@ const dispatchWorkRequest = async (
 
   const result = Promise.race([timeoutPromise, responsePromise]);
 
-  io.emit('WorkRequest', request);
+  if (config.currentApiVersion === api.V2) {
+    io.emit('WorkRequest-v2', request);
+  } else {
+    io.emit('WorkRequest', request);
+  }
   return result;
 };
 

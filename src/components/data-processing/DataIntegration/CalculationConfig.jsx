@@ -32,12 +32,10 @@ const CalculationConfig = (props) => {
     onConfigChange, disabled, disableDataIntegration,
   } = props;
   const FILTER_UUID = 'dataIntegration';
-
   const dispatch = useDispatch();
   const { dataIntegration, dimensionalityReduction } = useSelector(
     (state) => state.experimentSettings.processing.dataIntegration,
   );
-
   const elbowPlotUuid = generateDataProcessingPlotUuid(null, FILTER_UUID, 1);
   const data = useSelector((state) => state.componentConfig[elbowPlotUuid]?.plotData);
 
@@ -98,6 +96,52 @@ const CalculationConfig = (props) => {
 
     return _.round(variationExplained * 100, roundingPrecision);
   };
+
+  const renderDimReductionMethod = () => (
+    <Form.Item label={(
+      <span>
+        Method&nbsp;
+        <Tooltip overlay={(
+          <span>
+            To integrate data, dimensional reduction is performed to find so called "anchors".
+            cross-dataset pairs of cells that are in a matched biological state (‘anchors’), are both to correct for technical
+            differences between datasets
+            (i.e. batch effect correction), and to perform comparative scRNA-seq analysis across experimental conditions.
+            CCA is well-suited when cell types are conserved, but there are very substantial differences
+            in gene expression across experiments.
+            However, CCA-based integration may also lead to overcorrection, especially when a large proportion of cells are
+            non-overlapping across datasets.
+
+            RPCA-based integration runs significantly faster, and also represents a more conservative approach where
+            cells in different biological states are less likely to ‘align’ after integration.
+            More info
+            <a
+              href='https://satijalab.org/seurat/articles/integration_rpca.html'
+              target='_blank'
+              rel='noreferrer'
+            >
+              {' '}
+              <code>here</code>
+            </a>
+          </span>
+        )}
+        >
+          <QuestionCircleOutlined />
+        </Tooltip>
+      </span>
+    )}
+    >
+
+      <Select
+        value={dimensionalityReduction.method}
+        onChange={(val) => updateSettings({ dimensionalityReduction: { method: val } })}
+        disabled={disabled}
+      >
+        <Option key='rpca' value='rpca'>Reciprocal PCA (RPCA)</Option>
+        <Option key='cca' value='cca'>Canonical Correlation Analysis (CCA)</Option>
+      </Select>
+    </Form.Item>
+  );
 
   return (
     <Collapse defaultActiveKey='data-integration'>
@@ -195,49 +239,9 @@ const CalculationConfig = (props) => {
                 </Space>
               </Checkbox.Group>
             </Form.Item>
-            <Form.Item label={(
-              <span>
-                Method&nbsp;
-                <Tooltip overlay={(
-                  <span>
-                    To integrate data, dimensional reduction is performed to find so called "anchors".
-                    cross-dataset pairs of cells that are in a matched biological state (‘anchors’), can are both to correct for technical
-                    differences between datasets
-                    (i.e. batch effect correction), and to perform comparative scRNA-seq analysis across experimental conditions.
-                    CCA is well-suitedn cell types are conserved, but there are very substantial differences
-                    in gene expression across experiments.
-                    However, CCA-based integration may also lead to overcorrection, especially when a large proportion of cells are
-                    non-overlapping across datasets.
 
-                    RPCA-based integration runs significantly faster, and also represents a more conservative approach where
-                    cells in different biological states are less likely to ‘align’ after integration.
-                    More info
-                    <a
-                      href='https://satijalab.org/seurat/articles/integration_rpca.html'
-                      target='_blank'
-                      rel='noreferrer'
-                    >
-                      {' '}
-                      <code>here</code>
-                    </a>
-                  </span>
-                )}
-                >
-                  <QuestionCircleOutlined />
-                </Tooltip>
-              </span>
-            )}
-            >
-              <Select
-                value={dimensionalityReduction.method}
-                onChange={(val) => updateSettings({ dimensionalityReduction: { method: val } })}
-                disabled={disabled}
-              >
-                <Option key='rpca' value='rpca'>Reciprocal PCA (RPCA)</Option>
-                <Option key='cca' value='cca'>Canonical Correlation Analysis (CCA)</Option>
-              </Select>
+            {dataIntegration.method === 'seuratv4' ? renderDimReductionMethod() : <></>}
 
-            </Form.Item>
           </div>
         </Form>
       </Panel>

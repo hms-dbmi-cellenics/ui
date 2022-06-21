@@ -4,6 +4,8 @@ import SocketMock from 'socket.io-mock';
 import { dispatchWorkRequest, seekFromS3 } from 'utils/work/seekWorkResponse';
 import fake from '__test__/test-utils/constants';
 import mockAPI, { generateDefaultMockAPIResponses } from '__test__/test-utils/mockAPI';
+import config from 'config';
+import { api } from 'utils/constants';
 
 import unpackResult from 'utils/work/unpackResult';
 
@@ -90,7 +92,7 @@ describe('dispatchWorkRequest unit tests', () => {
     await dispatchWorkRequest(
       experimentId, body, timeout, 'facefeed',
     );
-    expect(socketConnectionMocks.mockEmit).toHaveBeenCalledWith('WorkRequest', {
+    expect(socketConnectionMocks.mockEmit).toHaveBeenCalledWith('WorkRequest-v2', {
       ETag: 'facefeed',
       socketId: '5678',
       experimentId: fake.EXPERIMENT_ID,
@@ -107,7 +109,7 @@ describe('dispatchWorkRequest unit tests', () => {
     await dispatchWorkRequest(
       experimentId, body, timeout, 'facefeed',
     );
-    expect(socketConnectionMocks.mockEmit).toHaveBeenCalledWith('WorkRequest', {
+    expect(socketConnectionMocks.mockEmit).toHaveBeenCalledWith('WorkRequest-v2', {
       ETag: 'facefeed',
       socketId: '5678',
       experimentId: fake.EXPERIMENT_ID,
@@ -132,6 +134,21 @@ describe('dispatchWorkRequest unit tests', () => {
     expect(async () => {
       await dispatchWorkRequest(experimentId, body, timeout, 'facefeed');
     }).rejects.toEqual(new Error('MOCK_ERROR_CODE: Mock worker error message'));
+  });
+  it('When using apiv2 correct work request is sent', async () => {
+    config.currentApiVersion = api.V2;
+    fetchMock.mockResponse(JSON.stringify({ signedUrl: 'http://www.apiUrl:portNum/path/blabla' }));
+
+    await dispatchWorkRequest(
+      experimentId, body, timeout, 'facefeed',
+    );
+    expect(socketConnectionMocks.mockEmit).toHaveBeenCalledWith('WorkRequest-v2', {
+      ETag: 'facefeed',
+      socketId: '5678',
+      experimentId: fake.EXPERIMENT_ID,
+      timeout: '4022-01-01T00:00:30.000Z',
+      body: { name: 'ImportantTask', type: 'fake task' },
+    });
   });
 });
 
@@ -169,8 +186,9 @@ describe('seekFromS3 unit tests', () => {
       };
     });
   });
-
   beforeEach(async () => {
+    config.currentApiVersion = api.V1;
+
     jest.clearAllMocks();
   });
 
@@ -200,5 +218,12 @@ describe('seekFromS3 unit tests', () => {
     expect(async () => {
       await seekFromS3(S3ErrorPath, experimentId);
     }).rejects.toThrow();
+  });
+
+  it('Works for apiv2 ', async () => {
+    config.currentApiVersion = api.V2;
+    // fetchMock.mockResponseOnce(JSON.stringify({ signedUrl: 'http://www.apiUrl:portNum/path/blabla' }));
+    await seekFromS3(validResultPath, experimentId);
+    expect(fetchMock.mock.calls[0]).toEqual(['http://localhost:3000/v2/workResults/testae48e318dab9a1bd0bexperiment/validResultPath', { headers: {} }]);
   });
 });
