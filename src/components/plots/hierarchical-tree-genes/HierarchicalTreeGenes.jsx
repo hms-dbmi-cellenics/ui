@@ -15,10 +15,6 @@ const HierarchicalTreeGenes = (props) => {
     const {
       dragNode, node, dropPosition, dropToGap,
     } = info;
-    console.log(dragNode);
-    console.log(node);
-    console.log(dropPosition);
-    console.log(dropToGap);
 
     // if dropped in place, ignore
     // dragNode.key is str, dropPosition is int
