@@ -36,7 +36,7 @@ import { arrayMoveImmutable } from 'utils/array-move';
 import downloadFromUrl from 'utils/data-management/downloadFromUrl';
 import { metadataNameToKey, metadataKeyToName, temporaryMetadataKey } from 'utils/data-management/metadataUtils';
 import integrationTestConstants from 'utils/integrationTestConstants';
-
+import getAccountId from 'utils/getAccountId';
 import 'utils/css/data-management.css';
 import { ClipLoader } from 'react-spinners';
 
@@ -274,8 +274,9 @@ const SamplesTable = forwardRef((props, ref) => {
   };
 
   const getPublicDatasets = async () => {
+    const accountId = getAccountId(environment);
     Storage.configure({
-      bucket: `biomage-public-datasets-${environment}`,
+      bucket: `biomage-public-datasets-${environment}-${accountId}`,
       customPrefix: {
         public: '',
       },
@@ -309,10 +310,11 @@ const SamplesTable = forwardRef((props, ref) => {
   }, [environment]);
 
   const downloadPublicDataset = async (filename) => {
+    const accountId = getAccountId(environment);
     const s3Object = await Storage.get(
       filename,
       {
-        bucket: `biomage-public-datasets-${environment}`,
+        bucket: `biomage-public-datasets-${environment}-${accountId}`,
         contentType: 'multipart/form-data',
       },
     );
