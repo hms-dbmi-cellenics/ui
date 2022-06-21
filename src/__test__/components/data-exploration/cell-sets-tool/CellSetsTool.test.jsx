@@ -413,7 +413,7 @@ describe('CellSetsTool', () => {
     screen.getByText(`${numCellsCluster0} cells selected`);
   });
 
-  fit('Scratchpad cluster deletion works ', async () => {
+  it('Scratchpad cluster deletion works ', async () => {
     await act(async () => {
       render(
         <Provider store={storeState}>
