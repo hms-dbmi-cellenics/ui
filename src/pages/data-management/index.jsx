@@ -63,7 +63,6 @@ const DataManagementPage = () => {
 
     dispatch(loadProcessingSettings(activeExperimentId));
 
-    console.log(areSamplesLoaded());
     if (!areSamplesLoaded()) dispatch(loadSamples(activeProjectUuid));
 
     if (!experimentsAreLoaded) {

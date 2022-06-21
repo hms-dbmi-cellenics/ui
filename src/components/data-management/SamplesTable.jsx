@@ -38,8 +38,7 @@ import { metadataNameToKey, metadataKeyToName, temporaryMetadataKey } from 'util
 import integrationTestConstants from 'utils/integrationTestConstants';
 
 import 'utils/css/data-management.css';
-
-import { fastLoad } from 'components/Loader';
+import { ClipLoader } from 'react-spinners';
 
 const { Paragraph, Text } = Typography;
 
@@ -405,7 +404,24 @@ const SamplesTable = forwardRef((props, ref) => {
     return <SortableRow index={index} {...otherProps} />;
   };
 
-  return (
+  const renderLoader = () => (
+    <>
+      <Row justify='center'>
+        <ClipLoader
+          size={50}
+          color='#8f0b10'
+        />
+      </Row>
+
+      <Row justify='center'>
+        <Text>
+          We&apos;re getting your samples ...
+        </Text>
+      </Row>
+    </>
+  );
+
+  const renderSamplesTable = () => (
     <Row>
       <Col>
         <Table
@@ -415,15 +431,11 @@ const SamplesTable = forwardRef((props, ref) => {
             x: 'max-content',
           }}
           bordered
-          columns={areSamplesLoading ? [] : tableColumns}
-          dataSource={areSamplesLoading ? [] : tableData}
+          columns={tableColumns}
+          dataSource={tableData}
           sticky
           pagination={false}
-          loading={{
-            spinning: areSamplesLoading,
-            indicator: fastLoad("We're getting your samples"),
-          }}
-          locale={{ emptyText: areSamplesLoading ? (<></>) : noDataText }}
+          locale={{ emptyText: noDataText }}
           components={{
             body: {
               wrapper: DragContainer,
@@ -433,6 +445,12 @@ const SamplesTable = forwardRef((props, ref) => {
         />
       </Col>
     </Row>
+  );
+
+  return (
+    <>
+      {areSamplesLoading ? renderLoader() : renderSamplesTable()}
+    </>
   );
 });
 
