@@ -2,7 +2,7 @@
 import React, {
   useEffect, useState, forwardRef, useImperativeHandle,
 } from 'react';
-import Storage from '@aws-amplify/storage';
+
 import { useSelector, useDispatch } from 'react-redux';
 import {
   Table, Row, Col, Typography, Space, Button, Empty,
@@ -26,6 +26,7 @@ import {
   deleteMetadataTrack,
   createMetadataTrack,
   updateValueInMetadataTrack,
+  loadProjects,
 } from 'redux/actions/projects';
 import { DEFAULT_NA } from 'redux/reducers/projects/initialState';
 import { reorderSamples, updateExperiment } from 'redux/actions/experiments';
@@ -33,10 +34,10 @@ import { updateSample } from 'redux/actions/samples';
 
 import UploadStatus from 'utils/upload/UploadStatus';
 import { arrayMoveImmutable } from 'utils/array-move';
-import downloadFromUrl from 'utils/data-management/downloadFromUrl';
+
 import { metadataNameToKey, metadataKeyToName, temporaryMetadataKey } from 'utils/data-management/metadataUtils';
 import integrationTestConstants from 'utils/integrationTestConstants';
-import getAccountId from 'utils/getAccountId';
+
 import 'utils/css/data-management.css';
 import fetchAPI from 'utils/http/fetchAPI';
 
@@ -261,16 +262,12 @@ const SamplesTable = forwardRef((props, ref) => {
     });
   }, [environment]);
 
-  const downloadPublicDataset = async (filename) => {
-    const accountId = getAccountId(environment);
-    const s3Object = await Storage.get(
-      filename,
-      {
-        bucket: `biomage-public-datasets-${environment}-${accountId}`,
-        contentType: 'multipart/form-data',
-      },
-    );
-    downloadFromUrl(s3Object);
+  const cloneIntoCurrentExperiment = async (exampleExperimentId) => {
+    const url = `/v2/experiments/${exampleExperimentId}/clone/${activeProjectUuid}`;
+
+    await fetchAPI(url, { method: 'POST' });
+
+    dispatch(loadProjects());
   };
 
   const noDataText = (
@@ -292,12 +289,12 @@ const SamplesTable = forwardRef((props, ref) => {
                 <div style={{ width: 'auto', textAlign: 'left' }}>
                   <ul>
                     {
-                      exampleDatasets.map(({ name }) => (
+                      exampleDatasets.map(({ id, name }) => (
                         <li key={name}>
                           <Button
                             type='link'
                             size='small'
-                            onClick={() => downloadPublicDataset(name)}
+                            onClick={() => cloneIntoCurrentExperiment(id)}
                           >
                             {name}
                           </Button>
