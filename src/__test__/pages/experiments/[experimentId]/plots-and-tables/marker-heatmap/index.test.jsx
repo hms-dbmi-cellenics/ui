@@ -28,6 +28,7 @@ import mockAPI, {
 } from '__test__/test-utils/mockAPI';
 import createTestComponentFactory from '__test__/test-utils/testComponentFactory';
 import waitForComponentToPaint from '__test__/test-utils/waitForComponentToPaint';
+import { arrayMoveImmutable } from 'utils/array-move';
 
 jest.mock('components/header/UserButton', () => () => <></>);
 jest.mock('react-resize-detector', () => (props) => {
@@ -302,7 +303,7 @@ describe('Marker heatmap plot', () => {
     expect(screen.getByText(/Re-order genes/i)).toBeInTheDocument();
   });
 
-  it('switches tabs, re-orders and removes genes using the tree', async () => {
+  it('switches tabs and removes genes within the tree', async () => {
     await renderHeatmapPage(storeState);
 
     await act(async () => {
@@ -336,32 +337,41 @@ describe('Marker heatmap plot', () => {
     expect(_.isEqual(genesListAfterRemoval, genesListBeforeRemoval)).toEqual(true);
   });
 
-  it.only('Loads', async () => {
+  it.only('Re-orders genes within the tree', async () => {
     const component = await renderHeatmapPageForEnzyme(storeState);
 
     await waitForComponentToPaint(component);
 
     await act(async () => {
-      const reorderTab = component.find('TabPane');
-
-      console.log('reorderTabDebug');
-      console.log(reorderTab.debug());
+      // needs to find specifically the tab button to click
+      const reorderTab = component.find('div.ant-tabs-tab-btn');
 
       reorderTab.at(1).simulate('click');
     });
 
     component.update();
 
-    // const tree = component.find('HierarchicalTree Tree');
-    // const tree = component.find('HierarchicalTreeGenes Tree');
-    // const htree = component.find('HierarchicalTreeGenes');
-    // const tree = component.find('HierarchicalTreeGenes Tree');
+    // this finds the tree and tree nodes
+    const tree = component.find('div.ant-tree');
+    const treeNodes = component.find('div.ant-tree-treenode');
 
-    console.log('componentDebug');
-    console.log(component.debug());
+    console.log(tree.props());
 
-    console.log('deijfrkrj');
-    // console.log(component.find({ prop: 'onDrop' }).debug());
-    // console.log(component.find({ prop: 'onDrop' }).getElement().props.onDrop);
+    // The default data should be in the tree
+    // markerGenesData5.order.forEach((geneName) => {
+    //   expect(tree.containsMatchingElement(geneName)).toEqual(true);
+    // });
+
+    // const expectedOrder = arrayMoveImmutable(markerGenesData5.order, 1, 4);
+    
+
+    // const newOrder = [];
+    // treeNodes.forEach((node) => {
+    //   newOrder.push(node.text());
+    // });
+
+    // expect(_.isEqual(newOrder, expectedOrder).toEqual(true));
+
+    // component.update();
   });
 });
