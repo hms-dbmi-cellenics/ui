@@ -59,10 +59,6 @@ const loadProjects = () => async (dispatch) => {
       data = await fetchAPI(url);
 
       data = toApiV1(data);
-
-      await Promise.all(data
-        .filter((entry) => entry.samples.length)
-        .map((entry) => dispatch(loadSamples(null, entry.uuid))));
     }
 
     const ids = data.map((project) => project.uuid);

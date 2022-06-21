@@ -38,6 +38,7 @@ import { metadataNameToKey, metadataKeyToName, temporaryMetadataKey } from 'util
 import integrationTestConstants from 'utils/integrationTestConstants';
 import getAccountId from 'utils/getAccountId';
 import 'utils/css/data-management.css';
+import { ClipLoader } from 'react-spinners';
 
 const { Paragraph, Text } = Typography;
 
@@ -48,6 +49,7 @@ const SamplesTable = forwardRef((props, ref) => {
 
   const projects = useSelector((state) => state.projects);
   const samples = useSelector((state) => state.samples);
+  const areSamplesLoading = useSelector((state) => state.samples.meta.loading);
 
   const { activeProjectUuid } = useSelector((state) => state.projects.meta) || false;
   const activeProject = useSelector((state) => state.projects[activeProjectUuid]) || false;
@@ -404,7 +406,24 @@ const SamplesTable = forwardRef((props, ref) => {
     return <SortableRow index={index} {...otherProps} />;
   };
 
-  return (
+  const renderLoader = () => (
+    <>
+      <Row justify='center'>
+        <ClipLoader
+          size={50}
+          color='#8f0b10'
+        />
+      </Row>
+
+      <Row justify='center'>
+        <Text>
+          We&apos;re getting your samples ...
+        </Text>
+      </Row>
+    </>
+  );
+
+  const renderSamplesTable = () => (
     <Row>
       <Col>
         <Table
@@ -428,6 +447,12 @@ const SamplesTable = forwardRef((props, ref) => {
         />
       </Col>
     </Row>
+  );
+
+  return (
+    <>
+      {areSamplesLoading ? renderLoader() : renderSamplesTable()}
+    </>
   );
 });
 
