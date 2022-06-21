@@ -337,7 +337,7 @@ describe('Marker heatmap plot', () => {
     expect(_.isEqual(genesListAfterRemoval, genesListBeforeRemoval)).toEqual(true);
   });
 
-  it.only('Re-orders genes within the tree', async () => {
+  it('Re-orders genes within the tree', async () => {
     const component = await renderHeatmapPageForEnzyme(storeState);
 
     await waitForComponentToPaint(component);
@@ -351,38 +351,84 @@ describe('Marker heatmap plot', () => {
 
     component.update();
 
-    // this finds the tree and tree nodes
-    // const tree = component.find('div.ant-tree');
-    // const treeNodes = component.find('div.ant-tree-treenode');
+    // this finds 5 elements, use the first one
+    const tree = component.find({ 'data-testid': 'HierachicalTreeGenes' });
 
-    const tree = component.find({ 'data-testid': 'HierachicalTreeGenesTree' });
+    // default genes are in the tree
+    markerGenesData5.order.forEach((geneName) => {
+      expect(tree.at(0).containsMatchingElement(geneName));
+    });
 
-    console.log('treeDebug');
-    console.log(tree.debug());
-    console.log('-------------treeDebug-------------');
-    // console.log(tree.debug());
-    // console.log(tree.getElement());
+    // dropping in place does nothing
+    let info = {
+      dragNode: { key: 1, pos: '0-1' },
+      node: { key: 1, pos: '0-1' },
+      dropPosition: 1,
+      dropToGap: true,
+    };
 
-    console.log(tree.at(0).props.onDrop);
-    console.log(tree.at(0).getElement().props.onDrop);
+    tree.at(0).getElement().props.onDrop(info);
 
-    tree.at(0).getElement().props.onDrop();
-    // console.log(tree.props());
+    await act(async () => {
+      component.update();
+    });
 
-    // The default data should be in the tree
-    // markerGenesData5.order.forEach((geneName) => {
-    //   expect(tree.containsMatchingElement(geneName)).toEqual(true);
-    // });
+    let treeNodes = component.find('div.ant-tree-treenode');
+    let newOrder = [];
+    treeNodes.forEach((node) => {
+      newOrder.push(node.text());
+    });
+    // first element is empty, can be removed
+    newOrder.splice(0, 1);
 
-    // const expectedOrder = arrayMoveImmutable(markerGenesData5.order, 1, 4);
+    expect(_.isEqual(newOrder, markerGenesData5.order)).toEqual(true);
 
-    // const newOrder = [];
-    // treeNodes.forEach((node) => {
-    //   newOrder.push(node.text());
-    // });
+    // not dropping to gap does nothing
+    info = {
+      dragNode: { key: 1, pos: '0-1' },
+      node: { key: 3, pos: '0-3' },
+      dropPosition: 4,
+      dropToGap: false,
+    };
 
-    // expect(_.isEqual(newOrder, expectedOrder).toEqual(true));
+    tree.at(0).getElement().props.onDrop(info);
 
-    // component.update();
+    await act(async () => {
+      component.update();
+    });
+
+    treeNodes = component.find('div.ant-tree-treenode');
+    newOrder = [];
+    treeNodes.forEach((node) => {
+      newOrder.push(node.text());
+    });
+    newOrder.splice(0, 1);
+
+    expect(_.isEqual(newOrder, markerGenesData5.order)).toEqual(true);
+
+    // dropping to gap re-orders genes
+    info = {
+      dragNode: { key: 1, pos: '0-1' },
+      node: { key: 3, pos: '0-3' },
+      dropPosition: 4,
+      dropToGap: true,
+    };
+
+    tree.at(0).getElement().props.onDrop(info);
+
+    await act(async () => {
+      component.update();
+    });
+
+    treeNodes = component.find('div.ant-tree-treenode');
+    newOrder = [];
+    treeNodes.forEach((node) => {
+      newOrder.push(node.text());
+    });
+    newOrder.splice(0, 1);
+
+    const expectedOrder = arrayMoveImmutable(markerGenesData5.order, 1, 3);
+
+    expect(_.isEqual(newOrder, expectedOrder)).toEqual(true);
   });
 });

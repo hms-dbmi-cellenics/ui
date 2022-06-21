@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { Tree, Skeleton } from 'antd';
 
 import 'components/plots/hierarchical-tree-genes/HierarchicalTreeGenes.css';
+import { ConsoleLogger } from '@aws-amplify/core';
 
 const HierarchicalTreeGenes = (props) => {
   const {
@@ -14,6 +15,10 @@ const HierarchicalTreeGenes = (props) => {
     const {
       dragNode, node, dropPosition, dropToGap,
     } = info;
+    console.log(dragNode);
+    console.log(node);
+    console.log(dropPosition);
+    console.log(dropToGap);
 
     // if dropped in place, ignore
     // dragNode.key is str, dropPosition is int
@@ -32,7 +37,7 @@ const HierarchicalTreeGenes = (props) => {
 
   return (
     <Tree
-      data-testid='HierachicalTreeGenesTree'
+      data-testid='HierachicalTreeGenes'
       draggable
       treeData={treeData}
       onDrop={onDrop}
