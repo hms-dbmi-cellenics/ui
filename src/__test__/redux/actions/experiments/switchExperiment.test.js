@@ -8,6 +8,7 @@ import { makeStore } from 'redux/store';
 import { loadProjects, setActiveProject } from 'redux/actions/projects';
 import { responseData } from '__test__/test-utils/mockData';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
+import { loadSamples } from 'redux/actions/samples';
 
 let store = null;
 
@@ -37,6 +38,7 @@ describe('switch experiment ', () => {
     store = makeStore();
     await store.dispatch(loadProjects());
     await store.dispatch(loadExperiments(experimentWithSamplesId));
+    await store.dispatch(loadSamples(experimentWithSamplesId));
     await store.dispatch(loadExperiments(experimentWithoutSamplesId));
     await store.dispatch(setActiveProject(experimentWithoutSamplesId));
   });

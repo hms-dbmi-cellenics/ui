@@ -25,6 +25,7 @@ import downloadFromUrl from 'utils/data-management/downloadFromUrl';
 
 import loadEnvironment from 'redux/actions/networkResources/loadEnvironment';
 import { loadExperiments } from 'redux/actions/experiments';
+import { loadSamples } from 'redux/actions/samples';
 
 jest.mock('config');
 
@@ -107,6 +108,7 @@ describe('Samples table', () => {
     // Loading experiment is usually called in Data Management, so we have to load them manually
     await storeState.dispatch(loadExperiments(experimentWithSamplesId));
     await storeState.dispatch(loadExperiments(experimentWithoutSamplesId));
+    await storeState.dispatch(loadSamples(experimentWithSamplesId));
 
     // Defaults to project with samples
     await storeState.dispatch(setActiveProject(experimentWithSamplesId));
