@@ -1,4 +1,5 @@
 import { render, screen } from '@testing-library/react';
+import { mount } from 'enzyme';
 import { within } from '@testing-library/dom';
 import userEvent from '@testing-library/user-event';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
@@ -15,6 +16,8 @@ import expressionDataFAKEGENE from '__test__/data/gene_expression_FAKEGENE.json'
 import markerGenesData2 from '__test__/data/marker_genes_2.json';
 import markerGenesData5 from '__test__/data/marker_genes_5.json';
 
+import { Tree } from 'antd';
+
 import preloadAll from 'jest-next-dynamic';
 
 import fake from '__test__/test-utils/constants';
@@ -24,6 +27,7 @@ import mockAPI, {
   statusResponse,
 } from '__test__/test-utils/mockAPI';
 import createTestComponentFactory from '__test__/test-utils/testComponentFactory';
+import waitForComponentToPaint from '__test__/test-utils/waitForComponentToPaint';
 
 jest.mock('components/header/UserButton', () => () => <></>);
 jest.mock('react-resize-detector', () => (props) => {
@@ -97,6 +101,14 @@ const renderHeatmapPage = async (store) => {
     )
   ));
 };
+
+const renderHeatmapPageForEnzyme = async (store) => (
+  mount(
+    <Provider store={store}>
+      {heatmapPageFactory()}
+    </Provider>,
+  )
+);
 
 describe('Marker heatmap plot', () => {
   beforeAll(async () => {
@@ -310,7 +322,7 @@ describe('Marker heatmap plot', () => {
     const genesListBeforeRemoval = getTreeGenes(geneTree);
 
     const geneToRemove = within(geneTree).getByText(genesListBeforeRemoval[1]);
-    
+
     const geneRemoveButton = geneToRemove.nextSibling.firstChild;
 
     userEvent.click(geneRemoveButton);
@@ -319,8 +331,37 @@ describe('Marker heatmap plot', () => {
 
     // remove element from list manually to compare
     genesListBeforeRemoval.splice(1, 1);
-    
+
     // The gene should be deleted from the list
     expect(_.isEqual(genesListAfterRemoval, genesListBeforeRemoval)).toEqual(true);
+  });
+
+  it.only('Loads', async () => {
+    const component = await renderHeatmapPageForEnzyme(storeState);
+
+    await waitForComponentToPaint(component);
+
+    await act(async () => {
+      const reorderTab = component.find('TabPane');
+
+      console.log('reorderTabDebug');
+      console.log(reorderTab.debug());
+
+      reorderTab.at(1).simulate('click');
+    });
+
+    component.update();
+
+    // const tree = component.find('HierarchicalTree Tree');
+    // const tree = component.find('HierarchicalTreeGenes Tree');
+    // const htree = component.find('HierarchicalTreeGenes');
+    // const tree = component.find('HierarchicalTreeGenes Tree');
+
+    console.log('componentDebug');
+    console.log(component.debug());
+
+    console.log('deijfrkrj');
+    // console.log(component.find({ prop: 'onDrop' }).debug());
+    // console.log(component.find({ prop: 'onDrop' }).getElement().props.onDrop);
   });
 });
