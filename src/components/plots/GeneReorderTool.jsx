@@ -7,6 +7,9 @@ import { updatePlotConfig } from 'redux/actions/componentConfig';
 import { loadGeneExpression } from 'redux/actions/genes';
 import HierarchicalTreeGenes from 'components/plots/hierarchical-tree-genes/HierarchicalTreeGenes';
 
+import { Space, Button } from 'antd';
+import { CloseOutlined } from '@ant-design/icons';
+
 const GeneReorderTool = (props) => {
   const { plotUuid } = (props);
 
@@ -56,9 +59,38 @@ const GeneReorderTool = (props) => {
     dispatch(loadGeneExpression(experimentId, genes, plotUuid));
   };
 
+  const renderTitles = (data) => {
+    // replace every title (gene name) in tree data with a modified title (name + button)
+    const toRender = data.map((treeNode) => {
+      // modified needs to be a copy of a given node
+      const modified = { ...treeNode };
+      modified.title = (
+        <Space>
+          {treeNode.title}
+          <Button
+            type='text'
+            onClick={() => {
+              onNodeDelete(treeNode.key);
+            }}
+          >
+            <CloseOutlined />
+          </Button>
+        </Space>
+      );
+      return modified;
+    });
+    return toRender;
+  };
+
+  const [renderedTreeData, setRenderedTreeData] = useState([]);
+
+  useEffect(() => {
+    setRenderedTreeData(renderTitles(geneTreeData));
+  }, [geneTreeData]);
+
   return (
     <HierarchicalTreeGenes
-      treeData={geneTreeData}
+      treeData={renderedTreeData}
       onGeneReorder={onGeneReorder}
       onNodeDelete={onNodeDelete}
     />

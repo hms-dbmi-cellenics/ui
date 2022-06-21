@@ -6,6 +6,7 @@ import {
   Empty,
   Select,
   Radio,
+  Tabs,
 } from 'antd';
 import _ from 'lodash';
 import { useSelector, useDispatch } from 'react-redux';
@@ -34,12 +35,11 @@ import populateHeatmapData from 'components/plots/helpers/heatmap/populateHeatma
 import { plotNames } from 'utils/constants';
 
 import GeneReorderTool from 'components/plots/GeneReorderTool';
-import { Element } from 'react-scroll';
-import TabCard from 'components/plots/TabCard';
 
 const { Panel } = Collapse;
 const plotUuid = 'markerHeatmapPlotMain';
 const plotType = 'markerHeatmap';
+const { TabPane } = Tabs;
 
 const MarkerHeatmap = ({ experimentId }) => {
   const dispatch = useDispatch();
@@ -301,46 +301,37 @@ const MarkerHeatmap = ({ experimentId }) => {
     updatePlotWithChanges({ selectedCellSet: newValue });
   };
 
-  // definitions of the tabs moved outside renderExtraPanels for clarity
-  // previous functionality is the addGenesTab
-  const addGenesTab = (
-    <Element>
-      <MarkerGeneSelection
-        config={config}
-        onUpdate={updatePlotWithChanges}
-        onGeneEnter={onGeneEnter}
-        onReset={onReset}
-      />
-      <div>
-        <p>Gene labels:</p>
-        <Radio.Group
-          onChange={
-            (e) => updatePlotWithChanges({ showGeneLabels: e.target.value })
-          }
-          value={config.showGeneLabels}
-        >
-          <Radio value>Show</Radio>
-          <Radio value={false}>Hide</Radio>
-        </Radio.Group>
-      </div>
-    </Element>
-  );
-
-  // new tab for reordering genes
-  const reorderGenesTab = (
-    <GeneReorderTool
-      plotUuid={plotUuid}
-    />
-  );
   const renderExtraPanels = () => (
     <>
       <Panel header='Gene selection' key='gene-selection'>
-        <Space direction='vertical' size='small'>
-          <TabCard
-            addGenesTab={addGenesTab}
-            reorderGenesTab={reorderGenesTab}
-          />
-        </Space>
+        <Tabs defaultActiveKey='1'>
+          <TabPane tab='Add/Remove genes' key='1'>
+            <MarkerGeneSelection
+              config={config}
+              onUpdate={updatePlotWithChanges}
+              onGeneEnter={onGeneEnter}
+              onReset={onReset}
+            />
+            <div>
+              <p>Gene labels:</p>
+              <Radio.Group
+                onChange={
+                  (e) => updatePlotWithChanges({ showGeneLabels: e.target.value })
+                }
+                value={config.showGeneLabels}
+              >
+                <Radio value>Show</Radio>
+                <Radio value={false}>Hide</Radio>
+              </Radio.Group>
+            </div>
+          </TabPane>
+          <TabPane tab='Re-order genes' key='2'>
+            <p>Drag and drop genes to re-order them in the heatmap.</p>
+            <GeneReorderTool
+              plotUuid={plotUuid}
+            />
+          </TabPane>
+        </Tabs>
       </Panel>
       <Panel header='Select data' key='select-data'>
         <Space direction='vertical' size='small'>
