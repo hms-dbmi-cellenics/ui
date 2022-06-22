@@ -272,7 +272,13 @@ const SamplesTable = forwardRef((props, ref) => {
   const cloneIntoCurrentExperiment = async (exampleExperimentId) => {
     const url = `/v2/experiments/${exampleExperimentId}/clone/${activeProjectUuid}`;
 
-    await fetchAPI(url, { method: 'POST' });
+    await fetchAPI(
+      url,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+      },
+    );
 
     dispatch(loadProjects());
   };
