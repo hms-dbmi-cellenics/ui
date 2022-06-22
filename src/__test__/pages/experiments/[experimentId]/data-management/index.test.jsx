@@ -163,41 +163,6 @@ describe('Data Management page', () => {
     expect(processProjectButton).toBeInTheDocument();
   });
 
-  it('Example datasets are available for download', async () => {
-    await act(async () => {
-      render(
-        <Provider store={storeState}>
-          {dataManagementPageFactory()}
-        </Provider>,
-      );
-    });
-
-    // There are 2 elements with the name of the project,  because of how Antd renders the element
-    // so we're only choosing one
-    const projectName = screen.getAllByText(experimentWithoutSamples.name)[0];
-
-    await act(async () => {
-      userEvent.click(projectName);
-    });
-
-    await waitFor(() => {
-      expect(screen.getByText(/Don't have data\? Get started using one of our example datasets/i)).toBeInTheDocument();
-    });
-
-    const downloadPromises = expectedSampleNames.map(async (sampleName) => {
-      const fileDownloadLink = screen.getByText(sampleName);
-
-      expect(fileDownloadLink).toBeInTheDocument();
-
-      // Clicking the link will trigger downlaod
-      userEvent.click(fileDownloadLink);
-    });
-
-    await Promise.all(downloadPromises);
-
-    expect(downloadFromUrl).toHaveBeenCalledTimes(expectedSampleNames.length);
-  });
-
   it('Shows samples table if project contain samples', async () => {
     // Change to project with samples
     await act(async () => {

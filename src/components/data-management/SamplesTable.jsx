@@ -120,7 +120,7 @@ const SamplesTable = forwardRef((props, ref) => {
 
   useConditionalEffect(() => {
     dispatch(loadSamples(activeProjectUuid));
-  }, [activeProject.samples]);
+  }, [activeProject.samples], { lazy: true });
 
   const deleteMetadataColumn = (name) => {
     dispatch(deleteMetadataTrack(name, activeProjectUuid));
