@@ -6,8 +6,6 @@ import '@testing-library/jest-dom';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import reactSortableHoc from 'react-sortable-hoc';
 
-import Storage from '@aws-amplify/storage';
-
 import _ from 'lodash';
 import { Provider } from 'react-redux';
 
@@ -21,7 +19,6 @@ import thunk from 'redux-thunk';
 import createTestComponentFactory from '__test__/test-utils/testComponentFactory';
 
 import { loadProjects, setActiveProject } from 'redux/actions/projects';
-import downloadFromUrl from 'utils/data-management/downloadFromUrl';
 
 import loadEnvironment from 'redux/actions/networkResources/loadEnvironment';
 import { loadExperiments } from 'redux/actions/experiments';
@@ -174,41 +171,6 @@ describe('Samples table', () => {
 
     expect(screen.queryByText(/Start uploading your samples by clicking on Add samples./i)).toBeNull();
     expect(screen.queryByText(/Don't have data\? Get started using one of our example datasets:/i)).toBeNull();
-  });
-
-  it('Does not show option to download sample dataset if there are none available in S3 bucket', async () => {
-    Storage.list.mockImplementationOnce(() => Promise.resolve([]));
-
-    await renderSamplesTable(storeState);
-
-    // Load project without samples
-    storeState.dispatch(setActiveProject(experimentWithoutSamplesId));
-
-    // This prompt to upload samples is still visible
-    expect(screen.getByText(/Start uploading your samples by clicking on Add samples./i)).toBeInTheDocument();
-
-    // But the prompt to download data is not shown anymore
-    expect(screen.queryByText(/Don't have data\? Get started using one of our example datasets:/i)).toBeNull();
-  });
-
-  it('Should not show example datasets with incorrect names', async () => {
-    Storage.list.mockImplementationOnce(() => Promise.resolve([
-      { key: '2.Another-Example_no.2.zip' },
-      { key: '1.Example_1.zip' },
-      { key: 'Dataset_with_no_order.zip' },
-      { key: 'Invalid_key.Dataset.zip' },
-      { key: 'Invalid_key.Dataset_no_extension' },
-    ]));
-
-    await renderSamplesTable(storeState);
-
-    // Load project without samples
-    storeState.dispatch(setActiveProject(experimentWithoutSamplesId));
-
-    const linksContainer = screen.getByText(expectedSampleNames[0]).closest('ul');
-    const links = Array.from(linksContainer.children).map((el) => el.textContent);
-
-    expect(links.join(' ')).toEqual(expectedSampleNames.join(' '));
   });
 
   it('Should show all the samples', async () => {
