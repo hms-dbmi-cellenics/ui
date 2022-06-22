@@ -30,7 +30,7 @@ import {
 } from 'redux/actions/projects';
 import { DEFAULT_NA } from 'redux/reducers/projects/initialState';
 import { reorderSamples, updateExperiment } from 'redux/actions/experiments';
-import { updateSample } from 'redux/actions/samples';
+import { loadSamples, updateSample } from 'redux/actions/samples';
 
 import UploadStatus from 'utils/upload/UploadStatus';
 import { arrayMoveImmutable } from 'utils/array-move';
@@ -116,6 +116,10 @@ const SamplesTable = forwardRef((props, ref) => {
       setSampleNames(new Set());
     }
   }, [samples, activeProject]);
+
+  useEffect(() => {
+    dispatch(loadSamples(activeProjectUuid));
+  }, [activeProject]);
 
   const deleteMetadataColumn = (name) => {
     dispatch(deleteMetadataTrack(name, activeProjectUuid));
