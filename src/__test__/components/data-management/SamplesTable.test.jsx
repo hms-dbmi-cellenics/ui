@@ -110,7 +110,7 @@ describe('Samples table', () => {
     await storeState.dispatch(loadEnvironment('test'));
   });
 
-  it('Download datasets works correctly and shows up if there are no samples', async () => {
+  it('Clone from example experiment works correctly and shows up if there are no samples', async () => {
     await renderSamplesTable(storeState);
 
     // Load project without samples

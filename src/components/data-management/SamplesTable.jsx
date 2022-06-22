@@ -48,7 +48,7 @@ const { Paragraph, Text } = Typography;
 const SamplesTable = forwardRef((props, ref) => {
   const dispatch = useDispatch();
   const [tableData, setTableData] = useState([]);
-  const [exampleDatasets, setExampleExperiments] = useState([]);
+  const [exampleExperiments, setExampleExperiments] = useState([]);
 
   const projects = useSelector((state) => state.projects);
   const samples = useSelector((state) => state.samples);
@@ -288,7 +288,7 @@ const SamplesTable = forwardRef((props, ref) => {
             Start uploading your samples by clicking on Add samples.
           </Paragraph>
           {
-            exampleDatasets.length > 0 && (
+            exampleExperiments.length > 0 && (
               <>
                 <Text>
                   Don&apos;t have data? Get started using one of our example datasets:
@@ -296,7 +296,7 @@ const SamplesTable = forwardRef((props, ref) => {
                 <div style={{ width: 'auto', textAlign: 'left' }}>
                   <ul>
                     {
-                      exampleDatasets.map(({ id, name }) => (
+                      exampleExperiments.map(({ id, name }) => (
                         <li key={name}>
                           <Button
                             type='link'
