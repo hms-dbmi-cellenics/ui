@@ -110,62 +110,6 @@ describe('Samples table', () => {
     await storeState.dispatch(loadEnvironment('test'));
   });
 
-  it('Clone from example experiment works correctly and shows up if there are no samples', async () => {
-    await renderSamplesTable(storeState);
-
-    // Load project without samples
-    await act(async () => {
-      await storeState.dispatch(setActiveProject(experimentWithoutSamplesId));
-    });
-
-    expect(screen.getByText(/Start uploading your samples by clicking on Add samples./i)).toBeInTheDocument();
-    expect(screen.getByText(/Don't have data\? Get started using one of our example datasets:/i)).toBeInTheDocument();
-
-    const exampleExperimentNames = _.map(mockDemoExperiments, 'name');
-
-    exampleExperimentNames.forEach((name) => {
-      expect(screen.getByText(name)).toBeDefined();
-    });
-
-    // Clear mock calls so we can distinguish the new calls made from the old ones
-    fetchMock.mockClear();
-
-    const newExperimentsResponse = _.cloneDeep(responseData.experiments);
-
-    const noSamplesExperiment = newExperimentsResponse.find(
-      ({ id }) => id === experimentWithoutSamplesId,
-    );
-    noSamplesExperiment.samplesOrder = mockDemoExperiments[0].samplesOrder;
-
-    const newApiResponses = _.merge(
-      mockAPIResponse,
-      { experiments: () => promiseResponse(JSON.stringify(newExperimentsResponse)) },
-    );
-
-    fetchMock.mockIf(/.*/, mockAPI(newApiResponses));
-
-    await act(async () => {
-      userEvent.click(screen.getByText(exampleExperimentNames[0]));
-    });
-
-    expect(fetchMock).toHaveBeenCalledWith(
-      `http://localhost:3000/v2/experiments/${mockDemoExperiments[0].id}/clone/${experimentWithoutSamplesId}`,
-      expect.objectContaining({ method: 'POST' }),
-    );
-
-    // Reloads experiments
-    expect(fetchMock).toHaveBeenCalledWith(
-      'http://localhost:3000/v2/experiments',
-      { headers: {} },
-    );
-
-    // Reloads samples for the active experiment (because the samples changed, it wouldnt otherwise)
-    expect(fetchMock).toHaveBeenCalledWith(
-      `http://localhost:3000/v2/experiments/${experimentWithoutSamplesId}/samples`,
-      { headers: {} },
-    );
-  });
-
   it('Does not show prompt to upload datasets if samples are available', async () => {
     await renderSamplesTable(storeState);
 
@@ -288,5 +232,65 @@ describe('Samples table', () => {
         body: '{"oldPosition":0,"newPosition":5}',
       },
     );
+  });
+
+  describe('Example experiments functionality', () => {
+    beforeEach(async () => {
+      await renderSamplesTable(storeState);
+
+      // Load project without samples
+      await act(async () => {
+        await storeState.dispatch(setActiveProject(experimentWithoutSamplesId));
+      });
+    });
+
+    it('Example experiments show up in an empty experiment', async () => {
+      expect(screen.getByText(/Start uploading your samples by clicking on Add samples./i)).toBeInTheDocument();
+      expect(screen.getByText(/Don't have data\? Get started using one of our example datasets:/i)).toBeInTheDocument();
+
+      const exampleExperimentNames = _.map(mockDemoExperiments, 'name');
+
+      exampleExperimentNames.forEach((name) => {
+        expect(screen.getByText(name)).toBeDefined();
+      });
+    });
+
+    it('Cloning from example experiments works correctly', async () => {
+      // Clear mock calls so we can distinguish the new calls made from the old ones
+      fetchMock.mockClear();
+
+      const newExperimentsResponse = _.cloneDeep(responseData.experiments);
+      const noSamplesExperiment = newExperimentsResponse.find(
+        ({ id }) => id === experimentWithoutSamplesId,
+      );
+      noSamplesExperiment.samplesOrder = mockDemoExperiments[0].samplesOrder;
+      const newApiResponses = _.merge(
+        mockAPIResponse,
+        { experiments: () => promiseResponse(JSON.stringify(newExperimentsResponse)) },
+      );
+      fetchMock.mockIf(/.*/, mockAPI(newApiResponses));
+
+      await act(async () => {
+        userEvent.click(screen.getByText(mockDemoExperiments[0].name));
+      });
+
+      expect(fetchMock).toHaveBeenCalledWith(
+        `http://localhost:3000/v2/experiments/${mockDemoExperiments[0].id}/clone/${experimentWithoutSamplesId}`,
+        expect.objectContaining({ method: 'POST' }),
+      );
+
+      // Reloads experiments
+      expect(fetchMock).toHaveBeenCalledWith(
+        'http://localhost:3000/v2/experiments',
+        { headers: {} },
+      );
+
+      // Reloads samples for the active experiment
+      // (because the samples changed, it wouldnt otherwise)
+      expect(fetchMock).toHaveBeenCalledWith(
+        `http://localhost:3000/v2/experiments/${experimentWithoutSamplesId}/samples`,
+        { headers: {} },
+      );
+    });
   });
 });
