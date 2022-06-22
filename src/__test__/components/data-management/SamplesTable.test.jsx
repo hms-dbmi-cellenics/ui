@@ -11,8 +11,8 @@ import Storage from '@aws-amplify/storage';
 import _ from 'lodash';
 import { Provider } from 'react-redux';
 
-import mockAPI, { generateDefaultMockAPIResponses, statusResponse } from '__test__/test-utils/mockAPI';
-import { experiments, samples } from '__test__/test-utils/mockData';
+import mockAPI, { generateDefaultMockAPIResponses, promiseResponse, statusResponse } from '__test__/test-utils/mockAPI';
+import { experiments, responseData, samples } from '__test__/test-utils/mockData';
 
 import SamplesTable from 'components/data-management/SamplesTable';
 import { makeStore } from 'redux/store';
@@ -26,6 +26,8 @@ import downloadFromUrl from 'utils/data-management/downloadFromUrl';
 import loadEnvironment from 'redux/actions/networkResources/loadEnvironment';
 import { loadExperiments } from 'redux/actions/experiments';
 import { loadSamples } from 'redux/actions/samples';
+
+import mockDemoExperiments from '__test__/test-utils/mockData/mockDemoExperiments.json';
 
 jest.mock('config');
 
@@ -43,11 +45,6 @@ jest.mock('@aws-amplify/storage', () => ({
     { key: '1.Example_1.zip' },
   ])),
 }));
-
-const expectedSampleNames = [
-  'Example 1',
-  'Another-Example no.2',
-];
 
 jest.mock('utils/data-management/downloadFromUrl');
 
@@ -86,6 +83,7 @@ const experimentWithoutSamplesId = experimentWithoutSamples.id;
 const customResponses = {
   [`experiments/${experimentWithSamplesId}/samples/${experimentWithSamples.samplesOrder[0]}`]: () => statusResponse(200, 'OK'),
   [`experiments/${experimentWithSamplesId}/samples/position`]: () => statusResponse(200, 'OK'),
+  [`experiments/${mockDemoExperiments[0].id}/clone/${experimentWithoutSamplesId}`]: () => statusResponse(200, 'OK'),
 };
 
 const mockAPIResponse = _.merge(
@@ -115,29 +113,60 @@ describe('Samples table', () => {
     await storeState.dispatch(loadEnvironment('test'));
   });
 
-  it('Shows option to download datasets if there are no samples', async () => {
+  it('Download datasets works correctly and shows up if there are no samples', async () => {
     await renderSamplesTable(storeState);
 
     // Load project without samples
-    storeState.dispatch(setActiveProject(experimentWithoutSamplesId));
+    await act(async () => {
+      await storeState.dispatch(setActiveProject(experimentWithoutSamplesId));
+    });
 
     expect(screen.getByText(/Start uploading your samples by clicking on Add samples./i)).toBeInTheDocument();
     expect(screen.getByText(/Don't have data\? Get started using one of our example datasets:/i)).toBeInTheDocument();
 
-    // There should be n number of example datasets in the correct order
-    const linksContainer = screen.getByText(expectedSampleNames[0]).closest('ul');
-    const links = Array.from(linksContainer.children).map((el) => el.textContent);
+    const exampleExperimentNames = _.map(mockDemoExperiments, 'name');
 
-    expect(links.join(' ')).toEqual(expectedSampleNames.join(' '));
-
-    // Clicking on one of the samples downloads the file
-    const exampleFileLink = expectedSampleNames[0];
-
-    await act(async () => {
-      userEvent.click(screen.getByText(exampleFileLink));
+    exampleExperimentNames.forEach((name) => {
+      expect(screen.getByText(name)).toBeDefined();
     });
 
-    expect(downloadFromUrl).toHaveBeenCalledTimes(1);
+    // Clear mock calls so we can distinguish the new calls made from the old ones
+    fetchMock.mockClear();
+
+    const newExperimentsResponse = _.cloneDeep(responseData.experiments);
+
+    const noSamplesExperiment = newExperimentsResponse.find(
+      ({ id }) => id === experimentWithoutSamplesId,
+    );
+    noSamplesExperiment.samplesOrder = mockDemoExperiments[0].samplesOrder;
+
+    const newApiResponses = _.merge(
+      mockAPIResponse,
+      { experiments: () => promiseResponse(JSON.stringify(newExperimentsResponse)) },
+    );
+
+    fetchMock.mockIf(/.*/, mockAPI(newApiResponses));
+
+    await act(async () => {
+      userEvent.click(screen.getByText(exampleExperimentNames[0]));
+    });
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      `http://localhost:3000/v2/experiments/${mockDemoExperiments[0].id}/clone/${experimentWithoutSamplesId}`,
+      expect.objectContaining({ method: 'POST' }),
+    );
+
+    // Reloads experiments
+    expect(fetchMock).toHaveBeenCalledWith(
+      'http://localhost:3000/v2/experiments',
+      { headers: {} },
+    );
+
+    // Reloads samples for the active experiment (because the samples changed, it wouldnt otherwise)
+    expect(fetchMock).toHaveBeenCalledWith(
+      `http://localhost:3000/v2/experiments/${experimentWithoutSamplesId}/samples`,
+      { headers: {} },
+    );
   });
 
   it('Does not show prompt to upload datasets if samples are available', async () => {
