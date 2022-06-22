@@ -41,6 +41,7 @@ import integrationTestConstants from 'utils/integrationTestConstants';
 import 'utils/css/data-management.css';
 import fetchAPI from 'utils/http/fetchAPI';
 import { ClipLoader } from 'react-spinners';
+import useConditionalEffect from 'utils/customHooks/useConditionalEffect';
 
 const { Paragraph, Text } = Typography;
 
@@ -117,9 +118,9 @@ const SamplesTable = forwardRef((props, ref) => {
     }
   }, [samples, activeProject]);
 
-  useEffect(() => {
+  useConditionalEffect(() => {
     dispatch(loadSamples(activeProjectUuid));
-  }, [activeProject]);
+  }, [activeProject.samples]);
 
   const deleteMetadataColumn = (name) => {
     dispatch(deleteMetadataTrack(name, activeProjectUuid));
