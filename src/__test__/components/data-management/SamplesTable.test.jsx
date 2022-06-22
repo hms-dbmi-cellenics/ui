@@ -276,7 +276,10 @@ describe('Samples table', () => {
 
       expect(fetchMock).toHaveBeenCalledWith(
         `http://localhost:3000/v2/experiments/${mockDemoExperiments[0].id}/clone/${experimentWithoutSamplesId}`,
-        expect.objectContaining({ method: 'POST' }),
+        expect.objectContaining({
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+        }),
       );
 
       // Reloads experiments
