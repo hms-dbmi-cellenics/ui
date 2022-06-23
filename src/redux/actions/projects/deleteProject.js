@@ -68,7 +68,6 @@ const deleteProject = (
     dispatch({
       type: SAMPLES_DELETE,
       payload: {
-        projectUuid,
         experimentId: projectUuid,
         sampleIds: projects[projectUuid].samples,
       },

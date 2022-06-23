@@ -13,7 +13,7 @@ const SAMPLES_UPDATE = `${SAMPLES}/update`;
 /**
  * Delete sample.
  */
-const SAMPLES_DELETE = `${SAMPLES}/deleteApiV2`;
+const SAMPLES_DELETE = `${SAMPLES}/delete`;
 
 /**
  * Update files in sample.

@@ -71,7 +71,7 @@ const deleteSamples = (
 
         dispatch({
           type: SAMPLES_DELETE,
-          payload: { projectUuid, experimentId, sampleIds: samplesToDelete },
+          payload: { experimentId, sampleIds: samplesToDelete },
         });
       },
     );
