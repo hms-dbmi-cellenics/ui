@@ -1,5 +1,6 @@
 import Environment, { ssrGetCurrentEnvironment } from './environment';
 import getAccountId from './getAccountId';
+import { getAWSRegion } from './awsConfig';
 
 const configure = (userPoolId, identityPoolId, userPoolClientDetails) => {
   const currentEnvironment = ssrGetCurrentEnvironment();
@@ -10,7 +11,7 @@ const configure = (userPoolId, identityPoolId, userPoolClientDetails) => {
     Storage: {
       AWSS3: {
         bucket: bucketName,
-        region: 'eu-west-1',
+        region: getAWSRegion(),
         dangerouslyConnectToHttpEndpointForTesting: currentEnvironment === Environment.DEVELOPMENT,
         identityId: identityPoolId,
         customPrefix: {
@@ -26,7 +27,7 @@ const configure = (userPoolId, identityPoolId, userPoolClientDetails) => {
 
   const authConfig = {
     Auth: {
-      region: 'eu-west-1',
+      region: getAWSRegion(),
       identityPoolId,
       userPoolId,
       userPoolWebClientId: userPoolClientDetails.ClientId,

@@ -10,7 +10,7 @@ const getApiEndpoint = (location) => {
       return 'http://localhost:3000';
     }
 
-    return 'https://api.scp.biomage.net';
+    return process.env.API_ENDPOINT_PRODUCTION || 'https://api.scp.biomage.net';
   } catch (error) {
     console.error('Failed to get API endpoint.');
     console.error(error);
