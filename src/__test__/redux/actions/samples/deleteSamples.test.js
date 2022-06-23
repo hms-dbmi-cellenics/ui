@@ -25,20 +25,17 @@ saveProject.mockImplementation(() => async () => { });
 const mockStore = configureStore([thunk]);
 
 const mockSampleUuid = 'sample-1';
-const mockProjectUuid = 'project-1';
 const mockExperimentId = 'experimentId';
 
 const mockSample = {
   ...sampleTemplate,
   name: 'test sample',
-  projectUuid: mockProjectUuid,
   uuid: mockSampleUuid,
 };
 
 const mockProject = {
   ...projectTemplate,
   name: 'test project',
-  uuid: mockProjectUuid,
   samples: [mockSampleUuid],
   experiments: [mockExperimentId],
 };
@@ -50,8 +47,8 @@ const initialState = {
   },
   projects: {
     ...initialProjectState,
-    ids: [mockProjectUuid],
-    [mockProjectUuid]: mockProject,
+    ids: [mockExperimentId],
+    [mockExperimentId]: mockProject,
   },
 };
 
