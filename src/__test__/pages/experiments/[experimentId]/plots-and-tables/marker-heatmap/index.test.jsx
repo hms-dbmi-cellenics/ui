@@ -1,4 +1,6 @@
 import { render, screen } from '@testing-library/react';
+import { mount } from 'enzyme';
+import { within } from '@testing-library/dom';
 import userEvent from '@testing-library/user-event';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import _ from 'lodash';
@@ -14,6 +16,8 @@ import expressionDataFAKEGENE from '__test__/data/gene_expression_FAKEGENE.json'
 import markerGenesData2 from '__test__/data/marker_genes_2.json';
 import markerGenesData5 from '__test__/data/marker_genes_5.json';
 
+import { Tree } from 'antd';
+
 import preloadAll from 'jest-next-dynamic';
 
 import fake from '__test__/test-utils/constants';
@@ -23,6 +27,8 @@ import mockAPI, {
   statusResponse,
 } from '__test__/test-utils/mockAPI';
 import createTestComponentFactory from '__test__/test-utils/testComponentFactory';
+import waitForComponentToPaint from '__test__/test-utils/waitForComponentToPaint';
+import { arrayMoveImmutable } from 'utils/array-move';
 
 jest.mock('components/header/UserButton', () => () => <></>);
 jest.mock('react-resize-detector', () => (props) => {
@@ -81,6 +87,23 @@ const getDisplayedGenes = (container) => {
   return Array.from(genesNodeList).map((gene) => gene.textContent);
 };
 
+// Helper function to get genes held within the tree
+const getTreeGenes = (container) => {
+  const treeNodeList = container.querySelectorAll('span[class*=ant-tree-title]');
+  return Array.from(treeNodeList).map((node) => node.firstChild.firstChild.textContent);
+};
+
+// Helper function to get current order of displayed genes in enzyme tests
+const getCurrentGeneOrder = (component) => {
+  const treeNodes = component.find('div.ant-tree-treenode');
+  const newOrder = []
+  treeNodes.forEach((node) => {
+    newOrder.push(node.text());
+  });
+  newOrder.splice(0, 1);
+  return newOrder;
+}
+
 const renderHeatmapPage = async (store) => {
   await act(async () => (
     render(
@@ -90,6 +113,14 @@ const renderHeatmapPage = async (store) => {
     )
   ));
 };
+
+const renderHeatmapPageForEnzyme = async (store) => (
+  mount(
+    <Provider store={store}>
+      {heatmapPageFactory()}
+    </Provider>,
+  )
+);
 
 describe('Marker heatmap plot', () => {
   beforeAll(async () => {
@@ -274,5 +305,144 @@ describe('Marker heatmap plot', () => {
 
     // The list of displayed genes should be in the same order as the displayed genes
     expect(_.isEqual(genesListAfterRemoval, genesListBeforeRemoval)).toEqual(true);
+  });
+
+  it('loads the tabs under gene selection', async () => {
+    await renderHeatmapPage(storeState);
+
+    expect(screen.getByText(/Add\/Remove genes/i)).toBeInTheDocument();
+    expect(screen.getByText(/Re-order genes/i)).toBeInTheDocument();
+  });
+
+  it('switches tabs and removes genes within the tree', async () => {
+    await renderHeatmapPage(storeState);
+
+    await act(async () => {
+      userEvent.click(screen.getByText('Re-order genes'));
+    });
+    // note: clicking another tab doesn't remove previous tab from screen
+    // screen.getByText will find multiples of the same gene -> use within(geneTree)
+
+    const geneTree = screen.getByRole('tree');
+
+    // The genes in Data 5 should be in the tree
+    markerGenesData5.order.forEach((geneName) => {
+      expect(within(geneTree).getByText(geneName)).toBeInTheDocument();
+    });
+
+    // Remove a gene using the X button
+    const genesListBeforeRemoval = getTreeGenes(geneTree);
+
+    const geneToRemove = within(geneTree).getByText(genesListBeforeRemoval[1]);
+
+    const geneRemoveButton = geneToRemove.nextSibling.firstChild;
+
+    userEvent.click(geneRemoveButton);
+
+    const genesListAfterRemoval = getTreeGenes(geneTree);
+
+    // remove element from list manually to compare
+    genesListBeforeRemoval.splice(1, 1);
+
+    // The gene should be deleted from the list
+    expect(_.isEqual(genesListAfterRemoval, genesListBeforeRemoval)).toEqual(true);
+  });
+
+  describe('Drag and drop enzyme tests', () => {
+    let component;
+    let tree;
+
+    beforeEach(async () => {
+      component = await renderHeatmapPageForEnzyme(storeState);
+
+      await waitForComponentToPaint(component);
+
+      await act(async () => {
+        // needs to find specifically the tab button to click
+        const reorderTab = component.find('div.ant-tabs-tab-btn');
+        reorderTab.at(1).simulate('click');
+      });
+
+      component.update();
+
+      // this finds 5 elements, use the first one
+      tree = component.find({ 'data-testid': 'HierachicalTreeGenes' });
+    });
+
+    it('changes nothing on drop in place', async () => {
+      // default genes are in the tree
+      markerGenesData5.order.forEach((geneName) => {
+        expect(tree.at(0).containsMatchingElement(geneName));
+      });
+
+      // dropping in place does nothing
+      const info = {
+        dragNode: { key: 1, pos: '0-1' },
+        node: { key: 1, pos: '0-1' },
+        dropPosition: 1,
+        dropToGap: true,
+      };
+
+      tree.at(0).getElement().props.onDrop(info);
+
+      await act(async () => {
+        component.update();
+      });
+
+      const newOrder = getCurrentGeneOrder(component);
+
+      expect(_.isEqual(newOrder, markerGenesData5.order)).toEqual(true);
+    });
+
+    it('changes nothing when not dropped in gap', async () => {
+      // default genes are in the tree
+      markerGenesData5.order.forEach((geneName) => {
+        expect(tree.at(0).containsMatchingElement(geneName));
+      });
+
+      // not dropping to gap does nothing
+      const info = {
+        dragNode: { key: 1, pos: '0-1' },
+        node: { key: 3, pos: '0-3' },
+        dropPosition: 4,
+        dropToGap: false,
+      };
+
+      tree.at(0).getElement().props.onDrop(info);
+
+      await act(async () => {
+        component.update();
+      });
+
+      const newOrder = getCurrentGeneOrder(component);
+
+      expect(_.isEqual(newOrder, markerGenesData5.order)).toEqual(true);
+    });
+
+    it('re-orders genes correctly', async () => {
+      // default genes are in the tree
+      markerGenesData5.order.forEach((geneName) => {
+        expect(tree.at(0).containsMatchingElement(geneName));
+      });
+      // dropping to gap re-orders genes
+      const info = {
+        dragNode: { key: 1, pos: '0-1' },
+        node: { key: 3, pos: '0-3' },
+        dropPosition: 4,
+        dropToGap: true,
+      };
+
+      tree.at(0).getElement().props.onDrop(info);
+
+      await act(async () => {
+        component.update();
+      });
+
+      const newOrder = getCurrentGeneOrder(component);
+
+      const expectedOrder = arrayMoveImmutable(markerGenesData5.order, 1, 3);
+
+      expect(_.isEqual(newOrder, expectedOrder)).toEqual(true);
+    });
   });
 });
