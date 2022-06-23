@@ -11,15 +11,12 @@ import {
 } from 'redux/actionTypes/projects';
 
 import {
-  SAMPLES_DELETE_API_V1,
-} from 'redux/actionTypes/samples';
-
-import {
   EXPERIMENTS_DELETED,
 } from 'redux/actionTypes/experiments';
 
 import config from 'config';
 import { api } from 'utils/constants';
+import { SAMPLES_DELETE } from 'redux/actionTypes/samples';
 
 const deleteProject = (
   projectUuid,
@@ -69,16 +66,18 @@ const deleteProject = (
     }
 
     dispatch({
-      type: EXPERIMENTS_DELETED,
+      type: SAMPLES_DELETE,
       payload: {
-        experimentIds: projects[projectUuid].experiments,
+        projectUuid,
+        experimentId: projectUuid,
+        sampleIds: projects[projectUuid].samples,
       },
     });
 
     dispatch({
-      type: SAMPLES_DELETE_API_V1,
+      type: EXPERIMENTS_DELETED,
       payload: {
-        sampleUuids: projects[projectUuid].samples,
+        experimentIds: projects[projectUuid].experiments,
       },
     });
 

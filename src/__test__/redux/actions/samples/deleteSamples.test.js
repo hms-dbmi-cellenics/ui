@@ -9,7 +9,7 @@ import initialProjectState, { projectTemplate } from 'redux/reducers/projects/in
 import { saveProject } from 'redux/actions/projects';
 
 import {
-  SAMPLES_DELETE_API_V2, SAMPLES_SAVED, SAMPLES_SAVING, SAMPLES_ERROR,
+  SAMPLES_DELETE, SAMPLES_SAVED, SAMPLES_SAVING, SAMPLES_ERROR,
 } from 'redux/actionTypes/samples';
 
 import config from 'config';
@@ -75,7 +75,7 @@ describe('deleteSamples', () => {
     expect(actions[0].type).toEqual(SAMPLES_SAVING);
 
     // Delete sample
-    expect(actions[1].type).toEqual(SAMPLES_DELETE_API_V2);
+    expect(actions[1].type).toEqual(SAMPLES_DELETE);
 
     // Resolve loading state
     expect(actions[2].type).toEqual(SAMPLES_SAVED);

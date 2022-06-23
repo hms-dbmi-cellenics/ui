@@ -11,7 +11,7 @@ import {
   EXPERIMENTS_DELETED,
 } from 'redux/actionTypes/experiments';
 
-import { SAMPLES_CREATE, SAMPLES_DELETE_API_V2 } from 'redux/actionTypes/samples';
+import { SAMPLES_CREATE, SAMPLES_DELETE } from 'redux/actionTypes/samples';
 
 describe('experimentsReducer', () => {
   const experimentId1 = 'experiment-1';
@@ -243,10 +243,10 @@ describe('experimentsReducer', () => {
 
   it('Deletes samples in v2 correctly', () => {
     const newState = experimentsReducer(oneExperimentWithSampleState, {
-      type: SAMPLES_DELETE_API_V2,
+      type: SAMPLES_DELETE,
       payload: {
         experimentId: experiment1.id,
-        sampleUuids: [sampleId],
+        sampleIds: [sampleId],
       },
     });
 

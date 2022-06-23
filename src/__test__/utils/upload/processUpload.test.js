@@ -14,8 +14,6 @@ import processUpload from 'utils/upload/processUpload';
 
 import loadAndCompressIfNecessary from 'utils/upload/loadAndCompressIfNecessary';
 
-jest.mock('config', () => ({ currentApiVersion: 'v2' }));
-
 enableFetchMocks();
 
 const getValidFiles = (cellrangerVersion) => {
@@ -140,7 +138,7 @@ jest.mock('redux/actions/samples/deleteSamples', () => ({
 
 let store = null;
 
-describe('processUploadV2', () => {
+describe('processUpload', () => {
   beforeEach(() => {
     jest.clearAllMocks();
 

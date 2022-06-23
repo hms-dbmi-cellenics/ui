@@ -12,7 +12,7 @@ const fileNameForApiV1 = {
   features10x: 'features.tsv.gz',
 };
 
-const updateSampleFileUploadV2 = (
+const updateSampleFileUpload = (
   experimentId, sampleId, type, uploadStatus, uploadProgress,
 ) => async (dispatch) => {
   const updatedAt = moment().toISOString();
@@ -62,4 +62,4 @@ const updateSampleFileUploadV2 = (
   });
 };
 
-export default updateSampleFileUploadV2;
+export default updateSampleFileUpload;

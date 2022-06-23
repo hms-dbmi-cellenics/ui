@@ -29,7 +29,6 @@ import {
 } from 'redux/actions/projects';
 import { DEFAULT_NA } from 'redux/reducers/projects/initialState';
 import { reorderSamples, updateExperiment } from 'redux/actions/experiments';
-import { updateSample } from 'redux/actions/samples';
 
 import UploadStatus from 'utils/upload/UploadStatus';
 import { arrayMoveImmutable } from 'utils/array-move';
@@ -141,11 +140,7 @@ const SamplesTable = forwardRef((props, ref) => {
           dataIndex={key}
           rowIdx={rowIdx}
           onAfterSubmit={(newValue) => {
-            if (config.currentApiVersion === api.V1) {
-              dispatch(updateSample(record.uuid, { metadata: { [key]: newValue } }));
-            } else if (config.currentApiVersion === api.V2) {
-              dispatch(updateValueInMetadataTrack(activeProjectUuid, record.uuid, key, newValue));
-            }
+            dispatch(updateValueInMetadataTrack(activeProjectUuid, record.uuid, key, newValue));
           }}
         />
       ),
@@ -194,7 +189,6 @@ const SamplesTable = forwardRef((props, ref) => {
 
   const setCells = (value, metadataKey, actionType) => {
     if (!MASS_EDIT_ACTIONS.includes(actionType)) return;
-    const updateObject = { metadata: { [metadataKey]: value } };
 
     const canUpdateCell = (sampleUuid, action) => {
       if (action !== 'REPLACE_EMPTY') return true;
@@ -210,11 +204,7 @@ const SamplesTable = forwardRef((props, ref) => {
     activeProject.samples.forEach(
       (sampleUuid) => {
         if (canUpdateCell(sampleUuid, actionType)) {
-          if (config.currentApiVersion === api.V1) {
-            dispatch(updateSample(sampleUuid, updateObject));
-          } else if (config.currentApiVersion === api.V2) {
-            dispatch(updateValueInMetadataTrack(activeProjectUuid, sampleUuid, metadataKey, value));
-          }
+          dispatch(updateValueInMetadataTrack(activeProjectUuid, sampleUuid, metadataKey, value));
         }
       },
     );
