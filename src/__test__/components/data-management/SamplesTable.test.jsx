@@ -76,11 +76,13 @@ const experimentWithoutSamples = experiments.find(
 const experimentWithSamplesId = experimentWithSamples.id;
 const experimentWithoutSamplesId = experimentWithoutSamples.id;
 
+const experimentCloneId = 'mockExperimentCloneId';
+
 // Mocking samples update / delete routes
 const customResponses = {
   [`experiments/${experimentWithSamplesId}/samples/${experimentWithSamples.samplesOrder[0]}`]: () => statusResponse(200, 'OK'),
   [`experiments/${experimentWithSamplesId}/samples/position`]: () => statusResponse(200, 'OK'),
-  [`experiments/${mockDemoExperiments[0].id}/clone/${experimentWithoutSamplesId}`]: () => statusResponse(200, 'OK'),
+  [`experiments/${mockDemoExperiments[0].id}/clone`]: () => promiseResponse(JSON.stringify(experimentCloneId)),
 };
 
 const mockAPIResponse = _.merge(
@@ -275,7 +277,7 @@ describe('Samples table', () => {
       });
 
       expect(fetchMock).toHaveBeenCalledWith(
-        `http://localhost:3000/v2/experiments/${mockDemoExperiments[0].id}/clone/${experimentWithoutSamplesId}`,
+        `http://localhost:3000/v2/experiments/${mockDemoExperiments[0].id}/clone`,
         expect.objectContaining({
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -285,13 +287,6 @@ describe('Samples table', () => {
       // Reloads experiments
       expect(fetchMock).toHaveBeenCalledWith(
         'http://localhost:3000/v2/experiments',
-        { headers: {} },
-      );
-
-      // Reloads samples for the active experiment
-      // (because the samples changed, it wouldnt otherwise)
-      expect(fetchMock).toHaveBeenCalledWith(
-        `http://localhost:3000/v2/experiments/${experimentWithoutSamplesId}/samples`,
         { headers: {} },
       );
     });
