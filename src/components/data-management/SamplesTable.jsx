@@ -27,6 +27,7 @@ import {
   createMetadataTrack,
   updateValueInMetadataTrack,
   loadProjects,
+  setActiveProject,
 } from 'redux/actions/projects';
 import { DEFAULT_NA } from 'redux/reducers/projects/initialState';
 import { reorderSamples, updateExperiment } from 'redux/actions/experiments';
@@ -270,9 +271,9 @@ const SamplesTable = forwardRef((props, ref) => {
   }, [environment]);
 
   const cloneIntoCurrentExperiment = async (exampleExperimentId) => {
-    const url = `/v2/experiments/${exampleExperimentId}/clone/${activeProjectUuid}`;
+    const url = `/v2/experiments/${exampleExperimentId}/clone`;
 
-    await fetchAPI(
+    const newExperimentId = await fetchAPI(
       url,
       {
         method: 'POST',
@@ -280,7 +281,8 @@ const SamplesTable = forwardRef((props, ref) => {
       },
     );
 
-    dispatch(loadProjects());
+    await dispatch(loadProjects());
+    await dispatch(setActiveProject(newExperimentId));
   };
 
   const noDataText = (
