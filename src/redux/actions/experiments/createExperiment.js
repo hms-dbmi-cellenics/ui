@@ -11,11 +11,7 @@ import { experimentTemplate } from 'redux/reducers/experiments/initialState';
 
 import endUserMessages from 'utils/endUserMessages';
 
-import convertExperimentToApiV1Model from 'utils/convertExperimentToApiV1Model';
 import handleError from 'utils/http/handleError';
-
-import config from 'config';
-import { api } from 'utils/constants';
 
 const createExperiment = (
   newExperimentName,
@@ -32,19 +28,10 @@ const createExperiment = (
     createdDate,
   };
 
-  let url;
-  let experimentToSend;
+  const { id, name, description } = newExperiment;
+  const experimentToSend = { id, name, description };
 
-  if (config.currentApiVersion === api.V1) {
-    experimentToSend = convertExperimentToApiV1Model(newExperiment);
-
-    url = `/v1/experiments/${experimentId}`;
-  } else if (config.currentApiVersion === api.V2) {
-    const { id, name, description } = newExperiment;
-    experimentToSend = { id, name, description };
-
-    url = `/v2/experiments/${experimentId}`;
-  }
+  const url = `/v2/experiments/${experimentId}`;
 
   dispatch({
     type: EXPERIMENTS_SAVING,
