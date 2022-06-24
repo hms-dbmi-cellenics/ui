@@ -67,6 +67,11 @@ describe('CellSetsTool', () => {
     storeState = makeStore();
   });
 
+  afterEach(() => {
+    jest.runOnlyPendingTimers();
+    jest.useRealTimers();
+  });
+
   it('renders correctly cell set tool with no clusters in custom cell sets', async () => {
     await act(async () => {
       render(
@@ -413,7 +418,7 @@ describe('CellSetsTool', () => {
     screen.getByText(`${numCellsCluster0} cells selected`);
   });
 
-  it('Scratchpad cluster deletion works ', async () => {
+  fit('Scratchpad cluster deletion works', async () => {
     await act(async () => {
       render(
         <Provider store={storeState}>
@@ -421,6 +426,8 @@ describe('CellSetsTool', () => {
         </Provider>,
       );
     });
+
+    expect(screen.queryByText('New Cluster')).toBeNull();
 
     // create a new cluster:
     await act(async () => {
@@ -432,6 +439,7 @@ describe('CellSetsTool', () => {
     userEvent.click(customCellSetsGroup);
 
     screen.getByText('New Cluster');
+    // const newClusterKey = getClusterByName('New Cluster');
 
     // There should be a delete button for the scratchpad cluster.
     const deleteButtons = screen.getAllByLabelText(/Delete/);
@@ -440,6 +448,9 @@ describe('CellSetsTool', () => {
     // Clicking on one of the buttons...
     userEvent.click(deleteButtons[0]);
 
+    // const actualIntersection = storeState.getState().cellSets.properties[newClusterKey].cellIds;
+    // console.log('**** ', actualIntersection);
+    // debugger;
     await waitFor(() => expect(screen.queryByText('New Cluster')).toBeNull());
   });
 
