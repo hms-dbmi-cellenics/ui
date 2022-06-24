@@ -1,7 +1,7 @@
 import {
   SAMPLES_ERROR,
   SAMPLES_SAVING,
-  SAMPLES_VALUE_IN_METADATA_TRACK_UPDATED_API_V2,
+  SAMPLES_VALUE_IN_METADATA_TRACK_UPDATED,
 } from 'redux/actionTypes/samples';
 
 import fetchAPI from 'utils/http/fetchAPI';
@@ -36,7 +36,7 @@ const updateValueInMetadataTrack = (
     );
 
     dispatch({
-      type: SAMPLES_VALUE_IN_METADATA_TRACK_UPDATED_API_V2,
+      type: SAMPLES_VALUE_IN_METADATA_TRACK_UPDATED,
       payload: {
         sampleUuid: sampleId,
         key: metadataTrackKey,

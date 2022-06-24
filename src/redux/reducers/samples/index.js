@@ -9,7 +9,7 @@ import {
   SAMPLES_ERROR,
   SAMPLES_METADATA_DELETE,
   SAMPLES_LOADING,
-  SAMPLES_VALUE_IN_METADATA_TRACK_UPDATED_API_V2,
+  SAMPLES_VALUE_IN_METADATA_TRACK_UPDATED,
 } from '../../actionTypes/samples';
 import initialState from './initialState';
 import samplesCreate from './samplesCreate';
@@ -66,7 +66,7 @@ const samplesReducer = (state = initialState, action) => {
       return samplesLoading(state);
     }
 
-    case SAMPLES_VALUE_IN_METADATA_TRACK_UPDATED_API_V2: {
+    case SAMPLES_VALUE_IN_METADATA_TRACK_UPDATED: {
       return samplesValueInMetadataTrackUpdated(state, action);
     }
 

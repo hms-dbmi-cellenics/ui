@@ -10,7 +10,7 @@ import '__test__/test-utils/setupTests';
 
 import config from 'config';
 import { api } from 'utils/constants';
-import { SAMPLES_ERROR, SAMPLES_SAVING, SAMPLES_VALUE_IN_METADATA_TRACK_UPDATED_API_V2 } from 'redux/actionTypes/samples';
+import { SAMPLES_ERROR, SAMPLES_SAVING, SAMPLES_VALUE_IN_METADATA_TRACK_UPDATED } from 'redux/actionTypes/samples';
 
 const mockStore = configureStore([thunk]);
 
@@ -38,7 +38,7 @@ describe('updateValueInMetadataTrack action', () => {
     );
 
     const actions = store.getActions();
-    expect(_.map(actions, 'type')).toEqual([SAMPLES_SAVING, SAMPLES_VALUE_IN_METADATA_TRACK_UPDATED_API_V2]);
+    expect(_.map(actions, 'type')).toEqual([SAMPLES_SAVING, SAMPLES_VALUE_IN_METADATA_TRACK_UPDATED]);
     expect(_.map(actions, 'payload')).toMatchSnapshot();
 
     expect(fetchMock).toHaveBeenCalledWith(

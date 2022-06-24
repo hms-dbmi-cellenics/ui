@@ -11,7 +11,7 @@ import {
   SAMPLES_SAVING,
   SAMPLES_SAVED,
   SAMPLES_METADATA_DELETE,
-  SAMPLES_VALUE_IN_METADATA_TRACK_UPDATED_API_V2,
+  SAMPLES_VALUE_IN_METADATA_TRACK_UPDATED,
 } from 'redux/actionTypes/samples';
 
 describe('samplesReducer', () => {
@@ -302,7 +302,7 @@ describe('samplesReducer', () => {
     };
 
     const newState = samplesReducer(sampleWithMetadata, {
-      type: SAMPLES_VALUE_IN_METADATA_TRACK_UPDATED_API_V2,
+      type: SAMPLES_VALUE_IN_METADATA_TRACK_UPDATED,
       payload: {
         sampleUuid: mockUuid1,
         key: metadataKey,
