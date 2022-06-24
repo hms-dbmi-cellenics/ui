@@ -36,16 +36,20 @@ import { plotNames } from 'utils/constants';
 
 import GeneReorderTool from 'components/plots/GeneReorderTool';
 import GeneSearchBar from 'components/plots/GeneSearchBar';
+import { loadPaginatedGeneProperties } from 'redux/actions/genes';
 
 const { Panel } = Collapse;
 const plotUuid = 'markerHeatmapPlotMain';
 const plotType = 'markerHeatmap';
+const searchBarUuid = 'geneSearchBar';
 const { TabPane } = Tabs;
 
 const MarkerHeatmap = ({ experimentId }) => {
   const dispatch = useDispatch();
 
   const [vegaSpec, setVegaSpec] = useState();
+
+  const geneList = useSelector((state) => state.genes.properties.views[searchBarUuid]?.data);
 
   const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
 
@@ -301,6 +305,24 @@ const MarkerHeatmap = ({ experimentId }) => {
     const newValue = option.value.toLowerCase();
     updatePlotWithChanges({ selectedCellSet: newValue });
   };
+
+
+  const state = {
+    sorter: {
+      field: 'gene_names',
+      columnKey: 'gene_names',
+      order: 'ascend',
+    },
+    pagination: {
+      current: 1,
+      pageSize: 100000,
+    },
+    pageSizeFilter: null,
+  };
+
+  if (!geneList) {
+    dispatch(loadPaginatedGeneProperties(experimentId, 'dispersions', searchBarUuid, state));
+  }
 
   const renderExtraPanels = () => (
     <>

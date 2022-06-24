@@ -4,7 +4,6 @@ import { AutoComplete } from 'antd';
 import { useSelector, useDispatch } from 'react-redux';
 import { loadGeneExpression } from 'redux/actions/genes';
 import PropTypes from 'prop-types';
-import { loadPaginatedGeneProperties } from 'redux/actions/genes';
 
 // import ListAllGenes from 'components/plots/gene-search-bar/ListAllGenes.jsx';
 
@@ -29,23 +28,6 @@ const GeneSearchBar = (props) => {
   const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
 
   const [options, setOptions] = useState([]);
-
-  const state = {
-    sorter: {
-      field: 'dispersions',
-      columnKey: 'dispersions',
-      order: 'descend',
-    },
-    pagination: {
-      current: 1,
-      pageSize: 100000,
-    },
-    pageSizeFilter: null,
-  };
-
-  if (!geneList) {
-    dispatch(loadPaginatedGeneProperties(experimentId, 'dispersions', componentUuid, state));
-  }
 
   const onSelect = (newGene) => {
     if (!geneList.includes(newGene) || config?.selectedGenes.includes(newGene)) {
