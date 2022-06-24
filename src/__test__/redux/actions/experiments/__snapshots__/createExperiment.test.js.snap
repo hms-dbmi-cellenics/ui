@@ -11,12 +11,12 @@ Object {
       "organism": null,
       "type": "10x",
     },
-    "name": undefined,
+    "name": "project-1",
     "notifyByEmail": true,
-    "projectUuid": "project-1",
+    "projectUuid": "b3f6c0ca86ec045c84f380cd5016972e",
     "sampleIds": Array [],
   },
 }
 `;
 
-exports[`createExperiment Works correctly 2`] = `"{\\"id\\":\\"b3f6c0ca86ec045c84f380cd5016972e\\",\\"description\\":\\"Analysis description\\"}"`;
+exports[`createExperiment Works correctly 2`] = `"{\\"id\\":\\"b3f6c0ca86ec045c84f380cd5016972e\\",\\"name\\":\\"project-1\\",\\"description\\":\\"Analysis description\\"}"`;

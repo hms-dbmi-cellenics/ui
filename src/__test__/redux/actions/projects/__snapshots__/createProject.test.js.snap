@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`createProject action Works corectly project when there are no errors 1`] = `
+exports[`createProject action Creates a project when there are no errors 1`] = `
 Object {
   "project": Object {
     "createdDate": "2020-01-01T00:00:00.000Z",
@@ -13,7 +13,7 @@ Object {
     "metadataKeys": Array [],
     "name": "test project",
     "samples": Array [],
-    "uuid": "random-project-uuid",
+    "uuid": "random-experiment-uuid",
   },
 }
 `;

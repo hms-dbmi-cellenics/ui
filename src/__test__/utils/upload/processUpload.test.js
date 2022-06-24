@@ -120,10 +120,6 @@ jest.mock('utils/upload/loadAndCompressIfNecessary',
     },
   ));
 
-jest.mock('redux/actions/samples/saveSamples', () => jest.fn().mockImplementation(() => ({
-  type: 'samples/saved',
-})));
-
 jest.mock('uuid', () => ({
   v4: jest.fn(() => 'sample-uuid'),
 }));

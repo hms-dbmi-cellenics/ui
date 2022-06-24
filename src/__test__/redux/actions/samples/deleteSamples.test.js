@@ -6,21 +6,11 @@ import deleteSamples from 'redux/actions/samples/deleteSamples';
 import initialSampleState, { sampleTemplate } from 'redux/reducers/samples/initialState';
 import initialProjectState, { projectTemplate } from 'redux/reducers/projects/initialState';
 
-import { saveProject } from 'redux/actions/projects';
-
 import {
   SAMPLES_DELETE, SAMPLES_SAVED, SAMPLES_SAVING, SAMPLES_ERROR,
 } from 'redux/actionTypes/samples';
 
-import config from 'config';
-import { api } from 'utils/constants';
-
-jest.mock('config');
-
 enableFetchMocks();
-
-jest.mock('redux/actions/projects/saveProject');
-saveProject.mockImplementation(() => async () => { });
 
 const mockStore = configureStore([thunk]);
 
@@ -31,6 +21,7 @@ const mockSample = {
   ...sampleTemplate,
   name: 'test sample',
   uuid: mockSampleUuid,
+  projectUuid: mockExperimentId,
 };
 
 const mockProject = {
@@ -62,8 +53,6 @@ describe('deleteSamples', () => {
   });
 
   it('Dispatches event correctly', async () => {
-    config.currentApiVersion = api.V2;
-
     const store = mockStore(initialState);
     await store.dispatch(deleteSamples([mockSampleUuid]));
 
@@ -87,8 +76,6 @@ describe('deleteSamples', () => {
   });
 
   it('Dispatches error correctly if fetch fails', async () => {
-    config.currentApiVersion = api.V2;
-
     fetchMock.mockReject(new Error('Api error'));
 
     const store = mockStore(initialState);

@@ -19,8 +19,6 @@ import { api } from 'utils/constants';
 
 jest.mock('config');
 
-jest.mock('redux/actions/projects/saveProject', () => { });
-
 enableFetchMocks();
 
 const mockStore = configureStore([thunk]);
