@@ -17,13 +17,11 @@ const filterGenes = (searchText, geneList) => {
 };
 
 const GeneSearchBar = (props) => {
-  const { plotUuid, experimentId } = props;
-
-  const componentUuid = 'SearchBar';
+  const { plotUuid, experimentId, searchBarUuid } = props;
 
   const dispatch = useDispatch();
 
-  const geneList = useSelector((state) => state.genes.properties.views[componentUuid]?.data);
+  const geneList = useSelector((state) => state.genes.properties.views[searchBarUuid]?.data);
 
   const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
 
@@ -56,6 +54,7 @@ const GeneSearchBar = (props) => {
 GeneSearchBar.propTypes = {
   plotUuid: PropTypes.string.isRequired,
   experimentId: PropTypes.string.isRequired,
+  searchBarUuid: PropTypes.string.isRequired,
 };
 
 export default GeneSearchBar;

@@ -321,7 +321,7 @@ const MarkerHeatmap = ({ experimentId }) => {
   };
 
   if (!geneList) {
-    dispatch(loadPaginatedGeneProperties(experimentId, 'dispersions', searchBarUuid, state));
+    dispatch(loadPaginatedGeneProperties(experimentId, ['dispersions'], searchBarUuid, state));
   }
 
   const renderExtraPanels = () => (
@@ -355,6 +355,7 @@ const MarkerHeatmap = ({ experimentId }) => {
               <GeneSearchBar
                 plotUuid={plotUuid}
                 experimentId={experimentId}
+                searchBarUuid={searchBarUuid}
               />
               <GeneReorderTool
                 plotUuid={plotUuid}
