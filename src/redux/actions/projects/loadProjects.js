@@ -3,11 +3,6 @@ import handleError from 'utils/http/handleError';
 import endUserMessages from 'utils/endUserMessages';
 import { PROJECTS_ERROR, PROJECTS_LOADED, PROJECTS_LOADING } from 'redux/actionTypes/projects';
 
-import config from 'config';
-import { api } from 'utils/constants';
-
-import loadSamples from 'redux/actions/samples/loadSamples';
-
 const toApiV1 = (experimentListV2) => {
   const projectsListV1 = experimentListV2.map((experimentData) => {
     const {
@@ -39,27 +34,10 @@ const loadProjects = () => async (dispatch) => {
     type: PROJECTS_LOADING,
   });
 
-  let url;
-
   try {
-    let data;
+    let data = await fetchAPI('/v2/experiments');
 
-    if (config.currentApiVersion === api.V1) {
-      url = '/v1/projects';
-      data = await fetchAPI(url);
-
-      // filter out "projects" that are actually old experiments without a project
-      data = data.filter((project) => project.name !== project.uuid);
-
-      await Promise.all(data
-        .filter((entry) => entry.samples.length)
-        .map((entry) => dispatch(loadSamples(null, entry.uuid))));
-    } else if (config.currentApiVersion === api.V2) {
-      url = '/v2/experiments';
-      data = await fetchAPI(url);
-
-      data = toApiV1(data);
-    }
+    data = toApiV1(data);
 
     const ids = data.map((project) => project.uuid);
 
