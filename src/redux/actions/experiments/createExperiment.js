@@ -18,7 +18,7 @@ import config from 'config';
 import { api } from 'utils/constants';
 
 const createExperiment = (
-  projectUuid, newExperimentName,
+  newExperimentName,
 ) => async (dispatch) => {
   const createdDate = moment().toISOString();
 
@@ -28,7 +28,7 @@ const createExperiment = (
     ...experimentTemplate,
     id: experimentId,
     name: newExperimentName,
-    projectUuid,
+    projectUuid: experimentId,
     createdDate,
   };
 
