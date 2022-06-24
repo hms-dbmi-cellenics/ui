@@ -14,8 +14,6 @@ import {
   EXPERIMENTS_DELETED,
 } from 'redux/actionTypes/experiments';
 
-import config from 'config';
-import { api } from 'utils/constants';
 import { SAMPLES_DELETE } from 'redux/actionTypes/samples';
 
 const deleteProject = (
@@ -33,27 +31,15 @@ const deleteProject = (
   });
 
   try {
-    if (config.currentApiVersion === api.V1) {
-      await fetchAPI(
-        `/v1/projects/${projectUuid}`,
-        {
-          method: 'DELETE',
-          headers: {
-            'Content-Type': 'application/json',
-          },
+    await fetchAPI(
+      `/v2/experiments/${projectUuid}`,
+      {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
         },
-      );
-    } else if (config.currentApiVersion === api.V2) {
-      await fetchAPI(
-        `/v2/experiments/${projectUuid}`,
-        {
-          method: 'DELETE',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        },
-      );
-    }
+      },
+    );
 
     // If deleted project is the same as the active project, choose another project
     if (projectUuid === activeProjectUuid) {
