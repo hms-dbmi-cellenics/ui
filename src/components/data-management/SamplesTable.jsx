@@ -36,7 +36,7 @@ import { arrayMoveImmutable } from 'utils/array-move';
 import downloadFromUrl from 'utils/data-management/downloadFromUrl';
 import { metadataNameToKey, metadataKeyToName, temporaryMetadataKey } from 'utils/data-management/metadataUtils';
 import integrationTestConstants from 'utils/integrationTestConstants';
-import getAccountId from 'utils/getAccountId';
+import { getAccountId } from 'utils/awsConfig';
 import 'utils/css/data-management.css';
 import { ClipLoader } from 'react-spinners';
 

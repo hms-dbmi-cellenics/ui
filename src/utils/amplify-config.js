@@ -1,6 +1,5 @@
 import Environment, { ssrGetCurrentEnvironment } from './environment';
-import getAccountId from './getAccountId';
-import { getAWSRegion } from './awsConfig';
+import { getAccountId, getAWSRegion } from './awsConfig';
 
 const configure = (userPoolId, identityPoolId, userPoolClientDetails) => {
   const currentEnvironment = ssrGetCurrentEnvironment();
