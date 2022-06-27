@@ -64,18 +64,16 @@ const toApiV1 = (samples, experimentId) => {
   return apiV1Samples;
 };
 
-const loadSamples = (
-  experimentId = null, projectUuid = null,
-) => async (dispatch) => {
+const loadSamples = (experimentId) => async (dispatch) => {
   try {
     dispatch({
       type: SAMPLES_LOADING,
     });
 
-    const url = `/v2/experiments/${experimentId ?? projectUuid}/samples`;
+    const url = `/v2/experiments/${experimentId}/samples`;
     const data = await fetchAPI(url);
 
-    const samples = toApiV1(data, experimentId ?? projectUuid);
+    const samples = toApiV1(data, experimentId);
 
     // throwIfRequestFailed(response, data, endUserMessages.ERROR_FETCHING_SAMPLES);
 
