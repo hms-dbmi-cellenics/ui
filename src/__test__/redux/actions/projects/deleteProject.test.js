@@ -14,9 +14,6 @@ import {
 import { EXPERIMENTS_DELETED } from 'redux/actionTypes/experiments';
 import { SAMPLES_DELETE } from 'redux/actionTypes/samples';
 
-import config from 'config';
-import { api } from 'utils/constants';
-
 jest.mock('config');
 
 enableFetchMocks();
@@ -132,27 +129,7 @@ describe('deleteProject action', () => {
     ]);
   });
 
-  it('Dispatches fetch correctly.', async () => {
-    const response = new Response(JSON.stringify({}));
-    fetchMock.mockResolvedValueOnce(response);
-
-    const store = mockStore(initialStateUniSample);
-    await store.dispatch(deleteProject(mockProjectUuid1));
-
-    expect(fetchMock).toHaveBeenCalledWith(
-      `http://localhost:3000/v2/experiments/${mockProject.uuid}`,
-      {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      },
-    );
-  });
-
   it('Dispatches fetch correctly', async () => {
-    config.currentApiVersion = api.V2;
-
     const response = new Response(JSON.stringify({}));
     fetchMock.mockResolvedValueOnce(response);
 
