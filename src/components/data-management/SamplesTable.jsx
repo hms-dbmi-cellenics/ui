@@ -2,21 +2,20 @@
 import React, {
   useEffect, useState, forwardRef, useImperativeHandle,
 } from 'react';
-import Storage from '@aws-amplify/storage';
+
 import { useSelector, useDispatch } from 'react-redux';
 import {
-  Table, Row, Col, Typography, Space, Button, Empty,
+  Table, Row, Col, Typography, Space,
 } from 'antd';
 import {
   MenuOutlined,
 } from '@ant-design/icons';
 import { sortableHandle, sortableContainer, sortableElement } from 'react-sortable-hoc';
 
-import MetadataColumnTitle from 'components/data-management/MetadataColumn';
+import ExampleExperimentsSpace from 'components/data-management/ExampleExperimentsSpace';
 import MetadataPopover from 'components/data-management/MetadataPopover';
-import {
-  UploadCell, SampleNameCell, EditableFieldCell,
-} from 'components/data-management/SamplesTableCells';
+import MetadataColumnTitle from 'components/data-management/MetadataColumn';
+import { UploadCell, SampleNameCell, EditableFieldCell } from 'components/data-management/SamplesTableCells';
 
 import {
   updateProject,
@@ -27,21 +26,24 @@ import {
 import { DEFAULT_NA } from 'redux/reducers/projects/initialState';
 import { reorderSamples } from 'redux/actions/experiments';
 
+import { loadSamples } from 'redux/actions/samples';
+
 import UploadStatus from 'utils/upload/UploadStatus';
 import { arrayMoveImmutable } from 'utils/array-move';
-import downloadFromUrl from 'utils/data-management/downloadFromUrl';
+
 import { metadataNameToKey, metadataKeyToName, temporaryMetadataKey } from 'utils/data-management/metadataUtils';
 import integrationTestConstants from 'utils/integrationTestConstants';
-import getAccountId from 'utils/getAccountId';
-import 'utils/css/data-management.css';
-import { ClipLoader } from 'react-spinners';
 
-const { Paragraph, Text } = Typography;
+import 'utils/css/data-management.css';
+
+import { ClipLoader } from 'react-spinners';
+import useConditionalEffect from 'utils/customHooks/useConditionalEffect';
+
+const { Text } = Typography;
 
 const SamplesTable = forwardRef((props, ref) => {
   const dispatch = useDispatch();
   const [tableData, setTableData] = useState([]);
-  const [exampleDatasets, setExampleDatasets] = useState([]);
 
   const projects = useSelector((state) => state.projects);
   const samples = useSelector((state) => state.samples);
@@ -49,7 +51,6 @@ const SamplesTable = forwardRef((props, ref) => {
 
   const { activeProjectUuid } = useSelector((state) => state.projects.meta) || false;
   const activeProject = useSelector((state) => state.projects[activeProjectUuid]) || false;
-  const environment = useSelector((state) => state?.networkResources?.environment);
 
   const [sampleNames, setSampleNames] = useState(new Set());
   const DragHandle = sortableHandle(() => <MenuOutlined style={{ cursor: 'grab', color: '#999' }} />);
@@ -110,6 +111,10 @@ const SamplesTable = forwardRef((props, ref) => {
       setSampleNames(new Set());
     }
   }, [samples, activeProject]);
+
+  useConditionalEffect(() => {
+    dispatch(loadSamples(activeProjectUuid));
+  }, [activeProject.samples], { lazy: true });
 
   const deleteMetadataColumn = (name) => {
     dispatch(deleteMetadataTrack(name, activeProjectUuid));
@@ -241,111 +246,10 @@ const SamplesTable = forwardRef((props, ref) => {
     setTableData(newData);
   }, [projects, samples, activeProjectUuid]);
 
-  // Name of file is 1.Example-File_Name.zip
-  // The naming starts from 1
-  const parseFileName = (name) => {
-    const parts = name.split('.');
-
-    // The first part of the file name is the order
-    const order = Number.parseInt(parts[0], 10);
-    if (!order) {
-      console.warn('Invalid dataset file:', name);
-      return null;
-    }
-
-    // Filename may contain dots, so we need to join them
-    const rawFileName = parts.slice(1, parts.length - 1).join('.');
-    const filename = rawFileName.replace(/_/g, ' ');
-
-    return { order, filename };
-  };
-
-  const getPublicDatasets = async () => {
-    const accountId = getAccountId(environment);
-    Storage.configure({
-      bucket: `biomage-public-datasets-${environment}-${accountId}`,
-      customPrefix: {
-        public: '',
-      },
-    });
-
-    const datasets = await Storage.list('');
-
-    // Properly order the datasets
-    const result = new Array(datasets.length).fill(null);
-
-    datasets.forEach((data) => {
-      const parsed = parseFileName(data.key);
-
-      if (!parsed) return;
-
-      // Order begins from 1, but array index begins from 0
-      const insertionIndex = parsed.order - 1;
-      result[insertionIndex] = {
-        filename: data.key,
-        description: parsed.filename,
-      };
-    });
-
-    return result.filter((data) => data !== null);
-  };
-
-  useEffect(() => {
-    if (!environment) return;
-
-    getPublicDatasets().then((datasets) => { setExampleDatasets(datasets); });
-  }, [environment]);
-
-  const downloadPublicDataset = async (filename) => {
-    const accountId = getAccountId(environment);
-    const s3Object = await Storage.get(
-      filename,
-      {
-        bucket: `biomage-public-datasets-${environment}-${accountId}`,
-        contentType: 'multipart/form-data',
-      },
-    );
-    downloadFromUrl(s3Object);
-  };
-
-  const noDataText = (
-    <Empty
-      imageStyle={{
-        height: 60,
-      }}
-      description={(
-        <Space size='middle' direction='vertical'>
-          <Paragraph>
-            Start uploading your samples by clicking on Add samples.
-          </Paragraph>
-          {
-            exampleDatasets.length > 0 && (
-              <>
-                <Text>
-                  Don&apos;t have data? Get started using one of our example datasets:
-                </Text>
-                <div style={{ width: 'auto', textAlign: 'left' }}>
-                  <ul>
-                    {
-                      exampleDatasets.map(({ filename, description }) => (
-                        <li key={filename}>
-                          <Button
-                            type='link'
-                            size='small'
-                            onClick={() => downloadPublicDataset(filename)}
-                          >
-                            {description}
-                          </Button>
-                        </li>
-                      ))
-                    }
-                  </ul>
-                </div>
-              </>
-            )
-          }
-        </Space>
-      )}
+  const noDataComponent = (
+    <ExampleExperimentsSpace
+      introductionText='Start uploading your samples by clicking on Add samples.'
+      imageStyle={{ height: 60 }}
     />
   );
 
@@ -416,7 +320,7 @@ const SamplesTable = forwardRef((props, ref) => {
           dataSource={tableData}
           sticky
           pagination={false}
-          locale={{ emptyText: noDataText }}
+          locale={{ emptyText: noDataComponent }}
           components={{
             body: {
               wrapper: DragContainer,

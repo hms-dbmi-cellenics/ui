@@ -55,11 +55,6 @@ const deleteSamples = (
   try {
     const deleteSamplesPromise = Object.entries(projectSamples).map(
       async ([projectUuid, samplesToDelete]) => {
-        console.log('projectsDebug');
-        console.log(projects);
-
-        console.log('projectUuidDebug');
-        console.log(projectUuid);
         const experimentId = projects[projectUuid].experiments[0];
 
         await Promise.all(sampleIds.map(async (sampleUuid) => {
@@ -86,8 +81,6 @@ const deleteSamples = (
       type: SAMPLES_SAVED,
     });
   } catch (e) {
-    console.log('eDebug');
-    console.log(e);
     handleError(e, endUserMessages.ERROR_DELETING_SAMPLES);
 
     dispatch({

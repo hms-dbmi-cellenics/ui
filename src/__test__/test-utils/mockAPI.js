@@ -4,6 +4,7 @@ import _ from 'lodash';
 import cellSetsData from '__test__/data/cell_sets.json';
 import backendStatusData from '__test__/data/backend_status.json';
 import processingConfigData from '__test__/data/processing_config.json';
+import mockDemoExperiments from '__test__/test-utils/mockData/mockDemoExperiments.json';
 
 // A ticket has been created to address this : https://biomage.atlassian.net/browse/BIOMAGE-1553
 import {
@@ -46,6 +47,9 @@ const generateDefaultMockAPIResponses = (experimentId) => ({
   ),
   [`experiments/${experimentId}/samples`]: () => promiseResponse(
     JSON.stringify(responseData.samples[0]),
+  ),
+  '/v2/experiments/examples': () => promiseResponse(
+    JSON.stringify(mockDemoExperiments),
   ),
 });
 

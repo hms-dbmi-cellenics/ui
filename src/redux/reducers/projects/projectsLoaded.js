@@ -5,13 +5,21 @@ const projectsLoaded = (state, action) => {
   projects.forEach((project) => {
     newProjects[project.uuid] = project;
   });
+
+  let activeProjectId = state.meta.activeProjectUuid;
+
+  // If the current active project no longer exists, change it
+  if (!Object.keys(state).includes(activeProjectId)) {
+    activeProjectId = projects[0]?.uuid;
+  }
+
   return {
     ...state,
     ids,
     loading: false,
     ...newProjects,
     meta: {
-      activeProjectUuid: projects[0]?.uuid,
+      activeProjectUuid: activeProjectId,
     },
   };
 };
