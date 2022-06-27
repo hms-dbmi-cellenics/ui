@@ -7,31 +7,22 @@ import {
   EXPERIMENTS_ERROR,
   EXPERIMENTS_SAVING,
 } from 'redux/actionTypes/experiments';
-import { experimentTemplate } from 'redux/reducers/experiments/initialState';
 
 import endUserMessages from 'utils/endUserMessages';
 
 import handleError from 'utils/http/handleError';
 
 const createExperiment = (
-  newExperimentName,
+  name, description,
 ) => async (dispatch) => {
   const createdDate = moment().toISOString();
-
   const experimentId = hash.MD5(createdDate);
 
-  const newExperiment = {
-    ...experimentTemplate,
+  const newExperimentProperties = {
     id: experimentId,
-    name: newExperimentName,
-    projectUuid: experimentId,
-    createdDate,
+    name,
+    description,
   };
-
-  const { id, name, description } = newExperiment;
-  const experimentToSend = { id, name, description };
-
-  const url = `/v2/experiments/${experimentId}`;
 
   dispatch({
     type: EXPERIMENTS_SAVING,
@@ -39,20 +30,20 @@ const createExperiment = (
 
   try {
     await fetchAPI(
-      url,
+      `/v2/experiments/${experimentId}`,
       {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(experimentToSend),
+        body: JSON.stringify(newExperimentProperties),
       },
     );
 
     dispatch({
       type: EXPERIMENTS_CREATED,
       payload: {
-        experiment: newExperiment,
+        experiment: { createdDate, ...newExperimentProperties },
       },
     });
   } catch (e) {
@@ -68,7 +59,7 @@ const createExperiment = (
     throw e;
   }
 
-  return Promise.resolve(newExperiment);
+  return Promise.resolve(experimentId);
 };
 
 export default createExperiment;

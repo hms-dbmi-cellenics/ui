@@ -26,7 +26,7 @@ const createProject = (
       },
     });
 
-    const { id: experimentId } = await dispatch(createExperiment(newExperimentName));
+    const experimentId = await dispatch(createExperiment(newExperimentName, projectDescription));
 
     const newProject = {
       ...projectTemplate,
