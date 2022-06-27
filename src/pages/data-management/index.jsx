@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import {
-  Button, Space, Empty,
-} from 'antd';
+import { Space } from 'antd';
 
 import { ClipLoader } from 'react-spinners';
 import { loadProjects } from 'redux/actions/projects';
@@ -17,6 +15,7 @@ import ProjectDetails from 'components/data-management/ProjectDetails';
 import { loadProcessingSettings } from 'redux/actions/experimentSettings';
 import loadBackendStatus from 'redux/actions/backendStatus/loadBackendStatus';
 import { loadSamples } from 'redux/actions/samples';
+import ExampleExperimentsSpace from 'components/data-management/ExampleExperimentsSpace';
 
 const DataManagementPage = () => {
   const dispatch = useDispatch();
@@ -85,13 +84,7 @@ const DataManagementPage = () => {
       toolbarControls: [],
       component: (width, height) => {
         if (!activeProjectUuid) {
-          return (
-            <Empty
-              description='You have no projects yet.'
-            >
-              <Button type='primary' onClick={() => setNewProjectModalVisible(true)}>Get started</Button>
-            </Empty>
-          );
+          return <ExampleExperimentsSpace introductionText='You have no projects yet.' />;
         }
 
         return (

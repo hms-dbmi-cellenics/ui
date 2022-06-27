@@ -5,7 +5,7 @@ import React, {
 
 import { useSelector, useDispatch } from 'react-redux';
 import {
-  Table, Row, Col, Typography, Space, Button, Empty,
+  Table, Row, Col, Typography, Space,
 } from 'antd';
 import {
   MenuOutlined,
@@ -15,19 +15,16 @@ import { sortableHandle, sortableContainer, sortableElement } from 'react-sortab
 import config from 'config';
 import { api } from 'utils/constants';
 
-import MetadataColumnTitle from 'components/data-management/MetadataColumn';
+import ExampleExperimentsSpace from 'components/data-management/ExampleExperimentsSpace';
 import MetadataPopover from 'components/data-management/MetadataPopover';
-import {
-  UploadCell, SampleNameCell, EditableFieldCell,
-} from 'components/data-management/SamplesTableCells';
+import MetadataColumnTitle from 'components/data-management/MetadataColumn';
+import { UploadCell, SampleNameCell, EditableFieldCell } from 'components/data-management/SamplesTableCells';
 
 import {
   updateProject,
   deleteMetadataTrack,
   createMetadataTrack,
   updateValueInMetadataTrack,
-  loadProjects,
-  setActiveProject,
 } from 'redux/actions/projects';
 import { DEFAULT_NA } from 'redux/reducers/projects/initialState';
 import { reorderSamples, updateExperiment } from 'redux/actions/experiments';
@@ -40,16 +37,15 @@ import { metadataNameToKey, metadataKeyToName, temporaryMetadataKey } from 'util
 import integrationTestConstants from 'utils/integrationTestConstants';
 
 import 'utils/css/data-management.css';
-import fetchAPI from 'utils/http/fetchAPI';
+
 import { ClipLoader } from 'react-spinners';
 import useConditionalEffect from 'utils/customHooks/useConditionalEffect';
 
-const { Paragraph, Text } = Typography;
+const { Text } = Typography;
 
 const SamplesTable = forwardRef((props, ref) => {
   const dispatch = useDispatch();
   const [tableData, setTableData] = useState([]);
-  const [exampleExperiments, setExampleExperiments] = useState([]);
 
   const projects = useSelector((state) => state.projects);
   const samples = useSelector((state) => state.samples);
@@ -57,7 +53,6 @@ const SamplesTable = forwardRef((props, ref) => {
 
   const { activeProjectUuid } = useSelector((state) => state.projects.meta) || false;
   const activeProject = useSelector((state) => state.projects[activeProjectUuid]) || false;
-  const environment = useSelector((state) => state?.networkResources?.environment);
 
   const [sampleNames, setSampleNames] = useState(new Set());
   const DragHandle = sortableHandle(() => <MenuOutlined style={{ cursor: 'grab', color: '#999' }} />);
@@ -253,67 +248,10 @@ const SamplesTable = forwardRef((props, ref) => {
     setTableData(newData);
   }, [projects, samples, activeProjectUuid]);
 
-  useEffect(() => {
-    if (!environment) return;
-
-    fetchAPI('/v2/experiments/examples').then((experiments) => {
-      setExampleExperiments(experiments);
-    });
-  }, [environment]);
-
-  const cloneIntoCurrentExperiment = async (exampleExperimentId) => {
-    const url = `/v2/experiments/${exampleExperimentId}/clone`;
-
-    const newExperimentId = await fetchAPI(
-      url,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-      },
-    );
-
-    await dispatch(loadProjects());
-    await dispatch(setActiveProject(newExperimentId));
-  };
-
-  const noDataText = (
-    <Empty
-      imageStyle={{
-        height: 60,
-      }}
-      description={(
-        <Space size='middle' direction='vertical'>
-          <Paragraph>
-            Start uploading your samples by clicking on Add samples.
-          </Paragraph>
-          {
-            exampleExperiments.length > 0 && (
-              <>
-                <Text>
-                  Don&apos;t have data? Get started using one of our example datasets:
-                </Text>
-                <div style={{ width: 'auto', textAlign: 'left' }}>
-                  <ul>
-                    {
-                      exampleExperiments.map(({ id, name }) => (
-                        <li key={name}>
-                          <Button
-                            type='link'
-                            size='small'
-                            onClick={() => cloneIntoCurrentExperiment(id)}
-                          >
-                            {name}
-                          </Button>
-                        </li>
-                      ))
-                    }
-                  </ul>
-                </div>
-              </>
-            )
-          }
-        </Space>
-      )}
+  const noDataComponent = (
+    <ExampleExperimentsSpace
+      introductionText='Start uploading your samples by clicking on Add samples.'
+      imageStyle={{ height: 60 }}
     />
   );
 
@@ -392,7 +330,7 @@ const SamplesTable = forwardRef((props, ref) => {
           dataSource={tableData}
           sticky
           pagination={false}
-          locale={{ emptyText: noDataText }}
+          locale={{ emptyText: noDataComponent }}
           components={{
             body: {
               wrapper: DragContainer,
