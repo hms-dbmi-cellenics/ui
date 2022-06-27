@@ -1,5 +1,9 @@
-const getAccountId = (environment) => {
+import { useSelector } from 'react-redux';
+
+const getAccountId = () => {
   let accountID;
+  const environment = useSelector((state) => state.networkResources.environment);
+
   if (environment === 'development') {
     accountID = '000000000000';
   } else {
