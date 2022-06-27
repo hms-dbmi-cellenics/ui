@@ -12,16 +12,3 @@ Array [
   },
 ]
 `;
-
-exports[`Share expeirment modal Inviting users works for v2 1`] = `
-Array [
-  "http://localhost:3000/v2/access/testae48e318dab9a1bd0bexperiment",
-  Object {
-    "body": "{\\"projectUuid\\":\\"test24b6-8600-test-mock-63822d2fmock\\",\\"role\\":\\"explorer\\",\\"userEmail\\":\\"asd@asd.com\\"}",
-    "headers": Object {
-      "Content-Type": "application/json",
-    },
-    "method": "PUT",
-  },
-]
-`;

@@ -8,8 +8,6 @@ import { updateValueInMetadataTrack } from 'redux/actions/projects';
 
 import '__test__/test-utils/setupTests';
 
-import config from 'config';
-import { api } from 'utils/constants';
 import { SAMPLES_ERROR, SAMPLES_SAVING, SAMPLES_VALUE_IN_METADATA_TRACK_UPDATED } from 'redux/actionTypes/samples';
 
 const mockStore = configureStore([thunk]);
@@ -26,9 +24,7 @@ describe('updateValueInMetadataTrack action', () => {
     fetchMock.doMock();
   });
 
-  it('Works correctly in api v2', async () => {
-    config.currentApiVersion = api.V2;
-
+  it('Works correctly', async () => {
     const store = mockStore();
 
     fetchMock.mockResolvedValue(new Response(JSON.stringify({})));
@@ -51,9 +47,7 @@ describe('updateValueInMetadataTrack action', () => {
     );
   });
 
-  it('Dispatches error when theres an error updating in api v2', async () => {
-    config.currentApiVersion = api.V2;
-
+  it('Dispatches error when theres an error updating', async () => {
     const store = mockStore();
 
     fetchMock.mockRejectOnce(() => Promise.reject(new Error('Some error')));

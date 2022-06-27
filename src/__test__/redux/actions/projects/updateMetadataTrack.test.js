@@ -14,8 +14,6 @@ import {
 } from 'redux/actionTypes/projects';
 import '__test__/test-utils/setupTests';
 
-import config from 'config';
-import { api } from 'utils/constants';
 import { SAMPLES_METADATA_DELETE, SAMPLES_UPDATE } from 'redux/actionTypes/samples';
 
 const mockStore = configureStore([thunk]);
@@ -68,8 +66,6 @@ describe('updateMetadataTrack action', () => {
   });
 
   it('Works correctly', async () => {
-    config.currentApiVersion = api.V2;
-
     const store = mockStore(initialState);
 
     fetchMock.mockResolvedValue(new Response(JSON.stringify({})));

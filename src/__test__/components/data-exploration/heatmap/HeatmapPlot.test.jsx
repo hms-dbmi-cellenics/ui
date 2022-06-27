@@ -33,9 +33,6 @@ import { setCellSetHiddenStatus } from 'redux/actions/cellSets';
 import { isSubset } from 'utils/arrayUtils';
 import { updatePlotConfig } from 'redux/actions/componentConfig';
 
-import config from 'config';
-import { api } from 'utils/constants';
-
 jest.mock('config');
 
 const experimentId = fake.EXPERIMENT_ID;
@@ -146,8 +143,6 @@ describe('HeatmapPlot', () => {
   });
 
   it('Shows loader message if cellSets are loading in v2', async () => {
-    config.currentApiVersion = 'v2';
-
     const mockLoadingAPIResponses = {
       ...mockWorkerResponses,
       [`experiments/${experimentId}/cellSets`]: () => delayedResponse({ body: 'Not found', status: 404 }, 4000),
@@ -262,7 +257,8 @@ describe('HeatmapPlot', () => {
     // Renders correctly
     expect(screen.getByText(/Sup Im a heatmap/i)).toBeInTheDocument();
 
-    // Cell ids stored in expression matrix is string, whereas cell ids stored in the store are number
+    // Cell ids stored in expression matrix is string,
+    // whereas cell ids stored in the store are number
     // So we need to convert them to string to be able to compare the values
     const cellsInLouvain3 = cellSetsData
       .cellSets.find(({ key }) => key === 'louvain')

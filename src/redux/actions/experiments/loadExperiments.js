@@ -28,7 +28,6 @@ const toApiV1 = (experimentV2) => {
     createdDate: createdAt,
     notifyByEmail,
     sampleIds: samplesOrder,
-    // lastViewed: ignored, it isn\'t being used in the UI,
     meta: {
       // This is always 10x and organism so we can just generate them here
       organism: null,

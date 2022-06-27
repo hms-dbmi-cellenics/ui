@@ -1,8 +1,5 @@
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 
-import config from 'config';
-import { api } from 'utils/constants';
-
 import downloadSingleFile from 'utils/data-management/downloadSingleFile';
 import downloadFromUrl from 'utils/data-management/downloadFromUrl';
 
@@ -22,8 +19,6 @@ describe('downloadFromUrl', () => {
   });
 
   it('Downloads from url', async () => {
-    config.currentApiVersion = api.V2;
-
     const mockSignedUrl = 'mockDownloadUrl';
 
     fetchMock.mockResponse(JSON.stringify(mockSignedUrl));

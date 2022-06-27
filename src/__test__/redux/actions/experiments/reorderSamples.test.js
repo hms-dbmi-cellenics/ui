@@ -12,9 +12,6 @@ import {
 import { reorderSamples } from 'redux/actions/experiments';
 import initialExperimentState, { experimentTemplate } from 'redux/reducers/experiments/initialState';
 
-import config from 'config';
-import { api } from 'utils/constants';
-
 import '__test__/test-utils/setupTests';
 
 jest.mock('config');
@@ -47,9 +44,7 @@ describe('updateExperiment', () => {
     fetchMock.doMock();
   });
 
-  it('Updates properties with api v2 correctly', async () => {
-    config.currentApiVersion = api.V2;
-
+  it('Updates properties correctly', async () => {
     const response = new Response(JSON.stringify({}));
     fetchMock.mockResolvedValueOnce(response);
 
@@ -72,9 +67,7 @@ describe('updateExperiment', () => {
     );
   });
 
-  it('Handles error with api v2 and then rethrows (so the UI doesnt reorder)', async () => {
-    config.currentApiVersion = api.V2;
-
+  it('Handles error and then rethrows (so the UI doesnt reorder)', async () => {
     const error = new Error('Some api error');
 
     fetchMock.mockRejectOnce(() => Promise.reject(error));
