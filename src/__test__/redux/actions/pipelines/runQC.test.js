@@ -18,7 +18,7 @@ import {
 } from 'redux/actionTypes/backendStatus';
 import { EMBEDDINGS_LOADING } from 'redux/actionTypes/embeddings';
 
-import { runPipeline } from 'redux/actions/pipeline';
+import { runQC } from 'redux/actions/pipeline';
 
 import generateExperimentSettingsMock from '__test__/test-utils/experimentSettings.mock';
 import '__test__/test-utils/setupTests';
@@ -58,7 +58,7 @@ const initialState = {
   },
 };
 
-describe('runPipeline action', () => {
+describe('runQC action', () => {
   beforeEach(() => {
     const response = new Response(JSON.stringify({}));
 
@@ -73,7 +73,7 @@ describe('runPipeline action', () => {
 
   it('Dispatches events properly', async () => {
     const store = mockStore(initialState);
-    await store.dispatch(runPipeline(experimentId));
+    await store.dispatch(runQC(experimentId));
 
     const actions = store.getActions();
 
@@ -88,7 +88,7 @@ describe('runPipeline action', () => {
     fetchMock.mockResponse(JSON.stringify({ message: 'some weird error that happened' }), { status: 400 });
 
     const store = mockStore(initialState);
-    await store.dispatch(runPipeline(experimentId));
+    await store.dispatch(runQC(experimentId));
 
     const actions = store.getActions();
 
@@ -108,7 +108,7 @@ describe('runPipeline action', () => {
     onlyConfigureEmbeddingChangedState.experimentSettings.processing.meta.changedQCFilters = new Set(['configureEmbedding']);
 
     const store = mockStore(onlyConfigureEmbeddingChangedState);
-    await store.dispatch(runPipeline(experimentId));
+    await store.dispatch(runQC(experimentId));
 
     await waitForActions(
       store,
@@ -127,7 +127,7 @@ describe('runPipeline action', () => {
     config.currentApiVersion = api.V2;
 
     const store = mockStore(initialState);
-    await store.dispatch(runPipeline(experimentId));
+    await store.dispatch(runQC(experimentId));
 
     const actions = store.getActions();
 

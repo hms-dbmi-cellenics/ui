@@ -12,9 +12,6 @@ import {
 
 import loadBackendStatus from 'redux/actions/backendStatus/loadBackendStatus';
 
-import config from 'config';
-import { api } from 'utils/constants';
-
 const runGem2s = (experimentId, paramsHash) => async (dispatch) => {
   dispatch({
     type: BACKEND_STATUS_LOADING,
@@ -23,16 +20,9 @@ const runGem2s = (experimentId, paramsHash) => async (dispatch) => {
     },
   });
 
-  let url;
-  if (config.currentApiVersion === api.V1) {
-    url = `/v1/experiments/${experimentId}/gem2s`;
-  } else if (config.currentApiVersion === api.V2) {
-    url = `/v2/experiments/${experimentId}/gem2s`;
-  }
-
   try {
     await fetchAPI(
-      url,
+      `/v2/experiments/${experimentId}/gem2s`,
       {
         method: 'POST',
         headers: {

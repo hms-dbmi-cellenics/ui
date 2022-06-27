@@ -36,7 +36,7 @@ const runOnlyConfigureEmbedding = async (experimentId, embeddingMethod, dispatch
   );
 };
 
-const runPipeline = (experimentId) => async (dispatch, getState) => {
+const runQC = (experimentId) => async (dispatch, getState) => {
   const { processing } = getState().experimentSettings;
   const { changedQCFilters } = processing.meta;
 
@@ -116,4 +116,4 @@ const runPipeline = (experimentId) => async (dispatch, getState) => {
   }
 };
 
-export default runPipeline;
+export default runQC;

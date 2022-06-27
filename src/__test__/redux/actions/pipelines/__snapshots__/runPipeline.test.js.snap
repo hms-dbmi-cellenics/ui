@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`runPipeline action Dispatches events properly 1`] = `
+exports[`runQC action Dispatches events properly 1`] = `
 Array [
   Object {
     "payload": Object {
@@ -15,7 +15,7 @@ Array [
 ]
 `;
 
-exports[`runPipeline action Dispatches status error if loading fails 1`] = `
+exports[`runQC action Dispatches status error if loading fails 1`] = `
 Array [
   Object {
     "payload": Object {
@@ -33,7 +33,7 @@ Array [
 ]
 `;
 
-exports[`runPipeline action Runs only the embedding if only changed filter was configureEmbedding 1`] = `
+exports[`runQC action Runs only the embedding if only changed filter was configureEmbedding 1`] = `
 Array [
   Object {
     "payload": Object {},
@@ -48,7 +48,7 @@ Array [
 ]
 `;
 
-exports[`runPipeline action Works well with api v2 1`] = `
+exports[`runQC action Works well with api v2 1`] = `
 Array [
   Object {
     "payload": Object {
@@ -63,7 +63,7 @@ Array [
 ]
 `;
 
-exports[`runPipeline action Works well with api v2 2`] = `
+exports[`runQC action Works well with api v2 2`] = `
 Array [
   "http://localhost:3000/v2/experiments/experiment-id/qc",
   Object {
