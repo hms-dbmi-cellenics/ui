@@ -28,14 +28,10 @@ const DataManagementPage = () => {
 
   const sampleSaving = useSelector((state) => state.samples.meta.saving);
 
-  const {
-    activeProjectUuid,
-    loading: projectsLoading,
-  } = useSelector((state) => state.projects.meta);
+  const { activeProjectUuid } = useSelector((state) => state.projects.meta);
 
   const experiments = useSelector((state) => state.experiments);
   const [newProjectModalVisible, setNewProjectModalVisible] = useState(false);
-  const [justLoggedIn, setJustLoggedIn] = useState(true);
   const activeProject = projectsList[activeProjectUuid];
   const loadedSamples = useSelector((state) => state.samples);
 
@@ -71,19 +67,6 @@ const DataManagementPage = () => {
 
     if (experiments[activeExperimentId]) updateRunStatus(activeExperimentId);
   }, [activeProjectUuid]);
-
-  useEffect(() => {
-    // only open the modal the first time a user logs in if there are no projects
-    if (justLoggedIn === false || projectsLoading === true) {
-      return;
-    }
-
-    setJustLoggedIn(false);
-
-    if (projectsList.ids.length === 0) {
-      setNewProjectModalVisible(true);
-    }
-  }, [projectsList, projectsLoading]);
 
   const PROJECTS_LIST = 'Projects';
   const PROJECT_DETAILS = 'Project Details';
