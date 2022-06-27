@@ -1,14 +1,19 @@
-import { useSelector } from 'react-redux';
+import * as AWS from '@aws-sdk/client-sts';
+import { getDefaultRoleAssumerWithWebIdentity } from '@aws-sdk/client-sts';
+import { fromTokenFile } from '@aws-sdk/credential-provider-web-identity';
 
-const getAccountId = () => {
-  let accountID;
-  const environment = useSelector((state) => state.networkResources.environment);
+const getAccountId = async () => {
+  const sts = new AWS.STS({
+    region: getAWSRegion(),
+    credentials: fromTokenFile({
+      roleAssumerWithWebIdentity: getDefaultRoleAssumerWithWebIdentity(),
+    }),
+  });
+  console.log('HERE LMAO', getAWSRegion());
 
-  if (environment === 'development') {
-    accountID = '000000000000';
-  } else {
-    accountID = '242905224710';
-  }
+  const accountID = await sts.getCallerIdentity({}).promise;
+  console.log('ID IS ', accountID);
+
   return accountID;
 };
 
