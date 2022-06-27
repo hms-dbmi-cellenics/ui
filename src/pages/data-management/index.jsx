@@ -51,7 +51,7 @@ const DataManagementPage = () => {
     dispatch(loadBackendStatus(experimentId));
   };
 
-  const areSamplesLoaded = () => !activeProject.samples.length
+  const sampleAreLoaded = () => !activeProject.samples.length
     || activeProject.samples.every((sample) => Object.keys(loadedSamples).includes(sample));
 
   useEffect(() => {
@@ -63,7 +63,7 @@ const DataManagementPage = () => {
 
     dispatch(loadProcessingSettings(activeExperimentId));
 
-    if (!areSamplesLoaded()) dispatch(loadSamples(activeProjectUuid));
+    if (!sampleAreLoaded()) dispatch(loadSamples(activeProjectUuid));
 
     if (!experimentsAreLoaded) {
       dispatch(loadExperiments(activeProjectUuid)).then(() => updateRunStatus(activeExperimentId));
