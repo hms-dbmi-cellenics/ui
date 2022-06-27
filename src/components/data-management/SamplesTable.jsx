@@ -12,9 +12,6 @@ import {
 } from '@ant-design/icons';
 import { sortableHandle, sortableContainer, sortableElement } from 'react-sortable-hoc';
 
-import config from 'config';
-import { api } from 'utils/constants';
-
 import MetadataColumnTitle from 'components/data-management/MetadataColumn';
 import MetadataPopover from 'components/data-management/MetadataPopover';
 import {
@@ -28,7 +25,7 @@ import {
   updateValueInMetadataTrack,
 } from 'redux/actions/projects';
 import { DEFAULT_NA } from 'redux/reducers/projects/initialState';
-import { reorderSamples, updateExperiment } from 'redux/actions/experiments';
+import { reorderSamples } from 'redux/actions/experiments';
 
 import UploadStatus from 'utils/upload/UploadStatus';
 import { arrayMoveImmutable } from 'utils/array-move';
@@ -354,24 +351,16 @@ const SamplesTable = forwardRef((props, ref) => {
 
   const onSortEnd = async ({ oldIndex, newIndex }) => {
     if (oldIndex !== newIndex) {
-      // This can be done because there is only one experiment per project
-      // Has to be changed when we support multiple experiments per project
-      const experimentId = activeProject.experiments[0];
-
       const newData = arrayMoveImmutable(tableData, oldIndex, newIndex).filter((el) => !!el);
       const newSampleOrder = newData.map((sample) => sample.uuid);
 
       dispatch(updateProject(activeProjectUuid, { samples: newSampleOrder }));
 
-      if (config.currentApiVersion === api.V1) {
-        dispatch(updateExperiment(experimentId, { sampleIds: newSampleOrder }));
-      } else if (config.currentApiVersion === api.V2) {
-        try {
-          await dispatch(reorderSamples(activeProjectUuid, oldIndex, newIndex, newSampleOrder));
-        } catch (e) {
-          // If the fetch fails, avoid doing setTableData(newData)
-          return;
-        }
+      try {
+        await dispatch(reorderSamples(activeProjectUuid, oldIndex, newIndex, newSampleOrder));
+      } catch (e) {
+        // If the fetch fails, avoid doing setTableData(newData)
+        return;
       }
 
       setTableData(newData);
