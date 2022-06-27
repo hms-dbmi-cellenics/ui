@@ -1,8 +1,6 @@
 import fetchAPI from 'utils/http/fetchAPI';
 import updateExperimentInfo from 'redux/actions/experimentSettings/updateExperimentInfo';
 
-import config from 'config';
-import { api } from 'utils/constants';
 import APIError from 'utils/http/errors/APIError';
 import httpStatusCodes from 'utils/http/httpStatusCodes';
 
@@ -58,22 +56,13 @@ const getExperimentInfo = async (context, store, Auth) => {
 
   const url = `${req.protocol}://${req.get('host')}${req.originalUrl}`;
 
-  let experimentData;
-  if (config.currentApiVersion === api.V1) {
-    experimentData = await fetchAPI(
-      `/v1/experiments/${experimentId}`,
-      {},
-      { uiUrl: url, jwt },
-    );
-  } else if (config.currentApiVersion === api.V2) {
-    const experimentDataV2 = await fetchAPI(
-      `/v2/experiments/${experimentId}`,
-      {},
-      { uiUrl: url, jwt },
-    );
+  const experimentDataV2 = await fetchAPI(
+    `/v2/experiments/${experimentId}`,
+    {},
+    { uiUrl: url, jwt },
+  );
 
-    experimentData = toApiV1(experimentDataV2);
-  }
+  const experimentData = toApiV1(experimentDataV2);
 
   store.dispatch(updateExperimentInfo(experimentData));
   return {};

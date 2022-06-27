@@ -1,12 +1,11 @@
 import moment from 'moment';
+
 import getAuthJWT from 'utils/getAuthJWT';
 import WorkTimeoutError from 'utils/http/errors/WorkTimeoutError';
 import fetchAPI from 'utils/http/fetchAPI';
 import unpackResult from 'utils/work/unpackResult';
 import WorkResponseError from 'utils/http/errors/WorkResponseError';
 import httpStatusCodes from 'utils/http/httpStatusCodes';
-import config from 'config';
-import { api } from 'utils/constants';
 
 const throwResponseError = (response) => {
   throw new Error(`Error ${response.status}: ${response.text}`, { cause: response });
@@ -29,13 +28,7 @@ const getRemainingWorkerStartTime = (creationTimestamp) => {
 const seekFromS3 = async (ETag, experimentId) => {
   let response;
   try {
-    let url;
-    if (config.currentApiVersion === api.V2) {
-      url = `/v2/workResults/${experimentId}/${ETag}`;
-    } else {
-      url = `/v1/workResults/${experimentId}/${ETag}`;
-    }
-    response = await fetchAPI(url);
+    response = await fetchAPI(`/v2/workResults/${experimentId}/${ETag}`);
   } catch (e) {
     if (e.statusCode === httpStatusCodes.NOT_FOUND) {
       return null;
@@ -118,11 +111,9 @@ const dispatchWorkRequest = async (
 
   const result = Promise.race([timeoutPromise, responsePromise]);
 
-  if (config.currentApiVersion === api.V2) {
-    io.emit('WorkRequest-v2', request);
-  } else {
-    io.emit('WorkRequest', request);
-  }
+  // TODO switch to using normal WorkRequest for v2 requests
+  io.emit('WorkRequest-v2', request);
+
   return result;
 };
 
