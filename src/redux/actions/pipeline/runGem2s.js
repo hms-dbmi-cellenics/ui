@@ -2,7 +2,7 @@ import fetchAPI from 'utils/http/fetchAPI';
 import handleError from 'utils/http/handleError';
 import endUserMessages from 'utils/endUserMessages';
 import {
-  EXPERIMENT_SETTINGS_PIPELINE_START,
+  EXPERIMENT_SETTINGS_QC_START,
 } from 'redux/actionTypes/experimentSettings';
 
 import {
@@ -33,7 +33,7 @@ const runGem2s = (experimentId, paramsHash) => async (dispatch) => {
     );
 
     dispatch({
-      type: EXPERIMENT_SETTINGS_PIPELINE_START,
+      type: EXPERIMENT_SETTINGS_QC_START,
       payload: {},
     });
 

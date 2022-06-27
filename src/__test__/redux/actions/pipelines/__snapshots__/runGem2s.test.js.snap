@@ -10,7 +10,7 @@ Array [
   },
   Object {
     "payload": Object {},
-    "type": "experimentSettings/startPipeline",
+    "type": "experimentSettings/startQC",
   },
 ]
 `;
@@ -43,7 +43,7 @@ Array [
   },
   Object {
     "payload": Object {},
-    "type": "experimentSettings/startPipeline",
+    "type": "experimentSettings/startQC",
   },
 ]
 `;

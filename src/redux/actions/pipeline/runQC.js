@@ -2,7 +2,7 @@ import fetchAPI from 'utils/http/fetchAPI';
 import handleError from 'utils/http/handleError';
 import endUserMessages from 'utils/endUserMessages';
 import {
-  EXPERIMENT_SETTINGS_PIPELINE_START,
+  EXPERIMENT_SETTINGS_QC_START,
   EXPERIMENT_SETTINGS_DISCARD_CHANGED_QC_FILTERS,
 } from 'redux/actionTypes/experimentSettings';
 
@@ -93,7 +93,7 @@ const runQC = (experimentId) => async (dispatch, getState) => {
     );
 
     dispatch({
-      type: EXPERIMENT_SETTINGS_PIPELINE_START,
+      type: EXPERIMENT_SETTINGS_QC_START,
       payload: {},
     });
 

@@ -9,7 +9,7 @@ import loadBackendStatus from 'redux/actions/backendStatus/loadBackendStatus';
 import saveProcessingSettings from 'redux/actions/experimentSettings/processingConfig/saveProcessingSettings';
 
 import {
-  EXPERIMENT_SETTINGS_PIPELINE_START,
+  EXPERIMENT_SETTINGS_QC_START,
   EXPERIMENT_SETTINGS_DISCARD_CHANGED_QC_FILTERS,
 } from 'redux/actionTypes/experimentSettings';
 import {
@@ -78,7 +78,7 @@ describe('runQC action', () => {
     const actions = store.getActions();
 
     expect(actions[0].type).toEqual(BACKEND_STATUS_LOADING);
-    expect(actions[1].type).toEqual(EXPERIMENT_SETTINGS_PIPELINE_START);
+    expect(actions[1].type).toEqual(EXPERIMENT_SETTINGS_QC_START);
     expect(loadBackendStatus).toHaveBeenCalled();
     expect(actions).toMatchSnapshot();
   });
@@ -132,7 +132,7 @@ describe('runQC action', () => {
     const actions = store.getActions();
 
     expect(actions[0].type).toEqual(BACKEND_STATUS_LOADING);
-    expect(actions[1].type).toEqual(EXPERIMENT_SETTINGS_PIPELINE_START);
+    expect(actions[1].type).toEqual(EXPERIMENT_SETTINGS_QC_START);
     expect(loadBackendStatus).toHaveBeenCalled();
 
     expect(actions).toMatchSnapshot();
