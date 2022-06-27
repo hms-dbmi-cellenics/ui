@@ -12,9 +12,6 @@ import {
 import { updateExperiment } from 'redux/actions/experiments';
 import initialExperimentState, { experimentTemplate } from 'redux/reducers/experiments/initialState';
 
-import config from 'config';
-import { api } from 'utils/constants';
-
 import '__test__/test-utils/setupTests';
 
 jest.mock('config');
@@ -45,8 +42,6 @@ describe('updateExperiment', () => {
   });
 
   it('Works correctly', async () => {
-    config.currentApiVersion = api.V2;
-
     const store = mockStore(mockState);
     const response = new Response(JSON.stringify({}));
     fetchMock.mockResolvedValueOnce(response);
@@ -73,8 +68,6 @@ describe('updateExperiment', () => {
   });
 
   it('Handles error if api request fails', async () => {
-    config.currentApiVersion = api.V2;
-
     const store = mockStore(mockState);
 
     fetchMock.mockRejectOnce(new Error('Api error'));

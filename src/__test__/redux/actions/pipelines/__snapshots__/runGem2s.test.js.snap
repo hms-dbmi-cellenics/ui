@@ -32,31 +32,3 @@ Array [
   },
 ]
 `;
-
-exports[`runGem2s action Works well with api v2 1`] = `
-Array [
-  Object {
-    "payload": Object {
-      "experimentId": "experiment-id",
-    },
-    "type": "backendStatus/backendStatusLoading",
-  },
-  Object {
-    "payload": Object {},
-    "type": "experimentSettings/startQC",
-  },
-]
-`;
-
-exports[`runGem2s action Works well with api v2 2`] = `
-Array [
-  "http://localhost:3000/v2/experiments/experiment-id/gem2s",
-  Object {
-    "body": "{}",
-    "headers": Object {
-      "Content-Type": "application/json",
-    },
-    "method": "POST",
-  },
-]
-`;
