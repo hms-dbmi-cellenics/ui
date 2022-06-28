@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import { Tree, Skeleton } from 'antd';
 
 import 'components/plots/hierarchical-tree-genes/HierarchicalTreeGenes.css';
-import { ConsoleLogger } from '@aws-amplify/core';
 
 const HierarchicalTreeGenes = (props) => {
   const {
@@ -34,6 +33,7 @@ const HierarchicalTreeGenes = (props) => {
   return (
     <Tree
       data-testid='HierachicalTreeGenes'
+      height={400}
       draggable
       treeData={treeData}
       onDrop={onDrop}

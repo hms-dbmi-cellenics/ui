@@ -5,15 +5,13 @@ import { useSelector, useDispatch } from 'react-redux';
 import { loadGeneExpression } from 'redux/actions/genes';
 import PropTypes from 'prop-types';
 
-// import ListAllGenes from 'components/plots/gene-search-bar/ListAllGenes.jsx';
-
-const filterGenes = (searchText, geneList) => {
-  // searchText is a string, geneList is an array of gene names
-  // setOptions needs an array of objects with key: value -> value: geneName
+const filterGenes = (searchText, geneList, loadedGenes) => {
   const searchTextUpper = searchText.toUpperCase();
   const filteredList = geneList.filter((gene) => gene.toUpperCase().includes(searchTextUpper));
+  const disableLoaded = filteredList.map((gene) => loadedGenes.includes(gene));
 
-  return filteredList.map((geneName) => ({ value: geneName }));
+  // options needs to be an array of objects
+  return filteredList.map((geneName, index) => ({ value: geneName, disabled: disableLoaded[index] }));
 };
 
 const GeneSearchBar = (props) => {
@@ -27,6 +25,9 @@ const GeneSearchBar = (props) => {
 
   const [options, setOptions] = useState([]);
 
+  // pass reactive component as value (search text) to allow auto clear on select
+  const [value, setValue] = useState('');
+
   const onSelect = (newGene) => {
     if (!geneList.includes(newGene) || config?.selectedGenes.includes(newGene)) {
       return;
@@ -34,14 +35,19 @@ const GeneSearchBar = (props) => {
     const genes = _.clone(config?.selectedGenes);
     genes.push(newGene);
     dispatch(loadGeneExpression(experimentId, genes, plotUuid));
+    setValue('');
   };
 
   const onSearch = (searchText) => {
-    setOptions(!searchText ? [] : filterGenes(searchText, geneList));
+    setValue(searchText);
+    setOptions(!searchText ? [] : filterGenes(searchText, geneList, config?.selectedGenes));
   };
 
   return (
     <AutoComplete
+      id='SearchBox'
+      allowClear
+      value={value}
       options={options}
       style={{ width: '100%' }}
       onSelect={onSelect}
