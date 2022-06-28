@@ -2,16 +2,17 @@ import * as AWS from '@aws-sdk/client-sts';
 import { getDefaultRoleAssumerWithWebIdentity } from '@aws-sdk/client-sts';
 import { fromTokenFile } from '@aws-sdk/credential-provider-web-identity';
 
-const getAccountId = async () => {
-  const sts = new AWS.STS({
-    region: getAWSRegion(),
-    credentials: fromTokenFile({
-      roleAssumerWithWebIdentity: getDefaultRoleAssumerWithWebIdentity(),
-    }),
-  });
-  console.log('HERE LMAO', getAWSRegion());
-
-  const accountID = await sts.getCallerIdentity({}).promise;
+const getAccountId = async (environment) => {
+  let accountID = '000000000000';
+  if (environment !== 'development') {
+    const sts = new AWS.STS({
+      region: getAWSRegion(),
+      credentials: fromTokenFile({
+        roleAssumerWithWebIdentity: getDefaultRoleAssumerWithWebIdentity(),
+      }),
+    });
+    accountID = await sts.getCallerIdentity({}).promise;
+  }
   console.log('ID IS ', accountID);
 
   return accountID;

@@ -28,6 +28,9 @@ import { loadExperiments } from 'redux/actions/experiments';
 import { loadSamples } from 'redux/actions/samples';
 
 jest.mock('config');
+jest.mock('utils/awsConfig', () => ({
+  getAccountId: () => '000000000000',
+}));
 
 jest.mock('@aws-amplify/auth', () => ({
   currentAuthenticatedUser: jest.fn(() => Promise.resolve({ attributes: { name: 'mockUserName' } })),
