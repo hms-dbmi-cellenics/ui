@@ -7,11 +7,11 @@ import {
   SAMPLES_FILE_UPDATE,
   SAMPLES_LOADED,
   SAMPLES_ERROR,
-  SAMPLES_DELETE_API_V2,
+  SAMPLES_DELETE,
   SAMPLES_SAVING,
   SAMPLES_SAVED,
   SAMPLES_METADATA_DELETE,
-  SAMPLES_VALUE_IN_METADATA_TRACK_UPDATED_API_V2,
+  SAMPLES_VALUE_IN_METADATA_TRACK_UPDATED,
 } from 'redux/actionTypes/samples';
 
 describe('samplesReducer', () => {
@@ -121,9 +121,9 @@ describe('samplesReducer', () => {
 
   it('Delete samples correctly', () => {
     const newState = samplesReducer(twoSamplesState, {
-      type: SAMPLES_DELETE_API_V2,
+      type: SAMPLES_DELETE,
       payload: {
-        sampleUuids: [sample2.uuid],
+        sampleIds: [sample2.uuid],
       },
     });
 
@@ -302,7 +302,7 @@ describe('samplesReducer', () => {
     };
 
     const newState = samplesReducer(sampleWithMetadata, {
-      type: SAMPLES_VALUE_IN_METADATA_TRACK_UPDATED_API_V2,
+      type: SAMPLES_VALUE_IN_METADATA_TRACK_UPDATED,
       payload: {
         sampleUuid: mockUuid1,
         key: metadataKey,

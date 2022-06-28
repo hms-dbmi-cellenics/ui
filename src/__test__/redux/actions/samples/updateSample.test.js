@@ -5,7 +5,6 @@ import thunk from 'redux-thunk';
 
 import updateSample from 'redux/actions/samples/updateSample';
 import initialState, { sampleTemplate } from 'redux/reducers/samples/initialState';
-import { saveSamples } from 'redux/actions/samples';
 
 import {
   SAMPLES_ERROR, SAMPLES_SAVED, SAMPLES_SAVING, SAMPLES_UPDATE,
@@ -13,8 +12,6 @@ import {
 
 import config from 'config';
 import { api } from 'utils/constants';
-
-jest.mock('redux/actions/samples/saveSamples');
 
 const mockStore = configureStore([thunk]);
 
@@ -36,8 +33,6 @@ describe('updateSample action', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-
-    saveSamples.mockImplementation(() => async () => { });
 
     enableFetchMocks();
     fetchMock.resetMocks();
@@ -67,8 +62,6 @@ describe('updateSample action', () => {
         method: 'PATCH',
       },
     );
-
-    expect(saveSamples).not.toHaveBeenCalled();
   });
 
   it('Error handling works', async () => {

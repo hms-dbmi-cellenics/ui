@@ -10,19 +10,12 @@ import initialSamplesState, { sampleTemplate } from 'redux/reducers/samples/init
 import {
   PROJECTS_METADATA_CREATE,
 } from 'redux/actionTypes/projects';
-import { saveProject } from 'redux/actions/projects';
-import { saveSamples } from 'redux/actions/samples';
+
 import '__test__/test-utils/setupTests';
 
 import { SAMPLES_UPDATE } from 'redux/actionTypes/samples';
 
 const mockStore = configureStore([thunk]);
-
-jest.mock('redux/actions/projects/saveProject');
-saveProject.mockImplementation(() => async () => { });
-
-jest.mock('redux/actions/samples/saveSamples');
-saveSamples.mockImplementation(() => async () => { });
 
 describe('createMetadataTrack action', () => {
   const project1uuid = 'project1';

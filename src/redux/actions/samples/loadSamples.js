@@ -1,7 +1,5 @@
 import fetchAPI from 'utils/http/fetchAPI';
 import handleError from 'utils/http/handleError';
-import config from 'config';
-import { api } from 'utils/constants';
 
 import {
   SAMPLES_LOADED,
@@ -66,39 +64,16 @@ const toApiV1 = (samples, experimentId) => {
   return apiV1Samples;
 };
 
-const loadSamples = (
-  experimentId = null, projectUuid = null,
-) => async (dispatch) => {
-  const { currentApiVersion } = config;
-  let url;
-
-  if (currentApiVersion === api.V1) {
-    url = experimentId ? `/${currentApiVersion}/experiments/${experimentId}/samples`
-      : `/${currentApiVersion}/projects/${projectUuid}/samples`;
-  } else if (currentApiVersion === api.V2) {
-    url = `/${currentApiVersion}/experiments/${experimentId ?? projectUuid}/samples`;
-  }
-
+const loadSamples = (experimentId) => async (dispatch) => {
   try {
     dispatch({
       type: SAMPLES_LOADING,
     });
 
+    const url = `/v2/experiments/${experimentId}/samples`;
     const data = await fetchAPI(url);
 
-    let samples;
-
-    if (currentApiVersion === api.V2) {
-      samples = toApiV1(data, experimentId ?? projectUuid);
-    } else {
-      // Querying using experimentId returns an object with a `samples` key
-      if (experimentId) samples = data;
-
-      // Querying using projectUuid returns an array with oh objects with of `samples` key
-      // Data[0] because 1 project contains only 1 experiment right now.
-      // This has to be changed when we support multiple experiments per project.
-      if (projectUuid) [{ samples }] = data;
-    }
+    const samples = toApiV1(data, experimentId);
 
     // throwIfRequestFailed(response, data, endUserMessages.ERROR_FETCHING_SAMPLES);
 
