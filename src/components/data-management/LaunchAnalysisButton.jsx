@@ -40,10 +40,8 @@ const LaunchAnalysisButton = () => {
   const samples = useSelector((state) => state.samples);
   const backendStatus = useSelector((state) => state.backendStatus);
 
-  const projects = useSelector((state) => state.projects);
-  const { activeProjectUuid } = projects.meta;
-  const activeProject = projects[activeProjectUuid];
-  const experimentId = activeProject.experiments[0];
+  const { activeExperimentId } = experiments.meta;
+  const activeExperiment = experiments[activeExperimentId];
 
   const [gem2sRerunStatus, setGem2sRerunStatus] = useState(
     { rerun: true, paramsHash: null, reasons: [] },
@@ -51,34 +49,34 @@ const LaunchAnalysisButton = () => {
 
   const launchAnalysis = () => {
     if (gem2sRerunStatus.rerun) {
-      dispatch(runGem2s(experimentId, gem2sRerunStatus.paramsHash));
+      dispatch(runGem2s(activeExperimentId, gem2sRerunStatus.paramsHash));
     }
-    navigateTo(modules.DATA_PROCESSING, { experimentId });
+    navigateTo(modules.DATA_PROCESSING, { experimentId: activeExperimentId });
   };
 
   useEffect(() => {
     // The value of backend status is null for new projects that have never run
-    const gem2sBackendStatus = backendStatus[experimentId]?.status?.gem2s;
+    const gem2sBackendStatus = backendStatus[activeExperimentId]?.status?.gem2s;
 
     if (
       !gem2sBackendStatus
-      || !experiments[experimentId]?.sampleIds?.length > 0
+      || !experiments[activeExperimentId]?.sampleIds?.length > 0
     ) return;
 
     const gem2sStatus = calculateGem2sRerunStatus(
-      gem2sBackendStatus, activeProject, samples, experiments[experimentId],
+      gem2sBackendStatus, activeExperiment, samples,
     );
     setGem2sRerunStatus(gem2sStatus);
-  }, [backendStatus, activeProjectUuid, samples, activeProject]);
+  }, [backendStatus, activeExperimentId, samples, activeExperiment]);
 
   const canLaunchAnalysis = useCallback(() => {
-    if (activeProject.samples.length === 0) return false;
+    if (activeExperiment.sampleIds.length === 0) return false;
 
     // Check that samples is loaded
-    const testSampleUuid = activeProject.samples[0];
+    const testSampleUuid = activeExperiment.sampleIds[0];
     if (samples[testSampleUuid] === undefined) return false;
 
-    const metadataKeysAvailable = activeProject.metadataKeys.length;
+    const metadataKeysAvailable = activeExperiment.metadataKeys.length;
 
     const allSampleFilesUploaded = (sample) => {
       // Check if all files for a given tech has been uploaded
@@ -111,7 +109,7 @@ const LaunchAnalysisButton = () => {
         .every((value) => value.length > 0);
     };
 
-    const canLaunch = activeProject.samples.every((sampleUuid) => {
+    const canLaunch = activeExperiment.sampleIds.every((sampleUuid) => {
       if (!samples[sampleUuid]) return false;
 
       const checkedSample = samples[sampleUuid];
@@ -119,12 +117,12 @@ const LaunchAnalysisButton = () => {
         && allSampleMetadataInserted(checkedSample);
     });
     return canLaunch;
-  }, [samples, activeProject.samples, activeProject.metadataKeys]);
+  }, [samples, activeExperiment.sampleIds, activeExperiment.metadataKeys]);
 
   const renderLaunchButton = () => {
     const buttonText = !gem2sRerunStatus.rerun ? 'Go to Data Processing' : 'Process project';
 
-    if (!backendStatus[experimentId] || backendStatus[experimentId]?.loading) {
+    if (!backendStatus[activeExperimentId] || backendStatus[activeExperimentId]?.loading) {
       return <LaunchButtonTemplate text='Loading project...' disabled loading />;
     }
 

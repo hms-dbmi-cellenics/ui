@@ -2,13 +2,13 @@ import objectHash from 'object-hash';
 
 import { DEFAULT_NA } from 'redux/reducers/projects/initialState';
 
-const generateGem2sParamsHash = (project, samples, experiment) => {
-  if (!project || !samples || !experiment) {
+const generateGem2sParamsHash = (experiment, samples) => {
+  if (!experiment || !samples) {
     return false;
   }
   const projectSamples = Object.entries(samples)
     .sort()
-    .filter(([key]) => project?.samples?.includes(key));
+    .filter(([key]) => experiment?.sampleIds?.includes(key));
   const existingSampleIds = projectSamples.map(([, sample]) => sample.uuid);
 
   // Different sample order should not change the hash.
@@ -21,8 +21,8 @@ const generateGem2sParamsHash = (project, samples, experiment) => {
     sampleNames: orderInvariantSampleIds.map((sampleId) => samples[sampleId].name),
   };
 
-  if (project.metadataKeys.length) {
-    const orderInvariantProjectMetadataKeys = [...project.metadataKeys].sort();
+  if (experiment.metadataKeys.length) {
+    const orderInvariantProjectMetadataKeys = [...experiment.metadataKeys].sort();
 
     hashParams.metadata = orderInvariantProjectMetadataKeys.reduce((acc, key) => {
       // Make sure the key does not contain '-' as it will cause failure in GEM2S
