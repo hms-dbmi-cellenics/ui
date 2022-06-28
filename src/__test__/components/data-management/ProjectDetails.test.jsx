@@ -1,14 +1,18 @@
-import React from 'react';
-import '@testing-library/jest-dom';
-import { Provider } from 'react-redux';
-import configureStore from 'redux-mock-store';
-import thunk from 'redux-thunk';
-import { screen, render, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-import { createStore, applyMiddleware } from 'redux';
 import _ from 'lodash';
-import { fireEvent } from '@testing-library/dom';
+import React from 'react';
+
+import { Provider } from 'react-redux';
 import rootReducer from 'redux/reducers/index';
+import { createStore, applyMiddleware } from 'redux';
+import thunk from 'redux-thunk';
+
+import '@testing-library/jest-dom';
+import configureStore from 'redux-mock-store';
+import { act } from 'react-dom/test-utils';
+import { fireEvent } from '@testing-library/dom';
+import userEvent from '@testing-library/user-event';
+import { screen, render, waitFor } from '@testing-library/react';
+
 import * as createMetadataTrack from 'redux/actions/projects/createMetadataTrack';
 import initialProjectState, { projectTemplate } from 'redux/reducers/projects/initialState';
 import initialSamplesState, { sampleTemplate } from 'redux/reducers/samples/initialState';
@@ -18,6 +22,7 @@ import { initialExperimentBackendStatus } from 'redux/reducers/backendStatus/ini
 import PipelineStatus from 'utils/pipelineStatusValues';
 import UploadStatus from 'utils/upload/UploadStatus';
 import ProjectDetails from 'components/data-management/ProjectDetails';
+
 import '__test__/test-utils/setupTests';
 
 const mockNavigateTo = jest.fn();
@@ -227,11 +232,14 @@ describe('ProjectDetails', () => {
 
   it('Creates a metadata column', async () => {
     const store = createStore(rootReducer, _.cloneDeep(withDataState), applyMiddleware(thunk));
-    render(
-      <Provider store={store}>
-        <ProjectDetails width={width} height={height} />
-      </Provider>,
-    );
+    await act(async () => {
+      render(
+        <Provider store={store}>
+          <ProjectDetails width={width} height={height} />
+        </Provider>,
+      );
+    });
+
     const addMetadata = screen.getByText('Add metadata');
     userEvent.click(addMetadata);
     const field = screen.getByRole('textbox');
