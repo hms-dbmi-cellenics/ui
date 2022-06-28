@@ -22,6 +22,7 @@ const experimentCreate = (state, action) => {
     [newExperiment.id]: newExperiment,
     meta: {
       ...state.meta,
+      activeExperimentId: newExperiment.id,
       saving: false,
     },
   };

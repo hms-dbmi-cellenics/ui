@@ -7,6 +7,7 @@ const experimentTemplate = {
   notifyByEmail: true,
   meta: { organism: null, type: '10x' },
   sampleIds: [],
+  metadataKeys: [],
 };
 
 const initialState = {

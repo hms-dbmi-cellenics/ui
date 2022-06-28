@@ -1,4 +1,4 @@
-import initialState from './initialState';
+import initialState from 'redux/reducers/experiments/initialState';
 import {
   EXPERIMENTS_CREATED,
   EXPERIMENTS_UPDATED,
@@ -7,19 +7,25 @@ import {
   EXPERIMENTS_ERROR,
   EXPERIMENTS_SAVING,
   EXPERIMENTS_DELETED,
-} from '../../actionTypes/experiments';
-
+} from 'redux/actionTypes/experiments';
+import {
+  PROJECTS_METADATA_CREATE, PROJECTS_METADATA_DELETE, PROJECTS_METADATA_UPDATE, PROJECTS_SET_ACTIVE,
+} from 'redux/actionTypes/projects';
 import {
   SAMPLES_CREATE, SAMPLES_DELETE,
-} from '../../actionTypes/samples';
+} from 'redux/actionTypes/samples';
 
 import experimentsCreate from './experimentsCreate';
 import experimentsUpdate from './experimentsUpdate';
 import experimentsDelete from './experimentsDelete';
+import experimentsSetActive from './experimentsSetActive';
 import experimentsLoading from './experimentsLoading';
 import experimentsLoaded from './experimentsLoaded';
 import experimentsError from './experimentsError';
 import experimentsSaving from './experimentsSaving';
+import experimentsMetadataCreate from './experimentsMetadataCreate';
+import experimentsMetadataUpdate from './experimentsMetadataUpdate';
+import experimentsMetadataDelete from './experimentsMetadataDelete';
 
 import samplesCreate from './samplesCreate';
 import samplesDelete from './samplesDelete';
@@ -36,6 +42,10 @@ const experimentsReducer = (state = initialState, action) => {
 
     case EXPERIMENTS_DELETED: {
       return experimentsDelete(state, action);
+    }
+
+    case PROJECTS_SET_ACTIVE: {
+      return experimentsSetActive(state, action);
     }
 
     case EXPERIMENTS_LOADING: {
@@ -60,6 +70,18 @@ const experimentsReducer = (state = initialState, action) => {
 
     case SAMPLES_DELETE: {
       return samplesDelete(state, action);
+    }
+
+    case PROJECTS_METADATA_CREATE: {
+      return experimentsMetadataCreate(state, action);
+    }
+
+    case PROJECTS_METADATA_UPDATE: {
+      return experimentsMetadataUpdate(state, action);
+    }
+
+    case PROJECTS_METADATA_DELETE: {
+      return experimentsMetadataDelete(state, action);
     }
 
     default: {

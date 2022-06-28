@@ -11,7 +11,7 @@ import {
 } from 'redux/actionTypes/projects';
 
 import {
-  EXPERIMENTS_DELETED,
+  EXPERIMENTS_DELETED, EXPERIMENTS_ERROR, EXPERIMENTS_SAVING,
 } from 'redux/actionTypes/experiments';
 
 import { SAMPLES_DELETE } from 'redux/actionTypes/samples';
@@ -25,6 +25,13 @@ const deleteProject = (
 
   dispatch({
     type: PROJECTS_SAVING,
+    payload: {
+      message: endUserMessages.DELETING_PROJECT,
+    },
+  });
+
+  dispatch({
+    type: EXPERIMENTS_SAVING,
     payload: {
       message: endUserMessages.DELETING_PROJECT,
     },
@@ -81,6 +88,13 @@ const deleteProject = (
       type: PROJECTS_ERROR,
       payload: {
         error: errorMessage,
+      },
+    });
+
+    dispatch({
+      type: EXPERIMENTS_ERROR,
+      payload: {
+        message: endUserMessages.DELETING_PROJECT,
       },
     });
   }
