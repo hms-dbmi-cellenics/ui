@@ -94,9 +94,6 @@ describe('deleteProject action', () => {
   });
 
   it('Dispatches event correctly for one sample', async () => {
-    // const response = new Response(JSON.stringify({}));
-    // fetchMock.mockResolvedValueOnce(response);
-
     const store = mockStore(initialStateUniSample);
     await store.dispatch(deleteProject(mockProjectUuid1));
 
