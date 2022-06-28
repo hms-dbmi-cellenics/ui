@@ -33,7 +33,6 @@ const HierarchicalTreeGenes = (props) => {
   return (
     <Tree
       data-testid='HierachicalTreeGenes'
-      height={400}
       draggable
       treeData={treeData}
       onDrop={onDrop}
