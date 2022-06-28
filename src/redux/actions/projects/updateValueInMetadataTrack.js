@@ -9,16 +9,9 @@ import handleError from 'utils/http/handleError';
 
 import endUserMessages from 'utils/endUserMessages';
 
-import config from 'config';
-import { api } from 'utils/constants';
-
 const updateValueInMetadataTrack = (
   experimentId, sampleId, metadataTrackKey, value,
 ) => async (dispatch) => {
-  if (config.currentApiVersion !== api.V2) {
-    throw new Error('This action only works with api v2');
-  }
-
   dispatch({ type: SAMPLES_SAVING, payload: { message: endUserMessages.SAVING_SAMPLE } });
 
   try {

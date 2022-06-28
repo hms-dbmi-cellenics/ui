@@ -100,7 +100,6 @@ Object {
       "createdDate": "0000-00-00T00:00:00.000Z",
       "description": "Mock experiment 0",
       "id": "testae48e318dab9a1bd0bexperiment-0",
-      "lastViewed": undefined,
       "meta": Object {
         "gem2s": Object {
           "executionArn": "arn:aws:states:eu-west-1:000000000000:execution:biomage-gem2s-development-mock997586f1bae0a6d5c5beed65663ec1519de4:5f273383-f093-4112-95b0-d76db896test",
@@ -127,7 +126,6 @@ Object {
       "createdDate": "0000-00-00T00:00:00.000Z",
       "description": "Mock experiment 1",
       "id": "testae48e318dab9a1bd0bexperiment-1",
-      "lastViewed": undefined,
       "meta": Object {
         "gem2s": Object {
           "executionArn": "arn:aws:states:eu-west-1:000000000000:execution:biomage-gem2s-development-mock997586f1bae0a6d5c5beed65663ec1519de4:5f273383-f093-4112-95b0-d76db896test",
@@ -489,7 +487,6 @@ Object {
       "createdDate": "0000-00-00T00:00:00.000Z",
       "description": "Mock experiment 0",
       "id": "testae48e318dab9a1bd0bexperiment-0",
-      "lastViewed": undefined,
       "meta": Object {
         "gem2s": Object {
           "executionArn": "arn:aws:states:eu-west-1:000000000000:execution:biomage-gem2s-development-mock997586f1bae0a6d5c5beed65663ec1519de4:5f273383-f093-4112-95b0-d76db896test",
@@ -516,7 +513,6 @@ Object {
       "createdDate": "0000-00-00T00:00:00.000Z",
       "description": "Mock experiment 1",
       "id": "testae48e318dab9a1bd0bexperiment-1",
-      "lastViewed": undefined,
       "meta": Object {
         "gem2s": Object {
           "executionArn": "arn:aws:states:eu-west-1:000000000000:execution:biomage-gem2s-development-mock997586f1bae0a6d5c5beed65663ec1519de4:5f273383-f093-4112-95b0-d76db896test",

@@ -14,8 +14,6 @@ import {
 import { EXPERIMENTS_DELETED } from 'redux/actionTypes/experiments';
 import { SAMPLES_DELETE } from 'redux/actionTypes/samples';
 
-jest.mock('config');
-
 enableFetchMocks();
 
 const mockStore = configureStore([thunk]);
@@ -104,6 +102,16 @@ describe('deleteProject action', () => {
     expect(_.map(actions, 'type')).toEqual([
       PROJECTS_SAVING, SAMPLES_DELETE, EXPERIMENTS_DELETED, PROJECTS_DELETE, PROJECTS_SAVED,
     ]);
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      `http://localhost:3000/v2/experiments/${mockProject.uuid}`,
+      {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      },
+    );
   });
 
   it('Dispatches event correctly for multiple samples', async () => {
@@ -127,23 +135,5 @@ describe('deleteProject action', () => {
       PROJECTS_SAVING, PROJECTS_SET_ACTIVE, SAMPLES_DELETE,
       EXPERIMENTS_DELETED, PROJECTS_DELETE, PROJECTS_SAVED,
     ]);
-  });
-
-  it('Dispatches fetch correctly', async () => {
-    const response = new Response(JSON.stringify({}));
-    fetchMock.mockResolvedValueOnce(response);
-
-    const store = mockStore(initialStateUniSample);
-    await store.dispatch(deleteProject(mockProjectUuid1));
-
-    expect(fetchMock).toHaveBeenCalledWith(
-      `http://localhost:3000/v2/experiments/${mockProject.uuid}`,
-      {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      },
-    );
   });
 });

@@ -10,9 +10,6 @@ import {
   SAMPLES_ERROR, SAMPLES_SAVED, SAMPLES_SAVING, SAMPLES_UPDATE,
 } from 'redux/actionTypes/samples';
 
-import config from 'config';
-import { api } from 'utils/constants';
-
 const mockStore = configureStore([thunk]);
 
 describe('updateSample action', () => {
@@ -40,7 +37,6 @@ describe('updateSample action', () => {
   });
 
   it('Works correctly', async () => {
-    config.currentApiVersion = api.V2;
     fetchMock.mockResponseOnce(() => Promise.resolve(JSON.stringify({})));
 
     const sampleDiff = {
@@ -65,8 +61,6 @@ describe('updateSample action', () => {
   });
 
   it('Error handling works', async () => {
-    config.currentApiVersion = api.V2;
-
     fetchMock.mockRejectOnce(() => Promise.reject(new Error('Api error')));
 
     const sampleDiff = {

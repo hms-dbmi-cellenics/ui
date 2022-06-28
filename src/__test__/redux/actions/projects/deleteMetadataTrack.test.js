@@ -15,11 +15,6 @@ import '__test__/test-utils/setupTests';
 import { PROJECTS_METADATA_DELETE } from 'redux/actionTypes/projects';
 import { SAMPLES_METADATA_DELETE } from 'redux/actionTypes/samples';
 
-import config from 'config';
-import { api } from 'utils/constants';
-
-jest.mock('config');
-
 const mockStore = configureStore([thunk]);
 
 const mockProjectUuid = 'project-1234';
@@ -65,9 +60,7 @@ describe('deleteMetadataTrack action', () => {
     fetchMock.doMock();
   });
 
-  it('Works correctly in api v2', async () => {
-    config.currentApiVersion = api.V2;
-
+  it('Works correctly', async () => {
     const store = mockStore(initialState);
 
     fetchMock.mockResolvedValue(new Response(JSON.stringify({})));

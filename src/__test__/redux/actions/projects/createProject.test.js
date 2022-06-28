@@ -18,11 +18,7 @@ const mockStore = configureStore([thunk]);
 
 const experimentId = 'random-experiment-uuid';
 jest.mock('redux/actions/experiments/createExperiment');
-createExperiment.mockImplementation((uuid, name) => async () => ({
-  name,
-  projectUuid: uuid,
-  id: experimentId,
-}));
+createExperiment.mockImplementation(() => async () => (experimentId));
 
 enableFetchMocks();
 
@@ -52,7 +48,7 @@ describe('createProject action', () => {
       createProject(projectName, projectDescription, experimentName),
     );
 
-    expect(createExperiment).toHaveBeenCalledWith(experimentName);
+    expect(createExperiment).toHaveBeenCalledWith(experimentName, projectDescription);
 
     // Sends correct actions
     const actions = store.getActions();
@@ -74,7 +70,7 @@ describe('createProject action', () => {
       createProject(projectName, projectDescription, experimentName),
     );
 
-    expect(createExperiment).toHaveBeenCalledWith(experimentName);
+    expect(createExperiment).toHaveBeenCalledWith(experimentName, projectDescription);
 
     // Sends correct actions
     const actions = store.getActions();

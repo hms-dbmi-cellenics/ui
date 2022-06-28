@@ -16,11 +16,6 @@ import {
 import endUserMessages from 'utils/endUserMessages';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
 
-import config from 'config';
-import { api } from 'utils/constants';
-
-jest.mock('config');
-
 pushNotificationMessage.mockImplementation(() => async () => { });
 
 enableFetchMocks();
@@ -78,7 +73,6 @@ describe('createSample action', () => {
   });
 
   it('Works correctly with one file being uploaded', async () => {
-    config.currentApiVersion = api.V2;
     fetchMock.mockResponse(JSON.stringify({}), { url: 'mockedUrl', status: 200 });
 
     const newUuid = await store.dispatch(createSample(projectUuid, sampleName, mockType, ['matrix.tsv.gz']));
@@ -102,7 +96,6 @@ describe('createSample action', () => {
   });
 
   it('Works correctly with many files being uploaded', async () => {
-    config.currentApiVersion = api.V2;
     fetchMock.mockResponse(JSON.stringify({}), { url: 'mockedUrl', status: 200 });
 
     const newUuid = await store.dispatch(createSample(projectUuid, sampleName, mockType, ['matrix.tsv.gz', 'features.tsv.gz', 'barcodes.tsv.gz']));
@@ -126,8 +119,6 @@ describe('createSample action', () => {
   });
 
   it('Throws if the api fails', async () => {
-    config.currentApiVersion = api.V2;
-
     fetchMock.mockRejectOnce(() => Promise.reject(new Error('Some error')));
 
     await expect(
@@ -143,7 +134,6 @@ describe('createSample action', () => {
   });
 
   it('Throws if technology is not identified', async () => {
-    config.currentApiVersion = api.V2;
     fetchMock.mockResponse(JSON.stringify({}), { url: 'mockedUrl', status: 200 });
 
     await expect(
