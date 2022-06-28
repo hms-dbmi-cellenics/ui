@@ -9,8 +9,6 @@ import initialState from 'redux/reducers/backendStatus/initialState';
 import loadBackendStatus from 'redux/actions/backendStatus/loadBackendStatus';
 import { BACKEND_STATUS_LOADING, BACKEND_STATUS_LOADED, BACKEND_STATUS_ERROR } from 'redux/actionTypes/backendStatus';
 
-jest.mock('config');
-
 const mockStore = configureStore([thunk]);
 
 const backendStatusResponse = {

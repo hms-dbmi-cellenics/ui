@@ -15,8 +15,6 @@ import '__test__/test-utils/setupTests';
 import { PROJECTS_METADATA_DELETE } from 'redux/actionTypes/projects';
 import { SAMPLES_METADATA_DELETE } from 'redux/actionTypes/samples';
 
-jest.mock('config');
-
 const mockStore = configureStore([thunk]);
 
 const mockProjectUuid = 'project-1234';

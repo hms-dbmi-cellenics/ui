@@ -26,8 +26,6 @@ import { loadSamples } from 'redux/actions/samples';
 
 import mockDemoExperiments from '__test__/test-utils/mockData/mockDemoExperiments.json';
 
-jest.mock('config');
-
 jest.mock('@aws-amplify/auth', () => ({
   currentAuthenticatedUser: jest.fn(() => Promise.resolve({ attributes: { name: 'mockUserName' } })),
   federatedSignIn: jest.fn(),

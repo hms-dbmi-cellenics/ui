@@ -5,7 +5,6 @@ import downloadFromUrl from 'utils/data-management/downloadFromUrl';
 
 import fake from '__test__/test-utils/constants';
 
-jest.mock('config');
 jest.mock('utils/data-management/downloadFromUrl');
 
 enableFetchMocks();

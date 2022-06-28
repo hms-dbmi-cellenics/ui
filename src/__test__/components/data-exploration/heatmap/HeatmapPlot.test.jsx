@@ -33,8 +33,6 @@ import { setCellSetHiddenStatus } from 'redux/actions/cellSets';
 import { isSubset } from 'utils/arrayUtils';
 import { updatePlotConfig } from 'redux/actions/componentConfig';
 
-jest.mock('config');
-
 const experimentId = fake.EXPERIMENT_ID;
 
 // Mock hash so we can control the ETag that is produced by hash.MD5 when fetching work requests

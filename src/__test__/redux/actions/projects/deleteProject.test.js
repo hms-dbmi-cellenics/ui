@@ -14,8 +14,6 @@ import {
 import { EXPERIMENTS_DELETED } from 'redux/actionTypes/experiments';
 import { SAMPLES_DELETE } from 'redux/actionTypes/samples';
 
-jest.mock('config');
-
 enableFetchMocks();
 
 const mockStore = configureStore([thunk]);

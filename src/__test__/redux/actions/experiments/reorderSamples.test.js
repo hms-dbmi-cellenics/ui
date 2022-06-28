@@ -14,8 +14,6 @@ import initialExperimentState, { experimentTemplate } from 'redux/reducers/exper
 
 import '__test__/test-utils/setupTests';
 
-jest.mock('config');
-
 const mockStore = configureStore([thunk]);
 
 enableFetchMocks();

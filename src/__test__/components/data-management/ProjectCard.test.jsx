@@ -14,8 +14,6 @@ import thunk from 'redux-thunk';
 import initialState, { projectTemplate } from 'redux/reducers/projects/initialState';
 import ProjectCard from 'components/data-management/ProjectCard';
 
-jest.mock('config');
-
 const projectUuid = '12345';
 const projectName = 'Test Project';
 const experimentId = 'experimentId1';
