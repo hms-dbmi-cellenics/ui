@@ -7,7 +7,7 @@ import { PROJECTS_SET_ACTIVE } from 'redux/actionTypes/projects';
 
 const mockStore = configureStore([thunk]);
 
-describe('setActiveProject action', () => {
+describe('setActiveExperiment action', () => {
   const activeProject = {
     ...projectTemplate,
     name: 'project 1',

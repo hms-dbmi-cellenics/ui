@@ -9,7 +9,7 @@ import initialSampleState, { sampleTemplate } from 'redux/reducers/samples/initi
 import initialProjectState, { projectTemplate } from 'redux/reducers/projects/initialState';
 
 import {
-  PROJECTS_DELETE, PROJECTS_SAVED, PROJECTS_SAVING, PROJECTS_SET_ACTIVE,
+  PROJECTS_SAVED, PROJECTS_SAVING, PROJECTS_SET_ACTIVE,
 } from 'redux/actionTypes/projects';
 import { EXPERIMENTS_DELETED } from 'redux/actionTypes/experiments';
 import { SAMPLES_DELETE } from 'redux/actionTypes/samples';
@@ -103,7 +103,7 @@ describe('deleteProject action', () => {
     // Sets up loading state for saving project
     const actions = store.getActions();
     expect(_.map(actions, 'type')).toEqual([
-      PROJECTS_SAVING, SAMPLES_DELETE, EXPERIMENTS_DELETED, PROJECTS_DELETE, PROJECTS_SAVED,
+      PROJECTS_SAVING, SAMPLES_DELETE, EXPERIMENTS_DELETED, PROJECTS_SAVED,
     ]);
 
     expect(fetchMock).toHaveBeenCalledWith(
@@ -124,7 +124,7 @@ describe('deleteProject action', () => {
     // Sets up loading state for saving project
     const actions = store.getActions();
     expect(_.map(actions, 'type')).toEqual([
-      PROJECTS_SAVING, SAMPLES_DELETE, EXPERIMENTS_DELETED, PROJECTS_DELETE, PROJECTS_SAVED,
+      PROJECTS_SAVING, SAMPLES_DELETE, EXPERIMENTS_DELETED, PROJECTS_SAVED,
     ]);
   });
 
@@ -136,7 +136,7 @@ describe('deleteProject action', () => {
     const actions = store.getActions();
     expect(_.map(actions, 'type')).toEqual([
       PROJECTS_SAVING, PROJECTS_SET_ACTIVE, SAMPLES_DELETE,
-      EXPERIMENTS_DELETED, PROJECTS_DELETE, PROJECTS_SAVED,
+      EXPERIMENTS_DELETED, PROJECTS_SAVED,
     ]);
   });
 });

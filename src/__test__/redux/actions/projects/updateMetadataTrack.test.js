@@ -5,7 +5,7 @@ import thunk from 'redux-thunk';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 
 import { metadataNameToKey } from 'utils/data-management/metadataUtils';
-import updateMetadataTrack from 'redux/actions/projects/updateMetadataTrack';
+import updateMetadataTrack from 'redux/actions/experiments/updateMetadataTrack';
 import initialProjectState from 'redux/reducers/projects';
 import initialSampleState from 'redux/reducers/samples';
 

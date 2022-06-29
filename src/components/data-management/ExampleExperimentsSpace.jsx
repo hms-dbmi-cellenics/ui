@@ -5,8 +5,7 @@ import {
   Typography, Space, Button, Empty,
 } from 'antd';
 
-import { loadExperiments } from 'redux/actions/experiments';
-import { setActiveProject } from 'redux/actions/projects';
+import { setActiveExperiment, loadExperiments } from 'redux/actions/experiments';
 import fetchAPI from 'utils/http/fetchAPI';
 
 const { Paragraph, Text } = Typography;
@@ -38,7 +37,7 @@ const ExampleExperimentsSpace = ({ introductionText, imageStyle }) => {
     );
 
     await dispatch(loadExperiments());
-    await dispatch(setActiveProject(newExperimentId));
+    await dispatch(setActiveExperiment(newExperimentId));
   };
 
   return (

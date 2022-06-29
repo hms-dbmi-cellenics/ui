@@ -6,7 +6,7 @@ import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 
 import { metadataNameToKey } from 'utils/data-management/metadataUtils';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
-import deleteMetadataTrack from 'redux/actions/projects/deleteMetadataTrack';
+import deleteMetadataTrack from 'redux/actions/experiments/deleteMetadataTrack';
 import initialProjectState from 'redux/reducers/projects';
 import initialSampleState from 'redux/reducers/samples';
 

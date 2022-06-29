@@ -18,9 +18,7 @@ import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import createTestComponentFactory from '__test__/test-utils/testComponentFactory';
 
-import { loadExperiments, loadExperiment } from 'redux/actions/experiments';
-import { setActiveProject } from 'redux/actions/projects';
-
+import { loadExperiments, loadExperiment, setActiveExperiment } from 'redux/actions/experiments';
 import loadEnvironment from 'redux/actions/networkResources/loadEnvironment';
 import { loadSamples } from 'redux/actions/samples';
 
@@ -106,7 +104,7 @@ describe('Samples table', () => {
     await storeState.dispatch(loadSamples(experimentWithSamplesId));
 
     // Defaults to project with samples
-    await storeState.dispatch(setActiveProject(experimentWithSamplesId));
+    await storeState.dispatch(setActiveExperiment(experimentWithSamplesId));
     await storeState.dispatch(loadEnvironment('test'));
   });
 
@@ -240,7 +238,7 @@ describe('Samples table', () => {
 
       // Load project without samples
       await act(async () => {
-        await storeState.dispatch(setActiveProject(experimentWithoutSamplesId));
+        await storeState.dispatch(setActiveExperiment(experimentWithoutSamplesId));
       });
     });
 

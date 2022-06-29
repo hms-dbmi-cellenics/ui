@@ -1,11 +1,6 @@
 const PROJECTS = 'projects';
 
 /**
- * Create project.
- */
-const PROJECTS_CREATE = `${PROJECTS}/create`;
-
-/**
  * Update project.
  */
 const PROJECTS_UPDATE = `${PROJECTS}/update`;
@@ -14,11 +9,6 @@ const PROJECTS_UPDATE = `${PROJECTS}/update`;
  * Set active project.
  */
 const PROJECTS_SET_ACTIVE = `${PROJECTS}/setActive`;
-
-/**
- * Delete project.
- */
-const PROJECTS_DELETE = `${PROJECTS}/deleted`;
 
 /**
  * Saving project.
@@ -57,10 +47,8 @@ const PROJECTS_LOADED = `${PROJECTS}/loaded`;
 
 const PROJECTS_LOADING = `${PROJECTS}/loading`;
 export {
-  PROJECTS_CREATE,
   PROJECTS_UPDATE,
   PROJECTS_SET_ACTIVE,
-  PROJECTS_DELETE,
   PROJECTS_ERROR,
   PROJECTS_SAVED,
   PROJECTS_SAVING,

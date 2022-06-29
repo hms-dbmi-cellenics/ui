@@ -5,8 +5,8 @@ import {
 } from 'antd';
 import { blue } from '@ant-design/colors';
 import { useSelector, useDispatch } from 'react-redux';
-import { setActiveProject, updateProject } from 'redux/actions/projects';
-import { updateExperiment } from 'redux/actions/experiments';
+
+import { updateExperiment, setActiveExperiment } from 'redux/actions/experiments';
 import validateInputs, { rules } from 'utils/validateInputs';
 import integrationTestConstants from 'utils/integrationTestConstants';
 import EditableField from 'components/EditableField';
@@ -80,7 +80,7 @@ const ProjectCard = (props) => {
         type='primary'
         style={experimentCardStyle}
         onClick={() => {
-          dispatch(setActiveProject(experiment.id));
+          dispatch(setActiveExperiment(experiment.id));
         }}
       >
         <Descriptions

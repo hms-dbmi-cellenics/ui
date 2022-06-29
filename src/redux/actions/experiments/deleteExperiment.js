@@ -3,7 +3,6 @@ import handleError from 'utils/http/handleError';
 import endUserMessages from 'utils/endUserMessages';
 
 import {
-  PROJECTS_DELETE,
   PROJECTS_SET_ACTIVE,
   PROJECTS_ERROR,
   PROJECTS_SAVING,
@@ -71,11 +70,6 @@ const deleteExperiment = (
       payload: {
         experimentIds: [experimentId],
       },
-    });
-
-    dispatch({
-      type: PROJECTS_DELETE,
-      payload: { projectUuid: experimentId },
     });
 
     dispatch({

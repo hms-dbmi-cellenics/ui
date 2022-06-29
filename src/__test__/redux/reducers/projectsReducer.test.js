@@ -2,10 +2,8 @@ import projectsReducer from 'redux/reducers/projects';
 import initialState, { projectTemplate } from 'redux/reducers/projects/initialState';
 
 import {
-  PROJECTS_CREATE,
   PROJECTS_UPDATE,
   PROJECTS_SET_ACTIVE,
-  PROJECTS_DELETE,
   PROJECTS_SAVING,
   PROJECTS_SAVED,
   PROJECTS_ERROR,
@@ -68,35 +66,6 @@ describe('projectsReducer', () => {
     }),
   ).toEqual(initialState));
 
-  it('Inserts a new project correctly', () => {
-    const newState = projectsReducer(initialState, {
-      type: PROJECTS_CREATE,
-      payload: {
-        project: project1,
-      },
-    });
-
-    expect(newState.ids).toEqual([project1.uuid]);
-    expect(newState.meta.activeProjectUuid).toEqual(project1.uuid);
-    expect(newState[project1.uuid]).toEqual(project1);
-    expect(newState).toMatchSnapshot();
-  });
-
-  it('Adds a new project correctly', () => {
-    const newState = projectsReducer(oneProjectState, {
-      type: PROJECTS_CREATE,
-      payload: {
-        project: project2,
-      },
-    });
-
-    expect(newState.ids).toEqual([project1.uuid, project2.uuid]);
-    expect(newState.meta.activeProjectUuid).toEqual(project2.uuid);
-    expect(newState[project1.uuid]).toEqual(project1);
-    expect(newState[project2.uuid]).toEqual(project2);
-    expect(newState).toMatchSnapshot();
-  });
-
   it('Loads projects correctly', () => {
     const newState = projectsReducer(initialState, {
       type: PROJECTS_LOADED,
@@ -137,17 +106,6 @@ describe('projectsReducer', () => {
 
     expect(newState.ids).toEqual(twoProjectsState.ids);
     expect(newState.meta.activeProjectUuid).toEqual(project2.uuid);
-    expect(newState).toMatchSnapshot();
-  });
-
-  it('Deletes projects correctly', () => {
-    const newState = projectsReducer(twoProjectsState, {
-      type: PROJECTS_DELETE,
-      payload: { projectUuid: projectUuid2 },
-    });
-
-    expect(newState.ids).toEqual([project1.uuid]);
-    expect(newState[project2.uuid]).toBeUndefined();
     expect(newState).toMatchSnapshot();
   });
 

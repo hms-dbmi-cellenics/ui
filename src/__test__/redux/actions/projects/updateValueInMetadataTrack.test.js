@@ -4,7 +4,7 @@ import thunk from 'redux-thunk';
 
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 
-import { updateValueInMetadataTrack } from 'redux/actions/projects';
+import { updateValueInMetadataTrack } from 'redux/actions/experiments';
 
 import '__test__/test-utils/setupTests';
 

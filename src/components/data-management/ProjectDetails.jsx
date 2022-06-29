@@ -7,7 +7,6 @@ import {
   Space, Typography, Button,
 } from 'antd';
 
-import { updateProject } from 'redux/actions/projects';
 import { updateExperiment } from 'redux/actions/experiments';
 
 import { layout } from 'utils/constants';

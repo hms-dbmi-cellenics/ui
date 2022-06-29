@@ -1,8 +1,8 @@
 import {
   PROJECTS_SET_ACTIVE,
-} from '../../actionTypes/projects';
+} from 'redux/actionTypes/projects';
 
-const setActiveProject = (
+const setActiveExperiment = (
   experimentId,
 ) => async (dispatch, getState) => {
   const {
@@ -17,4 +17,4 @@ const setActiveProject = (
   });
 };
 
-export default setActiveProject;
+export default setActiveExperiment;

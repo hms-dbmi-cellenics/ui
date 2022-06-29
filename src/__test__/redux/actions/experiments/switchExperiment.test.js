@@ -2,8 +2,9 @@ import _ from 'lodash';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 
 import { makeStore } from 'redux/store';
-import { setActiveProject } from 'redux/actions/projects';
-import { loadExperiments, loadExperiment, switchExperiment } from 'redux/actions/experiments';
+import {
+  loadExperiments, loadExperiment, setActiveExperiment, switchExperiment,
+} from 'redux/actions/experiments';
 import { loadSamples } from 'redux/actions/samples';
 
 import { responseData } from '__test__/test-utils/mockData';
@@ -41,7 +42,7 @@ describe('switch experiment ', () => {
     await store.dispatch(loadExperiment(experimentWithSamplesId));
     await store.dispatch(loadSamples(experimentWithSamplesId));
     await store.dispatch(loadExperiment(experimentWithoutSamplesId));
-    await store.dispatch(setActiveProject(experimentWithoutSamplesId));
+    await store.dispatch(setActiveExperiment(experimentWithoutSamplesId));
   });
 
   it('switches the experiment to its initial values', async () => {
