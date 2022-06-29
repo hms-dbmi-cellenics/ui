@@ -96,11 +96,11 @@ const SamplesTable = forwardRef((props, ref) => {
   ];
 
   const [tableColumns, setTableColumns] = useState(initialTableColumns);
+  getAccountId(environment);
 
   useEffect(() => {
     if (activeProject.samples.length > 0) {
       // if there are samples - build the table columns
-      getAccountId(environment);
       setSampleNames(new Set(activeProject.samples.map((id) => samples[id]?.name.trim())));
       const metadataColumns = activeProject.metadataKeys.map(
         (metadataKey) => createInitializedMetadataColumn(metadataKeyToName(metadataKey)),
