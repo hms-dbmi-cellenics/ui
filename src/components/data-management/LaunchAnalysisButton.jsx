@@ -55,7 +55,7 @@ const LaunchAnalysisButton = () => {
   };
 
   useEffect(() => {
-    // The value of backend status is null for new projects that have never run
+    // The value of backend status is null for new experiments that have never run
     const gem2sBackendStatus = backendStatus[activeExperimentId]?.status?.gem2s;
 
     if (
