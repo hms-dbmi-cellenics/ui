@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-
+import { useDispatch, useSelector } from 'react-redux';
 import {
   Typography, Space, Button, Empty,
 } from 'antd';
+
+import { loadExperiments } from 'redux/actions/experiments';
+import { setActiveProject } from 'redux/actions/projects';
 import fetchAPI from 'utils/http/fetchAPI';
-import { loadProjects, setActiveProject } from 'redux/actions/projects';
-import { useDispatch, useSelector } from 'react-redux';
 
 const { Paragraph, Text } = Typography;
 
@@ -36,7 +37,7 @@ const ExampleExperimentsSpace = ({ introductionText, imageStyle }) => {
       },
     );
 
-    await dispatch(loadProjects());
+    await dispatch(loadExperiments());
     await dispatch(setActiveProject(newExperimentId));
   };
 

@@ -17,7 +17,8 @@ import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import createTestComponentFactory from '__test__/test-utils/testComponentFactory';
 import mockAPI, { generateDefaultMockAPIResponses } from '__test__/test-utils/mockAPI';
 
-import { loadProjects, setActiveProject } from 'redux/actions/projects';
+import { loadExperiments } from 'redux/actions/experiments';
+import { setActiveProject } from 'redux/actions/projects';
 import { experiments } from '__test__/test-utils/mockData';
 import ProjectMenu from 'components/data-management/ProjectMenu';
 
@@ -81,7 +82,7 @@ describe('ProjectMenu', () => {
 
     storeState = makeStore();
 
-    await storeState.dispatch(loadProjects());
+    await storeState.dispatch(loadExperiments());
     await storeState.dispatch(setActiveProject(experimentWithoutSamplesId));
   });
 

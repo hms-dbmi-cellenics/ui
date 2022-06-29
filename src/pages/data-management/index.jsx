@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Space } from 'antd';
 
 import { ClipLoader } from 'react-spinners';
-import { loadProjects } from 'redux/actions/projects';
+import { loadExperiments } from 'redux/actions/experiments';
 
 import Header from 'components/Header';
 import MultiTileContainer from 'components/MultiTileContainer';
@@ -31,7 +31,7 @@ const DataManagementPage = () => {
   const [newProjectModalVisible, setNewProjectModalVisible] = useState(false);
 
   useEffect(() => {
-    if (experiments.ids.length === 0) dispatch(loadProjects());
+    if (experiments.ids.length === 0) dispatch(loadExperiments());
   }, []);
 
   const sampleAreLoaded = () => !activeExperiment.sampleIds.length

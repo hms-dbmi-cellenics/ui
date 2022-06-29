@@ -8,8 +8,8 @@ import { act } from 'react-dom/test-utils';
 import { Provider } from 'react-redux';
 import userEvent from '@testing-library/user-event';
 import * as updateExperiment from 'redux/actions/experiments/updateExperiment';
-import * as loadProjects from 'redux/actions/projects/loadProjects';
 import * as loadExperiments from 'redux/actions/experiments/loadExperiments';
+import * as loadExperiment from 'redux/actions/experiments/loadExperiment';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import mockAPI, {
   generateDefaultMockAPIResponses,
@@ -23,14 +23,14 @@ const experimentId = fake.EXPERIMENT_ID;
 
 describe('Notify by email component', () => {
   let updateExperimentSpy;
-  let loadProjectsSpy;
   let loadExperimentsSpy;
+  let loadExperimentSpy;
 
   beforeEach(() => {
     jest.clearAllMocks();
     updateExperimentSpy = jest.spyOn(updateExperiment, 'default');
-    loadProjectsSpy = jest.spyOn(loadProjects, 'default');
     loadExperimentsSpy = jest.spyOn(loadExperiments, 'default');
+    loadExperimentSpy = jest.spyOn(loadExperiment, 'default');
     enableFetchMocks();
     fetchMock.resetMocks();
     fetchMock.doMock();
@@ -48,7 +48,7 @@ describe('Notify by email component', () => {
   it('loads experiments if  there is an activeProjectUuid', async () => {
     fetchMock.mockIf(/.*/, mockAPI(generateDefaultMockAPIResponses(experimentId, fake.PROJECT_ID)));
     await renderNotifyByEmail();
-    expect(loadExperimentsSpy).toHaveBeenCalledTimes(1);
+    expect(loadExperimentSpy).toHaveBeenCalledTimes(1);
   });
 
   it('Renders Correctly', async () => {
@@ -69,6 +69,6 @@ describe('Notify by email component', () => {
 
   it('loads projects if non-existent', async () => {
     await renderNotifyByEmail();
-    expect(loadProjectsSpy).toHaveBeenCalledTimes(1);
+    expect(loadExperimentsSpy).toHaveBeenCalledTimes(1);
   });
 });

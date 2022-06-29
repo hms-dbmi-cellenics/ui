@@ -17,8 +17,8 @@ import AppRouteProvider, { useAppRouter, PATHS } from 'utils/AppRouteProvider';
 import DataProcessingIntercept from 'components/data-processing/DataProcessingIntercept';
 
 import addChangedQCFilter from 'redux/actions/experimentSettings/processingConfig/addChangedQCFilter';
-import { loadProjects, updateProject } from 'redux/actions/projects';
-import { switchExperiment, updateExperiment } from 'redux/actions/experiments';
+import { updateProject } from 'redux/actions/projects';
+import { loadExperiments, switchExperiment, updateExperiment } from 'redux/actions/experiments';
 
 jest.mock('next/router', () => ({
   __esModule: true,
@@ -112,7 +112,7 @@ describe('AppRouteProvider', () => {
   });
 
   it('Switch experiment when navigating from DataManagement', async () => {
-    await storeState.dispatch(loadProjects());
+    await storeState.dispatch(loadExperiments());
 
     render(
       <Provider store={storeState}>

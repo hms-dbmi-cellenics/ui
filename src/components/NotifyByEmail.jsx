@@ -1,9 +1,8 @@
 import React, { useEffect } from 'react';
 import { Switch, Typography, Space } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
-import { updateExperiment, loadExperiments } from 'redux/actions/experiments';
+import { updateExperiment, loadExperiment, loadExperiments } from 'redux/actions/experiments';
 import PropTypes from 'prop-types';
-import { loadProjects } from 'redux/actions/projects';
 
 const { Text } = Typography;
 const NotifyByEmail = (props) => {
@@ -17,13 +16,13 @@ const NotifyByEmail = (props) => {
 
   useEffect(() => {
     if (!activeExperimentId) {
-      dispatch(loadProjects());
+      dispatch(loadExperiments());
     }
   }, []);
 
   useEffect(() => {
     if (!experiment && activeExperimentId) {
-      dispatch(loadExperiments(activeExperimentId));
+      dispatch(loadExperiment(activeExperimentId));
     }
   }, [activeExperimentId]);
 
