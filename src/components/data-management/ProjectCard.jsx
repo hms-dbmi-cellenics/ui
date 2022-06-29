@@ -57,7 +57,6 @@ const ProjectCard = (props) => {
   };
 
   const updateExperimentName = (newName) => {
-    dispatch(updateProject(experiment.id, { name: newName.trim() }));
     dispatch(updateExperiment(experiment.id, { name: newName.trim() }));
   };
 

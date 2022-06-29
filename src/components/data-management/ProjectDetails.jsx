@@ -69,7 +69,6 @@ const ProjectDetails = ({ width, height }) => {
             value={activeExperiment.description}
             onUpdate={(text) => {
               if (text !== activeExperiment.description) {
-                dispatch(updateProject(activeExperimentId, { description: text }));
                 dispatch(updateExperiment(activeExperimentId, { description: text }));
               }
             }}

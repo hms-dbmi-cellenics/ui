@@ -45,7 +45,7 @@ const createMetadataTrack = (
       },
     });
 
-    await Promise.all(experiment.samples.map((sampleUuid) => dispatch({
+    await Promise.all(experiment.sampleIds.map((sampleUuid) => dispatch({
       type: SAMPLES_UPDATE,
       payload: {
         sampleUuid,
@@ -58,8 +58,6 @@ const createMetadataTrack = (
         },
       },
     })));
-
-    // Get updated samples in an object
   } catch (e) {
     handleError(e, endUserMessages.ERROR_SAVING);
   }

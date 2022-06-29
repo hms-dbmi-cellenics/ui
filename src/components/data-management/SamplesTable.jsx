@@ -18,7 +18,6 @@ import MetadataColumnTitle from 'components/data-management/MetadataColumn';
 import { UploadCell, SampleNameCell, EditableFieldCell } from 'components/data-management/SamplesTableCells';
 
 import {
-  updateProject,
   deleteMetadataTrack,
   createMetadataTrack,
   updateValueInMetadataTrack,
@@ -257,8 +256,6 @@ const SamplesTable = forwardRef((props, ref) => {
     if (oldIndex !== newIndex) {
       const newData = arrayMoveImmutable(tableData, oldIndex, newIndex).filter((el) => !!el);
       const newSampleOrder = newData.map((sample) => sample.uuid);
-
-      dispatch(updateProject(activeExperimentId, { samples: newSampleOrder }));
 
       try {
         await dispatch(reorderSamples(activeExperimentId, oldIndex, newIndex, newSampleOrder));
