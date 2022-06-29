@@ -1,10 +1,25 @@
+import { experimentTemplate } from 'redux/reducers/experiments/initialState';
+
 const experimentCreate = (state, action) => {
-  const { experiment } = action.payload;
+  const {
+    experiment: {
+      id, name, description, createdDate,
+    },
+  } = action.payload;
+
+  const newExperiment = {
+    ...experimentTemplate,
+    id,
+    name,
+    description,
+    projectUuid: id,
+    createdDate,
+  };
 
   return {
     ...state,
-    ids: [...state.ids, experiment.id],
-    [experiment.id]: experiment,
+    ids: [...state.ids, newExperiment.id],
+    [newExperiment.id]: newExperiment,
     meta: {
       ...state.meta,
       saving: false,

@@ -14,9 +14,6 @@ import PrettyTime from 'components/PrettyTime';
 
 import ProjectDeleteModal from 'components/data-management/ProjectDeleteModal';
 
-import config from 'config';
-import { api } from 'utils/constants';
-
 const { Item } = Descriptions;
 
 const validationChecks = [
@@ -48,7 +45,8 @@ const ProjectCard = (props) => {
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
 
   const { activeProjectUuid } = projects.meta;
-  const projectCardStyle = activeProjectUuid === projectUuid ? activeProjectStyle : inactiveProjectStyle;
+  const projectCardStyle = activeProjectUuid === projectUuid
+    ? activeProjectStyle : inactiveProjectStyle;
 
   const project = projects[projectUuid];
   const projectExperiment = project.experiments[0];
@@ -61,13 +59,7 @@ const ProjectCard = (props) => {
 
   const updateProjectName = (newName) => {
     dispatch(updateProject(project.uuid, { name: newName.trim() }));
-
-    if (
-      (config.currentApiVersion === api.V1 && projects.meta.error === false)
-      || config.currentApiVersion === api.V2
-    ) {
-      dispatch(updateExperiment(projectExperiment, { name: newName.trim() }));
-    }
+    dispatch(updateExperiment(projectExperiment, { name: newName.trim() }));
   };
 
   const deleteProject = () => {
