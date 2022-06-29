@@ -9,8 +9,7 @@ import {
   DescribeUserPoolClientCommand,
   DescribeUserPoolCommand,
 } from '@aws-sdk/client-cognito-identity-provider';
-import * as AWS from '@aws-sdk/client-sts';
-import { getDefaultRoleAssumerWithWebIdentity, GetCallerIdentityCommand, STSClient } from '@aws-sdk/client-sts';
+import { getDefaultRoleAssumerWithWebIdentity } from '@aws-sdk/client-sts';
 import { fromTokenFile } from '@aws-sdk/credential-provider-web-identity';
 import { getAWSRegion } from 'utils/awsConfig';
 import configure from '../amplify-config';
@@ -21,7 +20,6 @@ const getAuthenticationInfo = async () => {
   // if (global.cachedAuthenticationInfo) {
   //   return global.cachedAuthenticationInfo;
   // }
-  console.log('HELLO!!! ');
   let additionalClientParams = {};
 
   if (process.env.NODE_ENV !== 'development') {
@@ -32,22 +30,7 @@ const getAuthenticationInfo = async () => {
       }),
     };
   }
-  // const stsClient = new STSClient({
-  //   region: getAWSRegion(),
-  //   credentials: fromTokenFile({
-  //     roleAssumerWithWebIdentity: getDefaultRoleAssumerWithWebIdentity(),
-  //   }),
-  // });
-  // const result2 = await stsClient.send(new GetCallerIdentityCommand({}));
 
-  const sts = new AWS.STS({
-    region: getAWSRegion(),
-    credentials: fromTokenFile({
-      roleAssumerWithWebIdentity: getDefaultRoleAssumerWithWebIdentity(),
-    }),
-  });
-  const accountID = await sts.getCallerIdentity({}).promise;
-  console.log('******** AccountId', accountID);
   const identityPoolClient = new CognitoIdentityClient(
     {
       region: getAWSRegion(),
