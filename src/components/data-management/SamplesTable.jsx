@@ -47,7 +47,7 @@ const SamplesTable = forwardRef((props, ref) => {
   const projects = useSelector((state) => state.projects);
   const samples = useSelector((state) => state.samples);
   const areSamplesLoading = useSelector((state) => state.samples.meta.loading);
-
+  const environment = useSelector((state) => state.networkResources.environment);
   const { activeProjectUuid } = useSelector((state) => state.projects.meta) || false;
   const activeProject = useSelector((state) => state.projects[activeProjectUuid]) || false;
 
@@ -100,7 +100,7 @@ const SamplesTable = forwardRef((props, ref) => {
   useEffect(() => {
     if (activeProject.samples.length > 0) {
       // if there are samples - build the table columns
-      getAccountId();
+      getAccountId(environment);
       setSampleNames(new Set(activeProject.samples.map((id) => samples[id]?.name.trim())));
       const metadataColumns = activeProject.metadataKeys.map(
         (metadataKey) => createInitializedMetadataColumn(metadataKeyToName(metadataKey)),
