@@ -17,11 +17,11 @@ import {
 import { SAMPLES_DELETE } from 'redux/actionTypes/samples';
 
 const deleteProject = (
-  projectUuid,
+  experimentId,
 ) => async (dispatch, getState) => {
   // Delete samples
-  const { projects } = getState();
-  const { activeProjectUuid } = projects.meta;
+  const { experiments } = getState();
+  const { activeExperimentId } = experiments.meta;
 
   dispatch({
     type: PROJECTS_SAVING,
@@ -39,7 +39,7 @@ const deleteProject = (
 
   try {
     await fetchAPI(
-      `/v2/experiments/${projectUuid}`,
+      `/v2/experiments/${experimentId}`,
       {
         method: 'DELETE',
         headers: {
@@ -49,8 +49,8 @@ const deleteProject = (
     );
 
     // If deleted project is the same as the active project, choose another project
-    if (projectUuid === activeProjectUuid) {
-      const leftoverProjectIds = projects.ids.filter((uuid) => uuid !== activeProjectUuid);
+    if (experimentId === activeExperimentId) {
+      const leftoverProjectIds = experiments.ids.filter((uuid) => uuid !== activeExperimentId);
 
       dispatch({
         type: PROJECTS_SET_ACTIVE,
@@ -61,21 +61,21 @@ const deleteProject = (
     dispatch({
       type: SAMPLES_DELETE,
       payload: {
-        experimentId: projectUuid,
-        sampleIds: projects[projectUuid].samples,
+        experimentId,
+        sampleIds: experiments[experimentId].sampleIds,
       },
     });
 
     dispatch({
       type: EXPERIMENTS_DELETED,
       payload: {
-        experimentIds: projects[projectUuid].experiments,
+        experimentIds: [experimentId],
       },
     });
 
     dispatch({
       type: PROJECTS_DELETE,
-      payload: { projectUuid },
+      payload: { projectUuid: experimentId },
     });
 
     dispatch({
