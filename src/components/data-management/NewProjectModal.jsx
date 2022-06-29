@@ -14,6 +14,7 @@ import PropTypes from 'prop-types';
 import validateInputs, { rules } from 'utils/validateInputs';
 import { createProject } from 'redux/actions/projects';
 import integrationTestConstants from 'utils/integrationTestConstants';
+import { createExperiment } from 'redux/actions/experiments';
 
 const { Text, Title, Paragraph } = Typography;
 const { TextArea } = Input;
@@ -60,7 +61,7 @@ const NewProjectModal = (props) => {
   const submit = () => {
     setProjectName('');
 
-    dispatch(createProject(projectName, projectDescription, projectName));
+    dispatch(createExperiment(projectName, projectDescription));
     onCreate(projectName, projectDescription);
   };
 

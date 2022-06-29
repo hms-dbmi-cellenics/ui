@@ -55,8 +55,6 @@ const createExperiment = (
         error: errorMessage,
       },
     });
-
-    throw e;
   }
 
   return Promise.resolve(experimentId);

@@ -1,24 +1,24 @@
 import moment from 'moment';
 import _ from 'lodash';
 
+import {
+  PROJECTS_UPDATE,
+} from 'redux/actionTypes/projects';
+
 import endUserMessages from 'utils/endUserMessages';
 import mergeObjectReplacingArrays from 'utils/mergeObjectReplacingArrays';
 import handleError from 'utils/http/handleError';
 
-import {
-  PROJECTS_UPDATE,
-} from '../../actionTypes/projects';
-
 const updateProject = (
-  projectUuid,
+  experimentId,
   diff,
 ) => async (dispatch, getState) => {
-  const currentProject = _.cloneDeep(getState().projects[projectUuid]);
+  const currentExperiment = _.cloneDeep(getState().experiments[experimentId]);
 
   // eslint-disable-next-line no-param-reassign
   diff.lastModified = moment().toISOString();
 
-  const newProject = mergeObjectReplacingArrays(currentProject, diff);
+  const newProject = mergeObjectReplacingArrays(currentExperiment, diff);
 
   try {
     // With api.V2 dont do any fetch
@@ -27,7 +27,7 @@ const updateProject = (
     dispatch({
       type: PROJECTS_UPDATE,
       payload: {
-        projectUuid,
+        projectUuid: experimentId,
         project: newProject,
       },
     });

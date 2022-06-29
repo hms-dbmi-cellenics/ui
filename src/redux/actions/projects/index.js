@@ -1,4 +1,3 @@
-import createProject from './createProject';
 import updateProject from './updateProject';
 import deleteProject from './deleteProject';
 import setActiveProject from './setActiveProject';
@@ -8,7 +7,6 @@ import deleteMetadataTrack from './deleteMetadataTrack';
 import updateValueInMetadataTrack from './updateValueInMetadataTrack';
 
 export {
-  createProject,
   updateProject,
   deleteProject,
   setActiveProject,

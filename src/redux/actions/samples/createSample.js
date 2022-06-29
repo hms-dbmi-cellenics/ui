@@ -17,15 +17,15 @@ import { sampleTemplate } from 'redux/reducers/samples/initialState';
 import UploadStatus from 'utils/upload/UploadStatus';
 
 const createSample = (
-  projectUuid,
+  experimentId,
   name,
   type,
   filesToUpload,
 ) => async (dispatch, getState) => {
-  const project = getState().projects[projectUuid];
-  const createdDate = moment().toISOString();
-  const experimentId = project.experiments[0];
+  const experiment = getState().experiments[experimentId];
+
   const newSampleUuid = uuidv4();
+  const createdDate = moment().toISOString();
 
   dispatch({
     type: SAMPLES_SAVING,
@@ -38,13 +38,15 @@ const createSample = (
     ..._.cloneDeep(sampleTemplate),
     name,
     type,
-    projectUuid,
+    experimentId,
     uuid: newSampleUuid,
     createdDate,
     lastModified: createdDate,
-    metadata: project?.metadataKeys
+    metadata: experiment?.metadataKeys
       .reduce((acc, curr) => ({ ...acc, [curr]: DEFAULT_NA }), {}) || {},
   };
+
+  console.log('wlkgnreoerkn');
 
   const url = `/v2/experiments/${experimentId}/samples/${newSampleUuid}`;
 
