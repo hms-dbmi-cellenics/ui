@@ -1,11 +1,7 @@
 import _ from 'lodash';
 
-import {
-  PROJECTS_METADATA_DELETE,
-} from 'redux/actionTypes/projects';
-import {
-  SAMPLES_METADATA_DELETE,
-} from 'redux/actionTypes/samples';
+import { PROJECTS_METADATA_DELETE } from 'redux/actionTypes/experiments';
+import { SAMPLES_METADATA_DELETE } from 'redux/actionTypes/samples';
 
 import fetchAPI from 'utils/http/fetchAPI';
 import handleError from 'utils/http/handleError';

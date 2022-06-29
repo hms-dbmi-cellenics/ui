@@ -1,12 +1,12 @@
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
-import { PROJECTS_LOADED, PROJECTS_ERROR } from 'redux/actionTypes/projects';
 import { projectTemplate } from 'redux/reducers/projects/initialState';
 import { loadExperiments } from 'redux/actions/experiments';
 
 import fake from '__test__/test-utils/constants';
 import mockAPI, { generateDefaultMockAPIResponses } from '__test__/test-utils/mockAPI';
+import { EXPERIMENTS_ERROR, EXPERIMENTS_LOADED } from 'redux/actionTypes/experiments';
 
 enableFetchMocks();
 
@@ -36,7 +36,7 @@ describe('load projects ', () => {
     const actions = store.getActions();
 
     const lastAction = actions[actions.length - 1];
-    expect(lastAction.type).toEqual(PROJECTS_LOADED);
+    expect(lastAction.type).toEqual(EXPERIMENTS_LOADED);
     expect(lastAction.payload).toMatchSnapshot();
   });
 
@@ -44,7 +44,7 @@ describe('load projects ', () => {
     fetchMock.mockReject(new Error('Something went wrong :/'));
     const store = mockStore(initialState);
     await store.dispatch(loadExperiments());
-    const action = store.getActions()[1];
-    expect(action.type).toEqual(PROJECTS_ERROR);
+    const action = store.getActions()[0];
+    expect(action.type).toEqual(EXPERIMENTS_ERROR);
   });
 });

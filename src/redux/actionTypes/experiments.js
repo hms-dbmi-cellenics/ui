@@ -37,6 +37,26 @@ const EXPERIMENTS_ERROR = `${EXPERIMENTS}/error`;
 
 const EXPERIMENTS_SWITCH = `${EXPERIMENTS}/switch`;
 
+/**
+ * Set active project.
+ */
+const PROJECTS_SET_ACTIVE = `${EXPERIMENTS}/setActive`;
+
+/**
+ * Add project metadata.
+ */
+const PROJECTS_METADATA_CREATE = `${EXPERIMENTS}/metadataCreate`;
+
+/**
+ * Update project metadata.
+ */
+const PROJECTS_METADATA_UPDATE = `${EXPERIMENTS}/metadataUpdate`;
+
+/**
+ * Delete project metadta.
+ */
+const PROJECTS_METADATA_DELETE = `${EXPERIMENTS}/metadataDelete`;
+
 export {
   EXPERIMENTS_CREATED,
   EXPERIMENTS_UPDATED,
@@ -46,4 +66,8 @@ export {
   EXPERIMENTS_DELETED,
   EXPERIMENTS_SAVING,
   EXPERIMENTS_SWITCH,
+  PROJECTS_SET_ACTIVE,
+  PROJECTS_METADATA_CREATE,
+  PROJECTS_METADATA_UPDATE,
+  PROJECTS_METADATA_DELETE,
 };

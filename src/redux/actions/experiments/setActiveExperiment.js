@@ -1,6 +1,6 @@
 import {
   PROJECTS_SET_ACTIVE,
-} from 'redux/actionTypes/projects';
+} from 'redux/actionTypes/experiments';
 
 const setActiveExperiment = (
   experimentId,

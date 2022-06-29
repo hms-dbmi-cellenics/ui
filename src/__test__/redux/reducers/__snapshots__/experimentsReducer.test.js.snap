@@ -83,6 +83,33 @@ Object {
 }
 `;
 
+exports[`experimentsReducer Deletes samples correctly 1`] = `
+Object {
+  "experiment-1": Object {
+    "createdDate": "01-01-2021",
+    "description": "this is a test description",
+    "id": "experiment-1",
+    "meta": Object {
+      "organism": null,
+      "type": "10x",
+    },
+    "metadataKeys": Array [],
+    "name": "experiment 1",
+    "notifyByEmail": true,
+    "projectUuid": "experiment-1",
+    "sampleIds": Array [],
+  },
+  "ids": Array [
+    "experiment-1",
+  ],
+  "meta": Object {
+    "error": false,
+    "loading": false,
+    "saving": false,
+  },
+}
+`;
+
 exports[`experimentsReducer Deletes samples in v2 correctly 1`] = `
 Object {
   "experiment-1": Object {

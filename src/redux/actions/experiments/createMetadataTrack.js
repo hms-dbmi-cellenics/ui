@@ -2,7 +2,7 @@ import _ from 'lodash';
 
 import {
   PROJECTS_METADATA_CREATE,
-} from 'redux/actionTypes/projects';
+} from 'redux/actionTypes/experiments';
 import {
   SAMPLES_UPDATE,
 } from 'redux/actionTypes/samples';

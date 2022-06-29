@@ -3,14 +3,7 @@ import handleError from 'utils/http/handleError';
 import endUserMessages from 'utils/endUserMessages';
 
 import {
-  PROJECTS_SET_ACTIVE,
-  PROJECTS_ERROR,
-  PROJECTS_SAVING,
-  PROJECTS_SAVED,
-} from 'redux/actionTypes/projects';
-
-import {
-  EXPERIMENTS_DELETED, EXPERIMENTS_ERROR, EXPERIMENTS_SAVING,
+  PROJECTS_SET_ACTIVE, EXPERIMENTS_DELETED, EXPERIMENTS_ERROR, EXPERIMENTS_SAVING,
 } from 'redux/actionTypes/experiments';
 
 import { SAMPLES_DELETE } from 'redux/actionTypes/samples';
@@ -21,13 +14,6 @@ const deleteExperiment = (
   // Delete samples
   const { experiments } = getState();
   const { activeExperimentId } = experiments.meta;
-
-  dispatch({
-    type: PROJECTS_SAVING,
-    payload: {
-      message: endUserMessages.DELETING_PROJECT,
-    },
-  });
 
   dispatch({
     type: EXPERIMENTS_SAVING,
@@ -71,24 +57,13 @@ const deleteExperiment = (
         experimentIds: [experimentId],
       },
     });
-
-    dispatch({
-      type: PROJECTS_SAVED,
-    });
   } catch (e) {
     const errorMessage = handleError(e, endUserMessages.ERROR_DELETING_PROJECT);
 
     dispatch({
-      type: PROJECTS_ERROR,
-      payload: {
-        error: errorMessage,
-      },
-    });
-
-    dispatch({
       type: EXPERIMENTS_ERROR,
       payload: {
-        message: endUserMessages.DELETING_PROJECT,
+        message: errorMessage,
       },
     });
   }

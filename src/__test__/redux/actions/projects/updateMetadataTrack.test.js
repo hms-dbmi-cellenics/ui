@@ -6,12 +6,12 @@ import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 
 import { metadataNameToKey } from 'utils/data-management/metadataUtils';
 import updateMetadataTrack from 'redux/actions/experiments/updateMetadataTrack';
-import initialProjectState from 'redux/reducers/projects';
+import initialExperimentState from 'redux/reducers/experiments';
 import initialSampleState from 'redux/reducers/samples';
 
 import {
   PROJECTS_METADATA_UPDATE,
-} from 'redux/actionTypes/projects';
+} from 'redux/actionTypes/experiments';
 import '__test__/test-utils/setupTests';
 
 import { SAMPLES_METADATA_DELETE, SAMPLES_UPDATE } from 'redux/actionTypes/samples';
@@ -28,7 +28,7 @@ const newMetadataTrack = 'New track';
 const newMetadataTrackKey = metadataNameToKey(newMetadataTrack);
 
 const mockProject = {
-  ...initialProjectState,
+  ...initialExperimentState,
   name: 'test project',
   uuid: mockProjectUuid,
   createdDate: '01-01-2021',

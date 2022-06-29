@@ -9,6 +9,7 @@ import {
   EXPERIMENTS_UPDATED,
   EXPERIMENTS_ERROR,
   EXPERIMENTS_DELETED,
+  EXPERIMENTS_SAVING,
 } from 'redux/actionTypes/experiments';
 
 import { SAMPLES_CREATE, SAMPLES_DELETE } from 'redux/actionTypes/samples';
@@ -139,6 +140,20 @@ describe('experimentsReducer', () => {
     expect(newState).toMatchSnapshot();
   });
 
+  it('Loads experiments correctly', () => {
+    const newState = experimentsReducer(initialState, {
+      type: EXPERIMENTS_LOADED,
+      payload: {
+        experiments: [
+          rawExperiment1, rawExperiment2,
+        ],
+      },
+    });
+    expect(newState.ids).toEqual([rawExperiment1.id, rawExperiment2.id]);
+    expect(newState.meta.activeExperimentId).toEqual(rawExperiment1.id);
+    expect(newState).toMatchSnapshot();
+  });
+
   it('Loading state changes meta state', () => {
     const newState = experimentsReducer(initialState, {
       type: EXPERIMENTS_LOADING,
@@ -234,7 +249,29 @@ describe('experimentsReducer', () => {
     expect(newState).toMatchSnapshot();
   });
 
-  it('Deletes samples in v2 correctly', () => {
+  it('Sets up saving state correctly', () => {
+    const savingMsg = 'Saving';
+
+    const newState = experimentsReducer({
+      ...oneExperimentWithSampleState,
+      meta: {
+        ...oneExperimentWithSampleState[oneExperimentWithSampleState.id].meta,
+        loading: false,
+        saving: savingMsg,
+        error: true,
+      },
+    }, {
+      type: EXPERIMENTS_SAVING,
+      payload: { message: savingMsg },
+    });
+
+    expect(newState.meta.error).toBe(false);
+    expect(newState.meta.loading).toBe(false);
+    expect(newState.meta.saving).toBe(savingMsg);
+    expect(newState).toMatchSnapshot();
+  });
+
+  it('Deletes samples correctly', () => {
     const newState = experimentsReducer(oneExperimentWithSampleState, {
       type: SAMPLES_DELETE,
       payload: {

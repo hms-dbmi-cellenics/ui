@@ -3,7 +3,7 @@ import thunk from 'redux-thunk';
 import setActiveExperiment from 'redux/actions/experiments/setActiveExperiment';
 import initialState, { projectTemplate } from 'redux/reducers/projects/initialState';
 
-import { PROJECTS_SET_ACTIVE } from 'redux/actionTypes/projects';
+import { PROJECTS_SET_ACTIVE } from 'redux/actionTypes/experiments';
 
 const mockStore = configureStore([thunk]);
 

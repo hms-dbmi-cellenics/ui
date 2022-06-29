@@ -1,8 +1,6 @@
 import _ from 'lodash';
 
-import {
-  PROJECTS_METADATA_UPDATE,
-} from 'redux/actionTypes/projects';
+import { PROJECTS_METADATA_UPDATE } from 'redux/actionTypes/experiments';
 import {
   SAMPLES_UPDATE,
   SAMPLES_METADATA_DELETE,
