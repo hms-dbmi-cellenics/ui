@@ -13,7 +13,7 @@ import MetadataEditor from './MetadataEditor';
 
 const MetadataColumnTitle = (props) => {
   const {
-    name, sampleNames, activeProjectUuid, deleteMetadataColumn, setCells,
+    name, sampleNames, activeExperimentId, deleteMetadataColumn, setCells,
   } = props;
 
   const validationParams = {
@@ -30,7 +30,7 @@ const MetadataColumnTitle = (props) => {
       }
       setCells={setCells}
       deleteMetadataColumn={deleteMetadataColumn}
-      activeProjectUuid={activeProjectUuid}
+      activeExperimentId={activeExperimentId}
     />
   );
 };
@@ -40,13 +40,13 @@ MetadataColumnTitle.propTypes = {
   sampleNames: PropTypes.instanceOf(Set).isRequired,
   setCells: PropTypes.func.isRequired,
   deleteMetadataColumn: PropTypes.func.isRequired,
-  activeProjectUuid: PropTypes.string.isRequired,
+  activeExperimentId: PropTypes.string.isRequired,
 };
 
 const MetadataTitle = (props) => {
   const dispatch = useDispatch();
   const {
-    name, validateInput, setCells, deleteMetadataColumn, activeProjectUuid,
+    name, validateInput, setCells, deleteMetadataColumn, activeExperimentId,
   } = props;
   const metaKey = metadataNameToKey(name);
 
@@ -62,7 +62,7 @@ const MetadataTitle = (props) => {
         deleteEnabled
         onDelete={(e, currentName) => deleteMetadataColumn(currentName)}
         onAfterSubmit={(newName) => dispatch(
-          updateMetadataTrack(name, newName, activeProjectUuid),
+          updateMetadataTrack(name, newName, activeExperimentId),
         )}
         value={name}
         validationFunc={
@@ -85,6 +85,6 @@ MetadataTitle.propTypes = {
   validateInput: PropTypes.func.isRequired,
   setCells: PropTypes.func.isRequired,
   deleteMetadataColumn: PropTypes.func.isRequired,
-  activeProjectUuid: PropTypes.string.isRequired,
+  activeExperimentId: PropTypes.string.isRequired,
 };
 export default MetadataColumnTitle;

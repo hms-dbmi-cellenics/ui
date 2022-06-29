@@ -131,7 +131,7 @@ const SamplesTable = forwardRef((props, ref) => {
           sampleNames={sampleNames}
           setCells={setCells}
           deleteMetadataColumn={deleteMetadataColumn}
-          activeProjectUuid={activeExperimentId}
+          activeExperimentId={activeExperimentId}
         />
       ),
       width: 200,
