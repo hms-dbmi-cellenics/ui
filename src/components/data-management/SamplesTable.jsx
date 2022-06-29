@@ -34,7 +34,6 @@ import { arrayMoveImmutable } from 'utils/array-move';
 import { metadataNameToKey, metadataKeyToName, temporaryMetadataKey } from 'utils/data-management/metadataUtils';
 import integrationTestConstants from 'utils/integrationTestConstants';
 import 'utils/css/data-management.css';
-import { getAccountId } from 'utils/awsConfig';
 import { ClipLoader } from 'react-spinners';
 import useConditionalEffect from 'utils/customHooks/useConditionalEffect';
 
@@ -47,7 +46,6 @@ const SamplesTable = forwardRef((props, ref) => {
   const projects = useSelector((state) => state.projects);
   const samples = useSelector((state) => state.samples);
   const areSamplesLoading = useSelector((state) => state.samples.meta.loading);
-  const environment = useSelector((state) => state.networkResources.environment);
   const { activeProjectUuid } = useSelector((state) => state.projects.meta) || false;
   const activeProject = useSelector((state) => state.projects[activeProjectUuid]) || false;
 
@@ -96,7 +94,6 @@ const SamplesTable = forwardRef((props, ref) => {
   ];
 
   const [tableColumns, setTableColumns] = useState(initialTableColumns);
-  getAccountId(environment);
 
   useEffect(() => {
     if (activeProject.samples.length > 0) {
