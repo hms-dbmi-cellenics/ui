@@ -34,9 +34,7 @@ jest.mock('components/data-processing/GenesVsUMIs/GenesVsUMIs', () => () => <></
 jest.mock('components/data-processing/DoubletScores/DoubletScores', () => () => <></>);
 jest.mock('components/data-processing/DataIntegration/DataIntegration', () => () => <></>);
 jest.mock('components/data-processing/ConfigureEmbedding/ConfigureEmbedding', () => () => <></>);
-jest.mock('utils/awsConfig', () => ({
-  getAccountId: () => '000000000000',
-}));
+
 const mockNavigateTo = jest.fn();
 
 jest.mock('utils/AppRouteProvider', () => ({

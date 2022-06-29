@@ -17,9 +17,9 @@ import configure from '../amplify-config';
 const getAuthenticationInfo = async () => {
   // We use Node's `global` as a store for caching the results on the server-side.
   // Once we grab the cognito pool information there is no need to re-fetch again.
-  // if (global.cachedAuthenticationInfo) {
-  //   return global.cachedAuthenticationInfo;
-  // }
+  if (global.cachedAuthenticationInfo) {
+    return global.cachedAuthenticationInfo;
+  }
   let additionalClientParams = {};
 
   if (process.env.NODE_ENV !== 'development') {
