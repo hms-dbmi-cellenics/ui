@@ -45,7 +45,7 @@ const SamplesTable = forwardRef((props, ref) => {
   const dispatch = useDispatch();
   const [tableData, setTableData] = useState([]);
 
-  const projects = useSelector((state) => state.projects);
+  const experiments = useSelector((state) => state.experiments);
   const samples = useSelector((state) => state.samples);
   const areSamplesLoading = useSelector((state) => state.samples.meta.loading);
 
@@ -244,7 +244,7 @@ const SamplesTable = forwardRef((props, ref) => {
       };
     });
     setTableData(newData);
-  }, [projects, samples, activeExperimentId]);
+  }, [experiments, samples, activeExperimentId]);
 
   const noDataComponent = (
     <ExampleExperimentsSpace

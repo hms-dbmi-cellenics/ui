@@ -24,14 +24,20 @@ const NewProjectModal = (props) => {
     onCancel,
   } = props;
 
+  const experiments = useSelector(((state) => state.experiments));
+
+  const {
+    saving,
+    error,
+  } = useSelector((state) => state.experiments.meta);
+
   const dispatch = useDispatch();
   const [projectNames, setProjectNames] = useState(new Set());
   const [projectName, setProjectName] = useState('');
   const [projectDescription, setProjectDescription] = useState('');
   const [isValidName, setIsValidName] = useState(false);
-  const projects = useSelector(((state) => state.projects));
 
-  const firstTimeFlow = projects.ids.length === 0;
+  const firstTimeFlow = experiments.ids.length === 0;
   const validationChecks = [
     rules.MIN_8_CHARS,
     rules.MIN_2_SEQUENTIAL_CHARS,
@@ -44,17 +50,12 @@ const NewProjectModal = (props) => {
   };
 
   useEffect(() => {
-    setProjectNames(new Set(projects.ids.map((id) => projects[id].name.trim())));
-  }, [projects.ids]);
+    setProjectNames(new Set(experiments.ids.map((id) => experiments[id].name.trim())));
+  }, [experiments.ids]);
 
   useEffect(() => {
     setIsValidName(validateInputs(projectName, validationChecks, validationParams).isValid);
   }, [projectName, projectNames]);
-
-  const {
-    saving,
-    error,
-  } = useSelector((state) => state.projects.meta);
 
   const submit = () => {
     setProjectName('');
