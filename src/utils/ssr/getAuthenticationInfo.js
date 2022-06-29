@@ -11,7 +11,7 @@ import {
 } from '@aws-sdk/client-cognito-identity-provider';
 import { getDefaultRoleAssumerWithWebIdentity } from '@aws-sdk/client-sts';
 import { fromTokenFile } from '@aws-sdk/credential-provider-web-identity';
-import { getAWSRegion } from 'utils/awsConfig';
+import getAWSRegion from 'utils/getAWSRegion';
 import configure from '../amplify-config';
 
 const getAuthenticationInfo = async () => {

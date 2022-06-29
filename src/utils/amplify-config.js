@@ -1,4 +1,4 @@
-import { getAWSRegion } from './awsConfig';
+import getAWSRegion from './getAWSRegion';
 
 const configure = (userPoolId, identityPoolId, userPoolClientDetails) => {
   const redirectProtocol = (process.env.NODE_ENV === 'development') ? 'http:' : 'https:';
