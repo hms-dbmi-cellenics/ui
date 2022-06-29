@@ -94,12 +94,12 @@ const createAndUploadSingleFile = async (file, projectId, sampleId, dispatch) =>
   await prepareAndUploadFileToS3(projectId, sampleId, fileType, file, signedUrl, dispatch);
 };
 
-const createAndUpload = async (sample, activeProjectUuid, dispatch) => (
+const createAndUpload = async (sample, experimentId, dispatch) => (
   Object.values(sample.files).map(
-    (file) => createAndUploadSingleFile(file, activeProjectUuid, sample.uuid, dispatch),
+    (file) => createAndUploadSingleFile(file, experimentId, sample.uuid, dispatch),
   ));
 
-const processUpload = async (filesList, sampleType, samples, activeProjectUuid, dispatch) => {
+const processUpload = async (filesList, sampleType, samples, experimentId, dispatch) => {
   const samplesMap = filesList.reduce((acc, file) => {
     const pathToArray = file.name.trim().replace(/[\s]{2,}/ig, ' ').split('/');
 
@@ -112,7 +112,7 @@ const processUpload = async (filesList, sampleType, samples, activeProjectUuid, 
 
     const sampleUuid = Object.values(samples).filter(
       (s) => s.name === sampleName
-        && s.projectUuid === activeProjectUuid,
+        && s.projectUuid === experimentId,
     )[0]?.uuid;
 
     return {
@@ -134,14 +134,14 @@ const processUpload = async (filesList, sampleType, samples, activeProjectUuid, 
     // Create sample if not exists.
     try {
       sample.uuid ??= await dispatch(
-        createSample(activeProjectUuid, name, sampleType, filesToUploadForSample),
+        createSample(experimentId, name, sampleType, filesToUploadForSample),
       );
     } catch (e) {
       // If sample creation fails, sample should not be created
       return;
     }
 
-    createAndUpload(sample, activeProjectUuid, dispatch);
+    createAndUpload(sample, experimentId, dispatch);
   });
 };
 

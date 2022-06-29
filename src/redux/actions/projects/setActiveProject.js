@@ -3,17 +3,17 @@ import {
 } from '../../actionTypes/projects';
 
 const setActiveProject = (
-  projectUuid,
+  experimentId,
 ) => async (dispatch, getState) => {
   const {
-    activeProjectUuid,
-  } = getState().projects.meta;
+    activeExperimentId,
+  } = getState().experiments.meta;
 
-  if (activeProjectUuid === projectUuid) return null;
+  if (activeExperimentId === experimentId) return null;
 
   dispatch({
     type: PROJECTS_SET_ACTIVE,
-    payload: { projectUuid },
+    payload: { projectUuid: experimentId },
   });
 };
 
