@@ -3,7 +3,7 @@ import _ from 'lodash';
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
-import deleteProject from 'redux/actions/projects/deleteProject';
+import deleteProject from 'redux/actions/experiments/deleteExperiment';
 
 import initialSampleState, { sampleTemplate } from 'redux/reducers/samples/initialState';
 import initialProjectState, { projectTemplate } from 'redux/reducers/projects/initialState';

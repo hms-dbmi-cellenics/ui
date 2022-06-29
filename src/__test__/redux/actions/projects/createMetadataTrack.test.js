@@ -4,7 +4,7 @@ import thunk from 'redux-thunk';
 
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 
-import createMetadataTrack from 'redux/actions/projects/createMetadataTrack';
+import createMetadataTrack from 'redux/actions/experiments/createMetadataTrack';
 import initialProjectState, { projectTemplate } from 'redux/reducers/projects/initialState';
 import initialSamplesState, { sampleTemplate } from 'redux/reducers/samples/initialState';
 import {

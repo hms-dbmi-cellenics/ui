@@ -13,7 +13,7 @@ import { fireEvent } from '@testing-library/dom';
 import userEvent from '@testing-library/user-event';
 import { screen, render, waitFor } from '@testing-library/react';
 
-import * as createMetadataTrack from 'redux/actions/projects/createMetadataTrack';
+import * as createMetadataTrack from 'redux/actions/experiments/createMetadataTrack';
 import initialProjectState, { projectTemplate } from 'redux/reducers/projects/initialState';
 import initialSamplesState, { sampleTemplate } from 'redux/reducers/samples/initialState';
 import initialExperimentsState from 'redux/reducers/experiments/initialState';

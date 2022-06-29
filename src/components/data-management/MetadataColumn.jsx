@@ -2,10 +2,10 @@ import React from 'react';
 import { Space, Input } from 'antd';
 import { useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
+
 import { DEFAULT_NA } from 'redux/reducers/projects/initialState';
-import {
-  updateMetadataTrack,
-} from 'redux/actions/projects';
+import { updateMetadataTrack } from 'redux/actions/experiments';
+
 import validateInputs, { rules } from 'utils/validateInputs';
 import { metadataNameToKey } from 'utils/data-management/metadataUtils';
 import EditableField from '../EditableField';

@@ -21,9 +21,10 @@ import {
   deleteMetadataTrack,
   createMetadataTrack,
   updateValueInMetadataTrack,
-} from 'redux/actions/projects';
+  reorderSamples,
+} from 'redux/actions/experiments';
+
 import { DEFAULT_NA } from 'redux/reducers/projects/initialState';
-import { reorderSamples } from 'redux/actions/experiments';
 
 import { loadSamples } from 'redux/actions/samples';
 

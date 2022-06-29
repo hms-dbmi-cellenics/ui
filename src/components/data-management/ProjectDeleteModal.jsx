@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import {
   Modal, Button, Input, Space, Typography, Form, Alert,
 } from 'antd';
-import deleteProject from 'redux/actions/projects/deleteProject';
+import { deleteExperiment } from 'redux/actions/experiments';
 import integrationTestConstants from 'utils/integrationTestConstants';
 
 const { Text, Paragraph } = Typography;
@@ -42,7 +42,7 @@ const ProjectDeleteModal = (props) => {
             key='create'
             disabled={!isValid}
             onClick={() => {
-              dispatch(deleteProject(experimentId));
+              dispatch(deleteExperiment(experimentId));
               onDelete();
             }}
           >

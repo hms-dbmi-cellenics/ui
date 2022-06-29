@@ -16,7 +16,7 @@ import {
 
 import { SAMPLES_DELETE } from 'redux/actionTypes/samples';
 
-const deleteProject = (
+const deleteExperiment = (
   experimentId,
 ) => async (dispatch, getState) => {
   // Delete samples
@@ -100,4 +100,4 @@ const deleteProject = (
   }
 };
 
-export default deleteProject;
+export default deleteExperiment;

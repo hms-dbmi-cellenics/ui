@@ -1,6 +1,6 @@
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
-import setActiveProject from 'redux/actions/projects/setActiveProject';
+import setActiveExperiment from 'redux/actions/experiments/setActiveExperiment';
 import initialState, { projectTemplate } from 'redux/reducers/projects/initialState';
 
 import { PROJECTS_SET_ACTIVE } from 'redux/actionTypes/projects';
@@ -39,7 +39,7 @@ describe('setActiveProject action', () => {
 
   it('Dispatches event correctly', async () => {
     const store = mockStore(mockState);
-    await store.dispatch(setActiveProject(otherProject.uuid));
+    await store.dispatch(setActiveExperiment(otherProject.uuid));
 
     const firstAction = store.getActions()[0];
     expect(firstAction.type).toEqual(PROJECTS_SET_ACTIVE);
@@ -48,7 +48,7 @@ describe('setActiveProject action', () => {
 
   it('Does not dispatch if project is the same', async () => {
     const store = mockStore(mockState);
-    await store.dispatch(setActiveProject(activeProject.uuid));
+    await store.dispatch(setActiveExperiment(activeProject.uuid));
 
     expect(store.getActions().length).toEqual(0);
   });
