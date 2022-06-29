@@ -128,6 +128,8 @@ const ContentWrapper = (props) => {
   const [gem2sRerunStatus, setGem2sRerunStatus] = useState(null);
 
   useEffect(() => {
+    if (!activeExperiment) return;
+
     const gem2sStatus = calculateGem2sRerunStatus(
       gem2sBackendStatus, activeExperiment, samples, experiment,
     );

@@ -2,9 +2,9 @@ import fetchAPI from 'utils/http/fetchAPI';
 import handleError from 'utils/http/handleError';
 
 import {
-  EXPERIMENTS_LOADED,
+  // EXPERIMENTS_LOADED,
   EXPERIMENTS_ERROR,
-  EXPERIMENTS_LOADING,
+  // EXPERIMENTS_LOADING,
 } from 'redux/actionTypes/experiments';
 
 const toApiV1 = (experimentV2) => {
@@ -17,6 +17,7 @@ const toApiV1 = (experimentV2) => {
     processingConfig,
     createdAt,
     pipelines,
+    metadataKeys,
   } = experimentV2;
 
   const experimentV1 = {
@@ -28,6 +29,7 @@ const toApiV1 = (experimentV2) => {
     createdDate: createdAt,
     notifyByEmail,
     sampleIds: samplesOrder,
+    metadataKeys,
     meta: {
       // This is always 10x and organism so we can just generate them here
       organism: null,
@@ -43,21 +45,27 @@ const toApiV1 = (experimentV2) => {
 const loadExperiments = (
   projectUuid,
 ) => async (dispatch) => {
-  dispatch({
-    type: EXPERIMENTS_LOADING,
-  });
+  // dispatch({
+  //   type: EXPERIMENTS_LOADING,
+  // });
 
   try {
     let data = await fetchAPI(`/v2/experiments/${projectUuid}`);
 
+    console.log('dataDebgu1');
+    console.log(data);
+
     data = [toApiV1(data)];
 
-    dispatch({
-      type: EXPERIMENTS_LOADED,
-      payload: {
-        experiments: data,
-      },
-    });
+    console.log('dataDebug');
+    console.log(data);
+
+    // dispatch({
+    //   type: EXPERIMENTS_LOADED,
+    //   payload: {
+    //     experiments: data,
+    //   },
+    // });
   } catch (e) {
     const errorMessage = handleError(e);
 

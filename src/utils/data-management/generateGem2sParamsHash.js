@@ -3,6 +3,7 @@ import objectHash from 'object-hash';
 import { DEFAULT_NA } from 'redux/reducers/projects/initialState';
 
 const generateGem2sParamsHash = (experiment, samples) => {
+  // WIP samples has meta, so check on that before merging
   if (!experiment || !samples) {
     return false;
   }
@@ -15,8 +16,8 @@ const generateGem2sParamsHash = (experiment, samples) => {
   const orderInvariantSampleIds = [...existingSampleIds].sort();
 
   const hashParams = {
-    organism: experiment.meta.organism,
-    input: { type: experiment.meta.type },
+    organism: null,
+    input: { type: '10x' },
     sampleIds: orderInvariantSampleIds,
     sampleNames: orderInvariantSampleIds.map((sampleId) => samples[sampleId].name),
   };

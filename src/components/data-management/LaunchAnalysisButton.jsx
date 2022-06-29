@@ -117,11 +117,16 @@ const LaunchAnalysisButton = () => {
         && allSampleMetadataInserted(checkedSample);
     });
     return canLaunch;
-  }, [samples, activeExperiment.sampleIds, activeExperiment.metadataKeys]);
+  }, [samples, activeExperiment?.sampleIds, activeExperiment?.metadataKeys]);
 
   const renderLaunchButton = () => {
     const buttonText = !gem2sRerunStatus.rerun ? 'Go to Data Processing' : 'Process project';
 
+    console.log('activeExperimentIdDebug');
+    console.log(activeExperimentId);
+
+    console.log('backendStatusDebug');
+    console.log(backendStatus[activeExperimentId]);
     if (!backendStatus[activeExperimentId] || backendStatus[activeExperimentId]?.loading) {
       return <LaunchButtonTemplate text='Loading project...' disabled loading />;
     }

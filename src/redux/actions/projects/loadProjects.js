@@ -2,6 +2,7 @@ import fetchAPI from 'utils/http/fetchAPI';
 import handleError from 'utils/http/handleError';
 import endUserMessages from 'utils/endUserMessages';
 import { PROJECTS_ERROR, PROJECTS_LOADED, PROJECTS_LOADING } from 'redux/actionTypes/projects';
+import { EXPERIMENTS_LOADED } from 'redux/actionTypes/experiments';
 
 const toApiV1 = (experimentListV2) => {
   const projectsListV1 = experimentListV2.map((experimentData) => {
@@ -36,6 +37,13 @@ const loadProjects = () => async (dispatch) => {
 
   try {
     let data = await fetchAPI('/v2/experiments');
+
+    dispatch({
+      type: EXPERIMENTS_LOADED,
+      payload: {
+        experiments: data,
+      },
+    });
 
     data = toApiV1(data);
 
