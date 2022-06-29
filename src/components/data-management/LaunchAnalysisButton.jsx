@@ -140,7 +140,6 @@ const LaunchAnalysisButton = () => {
       );
     }
 
-    // Popconfirm
     if (gem2sRerunStatus.rerun) {
       return (
         <Popconfirm
