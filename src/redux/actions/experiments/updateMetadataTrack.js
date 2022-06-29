@@ -1,6 +1,6 @@
 import _ from 'lodash';
 
-import { PROJECTS_METADATA_UPDATE } from 'redux/actionTypes/experiments';
+import { EXPERIMENTS_METADATA_UPDATE } from 'redux/actionTypes/experiments';
 import {
   SAMPLES_UPDATE,
   SAMPLES_METADATA_DELETE,
@@ -42,7 +42,7 @@ const updateMetadataTrack = (
     );
 
     dispatch({
-      type: PROJECTS_METADATA_UPDATE,
+      type: EXPERIMENTS_METADATA_UPDATE,
       payload: {
         oldKey: oldMetadataKey,
         newKey: newMetadataKey,

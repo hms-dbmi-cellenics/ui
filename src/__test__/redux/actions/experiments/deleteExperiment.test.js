@@ -8,7 +8,7 @@ import deleteProject from 'redux/actions/experiments/deleteExperiment';
 import initialSampleState, { sampleTemplate } from 'redux/reducers/samples/initialState';
 import initialProjectState, { projectTemplate } from 'redux/reducers/projects/initialState';
 
-import { PROJECTS_SET_ACTIVE, EXPERIMENTS_DELETED, EXPERIMENTS_SAVING } from 'redux/actionTypes/experiments';
+import { EXPERIMENTS_SET_ACTIVE, EXPERIMENTS_DELETED, EXPERIMENTS_SAVING } from 'redux/actionTypes/experiments';
 import { SAMPLES_DELETE } from 'redux/actionTypes/samples';
 
 enableFetchMocks();
@@ -132,7 +132,7 @@ describe('deleteProject action', () => {
     // Sets up loading state for saving project
     const actions = store.getActions();
     expect(_.map(actions, 'type')).toEqual([
-      EXPERIMENTS_SAVING, PROJECTS_SET_ACTIVE, SAMPLES_DELETE, EXPERIMENTS_DELETED,
+      EXPERIMENTS_SAVING, EXPERIMENTS_SET_ACTIVE, SAMPLES_DELETE, EXPERIMENTS_DELETED,
     ]);
   });
 });

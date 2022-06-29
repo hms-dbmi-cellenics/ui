@@ -10,7 +10,7 @@ import initialExperimentState from 'redux/reducers/experiments';
 import initialSampleState from 'redux/reducers/samples';
 
 import {
-  PROJECTS_METADATA_UPDATE,
+  EXPERIMENTS_METADATA_UPDATE,
 } from 'redux/actionTypes/experiments';
 import '__test__/test-utils/setupTests';
 
@@ -73,7 +73,7 @@ describe('updateMetadataTrack action', () => {
     await store.dispatch(updateMetadataTrack(oldMetadataTrack, newMetadataTrack, mockProject.uuid));
 
     const actions = store.getActions();
-    expect(_.map(actions, 'type')).toEqual([PROJECTS_METADATA_UPDATE, SAMPLES_UPDATE, SAMPLES_METADATA_DELETE]);
+    expect(_.map(actions, 'type')).toEqual([EXPERIMENTS_METADATA_UPDATE, SAMPLES_UPDATE, SAMPLES_METADATA_DELETE]);
     expect(_.map(actions, 'payload')).toMatchSnapshot();
 
     expect(fetchMock).toHaveBeenCalledWith(

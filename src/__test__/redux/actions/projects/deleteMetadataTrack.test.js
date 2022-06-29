@@ -12,7 +12,7 @@ import initialSampleState from 'redux/reducers/samples';
 
 import '__test__/test-utils/setupTests';
 
-import { PROJECTS_METADATA_DELETE } from 'redux/actionTypes/experiments';
+import { EXPERIMENTS_METADATA_DELETE } from 'redux/actionTypes/experiments';
 import { SAMPLES_METADATA_DELETE } from 'redux/actionTypes/samples';
 
 const mockStore = configureStore([thunk]);
@@ -68,7 +68,7 @@ describe('deleteMetadataTrack action', () => {
     await store.dispatch(deleteMetadataTrack(metadataTrack, mockProject.uuid));
 
     const actions = store.getActions();
-    expect(_.map(actions, 'type')).toEqual([PROJECTS_METADATA_DELETE, SAMPLES_METADATA_DELETE]);
+    expect(_.map(actions, 'type')).toEqual([EXPERIMENTS_METADATA_DELETE, SAMPLES_METADATA_DELETE]);
     expect(_.map(actions, 'payload')).toMatchSnapshot();
 
     expect(fetchMock).toHaveBeenCalledWith(

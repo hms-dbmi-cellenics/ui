@@ -3,7 +3,7 @@ import handleError from 'utils/http/handleError';
 import endUserMessages from 'utils/endUserMessages';
 
 import {
-  PROJECTS_SET_ACTIVE, EXPERIMENTS_DELETED, EXPERIMENTS_ERROR, EXPERIMENTS_SAVING,
+  EXPERIMENTS_SET_ACTIVE, EXPERIMENTS_DELETED, EXPERIMENTS_ERROR, EXPERIMENTS_SAVING,
 } from 'redux/actionTypes/experiments';
 
 import { SAMPLES_DELETE } from 'redux/actionTypes/samples';
@@ -38,7 +38,7 @@ const deleteExperiment = (
       const leftoverProjectIds = experiments.ids.filter((uuid) => uuid !== activeExperimentId);
 
       dispatch({
-        type: PROJECTS_SET_ACTIVE,
+        type: EXPERIMENTS_SET_ACTIVE,
         payload: { projectUuid: leftoverProjectIds.length ? leftoverProjectIds[0] : null },
       });
     }

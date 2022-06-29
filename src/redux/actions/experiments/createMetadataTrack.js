@@ -1,7 +1,7 @@
 import _ from 'lodash';
 
 import {
-  PROJECTS_METADATA_CREATE,
+  EXPERIMENTS_METADATA_CREATE,
 } from 'redux/actionTypes/experiments';
 import {
   SAMPLES_UPDATE,
@@ -38,7 +38,7 @@ const createMetadataTrack = (
     );
 
     dispatch({
-      type: PROJECTS_METADATA_CREATE,
+      type: EXPERIMENTS_METADATA_CREATE,
       payload: {
         projectUuid: experimentId,
         key: metadataKey,

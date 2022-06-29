@@ -1,6 +1,6 @@
 import _ from 'lodash';
 
-import { PROJECTS_METADATA_DELETE } from 'redux/actionTypes/experiments';
+import { EXPERIMENTS_METADATA_DELETE } from 'redux/actionTypes/experiments';
 import { SAMPLES_METADATA_DELETE } from 'redux/actionTypes/samples';
 
 import fetchAPI from 'utils/http/fetchAPI';
@@ -31,7 +31,7 @@ const deleteMetadataTrack = (
     );
 
     dispatch({
-      type: PROJECTS_METADATA_DELETE,
+      type: EXPERIMENTS_METADATA_DELETE,
       payload: {
         key: metadataKey,
         projectUuid: experimentId,

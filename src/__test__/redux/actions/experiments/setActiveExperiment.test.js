@@ -3,7 +3,7 @@ import thunk from 'redux-thunk';
 import setActiveExperiment from 'redux/actions/experiments/setActiveExperiment';
 import initialState, { projectTemplate } from 'redux/reducers/projects/initialState';
 
-import { PROJECTS_SET_ACTIVE } from 'redux/actionTypes/experiments';
+import { EXPERIMENTS_SET_ACTIVE } from 'redux/actionTypes/experiments';
 
 const mockStore = configureStore([thunk]);
 
@@ -42,7 +42,7 @@ describe('setActiveExperiment action', () => {
     await store.dispatch(setActiveExperiment(otherProject.uuid));
 
     const firstAction = store.getActions()[0];
-    expect(firstAction.type).toEqual(PROJECTS_SET_ACTIVE);
+    expect(firstAction.type).toEqual(EXPERIMENTS_SET_ACTIVE);
     expect(firstAction).toMatchSnapshot();
   });
 

@@ -1,5 +1,5 @@
 import {
-  PROJECTS_SET_ACTIVE,
+  EXPERIMENTS_SET_ACTIVE,
 } from 'redux/actionTypes/experiments';
 
 const setActiveExperiment = (
@@ -12,7 +12,7 @@ const setActiveExperiment = (
   if (activeExperimentId === experimentId) return null;
 
   dispatch({
-    type: PROJECTS_SET_ACTIVE,
+    type: EXPERIMENTS_SET_ACTIVE,
     payload: { projectUuid: experimentId },
   });
 };

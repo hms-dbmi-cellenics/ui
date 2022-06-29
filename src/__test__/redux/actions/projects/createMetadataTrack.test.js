@@ -9,7 +9,7 @@ import initialProjectState, { projectTemplate } from 'redux/reducers/projects/in
 import initialSamplesState, { sampleTemplate } from 'redux/reducers/samples/initialState';
 
 import {
-  PROJECTS_METADATA_CREATE,
+  EXPERIMENTS_METADATA_CREATE,
 } from 'redux/actionTypes/experiments';
 
 import '__test__/test-utils/setupTests';
@@ -66,7 +66,7 @@ describe('createMetadataTrack action', () => {
     const trackKeyRCompatible = 'Test_track';
 
     const actions = store.getActions();
-    expect(_.map(actions, 'type')).toEqual([PROJECTS_METADATA_CREATE, SAMPLES_UPDATE]);
+    expect(_.map(actions, 'type')).toEqual([EXPERIMENTS_METADATA_CREATE, SAMPLES_UPDATE]);
     expect(_.map(actions, 'payload')).toMatchSnapshot();
 
     expect(fetchMock).toHaveBeenCalledWith(
