@@ -36,7 +36,7 @@ import { arrayMoveImmutable } from 'utils/array-move';
 import { metadataNameToKey, metadataKeyToName, temporaryMetadataKey } from 'utils/data-management/metadataUtils';
 import integrationTestConstants from 'utils/integrationTestConstants';
 import 'utils/css/data-management.css';
-
+import { getAccountId } from 'utils/awsConfig';
 import { ClipLoader } from 'react-spinners';
 import useConditionalEffect from 'utils/customHooks/useConditionalEffect';
 
@@ -102,6 +102,7 @@ const SamplesTable = forwardRef((props, ref) => {
   useEffect(() => {
     if (activeProject.samples.length > 0) {
       // if there are samples - build the table columns
+      getAccountId();
       setSampleNames(new Set(activeProject.samples.map((id) => samples[id]?.name.trim())));
       const metadataColumns = activeProject.metadataKeys.map(
         (metadataKey) => createInitializedMetadataColumn(metadataKeyToName(metadataKey)),
