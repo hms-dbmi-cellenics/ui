@@ -13,19 +13,19 @@ const NotifyByEmail = (props) => {
   const changeEmailNotification = (value) => {
     dispatch(updateExperiment(experimentId, { notifyByEmail: value }));
   };
-  const { activeProjectUuid } = useSelector((state) => state?.projects?.meta) || false;
+  const { activeExperimentId } = useSelector((state) => state?.experiments?.meta) || false;
 
   useEffect(() => {
-    if (!activeProjectUuid) {
+    if (!activeExperimentId) {
       dispatch(loadProjects());
     }
   }, []);
 
   useEffect(() => {
-    if (!experiment && activeProjectUuid) {
-      dispatch(loadExperiments(activeProjectUuid));
+    if (!experiment && activeExperimentId) {
+      dispatch(loadExperiments(activeExperimentId));
     }
-  }, [activeProjectUuid]);
+  }, [activeExperimentId]);
 
   return (
     <Space direction='horizontal'>
