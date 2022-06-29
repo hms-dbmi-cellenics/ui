@@ -25,7 +25,7 @@ const cancelUploads = async (files) => {
 const deleteSamples = (
   sampleIds,
 ) => async (dispatch, getState) => {
-  const { samples, projects } = getState();
+  const { samples } = getState();
 
   const projectSamples = await sampleIds.reduce(async (acc, sampleUuid) => {
     const { projectUuid, files } = samples[sampleUuid];
@@ -54,9 +54,7 @@ const deleteSamples = (
 
   try {
     const deleteSamplesPromise = Object.entries(projectSamples).map(
-      async ([projectUuid, samplesToDelete]) => {
-        const experimentId = projects[projectUuid].experiments[0];
-
+      async ([experimentId, samplesToDelete]) => {
         await Promise.all(sampleIds.map(async (sampleUuid) => {
           await fetchAPI(
             `/v2/experiments/${experimentId}/samples/${sampleUuid}`,
