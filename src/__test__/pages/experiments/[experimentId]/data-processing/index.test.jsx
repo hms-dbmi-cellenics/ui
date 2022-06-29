@@ -17,7 +17,7 @@ import initialSamplesState, { sampleTemplate } from 'redux/reducers/samples/init
 import { getBackendStatus } from 'redux/selectors';
 import '__test__/test-utils/setupTests';
 
-import { runPipeline } from 'redux/actions/pipeline';
+import { runQC } from 'redux/actions/pipeline';
 import generateExperimentSettingsMock from '__test__/test-utils/experimentSettings.mock';
 import { modules } from 'utils/constants';
 import { act } from 'react-dom/test-utils';
@@ -48,7 +48,7 @@ jest.mock('utils/AppRouteProvider', () => ({
 jest.mock('redux/selectors');
 
 jest.mock('redux/actions/pipeline', () => ({
-  runPipeline: jest.fn(() => ({ type: 'RUN_PIPELINE' })),
+  runQC: jest.fn(() => ({ type: 'RUN_PIPELINE' })),
 }));
 
 const mockStore = configureMockStore([thunk]);
@@ -219,7 +219,7 @@ describe('DataProcessingPage', () => {
 
     userEvent.click(screen.getByText('Start'));
 
-    expect(runPipeline).toHaveBeenCalled();
+    expect(runQC).toHaveBeenCalled();
   });
 
   it('Classifier filter (1st filter) should show custom disabled message if sample is prefiltered ', () => {

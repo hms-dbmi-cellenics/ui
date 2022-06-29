@@ -19,8 +19,6 @@ import { loadBackendStatus } from 'redux/actions/backendStatus/index';
 import { getBackendStatus } from 'redux/selectors';
 import handleError from 'utils/http/handleError';
 
-import apiConfig from 'config';
-
 const DownloadDataButton = () => {
   const dispatch = useDispatch();
   const { activeProjectUuid } = useSelector((state) => state.projects.meta);
@@ -72,7 +70,7 @@ const DownloadDataButton = () => {
       if (!experimentId) throw new Error('No experimentId specified');
       if (!downloadTypes.has(type)) throw new Error('Invalid download type');
 
-      const signedUrl = await fetchAPI(`/${apiConfig.currentApiVersion}/experiments/${experimentId}/download/${type}`);
+      const signedUrl = await fetchAPI(`/v2/experiments/${experimentId}/download/${type}`);
 
       downloadFromUrl(signedUrl);
     } catch (e) {

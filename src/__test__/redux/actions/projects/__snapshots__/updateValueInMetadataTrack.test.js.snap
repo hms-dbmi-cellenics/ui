@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`updateValueInMetadataTrack action Dispatches error when theres an error updating in api v2 1`] = `
+exports[`updateValueInMetadataTrack action Dispatches error when theres an error updating 1`] = `
 Array [
   Object {
     "message": "Saving sample...",
@@ -11,7 +11,7 @@ Array [
 ]
 `;
 
-exports[`updateValueInMetadataTrack action Works correctly in api v2 1`] = `
+exports[`updateValueInMetadataTrack action Works correctly 1`] = `
 Array [
   Object {
     "message": "Saving sample...",

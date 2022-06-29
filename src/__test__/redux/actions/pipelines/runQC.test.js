@@ -9,7 +9,7 @@ import loadBackendStatus from 'redux/actions/backendStatus/loadBackendStatus';
 import saveProcessingSettings from 'redux/actions/experimentSettings/processingConfig/saveProcessingSettings';
 
 import {
-  EXPERIMENT_SETTINGS_PIPELINE_START,
+  EXPERIMENT_SETTINGS_QC_START,
   EXPERIMENT_SETTINGS_DISCARD_CHANGED_QC_FILTERS,
 } from 'redux/actionTypes/experimentSettings';
 import {
@@ -18,13 +18,10 @@ import {
 } from 'redux/actionTypes/backendStatus';
 import { EMBEDDINGS_LOADING } from 'redux/actionTypes/embeddings';
 
-import { runPipeline } from 'redux/actions/pipeline';
+import { runQC } from 'redux/actions/pipeline';
 
 import generateExperimentSettingsMock from '__test__/test-utils/experimentSettings.mock';
 import '__test__/test-utils/setupTests';
-
-import config from 'config';
-import { api } from 'utils/constants';
 
 const mockStore = configureStore([thunk]);
 
@@ -58,7 +55,7 @@ const initialState = {
   },
 };
 
-describe('runPipeline action', () => {
+describe('runQC action', () => {
   beforeEach(() => {
     const response = new Response(JSON.stringify({}));
 
@@ -73,14 +70,16 @@ describe('runPipeline action', () => {
 
   it('Dispatches events properly', async () => {
     const store = mockStore(initialState);
-    await store.dispatch(runPipeline(experimentId));
+    await store.dispatch(runQC(experimentId));
 
     const actions = store.getActions();
 
     expect(actions[0].type).toEqual(BACKEND_STATUS_LOADING);
-    expect(actions[1].type).toEqual(EXPERIMENT_SETTINGS_PIPELINE_START);
+    expect(actions[1].type).toEqual(EXPERIMENT_SETTINGS_QC_START);
     expect(loadBackendStatus).toHaveBeenCalled();
     expect(actions).toMatchSnapshot();
+
+    expect(fetchMock.mock.calls[0]).toMatchSnapshot();
   });
 
   it('Dispatches status error if loading fails', async () => {
@@ -88,7 +87,7 @@ describe('runPipeline action', () => {
     fetchMock.mockResponse(JSON.stringify({ message: 'some weird error that happened' }), { status: 400 });
 
     const store = mockStore(initialState);
-    await store.dispatch(runPipeline(experimentId));
+    await store.dispatch(runQC(experimentId));
 
     const actions = store.getActions();
 
@@ -108,7 +107,7 @@ describe('runPipeline action', () => {
     onlyConfigureEmbeddingChangedState.experimentSettings.processing.meta.changedQCFilters = new Set(['configureEmbedding']);
 
     const store = mockStore(onlyConfigureEmbeddingChangedState);
-    await store.dispatch(runPipeline(experimentId));
+    await store.dispatch(runQC(experimentId));
 
     await waitForActions(
       store,
@@ -121,22 +120,5 @@ describe('runPipeline action', () => {
     expect(actions[1].type).toEqual(EMBEDDINGS_LOADING);
 
     expect(actions).toMatchSnapshot();
-  });
-
-  it('Works well with api v2', async () => {
-    config.currentApiVersion = api.V2;
-
-    const store = mockStore(initialState);
-    await store.dispatch(runPipeline(experimentId));
-
-    const actions = store.getActions();
-
-    expect(actions[0].type).toEqual(BACKEND_STATUS_LOADING);
-    expect(actions[1].type).toEqual(EXPERIMENT_SETTINGS_PIPELINE_START);
-    expect(loadBackendStatus).toHaveBeenCalled();
-
-    expect(actions).toMatchSnapshot();
-
-    expect(fetchMock.mock.calls[0]).toMatchSnapshot();
   });
 });

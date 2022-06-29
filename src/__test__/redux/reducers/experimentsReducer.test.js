@@ -11,22 +11,18 @@ import {
   EXPERIMENTS_DELETED,
 } from 'redux/actionTypes/experiments';
 
-import { SAMPLES_CREATE, SAMPLES_DELETE_API_V2 } from 'redux/actionTypes/samples';
+import { SAMPLES_CREATE, SAMPLES_DELETE } from 'redux/actionTypes/samples';
 
 describe('experimentsReducer', () => {
   const experimentId1 = 'experiment-1';
-  const projectUuid1 = 'project-1';
-
   const experimentId2 = 'experiment-2';
-  const projectUuid2 = 'project-2';
 
   const rawExperiment1 = {
     experimentId: experimentId1,
     experimentName: 'experiment 1',
-    projectId: projectUuid1,
+    projectId: experimentId1,
     description: 'this is a test description',
     createdDate: '01-01-2021',
-    lastViewed: '01-01-2021',
     meta: {
       organism: null,
       type: '10x',
@@ -38,10 +34,9 @@ describe('experimentsReducer', () => {
   const rawExperiment2 = {
     experimentId: experimentId2,
     experimentName: 'experiment 2',
-    projectId: projectUuid2,
+    projectId: experimentId2,
     description: 'this is a test description',
     createdDate: '01-01-2021',
-    lastViewed: '01-01-2021',
     meta: {
       organism: null,
       type: '10x',
@@ -52,24 +47,22 @@ describe('experimentsReducer', () => {
 
   const experiment1 = {
     ...experimentTemplate,
-    projectUuid: projectUuid1,
+    projectUuid: experimentId1,
     name: 'experiment 1',
     id: experimentId1,
     description: 'this is a test description',
     createdDate: '01-01-2021',
-    lastViewed: '01-01-2021',
     sampleIds: [],
     meta: experimentTemplate.meta,
   };
 
   const experiment2 = {
     ...experimentTemplate,
-    projectUuid: projectUuid2,
+    projectUuid: experimentId2,
     name: 'experiment 2',
     id: experimentId2,
     description: 'this is a test description',
     createdDate: '01-01-2021',
-    lastViewed: '01-01-2021',
     sampleIds: [],
     meta: experimentTemplate.meta,
   };
@@ -243,10 +236,10 @@ describe('experimentsReducer', () => {
 
   it('Deletes samples in v2 correctly', () => {
     const newState = experimentsReducer(oneExperimentWithSampleState, {
-      type: SAMPLES_DELETE_API_V2,
+      type: SAMPLES_DELETE,
       payload: {
         experimentId: experiment1.id,
-        sampleUuids: [sampleId],
+        sampleIds: [sampleId],
       },
     });
 

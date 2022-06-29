@@ -8,9 +8,8 @@ import {
   EXPERIMENT_SETTINGS_PROCESSING_ERROR,
 } from 'redux/actionTypes/experimentSettings';
 import loadProcessingSettings from 'redux/actions/experimentSettings/processingConfig/loadProcessingSettings';
-import config from 'config';
-import { api } from 'utils/constants';
-import generateExperimentSettingsMock from '../../../test-utils/experimentSettings.mock';
+
+import generateExperimentSettingsMock from '__test__/test-utils/experimentSettings.mock';
 
 import '__test__/test-utils/setupTests';
 
@@ -59,6 +58,8 @@ describe('loadProcessingSettings action', () => {
 
     expect(actions.length).toEqual(1);
     expect(actions[0].type).toEqual(EXPERIMENT_SETTINGS_PROCESSING_CONFIG_LOADED);
+
+    expect(fetchMock).toHaveBeenCalledWith(`http://localhost:3000/v2/experiments/${experimentId}/processingConfig`, { headers: {} });
   });
 
   it('Correctly sets error if returned an error', async () => {
@@ -99,12 +100,5 @@ describe('loadProcessingSettings action', () => {
     const actions = store.getActions();
     expect(actions.length).toEqual(1);
     expect(actions[0].type).toEqual(EXPERIMENT_SETTINGS_PROCESSING_CONFIG_LOADED);
-  });
-
-  it('Works with apiv2', async () => {
-    config.currentApiVersion = api.V2;
-    const store = mockStore(mockState);
-    await store.dispatch(loadProcessingSettings(experimentId));
-    expect(fetchMock).toHaveBeenCalledWith(`http://localhost:3000/v2/experiments/${experimentId}/processingConfig`, { headers: {} });
   });
 });

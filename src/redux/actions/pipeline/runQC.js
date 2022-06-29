@@ -2,7 +2,7 @@ import fetchAPI from 'utils/http/fetchAPI';
 import handleError from 'utils/http/handleError';
 import endUserMessages from 'utils/endUserMessages';
 import {
-  EXPERIMENT_SETTINGS_PIPELINE_START,
+  EXPERIMENT_SETTINGS_QC_START,
   EXPERIMENT_SETTINGS_DISCARD_CHANGED_QC_FILTERS,
 } from 'redux/actionTypes/experimentSettings';
 
@@ -14,9 +14,6 @@ import {
 import { saveProcessingSettings } from 'redux/actions/experimentSettings';
 import { loadBackendStatus } from 'redux/actions/backendStatus';
 import { loadEmbedding } from 'redux/actions/embedding';
-
-import config from 'config';
-import { api } from 'utils/constants';
 
 const runOnlyConfigureEmbedding = async (experimentId, embeddingMethod, dispatch) => {
   await dispatch(saveProcessingSettings(experimentId, 'configureEmbedding'));
@@ -36,7 +33,7 @@ const runOnlyConfigureEmbedding = async (experimentId, embeddingMethod, dispatch
   );
 };
 
-const runPipeline = (experimentId) => async (dispatch, getState) => {
+const runQC = (experimentId) => async (dispatch, getState) => {
   const { processing } = getState().experimentSettings;
   const { changedQCFilters } = processing.meta;
 
@@ -65,13 +62,6 @@ const runPipeline = (experimentId) => async (dispatch, getState) => {
     };
   });
 
-  let url;
-  if (config.currentApiVersion === api.V1) {
-    url = `/v1/experiments/${experimentId}/pipelines`;
-  } else if (config.currentApiVersion === api.V2) {
-    url = `/v2/experiments/${experimentId}/qc`;
-  }
-
   try {
     // We are only sending the configuration that we know changed
     // with respect to the one that is already persisted in dynamodb
@@ -80,7 +70,7 @@ const runPipeline = (experimentId) => async (dispatch, getState) => {
     // We don't need to manually save any processing config because it is done by
     // the api once the pipeline finishes successfully
     await fetchAPI(
-      url,
+      `/v2/experiments/${experimentId}/qc`,
       {
         method: 'POST',
         headers: {
@@ -93,7 +83,7 @@ const runPipeline = (experimentId) => async (dispatch, getState) => {
     );
 
     dispatch({
-      type: EXPERIMENT_SETTINGS_PIPELINE_START,
+      type: EXPERIMENT_SETTINGS_QC_START,
       payload: {},
     });
 
@@ -116,4 +106,4 @@ const runPipeline = (experimentId) => async (dispatch, getState) => {
   }
 };
 
-export default runPipeline;
+export default runQC;

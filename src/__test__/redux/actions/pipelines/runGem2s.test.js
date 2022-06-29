@@ -6,7 +6,7 @@ import loadBackendStatus from 'redux/actions/backendStatus/loadBackendStatus';
 import initialBackendState from 'redux/reducers/backendStatus';
 
 import {
-  EXPERIMENT_SETTINGS_PIPELINE_START,
+  EXPERIMENT_SETTINGS_QC_START,
 } from 'redux/actionTypes/experimentSettings';
 
 import {
@@ -16,13 +16,9 @@ import {
 
 import { runGem2s } from 'redux/actions/pipeline';
 
-import config from 'config';
-import { api } from 'utils/constants';
-
 const mockStore = configureStore([thunk]);
 enableFetchMocks();
 
-jest.mock('config');
 jest.mock('redux/actions/backendStatus/loadBackendStatus',
   () => jest.fn().mockImplementation(() => async () => { }));
 
@@ -73,7 +69,7 @@ describe('runGem2s action', () => {
     const actions = store.getActions();
 
     expect(actions[0].type).toEqual(BACKEND_STATUS_LOADING);
-    expect(actions[1].type).toEqual(EXPERIMENT_SETTINGS_PIPELINE_START);
+    expect(actions[1].type).toEqual(EXPERIMENT_SETTINGS_QC_START);
     expect(loadBackendStatus).toHaveBeenCalled();
 
     expect(actions).toMatchSnapshot();
@@ -100,22 +96,5 @@ describe('runGem2s action', () => {
     await store.dispatch(runGem2s(experimentId));
 
     expect(fetchMock).toHaveBeenCalled();
-  });
-
-  it('Works well with api v2', async () => {
-    config.currentApiVersion = api.V2;
-
-    const store = mockStore(initialState);
-    await store.dispatch(runGem2s(experimentId));
-
-    const actions = store.getActions();
-
-    expect(actions[0].type).toEqual(BACKEND_STATUS_LOADING);
-    expect(actions[1].type).toEqual(EXPERIMENT_SETTINGS_PIPELINE_START);
-    expect(loadBackendStatus).toHaveBeenCalled();
-
-    expect(actions).toMatchSnapshot();
-
-    expect(fetchMock.mock.calls[0]).toMatchSnapshot();
   });
 });

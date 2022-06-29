@@ -14,11 +14,6 @@ import thunk from 'redux-thunk';
 import initialState, { projectTemplate } from 'redux/reducers/projects/initialState';
 import ProjectCard from 'components/data-management/ProjectCard';
 
-import config from 'config';
-import { api } from 'utils/constants';
-
-jest.mock('config');
-
 const projectUuid = '12345';
 const projectName = 'Test Project';
 const experimentId = 'experimentId1';
@@ -89,9 +84,7 @@ describe('ProjectCard', () => {
     expect(modal).toBeInTheDocument();
   });
 
-  it('Updates project name in api v2 when clicked', async () => {
-    config.currentApiVersion = api.V2;
-
+  it('Updates project name when clicked', async () => {
     render(
       <Provider store={mockStore(projectState)}>
         <ProjectCard projectUuid={projectUuid} />

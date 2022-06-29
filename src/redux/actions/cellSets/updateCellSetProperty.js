@@ -6,9 +6,6 @@ import fetchAPI from 'utils/http/fetchAPI';
 import endUserMessages from 'utils/endUserMessages';
 import handleError from 'utils/http/handleError';
 
-import config from 'config';
-import { api } from 'utils/constants';
-
 const updateCellSetPropertyJsonMerger = (cellSetKey, dataUpdated, cellClassKey) => (
   [{
     $match: {
@@ -50,9 +47,7 @@ const updatesAreAllowed = (dataUpdated, rootNode) => {
 const updateCellSetProperty = (
   experimentId, key, dataUpdated,
 ) => async (dispatch, getState) => {
-  const {
-    loading, error, properties,
-  } = getState().cellSets;
+  const { loading, error, properties } = getState().cellSets;
 
   if (loading || error) {
     return null;
@@ -68,17 +63,9 @@ const updateCellSetProperty = (
     ? updateCellClassPropertyJsonMerger(key, dataUpdated)
     : updateCellSetPropertyJsonMerger(key, dataUpdated, parentNodeKey);
 
-  let url;
-
-  if (config.currentApiVersion === api.V1) {
-    url = `/v1/experiments/${experimentId}/cellSets`;
-  } else if (config.currentApiVersion === api.V2) {
-    url = `/v2/experiments/${experimentId}/cellSets`;
-  }
-
   try {
     await fetchAPI(
-      url,
+      `/v2/experiments/${experimentId}/cellSets`,
       {
         method: 'PATCH',
         headers: {

@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`updateMetadataTrack action Works correctly in api v2 1`] = `
+exports[`updateMetadataTrack action Works correctly 1`] = `
 Array [
   Object {
     "newKey": "New_track",

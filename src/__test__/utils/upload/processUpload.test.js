@@ -14,8 +14,6 @@ import processUpload from 'utils/upload/processUpload';
 
 import loadAndCompressIfNecessary from 'utils/upload/loadAndCompressIfNecessary';
 
-jest.mock('config', () => ({ currentApiVersion: 'v2' }));
-
 enableFetchMocks();
 
 const getValidFiles = (cellrangerVersion) => {
@@ -122,10 +120,6 @@ jest.mock('utils/upload/loadAndCompressIfNecessary',
     },
   ));
 
-jest.mock('redux/actions/samples/saveSamples', () => jest.fn().mockImplementation(() => ({
-  type: 'samples/saved',
-})));
-
 jest.mock('uuid', () => ({
   v4: jest.fn(() => 'sample-uuid'),
 }));
@@ -140,7 +134,7 @@ jest.mock('redux/actions/samples/deleteSamples', () => ({
 
 let store = null;
 
-describe('processUploadV2', () => {
+describe('processUpload', () => {
   beforeEach(() => {
     jest.clearAllMocks();
 
