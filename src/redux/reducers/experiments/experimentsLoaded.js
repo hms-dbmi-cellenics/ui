@@ -15,8 +15,6 @@ const experimentsLoaded = produce((draft, action) => {
     newActiveExperimentId = experiments[0]?.id;
   }
 
-  // WIP would be better to store experiments inside a special property for it
-  // instead of having to store the ids apart to differentiate experiment entries from meta
   const ids = _.map(experiments, 'id');
 
   draft.meta.activeExperimentId = experiments[0].id;

@@ -3,7 +3,6 @@ import objectHash from 'object-hash';
 import { DEFAULT_NA } from 'redux/reducers/projects/initialState';
 
 const generateGem2sParamsHash = (experiment, samples) => {
-  // WIP samples has meta, so check on that before merging
   if (!experiment || !samples) {
     return false;
   }
