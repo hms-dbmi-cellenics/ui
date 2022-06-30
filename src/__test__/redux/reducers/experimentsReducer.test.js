@@ -1,5 +1,6 @@
+import initialState, { experimentTemplate } from 'redux/reducers/experiments/initialState';
+
 import experimentsReducer from 'redux/reducers/experiments';
-import initialState from 'redux/reducers/experiments/initialState';
 import { sampleTemplate } from 'redux/reducers/samples/initialState';
 
 import {
@@ -54,6 +55,11 @@ describe('experimentsReducer', () => {
     ...initialState,
     ids: [experimentId1],
     [experimentId1]: experiment1,
+    meta: {
+      loading: false,
+      saving: false,
+      error: false,
+    },
   };
 
   const twoExperimentsState = {
@@ -61,12 +67,22 @@ describe('experimentsReducer', () => {
     ids: [experimentId1, experimentId2],
     [experimentId1]: experiment1,
     [experimentId2]: experiment2,
+    meta: {
+      loading: false,
+      saving: false,
+      error: false,
+    },
   };
 
   const oneExperimentWithSampleState = {
     ...initialState,
     ids: [experimentId1],
     [experimentId1]: experiment1WithSample,
+    meta: {
+      loading: false,
+      saving: false,
+      error: false,
+    },
   };
 
   const sample = {
@@ -97,7 +113,7 @@ describe('experimentsReducer', () => {
     expect(newState).toMatchSnapshot();
   });
 
-  it('Loads experiment correctly on existing state', () => {
+  it('Overwrites existing state on loading experiments', () => {
     const newState = experimentsReducer(oneExperimentState, {
       type: EXPERIMENTS_LOADED,
       payload: {
@@ -105,7 +121,7 @@ describe('experimentsReducer', () => {
       },
     });
 
-    expect(newState.ids).toEqual([experiment1.id, experiment2.id]);
+    expect(newState.ids).toEqual([experiment2.id]);
     expect(newState[experiment2.id]).toEqual(experiment2);
     expect(newState).toMatchSnapshot();
   });
@@ -159,7 +175,12 @@ describe('experimentsReducer', () => {
     });
 
     expect(newState.ids).toEqual([experiment1.id]);
-    expect(newState[experiment1.id]).toEqual(createdExperimentData);
+    expect(newState[experiment1.id]).toEqual(
+      {
+        ...experimentTemplate,
+        ...createdExperimentData,
+      },
+    );
     expect(newState).toMatchSnapshot();
   });
 
@@ -225,24 +246,21 @@ describe('experimentsReducer', () => {
   });
 
   it('Sets up saving state correctly', () => {
-    const savingMsg = 'Saving';
-
     const newState = experimentsReducer({
       ...oneExperimentWithSampleState,
       meta: {
-        ...oneExperimentWithSampleState[oneExperimentWithSampleState.id].meta,
+        ...oneExperimentWithSampleState.meta,
         loading: false,
-        saving: savingMsg,
+        saving: false,
         error: true,
       },
     }, {
       type: EXPERIMENTS_SAVING,
-      payload: { message: savingMsg },
     });
 
     expect(newState.meta.error).toBe(false);
     expect(newState.meta.loading).toBe(false);
-    expect(newState.meta.saving).toBe(savingMsg);
+    expect(newState.meta.saving).toBe(true);
     expect(newState).toMatchSnapshot();
   });
 
