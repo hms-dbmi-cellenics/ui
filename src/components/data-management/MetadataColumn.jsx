@@ -3,11 +3,11 @@ import { Space, Input } from 'antd';
 import { useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 
-import { DEFAULT_NA } from 'redux/reducers/projects/initialState';
 import { updateMetadataTrack } from 'redux/actions/experiments';
 
 import validateInputs, { rules } from 'utils/validateInputs';
 import { metadataNameToKey } from 'utils/data-management/metadataUtils';
+import { METADATA_DEFAULT_VALUE } from 'redux/reducers/experiments/initialState';
 import EditableField from '../EditableField';
 import MetadataEditor from './MetadataEditor';
 
@@ -72,7 +72,7 @@ const MetadataTitle = (props) => {
       <MetadataEditor
         onReplaceEmpty={(value) => setCells(value, metaKey, 'REPLACE_EMPTY')}
         onReplaceAll={(value) => setCells(value, metaKey, 'REPLACE_ALL')}
-        onClearAll={() => setCells(DEFAULT_NA, metaKey, 'CLEAR_ALL')}
+        onClearAll={() => setCells(METADATA_DEFAULT_VALUE, metaKey, 'CLEAR_ALL')}
         massEdit
       >
         <Input />

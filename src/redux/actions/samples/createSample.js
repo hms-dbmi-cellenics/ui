@@ -5,13 +5,11 @@ import {
   SAMPLES_CREATE, SAMPLES_ERROR, SAMPLES_SAVED, SAMPLES_SAVING,
 } from 'redux/actionTypes/samples';
 
-import {
-  DEFAULT_NA,
-} from 'redux/reducers/projects/initialState';
 import fetchAPI from 'utils/http/fetchAPI';
 import handleError from 'utils/http/handleError';
 import endUserMessages from 'utils/endUserMessages';
 
+import { METADATA_DEFAULT_VALUE } from 'redux/reducers/experiments/initialState';
 import { sampleTemplate } from 'redux/reducers/samples/initialState';
 
 import UploadStatus from 'utils/upload/UploadStatus';
@@ -43,7 +41,7 @@ const createSample = (
     createdDate,
     lastModified: createdDate,
     metadata: experiment?.metadataKeys
-      .reduce((acc, curr) => ({ ...acc, [curr]: DEFAULT_NA }), {}) || {},
+      .reduce((acc, curr) => ({ ...acc, [curr]: METADATA_DEFAULT_VALUE }), {}) || {},
   };
 
   const url = `/v2/experiments/${experimentId}/samples/${newSampleUuid}`;

@@ -1,6 +1,5 @@
 import objectHash from 'object-hash';
-
-import { DEFAULT_NA } from 'redux/reducers/projects/initialState';
+import { METADATA_DEFAULT_VALUE } from 'redux/reducers/experiments/initialState';
 
 const generateGem2sParamsHash = (experiment, samples) => {
   if (!experiment || !samples) {
@@ -29,7 +28,7 @@ const generateGem2sParamsHash = (experiment, samples) => {
       const sanitizedKey = key.replace(/-+/g, '_');
 
       acc[sanitizedKey] = projectSamples.map(
-        ([, sample]) => sample.metadata[key] || DEFAULT_NA,
+        ([, sample]) => sample.metadata[key] || METADATA_DEFAULT_VALUE,
       );
       return acc;
     }, {});

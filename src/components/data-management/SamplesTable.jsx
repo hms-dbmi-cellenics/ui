@@ -24,8 +24,6 @@ import {
   reorderSamples,
 } from 'redux/actions/experiments';
 
-import { DEFAULT_NA } from 'redux/reducers/projects/initialState';
-
 import { loadSamples } from 'redux/actions/samples';
 
 import UploadStatus from 'utils/upload/UploadStatus';
@@ -38,6 +36,7 @@ import 'utils/css/data-management.css';
 
 import { ClipLoader } from 'react-spinners';
 import useConditionalEffect from 'utils/customHooks/useConditionalEffect';
+import { METADATA_DEFAULT_VALUE } from 'redux/reducers/experiments/initialState';
 
 const { Text } = Typography;
 
@@ -197,7 +196,7 @@ const SamplesTable = forwardRef((props, ref) => {
 
       const isMetadataEmpty = (uuid) => (
         !samples[uuid].metadata[metadataKey]
-        || samples[uuid].metadata[metadataKey] === DEFAULT_NA
+        || samples[uuid].metadata[metadataKey] === METADATA_DEFAULT_VALUE
       );
 
       return isMetadataEmpty(sampleUuid);

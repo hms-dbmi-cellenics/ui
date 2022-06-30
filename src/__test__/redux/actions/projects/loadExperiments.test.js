@@ -1,7 +1,7 @@
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
-import { projectTemplate } from 'redux/reducers/projects/initialState';
+import { experimentTemplate } from 'redux/reducers/experiments/initialState';
 import { loadExperiments } from 'redux/actions/experiments';
 
 import fake from '__test__/test-utils/constants';
@@ -12,10 +12,10 @@ enableFetchMocks();
 
 const mockStore = configureStore([thunk]);
 
-describe('load projects ', () => {
+describe('load experiments ', () => {
   const initialState = {
-    projects: {
-      ...projectTemplate,
+    experiments: {
+      ...experimentTemplate,
     },
   };
 

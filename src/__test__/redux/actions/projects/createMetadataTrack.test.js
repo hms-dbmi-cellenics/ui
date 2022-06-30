@@ -5,7 +5,7 @@ import thunk from 'redux-thunk';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 
 import createMetadataTrack from 'redux/actions/experiments/createMetadataTrack';
-import initialProjectState, { projectTemplate } from 'redux/reducers/projects/initialState';
+import initialExperimentState, { experimentTemplate } from 'redux/reducers/experiments/initialState';
 import initialSamplesState, { sampleTemplate } from 'redux/reducers/samples/initialState';
 
 import {
@@ -19,30 +19,30 @@ import { SAMPLES_UPDATE } from 'redux/actionTypes/samples';
 const mockStore = configureStore([thunk]);
 
 describe('createMetadataTrack action', () => {
-  const project1uuid = 'project1';
+  const experiment1Id = 'expeirment-1';
   const sample1uuid = 'sample1';
 
-  const project1 = {
-    ...projectTemplate,
-    name: 'Project 1',
-    uuid: 'project1',
+  const experiment1 = {
+    ...experimentTemplate,
+    name: 'Experiment 1',
+    uuid: experiment1Id,
     createdDate: '01-01-2021',
     lastModified: '01-01-2021',
-    samples: [sample1uuid],
+    sampleIds: [sample1uuid],
   };
 
   const sample1 = {
     ...sampleTemplate,
     name: 'Sample 1',
-    projectUuid: project1uuid,
+    projectUuid: experiment1Id,
     uuid: 'sample1',
   };
 
-  const oneProjectState = {
-    projects: {
-      ...initialProjectState,
-      ids: [project1.uuid],
-      [project1.uuid]: project1,
+  const oneExperimentState = {
+    experiments: {
+      ...initialExperimentState,
+      ids: [experiment1.id],
+      [experiment1.id]: experiment1,
     },
     samples: {
       ...initialSamplesState,
@@ -57,11 +57,11 @@ describe('createMetadataTrack action', () => {
   });
 
   it('Works correctly', async () => {
-    const store = mockStore(oneProjectState);
+    const store = mockStore(oneExperimentState);
 
     fetchMock.mockResolvedValue(new Response(JSON.stringify({})));
 
-    await store.dispatch(createMetadataTrack('Test track', project1.uuid));
+    await store.dispatch(createMetadataTrack('Test track', experiment1.id));
 
     const trackKeyRCompatible = 'Test_track';
 
@@ -70,7 +70,7 @@ describe('createMetadataTrack action', () => {
     expect(_.map(actions, 'payload')).toMatchSnapshot();
 
     expect(fetchMock).toHaveBeenCalledWith(
-      `http://localhost:3000/v2/experiments/${project1.uuid}/metadataTracks/${trackKeyRCompatible}`,
+      `http://localhost:3000/v2/experiments/${experiment1.id}/metadataTracks/${trackKeyRCompatible}`,
       {
         headers: { 'Content-Type': 'application/json' },
         method: 'POST',

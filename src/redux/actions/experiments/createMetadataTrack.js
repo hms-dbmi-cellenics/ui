@@ -6,15 +6,13 @@ import {
 import {
   SAMPLES_UPDATE,
 } from 'redux/actionTypes/samples';
-import {
-  DEFAULT_NA,
-} from 'redux/reducers/projects/initialState';
 
 import fetchAPI from 'utils/http/fetchAPI';
 import handleError from 'utils/http/handleError';
 
 import endUserMessages from 'utils/endUserMessages';
 import { metadataNameToKey } from 'utils/data-management/metadataUtils';
+import { METADATA_DEFAULT_VALUE } from 'redux/reducers/experiments/initialState';
 
 const createMetadataTrack = (
   name, experimentId,
@@ -52,7 +50,7 @@ const createMetadataTrack = (
         sample: {
           metadata: {
             [metadataKey]: (
-              samples[sampleUuid].metadata[metadataKey] || DEFAULT_NA
+              samples[sampleUuid].metadata[metadataKey] || METADATA_DEFAULT_VALUE
             ),
           },
         },

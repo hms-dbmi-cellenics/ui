@@ -1,50 +1,50 @@
 import _ from 'lodash';
 
-import samplesCreateReducer from 'redux/reducers/projects/samplesCreate';
+import samplesCreateReducer from 'redux/reducers/experiments/samplesCreate';
 
 import { sampleTemplate } from 'redux/reducers/samples/initialState';
-import initialState, { projectTemplate } from 'redux/reducers/projects/initialState';
+import initialState, { experimentTemplate } from 'redux/reducers/experiments/initialState';
 
-const projectUuid = 'project-1';
+const experimentId = 'experiment-1';
 
 const newSample = {
   ...sampleTemplate,
   name: 'sampleName',
   uuid: 'uuid',
-  projectUuid,
+  projectUuid: experimentId,
   type: '10x',
 };
 
-const project = {
-  ...projectTemplate,
-  name: 'test project',
-  uuid: projectUuid,
+const experiment = {
+  ...experimentTemplate,
+  name: 'test experiment',
+  id: experimentId,
   description: 'this is a test description',
-  createdDate: '01-01-2021',
-  lastModified: '01-01-2021',
+  createdAt: '01-01-2021',
+  updatedAt: '01-01-2021',
 };
 
-const oneProjectState = {
+const oneExperimentState = {
   ...initialState,
-  ids: [...initialState.ids, projectUuid],
+  ids: [...initialState.ids, experimentId],
   meta: {
-    activeProjectUuid: projectUuid,
+    activeExperimentId: experimentId,
   },
-  [project.uuid]: project,
+  [experimentId]: experiment,
 };
 
 describe('samplesCreate', () => {
   it('returns correct state if previous state was initial', () => {
-    const newState = samplesCreateReducer(oneProjectState, { payload: { sample: newSample } });
+    const newState = samplesCreateReducer(oneExperimentState, { payload: { sample: newSample } });
 
     expect(newState).toMatchSnapshot();
   });
 
-  it('returns correct state when project already had a sample', () => {
-    const projectWithSampleState = _.cloneDeep(oneProjectState);
-    projectWithSampleState[projectUuid].samples.push('oldSampleUuid');
+  it('returns correct state when experiment already had a sample', () => {
+    const experimentWithSampleState = _.cloneDeep(oneExperimentState);
+    experimentWithSampleState[experimentId].samples.push('oldSampleUuid');
 
-    const newState = samplesCreateReducer(oneProjectState, { payload: { sample: newSample } });
+    const newState = samplesCreateReducer(oneExperimentState, { payload: { sample: newSample } });
 
     expect(newState).toMatchSnapshot();
   });

@@ -3,10 +3,11 @@ import thunk from 'redux-thunk';
 import waitForActions from 'redux-mock-store-await-actions';
 import axios from 'axios';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
+
 import { SAMPLES_FILE_UPDATE } from 'redux/actionTypes/samples';
 import initialSampleState, { sampleTemplate } from 'redux/reducers/samples/initialState';
-import initialProjectState, { projectTemplate } from 'redux/reducers/projects/initialState';
 import initialExperimentState, { experimentTemplate } from 'redux/reducers/experiments/initialState';
+
 import UploadStatus from 'utils/upload/UploadStatus';
 import { waitFor } from '@testing-library/dom';
 
@@ -68,23 +69,23 @@ const mockProjectUuid = 'project-uuid';
 const mockExperimentId = 'experiment-id';
 
 const initialState = {
-  projects: {
-    ...initialProjectState,
-    ids: [mockProjectUuid],
-    meta: {
-      activeProjectUuid: mockProjectUuid,
-    },
-    [mockProjectUuid]: {
-      ...projectTemplate,
-      samples: [mockSampleUuid],
-      experiments: [mockExperimentId],
-    },
-    errorProjectUuid: {
-      ...projectTemplate,
-      samples: [mockSampleUuid],
-      experiments: [mockExperimentId],
-    },
-  },
+  // projects: {
+  //   ...initialProjectState,
+  //   ids: [mockProjectUuid],
+  //   meta: {
+  //     activeProjectUuid: mockProjectUuid,
+  //   },
+  //   [mockProjectUuid]: {
+  //     ...projectTemplate,
+  //     samples: [mockSampleUuid],
+  //     experiments: [mockExperimentId],
+  //   },
+  //   errorProjectUuid: {
+  //     ...projectTemplate,
+  //     samples: [mockSampleUuid],
+  //     experiments: [mockExperimentId],
+  //   },
+  // },
   experiments: {
     ...initialExperimentState,
     [mockExperimentId]: {

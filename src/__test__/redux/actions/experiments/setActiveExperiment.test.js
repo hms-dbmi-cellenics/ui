@@ -1,45 +1,45 @@
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import setActiveExperiment from 'redux/actions/experiments/setActiveExperiment';
-import initialState, { projectTemplate } from 'redux/reducers/projects/initialState';
+import initialExperimentState, { experimentTemplate } from 'redux/reducers/experiments/initialState';
 
 import { EXPERIMENTS_SET_ACTIVE } from 'redux/actionTypes/experiments';
 
 const mockStore = configureStore([thunk]);
 
 describe('setActiveExperiment action', () => {
-  const activeProject = {
-    ...projectTemplate,
-    name: 'project 1',
-    uuid: '12345',
-    createdDate: '01-01-2021',
-    lastModified: '01-01-2021',
+  const activeExperiment = {
+    ...experimentTemplate,
+    name: 'experiment 1',
+    id: '12345',
+    createdAt: '01-01-2021',
+    updatedAt: '01-01-2021',
   };
 
-  const otherProject = {
-    ...projectTemplate,
-    name: 'project 2',
-    uuid: '67890',
-    createdDate: '01-01-2021',
-    lastModified: '01-01-2021',
+  const otherExperiment = {
+    ...experimentTemplate,
+    name: 'experiment 2',
+    id: '67890',
+    createdAt: '01-01-2021',
+    updatedAt: '01-01-2021',
   };
 
   const mockState = {
-    projects: {
-      ...initialState,
-      ids: [...initialState.ids, activeProject.uuid, otherProject.uuid],
+    experiments: {
+      ...initialExperimentState,
+      ids: [...initialExperimentState.ids, activeExperiment.id, otherExperiment.uuid],
       meta: {
-        ...initialState.meta,
-        activeProjectUuid: activeProject.uuid,
+        ...initialExperimentState.meta,
+        activeExperimentId: activeExperiment.id,
       },
-      [activeProject.uuid]: activeProject,
-      [otherProject.uuid]: otherProject,
+      [activeExperiment.id]: activeExperiment,
+      [otherExperiment.id]: otherExperiment,
     },
   };
 
   it('Dispatches event correctly', async () => {
     const store = mockStore(mockState);
-    await store.dispatch(setActiveExperiment(otherProject.uuid));
+    await store.dispatch(setActiveExperiment(otherExperiment.id));
 
     const firstAction = store.getActions()[0];
     expect(firstAction.type).toEqual(EXPERIMENTS_SET_ACTIVE);
@@ -48,7 +48,7 @@ describe('setActiveExperiment action', () => {
 
   it('Does not dispatch if project is the same', async () => {
     const store = mockStore(mockState);
-    await store.dispatch(setActiveExperiment(activeProject.uuid));
+    await store.dispatch(setActiveExperiment(activeExperiment.id));
 
     expect(store.getActions().length).toEqual(0);
   });
