@@ -10,12 +10,19 @@ const loadExperiments = () => async (dispatch) => {
   });
 
   try {
-    const data = await fetchAPI('/v2/experiments');
+    const experiments = await fetchAPI('/v2/experiments');
+
+    experiments.forEach((experiment) => {
+      // eslint-disable-next-line no-param-reassign
+      experiment.sampleIds = experiment.samplesOrder;
+      // eslint-disable-next-line no-param-reassign
+      delete experiment.samplesOrder;
+    });
 
     dispatch({
       type: EXPERIMENTS_LOADED,
       payload: {
-        experiments: data,
+        experiments,
       },
     });
   } catch (e) {

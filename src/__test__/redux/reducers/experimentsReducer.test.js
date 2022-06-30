@@ -1,5 +1,5 @@
 import experimentsReducer from 'redux/reducers/experiments';
-import initialState, { experimentTemplate } from 'redux/reducers/experiments/initialState';
+import initialState from 'redux/reducers/experiments/initialState';
 import { sampleTemplate } from 'redux/reducers/samples/initialState';
 
 import {
@@ -18,54 +18,24 @@ describe('experimentsReducer', () => {
   const experimentId1 = 'experiment-1';
   const experimentId2 = 'experiment-2';
 
-  const rawExperiment1 = {
-    experimentId: experimentId1,
-    experimentName: 'experiment 1',
-    projectId: experimentId1,
-    description: 'this is a test description',
-    createdDate: '01-01-2021',
-    meta: {
-      organism: null,
-      type: '10x',
-    },
-    sampleIds: [],
-    notifyByEmail: true,
-  };
-
-  const rawExperiment2 = {
-    experimentId: experimentId2,
-    experimentName: 'experiment 2',
-    projectId: experimentId2,
-    description: 'this is a test description',
-    createdDate: '01-01-2021',
-    meta: {
-      organism: null,
-      type: '10x',
-    },
-    sampleIds: [],
-    notifyByEmail: true,
-  };
-
   const experiment1 = {
-    ...experimentTemplate,
-    projectUuid: experimentId1,
-    name: 'experiment 1',
     id: experimentId1,
+    name: 'experiment 1',
     description: 'this is a test description',
-    createdDate: '01-01-2021',
     sampleIds: [],
-    meta: experimentTemplate.meta,
+    notifyByEmail: true,
+    createdAt: '2021-01-01',
+    updatedAt: '2022-01-17',
   };
 
   const experiment2 = {
-    ...experimentTemplate,
-    projectUuid: experimentId2,
-    name: 'experiment 2',
     id: experimentId2,
+    name: 'experiment 2',
     description: 'this is a test description',
-    createdDate: '01-01-2021',
     sampleIds: [],
-    meta: experimentTemplate.meta,
+    notifyByEmail: true,
+    createdAt: '2021-01-01',
+    updatedAt: '2022-01-17',
   };
 
   const sampleId = 'testSampleId';
@@ -77,7 +47,7 @@ describe('experimentsReducer', () => {
   const updatedExperiment = {
     ...experiment1,
     name: 'updated name',
-    lastModified: '02-01-2021',
+    updatedAt: '02-01-2021',
   };
 
   const oneExperimentState = {
@@ -103,8 +73,8 @@ describe('experimentsReducer', () => {
     ...sampleTemplate,
     name: 'test sample',
     uuid: sampleId,
-    createdDate: '2021-01-01T14:48:00.000Z',
-    lastModified: '2021-01-01T14:48:00.000Z',
+    createdAt: '2021-01-01T14:48:00.000Z',
+    updatedAt: '2021-01-01T14:48:00.000Z',
   };
 
   it('Reduces identical state on unknown action', () => expect(
@@ -118,7 +88,7 @@ describe('experimentsReducer', () => {
     const newState = experimentsReducer(initialState, {
       type: EXPERIMENTS_LOADED,
       payload: {
-        experiments: [rawExperiment1],
+        experiments: [experiment1],
       },
     });
 
@@ -131,7 +101,7 @@ describe('experimentsReducer', () => {
     const newState = experimentsReducer(oneExperimentState, {
       type: EXPERIMENTS_LOADED,
       payload: {
-        experiments: [rawExperiment2],
+        experiments: [experiment2],
       },
     });
 
@@ -145,12 +115,12 @@ describe('experimentsReducer', () => {
       type: EXPERIMENTS_LOADED,
       payload: {
         experiments: [
-          rawExperiment1, rawExperiment2,
+          experiment1, experiment2,
         ],
       },
     });
-    expect(newState.ids).toEqual([rawExperiment1.id, rawExperiment2.id]);
-    expect(newState.meta.activeExperimentId).toEqual(rawExperiment1.id);
+    expect(newState.ids).toEqual([experiment1.id, experiment2.id]);
+    expect(newState.meta.activeExperimentId).toEqual(experiment1.id);
     expect(newState).toMatchSnapshot();
   });
 
@@ -176,15 +146,20 @@ describe('experimentsReducer', () => {
   });
 
   it('Inserts a new experiment correctly', () => {
+    const createdExperimentData = {
+      id: experiment1.id,
+      name: experiment1.name,
+      description: experiment1.description,
+      createdAt: experiment1.createdAt,
+    };
+
     const newState = experimentsReducer(initialState, {
       type: EXPERIMENTS_CREATED,
-      payload: {
-        experiment: experiment1,
-      },
+      payload: { experiment: createdExperimentData },
     });
 
     expect(newState.ids).toEqual([experiment1.id]);
-    expect(newState[experiment1.id]).toEqual(experiment1);
+    expect(newState[experiment1.id]).toEqual(createdExperimentData);
     expect(newState).toMatchSnapshot();
   });
 
@@ -233,8 +208,8 @@ describe('experimentsReducer', () => {
       ...sampleTemplate,
       name: 'another test sample',
       uuid: 'testAnotherSampleId',
-      createdDate: '2021-01-01T14:48:00.000Z',
-      lastModified: '2021-01-01T14:48:00.000Z',
+      createdAt: '2021-01-01T14:48:00.000Z',
+      updatedAt: '2021-01-01T14:48:00.000Z',
     };
 
     const newState = experimentsReducer(oneExperimentWithSampleState, {

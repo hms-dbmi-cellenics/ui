@@ -22,9 +22,7 @@ const experimentsLoaded = produce((draft, action) => {
   draft.ids = ids;
 
   experiments.forEach((experiment) => {
-    experiment.sampleIds = experiment.samplesOrder;
-
-    draft[experiment.id] = _.omit(experiment, ['samplesOrder']);
+    draft[experiment.id] = experiment;
   });
 });
 
