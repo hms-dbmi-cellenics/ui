@@ -43,6 +43,10 @@ const createExperiment = (
     dispatch({
       type: EXPERIMENTS_CREATED,
       payload: {
+        // TODO We don't really need to send this createdDate to redux, the real createdAt
+        // is being generated in the api
+        // We should make the POST to create the experiment return the new experiment and
+        // Take the createdAt from there
         experiment: { createdDate, ...newExperimentProperties },
       },
     });
