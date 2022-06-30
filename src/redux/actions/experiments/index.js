@@ -2,7 +2,6 @@ import createExperiment from './createExperiment';
 import deleteExperiment from './deleteExperiment';
 import updateExperiment from './updateExperiment';
 import loadExperiments from './loadExperiments';
-import loadExperiment from './loadExperiment';
 import setActiveExperiment from './setActiveExperiment';
 import switchExperiment from './switchExperiment';
 import reorderSamples from './reorderSamples';
@@ -16,7 +15,6 @@ export {
   deleteExperiment,
   updateExperiment,
   loadExperiments,
-  loadExperiment,
   setActiveExperiment,
   switchExperiment,
   reorderSamples,

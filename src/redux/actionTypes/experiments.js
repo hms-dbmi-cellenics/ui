@@ -11,7 +11,7 @@ const EXPERIMENTS_CREATED = `${EXPERIMENTS}/created`;
 const EXPERIMENTS_LOADING = `${EXPERIMENTS}/loading`;
 
 /**
- * Create experiments
+ * Experiments loaded
  */
 const EXPERIMENTS_LOADED = `${EXPERIMENTS}/loaded`;
 

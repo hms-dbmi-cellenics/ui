@@ -46,8 +46,6 @@ const createSample = (
       .reduce((acc, curr) => ({ ...acc, [curr]: DEFAULT_NA }), {}) || {},
   };
 
-  console.log('wlkgnreoerkn');
-
   const url = `/v2/experiments/${experimentId}/samples/${newSampleUuid}`;
 
   let sampleTechnology;

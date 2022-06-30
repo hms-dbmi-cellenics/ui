@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { Switch, Typography, Space } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
-import { updateExperiment, loadExperiment, loadExperiments } from 'redux/actions/experiments';
+import { updateExperiment, loadExperiments } from 'redux/actions/experiments';
 import PropTypes from 'prop-types';
 
 const { Text } = Typography;
@@ -19,12 +19,6 @@ const NotifyByEmail = (props) => {
       dispatch(loadExperiments());
     }
   }, []);
-
-  useEffect(() => {
-    if (!experiment && activeExperimentId) {
-      dispatch(loadExperiment(activeExperimentId));
-    }
-  }, [activeExperimentId]);
 
   return (
     <Space direction='horizontal'>

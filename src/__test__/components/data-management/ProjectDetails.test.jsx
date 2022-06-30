@@ -14,7 +14,8 @@ import userEvent from '@testing-library/user-event';
 import { screen, render, waitFor } from '@testing-library/react';
 
 import * as createMetadataTrack from 'redux/actions/experiments/createMetadataTrack';
-import initialProjectState, { projectTemplate } from 'redux/reducers/projects/initialState';
+// import initialProjectState, { projectTemplate } from 'redux/reducers/projects/initialState';
+// import initialProjectState, { projectTemplate } from 'redux/reducers/projects/initialState';
 import initialSamplesState, { sampleTemplate } from 'redux/reducers/samples/initialState';
 import initialExperimentsState from 'redux/reducers/experiments/initialState';
 import initialExperimentSettingsState from 'redux/reducers/experimentSettings/initialState';
@@ -36,38 +37,31 @@ jest.mock('utils/AppRouteProvider', () => ({
 const mockStore = configureStore([thunk]);
 const width = 600;
 const height = 400;
-const projectName = 'Project 1';
-const projectUuid = 'project-1-uuid';
-const projectDescription = 'Some description';
+const experiment1id = 'experiment-1';
+const experimentName = 'Project 1';
+const experimentDescription = 'Some description';
 const sample1Name = 'Sample 1';
 const sample1Uuid = 'sample-1';
 const sample2Name = 'Sample 2';
 const sample2Uuid = 'sample-2';
-const experiment1id = 'experiment-1';
 
 const noDataState = {
-  backendStatus: {
-    'experiment-1': initialExperimentBackendStatus,
-  },
-  projects: {
-    ...initialProjectState,
-    meta: {
-      ...initialProjectState.meta,
-      activeProjectUuid: projectUuid,
-      loading: false,
-    },
-    ids: [projectUuid],
-    [projectUuid]: {
-      ...projectTemplate,
-      experiments: [experiment1id],
-      uuid: projectUuid,
-      name: projectName,
-      description: projectDescription,
-    },
-  },
   experiments: {
     ...initialExperimentsState,
     ids: [experiment1id],
+    meta: {
+      activeExperimentId: experiment1id,
+    },
+    [experiment1id]: {
+      id: experiment1id,
+      name: experimentName,
+      description: experimentDescription,
+      notifyByEmail: true,
+      createdAt: '2022-06-29 17:06:10.683568+00',
+      updatedAt: '2022-06-29 17:06:10.683568+00',
+      metadataKeys: [],
+      sampleIds: [],
+    },
   },
   experimentSettings: {
     ...initialExperimentSettingsState,
@@ -76,6 +70,7 @@ const noDataState = {
     ...initialSamplesState,
   },
   backendStatus: {
+    'experiment-1': initialExperimentBackendStatus,
     [experiment1id]: {
       ...initialExperimentBackendStatus,
       status: {
@@ -92,20 +87,12 @@ const noDataState = {
 
 const withDataState = {
   ...noDataState,
-  projects: {
-    ...noDataState.projects,
-    [projectUuid]: {
-      ...noDataState.projects[projectUuid],
-      samples: [sample1Uuid, sample2Uuid],
-      metadataKeys: ['metadata-1'],
-    },
-  },
   samples: {
     ...noDataState.samples,
     [sample1Uuid]: {
       ...sampleTemplate,
       name: sample1Name,
-      projectUuid,
+      projectUuid: experiment1id,
       uuid: sample1Uuid,
       type: '10X Chromium',
       metadata: ['value-1'],
@@ -120,7 +107,7 @@ const withDataState = {
     [sample2Uuid]: {
       ...sampleTemplate,
       name: sample2Name,
-      projectUuid,
+      projectUuid: experiment1id,
       uuid: sample2Uuid,
       type: '10X Chromium',
       metadata: ['value-2'],
@@ -154,6 +141,7 @@ describe('ProjectDetails', () => {
     jest.clearAllMocks();
     metadataCreated = jest.spyOn(createMetadataTrack, 'default');
   });
+
   it('Has a title, project ID and description', () => {
     render(
       <Provider store={mockStore(noDataState)}>
@@ -162,13 +150,13 @@ describe('ProjectDetails', () => {
     );
 
     // Project name
-    expect(screen.getByText(projectName)).toBeDefined();
+    expect(screen.getByText(experimentName)).toBeDefined();
 
     // Project uuid
-    expect(screen.queryByText(projectUuid)).toBeDefined();
+    expect(screen.queryByText(experiment1id)).toBeDefined();
 
     // Description
-    expect(screen.queryByText(projectDescription)).toBeDefined();
+    expect(screen.queryByText(experimentDescription)).toBeDefined();
   });
 
   it('Has 4 buttons', () => {
@@ -260,6 +248,7 @@ describe('ProjectDetails', () => {
     const field = screen.getByRole('textbox');
     userEvent.type(field, 'somenewMeta');
     fireEvent.keyDown(field, { key: 'Escape', code: 'Escape' });
-    expect(store.getState().projects[projectUuid].metadataKeys).toEqual(['metadata-1']);
+
+    expect(store.getState().experiments[experiment1id].metadataKeys).toEqual(['metadata-1']);
   });
 });

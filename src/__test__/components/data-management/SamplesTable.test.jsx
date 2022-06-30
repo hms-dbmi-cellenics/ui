@@ -18,7 +18,7 @@ import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import createTestComponentFactory from '__test__/test-utils/testComponentFactory';
 
-import { loadExperiments, loadExperiment, setActiveExperiment } from 'redux/actions/experiments';
+import { loadExperiments, setActiveExperiment } from 'redux/actions/experiments';
 import loadEnvironment from 'redux/actions/networkResources/loadEnvironment';
 import { loadSamples } from 'redux/actions/samples';
 
@@ -99,8 +99,6 @@ describe('Samples table', () => {
     await storeState.dispatch(loadExperiments());
 
     // Loading experiment is usually called in Data Management, so we have to load them manually
-    await storeState.dispatch(loadExperiment(experimentWithSamplesId));
-    await storeState.dispatch(loadExperiment(experimentWithoutSamplesId));
     await storeState.dispatch(loadSamples(experimentWithSamplesId));
 
     // Defaults to project with samples

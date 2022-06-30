@@ -3,7 +3,7 @@ import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 
 import { makeStore } from 'redux/store';
 import {
-  loadExperiments, loadExperiment, setActiveExperiment, switchExperiment,
+  loadExperiments, setActiveExperiment, switchExperiment,
 } from 'redux/actions/experiments';
 import { loadSamples } from 'redux/actions/samples';
 
@@ -39,9 +39,7 @@ describe('switch experiment ', () => {
 
     store = makeStore();
     await store.dispatch(loadExperiments());
-    await store.dispatch(loadExperiment(experimentWithSamplesId));
     await store.dispatch(loadSamples(experimentWithSamplesId));
-    await store.dispatch(loadExperiment(experimentWithoutSamplesId));
     await store.dispatch(setActiveExperiment(experimentWithoutSamplesId));
   });
 
