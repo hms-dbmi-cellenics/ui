@@ -24,10 +24,9 @@ const experimentsLoaded = produce((draft, action) => {
   draft.ids = ids;
 
   experiments.forEach((experiment) => {
-    // WIP, deal with this before emrging
     experiment.sampleIds = experiment.samplesOrder;
 
-    draft[experiment.id] = experiment;
+    draft[experiment.id] = _.omit(experiment, ['samplesOrder']);
   });
 });
 
