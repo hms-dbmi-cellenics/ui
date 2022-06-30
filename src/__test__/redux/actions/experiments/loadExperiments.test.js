@@ -15,35 +15,7 @@ enableFetchMocks();
 
 const mockStore = configureStore([thunk]);
 
-const v1Experiment = [
-  {
-    experimentId: '03a9af8d-17ae-9caf-ace5-1152f4241eb2',
-    projectId: '03a9af8d-17ae-9caf-ace5-1152f4241eb2',
-    description: '',
-    experimentName: 'Bone marrow analysis',
-    createdDate: '2021-06-29 09:34:48.793+00',
-    notifyByEmail: true,
-    sampleIds: [
-      '51ffbd1e-a156-46e7-a380-039c2999a5b5',
-    ],
-    meta: {
-      organism: null,
-      type: '10x',
-      gem2s: {
-        paramsHash: 'paramsHash',
-        executionArn: 'executionArnGem2s',
-        stateMachineArn: 'stateMachineArnGem2s',
-      },
-      pipeline: {
-        paramsHash: null,
-        executionArn: 'executionArnPipeline',
-        stateMachineArn: 'stateMachineArnPipeline',
-      },
-    },
-  },
-];
-
-const v2Experiment = {
+const experiment = {
   id: '03a9af8d-17ae-9caf-ace5-1152f4241eb2',
   name: 'Bone marrow analysis',
   description: '',
@@ -67,7 +39,7 @@ const v2Experiment = {
   },
 };
 
-describe('loadExperiment', () => {
+describe('loadExperiments', () => {
   beforeEach(() => {
     jest.clearAllMocks();
 
@@ -78,7 +50,7 @@ describe('loadExperiment', () => {
   it('Dispatches the correct actions when called', async () => {
     const experimentId = 'experiment-1';
 
-    fetchMock.mockResolvedValue(new Response(JSON.stringify(v2Experiment)));
+    fetchMock.mockResolvedValue(new Response(JSON.stringify(experiment)));
 
     const store = mockStore();
     await store.dispatch(loadExperiments(experimentId));
@@ -87,7 +59,7 @@ describe('loadExperiment', () => {
     expect(actions[0].type).toEqual(EXPERIMENTS_LOADING);
 
     expect(actions[1].type).toEqual(EXPERIMENTS_LOADED);
-    expect(actions[1].payload.experiments).toEqual(v1Experiment);
+    expect(actions[1].payload.experiments).toEqual(experiment);
   });
 
   it('Dispatches notifications when error', async () => {
@@ -99,6 +71,9 @@ describe('loadExperiment', () => {
     await store.dispatch(loadExperiments(experimentId));
 
     const actions = store.getActions();
+    console.log('actionsDebug');
+    console.log(actions);
+
     expect(actions[0].type).toEqual(EXPERIMENTS_LOADING);
 
     expect(actions[1].type).toEqual(EXPERIMENTS_ERROR);
