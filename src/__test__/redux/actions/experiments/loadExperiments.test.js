@@ -25,18 +25,16 @@ const experiment = {
   notifyByEmail: true,
   createdAt: '2021-06-29 09:34:48.793+00',
   updatedAt: '2022-01-17 15:06:22.267+00',
-  pipelines: {
-    qc: {
-      paramsHash: null,
-      executionArn: 'executionArnPipeline',
-      stateMachineArn: 'stateMachineArnPipeline',
-    },
-    gem2s: {
-      paramsHash: 'paramsHash',
-      executionArn: 'executionArnGem2s',
-      stateMachineArn: 'stateMachineArnGem2s',
-    },
-  },
+};
+
+const dispatchedExperiment = {
+  id: experiment.id,
+  name: experiment.name,
+  description: experiment.description,
+  sampleIds: experiment.samplesOrder,
+  notifyByEmail: experiment.notifyByEmail,
+  createdAt: experiment.createdAt,
+  updatedAt: experiment.updatedAt,
 };
 
 describe('loadExperiments', () => {
@@ -50,7 +48,7 @@ describe('loadExperiments', () => {
   it('Dispatches the correct actions when called', async () => {
     const experimentId = 'experiment-1';
 
-    fetchMock.mockResolvedValue(new Response(JSON.stringify(experiment)));
+    fetchMock.mockResolvedValue(new Response(JSON.stringify([experiment])));
 
     const store = mockStore();
     await store.dispatch(loadExperiments(experimentId));
@@ -59,7 +57,7 @@ describe('loadExperiments', () => {
     expect(actions[0].type).toEqual(EXPERIMENTS_LOADING);
 
     expect(actions[1].type).toEqual(EXPERIMENTS_LOADED);
-    expect(actions[1].payload.experiments).toEqual(experiment);
+    expect(actions[1].payload.experiments).toEqual([dispatchedExperiment]);
   });
 
   it('Dispatches notifications when error', async () => {
