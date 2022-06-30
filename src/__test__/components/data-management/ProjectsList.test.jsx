@@ -15,8 +15,8 @@ const experiment1 = {
   ...experimentTemplate,
   name: 'experiment 1',
   id: '12345',
-  createdDate: '01-01-2021',
-  lastModified: '01-01-2021',
+  createdAt: '01-01-2021',
+  updatedAt: '01-01-2021',
 };
 
 const experiment2 = {
@@ -52,7 +52,7 @@ const createMockStore = (experimentNames) => {
     acc[idx] = {
       ...experimentTemplate,
       name,
-      uuid: idx,
+      id: idx,
     };
     return acc;
   }, {});

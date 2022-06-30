@@ -31,6 +31,7 @@ describe('Notify by email component', () => {
     fetchMock.doMock();
     storeState = makeStore();
   });
+
   const renderNotifyByEmail = async () => {
     await act(async () => (render(
       <Provider store={storeState}>
@@ -57,7 +58,7 @@ describe('Notify by email component', () => {
     expect(updateExperimentSpy).toHaveBeenCalledTimes(2);
   });
 
-  it('loads projects if non-existent', async () => {
+  it('loads experiments if non-existent', async () => {
     await renderNotifyByEmail();
     expect(loadExperimentsSpy).toHaveBeenCalledTimes(1);
   });
