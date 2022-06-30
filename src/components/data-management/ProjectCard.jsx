@@ -113,14 +113,14 @@ const ProjectCard = (props) => {
             labelStyle={itemTextStyle}
             label='Created'
           >
-            <PrettyTime isoTime={experiment.createdDate} />
+            <PrettyTime isoTime={experiment.createdAt} />
 
           </Item>
           <Item
             labelStyle={itemTextStyle}
             label='Modified'
           >
-            <PrettyTime isoTime={experiment.lastModified} />
+            <PrettyTime isoTime={experiment.updatedAt} />
 
           </Item>
         </Descriptions>

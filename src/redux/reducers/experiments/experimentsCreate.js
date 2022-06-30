@@ -3,7 +3,7 @@ import { experimentTemplate } from 'redux/reducers/experiments/initialState';
 const experimentCreate = (state, action) => {
   const {
     experiment: {
-      id, name, description, createdDate,
+      id, name, description, createdAt,
     },
   } = action.payload;
 
@@ -12,8 +12,7 @@ const experimentCreate = (state, action) => {
     id,
     name,
     description,
-    projectUuid: id,
-    createdDate,
+    createdAt,
   };
 
   return {
