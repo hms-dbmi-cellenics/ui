@@ -49,9 +49,8 @@ describe('Share expeirment modal', () => {
     await act(async () => render(
       <ShareExperimentModal
         onCancel={onCancel}
-        activeProject={{
-          experiments: [fake.EXPERIMENT_ID],
-          uuid: fake.PROJECT_ID,
+        experiment={{
+          id: fake.EXPERIMENT_ID,
           name: fake.PROJECT_NAME,
         }}
       />,
