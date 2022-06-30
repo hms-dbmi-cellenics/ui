@@ -114,7 +114,7 @@ const SamplesTable = forwardRef((props, ref) => {
 
   useConditionalEffect(() => {
     dispatch(loadSamples(activeExperimentId));
-  }, [activeExperiment.sampleIds], { lazy: true });
+  }, [activeExperiment?.sampleIds], { lazy: true });
 
   const deleteMetadataColumn = (name) => {
     dispatch(deleteMetadataTrack(name, activeExperimentId));
