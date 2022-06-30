@@ -14,8 +14,6 @@ import userEvent from '@testing-library/user-event';
 import { screen, render, waitFor } from '@testing-library/react';
 
 import * as createMetadataTrack from 'redux/actions/experiments/createMetadataTrack';
-// import initialProjectState, { projectTemplate } from 'redux/reducers/projects/initialState';
-// import initialProjectState, { projectTemplate } from 'redux/reducers/projects/initialState';
 import initialSamplesState, { sampleTemplate } from 'redux/reducers/samples/initialState';
 import initialExperimentsState from 'redux/reducers/experiments/initialState';
 import initialExperimentSettingsState from 'redux/reducers/experimentSettings/initialState';
@@ -38,7 +36,7 @@ const mockStore = configureStore([thunk]);
 const width = 600;
 const height = 400;
 const experiment1id = 'experiment-1';
-const experimentName = 'Project 1';
+const experimentName = 'Experiment 1';
 const experimentDescription = 'Some description';
 const sample1Name = 'Sample 1';
 const sample1Uuid = 'sample-1';
@@ -87,6 +85,14 @@ const noDataState = {
 
 const withDataState = {
   ...noDataState,
+  experiments: {
+    ...noDataState.experiments,
+    [experiment1id]: {
+      ...noDataState.experiments[experiment1id],
+      sampleIds: [sample1Uuid, sample2Uuid],
+      metadataKeys: ['metadata-1'],
+    },
+  },
   samples: {
     ...noDataState.samples,
     [sample1Uuid]: {
