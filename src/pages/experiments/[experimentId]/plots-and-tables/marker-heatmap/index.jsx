@@ -249,7 +249,7 @@ const MarkerHeatmap = ({ experimentId }) => {
       },
       pageSizeFilter: null,
     };
-    
+
     dispatch(loadPaginatedGeneProperties(experimentId, ['dispersions'], searchBarUuid, state));
   }, []);
 

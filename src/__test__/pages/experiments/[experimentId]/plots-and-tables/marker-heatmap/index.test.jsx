@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import { mount } from 'enzyme';
-import { within } from '@testing-library/dom';
+import { within, fireEvent } from '@testing-library/dom';
 import userEvent from '@testing-library/user-event';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import _ from 'lodash';
@@ -94,7 +94,7 @@ const getDisplayedGenes = (container) => {
 // Helper function to get genes held within the tree
 const getTreeGenes = (container) => {
   const treeNodeList = container.querySelectorAll('span[class*=ant-tree-title]');
-  return Array.from(treeNodeList).map((node) => node.firstChild.firstChild.textContent);
+  return Array.from(treeNodeList).map((node) => node.textContent);
 };
 
 // Helper function to get current order of displayed genes in enzyme tests
@@ -368,6 +368,74 @@ describe('Marker heatmap plot', () => {
 
     // The gene should be deleted from the list
     expect(_.isEqual(genesListAfterRemoval, genesListBeforeRemoval)).toEqual(true);
+  });
+
+  it('searches for genes and adds a valid gene', async () => {
+    await renderHeatmapPage(storeState);
+
+    await act(async () => {
+      userEvent.click(screen.getByText('Re-order genes'));
+    });
+
+    // check placeholder text is loaded
+    expect(screen.getByText('Search for genes...')).toBeInTheDocument();
+
+    const searchBox = screen.getByRole('combobox');
+
+    // remove a gene to check if genes can be added
+    const geneTree = screen.getByRole('tree');
+    const geneToRemove = within(geneTree).getByText('Tmem176a');
+
+    const geneRemoveButton = geneToRemove.nextSibling.firstChild;
+
+    userEvent.click(geneRemoveButton);
+
+    // search for genes using lowercase
+    userEvent.type(searchBox, 'tmem');
+
+    // antd creates multiple elements for options
+    // find option element by title, clicking on element with role='option' does nothing
+    const option = screen.getByTitle('Tmem176a');
+
+    // the element has pointer-events set to 'none', skip check
+    await act(async () => {
+      // based on https://stackoverflow.com/questions/61080116
+      userEvent.click(option, undefined, { skipPointerEventsCheck: true });
+    });
+
+    // check the search text is cleared after selecting a valid option
+    expect(searchBox.value).toBe('');
+
+    // check the selected gene was added
+    expect(within(geneTree).getByText('Tmem176a')).toBeInTheDocument();
+  });
+
+  it('adds and already loaded gene and clears the input', async () => {
+    await renderHeatmapPage(storeState);
+
+    await act(async () => {
+      userEvent.click(screen.getByText('Re-order genes'));
+    });
+
+    const searchBox = screen.getByRole('combobox');
+
+    userEvent.type(searchBox, 'tmem');
+
+    // this finds option for selection box in 1st tab and search box, use second element
+    const option = screen.getAllByTitle('Tmem176a')[1];
+
+    await act(async () => {
+      userEvent.click(option, undefined, { skipPointerEventsCheck: true });
+    });
+
+    // search box shouldn't clear when selecting an already loaded gene
+    expect(searchBox.value).toBe('tmem');
+
+    const clearButton = searchBox.closest('div[class*=ant-select-auto-complete]').lastChild;
+
+    userEvent.click(clearButton);
+
+    expect(searchBox.value).toBe('');
   });
 });
 

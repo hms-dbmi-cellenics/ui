@@ -11,7 +11,9 @@ const filterGenes = (searchText, geneList, loadedGenes) => {
   const disableLoaded = filteredList.map((gene) => loadedGenes.includes(gene));
 
   // options needs to be an array of objects
-  return filteredList.map((geneName, index) => ({ value: geneName, disabled: disableLoaded[index] }));
+  return filteredList.map((geneName, index) => ({
+    value: geneName, disabled: disableLoaded[index],
+  }));
 };
 
 const GeneSearchBar = (props) => {
@@ -32,6 +34,7 @@ const GeneSearchBar = (props) => {
     if (!geneList.includes(newGene) || config?.selectedGenes.includes(newGene)) {
       return;
     }
+
     const genes = _.clone(config?.selectedGenes);
     genes.push(newGene);
     dispatch(loadGeneExpression(experimentId, genes, plotUuid));
@@ -45,7 +48,6 @@ const GeneSearchBar = (props) => {
 
   return (
     <AutoComplete
-      id='SearchBox'
       allowClear
       value={value}
       options={options}
