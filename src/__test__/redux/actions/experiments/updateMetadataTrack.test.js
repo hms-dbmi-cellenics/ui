@@ -18,7 +18,7 @@ import { SAMPLES_METADATA_DELETE, SAMPLES_UPDATE } from 'redux/actionTypes/sampl
 
 const mockStore = configureStore([thunk]);
 
-const mockProjectUuid = 'project-1234';
+const mockExperimentId = 'experiment-1234';
 const mockSampleUuid = 'sample-1234';
 
 const oldMetadataTrack = 'Old track';
@@ -27,20 +27,20 @@ const oldMetadataTrackKey = metadataNameToKey(oldMetadataTrack);
 const newMetadataTrack = 'New track';
 const newMetadataTrackKey = metadataNameToKey(newMetadataTrack);
 
-const mockProject = {
+const mockExperiment = {
   ...initialExperimentState,
-  name: 'test project',
-  uuid: mockProjectUuid,
+  name: 'test experiment',
+  id: mockExperimentId,
   createdDate: '01-01-2021',
   lastModified: '01-01-2021',
   metadataKeys: [oldMetadataTrackKey],
-  samples: [mockSampleUuid],
+  sampleIds: [mockSampleUuid],
 };
 
 const mockSample = {
   ...initialSampleState,
   name: 'test sample',
-  projectUuid: mockProjectUuid,
+  projectUuid: mockExperimentId,
   uuid: mockSampleUuid,
   metadata: {
     [oldMetadataTrackKey]: 'value',
@@ -48,9 +48,9 @@ const mockSample = {
 };
 
 const initialState = {
-  projects: {
-    ids: [mockProject.uuid],
-    [mockProject.uuid]: mockProject,
+  experiments: {
+    ids: [mockExperiment.id],
+    [mockExperiment.id]: mockExperiment,
   },
   samples: {
     ids: [mockSample.uuid],
@@ -70,14 +70,16 @@ describe('updateMetadataTrack action', () => {
 
     fetchMock.mockResolvedValue(new Response(JSON.stringify({})));
 
-    await store.dispatch(updateMetadataTrack(oldMetadataTrack, newMetadataTrack, mockProject.uuid));
+    await store.dispatch(
+      updateMetadataTrack(oldMetadataTrack, newMetadataTrack, mockExperiment.id),
+    );
 
     const actions = store.getActions();
     expect(_.map(actions, 'type')).toEqual([EXPERIMENTS_METADATA_UPDATE, SAMPLES_UPDATE, SAMPLES_METADATA_DELETE]);
     expect(_.map(actions, 'payload')).toMatchSnapshot();
 
     expect(fetchMock).toHaveBeenCalledWith(
-      `http://localhost:3000/v2/experiments/${mockProject.uuid}/metadataTracks/${oldMetadataTrackKey}`,
+      `http://localhost:3000/v2/experiments/${mockExperiment.id}/metadataTracks/${oldMetadataTrackKey}`,
       {
         body: JSON.stringify({ key: newMetadataTrackKey }),
         headers: { 'Content-Type': 'application/json' },

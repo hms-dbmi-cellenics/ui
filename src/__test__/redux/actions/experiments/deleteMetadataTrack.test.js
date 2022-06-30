@@ -17,25 +17,25 @@ import { SAMPLES_METADATA_DELETE } from 'redux/actionTypes/samples';
 
 const mockStore = configureStore([thunk]);
 
-const mockProjectUuid = 'project-1234';
+const mockExperimentId = 'experiment-1234';
 const mockSampleUuid = 'sample-1234';
 const metadataTrack = 'Test';
 const metadataTrackKey = metadataNameToKey(metadataTrack);
 
-const mockProject = {
+const mockExperiment = {
   ...initialExperimentState,
-  name: 'test project',
-  uuid: mockProjectUuid,
-  createdDate: '01-01-2021',
-  lastModified: '01-01-2021',
+  name: 'test experiment',
+  id: mockExperimentId,
+  createdAt: '01-01-2021',
+  updatedAt: '01-01-2021',
   metadataKeys: [metadataTrackKey],
-  samples: [mockSampleUuid],
+  sampleIds: [mockSampleUuid],
 };
 
 const mockSample = {
   ...initialSampleState,
   name: 'test sample',
-  projectUuid: mockProjectUuid,
+  projectUuid: mockExperimentId,
   uuid: mockSampleUuid,
   metadata: {
     [metadataTrackKey]: 'value',
@@ -43,9 +43,9 @@ const mockSample = {
 };
 
 const initialState = {
-  projects: {
-    ids: [mockProject.uuid],
-    [mockProject.uuid]: mockProject,
+  experiments: {
+    ids: [mockExperiment.id],
+    [mockExperiment.id]: mockExperiment,
   },
   samples: {
     ids: [mockSample.uuid],
@@ -65,14 +65,14 @@ describe('deleteMetadataTrack action', () => {
 
     fetchMock.mockResolvedValue(new Response(JSON.stringify({})));
 
-    await store.dispatch(deleteMetadataTrack(metadataTrack, mockProject.uuid));
+    await store.dispatch(deleteMetadataTrack(metadataTrack, mockExperiment.id));
 
     const actions = store.getActions();
     expect(_.map(actions, 'type')).toEqual([EXPERIMENTS_METADATA_DELETE, SAMPLES_METADATA_DELETE]);
     expect(_.map(actions, 'payload')).toMatchSnapshot();
 
     expect(fetchMock).toHaveBeenCalledWith(
-      `http://localhost:3000/v2/experiments/${mockProject.uuid}/metadataTracks/${metadataTrack}`,
+      `http://localhost:3000/v2/experiments/${mockExperiment.id}/metadataTracks/${metadataTrack}`,
       {
         headers: { 'Content-Type': 'application/json' },
         method: 'DELETE',
@@ -82,7 +82,7 @@ describe('deleteMetadataTrack action', () => {
 
   it('Does not update metadata if save fails', async () => {
     const store = mockStore(initialState);
-    await store.dispatch(deleteMetadataTrack(metadataTrack, mockProject.uuid));
+    await store.dispatch(deleteMetadataTrack(metadataTrack, mockExperiment.id));
 
     const actions = store.getActions();
     expect(actions).toHaveLength(0);

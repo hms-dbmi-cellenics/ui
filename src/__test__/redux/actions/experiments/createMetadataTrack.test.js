@@ -25,7 +25,7 @@ describe('createMetadataTrack action', () => {
   const experiment1 = {
     ...experimentTemplate,
     name: 'Experiment 1',
-    uuid: experiment1Id,
+    id: experiment1Id,
     createdDate: '01-01-2021',
     lastModified: '01-01-2021',
     sampleIds: [sample1uuid],
