@@ -37,6 +37,7 @@ const createSample = (
     name,
     type,
     experimentId,
+    projectUuid: experimentId,
     uuid: newSampleUuid,
     createdDate,
     lastModified: createdDate,
