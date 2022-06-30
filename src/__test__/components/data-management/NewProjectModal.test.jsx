@@ -16,7 +16,7 @@ const { Text } = Typography;
 const mockStore = configureMockStore([thunk]);
 
 const initialState = {
-  projects: {
+  experiments: {
     ids: [],
     meta: {
       loading: true,
@@ -26,8 +26,8 @@ const initialState = {
   },
 };
 
-const storeWithProjects = {
-  projects: {
+const storeWithExperiments = {
+  experiments: {
     ids: ['123'],
     meta: {
       loading: true,
@@ -35,7 +35,7 @@ const storeWithProjects = {
       error: false,
     },
     123: {
-      name: 'my awesome project',
+      name: 'my awesome experiment',
     },
   },
 };
@@ -66,7 +66,7 @@ describe('NewProjectModal', () => {
     // It has an input
     expect(component.find(Input).length).toEqual(1);
 
-    // It has a project description input
+    // It has a experiment description input
     expect(component.find(TextArea).length).toEqual(1);
 
     // It has a button
@@ -75,7 +75,7 @@ describe('NewProjectModal', () => {
 
   it('contains required components for later flows', () => {
     const component = mount(
-      <Provider store={mockStore(storeWithProjects)}>
+      <Provider store={mockStore(storeWithExperiments)}>
         <NewProjectModal onCancel={onCancel} onCreate={onCreate} />
       </Provider>,
     );
@@ -86,24 +86,24 @@ describe('NewProjectModal', () => {
     // It has an input
     expect(component.find(Input).length).toEqual(1);
 
-    // It has a project description input
+    // It has a experiment description input
     expect(component.find(TextArea).length).toEqual(1);
 
     // It has a button
     expect(component.find(Button).length).toEqual(1);
   });
 
-  it('disables input and shows loading when project is being saved', () => {
+  it('disables input and shows loading when experiment is being saved', () => {
     const savingState = {
       ...initialState,
-      projects: {
+      experiments: {
         meta: {
-          ...initialState.projects.meta,
+          ...initialState.experiments.meta,
           saving: true,
         },
         ids: ['123'],
         123: {
-          name: 'my awesome project',
+          name: 'my awesome experiment',
         },
       },
     };
@@ -124,19 +124,19 @@ describe('NewProjectModal', () => {
     expect(component.find(ClipLoader).length).toEqual(1);
   });
 
-  it('disables input and shows error if project has errors', () => {
+  it('disables input and shows error if experiment has errors', () => {
     const errMsg = 'Error message';
 
     const errorState = {
       ...initialState,
-      projects: {
+      experiments: {
         meta: {
-          ...initialState.projects.meta,
+          ...initialState.experiments.meta,
           error: errMsg,
         },
         ids: ['123'],
         123: {
-          name: 'my awesome project',
+          name: 'my awesome experiment',
         },
       },
     };
