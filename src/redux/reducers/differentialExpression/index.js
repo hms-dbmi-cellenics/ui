@@ -7,7 +7,7 @@ import {
   DIFF_EXPR_COMPARISON_GROUP_SET,
   DIFF_EXPR_ORDERING_SET,
 } from 'redux/actionTypes/differentialExpression';
-import { EXPERIMENT_SETTINGS_PIPELINE_START } from 'redux/actionTypes/experimentSettings';
+import { EXPERIMENT_SETTINGS_QC_START } from 'redux/actionTypes/experimentSettings';
 
 import differentialExpressionLoading from 'redux/reducers/differentialExpression/differentialExpressionLoading';
 import differentialExpressionLoaded from 'redux/reducers/differentialExpression/differentialExpressionLoaded';
@@ -38,7 +38,7 @@ const differentialExpressionReducer = (state = initialState, action) => {
     case DIFF_EXPR_ORDERING_SET: {
       return differentialExpressionSetGeneOrdering(state, action);
     }
-    case EXPERIMENT_SETTINGS_PIPELINE_START: {
+    case EXPERIMENT_SETTINGS_QC_START: {
       return initialState;
     }
     case CELL_SETS_DELETE: {

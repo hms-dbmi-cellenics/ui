@@ -7,8 +7,6 @@ import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import initialSampleState from 'redux/reducers/samples/initialState';
 import { SAMPLES_ERROR, SAMPLES_LOADED, SAMPLES_LOADING } from 'redux/actionTypes/samples';
 import { loadSamples } from 'redux/actions/samples';
-import config from 'config';
-import { api } from 'utils/constants';
 
 enableFetchMocks();
 
@@ -43,7 +41,6 @@ describe('loadSample action', () => {
   });
 
   it('Works correctly', async () => {
-    config.currentApiVersion = api.V2;
     // mock new response from apiv2
     const responseV2 = new Response(
       JSON.stringify(
@@ -77,8 +74,6 @@ describe('loadSample action', () => {
   });
 
   it('Dispatches error correctly', async () => {
-    config.currentApiVersion = api.V2;
-
     fetchMock.resetMocks();
     fetchMock.doMock();
     fetchMock.mockRejectOnce(new Error('An api error'));

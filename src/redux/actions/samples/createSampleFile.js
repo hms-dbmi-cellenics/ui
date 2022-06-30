@@ -12,7 +12,7 @@ const fileNameForApiV1 = {
   features10x: 'features.tsv.gz',
 };
 
-const createSampleFileV2 = (
+const createSampleFile = (
   experimentId,
   sampleId,
   type,
@@ -60,4 +60,4 @@ const createSampleFileV2 = (
   }
 };
 
-export default createSampleFileV2;
+export default createSampleFile;

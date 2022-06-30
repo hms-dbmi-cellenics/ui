@@ -13,9 +13,6 @@ import endUserMessages from 'utils/endUserMessages';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import fake from '__test__/test-utils/constants';
 
-import config from 'config';
-import { api } from 'utils/constants';
-
 jest.mock('utils/pushNotificationMessage');
 
 let testStore = null;
@@ -46,6 +43,10 @@ describe('loadPlotConfig', () => {
     await act(async () => {
       await testStore.dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
     });
+
+    // Hits the correct url
+    const fetchUrl = fetchMock.mock.calls[0][0];
+    expect(fetchUrl).toEqual(`http://localhost:3000/v2/experiments/${experimentId}/plots/${plotUuid}`);
 
     // Expect componentConfig to contain key for plotUuid
     expect(testStore.getState().componentConfig[plotUuid]).toBeDefined();
@@ -91,18 +92,5 @@ describe('loadPlotConfig', () => {
 
     expect(pushNotificationMessage).toHaveBeenCalledTimes(1);
     expect(pushNotificationMessage).toHaveBeenCalledWith('error', expect.anything());
-  });
-
-  it('Uses V2 URL when using API version V2', async () => {
-    fetchMock.mockResponse(() => Promise.resolve(new Response(JSON.stringify(mockConfigData))));
-    config.currentApiVersion = api.V2;
-
-    await act(async () => {
-      await testStore.dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
-    });
-
-    const fetchUrl = fetchMock.mock.calls[0][0];
-
-    expect(fetchUrl).toEqual(`http://localhost:3000/v2/experiments/${experimentId}/plots/${plotUuid}`);
   });
 });

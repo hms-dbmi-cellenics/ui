@@ -4,9 +4,6 @@ import endUserMessages from 'utils/endUserMessages';
 import fetchAPI from 'utils/http/fetchAPI';
 import handleError from 'utils/http/handleError';
 
-import config from 'config';
-import { api } from 'utils/constants';
-
 const deleteCellSetJsonMerger = (cellSetKey, cellClasskey) => (
   [{
     $match: {
@@ -36,17 +33,9 @@ const deleteCellSet = (experimentId, key) => async (dispatch, getState) => {
     return null;
   }
 
-  let url;
-
-  if (config.currentApiVersion === api.V1) {
-    url = `/v1/experiments/${experimentId}/cellSets`;
-  } else if (config.currentApiVersion === api.V2) {
-    url = `/v2/experiments/${experimentId}/cellSets`;
-  }
-
   try {
     await fetchAPI(
-      url,
+      `/v2/experiments/${experimentId}/cellSets`,
       {
         method: 'PATCH',
         headers: {

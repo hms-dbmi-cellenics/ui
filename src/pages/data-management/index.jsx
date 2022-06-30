@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import {
-  Button, Space, Empty,
-} from 'antd';
+import { Space } from 'antd';
 
 import { ClipLoader } from 'react-spinners';
 import { loadProjects } from 'redux/actions/projects';
@@ -17,6 +15,7 @@ import ProjectDetails from 'components/data-management/ProjectDetails';
 import { loadProcessingSettings } from 'redux/actions/experimentSettings';
 import loadBackendStatus from 'redux/actions/backendStatus/loadBackendStatus';
 import { loadSamples } from 'redux/actions/samples';
+import ExampleExperimentsSpace from 'components/data-management/ExampleExperimentsSpace';
 
 const DataManagementPage = () => {
   const dispatch = useDispatch();
@@ -28,14 +27,10 @@ const DataManagementPage = () => {
 
   const sampleSaving = useSelector((state) => state.samples.meta.saving);
 
-  const {
-    activeProjectUuid,
-    loading: projectsLoading,
-  } = useSelector((state) => state.projects.meta);
+  const { activeProjectUuid } = useSelector((state) => state.projects.meta);
 
   const experiments = useSelector((state) => state.experiments);
   const [newProjectModalVisible, setNewProjectModalVisible] = useState(false);
-  const [justLoggedIn, setJustLoggedIn] = useState(true);
   const activeProject = projectsList[activeProjectUuid];
   const loadedSamples = useSelector((state) => state.samples);
 
@@ -51,7 +46,7 @@ const DataManagementPage = () => {
     dispatch(loadBackendStatus(experimentId));
   };
 
-  const areSamplesLoaded = () => !activeProject.samples.length
+  const samplesAreLoaded = () => !activeProject.samples.length
     || activeProject.samples.every((sample) => Object.keys(loadedSamples).includes(sample));
 
   useEffect(() => {
@@ -63,7 +58,7 @@ const DataManagementPage = () => {
 
     dispatch(loadProcessingSettings(activeExperimentId));
 
-    if (!areSamplesLoaded()) dispatch(loadSamples(activeProjectUuid));
+    if (!samplesAreLoaded()) dispatch(loadSamples(activeProjectUuid));
 
     if (!experimentsAreLoaded) {
       dispatch(loadExperiments(activeProjectUuid)).then(() => updateRunStatus(activeExperimentId));
@@ -71,19 +66,6 @@ const DataManagementPage = () => {
 
     if (experiments[activeExperimentId]) updateRunStatus(activeExperimentId);
   }, [activeProjectUuid]);
-
-  useEffect(() => {
-    // only open the modal the first time a user logs in if there are no projects
-    if (justLoggedIn === false || projectsLoading === true) {
-      return;
-    }
-
-    setJustLoggedIn(false);
-
-    if (projectsList.ids.length === 0) {
-      setNewProjectModalVisible(true);
-    }
-  }, [projectsList, projectsLoading]);
 
   const PROJECTS_LIST = 'Projects';
   const PROJECT_DETAILS = 'Project Details';
@@ -102,13 +84,7 @@ const DataManagementPage = () => {
       toolbarControls: [],
       component: (width, height) => {
         if (!activeProjectUuid) {
-          return (
-            <Empty
-              description='You have no projects yet.'
-            >
-              <Button type='primary' onClick={() => setNewProjectModalVisible(true)}>Get started</Button>
-            </Empty>
-          );
+          return <ExampleExperimentsSpace introductionText='You have no projects yet.' />;
         }
 
         return (

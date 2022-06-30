@@ -13,9 +13,6 @@ import endUserMessages from 'utils/endUserMessages';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import fake from '__test__/test-utils/constants';
 
-import config from 'config';
-import { api } from 'utils/constants';
-
 jest.mock('utils/pushNotificationMessage');
 
 const mockStore = configureMockStore([thunk]);
@@ -37,7 +34,7 @@ const state = {
 
 const store = mockStore(state);
 
-describe('loadPlotConfig', () => {
+describe('savePlotConfig', () => {
   beforeEach(async () => {
     jest.clearAllMocks();
     fetchMock.resetMocks();
@@ -62,16 +59,5 @@ describe('loadPlotConfig', () => {
     // Expect componentConfig to contain key for plotUuid
     expect(pushNotificationMessage).toHaveBeenCalledTimes(1);
     expect(pushNotificationMessage).toHaveBeenCalledWith('error', endUserMessages.ERROR_SAVING_PLOT_CONFIG);
-  });
-
-  it('Uses V2 URL when using API version V2', async () => {
-    config.currentApiVersion = api.V2;
-
-    await act(async () => {
-      await store.dispatch(savePlotConfig(experimentId, plotUuid));
-    });
-
-    const url = fetchMock.mock.calls[0][0];
-    expect(url).toEqual(`http://localhost:3000/v2/experiments/${experimentId}/plots/${plotUuid}`);
   });
 });

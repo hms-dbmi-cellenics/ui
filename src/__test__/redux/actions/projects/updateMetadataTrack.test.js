@@ -9,23 +9,12 @@ import updateMetadataTrack from 'redux/actions/projects/updateMetadataTrack';
 import initialProjectState from 'redux/reducers/projects';
 import initialSampleState from 'redux/reducers/samples';
 
-import { saveProject } from 'redux/actions/projects';
-import { saveSamples } from 'redux/actions/samples';
-
 import {
   PROJECTS_METADATA_UPDATE,
 } from 'redux/actionTypes/projects';
 import '__test__/test-utils/setupTests';
 
-import config from 'config';
-import { api } from 'utils/constants';
 import { SAMPLES_METADATA_DELETE, SAMPLES_UPDATE } from 'redux/actionTypes/samples';
-
-jest.mock('redux/actions/projects/saveProject');
-saveProject.mockImplementation(() => async () => { });
-
-jest.mock('redux/actions/samples/saveSamples');
-saveSamples.mockImplementation(() => async () => { });
 
 const mockStore = configureStore([thunk]);
 
@@ -76,9 +65,7 @@ describe('updateMetadataTrack action', () => {
     fetchMock.doMock();
   });
 
-  it('Works correctly in api v2', async () => {
-    config.currentApiVersion = api.V2;
-
+  it('Works correctly', async () => {
     const store = mockStore(initialState);
 
     fetchMock.mockResolvedValue(new Response(JSON.stringify({})));
@@ -97,21 +84,5 @@ describe('updateMetadataTrack action', () => {
         method: 'PATCH',
       },
     );
-  });
-
-  it('Does not update metadata if save fails', async () => {
-    const store = mockStore(initialState);
-
-    saveProject.mockImplementation(() => async () => { throw new Error('some weird error'); });
-
-    await store.dispatch(updateMetadataTrack(
-      oldMetadataTrack,
-      newMetadataTrack,
-      mockProject.uuid,
-    ));
-
-    const actions = store.getActions();
-
-    expect(actions).toHaveLength(0);
   });
 });

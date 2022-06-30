@@ -1,15 +1,10 @@
-import _ from 'lodash';
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import updateProject from 'redux/actions/projects/updateProject';
 import initialState, { projectTemplate } from 'redux/reducers/projects/initialState';
-import { saveProject } from 'redux/actions/projects';
 
 import { PROJECTS_UPDATE } from 'redux/actionTypes/projects';
 
-jest.mock('redux/actions/projects/saveProject');
-
-saveProject.mockImplementation(() => async () => { });
 const mockStore = configureStore([thunk]);
 
 const mockUuid = 'abc123';
@@ -48,15 +43,5 @@ describe('updateProject action', () => {
 
     const firstAction = store.getActions()[0];
     expect(firstAction.type).toEqual(PROJECTS_UPDATE);
-  });
-
-  it('Updates the lastModified field', async () => {
-    const originalModifiedDate = updatedProject.lastModified;
-    await store.dispatch(updateProject(mockUuid, updatedProject));
-
-    const { project: diff } = store.getActions()[0].payload;
-
-    expect(diff.lastModified).not.toEqual(originalModifiedDate);
-    expect(_.omit(diff, 'lastModified')).toEqual(_.omit(updatedProject, 'lastModified'));
   });
 });
