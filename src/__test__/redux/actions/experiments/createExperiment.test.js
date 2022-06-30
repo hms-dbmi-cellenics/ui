@@ -35,7 +35,7 @@ describe('createExperiment', () => {
 
   it('Works correctly', async () => {
     const store = mockStore(mockState);
-    await store.dispatch(createExperiment(experimentId, 'name', 'description'));
+    await store.dispatch(createExperiment('name', 'description'));
 
     const actions = store.getActions();
 
