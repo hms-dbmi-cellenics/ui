@@ -220,6 +220,7 @@ exports[`experimentsReducer Error state inserts error correctly 1`] = `
 Object {
   "ids": Array [],
   "meta": Object {
+    "activeExperimentId": null,
     "error": "Error message",
     "loading": false,
     "saving": false,
@@ -259,6 +260,7 @@ exports[`experimentsReducer Loading state changes meta state 1`] = `
 Object {
   "ids": Array [],
   "meta": Object {
+    "activeExperimentId": null,
     "error": false,
     "loading": true,
     "saving": false,

@@ -89,6 +89,7 @@ Array [
     "experiments": Object {
       "ids": Array [],
       "meta": Object {
+        "activeExperimentId": null,
         "error": false,
         "loading": false,
         "saving": false,
@@ -235,6 +236,7 @@ Array [
     "experiments": Object {
       "ids": Array [],
       "meta": Object {
+        "activeExperimentId": null,
         "error": false,
         "loading": false,
         "saving": false,
