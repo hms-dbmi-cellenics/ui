@@ -333,14 +333,14 @@ describe('Marker heatmap plot', () => {
     await renderHeatmapPage(storeState);
 
     expect(screen.getByText(/Add\/Remove genes/i)).toBeInTheDocument();
-    expect(screen.getByText(/Re-order genes/i)).toBeInTheDocument();
+    expect(screen.getByText(/Search for and re-order genes/i)).toBeInTheDocument();
   });
 
   it('switches tabs and removes genes within the tree', async () => {
     await renderHeatmapPage(storeState);
 
     await act(async () => {
-      userEvent.click(screen.getByText('Re-order genes'));
+      userEvent.click(screen.getByText('Search for and re-order genes'));
     });
     // note: clicking another tab doesn't remove previous tab from screen
     // screen.getByText will find multiples of the same gene -> use within(geneTree)
@@ -374,7 +374,7 @@ describe('Marker heatmap plot', () => {
     await renderHeatmapPage(storeState);
 
     await act(async () => {
-      userEvent.click(screen.getByText('Re-order genes'));
+      userEvent.click(screen.getByText('Search for and re-order genes'));
     });
 
     // check placeholder text is loaded
@@ -414,7 +414,7 @@ describe('Marker heatmap plot', () => {
     await renderHeatmapPage(storeState);
 
     await act(async () => {
-      userEvent.click(screen.getByText('Re-order genes'));
+      userEvent.click(screen.getByText('Search for and re-order genes'));
     });
 
     const searchBox = screen.getByRole('combobox');
