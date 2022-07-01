@@ -10,7 +10,7 @@ const filterGenes = (searchText, geneList, loadedGenes) => {
   const filteredList = geneList.filter((gene) => gene.toUpperCase().includes(searchTextUpper));
   const disableLoaded = filteredList.map((gene) => loadedGenes.includes(gene));
 
-  // options needs to be an array of objects
+  // options needs to be an array of objects, set disabled for loaded genes
   return filteredList.map((geneName, index) => ({
     value: geneName, disabled: disableLoaded[index],
   }));

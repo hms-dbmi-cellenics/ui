@@ -345,8 +345,8 @@ const MarkerHeatmap = ({ experimentId }) => {
               </Radio.Group>
             </div>
           </TabPane>
-          <TabPane tab='Re-order genes' key='2'>
-            <p>Type in a gene name and select it or hit enter to add it to the heatmap. Drag and drop genes to re-order them.</p>
+          <TabPane tab='Search for and re-order genes' key='2'>
+            <p>Type in a gene name and select it to add it to the heatmap. Drag and drop genes to re-order them.</p>
             {/* space needed to separate search box and reorder tree, display=flex fills the space */}
             <Space direction='vertical' style={{ display: 'flex' }}>
               <GeneSearchBar
