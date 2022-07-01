@@ -7,9 +7,6 @@ import {
   EXPERIMENTS_LOADING,
 } from 'redux/actionTypes/experiments';
 
-import config from 'config';
-import { api } from 'utils/constants';
-
 const toApiV1 = (experimentV2) => {
   const {
     id,
@@ -31,7 +28,6 @@ const toApiV1 = (experimentV2) => {
     createdDate: createdAt,
     notifyByEmail,
     sampleIds: samplesOrder,
-    // lastViewed: ignored, it isn\'t being used in the UI,
     meta: {
       // This is always 10x and organism so we can just generate them here
       organism: null,
@@ -51,19 +47,10 @@ const loadExperiments = (
     type: EXPERIMENTS_LOADING,
   });
 
-  let url;
   try {
-    let data;
+    let data = await fetchAPI(`/v2/experiments/${projectUuid}`);
 
-    if (config.currentApiVersion === api.V1) {
-      url = `/v1/projects/${projectUuid}/experiments`;
-      data = await fetchAPI(url);
-    } else if (config.currentApiVersion === api.V2) {
-      url = `/v2/experiments/${projectUuid}`;
-      data = await fetchAPI(url);
-
-      data = [toApiV1(data)];
-    }
+    data = [toApiV1(data)];
 
     dispatch({
       type: EXPERIMENTS_LOADED,

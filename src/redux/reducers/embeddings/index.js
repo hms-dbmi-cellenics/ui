@@ -5,7 +5,7 @@ import {
   EMBEDDINGS_ERROR,
 } from '../../actionTypes/embeddings';
 
-import { EXPERIMENT_SETTINGS_PIPELINE_START } from '../../actionTypes/experimentSettings';
+import { EXPERIMENT_SETTINGS_QC_START } from '../../actionTypes/experimentSettings';
 
 import embeddingsLoading from './embeddingsLoading';
 import embeddingsLoaded from './embeddingsLoaded';
@@ -25,7 +25,7 @@ const notificationsReducer = (state = initialState, action) => {
       return embeddingsError(state, action);
     }
 
-    case EXPERIMENT_SETTINGS_PIPELINE_START: {
+    case EXPERIMENT_SETTINGS_QC_START: {
       return initialState;
     }
 

@@ -1,7 +1,7 @@
 import {
   SAMPLES_ERROR,
   SAMPLES_SAVING,
-  SAMPLES_VALUE_IN_METADATA_TRACK_UPDATED_API_V2,
+  SAMPLES_VALUE_IN_METADATA_TRACK_UPDATED,
 } from 'redux/actionTypes/samples';
 
 import fetchAPI from 'utils/http/fetchAPI';
@@ -9,16 +9,9 @@ import handleError from 'utils/http/handleError';
 
 import endUserMessages from 'utils/endUserMessages';
 
-import config from 'config';
-import { api } from 'utils/constants';
-
 const updateValueInMetadataTrack = (
   experimentId, sampleId, metadataTrackKey, value,
 ) => async (dispatch) => {
-  if (config.currentApiVersion !== api.V2) {
-    throw new Error('This action only works with api v2');
-  }
-
   dispatch({ type: SAMPLES_SAVING, payload: { message: endUserMessages.SAVING_SAMPLE } });
 
   try {
@@ -36,7 +29,7 @@ const updateValueInMetadataTrack = (
     );
 
     dispatch({
-      type: SAMPLES_VALUE_IN_METADATA_TRACK_UPDATED_API_V2,
+      type: SAMPLES_VALUE_IN_METADATA_TRACK_UPDATED,
       payload: {
         sampleUuid: sampleId,
         key: metadataTrackKey,

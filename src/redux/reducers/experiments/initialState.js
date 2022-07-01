@@ -4,7 +4,6 @@ const experimentTemplate = {
   description: 'Analysis description',
   id: null,
   createdDate: null,
-  lastViewed: null,
   notifyByEmail: true,
   meta: { organism: null, type: '10x' },
   sampleIds: [],

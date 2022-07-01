@@ -11,11 +11,6 @@ import { loadExperiments } from 'redux/actions/experiments';
 
 import '__test__/test-utils/setupTests';
 
-import { api } from 'utils/constants';
-import config from 'config';
-
-jest.mock('config');
-
 enableFetchMocks();
 
 const mockStore = configureStore([thunk]);
@@ -81,7 +76,6 @@ describe('loadExperiment', () => {
   });
 
   it('Dispatches the correct actions when called', async () => {
-    config.currentApiVersion = api.V2;
     const experimentId = 'experiment-1';
 
     fetchMock.mockResolvedValue(new Response(JSON.stringify(v2Experiment)));
@@ -97,7 +91,6 @@ describe('loadExperiment', () => {
   });
 
   it('Dispatches notifications when error', async () => {
-    config.currentApiVersion = api.V2;
     const experimentId = 'experiment-1';
 
     fetchMock.mockReject(new Error('some weird error that happened'));

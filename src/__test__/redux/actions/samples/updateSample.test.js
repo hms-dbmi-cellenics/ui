@@ -5,16 +5,10 @@ import thunk from 'redux-thunk';
 
 import updateSample from 'redux/actions/samples/updateSample';
 import initialState, { sampleTemplate } from 'redux/reducers/samples/initialState';
-import { saveSamples } from 'redux/actions/samples';
 
 import {
   SAMPLES_ERROR, SAMPLES_SAVED, SAMPLES_SAVING, SAMPLES_UPDATE,
 } from 'redux/actionTypes/samples';
-
-import config from 'config';
-import { api } from 'utils/constants';
-
-jest.mock('redux/actions/samples/saveSamples');
 
 const mockStore = configureStore([thunk]);
 
@@ -37,15 +31,12 @@ describe('updateSample action', () => {
   beforeEach(() => {
     jest.clearAllMocks();
 
-    saveSamples.mockImplementation(() => async () => { });
-
     enableFetchMocks();
     fetchMock.resetMocks();
     fetchMock.doMock();
   });
 
   it('Works correctly', async () => {
-    config.currentApiVersion = api.V2;
     fetchMock.mockResponseOnce(() => Promise.resolve(JSON.stringify({})));
 
     const sampleDiff = {
@@ -67,13 +58,9 @@ describe('updateSample action', () => {
         method: 'PATCH',
       },
     );
-
-    expect(saveSamples).not.toHaveBeenCalled();
   });
 
   it('Error handling works', async () => {
-    config.currentApiVersion = api.V2;
-
     fetchMock.mockRejectOnce(() => Promise.reject(new Error('Api error')));
 
     const sampleDiff = {

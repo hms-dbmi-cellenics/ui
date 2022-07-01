@@ -16,18 +16,14 @@ const reorderSamples = (
     type: EXPERIMENTS_SAVING,
   });
 
-  let url;
-
   try {
-    url = `/v2/experiments/${experimentId}/samples/position`;
-
     const body = {
       oldPosition: oldIndex,
       newPosition: newIndex,
     };
 
     await fetchAPI(
-      url,
+      `/v2/experiments/${experimentId}/samples/position`,
       {
         method: 'PUT',
         headers: {

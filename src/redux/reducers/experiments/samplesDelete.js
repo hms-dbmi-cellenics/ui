@@ -4,9 +4,9 @@ import produce from 'immer';
 import initialState from './initialState';
 
 const samplesDelete = produce((draft, action) => {
-  const { experimentId, sampleUuids } = action.payload;
+  const { experimentId, sampleIds } = action.payload;
 
-  _.pullAll(draft[experimentId].sampleIds, sampleUuids);
+  _.pullAll(draft[experimentId].sampleIds, sampleIds);
 }, initialState);
 
 export default samplesDelete;

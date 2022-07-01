@@ -1,39 +1,24 @@
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
-import { v4 as uuidv4 } from 'uuid';
+
 import handleError from 'utils/http/handleError';
 import createProject from 'redux/actions/projects/createProject';
 import initialProjectsState from 'redux/reducers/projects';
-import { saveProject } from 'redux/actions/projects';
+
 import { createExperiment } from 'redux/actions/experiments';
 import {
   PROJECTS_CREATE, PROJECTS_SAVING, PROJECTS_ERROR,
 } from 'redux/actionTypes/projects';
 import '__test__/test-utils/setupTests';
 
-import config from 'config';
-import { api } from 'utils/constants';
-
-jest.mock('config');
 jest.mock('utils/http/handleError');
 
 const mockStore = configureStore([thunk]);
 
-jest.mock('uuid');
-const projectUuid = 'random-project-uuid';
-uuidv4.mockImplementation(() => projectUuid);
-
-jest.mock('redux/actions/projects/saveProject');
-saveProject.mockImplementation(() => async () => { });
-
 const experimentId = 'random-experiment-uuid';
 jest.mock('redux/actions/experiments/createExperiment');
-createExperiment.mockImplementation((uuid, name) => async () => ({
-  name,
-  projectUuid: uuid,
-  id: experimentId,
-}));
+createExperiment.mockImplementation(() => async () => (experimentId));
 
 enableFetchMocks();
 
@@ -56,16 +41,14 @@ describe('createProject action', () => {
   const projectDescription = 'test project description';
   const experimentName = 'mockExperimentName';
 
-  it('Works corectly project when there are no errors', async () => {
-    config.currentApiVersion = api.V1;
-
+  it('Creates a project when there are no errors', async () => {
     fetchMock.mockResponse(JSON.stringify({}));
 
     await store.dispatch(
       createProject(projectName, projectDescription, experimentName),
     );
 
-    expect(createExperiment).toHaveBeenCalledWith(projectUuid, experimentName);
+    expect(createExperiment).toHaveBeenCalledWith(experimentName, projectDescription);
 
     // Sends correct actions
     const actions = store.getActions();
@@ -78,17 +61,16 @@ describe('createProject action', () => {
     expect(actions[1].payload).toMatchSnapshot();
   });
 
-  it('Shows error when there was a fetch error', async () => {
-    config.currentApiVersion = api.V1;
+  it('Shows error when there was an experiment error', async () => {
     const fetchErrorMessage = 'some error';
 
-    fetchMock.mockResponse(JSON.stringify({ message: fetchErrorMessage }), { url: 'mockedUrl', status: 400 });
+    createExperiment.mockImplementationOnce(() => { throw new Error(fetchErrorMessage); });
 
     await store.dispatch(
       createProject(projectName, projectDescription, experimentName),
     );
 
-    expect(createExperiment).toHaveBeenCalledWith(projectUuid, experimentName);
+    expect(createExperiment).toHaveBeenCalledWith(experimentName, projectDescription);
 
     // Sends correct actions
     const actions = store.getActions();

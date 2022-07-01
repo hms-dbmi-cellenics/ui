@@ -12,8 +12,6 @@ import initialState from 'redux/reducers/cellSets/initialState';
 
 enableFetchMocks();
 
-jest.mock('config');
-
 const mockStore = configureStore([thunk]);
 
 describe('reorderCellSet action', () => {

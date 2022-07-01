@@ -19,7 +19,6 @@ const experimentsLoaded = (state, action) => {
       description: uiModelExp.description,
       id: uiModelExp.id,
       createdDate: uiModelExp.createdDate,
-      lastViewed: uiModelExp.lastViewed,
       meta: uiModelExp.meta,
       sampleIds: uiModelExp.sampleIds,
       notifyByEmail: curr.notifyByEmail,
