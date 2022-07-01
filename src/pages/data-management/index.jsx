@@ -34,15 +34,17 @@ const DataManagementPage = () => {
     if (experiments.ids.length === 0) dispatch(loadExperiments());
   }, []);
 
-  const sampleAreLoaded = () => !activeExperiment.sampleIds.length
-    || activeExperiment.sampleIds.every((sampleId) => Object.keys(samples).includes(sampleId));
+  const samplesAreLoaded = () => {
+    const loadedSampleIds = Object.keys(samples);
+    return activeExperiment.sampleIds.every((sampleId) => loadedSampleIds.includes(sampleId));
+  };
 
   useEffect(() => {
     if (!activeExperimentId) return;
 
     dispatch(loadProcessingSettings(activeExperimentId));
 
-    if (!sampleAreLoaded()) dispatch(loadSamples(activeExperimentId));
+    if (!samplesAreLoaded()) dispatch(loadSamples(activeExperimentId));
 
     dispatch(loadBackendStatus(activeExperimentId));
   }, [activeExperimentId]);

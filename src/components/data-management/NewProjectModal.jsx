@@ -26,11 +26,7 @@ const NewProjectModal = (props) => {
   } = props;
 
   const experiments = useSelector(((state) => state.experiments));
-
-  const {
-    saving,
-    error,
-  } = useSelector((state) => state.experiments.meta);
+  const { saving, error } = experiments.meta;
 
   const dispatch = useDispatch();
   const [projectNames, setProjectNames] = useState(new Set());
