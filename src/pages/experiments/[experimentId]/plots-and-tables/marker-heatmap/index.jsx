@@ -35,10 +35,13 @@ import populateHeatmapData from 'components/plots/helpers/heatmap/populateHeatma
 import { plotNames } from 'utils/constants';
 
 import GeneReorderTool from 'components/plots/GeneReorderTool';
+import GeneSearchBar from 'components/plots/GeneSearchBar';
+import { loadPaginatedGeneProperties } from 'redux/actions/genes';
 
 const { Panel } = Collapse;
 const plotUuid = 'markerHeatmapPlotMain';
 const plotType = 'markerHeatmap';
+const searchBarUuid = 'geneSearchBar';
 const { TabPane } = Tabs;
 
 const MarkerHeatmap = ({ experimentId }) => {
@@ -233,6 +236,23 @@ const MarkerHeatmap = ({ experimentId }) => {
     setVegaSpec(spec);
   }, [config, cellSets]);
 
+  useEffect(() => {
+    const state = {
+      sorter: {
+        field: 'gene_names',
+        columnKey: 'gene_names',
+        order: 'ascend',
+      },
+      pagination: {
+        current: 1,
+        pageSize: 100000,
+      },
+      pageSizeFilter: null,
+    };
+
+    dispatch(loadPaginatedGeneProperties(experimentId, ['dispersions'], searchBarUuid, state));
+  }, []);
+
   // updatedField is a subset of what default config has and contains only the things we want change
   const updatePlotWithChanges = (updatedField) => {
     dispatch(updatePlotConfig(plotUuid, updatedField));
@@ -325,11 +345,19 @@ const MarkerHeatmap = ({ experimentId }) => {
               </Radio.Group>
             </div>
           </TabPane>
-          <TabPane tab='Re-order genes' key='2'>
-            <p>Drag and drop genes to re-order them in the heatmap.</p>
-            <GeneReorderTool
-              plotUuid={plotUuid}
-            />
+          <TabPane tab='Search for and re-order genes' key='2'>
+            <p>Type in a gene name and select it to add it to the heatmap. Drag and drop genes to re-order them.</p>
+            {/* space needed to separate search box and reorder tree, display=flex fills the space */}
+            <Space direction='vertical' style={{ display: 'flex' }}>
+              <GeneSearchBar
+                plotUuid={plotUuid}
+                experimentId={experimentId}
+                searchBarUuid={searchBarUuid}
+              />
+              <GeneReorderTool
+                plotUuid={plotUuid}
+              />
+            </Space>
           </TabPane>
         </Tabs>
       </Panel>
