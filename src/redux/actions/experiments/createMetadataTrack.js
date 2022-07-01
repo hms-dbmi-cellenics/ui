@@ -38,7 +38,7 @@ const createMetadataTrack = (
     dispatch({
       type: EXPERIMENTS_METADATA_CREATE,
       payload: {
-        projectUuid: experimentId,
+        experimentId,
         key: metadataKey,
       },
     });

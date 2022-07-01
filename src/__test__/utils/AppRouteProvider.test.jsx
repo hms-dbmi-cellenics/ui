@@ -61,7 +61,7 @@ const TestComponent = (props) => {
 
   const testParams = {
     experimentId,
-    projectUuid: experimentId,
+    experimentId,
     ...params,
   };
 

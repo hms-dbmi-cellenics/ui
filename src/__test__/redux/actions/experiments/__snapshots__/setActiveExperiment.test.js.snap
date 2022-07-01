@@ -3,7 +3,7 @@
 exports[`setActiveExperiment action Dispatches event correctly 1`] = `
 Object {
   "payload": Object {
-    "projectUuid": "67890",
+    "experimentId": "67890",
   },
   "type": "experiments/setActive",
 }

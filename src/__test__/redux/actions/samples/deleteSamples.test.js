@@ -21,7 +21,7 @@ const mockSample = {
   ...sampleTemplate,
   name: 'test sample',
   uuid: mockSampleUuid,
-  projectUuid: mockExperimentId,
+  experimentId: mockExperimentId,
 };
 
 const mockExperiment = {

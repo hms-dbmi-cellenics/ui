@@ -103,7 +103,7 @@ const initialState = {
     [mockSampleUuid]: {
       ...sampleTemplate,
       uuid: [mockSampleUuid],
-      projectUuid: mockProjectUuid,
+      experimentId: mockProjectUuid,
     },
   },
 };

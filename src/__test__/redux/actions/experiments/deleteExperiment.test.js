@@ -24,7 +24,7 @@ describe('deleteExperiment action', () => {
   const mockSample = {
     ...sampleTemplate,
     name: 'test sample',
-    projectUuid: mockExperimentId1,
+    experimentId: mockExperimentId1,
     uuid: mockSampleUuid1,
   };
 

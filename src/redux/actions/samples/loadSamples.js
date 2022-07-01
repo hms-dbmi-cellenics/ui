@@ -49,7 +49,7 @@ const toApiV1 = (samples, experimentId) => {
   samples.forEach((sample) => {
     const { apiV1Files, fileNames } = buildApiv1Files(sample.files);
     apiV1Samples[sample.id] = {
-      projectUuid: experimentId,
+      experimentId,
       metadata: sample.metadata,
       createdDate: sample.createdAt,
       name: sample.name,

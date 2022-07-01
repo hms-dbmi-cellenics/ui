@@ -28,18 +28,18 @@ const deleteSamples = (
   const { samples } = getState();
 
   const projectSamples = await sampleIds.reduce(async (acc, sampleUuid) => {
-    const { projectUuid, files } = samples[sampleUuid];
+    const { experimentId, files } = samples[sampleUuid];
 
-    if (!_.has(acc, samples[sampleUuid].projectUuid)) {
-      acc[samples[sampleUuid].projectUuid] = [];
+    if (!_.has(acc, samples[sampleUuid].experimentId)) {
+      acc[samples[sampleUuid].experimentId] = [];
     }
 
     await cancelUploads(files);
 
     return {
       ...acc,
-      [projectUuid]: [
-        ...acc[projectUuid],
+      [experimentId]: [
+        ...acc[experimentId],
         sampleUuid,
       ],
     };

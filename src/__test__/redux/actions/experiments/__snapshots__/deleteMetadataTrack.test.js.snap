@@ -3,8 +3,8 @@
 exports[`deleteMetadataTrack action Works correctly 1`] = `
 Array [
   Object {
+    "experimentId": "experiment-1234",
     "key": "Test",
-    "projectUuid": "experiment-1234",
   },
   Object {
     "metadataKey": "Test",

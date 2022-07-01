@@ -193,6 +193,7 @@ Object {
     },
     "test9188-d682-test-mock-cb6d644cmock-0": Object {
       "createdDate": "2021-12-07 17:36:27.773+00",
+      "experimentId": "testae48e318dab9a1bd0bexperiment-0",
       "fileNames": Array [
         "matrix.mtx.gz",
         "barcodes.tsv.gz",
@@ -230,12 +231,12 @@ Object {
         "timePoint": "BL",
       },
       "name": "Mock sample 0",
-      "projectUuid": "testae48e318dab9a1bd0bexperiment-0",
       "type": "10X Chromium",
       "uuid": "test9188-d682-test-mock-cb6d644cmock-0",
     },
     "test9188-d682-test-mock-cb6d644cmock-1": Object {
       "createdDate": "2021-12-07 17:36:27.773+00",
+      "experimentId": "testae48e318dab9a1bd0bexperiment-0",
       "fileNames": Array [
         "matrix.mtx.gz",
         "barcodes.tsv.gz",
@@ -273,12 +274,12 @@ Object {
         "timePoint": "BL",
       },
       "name": "Mock sample 1",
-      "projectUuid": "testae48e318dab9a1bd0bexperiment-0",
       "type": "10X Chromium",
       "uuid": "test9188-d682-test-mock-cb6d644cmock-1",
     },
     "test9188-d682-test-mock-cb6d644cmock-2": Object {
       "createdDate": "2021-12-07 17:36:27.773+00",
+      "experimentId": "testae48e318dab9a1bd0bexperiment-0",
       "fileNames": Array [
         "matrix.mtx.gz",
         "barcodes.tsv.gz",
@@ -316,7 +317,6 @@ Object {
         "timePoint": "BL",
       },
       "name": "Mock sample 2",
-      "projectUuid": "testae48e318dab9a1bd0bexperiment-0",
       "type": "10X Chromium",
       "uuid": "test9188-d682-test-mock-cb6d644cmock-2",
     },
@@ -517,6 +517,7 @@ Object {
     },
     "test9188-d682-test-mock-cb6d644cmock-0": Object {
       "createdDate": "2021-12-07 17:36:27.773+00",
+      "experimentId": "testae48e318dab9a1bd0bexperiment-0",
       "fileNames": Array [
         "matrix.mtx.gz",
         "barcodes.tsv.gz",
@@ -554,12 +555,12 @@ Object {
         "timePoint": "BL",
       },
       "name": "Mock sample 0",
-      "projectUuid": "testae48e318dab9a1bd0bexperiment-0",
       "type": "10X Chromium",
       "uuid": "test9188-d682-test-mock-cb6d644cmock-0",
     },
     "test9188-d682-test-mock-cb6d644cmock-1": Object {
       "createdDate": "2021-12-07 17:36:27.773+00",
+      "experimentId": "testae48e318dab9a1bd0bexperiment-0",
       "fileNames": Array [
         "matrix.mtx.gz",
         "barcodes.tsv.gz",
@@ -597,12 +598,12 @@ Object {
         "timePoint": "BL",
       },
       "name": "Mock sample 1",
-      "projectUuid": "testae48e318dab9a1bd0bexperiment-0",
       "type": "10X Chromium",
       "uuid": "test9188-d682-test-mock-cb6d644cmock-1",
     },
     "test9188-d682-test-mock-cb6d644cmock-2": Object {
       "createdDate": "2021-12-07 17:36:27.773+00",
+      "experimentId": "testae48e318dab9a1bd0bexperiment-0",
       "fileNames": Array [
         "matrix.mtx.gz",
         "barcodes.tsv.gz",
@@ -640,7 +641,6 @@ Object {
         "timePoint": "BL",
       },
       "name": "Mock sample 2",
-      "projectUuid": "testae48e318dab9a1bd0bexperiment-0",
       "type": "10X Chromium",
       "uuid": "test9188-d682-test-mock-cb6d644cmock-2",
     },

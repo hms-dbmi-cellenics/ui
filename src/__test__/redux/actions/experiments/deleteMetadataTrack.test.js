@@ -35,7 +35,7 @@ const mockExperiment = {
 const mockSample = {
   ...initialSampleState,
   name: 'test sample',
-  projectUuid: mockExperimentId,
+  experimentId: mockExperimentId,
   uuid: mockSampleUuid,
   metadata: {
     [metadataTrackKey]: 'value',

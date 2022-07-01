@@ -1,12 +1,12 @@
 const projectsMetadataUpdate = (state, action) => {
-  const { oldKey, newKey, projectUuid } = action.payload;
+  const { oldKey, newKey, experimentId } = action.payload;
 
   return {
     ...state,
-    [projectUuid]: {
-      ...state[projectUuid],
+    [experimentId]: {
+      ...state[experimentId],
       metadataKeys: [
-        ...state[projectUuid].metadataKeys.filter((value) => value !== oldKey),
+        ...state[experimentId].metadataKeys.filter((value) => value !== oldKey),
         newKey,
       ],
     },

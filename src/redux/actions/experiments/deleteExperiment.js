@@ -39,7 +39,7 @@ const deleteExperiment = (
 
       dispatch({
         type: EXPERIMENTS_SET_ACTIVE,
-        payload: { projectUuid: leftoverProjectIds.length ? leftoverProjectIds[0] : null },
+        payload: { experimentId: leftoverProjectIds.length ? leftoverProjectIds[0] : null },
       });
     }
 

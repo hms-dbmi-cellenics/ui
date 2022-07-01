@@ -46,7 +46,7 @@ const updateMetadataTrack = (
       payload: {
         oldKey: oldMetadataKey,
         newKey: newMetadataKey,
-        projectUuid: experimentId,
+        experimentId,
       },
     });
 

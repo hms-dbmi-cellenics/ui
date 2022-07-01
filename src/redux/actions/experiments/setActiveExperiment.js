@@ -13,7 +13,7 @@ const setActiveExperiment = (
 
   dispatch({
     type: EXPERIMENTS_SET_ACTIVE,
-    payload: { projectUuid: experimentId },
+    payload: { experimentId },
   });
 };
 

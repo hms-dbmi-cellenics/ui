@@ -94,7 +94,7 @@ const withDataState = {
     [sample1Uuid]: {
       ...sampleTemplate,
       name: sample1Name,
-      projectUuid: experiment1id,
+      experimentId: experiment1id,
       uuid: sample1Uuid,
       type: '10X Chromium',
       metadata: ['value-1'],
@@ -108,7 +108,7 @@ const withDataState = {
     [sample2Uuid]: {
       ...sampleTemplate,
       name: sample2Name,
-      projectUuid: experiment1id,
+      experimentId: experiment1id,
       uuid: sample2Uuid,
       type: '10X Chromium',
       metadata: ['value-2'],

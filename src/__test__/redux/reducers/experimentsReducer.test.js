@@ -297,7 +297,7 @@ describe('experimentsReducer', () => {
       type: EXPERIMENTS_METADATA_CREATE,
       payload: {
         key: newMetadataKey,
-        projectUuid: experiment1.id,
+        experimentId: experiment1.id,
       },
     });
 
@@ -321,7 +321,7 @@ describe('experimentsReducer', () => {
       payload: {
         oldKey: oldMetadataKey,
         newKey: newMetadataKey,
-        projectUuid: experiment1.id,
+        experimentId: experiment1.id,
       },
     });
 
@@ -343,7 +343,7 @@ describe('experimentsReducer', () => {
       type: EXPERIMENTS_METADATA_DELETE,
       payload: {
         key: metadataKey,
-        projectUuid: experiment1.id,
+        experimentId: experiment1.id,
       },
     });
 

@@ -3,8 +3,8 @@
 exports[`createMetadataTrack action Works correctly 1`] = `
 Array [
   Object {
+    "experimentId": "expeirment-1",
     "key": "Test_track",
-    "projectUuid": "expeirment-1",
   },
   Object {
     "sample": Object {

@@ -1,12 +1,12 @@
 const projectsMetadataDelete = (state, action) => {
-  const { key, projectUuid } = action.payload;
+  const { key, experimentId } = action.payload;
 
   return {
     ...state,
-    [projectUuid]: {
-      ...state[projectUuid],
+    [experimentId]: {
+      ...state[experimentId],
       metadataKeys: [
-        ...state[projectUuid].metadataKeys.filter((value) => value !== key),
+        ...state[experimentId].metadataKeys.filter((value) => value !== key),
       ],
     },
   };

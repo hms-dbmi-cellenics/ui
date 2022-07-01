@@ -112,7 +112,7 @@ const processUpload = async (filesList, sampleType, samples, experimentId, dispa
 
     const sampleUuid = Object.values(samples).filter(
       (s) => s.name === sampleName
-        && s.projectUuid === experimentId,
+        && s.experimentId === experimentId,
     )[0]?.uuid;
 
     return {

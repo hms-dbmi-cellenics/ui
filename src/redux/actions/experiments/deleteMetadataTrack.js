@@ -34,7 +34,7 @@ const deleteMetadataTrack = (
       type: EXPERIMENTS_METADATA_DELETE,
       payload: {
         key: metadataKey,
-        projectUuid: experimentId,
+        experimentId,
       },
     });
 

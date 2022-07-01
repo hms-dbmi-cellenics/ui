@@ -1,12 +1,12 @@
 const experimentsMetadataCreate = (state, action) => {
-  const { key, projectUuid } = action.payload;
+  const { key, experimentId } = action.payload;
 
   return {
     ...state,
-    [projectUuid]: {
-      ...state[projectUuid],
+    [experimentId]: {
+      ...state[experimentId],
       metadataKeys: [
-        ...state[projectUuid].metadataKeys,
+        ...state[experimentId].metadataKeys,
         key,
       ],
     },
