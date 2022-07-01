@@ -11,6 +11,9 @@ import {
   EXPERIMENTS_ERROR,
   EXPERIMENTS_DELETED,
   EXPERIMENTS_SAVING,
+  EXPERIMENTS_METADATA_CREATE,
+  EXPERIMENTS_METADATA_UPDATE,
+  EXPERIMENTS_METADATA_DELETE,
 } from 'redux/actionTypes/experiments';
 
 import { SAMPLES_CREATE, SAMPLES_DELETE } from 'redux/actionTypes/samples';
@@ -24,6 +27,7 @@ describe('experimentsReducer', () => {
     name: 'experiment 1',
     description: 'this is a test description',
     sampleIds: [],
+    metadataKeys: [],
     notifyByEmail: true,
     createdAt: '2021-01-01',
     updatedAt: '2022-01-17',
@@ -34,6 +38,7 @@ describe('experimentsReducer', () => {
     name: 'experiment 2',
     description: 'this is a test description',
     sampleIds: [],
+    metadataKeys: [],
     notifyByEmail: true,
     createdAt: '2021-01-01',
     updatedAt: '2022-01-17',
@@ -274,6 +279,75 @@ describe('experimentsReducer', () => {
     });
 
     expect(newState[experiment1.id].sampleIds).toHaveLength(0);
+    expect(newState).toMatchSnapshot();
+  });
+
+  it('Correctly creates project metadata', () => {
+    const newMetadataKey = 'metadata-test';
+
+    const stateWithMetadata = {
+      ...oneExperimentWithSampleState,
+      [oneExperimentWithSampleState[experiment1.id]]: {
+        ...oneExperimentWithSampleState[experiment1.id],
+        metadataKeys: [],
+      },
+    };
+
+    const newState = experimentsReducer(stateWithMetadata, {
+      type: EXPERIMENTS_METADATA_CREATE,
+      payload: {
+        key: newMetadataKey,
+        projectUuid: experiment1.id,
+      },
+    });
+
+    expect(newState[experiment1.id].metadataKeys).toEqual([newMetadataKey]);
+    expect(newState).toMatchSnapshot();
+  });
+
+  it('Correctly updates project metadata', () => {
+    const oldMetadataKey = 'metadata-old';
+    const newMetadataKey = 'metadata-new';
+    const stateWithMetadata = {
+      ...oneExperimentWithSampleState,
+      [oneExperimentWithSampleState[experiment1.id]]: {
+        ...oneExperimentWithSampleState[experiment1.id],
+        metadataKeys: [oldMetadataKey],
+      },
+    };
+
+    const newState = experimentsReducer(stateWithMetadata, {
+      type: EXPERIMENTS_METADATA_UPDATE,
+      payload: {
+        oldKey: oldMetadataKey,
+        newKey: newMetadataKey,
+        projectUuid: experiment1.id,
+      },
+    });
+
+    expect(newState[experiment1.id].metadataKeys).toEqual([newMetadataKey]);
+    expect(newState).toMatchSnapshot();
+  });
+
+  it('Correctly deletes project metadata', () => {
+    const metadataKey = 'metadata-old';
+    const stateWithMetadata = {
+      ...oneExperimentWithSampleState,
+      [oneExperimentWithSampleState[experiment1.id]]: {
+        ...oneExperimentWithSampleState[experiment1.id],
+        metadataKeys: [metadataKey],
+      },
+    };
+
+    const newState = experimentsReducer(stateWithMetadata, {
+      type: EXPERIMENTS_METADATA_DELETE,
+      payload: {
+        key: metadataKey,
+        projectUuid: experiment1.id,
+      },
+    });
+
+    expect(newState[experiment1.id].metadataKeys).toEqual([]);
     expect(newState).toMatchSnapshot();
   });
 });
