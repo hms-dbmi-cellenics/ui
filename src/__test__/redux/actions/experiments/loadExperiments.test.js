@@ -69,11 +69,8 @@ describe('loadExperiments', () => {
     await store.dispatch(loadExperiments(experimentId));
 
     const actions = store.getActions();
-    console.log('actionsDebug');
-    console.log(actions);
 
     expect(actions[0].type).toEqual(EXPERIMENTS_LOADING);
-
     expect(actions[1].type).toEqual(EXPERIMENTS_ERROR);
 
     expect(pushNotificationMessage).toHaveBeenCalled();

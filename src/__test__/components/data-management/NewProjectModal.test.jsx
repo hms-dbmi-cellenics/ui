@@ -9,22 +9,15 @@ import { ClipLoader } from 'react-spinners';
 import NewProjectModal from 'components/data-management/NewProjectModal';
 import '__test__/test-utils/setupTests';
 
+import experimentsInitialState from 'redux/reducers/experiments/initialState';
+
 const { TextArea } = Input;
 
 const { Text } = Typography;
 
 const mockStore = configureMockStore([thunk]);
 
-const initialState = {
-  experiments: {
-    ids: [],
-    meta: {
-      loading: true,
-      saving: false,
-      error: false,
-    },
-  },
-};
+const initialState = { experiments: experimentsInitialState };
 
 const storeWithExperiments = {
   experiments: {
