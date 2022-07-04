@@ -66,6 +66,10 @@ const getValidFiles = (cellrangerVersion) => {
 const sampleType = '10X Chromium';
 const mockSampleUuid = 'sample-uuid';
 const mockExperimentId = 'project-uuid';
+const sampleName = 'mockSampleName';
+
+const mockUnrelatedSampleUuid = 'unrelated-sample-uuid';
+const mockUnrelatedExperimentId = 'unrelated-experiment-id';
 
 const initialState = {
   experiments: {
@@ -84,8 +88,15 @@ const initialState = {
     },
     [mockSampleUuid]: {
       ...sampleTemplate,
-      uuid: [mockSampleUuid],
+      uuid: mockSampleUuid,
+      name: sampleName,
       experimentId: mockExperimentId,
+    },
+    [mockUnrelatedSampleUuid]: {
+      ...sampleTemplate,
+      uuid: mockUnrelatedSampleUuid,
+      name: sampleName,
+      experimentId: mockUnrelatedExperimentId,
     },
   },
 };
