@@ -65,8 +65,7 @@ const getValidFiles = (cellrangerVersion) => {
 
 const sampleType = '10X Chromium';
 const mockSampleUuid = 'sample-uuid';
-const mockProjectUuid = 'project-uuid';
-const mockExperimentId = 'experiment-id';
+const mockExperimentId = 'project-uuid';
 
 const initialState = {
   experiments: {
@@ -86,7 +85,7 @@ const initialState = {
     [mockSampleUuid]: {
       ...sampleTemplate,
       uuid: [mockSampleUuid],
-      experimentId: mockProjectUuid,
+      experimentId: mockExperimentId,
     },
   },
 };
@@ -144,7 +143,7 @@ describe('processUpload', () => {
       getValidFiles('v3'),
       sampleType,
       store.getState().samples,
-      mockProjectUuid,
+      mockExperimentId,
       store.dispatch,
     );
 
@@ -231,7 +230,7 @@ describe('processUpload', () => {
       getValidFiles('v2'),
       sampleType,
       store.getState().samples,
-      mockProjectUuid,
+      mockExperimentId,
       store.dispatch,
     );
 
@@ -310,7 +309,7 @@ describe('processUpload', () => {
       invalidFiles,
       sampleType,
       store.getState().samples,
-      mockProjectUuid,
+      mockExperimentId,
       store.dispatch,
     );
 
@@ -410,7 +409,7 @@ describe('processUpload', () => {
       getValidFiles('v3'),
       sampleType,
       store.getState().samples,
-      mockProjectUuid,
+      mockExperimentId,
       store.dispatch,
     );
 
