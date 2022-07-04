@@ -22,7 +22,7 @@ const ExampleExperimentsSpace = ({ introductionText, imageStyle }) => {
 
     fetchAPI('/v2/experiments/examples').then((experiments) => {
       setExampleExperiments(experiments);
-    });
+    }).catch(() => { });
   }, [environment]);
 
   const cloneIntoCurrentExperiment = async (exampleExperimentId) => {
