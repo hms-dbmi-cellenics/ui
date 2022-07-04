@@ -11,7 +11,7 @@ describe('Heatmap Controls test', () => {
   const renderHeatmapControls = (selectedGenes) => {
     render(<HeatmapControls
       onGeneEnter={onGeneEnter}
-      plotUuid={fake.PROJECT_ID}
+      plotUuid={fake.EXPERIMENT_ID}
       selectedGenes={selectedGenes}
       onReset={onReset}
     />);

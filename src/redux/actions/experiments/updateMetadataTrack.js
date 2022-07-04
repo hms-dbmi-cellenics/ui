@@ -1,8 +1,6 @@
 import _ from 'lodash';
 
-import {
-  PROJECTS_METADATA_UPDATE,
-} from 'redux/actionTypes/projects';
+import { EXPERIMENTS_METADATA_UPDATE } from 'redux/actionTypes/experiments';
 import {
   SAMPLES_UPDATE,
   SAMPLES_METADATA_DELETE,
@@ -15,25 +13,25 @@ import endUserMessages from 'utils/endUserMessages';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
 
 const updateMetadataTrack = (
-  oldName, newName, projectUuid,
+  oldName, newName, experimentId,
 ) => async (dispatch, getState) => {
   const { samples } = getState();
-  const project = getState().projects[projectUuid];
+  const experiment = getState().experiments[experimentId];
 
   const oldMetadataKey = metadataNameToKey(oldName);
   const newMetadataKey = metadataNameToKey(newName);
 
-  const newProject = _.cloneDeep(project);
-  newProject.metadataKeys = newProject.metadataKeys
+  const newExperiment = _.cloneDeep(experiment);
+  newExperiment.metadataKeys = newExperiment.metadataKeys
     .filter((key) => key !== oldMetadataKey);
 
-  newProject.metadataKeys.push(newMetadataKey);
+  newExperiment.metadataKeys.push(newMetadataKey);
 
   try {
     const body = { key: newMetadataKey };
 
     await fetchAPI(
-      `/v2/experiments/${projectUuid}/metadataTracks/${oldMetadataKey}`,
+      `/v2/experiments/${experimentId}/metadataTracks/${oldMetadataKey}`,
       {
         method: 'PATCH',
         headers: {
@@ -44,15 +42,15 @@ const updateMetadataTrack = (
     );
 
     dispatch({
-      type: PROJECTS_METADATA_UPDATE,
+      type: EXPERIMENTS_METADATA_UPDATE,
       payload: {
         oldKey: oldMetadataKey,
         newKey: newMetadataKey,
-        projectUuid,
+        experimentId,
       },
     });
 
-    project.samples.forEach((sampleUuid) => {
+    experiment.sampleIds.forEach((sampleUuid) => {
       dispatch({
         type: SAMPLES_UPDATE,
         payload: {

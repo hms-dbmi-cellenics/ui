@@ -1,10 +1,10 @@
 const projectsSetActive = (state, action) => {
-  const { projectUuid } = action.payload;
+  const { experimentId } = action.payload;
   return {
     ...state,
     meta: {
       ...state.meta,
-      activeProjectUuid: projectUuid,
+      activeExperimentId: experimentId,
     },
   };
 };
