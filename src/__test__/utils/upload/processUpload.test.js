@@ -69,23 +69,6 @@ const mockProjectUuid = 'project-uuid';
 const mockExperimentId = 'experiment-id';
 
 const initialState = {
-  // projects: {
-  //   ...initialProjectState,
-  //   ids: [mockProjectUuid],
-  //   meta: {
-  //     activeProjectUuid: mockProjectUuid,
-  //   },
-  //   [mockProjectUuid]: {
-  //     ...projectTemplate,
-  //     samples: [mockSampleUuid],
-  //     experiments: [mockExperimentId],
-  //   },
-  //   errorProjectUuid: {
-  //     ...projectTemplate,
-  //     samples: [mockSampleUuid],
-  //     experiments: [mockExperimentId],
-  //   },
-  // },
   experiments: {
     ...initialExperimentState,
     [mockExperimentId]: {
