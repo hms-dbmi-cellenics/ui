@@ -6,7 +6,6 @@ import {
   Empty,
   Select,
   Radio,
-  Tabs,
 } from 'antd';
 import _ from 'lodash';
 import { useSelector, useDispatch } from 'react-redux';
@@ -34,15 +33,13 @@ import Loader from 'components/Loader';
 import populateHeatmapData from 'components/plots/helpers/heatmap/populateHeatmapData';
 import { plotNames } from 'utils/constants';
 
-import GeneReorderTool from 'components/plots/GeneReorderTool';
-import GeneSearchBar from 'components/plots/GeneSearchBar';
+import ScrollOnDrag from 'components/plots/ScrollOnDrag';
 import { loadPaginatedGeneProperties } from 'redux/actions/genes';
 
 const { Panel } = Collapse;
 const plotUuid = 'markerHeatmapPlotMain';
 const plotType = 'markerHeatmap';
 const searchBarUuid = 'geneSearchBar';
-const { TabPane } = Tabs;
 
 const MarkerHeatmap = ({ experimentId }) => {
   const dispatch = useDispatch();
@@ -253,6 +250,12 @@ const MarkerHeatmap = ({ experimentId }) => {
     dispatch(loadPaginatedGeneProperties(experimentId, ['dispersions'], searchBarUuid, state));
   }, []);
 
+  const treeScrollable = document.querySelector('div#ScrollWrapper');
+
+  useEffect(() => {
+    ScrollOnDrag();
+  }, [treeScrollable]);
+
   // updatedField is a subset of what default config has and contains only the things we want change
   const updatePlotWithChanges = (updatedField) => {
     dispatch(updatePlotConfig(plotUuid, updatedField));
@@ -324,42 +327,26 @@ const MarkerHeatmap = ({ experimentId }) => {
   const renderExtraPanels = () => (
     <>
       <Panel header='Gene selection' key='gene-selection'>
-        <Tabs defaultActiveKey='1'>
-          <TabPane tab='Add/Remove genes' key='1'>
-            <MarkerGeneSelection
-              config={config}
-              onUpdate={updatePlotWithChanges}
-              onGeneEnter={onGeneEnter}
-              onReset={onReset}
-            />
-            <div>
-              <p>Gene labels:</p>
-              <Radio.Group
-                onChange={
-                  (e) => updatePlotWithChanges({ showGeneLabels: e.target.value })
-                }
-                value={config.showGeneLabels}
-              >
-                <Radio value>Show</Radio>
-                <Radio value={false}>Hide</Radio>
-              </Radio.Group>
-            </div>
-          </TabPane>
-          <TabPane tab='Search for and re-order genes' key='2'>
-            <p>Type in a gene name and select it to add it to the heatmap. Drag and drop genes to re-order them.</p>
-            {/* space needed to separate search box and reorder tree, display=flex fills the space */}
-            <Space direction='vertical' style={{ display: 'flex' }}>
-              <GeneSearchBar
-                plotUuid={plotUuid}
-                experimentId={experimentId}
-                searchBarUuid={searchBarUuid}
-              />
-              <GeneReorderTool
-                plotUuid={plotUuid}
-              />
-            </Space>
-          </TabPane>
-        </Tabs>
+        <MarkerGeneSelection
+          config={config}
+          plotUuid={plotUuid}
+          searchBarUuid={searchBarUuid}
+          experimentId={experimentId}
+          onUpdate={updatePlotWithChanges}
+          onReset={onReset}
+        />
+        <div style={{ paddingTop: '10px' }}>
+          <p>Gene labels:</p>
+          <Radio.Group
+            onChange={
+              (e) => updatePlotWithChanges({ showGeneLabels: e.target.value })
+            }
+            value={config.showGeneLabels}
+          >
+            <Radio value>Show</Radio>
+            <Radio value={false}>Hide</Radio>
+          </Radio.Group>
+        </div>
       </Panel>
       <Panel header='Select data' key='select-data'>
         <Space direction='vertical' size='small'>

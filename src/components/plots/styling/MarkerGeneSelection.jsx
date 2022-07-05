@@ -4,13 +4,15 @@ import {
   Space,
   Radio,
   InputNumber,
-  Select,
   Button,
 } from 'antd';
 
+import GeneReorderTool from 'components/plots/GeneReorderTool';
+import GeneSearchBar from 'components/plots/GeneSearchBar';
+
 const MarkerGeneSelection = (props) => {
   const {
-    config, onUpdate, onReset, onGeneEnter,
+    config, plotUuid, experimentId, searchBarUuid, onUpdate, onReset,
   } = props;
   const [numGenes, setNumGenes] = useState(config.nMarkerGenes);
 
@@ -41,15 +43,14 @@ const MarkerGeneSelection = (props) => {
 
     return (
       <Space direction='vertical' size='small'>
-        <p>Type in a gene name and hit space or enter to add it to the heatmap.</p>
-        <Select
-          mode='tags'
-          style={{ width: '100%' }}
-          placeholder='Select genes...'
-          onChange={onGeneEnter}
-          value={config.selectedGenes}
-          tokenSeparators={[' ']}
-          notFoundContent='No gene added yet.'
+        <p>Type in a gene name and select it to add it to the heatmap. Drag and drop genes to re-order them.</p>
+        <GeneSearchBar
+          plotUuid={plotUuid}
+          experimentId={experimentId}
+          searchBarUuid={searchBarUuid}
+        />
+        <GeneReorderTool
+          plotUuid={plotUuid}
         />
         <Button
           type='primary'
@@ -81,8 +82,11 @@ const MarkerGeneSelection = (props) => {
 MarkerGeneSelection.propTypes = {
   onUpdate: propTypes.func.isRequired,
   config: propTypes.object.isRequired,
-  onGeneEnter: propTypes.func.isRequired,
   onReset: propTypes.func.isRequired,
+  plotUuid: propTypes.string.isRequired,
+  experimentId: propTypes.string.isRequired,
+  searchBarUuid: propTypes.string.isRequired,
+
 };
 
 export default MarkerGeneSelection;
