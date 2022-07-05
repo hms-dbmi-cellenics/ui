@@ -9,6 +9,11 @@ on:
   pull_request:
     branches:
       - master
+
+concurrency:
+  group: ${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   uncheck-integration-test:
     name: Mark integration test as not run
@@ -148,8 +153,14 @@ jobs:
           # this is what we push to ECR
           # we will also take semver'd tags like `1.0.0` and use them for releases
 
+          # In push & PR events we want the tag to contain the latest commit on the branch:
+          # in push events, the latest commit of the master branch is GITHUB_SHA
+          # in PR synch the latest commit of the branch is found in github.event.pull_request.head.sha instead
+
           if [ "${{ github.event_name }}" = "release" ] && [ "${{ github.event.action }}" = "released" ]; then
             echo "::set-output name=tag::${REF_ID/refs-tags-/}"
+          elif [ "${{ github.event_name }}" = "pull_request" ]; then
+            echo "::set-output name=tag::$REF_ID-${{ github.event.pull_request.head.sha }}"
           else
             echo "::set-output name=tag::$REF_ID-$GITHUB_SHA"
           fi

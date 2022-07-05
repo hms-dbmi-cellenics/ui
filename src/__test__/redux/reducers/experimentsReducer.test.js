@@ -145,6 +145,18 @@ describe('experimentsReducer', () => {
     expect(newState).toMatchSnapshot();
   });
 
+  it('Loads 0 experiments correctly', () => {
+    const newState = experimentsReducer(initialState, {
+      type: EXPERIMENTS_LOADED,
+      payload: {
+        experiments: [],
+      },
+    });
+    expect(newState.ids).toEqual([]);
+    expect(newState.meta.activeExperimentId).toEqual(undefined);
+    expect(newState).toMatchSnapshot();
+  });
+
   it('Loading state changes meta state', () => {
     const newState = experimentsReducer(initialState, {
       type: EXPERIMENTS_LOADING,
