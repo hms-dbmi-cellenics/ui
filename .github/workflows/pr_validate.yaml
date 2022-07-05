@@ -140,9 +140,9 @@ jobs:
         if: steps.check-e2e-run.outputs.should-e2e-run == 'true'
         name: Get details of last commit
         run: |-
-          echo "SHA of GitHub merge commit:"
-          echo $GITHUB_SHA
-          echo "::set-output name=github_sha::$GITHUB_SHA"
+          echo "SHA of latest GitHub branch commit:"
+          echo ${{ github.event.pull_request.head.sha }}
+          echo "::set-output name=github_sha::${{ github.event.pull_request.head.sha }}"
 
           REPO_NAME=$(echo $GITHUB_REPOSITORY | awk -F '/' '{print $2}')
           echo "Repo name:"
