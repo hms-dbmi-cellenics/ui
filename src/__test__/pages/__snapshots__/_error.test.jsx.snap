@@ -89,6 +89,7 @@ Array [
     "experiments": Object {
       "ids": Array [],
       "meta": Object {
+        "activeExperimentId": null,
         "error": false,
         "loading": false,
         "saving": false,
@@ -134,15 +135,6 @@ Array [
     },
     "networkResources": Object {
       "environment": "production",
-    },
-    "projects": Object {
-      "ids": Array [],
-      "meta": Object {
-        "activeProjectUuid": null,
-        "error": false,
-        "loading": true,
-        "saving": false,
-      },
     },
     "samples": Object {
       "meta": Object {
@@ -244,6 +236,7 @@ Array [
     "experiments": Object {
       "ids": Array [],
       "meta": Object {
+        "activeExperimentId": null,
         "error": false,
         "loading": false,
         "saving": false,
@@ -289,15 +282,6 @@ Array [
     },
     "networkResources": Object {
       "environment": "staging",
-    },
-    "projects": Object {
-      "ids": Array [],
-      "meta": Object {
-        "activeProjectUuid": null,
-        "error": false,
-        "loading": true,
-        "saving": false,
-      },
     },
     "samples": Object {
       "meta": Object {

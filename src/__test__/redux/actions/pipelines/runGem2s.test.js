@@ -33,7 +33,7 @@ const initialState = {
       ...experimentTemplate,
       name: 'Mock experiment',
       id: experimentId,
-      projectUuid: projectId,
+      experimentId: projectId,
       sampleIds: ['sample-1', 'sample-2'],
     },
   },

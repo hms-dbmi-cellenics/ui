@@ -5,27 +5,25 @@ import {
   SAMPLES_CREATE, SAMPLES_ERROR, SAMPLES_SAVED, SAMPLES_SAVING,
 } from 'redux/actionTypes/samples';
 
-import {
-  DEFAULT_NA,
-} from 'redux/reducers/projects/initialState';
 import fetchAPI from 'utils/http/fetchAPI';
 import handleError from 'utils/http/handleError';
 import endUserMessages from 'utils/endUserMessages';
 
+import { METADATA_DEFAULT_VALUE } from 'redux/reducers/experiments/initialState';
 import { sampleTemplate } from 'redux/reducers/samples/initialState';
 
 import UploadStatus from 'utils/upload/UploadStatus';
 
 const createSample = (
-  projectUuid,
+  experimentId,
   name,
   type,
   filesToUpload,
 ) => async (dispatch, getState) => {
-  const project = getState().projects[projectUuid];
-  const createdDate = moment().toISOString();
-  const experimentId = project.experiments[0];
+  const experiment = getState().experiments[experimentId];
+
   const newSampleUuid = uuidv4();
+  const createdDate = moment().toISOString();
 
   dispatch({
     type: SAMPLES_SAVING,
@@ -38,12 +36,12 @@ const createSample = (
     ..._.cloneDeep(sampleTemplate),
     name,
     type,
-    projectUuid,
+    experimentId,
     uuid: newSampleUuid,
     createdDate,
     lastModified: createdDate,
-    metadata: project?.metadataKeys
-      .reduce((acc, curr) => ({ ...acc, [curr]: DEFAULT_NA }), {}) || {},
+    metadata: experiment?.metadataKeys
+      .reduce((acc, curr) => ({ ...acc, [curr]: METADATA_DEFAULT_VALUE }), {}) || {},
   };
 
   const url = `/v2/experiments/${experimentId}/samples/${newSampleUuid}`;

@@ -9,17 +9,17 @@ import _ from 'lodash';
 import '@testing-library/jest-dom';
 import '__test__/test-utils/mockWorkerBackend';
 
+import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
+
 import { makeStore } from 'redux/store';
 
 import fake from '__test__/test-utils/constants';
-import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
-
+import { experiments } from '__test__/test-utils/mockData';
 import createTestComponentFactory from '__test__/test-utils/testComponentFactory';
 import mockAPI, { generateDefaultMockAPIResponses } from '__test__/test-utils/mockAPI';
 
-import { loadProjects, setActiveProject } from 'redux/actions/projects';
-import { experiments } from '__test__/test-utils/mockData';
 import ProjectMenu from 'components/data-management/ProjectMenu';
+import { loadExperiments, setActiveExperiment } from 'redux/actions/experiments';
 
 const mockNavigateTo = jest.fn();
 jest.mock('@aws-amplify/auth', () => ({
@@ -81,8 +81,8 @@ describe('ProjectMenu', () => {
 
     storeState = makeStore();
 
-    await storeState.dispatch(loadProjects());
-    await storeState.dispatch(setActiveProject(experimentWithoutSamplesId));
+    await storeState.dispatch(loadExperiments());
+    await storeState.dispatch(setActiveExperiment(experimentWithoutSamplesId));
   });
 
   it('Renders correctly when there is a project', async () => {

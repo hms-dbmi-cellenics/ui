@@ -18,10 +18,8 @@ import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import createTestComponentFactory from '__test__/test-utils/testComponentFactory';
 
-import { loadProjects, setActiveProject } from 'redux/actions/projects';
-
+import { loadExperiments, setActiveExperiment } from 'redux/actions/experiments';
 import loadEnvironment from 'redux/actions/networkResources/loadEnvironment';
-import { loadExperiments } from 'redux/actions/experiments';
 import { loadSamples } from 'redux/actions/samples';
 
 import mockDemoExperiments from '__test__/test-utils/mockData/mockDemoExperiments.json';
@@ -98,15 +96,13 @@ describe('Samples table', () => {
 
     storeState = makeStore();
 
-    await storeState.dispatch(loadProjects());
+    await storeState.dispatch(loadExperiments());
 
     // Loading experiment is usually called in Data Management, so we have to load them manually
-    await storeState.dispatch(loadExperiments(experimentWithSamplesId));
-    await storeState.dispatch(loadExperiments(experimentWithoutSamplesId));
     await storeState.dispatch(loadSamples(experimentWithSamplesId));
 
     // Defaults to project with samples
-    await storeState.dispatch(setActiveProject(experimentWithSamplesId));
+    await storeState.dispatch(setActiveExperiment(experimentWithSamplesId));
     await storeState.dispatch(loadEnvironment('test'));
   });
 
@@ -240,7 +236,7 @@ describe('Samples table', () => {
 
       // Load project without samples
       await act(async () => {
-        await storeState.dispatch(setActiveProject(experimentWithoutSamplesId));
+        await storeState.dispatch(setActiveExperiment(experimentWithoutSamplesId));
       });
     });
 

@@ -3,9 +3,9 @@
 exports[`updateMetadataTrack action Works correctly 1`] = `
 Array [
   Object {
+    "experimentId": "experiment-1234",
     "newKey": "New_track",
     "oldKey": "Old_track",
-    "projectUuid": "project-1234",
   },
   Object {
     "sample": Object {

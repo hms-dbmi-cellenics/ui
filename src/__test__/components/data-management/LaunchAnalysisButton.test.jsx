@@ -12,9 +12,8 @@ import { runGem2s } from 'redux/actions/pipeline';
 
 import PipelineStatus from 'utils/pipelineStatusValues';
 import LaunchAnalysisButton from 'components/data-management/LaunchAnalysisButton';
-import initialProjectState, { projectTemplate } from 'redux/reducers/projects/initialState';
-import initialSamplesState, { sampleTemplate } from 'redux/reducers/samples/initialState';
 import initialExperimentsState, { experimentTemplate } from 'redux/reducers/experiments/initialState';
+import initialSamplesState, { sampleTemplate } from 'redux/reducers/samples/initialState';
 import { initialExperimentBackendStatus } from 'redux/reducers/backendStatus/initialState';
 
 import UploadStatus from 'utils/upload/UploadStatus';
@@ -37,37 +36,28 @@ jest.mock('utils/AppRouteProvider', () => ({
 
 const mockStore = configureMockStore([thunk]);
 
-const projectName = 'Project 1';
-const projectUuid = 'project-1-uuid';
-const projectDescription = 'Some description';
-const sample1Name = 'Sample 1';
-const sample1Uuid = 'sample-1';
-const sample2Name = 'Sample 2';
-const sample2Uuid = 'sample-2';
 const experiment1id = 'experiment-1';
+const experimentName = 'Experiment 1';
+const experimentDescription = 'Some description';
+const sample1Uuid = 'sample-1';
+const sample1Name = 'Sample 1';
+const sample2Uuid = 'sample-2';
+const sample2Name = 'Sample 2';
 
 const noDataState = {
-  projects: {
-    ...initialProjectState,
-    meta: {
-      ...initialProjectState.meta,
-      activeProjectUuid: projectUuid,
-      loading: false,
-    },
-    ids: [projectUuid],
-    [projectUuid]: {
-      ...projectTemplate,
-      experiments: [experiment1id],
-      uuid: projectUuid,
-      name: projectName,
-      description: projectDescription,
-    },
-  },
   experiments: {
     ...initialExperimentsState,
+    meta: {
+      ...initialExperimentsState,
+      activeExperimentId: experiment1id,
+      loading: false,
+    },
     ids: [experiment1id],
     [experiment1id]: {
       ...experimentTemplate,
+      id: experiment1id,
+      name: experimentName,
+      description: experimentDescription,
     },
   },
   samples: {
@@ -90,20 +80,13 @@ const noDataState = {
 
 const withDataState = {
   ...noDataState,
-  projects: {
-    ...noDataState.projects,
-    [projectUuid]: {
-      ...noDataState.projects[projectUuid],
-      samples: [sample1Uuid, sample2Uuid],
-      metadataKeys: ['metadata-1'],
-    },
-  },
   experiments: {
     ...noDataState.experiments,
     [experiment1id]: {
       ...experimentTemplate,
       ...noDataState.experiments[experiment1id],
       sampleIds: [sample1Uuid, sample2Uuid],
+      metadataKeys: ['metadata-1'],
     },
   },
   samples: {
@@ -111,7 +94,7 @@ const withDataState = {
     [sample1Uuid]: {
       ...sampleTemplate,
       name: sample1Name,
-      projectUuid,
+      experimentId: experiment1id,
       uuid: sample1Uuid,
       type: '10X Chromium',
       metadata: ['value-1'],
@@ -125,7 +108,7 @@ const withDataState = {
     [sample2Uuid]: {
       ...sampleTemplate,
       name: sample2Name,
-      projectUuid,
+      experimentId: experiment1id,
       uuid: sample2Uuid,
       type: '10X Chromium',
       metadata: ['value-2'],
@@ -239,7 +222,7 @@ describe('LaunchAnalysisButton', () => {
     expect(button).not.toBeDisabled();
   });
 
-  it('Shows Go to Data Processing if there are no changes to the project (same hash)', async () => {
+  it('Shows Go to Data Processing if there are no changes to the experiment (same hash)', async () => {
     generateGem2sParamsHash.mockReturnValueOnce('old-params-hash');
 
     await act(async () => {
@@ -255,7 +238,7 @@ describe('LaunchAnalysisButton', () => {
     });
   });
 
-  it('Shows Process project if there are changes to the project (different hash)', async () => {
+  it('Shows Process project if there are changes to the experiment (different hash)', async () => {
     generateGem2sParamsHash.mockReturnValueOnce('new-params-hash');
 
     await act(async () => {
@@ -271,7 +254,7 @@ describe('LaunchAnalysisButton', () => {
     });
   });
 
-  it('Dispatches request for GEM2S if there are changes to the project', async () => {
+  it('Dispatches request for GEM2S if there are changes to the experiment', async () => {
     generateGem2sParamsHash.mockReturnValueOnce('new-params-hash');
 
     await act(async () => {
@@ -295,7 +278,7 @@ describe('LaunchAnalysisButton', () => {
     expect(runGem2s).toHaveBeenCalled();
   });
 
-  it('Does not dispatch request for GEM2S if there are no changes to the project', async () => {
+  it('Does not dispatch request for GEM2S if there are no changes to the experiment', async () => {
     generateGem2sParamsHash.mockReturnValueOnce('old-params-hash');
 
     await act(async () => {

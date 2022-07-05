@@ -12,20 +12,17 @@ import revokeRole from 'utils/data-management/experimentSharing/revokeRole';
 const { Text } = Typography;
 
 const ShareExperimentModal = (props) => {
-  const { onCancel, activeProject } = props;
+  const { onCancel, experiment } = props;
   const [usersWithAccess, setUsersWithAccess] = useState([]);
-  const experimentId = activeProject.experiments[0];
-  const experimentName = activeProject.name;
-  const activeProjectUuid = activeProject.uuid;
   const [addedUsers, setAddedUsers] = useState([]);
-  const [role, setRole] = useState('explorer');
   const [currentUser, setCurrentUser] = useState(null);
+  const [role, setRole] = useState('explorer');
 
   const fetchRoles = async () => {
     const getCurrentUser = await Auth.currentAuthenticatedUser();
     setCurrentUser(getCurrentUser.attributes.email);
 
-    const userRole = await loadRoles(experimentId);
+    const userRole = await loadRoles(experiment.id);
     setUsersWithAccess(userRole);
   };
 
@@ -55,9 +52,8 @@ const ShareExperimentModal = (props) => {
     await sendInvites(
       addedUsers,
       {
-        experimentId,
-        experimentName,
-        activeProjectUuid,
+        experimentId: experiment.id,
+        experimentName: experiment.name,
         role,
       },
     );
@@ -81,7 +77,7 @@ const ShareExperimentModal = (props) => {
     >
       <Space direction='vertical' style={{ width: '100%' }}>
         <Text strong>
-          {experimentName}
+          {experiment.name}
         </Text>
         <Row gutter={10} style={{ width: '110%' }}>
 
@@ -135,7 +131,11 @@ const ShareExperimentModal = (props) => {
                         type='primary'
                         danger
                         onClick={() => {
-                          revokeRole(user.email, { experimentId, experimentName });
+                          revokeRole(
+                            user.email,
+                            { experimentId: experiment.id, experimentName: experiment.name },
+                          );
+
                           onCancel();
                         }}
                         disabled={user.email === currentUser}
@@ -163,7 +163,7 @@ const ShareExperimentModal = (props) => {
 
 ShareExperimentModal.propTypes = {
   onCancel: PropTypes.func.isRequired,
-  activeProject: PropTypes.object.isRequired,
+  experiment: PropTypes.object.isRequired,
 };
 
 export default ShareExperimentModal;

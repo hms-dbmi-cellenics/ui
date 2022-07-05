@@ -16,13 +16,11 @@ import {
   samples,
 } from '__test__/test-utils/mockData';
 
-import downloadFromUrl from 'utils/data-management/downloadFromUrl';
-
 import DataManagementPage from 'pages/data-management';
 import userEvent from '@testing-library/user-event';
 
+import { setActiveExperiment } from 'redux/actions/experiments';
 import loadEnvironment from 'redux/actions/networkResources/loadEnvironment';
-import { setActiveProject } from 'redux/actions/projects';
 
 jest.mock('utils/data-management/downloadFromUrl');
 jest.mock('react-resize-detector', () => (props) => props.children({ width: 100, height: 100 }));
@@ -138,7 +136,7 @@ describe('Data Management page', () => {
 
     // Select the project with samples
     await act(async () => {
-      storeState.dispatch(setActiveProject(experimentWithSamplesId));
+      storeState.dispatch(setActiveExperiment(experimentWithSamplesId));
     });
 
     expect(screen.getAllByText(/Project Details/i).length).toBeGreaterThan(0);

@@ -31,8 +31,9 @@ const UploadDetailsModal = (props) => {
   const inputFileRef = useRef(null);
   const [replacementFileObject, setReplacementFileObject] = useState(null);
 
-  const { activeProjectUuid } = useSelector((state) => state.projects.meta) || false;
+  const { activeExperimentId } = useSelector((state) => state.experiments.meta);
   const samples = useSelector((state) => state.samples);
+
   const sampleName = samples[uploadDetailsModalDataRef.current?.sampleUuid]?.name;
 
   useEffect(() => {
@@ -68,7 +69,7 @@ const UploadDetailsModal = (props) => {
       return;
     }
 
-    createAndUploadSingleFile(newFile, activeProjectUuid, sampleUuid, dispatch);
+    createAndUploadSingleFile(newFile, activeExperimentId, sampleUuid, dispatch);
     onCancel();
   };
 
@@ -126,7 +127,7 @@ const UploadDetailsModal = (props) => {
       key='retry'
       block
       onClick={() => {
-        downloadSingleFile(activeProjectUuid, sampleUuid, file.name);
+        downloadSingleFile(activeExperimentId, sampleUuid, file.name);
       }}
       style={{ width: '140px', marginBottom: '10px' }}
     >

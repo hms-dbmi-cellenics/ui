@@ -4,7 +4,7 @@ import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 
 import deleteSamples from 'redux/actions/samples/deleteSamples';
 import initialSampleState, { sampleTemplate } from 'redux/reducers/samples/initialState';
-import initialProjectState, { projectTemplate } from 'redux/reducers/projects/initialState';
+import initialExperimentState, { experimentTemplate } from 'redux/reducers/experiments/initialState';
 
 import {
   SAMPLES_DELETE, SAMPLES_SAVED, SAMPLES_SAVING, SAMPLES_ERROR,
@@ -21,14 +21,14 @@ const mockSample = {
   ...sampleTemplate,
   name: 'test sample',
   uuid: mockSampleUuid,
-  projectUuid: mockExperimentId,
+  experimentId: mockExperimentId,
 };
 
-const mockProject = {
-  ...projectTemplate,
-  name: 'test project',
+const mockExperiment = {
+  ...experimentTemplate,
+  name: 'test experiment',
+  id: mockExperimentId,
   samples: [mockSampleUuid],
-  experiments: [mockExperimentId],
 };
 
 const initialState = {
@@ -36,10 +36,10 @@ const initialState = {
     ...initialSampleState,
     [mockSampleUuid]: mockSample,
   },
-  projects: {
-    ...initialProjectState,
+  experiments: {
+    ...initialExperimentState,
     ids: [mockExperimentId],
-    [mockExperimentId]: mockProject,
+    [mockExperimentId]: mockExperiment,
   },
 };
 
