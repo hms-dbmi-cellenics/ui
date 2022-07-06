@@ -161,7 +161,7 @@ describe('Marker heatmap plot', () => {
     expect(screen.getByText(/Colours/i)).toBeInTheDocument();
     expect(screen.getByText(/Legend/i)).toBeInTheDocument();
   });
-  
+
   it('Loads the plot', async () => {
     await renderHeatmapPage(storeState);
 
@@ -236,19 +236,19 @@ describe('Marker heatmap plot', () => {
     await renderHeatmapPage(storeState);
 
     // Add in a new gene
-    // This is done because we can not insert text into the genes list input
     const genesToLoad = [...markerGenesData5.order, 'FAKEGENE'];
 
     await act(async () => {
       await storeState.dispatch(loadGeneExpression(experimentId, genesToLoad, plotUuid));
     });
 
-    expect(screen.getByText('FAKEGENE')).toBeInTheDocument();
+    // Get genes displayed in the tree
+    const geneTree = screen.getByRole('tree');
 
-    // The returned value is a HTML NodeList
-    const genesContainer = screen.getByRole('tree');
+    const displayedGenesList = getTreeGenes(geneTree);
 
-    const displayedGenesList = getTreeGenes(genesContainer);
+    // check the added gene is in the tree
+    expect(within(geneTree).getByText('FAKEGENE')).toBeInTheDocument();
 
     // Check that the genes is ordered correctly.
     // This means that FAKEGENE should not be the last in the genes list
@@ -370,7 +370,7 @@ describe('Marker heatmap plot', () => {
   });
 });
 
-// drag and drop is impossible in jest, use enzyme
+// drag and drop is impossible in RTL, use enzyme
 describe('Drag and drop enzyme tests', () => {
   let component;
   let tree;
