@@ -14,7 +14,9 @@ import AppRouteProvider from 'utils/AppRouteProvider';
 
 import { makeStore } from 'redux/store';
 import { getBackendStatus } from 'redux/selectors';
-import { loadProjects, setActiveProject } from 'redux/actions/projects';
+
+import { loadExperiments, setActiveExperiment } from 'redux/actions/experiments';
+
 import { updateExperimentInfo } from 'redux/actions/experimentSettings';
 import generateGem2sParamsHash from 'utils/data-management/generateGem2sParamsHash';
 
@@ -117,8 +119,8 @@ describe('ContentWrapper', () => {
       status: null,
     }));
 
-    await store.dispatch(loadProjects());
-    await store.dispatch(setActiveProject(experimentId));
+    await store.dispatch(loadExperiments());
+    await store.dispatch(setActiveExperiment(experimentId));
     await store.dispatch(updateExperimentInfo({ experimentId, experimentName, sampleIds }));
   });
 

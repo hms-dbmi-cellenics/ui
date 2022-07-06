@@ -85,7 +85,7 @@ const AppRouteProvider = (props) => {
     }
 
     if (previousRoute.match(PATH_STUBS.DATA_MANAGEMENT)) {
-      // Update active project and experiment id when navigating from Data Management
+      // Update active experiment id when navigating from Data Management
       const { experimentId } = params;
       updateExperimentInfoOnNavigate(experimentId);
     }

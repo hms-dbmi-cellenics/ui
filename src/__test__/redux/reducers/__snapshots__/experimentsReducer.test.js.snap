@@ -3,19 +3,16 @@
 exports[`experimentsReducer Adds new sampleId when sample is created 1`] = `
 Object {
   "experiment-1": Object {
-    "createdDate": "01-01-2021",
+    "createdAt": "2021-01-01",
     "description": "this is a test description",
     "id": "experiment-1",
-    "meta": Object {
-      "organism": null,
-      "type": "10x",
-    },
+    "metadataKeys": Array [],
     "name": "experiment 1",
     "notifyByEmail": true,
-    "projectUuid": "experiment-1",
     "sampleIds": Array [
       "testSampleId",
     ],
+    "updatedAt": "2022-01-17",
   },
   "ids": Array [
     "experiment-1",
@@ -31,20 +28,136 @@ Object {
 exports[`experimentsReducer Adds new sampleId when sample is created and we already have one sample 1`] = `
 Object {
   "experiment-1": Object {
-    "createdDate": "01-01-2021",
+    "createdAt": "2021-01-01",
     "description": "this is a test description",
     "id": "experiment-1",
-    "meta": Object {
-      "organism": null,
-      "type": "10x",
-    },
+    "metadataKeys": Array [],
     "name": "experiment 1",
     "notifyByEmail": true,
-    "projectUuid": "experiment-1",
     "sampleIds": Array [
       "testSampleId",
       "testAnotherSampleId",
     ],
+    "updatedAt": "2022-01-17",
+  },
+  "ids": Array [
+    "experiment-1",
+  ],
+  "meta": Object {
+    "error": false,
+    "loading": false,
+    "saving": false,
+  },
+}
+`;
+
+exports[`experimentsReducer Correctly creates project metadata 1`] = `
+Object {
+  "[object Object]": Object {
+    "createdAt": "2021-01-01",
+    "description": "this is a test description",
+    "id": "experiment-1",
+    "metadataKeys": Array [],
+    "name": "experiment 1",
+    "notifyByEmail": true,
+    "sampleIds": Array [
+      "testSampleId",
+    ],
+    "updatedAt": "2022-01-17",
+  },
+  "experiment-1": Object {
+    "createdAt": "2021-01-01",
+    "description": "this is a test description",
+    "id": "experiment-1",
+    "metadataKeys": Array [
+      "metadata-test",
+    ],
+    "name": "experiment 1",
+    "notifyByEmail": true,
+    "sampleIds": Array [
+      "testSampleId",
+    ],
+    "updatedAt": "2022-01-17",
+  },
+  "ids": Array [
+    "experiment-1",
+  ],
+  "meta": Object {
+    "error": false,
+    "loading": false,
+    "saving": false,
+  },
+}
+`;
+
+exports[`experimentsReducer Correctly deletes project metadata 1`] = `
+Object {
+  "[object Object]": Object {
+    "createdAt": "2021-01-01",
+    "description": "this is a test description",
+    "id": "experiment-1",
+    "metadataKeys": Array [
+      "metadata-old",
+    ],
+    "name": "experiment 1",
+    "notifyByEmail": true,
+    "sampleIds": Array [
+      "testSampleId",
+    ],
+    "updatedAt": "2022-01-17",
+  },
+  "experiment-1": Object {
+    "createdAt": "2021-01-01",
+    "description": "this is a test description",
+    "id": "experiment-1",
+    "metadataKeys": Array [],
+    "name": "experiment 1",
+    "notifyByEmail": true,
+    "sampleIds": Array [
+      "testSampleId",
+    ],
+    "updatedAt": "2022-01-17",
+  },
+  "ids": Array [
+    "experiment-1",
+  ],
+  "meta": Object {
+    "error": false,
+    "loading": false,
+    "saving": false,
+  },
+}
+`;
+
+exports[`experimentsReducer Correctly updates project metadata 1`] = `
+Object {
+  "[object Object]": Object {
+    "createdAt": "2021-01-01",
+    "description": "this is a test description",
+    "id": "experiment-1",
+    "metadataKeys": Array [
+      "metadata-old",
+    ],
+    "name": "experiment 1",
+    "notifyByEmail": true,
+    "sampleIds": Array [
+      "testSampleId",
+    ],
+    "updatedAt": "2022-01-17",
+  },
+  "experiment-1": Object {
+    "createdAt": "2021-01-01",
+    "description": "this is a test description",
+    "id": "experiment-1",
+    "metadataKeys": Array [
+      "metadata-new",
+    ],
+    "name": "experiment 1",
+    "notifyByEmail": true,
+    "sampleIds": Array [
+      "testSampleId",
+    ],
+    "updatedAt": "2022-01-17",
   },
   "ids": Array [
     "experiment-1",
@@ -60,17 +173,14 @@ Object {
 exports[`experimentsReducer Deletes an experiment correctly 1`] = `
 Object {
   "experiment-1": Object {
-    "createdDate": "01-01-2021",
+    "createdAt": "2021-01-01",
     "description": "this is a test description",
     "id": "experiment-1",
-    "meta": Object {
-      "organism": null,
-      "type": "10x",
-    },
+    "metadataKeys": Array [],
     "name": "experiment 1",
     "notifyByEmail": true,
-    "projectUuid": "experiment-1",
     "sampleIds": Array [],
+    "updatedAt": "2022-01-17",
   },
   "ids": Array [
     "experiment-1",
@@ -83,20 +193,17 @@ Object {
 }
 `;
 
-exports[`experimentsReducer Deletes samples in v2 correctly 1`] = `
+exports[`experimentsReducer Deletes samples correctly 1`] = `
 Object {
   "experiment-1": Object {
-    "createdDate": "01-01-2021",
+    "createdAt": "2021-01-01",
     "description": "this is a test description",
     "id": "experiment-1",
-    "meta": Object {
-      "organism": null,
-      "type": "10x",
-    },
+    "metadataKeys": Array [],
     "name": "experiment 1",
     "notifyByEmail": true,
-    "projectUuid": "experiment-1",
     "sampleIds": Array [],
+    "updatedAt": "2022-01-17",
   },
   "ids": Array [
     "experiment-1",
@@ -113,6 +220,7 @@ exports[`experimentsReducer Error state inserts error correctly 1`] = `
 Object {
   "ids": Array [],
   "meta": Object {
+    "activeExperimentId": null,
     "error": "Error message",
     "loading": false,
     "saving": false,
@@ -123,22 +231,24 @@ Object {
 exports[`experimentsReducer Inserts a new experiment correctly 1`] = `
 Object {
   "experiment-1": Object {
-    "createdDate": "01-01-2021",
+    "createdAt": "2021-01-01",
     "description": "this is a test description",
     "id": "experiment-1",
     "meta": Object {
       "organism": null,
       "type": "10x",
     },
+    "metadataKeys": Array [],
     "name": "experiment 1",
     "notifyByEmail": true,
-    "projectUuid": "experiment-1",
     "sampleIds": Array [],
+    "updatedAt": null,
   },
   "ids": Array [
     "experiment-1",
   ],
   "meta": Object {
+    "activeExperimentId": "experiment-1",
     "error": false,
     "loading": false,
     "saving": false,
@@ -150,8 +260,21 @@ exports[`experimentsReducer Loading state changes meta state 1`] = `
 Object {
   "ids": Array [],
   "meta": Object {
+    "activeExperimentId": null,
     "error": false,
     "loading": true,
+    "saving": false,
+  },
+}
+`;
+
+exports[`experimentsReducer Loads 0 experiments correctly 1`] = `
+Object {
+  "ids": Array [],
+  "meta": Object {
+    "activeExperimentId": undefined,
+    "error": false,
+    "loading": false,
     "saving": false,
   },
 }
@@ -160,22 +283,20 @@ Object {
 exports[`experimentsReducer Loads an experiment correctly 1`] = `
 Object {
   "experiment-1": Object {
-    "createdDate": "01-01-2021",
+    "createdAt": "2021-01-01",
     "description": "this is a test description",
     "id": "experiment-1",
-    "meta": Object {
-      "organism": null,
-      "type": "10x",
-    },
+    "metadataKeys": Array [],
     "name": "experiment 1",
     "notifyByEmail": true,
-    "projectUuid": "experiment-1",
     "sampleIds": Array [],
+    "updatedAt": "2022-01-17",
   },
   "ids": Array [
     "experiment-1",
   ],
   "meta": Object {
+    "activeExperimentId": "experiment-1",
     "error": false,
     "loading": false,
     "saving": false,
@@ -183,42 +304,96 @@ Object {
 }
 `;
 
-exports[`experimentsReducer Loads experiment correctly on existing state 1`] = `
+exports[`experimentsReducer Loads experiments correctly 1`] = `
 Object {
   "experiment-1": Object {
-    "createdDate": "01-01-2021",
+    "createdAt": "2021-01-01",
     "description": "this is a test description",
     "id": "experiment-1",
-    "meta": Object {
-      "organism": null,
-      "type": "10x",
-    },
+    "metadataKeys": Array [],
     "name": "experiment 1",
     "notifyByEmail": true,
-    "projectUuid": "experiment-1",
     "sampleIds": Array [],
+    "updatedAt": "2022-01-17",
   },
   "experiment-2": Object {
-    "createdDate": "01-01-2021",
+    "createdAt": "2021-01-01",
     "description": "this is a test description",
     "id": "experiment-2",
-    "meta": Object {
-      "organism": null,
-      "type": "10x",
-    },
+    "metadataKeys": Array [],
     "name": "experiment 2",
     "notifyByEmail": true,
-    "projectUuid": "experiment-2",
     "sampleIds": Array [],
+    "updatedAt": "2022-01-17",
   },
   "ids": Array [
     "experiment-1",
     "experiment-2",
   ],
   "meta": Object {
+    "activeExperimentId": "experiment-1",
     "error": false,
     "loading": false,
     "saving": false,
+  },
+}
+`;
+
+exports[`experimentsReducer Overwrites existing state on loading experiments 1`] = `
+Object {
+  "experiment-1": Object {
+    "createdAt": "2021-01-01",
+    "description": "this is a test description",
+    "id": "experiment-1",
+    "metadataKeys": Array [],
+    "name": "experiment 1",
+    "notifyByEmail": true,
+    "sampleIds": Array [],
+    "updatedAt": "2022-01-17",
+  },
+  "experiment-2": Object {
+    "createdAt": "2021-01-01",
+    "description": "this is a test description",
+    "id": "experiment-2",
+    "metadataKeys": Array [],
+    "name": "experiment 2",
+    "notifyByEmail": true,
+    "sampleIds": Array [],
+    "updatedAt": "2022-01-17",
+  },
+  "ids": Array [
+    "experiment-2",
+  ],
+  "meta": Object {
+    "activeExperimentId": "experiment-2",
+    "error": false,
+    "loading": false,
+    "saving": false,
+  },
+}
+`;
+
+exports[`experimentsReducer Sets up saving state correctly 1`] = `
+Object {
+  "experiment-1": Object {
+    "createdAt": "2021-01-01",
+    "description": "this is a test description",
+    "id": "experiment-1",
+    "metadataKeys": Array [],
+    "name": "experiment 1",
+    "notifyByEmail": true,
+    "sampleIds": Array [
+      "testSampleId",
+    ],
+    "updatedAt": "2022-01-17",
+  },
+  "ids": Array [
+    "experiment-1",
+  ],
+  "meta": Object {
+    "error": false,
+    "loading": false,
+    "saving": true,
   },
 }
 `;
@@ -226,18 +401,14 @@ Object {
 exports[`experimentsReducer Updates an experiment correctly 1`] = `
 Object {
   "experiment-1": Object {
-    "createdDate": "01-01-2021",
+    "createdAt": "2021-01-01",
     "description": "this is a test description",
     "id": "experiment-1",
-    "lastModified": "02-01-2021",
-    "meta": Object {
-      "organism": null,
-      "type": "10x",
-    },
+    "metadataKeys": Array [],
     "name": "updated name",
     "notifyByEmail": true,
-    "projectUuid": "experiment-1",
     "sampleIds": Array [],
+    "updatedAt": "02-01-2021",
   },
   "ids": Array [
     "experiment-1",

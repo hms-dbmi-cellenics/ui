@@ -4,20 +4,20 @@ import { useDispatch, useSelector } from 'react-redux';
 import {
   Modal, Button, Input, Space, Typography, Form, Alert,
 } from 'antd';
-import deleteProject from 'redux/actions/projects/deleteProject';
+import { deleteExperiment } from 'redux/actions/experiments';
 import integrationTestConstants from 'utils/integrationTestConstants';
 
 const { Text, Paragraph } = Typography;
 
 const ProjectDeleteModal = (props) => {
   const {
-    projectUuid, onCancel, onDelete,
+    experimentId, onCancel, onDelete,
   } = props;
 
   const dispatch = useDispatch();
-  const projectName = useSelector((state) => state.projects[projectUuid].name);
+  const experimentName = useSelector((state) => state.experiments[experimentId].name);
 
-  const [inputProjectName, setInputProjectName] = useState('');
+  const [inputExperimentName, setInputExperimentName] = useState('');
   const [isValid, setIsValid] = useState(false);
   return (
     <Modal
@@ -42,7 +42,7 @@ const ProjectDeleteModal = (props) => {
             key='create'
             disabled={!isValid}
             onClick={() => {
-              dispatch(deleteProject(projectUuid));
+              dispatch(deleteExperiment(experimentId));
               onDelete();
             }}
           >
@@ -65,7 +65,7 @@ const ProjectDeleteModal = (props) => {
             {' '}
             This will delete the project
             {' '}
-            <Text strong>{projectName}</Text>
+            <Text strong>{experimentName}</Text>
             {', '}
             all of its data sets, metadata,
             analyses, and all other information
@@ -87,11 +87,11 @@ const ProjectDeleteModal = (props) => {
               <Input
                 data-test-id={integrationTestConstants.classes.DELETE_PROJECT_MODAL_INPUT}
                 onChange={(e) => {
-                  setIsValid(projectName === e.target.value);
-                  setInputProjectName(e.target.value);
+                  setIsValid(experimentName === e.target.value);
+                  setInputExperimentName(e.target.value);
                 }}
-                placeholder={projectName}
-                value={inputProjectName}
+                placeholder={experimentName}
+                value={inputExperimentName}
               />
             </Form.Item>
           </Form>
@@ -104,7 +104,7 @@ const ProjectDeleteModal = (props) => {
 };
 
 ProjectDeleteModal.propTypes = {
-  projectUuid: PropTypes.string.isRequired,
+  experimentId: PropTypes.string.isRequired,
   onCancel: PropTypes.func,
   onDelete: PropTypes.func,
 };

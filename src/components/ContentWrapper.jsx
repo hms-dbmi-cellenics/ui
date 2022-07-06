@@ -51,26 +51,23 @@ const ContentWrapper = (props) => {
   const { navigateTo, currentModule } = useAppRouter();
 
   const currentExperimentIdRef = useRef(routeExperimentId);
-  const activeProjectUuid = useSelector((state) => state?.projects?.meta?.activeProjectUuid);
-  const activeProjectExperimentID = useSelector((state) => (
-    state?.projects[activeProjectUuid]?.experiments[0]));
+  const activeExperimentId = useSelector((state) => state?.experiments?.meta?.activeExperimentId);
+  const activeExperiment = useSelector((state) => state.experiments[activeExperimentId]);
 
-  const activeProject = useSelector((state) => state.projects[activeProjectUuid]);
   const samples = useSelector((state) => state.samples);
 
-  // Use the project's experiment ID in data management
   useEffect(() => {
-    if (!activeProjectExperimentID && !routeExperimentId) return;
+    if (!activeExperimentId && !routeExperimentId) return;
 
     if (currentModule === modules.DATA_MANAGEMENT) {
-      currentExperimentIdRef.current = activeProjectExperimentID;
+      currentExperimentIdRef.current = activeExperimentId;
       return;
     }
 
     if (currentExperimentIdRef.current === routeExperimentId) return;
 
     currentExperimentIdRef.current = routeExperimentId;
-  }, [currentModule, activeProjectExperimentID, routeExperimentId]);
+  }, [currentModule, activeExperimentId, routeExperimentId]);
 
   const currentExperimentId = currentExperimentIdRef.current;
   const experiment = useSelector((state) => state?.experiments[currentExperimentId]);
@@ -131,12 +128,14 @@ const ContentWrapper = (props) => {
   const [gem2sRerunStatus, setGem2sRerunStatus] = useState(null);
 
   useEffect(() => {
+    if (!activeExperiment) return;
+
     const gem2sStatus = calculateGem2sRerunStatus(
-      gem2sBackendStatus, activeProject, samples, experiment,
+      gem2sBackendStatus, activeExperiment, samples, experiment,
     );
 
     setGem2sRerunStatus(gem2sStatus);
-  }, [gem2sBackendStatus, activeProject, samples, experiment]);
+  }, [gem2sBackendStatus, activeExperiment, samples, experiment]);
 
   useEffect(() => {
     Auth.currentAuthenticatedUser()

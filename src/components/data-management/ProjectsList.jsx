@@ -13,14 +13,14 @@ const windowMargin = 130; // px
 const ProjectsList = (props) => {
   const { height, filter } = props;
 
-  const projects = useSelector((state) => state.projects);
+  const experiments = useSelector((state) => state.experiments);
 
-  if (projects.meta.loading) {
+  if (experiments.meta.loading) {
     return [...Array(5)].map((_, idx) => <Skeleton key={`skeleton-${idx}`} role='progressbar' active />);
   }
 
   // if there are no element return an emtpy one so that the tests know the list has been loaded
-  if (projects.ids.length === 0) {
+  if (experiments.ids.length === 0) {
     return (
       <div data-test-id={integrationTestConstants.ids.PROJECTS_LIST} />
     );
@@ -33,19 +33,17 @@ const ProjectsList = (props) => {
       style={{ height: height - windowMargin, overflowY: 'auto' }}
     >
       {
-        projects.ids.map((projectUuid) => {
-          const project = projects[projectUuid];
+        experiments.ids.map((experimentId) => {
+          const experiment = experiments[experimentId];
 
-          const matchFilter = project.name.match(filter)
-              || project.experiments.some((experimentId) => experimentId.match(filter))
-              || projectUuid.match(filter);
+          const matchFilter = experiment.name.match(filter) || experimentId.match(filter);
 
           if (!matchFilter) return <></>;
 
           return (
             <ProjectCard
-              key={project.uuid}
-              projectUuid={project.uuid}
+              key={experiment.id}
+              experimentId={experiment.id}
             />
           );
         })

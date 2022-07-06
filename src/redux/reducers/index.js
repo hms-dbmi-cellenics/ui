@@ -10,7 +10,6 @@ import experimentsReducer from './experiments';
 import experimentSettingsReducer from './experimentSettings';
 import genesReducer from './genes';
 import layoutReducer from './layout';
-import projectsReducer from './projects';
 import sampleReducer from './samples';
 import networkResourcesReducer from './networkResources';
 import backendStatusReducer from './backendStatus';
@@ -28,7 +27,6 @@ const appReducers = combineReducers({
   backendStatus: backendStatusReducer,
   genes: genesReducer,
   layout: layoutReducer,
-  projects: projectsReducer,
   samples: sampleReducer,
   networkResources: networkResourcesReducer,
 });

@@ -10,8 +10,8 @@ import handleError from 'utils/http/handleError';
 import fetchAPI from 'utils/http/fetchAPI';
 
 const updateSample = (sampleUuid, diff) => async (dispatch, getState) => {
-  // In api v2 projectUuid and experimentId are the same
-  const experimentId = getState().samples[sampleUuid].projectUuid;
+  // In api v2 experimentId and experimentId are the same
+  const { experimentId } = getState().samples[sampleUuid];
 
   if (_.isNil(diff.name) || diff.metadata) {
     throw new Error('This action can be used to update only the name in sample');

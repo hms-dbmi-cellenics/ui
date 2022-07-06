@@ -151,14 +151,20 @@ jobs:
           # this is what we push to ECR
           # we will also take semver'd tags like `1.0.0` and use them for releases
 
+          # In push & PR events we want the tag to contain the latest commit on the branch:
+          # in push events, the latest commit of the master branch is GITHUB_SHA
+          # in PR synch the latest commit of the branch is found in github.event.pull_request.head.sha instead
+
           if [ "${{ github.event_name }}" = "release" ] && [ "${{ github.event.action }}" = "released" ]; then
             echo "::set-output name=tag::${REF_ID/refs-tags-/}"
+          elif [ "${{ github.event_name }}" = "pull_request" ]; then
+            echo "::set-output name=tag::$REF_ID-${{ github.event.pull_request.head.sha }}"
           else
             echo "::set-output name=tag::$REF_ID-$GITHUB_SHA"
           fi
 
-          # This will take a GitHub repo name like `hms-dbmi-cellenics/iac`
-          # and turns it into `iac`. This will be the name of the
+          # This will take a GitHub repo name like `hms-dbmi-cellenics/releases`
+          # and turns it into `releases`. This will be the name of the
           # ECR repository.
           IMAGE_REPO_NAME=$(echo $GITHUB_REPOSITORY | awk -F '/' '{print $2}')
           echo "::set-output name=repo-name::$IMAGE_REPO_NAME"
@@ -311,28 +317,6 @@ jobs:
         env:
           IMAGE_NAME: ${{ format('{0}/{1}:{2}', steps.login-ecr.outputs.registry, needs.build-docker.outputs.repo-name, needs.build-docker.outputs.tag) }}
 
-      - id: disable-admin-enforcement
-        name: Temporarily disable admin enforcement
-        uses: benjefferies/branch-protection-bot@1.0.7
-        with:
-          access_token: ${{ secrets.API_TOKEN_GITHUB }}
-          owner: ${{ github.repository_owner }}
-          repo: iac
-          enforce_admins: false
-          retries: 8
-
-      - name: Push production/develop release to iac for deployment
-        if: (matrix.environment == 'production' && github.event_name == 'release' && github.event.action == 'released') || (matrix.environment == 'develop' && github.event_name == 'push')
-        uses: dmnemec/copy_file_to_another_repo_action@v1.0.4
-        env:
-          API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
-        with:
-          source_file: ${{ steps.fill-metadata.outputs.deployment-name }}.yaml
-          destination_repo: ${{ github.repository_owner }}/iac
-          destination_folder: releases/${{ steps.fill-metadata.outputs.kubernetes-env }}
-          user_email: ci@biomage.net
-          user_name: Biomage CI/CD
-
       - name: Push production/develop template to releases repo for deployment
         if: (matrix.environment == 'production' && github.event_name == 'release' && github.event.action == 'released') || (matrix.environment == 'develop' && github.event_name == 'push')
         uses: dmnemec/copy_file_to_another_repo_action@v1.0.4
@@ -353,18 +337,6 @@ jobs:
         run: |-
           mv $DEPLOYMENT_NAME.yaml $REF_DASHED.yaml
 
-      - name: Push staging deployment template to iac
-        if: (github.event_name == 'pull_request' || github.event_name == 'push') && matrix.environment == 'staging'
-        uses: dmnemec/copy_file_to_another_repo_action@v1.0.4
-        env:
-          API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
-        with:
-          source_file: ${{ steps.fill-metadata.outputs.ref-dashed }}.yaml
-          destination_repo: ${{ github.repository_owner }}/iac
-          destination_folder: releases/staging-candidates/${{ steps.fill-metadata.outputs.deployment-name }}
-          user_email: ci@biomage.net
-          user_name: 'Biomage CI/CD'
-
       - name: Push staging deployment template to releases
         if: (github.event_name == 'pull_request' || github.event_name == 'push') && matrix.environment == 'staging'
         uses: dmnemec/copy_file_to_another_repo_action@v1.0.4
@@ -376,17 +348,6 @@ jobs:
           destination_folder: staging-candidates/${{ steps.fill-metadata.outputs.deployment-name }}
           user_email: ci@biomage.net
           user_name: 'Biomage CI/CD'
-
-      - id: enable-admin-enforcement
-        name: Re-enable admin enforcement
-        uses: benjefferies/branch-protection-bot@1.0.7
-        if: always()
-        with:
-          access_token: ${{ secrets.API_TOKEN_GITHUB }}
-          owner: ${{ github.repository_owner }}
-          repo: iac
-          enforce_admins: true
-          retries: 8
 
       - id: send-to-slack
         name: Send failure notification to Slack
