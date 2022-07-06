@@ -1,5 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Skeleton, Empty } from 'antd';
+import {
+  Skeleton, Empty, Collapse, Space, Select,
+} from 'antd';
 import _ from 'lodash';
 import { useSelector, useDispatch } from 'react-redux';
 import { Vega } from 'react-vega';
@@ -14,8 +16,12 @@ import PlatformError from 'components/PlatformError';
 import Loader from 'components/Loader';
 import populateHeatmapData from 'components/plots/helpers/heatmap/populateHeatmapData';
 import HeatmapControls from 'components/plots/styling/heatmap/HeatmapControls';
-import { getCellSets } from 'redux/selectors';
+import { getCellSets, getCellSetsHierarchyByType } from 'redux/selectors';
 import { plotNames } from 'utils/constants';
+
+import getSelectOptions from 'utils/plots/getSelectOptions';
+
+const { Panel } = Collapse;
 
 const plotUuid = 'heatmapPlotMain';
 const plotType = 'heatmap';
@@ -29,6 +35,8 @@ const HeatmapPlot = ({ experimentId }) => {
   const selectedGenes = useSelector((state) => state.genes.expression.views[plotUuid]?.data) || [];
   const [vegaSpec, setVegaSpec] = useState();
   const displaySavedGenes = useRef(true);
+
+  const cellOptions = useSelector(getCellSetsHierarchyByType('cellSets'));
 
   useEffect(() => {
     if (!config) dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
@@ -125,12 +133,36 @@ const HeatmapPlot = ({ experimentId }) => {
     },
   ];
 
+  const clustersForSelect = getSelectOptions(cellOptions);
+
+  const changeClusters = (option) => {
+    const newValue = option.value.toLowerCase();
+    updatePlotWithChanges({ selectedCellSet: newValue });
+  };
+
   const renderExtraPanels = () => (
-    <HeatmapControls
-      selectedGenes={selectedGenes}
-      plotUuid={plotUuid}
-      onGeneEnter={onGeneEnter}
-    />
+    <>
+      <Panel header='Select data' key='select-data'>
+        <Space direction='vertical' size='small'>
+          <p>Select the cell sets to show markers for:</p>
+          <Select
+            value={{
+              value: config.selectedCellSet,
+            }}
+            onChange={changeClusters}
+            labelInValue
+            style={{ width: '100%' }}
+            placeholder='Select cell set...'
+            options={clustersForSelect}
+          />
+        </Space>
+      </Panel>
+      <HeatmapControls
+        selectedGenes={selectedGenes}
+        plotUuid={plotUuid}
+        onGeneEnter={onGeneEnter}
+      />
+    </>
   );
 
   const renderPlot = () => {
