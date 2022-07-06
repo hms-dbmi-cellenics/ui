@@ -106,5 +106,10 @@ module.exports = withPlugins([
       localIdentName: '[local]___[hash:base64:5]',
     },
   }],
-  [css],
+  [css], {
+    publicRuntimeConfig: {
+      staticFolder: '/public',
+      domainName: process.env.DOMAIN_NAME,
+    },
+  },
 ], nextConfig);
