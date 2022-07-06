@@ -3,14 +3,12 @@ import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import _ from 'lodash';
 import Heatmap from 'pages/experiments/[experimentId]/plots-and-tables/heatmap/index';
 import React from 'react';
+import userEvent from '@testing-library/user-event';
 import { act } from 'react-dom/test-utils';
 import { Provider } from 'react-redux';
 import { loadBackendStatus } from 'redux/actions/backendStatus';
+import { updatePlotConfig } from 'redux/actions/componentConfig';
 import { makeStore } from 'redux/store';
-import { seekFromS3 } from 'utils/work/seekWorkResponse';
-import expressionDataFAKEGENE from '__test__/data/gene_expression_FAKEGENE.json';
-import markerGenesData2 from '__test__/data/marker_genes_2.json';
-import markerGenesData5 from '__test__/data/marker_genes_5.json';
 
 import preloadAll from 'jest-next-dynamic';
 
@@ -29,29 +27,21 @@ jest.mock('react-resize-detector', () => (props) => {
   return children({ width: 800, height: 800 });
 });
 
-// Mock hash so we can control the ETag that is produced by hash.MD5 when fetching work requests
-// EtagParams is the object that's passed to the function which generates ETag in fetchWork
-jest.mock('object-hash', () => {
-  const objectHash = jest.requireActual('object-hash');
-  const mockWorkResultETag = jest.requireActual('__test__/test-utils/mockWorkResultETag').default;
+jest.mock('redux/actions/componentConfig', () => {
+  const originalModule = jest.requireActual('redux/actions/componentConfig');
+  const { UPDATE_CONFIG } = jest.requireActual('redux/actionTypes/componentConfig');
 
-  const mockWorkRequestETag = (ETagParams) => `${ETagParams.body.nGenes}-marker-genes`;
-  const mockGeneExpressionETag = (ETagParams) => `${ETagParams.missingGenesBody.genes.join('-')}-expression`;
-
-  return mockWorkResultETag(objectHash, mockWorkRequestETag, mockGeneExpressionETag);
+  return {
+    ...originalModule,
+    updatePlotConfig: jest.fn((plotUuid, configChanges) => (dispatch) => {
+      dispatch({
+        type: UPDATE_CONFIG,
+        payload:
+          { plotUuid, configChanges },
+      });
+    }),
+  };
 });
-
-jest.mock('utils/work/seekWorkResponse', () => ({
-  __esModule: true,
-  dispatchWorkRequest: jest.fn(() => true),
-  seekFromS3: jest.fn(),
-}));
-
-const mockWorkerResponses = {
-  '5-marker-genes': markerGenesData5,
-  '2-marker-genes': markerGenesData2,
-  'FAKEGENE-expression': expressionDataFAKEGENE,
-};
 
 const experimentId = fake.EXPERIMENT_ID;
 const plotUuid = 'heatmapPlotMain';
@@ -91,11 +81,6 @@ describe('Heatmap plot', () => {
   beforeEach(async () => {
     jest.clearAllMocks();
 
-    seekFromS3
-      .mockReset()
-      .mockImplementationOnce(() => null)
-      .mockImplementationOnce((Etag) => mockWorkerResponses[Etag]);
-
     enableFetchMocks();
     fetchMock.resetMocks();
     fetchMock.doMock();
@@ -104,6 +89,7 @@ describe('Heatmap plot', () => {
     storeState = makeStore();
 
     // Set up state for backend status
+    await storeState.dispatch(loadBackendStatus(experimentId));
     await storeState.dispatch(loadBackendStatus(experimentId));
   });
 
@@ -124,5 +110,14 @@ describe('Heatmap plot', () => {
     await renderHeatmapPage(storeState);
 
     expect(screen.getByText(/Add some genes to this heatmap to get started/i)).toBeInTheDocument();
+  });
+
+  it('Changing clusters updates the plot data', async () => {
+    await renderHeatmapPage(storeState);
+
+    userEvent.click(screen.getByText('Louvain'));
+    userEvent.click(screen.getByText('Scratchpad'), null, { skipPointerEventsCheck: true });
+
+    expect(updatePlotConfig).toHaveBeenCalled();
   });
 });
