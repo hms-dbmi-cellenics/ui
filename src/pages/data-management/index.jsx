@@ -29,7 +29,7 @@ const DataManagementPage = () => {
   const { saving: samplesSaving } = samples.meta;
 
   const [newProjectModalVisible, setNewProjectModalVisible] = useState(false);
-
+  console.log('TESTING THE VALUES IN NON SSR ', process.env.DOMAIN_NAME, process.env.AWS_REGION);
   useEffect(() => {
     if (experiments.ids.length === 0) dispatch(loadExperiments());
   }, []);
