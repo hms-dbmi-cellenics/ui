@@ -110,6 +110,7 @@ describe('Heatmap plot', () => {
   it('Loads controls and elements', async () => {
     await renderHeatmapPage(storeState);
 
+    expect(screen.getByText(/Select data/i)).toBeInTheDocument();
     expect(screen.getByText(/Gene selection/i)).toBeInTheDocument();
     expect(screen.getByText(/Metadata tracks/i)).toBeInTheDocument();
     expect(screen.getByText(/Group by/i)).toBeInTheDocument();
