@@ -144,7 +144,7 @@ const HeatmapPlot = ({ experimentId }) => {
     <>
       <Panel header='Select data' key='select-data'>
         <Space direction='vertical' size='small'>
-          <p>Select the cell sets to show markers for:</p>
+          <p>Select cell sets to show in the heatmap:</p>
           <Select
             value={{
               value: config.selectedCellSet,
