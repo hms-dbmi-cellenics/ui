@@ -1,3 +1,7 @@
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { ClipLoader } from 'react-spinners';
+import PropTypes from 'prop-types';
 import {
   Button,
   Form,
@@ -6,13 +10,10 @@ import {
   Space,
   Typography,
 } from 'antd';
-import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 
-import { ClipLoader } from 'react-spinners';
-import PropTypes from 'prop-types';
+import { createExperiment } from 'redux/actions/experiments';
+
 import validateInputs, { rules } from 'utils/validateInputs';
-import { createProject } from 'redux/actions/projects';
 import integrationTestConstants from 'utils/integrationTestConstants';
 
 const { Text, Title, Paragraph } = Typography;
@@ -24,14 +25,16 @@ const NewProjectModal = (props) => {
     onCancel,
   } = props;
 
+  const experiments = useSelector(((state) => state.experiments));
+  const { saving, error } = experiments.meta;
+
   const dispatch = useDispatch();
   const [projectNames, setProjectNames] = useState(new Set());
   const [projectName, setProjectName] = useState('');
   const [projectDescription, setProjectDescription] = useState('');
   const [isValidName, setIsValidName] = useState(false);
-  const projects = useSelector(((state) => state.projects));
 
-  const firstTimeFlow = projects.ids.length === 0;
+  const firstTimeFlow = experiments.ids.length === 0;
   const validationChecks = [
     rules.MIN_8_CHARS,
     rules.MIN_2_SEQUENTIAL_CHARS,
@@ -44,22 +47,17 @@ const NewProjectModal = (props) => {
   };
 
   useEffect(() => {
-    setProjectNames(new Set(projects.ids.map((id) => projects[id].name.trim())));
-  }, [projects.ids]);
+    setProjectNames(new Set(experiments.ids.map((id) => experiments[id].name.trim())));
+  }, [experiments.ids]);
 
   useEffect(() => {
     setIsValidName(validateInputs(projectName, validationChecks, validationParams).isValid);
   }, [projectName, projectNames]);
 
-  const {
-    saving,
-    error,
-  } = useSelector((state) => state.projects.meta);
-
   const submit = () => {
     setProjectName('');
 
-    dispatch(createProject(projectName, projectDescription, projectName));
+    dispatch(createExperiment(projectName, projectDescription));
     onCreate(projectName, projectDescription);
   };
 

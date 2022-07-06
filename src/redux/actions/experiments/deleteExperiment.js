@@ -3,28 +3,20 @@ import handleError from 'utils/http/handleError';
 import endUserMessages from 'utils/endUserMessages';
 
 import {
-  PROJECTS_DELETE,
-  PROJECTS_SET_ACTIVE,
-  PROJECTS_ERROR,
-  PROJECTS_SAVING,
-  PROJECTS_SAVED,
-} from 'redux/actionTypes/projects';
-
-import {
-  EXPERIMENTS_DELETED,
+  EXPERIMENTS_SET_ACTIVE, EXPERIMENTS_DELETED, EXPERIMENTS_ERROR, EXPERIMENTS_SAVING,
 } from 'redux/actionTypes/experiments';
 
 import { SAMPLES_DELETE } from 'redux/actionTypes/samples';
 
-const deleteProject = (
-  projectUuid,
+const deleteExperiment = (
+  experimentId,
 ) => async (dispatch, getState) => {
   // Delete samples
-  const { projects } = getState();
-  const { activeProjectUuid } = projects.meta;
+  const { experiments } = getState();
+  const { activeExperimentId } = experiments.meta;
 
   dispatch({
-    type: PROJECTS_SAVING,
+    type: EXPERIMENTS_SAVING,
     payload: {
       message: endUserMessages.DELETING_PROJECT,
     },
@@ -32,7 +24,7 @@ const deleteProject = (
 
   try {
     await fetchAPI(
-      `/v2/experiments/${projectUuid}`,
+      `/v2/experiments/${experimentId}`,
       {
         method: 'DELETE',
         headers: {
@@ -42,48 +34,39 @@ const deleteProject = (
     );
 
     // If deleted project is the same as the active project, choose another project
-    if (projectUuid === activeProjectUuid) {
-      const leftoverProjectIds = projects.ids.filter((uuid) => uuid !== activeProjectUuid);
+    if (experimentId === activeExperimentId) {
+      const leftoverProjectIds = experiments.ids.filter((uuid) => uuid !== activeExperimentId);
 
       dispatch({
-        type: PROJECTS_SET_ACTIVE,
-        payload: { projectUuid: leftoverProjectIds.length ? leftoverProjectIds[0] : null },
+        type: EXPERIMENTS_SET_ACTIVE,
+        payload: { experimentId: leftoverProjectIds.length ? leftoverProjectIds[0] : null },
       });
     }
 
     dispatch({
       type: SAMPLES_DELETE,
       payload: {
-        experimentId: projectUuid,
-        sampleIds: projects[projectUuid].samples,
+        experimentId,
+        sampleIds: experiments[experimentId].sampleIds,
       },
     });
 
     dispatch({
       type: EXPERIMENTS_DELETED,
       payload: {
-        experimentIds: projects[projectUuid].experiments,
+        experimentIds: [experimentId],
       },
-    });
-
-    dispatch({
-      type: PROJECTS_DELETE,
-      payload: { projectUuid },
-    });
-
-    dispatch({
-      type: PROJECTS_SAVED,
     });
   } catch (e) {
     const errorMessage = handleError(e, endUserMessages.ERROR_DELETING_PROJECT);
 
     dispatch({
-      type: PROJECTS_ERROR,
+      type: EXPERIMENTS_ERROR,
       payload: {
-        error: errorMessage,
+        message: errorMessage,
       },
     });
   }
 };
 
-export default deleteProject;
+export default deleteExperiment;

@@ -7,7 +7,6 @@ import {
   Space, Typography, Button,
 } from 'antd';
 
-import { updateProject } from 'redux/actions/projects';
 import { updateExperiment } from 'redux/actions/experiments';
 
 import { layout } from 'utils/constants';
@@ -27,8 +26,8 @@ const paddingLeft = layout.PANEL_PADDING;
 const ProjectDetails = ({ width, height }) => {
   const dispatch = useDispatch();
 
-  const { activeProjectUuid } = useSelector((state) => state.projects.meta);
-  const activeProject = useSelector((state) => state.projects[activeProjectUuid]);
+  const { activeExperimentId } = useSelector((state) => state.experiments.meta);
+  const activeExperiment = useSelector((state) => state.experiments[activeExperimentId]);
   const samplesTableRef = useRef();
 
   return (
@@ -46,10 +45,10 @@ const ProjectDetails = ({ width, height }) => {
       >
         <div style={{ flex: 'none', paddingBottom: '1em' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-            <Title level={3}>{activeProject.name}</Title>
+            <Title level={3}>{activeExperiment.name}</Title>
             <Space>
               <Button
-                disabled={activeProject.samples?.length === 0}
+                disabled={activeExperiment.sampleIds?.length === 0}
                 onClick={() => samplesTableRef.current.createMetadataColumn()}
               >
                 Add metadata
@@ -58,7 +57,7 @@ const ProjectDetails = ({ width, height }) => {
             </Space>
           </div>
           <Text type='secondary'>
-            {`Project ID: ${activeProjectUuid}`}
+            {`Project ID: ${activeExperimentId}`}
           </Text>
         </div>
         <div style={{ flex: 1, overflowY: 'auto' }}>
@@ -66,11 +65,10 @@ const ProjectDetails = ({ width, height }) => {
             Description:
           </Text>
           <EditableParagraph
-            value={activeProject.description}
+            value={activeExperiment.description}
             onUpdate={(text) => {
-              if (text !== activeProject.description) {
-                dispatch(updateProject(activeProjectUuid, { description: text }));
-                dispatch(updateExperiment(activeProject.experiments[0], { description: text }));
+              if (text !== activeExperiment.description) {
+                dispatch(updateExperiment(activeExperimentId, { description: text }));
               }
             }}
           />

@@ -85,7 +85,7 @@ const loadAndRenderDefaultHeatmap = async (storeState) => {
   });
 };
 
-const mockAPIResponses = generateDefaultMockAPIResponses(experimentId, fake.PROJECT_ID);
+const mockAPIResponses = generateDefaultMockAPIResponses(experimentId);
 
 const errorResponse = () => Promise.reject(new Error('Some error idk'));
 

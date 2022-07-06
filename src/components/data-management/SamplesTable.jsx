@@ -18,13 +18,11 @@ import MetadataColumnTitle from 'components/data-management/MetadataColumn';
 import { UploadCell, SampleNameCell, EditableFieldCell } from 'components/data-management/SamplesTableCells';
 
 import {
-  updateProject,
   deleteMetadataTrack,
   createMetadataTrack,
   updateValueInMetadataTrack,
-} from 'redux/actions/projects';
-import { DEFAULT_NA } from 'redux/reducers/projects/initialState';
-import { reorderSamples } from 'redux/actions/experiments';
+  reorderSamples,
+} from 'redux/actions/experiments';
 
 import { loadSamples } from 'redux/actions/samples';
 
@@ -38,6 +36,7 @@ import 'utils/css/data-management.css';
 
 import { ClipLoader } from 'react-spinners';
 import useConditionalEffect from 'utils/customHooks/useConditionalEffect';
+import { METADATA_DEFAULT_VALUE } from 'redux/reducers/experiments/initialState';
 
 const { Text } = Typography;
 
@@ -45,12 +44,12 @@ const SamplesTable = forwardRef((props, ref) => {
   const dispatch = useDispatch();
   const [tableData, setTableData] = useState([]);
 
-  const projects = useSelector((state) => state.projects);
+  const experiments = useSelector((state) => state.experiments);
   const samples = useSelector((state) => state.samples);
   const areSamplesLoading = useSelector((state) => state.samples.meta.loading);
 
-  const { activeProjectUuid } = useSelector((state) => state.projects.meta) || false;
-  const activeProject = useSelector((state) => state.projects[activeProjectUuid]) || false;
+  const activeExperimentId = useSelector((state) => state.experiments.meta.activeExperimentId);
+  const activeExperiment = useSelector((state) => state.experiments[activeExperimentId]);
 
   const [sampleNames, setSampleNames] = useState(new Set());
   const DragHandle = sortableHandle(() => <MenuOutlined style={{ cursor: 'grab', color: '#999' }} />);
@@ -99,10 +98,10 @@ const SamplesTable = forwardRef((props, ref) => {
   const [tableColumns, setTableColumns] = useState(initialTableColumns);
 
   useEffect(() => {
-    if (activeProject.samples.length > 0) {
+    if (activeExperiment.sampleIds.length > 0) {
       // if there are samples - build the table columns
-      setSampleNames(new Set(activeProject.samples.map((id) => samples[id]?.name.trim())));
-      const metadataColumns = activeProject.metadataKeys.map(
+      setSampleNames(new Set(activeExperiment.sampleIds.map((id) => samples[id]?.name.trim())));
+      const metadataColumns = activeExperiment.metadataKeys.map(
         (metadataKey) => createInitializedMetadataColumn(metadataKeyToName(metadataKey)),
       ) || [];
       setTableColumns([...initialTableColumns, ...metadataColumns]);
@@ -110,14 +109,14 @@ const SamplesTable = forwardRef((props, ref) => {
       setTableColumns([]);
       setSampleNames(new Set());
     }
-  }, [samples, activeProject]);
+  }, [samples, activeExperiment]);
 
   useConditionalEffect(() => {
-    dispatch(loadSamples(activeProjectUuid));
-  }, [activeProject.samples], { lazy: true });
+    dispatch(loadSamples(activeExperimentId));
+  }, [activeExperiment?.sampleIds], { lazy: true });
 
   const deleteMetadataColumn = (name) => {
-    dispatch(deleteMetadataTrack(name, activeProjectUuid));
+    dispatch(deleteMetadataTrack(name, activeExperimentId));
   };
 
   const createInitializedMetadataColumn = (name) => {
@@ -131,7 +130,7 @@ const SamplesTable = forwardRef((props, ref) => {
           sampleNames={sampleNames}
           setCells={setCells}
           deleteMetadataColumn={deleteMetadataColumn}
-          activeProjectUuid={activeProjectUuid}
+          activeExperimentId={activeExperimentId}
         />
       ),
       width: 200,
@@ -142,7 +141,7 @@ const SamplesTable = forwardRef((props, ref) => {
           dataIndex={key}
           rowIdx={rowIdx}
           onAfterSubmit={(newValue) => {
-            dispatch(updateValueInMetadataTrack(activeProjectUuid, record.uuid, key, newValue));
+            dispatch(updateValueInMetadataTrack(activeExperimentId, record.uuid, key, newValue));
           }}
         />
       ),
@@ -150,7 +149,7 @@ const SamplesTable = forwardRef((props, ref) => {
   };
 
   const onMetadataCreate = (name) => {
-    dispatch(createMetadataTrack(name, activeProjectUuid));
+    dispatch(createMetadataTrack(name, activeExperimentId));
   };
 
   useImperativeHandle(ref, () => ({
@@ -162,7 +161,7 @@ const SamplesTable = forwardRef((props, ref) => {
         fixed: 'right',
         title: () => (
           <MetadataPopover
-            existingMetadata={activeProject.metadataKeys}
+            existingMetadata={activeExperiment.metadataKeys}
             onCreate={(name) => {
               onMetadataCreate(name);
             }}
@@ -197,28 +196,28 @@ const SamplesTable = forwardRef((props, ref) => {
 
       const isMetadataEmpty = (uuid) => (
         !samples[uuid].metadata[metadataKey]
-        || samples[uuid].metadata[metadataKey] === DEFAULT_NA
+        || samples[uuid].metadata[metadataKey] === METADATA_DEFAULT_VALUE
       );
 
       return isMetadataEmpty(sampleUuid);
     };
 
-    activeProject.samples.forEach(
+    activeExperiment.sampleIds.forEach(
       (sampleUuid) => {
         if (canUpdateCell(sampleUuid, actionType)) {
-          dispatch(updateValueInMetadataTrack(activeProjectUuid, sampleUuid, metadataKey, value));
+          dispatch(updateValueInMetadataTrack(activeExperimentId, sampleUuid, metadataKey, value));
         }
       },
     );
   };
 
   useEffect(() => {
-    if (activeProject.samples.length === 0) {
+    if (activeExperiment.sampleIds.length === 0) {
       setTableData([]);
       return;
     }
 
-    const newData = activeProject.samples.map((sampleUuid, idx) => {
+    const newData = activeExperiment.sampleIds.map((sampleUuid, idx) => {
       // upload problems sometimes lead to partial updates and incosistent states
       // in this situation it's possible that the sampleUuid does not exist
       // this a temporary fix so that the whole UI doesn't crash preventing the
@@ -244,7 +243,7 @@ const SamplesTable = forwardRef((props, ref) => {
       };
     });
     setTableData(newData);
-  }, [projects, samples, activeProjectUuid]);
+  }, [experiments, samples, activeExperimentId]);
 
   const noDataComponent = (
     <ExampleExperimentsSpace
@@ -258,10 +257,8 @@ const SamplesTable = forwardRef((props, ref) => {
       const newData = arrayMoveImmutable(tableData, oldIndex, newIndex).filter((el) => !!el);
       const newSampleOrder = newData.map((sample) => sample.uuid);
 
-      dispatch(updateProject(activeProjectUuid, { samples: newSampleOrder }));
-
       try {
-        await dispatch(reorderSamples(activeProjectUuid, oldIndex, newIndex, newSampleOrder));
+        await dispatch(reorderSamples(activeExperimentId, oldIndex, newIndex, newSampleOrder));
       } catch (e) {
         // If the fetch fails, avoid doing setTableData(newData)
         return;

@@ -1,6 +1,6 @@
 const sampleTemplate = {
   name: null,
-  projectUuid: null,
+  experimentId: null,
   uuid: null,
   type: null,
   createdDate: null,

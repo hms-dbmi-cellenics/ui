@@ -29,6 +29,7 @@ Array [
       "complete": false,
       "createdDate": "2020-01-01T00:00:00.000Z",
       "error": false,
+      "experimentId": "exp234",
       "fileNames": Array [],
       "files": Object {
         "barcodes.tsv.gz": Object {
@@ -50,7 +51,6 @@ Array [
       "lastModified": "2020-01-01T00:00:00.000Z",
       "metadata": Object {},
       "name": "test sample",
-      "projectUuid": "qwe234",
       "type": "10X Chromium",
       "uuid": "abc123",
     },
@@ -61,6 +61,7 @@ Array [
       "complete": false,
       "createdDate": "2020-01-01T00:00:00.000Z",
       "error": false,
+      "experimentId": "exp234",
       "fileNames": Array [],
       "files": Object {
         "barcodes.tsv.gz": Object {
@@ -82,7 +83,6 @@ Array [
       "lastModified": "2020-01-01T00:00:00.000Z",
       "metadata": Object {},
       "name": "test sample",
-      "projectUuid": "qwe234",
       "type": "10X Chromium",
       "uuid": "abc123",
     },
@@ -108,6 +108,7 @@ Array [
       "complete": false,
       "createdDate": "2020-01-01T00:00:00.000Z",
       "error": false,
+      "experimentId": "exp234",
       "fileNames": Array [],
       "files": Object {
         "matrix.tsv.gz": Object {
@@ -119,7 +120,6 @@ Array [
       "lastModified": "2020-01-01T00:00:00.000Z",
       "metadata": Object {},
       "name": "test sample",
-      "projectUuid": "qwe234",
       "type": "10X Chromium",
       "uuid": "abc123",
     },
@@ -130,6 +130,7 @@ Array [
       "complete": false,
       "createdDate": "2020-01-01T00:00:00.000Z",
       "error": false,
+      "experimentId": "exp234",
       "fileNames": Array [],
       "files": Object {
         "matrix.tsv.gz": Object {
@@ -141,7 +142,6 @@ Array [
       "lastModified": "2020-01-01T00:00:00.000Z",
       "metadata": Object {},
       "name": "test sample",
-      "projectUuid": "qwe234",
       "type": "10X Chromium",
       "uuid": "abc123",
     },

@@ -112,7 +112,11 @@ const NormalisationOptions = (props) => {
           <Option value='logNormalize'>LogNormalize</Option>
 
           {/* scTransform is disabled until implemented in the QC pipeline */}
-          <Option disabled value='scTransform'>SCTransform</Option>
+          <Option disabled value='scTransform'>
+            <Tooltip title='Will be supported in a later version' placement='left'>
+              SCTransform
+            </Tooltip>
+          </Option>
         </Select>
 
       </Form.Item>

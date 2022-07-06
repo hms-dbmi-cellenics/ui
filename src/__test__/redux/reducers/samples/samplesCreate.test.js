@@ -2,13 +2,13 @@ import samplesCreateReducer from 'redux/reducers/samples/samplesCreate';
 
 import initialState, { sampleTemplate } from 'redux/reducers/samples/initialState';
 
-const projectUuid = 'projectUuid';
+const experimentId = 'experimentId';
 
 const newSample = {
   ...sampleTemplate,
   name: 'sampleName',
   uuid: 'uuid',
-  projectUuid,
+  experimentId,
   type: '10x',
 };
 
@@ -24,7 +24,7 @@ describe('samplesCreate', () => {
       ...sampleTemplate,
       name: 'oldSampleName',
       uuid: 'oldUuid',
-      projectUuid,
+      experimentId,
       type: '10x',
     };
 

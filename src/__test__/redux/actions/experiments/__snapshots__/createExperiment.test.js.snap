@@ -3,12 +3,12 @@
 exports[`createExperiment Works correctly 1`] = `
 Object {
   "experiment": Object {
-    "createdDate": "2020-01-01T00:00:00.000Z",
-    "description": undefined,
+    "createdAt": "2020-01-01T00:00:00.000Z",
+    "description": "description",
     "id": "b3f6c0ca86ec045c84f380cd5016972e",
-    "name": "project-1",
+    "name": "name",
   },
 }
 `;
 
-exports[`createExperiment Works correctly 2`] = `"{\\"id\\":\\"b3f6c0ca86ec045c84f380cd5016972e\\",\\"name\\":\\"project-1\\"}"`;
+exports[`createExperiment Works correctly 2`] = `"{\\"id\\":\\"b3f6c0ca86ec045c84f380cd5016972e\\",\\"name\\":\\"name\\",\\"description\\":\\"description\\"}"`;

@@ -1,34 +1,32 @@
 import _ from 'lodash';
 
 import {
-  PROJECTS_METADATA_CREATE,
-} from 'redux/actionTypes/projects';
+  EXPERIMENTS_METADATA_CREATE,
+} from 'redux/actionTypes/experiments';
 import {
   SAMPLES_UPDATE,
 } from 'redux/actionTypes/samples';
-import {
-  DEFAULT_NA,
-} from 'redux/reducers/projects/initialState';
 
 import fetchAPI from 'utils/http/fetchAPI';
 import handleError from 'utils/http/handleError';
 
 import endUserMessages from 'utils/endUserMessages';
 import { metadataNameToKey } from 'utils/data-management/metadataUtils';
+import { METADATA_DEFAULT_VALUE } from 'redux/reducers/experiments/initialState';
 
 const createMetadataTrack = (
-  name, projectUuid,
+  name, experimentId,
 ) => async (dispatch, getState) => {
-  const project = getState().projects[projectUuid];
+  const experiment = getState().experiments[experimentId];
   const { samples } = getState();
 
   const metadataKey = metadataNameToKey(name);
 
-  const newProject = _.cloneDeep(project);
-  newProject.metadataKeys.push(metadataKey);
+  const newExperiment = _.cloneDeep(experiment);
+  newExperiment.metadataKeys.push(metadataKey);
   try {
     await fetchAPI(
-      `/v2/experiments/${projectUuid}/metadataTracks/${metadataKey}`,
+      `/v2/experiments/${experimentId}/metadataTracks/${metadataKey}`,
       {
         method: 'POST',
         headers: {
@@ -38,28 +36,26 @@ const createMetadataTrack = (
     );
 
     dispatch({
-      type: PROJECTS_METADATA_CREATE,
+      type: EXPERIMENTS_METADATA_CREATE,
       payload: {
-        projectUuid,
+        experimentId,
         key: metadataKey,
       },
     });
 
-    await Promise.all(project.samples.map((sampleUuid) => dispatch({
+    await Promise.all(experiment.sampleIds.map((sampleUuid) => dispatch({
       type: SAMPLES_UPDATE,
       payload: {
         sampleUuid,
         sample: {
           metadata: {
             [metadataKey]: (
-              samples[sampleUuid].metadata[metadataKey] || DEFAULT_NA
+              samples[sampleUuid].metadata[metadataKey] || METADATA_DEFAULT_VALUE
             ),
           },
         },
       },
     })));
-
-    // Get updated samples in an object
   } catch (e) {
     handleError(e, endUserMessages.ERROR_SAVING);
   }

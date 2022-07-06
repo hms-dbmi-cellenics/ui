@@ -15,8 +15,8 @@ import handleError from 'utils/http/handleError';
 const createExperiment = (
   name, description,
 ) => async (dispatch) => {
-  const createdDate = moment().toISOString();
-  const experimentId = hash.MD5(createdDate);
+  const createdAt = moment().toISOString();
+  const experimentId = hash.MD5(createdAt);
 
   const newExperimentProperties = {
     id: experimentId,
@@ -43,11 +43,11 @@ const createExperiment = (
     dispatch({
       type: EXPERIMENTS_CREATED,
       payload: {
-        // TODO We don't really need to send this createdDate to redux, the real createdAt
+        // TODO We don't really need to send this createdAt to redux, the real createdAt
         // is being generated in the api
         // We should make the POST to create the experiment return the new experiment and
         // Take the createdAt from there
-        experiment: { createdDate, ...newExperimentProperties },
+        experiment: { createdAt, ...newExperimentProperties },
       },
     });
   } catch (e) {
@@ -59,8 +59,6 @@ const createExperiment = (
         error: errorMessage,
       },
     });
-
-    throw e;
   }
 
   return Promise.resolve(experimentId);
