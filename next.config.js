@@ -109,9 +109,7 @@ module.exports = withPlugins([
   [css],
   {
     publicRuntimeConfig: {
-      staticFolder: '/public',
       domainName: process.env.DOMAIN_NAME || false,
-      nodeEnv: process.env.NODE_ENV,
     },
   },
 ], nextConfig);
