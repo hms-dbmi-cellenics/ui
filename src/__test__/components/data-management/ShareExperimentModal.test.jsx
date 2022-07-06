@@ -49,10 +49,9 @@ describe('Share expeirment modal', () => {
     await act(async () => render(
       <ShareExperimentModal
         onCancel={onCancel}
-        activeProject={{
-          experiments: [fake.EXPERIMENT_ID],
-          uuid: fake.PROJECT_ID,
-          name: fake.PROJECT_NAME,
+        experiment={{
+          id: fake.EXPERIMENT_ID,
+          name: fake.EXPERIMENT_NAME,
         }}
       />,
     ));
@@ -61,7 +60,7 @@ describe('Share expeirment modal', () => {
   it('Renders correctly', async () => {
     await renderShareExperimentModal();
     expect(screen.getByText('Share with collaborators')).toBeInTheDocument();
-    expect(screen.getByText(fake.PROJECT_NAME)).toBeInTheDocument();
+    expect(screen.getByText(fake.EXPERIMENT_NAME)).toBeInTheDocument();
     expect(screen.getByText('Input an email address. Add multiple addresses with enter.')).toBeInTheDocument();
     expect(screen.getAllByRole('combobox').length).toEqual(2);
     expect(screen.getByText('bob@bob.com')).toBeInTheDocument();

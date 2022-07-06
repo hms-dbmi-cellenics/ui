@@ -30,7 +30,7 @@ const loadAndRenderDefault = async () => {
   fetchMock.resetMocks();
   fetchMock.doMock();
 
-  fetchMock.mockIf(/.*/, mockAPI(generateDefaultMockAPIResponses(fake.EXPERIMENT_ID, fake.PROJECT_ID)));
+  fetchMock.mockIf(/.*/, mockAPI(generateDefaultMockAPIResponses(fake.EXPERIMENT_ID)));
 
   storeState = makeStore();
 

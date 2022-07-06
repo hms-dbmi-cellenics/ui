@@ -8,12 +8,9 @@ import { act } from 'react-dom/test-utils';
 import { Provider } from 'react-redux';
 import userEvent from '@testing-library/user-event';
 import * as updateExperiment from 'redux/actions/experiments/updateExperiment';
-import * as loadProjects from 'redux/actions/projects/loadProjects';
 import * as loadExperiments from 'redux/actions/experiments/loadExperiments';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
-import mockAPI, {
-  generateDefaultMockAPIResponses,
-} from '__test__/test-utils/mockAPI';
+
 import { makeStore } from 'redux/store';
 import fake from '__test__/test-utils/constants';
 
@@ -23,19 +20,18 @@ const experimentId = fake.EXPERIMENT_ID;
 
 describe('Notify by email component', () => {
   let updateExperimentSpy;
-  let loadProjectsSpy;
   let loadExperimentsSpy;
 
   beforeEach(() => {
     jest.clearAllMocks();
     updateExperimentSpy = jest.spyOn(updateExperiment, 'default');
-    loadProjectsSpy = jest.spyOn(loadProjects, 'default');
     loadExperimentsSpy = jest.spyOn(loadExperiments, 'default');
     enableFetchMocks();
     fetchMock.resetMocks();
     fetchMock.doMock();
     storeState = makeStore();
   });
+
   const renderNotifyByEmail = async () => {
     await act(async () => (render(
       <Provider store={storeState}>
@@ -45,11 +41,6 @@ describe('Notify by email component', () => {
       </Provider>,
     )));
   };
-  it('loads experiments if  there is an activeProjectUuid', async () => {
-    fetchMock.mockIf(/.*/, mockAPI(generateDefaultMockAPIResponses(experimentId, fake.PROJECT_ID)));
-    await renderNotifyByEmail();
-    expect(loadExperimentsSpy).toHaveBeenCalledTimes(1);
-  });
 
   it('Renders Correctly', async () => {
     await renderNotifyByEmail();
@@ -67,8 +58,8 @@ describe('Notify by email component', () => {
     expect(updateExperimentSpy).toHaveBeenCalledTimes(2);
   });
 
-  it('loads projects if non-existent', async () => {
+  it('loads experiments if non-existent', async () => {
     await renderNotifyByEmail();
-    expect(loadProjectsSpy).toHaveBeenCalledTimes(1);
+    expect(loadExperimentsSpy).toHaveBeenCalledTimes(1);
   });
 });

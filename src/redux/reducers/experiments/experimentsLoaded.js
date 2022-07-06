@@ -1,40 +1,29 @@
-const convertedToUIModel = (experiment) => ({
-  ...experiment,
-  id: experiment.experimentId,
-  name: experiment.experimentName,
-  projectUuid: experiment.projectId,
-});
+/* eslint-disable no-param-reassign */
+import produce, { original } from 'immer';
 
-const experimentsLoaded = (state, action) => {
+import _ from 'lodash';
+
+const experimentsLoaded = produce((draft, action) => {
   const { experiments } = action.payload;
 
-  const newExperiments = experiments.reduce((acc, curr) => {
-    if (!acc.ids.includes(curr.experimentId)) acc.ids.push(curr.experimentId);
+  const originalState = original(draft);
 
-    const uiModelExp = convertedToUIModel(curr);
+  let newActiveExperimentId = originalState.meta.activeExperimentId;
 
-    acc[curr.experimentId] = {
-      projectUuid: uiModelExp.projectUuid,
-      name: uiModelExp.name,
-      description: uiModelExp.description,
-      id: uiModelExp.id,
-      createdDate: uiModelExp.createdDate,
-      meta: uiModelExp.meta,
-      sampleIds: uiModelExp.sampleIds,
-      notifyByEmail: curr.notifyByEmail,
-    };
+  // If the current active experiment no longer exists, change it
+  if (!Object.keys(originalState).includes(newActiveExperimentId)) {
+    newActiveExperimentId = experiments[0]?.id;
+  }
 
-    return acc;
-  }, { ids: [...state.ids] });
+  const ids = _.map(experiments, 'id');
 
-  return {
-    ...state,
-    ...newExperiments,
-    meta: {
-      ...state.meta,
-      loading: false,
-    },
-  };
-};
+  draft.meta.activeExperimentId = experiments[0]?.id;
+  draft.meta.loading = false;
+  draft.ids = ids;
+
+  experiments.forEach((experiment) => {
+    draft[experiment.id] = experiment;
+  });
+});
 
 export default experimentsLoaded;

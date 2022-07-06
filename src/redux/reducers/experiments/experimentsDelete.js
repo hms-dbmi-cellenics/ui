@@ -14,6 +14,10 @@ const experimentsDelete = (state, action) => {
   return {
     ids: newIds,
     ...remainingExperiments,
+    meta: {
+      ...state.meta,
+      saving: false,
+    },
   };
 };
 

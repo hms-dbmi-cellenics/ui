@@ -3,7 +3,6 @@ import { Switch, Typography, Space } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
 import { updateExperiment, loadExperiments } from 'redux/actions/experiments';
 import PropTypes from 'prop-types';
-import { loadProjects } from 'redux/actions/projects';
 
 const { Text } = Typography;
 const NotifyByEmail = (props) => {
@@ -13,19 +12,13 @@ const NotifyByEmail = (props) => {
   const changeEmailNotification = (value) => {
     dispatch(updateExperiment(experimentId, { notifyByEmail: value }));
   };
-  const { activeProjectUuid } = useSelector((state) => state?.projects?.meta) || false;
+  const { activeExperimentId } = useSelector((state) => state?.experiments?.meta) || false;
 
   useEffect(() => {
-    if (!activeProjectUuid) {
-      dispatch(loadProjects());
+    if (!activeExperimentId) {
+      dispatch(loadExperiments());
     }
   }, []);
-
-  useEffect(() => {
-    if (!experiment && activeProjectUuid) {
-      dispatch(loadExperiments(activeProjectUuid));
-    }
-  }, [activeProjectUuid]);
 
   return (
     <Space direction='horizontal'>

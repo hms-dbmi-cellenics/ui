@@ -4,27 +4,21 @@ import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 
 import { EXPERIMENTS_SAVING, EXPERIMENTS_CREATED } from 'redux/actionTypes/experiments';
 import { createExperiment } from 'redux/actions/experiments';
-import initialExperimentState from 'redux/reducers/experiments/initialState';
-import initialProjectState, { projectTemplate } from 'redux/reducers/projects/initialState';
+import initialExperimentState, { experimentTemplate } from 'redux/reducers/experiments/initialState';
 
 const mockStore = configureStore([thunk]);
 
 enableFetchMocks();
 
 describe('createExperiment', () => {
-  const projectUuid = 'project-1';
+  const experimentId = 'experiment-1';
 
   const mockState = {
-    projects: {
-      ...initialProjectState,
-      [projectUuid]: {
-        ...projectTemplate,
-        uuid: projectUuid,
-        experiments: [],
-      },
-    },
     experiments: {
       ...initialExperimentState,
+      [experimentId]: {
+        ...experimentTemplate,
+      },
     },
   };
 
@@ -41,7 +35,7 @@ describe('createExperiment', () => {
 
   it('Works correctly', async () => {
     const store = mockStore(mockState);
-    await store.dispatch(createExperiment(projectUuid));
+    await store.dispatch(createExperiment('name', 'description'));
 
     const actions = store.getActions();
 

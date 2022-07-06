@@ -4,7 +4,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Space } from 'antd';
 
 import { ClipLoader } from 'react-spinners';
-import { loadProjects } from 'redux/actions/projects';
 import { loadExperiments } from 'redux/actions/experiments';
 
 import Header from 'components/Header';
@@ -19,53 +18,36 @@ import ExampleExperimentsSpace from 'components/data-management/ExampleExperimen
 
 const DataManagementPage = () => {
   const dispatch = useDispatch();
-  const projectsList = useSelector(((state) => state.projects));
 
-  const {
-    saving: projectSaving,
-  } = projectsList.meta;
+  const samples = useSelector((state) => state.samples);
 
-  const sampleSaving = useSelector((state) => state.samples.meta.saving);
+  const { activeExperimentId } = useSelector((state) => state.experiments.meta);
+  const experiments = useSelector(((state) => state.experiments));
 
-  const { activeProjectUuid } = useSelector((state) => state.projects.meta);
+  const activeExperiment = experiments[activeExperimentId];
+  const { saving: experimentsSaving } = experiments.meta;
+  const { saving: samplesSaving } = samples.meta;
 
-  const experiments = useSelector((state) => state.experiments);
   const [newProjectModalVisible, setNewProjectModalVisible] = useState(false);
-  const activeProject = projectsList[activeProjectUuid];
-  const loadedSamples = useSelector((state) => state.samples);
-
-  const experimentIds = new Set(experiments.ids);
-  const experimentsAreLoaded = activeProject?.experiments
-    .every((experimentId) => experimentIds.has(experimentId));
 
   useEffect(() => {
-    if (projectsList.ids.length === 0) dispatch(loadProjects());
+    if (experiments.ids.length === 0) dispatch(loadExperiments());
   }, []);
 
-  const updateRunStatus = (experimentId) => {
-    dispatch(loadBackendStatus(experimentId));
+  const samplesAreLoaded = () => {
+    const loadedSampleIds = Object.keys(samples);
+    return activeExperiment.sampleIds.every((sampleId) => loadedSampleIds.includes(sampleId));
   };
 
-  const samplesAreLoaded = () => !activeProject.samples.length
-    || activeProject.samples.every((sample) => Object.keys(loadedSamples).includes(sample));
-
   useEffect(() => {
-    if (!activeProjectUuid) return;
-
-    // Right now we have one experiment per project, so we can just load the experiment
-    // This has to be changed when we have more than one experiment
-    const activeExperimentId = projectsList[activeProjectUuid].experiments[0];
+    if (!activeExperimentId) return;
 
     dispatch(loadProcessingSettings(activeExperimentId));
 
-    if (!samplesAreLoaded()) dispatch(loadSamples(activeProjectUuid));
+    if (!samplesAreLoaded()) dispatch(loadSamples(activeExperimentId));
 
-    if (!experimentsAreLoaded) {
-      dispatch(loadExperiments(activeProjectUuid)).then(() => updateRunStatus(activeExperimentId));
-    }
-
-    if (experiments[activeExperimentId]) updateRunStatus(activeExperimentId);
-  }, [activeProjectUuid]);
+    dispatch(loadBackendStatus(activeExperimentId));
+  }, [activeExperimentId]);
 
   const PROJECTS_LIST = 'Projects';
   const PROJECT_DETAILS = 'Project Details';
@@ -83,7 +65,7 @@ const DataManagementPage = () => {
     [PROJECT_DETAILS]: {
       toolbarControls: [],
       component: (width, height) => {
-        if (!activeProjectUuid) {
+        if (!activeExperimentId) {
           return <ExampleExperimentsSpace introductionText='You have no projects yet.' />;
         }
 
@@ -107,7 +89,7 @@ const DataManagementPage = () => {
   return (
     <>
       <Header title='Data Management' />
-      {projectSaving || sampleSaving ? (
+      {experimentsSaving || samplesSaving ? (
         <center>
           <Space direction='vertical'>
             <ClipLoader

@@ -1,35 +1,34 @@
 import objectHash from 'object-hash';
+import { METADATA_DEFAULT_VALUE } from 'redux/reducers/experiments/initialState';
 
-import { DEFAULT_NA } from 'redux/reducers/projects/initialState';
-
-const generateGem2sParamsHash = (project, samples, experiment) => {
-  if (!project || !samples || !experiment) {
+const generateGem2sParamsHash = (experiment, samples) => {
+  if (!experiment || !samples) {
     return false;
   }
   const projectSamples = Object.entries(samples)
     .sort()
-    .filter(([key]) => project?.samples?.includes(key));
+    .filter(([key]) => experiment?.sampleIds?.includes(key));
   const existingSampleIds = projectSamples.map(([, sample]) => sample.uuid);
 
   // Different sample order should not change the hash.
   const orderInvariantSampleIds = [...existingSampleIds].sort();
 
   const hashParams = {
-    organism: experiment.meta.organism,
-    input: { type: experiment.meta.type },
+    organism: null,
+    input: { type: '10x' },
     sampleIds: orderInvariantSampleIds,
     sampleNames: orderInvariantSampleIds.map((sampleId) => samples[sampleId].name),
   };
 
-  if (project.metadataKeys.length) {
-    const orderInvariantProjectMetadataKeys = [...project.metadataKeys].sort();
+  if (experiment.metadataKeys.length) {
+    const orderInvariantProjectMetadataKeys = [...experiment.metadataKeys].sort();
 
     hashParams.metadata = orderInvariantProjectMetadataKeys.reduce((acc, key) => {
       // Make sure the key does not contain '-' as it will cause failure in GEM2S
       const sanitizedKey = key.replace(/-+/g, '_');
 
       acc[sanitizedKey] = projectSamples.map(
-        ([, sample]) => sample.metadata[key] || DEFAULT_NA,
+        ([, sample]) => sample.metadata[key] || METADATA_DEFAULT_VALUE,
       );
       return acc;
     }, {});
