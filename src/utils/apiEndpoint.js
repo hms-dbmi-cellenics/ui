@@ -1,7 +1,7 @@
 import nextConfig from 'next/config';
 
 const getApiEndpoint = (location) => {
-  console.log('CONFIG IS ', nextConfig(), ' domain name is', nextConfig().publicRuntimeConfig.domainName);
+  console.log('CONFIG IS ', nextConfig(), ' domain name is', nextConfig()?.publicRuntimeConfig?.domainName);
   try {
     const url = new URL(location || window.location.href);
 
