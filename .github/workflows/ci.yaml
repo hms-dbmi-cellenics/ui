@@ -164,17 +164,17 @@ jobs:
             IMAGE_TAG="${REF_ID/refs-tags-/}"
           elif [ "${{ github.event_name }}" = "pull_request" ]; then
             COMMIT_SHA="${{ github.event.pull_request.head.sha }}"
-            IMAGE_TAG="$REF_ID-${{ github.event.pull_request.head.sha }}"
+            IMAGE_TAG="$REF_ID-$COMMIT_SHA"
           else
             COMMIT_SHA=$GITHUB_SHA
-            IMAGE_TAG="$REF_ID-$GITHUB_SHA"
+            IMAGE_TAG="$REF_ID-$COMMIT_SHA"
           fi
 
           echo "::set-output name=commit-sha::$COMMIT_SHA"
 
           # IMAGE_TAG is used in the Build Docker Image step.
-          # We can easily build the image-tag from REF_ID and COMMIT_SHA for non-releases in the step inputs
-          # But we can not easily create the image tag for releases, so we're bulding it here
+          # We can easily build the image-tag from REF_ID and COMMIT_SHA for non-production releases.
+          # But we can not easily create the image tag for production releases, so we're bulding it here
           echo "::set-output name=image-tag::$IMAGE_TAG"
 
           # This will take a GitHub repo name like `hms-dbmi-cellenics/releases`
