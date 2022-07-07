@@ -128,7 +128,8 @@ jobs:
     runs-on: ubuntu-20.04
     needs: build
     outputs:
-      ref-tag: ${{ steps.ref.outputs.tag }}
+      ref-id: ${{ steps.ref.outputs.ref-id }}
+      commit-sha: ${{ steps.ref.outputs.commit-sha }}
     steps:
       - id: checkout
         name: Check out source code
@@ -147,6 +148,7 @@ jobs:
           # This will take a ref like `refs/heads/master`
           # and turn it into `refs-heads-master`
           REF_ID=$(echo $GITHUB_REF | sed 's/\//-/g')
+          echo "::set-output name=ref-id::$REF_ID"
 
           # the final tag is something like:
           # refs-heads-master-a4f8bc313dae
@@ -158,12 +160,18 @@ jobs:
           # in PR synch the latest commit of the branch is found in github.event.pull_request.head.sha instead
 
           if [ "${{ github.event_name }}" = "release" ] && [ "${{ github.event.action }}" = "released" ]; then
-            echo "::set-output name=tag::${REF_ID/refs-tags-/}"
+            COMMIT_SHA=""
+            IMAGE_TAG="${REF_ID/refs-tags-/}"
           elif [ "${{ github.event_name }}" = "pull_request" ]; then
-            echo "::set-output name=tag::$REF_ID-${{ github.event.pull_request.head.sha }}"
+            COMMIT_SHA="${{ github.event.pull_request.head.sha }}"
+            IMAGE_TAG="$REF_ID-${{ github.event.pull_request.head.sha }}"
           else
-            echo "::set-output name=tag::$REF_ID-$GITHUB_SHA"
+            COMMIT_SHA=$GITHUB_SHA
+            IMAGE_TAG="$REF_ID-${{ github.event.pull_request.head.sha }}"
           fi
+
+          echo "::set-output name=commit-sha::$COMMIT_SHA"
+          echo "::set-output name=image-tag::$IMAGE_TAG"
 
           # This will take a GitHub repo name like `hms-dbmi-cellenics/releases`
           # and turns it into `releases`. This will be the name of the
@@ -200,7 +208,7 @@ jobs:
           context: .
           file: ./Dockerfile
           platforms: linux/amd64
-          tags: ${{ format('{0}/{1}:{2}', steps.login-ecr.outputs.registry, steps.ref.outputs.repo-name, steps.ref.outputs.tag) }}
+          tags: ${{ format('{0}/{1}:{2}', steps.login-ecr.outputs.registry, steps.ref.outputs.repo-name, steps.ref.outputs.image-tag) }}
           push: false
           build-args: READONLY_API_TOKEN_GITHUB=${{ secrets.READONLY_API_TOKEN_GITHUB }}
 
@@ -210,7 +218,7 @@ jobs:
           echo Pushing image $IMAGE_NAME to ECR.
           docker push $IMAGE_NAME
         env:
-          IMAGE_NAME: ${{ format('{0}/{1}:{2}', steps.login-ecr.outputs.registry, steps.ref.outputs.repo-name, steps.ref.outputs.tag) }}
+          IMAGE_NAME: ${{ format('{0}/{1}:{2}', steps.login-ecr.outputs.registry, steps.ref.outputs.repo-name, steps.ref.outputs.image-tag) }}
 
       - id: send-to-slack
         name: Send failure notification to Slack
@@ -256,16 +264,14 @@ jobs:
       - id: fill-metadata
         name: Fill out a new HelmRelease resource
         run: |-
-          REF_DASHED=$(echo $GITHUB_REF | sed 's/\//-/g')
           DEPLOYMENT_NAME=$(echo $GITHUB_REPOSITORY | awk -F '/' '{print $2}')
           echo "::set-output name=deployment-name::$DEPLOYMENT_NAME"
-          echo "::set-output name=ref-dashed::$REF_DASHED"
 
           if [ "${{ matrix.environment }}" = "production" ]; then
             SANDBOX_ID="default"
             CHART_REF="master"
             KUBERNETES_ENV="production"
-            IMAGE_TAG="${REF_DASHED/refs-tags-/}"
+            IMAGE_TAG="${REF_ID/refs-tags-/}"
             IMAGE_GLOB="semver:>=0.0.0"
             REPLICA_COUNT="4"
           fi
@@ -274,8 +280,8 @@ jobs:
             SANDBOX_ID="default"
             CHART_REF="master"
             KUBERNETES_ENV="staging"
-            IMAGE_TAG="$REF_TAG"
-            IMAGE_GLOB="glob:$REF_DASHED-*"
+            IMAGE_TAG="$REF_ID-$COMMIT_SHA"
+            IMAGE_GLOB="glob:$REF_ID-*"
             REPLICA_COUNT="2"
           fi
 
@@ -283,8 +289,8 @@ jobs:
             SANDBOX_ID="STAGING_SANDBOX_ID"
             CHART_REF="STAGING_CHART_REF"
             KUBERNETES_ENV="staging"
-            IMAGE_TAG="$REF_TAG"
-            IMAGE_GLOB="glob:$REF_DASHED-*"
+            IMAGE_TAG="$REF_ID-$COMMIT_SHA"
+            IMAGE_GLOB="glob:$REF_ID-*"
             REPLICA_COUNT="1"
           fi
 
@@ -317,8 +323,8 @@ jobs:
 
           cat $DEPLOYMENT_NAME.yaml
         env:
-          IMAGE_NAME: ${{ format('{0}/{1}:{2}', steps.login-ecr.outputs.registry, needs.build-docker.outputs.repo-name, needs.build-docker.outputs.tag) }}
-          REF_TAG: ${{ needs.build-docker.outputs.ref-tag }}
+          REF_ID: ${{ needs.build-docker.outputs.ref-id }}
+          COMMIT_SHA: ${{ needs.build-docker.outputs.commit-sha }}
 
       - name: Push production/develop template to releases repo for deployment
         if: (matrix.environment == 'production' && github.event_name == 'release' && github.event.action == 'released') || (matrix.environment == 'develop' && github.event_name == 'push')
@@ -336,9 +342,9 @@ jobs:
         if: (github.event_name == 'pull_request' || github.event_name == 'push') && matrix.environment == 'staging'
         env:
           DEPLOYMENT_NAME: ${{ steps.fill-metadata.outputs.deployment-name }}
-          REF_DASHED: ${{ steps.fill-metadata.outputs.ref-dashed }}
+          REF_ID: ${{ needs.build-docker.outputs.ref-id }}
         run: |-
-          mv $DEPLOYMENT_NAME.yaml $REF_DASHED.yaml
+          mv $DEPLOYMENT_NAME.yaml $REF_ID.yaml
 
       - name: Push staging deployment template to releases
         if: (github.event_name == 'pull_request' || github.event_name == 'push') && matrix.environment == 'staging'
@@ -346,7 +352,7 @@ jobs:
         env:
           API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
         with:
-          source_file: ${{ steps.fill-metadata.outputs.ref-dashed }}.yaml
+          source_file: ${{ needs.build-docker.outputs.ref-id }}.yaml
           destination_repo: ${{ github.repository_owner }}/releases
           destination_folder: staging-candidates/${{ steps.fill-metadata.outputs.deployment-name }}
           user_email: ci@biomage.net
