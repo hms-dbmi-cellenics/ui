@@ -30,7 +30,7 @@ const ChangesNotAppliedModal = (props) => {
     status: backendStatus,
   } = useSelector(getBackendStatus(experimentId));
 
-  const paramsHash = backendStatus.gem2s?.paramsHash;
+  const paramsHash = backendStatus?.gem2s?.paramsHash;
 
   const dispatch = useDispatch();
 
