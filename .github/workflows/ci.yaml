@@ -9,6 +9,10 @@ on:
   pull_request:
     branches:
       - master
+concurrency:
+  group: ${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   uncheck-integration-test:
     name: Mark integration test as not run
@@ -54,18 +58,17 @@ jobs:
     env:
       CI: true
     steps:
-      - id: setup-node
-        uses: actions/setup-node@v2
-        with:
-          node-version: '14'
+
 
       - id: checkout
         name: Check out source code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
-      - id: cache-seek
-        name: Check for npm cache hit
-        uses: c-hive/gha-npm-cache@v1
+      - id: setup-node
+        uses: actions/setup-node@v3
+        with:
+          node-version: '14'
+          cache: 'npm'
 
       - id: install
         name: Install dependencies
@@ -130,7 +133,7 @@ jobs:
     steps:
       - id: checkout
         name: Check out source code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - id: download-build-out
         name: Download Next.js build output
