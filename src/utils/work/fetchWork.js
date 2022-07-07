@@ -106,7 +106,13 @@ const fetchWork = async (
   getState,
   optionals = {},
 ) => {
-  const { extras = undefined, timeout = 180, broadcast = false } = optionals;
+  const {
+    extras = undefined,
+    timeout = 180,
+    broadcast = false,
+    clusterNames = [],
+  } = optionals;
+
   const backendStatus = getBackendStatus(experimentId)(getState()).status;
 
   const { environment } = getState().networkResources;
@@ -129,13 +135,19 @@ const fetchWork = async (
   // If caching is disabled, we add an additional randomized key to the hash so we never reuse
   // past results.
 
-  let cacheUniquenessKey = null;
-  if (environment !== Environment.PRODUCTION && localStorage.getItem('disableCache') === 'true') {
-    cacheUniquenessKey = Math.random();
-  }
+  // let cacheUniquenessKey = null;
+  // if (environment !== Environment.PRODUCTION
+  // && localStorage.getItem('disableCache') === 'true') {
+  //   cacheUniquenessKey = Math.random();
+  // }
 
   const ETag = createObjectHash({
-    experimentId, body, qcPipelineStartDate, extras, cacheUniquenessKey,
+    experimentId,
+    body,
+    qcPipelineStartDate,
+    extras,
+    // cacheUniquenessKey,
+    clusterNames,
   });
 
   // First, let's try to fetch this information from the local cache.

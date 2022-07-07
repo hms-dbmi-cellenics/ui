@@ -95,12 +95,18 @@ const DotPlotPage = (props) => {
   } = useSelector((state) => state.genes.properties.views[plotUuid] || {});
 
   const cellSets = useSelector(getCellSets());
+
+
+
   const {
     loading: cellSetsLoading,
     error: cellSetsError,
     hierarchy: cellSetHierarcy,
     properties: cellSetProperties,
   } = cellSets;
+
+
+  const clusterNames = Object.values(cellSetProperties).map((el) => el.name);
 
   const [moreThanTwoGroups, setMoreThanTwoGroups] = useState(false);
   const experimentName = useSelector((state) => state.experimentSettings.info.experimentName);
@@ -183,7 +189,7 @@ const DotPlotPage = (props) => {
     const currentComparedConfig = getComparedConfig(config);
     if (config && !_.isEqual(previousComparedConfig.current, currentComparedConfig)) {
       previousComparedConfig.current = currentComparedConfig;
-      dispatch(fetchPlotDataWork(experimentId, plotUuid, plotType));
+      dispatch(fetchPlotDataWork(experimentId, plotUuid, plotType, clusterNames));
     }
   }, [config, cellSetProperties]);
 
@@ -292,7 +298,7 @@ const DotPlotPage = (props) => {
           <PlatformError
             description='Error loading plot data.'
             reason='Check the options that you have selected and try again.'
-            onClick={() => dispatch(fetchPlotDataWork(experimentId, plotUuid, plotType))}
+            onClick={() => dispatch(fetchPlotDataWork(experimentId, plotUuid, plotType, clusterNames))}
           />
         </center>
       );
