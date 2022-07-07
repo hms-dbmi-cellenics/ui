@@ -72,12 +72,12 @@ const PlotContainer = (props) => {
     if (!config) {
       return;
     }
+    debounceSave();
 
     if (isConfigEqual(config, initialPlotConfigStates[plotType])) {
       setResetDisabled(true);
       return;
     }
-    debounceSave();
     setResetDisabled(false);
   }, [config]);
 
