@@ -167,7 +167,7 @@ jobs:
             IMAGE_TAG="$REF_ID-${{ github.event.pull_request.head.sha }}"
           else
             COMMIT_SHA=$GITHUB_SHA
-            IMAGE_TAG="$REF_ID-${{ github.event.pull_request.head.sha }}"
+            IMAGE_TAG="$REF_ID-$GITHUB_SHA"
           fi
 
           echo "::set-output name=commit-sha::$COMMIT_SHA"
