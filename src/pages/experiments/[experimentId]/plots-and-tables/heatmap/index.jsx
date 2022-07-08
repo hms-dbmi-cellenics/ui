@@ -210,6 +210,25 @@ const HeatmapPlot = ({ experimentId }) => {
         <Empty description='Add some genes to this heatmap to get started.' />
       );
     }
+
+    const isCellSetEmpty = (cellSet) => {
+      const chosenCellSet = cellSets.hierarchy.find(({ key }) => key === cellSet);
+      return chosenCellSet.children.length === 0;
+    };
+
+    if (isCellSetEmpty(config.selectedCellSet)) {
+      return (
+        <Empty description={(
+          <>
+            There are no custom cell sets to show
+            <br />
+            Create some custom cell sets in Data Exploration
+          </>
+        )}
+        />
+      );
+    }
+
     if (vegaSpec) {
       return <Vega spec={vegaSpec} renderer='canvas' />;
     }
