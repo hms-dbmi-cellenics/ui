@@ -96,6 +96,11 @@ const HeatmapPlot = ({ experimentId }) => {
     dispatch(loadGeneExpression(experimentId, genes, plotUuid));
   };
 
+  const isCellSetEmpty = (cellSet) => {
+    const chosenCellSet = cellSets.hierarchy.find(({ key }) => key === cellSet);
+    return chosenCellSet.children.length === 0;
+  };
+
   const plotStylingConfig = [
     {
       panelTitle: 'Expression values',
@@ -205,17 +210,6 @@ const HeatmapPlot = ({ experimentId }) => {
       );
     }
 
-    if (selectedGenes.length === 0) {
-      return (
-        <Empty description='Add some genes to this heatmap to get started.' />
-      );
-    }
-
-    const isCellSetEmpty = (cellSet) => {
-      const chosenCellSet = cellSets.hierarchy.find(({ key }) => key === cellSet);
-      return chosenCellSet.children.length === 0;
-    };
-
     if (isCellSetEmpty(config.selectedCellSet)) {
       return (
         <Empty description={(
@@ -226,6 +220,12 @@ const HeatmapPlot = ({ experimentId }) => {
           </>
         )}
         />
+      );
+    }
+
+    if (selectedGenes.length === 0) {
+      return (
+        <Empty description='Add some genes to this heatmap to get started.' />
       );
     }
 

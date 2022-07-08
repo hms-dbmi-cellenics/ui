@@ -7,8 +7,10 @@ import userEvent from '@testing-library/user-event';
 import { act } from 'react-dom/test-utils';
 import { Provider } from 'react-redux';
 import { loadBackendStatus } from 'redux/actions/backendStatus';
-import { updatePlotConfig } from 'redux/actions/componentConfig';
+import { loadPlotConfig, updatePlotConfig } from 'redux/actions/componentConfig';
 import { makeStore } from 'redux/store';
+
+import cellSetsWithScratchpad from '__test__/data/cell_sets_with_scratchpad.json';
 
 import preloadAll from 'jest-next-dynamic';
 
@@ -45,6 +47,7 @@ jest.mock('redux/actions/componentConfig', () => {
 
 const experimentId = fake.EXPERIMENT_ID;
 const plotUuid = 'heatmapPlotMain';
+const plotType = 'heatmap';
 let storeState = null;
 
 const customAPIResponses = {
@@ -90,7 +93,7 @@ describe('Heatmap plot', () => {
 
     // Set up state for backend status
     await storeState.dispatch(loadBackendStatus(experimentId));
-    await storeState.dispatch(loadBackendStatus(experimentId));
+    await storeState.dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
   });
 
   it('Loads controls and elements', async () => {
@@ -123,5 +126,46 @@ describe('Heatmap plot', () => {
     userEvent.click(screen.getByText(/Custom cell sets/i), null, { skipPointerEventsCheck: true });
 
     expect(updatePlotConfig).toHaveBeenCalled();
+  });
+
+  it('It shows an informative text if there are cell sets to show', async () => {
+    await renderHeatmapPage(storeState);
+
+    // Open the Select Data panel
+    userEvent.click(screen.getByText(/Select data/i));
+
+    // Change from Louvain to Custom cell sets
+    userEvent.click(screen.getByText(/Louvain/i));
+    userEvent.click(screen.getByText(/Custom cell sets/i), null, { skipPointerEventsCheck: true });
+
+    expect(updatePlotConfig).toHaveBeenCalled();
+    expect(screen.getByText(/There are no custom cell sets to show/i)).toBeInTheDocument();
+  });
+
+  it('Shows the plot if there are custom clusters to show', async () => {
+    const withScratchpadResponse = _.merge(
+      generateDefaultMockAPIResponses(experimentId),
+      customAPIResponses,
+      {
+        [`experiments/${experimentId}/cellSets`]: () => promiseResponse(
+          JSON.stringify(cellSetsWithScratchpad),
+        ),
+      },
+    );
+
+    fetchMock.mockIf(/.*/, mockAPI(withScratchpadResponse));
+    await storeState.dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
+
+    await renderHeatmapPage(storeState);
+
+    // Open the Select Data panel
+    userEvent.click(screen.getByText(/Select data/i));
+
+    // Change from Louvain to Custom cell sets
+    userEvent.click(screen.getByText(/Louvain/i));
+    userEvent.click(screen.getByText(/Custom cell sets/i), null, { skipPointerEventsCheck: true });
+
+    expect(updatePlotConfig).toHaveBeenCalled();
+    expect(screen.queryByText(/There are no custom cell sets to show/i)).toBeNull();
   });
 });
