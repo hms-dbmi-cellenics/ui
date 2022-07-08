@@ -115,8 +115,12 @@ describe('Heatmap plot', () => {
   it('Changing clusters updates the plot data', async () => {
     await renderHeatmapPage(storeState);
 
-    userEvent.click(screen.getByText('Louvain'));
-    userEvent.click(screen.getByText('Scratchpad'), null, { skipPointerEventsCheck: true });
+    // Open the Select Data panel
+    userEvent.click(screen.getByText(/Select data/i));
+
+    // Change from Louvain to Custom cell sets
+    userEvent.click(screen.getByText(/Louvain/i));
+    userEvent.click(screen.getByText(/Custom cell sets/i), null, { skipPointerEventsCheck: true });
 
     expect(updatePlotConfig).toHaveBeenCalled();
   });
