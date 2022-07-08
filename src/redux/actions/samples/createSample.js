@@ -44,11 +44,15 @@ const createSample = (
       .reduce((acc, curr) => ({ ...acc, [curr]: METADATA_DEFAULT_VALUE }), {}) || {},
   };
 
+  console.log(newSample);
+
   const url = `/v2/experiments/${experimentId}/samples/${newSampleUuid}`;
 
   let sampleTechnology;
   if (type === '10X Chromium') {
     sampleTechnology = '10x';
+  } else if (type === 'Seurat') {
+    sampleTechnology = 'seurat';
   } else {
     throw new Error(`Sample technology ${type} is not recognized`);
   }

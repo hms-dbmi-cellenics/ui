@@ -11,7 +11,7 @@ const fileUploadSpecifications = {
       'matrix.mtx.gz',
     ]),
     validMimeTypes: ['text/tsv', 'application/gzip', 'application/x-gzip', 'text/tab-separated-values'],
-    validExtensionTypes: ['.mtx'],
+    validExtensionTypes: ['.mtx', '.rds'],
     inputInfo: [
       ['features.tsv', 'features.tsv.gz', 'genes.tsv', 'genes.tsv.gz'],
       ['barcodes.tsv', 'barcodes.tsv.gz'],
@@ -21,6 +21,31 @@ const fileUploadSpecifications = {
       'features.tsv.gz',
       'barcodes.tsv.gz',
       'matrix.mtx.gz',
+    ],
+    fileUploadParagraphs: [
+      'For each sample, upload a folder containing the 3 required files. The folder\'s name will be used to name the sample in it. You can change this name later in Data Management.',
+      'The required files for each sample are:',
+    ],
+  },
+  Seurat: {
+    acceptedFiles: new Set([
+      'r.rds',
+    ]),
+    validMimeTypes: ['text/tsv', 'application/gzip', 'application/x-gzip', 'text/tab-separated-values'],
+    validExtensionTypes: ['.rds'],
+    inputInfo: [
+      ['object@reductions$umap'],
+      ['object$seurat_clusters'],
+      ['object$orig.ident'],
+    ],
+    requiredFiles: [
+      'r.rds',
+    ],
+    fileUploadParagraphs: [
+      // eslint-disable-next-line
+      <p>For your dataset, upload a single <code>r.rds</code> file with the Seurat object.</p>,
+      // eslint-disable-next-line
+      <p>The required slots for the Seurat <code>object</code> include:</p>
     ],
   },
 

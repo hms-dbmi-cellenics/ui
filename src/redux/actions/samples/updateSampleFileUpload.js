@@ -10,6 +10,7 @@ const fileNameForApiV1 = {
   matrix10x: 'matrix.mtx.gz',
   barcodes10x: 'barcodes.tsv.gz',
   features10x: 'features.tsv.gz',
+  seurat: 'r.rds',
 };
 
 const updateSampleFileUpload = (
@@ -22,6 +23,8 @@ const updateSampleFileUpload = (
   if (uploadStatus !== UploadStatus.UPLOADING) {
     const url = `/v2/experiments/${experimentId}/samples/${sampleId}/sampleFiles/${type}`;
     const body = { uploadStatus };
+
+    console.log('HERE3======');
 
     try {
       await fetchAPI(

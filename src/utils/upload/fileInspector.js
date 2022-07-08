@@ -15,6 +15,14 @@ const MATRIX_SIGNATURE = Buffer.from('%%MatrixMarket');
 const GZIP_SIGNATURE = Buffer.from([0x1f, 0x8b]);
 
 const inspectFile = async (file, technology) => {
+  if (technology === '10X Genomics') {
+    inspect10XFile(file, technology);
+  } else if (technology === 'Seurat') {
+    inspectSeuratFile(file, technology);
+  }
+};
+
+const inspect10XFile = async (file, technology) => {
   // Validate a file requested for upload to the platform.
 
   // immediately discard file if filename is not in valid set
@@ -51,8 +59,25 @@ const inspectFile = async (file, technology) => {
 
   // check barcodes file starts with a 16 digit DNA sequence
   if (file.name.startsWith('barcodes')
-      && !data.toString().match(/\t/)) {
+    && !data.toString().match(/\t/)) {
     return valid;
+  }
+
+  return Verdict.INVALID_FORMAT;
+};
+
+const inspectSeuratFile = async (file, technology) => {
+  // Validate a file requested for upload to the platform.
+
+  // immediately discard file if filename is not in valid set
+  const validNames = techOptions[technology].acceptedFiles;
+  if (!validNames.has(file.name)) {
+    return Verdict.INVALID_NAME;
+  }
+
+  // check rds files ends with .rds
+  if (file.name.endsWith('rds')) {
+    return Verdict.VALID_UNZIPPED;
   }
 
   return Verdict.INVALID_FORMAT;

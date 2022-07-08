@@ -38,30 +38,45 @@ const FileUploadModal = (props) => {
     setCanUpload(filesList.length && filesList.every((file) => file.valid));
   }, [filesList]);
 
+  useEffect(() => {
+    setFilesList([]);
+  }, [selectedTech]);
+
   // Handle on Drop
   const onDrop = async (acceptedFiles) => {
-    let filesNotInFolder = false;
-    const filteredFiles = acceptedFiles
-      // Remove all hidden files
-      .filter((file) => !file.name.startsWith('.') && !file.name.startsWith('__MACOSX'))
+    // Remove all hidden files
+    let filteredFiles = acceptedFiles
+      .filter((file) => !file.name.startsWith('.') && !file.name.startsWith('__MACOSX'));
+
+    if (selectedTech === '10X Chromium') {
+      let filesNotInFolder = false;
+
       // Remove all files that aren't in a folder
-      .filter((file) => {
-        const inFolder = file.path.includes('/');
+      filteredFiles = filteredFiles
+        .filter((file) => {
+          const inFolder = file.path.includes('/');
 
-        filesNotInFolder ||= !inFolder;
+          filesNotInFolder ||= !inFolder;
 
-        return inFolder;
-      });
+          return inFolder;
+        });
 
-    if (filesNotInFolder) {
-      handleError('error', endUserMessages.ERROR_FILES_FOLDER);
+      if (filesNotInFolder) {
+        handleError('error', endUserMessages.ERROR_FILES_FOLDER);
+      }
+
+      const newFiles = await Promise.all(filteredFiles.map((file) => (
+        fileObjectToFileRecord(file, selectedTech)
+      )));
+
+      setFilesList([...filesList, ...newFiles]);
+    } else if (selectedTech === 'Seurat') {
+      const newFiles = await Promise.all(filteredFiles.map((file) => (
+        fileObjectToFileRecord(file, selectedTech)
+      )));
+
+      setFilesList([...filesList, ...newFiles]);
     }
-
-    const newFiles = await Promise.all(filteredFiles.map((file) => (
-      fileObjectToFileRecord(file, selectedTech)
-    )));
-
-    setFilesList([...filesList, ...newFiles]);
   };
 
   const removeFile = (fileName) => {
@@ -72,19 +87,14 @@ const FileUploadModal = (props) => {
     setFilesList(newArray);
   };
 
+  const { fileUploadParagraphs } = techOptions[selectedTech];
+
   const renderHelpText = () => (
     <>
       <Space direction='vertical' style={{ width: '100%' }}>
-        <Paragraph>
-          For each sample, upload a folder containing the
-          {' '}
-          {techOptions[selectedTech].inputInfo.length}
-          {' '}
-          count matrix files. The folder&apos;s name will be used to name the sample in it. You can change this name later in Data Management.
-        </Paragraph>
-        <Paragraph>
-          The required files for each sample are:
-        </Paragraph>
+        {
+          fileUploadParagraphs.map((text) => <Paragraph>{text}</Paragraph>)
+        }
         <List
           dataSource={techOptions[selectedTech].inputInfo}
           size='small'
@@ -162,7 +172,7 @@ const FileUploadModal = (props) => {
             File Upload:
             <span style={{ color: 'red', marginRight: '2em' }}>*</span>
           </Title>
-          {selectedTech && renderHelpText()}
+          {selectedTech && renderHelpText(selectedTech)}
         </Col>
       </Row>
 
