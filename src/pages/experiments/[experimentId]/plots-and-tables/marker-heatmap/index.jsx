@@ -27,7 +27,7 @@ import { updatePlotConfig, loadPlotConfig } from 'redux/actions/componentConfig'
 import Header from 'components/Header';
 import PlotContainer from 'components/plots/PlotContainer';
 import { generateSpec } from 'utils/plotSpecs/generateHeatmapSpec';
-import { loadGeneExpression, loadMarkerGenes } from 'redux/actions/genes';
+import { loadGeneExpression, loadMarkerGenes, loadPaginatedGeneProperties } from 'redux/actions/genes';
 import { loadCellSets } from 'redux/actions/cellSets';
 import PlatformError from 'components/PlatformError';
 import Loader from 'components/Loader';
@@ -36,7 +36,6 @@ import { plotNames } from 'utils/constants';
 
 import GeneReorderTool from 'components/plots/GeneReorderTool';
 import GeneSearchBar from 'components/plots/GeneSearchBar';
-import { loadPaginatedGeneProperties } from 'redux/actions/genes';
 
 const { Panel } = Collapse;
 const plotUuid = 'markerHeatmapPlotMain';
@@ -363,7 +362,7 @@ const MarkerHeatmap = ({ experimentId }) => {
       </Panel>
       <Panel header='Select data' key='select-data'>
         <Space direction='vertical' size='small'>
-          <p>Select the cell sets to show markers for:</p>
+          <p>Select cell sets to show in the heatmap:</p>
           <Select
             value={{
               value: config.selectedCellSet,
