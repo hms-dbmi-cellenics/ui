@@ -146,12 +146,6 @@ const FileUploadModal = (props) => {
                 ))}
               </Select>
             </Space>
-            <Text type='secondary'>
-              <i>
-                Is your dataset generated using another single cell RNA-seq technology (e.g. Nadia, BD Rhapsody, etc.)? Email us to find out if we can support your data:
-                <a href='mailto:hello@biomage.net'> hello@biomage.net</a>
-              </i>
-            </Text>
           </Space>
         </Col>
       </Row>
@@ -170,10 +164,6 @@ const FileUploadModal = (props) => {
         {/* eslint-disable react/jsx-props-no-spreading */}
         <Col span={24}>
           <Paragraph type='secondary'>
-            <i>
-              Don’t have the data in the accepted format? Email us for help with file conversion (e.g. from Fastq or H5 file):
-              <a href='mailto:hello@biomage.net'> hello@biomage.net</a>
-            </i>
             <span style={{ display: 'block', height: '0.6rem' }} />
             <i>
               More guidance on supported file types and formats is available
