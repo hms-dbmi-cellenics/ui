@@ -44,8 +44,8 @@ const ChangesNotAppliedModal = (props) => {
           <Button
             type='primary'
             key='run'
+            disabled={!experimentId || !paramsHash}
             onClick={() => {
-              if (!experimentId || !paramsHash) return;
               dispatch(runQC(experimentId, paramsHash));
               onRunQC();
             }}
