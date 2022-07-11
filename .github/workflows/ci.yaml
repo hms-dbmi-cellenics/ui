@@ -66,7 +66,7 @@ jobs:
       - uses: actions/cache@v2
         with:
           path: '**/node_modules'
-          key: ${{ runner.os }}-modules-${{ hashFiles('**/package-lock') }}
+          key: ${{ runner.os }}-npm-cache-${{ hashFiles('**/package-lock') }}
 
       - id: install
         name: Install dependencies
