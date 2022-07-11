@@ -55,18 +55,14 @@ jobs:
       CI: true
     steps:
       - id: setup-node
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: '14'
+          cache: 'npm'
 
       - id: checkout
         name: Check out source code
         uses: actions/checkout@v2
-
-      - uses: actions/cache@v2
-        with:
-          path: '**/node_modules'
-          key: ${{ runner.os }}-npm-cache-${{ hashFiles('**/package-lock') }}
 
       - id: install
         name: Install dependencies
