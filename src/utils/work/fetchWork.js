@@ -135,18 +135,17 @@ const fetchWork = async (
   // If caching is disabled, we add an additional randomized key to the hash so we never reuse
   // past results.
 
-  // let cacheUniquenessKey = null;
-  // if (environment !== Environment.PRODUCTION
-  // && localStorage.getItem('disableCache') === 'true') {
-  //   cacheUniquenessKey = Math.random();
-  // }
+  let cacheUniquenessKey = null;
+  if (environment !== Environment.PRODUCTION && localStorage.getItem('disableCache') === 'true') {
+    cacheUniquenessKey = Math.random();
+  }
 
   const ETag = createObjectHash({
     experimentId,
     body,
     qcPipelineStartDate,
     extras,
-    // cacheUniquenessKey,
+    cacheUniquenessKey,
     clusterNames,
   });
 
