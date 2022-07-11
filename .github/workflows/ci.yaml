@@ -61,11 +61,13 @@ jobs:
 
       - id: checkout
         name: Check out source code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
-      - id: cache-seek
-        name: Check for npm cache hit
-        uses: c-hive/gha-npm-cache@v1
+      - id: setup-node
+        uses: actions/setup-node@v3
+        with:
+          node-version: '14'
+          cache: 'npm'
 
       - id: install
         name: Install dependencies
@@ -133,7 +135,7 @@ jobs:
     steps:
       - id: checkout
         name: Check out source code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - id: download-build-out
         name: Download Next.js build output
@@ -215,6 +217,8 @@ jobs:
           tags: ${{ format('{0}/{1}:{2}', steps.login-ecr.outputs.registry, steps.ref.outputs.repo-name, steps.ref.outputs.image-tag) }}
           push: false
           build-args: READONLY_API_TOKEN_GITHUB=${{ secrets.READONLY_API_TOKEN_GITHUB }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
       - id: push
         name: Push docker image to ECR
@@ -246,7 +250,7 @@ jobs:
     steps:
       - id: checkout
         name: Check out source code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - id: setup-aws
         name: Configure AWS credentials
