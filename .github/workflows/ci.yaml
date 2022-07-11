@@ -202,6 +202,10 @@ jobs:
         env:
           REPO_NAME: ${{ steps.ref.outputs.repo-name }}
 
+      - id: setup-buildx
+        name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
       - id: build
         name: Build Docker image
         uses: docker/build-push-action@v2
