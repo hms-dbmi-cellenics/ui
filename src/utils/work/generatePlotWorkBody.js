@@ -1,6 +1,6 @@
 import { plotTypes } from 'utils/constants';
 
-const composeDotPlotWorkBody = (config) => {
+const composeDotPlotWorkBody = (config, clusterNames) => {
   const [filterGroup, filterKey] = config.selectedPoints.split('/');
 
   return {
@@ -9,6 +9,7 @@ const composeDotPlotWorkBody = (config) => {
     numberOfMarkers: config.nMarkerGenes,
     customGenesList: config.selectedGenes,
     groupBy: config.selectedCellSet,
+    clusterNames,
     filterBy: {
       group: filterGroup,
       key: filterKey || 'All',
@@ -16,10 +17,10 @@ const composeDotPlotWorkBody = (config) => {
   };
 };
 
-const generatePlotWorkBody = (plotType, config) => {
+const generatePlotWorkBody = (plotType, config, clusterNames) => {
   switch (plotType) {
     case plotTypes.DOT_PLOT:
-      return composeDotPlotWorkBody(config);
+      return composeDotPlotWorkBody(config, clusterNames);
     default: {
       throw new Error('Plot type doesn\'t exist');
     }

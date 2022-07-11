@@ -189,7 +189,7 @@ const DotPlotPage = (props) => {
     const currentComparedConfig = getComparedConfig(config);
     if (config && !_.isEqual(previousComparedConfig.current, currentComparedConfig)) {
       previousComparedConfig.current = currentComparedConfig;
-      dispatch(fetchPlotDataWork(experimentId, plotUuid, plotType, clusterNames));
+      dispatch(fetchPlotDataWork(experimentId, plotUuid, plotType));
     }
   }, [config, cellSetProperties]);
 
@@ -298,7 +298,7 @@ const DotPlotPage = (props) => {
           <PlatformError
             description='Error loading plot data.'
             reason='Check the options that you have selected and try again.'
-            onClick={() => dispatch(fetchPlotDataWork(experimentId, plotUuid, plotType, clusterNames))}
+            onClick={() => dispatch(fetchPlotDataWork(experimentId, plotUuid, plotType))}
           />
         </center>
       );

@@ -7,17 +7,24 @@ import endUserMessages from 'utils/endUserMessages';
 import generatePlotWorkBody from 'utils/work/generatePlotWorkBody';
 import { fetchWork } from 'utils/work/fetchWork';
 
+const getClusterNames = (state) => {
+  const clusterIds = state.cellSets.hierarchy[0]?.children.map((entry) => entry.key);
+  const clusterNames = clusterIds?.map((clusterId) => state.cellSets.properties[clusterId].name);
+
+  return clusterNames;
+};
+
 const fetchPlotDataWork = (
   experimentId,
   plotUuid,
   plotType,
-  clusterNames,
 ) => async (dispatch, getState) => {
   const config = getState().componentConfig[plotUuid]?.config ?? initialPlotConfigStates[plotType];
+  const clusterNames = getClusterNames(getState());
   const timeout = getTimeoutForWorkerTask(getState(), 'PlotData');
 
   try {
-    const body = generatePlotWorkBody(plotType, config);
+    const body = generatePlotWorkBody(plotType, config, clusterNames);
 
     dispatch({
       type: PLOT_DATA_LOADING,
@@ -25,7 +32,7 @@ const fetchPlotDataWork = (
     });
 
     const data = await fetchWork(
-      experimentId, body, getState, { timeout, clusterNames },
+      experimentId, body, getState, { timeout },
     );
 
     dispatch({
