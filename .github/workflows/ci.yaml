@@ -63,9 +63,10 @@ jobs:
         name: Check out source code
         uses: actions/checkout@v2
 
-      - id: cache-seek
-        name: Check for npm cache hit
-        uses: c-hive/gha-npm-cache@v1
+      - uses: actions/cache@v2
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/package-lock') }}
 
       - id: install
         name: Install dependencies
