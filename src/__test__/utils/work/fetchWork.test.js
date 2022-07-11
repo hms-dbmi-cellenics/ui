@@ -18,7 +18,7 @@ jest.mock('utils/cache', () => require('__test__/utils/work/fetchWork.mock').moc
 jest.mock('utils/work/seekWorkResponse', () => require('__test__/utils/work/fetchWork.mock').mockSeekWorkResponseModule);
 
 const experimentId = '1234';
-const NON_GENE_EXPRESSION_ETAG = '013c3026bb7156d222ccd18919745195'; // pragma: allowlist secret
+const NON_GENE_EXPRESSION_ETAG = '3ebcb92e53c10a67614c6dcc12f8c8d4'; // pragma: allowlist secret
 const GENE_EXPRESSION_ETAG = '34c05c9d07fd24ce0c22d2bec7fd7437'; // pragma: allowlist secret
 const timeout = 10;
 

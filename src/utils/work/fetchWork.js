@@ -110,7 +110,7 @@ const fetchWork = async (
     extras = undefined,
     timeout = 180,
     broadcast = false,
-    clusterNames = [],
+    clusterNames = undefined,
   } = optionals;
 
   const backendStatus = getBackendStatus(experimentId)(getState()).status;
