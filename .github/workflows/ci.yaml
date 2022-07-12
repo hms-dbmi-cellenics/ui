@@ -72,7 +72,7 @@ jobs:
           echo "NPM version: $(npm --version)"
 
           git config --global url."https://".insteadOf ssh://
-          npm ci --prefer-offline
+          npm ci --ignore-scripts
 
       - id: test
         name: Run unit tests
