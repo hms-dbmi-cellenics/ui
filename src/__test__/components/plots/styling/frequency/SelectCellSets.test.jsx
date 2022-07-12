@@ -20,7 +20,7 @@ import { initialPlotConfigStates } from 'redux/reducers/componentConfig/initialS
 
 import createTestComponentFactory from '__test__/test-utils/testComponentFactory';
 
-const mockOnUpdate = jest.fn().mockImplementation(() => {});
+const mockOnUpdate = jest.fn().mockImplementation(() => { });
 
 const defaultProps = {
   onUpdate: mockOnUpdate,
@@ -80,7 +80,7 @@ describe('Select cell sets tests ', () => {
       fireEvent.change(dropdown, { target: { value: 'Scratchpad' } });
     });
 
-    const option1 = screen.getByText('Scratchpad');
+    const option1 = screen.getByText('Custom cell sets');
 
     await act(async () => {
       fireEvent.click(option1);

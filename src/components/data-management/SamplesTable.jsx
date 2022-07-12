@@ -31,9 +31,7 @@ import { arrayMoveImmutable } from 'utils/array-move';
 
 import { metadataNameToKey, metadataKeyToName, temporaryMetadataKey } from 'utils/data-management/metadataUtils';
 import integrationTestConstants from 'utils/integrationTestConstants';
-
 import 'utils/css/data-management.css';
-
 import { ClipLoader } from 'react-spinners';
 import useConditionalEffect from 'utils/customHooks/useConditionalEffect';
 import { METADATA_DEFAULT_VALUE } from 'redux/reducers/experiments/initialState';
