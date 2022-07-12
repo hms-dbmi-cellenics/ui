@@ -16,15 +16,15 @@ jobs:
   analyze:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - id: checkout
+        name: Check out source code
+        uses: actions/checkout@v3
 
-      - name: Set up node
-        uses: actions/setup-node@v1
+      - id: setup-node
+        uses: actions/setup-node@v3
         with:
-          node-version: "14.x"
-
-      - name: Check for npm cache hit
-        uses: c-hive/gha-npm-cache@v1
+          node-version: '14'
+          cache: 'npm'
 
       - name: Install dependencies
         run: |-
