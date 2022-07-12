@@ -33,6 +33,8 @@ const deleteCellSet = (experimentId, key) => async (dispatch, getState) => {
     return null;
   }
 
+  Object.values(getState().cellSets.properties).forEach((a) => console.log('******** key: ', a.key, ' name: ', a.name));
+
   try {
     await fetchAPI(
       `/v2/experiments/${experimentId}/cellSets`,
@@ -51,6 +53,8 @@ const deleteCellSet = (experimentId, key) => async (dispatch, getState) => {
       type: CELL_SETS_DELETE,
       payload: { key },
     });
+
+    Object.values(getState().cellSets.properties).forEach((a) => console.log('******** finished key: ', a.key, ' name: ', a.name));
   } catch (e) {
     handleError(e, endUserMessages.ERROR_SAVING);
   }

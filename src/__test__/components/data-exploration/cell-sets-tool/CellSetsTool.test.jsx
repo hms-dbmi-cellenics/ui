@@ -439,19 +439,31 @@ describe('CellSetsTool', () => {
     userEvent.click(customCellSetsGroup);
 
     screen.getByText('New Cluster');
-    // const newClusterKey = getClusterByName('New Cluster');
+    const newClusterKey = getClusterByName('New Cluster');
+    console.log('***************** ', newClusterKey);
 
     // There should be a delete button for the scratchpad cluster.
-    const deleteButtons = screen.getAllByLabelText(/Delete/);
-    expect(deleteButtons.length).toEqual(1);
+    const deleteButton = screen.getByRole('button', { name: /Delete/i });
+    // expect(deleteButton.length).toEqual(1);
 
-    // Clicking on one of the buttons...
-    userEvent.click(deleteButtons[0]);
+    // Clicking on the delete button ...
+    // userEvent.click(deleteButton);
+    await act(async () => {
+      fireEvent(
+        deleteButton,
+        new MouseEvent('click', {
+          bubbles: true,
+          cancelable: true,
+        }),
+      );
+    });
+
+    // screen.debug(null, Infinity);
 
     // const actualIntersection = storeState.getState().cellSets.properties[newClusterKey].cellIds;
     // console.log('**** ', actualIntersection);
     // debugger;
-    await waitFor(() => expect(screen.queryByText('New Cluster')).toBeNull());
+    // await waitFor(() => expect(screen.queryByText('New Cluster')).toBeNull());
   });
 
   it('Calculates filtered cell indices correctly', async () => {
