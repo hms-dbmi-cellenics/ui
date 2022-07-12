@@ -1,9 +1,13 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 
+import Auth from '@aws-amplify/auth';
+
 import {
-  Modal, Space, Checkbox, Typography, Link,
+  Modal, Space, Checkbox, Typography,
 } from 'antd';
+import pushNotificationMessage from 'utils/pushNotificationMessage';
+import endUserMessages from 'utils/endUserMessages';
 
 const { Text } = Typography;
 
@@ -11,7 +15,7 @@ const agreedPrivacyPolicyKey = 'custom:agreed_terms';
 const agreedEmailsKey = 'custom:agreed_emails';
 
 const PrivacyPolicyIntercept = (props) => {
-  const { user } = props;
+  const { user, onOk } = props;
 
   const {
     attributes: {
@@ -31,7 +35,21 @@ const PrivacyPolicyIntercept = (props) => {
       visible
       cancelButtonProps={{ style: { display: 'none' } }}
       okButtonProps={{ disabled: agreedPrivacyPolicy !== 'true' }}
-      onOk={() => { }}
+      closable={false}
+      onOk={async () => {
+        await Auth.updateUserAttributes(
+          user,
+          {
+            [agreedPrivacyPolicyKey]: agreedPrivacyPolicy,
+            [agreedEmailsKey]: agreedEmails,
+          },
+        )
+          .then(() => {
+            pushNotificationMessage('success', endUserMessages.ACCOUNT_DETAILS_UPDATED, 3);
+            onOk();
+          })
+          .catch(() => pushNotificationMessage('error', endUserMessages.ERROR_SAVING, 3));
+      }}
     >
       <Space direction='vertical'>
         In order to begin using the platform, blablabla

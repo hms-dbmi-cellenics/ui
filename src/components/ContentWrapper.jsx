@@ -138,7 +138,7 @@ const ContentWrapper = (props) => {
     setGem2sRerunStatus(gem2sStatus);
   }, [gem2sBackendStatus, activeExperiment, samples, experiment]);
 
-  useEffect(() => {
+  const fetchCurrentUser = () => {
     Auth.currentAuthenticatedUser()
       .then((currentUser) => {
         setUser(currentUser);
@@ -147,6 +147,10 @@ const ContentWrapper = (props) => {
         setUser(null);
         Auth.federatedSignIn();
       });
+  };
+
+  useEffect(() => {
+    fetchCurrentUser();
   }, []);
 
   if (!user) return <></>;
@@ -336,7 +340,7 @@ const ContentWrapper = (props) => {
 
   return (
     <>
-      {!user.attributes['custom:agreed_terms'] ? <PrivacyPolicyIntercept user={user} /> : <></>}
+      {!user.attributes['custom:agreed_terms'] ? <PrivacyPolicyIntercept user={user} onOk={fetchCurrentUser} /> : <></>}
       <BrowserAlert />
       <Layout style={{ minHeight: '100vh' }}>
         <Sider
