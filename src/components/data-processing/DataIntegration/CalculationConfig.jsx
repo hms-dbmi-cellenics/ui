@@ -167,7 +167,16 @@ const CalculationConfig = (props) => {
               >
                 {
                   methods.map((el) => (
-                    <Option key={el.text} value={el.value} disabled={el.disabled}>{el.text}</Option>
+                    <Option key={el.text} value={el.value} disabled={el.disabled}>
+                      {
+                        el.disabled ? (
+                          <Tooltip title='Will be supported in a later version' placement='left'>
+                            {el.text}
+                          </Tooltip>
+                        ) : el.text
+                      }
+
+                    </Option>
                   ))
                 }
               </Select>

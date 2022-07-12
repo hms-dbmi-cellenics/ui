@@ -120,16 +120,16 @@ describe('ChangesNotAppliedModal', () => {
   });
 
   it('Fires the correct action for Run button', () => {
-    const mockRunPipeline = jest.fn();
+    const mockRunQC = jest.fn();
 
     render(
       <Provider store={mockStore(withChangesState)}>
-        <ChangesNotAppliedModal onRunPipeline={() => mockRunPipeline()} />
+        <ChangesNotAppliedModal onRunQC={() => mockRunQC()} />
       </Provider>,
     );
 
     userEvent.click(screen.getByText('Run'));
-    expect(mockRunPipeline).toHaveBeenCalled();
+    expect(mockRunQC).toHaveBeenCalled();
   });
 
   it('Fires the correct action for Discard button', () => {

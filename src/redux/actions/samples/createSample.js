@@ -5,29 +5,25 @@ import {
   SAMPLES_CREATE, SAMPLES_ERROR, SAMPLES_SAVED, SAMPLES_SAVING,
 } from 'redux/actionTypes/samples';
 
-import {
-  DEFAULT_NA,
-} from 'redux/reducers/projects/initialState';
 import fetchAPI from 'utils/http/fetchAPI';
 import handleError from 'utils/http/handleError';
 import endUserMessages from 'utils/endUserMessages';
 
+import { METADATA_DEFAULT_VALUE } from 'redux/reducers/experiments/initialState';
 import { sampleTemplate } from 'redux/reducers/samples/initialState';
 
-import config from 'config';
-import { api } from 'utils/constants';
 import UploadStatus from 'utils/upload/UploadStatus';
 
 const createSample = (
-  projectUuid,
+  experimentId,
   name,
   type,
-  filesToUploadV2Only,
+  filesToUpload,
 ) => async (dispatch, getState) => {
-  const project = getState().projects[projectUuid];
-  const createdDate = moment().toISOString();
-  const experimentId = project.experiments[0];
+  const experiment = getState().experiments[experimentId];
+
   const newSampleUuid = uuidv4();
+  const createdDate = moment().toISOString();
 
   dispatch({
     type: SAMPLES_SAVING,
@@ -36,41 +32,30 @@ const createSample = (
     },
   });
 
-  let url;
-  let body;
-
   const newSample = {
     ..._.cloneDeep(sampleTemplate),
     name,
     type,
-    projectUuid,
+    experimentId,
     uuid: newSampleUuid,
     createdDate,
     lastModified: createdDate,
-    metadata: project?.metadataKeys
-      .reduce((acc, curr) => ({ ...acc, [curr]: DEFAULT_NA }), {}) || {},
+    metadata: experiment?.metadataKeys
+      .reduce((acc, curr) => ({ ...acc, [curr]: METADATA_DEFAULT_VALUE }), {}) || {},
   };
 
-  if (config.currentApiVersion === api.V1) {
-    url = `/v1/projects/${projectUuid}/${experimentId}/samples`;
+  const url = `/v2/experiments/${experimentId}/samples/${newSampleUuid}`;
 
-    body = _.clone(newSample);
-  } else if (config.currentApiVersion === api.V2) {
-    url = `/v2/experiments/${experimentId}/samples/${newSampleUuid}`;
-
-    let sampleTechnology;
-    if (type === '10X Chromium') {
-      sampleTechnology = '10x';
-    } else {
-      throw new Error(`Sample technology ${type} is not recognized`);
-    }
-
-    filesToUploadV2Only.forEach((fileName) => {
-      newSample.files[fileName] = { upload: { status: UploadStatus.UPLOADING } };
-    });
-
-    body = { name, sampleTechnology };
+  let sampleTechnology;
+  if (type === '10X Chromium') {
+    sampleTechnology = '10x';
+  } else {
+    throw new Error(`Sample technology ${type} is not recognized`);
   }
+
+  filesToUpload.forEach((fileName) => {
+    newSample.files[fileName] = { upload: { status: UploadStatus.UPLOADING } };
+  });
 
   try {
     await fetchAPI(
@@ -80,7 +65,7 @@ const createSample = (
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(body),
+        body: JSON.stringify({ name, sampleTechnology }),
       },
     );
 

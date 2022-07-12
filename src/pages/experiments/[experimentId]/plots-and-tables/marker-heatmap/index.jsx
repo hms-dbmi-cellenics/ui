@@ -6,6 +6,7 @@ import {
   Empty,
   Select,
   Radio,
+  Tabs,
 } from 'antd';
 import _ from 'lodash';
 import { useSelector, useDispatch } from 'react-redux';
@@ -26,16 +27,21 @@ import { updatePlotConfig, loadPlotConfig } from 'redux/actions/componentConfig'
 import Header from 'components/Header';
 import PlotContainer from 'components/plots/PlotContainer';
 import { generateSpec } from 'utils/plotSpecs/generateHeatmapSpec';
-import { loadGeneExpression, loadMarkerGenes } from 'redux/actions/genes';
+import { loadGeneExpression, loadMarkerGenes, loadPaginatedGeneProperties } from 'redux/actions/genes';
 import { loadCellSets } from 'redux/actions/cellSets';
 import PlatformError from 'components/PlatformError';
 import Loader from 'components/Loader';
 import populateHeatmapData from 'components/plots/helpers/heatmap/populateHeatmapData';
 import { plotNames } from 'utils/constants';
 
+import GeneReorderTool from 'components/plots/GeneReorderTool';
+import GeneSearchBar from 'components/plots/GeneSearchBar';
+
 const { Panel } = Collapse;
 const plotUuid = 'markerHeatmapPlotMain';
 const plotType = 'markerHeatmap';
+const searchBarUuid = 'geneSearchBar';
+const { TabPane } = Tabs;
 
 const MarkerHeatmap = ({ experimentId }) => {
   const dispatch = useDispatch();
@@ -229,6 +235,23 @@ const MarkerHeatmap = ({ experimentId }) => {
     setVegaSpec(spec);
   }, [config, cellSets]);
 
+  useEffect(() => {
+    const state = {
+      sorter: {
+        field: 'gene_names',
+        columnKey: 'gene_names',
+        order: 'ascend',
+      },
+      pagination: {
+        current: 1,
+        pageSize: 100000,
+      },
+      pageSizeFilter: null,
+    };
+
+    dispatch(loadPaginatedGeneProperties(experimentId, ['dispersions'], searchBarUuid, state));
+  }, []);
+
   // updatedField is a subset of what default config has and contains only the things we want change
   const updatePlotWithChanges = (updatedField) => {
     dispatch(updatePlotConfig(plotUuid, updatedField));
@@ -300,30 +323,46 @@ const MarkerHeatmap = ({ experimentId }) => {
   const renderExtraPanels = () => (
     <>
       <Panel header='Gene selection' key='gene-selection'>
-        <Space direction='vertical' size='small'>
-          <MarkerGeneSelection
-            config={config}
-            onUpdate={updatePlotWithChanges}
-            onGeneEnter={onGeneEnter}
-            onReset={onReset}
-          />
-          <div>
-            <p>Gene labels:</p>
-            <Radio.Group
-              onChange={
-                (e) => updatePlotWithChanges({ showGeneLabels: e.target.value })
-              }
-              value={config.showGeneLabels}
-            >
-              <Radio value>Show</Radio>
-              <Radio value={false}>Hide</Radio>
-            </Radio.Group>
-          </div>
-        </Space>
+        <Tabs defaultActiveKey='1'>
+          <TabPane tab='Add/Remove genes' key='1'>
+            <MarkerGeneSelection
+              config={config}
+              onUpdate={updatePlotWithChanges}
+              onGeneEnter={onGeneEnter}
+              onReset={onReset}
+            />
+            <div>
+              <p>Gene labels:</p>
+              <Radio.Group
+                onChange={
+                  (e) => updatePlotWithChanges({ showGeneLabels: e.target.value })
+                }
+                value={config.showGeneLabels}
+              >
+                <Radio value>Show</Radio>
+                <Radio value={false}>Hide</Radio>
+              </Radio.Group>
+            </div>
+          </TabPane>
+          <TabPane tab='Search for and re-order genes' key='2'>
+            <p>Type in a gene name and select it to add it to the heatmap. Drag and drop genes to re-order them.</p>
+            {/* space needed to separate search box and reorder tree, display=flex fills the space */}
+            <Space direction='vertical' style={{ display: 'flex' }}>
+              <GeneSearchBar
+                plotUuid={plotUuid}
+                experimentId={experimentId}
+                searchBarUuid={searchBarUuid}
+              />
+              <GeneReorderTool
+                plotUuid={plotUuid}
+              />
+            </Space>
+          </TabPane>
+        </Tabs>
       </Panel>
       <Panel header='Select data' key='select-data'>
         <Space direction='vertical' size='small'>
-          <p>Select the cell sets to show markers for:</p>
+          <p>Select cell sets to show in the heatmap:</p>
           <Select
             value={{
               value: config.selectedCellSet,

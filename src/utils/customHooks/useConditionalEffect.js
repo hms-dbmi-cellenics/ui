@@ -4,7 +4,10 @@ import React, { useRef } from 'react';
 // Custom useEffect hook that runs only when
 // a comparator notices a difference between one of the dependencies previous and new values
 // By default, the comparator used is _.isEqual
-const useConditionalEffect = (callback, dependencies, comparator = _.isEqual) => {
+// It can be set as lazy (so that it doesnt run on the first render)
+const useConditionalEffect = (callback, dependencies, optionals = {}) => {
+  const { comparator = _.isEqual, lazy = false } = optionals;
+
   const firstRenderRef = useRef(true);
   const dependenciesRef = useRef(dependencies);
 
@@ -14,7 +17,7 @@ const useConditionalEffect = (callback, dependencies, comparator = _.isEqual) =>
       (currDependency, index) => !comparator(currDependency, dependencies[index]),
     );
 
-    if (firstRenderRef.current || somethingChanged) {
+    if ((firstRenderRef.current && !lazy) || somethingChanged) {
       callback(...args);
     }
 

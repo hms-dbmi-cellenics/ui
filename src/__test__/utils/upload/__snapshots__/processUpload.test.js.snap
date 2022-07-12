@@ -1,0 +1,165 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`processUpload Uploads and updates redux correctly when there are no errors with cellranger v2 1`] = `
+Array [
+  Object {
+    "compressed": true,
+    "errors": "",
+    "fileObject": Object {
+      "name": "genes.tsv.gz",
+      "path": "/WT13/genes.tsv.gz",
+      "size": 100,
+      "type": "application/gzip",
+    },
+    "name": "genes.tsv.gz",
+    "upload": Object {
+      "status": "uploading",
+    },
+    "valid": true,
+  },
+  Object {
+    "compressed": true,
+    "errors": "",
+    "fileObject": Object {
+      "name": "barcodes.tsv.gz",
+      "path": "/WT13/barcodes.tsv.gz",
+      "size": 100,
+      "type": "application/gzip",
+    },
+    "name": "barcodes.tsv.gz",
+    "upload": Object {
+      "status": "uploading",
+    },
+    "valid": true,
+  },
+  Object {
+    "compressed": true,
+    "errors": "",
+    "fileObject": Object {
+      "name": "matrix.mtx.gz",
+      "path": "/WT13/matrix.mtx.gz",
+      "size": 100,
+      "type": "application/gzip",
+    },
+    "name": "matrix.mtx.gz",
+    "upload": Object {
+      "status": "uploading",
+    },
+    "valid": true,
+  },
+]
+`;
+
+exports[`processUpload Uploads and updates redux correctly when there are no errors with cellranger v2 2`] = `
+Array [
+  Object {
+    "data": "loadedGzippedFile",
+    "headers": Object {
+      "Content-Type": "application/octet-stream",
+    },
+    "method": "put",
+    "onUploadProgress": [Function],
+    "url": "theSignedUrl",
+  },
+  Object {
+    "data": "loadedGzippedFile",
+    "headers": Object {
+      "Content-Type": "application/octet-stream",
+    },
+    "method": "put",
+    "onUploadProgress": [Function],
+    "url": "theSignedUrl",
+  },
+  Object {
+    "data": "loadedGzippedFile",
+    "headers": Object {
+      "Content-Type": "application/octet-stream",
+    },
+    "method": "put",
+    "onUploadProgress": [Function],
+    "url": "theSignedUrl",
+  },
+]
+`;
+
+exports[`processUpload Uploads and updates redux correctly when there are no errors with cellranger v3 1`] = `
+Array [
+  Object {
+    "compressed": true,
+    "errors": "",
+    "fileObject": Object {
+      "name": "features.tsv.gz",
+      "path": "/WT13/features.tsv.gz",
+      "size": 100,
+      "type": "application/gzip",
+    },
+    "name": "features.tsv.gz",
+    "upload": Object {
+      "status": "uploading",
+    },
+    "valid": true,
+  },
+  Object {
+    "compressed": true,
+    "errors": "",
+    "fileObject": Object {
+      "name": "barcodes.tsv.gz",
+      "path": "/WT13/barcodes.tsv.gz",
+      "size": 100,
+      "type": "application/gzip",
+    },
+    "name": "barcodes.tsv.gz",
+    "upload": Object {
+      "status": "uploading",
+    },
+    "valid": true,
+  },
+  Object {
+    "compressed": true,
+    "errors": "",
+    "fileObject": Object {
+      "name": "matrix.mtx.gz",
+      "path": "/WT13/matrix.mtx.gz",
+      "size": 100,
+      "type": "application/gzip",
+    },
+    "name": "matrix.mtx.gz",
+    "upload": Object {
+      "status": "uploading",
+    },
+    "valid": true,
+  },
+]
+`;
+
+exports[`processUpload Uploads and updates redux correctly when there are no errors with cellranger v3 2`] = `
+Array [
+  Object {
+    "data": "loadedGzippedFile",
+    "headers": Object {
+      "Content-Type": "application/octet-stream",
+    },
+    "method": "put",
+    "onUploadProgress": [Function],
+    "url": "theSignedUrl",
+  },
+  Object {
+    "data": "loadedGzippedFile",
+    "headers": Object {
+      "Content-Type": "application/octet-stream",
+    },
+    "method": "put",
+    "onUploadProgress": [Function],
+    "url": "theSignedUrl",
+  },
+  Object {
+    "data": "loadedGzippedFile",
+    "headers": Object {
+      "Content-Type": "application/octet-stream",
+    },
+    "method": "put",
+    "onUploadProgress": [Function],
+    "url": "theSignedUrl",
+  },
+]
+`;

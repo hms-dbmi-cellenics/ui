@@ -4,43 +4,31 @@ import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 
 import deleteSamples from 'redux/actions/samples/deleteSamples';
 import initialSampleState, { sampleTemplate } from 'redux/reducers/samples/initialState';
-import initialProjectState, { projectTemplate } from 'redux/reducers/projects/initialState';
-
-import { saveProject } from 'redux/actions/projects';
+import initialExperimentState, { experimentTemplate } from 'redux/reducers/experiments/initialState';
 
 import {
-  SAMPLES_DELETE_API_V2, SAMPLES_SAVED, SAMPLES_SAVING, SAMPLES_ERROR,
+  SAMPLES_DELETE, SAMPLES_SAVED, SAMPLES_SAVING, SAMPLES_ERROR,
 } from 'redux/actionTypes/samples';
 
-import config from 'config';
-import { api } from 'utils/constants';
-
-jest.mock('config');
-
 enableFetchMocks();
-
-jest.mock('redux/actions/projects/saveProject');
-saveProject.mockImplementation(() => async () => { });
 
 const mockStore = configureStore([thunk]);
 
 const mockSampleUuid = 'sample-1';
-const mockProjectUuid = 'project-1';
 const mockExperimentId = 'experimentId';
 
 const mockSample = {
   ...sampleTemplate,
   name: 'test sample',
-  projectUuid: mockProjectUuid,
   uuid: mockSampleUuid,
+  experimentId: mockExperimentId,
 };
 
-const mockProject = {
-  ...projectTemplate,
-  name: 'test project',
-  uuid: mockProjectUuid,
+const mockExperiment = {
+  ...experimentTemplate,
+  name: 'test experiment',
+  id: mockExperimentId,
   samples: [mockSampleUuid],
-  experiments: [mockExperimentId],
 };
 
 const initialState = {
@@ -48,10 +36,10 @@ const initialState = {
     ...initialSampleState,
     [mockSampleUuid]: mockSample,
   },
-  projects: {
-    ...initialProjectState,
-    ids: [mockProjectUuid],
-    [mockProjectUuid]: mockProject,
+  experiments: {
+    ...initialExperimentState,
+    ids: [mockExperimentId],
+    [mockExperimentId]: mockExperiment,
   },
 };
 
@@ -65,8 +53,6 @@ describe('deleteSamples', () => {
   });
 
   it('Dispatches event correctly', async () => {
-    config.currentApiVersion = api.V2;
-
     const store = mockStore(initialState);
     await store.dispatch(deleteSamples([mockSampleUuid]));
 
@@ -75,7 +61,7 @@ describe('deleteSamples', () => {
     expect(actions[0].type).toEqual(SAMPLES_SAVING);
 
     // Delete sample
-    expect(actions[1].type).toEqual(SAMPLES_DELETE_API_V2);
+    expect(actions[1].type).toEqual(SAMPLES_DELETE);
 
     // Resolve loading state
     expect(actions[2].type).toEqual(SAMPLES_SAVED);
@@ -90,8 +76,6 @@ describe('deleteSamples', () => {
   });
 
   it('Dispatches error correctly if fetch fails', async () => {
-    config.currentApiVersion = api.V2;
-
     fetchMock.mockReject(new Error('Api error'));
 
     const store = mockStore(initialState);

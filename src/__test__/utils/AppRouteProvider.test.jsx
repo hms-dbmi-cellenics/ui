@@ -17,8 +17,9 @@ import AppRouteProvider, { useAppRouter, PATHS } from 'utils/AppRouteProvider';
 import DataProcessingIntercept from 'components/data-processing/DataProcessingIntercept';
 
 import addChangedQCFilter from 'redux/actions/experimentSettings/processingConfig/addChangedQCFilter';
-import { loadProjects, updateProject } from 'redux/actions/projects';
-import { switchExperiment, updateExperiment } from 'redux/actions/experiments';
+import {
+  updateExperiment, loadExperiments, switchExperiment,
+} from 'redux/actions/experiments';
 
 jest.mock('next/router', () => ({
   __esModule: true,
@@ -29,11 +30,9 @@ jest.mock('components/data-processing/DataProcessingIntercept',
   () => jest.fn(() => <>Data Processing Intercept</>));
 
 jest.mock('redux/actions/experiments/switchExperiment');
-jest.mock('redux/actions/projects/updateProject');
 jest.mock('redux/actions/experiments/updateExperiment');
 
 switchExperiment.mockImplementation(() => ({ type: 'MOCK_ACTION ' }));
-updateProject.mockImplementation(() => ({ type: 'MOCK_ACTION ' }));
 updateExperiment.mockImplementation(() => ({ type: 'MOCK_ACTION ' }));
 
 enableFetchMocks();
@@ -62,7 +61,7 @@ const TestComponent = (props) => {
 
   const testParams = {
     experimentId,
-    projectUuid: experimentId,
+    experimentId,
     ...params,
   };
 
@@ -112,7 +111,7 @@ describe('AppRouteProvider', () => {
   });
 
   it('Switch experiment when navigating from DataManagement', async () => {
-    await storeState.dispatch(loadProjects());
+    await storeState.dispatch(loadExperiments());
 
     render(
       <Provider store={storeState}>

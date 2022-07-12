@@ -12,8 +12,6 @@ import '__test__/test-utils/setupTests';
 
 enableFetchMocks();
 
-jest.mock('config');
-
 const mockStore = configureStore([thunk]);
 
 describe('updateCellSetProperty action', () => {

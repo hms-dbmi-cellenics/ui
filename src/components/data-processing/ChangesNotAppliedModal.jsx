@@ -7,7 +7,7 @@ import {
 
 import { getBackendStatus } from 'redux/selectors';
 import { discardChangedQCFilters } from 'redux/actions/experimentSettings';
-import { runPipeline } from 'redux/actions/pipeline';
+import { runQC } from 'redux/actions/pipeline';
 
 import { getUserFriendlyQCStepName } from 'utils/qcSteps';
 
@@ -15,7 +15,7 @@ const { Text } = Typography;
 
 const ChangesNotAppliedModal = (props) => {
   const {
-    onRunPipeline, onDiscardChanges, onCloseModal,
+    onRunQC, onDiscardChanges, onCloseModal,
   } = props;
 
   const experimentId = useSelector(
@@ -30,7 +30,7 @@ const ChangesNotAppliedModal = (props) => {
     status: backendStatus,
   } = useSelector(getBackendStatus(experimentId));
 
-  const paramsHash = backendStatus.gem2s?.paramsHash;
+  const paramsHash = backendStatus?.gem2s?.paramsHash;
 
   const dispatch = useDispatch();
 
@@ -44,10 +44,10 @@ const ChangesNotAppliedModal = (props) => {
           <Button
             type='primary'
             key='run'
+            disabled={!experimentId || !paramsHash}
             onClick={() => {
-              if (!experimentId || !paramsHash) return;
-              dispatch(runPipeline(experimentId, paramsHash));
-              onRunPipeline();
+              dispatch(runQC(experimentId, paramsHash));
+              onRunQC();
             }}
             style={{ width: '100px' }}
           >
@@ -97,13 +97,13 @@ const ChangesNotAppliedModal = (props) => {
 };
 
 ChangesNotAppliedModal.propTypes = {
-  onRunPipeline: PropTypes.func,
+  onRunQC: PropTypes.func,
   onDiscardChanges: PropTypes.func,
   onCloseModal: PropTypes.func,
 };
 
 ChangesNotAppliedModal.defaultProps = {
-  onRunPipeline: null,
+  onRunQC: null,
   onDiscardChanges: null,
   onCloseModal: null,
 };

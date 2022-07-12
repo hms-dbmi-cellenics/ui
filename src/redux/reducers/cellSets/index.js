@@ -7,7 +7,7 @@ import {
   CELL_SETS_ERROR,
   CELL_SETS_CLUSTERING_UPDATING, CELL_SETS_CLUSTERING_UPDATED, CELL_SETS_REORDER,
 } from 'redux/actionTypes/cellSets';
-import { EXPERIMENT_SETTINGS_PIPELINE_START } from 'redux/actionTypes/experimentSettings';
+import { EXPERIMENT_SETTINGS_QC_START } from 'redux/actionTypes/experimentSettings';
 
 import initialState from 'redux/reducers/cellSets/initialState';
 
@@ -64,7 +64,7 @@ const cellSetsReducer = (state = initialState, action) => {
     case CELL_SETS_ERROR: {
       return cellSetsError(state, action);
     }
-    case EXPERIMENT_SETTINGS_PIPELINE_START: {
+    case EXPERIMENT_SETTINGS_QC_START: {
       return initialState;
     }
     default: {

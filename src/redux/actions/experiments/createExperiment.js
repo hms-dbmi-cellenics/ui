@@ -7,44 +7,22 @@ import {
   EXPERIMENTS_ERROR,
   EXPERIMENTS_SAVING,
 } from 'redux/actionTypes/experiments';
-import { experimentTemplate } from 'redux/reducers/experiments/initialState';
 
 import endUserMessages from 'utils/endUserMessages';
 
-import convertExperimentToApiV1Model from 'utils/convertExperimentToApiV1Model';
 import handleError from 'utils/http/handleError';
 
-import config from 'config';
-import { api } from 'utils/constants';
-
 const createExperiment = (
-  projectUuid, newExperimentName,
+  name, description,
 ) => async (dispatch) => {
-  const createdDate = moment().toISOString();
+  const createdAt = moment().toISOString();
+  const experimentId = hash.MD5(createdAt);
 
-  const experimentId = hash.MD5(createdDate);
-
-  const newExperiment = {
-    ...experimentTemplate,
+  const newExperimentProperties = {
     id: experimentId,
-    name: newExperimentName,
-    projectUuid,
-    createdDate,
+    name,
+    description,
   };
-
-  let url;
-  let experimentToSend;
-
-  if (config.currentApiVersion === api.V1) {
-    experimentToSend = convertExperimentToApiV1Model(newExperiment);
-
-    url = `/v1/experiments/${experimentId}`;
-  } else if (config.currentApiVersion === api.V2) {
-    const { id, name, description } = newExperiment;
-    experimentToSend = { id, name, description };
-
-    url = `/v2/experiments/${experimentId}`;
-  }
 
   dispatch({
     type: EXPERIMENTS_SAVING,
@@ -52,20 +30,24 @@ const createExperiment = (
 
   try {
     await fetchAPI(
-      url,
+      `/v2/experiments/${experimentId}`,
       {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(experimentToSend),
+        body: JSON.stringify(newExperimentProperties),
       },
     );
 
     dispatch({
       type: EXPERIMENTS_CREATED,
       payload: {
-        experiment: newExperiment,
+        // TODO We don't really need to send this createdAt to redux, the real createdAt
+        // is being generated in the api
+        // We should make the POST to create the experiment return the new experiment and
+        // Take the createdAt from there
+        experiment: { createdAt, ...newExperimentProperties },
       },
     });
   } catch (e) {
@@ -79,7 +61,7 @@ const createExperiment = (
     });
   }
 
-  return Promise.resolve(newExperiment);
+  return Promise.resolve(experimentId);
 };
 
 export default createExperiment;

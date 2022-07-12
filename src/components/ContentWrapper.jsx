@@ -51,26 +51,23 @@ const ContentWrapper = (props) => {
   const { navigateTo, currentModule } = useAppRouter();
 
   const currentExperimentIdRef = useRef(routeExperimentId);
-  const activeProjectUuid = useSelector((state) => state?.projects?.meta?.activeProjectUuid);
-  const activeProjectExperimentID = useSelector((state) => (
-    state?.projects[activeProjectUuid]?.experiments[0]));
+  const activeExperimentId = useSelector((state) => state?.experiments?.meta?.activeExperimentId);
+  const activeExperiment = useSelector((state) => state.experiments[activeExperimentId]);
 
-  const activeProject = useSelector((state) => state.projects[activeProjectUuid]);
   const samples = useSelector((state) => state.samples);
 
-  // Use the project's experiment ID in data management
   useEffect(() => {
-    if (!activeProjectExperimentID && !routeExperimentId) return;
+    if (!activeExperimentId && !routeExperimentId) return;
 
     if (currentModule === modules.DATA_MANAGEMENT) {
-      currentExperimentIdRef.current = activeProjectExperimentID;
+      currentExperimentIdRef.current = activeExperimentId;
       return;
     }
 
     if (currentExperimentIdRef.current === routeExperimentId) return;
 
     currentExperimentIdRef.current = routeExperimentId;
-  }, [currentModule, activeProjectExperimentID, routeExperimentId]);
+  }, [currentModule, activeExperimentId, routeExperimentId]);
 
   const currentExperimentId = currentExperimentIdRef.current;
   const experiment = useSelector((state) => state?.experiments[currentExperimentId]);
@@ -131,12 +128,14 @@ const ContentWrapper = (props) => {
   const [gem2sRerunStatus, setGem2sRerunStatus] = useState(null);
 
   useEffect(() => {
+    if (!activeExperiment) return;
+
     const gem2sStatus = calculateGem2sRerunStatus(
-      gem2sBackendStatus, activeProject, samples, experiment,
+      gem2sBackendStatus, activeExperiment, samples, experiment,
     );
 
     setGem2sRerunStatus(gem2sStatus);
-  }, [gem2sBackendStatus, activeProject, samples, experiment]);
+  }, [gem2sBackendStatus, activeExperiment, samples, experiment]);
 
   useEffect(() => {
     Auth.currentAuthenticatedUser()
@@ -205,7 +204,7 @@ const ContentWrapper = (props) => {
         userSelect: 'none',
       }}
     >
-      <svg xmlns='http://www.w3.org/2000/svg' width={100} height={50}>
+      <svg xmlns='http://www.w3.org/2000/svg' width={100} height={30}>
         <defs id='svg_document_defs'>
           <style id='IBM Plex Sans_Google_Webfont_import'>@import url(https://fonts.googleapis.com/css?family=IBM+Plex+Sans);</style>
         </defs>
@@ -222,21 +221,6 @@ const ContentWrapper = (props) => {
             textAnchor='middle'
           >
             Cs
-          </text>
-          <text
-            stroke='none'
-            style={{ outlineStyle: 'none' }}
-            strokeWidth='1px'
-            x='40px'
-            fontWeight='200'
-            textRendering='geometricPrecision'
-            fontFamily='IBM Plex Sans'
-            fill='#aab6c1'
-            fontSize='12.80px'
-            y='45px'
-            textAnchor='middle'
-          >
-            Biomage
           </text>
         </g>
       </svg>
@@ -362,8 +346,7 @@ const ContentWrapper = (props) => {
           onCollapse={(collapse) => setCollapsed(collapse)}
         >
           <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-            {!collapsed && <BigLogo />}
-            {collapsed && <SmallLogo />}
+            {collapsed ? <SmallLogo /> : <BigLogo />}
             <Menu
               data-test-id={integrationTestConstants.ids.NAVIGATION_MENU}
               theme='dark'
@@ -404,38 +387,7 @@ const ContentWrapper = (props) => {
               </Menu.ItemGroup>
 
             </Menu>
-            {
-              !collapsed && (
-                <Footer style={{
-                  backgroundColor: 'inherit',
-                  marginTop: 'auto',
-                  paddingLeft: 24,
-                  paddingRight: 24,
-                }}
-                >
-                  <Paragraph ellipsis={{ rows: 10 }} style={{ color: '#999999' }}>
-                    <a href='//www.biomage.net/our-team'>Team</a>
-                    &nbsp;&middot;&nbsp;
-                    <a href='//www.biomage.net/careers'>Careers</a>
-                    &nbsp;&middot;&nbsp;
-                    <a href='mailto:hello@biomage.net'>Contact</a>
-                  </Paragraph>
-
-                  <Paragraph ellipsis={{ rows: 10 }} style={{ color: '#999999' }}>
-                    &copy;
-                    {' '}
-                    {new Date().getFullYear()}
-                    {' '}
-                    Biomage Ltd,
-                    <br />
-                    affiliates &amp; contributors.
-                  </Paragraph>
-
-                </Footer>
-              )
-            }
           </div>
-
         </Sider>
         <Layout
           style={!collapsed ? { marginLeft: '210px' } : { marginLeft: '80px' }} // this is the collapsed width for our sider

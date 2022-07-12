@@ -6,7 +6,7 @@ import {
   MARKER_GENES_LOADING, MARKER_GENES_LOADED, MARKER_GENES_ERROR,
 } from '../../actionTypes/genes';
 
-import { EXPERIMENT_SETTINGS_PIPELINE_START } from '../../actionTypes/experimentSettings';
+import { EXPERIMENT_SETTINGS_QC_START } from '../../actionTypes/experimentSettings';
 
 import genesPropertiesLoading from './genesPropertiesLoading';
 import genesPropertiesLoadedPaginated from './genesPropertiesLoadedPaginated';
@@ -48,7 +48,7 @@ const genesReducer = (state = initialState, action) => {
     case GENES_EXPRESSION_ERROR: {
       return genesExpressionError(state, action);
     }
-    case EXPERIMENT_SETTINGS_PIPELINE_START: {
+    case EXPERIMENT_SETTINGS_QC_START: {
       return initialState;
     }
     case MARKER_GENES_LOADING: {
