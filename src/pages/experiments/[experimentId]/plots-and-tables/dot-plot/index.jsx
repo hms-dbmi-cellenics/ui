@@ -96,17 +96,12 @@ const DotPlotPage = (props) => {
 
   const cellSets = useSelector(getCellSets());
 
-
-
   const {
     loading: cellSetsLoading,
     error: cellSetsError,
     hierarchy: cellSetHierarcy,
     properties: cellSetProperties,
   } = cellSets;
-
-
-  const clusterNames = Object.values(cellSetProperties).map((el) => el.name);
 
   const [moreThanTwoGroups, setMoreThanTwoGroups] = useState(false);
   const experimentName = useSelector((state) => state.experimentSettings.info.experimentName);

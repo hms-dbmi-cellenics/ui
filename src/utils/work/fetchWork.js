@@ -110,7 +110,6 @@ const fetchWork = async (
     extras = undefined,
     timeout = 180,
     broadcast = false,
-    clusterNames = undefined,
   } = optionals;
 
   const backendStatus = getBackendStatus(experimentId)(getState()).status;
@@ -146,7 +145,6 @@ const fetchWork = async (
     qcPipelineStartDate,
     extras,
     cacheUniquenessKey,
-    clusterNames,
   });
 
   // First, let's try to fetch this information from the local cache.
