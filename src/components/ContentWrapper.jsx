@@ -36,6 +36,7 @@ import Error from 'pages/_error';
 import integrationTestConstants from 'utils/integrationTestConstants';
 import pipelineStatus from 'utils/pipelineStatusValues';
 import BrowserAlert from 'components/BrowserAlert';
+import PrivacyPolicyIntercept from './data-management/PrivacyPolicyIntercept';
 
 const { Sider, Footer } = Layout;
 
@@ -44,7 +45,7 @@ const { Paragraph, Text } = Typography;
 const ContentWrapper = (props) => {
   const dispatch = useDispatch();
 
-  const [isAuth, setIsAuth] = useState(false);
+  const [user, setUser] = useState(null);
   const [collapsed, setCollapsed] = useState(false);
 
   const { routeExperimentId, experimentData, children } = props;
@@ -139,14 +140,16 @@ const ContentWrapper = (props) => {
 
   useEffect(() => {
     Auth.currentAuthenticatedUser()
-      .then(() => setIsAuth(true))
+      .then((currentUser) => {
+        setUser(currentUser);
+      })
       .catch(() => {
-        setIsAuth(false);
+        setUser(null);
         Auth.federatedSignIn();
       });
   }, []);
 
-  if (!isAuth) return <></>;
+  if (!user) return <></>;
 
   const BigLogo = () => (
     <div
@@ -330,8 +333,10 @@ const ContentWrapper = (props) => {
       </Menu.Item>
     );
   };
+
   return (
     <>
+      {!user.attributes['custom:agreed_terms'] ? <PrivacyPolicyIntercept user={user} /> : <></>}
       <BrowserAlert />
       <Layout style={{ minHeight: '100vh' }}>
         <Sider

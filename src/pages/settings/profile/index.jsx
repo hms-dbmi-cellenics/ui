@@ -2,13 +2,15 @@ import React, { useEffect, useState } from 'react';
 import Auth from '@aws-amplify/auth';
 import _ from 'lodash';
 import {
-  Form, Input, Empty, Row, Col, Button, Space,
+  Form, Input, Empty, Row, Col, Button, Space, Checkbox, Typography,
 } from 'antd';
 import { useRouter } from 'next/router';
 import Header from 'components/Header';
 import endUserMessages from 'utils/endUserMessages';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
 import handleError from 'utils/http/handleError';
+
+const { Text } = Typography;
 
 const ProfileSettings = () => {
   const router = useRouter();
@@ -39,16 +41,20 @@ const ProfileSettings = () => {
     currentUser();
   }, []);
 
+  const agreedEmailsKey = 'custom:agreed_emails';
+
   const updateDetails = async () => {
     const { name, email } = changedUserAttributes;
     const { oldPassword, newPassword, confirmNewPassword } = changedPasswordAttributes;
 
     const invalidPasswordErrors = ['InvalidPasswordException', 'InvalidParameterException', 'NotAuthorizedException'];
-    if (name || email) {
+    if (name || email || changedUserAttributes[agreedEmailsKey]) {
       setEmailError(false);
       await Auth.updateUserAttributes(user, changedUserAttributes)
         .then(() => pushNotificationMessage('success', endUserMessages.ACCOUNT_DETAILS_UPDATED, 3))
-        .catch(() => setEmailError(true));
+        .catch(() => {
+          setEmailError(true);
+        });
     }
     if (oldPassword || newPassword || confirmNewPassword) {
       setOldPasswordError(false);
@@ -118,6 +124,21 @@ const ProfileSettings = () => {
                 {/* no information for the institution currently */}
                 <Form.Item label='Institution:'>
                   <Input disabled placeholder={user.attributes.institution} />
+                </Form.Item>
+                <Form.Item
+                  label=''
+                >
+                  <Space>
+                    <Checkbox
+                      defaultChecked={user.attributes[agreedEmailsKey] === 'true'}
+                      onChange={(e) => setChanges({
+                        changedUserAttributes: { [agreedEmailsKey]: e.target.checked.toString() },
+                      })}
+                    />
+                    <Text>
+                      I agree to receive updates about new features in Cellenics, research done with Cellenics, and Cellenics community events. (No external marketing.)
+                    </Text>
+                  </Space>
                 </Form.Item>
 
                 <h2 style={{ marginTop: '40px' }}>Password settings:</h2>
