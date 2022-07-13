@@ -33,6 +33,7 @@ const PrivacyPolicyIntercept = (props) => {
     <Modal
       title='Agree to the Biomage privacy policy to continue using Cellenics'
       visible
+      centered
       cancelButtonProps={{ style: { display: 'none' } }}
       okButtonProps={{ disabled: agreedPrivacyPolicy !== 'true' }}
       closable={false}
