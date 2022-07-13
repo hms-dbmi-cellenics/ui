@@ -398,6 +398,8 @@ const embeddingPreviewDoubletScoreInitialConfig = {
 };
 
 const interactiveHeatmapInitialConfig = {
+  selectedCellSet: 'louvain',
+  selectedPoints: 'All',
   selectedTracks: ['louvain'],
   groupedTracks: ['louvain', 'sample'],
   expressionValue: 'raw',
