@@ -115,19 +115,6 @@ describe('Heatmap plot', () => {
     expect(screen.getByText(/Add some genes to this heatmap to get started/i)).toBeInTheDocument();
   });
 
-  it('Changing clusters updates the plot data', async () => {
-    await renderHeatmapPage(storeState);
-
-    // Open the Select Data panel
-    userEvent.click(screen.getByText(/Select data/i));
-
-    // Change from Louvain to Custom cell sets
-    userEvent.click(screen.getByText(/Louvain/i));
-    userEvent.click(screen.getByText(/Custom cell sets/i), null, { skipPointerEventsCheck: true });
-
-    expect(updatePlotConfig).toHaveBeenCalled();
-  });
-
   it('It shows an informative text if there are cell sets to show', async () => {
     await renderHeatmapPage(storeState);
 
@@ -167,5 +154,33 @@ describe('Heatmap plot', () => {
 
     expect(updatePlotConfig).toHaveBeenCalled();
     expect(screen.queryByText(/There are no custom cell sets to show/i)).toBeNull();
+  });
+
+  it.only('Changing chosen cluster updates the plot data', async () => {
+    const withScratchpadResponse = _.merge(
+      generateDefaultMockAPIResponses(experimentId),
+      customAPIResponses,
+      {
+        [`experiments/${experimentId}/cellSets`]: () => promiseResponse(
+          JSON.stringify(cellSetsWithScratchpad),
+        ),
+      },
+    );
+
+    fetchMock.mockIf(/.*/, mockAPI(withScratchpadResponse));
+    await storeState.dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
+
+    await renderHeatmapPage(storeState);
+
+    // Open the Select Data panel
+    userEvent.click(screen.getByText(/Select data/i));
+
+    // Change to display another cell set
+    userEvent.click(screen.getByText(/All/i));
+    await act(async () => {
+      userEvent.click(screen.getByText(/Copied KO/i), null, { skipPointerEventsCheck: true });
+    });
+
+    expect(updatePlotConfig).toHaveBeenCalledTimes(1);
   });
 });
