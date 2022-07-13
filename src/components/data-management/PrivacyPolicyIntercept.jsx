@@ -4,8 +4,11 @@ import PropTypes from 'prop-types';
 import Auth from '@aws-amplify/auth';
 
 import {
-  Modal, Space, Checkbox, Typography,
+  Modal, Space, Checkbox, Typography, Button,
 } from 'antd';
+
+import 'components/data-management/PrivacyPolicyIntercept.css';
+
 import pushNotificationMessage from 'utils/pushNotificationMessage';
 import endUserMessages from 'utils/endUserMessages';
 
@@ -25,7 +28,7 @@ const PrivacyPolicyIntercept = (props) => {
   } = user;
 
   const [agreedPrivacyPolicy, setAgreedPrivacyPolicy] = useState(originalAgreedPrivacyPolicy);
-  const [agreedEmails, setAgreedEmails] = useState(originalAgreedEmails);
+  const [agreedEmails, setAgreedEmails] = useState(originalAgreedEmails ?? 'false');
 
   const privacyPolicyUrl = 'https://static1.squarespace.com/static/5f355513fc75aa471d47455c/t/61f12e7b7266045b4cb137bc/1643196027265/Biomage_Privacy_Policy_Jan2022.pdf';
 
@@ -34,7 +37,9 @@ const PrivacyPolicyIntercept = (props) => {
       title='Agree to the Biomage privacy policy to continue using Cellenics'
       visible
       centered
-      cancelButtonProps={{ style: { display: 'none' } }}
+      className='ok-to-the-left-modal'
+      cancelText='Sign out'
+      cancelButtonProps={{ danger: true }}
       okButtonProps={{ disabled: agreedPrivacyPolicy !== 'true' }}
       closable={false}
       onOk={async () => {
@@ -51,6 +56,7 @@ const PrivacyPolicyIntercept = (props) => {
           })
           .catch(() => pushNotificationMessage('error', endUserMessages.ERROR_SAVING, 3));
       }}
+      onCancel={async () => Auth.signOut()}
     >
       <Space direction='vertical'>
         <Space align='start'>
