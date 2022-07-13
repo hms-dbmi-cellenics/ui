@@ -4,7 +4,6 @@ import {
   Collapse,
   Skeleton,
   Empty,
-  Select,
   Radio,
   Tabs,
 } from 'antd';
@@ -31,6 +30,7 @@ import { loadGeneExpression, loadMarkerGenes, loadPaginatedGeneProperties } from
 import { loadCellSets } from 'redux/actions/cellSets';
 import PlatformError from 'components/PlatformError';
 import Loader from 'components/Loader';
+import SelectData from 'components/plots/styling/SelectData';
 import populateHeatmapData from 'components/plots/helpers/heatmap/populateHeatmapData';
 import { plotNames } from 'utils/constants';
 
@@ -361,19 +361,11 @@ const MarkerHeatmap = ({ experimentId }) => {
         </Tabs>
       </Panel>
       <Panel header='Select data' key='select-data'>
-        <Space direction='vertical' size='small'>
-          <p>Select cell sets to show in the heatmap:</p>
-          <Select
-            value={{
-              value: config.selectedCellSet,
-            }}
-            onChange={changeClusters}
-            labelInValue
-            style={{ width: '100%' }}
-            placeholder='Select cell set...'
-            options={clustersForSelect}
-          />
-        </Space>
+        <SelectData
+          config={config}
+          onUpdate={updatePlotWithChanges}
+          cellSets={cellSets}
+        />
       </Panel>
       <Panel header='Cluster guardlines' key='cluster-guardlines'>
         <Radio.Group
