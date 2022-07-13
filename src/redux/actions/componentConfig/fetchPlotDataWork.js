@@ -25,7 +25,7 @@ const fetchPlotDataWork = (
   let config = getState().componentConfig[plotUuid]?.config ?? initialPlotConfigStates[plotType];
   const clusterNames = getClusterNames(getState());
   const timeout = getTimeoutForWorkerTask(getState(), 'PlotData');
-  console.error(clusterNames);
+
   config = {
     ...config,
     clusterNames,
