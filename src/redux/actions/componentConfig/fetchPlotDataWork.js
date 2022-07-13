@@ -8,11 +8,12 @@ import generatePlotWorkBody from 'utils/work/generatePlotWorkBody';
 import { fetchWork } from 'utils/work/fetchWork';
 
 const getClusterNames = (state) => {
-  const clusterIds = state.cellSets.hierarchy[0]?.children.map((entry) => entry.key);
-  const customClusterIds = state.cellSets.hierarchy[1]?.children.map((entry) => entry.key);
+  const clusterIds = state.cellSets.hierarchy.reduce(
+    (acc, cellSet) => [...acc, ...cellSet.children.map((entry) => entry.key)],
+    [],
+  );
 
-  const allClusterIds = clusterIds?.concat(customClusterIds);
-  const clusterNames = allClusterIds?.map((clusterId) => state.cellSets.properties[clusterId].name);
+  const clusterNames = clusterIds?.map((clusterId) => state.cellSets.properties[clusterId].name);
   return clusterNames;
 };
 
@@ -24,7 +25,7 @@ const fetchPlotDataWork = (
   let config = getState().componentConfig[plotUuid]?.config ?? initialPlotConfigStates[plotType];
   const clusterNames = getClusterNames(getState());
   const timeout = getTimeoutForWorkerTask(getState(), 'PlotData');
-
+  console.error(clusterNames);
   config = {
     ...config,
     clusterNames,
