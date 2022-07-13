@@ -31,7 +31,7 @@ const PrivacyPolicyIntercept = (props) => {
 
   return (
     <Modal
-      title='Initial set up'
+      title='Agree to the Biomage privacy policy to continue using Cellenics'
       visible
       cancelButtonProps={{ style: { display: 'none' } }}
       okButtonProps={{ disabled: agreedPrivacyPolicy !== 'true' }}
@@ -52,20 +52,18 @@ const PrivacyPolicyIntercept = (props) => {
       }}
     >
       <Space direction='vertical'>
-        In order to begin using the platform, blablabla
-
         <Space align='start'>
           <Checkbox
             defaultChecked={agreedPrivacyPolicy === 'true'}
             onChange={(e) => setAgreedPrivacyPolicy(e.target.checked.toString())}
           />
           <Text>
+            <span style={{ color: '#ff0000' }}>* </span>
             I accept the terms of the
             {' '}
             <a href={privacyPolicyUrl} target='_blank' rel='noreferrer'> Biomage privacy policy</a>
             .
           </Text>
-          <span style={{ color: '#ff0000' }}>*</span>
         </Space>
         <Space align='start'>
           <Checkbox
