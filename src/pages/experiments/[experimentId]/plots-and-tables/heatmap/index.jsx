@@ -15,12 +15,11 @@ import { loadCellSets } from 'redux/actions/cellSets';
 import PlatformError from 'components/PlatformError';
 import Loader from 'components/Loader';
 import populateHeatmapData from 'components/plots/helpers/heatmap/populateHeatmapData';
-import { getCellSets, getCellSetsHierarchyByType } from 'redux/selectors';
+import { getCellSets } from 'redux/selectors';
 import { plotNames } from 'utils/constants';
+import SelectData from 'components/plots/styling/SelectData';
 import HeatmapGroupBySettings from 'components/data-exploration/heatmap/HeatmapGroupBySettings';
 import HeatmapMetadataTrackSettings from 'components/data-exploration/heatmap/HeatmapMetadataTrackSettings';
-
-import getSelectOptions from 'utils/plots/getSelectOptions';
 
 const { Panel } = Collapse;
 
@@ -36,8 +35,6 @@ const HeatmapPlot = ({ experimentId }) => {
   const selectedGenes = useSelector((state) => state.genes.expression.views[plotUuid]?.data) || [];
   const [vegaSpec, setVegaSpec] = useState();
   const displaySavedGenes = useRef(true);
-
-  const cellOptions = useSelector(getCellSetsHierarchyByType('cellSets'));
 
   useEffect(() => {
     if (!config) dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
@@ -139,13 +136,6 @@ const HeatmapPlot = ({ experimentId }) => {
     },
   ];
 
-  const clustersForSelect = getSelectOptions(cellOptions);
-
-  const changeClusters = (option) => {
-    const newValue = option.value.toLowerCase();
-    updatePlotWithChanges({ selectedCellSet: newValue });
-  };
-
   const renderExtraPanels = () => (
     <>
       <Panel header='Gene selection' key='gene-selection'>
@@ -170,19 +160,11 @@ const HeatmapPlot = ({ experimentId }) => {
         </Space>
       </Panel>
       <Panel header='Select data' key='select-data'>
-        <Space direction='vertical' size='small'>
-          <p>Select cell sets to show in the heatmap:</p>
-          <Select
-            value={{
-              value: config.selectedCellSet,
-            }}
-            onChange={changeClusters}
-            labelInValue
-            style={{ width: '100%' }}
-            placeholder='Select cell set...'
-            options={clustersForSelect}
-          />
-        </Space>
+        <SelectData
+          config={config}
+          onUpdate={updatePlotWithChanges}
+          cellSets={cellSets}
+        />
       </Panel>
       <Panel header='Metadata tracks' key='metadata-tracks'>
         <HeatmapMetadataTrackSettings componentType={plotUuid} />

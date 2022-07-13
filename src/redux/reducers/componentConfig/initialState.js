@@ -102,6 +102,7 @@ const heatmapInitialConfig = {
   labels: labelBaseState,
   selectedGenes: [],
   selectedCellSet: 'louvain',
+  selectedPoints: 'All',
   labelColour: 'transparent',
   selectedTracks: ['louvain'],
   groupedTracks: ['sample', 'louvain'],
