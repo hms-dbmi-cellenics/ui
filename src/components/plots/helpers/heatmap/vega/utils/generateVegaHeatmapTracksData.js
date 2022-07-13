@@ -1,4 +1,4 @@
-const generateVegaHeatmapTracksData = (cells, track, cellSets, heatmapSettings) => {
+const generateVegaHeatmapTracksData = (cellOrder, track, cellSets, heatmapSettings) => {
   const { hierarchy, properties } = cellSets;
 
   const getCellClusterFromCellId = (clusters, cellId) => {
@@ -27,8 +27,8 @@ const generateVegaHeatmapTracksData = (cells, track, cellSets, heatmapSettings) 
 
   const clusterSeparationLines = [];
   if (heatmapSettings.guardLines) {
-    let currentCluster = getCellClusterFromCellId(childrenCellSets, cells[0]);
-    cells.forEach((cell) => {
+    let currentCluster = getCellClusterFromCellId(childrenCellSets, cellOrder[0]);
+    cellOrder.forEach((cell) => {
       const isTheSameCluster = properties[currentCluster]?.cellIds?.has(cell);
       if (!isTheSameCluster) {
         currentCluster = getCellClusterFromCellId(childrenCellSets, cell);
@@ -36,6 +36,9 @@ const generateVegaHeatmapTracksData = (cells, track, cellSets, heatmapSettings) 
       }
     });
   }
+
+  const cellOrderSet = new Set(cellOrder);
+
   childrenCellSets.forEach(({ key }) => {
     const { cellIds, name, color } = properties[key];
 
@@ -47,9 +50,7 @@ const generateVegaHeatmapTracksData = (cells, track, cellSets, heatmapSettings) 
       trackName: properties[track].name,
     });
 
-    const intersectionSet = [cellIds, cells].reduce(
-      (acc, curr) => new Set([...acc].filter((x) => curr.has(x))),
-    );
+    const intersectionSet = [...cellIds].filter((x) => cellOrderSet.has(x));
 
     intersectionSet.forEach((cellId) => trackColorData.push({
       cellId,

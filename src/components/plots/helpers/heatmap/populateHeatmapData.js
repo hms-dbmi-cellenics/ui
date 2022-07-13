@@ -148,8 +148,17 @@ const populateHeatmapData = (
   // For now, this is statically defined. In the future, these values are
   // controlled from the settings panel in the heatmap.
 
+  // Filter cellOrder so that it only contains cells which have been filtered
+  const allLouvainCellIds = new Set(hierarchy[0].children.reduce(
+    (acc, cellSet) => [
+      ...acc,
+      ...properties[cellSet.key].cellIds,
+    ], [],
+  ));
+
   // Do downsampling and return cellIds with their order by groupings.
-  const cellOrder = generateCellOrder(groupedTracks);
+  const cellOrder = generateCellOrder(groupedTracks)
+    .filter((cellId) => allLouvainCellIds.has(cellId));
   const geneOrder = selectedGenes;
 
   if (!vitessce) {

@@ -14,14 +14,12 @@ const generateVegaData = (
     trackGroupData: [],
   };
 
-  const cells = new Set(cellOrder);
-
   data.geneExpressionsData = generateVegaGeneExpressionsData(
     cellOrder, geneOrder, expression, heatmapSettings,
   );
 
   const trackData = trackOrder.map((rootNode) => generateVegaHeatmapTracksData(
-    cells,
+    cellOrder,
     rootNode,
     cellSets,
     heatmapSettings,
