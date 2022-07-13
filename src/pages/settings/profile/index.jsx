@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import Auth from '@aws-amplify/auth';
 import _ from 'lodash';
 import {
@@ -9,13 +9,18 @@ import Header from 'components/Header';
 import endUserMessages from 'utils/endUserMessages';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
 import handleError from 'utils/http/handleError';
+import { useSelector, useDispatch } from 'react-redux';
+import { loadUser } from 'redux/actions/user';
 
 const { Text } = Typography;
 
 const ProfileSettings = () => {
   const router = useRouter();
 
-  const [user, setUser] = useState();
+  const dispatch = useDispatch();
+
+  const user = useSelector((state) => state.user.current);
+
   const [oldPasswordError, setOldPasswordError] = useState(null);
   const [newPasswordError, setNewPasswordError] = useState(null);
   const [emailError, setEmailError] = useState(null);
@@ -32,14 +37,6 @@ const ProfileSettings = () => {
     _.merge(newChanges, object);
     setNewAttributes(newChanges);
   };
-
-  const currentUser = () => Auth.currentAuthenticatedUser()
-    .then((userData) => setUser(userData))
-    .catch((e) => console.log('error during getuser', e));
-
-  useEffect(() => {
-    currentUser();
-  }, []);
 
   const agreedEmailsKey = 'custom:agreed_emails';
 
@@ -81,7 +78,8 @@ const ProfileSettings = () => {
           });
       }
     }
-    currentUser();
+
+    dispatch(loadUser());
     setChanges(initialState);
   };
 

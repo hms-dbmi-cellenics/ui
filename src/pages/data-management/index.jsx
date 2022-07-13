@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import Auth from '@aws-amplify/auth';
 
 import { Space } from 'antd';
 
@@ -23,6 +24,7 @@ const DataManagementPage = () => {
 
   const { activeExperimentId } = useSelector((state) => state.experiments.meta);
   const experiments = useSelector(((state) => state.experiments));
+  const user = useSelector((state) => state.user.current);
 
   const activeExperiment = experiments[activeExperimentId];
   const { saving: experimentsSaving } = experiments.meta;
@@ -31,8 +33,10 @@ const DataManagementPage = () => {
   const [newProjectModalVisible, setNewProjectModalVisible] = useState(false);
 
   useEffect(() => {
+    if (user?.attributes['custom:agreed_terms'] !== 'true') return;
+
     if (experiments.ids.length === 0) dispatch(loadExperiments());
-  }, []);
+  }, [user]);
 
   const samplesAreLoaded = () => {
     const loadedSampleIds = Object.keys(samples);
@@ -40,14 +44,14 @@ const DataManagementPage = () => {
   };
 
   useEffect(() => {
-    if (!activeExperimentId) return;
+    if (!activeExperimentId || user?.attributes['custom:agreed_terms'] !== 'true') return;
 
     dispatch(loadProcessingSettings(activeExperimentId));
 
     if (!samplesAreLoaded()) dispatch(loadSamples(activeExperimentId));
 
     dispatch(loadBackendStatus(activeExperimentId));
-  }, [activeExperimentId]);
+  }, [activeExperimentId, user]);
 
   const PROJECTS_LIST = 'Projects';
   const PROJECT_DETAILS = 'Project Details';

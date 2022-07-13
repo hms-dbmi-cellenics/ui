@@ -17,8 +17,6 @@ import {
 } from 'antd';
 import { modules } from 'utils/constants';
 
-import Auth from '@aws-amplify/auth';
-
 import { useAppRouter } from 'utils/AppRouteProvider';
 
 import calculateGem2sRerunStatus from 'utils/data-management/calculateGem2sRerunStatus';
@@ -36,16 +34,15 @@ import Error from 'pages/_error';
 import integrationTestConstants from 'utils/integrationTestConstants';
 import pipelineStatus from 'utils/pipelineStatusValues';
 import BrowserAlert from 'components/BrowserAlert';
+import { loadUser } from 'redux/actions/user';
 import PrivacyPolicyIntercept from './data-management/PrivacyPolicyIntercept';
 
-const { Sider, Footer } = Layout;
-
-const { Paragraph, Text } = Typography;
+const { Sider } = Layout;
+const { Text } = Typography;
 
 const ContentWrapper = (props) => {
   const dispatch = useDispatch();
 
-  const [user, setUser] = useState(null);
   const [collapsed, setCollapsed] = useState(false);
 
   const { routeExperimentId, experimentData, children } = props;
@@ -54,6 +51,7 @@ const ContentWrapper = (props) => {
   const currentExperimentIdRef = useRef(routeExperimentId);
   const activeExperimentId = useSelector((state) => state?.experiments?.meta?.activeExperimentId);
   const activeExperiment = useSelector((state) => state.experiments[activeExperimentId]);
+  const user = useSelector((state) => state.user.current);
 
   const samples = useSelector((state) => state.samples);
 
@@ -138,19 +136,8 @@ const ContentWrapper = (props) => {
     setGem2sRerunStatus(gem2sStatus);
   }, [gem2sBackendStatus, activeExperiment, samples, experiment]);
 
-  const fetchCurrentUser = () => {
-    Auth.currentAuthenticatedUser()
-      .then((currentUser) => {
-        setUser(currentUser);
-      })
-      .catch(() => {
-        setUser(null);
-        Auth.federatedSignIn();
-      });
-  };
-
   useEffect(() => {
-    fetchCurrentUser();
+    dispatch(loadUser());
   }, []);
 
   if (!user) return <></>;
@@ -338,9 +325,11 @@ const ContentWrapper = (props) => {
     );
   };
 
+  if (!user) return <></>;
+
   return (
     <>
-      {!user.attributes['custom:agreed_terms'] ? <PrivacyPolicyIntercept user={user} onOk={fetchCurrentUser} /> : <></>}
+      {user?.attributes['custom:agreed_terms'] !== 'true' ? <PrivacyPolicyIntercept user={user} onOk={() => dispatch(loadUser())} /> : <></>}
       <BrowserAlert />
       <Layout style={{ minHeight: '100vh' }}>
         <Sider
