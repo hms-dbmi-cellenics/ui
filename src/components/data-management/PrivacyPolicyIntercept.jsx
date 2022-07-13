@@ -69,6 +69,7 @@ const PrivacyPolicyIntercept = (props) => {
           <Checkbox
             defaultChecked={agreedEmails === 'true'}
             onChange={(e) => setAgreedEmails(e.target.checked.toString())}
+            style={{ marginRight: 10 }}
           />
           <Text>
             I agree to receive updates about new features in Cellenics,
@@ -80,7 +81,10 @@ const PrivacyPolicyIntercept = (props) => {
   );
 };
 
-PrivacyPolicyIntercept.propTypes = { user: PropTypes.object.isRequired };
+PrivacyPolicyIntercept.propTypes = {
+  user: PropTypes.object.isRequired,
+  onOk: PropTypes.func.isRequired,
+};
 
 PrivacyPolicyIntercept.defaultProps = {};
 
