@@ -126,9 +126,9 @@ const ProfileSettings = () => {
                   <Input disabled placeholder={user.attributes.institution} />
                 </Form.Item>
                 <Form.Item
-                  label=''
+                  label='Updates: '
                 >
-                  <Space>
+                  <Space align='start' style={{ marginTop: '5px' }}>
                     <Checkbox
                       defaultChecked={user.attributes[agreedEmailsKey] === 'true'}
                       onChange={(e) => setChanges({
