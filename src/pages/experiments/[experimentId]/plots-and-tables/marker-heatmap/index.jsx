@@ -298,12 +298,13 @@ const MarkerHeatmap = ({ experimentId }) => {
       ],
     },
   ];
-  const onGeneEnter = (genes) => {
+
+  const onDataChange = (genes) => {
     dispatch(loadGeneExpression(experimentId, genes, plotUuid));
   };
 
   const onReset = () => {
-    onGeneEnter([]);
+    onDataChange([]);
     dispatch(loadMarkerGenes(
       experimentId,
       louvainClustersResolution,
@@ -334,6 +335,7 @@ const MarkerHeatmap = ({ experimentId }) => {
           experimentId={experimentId}
           onUpdate={updatePlotWithChanges}
           onReset={onReset}
+          onDataChange={onDataChange}
         />
         <div style={{ paddingTop: '10px' }}>
           <p>Gene labels:</p>

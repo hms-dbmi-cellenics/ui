@@ -12,7 +12,7 @@ import GeneSearchBar from 'components/plots/GeneSearchBar';
 
 const MarkerGeneSelection = (props) => {
   const {
-    config, plotUuid, experimentId, searchBarUuid, onUpdate, onReset,
+    config, plotUuid, searchBarUuid, onUpdate, onReset, onDataChange,
   } = props;
   const [numGenes, setNumGenes] = useState(config.nMarkerGenes);
 
@@ -46,11 +46,12 @@ const MarkerGeneSelection = (props) => {
         <p>Type in a gene name and select it to add it to the heatmap. Drag and drop genes to re-order them.</p>
         <GeneSearchBar
           plotUuid={plotUuid}
-          experimentId={experimentId}
           searchBarUuid={searchBarUuid}
+          onSelect={onDataChange}
         />
         <GeneReorderTool
           plotUuid={plotUuid}
+          onDelete={onDataChange}
         />
         <Button
           type='primary'
@@ -84,9 +85,8 @@ MarkerGeneSelection.propTypes = {
   config: propTypes.object.isRequired,
   onReset: propTypes.func.isRequired,
   plotUuid: propTypes.string.isRequired,
-  experimentId: propTypes.string.isRequired,
   searchBarUuid: propTypes.string.isRequired,
-
+  onDataChange: propTypes.func.isRequired,
 };
 
 export default MarkerGeneSelection;

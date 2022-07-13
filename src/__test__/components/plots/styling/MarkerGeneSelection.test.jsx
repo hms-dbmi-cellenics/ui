@@ -18,7 +18,7 @@ const plotType = plotTypes.DOT_PLOT;
 const defaultProps = {
   onUpdate: mockOnUpdate,
   onReset: mockOnReset,
-  plotUuid: plotType,
+  plotUuid: 'dotPlotMain',
   experimentId: 'experimentId',
   searchBarUuid: 'searchBarUuid',
 };
