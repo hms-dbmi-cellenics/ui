@@ -164,6 +164,8 @@ const HeatmapPlot = ({ experimentId }) => {
           config={config}
           onUpdate={updatePlotWithChanges}
           cellSets={cellSets}
+          firstSelectionText='Select the cell sets or metadata to show expression for'
+          secondSelectionText='Select the cell set, sample or metadata group to be shown'
         />
       </Panel>
       <Panel header='Metadata tracks' key='metadata-tracks'>
