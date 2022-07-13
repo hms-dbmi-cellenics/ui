@@ -156,7 +156,7 @@ describe('Heatmap plot', () => {
     expect(screen.queryByText(/There are no custom cell sets to show/i)).toBeNull();
   });
 
-  it.only('Changing chosen cluster updates the plot data', async () => {
+  it('Changing chosen cluster updates the plot data', async () => {
     const withScratchpadResponse = _.merge(
       generateDefaultMockAPIResponses(experimentId),
       customAPIResponses,

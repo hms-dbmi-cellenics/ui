@@ -84,7 +84,6 @@ const SelectData = (props) => {
     <>
       <p>
         {firstSelectionText}
-        :
       </p>
       <Form.Item>
         <Select
@@ -106,7 +105,6 @@ const SelectData = (props) => {
       </Form.Item>
       <p>
         {secondSelectionText}
-        :
       </p>
       <Form.Item>
         <Select
@@ -142,7 +140,7 @@ SelectData.propTypes = {
 SelectData.defaultProps = {
   config: null,
   firstSelectionText: 'Select the cell sets or metadata that cells are grouped by',
-  secondSelectionText: 'Select the cell sets or metadata to be shown as data: ',
+  secondSelectionText: 'Select the cell sets or metadata to be shown as data',
 };
 
 export default SelectData;
