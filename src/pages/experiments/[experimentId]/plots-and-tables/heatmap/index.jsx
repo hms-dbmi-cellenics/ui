@@ -1,5 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Skeleton, Empty } from 'antd';
+import {
+  Skeleton, Empty, Collapse, Space, Select, Button,
+} from 'antd';
 import _ from 'lodash';
 import { useSelector, useDispatch } from 'react-redux';
 import { Vega } from 'react-vega';
@@ -13,9 +15,14 @@ import { loadCellSets } from 'redux/actions/cellSets';
 import PlatformError from 'components/PlatformError';
 import Loader from 'components/Loader';
 import populateHeatmapData from 'components/plots/helpers/heatmap/populateHeatmapData';
-import HeatmapControls from 'components/plots/styling/heatmap/HeatmapControls';
-import { getCellSets } from 'redux/selectors';
+import { getCellSets, getCellSetsHierarchyByType } from 'redux/selectors';
 import { plotNames } from 'utils/constants';
+import HeatmapGroupBySettings from 'components/data-exploration/heatmap/HeatmapGroupBySettings';
+import HeatmapMetadataTrackSettings from 'components/data-exploration/heatmap/HeatmapMetadataTrackSettings';
+
+import getSelectOptions from 'utils/plots/getSelectOptions';
+
+const { Panel } = Collapse;
 
 const plotUuid = 'heatmapPlotMain';
 const plotType = 'heatmap';
@@ -29,6 +36,8 @@ const HeatmapPlot = ({ experimentId }) => {
   const selectedGenes = useSelector((state) => state.genes.expression.views[plotUuid]?.data) || [];
   const [vegaSpec, setVegaSpec] = useState();
   const displaySavedGenes = useRef(true);
+
+  const cellOptions = useSelector(getCellSetsHierarchyByType('cellSets'));
 
   useEffect(() => {
     if (!config) dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
@@ -87,6 +96,11 @@ const HeatmapPlot = ({ experimentId }) => {
     dispatch(loadGeneExpression(experimentId, genes, plotUuid));
   };
 
+  const isCellSetEmpty = (cellSet) => {
+    const chosenCellSet = cellSets.hierarchy.find(({ key }) => key === cellSet);
+    return chosenCellSet.children.length === 0;
+  };
+
   const plotStylingConfig = [
     {
       panelTitle: 'Expression values',
@@ -125,12 +139,58 @@ const HeatmapPlot = ({ experimentId }) => {
     },
   ];
 
+  const clustersForSelect = getSelectOptions(cellOptions);
+
+  const changeClusters = (option) => {
+    const newValue = option.value.toLowerCase();
+    updatePlotWithChanges({ selectedCellSet: newValue });
+  };
+
   const renderExtraPanels = () => (
-    <HeatmapControls
-      selectedGenes={selectedGenes}
-      plotUuid={plotUuid}
-      onGeneEnter={onGeneEnter}
-    />
+    <>
+      <Panel header='Gene selection' key='gene-selection'>
+        <p>Type in a gene name and hit space or enter to add it to the heatmap.</p>
+        <Space direction='vertical' style={{ width: '100%' }}>
+          <Select
+            mode='tags'
+            style={{ width: '100%' }}
+            placeholder='Select genes...'
+            onChange={onGeneEnter}
+            value={selectedGenes}
+            tokenSeparators={[' ']}
+            notFoundContent='No gene added yet.'
+          />
+
+          <Button
+            type='primary'
+            onClick={() => { onGeneEnter([]); }}
+          >
+            Reset
+          </Button>
+        </Space>
+      </Panel>
+      <Panel header='Select data' key='select-data'>
+        <Space direction='vertical' size='small'>
+          <p>Select cell sets to show in the heatmap:</p>
+          <Select
+            value={{
+              value: config.selectedCellSet,
+            }}
+            onChange={changeClusters}
+            labelInValue
+            style={{ width: '100%' }}
+            placeholder='Select cell set...'
+            options={clustersForSelect}
+          />
+        </Space>
+      </Panel>
+      <Panel header='Metadata tracks' key='metadata-tracks'>
+        <HeatmapMetadataTrackSettings componentType={plotUuid} />
+      </Panel>
+      <Panel header='Group by' key='group-by'>
+        <HeatmapGroupBySettings componentType={plotUuid} />
+      </Panel>
+    </>
   );
 
   const renderPlot = () => {
@@ -150,11 +210,25 @@ const HeatmapPlot = ({ experimentId }) => {
       );
     }
 
+    if (isCellSetEmpty(config.selectedCellSet)) {
+      return (
+        <Empty description={(
+          <>
+            There are no custom cell sets to show
+            <br />
+            Create some custom cell sets in Data Exploration
+          </>
+        )}
+        />
+      );
+    }
+
     if (selectedGenes.length === 0) {
       return (
         <Empty description='Add some genes to this heatmap to get started.' />
       );
     }
+
     if (vegaSpec) {
       return <Vega spec={vegaSpec} renderer='canvas' />;
     }
@@ -173,7 +247,7 @@ const HeatmapPlot = ({ experimentId }) => {
         plotType={plotType}
         plotStylingConfig={plotStylingConfig}
         extraControlPanels={renderExtraPanels()}
-        defaultActiveKey='select-data'
+        defaultActiveKey='gene-selection'
       >
         {renderPlot()}
       </PlotContainer>
