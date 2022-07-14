@@ -261,6 +261,24 @@ describe('Marker heatmap plot', () => {
     expect(_.isEqual(displayedGenesList, genesToLoad)).toEqual(false);
   });
 
+  it('Shows an information text if a selected cell set does not contain enough number of samples', async () => {
+    await renderHeatmapPage(storeState);
+
+    // Open the toggle
+    userEvent.click(screen.getByText(/Select data/i));
+
+    // Click custom cell sets
+    userEvent.click(screen.getByText(/louvain clusters/i));
+    userEvent.click(screen.getByText(/Custom cell sets/i), null, { skipPointerEventsCheck: true });
+
+    // It shouldn't show the plot
+    expect(screen.queryByRole('graphics-document', { name: 'Marker heatmap' })).toBeNull();
+
+    // There is an error message
+    expect(screen.getByText(/Two cell sets consisting of different cells are required to generate the marker heatmap/i)).toBeInTheDocument();
+    expect(screen.getByText(/Create some custom cell sets in Data Exploration/i)).toBeInTheDocument();
+  });
+
   it('Shows an error message if gene expression fails to load', async () => {
     seekFromS3
       .mockReset()

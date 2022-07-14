@@ -182,6 +182,19 @@ const HeatmapPlot = ({ experimentId }) => {
   );
 
   const renderPlot = () => {
+    if (isCellSetEmpty(config.selectedCellSet)) {
+      return (
+        <Empty description={(
+          <>
+            There are no custom cell sets to show
+            <br />
+            Create some custom cell sets in Data Exploration
+          </>
+        )}
+        />
+      );
+    }
+
     if (!config || loading.length > 0 || cellSets.loading) {
       return (
         <Loader experimentId={experimentId} />
@@ -194,19 +207,6 @@ const HeatmapPlot = ({ experimentId }) => {
           description='Could not load gene expression data.'
           error={error}
           onClick={() => dispatch(loadGeneExpression(experimentId, selectedGenes, plotUuid))}
-        />
-      );
-    }
-
-    if (isCellSetEmpty(config.selectedCellSet)) {
-      return (
-        <Empty description={(
-          <>
-            There are no custom cell sets to show
-            <br />
-            Create some custom cell sets in Data Exploration
-          </>
-        )}
         />
       );
     }

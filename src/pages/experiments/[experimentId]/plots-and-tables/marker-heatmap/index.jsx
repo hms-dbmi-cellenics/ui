@@ -56,8 +56,6 @@ const MarkerHeatmap = ({ experimentId }) => {
   const cellSets = useSelector(getCellSets());
   const { hierarchy, properties } = cellSets;
 
-  const cellOptions = useSelector(getCellSetsHierarchyByType('cellSets'));
-
   const selectedCellSetClassAvailable = useSelector(
     getCellSetsHierarchyByKeys([config?.selectedCellSet]),
   ).length;
@@ -382,7 +380,25 @@ const MarkerHeatmap = ({ experimentId }) => {
     </>
   );
 
+  const hasEnoughCellSets = (cellSet) => {
+    const chosenCellSet = cellSets.hierarchy.find(({ key }) => key === cellSet);
+    return chosenCellSet.children.length < 2;
+  };
+
   const renderPlot = () => {
+    if (hasEnoughCellSets(config.selectedCellSet)) {
+      return (
+        <Empty description={(
+          <>
+            Two cell sets consisting of different cells are required to generate the marker heatmap
+            <br />
+            Create some custom cell sets in Data Exploration
+          </>
+        )}
+        />
+      );
+    }
+
     if (error) {
       return (
         <PlatformError

@@ -6,16 +6,14 @@ import React from 'react';
 import userEvent from '@testing-library/user-event';
 import { act } from 'react-dom/test-utils';
 import { Provider } from 'react-redux';
-import { loadBackendStatus } from 'redux/actions/backendStatus';
-
 import { seekFromS3 } from 'utils/work/seekWorkResponse';
 import expressionDataFAKEGENE from '__test__/data/gene_expression_FAKEGENE.json';
-
-import { loadGeneExpression } from 'redux/actions/genes';
-import { loadPlotConfig, updatePlotConfig } from 'redux/actions/componentConfig';
-import { makeStore } from 'redux/store';
-
 import cellSetsWithScratchpad from '__test__/data/cell_sets_with_scratchpad.json';
+
+import { loadBackendStatus } from 'redux/actions/backendStatus';
+import { loadGeneExpression } from 'redux/actions/genes';
+import { updatePlotConfig } from 'redux/actions/componentConfig';
+import { makeStore } from 'redux/store';
 
 import preloadAll from 'jest-next-dynamic';
 
@@ -78,7 +76,6 @@ const mockWorkerResponses = {
 
 const experimentId = fake.EXPERIMENT_ID;
 const plotUuid = 'heatmapPlotMain';
-const plotType = 'heatmap';
 let storeState = null;
 
 const customAPIResponses = {
