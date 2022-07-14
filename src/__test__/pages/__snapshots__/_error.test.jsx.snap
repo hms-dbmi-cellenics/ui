@@ -143,6 +143,9 @@ Array [
         "saving": false,
       },
     },
+    "user": Object {
+      "current": null,
+    },
   },
 ]
 `;
@@ -289,6 +292,9 @@ Array [
         "loading": false,
         "saving": false,
       },
+    },
+    "user": Object {
+      "current": null,
     },
   },
 ]
