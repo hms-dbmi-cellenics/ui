@@ -95,6 +95,7 @@ const DotPlotPage = (props) => {
   } = useSelector((state) => state.genes.properties.views[plotUuid] || {});
 
   const cellSets = useSelector(getCellSets());
+
   const {
     loading: cellSetsLoading,
     error: cellSetsError,

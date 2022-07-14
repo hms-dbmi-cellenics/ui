@@ -106,7 +106,12 @@ const fetchWork = async (
   getState,
   optionals = {},
 ) => {
-  const { extras = undefined, timeout = 180, broadcast = false } = optionals;
+  const {
+    extras = undefined,
+    timeout = 180,
+    broadcast = false,
+  } = optionals;
+
   const backendStatus = getBackendStatus(experimentId)(getState()).status;
 
   const { environment } = getState().networkResources;
@@ -135,7 +140,11 @@ const fetchWork = async (
   }
 
   const ETag = createObjectHash({
-    experimentId, body, qcPipelineStartDate, extras, cacheUniquenessKey,
+    experimentId,
+    body,
+    qcPipelineStartDate,
+    extras,
+    cacheUniquenessKey,
   });
 
   // First, let's try to fetch this information from the local cache.
