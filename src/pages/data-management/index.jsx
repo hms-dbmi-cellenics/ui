@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import Auth from '@aws-amplify/auth';
 
 import { Space } from 'antd';
 

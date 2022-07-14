@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import Auth from '@aws-amplify/auth';
 
 import {
-  Modal, Space, Checkbox, Typography, Button,
+  Modal, Space, Checkbox, Typography,
 } from 'antd';
 
 import 'components/data-management/PrivacyPolicyIntercept.css';
@@ -37,7 +37,7 @@ const PrivacyPolicyIntercept = (props) => {
       title='Agree to the Biomage privacy policy to continue using Cellenics'
       visible
       centered
-      className='ok-to-the-left-modal'
+      className='ok-to-the-right-modal'
       cancelText='Sign out'
       cancelButtonProps={{ danger: true }}
       okButtonProps={{ disabled: agreedPrivacyPolicy !== 'true' }}

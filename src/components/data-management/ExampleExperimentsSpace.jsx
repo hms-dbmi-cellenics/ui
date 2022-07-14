@@ -14,16 +14,17 @@ const ExampleExperimentsSpace = ({ introductionText, imageStyle }) => {
   const dispatch = useDispatch();
 
   const environment = useSelector((state) => state?.networkResources?.environment);
+  const user = useSelector((state) => state?.user?.current);
 
   const [exampleExperiments, setExampleExperiments] = useState([]);
 
   useEffect(() => {
-    if (!environment) return;
+    if (!environment || user?.attributes['custom:agreed_terms'] !== 'true') return;
 
     fetchAPI('/v2/experiments/examples').then((experiments) => {
       setExampleExperiments(experiments);
     }).catch(() => { });
-  }, [environment]);
+  }, [environment, user]);
 
   const cloneIntoCurrentExperiment = async (exampleExperimentId) => {
     const url = `/v2/experiments/${exampleExperimentId}/clone`;
