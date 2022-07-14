@@ -1,4 +1,4 @@
-const generateVegaHeatmapTracksData = (cellOrder, track, cellSets, heatmapSettings) => {
+const generateVegaHeatmapTracksData = (cellOrder, track, cellSets, showGuardlines) => {
   const { hierarchy, properties } = cellSets;
 
   const getCellClusterFromCellId = (clusters, cellId) => {
@@ -26,7 +26,7 @@ const generateVegaHeatmapTracksData = (cellOrder, track, cellSets, heatmapSettin
   // Iterate over each child node.
 
   const clusterSeparationLines = [];
-  if (heatmapSettings.guardLines) {
+  if (showGuardlines) {
     let currentCluster = getCellClusterFromCellId(childrenCellSets, cellOrder[0]);
     cellOrder.forEach((cell) => {
       const isTheSameCluster = properties[currentCluster]?.cellIds?.has(cell);

@@ -1,19 +1,15 @@
 import _ from 'lodash';
 
-import generateVegaData from 'components/plots/helpers/heatmap/vega/generateVegaData';
-import generateVitessceData from 'components/plots/helpers/heatmap/vitessce/generateVitessceData';
-
 import SetOperations from 'utils/setOperations';
 import { union } from 'utils/cellSetOperations';
-import { reversed } from 'utils/arrayUtils';
 
 const populateHeatmapData = (
-  cellSets, heatmapSettings, expression,
-  selectedGenes, downsampling = false, vitessce = false,
+  cellSets, heatmapSettings,
+  downsampling = false,
 ) => {
   const { hierarchy, properties, hidden } = cellSets;
   const {
-    selectedTracks, groupedTracks, selectedCellSet, selectedPoints,
+    groupedTracks, selectedCellSet, selectedPoints,
   } = heatmapSettings;
 
   const maxCells = 1000;
@@ -146,11 +142,8 @@ const populateHeatmapData = (
 
     return cellIds;
   };
-  // For now, this is statically defined. In the future, these values are
-  // controlled from the settings panel in the heatmap.
 
-  // Get cellIds of the base set that is chosen in the first option
-  let baseCellIds = hierarchy.find(
+  let firstOptionCellIds = hierarchy.find(
     (cellSet) => cellSet.key === selectedCellSet,
   ).children.reduce(
     (acc, cellSet) => [
@@ -159,23 +152,12 @@ const populateHeatmapData = (
     ], [],
   );
 
-  baseCellIds = new Set(baseCellIds);
+  firstOptionCellIds = new Set(firstOptionCellIds);
 
-  // Do downsampling and return cellIds with their order by groupings.
-  const cellOrder = generateCellOrder(groupedTracks)
-    .filter((cellId) => baseCellIds.has(cellId));
-  const geneOrder = selectedGenes;
+  const filteredCellOrder = generateCellOrder(groupedTracks)
+    .filter((cellId) => firstOptionCellIds.has(cellId));
 
-  if (!vitessce) {
-    return generateVegaData(
-      cellOrder, geneOrder, reversed(selectedTracks),
-      expression, heatmapSettings, cellSets,
-    );
-  }
-
-  return generateVitessceData(
-    cellOrder, geneOrder, selectedTracks,
-    expression, heatmapSettings, cellSets,
-  );
+  return filteredCellOrder;
 };
+
 export default populateHeatmapData;

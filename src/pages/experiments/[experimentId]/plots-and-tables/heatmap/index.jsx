@@ -21,6 +21,8 @@ import SelectData from 'components/plots/styling/SelectData';
 import HeatmapGroupBySettings from 'components/data-exploration/heatmap/HeatmapGroupBySettings';
 import HeatmapMetadataTrackSettings from 'components/data-exploration/heatmap/HeatmapMetadataTrackSettings';
 
+import generateVegaData from 'components/plots/helpers/heatmap/vega/generateVegaData';
+
 const { Panel } = Collapse;
 
 const plotUuid = 'heatmapPlotMain';
@@ -72,7 +74,9 @@ const HeatmapPlot = ({ experimentId }) => {
       return;
     }
 
-    const data = populateHeatmapData(cellSets, config, expressionData, selectedGenes);
+    const cellOrder = populateHeatmapData(cellSets, config);
+    const data = generateVegaData(cellOrder, selectedGenes, expressionData, config, cellSets);
+
     const displayLabels = selectedGenes.length <= 53;
     const spec = generateSpec(config, 'Cluster ID', data, displayLabels);
 
