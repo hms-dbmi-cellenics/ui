@@ -1,7 +1,7 @@
 import React from 'react';
 import _ from 'lodash';
 
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { act } from 'react-dom/test-utils';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import { Provider } from 'react-redux';
@@ -21,6 +21,7 @@ import userEvent from '@testing-library/user-event';
 
 import { setActiveExperiment } from 'redux/actions/experiments';
 import loadEnvironment from 'redux/actions/networkResources/loadEnvironment';
+import { loadUser } from 'redux/actions/user';
 
 jest.mock('utils/data-management/downloadFromUrl');
 jest.mock('react-resize-detector', () => (props) => props.children({ width: 100, height: 100 }));
@@ -34,7 +35,12 @@ jest.mock('utils/AppRouteProvider', () => ({
 }));
 
 jest.mock('@aws-amplify/auth', () => ({
-  currentAuthenticatedUser: jest.fn(() => Promise.resolve({ attributes: { name: 'mockUserName' } })),
+  currentAuthenticatedUser: jest.fn(() => Promise.resolve({
+    attributes: {
+      name: 'mockUserName',
+      'custom:agreed_terms': 'true',
+    },
+  })),
   federatedSignIn: jest.fn(),
 }));
 
@@ -52,11 +58,6 @@ const experimentWithSamples = experiments.find((experiment) => experiment.sample
 const experimentWithoutSamples = experiments.find(
   (experiment) => experiment.samplesOrder.length === 0,
 );
-
-const expectedSampleNames = [
-  'Example 1',
-  'Another-Example no.2',
-];
 
 const experimentWithSamplesId = experimentWithSamples.id;
 const experimentWithoutSamplesId = experimentWithoutSamples.id;
@@ -80,6 +81,8 @@ describe('Data Management page', () => {
 
     storeState = makeStore();
     storeState.dispatch(loadEnvironment('test'));
+
+    storeState.dispatch(loadUser());
   });
 
   it('Shows an empty project list if there are no projects', async () => {
