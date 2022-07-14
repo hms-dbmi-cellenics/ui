@@ -37,8 +37,6 @@ const generateVegaHeatmapTracksData = (cellOrder, track, cellSets, showGuardline
     });
   }
 
-  const cellOrderSet = new Set(cellOrder);
-
   childrenCellSets.forEach(({ key }) => {
     const { cellIds, name, color } = properties[key];
 
@@ -50,6 +48,7 @@ const generateVegaHeatmapTracksData = (cellOrder, track, cellSets, showGuardline
       trackName: properties[track].name,
     });
 
+    const cellOrderSet = new Set(cellOrder);
     const intersectionSet = [...cellIds].filter((x) => cellOrderSet.has(x));
 
     intersectionSet.forEach((cellId) => trackColorData.push({
