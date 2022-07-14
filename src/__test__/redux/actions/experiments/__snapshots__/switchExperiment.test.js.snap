@@ -321,6 +321,9 @@ Object {
       "uuid": "test9188-d682-test-mock-cb6d644cmock-2",
     },
   },
+  "user": Object {
+    "current": null,
+  },
 }
 `;
 
@@ -644,6 +647,9 @@ Object {
       "type": "10X Chromium",
       "uuid": "test9188-d682-test-mock-cb6d644cmock-2",
     },
+  },
+  "user": Object {
+    "current": null,
   },
 }
 `;
