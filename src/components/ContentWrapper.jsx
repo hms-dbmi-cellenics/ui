@@ -142,9 +142,6 @@ const ContentWrapper = (props) => {
 
   if (!user) return <></>;
 
-  console.log('userDebug');
-  console.log(user);
-
   const BigLogo = () => (
     <div
       style={{
