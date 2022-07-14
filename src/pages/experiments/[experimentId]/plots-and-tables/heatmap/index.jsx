@@ -75,7 +75,7 @@ const HeatmapPlot = ({ experimentId }) => {
     }
 
     const cellOrder = populateHeatmapData(cellSets, config);
-    const data = generateVegaData(cellOrder, selectedGenes, expressionData, config, cellSets);
+    const data = generateVegaData(cellOrder, expressionData, config, cellSets);
 
     const displayLabels = selectedGenes.length <= 53;
     const spec = generateSpec(config, 'Cluster ID', data, displayLabels);

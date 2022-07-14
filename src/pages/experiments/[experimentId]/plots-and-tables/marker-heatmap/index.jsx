@@ -31,6 +31,7 @@ import PlatformError from 'components/PlatformError';
 import Loader from 'components/Loader';
 import SelectData from 'components/plots/styling/SelectData';
 import populateHeatmapData from 'components/plots/helpers/heatmap/populateHeatmapData';
+import generateVegaData from 'components/plots/helpers/heatmap/vega/generateVegaData';
 import { plotNames } from 'utils/constants';
 
 import GeneReorderTool from 'components/plots/GeneReorderTool';
@@ -208,7 +209,9 @@ const MarkerHeatmap = ({ experimentId }) => {
       return;
     }
 
-    const data = populateHeatmapData(cellSets, config, expressionData, config.selectedGenes, true);
+    const cellOrder = populateHeatmapData(cellSets, config, true);
+    const data = generateVegaData(cellOrder, expressionData, config, cellSets);
+
     const spec = generateSpec(config, 'Cluster ID', data, true);
 
     spec.description = 'Marker heatmap';
