@@ -81,7 +81,6 @@ describe('Data Management page', () => {
 
     storeState = makeStore();
     storeState.dispatch(loadEnvironment('test'));
-
     storeState.dispatch(loadUser());
   });
 
