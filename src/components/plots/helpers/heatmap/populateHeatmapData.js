@@ -12,7 +12,9 @@ const populateHeatmapData = (
   selectedGenes, downsampling = false, vitessce = false,
 ) => {
   const { hierarchy, properties, hidden } = cellSets;
-  const { selectedTracks, groupedTracks } = heatmapSettings;
+  const {
+    selectedTracks, groupedTracks, selectedCellSet, selectedPoints,
+  } = heatmapSettings;
 
   const maxCells = 1000;
   const getCellsInSet = (cellSetName) => properties[cellSetName].cellIds;
@@ -80,7 +82,6 @@ const populateHeatmapData = (
   };
 
   const getAllEnabledCellIds = () => {
-    const { selectedCellSet, selectedPoints } = heatmapSettings;
     let cellIds;
 
     if (selectedPoints === 'All') {
@@ -148,17 +149,21 @@ const populateHeatmapData = (
   // For now, this is statically defined. In the future, these values are
   // controlled from the settings panel in the heatmap.
 
-  // Filter cellOrder so that it only contains cells which have been filtered
-  const allLouvainCellIds = new Set(hierarchy[0].children.reduce(
+  // Get cellIds of the base set that is chosen in the first option
+  let baseCellIds = hierarchy.find(
+    (cellSet) => cellSet.key === selectedCellSet,
+  ).children.reduce(
     (acc, cellSet) => [
       ...acc,
       ...properties[cellSet.key].cellIds,
     ], [],
-  ));
+  );
+
+  baseCellIds = new Set(baseCellIds);
 
   // Do downsampling and return cellIds with their order by groupings.
   const cellOrder = generateCellOrder(groupedTracks)
-    .filter((cellId) => allLouvainCellIds.has(cellId));
+    .filter((cellId) => baseCellIds.has(cellId));
   const geneOrder = selectedGenes;
 
   if (!vitessce) {
