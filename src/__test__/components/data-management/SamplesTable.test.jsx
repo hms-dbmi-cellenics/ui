@@ -23,9 +23,15 @@ import loadEnvironment from 'redux/actions/networkResources/loadEnvironment';
 import { loadSamples } from 'redux/actions/samples';
 
 import mockDemoExperiments from '__test__/test-utils/mockData/mockDemoExperiments.json';
+import { loadUser } from 'redux/actions/user';
 
 jest.mock('@aws-amplify/auth', () => ({
-  currentAuthenticatedUser: jest.fn(() => Promise.resolve({ attributes: { name: 'mockUserName' } })),
+  currentAuthenticatedUser: jest.fn(() => Promise.resolve({
+    attributes: {
+      name: 'mockUserName',
+      'custom:agreed_terms': 'true',
+    },
+  })),
   federatedSignIn: jest.fn(),
 }));
 
@@ -104,6 +110,8 @@ describe('Samples table', () => {
     // Defaults to project with samples
     await storeState.dispatch(setActiveExperiment(experimentWithSamplesId));
     await storeState.dispatch(loadEnvironment('test'));
+
+    await storeState.dispatch(loadUser());
   });
 
   it('Does not show prompt to upload datasets if samples are available', async () => {
