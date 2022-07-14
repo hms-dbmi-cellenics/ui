@@ -7,6 +7,11 @@ import userEvent from '@testing-library/user-event';
 import { act } from 'react-dom/test-utils';
 import { Provider } from 'react-redux';
 import { loadBackendStatus } from 'redux/actions/backendStatus';
+
+import { seekFromS3 } from 'utils/work/seekWorkResponse';
+import expressionDataFAKEGENE from '__test__/data/gene_expression_FAKEGENE.json';
+
+import { loadGeneExpression } from 'redux/actions/genes';
 import { loadPlotConfig, updatePlotConfig } from 'redux/actions/componentConfig';
 import { makeStore } from 'redux/store';
 
@@ -44,6 +49,32 @@ jest.mock('redux/actions/componentConfig', () => {
     }),
   };
 });
+
+// Mock hash so we can control the ETag that is produced by hash.MD5 when fetching work requests
+// EtagParams is the object that's passed to the function which generates ETag in fetchWork
+jest.mock('object-hash', () => {
+  const objectHash = jest.requireActual('object-hash');
+  const mockWorkResultETag = jest.requireActual('__test__/test-utils/mockWorkResultETag').default;
+
+  const mockWorkRequestETag = (ETagParams) => {
+    if (ETagParams.body.name === 'ListGenes') return 'ListGenes';
+    return `${ETagParams.body.nGenes}-marker-genes`;
+  };
+
+  const mockGeneExpressionETag = (ETagParams) => `${ETagParams.missingGenesBody.genes.join('-')}-expression`;
+
+  return mockWorkResultETag(objectHash, mockWorkRequestETag, mockGeneExpressionETag);
+});
+
+jest.mock('utils/work/seekWorkResponse', () => ({
+  __esModule: true,
+  dispatchWorkRequest: jest.fn(() => true),
+  seekFromS3: jest.fn(),
+}));
+
+const mockWorkerResponses = {
+  'FAKEGENE-expression': expressionDataFAKEGENE,
+};
 
 const experimentId = fake.EXPERIMENT_ID;
 const plotUuid = 'heatmapPlotMain';
@@ -93,7 +124,6 @@ describe('Heatmap plot', () => {
 
     // Set up state for backend status
     await storeState.dispatch(loadBackendStatus(experimentId));
-    await storeState.dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
   });
 
   it('Loads controls and elements', async () => {
@@ -141,7 +171,6 @@ describe('Heatmap plot', () => {
     );
 
     fetchMock.mockIf(/.*/, mockAPI(withScratchpadResponse));
-    await storeState.dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
 
     await renderHeatmapPage(storeState);
 
@@ -168,9 +197,19 @@ describe('Heatmap plot', () => {
     );
 
     fetchMock.mockIf(/.*/, mockAPI(withScratchpadResponse));
-    await storeState.dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
+
+    seekFromS3
+      .mockReset()
+      .mockImplementationOnce(() => null)
+      .mockImplementationOnce((Etag) => mockWorkerResponses[Etag]);
 
     await renderHeatmapPage(storeState);
+
+    const genesToLoad = ['FAKEGENE'];
+
+    await act(async () => {
+      await storeState.dispatch(loadGeneExpression(experimentId, genesToLoad, plotUuid));
+    });
 
     // Open the Select Data panel
     userEvent.click(screen.getByText(/Select data/i));
@@ -181,6 +220,9 @@ describe('Heatmap plot', () => {
       userEvent.click(screen.getByText(/Copied KO/i), null, { skipPointerEventsCheck: true });
     });
 
-    expect(updatePlotConfig).toHaveBeenCalledTimes(1);
+    // 2 calls:
+    // 1 for the selected gene (loadGeneExpression)
+    // 1 for changing the cell set
+    expect(updatePlotConfig).toHaveBeenCalledTimes(2);
   });
 });

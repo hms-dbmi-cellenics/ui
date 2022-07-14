@@ -15,7 +15,6 @@ import pushNotificationMessage from 'utils/pushNotificationMessage';
 import endUserMessages from 'utils/endUserMessages';
 
 import { getCellSets, getCellSetsHierarchyByKeys, getCellSetsHierarchyByType } from 'redux/selectors';
-import getSelectOptions from 'utils/plots/getSelectOptions';
 
 import HeatmapGroupBySettings from 'components/data-exploration/heatmap/HeatmapGroupBySettings';
 import HeatmapMetadataTracksSettings from 'components/data-exploration/heatmap/HeatmapMetadataTrackSettings';
@@ -312,13 +311,6 @@ const MarkerHeatmap = ({ experimentId }) => {
   if (!config || cellSets.loading || hierarchy.length === 0) {
     return (<Skeleton />);
   }
-
-  const clustersForSelect = getSelectOptions(cellOptions);
-
-  const changeClusters = (option) => {
-    const newValue = option.value.toLowerCase();
-    updatePlotWithChanges({ selectedCellSet: newValue });
-  };
 
   const renderExtraPanels = () => (
     <>

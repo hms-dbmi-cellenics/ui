@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import { mount } from 'enzyme';
-import { within, fireEvent } from '@testing-library/dom';
+import { within } from '@testing-library/dom';
 import userEvent from '@testing-library/user-event';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import _ from 'lodash';
@@ -106,7 +106,7 @@ const getCurrentGeneOrder = (component) => {
   });
   newOrder.splice(0, 1);
   return newOrder;
-}
+};
 
 const renderHeatmapPage = async (store) => {
   await act(async () => (
@@ -167,7 +167,7 @@ describe('Marker heatmap plot', () => {
     expect(screen.getByText(/Colours/i)).toBeInTheDocument();
     expect(screen.getByText(/Legend/i)).toBeInTheDocument();
   });
-  
+
   it('Loads the plot', async () => {
     await renderHeatmapPage(storeState);
 
