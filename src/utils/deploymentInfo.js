@@ -8,6 +8,7 @@ const Environment = {
 
 const DomainName = {
   BIOMAGE: 'scp.biomage.net',
+  BIOMAGE_STAGING: 'scp-staging.biomage.net',
 };
 
 const ssrGetDeploymentInfo = () => {
@@ -33,7 +34,12 @@ const ssrGetDeploymentInfo = () => {
       break;
   }
 
-  return { environment: currentEnvironment, domainName: DomainName[process.env.DOMAIN_NAME] };
+  let domainName;
+  if ([DomainName.BIOMAGE, DomainName.BIOMAGE_STAGING].includes(domainName)) {
+    domainName = DomainName.BIOMAGE;
+  }
+
+  return { environment: currentEnvironment, domainName };
 };
 
 export {
