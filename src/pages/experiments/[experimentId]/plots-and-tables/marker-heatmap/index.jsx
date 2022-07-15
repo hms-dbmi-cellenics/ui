@@ -382,20 +382,25 @@ const MarkerHeatmap = ({ experimentId }) => {
 
   const hasEnoughCellSets = (cellSet) => {
     const chosenCellSet = cellSets.hierarchy.find(({ key }) => key === cellSet);
-    return chosenCellSet.children.length < 2;
+    return chosenCellSet.children.length === 0;
   };
 
   const renderPlot = () => {
     if (hasEnoughCellSets(config.selectedCellSet)) {
       return (
-        <Empty description={(
-          <>
-            Two cell sets consisting of different cells are required to generate the marker heatmap
-            <br />
-            Create some custom cell sets in Data Exploration
-          </>
-        )}
-        />
+        <center>
+          <Empty description={(
+            <>
+              <p>
+                There is no data to show.
+              </p>
+              <p>
+                Select another option from the 'Select data' menu.
+              </p>
+            </>
+          )}
+          />
+        </center>
       );
     }
 

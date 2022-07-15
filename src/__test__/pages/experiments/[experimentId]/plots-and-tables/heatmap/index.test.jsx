@@ -153,7 +153,8 @@ describe('Heatmap plot', () => {
     userEvent.click(screen.getByText(/Custom cell sets/i), null, { skipPointerEventsCheck: true });
 
     expect(updatePlotConfig).toHaveBeenCalled();
-    expect(screen.getByText(/There are no custom cell sets to show/i)).toBeInTheDocument();
+    expect(screen.getByText(/There is no data to show/i)).toBeInTheDocument();
+    expect(screen.getByText(/Select another option from the 'Select data' menu/i)).toBeInTheDocument();
   });
 
   it('Shows the plot if there are custom clusters to show', async () => {
@@ -179,7 +180,7 @@ describe('Heatmap plot', () => {
     userEvent.click(screen.getByText(/Custom cell sets/i), null, { skipPointerEventsCheck: true });
 
     expect(updatePlotConfig).toHaveBeenCalled();
-    expect(screen.queryByText(/There are no custom cell sets to show/i)).toBeNull();
+    expect(screen.queryByText(/There is no data to show/i)).toBeNull();
   });
 
   it('Changing chosen cluster updates the plot data', async () => {

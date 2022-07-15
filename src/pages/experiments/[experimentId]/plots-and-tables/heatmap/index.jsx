@@ -184,14 +184,19 @@ const HeatmapPlot = ({ experimentId }) => {
   const renderPlot = () => {
     if (isCellSetEmpty(config.selectedCellSet)) {
       return (
-        <Empty description={(
-          <>
-            There are no custom cell sets to show
-            <br />
-            Create some custom cell sets in Data Exploration
-          </>
-        )}
-        />
+        <center>
+          <Empty description={(
+            <>
+              <p>
+                There is no data to show.
+              </p>
+              <p>
+                Select another option from the 'Select data' menu.
+              </p>
+            </>
+          )}
+          />
+        </center>
       );
     }
 

@@ -275,8 +275,8 @@ describe('Marker heatmap plot', () => {
     expect(screen.queryByRole('graphics-document', { name: 'Marker heatmap' })).toBeNull();
 
     // There is an error message
-    expect(screen.getByText(/Two cell sets consisting of different cells are required to generate the marker heatmap/i)).toBeInTheDocument();
-    expect(screen.getByText(/Create some custom cell sets in Data Exploration/i)).toBeInTheDocument();
+    expect(screen.getByText(/There is no data to show/i)).toBeInTheDocument();
+    expect(screen.getByText(/Select another option from the 'Select data' menu/i)).toBeInTheDocument();
   });
 
   it('Shows an error message if gene expression fails to load', async () => {
