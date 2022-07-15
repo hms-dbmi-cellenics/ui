@@ -1,11 +1,11 @@
-import Environment, { ssrGetCurrentEnvironment } from 'utils/environment';
+import { Environment, ssrGetDeploymentInfo } from 'utils/deploymentInfo';
 import postErrorToSlack from 'utils/postErrorToSlack';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
 import endUserMessages from 'utils/endUserMessages';
 
 import httpStatusCodes from 'utils/http/httpStatusCodes';
 
-const env = ssrGetCurrentEnvironment();
+const { environment } = ssrGetDeploymentInfo();
 
 const handleCodedErrors = (error, message, notifyUser) => {
   let errorMessage = message;
@@ -32,11 +32,11 @@ const handleGenericErrors = (error, message, notifyUser) => {
     pushNotificationMessage('error', `${message}`);
   }
 
-  if (env === Environment.PRODUCTION) {
-  // add the intended user message to the error to now where
-  // the error comes from
+  if (environment === Environment.PRODUCTION) {
+    // add the intended user message to the error to now where
+    // the error comes from
     if (message) {
-    // eslint-disable-next-line no-param-reassign
+      // eslint-disable-next-line no-param-reassign
       error.message += message;
     }
     postErrorToSlack(error);

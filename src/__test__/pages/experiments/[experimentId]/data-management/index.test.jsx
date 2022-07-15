@@ -20,7 +20,7 @@ import DataManagementPage from 'pages/data-management';
 import userEvent from '@testing-library/user-event';
 
 import { setActiveExperiment } from 'redux/actions/experiments';
-import loadEnvironment from 'redux/actions/networkResources/loadEnvironment';
+import loadDeploymentInfo from 'redux/actions/networkResources/loadDeploymentInfo';
 import { loadUser } from 'redux/actions/user';
 
 jest.mock('utils/data-management/downloadFromUrl');
@@ -80,7 +80,7 @@ describe('Data Management page', () => {
     fetchMock.mockIf(/.*/, mockAPI(mockAPIResponse));
 
     storeState = makeStore();
-    storeState.dispatch(loadEnvironment('test'));
+    storeState.dispatch(loadDeploymentInfo({ environment: 'test' }));
     storeState.dispatch(loadUser());
   });
 

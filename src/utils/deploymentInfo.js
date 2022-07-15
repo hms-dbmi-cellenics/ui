@@ -6,7 +6,11 @@ const Environment = {
   PRODUCTION: 'production',
 };
 
-const ssrGetCurrentEnvironment = () => {
+const DomainName = {
+  BIOMAGE: 'scp.biomage.net',
+};
+
+const ssrGetDeploymentInfo = () => {
   let currentEnvironment = null;
 
   if (process.env.NODE_ENV === 'test') {
@@ -14,7 +18,7 @@ const ssrGetCurrentEnvironment = () => {
   }
 
   if (!process.env) {
-    throw new Error('ssrGetCurrentEnvironment must be called on the server side. Refer to `store.networkResources.environment` for the actual environment.');
+    throw new Error('ssrGetDeploymentInfo must be called on the server side. Refer to `store.networkResources.environment` for the actual environment.');
   }
 
   switch (process.env.K8S_ENV) {
@@ -29,8 +33,9 @@ const ssrGetCurrentEnvironment = () => {
       break;
   }
 
-  return currentEnvironment;
+  return { environment: currentEnvironment, domainName: DomainName[process.env.DOMAIN_NAME] };
 };
 
-export { isBrowser, ssrGetCurrentEnvironment };
-export default Environment;
+export {
+  isBrowser, ssrGetDeploymentInfo, DomainName, Environment,
+};

@@ -19,7 +19,7 @@ import thunk from 'redux-thunk';
 import createTestComponentFactory from '__test__/test-utils/testComponentFactory';
 
 import { loadExperiments, setActiveExperiment } from 'redux/actions/experiments';
-import loadEnvironment from 'redux/actions/networkResources/loadEnvironment';
+import loadDeploymentInfo from 'redux/actions/networkResources/loadDeploymentInfo';
 import { loadSamples } from 'redux/actions/samples';
 
 import mockDemoExperiments from '__test__/test-utils/mockData/mockDemoExperiments.json';
@@ -109,7 +109,7 @@ describe('Samples table', () => {
 
     // Defaults to project with samples
     await storeState.dispatch(setActiveExperiment(experimentWithSamplesId));
-    await storeState.dispatch(loadEnvironment('test'));
+    await storeState.dispatch(loadDeploymentInfo({ environment: 'test' }));
 
     await storeState.dispatch(loadUser());
   });

@@ -12,7 +12,7 @@ import pushNotificationMessage from 'utils/pushNotificationMessage';
 import { Provider } from 'react-redux';
 
 import { loadUser } from 'redux/actions/user';
-import loadEnvironment from 'redux/actions/networkResources/loadEnvironment';
+import loadDeploymentInfo from 'redux/actions/networkResources/loadDeploymentInfo';
 
 jest.mock('next/router', () => ({
   useRouter: jest.fn(),
@@ -56,7 +56,7 @@ describe('Profile page', () => {
 
     setUpAuthMocks();
 
-    store.dispatch(loadEnvironment('test'));
+    store.dispatch(loadDeploymentInfo({ environment: 'test' }));
     store.dispatch(loadUser());
   });
 

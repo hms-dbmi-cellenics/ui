@@ -27,7 +27,7 @@ import PreloadContent from 'components/PreloadContent';
 import experimentUpdatesHandler from 'utils/experimentUpdatesHandler';
 import { getBackendStatus } from 'redux/selectors';
 import { loadBackendStatus } from 'redux/actions/backendStatus';
-import { isBrowser } from 'utils/environment';
+import { DomainName, isBrowser } from 'utils/deploymentInfo';
 
 import Error from 'pages/_error';
 
@@ -51,6 +51,8 @@ const ContentWrapper = (props) => {
   const currentExperimentIdRef = useRef(routeExperimentId);
   const activeExperimentId = useSelector((state) => state?.experiments?.meta?.activeExperimentId);
   const activeExperiment = useSelector((state) => state.experiments[activeExperimentId]);
+
+  const domainName = useSelector((state) => state.networkResources.domainName);
   const user = useSelector((state) => state.user.current);
 
   const samples = useSelector((state) => state.samples);
@@ -329,7 +331,9 @@ const ContentWrapper = (props) => {
 
   return (
     <>
-      {user?.attributes['custom:agreed_terms'] !== 'true' && <PrivacyPolicyIntercept user={user} onOk={() => dispatch(loadUser())} />}
+      {user?.attributes['custom:agreed_terms'] !== 'true' && domainName === DomainName.BIOMAGE && (
+        <PrivacyPolicyIntercept user={user} onOk={() => dispatch(loadUser())} />
+      )}
       <BrowserAlert />
       <Layout style={{ minHeight: '100vh' }}>
         <Sider

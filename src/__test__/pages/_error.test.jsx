@@ -6,7 +6,7 @@ import { Provider } from 'react-redux';
 import { makeStore } from 'redux/store';
 
 import postErrorToSlack from 'utils/postErrorToSlack';
-import loadEnvironment from 'redux/actions/networkResources/loadEnvironment';
+import loadDeploymentInfo from 'redux/actions/networkResources/loadDeploymentInfo';
 
 import createTestComponentFactory from '__test__/test-utils/testComponentFactory';
 
@@ -36,7 +36,7 @@ describe('ErrorPage', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     storeState = makeStore();
-    storeState.dispatch(loadEnvironment('production'));
+    storeState.dispatch(loadDeploymentInfo({ environment: 'production' }));
   });
 
   it('Renders properly without props', () => {
@@ -70,7 +70,7 @@ describe('ErrorPage', () => {
   });
 
   it('Should post error to Slack if environment is production', () => {
-    storeState.dispatch(loadEnvironment('production'));
+    storeState.dispatch(loadDeploymentInfo({ environment: 'production' }));
 
     renderErrorPage(mockErrorProp, storeState);
 
@@ -79,7 +79,7 @@ describe('ErrorPage', () => {
   });
 
   it('Should post error to Slack if environment is staging', () => {
-    storeState.dispatch(loadEnvironment('staging'));
+    storeState.dispatch(loadDeploymentInfo({ environment: 'staging' }));
 
     renderErrorPage(mockErrorProp, storeState);
 
@@ -88,7 +88,7 @@ describe('ErrorPage', () => {
   });
 
   it('Should not post error to Slack if environment is not production', () => {
-    storeState.dispatch(loadEnvironment('development'));
+    storeState.dispatch(loadDeploymentInfo({ environment: 'development' }));
 
     renderErrorPage(mockErrorProp, storeState);
 
