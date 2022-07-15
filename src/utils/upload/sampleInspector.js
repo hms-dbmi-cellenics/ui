@@ -116,14 +116,9 @@ const validationTests = [
 ];
 
 const inspectSample = async (sample) => {
-  console.log('*** sample', sample);
-  console.log('*** inspecting sample', sample.name);
-
   // The promises return [{ valid: ..., verdict: ... }, ... ]
   const validationPromises = validationTests
     .map(async (validationFn) => await validationFn(sample));
-
-  console.log(validationPromises);
 
   const result = await Promise.all(validationPromises);
 

@@ -53,6 +53,8 @@ const toApiV1 = (samples, experimentId) => {
       metadata: sample.metadata,
       createdDate: sample.createdAt,
       name: sample.name,
+      valid: sample.valid,
+      validationMessage: sample.validationMessage,
       lastModified: sample.updatedAt,
       files: apiV1Files,
       type: sampleTechnologyConvert(sample.sampleTechnology),
@@ -74,8 +76,6 @@ const loadSamples = (experimentId) => async (dispatch) => {
     const data = await fetchAPI(url);
 
     const samples = toApiV1(data, experimentId);
-
-    // throwIfRequestFailed(response, data, endUserMessages.ERROR_FETCHING_SAMPLES);
 
     dispatch({
       type: SAMPLES_LOADED,
