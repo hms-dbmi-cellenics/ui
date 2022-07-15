@@ -15,7 +15,7 @@ import { loadProcessingSettings } from 'redux/actions/experimentSettings';
 import loadBackendStatus from 'redux/actions/backendStatus/loadBackendStatus';
 import { loadSamples } from 'redux/actions/samples';
 import ExampleExperimentsSpace from 'components/data-management/ExampleExperimentsSpace';
-import { DomainName, privacyPolicyIsNotAccepted } from 'utils/deploymentInfo';
+import { privacyPolicyIsNotAccepted } from 'utils/deploymentInfo';
 
 const DataManagementPage = () => {
   const dispatch = useDispatch();
