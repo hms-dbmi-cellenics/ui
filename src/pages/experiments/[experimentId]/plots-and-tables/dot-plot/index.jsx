@@ -102,7 +102,7 @@ const DotPlotPage = (props) => {
   } = cellSets;
 
   const [moreThanTwoGroups, setMoreThanTwoGroups] = useState(false);
-  const [initialReorder, setInitialReorder] = useState(false);
+  const [reorderFetched, setReorderFetched] = useState(false);
 
   const experimentName = useSelector((state) => state.experimentSettings.info.experimentName);
   const csvFileName = fileNames(experimentName, 'DOT_PLOT', [config?.selectedCellSet, config?.selectedPoints]);
@@ -205,11 +205,22 @@ const DotPlotPage = (props) => {
 
     const currentComparedConfig = getComparedConfig(config);
     if (config && !_.isEqual(previousComparedConfig.current, currentComparedConfig)) {
-      const previousSelected = previousComparedConfig.current ? previousComparedConfig.current.selectedGenes : [];
+      // previous compared config is null on first load, use [] for previous selected genes instead
+      const previousSelected = previousComparedConfig.current?.selectedGenes ?? [];
       const currentSelected = currentComparedConfig.selectedGenes;
+
       previousComparedConfig.current = currentComparedConfig;
-      if (currentSelected.length > previousSelected.length || _.isEqual(currentSelected, previousSelected)) {
+
+      // dispatch is different depending on whether selected genes don't change or are added, re-ordered or deleted
+      // to prevent unnecessary rerenders
+      if (_.isEqual(currentSelected, previousSelected)) {
         dispatch(fetchPlotDataWork(experimentId, plotUuid, plotType));
+        return;
+      }
+
+      if (currentSelected.length > previousSelected.length) {
+        dispatch(fetchPlotDataWork(experimentId, plotUuid, plotType));
+        setReorderFetched(true);
         return;
       }
 
@@ -243,7 +254,8 @@ const DotPlotPage = (props) => {
     dispatch(loadPaginatedGeneProperties(experimentId, ['dispersions'], searchBarUuid, state));
   }, []);
 
-  const loadMarkerGenes = () => {
+  // find genes with highest dispersion from list of genes sorted by name
+  const loadHighestDispersionGenes = () => {
     const highestDispersions = Object.values(geneData).map((gene) => gene.dispersions).sort().splice(-config.nMarkerGenes);
 
     const getKeyByValue = (value) => Object.keys(geneData).find((key) => geneData[key].dispersions === value);
@@ -251,28 +263,25 @@ const DotPlotPage = (props) => {
     const highestDispersionGenes = highestDispersions.map((dispersion) => getKeyByValue(dispersion));
 
     updatePlotWithChanges({ selectedGenes: highestDispersionGenes });
-
-    setInitialReorder(true);
   };
 
   // load initial state, based on highest dispersion genes from all genes
   useEffect(() => {
-    if (Object.keys(geneData).length === 0) {
+    if (Object.keys(geneData).length === 0 || !config) {
       return;
     }
 
-    loadMarkerGenes();
+    loadHighestDispersionGenes();
   }, [geneData]);
 
-  // reorder selected genes only after the 1st load
+  // When fetching new genes, reorder data to match selected genes
   useEffect(() => {
     // is there a better way to get number of cell sets?
-    if (plotData?.length !== cellSetHierarchy[0]?.children.length * config?.nMarkerGenes || !initialReorder) return;
+    if (plotData?.length !== cellSetHierarchy[0]?.children.length * config?.selectedGenes.length || !reorderFetched) return;
 
-    const genes = [...new Set(plotData.map((elem) => elem.geneName))];
-    updatePlotWithChanges({ selectedGenes: genes });
+    reorderData(config.selectedGenes);
 
-    setInitialReorder(false);
+    setReorderFetched(false);
   }, [plotData]);
 
   const getCSVData = () => {

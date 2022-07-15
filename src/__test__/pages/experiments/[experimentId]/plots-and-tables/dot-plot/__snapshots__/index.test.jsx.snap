@@ -39,13 +39,6 @@ Array [
   ],
   Array [
     Object {
-      "data": Array [],
-      "filename": "Test_Experiment-dot_plot-louvain-All",
-    },
-    Object {},
-  ],
-  Array [
-    Object {
       "data": Array [
         Object {
           "Average expression": 0.0251,
