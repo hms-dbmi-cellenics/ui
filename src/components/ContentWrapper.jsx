@@ -329,7 +329,7 @@ const ContentWrapper = (props) => {
 
   return (
     <>
-      {user?.attributes['custom:agreed_terms'] !== 'true' ? <PrivacyPolicyIntercept user={user} onOk={() => dispatch(loadUser())} /> : <></>}
+      {user?.attributes['custom:agreed_terms'] !== 'true' && <PrivacyPolicyIntercept user={user} onOk={() => dispatch(loadUser())} />}
       <BrowserAlert />
       <Layout style={{ minHeight: '100vh' }}>
         <Sider
