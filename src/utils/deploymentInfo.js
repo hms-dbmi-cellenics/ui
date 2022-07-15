@@ -1,5 +1,7 @@
 const isBrowser = typeof window !== 'undefined' && typeof window.document !== 'undefined';
 
+const privacyPolicyIsNotAccepted = (user, domainName) => user?.attributes['custom:agreed_terms'] !== 'true' && domainName === DomainName.BIOMAGE;
+
 const Environment = {
   DEVELOPMENT: 'development',
   STAGING: 'staging',
@@ -35,7 +37,10 @@ const ssrGetDeploymentInfo = () => {
   }
 
   let domainName;
-  if ([DomainName.BIOMAGE, DomainName.BIOMAGE_STAGING].includes(domainName)) {
+  if (
+    [DomainName.BIOMAGE, DomainName.BIOMAGE_STAGING].includes(domainName)
+    || currentEnvironment === Environment.DEVELOPMENT
+  ) {
     domainName = DomainName.BIOMAGE;
   }
 
@@ -43,5 +48,5 @@ const ssrGetDeploymentInfo = () => {
 };
 
 export {
-  isBrowser, ssrGetDeploymentInfo, DomainName, Environment,
+  isBrowser, ssrGetDeploymentInfo, DomainName, Environment, privacyPolicyIsNotAccepted,
 };

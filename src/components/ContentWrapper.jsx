@@ -27,7 +27,7 @@ import PreloadContent from 'components/PreloadContent';
 import experimentUpdatesHandler from 'utils/experimentUpdatesHandler';
 import { getBackendStatus } from 'redux/selectors';
 import { loadBackendStatus } from 'redux/actions/backendStatus';
-import { DomainName, isBrowser } from 'utils/deploymentInfo';
+import { DomainName, isBrowser, privacyPolicyIsNotAccepted } from 'utils/deploymentInfo';
 
 import Error from 'pages/_error';
 
@@ -331,7 +331,7 @@ const ContentWrapper = (props) => {
 
   return (
     <>
-      {user?.attributes['custom:agreed_terms'] !== 'true' && domainName === DomainName.BIOMAGE && (
+      {privacyPolicyIsNotAccepted(user, domainName) && (
         <PrivacyPolicyIntercept user={user} onOk={() => dispatch(loadUser())} />
       )}
       <BrowserAlert />

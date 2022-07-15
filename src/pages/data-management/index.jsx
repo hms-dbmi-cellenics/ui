@@ -15,6 +15,7 @@ import { loadProcessingSettings } from 'redux/actions/experimentSettings';
 import loadBackendStatus from 'redux/actions/backendStatus/loadBackendStatus';
 import { loadSamples } from 'redux/actions/samples';
 import ExampleExperimentsSpace from 'components/data-management/ExampleExperimentsSpace';
+import { DomainName, privacyPolicyIsNotAccepted } from 'utils/deploymentInfo';
 
 const DataManagementPage = () => {
   const dispatch = useDispatch();
@@ -24,6 +25,7 @@ const DataManagementPage = () => {
   const { activeExperimentId } = useSelector((state) => state.experiments.meta);
   const experiments = useSelector(((state) => state.experiments));
   const user = useSelector((state) => state.user.current);
+  const domainName = useSelector((state) => state.networkResources?.domainName);
 
   const activeExperiment = experiments[activeExperimentId];
   const { saving: experimentsSaving } = experiments.meta;
@@ -32,7 +34,7 @@ const DataManagementPage = () => {
   const [newProjectModalVisible, setNewProjectModalVisible] = useState(false);
 
   useEffect(() => {
-    if (user?.attributes['custom:agreed_terms'] !== 'true') return;
+    if (privacyPolicyIsNotAccepted(user, domainName)) return;
 
     if (experiments.ids.length === 0) dispatch(loadExperiments());
   }, [user]);
@@ -43,7 +45,7 @@ const DataManagementPage = () => {
   };
 
   useEffect(() => {
-    if (!activeExperimentId || user?.attributes['custom:agreed_terms'] !== 'true') return;
+    if (!activeExperimentId || privacyPolicyIsNotAccepted(user, domainName)) return;
 
     dispatch(loadProcessingSettings(activeExperimentId));
 
