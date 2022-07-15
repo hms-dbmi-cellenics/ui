@@ -183,6 +183,7 @@ Object {
     },
   },
   "networkResources": Object {
+    "domainName": undefined,
     "environment": undefined,
   },
   "samples": Object {
@@ -510,6 +511,7 @@ Object {
     },
   },
   "networkResources": Object {
+    "domainName": undefined,
     "environment": undefined,
   },
   "samples": Object {
