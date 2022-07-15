@@ -16,9 +16,7 @@ const verdictText = {
 
 const CHUNK_SIZE = 2 ** 18; // 250 kb
 
-const decodeStream = async (fileSlice) => {
-  const arrBuffer = await fileSlice.arrayBuffer();
-
+const decode = async (arrBuffer) => {
   let result = '';
   const utfDecode = new DecodeUTF8((data) => { result += data; });
   utfDecode.push(new Uint8Array(arrBuffer));
@@ -26,12 +24,9 @@ const decodeStream = async (fileSlice) => {
   return result;
 };
 
-const decompressStream = async (fileSlice) => {
-  const arrBuffer = await fileSlice.arrayBuffer();
-
+const decompress = async (arrBuffer) => {
   let result = '';
-  const utfDecode = new DecodeUTF8((data) => { result += data; });
-  const decompressor = new Decompress((chunk) => { utfDecode.push(chunk); });
+  const decompressor = new Decompress((chunk) => { result = chunk; });
   decompressor.push(new Uint8Array(arrBuffer));
 
   return result;
@@ -42,11 +37,11 @@ const extractSampleSizes = async (matrix) => {
   let header = '';
   let matrixHeader = '';
 
-  const fileSlie = fileObject.slice(0, 500);
+  const fileArrBuffer = await fileObject.slice(0, 500).arrayBuffer();
 
   matrixHeader = compressed
-    ? await decompressStream(fileSlie)
-    : await decodeStream(fileSlie);
+    ? await decode(await decompress(fileArrBuffer))
+    : await decode(fileArrBuffer);
 
   // The matrix header is the first line in the file that splits into 3
   header = matrixHeader.split('\n').find((line) => line.split(' ').length === 3);
@@ -60,14 +55,16 @@ const extractSampleSizes = async (matrix) => {
 
 const countLine = async (fileObject, start, compressed) => {
   const end = Math.min(start + CHUNK_SIZE, fileObject.size);
-  const fileSlice = fileObject.slice(start, end);
+  const arrBuffer = await fileObject.slice(start, end).arrayBuffer();
+  const fileStr = compressed
+    ? await decode(await decompress(arrBuffer))
+    : await decode(arrBuffer);
 
-  const fileStr = compressed ? await decompressStream(fileSlice) : await decodeStream(fileSlice);
   let numLines = (fileStr.match(/\n|\r\n/g) || []).length;
 
   // Last character might not contain a new line char (\n), so the last line is not counted
   // Correct this by adding a line to the count if the last line is not \n
-  if (fileSlice.size === CHUNK_SIZE) return numLines;
+  if (arrBuffer.byteSize === CHUNK_SIZE) return numLines;
 
   const lastChar = fileStr[fileStr.length - 1];
   if (lastChar !== '\n') { numLines += 1; }
