@@ -4,6 +4,7 @@ import _ from 'lodash';
 import axios from 'axios';
 
 import { createSample, createSampleFile, updateSampleFileUpload } from 'redux/actions/samples';
+import { inspectSample, verdictText } from 'utils/upload/sampleInspector';
 
 import UploadStatus from 'utils/upload/UploadStatus';
 import loadAndCompressIfNecessary from 'utils/upload/loadAndCompressIfNecessary';
@@ -129,12 +130,25 @@ const processUpload = async (filesList, sampleType, samples, experimentId, dispa
   }, {});
 
   Object.entries(samplesMap).forEach(async ([name, sample]) => {
+    console.log('*** inspecting sample', name);
+
+    // Validate sample
+    const { valid, verdict } = await inspectSample(sample);
+    const validationMessage = verdict.map((item) => `${verdictText[item]}`).join('\n');
+
     const filesToUploadForSample = Object.keys(sample.files);
 
     // Create sample if not exists.
     try {
       sample.uuid ??= await dispatch(
-        createSample(experimentId, name, sampleType, filesToUploadForSample),
+        createSample(
+          experimentId,
+          name,
+          sampleType,
+          valid,
+          validationMessage,
+          filesToUploadForSample,
+        ),
       );
     } catch (e) {
       // If sample creation fails, sample should not be created

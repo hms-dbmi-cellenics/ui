@@ -18,6 +18,8 @@ const createSample = (
   experimentId,
   name,
   type,
+  valid,
+  validationMessage,
   filesToUpload,
 ) => async (dispatch, getState) => {
   const experiment = getState().experiments[experimentId];
@@ -38,6 +40,8 @@ const createSample = (
     type,
     experimentId,
     uuid: newSampleUuid,
+    valid,
+    validationMessage,
     createdDate,
     lastModified: createdDate,
     metadata: experiment?.metadataKeys
