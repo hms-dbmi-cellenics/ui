@@ -130,7 +130,6 @@ const processUpload = async (filesList, sampleType, samples, experimentId, dispa
   }, {});
 
   Object.entries(samplesMap).forEach(async ([name, sample]) => {
-    // Validate sample
     const { valid, verdict } = await inspectSample(sample);
     const validationMessage = verdict.map((item) => `${verdictText[item]}`).join('\n');
 

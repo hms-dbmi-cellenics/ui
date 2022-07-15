@@ -96,6 +96,8 @@ const withDataState = {
       name: sample1Name,
       experimentId: experiment1id,
       uuid: sample1Uuid,
+      valid: true,
+      validationMessage: '',
       type: '10X Chromium',
       metadata: ['value-1'],
       fileNames: ['features.tsv.gz', 'barcodes.tsv.gz', 'matrix.mtx.gz'],
@@ -110,6 +112,8 @@ const withDataState = {
       name: sample2Name,
       experimentId: experiment1id,
       uuid: sample2Uuid,
+      valid: true,
+      validationMessage: '',
       type: '10X Chromium',
       metadata: ['value-2'],
       fileNames: ['features.tsv.gz', 'barcodes.tsv.gz', 'matrix.mtx.gz'],
@@ -187,6 +191,36 @@ describe('LaunchAnalysisButton', () => {
         ...withDataState.samples,
         [sample1Uuid]: {
           ...withDataState.samples[sample1Uuid],
+          files: {
+            ...withDataState.samples[sample1Uuid].files,
+            'features.tsv.gz': { valid: true, upload: { status: UploadStatus.UPLOADING } },
+          },
+        },
+      },
+    };
+
+    await act(async () => {
+      render(
+        <Provider store={mockStore(notAllDataUploaded)}>
+          <LaunchAnalysisButton />
+        </Provider>,
+      );
+    });
+
+    const button = screen.getByText('Process project').closest('button');
+
+    expect(button).toBeDisabled();
+  });
+
+  it('Process project button is disabled if there is an invalid sample', async () => {
+    const notAllDataUploaded = {
+      ...withDataState,
+      samples: {
+        ...withDataState.samples,
+        [sample1Uuid]: {
+          ...withDataState.samples[sample1Uuid],
+          valid: false,
+          validationMessage: 'Invalid file uploaded',
           files: {
             ...withDataState.samples[sample1Uuid].files,
             'features.tsv.gz': { valid: true, upload: { status: UploadStatus.UPLOADING } },

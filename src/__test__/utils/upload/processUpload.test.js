@@ -126,6 +126,15 @@ jest.mock('redux/actions/samples/deleteSamples', () => ({
   sendDeleteSamplesRequest: jest.fn(),
 }));
 
+jest.mock('utils/upload/sampleInspector', () => {
+  const actual = jest.requireActual('utils/upload/sampleInspector');
+
+  return {
+    ...actual,
+    inspectSample: jest.fn(() => ({ valid: true, verdict: [] })),
+  };
+});
+
 let store = null;
 
 describe('processUpload', () => {

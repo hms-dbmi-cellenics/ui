@@ -47,6 +47,9 @@ describe('createSample action', () => {
     },
   };
 
+  const validation = true;
+  const validationMessage = '';
+
   let store;
 
   beforeEach(() => {
@@ -62,7 +65,16 @@ describe('createSample action', () => {
   it('Works correctly with one file being uploaded', async () => {
     fetchMock.mockResponse(JSON.stringify({}), { url: 'mockedUrl', status: 200 });
 
-    const newUuid = await store.dispatch(createSample(experimentId, sampleName, mockType, ['matrix.tsv.gz']));
+    const newUuid = await store.dispatch(
+      createSample(
+        experimentId,
+        sampleName,
+        mockType,
+        validation,
+        validationMessage,
+        ['matrix.tsv.gz'],
+      ),
+    );
 
     // Returns a new sampleUuid
     expect(newUuid).toEqual(sampleUuid);
@@ -85,7 +97,16 @@ describe('createSample action', () => {
   it('Works correctly with many files being uploaded', async () => {
     fetchMock.mockResponse(JSON.stringify({}), { url: 'mockedUrl', status: 200 });
 
-    const newUuid = await store.dispatch(createSample(experimentId, sampleName, mockType, ['matrix.tsv.gz', 'features.tsv.gz', 'barcodes.tsv.gz']));
+    const newUuid = await store.dispatch(
+      createSample(
+        experimentId,
+        sampleName,
+        mockType,
+        validation,
+        validationMessage,
+        ['matrix.tsv.gz', 'features.tsv.gz', 'barcodes.tsv.gz'],
+      ),
+    );
 
     // Returns a new sampleUuid
     expect(newUuid).toEqual(sampleUuid);
@@ -110,7 +131,14 @@ describe('createSample action', () => {
 
     await expect(
       store.dispatch(
-        createSample(experimentId, sampleName, mockType, ['matrix.tsv.gz']),
+        createSample(
+          experimentId,
+          sampleName,
+          mockType,
+          validation,
+          validationMessage,
+          ['matrix.tsv.gz'],
+        ),
       ),
     ).rejects.toThrow(endUserMessages.ERROR_CREATING_SAMPLE);
 
@@ -125,7 +153,14 @@ describe('createSample action', () => {
 
     await expect(
       store.dispatch(
-        createSample(experimentId, sampleName, 'unrecognizable type', ['matrix.tsv.gz', 'features.tsv.gz', 'barcodes.tsv.gz']),
+        createSample(
+          experimentId,
+          sampleName,
+          'unrecognizable type',
+          validation,
+          validationMessage,
+          ['matrix.tsv.gz', 'features.tsv.gz', 'barcodes.tsv.gz'],
+        ),
       ),
     ).rejects.toThrow('Sample technology unrecognizable type is not recognized');
   });

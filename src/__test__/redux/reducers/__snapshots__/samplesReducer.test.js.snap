@@ -14,6 +14,8 @@ Object {
     "name": "test sample",
     "type": null,
     "uuid": "asd123",
+    "valid": null,
+    "validationMessage": null,
   },
   "meta": Object {
     "error": false,
@@ -32,6 +34,8 @@ Object {
     "name": "test sample 2",
     "type": null,
     "uuid": "qwe234",
+    "valid": null,
+    "validationMessage": null,
   },
 }
 `;
@@ -50,6 +54,8 @@ Object {
     "name": "test sample",
     "type": null,
     "uuid": "asd123",
+    "valid": null,
+    "validationMessage": null,
   },
   "meta": Object {
     "error": false,
@@ -78,6 +84,8 @@ Object {
     "name": "test sample",
     "type": null,
     "uuid": "asd123",
+    "valid": null,
+    "validationMessage": null,
   },
   "meta": Object {
     "error": false,
@@ -116,6 +124,8 @@ Object {
     "name": "test sample",
     "type": null,
     "uuid": "asd123",
+    "valid": null,
+    "validationMessage": null,
   },
   "meta": Object {
     "error": false,
@@ -144,6 +154,8 @@ Object {
     "name": "test sample",
     "type": null,
     "uuid": "asd123",
+    "valid": null,
+    "validationMessage": null,
   },
   "meta": Object {
     "error": false,
@@ -167,6 +179,8 @@ Object {
     "name": "test sample",
     "type": null,
     "uuid": "asd123",
+    "valid": null,
+    "validationMessage": null,
   },
   "ids": Array [
     "asd123",
@@ -189,6 +203,8 @@ Object {
     "name": "test sample 2",
     "type": null,
     "uuid": "qwe234",
+    "valid": null,
+    "validationMessage": null,
   },
 }
 `;
@@ -207,6 +223,8 @@ Object {
     "name": "test sample",
     "type": null,
     "uuid": "asd123",
+    "valid": null,
+    "validationMessage": null,
   },
   "meta": Object {
     "error": false,
@@ -230,6 +248,8 @@ Object {
     "name": "test sample",
     "type": null,
     "uuid": "asd123",
+    "valid": null,
+    "validationMessage": null,
   },
   "meta": Object {
     "error": false,
@@ -253,6 +273,8 @@ Object {
     "name": "test sample",
     "type": null,
     "uuid": "asd123",
+    "valid": null,
+    "validationMessage": null,
   },
   "meta": Object {
     "error": "Error message",
@@ -276,6 +298,8 @@ Object {
     "name": "updated name",
     "type": null,
     "uuid": "asd123",
+    "valid": null,
+    "validationMessage": null,
   },
   "meta": Object {
     "error": false,
@@ -316,6 +340,8 @@ Object {
     "name": "test sample",
     "type": null,
     "uuid": "asd123",
+    "valid": null,
+    "validationMessage": null,
   },
   "meta": Object {
     "error": false,
@@ -346,6 +372,8 @@ Object {
     "name": "test sample",
     "type": null,
     "uuid": "asd123",
+    "valid": null,
+    "validationMessage": null,
   },
   "meta": Object {
     "error": false,

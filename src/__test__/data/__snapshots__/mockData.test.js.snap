@@ -57,6 +57,8 @@ Array [
     "name": "Mock sample 0",
     "sampleTechnology": "10x",
     "updatedAt": "2021-12-07 17:38:42.036+00",
+    "valid": true,
+    "validationMessage": "",
   },
   Object {
     "createdAt": "2021-12-07 17:36:27.773+00",
@@ -113,6 +115,8 @@ Array [
     "name": "Mock sample 1",
     "sampleTechnology": "10x",
     "updatedAt": "2021-12-07 17:38:42.036+00",
+    "valid": true,
+    "validationMessage": "",
   },
   Object {
     "createdAt": "2021-12-07 17:36:27.773+00",
@@ -169,6 +173,8 @@ Array [
     "name": "Mock sample 2",
     "sampleTechnology": "10x",
     "updatedAt": "2021-12-07 17:38:42.036+00",
+    "valid": true,
+    "validationMessage": "",
   },
 ]
 `;
@@ -282,6 +288,8 @@ Array [
       "name": "Mock sample 0",
       "sampleTechnology": "10x",
       "updatedAt": "2021-12-07 17:38:42.036+00",
+      "valid": true,
+      "validationMessage": "",
     },
     Object {
       "createdAt": "2021-12-07 17:36:27.773+00",
@@ -338,6 +346,8 @@ Array [
       "name": "Mock sample 1",
       "sampleTechnology": "10x",
       "updatedAt": "2021-12-07 17:38:42.036+00",
+      "valid": true,
+      "validationMessage": "",
     },
     Object {
       "createdAt": "2021-12-07 17:36:27.773+00",
@@ -394,6 +404,8 @@ Array [
       "name": "Mock sample 2",
       "sampleTechnology": "10x",
       "updatedAt": "2021-12-07 17:38:42.036+00",
+      "valid": true,
+      "validationMessage": "",
     },
   ],
 ]

@@ -7,6 +7,8 @@ const mockSampleTemplate = (experimentId, sampleId, idx) => ({
   experimentId,
   name: `Mock sample ${idx}`,
   sampleTechnology: '10x',
+  valid: true,
+  validationMessage: '',
   createdAt: '2021-12-07 17:36:27.773+00',
   updatedAt: '2021-12-07 17:38:42.036+00',
   metadata: { age: 'BL', timePoint: 'BL' },
