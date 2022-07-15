@@ -60,20 +60,13 @@ const countLine = async (fileObject, start, compressed) => {
     ? await decode(await decompress(arrBuffer))
     : await decode(arrBuffer);
 
-  let numLines = (fileStr.match(/\n|\r\n/g) || []).length;
+  const numLines = (fileStr.match(/\n|\r\n/g) || []).length;
 
-  // Last character might not contain a new line char (\n), so the last line is not counted
-  // Correct this by adding a line to the count if the last line is not \n
-  if (arrBuffer.byteSize === CHUNK_SIZE) return numLines;
-
-  const lastChar = fileStr[fileStr.length - 1];
-  if (lastChar !== '\n') { numLines += 1; }
   return numLines;
 };
 
-const validateFileSize = async (sampleFile, expectedSize) => {
+const getNumLines = async (sampleFile) => {
   let pointer = 0;
-
   const counterJobs = [];
 
   const { compressed, fileObject } = sampleFile;
@@ -85,8 +78,7 @@ const validateFileSize = async (sampleFile, expectedSize) => {
 
   const resultingCounts = await Promise.all(counterJobs);
   const numLines = resultingCounts.reduce((count, numLine) => count + numLine, 0);
-
-  return numLines === expectedSize;
+  return numLines;
 };
 
 const validateFileSizes = async (sample) => {
@@ -96,14 +88,17 @@ const validateFileSizes = async (sample) => {
 
   const { barcodeSize, featuresSize } = await extractSampleSizes(matrix);
 
-  const isBarcodeValid = await validateFileSize(barcodes, barcodeSize);
-  const isFeaturesValid = await validateFileSize(features, featuresSize);
-
-  const valid = isBarcodeValid && isFeaturesValid;
+  const numBarcodeLines = await getNumLines(barcodes);
+  const numFeaturesLines = await getNumLines(features);
 
   const verdict = [];
-  if (!isBarcodeValid) verdict.push(Verdict.INVALID_BARCODES_FILE);
-  if (!isFeaturesValid) verdict.push(Verdict.INVALID_FEATURES_FILE);
+  if (numBarcodeLines !== barcodeSize) verdict.push(Verdict.INVALID_BARCODES_FILE);
+  if (numFeaturesLines !== featuresSize) verdict.push(Verdict.INVALID_FEATURES_FILE);
+  if (numBarcodeLines === featuresSize && numFeaturesLines === barcodeSize) {
+    verdict.push(Verdict.INVALID_SAMPLE_FILE_TRANSPOSED);
+  }
+
+  const valid = numBarcodeLines === barcodeSize && numFeaturesLines === featuresSize;
 
   return { valid, verdict };
 };
