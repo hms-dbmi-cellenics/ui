@@ -3,9 +3,9 @@ import generateVitessceHeatmapTracksData from 'components/plots/helpers/heatmap/
 
 const generateVitessceData = (
   cellOrder, heatmapSettings,
-  expression, cellSets,
+  expression, selectedGenes, cellSets,
 ) => {
-  const { selectedGenes, selectedTracks } = heatmapSettings;
+  const { selectedTracks } = heatmapSettings;
 
   const trackColorData = generateVitessceHeatmapTracksData(
     selectedTracks, cellSets, cellOrder,
