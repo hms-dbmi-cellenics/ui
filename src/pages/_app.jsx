@@ -111,6 +111,16 @@ const WrappedApp = ({ Component, pageProps }) => {
         );
       }
 
+      if (httpError === 424) {
+        return (
+          <NotFoundPage
+            title='Terms agreement required'
+            subTitle={'You don\'t have access to the platform.'}
+            hint='First please go to data management and accept the privacy policy.'
+          />
+        );
+      }
+
       if (httpError === 401) {
         return (
           <UnauthorizedPage
