@@ -27,7 +27,7 @@ import PreloadContent from 'components/PreloadContent';
 import experimentUpdatesHandler from 'utils/experimentUpdatesHandler';
 import { getBackendStatus } from 'redux/selectors';
 import { loadBackendStatus } from 'redux/actions/backendStatus';
-import { DomainName, isBrowser, privacyPolicyIsNotAccepted } from 'utils/deploymentInfo';
+import { isBrowser, privacyPolicyIsNotAccepted } from 'utils/deploymentInfo';
 
 import Error from 'pages/_error';
 

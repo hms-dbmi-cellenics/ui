@@ -33,7 +33,7 @@ const handleGenericErrors = (error, message, notifyUser) => {
   }
 
   if (environment === Environment.PRODUCTION) {
-    // add the intended user message to the error to now where
+    // add the intended user message to the error to know where
     // the error comes from
     if (message) {
       // eslint-disable-next-line no-param-reassign

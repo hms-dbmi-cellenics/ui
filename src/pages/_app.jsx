@@ -116,7 +116,7 @@ const WrappedApp = ({ Component, pageProps }) => {
           <NotFoundPage
             title='Terms agreement required'
             subTitle={'You don\'t have access to the platform.'}
-            hint='First please go to data management and accept the privacy policy.'
+            hint='To get access, go to data management and accept the privacy policy.'
           />
         );
       }
