@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import { mount } from 'enzyme';
-import { within, fireEvent } from '@testing-library/dom';
+import { within } from '@testing-library/dom';
 import userEvent from '@testing-library/user-event';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import _ from 'lodash';
@@ -106,7 +106,7 @@ const getCurrentGeneOrder = (component) => {
   });
   newOrder.splice(0, 1);
   return newOrder;
-}
+};
 
 const renderHeatmapPage = async (store) => {
   await act(async () => (
@@ -167,7 +167,7 @@ describe('Marker heatmap plot', () => {
     expect(screen.getByText(/Colours/i)).toBeInTheDocument();
     expect(screen.getByText(/Legend/i)).toBeInTheDocument();
   });
-  
+
   it('Loads the plot', async () => {
     await renderHeatmapPage(storeState);
 
@@ -259,6 +259,24 @@ describe('Marker heatmap plot', () => {
     // Check that the genes is ordered correctly.
     // This means that FAKEGENE should not be the last in the genes list
     expect(_.isEqual(displayedGenesList, genesToLoad)).toEqual(false);
+  });
+
+  it('Shows an information text if a selected cell set does not contain enough number of samples', async () => {
+    await renderHeatmapPage(storeState);
+
+    // Open the toggle
+    userEvent.click(screen.getByText(/Select data/i));
+
+    // Click custom cell sets
+    userEvent.click(screen.getByText(/louvain clusters/i));
+    userEvent.click(screen.getByText(/Custom cell sets/i), null, { skipPointerEventsCheck: true });
+
+    // It shouldn't show the plot
+    expect(screen.queryByRole('graphics-document', { name: 'Marker heatmap' })).toBeNull();
+
+    // There is an error message
+    expect(screen.getByText(/There is no data to show/i)).toBeInTheDocument();
+    expect(screen.getByText(/Select another option from the 'Select data' menu/i)).toBeInTheDocument();
   });
 
   it('Shows an error message if gene expression fails to load', async () => {

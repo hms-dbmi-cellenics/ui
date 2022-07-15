@@ -6,11 +6,14 @@ import React from 'react';
 import userEvent from '@testing-library/user-event';
 import { act } from 'react-dom/test-utils';
 import { Provider } from 'react-redux';
-import { loadBackendStatus } from 'redux/actions/backendStatus';
-import { loadPlotConfig, updatePlotConfig } from 'redux/actions/componentConfig';
-import { makeStore } from 'redux/store';
-
+import { seekFromS3 } from 'utils/work/seekWorkResponse';
+import expressionDataFAKEGENE from '__test__/data/gene_expression_FAKEGENE.json';
 import cellSetsWithScratchpad from '__test__/data/cell_sets_with_scratchpad.json';
+
+import { loadBackendStatus } from 'redux/actions/backendStatus';
+import { loadGeneExpression } from 'redux/actions/genes';
+import { updatePlotConfig } from 'redux/actions/componentConfig';
+import { makeStore } from 'redux/store';
 
 import preloadAll from 'jest-next-dynamic';
 
@@ -45,9 +48,34 @@ jest.mock('redux/actions/componentConfig', () => {
   };
 });
 
+// Mock hash so we can control the ETag that is produced by hash.MD5 when fetching work requests
+// EtagParams is the object that's passed to the function which generates ETag in fetchWork
+jest.mock('object-hash', () => {
+  const objectHash = jest.requireActual('object-hash');
+  const mockWorkResultETag = jest.requireActual('__test__/test-utils/mockWorkResultETag').default;
+
+  const mockWorkRequestETag = (ETagParams) => {
+    if (ETagParams.body.name === 'ListGenes') return 'ListGenes';
+    return `${ETagParams.body.nGenes}-marker-genes`;
+  };
+
+  const mockGeneExpressionETag = (ETagParams) => `${ETagParams.missingGenesBody.genes.join('-')}-expression`;
+
+  return mockWorkResultETag(objectHash, mockWorkRequestETag, mockGeneExpressionETag);
+});
+
+jest.mock('utils/work/seekWorkResponse', () => ({
+  __esModule: true,
+  dispatchWorkRequest: jest.fn(() => true),
+  seekFromS3: jest.fn(),
+}));
+
+const mockWorkerResponses = {
+  'FAKEGENE-expression': expressionDataFAKEGENE,
+};
+
 const experimentId = fake.EXPERIMENT_ID;
 const plotUuid = 'heatmapPlotMain';
-const plotType = 'heatmap';
 let storeState = null;
 
 const customAPIResponses = {
@@ -93,7 +121,6 @@ describe('Heatmap plot', () => {
 
     // Set up state for backend status
     await storeState.dispatch(loadBackendStatus(experimentId));
-    await storeState.dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
   });
 
   it('Loads controls and elements', async () => {
@@ -115,19 +142,6 @@ describe('Heatmap plot', () => {
     expect(screen.getByText(/Add some genes to this heatmap to get started/i)).toBeInTheDocument();
   });
 
-  it('Changing clusters updates the plot data', async () => {
-    await renderHeatmapPage(storeState);
-
-    // Open the Select Data panel
-    userEvent.click(screen.getByText(/Select data/i));
-
-    // Change from Louvain to Custom cell sets
-    userEvent.click(screen.getByText(/Louvain/i));
-    userEvent.click(screen.getByText(/Custom cell sets/i), null, { skipPointerEventsCheck: true });
-
-    expect(updatePlotConfig).toHaveBeenCalled();
-  });
-
   it('It shows an informative text if there are cell sets to show', async () => {
     await renderHeatmapPage(storeState);
 
@@ -139,7 +153,8 @@ describe('Heatmap plot', () => {
     userEvent.click(screen.getByText(/Custom cell sets/i), null, { skipPointerEventsCheck: true });
 
     expect(updatePlotConfig).toHaveBeenCalled();
-    expect(screen.getByText(/There are no custom cell sets to show/i)).toBeInTheDocument();
+    expect(screen.getByText(/There is no data to show/i)).toBeInTheDocument();
+    expect(screen.getByText(/Select another option from the 'Select data' menu/i)).toBeInTheDocument();
   });
 
   it('Shows the plot if there are custom clusters to show', async () => {
@@ -154,7 +169,6 @@ describe('Heatmap plot', () => {
     );
 
     fetchMock.mockIf(/.*/, mockAPI(withScratchpadResponse));
-    await storeState.dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
 
     await renderHeatmapPage(storeState);
 
@@ -166,6 +180,47 @@ describe('Heatmap plot', () => {
     userEvent.click(screen.getByText(/Custom cell sets/i), null, { skipPointerEventsCheck: true });
 
     expect(updatePlotConfig).toHaveBeenCalled();
-    expect(screen.queryByText(/There are no custom cell sets to show/i)).toBeNull();
+    expect(screen.queryByText(/There is no data to show/i)).toBeNull();
+  });
+
+  it('Changing chosen cluster updates the plot data', async () => {
+    const withScratchpadResponse = _.merge(
+      generateDefaultMockAPIResponses(experimentId),
+      customAPIResponses,
+      {
+        [`experiments/${experimentId}/cellSets`]: () => promiseResponse(
+          JSON.stringify(cellSetsWithScratchpad),
+        ),
+      },
+    );
+
+    fetchMock.mockIf(/.*/, mockAPI(withScratchpadResponse));
+
+    seekFromS3
+      .mockReset()
+      .mockImplementationOnce(() => null)
+      .mockImplementationOnce((Etag) => mockWorkerResponses[Etag]);
+
+    await renderHeatmapPage(storeState);
+
+    const genesToLoad = ['FAKEGENE'];
+
+    await act(async () => {
+      await storeState.dispatch(loadGeneExpression(experimentId, genesToLoad, plotUuid));
+    });
+
+    // Open the Select Data panel
+    userEvent.click(screen.getByText(/Select data/i));
+
+    // Change to display another cell set
+    userEvent.click(screen.getByText(/All/i));
+    await act(async () => {
+      userEvent.click(screen.getByText(/Copied KO/i), null, { skipPointerEventsCheck: true });
+    });
+
+    // 2 calls:
+    // 1 for the selected gene (loadGeneExpression)
+    // 1 for changing the cell set
+    expect(updatePlotConfig).toHaveBeenCalledTimes(2);
   });
 });

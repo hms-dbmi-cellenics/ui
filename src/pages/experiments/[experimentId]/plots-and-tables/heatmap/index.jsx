@@ -15,12 +15,13 @@ import { loadCellSets } from 'redux/actions/cellSets';
 import PlatformError from 'components/PlatformError';
 import Loader from 'components/Loader';
 import populateHeatmapData from 'components/plots/helpers/heatmap/populateHeatmapData';
-import { getCellSets, getCellSetsHierarchyByType } from 'redux/selectors';
+import { getCellSets } from 'redux/selectors';
 import { plotNames } from 'utils/constants';
+import SelectData from 'components/plots/styling/SelectData';
 import HeatmapGroupBySettings from 'components/data-exploration/heatmap/HeatmapGroupBySettings';
 import HeatmapMetadataTrackSettings from 'components/data-exploration/heatmap/HeatmapMetadataTrackSettings';
 
-import getSelectOptions from 'utils/plots/getSelectOptions';
+import generateVegaData from 'components/plots/helpers/heatmap/vega/generateVegaData';
 
 const { Panel } = Collapse;
 
@@ -36,8 +37,6 @@ const HeatmapPlot = ({ experimentId }) => {
   const selectedGenes = useSelector((state) => state.genes.expression.views[plotUuid]?.data) || [];
   const [vegaSpec, setVegaSpec] = useState();
   const displaySavedGenes = useRef(true);
-
-  const cellOptions = useSelector(getCellSetsHierarchyByType('cellSets'));
 
   useEffect(() => {
     if (!config) dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
@@ -75,7 +74,9 @@ const HeatmapPlot = ({ experimentId }) => {
       return;
     }
 
-    const data = populateHeatmapData(cellSets, config, expressionData, selectedGenes);
+    const cellOrder = populateHeatmapData(cellSets, config);
+    const data = generateVegaData(cellOrder, expressionData, config, cellSets);
+
     const displayLabels = selectedGenes.length <= 53;
     const spec = generateSpec(config, 'Cluster ID', data, displayLabels);
 
@@ -139,13 +140,6 @@ const HeatmapPlot = ({ experimentId }) => {
     },
   ];
 
-  const clustersForSelect = getSelectOptions(cellOptions);
-
-  const changeClusters = (option) => {
-    const newValue = option.value.toLowerCase();
-    updatePlotWithChanges({ selectedCellSet: newValue });
-  };
-
   const renderExtraPanels = () => (
     <>
       <Panel header='Gene selection' key='gene-selection'>
@@ -170,19 +164,13 @@ const HeatmapPlot = ({ experimentId }) => {
         </Space>
       </Panel>
       <Panel header='Select data' key='select-data'>
-        <Space direction='vertical' size='small'>
-          <p>Select cell sets to show in the heatmap:</p>
-          <Select
-            value={{
-              value: config.selectedCellSet,
-            }}
-            onChange={changeClusters}
-            labelInValue
-            style={{ width: '100%' }}
-            placeholder='Select cell set...'
-            options={clustersForSelect}
-          />
-        </Space>
+        <SelectData
+          config={config}
+          onUpdate={updatePlotWithChanges}
+          cellSets={cellSets}
+          firstSelectionText='Select the cell sets or metadata to show expression for'
+          secondSelectionText='Select the cell set, sample or metadata group to be shown'
+        />
       </Panel>
       <Panel header='Metadata tracks' key='metadata-tracks'>
         <HeatmapMetadataTrackSettings componentType={plotUuid} />
@@ -194,6 +182,24 @@ const HeatmapPlot = ({ experimentId }) => {
   );
 
   const renderPlot = () => {
+    if (isCellSetEmpty(config.selectedCellSet)) {
+      return (
+        <center>
+          <Empty description={(
+            <>
+              <p>
+                There is no data to show.
+              </p>
+              <p>
+                Select another option from the 'Select data' menu.
+              </p>
+            </>
+          )}
+          />
+        </center>
+      );
+    }
+
     if (!config || loading.length > 0 || cellSets.loading) {
       return (
         <Loader experimentId={experimentId} />
@@ -206,19 +212,6 @@ const HeatmapPlot = ({ experimentId }) => {
           description='Could not load gene expression data.'
           error={error}
           onClick={() => dispatch(loadGeneExpression(experimentId, selectedGenes, plotUuid))}
-        />
-      );
-    }
-
-    if (isCellSetEmpty(config.selectedCellSet)) {
-      return (
-        <Empty description={(
-          <>
-            There are no custom cell sets to show
-            <br />
-            Create some custom cell sets in Data Exploration
-          </>
-        )}
         />
       );
     }

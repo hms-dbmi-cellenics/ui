@@ -38,11 +38,11 @@ describe('Select Data', () => {
     });
 
     // It has the first dropdown
-    expect(screen.getByText(/Select the Cell sets or Metadata that cells are grouped by \(determines the y-axis\)/)).toBeInTheDocument();
+    expect(screen.getByText(/Select the cell sets or metadata that cells are grouped by/i)).toBeInTheDocument();
     expect(screen.getByRole('combobox', { name: 'selectCellSets' }));
 
     // It has the second dropdown
-    expect(screen.getByText(/Select the Cell sets or Metadata to be shown as data:/)).toBeInTheDocument();
+    expect(screen.getByText(/Select the cell sets or metadata to be shown as data/i)).toBeInTheDocument();
     expect(screen.getByRole('combobox', { name: 'selectPoints' }));
   });
 
@@ -79,22 +79,19 @@ describe('Select Data', () => {
     expect(screen.getByText(/Error loading cell set/i)).toBeInTheDocument();
   });
 
-  it('Shows x or y axis properly according to config ', async () => {
-    await act(async () => {
-      render(selectDataFactory());
-    });
-
-    // It shows y-axis by default
-    expect(screen.getByText(/determines the y-axis/)).toBeInTheDocument();
+  it('Renders custom texts properly', async () => {
+    const firstSelectionText = 'First selection text';
+    const secondSelectionText = 'Second selection text';
 
     await act(async () => {
-      render(
-        selectDataFactory({ axisName: 'x' }),
-      );
+      render(selectDataFactory({
+        firstSelectionText,
+        secondSelectionText,
+      }));
     });
 
-    // It shows x-axis if configured
-    expect(screen.getByText(/determines the x-axis/)).toBeInTheDocument();
+    expect(screen.getByText(firstSelectionText)).toBeInTheDocument();
+    expect(screen.getByText(secondSelectionText)).toBeInTheDocument();
   });
 
   it('Changing the first option triggers onUpdate ', async () => {
