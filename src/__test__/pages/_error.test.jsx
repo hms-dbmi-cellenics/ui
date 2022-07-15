@@ -7,6 +7,7 @@ import { makeStore } from 'redux/store';
 
 import postErrorToSlack from 'utils/postErrorToSlack';
 import loadDeploymentInfo from 'redux/actions/networkResources/loadDeploymentInfo';
+import { DomainName } from 'utils/deploymentInfo';
 
 import createTestComponentFactory from '__test__/test-utils/testComponentFactory';
 
@@ -36,7 +37,7 @@ describe('ErrorPage', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     storeState = makeStore();
-    storeState.dispatch(loadDeploymentInfo({ environment: 'production' }));
+    storeState.dispatch(loadDeploymentInfo({ environment: 'production', domainName: DomainName.BIOMAGE }));
   });
 
   it('Renders properly without props', () => {
@@ -70,7 +71,7 @@ describe('ErrorPage', () => {
   });
 
   it('Should post error to Slack if environment is production', () => {
-    storeState.dispatch(loadDeploymentInfo({ environment: 'production' }));
+    storeState.dispatch(loadDeploymentInfo({ environment: 'production', domainName: DomainName.BIOMAGE }));
 
     renderErrorPage(mockErrorProp, storeState);
 
@@ -79,7 +80,7 @@ describe('ErrorPage', () => {
   });
 
   it('Should post error to Slack if environment is staging', () => {
-    storeState.dispatch(loadDeploymentInfo({ environment: 'staging' }));
+    storeState.dispatch(loadDeploymentInfo({ environment: 'staging', domainName: DomainName.BIOMAGE }));
 
     renderErrorPage(mockErrorProp, storeState);
 
@@ -88,7 +89,7 @@ describe('ErrorPage', () => {
   });
 
   it('Should not post error to Slack if environment is not production', () => {
-    storeState.dispatch(loadDeploymentInfo({ environment: 'development' }));
+    storeState.dispatch(loadDeploymentInfo({ environment: 'development', domainName: DomainName.BIOMAGE }));
 
     renderErrorPage(mockErrorProp, storeState);
 
