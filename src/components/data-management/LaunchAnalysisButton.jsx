@@ -113,7 +113,8 @@ const LaunchAnalysisButton = () => {
       if (!samples[sampleUuid]) return false;
 
       const checkedSample = samples[sampleUuid];
-      return allSampleFilesUploaded(checkedSample)
+      return checkedSample.valid
+        && allSampleFilesUploaded(checkedSample)
         && allSampleMetadataInserted(checkedSample);
     });
     return canLaunch;
@@ -129,7 +130,7 @@ const LaunchAnalysisButton = () => {
     if (!canLaunchAnalysis()) {
       return (
         <Tooltip
-          title='Ensure that all samples are uploaded successfully and all relevant metadata is inserted.'
+          title='Ensure that all samples are valid, uploaded successfully, and all relevant metadata is inserted.'
         >
           {/* disabled button inside tooltip causes tooltip to not function */}
           {/* https://github.com/react-component/tooltip/issues/18#issuecomment-140078802 */}
