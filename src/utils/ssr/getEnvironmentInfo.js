@@ -2,11 +2,8 @@ import loadDeploymentInfo from 'redux/actions/networkResources/loadDeploymentInf
 import { ssrGetDeploymentInfo } from 'utils/deploymentInfo';
 
 const getEnvironmentInfo = async (context, store) => {
-  if (
-    store.getState().networkResources.environment
-  ) {
-    return;
-  }
+  const { networkResources } = store.getState();
+  if (networkResources.environment && networkResources.domainName) return;
 
   const { environment, domainName } = ssrGetDeploymentInfo();
 
