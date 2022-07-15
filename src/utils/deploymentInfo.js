@@ -38,7 +38,7 @@ const ssrGetDeploymentInfo = () => {
 
   let domainName;
   if (
-    [DomainName.BIOMAGE, DomainName.BIOMAGE_STAGING].includes(domainName)
+    [DomainName.BIOMAGE, DomainName.BIOMAGE_STAGING].includes(process.env.DOMAIN_NAME)
     || currentEnvironment === Environment.DEVELOPMENT
   ) {
     domainName = DomainName.BIOMAGE;
