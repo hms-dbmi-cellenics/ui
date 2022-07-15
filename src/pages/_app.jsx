@@ -115,8 +115,9 @@ const WrappedApp = ({ Component, pageProps }) => {
         return (
           <NotFoundPage
             title='Terms agreement required'
-            subTitle={'You don\'t have access to the platform.'}
-            hint='To get access, go to data management and accept the privacy policy.'
+            subTitle='You cannot access your analysis in Cellenics until you have agreed to our updated privacy policy.'
+            hint='Go to data management to accept the terms.'
+            primaryActionText='Go to data management'
           />
         );
       }
