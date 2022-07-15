@@ -94,6 +94,7 @@ const DotPlotPage = (props) => {
   const { data: geneData } = useSelector((state) => state.genes.properties || {});
 
   const cellSets = useSelector(getCellSets());
+
   const {
     loading: cellSetsLoading,
     error: cellSetsError,
