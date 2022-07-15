@@ -2,29 +2,29 @@ import generateVitessceHeatmapExpressionsMatrix from 'components/plots/helpers/h
 import generateVitessceHeatmapTracksData from 'components/plots/helpers/heatmap/vitessce/utils/generateVitessceHeatmapTracksData';
 
 const generateVitessceData = (
-  cellOrder, geneOrder, trackOrder,
-  expression, heatmapSettings, cellSets,
+  cellOrder, heatmapSettings,
+  expression, cellSets,
 ) => {
-  const cells = new Set(cellOrder);
+  const { selectedGenes, selectedTracks } = heatmapSettings;
 
   const trackColorData = generateVitessceHeatmapTracksData(
-    trackOrder, cellSets, cells,
+    selectedTracks, cellSets, cellOrder,
   );
 
   // Expression matrix is an array
   // with shape [cell_1 gene_1, ..., cell_1 gene_n, cell_2 gene_1, ... ]
   const expressionMatrix = generateVitessceHeatmapExpressionsMatrix(
     cellOrder,
-    geneOrder,
+    selectedGenes,
     expression,
   );
 
-  const metadataTracksLabels = heatmapSettings.selectedTracks
+  const metadataTracksLabels = selectedTracks
     .map((cellClassKey) => cellSets.properties[cellClassKey].name);
 
   return {
     expressionMatrix: {
-      cols: geneOrder,
+      cols: selectedGenes,
       rows: cellOrder.map((x) => `${x}`),
       matrix: Uint8Array.from(expressionMatrix),
     },

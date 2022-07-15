@@ -1,18 +1,16 @@
 import _ from 'lodash';
 
-import generateVegaData from 'components/plots/helpers/heatmap/vega/generateVegaData';
-import generateVitessceData from 'components/plots/helpers/heatmap/vitessce/generateVitessceData';
-
 import SetOperations from 'utils/setOperations';
 import { union } from 'utils/cellSetOperations';
-import { reversed } from 'utils/arrayUtils';
 
 const populateHeatmapData = (
-  cellSets, heatmapSettings, expression,
-  selectedGenes, downsampling = false, vitessce = false,
+  cellSets, heatmapSettings,
+  downsampling = false,
 ) => {
   const { hierarchy, properties, hidden } = cellSets;
-  const { selectedTracks, groupedTracks } = heatmapSettings;
+  const {
+    groupedTracks, selectedCellSet, selectedPoints,
+  } = heatmapSettings;
 
   const maxCells = 1000;
   const getCellsInSet = (cellSetName) => properties[cellSetName].cellIds;
@@ -80,18 +78,21 @@ const populateHeatmapData = (
   };
 
   const getAllEnabledCellIds = () => {
-    // we want to avoid displaying elements which are not in a louvain cluster
-    // so initially consider as enabled only cells in louvain clusters
-    // See: https://biomage.atlassian.net/browse/BIOMAGE-809
-    const selectedCellSet = heatmapSettings?.selectedCellSet ? heatmapSettings.selectedCellSet : 'louvain';
-    const selectedClusters = hierarchy.find(
-      (clusters) => clusters.key === selectedCellSet,
-    );
-    const cellIsInLouvainCluster = getCellsSetInGroup(selectedClusters);
+    let cellIds;
+
+    if (selectedPoints === 'All') {
+      const selectedClusters = hierarchy.find(
+        (clusters) => clusters.key === selectedCellSet,
+      );
+      cellIds = getCellsSetInGroup(selectedClusters);
+    } else {
+      const cellSetKey = selectedPoints.split('/')[1];
+      cellIds = getCellsInSet(cellSetKey);
+    }
 
     // Remove cells from groups marked as hidden by the user in the UI.
     const hiddenCellIds = union(Array.from(hidden), properties);
-    const enabledCellIds = new Set([...cellIsInLouvainCluster]
+    const enabledCellIds = new Set([...cellIds]
       .filter((cellId) => !hiddenCellIds.has(cellId)));
 
     return enabledCellIds;
@@ -141,23 +142,22 @@ const populateHeatmapData = (
 
     return cellIds;
   };
-  // For now, this is statically defined. In the future, these values are
-  // controlled from the settings panel in the heatmap.
 
-  // Do downsampling and return cellIds with their order by groupings.
-  const cellOrder = generateCellOrder(groupedTracks);
-  const geneOrder = selectedGenes;
-
-  if (!vitessce) {
-    return generateVegaData(
-      cellOrder, geneOrder, reversed(selectedTracks),
-      expression, heatmapSettings, cellSets,
-    );
-  }
-
-  return generateVitessceData(
-    cellOrder, geneOrder, selectedTracks,
-    expression, heatmapSettings, cellSets,
+  let firstOptionCellIds = hierarchy.find(
+    (cellSet) => cellSet.key === selectedCellSet,
+  ).children.reduce(
+    (acc, cellSet) => [
+      ...acc,
+      ...properties[cellSet.key].cellIds,
+    ], [],
   );
+
+  firstOptionCellIds = new Set(firstOptionCellIds);
+
+  const filteredCellOrder = generateCellOrder(groupedTracks)
+    .filter((cellId) => firstOptionCellIds.has(cellId));
+
+  return filteredCellOrder;
 };
+
 export default populateHeatmapData;

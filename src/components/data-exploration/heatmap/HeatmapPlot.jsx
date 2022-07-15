@@ -24,6 +24,7 @@ import HeatmapTracksCellInfo from 'components/data-exploration/heatmap/HeatmapTr
 
 import getContainingCellSetsProperties from 'utils/cellSets/getContainingCellSetsProperties';
 import useConditionalEffect from 'utils/customHooks/useConditionalEffect';
+import generateVitessceData from 'components/plots/helpers/heatmap/vitessce/generateVitessceData';
 
 const COMPONENT_TYPE = 'interactiveHeatmap';
 
@@ -134,10 +135,10 @@ const HeatmapPlot = (props) => {
       return;
     }
 
-    const data = populateHeatmapData(
-      cellSets, heatmapSettings, expressionData, selectedGenes, true, true,
-    );
+    const cellOrder = populateHeatmapData(cellSets, heatmapSettings, true);
 
+    heatmapSettings.selectedGenes = selectedGenes;
+    const data = generateVitessceData(cellOrder, heatmapSettings, expressionData, cellSets);
     setHeatmapData(data);
   }, [
     selectedGenes,
