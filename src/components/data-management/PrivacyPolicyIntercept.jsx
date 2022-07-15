@@ -42,6 +42,7 @@ const PrivacyPolicyIntercept = (props) => {
       cancelButtonProps={{ danger: true }}
       okButtonProps={{ disabled: agreedPrivacyPolicy !== 'true' }}
       closable={false}
+      maskClosable={false}
       onOk={async () => {
         await Auth.updateUserAttributes(
           user,
