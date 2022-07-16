@@ -5,13 +5,13 @@ import {
 const Verdict = {
   INVALID_BARCODES_FILE: 'INVALID_SAMPLE_FILES',
   INVALID_FEATURES_FILE: 'INVALID_FEATURES_FILE',
-  INVALID_SAMPLE_FILE_TRANSPOSED: 'INVALID_SAMPLE_FILE_TRANSPOSED',
+  INVALID_TRANSPOSED_MATRIX: 'INVALID_TRANSPOSED_MATRIX',
 };
 
 const verdictText = {
   [Verdict.INVALID_BARCODES_FILE]: 'Barcodes file is invalid',
   [Verdict.INVALID_FEATURES_FILE]: 'Features file is invalid',
-  [Verdict.INVALID_SAMPLE_FILE_TRANSPOSED]: 'Sample files are transposed',
+  [Verdict.INVALID_TRANSPOSED_MATRIX]: 'Sample files are transposed',
 };
 
 const CHUNK_SIZE = 2 ** 18; // 250 kb
@@ -92,13 +92,16 @@ const validateFileSizes = async (sample) => {
   const numFeaturesLines = await getNumLines(features);
 
   const verdict = [];
-  if (numBarcodeLines !== barcodeSize) verdict.push(Verdict.INVALID_BARCODES_FILE);
-  if (numFeaturesLines !== featuresSize) verdict.push(Verdict.INVALID_FEATURES_FILE);
-  if (numBarcodeLines === featuresSize && numFeaturesLines === barcodeSize) {
-    verdict.push(Verdict.INVALID_SAMPLE_FILE_TRANSPOSED);
-  }
-
   const valid = numBarcodeLines === barcodeSize && numFeaturesLines === featuresSize;
+
+  const isSampleTransposed = numBarcodeLines === featuresSize && numFeaturesLines === barcodeSize;
+  const isBarcodesInvalid = numBarcodeLines !== barcodeSize;
+  const isFeaturesInvalid = numFeaturesLines !== featuresSize;
+
+  if (isSampleTransposed) { verdict.push(Verdict.INVALID_TRANSPOSED_MATRIX); } else {
+    if (isBarcodesInvalid) verdict.push(Verdict.INVALID_BARCODES_FILE);
+    if (isFeaturesInvalid) verdict.push(Verdict.INVALID_FEATURES_FILE);
+  }
 
   return { valid, verdict };
 };
@@ -128,5 +131,6 @@ const inspectSample = async (sample) => {
 
 export {
   inspectSample,
+  Verdict,
   verdictText,
 };

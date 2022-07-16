@@ -177,11 +177,11 @@ const SampleNameCell = (props) => {
         />
       </Text>
       {
-        !record.valid ? (
+        !record.valid && (
           <Tooltip placement='top' overlayStyle={{ whiteSpace: 'pre-line' }} title={record.validationMessage}>
             <WarningFilled style={{ color: 'red', fontSize: '1.2em' }} />
           </Tooltip>
-        ) : ''
+        )
       }
     </Space>
   );
