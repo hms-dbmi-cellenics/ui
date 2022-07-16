@@ -35,6 +35,8 @@ import { getCellSets } from 'redux/selectors';
 
 import { plotNames, plotTypes } from 'utils/constants';
 
+import ScrollOnDrag from 'components/plots/ScrollOnDrag';
+
 const { Panel } = Collapse;
 
 const plotUuid = 'dotPlotMain';
@@ -103,7 +105,7 @@ const DotPlotPage = (props) => {
   } = cellSets;
 
   const [moreThanTwoGroups, setMoreThanTwoGroups] = useState(false);
-  const [reorderFetched, setReorderFetched] = useState(false);
+  const [reorderAfterFetch, setReorderAfterFetch] = useState(false);
 
   const experimentName = useSelector((state) => state.experimentSettings.info.experimentName);
   const csvFileName = fileNames(experimentName, 'DOT_PLOT', [config?.selectedCellSet, config?.selectedPoints]);
@@ -167,9 +169,6 @@ const DotPlotPage = (props) => {
     // If using marker genes, check that the selected number is more than 0
     if (config.useMarkerGenes && config.nMarkerGenes === 0) return false;
 
-    // Skip fetch for initial reorder
-    // if (initialReorder) return false;
-
     return true;
   };
 
@@ -221,7 +220,7 @@ const DotPlotPage = (props) => {
 
       if (currentSelected.length > previousSelected.length) {
         dispatch(fetchPlotDataWork(experimentId, plotUuid, plotType));
-        setReorderFetched(true);
+        setReorderAfterFetch(true);
         return;
       }
 
@@ -255,6 +254,12 @@ const DotPlotPage = (props) => {
     dispatch(loadPaginatedGeneProperties(experimentId, ['dispersions'], searchBarUuid, state));
   }, []);
 
+  const treeScrollable = document.getElementById('ScrollWrapper');
+
+  useEffect(() => {
+    if (treeScrollable) ScrollOnDrag(treeScrollable);
+  }, [treeScrollable]);
+
   // find genes with highest dispersion from list of genes sorted by name
   const loadHighestDispersionGenes = () => {
     const highestDispersions = Object.values(geneData).map((gene) => gene.dispersions).sort().splice(-config.nMarkerGenes);
@@ -268,21 +273,21 @@ const DotPlotPage = (props) => {
 
   // load initial state, based on highest dispersion genes from all genes
   useEffect(() => {
-    if (Object.keys(geneData).length === 0 || !config) {
+    console.log('test');
+    if (Object.keys(geneData).length === 0) {
       return;
     }
-
+    console.log('test2');
     loadHighestDispersionGenes();
   }, [geneData]);
 
   // When fetching new genes, reorder data to match selected genes
   useEffect(() => {
-    // is there a better way to get number of cell sets?
-    if (plotData?.length !== cellSetHierarchy[0]?.children.length * config?.selectedGenes.length || !reorderFetched) return;
+    if (plotData?.length !== cellSetHierarchy[0]?.children.length * config?.selectedGenes.length || !reorderAfterFetch) return;
 
     reorderData(config.selectedGenes);
 
-    setReorderFetched(false);
+    setReorderAfterFetch(false);
   }, [plotData]);
 
   const getCSVData = () => {
@@ -303,13 +308,13 @@ const DotPlotPage = (props) => {
     dispatch(updatePlotConfig(plotUuid, obj));
   };
 
-  const onDataChange = (genes) => {
+  const onGenesChange = (genes) => {
     updatePlotWithChanges({ selectedGenes: genes });
   };
 
   const onReset = () => {
-    onDataChange([]);
-    loadMarkerGenes();
+    onGenesChange([]);
+    loadHighestDispersionGenes();
   };
 
   const renderExtraPanels = () => (
@@ -322,7 +327,7 @@ const DotPlotPage = (props) => {
           experimentId={experimentId}
           onUpdate={updatePlotWithChanges}
           onReset={onReset}
-          onDataChange={onDataChange}
+          onGenesChange={onGenesChange}
         />
       </Panel>
       <Panel header='Select data' key='select-data'>

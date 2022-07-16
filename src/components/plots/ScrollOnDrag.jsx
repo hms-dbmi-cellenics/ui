@@ -15,15 +15,12 @@ const findPos = (elem) => {
   return posTop;
 };
 
-const ScrollOnDrag = () => {
-  const treeScrollable = document.querySelector('div#ScrollWrapper');
-  if (!treeScrollable) return;
-
+const ScrollOnDrag = (treeScrollable) => {
   const treeTop = findPos(treeScrollable);
-  const treeHeight = treeScrollable.clientHeight;
   let interval;
 
   const handleScrollOnDrag = (event) => {
+    const treeHeight = treeScrollable.clientHeight;
     const relY = event.clientY - treeTop;
 
     clearInterval(interval);

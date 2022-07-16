@@ -249,10 +249,10 @@ const MarkerHeatmap = ({ experimentId }) => {
     dispatch(loadPaginatedGeneProperties(experimentId, ['dispersions'], searchBarUuid, state));
   }, []);
 
-  const treeScrollable = document.querySelector('div#ScrollWrapper');
+  const treeScrollable = document.getElementById('ScrollWrapper');
 
   useEffect(() => {
-    ScrollOnDrag();
+    if (treeScrollable) ScrollOnDrag(treeScrollable);
   }, [treeScrollable]);
 
   // updatedField is a subset of what default config has and contains only the things we want change
@@ -298,12 +298,12 @@ const MarkerHeatmap = ({ experimentId }) => {
     },
   ];
 
-  const onDataChange = (genes) => {
+  const onGenesChange = (genes) => {
     dispatch(loadGeneExpression(experimentId, genes, plotUuid));
   };
 
   const onReset = () => {
-    onDataChange([]);
+    onGenesChange([]);
     dispatch(loadMarkerGenes(
       experimentId,
       louvainClustersResolution,
@@ -334,7 +334,7 @@ const MarkerHeatmap = ({ experimentId }) => {
           experimentId={experimentId}
           onUpdate={updatePlotWithChanges}
           onReset={onReset}
-          onDataChange={onDataChange}
+          onGenesChange={onGenesChange}
         />
         <div style={{ paddingTop: '10px' }}>
           <p>Gene labels:</p>
