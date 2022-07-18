@@ -1,6 +1,9 @@
 const isBrowser = typeof window !== 'undefined' && typeof window.document !== 'undefined';
 
-const privacyPolicyIsNotAccepted = (user, domainName) => user?.attributes['custom:agreed_terms'] !== 'true' && domainName === DomainName.BIOMAGE;
+const privacyPolicyIsNotAccepted = (user, domainName) => (
+  user?.attributes['custom:agreed_terms'] !== 'true'
+  && (domainName === DomainName.BIOMAGE || domainName === DomainName.BIOMAGE_STAGING)
+);
 
 const Environment = {
   DEVELOPMENT: 'development',
@@ -16,12 +19,12 @@ const DomainName = {
 const ssrGetDeploymentInfo = () => {
   let currentEnvironment = null;
 
-  if (process.env.NODE_ENV === 'test') {
-    return Environment.DEVELOPMENT;
-  }
-
   if (!process.env) {
     throw new Error('ssrGetDeploymentInfo must be called on the server side. Refer to `store.networkResources.environment` for the actual environment.');
+  }
+
+  if (process.env.NODE_ENV === 'test') {
+    return { environment: Environment.DEVELOPMENT, domainName: DomainName.BIOMAGE };
   }
 
   switch (process.env.K8S_ENV) {
@@ -36,13 +39,9 @@ const ssrGetDeploymentInfo = () => {
       break;
   }
 
-  let domainName;
-  if (
-    [DomainName.BIOMAGE, DomainName.BIOMAGE_STAGING].includes(process.env.DOMAIN_NAME)
-    || currentEnvironment === Environment.DEVELOPMENT
-  ) {
-    domainName = DomainName.BIOMAGE;
-  }
+  const domainName = currentEnvironment !== Environment.DEVELOPMENT
+    ? process.env.DOMAIN_NAME
+    : DomainName.BIOMAGE;
 
   return { environment: currentEnvironment, domainName };
 };
