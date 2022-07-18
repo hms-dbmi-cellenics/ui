@@ -62,22 +62,21 @@ const getAuthenticationInfo = async () => {
    * because we do not have a way to reliably replicate Cognito in
    * local development.
    */
-  // const k8sEnv = process.env.K8S_ENV || 'staging';
-  // const userPoolName = `test-biomage-userpool-${k8sEnv}`;
+  const k8sEnv = process.env.K8S_ENV || 'staging';
+  const userPoolName = `biomage-user-pool-case-insensitive-${k8sEnv}`;
 
   const identityPoolId = IdentityPools.find(
-    (pool) => pool.IdentityPoolName.includes('test-file-upload-identity-pool-staging-default'),
-    // (pool) => pool.IdentityPoolName.includes(`${k8sEnv}-${sandboxId}`),
+    (pool) => pool.IdentityPoolName.includes(`${k8sEnv}-${sandboxId}`),
   ).IdentityPoolId;
 
-  const userPoolId = UserPools.find((pool) => pool.Name === 'test-biomage-user-pool-staging').Id;
+  const userPoolId = UserPools.find((pool) => pool.Name === userPoolName).Id;
 
   const { UserPoolClients } = await userPoolClient.send(
     new ListUserPoolClientsCommand({ UserPoolId: userPoolId, MaxResults: 60 }),
   );
 
   const userPoolClientId = UserPoolClients.find((client) => client.ClientName.includes(
-    `test-biomage-cellscope-cluster-${sandboxId}`,
+    `cluster-${sandboxId}`,
   )).ClientId;
 
   const [{ UserPoolClient: userPoolClientDetails }, { UserPool: { Domain } }] = await Promise.all([
