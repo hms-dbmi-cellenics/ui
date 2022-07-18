@@ -233,8 +233,6 @@ Object {
       "name": "Mock sample 0",
       "type": "10X Chromium",
       "uuid": "test9188-d682-test-mock-cb6d644cmock-0",
-      "valid": true,
-      "validationMessage": "",
     },
     "test9188-d682-test-mock-cb6d644cmock-1": Object {
       "createdDate": "2021-12-07 17:36:27.773+00",
@@ -278,8 +276,6 @@ Object {
       "name": "Mock sample 1",
       "type": "10X Chromium",
       "uuid": "test9188-d682-test-mock-cb6d644cmock-1",
-      "valid": true,
-      "validationMessage": "",
     },
     "test9188-d682-test-mock-cb6d644cmock-2": Object {
       "createdDate": "2021-12-07 17:36:27.773+00",
@@ -323,8 +319,6 @@ Object {
       "name": "Mock sample 2",
       "type": "10X Chromium",
       "uuid": "test9188-d682-test-mock-cb6d644cmock-2",
-      "valid": true,
-      "validationMessage": "",
     },
   },
 }
@@ -563,8 +557,6 @@ Object {
       "name": "Mock sample 0",
       "type": "10X Chromium",
       "uuid": "test9188-d682-test-mock-cb6d644cmock-0",
-      "valid": true,
-      "validationMessage": "",
     },
     "test9188-d682-test-mock-cb6d644cmock-1": Object {
       "createdDate": "2021-12-07 17:36:27.773+00",
@@ -608,8 +600,6 @@ Object {
       "name": "Mock sample 1",
       "type": "10X Chromium",
       "uuid": "test9188-d682-test-mock-cb6d644cmock-1",
-      "valid": true,
-      "validationMessage": "",
     },
     "test9188-d682-test-mock-cb6d644cmock-2": Object {
       "createdDate": "2021-12-07 17:36:27.773+00",
@@ -653,8 +643,6 @@ Object {
       "name": "Mock sample 2",
       "type": "10X Chromium",
       "uuid": "test9188-d682-test-mock-cb6d644cmock-2",
-      "valid": true,
-      "validationMessage": "",
     },
   },
 }

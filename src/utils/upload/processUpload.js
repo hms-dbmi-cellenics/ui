@@ -9,6 +9,7 @@ import { inspectSample, verdictText } from 'utils/upload/sampleInspector';
 import UploadStatus from 'utils/upload/UploadStatus';
 import loadAndCompressIfNecessary from 'utils/upload/loadAndCompressIfNecessary';
 import { inspectFile, Verdict } from 'utils/upload/fileInspector';
+import pushNotificationMessage from 'utils/pushNotificationMessage';
 
 import getFileTypeV2 from 'utils/getFileTypeV2';
 
@@ -135,6 +136,11 @@ const processUpload = async (filesList, sampleType, samples, experimentId, dispa
 
     const filesToUploadForSample = Object.keys(sample.files);
 
+    if (!valid) {
+      pushNotificationMessage('error', `Error uploading sample ${name}: ${validationMessage}`);
+      return;
+    }
+
     // Create sample if not exists.
     try {
       sample.uuid ??= await dispatch(
@@ -142,8 +148,6 @@ const processUpload = async (filesList, sampleType, samples, experimentId, dispa
           experimentId,
           name,
           sampleType,
-          valid,
-          validationMessage,
           filesToUploadForSample,
         ),
       );

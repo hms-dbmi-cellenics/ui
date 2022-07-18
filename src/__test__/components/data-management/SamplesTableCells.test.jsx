@@ -1,7 +1,5 @@
 import React from 'react';
-import {
-  screen, render, waitFor,
-} from '@testing-library/react';
+import { screen, render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { act } from 'react-dom/test-utils';
 import { Provider } from 'react-redux';
@@ -150,7 +148,7 @@ describe('SampleNameCell', () => {
 
     const cellInfo = {
       text: mockSampleName,
-      record: { uuid: 'mock-uuid', valid: true, validationMessage: '' },
+      record: { uuid: 'mock-uuid' },
       idx: 1,
     };
 
@@ -161,31 +159,5 @@ describe('SampleNameCell', () => {
     );
 
     expect(screen.getByText(mockSampleName)).toBeInTheDocument();
-    expect(screen.queryByLabelText('warning')).toBeNull();
-  });
-
-  it('Shows validation status and message', async () => {
-    const mockSampleName = 'my mocky name';
-    const mockValidationMessage = 'some random error';
-
-    const cellInfo = {
-      text: mockSampleName,
-      record: { uuid: 'mock-uuid', valid: false, validationMessage: mockValidationMessage },
-      idx: 1,
-    };
-
-    render(
-      <Provider store={storeState}>
-        <SampleNameCell cellInfo={cellInfo} />
-      </Provider>,
-    );
-
-    expect(screen.getByText(mockSampleName)).toBeInTheDocument();
-
-    userEvent.hover(screen.getByRole('img', { name: 'warning' }));
-
-    await waitFor(() => {
-      expect(screen.getByText(mockValidationMessage)).toBeInTheDocument();
-    });
   });
 });

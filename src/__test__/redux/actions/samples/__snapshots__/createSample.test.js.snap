@@ -15,8 +15,6 @@ exports[`createSample action Works correctly with many files being uploaded 1`] 
 Object {
   "name": "test sample",
   "sampleTechnology": "10x",
-  "valid": true,
-  "validationMessage": "",
 }
 `;
 
@@ -55,8 +53,6 @@ Array [
       "name": "test sample",
       "type": "10X Chromium",
       "uuid": "abc123",
-      "valid": true,
-      "validationMessage": "",
     },
   },
   Object {
@@ -89,8 +85,6 @@ Array [
       "name": "test sample",
       "type": "10X Chromium",
       "uuid": "abc123",
-      "valid": true,
-      "validationMessage": "",
     },
   },
 ]
@@ -100,8 +94,6 @@ exports[`createSample action Works correctly with one file being uploaded 1`] = 
 Object {
   "name": "test sample",
   "sampleTechnology": "10x",
-  "valid": true,
-  "validationMessage": "",
 }
 `;
 
@@ -130,8 +122,6 @@ Array [
       "name": "test sample",
       "type": "10X Chromium",
       "uuid": "abc123",
-      "valid": true,
-      "validationMessage": "",
     },
   },
   Object {
@@ -154,8 +144,6 @@ Array [
       "name": "test sample",
       "type": "10X Chromium",
       "uuid": "abc123",
-      "valid": true,
-      "validationMessage": "",
     },
   },
 ]

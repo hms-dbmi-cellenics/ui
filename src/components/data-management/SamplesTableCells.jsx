@@ -2,9 +2,7 @@ import React, { useRef, useState } from 'react';
 import {
   Space, Typography, Progress, Tooltip, Button,
 } from 'antd';
-import {
-  UploadOutlined, WarningFilled,
-} from '@ant-design/icons';
+import { UploadOutlined } from '@ant-design/icons';
 import { useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
@@ -176,13 +174,6 @@ const SampleNameCell = (props) => {
           onDelete={() => dispatch(deleteSamples([record.uuid]))}
         />
       </Text>
-      {
-        !record.valid && (
-          <Tooltip placement='top' overlayStyle={{ whiteSpace: 'pre-line' }} title={record.validationMessage}>
-            <WarningFilled style={{ color: 'red', fontSize: '1.2em' }} />
-          </Tooltip>
-        )
-      }
     </Space>
   );
 };

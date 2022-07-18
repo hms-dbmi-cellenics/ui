@@ -19,8 +19,6 @@ Object {
     "name": "oldSampleName",
     "type": "10x",
     "uuid": "oldUuid",
-    "valid": null,
-    "validationMessage": null,
   },
   "uuid": Object {
     "complete": false,
@@ -34,8 +32,6 @@ Object {
     "name": "sampleName",
     "type": "10x",
     "uuid": "uuid",
-    "valid": null,
-    "validationMessage": null,
   },
 }
 `;
@@ -59,8 +55,6 @@ Object {
     "name": "sampleName",
     "type": "10x",
     "uuid": "uuid",
-    "valid": null,
-    "validationMessage": null,
   },
 }
 `;

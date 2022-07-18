@@ -11,7 +11,7 @@ const Verdict = {
 const verdictText = {
   [Verdict.INVALID_BARCODES_FILE]: 'Barcodes file is invalid',
   [Verdict.INVALID_FEATURES_FILE]: 'Features file is invalid',
-  [Verdict.INVALID_TRANSPOSED_MATRIX]: 'Sample files are transposed',
+  [Verdict.INVALID_TRANSPOSED_MATRIX]: 'Matrix file is transposed',
 };
 
 const CHUNK_SIZE = 2 ** 18; // 250 kb

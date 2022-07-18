@@ -53,8 +53,6 @@ const toApiV1 = (samples, experimentId) => {
       metadata: sample.metadata,
       createdDate: sample.createdAt,
       name: sample.name,
-      valid: sample.valid,
-      validationMessage: sample.validationMessage,
       lastModified: sample.updatedAt,
       files: apiV1Files,
       type: sampleTechnologyConvert(sample.sampleTechnology),

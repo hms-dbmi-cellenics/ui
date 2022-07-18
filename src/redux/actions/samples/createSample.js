@@ -18,8 +18,6 @@ const createSample = (
   experimentId,
   name,
   type,
-  valid,
-  validationMessage,
   filesToUpload,
 ) => async (dispatch, getState) => {
   const experiment = getState().experiments[experimentId];
@@ -40,8 +38,6 @@ const createSample = (
     type,
     experimentId,
     uuid: newSampleUuid,
-    valid,
-    validationMessage,
     createdDate,
     lastModified: createdDate,
     metadata: experiment?.metadataKeys
@@ -69,9 +65,7 @@ const createSample = (
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          name, sampleTechnology, valid, validationMessage,
-        }),
+        body: JSON.stringify({ name, sampleTechnology }),
       },
     );
 

@@ -3,8 +3,6 @@ const sampleTemplate = {
   experimentId: null,
   uuid: null,
   type: null,
-  valid: null,
-  validationMessage: null,
   createdDate: null,
   lastModified: null,
   complete: false,

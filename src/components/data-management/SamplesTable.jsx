@@ -230,14 +230,10 @@ const SamplesTable = forwardRef((props, ref) => {
       const genesData = { sampleUuid, file: genesFile };
       const matrixData = { sampleUuid, file: matrixFile };
 
-      const { name, valid, validationMessage } = samples[sampleUuid] ?? {};
-
       return {
         key: idx,
-        name: name || 'UPLOAD ERROR: Please reupload sample',
+        name: samples[sampleUuid]?.name || 'UPLOAD ERROR: Please reupload sample',
         uuid: sampleUuid,
-        valid: valid || false,
-        validationMessage: validationMessage || '',
         barcodes: barcodesData,
         genes: genesData,
         matrix: matrixData,
