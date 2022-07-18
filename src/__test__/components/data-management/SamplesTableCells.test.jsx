@@ -129,7 +129,7 @@ describe('EditableFieldCell', () => {
       cellText={mockCellText}
       dataIndex='mockIndex'
       rowIdx={1}
-      onAfterSubmit={() => { }}
+      onAfterSubmit={() => {}}
     />);
 
     expect(screen.getByText(mockCellText)).toBeInTheDocument();

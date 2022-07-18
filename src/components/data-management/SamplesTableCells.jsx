@@ -2,7 +2,9 @@ import React, { useRef, useState } from 'react';
 import {
   Space, Typography, Progress, Tooltip, Button,
 } from 'antd';
-import { UploadOutlined } from '@ant-design/icons';
+import {
+  UploadOutlined,
+} from '@ant-design/icons';
 import { useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
@@ -165,16 +167,14 @@ const SampleNameCell = (props) => {
   const { text, record, idx } = cellInfo;
   const dispatch = useDispatch();
   return (
-    <Space>
-      <Text className={integrationTestConstants.classes.SAMPLES_TABLE_NAME_CELL} strong key={`sample-cell-${idx}`}>
-        <EditableField
-          deleteEnabled
-          value={text}
-          onAfterSubmit={(name) => dispatch(updateSample(record.uuid, { name }))}
-          onDelete={() => dispatch(deleteSamples([record.uuid]))}
-        />
-      </Text>
-    </Space>
+    <Text className={integrationTestConstants.classes.SAMPLES_TABLE_NAME_CELL} strong key={`sample-cell-${idx}`}>
+      <EditableField
+        deleteEnabled
+        value={text}
+        onAfterSubmit={(name) => dispatch(updateSample(record.uuid, { name }))}
+        onDelete={() => dispatch(deleteSamples([record.uuid]))}
+      />
+    </Text>
   );
 };
 SampleNameCell.propTypes = {
