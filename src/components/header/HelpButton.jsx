@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Button, Dropdown, Card } from 'antd';
 import { QuestionCircleOutlined, DownOutlined } from '@ant-design/icons';
 
+import config from 'config';
+
 const HelpButton = () => {
   const [visible, setVisible] = useState(false);
 
@@ -15,7 +17,7 @@ const HelpButton = () => {
       <br />
       If you need additional help with your analysis, email:
       {' '}
-      <a href='mailto:hello@biomage.net'>hello@biomage.net</a>
+      <a href={`mailto:${config.supportEmail}`}>{config.supportEmail}</a>
     </Card>
   );
 
