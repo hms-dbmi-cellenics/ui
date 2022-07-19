@@ -51,7 +51,7 @@ Object {
 }
 `;
 
-exports[`experimentsReducer Correctly creates project metadata 1`] = `
+exports[`experimentsReducer Correctly creates experiment metadata 1`] = `
 Object {
   "experiment-1": Object {
     "createdAt": "2021-01-01",
@@ -78,7 +78,7 @@ Object {
 }
 `;
 
-exports[`experimentsReducer Correctly deletes project metadata 1`] = `
+exports[`experimentsReducer Correctly deletes experiment metadata 1`] = `
 Object {
   "experiment-1": Object {
     "createdAt": "2021-01-01",

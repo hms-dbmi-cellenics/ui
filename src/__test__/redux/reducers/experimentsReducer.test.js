@@ -294,7 +294,7 @@ describe('experimentsReducer', () => {
     expect(newState).toMatchSnapshot();
   });
 
-  it('Correctly creates project metadata', () => {
+  it('Correctly creates experiment metadata', () => {
     const newMetadataKey = 'metadata-test';
 
     const stateWithMetadata = {
@@ -341,7 +341,7 @@ describe('experimentsReducer', () => {
     expect(newState).toMatchSnapshot();
   });
 
-  it('Correctly deletes project metadata', () => {
+  it('Correctly deletes experiment metadata', () => {
     const metadataKey = 'metadata-old';
     const stateWithMetadata = {
       ...oneExperimentWithSampleState,
