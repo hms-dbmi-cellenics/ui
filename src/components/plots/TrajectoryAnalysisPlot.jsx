@@ -7,6 +7,7 @@ import { generateSpec, generateData } from 'utils/plotSpecs/generateEmbeddingCat
 import { loadEmbedding } from 'redux/actions/embedding';
 import { loadCellSets } from 'redux/actions/cellSets';
 import { loadProcessingSettings } from 'redux/actions/experimentSettings';
+
 import { getCellSets } from 'redux/selectors';
 import PlatformError from 'components/PlatformError';
 import Loader from 'components/Loader';
