@@ -21,8 +21,8 @@ import { plotNames, plotTypes } from 'utils/constants';
 
 const { Panel } = Collapse;
 
-const plotUuid = 'trajectoryPlotMain';
-const plotType = plotTypes.TRAJECTORY_PLOT;
+const plotUuid = 'trajectoryAnalysisMain';
+const plotType = plotTypes.TRAJECTORY_ANALYSIS;
 
 const TrajectoryAnalysisPage = ({ experimentId }) => {
   const dispatch = useDispatch();
@@ -123,13 +123,13 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
 
   return (
     <>
-      <Header title={plotNames.TRAJECTORY_PLOT} />
+      <Header title={plotNames.TRAJECTORY_ANALYSIS} />
       <PlotContainer
         experimentId={experimentId}
         plotUuid={plotUuid}
         plotType={plotType}
         plotStylingConfig={plotStylingConfig}
-        plotInfo='In order to rename existing clusters or create new ones, use the cell set tool, located in the Data Exploration page.'
+        plotInfo='The trajectory analysis plot displays the result of trajectory analysis for the given cell set.'
         extraControlPanels={renderExtraPanels()}
         defaultActiveKey='group-by'
       >

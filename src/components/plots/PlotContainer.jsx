@@ -87,7 +87,11 @@ const PlotContainer = (props) => {
   };
 
   if (!config) {
-    return <Skeleton active paragraph={{ rows: 1 }} title={{ width: 500 }} />;
+    return (
+      <div style={{ paddingLeft: '2em' }}>
+        <Skeleton active paragraph={{ rows: 1 }} title={{ width: 500 }} />
+      </div>
+    );
   }
 
   const renderPlotToolbarControls = () => (
