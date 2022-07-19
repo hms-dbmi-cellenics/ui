@@ -10,7 +10,7 @@ const HelpButton = () => {
 
   const overlay = () => (
     <Card size='small' style={{ padding: '1em', width: '265px' }}>
-      {process.env.DOMAIN_NAME !== DomainName.HMS ?? (
+      {process.env.DOMAIN_NAME !== DomainName.HMS && (
         <>
           For tutorial videos, ‘how to’ guides and FAQs on how to use Cellenics, visit
           {' '}
