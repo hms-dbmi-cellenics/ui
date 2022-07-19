@@ -5,12 +5,6 @@ import { QuestionCircleOutlined, DownOutlined } from '@ant-design/icons';
 import config from 'config';
 import { DomainName } from 'utils/deploymentInfo';
 
-// const getStartedLinkIfNotHMS = () => {
-//   if (process.env.DOMAIN_NAME !== DomainName.HMS) {
-//     return ()
-//   }
-// };
-
 const HelpButton = () => {
   const [visible, setVisible] = useState(false);
 
