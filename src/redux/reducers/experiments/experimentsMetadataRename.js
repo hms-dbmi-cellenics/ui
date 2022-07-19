@@ -2,6 +2,7 @@ const experimentsMetadataRename = (state, action) => {
   const { oldKey, newKey, experimentId } = action.payload;
 
   const { metadataKeys } = state[experimentId];
+
   const newMetadataKeys = metadataKeys.map((metadataKey) => (
     metadataKey === oldKey ? newKey : metadataKey
   ));

@@ -299,7 +299,7 @@ describe('experimentsReducer', () => {
 
     const stateWithMetadata = {
       ...oneExperimentWithSampleState,
-      [oneExperimentWithSampleState[experiment1.id]]: {
+      [experiment1.id]: {
         ...oneExperimentWithSampleState[experiment1.id],
         metadataKeys: [],
       },
@@ -317,12 +317,12 @@ describe('experimentsReducer', () => {
     expect(newState).toMatchSnapshot();
   });
 
-  it('Correctly updates project metadata', () => {
+  it('Correctly updates experiment metadata', () => {
     const oldMetadataKey = 'metadata-old';
     const newMetadataKey = 'metadata-new';
     const stateWithMetadata = {
       ...oneExperimentWithSampleState,
-      [oneExperimentWithSampleState[experiment1.id]]: {
+      [experiment1.id]: {
         ...oneExperimentWithSampleState[experiment1.id],
         metadataKeys: [oldMetadataKey],
       },
@@ -345,7 +345,7 @@ describe('experimentsReducer', () => {
     const metadataKey = 'metadata-old';
     const stateWithMetadata = {
       ...oneExperimentWithSampleState,
-      [oneExperimentWithSampleState[experiment1.id]]: {
+      [experiment1.id]: {
         ...oneExperimentWithSampleState[experiment1.id],
         metadataKeys: [metadataKey],
       },
