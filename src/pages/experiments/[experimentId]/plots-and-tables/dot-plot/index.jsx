@@ -26,9 +26,10 @@ import fileNames from 'utils/fileNames';
 import {
   updatePlotConfig,
   loadPlotConfig,
-  fetchPlotDataWork,
 } from 'redux/actions/componentConfig';
-import { plotBodyWorkTypes } from 'utils/work/generatePlotWorkBody';
+
+import getDotPlotData from 'components/plots/helpers/dot-plot/getDotPlotData';
+
 import PlatformError from 'components/PlatformError';
 
 import { getCellSets } from 'redux/selectors';
@@ -186,7 +187,7 @@ const DotPlotPage = (props) => {
     const currentComparedConfig = getComparedConfig(config);
     if (config && !_.isEqual(previousComparedConfig.current, currentComparedConfig)) {
       previousComparedConfig.current = currentComparedConfig;
-      dispatch(fetchPlotDataWork(plotBodyWorkTypes.DOT_PLOT_DATA, experimentId, plotType, plotUuid));
+      dispatch(getDotPlotData(experimentId, plotUuid));
     }
   }, [config, cellSetProperties]);
 
@@ -296,7 +297,7 @@ const DotPlotPage = (props) => {
           <PlatformError
             description='Error loading plot data.'
             reason='Check the options that you have selected and try again.'
-            onClick={() => dispatch(fetchPlotDataWork(experimentId, plotUuid, plotType))}
+            onClick={() => dispatch(dispatch(getDotPlotData(experimentId, plotUuid)))}
           />
         </center>
       );

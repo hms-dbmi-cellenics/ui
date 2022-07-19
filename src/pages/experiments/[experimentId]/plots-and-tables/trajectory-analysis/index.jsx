@@ -13,7 +13,6 @@ import { getCellSets } from 'redux/selectors';
 import {
   updatePlotConfig,
   loadPlotConfig,
-  fetchPlotDataWork,
 } from 'redux/actions/componentConfig/index';
 import Header from 'components/Header';
 import { loadCellSets } from 'redux/actions/cellSets';
@@ -21,7 +20,7 @@ import TrajectoryAnalysisPlot from 'components/plots/TrajectoryAnalysisPlot';
 import PlotContainer from 'components/plots/PlotContainer';
 // import SelectData from 'components/plots/styling/SelectData';
 import { plotNames, plotTypes } from 'utils/constants';
-import { plotBodyWorkTypes } from 'utils/work/generatePlotWorkBody';
+import getTrajectoryGraph from 'components/plots/helpers/trajectory-analysis/getTrajectoryGraph';
 
 // const { Panel } = Collapse;
 
@@ -65,7 +64,7 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
     // if (config && !_.isEqual(previousComparedConfig.current, currentComparedConfig)) {
     previousComparedConfig.current = currentComparedConfig;
 
-    dispatch(fetchPlotDataWork(plotBodyWorkTypes.TRAJECTORY_ANALYSIS_ROOT_NODES, experimentId, plotType, plotUuid));
+    dispatch(getTrajectoryGraph(experimentId, plotUuid));
     // }
   }, [config, cellSetsLoading]);
 

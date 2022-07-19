@@ -4,8 +4,10 @@ import { PLOT_DATA_LOADED, PLOT_DATA_LOADING, PLOT_DATA_ERROR } from 'redux/acti
 
 import handleError from 'utils/http/handleError';
 import endUserMessages from 'utils/endUserMessages';
-import generatePlotWorkBody from 'utils/work/generatePlotWorkBody';
 import { fetchWork } from 'utils/work/fetchWork';
+import { plotTypes } from 'utils/constants';
+
+const plotType = plotTypes.DOT_PLOT;
 
 const getClusterNames = (state) => {
   const clusterIds = state.cellSets.hierarchy.reduce(
@@ -17,23 +19,31 @@ const getClusterNames = (state) => {
   return clusterNames;
 };
 
-const fetchPlotDataWork = (
-  plotWorkType,
+const getDotPlotData = (
   experimentId,
-  plotType,
   plotUuid,
 ) => async (dispatch, getState) => {
-  let config = getState().componentConfig[plotUuid]?.config ?? initialPlotConfigStates[plotType];
+  const config = getState().componentConfig[plotUuid]?.config ?? initialPlotConfigStates[plotType];
   const clusterNames = getClusterNames(getState());
-  const timeout = getTimeoutForWorkerTask(getState(), plotType);
+  const timeout = getTimeoutForWorkerTask(getState(), 'PlotData');
 
-  config = {
-    ...config,
+  const [filterGroup, filterKey] = config.selectedPoints.split('/');
+
+  const body = {
+    name: 'DotPlot',
+    useMarkerGenes: config.useMarkerGenes,
+    numberOfMarkers: config.nMarkerGenes,
+    customGenesList: config.selectedGenes,
+    groupBy: config.selectedCellSet,
+    filterBy: {
+      group: filterGroup,
+      key: filterKey || 'All',
+    },
+    // clusterNames is used for triggering a work request upon cluster name change
     clusterNames,
   };
 
   try {
-    const body = generatePlotWorkBody(plotWorkType, config);
     dispatch({
       type: PLOT_DATA_LOADING,
       payload: { plotUuid },
@@ -63,4 +73,4 @@ const fetchPlotDataWork = (
   }
 };
 
-export default fetchPlotDataWork;
+export default getDotPlotData;

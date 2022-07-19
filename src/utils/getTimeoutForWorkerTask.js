@@ -1,5 +1,4 @@
 import getNumberOfCellsInGrouping from 'redux/selectors/getNumberOfCellsInGrouping';
-import { plotTypes } from './constants';
 
 // Timeouts calculated in https://docs.google.com/document/d/1vim9t9lWMLW8wALeJvDeYnofQa9tj9zPU3i1SOfMilM/edit
 const getTimeoutForWorkerTaskUncapped = (state, taskName, options) => {
@@ -22,14 +21,14 @@ const getTimeoutForWorkerTaskUncapped = (state, taskName, options) => {
       return 0.002 * nCells + 60;
     }
     case 'DifferentialExpression':
-    case plotTypes.TRAJECTORY_ANALYSIS: {
+    case 'TrajectoryAnalysis': {
       return 180;
     }
     case 'ListGenes':
     case 'GeneExpression':
     case 'GetMitochondrialContent':
     case 'GetDoubletScore':
-    case plotTypes.DOT_PLOT: {
+    case 'PlotData': {
       return 60;
     }
     default: {
