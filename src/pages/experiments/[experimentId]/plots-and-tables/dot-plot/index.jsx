@@ -28,6 +28,7 @@ import {
   loadPlotConfig,
   fetchPlotDataWork,
 } from 'redux/actions/componentConfig';
+import { plotBodyWorkTypes } from 'utils/work/generatePlotWorkBody';
 import PlatformError from 'components/PlatformError';
 
 import { getCellSets } from 'redux/selectors';
@@ -126,7 +127,8 @@ const DotPlotPage = (props) => {
     // filterBy has the shape louvain/louvain-1
     const [filterRootNode, filterKey] = filterCluster.split('/');
 
-    // If 'All" is chosen for the dropdown, there will always be representation from more than 1 group
+    // If 'All" is chosen for the dropdown,
+    // there will always be representation from more than 1 group
     if (filterRootNode === 'All') return true;
 
     // Ensure that filterKey exists in cellSetProperties
@@ -184,7 +186,7 @@ const DotPlotPage = (props) => {
     const currentComparedConfig = getComparedConfig(config);
     if (config && !_.isEqual(previousComparedConfig.current, currentComparedConfig)) {
       previousComparedConfig.current = currentComparedConfig;
-      dispatch(fetchPlotDataWork(experimentId, plotUuid, plotType));
+      dispatch(fetchPlotDataWork(plotBodyWorkTypes.DOT_PLOT_DATA, experimentId, plotType, plotUuid));
     }
   }, [config, cellSetProperties]);
 

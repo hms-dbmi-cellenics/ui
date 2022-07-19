@@ -1,10 +1,13 @@
-import { plotTypes } from 'utils/constants';
+const plotBodyWorkTypes = {
+  DOT_PLOT_DATA: 'DotPlotDataWork',
+  TRAJECTORY_ANALYSIS_ROOT_NODES: 'TrajectoryAnalysisRootNodesWork',
+};
 
-const composeDotPlotWorkBody = (config) => {
+const composeDotPlotDataWorkBody = (config) => {
   const [filterGroup, filterKey] = config.selectedPoints.split('/');
 
   return {
-    name: plotTypes.DOT_PLOT,
+    name: 'DotPlot',
     useMarkerGenes: config.useMarkerGenes,
     numberOfMarkers: config.nMarkerGenes,
     customGenesList: config.selectedGenes,
@@ -18,14 +21,22 @@ const composeDotPlotWorkBody = (config) => {
   };
 };
 
-const generatePlotWorkBody = (plotType, config) => {
-  switch (plotType) {
-    case plotTypes.DOT_PLOT:
-      return composeDotPlotWorkBody(config);
+const composeTrajectoryAnalaysisRootNodesWorkBody = () => ({
+  name: 'GetTrajectoryGraph',
+  embeddingEtag: null, // TODO: Get ETag from embedding
+});
+
+const generatePlotWorkBody = (plotBodyWorkType, config) => {
+  switch (plotBodyWorkType) {
+    case plotBodyWorkTypes.DOT_PLOT_DATA:
+      return composeDotPlotDataWorkBody(config);
+    case plotBodyWorkTypes.TRAJECTORY_ANALYSIS_ROOT_NODES:
+      return composeTrajectoryAnalaysisRootNodesWorkBody(config);
     default: {
-      throw new Error('Plot type doesn\'t exist');
+      throw new Error('Work type doesn\'t exist');
     }
   }
 };
 
 export default generatePlotWorkBody;
+export { plotBodyWorkTypes };

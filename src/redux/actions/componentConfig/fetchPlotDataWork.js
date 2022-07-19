@@ -18,13 +18,14 @@ const getClusterNames = (state) => {
 };
 
 const fetchPlotDataWork = (
+  plotWorkType,
   experimentId,
-  plotUuid,
   plotType,
+  plotUuid,
 ) => async (dispatch, getState) => {
   let config = getState().componentConfig[plotUuid]?.config ?? initialPlotConfigStates[plotType];
   const clusterNames = getClusterNames(getState());
-  const timeout = getTimeoutForWorkerTask(getState(), 'PlotData');
+  const timeout = getTimeoutForWorkerTask(getState(), plotType);
 
   config = {
     ...config,
@@ -32,8 +33,7 @@ const fetchPlotDataWork = (
   };
 
   try {
-    const body = generatePlotWorkBody(plotType, config);
-
+    const body = generatePlotWorkBody(plotWorkType, config);
     dispatch({
       type: PLOT_DATA_LOADING,
       payload: { plotUuid },

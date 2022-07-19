@@ -1,4 +1,5 @@
 import getNumberOfCellsInGrouping from 'redux/selectors/getNumberOfCellsInGrouping';
+import { plotTypes } from './constants';
 
 // Timeouts calculated in https://docs.google.com/document/d/1vim9t9lWMLW8wALeJvDeYnofQa9tj9zPU3i1SOfMilM/edit
 const getTimeoutForWorkerTaskUncapped = (state, taskName, options) => {
@@ -20,14 +21,15 @@ const getTimeoutForWorkerTaskUncapped = (state, taskName, options) => {
     case 'MarkerHeatmap': {
       return 0.002 * nCells + 60;
     }
-    case 'DifferentialExpression': {
+    case 'DifferentialExpression':
+    case plotTypes.TRAJECTORY_ANALYSIS: {
       return 180;
     }
     case 'ListGenes':
     case 'GeneExpression':
     case 'GetMitochondrialContent':
     case 'GetDoubletScore':
-    case 'PlotData': {
+    case plotTypes.DOT_PLOT: {
       return 60;
     }
     default: {
