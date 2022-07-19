@@ -9,12 +9,10 @@ import updateMetadataTrack from 'redux/actions/experiments/updateMetadataTrack';
 import initialExperimentState from 'redux/reducers/experiments';
 import initialSampleState from 'redux/reducers/samples';
 
-import {
-  EXPERIMENTS_METADATA_UPDATE,
-} from 'redux/actionTypes/experiments';
+import { EXPERIMENTS_METADATA_UPDATE } from 'redux/actionTypes/experiments';
 import '__test__/test-utils/setupTests';
 
-import { SAMPLES_METADATA_DELETE, SAMPLES_UPDATE } from 'redux/actionTypes/samples';
+import { SAMPLES_UPDATE } from 'redux/actionTypes/samples';
 
 const mockStore = configureStore([thunk]);
 
@@ -75,7 +73,7 @@ describe('updateMetadataTrack action', () => {
     );
 
     const actions = store.getActions();
-    expect(_.map(actions, 'type')).toEqual([EXPERIMENTS_METADATA_UPDATE, SAMPLES_UPDATE, SAMPLES_METADATA_DELETE]);
+    expect(_.map(actions, 'type')).toEqual([EXPERIMENTS_METADATA_UPDATE, SAMPLES_UPDATE]);
     expect(_.map(actions, 'payload')).toMatchSnapshot();
 
     expect(fetchMock).toHaveBeenCalledWith(

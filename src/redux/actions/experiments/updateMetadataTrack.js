@@ -1,10 +1,7 @@
 import _ from 'lodash';
 
 import { EXPERIMENTS_METADATA_UPDATE } from 'redux/actionTypes/experiments';
-import {
-  SAMPLES_UPDATE,
-  SAMPLES_METADATA_DELETE,
-} from 'redux/actionTypes/samples';
+import { SAMPLES_UPDATE } from 'redux/actionTypes/samples';
 
 import fetchAPI from 'utils/http/fetchAPI';
 
@@ -56,14 +53,6 @@ const updateMetadataTrack = (
         payload: {
           sampleUuid,
           sample: { metadata: { [newMetadataKey]: samples[sampleUuid].metadata[oldMetadataKey] } },
-        },
-      });
-
-      dispatch({
-        type: SAMPLES_METADATA_DELETE,
-        payload: {
-          metadataKey: oldMetadataKey,
-          sampleUuid,
         },
       });
     });

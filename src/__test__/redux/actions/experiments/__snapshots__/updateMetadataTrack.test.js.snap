@@ -15,9 +15,5 @@ Array [
     },
     "sampleUuid": "sample-1234",
   },
-  Object {
-    "metadataKey": "Old_track",
-    "sampleUuid": "sample-1234",
-  },
 ]
 `;
