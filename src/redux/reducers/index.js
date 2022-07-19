@@ -42,9 +42,10 @@ const rootReducer = (state, action) => {
       backendStatus: state.backendStatus,
       experiments: state.experiments,
       networkResources: state.networkResources,
-      userReducer: state.user,
+      user: state.user,
     };
   }
+
   return appReducers(newState, action);
 };
 
