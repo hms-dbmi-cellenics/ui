@@ -3,11 +3,12 @@ import produce from 'immer';
 import initialState, { initialEmbeddingState } from './initialState';
 
 const embeddingsLoaded = produce((draft, action) => {
-  const { embeddingType, data: jsonData } = action.payload;
+  const { embeddingType, data: jsonData, ETag } = action.payload;
 
   draft[embeddingType] = {
     ...initialEmbeddingState,
     loading: false,
+    ETag,
   };
 
   const data = [];

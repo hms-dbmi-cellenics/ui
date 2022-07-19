@@ -9,7 +9,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 
-import { getCellSets, getCellSetsHierarchy } from 'redux/selectors';
+import { getCellSets } from 'redux/selectors';
 import {
   updatePlotConfig,
   loadPlotConfig,

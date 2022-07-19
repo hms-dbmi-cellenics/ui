@@ -105,8 +105,6 @@ const TrajectoryAnalysisPlot = (props) => {
       );
     }
 
-    console.log('*** plotspec', plotSpec);
-
     if (!config
       || cellSets.loading
       || !embeddingData

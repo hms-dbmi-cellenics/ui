@@ -97,7 +97,7 @@ const fetchGeneExpressionWork = async (
     await cache.set(missingDataKeys[gene], response[gene]);
   });
 
-  return response;
+  return { data: response, ETag };
 };
 
 const fetchWork = async (
@@ -182,7 +182,7 @@ const fetchWork = async (
   // If a work response is in s3, it is cacheable
   // (the cacheable or not option is managed in the worker)
   await cache.set(ETag, response);
-  return response;
+  return { data: response, ETag };
 };
 
 export { fetchWork, fetchGeneExpressionWork, createObjectHash };

@@ -13,6 +13,7 @@ const initialEmbeddingState = {
   data: [],
   loading: true,
   error: false,
+  ETag: null,
 };
 
 const initialState = {};
