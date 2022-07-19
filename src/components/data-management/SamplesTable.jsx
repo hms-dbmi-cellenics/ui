@@ -96,9 +96,16 @@ const SamplesTable = forwardRef((props, ref) => {
   const [tableColumns, setTableColumns] = useState(initialTableColumns);
 
   useEffect(() => {
-    if (activeExperiment.sampleIds.length > 0) {
+    const samplesLoaded = activeExperiment?.sampleIds.every((sampleId) => samples[sampleId]);
+
+    if (activeExperiment?.sampleIds.length > 0 && samplesLoaded) {
       // if there are samples - build the table columns
-      setSampleNames(new Set(activeExperiment.sampleIds.map((id) => samples[id]?.name.trim())));
+
+      const sanitizedSampleNames = new Set(
+        activeExperiment.sampleIds.map((id) => samples[id]?.name.trim()),
+      );
+
+      setSampleNames(sanitizedSampleNames);
       const metadataColumns = activeExperiment.metadataKeys.map(
         (metadataKey) => createInitializedMetadataColumn(metadataKeyToName(metadataKey)),
       ) || [];

@@ -72,9 +72,6 @@ const validationFns = {
   [rules.UNIQUE_NAME_CASE_INSENSITIVE](checkName, input, params) {
     if (!params?.existingNames || params.existingNames.length === 0) return true;
 
-    console.log('paramsDebug');
-    console.log(params);
-
     const { existingNames } = params;
 
     const existingNamesArr = existingNames instanceof Set
