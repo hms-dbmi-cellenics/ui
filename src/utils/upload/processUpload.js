@@ -4,7 +4,7 @@ import _ from 'lodash';
 import axios from 'axios';
 
 import { createSample, createSampleFile, updateSampleFileUpload } from 'redux/actions/samples';
-import { inspectSample, verdictText } from 'utils/upload/sampleInspector';
+import { inspectSample } from 'utils/upload/sampleInspector';
 
 import UploadStatus from 'utils/upload/UploadStatus';
 import loadAndCompressIfNecessary from 'utils/upload/loadAndCompressIfNecessary';
@@ -132,7 +132,7 @@ const processUpload = async (filesList, sampleType, samples, experimentId, dispa
 
   Object.entries(samplesMap).forEach(async ([name, sample]) => {
     const { valid, verdict } = await inspectSample(sample);
-    const validationMessage = verdict.map((item) => `${verdictText[item]}`).join('\n');
+    const validationMessage = verdict.join('\n');
 
     const filesToUploadForSample = Object.keys(sample.files);
 

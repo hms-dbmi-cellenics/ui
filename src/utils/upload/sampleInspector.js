@@ -2,19 +2,11 @@ import {
   DecodeUTF8, Decompress,
 } from 'fflate';
 
-const Verdict = {
-  INVALID_BARCODES_FILE: 'INVALID_SAMPLE_FILES',
-  INVALID_FEATURES_FILE: 'INVALID_FEATURES_FILE',
-  INVALID_TRANSPOSED_MATRIX: 'INVALID_TRANSPOSED_MATRIX',
+const verdictMessage = {
+  invalidBarcodesFile: (expected, found) => `Invalid barcodes.tsv file. ${expected} barcodes expected, but ${found} found.`,
+  invalidFeaturesFile: (expected, found) => `Invalid features/genes.tsv file. ${expected} genes expected, but ${found} found.`,
+  transposedMatrixFile: () => 'Invalid matrix.mtx file: Matrix is transposed.',
 };
-
-const verdictText = {
-  [Verdict.INVALID_BARCODES_FILE]: 'Barcodes file is invalid',
-  [Verdict.INVALID_FEATURES_FILE]: 'Features file is invalid',
-  [Verdict.INVALID_TRANSPOSED_MATRIX]: 'Matrix file is transposed',
-};
-
-const CHUNK_SIZE = 2 ** 18; // 250 kb
 
 const decode = async (arrBuffer) => {
   let result = '';
@@ -34,10 +26,11 @@ const decompress = async (arrBuffer) => {
 
 const extractSampleSizes = async (matrix) => {
   const { compressed, fileObject } = matrix;
+
   let header = '';
   let matrixHeader = '';
 
-  const fileArrBuffer = await fileObject.slice(0, 500).arrayBuffer();
+  const fileArrBuffer = await fileObject.slice(0, 300).arrayBuffer();
 
   matrixHeader = compressed
     ? await decode(await decompress(fileArrBuffer))
@@ -53,9 +46,10 @@ const extractSampleSizes = async (matrix) => {
   };
 };
 
-const countLine = async (fileObject, start, compressed) => {
-  const end = Math.min(start + CHUNK_SIZE, fileObject.size);
-  const arrBuffer = await fileObject.slice(start, end).arrayBuffer();
+const getNumLines = async (sampleFile) => {
+  const { compressed, fileObject } = sampleFile;
+  const arrBuffer = await fileObject.arrayBuffer();
+
   const fileStr = compressed
     ? await decode(await decompress(arrBuffer))
     : await decode(arrBuffer);
@@ -65,42 +59,42 @@ const countLine = async (fileObject, start, compressed) => {
   return numLines;
 };
 
-const getNumLines = async (sampleFile) => {
-  let pointer = 0;
-  const counterJobs = [];
-
-  const { compressed, fileObject } = sampleFile;
-
-  while (pointer < fileObject.size) {
-    counterJobs.push(countLine(fileObject, pointer, compressed));
-    pointer += CHUNK_SIZE;
-  }
-
-  const resultingCounts = await Promise.all(counterJobs);
-  const numLines = resultingCounts.reduce((count, numLine) => count + numLine, 0);
-  return numLines;
-};
-
 const validateFileSizes = async (sample) => {
   const barcodes = sample.files['barcodes.tsv.gz'] || sample.files['barcodes.tsv'];
-  const features = sample.files['features.tsv.gz'] || sample.files['features.tsv'];
+  const features = sample.files['features.tsv.gz'] || sample.files['features.tsv'] || sample.files['genes.tsv.gz'] || sample.files['genes.tsv'];
   const matrix = sample.files['matrix.mtx.gz'] || sample.files['matrix.mtx'];
 
-  const { barcodeSize, featuresSize } = await extractSampleSizes(matrix);
+  const {
+    barcodeSize: expectedNumBarcodes,
+    featuresSize: expectedNumFeatures,
+  } = await extractSampleSizes(matrix);
 
-  const numBarcodeLines = await getNumLines(barcodes);
-  const numFeaturesLines = await getNumLines(features);
+  const numBarcodeFound = await getNumLines(barcodes);
+  const numFeaturesFound = await getNumLines(features);
 
   const verdict = [];
-  const valid = numBarcodeLines === barcodeSize && numFeaturesLines === featuresSize;
+  const valid = numBarcodeFound === expectedNumBarcodes && numFeaturesFound === expectedNumFeatures;
 
-  const isSampleTransposed = numBarcodeLines === featuresSize && numFeaturesLines === barcodeSize;
-  const isBarcodesInvalid = numBarcodeLines !== barcodeSize;
-  const isFeaturesInvalid = numFeaturesLines !== featuresSize;
+  const isSampleTransposed = numBarcodeFound === expectedNumFeatures
+    && numFeaturesFound === expectedNumBarcodes;
+  const isBarcodesInvalid = numBarcodeFound !== expectedNumBarcodes;
+  const isFeaturesInvalid = numFeaturesFound !== expectedNumFeatures;
 
-  if (isSampleTransposed) { verdict.push(Verdict.INVALID_TRANSPOSED_MATRIX); } else {
-    if (isBarcodesInvalid) verdict.push(Verdict.INVALID_BARCODES_FILE);
-    if (isFeaturesInvalid) verdict.push(Verdict.INVALID_FEATURES_FILE);
+  if (isSampleTransposed) {
+    verdict.push(verdictMessage.transposedMatrixFile());
+    return { valid, verdict };
+  }
+
+  if (isBarcodesInvalid) {
+    verdict.push(
+      verdictMessage.invalidBarcodesFile(expectedNumBarcodes, numBarcodeFound),
+    );
+  }
+
+  if (isFeaturesInvalid) {
+    verdict.push(
+      verdictMessage.invalidFeaturesFile(expectedNumFeatures, numFeaturesFound),
+    );
   }
 
   return { valid, verdict };
@@ -131,6 +125,5 @@ const inspectSample = async (sample) => {
 
 export {
   inspectSample,
-  Verdict,
-  verdictText,
+  verdictMessage,
 };

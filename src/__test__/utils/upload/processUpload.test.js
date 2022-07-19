@@ -14,7 +14,7 @@ import { waitFor } from '@testing-library/dom';
 import processUpload from 'utils/upload/processUpload';
 
 import loadAndCompressIfNecessary from 'utils/upload/loadAndCompressIfNecessary';
-import { inspectSample, Verdict } from 'utils/upload/sampleInspector';
+import { inspectSample } from 'utils/upload/sampleInspector';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
 
 enableFetchMocks();
@@ -445,7 +445,7 @@ describe('processUpload', () => {
 
   it('Should not upload sample and show notification if uploaded sample is invalid', async () => {
     inspectSample.mockImplementationOnce(
-      () => ({ valid: false, verdict: [Verdict.INVALID_TRANSPOSED_MATRIX] }),
+      () => ({ valid: false, verdict: ['Some file error'] }),
     );
 
     await processUpload(

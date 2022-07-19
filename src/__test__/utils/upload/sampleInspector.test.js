@@ -1,4 +1,4 @@
-import { inspectSample, Verdict } from 'utils/upload/sampleInspector';
+import { inspectSample } from 'utils/upload/sampleInspector';
 import initialState, { sampleFileTemplate, sampleTemplate } from 'redux/reducers/samples/initialState';
 
 import * as fs from 'fs';
@@ -159,7 +159,9 @@ describe('sampleInspector', () => {
     };
 
     const result = await inspectSample(mockInvalidBarcodesFile);
-    expect(result).toEqual({ valid: false, verdict: [Verdict.INVALID_BARCODES_FILE] });
+
+    expect(result.valid).toEqual(false);
+    expect(result.verdict[0]).toMatch(/Invalid barcodes.tsv file/i);
   });
 
   it('Correctly identifies invalid features file', async () => {
@@ -176,7 +178,9 @@ describe('sampleInspector', () => {
     };
 
     const result = await inspectSample(mockInvalidFeaturesFile);
-    expect(result).toEqual({ valid: false, verdict: [Verdict.INVALID_FEATURES_FILE] });
+
+    expect(result.valid).toEqual(false);
+    expect(result.verdict[0]).toMatch(/Invalid features\/genes.tsv file/i);
   });
 
   it('Correctly identifies transposed matrix file', async () => {
@@ -193,9 +197,8 @@ describe('sampleInspector', () => {
     };
 
     const result = await inspectSample(mockTransposedFile);
-    expect(result).toEqual({
-      valid: false,
-      verdict: [Verdict.INVALID_TRANSPOSED_MATRIX],
-    });
+
+    expect(result.valid).toEqual(false);
+    expect(result.verdict[0]).toMatch(/Invalid matrix.mtx file/i);
   });
 });
