@@ -3,7 +3,11 @@ import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Vega } from 'react-vega';
 
-import { generateSpec, generateData } from 'utils/plotSpecs/generateEmbeddingCategoricalSpec';
+import { generateData as generateCategoricalEmbeddingData } from 'utils/plotSpecs/generateEmbeddingCategoricalSpec';
+import {
+  generateSpec,
+  generateData as genarateTrajectoryPathData,
+} from 'utils/plotSpecs/generateTrajectoryAnalysisGraph';
 import { loadEmbedding } from 'redux/actions/embedding';
 import { loadCellSets } from 'redux/actions/cellSets';
 import { loadProcessingSettings } from 'redux/actions/experimentSettings';
@@ -15,7 +19,11 @@ import changeEmbeddingAxesIfNecessary from 'components/plots/helpers/changeEmbed
 
 const TrajectoryAnalysisPlot = (props) => {
   const {
-    experimentId, config, actions, onUpdate,
+    experimentId,
+    config,
+    plotData,
+    actions,
+    onUpdate,
   } = props;
   const dispatch = useDispatch();
 
@@ -54,20 +62,28 @@ const TrajectoryAnalysisPlot = (props) => {
   }, [config, embeddingSettings?.method]);
 
   useEffect(() => {
+    console.log('cellSets.loading', cellSets.loading);
+    console.log('cellSets.error', cellSets.error);
+    console.log('!plotData?.length', !plotData);
+    console.log('!embeddingData?.length', !embeddingData?.length);
+
     if (!config
       || cellSets.loading
-      || cellSets.error) {
+      || cellSets.error
+      || !embeddingData?.length
+      || !plotData
+    ) {
       return;
     }
 
-    if (embeddingData?.length) {
-      const {
-        plotData,
-        cellSetLegendsData,
-      } = generateData(cellSets, config.selectedSample, config.selectedCellSet, embeddingData);
+    const {
+      plotData: plotEmbedding,
+      cellSetLegendsData,
+    } = generateCategoricalEmbeddingData(cellSets, config.selectedSample, config.selectedCellSet, embeddingData);
 
-      setPlotSpec(generateSpec(config, plotData, cellSetLegendsData));
-    }
+    const trajectoryData = genarateTrajectoryPathData(plotData, plotEmbedding);
+
+    setPlotSpec(generateSpec(config, plotEmbedding, trajectoryData, cellSetLegendsData));
   }, [config, cellSets, embeddingData, config]);
 
   const render = () => {
@@ -88,6 +104,8 @@ const TrajectoryAnalysisPlot = (props) => {
         />
       );
     }
+
+    console.log('*** plotspec', plotSpec);
 
     if (!config
       || cellSets.loading
@@ -120,6 +138,7 @@ const TrajectoryAnalysisPlot = (props) => {
 TrajectoryAnalysisPlot.propTypes = {
   experimentId: PropTypes.string.isRequired,
   config: PropTypes.object,
+  plotData: PropTypes.object.isRequired,
   actions: PropTypes.oneOfType([
     PropTypes.bool,
     PropTypes.object,

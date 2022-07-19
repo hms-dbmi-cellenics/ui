@@ -30,7 +30,10 @@ const plotType = plotTypes.TRAJECTORY_ANALYSIS;
 
 const TrajectoryAnalysisPage = ({ experimentId }) => {
   const dispatch = useDispatch();
-  const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
+  const {
+    config,
+    plotData,
+  } = useSelector((state) => state.componentConfig[plotUuid]) || {};
   const cellSets = useSelector(getCellSets());
   // const hierarchy = useSelector(getCellSetsHierarchy());
 
@@ -168,6 +171,7 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
           experimentId={experimentId}
           config={config}
           plotUuid={plotUuid}
+          plotData={plotData}
           onUpdate={updatePlotWithChanges}
         />
       </PlotContainer>
