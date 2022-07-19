@@ -12,8 +12,6 @@ import initialSampleState from 'redux/reducers/samples';
 import { EXPERIMENTS_METADATA_RENAME } from 'redux/actionTypes/experiments';
 import '__test__/test-utils/setupTests';
 
-import { SAMPLES_UPDATE } from 'redux/actionTypes/samples';
-
 const mockStore = configureStore([thunk]);
 
 const mockExperimentId = 'experiment-1234';
@@ -73,7 +71,7 @@ describe('renameMetadataTrack action', () => {
     );
 
     const actions = store.getActions();
-    expect(_.map(actions, 'type')).toEqual([EXPERIMENTS_METADATA_RENAME, SAMPLES_UPDATE]);
+    expect(_.map(actions, 'type')).toEqual([EXPERIMENTS_METADATA_RENAME]);
     expect(_.map(actions, 'payload')).toMatchSnapshot();
 
     expect(fetchMock).toHaveBeenCalledWith(

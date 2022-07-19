@@ -7,13 +7,5 @@ Array [
     "newKey": "New_track",
     "oldKey": "Old_track",
   },
-  Object {
-    "sample": Object {
-      "metadata": Object {
-        "New_track": "value",
-      },
-    },
-    "sampleUuid": "sample-1234",
-  },
 ]
 `;
