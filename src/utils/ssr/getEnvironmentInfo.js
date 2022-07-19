@@ -1,18 +1,15 @@
-import loadEnvironment from 'redux/actions/networkResources/loadEnvironment';
-import { ssrGetCurrentEnvironment } from 'utils/environment';
+import loadDeploymentInfo from 'redux/actions/networkResources/loadDeploymentInfo';
+import { ssrGetDeploymentInfo } from 'utils/deploymentInfo';
 
-const getAuthenticationInfo = async (context, store) => {
-  if (
-    store.getState().networkResources.environment
-  ) {
-    return;
-  }
+const getEnvironmentInfo = async (context, store) => {
+  const { networkResources } = store.getState();
+  if (networkResources.environment && networkResources.domainName) return;
 
-  const env = ssrGetCurrentEnvironment();
+  const { environment, domainName } = ssrGetDeploymentInfo();
 
-  store.dispatch(loadEnvironment(env));
+  store.dispatch(loadDeploymentInfo({ environment, domainName }));
 
   return {};
 };
 
-export default getAuthenticationInfo;
+export default getEnvironmentInfo;

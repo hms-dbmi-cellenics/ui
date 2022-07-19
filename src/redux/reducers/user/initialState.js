@@ -1,6 +1,5 @@
 const initialState = {
-  environment: undefined,
-  domainName: undefined,
+  current: null,
 };
 
 export default initialState;
