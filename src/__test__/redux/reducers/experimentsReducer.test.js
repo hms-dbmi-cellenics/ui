@@ -12,7 +12,7 @@ import {
   EXPERIMENTS_DELETED,
   EXPERIMENTS_SAVING,
   EXPERIMENTS_METADATA_CREATE,
-  EXPERIMENTS_METADATA_UPDATE,
+  EXPERIMENTS_METADATA_RENAME,
   EXPERIMENTS_METADATA_DELETE,
 } from 'redux/actionTypes/experiments';
 
@@ -329,7 +329,7 @@ describe('experimentsReducer', () => {
     };
 
     const newState = experimentsReducer(stateWithMetadata, {
-      type: EXPERIMENTS_METADATA_UPDATE,
+      type: EXPERIMENTS_METADATA_RENAME,
       payload: {
         oldKey: oldMetadataKey,
         newKey: newMetadataKey,

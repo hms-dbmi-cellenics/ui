@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`updateMetadataTrack action Works correctly 1`] = `
+exports[`renameMetadataTrack action Works correctly 1`] = `
 Array [
   Object {
     "experimentId": "experiment-1234",

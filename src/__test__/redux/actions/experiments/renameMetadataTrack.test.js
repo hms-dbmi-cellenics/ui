@@ -5,11 +5,11 @@ import thunk from 'redux-thunk';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 
 import { metadataNameToKey } from 'utils/data-management/metadataUtils';
-import updateMetadataTrack from 'redux/actions/experiments/updateMetadataTrack';
+import renameMetadataTrack from 'redux/actions/experiments/renameMetadataTrack';
 import initialExperimentState from 'redux/reducers/experiments';
 import initialSampleState from 'redux/reducers/samples';
 
-import { EXPERIMENTS_METADATA_UPDATE } from 'redux/actionTypes/experiments';
+import { EXPERIMENTS_METADATA_RENAME } from 'redux/actionTypes/experiments';
 import '__test__/test-utils/setupTests';
 
 import { SAMPLES_UPDATE } from 'redux/actionTypes/samples';
@@ -56,7 +56,7 @@ const initialState = {
   },
 };
 
-describe('updateMetadataTrack action', () => {
+describe('renameMetadataTrack action', () => {
   beforeEach(() => {
     enableFetchMocks();
     fetchMock.resetMocks();
@@ -69,11 +69,11 @@ describe('updateMetadataTrack action', () => {
     fetchMock.mockResolvedValue(new Response(JSON.stringify({})));
 
     await store.dispatch(
-      updateMetadataTrack(oldMetadataTrack, newMetadataTrack, mockExperiment.id),
+      renameMetadataTrack(oldMetadataTrack, newMetadataTrack, mockExperiment.id),
     );
 
     const actions = store.getActions();
-    expect(_.map(actions, 'type')).toEqual([EXPERIMENTS_METADATA_UPDATE, SAMPLES_UPDATE]);
+    expect(_.map(actions, 'type')).toEqual([EXPERIMENTS_METADATA_RENAME, SAMPLES_UPDATE]);
     expect(_.map(actions, 'payload')).toMatchSnapshot();
 
     expect(fetchMock).toHaveBeenCalledWith(

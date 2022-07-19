@@ -1,7 +1,6 @@
 import _ from 'lodash';
 
-import { EXPERIMENTS_METADATA_UPDATE } from 'redux/actionTypes/experiments';
-import { SAMPLES_UPDATE } from 'redux/actionTypes/samples';
+import { EXPERIMENTS_METADATA_RENAME } from 'redux/actionTypes/experiments';
 
 import fetchAPI from 'utils/http/fetchAPI';
 
@@ -9,10 +8,9 @@ import { metadataNameToKey } from 'utils/data-management/metadataUtils';
 import endUserMessages from 'utils/endUserMessages';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
 
-const updateMetadataTrack = (
+const renameMetadataTrack = (
   oldName, newName, experimentId,
 ) => async (dispatch, getState) => {
-  const { samples } = getState();
   const experiment = getState().experiments[experimentId];
 
   const oldMetadataKey = metadataNameToKey(oldName);
@@ -39,26 +37,16 @@ const updateMetadataTrack = (
     );
 
     dispatch({
-      type: EXPERIMENTS_METADATA_UPDATE,
+      type: EXPERIMENTS_METADATA_RENAME,
       payload: {
         oldKey: oldMetadataKey,
         newKey: newMetadataKey,
         experimentId,
       },
     });
-
-    experiment.sampleIds.forEach((sampleUuid) => {
-      dispatch({
-        type: SAMPLES_UPDATE,
-        payload: {
-          sampleUuid,
-          sample: { metadata: { [newMetadataKey]: samples[sampleUuid].metadata[oldMetadataKey] } },
-        },
-      });
-    });
   } catch (e) {
     pushNotificationMessage('error', endUserMessages.ERROR_SAVING);
   }
 };
 
-export default updateMetadataTrack;
+export default renameMetadataTrack;

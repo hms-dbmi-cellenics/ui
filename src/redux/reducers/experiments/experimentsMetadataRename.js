@@ -1,4 +1,4 @@
-const projectsMetadataUpdate = (state, action) => {
+const experimentsMetadataRename = (state, action) => {
   const { oldKey, newKey, experimentId } = action.payload;
 
   return {
@@ -13,4 +13,4 @@ const projectsMetadataUpdate = (state, action) => {
   };
 };
 
-export default projectsMetadataUpdate;
+export default experimentsMetadataRename;
