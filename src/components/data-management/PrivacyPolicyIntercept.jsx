@@ -30,7 +30,7 @@ const PrivacyPolicyIntercept = (props) => {
   const [agreedPrivacyPolicy, setAgreedPrivacyPolicy] = useState(originalAgreedPrivacyPolicy);
   const [agreedEmails, setAgreedEmails] = useState(originalAgreedEmails ?? 'false');
 
-  const privacyPolicyUrl = 'https://static1.squarespace.com/static/5f355513fc75aa471d47455c/t/61f12e7b7266045b4cb137bc/1643196027265/Biomage_Privacy_Policy_Jan2022.pdf';
+  const privacyPolicyUrl = 'https://static1.squarespace.com/static/5f355513fc75aa471d47455c/t/62d67b8cbd2d7f3177d91f83/1658223501108/Privacy+Policy_July+2022.pdf';
 
   return (
     <Modal
