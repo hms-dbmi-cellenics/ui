@@ -14,8 +14,11 @@ const experimentsMetadataRename = produce((draft, action) => {
 
   // Move the metadata in oldKey to newKey and then remove the old one
   sampleIdsFromExperiment.forEach((sampleId) => {
-    draft[sampleId].metadata[newKey] = draft[sampleId].metadata[oldKey];
+    const value = draft[sampleId].metadata[oldKey];
+
     delete draft[sampleId].metadata[oldKey];
+
+    draft[sampleId].metadata[newKey] = value;
   });
 });
 
