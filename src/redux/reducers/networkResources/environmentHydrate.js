@@ -3,8 +3,9 @@ import produce from 'immer';
 import initialState from './initialState';
 
 const environmentHydrate = produce((draft, action) => {
-  const { environment } = action.payload.networkResources;
+  const { environment, domainName } = action.payload.networkResources;
   draft.environment = environment;
+  draft.domainName = domainName;
 }, initialState);
 
 export default environmentHydrate;
