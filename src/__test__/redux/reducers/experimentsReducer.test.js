@@ -12,7 +12,7 @@ import {
   EXPERIMENTS_DELETED,
   EXPERIMENTS_SAVING,
   EXPERIMENTS_METADATA_CREATE,
-  EXPERIMENTS_METADATA_UPDATE,
+  EXPERIMENTS_METADATA_RENAME,
   EXPERIMENTS_METADATA_DELETE,
 } from 'redux/actionTypes/experiments';
 
@@ -294,12 +294,12 @@ describe('experimentsReducer', () => {
     expect(newState).toMatchSnapshot();
   });
 
-  it('Correctly creates project metadata', () => {
+  it('Correctly creates experiment metadata', () => {
     const newMetadataKey = 'metadata-test';
 
     const stateWithMetadata = {
       ...oneExperimentWithSampleState,
-      [oneExperimentWithSampleState[experiment1.id]]: {
+      [experiment1.id]: {
         ...oneExperimentWithSampleState[experiment1.id],
         metadataKeys: [],
       },
@@ -317,19 +317,19 @@ describe('experimentsReducer', () => {
     expect(newState).toMatchSnapshot();
   });
 
-  it('Correctly updates project metadata', () => {
+  it('Correctly renames experiment metadata', () => {
     const oldMetadataKey = 'metadata-old';
     const newMetadataKey = 'metadata-new';
     const stateWithMetadata = {
       ...oneExperimentWithSampleState,
-      [oneExperimentWithSampleState[experiment1.id]]: {
+      [experiment1.id]: {
         ...oneExperimentWithSampleState[experiment1.id],
         metadataKeys: [oldMetadataKey],
       },
     };
 
     const newState = experimentsReducer(stateWithMetadata, {
-      type: EXPERIMENTS_METADATA_UPDATE,
+      type: EXPERIMENTS_METADATA_RENAME,
       payload: {
         oldKey: oldMetadataKey,
         newKey: newMetadataKey,
@@ -341,11 +341,11 @@ describe('experimentsReducer', () => {
     expect(newState).toMatchSnapshot();
   });
 
-  it('Correctly deletes project metadata', () => {
+  it('Correctly deletes experiment metadata', () => {
     const metadataKey = 'metadata-old';
     const stateWithMetadata = {
       ...oneExperimentWithSampleState,
-      [oneExperimentWithSampleState[experiment1.id]]: {
+      [experiment1.id]: {
         ...oneExperimentWithSampleState[experiment1.id],
         metadataKeys: [metadataKey],
       },
