@@ -13,6 +13,7 @@ import {
   SAMPLES_METADATA_DELETE,
   SAMPLES_VALUE_IN_METADATA_TRACK_UPDATED,
 } from 'redux/actionTypes/samples';
+import { EXPERIMENTS_METADATA_RENAME } from 'redux/actionTypes/experiments';
 
 describe('samplesReducer', () => {
   const mockUuid1 = 'asd123';
@@ -236,32 +237,6 @@ describe('samplesReducer', () => {
     expect(newState).toMatchSnapshot();
   });
 
-  it('Updates sample metadata correctly', () => {
-    const metadataKey = 'metadata-test';
-    const oldValue = 'old-value';
-    const newValue = 'new-value';
-
-    const sampleWithMetadata = {
-      ...oneSampleState,
-      [oneSampleState[mockUuid1]]: {
-        metadata: {
-          [metadataKey]: oldValue,
-        },
-      },
-    };
-
-    const newState = samplesReducer(sampleWithMetadata, {
-      type: SAMPLES_UPDATE,
-      payload: {
-        sampleUuid: mockUuid1,
-        sample: { metadata: { [metadataKey]: newValue } },
-      },
-    });
-
-    expect(newState[mockUuid1].metadata[metadataKey]).toEqual(newValue);
-    expect(newState).toMatchSnapshot();
-  });
-
   it('Deletes sample metadata correctly', () => {
     const metadataKey = 'metadata-test';
     const metadataValue = 'old-value';
@@ -310,6 +285,36 @@ describe('samplesReducer', () => {
       },
     });
 
+    expect(newState).toMatchSnapshot();
+  });
+
+  it('Handles experimentMetadataRename correctly', () => {
+    const experimentId = 'mockExpId';
+    const oldMetadataKey = 'metadata-old';
+    const newMetadataKey = 'metadata-new';
+    const metadataValue = 'value';
+
+    const stateWithMetadata = {
+      ...oneSampleState,
+      [mockUuid1]: {
+        experimentId,
+        metadata: {
+          [oldMetadataKey]: metadataValue,
+        },
+      },
+    };
+
+    const newState = samplesReducer(stateWithMetadata, {
+      type: EXPERIMENTS_METADATA_RENAME,
+      payload: {
+        oldKey: oldMetadataKey,
+        newKey: newMetadataKey,
+        experimentId,
+      },
+    });
+
+    expect(newState[mockUuid1].metadata[newMetadataKey]).toEqual(metadataValue);
+    expect(newState[mockUuid1].metadata[oldMetadataKey]).not.toBeDefined();
     expect(newState).toMatchSnapshot();
   });
 });
