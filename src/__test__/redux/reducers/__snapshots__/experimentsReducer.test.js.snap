@@ -51,20 +51,8 @@ Object {
 }
 `;
 
-exports[`experimentsReducer Correctly creates project metadata 1`] = `
+exports[`experimentsReducer Correctly creates experiment metadata 1`] = `
 Object {
-  "[object Object]": Object {
-    "createdAt": "2021-01-01",
-    "description": "this is a test description",
-    "id": "experiment-1",
-    "metadataKeys": Array [],
-    "name": "experiment 1",
-    "notifyByEmail": true,
-    "sampleIds": Array [
-      "testSampleId",
-    ],
-    "updatedAt": "2022-01-17",
-  },
   "experiment-1": Object {
     "createdAt": "2021-01-01",
     "description": "this is a test description",
@@ -90,22 +78,8 @@ Object {
 }
 `;
 
-exports[`experimentsReducer Correctly deletes project metadata 1`] = `
+exports[`experimentsReducer Correctly deletes experiment metadata 1`] = `
 Object {
-  "[object Object]": Object {
-    "createdAt": "2021-01-01",
-    "description": "this is a test description",
-    "id": "experiment-1",
-    "metadataKeys": Array [
-      "metadata-old",
-    ],
-    "name": "experiment 1",
-    "notifyByEmail": true,
-    "sampleIds": Array [
-      "testSampleId",
-    ],
-    "updatedAt": "2022-01-17",
-  },
   "experiment-1": Object {
     "createdAt": "2021-01-01",
     "description": "this is a test description",
@@ -129,22 +103,8 @@ Object {
 }
 `;
 
-exports[`experimentsReducer Correctly updates project metadata 1`] = `
+exports[`experimentsReducer Correctly renames experiment metadata 1`] = `
 Object {
-  "[object Object]": Object {
-    "createdAt": "2021-01-01",
-    "description": "this is a test description",
-    "id": "experiment-1",
-    "metadataKeys": Array [
-      "metadata-old",
-    ],
-    "name": "experiment 1",
-    "notifyByEmail": true,
-    "sampleIds": Array [
-      "testSampleId",
-    ],
-    "updatedAt": "2022-01-17",
-  },
   "experiment-1": Object {
     "createdAt": "2021-01-01",
     "description": "this is a test description",

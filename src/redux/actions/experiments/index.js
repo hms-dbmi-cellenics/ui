@@ -6,7 +6,7 @@ import setActiveExperiment from './setActiveExperiment';
 import switchExperiment from './switchExperiment';
 import reorderSamples from './reorderSamples';
 import createMetadataTrack from './createMetadataTrack';
-import updateMetadataTrack from './updateMetadataTrack';
+import renameMetadataTrack from './renameMetadataTrack';
 import deleteMetadataTrack from './deleteMetadataTrack';
 import updateValueInMetadataTrack from './updateValueInMetadataTrack';
 
@@ -19,7 +19,7 @@ export {
   switchExperiment,
   reorderSamples,
   createMetadataTrack,
-  updateMetadataTrack,
+  renameMetadataTrack,
   deleteMetadataTrack,
   updateValueInMetadataTrack,
 };

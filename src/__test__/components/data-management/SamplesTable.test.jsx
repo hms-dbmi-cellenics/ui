@@ -102,6 +102,7 @@ describe('Samples table', () => {
 
     storeState = makeStore();
 
+    await storeState.dispatch(loadUser());
     await storeState.dispatch(loadExperiments());
 
     // Loading experiment is usually called in Data Management, so we have to load them manually
@@ -110,8 +111,6 @@ describe('Samples table', () => {
     // Defaults to project with samples
     await storeState.dispatch(setActiveExperiment(experimentWithSamplesId));
     await storeState.dispatch(loadDeploymentInfo({ environment: 'test' }));
-
-    await storeState.dispatch(loadUser());
   });
 
   it('Does not show prompt to upload datasets if samples are available', async () => {
@@ -129,24 +128,22 @@ describe('Samples table', () => {
     });
   });
 
-  it('Should show an error if a sample fails to upload', async () => {
+  it('Should not show the samples until they are loaded', async () => {
     const missingSampleState = _.cloneDeep(storeState.getState());
+
     const createMockStore = configureMockStore([thunk]);
 
-    // Delete one of the samples
+    // Remove one of the samples of the experiment
     const deletedSampleUuid = Object.keys(missingSampleState.samples).find((key) => key !== 'meta');
-    const deletedSampleObject = missingSampleState.samples[deletedSampleUuid];
     delete missingSampleState.samples[deletedSampleUuid];
 
     const missingSampleStore = createMockStore(missingSampleState);
 
     await renderSamplesTable(missingSampleStore);
 
-    // The sample name should not be in the document
-    expect(screen.queryByText(deletedSampleObject.name)).toBeNull();
-
-    // There should be an error entry for the missing sample
-    expect(screen.getByText(/UPLOAD ERROR: Please reupload sample/i)).toBeInTheDocument();
+    Object.values(samples).forEach((sample) => {
+      expect(screen.queryByText(sample.name)).not.toBeInTheDocument();
+    });
   });
 
   it('Renaming the sample renames the sample', async () => {
