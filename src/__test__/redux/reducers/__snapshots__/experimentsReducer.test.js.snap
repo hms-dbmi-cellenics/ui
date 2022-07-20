@@ -103,7 +103,7 @@ Object {
 }
 `;
 
-exports[`experimentsReducer Correctly updates experiment metadata 1`] = `
+exports[`experimentsReducer Correctly renames experiment metadata 1`] = `
 Object {
   "experiment-1": Object {
     "createdAt": "2021-01-01",
