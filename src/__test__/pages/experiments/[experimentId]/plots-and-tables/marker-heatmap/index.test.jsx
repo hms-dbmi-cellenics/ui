@@ -416,7 +416,6 @@ describe('Drag and drop enzyme tests', () => {
     // dropping in place does nothing
     const info = {
       dragNode: { key: 1, pos: '0-1' },
-      node: { key: 1, pos: '0-1' },
       dropPosition: 1,
       dropToGap: true,
     };
@@ -441,7 +440,6 @@ describe('Drag and drop enzyme tests', () => {
     // not dropping to gap does nothing
     const info = {
       dragNode: { key: 1, pos: '0-1' },
-      node: { key: 3, pos: '0-3' },
       dropPosition: 4,
       dropToGap: false,
     };
@@ -465,7 +463,6 @@ describe('Drag and drop enzyme tests', () => {
     // dropping to gap re-orders genes
     const info = {
       dragNode: { key: 1, pos: '0-1' },
-      node: { key: 3, pos: '0-3' },
       dropPosition: 4,
       dropToGap: true,
     };
