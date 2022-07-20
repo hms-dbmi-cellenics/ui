@@ -2,7 +2,7 @@ import nextConfig from 'next/config';
 
 import { AccountId } from 'utils/deploymentInfo';
 
-const accountId = nextConfig()?.publicRuntimeConfig?.accountId;
+const accountId = nextConfig()?.publicRuntimeConfig?.accountId ?? AccountId.BIOMAGE;
 
 const supportEmailsByAccountId = {
   [AccountId.BIOMAGE]: 'hello@biomage.net',
