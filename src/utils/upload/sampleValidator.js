@@ -5,7 +5,6 @@ import {
 const errorMessages = {
   invalidBarcodesFile: (expected, found) => `Invalid barcodes.tsv file. ${expected} barcodes expected, but ${found} found.`,
   invalidFeaturesFile: (expected, found) => `Invalid features/genes.tsv file. ${expected} genes expected, but ${found} found.`,
-  invalidMatrixFile: (expected, found) => `Invalid matrix.tsv file. ${expected} elements expected, but ${found} found.`,
   transposedMatrixFile: () => 'Invalid matrix.mtx file: Matrix is transposed.',
 };
 
