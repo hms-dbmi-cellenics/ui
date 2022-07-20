@@ -3,26 +3,10 @@ import { screen, render } from '@testing-library/react';
 
 import HelpButton from 'components/header/HelpButton';
 import userEvent from '@testing-library/user-event';
-import { DomainName } from 'utils/deploymentInfo';
 
 const renderHelpButton = () => render(<HelpButton />);
 
 describe('HelpButton', () => {
-  let originalEnv;
-
-  // We are going to mess with the process env so save the original to avoid leak into other tests
-  beforeAll(() => {
-    originalEnv = { ...process.env };
-  });
-
-  afterAll(() => {
-    process.env = originalEnv;
-  });
-
-  beforeEach(() => {
-    process.env = { DOMAIN_NAME: DomainName.BIOMAGE };
-  });
-
   it('Renders the testing buttton properly', () => {
     renderHelpButton();
 

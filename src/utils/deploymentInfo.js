@@ -14,7 +14,6 @@ const Environment = {
 const DomainName = {
   BIOMAGE: 'scp.biomage.net',
   BIOMAGE_STAGING: 'scp-staging.biomage.net',
-  HMS: 'cellenics.hms.harvard.edu',
 };
 
 const AccountId = {
