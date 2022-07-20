@@ -111,6 +111,17 @@ const WrappedApp = ({ Component, pageProps }) => {
         );
       }
 
+      if (httpError === 424) {
+        return (
+          <NotFoundPage
+            title='Terms agreement required'
+            subTitle='You cannot access your analysis in Cellenics until you have agreed to our updated privacy policy.'
+            hint='Go to data management to accept the terms.'
+            primaryActionText='Go to data management'
+          />
+        );
+      }
+
       if (httpError === 401) {
         return (
           <UnauthorizedPage

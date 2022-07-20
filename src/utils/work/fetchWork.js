@@ -1,7 +1,7 @@
 /* eslint-disable no-underscore-dangle */
 import { MD5 } from 'object-hash';
 
-import Environment, { isBrowser } from 'utils/environment';
+import { Environment, isBrowser } from 'utils/deploymentInfo';
 import { calculateZScore } from 'utils/postRequestProcessing';
 import { getBackendStatus } from 'redux/selectors';
 
