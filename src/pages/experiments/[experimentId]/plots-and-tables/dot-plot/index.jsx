@@ -211,28 +211,28 @@ const DotPlotPage = (props) => {
 
       previousComparedConfig.current = currentComparedConfig;
 
-      // dispatch is different depending on whether selected genes don't change or are added, re-ordered or deleted
-      // to prevent unnecessary rerenders
+      // if the selected genes don't change
       if (_.isEqual(currentSelected, previousSelected)) {
         dispatch(fetchPlotDataWork(experimentId, plotUuid, plotType));
         return;
       }
 
+      // if a gene was added
       if (currentSelected.length > previousSelected.length) {
         dispatch(fetchPlotDataWork(experimentId, plotUuid, plotType));
         setReorderAfterFetch(true);
         return;
       }
 
+      // if the genes were reordered
       if (currentSelected.length === previousSelected.length) {
         reorderData(currentSelected);
         return;
       }
       
-      // if (currentSelected.length < previousSelected.length) {
+      // if a gene was removed
       const removedGene = previousSelected.filter((gene) => !currentSelected.includes(gene))[0];
       deleteData(removedGene);
-      // }
     }
   }, [config, cellSetProperties]);
 
