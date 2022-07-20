@@ -317,7 +317,7 @@ describe('experimentsReducer', () => {
     expect(newState).toMatchSnapshot();
   });
 
-  it('Correctly updates experiment metadata', () => {
+  it('Correctly renames experiment metadata', () => {
     const oldMetadataKey = 'metadata-old';
     const newMetadataKey = 'metadata-new';
     const stateWithMetadata = {
