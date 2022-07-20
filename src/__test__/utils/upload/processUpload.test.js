@@ -14,7 +14,7 @@ import { waitFor } from '@testing-library/dom';
 import processUpload from 'utils/upload/processUpload';
 
 import loadAndCompressIfNecessary from 'utils/upload/loadAndCompressIfNecessary';
-import { inspectSample } from 'utils/upload/sampleInspector';
+import validate from 'utils/upload/sampleValidator';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
 
 enableFetchMocks();
@@ -126,18 +126,7 @@ jest.mock('axios', () => ({
 
 jest.mock('utils/pushNotificationMessage');
 
-jest.mock('redux/actions/samples/deleteSamples', () => ({
-  sendDeleteSamplesRequest: jest.fn(),
-}));
-
-jest.mock('utils/upload/sampleInspector', () => {
-  const actual = jest.requireActual('utils/upload/sampleInspector');
-
-  return {
-    ...actual,
-    inspectSample: jest.fn(() => ({ valid: true, verdict: [] })),
-  };
-});
+jest.mock('utils/upload/sampleValidator');
 
 let store = null;
 
@@ -153,6 +142,9 @@ describe('processUpload', () => {
   });
 
   it('Uploads and updates redux correctly when there are no errors with cellranger v3', async () => {
+    // validate.mockImplementation(
+    //   () => ([]),
+    // );
     const mockAxiosCalls = [];
     const uploadSuccess = (params) => {
       mockAxiosCalls.push(params);
@@ -444,8 +436,8 @@ describe('processUpload', () => {
   });
 
   it('Should not upload sample and show notification if uploaded sample is invalid', async () => {
-    inspectSample.mockImplementationOnce(
-      () => ({ valid: false, verdict: ['Some file error'] }),
+    validate.mockImplementationOnce(
+      () => (['Some file error']),
     );
 
     await processUpload(

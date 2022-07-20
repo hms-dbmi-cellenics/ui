@@ -4,14 +4,14 @@ import _ from 'lodash';
 import axios from 'axios';
 
 import { createSample, createSampleFile, updateSampleFileUpload } from 'redux/actions/samples';
-import { inspectSample } from 'utils/upload/sampleInspector';
+import validate from 'utils/upload/sampleValidator';
 
 import UploadStatus from 'utils/upload/UploadStatus';
 import loadAndCompressIfNecessary from 'utils/upload/loadAndCompressIfNecessary';
 import { inspectFile, Verdict } from 'utils/upload/fileInspector';
-import pushNotificationMessage from 'utils/pushNotificationMessage';
 
 import getFileTypeV2 from 'utils/getFileTypeV2';
+import { message } from 'antd';
 
 const putInS3 = async (loadedFileData, signedUrl, onUploadProgress) => (
   await axios.request({
@@ -131,13 +131,13 @@ const processUpload = async (filesList, sampleType, samples, experimentId, dispa
   }, {});
 
   Object.entries(samplesMap).forEach(async ([name, sample]) => {
-    const { valid, verdict } = await inspectSample(sample);
-    const validationMessage = verdict.join('\n');
+    const errors = await validate(sample);
 
     const filesToUploadForSample = Object.keys(sample.files);
 
-    if (!valid) {
-      pushNotificationMessage('error', `Error uploading sample ${name}: ${validationMessage}`);
+    if (errors.length > 0) {
+      const errorMessage = errors.join('\n');
+      message.error(`Error uploading sample ${name}.\n${errorMessage}`, 15);
       return;
     }
 
