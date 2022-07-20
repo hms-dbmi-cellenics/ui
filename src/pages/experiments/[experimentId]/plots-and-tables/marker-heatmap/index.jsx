@@ -4,7 +4,6 @@ import {
   Collapse,
   Skeleton,
   Empty,
-  Select,
   Radio,
 } from 'antd';
 import _ from 'lodash';
@@ -15,7 +14,6 @@ import pushNotificationMessage from 'utils/pushNotificationMessage';
 import endUserMessages from 'utils/endUserMessages';
 
 import { getCellSets, getCellSetsHierarchyByKeys, getCellSetsHierarchyByType } from 'redux/selectors';
-import getSelectOptions from 'utils/plots/getSelectOptions';
 
 import HeatmapGroupBySettings from 'components/data-exploration/heatmap/HeatmapGroupBySettings';
 import HeatmapMetadataTracksSettings from 'components/data-exploration/heatmap/HeatmapMetadataTrackSettings';
@@ -30,7 +28,9 @@ import { loadGeneExpression, loadMarkerGenes, loadPaginatedGeneProperties } from
 import { loadCellSets } from 'redux/actions/cellSets';
 import PlatformError from 'components/PlatformError';
 import Loader from 'components/Loader';
+import SelectData from 'components/plots/styling/SelectData';
 import populateHeatmapData from 'components/plots/helpers/heatmap/populateHeatmapData';
+import generateVegaData from 'components/plots/helpers/heatmap/vega/generateVegaData';
 import { plotNames } from 'utils/constants';
 
 import ScrollOnDrag from 'components/plots/ScrollOnDrag';
@@ -52,8 +52,6 @@ const MarkerHeatmap = ({ experimentId }) => {
 
   const cellSets = useSelector(getCellSets());
   const { hierarchy, properties } = cellSets;
-
-  const cellOptions = useSelector(getCellSetsHierarchyByType('cellSets'));
 
   const selectedCellSetClassAvailable = useSelector(
     getCellSetsHierarchyByKeys([config?.selectedCellSet]),
@@ -206,7 +204,9 @@ const MarkerHeatmap = ({ experimentId }) => {
       return;
     }
 
-    const data = populateHeatmapData(cellSets, config, expressionData, config.selectedGenes, true);
+    const cellOrder = populateHeatmapData(cellSets, config, true);
+    const data = generateVegaData(cellOrder, expressionData, config, cellSets);
+
     const spec = generateSpec(config, 'Cluster ID', data, true);
 
     spec.description = 'Marker heatmap';
@@ -317,13 +317,6 @@ const MarkerHeatmap = ({ experimentId }) => {
     return (<Skeleton />);
   }
 
-  const clustersForSelect = getSelectOptions(cellOptions);
-
-  const changeClusters = (option) => {
-    const newValue = option.value.toLowerCase();
-    updatePlotWithChanges({ selectedCellSet: newValue });
-  };
-
   const renderExtraPanels = () => (
     <>
       <Panel header='Gene selection' key='gene-selection'>
@@ -350,19 +343,13 @@ const MarkerHeatmap = ({ experimentId }) => {
         </div>
       </Panel>
       <Panel header='Select data' key='select-data'>
-        <Space direction='vertical' size='small'>
-          <p>Select cell sets to show in the heatmap:</p>
-          <Select
-            value={{
-              value: config.selectedCellSet,
-            }}
-            onChange={changeClusters}
-            labelInValue
-            style={{ width: '100%' }}
-            placeholder='Select cell set...'
-            options={clustersForSelect}
-          />
-        </Space>
+        <SelectData
+          config={config}
+          onUpdate={updatePlotWithChanges}
+          cellSets={cellSets}
+          firstSelectionText='Select the cell sets or metadata to show markers for'
+          secondSelectionText='Select the cell set, sample or metadata group to be shown'
+        />
       </Panel>
       <Panel header='Cluster guardlines' key='cluster-guardlines'>
         <Radio.Group
@@ -382,7 +369,30 @@ const MarkerHeatmap = ({ experimentId }) => {
     </>
   );
 
+  const hasEnoughCellSets = (cellSet) => {
+    const chosenCellSet = cellSets.hierarchy.find(({ key }) => key === cellSet);
+    return chosenCellSet.children.length === 0;
+  };
+
   const renderPlot = () => {
+    if (hasEnoughCellSets(config.selectedCellSet)) {
+      return (
+        <center>
+          <Empty description={(
+            <>
+              <p>
+                There is no data to show.
+              </p>
+              <p>
+                Select another option from the 'Select data' menu.
+              </p>
+            </>
+          )}
+          />
+        </center>
+      );
+    }
+
     if (error) {
       return (
         <PlatformError

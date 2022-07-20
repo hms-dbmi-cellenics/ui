@@ -26,7 +26,7 @@ const ViolinControls = (props) => {
           config={config}
           onUpdate={onUpdate}
           cellSets={cellSets}
-          axisName='x'
+          firstSelectionText='Select the cell sets or metadata that cells are grouped by (determines the x-axis)'
         />
       </Panel>
       <Panel header='Data transformation' key='data-transformation'>

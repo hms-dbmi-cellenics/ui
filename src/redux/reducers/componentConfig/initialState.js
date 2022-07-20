@@ -102,6 +102,7 @@ const heatmapInitialConfig = {
   labels: labelBaseState,
   selectedGenes: [],
   selectedCellSet: 'louvain',
+  selectedPoints: 'All',
   labelColour: 'transparent',
   selectedTracks: ['louvain'],
   groupedTracks: ['sample', 'louvain'],
@@ -397,6 +398,8 @@ const embeddingPreviewDoubletScoreInitialConfig = {
 };
 
 const interactiveHeatmapInitialConfig = {
+  selectedCellSet: 'louvain',
+  selectedPoints: 'All',
   selectedTracks: ['louvain'],
   groupedTracks: ['louvain', 'sample'],
   expressionValue: 'raw',

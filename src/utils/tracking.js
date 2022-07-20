@@ -1,6 +1,6 @@
 import { init, push } from '@socialgouv/matomo-next';
 import Auth from '@aws-amplify/auth';
-import Env from './environment';
+import { Environment } from './deploymentInfo';
 
 const MATOMO_URL = 'https://biomage.matomo.cloud';
 
@@ -9,24 +9,24 @@ const MATOMO_URL = 'https://biomage.matomo.cloud';
 // To test locally, just enable the development environemnt.
 // The Site Ids are defined in biomage.matomo.cloud
 const trackingInfo = {
-  [Env.PRODUCTION]: {
+  [Environment.PRODUCTION]: {
     enabled: true,
     siteId: 1,
     containerId: 'lkIodjnO',
   },
-  [Env.STAGING]: {
+  [Environment.STAGING]: {
     enabled: false,
     siteId: 2,
     containerId: 'FX7UBNS6',
   },
-  [Env.DEVELOPMENT]: {
+  [Environment.DEVELOPMENT]: {
     enabled: false,
     siteId: 3,
     containerId: 'lS8ZRMXJ',
   },
 };
 
-let env = Env.DEVELOPMENT;
+let env = Environment.DEVELOPMENT;
 
 const getTrackingDetails = (e) => trackingInfo[e];
 
