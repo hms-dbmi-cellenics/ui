@@ -17,8 +17,6 @@ import {
 } from 'antd';
 import { modules } from 'utils/constants';
 
-import Auth from '@aws-amplify/auth';
-
 import { useAppRouter } from 'utils/AppRouteProvider';
 
 import calculateGem2sRerunStatus from 'utils/data-management/calculateGem2sRerunStatus';
@@ -29,22 +27,22 @@ import PreloadContent from 'components/PreloadContent';
 import experimentUpdatesHandler from 'utils/experimentUpdatesHandler';
 import { getBackendStatus } from 'redux/selectors';
 import { loadBackendStatus } from 'redux/actions/backendStatus';
-import { isBrowser } from 'utils/environment';
+import { isBrowser, privacyPolicyIsNotAccepted } from 'utils/deploymentInfo';
 
 import Error from 'pages/_error';
 
 import integrationTestConstants from 'utils/integrationTestConstants';
 import pipelineStatus from 'utils/pipelineStatusValues';
 import BrowserAlert from 'components/BrowserAlert';
+import { loadUser } from 'redux/actions/user';
+import PrivacyPolicyIntercept from './data-management/PrivacyPolicyIntercept';
 
-const { Sider, Footer } = Layout;
-
-const { Paragraph, Text } = Typography;
+const { Sider } = Layout;
+const { Text } = Typography;
 
 const ContentWrapper = (props) => {
   const dispatch = useDispatch();
 
-  const [isAuth, setIsAuth] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
 
   const { routeExperimentId, experimentData, children } = props;
@@ -53,6 +51,9 @@ const ContentWrapper = (props) => {
   const currentExperimentIdRef = useRef(routeExperimentId);
   const activeExperimentId = useSelector((state) => state?.experiments?.meta?.activeExperimentId);
   const activeExperiment = useSelector((state) => state.experiments[activeExperimentId]);
+
+  const domainName = useSelector((state) => state.networkResources.domainName);
+  const user = useSelector((state) => state.user.current);
 
   const samples = useSelector((state) => state.samples);
 
@@ -138,15 +139,10 @@ const ContentWrapper = (props) => {
   }, [gem2sBackendStatus, activeExperiment, samples, experiment]);
 
   useEffect(() => {
-    Auth.currentAuthenticatedUser()
-      .then(() => setIsAuth(true))
-      .catch(() => {
-        setIsAuth(false);
-        Auth.federatedSignIn();
-      });
+    dispatch(loadUser());
   }, []);
 
-  if (!isAuth) return <></>;
+  if (!user) return <></>;
 
   const BigLogo = () => (
     <div
@@ -330,8 +326,14 @@ const ContentWrapper = (props) => {
       </Menu.Item>
     );
   };
+
+  if (!user) return <></>;
+
   return (
     <>
+      {privacyPolicyIsNotAccepted(user, domainName) && (
+        <PrivacyPolicyIntercept user={user} onOk={() => dispatch(loadUser())} />
+      )}
       <BrowserAlert />
       <Layout style={{ minHeight: '100vh' }}>
         <Sider

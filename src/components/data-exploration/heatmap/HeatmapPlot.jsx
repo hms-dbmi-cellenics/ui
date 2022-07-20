@@ -24,6 +24,7 @@ import HeatmapTracksCellInfo from 'components/data-exploration/heatmap/HeatmapTr
 
 import getContainingCellSetsProperties from 'utils/cellSets/getContainingCellSetsProperties';
 import useConditionalEffect from 'utils/customHooks/useConditionalEffect';
+import generateVitessceData from 'components/plots/helpers/heatmap/vitessce/generateVitessceData';
 
 const COMPONENT_TYPE = 'interactiveHeatmap';
 
@@ -134,8 +135,18 @@ const HeatmapPlot = (props) => {
       return;
     }
 
-    const data = populateHeatmapData(
-      cellSets, heatmapSettings, expressionData, selectedGenes, true, true,
+    const cellOrder = populateHeatmapData(cellSets, heatmapSettings, true);
+
+    // Selected genes is not contained in heatmap settings for the
+    // data exploration marker heatmap, so must be passed spearatedly.
+    // Trying to assign it to heatmapSettings will throw an error because
+    // heatmapSettings is is frozen in redux by immer.
+    const data = generateVitessceData(
+      cellOrder,
+      heatmapSettings,
+      expressionData,
+      selectedGenes,
+      cellSets,
     );
 
     setHeatmapData(data);

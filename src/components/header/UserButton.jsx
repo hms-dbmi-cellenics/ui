@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import {
   Avatar,
   Button,
@@ -11,24 +11,23 @@ import Auth from '@aws-amplify/auth';
 import endUserMessages from 'utils/endUserMessages';
 import { resetTrackingId } from 'utils/tracking';
 import handleError from 'utils/http/handleError';
+import { loadUser } from 'redux/actions/user';
+import { useDispatch, useSelector } from 'react-redux';
 
 const UserButton = () => {
-  const [user, setUser] = useState();
+  const dispatch = useDispatch();
 
-  const getUser = () => Auth.currentAuthenticatedUser()
-    .then((userData) => userData)
-    .catch((e) => console.log('error during getuser', e));
+  const user = useSelector((state) => state.user.current);
 
   useEffect(() => {
     Hub.listen('auth', ({ payload: { event } }) => {
       switch (event) {
         case 'signIn':
         case 'cognitoHostedUI':
-          getUser().then((userData) => setUser(userData));
+          dispatch(loadUser());
           break;
         case 'signOut':
           resetTrackingId();
-          setUser(null);
           break;
         case 'signIn_failure':
         case 'cognitoHostedUI_failure':
@@ -38,13 +37,11 @@ const UserButton = () => {
           break;
       }
     });
-
-    getUser().then((userData) => setUser(userData));
   }, []);
 
   const content = () => (
     <Menu>
-      <Menu.ItemGroup key='g1' title={`Signed in as ${user.attributes.name}`} />
+      <Menu.ItemGroup key='g1' title={`Signed in as ${user?.attributes.name}`} />
       <Menu.Item key='profile' disabled>Your profile</Menu.Item>
       <Menu.Item key='settings'>
         <Link href='/settings/profile'>

@@ -36,7 +36,11 @@ jest.mock('next/router', () => ({
 }));
 
 jest.mock('@aws-amplify/auth', () => ({
-  currentAuthenticatedUser: jest.fn().mockImplementation(async () => true),
+  currentAuthenticatedUser: jest.fn().mockImplementation(async () => ({
+    attributes: {
+      'custom:agreed_terms': 'true',
+    },
+  })),
   federatedSignIn: jest.fn(),
 }));
 
@@ -124,7 +128,6 @@ describe('ContentWrapper', () => {
     await store.dispatch(updateExperimentInfo({ experimentId, experimentName, sampleIds }));
   });
 
-  // PROBLEMATIC
   it('renders correctly', async () => {
     getBackendStatus.mockImplementation(() => () => ({
       loading: false,

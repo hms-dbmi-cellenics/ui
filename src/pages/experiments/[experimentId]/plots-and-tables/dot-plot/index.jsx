@@ -333,6 +333,7 @@ const DotPlotPage = (props) => {
           config={config}
           onUpdate={updatePlotWithChanges}
           cellSets={cellSets}
+          firstSelectionText='Select the cell sets or metadata that cells are grouped by (determines the y-axis)'
         />
       </Panel>
       <Panel header='Size scale' key='size-scale'>

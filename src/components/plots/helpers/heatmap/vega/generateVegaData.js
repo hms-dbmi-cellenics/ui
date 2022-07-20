@@ -1,31 +1,34 @@
 import generateVegaGeneExpressionsData from 'components/plots/helpers/heatmap/vega/utils/generateVegaGeneExpressionsData';
 import generateVegaHeatmapTracksData from 'components/plots/helpers/heatmap/vega/utils/generateVegaHeatmapTracksData';
+import { reversed } from 'utils/arrayUtils';
 
 const generateVegaData = (
-  cellOrder, geneOrder, trackOrder,
-  expression, heatmapSettings, cellSets,
+  cellOrder, expression, heatmapSettings, cellSets,
 ) => {
+  const { selectedGenes, selectedTracks, guardlines } = heatmapSettings;
+  const trackOrder = reversed(selectedTracks);
+
   const data = {
     cellOrder,
-    geneOrder,
+    geneOrder: selectedGenes,
     trackOrder,
     geneExpressionsData: [],
     trackPositionData: [],
     trackGroupData: [],
   };
 
-  const cells = new Set(cellOrder);
-
   data.geneExpressionsData = generateVegaGeneExpressionsData(
-    cellOrder, geneOrder, expression, heatmapSettings,
+    cellOrder, selectedGenes, expression, heatmapSettings,
   );
 
-  const trackData = trackOrder.map((rootNode) => generateVegaHeatmapTracksData(
-    cells,
-    rootNode,
-    cellSets,
-    heatmapSettings,
-  ));
+  const trackData = trackOrder.map(
+    (rootNode) => generateVegaHeatmapTracksData(
+      cellOrder,
+      rootNode,
+      cellSets,
+      guardlines,
+    ),
+  );
 
   data.trackColorData = trackData.map((datum) => datum.trackColorData).flat();
   data.trackGroupData = trackData.map((datum) => datum.groupData).flat();
