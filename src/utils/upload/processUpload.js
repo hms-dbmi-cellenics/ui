@@ -11,7 +11,7 @@ import loadAndCompressIfNecessary from 'utils/upload/loadAndCompressIfNecessary'
 import { inspectFile, Verdict } from 'utils/upload/fileInspector';
 
 import getFileTypeV2 from 'utils/getFileTypeV2';
-import { message } from 'antd';
+import pushNotificationMessage from 'utils/pushNotificationMessage';
 
 const putInS3 = async (loadedFileData, signedUrl, onUploadProgress) => (
   await axios.request({
@@ -135,9 +135,9 @@ const processUpload = async (filesList, sampleType, samples, experimentId, dispa
 
     const filesToUploadForSample = Object.keys(sample.files);
 
-    if (errors.length > 0) {
+    if (errors && errors.length > 0) {
       const errorMessage = errors.join('\n');
-      message.error(`Error uploading sample ${name}.\n${errorMessage}`, 15);
+      pushNotificationMessage('error', `Error uploading sample ${name}.\n${errorMessage}`, 15);
       return;
     }
 

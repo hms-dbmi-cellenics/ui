@@ -42,13 +42,10 @@ const extractSampleSizes = async (matrix) => {
   // The matrix header is the first line in the file that splits into 3
   header = matrixHeader.split('\n').find((line) => line.split(' ').length === 3);
 
-  console.log('HEADER: ', header);
   const [featuresSize, barcodeSize, matrixSize] = header.split(' ');
-  // const [featuresSize, barcodeSize, matrixSize] = header.split(' ');
   return [Number.parseInt(featuresSize, 10),
     Number.parseInt(barcodeSize, 10),
     Number.parseInt(matrixSize, 10)];
-  // matrixSize: Number.parseInt(matrixSize, 10),
 };
 const getNumLines = async (sampleFile) => {
   const { compressed, fileObject } = sampleFile;
@@ -59,7 +56,6 @@ const getNumLines = async (sampleFile) => {
   const utfDecode = new DecodeUTF8((data) => {
     numLines += (data.match(/\n|\r\n/g) || []).length;
   });
-
   // Streaming Decompression (auto-detect the compression method)
   const dcmpStrm = new Decompress((chunk, final) => {
     utfDecode.push(chunk, final);
@@ -69,23 +65,15 @@ const getNumLines = async (sampleFile) => {
   // otherwise, just use the utfDecoder
   const decoder = compressed ? dcmpStrm : utfDecode;
 
-  // console.log('decoder object: ', decoder);
-  console.log('file object size: ', fileObject.size);
   let idx = 0;
   while (idx + CHUNK_SIZE < fileObject.size) {
-    console.log('Indices: ', idx, idx + CHUNK_SIZE);
     // eslint-disable-next-line no-await-in-loop
     const slice = await fileObject.slice(idx, idx + CHUNK_SIZE).arrayBuffer();
-    // console.log('slice', slice);
     decoder.push(new Uint8Array(slice));
     idx += CHUNK_SIZE;
   }
   const finalSlice = await fileObject.slice(idx, fileObject.size).arrayBuffer();
-  // console.log('final slice', finalSlice);
   decoder.push(new Uint8Array(finalSlice), true);
-  // dcmpStrm.push(fileObject, true);
-
-  console.log('NUM lines: ', numLines);
 
   return numLines;
 };
@@ -98,12 +86,10 @@ const validateFileSizes = async (sample) => {
   const [
     expectedNumFeatures,
     expectedNumBarcodes,
-    // expectedMatrixSize,
   ] = await extractSampleSizes(matrix);
 
   const numBarcodesFound = await getNumLines(barcodes);
   const numFeaturesFound = await getNumLines(features);
-  // const numMatrixLinesFound = await getNumLines(matrix);
 
   const errors = [];
 
@@ -124,18 +110,11 @@ const validateFileSizes = async (sample) => {
     );
   }
 
-  // if ((numMatrixLinesFound - 2) !== expectedMatrixSize) {
-  //   errors.push(
-  //     errorMessages.invalidMatrixFile(expectedMatrixSize, numMatrixLinesFound),
-  //   );
-  // }
-
   return errors;
 };
 
 const validate = async (sample) => {
   const errors = await validateFileSizes(sample);
-  console.log('errors: ', errors);
   return errors;
 };
 

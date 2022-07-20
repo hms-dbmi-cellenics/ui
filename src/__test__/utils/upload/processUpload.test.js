@@ -142,9 +142,6 @@ describe('processUpload', () => {
   });
 
   it('Uploads and updates redux correctly when there are no errors with cellranger v3', async () => {
-    // validate.mockImplementation(
-    //   () => ([]),
-    // );
     const mockAxiosCalls = [];
     const uploadSuccess = (params) => {
       mockAxiosCalls.push(params);
