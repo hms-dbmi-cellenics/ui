@@ -256,7 +256,7 @@ describe('Dot plot page', () => {
       // 2nd call to load dot plot
       .mockImplementationOnce(() => null)
       .mockImplementationOnce((Etag) => mockWorkerResponses[Etag]())
-      // 3nd call to load dot plot
+      // 3rd call to load dot plot
       .mockImplementationOnce(() => null)
       .mockImplementationOnce((Etag) => mockWorkerResponses[Etag]());
 
@@ -391,6 +391,42 @@ describe('Dot plot page', () => {
     userEvent.click(clearButton);
 
     expect(searchBox.value).toBe('');
+  });
+
+  it('resets the data', async () => {
+    await renderDotPlot(storeState);
+
+    seekFromS3
+      .mockReset()
+      // 1st call to list genes
+      .mockImplementationOnce(() => null)
+      .mockImplementationOnce((Etag) => mockWorkerResponses[Etag]())
+      // 2nd call to load dot plot
+      .mockImplementationOnce(() => null)
+      .mockImplementationOnce((Etag) => mockWorkerResponses[Etag]())
+      // 3rd call to load dot plot
+      .mockImplementationOnce(() => null)
+      .mockImplementationOnce((Etag) => mockWorkerResponses[Etag]());
+
+    // add a gene to prepare for reset
+    const searchBox = screen.getByRole('combobox');
+
+    userEvent.type(searchBox, 'ap');
+
+    const option = screen.getByTitle('Apoe');
+
+    await act(async () => {
+      userEvent.click(option, undefined, { skipPointerEventsCheck: true });
+    });
+
+    const resetButton = screen.getAllByText('Reset')[1];
+
+    await act(async () => {
+      userEvent.click(resetButton);
+    });
+
+    // expect the gene only within the options of the search box, antd creates 2 elements
+    expect(screen.getAllByText('Apoe').length).toBe(2);
   });
 });
 

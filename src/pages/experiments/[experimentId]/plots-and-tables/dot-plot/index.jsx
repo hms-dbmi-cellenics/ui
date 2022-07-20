@@ -311,8 +311,9 @@ const DotPlotPage = (props) => {
   };
 
   const onReset = () => {
-    onGenesChange([]);
     loadHighestDispersionGenes();
+    dispatch(fetchPlotDataWork(experimentId, plotUuid, plotType));
+    setReorderAfterFetch(true);
   };
 
   const renderExtraPanels = () => (
