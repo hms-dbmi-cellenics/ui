@@ -30,11 +30,9 @@ import {
 
 import getDotPlotData from 'components/plots/helpers/dot-plot/getDotPlotData';
 
-import PlatformError from 'components/PlatformError';
-
 import { getCellSets } from 'redux/selectors';
-
 import { plotNames, plotTypes } from 'utils/constants';
+import PlatformError from 'components/PlatformError';
 
 const { Panel } = Collapse;
 

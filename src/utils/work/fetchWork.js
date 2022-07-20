@@ -47,7 +47,7 @@ const fetchGeneExpressionWork = async (
   const missingGenes = Object.keys(missingDataKeys);
 
   if (missingGenes.length === 0) {
-    return cachedData;
+    return { data: cachedData };
   }
 
   // If new genes are needed, construct payload, try S3 for results,
@@ -151,7 +151,7 @@ const fetchWork = async (
   const data = await cache.get(ETag);
 
   if (data) {
-    return data;
+    return { data, ETag };
   }
 
   // Then, we may be able to find this in S3.

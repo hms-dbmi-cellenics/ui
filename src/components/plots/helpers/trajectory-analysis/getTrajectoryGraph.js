@@ -10,7 +10,7 @@ const getTrajectoryGraph = (
   plotUuid,
 ) => async (dispatch, getState) => {
   const embeddingMethod = getState().experimentSettings.processing
-    .configureEmbedding.embeddingSettings.method;
+    .configureEmbedding?.embeddingSettings.method;
   const embeddingEtag = getState().embeddings[embeddingMethod].ETag;
   const timeout = getTimeoutForWorkerTask(getState(), 'TrajectoryAnalysis');
 
