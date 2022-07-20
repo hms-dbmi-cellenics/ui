@@ -1,13 +1,16 @@
-import { DomainName } from 'utils/deploymentInfo';
+import nextConfig from 'next/config';
 
-const supportEmailsByDomainName = {
-  [DomainName.BIOMAGE]: 'hello@biomage.net',
-  [DomainName.BIOMAGE_STAGING]: 'hello@biomage.net',
-  [DomainName.HMS]: 'alex_pickering@hms.harvard.edu',
+import { AccountId } from 'utils/deploymentInfo';
+
+const accountId = nextConfig()?.publicRuntimeConfig?.accountId;
+
+const supportEmailsByAccountId = {
+  [AccountId.BIOMAGE]: 'hello@biomage.net',
+  [AccountId.HMS]: 'alex_pickering@hms.harvard.edu',
 };
 
 const config = {
-  supportEmail: supportEmailsByDomainName[process.env.DOMAIN_NAME],
+  supportEmail: supportEmailsByAccountId[accountId],
 };
 
 export default config;

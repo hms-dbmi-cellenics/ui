@@ -1,16 +1,19 @@
 import React, { useState } from 'react';
 import { Button, Dropdown, Card } from 'antd';
 import { QuestionCircleOutlined, DownOutlined } from '@ant-design/icons';
+import nextConfig from 'next/config';
 
 import config from 'config';
-import { DomainName } from 'utils/deploymentInfo';
+import { AccountId } from 'utils/deploymentInfo';
+
+const accountId = nextConfig()?.publicRuntimeConfig?.accountId;
 
 const HelpButton = () => {
   const [visible, setVisible] = useState(false);
 
   const overlay = () => (
     <Card size='small' style={{ padding: '1em', width: '265px' }}>
-      {process.env.DOMAIN_NAME !== DomainName.HMS && (
+      {accountId !== AccountId.HMS && (
         <>
           For tutorial videos, ‘how to’ guides and FAQs on how to use Cellenics, visit
           {' '}
