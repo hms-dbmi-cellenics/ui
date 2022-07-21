@@ -68,15 +68,6 @@ const GeneListTool = (props) => {
     },
   ];
 
-  const onUpdate = (newState, reason) => {
-    // We handle `loading` and `loaded` in the HOC, no need to react to these.
-    if (reason === geneTableUpdateReason.loaded || reason === geneTableUpdateReason.loading) {
-      return;
-    }
-
-    dispatch(loadPaginatedGeneProperties(experimentId, PROPERTIES, tableUuid, newState));
-  };
-
   const loadData = (loadAllState) => {
     dispatch(loadPaginatedGeneProperties(experimentId, PROPERTIES, tableUuid, loadAllState));
   };
@@ -112,7 +103,6 @@ const GeneListTool = (props) => {
           order: 'descend',
         },
       }}
-      onUpdate={onUpdate}
       columns={columns}
       loading={isTableLoading()}
       error={error || false}

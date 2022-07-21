@@ -7,17 +7,15 @@ import _ from 'lodash';
 import PropTypes from 'prop-types';
 import { changeGeneSelection } from 'redux/actions/genes';
 import GeneSelectionStatus from 'redux/actions/genes/geneSelectionStatus';
-import { geneTableUpdateReason } from 'utils/geneTable/geneTableUpdateReason';
 import FocusButton from 'components/FocusButton';
 import PlatformError from 'components/PlatformError';
-import useLazyEffect from 'utils/customHooks/useLazyEffect';
 import GeneSelectionMenu from 'components/data-exploration/generic-gene-table/GeneSelectionMenu';
 import FilterGenes from 'components/data-exploration/generic-gene-table/FilterGenes';
 import Loader from 'components/Loader';
 
 const GeneTable = (props) => {
   const {
-    experimentId, onUpdate, error, loading, columns, data, loadData,
+    experimentId, error, loading, columns, data, loadData,
     total, initialTableState, width, height, extraOptions,
   } = props;
 
@@ -67,10 +65,6 @@ const GeneTable = (props) => {
     );
   }, []);
 
-  useLazyEffect(() => {
-    onUpdate(tableState, loading ? geneTableUpdateReason.loading : geneTableUpdateReason.loaded);
-  }, [loading]);
-
   const getSortOrder = (key) => {
     if (key === tableState.sorter.columnKey) {
       return tableState.sorter.order;
@@ -81,7 +75,6 @@ const GeneTable = (props) => {
   const handleTableChange = (newPagination, a, newSorter) => {
     const newTableState = { ...tableState, pagination: newPagination, sorter: newSorter };
 
-    // onUpdate(newTableState, geneTableUpdateReason.paginated);
     setTableState(newTableState);
   };
 
@@ -96,9 +89,6 @@ const GeneTable = (props) => {
     } else if (filterOption === 'Contains') {
       searchPattern = text;
     }
-
-
-    // onUpdate(newTableState, geneTableUpdateReason.filtered);
 
     let newData = _.cloneDeep(data);
     newData = newData.filter(entry => entry.gene_names.includes(filter.text));
@@ -199,7 +189,7 @@ const GeneTable = (props) => {
     return (
       <PlatformError
         error={error}
-        onClick={() => onUpdate(tableState, geneTableUpdateReason.retry)}
+        onClick={() => loadData(tableStateAllEntries)}
       />
     );
   }
@@ -256,7 +246,6 @@ GeneTable.propTypes = {
     ],
   ).isRequired,
   loading: PropTypes.bool.isRequired,
-  onUpdate: PropTypes.func.isRequired,
   initialTableState: PropTypes.object,
   extraOptions: PropTypes.node,
   width: PropTypes.number.isRequired,
