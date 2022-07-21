@@ -32,8 +32,10 @@ const HierarchicalTreeGenes = (props) => {
 
   return (
     // wrapping in div needed to not unload dragged element when scrolling
-    <div id='ScrollWrapper' style={{ overflowY: 'scroll', maxHeight: '400px' }}>
+    // add padding to the tree to make first drop position visible
+    <div className='scroll-wrapper' id='ScrollWrapper' style={{ overflowY: 'auto', maxHeight: '400px' }}>
       <Tree
+        style={{ paddingTop: '6px', paddingBottom: '3px' }}
         data-testid='HierachicalTreeGenes'
         draggable
         treeData={treeData}

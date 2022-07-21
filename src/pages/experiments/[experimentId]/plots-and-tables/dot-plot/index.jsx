@@ -273,7 +273,7 @@ const DotPlotPage = (props) => {
 
   // load initial state, based on highest dispersion genes from all genes
   useEffect(() => {
-    if (Object.keys(geneData).length === 0 || !config) {
+    if (Object.keys(geneData).length === 0 || !config || plotData?.length) {
       return;
     }
     loadHighestDispersionGenes();

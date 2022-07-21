@@ -43,7 +43,8 @@ const MarkerGeneSelection = (props) => {
 
     return (
       <Space direction='vertical' size='small'>
-        <p>Type in a gene name and select it to add it to the heatmap. Drag and drop genes to re-order them.</p>
+        <p style={{ margin: 0 }}>Type in a gene name and select it to add it to the heatmap.</p>
+        <p>Drag and drop genes to re-order them. Hold an element above or below the table to scroll.</p>
         <GeneSearchBar
           plotUuid={plotUuid}
           searchBarUuid={searchBarUuid}

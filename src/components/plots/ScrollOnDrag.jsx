@@ -1,6 +1,6 @@
 // find the Y position of an object in the document
 // based on https://www.quirksmode.org/js/findpos.html
-const findPos = (elem) => {
+const findTop = (elem) => {
   let posTop = 0;
 
   if (!elem.offsetParent) {
@@ -16,21 +16,23 @@ const findPos = (elem) => {
 };
 
 const ScrollOnDrag = (treeScrollable) => {
-  const treeTop = findPos(treeScrollable);
+  const treeTop = findTop(treeScrollable);
+  // scrollable collapsable tablist is wrapped in a div with overflow
+  const tablist = document.getElementsByClassName('ant-collapse')[0].parentNode;
   let interval;
 
   const handleScrollOnDrag = (event) => {
     const treeHeight = treeScrollable.clientHeight;
-    const relY = event.clientY - treeTop;
+    const relY = event.clientY - treeTop + tablist.scrollTop;
 
     clearInterval(interval);
 
     // drag event ends with relY = -treeTop, currently hardcoded to ignore
-    if (relY < 10 && relY !== -treeTop) {
+    if (relY < 0 && relY !== -treeTop + tablist.scrollTop) {
       interval = setInterval(() => { treeScrollable.scrollTop -= 5; }, 20);
     }
 
-    if (relY > treeHeight - 10) {
+    if (relY > treeHeight) {
       interval = setInterval(() => { treeScrollable.scrollTop += 5; }, 20);
     }
   };
