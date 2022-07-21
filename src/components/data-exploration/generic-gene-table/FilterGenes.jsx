@@ -20,7 +20,8 @@ const FilterGenes = (props) => {
     onFilter({ filterOption: newSelectedOption, text: filterString });
   };
 
-  const onSearch = (text) => {
+  const onSearch = (event) => {
+    const text = event.target.value;
     setFilterString(text);
     onFilter({ filterOption, text });
   };
@@ -36,7 +37,7 @@ const FilterGenes = (props) => {
         placeholder='Filter genes ...'
         defaultValue={defaultFilterString}
         style={{ width: '75%' }}
-        onSearch={onSearch}
+        onChange={onSearch}
         allowClear
         size='small'
       />

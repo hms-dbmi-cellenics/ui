@@ -77,8 +77,13 @@ const GeneListTool = (props) => {
     dispatch(loadPaginatedGeneProperties(experimentId, PROPERTIES, tableUuid, newState));
   };
 
+  const loadData = (loadAllState) => {
+    dispatch(loadPaginatedGeneProperties(experimentId, PROPERTIES, tableUuid, loadAllState));
+  };
+
   // When data changes, update rows.
   useEffect(() => {
+
     if (!tableRowKeys || tableRowKeys.length === 0) {
       return;
     }
@@ -112,6 +117,7 @@ const GeneListTool = (props) => {
       loading={isTableLoading()}
       error={error || false}
       data={dataShown}
+      loadData={loadData}
       total={total || 0}
       width={width}
       height={height}
