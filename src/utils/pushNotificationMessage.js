@@ -1,25 +1,25 @@
 import { message } from 'antd';
 
-const pushNotificationMessage = (type, text) => {
+const pushNotificationMessage = (type, text, duration = '') => {
   switch (type) {
     case 'success':
-      message.success(text, 2);
+      message.success(text, duration || 2);
       break;
     case 'error':
-      message.error(text, 4);
+      message.error(text, duration || 4);
       break;
     case 'info':
-      message.info(text, 4);
+      message.info(text, duration || 4);
       break;
     case 'warning':
     case 'warn':
-      message.warn(text, 4);
+      message.warn(text, duration || 4);
       break;
     case 'loading':
-      message.loading(text, 2);
+      message.loading(text, duration || 2);
       break;
     default:
-      message.info(text, 4);
+      message.info(text, duration || 4);
       break;
   }
 };

@@ -4,12 +4,14 @@ import _ from 'lodash';
 import axios from 'axios';
 
 import { createSample, createSampleFile, updateSampleFileUpload } from 'redux/actions/samples';
+import validate from 'utils/upload/sampleValidator';
 
 import UploadStatus from 'utils/upload/UploadStatus';
 import loadAndCompressIfNecessary from 'utils/upload/loadAndCompressIfNecessary';
 import { inspectFile, Verdict } from 'utils/upload/fileInspector';
 
 import getFileTypeV2 from 'utils/getFileTypeV2';
+import pushNotificationMessage from 'utils/pushNotificationMessage';
 
 const putInS3 = async (loadedFileData, signedUrl, onUploadProgress) => (
   await axios.request({
@@ -129,12 +131,25 @@ const processUpload = async (filesList, sampleType, samples, experimentId, dispa
   }, {});
 
   Object.entries(samplesMap).forEach(async ([name, sample]) => {
+    const errors = await validate(sample);
+
     const filesToUploadForSample = Object.keys(sample.files);
+
+    if (errors && errors.length > 0) {
+      const errorMessage = errors.join('\n');
+      pushNotificationMessage('error', `Error uploading sample ${name}.\n${errorMessage}`, 15);
+      return;
+    }
 
     // Create sample if not exists.
     try {
       sample.uuid ??= await dispatch(
-        createSample(experimentId, name, sampleType, filesToUploadForSample),
+        createSample(
+          experimentId,
+          name,
+          sampleType,
+          filesToUploadForSample,
+        ),
       );
     } catch (e) {
       // If sample creation fails, sample should not be created
