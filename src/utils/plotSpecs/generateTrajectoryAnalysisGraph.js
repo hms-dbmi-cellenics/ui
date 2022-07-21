@@ -214,7 +214,7 @@ const generateSpec = (config, embeddingData, pathData, cellSetLegendsData) => {
             stroke: { value: '#444' },
             x: { scale: 'x', field: 'x' },
             y: { scale: 'y', field: 'y' },
-            opacity: { value: 1 },
+            opacity: { value: 0.2 },
           },
         },
       },
@@ -236,7 +236,7 @@ const generateSpec = (config, embeddingData, pathData, cellSetLegendsData) => {
               field: 'y',
             },
             size: {
-              value: 50,
+              value: 25,
             },
             stroke: {
               value: 'black',
@@ -348,24 +348,8 @@ const getConnectedNodes = (nodeId, connectedNodes) => {
 
 // Data returned from the trajectory analysis worker is 0 centered
 // This has to be remapped onto the embedding
-const generateData = (plotData, plotEmbedding) => {
-  let minX = 0;
-  let maxX = 0;
-  let minY = 0;
-  let maxY = 0;
-
-  plotEmbedding.forEach((node) => {
-    minX = Math.min(minX, node.x);
-    maxX = Math.max(maxX, node.x);
-    minY = Math.min(minY, node.y);
-    maxY = Math.max(maxY, node.y);
-  });
-
-  const centerX = (minX + maxX) / 2;
-  const centerY = (minY + maxY) / 2;
-
-  // Build graph
-  const pathData = [];
+const generateData = (plotData) => {
+  const trajectoryNodes = [];
 
   Object.values(plotData.nodes).forEach((node) => {
     const connectedNodes = getConnectedNodes(node.node_id, node.connected_nodes);
@@ -375,12 +359,12 @@ const generateData = (plotData, plotEmbedding) => {
     connectedNodes.forEach((connectedNodeId) => {
       const connNode = plotData.nodes[connectedNodeId];
 
-      pathData.push({ x: node.x + centerX, y: node.y + centerY, node_id: node.node_id });
-      pathData.push({ x: connNode.x + centerX, y: connNode.y + centerY, node_id: connectedNodeId });
+      trajectoryNodes.push({ x: node.x, y: node.y, node_id: node.node_id });
+      trajectoryNodes.push({ x: connNode.x, y: connNode.y, node_id: connectedNodeId });
     });
   });
 
-  return pathData;
+  return trajectoryNodes;
 };
 
 export {

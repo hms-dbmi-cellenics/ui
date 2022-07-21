@@ -72,6 +72,7 @@ const TrajectoryAnalysisPlot = (props) => {
       || cellSets.error
       || !embeddingData?.length
       || !plotData
+      || Object.keys(plotData).length === 0
     ) {
       return;
     }
@@ -81,10 +82,10 @@ const TrajectoryAnalysisPlot = (props) => {
       cellSetLegendsData,
     } = generateCategoricalEmbeddingData(cellSets, config.selectedSample, config.selectedCellSet, embeddingData);
 
-    const trajectoryData = genarateTrajectoryPathData(plotData, plotEmbedding);
+    const trajectoryData = genarateTrajectoryPathData(plotData);
 
     setPlotSpec(generateSpec(config, plotEmbedding, trajectoryData, cellSetLegendsData));
-  }, [config, cellSets, embeddingData, config]);
+  }, [config, cellSets, embeddingData, plotData]);
 
   const render = () => {
     if (cellSets.error) {
