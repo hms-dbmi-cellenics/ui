@@ -13,6 +13,12 @@ import GeneSelectionMenu from 'components/data-exploration/generic-gene-table/Ge
 import FilterGenes from 'components/data-exploration/generic-gene-table/FilterGenes';
 import Loader from 'components/Loader';
 
+const valueComparator = (key) => (a, b) => {
+  if (typeof a[key] === 'string') return a[key].localeCompare(b[key]);
+  if (typeof a[key] === "number") return a[key] - b[key];
+  return 0;
+}
+
 const GeneTable = (props) => {
   const {
     experimentId, error, loading, columns, data, loadData,
@@ -156,7 +162,7 @@ const GeneTable = (props) => {
         title: 'Gene',
         dataIndex: 'gene_names',
         key: 'gene_names',
-        sorter: true,
+        sorter: valueComparator('gene_names'),
         showSorterTooltip: false,
         render: (geneName) => (
           <a
@@ -175,6 +181,7 @@ const GeneTable = (props) => {
       const modifiedColumn = { ...column, dataIndex: column.key };
 
       if (column.sorter) {
+        modifiedColumn.sorter = valueComparator(column.key);
         modifiedColumn.sortOrder = getSortOrder(column.key);
       }
 
@@ -215,7 +222,6 @@ const GeneTable = (props) => {
         loading={loading ? { indicator: <Loader experimentId={experimentId} /> } : loading}
         size='small'
         pagination={{ ...tableState?.pagination }}
-        sorter={tableState?.sorter}
         scroll={{ x: width, y: height - 294 }}
         onChange={handleTableChange}
         rowSelection={{

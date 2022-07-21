@@ -11,3 +11,5 @@ export {
   // eslint-disable-next-line import/prefer-default-export
   geneTableUpdateReason,
 };
+
+// This is no longer used. Should it be deleted?

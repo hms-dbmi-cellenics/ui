@@ -14,7 +14,6 @@ import _ from 'lodash';
 import { getCellSets } from 'redux/selectors';
 import loadDifferentialExpression from 'redux/actions/differentialExpression/loadDifferentialExpression';
 
-import { geneTableUpdateReason } from 'utils/geneTable/geneTableUpdateReason';
 import GeneTable from 'components/data-exploration/generic-gene-table/GeneTable';
 
 import AdvancedFilteringModal from 'components/data-exploration/differential-expression-tool/AdvancedFilteringModal';
