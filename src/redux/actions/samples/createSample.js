@@ -66,11 +66,6 @@ const createSample = (
     newSample.files[fileName] = { upload: { status: UploadStatus.UPLOADING } };
   });
 
-  await dispatch({
-    type: SAMPLES_CREATE,
-    payload: { sample: newSample, experimentId },
-  });
-
   try {
     await fetchAPI(
       url,
@@ -82,6 +77,11 @@ const createSample = (
         body: JSON.stringify({ name, sampleTechnology }),
       },
     );
+
+    await dispatch({
+      type: SAMPLES_CREATE,
+      payload: { sample: newSample, experimentId },
+    });
 
     await dispatch({
       type: SAMPLES_SAVED,

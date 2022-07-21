@@ -7,6 +7,7 @@ import { v4 as uuidv4 } from 'uuid';
 import createSample from 'redux/actions/samples/createSample';
 import initialSampleState from 'redux/reducers/samples/initialState';
 import initialExperimentState, { experimentTemplate } from 'redux/reducers/experiments/initialState';
+import 'utils/upload/sampleValidator';
 
 import {
   SAMPLES_CREATE, SAMPLES_SAVING, SAMPLES_ERROR, SAMPLES_SAVED,
@@ -15,6 +16,7 @@ import {
 import endUserMessages from 'utils/endUserMessages';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
 
+jest.mock('utils/upload/sampleValidator');
 pushNotificationMessage.mockImplementation(() => async () => { });
 
 enableFetchMocks();
@@ -26,6 +28,7 @@ const sampleUuid = 'abc123';
 uuidv4.mockImplementation(() => sampleUuid);
 
 const sampleName = 'test sample';
+const sample = {};
 
 describe('createSample action', () => {
   const experimentId = 'exp234';
@@ -62,7 +65,7 @@ describe('createSample action', () => {
   it('Works correctly with one file being uploaded', async () => {
     fetchMock.mockResponse(JSON.stringify({}), { url: 'mockedUrl', status: 200 });
 
-    const newUuid = await store.dispatch(createSample(experimentId, sampleName, mockType, ['matrix.tsv.gz']));
+    const newUuid = await store.dispatch(createSample(experimentId, sampleName, sample, mockType, ['matrix.tsv.gz']));
 
     // Returns a new sampleUuid
     expect(newUuid).toEqual(sampleUuid);
@@ -85,7 +88,7 @@ describe('createSample action', () => {
   it('Works correctly with many files being uploaded', async () => {
     fetchMock.mockResponse(JSON.stringify({}), { url: 'mockedUrl', status: 200 });
 
-    const newUuid = await store.dispatch(createSample(experimentId, sampleName, mockType, ['matrix.tsv.gz', 'features.tsv.gz', 'barcodes.tsv.gz']));
+    const newUuid = await store.dispatch(createSample(experimentId, sampleName, sample, mockType, ['matrix.tsv.gz', 'features.tsv.gz', 'barcodes.tsv.gz']));
 
     // Returns a new sampleUuid
     expect(newUuid).toEqual(sampleUuid);
@@ -110,7 +113,7 @@ describe('createSample action', () => {
 
     await expect(
       store.dispatch(
-        createSample(experimentId, sampleName, mockType, ['matrix.tsv.gz']),
+        createSample(experimentId, sampleName, sample, mockType, ['matrix.tsv.gz']),
       ),
     ).rejects.toThrow(endUserMessages.ERROR_CREATING_SAMPLE);
 
@@ -125,7 +128,7 @@ describe('createSample action', () => {
 
     await expect(
       store.dispatch(
-        createSample(experimentId, sampleName, 'unrecognizable type', ['matrix.tsv.gz', 'features.tsv.gz', 'barcodes.tsv.gz']),
+        createSample(experimentId, sampleName, sample, 'unrecognizable type', ['matrix.tsv.gz', 'features.tsv.gz', 'barcodes.tsv.gz']),
       ),
     ).rejects.toThrow('Sample technology unrecognizable type is not recognized');
   });
