@@ -75,8 +75,6 @@ const loadSamples = (experimentId) => async (dispatch) => {
 
     const samples = toApiV1(data, experimentId);
 
-    // throwIfRequestFailed(response, data, endUserMessages.ERROR_FETCHING_SAMPLES);
-
     dispatch({
       type: SAMPLES_LOADED,
       payload: {
