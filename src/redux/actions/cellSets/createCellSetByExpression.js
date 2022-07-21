@@ -11,8 +11,8 @@ const createCellSetByExpression = (
     genesConfig: selectedGenes,
   };
   try {
-    const { data } = await fetchWork(experimentId, body, getState, { broadcast: true });
-    return data;
+    const result = await fetchWork(experimentId, body, getState, { broadcast: true });
+    return result;
   } catch (e) {
     let errorMessage = endUserMessages.ERROR_FETCHING_CELL_SETS;
     if (e instanceof WorkResponseError) errorMessage = e.userMessage;

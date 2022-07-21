@@ -49,7 +49,7 @@ describe('fetchWork', () => {
       .mockImplementationOnce(() => null)
       .mockImplementation(() => ({ D: mockGeneExpressionData.D }));
 
-    const { data: res, ETag } = await fetchWork(
+    const res = await fetchWork(
       experimentId,
       geneExpressionWorkRequest,
       mockReduxState(experimentId),
@@ -76,12 +76,11 @@ describe('fetchWork', () => {
     expect(mockCacheSet).toHaveBeenCalledTimes(1);
     expect(mockCacheSet).toHaveBeenCalledWith(mockCacheKeyMappings.D, expectedResponse.D);
     expect(res).toEqual(expectedResponse);
-    expect(ETag).toEqual(GENE_EXPRESSION_ETAG);
     expect(mockSeekFromS3).toHaveBeenCalledTimes(2);
   });
 
   it('runs correctly for non gene expression work request', async () => {
-    const { data: res, ETag } = await fetchWork(
+    const res = await fetchWork(
       experimentId,
       nonGeneExpressionWorkRequest,
       mockReduxState(experimentId),
@@ -100,7 +99,6 @@ describe('fetchWork', () => {
     expect(mockCacheSet).toHaveBeenCalledWith(NON_GENE_EXPRESSION_ETAG, mockGenesListData);
     expect(mockSeekFromS3).toHaveBeenCalledTimes(2);
     expect(res).toEqual(mockGenesListData);
-    expect(ETag).toEqual(NON_GENE_EXPRESSION_ETAG);
   });
 
   it('Throws an error if the dispatched work request throws an error', async () => {
