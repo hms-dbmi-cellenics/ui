@@ -9,6 +9,8 @@ import PropTypes from 'prop-types';
 const { Search } = Input;
 const { Option } = Select;
 
+const sanitizeString = (str) => str.replaceAll(/[\s|-]+/g, '');
+
 const FilterGenes = (props) => {
   const { onFilter, defaultFilterOption, defaultFilterString } = props;
 
@@ -21,7 +23,7 @@ const FilterGenes = (props) => {
   };
 
   const onSearch = (event) => {
-    const text = event.target.value;
+    const text = sanitizeString(event.target.value);
     setFilterString(text);
     onFilter({ filterOption, text });
   };
