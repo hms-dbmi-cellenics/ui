@@ -1,3 +1,4 @@
+import { EXPERIMENTS_METADATA_RENAME } from 'redux/actionTypes/experiments';
 import {
   SAMPLES_CREATE,
   SAMPLES_UPDATE,
@@ -23,6 +24,8 @@ import samplesSaved from './samplesSaved';
 import samplesMetadataDelete from './samplesMetadataDelete';
 import samplesLoading from './samplesLoading';
 import samplesValueInMetadataTrackUpdated from './samplesValueInMetadataTrackUpdated';
+
+import experimentsMetadataRename from './experimentsMetadataRename';
 
 const samplesReducer = (state = initialState, action) => {
   switch (action.type) {
@@ -68,6 +71,10 @@ const samplesReducer = (state = initialState, action) => {
 
     case SAMPLES_VALUE_IN_METADATA_TRACK_UPDATED: {
       return samplesValueInMetadataTrackUpdated(state, action);
+    }
+
+    case EXPERIMENTS_METADATA_RENAME: {
+      return experimentsMetadataRename(state, action);
     }
 
     default: {

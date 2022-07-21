@@ -104,6 +104,7 @@ const LaunchAnalysisButton = () => {
 
     const allSampleMetadataInserted = (sample) => {
       if (!metadataKeysAvailable) return true;
+
       if (Object.keys(sample.metadata).length !== metadataKeysAvailable) return false;
       return Object.values(sample.metadata)
         .every((value) => value.length > 0);
