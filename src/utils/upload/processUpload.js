@@ -11,18 +11,27 @@ import { inspectFile, Verdict } from 'utils/upload/fileInspector';
 
 import getFileTypeV2 from 'utils/getFileTypeV2';
 
-const putInS3 = async (loadedFileData, signedUrl, onUploadProgress) => (
-  await axios.request({
-    method: 'put',
-    url: signedUrl,
-    data: loadedFileData,
-    headers: {
-      'Content-Type': 'application/octet-stream',
-      Origin: null,
-    },
-    onUploadProgress,
-  })
-);
+const MAX_RETRIES = 2;
+
+const putInS3 = async (loadedFileData, signedUrl, onUploadProgress, currentRetry = 0) => {
+  try {
+    await axios.request({
+      method: 'put',
+      url: signedUrl,
+      data: loadedFileData,
+      headers: {
+        'Content-Type': 'application/octet-stream',
+      },
+      onUploadProgress,
+    });
+  } catch (e) {
+    if (currentRetry < MAX_RETRIES) {
+      await putInS3(loadedFileData, signedUrl, onUploadProgress, currentRetry + 1);
+    }
+
+    throw e;
+  }
+};
 
 const prepareAndUploadFileToS3 = async (
   projectId, sampleId, fileType, file, signedUrl, dispatch,
