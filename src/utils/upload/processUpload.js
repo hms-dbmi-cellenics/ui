@@ -18,6 +18,7 @@ const putInS3 = async (loadedFileData, signedUrl, onUploadProgress) => (
     data: loadedFileData,
     headers: {
       'Content-Type': 'application/octet-stream',
+      Origin: null,
     },
     onUploadProgress,
   })
