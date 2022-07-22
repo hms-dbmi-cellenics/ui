@@ -16,6 +16,11 @@ const DomainName = {
   BIOMAGE_STAGING: 'scp-staging.biomage.net',
 };
 
+const AccountId = {
+  BIOMAGE: '242905224710',
+  HMS: '160782110667',
+};
+
 const ssrGetDeploymentInfo = () => {
   let currentEnvironment = null;
 
@@ -47,5 +52,5 @@ const ssrGetDeploymentInfo = () => {
 };
 
 export {
-  isBrowser, ssrGetDeploymentInfo, DomainName, Environment, privacyPolicyIsNotAccepted,
+  isBrowser, ssrGetDeploymentInfo, DomainName, AccountId, Environment, privacyPolicyIsNotAccepted,
 };

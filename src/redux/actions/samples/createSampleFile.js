@@ -53,7 +53,7 @@ const createSampleFile = (
 
     return signedUrl;
   } catch (e) {
-    // Can't update the upload status becuase we didn't even get to create the sample file
+    // Can't update the upload status because we didn't even get to create the sample file
     handleError(e, endUserMessages.ERROR_BEGIN_SAMPLE_FILE_UPLOAD);
 
     throw e;

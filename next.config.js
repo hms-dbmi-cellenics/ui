@@ -110,6 +110,7 @@ module.exports = withPlugins([
   {
     publicRuntimeConfig: {
       domainName: process.env.DOMAIN_NAME,
+      accountId: process.env.AWS_ACCOUNT_ID,
     },
   },
 ], nextConfig);

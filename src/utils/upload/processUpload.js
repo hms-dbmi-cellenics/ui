@@ -134,7 +134,13 @@ const processUpload = async (filesList, sampleType, samples, experimentId, dispa
     // Create sample if not exists.
     try {
       sample.uuid ??= await dispatch(
-        createSample(experimentId, name, sampleType, filesToUploadForSample),
+        createSample(
+          experimentId,
+          name,
+          sample,
+          sampleType,
+          filesToUploadForSample,
+        ),
       );
     } catch (e) {
       // If sample creation fails, sample should not be created
