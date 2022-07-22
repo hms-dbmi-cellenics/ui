@@ -246,6 +246,13 @@ const DotPlotPage = (props) => {
     }
   }, [config, cellSetProperties]);
 
+  // if all selected genes are removed, removeGenes will not run. Remove plotData manually instead
+  useEffect(() => {
+    if (config?.useMarkerGenes || config?.selectedGenes.length || !plotData?.length) return;
+
+    dispatch(updatePlotData(plotUuid, []));
+  }, [config]);
+
   // load the gene names and dispersions for search table and initial state
   useEffect(() => {
     const state = {
@@ -283,7 +290,7 @@ const DotPlotPage = (props) => {
 
   // load initial state, based on highest dispersion genes from all genes
   useEffect(() => {
-    if (Object.keys(geneData).length === 0 || !config || plotData?.length) {
+    if (_.isEmpty(geneData) || !config || plotData?.length) {
       return;
     }
     loadHighestDispersionGenes();
