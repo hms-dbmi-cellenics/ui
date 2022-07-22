@@ -246,7 +246,7 @@ const DotPlotPage = (props) => {
     }
   }, [config, cellSetProperties]);
 
-  // if all selected genes are removed, removeGenes will not run. Remove plotData manually instead
+  // if all selected genes are removed, deleteData will not run. Remove plotData manually instead
   useEffect(() => {
     if (config?.useMarkerGenes || config?.selectedGenes.length || !plotData?.length) return;
 
