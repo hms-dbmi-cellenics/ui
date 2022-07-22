@@ -27,6 +27,7 @@ import {
   updatePlotConfig,
   loadPlotConfig,
   fetchPlotDataWork,
+  updatePlotData,
 } from 'redux/actions/componentConfig';
 import PlatformError from 'components/PlatformError';
 
@@ -34,10 +35,13 @@ import { getCellSets } from 'redux/selectors';
 
 import { plotNames, plotTypes } from 'utils/constants';
 
+import ScrollOnDrag from 'components/plots/ScrollOnDrag';
+
 const { Panel } = Collapse;
 
 const plotUuid = 'dotPlotMain';
 const plotType = plotTypes.DOT_PLOT;
+const searchBarUuid = 'geneSearchBar';
 
 const plotStylingConfig = [
   {
@@ -89,27 +93,27 @@ const DotPlotPage = (props) => {
     error: plotDataError,
   } = useSelector((state) => state.componentConfig[plotUuid]) || {};
 
-  const {
-    fetching: genesFetching,
-    data: highestDispersionGenes,
-  } = useSelector((state) => state.genes.properties.views[plotUuid] || {});
+  const { data: geneData } = useSelector((state) => state.genes.properties || {});
 
   const cellSets = useSelector(getCellSets());
 
   const {
     loading: cellSetsLoading,
     error: cellSetsError,
-    hierarchy: cellSetHierarcy,
+    hierarchy: cellSetHierarchy,
     properties: cellSetProperties,
   } = cellSets;
 
   const [moreThanTwoGroups, setMoreThanTwoGroups] = useState(false);
+  const [reorderAfterFetch, setReorderAfterFetch] = useState(false);
+  const [reset, setReset] = useState(false);
+
   const experimentName = useSelector((state) => state.experimentSettings.info.experimentName);
   const csvFileName = fileNames(experimentName, 'DOT_PLOT', [config?.selectedCellSet, config?.selectedPoints]);
 
   useEffect(() => {
     if (!config) dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
-    if (cellSetHierarcy.length === 0) dispatch(loadCellSets(experimentId));
+    if (cellSetHierarchy.length === 0) dispatch(loadCellSets(experimentId));
   }, []);
 
   const previousComparedConfig = useRef(null);
@@ -134,7 +138,7 @@ const DotPlotPage = (props) => {
 
     const filterClusterCellIds = Array.from(cellSetProperties[filterKey].cellIds);
 
-    const baseClusterParent = cellSetHierarcy.find((cellSet) => cellSet.key === baseCluster);
+    const baseClusterParent = cellSetHierarchy.find((cellSet) => cellSet.key === baseCluster);
     const baseClusterKeys = baseClusterParent.children.map((child) => child.key);
     const baseClusterCellIds = baseClusterKeys.map((key) => cellSetProperties[key].cellIds);
 
@@ -166,7 +170,28 @@ const DotPlotPage = (props) => {
     // If using marker genes, check that the selected number is more than 0
     if (config.useMarkerGenes && config.nMarkerGenes === 0) return false;
 
+    if (reset) return false;
+
     return true;
+  };
+
+  const reorderData = (order) => {
+    const cellSetsNames = [...new Set(plotData.map((elem) => elem.cellSets))];
+    const reorderedData = [];
+    cellSetsNames.forEach((set) => {
+      // choose data for a given cell set
+      const data = plotData.filter((elem) => elem.cellSets === set);
+      // re-order genes for each cell set based on order in selected genes
+      const reordered = data.slice().sort((a, b) => order.indexOf(a.geneName) - order.indexOf(b.geneName));
+      reorderedData.push(...reordered);
+    });
+
+    dispatch(updatePlotData(plotUuid, reorderedData));
+  };
+
+  const deleteData = (genes) => {
+    const data = plotData.filter((elem) => !genes.includes(elem.geneName));
+    dispatch(updatePlotData(plotUuid, data));
   };
 
   useEffect(() => {
@@ -183,33 +208,102 @@ const DotPlotPage = (props) => {
 
     const currentComparedConfig = getComparedConfig(config);
     if (config && !_.isEqual(previousComparedConfig.current, currentComparedConfig)) {
+      // previous compared config is null on first load, use [] for previous selected genes instead
+      const previousSelected = previousComparedConfig.current?.selectedGenes ?? [];
+      const currentSelected = currentComparedConfig.selectedGenes;
+
+      const previousUseMarker = previousComparedConfig.current?.useMarkerGenes ?? false;
+
       previousComparedConfig.current = currentComparedConfig;
-      dispatch(fetchPlotDataWork(experimentId, plotUuid, plotType));
+
+      // if the selected genes don't change
+      if (_.isEqual(currentSelected, previousSelected)) {
+        // if switching back from marker genes to custom genes, reorder data
+        if (!config.useMarkerGenes && previousUseMarker) {
+          setReorderAfterFetch(true);
+        }
+
+        dispatch(fetchPlotDataWork(experimentId, plotUuid, plotType));
+        return;
+      }
+
+      // if a gene was added
+      if (currentSelected.length > previousSelected.length) {
+        dispatch(fetchPlotDataWork(experimentId, plotUuid, plotType));
+        setReorderAfterFetch(true);
+        return;
+      }
+
+      // if the genes were reordered
+      if (currentSelected.length === previousSelected.length) {
+        reorderData(currentSelected);
+        return;
+      }
+
+      // if genes were removed
+      const removedGenes = previousSelected.filter((gene) => !currentSelected.includes(gene));
+      deleteData(removedGenes);
     }
   }, [config, cellSetProperties]);
 
-  const loadInitialCustomGenes = () => {
-    const PROPERTIES = ['dispersions'];
-    const tableState = {
-      pagination: {
-        current: 1, pageSize: config.nMarkerGenes, showSizeChanger: true, total: 0,
+  // if all selected genes are removed, deleteData will not run. Remove plotData manually instead
+  useEffect(() => {
+    if (config?.useMarkerGenes || config?.selectedGenes.length || !plotData?.length) return;
+
+    previousComparedConfig.current.selectedGenes = [];
+    dispatch(updatePlotData(plotUuid, []));
+  }, [config]);
+
+  // load the gene names and dispersions for search table and initial state
+  useEffect(() => {
+    const state = {
+      sorter: {
+        field: 'gene_names',
+        columnKey: 'gene_names',
+        order: 'ascend',
       },
-      geneNamesFilter: null,
-      sorter: { field: PROPERTIES[0], columnKey: PROPERTIES[0], order: 'descend' },
+      pagination: {
+        current: 1,
+        pageSize: 100000,
+      },
+      pageSizeFilter: null,
     };
 
-    dispatch(loadPaginatedGeneProperties(experimentId, PROPERTIES, plotUuid, tableState));
-  };
+    dispatch(loadPaginatedGeneProperties(experimentId, ['dispersions'], searchBarUuid, state));
+  }, []);
+
+  const treeScrollable = document.getElementById('ScrollWrapper');
 
   useEffect(() => {
-    if (config?.selectedGenes.length === 0 && !highestDispersionGenes?.length > 0 && !genesFetching) {
-      loadInitialCustomGenes();
-    }
+    if (treeScrollable) ScrollOnDrag(treeScrollable);
+  }, [treeScrollable]);
 
-    if (config?.selectedGenes.length === 0 && highestDispersionGenes?.length > 0) {
-      updatePlotWithChanges({ selectedGenes: highestDispersionGenes });
+  // find genes with highest dispersion from list of genes sorted by name
+  const loadHighestDispersionGenes = () => {
+    const highestDispersions = Object.values(geneData).map((gene) => gene.dispersions).sort().splice(-config.nMarkerGenes);
+
+    const getKeyByValue = (value) => Object.keys(geneData).find((key) => geneData[key].dispersions === value);
+
+    const highestDispersionGenes = highestDispersions.map((dispersion) => getKeyByValue(dispersion));
+
+    updatePlotWithChanges({ selectedGenes: highestDispersionGenes });
+  };
+
+  // load initial state, based on highest dispersion genes from all genes
+  useEffect(() => {
+    if (_.isEmpty(geneData) || !config || plotData?.length) {
+      return;
     }
-  }, [highestDispersionGenes, config, genesFetching]);
+    loadHighestDispersionGenes();
+  }, [geneData]);
+
+  // When fetching new genes, reorder data to match selected genes
+  useEffect(() => {
+    if (plotData?.length !== cellSetHierarchy[0]?.children.length * config?.selectedGenes.length || !reorderAfterFetch) return;
+
+    reorderData(config.selectedGenes);
+    setReorderAfterFetch(false);
+  }, [plotData]);
 
   const getCSVData = () => {
     if (!plotData?.length) return [];
@@ -229,23 +323,34 @@ const DotPlotPage = (props) => {
     dispatch(updatePlotConfig(plotUuid, obj));
   };
 
-  const onGeneEnter = (genes) => {
+  const onGenesChange = (genes) => {
     updatePlotWithChanges({ selectedGenes: genes });
   };
 
   const onReset = () => {
-    onGeneEnter([]);
-    loadInitialCustomGenes();
+    setReset(true);
+    loadHighestDispersionGenes();
   };
+
+  useEffect(() => {
+    if (!reset) return;
+
+    dispatch(fetchPlotDataWork(experimentId, plotUuid, plotType));
+    setReorderAfterFetch(true);
+    setReset(false);
+  }, [config]);
 
   const renderExtraPanels = () => (
     <>
       <Panel header='Gene selection' key='gene-selection'>
         <MarkerGeneSelection
           config={config}
+          plotUuid={plotUuid}
+          searchBarUuid={searchBarUuid}
+          experimentId={experimentId}
           onUpdate={updatePlotWithChanges}
           onReset={onReset}
-          onGeneEnter={onGeneEnter}
+          onGenesChange={onGenesChange}
         />
       </Panel>
       <Panel header='Select data' key='select-data'>
@@ -300,7 +405,7 @@ const DotPlotPage = (props) => {
       );
     }
 
-    if (cellSetsLoading || genesFetching || plotDataLoading) {
+    if (cellSetsLoading || plotDataLoading) {
       return (
         <center>
           <Loader experimentId={experimentId} />
