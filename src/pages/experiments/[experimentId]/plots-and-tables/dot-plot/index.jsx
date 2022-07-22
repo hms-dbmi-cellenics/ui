@@ -250,6 +250,7 @@ const DotPlotPage = (props) => {
   useEffect(() => {
     if (config?.useMarkerGenes || config?.selectedGenes.length || !plotData?.length) return;
 
+    previousComparedConfig.current.selectedGenes = [];
     dispatch(updatePlotData(plotUuid, []));
   }, [config]);
 
