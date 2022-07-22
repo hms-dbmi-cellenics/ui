@@ -1,15 +1,10 @@
 /* eslint-disable no-param-reassign */
 import React, { useEffect, useRef } from 'react';
-// import {
-//   Collapse,
-//   Select,
-//   Skeleton,
-// } from 'antd';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 
-import { getCellSets, getCellSetsHierarchy } from 'redux/selectors';
+import { getCellSets } from 'redux/selectors';
 import {
   updatePlotConfig,
   loadPlotConfig,
@@ -76,22 +71,11 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
 
     const currentComparedConfig = getComparedConfig(config);
 
-    // if (config && !_.isEqual(previousComparedConfig.current, currentComparedConfig)) {
-    previousComparedConfig.current = currentComparedConfig;
-
-    dispatch(getTrajectoryGraph(experimentId, plotUuid));
-    // }
+    if (config && !_.isEqual(previousComparedConfig.current, currentComparedConfig)) {
+      previousComparedConfig.current = currentComparedConfig;
+      dispatch(getTrajectoryGraph(experimentId, plotUuid));
+    }
   }, [config, cellSetsLoading, embeddingSettings, embeddingLoading]);
-
-  // const generateGroupByOptions = () => {
-  //   if (cellSets.loading) {
-  //     return [];
-  //   }
-  //   return hierarchy.map(({ key, children }) => ({
-  //     value: key,
-  //     label: `${cellSets.properties[key].name} (${children.length} ${children === 1 ? 'child' : 'children'})`,
-  //   }));
-  // };
 
   const updatePlotWithChanges = (obj) => {
     dispatch(updatePlotConfig(plotUuid, obj));
@@ -141,34 +125,6 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
     },
   ];
 
-  // const renderExtraPanels = () => (
-  //   <>
-  //     <Panel header='Trajectory analysis' key='trajectory-analysis'>
-  //       <SelectData
-  //         config={config}
-  //         onUpdate={updatePlotWithChanges}
-  //         cellSets={cellSets}
-  //       />
-  //     </Panel>
-  //     <Panel header='Group by' key='group-by'>
-  //       <p>
-  //         Select the cell set category you would like to group cells by.
-  //       </p>
-  //       {config ? (
-  //         <Select
-  //           labelInValue
-  //           style={{ width: '100%' }}
-  //           placeholder='Select cell set...'
-  //           loading={config}
-  //           value={{ value: config.selectedCellSet }}
-  //           options={generateGroupByOptions()}
-  //           onChange={({ value }) => updatePlotWithChanges({ selectedCellSet: value })}
-  //         />
-  //       ) : <Skeleton.Input style={{ width: '100%' }} active />}
-  //     </Panel>
-  //   </>
-  // );
-
   return (
     <>
       <Header title={plotNames.TRAJECTORY_ANALYSIS} />
@@ -178,7 +134,6 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
         plotType={plotType}
         plotStylingConfig={plotStylingConfig}
         plotInfo='The trajectory analysis plot displays the result of trajectory analysis for the given cell set.'
-        // extraControlPanels={renderExtraPanels()}
         defaultActiveKey='group-by'
       >
         <TrajectoryAnalysisPlot
