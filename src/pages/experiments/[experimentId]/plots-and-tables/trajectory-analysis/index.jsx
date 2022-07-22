@@ -61,12 +61,17 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
       'selectedPoints'],
   );
 
+  const {
+    ETag,
+  } = useSelector((state) => state.embeddings?.umap || {});
+
   useEffect(() => {
     if (cellSetsLoading
       || cellSetsError
       || !embeddingSettings
       || embeddingLoading
       || embeddingError
+      || !ETag
     ) return;
 
     const currentComparedConfig = getComparedConfig(config);

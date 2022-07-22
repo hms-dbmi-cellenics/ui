@@ -10,14 +10,25 @@ const getTrajectoryGraph = (
   plotUuid,
 ) => async (dispatch, getState) => {
   const {
-    configureEmbedding,
-  } = getState().experimentSettings.processing;
+    embeddingSettings,
+    clusteringSettings,
+  } = getState().experimentSettings.processing?.configureEmbedding || {};
+  const {
+    ETag,
+  } = getState().embeddings[embeddingSettings.method];
 
   const timeout = getTimeoutForWorkerTask(getState(), 'TrajectoryAnalysis');
 
   const body = {
     name: 'GetTrajectoryGraph',
-    configureEmbedding,
+    embedding: {
+      method: embeddingSettings.method,
+      ETag,
+    },
+    clustering: {
+      method: clusteringSettings.method,
+      resolution: clusteringSettings.methodSettings[clusteringSettings.method].resolution,
+    },
   };
 
   try {
@@ -26,15 +37,15 @@ const getTrajectoryGraph = (
       payload: { plotUuid },
     });
 
-    const plotData = await fetchWork(
-      experimentId, body, getState, { timeout },
+    const { data } = await fetchWork(
+      experimentId, body, getState, { timeout, rerun: true },
     );
 
     dispatch({
       type: PLOT_DATA_LOADED,
       payload: {
         plotUuid,
-        plotData,
+        plotData: data,
       },
     });
   } catch (e) {

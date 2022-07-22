@@ -6,7 +6,7 @@ import { Vega } from 'react-vega';
 import { generateData as generateCategoricalEmbeddingData } from 'utils/plotSpecs/generateEmbeddingCategoricalSpec';
 import {
   generateSpec,
-  generateData as genarateTrajectoryPathData,
+  generateData as generateTrajectoryPathData,
 } from 'utils/plotSpecs/generateTrajectoryAnalysisGraph';
 import { loadEmbedding } from 'redux/actions/embedding';
 import { loadCellSets } from 'redux/actions/cellSets';
@@ -67,7 +67,8 @@ const TrajectoryAnalysisPlot = (props) => {
       || cellSets.error
       || !embeddingData?.length
       || !plotData
-      || Object.keys(plotData).length === 0
+      || !plotData?.nodes
+      || Object.keys(plotData.nodes).length === 0
     ) {
       return;
     }
@@ -77,7 +78,7 @@ const TrajectoryAnalysisPlot = (props) => {
       cellSetLegendsData,
     } = generateCategoricalEmbeddingData(cellSets, config.selectedSample, config.selectedCellSet, embeddingData);
 
-    const trajectoryData = genarateTrajectoryPathData(plotData);
+    const trajectoryData = generateTrajectoryPathData(plotData);
 
     setPlotSpec(generateSpec(config, plotEmbedding, trajectoryData, cellSetLegendsData));
   }, [config, cellSets, embeddingData, plotData]);

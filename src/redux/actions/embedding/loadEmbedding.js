@@ -51,8 +51,8 @@ const loadEmbedding = (
       payload: {
         experimentId,
         embeddingType,
-        data,
         ETag,
+        data,
       },
     });
   } catch (error) {
