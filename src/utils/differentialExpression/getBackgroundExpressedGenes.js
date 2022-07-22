@@ -20,7 +20,7 @@ const getBackgroundExpressedGenes = () => async (dispatch, getState) => {
   const timeout = getTimeoutForWorkerTask(getState(), 'DifferentialExpression');
 
   try {
-    const data = await fetchWork(
+    const { data } = await fetchWork(
       experimentId, body, getState, { timeout },
     );
 

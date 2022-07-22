@@ -43,7 +43,7 @@ const loadEmbedding = (
   const timeout = getTimeoutForWorkerTask(getState(), 'GetEmbedding', { type: embeddingType });
 
   try {
-    const data = await fetchWork(
+    const { data, ETag } = await fetchWork(
       experimentId, body, getState, { timeout },
     );
     return dispatch({
@@ -52,6 +52,7 @@ const loadEmbedding = (
         experimentId,
         embeddingType,
         data,
+        ETag,
       },
     });
   } catch (error) {

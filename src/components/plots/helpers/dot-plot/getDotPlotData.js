@@ -49,7 +49,7 @@ const getDotPlotData = (
       payload: { plotUuid },
     });
 
-    const data = await fetchWork(
+    const { data } = await fetchWork(
       experimentId, body, getState, { timeout },
     );
 
