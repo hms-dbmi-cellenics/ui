@@ -9,14 +9,15 @@ const getTrajectoryGraph = (
   experimentId,
   plotUuid,
 ) => async (dispatch, getState) => {
-  const embeddingMethod = getState().experimentSettings.processing
-    .configureEmbedding?.embeddingSettings.method;
-  const embeddingEtag = getState().embeddings[embeddingMethod].ETag;
+  const {
+    configureEmbedding,
+  } = getState().experimentSettings.processing;
+
   const timeout = getTimeoutForWorkerTask(getState(), 'TrajectoryAnalysis');
 
   const body = {
     name: 'GetTrajectoryGraph',
-    embeddingEtag,
+    configureEmbedding,
   };
 
   try {
@@ -25,7 +26,7 @@ const getTrajectoryGraph = (
       payload: { plotUuid },
     });
 
-    const { data } = await fetchWork(
+    const plotData = await fetchWork(
       experimentId, body, getState, { timeout },
     );
 
@@ -33,7 +34,7 @@ const getTrajectoryGraph = (
       type: PLOT_DATA_LOADED,
       payload: {
         plotUuid,
-        plotData: data,
+        plotData,
       },
     });
   } catch (e) {

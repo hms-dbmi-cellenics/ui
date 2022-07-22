@@ -41,7 +41,6 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
   const {
     loading: embeddingLoading,
     error: embeddingError,
-    ETag: embeddingEtag,
   } = useSelector((state) => state.embeddings[embeddingSettings?.method]) || {};
 
   const cellSets = useSelector(getCellSets());
@@ -68,14 +67,11 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
   );
 
   useEffect(() => {
-    console.log('*** embedding ETag', embeddingEtag);
-
     if (cellSetsLoading
       || cellSetsError
       || !embeddingSettings
       || embeddingLoading
       || embeddingError
-      || !embeddingEtag
     ) return;
 
     const currentComparedConfig = getComparedConfig(config);
@@ -85,7 +81,7 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
 
     dispatch(getTrajectoryGraph(experimentId, plotUuid));
     // }
-  }, [config, cellSetsLoading, embeddingSettings, embeddingLoading, embeddingEtag]);
+  }, [config, cellSetsLoading, embeddingSettings, embeddingLoading]);
 
   // const generateGroupByOptions = () => {
   //   if (cellSets.loading) {

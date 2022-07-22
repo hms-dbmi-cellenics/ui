@@ -20,9 +20,11 @@ const getTimeoutForWorkerTaskUncapped = (state, taskName, options) => {
     case 'MarkerHeatmap': {
       return 0.002 * nCells + 60;
     }
-    case 'DifferentialExpression':
-    case 'TrajectoryAnalysis': {
+    case 'DifferentialExpression': {
       return 180;
+    }
+    case 'TrajectoryAnalysis': {
+      return 300;
     }
     case 'ListGenes':
     case 'GeneExpression':

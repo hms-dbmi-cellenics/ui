@@ -62,11 +62,6 @@ const TrajectoryAnalysisPlot = (props) => {
   }, [config, embeddingSettings?.method]);
 
   useEffect(() => {
-    console.log('cellSets.loading', cellSets.loading);
-    console.log('cellSets.error', cellSets.error);
-    console.log('!plotData?.length', !plotData);
-    console.log('!embeddingData?.length', !embeddingData?.length);
-
     if (!config
       || cellSets.loading
       || cellSets.error
@@ -105,8 +100,6 @@ const TrajectoryAnalysisPlot = (props) => {
         />
       );
     }
-
-    console.log('*** plotspec', plotSpec);
 
     if (!config
       || cellSets.loading
