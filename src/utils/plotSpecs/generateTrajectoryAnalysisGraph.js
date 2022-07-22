@@ -206,15 +206,18 @@ const generateSpec = (config, embeddingData, pathData, cellSetLegendsData) => {
       },
       {
         type: 'line',
-        from: {
-          data: 'pathData',
-        },
+        from: { data: 'pathData' },
         encode: {
+
           enter: {
-            stroke: { value: '#444' },
             x: { scale: 'x', field: 'x' },
             y: { scale: 'y', field: 'y' },
-            opacity: { value: 0.2 },
+            size: { value: 25 },
+            stroke: { value: '#ccc' },
+            fillOpacity: { value: 0.2 },
+            defined: {
+              signal: 'isValid(datum["x"]) && isFinite(+datum["x"]) && isValid(datum["y"]) && isFinite(+datum["y"])',
+            },
           },
         },
       },
@@ -227,32 +230,18 @@ const generateSpec = (config, embeddingData, pathData, cellSetLegendsData) => {
         },
         encode: {
           update: {
-            x: {
-              scale: 'x',
-              field: 'x',
-            },
-            y: {
-              scale: 'y',
-              field: 'y',
-            },
-            size: {
-              value: 25,
-            },
-            stroke: {
-              value: 'black',
-            },
+            x: { scale: 'x', field: 'x' },
+            y: { scale: 'y', field: 'y' },
+            size: { value: 15 },
+            stroke: { value: 'black' },
             fill: [
-              {
-                test: 'datum.selected',
-                value: 'red',
-              },
+              { test: 'datum.selected', value: 'red' },
               { value: 'white' },
             ],
-            shape: {
-              value: 'circle',
-            },
-            fillOpacity: {
-              value: 1,
+            shape: { value: 'circle' },
+            fillOpacity: { value: 1 },
+            defined: {
+              signal: 'isValid(datum["x"]) && isFinite(+datum["x"]) && isValid(datum["y"]) && isFinite(+datum["y"])',
             },
           },
         },
@@ -361,6 +350,7 @@ const generateData = (plotData) => {
 
       trajectoryNodes.push({ x: node.x, y: node.y, node_id: node.node_id });
       trajectoryNodes.push({ x: connNode.x, y: connNode.y, node_id: connectedNodeId });
+      trajectoryNodes.push({ x: null, y: null, node_id: null });
     });
   });
 
