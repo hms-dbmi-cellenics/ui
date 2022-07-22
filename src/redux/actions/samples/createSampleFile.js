@@ -5,6 +5,7 @@ import fetchAPI from 'utils/http/fetchAPI';
 import { SAMPLES_FILE_UPDATE } from 'redux/actionTypes/samples';
 import handleError from 'utils/http/handleError';
 import endUserMessages from 'utils/endUserMessages';
+import UploadStatus from 'utils/upload/UploadStatus';
 
 const fileNameForApiV1 = {
   matrix10x: 'matrix.mtx.gz',
@@ -47,7 +48,10 @@ const createSampleFile = (
         sampleUuid: sampleId,
         lastModified: updatedAt,
         fileName: fileNameForApiV1[type],
-        fileDiff: fileForApiV1,
+        fileDiff: {
+          upload: { status: UploadStatus.UPLOADING },
+          ...fileForApiV1,
+        },
       },
     });
 
