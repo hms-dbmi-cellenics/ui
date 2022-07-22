@@ -106,6 +106,7 @@ const DotPlotPage = (props) => {
 
   const [moreThanTwoGroups, setMoreThanTwoGroups] = useState(false);
   const [reorderAfterFetch, setReorderAfterFetch] = useState(false);
+  const [reset, setReset] = useState(false);
 
   const experimentName = useSelector((state) => state.experimentSettings.info.experimentName);
   const csvFileName = fileNames(experimentName, 'DOT_PLOT', [config?.selectedCellSet, config?.selectedPoints]);
@@ -169,6 +170,8 @@ const DotPlotPage = (props) => {
     // If using marker genes, check that the selected number is more than 0
     if (config.useMarkerGenes && config.nMarkerGenes === 0) return false;
 
+    if (reset) return false;
+
     return true;
   };
 
@@ -186,8 +189,8 @@ const DotPlotPage = (props) => {
     dispatch(updatePlotData(plotUuid, reorderedData));
   };
 
-  const deleteData = (gene) => {
-    const data = plotData.filter((elem) => elem.geneName !== gene);
+  const deleteData = (genes) => {
+    const data = plotData.filter((elem) => !genes.includes(elem.geneName));
     dispatch(updatePlotData(plotUuid, data));
   };
 
@@ -209,10 +212,17 @@ const DotPlotPage = (props) => {
       const previousSelected = previousComparedConfig.current?.selectedGenes ?? [];
       const currentSelected = currentComparedConfig.selectedGenes;
 
+      const previousUseMarker = previousComparedConfig.current?.useMarkerGenes ?? false;
+
       previousComparedConfig.current = currentComparedConfig;
 
       // if the selected genes don't change
       if (_.isEqual(currentSelected, previousSelected)) {
+        // if switching back from marker genes to custom genes, reorder data
+        if (!config.useMarkerGenes && previousUseMarker) {
+          setReorderAfterFetch(true);
+        }
+
         dispatch(fetchPlotDataWork(experimentId, plotUuid, plotType));
         return;
       }
@@ -229,10 +239,10 @@ const DotPlotPage = (props) => {
         reorderData(currentSelected);
         return;
       }
-      
-      // if a gene was removed
-      const removedGene = previousSelected.filter((gene) => !currentSelected.includes(gene))[0];
-      deleteData(removedGene);
+
+      // if genes were removed
+      const removedGenes = previousSelected.filter((gene) => !currentSelected.includes(gene));
+      deleteData(removedGenes);
     }
   }, [config, cellSetProperties]);
 
@@ -284,7 +294,6 @@ const DotPlotPage = (props) => {
     if (plotData?.length !== cellSetHierarchy[0]?.children.length * config?.selectedGenes.length || !reorderAfterFetch) return;
 
     reorderData(config.selectedGenes);
-
     setReorderAfterFetch(false);
   }, [plotData]);
 
@@ -311,10 +320,17 @@ const DotPlotPage = (props) => {
   };
 
   const onReset = () => {
+    setReset(true);
     loadHighestDispersionGenes();
+  };
+
+  useEffect(() => {
+    if (!reset) return;
+
     dispatch(fetchPlotDataWork(experimentId, plotUuid, plotType));
     setReorderAfterFetch(true);
-  };
+    setReset(false);
+  }, [config]);
 
   const renderExtraPanels = () => (
     <>

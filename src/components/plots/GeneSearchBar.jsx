@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import _ from 'lodash';
 import { AutoComplete } from 'antd';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
@@ -30,12 +29,7 @@ const GeneSearchBar = (props) => {
   const [value, setValue] = useState('');
 
   const onOptionSelect = (newGene) => {
-    if (!geneList.includes(newGene) || config?.selectedGenes.includes(newGene)) {
-      return;
-    }
-
-    const genes = _.clone(config?.selectedGenes);
-    genes.push(newGene);
+    const genes = [...config?.selectedGenes, newGene];
 
     onSelect(genes);
     setValue('');
