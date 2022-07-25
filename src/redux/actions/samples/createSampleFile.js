@@ -3,9 +3,9 @@ import { v4 as uuidv4 } from 'uuid';
 
 import fetchAPI from 'utils/http/fetchAPI';
 import { SAMPLES_FILE_UPDATE } from 'redux/actionTypes/samples';
-import handleError from 'utils/http/handleError';
-import endUserMessages from 'utils/endUserMessages';
+
 import UploadStatus from 'utils/upload/UploadStatus';
+import updateSampleFileUpload from 'redux/actions/samples/updateSampleFileUpload';
 
 const fileNameForApiV1 = {
   matrix10x: 'matrix.mtx.gz',
@@ -31,17 +31,6 @@ const createSampleFile = (
       metadata,
     };
 
-    const signedUrl = await fetchAPI(
-      url,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(body),
-      },
-    );
-
     dispatch({
       type: SAMPLES_FILE_UPDATE,
       payload: {
@@ -55,10 +44,20 @@ const createSampleFile = (
       },
     });
 
+    const signedUrl = await fetchAPI(
+      url,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(body),
+      },
+    );
+
     return signedUrl;
   } catch (e) {
-    // Can't update the upload status because we didn't even get to create the sample file
-    handleError(e, endUserMessages.ERROR_BEGIN_SAMPLE_FILE_UPLOAD);
+    dispatch(updateSampleFileUpload(experimentId, sampleId, type, UploadStatus.UPLOAD_ERROR));
 
     throw e;
   }
