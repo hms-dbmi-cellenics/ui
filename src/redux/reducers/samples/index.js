@@ -1,8 +1,8 @@
+import { EXPERIMENTS_METADATA_RENAME } from 'redux/actionTypes/experiments';
 import {
   SAMPLES_CREATE,
   SAMPLES_UPDATE,
-  SAMPLES_DELETE_API_V2,
-  SAMPLES_DELETE_API_V1,
+  SAMPLES_DELETE,
   SAMPLES_FILE_UPDATE,
   SAMPLES_LOADED,
   SAMPLES_SAVING,
@@ -10,7 +10,7 @@ import {
   SAMPLES_ERROR,
   SAMPLES_METADATA_DELETE,
   SAMPLES_LOADING,
-  SAMPLES_VALUE_IN_METADATA_TRACK_UPDATED_API_V2,
+  SAMPLES_VALUE_IN_METADATA_TRACK_UPDATED,
 } from '../../actionTypes/samples';
 import initialState from './initialState';
 import samplesCreate from './samplesCreate';
@@ -25,6 +25,8 @@ import samplesMetadataDelete from './samplesMetadataDelete';
 import samplesLoading from './samplesLoading';
 import samplesValueInMetadataTrackUpdated from './samplesValueInMetadataTrackUpdated';
 
+import experimentsMetadataRename from './experimentsMetadataRename';
+
 const samplesReducer = (state = initialState, action) => {
   switch (action.type) {
     case SAMPLES_CREATE: {
@@ -35,11 +37,7 @@ const samplesReducer = (state = initialState, action) => {
       return samplesUpdate(state, action);
     }
 
-    case SAMPLES_DELETE_API_V2: {
-      return samplesDelete(state, action);
-    }
-
-    case SAMPLES_DELETE_API_V1: {
+    case SAMPLES_DELETE: {
       return samplesDelete(state, action);
     }
 
@@ -71,8 +69,12 @@ const samplesReducer = (state = initialState, action) => {
       return samplesLoading(state);
     }
 
-    case SAMPLES_VALUE_IN_METADATA_TRACK_UPDATED_API_V2: {
+    case SAMPLES_VALUE_IN_METADATA_TRACK_UPDATED: {
       return samplesValueInMetadataTrackUpdated(state, action);
+    }
+
+    case EXPERIMENTS_METADATA_RENAME: {
+      return experimentsMetadataRename(state, action);
     }
 
     default: {

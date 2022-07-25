@@ -1,22 +1,6 @@
-import Environment, { ssrGetCurrentEnvironment } from './environment';
+import getAWSRegion from './getAWSRegion';
 
 const configure = (userPoolId, identityPoolId, userPoolClientDetails) => {
-  const currentEnvironment = ssrGetCurrentEnvironment();
-  const bucketName = `biomage-originals-${currentEnvironment}`;
-
-  const storageConfig = {
-    Storage: {
-      AWSS3: {
-        bucket: bucketName,
-        region: 'eu-west-1',
-        dangerouslyConnectToHttpEndpointForTesting: currentEnvironment === Environment.DEVELOPMENT,
-        identityId: identityPoolId,
-        customPrefix: {
-          public: '',
-        },
-      },
-    },
-  };
   const redirectProtocol = (process.env.NODE_ENV === 'development') ? 'http:' : 'https:';
   const usingProtocol = (url) => url.startsWith(redirectProtocol);
   const signInRedirect = userPoolClientDetails.CallbackURLs.filter(usingProtocol)[0];
@@ -24,7 +8,7 @@ const configure = (userPoolId, identityPoolId, userPoolClientDetails) => {
 
   const authConfig = {
     Auth: {
-      region: 'eu-west-1',
+      region: getAWSRegion(),
       identityPoolId,
       userPoolId,
       userPoolWebClientId: userPoolClientDetails.ClientId,
@@ -43,7 +27,7 @@ const configure = (userPoolId, identityPoolId, userPoolClientDetails) => {
   };
 
   return (
-    { ...authConfig, ...storageConfig }
+    { ...authConfig }
   );
 };
 

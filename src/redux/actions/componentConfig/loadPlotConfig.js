@@ -7,11 +7,10 @@ import handleError from 'utils/http/handleError';
 import httpStatusCodes from 'utils/http/httpStatusCodes';
 
 const loadPlotConfig = (experimentId, plotUuid, plotType) => async (dispatch) => {
-  const url = `/v1/experiments/${experimentId}/plots-tables/${plotUuid}`;
   try {
-    const data = await fetchAPI(url);
+    const data = await fetchAPI(`/v2/experiments/${experimentId}/plots/${plotUuid}`);
 
-    const config = _.merge({}, initialPlotConfigStates[plotType], data.config);
+    const plotConfig = _.merge({}, initialPlotConfigStates[plotType], data.config);
     dispatch({
       type: LOAD_CONFIG,
       payload: {
@@ -19,7 +18,7 @@ const loadPlotConfig = (experimentId, plotUuid, plotType) => async (dispatch) =>
         plotUuid,
         plotType,
         plotData: data.plotData,
-        config,
+        config: plotConfig,
       },
     });
   } catch (e) {

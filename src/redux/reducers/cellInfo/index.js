@@ -1,5 +1,5 @@
 import { CELL_INFO_UPDATE, CELL_INFO_FOCUS, CELL_INFO_UNFOCUS } from '../../actionTypes/cellInfo';
-import { EXPERIMENT_SETTINGS_PIPELINE_START } from '../../actionTypes/experimentSettings';
+import { EXPERIMENT_SETTINGS_QC_START } from '../../actionTypes/experimentSettings';
 
 import initialState from './initialState';
 import updateCellInfo from './updateCellInfo';
@@ -17,7 +17,7 @@ const cellInfoReducer = (state = initialState, action) => {
     case CELL_INFO_UNFOCUS: {
       return cellInfoUnfocus(state, action);
     }
-    case EXPERIMENT_SETTINGS_PIPELINE_START: {
+    case EXPERIMENT_SETTINGS_QC_START: {
       return initialState;
     }
     default: {

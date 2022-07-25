@@ -9,9 +9,6 @@ import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import mockAPI, {
 } from '__test__/test-utils/mockAPI';
 
-import config from 'config';
-import { api } from 'utils/constants';
-
 import ShareExperimentModal from 'components/data-management/ShareExperimentModal';
 
 jest.mock('@aws-amplify/auth', () => ({
@@ -52,10 +49,9 @@ describe('Share expeirment modal', () => {
     await act(async () => render(
       <ShareExperimentModal
         onCancel={onCancel}
-        activeProject={{
-          experiments: [fake.EXPERIMENT_ID],
-          uuid: fake.PROJECT_ID,
-          name: fake.PROJECT_NAME,
+        experiment={{
+          id: fake.EXPERIMENT_ID,
+          name: fake.EXPERIMENT_NAME,
         }}
       />,
     ));
@@ -64,7 +60,7 @@ describe('Share expeirment modal', () => {
   it('Renders correctly', async () => {
     await renderShareExperimentModal();
     expect(screen.getByText('Share with collaborators')).toBeInTheDocument();
-    expect(screen.getByText(fake.PROJECT_NAME)).toBeInTheDocument();
+    expect(screen.getByText(fake.EXPERIMENT_NAME)).toBeInTheDocument();
     expect(screen.getByText('Input an email address. Add multiple addresses with enter.')).toBeInTheDocument();
     expect(screen.getAllByRole('combobox').length).toEqual(2);
     expect(screen.getByText('bob@bob.com')).toBeInTheDocument();
@@ -90,30 +86,6 @@ describe('Share expeirment modal', () => {
   });
 
   it('Revoke access works', async () => {
-    await renderShareExperimentModal();
-    const revokeButton = screen.getAllByText('Revoke');
-    expect(screen.getByText('bob@bob.com')).toBeInTheDocument();
-    await act(() => userEvent.click(revokeButton[0]));
-    await waitFor(() => expect(onCancel).toHaveBeenCalled());
-  });
-
-  it('Inviting users works for v2', async () => {
-    config.currentApiVersion = api.V2;
-
-    await renderShareExperimentModal();
-    const input = screen.getAllByRole('combobox');
-    userEvent.type(input[0], 'asd@asd.com{enter}');
-
-    await waitFor(() => expect(screen.getByText('Add')).toBeInTheDocument());
-    const inviteButton = screen.getByText('Add');
-    await act(() => fireEvent.click(inviteButton));
-    expect(fetchMock.mock.calls.length).toEqual(2);
-    expect(fetchMock.mock.calls[1]).toMatchSnapshot();
-  });
-
-  it('Revoke access works for v2', async () => {
-    config.currentApiVersion = api.V2;
-
     await renderShareExperimentModal();
     const revokeButton = screen.getAllByText('Revoke');
     expect(screen.getByText('bob@bob.com')).toBeInTheDocument();

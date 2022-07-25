@@ -7,9 +7,29 @@ import endUserMessages from 'utils/endUserMessages';
 import generatePlotWorkBody from 'utils/work/generatePlotWorkBody';
 import { fetchWork } from 'utils/work/fetchWork';
 
-const fetchPlotDataWork = (experimentId, plotUuid, plotType) => async (dispatch, getState) => {
-  const config = getState().componentConfig[plotUuid]?.config ?? initialPlotConfigStates[plotType];
+const getClusterNames = (state) => {
+  const clusterIds = state.cellSets.hierarchy.reduce(
+    (acc, cellSet) => [...acc, ...cellSet.children.map((entry) => entry.key)],
+    [],
+  );
+
+  const clusterNames = clusterIds?.map((clusterId) => state.cellSets.properties[clusterId].name);
+  return clusterNames;
+};
+
+const fetchPlotDataWork = (
+  experimentId,
+  plotUuid,
+  plotType,
+) => async (dispatch, getState) => {
+  let config = getState().componentConfig[plotUuid]?.config ?? initialPlotConfigStates[plotType];
+  const clusterNames = getClusterNames(getState());
   const timeout = getTimeoutForWorkerTask(getState(), 'PlotData');
+
+  config = {
+    ...config,
+    clusterNames,
+  };
 
   try {
     const body = generatePlotWorkBody(plotType, config);

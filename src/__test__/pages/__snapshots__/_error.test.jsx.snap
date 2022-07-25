@@ -89,6 +89,7 @@ Array [
     "experiments": Object {
       "ids": Array [],
       "meta": Object {
+        "activeExperimentId": null,
         "error": false,
         "loading": false,
         "saving": false,
@@ -133,16 +134,8 @@ Array [
       },
     },
     "networkResources": Object {
+      "domainName": "scp.biomage.net",
       "environment": "production",
-    },
-    "projects": Object {
-      "ids": Array [],
-      "meta": Object {
-        "activeProjectUuid": null,
-        "error": false,
-        "loading": true,
-        "saving": false,
-      },
     },
     "samples": Object {
       "meta": Object {
@@ -150,6 +143,9 @@ Array [
         "loading": false,
         "saving": false,
       },
+    },
+    "user": Object {
+      "current": null,
     },
   },
 ]
@@ -244,6 +240,7 @@ Array [
     "experiments": Object {
       "ids": Array [],
       "meta": Object {
+        "activeExperimentId": null,
         "error": false,
         "loading": false,
         "saving": false,
@@ -288,16 +285,8 @@ Array [
       },
     },
     "networkResources": Object {
+      "domainName": "scp.biomage.net",
       "environment": "staging",
-    },
-    "projects": Object {
-      "ids": Array [],
-      "meta": Object {
-        "activeProjectUuid": null,
-        "error": false,
-        "loading": true,
-        "saving": false,
-      },
     },
     "samples": Object {
       "meta": Object {
@@ -305,6 +294,9 @@ Array [
         "loading": false,
         "saving": false,
       },
+    },
+    "user": Object {
+      "current": null,
     },
   },
 ]

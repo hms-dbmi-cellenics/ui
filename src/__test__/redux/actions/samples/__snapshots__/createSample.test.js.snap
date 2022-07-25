@@ -1,29 +1,24 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`createSample action Runs correctly 1`] = `
-Object {
-  "complete": false,
-  "createdDate": "2020-01-01T00:00:00.000Z",
-  "error": false,
-  "fileNames": Array [],
-  "files": Object {},
-  "lastModified": "2020-01-01T00:00:00.000Z",
-  "metadata": Object {},
-  "name": "test sample",
-  "projectUuid": "qwe234",
-  "type": "10X Chromium",
-  "uuid": "abc123",
-}
+exports[`createSample action Throws if the api fails 1`] = `
+Array [
+  Object {
+    "message": "Saving sample...",
+  },
+  Object {
+    "error": "We couldn't create your sample. Please try uploading it again",
+  },
+]
 `;
 
-exports[`createSample action Works correctly for api v2 with many files being uploaded 1`] = `
+exports[`createSample action Works correctly with many files being uploaded 1`] = `
 Object {
   "name": "test sample",
   "sampleTechnology": "10x",
 }
 `;
 
-exports[`createSample action Works correctly for api v2 with many files being uploaded 2`] = `
+exports[`createSample action Works correctly with many files being uploaded 2`] = `
 Array [
   Object {
     "message": "Saving sample...",
@@ -34,6 +29,7 @@ Array [
       "complete": false,
       "createdDate": "2020-01-01T00:00:00.000Z",
       "error": false,
+      "experimentId": "exp234",
       "fileNames": Array [],
       "files": Object {
         "barcodes.tsv.gz": Object {
@@ -55,7 +51,6 @@ Array [
       "lastModified": "2020-01-01T00:00:00.000Z",
       "metadata": Object {},
       "name": "test sample",
-      "projectUuid": "qwe234",
       "type": "10X Chromium",
       "uuid": "abc123",
     },
@@ -66,6 +61,7 @@ Array [
       "complete": false,
       "createdDate": "2020-01-01T00:00:00.000Z",
       "error": false,
+      "experimentId": "exp234",
       "fileNames": Array [],
       "files": Object {
         "barcodes.tsv.gz": Object {
@@ -87,7 +83,6 @@ Array [
       "lastModified": "2020-01-01T00:00:00.000Z",
       "metadata": Object {},
       "name": "test sample",
-      "projectUuid": "qwe234",
       "type": "10X Chromium",
       "uuid": "abc123",
     },
@@ -95,14 +90,14 @@ Array [
 ]
 `;
 
-exports[`createSample action Works correctly for api v2 with one file being uploaded 1`] = `
+exports[`createSample action Works correctly with one file being uploaded 1`] = `
 Object {
   "name": "test sample",
   "sampleTechnology": "10x",
 }
 `;
 
-exports[`createSample action Works correctly for api v2 with one file being uploaded 2`] = `
+exports[`createSample action Works correctly with one file being uploaded 2`] = `
 Array [
   Object {
     "message": "Saving sample...",
@@ -113,6 +108,7 @@ Array [
       "complete": false,
       "createdDate": "2020-01-01T00:00:00.000Z",
       "error": false,
+      "experimentId": "exp234",
       "fileNames": Array [],
       "files": Object {
         "matrix.tsv.gz": Object {
@@ -124,7 +120,6 @@ Array [
       "lastModified": "2020-01-01T00:00:00.000Z",
       "metadata": Object {},
       "name": "test sample",
-      "projectUuid": "qwe234",
       "type": "10X Chromium",
       "uuid": "abc123",
     },
@@ -135,6 +130,7 @@ Array [
       "complete": false,
       "createdDate": "2020-01-01T00:00:00.000Z",
       "error": false,
+      "experimentId": "exp234",
       "fileNames": Array [],
       "files": Object {
         "matrix.tsv.gz": Object {
@@ -146,7 +142,6 @@ Array [
       "lastModified": "2020-01-01T00:00:00.000Z",
       "metadata": Object {},
       "name": "test sample",
-      "projectUuid": "qwe234",
       "type": "10X Chromium",
       "uuid": "abc123",
     },

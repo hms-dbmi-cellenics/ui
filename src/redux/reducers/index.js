@@ -10,10 +10,10 @@ import experimentsReducer from './experiments';
 import experimentSettingsReducer from './experimentSettings';
 import genesReducer from './genes';
 import layoutReducer from './layout';
-import projectsReducer from './projects';
 import sampleReducer from './samples';
-import networkResourcesReducer from './networkResources';
 import backendStatusReducer from './backendStatus';
+import networkResourcesReducer from './networkResources';
+import userReducer from './user';
 import { EXPERIMENTS_SWITCH } from '../actionTypes/experiments';
 
 const appReducers = combineReducers({
@@ -28,9 +28,9 @@ const appReducers = combineReducers({
   backendStatus: backendStatusReducer,
   genes: genesReducer,
   layout: layoutReducer,
-  projects: projectsReducer,
   samples: sampleReducer,
   networkResources: networkResourcesReducer,
+  user: userReducer,
 });
 
 const rootReducer = (state, action) => {
@@ -38,13 +38,14 @@ const rootReducer = (state, action) => {
   if (action.type === EXPERIMENTS_SWITCH) {
     // we need to keep the old state for these parts of the store
     newState = {
-      networkResources: state.networkResources,
       samples: state.samples,
-      projects: state.projects,
       backendStatus: state.backendStatus,
       experiments: state.experiments,
+      networkResources: state.networkResources,
+      user: state.user,
     };
   }
+
   return appReducers(newState, action);
 };
 

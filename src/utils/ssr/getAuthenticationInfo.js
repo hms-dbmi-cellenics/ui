@@ -11,6 +11,7 @@ import {
 } from '@aws-sdk/client-cognito-identity-provider';
 import { getDefaultRoleAssumerWithWebIdentity } from '@aws-sdk/client-sts';
 import { fromTokenFile } from '@aws-sdk/credential-provider-web-identity';
+import getAWSRegion from 'utils/getAWSRegion';
 import configure from '../amplify-config';
 
 const getAuthenticationInfo = async () => {
@@ -19,7 +20,6 @@ const getAuthenticationInfo = async () => {
   if (global.cachedAuthenticationInfo) {
     return global.cachedAuthenticationInfo;
   }
-
   let additionalClientParams = {};
 
   if (process.env.NODE_ENV !== 'development') {
@@ -33,14 +33,14 @@ const getAuthenticationInfo = async () => {
 
   const identityPoolClient = new CognitoIdentityClient(
     {
-      region: 'eu-west-1',
+      region: getAWSRegion(),
       ...additionalClientParams,
     },
   );
 
   const userPoolClient = new CognitoIdentityProviderClient(
     {
-      region: 'eu-west-1',
+      region: getAWSRegion(),
       ...additionalClientParams,
     },
   );
@@ -91,7 +91,7 @@ const getAuthenticationInfo = async () => {
   const amplifyConfig = configure(
     userPoolId,
     identityPoolId,
-    { ...userPoolClientDetails, Domain: `${Domain}.auth.eu-west-1.amazoncognito.com` },
+    { ...userPoolClientDetails, Domain: `${Domain}.auth.${getAWSRegion()}.amazoncognito.com` },
   );
 
   const result = {

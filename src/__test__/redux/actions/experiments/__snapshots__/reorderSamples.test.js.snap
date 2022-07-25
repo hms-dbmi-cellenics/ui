@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`updateExperiment Handles error with api v2 and then rethrows (so the UI doesnt reorder) 1`] = `
+exports[`updateExperiment Handles error and then rethrows (so the UI doesnt reorder) 1`] = `
 Array [
   undefined,
   Object {
@@ -9,7 +9,7 @@ Array [
 ]
 `;
 
-exports[`updateExperiment Updates properties with api v2 correctly 1`] = `
+exports[`updateExperiment Updates properties correctly 1`] = `
 Array [
   undefined,
   Object {

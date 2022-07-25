@@ -10,7 +10,7 @@ const DataProcessingIntercept = (props) => {
 
   return (
     <ChangesNotAppliedModal
-      onRunPipeline={() => {
+      onRunQC={() => {
         onCancelNavigation();
         onDismissIntercept();
       }}
@@ -32,9 +32,9 @@ DataProcessingIntercept.propTypes = {
 };
 
 DataProcessingIntercept.defaultProps = {
-  onContinueNavigation: () => {},
-  onCancelNavigation: () => {},
-  onDismissIntercept: () => {},
+  onContinueNavigation: () => { },
+  onCancelNavigation: () => { },
+  onDismissIntercept: () => { },
 };
 
 export default DataProcessingIntercept;

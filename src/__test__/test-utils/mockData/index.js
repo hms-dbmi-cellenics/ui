@@ -1,7 +1,6 @@
-import generateMockExperimentData from './mockExperimentData';
-import generateMockProjects from './mockProjects';
-import generateMockSamples from './mockSamples';
-import generateMockExperiment from './mockExperiment';
+import _ from 'lodash';
+import generateMockSamples from './generateMockSamples';
+import generateMockExperiments from './generateMockExperiments';
 
 // This file is a work in progress to generate mock data for the endpoints of the test.
 // The generated data should be usable as response data to be sent via the mocked API in mockAPI.js
@@ -10,38 +9,22 @@ import generateMockExperiment from './mockExperiment';
 
 const responseData = {};
 
-const projects = generateMockProjects(2);
-responseData.projects = projects;
-
-const projectWithSamples = responseData.projects[0];
+responseData.experiments = generateMockExperiments(2);
 
 responseData.samples = [generateMockSamples(
-  projectWithSamples.uuid,
-  projectWithSamples.experiments[0],
+  responseData.experiments[0],
   3,
 )];
 
-const { samples } = responseData.samples[0];
-const sampleIds = Object.keys(samples);
+// Add samples to first experiment
+const samples = responseData.samples[0];
+const sampleIds = _.map(samples, 'id');
+responseData.experiments[0].samplesOrder = sampleIds;
 
-projectWithSamples.samples = sampleIds;
-
-responseData.experiments = [generateMockExperiment(
-  projectWithSamples.uuid,
-  projectWithSamples.experiments[0],
-  projectWithSamples.experiments[0],
-  projectWithSamples.samples,
-)];
-
-responseData.experimentData = generateMockExperimentData(
-  projectWithSamples.uuid,
-  projectWithSamples.experiments[0],
-  projectWithSamples.experiments[0],
-  projectWithSamples.samples,
-);
+const { experiments } = responseData;
 
 export {
-  projects,
+  experiments,
   samples,
   responseData,
 };

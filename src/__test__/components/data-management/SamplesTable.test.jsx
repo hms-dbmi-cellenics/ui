@@ -4,32 +4,45 @@ import userEvent from '@testing-library/user-event';
 import { act } from 'react-dom/test-utils';
 import '@testing-library/jest-dom';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
+import reactSortableHoc from 'react-sortable-hoc';
 
 import _ from 'lodash';
 import { Provider } from 'react-redux';
 
-import mockAPI, { generateDefaultMockAPIResponses, statusResponse } from '__test__/test-utils/mockAPI';
-import { projects, samples } from '__test__/test-utils/mockData';
+import mockAPI, { generateDefaultMockAPIResponses, promiseResponse, statusResponse } from '__test__/test-utils/mockAPI';
+import { experiments, responseData, samples } from '__test__/test-utils/mockData';
 
-import SamplesTable, { exampleDatasets } from 'components/data-management/SamplesTable';
+import SamplesTable from 'components/data-management/SamplesTable';
 import { makeStore } from 'redux/store';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import createTestComponentFactory from '__test__/test-utils/testComponentFactory';
 
-import { loadProjects, setActiveProject } from 'redux/actions/projects';
-import downloadFromUrl from 'utils/data-management/downloadFromUrl';
-import { loadExperiments } from 'redux/actions/experiments';
+import { loadExperiments, setActiveExperiment } from 'redux/actions/experiments';
+import loadDeploymentInfo from 'redux/actions/networkResources/loadDeploymentInfo';
+import { loadSamples } from 'redux/actions/samples';
 
-import reactSortableHoc from 'react-sortable-hoc';
+import mockDemoExperiments from '__test__/test-utils/mockData/mockDemoExperiments.json';
+import { loadUser } from 'redux/actions/user';
 
-import { api } from 'utils/constants';
-import config from 'config';
+jest.mock('@aws-amplify/auth', () => ({
+  currentAuthenticatedUser: jest.fn(() => Promise.resolve({
+    attributes: {
+      name: 'mockUserName',
+      'custom:agreed_terms': 'true',
+    },
+  })),
+  federatedSignIn: jest.fn(),
+}));
 
-jest.mock('config');
-
+// Necessary due to storage being used in the default SamplesTable.
 jest.mock('@aws-amplify/storage', () => ({
+  configure: jest.fn(),
   get: jest.fn(() => Promise.resolve('https://mock-s3-url.com')),
+  list: jest.fn(() => Promise.resolve([
+    { key: '2.Another-Example_no.2.zip' },
+    { key: '1.Example_1.zip' },
+  ])),
 }));
 
 jest.mock('utils/data-management/downloadFromUrl');
@@ -57,24 +70,26 @@ const renderSamplesTable = async (store) => {
 
 enableFetchMocks();
 
-const firstProjectWithSamples = projects.find((p) => p.samples.length > 0);
-const projectIdWithSamples = firstProjectWithSamples.uuid;
-const experimentIdWithSamples = firstProjectWithSamples.experiments[0];
+const experimentWithSamples = experiments.find((experiment) => experiment.samplesOrder.length > 0);
+const experimentWithoutSamples = experiments.find(
+  (experiment) => experiment.samplesOrder.length === 0,
+);
 
-const firstProjectWithoutSamples = projects.find((p) => p.samples.length === 0);
-const projectIdWithoutSamples = firstProjectWithoutSamples.uuid;
-const experimentIdWithoutSamples = firstProjectWithoutSamples.experiments[0];
+const experimentWithSamplesId = experimentWithSamples.id;
+const experimentWithoutSamplesId = experimentWithoutSamples.id;
+
+const experimentCloneId = 'mockExperimentCloneId';
 
 // Mocking samples update / delete routes
 const customResponses = {
-  [`/projects/${projectIdWithSamples}`]: () => statusResponse(200, JSON.stringify('OK')),
-  [`/projects/${projectIdWithSamples}/${experimentIdWithSamples}/samples`]: () => statusResponse(200, 'OK'),
-  [`/v2/experiments/${projectIdWithSamples}/samples/position`]: () => statusResponse(200, 'OK'),
+  [`experiments/${experimentWithSamplesId}/samples/${experimentWithSamples.samplesOrder[0]}`]: () => statusResponse(200, 'OK'),
+  [`experiments/${experimentWithSamplesId}/samples/position`]: () => statusResponse(200, 'OK'),
+  [`experiments/${mockDemoExperiments[0].id}/clone`]: () => promiseResponse(JSON.stringify(experimentCloneId)),
 };
 
 const mockAPIResponse = _.merge(
-  generateDefaultMockAPIResponses(experimentIdWithSamples, projectIdWithSamples),
-  generateDefaultMockAPIResponses(experimentIdWithoutSamples, projectIdWithoutSamples),
+  generateDefaultMockAPIResponses(experimentWithSamplesId),
+  generateDefaultMockAPIResponses(experimentWithoutSamplesId),
   customResponses,
 );
 
@@ -85,45 +100,20 @@ describe('Samples table', () => {
     fetchMock.mockClear();
     fetchMock.mockIf(/.*/, mockAPI(mockAPIResponse));
 
-    config.currentApiVersion = api.V1;
-
     storeState = makeStore();
 
-    await storeState.dispatch(loadProjects());
+    await storeState.dispatch(loadUser());
+    await storeState.dispatch(loadExperiments());
 
     // Loading experiment is usually called in Data Management, so we have to load them manually
-    await storeState.dispatch(loadExperiments(projectIdWithSamples));
-    await storeState.dispatch(loadExperiments(projectIdWithoutSamples));
+    await storeState.dispatch(loadSamples(experimentWithSamplesId));
 
     // Defaults to project with samples
-    await storeState.dispatch(setActiveProject(projectIdWithSamples));
+    await storeState.dispatch(setActiveExperiment(experimentWithSamplesId));
+    await storeState.dispatch(loadDeploymentInfo({ environment: 'test' }));
   });
 
-  it('Shows option to download datasets if there are no samples', async () => {
-    await renderSamplesTable(storeState);
-
-    // Load project without samples
-    storeState.dispatch(setActiveProject(projectIdWithoutSamples));
-
-    expect(screen.getByText(/Start uploading your samples by clicking on Add samples./i)).toBeInTheDocument();
-    expect(screen.getByText(/Don't have data\? Get started using one of our example datasets:/i)).toBeInTheDocument();
-
-    // There should be n number of example datasets
-    exampleDatasets.forEach((dataset) => {
-      expect(screen.getByText(dataset.description)).toBeInTheDocument();
-    });
-
-    // Clicking on one of the samples downloads the file
-    const exampleFileLink = exampleDatasets[0].description;
-
-    await act(async () => {
-      userEvent.click(screen.getByText(exampleFileLink));
-    });
-
-    expect(downloadFromUrl).toHaveBeenCalledTimes(1);
-  });
-
-  it('Should not show option to download datasets if samples are available', async () => {
+  it('Does not show prompt to upload datasets if samples are available', async () => {
     await renderSamplesTable(storeState);
 
     expect(screen.queryByText(/Start uploading your samples by clicking on Add samples./i)).toBeNull();
@@ -138,24 +128,22 @@ describe('Samples table', () => {
     });
   });
 
-  it('Should show an error if a sample fails to upload', async () => {
+  it('Should not show the samples until they are loaded', async () => {
     const missingSampleState = _.cloneDeep(storeState.getState());
+
     const createMockStore = configureMockStore([thunk]);
 
-    // Delete one of the samples
+    // Remove one of the samples of the experiment
     const deletedSampleUuid = Object.keys(missingSampleState.samples).find((key) => key !== 'meta');
-    const deletedSampleObject = missingSampleState.samples[deletedSampleUuid];
     delete missingSampleState.samples[deletedSampleUuid];
 
     const missingSampleStore = createMockStore(missingSampleState);
 
     await renderSamplesTable(missingSampleStore);
 
-    // The sample name should not be in the document
-    expect(screen.queryByText(deletedSampleObject.name)).toBeNull();
-
-    // There should be an error entry for the missing sample
-    expect(screen.getByText(/UPLOAD ERROR: Please reupload sample/i)).toBeInTheDocument();
+    Object.values(samples).forEach((sample) => {
+      expect(screen.queryByText(sample.name)).not.toBeInTheDocument();
+    });
   });
 
   it('Renaming the sample renames the sample', async () => {
@@ -225,8 +213,6 @@ describe('Samples table', () => {
   });
 
   it('Reorder samples send correct request in api v2', async () => {
-    config.currentApiVersion = api.V2;
-
     let onSortEndProp;
     reactSortableHoc.sortableContainer.mockImplementationOnce(() => (...params) => {
       onSortEndProp = params[0].onSortEnd;
@@ -240,12 +226,68 @@ describe('Samples table', () => {
     });
 
     expect(fetchMock).toHaveBeenCalledWith(
-      `http://localhost:3000/v2/experiments/${projectIdWithSamples}/samples/position`,
+      `http://localhost:3000/v2/experiments/${experimentWithSamplesId}/samples/position`,
       {
         method: 'PUT',
         headers: expect.anything(),
         body: '{"oldPosition":0,"newPosition":5}',
       },
     );
+  });
+
+  describe('Example experiments functionality', () => {
+    beforeEach(async () => {
+      await renderSamplesTable(storeState);
+
+      // Load project without samples
+      await act(async () => {
+        await storeState.dispatch(setActiveExperiment(experimentWithoutSamplesId));
+      });
+    });
+
+    it('Example experiments show up in an empty experiment', async () => {
+      expect(screen.getByText(/Start uploading your samples by clicking on Add samples./i)).toBeInTheDocument();
+      expect(screen.getByText(/Don't have data\? Get started using one of our example datasets:/i)).toBeInTheDocument();
+
+      const exampleExperimentNames = _.map(mockDemoExperiments, 'name');
+
+      exampleExperimentNames.forEach((name) => {
+        expect(screen.getByText(name)).toBeDefined();
+      });
+    });
+
+    it('Cloning from example experiments works correctly', async () => {
+      // Clear mock calls so we can distinguish the new calls made from the old ones
+      fetchMock.mockClear();
+
+      const newExperimentsResponse = _.cloneDeep(responseData.experiments);
+      const noSamplesExperiment = newExperimentsResponse.find(
+        ({ id }) => id === experimentWithoutSamplesId,
+      );
+      noSamplesExperiment.samplesOrder = mockDemoExperiments[0].samplesOrder;
+      const newApiResponses = _.merge(
+        mockAPIResponse,
+        { experiments: () => promiseResponse(JSON.stringify(newExperimentsResponse)) },
+      );
+      fetchMock.mockIf(/.*/, mockAPI(newApiResponses));
+
+      await act(async () => {
+        userEvent.click(screen.getByText(mockDemoExperiments[0].name));
+      });
+
+      expect(fetchMock).toHaveBeenCalledWith(
+        `http://localhost:3000/v2/experiments/${mockDemoExperiments[0].id}/clone`,
+        expect.objectContaining({
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+        }),
+      );
+
+      // Reloads experiments
+      expect(fetchMock).toHaveBeenCalledWith(
+        'http://localhost:3000/v2/experiments',
+        { headers: {} },
+      );
+    });
   });
 });

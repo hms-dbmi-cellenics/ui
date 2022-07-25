@@ -14,8 +14,9 @@ import AppRouteProvider from 'utils/AppRouteProvider';
 
 import { makeStore } from 'redux/store';
 import { getBackendStatus } from 'redux/selectors';
-import { loadProjects, setActiveProject } from 'redux/actions/projects';
-import { loadExperiments } from 'redux/actions/experiments';
+
+import { loadExperiments, setActiveExperiment } from 'redux/actions/experiments';
+
 import { updateExperimentInfo } from 'redux/actions/experimentSettings';
 import generateGem2sParamsHash from 'utils/data-management/generateGem2sParamsHash';
 
@@ -23,7 +24,7 @@ import mockAPI, {
   generateDefaultMockAPIResponses,
 } from '__test__/test-utils/mockAPI';
 
-import { projects } from '__test__/test-utils/mockData';
+import { experiments } from '__test__/test-utils/mockData';
 
 jest.mock('redux/selectors');
 jest.mock('utils/socketConnection');
@@ -35,7 +36,11 @@ jest.mock('next/router', () => ({
 }));
 
 jest.mock('@aws-amplify/auth', () => ({
-  currentAuthenticatedUser: jest.fn().mockImplementation(async () => true),
+  currentAuthenticatedUser: jest.fn().mockImplementation(async () => ({
+    attributes: {
+      'custom:agreed_terms': 'true',
+    },
+  })),
   federatedSignIn: jest.fn(),
 }));
 
@@ -57,10 +62,11 @@ enableFetchMocks();
 
 generateGem2sParamsHash.mockImplementation(() => 'mockParamsHash');
 
-const projectWithSamples = projects.find((project) => project.samples.length > 0);
-const experimentId = projectWithSamples.experiments[0];
-const projectUuid = projectWithSamples.uuid;
-const sampleIds = projectWithSamples.samples;
+const experimentWithSamples = experiments.find((experiment) => experiment.samplesOrder.length > 0);
+
+const sampleIds = experimentWithSamples.samplesOrder;
+
+const experimentId = experimentWithSamples.id;
 
 const experimentName = 'test experiment';
 const experimentData = {
@@ -68,7 +74,7 @@ const experimentData = {
   experimentName,
 };
 
-const mockAPIResponses = generateDefaultMockAPIResponses(experimentId, projectUuid);
+const mockAPIResponses = generateDefaultMockAPIResponses(experimentId);
 
 let store = null;
 
@@ -117,13 +123,11 @@ describe('ContentWrapper', () => {
       status: null,
     }));
 
-    await store.dispatch(loadProjects());
-    await store.dispatch(loadExperiments(projectUuid));
-    await store.dispatch(setActiveProject(projectUuid));
+    await store.dispatch(loadExperiments());
+    await store.dispatch(setActiveExperiment(experimentId));
     await store.dispatch(updateExperimentInfo({ experimentId, experimentName, sampleIds }));
   });
 
-  // PROBLEMATIC
   it('renders correctly', async () => {
     getBackendStatus.mockImplementation(() => () => ({
       loading: false,

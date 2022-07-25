@@ -54,18 +54,15 @@ jobs:
     env:
       CI: true
     steps:
-      - id: setup-node
-        uses: actions/setup-node@v2
-        with:
-          node-version: '14'
-
       - id: checkout
         name: Check out source code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
-      - id: cache-seek
-        name: Check for npm cache hit
-        uses: c-hive/gha-npm-cache@v1
+      - id: setup-node
+        uses: actions/setup-node@v3
+        with:
+          node-version: '14'
+          cache: 'npm'
 
       - id: install
         name: Install dependencies
@@ -127,10 +124,13 @@ jobs:
     name: Build Docker container
     runs-on: ubuntu-20.04
     needs: build
+    outputs:
+      ref-id: ${{ steps.ref.outputs.ref-id }}
+      commit-sha: ${{ steps.ref.outputs.commit-sha }}
     steps:
       - id: checkout
         name: Check out source code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - id: download-build-out
         name: Download Next.js build output
@@ -145,20 +145,37 @@ jobs:
           # This will take a ref like `refs/heads/master`
           # and turn it into `refs-heads-master`
           REF_ID=$(echo $GITHUB_REF | sed 's/\//-/g')
+          echo "::set-output name=ref-id::$REF_ID"
 
           # the final tag is something like:
           # refs-heads-master-a4f8bc313dae
           # this is what we push to ECR
           # we will also take semver'd tags like `1.0.0` and use them for releases
 
+          # In push & PR events we want the tag to contain the latest commit on the branch:
+          # in push events, the latest commit of the master branch is GITHUB_SHA
+          # in PR synch the latest commit of the branch is found in github.event.pull_request.head.sha instead
+
           if [ "${{ github.event_name }}" = "release" ] && [ "${{ github.event.action }}" = "released" ]; then
-            echo "::set-output name=tag::${REF_ID/refs-tags-/}"
+            COMMIT_SHA=""
+            IMAGE_TAG="${REF_ID/refs-tags-/}"
+          elif [ "${{ github.event_name }}" = "pull_request" ]; then
+            COMMIT_SHA="${{ github.event.pull_request.head.sha }}"
+            IMAGE_TAG="$REF_ID-$COMMIT_SHA"
           else
-            echo "::set-output name=tag::$REF_ID-$GITHUB_SHA"
+            COMMIT_SHA=$GITHUB_SHA
+            IMAGE_TAG="$REF_ID-$COMMIT_SHA"
           fi
 
-          # This will take a GitHub repo name like `hms-dbmi-cellenics/iac`
-          # and turns it into `iac`. This will be the name of the
+          echo "::set-output name=commit-sha::$COMMIT_SHA"
+
+          # IMAGE_TAG is used in the Build Docker Image step.
+          # We can easily build the image-tag from REF_ID and COMMIT_SHA for non-production releases.
+          # But we can not easily create the image tag for production releases, so we're bulding it here
+          echo "::set-output name=image-tag::$IMAGE_TAG"
+
+          # This will take a GitHub repo name like `hms-dbmi-cellenics/releases`
+          # and turns it into `releases`. This will be the name of the
           # ECR repository.
           IMAGE_REPO_NAME=$(echo $GITHUB_REPOSITORY | awk -F '/' '{print $2}')
           echo "::set-output name=repo-name::$IMAGE_REPO_NAME"
@@ -185,6 +202,10 @@ jobs:
         env:
           REPO_NAME: ${{ steps.ref.outputs.repo-name }}
 
+      - id: setup-buildx
+        name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
       - id: build
         name: Build Docker image
         uses: docker/build-push-action@v2
@@ -192,9 +213,12 @@ jobs:
           context: .
           file: ./Dockerfile
           platforms: linux/amd64
-          tags: ${{ format('{0}/{1}:{2}', steps.login-ecr.outputs.registry, steps.ref.outputs.repo-name, steps.ref.outputs.tag) }}
+          tags: ${{ format('{0}/{1}:{2}', steps.login-ecr.outputs.registry, steps.ref.outputs.repo-name, steps.ref.outputs.image-tag) }}
           push: false
+          load: true
           build-args: READONLY_API_TOKEN_GITHUB=${{ secrets.READONLY_API_TOKEN_GITHUB }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
       - id: push
         name: Push docker image to ECR
@@ -202,7 +226,7 @@ jobs:
           echo Pushing image $IMAGE_NAME to ECR.
           docker push $IMAGE_NAME
         env:
-          IMAGE_NAME: ${{ format('{0}/{1}:{2}', steps.login-ecr.outputs.registry, steps.ref.outputs.repo-name, steps.ref.outputs.tag) }}
+          IMAGE_NAME: ${{ format('{0}/{1}:{2}', steps.login-ecr.outputs.registry, steps.ref.outputs.repo-name, steps.ref.outputs.image-tag) }}
 
       - id: send-to-slack
         name: Send failure notification to Slack
@@ -226,7 +250,7 @@ jobs:
     steps:
       - id: checkout
         name: Check out source code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - id: setup-aws
         name: Configure AWS credentials
@@ -248,16 +272,14 @@ jobs:
       - id: fill-metadata
         name: Fill out a new HelmRelease resource
         run: |-
-          REF_DASHED=$(echo $GITHUB_REF | sed 's/\//-/g')
           DEPLOYMENT_NAME=$(echo $GITHUB_REPOSITORY | awk -F '/' '{print $2}')
           echo "::set-output name=deployment-name::$DEPLOYMENT_NAME"
-          echo "::set-output name=ref-dashed::$REF_DASHED"
 
           if [ "${{ matrix.environment }}" = "production" ]; then
             SANDBOX_ID="default"
             CHART_REF="master"
             KUBERNETES_ENV="production"
-            IMAGE_TAG="${REF_DASHED/refs-tags-/}"
+            IMAGE_TAG="${REF_ID/refs-tags-/}"
             IMAGE_GLOB="semver:>=0.0.0"
             REPLICA_COUNT="4"
           fi
@@ -266,17 +288,17 @@ jobs:
             SANDBOX_ID="default"
             CHART_REF="master"
             KUBERNETES_ENV="staging"
-            IMAGE_TAG="$REF_DASHED-$GITHUB_SHA"
-            IMAGE_GLOB="glob:$REF_DASHED-*"
-            REPLICA_COUNT="4"
+            IMAGE_TAG="$REF_ID-$COMMIT_SHA"
+            IMAGE_GLOB="glob:$REF_ID-*"
+            REPLICA_COUNT="2"
           fi
 
           if [ "${{ matrix.environment }}" = "staging" ]; then
             SANDBOX_ID="STAGING_SANDBOX_ID"
             CHART_REF="STAGING_CHART_REF"
             KUBERNETES_ENV="staging"
-            IMAGE_TAG="$REF_DASHED-$GITHUB_SHA"
-            IMAGE_GLOB="glob:$REF_DASHED-*"
+            IMAGE_TAG="$REF_ID-$COMMIT_SHA"
+            IMAGE_GLOB="glob:$REF_ID-*"
             REPLICA_COUNT="1"
           fi
 
@@ -302,34 +324,25 @@ jobs:
 
           if [ "${{ matrix.environment }}" = "production" ]
           then
-            yq w -d1 $DEPLOYMENT_NAME-without-host.yaml spec.values.service.additionalHosts[+] "scp.biomage.net" > $DEPLOYMENT_NAME.yaml
+            yq w -d1 $DEPLOYMENT_NAME-without-host.yaml spec.values.service.additionalHosts "true" > $DEPLOYMENT_NAME.yaml
           else
-            mv $DEPLOYMENT_NAME-without-host.yaml $DEPLOYMENT_NAME.yaml
+            yq w -d1 $DEPLOYMENT_NAME-without-host.yaml spec.values.service.additionalHosts "false" > $DEPLOYMENT_NAME.yaml
           fi
 
           cat $DEPLOYMENT_NAME.yaml
         env:
-          IMAGE_NAME: ${{ format('{0}/{1}:{2}', steps.login-ecr.outputs.registry, needs.build-docker.outputs.repo-name, needs.build-docker.outputs.tag) }}
+          REF_ID: ${{ needs.build-docker.outputs.ref-id }}
+          COMMIT_SHA: ${{ needs.build-docker.outputs.commit-sha }}
 
-      - id: disable-admin-enforcement
-        name: Temporarily disable admin enforcement
-        uses: benjefferies/branch-protection-bot@1.0.7
-        with:
-          access_token: ${{ secrets.API_TOKEN_GITHUB }}
-          owner: ${{ github.repository_owner }}
-          repo: iac
-          enforce_admins: false
-          retries: 8
-
-      - name: Push production/develop release to iac for deployment
+      - name: Push production/develop template to releases repo for deployment
         if: (matrix.environment == 'production' && github.event_name == 'release' && github.event.action == 'released') || (matrix.environment == 'develop' && github.event_name == 'push')
         uses: dmnemec/copy_file_to_another_repo_action@v1.0.4
         env:
           API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
         with:
           source_file: ${{ steps.fill-metadata.outputs.deployment-name }}.yaml
-          destination_repo: ${{ github.repository_owner }}/iac
-          destination_folder: releases/${{ steps.fill-metadata.outputs.kubernetes-env }}
+          destination_repo: ${{ github.repository_owner }}/releases
+          destination_folder: ${{ steps.fill-metadata.outputs.kubernetes-env }}
           user_email: ci@biomage.net
           user_name: Biomage CI/CD
 
@@ -337,32 +350,21 @@ jobs:
         if: (github.event_name == 'pull_request' || github.event_name == 'push') && matrix.environment == 'staging'
         env:
           DEPLOYMENT_NAME: ${{ steps.fill-metadata.outputs.deployment-name }}
-          REF_DASHED: ${{ steps.fill-metadata.outputs.ref-dashed }}
+          REF_ID: ${{ needs.build-docker.outputs.ref-id }}
         run: |-
-          mv $DEPLOYMENT_NAME.yaml $REF_DASHED.yaml
+          mv $DEPLOYMENT_NAME.yaml $REF_ID.yaml
 
-      - name: Push staging deployment template to iac
+      - name: Push staging deployment template to releases
         if: (github.event_name == 'pull_request' || github.event_name == 'push') && matrix.environment == 'staging'
         uses: dmnemec/copy_file_to_another_repo_action@v1.0.4
         env:
           API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
         with:
-          source_file: ${{ steps.fill-metadata.outputs.ref-dashed }}.yaml
-          destination_repo: ${{ github.repository_owner }}/iac
-          destination_folder: releases/staging-candidates/${{ steps.fill-metadata.outputs.deployment-name }}
+          source_file: ${{ needs.build-docker.outputs.ref-id }}.yaml
+          destination_repo: ${{ github.repository_owner }}/releases
+          destination_folder: staging-candidates/${{ steps.fill-metadata.outputs.deployment-name }}
           user_email: ci@biomage.net
           user_name: 'Biomage CI/CD'
-
-      - id: enable-admin-enforcement
-        name: Re-enable admin enforcement
-        uses: benjefferies/branch-protection-bot@1.0.7
-        if: always()
-        with:
-          access_token: ${{ secrets.API_TOKEN_GITHUB }}
-          owner: ${{ github.repository_owner }}
-          repo: iac
-          enforce_admins: true
-          retries: 8
 
       - id: send-to-slack
         name: Send failure notification to Slack

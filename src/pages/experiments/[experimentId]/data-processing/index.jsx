@@ -52,7 +52,7 @@ import _ from 'lodash';
 import { getBackendStatus } from 'redux/selectors';
 import { loadCellSets } from 'redux/actions/cellSets';
 import { loadSamples } from 'redux/actions/samples';
-import { runPipeline } from 'redux/actions/pipeline';
+import { runQC } from 'redux/actions/pipeline';
 import { useAppRouter } from 'utils/AppRouteProvider';
 import { modules } from 'utils/constants';
 
@@ -243,10 +243,10 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
           The probability of being a doublet is calculated using ‘scDblFinder’.
           For each sample, the default threshold tries to minimize both the deviation in the
           expected number of doublets and the error of a trained classifier. For more details see
-    {' '}
+          {' '}
           <a href='https://bioconductor.org/packages/devel/bioc/vignettes/scDblFinder/inst/doc/scDblFinder.html#thresholding' rel='noreferrer' target='_blank'>scDblFinder thresholding</a>
-    .
-  </span>,
+          .
+        </span>,
       multiSample: true,
       render: (key) => (
         <SingleComponentMultipleDataContainer
@@ -355,7 +355,7 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
   // Called when the pipeline is triggered to be run by the user.
   const onPipelineRun = () => {
     setRunQCModalVisible(false);
-    dispatch(runPipeline(experimentId));
+    dispatch(runQC(experimentId));
   };
 
   const renderTitle = () => {
@@ -434,16 +434,16 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
                               ) : pipelineNotFinished
                                 && !pipelineRunning
                                 && !isStepComplete(key) ? (
-                                        <>
-                                          <Text
-                                            type='danger'
-                                            strong
-                                          >
-                                            <WarningOutlined />
-                                          </Text>
-                                          <span style={{ marginLeft: '0.25rem' }}>{text}</span>
-                                        </>
-                                      ) : <></>}
+                                <>
+                                  <Text
+                                    type='danger'
+                                    strong
+                                  >
+                                    <WarningOutlined />
+                                  </Text>
+                                  <span style={{ marginLeft: '0.25rem' }}>{text}</span>
+                                </>
+                              ) : <></>}
                             </Option>
                           );
                         },
@@ -461,7 +461,7 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
                         disabled={prefiltered}
                         data-testid='enableFilterButton'
                         onClick={async () => {
-                          dispatch(saveProcessingSettings(experimentId, currentStep.key));
+                          await dispatch(saveProcessingSettings(experimentId, currentStep.key));
                           if (!processingConfig.meta.saveSettingsError) {
                             dispatch(setQCStepEnabled(
                               currentStep.key, !stepEnabled,

@@ -9,7 +9,7 @@ const resetPlotConfig = (experimentId, plotUuid, plotType) => async (dispatch) =
 
   try {
     await fetchAPI(
-      `/v1/experiments/${experimentId}/plots-tables/${plotUuid}`,
+      `/v2/experiments/${experimentId}/plots/${plotUuid}`,
       {
         method: 'PUT',
         headers: {
@@ -32,7 +32,7 @@ const resetPlotConfig = (experimentId, plotUuid, plotType) => async (dispatch) =
     dispatch({
       type: SAVE_CONFIG,
       payload:
-      { plotUuid, success: false },
+        { plotUuid, success: false },
     });
   }
 };

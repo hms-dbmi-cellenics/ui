@@ -1,12 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import {
-  Button, Space, Empty,
-} from 'antd';
+import { Space } from 'antd';
 
 import { ClipLoader } from 'react-spinners';
-import { loadProjects } from 'redux/actions/projects';
 import { loadExperiments } from 'redux/actions/experiments';
 
 import Header from 'components/Header';
@@ -16,67 +13,46 @@ import ProjectsListContainer from 'components/data-management/ProjectsListContai
 import ProjectDetails from 'components/data-management/ProjectDetails';
 import { loadProcessingSettings } from 'redux/actions/experimentSettings';
 import loadBackendStatus from 'redux/actions/backendStatus/loadBackendStatus';
+import { loadSamples } from 'redux/actions/samples';
+import ExampleExperimentsSpace from 'components/data-management/ExampleExperimentsSpace';
+import { privacyPolicyIsNotAccepted } from 'utils/deploymentInfo';
 
 const DataManagementPage = () => {
   const dispatch = useDispatch();
-  const projectsList = useSelector(((state) => state.projects));
 
-  const {
-    saving: projectSaving,
-  } = projectsList.meta;
+  const samples = useSelector((state) => state.samples);
 
-  const sampleSaving = useSelector((state) => state.samples.meta.saving);
+  const { activeExperimentId } = useSelector((state) => state.experiments.meta);
+  const experiments = useSelector(((state) => state.experiments));
+  const user = useSelector((state) => state.user.current);
+  const domainName = useSelector((state) => state.networkResources?.domainName);
 
-  const {
-    activeProjectUuid,
-    loading: projectsLoading,
-  } = useSelector((state) => state.projects.meta);
+  const activeExperiment = experiments[activeExperimentId];
+  const { saving: experimentsSaving } = experiments.meta;
+  const { saving: samplesSaving } = samples.meta;
 
-  const experiments = useSelector((state) => state.experiments);
   const [newProjectModalVisible, setNewProjectModalVisible] = useState(false);
-  const [justLoggedIn, setJustLoggedIn] = useState(true);
-  const activeProject = projectsList[activeProjectUuid];
-
-  const experimentIds = new Set(experiments.ids);
-  const experimentsAreLoaded = activeProject?.experiments
-    .every((experimentId) => experimentIds.has(experimentId));
 
   useEffect(() => {
-    if (projectsList.ids.length === 0) dispatch(loadProjects());
-  }, []);
+    if (privacyPolicyIsNotAccepted(user, domainName)) return;
 
-  const updateRunStatus = (experimentId) => {
-    dispatch(loadBackendStatus(experimentId));
+    if (experiments.ids.length === 0) dispatch(loadExperiments());
+  }, [user]);
+
+  const samplesAreLoaded = () => {
+    const loadedSampleIds = Object.keys(samples);
+    return activeExperiment.sampleIds.every((sampleId) => loadedSampleIds.includes(sampleId));
   };
 
   useEffect(() => {
-    if (!activeProjectUuid) return;
-
-    // Right now we have one experiment per project, so we can just load the experiment
-    // This has to be changed when we have more than one experiment
-    const activeExperimentId = projectsList[activeProjectUuid].experiments[0];
+    if (!activeExperimentId || privacyPolicyIsNotAccepted(user, domainName)) return;
 
     dispatch(loadProcessingSettings(activeExperimentId));
 
-    if (!experimentsAreLoaded) {
-      dispatch(loadExperiments(activeProjectUuid)).then(() => updateRunStatus(activeExperimentId));
-    }
+    if (!samplesAreLoaded()) dispatch(loadSamples(activeExperimentId));
 
-    if (experiments[activeExperimentId]) updateRunStatus(activeExperimentId);
-  }, [activeProjectUuid]);
-
-  useEffect(() => {
-    // only open the modal the first time a user logs in if there are no projects
-    if (justLoggedIn === false || projectsLoading === true) {
-      return;
-    }
-
-    setJustLoggedIn(false);
-
-    if (projectsList.ids.length === 0) {
-      setNewProjectModalVisible(true);
-    }
-  }, [projectsList, projectsLoading]);
+    dispatch(loadBackendStatus(activeExperimentId));
+  }, [activeExperimentId, user]);
 
   const PROJECTS_LIST = 'Projects';
   const PROJECT_DETAILS = 'Project Details';
@@ -94,14 +70,8 @@ const DataManagementPage = () => {
     [PROJECT_DETAILS]: {
       toolbarControls: [],
       component: (width, height) => {
-        if (!activeProjectUuid) {
-          return (
-            <Empty
-              description='You have no projects yet.'
-            >
-              <Button type='primary' onClick={() => setNewProjectModalVisible(true)}>Get started</Button>
-            </Empty>
-          );
+        if (!activeExperimentId) {
+          return <ExampleExperimentsSpace introductionText='You have no projects yet.' />;
         }
 
         return (
@@ -124,7 +94,7 @@ const DataManagementPage = () => {
   return (
     <>
       <Header title='Data Management' />
-      {projectSaving || sampleSaving ? (
+      {experimentsSaving || samplesSaving ? (
         <center>
           <Space direction='vertical'>
             <ClipLoader

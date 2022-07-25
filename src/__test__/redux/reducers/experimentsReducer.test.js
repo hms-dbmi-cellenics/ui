@@ -1,6 +1,6 @@
-import { SAMPLES_CREATE } from 'redux/actionTypes/samples';
-import experimentsReducer from 'redux/reducers/experiments';
 import initialState, { experimentTemplate } from 'redux/reducers/experiments/initialState';
+
+import experimentsReducer from 'redux/reducers/experiments';
 import { sampleTemplate } from 'redux/reducers/samples/initialState';
 
 import {
@@ -10,67 +10,38 @@ import {
   EXPERIMENTS_UPDATED,
   EXPERIMENTS_ERROR,
   EXPERIMENTS_DELETED,
+  EXPERIMENTS_SAVING,
+  EXPERIMENTS_METADATA_CREATE,
+  EXPERIMENTS_METADATA_RENAME,
+  EXPERIMENTS_METADATA_DELETE,
 } from 'redux/actionTypes/experiments';
+
+import { SAMPLES_CREATE, SAMPLES_DELETE } from 'redux/actionTypes/samples';
 
 describe('experimentsReducer', () => {
   const experimentId1 = 'experiment-1';
-  const projectUuid1 = 'project-1';
-
   const experimentId2 = 'experiment-2';
-  const projectUuid2 = 'project-2';
-
-  const rawExperiment1 = {
-    experimentId: experimentId1,
-    experimentName: 'experiment 1',
-    projectId: projectUuid1,
-    description: 'this is a test description',
-    createdDate: '01-01-2021',
-    lastViewed: '01-01-2021',
-    meta: {
-      organism: null,
-      type: '10x',
-    },
-    sampleIds: [],
-    notifyByEmail: true,
-  };
-
-  const rawExperiment2 = {
-    experimentId: experimentId2,
-    experimentName: 'experiment 2',
-    projectId: projectUuid2,
-    description: 'this is a test description',
-    createdDate: '01-01-2021',
-    lastViewed: '01-01-2021',
-    meta: {
-      organism: null,
-      type: '10x',
-    },
-    sampleIds: [],
-    notifyByEmail: true,
-  };
 
   const experiment1 = {
-    ...experimentTemplate,
-    projectUuid: projectUuid1,
-    name: 'experiment 1',
     id: experimentId1,
+    name: 'experiment 1',
     description: 'this is a test description',
-    createdDate: '01-01-2021',
-    lastViewed: '01-01-2021',
     sampleIds: [],
-    meta: experimentTemplate.meta,
+    metadataKeys: [],
+    notifyByEmail: true,
+    createdAt: '2021-01-01',
+    updatedAt: '2022-01-17',
   };
 
   const experiment2 = {
-    ...experimentTemplate,
-    projectUuid: projectUuid2,
-    name: 'experiment 2',
     id: experimentId2,
+    name: 'experiment 2',
     description: 'this is a test description',
-    createdDate: '01-01-2021',
-    lastViewed: '01-01-2021',
     sampleIds: [],
-    meta: experimentTemplate.meta,
+    metadataKeys: [],
+    notifyByEmail: true,
+    createdAt: '2021-01-01',
+    updatedAt: '2022-01-17',
   };
 
   const sampleId = 'testSampleId';
@@ -82,13 +53,18 @@ describe('experimentsReducer', () => {
   const updatedExperiment = {
     ...experiment1,
     name: 'updated name',
-    lastModified: '02-01-2021',
+    updatedAt: '02-01-2021',
   };
 
   const oneExperimentState = {
     ...initialState,
     ids: [experimentId1],
     [experimentId1]: experiment1,
+    meta: {
+      loading: false,
+      saving: false,
+      error: false,
+    },
   };
 
   const twoExperimentsState = {
@@ -96,20 +72,30 @@ describe('experimentsReducer', () => {
     ids: [experimentId1, experimentId2],
     [experimentId1]: experiment1,
     [experimentId2]: experiment2,
+    meta: {
+      loading: false,
+      saving: false,
+      error: false,
+    },
   };
 
   const oneExperimentWithSampleState = {
     ...initialState,
     ids: [experimentId1],
     [experimentId1]: experiment1WithSample,
+    meta: {
+      loading: false,
+      saving: false,
+      error: false,
+    },
   };
 
   const sample = {
     ...sampleTemplate,
     name: 'test sample',
     uuid: sampleId,
-    createdDate: '2021-01-01T14:48:00.000Z',
-    lastModified: '2021-01-01T14:48:00.000Z',
+    createdAt: '2021-01-01T14:48:00.000Z',
+    updatedAt: '2021-01-01T14:48:00.000Z',
   };
 
   it('Reduces identical state on unknown action', () => expect(
@@ -123,7 +109,7 @@ describe('experimentsReducer', () => {
     const newState = experimentsReducer(initialState, {
       type: EXPERIMENTS_LOADED,
       payload: {
-        experiments: [rawExperiment1],
+        experiments: [experiment1],
       },
     });
 
@@ -132,16 +118,42 @@ describe('experimentsReducer', () => {
     expect(newState).toMatchSnapshot();
   });
 
-  it('Loads experiment correctly on existing state', () => {
+  it('Overwrites existing state on loading experiments', () => {
     const newState = experimentsReducer(oneExperimentState, {
       type: EXPERIMENTS_LOADED,
       payload: {
-        experiments: [rawExperiment2],
+        experiments: [experiment2],
       },
     });
 
-    expect(newState.ids).toEqual([experiment1.id, experiment2.id]);
+    expect(newState.ids).toEqual([experiment2.id]);
     expect(newState[experiment2.id]).toEqual(experiment2);
+    expect(newState).toMatchSnapshot();
+  });
+
+  it('Loads experiments correctly', () => {
+    const newState = experimentsReducer(initialState, {
+      type: EXPERIMENTS_LOADED,
+      payload: {
+        experiments: [
+          experiment1, experiment2,
+        ],
+      },
+    });
+    expect(newState.ids).toEqual([experiment1.id, experiment2.id]);
+    expect(newState.meta.activeExperimentId).toEqual(experiment1.id);
+    expect(newState).toMatchSnapshot();
+  });
+
+  it('Loads 0 experiments correctly', () => {
+    const newState = experimentsReducer(initialState, {
+      type: EXPERIMENTS_LOADED,
+      payload: {
+        experiments: [],
+      },
+    });
+    expect(newState.ids).toEqual([]);
+    expect(newState.meta.activeExperimentId).toEqual(undefined);
     expect(newState).toMatchSnapshot();
   });
 
@@ -167,15 +179,25 @@ describe('experimentsReducer', () => {
   });
 
   it('Inserts a new experiment correctly', () => {
+    const createdExperimentData = {
+      id: experiment1.id,
+      name: experiment1.name,
+      description: experiment1.description,
+      createdAt: experiment1.createdAt,
+    };
+
     const newState = experimentsReducer(initialState, {
       type: EXPERIMENTS_CREATED,
-      payload: {
-        experiment: experiment1,
-      },
+      payload: { experiment: createdExperimentData },
     });
 
     expect(newState.ids).toEqual([experiment1.id]);
-    expect(newState[experiment1.id]).toEqual(experiment1);
+    expect(newState[experiment1.id]).toEqual(
+      {
+        ...experimentTemplate,
+        ...createdExperimentData,
+      },
+    );
     expect(newState).toMatchSnapshot();
   });
 
@@ -224,8 +246,8 @@ describe('experimentsReducer', () => {
       ...sampleTemplate,
       name: 'another test sample',
       uuid: 'testAnotherSampleId',
-      createdDate: '2021-01-01T14:48:00.000Z',
-      lastModified: '2021-01-01T14:48:00.000Z',
+      createdAt: '2021-01-01T14:48:00.000Z',
+      updatedAt: '2021-01-01T14:48:00.000Z',
     };
 
     const newState = experimentsReducer(oneExperimentWithSampleState, {
@@ -237,6 +259,107 @@ describe('experimentsReducer', () => {
     });
 
     expect(newState[experiment1.id].sampleIds).toEqual([sampleId, anotherSample.uuid]);
+    expect(newState).toMatchSnapshot();
+  });
+
+  it('Sets up saving state correctly', () => {
+    const newState = experimentsReducer({
+      ...oneExperimentWithSampleState,
+      meta: {
+        ...oneExperimentWithSampleState.meta,
+        loading: false,
+        saving: false,
+        error: true,
+      },
+    }, {
+      type: EXPERIMENTS_SAVING,
+    });
+
+    expect(newState.meta.error).toBe(false);
+    expect(newState.meta.loading).toBe(false);
+    expect(newState.meta.saving).toBe(true);
+    expect(newState).toMatchSnapshot();
+  });
+
+  it('Deletes samples correctly', () => {
+    const newState = experimentsReducer(oneExperimentWithSampleState, {
+      type: SAMPLES_DELETE,
+      payload: {
+        experimentId: experiment1.id,
+        sampleIds: [sampleId],
+      },
+    });
+
+    expect(newState[experiment1.id].sampleIds).toHaveLength(0);
+    expect(newState).toMatchSnapshot();
+  });
+
+  it('Correctly creates experiment metadata', () => {
+    const newMetadataKey = 'metadata-test';
+
+    const stateWithMetadata = {
+      ...oneExperimentWithSampleState,
+      [experiment1.id]: {
+        ...oneExperimentWithSampleState[experiment1.id],
+        metadataKeys: [],
+      },
+    };
+
+    const newState = experimentsReducer(stateWithMetadata, {
+      type: EXPERIMENTS_METADATA_CREATE,
+      payload: {
+        key: newMetadataKey,
+        experimentId: experiment1.id,
+      },
+    });
+
+    expect(newState[experiment1.id].metadataKeys).toEqual([newMetadataKey]);
+    expect(newState).toMatchSnapshot();
+  });
+
+  it('Correctly renames experiment metadata', () => {
+    const oldMetadataKey = 'metadata-old';
+    const newMetadataKey = 'metadata-new';
+    const stateWithMetadata = {
+      ...oneExperimentWithSampleState,
+      [experiment1.id]: {
+        ...oneExperimentWithSampleState[experiment1.id],
+        metadataKeys: [oldMetadataKey],
+      },
+    };
+
+    const newState = experimentsReducer(stateWithMetadata, {
+      type: EXPERIMENTS_METADATA_RENAME,
+      payload: {
+        oldKey: oldMetadataKey,
+        newKey: newMetadataKey,
+        experimentId: experiment1.id,
+      },
+    });
+
+    expect(newState[experiment1.id].metadataKeys).toEqual([newMetadataKey]);
+    expect(newState).toMatchSnapshot();
+  });
+
+  it('Correctly deletes experiment metadata', () => {
+    const metadataKey = 'metadata-old';
+    const stateWithMetadata = {
+      ...oneExperimentWithSampleState,
+      [experiment1.id]: {
+        ...oneExperimentWithSampleState[experiment1.id],
+        metadataKeys: [metadataKey],
+      },
+    };
+
+    const newState = experimentsReducer(stateWithMetadata, {
+      type: EXPERIMENTS_METADATA_DELETE,
+      payload: {
+        key: metadataKey,
+        experimentId: experiment1.id,
+      },
+    });
+
+    expect(newState[experiment1.id].metadataKeys).toEqual([]);
     expect(newState).toMatchSnapshot();
   });
 });

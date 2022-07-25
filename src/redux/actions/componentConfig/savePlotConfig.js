@@ -18,7 +18,7 @@ const savePlotConfig = (experimentId, plotUuid) => async (dispatch, getState) =>
 
   try {
     await fetchAPI(
-      `/v1/experiments/${experimentId}/plots-tables/${plotUuid}`,
+      `/v2/experiments/${experimentId}/plots/${plotUuid}`,
       {
         method: 'PUT',
         headers: {
@@ -38,7 +38,7 @@ const savePlotConfig = (experimentId, plotUuid) => async (dispatch, getState) =>
     dispatch({
       type: SAVE_CONFIG,
       payload:
-      { plotUuid, success: false },
+        { plotUuid, success: false },
     });
   }
 };

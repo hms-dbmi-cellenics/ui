@@ -44,6 +44,10 @@ describe('loadPlotConfig', () => {
       await testStore.dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
     });
 
+    // Hits the correct url
+    const fetchUrl = fetchMock.mock.calls[0][0];
+    expect(fetchUrl).toEqual(`http://localhost:3000/v2/experiments/${experimentId}/plots/${plotUuid}`);
+
     // Expect componentConfig to contain key for plotUuid
     expect(testStore.getState().componentConfig[plotUuid]).toBeDefined();
 

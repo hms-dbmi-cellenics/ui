@@ -13,6 +13,8 @@ const composeDotPlotWorkBody = (config) => {
       group: filterGroup,
       key: filterKey || 'All',
     },
+    // clusterNames is used for triggering a work request upon cluster name change
+    clusterNames: config.clusterNames,
   };
 };
 

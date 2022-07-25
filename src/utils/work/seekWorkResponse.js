@@ -1,4 +1,5 @@
 import moment from 'moment';
+
 import getAuthJWT from 'utils/getAuthJWT';
 import WorkTimeoutError from 'utils/http/errors/WorkTimeoutError';
 import fetchAPI from 'utils/http/fetchAPI';
@@ -27,7 +28,7 @@ const getRemainingWorkerStartTime = (creationTimestamp) => {
 const seekFromS3 = async (ETag, experimentId) => {
   let response;
   try {
-    response = await fetchAPI(`/v1/workResults/${experimentId}/${ETag}`);
+    response = await fetchAPI(`/v2/workResults/${experimentId}/${ETag}`);
   } catch (e) {
     if (e.statusCode === httpStatusCodes.NOT_FOUND) {
       return null;
@@ -110,7 +111,9 @@ const dispatchWorkRequest = async (
 
   const result = Promise.race([timeoutPromise, responsePromise]);
 
-  io.emit('WorkRequest', request);
+  // TODO switch to using normal WorkRequest for v2 requests
+  io.emit('WorkRequest-v2', request);
+
   return result;
 };
 
