@@ -12,47 +12,22 @@ import { plotTypes } from 'utils/constants';
 
 const mockOnUpdate = jest.fn();
 const mockOnReset = jest.fn();
-const mockOnGeneEnter = jest.fn();
+
+const plotType = plotTypes.DOT_PLOT;
 
 const defaultProps = {
   onUpdate: mockOnUpdate,
   onReset: mockOnReset,
-  onGeneEnter: mockOnGeneEnter,
+  plotUuid: 'dotPlotMain',
+  experimentId: 'experimentId',
+  searchBarUuid: 'searchBarUuid',
 };
-
-const plotType = plotTypes.DOT_PLOT;
 
 const markerGeneSelectionFactory = createTestComponentFactory(MarkerGeneSelection, defaultProps);
 
 describe('MarkerGeneSelection', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-  });
-
-  it('Should show the custom gene input by default', async () => {
-    const mockConfig = initialPlotConfigStates[plotType];
-
-    await act(async () => {
-      render(
-        markerGeneSelectionFactory({ config: mockConfig }),
-      );
-    });
-
-    // Expect screen to show the custom gene selection input by default
-    expect(screen.getByText(/Type in a gene name/i)).toBeInTheDocument();
-
-    // Typing genes and then pressing enter
-    const geneInput = screen.getByRole('combobox');
-
-    // This is not wrapped in act() because changes to the value causes a re-render
-    // which causes mockOnGeneEnter to lose its  memory of having been called
-    userEvent.type(geneInput, 'ABC{enter}');
-
-    // Expect geneEnter to be called
-    expect(mockOnGeneEnter).toHaveBeenCalledTimes(1);
-    const inputValue = mockOnGeneEnter.mock.calls[0][0];
-
-    expect(inputValue).toEqual(['ABC']);
   });
 
   it('Should show the number of marker genes input', async () => {

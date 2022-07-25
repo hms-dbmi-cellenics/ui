@@ -5,7 +5,6 @@ import {
   Skeleton,
   Empty,
   Radio,
-  Tabs,
 } from 'antd';
 import _ from 'lodash';
 import { useSelector, useDispatch } from 'react-redux';
@@ -34,14 +33,12 @@ import populateHeatmapData from 'components/plots/helpers/heatmap/populateHeatma
 import generateVegaData from 'components/plots/helpers/heatmap/vega/generateVegaData';
 import { plotNames } from 'utils/constants';
 
-import GeneReorderTool from 'components/plots/GeneReorderTool';
-import GeneSearchBar from 'components/plots/GeneSearchBar';
+import ScrollOnDrag from 'components/plots/ScrollOnDrag';
 
 const { Panel } = Collapse;
 const plotUuid = 'markerHeatmapPlotMain';
 const plotType = 'markerHeatmap';
 const searchBarUuid = 'geneSearchBar';
-const { TabPane } = Tabs;
 
 const MarkerHeatmap = ({ experimentId }) => {
   const dispatch = useDispatch();
@@ -252,6 +249,12 @@ const MarkerHeatmap = ({ experimentId }) => {
     dispatch(loadPaginatedGeneProperties(experimentId, ['dispersions'], searchBarUuid, state));
   }, []);
 
+  const treeScrollable = document.getElementById('ScrollWrapper');
+
+  useEffect(() => {
+    if (treeScrollable) ScrollOnDrag(treeScrollable);
+  }, [treeScrollable]);
+
   // updatedField is a subset of what default config has and contains only the things we want change
   const updatePlotWithChanges = (updatedField) => {
     dispatch(updatePlotConfig(plotUuid, updatedField));
@@ -294,12 +297,13 @@ const MarkerHeatmap = ({ experimentId }) => {
       ],
     },
   ];
-  const onGeneEnter = (genes) => {
+
+  const onGenesChange = (genes) => {
     dispatch(loadGeneExpression(experimentId, genes, plotUuid));
   };
 
   const onReset = () => {
-    onGeneEnter([]);
+    onGenesChange([]);
     dispatch(loadMarkerGenes(
       experimentId,
       louvainClustersResolution,
@@ -316,42 +320,27 @@ const MarkerHeatmap = ({ experimentId }) => {
   const renderExtraPanels = () => (
     <>
       <Panel header='Gene selection' key='gene-selection'>
-        <Tabs defaultActiveKey='1'>
-          <TabPane tab='Add/Remove genes' key='1'>
-            <MarkerGeneSelection
-              config={config}
-              onUpdate={updatePlotWithChanges}
-              onGeneEnter={onGeneEnter}
-              onReset={onReset}
-            />
-            <div>
-              <p>Gene labels:</p>
-              <Radio.Group
-                onChange={
-                  (e) => updatePlotWithChanges({ showGeneLabels: e.target.value })
-                }
-                value={config.showGeneLabels}
-              >
-                <Radio value>Show</Radio>
-                <Radio value={false}>Hide</Radio>
-              </Radio.Group>
-            </div>
-          </TabPane>
-          <TabPane tab='Search for and re-order genes' key='2'>
-            <p>Type in a gene name and select it to add it to the heatmap. Drag and drop genes to re-order them.</p>
-            {/* space needed to separate search box and reorder tree, display=flex fills the space */}
-            <Space direction='vertical' style={{ display: 'flex' }}>
-              <GeneSearchBar
-                plotUuid={plotUuid}
-                experimentId={experimentId}
-                searchBarUuid={searchBarUuid}
-              />
-              <GeneReorderTool
-                plotUuid={plotUuid}
-              />
-            </Space>
-          </TabPane>
-        </Tabs>
+        <MarkerGeneSelection
+          config={config}
+          plotUuid={plotUuid}
+          searchBarUuid={searchBarUuid}
+          experimentId={experimentId}
+          onUpdate={updatePlotWithChanges}
+          onReset={onReset}
+          onGenesChange={onGenesChange}
+        />
+        <div style={{ paddingTop: '10px' }}>
+          <p>Gene labels:</p>
+          <Radio.Group
+            onChange={
+              (e) => updatePlotWithChanges({ showGeneLabels: e.target.value })
+            }
+            value={config.showGeneLabels}
+          >
+            <Radio value>Show</Radio>
+            <Radio value={false}>Hide</Radio>
+          </Radio.Group>
+        </div>
       </Panel>
       <Panel header='Select data' key='select-data'>
         <SelectData
