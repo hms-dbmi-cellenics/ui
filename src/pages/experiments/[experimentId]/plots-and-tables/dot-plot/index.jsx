@@ -176,6 +176,8 @@ const DotPlotPage = (props) => {
   };
 
   const reorderData = (order) => {
+    if (!plotData) return;
+
     const cellSetsNames = [...new Set(plotData.map((elem) => elem.cellSets))];
     const reorderedData = [];
     cellSetsNames.forEach((set) => {
@@ -190,6 +192,8 @@ const DotPlotPage = (props) => {
   };
 
   const deleteData = (genes) => {
+    if (!plotData) return;
+
     const data = plotData.filter((elem) => !genes.includes(elem.geneName));
     dispatch(updatePlotData(plotUuid, data));
   };
