@@ -58,8 +58,8 @@ const GenesVsUMIs = (props) => {
 
   useEffect(() => {
     if (!config) {
-      const newConfig = _.clone(config);
-      _.merge(newConfig, expConfig);
+      // const newConfig = _.clone(config);
+      // _.merge(newConfig, expConfig);
       dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
     }
   }, [config]);
@@ -105,10 +105,10 @@ const GenesVsUMIs = (props) => {
     if (config && plotData) {
       return (
         <FeaturesVsUMIsScatterplot
-          experimentId={experimentId}
           config={config}
           plotData={plotData}
           actions={allowedPlotActions}
+          expConfig={expConfig}
         />
       );
     }

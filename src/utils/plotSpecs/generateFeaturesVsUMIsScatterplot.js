@@ -1,11 +1,21 @@
+import { round } from 'lodash';
 import { stdev } from '../mathFormulas';
 
-const generateSpec = (config, plotData) => {
+const generateSpec = (config, plotData, predictionInterval) => {
   const { pointsData, linesData } = plotData;
 
   const sd = stdev(pointsData.map((p) => p.log_genes));
-  const lowerCutoff = Math.min(...linesData.map((p) => p.lower_cutoff)) - sd;
-  const upperCutoff = Math.max(...linesData.map((p) => p.upper_cutoff)) + sd;
+  const predictionIntervalIndex = round((predictionInterval || 0) * 100);
+
+  // if its the old model of the data, do not use the prediction interval variable
+  const selectedLinesData = linesData[0].length ? linesData[predictionIntervalIndex] : linesData;
+  console.log('selectedLinesData', selectedLinesData);
+  const lowerCutoff = Math.min(
+    ...selectedLinesData.map((p) => p.lower_cutoff),
+  ) - sd;
+  const upperCutoff = Math.max(
+    ...selectedLinesData.map((p) => p.upper_cutoff),
+  ) + sd;
 
   return {
     $schema: 'https://vega.github.io/schema/vega/v5.json',
@@ -38,7 +48,7 @@ const generateSpec = (config, plotData) => {
       },
       {
         name: 'linesData',
-        values: linesData,
+        values: selectedLinesData,
         // Vega internally modifies objects during data transforms. If the plot data is frozen,
         // Vega is not able to carry out the transform and will throw an error.
         // https://github.com/vega/vega/issues/2453#issuecomment-604516777

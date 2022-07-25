@@ -6,19 +6,41 @@ import {
   Form,
   Tooltip,
   Select,
+  Slider,
+  Alert,
 } from 'antd';
 import { InfoCircleOutlined } from '@ant-design/icons';
+import useUpdateThrottled from 'utils/customHooks/useUpdateThrottled';
+import { range } from 'lodash';
 
 const { Option } = Select;
 
 const GenesVsUMIsConfig = (props) => {
   const {
-    // eslint-disable-next-line no-unused-vars
-    config, disabled, plotType, updateSettings,
+    config, updateSettings,
   } = props;
+  const [newConfig, handleChange] = useUpdateThrottled(updateSettings, config);
 
+  const defaultValues = range(0, 0.99, 0.01);
+  console.log('defaultValues', defaultValues);
+  const sliderMarks = {
+    ...defaultValues,
+    0.999: '0.999',
+    0.9999: {
+      style: {
+        transform: 'translate(10%)',
+      },
+      label: '0.9999',
+    },
+
+    0.99999: '0.99999',
+    0.999999: '0.999999',
+  };
+  console.log('CONFIG IS ', config);
   return (
     <>
+      {/* only display info message for datasets which have not rerun the pipeline to see the new interractive plot */}
+
       <Form.Item label={(
         <span>
           Fit type&nbsp;
@@ -38,13 +60,22 @@ const GenesVsUMIsConfig = (props) => {
         <Select
           value={config.regressionType}
           onChange={(val) => updateSettings({ regressionType: val })}
-          disabled={disabled}
         >
           <Option value='linear'>linear</Option>
           <Option value='spline'>spline</Option>
         </Select>
       </Form.Item>
-      <Form.Item label='p-level cut-off:'>
+      <Form.Item label='Prediction interval'>
+        <Slider
+          value={newConfig.predictionInterval}
+          min={0}
+          max={0.999999}
+          marks={sliderMarks}
+          step={null}
+          onChange={(val) => handleChange({ predictionInterval: val })}
+        />
+      </Form.Item>
+      <Form.Item label='p-value:'>
         <Space direction='horizontal'>
           <Tooltip title='Regression of feature counts (genes) vs UMI counts (molecules) is performed for all cells in order to detect outliers. The ‘p-level cut-off’ is the stringency for defining outliers: ‘p.level’ refers to the confidence level for a given cell to deviate from the main trend. The smaller the number the more stringent cut-off.
 ‘p.level’ sets the prediction intervals calculated by the R `predict` where `level = 1 - p.value`.'
@@ -52,14 +83,8 @@ const GenesVsUMIsConfig = (props) => {
             <InfoCircleOutlined />
           </Tooltip>
           <InputNumber
-            value={config.regressionTypeSettings[config.regressionType]['p.level']}
-            onChange={(value) => updateSettings({ regressionTypeSettings: { [config.regressionType]: { 'p.level': value } } })}
-            onPressEnter={(e) => updateSettings({ regressionTypeSettings: { [config.regressionType]: { 'p.level': e.target.value } } })}
-            placeholder={0.00001}
-            min={0}
-            max={1}
-            step={0.00001}
-            disabled={disabled}
+            value={1 - config.predictionInterval}
+            disabled
           />
         </Space>
       </Form.Item>
@@ -68,16 +93,8 @@ const GenesVsUMIsConfig = (props) => {
 };
 
 GenesVsUMIsConfig.propTypes = {
-  plotType: PropTypes.string,
-  updateSettings: PropTypes.func,
-  config: PropTypes.object,
-  disabled: PropTypes.bool,
-};
-GenesVsUMIsConfig.defaultProps = {
-  plotType: 'overriden by CalculationConfigContainer, like the rest of props here',
-  updateSettings: () => { },
-  config: {},
-  disabled: false,
+  updateSettings: PropTypes.func.isRequired,
+  config: PropTypes.object.isRequired,
 };
 
 export default GenesVsUMIsConfig;
