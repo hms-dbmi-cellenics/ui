@@ -10,7 +10,6 @@ import waitForActions from 'redux-mock-store-await-actions';
 import AdvancedFilteringModal from 'components/data-exploration/differential-expression-tool/AdvancedFilteringModal';
 
 import DiffExprResults from 'components/data-exploration/differential-expression-tool/DiffExprResults';
-import { fetchWork } from 'utils/work/fetchWork';
 import { DIFF_EXPR_LOADING, DIFF_EXPR_LOADED, DIFF_EXPR_ORDERING_SET } from 'redux/actionTypes/differentialExpression';
 
 import { mockCellSets } from '__test__/test-utils/cellSets.mock';
@@ -62,19 +61,19 @@ const backendStatus = {
 
 const mockGeneExpressionData = [
   {
-    p_val: 1.496, p_val_adj: 1.647, logFC: -1.427, gene_names: 'A', auc: '0.1', pct_1: '100', pct_2: '100',
+    p_val: 1.496, p_val_adj: 1.647, logFC: -1.427, gene_names: 'A', auc: '0.1', pct_1: '100', pct_2: '100', Gene: "EN123123123123123",
   },
   {
-    p_val: 2.496, p_val_adj: 2.647, logFC: -2.427, gene_names: 'B', auc: '0.2', pct_1: '90', pct_2: '90',
+    p_val: 2.496, p_val_adj: 2.647, logFC: -2.427, gene_names: 'B', auc: '0.2', pct_1: '90', pct_2: '90', Gene: "EN123123123123123",
   },
   {
-    p_val: 3.496, p_val_adj: 3.647, logFC: -3.427, gene_names: 'C', auc: '0.3', pct_1: '80', pct_2: '80',
+    p_val: 3.496, p_val_adj: 3.647, logFC: -3.427, gene_names: 'C', auc: '0.3', pct_1: '80', pct_2: '80', Gene: "EN123123123123123",
   },
   {
-    p_val: 4.496, p_val_adj: 4.647, logFC: -4.427, gene_names: 'D', auc: '0.4', pct_1: '70', pct_2: '70',
+    p_val: 4.496, p_val_adj: 4.647, logFC: -4.427, gene_names: 'D', auc: '0.4', pct_1: '70', pct_2: '70', Gene: "EN123123123123123",
   },
   {
-    p_val: 5.496, p_val_adj: 5.647, logFC: -5.427, gene_names: 'E', auc: '0.5', pct_1: '60', pct_2: '60',
+    p_val: 5.496, p_val_adj: 5.647, logFC: -5.427, gene_names: 'E', auc: '0.5', pct_1: '60', pct_2: '60', Gene: "EN123123123123123",
   },
 ];
 
@@ -203,7 +202,7 @@ describe('DiffExprResults', () => {
     expect(table.getElement().props.columns[6].sortOrder).toEqual(null);
   });
 
-  it('can sort the gene names in alphabetical order', async () => {
+  it('fetches all the genes', async () => {
     const newPagination = {
       current: 1,
       pageSize: 4,
@@ -241,31 +240,33 @@ describe('DiffExprResults', () => {
 
     // // Wait for side-effect to propagate (properties loading and loaded).
     await waitForActions(withResultStore, [DIFF_EXPR_ORDERING_SET, DIFF_EXPR_LOADING, DIFF_EXPR_LOADED]);
+    const entries = component.find(".ant-table-tbody").children();
 
-    expect(fetchWork).toHaveBeenCalledWith(
-      '1234',
-      {
-        cellSet: 'cluster-a',
-        compareWith: 'cluster-b',
-        basis: 'scratchpad-a',
-        comparisonType: 'between',
-        experimentId: '1234',
-        name: 'DifferentialExpression',
-      },
-      withResultStore.getState,
-      {
-        extras: {
-          pagination: {
-            limit: 4, offset: 0, orderBy: 'gene_names', orderDirection: 'ASC', responseKey: 0,
-          },
-        },
-        timeout: 60,
-      },
-    );
-
+    expect(entries.length).toEqual(6);
     expect(withResultStore.getActions()[1]).toMatchSnapshot();
     expect(withResultStore.getActions()[2]).toMatchSnapshot();
   });
+
+  it('displays the correct genes when searching', () => {
+    const component = mount(
+      <Provider store={withResultStore}>
+        <DiffExprResults
+          experimentId={experimentId}
+          onGoBack={jest.fn()}
+          width={100}
+          height={200}
+        />
+      </Provider>,
+    );
+
+    const searchBox = component.find('.ant-input');
+
+    searchBox.simulate('change', { target: { value: 'A' } });
+
+    const entries = component.find(".ant-table-tbody").children();
+
+    expect(entries.at(1).text()).toEqual('A-1.4271.6471001000.1');
+  })
 
   it('Having a focused gene triggers focused view for `eye` button.', () => {
     // Redefine store from `beforeEach`.

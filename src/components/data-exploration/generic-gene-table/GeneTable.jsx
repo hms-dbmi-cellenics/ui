@@ -95,9 +95,9 @@ const GeneTable = (props) => {
     } else if (filterOption === 'Contains') {
       searchPattern = text;
     }
-
+    console.log(searchPattern);
     let newData = _.cloneDeep(data);
-    newData = newData.filter(entry => entry.gene_names.includes(filter.text));
+    newData = newData.filter(entry => entry.gene_names.match(searchPattern));
 
     const newTableState = {
       ...tableState,

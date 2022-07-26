@@ -9,7 +9,9 @@ import PropTypes from 'prop-types';
 const { Search } = Input;
 const { Option } = Select;
 
-const sanitizeString = (str) => str.replaceAll(/[\s|-]+/g, '');
+const sanitizeString = (str) => {
+  console.log(typeof str); return str.replace(/[\s|-]+/g, '')
+};
 
 const FilterGenes = (props) => {
   const { onFilter, defaultFilterOption, defaultFilterString } = props;
