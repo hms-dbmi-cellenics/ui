@@ -72,7 +72,6 @@ const GenesVsUMIsConfig = (props) => {
         </Select>
       </Form.Item>
       <Form.Item label='Prediction interval'>
-        {/* <Space direction='horizontal'> */}
 
         <Tooltip title=' Regression of feature counts (genes) vs UMI counts (molecules) is performed for all cells in order to detect outliers.
             The ‘prediction interval’ is the stringency for defining outliers: it sets the prediction intervals calculated by the R `predict`
@@ -112,7 +111,6 @@ const GenesVsUMIsConfig = (props) => {
                 max={0.999999}
                 disabled
                 step={0.01}
-                onChange={(val) => handleChange({ predictionInterval: val })}
               />
             </Space>
             <Radio value={0.999}>0.999</Radio>

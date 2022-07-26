@@ -143,7 +143,7 @@ const GenesVsUMIs = (props) => {
                 stepDisabled={stepDisabled}
               >
                 <CalculationConfig
-                  rerunRequired={!plotData?.linesData[0]?.length && plotData}
+                  rerunRequired={plotData.linesData && !plotData?.linesData[0]?.length}
                   experimentId={experimentId}
                 />
               </CalculationConfigContainer>
