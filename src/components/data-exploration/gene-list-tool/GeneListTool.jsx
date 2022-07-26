@@ -105,7 +105,7 @@ const GeneListTool = (props) => {
       columns={columns}
       loading={isTableLoading()}
       error={error || false}
-      data={dataShown}
+      propData={dataShown}
       loadData={loadData}
       total={total || 0}
       width={width}

@@ -189,7 +189,7 @@ const DiffExprResults = (props) => {
         error={error}
         width={width}
         height={height - 70 - (exportAlert ? 70 : 0) - (settingsListed ? 70 : 0)}
-        data={dataShown}
+        propData={dataShown}
         loadData={loadData}
         total={total}
         extraOptions={(

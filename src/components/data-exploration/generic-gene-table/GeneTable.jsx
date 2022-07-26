@@ -22,7 +22,7 @@ const valueComparator = (key) => (a, b) => {
 
 const GeneTable = (props) => {
   const {
-    experimentId, error, loading, columns, data, loadData,
+    experimentId, error, loading, columns, propData, loadData,
     total, initialTableState, width, height, extraOptions,
   } = props;
 
@@ -43,8 +43,8 @@ const GeneTable = (props) => {
   const [tableData, setTableData] = useState([]);
 
   useEffect(() => {
-    setTableData(data);
-  }, [data]);
+    setTableData(propData);
+  }, [propData]);
 
   const [tableState, setTableState] = useState(
     _.merge(
@@ -97,7 +97,7 @@ const GeneTable = (props) => {
       searchPattern = text;
     }
 
-    let newData = _.cloneDeep(data);
+    let newData = _.cloneDeep(propData);
     newData = newData.filter(entry => sanitizeString(`${entry.gene_names}`).match(searchPattern));
 
     const newTableState = {
@@ -243,7 +243,7 @@ GeneTable.defaultProps = {
 GeneTable.propTypes = {
   experimentId: PropTypes.string.isRequired,
   columns: PropTypes.array.isRequired,
-  data: PropTypes.array.isRequired,
+  propData: PropTypes.array.isRequired,
   loadData: PropTypes.func.isRequired,
   total: PropTypes.number.isRequired,
   error: PropTypes.PropTypes.oneOfType(
