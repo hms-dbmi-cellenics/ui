@@ -15,14 +15,4 @@ describe('FilterGenes', () => {
     expect(select.length).toEqual(1);
     expect(search.length).toEqual(1);
   });
-
-  test('uses correct search pattern on search', () => {
-    const mockFilter = jest.fn();
-    const component = mount(<FilterGenes onFilter={mockFilter} />);
-
-    const searchBox = component.find('.ant-input');
-
-    searchBox.simulate('change', { target: { value: 'A' } });
-    expect(searchBox.instance().value).toContain('A');
-  });
 });

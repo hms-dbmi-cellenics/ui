@@ -15,6 +15,7 @@ import { DIFF_EXPR_LOADING, DIFF_EXPR_LOADED, DIFF_EXPR_ORDERING_SET } from 'red
 import { mockCellSets } from '__test__/test-utils/cellSets.mock';
 
 import Loader from 'components/Loader';
+import { fetchWork } from 'utils/work/fetchWork';
 
 jest.mock('utils/getTimeoutForWorkerTask', () => ({
   __esModule: true, // this property makes it work
@@ -210,6 +211,8 @@ describe('DiffExprResults', () => {
       total: 4,
     };
 
+
+
     const newSorter = {
       column: {
         dataIndex: 'gene_names',
@@ -242,7 +245,27 @@ describe('DiffExprResults', () => {
     await waitForActions(withResultStore, [DIFF_EXPR_ORDERING_SET, DIFF_EXPR_LOADING, DIFF_EXPR_LOADED]);
     const entries = component.find(".ant-table-tbody").children();
 
-    expect(entries.length).toEqual(6);
+    expect(fetchWork).toHaveBeenCalledWith(
+      '1234',
+      {
+        cellSet: 'cluster-a',
+        compareWith: 'cluster-b',
+        basis: 'scratchpad-a',
+        comparisonType: 'between',
+        experimentId: '1234',
+        name: 'DifferentialExpression',
+      },
+      withResultStore.getState,
+      {
+        extras: {
+          pagination: {
+            limit: 1000000, offset: 0, orderBy: 'logFC', orderDirection: 'DESC', responseKey: 0,
+          },
+        },
+        timeout: 60,
+      },
+    );
+    expect(entries).toHaveLength(6);
     expect(withResultStore.getActions()[1]).toMatchSnapshot();
     expect(withResultStore.getActions()[2]).toMatchSnapshot();
   });
@@ -266,6 +289,7 @@ describe('DiffExprResults', () => {
     const entries = component.find(".ant-table-tbody").children();
 
     expect(entries.at(1).text()).toEqual('A-1.4271.6471001000.1');
+    expect(entries).toHaveLength(2);
   })
 
   it('Having a focused gene triggers focused view for `eye` button.', () => {
