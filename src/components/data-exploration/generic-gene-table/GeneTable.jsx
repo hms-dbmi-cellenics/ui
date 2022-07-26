@@ -97,8 +97,6 @@ const GeneTable = (props) => {
       searchPattern = text;
     }
 
-    console.log(searchPattern);
-
     let newData = _.cloneDeep(data);
     newData = newData.filter(entry => sanitizeString(`${entry.gene_names}`).match(searchPattern));
 
