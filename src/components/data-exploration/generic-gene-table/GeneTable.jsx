@@ -12,6 +12,7 @@ import PlatformError from 'components/PlatformError';
 import GeneSelectionMenu from 'components/data-exploration/generic-gene-table/GeneSelectionMenu';
 import FilterGenes from 'components/data-exploration/generic-gene-table/FilterGenes';
 import Loader from 'components/Loader';
+import { sanitizeString } from 'components/data-exploration/generic-gene-table/FilterGenes';
 
 const valueComparator = (key) => (a, b) => {
   if (typeof a[key] === 'string') return a[key].localeCompare(b[key]);
@@ -95,9 +96,11 @@ const GeneTable = (props) => {
     } else if (filterOption === 'Contains') {
       searchPattern = text;
     }
+
     console.log(searchPattern);
+
     let newData = _.cloneDeep(data);
-    newData = newData.filter(entry => entry.gene_names.match(searchPattern));
+    newData = newData.filter(entry => sanitizeString(`${entry.gene_names}`).match(searchPattern));
 
     const newTableState = {
       ...tableState,
