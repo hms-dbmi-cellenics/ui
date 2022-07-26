@@ -127,7 +127,7 @@ const GenesVsUMIsConfig = (props) => {
             <InfoCircleOutlined />
           </Tooltip>
           <InputNumber
-            value={parseFloat(1 - config.predictionInterval).toFixed(2)}
+            value={parseFloat(1 - config.predictionInterval).toFixed(6)}
             disabled
           />
         </Space>
