@@ -5,11 +5,25 @@ const generateSpec = (config, plotData, predictionInterval) => {
   const { pointsData, linesData } = plotData;
 
   const sd = stdev(pointsData.map((p) => p.log_genes));
-  const predictionIntervalIndex = round((predictionInterval || 0) * 100);
+  let predictionIntervalIndex;
+
+  if (predictionInterval <= 0.99) {
+    predictionIntervalIndex = round((predictionInterval || 0) * 100);
+  } else if (predictionInterval === 0.999) {
+    predictionIntervalIndex = 100;
+  } else if (predictionInterval === 0.9999) {
+    predictionIntervalIndex = 101;
+  } else if (predictionInterval === 0.99999) {
+    predictionIntervalIndex = 102;
+  } else if (predictionInterval === 0.999999) {
+    predictionIntervalIndex = 103;
+  } else {
+    predictionIntervalIndex = 0;
+  }
 
   // if its the old model of the data, do not use the prediction interval variable
   const selectedLinesData = linesData[0].length ? linesData[predictionIntervalIndex] : linesData;
-  console.log('selectedLinesData', selectedLinesData);
+
   const lowerCutoff = Math.min(
     ...selectedLinesData.map((p) => p.lower_cutoff),
   ) - sd;

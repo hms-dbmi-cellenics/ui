@@ -8,38 +8,44 @@ import {
   Select,
   Slider,
   Alert,
+  Radio,
+  Button,
 } from 'antd';
+import { useDispatch } from 'react-redux';
 import { InfoCircleOutlined } from '@ant-design/icons';
 import useUpdateThrottled from 'utils/customHooks/useUpdateThrottled';
-import { range } from 'lodash';
+import { runQC } from 'redux/actions/pipeline';
 
 const { Option } = Select;
 
 const GenesVsUMIsConfig = (props) => {
+  const dispatch = useDispatch();
   const {
-    config, updateSettings,
+    config, updateSettings, disabled, rerunRequired, experimentId,
   } = props;
   const [newConfig, handleChange] = useUpdateThrottled(updateSettings, config);
 
-  const defaultValues = range(0, 0.99, 0.01);
-  console.log('defaultValues', defaultValues);
-  const sliderMarks = {
-    ...defaultValues,
-    0.999: '0.999',
-    0.9999: {
-      style: {
-        transform: 'translate(10%)',
-      },
-      label: '0.9999',
-    },
-
-    0.99999: '0.99999',
-    0.999999: '0.999999',
-  };
-  console.log('CONFIG IS ', config);
   return (
     <>
       {/* only display info message for datasets which have not rerun the pipeline to see the new interractive plot */}
+      {rerunRequired && (
+        <Space direction='vertical'>
+          <Alert
+            message='A new interactive version of this plot is available! To see it,
+      you need to run data processing again by clicking on the button below.
+      Please note that by doing so, any customisation made to your project will be lost.
+      In this case, we suggest creating a new project with the same data to view the new interactive plot.'
+            type='info'
+            showIcon
+          />
+          <Button
+            type='primary'
+            onClick={() => dispatch(runQC(experimentId))}
+          >
+            Re-run
+          </Button>
+        </Space>
+      )}
 
       <Form.Item label={(
         <span>
@@ -66,24 +72,64 @@ const GenesVsUMIsConfig = (props) => {
         </Select>
       </Form.Item>
       <Form.Item label='Prediction interval'>
+        {/* <Space direction='horizontal'> */}
+
+        <Tooltip title=' Regression of feature counts (genes) vs UMI counts (molecules) is performed for all cells in order to detect outliers.
+            The ‘prediction interval’ is the stringency for defining outliers: it sets the prediction intervals calculated by the R `predict`
+            where `level = prediction interval`. Prediction intervals represent the likelihood that the predicted value will be between the upper and
+            lower limits of the prediction interval. Prediction intervals are similar to confidence intervals, but on top of the sampling uncertainty,
+            they also express uncertainty around a single value. They must account for the uncertainty in estimating the population mean,
+            plus the random variation of the individual values. Higher prediction interval means higher probability of the value to be inside the range.
+            Consequently, the size of the interval will be wider. The higher the prediction level, the less stringent we are when filtering the cells.
+            Conversely, the lower the prediction level, the more stringent we are, and we exclude more cells that are far from the behaviour of the
+            relationship between the number of genes and the number of UMIs/molecules.'
+        >
+          <InfoCircleOutlined />
+        </Tooltip>
+
         <Slider
           value={newConfig.predictionInterval}
           min={0}
-          max={0.999999}
-          marks={sliderMarks}
-          step={null}
+          max={0.99}
+          step={0.01}
+          disabled={disabled}
           onChange={(val) => handleChange({ predictionInterval: val })}
         />
+
+        <Radio.Group
+          value={config.predictionInterval}
+          onChange={(val) => updateSettings({ predictionInterval: val.target.value })}
+          disabled={disabled}
+        >
+          <Space direction='vertical'>
+            <Space direction='horizontal'>
+              <Radio.Group>
+                <Radio defaultChecked />
+              </Radio.Group>
+              <InputNumber
+                value={newConfig.predictionInterval}
+                min={0}
+                max={0.999999}
+                disabled
+                step={0.01}
+                onChange={(val) => handleChange({ predictionInterval: val })}
+              />
+            </Space>
+            <Radio value={0.999}>0.999</Radio>
+            <Radio value={0.9999}>0.9999</Radio>
+            <Radio value={0.99999}>0.99999</Radio>
+            <Radio value={0.999999}>0.999999</Radio>
+          </Space>
+        </Radio.Group>
+
       </Form.Item>
       <Form.Item label='p-value:'>
         <Space direction='horizontal'>
-          <Tooltip title='Regression of feature counts (genes) vs UMI counts (molecules) is performed for all cells in order to detect outliers. The ‘p-level cut-off’ is the stringency for defining outliers: ‘p.level’ refers to the confidence level for a given cell to deviate from the main trend. The smaller the number the more stringent cut-off.
-‘p.level’ sets the prediction intervals calculated by the R `predict` where `level = 1 - p.value`.'
-          >
+          <Tooltip title='The reported p-value is derived from the prediction interval: p-value = 1 - prediction interval.'>
             <InfoCircleOutlined />
           </Tooltip>
           <InputNumber
-            value={1 - config.predictionInterval}
+            value={parseFloat(1 - config.predictionInterval).toFixed(2)}
             disabled
           />
         </Space>
@@ -95,6 +141,9 @@ const GenesVsUMIsConfig = (props) => {
 GenesVsUMIsConfig.propTypes = {
   updateSettings: PropTypes.func.isRequired,
   config: PropTypes.object.isRequired,
+  disabled: PropTypes.bool.isRequired,
+  rerunRequired: PropTypes.bool.isRequired,
+  experimentId: PropTypes.string.isRequired,
 };
 
 export default GenesVsUMIsConfig;

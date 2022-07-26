@@ -58,8 +58,6 @@ const GenesVsUMIs = (props) => {
 
   useEffect(() => {
     if (!config) {
-      // const newConfig = _.clone(config);
-      // _.merge(newConfig, expConfig);
       dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
     }
   }, [config]);
@@ -144,7 +142,10 @@ const GenesVsUMIs = (props) => {
                 plotType='unused'
                 stepDisabled={stepDisabled}
               >
-                <CalculationConfig />
+                <CalculationConfig
+                  rerunRequired={!plotData?.linesData[0]?.length && plotData}
+                  experimentId={experimentId}
+                />
               </CalculationConfigContainer>
             </Panel>
             <Panel header='Plot styling' key='styling'>
