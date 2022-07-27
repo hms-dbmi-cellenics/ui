@@ -232,9 +232,8 @@ const CalculationConfig = (props) => {
                     title='Normalization can be biased by certain gene categories such the ones listed here.
                     Checking them will ignore those categories.
                     For example, cell cycle genes should be removed if sampling timepoints occured throughout the day.
-                    Those genes can otherwise introduces within-cell-type heterogeneity that can obscure the differences
-                    in expression between cell types.
-                    This is not implemented yet'
+                    Those genes can otherwise introduce within-cell-type heterogeneity that can obscure the differences
+                    in expression between cell types.'
                   >
                     <QuestionCircleOutlined />
                   </Tooltip>
@@ -249,13 +248,13 @@ const CalculationConfig = (props) => {
                 value={dimensionalityReduction.excludeGeneCategories}
               >
                 <Space direction='vertical'>
-                  <Checkbox disabled value='ribosomal'>ribosomal</Checkbox>
-                  <Checkbox disabled value='mitochondrial'>mitochondrial</Checkbox>
+                  <Checkbox disabled value='ribosomal'>Ribosomal</Checkbox>
+                  <Checkbox disabled value='mitochondrial'>Mitochondrial</Checkbox>
                   <Checkbox value='cellCycle'>
                     <span>
-                      cycle genes&nbsp;
+                      Cell cycle genes&nbsp;
                       <Tooltip
-                        title='Currently only available for human and mice species'
+                        title='Currently only available for human and mice species. Do not check this box if your cells are from a different species.'
                       >
                         <QuestionCircleOutlined />
                       </Tooltip>
