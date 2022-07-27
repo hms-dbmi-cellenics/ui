@@ -224,16 +224,24 @@ const CalculationConfig = (props) => {
                 readOnly
               />
             </Form.Item>
-            <Form.Item label='Exclude genes categories'>
-              <Tooltip title='Normalization can be biased by certain gene categories such the ones listed here.
-              Checking them will ignore those categories.
-              For example, cell cycle genes should be removed if sampling timepoints occured throughout the day.
-              Those genes can otherwise introduces within-cell-type heterogeneity that can obscure the differences
-              in expression between cell types.
-              This is not implemented yet'
-              >
-                <QuestionCircleOutlined />
-              </Tooltip>
+            <Form.Item
+              label={(
+                <span>
+                  Exclude genes categories&nbsp;
+                  <Tooltip
+                    title='Normalization can be biased by certain gene categories such the ones listed here.
+                    Checking them will ignore those categories.
+                    For example, cell cycle genes should be removed if sampling timepoints occured throughout the day.
+                    Those genes can otherwise introduces within-cell-type heterogeneity that can obscure the differences
+                    in expression between cell types.
+                    This is not implemented yet'
+                  >
+                    <QuestionCircleOutlined />
+                  </Tooltip>
+                </span>
+              )}
+            >
+              
               <Checkbox.Group
                 onChange={(val) => updateSettings(
                   { dimensionalityReduction: { excludeGeneCategories: val } },
@@ -243,7 +251,16 @@ const CalculationConfig = (props) => {
                 <Space direction='vertical'>
                   <Checkbox disabled value='ribosomal'>ribosomal</Checkbox>
                   <Checkbox disabled value='mitochondrial'>mitochondrial</Checkbox>
-                  <Checkbox value='cellCycle'>cell cycle</Checkbox>
+                  <Checkbox value='cellCycle'>
+                    <span>
+                      cycle genes&nbsp;
+                      <Tooltip
+                        title='Currently only available for human and mice species'
+                      >
+                        <QuestionCircleOutlined />
+                      </Tooltip>
+                    </span>
+                  </Checkbox>
                 </Space>
               </Checkbox.Group>
             </Form.Item>
