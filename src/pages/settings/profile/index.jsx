@@ -1,16 +1,22 @@
 import React, { useState } from 'react';
 import Auth from '@aws-amplify/auth';
+import nextConfig from 'next/config';
 import _ from 'lodash';
 import {
   Form, Input, Empty, Row, Col, Button, Space, Checkbox, Typography,
 } from 'antd';
 import { useRouter } from 'next/router';
+
 import Header from 'components/Header';
 import endUserMessages from 'utils/endUserMessages';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
 import handleError from 'utils/http/handleError';
 import { useSelector, useDispatch } from 'react-redux';
 import { loadUser } from 'redux/actions/user';
+
+import { AccountId } from 'utils/deploymentInfo';
+
+const accountId = nextConfig()?.publicRuntimeConfig?.accountId;
 
 const { Text } = Typography;
 
@@ -123,22 +129,24 @@ const ProfileSettings = () => {
                 <Form.Item label='Institution:'>
                   <Input disabled placeholder={user.attributes.institution} />
                 </Form.Item>
-                <Form.Item
-                  label='Updates: '
-                >
-                  <Space align='start' style={{ marginTop: '5px' }}>
-                    <Checkbox
-                      defaultChecked={user.attributes[agreedEmailsKey] === 'true'}
-                      onChange={(e) => setChanges({
-                        changedUserAttributes: { [agreedEmailsKey]: e.target.checked.toString() },
-                      })}
-                    />
-                    <Text>
-                      I agree to receive updates about new features in Cellenics, research done with Cellenics, and Cellenics community events. (No external marketing.)
-                    </Text>
-                  </Space>
-                </Form.Item>
-
+                {accountId !== AccountId.HMS
+                  && (
+                    <Form.Item
+                      label='Updates: '
+                    >
+                      <Space align='start' style={{ marginTop: '5px' }}>
+                        <Checkbox
+                          defaultChecked={user.attributes[agreedEmailsKey] === 'true'}
+                          onChange={(e) => setChanges({
+                            changedUserAttributes: { [agreedEmailsKey]: e.target.checked.toString() },
+                          })}
+                        />
+                        <Text>
+                          I agree to receive updates about new features in Cellenics, research done with Cellenics, and Cellenics community events. (No external marketing.)
+                        </Text>
+                      </Space>
+                    </Form.Item>
+                  )}
                 <h2 style={{ marginTop: '40px' }}>Password settings:</h2>
                 <Form.Item
                   label='Current password:' // pragma: allowlist secret
