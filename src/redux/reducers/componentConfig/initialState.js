@@ -25,8 +25,8 @@ const embeddingCategoricalInitialConfig = {
   },
   axes: {
     ...axesBaseState,
-    xAxisText: '',
-    yAxisText: '',
+    xAxisText: 'Umap 1',
+    yAxisText: 'Umap 2',
     defaultValues: ['x', 'y'],
     offset: 10,
   },
@@ -56,8 +56,8 @@ const embeddingContinuousInitialConfig = {
   },
   axes: {
     ...axesBaseState,
-    xAxisText: '',
-    yAxisText: '',
+    xAxisText: 'Umap 1',
+    yAxisText: 'Umap 2',
     defaultValues: ['x', 'y'],
     offset: 10,
   },
@@ -75,6 +75,7 @@ const embeddingContinuousInitialConfig = {
   expressionValue: 'raw',
   truncatedValues: true,
   selectedSample: 'All',
+  keepValuesOnReset: ['shownGene'],
 };
 
 // PLOTS & TABLES - Heatmap
@@ -115,6 +116,7 @@ const markerHeatmapInitialConfig = {
   guardLines: false,
   nMarkerGenes: 5,
   showGeneLabels: true,
+  keepValuesOnReset: ['selectedGenes'],
 };
 
 // PLOTS & TABLES - Volcano plot
@@ -227,6 +229,7 @@ const violinConfig = {
   statisticsVisible: false,
   kdeBandwidth: 0.3,
   normalised: 'normalised',
+  keepValuesOnReset: ['shownGene', 'title'],
 };
 
 // PLOTS & TABLES - Dot Plot
@@ -265,6 +268,7 @@ const dotPlotConfig = {
   selectedGenes: [],
   selectedCellSet: 'louvain',
   selectedPoints: 'All',
+  keepValuesOnReset: ['selectedGenes'],
 };
 
 // EMBEDDING PREVIEW - Coloured by sample

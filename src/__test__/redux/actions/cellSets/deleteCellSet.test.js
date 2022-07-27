@@ -11,6 +11,7 @@ import deleteCellSet from 'redux/actions/cellSets/deleteCellSet';
 import '__test__/test-utils/setupTests';
 
 enableFetchMocks();
+
 const mockStore = configureStore([thunk]);
 
 describe('deleteCellSet action', () => {
@@ -56,7 +57,19 @@ describe('deleteCellSet action', () => {
 
     const [url, body] = fetch.mock.calls[0];
 
-    expect(url).toEqual('http://localhost:3000/v1/experiments/1234/cellSets');
+    expect(url).toEqual('http://localhost:3000/v2/experiments/1234/cellSets');
+    expect(body).toMatchSnapshot();
+  });
+
+  it('Uses V2 URL when using API version V2', async () => {
+    const store = mockStore({ cellSets: { ...initialState, loading: false } });
+    await store.dispatch(deleteCellSet(experimentId, key));
+
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+
+    const [url, body] = fetch.mock.calls[0];
+
+    expect(url).toEqual('http://localhost:3000/v2/experiments/1234/cellSets');
     expect(body).toMatchSnapshot();
   });
 });

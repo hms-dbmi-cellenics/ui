@@ -4,84 +4,81 @@ import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import '@testing-library/jest-dom';
-import ProjectsList from '../../../components/data-management/ProjectsList';
-import ProjectCard from '../../../components/data-management/ProjectCard';
-import initialState, { projectTemplate } from '../../../redux/reducers/projects/initialState';
+import initialState, { experimentTemplate } from 'redux/reducers/experiments/initialState';
+import ProjectsList from 'components/data-management/ProjectsList';
+import ProjectCard from 'components/data-management/ProjectCard';
 import '__test__/test-utils/setupTests';
 
 const mockStore = configureMockStore([thunk]);
 
-const project1 = {
-  ...projectTemplate,
-  name: 'project 1',
-  uuid: '12345',
-  experiments: ['experiment-1'],
-  createdDate: '01-01-2021',
-  lastModified: '01-01-2021',
+const experiment1 = {
+  ...experimentTemplate,
+  name: 'experiment 1',
+  id: '12345',
+  createdAt: '01-01-2021',
+  updatedAt: '01-01-2021',
 };
 
-const project2 = {
-  ...project1,
-  name: 'project 2',
-  uuid: '67890',
-  experiments: ['experiment-2'],
+const experiment2 = {
+  ...experiment1,
+  name: 'experiment 2',
+  id: '67890',
 };
 
-const project3 = {
-  ...project1,
+const experiment3 = {
+  ...experiment1,
   name: 'testing',
-  uuid: '45678',
-  experiments: ['experiment-3'],
+  id: '45678',
 };
 
 const initialStore = mockStore({
-  projects: {
+  experiments: {
     ...initialState,
   },
 });
 
 const emptyStore = mockStore({
-  projects: {
+  experiments: {
     ...initialState,
     ids: [],
     meta: {
-      activeProjectUuid: null,
+      activeExperimentId: null,
     },
   },
 });
 
-const createMockStore = (projectNames) => {
-  const newProjects = projectNames.reduce((acc, name, idx) => {
+const createMockStore = (experimentNames) => {
+  const newExperiments = experimentNames.reduce((acc, name, idx) => {
     acc[idx] = {
-      ...projectTemplate,
+      ...experimentTemplate,
       name,
-      uuid: idx,
+      id: idx,
     };
     return acc;
   }, {});
 
   return mockStore({
-    projects: {
+    experiments: {
       ...initialState,
-      ids: Object.keys(newProjects),
+      ids: Object.keys(newExperiments),
       meta: {
-        activeProjectUuid: Object.keys(newProjects)[0],
+        activeExperimentId: Object.keys(newExperiments)[0],
       },
-      ...newProjects,
+      ...newExperiments,
     },
   });
 };
 
 const filledStore = mockStore({
-  projects: {
+  experiments: {
     ...initialState,
-    ids: [project1.uuid, project2.uuid, project3.uuid],
+    ids: [experiment1.id, experiment2.id, experiment3.id],
     meta: {
-      activeProjectUuid: project1.uuid,
+      activeExperimentId: experiment1.id,
     },
-    [project1.uuid]: project1,
-    [project2.uuid]: project2,
-    [project3.uuid]: project3,
+    [experiment1.id]: experiment1,
+    [experiment2.id]: experiment2,
+    [experiment3.id]: experiment3,
   },
 });
 
@@ -96,8 +93,8 @@ describe('ProjectsList', () => {
     expect(component.exists()).toEqual(true);
   });
 
-  it('has no project if there is no project', () => {
-    const projects = initialStore.getState().projects.ids;
+  it('has no experiment if there is no experiment', () => {
+    const experiments = initialStore.getState().experiments.ids;
 
     const component = mount(
       <Provider store={initialStore}>
@@ -105,12 +102,12 @@ describe('ProjectsList', () => {
       </Provider>,
     );
 
-    // expect the number of projects to be the same as the one in the list
-    expect(component.find(ProjectCard).length).toEqual(projects.length);
+    // expect the number of experiments to be the same as the one in the list
+    expect(component.find(ProjectCard).length).toEqual(experiments.length);
   });
 
-  it('contains components if there are projects', () => {
-    const projects = filledStore.getState().projects.ids;
+  it('contains components if there are experiments', () => {
+    const experiments = filledStore.getState().experiments.ids;
 
     const component = mount(
       <Provider store={filledStore}>
@@ -118,12 +115,12 @@ describe('ProjectsList', () => {
       </Provider>,
     );
 
-    // expect the number of projects to be the same as the one in the list
-    expect(component.find(ProjectCard).length).toEqual(projects.length);
+    // expect the number of experiments to be the same as the one in the list
+    expect(component.find(ProjectCard).length).toEqual(experiments.length);
   });
 
-  it('Shows all projects if not given a filter', () => {
-    const projects = filledStore.getState().projects.ids;
+  it('Shows all experiments if not given a filter', () => {
+    const experiments = filledStore.getState().experiments.ids;
 
     const component = mount(
       <Provider store={filledStore}>
@@ -131,46 +128,46 @@ describe('ProjectsList', () => {
       </Provider>,
     );
 
-    // Expect all projects to be shown
-    expect(component.find(ProjectCard).length).toEqual(projects.length);
+    // Expect all experiments to be shown
+    expect(component.find(ProjectCard).length).toEqual(experiments.length);
   });
 
-  it('Filters the correct project given a filter', () => {
+  it('Filters the correct experiment given a filter', () => {
     const testCases = [
 
-      // Filter for one project
+      // Filter for one experiment
       {
         filterText: 'test',
-        projectNames: ['testing', 'new project', 'misc'],
-        matchingProjects: ['testing'],
+        experimentNames: ['testing', 'new experiment', 'misc'],
+        matchingExperiments: ['testing'],
       },
 
-      // Filter for more than one project
+      // Filter for more than one experiment
       {
         filterText: 'test',
-        projectNames: ['testing', 'project1', 'testing2'],
-        matchingProjects: ['testing', 'testing2'],
+        experimentNames: ['testing', 'project1', 'testing2'],
+        matchingExperiments: ['testing', 'testing2'],
       },
 
-      // Filter for projects with the same name
+      // Filter for experiments with the same name
       {
         filterText: 'test',
-        projectNames: ['testing', 'project1', 'testing', 'testing'],
-        matchingProjects: ['testing', 'testing', 'testing'],
+        experimentNames: ['testing', 'project1', 'testing', 'testing'],
+        matchingExperiments: ['testing', 'testing', 'testing'],
       },
 
       // Check that filter works for names beginning, containing and ending the filter
       {
         filterText: 'test',
-        projectNames: ['testing-project', 'beta-testing', 'project', 'no-test'],
-        matchingProjects: ['testing-project', 'beta-testing', 'no-test'],
+        experimentNames: ['testing-project', 'beta-testing', 'project', 'no-test'],
+        matchingExperiments: ['testing-project', 'beta-testing', 'no-test'],
       },
 
       // If no projects match, expect no projects to be shown
       {
         filterText: 'test',
-        projectNames: ['project1', 'project2', 'project3'],
-        matchingProjects: [],
+        experimentNames: ['experiment1', 'project2', 'project3'],
+        matchingExperiments: [],
       },
     ];
 
@@ -178,61 +175,45 @@ describe('ProjectsList', () => {
       const filter = new RegExp(testCase.filterText, 'i');
 
       const component = mount(
-        <Provider store={createMockStore(testCase.projectNames)}>
+        <Provider store={createMockStore(testCase.experimentNames)}>
           <ProjectsList filter={filter} />
         </Provider>,
       );
 
-      const projects = component.find(ProjectCard);
+      const experiments = component.find(ProjectCard);
 
-      expect(projects.length).toEqual(testCase.matchingProjects.length);
+      expect(experiments.length).toEqual(testCase.matchingExperiments.length);
 
-      testCase.matchingProjects.forEach((projectName, idx) => {
-        expect(projects.at(idx).text()).toMatch(projectName);
+      testCase.matchingExperiments.forEach((experimentName, idx) => {
+        expect(experiments.at(idx).text()).toMatch(experimentName);
       });
     });
   });
 
-  it('Filter should not break if there is no project and no filter', () => {
+  it('Filter should not break if there is no experiment and no filter', () => {
     const component = mount(
       <Provider store={emptyStore}>
         <ProjectsList />
       </Provider>,
     );
 
-    // Expect there to be no project
+    // Expect there to be no experiment
     expect(component.find(ProjectCard).length).toEqual(0);
   });
 
-  it('Filter should not break if there is no project and the filter is input', () => {
+  it('Filter should not break if there is no experiment and the filter is input', () => {
     const component = mount(
       <Provider store={emptyStore}>
         <ProjectsList />
       </Provider>,
     );
 
-    // Expect there to be no project
+    // Expect there to be no experiment
     expect(component.find(ProjectCard).length).toEqual(0);
-  });
-
-  it('Filter should work when searching using projectUuid', () => {
-    const filterText = project3.uuid;
-    const filter = new RegExp(filterText, 'i');
-
-    const component = mount(
-      <Provider store={filledStore}>
-        <ProjectsList filter={filter} />
-      </Provider>,
-    );
-
-    const filteredProjects = component.find(ProjectCard);
-
-    expect(filteredProjects.length).toEqual(1);
-    expect(filteredProjects.text()).toMatch(project3.name);
   });
 
   it('Filter should work when searching using experimentId', () => {
-    const filterText = project3.experiments[0];
+    const filterText = experiment3.id;
     const filter = new RegExp(filterText, 'i');
 
     const component = mount(
@@ -241,9 +222,24 @@ describe('ProjectsList', () => {
       </Provider>,
     );
 
-    const filteredProjects = component.find(ProjectCard);
+    const filteredExperiments = component.find(ProjectCard);
 
-    expect(filteredProjects.length).toEqual(1);
-    expect(filteredProjects.text()).toMatch(project3.name);
+    expect(filteredExperiments.length).toEqual(1);
+    expect(filteredExperiments.text()).toMatch(experiment3.name);
+  });
+
+  it('Filter should work when searching using experimentId', () => {
+    const filter = new RegExp(experiment3.id, 'i');
+
+    const component = mount(
+      <Provider store={filledStore}>
+        <ProjectsList filter={filter} />
+      </Provider>,
+    );
+
+    const filteredExperiments = component.find(ProjectCard);
+
+    expect(filteredExperiments.length).toEqual(1);
+    expect(filteredExperiments.text()).toMatch(experiment3.name);
   });
 });

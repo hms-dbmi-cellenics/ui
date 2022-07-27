@@ -1,14 +1,14 @@
 import _ from 'lodash';
 import configureStore from 'redux-mock-store';
+import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import thunk from 'redux-thunk';
-import updateSample from '../../../../redux/actions/samples/updateSample';
-import initialState, { sampleTemplate } from '../../../../redux/reducers/samples/initialState';
-import { saveSamples } from '../../../../redux/actions/samples';
 
-import { SAMPLES_UPDATE } from '../../../../redux/actionTypes/samples';
+import updateSample from 'redux/actions/samples/updateSample';
+import initialState, { sampleTemplate } from 'redux/reducers/samples/initialState';
 
-jest.mock('../../../../redux/actions/samples/saveSamples');
-saveSamples.mockImplementation(() => async () => { });
+import {
+  SAMPLES_ERROR, SAMPLES_SAVED, SAMPLES_SAVING, SAMPLES_UPDATE,
+} from 'redux/actionTypes/samples';
 
 const mockStore = configureStore([thunk]);
 
@@ -21,11 +21,6 @@ describe('updateSample action', () => {
     uuid: mockUuid,
   };
 
-  const updatedSample = {
-    ...mockSample,
-    name: 'updated name',
-  };
-
   const mockState = {
     samples: {
       ...initialState,
@@ -33,28 +28,50 @@ describe('updateSample action', () => {
     },
   };
 
-  it('Dispatches event correctly', async () => {
-    const store = mockStore(mockState);
-    await store.dispatch(updateSample(mockUuid, updatedSample));
+  beforeEach(() => {
+    jest.clearAllMocks();
 
-    const firstAction = store.getActions()[0];
-    expect(firstAction.type).toEqual(SAMPLES_UPDATE);
+    enableFetchMocks();
+    fetchMock.resetMocks();
+    fetchMock.doMock();
   });
 
-  it('Updates the lastModified field', async () => {
-    const originalModifiedDate = mockSample.lastModified;
-    const store = mockStore(mockState);
-    await store.dispatch(updateSample(mockUuid, updatedSample));
+  it('Works correctly', async () => {
+    fetchMock.mockResponseOnce(() => Promise.resolve(JSON.stringify({})));
 
-    const { sample } = store.getActions()[0].payload;
-    expect(sample.lastModified).not.toEqual(originalModifiedDate);
-    expect(_.omit(sample, 'lastModified')).toEqual(_.omit(updatedSample, 'lastModified'));
+    const sampleDiff = {
+      name: 'updated name',
+    };
+
+    const store = mockStore(mockState);
+    await store.dispatch(updateSample(mockUuid, sampleDiff));
+
+    const actions = store.getActions();
+    expect(_.map(actions, 'type')).toEqual([SAMPLES_SAVING, SAMPLES_SAVED, SAMPLES_UPDATE]);
+    expect(_.map(actions, 'payload')).toMatchSnapshot();
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      'http://localhost:3000/v2/experiments/null/samples/asd123',
+      {
+        body: JSON.stringify(sampleDiff),
+        headers: { 'Content-Type': 'application/json' },
+        method: 'PATCH',
+      },
+    );
   });
 
-  it('Dispatches call to save sample', async () => {
-    const store = mockStore(mockState);
-    await store.dispatch(updateSample(mockUuid, updatedSample));
+  it('Error handling works', async () => {
+    fetchMock.mockRejectOnce(() => Promise.reject(new Error('Api error')));
 
-    expect(saveSamples).toHaveBeenCalled();
+    const sampleDiff = {
+      name: 'updated name',
+    };
+
+    const store = mockStore(mockState);
+    await store.dispatch(updateSample(mockUuid, sampleDiff));
+
+    const actions = store.getActions();
+    expect(_.map(actions, 'type')).toEqual([SAMPLES_SAVING, SAMPLES_ERROR]);
+    expect(_.map(actions, 'payload')).toMatchSnapshot();
   });
 });

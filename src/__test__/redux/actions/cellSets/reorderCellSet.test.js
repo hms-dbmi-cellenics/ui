@@ -11,6 +11,7 @@ import pushNotificationMessage from 'utils/pushNotificationMessage';
 import initialState from 'redux/reducers/cellSets/initialState';
 
 enableFetchMocks();
+
 const mockStore = configureStore([thunk]);
 
 describe('reorderCellSet action', () => {
@@ -51,10 +52,10 @@ describe('reorderCellSet action', () => {
     expect(store.getActions()[0]).toMatchSnapshot();
 
     // Fetch was called correctly
-    expect(fetch).toHaveBeenCalledTimes(1);
+    expect(fetchMock).toHaveBeenCalledTimes(1);
 
-    const [url, body] = fetch.mock.calls[0];
-    expect(url).toEqual('http://localhost:3000/v1/experiments/1234/cellSets');
+    const [url, body] = fetchMock.mock.calls[0];
+    expect(url).toEqual('http://localhost:3000/v2/experiments/1234/cellSets');
     expect(body).toMatchSnapshot();
   });
 
@@ -71,5 +72,17 @@ describe('reorderCellSet action', () => {
     expect(pushNotificationMessageParams).toEqual(['error', 'We couldn\'t save your data.']);
 
     expect(store.getActions()).toHaveLength(0);
+  });
+
+  it('Uses V2 URL when using API version V2', async () => {
+    const store = mockStore({ cellSets: { ...cellSetsNodeState, loading: false } });
+    await store.dispatch(reorderCellSet(experimentId, cellSetKey, 5));
+
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+
+    const [url, body] = fetch.mock.calls[0];
+
+    expect(url).toEqual('http://localhost:3000/v2/experiments/1234/cellSets');
+    expect(body).toMatchSnapshot();
   });
 });

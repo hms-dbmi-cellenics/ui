@@ -2,10 +2,9 @@ import _ from 'lodash';
 
 import { CELL_SETS_UPDATE_PROPERTY } from 'redux/actionTypes/cellSets';
 
-import fetchAPI from 'utils/fetchAPI';
+import fetchAPI from 'utils/http/fetchAPI';
 import endUserMessages from 'utils/endUserMessages';
-import pushNotificationMessage from 'utils/pushNotificationMessage';
-import { isServerError, throwIfRequestFailed } from 'utils/fetchErrors';
+import handleError from 'utils/http/handleError';
 
 const updateCellSetPropertyJsonMerger = (cellSetKey, dataUpdated, cellClassKey) => (
   [{
@@ -48,9 +47,7 @@ const updatesAreAllowed = (dataUpdated, rootNode) => {
 const updateCellSetProperty = (
   experimentId, key, dataUpdated,
 ) => async (dispatch, getState) => {
-  const {
-    loading, error, properties,
-  } = getState().cellSets;
+  const { loading, error, properties } = getState().cellSets;
 
   if (loading || error) {
     return null;
@@ -66,10 +63,9 @@ const updateCellSetProperty = (
     ? updateCellClassPropertyJsonMerger(key, dataUpdated)
     : updateCellSetPropertyJsonMerger(key, dataUpdated, parentNodeKey);
 
-  const url = `/v1/experiments/${experimentId}/cellSets`;
   try {
-    const response = await fetchAPI(
-      url,
+    await fetchAPI(
+      `/v2/experiments/${experimentId}/cellSets`,
       {
         method: 'PATCH',
         headers: {
@@ -79,9 +75,6 @@ const updateCellSetProperty = (
       },
     );
 
-    const json = await response.json();
-    throwIfRequestFailed(response, json, endUserMessages.ERROR_SAVING);
-
     await dispatch({
       type: CELL_SETS_UPDATE_PROPERTY,
       payload: {
@@ -90,11 +83,7 @@ const updateCellSetProperty = (
       },
     });
   } catch (e) {
-    if (!isServerError(e)) {
-      console.error(`fetch ${url} error ${e.message}`);
-    }
-
-    pushNotificationMessage('error', endUserMessages.ERROR_SAVING);
+    handleError(e, endUserMessages.ERROR_SAVING);
   }
 };
 

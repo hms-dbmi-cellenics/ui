@@ -8,11 +8,12 @@ import {
 } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
 import { useDispatch } from 'react-redux';
-import { uploadSingleFile, fileObjectToFileRecord } from '../../utils/upload/processUpload';
+import endUserMessages from 'utils/endUserMessages';
+import handleError from 'utils/http/handleError';
+import { createAndUploadSingleFile, fileObjectToFileRecord } from 'utils/upload/processUpload';
 
-import pushNotificationMessage from '../../utils/pushNotificationMessage';
-import UploadStatus, { messageForStatus } from '../../utils/upload/UploadStatus';
-import downloadSingleFile from '../../utils/data-management/downloadSingleFile';
+import UploadStatus, { messageForStatus } from 'utils/upload/UploadStatus';
+import downloadSingleFile from 'utils/data-management/downloadSingleFile';
 
 // we'll need to remove the hard-coded 10x tech type once we start
 // supporting other types and save the chosen tech type in redux
@@ -30,8 +31,9 @@ const UploadDetailsModal = (props) => {
   const inputFileRef = useRef(null);
   const [replacementFileObject, setReplacementFileObject] = useState(null);
 
-  const { activeProjectUuid } = useSelector((state) => state.projects.meta) || false;
+  const { activeExperimentId } = useSelector((state) => state.experiments.meta);
   const samples = useSelector((state) => state.samples);
+
   const sampleName = samples[uploadDetailsModalDataRef.current?.sampleUuid]?.name;
 
   useEffect(() => {
@@ -40,8 +42,7 @@ const UploadDetailsModal = (props) => {
         if (newFile.valid) { // && newFile.name === file.name ?
           uploadFile(newFile);
         } else {
-          pushNotificationMessage('error',
-            'The selected file name does not match the expected category.', 2);
+          handleError('error', endUserMessages.ERROR_FILE_CATEGORY);
         }
       });
     }
@@ -67,7 +68,8 @@ const UploadDetailsModal = (props) => {
     if (!uploadDetailsModalDataRef.current) {
       return;
     }
-    uploadSingleFile(newFile, activeProjectUuid, sampleUuid, dispatch);
+
+    createAndUploadSingleFile(newFile, activeExperimentId, sampleUuid, dispatch);
     onCancel();
   };
 
@@ -125,7 +127,7 @@ const UploadDetailsModal = (props) => {
       key='retry'
       block
       onClick={() => {
-        downloadSingleFile(activeProjectUuid, sampleUuid, file.name);
+        downloadSingleFile(activeExperimentId, sampleUuid, file.name);
       }}
       style={{ width: '140px', marginBottom: '10px' }}
     >

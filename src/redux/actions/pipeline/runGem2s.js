@@ -1,16 +1,16 @@
-import fetchAPI from '../../../utils/fetchAPI';
-import { isServerError, throwIfRequestFailed } from '../../../utils/fetchErrors';
-import endUserMessages from '../../../utils/endUserMessages';
+import fetchAPI from 'utils/http/fetchAPI';
+import handleError from 'utils/http/handleError';
+import endUserMessages from 'utils/endUserMessages';
 import {
-  EXPERIMENT_SETTINGS_PIPELINE_START,
-} from '../../actionTypes/experimentSettings';
+  EXPERIMENT_SETTINGS_QC_START,
+} from 'redux/actionTypes/experimentSettings';
 
 import {
   BACKEND_STATUS_LOADING,
   BACKEND_STATUS_ERROR,
-} from '../../actionTypes/backendStatus';
+} from 'redux/actionTypes/backendStatus';
 
-import loadBackendStatus from '../backendStatus/loadBackendStatus';
+import loadBackendStatus from 'redux/actions/backendStatus/loadBackendStatus';
 
 const runGem2s = (experimentId, paramsHash) => async (dispatch) => {
   dispatch({
@@ -20,10 +20,9 @@ const runGem2s = (experimentId, paramsHash) => async (dispatch) => {
     },
   });
 
-  const url = `/v1/experiments/${experimentId}/gem2s`;
   try {
-    const response = await fetchAPI(
-      url,
+    await fetchAPI(
+      `/v2/experiments/${experimentId}/gem2s`,
       {
         method: 'POST',
         headers: {
@@ -33,31 +32,25 @@ const runGem2s = (experimentId, paramsHash) => async (dispatch) => {
       },
     );
 
-    const json = await response.json();
-    throwIfRequestFailed(response, json, endUserMessages.ERROR_STARTING_PIPLELINE);
-
     dispatch({
-      type: EXPERIMENT_SETTINGS_PIPELINE_START,
+      type: EXPERIMENT_SETTINGS_QC_START,
       payload: {},
     });
 
     dispatch(loadBackendStatus(experimentId));
   } catch (e) {
-    let { message } = e;
-    if (!isServerError(e)) {
-      console.error(`fetch ${url} error ${message}`);
-      message = endUserMessages.CONNECTION_ERROR;
-    }
-    console.log(`error run gem2s ${e}`);
+    let errorMessage = handleError(e, endUserMessages.ERROR_STARTING_PIPLELINE);
+
     // temporarily give the user more info if the error is permission denied
-    if (message.includes('does not have access to experiment')) {
-      message += ' Refresh the page to continue with your analysis.';
+    if (errorMessage.includes('does not have access to experiment')) {
+      errorMessage += ' Refresh the page to continue with your analysis.';
     }
+
     dispatch({
       type: BACKEND_STATUS_ERROR,
       payload: {
         experimentId,
-        error: `Could not start gem2s. ${message}`,
+        error: errorMessage,
       },
     });
   }

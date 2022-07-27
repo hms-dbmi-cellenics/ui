@@ -1,34 +1,26 @@
 /* eslint-disable no-param-reassign */
 import React, { useEffect } from 'react';
 import {
-  Row,
-  Col,
-  Space,
   Collapse,
   Select,
-  Tooltip,
-  Button,
   Skeleton,
 } from 'antd';
-import { InfoCircleOutlined } from '@ant-design/icons';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import { getCellSets, getCellSetsHierarchy } from 'redux/selectors';
-import PlotStyling from 'components/plots/styling/PlotStyling';
 import {
   updatePlotConfig,
   loadPlotConfig,
 } from 'redux/actions/componentConfig/index';
-import PlotHeader from 'components/plots/PlotHeader';
+import Header from 'components/Header';
 import { loadCellSets } from 'redux/actions/cellSets';
 import CategoricalEmbeddingPlot from 'components/plots/CategoricalEmbeddingPlot';
+import PlotContainer from 'components/plots/PlotContainer';
 import SelectData from 'components/plots/styling/embedding-continuous/SelectData';
 import { plotNames } from 'utils/constants';
 
 const { Panel } = Collapse;
 
-// TODO: when we want to enable users to create their custom plots,
-// we will need to change this to proper Uuid
 const plotUuid = 'embeddingCategoricalMain';
 const plotType = 'embeddingCategorical';
 
@@ -37,10 +29,10 @@ const EmbeddingCategoricalPage = ({ experimentId }) => {
   const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
   const cellSets = useSelector(getCellSets());
   const hierarchy = useSelector(getCellSetsHierarchy());
+
   useEffect(() => {
-    // try to load the plot configuration.
+    if (!config) dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
     dispatch(loadCellSets(experimentId));
-    dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
   }, []);
 
   const generateGroupByOptions = () => {
@@ -57,11 +49,7 @@ const EmbeddingCategoricalPage = ({ experimentId }) => {
     dispatch(updatePlotConfig(plotUuid, obj));
   };
 
-  const onCellSetSelect = ({ value }) => {
-    updatePlotWithChanges({ selectedCellSet: value });
-  };
-
-  const plotStylingControlsConfig = [
+  const plotStylingConfig = [
     {
       panelTitle: 'Main schema',
       controls: ['dimensions'],
@@ -107,14 +95,14 @@ const EmbeddingCategoricalPage = ({ experimentId }) => {
 
   const renderExtraPanels = () => (
     <>
-      <Panel header='Select data' key='15'>
+      <Panel header='Select data' key='select-data'>
         <SelectData
           config={config}
           onUpdate={updatePlotWithChanges}
           cellSets={cellSets}
         />
       </Panel>
-      <Panel header='Group by' key='1'>
+      <Panel header='Group by' key='group-by'>
         <p>
           Select the cell set category you would like to group cells by.
         </p>
@@ -126,7 +114,7 @@ const EmbeddingCategoricalPage = ({ experimentId }) => {
             loading={config}
             value={{ value: config.selectedCellSet }}
             options={generateGroupByOptions()}
-            onChange={onCellSetSelect}
+            onChange={({ value }) => updatePlotWithChanges({ selectedCellSet: value })}
           />
         ) : <Skeleton.Input style={{ width: '100%' }} active />}
       </Panel>
@@ -135,49 +123,23 @@ const EmbeddingCategoricalPage = ({ experimentId }) => {
 
   return (
     <>
-      <PlotHeader
-        title={plotNames.CATEGORICAL_EMBEDDING}
-        plotUuid={plotUuid}
+      <Header title={plotNames.CATEGORICAL_EMBEDDING} />
+      <PlotContainer
         experimentId={experimentId}
-      />
-      <Space direction='vertical' style={{ width: '100%', padding: '0 10px' }}>
-
-        <Row gutter={16}>
-          <Col span={16}>
-            <Space direction='vertical' style={{ width: '100%' }}>
-              <Collapse defaultActiveKey='1'>
-                <Panel
-                  header='Preview'
-                  key='1'
-                  extra={(
-                    <Tooltip title='In order to rename existing clusters or create new ones, use the cell set tool, located in the Data Exploration page.'>
-                      <Button icon={<InfoCircleOutlined />} />
-                    </Tooltip>
-                  )}
-                >
-                  <CategoricalEmbeddingPlot
-                    experimentId={experimentId}
-                    config={config}
-                    plotUuid={plotUuid}
-                    onUpdate={updatePlotWithChanges}
-                  />
-                </Panel>
-              </Collapse>
-            </Space>
-          </Col>
-          <Col span={8}>
-            <Space direction='vertical' style={{ width: '100%' }}>
-              <PlotStyling
-                formConfig={plotStylingControlsConfig}
-                config={config}
-                onUpdate={updatePlotWithChanges}
-                renderExtraPanels={renderExtraPanels}
-                defaultActiveKey='1'
-              />
-            </Space>
-          </Col>
-        </Row>
-      </Space>
+        plotUuid={plotUuid}
+        plotType={plotType}
+        plotStylingConfig={plotStylingConfig}
+        plotInfo='In order to rename existing clusters or create new ones, use the cell set tool, located in the Data Exploration page.'
+        extraControlPanels={renderExtraPanels()}
+        defaultActiveKey='group-by'
+      >
+        <CategoricalEmbeddingPlot
+          experimentId={experimentId}
+          config={config}
+          plotUuid={plotUuid}
+          onUpdate={updatePlotWithChanges}
+        />
+      </PlotContainer>
     </>
   );
 };

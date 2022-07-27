@@ -1,96 +1,67 @@
 /* eslint-disable no-param-reassign */
-import fetchAPI from 'utils/fetchAPI';
+import fetchAPI from 'utils/http/fetchAPI';
 import moment from 'moment';
 import hash from 'object-hash';
-
-import config from 'config';
-import { api } from 'utils/constants';
-
 import {
   EXPERIMENTS_CREATED,
   EXPERIMENTS_ERROR,
   EXPERIMENTS_SAVING,
 } from 'redux/actionTypes/experiments';
-import { experimentTemplate } from 'redux/reducers/experiments/initialState';
 
 import endUserMessages from 'utils/endUserMessages';
-import pushNotificationMessage from 'utils/pushNotificationMessage';
-import { isServerError, throwIfRequestFailed } from 'utils/fetchErrors';
-import convertExperimentToApiV1Model from 'utils/convertExperimentToApiV1Model';
+
+import handleError from 'utils/http/handleError';
 
 const createExperiment = (
-  projectUuid, newExperimentName,
+  name, description,
 ) => async (dispatch) => {
-  const createdDate = moment().toISOString();
+  const createdAt = moment().toISOString();
+  const experimentId = hash.MD5(createdAt);
 
-  const experimentId = hash.MD5(createdDate);
-
-  const newExperiment = {
-    ...experimentTemplate,
+  const newExperimentProperties = {
     id: experimentId,
-    name: newExperimentName,
-    projectUuid,
-    createdDate,
+    name,
+    description,
   };
-
-  let url;
-  let experimentToSend;
-
-  if (config.currentApiVersion === api.V1) {
-    experimentToSend = convertExperimentToApiV1Model(newExperiment);
-
-    url = `/v1/experiments/${experimentId}`;
-  } else if (config.currentApiVersion === api.V2) {
-    const { id, name, description } = newExperiment;
-    experimentToSend = { id, name, description };
-
-    url = `/v2/experiments/${experimentId}`;
-  }
 
   dispatch({
     type: EXPERIMENTS_SAVING,
   });
 
   try {
-    const response = await fetchAPI(
-      url,
+    await fetchAPI(
+      `/v2/experiments/${experimentId}`,
       {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(experimentToSend),
+        body: JSON.stringify(newExperimentProperties),
       },
     );
-
-    const json = await response.json();
-    throwIfRequestFailed(response, json, endUserMessages.ERROR_SAVING);
 
     dispatch({
       type: EXPERIMENTS_CREATED,
       payload: {
-        experiment: newExperiment,
+        // TODO We don't really need to send this createdAt to redux, the real createdAt
+        // is being generated in the api
+        // We should make the POST to create the experiment return the new experiment and
+        // Take the createdAt from there
+        experiment: { createdAt, ...newExperimentProperties },
       },
     });
   } catch (e) {
+    const errorMessage = handleError(e, endUserMessages.ERROR_SAVING);
+
     dispatch({
       type: EXPERIMENTS_ERROR,
       payload: {
-        error: e.message,
+        error: errorMessage,
       },
     });
-
-    const userMessage = isServerError(e)
-      ? endUserMessages.ERROR_SAVING
-      : endUserMessages.CONNECTION_ERROR;
-
-    pushNotificationMessage(
-      'error',
-      userMessage,
-    );
   }
 
-  return Promise.resolve(newExperiment);
+  return Promise.resolve(experimentId);
 };
 
 export default createExperiment;

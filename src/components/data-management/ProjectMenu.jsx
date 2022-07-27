@@ -3,23 +3,24 @@ import { useDispatch, useSelector } from 'react-redux';
 import {
   Space, Button,
 } from 'antd';
+import integrationTestConstants from 'utils/integrationTestConstants';
+import processUpload from 'utils/upload/processUpload';
 import DownloadDataButton from './DownloadDataButton';
 import LaunchAnalysisButton from './LaunchAnalysisButton';
 import FileUploadModal from './FileUploadModal';
-import integrationTestConstants from '../../utils/integrationTestConstants';
-import { processUpload } from '../../utils/upload/processUpload';
 import ShareExperimentModal from './ShareExperimentModal';
 
 const ProjectMenu = () => {
   const dispatch = useDispatch();
   const samples = useSelector((state) => state.samples);
-  const activeProjectUuid = useSelector((state) => state.projects.meta.activeProjectUuid);
+  const activeExperimentId = useSelector((state) => state.experiments.meta.activeExperimentId);
+  const activeExperiment = useSelector((state) => state.experiments[activeExperimentId]);
+
   const [uploadModalVisible, setUploadModalVisible] = useState(false);
   const [shareExperimentModalVisible, setShareExperimentModalVisible] = useState(false);
-  const activeProject = useSelector((state) => state.projects[activeProjectUuid]);
 
   const uploadFiles = (filesList, sampleType) => {
-    processUpload(filesList, sampleType, samples, activeProjectUuid, dispatch);
+    processUpload(filesList, sampleType, samples, activeExperimentId, dispatch);
     setUploadModalVisible(false);
   };
 
@@ -42,7 +43,7 @@ const ProjectMenu = () => {
         {shareExperimentModalVisible && (
           <ShareExperimentModal
             onCancel={() => setShareExperimentModalVisible(false)}
-            activeProject={activeProject}
+            experiment={activeExperiment}
           />
         )}
         <LaunchAnalysisButton />

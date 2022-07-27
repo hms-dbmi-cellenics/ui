@@ -1,13 +1,25 @@
 import createExperiment from './createExperiment';
-import saveExperiment from './saveExperiment';
+import deleteExperiment from './deleteExperiment';
 import updateExperiment from './updateExperiment';
 import loadExperiments from './loadExperiments';
+import setActiveExperiment from './setActiveExperiment';
 import switchExperiment from './switchExperiment';
+import reorderSamples from './reorderSamples';
+import createMetadataTrack from './createMetadataTrack';
+import updateMetadataTrack from './updateMetadataTrack';
+import deleteMetadataTrack from './deleteMetadataTrack';
+import updateValueInMetadataTrack from './updateValueInMetadataTrack';
 
 export {
   createExperiment,
-  saveExperiment,
+  deleteExperiment,
   updateExperiment,
   loadExperiments,
+  setActiveExperiment,
   switchExperiment,
+  reorderSamples,
+  createMetadataTrack,
+  updateMetadataTrack,
+  deleteMetadataTrack,
+  updateValueInMetadataTrack,
 };

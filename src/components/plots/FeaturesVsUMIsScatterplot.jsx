@@ -2,9 +2,9 @@ import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Vega } from 'react-vega';
 
+import generateSpec from 'utils/plotSpecs/generateFeaturesVsUMIsScatterplot';
 import EmptyPlot from './helpers/EmptyPlot';
 import transformOldFeaturesVsUMIsPlotData from './helpers/transformOldFeaturesVsUMIsPlotData';
-import generateSpec from '../../utils/plotSpecs/generateFeaturesVsUMIsScatterplot';
 
 const FeaturesVsUMIsScatterplot = (props) => {
   const {

@@ -1,85 +1,53 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Mosaic, MosaicWindow } from 'react-mosaic-component';
-import {
-  Button, Space, Empty, Typography,
-} from 'antd';
-import ReactResizeDetector from 'react-resize-detector';
-import 'react-mosaic-component/react-mosaic-component.css';
+
+import { Space } from 'antd';
 
 import { ClipLoader } from 'react-spinners';
+import { loadExperiments } from 'redux/actions/experiments';
+
+import Header from 'components/Header';
+import MultiTileContainer from 'components/MultiTileContainer';
 import NewProjectModal from 'components/data-management/NewProjectModal';
-import { loadProjects } from '../../redux/actions/projects';
-import { loadExperiments } from '../../redux/actions/experiments';
-
-import Header from '../../components/Header';
-import ProjectsListContainer from '../../components/data-management/ProjectsListContainer';
-import ProjectDetails from '../../components/data-management/ProjectDetails';
-import { loadProcessingSettings } from '../../redux/actions/experimentSettings';
-import loadBackendStatus from '../../redux/actions/backendStatus/loadBackendStatus';
-
-const { Text } = Typography;
+import ProjectsListContainer from 'components/data-management/ProjectsListContainer';
+import ProjectDetails from 'components/data-management/ProjectDetails';
+import { loadProcessingSettings } from 'redux/actions/experimentSettings';
+import loadBackendStatus from 'redux/actions/backendStatus/loadBackendStatus';
+import { loadSamples } from 'redux/actions/samples';
+import ExampleExperimentsSpace from 'components/data-management/ExampleExperimentsSpace';
 
 const DataManagementPage = () => {
   const dispatch = useDispatch();
-  const projectsList = useSelector(((state) => state.projects));
 
-  const {
-    saving: projectSaving,
-  } = projectsList.meta;
+  const samples = useSelector((state) => state.samples);
 
-  const sampleSaving = useSelector((state) => state.samples.meta.saving);
+  const { activeExperimentId } = useSelector((state) => state.experiments.meta);
+  const experiments = useSelector(((state) => state.experiments));
 
-  const {
-    activeProjectUuid,
-    loading: projectsLoading,
-  } = useSelector((state) => state.projects.meta);
+  const activeExperiment = experiments[activeExperimentId];
+  const { saving: experimentsSaving } = experiments.meta;
+  const { saving: samplesSaving } = samples.meta;
 
-  const experiments = useSelector((state) => state.experiments);
   const [newProjectModalVisible, setNewProjectModalVisible] = useState(false);
-  const [justLoggedIn, setJustLoggedIn] = useState(true);
-  const activeProject = projectsList[activeProjectUuid];
-
-  const experimentIds = new Set(experiments.ids);
-  const experimentsAreLoaded = activeProject?.experiments
-    .every((experimentId) => experimentIds.has(experimentId));
 
   useEffect(() => {
-    if (projectsList.ids.length === 0) dispatch(loadProjects());
+    if (experiments.ids.length === 0) dispatch(loadExperiments());
   }, []);
 
-  const updateRunStatus = (experimentId) => {
-    dispatch(loadBackendStatus(experimentId));
+  const samplesAreLoaded = () => {
+    const loadedSampleIds = Object.keys(samples);
+    return activeExperiment.sampleIds.every((sampleId) => loadedSampleIds.includes(sampleId));
   };
 
   useEffect(() => {
-    if (!activeProjectUuid) return;
-
-    // Right now we have one experiment per project, so we can just load the experiment
-    // This has to be changed when we have more than one experiment
-    const activeExperimentId = projectsList[activeProjectUuid].experiments[0];
+    if (!activeExperimentId) return;
 
     dispatch(loadProcessingSettings(activeExperimentId));
 
-    if (!experimentsAreLoaded) {
-      dispatch(loadExperiments(activeProjectUuid)).then(() => updateRunStatus(activeExperimentId));
-    }
+    if (!samplesAreLoaded()) dispatch(loadSamples(activeExperimentId));
 
-    if (experiments[activeExperimentId]) updateRunStatus(activeExperimentId);
-  }, [activeProjectUuid]);
-
-  useEffect(() => {
-    // only open the modal the first time a user logs in if there are no projects
-    if (justLoggedIn === false || projectsLoading === true) {
-      return;
-    }
-
-    setJustLoggedIn(false);
-
-    if (projectsList.ids.length === 0) {
-      setNewProjectModalVisible(true);
-    }
-  }, [projectsList, projectsLoading]);
+    dispatch(loadBackendStatus(activeExperimentId));
+  }, [activeExperimentId]);
 
   const PROJECTS_LIST = 'Projects';
   const PROJECT_DETAILS = 'Project Details';
@@ -88,31 +56,25 @@ const DataManagementPage = () => {
     [PROJECTS_LIST]: {
       toolbarControls: [],
       component: (width, height) => (
-        <Space
-          direction='vertical'
-          style={{ width: '100%' }}
-        >
-          <ProjectsListContainer
-            height={height}
-            onCreateNewProject={() => setNewProjectModalVisible(true)}
-          />
-        </Space>
+        <ProjectsListContainer
+          height={height}
+          onCreateNewProject={() => setNewProjectModalVisible(true)}
+        />
       ),
     },
     [PROJECT_DETAILS]: {
       toolbarControls: [],
       component: (width, height) => {
-        if (!activeProjectUuid) {
-          return (
-            <Empty
-              description='You have no projects yet.'
-            >
-              <Button type='primary' onClick={() => setNewProjectModalVisible(true)}>Get started</Button>
-            </Empty>
-          );
+        if (!activeExperimentId) {
+          return <ExampleExperimentsSpace introductionText='You have no projects yet.' />;
         }
 
-        return (<ProjectDetails width={width} height={height} />);
+        return (
+          <ProjectDetails
+            width={width}
+            height={height}
+          />
+        );
       },
     },
   };
@@ -124,23 +86,17 @@ const DataManagementPage = () => {
     splitPercentage: 23,
   };
 
-  const renderWindow = (tile, width, height) => (tile && height && width ? tile(width, height) : <></>);
-
   return (
     <>
-      <Header
-        title='Data Management'
-      />
-      {projectSaving || sampleSaving ? (
+      <Header title='Data Management' />
+      {experimentsSaving || samplesSaving ? (
         <center>
           <Space direction='vertical'>
             <ClipLoader
               size={50}
               color='#8f0b10'
             />
-            <Text>
-              Loading...
-            </Text>
+            Loading...
           </Space>
         </center>
       ) : (<></>)}
@@ -150,29 +106,10 @@ const DataManagementPage = () => {
           onCreate={() => { setNewProjectModalVisible(false); }}
         />
       ) : (<></>)}
-      <div style={{ height: '100%', width: '100%', margin: 0 }}>
-        <Mosaic
-          renderTile={(id, path) => (
-            <ReactResizeDetector
-              handleWidth
-              handleHeight
-              refreshMode='throttle'
-              refreshRate={500}
-            >
-              {({ width, height }) => (
-                <MosaicWindow
-                  path={path}
-                  title={id}
-                  toolbarControls={TILE_MAP[id].toolbarControls}
-                >
-                  {renderWindow(TILE_MAP[id].component, width, height)}
-                </MosaicWindow>
-              )}
-            </ReactResizeDetector>
-          )}
-          initialValue={windows}
-        />
-      </div>
+      <MultiTileContainer
+        tileMap={TILE_MAP}
+        initialArrangement={windows}
+      />
     </>
   );
 };

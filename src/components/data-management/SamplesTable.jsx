@@ -2,62 +2,54 @@
 import React, {
   useEffect, useState, forwardRef, useImperativeHandle,
 } from 'react';
-import Storage from '@aws-amplify/storage';
+
 import { useSelector, useDispatch } from 'react-redux';
 import {
-  Table, Row, Col, Typography, Space, Button, Empty,
+  Table, Row, Col, Typography, Space,
 } from 'antd';
 import {
   MenuOutlined,
 } from '@ant-design/icons';
 import { sortableHandle, sortableContainer, sortableElement } from 'react-sortable-hoc';
 
-import MetadataColumnTitle from 'components/data-management/MetadataColumn';
+import ExampleExperimentsSpace from 'components/data-management/ExampleExperimentsSpace';
 import MetadataPopover from 'components/data-management/MetadataPopover';
-import {
-  UploadCell, SampleNameCell, EditableFieldCell,
-} from 'components/data-management/SamplesTableCells';
+import MetadataColumnTitle from 'components/data-management/MetadataColumn';
+import { UploadCell, SampleNameCell, EditableFieldCell } from 'components/data-management/SamplesTableCells';
 
 import {
-  updateProject,
   deleteMetadataTrack,
   createMetadataTrack,
-} from 'redux/actions/projects';
-import { DEFAULT_NA } from 'redux/reducers/projects/initialState';
-import { updateExperiment } from 'redux/actions/experiments';
-import { updateSample } from 'redux/actions/samples';
+  updateValueInMetadataTrack,
+  reorderSamples,
+} from 'redux/actions/experiments';
+
+import { loadSamples } from 'redux/actions/samples';
 
 import UploadStatus from 'utils/upload/UploadStatus';
 import { arrayMoveImmutable } from 'utils/array-move';
-import downloadFromUrl from 'utils/data-management/downloadFromUrl';
+
 import { metadataNameToKey, metadataKeyToName, temporaryMetadataKey } from 'utils/data-management/metadataUtils';
 import integrationTestConstants from 'utils/integrationTestConstants';
 
 import 'utils/css/data-management.css';
 
-const { Paragraph, Text } = Typography;
+import { ClipLoader } from 'react-spinners';
+import useConditionalEffect from 'utils/customHooks/useConditionalEffect';
+import { METADATA_DEFAULT_VALUE } from 'redux/reducers/experiments/initialState';
 
-const exampleDatasets = [
-  {
-    filename: 'PBMC_3k.zip',
-    description: 'Uni-sample PBMC dataset',
-  },
-  {
-    filename: 'PBMC_BMMC_17k.zip',
-    description: 'Multi-sample blood and bone marrow dataset',
-  },
-];
+const { Text } = Typography;
 
 const SamplesTable = forwardRef((props, ref) => {
   const dispatch = useDispatch();
   const [tableData, setTableData] = useState([]);
 
-  const projects = useSelector((state) => state.projects);
+  const experiments = useSelector((state) => state.experiments);
   const samples = useSelector((state) => state.samples);
+  const areSamplesLoading = useSelector((state) => state.samples.meta.loading);
 
-  const { activeProjectUuid } = useSelector((state) => state.projects.meta) || false;
-  const activeProject = useSelector((state) => state.projects[activeProjectUuid]) || false;
-  const environment = useSelector((state) => state?.networkResources?.environment);
+  const activeExperimentId = useSelector((state) => state.experiments.meta.activeExperimentId);
+  const activeExperiment = useSelector((state) => state.experiments[activeExperimentId]);
 
   const [sampleNames, setSampleNames] = useState(new Set());
   const DragHandle = sortableHandle(() => <MenuOutlined style={{ cursor: 'grab', color: '#999' }} />);
@@ -106,10 +98,10 @@ const SamplesTable = forwardRef((props, ref) => {
   const [tableColumns, setTableColumns] = useState(initialTableColumns);
 
   useEffect(() => {
-    if (activeProject.samples.length > 0) {
+    if (activeExperiment.sampleIds.length > 0) {
       // if there are samples - build the table columns
-      setSampleNames(new Set(activeProject.samples.map((id) => samples[id]?.name.trim())));
-      const metadataColumns = activeProject.metadataKeys.map(
+      setSampleNames(new Set(activeExperiment.sampleIds.map((id) => samples[id]?.name.trim())));
+      const metadataColumns = activeExperiment.metadataKeys.map(
         (metadataKey) => createInitializedMetadataColumn(metadataKeyToName(metadataKey)),
       ) || [];
       setTableColumns([...initialTableColumns, ...metadataColumns]);
@@ -117,10 +109,14 @@ const SamplesTable = forwardRef((props, ref) => {
       setTableColumns([]);
       setSampleNames(new Set());
     }
-  }, [samples, activeProject]);
+  }, [samples, activeExperiment]);
+
+  useConditionalEffect(() => {
+    dispatch(loadSamples(activeExperimentId));
+  }, [activeExperiment?.sampleIds], { lazy: true });
 
   const deleteMetadataColumn = (name) => {
-    dispatch(deleteMetadataTrack(name, activeProjectUuid));
+    dispatch(deleteMetadataTrack(name, activeExperimentId));
   };
 
   const createInitializedMetadataColumn = (name) => {
@@ -134,7 +130,7 @@ const SamplesTable = forwardRef((props, ref) => {
           sampleNames={sampleNames}
           setCells={setCells}
           deleteMetadataColumn={deleteMetadataColumn}
-          activeProjectUuid={activeProjectUuid}
+          activeExperimentId={activeExperimentId}
         />
       ),
       width: 200,
@@ -145,7 +141,7 @@ const SamplesTable = forwardRef((props, ref) => {
           dataIndex={key}
           rowIdx={rowIdx}
           onAfterSubmit={(newValue) => {
-            dispatch(updateSample(record.uuid, { metadata: { [key]: newValue } }));
+            dispatch(updateValueInMetadataTrack(activeExperimentId, record.uuid, key, newValue));
           }}
         />
       ),
@@ -153,7 +149,7 @@ const SamplesTable = forwardRef((props, ref) => {
   };
 
   const onMetadataCreate = (name) => {
-    dispatch(createMetadataTrack(name, activeProjectUuid));
+    dispatch(createMetadataTrack(name, activeExperimentId));
   };
 
   useImperativeHandle(ref, () => ({
@@ -165,7 +161,7 @@ const SamplesTable = forwardRef((props, ref) => {
         fixed: 'right',
         title: () => (
           <MetadataPopover
-            existingMetadata={activeProject.metadataKeys}
+            existingMetadata={activeExperiment.metadataKeys}
             onCreate={(name) => {
               onMetadataCreate(name);
             }}
@@ -194,35 +190,34 @@ const SamplesTable = forwardRef((props, ref) => {
 
   const setCells = (value, metadataKey, actionType) => {
     if (!MASS_EDIT_ACTIONS.includes(actionType)) return;
-    const updateObject = { metadata: { [metadataKey]: value } };
 
     const canUpdateCell = (sampleUuid, action) => {
       if (action !== 'REPLACE_EMPTY') return true;
 
       const isMetadataEmpty = (uuid) => (
         !samples[uuid].metadata[metadataKey]
-        || samples[uuid].metadata[metadataKey] === DEFAULT_NA
+        || samples[uuid].metadata[metadataKey] === METADATA_DEFAULT_VALUE
       );
 
       return isMetadataEmpty(sampleUuid);
     };
 
-    activeProject.samples.forEach(
+    activeExperiment.sampleIds.forEach(
       (sampleUuid) => {
         if (canUpdateCell(sampleUuid, actionType)) {
-          dispatch(updateSample(sampleUuid, updateObject));
+          dispatch(updateValueInMetadataTrack(activeExperimentId, sampleUuid, metadataKey, value));
         }
       },
     );
   };
 
   useEffect(() => {
-    if (activeProject.samples.length === 0) {
+    if (activeExperiment.sampleIds.length === 0) {
       setTableData([]);
       return;
     }
 
-    const newData = activeProject.samples.map((sampleUuid, idx) => {
+    const newData = activeExperiment.sampleIds.map((sampleUuid, idx) => {
       // upload problems sometimes lead to partial updates and incosistent states
       // in this situation it's possible that the sampleUuid does not exist
       // this a temporary fix so that the whole UI doesn't crash preventing the
@@ -248,65 +243,27 @@ const SamplesTable = forwardRef((props, ref) => {
       };
     });
     setTableData(newData);
-  }, [projects, samples, activeProjectUuid]);
+  }, [experiments, samples, activeExperimentId]);
 
-  const downloadPublicDataset = async (filename) => {
-    const s3Object = await Storage.get(
-      filename,
-      {
-        bucket: `biomage-public-datasets-${environment}`,
-        contentType: 'multipart/form-data',
-      },
-    );
-    downloadFromUrl(s3Object);
-  };
-
-  const noDataText = (
-    <Empty
-      imageStyle={{
-        height: 60,
-      }}
-      description={(
-        <Space size='middle' direction='vertical'>
-          <Paragraph>
-            Start uploading your samples by clicking on Add samples.
-          </Paragraph>
-          <Text>
-            Don&apos;t have data? Get started using one of our example datasets:
-          </Text>
-          <div style={{ width: 'auto', textAlign: 'left' }}>
-            <ul>
-              {
-                exampleDatasets.map(({ filename, description }) => (
-                  <li key={filename}>
-                    <Button
-                      type='link'
-                      size='small'
-                      onClick={() => downloadPublicDataset(filename)}
-                    >
-                      {description}
-                    </Button>
-                  </li>
-                ))
-              }
-            </ul>
-          </div>
-        </Space>
-      )}
+  const noDataComponent = (
+    <ExampleExperimentsSpace
+      introductionText='Start uploading your samples by clicking on Add samples.'
+      imageStyle={{ height: 60 }}
     />
   );
 
-  const onSortEnd = ({ oldIndex, newIndex }) => {
+  const onSortEnd = async ({ oldIndex, newIndex }) => {
     if (oldIndex !== newIndex) {
-      // This can be done because there is only one experiment per project
-      // Has to be changed when we support multiple experiments per project
-      const experimentId = activeProject.experiments[0];
-
       const newData = arrayMoveImmutable(tableData, oldIndex, newIndex).filter((el) => !!el);
       const newSampleOrder = newData.map((sample) => sample.uuid);
 
-      dispatch(updateProject(activeProjectUuid, { samples: newSampleOrder }));
-      dispatch(updateExperiment(experimentId, { sampleIds: newSampleOrder }));
+      try {
+        await dispatch(reorderSamples(activeExperimentId, oldIndex, newIndex, newSampleOrder));
+      } catch (e) {
+        // If the fetch fails, avoid doing setTableData(newData)
+        return;
+      }
+
       setTableData(newData);
     }
   };
@@ -329,7 +286,24 @@ const SamplesTable = forwardRef((props, ref) => {
     return <SortableRow index={index} {...otherProps} />;
   };
 
-  return (
+  const renderLoader = () => (
+    <>
+      <Row justify='center'>
+        <ClipLoader
+          size={50}
+          color='#8f0b10'
+        />
+      </Row>
+
+      <Row justify='center'>
+        <Text>
+          We&apos;re getting your samples ...
+        </Text>
+      </Row>
+    </>
+  );
+
+  const renderSamplesTable = () => (
     <Row>
       <Col>
         <Table
@@ -343,7 +317,7 @@ const SamplesTable = forwardRef((props, ref) => {
           dataSource={tableData}
           sticky
           pagination={false}
-          locale={{ emptyText: noDataText }}
+          locale={{ emptyText: noDataComponent }}
           components={{
             body: {
               wrapper: DragContainer,
@@ -354,10 +328,12 @@ const SamplesTable = forwardRef((props, ref) => {
       </Col>
     </Row>
   );
+
+  return (
+    <>
+      {areSamplesLoading ? renderLoader() : renderSamplesTable()}
+    </>
+  );
 });
 
 export default React.memo(SamplesTable);
-
-export {
-  exampleDatasets,
-};

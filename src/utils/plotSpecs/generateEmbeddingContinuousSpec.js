@@ -27,6 +27,7 @@ const generateSpec = (config, plotData) => {
   }
   return {
     $schema: 'https://vega.github.io/schema/vega/v5.json',
+    description: 'Continuous embedding plot',
     width: config.dimensions.width,
     height: config.dimensions.height,
     autosize: { type: 'fit', resize: true },
@@ -157,7 +158,7 @@ const filterCells = (cellSets, selectedSample) => {
     filteredCells = getSampleCells(cellSets, selectedSample);
   }
 
-  return filteredCells;
+  return filteredCells.map((cell) => cell.cellId);
 };
 
 const generateData = (
@@ -168,15 +169,16 @@ const generateData = (
 ) => {
   const filteredCells = filterCells(cellSets, selectedSample, embeddingData);
 
-  const cells = filteredCells
-    .filter((d) => d.cellId < embeddingData.length)
-    .filter((data) => embeddingData[data.cellId]) // filter out cells removed in data processing
+  const cells = embeddingData
+    .map((coordinates, cellId) => ({ cellId, coordinates }))
+    .filter(({ coordinates }) => coordinates !== undefined)
+    .filter(({ cellId }) => filteredCells.includes(cellId))
     .map((data) => {
-      const { cellId } = data;
+      const { cellId, coordinates } = data;
 
       return {
-        x: embeddingData[cellId][0],
-        y: embeddingData[cellId][1],
+        x: coordinates[0],
+        y: coordinates[1],
         value: plotData[cellId],
       };
     });

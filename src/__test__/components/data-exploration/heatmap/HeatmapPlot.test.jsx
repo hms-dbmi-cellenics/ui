@@ -85,7 +85,7 @@ const loadAndRenderDefaultHeatmap = async (storeState) => {
   });
 };
 
-const mockAPIResponses = generateDefaultMockAPIResponses(experimentId, fake.PROJECT_ID);
+const mockAPIResponses = generateDefaultMockAPIResponses(experimentId);
 
 const errorResponse = () => Promise.reject(new Error('Some error idk'));
 
@@ -128,6 +128,19 @@ describe('HeatmapPlot', () => {
   });
 
   it('Shows loader message if cellSets are loading', async () => {
+    const mockLoadingAPIResponses = {
+      ...mockWorkerResponses,
+      [`experiments/${experimentId}/cellSets`]: () => delayedResponse({ body: 'Not found', status: 404 }, 4000),
+    };
+
+    fetchMock.mockIf(/.*/, mockAPI(mockLoadingAPIResponses));
+
+    await loadAndRenderDefaultHeatmap(storeState);
+
+    expect(screen.getByText(/We're getting your data .../i)).toBeInTheDocument();
+  });
+
+  it('Shows loader message if cellSets are loading in v2', async () => {
     const mockLoadingAPIResponses = {
       ...mockWorkerResponses,
       [`experiments/${experimentId}/cellSets`]: () => delayedResponse({ body: 'Not found', status: 404 }, 4000),
@@ -242,7 +255,8 @@ describe('HeatmapPlot', () => {
     // Renders correctly
     expect(screen.getByText(/Sup Im a heatmap/i)).toBeInTheDocument();
 
-    // Cell ids stored in expression matrix is string, whereas cell ids stored in the store are number
+    // Cell ids stored in expression matrix is string,
+    // whereas cell ids stored in the store are number
     // So we need to convert them to string to be able to compare the values
     const cellsInLouvain3 = cellSetsData
       .cellSets.find(({ key }) => key === 'louvain')

@@ -1,5 +1,5 @@
 import React from 'react';
-import { screen, render } from '@testing-library/react';
+import { screen, render, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import userEvent from '@testing-library/user-event';
 import { Provider } from 'react-redux';
@@ -17,11 +17,15 @@ import initialSamplesState, { sampleTemplate } from 'redux/reducers/samples/init
 import { getBackendStatus } from 'redux/selectors';
 import '__test__/test-utils/setupTests';
 
-import { runPipeline } from 'redux/actions/pipeline';
+import { runQC } from 'redux/actions/pipeline';
 import generateExperimentSettingsMock from '__test__/test-utils/experimentSettings.mock';
 import { modules } from 'utils/constants';
+import { act } from 'react-dom/test-utils';
+import { saveProcessingSettings } from 'redux/actions/experimentSettings';
+import { EXPERIMENT_SETTINGS_SET_QC_STEP_ENABLED } from 'redux/actionTypes/experimentSettings';
 
-jest.mock('components/UserButton', () => () => <></>);
+jest.mock('components/header/UserButton', () => () => <></>);
+jest.mock('redux/actions/experimentSettings/processingConfig/saveProcessingSettings');
 
 // Mock all filter components
 jest.mock('components/data-processing/CellSizeDistribution/CellSizeDistribution', () => () => <></>);
@@ -42,7 +46,7 @@ jest.mock('utils/AppRouteProvider', () => ({
 jest.mock('redux/selectors');
 
 jest.mock('redux/actions/pipeline', () => ({
-  runPipeline: jest.fn(() => ({ type: 'RUN_PIPELINE' })),
+  runQC: jest.fn(() => ({ type: 'RUN_PIPELINE' })),
 }));
 
 const mockStore = configureMockStore([thunk]);
@@ -213,7 +217,7 @@ describe('DataProcessingPage', () => {
 
     userEvent.click(screen.getByText('Start'));
 
-    expect(runPipeline).toHaveBeenCalled();
+    expect(runQC).toHaveBeenCalled();
   });
 
   it('Classifier filter (1st filter) should show custom disabled message if sample is prefiltered ', () => {
@@ -276,7 +280,7 @@ describe('DataProcessingPage', () => {
     expect(screen.queryByText(/is pre-filtered/i)).toBeNull();
   });
 
-  it('A disabled filter shows a warning', () => {
+  it('A disabled filter shows a warning', async () => {
     const store = getStore(
       experimentId,
       {
@@ -300,7 +304,31 @@ describe('DataProcessingPage', () => {
 
     expect(screen.getByText(/This filter is disabled/i)).toBeInTheDocument();
   });
+  it('Disabling a filter saves and dispatches appropriate actions', async () => {
+    const store = getStore(
+      experimentId,
+      {
+        experimentSettings: {
+          processing: {
+            classifier: {
+              enabled: true,
+            },
+          },
+        },
+      },
+    );
+    saveProcessingSettings.mockImplementation(() => () => Promise.resolve());
 
+    render(
+      <Provider store={store}>
+        {dataProcessingPageFactory()}
+      </Provider>,
+    );
+
+    act(() => userEvent.click(screen.getByText(/Disable/i)));
+    expect(saveProcessingSettings).toHaveBeenCalled();
+    await waitFor(() => expect(store.getActions()[1].type).toEqual(EXPERIMENT_SETTINGS_SET_QC_STEP_ENABLED));
+  });
   it('Shows a wait screen if pipeline is still running', () => {
     getBackendStatus.mockImplementation(() => () => ({
       loading: false,

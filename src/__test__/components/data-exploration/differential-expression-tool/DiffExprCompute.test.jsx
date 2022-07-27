@@ -26,7 +26,6 @@ const createMockStore = configureMockStore([thunk]);
 
 const mockOnCompute = jest.fn();
 const experimentId = fake.EXPERIMENT_ID;
-
 const defaultProps = {
   experimentId,
   onCompute: mockOnCompute,
@@ -232,7 +231,7 @@ describe('DiffExprCompute', () => {
 
     // There should be a warning
     await waitFor(() => {
-      expect(screen.getByText(/fewer than 3 samples with the recommended minimum number of cells/i)).toBeInTheDocument();
+      expect(screen.getByText(/fewer than 3 samples with the minimum number of cells/i)).toBeInTheDocument();
     });
 
     await waitFor(() => {

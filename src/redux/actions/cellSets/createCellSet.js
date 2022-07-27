@@ -1,12 +1,12 @@
 import { v4 as uuidv4 } from 'uuid';
 
-import fetchAPI from 'utils/fetchAPI';
+import fetchAPI from 'utils/http/fetchAPI';
 
 import { CELL_SETS_CREATE } from 'redux/actionTypes/cellSets';
 
 import endUserMessages from 'utils/endUserMessages';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
-import { isServerError, throwIfRequestFailed } from 'utils/fetchErrors';
+import handleError from 'utils/http/handleError';
 
 const createCellSetJsonMerger = (newCellSet, cellClassKey) => (
   [{
@@ -64,11 +64,9 @@ const createCellSet = (experimentId, name, color, cellIdsSet) => async (dispatch
     payload: dataForRedux,
   });
 
-  const url = `/v1/experiments/${experimentId}/cellSets`;
-
   try {
-    const response = await fetchAPI(
-      url,
+    await fetchAPI(
+      `/v2/experiments/${experimentId}/cellSets`,
       {
         method: 'PATCH',
         headers: {
@@ -80,16 +78,9 @@ const createCellSet = (experimentId, name, color, cellIdsSet) => async (dispatch
       },
     );
 
-    const json = await response.json();
-    throwIfRequestFailed(response, json, endUserMessages.ERROR_SAVING);
-
     pushNotificationMessage('info', endUserMessages.SUCCESS_NEW_CLUSTER_CREATED);
   } catch (e) {
-    if (!isServerError(e)) {
-      console.error(`fetch ${url} error ${e.message}`);
-    }
-
-    pushNotificationMessage('error', endUserMessages.ERROR_SAVING);
+    handleError(e, endUserMessages.ERROR_SAVING);
   }
 };
 

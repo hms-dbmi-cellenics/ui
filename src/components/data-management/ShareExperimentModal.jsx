@@ -1,34 +1,33 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { UserAddOutlined, MenuOutlined } from '@ant-design/icons';
+import { UserAddOutlined } from '@ant-design/icons';
 import {
   Modal, Button, Space, Row, Col, Card, Avatar, Select, Typography,
 } from 'antd';
 import Auth from '@aws-amplify/auth';
-import fetchAPI from 'utils/fetchAPI';
-import pushNotificationMessage from 'utils/pushNotificationMessage';
+import loadRoles from 'utils/data-management/experimentSharing/loadRoles';
+import sendInvites from 'utils/data-management/experimentSharing/sendInvites';
+import revokeRole from 'utils/data-management/experimentSharing/revokeRole';
 
 const { Text } = Typography;
 
 const ShareExperimentModal = (props) => {
-  const { onCancel, activeProject } = props;
+  const { onCancel, experiment } = props;
   const [usersWithAccess, setUsersWithAccess] = useState([]);
-  const experimentId = activeProject.experiments[0];
-  const experimentName = activeProject.name;
-  const activeProjectUuid = activeProject.uuid;
   const [addedUsers, setAddedUsers] = useState([]);
-  const [role, setRole] = useState('explorer');
   const [currentUser, setCurrentUser] = useState(null);
-  const loadRoles = async () => {
-    const response = await fetchAPI(`/v1/access/${experimentId}`);
-    const responseJson = await response.json();
+  const [role, setRole] = useState('explorer');
+
+  const fetchRoles = async () => {
     const getCurrentUser = await Auth.currentAuthenticatedUser();
     setCurrentUser(getCurrentUser.attributes.email);
-    setUsersWithAccess(responseJson);
+
+    const userRole = await loadRoles(experiment.id);
+    setUsersWithAccess(userRole);
   };
 
   useEffect(() => {
-    loadRoles();
+    fetchRoles();
   }, []);
 
   const changeSelectedUsers = (selectedUsers) => {
@@ -50,51 +49,15 @@ const ShareExperimentModal = (props) => {
   const inviteUsers = async () => {
     if (!addedUsers.length) return;
 
-    const requests = addedUsers.map((user) => (
-      fetchAPI(`/v1/access/${experimentId}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          projectUuid: activeProjectUuid,
-          role,
-          userEmail: user,
-        }),
-      })));
-
-    const responses = await Promise.all(requests)
-      .then((res) => (
-        Promise.all(
-          res.map((data) => data.json()),
-        )));
-
-    responses.forEach((response, indx) => {
-      if (response?.data?.code === 200) {
-        pushNotificationMessage('success', `User ${addedUsers[indx]} has been successfully invited to view ${experimentName}.`);
-      } else {
-        pushNotificationMessage('error', response.message);
-      }
-    });
-    onCancel();
-  };
-
-  const revokeRole = async (userEmail) => {
-    const response = await fetchAPI(`/v1/access/${experimentId}`, {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
+    await sendInvites(
+      addedUsers,
+      {
+        experimentId: experiment.id,
+        experimentName: experiment.name,
+        role,
       },
-      body: JSON.stringify({
-        userEmail,
-      }),
-    });
+    );
 
-    if (!response.ok) {
-      pushNotificationMessage('error', 'Error removing user. You may not have permissions to remove users.');
-    } else {
-      pushNotificationMessage('success', `${userEmail} removed from ${experimentName}.`);
-    }
     onCancel();
   };
 
@@ -114,7 +77,7 @@ const ShareExperimentModal = (props) => {
     >
       <Space direction='vertical' style={{ width: '100%' }}>
         <Text strong>
-          {experimentName}
+          {experiment.name}
         </Text>
         <Row gutter={10} style={{ width: '110%' }}>
 
@@ -167,7 +130,14 @@ const ShareExperimentModal = (props) => {
                       <Button
                         type='primary'
                         danger
-                        onClick={() => revokeRole(user.email)}
+                        onClick={() => {
+                          revokeRole(
+                            user.email,
+                            { experimentId: experiment.id, experimentName: experiment.name },
+                          );
+
+                          onCancel();
+                        }}
                         disabled={user.email === currentUser}
                       >
                         Revoke
@@ -193,7 +163,7 @@ const ShareExperimentModal = (props) => {
 
 ShareExperimentModal.propTypes = {
   onCancel: PropTypes.func.isRequired,
-  activeProject: PropTypes.object.isRequired,
+  experiment: PropTypes.object.isRequired,
 };
 
 export default ShareExperimentModal;

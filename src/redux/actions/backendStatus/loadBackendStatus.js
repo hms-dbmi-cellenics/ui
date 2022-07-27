@@ -1,11 +1,12 @@
-import fetchAPI from '../../../utils/fetchAPI';
-import endUserMessages from '../../../utils/endUserMessages';
-import { isServerError, throwIfRequestFailed } from '../../../utils/fetchErrors';
+import handleError from 'utils/http/handleError';
+import fetchAPI from 'utils/http/fetchAPI';
 import {
   BACKEND_STATUS_LOADING,
   BACKEND_STATUS_LOADED,
   BACKEND_STATUS_ERROR,
-} from '../../actionTypes/backendStatus';
+} from 'redux/actionTypes/backendStatus';
+
+import endUserMessages from 'utils/endUserMessages';
 
 const loadBackendStatus = (experimentId) => async (dispatch) => {
   dispatch({
@@ -15,12 +16,8 @@ const loadBackendStatus = (experimentId) => async (dispatch) => {
     },
   });
 
-  const url = `/v1/experiments/${experimentId}/backendStatus`;
   try {
-    const response = await fetchAPI(url);
-    const status = await response.json();
-
-    throwIfRequestFailed(response, status, endUserMessages.ERROR_FETCHING_STATUS);
+    const status = await fetchAPI(`/v2/experiments/${experimentId}/backendStatus`);
 
     dispatch({
       type: BACKEND_STATUS_LOADED,
@@ -32,14 +29,13 @@ const loadBackendStatus = (experimentId) => async (dispatch) => {
 
     return status;
   } catch (e) {
-    if (!isServerError(e)) {
-      console.error(`fetch ${url} error ${e.message}`);
-    }
+    const errorMessage = handleError(e, endUserMessages.ERROR_FETCHING_BACKEND_STATUS);
+
     dispatch({
       type: BACKEND_STATUS_ERROR,
       payload: {
         experimentId,
-        error: `Could not get the status of the backend. ${e}`,
+        error: errorMessage,
       },
     });
   }

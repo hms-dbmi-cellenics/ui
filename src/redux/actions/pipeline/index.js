@@ -1,7 +1,7 @@
-import runPipeline from './runPipeline';
+import runQC from './runQC';
 import runGem2s from './runGem2s';
 
 export {
-  runPipeline,
+  runQC,
   runGem2s,
 };

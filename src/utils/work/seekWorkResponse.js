@@ -1,33 +1,47 @@
 import moment from 'moment';
+
 import getAuthJWT from 'utils/getAuthJWT';
-import WorkTimeoutError from 'utils/WorkTimeoutError';
-import fetchAPI from 'utils/fetchAPI';
+import WorkTimeoutError from 'utils/http/errors/WorkTimeoutError';
+import fetchAPI from 'utils/http/fetchAPI';
 import unpackResult from 'utils/work/unpackResult';
-import WorkResponseError from 'utils/WorkResponseError';
+import WorkResponseError from 'utils/http/errors/WorkResponseError';
+import httpStatusCodes from 'utils/http/httpStatusCodes';
 
 const throwResponseError = (response) => {
   throw new Error(`Error ${response.status}: ${response.text}`, { cause: response });
 };
 
-const seekFromS3 = async (ETag, experimentId, fetchS3Data = true) => {
-  const response = await fetchAPI(`/v1/workResults/${experimentId}/${ETag}`);
+// getRemainingWorkerStartTime returns how many more seconds the worker is expected to
+// need to be running with an extra 1 minute for a bit of leeway
+const getRemainingWorkerStartTime = (creationTimestamp) => {
+  const now = new Date();
+  const creationTime = new Date(creationTimestamp);
+  const elapsed = parseInt((now - creationTime) / (1000), 10); // gives second difference
 
-  if (!response.ok) {
-    if (response.status === 404) return null;
+  // we assume a worker takes up to 5 minutes to start
+  const totalStartup = 5 * 60;
+  const remainingTime = totalStartup - elapsed;
+  // add an extra minute just in case
+  return remainingTime + 60;
+};
 
-    throwResponseError(response);
+const seekFromS3 = async (ETag, experimentId) => {
+  let response;
+  try {
+    response = await fetchAPI(`/v2/workResults/${experimentId}/${ETag}`);
+  } catch (e) {
+    if (e.statusCode === httpStatusCodes.NOT_FOUND) {
+      return null;
+    }
+
+    throw e;
   }
 
-  const { signedUrl } = await response.json();
-
+  const { signedUrl } = response;
   const storageResp = await fetch(signedUrl);
 
   if (!storageResp.ok) {
     throwResponseError(storageResp);
-  }
-
-  if (!fetchS3Data) {
-    return signedUrl;
   }
 
   return unpackResult(storageResp);
@@ -59,9 +73,21 @@ const dispatchWorkRequest = async (
 
   const timeoutPromise = new Promise((resolve, reject) => {
     const id = setTimeout(() => {
-      clearTimeout(id);
       reject(new WorkTimeoutError(timeoutDate, request));
     }, timeout * 1000);
+
+    io.on(`WorkerInfo-${experimentId}`, (res) => {
+      const { response: { podInfo: { name, creationTimestamp, phase } } } = res;
+
+      const extraTime = getRemainingWorkerStartTime(creationTimestamp);
+      if (phase === 'Pending' && extraTime > 0) {
+        console.log(`worker ${name} started at ${creationTimestamp}. Adding ${extraTime} seconds to timeout.`);
+        clearTimeout(id);
+        setTimeout(() => {
+          reject(new WorkTimeoutError(timeoutDate, request));
+        }, (timeout + extraTime) * 1000);
+      }
+    });
   });
 
   const responsePromise = new Promise((resolve, reject) => {
@@ -85,7 +111,9 @@ const dispatchWorkRequest = async (
 
   const result = Promise.race([timeoutPromise, responsePromise]);
 
-  io.emit('WorkRequest', request);
+  // TODO switch to using normal WorkRequest for v2 requests
+  io.emit('WorkRequest-v2', request);
+
   return result;
 };
 

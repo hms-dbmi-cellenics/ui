@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
@@ -5,12 +6,13 @@ import { v4 as uuidv4 } from 'uuid';
 
 import createSample from 'redux/actions/samples/createSample';
 import initialSampleState from 'redux/reducers/samples/initialState';
-import initialProjectState, { projectTemplate } from 'redux/reducers/projects/initialState';
 import initialExperimentState, { experimentTemplate } from 'redux/reducers/experiments/initialState';
+
+import {
+  SAMPLES_CREATE, SAMPLES_SAVING, SAMPLES_ERROR, SAMPLES_SAVED,
+} from 'redux/actionTypes/samples';
+
 import endUserMessages from 'utils/endUserMessages';
-
-import { SAMPLES_CREATE, SAMPLES_SAVING, SAMPLES_ERROR } from 'redux/actionTypes/samples';
-
 import pushNotificationMessage from 'utils/pushNotificationMessage';
 
 pushNotificationMessage.mockImplementation(() => async () => { });
@@ -26,17 +28,9 @@ uuidv4.mockImplementation(() => sampleUuid);
 const sampleName = 'test sample';
 
 describe('createSample action', () => {
-  const projectUuid = 'qwe234';
   const experimentId = 'exp234';
 
-  const mockType = '10x Chromium';
-
-  const mockProject = {
-    ...projectTemplate,
-    name: 'test project',
-    uuid: projectUuid,
-    experiments: [experimentId],
-  };
+  const mockType = '10X Chromium';
 
   const mockExperiment = {
     ...experimentTemplate,
@@ -49,11 +43,7 @@ describe('createSample action', () => {
     experiments: {
       ...initialExperimentState,
       [experimentId]: mockExperiment,
-    },
-    projects: {
-      ...initialProjectState,
-      ids: [projectUuid],
-      [projectUuid]: mockProject,
+      ids: [mockExperiment.id],
     },
   };
 
@@ -69,56 +59,74 @@ describe('createSample action', () => {
     store = mockStore(initialState);
   });
 
-  it('Runs correctly', async () => {
+  it('Works correctly with one file being uploaded', async () => {
     fetchMock.mockResponse(JSON.stringify({}), { url: 'mockedUrl', status: 200 });
 
-    const newUuid = await store.dispatch(createSample(projectUuid, sampleName, mockType));
+    const newUuid = await store.dispatch(createSample(experimentId, sampleName, mockType, ['matrix.tsv.gz']));
+
+    // Returns a new sampleUuid
+    expect(newUuid).toEqual(sampleUuid);
 
     // Fetch call is made
     const fetchMockFirstCall = fetchMock.mock.calls[0];
 
     const { body: fetchBody, method: fetchMethod } = fetchMockFirstCall[1];
-    expect(fetchMockFirstCall[0]).toEqual(`http://localhost:3000/v1/projects/${projectUuid}/${mockProject.experiments[0]}/samples`);
+    expect(fetchMockFirstCall[0]).toEqual(`http://localhost:3000/v2/experiments/${mockExperiment.id}/samples/${sampleUuid}`);
 
     expect(fetchMethod).toEqual('POST');
     expect(JSON.parse(fetchBody)).toMatchSnapshot();
 
     // Sends correct actions
     const actions = store.getActions();
+    expect(_.map(actions, 'type')).toEqual([SAMPLES_SAVING, SAMPLES_CREATE, SAMPLES_SAVED]);
+    expect(_.map(actions, 'payload')).toMatchSnapshot();
+  });
 
-    expect(actions[0].type).toEqual(SAMPLES_SAVING);
-    expect(actions[1].type).toEqual(SAMPLES_CREATE);
+  it('Works correctly with many files being uploaded', async () => {
+    fetchMock.mockResponse(JSON.stringify({}), { url: 'mockedUrl', status: 200 });
+
+    const newUuid = await store.dispatch(createSample(experimentId, sampleName, mockType, ['matrix.tsv.gz', 'features.tsv.gz', 'barcodes.tsv.gz']));
 
     // Returns a new sampleUuid
     expect(newUuid).toEqual(sampleUuid);
-  });
 
-  it('Shows error message and throws an error when there is a fetch error', async () => {
-    const fetchErrorMessage = 'someFetchError';
+    // Fetch call is made
+    const fetchMockFirstCall = fetchMock.mock.calls[0];
 
-    fetchMock.mockResponse(JSON.stringify({ message: fetchErrorMessage }), { url: 'mockedUrl', status: 400 });
+    const { body: fetchBody, method: fetchMethod } = fetchMockFirstCall[1];
+    expect(fetchMockFirstCall[0]).toEqual(`http://localhost:3000/v2/experiments/${mockExperiment.id}/samples/${sampleUuid}`);
 
-    let newUuid;
-
-    // Fails with error message we sent in response to fetch
-    await expect(async () => {
-      newUuid = await store.dispatch(
-        createSample(projectUuid, sampleName, mockType),
-      );
-    }).rejects.toThrowError(fetchErrorMessage);
+    expect(fetchMethod).toEqual('POST');
+    expect(JSON.parse(fetchBody)).toMatchSnapshot();
 
     // Sends correct actions
     const actions = store.getActions();
+    expect(_.map(actions, 'type')).toEqual([SAMPLES_SAVING, SAMPLES_CREATE, SAMPLES_SAVED]);
+    expect(_.map(actions, 'payload')).toMatchSnapshot();
+  });
 
-    expect(actions[0].type).toEqual(SAMPLES_SAVING);
-    expect(actions[1].type).toEqual(SAMPLES_ERROR);
+  it('Throws if the api fails', async () => {
+    fetchMock.mockRejectOnce(() => Promise.reject(new Error('Some error')));
 
-    // Check no other action was sent
-    expect(actions).toHaveLength(2);
+    await expect(
+      store.dispatch(
+        createSample(experimentId, sampleName, mockType, ['matrix.tsv.gz']),
+      ),
+    ).rejects.toThrow(endUserMessages.ERROR_CREATING_SAMPLE);
 
-    expect(pushNotificationMessage).toHaveBeenCalledWith('error', endUserMessages.ERROR_CREATING_SAMPLE);
+    // Sends correct actions
+    const actions = store.getActions();
+    expect(_.map(actions, 'type')).toEqual([SAMPLES_SAVING, SAMPLES_ERROR]);
+    expect(_.map(actions, 'payload')).toMatchSnapshot();
+  });
 
-    // It should not return a uuid
-    expect(newUuid).toBeUndefined();
+  it('Throws if technology is not identified', async () => {
+    fetchMock.mockResponse(JSON.stringify({}), { url: 'mockedUrl', status: 200 });
+
+    await expect(
+      store.dispatch(
+        createSample(experimentId, sampleName, 'unrecognizable type', ['matrix.tsv.gz', 'features.tsv.gz', 'barcodes.tsv.gz']),
+      ),
+    ).rejects.toThrow('Sample technology unrecognizable type is not recognized');
   });
 });

@@ -1,9 +1,8 @@
 import { CELL_SETS_DELETE } from 'redux/actionTypes/cellSets';
 
-import { isServerError, throwIfRequestFailed } from 'utils/fetchErrors';
-import pushNotificationMessage from 'utils/pushNotificationMessage';
 import endUserMessages from 'utils/endUserMessages';
-import fetchAPI from 'utils/fetchAPI';
+import fetchAPI from 'utils/http/fetchAPI';
+import handleError from 'utils/http/handleError';
 
 const deleteCellSetJsonMerger = (cellSetKey, cellClasskey) => (
   [{
@@ -34,11 +33,9 @@ const deleteCellSet = (experimentId, key) => async (dispatch, getState) => {
     return null;
   }
 
-  const url = `/v1/experiments/${experimentId}/cellSets`;
-
   try {
-    const response = await fetchAPI(
-      url,
+    await fetchAPI(
+      `/v2/experiments/${experimentId}/cellSets`,
       {
         method: 'PATCH',
         headers: {
@@ -50,19 +47,12 @@ const deleteCellSet = (experimentId, key) => async (dispatch, getState) => {
       },
     );
 
-    const json = await response.json();
-    throwIfRequestFailed(response, json, endUserMessages.ERROR_SAVING);
-
     await dispatch({
       type: CELL_SETS_DELETE,
       payload: { key },
     });
   } catch (e) {
-    if (!isServerError(e)) {
-      console.error(`fetch ${url} error ${e.message}`);
-    }
-
-    pushNotificationMessage('error', endUserMessages.ERROR_SAVING);
+    handleError(e, endUserMessages.ERROR_SAVING);
   }
 };
 

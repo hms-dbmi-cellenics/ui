@@ -2,7 +2,7 @@ import { initialPlotConfigStates } from 'redux/reducers/componentConfig/initialS
 import getTimeoutForWorkerTask from 'utils/getTimeoutForWorkerTask';
 import { PLOT_DATA_LOADED, PLOT_DATA_LOADING, PLOT_DATA_ERROR } from 'redux/actionTypes/componentConfig';
 
-import pushNotificationMessage from 'utils/pushNotificationMessage';
+import handleError from 'utils/http/handleError';
 import endUserMessages from 'utils/endUserMessages';
 import generatePlotWorkBody from 'utils/work/generatePlotWorkBody';
 import { fetchWork } from 'utils/work/fetchWork';
@@ -32,18 +32,16 @@ const fetchPlotDataWork = (
         plotData: data,
       },
     });
-  } catch (error) {
-    console.error(error.message);
-    console.log('Error');
+  } catch (e) {
+    const errorMessage = handleError(e, endUserMessages.ERROR_FETCHING_PLOT_DATA);
+
     dispatch({
       type: PLOT_DATA_ERROR,
       payload: {
         plotUuid,
-        error: error.message,
+        error: errorMessage,
       },
     });
-
-    pushNotificationMessage('error', endUserMessages.ERROR_FETCHING_PLOT_DATA);
   }
 };
 

@@ -9,7 +9,6 @@ import NProgress from 'nprogress';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 import { DefaultSeo } from 'next-seo';
-import ErrorBoundary from 'components/ErrorBoundary';
 
 import { wrapper } from 'redux/store';
 import { useSelector } from 'react-redux';
@@ -19,10 +18,10 @@ import ContentWrapper from 'components/ContentWrapper';
 import TagManager from 'components/TagManager';
 import { initTracking } from 'utils/tracking';
 
-import CustomError from 'utils/customError';
 import UnauthorizedPage from 'pages/401';
 import NotFoundPage from 'pages/404';
 import Error from 'pages/_error';
+import APIError from 'utils/http/errors/APIError';
 
 const mockCredentialsForInframock = () => {
   Credentials.get = async () => ({
@@ -127,20 +126,18 @@ const WrappedApp = ({ Component, pageProps }) => {
 
     // Otherwise, load the page inside the content wrapper.
     return (
-      <ErrorBoundary>
-        <AppRouteProvider>
-          <ContentWrapper
-            routeExperimentId={experimentId}
+      <AppRouteProvider>
+        <ContentWrapper
+          routeExperimentId={experimentId}
+          experimentData={experimentData}
+        >
+          <Component
+            experimentId={experimentId}
             experimentData={experimentData}
-          >
-            <Component
-              experimentId={experimentId}
-              experimentData={experimentData}
-              {...pageProps}
-            />
-          </ContentWrapper>
-        </AppRouteProvider>
-      </ErrorBoundary>
+            {...pageProps}
+          />
+        </ContentWrapper>
+      </AppRouteProvider>
     );
   };
 
@@ -171,8 +168,12 @@ const WrappedApp = ({ Component, pageProps }) => {
 /* eslint-disable global-require */
 WrappedApp.getInitialProps = async ({ Component, ctx }) => {
   const {
-    store, req, query, res,
+    store, req, query, res, err,
   } = ctx;
+
+  // If a render error occurs, NextJS bypasses the normal page rendering
+  // and returns `_error.jsx` instead, returning these parameters
+  if (err) { return { pageProps: { errorObject: err } }; }
 
   // Do nothing if not server-side
   if (!req) { return { pageProps: {} }; }
@@ -183,10 +184,10 @@ WrappedApp.getInitialProps = async ({ Component, ctx }) => {
 
   const promises = [];
 
-  const { default: getEnvironmentInfo } = (await import('../utils/ssr/getEnvironmentInfo'));
+  const { default: getEnvironmentInfo } = (await import('utils/ssr/getEnvironmentInfo'));
   promises.push(getEnvironmentInfo);
 
-  const { default: getAuthenticationInfo } = (await import('../utils/ssr/getAuthenticationInfo'));
+  const { default: getAuthenticationInfo } = (await import('utils/ssr/getAuthenticationInfo'));
   promises.push(getAuthenticationInfo);
 
   let results = await Promise.all(promises.map((f) => f(ctx, store)));
@@ -199,31 +200,20 @@ WrappedApp.getInitialProps = async ({ Component, ctx }) => {
     Auth.configure(results.amplifyConfig.Auth);
 
     if (query?.experimentId) {
-      const { default: getExperimentInfo } = (await import('../utils/ssr/getExperimentInfo'));
+      const { default: getExperimentInfo } = (await import('utils/ssr/getExperimentInfo'));
       const experimentInfo = await getExperimentInfo(ctx, store, Auth);
       results = _.merge(results, experimentInfo);
     }
 
     return { pageProps: { ...pageProps, ...results } };
   } catch (e) {
-    if (e === 'The user is not authenticated') {
-      console.error(`User not authenticated ${req.url}`);
+    if (!(e instanceof APIError)) {
       // eslint-disable-next-line no-ex-assign
-      e = new CustomError(e, res);
-      e.payload.status = 401;
+      e = new APIError(500);
     }
-    if (e instanceof CustomError) {
-      if (res && e.payload.status) {
-        res.statusCode = e.payload.status;
-      } else {
-        res.statusCode = 500;
-      }
+    res.statusCode = e.statusCode;
 
-      return { pageProps: { ...pageProps, ...results, httpError: e.payload.status || true } };
-    }
-    console.error('Error in WrappedApp.getInitialProps', e);
-
-    throw e;
+    return { pageProps: { ...pageProps, ...results, httpError: e.statusCode || true } };
   }
 };
 /* eslint-enable global-require */

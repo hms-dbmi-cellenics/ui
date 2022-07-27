@@ -10,7 +10,8 @@ import { useSelector, useDispatch } from 'react-redux';
 import _ from 'lodash';
 
 import PropTypes from 'prop-types';
-import PlotHeader from 'components/plots/PlotHeader';
+import Header from 'components/Header';
+// import PlotHeader from 'components/plots/PlotHeader';
 
 import {
   fetchPlotDataWork, loadPlotConfig, updatePlotConfig,
@@ -109,11 +110,13 @@ const VolcanoPlotPage = (props) => {
 
   return (
     <>
-      <PlotHeader
+      {/* <PlotHeader
         title='Ridge Plot'
         plotUuid={plotUuid}
         experimentId={experimentId}
-      />
+      /> */}
+
+      <Header title={plotNames.IMG_PLOT} />
       <Space direction='vertical' style={{ width: '100%', padding: '0 10px' }}>
         <Row gutter={16}>
           <Col span={16}>

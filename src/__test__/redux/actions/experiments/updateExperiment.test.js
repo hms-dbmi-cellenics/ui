@@ -1,9 +1,11 @@
+import _ from 'lodash';
+
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 
 import {
-  EXPERIMENTS_SAVED,
+  EXPERIMENTS_ERROR,
   EXPERIMENTS_SAVING,
   EXPERIMENTS_UPDATED,
 } from 'redux/actionTypes/experiments';
@@ -25,11 +27,6 @@ describe('updateExperiment', () => {
     id: experimentId,
   };
 
-  const updatedExperiment = {
-    ...mockExperiment,
-    name: 'updated-experiment',
-  };
-
   const mockState = {
     experiments: {
       ...initialExperimentState,
@@ -38,16 +35,16 @@ describe('updateExperiment', () => {
   };
 
   beforeEach(() => {
-    const response = new Response(JSON.stringify({}));
-
     fetchMock.resetMocks();
     fetchMock.doMock();
-    fetchMock.mockResolvedValueOnce(response);
   });
 
-  it('Dispatches actions when called', async () => {
+  it('Works correctly', async () => {
     const store = mockStore(mockState);
-    await store.dispatch(updateExperiment(experimentId, updatedExperiment));
+    const response = new Response(JSON.stringify({}));
+    fetchMock.mockResolvedValueOnce(response);
+
+    await store.dispatch(updateExperiment(experimentId, { name: 'newName' }));
 
     const actions = store.getActions();
 
@@ -56,18 +53,27 @@ describe('updateExperiment', () => {
     // Updates the experiments
     expect(actions[1].type).toEqual(EXPERIMENTS_UPDATED);
 
-    // Switches the loading to false
-    expect(actions[2].type).toEqual(EXPERIMENTS_SAVED);
-
     expect(actions).toMatchSnapshot();
 
     expect(fetchMock).toHaveBeenCalledWith(
-      'http://localhost:3000/v1/experiments/experiment-1',
+      'http://localhost:3000/v2/experiments/experiment-1',
       expect.objectContaining({
-        method: 'PUT',
+        method: 'PATCH',
       }),
     );
 
     expect(fetchMock.mock.calls[0][1].body).toMatchSnapshot();
+  });
+
+  it('Handles error if api request fails', async () => {
+    const store = mockStore(mockState);
+
+    fetchMock.mockRejectOnce(new Error('Api error'));
+
+    await store.dispatch(updateExperiment(experimentId, { name: 'newName' }));
+
+    const actions = store.getActions();
+    expect(_.map(actions, 'type')).toEqual([EXPERIMENTS_SAVING, EXPERIMENTS_ERROR]);
+    expect(_.map(actions, 'payload')).toMatchSnapshot();
   });
 });

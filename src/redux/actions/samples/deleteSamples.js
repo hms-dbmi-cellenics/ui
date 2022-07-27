@@ -7,35 +7,9 @@ import {
   SAMPLES_SAVED,
 } from 'redux/actionTypes/samples';
 
-import {
-  PROJECTS_UPDATE,
-} from 'redux/actionTypes/projects';
-
-import saveProject from 'redux/actions/projects/saveProject';
-
 import endUserMessages from 'utils/endUserMessages';
-import pushNotificationMessage from 'utils/pushNotificationMessage';
-import fetchAPI from 'utils/fetchAPI';
-import { updateExperiment } from 'redux/actions/experiments';
-
-const sendDeleteSamplesRequest = async (projectUuid, experimentId, sampleUuids) => {
-  const response = await fetchAPI(
-    `/v1/projects/${projectUuid}/${experimentId}/samples`,
-    {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        ids: sampleUuids,
-      }),
-    },
-  );
-
-  if (!response.ok) {
-    throw new Error(await response.json().message);
-  }
-};
+import fetchAPI from 'utils/http/fetchAPI';
+import handleError from 'utils/http/handleError';
 
 const cancelUploads = async (files) => {
   const promises = Object.values(files).map(({ upload }) => {
@@ -49,23 +23,23 @@ const cancelUploads = async (files) => {
 };
 
 const deleteSamples = (
-  sampleUuids,
+  sampleIds,
 ) => async (dispatch, getState) => {
-  const { samples, projects } = getState();
+  const { samples } = getState();
 
-  const projectSamples = await sampleUuids.reduce(async (acc, sampleUuid) => {
-    const { projectUuid, files } = samples[sampleUuid];
+  const projectSamples = await sampleIds.reduce(async (acc, sampleUuid) => {
+    const { experimentId, files } = samples[sampleUuid];
 
-    if (!_.has(acc, samples[sampleUuid].projectUuid)) {
-      acc[samples[sampleUuid].projectUuid] = [];
+    if (!_.has(acc, samples[sampleUuid].experimentId)) {
+      acc[samples[sampleUuid].experimentId] = [];
     }
 
     await cancelUploads(files);
 
     return {
       ...acc,
-      [projectUuid]: [
-        ...acc[projectUuid],
+      [experimentId]: [
+        ...acc[experimentId],
         sampleUuid,
       ],
     };
@@ -80,47 +54,32 @@ const deleteSamples = (
 
   try {
     const deleteSamplesPromise = Object.entries(projectSamples).map(
-      async ([projectUuid, samplesToDelete]) => {
-        const newSamples = _.difference(projects[projectUuid].samples, samplesToDelete);
-
-        const newProject = {
-          ...projects[projectUuid],
-          samples: newSamples,
-        };
-
-        // This is set right now as there is only one experiment per project
-        // Should be changed when we support multiple experiments per project
-        const experimentId = projects[projectUuid].experiments[0];
-        await sendDeleteSamplesRequest(projectUuid, experimentId, sampleUuids);
-
-        dispatch(saveProject(projectUuid, newProject, false));
-
-        dispatch({
-          type: PROJECTS_UPDATE,
-          payload: {
-            projectUuid,
-            project: {
-              samples: newSamples,
+      async ([experimentId, samplesToDelete]) => {
+        await Promise.all(sampleIds.map(async (sampleUuid) => {
+          await fetchAPI(
+            `/v2/experiments/${experimentId}/samples/${sampleUuid}`,
+            {
+              method: 'DELETE',
+              headers: {
+                'Content-Type': 'application/json',
+              },
             },
-          },
-        });
+          );
+        }));
 
         dispatch({
           type: SAMPLES_DELETE,
-          payload: { sampleUuids: samplesToDelete },
+          payload: { experimentId, sampleIds: samplesToDelete },
         });
-
-        dispatch(updateExperiment(experimentId, { sampleIds: newSamples }));
       },
     );
-
     await Promise.all(deleteSamplesPromise);
 
     dispatch({
       type: SAMPLES_SAVED,
     });
   } catch (e) {
-    pushNotificationMessage('error', endUserMessages.ERROR_DELETING_SAMPLES);
+    handleError(e, endUserMessages.ERROR_DELETING_SAMPLES);
 
     dispatch({
       type: SAMPLES_ERROR,

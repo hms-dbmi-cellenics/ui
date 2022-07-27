@@ -9,51 +9,41 @@ import preloadAll from 'jest-next-dynamic';
 import { act } from 'react-dom/test-utils';
 import configureMockStore from 'redux-mock-store';
 
-import { getFromApiExpectOK } from 'utils/getDataExpectOK';
 import DownloadDataButton from 'components/data-management/DownloadDataButton';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
 import downloadFromUrl from 'utils/data-management/downloadFromUrl';
 
-import initialProjectState, { projectTemplate } from 'redux/reducers/projects/initialState';
 import initialSamplesState from 'redux/reducers/samples/initialState';
 import initialExperimentsState from 'redux/reducers/experiments/initialState';
 import initialExperimentSettingsState from 'redux/reducers/experimentSettings/initialState';
 import { initialExperimentBackendStatus } from 'redux/reducers/backendStatus/initialState';
 
 import { getBackendStatus } from 'redux/selectors';
+import fetchAPI from 'utils/http/fetchAPI';
 
 jest.mock('redux/selectors');
-jest.mock('utils/getDataExpectOK');
 jest.mock('utils/pushNotificationMessage');
+jest.mock('utils/http/fetchAPI');
 jest.mock('utils/data-management/downloadFromUrl');
 
 const mockStore = configureMockStore([thunk]);
-const projectName = 'Project 1';
-const projectUuid = 'project-1-uuid';
-const projectDescription = 'Some description';
+const experimentName = 'Experiment 1';
+const experimentDescription = 'Some description';
 const experimentId = 'my-experiment-🧬';
 const sample1Uuid = 'sample-1';
 const sample2Uuid = 'sample-2';
 
 const noDataState = {
-  projects: {
-    ...initialProjectState,
-    meta: {
-      ...initialProjectState.meta,
-      activeProjectUuid: projectUuid,
-      loading: false,
-    },
-    ids: [projectUuid],
-    [projectUuid]: {
-      ...projectTemplate,
-      uuid: projectUuid,
-      name: projectName,
-      description: projectDescription,
-    },
-  },
   experiments: {
     ...initialExperimentsState,
+    name: experimentName,
+    description: experimentDescription,
     ids: ['experiment-1'],
+    meta: {
+      ...initialExperimentsState.meta,
+      activeExperimentId: experimentId,
+      loading: false,
+    },
   },
   experimentSettings: {
     ...initialExperimentSettingsState,
@@ -65,13 +55,12 @@ const noDataState = {
 
 const withDataState = {
   ...noDataState,
-  projects: {
-    ...noDataState.projects,
-    [projectUuid]: {
-      ...noDataState.projects[projectUuid],
-      samples: [sample1Uuid, sample2Uuid],
+  experiments: {
+    ...noDataState.experiments,
+    [experimentId]: {
+      ...noDataState.experiments[experimentId],
+      sampleIds: [sample1Uuid, sample2Uuid],
       metadataKeys: ['metadata-1'],
-      experiments: [experimentId],
     },
   },
   experimentSettings: {
@@ -97,7 +86,7 @@ describe('DownloadDataButton', () => {
     await act(async () => {
       render(
         <Provider store={store}>
-          <DownloadDataButton activeProjectUuid={projectUuid} />
+          <DownloadDataButton />
         </Provider>,
       );
     });
@@ -214,7 +203,7 @@ describe('DownloadDataButton', () => {
   });
 
   it('Downolods data properly', async () => {
-    getFromApiExpectOK.mockImplementation(() => Promise.resolve('signedUrl'));
+    fetchAPI.mockImplementation(() => Promise.resolve('signedUrl'));
     getBackendStatus.mockImplementation(() => () => ({
       ...initialExperimentBackendStatus,
       status: {
@@ -242,7 +231,7 @@ describe('DownloadDataButton', () => {
   });
 
   it('Shows an error if there is an error downloading data', async () => {
-    getFromApiExpectOK.mockImplementation(() => Promise.reject(new Error('Something went wrong')));
+    fetchAPI.mockImplementation(() => Promise.reject(new Error('Something went wrong')));
     getBackendStatus.mockImplementation(() => () => ({
       ...initialExperimentBackendStatus,
       status: {

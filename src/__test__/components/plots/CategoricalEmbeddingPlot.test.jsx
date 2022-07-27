@@ -15,7 +15,7 @@ import fake from '__test__/test-utils/constants';
 import mockEmbedding from '__test__/data/embedding.json';
 import { seekFromS3 } from 'utils/work/seekWorkResponse';
 import { loadBackendStatus } from 'redux/actions/backendStatus';
-import WorkResponseError from 'utils/WorkResponseError';
+import WorkResponseError from 'utils/http/errors/WorkResponseError';
 
 enableFetchMocks();
 
@@ -85,7 +85,7 @@ describe('Categorical embedding plot', () => {
   it('Renders correctly with data', async () => {
     await renderCategoricalEmbeddingPlot(storeState);
 
-    expect(screen.getByRole('graphics-document', { name: 'Vega visualization' })).toBeInTheDocument();
+    expect(screen.getByRole('graphics-document', { name: 'Categorical embedding plot' })).toBeInTheDocument();
   });
 
   it('Shows a loader if there is no config', async () => {
@@ -98,7 +98,7 @@ describe('Categorical embedding plot', () => {
     });
 
     expect(screen.getByText(/We're getting your data/i)).toBeInTheDocument();
-    expect(screen.queryByRole('graphics-document', { name: 'Vega visualization' })).toBeNull();
+    expect(screen.queryByRole('graphics-document', { name: 'Categorical embedding plot' })).toBeNull();
   });
 
   it('Shows a loader if cell sets is loading', async () => {
@@ -112,7 +112,7 @@ describe('Categorical embedding plot', () => {
     await renderCategoricalEmbeddingPlot(storeState);
 
     expect(screen.getByText(/We're getting your data/i)).toBeInTheDocument();
-    expect(screen.queryByRole('graphics-document', { name: 'Vega visualization' })).toBeNull();
+    expect(screen.queryByRole('graphics-document', { name: 'Categorical embedding plot' })).toBeNull();
   });
 
   it('Shows an error if fetching cell sets throw an error', async () => {
@@ -126,7 +126,7 @@ describe('Categorical embedding plot', () => {
     await renderCategoricalEmbeddingPlot(storeState);
 
     expect(screen.getByText(/We're sorry, we couldn't load this/i)).toBeInTheDocument();
-    expect(screen.queryByRole('graphics-document', { name: 'Vega visualization' })).toBeNull();
+    expect(screen.queryByRole('graphics-document', { name: 'Categorical embedding plot' })).toBeNull();
   });
 
   it('Shows a loader if embedding data is loading', async () => {
@@ -138,7 +138,7 @@ describe('Categorical embedding plot', () => {
     await renderCategoricalEmbeddingPlot(storeState);
 
     expect(screen.getByText(/We're getting your data/i)).toBeInTheDocument();
-    expect(screen.queryByRole('graphics-document', { name: 'Vega visualization' })).toBeNull();
+    expect(screen.queryByRole('graphics-document', { name: 'Categorical embedding plot' })).toBeNull();
   });
 
   it('Shows an error if there is an error fetching embedding', async () => {
@@ -150,6 +150,6 @@ describe('Categorical embedding plot', () => {
     await renderCategoricalEmbeddingPlot(storeState);
 
     expect(screen.getByText(/We had an error on our side while we were completing your request/i)).toBeInTheDocument();
-    expect(screen.queryByRole('graphics-document', { name: 'Vega visualization' })).toBeNull();
+    expect(screen.queryByRole('graphics-document', { name: 'Categorical embedding plot' })).toBeNull();
   });
 });

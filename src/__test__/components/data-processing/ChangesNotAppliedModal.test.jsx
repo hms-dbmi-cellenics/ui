@@ -6,10 +6,10 @@ import thunk from 'redux-thunk';
 import configureMockStore from 'redux-mock-store';
 
 import { getBackendStatus } from 'redux/selectors';
-import ChangesNotAppliedModal from '../../../components/data-processing/ChangesNotAppliedModal';
-import experimentSettingsInitialState, { metaInitialState } from '../../../redux/reducers/experimentSettings/initialState';
+import experimentSettingsInitialState, { metaInitialState } from 'redux/reducers/experimentSettings/initialState';
+import ChangesNotAppliedModal from 'components/data-processing/ChangesNotAppliedModal';
 
-jest.mock('../../../utils/qcSteps', () => ({
+jest.mock('utils/qcSteps', () => ({
   getUserFriendlyQCStepName: jest.fn().mockImplementation((step) => {
     switch (step) {
       case 'step-1':
@@ -22,7 +22,7 @@ jest.mock('../../../utils/qcSteps', () => ({
   }),
 }));
 
-jest.mock('../../../redux/selectors');
+jest.mock('redux/selectors');
 
 getBackendStatus.mockImplementation(() => () => ({
   status: {
@@ -120,16 +120,16 @@ describe('ChangesNotAppliedModal', () => {
   });
 
   it('Fires the correct action for Run button', () => {
-    const mockRunPipeline = jest.fn();
+    const mockRunQC = jest.fn();
 
     render(
       <Provider store={mockStore(withChangesState)}>
-        <ChangesNotAppliedModal onRunPipeline={() => mockRunPipeline()} />
+        <ChangesNotAppliedModal onRunQC={() => mockRunQC()} />
       </Provider>,
     );
 
     userEvent.click(screen.getByText('Run'));
-    expect(mockRunPipeline).toHaveBeenCalled();
+    expect(mockRunQC).toHaveBeenCalled();
   });
 
   it('Fires the correct action for Discard button', () => {

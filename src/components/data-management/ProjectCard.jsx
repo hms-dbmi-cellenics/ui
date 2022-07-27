@@ -5,15 +5,14 @@ import {
 } from 'antd';
 import { blue } from '@ant-design/colors';
 import { useSelector, useDispatch } from 'react-redux';
-import EditableField from '../EditableField';
-import PrettyTime from '../PrettyTime';
 
-import validateInputs, { rules } from '../../utils/validateInputs';
-import ProjectDeleteModal from './ProjectDeleteModal';
-import { setActiveProject, updateProject } from '../../redux/actions/projects';
-import { updateExperiment } from '../../redux/actions/experiments';
+import { updateExperiment, setActiveExperiment } from 'redux/actions/experiments';
+import validateInputs, { rules } from 'utils/validateInputs';
+import integrationTestConstants from 'utils/integrationTestConstants';
+import EditableField from 'components/EditableField';
+import PrettyTime from 'components/PrettyTime';
 
-import integrationTestConstants from '../../utils/integrationTestConstants';
+import ProjectDeleteModal from 'components/data-management/ProjectDeleteModal';
 
 const { Item } = Descriptions;
 
@@ -24,11 +23,11 @@ const validationChecks = [
   rules.UNIQUE_NAME_CASE_INSENSITIVE,
 ];
 
-const inactiveProjectStyle = {
+const inactiveExperimentStyle = {
   cursor: 'pointer',
 };
 
-const activeProjectStyle = {
+const activeExperimentStyle = {
   backgroundColor: blue[0],
   cursor: 'pointer',
   border: `2px solid ${blue.primary}`,
@@ -37,34 +36,31 @@ const activeProjectStyle = {
 const itemTextStyle = { fontWeight: 'bold' };
 
 const ProjectCard = (props) => {
-  const { projectUuid } = props;
+  const { experimentId } = props;
 
   const dispatch = useDispatch();
 
-  const projects = useSelector((state) => state.projects);
+  const experiments = useSelector((state) => state.experiments);
 
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
 
-  const { activeProjectUuid } = projects.meta;
-  const projectCardStyle = activeProjectUuid === projectUuid ? activeProjectStyle : inactiveProjectStyle;
+  const { activeExperimentId } = experiments.meta;
+  const experimentCardStyle = activeExperimentId === experimentId
+    ? activeExperimentStyle : inactiveExperimentStyle;
 
-  const project = projects[projectUuid];
-  const projectExperiment = project.experiments[0];
+  const experiment = experiments[experimentId];
 
-  const projectNames = projects.ids.map((uuid) => projects[uuid].name);
+  const experimentNames = experiments.ids.map((id) => experiments[id].name);
 
   const validationParams = {
-    existingNames: projectNames,
+    existingNames: experimentNames,
   };
 
-  const updateProjectName = (newName) => {
-    dispatch(updateProject(project.uuid, { name: newName.trim() }));
-
-    // Before multiple experiment support, use project name for analysis name
-    dispatch(updateExperiment(projectExperiment, { name: newName.trim() }));
+  const updateExperimentName = (newName) => {
+    dispatch(updateExperiment(experiment.id, { name: newName.trim() }));
   };
 
-  const deleteProject = () => {
+  const deleteExperiment = () => {
     setDeleteModalVisible(true);
   };
 
@@ -72,19 +68,19 @@ const ProjectCard = (props) => {
     <>
       {deleteModalVisible && (
         <ProjectDeleteModal
-          key={`${project.uuid}-name`}
-          projectUuid={project.uuid}
+          key={`${experiment.id}-name`}
+          experimentId={experiment.id}
           onCancel={() => { setDeleteModalVisible(false); }}
           onDelete={() => { setDeleteModalVisible(false); }}
         />
       )}
       <Card
         data-test-class={integrationTestConstants.classes.PROJECT_CARD}
-        key={projectUuid}
+        key={experimentId}
         type='primary'
-        style={projectCardStyle}
+        style={experimentCardStyle}
         onClick={() => {
-          dispatch(setActiveProject(project.uuid));
+          dispatch(setActiveExperiment(experiment.id));
         }}
       >
         <Descriptions
@@ -94,9 +90,9 @@ const ProjectCard = (props) => {
         >
           <Item contentStyle={{ fontWeight: 700, fontSize: 16 }}>
             <EditableField
-              value={project.name}
-              onAfterSubmit={updateProjectName}
-              onDelete={deleteProject}
+              value={experiment.name}
+              onAfterSubmit={updateExperimentName}
+              onDelete={deleteExperiment}
               validationFunc={
                 (newName) => validateInputs(
                   newName,
@@ -110,21 +106,21 @@ const ProjectCard = (props) => {
             labelStyle={itemTextStyle}
             label='Samples'
           >
-            {project.samples.length}
+            {experiment.sampleIds.length}
 
           </Item>
           <Item
             labelStyle={itemTextStyle}
             label='Created'
           >
-            <PrettyTime isoTime={project.createdDate} />
+            <PrettyTime isoTime={experiment.createdAt} />
 
           </Item>
           <Item
             labelStyle={itemTextStyle}
             label='Modified'
           >
-            <PrettyTime isoTime={project.lastModified} />
+            <PrettyTime isoTime={experiment.updatedAt} />
 
           </Item>
         </Descriptions>
@@ -134,7 +130,7 @@ const ProjectCard = (props) => {
 };
 
 ProjectCard.propTypes = {
-  projectUuid: PropTypes.string.isRequired,
+  experimentId: PropTypes.string.isRequired,
 };
 
 export default ProjectCard;

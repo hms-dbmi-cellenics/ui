@@ -10,7 +10,7 @@ Array [
   },
   Object {
     "payload": Object {},
-    "type": "experimentSettings/startPipeline",
+    "type": "experimentSettings/startQC",
   },
 ]
 `;
@@ -25,7 +25,7 @@ Array [
   },
   Object {
     "payload": Object {
-      "error": "Could not start gem2s. some weird error that happened",
+      "error": "We couldn't start working on your data.",
       "experimentId": "experiment-id",
     },
     "type": "backendStatus/backendStatusError",

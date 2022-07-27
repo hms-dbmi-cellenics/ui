@@ -11,7 +11,7 @@ const EXPERIMENTS_CREATED = `${EXPERIMENTS}/created`;
 const EXPERIMENTS_LOADING = `${EXPERIMENTS}/loading`;
 
 /**
- * Create experiments
+ * Experiments loaded
  */
 const EXPERIMENTS_LOADED = `${EXPERIMENTS}/loaded`;
 
@@ -31,16 +31,31 @@ const EXPERIMENTS_DELETED = `${EXPERIMENTS}/deleted`;
 const EXPERIMENTS_SAVING = `${EXPERIMENTS}/saving`;
 
 /**
- * Experiment saved
- */
-const EXPERIMENTS_SAVED = `${EXPERIMENTS}/saved`;
-
-/**
  * Update experiments
  */
 const EXPERIMENTS_ERROR = `${EXPERIMENTS}/error`;
 
 const EXPERIMENTS_SWITCH = `${EXPERIMENTS}/switch`;
+
+/**
+ * Set active project.
+ */
+const EXPERIMENTS_SET_ACTIVE = `${EXPERIMENTS}/setActive`;
+
+/**
+ * Add project metadata.
+ */
+const EXPERIMENTS_METADATA_CREATE = `${EXPERIMENTS}/metadataCreate`;
+
+/**
+ * Update project metadata.
+ */
+const EXPERIMENTS_METADATA_UPDATE = `${EXPERIMENTS}/metadataUpdate`;
+
+/**
+ * Delete project metadta.
+ */
+const EXPERIMENTS_METADATA_DELETE = `${EXPERIMENTS}/metadataDelete`;
 
 export {
   EXPERIMENTS_CREATED,
@@ -50,6 +65,9 @@ export {
   EXPERIMENTS_LOADED,
   EXPERIMENTS_DELETED,
   EXPERIMENTS_SAVING,
-  EXPERIMENTS_SAVED,
   EXPERIMENTS_SWITCH,
+  EXPERIMENTS_SET_ACTIVE,
+  EXPERIMENTS_METADATA_CREATE,
+  EXPERIMENTS_METADATA_UPDATE,
+  EXPERIMENTS_METADATA_DELETE,
 };

@@ -39,7 +39,7 @@ jest.mock('utils/socketConnection', () => {
 jest.mock('utils/work/unpackResult');
 
 describe('dispatchWorkRequest unit tests', () => {
-  const experimentId = '1234';
+  const experimentId = fake.EXPERIMENT_ID;
   const timeout = 30;
   const body = {
     name: 'ImportantTask',
@@ -61,8 +61,19 @@ describe('dispatchWorkRequest unit tests', () => {
         },
       };
 
+      const podInfo = {
+        response: {
+          podInfo: {
+            name: 'worker-pod',
+            creationTimestamp: '2022-04-29T07:48:47.000Z',
+            phase: 'Pending',
+          },
+        },
+      };
+
       // This is a mocked response emit response from server
       socketMock.socketClient.emit(`WorkResponse-${requestBody.ETag}`, responseBody);
+      socketMock.socketClient.emit(`WorkerInfo-${fake.EXPERIMENT_ID}`, podInfo);
     });
 
     socketConnectionMocks.mockOn.mockImplementation((channel, socketCallback) => {
@@ -79,15 +90,32 @@ describe('dispatchWorkRequest unit tests', () => {
     await dispatchWorkRequest(
       experimentId, body, timeout, 'facefeed',
     );
-    expect(socketConnectionMocks.mockEmit).toHaveBeenCalledWith('WorkRequest', {
+    expect(socketConnectionMocks.mockEmit).toHaveBeenCalledWith('WorkRequest-v2', {
       ETag: 'facefeed',
       socketId: '5678',
-      experimentId: '1234',
+      experimentId: fake.EXPERIMENT_ID,
       timeout: '4022-01-01T00:00:30.000Z',
       body: { name: 'ImportantTask', type: 'fake task' },
     });
 
-    expect(socketConnectionMocks.mockOn).toHaveBeenCalledTimes(1);
+    expect(socketConnectionMocks.mockOn).toHaveBeenCalledTimes(2);
+  });
+
+  it('Sends work to the backend when called', async () => {
+    fetchMock.mockResponse(JSON.stringify({ signedUrl: 'http://www.apiUrl:portNum/path/blabla' }));
+
+    await dispatchWorkRequest(
+      experimentId, body, timeout, 'facefeed',
+    );
+    expect(socketConnectionMocks.mockEmit).toHaveBeenCalledWith('WorkRequest-v2', {
+      ETag: 'facefeed',
+      socketId: '5678',
+      experimentId: fake.EXPERIMENT_ID,
+      timeout: '4022-01-01T00:00:30.000Z',
+      body: { name: 'ImportantTask', type: 'fake task' },
+    });
+
+    expect(socketConnectionMocks.mockOn).toHaveBeenCalledTimes(2);
   });
 
   it('Returns an error if there is error in the response.', async () => {
@@ -105,10 +133,24 @@ describe('dispatchWorkRequest unit tests', () => {
       await dispatchWorkRequest(experimentId, body, timeout, 'facefeed');
     }).rejects.toEqual(new Error('MOCK_ERROR_CODE: Mock worker error message'));
   });
+  it('When using apiv2 correct work request is sent', async () => {
+    fetchMock.mockResponse(JSON.stringify({ signedUrl: 'http://www.apiUrl:portNum/path/blabla' }));
+
+    await dispatchWorkRequest(
+      experimentId, body, timeout, 'facefeed',
+    );
+    expect(socketConnectionMocks.mockEmit).toHaveBeenCalledWith('WorkRequest-v2', {
+      ETag: 'facefeed',
+      socketId: '5678',
+      experimentId: fake.EXPERIMENT_ID,
+      timeout: '4022-01-01T00:00:30.000Z',
+      body: { name: 'ImportantTask', type: 'fake task' },
+    });
+  });
 });
 
 describe('seekFromS3 unit tests', () => {
-  const experimentId = '1234';
+  const experimentId = fake.EXPERIMENT_ID;
   const result = 'someResult';
 
   const validResultPath = 'validResultPath';
@@ -172,5 +214,11 @@ describe('seekFromS3 unit tests', () => {
     expect(async () => {
       await seekFromS3(S3ErrorPath, experimentId);
     }).rejects.toThrow();
+  });
+
+  it('Works for apiv2 ', async () => {
+    // fetchMock.mockResponseOnce(JSON.stringify({ signedUrl: 'http://www.apiUrl:portNum/path/blabla' }));
+    await seekFromS3(validResultPath, experimentId);
+    expect(fetchMock.mock.calls[0]).toEqual(['http://localhost:3000/v2/workResults/testae48e318dab9a1bd0bexperiment/validResultPath', { headers: {} }]);
   });
 });

@@ -3,52 +3,61 @@ import _ from 'lodash';
 
 import axios from 'axios';
 
-import { createSample, updateSampleFile } from 'redux/actions/samples';
-
-import fetchAPI from 'utils/fetchAPI';
+import { createSample, createSampleFile, updateSampleFileUpload } from 'redux/actions/samples';
 
 import UploadStatus from 'utils/upload/UploadStatus';
 import loadAndCompressIfNecessary from 'utils/upload/loadAndCompressIfNecessary';
 import { inspectFile, Verdict } from 'utils/upload/fileInspector';
 
-const putInS3 = async (projectUuid, loadedFileData, dispatch, sampleUuid, fileName, metadata) => {
-  const baseUrl = `/v1/projects/${projectUuid}/samples/${sampleUuid}/${fileName}/uploadUrl`;
+import getFileTypeV2 from 'utils/getFileTypeV2';
 
-  const urlParams = new URLSearchParams(metadata);
-  const urlParamsStr = Object.keys(metadata).length ? `?${urlParams}` : '';
-
-  const url = `${baseUrl}${urlParamsStr}`;
-
-  const signedUrlResponse = await fetchAPI(
-    url,
-    {
-      method: 'GET',
-    },
-  );
-
-  const signedUrl = await signedUrlResponse.json();
-
-  return axios.request({
+const putInS3 = async (loadedFileData, signedUrl, onUploadProgress) => (
+  await axios.request({
     method: 'put',
     url: signedUrl,
     data: loadedFileData,
     headers: {
       'Content-Type': 'application/octet-stream',
     },
-    onUploadProgress: (progress) => {
+    onUploadProgress,
+  })
+);
+
+const prepareAndUploadFileToS3 = async (
+  projectId, sampleId, fileType, file, signedUrl, dispatch,
+) => {
+  let loadedFile = null;
+
+  try {
+    loadedFile = await loadAndCompressIfNecessary(file, () => {
+      dispatch(updateSampleFileUpload(projectId, sampleId, fileType, UploadStatus.COMPRESSING));
+    });
+  } catch (e) {
+    const fileErrorStatus = e.message === 'aborted' ? UploadStatus.FILE_READ_ABORTED : UploadStatus.FILE_READ_ERROR;
+
+    dispatch(updateSampleFileUpload(projectId, sampleId, fileType, fileErrorStatus));
+    return;
+  }
+
+  try {
+    await putInS3(loadedFile, signedUrl, (progress) => {
       const percentProgress = Math.round((progress.loaded / progress.total) * 100);
 
-      dispatch(updateSampleFile(sampleUuid, fileName, {
-        upload: {
-          status: UploadStatus.UPLOADING,
-          progress: percentProgress ?? 0,
-        },
-      }));
-    },
-  });
+      dispatch(
+        updateSampleFileUpload(
+          projectId, sampleId, fileType, UploadStatus.UPLOADING, percentProgress ?? 0,
+        ),
+      );
+    });
+  } catch (e) {
+    dispatch(updateSampleFileUpload(projectId, sampleId, fileType, UploadStatus.UPLOAD_ERROR));
+    return;
+  }
+
+  dispatch(updateSampleFileUpload(projectId, sampleId, fileType, UploadStatus.UPLOADED));
 };
 
-const metadataForFile = (file) => {
+const getMetadata = (file) => {
   const metadata = {};
 
   if (file.name.includes('genes')) {
@@ -60,126 +69,37 @@ const metadataForFile = (file) => {
   return metadata;
 };
 
-const compressAndUploadSingleFile = async (
-  projectUuid, sampleUuid, fileName, file,
-  dispatch, metadata = {},
-) => {
-  let loadedFile = null;
+const createAndUploadSingleFile = async (file, projectId, sampleId, dispatch) => {
+  const metadata = getMetadata(file);
+  const fileType = getFileTypeV2(file.fileObject.name, file.fileObject.type);
 
-  const filePropertiesToUpdate = {
-    size: file.size,
-    fileObject: file.fileObject,
-  };
-
+  let signedUrl;
   try {
-    loadedFile = await loadAndCompressIfNecessary(file, () => (
-      dispatch(
-        updateSampleFile(
-          sampleUuid,
-          fileName,
-          { upload: { status: UploadStatus.COMPRESSING } },
-        ),
-      )
-    ));
-  } catch (e) {
-    const fileErrorStatus = e === 'aborted' ? UploadStatus.FILE_READ_ABORTED : UploadStatus.FILE_READ_ERROR;
-
-    dispatch(
-      updateSampleFile(
-        sampleUuid,
-        fileName,
-        { upload: { status: fileErrorStatus } },
+    signedUrl = await dispatch(
+      createSampleFile(
+        projectId,
+        sampleId,
+        fileType,
+        file.size,
+        metadata,
+        file,
       ),
     );
-
+  } catch (e) {
+    // If there was an error we can't continue the process, so return
+    // (the action creator handles the other consequences of the error)
     return;
   }
 
-  try {
-    const uploadPromise = putInS3(
-      projectUuid, loadedFile, dispatch,
-      sampleUuid, fileName, metadata,
-    );
-
-    dispatch(
-      updateSampleFile(
-        sampleUuid,
-        fileName,
-        { upload: { status: UploadStatus.UPLOADING, amplifyPromise: uploadPromise } },
-      ),
-    );
-
-    await uploadPromise;
-  } catch (e) {
-    console.log('uploadError');
-    console.log(e);
-
-    console.log('uploadErrorResponse');
-    console.log(e.response);
-
-    console.log('uploadErrorResponseData');
-    console.log(e.response?.data);
-
-    // File size and file object should be available so we can reupload
-    dispatch(
-      updateSampleFile(
-        sampleUuid,
-        fileName,
-        {
-          ...filePropertiesToUpdate,
-          upload: { status: UploadStatus.UPLOAD_ERROR, amplifyPromise: null },
-        },
-      ),
-    );
-
-    return;
-  }
-
-  dispatch(
-    updateSampleFile(
-      sampleUuid,
-      fileName,
-      {
-        ...filePropertiesToUpdate,
-        upload: {
-          status: UploadStatus.UPLOADED,
-          progress: 100,
-          amplifyPromise: null,
-        },
-      },
-    ),
-  );
+  await prepareAndUploadFileToS3(projectId, sampleId, fileType, file, signedUrl, dispatch);
 };
 
-const renameFileIfNeeded = (fileName, type) => {
-  // rename files to include .gz
-  const uncompressed = !['application/gzip', 'application/x-gzip'].includes(type) && !fileName.endsWith('.gz');
-  let newFileName = uncompressed ? `${fileName}.gz` : fileName;
+const createAndUpload = async (sample, experimentId, dispatch) => (
+  Object.values(sample.files).map(
+    (file) => createAndUploadSingleFile(file, experimentId, sample.uuid, dispatch),
+  ));
 
-  // We rename genes.tsv files to features.tsv (for a single entry)
-  newFileName = newFileName.replace('genes', 'features');
-
-  return newFileName;
-};
-
-const uploadSingleFile = (newFile, activeProjectUuid, sampleUuid, dispatch) => {
-  const metadata = metadataForFile(newFile);
-
-  const newFileName = renameFileIfNeeded(newFile.fileObject.name, newFile.fileObject.type);
-
-  compressAndUploadSingleFile(
-    activeProjectUuid, sampleUuid, newFileName, newFile, dispatch, metadata,
-  );
-
-  return [newFileName, { ...newFile, name: newFileName }];
-};
-
-const compressAndUpload = (sample, activeProjectUuid, dispatch) => Object.fromEntries(
-  Object.values(sample.files)
-    .map((file) => uploadSingleFile(file, activeProjectUuid, sample.uuid, dispatch)),
-);
-
-const processUpload = async (filesList, sampleType, samples, activeProjectUuid, dispatch) => {
+const processUpload = async (filesList, sampleType, samples, experimentId, dispatch) => {
   const samplesMap = filesList.reduce((acc, file) => {
     const pathToArray = file.name.trim().replace(/[\s]{2,}/ig, ' ').split('/');
 
@@ -192,7 +112,7 @@ const processUpload = async (filesList, sampleType, samples, activeProjectUuid, 
 
     const sampleUuid = Object.values(samples).filter(
       (s) => s.name === sampleName
-        && s.projectUuid === activeProjectUuid,
+        && s.experimentId === experimentId,
     )[0]?.uuid;
 
     return {
@@ -209,29 +129,19 @@ const processUpload = async (filesList, sampleType, samples, activeProjectUuid, 
   }, {});
 
   Object.entries(samplesMap).forEach(async ([name, sample]) => {
+    const filesToUploadForSample = Object.keys(sample.files);
+
     // Create sample if not exists.
     try {
-      sample.uuid ??= await dispatch(createSample(activeProjectUuid, name, sampleType));
+      sample.uuid ??= await dispatch(
+        createSample(experimentId, name, sampleType, filesToUploadForSample),
+      );
     } catch (e) {
       // If sample creation fails, sample should not be created
       return;
     }
 
-    sample.files = compressAndUpload(sample, activeProjectUuid, dispatch);
-
-    Object.values(sample.files).forEach((file) => {
-      // Create files
-      dispatch(
-        updateSampleFile(
-          sample.uuid,
-          file.name,
-          {
-            ...file,
-            path: `${activeProjectUuid}/${file.name.replace(name, sample.uuid)}`,
-          },
-        ),
-      );
-    });
+    createAndUpload(sample, experimentId, dispatch);
   });
 };
 
@@ -277,6 +187,7 @@ const fileObjectToFileRecord = async (fileObject, technology) => {
 
 export {
   fileObjectToFileRecord,
-  uploadSingleFile,
-  processUpload,
+  createAndUploadSingleFile,
 };
+
+export default processUpload;

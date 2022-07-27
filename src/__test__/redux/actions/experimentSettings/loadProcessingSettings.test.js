@@ -2,14 +2,14 @@ import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import _ from 'lodash';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
+import pushNotificationMessage from 'utils/pushNotificationMessage';
 import {
   EXPERIMENT_SETTINGS_PROCESSING_CONFIG_LOADED,
   EXPERIMENT_SETTINGS_PROCESSING_ERROR,
-} from '../../../../redux/actionTypes/experimentSettings';
-import loadProcessingSettings from '../../../../redux/actions/experimentSettings/processingConfig/loadProcessingSettings';
-import generateExperimentSettingsMock from '../../../test-utils/experimentSettings.mock';
+} from 'redux/actionTypes/experimentSettings';
+import loadProcessingSettings from 'redux/actions/experimentSettings/processingConfig/loadProcessingSettings';
 
-import pushNotificationMessage from '../../../../utils/pushNotificationMessage';
+import generateExperimentSettingsMock from '__test__/test-utils/experimentSettings.mock';
 
 import '__test__/test-utils/setupTests';
 
@@ -58,6 +58,8 @@ describe('loadProcessingSettings action', () => {
 
     expect(actions.length).toEqual(1);
     expect(actions[0].type).toEqual(EXPERIMENT_SETTINGS_PROCESSING_CONFIG_LOADED);
+
+    expect(fetchMock).toHaveBeenCalledWith(`http://localhost:3000/v2/experiments/${experimentId}/processingConfig`, { headers: {} });
   });
 
   it('Correctly sets error if returned an error', async () => {

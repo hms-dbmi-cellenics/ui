@@ -52,7 +52,7 @@ import _ from 'lodash';
 import { getBackendStatus } from 'redux/selectors';
 import { loadCellSets } from 'redux/actions/cellSets';
 import { loadSamples } from 'redux/actions/samples';
-import { runPipeline } from 'redux/actions/pipeline';
+import { runQC } from 'redux/actions/pipeline';
 import { useAppRouter } from 'utils/AppRouteProvider';
 import { modules } from 'utils/constants';
 
@@ -355,7 +355,7 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
   // Called when the pipeline is triggered to be run by the user.
   const onPipelineRun = () => {
     setRunQCModalVisible(false);
-    dispatch(runPipeline(experimentId));
+    dispatch(runQC(experimentId));
   };
 
   const renderTitle = () => {
@@ -460,11 +460,13 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
                       <Button
                         disabled={prefiltered}
                         data-testid='enableFilterButton'
-                        onClick={() => {
-                          dispatch(setQCStepEnabled(
-                            currentStep.key, !stepEnabled,
-                          ));
-                          dispatch(saveProcessingSettings(experimentId, currentStep.key));
+                        onClick={async () => {
+                          await dispatch(saveProcessingSettings(experimentId, currentStep.key));
+                          if (!processingConfig.meta.saveSettingsError) {
+                            dispatch(setQCStepEnabled(
+                              currentStep.key, !stepEnabled,
+                            ));
+                          }
                         }}
                       >
                         {
@@ -616,7 +618,7 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
             okText='Start'
           >
             <p>
-              This will take several minutes.
+              This might take several minutes.
               Your navigation within Cellenics will be restricted during this time.
               Do you want to start?
             </p>

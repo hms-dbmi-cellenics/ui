@@ -18,3 +18,13 @@ Object {
   "method": "PATCH",
 }
 `;
+
+exports[`deleteCellSet action Uses V2 URL when using API version V2 1`] = `
+Object {
+  "body": "[{\\"$match\\":{\\"query\\":\\"$[?(@.key == \\\\\\"scratchpad\\\\\\")]\\",\\"value\\":{\\"children\\":[{\\"$match\\":{\\"query\\":\\"$[?(@.key == \\\\\\"my-key\\\\\\")]\\",\\"value\\":{\\"$remove\\":true}}}]}}}]",
+  "headers": Object {
+    "Content-Type": "application/boschni-json-merger+json",
+  },
+  "method": "PATCH",
+}
+`;

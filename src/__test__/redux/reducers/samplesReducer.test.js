@@ -1,5 +1,5 @@
-import samplesReducer from '../../../redux/reducers/samples';
-import initialState, { sampleTemplate, sampleFileTemplate } from '../../../redux/reducers/samples/initialState';
+import samplesReducer from 'redux/reducers/samples';
+import initialState, { sampleTemplate, sampleFileTemplate } from 'redux/reducers/samples/initialState';
 
 import {
   SAMPLES_CREATE,
@@ -11,7 +11,8 @@ import {
   SAMPLES_SAVING,
   SAMPLES_SAVED,
   SAMPLES_METADATA_DELETE,
-} from '../../../redux/actionTypes/samples';
+  SAMPLES_VALUE_IN_METADATA_TRACK_UPDATED,
+} from 'redux/actionTypes/samples';
 
 describe('samplesReducer', () => {
   const mockUuid1 = 'asd123';
@@ -111,7 +112,10 @@ describe('samplesReducer', () => {
     });
 
     expect(newState[sample1.uuid].fileNames).toEqual([fileName]);
-    expect(newState[sample1.uuid].files[fileName]).toEqual(mockFile);
+    expect(newState[sample1.uuid].files[fileName]).toEqual({
+      ...mockFile,
+      lastModified: 'newLastModified',
+    });
     expect(newState).toMatchSnapshot();
   });
 
@@ -119,27 +123,11 @@ describe('samplesReducer', () => {
     const newState = samplesReducer(twoSamplesState, {
       type: SAMPLES_DELETE,
       payload: {
-        sampleUuids: [sample2.uuid],
+        sampleIds: [sample2.uuid],
       },
     });
 
     expect(newState[sample2.uuid]).toBeUndefined();
-    expect(newState).toMatchSnapshot();
-  });
-
-  it('Updates sample files correctly', () => {
-    const newState = samplesReducer(oneSampleState, {
-      type: SAMPLES_FILE_UPDATE,
-      payload: {
-        sampleUuid: mockUuid1,
-        fileName,
-        fileDiff: mockFile,
-        lastModified: 'newLastModified',
-      },
-    });
-
-    expect(newState[sample1.uuid].fileNames).toEqual([fileName]);
-    expect(newState[sample1.uuid].files[fileName]).toEqual(mockFile);
     expect(newState).toMatchSnapshot();
   });
 
@@ -296,6 +284,32 @@ describe('samplesReducer', () => {
     });
 
     expect(newState[mockUuid1].metadata[metadataKey]).toBeUndefined();
+    expect(newState).toMatchSnapshot();
+  });
+
+  it('Handles samplesValueInMetadataTrackUpdated correctly', () => {
+    const metadataKey = 'metadata-test';
+    const metadataOldValue = 'old-value';
+    const metadataNewValue = 'new-value';
+
+    const sampleWithMetadata = {
+      ...oneSampleState,
+      [mockUuid1]: {
+        metadata: {
+          [metadataKey]: metadataOldValue,
+        },
+      },
+    };
+
+    const newState = samplesReducer(sampleWithMetadata, {
+      type: SAMPLES_VALUE_IN_METADATA_TRACK_UPDATED,
+      payload: {
+        sampleUuid: mockUuid1,
+        key: metadataKey,
+        value: metadataNewValue,
+      },
+    });
+
     expect(newState).toMatchSnapshot();
   });
 });

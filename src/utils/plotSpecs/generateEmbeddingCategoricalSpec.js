@@ -42,6 +42,7 @@ const generateSpec = (config, plotData, cellSetLegendsData) => {
   }
   return {
     $schema: 'https://vega.github.io/schema/vega/v5.json',
+    description: 'Categorical embedding plot',
     width: config?.dimensions.width,
     height: config?.dimensions.height,
     autosize: { type: 'fit', resize: true },
@@ -51,6 +52,13 @@ const generateSpec = (config, plotData, cellSetLegendsData) => {
       {
         name: 'values',
         values: plotData,
+        // Vega internally modifies objects during data transforms. If the plot data is frozen,
+        // Vega is not able to carry out the transform and will throw an error.
+        // https://github.com/vega/vega/issues/2453#issuecomment-604516777
+        format: {
+          type: 'json',
+          copy: true,
+        },
       },
       {
         name: 'labels',
@@ -219,11 +227,13 @@ const filterCells = (cellSets, sampleKey, groupBy) => {
   let cellSetLegendsData = [];
   const addedCellSetKeys = new Set();
 
-  filteredCells = filteredCells.map((cell) => {
+  filteredCells = filteredCells.reduce((acc, cell) => {
+    if (!cell) return acc;
+
     const inCellSet = colorToCellIdsMap.find((map) => map.cellIds.has(cell.cellId));
 
-    // If cell is not in the cell set, then return null
-    if (!inCellSet) return null;
+    // If cell is not in the cell set, then return
+    if (!inCellSet) return acc;
 
     const { key, name, color } = inCellSet;
 
@@ -232,15 +242,15 @@ const filterCells = (cellSets, sampleKey, groupBy) => {
       cellSetLegendsData.push({ key, name, color });
     }
 
-    return {
+    acc[cell.cellId] = {
       ...cell,
       cellSetKey: key,
       cellSetName: name,
       color,
     };
-  });
 
-  filteredCells = filteredCells.filter((cell) => cell !== null);
+    return acc;
+  }, {});
 
   // Sort legends to show them in the order that cellSetKeys are stored
   cellSetLegendsData = _.sortBy(
@@ -255,16 +265,16 @@ const filterCells = (cellSets, sampleKey, groupBy) => {
 const generateData = (cellSets, sampleKey, groupBy, embeddingData) => {
   const { filteredCells, cellSetLegendsData } = filterCells(cellSets, sampleKey, groupBy);
 
-  const plotData = filteredCells
-    .filter((d) => d.cellId < embeddingData.length)
-    .filter((data) => embeddingData[data.cellId]) // filter out cells removed in data processing
+  const plotData = embeddingData
+    .map((coordinates, cellId) => ({ cellId, coordinates }))
+    .filter(({ coordinates }) => coordinates !== undefined)
     .map((data) => {
-      const { cellId, ...supportingData } = data;
+      const { cellId, coordinates } = data;
 
       return {
-        ...supportingData,
-        x: embeddingData[cellId][0],
-        y: embeddingData[cellId][1],
+        ...filteredCells[cellId],
+        x: coordinates[0],
+        y: coordinates[1],
       };
     });
 

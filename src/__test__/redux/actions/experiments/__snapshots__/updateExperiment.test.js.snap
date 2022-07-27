@@ -1,6 +1,15 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`updateExperiment Dispatches actions when called 1`] = `
+exports[`updateExperiment Handles error if api request fails 1`] = `
+Array [
+  undefined,
+  Object {
+    "error": "We couldn't save your data.",
+  },
+]
+`;
+
+exports[`updateExperiment Works correctly 1`] = `
 Array [
   Object {
     "type": "experiments/saving",
@@ -8,27 +17,13 @@ Array [
   Object {
     "payload": Object {
       "experiment": Object {
-        "createdDate": null,
-        "description": "Analysis description",
-        "id": "experiment-1",
-        "lastViewed": null,
-        "meta": Object {
-          "organism": null,
-          "type": "10x",
-        },
-        "name": "updated-experiment",
-        "notifyByEmail": true,
-        "projectUuid": null,
-        "sampleIds": Array [],
+        "name": "newName",
       },
       "experimentId": "experiment-1",
     },
     "type": "experiments/updated",
   },
-  Object {
-    "type": "experiments/saved",
-  },
 ]
 `;
 
-exports[`updateExperiment Dispatches actions when called 2`] = `"{\\"description\\":\\"Analysis description\\",\\"notifyByEmail\\":true,\\"meta\\":{\\"organism\\":null,\\"type\\":\\"10x\\"},\\"sampleIds\\":[],\\"experimentId\\":\\"experiment-1\\",\\"experimentName\\":\\"updated-experiment\\"}"`;
+exports[`updateExperiment Works correctly 2`] = `"{\\"name\\":\\"newName\\"}"`;

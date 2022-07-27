@@ -2,15 +2,13 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React, { useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-
+import PropTypes from 'prop-types';
 import {
   Space, Typography, Button,
 } from 'antd';
 
-import PropTypes from 'prop-types';
-import {
-  updateProject,
-} from 'redux/actions/projects';
+import { updateExperiment } from 'redux/actions/experiments';
+
 import { layout } from 'utils/constants';
 import EditableParagraph from 'components/EditableParagraph';
 import SamplesTable from './SamplesTable';
@@ -20,20 +18,25 @@ const {
   Title, Text,
 } = Typography;
 
+const paddingTop = layout.PANEL_PADDING;
+const paddingBottom = layout.PANEL_PADDING;
+const paddingRight = layout.PANEL_PADDING;
+const paddingLeft = layout.PANEL_PADDING;
+
 const ProjectDetails = ({ width, height }) => {
   const dispatch = useDispatch();
 
-  const { activeProjectUuid } = useSelector((state) => state.projects.meta);
-  const activeProject = useSelector((state) => state.projects[activeProjectUuid]);
+  const { activeExperimentId } = useSelector((state) => state.experiments.meta);
+  const activeExperiment = useSelector((state) => state.experiments[activeExperimentId]);
   const samplesTableRef = useRef();
 
   return (
+    // The height of this div has to be fixed to enable sample scrolling
     <div
       id='project-details'
       style={{
-        padding: layout.PANEL_PADDING,
-        width,
-        height: height - layout.PANEL_HEADING_HEIGHT,
+        width: width - paddingLeft - paddingRight,
+        height: height - layout.PANEL_HEADING_HEIGHT - paddingTop - paddingBottom,
       }}
     >
       <div style={{
@@ -42,10 +45,10 @@ const ProjectDetails = ({ width, height }) => {
       >
         <div style={{ flex: 'none', paddingBottom: '1em' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-            <Title level={3}>{activeProject.name}</Title>
+            <Title level={3}>{activeExperiment.name}</Title>
             <Space>
               <Button
-                disabled={activeProject.samples?.length === 0}
+                disabled={activeExperiment.sampleIds?.length === 0}
                 onClick={() => samplesTableRef.current.createMetadataColumn()}
               >
                 Add metadata
@@ -54,7 +57,7 @@ const ProjectDetails = ({ width, height }) => {
             </Space>
           </div>
           <Text type='secondary'>
-            {`Project ID: ${activeProjectUuid}`}
+            {`Project ID: ${activeExperimentId}`}
           </Text>
         </div>
         <div style={{ flex: 1, overflowY: 'auto' }}>
@@ -62,10 +65,10 @@ const ProjectDetails = ({ width, height }) => {
             Description:
           </Text>
           <EditableParagraph
-            value={activeProject.description}
+            value={activeExperiment.description}
             onUpdate={(text) => {
-              if (text !== activeProject.description) {
-                dispatch(updateProject(activeProjectUuid, { description: text }));
+              if (text !== activeExperiment.description) {
+                dispatch(updateExperiment(activeExperimentId, { description: text }));
               }
             }}
           />

@@ -13,15 +13,15 @@ import {
   Divider,
 } from 'antd';
 
+import generateDataProcessingPlotUuid from 'utils/generateDataProcessingPlotUuid';
 import {
   updatePlotConfig,
   loadPlotConfig,
   savePlotConfig,
-} from '../../../redux/actions/componentConfig';
+} from 'redux/actions/componentConfig';
 
 import CellSizeDistributionHistogram from '../../plots/CellSizeDistributionHistogram';
 import CellSizeDistributionKneePlot from '../../plots/CellSizeDistributionKneePlot';
-import generateDataProcessingPlotUuid from '../../../utils/generateDataProcessingPlotUuid';
 
 import PlotStyling from '../../plots/styling/PlotStyling';
 import MiniPlot from '../../plots/MiniPlot';

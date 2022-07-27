@@ -1,8 +1,14 @@
 import downloadFromUrl from 'utils/data-management/downloadFromUrl';
-import { getFromApiExpectOK } from 'utils/getDataExpectOK';
+import fetchAPI from 'utils/http/fetchAPI';
 
-const downloadSingleFile = async (activeProjectUuid, sampleUuid, fileName) => {
-  const downloadUrl = await getFromApiExpectOK(`/v1/projects/${activeProjectUuid}/samples/${sampleUuid}/${fileName}/downloadUrl`);
+import getFileTypeV2 from 'utils/getFileTypeV2';
+
+const downloadSingleFile = async (experimentId, sampleUuid, fileName) => {
+  const fileType = getFileTypeV2(fileName);
+
+  const requestUrl = `/v2/experiments/${experimentId}/samples/${sampleUuid}/files/${fileType}/downloadUrl`;
+  const downloadUrl = await fetchAPI(requestUrl);
+
   downloadFromUrl(downloadUrl);
 };
 

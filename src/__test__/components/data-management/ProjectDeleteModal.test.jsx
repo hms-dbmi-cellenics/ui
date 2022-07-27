@@ -6,21 +6,21 @@ import {
   screen, render, fireEvent, waitFor,
 } from '@testing-library/react';
 import configureMockStore from 'redux-mock-store';
-import ProjectDeleteModal from '../../../components/data-management/ProjectDeleteModal';
-import initialProjectState from '../../../redux/reducers/projects/initialState';
+import initialExperimentState from 'redux/reducers/experiments/initialState';
+import ProjectDeleteModal from 'components/data-management/ProjectDeleteModal';
 
 const mockStore = configureMockStore([thunk]);
-const projectName = 'super cool project';
-const projectId = 'iamid';
+const experimentName = 'super cool experiment';
+const experimentId = 'iamid';
 const state = {
-  projects: {
-    ...initialProjectState,
-    ids: [projectId],
-    [projectId]: {
-      name: projectName,
+  experiments: {
+    ...initialExperimentState,
+    ids: [experimentId],
+    [experimentId]: {
+      name: experimentName,
     },
     meta: {
-      ...initialProjectState.meta,
+      ...initialExperimentState.meta,
       loading: false,
     },
   },
@@ -37,7 +37,7 @@ describe('Delete Project Modal tests', () => {
     render(
       <Provider store={store}>
         <ProjectDeleteModal
-          projectUuid={projectId}
+          experimentId={experimentId}
           onDelete={deleteProjectSpy}
           onCancel={cancelProjectSpy}
         />
@@ -59,14 +59,14 @@ describe('Delete Project Modal tests', () => {
   it('ok button is not disabled if project name is typed in', () => {
     renderProjectDeleteModal();
     const nameField = screen.getByRole('textbox');
-    fireEvent.change(nameField, { target: { value: projectName } });
+    fireEvent.change(nameField, { target: { value: experimentName } });
     expect(screen.getByText('Permanently delete project').parentElement).not.toBeDisabled();
   });
 
   it('Calls delete on deletion', async () => {
     renderProjectDeleteModal();
     const nameField = screen.getByRole('textbox');
-    fireEvent.change(nameField, { target: { value: projectName } });
+    fireEvent.change(nameField, { target: { value: experimentName } });
     fireEvent.click(screen.getByText('Permanently delete project').parentElement);
     await waitFor(() => expect(deleteProjectSpy).toHaveBeenCalled());
   });

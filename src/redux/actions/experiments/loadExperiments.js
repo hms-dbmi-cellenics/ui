@@ -1,47 +1,39 @@
-import fetchAPI from '../../../utils/fetchAPI';
-import { isServerError, throwIfRequestFailed } from '../../../utils/fetchErrors';
-import endUserMessages from '../../../utils/endUserMessages';
-import pushNotificationMessage from '../../../utils/pushNotificationMessage';
-import {
-  EXPERIMENTS_LOADED,
-  EXPERIMENTS_ERROR,
-  EXPERIMENTS_LOADING,
-} from '../../actionTypes/experiments';
+import fetchAPI from 'utils/http/fetchAPI';
+import handleError from 'utils/http/handleError';
+import endUserMessages from 'utils/endUserMessages';
 
-const loadExperiments = (
-  projectUuid,
-) => async (dispatch) => {
+import { EXPERIMENTS_ERROR, EXPERIMENTS_LOADED, EXPERIMENTS_LOADING } from 'redux/actionTypes/experiments';
+
+const loadExperiments = () => async (dispatch) => {
   dispatch({
     type: EXPERIMENTS_LOADING,
   });
 
-  const url = `/v1/projects/${projectUuid}/experiments`;
   try {
-    const response = await fetchAPI(url);
-    const data = await response.json();
-    throwIfRequestFailed(response, data, endUserMessages.ERROR_FETCHING_EXPERIMENTS);
+    const experiments = await fetchAPI('/v2/experiments');
+
+    experiments.forEach((experiment) => {
+      // eslint-disable-next-line no-param-reassign
+      experiment.sampleIds = experiment.samplesOrder;
+      // eslint-disable-next-line no-param-reassign
+      delete experiment.samplesOrder;
+    });
 
     dispatch({
       type: EXPERIMENTS_LOADED,
       payload: {
-        experiments: data,
+        experiments,
       },
     });
   } catch (e) {
-    let { message } = e;
-    if (!isServerError(e)) {
-      console.error(`fetch ${url} error ${message}`);
-      message = endUserMessages.CONNECTION_ERROR;
-    }
+    const errorMessage = handleError(e, endUserMessages.ERROR_LOADING_PROJECT);
+
     dispatch({
       type: EXPERIMENTS_ERROR,
       payload: {
-        error: message,
+        error: errorMessage,
       },
     });
-
-    pushNotificationMessage('error', message);
   }
 };
-
 export default loadExperiments;

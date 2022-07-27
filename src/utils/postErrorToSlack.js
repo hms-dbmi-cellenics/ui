@@ -33,13 +33,14 @@ const trimOutput = (key, item) => {
   return item;
 };
 
-const buildErrorMessage = (error, componentStack, reduxDump, context) => {
+const buildErrorMessage = (errorObject, reduxState, context) => {
   const {
     user, timestamp, experimentId, url,
   } = context;
 
-  return (`
-    Uncaught UI Error - Exp ID ${experimentId} - ${timestamp}
+  let message = `
+    ===== ERROR STACK =====
+    ${errorObject.stack}
 
     === DETAILS ===
     User: ${user.attributes.name} <${user.attributes.email}> ${user.username}
@@ -47,24 +48,22 @@ const buildErrorMessage = (error, componentStack, reduxDump, context) => {
     URL: ${url}
     Timestamp: ${timestamp}
 
-    ===== ERROR =====
-    ${error.stack}
+    `;
 
-    ===== COMPONENT STACK =====
-    ${componentStack}
-
-    ===== REDUX STATE =====
-    ${JSON.stringify(reduxDump, trimOutput, 2)}`
-  );
+  if (reduxState) {
+    message += `===== REDUX STATE =====
+    ${JSON.stringify(reduxState, trimOutput, 2)}`;
+  }
+  return message;
 };
 
 const postError = async (errorLog, context) => {
   const {
-    user, timestamp, experimentId, url,
+    user, timestamp, experimentId, url, environment,
   } = context;
 
   const message = `
-  \u26A0  Uncaught UI Error - ExpID ${experimentId} - ${timestamp}
+  \u26A0  [${environment.toUpperCase()}] Uncaught UI Error - ExpID ${experimentId} - ${timestamp}
   URL: ${url}
 
   User: ${user.attributes.name} <${user.attributes.email}> ${user.username}
@@ -101,22 +100,23 @@ const postError = async (errorLog, context) => {
   }
 };
 
-const postErrorToSlack = async (error, info, reduxDump) => {
+const postErrorToSlack = async (errorObject, reduxState) => {
   const user = await Auth.currentAuthenticatedUser();
 
   const timestamp = new Date().toISOString();
   const url = window.location.href;
   const experimentId = extractExperimentId(url);
-  const { componentStack } = info;
+  const { networkResources: { environment } } = reduxState;
 
   const context = {
     user,
     timestamp,
     experimentId,
     url,
+    environment,
   };
 
-  const errorLog = buildErrorMessage(error, componentStack, reduxDump, context);
+  const errorLog = buildErrorMessage(errorObject, reduxState, context);
   await postError(errorLog, context);
 };
 

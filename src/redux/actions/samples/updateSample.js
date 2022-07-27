@@ -1,38 +1,64 @@
-import moment from 'moment';
 import _ from 'lodash';
 
-import saveSamples from './saveSamples';
+import endUserMessages from 'utils/endUserMessages';
 
 import {
-  SAMPLES_UPDATE,
-} from '../../actionTypes/samples';
-import endUserMessages from '../../../utils/endUserMessages';
-import pushNotificationMessage from '../../../utils/pushNotificationMessage';
+  SAMPLES_UPDATE, SAMPLES_SAVING, SAMPLES_SAVED, SAMPLES_ERROR,
+} from 'redux/actionTypes/samples';
 
-import mergeObjectWithArrays from '../../../utils/mergeObjectWithArrays';
+import handleError from 'utils/http/handleError';
+import fetchAPI from 'utils/http/fetchAPI';
 
-const updateSample = (
-  sampleUuid,
-  diff,
-) => async (dispatch, getState) => {
-  const sample = _.cloneDeep(getState().samples[sampleUuid]);
+const updateSample = (sampleUuid, diff) => async (dispatch, getState) => {
+  // In api v2 experimentId and experimentId are the same
+  const { experimentId } = getState().samples[sampleUuid];
 
-  // eslint-disable-next-line no-param-reassign
-  diff.lastModified = moment().toISOString();
+  if (_.isNil(diff.name) || diff.metadata) {
+    throw new Error('This action can be used to update only the name in sample');
+  }
 
-  const newSample = mergeObjectWithArrays(sample, diff);
+  const url = `/v2/experiments/${experimentId}/samples/${sampleUuid}`;
+  const body = diff;
+
+  dispatch({
+    type: SAMPLES_SAVING,
+    payload: {
+      message: endUserMessages.SAVING_SAMPLE,
+    },
+  });
 
   try {
-    dispatch(saveSamples(sample.projectUuid, newSample))
-      .then(() => dispatch({
-        type: SAMPLES_UPDATE,
-        payload: {
-          sampleUuid,
-          sample: diff,
+    await fetchAPI(
+      url,
+      {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
         },
-      }));
+        body: JSON.stringify(body),
+      },
+    );
+
+    dispatch({
+      type: SAMPLES_SAVED,
+    });
+
+    dispatch({
+      type: SAMPLES_UPDATE,
+      payload: {
+        sampleUuid,
+        sample: diff,
+      },
+    });
   } catch (e) {
-    pushNotificationMessage('error', endUserMessages.ERROR_SAVING);
+    const errorMessage = handleError(e, endUserMessages.ERROR_SAVING);
+
+    dispatch({
+      type: SAMPLES_ERROR,
+      payload: {
+        error: errorMessage,
+      },
+    });
   }
 };
 
