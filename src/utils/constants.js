@@ -24,6 +24,7 @@ const plotNames = {
   FREQUENCY_PLOT: 'Frequency Plot',
   VIOLIN_PLOT: 'Violin Plot',
   DOT_PLOT: 'Dot Plot',
+  IMG_PLOT: 'Image Plot',
 };
 
 const modules = {

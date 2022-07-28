@@ -1,13 +1,13 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
-  Row, Col, Space, Collapse, Typography,
+  Row, Col, Space, Collapse,
 } from 'antd';
 
 import Loader from 'components/Loader';
 import PlatformError from 'components/PlatformError';
 
 import { useSelector, useDispatch } from 'react-redux';
-import _ from 'lodash';
+import PlotContainer from 'components/plots/PlotContainer';
 
 import PropTypes from 'prop-types';
 import Header from 'components/Header';
@@ -19,7 +19,6 @@ import {
 
 import { plotNames } from 'utils/constants';
 
-import PlotStyling from 'components/plots/styling/PlotStyling';
 import SingleGeneSelection from 'components/plots/styling/SingleGeneSelection';
 
 import SelectPlotType from 'components/plots/styling/img-plot/SelectPlotType';
@@ -45,7 +44,6 @@ const VolcanoPlotPage = (props) => {
   // Cargar config
   useEffect(() => {
     if (!plotUrl) dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
-    dispatch(fetchPlotDataWork(experimentId, plotUuid, plotType, false));
   }, []);
 
   useEffect(() => {
@@ -59,9 +57,9 @@ const VolcanoPlotPage = (props) => {
     dispatch(fetchPlotDataWork(experimentId, plotUuid, plotType, false));
   }, [searchedGene]);
 
-  useEffect(() => {
-    dispatch(fetchPlotDataWork(experimentId, plotUuid, plotType, false));
-  }, [config?.PlotSubType]);
+  // useEffect(() => {
+  //   dispatch(fetchPlotDataWork(experimentId, plotUuid, plotType, false));
+  // }, [config?.PlotSubType]);
 
   const updatePlotWithChanges = () => {
     dispatch(fetchPlotDataWork(experimentId, plotUuid, plotType, false));
@@ -110,14 +108,21 @@ const VolcanoPlotPage = (props) => {
 
   return (
     <>
-      {/* <PlotHeader
-        title='Ridge Plot'
+      <Header title={plotNames.IMG_PLOT} />
+
+      <PlotContainer
         plotUuid={plotUuid}
         experimentId={experimentId}
-      /> */}
-
-      <Header title={plotNames.IMG_PLOT} />
-      <Space direction='vertical' style={{ width: '100%', padding: '0 10px' }}>
+        plotType={plotType}
+        config={config}
+        updatePlotWithChanges={updatePlotWithChanges}
+        extraControlPanels={renderExtraPanels}
+      >
+        <center>
+          <img src={plotUrl} alt='generic plot' style={{ width: '100%', height: '100%' }} />
+        </center>
+      </PlotContainer>
+      {/* <Space direction='vertical' style={{ width: '100%', padding: '0 10px' }}>
         <Row gutter={16}>
           <Col span={16}>
             <Space direction='vertical' style={{ width: '100%' }}>
@@ -139,7 +144,7 @@ const VolcanoPlotPage = (props) => {
             />
           </Col>
         </Row>
-      </Space>
+      </Space> */}
     </>
   );
 };
