@@ -2,7 +2,7 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable max-classes-per-file */
 import * as localForage from 'localforage';
-import { isBrowser } from './environment';
+import { isBrowser } from './deploymentInfo';
 
 const currentCacheVersion = 'biomage_0.0.1';
 const previousCacheVersions = ['biomage'];

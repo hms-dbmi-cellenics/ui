@@ -2,30 +2,24 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 
-import { arrayMoveImmutable } from 'utils/array-move';
 import { updatePlotConfig } from 'redux/actions/componentConfig';
-import { loadGeneExpression } from 'redux/actions/genes';
+
+import { arrayMoveImmutable } from 'utils/array-move';
 import HierarchicalTreeGenes from 'components/plots/hierarchical-tree-genes/HierarchicalTreeGenes';
 
 import { Space, Button } from 'antd';
 import { CloseOutlined } from '@ant-design/icons';
 
 const GeneReorderTool = (props) => {
-  const { plotUuid } = (props);
+  const { plotUuid, onDelete } = props;
 
   const dispatch = useDispatch();
-
+  
   const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
-
-  const experimentId = useSelector((state) => state.componentConfig[plotUuid]?.experimentId);
-
-  const loadedMarkerGenes = useSelector(
-    (state) => state.genes.expression.views[plotUuid]?.data,
-  );
 
   // Tree from antd requires format [{key: , title: }], made from gene names from loadedMarkerGenes and config
   const composeGeneTree = (treeGenes) => {
-    if (!treeGenes) {
+    if (!treeGenes.length) {
       return [];
     }
 
@@ -36,7 +30,7 @@ const GeneReorderTool = (props) => {
     return data;
   };
 
-  const [geneTreeData, setGeneTreeData] = useState(composeGeneTree(loadedMarkerGenes));
+  const [geneTreeData, setGeneTreeData] = useState([]);
 
   useEffect(() => {
     setGeneTreeData(composeGeneTree(config?.selectedGenes));
@@ -56,7 +50,7 @@ const GeneReorderTool = (props) => {
     const genes = geneTreeData.map((treeNode) => treeNode.title);
     genes.splice(geneKey, 1);
 
-    dispatch(loadGeneExpression(experimentId, genes, plotUuid));
+    onDelete(genes);
   };
 
   const renderTitles = (data) => {
@@ -101,6 +95,7 @@ GeneReorderTool.defaultProps = {};
 
 GeneReorderTool.propTypes = {
   plotUuid: PropTypes.string.isRequired,
+  onDelete: PropTypes.func.isRequired,
 };
 
 export default GeneReorderTool;

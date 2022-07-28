@@ -84,6 +84,18 @@
                         4,
                         5
                     ]
+                },
+                {
+                    "key": "d273c823-ffa0-4f10-823d-a9ee6edb793f",
+                    "name": "Copied KO",
+                    "color": "#8c564b",
+                    "cellIds": [
+                        6,
+                        7,
+                        8,
+                        9,
+                        10
+                    ]
                 }
             ],
             "type": "cellSets"

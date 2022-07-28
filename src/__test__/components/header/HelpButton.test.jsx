@@ -1,5 +1,4 @@
 import React from 'react';
-import { act } from 'react-dom/test-utils';
 import { screen, render } from '@testing-library/react';
 
 import HelpButton from 'components/header/HelpButton';

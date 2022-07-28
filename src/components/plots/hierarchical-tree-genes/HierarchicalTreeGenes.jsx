@@ -12,7 +12,7 @@ const HierarchicalTreeGenes = (props) => {
 
   const onDrop = (info) => {
     const {
-      dragNode, node, dropPosition, dropToGap,
+      dragNode, dropPosition, dropToGap,
     } = info;
 
     // if dropped in place, ignore
@@ -31,12 +31,17 @@ const HierarchicalTreeGenes = (props) => {
   if (!treeData) return <Skeleton active />;
 
   return (
-    <Tree
-      data-testid='HierachicalTreeGenes'
-      draggable
-      treeData={treeData}
-      onDrop={onDrop}
-    />
+    // wrapping in div needed to not unload dragged element when scrolling
+    // add padding to the tree to make first drop position visible
+    <div className='scroll-wrapper' id='ScrollWrapper' style={{ overflowY: 'auto', maxHeight: '400px' }}>
+      <Tree
+        style={{ paddingTop: '6px', paddingBottom: '3px' }}
+        data-testid='HierachicalTreeGenes'
+        draggable
+        treeData={treeData}
+        onDrop={onDrop}
+      />
+    </div>
   );
 };
 

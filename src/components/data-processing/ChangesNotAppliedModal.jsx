@@ -30,7 +30,7 @@ const ChangesNotAppliedModal = (props) => {
     status: backendStatus,
   } = useSelector(getBackendStatus(experimentId));
 
-  const paramsHash = backendStatus.gem2s?.paramsHash;
+  const paramsHash = backendStatus?.gem2s?.paramsHash;
 
   const dispatch = useDispatch();
 
@@ -44,8 +44,8 @@ const ChangesNotAppliedModal = (props) => {
           <Button
             type='primary'
             key='run'
+            disabled={!experimentId || !paramsHash}
             onClick={() => {
-              if (!experimentId || !paramsHash) return;
               dispatch(runQC(experimentId, paramsHash));
               onRunQC();
             }}
