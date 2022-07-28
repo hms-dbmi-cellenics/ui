@@ -11,7 +11,7 @@ const markerGenesLoaded = produce((draft, action) => {
       order,
       rawExpression,
       truncatedExpression,
-      // stats,
+      stats,
     },
   } = action.payload;
 
@@ -31,6 +31,7 @@ const markerGenesLoaded = produce((draft, action) => {
     order,
     rawExpression,
     truncatedExpression,
+    stats,
   );
 
   draft.expression.views[plotUuid] = { fetching: false, error: false, data: order };

@@ -12,6 +12,46 @@ const setRow = (rowIndex, newRow, sparseMatrix) => {
   sparseMatrix.subset(new Index(rowIndex, new Range(0, cellsCount)), newRow);
 };
 
+// Commented out pending decision on whether to calculate zScore in the UI or not
+// const calculateZScore = (expressionsRow, { rawMean: mean, rawStdev: stdev }) => {
+//   const [, cellsCount] = expressionsRow.size();
+
+//   const zScoreRow = new SparseMatrix();
+
+//   cellsCount.forEach((cellIndex) => {
+//     const index = new Index(0, cellIndex);
+
+//     const expression = expressionsRow.get(index);
+
+//     const zScore = (expression - mean) / stdev;
+
+//     zScoreRow.set(index, zScore);
+//   });
+
+//   const expressionsArray = expressionsRow.valueOf()[0];
+//   const zScore = expressionsArray.map((expression) => (
+//     expression !== null ? (
+//       expression - mean) / stdev
+//       : null
+//   ));
+// };
+
+// const calculateZScore = (responseData) => {
+//   const dataWithZScore = Object.entries(responseData).reduce((acc, [gene, value]) => {
+//     const { mean, stdev, expression } = value.rawExpression;
+//     const zScore = expression.map((x) => (x !== null ? ((x - mean) / stdev) : null));
+
+//     acc[gene] = {
+//       ...value,
+//       zScore,
+//     };
+
+//     return acc;
+//   }, {});
+
+//   return dataWithZScore;
+// };
+
 class ExpressionMatrix {
   constructor() {
     this.lastFreeIndex = 0;
@@ -20,7 +60,7 @@ class ExpressionMatrix {
 
     this.rawGeneExpressions = new SparseMatrix();
     this.truncatedGeneExpressions = new SparseMatrix();
-    // this.zscore = new SparseMatrix();
+    // this.ZScores = new SparseMatrix();
   }
 
   getRawExpression(geneSymbol) {
@@ -51,8 +91,11 @@ class ExpressionMatrix {
    *  raw gene expressions for each of the genes
    * @param {*} newTruncatedGeneExpression A mathjs SparseMatrix with the
    *  raw gene expressions for each of the genes
+   * @param {*} stats An object which with the stats for each gene's expression
+   * Each key is a gene symbol,
+   * Each value has this shape: {rawMean, rawStdev, truncatedMin, truncatedMax}
    */
-  pushGeneExpression(newGeneSymbols, newRawGeneExpression, newTruncatedGeneExpression) {
+  pushGeneExpression(newGeneSymbols, newRawGeneExpression, newTruncatedGeneExpression, stats) {
     const [, cellsCount] = this.rawGeneExpressions.size();
 
     // If the matrix was empty previously we need to set the correct column size
@@ -67,11 +110,13 @@ class ExpressionMatrix {
       // Get new gene expression
       const newRawGeneExpressionRow = getRow(index, newRawGeneExpression);
       const newTruncatedGeneExpressionRow = getRow(index, newTruncatedGeneExpression);
+      // const newZScoreRow = calculateZScore(newRawGeneExpressionRow, stats[geneSymbol]);
 
       // And store it in the matrix
       const geneIndex = this.generateIndexFor(geneSymbol);
       setRow(geneIndex, newRawGeneExpressionRow, this.rawGeneExpressions);
       setRow(geneIndex, newTruncatedGeneExpressionRow, this.truncatedGeneExpressions);
+      // setRow(geneIndex, newZScoreRow, this.zScores);
     });
   }
 

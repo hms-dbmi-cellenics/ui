@@ -9,22 +9,6 @@ import getTimeoutForWorkerTask from 'utils/getTimeoutForWorkerTask';
 import handleError from 'utils/http/handleError';
 import endUserMessages from 'utils/endUserMessages';
 
-// const calculateZScoreWithSparseMatrix = (responseData) => {
-//   const dataWithZScore = Object.entries(responseData).reduce((acc, [gene, value]) => {
-//     const { mean, stdev, expression } = value.rawExpression;
-//     const zScore = expression.map((x) => (x !== null ? ((x - mean) / stdev) : null));
-
-//     acc[gene] = {
-//       ...value,
-//       zScore,
-//     };
-
-//     return acc;
-//   }, {});
-
-//   return dataWithZScore;
-// };
-
 const loadMarkerGenes = (
   experimentId, resolution, plotUuid, numGenes = 5, selectedCellSet = 'louvain',
 ) => async (dispatch, getState) => {
