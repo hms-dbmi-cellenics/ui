@@ -204,10 +204,13 @@ const MarkerHeatmap = ({ experimentId }) => {
       return;
     }
 
+    console.time('generateData');
     const cellOrder = populateHeatmapData(cellSets, config, true);
     const data = generateVegaData(cellOrder, expressionData, config, cellSets);
-
+    console.timeEnd('generateData');
+    console.time('generateSpec');
     const spec = generateSpec(config, 'Cluster ID', data, true);
+    console.timeEnd('generateSpec');
 
     spec.description = 'Marker heatmap';
 
