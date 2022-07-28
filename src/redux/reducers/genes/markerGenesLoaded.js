@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
 import produce, { original } from 'immer';
 
-import { calculateZScore } from 'utils/postRequestProcessing';
+// import { calculateZScore } from 'utils/postRequestProcessing';
 import initialState from 'redux/reducers/genes/initialState';
 
 const markerGenesLoaded = produce((draft, action) => {
@@ -11,7 +11,7 @@ const markerGenesLoaded = produce((draft, action) => {
       order,
       rawExpression,
       truncatedExpression,
-      stats,
+      // stats,
     },
   } = action.payload;
 
@@ -35,6 +35,7 @@ const markerGenesLoaded = produce((draft, action) => {
 
   draft.expression.views[plotUuid] = { fetching: false, error: false, data: order };
 
+  // eslint-disable-next-line max-len
   // const currentTruncatedExpressionExpression = current(draft.expression.data.truncatedExpression);
 
   // order.forEach((geneSymbol, index) => {

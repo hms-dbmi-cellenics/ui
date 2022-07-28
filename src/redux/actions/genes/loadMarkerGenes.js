@@ -1,4 +1,3 @@
-import ExpressionMatrix from 'utils/ExpressionMatrix';
 import { SparseMatrix } from 'mathjs';
 
 import {
@@ -10,21 +9,21 @@ import getTimeoutForWorkerTask from 'utils/getTimeoutForWorkerTask';
 import handleError from 'utils/http/handleError';
 import endUserMessages from 'utils/endUserMessages';
 
-const calculateZScoreWithSparseMatrix = (responseData) => {
-  const dataWithZScore = Object.entries(responseData).reduce((acc, [gene, value]) => {
-    const { mean, stdev, expression } = value.rawExpression;
-    const zScore = expression.map((x) => (x !== null ? ((x - mean) / stdev) : null));
+// const calculateZScoreWithSparseMatrix = (responseData) => {
+//   const dataWithZScore = Object.entries(responseData).reduce((acc, [gene, value]) => {
+//     const { mean, stdev, expression } = value.rawExpression;
+//     const zScore = expression.map((x) => (x !== null ? ((x - mean) / stdev) : null));
 
-    acc[gene] = {
-      ...value,
-      zScore,
-    };
+//     acc[gene] = {
+//       ...value,
+//       zScore,
+//     };
 
-    return acc;
-  }, {});
+//     return acc;
+//   }, {});
 
-  return dataWithZScore;
-};
+//   return dataWithZScore;
+// };
 
 const loadMarkerGenes = (
   experimentId, resolution, plotUuid, numGenes = 5, selectedCellSet = 'louvain',
