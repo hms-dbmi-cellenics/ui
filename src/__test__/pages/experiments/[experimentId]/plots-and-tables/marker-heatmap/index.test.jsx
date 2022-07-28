@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import { mount } from 'enzyme';
-import { within, fireEvent } from '@testing-library/dom';
+import { within } from '@testing-library/dom';
 import userEvent from '@testing-library/user-event';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import _ from 'lodash';
@@ -85,12 +85,6 @@ const defaultProps = { experimentId };
 
 const heatmapPageFactory = createTestComponentFactory(MarkerHeatmap, defaultProps);
 
-// Helper function to get displayed genes from the gene input
-const getDisplayedGenes = (container) => {
-  const genesNodeList = container.querySelectorAll('span[class*=selection-item-content]');
-  return Array.from(genesNodeList).map((gene) => gene.textContent);
-};
-
 // Helper function to get genes held within the tree
 const getTreeGenes = (container) => {
   const treeNodeList = container.querySelectorAll('span[class*=ant-tree-title]');
@@ -106,7 +100,7 @@ const getCurrentGeneOrder = (component) => {
   });
   newOrder.splice(0, 1);
   return newOrder;
-}
+};
 
 const renderHeatmapPage = async (store) => {
   await act(async () => (
@@ -167,7 +161,7 @@ describe('Marker heatmap plot', () => {
     expect(screen.getByText(/Colours/i)).toBeInTheDocument();
     expect(screen.getByText(/Legend/i)).toBeInTheDocument();
   });
-  
+
   it('Loads the plot', async () => {
     await renderHeatmapPage(storeState);
 
@@ -242,23 +236,41 @@ describe('Marker heatmap plot', () => {
     await renderHeatmapPage(storeState);
 
     // Add in a new gene
-    // This is done because we can not insert text into the genes list input
     const genesToLoad = [...markerGenesData5.order, 'FAKEGENE'];
 
     await act(async () => {
       await storeState.dispatch(loadGeneExpression(experimentId, genesToLoad, plotUuid));
     });
 
-    expect(screen.getByText('FAKEGENE')).toBeInTheDocument();
+    // Get genes displayed in the tree
+    const geneTree = screen.getByRole('tree');
 
-    // The returned value is a HTML NodeList
-    const genesContainer = screen.getByText('FAKEGENE').closest('div[class*=selector]');
+    const displayedGenesList = getTreeGenes(geneTree);
 
-    const displayedGenesList = getDisplayedGenes(genesContainer);
+    // check the added gene is in the tree
+    expect(within(geneTree).getByText('FAKEGENE')).toBeInTheDocument();
 
     // Check that the genes is ordered correctly.
     // This means that FAKEGENE should not be the last in the genes list
     expect(_.isEqual(displayedGenesList, genesToLoad)).toEqual(false);
+  });
+
+  it('Shows an information text if a selected cell set does not contain enough number of samples', async () => {
+    await renderHeatmapPage(storeState);
+
+    // Open the toggle
+    userEvent.click(screen.getByText(/Select data/i));
+
+    // Click custom cell sets
+    userEvent.click(screen.getByText(/louvain clusters/i));
+    userEvent.click(screen.getByText(/Custom cell sets/i), null, { skipPointerEventsCheck: true });
+
+    // It shouldn't show the plot
+    expect(screen.queryByRole('graphics-document', { name: 'Marker heatmap' })).toBeNull();
+
+    // There is an error message
+    expect(screen.getByText(/There is no data to show/i)).toBeInTheDocument();
+    expect(screen.getByText(/Select another option from the 'Select data' menu/i)).toBeInTheDocument();
   });
 
   it('Shows an error message if gene expression fails to load', async () => {
@@ -287,63 +299,7 @@ describe('Marker heatmap plot', () => {
   });
 
   it('removing a gene keeps the sorted order without re-sorting', async () => {
-    seekFromS3
-      .mockReset()
-      // load genes list
-      .mockImplementationOnce(() => null)
-      .mockImplementationOnce((Etag) => mockWorkerResponses[Etag])
-      // 1st load
-      .mockImplementationOnce(() => null)
-      .mockImplementationOnce((ETag) => mockWorkerResponses[ETag])
-      // 2nd load
-      .mockImplementationOnce(() => null)
-      .mockImplementationOnce((ETag) => mockWorkerResponses[ETag]);
-
     await renderHeatmapPage(storeState);
-
-    // Setting up so that there is an inserted gene in the list
-    const genesToLoad = [...markerGenesData5.order, 'FAKEGENE'];
-
-    await act(async () => {
-      // This is done because we can not insert text into the genes list input
-      await storeState.dispatch(loadGeneExpression(experimentId, genesToLoad, plotUuid));
-    });
-
-    expect(screen.getByText('FAKEGENE')).toBeInTheDocument();
-
-    // The returned value is a HTML NodeList
-    const genesContainer = screen.getByText('FAKEGENE').closest('div[class*=selector]');
-    const genesListBeforeRemoval = getDisplayedGenes(genesContainer);
-
-    // Removing the 5th gene from the list
-    // genesListBeforeRemoval is modified - splice removes the item from the list
-    const geneToRemove = genesListBeforeRemoval.splice(5, 1);
-    const geneRemoveButton = screen.getByText(geneToRemove).nextSibling;
-
-    userEvent.click(geneRemoveButton);
-
-    // Get newly displayed genes after the removal
-    const genesListAfterRemoval = getDisplayedGenes(genesContainer);
-
-    // The list of displayed genes should be in the same order as the displayed genes
-    expect(_.isEqual(genesListAfterRemoval, genesListBeforeRemoval)).toEqual(true);
-  });
-
-  it('loads the tabs under gene selection', async () => {
-    await renderHeatmapPage(storeState);
-
-    expect(screen.getByText(/Add\/Remove genes/i)).toBeInTheDocument();
-    expect(screen.getByText(/Search for and re-order genes/i)).toBeInTheDocument();
-  });
-
-  it('switches tabs and removes genes within the tree', async () => {
-    await renderHeatmapPage(storeState);
-
-    await act(async () => {
-      userEvent.click(screen.getByText('Search for and re-order genes'));
-    });
-    // note: clicking another tab doesn't remove previous tab from screen
-    // screen.getByText will find multiples of the same gene -> use within(geneTree)
 
     const geneTree = screen.getByRole('tree');
 
@@ -372,10 +328,6 @@ describe('Marker heatmap plot', () => {
 
   it('searches for genes and adds a valid gene', async () => {
     await renderHeatmapPage(storeState);
-
-    await act(async () => {
-      userEvent.click(screen.getByText('Search for and re-order genes'));
-    });
 
     // check placeholder text is loaded
     expect(screen.getByText('Search for genes...')).toBeInTheDocument();
@@ -413,17 +365,13 @@ describe('Marker heatmap plot', () => {
   it('adds an already loaded gene and clears the input', async () => {
     await renderHeatmapPage(storeState);
 
-    await act(async () => {
-      userEvent.click(screen.getByText('Search for and re-order genes'));
-    });
-
     const searchBox = screen.getByRole('combobox');
 
     userEvent.type(searchBox, 'tmem');
 
-    // this finds option for selection box in 1st tab and search box, use second element
-    const option = screen.getAllByTitle('Tmem176a')[1];
+    const option = screen.getByTitle('Tmem176a');
 
+    // expecting option to be disabled throws error, click the option instead and check reaction
     await act(async () => {
       userEvent.click(option, undefined, { skipPointerEventsCheck: true });
     });
@@ -440,7 +388,7 @@ describe('Marker heatmap plot', () => {
   });
 });
 
-// drag and drop is impossible in jest, use enzyme
+// drag and drop is impossible in RTL, use enzyme
 describe('Drag and drop enzyme tests', () => {
   let component;
   let tree;
@@ -471,12 +419,6 @@ describe('Drag and drop enzyme tests', () => {
 
     await waitForComponentToPaint(component);
 
-    // activate re-order genes tab
-    await act(async () => {
-      const reorderTab = component.find('div.ant-tabs-tab-btn');
-      reorderTab.at(1).simulate('click');
-    });
-
     component.update();
 
     // antd renders 5 elements, use the first one
@@ -492,7 +434,6 @@ describe('Drag and drop enzyme tests', () => {
     // dropping in place does nothing
     const info = {
       dragNode: { key: 1, pos: '0-1' },
-      node: { key: 1, pos: '0-1' },
       dropPosition: 1,
       dropToGap: true,
     };
@@ -517,7 +458,6 @@ describe('Drag and drop enzyme tests', () => {
     // not dropping to gap does nothing
     const info = {
       dragNode: { key: 1, pos: '0-1' },
-      node: { key: 3, pos: '0-3' },
       dropPosition: 4,
       dropToGap: false,
     };
@@ -541,7 +481,6 @@ describe('Drag and drop enzyme tests', () => {
     // dropping to gap re-orders genes
     const info = {
       dragNode: { key: 1, pos: '0-1' },
-      node: { key: 3, pos: '0-3' },
       dropPosition: 4,
       dropToGap: true,
     };

@@ -1,6 +1,6 @@
 /* eslint-disable global-require */
 import { fetchWork } from 'utils/work/fetchWork';
-import Environment from 'utils/environment';
+import { Environment } from 'utils/deploymentInfo';
 
 const {
   mockGeneExpressionData,

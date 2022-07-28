@@ -9,7 +9,7 @@ import {
   EXPERIMENTS_DELETED,
   EXPERIMENTS_METADATA_CREATE,
   EXPERIMENTS_METADATA_DELETE,
-  EXPERIMENTS_METADATA_UPDATE,
+  EXPERIMENTS_METADATA_RENAME,
   EXPERIMENTS_SET_ACTIVE,
 } from 'redux/actionTypes/experiments';
 
@@ -26,7 +26,7 @@ import experimentsLoaded from './experimentsLoaded';
 import experimentsError from './experimentsError';
 import experimentsSaving from './experimentsSaving';
 import experimentsMetadataCreate from './experimentsMetadataCreate';
-import experimentsMetadataUpdate from './experimentsMetadataUpdate';
+import experimentsMetadataRename from './experimentsMetadataRename';
 import experimentsMetadataDelete from './experimentsMetadataDelete';
 
 import samplesCreate from './samplesCreate';
@@ -78,8 +78,8 @@ const experimentsReducer = (state = initialState, action) => {
       return experimentsMetadataCreate(state, action);
     }
 
-    case EXPERIMENTS_METADATA_UPDATE: {
-      return experimentsMetadataUpdate(state, action);
+    case EXPERIMENTS_METADATA_RENAME: {
+      return experimentsMetadataRename(state, action);
     }
 
     case EXPERIMENTS_METADATA_DELETE: {

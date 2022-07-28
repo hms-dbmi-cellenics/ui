@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
-import _ from 'lodash';
 import { AutoComplete } from 'antd';
-import { useSelector, useDispatch } from 'react-redux';
-import { loadGeneExpression } from 'redux/actions/genes';
+import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 
 const filterGenes = (searchText, geneList, loadedGenes) => {
@@ -17,9 +15,9 @@ const filterGenes = (searchText, geneList, loadedGenes) => {
 };
 
 const GeneSearchBar = (props) => {
-  const { plotUuid, experimentId, searchBarUuid } = props;
-
-  const dispatch = useDispatch();
+  const {
+    plotUuid, searchBarUuid, onSelect,
+  } = props;
 
   const geneList = useSelector((state) => state.genes.properties.views[searchBarUuid]?.data);
 
@@ -30,14 +28,10 @@ const GeneSearchBar = (props) => {
   // pass reactive component as value (search text) to allow auto clear on select
   const [value, setValue] = useState('');
 
-  const onSelect = (newGene) => {
-    if (!geneList.includes(newGene) || config?.selectedGenes.includes(newGene)) {
-      return;
-    }
+  const onOptionSelect = (newGene) => {
+    const genes = [...config?.selectedGenes, newGene];
 
-    const genes = _.clone(config?.selectedGenes);
-    genes.push(newGene);
-    dispatch(loadGeneExpression(experimentId, genes, plotUuid));
+    onSelect(genes);
     setValue('');
   };
 
@@ -52,7 +46,7 @@ const GeneSearchBar = (props) => {
       value={value}
       options={options}
       style={{ width: '100%' }}
-      onSelect={onSelect}
+      onSelect={onOptionSelect}
       onSearch={onSearch}
       placeholder='Search for genes...'
     />
@@ -61,8 +55,8 @@ const GeneSearchBar = (props) => {
 
 GeneSearchBar.propTypes = {
   plotUuid: PropTypes.string.isRequired,
-  experimentId: PropTypes.string.isRequired,
   searchBarUuid: PropTypes.string.isRequired,
+  onSelect: PropTypes.func.isRequired,
 };
 
 export default GeneSearchBar;

@@ -1,4 +1,4 @@
-const projectsMetadataDelete = (state, action) => {
+const experimentsMetadataDelete = (state, action) => {
   const { key, experimentId } = action.payload;
 
   return {
@@ -12,4 +12,4 @@ const projectsMetadataDelete = (state, action) => {
   };
 };
 
-export default projectsMetadataDelete;
+export default experimentsMetadataDelete;

@@ -1,5 +1,5 @@
 /* eslint-disable react/require-default-props */
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -11,8 +11,9 @@ import { initialPlotConfigStates } from 'redux/reducers/componentConfig/initialS
 import {
   updatePlotConfig,
   resetPlotConfig,
+  savePlotConfig,
 } from 'redux/actions/componentConfig';
-
+import _ from 'lodash';
 import PlotStyling from 'components/plots/styling/PlotStyling';
 import MultiTileContainer from 'components/MultiTileContainer';
 
@@ -35,6 +36,9 @@ const PlotContainer = (props) => {
   const [resetDisabled, setResetDisabled] = useState(true);
   const [tileDirection, setTileDirection] = useState(DEFAULT_ORIENTATION);
   const { config } = useSelector((state) => state.componentConfig[plotUuid] || {});
+  const debounceSave = useCallback(
+    _.debounce(() => dispatch(savePlotConfig(experimentId, plotUuid)), 2000), [],
+  );
 
   const updatePlotWithChanges = (obj) => {
     dispatch(updatePlotConfig(plotUuid, obj));
@@ -68,12 +72,12 @@ const PlotContainer = (props) => {
     if (!config) {
       return;
     }
+    debounceSave();
 
     if (isConfigEqual(config, initialPlotConfigStates[plotType])) {
       setResetDisabled(true);
       return;
     }
-
     setResetDisabled(false);
   }, [config]);
 
