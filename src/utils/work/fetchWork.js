@@ -120,9 +120,9 @@ const fetchWork = async (
     throw new Error('Disabling network interaction on server');
   }
 
-  if (environment === Environment.DEVELOPMENT && !localStorage.getItem('disableCache')) {
-    localStorage.setItem('disableCache', 'true');
-  }
+  // if (environment === Environment.DEVELOPMENT && !localStorage.getItem('disableCache')) {
+  //   localStorage.setItem('disableCache', 'true');
+  // }
 
   const { pipeline: { startDate: qcPipelineStartDate } } = backendStatus;
   if (body.name === 'GeneExpression') {
@@ -134,18 +134,22 @@ const fetchWork = async (
   // If caching is disabled, we add an additional randomized key to the hash so we never reuse
   // past results.
 
-  let cacheUniquenessKey = null;
-  if (environment !== Environment.PRODUCTION && localStorage.getItem('disableCache') === 'true') {
-    cacheUniquenessKey = Math.random();
-  }
+  const cacheUniquenessKey = null;
+  // if (environment !== Environment.PRODUCTION && localStorage.getItem('disableCache') === 'true') {
+  //   cacheUniquenessKey = Math.random();
+  // }
 
-  const ETag = createObjectHash({
+  let ETag = createObjectHash({
     experimentId,
     body,
     qcPipelineStartDate,
     extras,
     cacheUniquenessKey,
   });
+
+  if (body.name === 'MarkerHeatmap') {
+    ETag += 1;
+  }
 
   // First, let's try to fetch this information from the local cache.
   const data = await cache.get(ETag);
