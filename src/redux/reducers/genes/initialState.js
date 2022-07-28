@@ -1,3 +1,5 @@
+import ExpressionMatrix from 'utils/ExpressionMatrix';
+
 const initialViewState = {
   fetching: false,
   error: false,
@@ -22,7 +24,7 @@ const initialState = {
   expression: {
     loading: [],
     error: false,
-    data: {},
+    matrix: new ExpressionMatrix(),
     views: {},
   },
   selected: [],

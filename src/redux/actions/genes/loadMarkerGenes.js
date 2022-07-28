@@ -1,3 +1,6 @@
+import ExpressionMatrix from 'utils/ExpressionMatrix';
+import { SparseMatrix } from 'mathjs';
+
 import {
   MARKER_GENES_ERROR, MARKER_GENES_LOADING, MARKER_GENES_LOADED,
 } from 'redux/actionTypes/genes';
@@ -6,6 +9,22 @@ import { fetchWork } from 'utils/work/fetchWork';
 import getTimeoutForWorkerTask from 'utils/getTimeoutForWorkerTask';
 import handleError from 'utils/http/handleError';
 import endUserMessages from 'utils/endUserMessages';
+
+const calculateZScoreWithSparseMatrix = (responseData) => {
+  const dataWithZScore = Object.entries(responseData).reduce((acc, [gene, value]) => {
+    const { mean, stdev, expression } = value.rawExpression;
+    const zScore = expression.map((x) => (x !== null ? ((x - mean) / stdev) : null));
+
+    acc[gene] = {
+      ...value,
+      zScore,
+    };
+
+    return acc;
+  }, {});
+
+  return dataWithZScore;
+};
 
 const loadMarkerGenes = (
   experimentId, resolution, plotUuid, numGenes = 5, selectedCellSet = 'louvain',
@@ -26,16 +45,26 @@ const loadMarkerGenes = (
   try {
     const timeout = getTimeoutForWorkerTask(getState(), 'MarkerHeatmap');
 
-    const data = await fetchWork(experimentId, body, getState, { timeout });
-    const { data: markerGeneExpressions, order } = data;
+    const {
+      order,
+      rawExpression: rawExpressionJson,
+      truncatedExpression: truncatedExpressionJson,
+      stats,
+    } = await fetchWork(experimentId, body, getState, { timeout });
+
+    const rawExpression = SparseMatrix.fromJSON(rawExpressionJson);
+    const truncatedExpression = SparseMatrix.fromJSON(truncatedExpressionJson);
 
     dispatch({
       type: MARKER_GENES_LOADED,
       payload: {
-        experimentId,
-        genes: order,
-        data: markerGeneExpressions,
         plotUuid,
+        data: {
+          order,
+          rawExpression,
+          truncatedExpression,
+          stats,
+        },
       },
     });
   } catch (e) {
@@ -43,7 +72,6 @@ const loadMarkerGenes = (
     dispatch({
       type: MARKER_GENES_ERROR,
       payload: {
-        experimentId,
         error: errorMessage,
       },
     });
