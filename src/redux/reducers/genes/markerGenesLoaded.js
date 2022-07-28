@@ -24,13 +24,16 @@ const markerGenesLoaded = produce((draft, action) => {
   // // const dataWithZScore = calculateZScore(data);
   // draft.expression.views[plotUuid] = { fetching: false, error: false, data: order };
 
-  const expressionMatrix = original(draft.expression.matrix);
+  // const expressionMatrix = original(draft.expression.matrix);
+  const expressionMatrix = original(draft).expression.matrix;
 
   expressionMatrix.pushGeneExpression(
     order,
     rawExpression,
     truncatedExpression,
   );
+
+  draft.expression.views[plotUuid] = { fetching: false, error: false, data: order };
 
   // const currentTruncatedExpressionExpression = current(draft.expression.data.truncatedExpression);
 

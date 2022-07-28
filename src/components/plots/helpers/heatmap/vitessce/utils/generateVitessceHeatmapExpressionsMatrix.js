@@ -12,10 +12,19 @@ const generateVitessceHeatmapExpressionsMatrix = (cellOrder, geneOrder, expressi
   const geneExpressionsDataMatrix = [];
 
   geneOrder.forEach((gene) => {
-    if (!expression.data[gene]) return;
+    const { matrix } = expression;
+
+    if (!matrix.geneIsLoaded(gene)) return;
+    // if (!expression.data[gene]) return;
+
+    const truncatedExpression = matrix.getTruncatedExpression(gene);
 
     const geneExpressions = cellOrder.map(
-      (cellId) => expression.data[gene].truncatedExpression.expression[cellId],
+      (cellId) => {
+        const a = truncatedExpression[cellId];
+        return a;
+        // return matrix.getTruncatedExpression(gene)[cellId]
+      },
     );
 
     const scaledGeneExpressions = scaledTo255(geneExpressions);

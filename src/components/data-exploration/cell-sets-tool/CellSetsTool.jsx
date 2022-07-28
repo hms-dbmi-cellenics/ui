@@ -61,7 +61,8 @@ const CellSetsTool = (props) => {
   const [activeTab, setActiveTab] = useState('cellSets');
 
   useEffect(() => {
-    filteredCells.current = generateFilteredCellIndices(genes.expression.data);
+    // TMP - disable for poc
+    // filteredCells.current = generateFilteredCellIndices(genes.expression.data);
   }, [genes.expression.data]);
 
   useEffect(() => {
