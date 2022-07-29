@@ -19,7 +19,9 @@ const fetchAPI = async (path, params = {}, extras = {}) => {
 
   let response;
   try {
+    console.log('[DEBUG] - BEGUN await fetch(url, parameters);');
     response = await fetch(url, parameters);
+    console.log('[DEBUG] - FINISHED await fetch(url, parameters);');
   } catch (e) {
     // wrap fetch errors in custom error
     throw new FetchError(e);
@@ -39,7 +41,11 @@ const fetchAPI = async (path, params = {}, extras = {}) => {
     throw new APIError(response.status, data?.message, data?.errors);
   }
 
-  return await response.json();
+  console.log('[DEBUG] - BEGUN const a = await response.json');
+  const a = await response.json();
+  console.log('[DEBUG] - FINISHED const a = await response.json');
+
+  return a;
 };
 
 export default fetchAPI;
