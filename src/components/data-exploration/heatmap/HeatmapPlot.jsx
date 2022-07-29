@@ -103,9 +103,9 @@ const HeatmapPlot = (props) => {
   /**
    * Loads cell set on initial render if it does not already exist in the store.
    */
-  useEffect(() => {
-    dispatch(loadCellSets(experimentId));
-  }, []);
+  // useEffect(() => {
+  //   dispatch(loadCellSets(experimentId));
+  // }, []);
 
   useEffect(() => {
     if (!_.isEmpty(heatmapSettings)) {
