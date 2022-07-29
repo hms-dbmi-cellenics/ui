@@ -21,7 +21,7 @@ const markerGenesLoaded = produce((draft, action) => {
   // const expressionMatrix = original(draft.expression.matrix);
   const expressionMatrix = original(draft).expression.matrix;
 
-  expressionMatrix.pushGeneExpression(
+  expressionMatrix.setGeneExpression(
     order,
     rawExpression,
     truncatedExpression,

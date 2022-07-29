@@ -83,6 +83,19 @@ class ExpressionMatrix {
     return !_.isNil(this.loadedExpressionsIndexes[geneSymbol]);
   }
 
+  setGeneExpression(newGeneSymbols, newRawGeneExpression, newTruncatedGeneExpression, stats) {
+    this.rawGeneExpressions = newRawGeneExpression;
+    this.truncatedGeneExpressions = newTruncatedGeneExpression;
+
+    this.loadedExpressionsIndexes = newGeneSymbols.reduce((acum, currentSymbol, index) => {
+      // eslint-disable-next-line no-param-reassign
+      acum[currentSymbol] = index;
+      return acum;
+    }, {});
+
+    this.lastFreeIndex = this.loadedExpressionsIndexes + 1;
+  }
+
   /**
    *
    * @param {*} newGeneSymbols A row with the gene symbols corresponding
