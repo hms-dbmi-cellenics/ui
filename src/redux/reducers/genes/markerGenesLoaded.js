@@ -15,12 +15,6 @@ const markerGenesLoaded = produce((draft, action) => {
     },
   } = action.payload;
 
-  console.log('plotUuidDebug');
-  console.log(plotUuid);
-
-  console.log('actionspayloaddataDebug');
-  console.log(action.payload.data);
-
   // // const dataWithZScore = calculateZScore(data);
   // draft.expression.views[plotUuid] = { fetching: false, error: false, data: order };
 
