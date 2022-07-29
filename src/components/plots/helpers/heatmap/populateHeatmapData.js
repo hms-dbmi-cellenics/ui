@@ -129,16 +129,24 @@ const populateHeatmapData = (
     if (!groupByRootNodes.length) {
       return [];
     }
-    const { buckets, size } = splitByCartesianProductIntersections(groupByRootNodes);
 
+    console.log('[DEBUG] - BEGUN splitByCartesianProductIntersections');
+    const { buckets, size } = splitByCartesianProductIntersections(groupByRootNodes);
+    console.log('[DEBUG] - FINISHED splitByCartesianProductIntersections');
+
+    console.log('[DEBUG] - BEGUN downsampleWithProportions');
     if (downsampling) {
       return downsampleWithProportions(buckets, size);
     }
+    console.log('[DEBUG] - FINISHED downsampleWithProportions');
 
     const cellIds = [];
+
+    console.log('[DEBUG] - BEGUN buckets.forEach((bucket) => {');
     buckets.forEach((bucket) => {
       cellIds.push(...bucket);
     });
+    console.log('[DEBUG] - FINISHED buckets.forEach((bucket) => {');
 
     return cellIds;
   };
@@ -154,8 +162,10 @@ const populateHeatmapData = (
 
   firstOptionCellIds = new Set(firstOptionCellIds);
 
+  console.log('[DEBUG] - BEGUN generateCellOrder');
   const filteredCellOrder = generateCellOrder(groupedTracks)
     .filter((cellId) => firstOptionCellIds.has(cellId));
+  console.log('[DEBUG] - FINISHED generateCellOrder');
 
   return filteredCellOrder;
 };
