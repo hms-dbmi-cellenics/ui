@@ -35,8 +35,12 @@ const loadMarkerGenes = (
       stats,
     } = await fetchWork(experimentId, body, getState, { timeout });
 
+    console.log('[DEBUG] - BEGUN const rawExpression = SparseMatrix.fromJSON');
     const rawExpression = SparseMatrix.fromJSON(rawExpressionJson);
+    console.log('[DEBUG] - FINISHED const rawExpression = SparseMatrix.fromJSON');
+    console.log('[DEBUG] - BEGUN const truncatedExpression = SparseMatrix.fromJSON');
     const truncatedExpression = SparseMatrix.fromJSON(truncatedExpressionJson);
+    console.log('[DEBUG] - FINISHED const truncatedExpression = SparseMatrix.fromJSON');
 
     dispatch({
       type: MARKER_GENES_LOADED,
