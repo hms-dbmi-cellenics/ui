@@ -1,7 +1,3 @@
-/* eslint-disable no-param-reassign */
-import _ from 'lodash';
-import { getAllCells, getSampleCells } from 'utils/cellSets';
-
 const generateSpec = (config, embeddingData, pathData, cellSetLegendsData) => {
   let legend = [];
 
@@ -260,72 +256,6 @@ const generateSpec = (config, embeddingData, pathData, cellSetLegendsData) => {
   };
 };
 
-const filterCells = (cellSets, sampleKey, groupBy) => {
-  let filteredCells = [];
-
-  // Get all the filtered cells
-  if (sampleKey === 'All') {
-    filteredCells = getAllCells(cellSets, groupBy);
-  } else {
-    filteredCells = getSampleCells(cellSets, sampleKey);
-  }
-
-  // Get the cell set names
-  const clusterEnteries = cellSets.hierarchy
-    .find(
-      (rootNode) => rootNode.key === groupBy,
-    )?.children || [];
-
-  const cellSetKeys = clusterEnteries.map(({ key }) => key);
-
-  const colorToCellIdsMap = cellSetKeys.reduce((acc, key) => {
-    acc.push({
-      cellIds: cellSets.properties[key].cellIds,
-      key,
-      name: cellSets.properties[key].name,
-      color: cellSets.properties[key].color,
-    });
-
-    return acc;
-  }, []);
-
-  let cellSetLegendsData = [];
-  const addedCellSetKeys = new Set();
-
-  filteredCells = filteredCells.reduce((acc, cell) => {
-    if (!cell) return acc;
-
-    const inCellSet = colorToCellIdsMap.find((map) => map.cellIds.has(cell.cellId));
-
-    // If cell is not in the cell set, then return
-    if (!inCellSet) return acc;
-
-    const { key, name, color } = inCellSet;
-
-    if (!addedCellSetKeys.has(key)) {
-      addedCellSetKeys.add(key);
-      cellSetLegendsData.push({ key, name, color });
-    }
-
-    acc[cell.cellId] = {
-      ...cell,
-      cellSetKey: key,
-      cellSetName: name,
-      color,
-    };
-
-    return acc;
-  }, {});
-
-  // Sort legends to show them in the order that cellSetKeys are stored
-  cellSetLegendsData = _.sortBy(
-    cellSetLegendsData,
-    ({ key }) => _.indexOf(cellSetKeys, key),
-  );
-
-  return { filteredCells, cellSetLegendsData };
-};
-
 // Filter for nodes that appear later than the current node
 const getConnectedNodes = (nodeId, connectedNodes) => {
   const parseNode = (id) => Number.parseInt(id.slice(2), 10);
@@ -360,5 +290,4 @@ const generateData = (plotData) => {
 export {
   generateSpec,
   generateData,
-  filterCells,
 };
