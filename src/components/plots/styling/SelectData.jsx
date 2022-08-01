@@ -66,7 +66,6 @@ const SelectData = (props) => {
       );
     });
   };
-
   if (cellSets.error) {
     return <InlineError message='Error loading cell set' />;
   }
