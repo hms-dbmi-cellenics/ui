@@ -50,24 +50,25 @@ const HierarchicalTree = (props) => {
     // If rootNode, ignore
     if (dragNode.rootNode) return;
 
+    if (dropPosition === -1) return;
+
     // pos is a string e.g.: 0-0-1, each number is a position in a tree level
     const posFromArray = dragNode.pos.split('-');
     const posToArray = node.pos.split('-');
 
-    const fromPosition = parseInt(posFromArray[2], 10);
+    const sameLevel = (posFromArray.length === posToArray.length);
 
     // If not in the same cellClass, ignore
     if (!_.isEqual(posFromArray[1], posToArray[1])) return;
 
+    const fromPosition = parseInt(posFromArray[2], 10);
+    const toPosition = (!sameLevel ? dropToGap ? -1 : 0 : dropPosition);
+
     // If was dropped in same place, ignore
-    if (fromPosition === dropPosition) return;
+    if (fromPosition === toPosition) return;
 
-    // If not dropped in gap, ignore
-    // (only allow dropToGap when the destination node is rootNode
-    // because it can have children nodes)
-    if (!dropToGap && !node.rootNode) return;
-
-    const newPosition = dropPosition - (fromPosition < dropPosition ? 1 : 0);
+    // if dropping below the initial position subtract 1, if dropping to secondary position add 1
+    const newPosition = toPosition - (fromPosition < toPosition ? 1 : 0) + (!sameLevel ? 0 : node.dragOver);
 
     onCellSetReorder(dragNode.key, newPosition);
   }, []);
