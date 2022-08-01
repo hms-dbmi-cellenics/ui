@@ -12,7 +12,7 @@ import { loadCellSets } from 'redux/actions/cellSets';
 const DotPlot = (props) => {
   const { experimentId, config, plotData } = props;
 
-  const { loading: cellSetsLoading, error: cellSetsError } = useSelector(getCellSets());
+  const cellSets = useSelector(getCellSets());
   const cellSet = useSelector(getCellSetsHierarchyByKeys([config.selectedCellSet]))[0];
   const numClusters = cellSet ? cellSet.children.length : 0;
 
@@ -24,19 +24,22 @@ const DotPlot = (props) => {
   };
 
   const render = () => {
-    if (cellSetsError) {
+    if (cellSets.error) {
       return (
         <PlatformError
-          error={cellSetsError}
-          reason={cellSetsError}
+          error={cellSets.error}
+          reason={cellSets.error}
           onClick={() => loadCellSets(experimentId)}
         />
       );
     }
 
-    if (cellSetsLoading) return <Loader experimentId={experimentId} />;
+    if (!cellSets.accessible) {
+      return <Loader experimentId={experimentId} />;
+    }
 
-    // PlotData has to be cloned for this plot because Immer freezes plotData meanwhile the plot needs to modify it to work
+    // PlotData has to be cloned for this plot because
+    //  Immer freezes plotData meanwhile the plot needs to modify it to work
     return <Vega spec={generateSpec(config, plotData, numClusters)} renderer='canvas' actions={actions} />;
   };
 

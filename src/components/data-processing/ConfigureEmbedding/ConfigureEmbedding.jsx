@@ -277,11 +277,7 @@ const ConfigureEmbedding = (props) => {
     const plotActions = {
       export: true,
     };
-    if (!cellSets.loading
-      && !cellSets.error
-      && !cellSets.updateCellSetsClustering
-      && selectedConfig
-    ) {
+    if (cellSets.accessible && selectedConfig) {
       setPlot(plots[selectedPlot].plot(selectedConfig, plotActions));
     }
   }, [selectedConfig, cellSets]);
@@ -301,7 +297,7 @@ const ConfigureEmbedding = (props) => {
       );
     }
 
-    if (selectedPlot === 'sample' && !cellSets.loading && isUnisample(cellSets.hierarchy)
+    if (selectedPlot === 'sample' && !cellSets.loading && !cellSets.initialLoadPending && isUnisample(cellSets.hierarchy)
     ) {
       return (
         <center>

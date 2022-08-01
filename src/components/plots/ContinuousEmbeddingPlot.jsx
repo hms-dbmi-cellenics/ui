@@ -36,7 +36,7 @@ const ContinuousEmbeddingPlot = (props) => {
   const [plotSpec, setPlotSpec] = useState({});
 
   useEffect(() => {
-    if (cellSets.loading && !cellSets.error) {
+    if (!cellSets.error) {
       dispatch(loadCellSets(experimentId));
     }
 
@@ -58,8 +58,7 @@ const ContinuousEmbeddingPlot = (props) => {
       && !embeddingError
       && config
       && plotData?.length > 0
-      && !cellSets.loading
-      && !cellSets.error
+      && cellSets.accessible
       && embeddingData?.length) {
       setPlotSpec(
         generateSpec(
@@ -105,7 +104,7 @@ const ContinuousEmbeddingPlot = (props) => {
 
     if (!config
       || loading
-      || cellSets.loading
+      || !cellSets.accessible
       || embeddingLoading
       || Object.keys(plotSpec).length === 0) {
       return (
