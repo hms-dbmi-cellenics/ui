@@ -200,7 +200,7 @@ const HeatmapPlot = ({ experimentId }) => {
       );
     }
 
-    if (!config || loading.length > 0 || cellSets.initialLoadPending || cellSets.loading) {
+    if (!config || loading.length > 0 || !cellSets.accessible) {
       return (
         <Loader experimentId={experimentId} />
       );
@@ -227,7 +227,7 @@ const HeatmapPlot = ({ experimentId }) => {
     }
   };
 
-  if (!config || cellSets.initialLoadPending || cellSets.loading) {
+  if (!config || !cellSets.accessible) {
     return (<Skeleton />);
   }
 
