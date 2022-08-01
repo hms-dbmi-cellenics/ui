@@ -25,16 +25,6 @@ const GenesVsUMIsConfig = (props) => {
   } = props;
   const [newConfig, handleChange] = useUpdateThrottled(updateSettings, config);
 
-  // if prediction interval is not set - use the passed p-value from the pipeline
-  useEffect(() => {
-    if (!config.predictionInterval) {
-      updateSettings(
-        { predictionInterval: 1 - config.regressionTypeSettings[config.regressionType]['p.level'] },
-        false,
-      );
-    }
-  }, []);
-
   return (
     <>
       {/* only display info message for datasets which have

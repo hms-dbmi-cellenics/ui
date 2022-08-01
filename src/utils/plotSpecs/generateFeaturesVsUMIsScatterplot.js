@@ -1,11 +1,17 @@
 import { round } from 'lodash';
 import { stdev } from '../mathFormulas';
 
-const generateSpec = (config, plotData, predictionInterval) => {
+const generateSpec = (config, plotData, expConfig) => {
   const { pointsData, linesData } = plotData;
+  let { predictionInterval } = expConfig;
+  const pLevel = expConfig.regressionTypeSettings[expConfig.regressionType]['p.level'];
 
   const sd = stdev(pointsData.map((p) => p.log_genes));
   let predictionIntervalIndex;
+
+  if (!predictionInterval && predictionInterval !== 0) {
+    predictionInterval = 1 - pLevel;
+  }
 
   if (predictionInterval <= 0.99) {
     predictionIntervalIndex = round((predictionInterval || 0) * 100);
@@ -17,8 +23,6 @@ const generateSpec = (config, plotData, predictionInterval) => {
     predictionIntervalIndex = 102;
   } else if (predictionInterval === 0.999999) {
     predictionIntervalIndex = 103;
-  } else {
-    predictionIntervalIndex = 0;
   }
 
   // if its the old model of the data, do not use the prediction interval variable
