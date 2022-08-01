@@ -97,14 +97,6 @@ const DotPlotPage = (props) => {
 
   const cellSets = useSelector(getCellSets());
 
-  // const {
-  //   initialLoadPending: cellSetsInitialLoadPending,
-  //   loading: cellSetsLoading,
-  //   error: cellSetsError,
-  //   hierarchy: cellSetHierarchy,
-  //   properties: cellSetProperties,
-  // } = cellSets;
-
   const [moreThanTwoGroups, setMoreThanTwoGroups] = useState(false);
   const [reorderAfterFetch, setReorderAfterFetch] = useState(false);
   const [reset, setReset] = useState(false);
