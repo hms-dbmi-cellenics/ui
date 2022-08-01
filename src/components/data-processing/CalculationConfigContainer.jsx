@@ -69,9 +69,11 @@ const CalculationConfigContainer = (props) => {
       {React.cloneElement(children, {
         config,
         plotType,
-        updateSettings: (diff) => {
+        updateSettings: (diff, outstandingChanges = true) => {
           dispatch(updateFilterSettings(filterUuid, diff, sampleId));
-          onFilterSettingsChange();
+          if (outstandingChanges) {
+            onFilterSettingsChange();
+          }
         },
         disabled: stepDisabled || auto,
       })}

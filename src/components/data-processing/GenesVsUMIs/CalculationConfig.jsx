@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import {
   Space,
@@ -25,9 +25,20 @@ const GenesVsUMIsConfig = (props) => {
   } = props;
   const [newConfig, handleChange] = useUpdateThrottled(updateSettings, config);
 
+  // if prediction interval is not set - use the passed p-value from the pipeline
+  useEffect(() => {
+    if (!config.predictionInterval) {
+      updateSettings(
+        { predictionInterval: 1 - config.regressionTypeSettings[config.regressionType]['p.level'] },
+        false,
+      );
+    }
+  }, []);
+
   return (
     <>
-      {/* only display info message for datasets which have not rerun the pipeline to see the new interractive plot */}
+      {/* only display info message for datasets which have
+      not rerun the pipeline to see the new interractive plot */}
       {rerunRequired && (
         <Space direction='vertical'>
           <Alert
@@ -102,9 +113,6 @@ const GenesVsUMIsConfig = (props) => {
         >
           <Space direction='vertical'>
             <Space direction='horizontal'>
-              <Radio.Group>
-                <Radio defaultChecked />
-              </Radio.Group>
               <InputNumber
                 value={newConfig.predictionInterval}
                 min={0}
