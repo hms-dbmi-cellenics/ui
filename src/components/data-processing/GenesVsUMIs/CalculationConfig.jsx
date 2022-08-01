@@ -29,7 +29,7 @@ const GenesVsUMIsConfig = (props) => {
   useEffect(() => {
     if (!config.predictionInterval) {
       updateSettings(
-        { predictionInterval: parseFloat(1 - config.regressionTypeSettings[config.regressionType]['p.level']).toFixed(6) },
+        { predictionInterval: 1 - config.regressionTypeSettings[config.regressionType]['p.level'] },
         false,
       );
     }
