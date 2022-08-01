@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`createCellSetByExpression Dispatces the correct body 1`] = `
+exports[`createCellSetByExpression Dispatches the correct body 1`] = `
 Array [
   "testae48e318dab9a1bd0bexperiment",
   Object {

@@ -335,7 +335,7 @@ const DotPlotPage = (props) => {
   useEffect(() => {
     if (!reset) return;
 
-    dispatch(fetchPlotDataWork(experimentId, plotUuid, plotType));
+    dispatch(getDotPlotData(experimentId, plotUuid));
     setReorderAfterFetch(true);
     setReset(false);
   }, [config]);

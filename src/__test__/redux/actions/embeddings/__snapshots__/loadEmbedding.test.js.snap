@@ -32,6 +32,7 @@ Object {
 exports[`loadEmbedding action Dispatches on a previous error condition 2`] = `
 Object {
   "payload": Object {
+    "ETag": "271c9070cfb71c03e447891c39d78833",
     "data": Array [
       Array [
         1,
@@ -61,6 +62,7 @@ Object {
 exports[`loadEmbedding action Dispatches on a previously unseen embedding 2`] = `
 Object {
   "payload": Object {
+    "ETag": "271c9070cfb71c03e447891c39d78833",
     "data": Array [
       Array [
         1,
@@ -90,6 +92,7 @@ Object {
 exports[`loadEmbedding action Dispatches on if forceReload is set to true 2`] = `
 Object {
   "payload": Object {
+    "ETag": "271c9070cfb71c03e447891c39d78833",
     "data": Array [
       Array [
         1,
