@@ -16,8 +16,6 @@ const loadCellSets = (experimentId, forceReload = false) => async (dispatch, get
     return;
   }
 
-  console.log('Dispatched cell sets loading');
-
   dispatch({
     type: CELL_SETS_LOADING,
   });
