@@ -297,7 +297,7 @@ const ConfigureEmbedding = (props) => {
       );
     }
 
-    if (selectedPlot === 'sample' && !cellSets.initialLoadPending && isUnisample(cellSets.hierarchy)
+    if (selectedPlot === 'sample' && cellSets.accessible && isUnisample(cellSets.hierarchy)
     ) {
       return (
         <center>
