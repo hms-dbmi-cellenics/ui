@@ -1,23 +1,17 @@
 /* eslint-disable no-param-reassign */
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
-import _ from 'lodash';
 
-import { getCellSets } from 'redux/selectors';
 import {
   updatePlotConfig,
   loadPlotConfig,
 } from 'redux/actions/componentConfig/index';
 import Header from 'components/Header';
-import { loadCellSets } from 'redux/actions/cellSets';
 import TrajectoryAnalysisPlot from 'components/plots/TrajectoryAnalysisPlot';
 import PlotContainer from 'components/plots/PlotContainer';
-// import SelectData from 'components/plots/styling/SelectData';
 import { plotNames, plotTypes } from 'utils/constants';
 import getTrajectoryGraph from 'components/plots/helpers/trajectory-analysis/getTrajectoryGraph';
-
-// const { Panel } = Collapse;
 
 const plotUuid = 'trajectoryAnalysisMain';
 const plotType = plotTypes.TRAJECTORY_ANALYSIS;
@@ -38,49 +32,22 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
     error: embeddingError,
   } = useSelector((state) => state.embeddings[embeddingSettings?.method]) || {};
 
-  const cellSets = useSelector(getCellSets());
-  // const hierarchy = useSelector(getCellSetsHierarchy());
-
-  const {
-    loading: cellSetsLoading,
-    error: cellSetsError,
-  } = cellSets;
-
   useEffect(() => {
     if (!config) dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
-    dispatch(loadCellSets(experimentId));
   }, []);
-
-  const previousComparedConfig = useRef(null);
-  const getComparedConfig = (updatedConfig) => _.pick(
-    updatedConfig,
-    ['useMarkerGenes',
-      'nMarkerGenes',
-      'selectedGenes',
-      'selectedCellSet',
-      'selectedPoints'],
-  );
-
   const {
     ETag,
   } = useSelector((state) => state.embeddings?.umap || {});
 
   useEffect(() => {
-    if (cellSetsLoading
-      || cellSetsError
-      || !embeddingSettings
+    if (
+      !embeddingSettings
       || embeddingLoading
       || embeddingError
       || !ETag
     ) return;
-
-    const currentComparedConfig = getComparedConfig(config);
-
-    if (config && !_.isEqual(previousComparedConfig.current, currentComparedConfig)) {
-      previousComparedConfig.current = currentComparedConfig;
-      dispatch(getTrajectoryGraph(experimentId, plotUuid));
-    }
-  }, [config, cellSetsLoading, embeddingSettings, embeddingLoading]);
+    dispatch(getTrajectoryGraph(experimentId, plotUuid));
+  }, [config, embeddingSettings, embeddingLoading]);
 
   const updatePlotWithChanges = (obj) => {
     dispatch(updatePlotConfig(plotUuid, obj));

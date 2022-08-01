@@ -42,7 +42,7 @@ const generateSpec = (config, embeddingData, pathData, cellSetLegendsData) => {
   }
   return {
     $schema: 'https://vega.github.io/schema/vega/v5.json',
-    description: 'Categorical embedding plot',
+    description: 'Trajectory analysis plot',
     width: config?.dimensions.width,
     height: config?.dimensions.height,
     autosize: { type: 'fit', resize: true },
