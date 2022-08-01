@@ -23,31 +23,30 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
     plotData,
   } = useSelector((state) => state.componentConfig[plotUuid]) || {};
 
-  const embeddingSettings = useSelector(
-    (state) => state.experimentSettings.originalProcessing?.configureEmbedding?.embeddingSettings,
+  const { method: embeddingMethod } = useSelector(
+    (state) => state.experimentSettings.originalProcessing
+      ?.configureEmbedding?.embeddingSettings || {},
   );
 
   const {
     loading: embeddingLoading,
     error: embeddingError,
-  } = useSelector((state) => state.embeddings[embeddingSettings?.method]) || {};
+    ETag,
+  } = useSelector((state) => state.embeddings[embeddingMethod]) || {};
 
   useEffect(() => {
     if (!config) dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
   }, []);
-  const {
-    ETag,
-  } = useSelector((state) => state.embeddings?.umap || {});
 
   useEffect(() => {
     if (
-      !embeddingSettings
+      !embeddingMethod
       || embeddingLoading
       || embeddingError
       || !ETag
     ) return;
     dispatch(getTrajectoryGraph(experimentId, plotUuid));
-  }, [config, embeddingSettings, embeddingLoading]);
+  }, [config, embeddingMethod, embeddingLoading]);
 
   const updatePlotWithChanges = (obj) => {
     dispatch(updatePlotConfig(plotUuid, obj));

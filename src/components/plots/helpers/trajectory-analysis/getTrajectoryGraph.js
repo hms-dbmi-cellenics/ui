@@ -13,6 +13,7 @@ const getTrajectoryGraph = (
     embeddingSettings,
     clusteringSettings,
   } = getState().experimentSettings.processing?.configureEmbedding || {};
+
   const {
     ETag,
   } = getState().embeddings[embeddingSettings.method];
