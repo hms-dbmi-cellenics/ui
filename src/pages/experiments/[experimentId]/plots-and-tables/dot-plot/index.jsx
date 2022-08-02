@@ -177,6 +177,8 @@ const DotPlotPage = (props) => {
   };
 
   const reorderData = (order) => {
+    if (!plotData) return;
+
     const cellSetsNames = [...new Set(plotData.map((elem) => elem.cellSets))];
     const reorderedData = [];
     cellSetsNames.forEach((set) => {
@@ -191,6 +193,8 @@ const DotPlotPage = (props) => {
   };
 
   const deleteData = (genes) => {
+    if (!plotData) return;
+
     const data = plotData.filter((elem) => !genes.includes(elem.geneName));
     dispatch(updatePlotData(plotUuid, data));
   };
@@ -291,7 +295,7 @@ const DotPlotPage = (props) => {
 
   // load initial state, based on highest dispersion genes from all genes
   useEffect(() => {
-    if (_.isEmpty(geneData) || !config || plotData?.length) {
+    if (_.isEmpty(geneData) || !config || plotDataLoading) {
       return;
     }
     loadHighestDispersionGenes();
