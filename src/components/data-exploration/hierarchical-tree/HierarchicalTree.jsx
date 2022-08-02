@@ -61,8 +61,10 @@ const HierarchicalTree = (props) => {
     // If not in the same cellClass, ignore
     if (!_.isEqual(posFromArray[1], posToArray[1])) return;
 
+    const numberOfClusters = treeData[posFromArray[1]].children.length;
+
     const fromPosition = parseInt(posFromArray[2], 10);
-    const toPosition = (!sameLevel ? dropToGap ? -1 : 0 : dropPosition);
+    const toPosition = (!sameLevel ? dropToGap ? numberOfClusters : 0 : dropPosition);
 
     // If was dropped in same place, ignore
     if (fromPosition === toPosition) return;
