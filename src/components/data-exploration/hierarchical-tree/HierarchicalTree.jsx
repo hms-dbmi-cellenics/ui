@@ -68,9 +68,21 @@ const HierarchicalTree = (props) => {
     const numberOfClusters = treeData[posFromArray[1]].children.length;
 
     const fromPosition = parseInt(posFromArray[2], 10);
-    // dropPosition is not set correctly for the first one of the last positions in each cluster list
-    // set manually to 0 or length of the clusters array, otherwise use dropPosition
-    const toPosition = (!sameLevel ? !dropToGap ? 0 : numberOfClusters : dropPosition);
+
+    // dropPosition is not set correctly for first and last position, set manually instead
+    let toPosition;
+
+    if (!sameLevel) {
+      // first position has dropToGap: false, last position has dropToGap: true
+      if (!dropToGap) {
+        toPosition = 0;
+      } else {
+        toPosition = numberOfClusters;
+      }
+    } else {
+      // for positions other than the first and last, use dropPosition
+      toPosition = dropPosition;
+    }
 
     // If was dropped in same place, ignore
     if (fromPosition === toPosition) return;
