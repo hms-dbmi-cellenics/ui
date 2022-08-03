@@ -5,12 +5,10 @@ import initialState from '../../reducers/cellSets/initialState';
 const getCellSets = () => (state) => {
   const stateToReturn = (Object.keys(state).length ? state : initialState);
 
-  const accessible = !(
-    stateToReturn.loading
-    || stateToReturn.initialLoadPending
-    || stateToReturn.updatingClustering
-    || stateToReturn.error
-  );
+  const accessible = !stateToReturn.loading
+    && !stateToReturn.initialLoadPending
+    && !stateToReturn.updatingClustering
+    && !stateToReturn.error;
 
   return {
     ...stateToReturn,
