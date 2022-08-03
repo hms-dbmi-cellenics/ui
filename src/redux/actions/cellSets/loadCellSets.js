@@ -10,10 +10,10 @@ const loadCellSets = (experimentId, forceReload = false) => async (dispatch, get
     loading, error, updatingClustering, initialLoadPending,
   } = getState().cellSets;
 
-  const loadingAlreadyReserved = loading || updatingClustering;
+  const loadingBlocked = loading || updatingClustering;
   const requiresLoading = initialLoadPending || error;
 
-  const shouldLoad = requiresLoading && !loadingAlreadyReserved;
+  const shouldLoad = requiresLoading && !loadingBlocked;
 
   if (!shouldLoad && !forceReload) {
     return;
