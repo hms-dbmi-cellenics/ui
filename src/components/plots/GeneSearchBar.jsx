@@ -32,8 +32,7 @@ const GeneSearchBar = (props) => {
   const onOptionSelect = (newGene) => {
     const charArray = [...value];
     const lastComma = _.findLastIndex(charArray, (letter) => letter === ',');
-    const newValue = charArray.slice(0, lastComma + 1).join('').concat(' ', newGene).trim();
-    
+    const newValue = charArray.slice(0, lastComma + 1).join('').concat(' ', newGene, ',').trim();
     setValue(newValue);
     setOptions([]);
   };

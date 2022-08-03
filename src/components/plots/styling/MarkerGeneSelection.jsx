@@ -47,10 +47,9 @@ const MarkerGeneSelection = (props) => {
     return (
       <Space direction='vertical' size='small'>
         <p style={{ margin: 0 }}>
-          Type in a gene name or select it and press Add to add it to the plot.
+          Type in a gene name and select it to add it to the plot.
           <Tooltip
-            title='To add multiple genes, separate them with a comma. The search box will display possible matches
-            for the text after the last comma.'
+            title='To add multiple genes, separate them with a comma.'
           >
             &nbsp;
             <QuestionCircleOutlined />
