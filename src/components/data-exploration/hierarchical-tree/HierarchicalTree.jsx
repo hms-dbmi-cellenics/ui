@@ -72,15 +72,13 @@ const HierarchicalTree = (props) => {
     // dropPosition is not set correctly for first and last position, set manually instead
     let toPosition;
 
-    if (!sameLevel) {
-      // first position has dropToGap: false, last position has dropToGap: true
-      if (!dropToGap) {
-        toPosition = 0;
-      } else {
-        toPosition = numberOfClusters;
-      }
+    // if dropped in first position
+    if (!sameLevel && !dropToGap) {
+      toPosition = 0;
+    // if dropped in last position
+    } else if (!sameLevel && dropToGap) {
+      toPosition = numberOfClusters;
     } else {
-      // for positions other than the first and last, use dropPosition
       toPosition = dropPosition;
     }
 
