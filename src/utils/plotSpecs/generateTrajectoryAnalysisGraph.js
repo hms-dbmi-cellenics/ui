@@ -1,4 +1,10 @@
-const generateSpec = (config, embeddingData, pathData, cellSetLegendsData) => {
+const generateSpec = (
+  config,
+  embeddingData,
+  pathData,
+  cellSetLegendsData,
+  resetToggle,
+) => {
   let legend = [];
 
   if (config?.legend.enabled) {
@@ -39,6 +45,7 @@ const generateSpec = (config, embeddingData, pathData, cellSetLegendsData) => {
   return {
     $schema: 'https://vega.github.io/schema/vega/v5.json',
     description: 'Trajectory analysis plot',
+    resetToggle,
     width: config?.dimensions.width,
     height: config?.dimensions.height,
     autosize: { type: 'fit', resize: true },

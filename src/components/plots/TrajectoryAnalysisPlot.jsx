@@ -26,8 +26,11 @@ const TrajectoryAnalysisPlot = (props) => {
     actions,
     onUpdate,
     onSelectNode,
+    resetPlot,
   } = props;
   const dispatch = useDispatch();
+
+  const [plotSpec, setPlotSpec] = useState({});
 
   const cellSets = useSelector(getCellSets());
 
@@ -42,8 +45,6 @@ const TrajectoryAnalysisPlot = (props) => {
   } = useSelector(
     (state) => state.embeddings[embeddingSettings?.method],
   ) || {};
-
-  const [plotSpec, setPlotSpec] = useState({});
 
   useEffect(() => {
     if (!embeddingSettings) {
@@ -78,11 +79,25 @@ const TrajectoryAnalysisPlot = (props) => {
     const {
       plotData: plotEmbedding,
       cellSetLegendsData,
-    } = generateCategoricalEmbeddingData(cellSets, config.selectedSample, config.selectedCellSet, embeddingData);
+    } = generateCategoricalEmbeddingData(
+      cellSets,
+      config.selectedSample,
+      config.selectedCellSet,
+      embeddingData,
+    );
+
     const trajectoryData = generateTrajectoryPathData(plotData);
 
-    setPlotSpec(generateSpec(config, plotEmbedding, trajectoryData, cellSetLegendsData));
-  }, [config, cellSets, embeddingData, plotData]);
+    setPlotSpec(
+      generateSpec(
+        config,
+        plotEmbedding,
+        trajectoryData,
+        cellSetLegendsData,
+        resetPlot,
+      ),
+    );
+  }, [config, cellSets, embeddingData, plotData, resetPlot]);
 
   const plotListener = {
     chooseNode: (eventName, payload) => {
@@ -152,12 +167,14 @@ TrajectoryAnalysisPlot.propTypes = {
   ]),
   onUpdate: PropTypes.func.isRequired,
   onSelectNode: PropTypes.func,
+  resetPlot: PropTypes.bool,
 };
 
 TrajectoryAnalysisPlot.defaultProps = {
   actions: true,
   config: null,
   onSelectNode: () => {},
+  resetPlot: false,
 };
 
 export default TrajectoryAnalysisPlot;

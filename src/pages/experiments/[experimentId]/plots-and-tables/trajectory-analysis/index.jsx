@@ -25,6 +25,7 @@ const plotType = plotTypes.TRAJECTORY_ANALYSIS;
 const TrajectoryAnalysisPage = ({ experimentId }) => {
   const dispatch = useDispatch();
   const [selectedNodes, setSelectedNodes] = useState([]);
+  const [resetToggle, setResetToggle] = useState(false);
 
   const {
     config,
@@ -112,7 +113,13 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
         </p>
         {selectedNodes.length > 0 && (
           <Space direction='vertical' style={{ width: '100%' }}>
-            <Button block onClick={() => setSelectedNodes([])}>
+            <Button
+              block
+              onClick={() => {
+                setSelectedNodes([]);
+                setResetToggle(!resetToggle);
+              }}
+            >
               Clear selection
             </Button>
             <Button type='primary' block>
@@ -125,13 +132,9 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
   );
 
   const handleNodeSelection = (selectedNodeId) => {
-    console.log('*** selectedNodes', selectedNodes);
-
     const updatedSelection = selectedNodes.includes(selectedNodeId)
       ? selectedNodes.filter((nodeId) => selectedNodeId !== nodeId)
       : [...selectedNodes, selectedNodeId];
-
-    console.log('*** updatedSelection', updatedSelection);
 
     setSelectedNodes(updatedSelection);
   };
@@ -153,6 +156,7 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
           config={config}
           plotUuid={plotUuid}
           plotData={plotData}
+          resetPlot={resetToggle}
           onUpdate={updatePlotWithChanges}
           onSelectNode={handleNodeSelection}
         />
