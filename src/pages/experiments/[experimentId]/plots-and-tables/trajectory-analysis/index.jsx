@@ -16,6 +16,7 @@ import TrajectoryAnalysisPlot from 'components/plots/TrajectoryAnalysisPlot';
 import PlotContainer from 'components/plots/PlotContainer';
 import { plotNames, plotTypes } from 'utils/constants';
 import getTrajectoryGraph from 'components/plots/helpers/trajectory-analysis/getTrajectoryGraph';
+import getPseudoTime from 'components/plots/helpers/trajectory-analysis/getPseudoTime';
 
 const { Panel } = Collapse;
 
@@ -122,7 +123,17 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
             >
               Clear selection
             </Button>
-            <Button type='primary' block>
+            <Button
+              type='primary'
+              block
+              onClick={() => {
+                dispatch(getPseudoTime(
+                  selectedNodes,
+                  experimentId,
+                  plotUuid,
+                ));
+              }}
+            >
               Calculate
             </Button>
           </Space>

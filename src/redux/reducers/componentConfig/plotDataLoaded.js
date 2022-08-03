@@ -4,7 +4,10 @@ const plotDataLoaded = (state, action) => {
     ...state,
     [plotUuid]: {
       ...state[plotUuid],
-      plotData,
+      plotData: {
+        ...state[plotUuid].plotData,
+        ...plotData,
+      },
       loading: false,
       error: false,
     },
