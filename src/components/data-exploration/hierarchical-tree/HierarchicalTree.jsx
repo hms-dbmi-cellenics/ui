@@ -79,7 +79,7 @@ const HierarchicalTree = (props) => {
     const newPosition = toPosition - (fromPosition < toPosition ? 1 : 0) + (!sameLevel ? 0 : addDragOverPosition);
 
     onCellSetReorder(dragNode.key, newPosition);
-  }, []);
+  }, [treeData]);
 
   const renderColorPicker = (modified) => {
     if (modified.color) {
