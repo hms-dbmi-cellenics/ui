@@ -1,5 +1,5 @@
 /* eslint-disable no-param-reassign */
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 
@@ -18,6 +18,8 @@ const plotType = plotTypes.TRAJECTORY_ANALYSIS;
 
 const TrajectoryAnalysisPage = ({ experimentId }) => {
   const dispatch = useDispatch();
+  const [selectedNodes, setSelectedNodes] = useState([]);
+
   const {
     config,
     plotData,
@@ -113,6 +115,11 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
           plotUuid={plotUuid}
           plotData={plotData}
           onUpdate={updatePlotWithChanges}
+          onSelectNode={(nodeId) => {
+            setSelectedNodes(
+              [...selectedNodes, nodeId],
+            );
+          }}
         />
       </PlotContainer>
     </>

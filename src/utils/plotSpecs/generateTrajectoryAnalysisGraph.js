@@ -46,7 +46,7 @@ const generateSpec = (config, embeddingData, pathData, cellSetLegendsData) => {
     padding: 5,
     signals: [
       {
-        name: 'clicked',
+        name: 'chooseNode',
         on: [
           {
             events: '@pathNodes:click',
@@ -82,9 +82,9 @@ const generateSpec = (config, embeddingData, pathData, cellSetLegendsData) => {
         values: pathData,
         on: [
           {
-            trigger: 'clicked',
-            modify: 'clicked',
-            values: '{ selected: !clicked.selected }',
+            trigger: 'chooseNode',
+            modify: 'chooseNode',
+            values: '{ selected: !chooseNode.selected }',
           },
         ],
       },
@@ -204,7 +204,6 @@ const generateSpec = (config, embeddingData, pathData, cellSetLegendsData) => {
         type: 'line',
         from: { data: 'pathData' },
         encode: {
-
           enter: {
             x: { scale: 'x', field: 'x' },
             y: { scale: 'y', field: 'y' },
@@ -228,7 +227,7 @@ const generateSpec = (config, embeddingData, pathData, cellSetLegendsData) => {
           update: {
             x: { scale: 'x', field: 'x' },
             y: { scale: 'y', field: 'y' },
-            size: { value: 15 },
+            size: { value: 20 },
             stroke: { value: 'black' },
             fill: [
               { test: 'datum.selected', value: 'red' },

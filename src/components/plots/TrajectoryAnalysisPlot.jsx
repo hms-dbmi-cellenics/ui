@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
@@ -24,6 +25,7 @@ const TrajectoryAnalysisPlot = (props) => {
     plotData,
     actions,
     onUpdate,
+    onSelectNode,
   } = props;
   const dispatch = useDispatch();
 
@@ -82,6 +84,13 @@ const TrajectoryAnalysisPlot = (props) => {
     setPlotSpec(generateSpec(config, plotEmbedding, trajectoryData, cellSetLegendsData));
   }, [config, cellSets, embeddingData, plotData]);
 
+  const plotListener = {
+    chooseNode: (eventName, payload) => {
+      const { node_id } = payload;
+      onSelectNode(node_id);
+    },
+  };
+
   const render = () => {
     if (cellSets.error) {
       return (
@@ -116,7 +125,12 @@ const TrajectoryAnalysisPlot = (props) => {
 
     return (
       <center>
-        <Vega spec={plotSpec} renderer='canvas' actions={actions} />
+        <Vega
+          spec={plotSpec}
+          renderer='canvas'
+          actions={actions}
+          signalListeners={plotListener}
+        />
       </center>
     );
   };
@@ -137,11 +151,13 @@ TrajectoryAnalysisPlot.propTypes = {
     PropTypes.object,
   ]),
   onUpdate: PropTypes.func.isRequired,
+  onSelectNode: PropTypes.func,
 };
 
 TrajectoryAnalysisPlot.defaultProps = {
   actions: true,
   config: null,
+  onSelectNode: () => {},
 };
 
 export default TrajectoryAnalysisPlot;
