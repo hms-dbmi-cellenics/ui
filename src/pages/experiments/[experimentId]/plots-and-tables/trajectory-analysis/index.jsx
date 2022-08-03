@@ -31,6 +31,7 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
 
   const {
     config,
+    loading: configLoading,
     plotData,
   } = useSelector((state) => state.componentConfig[plotUuid]) || {};
 
@@ -117,6 +118,7 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
           <Space direction='vertical' style={{ width: '100%' }}>
             <Button
               block
+              disabled={configLoading}
               onClick={() => {
                 setSelectedNodes([]);
                 setResetToggle(!resetToggle);
@@ -127,6 +129,7 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
             <Button
               type='primary'
               block
+              disabled={configLoading}
               onClick={() => {
                 dispatch(getPseudoTime(selectedNodes, experimentId, plotUuid));
               }}
@@ -195,9 +198,7 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
       >
         <TrajectoryAnalysisPlot
           experimentId={experimentId}
-          config={config}
           plotUuid={plotUuid}
-          plotData={plotData}
           resetPlot={resetToggle}
           onUpdate={updatePlotWithChanges}
           onSelectNode={handleNodeSelection}

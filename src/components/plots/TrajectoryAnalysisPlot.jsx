@@ -27,8 +27,7 @@ import changeEmbeddingAxesIfNecessary from 'components/plots/helpers/changeEmbed
 const TrajectoryAnalysisPlot = (props) => {
   const {
     experimentId,
-    config,
-    plotData,
+    plotUuid,
     actions,
     onUpdate,
     onSelectNode,
@@ -43,6 +42,12 @@ const TrajectoryAnalysisPlot = (props) => {
   const embeddingSettings = useSelector(
     (state) => state.experimentSettings.originalProcessing?.configureEmbedding?.embeddingSettings,
   );
+
+  const {
+    config,
+    loading: configLoading,
+    plotData,
+  } = useSelector((state) => state.componentConfig[plotUuid]);
 
   const {
     data: embeddingData,
@@ -73,6 +78,7 @@ const TrajectoryAnalysisPlot = (props) => {
   useEffect(() => {
     if (
       !config
+      || configLoading
       || cellSets.loading
       || cellSets.error
       || !embeddingData?.length
@@ -109,7 +115,6 @@ const TrajectoryAnalysisPlot = (props) => {
       );
       insertPseudotimeSpec(baseSpec, config, pseudotimeData);
     } else {
-      // Display cell clusters
       insertClusterColorsSpec(baseSpec, config, cellSetLegendsData);
     }
 
@@ -147,7 +152,9 @@ const TrajectoryAnalysisPlot = (props) => {
       );
     }
 
-    if (!config
+    if (
+      !config
+      || configLoading
       || cellSets.loading
       || !embeddingData
       || embeddingLoading
@@ -181,8 +188,7 @@ const TrajectoryAnalysisPlot = (props) => {
 
 TrajectoryAnalysisPlot.propTypes = {
   experimentId: PropTypes.string.isRequired,
-  config: PropTypes.object,
-  plotData: PropTypes.object,
+  plotUuid: PropTypes.string.isRequired,
   actions: PropTypes.oneOfType([
     PropTypes.bool,
     PropTypes.object,
@@ -194,8 +200,6 @@ TrajectoryAnalysisPlot.propTypes = {
 
 TrajectoryAnalysisPlot.defaultProps = {
   actions: true,
-  config: null,
-  plotData: {},
   onSelectNode: () => {},
   resetPlot: false,
 };
