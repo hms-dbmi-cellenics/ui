@@ -50,27 +50,33 @@ const HierarchicalTree = (props) => {
     // If rootNode, ignore
     if (dragNode.rootNode) return;
 
+    // Ignore topmost drop position
     if (dropPosition === -1) return;
 
     // pos is a string e.g.: 0-0-1, each number is a position in a tree level
     const posFromArray = dragNode.pos.split('-');
     const posToArray = node.pos.split('-');
 
-    const sameLevel = (posFromArray.length === posToArray.length);
-
     // If not in the same cellClass, ignore
     if (!_.isEqual(posFromArray[1], posToArray[1])) return;
+
+    const sameLevel = (posFromArray.length === posToArray.length);
+
+    // dragOver is true for positions where dropToGap is false
+    const addDragOverPosition = node.dragOver ? 1 : 0;
 
     const numberOfClusters = treeData[posFromArray[1]].children.length;
 
     const fromPosition = parseInt(posFromArray[2], 10);
-    const toPosition = (!sameLevel ? dropToGap ? numberOfClusters : 0 : dropPosition);
+    // dropPosition is not set correctly for the first and one of the last positions in each cluster list
+    // set manually to 0 or length of the clusters array if dropping in either position, otherwise use dropPosition
+    const toPosition = (!sameLevel ? !dropToGap ? 0 : numberOfClusters : dropPosition);
 
     // If was dropped in same place, ignore
     if (fromPosition === toPosition) return;
 
     // if dropping below the initial position subtract 1, if dropping to secondary position add 1
-    const newPosition = toPosition - (fromPosition < toPosition ? 1 : 0) + (!sameLevel ? 0 : node.dragOver);
+    const newPosition = toPosition - (fromPosition < toPosition ? 1 : 0) + (!sameLevel ? 0 : addDragOverPosition);
 
     onCellSetReorder(dragNode.key, newPosition);
   }, []);
