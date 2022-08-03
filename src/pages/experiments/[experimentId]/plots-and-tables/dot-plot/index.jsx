@@ -403,7 +403,7 @@ const DotPlotPage = (props) => {
           <PlatformError
             description='Error loading plot data.'
             reason='Check the options that you have selected and try again.'
-            onClick={() => dispatch(dispatch(getDotPlotData(experimentId, plotUuid)))}
+            onClick={() => dispatch(getDotPlotData(experimentId, plotUuid))}
           />
         </center>
       );
