@@ -6,6 +6,7 @@ import {
   Button,
   Collapse,
   Space,
+  Radio,
 } from 'antd';
 import {
   updatePlotConfig,
@@ -127,17 +128,47 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
               type='primary'
               block
               onClick={() => {
-                dispatch(getPseudoTime(
-                  selectedNodes,
-                  experimentId,
-                  plotUuid,
-                ));
+                dispatch(getPseudoTime(selectedNodes, experimentId, plotUuid));
               }}
             >
               Calculate
             </Button>
           </Space>
         ) }
+      </Panel>
+      <Panel header='Display' key='display'>
+        <Space
+          style={{ marginLeft: '5%' }}
+          direction='vertical'
+        >
+          <b>Plot values</b>
+          <Radio.Group
+            value={config?.display.pseudotime}
+            onChange={(e) => dispatch(
+              updatePlotConfig(plotUuid, { display: { pseudotime: e.target.value } }),
+            )}
+          >
+            <Space>
+              <Radio value={false}>Clusters</Radio>
+              <Radio disabled={!plotData?.pseudotime} value>
+
+                Pseudotime
+              </Radio>
+            </Space>
+          </Radio.Group>
+          <b>Trajectory</b>
+          <Radio.Group
+            value={config?.display.trajectory}
+            onChange={(e) => dispatch(
+              updatePlotConfig(plotUuid, { display: { trajectory: e.target.value } }),
+            )}
+          >
+            <Space>
+              <Radio value>Show</Radio>
+              <Radio value={false}>Hide</Radio>
+            </Space>
+          </Radio.Group>
+        </Space>
       </Panel>
     </>
   );

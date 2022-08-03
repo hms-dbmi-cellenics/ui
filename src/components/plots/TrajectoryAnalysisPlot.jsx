@@ -6,9 +6,15 @@ import { Vega } from 'react-vega';
 
 import { generateData as generateCategoricalEmbeddingData } from 'utils/plotSpecs/generateEmbeddingCategoricalSpec';
 import {
-  generateSpec,
-  generateData as generateTrajectoryPathData,
-} from 'utils/plotSpecs/generateTrajectoryAnalysisGraph';
+  insertTrajectorySpec,
+  insertPseudotimeSpec,
+  insertClusterColorsSpec,
+  generateBaseSpec,
+  generateTrajectoryData,
+} from 'utils/plotSpecs/generateTrajectoryAnalysisSpec';
+import {
+  generateData as generatePseudotimeData,
+} from 'utils/plotSpecs/generateEmbeddingContinuousSpec';
 import { loadEmbedding } from 'redux/actions/embedding';
 import { loadCellSets } from 'redux/actions/cellSets';
 import { loadProcessingSettings } from 'redux/actions/experimentSettings';
@@ -77,26 +83,42 @@ const TrajectoryAnalysisPlot = (props) => {
     }
 
     const {
+      selectedSample,
+      selectedCellSet,
+      display,
+    } = config;
+
+    const {
       plotData: plotEmbedding,
       cellSetLegendsData,
     } = generateCategoricalEmbeddingData(
       cellSets,
-      config.selectedSample,
-      config.selectedCellSet,
+      selectedSample,
+      selectedCellSet,
       embeddingData,
     );
 
-    const trajectoryData = generateTrajectoryPathData(plotData);
+    const baseSpec = generateBaseSpec(config, plotEmbedding);
 
-    setPlotSpec(
-      generateSpec(
-        config,
-        plotEmbedding,
-        trajectoryData,
-        cellSetLegendsData,
-        resetPlot,
-      ),
-    );
+    if (display.pseudotime) {
+      const pseudotimeData = generatePseudotimeData(
+        cellSets,
+        selectedSample,
+        plotData.pseudotime,
+        embeddingData,
+      );
+      insertPseudotimeSpec(baseSpec, config, pseudotimeData);
+    } else {
+      // Display cell clusters
+      insertClusterColorsSpec(baseSpec, config, cellSetLegendsData);
+    }
+
+    if (display.trajectory) {
+      const trajectoryData = generateTrajectoryData(plotData.nodes);
+      insertTrajectorySpec(baseSpec, trajectoryData, resetPlot);
+    }
+
+    setPlotSpec(baseSpec);
   }, [config, cellSets, embeddingData, plotData, resetPlot]);
 
   const plotListener = {
@@ -160,7 +182,7 @@ const TrajectoryAnalysisPlot = (props) => {
 TrajectoryAnalysisPlot.propTypes = {
   experimentId: PropTypes.string.isRequired,
   config: PropTypes.object,
-  plotData: PropTypes.object.isRequired,
+  plotData: PropTypes.object,
   actions: PropTypes.oneOfType([
     PropTypes.bool,
     PropTypes.object,
@@ -173,6 +195,7 @@ TrajectoryAnalysisPlot.propTypes = {
 TrajectoryAnalysisPlot.defaultProps = {
   actions: true,
   config: null,
+  plotData: {},
   onSelectNode: () => {},
   resetPlot: false,
 };

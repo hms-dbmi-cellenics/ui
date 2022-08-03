@@ -134,7 +134,6 @@ const generateSpec = (config, plotData) => {
           },
         },
       },
-
     ],
     legends: legend,
     title:

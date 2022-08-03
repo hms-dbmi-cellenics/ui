@@ -304,6 +304,10 @@ const trajectoryAnalysisInitialConfig = {
   },
   selectedCellSet: 'louvain',
   selectedSample: 'All',
+  display: {
+    trajectory: true,
+    pseudotime: false,
+  },
 };
 
 // EMBEDDING PREVIEW - Coloured by sample
