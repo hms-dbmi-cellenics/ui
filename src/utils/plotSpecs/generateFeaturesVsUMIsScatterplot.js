@@ -3,17 +3,16 @@ import { stdev } from '../mathFormulas';
 
 const generateSpec = (config, plotData, expConfig) => {
   const { pointsData, linesData } = plotData;
-  let { predictionInterval } = expConfig;
-  const pLevel = expConfig.regressionTypeSettings[expConfig.regressionType]['p.level'];
+  const { predictionInterval } = expConfig;
 
   const sd = stdev(pointsData.map((p) => p.log_genes));
   let predictionIntervalIndex;
 
+  // if the prediction interval is not set yet
+  // use a default value  which is the last index in linesData
   if (!predictionInterval && predictionInterval !== 0) {
-    predictionInterval = 1 - pLevel;
-  }
-
-  if (predictionInterval <= 0.99) {
+    predictionIntervalIndex = linesData.length - 1;
+  } else if (predictionInterval <= 0.99) {
     predictionIntervalIndex = round((predictionInterval || 0) * 100);
   } else if (predictionInterval === 0.999) {
     predictionIntervalIndex = 100;
