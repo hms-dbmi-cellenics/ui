@@ -16,6 +16,7 @@ import loadBackendStatus from 'redux/actions/backendStatus/loadBackendStatus';
 import { loadSamples } from 'redux/actions/samples';
 import ExampleExperimentsSpace from 'components/data-management/ExampleExperimentsSpace';
 import { privacyPolicyIsNotAccepted } from 'utils/deploymentInfo';
+import handleError from 'utils/http/handleError';
 
 const DataManagementPage = () => {
   const dispatch = useDispatch();
@@ -53,6 +54,12 @@ const DataManagementPage = () => {
 
     dispatch(loadBackendStatus(activeExperimentId));
   }, [activeExperimentId, user]);
+
+  try {
+    throw new Error('ERROR ON PURPOSE');
+  } catch (e) {
+    handleError(e, e.message);
+  }
 
   const PROJECTS_LIST = 'Projects';
   const PROJECT_DETAILS = 'Project Details';
