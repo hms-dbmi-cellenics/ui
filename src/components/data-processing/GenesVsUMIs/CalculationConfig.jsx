@@ -111,7 +111,7 @@ const GenesVsUMIsConfig = (props) => {
           <Space direction='vertical'>
             <Space direction='horizontal'>
               <InputNumber
-                value={newConfig.predictionInterval || 'default'}
+                value={newConfig.predictionInterval || 1 - config.regressionTypeSettings[config.regressionType]['p.level']}
                 min={0}
                 max={0.999999}
                 disabled
