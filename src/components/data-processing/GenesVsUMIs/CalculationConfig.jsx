@@ -25,6 +25,13 @@ const GenesVsUMIsConfig = (props) => {
   } = props;
   const [newConfig, handleChange] = useUpdateThrottled(updateSettings, config);
 
+  const getPLevelValue = () => {
+    if (!config.predictionInterval && config.predictionInterval !== 0) {
+      return config.regressionTypeSettings[config.regressionType]['p.level'];
+    }
+    return parseFloat(1 - config.predictionInterval).toFixed(6);
+  };
+
   return (
     <>
       {/* only display info message for datasets which have
@@ -104,7 +111,7 @@ const GenesVsUMIsConfig = (props) => {
           <Space direction='vertical'>
             <Space direction='horizontal'>
               <InputNumber
-                value={newConfig.predictionInterval}
+                value={newConfig.predictionInterval || 'default'}
                 min={0}
                 max={0.999999}
                 disabled
@@ -125,7 +132,7 @@ const GenesVsUMIsConfig = (props) => {
             <InfoCircleOutlined />
           </Tooltip>
           <InputNumber
-            value={parseFloat(1 - config.predictionInterval).toFixed(6)}
+            value={getPLevelValue()}
             disabled
           />
         </Space>
