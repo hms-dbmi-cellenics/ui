@@ -357,8 +357,12 @@ describe('Dot plot page', () => {
       userEvent.click(option, undefined, { skipPointerEventsCheck: true });
     });
 
-    // check the search text is cleared after selecting a valid option
-    expect(searchBox.value).toBe('');
+    // check the search text is modified after selecting a valid option
+    expect(searchBox.value).toBe('Apoe, ');
+
+    const geneAddButton = screen.getByText('Add');
+
+    userEvent.click(geneAddButton);
 
     // check the selected gene was added
     expect(within(geneTree).getByText('Apoe')).toBeInTheDocument();
@@ -368,7 +372,7 @@ describe('Dot plot page', () => {
     expect(_.isEqual(initialOrder, getTreeGenes(geneTree))).toEqual(true);
   });
 
-  it('adds an already loaded gene and clears the input', async () => {
+  it('tries to select an already loaded gene and clears the input', async () => {
     await renderDotPlot(storeState);
 
     const searchBox = screen.getByRole('combobox');
