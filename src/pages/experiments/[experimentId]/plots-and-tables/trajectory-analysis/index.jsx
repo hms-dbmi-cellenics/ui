@@ -132,6 +132,7 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
               disabled={configLoading}
               onClick={() => {
                 dispatch(getPseudoTime(selectedNodes, experimentId, plotUuid));
+                dispatch(updatePlotConfig(plotUuid, { display: { pseudotime: true } }));
               }}
             >
               Calculate
