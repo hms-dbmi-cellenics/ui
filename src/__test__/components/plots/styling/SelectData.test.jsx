@@ -14,6 +14,8 @@ const mockOnUpdate = jest.fn();
 
 const mockCellSetsStore = {
   loading: false,
+  initialLoadPending: false,
+  accessible: true,
   error: false,
   hierarchy: createHierarchyFromTree(mockCellSets.cellSets),
   properties: createPropertiesFromTree(mockCellSets.cellSets),
@@ -52,6 +54,9 @@ describe('Select Data', () => {
     const loadingState = {
       cellSets: {
         loading: true,
+        accessible: false,
+        initialLoadPending: false,
+        error: false,
       },
     };
 
@@ -69,6 +74,7 @@ describe('Select Data', () => {
     const errorState = {
       cellSets: {
         error: true,
+        acessible: false,
       },
     };
 
