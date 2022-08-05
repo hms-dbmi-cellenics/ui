@@ -151,7 +151,7 @@ const CalculationConfig = (props) => {
           <Form.Item>
             <Text>
               <strong style={{ marginRight: '0.5rem' }}>Data integration settings:</strong>
-              <Tooltip title='Integration of multiple samples corrects for batch effect. These methods identify shared cell states that are present across different datasets, even if they were collected from different individuals, experimental conditions, technologies, or even species. The user selects the integration method and sets the controls, as appropriate. The latest Seurat method is selected as default.'>
+              <Tooltip title='Integration of multiple samples corrects for batch effect. These methods identify shared cell states that are present across different datasets, even if they were collected from different individuals, experimental conditions, technologies, or even species. The user selects the integration method and sets the controls, as appropriate. Harmony is selected as default.'>
                 <QuestionCircleOutlined />
               </Tooltip>
             </Text>
@@ -240,7 +240,7 @@ const CalculationConfig = (props) => {
                 </span>
               )}
             >
-              
+
               <Checkbox.Group
                 onChange={(val) => updateSettings(
                   { dimensionalityReduction: { excludeGeneCategories: val } },

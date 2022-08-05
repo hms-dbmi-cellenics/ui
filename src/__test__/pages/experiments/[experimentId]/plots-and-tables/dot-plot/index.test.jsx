@@ -484,31 +484,7 @@ describe('Drag and drop enzyme tests', () => {
     const info = {
       dragNode: { key: 1, pos: '0-1' },
       dropPosition: 1,
-      dropToGap: true,
-    };
-
-    tree.getElement().props.onDrop(info);
-
-    await act(async () => {
-      component.update();
-    });
-
-    const newOrder = getCurrentGeneOrder(component);
-
-    expect(_.isEqual(newOrder, loadedGenes)).toEqual(true);
-  });
-
-  it('changes nothing when not dropped in gap', async () => {
-    // default genes are in the tree
-    loadedGenes.forEach((geneName) => {
-      expect(tree.containsMatchingElement(geneName));
-    });
-
-    // not dropping to gap does nothing
-    const info = {
-      dragNode: { key: 0, pos: '0-0' },
-      dropPosition: 2,
-      dropToGap: false,
+      node: { dragOver: false },
     };
 
     tree.getElement().props.onDrop(info);
@@ -531,7 +507,7 @@ describe('Drag and drop enzyme tests', () => {
     const info = {
       dragNode: { key: 0, pos: '0-0' },
       dropPosition: 2,
-      dropToGap: true,
+      node: { dragOver: false },
     };
 
     tree.getElement().props.onDrop(info);

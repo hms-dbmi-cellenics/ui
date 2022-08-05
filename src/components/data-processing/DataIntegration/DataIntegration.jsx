@@ -232,11 +232,7 @@ const DataIntegration = (props) => {
       return;
     }
 
-    if (!cellSets.loading
-      && !cellSets.error
-      && !cellSets.updateCellSetsClustering
-      && selectedConfig
-    ) {
+    if (cellSets.accessible && selectedConfig) {
       setPlot(plots[selectedPlot].plot(selectedConfig, plotData, true));
     }
   }, [selectedConfig, cellSets, plotData, calculationConfig]);
@@ -259,7 +255,7 @@ const DataIntegration = (props) => {
       );
     }
 
-    if ((selectedPlot === 'embedding' || selectedPlot === 'frequency') && !cellSets.loading && isUnisample(cellSets.hierarchy)
+    if ((selectedPlot === 'embedding' || selectedPlot === 'frequency') && cellSets.accessible && isUnisample(cellSets.hierarchy)
     ) {
       return (
         <center>

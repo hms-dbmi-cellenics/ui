@@ -1,4 +1,8 @@
 const mockCellSets = {
+  initialLoadPending: false,
+  error: false,
+  loading: false,
+  accessible: true,
   hierarchy: [
     {
       key: 'louvain',
