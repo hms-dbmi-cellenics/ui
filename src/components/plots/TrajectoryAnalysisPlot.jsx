@@ -121,11 +121,7 @@ const TrajectoryAnalysisPlot = (props) => {
     );
   };
 
-  return (
-    <>
-      {render()}
-    </>
-  );
+  return render();
 };
 
 TrajectoryAnalysisPlot.propTypes = {
