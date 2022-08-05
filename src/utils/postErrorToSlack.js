@@ -39,13 +39,13 @@ const buildErrorMessage = async (errorObject, reduxState, context) => {
     user, timestamp, experimentId, url,
   } = context;
 
-  const stack = (await StackTrace.fromError(errorObject))
-    .map((sf) => sf.toString())
-    .join('\n');
+  const stack = await StackTrace.fromError(errorObject);
+
+  const stringifiedStack = stack.map((sf) => sf.toString()).join('\n');
 
   let message = `
     ===== ERROR STACK =====
-    ${stack}
+    ${stringifiedStack}
 
     === DETAILS ===
     User: ${user.attributes.name} <${user.attributes.email}> ${user.username}
