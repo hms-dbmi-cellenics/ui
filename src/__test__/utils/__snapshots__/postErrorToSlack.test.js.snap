@@ -31,7 +31,8 @@ exports[`PostErrorToSlack Posts requests correctly 6`] = `
     Message:
     mockMessage
     At:
-    Mock error stack (::)
+    line1
+line2
 
     === DETAILS ===
     User: John Doe <fake@email.com> 5152fake-eb52-474c-user-mocke8c8user
