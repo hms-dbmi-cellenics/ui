@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import {
   Space,
@@ -24,6 +24,8 @@ const GenesVsUMIsConfig = (props) => {
     config, updateSettings, disabled, rerunRequired, experimentId,
   } = props;
   const [newConfig, handleChange] = useUpdateThrottled(updateSettings, config);
+
+  const defaultPredictionInterval = 1 - config.regressionTypeSettings[config.regressionType]['p.level'];
 
   const getPLevelValue = () => {
     if (!config.predictionInterval && config.predictionInterval !== 0) {
@@ -111,7 +113,7 @@ const GenesVsUMIsConfig = (props) => {
           <Space direction='vertical'>
             <Space direction='horizontal'>
               <InputNumber
-                value={newConfig.predictionInterval || 1 - config.regressionTypeSettings[config.regressionType]['p.level']}
+                value={newConfig.predictionInterval || defaultPredictionInterval}
                 min={0}
                 max={0.999999}
                 disabled
