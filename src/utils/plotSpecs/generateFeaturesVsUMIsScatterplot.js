@@ -2,6 +2,7 @@ import { round } from 'lodash';
 import { stdev } from '../mathFormulas';
 
 const generateSpec = (config, plotData, expConfig) => {
+  console.log('config', config, 'plotData', plotData, 'expConfig', expConfig);
   const { pointsData, linesData } = plotData;
   const { predictionInterval } = expConfig;
 
@@ -9,7 +10,7 @@ const generateSpec = (config, plotData, expConfig) => {
   let predictionIntervalIndex;
 
   // if the prediction interval is not set yet
-  // use a default value  which is the last index in linesData
+  // use a default value which is the last index in linesData
   if (!predictionInterval && predictionInterval !== 0) {
     predictionIntervalIndex = linesData.length - 1;
   } else if (predictionInterval <= 0.99) {
