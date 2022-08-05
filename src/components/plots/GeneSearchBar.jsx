@@ -29,7 +29,7 @@ const GeneSearchBar = (props) => {
   const [value, setValue] = useState('');
 
   const onOptionSelect = (newGene) => {
-    const genes = value.split(/(?<!-)[, ]+(?!-)/);
+    const genes = value.split(/(?<!-)[,\s]+(?!-)/);
     genes.splice(-1, 1, `${newGene}, `);
     setValue(genes.join(', '));
     setOptions([]);
@@ -38,7 +38,7 @@ const GeneSearchBar = (props) => {
   const onSearch = (input) => {
     setValue(input);
 
-    const genes = input.split(/(?<!-)[, ]+(?!-)/);
+    const genes = input.split(/(?<!-)[,\s]+(?!-)/);
     const searchText = genes[genes.length - 1];
 
     setOptions(!searchText ? [] : filterGenes(searchText, geneList, config?.selectedGenes));
@@ -47,7 +47,7 @@ const GeneSearchBar = (props) => {
   const onClick = () => {
     if (value === '') return;
 
-    const newGenes = value.split(/(?<!-)[, ]+(?!-)/).map((gene) => gene.trim()).filter((gene) => geneList.includes(gene));
+    const newGenes = value.split(/(?<!-)[,\s]+(?!-)/).map((gene) => gene.trim()).filter((gene) => geneList.includes(gene));
     const genes = _.uniq([...config?.selectedGenes, ...newGenes]);
 
     if (_.isEqual(genes, config?.selectedGenes)) return;
