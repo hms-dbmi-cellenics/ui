@@ -7,6 +7,9 @@ describe('Get cell sets selector test', () => {
     expect(getCellSets()(mockCellSets)).toEqual(mockCellSets);
   });
   it('should return default cell sets if unavailable', () => {
-    expect(getCellSets()({})).toEqual(initialCellSetsState);
+    expect(getCellSets()({})).toEqual({
+      ...initialCellSetsState,
+      accessible: false,
+    });
   });
 });

@@ -93,17 +93,16 @@ const ViolinPlot = (props) => {
   }, [searchedGene]);
 
   useEffect(() => {
-    if (cellSets.loading && !cellSets.error) {
+    if (!cellSets.error) {
       dispatch(loadCellSets(experimentId));
     }
-  }, [experimentId, cellSets.loading, cellSets.error]);
+  }, [experimentId, cellSets.accessible, cellSets.error]);
 
   useEffect(() => {
     if (config
       && Object.getOwnPropertyDescriptor(geneExpression.data, config.shownGene)
       && !geneExpression.error
-      && !cellSets.loading
-      && !cellSets.error) {
+      && cellSets.accessible) {
       const geneExpressionData = config.normalised === 'normalised'
         ? geneExpression.data[config.shownGene].zScore
         : geneExpression.data[config.shownGene].rawExpression.expression;
@@ -167,8 +166,9 @@ const ViolinPlot = (props) => {
 
     if (
       geneExpression.loading.length
-      || cellSets.loading
-      || highestDispersionLoading) {
+      || !cellSets.accessible
+      || highestDispersionLoading
+    ) {
       return <Loader experimentId={experimentId} />;
     }
 

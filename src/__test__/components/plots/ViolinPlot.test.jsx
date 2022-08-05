@@ -69,6 +69,10 @@ describe('ViolinPlot', () => {
       cellSets: {
         hierarchy: [],
         error: 'Broken CellSet',
+        accessible: false,
+        loading: false,
+        updatingClustering: false,
+        initialLoadPending: false,
       },
     };
     renderViolinPlot(storeContents);
