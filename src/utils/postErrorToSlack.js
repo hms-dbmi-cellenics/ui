@@ -40,7 +40,6 @@ const buildErrorMessage = async (errorObject, reduxState, context) => {
   } = context;
 
   const stack = await StackTrace.fromError(errorObject);
-
   const stringifiedStack = stack.map((sf) => sf.toString()).join('\n');
 
   let message = `
