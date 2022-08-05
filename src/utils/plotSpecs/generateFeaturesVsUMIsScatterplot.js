@@ -2,7 +2,6 @@ import { round } from 'lodash';
 import { stdev } from '../mathFormulas';
 
 const generateSpec = (config, plotData, expConfig) => {
-  console.log('config', config, 'plotData', plotData, 'expConfig', expConfig);
   const { pointsData, linesData } = plotData;
   const { predictionInterval } = expConfig;
 

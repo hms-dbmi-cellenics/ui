@@ -45,6 +45,9 @@ const buildErrorMessage = async (errorObject, reduxState, context) => {
 
   let message = `
     ===== ERROR STACK =====
+    Message:
+    ${errorObject.message}
+    At:
     ${stringifiedStack}
 
     === DETAILS ===
@@ -106,7 +109,6 @@ const postError = async (errorLog, context) => {
 };
 
 const postErrorToSlack = async (errorObject, reduxState) => {
-  console.log('ACATMBSI');
   const user = await Auth.currentAuthenticatedUser();
 
   const timestamp = new Date().toISOString();
@@ -121,8 +123,6 @@ const postErrorToSlack = async (errorObject, reduxState) => {
     url,
     environment,
   };
-
-  console.log('ACATMBTMB');
 
   const errorLog = await buildErrorMessage(errorObject, reduxState, context);
   await postError(errorLog, context);
