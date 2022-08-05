@@ -42,11 +42,16 @@ const getTrajectoryGraph = (
       experimentId, body, getState, { timeout, rerun: true },
     );
 
+    const { plotData } = getState().componentConfig[plotUuid];
+
     dispatch({
       type: PLOT_DATA_LOADED,
       payload: {
         plotUuid,
-        plotData: data,
+        plotData: {
+          ...plotData,
+          nodes: data.nodes,
+        },
       },
     });
   } catch (e) {
