@@ -75,7 +75,7 @@ const HierarchicalTree = (props) => {
     // if dropped in first position
     if (!sameLevel && !dropToGap) {
       toPosition = 0;
-    // if dropped in last position
+      // if dropped in last position
     } else if (!sameLevel && dropToGap) {
       toPosition = numberOfClusters;
     } else {
