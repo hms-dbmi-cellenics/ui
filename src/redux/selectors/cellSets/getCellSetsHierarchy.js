@@ -1,7 +1,7 @@
 import createMemoizedSelector from 'redux/selectors/createMemoizedSelector';
 
 const getCellSetsHierarchy = () => (state) => {
-  if (!state || state.loading) {
+  if (!state || state.initialLoadPending) {
     return [];
   }
 
