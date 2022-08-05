@@ -44,12 +44,12 @@ const TrajectoryAnalysisPlot = (props) => {
   const [plotSpec, setPlotSpec] = useState(null);
 
   useEffect(() => {
+    dispatch(loadCellSets(experimentId));
+  }, []);
+
+  useEffect(() => {
     if (!embeddingSettings) {
       dispatch(loadProcessingSettings(experimentId));
-    }
-
-    if (cellSets.loading && !cellSets.error) {
-      dispatch(loadCellSets(experimentId));
     }
 
     if (!embeddingData && embeddingSettings?.method) {
@@ -64,7 +64,7 @@ const TrajectoryAnalysisPlot = (props) => {
   useEffect(() => {
     if (
       !config
-      || cellSets.loading
+      || !cellSets.accessible
       || cellSets.error
       || !embeddingData?.length
       || !plotData
@@ -102,10 +102,10 @@ const TrajectoryAnalysisPlot = (props) => {
     }
 
     if (!config
-      || cellSets.loading
+      || !cellSets.accessible
       || !embeddingData
       || embeddingLoading
-      || Object.keys(plotSpec).length === 0
+      || !plotSpec
     ) {
       return (
         <center>
