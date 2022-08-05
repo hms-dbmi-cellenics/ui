@@ -50,27 +50,46 @@ const HierarchicalTree = (props) => {
     // If rootNode, ignore
     if (dragNode.rootNode) return;
 
+    // Ignore topmost drop position
+    if (dropPosition === -1) return;
+
     // pos is a string e.g.: 0-0-1, each number is a position in a tree level
     const posFromArray = dragNode.pos.split('-');
     const posToArray = node.pos.split('-');
 
-    const fromPosition = parseInt(posFromArray[2], 10);
-
     // If not in the same cellClass, ignore
     if (!_.isEqual(posFromArray[1], posToArray[1])) return;
 
+    const sameLevel = (posFromArray.length === posToArray.length);
+
+    // dragOver is true for positions where dropToGap is false
+    const addDragOverPosition = node.dragOver ? 1 : 0;
+
+    const numberOfClusters = treeData[posFromArray[1]].children.length;
+
+    const fromPosition = parseInt(posFromArray[2], 10);
+
+    // dropPosition is not set correctly for first and last position, set manually instead
+    let toPosition;
+
+    // if dropped in first position
+    if (!sameLevel && !dropToGap) {
+      toPosition = 0;
+      // if dropped in last position
+    } else if (!sameLevel && dropToGap) {
+      toPosition = numberOfClusters;
+    } else {
+      toPosition = dropPosition;
+    }
+
     // If was dropped in same place, ignore
-    if (fromPosition === dropPosition) return;
+    if (fromPosition === toPosition) return;
 
-    // If not dropped in gap, ignore
-    // (only allow dropToGap when the destination node is rootNode
-    // because it can have children nodes)
-    if (!dropToGap && !node.rootNode) return;
-
-    const newPosition = dropPosition - (fromPosition < dropPosition ? 1 : 0);
+    // if dropping below the initial position subtract 1, if dropping to secondary position add 1
+    const newPosition = toPosition - (fromPosition < toPosition ? 1 : 0) + (!sameLevel ? 0 : addDragOverPosition);
 
     onCellSetReorder(dragNode.key, newPosition);
-  }, []);
+  }, [treeData]);
 
   const renderColorPicker = (modified) => {
     if (modified.color) {
