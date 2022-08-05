@@ -41,7 +41,7 @@ const TrajectoryAnalysisPlot = (props) => {
     (state) => state.embeddings[embeddingSettings?.method],
   ) || {};
 
-  const [plotSpec, setPlotSpec] = useState({});
+  const [plotSpec, setPlotSpec] = useState(null);
 
   useEffect(() => {
     if (!embeddingSettings) {
