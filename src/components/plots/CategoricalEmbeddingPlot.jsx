@@ -39,7 +39,7 @@ const CategoricalEmbeddingPlot = (props) => {
       dispatch(loadProcessingSettings(experimentId));
     }
 
-    if (cellSets.loading && !cellSets.error) {
+    if (!cellSets.error) {
       dispatch(loadCellSets(experimentId));
     }
 
@@ -53,11 +53,7 @@ const CategoricalEmbeddingPlot = (props) => {
   }, [config, embeddingSettings?.method]);
 
   useEffect(() => {
-    if (!config
-      || cellSets.loading
-      || cellSets.error) {
-      return;
-    }
+    if (!config || !cellSets.accessible) return;
 
     if (embeddingData?.length) {
       const {
@@ -89,7 +85,7 @@ const CategoricalEmbeddingPlot = (props) => {
     }
 
     if (!config
-      || cellSets.loading
+      || !cellSets.accessible
       || !embeddingData
       || embeddingLoading
       || !config
