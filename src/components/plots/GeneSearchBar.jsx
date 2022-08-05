@@ -26,23 +26,20 @@ const GeneSearchBar = (props) => {
 
   const [options, setOptions] = useState([]);
 
-  // pass reactive component as value (search text) to allow auto clear on select
   const [value, setValue] = useState('');
 
   const onOptionSelect = (newGene) => {
-    const charArray = [...value];
-    const lastComma = _.findLastIndex(charArray, (letter) => letter === ',');
-    const newValue = charArray.slice(0, lastComma + 1).join('').concat(' ', newGene, ',').trim();
-    setValue(newValue);
+    const genes = value.split(/(?<!-)[, ]+(?!-)/);
+    genes.splice(-1, 1, `${newGene}, `);
+    setValue(genes.join(', '));
     setOptions([]);
   };
 
   const onSearch = (input) => {
     setValue(input);
 
-    const charArray = [...input];
-    const lastComma = _.findLastIndex(charArray, (letter) => letter === ',');
-    const searchText = charArray.slice(lastComma + 1).join('').trim();
+    const genes = input.split(/(?<!-)[, ]+(?!-)/);
+    const searchText = genes[genes.length - 1];
 
     setOptions(!searchText ? [] : filterGenes(searchText, geneList, config?.selectedGenes));
   };
@@ -50,7 +47,7 @@ const GeneSearchBar = (props) => {
   const onClick = () => {
     if (value === '') return;
 
-    const newGenes = value.split(',').map((gene) => gene.trim()).filter((gene) => geneList.includes(gene));
+    const newGenes = value.split(/(?<!-)[, ]+(?!-)/).map((gene) => gene.trim()).filter((gene) => geneList.includes(gene));
     const genes = _.uniq([...config?.selectedGenes, ...newGenes]);
 
     if (_.isEqual(genes, config?.selectedGenes)) return;

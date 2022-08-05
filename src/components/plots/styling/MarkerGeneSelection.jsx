@@ -49,7 +49,7 @@ const MarkerGeneSelection = (props) => {
         <p style={{ margin: 0 }}>
           Type in a gene name and select it to add it to the plot.
           <Tooltip
-            title='To add multiple genes, separate them with a comma.'
+            title='To add multiple genes, separate them with a space or comma.'
           >
             &nbsp;
             <QuestionCircleOutlined />
