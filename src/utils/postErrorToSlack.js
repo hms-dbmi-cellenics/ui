@@ -39,7 +39,7 @@ const buildErrorMessage = async (errorObject, reduxState, context) => {
     user, timestamp, experimentId, url,
   } = context;
 
-  const stack = await StackTrace.fromError(errorObject)
+  const stack = (await StackTrace.fromError(errorObject))
     .map((sf) => sf.toString())
     .join('\n');
 
