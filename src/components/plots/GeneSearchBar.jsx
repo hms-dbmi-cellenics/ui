@@ -27,7 +27,9 @@ const GeneSearchBar = (props) => {
   const [options, setOptions] = useState([]);
 
   const [value, setValue] = useState('');
-  const genes = value.split(/(?<!-)[,\s]+(?!-)/);
+
+  const GENES_REGEX = /(?<!-)[,\s]+(?!-)/;
+  const genes = value.split(GENES_REGEX);
 
   const onOptionSelect = (newGene) => {
     genes.splice(-1, 1, `${newGene}, `);
@@ -38,7 +40,7 @@ const GeneSearchBar = (props) => {
   const onSearch = (input) => {
     setValue(input);
 
-    const inputGenes = input.split(/(?<!-)[,\s]+(?!-)/);
+    const inputGenes = input.split(GENES_REGEX);
 
     const searchText = inputGenes[inputGenes.length - 1];
 

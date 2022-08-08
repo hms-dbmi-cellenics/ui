@@ -5,10 +5,7 @@ import {
   Radio,
   InputNumber,
   Button,
-  Tooltip,
 } from 'antd';
-
-import { QuestionCircleOutlined } from '@ant-design/icons';
 
 import GeneReorderTool from 'components/plots/GeneReorderTool';
 import GeneSearchBar from 'components/plots/GeneSearchBar';
@@ -50,7 +47,10 @@ const MarkerGeneSelection = (props) => {
           Type in a gene name and select it to add it to the plot.
           To add multiple genes, separate them with a space or comma.
         </p>
-        <p>Drag and drop genes to re-order them. Hold an element above or below the table to scroll.</p>
+        <p>
+          Drag and drop genes to re-order them.
+          Hold an element above or below the table to scroll.
+        </p>
         <GeneSearchBar
           plotUuid={plotUuid}
           searchBarUuid={searchBarUuid}
