@@ -3,7 +3,7 @@ import { PLOT_DATA_LOADED, PLOT_DATA_LOADING, PLOT_DATA_ERROR } from 'redux/acti
 
 import handleError from 'utils/http/handleError';
 import endUserMessages from 'utils/endUserMessages';
-import { fetchWork, generateEtag } from 'utils/work/fetchWork';
+import { fetchWork, generateETag } from 'utils/work/fetchWork';
 import { getBackendStatus } from 'redux/selectors';
 import { getEmbeddingWorkRequestBody } from 'redux/actions/embedding/loadEmbedding';
 
@@ -35,7 +35,7 @@ const getTrajectoryGraph = (
 
   const embeddingBody = getEmbeddingWorkRequestBody(methodSettings, embeddingMethod);
 
-  const embeddingETag = generateEtag(
+  const embeddingETag = generateETag(
     experimentId,
     embeddingBody,
     undefined,

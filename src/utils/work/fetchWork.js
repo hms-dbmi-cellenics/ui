@@ -15,7 +15,7 @@ const DISABLE_UNIQUE_KEYS = [
   'GetEmbedding',
 ];
 
-const generateEtag = (
+const generateETag = (
   experimentId,
   body,
   extras,
@@ -24,16 +24,17 @@ const generateEtag = (
 ) => {
   // If caching is disabled, we add an additional randomized key to the hash so we never reuse
   // past results.
-
   let cacheUniquenessKey = null;
+
   if (
     environment !== Environment.PRODUCTION
     && localStorage.getItem('disableCache') === 'true'
-    && !DISABLE_UNIQUE_KEYS.includes(body.name)) {
+    && !DISABLE_UNIQUE_KEYS.includes(body.name)
+  ) {
     cacheUniquenessKey = Math.random();
   }
 
-  let EtagBody = {
+  let ETagBody = {
     experimentId,
     body,
     qcPipelineStartDate,
@@ -44,7 +45,7 @@ const generateEtag = (
   // They `body` key to create ETAg for gene expression is different
   // from the others, causing the generated ETag to be different
   if (body.name === 'GeneExpression') {
-    EtagBody = {
+    ETagBody = {
       experimentId,
       missingGenesBody: body,
       qcPipelineStartDate,
@@ -53,7 +54,9 @@ const generateEtag = (
     };
   }
 
-  const ETag = createObjectHash(EtagBody);
+  console.log('*** ETagBody', ETagBody);
+
+  const ETag = createObjectHash(ETagBody);
 
   return ETag;
 };
@@ -105,7 +108,7 @@ const fetchGeneExpressionWork = async (
 
   const missingGenesBody = { ...body, genes: missingGenes };
 
-  const ETag = generateEtag(
+  const ETag = generateETag(
     experimentId,
     missingGenesBody,
     extras,
@@ -176,7 +179,7 @@ const fetchWork = async (
     );
   }
 
-  const ETag = generateEtag(
+  const ETag = generateETag(
     experimentId,
     body,
     extras,
@@ -224,5 +227,5 @@ const fetchWork = async (
 
 export {
   fetchWork,
-  generateEtag,
+  generateETag,
 };
