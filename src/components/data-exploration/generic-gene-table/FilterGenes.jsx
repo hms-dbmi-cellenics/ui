@@ -9,6 +9,8 @@ import PropTypes from 'prop-types';
 const { Search } = Input;
 const { Option } = Select;
 
+export const sanitizeString = (str) => str.replace(/[\s|-]+/g, '').toUpperCase();
+
 const FilterGenes = (props) => {
   const { onFilter, defaultFilterOption, defaultFilterString } = props;
 
@@ -20,7 +22,8 @@ const FilterGenes = (props) => {
     onFilter({ filterOption: newSelectedOption, text: filterString });
   };
 
-  const onSearch = (text) => {
+  const onSearch = (event) => {
+    const text = sanitizeString(event.target.value);
     setFilterString(text);
     onFilter({ filterOption, text });
   };
@@ -36,7 +39,7 @@ const FilterGenes = (props) => {
         placeholder='Filter genes ...'
         defaultValue={defaultFilterString}
         style={{ width: '75%' }}
-        onSearch={onSearch}
+        onChange={onSearch}
         allowClear
         size='small'
       />

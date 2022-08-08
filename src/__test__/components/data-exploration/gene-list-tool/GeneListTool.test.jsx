@@ -1,15 +1,11 @@
 import React from 'react';
 import { mount } from 'enzyme';
-import { act } from 'react-dom/test-utils';
 import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
 import preloadAll from 'jest-next-dynamic';
 import thunk from 'redux-thunk';
 import _ from 'lodash';
 import { Empty } from 'antd';
-import waitForActions from 'redux-mock-store-await-actions';
-import { GENES_PROPERTIES_LOADING, GENES_PROPERTIES_LOADED_PAGINATED } from 'redux/actionTypes/genes';
-import { fetchWork } from 'utils/work/fetchWork';
 import GeneListTool from 'components/data-exploration/gene-list-tool/GeneListTool';
 
 import Loader from 'components/Loader';
@@ -126,52 +122,6 @@ describe('GeneListTool', () => {
     expect(table.getElement().props.data.length).toEqual(
       initialState.genes.properties.views[TEST_UUID].data.length,
     );
-  });
-
-  it('can sort the gene names in alphabetical order', async () => {
-    const newPagination = {
-      current: 1,
-      pageSize: 4,
-      showSizeChanger: true,
-      total: 4,
-    };
-
-    const newSorter = {
-      column: {
-        dataIndex: 'gene_names',
-        key: 'gene_names',
-      },
-      render: jest.fn(),
-      columnKey: 'gene_names',
-      field: 'gene_names',
-      order: 'ascend',
-    };
-
-    const table = component.find('Table');
-
-    act(() => {
-      table.getElement().props.onChange(newPagination, {}, newSorter);
-    });
-
-    // Wait for side-effect to propagate (properties loading and loaded).
-    await waitForActions(store, [GENES_PROPERTIES_LOADING, GENES_PROPERTIES_LOADED_PAGINATED]);
-
-    expect(fetchWork).toHaveBeenCalledWith(
-      experimentId,
-      {
-        limit: 4,
-        name: 'ListGenes',
-        offset: 0,
-        orderBy: 'gene_names',
-        orderDirection: 'ASC',
-        selectFields: ['gene_names', 'dispersions'],
-      },
-      store.getState,
-      { timeout: 60 },
-    );
-
-    expect(store.getActions()[0]).toMatchSnapshot();
-    expect(store.getActions()[1]).toMatchSnapshot();
   });
 
   it('All `eye` buttons are initially unfocused.', () => {

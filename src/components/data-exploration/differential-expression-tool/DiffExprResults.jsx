@@ -14,7 +14,6 @@ import _ from 'lodash';
 import { getCellSets } from 'redux/selectors';
 import loadDifferentialExpression from 'redux/actions/differentialExpression/loadDifferentialExpression';
 
-import { geneTableUpdateReason } from 'utils/geneTable/geneTableUpdateReason';
 import GeneTable from 'components/data-exploration/generic-gene-table/GeneTable';
 
 import AdvancedFilteringModal from 'components/data-exploration/differential-expression-tool/AdvancedFilteringModal';
@@ -56,14 +55,9 @@ const DiffExprResults = (props) => {
     setDataShown(data);
   }, [data, properties]);
 
-  const onUpdate = (newState, reason) => {
-    // We handle `loading` and `loaded` in the HOC, no need to react to these.
-    if (reason === geneTableUpdateReason.loaded || reason === geneTableUpdateReason.loading) {
-      return;
-    }
-
-    geneTableState.current = newState;
-    const { sorter } = newState;
+  const loadData = (loadAllState) => {
+    geneTableState.current = loadAllState;
+    const { sorter } = loadAllState;
 
     const sortOrder = sorter.order === 'ascend' ? 'ASC' : 'DESC';
     dispatch(setGeneOrdering(sorter.field, sortOrder));
@@ -73,7 +67,7 @@ const DiffExprResults = (props) => {
         experimentId,
         comparisonGroup[comparisonType],
         comparisonType,
-        newState,
+        loadAllState,
       ),
     );
   };
@@ -190,13 +184,13 @@ const DiffExprResults = (props) => {
             order: 'descend',
           },
         }}
-        onUpdate={onUpdate}
         columns={columns}
         loading={loading}
         error={error}
         width={width}
         height={height - 70 - (exportAlert ? 70 : 0) - (settingsListed ? 70 : 0)}
-        data={dataShown}
+        propData={dataShown}
+        loadData={loadData}
         total={total}
         extraOptions={(
           <>
