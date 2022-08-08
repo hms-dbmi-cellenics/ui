@@ -120,13 +120,11 @@ describe('Trajectory analysis plot', () => {
     expect(screen.getByText(/Labels/i)).toBeInTheDocument();
   });
 
-  it.only('Renders the plots correctly', async () => {
+  it('Renders the plots correctly', async () => {
     await renderTrajectoryAnalysisPage(storeState);
 
-    screen.debug(null, Infinity);
-
-    // await waitFor(async () => {
-    //   expect(screen.getByRole('graphics-document', { name: 'Trajectory analysis plot' })).toBeInTheDocument();
-    // });
+    await waitFor(async () => {
+      expect(screen.getByRole('graphics-document', { name: 'Trajectory analysis plot' })).toBeInTheDocument();
+    });
   });
 });
