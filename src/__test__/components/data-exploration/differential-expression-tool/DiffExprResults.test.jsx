@@ -208,7 +208,7 @@ describe('DiffExprResults', () => {
       current: 1,
       pageSize: 4,
       showSizeChanger: true,
-      total: 4,
+      total: mockGeneExpressionData.length,
     };
 
 
@@ -259,7 +259,7 @@ describe('DiffExprResults', () => {
       {
         extras: {
           pagination: {
-            limit: 1000000, offset: 0, orderBy: 'logFC', orderDirection: 'DESC', responseKey: 0,
+            limit: newPagination.total, offset: 0, orderBy: 'logFC', orderDirection: 'DESC', responseKey: 0,
           },
         },
         timeout: 60,
