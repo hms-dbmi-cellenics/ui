@@ -23,13 +23,13 @@ const FrequencyPlot = (props) => {
   const [plotSpec, setPlotSpec] = useState({});
 
   useEffect(() => {
-    if (cellSets.loading && !cellSets.error) {
+    if (!cellSets.error) {
       dispatch(loadCellSets(experimentId));
     }
   }, []);
 
   useEffect(() => {
-    if (!config || cellSets.loading || cellSets.error) { return; }
+    if (!config || !cellSets.accessible) { return; }
 
     const {
       xNamesToDisplay,
@@ -44,10 +44,10 @@ const FrequencyPlot = (props) => {
   // If the plotSpec is empty then don't render it, this avoids a bug where
   //  vega doesn't remove the initial plot if it was created with an empty plotSpec
   if (Object.keys(plotSpec).length === 0) {
-    return <Loader experimentId={experimentId} />
+    return <Loader experimentId={experimentId} />;
   }
 
-  return <Vega spec={plotSpec} renderer='canvas' actions={actions} />
+  return <Vega spec={plotSpec} renderer='canvas' actions={actions} />;
 };
 
 FrequencyPlot.propTypes = {
