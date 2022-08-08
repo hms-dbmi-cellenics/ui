@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`DiffExprResults can sort the gene names in alphabetical order 1`] = `
+exports[`DiffExprResults fetches all the genes 1`] = `
 Object {
   "payload": Object {
     "advancedFilters": Array [],
@@ -10,7 +10,7 @@ Object {
 }
 `;
 
-exports[`DiffExprResults can sort the gene names in alphabetical order 2`] = `
+exports[`DiffExprResults fetches all the genes 2`] = `
 Object {
   "payload": Object {
     "comparisonGroup": Object {
