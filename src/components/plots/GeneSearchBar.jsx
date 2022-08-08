@@ -71,7 +71,6 @@ const GeneSearchBar = (props) => {
         onSearch={onSearch}
         placeholder='Search for genes...'
       />
-
       <Button
         type='primary'
         onClick={addGenes}
