@@ -4,40 +4,9 @@ exports[`GeneListTool Clicking one of the \`eye\` buttons triggers appropriate o
 Object {
   "payload": Object {
     "experimentId": "1234",
-    "key": "K",
+    "key": "J",
     "store": "genes",
   },
   "type": "cellInfo/focus",
-}
-`;
-
-exports[`GeneListTool can sort the gene names in alphabetical order 1`] = `
-Object {
-  "payload": Object {
-    "componentUuid": "testList",
-    "properties": Array [
-      "dispersions",
-    ],
-  },
-  "type": "genes/propertiesLoading",
-}
-`;
-
-exports[`GeneListTool can sort the gene names in alphabetical order 2`] = `
-Object {
-  "payload": Object {
-    "componentUuid": "testList",
-    "data": Object {
-      "R3ALG3N3": Object {
-        "dispersions": 12.3131,
-      },
-    },
-    "experimentId": "1234",
-    "properties": Array [
-      "dispersions",
-    ],
-    "total": 1,
-  },
-  "type": "genes/propertiesLoadedPaginated",
 }
 `;
