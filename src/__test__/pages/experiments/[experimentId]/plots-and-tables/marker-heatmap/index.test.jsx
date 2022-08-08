@@ -355,14 +355,18 @@ describe('Marker heatmap plot', () => {
       userEvent.click(option, undefined, { skipPointerEventsCheck: true });
     });
 
-    // check the search text is cleared after selecting a valid option
-    expect(searchBox.value).toBe('');
+    // check the search text is modified after selecting a valid option
+    expect(searchBox.value).toBe('Tmem176a, ');
+
+    const geneAddButton = screen.getByText('Add');
+
+    userEvent.click(geneAddButton);
 
     // check the selected gene was added
     expect(within(geneTree).getByText('Tmem176a')).toBeInTheDocument();
   });
 
-  it('adds an already loaded gene and clears the input', async () => {
+  it('tries to select an already loaded gene and clears the input', async () => {
     await renderHeatmapPage(storeState);
 
     const searchBox = screen.getByRole('combobox');
