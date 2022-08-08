@@ -27,9 +27,9 @@ const GeneSearchBar = (props) => {
   const [options, setOptions] = useState([]);
 
   const [value, setValue] = useState('');
+  const genes = value.split(/(?<!-)[,\s]+(?!-)/);
 
   const onOptionSelect = (newGene) => {
-    const genes = value.split(/(?<!-)[,\s]+(?!-)/);
     genes.splice(-1, 1, `${newGene}, `);
     setValue(genes.join(', '));
     setOptions([]);
@@ -38,21 +38,22 @@ const GeneSearchBar = (props) => {
   const onSearch = (input) => {
     setValue(input);
 
-    const genes = input.split(/(?<!-)[,\s]+(?!-)/);
-    const searchText = genes[genes.length - 1];
+    const inputGenes = input.split(/(?<!-)[,\s]+(?!-)/);
+
+    const searchText = inputGenes[inputGenes.length - 1];
 
     setOptions(!searchText ? [] : filterGenes(searchText, geneList, config?.selectedGenes));
   };
 
-  const onClick = () => {
+  const addGenes = () => {
     if (value === '') return;
 
-    const newGenes = value.split(/(?<!-)[,\s]+(?!-)/).map((gene) => gene.trim()).filter((gene) => geneList.includes(gene));
-    const genes = _.uniq([...config?.selectedGenes, ...newGenes]);
+    const newGenes = genes.filter((gene) => geneList.includes(gene));
+    const allGenes = _.uniq([...config?.selectedGenes, ...newGenes]);
 
-    if (_.isEqual(genes, config?.selectedGenes)) return;
+    if (_.isEqual(allGenes, config?.selectedGenes)) return;
 
-    onSelect(genes);
+    onSelect(allGenes);
     setValue('');
     setOptions([]);
   };
@@ -70,7 +71,7 @@ const GeneSearchBar = (props) => {
       />
       <Button
         type='primary'
-        onClick={onClick}
+        onClick={addGenes}
         style={{ width: '20%' }}
       >
         Add
