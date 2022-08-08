@@ -125,7 +125,7 @@ describe('loadDifferentialExpression action', () => {
         ],
       };
 
-      return new Promise((resolve) => resolve({ data: resolveWith }));
+      return new Promise((resolve) => resolve(resolveWith));
     });
 
     await store.dispatch(

@@ -10,6 +10,54 @@ import { dispatchWorkRequest, seekFromS3 } from 'utils/work/seekWorkResponse';
 
 const createObjectHash = (object) => MD5(object);
 
+// Disable unique keys to reallow reuse of work results in development
+const DISABLE_UNIQUE_KEYS = [
+  'GetEmbedding',
+];
+
+const generateEtag = (
+  experimentId,
+  body,
+  extras,
+  qcPipelineStartDate,
+  environment,
+) => {
+  // If caching is disabled, we add an additional randomized key to the hash so we never reuse
+  // past results.
+
+  let cacheUniquenessKey = null;
+  if (
+    environment !== Environment.PRODUCTION
+    && localStorage.getItem('disableCache') === 'true'
+    && !DISABLE_UNIQUE_KEYS.includes(body.name)) {
+    cacheUniquenessKey = Math.random();
+  }
+
+  let EtagBody = {
+    experimentId,
+    body,
+    qcPipelineStartDate,
+    extras,
+    cacheUniquenessKey,
+  };
+
+  // They `body` key to create ETAg for gene expression is different
+  // from the others, causing the generated ETag to be different
+  if (body.name === 'GeneExpression') {
+    EtagBody = {
+      experimentId,
+      missingGenesBody: body,
+      qcPipelineStartDate,
+      extras,
+      cacheUniquenessKey,
+    };
+  }
+
+  const ETag = createObjectHash(EtagBody);
+
+  return ETag;
+};
+
 const decomposeBody = async (body, experimentId) => {
   const { genes: requestedGenes } = body;
   const missingDataKeys = {};
@@ -20,6 +68,7 @@ const decomposeBody = async (body, experimentId) => {
       ...body,
       genes: g,
     };
+
     const key = createObjectHash({ experimentId, newBody });
     const data = await cache.get(key);
     if (data) {
@@ -47,7 +96,7 @@ const fetchGeneExpressionWork = async (
   const missingGenes = Object.keys(missingDataKeys);
 
   if (missingGenes.length === 0) {
-    return { data: cachedData };
+    return cachedData;
   }
 
   // If new genes are needed, construct payload, try S3 for results,
@@ -56,16 +105,13 @@ const fetchGeneExpressionWork = async (
 
   const missingGenesBody = { ...body, genes: missingGenes };
 
-  // If caching is disabled, we add an additional randomized key to the hash so we never reuse
-  // past results.
-  let cacheUniquenessKey = null;
-  if (environment !== Environment.PRODUCTION && localStorage.getItem('disableCache') === 'true') {
-    cacheUniquenessKey = Math.random();
-  }
-
-  const ETag = createObjectHash({
-    experimentId, missingGenesBody, qcPipelineStartDate, extras, cacheUniquenessKey,
-  });
+  const ETag = generateEtag(
+    experimentId,
+    missingGenesBody,
+    extras,
+    qcPipelineStartDate,
+    environment,
+  );
 
   // Then, we may be able to find this in S3.
   let response = await seekFromS3(ETag, experimentId);
@@ -97,7 +143,7 @@ const fetchGeneExpressionWork = async (
     await cache.set(missingDataKeys[gene], response[gene]);
   });
 
-  return { data: response, ETag };
+  return response;
 };
 
 const fetchWork = async (
@@ -115,7 +161,6 @@ const fetchWork = async (
   const backendStatus = getBackendStatus(experimentId)(getState()).status;
 
   const { environment } = getState().networkResources;
-
   if (!isBrowser) {
     throw new Error('Disabling network interaction on server');
   }
@@ -131,27 +176,19 @@ const fetchWork = async (
     );
   }
 
-  // If caching is disabled, we add an additional randomized key to the hash so we never reuse
-  // past results.
-
-  let cacheUniquenessKey = null;
-  if (environment !== Environment.PRODUCTION && localStorage.getItem('disableCache') === 'true') {
-    cacheUniquenessKey = Math.random();
-  }
-
-  const ETag = createObjectHash({
+  const ETag = generateEtag(
     experimentId,
     body,
-    qcPipelineStartDate,
     extras,
-    cacheUniquenessKey,
-  });
+    qcPipelineStartDate,
+    environment,
+  );
 
   // First, let's try to fetch this information from the local cache.
   const data = await cache.get(ETag);
 
   if (data) {
-    return { data, ETag };
+    return data;
   }
 
   // Then, we may be able to find this in S3.
@@ -182,7 +219,10 @@ const fetchWork = async (
   // If a work response is in s3, it is cacheable
   // (the cacheable or not option is managed in the worker)
   await cache.set(ETag, response);
-  return { data: response, ETag };
+  return response;
 };
 
-export { fetchWork, fetchGeneExpressionWork, createObjectHash };
+export {
+  fetchWork,
+  generateEtag,
+};

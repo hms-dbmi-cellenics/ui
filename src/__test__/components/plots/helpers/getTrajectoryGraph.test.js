@@ -10,9 +10,14 @@ import mockTrajectoryGraph from '__test__/data/trajectory_graph.json';
 import { initialEmbeddingState } from 'redux/reducers/embeddings/initialState';
 import initialExperimentSettingsState from 'redux/reducers/experimentSettings/initialState';
 
-jest.mock('utils/work/fetchWork', () => ({
-  fetchWork: jest.fn(() => ({ data: {} })),
-}));
+jest.mock('utils/work/fetchWork', () => {
+  const originalModule = jest.requireActual('utils/work/fetchWork');
+
+  return {
+    ...originalModule,
+    fetchWork: jest.fn(() => ({})),
+  };
+});
 
 jest.mock('utils/http/handleError');
 
@@ -21,6 +26,7 @@ jest.mock('utils/getTimeoutForWorkerTask', () => () => 60);
 const mockStore = configureStore([thunk]);
 const plotUuid = 'trajectoryAnalysisMock';
 
+const startDate = '2021-01-01T00:00:00';
 const experimentId = '1234';
 
 const initialState = {
@@ -57,6 +63,10 @@ const initialState = {
     umap: initialEmbeddingState,
     Etag: 'mockEtag',
   },
+  backendStatus: { [experimentId]: { status: { pipeline: { startDate } } } },
+  networkResources: {
+    environment: 'testing',
+  },
 };
 
 let store;
@@ -65,9 +75,7 @@ describe('Get trajectory graph', () => {
   beforeEach(async () => {
     jest.clearAllMocks();
 
-    fetchWork.mockImplementation(() => ({
-      data: mockTrajectoryGraph,
-    }));
+    fetchWork.mockImplementation(() => (mockTrajectoryGraph));
 
     store = mockStore(initialState);
   });

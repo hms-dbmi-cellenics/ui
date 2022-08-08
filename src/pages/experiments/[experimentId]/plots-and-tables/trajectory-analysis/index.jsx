@@ -7,6 +7,8 @@ import {
   updatePlotConfig,
   loadPlotConfig,
 } from 'redux/actions/componentConfig/index';
+import { loadEmbedding } from 'redux/actions/embedding';
+import { loadProcessingSettings } from 'redux/actions/experimentSettings';
 import Header from 'components/Header';
 import TrajectoryAnalysisPlot from 'components/plots/TrajectoryAnalysisPlot';
 import PlotContainer from 'components/plots/PlotContainer';
@@ -18,6 +20,7 @@ const plotType = plotTypes.TRAJECTORY_ANALYSIS;
 
 const TrajectoryAnalysisPage = ({ experimentId }) => {
   const dispatch = useDispatch();
+
   const {
     config,
     plotData,
@@ -29,21 +32,28 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
   );
 
   const {
+    data: embeddingData,
     loading: embeddingLoading,
     error: embeddingError,
-    ETag,
   } = useSelector((state) => state.embeddings[embeddingMethod]) || {};
 
   useEffect(() => {
     if (!config) dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
+    if (!embeddingMethod) dispatch(loadProcessingSettings(experimentId));
   }, []);
+
+  useEffect(() => {
+    if (embeddingMethod && embeddingData?.length === 0) {
+      dispatch(loadEmbedding(experimentId, embeddingMethod));
+    }
+  }, [embeddingMethod]);
 
   useEffect(() => {
     if (
       !embeddingMethod
       || embeddingLoading
       || embeddingError
-      || !ETag
+      || !embeddingData?.length
     ) return;
     dispatch(getTrajectoryGraph(experimentId, plotUuid));
   }, [config, embeddingMethod, embeddingLoading]);

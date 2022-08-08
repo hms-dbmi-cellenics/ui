@@ -9,9 +9,7 @@ describe('getBackgroundExpressedGenes test', () => {
   beforeEach(async () => {
     jest.clearAllMocks();
     fetchWork.mockImplementation(() => Promise.resolve({
-      data: {
-        genes: ['ENMUSG00000001', 'ENMUSG00000002', 'ENMUSG00000003'],
-      },
+      genes: ['ENMUSG00000001', 'ENMUSG00000002', 'ENMUSG00000003'],
     }));
   });
 
