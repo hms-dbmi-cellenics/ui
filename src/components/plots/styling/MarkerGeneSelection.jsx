@@ -48,12 +48,7 @@ const MarkerGeneSelection = (props) => {
       <Space direction='vertical' size='small'>
         <p style={{ margin: 0 }}>
           Type in a gene name and select it to add it to the plot.
-          <Tooltip
-            title='To add multiple genes, separate them with a space or comma.'
-          >
-            &nbsp;
-            <QuestionCircleOutlined />
-          </Tooltip>
+          To add multiple genes, separate them with a space or comma.
         </p>
         <p>Drag and drop genes to re-order them. Hold an element above or below the table to scroll.</p>
         <GeneSearchBar
