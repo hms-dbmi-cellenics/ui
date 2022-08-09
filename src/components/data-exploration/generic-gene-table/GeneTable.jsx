@@ -10,15 +10,14 @@ import GeneSelectionStatus from 'redux/actions/genes/geneSelectionStatus';
 import FocusButton from 'components/FocusButton';
 import PlatformError from 'components/PlatformError';
 import GeneSelectionMenu from 'components/data-exploration/generic-gene-table/GeneSelectionMenu';
-import FilterGenes from 'components/data-exploration/generic-gene-table/FilterGenes';
+import FilterGenes, { sanitizeString } from 'components/data-exploration/generic-gene-table/FilterGenes';
 import Loader from 'components/Loader';
-import { sanitizeString } from 'components/data-exploration/generic-gene-table/FilterGenes';
 
 const valueComparator = (key) => (a, b) => {
   if (typeof a[key] === 'string') return a[key].localeCompare(b[key]);
-  if (typeof a[key] === "number") return a[key] - b[key];
+  if (typeof a[key] === 'number') return a[key] - b[key];
   return 0;
-}
+};
 
 const GeneTable = (props) => {
   const {
@@ -33,12 +32,12 @@ const GeneTable = (props) => {
   const tableStateAllEntries = {
     pagination: {
       current: 1,
-      pageSize: total,
+      pageSize: 100000,
       showSizeChanger: true,
       total,
     },
     geneNamesFilter: null,
-  }
+  };
 
   const [tableData, setTableData] = useState([]);
 
@@ -68,7 +67,7 @@ const GeneTable = (props) => {
           geneNamesFilter: null,
         },
         initialTableState,
-      )
+      ),
     );
   }, []);
 
@@ -98,7 +97,7 @@ const GeneTable = (props) => {
     }
 
     let newData = _.cloneDeep(propData);
-    newData = newData.filter(entry => sanitizeString(`${entry.gene_names}`).match(searchPattern));
+    newData = newData.filter((entry) => sanitizeString(`${entry.gene_names}`).match(searchPattern));
 
     const newTableState = {
       ...tableState,
