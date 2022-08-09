@@ -83,6 +83,7 @@ describe('HierarchicalTree', () => {
       node: {
         ...thirdChild,
         pos: '0-0-3',
+        dragOver: false,
       },
     };
 
@@ -260,7 +261,7 @@ describe('HierarchicalTree', () => {
     expect(mockOnCellSetReorder).toHaveBeenCalledTimes(0);
   });
 
-  it("Can't drop into a child, only in a gap", () => {
+  it('Can drop in child as if it dropped in gap', () => {
     const treeData = [
       firstParent,
       secondParent,
@@ -277,6 +278,7 @@ describe('HierarchicalTree', () => {
         ...firstChild,
         key: '1b',
         pos: '0-0-5',
+        dragOver: true,
       },
     };
 
@@ -295,7 +297,7 @@ describe('HierarchicalTree', () => {
     tree.getElement().props.onDrop(dropInfo);
     component.update();
 
-    expect(mockOnCellSetReorder).toHaveBeenCalledTimes(0);
+    expect(mockOnCellSetReorder).toHaveBeenCalledTimes(1);
 
     // but dropToGap: false can be false when the dropInfo is rootNode
     // (we see this when we are moving the cell set into the first spot)
@@ -309,7 +311,7 @@ describe('HierarchicalTree', () => {
 
     tree.getElement().props.onDrop(newDropInfo);
     component.update();
-    expect(mockOnCellSetReorder).toHaveBeenCalledTimes(1);
+    expect(mockOnCellSetReorder).toHaveBeenCalledTimes(2);
   });
 
   it('tree data is not checked by default', async () => {
