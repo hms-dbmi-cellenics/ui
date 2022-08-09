@@ -257,7 +257,7 @@ describe('DiffExprResults', () => {
       {
         extras: {
           pagination: {
-            limit: 100000, offset: 0, orderBy: 'logFC', orderDirection: 'DESC', responseKey: 0,
+            limit: 1000000, offset: 0, orderBy: 'logFC', orderDirection: 'DESC', responseKey: 0,
           },
         },
         timeout: 60,

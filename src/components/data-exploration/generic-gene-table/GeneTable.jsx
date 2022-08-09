@@ -32,7 +32,7 @@ const GeneTable = (props) => {
   const tableStateAllEntries = {
     pagination: {
       current: 1,
-      pageSize: 100000,
+      pageSize: 1000000,
       showSizeChanger: true,
       total,
     },
