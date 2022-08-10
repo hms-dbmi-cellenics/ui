@@ -96,7 +96,8 @@ const ReferralButton = () => {
     };
 
     try {
-      const r = await fetch(atob(HOOK_URL), {
+      const { getReferralWebhookUrl } = await import('utils/slack');
+      const r = await fetch(getReferralWebhookUrl(), {
         method: 'POST',
         body: JSON.stringify(referralData),
       });

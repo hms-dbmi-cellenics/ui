@@ -2,9 +2,14 @@ import config from 'config';
 
 const decrypt = (hash) => decodeURIComponent(window.atob(hash));
 
-const getWebhookUrl = () => {
-  const { webhookEndpoint } = config;
-  return decrypt(webhookEndpoint);
+const getFeedbackWebhookUrl = () => {
+  const { feedbackWebhookEndpoint } = config;
+  return decrypt(feedbackWebhookEndpoint);
+};
+
+const getReferralWebhookUrl = () => {
+  const { referralWebhookEndpoint } = config;
+  return decrypt(referralWebhookEndpoint);
 };
 
 // Token for Logger bot to post errors as file
@@ -15,6 +20,7 @@ const getLoggerBotToken = () => {
 };
 
 export {
-  getWebhookUrl,
+  getFeedbackWebhookUrl,
+  getReferralWebhookUrl,
   getLoggerBotToken,
 };
