@@ -19,8 +19,8 @@ const generateSpec = (config, plotData, cellSetLegendsData) => {
         type: 'symbol',
         orient: config?.legend.position,
         offset: 40,
-        symbolType: 'square',
-        symbolSize: 200,
+        symbolType: 'circle',
+        symbolSize: 100,
         encode: {
           labels: {
             update: {

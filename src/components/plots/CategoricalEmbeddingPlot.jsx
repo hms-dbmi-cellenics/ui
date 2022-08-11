@@ -11,6 +11,7 @@ import { getCellSets } from 'redux/selectors';
 import PlatformError from 'components/PlatformError';
 import Loader from 'components/Loader';
 import changeEmbeddingAxesIfNecessary from 'components/plots/helpers/changeEmbeddingAxesIfNecessary';
+import 'vega-webgl-renderer';
 
 const CategoricalEmbeddingPlot = (props) => {
   const {
@@ -100,7 +101,8 @@ const CategoricalEmbeddingPlot = (props) => {
 
     return (
       <center>
-        <Vega spec={plotSpec} renderer='canvas' actions={actions} />
+        {console.log(plotSpec)}
+        <Vega spec={plotSpec} renderer='webgl' actions={actions} />
       </center>
     );
   };
