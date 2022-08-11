@@ -50,26 +50,50 @@ const generateSpec = (config, embeddingData, pathData, cellSetLegendsData) => {
       right: 40,
     },
     signals: [
+      // Signals for clicking
       {
         name: 'clicked',
         on: [{ events: '@pathNodes:click', update: 'datum', force: true }],
       },
+      // Signal for selection
       {
-        name: 'hover',
+        name: 'lassoStart',
+        value: null,
         on: [
-          { events: '*:mouseover', encode: 'hover' },
-          { events: '*:mouseout', encode: 'leave' },
-          { events: '*:mousedown', encode: 'select' },
-          { events: '*:mouseup', encode: 'release' },
+          { events: 'mousedown[event.shiftKey]', update: 'xy()' },
+          { events: 'mouseup[event.shiftKey]', update: 'null' },
         ],
       },
+      {
+        name: 'lassoEnd',
+        value: [0, 0],
+        on: [
+          {
+            events: [
+              {
+                source: 'window',
+                type: 'mousemove',
+                consume: true,
+                between: [
+                  { type: 'mousedown' },
+                  { source: 'window', type: 'mouseup' },
+
+                ],
+              },
+            ],
+            update: 'lassoStart ? xy() : [0,0]',
+          },
+        ],
+      },
+      // Signals for zooming
       { name: 'xrange', update: '[0, width]' },
       { name: 'yrange', update: '[height, 0]' },
       {
         name: 'down',
         value: null,
         on: [
-          { events: 'mousedown', update: 'xy()' },
+          { events: 'mousedown[!event.shiftKey]', update: 'xy()' },
+          { events: 'mouseup[!event.shiftKey]', update: 'null' },
         ],
       },
       {
@@ -161,6 +185,16 @@ const generateSpec = (config, embeddingData, pathData, cellSetLegendsData) => {
       {
         name: 'size',
         update: 'clamp(100 / span(xdom), 10, 100)',
+      },
+      {
+        name: 'nodeSize',
+        on: [
+          {
+            events: { signal: 'size' },
+            force: true,
+            update: 'size * 1.5',
+          },
+        ],
       },
     ],
     data: [
@@ -329,7 +363,7 @@ const generateSpec = (config, embeddingData, pathData, cellSetLegendsData) => {
               update: {
                 x: { scale: 'xscale', field: 'x' },
                 y: { scale: 'yscale', field: 'y' },
-                size: { signal: 'size' },
+                size: { signal: 'nodeSize' },
                 stroke: { value: 'black' },
                 fill: [
                   { test: 'datum.selected', value: 'red' },
@@ -340,6 +374,20 @@ const generateSpec = (config, embeddingData, pathData, cellSetLegendsData) => {
                 defined: {
                   signal: 'isValid(datum["x"]) && isFinite(+datum["x"]) && isValid(datum["y"]) && isFinite(+datum["y"])',
                 },
+              },
+            },
+          },
+          {
+            name: 'selection',
+            type: 'rect',
+            encode: {
+              update: {
+                fillOpacity: { value: 0.1 },
+                fill: { value: 'grey' },
+                x: { signal: 'lassoStart && lassoStart[0]' },
+                x2: { signal: 'lassoStart && lassoEnd[0]' },
+                y: { signal: 'lassoStart && lassoStart[1]' },
+                y2: { signal: 'lassoStart && lassoEnd[1]' },
               },
             },
           },
