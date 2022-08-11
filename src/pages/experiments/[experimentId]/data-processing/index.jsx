@@ -50,9 +50,12 @@ import SingleComponentMultipleDataContainer from 'components/SingleComponentMult
 import StatusIndicator from 'components/data-processing/StatusIndicator';
 import _ from 'lodash';
 import { getBackendStatus } from 'redux/selectors';
+
 import { loadCellSets } from 'redux/actions/cellSets';
 import { loadSamples } from 'redux/actions/samples';
+import { cloneExperiment, loadExperiments } from 'redux/actions/experiments';
 import { runQC } from 'redux/actions/pipeline';
+
 import { useAppRouter } from 'utils/AppRouteProvider';
 import { modules } from 'utils/constants';
 
@@ -604,6 +607,14 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
     );
   };
 
+  const cloneExperimentAndSelectIt = async () => {
+    dispatch(discardChangedQCFilters());
+    const newExperimentId = await dispatch(cloneExperiment(experimentId, `Clone of ${experimentData.experimentName}`));
+    await dispatch(loadExperiments());
+
+    navigateTo(modules.DATA_MANAGEMENT, { experimentId: newExperimentId }, true);
+  };
+
   const qcRerunDisabledAlert = () => (
     <Alert
       message={(
@@ -613,8 +624,9 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
           <br />
           <br />
           If you want to keep your custom cell set annotation,
-          you can clone this project and run the pipeline in the new project only.
-          Your old project will still be available in data exploration.
+          you can clone this project and run from scratch in the new project only.
+          Your current project will still be available in data exploration.
+          <Button onClick={cloneExperimentAndSelectIt}>Click here to clone your project</Button>
         </div>
       )}
       type='warning'
@@ -633,11 +645,11 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
         title='Data Processing'
       />
       <Space direction='vertical' style={{ width: '100%', padding: '0 10px' }}>
-
         {runQCModalVisible && (
           <Modal
             title='Run data processing with the changed settings'
             visible
+            okButtonProps={{ disabled: qcRerunDisabled }}
             onCancel={() => setRunQCModalVisible(false)}
             onOk={() => onPipelineRun()}
             okText='Start'

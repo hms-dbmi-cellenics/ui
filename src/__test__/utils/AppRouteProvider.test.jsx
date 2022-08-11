@@ -56,7 +56,7 @@ const expectedPath = PATHS[testModule].replace('[experimentId]', experimentId);
 
 const TestComponent = (props) => {
   // eslint-disable-next-line react/prop-types
-  const { module, params, refreshPage = false } = props;
+  const { module, params } = props;
   const { navigateTo } = useAppRouter();
 
   const testParams = {
@@ -67,7 +67,7 @@ const TestComponent = (props) => {
 
   return (
     <div>
-      <Button onClick={() => navigateTo(module, testParams, refreshPage)}>
+      <Button onClick={() => navigateTo(module, testParams)}>
         {buttonText}
       </Button>
     </div>
