@@ -11,6 +11,7 @@ import {
 import { loadEmbedding } from 'redux/actions/embedding';
 import { loadCellSets } from 'redux/actions/cellSets';
 import { loadProcessingSettings } from 'redux/actions/experimentSettings';
+import 'vega-webgl-renderer';
 
 import { getCellSets } from 'redux/selectors';
 import PlatformError from 'components/PlatformError';
@@ -116,7 +117,7 @@ const TrajectoryAnalysisPlot = (props) => {
 
     return (
       <center>
-        <Vega spec={plotSpec} renderer='canvas' actions={actions} />
+        <Vega spec={plotSpec} renderer='webgl' actions={actions} />
       </center>
     );
   };
