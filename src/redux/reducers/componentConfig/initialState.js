@@ -28,7 +28,7 @@ const embeddingCategoricalInitialConfig = {
     xAxisText: 'Umap 1',
     yAxisText: 'Umap 2',
     defaultValues: ['x', 'y'],
-    offset: 10,
+    offset: 0,
   },
   title: {
     ...titleBaseState,

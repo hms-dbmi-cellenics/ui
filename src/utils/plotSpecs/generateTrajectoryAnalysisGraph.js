@@ -14,7 +14,7 @@ const generateSpec = (config, embeddingData, pathData, cellSetLegendsData) => {
         titleColor: config?.colour.masterColour,
         type: 'symbol',
         orient: config?.legend.position,
-        offset: 40,
+        offset: 20,
         symbolType: 'square',
         symbolSize: 200,
         encode: {
@@ -41,19 +41,126 @@ const generateSpec = (config, embeddingData, pathData, cellSetLegendsData) => {
     description: 'Trajectory analysis plot',
     width: config?.dimensions.width,
     height: config?.dimensions.height,
-    autosize: { type: 'fit', resize: true },
+    autosize: 'none',
     background: config?.colour.toggleInvert,
-    padding: 5,
+    padding: {
+      top: 80,
+      left: 40,
+      bottom: 40,
+      right: 40,
+    },
     signals: [
       {
         name: 'clicked',
+        on: [{ events: '@pathNodes:click', update: 'datum', force: true }],
+      },
+      {
+        name: 'hover',
+        on: [
+          { events: '*:mouseover', encode: 'hover' },
+          { events: '*:mouseout', encode: 'leave' },
+          { events: '*:mousedown', encode: 'select' },
+          { events: '*:mouseup', encode: 'release' },
+        ],
+      },
+      { name: 'xrange', update: '[0, width]' },
+      { name: 'yrange', update: '[height, 0]' },
+      {
+        name: 'down',
+        value: null,
+        on: [
+          { events: 'mousedown', update: 'xy()' },
+        ],
+      },
+      {
+        name: 'xcur',
+        value: null,
         on: [
           {
-            events: '@pathNodes:click',
-            update: 'datum',
-            force: true,
+            events: 'mousedown',
+            update: 'slice(xdom)',
           },
         ],
+      },
+      {
+        name: 'ycur',
+        value: null,
+        on: [
+          {
+            events: 'mousedown',
+            update: 'slice(ydom)',
+          },
+        ],
+      },
+      {
+        name: 'delta',
+        value: [0, 0],
+        on: [
+          {
+            events: [
+              {
+                source: 'window',
+                type: 'mousemove',
+                consume: true,
+                between: [{ type: 'mousedown' }, { source: 'window', type: 'mouseup' }],
+              },
+            ],
+            update: 'down ? [down[0]-x(), y()-down[1]] : [0,0]',
+          },
+        ],
+      },
+      {
+        name: 'anchor',
+        value: [0, 0],
+        on: [
+          {
+            events: 'wheel',
+            update: "[invert('xscale', x()), invert('yscale', y())]",
+          },
+        ],
+      },
+      {
+        name: 'zoom',
+        value: 1,
+        on: [
+          {
+            events: 'wheel!',
+            force: true,
+            update: 'pow(1.001, event.deltaY * pow(16, event.deltaMode))',
+          },
+        ],
+      },
+      {
+        name: 'xdom',
+        update: 'slice(xext)',
+        on: [
+          {
+            events: { signal: 'delta' },
+            update: '[xcur[0] + span(xcur) * delta[0] / width, xcur[1] + span(xcur) * delta[0] / width]',
+          },
+          {
+            events: { signal: 'zoom' },
+            update: '[anchor[0] + (xdom[0] - anchor[0]) * zoom, anchor[0] + (xdom[1] - anchor[0]) * zoom]',
+          },
+        ],
+      },
+      {
+        name: 'ydom',
+        update: 'slice(yext)',
+        on: [
+          {
+            events: { signal: 'delta' },
+            update: '[ycur[0] + span(ycur) * delta[1] / height, ycur[1] + span(ycur) * delta[1] / height]',
+          },
+          {
+            events: { signal: 'zoom' },
+            update: '[anchor[1] + (ydom[0] - anchor[1]) * zoom, anchor[1] + (ydom[1] - anchor[1]) * zoom]',
+          },
+        ],
+      },
+      {
+        name: 'size',
+        update: 'clamp(100 / span(xdom), 10, 100)',
       },
     ],
     data: [
@@ -67,6 +174,10 @@ const generateSpec = (config, embeddingData, pathData, cellSetLegendsData) => {
           type: 'json',
           copy: true,
         },
+        transform: [
+          { type: 'extent', field: 'x', signal: 'xext' },
+          { type: 'extent', field: 'y', signal: 'yext' },
+        ],
       },
       {
         name: 'labels',
@@ -91,21 +202,18 @@ const generateSpec = (config, embeddingData, pathData, cellSetLegendsData) => {
     ],
     scales: [
       {
-        name: 'x',
+        name: 'xscale',
         type: 'linear',
-        round: true,
-        nice: true,
-        domain: { data: 'embeddingData', field: 'x' },
-        range: 'width',
+        zero: false,
+        domain: { signal: 'xdom' },
+        range: { signal: 'xrange' },
       },
       {
-        name: 'y',
+        name: 'yscale',
         type: 'linear',
-        round: true,
-        nice: true,
-        zero: true,
-        domain: { data: 'embeddingData', field: 'y' },
-        range: 'height',
+        zero: false,
+        domain: { signal: 'ydom' },
+        range: { signal: 'yrange' },
       },
       {
         name: 'cellSetLabelColors',
@@ -127,7 +235,7 @@ const generateSpec = (config, embeddingData, pathData, cellSetLegendsData) => {
     ],
     axes: [
       {
-        scale: 'x',
+        scale: 'xscale',
         grid: true,
         domain: true,
         orient: 'bottom',
@@ -139,7 +247,7 @@ const generateSpec = (config, embeddingData, pathData, cellSetLegendsData) => {
         gridColor: config?.colour.masterColour,
         gridOpacity: (config?.axes.gridOpacity / 20),
         gridWidth: (config?.axes.gridWidth / 20),
-        offset: config?.axes.offset,
+        offset: 0,
         titleFontSize: config?.axes.titleFontSize,
         titleColor: config?.colour.masterColour,
         labelFontSize: config?.axes.labelFontSize,
@@ -148,7 +256,7 @@ const generateSpec = (config, embeddingData, pathData, cellSetLegendsData) => {
         labelAlign: config.axes.xAxisRotateLabels ? 'left' : 'center',
       },
       {
-        scale: 'y',
+        scale: 'yscale',
         grid: true,
         domain: true,
         orient: 'left',
@@ -157,7 +265,7 @@ const generateSpec = (config, embeddingData, pathData, cellSetLegendsData) => {
         gridOpacity: (config?.axes.gridOpacity / 20),
         gridWidth: (config?.axes.gridWidth / 20),
         tickColor: config?.colour.masterColour,
-        offset: config?.axes.offset,
+        offset: 0,
         title: config?.axes.yAxisText,
         titleFont: config?.fontStyle.font,
         labelFont: config?.fontStyle.font,
@@ -170,75 +278,86 @@ const generateSpec = (config, embeddingData, pathData, cellSetLegendsData) => {
     ],
     marks: [
       {
-        type: 'symbol',
-        from: { data: 'embeddingData' },
+        type: 'group',
         encode: {
-          enter: {
-            x: { scale: 'x', field: 'x' },
-            y: { scale: 'y', field: 'y' },
-            size: { value: config?.marker.size },
-            stroke: { scale: 'cellSetMarkColors', field: 'cellSetKey' },
-            fill: { scale: 'cellSetMarkColors', field: 'cellSetKey' },
-            shape: { value: config?.marker.shape },
-            fillOpacity: { value: config?.marker.opacity / 10 },
+          update: {
+            width: { signal: 'width ' },
+            height: { signal: 'height' },
+            clip: { value: true },
           },
         },
+        marks: [
+          {
+            type: 'symbol',
+            from: { data: 'embeddingData' },
+            encode: {
+              update: {
+                x: { scale: 'xscale', field: 'x' },
+                y: { scale: 'yscale', field: 'y' },
+                size: { signal: 'size' },
+                stroke: { scale: 'cellSetMarkColors', field: 'cellSetKey' },
+                fill: { scale: 'cellSetMarkColors', field: 'cellSetKey' },
+                shape: { value: config?.marker.shape },
+                fillOpacity: { value: config?.marker.opacity / 10 },
+              },
+            },
+          },
+          {
+            type: 'line',
+            from: { data: 'pathData' },
+            encode: {
+              update: {
+                x: { scale: 'xscale', field: 'x' },
+                y: { scale: 'yscale', field: 'y' },
+                size: { signal: 'size' },
+                stroke: { value: '#ccc' },
+                fillOpacity: { value: 0.2 },
+                defined: {
+                  signal: 'isValid(datum["x"]) && isFinite(+datum["x"]) && isValid(datum["y"]) && isFinite(+datum["y"])',
+                },
+              },
+            },
+          },
+          {
+            type: 'symbol',
+            name: 'pathNodes',
+            interactive: true,
+            from: {
+              data: 'pathData',
+            },
+            encode: {
+              update: {
+                x: { scale: 'xscale', field: 'x' },
+                y: { scale: 'yscale', field: 'y' },
+                size: { signal: 'size' },
+                stroke: { value: 'black' },
+                fill: [
+                  { test: 'datum.selected', value: 'red' },
+                  { value: 'white' },
+                ],
+                shape: { value: 'circle' },
+                fillOpacity: { value: 1 },
+                defined: {
+                  signal: 'isValid(datum["x"]) && isFinite(+datum["x"]) && isValid(datum["y"]) && isFinite(+datum["y"])',
+                },
+              },
+            },
+          },
+        ],
       },
       {
         type: 'text',
         from: { data: 'labels' },
         encode: {
-          enter: {
-            x: { scale: 'x', field: 'meanX' },
-            y: { scale: 'y', field: 'meanY' },
+          update: {
+            x: { scale: 'xscale', field: 'meanX' },
+            y: { scale: 'yscale', field: 'meanY' },
             text: { field: 'cellSetName' },
             fontSize: { value: config?.labels.size },
             strokeWidth: { value: 1.2 },
             fill: { value: config?.colour.masterColour },
             fillOpacity: { value: config?.labels.enabled },
             font: { value: config?.fontStyle.font },
-          },
-        },
-      },
-      {
-        type: 'line',
-        from: { data: 'pathData' },
-        encode: {
-
-          enter: {
-            x: { scale: 'x', field: 'x' },
-            y: { scale: 'y', field: 'y' },
-            size: { value: 25 },
-            stroke: { value: '#ccc' },
-            fillOpacity: { value: 0.2 },
-            defined: {
-              signal: 'isValid(datum["x"]) && isFinite(+datum["x"]) && isValid(datum["y"]) && isFinite(+datum["y"])',
-            },
-          },
-        },
-      },
-      {
-        type: 'symbol',
-        name: 'pathNodes',
-        interactive: true,
-        from: {
-          data: 'pathData',
-        },
-        encode: {
-          update: {
-            x: { scale: 'x', field: 'x' },
-            y: { scale: 'y', field: 'y' },
-            size: { value: 15 },
-            stroke: { value: 'black' },
-            fill: [
-              { test: 'datum.selected', value: 'red' },
-              { value: 'white' },
-            ],
-            shape: { value: 'circle' },
-            fillOpacity: { value: 1 },
-            defined: {
-              signal: 'isValid(datum["x"]) && isFinite(+datum["x"]) && isValid(datum["y"]) && isFinite(+datum["y"])',
-            },
           },
         },
       },
