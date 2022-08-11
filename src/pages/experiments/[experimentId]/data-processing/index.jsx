@@ -66,7 +66,11 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
   const pipelineStatus = useSelector(getBackendStatus(experimentId))?.status?.pipeline;
 
   const processingConfig = useSelector((state) => state.experimentSettings.processing);
-  const sampleKeys = useSelector((state) => state.experimentSettings.info.sampleIds);
+  const {
+    sampleIds: sampleKeys,
+    qcRerunDisabled,
+  } = useSelector((state) => state.experimentSettings.info);
+
   const samples = useSelector((state) => state.samples);
 
   const pipelineStatusKey = pipelineStatus?.status;
@@ -235,18 +239,18 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
       key: 'doubletScores',
       name: getUserFriendlyQCStepName('doubletScores'),
       description:
-  <span>
-    Droplets may contain more than one cell.
-    In such cases, it is not possible to distinguish which reads came from which cell.
-    Such “cells” cause problems in the downstream analysis as they appear as an intermediate type.
-    “Cells” with a high probability of being a doublet should be excluded.
-    The probability of being a doublet is calculated using ‘scDblFinder’.
-    For each sample, the default threshold tries to minimize both the deviation in the
-    expected number of doublets and the error of a trained classifier. For more details see
-    {' '}
-    <a href='https://bioconductor.org/packages/devel/bioc/vignettes/scDblFinder/inst/doc/scDblFinder.html#thresholding' rel='noreferrer' target='_blank'>scDblFinder thresholding</a>
-    .
-  </span>,
+        <span>
+          Droplets may contain more than one cell.
+          In such cases, it is not possible to distinguish which reads came from which cell.
+          Such “cells” cause problems in the downstream analysis as they appear as an intermediate type.
+          “Cells” with a high probability of being a doublet should be excluded.
+          The probability of being a doublet is calculated using ‘scDblFinder’.
+          For each sample, the default threshold tries to minimize both the deviation in the
+          expected number of doublets and the error of a trained classifier. For more details see
+          {' '}
+          <a href='https://bioconductor.org/packages/devel/bioc/vignettes/scDblFinder/inst/doc/scDblFinder.html#thresholding' rel='noreferrer' target='_blank'>scDblFinder thresholding</a>
+          .
+        </span>,
       multiSample: true,
       render: (key) => (
         <SingleComponentMultipleDataContainer
@@ -434,16 +438,16 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
                               ) : pipelineNotFinished
                                 && !pipelineRunning
                                 && !isStepComplete(key) ? (
-                                  <>
-                                    <Text
-                                      type='danger'
-                                      strong
-                                    >
-                                      <WarningOutlined />
-                                    </Text>
-                                    <span style={{ marginLeft: '0.25rem' }}>{text}</span>
-                                  </>
-                                ) : <></>}
+                                <>
+                                  <Text
+                                    type='danger'
+                                    strong
+                                  >
+                                    <WarningOutlined />
+                                  </Text>
+                                  <span style={{ marginLeft: '0.25rem' }}>{text}</span>
+                                </>
+                              ) : <></>}
                             </Option>
                           );
                         },
@@ -600,6 +604,27 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
     );
   };
 
+  const qcRerunDisabledAlert = () => (
+    <Alert
+      message={(
+        <div style={{ padding: '5px' }}>
+          Due to a recent update, if you click Start your analysis will re-run
+          from scratch and you will lose all your annotated clusters.
+          <br />
+          <br />
+          If you want to keep your custom cell set annotation,
+          you can clone this project and run the pipeline in the new project only.
+          Your old project will still be available in data exploration.
+        </div>
+      )}
+      type='warning'
+      showIcon={false}
+      style={{
+        paddingTop: '3px', paddingBottom: '3px', paddingLeft: '10px', paddingRight: '10px', marginBottom: '10px',
+      }}
+    />
+  );
+
   return (
     <>
       <Header
@@ -617,6 +642,7 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
             onOk={() => onPipelineRun()}
             okText='Start'
           >
+            {qcRerunDisabled && qcRerunDisabledAlert()}
             <p>
               This might take several minutes.
               Your navigation within Cellenics will be restricted during this time.
