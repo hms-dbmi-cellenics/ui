@@ -71,7 +71,7 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
   const processingConfig = useSelector((state) => state.experimentSettings.processing);
   const {
     sampleIds: sampleKeys,
-    qcRerunDisabled,
+    pipelineVersion,
   } = useSelector((state) => state.experimentSettings.info);
 
   const samples = useSelector((state) => state.samples);
@@ -637,6 +637,8 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
     />
   );
 
+  const qcRerunDisabled = pipelineVersion < 1;
+
   return (
     <>
       <Header
@@ -655,6 +657,7 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
             okText='Start'
           >
             {qcRerunDisabled && qcRerunDisabledAlert()}
+            {/* {qcRerunDisabledAlert()} */}
             <p>
               This might take several minutes.
               Your navigation within Cellenics will be restricted during this time.

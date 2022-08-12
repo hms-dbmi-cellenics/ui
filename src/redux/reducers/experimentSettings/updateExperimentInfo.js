@@ -8,13 +8,13 @@ const updateExperimentInfo = produce((draft, action) => {
     experimentId,
     experimentName,
     sampleIds,
-    qcRerunDisabled,
+    pipelineVersion,
   } = action.payload;
 
   draft.info.experimentId = experimentId;
   draft.info.experimentName = experimentName;
   draft.info.sampleIds = sampleIds;
-  draft.info.qcRerunDisabled = qcRerunDisabled;
+  draft.info.pipelineVersion = pipelineVersion;
 
   // Experiment id was updated so processing config requires reloading
   draft.processing = { meta: metaInitialState };
