@@ -6,7 +6,7 @@ const generateSpec = (config, plotData) => {
   let plotWidth = Math.round(Math.min(100, 0.9 * (config.dimensions.width / numGroups)));
   plotWidth += (plotWidth % 2);
 
-  const expressionRange = config.axesRanges.yAxisAuto
+  const expressionDomain = config.axesRanges.yAxisAuto
     ? { data: 'cells', field: 'y' }
     : [config.axesRanges.yMin, config.axesRanges.yMax];
 
@@ -110,7 +110,7 @@ const generateSpec = (config, plotData) => {
         name: 'yscale',
         type: 'linear',
         range: 'height',
-        domain: expressionRange,
+        domain: expressionDomain,
         nice: true,
       },
       {

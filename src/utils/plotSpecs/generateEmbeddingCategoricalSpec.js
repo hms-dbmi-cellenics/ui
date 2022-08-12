@@ -3,6 +3,14 @@ import _ from 'lodash';
 import { getAllCells, getSampleCells } from 'utils/cellSets';
 
 const generateSpec = (config, plotData, cellSetLegendsData) => {
+  const Umap1Domain = config.axesRanges.xAxisAuto
+    ? { data: 'values', field: 'x' }
+    : [config.axesRanges.xMin, config.axesRanges.xMax];
+
+  const Umap2Domain = config.axesRanges.yAxisAuto
+    ? { data: 'values', field: 'y' }
+    : [config.axesRanges.yMin, config.axesRanges.yMax];
+
   let legend = [];
 
   if (config?.legend.enabled) {
@@ -74,18 +82,17 @@ const generateSpec = (config, plotData, cellSetLegendsData) => {
       {
         name: 'x',
         type: 'linear',
-        round: true,
         nice: true,
-        domain: { data: 'values', field: 'x' },
+        zero: false,
+        domain: Umap1Domain,
         range: 'width',
       },
       {
         name: 'y',
         type: 'linear',
-        round: true,
         nice: true,
-        zero: true,
-        domain: { data: 'values', field: 'y' },
+        zero: false,
+        domain: Umap2Domain,
         range: 'height',
       },
       {
@@ -152,6 +159,7 @@ const generateSpec = (config, plotData, cellSetLegendsData) => {
     marks: [
       {
         type: 'symbol',
+        clip: true,
         from: { data: 'values' },
         encode: {
           enter: {
@@ -167,6 +175,7 @@ const generateSpec = (config, plotData, cellSetLegendsData) => {
       },
       {
         type: 'text',
+        clip: true,
         from: { data: 'labels' },
         encode: {
           enter: {

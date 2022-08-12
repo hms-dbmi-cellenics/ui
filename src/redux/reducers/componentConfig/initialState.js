@@ -30,6 +30,14 @@ const embeddingCategoricalInitialConfig = {
     defaultValues: ['x', 'y'],
     offset: 10,
   },
+  axesRanges: {
+    xAxisAuto: true,
+    yAxisAuto: true,
+    xMin: -50,
+    xMax: 50,
+    yMin: -50,
+    yMax: 50,
+  },
   title: {
     ...titleBaseState,
     fontSize: 20,
