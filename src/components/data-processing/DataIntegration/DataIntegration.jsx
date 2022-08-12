@@ -155,6 +155,10 @@ const DataIntegration = (props) => {
     ],
   };
 
+  const axesControls = selectedPlot === 'embedding'
+    ? 'axesWithRanges'
+    : 'axes';
+
   const plotStylingControlsConfig = [
     {
       panelTitle: 'Main schema',
@@ -172,7 +176,7 @@ const DataIntegration = (props) => {
     },
     {
       panelTitle: 'Axes and margins',
-      controls: ['axes'],
+      controls: [axesControls],
     },
     ...plotSpecificStylingControl[selectedPlot],
   ];
