@@ -33,25 +33,6 @@ const allowedPlotActions = {
   editor: false,
 };
 
-const plotStylingControlsConfig = [
-  {
-    panelTitle: 'Plot Dimensions',
-    controls: ['dimensions'],
-  },
-  {
-    panelTitle: 'Axes',
-    controls: ['axes'],
-  },
-  {
-    panelTitle: 'Title',
-    controls: ['title'],
-  },
-  {
-    panelTitle: 'Font',
-    controls: ['font'],
-  },
-];
-
 const Classifier = (props) => {
   const {
     experimentId, sampleId, sampleIds, onConfigChange, stepDisabled,
@@ -73,6 +54,34 @@ const Classifier = (props) => {
     debounceSave(plots[selectedPlot].plotUuid);
   };
 
+  const axesControls = selectedPlot === 'emptyDropsPlot'
+    ? 'axesWithRanges'
+    : 'axes';
+
+  const plotStylingControlsConfig = [
+    {
+      panelTitle: 'Plot Dimensions',
+      controls: ['dimensions'],
+    },
+    {
+      panelTitle: 'Axes',
+      controls: [{
+        name: axesControls,
+        props: {
+          showXRange: false,
+        },
+      }],
+    },
+    {
+      panelTitle: 'Title',
+      controls: ['title'],
+    },
+    {
+      panelTitle: 'Font',
+      controls: ['font'],
+    },
+  ];
+
   const plots = {
     kneePlot: {
       title: 'Knee Plot',
@@ -87,10 +96,10 @@ const Classifier = (props) => {
         />
       ),
     },
-    histogram: {
-      title: 'Histogram',
+    emptyDropsPlot: {
+      title: 'Empty Drops Plot',
       plotUuid: generateDataProcessingPlotUuid(sampleId, filterName, 0),
-      plotType: 'cellSizeDistributionHistogram',
+      plotType: 'classifierEmptyDropsPlot',
       plot: (config, plotData, actions) => (
         <ClassifierEmptyDropsPlot
           config={config}

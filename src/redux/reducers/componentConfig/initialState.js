@@ -627,6 +627,11 @@ const classifierEmptyDropsPlot = {
     yAxisText: 'FDR (emptyDrops)',
     gridOpacity: 10,
   },
+  axesRanges: {
+    yAxisAuto: true,
+    yMin: 0,
+    yMax: 1,
+  },
   title: {
     ...titleBaseState,
     fontSize: 20,
