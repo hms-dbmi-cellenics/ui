@@ -110,7 +110,7 @@ const ContinuousEmbeddingPage = ({ experimentId }) => {
     },
     {
       panelTitle: 'Axes and margins',
-      controls: ['axes'],
+      controls: ['axesWithRanges'],
     },
     {
       panelTitle: 'Colours',

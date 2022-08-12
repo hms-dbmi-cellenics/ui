@@ -3,6 +3,14 @@
 import { getAllCells, getSampleCells } from 'utils/cellSets';
 
 const generateSpec = (config, plotData) => {
+  const Umap1Domain = config.axesRanges.xAxisAuto
+    ? { data: 'plotData', field: 'x' }
+    : [config.axesRanges.xMin, config.axesRanges.xMax];
+
+  const Umap2Domain = config.axesRanges.yAxisAuto
+    ? { data: 'plotData', field: 'y' }
+    : [config.axesRanges.yMin, config.axesRanges.yMax];
+
   let legend = [];
 
   if (config.legend.enabled) {
@@ -44,17 +52,17 @@ const generateSpec = (config, plotData) => {
       {
         name: 'x',
         type: 'linear',
-        round: true,
         nice: true,
-        domain: { data: 'plotData', field: 'x' },
+        zero: false,
+        domain: Umap1Domain,
         range: 'width',
       },
       {
         name: 'y',
         type: 'linear',
-        round: true,
         nice: true,
-        domain: { data: 'plotData', field: 'y' },
+        zero: false,
+        domain: Umap2Domain,
         range: 'height',
       },
       {
@@ -115,6 +123,7 @@ const generateSpec = (config, plotData) => {
     marks: [
       {
         type: 'symbol',
+        clip: true,
         from: { data: 'plotData' },
         encode: {
           enter: {
