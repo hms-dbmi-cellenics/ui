@@ -222,9 +222,10 @@ const violinConfig = {
     offset: 10,
     xAxisRotateLabels: true,
   },
-  axesBounds: {
+  axesRanges: {
     yAxisAuto: true,
-    yAxisBounds: [0, 50],
+    yMin: 0,
+    yMax: 50,
   },
   title: {
     ...titleBaseState,

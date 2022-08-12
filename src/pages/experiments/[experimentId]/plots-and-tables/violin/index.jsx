@@ -57,7 +57,12 @@ const ViolinIndex = ({ experimentId }) => {
     },
     {
       panelTitle: 'Axes and margins',
-      controls: ['axes'],
+      controls: [{
+        name: 'axesWithRanges',
+        props: {
+          showXRange: false,
+        },
+      }],
     },
     {
       panelTitle: 'Markers',
