@@ -31,7 +31,8 @@ const TrajectoryAnalysisPlot = (props) => {
     plotUuid,
     actions,
     onUpdate,
-    onSelectNode,
+    onClickNode,
+    onSelectNodes,
     resetPlot,
   } = props;
   const dispatch = useDispatch();
@@ -127,7 +128,22 @@ const TrajectoryAnalysisPlot = (props) => {
   const plotListener = {
     chooseNode: (eventName, payload) => {
       const { node_id } = payload;
-      onSelectNode(node_id);
+      onClickNode(node_id);
+    },
+    lassoSelection: (eventName, payload) => {
+      const [xStart, yStart, xEnd, yEnd] = payload;
+
+      const selectedNodes = Object.values(plotData.nodes).map(
+        (node) => {
+          const inSelection = xStart <= node.x && node.x <= xEnd
+            && yStart <= node.y && node.y <= yEnd;
+
+          if (inSelection) return node.node_id;
+          return false;
+        },
+      ).filter((inSelection) => inSelection);
+
+      onSelectNodes(selectedNodes);
     },
   };
 
@@ -186,13 +202,15 @@ TrajectoryAnalysisPlot.propTypes = {
     PropTypes.object,
   ]),
   onUpdate: PropTypes.func.isRequired,
-  onSelectNode: PropTypes.func,
+  onClickNode: PropTypes.func,
+  onSelectNodes: PropTypes.func,
   resetPlot: PropTypes.bool,
 };
 
 TrajectoryAnalysisPlot.defaultProps = {
   actions: true,
-  onSelectNode: () => {},
+  onClickNode: () => {},
+  onSelectNodes: () => {},
   resetPlot: false,
 };
 

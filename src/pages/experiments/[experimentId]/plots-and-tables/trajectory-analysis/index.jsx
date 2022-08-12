@@ -186,11 +186,16 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
     </>
   );
 
-  const handleNodeSelection = (selectedNodeId) => {
+  const clickNode = (selectedNodeId) => {
     const updatedSelection = selectedNodes.includes(selectedNodeId)
       ? selectedNodes.filter((nodeId) => selectedNodeId !== nodeId)
       : [...selectedNodes, selectedNodeId];
 
+    setSelectedNodes(updatedSelection);
+  };
+
+  const addNodes = (nodesInSelection) => {
+    const updatedSelection = [...new Set([...selectedNodes, ...nodesInSelection])];
     setSelectedNodes(updatedSelection);
   };
 
@@ -211,7 +216,8 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
           plotUuid={plotUuid}
           resetPlot={resetToggle}
           onUpdate={updatePlotWithChanges}
-          onSelectNode={handleNodeSelection}
+          onClickNode={clickNode}
+          onSelectNodes={addNodes}
         />
       </PlotContainer>
     </>

@@ -307,11 +307,11 @@ const insertTrajectorySpec = (
     },
     {
       name: 'lassoSelection',
-      value: [[0, 0], [0, 0]],
+      value: null,
       on: [
         {
-          events: { signal: 'lassoEnd' },
-          update: '[[lassoStart[0], lassoStart[1]], [lassoEnd[0], lassoEnd[1]]]',
+          events: 'mouseup[event.shiftKey]',
+          update: "[invert('xscale', lassoStart[0]), invert('yscale', lassoStart[1]), invert('xscale', lassoEnd[0]), invert('yscale', lassoEnd[1])]",
         },
       ],
     },
@@ -409,7 +409,7 @@ const insertTrajectorySpec = (
         {
           events: 'wheel!',
           force: true,
-          update: 'pow(1.001, event.deltaY * pow(16, event.deltaMode))',
+          update: 'pow(1.001, event.deltaY * pow(2, event.deltaMode))',
         },
       ],
     },
