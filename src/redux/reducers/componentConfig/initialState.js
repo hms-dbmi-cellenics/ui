@@ -289,7 +289,6 @@ const trajectoryAnalysisInitialConfig = {
     xAxisText: 'Umap 1',
     yAxisText: 'Umap 2',
     defaultValues: ['x', 'y'],
-    offset: 10,
   },
   title: {
     ...titleBaseState,
