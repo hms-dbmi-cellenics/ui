@@ -82,9 +82,8 @@ const generateSpec = (config, embeddingData, pathData, cellSetLegendsData) => {
               {
                 source: 'window',
                 type: 'mousemove',
-                consume: true,
                 between: [
-                  { type: 'mousedown' },
+                  { type: 'mousedown', filter: 'event.shiftKey' },
                   { source: 'window', type: 'mouseup' },
                 ],
               },
@@ -133,8 +132,10 @@ const generateSpec = (config, embeddingData, pathData, cellSetLegendsData) => {
               {
                 source: 'window',
                 type: 'mousemove',
-                consume: true,
-                between: [{ type: 'mousedown' }, { source: 'window', type: 'mouseup' }],
+                between: [
+                  { type: 'mousedown', filter: '!event.shiftKey' },
+                  { source: 'window', type: 'mouseup' },
+                ],
               },
             ],
             update: 'down ? [down[0]-x(), y()-down[1]] : [0,0]',
@@ -373,7 +374,7 @@ const generateSpec = (config, embeddingData, pathData, cellSetLegendsData) => {
             type: 'rect',
             encode: {
               update: {
-                fillOpacity: { value: 0.25 },
+                fillOpacity: { value: 0.20 },
                 fill: { value: 'grey' },
                 x: { signal: 'lassoStart && lassoStart[0]' },
                 x2: { signal: 'lassoStart && lassoEnd[0]' },
