@@ -17,22 +17,20 @@ jest.mock('utils/getTimeoutForWorkerTask', () => ({
 
 jest.mock('utils/work/fetchWork', () => ({
   fetchWork: jest.fn(() => new Promise((resolve) => resolve({
-    data: {
-      A: {
-        min: 0,
-        max: 1.6,
-        expression: [0, 0.4, 0.5, 1.6],
-      },
-      B: {
-        min: 0,
-        max: 1.6,
-        expression: [0, 0.4, 0.5, 1.6],
-      },
-      C: {
-        min: 0,
-        max: 1.6,
-        expression: [0, 0.4, 0.5, 1.6],
-      },
+    A: {
+      min: 0,
+      max: 1.6,
+      expression: [0, 0.4, 0.5, 1.6],
+    },
+    B: {
+      min: 0,
+      max: 1.6,
+      expression: [0, 0.4, 0.5, 1.6],
+    },
+    C: {
+      min: 0,
+      max: 1.6,
+      expression: [0, 0.4, 0.5, 1.6],
     },
   }))),
 }));

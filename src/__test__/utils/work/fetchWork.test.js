@@ -1,5 +1,5 @@
 /* eslint-disable global-require */
-import { fetchWork } from 'utils/work/fetchWork';
+import { fetchWork, generateETag } from 'utils/work/fetchWork';
 import { Environment } from 'utils/deploymentInfo';
 
 const {
@@ -12,15 +12,23 @@ const {
   mockDispatchWorkRequest,
   mockSeekFromS3,
   mockReduxState,
+  mockQcPipelineStartDate,
 } = require('__test__/utils/work/fetchWork.mock');
 
-jest.mock('utils/cache', () => require('__test__/utils/work/fetchWork.mock').mockCacheModule);
-jest.mock('utils/work/seekWorkResponse', () => require('__test__/utils/work/fetchWork.mock').mockSeekWorkResponseModule);
+jest.mock(
+  'utils/cache',
+  () => require('__test__/utils/work/fetchWork.mock').mockCacheModule,
+);
+jest.mock(
+  'utils/work/seekWorkResponse',
+  () => require('__test__/utils/work/fetchWork.mock').mockSeekWorkResponseModule,
+);
 
 const experimentId = '1234';
 const NON_GENE_EXPRESSION_ETAG = '013c3026bb7156d222ccd18919745195'; // pragma: allowlist secret
 const GENE_EXPRESSION_ETAG = '34c05c9d07fd24ce0c22d2bec7fd7437'; // pragma: allowlist secret
 const timeout = 10;
+const mockExtras = undefined;
 
 const nonGeneExpressionWorkRequest = {
   name: 'ListGenes',
@@ -49,7 +57,7 @@ describe('fetchWork', () => {
       .mockImplementationOnce(() => null)
       .mockImplementation(() => ({ D: mockGeneExpressionData.D }));
 
-    const { data: res, ETag } = await fetchWork(
+    const res = await fetchWork(
       experimentId,
       geneExpressionWorkRequest,
       mockReduxState(experimentId),
@@ -74,18 +82,20 @@ describe('fetchWork', () => {
 
     expect(mockCacheGet).toHaveBeenCalledTimes(4);
     expect(mockCacheSet).toHaveBeenCalledTimes(1);
-    expect(mockCacheSet).toHaveBeenCalledWith(mockCacheKeyMappings.D, expectedResponse.D);
+    expect(mockCacheSet).toHaveBeenCalledWith(
+      mockCacheKeyMappings.D,
+      expectedResponse.D,
+    );
     expect(res).toEqual(expectedResponse);
-    expect(ETag).toEqual(GENE_EXPRESSION_ETAG);
     expect(mockSeekFromS3).toHaveBeenCalledTimes(2);
   });
 
   it('runs correctly for non gene expression work request', async () => {
-    const { data: res, ETag } = await fetchWork(
+    const res = await fetchWork(
       experimentId,
       nonGeneExpressionWorkRequest,
       mockReduxState(experimentId),
-      { timeout: 10 },
+      { timeout },
     );
 
     expect(mockDispatchWorkRequest).toHaveBeenCalledWith(
@@ -97,21 +107,27 @@ describe('fetchWork', () => {
     );
     expect(mockCacheGet).toHaveBeenCalledTimes(1);
     expect(mockCacheSet).toHaveBeenCalledTimes(1);
-    expect(mockCacheSet).toHaveBeenCalledWith(NON_GENE_EXPRESSION_ETAG, mockGenesListData);
+    expect(mockCacheSet).toHaveBeenCalledWith(
+      NON_GENE_EXPRESSION_ETAG,
+      mockGenesListData,
+    );
     expect(mockSeekFromS3).toHaveBeenCalledTimes(2);
     expect(res).toEqual(mockGenesListData);
-    expect(ETag).toEqual(NON_GENE_EXPRESSION_ETAG);
   });
 
   it('Throws an error if the dispatched work request throws an error', async () => {
-    mockDispatchWorkRequest.mockImplementationOnce(() => { throw new Error('Worker timeout'); });
+    mockDispatchWorkRequest.mockImplementationOnce(() => {
+      throw new Error('Worker timeout');
+    });
 
-    await expect(fetchWork(
-      experimentId,
-      nonGeneExpressionWorkRequest,
-      mockReduxState(experimentId),
-      { timeout: 10 },
-    )).rejects.toThrow();
+    await expect(
+      fetchWork(
+        experimentId,
+        nonGeneExpressionWorkRequest,
+        mockReduxState(experimentId),
+        { timeout: 10 },
+      ),
+    ).rejects.toThrow();
 
     expect(mockCacheGet).toHaveBeenCalledTimes(1);
     expect(mockCacheSet).not.toHaveBeenCalled();
@@ -192,5 +208,65 @@ describe('fetchWork', () => {
       NON_GENE_EXPRESSION_ETAG,
       expect.anything(),
     );
+  });
+});
+
+describe('generateEtag', () => {
+  beforeEach(() => {
+    jest.resetAllMocks();
+
+    global.Math.random = jest.fn(() => 1);
+  });
+
+  it('Generates the correct ETag', async () => {
+    const ETag = generateETag(
+      experimentId,
+      nonGeneExpressionWorkRequest,
+      mockExtras,
+      mockQcPipelineStartDate,
+      Environment.PRODUCTION,
+    );
+
+    expect(ETag).toEqual(NON_GENE_EXPRESSION_ETAG);
+  });
+
+  it('Generates the correct geneExpression ETag', async () => {
+    const ETag = generateETag(
+      experimentId,
+      { name: 'GeneExpression', genes: ['D'] },
+      mockExtras,
+      mockQcPipelineStartDate,
+      Environment.PRODUCTION,
+    );
+
+    expect(ETag).toEqual(GENE_EXPRESSION_ETAG);
+  });
+
+  it('Generates unique key for dev environment', async () => {
+    Storage.prototype.getItem = jest.fn(() => 'true');
+
+    generateETag(
+      experimentId,
+      nonGeneExpressionWorkRequest,
+      mockExtras,
+      mockQcPipelineStartDate,
+      Environment.DEVELOPMENT,
+    );
+
+    expect(global.Math.random).toHaveBeenCalledTimes(1);
+  });
+
+  it('Does not generate a unique key for GetEmbedding in dev environment', async () => {
+    Storage.prototype.getItem = jest.fn(() => 'true');
+
+    generateETag(
+      experimentId,
+      { name: 'GetEmbedding' },
+      mockExtras,
+      mockQcPipelineStartDate,
+      Environment.DEVELOPMENT,
+    );
+
+    expect(global.Math.random).not.toHaveBeenCalled();
   });
 });

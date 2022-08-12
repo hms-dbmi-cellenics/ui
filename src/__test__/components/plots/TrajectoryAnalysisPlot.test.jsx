@@ -56,22 +56,22 @@ const defaultProps = {
   onUpdate: jest.fn(),
 };
 
-const categoricalEmbeddingPlotFactory = createTestComponentFactory(
+const trajectoryAnalysisPlotFactory = createTestComponentFactory(
   TrajectoryAnalysisPlot, defaultProps,
 );
 
-const renderCategoricalEmbeddingPlot = async (store, props) => {
+const renderTrajectoryAnalysisPlot = async (store, props) => {
   await act(async () => {
     render(
       <Provider store={store}>
-        {categoricalEmbeddingPlotFactory(props)}
+        {trajectoryAnalysisPlotFactory(props)}
       </Provider>,
     );
   });
 };
 
 let storeState = null;
-describe('Categorical embedding plot', () => {
+describe('Trajectory analysis plot', () => {
   beforeEach(async () => {
     jest.clearAllMocks();
 
@@ -88,7 +88,7 @@ describe('Categorical embedding plot', () => {
   });
 
   it('Renders correctly with data', async () => {
-    await renderCategoricalEmbeddingPlot(storeState);
+    await renderTrajectoryAnalysisPlot(storeState);
 
     await waitFor(async () => {
       await expect(screen.getByRole('graphics-document', { name: 'Trajectory analysis plot' })).toBeInTheDocument();
@@ -118,7 +118,7 @@ describe('Categorical embedding plot', () => {
 
     fetchMock.mockIf(/.*/, mockAPI(cellSetErrorResponse));
 
-    await renderCategoricalEmbeddingPlot(storeState);
+    await renderTrajectoryAnalysisPlot(storeState);
 
     expect(screen.getByText(/We're getting your data/i)).toBeInTheDocument();
     await waitFor(async () => {
@@ -134,7 +134,7 @@ describe('Categorical embedding plot', () => {
 
     fetchMock.mockIf(/.*/, mockAPI(cellSetErrorResponse));
 
-    await renderCategoricalEmbeddingPlot(storeState);
+    await renderTrajectoryAnalysisPlot(storeState);
 
     expect(screen.getByText(/We're sorry, we couldn't load this/i)).toBeInTheDocument();
     await waitFor(async () => {
@@ -148,7 +148,7 @@ describe('Categorical embedding plot', () => {
       .mockImplementationOnce(() => null)
       .mockImplementationOnce(() => delayedResponse({ body: 'Not found', status: 404 }, 4000));
 
-    await renderCategoricalEmbeddingPlot(storeState);
+    await renderTrajectoryAnalysisPlot(storeState);
 
     expect(screen.getByText(/We're getting your data/i)).toBeInTheDocument();
     await waitFor(async () => {
@@ -162,7 +162,7 @@ describe('Categorical embedding plot', () => {
       .mockImplementationOnce(() => null)
       .mockImplementationOnce(() => Promise.reject(new WorkResponseError('some random error')));
 
-    await renderCategoricalEmbeddingPlot(storeState);
+    await renderTrajectoryAnalysisPlot(storeState);
 
     expect(screen.getByText(/We had an error on our side while we were completing your request/i)).toBeInTheDocument();
     await waitFor(async () => {

@@ -68,7 +68,7 @@ describe('loadGeneExpression action', () => {
 
     fetchWork.mockImplementationOnce(() => (
       // No need to mock the result accurately.
-      new Promise((resolve) => resolve({ data: {} }))));
+      new Promise((resolve) => resolve({}))));
 
     await store.dispatch(loadGeneExpression(experimentId, loadingGenes, componentUuid));
 
@@ -127,7 +127,7 @@ describe('loadGeneExpression action', () => {
       },
     };
 
-    fetchWork.mockImplementationOnce(() => new Promise((resolve) => resolve({ data: mockResult })));
+    fetchWork.mockImplementationOnce(() => new Promise((resolve) => resolve(mockResult)));
 
     await store.dispatch(
       loadGeneExpression(experimentId, loadingGenes, componentUuid, true),

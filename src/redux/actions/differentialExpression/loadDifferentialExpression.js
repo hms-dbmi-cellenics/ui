@@ -59,7 +59,7 @@ const loadDifferentialExpression = (
   const timeout = getTimeoutForWorkerTask(getState(), 'DifferentialExpression');
 
   try {
-    const { data } = await fetchWork(
+    const data = await fetchWork(
       experimentId, body, getState, { timeout, extras },
     );
     let { total } = data;

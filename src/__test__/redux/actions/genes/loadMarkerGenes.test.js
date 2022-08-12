@@ -91,7 +91,7 @@ describe('loadMarkerGenes action', () => {
 
     const mockResult = { order, data };
 
-    fetchWork.mockImplementationOnce(() => new Promise((resolve) => resolve({ data: mockResult })));
+    fetchWork.mockImplementationOnce(() => new Promise((resolve) => resolve(mockResult)));
 
     await store.dispatch(loadMarkerGenes(experimentId, 10, 'interactiveHeatmap'));
 

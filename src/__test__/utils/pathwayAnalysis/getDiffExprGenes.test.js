@@ -15,11 +15,9 @@ describe('getDiffExpr test', () => {
   beforeEach(async () => {
     jest.clearAllMocks();
     fetchWork.mockImplementation(() => Promise.resolve({
-      data: {
-        rows: {
-          gene_names: ['gene1', 'gene2', 'gene3'],
-          gene_ids: ['ENMUSG00000001', 'ENMUSG00000002', 'ENMUSG00000003'],
-        },
+      rows: {
+        gene_names: ['gene1', 'gene2', 'gene3'],
+        gene_ids: ['ENMUSG00000001', 'ENMUSG00000002', 'ENMUSG00000003'],
       },
     }));
   });

@@ -66,7 +66,7 @@ const loadGeneExpression = (
   const timeout = getTimeoutForWorkerTask(getState(), 'GeneExpression');
 
   try {
-    const { data } = await fetchWork(
+    const data = await fetchWork(
       experimentId, body, getState, { timeout },
     );
 

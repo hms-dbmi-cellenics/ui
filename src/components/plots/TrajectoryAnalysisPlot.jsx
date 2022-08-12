@@ -18,6 +18,7 @@ import {
 import { loadEmbedding } from 'redux/actions/embedding';
 import { loadCellSets } from 'redux/actions/cellSets';
 import { loadProcessingSettings } from 'redux/actions/experimentSettings';
+import 'vega-webgl-renderer';
 
 import { getCellSets } from 'redux/selectors';
 import PlatformError from 'components/PlatformError';
@@ -45,7 +46,6 @@ const TrajectoryAnalysisPlot = (props) => {
 
   const {
     config,
-    loading: configLoading,
     plotData,
   } = useSelector((state) => state.componentConfig[plotUuid]);
 
@@ -58,12 +58,11 @@ const TrajectoryAnalysisPlot = (props) => {
   ) || {};
 
   useEffect(() => {
+    dispatch(loadCellSets(experimentId));
+  }, []);
+  useEffect(() => {
     if (!embeddingSettings) {
       dispatch(loadProcessingSettings(experimentId));
-    }
-
-    if (cellSets.loading && !cellSets.error) {
-      dispatch(loadCellSets(experimentId));
     }
 
     if (!embeddingData && embeddingSettings?.method) {
@@ -78,8 +77,7 @@ const TrajectoryAnalysisPlot = (props) => {
   useEffect(() => {
     if (
       !config
-      || configLoading
-      || cellSets.loading
+      || !cellSets.accessible
       || cellSets.error
       || !embeddingData?.length
       || !plotData
@@ -152,13 +150,11 @@ const TrajectoryAnalysisPlot = (props) => {
       );
     }
 
-    if (
-      !config
-      || configLoading
-      || cellSets.loading
+    if (!config
+      || !cellSets.accessible
       || !embeddingData
       || embeddingLoading
-      || Object.keys(plotSpec).length === 0
+      || !plotSpec
     ) {
       return (
         <center>
@@ -171,7 +167,7 @@ const TrajectoryAnalysisPlot = (props) => {
       <center>
         <Vega
           spec={plotSpec}
-          renderer='canvas'
+          renderer='webgl'
           actions={actions}
           signalListeners={plotListener}
         />
@@ -179,11 +175,7 @@ const TrajectoryAnalysisPlot = (props) => {
     );
   };
 
-  return (
-    <>
-      {render()}
-    </>
-  );
+  return render();
 };
 
 TrajectoryAnalysisPlot.propTypes = {

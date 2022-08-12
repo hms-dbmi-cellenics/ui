@@ -489,7 +489,7 @@ describe('CellSetsTool', () => {
       );
     });
 
-    fetchWork.mockImplementationOnce(() => new Promise((resolve) => resolve({ data: geneExpressionData })));
+    fetchWork.mockImplementationOnce(() => new Promise((resolve) => resolve(geneExpressionData)));
 
     await act(async () => {
       storeState.dispatch(loadGeneExpression(experimentId, ['TestGene'], '1234'));

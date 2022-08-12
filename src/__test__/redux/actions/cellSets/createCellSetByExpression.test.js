@@ -11,7 +11,7 @@ import endUserMessages from 'utils/endUserMessages';
 import { waitFor } from '@testing-library/dom';
 
 jest.mock('utils/work/fetchWork', () => ({
-  fetchWork: jest.fn(() => ({ data: {} })),
+  fetchWork: jest.fn(() => ({})),
 }));
 jest.mock('utils/pushNotificationMessage');
 

@@ -36,7 +36,7 @@ const loadCellMeta = (
   const timeout = getTimeoutForWorkerTask(getState(), plotWorkName[metaName]);
 
   try {
-    const { data } = await fetchWork(
+    const data = await fetchWork(
       experimentId, body, getState, { timeout },
     );
     dispatch({
