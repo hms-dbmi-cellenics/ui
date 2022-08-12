@@ -140,6 +140,14 @@ const volcanoInitialConfig = {
     gridOpacity: 5,
     offset: 10,
   },
+  axesRanges: {
+    xAxisAuto: true,
+    yAxisAuto: true,
+    xMin: -1,
+    xMax: 1,
+    yMin: 0,
+    yMax: 50,
+  },
   title: titleBaseState,
   fontStyle: fontStyleBaseState,
   colour: colourBaseState,
@@ -213,6 +221,10 @@ const violinConfig = {
     ...axesBaseState,
     offset: 10,
     xAxisRotateLabels: true,
+  },
+  axesBounds: {
+    yAxisAuto: true,
+    yAxisBounds: [0, 50],
   },
   title: {
     ...titleBaseState,

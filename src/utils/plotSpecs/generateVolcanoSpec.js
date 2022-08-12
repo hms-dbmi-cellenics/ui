@@ -24,13 +24,13 @@ const generateSpec = (configSrc, plotData) => {
   // interface by deselecting Auto and entering a custom value), use
   // their specified range. If not, scale the plot based on the range of
   // the data in the set.
-  const logFoldChangeDomain = config.xAxisAuto
+  const logFoldChangeDomain = config.axesRanges.xAxisAuto
     ? { data: 'data', field: 'logFC' }
-    : [config.logFoldChangeDomain * -1, config.logFoldChangeDomain];
+    : [config.axesRanges.xMin, config.axesRanges.xMax];
 
-  const maxNegativeLogpValueDomain = config.yAxisAuto
+  const maxNegativeLogpValueDomain = config.axesRanges.yAxisAuto
     ? { data: 'data', field: 'neglogpvalue' }
-    : [0, config.maxNegativeLogpValueDomain];
+    : [config.axesRanges.yMin, config.axesRanges.yMax];
 
   // adding gene labels above the set Y value only for the significant genes
   const geneLabelsEquation = `datum.logFC !== 'NA' && (datum.neglogpvalue >${config.textThresholdValue} && (datum.status == 'Upregulated' || datum.status == 'Downregulated'))`;
