@@ -114,17 +114,16 @@ const generateSpec = (configSrc, plotData) => {
       {
         name: 'x',
         type: 'linear',
-        round: true,
         nice: true,
+        zero: false,
         domain: logFoldChangeDomain,
         range: 'width',
       },
       {
         name: 'y',
         type: 'linear',
-        round: true,
         nice: true,
-        zero: true,
+        zero: false,
         domain: maxNegativeLogpValueDomain,
         range: 'height',
       },
@@ -204,6 +203,7 @@ const generateSpec = (configSrc, plotData) => {
     marks: [
       {
         type: 'symbol',
+        clip: true,
         from: { data: 'data' },
         encode: {
           enter: {
