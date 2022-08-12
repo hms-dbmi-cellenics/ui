@@ -16,8 +16,6 @@ const SelectData = (props) => {
   const { onUpdate, config, cellSets } = props;
 
   const {
-    loading: cellSetsLoading,
-    error: cellSetsError,
     hierarchy,
     properties,
   } = cellSets;
@@ -40,12 +38,12 @@ const SelectData = (props) => {
   };
   const parents = getMetadataParents();
 
-  if (!config || cellSetsLoading) {
-    return <Skeleton.Input style={{ width: 200 }} active />;
+  if (cellSets.error) {
+    return <InlineError message='Error loading cell set' />;
   }
 
-  if (cellSetsError) {
-    return <InlineError message='Error loading cell set' />;
+  if (!config || !cellSets.accessible) {
+    return <Skeleton.Input style={{ width: 200 }} active />;
   }
 
   return (

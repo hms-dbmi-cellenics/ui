@@ -36,7 +36,7 @@ const EmbeddingCategoricalPage = ({ experimentId }) => {
   }, []);
 
   const generateGroupByOptions = () => {
-    if (cellSets.loading) {
+    if (!cellSets.accessible) {
       return [];
     }
     return hierarchy.map(({ key, children }) => ({

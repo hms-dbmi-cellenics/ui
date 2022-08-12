@@ -18,7 +18,7 @@ metadata:
 spec:
   releaseName: FILLED_IN_BY_CI
   chart:
-    git: https://github.com/hms-dbmi-cellenics/iac
+    git: https://github.com/biomage-org/iac
     path: charts/nodejs
     ref: FILLED_IN_BY_CI
   values:

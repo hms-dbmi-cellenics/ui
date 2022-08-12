@@ -66,7 +66,7 @@ const HeatmapPlot = ({ experimentId }) => {
 
   useEffect(() => {
     if (!config
-      || cellSets.loading
+      || !cellSets.accessible
       || _.isEmpty(expressionData)
       || _.isEmpty(selectedGenes)
       || !loading
@@ -200,7 +200,7 @@ const HeatmapPlot = ({ experimentId }) => {
       );
     }
 
-    if (!config || loading.length > 0 || cellSets.loading) {
+    if (!config || loading.length > 0 || !cellSets.accessible) {
       return (
         <Loader experimentId={experimentId} />
       );
@@ -227,7 +227,7 @@ const HeatmapPlot = ({ experimentId }) => {
     }
   };
 
-  if (!config || cellSets.loading) {
+  if (!config || !cellSets.accessible) {
     return (<Skeleton />);
   }
 
