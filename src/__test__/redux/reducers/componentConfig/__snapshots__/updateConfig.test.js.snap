@@ -13,7 +13,7 @@ Object {
         "gridOpacity": 0,
         "gridWidth": 10,
         "labelFontSize": 12,
-        "offset": 10,
+        "offset": 0,
         "titleFontSize": 13,
         "xAxisRotateLabels": false,
         "xAxisText": "Umap 1",
