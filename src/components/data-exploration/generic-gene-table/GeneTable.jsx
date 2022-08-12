@@ -7,17 +7,21 @@ import _ from 'lodash';
 import PropTypes from 'prop-types';
 import { changeGeneSelection } from 'redux/actions/genes';
 import GeneSelectionStatus from 'redux/actions/genes/geneSelectionStatus';
-import { geneTableUpdateReason } from 'utils/geneTable/geneTableUpdateReason';
 import FocusButton from 'components/FocusButton';
 import PlatformError from 'components/PlatformError';
-import useLazyEffect from 'utils/customHooks/useLazyEffect';
 import GeneSelectionMenu from 'components/data-exploration/generic-gene-table/GeneSelectionMenu';
-import FilterGenes from 'components/data-exploration/generic-gene-table/FilterGenes';
+import FilterGenes, { sanitizeString } from 'components/data-exploration/generic-gene-table/FilterGenes';
 import Loader from 'components/Loader';
+
+const valueComparator = (key) => (a, b) => {
+  if (typeof a[key] === 'string') return a[key].localeCompare(b[key]);
+  if (typeof a[key] === 'number') return a[key] - b[key];
+  return 0;
+};
 
 const GeneTable = (props) => {
   const {
-    experimentId, onUpdate, error, loading, columns, data,
+    experimentId, error, loading, columns, propData, loadData,
     total, initialTableState, width, height, extraOptions,
   } = props;
 
@@ -25,28 +29,47 @@ const GeneTable = (props) => {
   const selectedGenes = useSelector((state) => state.genes.selected);
   const [geneNameFilterState, setGeneNameFilterState] = useState({});
 
+  const tableStateAllEntries = {
+    pagination: {
+      current: 1,
+      pageSize: 1000000,
+      showSizeChanger: true,
+      total,
+    },
+    geneNamesFilter: null,
+  };
+
+  const [tableData, setTableData] = useState([]);
+
+  useEffect(() => {
+    setTableData(propData);
+  }, [propData]);
+
   const [tableState, setTableState] = useState(
     _.merge(
-      {
-        pagination: {
-          current: 1,
-          pageSize: 50,
-          showSizeChanger: true,
-          total,
-        },
-        geneNamesFilter: null,
-      },
+      tableStateAllEntries,
       initialTableState,
     ),
   );
 
+  // Load all entries and then set table state to display only 50
   useEffect(() => {
-    onUpdate(tableState, geneTableUpdateReason.mounted);
+    loadData(tableStateAllEntries);
+    setTableState(
+      _.merge(
+        {
+          pagination: {
+            current: 1,
+            pageSize: 50,
+            showSizeChanger: true,
+            total,
+          },
+          geneNamesFilter: null,
+        },
+        initialTableState,
+      ),
+    );
   }, []);
-
-  useLazyEffect(() => {
-    onUpdate(tableState, loading ? geneTableUpdateReason.loading : geneTableUpdateReason.loaded);
-  }, [loading]);
 
   const getSortOrder = (key) => {
     if (key === tableState.sorter.columnKey) {
@@ -58,7 +81,6 @@ const GeneTable = (props) => {
   const handleTableChange = (newPagination, a, newSorter) => {
     const newTableState = { ...tableState, pagination: newPagination, sorter: newSorter };
 
-    onUpdate(newTableState, geneTableUpdateReason.paginated);
     setTableState(newTableState);
   };
 
@@ -74,13 +96,16 @@ const GeneTable = (props) => {
       searchPattern = text;
     }
 
+    let newData = _.cloneDeep(propData);
+    newData = newData.filter((entry) => sanitizeString(`${entry.gene_names}`).match(searchPattern));
+
     const newTableState = {
       ...tableState,
-      pagination: { ...tableState.pagination, current: 1 },
+      pagination: { ...tableState.pagination, current: 1, total: newData.length },
       geneNamesFilter: searchPattern,
     };
 
-    onUpdate(newTableState, geneTableUpdateReason.filtered);
+    setTableData(newData);
     setTableState(newTableState);
     setGeneNameFilterState(filter);
   };
@@ -137,7 +162,7 @@ const GeneTable = (props) => {
         title: 'Gene',
         dataIndex: 'gene_names',
         key: 'gene_names',
-        sorter: true,
+        sorter: valueComparator('gene_names'),
         showSorterTooltip: false,
         render: (geneName) => (
           <a
@@ -156,6 +181,7 @@ const GeneTable = (props) => {
       const modifiedColumn = { ...column, dataIndex: column.key };
 
       if (column.sorter) {
+        modifiedColumn.sorter = valueComparator(column.key);
         modifiedColumn.sortOrder = getSortOrder(column.key);
       }
 
@@ -170,7 +196,7 @@ const GeneTable = (props) => {
     return (
       <PlatformError
         error={error}
-        onClick={() => onUpdate(tableState, geneTableUpdateReason.retry)}
+        onClick={() => loadData(tableStateAllEntries)}
       />
     );
   }
@@ -192,11 +218,10 @@ const GeneTable = (props) => {
       )}
       <Table
         columns={renderColumns(columns)}
-        dataSource={renderRows(data)}
+        dataSource={renderRows(tableData)}
         loading={loading ? { indicator: <Loader experimentId={experimentId} /> } : loading}
         size='small'
-        pagination={{ ...tableState?.pagination, total }}
-        sorter={tableState?.sorter}
+        pagination={{ ...tableState?.pagination }}
         scroll={{ x: width, y: height - 294 }}
         onChange={handleTableChange}
         rowSelection={{
@@ -217,7 +242,8 @@ GeneTable.defaultProps = {
 GeneTable.propTypes = {
   experimentId: PropTypes.string.isRequired,
   columns: PropTypes.array.isRequired,
-  data: PropTypes.array.isRequired,
+  propData: PropTypes.array.isRequired,
+  loadData: PropTypes.func.isRequired,
   total: PropTypes.number.isRequired,
   error: PropTypes.PropTypes.oneOfType(
     [
@@ -226,7 +252,6 @@ GeneTable.propTypes = {
     ],
   ).isRequired,
   loading: PropTypes.bool.isRequired,
-  onUpdate: PropTypes.func.isRequired,
   initialTableState: PropTypes.object,
   extraOptions: PropTypes.node,
   width: PropTypes.number.isRequired,

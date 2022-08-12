@@ -5,6 +5,7 @@ Object {
   "error": false,
   "hidden": Set {},
   "hierarchy": Array [],
+  "initialLoadPending": true,
   "loading": true,
   "properties": Object {},
   "selected": Object {},

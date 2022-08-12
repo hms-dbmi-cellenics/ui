@@ -304,6 +304,7 @@ describe('DataProcessingPage', () => {
 
     expect(screen.getByText(/This filter is disabled/i)).toBeInTheDocument();
   });
+
   it('Disabling a filter saves and dispatches appropriate actions', async () => {
     const store = getStore(
       experimentId,
@@ -327,8 +328,12 @@ describe('DataProcessingPage', () => {
 
     act(() => userEvent.click(screen.getByText(/Disable/i)));
     expect(saveProcessingSettings).toHaveBeenCalled();
-    await waitFor(() => expect(store.getActions()[1].type).toEqual(EXPERIMENT_SETTINGS_SET_QC_STEP_ENABLED));
+
+    await waitFor(() => {
+      expect(_.map(store.getActions(), 'type')).toContain(EXPERIMENT_SETTINGS_SET_QC_STEP_ENABLED);
+    });
   });
+
   it('Shows a wait screen if pipeline is still running', () => {
     getBackendStatus.mockImplementation(() => () => ({
       loading: false,

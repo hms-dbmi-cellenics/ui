@@ -1,0 +1,6668 @@
+{
+    "pointsData": [{
+        "log_molecules": 2.69897,
+        "log_genes": 2.515874
+      },
+      {
+        "log_molecules": 2.699838,
+        "log_genes": 2.390935
+      },
+      {
+        "log_molecules": 2.701568,
+        "log_genes": 2.369216
+      },
+      {
+        "log_molecules": 2.701568,
+        "log_genes": 1.544068
+      },
+      {
+        "log_molecules": 2.703291,
+        "log_genes": 2.409933
+      },
+      {
+        "log_molecules": 2.706718,
+        "log_genes": 2.501059
+      },
+      {
+        "log_molecules": 2.71265,
+        "log_genes": 2.495544
+      },
+      {
+        "log_molecules": 2.713491,
+        "log_genes": 2.376577
+      },
+      {
+        "log_molecules": 2.716838,
+        "log_genes": 2.296665
+      },
+      {
+        "log_molecules": 2.716838,
+        "log_genes": 2.474216
+      },
+      {
+        "log_molecules": 2.723456,
+        "log_genes": 2.494155
+      },
+      {
+        "log_molecules": 2.727541,
+        "log_genes": 1.633468
+      },
+      {
+        "log_molecules": 2.730782,
+        "log_genes": 2.509203
+      },
+      {
+        "log_molecules": 2.730782,
+        "log_genes": 2.419956
+      },
+      {
+        "log_molecules": 2.733999,
+        "log_genes": 2.444045
+      },
+      {
+        "log_molecules": 2.736397,
+        "log_genes": 2.348305
+      },
+      {
+        "log_molecules": 2.739572,
+        "log_genes": 2.565848
+      },
+      {
+        "log_molecules": 2.750508,
+        "log_genes": 2.320146
+      },
+      {
+        "log_molecules": 2.750508,
+        "log_genes": 2.521138
+      },
+      {
+        "log_molecules": 2.754348,
+        "log_genes": 1.968483
+      },
+      {
+        "log_molecules": 2.761176,
+        "log_genes": 1.591065
+      },
+      {
+        "log_molecules": 2.764176,
+        "log_genes": 2.503791
+      },
+      {
+        "log_molecules": 2.768638,
+        "log_genes": 2.431364
+      },
+      {
+        "log_molecules": 2.775974,
+        "log_genes": 2.459392
+      },
+      {
+        "log_molecules": 2.780317,
+        "log_genes": 2.385606
+      },
+      {
+        "log_molecules": 2.781037,
+        "log_genes": 2.466868
+      },
+      {
+        "log_molecules": 2.782473,
+        "log_genes": 2.494155
+      },
+      {
+        "log_molecules": 2.78533,
+        "log_genes": 2.491362
+      },
+      {
+        "log_molecules": 2.788875,
+        "log_genes": 2.499687
+      },
+      {
+        "log_molecules": 2.791691,
+        "log_genes": 2.558709
+      },
+      {
+        "log_molecules": 2.79379,
+        "log_genes": 2.44248
+      },
+      {
+        "log_molecules": 2.795185,
+        "log_genes": 2.603144
+      },
+      {
+        "log_molecules": 2.795185,
+        "log_genes": 1.94939
+      },
+      {
+        "log_molecules": 2.797268,
+        "log_genes": 2.555094
+      },
+      {
+        "log_molecules": 2.798651,
+        "log_genes": 2.448706
+      },
+      {
+        "log_molecules": 2.805501,
+        "log_genes": 2.440909
+      },
+      {
+        "log_molecules": 2.806858,
+        "log_genes": 2.465383
+      },
+      {
+        "log_molecules": 2.810904,
+        "log_genes": 2.445604
+      },
+      {
+        "log_molecules": 2.812913,
+        "log_genes": 2.478566
+      },
+      {
+        "log_molecules": 2.813581,
+        "log_genes": 2.570543
+      },
+      {
+        "log_molecules": 2.818885,
+        "log_genes": 2.603144
+      },
+      {
+        "log_molecules": 2.826723,
+        "log_genes": 2.40654
+      },
+      {
+        "log_molecules": 2.82866,
+        "log_genes": 2.513218
+      },
+      {
+        "log_molecules": 2.830589,
+        "log_genes": 2.414973
+      },
+      {
+        "log_molecules": 2.83123,
+        "log_genes": 1.845098
+      },
+      {
+        "log_molecules": 2.834421,
+        "log_genes": 2.463893
+      },
+      {
+        "log_molecules": 2.835691,
+        "log_genes": 1.792392
+      },
+      {
+        "log_molecules": 2.835691,
+        "log_genes": 2.459392
+      },
+      {
+        "log_molecules": 2.839478,
+        "log_genes": 1.755875
+      },
+      {
+        "log_molecules": 2.841985,
+        "log_genes": 1.770852
+      },
+      {
+        "log_molecules": 2.844477,
+        "log_genes": 2.565848
+      },
+      {
+        "log_molecules": 2.844477,
+        "log_genes": 1.799341
+      },
+      {
+        "log_molecules": 2.845098,
+        "log_genes": 2.563481
+      },
+      {
+        "log_molecules": 2.846337,
+        "log_genes": 1.732394
+      },
+      {
+        "log_molecules": 2.850646,
+        "log_genes": 2.462398
+      },
+      {
+        "log_molecules": 2.863323,
+        "log_genes": 1.643453
+      },
+      {
+        "log_molecules": 2.865104,
+        "log_genes": 2.617
+      },
+      {
+        "log_molecules": 2.867467,
+        "log_genes": 2.480007
+      },
+      {
+        "log_molecules": 2.868644,
+        "log_genes": 2.372912
+      },
+      {
+        "log_molecules": 2.869818,
+        "log_genes": 2.481443
+      },
+      {
+        "log_molecules": 2.877947,
+        "log_genes": 2.647383
+      },
+      {
+        "log_molecules": 2.880242,
+        "log_genes": 2.567026
+      },
+      {
+        "log_molecules": 2.883093,
+        "log_genes": 2.582063
+      },
+      {
+        "log_molecules": 2.883093,
+        "log_genes": 1.812913
+      },
+      {
+        "log_molecules": 2.884795,
+        "log_genes": 2.434569
+      },
+      {
+        "log_molecules": 2.888741,
+        "log_genes": 2.668386
+      },
+      {
+        "log_molecules": 2.893762,
+        "log_genes": 2.716838
+      },
+      {
+        "log_molecules": 2.89487,
+        "log_genes": 2.686636
+      },
+      {
+        "log_molecules": 2.895423,
+        "log_genes": 2.478566
+      },
+      {
+        "log_molecules": 2.905256,
+        "log_genes": 2.638489
+      },
+      {
+        "log_molecules": 2.910091,
+        "log_genes": 2.553883
+      },
+      {
+        "log_molecules": 2.91169,
+        "log_genes": 2.539076
+      },
+      {
+        "log_molecules": 2.91698,
+        "log_genes": 1.913814
+      },
+      {
+        "log_molecules": 2.917506,
+        "log_genes": 2.466868
+      },
+      {
+        "log_molecules": 2.91803,
+        "log_genes": 2.683047
+      },
+      {
+        "log_molecules": 2.924279,
+        "log_genes": 2.621176
+      },
+      {
+        "log_molecules": 2.924796,
+        "log_genes": 2.70757
+      },
+      {
+        "log_molecules": 2.925312,
+        "log_genes": 2.583199
+      },
+      {
+        "log_molecules": 2.933487,
+        "log_genes": 2.752816
+      },
+      {
+        "log_molecules": 2.935003,
+        "log_genes": 2.643453
+      },
+      {
+        "log_molecules": 2.942504,
+        "log_genes": 2.547775
+      },
+      {
+        "log_molecules": 2.950851,
+        "log_genes": 2.704151
+      },
+      {
+        "log_molecules": 2.952792,
+        "log_genes": 2.136721
+      },
+      {
+        "log_molecules": 2.953276,
+        "log_genes": 2.518514
+      },
+      {
+        "log_molecules": 2.956649,
+        "log_genes": 2.592177
+      },
+      {
+        "log_molecules": 2.956649,
+        "log_genes": 2.781037
+      },
+      {
+        "log_molecules": 2.957607,
+        "log_genes": 2.722634
+      },
+      {
+        "log_molecules": 2.959041,
+        "log_genes": 2.572872
+      },
+      {
+        "log_molecules": 2.961421,
+        "log_genes": 1.892095
+      },
+      {
+        "log_molecules": 2.965202,
+        "log_genes": 2.749736
+      },
+      {
+        "log_molecules": 2.980458,
+        "log_genes": 1.897627
+      },
+      {
+        "log_molecules": 2.984527,
+        "log_genes": 2.09691
+      },
+      {
+        "log_molecules": 2.989005,
+        "log_genes": 2.726727
+      },
+      {
+        "log_molecules": 2.992554,
+        "log_genes": 2.716003
+      },
+      {
+        "log_molecules": 3.001734,
+        "log_genes": 2.729974
+      },
+      {
+        "log_molecules": 3.004751,
+        "log_genes": 2.7348
+      },
+      {
+        "log_molecules": 3.009876,
+        "log_genes": 2.744293
+      },
+      {
+        "log_molecules": 3.01494,
+        "log_genes": 2.806858
+      },
+      {
+        "log_molecules": 3.017033,
+        "log_genes": 2.646404
+      },
+      {
+        "log_molecules": 3.017868,
+        "log_genes": 1.832509
+      },
+      {
+        "log_molecules": 3.018284,
+        "log_genes": 1.826075
+      },
+      {
+        "log_molecules": 3.0306,
+        "log_genes": 2.756636
+      },
+      {
+        "log_molecules": 3.033826,
+        "log_genes": 2.716838
+      },
+      {
+        "log_molecules": 3.037825,
+        "log_genes": 2.761176
+      },
+      {
+        "log_molecules": 3.041393,
+        "log_genes": 1.732394
+      },
+      {
+        "log_molecules": 3.043362,
+        "log_genes": 1.653213
+      },
+      {
+        "log_molecules": 3.044932,
+        "log_genes": 1.69897
+      },
+      {
+        "log_molecules": 3.045714,
+        "log_genes": 2.751279
+      },
+      {
+        "log_molecules": 3.046105,
+        "log_genes": 2.817565
+      },
+      {
+        "log_molecules": 3.050766,
+        "log_genes": 2.784617
+      },
+      {
+        "log_molecules": 3.052694,
+        "log_genes": 2.756636
+      },
+      {
+        "log_molecules": 3.057286,
+        "log_genes": 2.806858
+      },
+      {
+        "log_molecules": 3.057286,
+        "log_genes": 2.814248
+      },
+      {
+        "log_molecules": 3.061075,
+        "log_genes": 1.838849
+      },
+      {
+        "log_molecules": 3.062206,
+        "log_genes": 2.724276
+      },
+      {
+        "log_molecules": 3.062958,
+        "log_genes": 2.733999
+      },
+      {
+        "log_molecules": 3.065206,
+        "log_genes": 1.716003
+      },
+      {
+        "log_molecules": 3.06558,
+        "log_genes": 2.570543
+      },
+      {
+        "log_molecules": 3.065953,
+        "log_genes": 2.781037
+      },
+      {
+        "log_molecules": 3.072985,
+        "log_genes": 2.710117
+      },
+      {
+        "log_molecules": 3.078457,
+        "log_genes": 2.738781
+      },
+      {
+        "log_molecules": 3.079543,
+        "log_genes": 2.870989
+      },
+      {
+        "log_molecules": 3.079543,
+        "log_genes": 2.806858
+      },
+      {
+        "log_molecules": 3.084934,
+        "log_genes": 2.833784
+      },
+      {
+        "log_molecules": 3.091315,
+        "log_genes": 2.848189
+      },
+      {
+        "log_molecules": 3.094122,
+        "log_genes": 1.886491
+      },
+      {
+        "log_molecules": 3.097604,
+        "log_genes": 2.790285
+      },
+      {
+        "log_molecules": 3.098298,
+        "log_genes": 2.802774
+      },
+      {
+        "log_molecules": 3.108565,
+        "log_genes": 2.786751
+      },
+      {
+        "log_molecules": 3.109916,
+        "log_genes": 2.807535
+      },
+      {
+        "log_molecules": 3.11294,
+        "log_genes": 2.835056
+      },
+      {
+        "log_molecules": 3.117603,
+        "log_genes": 2.782473
+      },
+      {
+        "log_molecules": 3.120245,
+        "log_genes": 2.826075
+      },
+      {
+        "log_molecules": 3.123525,
+        "log_genes": 1.78533
+      },
+      {
+        "log_molecules": 3.123852,
+        "log_genes": 2.694605
+      },
+      {
+        "log_molecules": 3.125481,
+        "log_genes": 2.727541
+      },
+      {
+        "log_molecules": 3.125806,
+        "log_genes": 2.798651
+      },
+      {
+        "log_molecules": 3.127105,
+        "log_genes": 2.797268
+      },
+      {
+        "log_molecules": 3.130655,
+        "log_genes": 2.89098
+      },
+      {
+        "log_molecules": 3.134814,
+        "log_genes": 2.701568
+      },
+      {
+        "log_molecules": 3.136721,
+        "log_genes": 2.755875
+      },
+      {
+        "log_molecules": 3.136721,
+        "log_genes": 2.824776
+      },
+      {
+        "log_molecules": 3.137354,
+        "log_genes": 2.830589
+      },
+      {
+        "log_molecules": 3.138303,
+        "log_genes": 1.633468
+      },
+      {
+        "log_molecules": 3.139249,
+        "log_genes": 2.876795
+      },
+      {
+        "log_molecules": 3.140508,
+        "log_genes": 2.799341
+      },
+      {
+        "log_molecules": 3.140508,
+        "log_genes": 1.643453
+      },
+      {
+        "log_molecules": 3.140822,
+        "log_genes": 2.778874
+      },
+      {
+        "log_molecules": 3.144885,
+        "log_genes": 2.872739
+      },
+      {
+        "log_molecules": 3.145196,
+        "log_genes": 2.804139
+      },
+      {
+        "log_molecules": 3.145818,
+        "log_genes": 2.799341
+      },
+      {
+        "log_molecules": 3.146128,
+        "log_genes": 2.877371
+      },
+      {
+        "log_molecules": 3.147367,
+        "log_genes": 2.762679
+      },
+      {
+        "log_molecules": 3.150142,
+        "log_genes": 2.779596
+      },
+      {
+        "log_molecules": 3.15137,
+        "log_genes": 2.717671
+      },
+      {
+        "log_molecules": 3.1529,
+        "log_genes": 2.856124
+      },
+      {
+        "log_molecules": 3.15351,
+        "log_genes": 2.865696
+      },
+      {
+        "log_molecules": 3.157154,
+        "log_genes": 2.732394
+      },
+      {
+        "log_molecules": 3.161068,
+        "log_genes": 2.71433
+      },
+      {
+        "log_molecules": 3.162266,
+        "log_genes": 2.720986
+      },
+      {
+        "log_molecules": 3.163161,
+        "log_genes": 2.737987
+      },
+      {
+        "log_molecules": 3.165244,
+        "log_genes": 2.848189
+      },
+      {
+        "log_molecules": 3.165838,
+        "log_genes": 2.838849
+      },
+      {
+        "log_molecules": 3.165838,
+        "log_genes": 2.804139
+      },
+      {
+        "log_molecules": 3.167908,
+        "log_genes": 1.60206
+      },
+      {
+        "log_molecules": 3.169674,
+        "log_genes": 2.669317
+      },
+      {
+        "log_molecules": 3.171141,
+        "log_genes": 2.810904
+      },
+      {
+        "log_molecules": 3.171434,
+        "log_genes": 2.906874
+      },
+      {
+        "log_molecules": 3.174641,
+        "log_genes": 2.718502
+      },
+      {
+        "log_molecules": 3.176381,
+        "log_genes": 2.857935
+      },
+      {
+        "log_molecules": 3.176959,
+        "log_genes": 2.780317
+      },
+      {
+        "log_molecules": 3.179264,
+        "log_genes": 2.708421
+      },
+      {
+        "log_molecules": 3.179839,
+        "log_genes": 2.700704
+      },
+      {
+        "log_molecules": 3.180699,
+        "log_genes": 2.873321
+      },
+      {
+        "log_molecules": 3.183555,
+        "log_genes": 2.829947
+      },
+      {
+        "log_molecules": 3.186108,
+        "log_genes": 2.838849
+      },
+      {
+        "log_molecules": 3.186108,
+        "log_genes": 2.836957
+      },
+      {
+        "log_molecules": 3.186956,
+        "log_genes": 2.943
+      },
+      {
+        "log_molecules": 3.187521,
+        "log_genes": 2.833784
+      },
+      {
+        "log_molecules": 3.18949,
+        "log_genes": 2.935507
+      },
+      {
+        "log_molecules": 3.18949,
+        "log_genes": 2.833784
+      },
+      {
+        "log_molecules": 3.190332,
+        "log_genes": 2.78533
+      },
+      {
+        "log_molecules": 3.190612,
+        "log_genes": 2.854913
+      },
+      {
+        "log_molecules": 3.191451,
+        "log_genes": 2.857332
+      },
+      {
+        "log_molecules": 3.192289,
+        "log_genes": 2.751279
+      },
+      {
+        "log_molecules": 3.192567,
+        "log_genes": 2.854306
+      },
+      {
+        "log_molecules": 3.193403,
+        "log_genes": 2.803457
+      },
+      {
+        "log_molecules": 3.1959,
+        "log_genes": 2.720986
+      },
+      {
+        "log_molecules": 3.196176,
+        "log_genes": 2.750508
+      },
+      {
+        "log_molecules": 3.196176,
+        "log_genes": 2.83123
+      },
+      {
+        "log_molecules": 3.196176,
+        "log_genes": 2.835056
+      },
+      {
+        "log_molecules": 3.196453,
+        "log_genes": 2.850033
+      },
+      {
+        "log_molecules": 3.197832,
+        "log_genes": 2.718502
+      },
+      {
+        "log_molecules": 3.198382,
+        "log_genes": 2.872156
+      },
+      {
+        "log_molecules": 3.199206,
+        "log_genes": 2.778874
+      },
+      {
+        "log_molecules": 3.201397,
+        "log_genes": 2.775974
+      },
+      {
+        "log_molecules": 3.201943,
+        "log_genes": 2.7348
+      },
+      {
+        "log_molecules": 3.201943,
+        "log_genes": 2.846337
+      },
+      {
+        "log_molecules": 3.202488,
+        "log_genes": 2.903633
+      },
+      {
+        "log_molecules": 3.202488,
+        "log_genes": 1.826075
+      },
+      {
+        "log_molecules": 3.203033,
+        "log_genes": 2.756636
+      },
+      {
+        "log_molecules": 3.205204,
+        "log_genes": 2.881955
+      },
+      {
+        "log_molecules": 3.205204,
+        "log_genes": 2.814248
+      },
+      {
+        "log_molecules": 3.206286,
+        "log_genes": 2.92737
+      },
+      {
+        "log_molecules": 3.206826,
+        "log_genes": 2.816904
+      },
+      {
+        "log_molecules": 3.207904,
+        "log_genes": 2.764176
+      },
+      {
+        "log_molecules": 3.209515,
+        "log_genes": 2.861534
+      },
+      {
+        "log_molecules": 3.209783,
+        "log_genes": 2.767156
+      },
+      {
+        "log_molecules": 3.209783,
+        "log_genes": 2.778151
+      },
+      {
+        "log_molecules": 3.21272,
+        "log_genes": 2.786751
+      },
+      {
+        "log_molecules": 3.213252,
+        "log_genes": 2.750508
+      },
+      {
+        "log_molecules": 3.213518,
+        "log_genes": 2.761928
+      },
+      {
+        "log_molecules": 3.214314,
+        "log_genes": 2.855519
+      },
+      {
+        "log_molecules": 3.214579,
+        "log_genes": 2.863917
+      },
+      {
+        "log_molecules": 3.215902,
+        "log_genes": 2.840106
+      },
+      {
+        "log_molecules": 3.21643,
+        "log_genes": 2.775974
+      },
+      {
+        "log_molecules": 3.219323,
+        "log_genes": 2.818885
+      },
+      {
+        "log_molecules": 3.22037,
+        "log_genes": 2.834421
+      },
+      {
+        "log_molecules": 3.220892,
+        "log_genes": 2.760422
+      },
+      {
+        "log_molecules": 3.221414,
+        "log_genes": 2.863323
+      },
+      {
+        "log_molecules": 3.221675,
+        "log_genes": 2.720986
+      },
+      {
+        "log_molecules": 3.222456,
+        "log_genes": 1.812913
+      },
+      {
+        "log_molecules": 3.222456,
+        "log_genes": 2.892651
+      },
+      {
+        "log_molecules": 3.223236,
+        "log_genes": 2.947924
+      },
+      {
+        "log_molecules": 3.224274,
+        "log_genes": 1.94939
+      },
+      {
+        "log_molecules": 3.224533,
+        "log_genes": 2.963788
+      },
+      {
+        "log_molecules": 3.225826,
+        "log_genes": 2.885926
+      },
+      {
+        "log_molecules": 3.2284,
+        "log_genes": 2.818885
+      },
+      {
+        "log_molecules": 3.228913,
+        "log_genes": 2.885361
+      },
+      {
+        "log_molecules": 3.230193,
+        "log_genes": 2.733999
+      },
+      {
+        "log_molecules": 3.230193,
+        "log_genes": 2.790988
+      },
+      {
+        "log_molecules": 3.23325,
+        "log_genes": 2.95376
+      },
+      {
+        "log_molecules": 3.233757,
+        "log_genes": 2.804821
+      },
+      {
+        "log_molecules": 3.233757,
+        "log_genes": 2.850646
+      },
+      {
+        "log_molecules": 3.234517,
+        "log_genes": 2.808886
+      },
+      {
+        "log_molecules": 3.235023,
+        "log_genes": 2.962843
+      },
+      {
+        "log_molecules": 3.235276,
+        "log_genes": 2.83187
+      },
+      {
+        "log_molecules": 3.237795,
+        "log_genes": 2.828015
+      },
+      {
+        "log_molecules": 3.239299,
+        "log_genes": 2.783904
+      },
+      {
+        "log_molecules": 3.240799,
+        "log_genes": 2.745075
+      },
+      {
+        "log_molecules": 3.241795,
+        "log_genes": 2.89098
+      },
+      {
+        "log_molecules": 3.244277,
+        "log_genes": 2.813581
+      },
+      {
+        "log_molecules": 3.245019,
+        "log_genes": 1.851258
+      },
+      {
+        "log_molecules": 3.245513,
+        "log_genes": 2.847573
+      },
+      {
+        "log_molecules": 3.246252,
+        "log_genes": 2.826723
+      },
+      {
+        "log_molecules": 3.246499,
+        "log_genes": 2.841985
+      },
+      {
+        "log_molecules": 3.246499,
+        "log_genes": 2.851258
+      },
+      {
+        "log_molecules": 3.247728,
+        "log_genes": 2.862728
+      },
+      {
+        "log_molecules": 3.248709,
+        "log_genes": 2.936011
+      },
+      {
+        "log_molecules": 3.254306,
+        "log_genes": 2.786751
+      },
+      {
+        "log_molecules": 3.255031,
+        "log_genes": 2.900367
+      },
+      {
+        "log_molecules": 3.255031,
+        "log_genes": 2.826075
+      },
+      {
+        "log_molecules": 3.255273,
+        "log_genes": 2.763428
+      },
+      {
+        "log_molecules": 3.256237,
+        "log_genes": 2.978637
+      },
+      {
+        "log_molecules": 3.257679,
+        "log_genes": 2.924279
+      },
+      {
+        "log_molecules": 3.259594,
+        "log_genes": 2.80618
+      },
+      {
+        "log_molecules": 3.259833,
+        "log_genes": 2.837588
+      },
+      {
+        "log_molecules": 3.261025,
+        "log_genes": 2.838849
+      },
+      {
+        "log_molecules": 3.261263,
+        "log_genes": 2.866878
+      },
+      {
+        "log_molecules": 3.262214,
+        "log_genes": 2.79796
+      },
+      {
+        "log_molecules": 3.263873,
+        "log_genes": 2.901458
+      },
+      {
+        "log_molecules": 3.26529,
+        "log_genes": 2.884229
+      },
+      {
+        "log_molecules": 3.265761,
+        "log_genes": 2.799341
+      },
+      {
+        "log_molecules": 3.265996,
+        "log_genes": 2.834421
+      },
+      {
+        "log_molecules": 3.266937,
+        "log_genes": 2.773786
+      },
+      {
+        "log_molecules": 3.267172,
+        "log_genes": 1.944483
+      },
+      {
+        "log_molecules": 3.267875,
+        "log_genes": 2.825426
+      },
+      {
+        "log_molecules": 3.268344,
+        "log_genes": 2.127105
+      },
+      {
+        "log_molecules": 3.268344,
+        "log_genes": 2.893762
+      },
+      {
+        "log_molecules": 3.269513,
+        "log_genes": 2.846955
+      },
+      {
+        "log_molecules": 3.270213,
+        "log_genes": 2.817565
+      },
+      {
+        "log_molecules": 3.270679,
+        "log_genes": 2.838219
+      },
+      {
+        "log_molecules": 3.271144,
+        "log_genes": 2.87564
+      },
+      {
+        "log_molecules": 3.271377,
+        "log_genes": 2.93044
+      },
+      {
+        "log_molecules": 3.271609,
+        "log_genes": 2.952792
+      },
+      {
+        "log_molecules": 3.271609,
+        "log_genes": 2.79796
+      },
+      {
+        "log_molecules": 3.271842,
+        "log_genes": 2.850033
+      },
+      {
+        "log_molecules": 3.271842,
+        "log_genes": 2.91698
+      },
+      {
+        "log_molecules": 3.272306,
+        "log_genes": 2.757396
+      },
+      {
+        "log_molecules": 3.272306,
+        "log_genes": 2.820858
+      },
+      {
+        "log_molecules": 3.274158,
+        "log_genes": 2.967548
+      },
+      {
+        "log_molecules": 3.274389,
+        "log_genes": 2.841985
+      },
+      {
+        "log_molecules": 3.27462,
+        "log_genes": 2.771587
+      },
+      {
+        "log_molecules": 3.275311,
+        "log_genes": 2.879669
+      },
+      {
+        "log_molecules": 3.275311,
+        "log_genes": 2.810904
+      },
+      {
+        "log_molecules": 3.275772,
+        "log_genes": 2.842609
+      },
+      {
+        "log_molecules": 3.276692,
+        "log_genes": 2.815578
+      },
+      {
+        "log_molecules": 3.276921,
+        "log_genes": 2.904174
+      },
+      {
+        "log_molecules": 3.277151,
+        "log_genes": 2.726727
+      },
+      {
+        "log_molecules": 3.27738,
+        "log_genes": 2.992111
+      },
+      {
+        "log_molecules": 3.277609,
+        "log_genes": 2.949878
+      },
+      {
+        "log_molecules": 3.277838,
+        "log_genes": 2.92737
+      },
+      {
+        "log_molecules": 3.278296,
+        "log_genes": 2.932474
+      },
+      {
+        "log_molecules": 3.279667,
+        "log_genes": 2.82866
+      },
+      {
+        "log_molecules": 3.279895,
+        "log_genes": 2.819544
+      },
+      {
+        "log_molecules": 3.280123,
+        "log_genes": 2.863917
+      },
+      {
+        "log_molecules": 3.280351,
+        "log_genes": 2.771587
+      },
+      {
+        "log_molecules": 3.280578,
+        "log_genes": 2.904174
+      },
+      {
+        "log_molecules": 3.280806,
+        "log_genes": 2.848805
+      },
+      {
+        "log_molecules": 3.281033,
+        "log_genes": 2.856124
+      },
+      {
+        "log_molecules": 3.281033,
+        "log_genes": 2.846337
+      }],
+    "linesData": [
+      [
+        {
+          "log_molecules": 2.69897,
+          "lower_cutoff": 2.454922,
+          "upper_cutoff": 2.454922
+        },
+        {
+          "log_molecules": 2.906867,
+          "lower_cutoff": 2.597447,
+          "upper_cutoff": 2.597447
+        },
+        {
+          "log_molecules": 3.114763,
+          "lower_cutoff": 2.739972,
+          "upper_cutoff": 2.739972
+        },
+        {
+          "log_molecules": 3.32266,
+          "lower_cutoff": 2.882497,
+          "upper_cutoff": 2.882497
+        },
+        {
+          "log_molecules": 3.530557,
+          "lower_cutoff": 3.025022,
+          "upper_cutoff": 3.025022
+        },
+        {
+          "log_molecules": 3.738454,
+          "lower_cutoff": 3.167547,
+          "upper_cutoff": 3.167547
+        },
+        {
+          "log_molecules": 3.94635,
+          "lower_cutoff": 3.310072,
+          "upper_cutoff": 3.310072
+        },
+        {
+          "log_molecules": 4.154247,
+          "lower_cutoff": 3.452598,
+          "upper_cutoff": 3.452598
+        },
+        {
+          "log_molecules": 4.362144,
+          "lower_cutoff": 3.595123,
+          "upper_cutoff": 3.595123
+        },
+        {
+          "log_molecules": 4.570041,
+          "lower_cutoff": 3.737648,
+          "upper_cutoff": 3.737648
+        }
+      ],
+      [
+        {
+          "log_molecules": 2.69897,
+          "lower_cutoff": 2.453993,
+          "upper_cutoff": 2.45585
+        },
+        {
+          "log_molecules": 2.906867,
+          "lower_cutoff": 2.596518,
+          "upper_cutoff": 2.598375
+        },
+        {
+          "log_molecules": 3.114763,
+          "lower_cutoff": 2.739044,
+          "upper_cutoff": 2.740899
+        },
+        {
+          "log_molecules": 3.32266,
+          "lower_cutoff": 2.88157,
+          "upper_cutoff": 2.883424
+        },
+        {
+          "log_molecules": 3.530557,
+          "lower_cutoff": 3.024095,
+          "upper_cutoff": 3.025949
+        },
+        {
+          "log_molecules": 3.738454,
+          "lower_cutoff": 3.16662,
+          "upper_cutoff": 3.168474
+        },
+        {
+          "log_molecules": 3.94635,
+          "lower_cutoff": 3.309145,
+          "upper_cutoff": 3.311
+        },
+        {
+          "log_molecules": 4.154247,
+          "lower_cutoff": 3.45167,
+          "upper_cutoff": 3.453526
+        },
+        {
+          "log_molecules": 4.362144,
+          "lower_cutoff": 3.594194,
+          "upper_cutoff": 3.596051
+        },
+        {
+          "log_molecules": 4.570041,
+          "lower_cutoff": 3.736718,
+          "upper_cutoff": 3.738577
+        }
+      ],
+      [
+        {
+          "log_molecules": 2.69897,
+          "lower_cutoff": 2.453064,
+          "upper_cutoff": 2.45678
+        },
+        {
+          "log_molecules": 2.906867,
+          "lower_cutoff": 2.59559,
+          "upper_cutoff": 2.599303
+        },
+        {
+          "log_molecules": 3.114763,
+          "lower_cutoff": 2.738116,
+          "upper_cutoff": 2.741827
+        },
+        {
+          "log_molecules": 3.32266,
+          "lower_cutoff": 2.880642,
+          "upper_cutoff": 2.884352
+        },
+        {
+          "log_molecules": 3.530557,
+          "lower_cutoff": 3.023168,
+          "upper_cutoff": 3.026877
+        },
+        {
+          "log_molecules": 3.738454,
+          "lower_cutoff": 3.165693,
+          "upper_cutoff": 3.169402
+        },
+        {
+          "log_molecules": 3.94635,
+          "lower_cutoff": 3.308217,
+          "upper_cutoff": 3.311928
+        },
+        {
+          "log_molecules": 4.154247,
+          "lower_cutoff": 3.450741,
+          "upper_cutoff": 3.454454
+        },
+        {
+          "log_molecules": 4.362144,
+          "lower_cutoff": 3.593265,
+          "upper_cutoff": 3.59698
+        },
+        {
+          "log_molecules": 4.570041,
+          "lower_cutoff": 3.735789,
+          "upper_cutoff": 3.739507
+        }
+      ],
+      [
+        {
+          "log_molecules": 2.69897,
+          "lower_cutoff": 2.452134,
+          "upper_cutoff": 2.457709
+        },
+        {
+          "log_molecules": 2.906867,
+          "lower_cutoff": 2.594662,
+          "upper_cutoff": 2.600232
+        },
+        {
+          "log_molecules": 3.114763,
+          "lower_cutoff": 2.737188,
+          "upper_cutoff": 2.742755
+        },
+        {
+          "log_molecules": 3.32266,
+          "lower_cutoff": 2.879715,
+          "upper_cutoff": 2.885279
+        },
+        {
+          "log_molecules": 3.530557,
+          "lower_cutoff": 3.02224,
+          "upper_cutoff": 3.027804
+        },
+        {
+          "log_molecules": 3.738454,
+          "lower_cutoff": 3.164765,
+          "upper_cutoff": 3.170329
+        },
+        {
+          "log_molecules": 3.94635,
+          "lower_cutoff": 3.307289,
+          "upper_cutoff": 3.312855
+        },
+        {
+          "log_molecules": 4.154247,
+          "lower_cutoff": 3.449813,
+          "upper_cutoff": 3.455382
+        },
+        {
+          "log_molecules": 4.362144,
+          "lower_cutoff": 3.592336,
+          "upper_cutoff": 3.597909
+        },
+        {
+          "log_molecules": 4.570041,
+          "lower_cutoff": 3.734859,
+          "upper_cutoff": 3.740437
+        }
+      ],
+      [
+        {
+          "log_molecules": 2.69897,
+          "lower_cutoff": 2.451204,
+          "upper_cutoff": 2.458639
+        },
+        {
+          "log_molecules": 2.906867,
+          "lower_cutoff": 2.593733,
+          "upper_cutoff": 2.601161
+        },
+        {
+          "log_molecules": 3.114763,
+          "lower_cutoff": 2.73626,
+          "upper_cutoff": 2.743684
+        },
+        {
+          "log_molecules": 3.32266,
+          "lower_cutoff": 2.878786,
+          "upper_cutoff": 2.886207
+        },
+        {
+          "log_molecules": 3.530557,
+          "lower_cutoff": 3.021312,
+          "upper_cutoff": 3.028732
+        },
+        {
+          "log_molecules": 3.738454,
+          "lower_cutoff": 3.163837,
+          "upper_cutoff": 3.171258
+        },
+        {
+          "log_molecules": 3.94635,
+          "lower_cutoff": 3.306361,
+          "upper_cutoff": 3.313784
+        },
+        {
+          "log_molecules": 4.154247,
+          "lower_cutoff": 3.448884,
+          "upper_cutoff": 3.456311
+        },
+        {
+          "log_molecules": 4.362144,
+          "lower_cutoff": 3.591407,
+          "upper_cutoff": 3.598839
+        },
+        {
+          "log_molecules": 4.570041,
+          "lower_cutoff": 3.733928,
+          "upper_cutoff": 3.741368
+        }
+      ],
+      [
+        {
+          "log_molecules": 2.69897,
+          "lower_cutoff": 2.450274,
+          "upper_cutoff": 2.459569
+        },
+        {
+          "log_molecules": 2.906867,
+          "lower_cutoff": 2.592803,
+          "upper_cutoff": 2.60209
+        },
+        {
+          "log_molecules": 3.114763,
+          "lower_cutoff": 2.735331,
+          "upper_cutoff": 2.744613
+        },
+        {
+          "log_molecules": 3.32266,
+          "lower_cutoff": 2.877858,
+          "upper_cutoff": 2.887136
+        },
+        {
+          "log_molecules": 3.530557,
+          "lower_cutoff": 3.020384,
+          "upper_cutoff": 3.029661
+        },
+        {
+          "log_molecules": 3.738454,
+          "lower_cutoff": 3.162908,
+          "upper_cutoff": 3.172186
+        },
+        {
+          "log_molecules": 3.94635,
+          "lower_cutoff": 3.305432,
+          "upper_cutoff": 3.314713
+        },
+        {
+          "log_molecules": 4.154247,
+          "lower_cutoff": 3.447955,
+          "upper_cutoff": 3.45724
+        },
+        {
+          "log_molecules": 4.362144,
+          "lower_cutoff": 3.590476,
+          "upper_cutoff": 3.599769
+        },
+        {
+          "log_molecules": 4.570041,
+          "lower_cutoff": 3.732997,
+          "upper_cutoff": 3.742299
+        }
+      ],
+      [
+        {
+          "log_molecules": 2.69897,
+          "lower_cutoff": 2.449343,
+          "upper_cutoff": 2.4605
+        },
+        {
+          "log_molecules": 2.906867,
+          "lower_cutoff": 2.591873,
+          "upper_cutoff": 2.603021
+        },
+        {
+          "log_molecules": 3.114763,
+          "lower_cutoff": 2.734401,
+          "upper_cutoff": 2.745543
+        },
+        {
+          "log_molecules": 3.32266,
+          "lower_cutoff": 2.876928,
+          "upper_cutoff": 2.888066
+        },
+        {
+          "log_molecules": 3.530557,
+          "lower_cutoff": 3.019454,
+          "upper_cutoff": 3.03059
+        },
+        {
+          "log_molecules": 3.738454,
+          "lower_cutoff": 3.161979,
+          "upper_cutoff": 3.173116
+        },
+        {
+          "log_molecules": 3.94635,
+          "lower_cutoff": 3.304502,
+          "upper_cutoff": 3.315642
+        },
+        {
+          "log_molecules": 4.154247,
+          "lower_cutoff": 3.447025,
+          "upper_cutoff": 3.458171
+        },
+        {
+          "log_molecules": 4.362144,
+          "lower_cutoff": 3.589546,
+          "upper_cutoff": 3.6007
+        },
+        {
+          "log_molecules": 4.570041,
+          "lower_cutoff": 3.732065,
+          "upper_cutoff": 3.74323
+        }
+      ],
+      [
+        {
+          "log_molecules": 2.69897,
+          "lower_cutoff": 2.448411,
+          "upper_cutoff": 2.461432
+        },
+        {
+          "log_molecules": 2.906867,
+          "lower_cutoff": 2.590941,
+          "upper_cutoff": 2.603952
+        },
+        {
+          "log_molecules": 3.114763,
+          "lower_cutoff": 2.73347,
+          "upper_cutoff": 2.746473
+        },
+        {
+          "log_molecules": 3.32266,
+          "lower_cutoff": 2.875998,
+          "upper_cutoff": 2.888996
+        },
+        {
+          "log_molecules": 3.530557,
+          "lower_cutoff": 3.018524,
+          "upper_cutoff": 3.03152
+        },
+        {
+          "log_molecules": 3.738454,
+          "lower_cutoff": 3.161049,
+          "upper_cutoff": 3.174046
+        },
+        {
+          "log_molecules": 3.94635,
+          "lower_cutoff": 3.303572,
+          "upper_cutoff": 3.316573
+        },
+        {
+          "log_molecules": 4.154247,
+          "lower_cutoff": 3.446094,
+          "upper_cutoff": 3.459102
+        },
+        {
+          "log_molecules": 4.362144,
+          "lower_cutoff": 3.588614,
+          "upper_cutoff": 3.601632
+        },
+        {
+          "log_molecules": 4.570041,
+          "lower_cutoff": 3.731133,
+          "upper_cutoff": 3.744163
+        }
+      ],
+      [
+        {
+          "log_molecules": 2.69897,
+          "lower_cutoff": 2.447478,
+          "upper_cutoff": 2.462365
+        },
+        {
+          "log_molecules": 2.906867,
+          "lower_cutoff": 2.590009,
+          "upper_cutoff": 2.604884
+        },
+        {
+          "log_molecules": 3.114763,
+          "lower_cutoff": 2.732539,
+          "upper_cutoff": 2.747405
+        },
+        {
+          "log_molecules": 3.32266,
+          "lower_cutoff": 2.875067,
+          "upper_cutoff": 2.889927
+        },
+        {
+          "log_molecules": 3.530557,
+          "lower_cutoff": 3.017593,
+          "upper_cutoff": 3.032451
+        },
+        {
+          "log_molecules": 3.738454,
+          "lower_cutoff": 3.160117,
+          "upper_cutoff": 3.174977
+        },
+        {
+          "log_molecules": 3.94635,
+          "lower_cutoff": 3.30264,
+          "upper_cutoff": 3.317505
+        },
+        {
+          "log_molecules": 4.154247,
+          "lower_cutoff": 3.445162,
+          "upper_cutoff": 3.460034
+        },
+        {
+          "log_molecules": 4.362144,
+          "lower_cutoff": 3.587681,
+          "upper_cutoff": 3.602564
+        },
+        {
+          "log_molecules": 4.570041,
+          "lower_cutoff": 3.730199,
+          "upper_cutoff": 3.745097
+        }
+      ],
+      [
+        {
+          "log_molecules": 2.69897,
+          "lower_cutoff": 2.446544,
+          "upper_cutoff": 2.463299
+        },
+        {
+          "log_molecules": 2.906867,
+          "lower_cutoff": 2.589076,
+          "upper_cutoff": 2.605818
+        },
+        {
+          "log_molecules": 3.114763,
+          "lower_cutoff": 2.731606,
+          "upper_cutoff": 2.748338
+        },
+        {
+          "log_molecules": 3.32266,
+          "lower_cutoff": 2.874134,
+          "upper_cutoff": 2.89086
+        },
+        {
+          "log_molecules": 3.530557,
+          "lower_cutoff": 3.01666,
+          "upper_cutoff": 3.033384
+        },
+        {
+          "log_molecules": 3.738454,
+          "lower_cutoff": 3.159185,
+          "upper_cutoff": 3.17591
+        },
+        {
+          "log_molecules": 3.94635,
+          "lower_cutoff": 3.301707,
+          "upper_cutoff": 3.318437
+        },
+        {
+          "log_molecules": 4.154247,
+          "lower_cutoff": 3.444228,
+          "upper_cutoff": 3.460967
+        },
+        {
+          "log_molecules": 4.362144,
+          "lower_cutoff": 3.586747,
+          "upper_cutoff": 3.603498
+        },
+        {
+          "log_molecules": 4.570041,
+          "lower_cutoff": 3.729264,
+          "upper_cutoff": 3.746032
+        }
+      ],
+      [
+        {
+          "log_molecules": 2.69897,
+          "lower_cutoff": 2.445608,
+          "upper_cutoff": 2.464235
+        },
+        {
+          "log_molecules": 2.906867,
+          "lower_cutoff": 2.588141,
+          "upper_cutoff": 2.606753
+        },
+        {
+          "log_molecules": 3.114763,
+          "lower_cutoff": 2.730672,
+          "upper_cutoff": 2.749272
+        },
+        {
+          "log_molecules": 3.32266,
+          "lower_cutoff": 2.8732,
+          "upper_cutoff": 2.891794
+        },
+        {
+          "log_molecules": 3.530557,
+          "lower_cutoff": 3.015727,
+          "upper_cutoff": 3.034318
+        },
+        {
+          "log_molecules": 3.738454,
+          "lower_cutoff": 3.158251,
+          "upper_cutoff": 3.176843
+        },
+        {
+          "log_molecules": 3.94635,
+          "lower_cutoff": 3.300773,
+          "upper_cutoff": 3.319371
+        },
+        {
+          "log_molecules": 4.154247,
+          "lower_cutoff": 3.443294,
+          "upper_cutoff": 3.461901
+        },
+        {
+          "log_molecules": 4.362144,
+          "lower_cutoff": 3.585812,
+          "upper_cutoff": 3.604434
+        },
+        {
+          "log_molecules": 4.570041,
+          "lower_cutoff": 3.728328,
+          "upper_cutoff": 3.746968
+        }
+      ],
+      [
+        {
+          "log_molecules": 2.69897,
+          "lower_cutoff": 2.444671,
+          "upper_cutoff": 2.465172
+        },
+        {
+          "log_molecules": 2.906867,
+          "lower_cutoff": 2.587205,
+          "upper_cutoff": 2.607689
+        },
+        {
+          "log_molecules": 3.114763,
+          "lower_cutoff": 2.729736,
+          "upper_cutoff": 2.750208
+        },
+        {
+          "log_molecules": 3.32266,
+          "lower_cutoff": 2.872265,
+          "upper_cutoff": 2.892729
+        },
+        {
+          "log_molecules": 3.530557,
+          "lower_cutoff": 3.014791,
+          "upper_cutoff": 3.035253
+        },
+        {
+          "log_molecules": 3.738454,
+          "lower_cutoff": 3.157316,
+          "upper_cutoff": 3.177779
+        },
+        {
+          "log_molecules": 3.94635,
+          "lower_cutoff": 3.299838,
+          "upper_cutoff": 3.320307
+        },
+        {
+          "log_molecules": 4.154247,
+          "lower_cutoff": 3.442358,
+          "upper_cutoff": 3.462838
+        },
+        {
+          "log_molecules": 4.362144,
+          "lower_cutoff": 3.584875,
+          "upper_cutoff": 3.60537
+        },
+        {
+          "log_molecules": 4.570041,
+          "lower_cutoff": 3.72739,
+          "upper_cutoff": 3.747905
+        }
+      ],
+      [
+        {
+          "log_molecules": 2.69897,
+          "lower_cutoff": 2.443732,
+          "upper_cutoff": 2.466111
+        },
+        {
+          "log_molecules": 2.906867,
+          "lower_cutoff": 2.586267,
+          "upper_cutoff": 2.608627
+        },
+        {
+          "log_molecules": 3.114763,
+          "lower_cutoff": 2.728798,
+          "upper_cutoff": 2.751145
+        },
+        {
+          "log_molecules": 3.32266,
+          "lower_cutoff": 2.871328,
+          "upper_cutoff": 2.893666
+        },
+        {
+          "log_molecules": 3.530557,
+          "lower_cutoff": 3.013855,
+          "upper_cutoff": 3.03619
+        },
+        {
+          "log_molecules": 3.738454,
+          "lower_cutoff": 3.156379,
+          "upper_cutoff": 3.178716
+        },
+        {
+          "log_molecules": 3.94635,
+          "lower_cutoff": 3.298901,
+          "upper_cutoff": 3.321244
+        },
+        {
+          "log_molecules": 4.154247,
+          "lower_cutoff": 3.44142,
+          "upper_cutoff": 3.463775
+        },
+        {
+          "log_molecules": 4.362144,
+          "lower_cutoff": 3.583937,
+          "upper_cutoff": 3.606309
+        },
+        {
+          "log_molecules": 4.570041,
+          "lower_cutoff": 3.726451,
+          "upper_cutoff": 3.748845
+        }
+      ],
+      [
+        {
+          "log_molecules": 2.69897,
+          "lower_cutoff": 2.442792,
+          "upper_cutoff": 2.467051
+        },
+        {
+          "log_molecules": 2.906867,
+          "lower_cutoff": 2.585327,
+          "upper_cutoff": 2.609566
+        },
+        {
+          "log_molecules": 3.114763,
+          "lower_cutoff": 2.727859,
+          "upper_cutoff": 2.752084
+        },
+        {
+          "log_molecules": 3.32266,
+          "lower_cutoff": 2.870389,
+          "upper_cutoff": 2.894605
+        },
+        {
+          "log_molecules": 3.530557,
+          "lower_cutoff": 3.012916,
+          "upper_cutoff": 3.037128
+        },
+        {
+          "log_molecules": 3.738454,
+          "lower_cutoff": 3.15544,
+          "upper_cutoff": 3.179654
+        },
+        {
+          "log_molecules": 3.94635,
+          "lower_cutoff": 3.297962,
+          "upper_cutoff": 3.322183
+        },
+        {
+          "log_molecules": 4.154247,
+          "lower_cutoff": 3.44048,
+          "upper_cutoff": 3.464715
+        },
+        {
+          "log_molecules": 4.362144,
+          "lower_cutoff": 3.582996,
+          "upper_cutoff": 3.607249
+        },
+        {
+          "log_molecules": 4.570041,
+          "lower_cutoff": 3.72551,
+          "upper_cutoff": 3.749786
+        }
+      ],
+      [
+        {
+          "log_molecules": 2.69897,
+          "lower_cutoff": 2.441849,
+          "upper_cutoff": 2.467994
+        },
+        {
+          "log_molecules": 2.906867,
+          "lower_cutoff": 2.584385,
+          "upper_cutoff": 2.610508
+        },
+        {
+          "log_molecules": 3.114763,
+          "lower_cutoff": 2.726918,
+          "upper_cutoff": 2.753025
+        },
+        {
+          "log_molecules": 3.32266,
+          "lower_cutoff": 2.869448,
+          "upper_cutoff": 2.895546
+        },
+        {
+          "log_molecules": 3.530557,
+          "lower_cutoff": 3.011975,
+          "upper_cutoff": 3.038069
+        },
+        {
+          "log_molecules": 3.738454,
+          "lower_cutoff": 3.154499,
+          "upper_cutoff": 3.180595
+        },
+        {
+          "log_molecules": 3.94635,
+          "lower_cutoff": 3.297021,
+          "upper_cutoff": 3.323124
+        },
+        {
+          "log_molecules": 4.154247,
+          "lower_cutoff": 3.439539,
+          "upper_cutoff": 3.465656
+        },
+        {
+          "log_molecules": 4.362144,
+          "lower_cutoff": 3.582054,
+          "upper_cutoff": 3.608191
+        },
+        {
+          "log_molecules": 4.570041,
+          "lower_cutoff": 3.724567,
+          "upper_cutoff": 3.750729
+        }
+      ],
+      [
+        {
+          "log_molecules": 2.69897,
+          "lower_cutoff": 2.440905,
+          "upper_cutoff": 2.468938
+        },
+        {
+          "log_molecules": 2.906867,
+          "lower_cutoff": 2.583442,
+          "upper_cutoff": 2.611452
+        },
+        {
+          "log_molecules": 3.114763,
+          "lower_cutoff": 2.725975,
+          "upper_cutoff": 2.753969
+        },
+        {
+          "log_molecules": 3.32266,
+          "lower_cutoff": 2.868505,
+          "upper_cutoff": 2.896489
+        },
+        {
+          "log_molecules": 3.530557,
+          "lower_cutoff": 3.011033,
+          "upper_cutoff": 3.039012
+        },
+        {
+          "log_molecules": 3.738454,
+          "lower_cutoff": 3.153557,
+          "upper_cutoff": 3.181538
+        },
+        {
+          "log_molecules": 3.94635,
+          "lower_cutoff": 3.296078,
+          "upper_cutoff": 3.324067
+        },
+        {
+          "log_molecules": 4.154247,
+          "lower_cutoff": 3.438595,
+          "upper_cutoff": 3.4666
+        },
+        {
+          "log_molecules": 4.362144,
+          "lower_cutoff": 3.58111,
+          "upper_cutoff": 3.609135
+        },
+        {
+          "log_molecules": 4.570041,
+          "lower_cutoff": 3.723622,
+          "upper_cutoff": 3.751674
+        }
+      ],
+      [
+        {
+          "log_molecules": 2.69897,
+          "lower_cutoff": 2.439958,
+          "upper_cutoff": 2.469885
+        },
+        {
+          "log_molecules": 2.906867,
+          "lower_cutoff": 2.582495,
+          "upper_cutoff": 2.612398
+        },
+        {
+          "log_molecules": 3.114763,
+          "lower_cutoff": 2.725029,
+          "upper_cutoff": 2.754914
+        },
+        {
+          "log_molecules": 3.32266,
+          "lower_cutoff": 2.86756,
+          "upper_cutoff": 2.897434
+        },
+        {
+          "log_molecules": 3.530557,
+          "lower_cutoff": 3.010088,
+          "upper_cutoff": 3.039957
+        },
+        {
+          "log_molecules": 3.738454,
+          "lower_cutoff": 3.152612,
+          "upper_cutoff": 3.182483
+        },
+        {
+          "log_molecules": 3.94635,
+          "lower_cutoff": 3.295132,
+          "upper_cutoff": 3.325013
+        },
+        {
+          "log_molecules": 4.154247,
+          "lower_cutoff": 3.437649,
+          "upper_cutoff": 3.467546
+        },
+        {
+          "log_molecules": 4.362144,
+          "lower_cutoff": 3.580163,
+          "upper_cutoff": 3.610082
+        },
+        {
+          "log_molecules": 4.570041,
+          "lower_cutoff": 3.722674,
+          "upper_cutoff": 3.752622
+        }
+      ],
+      [
+        {
+          "log_molecules": 2.69897,
+          "lower_cutoff": 2.439009,
+          "upper_cutoff": 2.470834
+        },
+        {
+          "log_molecules": 2.906867,
+          "lower_cutoff": 2.581547,
+          "upper_cutoff": 2.613346
+        },
+        {
+          "log_molecules": 3.114763,
+          "lower_cutoff": 2.724082,
+          "upper_cutoff": 2.755862
+        },
+        {
+          "log_molecules": 3.32266,
+          "lower_cutoff": 2.866613,
+          "upper_cutoff": 2.898381
+        },
+        {
+          "log_molecules": 3.530557,
+          "lower_cutoff": 3.00914,
+          "upper_cutoff": 3.040904
+        },
+        {
+          "log_molecules": 3.738454,
+          "lower_cutoff": 3.151664,
+          "upper_cutoff": 3.183431
+        },
+        {
+          "log_molecules": 3.94635,
+          "lower_cutoff": 3.294184,
+          "upper_cutoff": 3.32596
+        },
+        {
+          "log_molecules": 4.154247,
+          "lower_cutoff": 3.436701,
+          "upper_cutoff": 3.468494
+        },
+        {
+          "log_molecules": 4.362144,
+          "lower_cutoff": 3.579214,
+          "upper_cutoff": 3.611031
+        },
+        {
+          "log_molecules": 4.570041,
+          "lower_cutoff": 3.721724,
+          "upper_cutoff": 3.753572
+        }
+      ],
+      [
+        {
+          "log_molecules": 2.69897,
+          "lower_cutoff": 2.438057,
+          "upper_cutoff": 2.471786
+        },
+        {
+          "log_molecules": 2.906867,
+          "lower_cutoff": 2.580596,
+          "upper_cutoff": 2.614297
+        },
+        {
+          "log_molecules": 3.114763,
+          "lower_cutoff": 2.723131,
+          "upper_cutoff": 2.756813
+        },
+        {
+          "log_molecules": 3.32266,
+          "lower_cutoff": 2.865662,
+          "upper_cutoff": 2.899332
+        },
+        {
+          "log_molecules": 3.530557,
+          "lower_cutoff": 3.00819,
+          "upper_cutoff": 3.041854
+        },
+        {
+          "log_molecules": 3.738454,
+          "lower_cutoff": 3.150714,
+          "upper_cutoff": 3.184381
+        },
+        {
+          "log_molecules": 3.94635,
+          "lower_cutoff": 3.293234,
+          "upper_cutoff": 3.326911
+        },
+        {
+          "log_molecules": 4.154247,
+          "lower_cutoff": 3.43575,
+          "upper_cutoff": 3.469445
+        },
+        {
+          "log_molecules": 4.362144,
+          "lower_cutoff": 3.578263,
+          "upper_cutoff": 3.611983
+        },
+        {
+          "log_molecules": 4.570041,
+          "lower_cutoff": 3.720772,
+          "upper_cutoff": 3.754524
+        }
+      ],
+      [
+        {
+          "log_molecules": 2.69897,
+          "lower_cutoff": 2.437102,
+          "upper_cutoff": 2.472741
+        },
+        {
+          "log_molecules": 2.906867,
+          "lower_cutoff": 2.579642,
+          "upper_cutoff": 2.615251
+        },
+        {
+          "log_molecules": 3.114763,
+          "lower_cutoff": 2.722178,
+          "upper_cutoff": 2.757766
+        },
+        {
+          "log_molecules": 3.32266,
+          "lower_cutoff": 2.864709,
+          "upper_cutoff": 2.900284
+        },
+        {
+          "log_molecules": 3.530557,
+          "lower_cutoff": 3.007237,
+          "upper_cutoff": 3.042807
+        },
+        {
+          "log_molecules": 3.738454,
+          "lower_cutoff": 3.149761,
+          "upper_cutoff": 3.185334
+        },
+        {
+          "log_molecules": 3.94635,
+          "lower_cutoff": 3.292281,
+          "upper_cutoff": 3.327864
+        },
+        {
+          "log_molecules": 4.154247,
+          "lower_cutoff": 3.434797,
+          "upper_cutoff": 3.470399
+        },
+        {
+          "log_molecules": 4.362144,
+          "lower_cutoff": 3.577308,
+          "upper_cutoff": 3.612937
+        },
+        {
+          "log_molecules": 4.570041,
+          "lower_cutoff": 3.719816,
+          "upper_cutoff": 3.75548
+        }
+      ],
+      [
+        {
+          "log_molecules": 2.69897,
+          "lower_cutoff": 2.436145,
+          "upper_cutoff": 2.473698
+        },
+        {
+          "log_molecules": 2.906867,
+          "lower_cutoff": 2.578685,
+          "upper_cutoff": 2.616208
+        },
+        {
+          "log_molecules": 3.114763,
+          "lower_cutoff": 2.721221,
+          "upper_cutoff": 2.758722
+        },
+        {
+          "log_molecules": 3.32266,
+          "lower_cutoff": 2.863753,
+          "upper_cutoff": 2.90124
+        },
+        {
+          "log_molecules": 3.530557,
+          "lower_cutoff": 3.006281,
+          "upper_cutoff": 3.043763
+        },
+        {
+          "log_molecules": 3.738454,
+          "lower_cutoff": 3.148805,
+          "upper_cutoff": 3.186289
+        },
+        {
+          "log_molecules": 3.94635,
+          "lower_cutoff": 3.291325,
+          "upper_cutoff": 3.32882
+        },
+        {
+          "log_molecules": 4.154247,
+          "lower_cutoff": 3.43384,
+          "upper_cutoff": 3.471355
+        },
+        {
+          "log_molecules": 4.362144,
+          "lower_cutoff": 3.576351,
+          "upper_cutoff": 3.613894
+        },
+        {
+          "log_molecules": 4.570041,
+          "lower_cutoff": 3.718858,
+          "upper_cutoff": 3.756438
+        }
+      ],
+      [
+        {
+          "log_molecules": 2.69897,
+          "lower_cutoff": 2.435184,
+          "upper_cutoff": 2.474659
+        },
+        {
+          "log_molecules": 2.906867,
+          "lower_cutoff": 2.577725,
+          "upper_cutoff": 2.617168
+        },
+        {
+          "log_molecules": 3.114763,
+          "lower_cutoff": 2.720262,
+          "upper_cutoff": 2.759682
+        },
+        {
+          "log_molecules": 3.32266,
+          "lower_cutoff": 2.862794,
+          "upper_cutoff": 2.9022
+        },
+        {
+          "log_molecules": 3.530557,
+          "lower_cutoff": 3.005322,
+          "upper_cutoff": 3.044722
+        },
+        {
+          "log_molecules": 3.738454,
+          "lower_cutoff": 3.147846,
+          "upper_cutoff": 3.187248
+        },
+        {
+          "log_molecules": 3.94635,
+          "lower_cutoff": 3.290365,
+          "upper_cutoff": 3.32978
+        },
+        {
+          "log_molecules": 4.154247,
+          "lower_cutoff": 3.43288,
+          "upper_cutoff": 3.472315
+        },
+        {
+          "log_molecules": 4.362144,
+          "lower_cutoff": 3.57539,
+          "upper_cutoff": 3.614855
+        },
+        {
+          "log_molecules": 4.570041,
+          "lower_cutoff": 3.717896,
+          "upper_cutoff": 3.757399
+        }
+      ],
+      [
+        {
+          "log_molecules": 2.69897,
+          "lower_cutoff": 2.43422,
+          "upper_cutoff": 2.475623
+        },
+        {
+          "log_molecules": 2.906867,
+          "lower_cutoff": 2.576762,
+          "upper_cutoff": 2.618132
+        },
+        {
+          "log_molecules": 3.114763,
+          "lower_cutoff": 2.719299,
+          "upper_cutoff": 2.760644
+        },
+        {
+          "log_molecules": 3.32266,
+          "lower_cutoff": 2.861832,
+          "upper_cutoff": 2.903162
+        },
+        {
+          "log_molecules": 3.530557,
+          "lower_cutoff": 3.00436,
+          "upper_cutoff": 3.045684
+        },
+        {
+          "log_molecules": 3.738454,
+          "lower_cutoff": 3.146884,
+          "upper_cutoff": 3.188211
+        },
+        {
+          "log_molecules": 3.94635,
+          "lower_cutoff": 3.289403,
+          "upper_cutoff": 3.330742
+        },
+        {
+          "log_molecules": 4.154247,
+          "lower_cutoff": 3.431917,
+          "upper_cutoff": 3.473278
+        },
+        {
+          "log_molecules": 4.362144,
+          "lower_cutoff": 3.574427,
+          "upper_cutoff": 3.615819
+        },
+        {
+          "log_molecules": 4.570041,
+          "lower_cutoff": 3.716932,
+          "upper_cutoff": 3.758364
+        }
+      ],
+      [
+        {
+          "log_molecules": 2.69897,
+          "lower_cutoff": 2.433252,
+          "upper_cutoff": 2.476591
+        },
+        {
+          "log_molecules": 2.906867,
+          "lower_cutoff": 2.575795,
+          "upper_cutoff": 2.619098
+        },
+        {
+          "log_molecules": 3.114763,
+          "lower_cutoff": 2.718333,
+          "upper_cutoff": 2.761611
+        },
+        {
+          "log_molecules": 3.32266,
+          "lower_cutoff": 2.860866,
+          "upper_cutoff": 2.904128
+        },
+        {
+          "log_molecules": 3.530557,
+          "lower_cutoff": 3.003394,
+          "upper_cutoff": 3.04665
+        },
+        {
+          "log_molecules": 3.738454,
+          "lower_cutoff": 3.145918,
+          "upper_cutoff": 3.189177
+        },
+        {
+          "log_molecules": 3.94635,
+          "lower_cutoff": 3.288437,
+          "upper_cutoff": 3.331708
+        },
+        {
+          "log_molecules": 4.154247,
+          "lower_cutoff": 3.43095,
+          "upper_cutoff": 3.474245
+        },
+        {
+          "log_molecules": 4.362144,
+          "lower_cutoff": 3.573459,
+          "upper_cutoff": 3.616786
+        },
+        {
+          "log_molecules": 4.570041,
+          "lower_cutoff": 3.715963,
+          "upper_cutoff": 3.759332
+        }
+      ],
+      [
+        {
+          "log_molecules": 2.69897,
+          "lower_cutoff": 2.432281,
+          "upper_cutoff": 2.477562
+        },
+        {
+          "log_molecules": 2.906867,
+          "lower_cutoff": 2.574824,
+          "upper_cutoff": 2.620069
+        },
+        {
+          "log_molecules": 3.114763,
+          "lower_cutoff": 2.717363,
+          "upper_cutoff": 2.762581
+        },
+        {
+          "log_molecules": 3.32266,
+          "lower_cutoff": 2.859896,
+          "upper_cutoff": 2.905097
+        },
+        {
+          "log_molecules": 3.530557,
+          "lower_cutoff": 3.002425,
+          "upper_cutoff": 3.047619
+        },
+        {
+          "log_molecules": 3.738454,
+          "lower_cutoff": 3.144948,
+          "upper_cutoff": 3.190146
+        },
+        {
+          "log_molecules": 3.94635,
+          "lower_cutoff": 3.287467,
+          "upper_cutoff": 3.332678
+        },
+        {
+          "log_molecules": 4.154247,
+          "lower_cutoff": 3.42998,
+          "upper_cutoff": 3.475215
+        },
+        {
+          "log_molecules": 4.362144,
+          "lower_cutoff": 3.572488,
+          "upper_cutoff": 3.617757
+        },
+        {
+          "log_molecules": 4.570041,
+          "lower_cutoff": 3.714991,
+          "upper_cutoff": 3.760304
+        }
+      ],
+      [
+        {
+          "log_molecules": 2.69897,
+          "lower_cutoff": 2.431305,
+          "upper_cutoff": 2.478538
+        },
+        {
+          "log_molecules": 2.906867,
+          "lower_cutoff": 2.57385,
+          "upper_cutoff": 2.621043
+        },
+        {
+          "log_molecules": 3.114763,
+          "lower_cutoff": 2.716389,
+          "upper_cutoff": 2.763555
+        },
+        {
+          "log_molecules": 3.32266,
+          "lower_cutoff": 2.858923,
+          "upper_cutoff": 2.906071
+        },
+        {
+          "log_molecules": 3.530557,
+          "lower_cutoff": 3.001452,
+          "upper_cutoff": 3.048593
+        },
+        {
+          "log_molecules": 3.738454,
+          "lower_cutoff": 3.143975,
+          "upper_cutoff": 3.19112
+        },
+        {
+          "log_molecules": 3.94635,
+          "lower_cutoff": 3.286493,
+          "upper_cutoff": 3.333652
+        },
+        {
+          "log_molecules": 4.154247,
+          "lower_cutoff": 3.429006,
+          "upper_cutoff": 3.476189
+        },
+        {
+          "log_molecules": 4.362144,
+          "lower_cutoff": 3.571513,
+          "upper_cutoff": 3.618732
+        },
+        {
+          "log_molecules": 4.570041,
+          "lower_cutoff": 3.714015,
+          "upper_cutoff": 3.76128
+        }
+      ],
+      [
+        {
+          "log_molecules": 2.69897,
+          "lower_cutoff": 2.430326,
+          "upper_cutoff": 2.479517
+        },
+        {
+          "log_molecules": 2.906867,
+          "lower_cutoff": 2.572871,
+          "upper_cutoff": 2.622022
+        },
+        {
+          "log_molecules": 3.114763,
+          "lower_cutoff": 2.715411,
+          "upper_cutoff": 2.764533
+        },
+        {
+          "log_molecules": 3.32266,
+          "lower_cutoff": 2.857945,
+          "upper_cutoff": 2.907049
+        },
+        {
+          "log_molecules": 3.530557,
+          "lower_cutoff": 3.000474,
+          "upper_cutoff": 3.04957
+        },
+        {
+          "log_molecules": 3.738454,
+          "lower_cutoff": 3.142997,
+          "upper_cutoff": 3.192097
+        },
+        {
+          "log_molecules": 3.94635,
+          "lower_cutoff": 3.285515,
+          "upper_cutoff": 3.33463
+        },
+        {
+          "log_molecules": 4.154247,
+          "lower_cutoff": 3.428027,
+          "upper_cutoff": 3.477168
+        },
+        {
+          "log_molecules": 4.362144,
+          "lower_cutoff": 3.570534,
+          "upper_cutoff": 3.619711
+        },
+        {
+          "log_molecules": 4.570041,
+          "lower_cutoff": 3.713035,
+          "upper_cutoff": 3.76226
+        }
+      ],
+      [
+        {
+          "log_molecules": 2.69897,
+          "lower_cutoff": 2.429342,
+          "upper_cutoff": 2.480501
+        },
+        {
+          "log_molecules": 2.906867,
+          "lower_cutoff": 2.571888,
+          "upper_cutoff": 2.623005
+        },
+        {
+          "log_molecules": 3.114763,
+          "lower_cutoff": 2.714429,
+          "upper_cutoff": 2.765515
+        },
+        {
+          "log_molecules": 3.32266,
+          "lower_cutoff": 2.856963,
+          "upper_cutoff": 2.908031
+        },
+        {
+          "log_molecules": 3.530557,
+          "lower_cutoff": 2.999492,
+          "upper_cutoff": 3.050552
+        },
+        {
+          "log_molecules": 3.738454,
+          "lower_cutoff": 3.142015,
+          "upper_cutoff": 3.193079
+        },
+        {
+          "log_molecules": 3.94635,
+          "lower_cutoff": 3.284533,
+          "upper_cutoff": 3.335612
+        },
+        {
+          "log_molecules": 4.154247,
+          "lower_cutoff": 3.427045,
+          "upper_cutoff": 3.47815
+        },
+        {
+          "log_molecules": 4.362144,
+          "lower_cutoff": 3.569551,
+          "upper_cutoff": 3.620695
+        },
+        {
+          "log_molecules": 4.570041,
+          "lower_cutoff": 3.712051,
+          "upper_cutoff": 3.763245
+        }
+      ],
+      [
+        {
+          "log_molecules": 2.69897,
+          "lower_cutoff": 2.428354,
+          "upper_cutoff": 2.481489
+        },
+        {
+          "log_molecules": 2.906867,
+          "lower_cutoff": 2.570901,
+          "upper_cutoff": 2.623992
+        },
+        {
+          "log_molecules": 3.114763,
+          "lower_cutoff": 2.713442,
+          "upper_cutoff": 2.766502
+        },
+        {
+          "log_molecules": 3.32266,
+          "lower_cutoff": 2.855977,
+          "upper_cutoff": 2.909017
+        },
+        {
+          "log_molecules": 3.530557,
+          "lower_cutoff": 2.998506,
+          "upper_cutoff": 3.051538
+        },
+        {
+          "log_molecules": 3.738454,
+          "lower_cutoff": 3.141029,
+          "upper_cutoff": 3.194065
+        },
+        {
+          "log_molecules": 3.94635,
+          "lower_cutoff": 3.283546,
+          "upper_cutoff": 3.336599
+        },
+        {
+          "log_molecules": 4.154247,
+          "lower_cutoff": 3.426057,
+          "upper_cutoff": 3.479138
+        },
+        {
+          "log_molecules": 4.362144,
+          "lower_cutoff": 3.568563,
+          "upper_cutoff": 3.621683
+        },
+        {
+          "log_molecules": 4.570041,
+          "lower_cutoff": 3.711062,
+          "upper_cutoff": 3.764234
+        }
+      ],
+      [
+        {
+          "log_molecules": 2.69897,
+          "lower_cutoff": 2.427361,
+          "upper_cutoff": 2.482482
+        },
+        {
+          "log_molecules": 2.906867,
+          "lower_cutoff": 2.569909,
+          "upper_cutoff": 2.624984
+        },
+        {
+          "log_molecules": 3.114763,
+          "lower_cutoff": 2.71245,
+          "upper_cutoff": 2.767493
+        },
+        {
+          "log_molecules": 3.32266,
+          "lower_cutoff": 2.854986,
+          "upper_cutoff": 2.910008
+        },
+        {
+          "log_molecules": 3.530557,
+          "lower_cutoff": 2.997515,
+          "upper_cutoff": 3.052529
+        },
+        {
+          "log_molecules": 3.738454,
+          "lower_cutoff": 3.140038,
+          "upper_cutoff": 3.195057
+        },
+        {
+          "log_molecules": 3.94635,
+          "lower_cutoff": 3.282555,
+          "upper_cutoff": 3.33759
+        },
+        {
+          "log_molecules": 4.154247,
+          "lower_cutoff": 3.425066,
+          "upper_cutoff": 3.48013
+        },
+        {
+          "log_molecules": 4.362144,
+          "lower_cutoff": 3.56757,
+          "upper_cutoff": 3.622675
+        },
+        {
+          "log_molecules": 4.570041,
+          "lower_cutoff": 3.710068,
+          "upper_cutoff": 3.765227
+        }
+      ],
+      [
+        {
+          "log_molecules": 2.69897,
+          "lower_cutoff": 2.426363,
+          "upper_cutoff": 2.48348
+        },
+        {
+          "log_molecules": 2.906867,
+          "lower_cutoff": 2.568912,
+          "upper_cutoff": 2.625982
+        },
+        {
+          "log_molecules": 3.114763,
+          "lower_cutoff": 2.711454,
+          "upper_cutoff": 2.76849
+        },
+        {
+          "log_molecules": 3.32266,
+          "lower_cutoff": 2.85399,
+          "upper_cutoff": 2.911004
+        },
+        {
+          "log_molecules": 3.530557,
+          "lower_cutoff": 2.996519,
+          "upper_cutoff": 3.053525
+        },
+        {
+          "log_molecules": 3.738454,
+          "lower_cutoff": 3.139042,
+          "upper_cutoff": 3.196053
+        },
+        {
+          "log_molecules": 3.94635,
+          "lower_cutoff": 3.281558,
+          "upper_cutoff": 3.338586
+        },
+        {
+          "log_molecules": 4.154247,
+          "lower_cutoff": 3.424069,
+          "upper_cutoff": 3.481126
+        },
+        {
+          "log_molecules": 4.362144,
+          "lower_cutoff": 3.566572,
+          "upper_cutoff": 3.623673
+        },
+        {
+          "log_molecules": 4.570041,
+          "lower_cutoff": 3.70907,
+          "upper_cutoff": 3.766226
+        }
+      ],
+      [
+        {
+          "log_molecules": 2.69897,
+          "lower_cutoff": 2.42536,
+          "upper_cutoff": 2.484483
+        },
+        {
+          "log_molecules": 2.906867,
+          "lower_cutoff": 2.567909,
+          "upper_cutoff": 2.626984
+        },
+        {
+          "log_molecules": 3.114763,
+          "lower_cutoff": 2.710452,
+          "upper_cutoff": 2.769491
+        },
+        {
+          "log_molecules": 3.32266,
+          "lower_cutoff": 2.852988,
+          "upper_cutoff": 2.912006
+        },
+        {
+          "log_molecules": 3.530557,
+          "lower_cutoff": 2.995518,
+          "upper_cutoff": 3.054526
+        },
+        {
+          "log_molecules": 3.738454,
+          "lower_cutoff": 3.138041,
+          "upper_cutoff": 3.197054
+        },
+        {
+          "log_molecules": 3.94635,
+          "lower_cutoff": 3.280557,
+          "upper_cutoff": 3.339588
+        },
+        {
+          "log_molecules": 4.154247,
+          "lower_cutoff": 3.423067,
+          "upper_cutoff": 3.482129
+        },
+        {
+          "log_molecules": 4.362144,
+          "lower_cutoff": 3.56557,
+          "upper_cutoff": 3.624676
+        },
+        {
+          "log_molecules": 4.570041,
+          "lower_cutoff": 3.708066,
+          "upper_cutoff": 3.76723
+        }
+      ],
+      [
+        {
+          "log_molecules": 2.69897,
+          "lower_cutoff": 2.424352,
+          "upper_cutoff": 2.485491
+        },
+        {
+          "log_molecules": 2.906867,
+          "lower_cutoff": 2.566902,
+          "upper_cutoff": 2.627992
+        },
+        {
+          "log_molecules": 3.114763,
+          "lower_cutoff": 2.709445,
+          "upper_cutoff": 2.770499
+        },
+        {
+          "log_molecules": 3.32266,
+          "lower_cutoff": 2.851982,
+          "upper_cutoff": 2.913012
+        },
+        {
+          "log_molecules": 3.530557,
+          "lower_cutoff": 2.994511,
+          "upper_cutoff": 3.055533
+        },
+        {
+          "log_molecules": 3.738454,
+          "lower_cutoff": 3.137034,
+          "upper_cutoff": 3.198061
+        },
+        {
+          "log_molecules": 3.94635,
+          "lower_cutoff": 3.27955,
+          "upper_cutoff": 3.340595
+        },
+        {
+          "log_molecules": 4.154247,
+          "lower_cutoff": 3.422059,
+          "upper_cutoff": 3.483136
+        },
+        {
+          "log_molecules": 4.362144,
+          "lower_cutoff": 3.564561,
+          "upper_cutoff": 3.625684
+        },
+        {
+          "log_molecules": 4.570041,
+          "lower_cutoff": 3.707057,
+          "upper_cutoff": 3.768239
+        }
+      ],
+      [
+        {
+          "log_molecules": 2.69897,
+          "lower_cutoff": 2.423337,
+          "upper_cutoff": 2.486506
+        },
+        {
+          "log_molecules": 2.906867,
+          "lower_cutoff": 2.565888,
+          "upper_cutoff": 2.629005
+        },
+        {
+          "log_molecules": 3.114763,
+          "lower_cutoff": 2.708432,
+          "upper_cutoff": 2.771511
+        },
+        {
+          "log_molecules": 3.32266,
+          "lower_cutoff": 2.850969,
+          "upper_cutoff": 2.914025
+        },
+        {
+          "log_molecules": 3.530557,
+          "lower_cutoff": 2.993499,
+          "upper_cutoff": 3.056545
+        },
+        {
+          "log_molecules": 3.738454,
+          "lower_cutoff": 3.136022,
+          "upper_cutoff": 3.199073
+        },
+        {
+          "log_molecules": 3.94635,
+          "lower_cutoff": 3.278537,
+          "upper_cutoff": 3.341608
+        },
+        {
+          "log_molecules": 4.154247,
+          "lower_cutoff": 3.421046,
+          "upper_cutoff": 3.484149
+        },
+        {
+          "log_molecules": 4.362144,
+          "lower_cutoff": 3.563547,
+          "upper_cutoff": 3.626698
+        },
+        {
+          "log_molecules": 4.570041,
+          "lower_cutoff": 3.706042,
+          "upper_cutoff": 3.769254
+        }
+      ],
+      [
+        {
+          "log_molecules": 2.69897,
+          "lower_cutoff": 2.422317,
+          "upper_cutoff": 2.487526
+        },
+        {
+          "log_molecules": 2.906867,
+          "lower_cutoff": 2.564869,
+          "upper_cutoff": 2.630024
+        },
+        {
+          "log_molecules": 3.114763,
+          "lower_cutoff": 2.707413,
+          "upper_cutoff": 2.77253
+        },
+        {
+          "log_molecules": 3.32266,
+          "lower_cutoff": 2.849951,
+          "upper_cutoff": 2.915043
+        },
+        {
+          "log_molecules": 3.530557,
+          "lower_cutoff": 2.992481,
+          "upper_cutoff": 3.057564
+        },
+        {
+          "log_molecules": 3.738454,
+          "lower_cutoff": 3.135003,
+          "upper_cutoff": 3.200091
+        },
+        {
+          "log_molecules": 3.94635,
+          "lower_cutoff": 3.277519,
+          "upper_cutoff": 3.342626
+        },
+        {
+          "log_molecules": 4.154247,
+          "lower_cutoff": 3.420027,
+          "upper_cutoff": 3.485169
+        },
+        {
+          "log_molecules": 4.362144,
+          "lower_cutoff": 3.562527,
+          "upper_cutoff": 3.627718
+        },
+        {
+          "log_molecules": 4.570041,
+          "lower_cutoff": 3.705021,
+          "upper_cutoff": 3.770275
+        }
+      ],
+      [
+        {
+          "log_molecules": 2.69897,
+          "lower_cutoff": 2.421291,
+          "upper_cutoff": 2.488552
+        },
+        {
+          "log_molecules": 2.906867,
+          "lower_cutoff": 2.563843,
+          "upper_cutoff": 2.63105
+        },
+        {
+          "log_molecules": 3.114763,
+          "lower_cutoff": 2.706388,
+          "upper_cutoff": 2.773555
+        },
+        {
+          "log_molecules": 3.32266,
+          "lower_cutoff": 2.848926,
+          "upper_cutoff": 2.916068
+        },
+        {
+          "log_molecules": 3.530557,
+          "lower_cutoff": 2.991456,
+          "upper_cutoff": 3.058588
+        },
+        {
+          "log_molecules": 3.738454,
+          "lower_cutoff": 3.133979,
+          "upper_cutoff": 3.201116
+        },
+        {
+          "log_molecules": 3.94635,
+          "lower_cutoff": 3.276494,
+          "upper_cutoff": 3.343651
+        },
+        {
+          "log_molecules": 4.154247,
+          "lower_cutoff": 3.419001,
+          "upper_cutoff": 3.486194
+        },
+        {
+          "log_molecules": 4.362144,
+          "lower_cutoff": 3.561501,
+          "upper_cutoff": 3.628744
+        },
+        {
+          "log_molecules": 4.570041,
+          "lower_cutoff": 3.703994,
+          "upper_cutoff": 3.771302
+        }
+      ],
+      [
+        {
+          "log_molecules": 2.69897,
+          "lower_cutoff": 2.420258,
+          "upper_cutoff": 2.489585
+        },
+        {
+          "log_molecules": 2.906867,
+          "lower_cutoff": 2.562811,
+          "upper_cutoff": 2.632082
+        },
+        {
+          "log_molecules": 3.114763,
+          "lower_cutoff": 2.705357,
+          "upper_cutoff": 2.774587
+        },
+        {
+          "log_molecules": 3.32266,
+          "lower_cutoff": 2.847895,
+          "upper_cutoff": 2.917099
+        },
+        {
+          "log_molecules": 3.530557,
+          "lower_cutoff": 2.990425,
+          "upper_cutoff": 3.059619
+        },
+        {
+          "log_molecules": 3.738454,
+          "lower_cutoff": 3.132948,
+          "upper_cutoff": 3.202147
+        },
+        {
+          "log_molecules": 3.94635,
+          "lower_cutoff": 3.275462,
+          "upper_cutoff": 3.344682
+        },
+        {
+          "log_molecules": 4.154247,
+          "lower_cutoff": 3.417969,
+          "upper_cutoff": 3.487226
+        },
+        {
+          "log_molecules": 4.362144,
+          "lower_cutoff": 3.560469,
+          "upper_cutoff": 3.629777
+        },
+        {
+          "log_molecules": 4.570041,
+          "lower_cutoff": 3.70296,
+          "upper_cutoff": 3.772336
+        }
+      ],
+      [
+        {
+          "log_molecules": 2.69897,
+          "lower_cutoff": 2.419218,
+          "upper_cutoff": 2.490625
+        },
+        {
+          "log_molecules": 2.906867,
+          "lower_cutoff": 2.561772,
+          "upper_cutoff": 2.633121
+        },
+        {
+          "log_molecules": 3.114763,
+          "lower_cutoff": 2.704319,
+          "upper_cutoff": 2.775625
+        },
+        {
+          "log_molecules": 3.32266,
+          "lower_cutoff": 2.846857,
+          "upper_cutoff": 2.918137
+        },
+        {
+          "log_molecules": 3.530557,
+          "lower_cutoff": 2.989388,
+          "upper_cutoff": 3.060657
+        },
+        {
+          "log_molecules": 3.738454,
+          "lower_cutoff": 3.13191,
+          "upper_cutoff": 3.203185
+        },
+        {
+          "log_molecules": 3.94635,
+          "lower_cutoff": 3.274424,
+          "upper_cutoff": 3.34572
+        },
+        {
+          "log_molecules": 4.154247,
+          "lower_cutoff": 3.416931,
+          "upper_cutoff": 3.488264
+        },
+        {
+          "log_molecules": 4.362144,
+          "lower_cutoff": 3.559429,
+          "upper_cutoff": 3.630816
+        },
+        {
+          "log_molecules": 4.570041,
+          "lower_cutoff": 3.70192,
+          "upper_cutoff": 3.773376
+        }
+      ],
+      [
+        {
+          "log_molecules": 2.69897,
+          "lower_cutoff": 2.418171,
+          "upper_cutoff": 2.491672
+        },
+        {
+          "log_molecules": 2.906867,
+          "lower_cutoff": 2.560726,
+          "upper_cutoff": 2.634167
+        },
+        {
+          "log_molecules": 3.114763,
+          "lower_cutoff": 2.703273,
+          "upper_cutoff": 2.77667
+        },
+        {
+          "log_molecules": 3.32266,
+          "lower_cutoff": 2.845812,
+          "upper_cutoff": 2.919182
+        },
+        {
+          "log_molecules": 3.530557,
+          "lower_cutoff": 2.988343,
+          "upper_cutoff": 3.061701
+        },
+        {
+          "log_molecules": 3.738454,
+          "lower_cutoff": 3.130865,
+          "upper_cutoff": 3.204229
+        },
+        {
+          "log_molecules": 3.94635,
+          "lower_cutoff": 3.273379,
+          "upper_cutoff": 3.346766
+        },
+        {
+          "log_molecules": 4.154247,
+          "lower_cutoff": 3.415885,
+          "upper_cutoff": 3.48931
+        },
+        {
+          "log_molecules": 4.362144,
+          "lower_cutoff": 3.558383,
+          "upper_cutoff": 3.631863
+        },
+        {
+          "log_molecules": 4.570041,
+          "lower_cutoff": 3.700872,
+          "upper_cutoff": 3.774424
+        }
+      ],
+      [
+        {
+          "log_molecules": 2.69897,
+          "lower_cutoff": 2.417117,
+          "upper_cutoff": 2.492726
+        },
+        {
+          "log_molecules": 2.906867,
+          "lower_cutoff": 2.559673,
+          "upper_cutoff": 2.63522
+        },
+        {
+          "log_molecules": 3.114763,
+          "lower_cutoff": 2.702221,
+          "upper_cutoff": 2.777723
+        },
+        {
+          "log_molecules": 3.32266,
+          "lower_cutoff": 2.84476,
+          "upper_cutoff": 2.920234
+        },
+        {
+          "log_molecules": 3.530557,
+          "lower_cutoff": 2.987291,
+          "upper_cutoff": 3.062754
+        },
+        {
+          "log_molecules": 3.738454,
+          "lower_cutoff": 3.129813,
+          "upper_cutoff": 3.205282
+        },
+        {
+          "log_molecules": 3.94635,
+          "lower_cutoff": 3.272327,
+          "upper_cutoff": 3.347818
+        },
+        {
+          "log_molecules": 4.154247,
+          "lower_cutoff": 3.414832,
+          "upper_cutoff": 3.490363
+        },
+        {
+          "log_molecules": 4.362144,
+          "lower_cutoff": 3.557329,
+          "upper_cutoff": 3.632917
+        },
+        {
+          "log_molecules": 4.570041,
+          "lower_cutoff": 3.699817,
+          "upper_cutoff": 3.775478
+        }
+      ],
+      [
+        {
+          "log_molecules": 2.69897,
+          "lower_cutoff": 2.416055,
+          "upper_cutoff": 2.493788
+        },
+        {
+          "log_molecules": 2.906867,
+          "lower_cutoff": 2.558612,
+          "upper_cutoff": 2.636281
+        },
+        {
+          "log_molecules": 3.114763,
+          "lower_cutoff": 2.70116,
+          "upper_cutoff": 2.778783
+        },
+        {
+          "log_molecules": 3.32266,
+          "lower_cutoff": 2.8437,
+          "upper_cutoff": 2.921294
+        },
+        {
+          "log_molecules": 3.530557,
+          "lower_cutoff": 2.986231,
+          "upper_cutoff": 3.063813
+        },
+        {
+          "log_molecules": 3.738454,
+          "lower_cutoff": 3.128753,
+          "upper_cutoff": 3.206341
+        },
+        {
+          "log_molecules": 3.94635,
+          "lower_cutoff": 3.271266,
+          "upper_cutoff": 3.348878
+        },
+        {
+          "log_molecules": 4.154247,
+          "lower_cutoff": 3.413771,
+          "upper_cutoff": 3.491424
+        },
+        {
+          "log_molecules": 4.362144,
+          "lower_cutoff": 3.556267,
+          "upper_cutoff": 3.633978
+        },
+        {
+          "log_molecules": 4.570041,
+          "lower_cutoff": 3.698755,
+          "upper_cutoff": 3.776541
+        }
+      ],
+      [
+        {
+          "log_molecules": 2.69897,
+          "lower_cutoff": 2.414985,
+          "upper_cutoff": 2.494858
+        },
+        {
+          "log_molecules": 2.906867,
+          "lower_cutoff": 2.557543,
+          "upper_cutoff": 2.63735
+        },
+        {
+          "log_molecules": 3.114763,
+          "lower_cutoff": 2.700092,
+          "upper_cutoff": 2.779852
+        },
+        {
+          "log_molecules": 3.32266,
+          "lower_cutoff": 2.842632,
+          "upper_cutoff": 2.922362
+        },
+        {
+          "log_molecules": 3.530557,
+          "lower_cutoff": 2.985163,
+          "upper_cutoff": 3.064881
+        },
+        {
+          "log_molecules": 3.738454,
+          "lower_cutoff": 3.127685,
+          "upper_cutoff": 3.207409
+        },
+        {
+          "log_molecules": 3.94635,
+          "lower_cutoff": 3.270198,
+          "upper_cutoff": 3.349947
+        },
+        {
+          "log_molecules": 4.154247,
+          "lower_cutoff": 3.412702,
+          "upper_cutoff": 3.492493
+        },
+        {
+          "log_molecules": 4.362144,
+          "lower_cutoff": 3.555198,
+          "upper_cutoff": 3.635048
+        },
+        {
+          "log_molecules": 4.570041,
+          "lower_cutoff": 3.697684,
+          "upper_cutoff": 3.777612
+        }
+      ],
+      [
+        {
+          "log_molecules": 2.69897,
+          "lower_cutoff": 2.413907,
+          "upper_cutoff": 2.495936
+        },
+        {
+          "log_molecules": 2.906867,
+          "lower_cutoff": 2.556466,
+          "upper_cutoff": 2.638428
+        },
+        {
+          "log_molecules": 3.114763,
+          "lower_cutoff": 2.699015,
+          "upper_cutoff": 2.780928
+        },
+        {
+          "log_molecules": 3.32266,
+          "lower_cutoff": 2.841556,
+          "upper_cutoff": 2.923438
+        },
+        {
+          "log_molecules": 3.530557,
+          "lower_cutoff": 2.984087,
+          "upper_cutoff": 3.065957
+        },
+        {
+          "log_molecules": 3.738454,
+          "lower_cutoff": 3.126609,
+          "upper_cutoff": 3.208486
+        },
+        {
+          "log_molecules": 3.94635,
+          "lower_cutoff": 3.269122,
+          "upper_cutoff": 3.351023
+        },
+        {
+          "log_molecules": 4.154247,
+          "lower_cutoff": 3.411625,
+          "upper_cutoff": 3.49357
+        },
+        {
+          "log_molecules": 4.362144,
+          "lower_cutoff": 3.55412,
+          "upper_cutoff": 3.636126
+        },
+        {
+          "log_molecules": 4.570041,
+          "lower_cutoff": 3.696605,
+          "upper_cutoff": 3.778691
+        }
+      ],
+      [
+        {
+          "log_molecules": 2.69897,
+          "lower_cutoff": 2.41282,
+          "upper_cutoff": 2.497023
+        },
+        {
+          "log_molecules": 2.906867,
+          "lower_cutoff": 2.55538,
+          "upper_cutoff": 2.639514
+        },
+        {
+          "log_molecules": 3.114763,
+          "lower_cutoff": 2.69793,
+          "upper_cutoff": 2.782014
+        },
+        {
+          "log_molecules": 3.32266,
+          "lower_cutoff": 2.840471,
+          "upper_cutoff": 2.924523
+        },
+        {
+          "log_molecules": 3.530557,
+          "lower_cutoff": 2.983002,
+          "upper_cutoff": 3.067042
+        },
+        {
+          "log_molecules": 3.738454,
+          "lower_cutoff": 3.125524,
+          "upper_cutoff": 3.209571
+        },
+        {
+          "log_molecules": 3.94635,
+          "lower_cutoff": 3.268036,
+          "upper_cutoff": 3.352109
+        },
+        {
+          "log_molecules": 4.154247,
+          "lower_cutoff": 3.410539,
+          "upper_cutoff": 3.494656
+        },
+        {
+          "log_molecules": 4.362144,
+          "lower_cutoff": 3.553033,
+          "upper_cutoff": 3.637212
+        },
+        {
+          "log_molecules": 4.570041,
+          "lower_cutoff": 3.695517,
+          "upper_cutoff": 3.779779
+        }
+      ],
+      [
+        {
+          "log_molecules": 2.69897,
+          "lower_cutoff": 2.411724,
+          "upper_cutoff": 2.498119
+        },
+        {
+          "log_molecules": 2.906867,
+          "lower_cutoff": 2.554284,
+          "upper_cutoff": 2.640609
+        },
+        {
+          "log_molecules": 3.114763,
+          "lower_cutoff": 2.696835,
+          "upper_cutoff": 2.783108
+        },
+        {
+          "log_molecules": 3.32266,
+          "lower_cutoff": 2.839376,
+          "upper_cutoff": 2.925618
+        },
+        {
+          "log_molecules": 3.530557,
+          "lower_cutoff": 2.981908,
+          "upper_cutoff": 3.068136
+        },
+        {
+          "log_molecules": 3.738454,
+          "lower_cutoff": 3.12443,
+          "upper_cutoff": 3.210665
+        },
+        {
+          "log_molecules": 3.94635,
+          "lower_cutoff": 3.266942,
+          "upper_cutoff": 3.353203
+        },
+        {
+          "log_molecules": 4.154247,
+          "lower_cutoff": 3.409444,
+          "upper_cutoff": 3.495751
+        },
+        {
+          "log_molecules": 4.362144,
+          "lower_cutoff": 3.551937,
+          "upper_cutoff": 3.638308
+        },
+        {
+          "log_molecules": 4.570041,
+          "lower_cutoff": 3.69442,
+          "upper_cutoff": 3.780875
+        }
+      ],
+      [
+        {
+          "log_molecules": 2.69897,
+          "lower_cutoff": 2.410618,
+          "upper_cutoff": 2.499225
+        },
+        {
+          "log_molecules": 2.906867,
+          "lower_cutoff": 2.55318,
+          "upper_cutoff": 2.641714
+        },
+        {
+          "log_molecules": 3.114763,
+          "lower_cutoff": 2.695731,
+          "upper_cutoff": 2.784213
+        },
+        {
+          "log_molecules": 3.32266,
+          "lower_cutoff": 2.838273,
+          "upper_cutoff": 2.926721
+        },
+        {
+          "log_molecules": 3.530557,
+          "lower_cutoff": 2.980804,
+          "upper_cutoff": 3.06924
+        },
+        {
+          "log_molecules": 3.738454,
+          "lower_cutoff": 3.123326,
+          "upper_cutoff": 3.211768
+        },
+        {
+          "log_molecules": 3.94635,
+          "lower_cutoff": 3.265838,
+          "upper_cutoff": 3.354307
+        },
+        {
+          "log_molecules": 4.154247,
+          "lower_cutoff": 3.40834,
+          "upper_cutoff": 3.496855
+        },
+        {
+          "log_molecules": 4.362144,
+          "lower_cutoff": 3.550832,
+          "upper_cutoff": 3.639414
+        },
+        {
+          "log_molecules": 4.570041,
+          "lower_cutoff": 3.693314,
+          "upper_cutoff": 3.781982
+        }
+      ],
+      [
+        {
+          "log_molecules": 2.69897,
+          "lower_cutoff": 2.409503,
+          "upper_cutoff": 2.50034
+        },
+        {
+          "log_molecules": 2.906867,
+          "lower_cutoff": 2.552065,
+          "upper_cutoff": 2.642828
+        },
+        {
+          "log_molecules": 3.114763,
+          "lower_cutoff": 2.694617,
+          "upper_cutoff": 2.785327
+        },
+        {
+          "log_molecules": 3.32266,
+          "lower_cutoff": 2.837159,
+          "upper_cutoff": 2.927835
+        },
+        {
+          "log_molecules": 3.530557,
+          "lower_cutoff": 2.979691,
+          "upper_cutoff": 3.070353
+        },
+        {
+          "log_molecules": 3.738454,
+          "lower_cutoff": 3.122212,
+          "upper_cutoff": 3.212882
+        },
+        {
+          "log_molecules": 3.94635,
+          "lower_cutoff": 3.264724,
+          "upper_cutoff": 3.355421
+        },
+        {
+          "log_molecules": 4.154247,
+          "lower_cutoff": 3.407225,
+          "upper_cutoff": 3.49797
+        },
+        {
+          "log_molecules": 4.362144,
+          "lower_cutoff": 3.549716,
+          "upper_cutoff": 3.640529
+        },
+        {
+          "log_molecules": 4.570041,
+          "lower_cutoff": 3.692197,
+          "upper_cutoff": 3.783098
+        }
+      ],
+      [
+        {
+          "log_molecules": 2.69897,
+          "lower_cutoff": 2.408376,
+          "upper_cutoff": 2.501467
+        },
+        {
+          "log_molecules": 2.906867,
+          "lower_cutoff": 2.55094,
+          "upper_cutoff": 2.643954
+        },
+        {
+          "log_molecules": 3.114763,
+          "lower_cutoff": 2.693493,
+          "upper_cutoff": 2.786451
+        },
+        {
+          "log_molecules": 3.32266,
+          "lower_cutoff": 2.836035,
+          "upper_cutoff": 2.928959
+        },
+        {
+          "log_molecules": 3.530557,
+          "lower_cutoff": 2.978567,
+          "upper_cutoff": 3.071477
+        },
+        {
+          "log_molecules": 3.738454,
+          "lower_cutoff": 3.121088,
+          "upper_cutoff": 3.214006
+        },
+        {
+          "log_molecules": 3.94635,
+          "lower_cutoff": 3.2636,
+          "upper_cutoff": 3.356545
+        },
+        {
+          "log_molecules": 4.154247,
+          "lower_cutoff": 3.4061,
+          "upper_cutoff": 3.499095
+        },
+        {
+          "log_molecules": 4.362144,
+          "lower_cutoff": 3.548591,
+          "upper_cutoff": 3.641655
+        },
+        {
+          "log_molecules": 4.570041,
+          "lower_cutoff": 3.691071,
+          "upper_cutoff": 3.784225
+        }
+      ],
+      [
+        {
+          "log_molecules": 2.69897,
+          "lower_cutoff": 2.40724,
+          "upper_cutoff": 2.502603
+        },
+        {
+          "log_molecules": 2.906867,
+          "lower_cutoff": 2.549804,
+          "upper_cutoff": 2.64509
+        },
+        {
+          "log_molecules": 3.114763,
+          "lower_cutoff": 2.692357,
+          "upper_cutoff": 2.787586
+        },
+        {
+          "log_molecules": 3.32266,
+          "lower_cutoff": 2.8349,
+          "upper_cutoff": 2.930094
+        },
+        {
+          "log_molecules": 3.530557,
+          "lower_cutoff": 2.977432,
+          "upper_cutoff": 3.072612
+        },
+        {
+          "log_molecules": 3.738454,
+          "lower_cutoff": 3.119954,
+          "upper_cutoff": 3.215141
+        },
+        {
+          "log_molecules": 3.94635,
+          "lower_cutoff": 3.262464,
+          "upper_cutoff": 3.35768
+        },
+        {
+          "log_molecules": 4.154247,
+          "lower_cutoff": 3.404965,
+          "upper_cutoff": 3.500231
+        },
+        {
+          "log_molecules": 4.362144,
+          "lower_cutoff": 3.547454,
+          "upper_cutoff": 3.642791
+        },
+        {
+          "log_molecules": 4.570041,
+          "lower_cutoff": 3.689933,
+          "upper_cutoff": 3.785363
+        }
+      ],
+      [
+        {
+          "log_molecules": 2.69897,
+          "lower_cutoff": 2.406091,
+          "upper_cutoff": 2.503752
+        },
+        {
+          "log_molecules": 2.906867,
+          "lower_cutoff": 2.548656,
+          "upper_cutoff": 2.646237
+        },
+        {
+          "log_molecules": 3.114763,
+          "lower_cutoff": 2.691211,
+          "upper_cutoff": 2.788733
+        },
+        {
+          "log_molecules": 3.32266,
+          "lower_cutoff": 2.833754,
+          "upper_cutoff": 2.93124
+        },
+        {
+          "log_molecules": 3.530557,
+          "lower_cutoff": 2.976286,
+          "upper_cutoff": 3.073758
+        },
+        {
+          "log_molecules": 3.738454,
+          "lower_cutoff": 3.118808,
+          "upper_cutoff": 3.216287
+        },
+        {
+          "log_molecules": 3.94635,
+          "lower_cutoff": 3.261318,
+          "upper_cutoff": 3.358827
+        },
+        {
+          "log_molecules": 4.154247,
+          "lower_cutoff": 3.403818,
+          "upper_cutoff": 3.501378
+        },
+        {
+          "log_molecules": 4.362144,
+          "lower_cutoff": 3.546306,
+          "upper_cutoff": 3.643939
+        },
+        {
+          "log_molecules": 4.570041,
+          "lower_cutoff": 3.688784,
+          "upper_cutoff": 3.786512
+        }
+      ],
+      [
+        {
+          "log_molecules": 2.69897,
+          "lower_cutoff": 2.404931,
+          "upper_cutoff": 2.504912
+        },
+        {
+          "log_molecules": 2.906867,
+          "lower_cutoff": 2.547497,
+          "upper_cutoff": 2.647396
+        },
+        {
+          "log_molecules": 3.114763,
+          "lower_cutoff": 2.690052,
+          "upper_cutoff": 2.789891
+        },
+        {
+          "log_molecules": 3.32266,
+          "lower_cutoff": 2.832596,
+          "upper_cutoff": 2.932398
+        },
+        {
+          "log_molecules": 3.530557,
+          "lower_cutoff": 2.975128,
+          "upper_cutoff": 3.074916
+        },
+        {
+          "log_molecules": 3.738454,
+          "lower_cutoff": 3.11765,
+          "upper_cutoff": 3.217445
+        },
+        {
+          "log_molecules": 3.94635,
+          "lower_cutoff": 3.26016,
+          "upper_cutoff": 3.359985
+        },
+        {
+          "log_molecules": 4.154247,
+          "lower_cutoff": 3.402659,
+          "upper_cutoff": 3.502536
+        },
+        {
+          "log_molecules": 4.362144,
+          "lower_cutoff": 3.545146,
+          "upper_cutoff": 3.645099
+        },
+        {
+          "log_molecules": 4.570041,
+          "lower_cutoff": 3.687623,
+          "upper_cutoff": 3.787673
+        }
+      ],
+      [
+        {
+          "log_molecules": 2.69897,
+          "lower_cutoff": 2.403759,
+          "upper_cutoff": 2.506084
+        },
+        {
+          "log_molecules": 2.906867,
+          "lower_cutoff": 2.546326,
+          "upper_cutoff": 2.648567
+        },
+        {
+          "log_molecules": 3.114763,
+          "lower_cutoff": 2.688881,
+          "upper_cutoff": 2.791062
+        },
+        {
+          "log_molecules": 3.32266,
+          "lower_cutoff": 2.831426,
+          "upper_cutoff": 2.933568
+        },
+        {
+          "log_molecules": 3.530557,
+          "lower_cutoff": 2.973958,
+          "upper_cutoff": 3.076086
+        },
+        {
+          "log_molecules": 3.738454,
+          "lower_cutoff": 3.116479,
+          "upper_cutoff": 3.218615
+        },
+        {
+          "log_molecules": 3.94635,
+          "lower_cutoff": 3.258989,
+          "upper_cutoff": 3.361156
+        },
+        {
+          "log_molecules": 4.154247,
+          "lower_cutoff": 3.401487,
+          "upper_cutoff": 3.503708
+        },
+        {
+          "log_molecules": 4.362144,
+          "lower_cutoff": 3.543974,
+          "upper_cutoff": 3.646271
+        },
+        {
+          "log_molecules": 4.570041,
+          "lower_cutoff": 3.68645,
+          "upper_cutoff": 3.788846
+        }
+      ],
+      [
+        {
+          "log_molecules": 2.69897,
+          "lower_cutoff": 2.402573,
+          "upper_cutoff": 2.50727
+        },
+        {
+          "log_molecules": 2.906867,
+          "lower_cutoff": 2.545141,
+          "upper_cutoff": 2.649752
+        },
+        {
+          "log_molecules": 3.114763,
+          "lower_cutoff": 2.687698,
+          "upper_cutoff": 2.792246
+        },
+        {
+          "log_molecules": 3.32266,
+          "lower_cutoff": 2.830242,
+          "upper_cutoff": 2.934752
+        },
+        {
+          "log_molecules": 3.530557,
+          "lower_cutoff": 2.972775,
+          "upper_cutoff": 3.077269
+        },
+        {
+          "log_molecules": 3.738454,
+          "lower_cutoff": 3.115296,
+          "upper_cutoff": 3.219798
+        },
+        {
+          "log_molecules": 3.94635,
+          "lower_cutoff": 3.257806,
+          "upper_cutoff": 3.362339
+        },
+        {
+          "log_molecules": 4.154247,
+          "lower_cutoff": 3.400303,
+          "upper_cutoff": 3.504892
+        },
+        {
+          "log_molecules": 4.362144,
+          "lower_cutoff": 3.542789,
+          "upper_cutoff": 3.647456
+        },
+        {
+          "log_molecules": 4.570041,
+          "lower_cutoff": 3.685264,
+          "upper_cutoff": 3.790032
+        }
+      ],
+      [
+        {
+          "log_molecules": 2.69897,
+          "lower_cutoff": 2.401375,
+          "upper_cutoff": 2.508468
+        },
+        {
+          "log_molecules": 2.906867,
+          "lower_cutoff": 2.543944,
+          "upper_cutoff": 2.65095
+        },
+        {
+          "log_molecules": 3.114763,
+          "lower_cutoff": 2.686501,
+          "upper_cutoff": 2.793443
+        },
+        {
+          "log_molecules": 3.32266,
+          "lower_cutoff": 2.829046,
+          "upper_cutoff": 2.935948
+        },
+        {
+          "log_molecules": 3.530557,
+          "lower_cutoff": 2.971579,
+          "upper_cutoff": 3.078466
+        },
+        {
+          "log_molecules": 3.738454,
+          "lower_cutoff": 3.1141,
+          "upper_cutoff": 3.220995
+        },
+        {
+          "log_molecules": 3.94635,
+          "lower_cutoff": 3.256609,
+          "upper_cutoff": 3.363536
+        },
+        {
+          "log_molecules": 4.154247,
+          "lower_cutoff": 3.399106,
+          "upper_cutoff": 3.50609
+        },
+        {
+          "log_molecules": 4.362144,
+          "lower_cutoff": 3.541591,
+          "upper_cutoff": 3.648655
+        },
+        {
+          "log_molecules": 4.570041,
+          "lower_cutoff": 3.684064,
+          "upper_cutoff": 3.791232
+        }
+      ],
+      [
+        {
+          "log_molecules": 2.69897,
+          "lower_cutoff": 2.400161,
+          "upper_cutoff": 2.509682
+        },
+        {
+          "log_molecules": 2.906867,
+          "lower_cutoff": 2.542731,
+          "upper_cutoff": 2.652162
+        },
+        {
+          "log_molecules": 3.114763,
+          "lower_cutoff": 2.685289,
+          "upper_cutoff": 2.794655
+        },
+        {
+          "log_molecules": 3.32266,
+          "lower_cutoff": 2.827835,
+          "upper_cutoff": 2.937159
+        },
+        {
+          "log_molecules": 3.530557,
+          "lower_cutoff": 2.970368,
+          "upper_cutoff": 3.079676
+        },
+        {
+          "log_molecules": 3.738454,
+          "lower_cutoff": 3.112889,
+          "upper_cutoff": 3.222206
+        },
+        {
+          "log_molecules": 3.94635,
+          "lower_cutoff": 3.255397,
+          "upper_cutoff": 3.364747
+        },
+        {
+          "log_molecules": 4.154247,
+          "lower_cutoff": 3.397894,
+          "upper_cutoff": 3.507301
+        },
+        {
+          "log_molecules": 4.362144,
+          "lower_cutoff": 3.540378,
+          "upper_cutoff": 3.649868
+        },
+        {
+          "log_molecules": 4.570041,
+          "lower_cutoff": 3.68285,
+          "upper_cutoff": 3.792446
+        }
+      ],
+      [
+        {
+          "log_molecules": 2.69897,
+          "lower_cutoff": 2.398933,
+          "upper_cutoff": 2.51091
+        },
+        {
+          "log_molecules": 2.906867,
+          "lower_cutoff": 2.541504,
+          "upper_cutoff": 2.653389
+        },
+        {
+          "log_molecules": 3.114763,
+          "lower_cutoff": 2.684063,
+          "upper_cutoff": 2.795881
+        },
+        {
+          "log_molecules": 3.32266,
+          "lower_cutoff": 2.826609,
+          "upper_cutoff": 2.938385
+        },
+        {
+          "log_molecules": 3.530557,
+          "lower_cutoff": 2.969142,
+          "upper_cutoff": 3.080902
+        },
+        {
+          "log_molecules": 3.738454,
+          "lower_cutoff": 3.111663,
+          "upper_cutoff": 3.223432
+        },
+        {
+          "log_molecules": 3.94635,
+          "lower_cutoff": 3.254171,
+          "upper_cutoff": 3.365974
+        },
+        {
+          "log_molecules": 4.154247,
+          "lower_cutoff": 3.396667,
+          "upper_cutoff": 3.508528
+        },
+        {
+          "log_molecules": 4.362144,
+          "lower_cutoff": 3.53915,
+          "upper_cutoff": 3.651095
+        },
+        {
+          "log_molecules": 4.570041,
+          "lower_cutoff": 3.681621,
+          "upper_cutoff": 3.793675
+        }
+      ],
+      [
+        {
+          "log_molecules": 2.69897,
+          "lower_cutoff": 2.39769,
+          "upper_cutoff": 2.512153
+        },
+        {
+          "log_molecules": 2.906867,
+          "lower_cutoff": 2.540262,
+          "upper_cutoff": 2.654631
+        },
+        {
+          "log_molecules": 3.114763,
+          "lower_cutoff": 2.682821,
+          "upper_cutoff": 2.797123
+        },
+        {
+          "log_molecules": 3.32266,
+          "lower_cutoff": 2.825367,
+          "upper_cutoff": 2.939626
+        },
+        {
+          "log_molecules": 3.530557,
+          "lower_cutoff": 2.967901,
+          "upper_cutoff": 3.082143
+        },
+        {
+          "log_molecules": 3.738454,
+          "lower_cutoff": 3.110422,
+          "upper_cutoff": 3.224673
+        },
+        {
+          "log_molecules": 3.94635,
+          "lower_cutoff": 3.25293,
+          "upper_cutoff": 3.367215
+        },
+        {
+          "log_molecules": 4.154247,
+          "lower_cutoff": 3.395425,
+          "upper_cutoff": 3.50977
+        },
+        {
+          "log_molecules": 4.362144,
+          "lower_cutoff": 3.537907,
+          "upper_cutoff": 3.652338
+        },
+        {
+          "log_molecules": 4.570041,
+          "lower_cutoff": 3.680377,
+          "upper_cutoff": 3.794919
+        }
+      ],
+      [
+        {
+          "log_molecules": 2.69897,
+          "lower_cutoff": 2.39643,
+          "upper_cutoff": 2.513413
+        },
+        {
+          "log_molecules": 2.906867,
+          "lower_cutoff": 2.539003,
+          "upper_cutoff": 2.65589
+        },
+        {
+          "log_molecules": 3.114763,
+          "lower_cutoff": 2.681563,
+          "upper_cutoff": 2.798381
+        },
+        {
+          "log_molecules": 3.32266,
+          "lower_cutoff": 2.82411,
+          "upper_cutoff": 2.940884
+        },
+        {
+          "log_molecules": 3.530557,
+          "lower_cutoff": 2.966644,
+          "upper_cutoff": 3.083401
+        },
+        {
+          "log_molecules": 3.738454,
+          "lower_cutoff": 3.109164,
+          "upper_cutoff": 3.22593
+        },
+        {
+          "log_molecules": 3.94635,
+          "lower_cutoff": 3.251672,
+          "upper_cutoff": 3.368473
+        },
+        {
+          "log_molecules": 4.154247,
+          "lower_cutoff": 3.394166,
+          "upper_cutoff": 3.511029
+        },
+        {
+          "log_molecules": 4.362144,
+          "lower_cutoff": 3.536648,
+          "upper_cutoff": 3.653598
+        },
+        {
+          "log_molecules": 4.570041,
+          "lower_cutoff": 3.679116,
+          "upper_cutoff": 3.79618
+        }
+      ],
+      [
+        {
+          "log_molecules": 2.69897,
+          "lower_cutoff": 2.395153,
+          "upper_cutoff": 2.51469
+        },
+        {
+          "log_molecules": 2.906867,
+          "lower_cutoff": 2.537727,
+          "upper_cutoff": 2.657166
+        },
+        {
+          "log_molecules": 3.114763,
+          "lower_cutoff": 2.680288,
+          "upper_cutoff": 2.799656
+        },
+        {
+          "log_molecules": 3.32266,
+          "lower_cutoff": 2.822835,
+          "upper_cutoff": 2.942159
+        },
+        {
+          "log_molecules": 3.530557,
+          "lower_cutoff": 2.965369,
+          "upper_cutoff": 3.084675
+        },
+        {
+          "log_molecules": 3.738454,
+          "lower_cutoff": 3.10789,
+          "upper_cutoff": 3.227205
+        },
+        {
+          "log_molecules": 3.94635,
+          "lower_cutoff": 3.250397,
+          "upper_cutoff": 3.369748
+        },
+        {
+          "log_molecules": 4.154247,
+          "lower_cutoff": 3.392891,
+          "upper_cutoff": 3.512305
+        },
+        {
+          "log_molecules": 4.362144,
+          "lower_cutoff": 3.535371,
+          "upper_cutoff": 3.654874
+        },
+        {
+          "log_molecules": 4.570041,
+          "lower_cutoff": 3.677838,
+          "upper_cutoff": 3.797458
+        }
+      ],
+      [
+        {
+          "log_molecules": 2.69897,
+          "lower_cutoff": 2.393858,
+          "upper_cutoff": 2.515985
+        },
+        {
+          "log_molecules": 2.906867,
+          "lower_cutoff": 2.536433,
+          "upper_cutoff": 2.65846
+        },
+        {
+          "log_molecules": 3.114763,
+          "lower_cutoff": 2.678995,
+          "upper_cutoff": 2.800949
+        },
+        {
+          "log_molecules": 3.32266,
+          "lower_cutoff": 2.821543,
+          "upper_cutoff": 2.943451
+        },
+        {
+          "log_molecules": 3.530557,
+          "lower_cutoff": 2.964077,
+          "upper_cutoff": 3.085968
+        },
+        {
+          "log_molecules": 3.738454,
+          "lower_cutoff": 3.106597,
+          "upper_cutoff": 3.228497
+        },
+        {
+          "log_molecules": 3.94635,
+          "lower_cutoff": 3.249104,
+          "upper_cutoff": 3.371041
+        },
+        {
+          "log_molecules": 4.154247,
+          "lower_cutoff": 3.391597,
+          "upper_cutoff": 3.513598
+        },
+        {
+          "log_molecules": 4.362144,
+          "lower_cutoff": 3.534076,
+          "upper_cutoff": 3.656169
+        },
+        {
+          "log_molecules": 4.570041,
+          "lower_cutoff": 3.676542,
+          "upper_cutoff": 3.798754
+        }
+      ],
+      [
+        {
+          "log_molecules": 2.69897,
+          "lower_cutoff": 2.392544,
+          "upper_cutoff": 2.517299
+        },
+        {
+          "log_molecules": 2.906867,
+          "lower_cutoff": 2.53512,
+          "upper_cutoff": 2.659773
+        },
+        {
+          "log_molecules": 3.114763,
+          "lower_cutoff": 2.677683,
+          "upper_cutoff": 2.802261
+        },
+        {
+          "log_molecules": 3.32266,
+          "lower_cutoff": 2.820231,
+          "upper_cutoff": 2.944763
+        },
+        {
+          "log_molecules": 3.530557,
+          "lower_cutoff": 2.962765,
+          "upper_cutoff": 3.087279
+        },
+        {
+          "log_molecules": 3.738454,
+          "lower_cutoff": 3.105286,
+          "upper_cutoff": 3.229809
+        },
+        {
+          "log_molecules": 3.94635,
+          "lower_cutoff": 3.247792,
+          "upper_cutoff": 3.372353
+        },
+        {
+          "log_molecules": 4.154247,
+          "lower_cutoff": 3.390284,
+          "upper_cutoff": 3.514911
+        },
+        {
+          "log_molecules": 4.362144,
+          "lower_cutoff": 3.532763,
+          "upper_cutoff": 3.657483
+        },
+        {
+          "log_molecules": 4.570041,
+          "lower_cutoff": 3.675227,
+          "upper_cutoff": 3.800068
+        }
+      ],
+      [
+        {
+          "log_molecules": 2.69897,
+          "lower_cutoff": 2.39121,
+          "upper_cutoff": 2.518633
+        },
+        {
+          "log_molecules": 2.906867,
+          "lower_cutoff": 2.533788,
+          "upper_cutoff": 2.661106
+        },
+        {
+          "log_molecules": 3.114763,
+          "lower_cutoff": 2.676351,
+          "upper_cutoff": 2.803593
+        },
+        {
+          "log_molecules": 3.32266,
+          "lower_cutoff": 2.8189,
+          "upper_cutoff": 2.946094
+        },
+        {
+          "log_molecules": 3.530557,
+          "lower_cutoff": 2.961434,
+          "upper_cutoff": 3.08861
+        },
+        {
+          "log_molecules": 3.738454,
+          "lower_cutoff": 3.103954,
+          "upper_cutoff": 3.23114
+        },
+        {
+          "log_molecules": 3.94635,
+          "lower_cutoff": 3.24646,
+          "upper_cutoff": 3.373685
+        },
+        {
+          "log_molecules": 4.154247,
+          "lower_cutoff": 3.388952,
+          "upper_cutoff": 3.516243
+        },
+        {
+          "log_molecules": 4.362144,
+          "lower_cutoff": 3.531429,
+          "upper_cutoff": 3.658816
+        },
+        {
+          "log_molecules": 4.570041,
+          "lower_cutoff": 3.673893,
+          "upper_cutoff": 3.801403
+        }
+      ],
+      [
+        {
+          "log_molecules": 2.69897,
+          "lower_cutoff": 2.389856,
+          "upper_cutoff": 2.519987
+        },
+        {
+          "log_molecules": 2.906867,
+          "lower_cutoff": 2.532434,
+          "upper_cutoff": 2.662459
+        },
+        {
+          "log_molecules": 3.114763,
+          "lower_cutoff": 2.674998,
+          "upper_cutoff": 2.804946
+        },
+        {
+          "log_molecules": 3.32266,
+          "lower_cutoff": 2.817547,
+          "upper_cutoff": 2.947447
+        },
+        {
+          "log_molecules": 3.530557,
+          "lower_cutoff": 2.960082,
+          "upper_cutoff": 3.089962
+        },
+        {
+          "log_molecules": 3.738454,
+          "lower_cutoff": 3.102602,
+          "upper_cutoff": 3.232492
+        },
+        {
+          "log_molecules": 3.94635,
+          "lower_cutoff": 3.245108,
+          "upper_cutoff": 3.375037
+        },
+        {
+          "log_molecules": 4.154247,
+          "lower_cutoff": 3.387599,
+          "upper_cutoff": 3.517597
+        },
+        {
+          "log_molecules": 4.362144,
+          "lower_cutoff": 3.530075,
+          "upper_cutoff": 3.66017
+        },
+        {
+          "log_molecules": 4.570041,
+          "lower_cutoff": 3.672537,
+          "upper_cutoff": 3.802759
+        }
+      ],
+      [
+        {
+          "log_molecules": 2.69897,
+          "lower_cutoff": 2.388479,
+          "upper_cutoff": 2.521364
+        },
+        {
+          "log_molecules": 2.906867,
+          "lower_cutoff": 2.531058,
+          "upper_cutoff": 2.663835
+        },
+        {
+          "log_molecules": 3.114763,
+          "lower_cutoff": 2.673623,
+          "upper_cutoff": 2.806321
+        },
+        {
+          "log_molecules": 3.32266,
+          "lower_cutoff": 2.816173,
+          "upper_cutoff": 2.948821
+        },
+        {
+          "log_molecules": 3.530557,
+          "lower_cutoff": 2.958708,
+          "upper_cutoff": 3.091336
+        },
+        {
+          "log_molecules": 3.738454,
+          "lower_cutoff": 3.101228,
+          "upper_cutoff": 3.233867
+        },
+        {
+          "log_molecules": 3.94635,
+          "lower_cutoff": 3.243733,
+          "upper_cutoff": 3.376412
+        },
+        {
+          "log_molecules": 4.154247,
+          "lower_cutoff": 3.386223,
+          "upper_cutoff": 3.518972
+        },
+        {
+          "log_molecules": 4.362144,
+          "lower_cutoff": 3.528699,
+          "upper_cutoff": 3.661547
+        },
+        {
+          "log_molecules": 4.570041,
+          "lower_cutoff": 3.671159,
+          "upper_cutoff": 3.804137
+        }
+      ],
+      [
+        {
+          "log_molecules": 2.69897,
+          "lower_cutoff": 2.387079,
+          "upper_cutoff": 2.522764
+        },
+        {
+          "log_molecules": 2.906867,
+          "lower_cutoff": 2.529659,
+          "upper_cutoff": 2.665234
+        },
+        {
+          "log_molecules": 3.114763,
+          "lower_cutoff": 2.672225,
+          "upper_cutoff": 2.807719
+        },
+        {
+          "log_molecules": 3.32266,
+          "lower_cutoff": 2.814775,
+          "upper_cutoff": 2.950219
+        },
+        {
+          "log_molecules": 3.530557,
+          "lower_cutoff": 2.95731,
+          "upper_cutoff": 3.092734
+        },
+        {
+          "log_molecules": 3.738454,
+          "lower_cutoff": 3.09983,
+          "upper_cutoff": 3.235264
+        },
+        {
+          "log_molecules": 3.94635,
+          "lower_cutoff": 3.242335,
+          "upper_cutoff": 3.37781
+        },
+        {
+          "log_molecules": 4.154247,
+          "lower_cutoff": 3.384824,
+          "upper_cutoff": 3.520371
+        },
+        {
+          "log_molecules": 4.362144,
+          "lower_cutoff": 3.527299,
+          "upper_cutoff": 3.662947
+        },
+        {
+          "log_molecules": 4.570041,
+          "lower_cutoff": 3.669758,
+          "upper_cutoff": 3.805538
+        }
+      ],
+      [
+        {
+          "log_molecules": 2.69897,
+          "lower_cutoff": 2.385654,
+          "upper_cutoff": 2.524189
+        },
+        {
+          "log_molecules": 2.906867,
+          "lower_cutoff": 2.528236,
+          "upper_cutoff": 2.666658
+        },
+        {
+          "log_molecules": 3.114763,
+          "lower_cutoff": 2.670802,
+          "upper_cutoff": 2.809142
+        },
+        {
+          "log_molecules": 3.32266,
+          "lower_cutoff": 2.813353,
+          "upper_cutoff": 2.951641
+        },
+        {
+          "log_molecules": 3.530557,
+          "lower_cutoff": 2.955888,
+          "upper_cutoff": 3.094156
+        },
+        {
+          "log_molecules": 3.738454,
+          "lower_cutoff": 3.098408,
+          "upper_cutoff": 3.236687
+        },
+        {
+          "log_molecules": 3.94635,
+          "lower_cutoff": 3.240912,
+          "upper_cutoff": 3.379233
+        },
+        {
+          "log_molecules": 4.154247,
+          "lower_cutoff": 3.383401,
+          "upper_cutoff": 3.521794
+        },
+        {
+          "log_molecules": 4.362144,
+          "lower_cutoff": 3.525874,
+          "upper_cutoff": 3.664371
+        },
+        {
+          "log_molecules": 4.570041,
+          "lower_cutoff": 3.668332,
+          "upper_cutoff": 3.806964
+        }
+      ],
+      [
+        {
+          "log_molecules": 2.69897,
+          "lower_cutoff": 2.384203,
+          "upper_cutoff": 2.52564
+        },
+        {
+          "log_molecules": 2.906867,
+          "lower_cutoff": 2.526786,
+          "upper_cutoff": 2.668107
+        },
+        {
+          "log_molecules": 3.114763,
+          "lower_cutoff": 2.669353,
+          "upper_cutoff": 2.81059
+        },
+        {
+          "log_molecules": 3.32266,
+          "lower_cutoff": 2.811905,
+          "upper_cutoff": 2.953089
+        },
+        {
+          "log_molecules": 3.530557,
+          "lower_cutoff": 2.95444,
+          "upper_cutoff": 3.095604
+        },
+        {
+          "log_molecules": 3.738454,
+          "lower_cutoff": 3.09696,
+          "upper_cutoff": 3.238135
+        },
+        {
+          "log_molecules": 3.94635,
+          "lower_cutoff": 3.239464,
+          "upper_cutoff": 3.380681
+        },
+        {
+          "log_molecules": 4.154247,
+          "lower_cutoff": 3.381952,
+          "upper_cutoff": 3.523243
+        },
+        {
+          "log_molecules": 4.362144,
+          "lower_cutoff": 3.524424,
+          "upper_cutoff": 3.665822
+        },
+        {
+          "log_molecules": 4.570041,
+          "lower_cutoff": 3.66688,
+          "upper_cutoff": 3.808415
+        }
+      ],
+      [
+        {
+          "log_molecules": 2.69897,
+          "lower_cutoff": 2.382724,
+          "upper_cutoff": 2.527119
+        },
+        {
+          "log_molecules": 2.906867,
+          "lower_cutoff": 2.525309,
+          "upper_cutoff": 2.669585
+        },
+        {
+          "log_molecules": 3.114763,
+          "lower_cutoff": 2.667877,
+          "upper_cutoff": 2.812067
+        },
+        {
+          "log_molecules": 3.32266,
+          "lower_cutoff": 2.810429,
+          "upper_cutoff": 2.954565
+        },
+        {
+          "log_molecules": 3.530557,
+          "lower_cutoff": 2.952964,
+          "upper_cutoff": 3.09708
+        },
+        {
+          "log_molecules": 3.738454,
+          "lower_cutoff": 3.095484,
+          "upper_cutoff": 3.23961
+        },
+        {
+          "log_molecules": 3.94635,
+          "lower_cutoff": 3.237987,
+          "upper_cutoff": 3.382157
+        },
+        {
+          "log_molecules": 4.154247,
+          "lower_cutoff": 3.380475,
+          "upper_cutoff": 3.52472
+        },
+        {
+          "log_molecules": 4.362144,
+          "lower_cutoff": 3.522946,
+          "upper_cutoff": 3.6673
+        },
+        {
+          "log_molecules": 4.570041,
+          "lower_cutoff": 3.665401,
+          "upper_cutoff": 3.809895
+        }
+      ],
+      [
+        {
+          "log_molecules": 2.69897,
+          "lower_cutoff": 2.381217,
+          "upper_cutoff": 2.528626
+        },
+        {
+          "log_molecules": 2.906867,
+          "lower_cutoff": 2.523802,
+          "upper_cutoff": 2.671091
+        },
+        {
+          "log_molecules": 3.114763,
+          "lower_cutoff": 2.666371,
+          "upper_cutoff": 2.813573
+        },
+        {
+          "log_molecules": 3.32266,
+          "lower_cutoff": 2.808924,
+          "upper_cutoff": 2.95607
+        },
+        {
+          "log_molecules": 3.530557,
+          "lower_cutoff": 2.95146,
+          "upper_cutoff": 3.098585
+        },
+        {
+          "log_molecules": 3.738454,
+          "lower_cutoff": 3.093979,
+          "upper_cutoff": 3.241115
+        },
+        {
+          "log_molecules": 3.94635,
+          "lower_cutoff": 3.236482,
+          "upper_cutoff": 3.383663
+        },
+        {
+          "log_molecules": 4.154247,
+          "lower_cutoff": 3.378968,
+          "upper_cutoff": 3.526227
+        },
+        {
+          "log_molecules": 4.362144,
+          "lower_cutoff": 3.521438,
+          "upper_cutoff": 3.668807
+        },
+        {
+          "log_molecules": 4.570041,
+          "lower_cutoff": 3.663892,
+          "upper_cutoff": 3.811404
+        }
+      ],
+      [
+        {
+          "log_molecules": 2.69897,
+          "lower_cutoff": 2.379678,
+          "upper_cutoff": 2.530165
+        },
+        {
+          "log_molecules": 2.906867,
+          "lower_cutoff": 2.522264,
+          "upper_cutoff": 2.672629
+        },
+        {
+          "log_molecules": 3.114763,
+          "lower_cutoff": 2.664834,
+          "upper_cutoff": 2.815109
+        },
+        {
+          "log_molecules": 3.32266,
+          "lower_cutoff": 2.807387,
+          "upper_cutoff": 2.957607
+        },
+        {
+          "log_molecules": 3.530557,
+          "lower_cutoff": 2.949924,
+          "upper_cutoff": 3.100121
+        },
+        {
+          "log_molecules": 3.738454,
+          "lower_cutoff": 3.092443,
+          "upper_cutoff": 3.242652
+        },
+        {
+          "log_molecules": 3.94635,
+          "lower_cutoff": 3.234945,
+          "upper_cutoff": 3.385199
+        },
+        {
+          "log_molecules": 4.154247,
+          "lower_cutoff": 3.377431,
+          "upper_cutoff": 3.527764
+        },
+        {
+          "log_molecules": 4.362144,
+          "lower_cutoff": 3.5199,
+          "upper_cutoff": 3.670346
+        },
+        {
+          "log_molecules": 4.570041,
+          "lower_cutoff": 3.662352,
+          "upper_cutoff": 3.812944
+        }
+      ],
+      [
+        {
+          "log_molecules": 2.69897,
+          "lower_cutoff": 2.378106,
+          "upper_cutoff": 2.531737
+        },
+        {
+          "log_molecules": 2.906867,
+          "lower_cutoff": 2.520694,
+          "upper_cutoff": 2.6742
+        },
+        {
+          "log_molecules": 3.114763,
+          "lower_cutoff": 2.663264,
+          "upper_cutoff": 2.816679
+        },
+        {
+          "log_molecules": 3.32266,
+          "lower_cutoff": 2.805818,
+          "upper_cutoff": 2.959176
+        },
+        {
+          "log_molecules": 3.530557,
+          "lower_cutoff": 2.948355,
+          "upper_cutoff": 3.10169
+        },
+        {
+          "log_molecules": 3.738454,
+          "lower_cutoff": 3.090874,
+          "upper_cutoff": 3.244221
+        },
+        {
+          "log_molecules": 3.94635,
+          "lower_cutoff": 3.233376,
+          "upper_cutoff": 3.386769
+        },
+        {
+          "log_molecules": 4.154247,
+          "lower_cutoff": 3.375861,
+          "upper_cutoff": 3.529335
+        },
+        {
+          "log_molecules": 4.362144,
+          "lower_cutoff": 3.518328,
+          "upper_cutoff": 3.671917
+        },
+        {
+          "log_molecules": 4.570041,
+          "lower_cutoff": 3.660779,
+          "upper_cutoff": 3.814517
+        }
+      ],
+      [
+        {
+          "log_molecules": 2.69897,
+          "lower_cutoff": 2.376498,
+          "upper_cutoff": 2.533345
+        },
+        {
+          "log_molecules": 2.906867,
+          "lower_cutoff": 2.519088,
+          "upper_cutoff": 2.675806
+        },
+        {
+          "log_molecules": 3.114763,
+          "lower_cutoff": 2.661659,
+          "upper_cutoff": 2.818284
+        },
+        {
+          "log_molecules": 3.32266,
+          "lower_cutoff": 2.804214,
+          "upper_cutoff": 2.96078
+        },
+        {
+          "log_molecules": 3.530557,
+          "lower_cutoff": 2.94675,
+          "upper_cutoff": 3.103294
+        },
+        {
+          "log_molecules": 3.738454,
+          "lower_cutoff": 3.089269,
+          "upper_cutoff": 3.245825
+        },
+        {
+          "log_molecules": 3.94635,
+          "lower_cutoff": 3.231771,
+          "upper_cutoff": 3.388374
+        },
+        {
+          "log_molecules": 4.154247,
+          "lower_cutoff": 3.374255,
+          "upper_cutoff": 3.53094
+        },
+        {
+          "log_molecules": 4.362144,
+          "lower_cutoff": 3.516721,
+          "upper_cutoff": 3.673524
+        },
+        {
+          "log_molecules": 4.570041,
+          "lower_cutoff": 3.65917,
+          "upper_cutoff": 3.816126
+        }
+      ],
+      [
+        {
+          "log_molecules": 2.69897,
+          "lower_cutoff": 2.374853,
+          "upper_cutoff": 2.53499
+        },
+        {
+          "log_molecules": 2.906867,
+          "lower_cutoff": 2.517444,
+          "upper_cutoff": 2.67745
+        },
+        {
+          "log_molecules": 3.114763,
+          "lower_cutoff": 2.660016,
+          "upper_cutoff": 2.819927
+        },
+        {
+          "log_molecules": 3.32266,
+          "lower_cutoff": 2.802571,
+          "upper_cutoff": 2.962423
+        },
+        {
+          "log_molecules": 3.530557,
+          "lower_cutoff": 2.945108,
+          "upper_cutoff": 3.104936
+        },
+        {
+          "log_molecules": 3.738454,
+          "lower_cutoff": 3.087627,
+          "upper_cutoff": 3.247467
+        },
+        {
+          "log_molecules": 3.94635,
+          "lower_cutoff": 3.230128,
+          "upper_cutoff": 3.390017
+        },
+        {
+          "log_molecules": 4.154247,
+          "lower_cutoff": 3.372611,
+          "upper_cutoff": 3.532584
+        },
+        {
+          "log_molecules": 4.362144,
+          "lower_cutoff": 3.515076,
+          "upper_cutoff": 3.675169
+        },
+        {
+          "log_molecules": 4.570041,
+          "lower_cutoff": 3.657524,
+          "upper_cutoff": 3.817772
+        }
+      ],
+      [
+        {
+          "log_molecules": 2.69897,
+          "lower_cutoff": 2.373167,
+          "upper_cutoff": 2.536676
+        },
+        {
+          "log_molecules": 2.906867,
+          "lower_cutoff": 2.515759,
+          "upper_cutoff": 2.679134
+        },
+        {
+          "log_molecules": 3.114763,
+          "lower_cutoff": 2.658333,
+          "upper_cutoff": 2.82161
+        },
+        {
+          "log_molecules": 3.32266,
+          "lower_cutoff": 2.800889,
+          "upper_cutoff": 2.964105
+        },
+        {
+          "log_molecules": 3.530557,
+          "lower_cutoff": 2.943426,
+          "upper_cutoff": 3.106618
+        },
+        {
+          "log_molecules": 3.738454,
+          "lower_cutoff": 3.085945,
+          "upper_cutoff": 3.24915
+        },
+        {
+          "log_molecules": 3.94635,
+          "lower_cutoff": 3.228445,
+          "upper_cutoff": 3.3917
+        },
+        {
+          "log_molecules": 4.154247,
+          "lower_cutoff": 3.370927,
+          "upper_cutoff": 3.534268
+        },
+        {
+          "log_molecules": 4.362144,
+          "lower_cutoff": 3.513391,
+          "upper_cutoff": 3.676854
+        },
+        {
+          "log_molecules": 4.570041,
+          "lower_cutoff": 3.655837,
+          "upper_cutoff": 3.819459
+        }
+      ],
+      [
+        {
+          "log_molecules": 2.69897,
+          "lower_cutoff": 2.371438,
+          "upper_cutoff": 2.538405
+        },
+        {
+          "log_molecules": 2.906867,
+          "lower_cutoff": 2.514032,
+          "upper_cutoff": 2.680861
+        },
+        {
+          "log_molecules": 3.114763,
+          "lower_cutoff": 2.656607,
+          "upper_cutoff": 2.823337
+        },
+        {
+          "log_molecules": 3.32266,
+          "lower_cutoff": 2.799163,
+          "upper_cutoff": 2.965831
+        },
+        {
+          "log_molecules": 3.530557,
+          "lower_cutoff": 2.9417,
+          "upper_cutoff": 3.108344
+        },
+        {
+          "log_molecules": 3.738454,
+          "lower_cutoff": 3.084219,
+          "upper_cutoff": 3.250876
+        },
+        {
+          "log_molecules": 3.94635,
+          "lower_cutoff": 3.226719,
+          "upper_cutoff": 3.393426
+        },
+        {
+          "log_molecules": 4.154247,
+          "lower_cutoff": 3.3692,
+          "upper_cutoff": 3.535995
+        },
+        {
+          "log_molecules": 4.362144,
+          "lower_cutoff": 3.511663,
+          "upper_cutoff": 3.678583
+        },
+        {
+          "log_molecules": 4.570041,
+          "lower_cutoff": 3.654107,
+          "upper_cutoff": 3.821189
+        }
+      ],
+      [
+        {
+          "log_molecules": 2.69897,
+          "lower_cutoff": 2.369663,
+          "upper_cutoff": 2.54018
+        },
+        {
+          "log_molecules": 2.906867,
+          "lower_cutoff": 2.512258,
+          "upper_cutoff": 2.682636
+        },
+        {
+          "log_molecules": 3.114763,
+          "lower_cutoff": 2.654833,
+          "upper_cutoff": 2.82511
+        },
+        {
+          "log_molecules": 3.32266,
+          "lower_cutoff": 2.79739,
+          "upper_cutoff": 2.967604
+        },
+        {
+          "log_molecules": 3.530557,
+          "lower_cutoff": 2.939928,
+          "upper_cutoff": 3.110116
+        },
+        {
+          "log_molecules": 3.738454,
+          "lower_cutoff": 3.082446,
+          "upper_cutoff": 3.252648
+        },
+        {
+          "log_molecules": 3.94635,
+          "lower_cutoff": 3.224946,
+          "upper_cutoff": 3.395199
+        },
+        {
+          "log_molecules": 4.154247,
+          "lower_cutoff": 3.367426,
+          "upper_cutoff": 3.537769
+        },
+        {
+          "log_molecules": 4.362144,
+          "lower_cutoff": 3.509888,
+          "upper_cutoff": 3.680358
+        },
+        {
+          "log_molecules": 4.570041,
+          "lower_cutoff": 3.65233,
+          "upper_cutoff": 3.822966
+        }
+      ],
+      [
+        {
+          "log_molecules": 2.69897,
+          "lower_cutoff": 2.367837,
+          "upper_cutoff": 2.542006
+        },
+        {
+          "log_molecules": 2.906867,
+          "lower_cutoff": 2.510433,
+          "upper_cutoff": 2.68446
+        },
+        {
+          "log_molecules": 3.114763,
+          "lower_cutoff": 2.65301,
+          "upper_cutoff": 2.826934
+        },
+        {
+          "log_molecules": 3.32266,
+          "lower_cutoff": 2.795567,
+          "upper_cutoff": 2.969426
+        },
+        {
+          "log_molecules": 3.530557,
+          "lower_cutoff": 2.938105,
+          "upper_cutoff": 3.111939
+        },
+        {
+          "log_molecules": 3.738454,
+          "lower_cutoff": 3.080624,
+          "upper_cutoff": 3.254471
+        },
+        {
+          "log_molecules": 3.94635,
+          "lower_cutoff": 3.223123,
+          "upper_cutoff": 3.397022
+        },
+        {
+          "log_molecules": 4.154247,
+          "lower_cutoff": 3.365602,
+          "upper_cutoff": 3.539593
+        },
+        {
+          "log_molecules": 4.362144,
+          "lower_cutoff": 3.508062,
+          "upper_cutoff": 3.682183
+        },
+        {
+          "log_molecules": 4.570041,
+          "lower_cutoff": 3.650503,
+          "upper_cutoff": 3.824793
+        }
+      ],
+      [
+        {
+          "log_molecules": 2.69897,
+          "lower_cutoff": 2.365956,
+          "upper_cutoff": 2.543887
+        },
+        {
+          "log_molecules": 2.906867,
+          "lower_cutoff": 2.508554,
+          "upper_cutoff": 2.686339
+        },
+        {
+          "log_molecules": 3.114763,
+          "lower_cutoff": 2.651132,
+          "upper_cutoff": 2.828811
+        },
+        {
+          "log_molecules": 3.32266,
+          "lower_cutoff": 2.79369,
+          "upper_cutoff": 2.971304
+        },
+        {
+          "log_molecules": 3.530557,
+          "lower_cutoff": 2.936229,
+          "upper_cutoff": 3.113816
+        },
+        {
+          "log_molecules": 3.738454,
+          "lower_cutoff": 3.078747,
+          "upper_cutoff": 3.256348
+        },
+        {
+          "log_molecules": 3.94635,
+          "lower_cutoff": 3.221245,
+          "upper_cutoff": 3.3989
+        },
+        {
+          "log_molecules": 4.154247,
+          "lower_cutoff": 3.363724,
+          "upper_cutoff": 3.541472
+        },
+        {
+          "log_molecules": 4.362144,
+          "lower_cutoff": 3.506182,
+          "upper_cutoff": 3.684063
+        },
+        {
+          "log_molecules": 4.570041,
+          "lower_cutoff": 3.648621,
+          "upper_cutoff": 3.826675
+        }
+      ],
+      [
+        {
+          "log_molecules": 2.69897,
+          "lower_cutoff": 2.364017,
+          "upper_cutoff": 2.545826
+        },
+        {
+          "log_molecules": 2.906867,
+          "lower_cutoff": 2.506616,
+          "upper_cutoff": 2.688277
+        },
+        {
+          "log_molecules": 3.114763,
+          "lower_cutoff": 2.649195,
+          "upper_cutoff": 2.830748
+        },
+        {
+          "log_molecules": 3.32266,
+          "lower_cutoff": 2.791754,
+          "upper_cutoff": 2.97324
+        },
+        {
+          "log_molecules": 3.530557,
+          "lower_cutoff": 2.934293,
+          "upper_cutoff": 3.115751
+        },
+        {
+          "log_molecules": 3.738454,
+          "lower_cutoff": 3.076811,
+          "upper_cutoff": 3.258284
+        },
+        {
+          "log_molecules": 3.94635,
+          "lower_cutoff": 3.219309,
+          "upper_cutoff": 3.400836
+        },
+        {
+          "log_molecules": 4.154247,
+          "lower_cutoff": 3.361786,
+          "upper_cutoff": 3.543409
+        },
+        {
+          "log_molecules": 4.362144,
+          "lower_cutoff": 3.504243,
+          "upper_cutoff": 3.686002
+        },
+        {
+          "log_molecules": 4.570041,
+          "lower_cutoff": 3.64668,
+          "upper_cutoff": 3.828616
+        }
+      ],
+      [
+        {
+          "log_molecules": 2.69897,
+          "lower_cutoff": 2.362013,
+          "upper_cutoff": 2.54783
+        },
+        {
+          "log_molecules": 2.906867,
+          "lower_cutoff": 2.504614,
+          "upper_cutoff": 2.690279
+        },
+        {
+          "log_molecules": 3.114763,
+          "lower_cutoff": 2.647194,
+          "upper_cutoff": 2.832749
+        },
+        {
+          "log_molecules": 3.32266,
+          "lower_cutoff": 2.789754,
+          "upper_cutoff": 2.97524
+        },
+        {
+          "log_molecules": 3.530557,
+          "lower_cutoff": 2.932293,
+          "upper_cutoff": 3.117751
+        },
+        {
+          "log_molecules": 3.738454,
+          "lower_cutoff": 3.074811,
+          "upper_cutoff": 3.260284
+        },
+        {
+          "log_molecules": 3.94635,
+          "lower_cutoff": 3.217308,
+          "upper_cutoff": 3.402837
+        },
+        {
+          "log_molecules": 4.154247,
+          "lower_cutoff": 3.359784,
+          "upper_cutoff": 3.545411
+        },
+        {
+          "log_molecules": 4.362144,
+          "lower_cutoff": 3.50224,
+          "upper_cutoff": 3.688006
+        },
+        {
+          "log_molecules": 4.570041,
+          "lower_cutoff": 3.644675,
+          "upper_cutoff": 3.830621
+        }
+      ],
+      [
+        {
+          "log_molecules": 2.69897,
+          "lower_cutoff": 2.359939,
+          "upper_cutoff": 2.549904
+        },
+        {
+          "log_molecules": 2.906867,
+          "lower_cutoff": 2.502541,
+          "upper_cutoff": 2.692352
+        },
+        {
+          "log_molecules": 3.114763,
+          "lower_cutoff": 2.645123,
+          "upper_cutoff": 2.834821
+        },
+        {
+          "log_molecules": 3.32266,
+          "lower_cutoff": 2.787683,
+          "upper_cutoff": 2.97731
+        },
+        {
+          "log_molecules": 3.530557,
+          "lower_cutoff": 2.930223,
+          "upper_cutoff": 3.119822
+        },
+        {
+          "log_molecules": 3.738454,
+          "lower_cutoff": 3.07274,
+          "upper_cutoff": 3.262354
+        },
+        {
+          "log_molecules": 3.94635,
+          "lower_cutoff": 3.215237,
+          "upper_cutoff": 3.404908
+        },
+        {
+          "log_molecules": 4.154247,
+          "lower_cutoff": 3.357712,
+          "upper_cutoff": 3.547483
+        },
+        {
+          "log_molecules": 4.362144,
+          "lower_cutoff": 3.500166,
+          "upper_cutoff": 3.690079
+        },
+        {
+          "log_molecules": 4.570041,
+          "lower_cutoff": 3.642599,
+          "upper_cutoff": 3.832697
+        }
+      ],
+      [
+        {
+          "log_molecules": 2.69897,
+          "lower_cutoff": 2.357787,
+          "upper_cutoff": 2.552056
+        },
+        {
+          "log_molecules": 2.906867,
+          "lower_cutoff": 2.500392,
+          "upper_cutoff": 2.694502
+        },
+        {
+          "log_molecules": 3.114763,
+          "lower_cutoff": 2.642975,
+          "upper_cutoff": 2.836969
+        },
+        {
+          "log_molecules": 3.32266,
+          "lower_cutoff": 2.785536,
+          "upper_cutoff": 2.979458
+        },
+        {
+          "log_molecules": 3.530557,
+          "lower_cutoff": 2.928075,
+          "upper_cutoff": 3.121969
+        },
+        {
+          "log_molecules": 3.738454,
+          "lower_cutoff": 3.070593,
+          "upper_cutoff": 3.264502
+        },
+        {
+          "log_molecules": 3.94635,
+          "lower_cutoff": 3.213089,
+          "upper_cutoff": 3.407056
+        },
+        {
+          "log_molecules": 4.154247,
+          "lower_cutoff": 3.355563,
+          "upper_cutoff": 3.549632
+        },
+        {
+          "log_molecules": 4.362144,
+          "lower_cutoff": 3.498015,
+          "upper_cutoff": 3.69223
+        },
+        {
+          "log_molecules": 4.570041,
+          "lower_cutoff": 3.640446,
+          "upper_cutoff": 3.83485
+        }
+      ],
+      [
+        {
+          "log_molecules": 2.69897,
+          "lower_cutoff": 2.355551,
+          "upper_cutoff": 2.554292
+        },
+        {
+          "log_molecules": 2.906867,
+          "lower_cutoff": 2.498157,
+          "upper_cutoff": 2.696736
+        },
+        {
+          "log_molecules": 3.114763,
+          "lower_cutoff": 2.640741,
+          "upper_cutoff": 2.839202
+        },
+        {
+          "log_molecules": 3.32266,
+          "lower_cutoff": 2.783303,
+          "upper_cutoff": 2.981691
+        },
+        {
+          "log_molecules": 3.530557,
+          "lower_cutoff": 2.925843,
+          "upper_cutoff": 3.124201
+        },
+        {
+          "log_molecules": 3.738454,
+          "lower_cutoff": 3.068361,
+          "upper_cutoff": 3.266734
+        },
+        {
+          "log_molecules": 3.94635,
+          "lower_cutoff": 3.210856,
+          "upper_cutoff": 3.409289
+        },
+        {
+          "log_molecules": 4.154247,
+          "lower_cutoff": 3.353329,
+          "upper_cutoff": 3.551866
+        },
+        {
+          "log_molecules": 4.362144,
+          "lower_cutoff": 3.49578,
+          "upper_cutoff": 3.694466
+        },
+        {
+          "log_molecules": 4.570041,
+          "lower_cutoff": 3.638208,
+          "upper_cutoff": 3.837088
+        }
+      ],
+      [
+        {
+          "log_molecules": 2.69897,
+          "lower_cutoff": 2.35322,
+          "upper_cutoff": 2.556623
+        },
+        {
+          "log_molecules": 2.906867,
+          "lower_cutoff": 2.495828,
+          "upper_cutoff": 2.699065
+        },
+        {
+          "log_molecules": 3.114763,
+          "lower_cutoff": 2.638414,
+          "upper_cutoff": 2.84153
+        },
+        {
+          "log_molecules": 3.32266,
+          "lower_cutoff": 2.780977,
+          "upper_cutoff": 2.984017
+        },
+        {
+          "log_molecules": 3.530557,
+          "lower_cutoff": 2.923517,
+          "upper_cutoff": 3.126527
+        },
+        {
+          "log_molecules": 3.738454,
+          "lower_cutoff": 3.066034,
+          "upper_cutoff": 3.26906
+        },
+        {
+          "log_molecules": 3.94635,
+          "lower_cutoff": 3.208529,
+          "upper_cutoff": 3.411616
+        },
+        {
+          "log_molecules": 4.154247,
+          "lower_cutoff": 3.351,
+          "upper_cutoff": 3.554195
+        },
+        {
+          "log_molecules": 4.362144,
+          "lower_cutoff": 3.493449,
+          "upper_cutoff": 3.696796
+        },
+        {
+          "log_molecules": 4.570041,
+          "lower_cutoff": 3.635876,
+          "upper_cutoff": 3.83942
+        }
+      ],
+      [
+        {
+          "log_molecules": 2.69897,
+          "lower_cutoff": 2.350784,
+          "upper_cutoff": 2.559059
+        },
+        {
+          "log_molecules": 2.906867,
+          "lower_cutoff": 2.493394,
+          "upper_cutoff": 2.701499
+        },
+        {
+          "log_molecules": 3.114763,
+          "lower_cutoff": 2.635981,
+          "upper_cutoff": 2.843962
+        },
+        {
+          "log_molecules": 3.32266,
+          "lower_cutoff": 2.778545,
+          "upper_cutoff": 2.986449
+        },
+        {
+          "log_molecules": 3.530557,
+          "lower_cutoff": 2.921085,
+          "upper_cutoff": 3.128959
+        },
+        {
+          "log_molecules": 3.738454,
+          "lower_cutoff": 3.063603,
+          "upper_cutoff": 3.271492
+        },
+        {
+          "log_molecules": 3.94635,
+          "lower_cutoff": 3.206096,
+          "upper_cutoff": 3.414048
+        },
+        {
+          "log_molecules": 4.154247,
+          "lower_cutoff": 3.348567,
+          "upper_cutoff": 3.556628
+        },
+        {
+          "log_molecules": 4.362144,
+          "lower_cutoff": 3.491014,
+          "upper_cutoff": 3.699231
+        },
+        {
+          "log_molecules": 4.570041,
+          "lower_cutoff": 3.633438,
+          "upper_cutoff": 3.841858
+        }
+      ],
+      [
+        {
+          "log_molecules": 2.69897,
+          "lower_cutoff": 2.34823,
+          "upper_cutoff": 2.561613
+        },
+        {
+          "log_molecules": 2.906867,
+          "lower_cutoff": 2.490842,
+          "upper_cutoff": 2.704051
+        },
+        {
+          "log_molecules": 3.114763,
+          "lower_cutoff": 2.633431,
+          "upper_cutoff": 2.846513
+        },
+        {
+          "log_molecules": 3.32266,
+          "lower_cutoff": 2.775996,
+          "upper_cutoff": 2.988998
+        },
+        {
+          "log_molecules": 3.530557,
+          "lower_cutoff": 2.918536,
+          "upper_cutoff": 3.131508
+        },
+        {
+          "log_molecules": 3.738454,
+          "lower_cutoff": 3.061053,
+          "upper_cutoff": 3.274041
+        },
+        {
+          "log_molecules": 3.94635,
+          "lower_cutoff": 3.203546,
+          "upper_cutoff": 3.416599
+        },
+        {
+          "log_molecules": 4.154247,
+          "lower_cutoff": 3.346015,
+          "upper_cutoff": 3.55918
+        },
+        {
+          "log_molecules": 4.362144,
+          "lower_cutoff": 3.488461,
+          "upper_cutoff": 3.701785
+        },
+        {
+          "log_molecules": 4.570041,
+          "lower_cutoff": 3.630882,
+          "upper_cutoff": 3.844414
+        }
+      ],
+      [
+        {
+          "log_molecules": 2.69897,
+          "lower_cutoff": 2.345542,
+          "upper_cutoff": 2.564301
+        },
+        {
+          "log_molecules": 2.906867,
+          "lower_cutoff": 2.488157,
+          "upper_cutoff": 2.706736
+        },
+        {
+          "log_molecules": 3.114763,
+          "lower_cutoff": 2.630747,
+          "upper_cutoff": 2.849196
+        },
+        {
+          "log_molecules": 3.32266,
+          "lower_cutoff": 2.773313,
+          "upper_cutoff": 2.991681
+        },
+        {
+          "log_molecules": 3.530557,
+          "lower_cutoff": 2.915854,
+          "upper_cutoff": 3.13419
+        },
+        {
+          "log_molecules": 3.738454,
+          "lower_cutoff": 3.058371,
+          "upper_cutoff": 3.276724
+        },
+        {
+          "log_molecules": 3.94635,
+          "lower_cutoff": 3.200863,
+          "upper_cutoff": 3.419282
+        },
+        {
+          "log_molecules": 4.154247,
+          "lower_cutoff": 3.343331,
+          "upper_cutoff": 3.561864
+        },
+        {
+          "log_molecules": 4.362144,
+          "lower_cutoff": 3.485774,
+          "upper_cutoff": 3.704471
+        },
+        {
+          "log_molecules": 4.570041,
+          "lower_cutoff": 3.628193,
+          "upper_cutoff": 3.847103
+        }
+      ],
+      [
+        {
+          "log_molecules": 2.69897,
+          "lower_cutoff": 2.342703,
+          "upper_cutoff": 2.56714
+        },
+        {
+          "log_molecules": 2.906867,
+          "lower_cutoff": 2.48532,
+          "upper_cutoff": 2.709573
+        },
+        {
+          "log_molecules": 3.114763,
+          "lower_cutoff": 2.627912,
+          "upper_cutoff": 2.852032
+        },
+        {
+          "log_molecules": 3.32266,
+          "lower_cutoff": 2.770479,
+          "upper_cutoff": 2.994515
+        },
+        {
+          "log_molecules": 3.530557,
+          "lower_cutoff": 2.91302,
+          "upper_cutoff": 3.137024
+        },
+        {
+          "log_molecules": 3.738454,
+          "lower_cutoff": 3.055537,
+          "upper_cutoff": 3.279558
+        },
+        {
+          "log_molecules": 3.94635,
+          "lower_cutoff": 3.198028,
+          "upper_cutoff": 3.422117
+        },
+        {
+          "log_molecules": 4.154247,
+          "lower_cutoff": 3.340494,
+          "upper_cutoff": 3.564701
+        },
+        {
+          "log_molecules": 4.362144,
+          "lower_cutoff": 3.482935,
+          "upper_cutoff": 3.70731
+        },
+        {
+          "log_molecules": 4.570041,
+          "lower_cutoff": 3.625352,
+          "upper_cutoff": 3.849944
+        }
+      ],
+      [
+        {
+          "log_molecules": 2.69897,
+          "lower_cutoff": 2.339689,
+          "upper_cutoff": 2.570154
+        },
+        {
+          "log_molecules": 2.906867,
+          "lower_cutoff": 2.482308,
+          "upper_cutoff": 2.712585
+        },
+        {
+          "log_molecules": 3.114763,
+          "lower_cutoff": 2.624902,
+          "upper_cutoff": 2.855042
+        },
+        {
+          "log_molecules": 3.32266,
+          "lower_cutoff": 2.76747,
+          "upper_cutoff": 2.997524
+        },
+        {
+          "log_molecules": 3.530557,
+          "lower_cutoff": 2.910012,
+          "upper_cutoff": 3.140033
+        },
+        {
+          "log_molecules": 3.738454,
+          "lower_cutoff": 3.052528,
+          "upper_cutoff": 3.282567
+        },
+        {
+          "log_molecules": 3.94635,
+          "lower_cutoff": 3.195018,
+          "upper_cutoff": 3.425127
+        },
+        {
+          "log_molecules": 4.154247,
+          "lower_cutoff": 3.337483,
+          "upper_cutoff": 3.567712
+        },
+        {
+          "log_molecules": 4.362144,
+          "lower_cutoff": 3.479922,
+          "upper_cutoff": 3.710324
+        },
+        {
+          "log_molecules": 4.570041,
+          "lower_cutoff": 3.622335,
+          "upper_cutoff": 3.852961
+        }
+      ],
+      [
+        {
+          "log_molecules": 2.69897,
+          "lower_cutoff": 2.336471,
+          "upper_cutoff": 2.573373
+        },
+        {
+          "log_molecules": 2.906867,
+          "lower_cutoff": 2.479093,
+          "upper_cutoff": 2.715801
+        },
+        {
+          "log_molecules": 3.114763,
+          "lower_cutoff": 2.621688,
+          "upper_cutoff": 2.858255
+        },
+        {
+          "log_molecules": 3.32266,
+          "lower_cutoff": 2.764257,
+          "upper_cutoff": 3.000737
+        },
+        {
+          "log_molecules": 3.530557,
+          "lower_cutoff": 2.9068,
+          "upper_cutoff": 3.143244
+        },
+        {
+          "log_molecules": 3.738454,
+          "lower_cutoff": 3.049316,
+          "upper_cutoff": 3.285779
+        },
+        {
+          "log_molecules": 3.94635,
+          "lower_cutoff": 3.191805,
+          "upper_cutoff": 3.42834
+        },
+        {
+          "log_molecules": 4.154247,
+          "lower_cutoff": 3.334268,
+          "upper_cutoff": 3.570927
+        },
+        {
+          "log_molecules": 4.362144,
+          "lower_cutoff": 3.476705,
+          "upper_cutoff": 3.713541
+        },
+        {
+          "log_molecules": 4.570041,
+          "lower_cutoff": 3.619115,
+          "upper_cutoff": 3.856181
+        }
+      ],
+      [
+        {
+          "log_molecules": 2.69897,
+          "lower_cutoff": 2.333012,
+          "upper_cutoff": 2.576831
+        },
+        {
+          "log_molecules": 2.906867,
+          "lower_cutoff": 2.475637,
+          "upper_cutoff": 2.719256
+        },
+        {
+          "log_molecules": 3.114763,
+          "lower_cutoff": 2.618235,
+          "upper_cutoff": 2.861709
+        },
+        {
+          "log_molecules": 3.32266,
+          "lower_cutoff": 2.760805,
+          "upper_cutoff": 3.004189
+        },
+        {
+          "log_molecules": 3.530557,
+          "lower_cutoff": 2.903348,
+          "upper_cutoff": 3.146696
+        },
+        {
+          "log_molecules": 3.738454,
+          "lower_cutoff": 3.045864,
+          "upper_cutoff": 3.289231
+        },
+        {
+          "log_molecules": 3.94635,
+          "lower_cutoff": 3.188352,
+          "upper_cutoff": 3.431792
+        },
+        {
+          "log_molecules": 4.154247,
+          "lower_cutoff": 3.330813,
+          "upper_cutoff": 3.574382
+        },
+        {
+          "log_molecules": 4.362144,
+          "lower_cutoff": 3.473247,
+          "upper_cutoff": 3.716998
+        },
+        {
+          "log_molecules": 4.570041,
+          "lower_cutoff": 3.615654,
+          "upper_cutoff": 3.859642
+        }
+      ],
+      [
+        {
+          "log_molecules": 2.69897,
+          "lower_cutoff": 2.329266,
+          "upper_cutoff": 2.580577
+        },
+        {
+          "log_molecules": 2.906867,
+          "lower_cutoff": 2.471894,
+          "upper_cutoff": 2.722999
+        },
+        {
+          "log_molecules": 3.114763,
+          "lower_cutoff": 2.614494,
+          "upper_cutoff": 2.86545
+        },
+        {
+          "log_molecules": 3.32266,
+          "lower_cutoff": 2.757066,
+          "upper_cutoff": 3.007928
+        },
+        {
+          "log_molecules": 3.530557,
+          "lower_cutoff": 2.899609,
+          "upper_cutoff": 3.150435
+        },
+        {
+          "log_molecules": 3.738454,
+          "lower_cutoff": 3.042125,
+          "upper_cutoff": 3.29297
+        },
+        {
+          "log_molecules": 3.94635,
+          "lower_cutoff": 3.184612,
+          "upper_cutoff": 3.435533
+        },
+        {
+          "log_molecules": 4.154247,
+          "lower_cutoff": 3.327071,
+          "upper_cutoff": 3.578124
+        },
+        {
+          "log_molecules": 4.362144,
+          "lower_cutoff": 3.469502,
+          "upper_cutoff": 3.720743
+        },
+        {
+          "log_molecules": 4.570041,
+          "lower_cutoff": 3.611905,
+          "upper_cutoff": 3.86339
+        }
+      ],
+      [
+        {
+          "log_molecules": 2.69897,
+          "lower_cutoff": 2.325168,
+          "upper_cutoff": 2.584675
+        },
+        {
+          "log_molecules": 2.906867,
+          "lower_cutoff": 2.4678,
+          "upper_cutoff": 2.727094
+        },
+        {
+          "log_molecules": 3.114763,
+          "lower_cutoff": 2.610402,
+          "upper_cutoff": 2.869542
+        },
+        {
+          "log_molecules": 3.32266,
+          "lower_cutoff": 2.752975,
+          "upper_cutoff": 3.012019
+        },
+        {
+          "log_molecules": 3.530557,
+          "lower_cutoff": 2.895519,
+          "upper_cutoff": 3.154525
+        },
+        {
+          "log_molecules": 3.738454,
+          "lower_cutoff": 3.038035,
+          "upper_cutoff": 3.29706
+        },
+        {
+          "log_molecules": 3.94635,
+          "lower_cutoff": 3.180521,
+          "upper_cutoff": 3.439624
+        },
+        {
+          "log_molecules": 4.154247,
+          "lower_cutoff": 3.322978,
+          "upper_cutoff": 3.582217
+        },
+        {
+          "log_molecules": 4.362144,
+          "lower_cutoff": 3.465406,
+          "upper_cutoff": 3.72484
+        },
+        {
+          "log_molecules": 4.570041,
+          "lower_cutoff": 3.607805,
+          "upper_cutoff": 3.867491
+        }
+      ],
+      [
+        {
+          "log_molecules": 2.69897,
+          "lower_cutoff": 2.320631,
+          "upper_cutoff": 2.589212
+        },
+        {
+          "log_molecules": 2.906867,
+          "lower_cutoff": 2.463266,
+          "upper_cutoff": 2.731628
+        },
+        {
+          "log_molecules": 3.114763,
+          "lower_cutoff": 2.605871,
+          "upper_cutoff": 2.874073
+        },
+        {
+          "log_molecules": 3.32266,
+          "lower_cutoff": 2.748446,
+          "upper_cutoff": 3.016548
+        },
+        {
+          "log_molecules": 3.530557,
+          "lower_cutoff": 2.890991,
+          "upper_cutoff": 3.159054
+        },
+        {
+          "log_molecules": 3.738454,
+          "lower_cutoff": 3.033505,
+          "upper_cutoff": 3.301589
+        },
+        {
+          "log_molecules": 3.94635,
+          "lower_cutoff": 3.17599,
+          "upper_cutoff": 3.444155
+        },
+        {
+          "log_molecules": 4.154247,
+          "lower_cutoff": 3.318445,
+          "upper_cutoff": 3.58675
+        },
+        {
+          "log_molecules": 4.362144,
+          "lower_cutoff": 3.460869,
+          "upper_cutoff": 3.729376
+        },
+        {
+          "log_molecules": 4.570041,
+          "lower_cutoff": 3.603264,
+          "upper_cutoff": 3.872032
+        }
+      ],
+      [
+        {
+          "log_molecules": 2.69897,
+          "lower_cutoff": 2.315525,
+          "upper_cutoff": 2.594318
+        },
+        {
+          "log_molecules": 2.906867,
+          "lower_cutoff": 2.458165,
+          "upper_cutoff": 2.736729
+        },
+        {
+          "log_molecules": 3.114763,
+          "lower_cutoff": 2.600773,
+          "upper_cutoff": 2.879171
+        },
+        {
+          "log_molecules": 3.32266,
+          "lower_cutoff": 2.743349,
+          "upper_cutoff": 3.021644
+        },
+        {
+          "log_molecules": 3.530557,
+          "lower_cutoff": 2.885895,
+          "upper_cutoff": 3.164149
+        },
+        {
+          "log_molecules": 3.738454,
+          "lower_cutoff": 3.028409,
+          "upper_cutoff": 3.306685
+        },
+        {
+          "log_molecules": 3.94635,
+          "lower_cutoff": 3.170893,
+          "upper_cutoff": 3.449252
+        },
+        {
+          "log_molecules": 4.154247,
+          "lower_cutoff": 3.313345,
+          "upper_cutoff": 3.591851
+        },
+        {
+          "log_molecules": 4.362144,
+          "lower_cutoff": 3.455765,
+          "upper_cutoff": 3.73448
+        },
+        {
+          "log_molecules": 4.570041,
+          "lower_cutoff": 3.598155,
+          "upper_cutoff": 3.877141
+        }
+      ],
+      [
+        {
+          "log_molecules": 2.69897,
+          "lower_cutoff": 2.309658,
+          "upper_cutoff": 2.600185
+        },
+        {
+          "log_molecules": 2.906867,
+          "lower_cutoff": 2.452302,
+          "upper_cutoff": 2.742592
+        },
+        {
+          "log_molecules": 3.114763,
+          "lower_cutoff": 2.594913,
+          "upper_cutoff": 2.88503
+        },
+        {
+          "log_molecules": 3.32266,
+          "lower_cutoff": 2.737492,
+          "upper_cutoff": 3.027502
+        },
+        {
+          "log_molecules": 3.530557,
+          "lower_cutoff": 2.880039,
+          "upper_cutoff": 3.170006
+        },
+        {
+          "log_molecules": 3.738454,
+          "lower_cutoff": 3.022553,
+          "upper_cutoff": 3.312542
+        },
+        {
+          "log_molecules": 3.94635,
+          "lower_cutoff": 3.165034,
+          "upper_cutoff": 3.455111
+        },
+        {
+          "log_molecules": 4.154247,
+          "lower_cutoff": 3.307483,
+          "upper_cutoff": 3.597712
+        },
+        {
+          "log_molecules": 4.362144,
+          "lower_cutoff": 3.449899,
+          "upper_cutoff": 3.740346
+        },
+        {
+          "log_molecules": 4.570041,
+          "lower_cutoff": 3.592283,
+          "upper_cutoff": 3.883012
+        }
+      ],
+      [
+        {
+          "log_molecules": 2.69897,
+          "lower_cutoff": 2.302707,
+          "upper_cutoff": 2.607136
+        },
+        {
+          "log_molecules": 2.906867,
+          "lower_cutoff": 2.445356,
+          "upper_cutoff": 2.749537
+        },
+        {
+          "log_molecules": 3.114763,
+          "lower_cutoff": 2.587972,
+          "upper_cutoff": 2.891972
+        },
+        {
+          "log_molecules": 3.32266,
+          "lower_cutoff": 2.730554,
+          "upper_cutoff": 3.03444
+        },
+        {
+          "log_molecules": 3.530557,
+          "lower_cutoff": 2.873101,
+          "upper_cutoff": 3.176943
+        },
+        {
+          "log_molecules": 3.738454,
+          "lower_cutoff": 3.015615,
+          "upper_cutoff": 3.31948
+        },
+        {
+          "log_molecules": 3.94635,
+          "lower_cutoff": 3.158094,
+          "upper_cutoff": 3.462051
+        },
+        {
+          "log_molecules": 4.154247,
+          "lower_cutoff": 3.300539,
+          "upper_cutoff": 3.604656
+        },
+        {
+          "log_molecules": 4.362144,
+          "lower_cutoff": 3.44295,
+          "upper_cutoff": 3.747295
+        },
+        {
+          "log_molecules": 4.570041,
+          "lower_cutoff": 3.585328,
+          "upper_cutoff": 3.889968
+        }
+      ],
+      [
+        {
+          "log_molecules": 2.69897,
+          "lower_cutoff": 2.294084,
+          "upper_cutoff": 2.615759
+        },
+        {
+          "log_molecules": 2.906867,
+          "lower_cutoff": 2.436741,
+          "upper_cutoff": 2.758153
+        },
+        {
+          "log_molecules": 3.114763,
+          "lower_cutoff": 2.579362,
+          "upper_cutoff": 2.900582
+        },
+        {
+          "log_molecules": 3.32266,
+          "lower_cutoff": 2.721946,
+          "upper_cutoff": 3.043048
+        },
+        {
+          "log_molecules": 3.530557,
+          "lower_cutoff": 2.864495,
+          "upper_cutoff": 3.185549
+        },
+        {
+          "log_molecules": 3.738454,
+          "lower_cutoff": 3.007008,
+          "upper_cutoff": 3.328087
+        },
+        {
+          "log_molecules": 3.94635,
+          "lower_cutoff": 3.149485,
+          "upper_cutoff": 3.47066
+        },
+        {
+          "log_molecules": 4.154247,
+          "lower_cutoff": 3.291925,
+          "upper_cutoff": 3.61327
+        },
+        {
+          "log_molecules": 4.362144,
+          "lower_cutoff": 3.43433,
+          "upper_cutoff": 3.755915
+        },
+        {
+          "log_molecules": 4.570041,
+          "lower_cutoff": 3.576699,
+          "upper_cutoff": 3.898597
+        }
+      ],
+      [
+        {
+          "log_molecules": 2.69897,
+          "lower_cutoff": 2.282503,
+          "upper_cutoff": 2.62734
+        },
+        {
+          "log_molecules": 2.906867,
+          "lower_cutoff": 2.425169,
+          "upper_cutoff": 2.769724
+        },
+        {
+          "log_molecules": 3.114763,
+          "lower_cutoff": 2.567797,
+          "upper_cutoff": 2.912147
+        },
+        {
+          "log_molecules": 3.32266,
+          "lower_cutoff": 2.710386,
+          "upper_cutoff": 3.054608
+        },
+        {
+          "log_molecules": 3.530557,
+          "lower_cutoff": 2.852936,
+          "upper_cutoff": 3.197108
+        },
+        {
+          "log_molecules": 3.738454,
+          "lower_cutoff": 2.995448,
+          "upper_cutoff": 3.339646
+        },
+        {
+          "log_molecules": 3.94635,
+          "lower_cutoff": 3.137921,
+          "upper_cutoff": 3.482223
+        },
+        {
+          "log_molecules": 4.154247,
+          "lower_cutoff": 3.280356,
+          "upper_cutoff": 3.624839
+        },
+        {
+          "log_molecules": 4.362144,
+          "lower_cutoff": 3.422752,
+          "upper_cutoff": 3.767493
+        },
+        {
+          "log_molecules": 4.570041,
+          "lower_cutoff": 3.56511,
+          "upper_cutoff": 3.910186
+        }
+      ],
+      [
+        {
+          "log_molecules": 2.69897,
+          "lower_cutoff": 2.264012,
+          "upper_cutoff": 2.645831
+        },
+        {
+          "log_molecules": 2.906867,
+          "lower_cutoff": 2.406694,
+          "upper_cutoff": 2.7882
+        },
+        {
+          "log_molecules": 3.114763,
+          "lower_cutoff": 2.549332,
+          "upper_cutoff": 2.930611
+        },
+        {
+          "log_molecules": 3.32266,
+          "lower_cutoff": 2.691928,
+          "upper_cutoff": 3.073066
+        },
+        {
+          "log_molecules": 3.530557,
+          "lower_cutoff": 2.834482,
+          "upper_cutoff": 3.215563
+        },
+        {
+          "log_molecules": 3.738454,
+          "lower_cutoff": 2.976992,
+          "upper_cutoff": 3.358103
+        },
+        {
+          "log_molecules": 3.94635,
+          "lower_cutoff": 3.11946,
+          "upper_cutoff": 3.500685
+        },
+        {
+          "log_molecules": 4.154247,
+          "lower_cutoff": 3.261885,
+          "upper_cutoff": 3.643311
+        },
+        {
+          "log_molecules": 4.362144,
+          "lower_cutoff": 3.404267,
+          "upper_cutoff": 3.785979
+        },
+        {
+          "log_molecules": 4.570041,
+          "lower_cutoff": 3.546606,
+          "upper_cutoff": 3.928689
+        }
+      ],
+      [
+        {
+          "log_molecules": 2.69897,
+          "lower_cutoff": 2.211042,
+          "upper_cutoff": 2.698801
+        },
+        {
+          "log_molecules": 2.906867,
+          "lower_cutoff": 2.353767,
+          "upper_cutoff": 2.841126
+        },
+        {
+          "log_molecules": 3.114763,
+          "lower_cutoff": 2.496437,
+          "upper_cutoff": 2.983507
+        },
+        {
+          "log_molecules": 3.32266,
+          "lower_cutoff": 2.639053,
+          "upper_cutoff": 3.125941
+        },
+        {
+          "log_molecules": 3.530557,
+          "lower_cutoff": 2.781614,
+          "upper_cutoff": 3.268431
+        },
+        {
+          "log_molecules": 3.738454,
+          "lower_cutoff": 2.92412,
+          "upper_cutoff": 3.410975
+        },
+        {
+          "log_molecules": 3.94635,
+          "lower_cutoff": 3.066572,
+          "upper_cutoff": 3.553573
+        },
+        {
+          "log_molecules": 4.154247,
+          "lower_cutoff": 3.208969,
+          "upper_cutoff": 3.696226
+        },
+        {
+          "log_molecules": 4.362144,
+          "lower_cutoff": 3.351311,
+          "upper_cutoff": 3.838934
+        },
+        {
+          "log_molecules": 4.570041,
+          "lower_cutoff": 3.493599,
+          "upper_cutoff": 3.981696
+        }
+      ],
+      [
+        {
+          "log_molecules": 2.69897,
+          "lower_cutoff": 2.166568,
+          "upper_cutoff": 2.743275
+        },
+        {
+          "log_molecules": 2.906867,
+          "lower_cutoff": 2.309329,
+          "upper_cutoff": 2.885564
+        },
+        {
+          "log_molecules": 3.114763,
+          "lower_cutoff": 2.452026,
+          "upper_cutoff": 3.027918
+        },
+        {
+          "log_molecules": 3.32266,
+          "lower_cutoff": 2.594658,
+          "upper_cutoff": 3.170336
+        },
+        {
+          "log_molecules": 3.530557,
+          "lower_cutoff": 2.737225,
+          "upper_cutoff": 3.312819
+        },
+        {
+          "log_molecules": 3.738454,
+          "lower_cutoff": 2.879728,
+          "upper_cutoff": 3.455366
+        },
+        {
+          "log_molecules": 3.94635,
+          "lower_cutoff": 3.022166,
+          "upper_cutoff": 3.597978
+        },
+        {
+          "log_molecules": 4.154247,
+          "lower_cutoff": 3.16454,
+          "upper_cutoff": 3.740655
+        },
+        {
+          "log_molecules": 4.362144,
+          "lower_cutoff": 3.306849,
+          "upper_cutoff": 3.883396
+        },
+        {
+          "log_molecules": 4.570041,
+          "lower_cutoff": 3.449094,
+          "upper_cutoff": 4.026201
+        }
+      ],
+      [
+        {
+          "log_molecules": 2.69897,
+          "lower_cutoff": 2.12754,
+          "upper_cutoff": 2.782303
+        },
+        {
+          "log_molecules": 2.906867,
+          "lower_cutoff": 2.270333,
+          "upper_cutoff": 2.92456
+        },
+        {
+          "log_molecules": 3.114763,
+          "lower_cutoff": 2.413053,
+          "upper_cutoff": 3.066891
+        },
+        {
+          "log_molecules": 3.32266,
+          "lower_cutoff": 2.5557,
+          "upper_cutoff": 3.209294
+        },
+        {
+          "log_molecules": 3.530557,
+          "lower_cutoff": 2.698273,
+          "upper_cutoff": 3.351771
+        },
+        {
+          "log_molecules": 3.738454,
+          "lower_cutoff": 2.840773,
+          "upper_cutoff": 3.494322
+        },
+        {
+          "log_molecules": 3.94635,
+          "lower_cutoff": 2.983199,
+          "upper_cutoff": 3.636946
+        },
+        {
+          "log_molecules": 4.154247,
+          "lower_cutoff": 3.125552,
+          "upper_cutoff": 3.779643
+        },
+        {
+          "log_molecules": 4.362144,
+          "lower_cutoff": 3.267832,
+          "upper_cutoff": 3.922413
+        },
+        {
+          "log_molecules": 4.570041,
+          "lower_cutoff": 3.410039,
+          "upper_cutoff": 4.065256
+        }
+      ],
+      [
+        {
+          "log_molecules": 2.69897,
+          "lower_cutoff": 2.092375,
+          "upper_cutoff": 2.817468
+        },
+        {
+          "log_molecules": 2.906867,
+          "lower_cutoff": 2.235197,
+          "upper_cutoff": 2.959697
+        },
+        {
+          "log_molecules": 3.114763,
+          "lower_cutoff": 2.377937,
+          "upper_cutoff": 3.102006
+        },
+        {
+          "log_molecules": 3.32266,
+          "lower_cutoff": 2.520597,
+          "upper_cutoff": 3.244397
+        },
+        {
+          "log_molecules": 3.530557,
+          "lower_cutoff": 2.663175,
+          "upper_cutoff": 3.386869
+        },
+        {
+          "log_molecules": 3.738454,
+          "lower_cutoff": 2.805673,
+          "upper_cutoff": 3.529422
+        },
+        {
+          "log_molecules": 3.94635,
+          "lower_cutoff": 2.948088,
+          "upper_cutoff": 3.672056
+        },
+        {
+          "log_molecules": 4.154247,
+          "lower_cutoff": 3.090423,
+          "upper_cutoff": 3.814772
+        },
+        {
+          "log_molecules": 4.362144,
+          "lower_cutoff": 3.232677,
+          "upper_cutoff": 3.957568
+        },
+        {
+          "log_molecules": 4.570041,
+          "lower_cutoff": 3.37485,
+          "upper_cutoff": 4.100446
+        }
+      ],
+      [
+        {
+          "log_molecules": 2.69897,
+          "lower_cutoff": 2.183467,
+          "upper_cutoff": 2.726376
+        },
+        {
+          "log_molecules": 2.906867,
+          "lower_cutoff": 2.326215,
+          "upper_cutoff": 2.868679
+        },
+        {
+          "log_molecules": 3.114763,
+          "lower_cutoff": 2.468901,
+          "upper_cutoff": 3.011043
+        },
+        {
+          "log_molecules": 3.32266,
+          "lower_cutoff": 2.611527,
+          "upper_cutoff": 3.153467
+        },
+        {
+          "log_molecules": 3.530557,
+          "lower_cutoff": 2.754092,
+          "upper_cutoff": 3.295952
+        },
+        {
+          "log_molecules": 3.738454,
+          "lower_cutoff": 2.896596,
+          "upper_cutoff": 3.438498
+        },
+        {
+          "log_molecules": 3.94635,
+          "lower_cutoff": 3.039039,
+          "upper_cutoff": 3.581105
+        },
+        {
+          "log_molecules": 4.154247,
+          "lower_cutoff": 3.181422,
+          "upper_cutoff": 3.723773
+        },
+        {
+          "log_molecules": 4.362144,
+          "lower_cutoff": 3.323744,
+          "upper_cutoff": 3.866501
+        },
+        {
+          "log_molecules": 4.570041,
+          "lower_cutoff": 3.466005,
+          "upper_cutoff": 4.00929
+        }
+      ]
+    ]
+  }

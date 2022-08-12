@@ -173,7 +173,7 @@ jobs:
         uses: aurelien-baudet/workflow-dispatch@v2
         with:
           workflow: Run end-to-end tests
-          repo: hms-dbmi-cellenics/testing
+          repo: biomage-org/testing
           token: ${{ secrets.API_TOKEN_GITHUB }}
           ref: ${{ steps.extract-integration-test-ref.outputs.ref }}
           inputs: '{ "environment": "staging", "ref": "${{ steps.extract-integration-test-ref.outputs.ref }}", "sandboxId": "${{needs.lint-pr-body.outputs.sandbox}}", "image_sha" : "${{ steps.extract-commit-details.outputs.github_sha }}", "namespace": "${{steps.extract-commit-details.outputs.repo_name}}-${{needs.lint-pr-body.outputs.sandbox}}" }'
