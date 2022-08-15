@@ -215,7 +215,10 @@ describe('DataProcessingPage', () => {
     // Click on the run button
     userEvent.click(screen.getByText('Run'));
 
-    userEvent.click(screen.getByText('Start'));
+    // The start button is the 2nd element with "Start" in it
+    const startButton = screen.getAllByText('Start')[1];
+
+    userEvent.click(startButton);
 
     expect(runQC).toHaveBeenCalled();
   });

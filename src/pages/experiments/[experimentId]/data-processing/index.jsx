@@ -626,7 +626,7 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
       <ul>
         <li>
           Click
-          <Text code>Run</Text>
+          <Text code>Start</Text>
           {' '}
           to re-run this project analysis from the beginning. Note that you will
           lose all of your annotated cell sets.
@@ -662,10 +662,9 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
             title='Run data processing with the changed settings'
             visible
             onCancel={() => setRunQCModalVisible(false)}
-            okText='Start'
             footer={
               [
-                <Button type='primary' onClick={() => onPipelineRun()}>Run</Button>,
+                <Button type='primary' onClick={() => onPipelineRun()}>Start</Button>,
                 qcRerunDisabled ? <Button type='primary' onClick={() => cloneExperimentAndSelectIt()}>Clone Project</Button> : <></>,
                 <Button onClick={() => setRunQCModalVisible(false)}>Cancel</Button>,
               ]

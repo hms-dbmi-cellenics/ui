@@ -71,6 +71,7 @@ Object {
     "info": Object {
       "experimentId": "testae48e318dab9a1bd0bexperiment-0",
       "experimentName": "Test Experiment-0",
+      "pipelineVersion": undefined,
       "sampleIds": Array [
         "test9188-d682-test-mock-cb6d644cmock-0",
         "test9188-d682-test-mock-cb6d644cmock-1",
@@ -400,6 +401,7 @@ Object {
     "info": Object {
       "experimentId": "testae48e318dab9a1bd0bexperiment-0",
       "experimentName": "Test Experiment-0",
+      "pipelineVersion": undefined,
       "sampleIds": Array [
         "test9188-d682-test-mock-cb6d644cmock-0",
         "test9188-d682-test-mock-cb6d644cmock-1",
