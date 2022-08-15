@@ -77,9 +77,28 @@ describe('PlotStyling', () => {
     expect(save).not.toBeDisabled();
 
     const yMin = screen.getByTestId('yMin');
+    const yMax = screen.getByTestId('yMax');
 
     userEvent.type(yMin, '{backspace}{backspace}{backspace}100');
+    expect(yMin).toHaveValue('100');
 
     expect(save).toBeDisabled();
+
+    userEvent.type(yMax, '{backspace}{backspace}150');
+    expect(yMax).toHaveValue('150');
+
+    expect(save).not.toBeDisabled();
+
+    const xAuto = screen.getByTestId('xAuto');
+    userEvent.click(xAuto);
+
+    const xMin = screen.getByTestId('xMin');
+    const xMax = screen.getByTestId('xMax');
+
+    userEvent.type(xMin, '{backspace}{backspace}{backspace}-10');
+    expect(xMin).toHaveValue('-10');
+
+    userEvent.type(xMax, '{backspace}{backspace}20');
+    expect(xMax).toHaveValue('20');
   });
 });
