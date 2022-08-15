@@ -18,7 +18,7 @@ import DataProcessingIntercept from 'components/data-processing/DataProcessingIn
 
 import addChangedQCFilter from 'redux/actions/experimentSettings/processingConfig/addChangedQCFilter';
 import {
-  updateExperiment, loadExperiments, switchExperiment,
+  updateExperiment, loadExperiments, switchExperiment, setActiveExperiment,
 } from 'redux/actions/experiments';
 
 jest.mock('next/router', () => ({
@@ -31,9 +31,11 @@ jest.mock('components/data-processing/DataProcessingIntercept',
 
 jest.mock('redux/actions/experiments/switchExperiment');
 jest.mock('redux/actions/experiments/updateExperiment');
+jest.mock('redux/actions/experiments/setActiveExperiment');
 
 switchExperiment.mockImplementation(() => ({ type: 'MOCK_ACTION ' }));
 updateExperiment.mockImplementation(() => ({ type: 'MOCK_ACTION ' }));
+setActiveExperiment.mockImplementation(() => ({ type: 'MOCK_ACTION ' }));
 
 enableFetchMocks();
 
@@ -60,7 +62,6 @@ const TestComponent = (props) => {
   const { navigateTo } = useAppRouter();
 
   const testParams = {
-    experimentId,
     experimentId,
     ...params,
   };
@@ -126,6 +127,27 @@ describe('AppRouteProvider', () => {
     userEvent.click(screen.getByText(buttonText));
 
     expect(switchExperiment).toHaveBeenCalledTimes(1);
+
+    expect(mockRouter.push).toHaveBeenCalled();
+  });
+
+  it('Switch active experiment when navigating to DataManagement', async () => {
+    await storeState.dispatch(loadExperiments());
+
+    render(
+      <Provider store={storeState}>
+        <AppRouteProvider>
+          <TestComponent module={modules.DATA_MANAGEMENT} />
+        </AppRouteProvider>
+      </Provider>,
+    );
+
+    mockRouter.pathname = '/data-processing';
+
+    userEvent.click(screen.getByText(buttonText));
+
+    expect(setActiveExperiment).toHaveBeenCalledTimes(1);
+    expect(setActiveExperiment).toHaveBeenCalledWith(experimentId);
 
     expect(mockRouter.push).toHaveBeenCalled();
   });
