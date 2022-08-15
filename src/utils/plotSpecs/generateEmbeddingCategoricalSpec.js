@@ -4,6 +4,7 @@ import { getAllCells, getSampleCells } from 'utils/cellSets';
 
 const generateSpec = (config, plotData, cellSetLegendsData) => {
   let legend = [];
+  plotData = plotData.filter((entry) => entry.cellSetKey);
 
   if (config?.legend.enabled) {
     const positionIsRight = config.legend.position === 'right';
