@@ -91,6 +91,7 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
   );
 
   const changesOutstanding = Boolean(changedQCFilters.size);
+  const qcRerunDisabled = pipelineVersion < 1;
 
   const [stepIdx, setStepIdx] = useState(0);
   const [runQCModalVisible, setRunQCModalVisible] = useState(false);
@@ -242,18 +243,18 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
       key: 'doubletScores',
       name: getUserFriendlyQCStepName('doubletScores'),
       description:
-        <span>
-          Droplets may contain more than one cell.
-          In such cases, it is not possible to distinguish which reads came from which cell.
-          Such “cells” cause problems in the downstream analysis as they appear as an intermediate type.
-          “Cells” with a high probability of being a doublet should be excluded.
-          The probability of being a doublet is calculated using ‘scDblFinder’.
-          For each sample, the default threshold tries to minimize both the deviation in the
-          expected number of doublets and the error of a trained classifier. For more details see
-          {' '}
-          <a href='https://bioconductor.org/packages/devel/bioc/vignettes/scDblFinder/inst/doc/scDblFinder.html#thresholding' rel='noreferrer' target='_blank'>scDblFinder thresholding</a>
-          .
-        </span>,
+  <span>
+    Droplets may contain more than one cell.
+    In such cases, it is not possible to distinguish which reads came from which cell.
+    Such “cells” cause problems in the downstream analysis as they appear as an intermediate type.
+    “Cells” with a high probability of being a doublet should be excluded.
+    The probability of being a doublet is calculated using ‘scDblFinder’.
+    For each sample, the default threshold tries to minimize both the deviation in the
+    expected number of doublets and the error of a trained classifier. For more details see
+    {' '}
+    <a href='https://bioconductor.org/packages/devel/bioc/vignettes/scDblFinder/inst/doc/scDblFinder.html#thresholding' rel='noreferrer' target='_blank'>scDblFinder thresholding</a>
+    .
+  </span>,
       multiSample: true,
       render: (key) => (
         <SingleComponentMultipleDataContainer
@@ -441,16 +442,16 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
                               ) : pipelineNotFinished
                                 && !pipelineRunning
                                 && !isStepComplete(key) ? (
-                                <>
-                                  <Text
-                                    type='danger'
-                                    strong
-                                  >
-                                    <WarningOutlined />
-                                  </Text>
-                                  <span style={{ marginLeft: '0.25rem' }}>{text}</span>
-                                </>
-                              ) : <></>}
+                                  <>
+                                    <Text
+                                      type='danger'
+                                      strong
+                                    >
+                                      <WarningOutlined />
+                                    </Text>
+                                    <span style={{ marginLeft: '0.25rem' }}>{text}</span>
+                                  </>
+                                ) : <></>}
                             </Option>
                           );
                         },
@@ -616,28 +617,36 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
   };
 
   const qcRerunDisabledAlert = () => (
-    <Alert
-      message={(
-        <div style={{ padding: '5px' }}>
-          Due to a recent update, if you click Start your analysis will re-run
-          from scratch and you will lose all your annotated clusters.
-          <br />
-          <br />
-          If you want to keep your custom cell set annotation,
-          you can clone this project and run from scratch in the new project only.
-          Your current project will still be available in data exploration.
-          <Button onClick={cloneExperimentAndSelectIt}>Click here to clone your project</Button>
-        </div>
-      )}
-      type='warning'
-      showIcon={false}
-      style={{
-        paddingTop: '3px', paddingBottom: '3px', paddingLeft: '10px', paddingRight: '10px', marginBottom: '10px',
-      }}
-    />
+    <>
+      <p>
+        Due to a recent update, re-running the pipeline will initiate the run from the beginning
+        and you will lose all of your annotated cell sets. You have 3 options:
+      </p>
+      <ul>
+        <li>
+          Click
+          <Text code>Run</Text>
+          {' '}
+          to re-run this project analysis from the beginning. Note that you will
+          lose all of your annotated cell sets.
+        </li>
+        <li>
+          Click
+          <Text code>Clone Project</Text>
+          {' '}
+          to clone this project and run from the beginning for the new project only.
+          Your current project will not re-run, and will still be available to explore.
+        </li>
+        <li>
+          Click
+          <Text code>Cancel</Text>
+          {' '}
+          to close this popup. You can then choose to discard the changed
+          settings in your current project.
+        </li>
+      </ul>
+    </>
   );
-
-  const qcRerunDisabled = pipelineVersion < 1;
 
   return (
     <>
@@ -651,13 +660,17 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
           <Modal
             title='Run data processing with the changed settings'
             visible
-            okButtonProps={{ disabled: qcRerunDisabled }}
             onCancel={() => setRunQCModalVisible(false)}
-            onOk={() => onPipelineRun()}
             okText='Start'
+            footer={
+              [
+                <Button type='primary' onClick={() => onPipelineRun()}>Run</Button>,
+                qcRerunDisabled ? <Button type='primary' onClick={() => cloneExperimentAndSelectIt()}>Clone Project</Button> : <></>,
+                <Button onClick={() => setRunQCModalVisible(false)}>Cancel</Button>,
+              ]
+            }
           >
             {qcRerunDisabled && qcRerunDisabledAlert()}
-            {/* {qcRerunDisabledAlert()} */}
             <p>
               This might take several minutes.
               Your navigation within Cellenics will be restricted during this time.
