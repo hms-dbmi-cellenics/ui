@@ -23,6 +23,7 @@ import { modules } from 'utils/constants';
 import { act } from 'react-dom/test-utils';
 import { saveProcessingSettings } from 'redux/actions/experimentSettings';
 import { EXPERIMENT_SETTINGS_SET_QC_STEP_ENABLED } from 'redux/actionTypes/experimentSettings';
+import { CURRENT_PIPELINE_VERSION } from 'utils/platformVersions';
 
 jest.mock('components/header/UserButton', () => () => <></>);
 jest.mock('redux/actions/experimentSettings/processingConfig/saveProcessingSettings');
@@ -78,6 +79,7 @@ const getStore = (experimentId, settings = {}) => {
       ...initialExperimentState,
       info: {
         ...initialExperimentState.info,
+        pipelineVersion: CURRENT_PIPELINE_VERSION,
         sampleIds,
       },
       processing: {
@@ -215,12 +217,100 @@ describe('DataProcessingPage', () => {
     // Click on the run button
     userEvent.click(screen.getByText('Run'));
 
-    // The start button is the 2nd element with "Start" in it
-    const startButton = screen.getAllByText('Start')[1];
-
-    userEvent.click(startButton);
+    // Click on the start button
+    userEvent.click(screen.getByText('Start'));
 
     expect(runQC).toHaveBeenCalled();
+  });
+
+  it('Shows extra information if there is a new version of the QC pipeline', () => {
+    const store = getStore(experimentId, {
+      experimentSettings: {
+        info: { pipelineVersion: CURRENT_PIPELINE_VERSION - 1 },
+        processing: { meta: { changedQCFilters: new Set(['classifier']) } },
+      },
+    });
+
+    render(
+      <Provider store={store}>
+        {dataProcessingPageFactory()}
+      </Provider>,
+    );
+
+    screen.debug(null, Infinity);
+
+    // Change settings by clicking on the "manual" radio button
+    const manualButton = screen.getByText('Manual');
+
+    userEvent.click(manualButton);
+
+    // Click on the run button
+    userEvent.click(screen.getByText('Run'));
+
+    expect(screen.getByText(/Due to a recent update, re-running the pipeline will initiate the run from the beginning/)).toBeInTheDocument();
+
+    // The Start text is the 1st element with "Start" in it
+    const startText = screen.getAllByText('Start')[0];
+    console.log('*** startText', startText);
+
+    expect(startText).toBeInTheDocument();
+    expect(screen.getByText(/to re-run this project analysis from the beginning. Note that you will lose all of your annotated cell sets./)).toBeInTheDocument();
+
+    // The Clone Project text is the 1st element with "Clone Project" in it
+    const cloneProjectText = screen.getAllByText('Clone Project')[0];
+    expect(cloneProjectText).toBeInTheDocument();
+    expect(screen.getByText(/to clone this project and run from the beginning for the new project only./)).toBeInTheDocument();
+    expect(screen.getByText(/Your current project will not re-run, and will still be available to explore./)).toBeInTheDocument();
+
+    // The Cancel text is the 1st element with "Cancel" in it
+    const cancelText = screen.getAllByText('Cancel')[0];
+    expect(cancelText).toBeInTheDocument();
+    expect(screen.getByText(/to close this popup. You can then choose to discard the changed settings in your current project./)).toBeInTheDocument();
+
+    // There should be 3 buttons
+    // The start button is the 2nd element with "Start" in it
+    const startButton = screen.getAllByText('Start')[1];
+    expect(startButton).toBeInTheDocument();
+
+    // The clone project button is the 2nd element with "Clone Project" in it
+    const cloneProjectButton = screen.getAllByText('Clone Project')[1];
+    expect(cloneProjectButton).toBeInTheDocument();
+
+    // Clicking the Clone Project button will call the clone experiment action
+    // expect(cloneExperiment).toHaveBeenCalledTimes(1);
+
+    // The cancel button is the 3rd element with "Cancel" in it
+    const cancelButton = screen.getAllByText('Cancel')[1];
+    expect(cancelButton).toBeInTheDocument();
+  });
+
+  it('Should not show extra information if there is no new version of the QC pipeline', () => {
+    const store = getStore(experimentId, {
+      experimentSettings: {
+        processing: { meta: { changedQCFilters: new Set(['classifier']) } },
+      },
+    });
+
+    render(
+      <Provider store={store}>
+        {dataProcessingPageFactory()}
+      </Provider>,
+    );
+
+    // Change settings by clicking on the "manual" radio button
+    const manualButton = screen.getByText('Manual');
+
+    userEvent.click(manualButton);
+
+    // Click on the run button
+    userEvent.click(screen.getByText('Run'));
+
+    // There should be no update information
+    expect(screen.queryByText(/Due to a recent update, re-running the pipeline will initiate the run from the beginning/)).toBeNull();
+
+    // There should only be 2 buttons
+    expect(screen.getByText('Start')).toBeInTheDocument();
+    expect(screen.getByText('Cancel')).toBeInTheDocument();
   });
 
   it('Classifier filter (1st filter) should show custom disabled message if sample is prefiltered ', () => {
