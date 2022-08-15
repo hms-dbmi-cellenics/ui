@@ -65,12 +65,7 @@ const Classifier = (props) => {
     },
     {
       panelTitle: 'Axes',
-      controls: [{
-        name: axesControls,
-        props: {
-          showXRange: false,
-        },
-      }],
+      controls: [axesControls],
     },
     {
       panelTitle: 'Title',

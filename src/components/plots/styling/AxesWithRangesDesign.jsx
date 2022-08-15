@@ -10,8 +10,12 @@ const { Panel } = Collapse;
 
 const AxesWithRangesDesign = (props) => {
   const {
-    config, onUpdate, showYRange, showXRange,
+    config, onUpdate,
   } = props;
+
+  const hideYRange = typeof config.axesRanges.yAxisAuto === 'undefined';
+
+  const hideXRange = typeof config.axesRanges.xAxisAuto === 'undefined';
 
   const [newConfig, setNewConfig] = useState(config.axesRanges);
 
@@ -34,7 +38,7 @@ const AxesWithRangesDesign = (props) => {
       <Collapse>
         <Panel header='Axes Ranges'>
           <Space direction='vertical' style={{ width: '80%' }}>
-            <Space direction='vertical' style={{ width: '100%' }} hidden={!showYRange}>
+            <Space direction='vertical' style={{ width: '100%' }} hidden={hideYRange}>
               <p><strong>Y-Axis</strong></p>
               <Form
                 size='small'
@@ -79,7 +83,7 @@ const AxesWithRangesDesign = (props) => {
               </Form>
             </Space>
 
-            <Space direction='vertical' style={{ width: '100%' }} hidden={!showXRange}>
+            <Space direction='vertical' style={{ width: '100%' }} hidden={hideXRange}>
               <p><strong>X-Axis</strong></p>
               <Form
                 size='small'
@@ -144,16 +148,9 @@ const AxesWithRangesDesign = (props) => {
   );
 };
 
-AxesWithRangesDesign.defaultProps = {
-  showYRange: true,
-  showXRange: true,
-};
-
 AxesWithRangesDesign.propTypes = {
   config: PropTypes.object.isRequired,
   onUpdate: PropTypes.func.isRequired,
-  showYRange: PropTypes.bool,
-  showXRange: PropTypes.bool,
 };
 
 export default AxesWithRangesDesign;
