@@ -10,6 +10,7 @@ const PointDesign = (props) => {
   const { onUpdate, config } = props;
   const [newConfig, handleChange] = useUpdateThrottled(onUpdate, config);
 
+
   return (
     <Space direction='vertical' style={{ width: '80%' }}>
       <Form
@@ -47,14 +48,17 @@ const PointDesign = (props) => {
             />
           </Form.Item>
         ) : <></>}
-
-        <p><strong>Point Shape</strong></p>
-        <Form.Item>
-          <Radio.Group onChange={(e) => onUpdate({ marker: { shape: e.target.value } })} value={config.marker.shape}>
-            <Radio value='circle'>Circle</Radio>
-            <Radio value='diamond'>Diamond</Radio>
-          </Radio.Group>
-        </Form.Item>
+        {props.showShapeType ? (
+          <>
+            <p><strong>Point Shape</strong></p>
+            <Form.Item>
+              <Radio.Group onChange={(e) => onUpdate({ marker: { shape: e.target.value } })} value={config.marker.shape}>
+                <Radio value='circle'>Circle</Radio>
+                <Radio value='diamond'>Diamond</Radio>
+              </Radio.Group>
+            </Form.Item>
+          </>
+        ) : <></>}
       </Form>
     </Space>
   );
@@ -63,6 +67,11 @@ const PointDesign = (props) => {
 PointDesign.propTypes = {
   config: PropTypes.object.isRequired,
   onUpdate: PropTypes.func.isRequired,
+  showShapeType: PropTypes.bool
 };
+
+PointDesign.defaultProps = {
+  showShapeType: true
+}
 
 export default PointDesign;

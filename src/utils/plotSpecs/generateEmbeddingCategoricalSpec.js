@@ -160,7 +160,7 @@ const generateSpec = (config, plotData, cellSetLegendsData) => {
             size: { value: config?.marker.size },
             stroke: { scale: 'cellSetMarkColors', field: 'cellSetKey' },
             fill: { scale: 'cellSetMarkColors', field: 'cellSetKey' },
-            shape: { value: config?.marker.shape },
+            shape: { value: 'circle' },
             fillOpacity: { value: config?.marker.opacity / 10 },
           },
         },
