@@ -228,15 +228,33 @@ const insertClusterColorsSpec = (
 const insertTrajectorySpec = (
   spec,
   pathData,
+  selectedNodes,
   resetToggle,
 ) => {
   spec.resetToggle = resetToggle;
 
-  spec.data.push(
+  spec.data = [
+    ...spec.data,
     {
       name: 'pathData',
       values: pathData,
+      format: {
+        type: 'json',
+        copy: true,
+      },
     },
+    {
+      name: 'highlight',
+      values: selectedNodes,
+      format: {
+        type: 'json',
+        copy: true,
+      },
+    },
+  ];
+
+  spec.data.push(
+
   );
 
   spec.marks[0].marks = [
@@ -280,6 +298,20 @@ const insertTrajectorySpec = (
           defined: {
             signal: 'isValid(datum["x"]) && isFinite(+datum["x"]) && isValid(datum["y"]) && isFinite(+datum["y"])',
           },
+        },
+      },
+    },
+    {
+      name: 'highlightNodes',
+      type: 'symbol',
+      from: { data: 'highlight' },
+      encode: {
+        update: {
+          x: { scale: 'xscale', field: 'x' },
+          y: { scale: 'yscale', field: 'y' },
+          size: { signal: 'size' },
+          fill: { value: 'red ' },
+          shape: { value: 'circle' },
         },
       },
     },

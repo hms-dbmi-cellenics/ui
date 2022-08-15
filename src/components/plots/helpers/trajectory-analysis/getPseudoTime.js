@@ -3,7 +3,9 @@ import { PLOT_DATA_LOADED, PLOT_DATA_LOADING, PLOT_DATA_ERROR } from 'redux/acti
 
 import handleError from 'utils/http/handleError';
 import endUserMessages from 'utils/endUserMessages';
-import { fetchWork } from 'utils/work/fetchWork';
+import { fetchWork, generateETag } from 'utils/work/fetchWork';
+import { getBackendStatus } from 'redux/selectors';
+import { getEmbeddingWorkRequestBody } from 'redux/actions/embedding/loadEmbedding';
 
 const getPseudoTime = (
   rootNodes,
@@ -15,17 +17,40 @@ const getPseudoTime = (
     clusteringSettings,
   } = getState().experimentSettings.processing?.configureEmbedding || {};
 
+  const embeddingState = getState()
+    .experimentSettings
+    ?.processing
+    ?.configureEmbedding
+    ?.embeddingSettings;
+
+  if (!embeddingState) return null;
+
   const {
-    ETag,
-  } = getState().embeddings[embeddingSettings.method];
+    methodSettings,
+    method: embeddingMethod,
+  } = embeddingState;
+
+  const { environment } = getState().networkResources;
+  const backendStatus = getBackendStatus(experimentId)(getState()).status;
+  const { pipeline: { startDate: qcPipelineStartDate } } = backendStatus;
+
+  const embeddingBody = getEmbeddingWorkRequestBody(methodSettings, embeddingMethod);
 
   const timeout = getTimeoutForWorkerTask(getState(), 'TrajectoryAnalysis');
+
+  const embeddingETag = generateETag(
+    experimentId,
+    embeddingBody,
+    undefined,
+    qcPipelineStartDate,
+    environment,
+  );
 
   const body = {
     name: 'GetPseudoTime',
     embedding: {
       method: embeddingSettings.method,
-      ETag,
+      ETag: embeddingETag,
     },
     clustering: {
       method: clusteringSettings.method,
@@ -40,9 +65,11 @@ const getPseudoTime = (
       payload: { plotUuid },
     });
 
-    const { data } = await fetchWork(
+    const res = await fetchWork(
       experimentId, body, getState, { timeout, rerun: true },
     );
+
+    const { data } = res;
 
     const { plotData } = getState().componentConfig[plotUuid];
 

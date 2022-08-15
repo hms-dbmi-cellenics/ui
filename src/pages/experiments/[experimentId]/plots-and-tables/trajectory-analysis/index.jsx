@@ -12,6 +12,7 @@ import {
   updatePlotConfig,
   loadPlotConfig,
 } from 'redux/actions/componentConfig/index';
+import Loader from 'components/Loader';
 import { loadEmbedding } from 'redux/actions/embedding';
 import { loadProcessingSettings } from 'redux/actions/experimentSettings';
 import Header from 'components/Header';
@@ -34,7 +35,6 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
     plotData,
   } = useSelector((state) => state.componentConfig[plotUuid]) || {};
 
-  const [selectedNodes, setSelectedNodes] = useState([]);
   const [resetToggle, setResetToggle] = useState([]);
 
   const { method: embeddingMethod } = useSelector(
@@ -72,6 +72,10 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
   const updatePlotWithChanges = (obj) => {
     dispatch(updatePlotConfig(plotUuid, obj));
   };
+
+  const {
+    selectedNodes,
+  } = config || {};
 
   const plotStylingConfig = [
     {
@@ -117,6 +121,8 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
     },
   ];
 
+  if (!config) return <Loader />;
+
   const renderExtraPanels = () => (
     <>
       <Panel header='Trajectory analysis' key='trajectory-analysis'>
@@ -129,7 +135,7 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
               block
               disabled={configLoading}
               onClick={() => {
-                setSelectedNodes([]);
+                dispatch(updatePlotConfig(plotUuid, { selectedNodes: [] }));
                 setResetToggle(!resetToggle);
               }}
             >
@@ -156,7 +162,7 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
         >
           <b>Plot values</b>
           <Radio.Group
-            value={config?.display.pseudotime}
+            value={config?.display?.pseudotime}
             onChange={(e) => dispatch(
               updatePlotConfig(plotUuid, { display: { pseudotime: e.target.value } }),
             )}
@@ -171,7 +177,7 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
           </Radio.Group>
           <b>Trajectory</b>
           <Radio.Group
-            value={config?.display.trajectory}
+            value={config?.display?.trajectory}
             onChange={(e) => dispatch(
               updatePlotConfig(plotUuid, { display: { trajectory: e.target.value } }),
             )}
@@ -191,12 +197,12 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
       ? selectedNodes.filter((nodeId) => selectedNodeId !== nodeId)
       : [...selectedNodes, selectedNodeId];
 
-    setSelectedNodes(updatedSelection);
+    dispatch(updatePlotConfig(plotUuid, { selectedNodes: updatedSelection }));
   };
 
   const addNodes = (nodesInSelection) => {
     const updatedSelection = [...new Set([...selectedNodes, ...nodesInSelection])];
-    setSelectedNodes(updatedSelection);
+    dispatch(updatePlotConfig(plotUuid, { selectedNodes: updatedSelection }));
   };
 
   return (

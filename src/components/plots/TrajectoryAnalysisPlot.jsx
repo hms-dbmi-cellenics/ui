@@ -119,7 +119,14 @@ const TrajectoryAnalysisPlot = (props) => {
 
     if (display.trajectory) {
       const trajectoryData = generateTrajectoryData(plotData.nodes);
-      insertTrajectorySpec(baseSpec, trajectoryData, resetPlot);
+      const selectedNodes = config.selectedNodes.map((nodeId) => plotData.nodes[nodeId]);
+
+      insertTrajectorySpec(
+        baseSpec,
+        trajectoryData,
+        selectedNodes,
+        resetPlot,
+      );
     }
 
     setPlotSpec(baseSpec);
@@ -131,7 +138,12 @@ const TrajectoryAnalysisPlot = (props) => {
       onClickNode(node_id);
     },
     lassoSelection: (eventName, payload) => {
-      const [xStart, yStart, xEnd, yEnd] = payload;
+      const [x1, y1, x2, y2] = payload;
+
+      const xStart = Math.min(x1, x2);
+      const xEnd = Math.max(x1, x2);
+      const yStart = Math.min(y1, y2);
+      const yEnd = Math.max(y1, y2);
 
       const selectedNodes = Object.values(plotData.nodes).map(
         (node) => {

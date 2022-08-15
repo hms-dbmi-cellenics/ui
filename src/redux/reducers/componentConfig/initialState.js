@@ -301,6 +301,7 @@ const trajectoryAnalysisInitialConfig = {
     ...labelBaseState,
     enabled: false,
   },
+  selectedNodes: [],
   selectedCellSet: 'louvain',
   selectedSample: 'All',
   display: {
