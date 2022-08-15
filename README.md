@@ -126,3 +126,5 @@ Browser cache makes it hard to develop as it can hide changes from the backend, 
     receiver](https://developer.apple.com/forums/thread/682332). To be able
     to run the UI locally it has to be disabled, going to system Preferences >
     Sharing and unticking the Airplay Reciever service box.
+
+For any other problems, reach out our team!
