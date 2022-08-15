@@ -15,6 +15,16 @@ const AxesWithRangesDesign = (props) => {
 
   const [newConfig, setNewConfig] = useState(config.axesRanges);
 
+  const disableSave = () => {
+    if (_.isEqual(config.axesRanges, newConfig)) return true;
+
+    if (newConfig.yMin > newConfig.yMax) return true;
+
+    if (newConfig.xMin > newConfig.xMax) return true;
+
+    return false;
+  };
+
   return (
     <Space direction='vertical' style={{ width: '100%' }}>
       <AxesDesign
@@ -107,12 +117,12 @@ const AxesWithRangesDesign = (props) => {
                 </Form.Item>
               </Form>
             </Space>
-            
+
             <Space align='end' size={20}>
               <Button
                 size='small'
                 type='primary'
-                disabled={_.isEqual(config.axesRanges, newConfig)}
+                disabled={disableSave()}
                 onClick={() => {
                   onUpdate({ axesRanges: newConfig });
                 }}
