@@ -7,6 +7,8 @@ import PlotStyling from 'components/plots/styling/PlotStyling';
 
 import { initialPlotConfigStates } from 'redux/reducers/componentConfig/initialState';
 
+const mockOnUpdate = jest.fn();
+
 const defaultStylingConfig = [
   {
     panelTitle: 'Main schema',
@@ -29,6 +31,7 @@ const defaultStylingConfig = [
 ];
 
 const defaultProps = {
+  onUpdate: mockOnUpdate,
   formConfig: defaultStylingConfig,
   config: initialPlotConfigStates.embeddingCategorical,
 };
@@ -61,7 +64,7 @@ describe('PlotStyling', () => {
     expect(screen.getByText('Save')).toBeInTheDocument();
   });
 
-  it('Changes axes ranges', () => {
+  it('Changes and saves axes ranges', () => {
     renderPlotStyling();
 
     userEvent.click(screen.getByText('Axes and margins'));
@@ -100,5 +103,8 @@ describe('PlotStyling', () => {
 
     userEvent.type(xMax, '{backspace}{backspace}20');
     expect(xMax).toHaveValue('20');
+
+    userEvent.click(save);
+    expect(mockOnUpdate).toHaveBeenCalledTimes(1);
   });
 });
