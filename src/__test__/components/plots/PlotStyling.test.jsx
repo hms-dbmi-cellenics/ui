@@ -24,7 +24,7 @@ const defaultStylingConfig = [
   },
   {
     panelTitle: 'Axes and margins',
-    controls: ['axes'],
+    controls: ['axesWithRanges'],
   },
 ];
 
@@ -50,5 +50,36 @@ describe('PlotStyling', () => {
 
     userEvent.click(screen.getByText('Main schema'));
     expect(screen.getByText('Main schema')).toBeInTheDocument();
+  });
+
+  it('Renders axes ranges controls', () => {
+    renderPlotStyling();
+
+    userEvent.click(screen.getByText('Axes and margins'));
+    userEvent.click(screen.getByText('Axes Ranges'));
+
+    expect(screen.getByText('Save')).toBeInTheDocument();
+  });
+
+  it('Changes axes ranges', () => {
+    renderPlotStyling();
+
+    userEvent.click(screen.getByText('Axes and margins'));
+    userEvent.click(screen.getByText('Axes Ranges'));
+
+    const yAuto = screen.getByTestId('yAuto');
+    const save = screen.getByTestId('save');
+
+    expect(save).toBeDisabled();
+
+    userEvent.click(yAuto);
+
+    expect(save).not.toBeDisabled();
+
+    const yMin = screen.getByTestId('yMin');
+
+    userEvent.type(yMin, '{backspace}{backspace}{backspace}100');
+
+    expect(save).toBeDisabled();
   });
 });

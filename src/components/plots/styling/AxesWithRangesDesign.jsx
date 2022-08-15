@@ -44,6 +44,7 @@ const AxesWithRangesDesign = (props) => {
                   label='Auto'
                 >
                   <Checkbox
+                    data-testid='yAuto'
                     onChange={() => {
                       setNewConfig({ ...newConfig, yAxisAuto: !newConfig.yAxisAuto });
                     }}
@@ -55,6 +56,7 @@ const AxesWithRangesDesign = (props) => {
                   label='Minimum: '
                 >
                   <InputNumber
+                    data-testid='yMin'
                     defaultValue={newConfig.yMin}
                     onChange={(value) => {
                       setNewConfig({ ...newConfig, yMin: value });
@@ -66,6 +68,7 @@ const AxesWithRangesDesign = (props) => {
                   label='Maximum:'
                 >
                   <InputNumber
+                    data-testid='yMax'
                     defaultValue={newConfig.yMax}
                     onChange={(value) => {
                       setNewConfig({ ...newConfig, yMax: value });
@@ -86,6 +89,7 @@ const AxesWithRangesDesign = (props) => {
                   label='Auto'
                 >
                   <Checkbox
+                    data-testid='xAuto'
                     onChange={() => {
                       setNewConfig({ ...newConfig, xAxisAuto: !newConfig.xAxisAuto });
                     }}
@@ -97,6 +101,7 @@ const AxesWithRangesDesign = (props) => {
                   label='Minimum: '
                 >
                   <InputNumber
+                    data-testid='xMin'
                     defaultValue={newConfig.xMin}
                     onChange={(value) => {
                       setNewConfig({ ...newConfig, xMin: value });
@@ -108,6 +113,7 @@ const AxesWithRangesDesign = (props) => {
                   label='Maximum:'
                 >
                   <InputNumber
+                    data-testid='xMax'
                     defaultValue={newConfig.xMax}
                     onChange={(value) => {
                       setNewConfig({ ...newConfig, xMax: value });
@@ -120,6 +126,7 @@ const AxesWithRangesDesign = (props) => {
 
             <Space align='end' size={20}>
               <Button
+                data-testid='save'
                 size='small'
                 type='primary'
                 disabled={disableSave()}
