@@ -21,14 +21,18 @@ const plotType = plotTypes.TRAJECTORY_ANALYSIS;
 const TrajectoryAnalysisPage = ({ experimentId }) => {
   const dispatch = useDispatch();
 
+  // Currenty monocle3 only trajectory analysis only supports
+  // UMAP embedding. Therefore, this embedding is specifically fetched.
+  const embeddingMethod = 'umap';
+
   const {
     config,
     plotData,
   } = useSelector((state) => state.componentConfig[plotUuid]) || {};
 
-  const { method: embeddingMethod } = useSelector(
+  const embeddingSettings = useSelector(
     (state) => state.experimentSettings.originalProcessing
-      ?.configureEmbedding?.embeddingSettings || {},
+      ?.configureEmbedding?.embeddingSettings,
   );
 
   const {
@@ -39,14 +43,17 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
 
   useEffect(() => {
     if (!config) dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
-    if (!embeddingMethod) dispatch(loadProcessingSettings(experimentId));
+    dispatch(loadProcessingSettings(experimentId));
   }, []);
 
   useEffect(() => {
-    if (embeddingMethod && embeddingData?.length === 0) {
+    if (embeddingMethod
+      && embeddingData?.length === 0
+      && embeddingSettings
+    ) {
       dispatch(loadEmbedding(experimentId, embeddingMethod));
     }
-  }, [embeddingMethod]);
+  }, [embeddingMethod, !embeddingSettings]);
 
   useEffect(() => {
     if (

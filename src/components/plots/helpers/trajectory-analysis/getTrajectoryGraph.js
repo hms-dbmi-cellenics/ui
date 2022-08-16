@@ -11,8 +11,11 @@ const getTrajectoryGraph = (
   experimentId,
   plotUuid,
 ) => async (dispatch, getState) => {
+  // Currenty monocle3 only trajectory analysis only supports
+  // UMAP embedding. Therefore, this embedding is specifically fetched.
+  const embeddingMethod = 'umap';
+
   const {
-    embeddingSettings,
     clusteringSettings,
   } = getState().experimentSettings.processing?.configureEmbedding || {};
 
@@ -24,10 +27,7 @@ const getTrajectoryGraph = (
 
   if (!embeddingState) return null;
 
-  const {
-    methodSettings,
-    method: embeddingMethod,
-  } = embeddingState;
+  const { methodSettings } = embeddingState;
 
   const { environment } = getState().networkResources;
   const backendStatus = getBackendStatus(experimentId)(getState()).status;
@@ -48,7 +48,7 @@ const getTrajectoryGraph = (
   const body = {
     name: 'GetTrajectoryGraph',
     embedding: {
-      method: embeddingSettings.method,
+      method: embeddingMethod,
       ETag: embeddingETag,
     },
     clustering: {

@@ -16,9 +16,15 @@ import 'vega-webgl-renderer';
 import { getCellSets } from 'redux/selectors';
 import PlatformError from 'components/PlatformError';
 import Loader from 'components/Loader';
+import { Alert } from 'antd';
+
 import changeEmbeddingAxesIfNecessary from 'components/plots/helpers/changeEmbeddingAxesIfNecessary';
 
 const TrajectoryAnalysisPlot = (props) => {
+  // Currenty monocle3 only trajectory analysis only supports
+  // UMAP embedding. Therefore, this embedding is specifically fetched.
+  const embeddingMethod = 'umap';
+
   const {
     experimentId,
     config,
@@ -39,7 +45,7 @@ const TrajectoryAnalysisPlot = (props) => {
     loading: embeddingLoading,
     error: embeddingError,
   } = useSelector(
-    (state) => state.embeddings[embeddingSettings?.method],
+    (state) => state.embeddings[embeddingMethod],
   ) || {};
 
   const [plotSpec, setPlotSpec] = useState(null);
@@ -52,15 +58,17 @@ const TrajectoryAnalysisPlot = (props) => {
     if (!embeddingSettings) {
       dispatch(loadProcessingSettings(experimentId));
     }
-
-    if (!embeddingData && embeddingSettings?.method) {
-      dispatch(loadEmbedding(experimentId, embeddingSettings?.method));
-    }
-  }, [experimentId, embeddingSettings?.method]);
+  }, [experimentId]);
 
   useEffect(() => {
-    changeEmbeddingAxesIfNecessary(config, embeddingSettings?.method, onUpdate);
-  }, [config, embeddingSettings?.method]);
+    if (!embeddingData && embeddingMethod) {
+      dispatch(loadEmbedding(experimentId, embeddingMethod));
+    }
+  }, [experimentId, embeddingMethod]);
+
+  useEffect(() => {
+    changeEmbeddingAxesIfNecessary(config, embeddingMethod, onUpdate);
+  }, [config, embeddingMethod]);
 
   useEffect(() => {
     if (
@@ -117,6 +125,18 @@ const TrajectoryAnalysisPlot = (props) => {
 
     return (
       <center>
+        {embeddingSettings?.method === 'tsne' && (
+          <Alert
+            type='warning'
+            message={(
+              <>
+                Due to Monocle3 limitations, only UMAP embeddings are supported for Trajectory Analysis.
+                <br />
+                The embedding and trajectory below are generated from a UMAP embedding of your data.
+              </>
+            )}
+          />
+        )}
         <Vega spec={plotSpec} renderer='webgl' actions={actions} />
       </center>
     );
