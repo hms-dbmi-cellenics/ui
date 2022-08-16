@@ -62,10 +62,13 @@ const TrajectoryAnalysisPlot = (props) => {
   }, [experimentId]);
 
   useEffect(() => {
-    if (!embeddingData && embeddingMethod) {
+    if (!embeddingData
+      && embeddingMethod
+      && embeddingSettings
+    ) {
       dispatch(loadEmbedding(experimentId, embeddingMethod));
     }
-  }, [experimentId, embeddingMethod]);
+  }, [experimentId, embeddingMethod, embeddingSettings]);
 
   useEffect(() => {
     changeEmbeddingAxesIfNecessary(config, embeddingMethod, onUpdate);
