@@ -45,7 +45,7 @@ const generateSpec = (config, embeddingData, pathData, cellSetLegendsData) => {
     const defaultPadding = {
       top: 80,
       left: 80,
-      bottom: 40,
+      bottom: 80,
       right: 40,
     };
 
