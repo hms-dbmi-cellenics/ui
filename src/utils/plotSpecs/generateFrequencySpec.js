@@ -64,7 +64,7 @@ const generateSpec = (config, plotData, xNamesToDisplay, yNamesToDisplay) => {
           {
             type: 'stack',
             groupby: ['x'],
-            sort: { field: 'yCellSetKey' },
+            sort: { field: 'x' },
             field: 'y',
           },
         ],
