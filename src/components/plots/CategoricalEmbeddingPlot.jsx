@@ -101,7 +101,6 @@ const CategoricalEmbeddingPlot = (props) => {
 
     return (
       <center>
-        {console.log(plotSpec)}
         <Vega spec={plotSpec} renderer='webgl' actions={actions} />
       </center>
     );

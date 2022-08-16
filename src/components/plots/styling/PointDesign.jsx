@@ -33,32 +33,38 @@ const PointDesign = (props) => {
           />
         </Form.Item>
 
-        {config.marker.showOpacity ? (
-          <Form.Item
-            label='Point Fill Opacity'
-          >
-            <Slider
-              value={newConfig.marker.opacity}
-              min={1}
-              max={10}
-              onChange={(value) => {
-                handleChange({ marker: { opacity: value } });
-              }}
-              marks={{ 1: 1, 10: 10 }}
-            />
-          </Form.Item>
-        ) : <></>}
-        {props.showShapeType ? (
-          <>
-            <p><strong>Point Shape</strong></p>
-            <Form.Item>
-              <Radio.Group onChange={(e) => onUpdate({ marker: { shape: e.target.value } })} value={config.marker.shape}>
-                <Radio value='circle'>Circle</Radio>
-                <Radio value='diamond'>Diamond</Radio>
-              </Radio.Group>
+        {
+          config.marker.showOpacity
+          && (
+            <Form.Item
+              label='Point Fill Opacity'
+            >
+              <Slider
+                value={newConfig.marker.opacity}
+                min={1}
+                max={10}
+                onChange={(value) => {
+                  handleChange({ marker: { opacity: value } });
+                }}
+                marks={{ 1: 1, 10: 10 }}
+              />
             </Form.Item>
-          </>
-        ) : <></>}
+          )
+        }
+        {
+          props.showShapeType
+          && (
+            <>
+              <p><strong>Point Shape</strong></p>
+              <Form.Item>
+                <Radio.Group onChange={(e) => onUpdate({ marker: { shape: e.target.value } })} value={config.marker.shape}>
+                  <Radio value='circle'>Circle</Radio>
+                  <Radio value='diamond'>Diamond</Radio>
+                </Radio.Group>
+              </Form.Item>
+            </>
+          )
+        }
       </Form>
     </Space>
   );
