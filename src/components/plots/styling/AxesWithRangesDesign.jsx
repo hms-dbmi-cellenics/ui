@@ -13,18 +13,18 @@ const AxesWithRangesDesign = (props) => {
     config, onUpdate,
   } = props;
 
-  const hideYRange = typeof config.axesRanges.yAxisAuto === 'undefined';
-
   const hideXRange = typeof config.axesRanges.xAxisAuto === 'undefined';
+
+  const hideYRange = typeof config.axesRanges.yAxisAuto === 'undefined';
 
   const [newConfig, setNewConfig] = useState(config.axesRanges);
 
   const disableSave = () => {
     if (_.isEqual(config.axesRanges, newConfig)) return true;
 
-    if (newConfig.yMin > newConfig.yMax) return true;
-
     if (newConfig.xMin > newConfig.xMax) return true;
+
+    if (newConfig.yMin > newConfig.yMax) return true;
 
     return false;
   };
@@ -38,51 +38,6 @@ const AxesWithRangesDesign = (props) => {
       <Collapse>
         <Panel header='Axes Ranges'>
           <Space direction='vertical' style={{ width: '80%' }}>
-            <Space direction='vertical' style={{ width: '100%' }} hidden={hideYRange}>
-              <p><strong>Y-Axis</strong></p>
-              <Form
-                size='small'
-                labelCol={{ span: 10 }}
-              >
-                <Form.Item
-                  label='Auto'
-                >
-                  <Checkbox
-                    data-testid='yAuto'
-                    onChange={() => {
-                      setNewConfig({ ...newConfig, yAxisAuto: !newConfig.yAxisAuto });
-                    }}
-                    defaultChecked
-                    checked={newConfig.yAxisAuto}
-                  />
-                </Form.Item>
-                <Form.Item
-                  label='Minimum: '
-                >
-                  <InputNumber
-                    data-testid='yMin'
-                    defaultValue={newConfig.yMin}
-                    onChange={(value) => {
-                      setNewConfig({ ...newConfig, yMin: value });
-                    }}
-                    disabled={newConfig.yAxisAuto}
-                  />
-                </Form.Item>
-                <Form.Item
-                  label='Maximum:'
-                >
-                  <InputNumber
-                    data-testid='yMax'
-                    defaultValue={newConfig.yMax}
-                    onChange={(value) => {
-                      setNewConfig({ ...newConfig, yMax: value });
-                    }}
-                    disabled={newConfig.yAxisAuto}
-                  />
-                </Form.Item>
-              </Form>
-            </Space>
-
             <Space direction='vertical' style={{ width: '100%' }} hidden={hideXRange}>
               <p><strong>X-Axis</strong></p>
               <Form
@@ -123,6 +78,51 @@ const AxesWithRangesDesign = (props) => {
                       setNewConfig({ ...newConfig, xMax: value });
                     }}
                     disabled={newConfig.xAxisAuto}
+                  />
+                </Form.Item>
+              </Form>
+            </Space>
+
+            <Space direction='vertical' style={{ width: '100%' }} hidden={hideYRange}>
+              <p><strong>Y-Axis</strong></p>
+              <Form
+                size='small'
+                labelCol={{ span: 10 }}
+              >
+                <Form.Item
+                  label='Auto'
+                >
+                  <Checkbox
+                    data-testid='yAuto'
+                    onChange={() => {
+                      setNewConfig({ ...newConfig, yAxisAuto: !newConfig.yAxisAuto });
+                    }}
+                    defaultChecked
+                    checked={newConfig.yAxisAuto}
+                  />
+                </Form.Item>
+                <Form.Item
+                  label='Minimum: '
+                >
+                  <InputNumber
+                    data-testid='yMin'
+                    defaultValue={newConfig.yMin}
+                    onChange={(value) => {
+                      setNewConfig({ ...newConfig, yMin: value });
+                    }}
+                    disabled={newConfig.yAxisAuto}
+                  />
+                </Form.Item>
+                <Form.Item
+                  label='Maximum:'
+                >
+                  <InputNumber
+                    data-testid='yMax'
+                    defaultValue={newConfig.yMax}
+                    onChange={(value) => {
+                      setNewConfig({ ...newConfig, yMax: value });
+                    }}
+                    disabled={newConfig.yAxisAuto}
                   />
                 </Form.Item>
               </Form>
