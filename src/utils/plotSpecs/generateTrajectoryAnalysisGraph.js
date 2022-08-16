@@ -36,6 +36,33 @@ const generateSpec = (config, embeddingData, pathData, cellSetLegendsData) => {
       },
     ];
   }
+
+  const generatePadding = (plotConfig) => {
+    const showLegend = config.legend.enabled;
+    const legendPosition = plotConfig.legend.position;
+    const axesOffset = plotConfig.axes.offset;
+
+    const defaultPadding = {
+      top: 80,
+      left: 80,
+      bottom: 40,
+      right: 40,
+    };
+
+    if (!showLegend) return defaultPadding;
+
+    const padding = {
+      top: defaultPadding.top + axesOffset,
+      left: defaultPadding.left + axesOffset,
+      bottom: (legendPosition === 'bottom' ? 120 : defaultPadding.bottom) + axesOffset,
+      right: (legendPosition === 'right' ? 120 : defaultPadding.right) + axesOffset,
+    };
+
+    return padding;
+  };
+
+  const padding = generatePadding(config);
+
   return {
     $schema: 'https://vega.github.io/schema/vega/v5.json',
     description: 'Trajectory analysis plot',
@@ -43,12 +70,7 @@ const generateSpec = (config, embeddingData, pathData, cellSetLegendsData) => {
     height: config.dimensions.height,
     autosize: { resize: true },
     background: config.colour.toggleInvert,
-    padding: {
-      top: 80 + config.axes.offset,
-      left: 40 + config.axes.offset,
-      bottom: 40 + config.axes.offset,
-      right: 40 + config.axes.offset,
-    },
+    padding,
     signals: [
       // Signal for selection
       {
@@ -362,7 +384,15 @@ const generateSpec = (config, embeddingData, pathData, cellSetLegendsData) => {
                   { value: 'white' },
                 ],
                 shape: { value: 'circle' },
-                fillOpacity: { value: 1 },
+                // Hide invalid nodes
+                strokeOpacity: [
+                  { test: '!isValid(datum.x)', value: 0 },
+                  { value: 1 },
+                ],
+                fillOpacity: [
+                  { test: '!isValid(datum.x)', value: 0 },
+                  { value: 1 },
+                ],
                 defined: {
                   signal: 'isValid(datum["x"]) && isFinite(+datum["x"]) && isValid(datum["y"]) && isFinite(+datum["y"])',
                 },
