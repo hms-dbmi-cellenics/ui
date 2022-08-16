@@ -4,6 +4,8 @@ import { getAllCells, getSampleCells } from 'utils/cellSets';
 
 const generateSpec = (config, plotData, cellSetLegendsData) => {
   let legend = [];
+
+  // removing empty/unused entries from the data. This was causing issues with the legend
   plotData = plotData.filter((entry) => entry.cellSetKey);
 
   if (config?.legend.enabled) {
