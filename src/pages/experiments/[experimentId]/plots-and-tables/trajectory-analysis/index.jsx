@@ -28,6 +28,7 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
   const {
     config,
     plotData,
+    loading: plotLoading,
   } = useSelector((state) => state.componentConfig[plotUuid]) || {};
 
   const embeddingSettings = useSelector(
@@ -63,7 +64,7 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
       || !embeddingData?.length
     ) return;
     dispatch(getTrajectoryGraph(experimentId, plotUuid));
-  }, [config, embeddingMethod, embeddingLoading]);
+  }, [config, embeddingMethod, embeddingLoading, embeddingSettings]);
 
   const updatePlotWithChanges = (obj) => {
     dispatch(updatePlotConfig(plotUuid, obj));
@@ -129,6 +130,7 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
           config={config}
           plotUuid={plotUuid}
           plotData={plotData}
+          plotLoading={plotLoading}
           onUpdate={updatePlotWithChanges}
         />
       </PlotContainer>

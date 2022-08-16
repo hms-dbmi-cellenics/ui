@@ -29,6 +29,7 @@ const TrajectoryAnalysisPlot = (props) => {
     experimentId,
     config,
     plotData,
+    plotLoading,
     actions,
     onUpdate,
   } = props;
@@ -111,9 +112,10 @@ const TrajectoryAnalysisPlot = (props) => {
     }
 
     if (!config
+      || embeddingLoading
+      || plotLoading
       || !cellSets.accessible
       || !embeddingData
-      || embeddingLoading
       || !plotSpec
     ) {
       return (
@@ -149,6 +151,7 @@ TrajectoryAnalysisPlot.propTypes = {
   experimentId: PropTypes.string.isRequired,
   config: PropTypes.object,
   plotData: PropTypes.object.isRequired,
+  plotLoading: PropTypes.bool,
   actions: PropTypes.oneOfType([
     PropTypes.bool,
     PropTypes.object,
@@ -158,6 +161,7 @@ TrajectoryAnalysisPlot.propTypes = {
 
 TrajectoryAnalysisPlot.defaultProps = {
   actions: true,
+  plotLoading: false,
   config: null,
 };
 
