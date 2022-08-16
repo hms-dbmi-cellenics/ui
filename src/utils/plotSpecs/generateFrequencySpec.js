@@ -6,8 +6,9 @@ const generateSpec = (config, plotData, xNamesToDisplay, yNamesToDisplay) => {
   let legend = [];
   if (config.legend.enabled) {
     const positionIsRight = config.legend.position === 'right';
-
-    const legendColumns = positionIsRight ? 1 : Math.floor(config.dimensions.width / 85);
+    const legendColumns = positionIsRight
+      ? Math.ceil(plotData.length / 20)
+      : Math.floor(config.dimensions.width / 85);
     const labelLimit = positionIsRight ? 0 : 85;
     legend = [
       {
