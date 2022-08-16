@@ -49,7 +49,7 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
 
   useEffect(() => {
     if (embeddingMethod
-      && embeddingData?.length === 0
+      && !embeddingData?.length
       && embeddingSettings
     ) {
       dispatch(loadEmbedding(experimentId, embeddingMethod));
