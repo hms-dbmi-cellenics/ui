@@ -550,6 +550,11 @@ const classifierKneePlot = {
     xAxisText: 'Droplet Rank',
     yAxisText: 'Droplet #UMIs',
   },
+  axesRanges: {
+    ...axesRangesBaseState,
+    xMin: 1,
+    yMin: 1,
+  },
   title: {
     ...titleBaseState,
     fontSize: 20,

@@ -54,10 +54,6 @@ const Classifier = (props) => {
     debounceSave(plots[selectedPlot].plotUuid);
   };
 
-  const axesControls = selectedPlot === 'emptyDropsPlot'
-    ? 'axesWithRanges'
-    : 'axes';
-
   const plotStylingControlsConfig = [
     {
       panelTitle: 'Plot Dimensions',
@@ -65,7 +61,7 @@ const Classifier = (props) => {
     },
     {
       panelTitle: 'Axes',
-      controls: [axesControls],
+      controls: ['axesWithRanges'],
     },
     {
       panelTitle: 'Title',
