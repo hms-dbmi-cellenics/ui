@@ -22,11 +22,16 @@ import generateExperimentSettingsMock from '__test__/test-utils/experimentSettin
 import { modules } from 'utils/constants';
 import { act } from 'react-dom/test-utils';
 import { saveProcessingSettings } from 'redux/actions/experimentSettings';
+import { cloneExperiment, loadExperiments } from 'redux/actions/experiments';
 import { EXPERIMENT_SETTINGS_SET_QC_STEP_ENABLED } from 'redux/actionTypes/experimentSettings';
 import { CURRENT_PIPELINE_VERSION } from 'utils/platformVersions';
 
 jest.mock('components/header/UserButton', () => () => <></>);
 jest.mock('redux/actions/experimentSettings/processingConfig/saveProcessingSettings');
+jest.mock('redux/actions/experiments', () => ({
+  cloneExperiment: jest.fn(() => ({ type: 'MOCK_ACTION' })),
+  loadExperiments: jest.fn(() => ({ type: 'MOCK_ACTION' })),
+}));
 
 // Mock all filter components
 jest.mock('components/data-processing/CellSizeDistribution/CellSizeDistribution', () => () => <></>);
@@ -223,7 +228,7 @@ describe('DataProcessingPage', () => {
     expect(runQC).toHaveBeenCalled();
   });
 
-  it('Shows extra information if there is a new version of the QC pipeline', () => {
+  it('Shows extra information if there is a new version of the QC pipeline', async () => {
     const store = getStore(experimentId, {
       experimentSettings: {
         info: { pipelineVersion: CURRENT_PIPELINE_VERSION - 1 },
@@ -237,8 +242,6 @@ describe('DataProcessingPage', () => {
       </Provider>,
     );
 
-    screen.debug(null, Infinity);
-
     // Change settings by clicking on the "manual" radio button
     const manualButton = screen.getByText('Manual');
 
@@ -251,7 +254,6 @@ describe('DataProcessingPage', () => {
 
     // The Start text is the 1st element with "Start" in it
     const startText = screen.getAllByText('Start')[0];
-    console.log('*** startText', startText);
 
     expect(startText).toBeInTheDocument();
     expect(screen.getByText(/to re-run this project analysis from the beginning. Note that you will lose all of your annotated cell sets./)).toBeInTheDocument();
@@ -276,12 +278,18 @@ describe('DataProcessingPage', () => {
     const cloneProjectButton = screen.getAllByText('Clone Project')[1];
     expect(cloneProjectButton).toBeInTheDocument();
 
-    // Clicking the Clone Project button will call the clone experiment action
-    // expect(cloneExperiment).toHaveBeenCalledTimes(1);
-
     // The cancel button is the 3rd element with "Cancel" in it
     const cancelButton = screen.getAllByText('Cancel')[1];
     expect(cancelButton).toBeInTheDocument();
+
+    // Clicking the Clone Project button will call the clone experiment action
+    userEvent.click(cloneProjectButton);
+
+    waitFor(() => {
+      expect(cloneExperiment).toHaveBeenCalledTimes(1);
+      expect(loadExperiments).toHaveBeenCalledTimes(1);
+      expect(mockNavigateTo).toHaveBeenCalledTimes(1);
+    });
   });
 
   it('Should not show extra information if there is no new version of the QC pipeline', () => {
