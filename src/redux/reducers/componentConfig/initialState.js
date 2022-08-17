@@ -436,6 +436,7 @@ const cellSizeDistributionHistogram = {
     xAxisText: '#UMIs in cell',
     yAxisText: '#UMIs * #Cells',
   },
+  axesRanges: axesRangesBaseState,
   title: {
     ...titleBaseState,
     fontSize: 20,
@@ -463,6 +464,10 @@ const cellSizeDistributionKneePlot = {
     ...axesBaseState,
     xAxisText: 'Cell rank',
     yAxisText: '#UMIs in cell',
+  },
+  axesRanges: {
+    ...axesRangesBaseState,
+    yMin: 1,
   },
   title: {
     ...titleBaseState,

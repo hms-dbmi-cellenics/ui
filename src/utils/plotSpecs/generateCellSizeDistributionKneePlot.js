@@ -12,6 +12,15 @@ const generateSpec = (config, plotData) => {
 
   const generateStatus = `(datum.rank <= ${minCellSizeRank}) ? 'high' : 'low'`;
 
+  // plot is in log scale, minimum shouldn't be below 1
+  const rankDomain = config.axesRanges.xAxisAuto
+    ? { data: 'plotData', field: 'rank' }
+    : [Math.max(config.axesRanges.xMin, 1), config.axesRanges.xMax];
+
+  const UMIsDomain = config.axesRanges.yAxisAuto
+    ? { data: 'plotData', field: 'u' }
+    : [Math.max(config.axesRanges.yMin, 1), config.axesRanges.yMax];
+
   legend = !config.legend.enabled ? null : [
     {
       fill: 'color',
@@ -103,14 +112,14 @@ const generateSpec = (config, plotData) => {
         name: 'xscale',
         type: 'log',
         range: 'width',
-        domain: { data: 'plotData', field: 'rank' },
+        domain: rankDomain,
       },
       {
         name: 'yscale',
         type: 'log',
         nice: true,
         range: 'height',
-        domain: { data: 'plotData', field: 'u' },
+        domain: UMIsDomain,
       },
       {
         name: 'color',
@@ -181,6 +190,7 @@ const generateSpec = (config, plotData) => {
       },
       {
         type: 'rule',
+        clip: true,
         encode: {
           update: {
             x: { scale: 'xscale', value: minCellSizeRank },

@@ -3,6 +3,14 @@ const generateSpec = (config, plotData, highestUmi) => {
 
   const coloringExpressionPlot = `(datum.bin1 < ${config.minCellSize}) ? 'low' : 'high'`;
 
+  const UMIsDomain = config.axesRanges.xAxisAuto
+    ? [1000, highestUmi]
+    : [config.axesRanges.xMin, config.axesRanges.xMax];
+
+  const countDomain = config.axesRanges.yAxisAuto
+    ? { data: 'binned', field: 'count' }
+    : [config.axesRanges.xMin, config.axesRanges.xMax];
+
   legend = !config.legend.enabled ? null : [
     {
       fill: 'color',
@@ -90,14 +98,14 @@ const generateSpec = (config, plotData, highestUmi) => {
         name: 'xscale',
         type: 'linear',
         range: 'width',
-        domain: [1000, highestUmi],
+        domain: UMIsDomain,
       },
       {
         name: 'yscale',
         type: 'linear',
         range: 'height',
         round: true,
-        domain: { data: 'binned', field: 'count' },
+        domain: countDomain,
         zero: true,
         nice: true,
       },
@@ -141,6 +149,7 @@ const generateSpec = (config, plotData, highestUmi) => {
     marks: [
       {
         type: 'rect',
+        clip: true,
         from: { data: 'binned' },
         encode: {
           enter: {
@@ -162,6 +171,7 @@ const generateSpec = (config, plotData, highestUmi) => {
       },
       {
         type: 'rule',
+        clip: true,
         encode: {
           update: {
             x: { scale: 'xscale', value: config.minCellSize },
