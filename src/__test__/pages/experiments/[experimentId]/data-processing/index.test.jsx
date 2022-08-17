@@ -29,8 +29,8 @@ import config from 'config/defaultConfig';
 jest.mock('components/header/UserButton', () => () => <></>);
 jest.mock('redux/actions/experimentSettings/processingConfig/saveProcessingSettings');
 jest.mock('redux/actions/experiments', () => ({
-  cloneExperiment: jest.fn(() => () => {}),
-  loadExperiments: jest.fn(() => () => {}),
+  cloneExperiment: jest.fn(() => () => { }),
+  loadExperiments: jest.fn(() => () => { }),
 }));
 
 // Mock all filter components
@@ -243,9 +243,7 @@ describe('DataProcessingPage', () => {
     );
 
     // Change settings by clicking on the "manual" radio button
-    const manualButton = screen.getByText('Manual');
-
-    userEvent.click(manualButton);
+    userEvent.click(screen.getByText('Manual'));
 
     // Click on the run button
     userEvent.click(screen.getByText('Run'));

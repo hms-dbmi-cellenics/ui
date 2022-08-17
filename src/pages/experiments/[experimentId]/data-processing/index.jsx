@@ -674,12 +674,10 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
               footer={
                 [
                   <Button type='primary' onClick={() => onPipelineRun()}>Start</Button>,
-                  qcRerunDisabled ? <Button type='primary' onClick={() => cloneExperimentAndSelectIt()}>Clone Project</Button> : <></>,
                   <Button onClick={() => setRunQCModalVisible(false)}>Cancel</Button>,
                 ]
               }
             >
-              {qcRerunDisabled && qcRerunDisabledAlert()}
               <p>
                 This might take several minutes.
                 Your navigation within Cellenics will be restricted during this time.
