@@ -4,16 +4,17 @@ import { intersection } from '../cellSetOperations';
 
 const generateSpec = (config, plotData, xNamesToDisplay, yNamesToDisplay) => {
   let legend = [];
+  let plotDataReversed;
   if (config.legend.enabled) {
     const positionIsRight = config.legend.position === 'right';
-
+    plotDataReversed = plotData.slice().reverse();
     const legendColumns = positionIsRight
       ? Math.ceil(yNamesToDisplay.length / 20)
       : Math.floor(config.dimensions.width / 85);
     const labelLimit = positionIsRight ? 0 : 85;
     legend = [
       {
-        fill: 'cellSetColors',
+        fill: 'legendColors',
         title: 'Cell Set',
         titleColor: config.colour.masterColour,
         type: 'symbol',
@@ -25,7 +26,7 @@ const generateSpec = (config, plotData, xNamesToDisplay, yNamesToDisplay) => {
           labels: {
             update: {
               text: {
-                scale: 'yCellSetKey', field: 'label',
+                scale: 'yCellSetKeyReversed', field: 'label',
               },
               fill: { value: config.colour.masterColour },
             },
@@ -64,7 +65,6 @@ const generateSpec = (config, plotData, xNamesToDisplay, yNamesToDisplay) => {
           {
             type: 'stack',
             groupby: ['x'],
-            sort: { field: 'x' },
             field: 'y',
           },
         ],
@@ -101,6 +101,17 @@ const generateSpec = (config, plotData, xNamesToDisplay, yNamesToDisplay) => {
         type: 'ordinal',
         range: plotData.map(({ color }) => color),
         domain: { data: 'plotData', field: 'yCellSetKey' },
+      },
+      {
+        name: 'legendColors',
+        type: 'ordinal',
+        range: plotDataReversed.map(({ color }) => color),
+        domain: { data: 'plotData', field: 'yCellSetKey' },
+      },
+      {
+        name: 'yCellSetKeyReversed',
+        type: 'ordinal',
+        range: yNamesToDisplay.slice().reverse(),
       },
     ],
 
