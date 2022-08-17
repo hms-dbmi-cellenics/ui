@@ -10,6 +10,8 @@ const loadCellSets = (experimentId, forceReload = false) => async (dispatch, get
     loading, error, updatingClustering, initialLoadPending,
   } = getState().cellSets;
 
+  const { sampleIds: samplesOrder } = getState().experimentSettings.info;
+  console.log('SAMPLES ORDER ', samplesOrder);
   const loadingBlocked = loading || updatingClustering;
   const requiresLoading = initialLoadPending || error;
 
@@ -26,6 +28,14 @@ const loadCellSets = (experimentId, forceReload = false) => async (dispatch, get
   try {
     const data = await fetchAPI(`/v2/experiments/${experimentId}/cellSets`);
 
+    // reordering cell sets based on the sampleIds recorded in the experiment table
+    console.log('DATA IS ', data.cellSets);
+
+    const samplesHierarchyIndex = data.cellSets.findIndex((cellSet) => cellSet.key === 'sample');
+    const samplesOrderedObject = samplesOrder.map((id) => ({ key: id }));
+    data.cellSets[samplesHierarchyIndex].children = samplesOrderedObject;
+
+    console.log('DAR CELSLSETS ', data.cellSets);
     dispatch({
       type: CELL_SETS_LOADED,
       payload: {
@@ -35,7 +45,7 @@ const loadCellSets = (experimentId, forceReload = false) => async (dispatch, get
     });
   } catch (e) {
     const errorMessage = handleError(e, endUserMessages.ERROR_FETCHING_CELL_SETS);
-
+    console.log('ERRORRR ', e);
     dispatch({
       type: CELL_SETS_ERROR,
       payload: { error: errorMessage },
