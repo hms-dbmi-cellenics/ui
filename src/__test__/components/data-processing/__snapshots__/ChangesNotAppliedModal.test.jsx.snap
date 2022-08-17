@@ -5,7 +5,7 @@ Array [
   Array [
     "http://localhost:3000/v2/experiments/experiment-id/clone",
     Object {
-      "body": "{\\"name\\":\\"Clone of null\\"}",
+      "body": "{\\"name\\":\\"Clone of expName\\"}",
       "headers": Object {
         "Content-Type": "application/json",
       },
