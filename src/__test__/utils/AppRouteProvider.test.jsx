@@ -131,7 +131,7 @@ describe('AppRouteProvider', () => {
     expect(mockRouter.push).toHaveBeenCalled();
   });
 
-  it('Switch active experiment when navigating to DataManagement', async () => {
+  it('Switch active experiment when navigating to DataManagement if an experiment is specified', async () => {
     await storeState.dispatch(loadExperiments());
 
     render(

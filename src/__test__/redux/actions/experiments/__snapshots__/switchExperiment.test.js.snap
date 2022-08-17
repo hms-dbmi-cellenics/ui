@@ -106,6 +106,7 @@ Object {
       "metadataKeys": Array [],
       "name": "Test Experiment-0",
       "notifyByEmail": true,
+      "pipelineVersion": 1,
       "pipelines": Object {
         "gem2s": Object {
           "executionArn": "arn:aws:states:eu-west-1:000000000000:execution:biomage-gem2s-development-mock997586f1bae0a6d5c5beed65663ec1519de4:5f273383-f093-4112-95b0-d76db896test",
@@ -131,6 +132,7 @@ Object {
       "metadataKeys": Array [],
       "name": "Test Experiment-1",
       "notifyByEmail": true,
+      "pipelineVersion": 1,
       "pipelines": Object {
         "gem2s": Object {
           "executionArn": "arn:aws:states:eu-west-1:000000000000:execution:biomage-gem2s-development-mock997586f1bae0a6d5c5beed65663ec1519de4:5f273383-f093-4112-95b0-d76db896test",
@@ -436,6 +438,7 @@ Object {
       "metadataKeys": Array [],
       "name": "Test Experiment-0",
       "notifyByEmail": true,
+      "pipelineVersion": 1,
       "pipelines": Object {
         "gem2s": Object {
           "executionArn": "arn:aws:states:eu-west-1:000000000000:execution:biomage-gem2s-development-mock997586f1bae0a6d5c5beed65663ec1519de4:5f273383-f093-4112-95b0-d76db896test",
@@ -461,6 +464,7 @@ Object {
       "metadataKeys": Array [],
       "name": "Test Experiment-1",
       "notifyByEmail": true,
+      "pipelineVersion": 1,
       "pipelines": Object {
         "gem2s": Object {
           "executionArn": "arn:aws:states:eu-west-1:000000000000:execution:biomage-gem2s-development-mock997586f1bae0a6d5c5beed65663ec1519de4:5f273383-f093-4112-95b0-d76db896test",

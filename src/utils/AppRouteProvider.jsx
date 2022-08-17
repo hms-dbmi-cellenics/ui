@@ -72,10 +72,6 @@ const AppRouteProvider = (props) => {
     ),
   };
 
-  const updateExperimentInfoOnNavigate = (experimentId) => {
-    dispatch(switchExperiment(experimentId));
-  };
-
   const handleRouteChange = (previousRoute, module, params, ignoreIntercepts) => {
     const nextRoute = PATHS[module].replace('[experimentId]', params.experimentId);
 
@@ -89,9 +85,8 @@ const AppRouteProvider = (props) => {
     }
 
     if (previousRoute.match(PATH_STUBS.DATA_MANAGEMENT)) {
-      // Update active experiment id when navigating from Data Management
       const { experimentId } = params;
-      updateExperimentInfoOnNavigate(experimentId);
+      dispatch(switchExperiment(experimentId));
     }
 
     if (nextRoute.match(PATH_STUBS.DATA_MANAGEMENT) && params.experimentId) {
