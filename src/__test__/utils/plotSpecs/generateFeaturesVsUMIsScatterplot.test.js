@@ -18,6 +18,14 @@ const config = {
     domainWidth: 2,
     xAxisRotateLabels: false,
   },
+  axesRanges: {
+    xAxisAuto: true,
+    yAxisAuto: true,
+    xMin: 0,
+    xMax: 10,
+    yMin: 0,
+    yMax: 10,
+  },
   title: {
     text: '',
     fontSize: 20,
