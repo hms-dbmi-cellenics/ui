@@ -28,7 +28,7 @@ const generateSpec = (configSrc, plotData) => {
     ? { data: 'data', field: 'logFC' }
     : [config.axesRanges.xMin, config.axesRanges.xMax];
 
-  const maxNegativeLogpValueDomain = config.axesRanges.yAxisAuto
+  const negativeLogpValueDomain = config.axesRanges.yAxisAuto
     ? { data: 'data', field: 'neglogpvalue' }
     : [config.axesRanges.yMin, config.axesRanges.yMax];
 
@@ -124,7 +124,7 @@ const generateSpec = (configSrc, plotData) => {
         type: 'linear',
         nice: true,
         zero: false,
-        domain: maxNegativeLogpValueDomain,
+        domain: negativeLogpValueDomain,
         range: 'height',
       },
       {

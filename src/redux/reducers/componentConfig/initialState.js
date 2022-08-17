@@ -193,6 +193,11 @@ const frequencyInitialConfig = {
     xAxisRotateLabels: true,
     offset: 10,
   },
+  axesRanges: {
+    yAxisAuto: true,
+    yMin: 0,
+    yMax: 10,
+  },
   fontStyle: fontStyleBaseState,
   proportionGrouping: 'louvain',
   xAxisGrouping: 'sample',
