@@ -86,7 +86,7 @@ const CellSetsTool = (props) => {
     setCellSetTreeData(composeTree(hierarchy, properties, 'cellSets'));
     setMetadataTreeData(composeTree(hierarchy, properties, 'metadataCategorical'));
   }, [hierarchy, properties]);
-
+  console.log('METADATA TREE DATA', metadataTreeData);
   const [numSelected, setNumSelected] = useState(0);
 
   useEffect(() => {
