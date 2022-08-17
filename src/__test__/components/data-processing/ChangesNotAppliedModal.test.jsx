@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import React from 'react';
 import { screen, render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -164,5 +165,23 @@ describe('ChangesNotAppliedModal', () => {
 
     userEvent.click(screen.getByRole('button', { name: 'Close' }));
     expect(mockOnCloseModal).toHaveBeenCalled();
+  });
+
+  it('Shows the QCRerunDisabledModal if the pipelineVersion is too old', () => {
+    const mockRunQC = jest.fn();
+
+    const oldPipelineState = _.cloneDeep(withChangesState);
+    oldPipelineState.experimentSettings.info.pipelineVersion = 0;
+
+    render(
+      <Provider store={mockStore(oldPipelineState)}>
+        <ChangesNotAppliedModal onRunQC={() => mockRunQC()} />
+      </Provider>,
+    );
+
+    userEvent.click(screen.getByText('Run'));
+
+    expect(mockRunQC).not.toHaveBeenCalled();
+    expect(screen.getByText(/Due to a recent update, re-running the pipeline will initiate the run from the beginning/)).toBeInTheDocument();
   });
 });
