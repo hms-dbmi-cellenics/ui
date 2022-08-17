@@ -1,6 +1,6 @@
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
-import getTrajectoryGraph from 'components/plots/helpers/trajectory-analysis/getTrajectoryGraph';
+import getTrajectoryGraph from 'redux/actions/plotData/getTrajectoryPlotGraph';
 import { fetchWork } from 'utils/work/fetchWork';
 import handleError from 'utils/http/handleError';
 

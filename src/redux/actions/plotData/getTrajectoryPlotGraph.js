@@ -7,7 +7,7 @@ import { fetchWork, generateETag } from 'utils/work/fetchWork';
 import { getBackendStatus } from 'redux/selectors';
 import { getEmbeddingWorkRequestBody } from 'redux/actions/embedding/loadEmbedding';
 
-const getTrajectoryGraph = (
+const getTrajectoryPlotGraph = (
   experimentId,
   plotUuid,
 ) => async (dispatch, getState) => {
@@ -88,4 +88,4 @@ const getTrajectoryGraph = (
   }
 };
 
-export default getTrajectoryGraph;
+export default getTrajectoryPlotGraph;
