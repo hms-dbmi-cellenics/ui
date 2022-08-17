@@ -1,5 +1,5 @@
 const generateSpec = (config, expConfig, plotData) => {
-  const FDRDomain = config.axesRanges.yAxisAuto
+  const yScaleDomain = config.axesRanges.yAxisAuto
     ? { data: 'plotData', field: 'FDR' }
     : [config.axesRanges.yMin, config.axesRanges.yMax];
 
@@ -63,7 +63,7 @@ const generateSpec = (config, expConfig, plotData) => {
         name: 'y',
         type: 'linear',
         nice: true,
-        domain: FDRDomain,
+        domain: yScaleDomain,
         range: 'height',
       },
     ],

@@ -1,9 +1,9 @@
 const generateSpec = (config, plotData, numPCs) => {
-  const PCDomain = config.axesRanges.xAxisAuto
+  const xScaleDomain = config.axesRanges.xAxisAuto
     ? { data: 'plotData', field: 'PC' }
     : [Math.max(config.axesRanges.xMin, 0), config.axesRanges.xMax];
 
-  const percentDomain = config.axesRanges.yAxisAuto
+  const yScaleDomain = config.axesRanges.yAxisAuto
     ? { data: 'plotData', field: 'percent' }
     : [Math.max(config.axesRanges.yMin / 100, 0), Math.min(config.axesRanges.yMax / 100, 100)];
 
@@ -42,14 +42,14 @@ const generateSpec = (config, plotData, numPCs) => {
         name: 'x',
         type: 'linear',
         range: 'width',
-        domain: PCDomain,
+        domain: xScaleDomain,
       },
       {
         name: 'y',
         type: 'linear',
         range: 'height',
         zero: false,
-        domain: percentDomain,
+        domain: yScaleDomain,
       },
     ],
 

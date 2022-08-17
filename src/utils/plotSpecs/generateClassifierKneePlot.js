@@ -38,11 +38,11 @@ const generateSpec = (config, { FDR }, plotData) => {
   const formatInt = (int) => int.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 
   // plot is in log scale, minimum shouldn't be below 1
-  const rankDomain = config.axesRanges.xAxisAuto
+  const xScaleDomain = config.axesRanges.xAxisAuto
     ? { data: 'plotData', field: 'rank' }
     : [Math.max(config.axesRanges.xMin, 1), config.axesRanges.xMax];
 
-  const UMIsDomain = config.axesRanges.yAxisAuto
+  const yScaleDomain = config.axesRanges.yAxisAuto
     ? { data: 'plotData', field: 'u' }
     : [Math.max(config.axesRanges.yMin, 1), config.axesRanges.yMax];
 
@@ -155,14 +155,14 @@ const generateSpec = (config, { FDR }, plotData) => {
         name: 'xscale',
         type: 'log',
         range: 'width',
-        domain: rankDomain,
+        domain: xScaleDomain,
       },
       {
         name: 'yscale',
         type: 'log',
         nice: true,
         range: 'height',
-        domain: UMIsDomain,
+        domain: yScaleDomain,
       },
       {
         name: 'color',

@@ -3,11 +3,11 @@ const generateSpec = (config, plotData, highestUmi) => {
 
   const coloringExpressionPlot = `(datum.bin1 < ${config.minCellSize}) ? 'low' : 'high'`;
 
-  const UMIsDomain = config.axesRanges.xAxisAuto
+  const xScaleDomain = config.axesRanges.xAxisAuto
     ? [1000, highestUmi]
     : [config.axesRanges.xMin, config.axesRanges.xMax];
 
-  const countDomain = config.axesRanges.yAxisAuto
+  const yScaleDomain = config.axesRanges.yAxisAuto
     ? { data: 'binned', field: 'count' }
     : [config.axesRanges.xMin, config.axesRanges.xMax];
 
@@ -98,14 +98,14 @@ const generateSpec = (config, plotData, highestUmi) => {
         name: 'xscale',
         type: 'linear',
         range: 'width',
-        domain: UMIsDomain,
+        domain: xScaleDomain,
       },
       {
         name: 'yscale',
         type: 'linear',
         range: 'height',
         round: true,
-        domain: countDomain,
+        domain: yScaleDomain,
         zero: true,
         nice: true,
       },

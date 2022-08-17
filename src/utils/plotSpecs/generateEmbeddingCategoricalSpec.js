@@ -3,11 +3,11 @@ import _ from 'lodash';
 import { getAllCells, getSampleCells } from 'utils/cellSets';
 
 const generateSpec = (config, plotData, cellSetLegendsData) => {
-  const Umap1Domain = config.axesRanges.xAxisAuto
+  const xScaleDomain = config.axesRanges.xAxisAuto
     ? { data: 'values', field: 'x' }
     : [config.axesRanges.xMin, config.axesRanges.xMax];
 
-  const Umap2Domain = config.axesRanges.yAxisAuto
+  const yScaleDomain = config.axesRanges.yAxisAuto
     ? { data: 'values', field: 'y' }
     : [config.axesRanges.yMin, config.axesRanges.yMax];
 
@@ -84,7 +84,7 @@ const generateSpec = (config, plotData, cellSetLegendsData) => {
         type: 'linear',
         nice: true,
         zero: false,
-        domain: Umap1Domain,
+        domain: xScaleDomain,
         range: 'width',
       },
       {
@@ -92,7 +92,7 @@ const generateSpec = (config, plotData, cellSetLegendsData) => {
         type: 'linear',
         nice: true,
         zero: false,
-        domain: Umap2Domain,
+        domain: yScaleDomain,
         range: 'height',
       },
       {

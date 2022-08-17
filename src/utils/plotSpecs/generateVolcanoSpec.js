@@ -24,11 +24,11 @@ const generateSpec = (configSrc, plotData) => {
   // interface by deselecting Auto and entering a custom value), use
   // their specified range. If not, scale the plot based on the range of
   // the data in the set.
-  const logFoldChangeDomain = config.axesRanges.xAxisAuto
+  const xScaleDomain = config.axesRanges.xAxisAuto
     ? { data: 'data', field: 'logFC' }
     : [config.axesRanges.xMin, config.axesRanges.xMax];
 
-  const negativeLogpValueDomain = config.axesRanges.yAxisAuto
+  const yScaleDomain = config.axesRanges.yAxisAuto
     ? { data: 'data', field: 'neglogpvalue' }
     : [config.axesRanges.yMin, config.axesRanges.yMax];
 
@@ -116,7 +116,7 @@ const generateSpec = (configSrc, plotData) => {
         type: 'linear',
         nice: true,
         zero: false,
-        domain: logFoldChangeDomain,
+        domain: xScaleDomain,
         range: 'width',
       },
       {
@@ -124,7 +124,7 @@ const generateSpec = (configSrc, plotData) => {
         type: 'linear',
         nice: true,
         zero: false,
-        domain: negativeLogpValueDomain,
+        domain: yScaleDomain,
         range: 'height',
       },
       {

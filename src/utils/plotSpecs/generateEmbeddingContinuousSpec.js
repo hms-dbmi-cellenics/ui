@@ -3,11 +3,11 @@
 import { getAllCells, getSampleCells } from 'utils/cellSets';
 
 const generateSpec = (config, plotData) => {
-  const Umap1Domain = config.axesRanges.xAxisAuto
+  const xScaleDomain = config.axesRanges.xAxisAuto
     ? { data: 'plotData', field: 'x' }
     : [config.axesRanges.xMin, config.axesRanges.xMax];
 
-  const Umap2Domain = config.axesRanges.yAxisAuto
+  const yScaleDomain = config.axesRanges.yAxisAuto
     ? { data: 'plotData', field: 'y' }
     : [config.axesRanges.yMin, config.axesRanges.yMax];
 
@@ -54,7 +54,7 @@ const generateSpec = (config, plotData) => {
         type: 'linear',
         nice: true,
         zero: false,
-        domain: Umap1Domain,
+        domain: xScaleDomain,
         range: 'width',
       },
       {
@@ -62,7 +62,7 @@ const generateSpec = (config, plotData) => {
         type: 'linear',
         nice: true,
         zero: false,
-        domain: Umap2Domain,
+        domain: yScaleDomain,
         range: 'height',
       },
       {

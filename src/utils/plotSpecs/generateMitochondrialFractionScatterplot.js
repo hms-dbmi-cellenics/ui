@@ -4,11 +4,11 @@ const generateSpec = (config, plotData) => {
 
   const deadOrAlive = `(datum.fracMito <= ${maxPercentage}) ? 'Alive' : 'Dead'`;
 
-  const readsPercentageDomain = config.axesRanges.xAxisAuto
+  const xScaleDomain = config.axesRanges.xAxisAuto
     ? [0, 100]
     : [Math.max(config.axesRanges.xMin, 0), Math.min(config.axesRanges.xMax, 100)];
 
-  const cellsNumDomain = config.axesRanges.yAxisAuto
+  const yScaleDomain = config.axesRanges.yAxisAuto
     ? { data: 'plotData', field: 'cellSize' }
     : [config.axesRanges.yMin, config.axesRanges.yMax];
 
@@ -77,14 +77,14 @@ const generateSpec = (config, plotData) => {
         name: 'xscale',
         type: 'linear',
         range: 'width',
-        domain: readsPercentageDomain,
+        domain: xScaleDomain,
         zero: false,
       },
       {
         name: 'yscale',
         type: 'linear',
         range: 'height',
-        domain: cellsNumDomain,
+        domain: yScaleDomain,
         zero: false,
         nice: true,
       },

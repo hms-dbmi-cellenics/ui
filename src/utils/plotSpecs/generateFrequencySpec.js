@@ -9,7 +9,7 @@ const generateSpec = (config, plotData, xNamesToDisplay, yNamesToDisplay) => {
     ? Math.min(config.axesRanges.yMax, 100)
     : config.axesRanges.yMax;
 
-  const frequencyDomain = config.axesRanges.yAxisAuto
+  const yScaleDomain = config.axesRanges.yAxisAuto
     ? yAutoDomain
     : [Math.max(config.axesRanges.yMin, 0), yManualMax];
 
@@ -99,7 +99,7 @@ const generateSpec = (config, plotData, xNamesToDisplay, yNamesToDisplay) => {
         range: 'height',
         nice: true,
         zero: false,
-        domain: frequencyDomain,
+        domain: yScaleDomain,
       },
       {
         name: 'yCellSetKey',

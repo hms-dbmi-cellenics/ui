@@ -34,11 +34,11 @@ const generateSpec = (config, plotData, expConfig) => {
     ...selectedLinesData.map((p) => p.upper_cutoff),
   ) + sd;
 
-  const logMoleculesDomain = config.axesRanges.xAxisAuto
+  const xScaleDomain = config.axesRanges.xAxisAuto
     ? { data: 'pointsData', field: 'log_molecules' }
     : [config.axesRanges.xMin, config.axesRanges.xMax];
 
-  const logGenesDomain = config.axesRanges.yAxisAuto
+  const yScaleDomain = config.axesRanges.yAxisAuto
     ? [lowerCutoff, upperCutoff]
     : [config.axesRanges.yMin, config.axesRanges.yMax];
 
@@ -90,7 +90,7 @@ const generateSpec = (config, plotData, expConfig) => {
         type: 'linear',
         round: true,
         zero: false,
-        domain: logMoleculesDomain,
+        domain: xScaleDomain,
         range: 'width',
       },
       {
@@ -98,7 +98,7 @@ const generateSpec = (config, plotData, expConfig) => {
         type: 'linear',
         round: true,
         zero: false,
-        domain: logGenesDomain,
+        domain: yScaleDomain,
         range: 'height',
       },
     ],

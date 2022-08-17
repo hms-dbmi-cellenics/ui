@@ -2,11 +2,11 @@ const generateSpec = (config, plotData) => {
   let legend = null;
   const generateStatus = `(datum.bin1 <= ${config.probabilityThreshold}) ? 'low score' : 'high score'`;
 
-  const doubletProbDomain = config.axesRanges.xAxisAuto
+  const xScaleDomain = config.axesRanges.xAxisAuto
     ? [0, 1]
     : [Math.max(config.axesRanges.xMin, 0), Math.min(config.axesRanges.xMax, 1)];
 
-  const frequencyDomain = config.axesRanges.yAxisAuto
+  const yScaleDomain = config.axesRanges.yAxisAuto
     ? { data: 'binned', field: 'count' }
     : [config.axesRanges.yMin, config.axesRanges.yMax];
 
@@ -99,14 +99,14 @@ const generateSpec = (config, plotData) => {
         name: 'xscale',
         type: 'linear',
         range: 'width',
-        domain: doubletProbDomain,
+        domain: xScaleDomain,
         zero: false,
       },
       {
         name: 'yscale',
         type: 'linear',
         range: 'height',
-        domain: frequencyDomain,
+        domain: yScaleDomain,
         nice: true,
         zero: false,
       },
