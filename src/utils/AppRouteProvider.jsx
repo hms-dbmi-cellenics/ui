@@ -6,7 +6,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useRouter } from 'next/router';
 import { modules } from 'utils/constants';
 
-import { setActiveExperiment, switchExperiment } from 'redux/actions/experiments';
+import { loadExperiments, setActiveExperiment, switchExperiment } from 'redux/actions/experiments';
 
 import DataProcessingIntercept from 'components/data-processing/DataProcessingIntercept';
 
@@ -53,7 +53,7 @@ const AppRouteProvider = (props) => {
 
   useEffect(() => {
     const [moduleName] = Object.entries(PATH_STUBS).find(
-      ([module, path]) => router.pathname.match(path),
+      ([, path]) => router.pathname.match(path),
     );
 
     setCurrentModule(moduleName);
@@ -91,6 +91,7 @@ const AppRouteProvider = (props) => {
 
     if (nextRoute.match(PATH_STUBS.DATA_MANAGEMENT) && params.experimentId) {
       dispatch(setActiveExperiment(params.experimentId));
+      dispatch(loadExperiments());
     }
 
     router.push(nextRoute);

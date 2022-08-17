@@ -9,6 +9,8 @@ import { getBackendStatus } from 'redux/selectors';
 import { discardChangedQCFilters } from 'redux/actions/experimentSettings';
 import { runQC } from 'redux/actions/pipeline';
 
+import config from 'config';
+
 import { getUserFriendlyQCStepName } from 'utils/qcSteps';
 
 const { Text } = Typography;
@@ -26,6 +28,8 @@ const ChangesNotAppliedModal = (props) => {
     (state) => state.experimentSettings.processing.meta.changedQCFilters,
   );
 
+  const pipelineVersion = useSelector((state) => state.experimentSettings.info.pipelineVersion);
+
   const {
     status: backendStatus,
   } = useSelector(getBackendStatus(experimentId));
@@ -33,6 +37,17 @@ const ChangesNotAppliedModal = (props) => {
   const paramsHash = backendStatus?.gem2s?.paramsHash;
 
   const dispatch = useDispatch();
+
+  const runQCIfPossible = () => {
+    const qcRerunDisabled = pipelineVersion < config.pipelineVersion;
+
+    if (qcRerunDisabled) {
+
+    } else {
+      dispatch(runQC(experimentId, paramsHash));
+      onRunQC();
+    }
+  };
 
   return (
     <Modal
@@ -46,8 +61,7 @@ const ChangesNotAppliedModal = (props) => {
             key='run'
             disabled={!experimentId || !paramsHash}
             onClick={() => {
-              dispatch(runQC(experimentId, paramsHash));
-              onRunQC();
+              runQCIfPossible();
             }}
             style={{ width: '100px' }}
           >
