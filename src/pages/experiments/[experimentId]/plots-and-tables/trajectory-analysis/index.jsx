@@ -64,7 +64,7 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
       || !embeddingData?.length
     ) return;
     dispatch(getTrajectoryPlotGraph(experimentId, plotUuid));
-  }, [config, embeddingMethod, embeddingLoading, embeddingSettings]);
+  }, [embeddingMethod, embeddingLoading, embeddingSettings]);
 
   const updatePlotWithChanges = (obj) => {
     dispatch(updatePlotConfig(plotUuid, obj));
