@@ -29,8 +29,8 @@ import config from 'config/defaultConfig';
 jest.mock('components/header/UserButton', () => () => <></>);
 jest.mock('redux/actions/experimentSettings/processingConfig/saveProcessingSettings');
 jest.mock('redux/actions/experiments', () => ({
-  cloneExperiment: jest.fn(() => ({ type: 'MOCK_ACTION' })),
-  loadExperiments: jest.fn(() => ({ type: 'MOCK_ACTION' })),
+  cloneExperiment: jest.fn(() => () => {}),
+  loadExperiments: jest.fn(() => () => {}),
 }));
 
 // Mock all filter components
