@@ -104,14 +104,14 @@ const generateSpec = (config, plotData) => {
         type: 'linear',
         range: 'width',
         domain: readsPercentageDomain,
+        zero: false,
       },
       {
         name: 'yscale',
         type: 'linear',
         range: 'height',
-        round: true,
         domain: cellsPercentageDomain,
-        zero: true,
+        zero: false,
         nice: true,
       },
       {
@@ -178,6 +178,7 @@ const generateSpec = (config, plotData) => {
       },
       {
         type: 'rect',
+        clip: true,
         from: { data: 'plotData' },
         encode: {
           enter: {

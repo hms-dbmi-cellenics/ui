@@ -647,6 +647,7 @@ const doubletScoreHistogram = {
     xAxisText: 'Probability of being a doublet',
     yAxisText: 'Frequency',
   },
+  axesRanges: axesRangesBaseState,
   title: {
     ...titleBaseState,
     fontSize: 20,
