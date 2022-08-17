@@ -90,8 +90,8 @@ const AppRouteProvider = (props) => {
     }
 
     if (nextRoute.match(PATH_STUBS.DATA_MANAGEMENT) && params.experimentId) {
-      dispatch(setActiveExperiment(params.experimentId));
       dispatch(loadExperiments());
+      dispatch(setActiveExperiment(params.experimentId));
     }
 
     router.push(nextRoute);
