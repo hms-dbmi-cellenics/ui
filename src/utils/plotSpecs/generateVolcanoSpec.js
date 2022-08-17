@@ -19,11 +19,7 @@ const generateSpec = (configSrc, plotData) => {
     config.colour.reverseColourBar = false;
     config.colour.masterColour = '#000000';
   }
-  // Domain specifiers for the volcano plot axes.
-  // If a logFoldChangeDomain is defined by the user (e.g. through the
-  // interface by deselecting Auto and entering a custom value), use
-  // their specified range. If not, scale the plot based on the range of
-  // the data in the set.
+
   const xScaleDomain = config.axesRanges.xAxisAuto
     ? { data: 'data', field: 'logFC' }
     : [config.axesRanges.xMin, config.axesRanges.xMax];
