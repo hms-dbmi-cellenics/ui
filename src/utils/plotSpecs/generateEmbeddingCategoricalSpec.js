@@ -5,10 +5,27 @@ import { getAllCells, getSampleCells } from 'utils/cellSets';
 const generateSpec = (config, plotData, cellSetLegendsData) => {
   let legend = [];
 
+  // removing empty/unused entries from the data. This was causing issues with the legend
+  // example of an entry {
+  //   "cellId": 0,
+  //     "cellSetKey": "25ca1d7f-40ac-4bdc-9625-2272478e7db7",
+  //       "cellSetName": "New Cluster3",
+  //         "color": "#c9080a",
+  //           "x": 10.914,
+  //             "y": -1.4774
+  // }
+  // entries not part of the plotted data look like this and need to be removed
+  // { "x": -6.6343, "y": 0.0962 }
+
+  plotData = plotData.filter((entry) => entry.cellSetKey);
+
   if (config?.legend.enabled) {
     const positionIsRight = config.legend.position === 'right';
 
-    const legendColumns = positionIsRight ? 1 : Math.floor(config.dimensions.width / 85);
+    // only 20 rows per column if the legend is on the right
+    const legendColumns = positionIsRight
+      ? Math.ceil(cellSetLegendsData.length / 20)
+      : Math.floor(config.dimensions.width / 85);
     const labelLimit = positionIsRight ? 0 : 85;
 
     legend = [
