@@ -27,8 +27,8 @@ const generateSpec = (config, plotData, cellSetLegendsData) => {
         type: 'symbol',
         orient: config?.legend.position,
         offset: 40,
-        symbolType: 'square',
-        symbolSize: 200,
+        symbolType: 'circle',
+        symbolSize: 100,
         encode: {
           labels: {
             update: {
@@ -168,7 +168,7 @@ const generateSpec = (config, plotData, cellSetLegendsData) => {
             size: { value: config?.marker.size },
             stroke: { scale: 'cellSetMarkColors', field: 'cellSetKey' },
             fill: { scale: 'cellSetMarkColors', field: 'cellSetKey' },
-            shape: { value: config?.marker.shape },
+            shape: { value: 'circle' },
             fillOpacity: { value: config?.marker.opacity / 10 },
           },
         },

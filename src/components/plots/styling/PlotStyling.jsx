@@ -30,7 +30,7 @@ const { Panel } = Collapse;
 
 const PlotStyling = (props) => {
   const {
-    formConfig, config, onUpdate, extraPanels, defaultActiveKey,
+    formConfig, config, onUpdate, extraPanels, defaultActiveKey, showShapeType
   } = props;
 
   const ComponentMapping = {
@@ -43,7 +43,7 @@ const PlotStyling = (props) => {
     colourInversion: (attr) => <ColourInversion key='colourInversion' config={config} onUpdate={onUpdate} {...attr} />,
     expressionValuesType: (attr) => <ExpressionValuesType key='expressionValuesType' config={config} onUpdate={onUpdate} {...attr} />,
     expressionValuesCapping: (attr) => <ExpressionValuesCapping key='expressionValuesCapping' config={config} onUpdate={onUpdate} {...attr} />,
-    markers: (attr) => <PointDesign key='markers' config={config} onUpdate={onUpdate} {...attr} />,
+    markers: (attr) => <PointDesign key='markers' config={config} onUpdate={onUpdate} showShapeType={showShapeType} {...attr} />,
     legend: (attr) => <LegendEditor key='legend' onUpdate={onUpdate} config={config} {...attr} />,
     labels: (attr) => <LabelsDesign key='legend' onUpdate={onUpdate} config={config} {...attr} />,
     violinMarkers: (attr) => <ViolinMarkersEditor key='violinMarkers' config={config} onUpdate={onUpdate} {...attr} />,
@@ -105,6 +105,7 @@ PlotStyling.propTypes = {
     PropTypes.string,
     PropTypes.array,
   ]),
+  showShapeType: PropTypes.bool
 };
 
 PlotStyling.defaultProps = {
