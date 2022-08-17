@@ -124,7 +124,7 @@
     "uuid": "^8.1.0",
     "vega": "^5.21.0",
     "vega-lite": "^4.13.0",
-    "vitessce": "github:biomage-org/vitessce",
+    "vitessce": "github:hms-dbmi-cellenics/vitessce",
     "vega-webgl-renderer": "^1.0.0-beta.2",
     "webpack": "^4.43.0",
     "webpack-bundle-analyzer": "^3.3.2"
