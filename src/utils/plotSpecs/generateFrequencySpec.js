@@ -8,13 +8,15 @@ const generateSpec = (config, plotData, xNamesToDisplay, yNamesToDisplay) => {
   if (config.legend.enabled) {
     const positionIsRight = config.legend.position === 'right';
     plotDataReversed = plotData.slice().reverse();
+
     const legendColumns = positionIsRight
       ? Math.ceil(yNamesToDisplay.length / 20)
       : Math.floor(config.dimensions.width / 85);
+
     const labelLimit = positionIsRight ? 0 : 85;
     legend = [
       {
-        fill: 'legendColors',
+        fill: positionIsRight ? 'cellSetColorsReversed' : 'cellSetColors',
         title: 'Cell Set',
         titleColor: config.colour.masterColour,
         type: 'symbol',
@@ -26,7 +28,8 @@ const generateSpec = (config, plotData, xNamesToDisplay, yNamesToDisplay) => {
           labels: {
             update: {
               text: {
-                scale: 'yCellSetKeyReversed', field: 'label',
+                scale: positionIsRight ? 'yCellSetKeyReversed' : 'yCellSetKey',
+                field: 'label',
               },
               fill: { value: config.colour.masterColour },
             },
@@ -103,7 +106,7 @@ const generateSpec = (config, plotData, xNamesToDisplay, yNamesToDisplay) => {
         domain: { data: 'plotData', field: 'yCellSetKey' },
       },
       {
-        name: 'legendColors',
+        name: 'cellSetColorsReversed',
         type: 'ordinal',
         range: plotDataReversed.map(({ color }) => color),
         domain: { data: 'plotData', field: 'yCellSetKey' },
