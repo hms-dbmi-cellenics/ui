@@ -33,6 +33,25 @@ const allowedPlotActions = {
   editor: false,
 };
 
+const plotStylingControlsConfig = [
+  {
+    panelTitle: 'Plot Dimensions',
+    controls: ['dimensions'],
+  },
+  {
+    panelTitle: 'Axes',
+    controls: ['axesWithRanges'],
+  },
+  {
+    panelTitle: 'Title',
+    controls: ['title'],
+  },
+  {
+    panelTitle: 'Font',
+    controls: ['font'],
+  },
+];
+
 const Classifier = (props) => {
   const {
     experimentId, sampleId, sampleIds, onConfigChange, stepDisabled,
@@ -53,25 +72,6 @@ const Classifier = (props) => {
     dispatch(updatePlotConfig(plots[selectedPlot].plotUuid, obj));
     debounceSave(plots[selectedPlot].plotUuid);
   };
-
-  const plotStylingControlsConfig = [
-    {
-      panelTitle: 'Plot Dimensions',
-      controls: ['dimensions'],
-    },
-    {
-      panelTitle: 'Axes',
-      controls: ['axesWithRanges'],
-    },
-    {
-      panelTitle: 'Title',
-      controls: ['title'],
-    },
-    {
-      panelTitle: 'Font',
-      controls: ['font'],
-    },
-  ];
 
   const plots = {
     kneePlot: {
