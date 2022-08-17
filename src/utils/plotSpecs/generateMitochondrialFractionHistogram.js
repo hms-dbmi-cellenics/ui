@@ -5,6 +5,14 @@ const generateSpec = (config, plotData) => {
   const deadOrAlive = `(datum.bin1 <= ${maxPercentage}) ? 'Alive' : 'Dead'`;
   const generatePercentage = `(datum.count * 100.0) / ${plotData.length}`;
 
+  const readsPercentageDomain = config.axesRanges.xAxisAuto
+    ? [0, 100]
+    : [Math.max(config.axesRanges.xMin, 0), Math.min(config.axesRanges.xMax, 100)];
+
+  const cellsPercentageDomain = config.axesRanges.yAxisAuto
+    ? { data: 'binned', field: 'percentage' }
+    : [Math.max(config.axesRanges.yMin, 0), Math.min(config.axesRanges.yMax, 100)];
+
   legend = !config.legend.enabled ? null : [
     {
       fill: 'color',
@@ -95,14 +103,14 @@ const generateSpec = (config, plotData) => {
         name: 'xscale',
         type: 'linear',
         range: 'width',
-        domain: [0, 100],
+        domain: readsPercentageDomain,
       },
       {
         name: 'yscale',
         type: 'linear',
         range: 'height',
         round: true,
-        domain: { data: 'binned', field: 'percentage' },
+        domain: cellsPercentageDomain,
         zero: true,
         nice: true,
       },
@@ -150,6 +158,7 @@ const generateSpec = (config, plotData) => {
     marks: [
       {
         type: 'rect',
+        clip: true,
         from: { data: 'binned' },
         encode: {
           update: {
@@ -186,6 +195,7 @@ const generateSpec = (config, plotData) => {
       },
       {
         type: 'rule',
+        clip: true,
         encode: {
           update: {
             x: { scale: 'xscale', value: maxPercentage },

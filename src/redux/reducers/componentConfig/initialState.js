@@ -497,6 +497,7 @@ const mitochondrialFractionHistogram = {
     xAxisText: 'Percentage of mitochondrial reads',
     yAxisText: 'Percentage of cells',
   },
+  axesRanges: axesRangesBaseState,
   title: {
     ...titleBaseState,
     fontSize: 20,
@@ -526,6 +527,7 @@ const mitochondrialFractionLogHistogram = {
     xAxisText: 'Percentage of mitochondrial reads',
     yAxisText: 'Num of UMIs in cell',
   },
+  axesRanges: axesRangesBaseState,
   title: {
     ...titleBaseState,
     fontSize: 20,
