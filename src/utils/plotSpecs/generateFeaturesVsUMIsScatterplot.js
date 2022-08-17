@@ -34,6 +34,14 @@ const generateSpec = (config, plotData, expConfig) => {
     ...selectedLinesData.map((p) => p.upper_cutoff),
   ) + sd;
 
+  const logMoleculesDomain = config.axesRanges.xAxisAuto
+    ? { data: 'pointsData', field: 'log_molecules' }
+    : [config.axesRanges.xMin, config.axesRanges.xMax];
+
+  const logGenesDomain = config.axesRanges.yAxisAuto
+    ? [lowerCutoff, upperCutoff]
+    : [config.axesRanges.yMin, config.axesRanges.yMax];
+
   return {
     $schema: 'https://vega.github.io/schema/vega/v5.json',
     width: config.dimensions.width,
@@ -82,7 +90,7 @@ const generateSpec = (config, plotData, expConfig) => {
         type: 'linear',
         round: true,
         zero: false,
-        domain: { data: 'pointsData', field: 'log_molecules' },
+        domain: logMoleculesDomain,
         range: 'width',
       },
       {
@@ -90,10 +98,7 @@ const generateSpec = (config, plotData, expConfig) => {
         type: 'linear',
         round: true,
         zero: false,
-        domain: [
-          lowerCutoff,
-          upperCutoff,
-        ],
+        domain: logGenesDomain,
         range: 'height',
       },
     ],
@@ -137,6 +142,7 @@ const generateSpec = (config, plotData, expConfig) => {
       {
         name: 'marks',
         type: 'symbol',
+        clip: true,
         from: { data: 'pointsData' },
         encode: {
           update: {
@@ -151,6 +157,7 @@ const generateSpec = (config, plotData, expConfig) => {
       },
       {
         type: 'line',
+        clip: true,
         from: { data: 'linesData' },
         encode: {
           update: {
@@ -164,6 +171,7 @@ const generateSpec = (config, plotData, expConfig) => {
       },
       {
         type: 'line',
+        clip: true,
         from: { data: 'linesData' },
         encode: {
           update: {

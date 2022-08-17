@@ -618,6 +618,7 @@ const featuresVsUMIsScatterplot = {
     yAxisText: 'log10 [gene counts]',
     gridOpacity: 10,
   },
+  axesRanges: axesRangesBaseState,
   title: {
     ...titleBaseState,
     fontSize: 20,
