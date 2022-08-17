@@ -723,6 +723,11 @@ const dataIntegrationFrequencyInitialConfig = {
     xAxisRotateLabels: true,
     offset: 10,
   },
+  axesRanges: {
+    yAxisAuto: true,
+    yMin: 0,
+    yMax: 10,
+  },
   fontStyle: fontStyleBaseState,
 };
 
@@ -750,6 +755,7 @@ const dataIntegrationElbowPlotInitialConfig = {
     offset: 0,
     gridOpacity: 10,
   },
+  axesRanges: axesRangesBaseState,
   colour: {
     toggleInvert: '#FFFFFF',
   },
