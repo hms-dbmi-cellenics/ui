@@ -54,8 +54,6 @@ const generateETag = (
     };
   }
 
-  console.log('*** ETagBody', ETagBody);
-
   const ETag = createObjectHash(ETagBody);
 
   return ETag;

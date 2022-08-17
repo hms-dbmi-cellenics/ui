@@ -19,15 +19,15 @@ const getTrajectoryGraph = (
     clusteringSettings,
   } = getState().experimentSettings.processing?.configureEmbedding || {};
 
-  const embeddingState = getState()
+  const embeddingSettings = getState()
     .experimentSettings
     ?.processing
     ?.configureEmbedding
     ?.embeddingSettings;
 
-  if (!embeddingState) return null;
+  if (!embeddingSettings) return null;
 
-  const { methodSettings } = embeddingState;
+  const { methodSettings } = embeddingSettings;
 
   const { environment } = getState().networkResources;
   const backendStatus = getBackendStatus(experimentId)(getState()).status;
@@ -49,6 +49,7 @@ const getTrajectoryGraph = (
     name: 'GetTrajectoryGraph',
     embedding: {
       method: embeddingMethod,
+      methodSettings: methodSettings[embeddingMethod],
       ETag: embeddingETag,
     },
     clustering: {
