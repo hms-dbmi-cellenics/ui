@@ -664,8 +664,7 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
           qcRerunDisabled ? (
             <QCRerunDisabledModal
               experimentId={experimentId}
-              onRunQC={() => setRunQCModalVisible(false)}
-              onCancel={() => setRunQCModalVisible(false)}
+              onFinish={() => setRunQCModalVisible(false)}
             />
           ) : (
             <Modal

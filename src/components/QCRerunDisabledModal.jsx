@@ -12,7 +12,9 @@ import { useAppRouter } from 'utils/AppRouteProvider';
 import { modules } from 'utils/constants';
 
 const QCRerunDisabledModal = (props) => {
-  const { experimentId, onCancel, onRunQC } = props;
+  const {
+    experimentId, onFinish, visible,
+  } = props;
 
   const dispatch = useDispatch();
   const { navigateTo } = useAppRouter();
@@ -21,10 +23,12 @@ const QCRerunDisabledModal = (props) => {
 
   const triggerOnRunQC = () => {
     dispatch(runQC(experimentId));
-    onRunQC();
+    onFinish();
   };
 
   const cloneExperimentAndSelectIt = async () => {
+    onFinish();
+
     dispatch(discardChangedQCFilters());
     const newExperimentId = await dispatch(cloneExperiment(experimentId, `Clone of ${experimentName}`));
     await dispatch(loadExperiments());
@@ -35,13 +39,13 @@ const QCRerunDisabledModal = (props) => {
   return (
     <Modal
       title='Run data processing with the changed settings'
-      visible
-      onCancel={() => onCancel()}
+      visible={visible}
+      onCancel={() => onFinish()}
       footer={
         [
           <Button type='primary' onClick={() => triggerOnRunQC()}>Start</Button>,
           <Button type='primary' onClick={() => cloneExperimentAndSelectIt()}>Clone Project</Button>,
-          <Button onClick={() => onCancel()}>Cancel</Button>,
+          <Button onClick={() => onFinish()}>Cancel</Button>,
         ]
       }
     >
@@ -91,8 +95,13 @@ const QCRerunDisabledModal = (props) => {
 
 QCRerunDisabledModal.propTypes = {
   experimentId: PropTypes.string.isRequired,
-  onRunQC: PropTypes.func.isRequired,
-  onCancel: PropTypes.func.isRequired,
+  onFinish: PropTypes.func,
+  visible: PropTypes.bool,
+};
+
+QCRerunDisabledModal.defaultProps = {
+  visible: true,
+  onFinish: () => { },
 };
 
 export default QCRerunDisabledModal;
