@@ -4,7 +4,7 @@ import { intersection } from '../cellSetOperations';
 
 const generateSpec = (config, plotData, xNamesToDisplay, yNamesToDisplay) => {
   let legend = [];
-  let plotDataReversed;
+  let plotDataReversed = [];
   if (config.legend.enabled) {
     const positionIsRight = config.legend.position === 'right';
     plotDataReversed = plotData.slice().reverse();
