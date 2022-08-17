@@ -58,7 +58,7 @@ import { runQC } from 'redux/actions/pipeline';
 
 import { useAppRouter } from 'utils/AppRouteProvider';
 import { modules } from 'utils/constants';
-import { CURRENT_PIPELINE_VERSION } from 'utils/platformVersions';
+import config from 'config/defaultConfig';
 
 const { Text } = Typography;
 const { Option } = Select;
@@ -92,7 +92,7 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
   );
 
   const changesOutstanding = Boolean(changedQCFilters.size);
-  const qcRerunDisabled = pipelineVersion < CURRENT_PIPELINE_VERSION;
+  const qcRerunDisabled = pipelineVersion < config.pipelineVersion;
 
   const [stepIdx, setStepIdx] = useState(0);
   const [runQCModalVisible, setRunQCModalVisible] = useState(false);

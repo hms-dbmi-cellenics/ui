@@ -24,7 +24,7 @@ import { act } from 'react-dom/test-utils';
 import { saveProcessingSettings } from 'redux/actions/experimentSettings';
 import { cloneExperiment, loadExperiments } from 'redux/actions/experiments';
 import { EXPERIMENT_SETTINGS_SET_QC_STEP_ENABLED } from 'redux/actionTypes/experimentSettings';
-import { CURRENT_PIPELINE_VERSION } from 'utils/platformVersions';
+import config from 'config/defaultConfig';
 
 jest.mock('components/header/UserButton', () => () => <></>);
 jest.mock('redux/actions/experimentSettings/processingConfig/saveProcessingSettings');
@@ -84,7 +84,7 @@ const getStore = (experimentId, settings = {}) => {
       ...initialExperimentState,
       info: {
         ...initialExperimentState.info,
-        pipelineVersion: CURRENT_PIPELINE_VERSION,
+        pipelineVersion: config.pipelineVersion,
         sampleIds,
       },
       processing: {
@@ -231,7 +231,7 @@ describe('DataProcessingPage', () => {
   it('Shows extra information if there is a new version of the QC pipeline', async () => {
     const store = getStore(experimentId, {
       experimentSettings: {
-        info: { pipelineVersion: CURRENT_PIPELINE_VERSION - 1 },
+        info: { pipelineVersion: config.pipelineVersion - 1 },
         processing: { meta: { changedQCFilters: new Set(['classifier']) } },
       },
     });
