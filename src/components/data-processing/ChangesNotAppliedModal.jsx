@@ -5,14 +5,14 @@ import {
   Modal, Typography, Space, Button,
 } from 'antd';
 
+import config from 'config';
+
 import { getBackendStatus } from 'redux/selectors';
 import { discardChangedQCFilters } from 'redux/actions/experimentSettings';
 import { runQC } from 'redux/actions/pipeline';
 
-import config from 'config';
-
-import { getUserFriendlyQCStepName } from 'utils/qcSteps';
 import QCRerunDisabledModal from 'components/QCRerunDisabledModal';
+import { getUserFriendlyQCStepName } from 'utils/qcSteps';
 
 const { Text } = Typography;
 
@@ -59,11 +59,13 @@ const ChangesNotAppliedModal = (props) => {
 
   return (
     <>
-      <QCRerunDisabledModal
-        experimentId={experimentId}
-        onFinish={closeModals}
-        visible={QCDisabledModalVisible}
-      />
+      {QCDisabledModalVisible && (
+        <QCRerunDisabledModal
+          experimentId={experimentId}
+          onFinish={closeModals}
+          visible={QCDisabledModalVisible}
+        />
+      )}
       <Modal
         title='Changes not applied'
         onCancel={() => onCloseModal()}

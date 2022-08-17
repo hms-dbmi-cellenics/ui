@@ -33,6 +33,8 @@ const QCRerunDisabledModal = (props) => {
     const newExperimentId = await dispatch(cloneExperiment(experimentId, `Clone of ${experimentName}`));
     await dispatch(loadExperiments());
 
+    console.log('navigateToDebug');
+    console.log(navigateTo);
     navigateTo(modules.DATA_MANAGEMENT, { experimentId: newExperimentId }, true);
   };
 
