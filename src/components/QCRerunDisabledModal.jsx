@@ -37,13 +37,11 @@ const QCRerunDisabledModal = (props) => {
       title='Run data processing with the changed settings'
       visible
       onCancel={() => onCancel()}
-      // onCancel={() => setRunQCModalVisible(false)}
       footer={
         [
           <Button type='primary' onClick={() => triggerOnRunQC()}>Start</Button>,
           <Button type='primary' onClick={() => cloneExperimentAndSelectIt()}>Clone Project</Button>,
           <Button onClick={() => onCancel()}>Cancel</Button>,
-          // <Button onClick={() => setRunQCModalVisible(false)}>Cancel</Button>,
         ]
       }
     >

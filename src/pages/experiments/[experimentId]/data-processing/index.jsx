@@ -689,27 +689,6 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
             </Modal>
           )
         )}
-        {/* {runQCModalVisible && (
-          <Modal
-            title='Run data processing with the changed settings'
-            visible
-            onCancel={() => setRunQCModalVisible(false)}
-            footer={
-              [
-                <Button type='primary' onClick={() => onPipelineRun()}>Start</Button>,
-                qcRerunDisabled ? <Button type='primary' onClick={() => cloneExperimentAndSelectIt()}>Clone Project</Button> : <></>,
-                <Button onClick={() => setRunQCModalVisible(false)}>Cancel</Button>,
-              ]
-            }
-          >
-            {qcRerunDisabled && qcRerunDisabledAlert()}
-            <p>
-              This might take several minutes.
-              Your navigation within Cellenics will be restricted during this time.
-              Do you want to start?
-            </p>
-          </Modal>
-        )} */}
         <Card
           title={renderTitle()}
         >
