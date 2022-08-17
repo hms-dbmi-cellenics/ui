@@ -9,6 +9,8 @@ import { getBackendStatus } from 'redux/selectors';
 import experimentSettingsInitialState, { metaInitialState } from 'redux/reducers/experimentSettings/initialState';
 import ChangesNotAppliedModal from 'components/data-processing/ChangesNotAppliedModal';
 
+jest.mock('redux/selectors');
+
 jest.mock('utils/qcSteps', () => ({
   getUserFriendlyQCStepName: jest.fn().mockImplementation((step) => {
     switch (step) {
@@ -22,7 +24,12 @@ jest.mock('utils/qcSteps', () => ({
   }),
 }));
 
-jest.mock('redux/selectors');
+const mockNavigateTo = jest.fn();
+jest.mock('utils/AppRouteProvider', () => ({
+  useAppRouter: jest.fn(() => ({
+    navigateTo: mockNavigateTo,
+  })),
+}));
 
 getBackendStatus.mockImplementation(() => () => ({
   status: {
@@ -42,6 +49,7 @@ const noChangesState = {
     ...experimentSettingsInitialState,
     info: {
       ...experimentSettingsInitialState.info,
+      pipelineVersion: 1,
       experimentId,
     },
     processing: {
