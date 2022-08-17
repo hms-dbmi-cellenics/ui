@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import {
   Button, Form, Space, Checkbox, InputNumber, Collapse,
@@ -18,6 +18,11 @@ const AxesWithRangesDesign = (props) => {
   const hideYRange = typeof config.axesRanges.yAxisAuto === 'undefined';
 
   const [newConfig, setNewConfig] = useState(config.axesRanges);
+
+  // if the plot changes, update the config
+  useEffect(() => {
+    setNewConfig(config.axesRanges);
+  }, [config]);
 
   const disableSave = () => {
     if (_.isEqual(config.axesRanges, newConfig)) return true;
@@ -61,7 +66,7 @@ const AxesWithRangesDesign = (props) => {
                 >
                   <InputNumber
                     data-testid='xMin'
-                    defaultValue={newConfig.xMin}
+                    value={newConfig.xMin}
                     onChange={(value) => {
                       setNewConfig({ ...newConfig, xMin: value });
                     }}
@@ -73,7 +78,7 @@ const AxesWithRangesDesign = (props) => {
                 >
                   <InputNumber
                     data-testid='xMax'
-                    defaultValue={newConfig.xMax}
+                    value={newConfig.xMax}
                     onChange={(value) => {
                       setNewConfig({ ...newConfig, xMax: value });
                     }}
@@ -106,7 +111,7 @@ const AxesWithRangesDesign = (props) => {
                 >
                   <InputNumber
                     data-testid='yMin'
-                    defaultValue={newConfig.yMin}
+                    value={newConfig.yMin}
                     onChange={(value) => {
                       setNewConfig({ ...newConfig, yMin: value });
                     }}
@@ -118,7 +123,7 @@ const AxesWithRangesDesign = (props) => {
                 >
                   <InputNumber
                     data-testid='yMax'
-                    defaultValue={newConfig.yMax}
+                    value={newConfig.yMax}
                     onChange={(value) => {
                       setNewConfig({ ...newConfig, yMax: value });
                     }}
