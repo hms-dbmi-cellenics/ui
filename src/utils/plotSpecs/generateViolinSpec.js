@@ -3,7 +3,6 @@ import _ from 'lodash';
 /* eslint-disable no-param-reassign */
 const generateSpec = (config, plotData) => {
   const numGroups = _.keys(plotData.groups).length;
-  console.log('PLOT DATA ', plotData);
   let plotWidth = Math.round(Math.min(100, 0.9 * (config.dimensions.width / numGroups)));
   plotWidth += (plotWidth % 2);
 

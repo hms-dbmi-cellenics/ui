@@ -11,7 +11,7 @@ const loadCellSets = (experimentId, forceReload = false) => async (dispatch, get
   } = getState().cellSets;
 
   const { sampleIds: samplesOrder } = getState().experimentSettings.info;
-  console.log('SAMPLES ORDER ', samplesOrder);
+
   const loadingBlocked = loading || updatingClustering;
   const requiresLoading = initialLoadPending || error;
 

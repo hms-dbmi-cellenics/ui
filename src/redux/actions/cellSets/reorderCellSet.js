@@ -60,7 +60,6 @@ const reorderCellSet = (
       await dispatch(reorderSamples(experimentId, oldPosition, newPosition, theNewOrder));
     }
   } catch (e) {
-    console.log('reorderCellSet', e);
     handleError(e, endUserMessages.ERROR_SAVING);
   }
 };
