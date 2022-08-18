@@ -19,6 +19,7 @@ import Loader from 'components/Loader';
 import { Alert } from 'antd';
 
 import changeEmbeddingAxesIfNecessary from 'components/plots/helpers/changeEmbeddingAxesIfNecessary';
+import debounce from 'lodash/debounce';
 
 const TrajectoryAnalysisPlot = (props) => {
   // Currenty monocle3 only trajectory analysis only supports
@@ -99,12 +100,11 @@ const TrajectoryAnalysisPlot = (props) => {
     setPlotSpec(generateSpec(config, plotEmbedding, trajectoryData, cellSetLegendsData, plotState));
   }, [config, cellSets, embeddingData, plotData]);
 
-  console.log('*** plotState', plotState);
-
   const listeners = {
     domUpdates: (e, val) => {
       const [xdom, ydom] = val;
       setPlotState({ ...plotState, xdom, ydom });
+      if (!config.viewChanged) debounce(onUpdate, 2000)({ viewChanged: true });
     },
   };
 

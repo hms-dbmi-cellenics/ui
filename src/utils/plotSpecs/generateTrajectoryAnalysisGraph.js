@@ -1,6 +1,30 @@
 const generateSpec = (config, embeddingData, pathData, cellSetLegendsData, plotState) => {
   let legend = [];
 
+  const extent = (arr) => {
+    let min;
+    let max;
+    let rest = [];
+
+    if (arr.length === 2) {
+      [min, max] = arr;
+      if (min < max) return [min, max];
+      return [max, min];
+    }
+
+    [min, max, ...rest] = arr;
+
+    rest.forEach((val) => {
+      if (val < min) min = val;
+      if (val > max) max = val;
+    });
+
+    return [min, max];
+  };
+
+  const xExt = !config.viewChanged ? extent(embeddingData.map((data) => data.x)) : [0, 0];
+  const yExt = !config.viewChanged ? extent(embeddingData.map((data) => data.y)) : [0, 0];
+
   if (config.legend.enabled) {
     const positionIsRight = config.legend.position === 'right';
 
@@ -75,11 +99,11 @@ const generateSpec = (config, embeddingData, pathData, cellSetLegendsData, plotS
       // Signal for selection
       {
         name: 'initXdom',
-        value: plotState.xdom,
+        value: config.viewChanged ? plotState.xdom : xExt,
       },
       {
         name: 'initYdom',
-        value: plotState.ydom,
+        value: config.viewChanged ? plotState.ydom : yExt,
       },
       {
         name: 'clicked',
@@ -233,7 +257,7 @@ const generateSpec = (config, embeddingData, pathData, cellSetLegendsData, plotS
           },
           {
             events: { signal: 'zoom' },
-            update: '[[anchor[1] + (ydom[0] - anchor[1]) * zoom, anchor[1] + (ydom[1] - anchor[1]) * zoom], [anchor[1] + (ydom[0] - anchor[1]) * zoom, anchor[1] + (ydom[1] - anchor[1]) * zoom]]',
+            update: '[[anchor[0] + (xdom[0] - anchor[0]) * zoom, anchor[0] + (xdom[1] - anchor[0]) * zoom], [anchor[1] + (ydom[0] - anchor[1]) * zoom, anchor[1] + (ydom[1] - anchor[1]) * zoom]]',
           },
         ],
       },
