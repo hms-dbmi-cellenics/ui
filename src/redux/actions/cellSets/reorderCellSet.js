@@ -1,8 +1,9 @@
 import { CELL_SETS_REORDER } from 'redux/actionTypes/cellSets';
-
 import fetchAPI from 'utils/http/fetchAPI';
 import handleError from 'utils/http/handleError';
 import endUserMessages from 'utils/endUserMessages';
+import { arrayMoveImmutable } from 'utils/array-move';
+import { reorderSamples } from '../experiments';
 
 const reorderCellSetJsonMerger = (cellSetKey, newPosition, cellClassKey) => (
   [{
@@ -51,7 +52,15 @@ const reorderCellSet = (
         cellClassKey: parentNodeKey,
       },
     });
+    if (parentNodeKey === 'sample') {
+      const currentOrder = getState().experimentSettings.info.sampleIds;
+      const oldPosition = currentOrder.indexOf(cellSetKey);
+
+      const theNewOrder = arrayMoveImmutable(currentOrder, oldPosition, newPosition);
+      await dispatch(reorderSamples(experimentId, oldPosition, newPosition, theNewOrder));
+    }
   } catch (e) {
+    console.log('reorderCellSet', e);
     handleError(e, endUserMessages.ERROR_SAVING);
   }
 };
