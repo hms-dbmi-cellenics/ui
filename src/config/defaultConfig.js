@@ -11,7 +11,7 @@ const supportEmailsByAccountId = {
 
 const config = {
   supportEmail: supportEmailsByAccountId[accountId],
-  pipelineVersionToRerunQC: 2,
+  pipelineVersionToRerunQC: 1,
 };
 
 export default config;
