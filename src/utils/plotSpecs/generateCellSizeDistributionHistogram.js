@@ -99,14 +99,14 @@ const generateSpec = (config, plotData, highestUmi) => {
         type: 'linear',
         range: 'width',
         domain: xScaleDomain,
+        zero: false,
       },
       {
         name: 'yscale',
         type: 'linear',
         range: 'height',
-        round: true,
         domain: yScaleDomain,
-        zero: true,
+        zero: false,
         nice: true,
       },
       {
