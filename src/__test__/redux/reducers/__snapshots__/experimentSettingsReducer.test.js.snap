@@ -5,6 +5,7 @@ Object {
   "info": Object {
     "experimentId": null,
     "experimentName": null,
+    "pipelineVersion": null,
     "sampleIds": Array [],
   },
   "originalProcessing": Object {
@@ -41,6 +42,7 @@ Object {
   "info": Object {
     "experimentId": null,
     "experimentName": null,
+    "pipelineVersion": null,
     "sampleIds": Array [],
   },
   "originalProcessing": Object {
@@ -71,6 +73,7 @@ Object {
   "info": Object {
     "experimentId": null,
     "experimentName": null,
+    "pipelineVersion": null,
     "sampleIds": Array [],
   },
   "originalProcessing": Object {
@@ -325,6 +328,7 @@ Object {
   "info": Object {
     "experimentId": null,
     "experimentName": null,
+    "pipelineVersion": null,
     "sampleIds": Array [],
   },
   "originalProcessing": Object {
@@ -355,6 +359,7 @@ Object {
   "info": Object {
     "experimentId": null,
     "experimentName": null,
+    "pipelineVersion": null,
     "sampleIds": Array [],
   },
   "originalProcessing": Object {

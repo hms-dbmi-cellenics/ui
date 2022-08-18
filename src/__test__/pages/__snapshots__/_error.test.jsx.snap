@@ -75,6 +75,7 @@ Array [
       "info": Object {
         "experimentId": null,
         "experimentName": null,
+        "pipelineVersion": null,
         "sampleIds": Array [],
       },
       "originalProcessing": Object {},
@@ -227,6 +228,7 @@ Array [
       "info": Object {
         "experimentId": null,
         "experimentName": null,
+        "pipelineVersion": null,
         "sampleIds": Array [],
       },
       "originalProcessing": Object {},

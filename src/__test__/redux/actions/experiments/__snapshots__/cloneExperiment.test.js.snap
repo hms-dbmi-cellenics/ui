@@ -1,0 +1,15 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`cloneExperiment Throws an error if cloning experiment throws an error 1`] = `"{\\"name\\":\\"clonedExperiment\\"}"`;
+
+exports[`cloneExperiment Works correctly 1`] = `
+Object {
+  "experiment": Object {
+    "createdAt": "2020-01-01T00:00:00.000Z",
+    "id": Object {},
+    "name": "clonedExperiment",
+  },
+}
+`;
+
+exports[`cloneExperiment Works correctly 2`] = `"{\\"name\\":\\"clonedExperiment\\"}"`;

@@ -1,5 +1,6 @@
 export default {
   EXPERIMENT_ID: 'testae48e318dab9a1bd0bexperiment',
+  CLONED_EXPERIMENT_ID: 'testae48e318dab9a1bd0bexperclone',
   PROJECT_WITH_SAMPLES_UUID: '380c53b4-mock-test-8091-4c82336d6d49',
   PROJECT_WITHOUT_SAMPLE_UUID: '4761594b-mock-test-ba89-c2c812d39bb5',
   EXPERIMENT_NAME: 'Test Experiment',
