@@ -22,9 +22,6 @@ const generateSpec = (config, embeddingData, pathData, cellSetLegendsData, plotS
     return [min, max];
   };
 
-  const xExt = !config.viewChanged ? extent(embeddingData.map((data) => data.x)) : [0, 0];
-  const yExt = !config.viewChanged ? extent(embeddingData.map((data) => data.y)) : [0, 0];
-
   if (config.legend.enabled) {
     const positionIsRight = config.legend.position === 'right';
 
@@ -141,11 +138,11 @@ const generateSpec = (config, embeddingData, pathData, cellSetLegendsData, plotS
       // Signals for zooming
       {
         name: 'initXdom',
-        value: config.viewChanged ? plotState.xdom : xExt,
+        value: config.viewChanged ? plotState.xdom : extent(embeddingData.map((data) => data.x)),
       },
       {
         name: 'initYdom',
-        value: config.viewChanged ? plotState.ydom : yExt,
+        value: config.viewChanged ? plotState.ydom : extent(embeddingData.map((data) => data.y)),
       },
       { name: 'xrange', update: '[0, width]' },
       { name: 'yrange', update: '[height, 0]' },
