@@ -139,6 +139,10 @@ const generateExperimentSettingsMock = (sampleIds) => {
     ...initialState,
     processing: mockedProcessingConfig,
     originalProcessing: mockedProcessingConfig,
+    info: {
+      ...initialState.info,
+      pipelineVersion: 1,
+    },
   };
 };
 
