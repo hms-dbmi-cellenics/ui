@@ -201,6 +201,7 @@ Object {
     "metadataKeys": Array [],
     "name": "experiment 1",
     "notifyByEmail": true,
+    "pipelineVersion": 1,
     "sampleIds": Array [],
     "updatedAt": null,
   },
