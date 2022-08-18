@@ -11,6 +11,7 @@ const supportEmailsByAccountId = {
 
 const config = {
   supportEmail: supportEmailsByAccountId[accountId],
+  pipelineVersion: 1,
 };
 
 export default config;

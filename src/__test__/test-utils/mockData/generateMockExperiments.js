@@ -20,6 +20,7 @@ const experimentFromTemplate = (idx) => (
       },
     },
     notifyByEmail: true,
+    pipelineVersion: 1,
     createdAt: fake.MOCK_DATETIME,
     updatedAt: fake.MOCK_DATETIME,
   }
