@@ -3,6 +3,8 @@ const generateSpec = (config, groupName, data, displayLabels = true) => {
 
   // Do not display gene labels by default if thre are more than 53
   // as the gene names will squash up
+
+  const verticalLegendColumns = Math.ceil(cellSetNames.length / 20);
   const extraLabels = displayLabels ? [
     {
       domain: false,
@@ -40,6 +42,7 @@ const generateSpec = (config, groupName, data, displayLabels = true) => {
           },
         },
       },
+      columns: verticalLegendColumns,
       labelFont: config.fontStyle.font,
       titleFont: config.fontStyle.font,
     },
