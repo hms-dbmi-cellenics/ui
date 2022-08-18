@@ -24,7 +24,7 @@ import { act } from 'react-dom/test-utils';
 import { saveProcessingSettings } from 'redux/actions/experimentSettings';
 import { cloneExperiment, loadExperiments } from 'redux/actions/experiments';
 import { EXPERIMENT_SETTINGS_SET_QC_STEP_ENABLED } from 'redux/actionTypes/experimentSettings';
-import config from 'config/defaultConfig';
+import config from 'config';
 
 jest.mock('components/header/UserButton', () => () => <></>);
 jest.mock('redux/actions/experimentSettings/processingConfig/saveProcessingSettings');
