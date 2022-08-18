@@ -98,14 +98,6 @@ const generateSpec = (config, embeddingData, pathData, cellSetLegendsData, plotS
     signals: [
       // Signal for selection
       {
-        name: 'initXdom',
-        value: config.viewChanged ? plotState.xdom : xExt,
-      },
-      {
-        name: 'initYdom',
-        value: config.viewChanged ? plotState.ydom : yExt,
-      },
-      {
         name: 'clicked',
         on: [{ events: '@pathNodes:click', update: 'datum', force: true }],
       },
@@ -147,6 +139,14 @@ const generateSpec = (config, embeddingData, pathData, cellSetLegendsData, plotS
         ],
       },
       // Signals for zooming
+      {
+        name: 'initXdom',
+        value: config.viewChanged ? plotState.xdom : xExt,
+      },
+      {
+        name: 'initYdom',
+        value: config.viewChanged ? plotState.ydom : yExt,
+      },
       { name: 'xrange', update: '[0, width]' },
       { name: 'yrange', update: '[height, 0]' },
       {
