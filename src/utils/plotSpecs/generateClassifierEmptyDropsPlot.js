@@ -1,4 +1,8 @@
 const generateSpec = (config, expConfig, plotData) => {
+  const xScaleDomain = config.axesRanges.xAxisAuto
+    ? { data: 'plotData', field: 'log_u' }
+    : [config.axesRanges.xMin, config.axesRanges.xMax];
+
   const yScaleDomain = config.axesRanges.yAxisAuto
     ? { data: 'plotData', field: 'FDR' }
     : [config.axesRanges.yMin, config.axesRanges.yMax];
@@ -52,17 +56,16 @@ const generateSpec = (config, expConfig, plotData) => {
       {
         name: 'x',
         type: 'linear',
-        round: true,
         nice: true,
-        zero: true,
-        domain: { data: 'plotData', field: 'log_u' },
-        domainMin: 1.5,
+        zero: false,
+        domain: xScaleDomain,
         range: 'width',
       },
       {
         name: 'y',
         type: 'linear',
         nice: true,
+        zero: false,
         domain: yScaleDomain,
         range: 'height',
       },
@@ -118,6 +121,7 @@ const generateSpec = (config, expConfig, plotData) => {
       },
       {
         type: 'image',
+        clip: true,
         from: { data: 'density' },
         encode: {
           update: {
@@ -139,6 +143,7 @@ const generateSpec = (config, expConfig, plotData) => {
       },
       {
         type: 'rule',
+        clip: true,
         encode: {
           update: {
             x: 0,
