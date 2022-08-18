@@ -4,16 +4,19 @@ import { intersection } from '../cellSetOperations';
 
 const generateSpec = (config, plotData, xNamesToDisplay, yNamesToDisplay) => {
   let legend = [];
-
+  let plotDataReversed = [];
   if (config.legend.enabled) {
     const positionIsRight = config.legend.position === 'right';
+    plotDataReversed = plotData.slice().reverse();
 
-    const legendColumns = positionIsRight ? 1 : Math.floor(config.dimensions.width / 85);
+    const legendColumns = positionIsRight
+      ? Math.ceil(yNamesToDisplay.length / 20)
+      : Math.floor(config.dimensions.width / 85);
+
     const labelLimit = positionIsRight ? 0 : 85;
-
     legend = [
       {
-        fill: 'color',
+        fill: positionIsRight ? 'cellSetColorsReversed' : 'cellSetColors',
         title: 'Cell Set',
         titleColor: config.colour.masterColour,
         type: 'symbol',
@@ -25,7 +28,8 @@ const generateSpec = (config, plotData, xNamesToDisplay, yNamesToDisplay) => {
           labels: {
             update: {
               text: {
-                scale: 'yCellSetKey', field: 'label',
+                scale: positionIsRight ? 'yCellSetKeyReversed' : 'yCellSetKey',
+                field: 'label',
               },
               fill: { value: config.colour.masterColour },
             },
@@ -64,7 +68,6 @@ const generateSpec = (config, plotData, xNamesToDisplay, yNamesToDisplay) => {
           {
             type: 'stack',
             groupby: ['x'],
-            sort: { field: 'yCellSetKey' },
             field: 'y',
           },
         ],
@@ -97,10 +100,21 @@ const generateSpec = (config, plotData, xNamesToDisplay, yNamesToDisplay) => {
         range: yNamesToDisplay,
       },
       {
-        name: 'color',
+        name: 'cellSetColors',
         type: 'ordinal',
-        range: { data: 'plotData', field: 'color' },
+        range: plotData.map(({ color }) => color),
         domain: { data: 'plotData', field: 'yCellSetKey' },
+      },
+      {
+        name: 'cellSetColorsReversed',
+        type: 'ordinal',
+        range: plotDataReversed.map(({ color }) => color),
+        domain: { data: 'plotData', field: 'yCellSetKey' },
+      },
+      {
+        name: 'yCellSetKeyReversed',
+        type: 'ordinal',
+        range: yNamesToDisplay.slice().reverse(),
       },
     ],
 
@@ -162,7 +176,7 @@ const generateSpec = (config, plotData, xNamesToDisplay, yNamesToDisplay) => {
             width: { scale: 'x', band: 1, offset: -1 },
             y: { scale: 'y', field: 'y0' },
             y2: { scale: 'y', field: 'y1' },
-            fill: { scale: 'color', field: 'yCellSetKey' },
+            fill: { scale: 'cellSetColors', field: 'yCellSetKey' },
           },
           update: {
             fillOpacity: 1,
