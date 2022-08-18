@@ -6,7 +6,7 @@ import endUserMessages from 'utils/endUserMessages';
 import { fetchWork, generateETag } from 'utils/work/fetchWork';
 import { getBackendStatus } from 'redux/selectors';
 
-const getTrajectoryPlotGraph = (
+const getStartingNodes = (
   experimentId,
   plotUuid,
 ) => async (dispatch, getState) => {
@@ -49,7 +49,7 @@ const getTrajectoryPlotGraph = (
   const timeout = getTimeoutForWorkerTask(getState(), 'TrajectoryAnalysis');
 
   const body = {
-    name: 'GetTrajectoryGraph',
+    name: 'GetStartingNodes',
     embedding: {
       method: embeddingMethod,
       methodSettings: methodSettings[embeddingMethod],
@@ -91,4 +91,4 @@ const getTrajectoryPlotGraph = (
   }
 };
 
-export default getTrajectoryPlotGraph;
+export default getStartingNodes;

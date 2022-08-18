@@ -6,7 +6,7 @@ import { Vega } from 'react-vega';
 import { generateData as generateCategoricalEmbeddingData } from 'utils/plotSpecs/generateEmbeddingCategoricalSpec';
 import {
   generateSpec,
-  generateData as generateTrajectoryPathData,
+  generateData as generateStartingNodesData,
 } from 'utils/plotSpecs/generateTrajectoryAnalysisGraph';
 import { loadEmbedding } from 'redux/actions/embedding';
 import { loadCellSets } from 'redux/actions/cellSets';
@@ -29,11 +29,12 @@ const TrajectoryAnalysisPlot = (props) => {
   const {
     experimentId,
     config,
-    plotData,
+    plotData: startingNodesPlotData,
     plotLoading,
     actions,
     onUpdate,
   } = props;
+
   const dispatch = useDispatch();
 
   const cellSets = useSelector(getCellSets());
@@ -85,20 +86,34 @@ const TrajectoryAnalysisPlot = (props) => {
       || !cellSets.accessible
       || cellSets.error
       || !embeddingData?.length
-      || !plotData
-      || !plotData?.nodes
+      || !startingNodesPlotData
+      || !startingNodesPlotData?.nodes
     ) {
       return;
     }
 
     const {
-      plotData: plotEmbedding,
+      plotData: embeddingPlotData,
       cellSetLegendsData,
-    } = generateCategoricalEmbeddingData(cellSets, config.selectedSample, config.selectedCellSet, embeddingData);
-    const trajectoryData = generateTrajectoryPathData(plotData);
+    } = generateCategoricalEmbeddingData(
+      cellSets,
+      config.selectedSample,
+      config.selectedCellSet,
+      embeddingData,
+    );
 
-    setPlotSpec(generateSpec(config, plotEmbedding, trajectoryData, cellSetLegendsData, plotState));
-  }, [config, cellSets, embeddingData, plotData]);
+    const startingNodesData = generateStartingNodesData(startingNodesPlotData);
+
+    setPlotSpec(
+      generateSpec(
+        config,
+        embeddingPlotData,
+        startingNodesData,
+        cellSetLegendsData,
+        plotState,
+      ),
+    );
+  }, [config, cellSets, embeddingData, startingNodesPlotData]);
 
   const listeners = {
     domUpdates: (e, val) => {

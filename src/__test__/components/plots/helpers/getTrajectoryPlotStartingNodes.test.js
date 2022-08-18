@@ -1,12 +1,12 @@
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
-import getTrajectoryGraph from 'redux/actions/plotData/getTrajectoryPlotGraph';
+import getStartingNodes from 'redux/actions/plotData/getTrajectoryPlotStartingNodes';
 import { fetchWork } from 'utils/work/fetchWork';
 import handleError from 'utils/http/handleError';
 
 import { PLOT_DATA_ERROR, PLOT_DATA_LOADED, PLOT_DATA_LOADING } from 'redux/actionTypes/componentConfig';
 
-import mockTrajectoryGraph from '__test__/data/trajectory_graph.json';
+import mockStartingNodes from '__test__/data/starting_nodes.json';
 import { initialEmbeddingState } from 'redux/reducers/embeddings/initialState';
 import initialExperimentSettingsState from 'redux/reducers/experimentSettings/initialState';
 
@@ -71,17 +71,17 @@ const initialState = {
 
 let store;
 
-describe('Get trajectory graph', () => {
+describe('Get trajectory plot starting nodes', () => {
   beforeEach(async () => {
     jest.clearAllMocks();
 
-    fetchWork.mockImplementation(() => (mockTrajectoryGraph));
+    fetchWork.mockImplementation(() => (mockStartingNodes));
 
     store = mockStore(initialState);
   });
 
   it('Dispatches the correct events', async () => {
-    await store.dispatch(getTrajectoryGraph(experimentId, plotUuid));
+    await store.dispatch(getStartingNodes(experimentId, plotUuid));
 
     const actions = store.getActions();
     expect(actions.length).toEqual(2);
@@ -93,7 +93,7 @@ describe('Get trajectory graph', () => {
   it('Dispatches error if there are errors when fetching work', async () => {
     fetchWork.mockImplementationOnce(() => new Promise((resolve, reject) => reject(new Error('random error!'))));
 
-    await store.dispatch(getTrajectoryGraph(experimentId, plotUuid));
+    await store.dispatch(getStartingNodes(experimentId, plotUuid));
 
     const actions = store.getActions();
     expect(actions.length).toEqual(2);

@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Get trajectory graph Dispatches the correct events 1`] = `
+exports[`Get trajectory plot starting nodes Dispatches the correct events 1`] = `
 Object {
   "payload": Object {
     "plotData": Object {

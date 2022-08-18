@@ -9,7 +9,7 @@ import { loadBackendStatus } from 'redux/actions/backendStatus';
 import { makeStore } from 'redux/store';
 import { seekFromS3 } from 'utils/work/seekWorkResponse';
 import mockEmbedding from '__test__/data/embedding.json';
-import mockTrajectoryGraph from '__test__/data/trajectory_graph.json';
+import mockStartingNodes from '__test__/data/starting_nodes.json';
 
 import preloadAll from 'jest-next-dynamic';
 
@@ -47,7 +47,7 @@ jest.mock('utils/work/seekWorkResponse', () => ({
 
 const mockWorkerResponses = {
   GetEmbedding: mockEmbedding,
-  GetTrajectoryGraph: mockTrajectoryGraph,
+  GetStartingNodes: mockStartingNodes,
 };
 
 const experimentId = fake.EXPERIMENT_ID;

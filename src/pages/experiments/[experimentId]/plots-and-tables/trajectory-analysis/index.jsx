@@ -13,7 +13,7 @@ import Header from 'components/Header';
 import TrajectoryAnalysisPlot from 'components/plots/TrajectoryAnalysisPlot';
 import PlotContainer from 'components/plots/PlotContainer';
 import { plotNames, plotTypes } from 'utils/constants';
-import getTrajectoryPlotGraph from 'redux/actions/plotData/getTrajectoryPlotGraph';
+import getStartingNodes from 'redux/actions/plotData/getTrajectoryPlotStartingNodes';
 
 const plotUuid = 'trajectoryAnalysisMain';
 const plotType = plotTypes.TRAJECTORY_ANALYSIS;
@@ -63,7 +63,7 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
       || embeddingError
       || !embeddingData?.length
     ) return;
-    dispatch(getTrajectoryPlotGraph(experimentId, plotUuid));
+    dispatch(getStartingNodes(experimentId, plotUuid));
   }, [embeddingMethod, embeddingLoading, embeddingSettings]);
 
   const updatePlotWithChanges = (obj) => {

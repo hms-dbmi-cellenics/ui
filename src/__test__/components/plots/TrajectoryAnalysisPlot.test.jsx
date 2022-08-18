@@ -17,7 +17,7 @@ import { seekFromS3 } from 'utils/work/seekWorkResponse';
 import { loadBackendStatus } from 'redux/actions/backendStatus';
 import WorkResponseError from 'utils/http/errors/WorkResponseError';
 
-import mockTrajectoryGraph from '__test__/data/trajectory_graph.json';
+import mockStartingNodes from '__test__/data/starting_nodes.json';
 
 import { plotTypes } from 'utils/constants';
 
@@ -51,7 +51,7 @@ const defaultAPIResponse = generateDefaultMockAPIResponses(experimentId);
 const defaultProps = {
   experimentId,
   config: initialPlotConfigStates[plotTypes.TRAJECTORY_ANALYSIS],
-  plotData: mockTrajectoryGraph,
+  plotData: mockStartingNodes,
   actions: false,
   onUpdate: jest.fn(),
 };
