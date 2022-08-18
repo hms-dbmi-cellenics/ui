@@ -182,7 +182,13 @@ const generateSpec = (config, plotData, cellSetLegendsData) => {
           enter: {
             x: { scale: 'x', field: 'x' },
             y: { scale: 'y', field: 'y' },
-            size: { value: config?.marker.size },
+            size: [
+              {
+                test: "inrange(datum.x, domain('x')) && inrange(datum.y, domain('y'))",
+                value: config?.marker.size,
+              },
+              { value: 0 },
+            ],
             stroke: { scale: 'cellSetMarkColors', field: 'cellSetKey' },
             fill: { scale: 'cellSetMarkColors', field: 'cellSetKey' },
             shape: { value: 'circle' },
