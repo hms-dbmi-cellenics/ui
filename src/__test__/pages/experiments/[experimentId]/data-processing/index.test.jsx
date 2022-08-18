@@ -84,7 +84,7 @@ const getStore = (experimentId, settings = {}) => {
       ...initialExperimentState,
       info: {
         ...initialExperimentState.info,
-        pipelineVersion: config.pipelineVersion,
+        pipelineVersion: config.pipelineVersionToRerunQC,
         sampleIds,
       },
       processing: {
@@ -231,7 +231,7 @@ describe('DataProcessingPage', () => {
   it('Shows extra information if there is a new version of the QC pipeline', async () => {
     const store = getStore(experimentId, {
       experimentSettings: {
-        info: { pipelineVersion: config.pipelineVersion - 1 },
+        info: { pipelineVersion: config.pipelineVersionToRerunQC - 1 },
         processing: { meta: { changedQCFilters: new Set(['classifier']) } },
       },
     });
