@@ -6,7 +6,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useRouter } from 'next/router';
 import { modules } from 'utils/constants';
 
-import { switchExperiment } from 'redux/actions/experiments';
+import { loadExperiments, setActiveExperiment, switchExperiment } from 'redux/actions/experiments';
 
 import DataProcessingIntercept from 'components/data-processing/DataProcessingIntercept';
 
@@ -53,7 +53,7 @@ const AppRouteProvider = (props) => {
 
   useEffect(() => {
     const [moduleName] = Object.entries(PATH_STUBS).find(
-      ([module, path]) => router.pathname.match(path),
+      ([, path]) => router.pathname.match(path),
     );
 
     setCurrentModule(moduleName);
@@ -72,22 +72,26 @@ const AppRouteProvider = (props) => {
     ),
   };
 
-  const updateExperimentInfoOnNavigate = (experimentId) => {
-    dispatch(switchExperiment(experimentId));
-  };
-
-  const handleRouteChange = (previousRoute, module, params) => {
+  const handleRouteChange = (previousRoute, module, params, ignoreIntercepts) => {
     const nextRoute = PATHS[module].replace('[experimentId]', params.experimentId);
 
-    if (previousRoute.match(PATH_STUBS.DATA_PROCESSING) && changedQCFilters.size > 0) {
+    if (
+      previousRoute.match(PATH_STUBS.DATA_PROCESSING)
+      && changedQCFilters.size > 0
+      && !ignoreIntercepts
+    ) {
       setRenderIntercept(availableIntercepts.DATA_PROCESSING(nextRoute));
       return;
     }
 
     if (previousRoute.match(PATH_STUBS.DATA_MANAGEMENT)) {
-      // Update active experiment id when navigating from Data Management
       const { experimentId } = params;
-      updateExperimentInfoOnNavigate(experimentId);
+      dispatch(switchExperiment(experimentId));
+    }
+
+    if (nextRoute.match(PATH_STUBS.DATA_MANAGEMENT) && params.experimentId) {
+      dispatch(loadExperiments());
+      dispatch(setActiveExperiment(params.experimentId));
     }
 
     router.push(nextRoute);
@@ -96,8 +100,8 @@ const AppRouteProvider = (props) => {
   const navigateTo = (
     module,
     params = {},
-    refreshPage,
-  ) => handleRouteChange(router.pathname, module, params, refreshPage);
+    ignoreIntercepts = false,
+  ) => handleRouteChange(router.pathname, module, params, ignoreIntercepts);
 
   return (
     <AppRouterContext.Provider value={{ navigateTo, currentModule }}>
