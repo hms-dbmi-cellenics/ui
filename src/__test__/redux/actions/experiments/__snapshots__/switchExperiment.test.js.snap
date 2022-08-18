@@ -71,6 +71,7 @@ Object {
     "info": Object {
       "experimentId": "testae48e318dab9a1bd0bexperiment-0",
       "experimentName": "Test Experiment-0",
+      "pipelineVersion": 1,
       "sampleIds": Array [
         "test9188-d682-test-mock-cb6d644cmock-0",
         "test9188-d682-test-mock-cb6d644cmock-1",
@@ -105,6 +106,7 @@ Object {
       "metadataKeys": Array [],
       "name": "Test Experiment-0",
       "notifyByEmail": true,
+      "pipelineVersion": 1,
       "pipelines": Object {
         "gem2s": Object {
           "executionArn": "arn:aws:states:eu-west-1:000000000000:execution:biomage-gem2s-development-mock997586f1bae0a6d5c5beed65663ec1519de4:5f273383-f093-4112-95b0-d76db896test",
@@ -130,6 +132,7 @@ Object {
       "metadataKeys": Array [],
       "name": "Test Experiment-1",
       "notifyByEmail": true,
+      "pipelineVersion": 1,
       "pipelines": Object {
         "gem2s": Object {
           "executionArn": "arn:aws:states:eu-west-1:000000000000:execution:biomage-gem2s-development-mock997586f1bae0a6d5c5beed65663ec1519de4:5f273383-f093-4112-95b0-d76db896test",
@@ -400,6 +403,7 @@ Object {
     "info": Object {
       "experimentId": "testae48e318dab9a1bd0bexperiment-0",
       "experimentName": "Test Experiment-0",
+      "pipelineVersion": 1,
       "sampleIds": Array [
         "test9188-d682-test-mock-cb6d644cmock-0",
         "test9188-d682-test-mock-cb6d644cmock-1",
@@ -434,6 +438,7 @@ Object {
       "metadataKeys": Array [],
       "name": "Test Experiment-0",
       "notifyByEmail": true,
+      "pipelineVersion": 1,
       "pipelines": Object {
         "gem2s": Object {
           "executionArn": "arn:aws:states:eu-west-1:000000000000:execution:biomage-gem2s-development-mock997586f1bae0a6d5c5beed65663ec1519de4:5f273383-f093-4112-95b0-d76db896test",
@@ -459,6 +464,7 @@ Object {
       "metadataKeys": Array [],
       "name": "Test Experiment-1",
       "notifyByEmail": true,
+      "pipelineVersion": 1,
       "pipelines": Object {
         "gem2s": Object {
           "executionArn": "arn:aws:states:eu-west-1:000000000000:execution:biomage-gem2s-development-mock997586f1bae0a6d5c5beed65663ec1519de4:5f273383-f093-4112-95b0-d76db896test",

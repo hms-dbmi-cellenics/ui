@@ -6,6 +6,8 @@ import backendStatusData from '__test__/data/backend_status.json';
 import processingConfigData from '__test__/data/processing_config.json';
 import mockDemoExperiments from '__test__/test-utils/mockData/mockDemoExperiments.json';
 
+import fake from '__test__/test-utils/constants';
+
 // A ticket has been created to address this : https://biomage.atlassian.net/browse/BIOMAGE-1553
 import {
   responseData,
@@ -50,6 +52,9 @@ const generateDefaultMockAPIResponses = (experimentId) => ({
   ),
   '/v2/experiments/examples': () => promiseResponse(
     JSON.stringify(mockDemoExperiments),
+  ),
+  'experiments/clone': () => promiseResponse(
+    JSON.stringify(fake.CLONED_EXPERIMENT_ID),
   ),
 });
 
