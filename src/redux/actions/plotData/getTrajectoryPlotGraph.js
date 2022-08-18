@@ -5,7 +5,6 @@ import handleError from 'utils/http/handleError';
 import endUserMessages from 'utils/endUserMessages';
 import { fetchWork, generateETag } from 'utils/work/fetchWork';
 import { getBackendStatus } from 'redux/selectors';
-import { getEmbeddingWorkRequestBody } from 'redux/actions/embedding/loadEmbedding';
 
 const getTrajectoryPlotGraph = (
   experimentId,
@@ -33,7 +32,11 @@ const getTrajectoryPlotGraph = (
   const backendStatus = getBackendStatus(experimentId)(getState()).status;
   const { pipeline: { startDate: qcPipelineStartDate } } = backendStatus;
 
-  const embeddingBody = getEmbeddingWorkRequestBody(methodSettings, embeddingMethod);
+  const embeddingBody = {
+    name: 'GetEmbedding',
+    type: embeddingMethod,
+    config: methodSettings[embeddingMethod],
+  };
 
   const embeddingETag = generateETag(
     experimentId,
