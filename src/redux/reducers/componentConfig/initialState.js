@@ -472,6 +472,7 @@ const cellSizeDistributionKneePlot = {
   },
   axesRanges: {
     ...axesRangesBaseState,
+    xMin: 1,
     yMin: 1,
   },
   title: {
