@@ -388,18 +388,21 @@ const generateSpec = (config, plotData) => {
   }
 
   if (config?.legend.enabled) {
+    const groups = _.keys(plotData.groups);
+    const groupNames = groups.map((id) => plotData.groups[id].name);
+    const groupColors = groups.map((id) => plotData.groups[id].color);
+
     const positionIsRight = config.legend.position === 'right';
 
-    const legendColumns = positionIsRight ? 1 : Math.floor(config.dimensions.width / 85);
+    const legendColumns = positionIsRight
+      ? Math.ceil(groups.length / 20)
+      : Math.floor(config.dimensions.width / 85);
     const labelLimit = positionIsRight ? 0 : 85;
     if (positionIsRight) {
       const plotWidthIndex = spec.signals.findIndex((item) => item.name === 'plotWidth');
       spec.signals[plotWidthIndex].value = plotWidth * 0.85;
     }
 
-    const groups = _.keys(plotData.groups);
-    const groupNames = groups.map((id) => plotData.groups[id].name);
-    const groupColors = groups.map((id) => plotData.groups[id].color);
     spec.scales.push({
       name: 'legend',
       type: 'ordinal',

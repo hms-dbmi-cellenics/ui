@@ -111,7 +111,6 @@ const EmbeddingCategoricalPage = ({ experimentId }) => {
             labelInValue
             style={{ width: '100%' }}
             placeholder='Select cell set...'
-            loading={config}
             value={{ value: config.selectedCellSet }}
             options={generateGroupByOptions()}
             onChange={({ value }) => updatePlotWithChanges({ selectedCellSet: value })}
