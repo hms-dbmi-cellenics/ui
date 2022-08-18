@@ -42,6 +42,7 @@ const generateSpec = (config, plotData, numPCs) => {
         name: 'x',
         type: 'linear',
         range: 'width',
+        zero: false,
         domain: xScaleDomain,
       },
       {
