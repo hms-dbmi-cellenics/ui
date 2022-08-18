@@ -223,6 +223,7 @@ const generateSpec = (configSrc, plotData) => {
       },
       {
         type: 'text',
+        clip: true,
         from: { data: 'dex2' },
         encode: {
           enter: {
