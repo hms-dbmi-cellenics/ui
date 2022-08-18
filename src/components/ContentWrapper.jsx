@@ -107,13 +107,11 @@ const ContentWrapper = (props) => {
       import('utils/socketConnection')
         .then(({ default: connectionPromise }) => connectionPromise)
         .then((io) => {
-          const cb = experimentUpdatesHandler(dispatch);
-
           // Unload all previous socket.io hooks that may have been created for a different
           // experiment.
           io.off();
 
-          io.on(`ExperimentUpdates-${currentExperimentId}`, (update) => cb(currentExperimentId, update));
+          io.on(`ExperimentUpdates-${currentExperimentId}`, (update) => experimentUpdatesHandler(dispatch)(currentExperimentId, update));
         });
     }
   }, [routeExperimentId]);
