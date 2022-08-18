@@ -1,4 +1,4 @@
-const generateSpec = (config, embeddingData, pathData, cellSetLegendsData) => {
+const generateSpec = (config, embeddingData, pathData, cellSetLegendsData, plotState) => {
   let legend = [];
 
   if (config.legend.enabled) {
@@ -73,6 +73,14 @@ const generateSpec = (config, embeddingData, pathData, cellSetLegendsData) => {
     padding,
     signals: [
       // Signal for selection
+      {
+        name: 'initXdom',
+        value: plotState.xdom,
+      },
+      {
+        name: 'initYdom',
+        value: plotState.ydom,
+      },
       {
         name: 'clicked',
         on: [{ events: '@pathNodes:click', update: 'datum', force: true }],
@@ -176,7 +184,6 @@ const generateSpec = (config, embeddingData, pathData, cellSetLegendsData) => {
       },
       {
         name: 'zoom',
-        value: 1,
         on: [
           {
             events: 'wheel!',
@@ -187,7 +194,7 @@ const generateSpec = (config, embeddingData, pathData, cellSetLegendsData) => {
       },
       {
         name: 'xdom',
-        update: 'slice(xext)',
+        update: 'initXdom',
         on: [
           {
             events: { signal: 'delta' },
@@ -201,7 +208,7 @@ const generateSpec = (config, embeddingData, pathData, cellSetLegendsData) => {
       },
       {
         name: 'ydom',
-        update: 'slice(yext)',
+        update: 'initYdom',
         on: [
           {
             events: { signal: 'delta' },
@@ -215,7 +222,20 @@ const generateSpec = (config, embeddingData, pathData, cellSetLegendsData) => {
       },
       {
         name: 'size',
-        update: 'clamp(100 / span(xdom), 20, 100)',
+        update: `clamp(${config.marker.size * 4} / span(xdom), ${config.marker.size}, ${config.marker.size * 4})`,
+      },
+      {
+        name: 'domUpdates',
+        on: [
+          {
+            events: { signal: 'delta' },
+            update: '[[xcur[0] + span(xcur) * delta[0] / width, xcur[1] + span(xcur) * delta[0] / width], [ycur[0] + span(ycur) * delta[1] / height, ycur[1] + span(ycur) * delta[1] / height]]',
+          },
+          {
+            events: { signal: 'zoom' },
+            update: '[[anchor[1] + (ydom[0] - anchor[1]) * zoom, anchor[1] + (ydom[1] - anchor[1]) * zoom], [anchor[1] + (ydom[0] - anchor[1]) * zoom, anchor[1] + (ydom[1] - anchor[1]) * zoom]]',
+          },
+        ],
       },
     ],
     data: [
@@ -229,10 +249,6 @@ const generateSpec = (config, embeddingData, pathData, cellSetLegendsData) => {
           type: 'json',
           copy: true,
         },
-        transform: [
-          { type: 'extent', field: 'x', signal: 'xext' },
-          { type: 'extent', field: 'y', signal: 'yext' },
-        ],
       },
       {
         name: 'labels',

@@ -50,6 +50,10 @@ const TrajectoryAnalysisPlot = (props) => {
   ) || {};
 
   const [plotSpec, setPlotSpec] = useState(null);
+  const [plotState, setPlotState] = useState({
+    xdom: [-10, 10],
+    ydom: [-10, 10],
+  });
 
   useEffect(() => {
     dispatch(loadCellSets(experimentId));
@@ -92,8 +96,17 @@ const TrajectoryAnalysisPlot = (props) => {
     } = generateCategoricalEmbeddingData(cellSets, config.selectedSample, config.selectedCellSet, embeddingData);
     const trajectoryData = generateTrajectoryPathData(plotData);
 
-    setPlotSpec(generateSpec(config, plotEmbedding, trajectoryData, cellSetLegendsData));
+    setPlotSpec(generateSpec(config, plotEmbedding, trajectoryData, cellSetLegendsData, plotState));
   }, [config, cellSets, embeddingData, plotData]);
+
+  console.log('*** plotState', plotState);
+
+  const listeners = {
+    domUpdates: (e, val) => {
+      const [xdom, ydom] = val;
+      setPlotState({ ...plotState, xdom, ydom });
+    },
+  };
 
   const render = () => {
     if (cellSets.error) {
@@ -142,7 +155,7 @@ const TrajectoryAnalysisPlot = (props) => {
             )}
           />
         )}
-        <Vega spec={plotSpec} renderer='webgl' actions={actions} />
+        <Vega spec={plotSpec} renderer='webgl' actions={actions} signalListeners={listeners} />
       </center>
     );
   };
