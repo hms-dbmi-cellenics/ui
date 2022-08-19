@@ -3,6 +3,16 @@ import _ from 'lodash';
 import { intersection } from '../cellSetOperations';
 
 const generateSpec = (config, plotData, xNamesToDisplay, yNamesToDisplay) => {
+  const frequencyProportional = config.frequencyType === 'proportional';
+  const yAutoDomain = frequencyProportional ? [0, 100] : { data: 'plotData', field: 'y1' };
+  const yManualMax = frequencyProportional
+    ? Math.min(config.axesRanges.yMax, 100)
+    : config.axesRanges.yMax;
+
+  const yScaleDomain = config.axesRanges.yAxisAuto
+    ? yAutoDomain
+    : [Math.max(config.axesRanges.yMin, 0), yManualMax];
+
   let legend = [];
   let plotDataReversed = [];
   if (config.legend.enabled) {
@@ -91,8 +101,8 @@ const generateSpec = (config, plotData, xNamesToDisplay, yNamesToDisplay) => {
         type: 'linear',
         range: 'height',
         nice: true,
-        zero: true,
-        domain: config.frequencyType === 'proportional' ? [0, 100] : { data: 'plotData', field: 'y1' },
+        zero: false,
+        domain: yScaleDomain,
       },
       {
         name: 'yCellSetKey',
@@ -169,6 +179,7 @@ const generateSpec = (config, plotData, xNamesToDisplay, yNamesToDisplay) => {
     marks: [
       {
         type: 'rect',
+        clip: true,
         from: { data: 'plotData' },
         encode: {
           enter: {

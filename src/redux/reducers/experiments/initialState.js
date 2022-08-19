@@ -8,6 +8,7 @@ const experimentTemplate = {
   meta: { organism: null, type: '10x' },
   sampleIds: [],
   metadataKeys: [],
+  pipelineVersion: 1,
 };
 
 const initialState = {

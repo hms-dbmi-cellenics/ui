@@ -1,5 +1,5 @@
 import updateCellSetsClustering from 'redux/actions/cellSets/updateCellSetsClustering';
-import { updateProcessingSettingsFromQC, loadedProcessingConfig } from 'redux/actions/experimentSettings';
+import { updateProcessingSettingsFromQC, loadedProcessingConfig, updatePipelineVersion } from 'redux/actions/experimentSettings';
 import { updateBackendStatus } from 'redux/actions/backendStatus';
 import { updatePlotData } from 'redux/actions/componentConfig';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
@@ -40,7 +40,7 @@ const experimentUpdatesHandler = (dispatch) => (experimentId, update) => {
 };
 
 const onQCUpdate = (update, dispatch, experimentId) => {
-  const { input, output } = update;
+  const { input, output, pipelineVersion } = update;
 
   const processingConfigUpdate = output?.config;
 
@@ -56,6 +56,8 @@ const onQCUpdate = (update, dispatch, experimentId) => {
       dispatch(updatePlotData(plotUuid, plotData));
     });
   }
+
+  dispatch(updatePipelineVersion(experimentId, pipelineVersion));
 
   // If the pipeline finished we have a new clustering, so fetch it
   if (update.status.pipeline.status === 'SUCCEEDED') {
