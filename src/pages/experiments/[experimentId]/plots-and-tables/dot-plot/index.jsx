@@ -26,7 +26,7 @@ import fileNames from 'utils/fileNames';
 import {
   updatePlotConfig,
   loadPlotConfig,
-  fetchPlotDataWork,
+  fetchDotPlotData,
   updatePlotData,
 } from 'redux/actions/componentConfig';
 import PlatformError from 'components/PlatformError';
@@ -225,13 +225,13 @@ const DotPlotPage = (props) => {
           setReorderAfterFetch(true);
         }
 
-        dispatch(fetchPlotDataWork(experimentId, plotUuid, plotType));
+        dispatch(fetchDotPlotData(experimentId, plotUuid, plotType));
         return;
       }
 
       // if a gene was added
       if (currentSelected.length > previousSelected.length) {
-        dispatch(fetchPlotDataWork(experimentId, plotUuid, plotType));
+        dispatch(fetchDotPlotData(experimentId, plotUuid, plotType));
         setReorderAfterFetch(true);
         return;
       }
@@ -346,7 +346,7 @@ const DotPlotPage = (props) => {
   useEffect(() => {
     if (!reset) return;
 
-    dispatch(fetchPlotDataWork(experimentId, plotUuid, plotType));
+    dispatch(fetchDotPlotData(experimentId, plotUuid, plotType));
     setReorderAfterFetch(true);
     setReset(false);
   }, [config]);
@@ -410,7 +410,7 @@ const DotPlotPage = (props) => {
           <PlatformError
             description='Error loading plot data.'
             reason='Check the options that you have selected and try again.'
-            onClick={() => dispatch(fetchPlotDataWork(experimentId, plotUuid, plotType))}
+            onClick={() => dispatch(fetchDotPlotData(experimentId, plotUuid, plotType))}
           />
         </center>
       );

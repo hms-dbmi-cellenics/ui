@@ -6,7 +6,7 @@ import { makeStore } from 'redux/store';
 import { plotTypes } from 'utils/constants';
 import fake from '__test__/test-utils/constants';
 
-import { fetchPlotDataWork } from 'redux/actions/componentConfig';
+import { fetchDotPlotData } from 'redux/actions/componentConfig';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
 import { fetchWork } from 'utils/work/fetchWork';
 
@@ -32,7 +32,7 @@ let testStore = null;
 const plotUuid = 'DotPlotMain';
 const plotType = plotTypes.DOT_PLOT;
 
-describe('fetchPlotDataWork', () => {
+describe('fetchDotPlotData', () => {
   beforeEach(async () => {
     jest.clearAllMocks();
     fetchMock.resetMocks();
@@ -44,7 +44,7 @@ describe('fetchPlotDataWork', () => {
 
   it('Loads plot data into the component properly', async () => {
     await act((async () => {
-      await testStore.dispatch(fetchPlotDataWork(experimentId, plotUuid, plotType));
+      await testStore.dispatch(fetchDotPlotData(experimentId, plotUuid, plotType));
     }));
 
     const { plotData } = testStore.getState().componentConfig[plotUuid];
@@ -62,7 +62,7 @@ describe('fetchPlotDataWork', () => {
     });
 
     await act((async () => {
-      await testStore.dispatch(fetchPlotDataWork(experimentId, plotUuid, plotType));
+      await testStore.dispatch(fetchDotPlotData(experimentId, plotUuid, plotType));
     }));
 
     // The test store error should not be false and loading should be resolved

@@ -17,7 +17,22 @@ const getClusterNames = (state) => {
   return clusterNames;
 };
 
-const fetchPlotDataWork = (
+const orderCellSets = (data, state, config) => {
+  // reordering data based on the sample order
+  const { selectedCellSet } = config;
+  const { hierarchy, properties } = state.cellSets;
+  if (hierarchy.length) {
+    const cellSetOrderKeys = hierarchy.filter((rootNode) => rootNode.key === selectedCellSet)[0]
+      .children
+      .map((cellSet) => cellSet.key);
+    const cellSetOrderNames = cellSetOrderKeys.map((cellSet) => properties[cellSet].name);
+    data.sort((a, b) => (
+      cellSetOrderNames.indexOf(a.cellSets) - cellSetOrderNames.indexOf(b.cellSets)
+    ));
+  }
+};
+
+const fetchDotPlotData = (
   experimentId,
   plotUuid,
   plotType,
@@ -43,16 +58,7 @@ const fetchPlotDataWork = (
       experimentId, body, getState, { timeout },
     );
 
-    // reordering data based on the sample order
-    const { selectedCellSet } = config;
-    const { hierarchy, properties } = getState().cellSets;
-    const cellSetOrderKeys = hierarchy.filter((rootNode) => rootNode.key === selectedCellSet)[0]
-      .children
-      .map((cellSet) => cellSet.key);
-    const cellSetOrderNames = cellSetOrderKeys.map((cellSet) => properties[cellSet].name);
-    data.sort((a, b) => (
-      cellSetOrderNames.indexOf(a.cellSets) - cellSetOrderNames.indexOf(b.cellSets)
-    ));
+    orderCellSets(data, getState(), config);
 
     dispatch({
       type: PLOT_DATA_LOADED,
@@ -74,4 +80,4 @@ const fetchPlotDataWork = (
   }
 };
 
-export default fetchPlotDataWork;
+export default fetchDotPlotData;
