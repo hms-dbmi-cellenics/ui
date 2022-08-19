@@ -20,6 +20,15 @@ Array [
 
 exports[`ExperimentUpdatesHandler Loads cell sets if QC pipeline completes  3`] = `
 Array [
+  Array [
+    "testae48e318dab9a1bd0bexperiment",
+    2,
+  ],
+]
+`;
+
+exports[`ExperimentUpdatesHandler Loads cell sets if QC pipeline completes  4`] = `
+Array [
   "testae48e318dab9a1bd0bexperiment",
   true,
 ]
@@ -45,6 +54,7 @@ exports[`ExperimentUpdatesHandler Logs error if there is an error returned as an
             "mockPlotUuid": "mockPlotData",
           },
         },
+        "pipelineVersion": 2,
         "response": Object {
           "error": true,
           "errorCode": "MOCK_ERROR_CODE",
@@ -106,6 +116,15 @@ Array [
 `;
 
 exports[`ExperimentUpdatesHandler Triggers properly for QC updates  3`] = `
+Array [
+  Array [
+    "testae48e318dab9a1bd0bexperiment",
+    2,
+  ],
+]
+`;
+
+exports[`ExperimentUpdatesHandler Triggers properly for QC updates  4`] = `
 Array [
   "mockPlotUuid",
   "mockPlotData",
