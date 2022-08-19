@@ -1,6 +1,6 @@
 const config = {
   supportEmail: 'hello@biomage.net',
-  pipelineVersion: 1,
+  pipelineVersionToRerunQC: 1,
 };
 
 export default config;

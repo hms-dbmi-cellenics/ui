@@ -42,7 +42,7 @@ const ChangesNotAppliedModal = (props) => {
   const [QCDisabledModalVisible, setQCDisabledModalVisible] = useState(false);
 
   const runQCIfPossible = () => {
-    const qcRerunDisabled = pipelineVersion < config.pipelineVersion;
+    const qcRerunDisabled = pipelineVersion < config.pipelineVersionToRerunQC;
 
     if (qcRerunDisabled) {
       setQCDisabledModalVisible(true);
