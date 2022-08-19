@@ -3,6 +3,14 @@ import _ from 'lodash';
 import { getAllCells, getSampleCells } from 'utils/cellSets';
 
 const generateSpec = (config, plotData, cellSetLegendsData) => {
+  const xScaleDomain = config.axesRanges.xAxisAuto
+    ? { data: 'values', field: 'x' }
+    : [config.axesRanges.xMin, config.axesRanges.xMax];
+
+  const yScaleDomain = config.axesRanges.yAxisAuto
+    ? { data: 'values', field: 'y' }
+    : [config.axesRanges.yMin, config.axesRanges.yMax];
+
   let legend = [];
 
   // removing empty/unused entries from the data. This was causing issues with the legend
@@ -91,18 +99,17 @@ const generateSpec = (config, plotData, cellSetLegendsData) => {
       {
         name: 'x',
         type: 'linear',
-        round: true,
         nice: true,
-        domain: { data: 'values', field: 'x' },
+        zero: false,
+        domain: xScaleDomain,
         range: 'width',
       },
       {
         name: 'y',
         type: 'linear',
-        round: true,
         nice: true,
-        zero: true,
-        domain: { data: 'values', field: 'y' },
+        zero: false,
+        domain: yScaleDomain,
         range: 'height',
       },
       {
@@ -169,12 +176,19 @@ const generateSpec = (config, plotData, cellSetLegendsData) => {
     marks: [
       {
         type: 'symbol',
+        clip: true,
         from: { data: 'values' },
         encode: {
           enter: {
             x: { scale: 'x', field: 'x' },
             y: { scale: 'y', field: 'y' },
-            size: { value: config?.marker.size },
+            size: [
+              {
+                test: "inrange(datum.x, domain('x')) && inrange(datum.y, domain('y'))",
+                value: config?.marker.size,
+              },
+              { value: 0 },
+            ],
             stroke: { scale: 'cellSetMarkColors', field: 'cellSetKey' },
             fill: { scale: 'cellSetMarkColors', field: 'cellSetKey' },
             shape: { value: 'circle' },
@@ -184,6 +198,7 @@ const generateSpec = (config, plotData, cellSetLegendsData) => {
       },
       {
         type: 'text',
+        clip: true,
         from: { data: 'labels' },
         encode: {
           enter: {

@@ -19,18 +19,14 @@ const generateSpec = (configSrc, plotData) => {
     config.colour.reverseColourBar = false;
     config.colour.masterColour = '#000000';
   }
-  // Domain specifiers for the volcano plot axes.
-  // If a logFoldChangeDomain is defined by the user (e.g. through the
-  // interface by deselecting Auto and entering a custom value), use
-  // their specified range. If not, scale the plot based on the range of
-  // the data in the set.
-  const logFoldChangeDomain = config.xAxisAuto
-    ? { data: 'data', field: 'logFC' }
-    : [config.logFoldChangeDomain * -1, config.logFoldChangeDomain];
 
-  const maxNegativeLogpValueDomain = config.yAxisAuto
+  const xScaleDomain = config.axesRanges.xAxisAuto
+    ? { data: 'data', field: 'logFC' }
+    : [config.axesRanges.xMin, config.axesRanges.xMax];
+
+  const yScaleDomain = config.axesRanges.yAxisAuto
     ? { data: 'data', field: 'neglogpvalue' }
-    : [0, config.maxNegativeLogpValueDomain];
+    : [config.axesRanges.yMin, config.axesRanges.yMax];
 
   // adding gene labels above the set Y value only for the significant genes
   const geneLabelsEquation = `datum.logFC !== 'NA' && (datum.neglogpvalue >${config.textThresholdValue} && (datum.status == 'Upregulated' || datum.status == 'Downregulated'))`;
@@ -114,18 +110,17 @@ const generateSpec = (configSrc, plotData) => {
       {
         name: 'x',
         type: 'linear',
-        round: true,
         nice: true,
-        domain: logFoldChangeDomain,
+        zero: false,
+        domain: xScaleDomain,
         range: 'width',
       },
       {
         name: 'y',
         type: 'linear',
-        round: true,
         nice: true,
-        zero: true,
-        domain: maxNegativeLogpValueDomain,
+        zero: false,
+        domain: yScaleDomain,
         range: 'height',
       },
       {
@@ -204,6 +199,7 @@ const generateSpec = (configSrc, plotData) => {
     marks: [
       {
         type: 'symbol',
+        clip: true,
         from: { data: 'data' },
         encode: {
           enter: {
@@ -227,6 +223,7 @@ const generateSpec = (configSrc, plotData) => {
       },
       {
         type: 'text',
+        clip: true,
         from: { data: 'dex2' },
         encode: {
           enter: {

@@ -5,6 +5,11 @@ const generateSpec = (config, plotData) => {
   const numGroups = _.keys(plotData.groups).length;
   let plotWidth = Math.round(Math.min(100, 0.9 * (config.dimensions.width / numGroups)));
   plotWidth += (plotWidth % 2);
+
+  const yScaleDomain = config.axesRanges.yAxisAuto
+    ? { data: 'cells', field: 'y' }
+    : [config.axesRanges.yMin, config.axesRanges.yMax];
+
   const spec = {
     $schema: 'https://vega.github.io/schema/vega/v5.json',
     description: 'Violin plot',
@@ -105,12 +110,7 @@ const generateSpec = (config, plotData) => {
         name: 'yscale',
         type: 'linear',
         range: 'height',
-        round: true,
-        domain: {
-          data: 'cells',
-          field: 'y',
-        },
-        zero: true,
+        domain: yScaleDomain,
         nice: true,
       },
       {
@@ -193,6 +193,7 @@ const generateSpec = (config, plotData) => {
     marks: [
       {
         type: 'group',
+        clip: true,
         from: {
           facet: {
             data: 'density',

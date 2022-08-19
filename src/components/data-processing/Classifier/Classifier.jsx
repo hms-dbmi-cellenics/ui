@@ -40,7 +40,7 @@ const plotStylingControlsConfig = [
   },
   {
     panelTitle: 'Axes',
-    controls: ['axes'],
+    controls: ['axesWithRanges'],
   },
   {
     panelTitle: 'Title',
@@ -87,10 +87,10 @@ const Classifier = (props) => {
         />
       ),
     },
-    histogram: {
-      title: 'Histogram',
+    emptyDropsPlot: {
+      title: 'Empty Drops Plot',
       plotUuid: generateDataProcessingPlotUuid(sampleId, filterName, 0),
-      plotType: 'cellSizeDistributionHistogram',
+      plotType: 'classifierEmptyDropsPlot',
       plot: (config, plotData, actions) => (
         <ClassifierEmptyDropsPlot
           config={config}

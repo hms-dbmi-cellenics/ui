@@ -130,7 +130,7 @@ const MitochondrialContent = (props) => {
     },
     {
       panelTitle: 'Axes',
-      controls: ['axes'],
+      controls: ['axesWithRanges'],
     },
     {
       panelTitle: 'Title',

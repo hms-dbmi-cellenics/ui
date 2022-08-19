@@ -21,6 +21,15 @@ const axesBaseState = {
   xAxisRotateLabels: false,
 };
 
+const axesRangesBaseState = {
+  xAxisAuto: true,
+  yAxisAuto: true,
+  xMin: 0,
+  xMax: 10,
+  yMin: 0,
+  yMax: 10,
+};
+
 const titleBaseState = {
   text: '',
   fontSize: 15,
@@ -57,6 +66,7 @@ export {
   legendBaseState,
   dimensionsBaseState,
   axesBaseState,
+  axesRangesBaseState,
   titleBaseState,
   fontStyleBaseState,
   colourBaseState,

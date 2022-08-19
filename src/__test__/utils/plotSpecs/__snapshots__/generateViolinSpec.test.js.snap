@@ -169,6 +169,7 @@ Object {
   ],
   "marks": Array [
     Object {
+      "clip": true,
       "data": Array [
         Object {
           "name": "summaryOfGroup",
@@ -306,9 +307,7 @@ Object {
       "name": "yscale",
       "nice": true,
       "range": "height",
-      "round": true,
       "type": "linear",
-      "zero": true,
     },
     Object {
       "domain": Object {
