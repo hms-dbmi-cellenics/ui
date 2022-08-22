@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Alert, Button, Modal } from 'antd';
 import Text from 'antd/lib/typography/Text';
-import { runQC } from 'redux/actions/pipeline';
+import { runGem2s } from 'redux/actions/pipeline';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { discardChangedQCFilters } from 'redux/actions/experimentSettings';
@@ -21,8 +21,8 @@ const QCRerunDisabledModal = (props) => {
 
   const experimentName = useSelector((state) => state.experimentSettings.info.experimentName);
 
-  const triggerOnRunQC = () => {
-    dispatch(runQC(experimentId));
+  const triggerOnRunGem2s = () => {
+    dispatch(runGem2s(experimentId));
     onFinish();
   };
 
@@ -33,8 +33,6 @@ const QCRerunDisabledModal = (props) => {
     const newExperimentId = await dispatch(cloneExperiment(experimentId, `Clone of ${experimentName}`));
     await dispatch(loadExperiments());
 
-    console.log('navigateToDebug');
-    console.log(navigateTo);
     navigateTo(modules.DATA_MANAGEMENT, { experimentId: newExperimentId }, true);
   };
 
@@ -45,7 +43,7 @@ const QCRerunDisabledModal = (props) => {
       onCancel={() => onFinish()}
       footer={
         [
-          <Button type='primary' onClick={() => triggerOnRunQC()}>Start</Button>,
+          <Button type='primary' onClick={() => triggerOnRunGem2s()}>Start</Button>,
           <Button type='primary' onClick={() => cloneExperimentAndSelectIt()}>Clone Project</Button>,
           <Button onClick={() => onFinish()}>Cancel</Button>,
         ]
