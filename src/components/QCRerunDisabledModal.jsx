@@ -6,7 +6,7 @@ import { runQC } from 'redux/actions/pipeline';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { discardChangedQCFilters } from 'redux/actions/experimentSettings';
-import { cloneExperiment, loadExperiments } from 'redux/actions/experiments';
+import { cloneExperiment } from 'redux/actions/experiments';
 
 import { useAppRouter } from 'utils/AppRouteProvider';
 import { modules } from 'utils/constants';
@@ -31,10 +31,7 @@ const QCRerunDisabledModal = (props) => {
 
     dispatch(discardChangedQCFilters());
     const newExperimentId = await dispatch(cloneExperiment(experimentId, `Clone of ${experimentName}`));
-    await dispatch(loadExperiments());
 
-    console.log('navigateToDebug');
-    console.log(navigateTo);
     navigateTo(modules.DATA_MANAGEMENT, { experimentId: newExperimentId }, true);
   };
 
