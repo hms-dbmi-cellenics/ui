@@ -8,6 +8,10 @@ import initialExperimentState, { experimentTemplate } from 'redux/reducers/exper
 
 const mockStore = configureStore([thunk]);
 
+jest.mock('uuid', () => ({
+  v4: () => ('f85035ac-de1e-4928-bed6-f55ef15b58f1'),
+}));
+
 enableFetchMocks();
 
 describe('createExperiment', () => {
@@ -46,7 +50,7 @@ describe('createExperiment', () => {
 
     expect(fetchMock).toHaveBeenCalledTimes(1);
     expect(fetchMock).toHaveBeenCalledWith(
-      'http://localhost:3000/v2/experiments/b3f6c0ca86ec045c84f380cd5016972e',
+      'http://localhost:3000/v2/experiments/f85035ac-de1e-4928-bed6-f55ef15b58f1',
       expect.objectContaining({
         method: 'POST',
       }),
