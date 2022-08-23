@@ -9,11 +9,13 @@ import {
 } from 'redux/actions/componentConfig/index';
 import { loadEmbedding } from 'redux/actions/embedding';
 import { loadProcessingSettings } from 'redux/actions/experimentSettings';
-import Header from 'components/Header';
-import TrajectoryAnalysisPlot from 'components/plots/TrajectoryAnalysisPlot';
-import PlotContainer from 'components/plots/PlotContainer';
-import { plotNames, plotTypes } from 'utils/constants';
 import getStartingNodes from 'redux/actions/componentConfig/getTrajectoryPlotStartingNodes';
+
+import Header from 'components/Header';
+import PlotContainer from 'components/plots/PlotContainer';
+import TrajectoryAnalysisPlot from 'components/plots/TrajectoryAnalysisPlot';
+
+import { plotNames, plotTypes } from 'utils/constants';
 
 const plotUuid = 'trajectoryAnalysisMain';
 const plotType = plotTypes.TRAJECTORY_ANALYSIS;

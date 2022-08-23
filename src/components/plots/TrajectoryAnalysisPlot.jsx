@@ -3,7 +3,6 @@ import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Vega } from 'react-vega';
 import 'vega-webgl-renderer';
-import _ from 'lodash';
 
 import { generateData as generateEmbeddingCategoricalData } from 'utils/plotSpecs/generateEmbeddingCategoricalSpec';
 import {
@@ -34,8 +33,6 @@ const TrajectoryAnalysisPlot = (props) => {
     actions,
     onUpdate,
   } = props;
-
-  console.log('*** actions', actions);
 
   const dispatch = useDispatch();
 
