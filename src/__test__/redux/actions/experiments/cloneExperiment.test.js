@@ -2,7 +2,9 @@ import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 
-import { EXPERIMENTS_SAVING, EXPERIMENTS_CREATED, EXPERIMENTS_ERROR } from 'redux/actionTypes/experiments';
+import {
+  EXPERIMENTS_SAVING, EXPERIMENTS_ERROR, EXPERIMENTS_SAVED,
+} from 'redux/actionTypes/experiments';
 import { cloneExperiment } from 'redux/actions/experiments';
 import initialExperimentState, { experimentTemplate } from 'redux/reducers/experiments/initialState';
 
@@ -40,9 +42,7 @@ describe('cloneExperiment', () => {
     const actions = store.getActions();
 
     expect(actions[0].type).toEqual(EXPERIMENTS_SAVING);
-    expect(actions[1].type).toEqual(EXPERIMENTS_CREATED);
-
-    expect(actions[1].payload).toMatchSnapshot();
+    expect(actions[1].type).toEqual(EXPERIMENTS_SAVED);
 
     expect(fetchMock).toHaveBeenCalledTimes(1);
     expect(fetchMock).toHaveBeenCalledWith(
@@ -52,7 +52,7 @@ describe('cloneExperiment', () => {
       }),
     );
 
-    expect(fetchMock.mock.calls[0][1].body).toMatchSnapshot();
+    expect(fetchMock.mock.calls).toMatchSnapshot();
   });
 
   it('Throws an error if cloning experiment throws an error', async () => {

@@ -72,7 +72,7 @@ const AppRouteProvider = (props) => {
     ),
   };
 
-  const handleRouteChange = (previousRoute, module, params, ignoreIntercepts) => {
+  const handleRouteChange = async (previousRoute, module, params, ignoreIntercepts) => {
     const nextRoute = PATHS[module].replace('[experimentId]', params.experimentId);
 
     if (
@@ -89,15 +89,18 @@ const AppRouteProvider = (props) => {
       dispatch(switchExperiment(experimentId));
     }
 
-    if (nextRoute.match(PATH_STUBS.DATA_MANAGEMENT) && params.experimentId) {
-      dispatch(loadExperiments());
-      dispatch(setActiveExperiment(params.experimentId));
+    if (nextRoute.match(PATH_STUBS.DATA_MANAGEMENT)) {
+      await dispatch(loadExperiments());
+
+      if (params.experimentId) {
+        dispatch(setActiveExperiment(params.experimentId));
+      }
     }
 
     router.push(nextRoute);
   };
 
-  const navigateTo = (
+  const navigateTo = async (
     module,
     params = {},
     ignoreIntercepts = false,
