@@ -30,7 +30,7 @@ const EXPERIMENTS_DELETED = `${EXPERIMENTS}/deleted`;
  */
 const EXPERIMENTS_SAVING = `${EXPERIMENTS}/saving`;
 
-const EXPERIMENTS_SAVED = `${EXPERIMENTS}/saving`;
+const EXPERIMENTS_SAVED = `${EXPERIMENTS}/saved`;
 
 /**
  * Update experiments
