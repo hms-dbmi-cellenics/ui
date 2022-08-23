@@ -3,13 +3,16 @@
 exports[`cloneExperiment Throws an error if cloning experiment throws an error 1`] = `"{\\"name\\":\\"clonedExperiment\\"}"`;
 
 exports[`cloneExperiment Works correctly 1`] = `
-Object {
-  "experiment": Object {
-    "createdAt": "2020-01-01T00:00:00.000Z",
-    "id": Object {},
-    "name": "clonedExperiment",
-  },
-}
+Array [
+  Array [
+    "http://localhost:3000/v2/experiments/experiment-1/clone",
+    Object {
+      "body": "{\\"name\\":\\"clonedExperiment\\"}",
+      "headers": Object {
+        "Content-Type": "application/json",
+      },
+      "method": "POST",
+    },
+  ],
+]
 `;
-
-exports[`cloneExperiment Works correctly 2`] = `"{\\"name\\":\\"clonedExperiment\\"}"`;
