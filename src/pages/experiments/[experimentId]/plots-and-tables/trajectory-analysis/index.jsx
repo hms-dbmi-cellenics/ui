@@ -13,7 +13,7 @@ import Header from 'components/Header';
 import TrajectoryAnalysisPlot from 'components/plots/TrajectoryAnalysisPlot';
 import PlotContainer from 'components/plots/PlotContainer';
 import { plotNames, plotTypes } from 'utils/constants';
-import getStartingNodes from 'redux/actions/plotData/getTrajectoryPlotStartingNodes';
+import getStartingNodes from 'redux/actions/componentConfig/getTrajectoryPlotStartingNodes';
 
 const plotUuid = 'trajectoryAnalysisMain';
 const plotType = plotTypes.TRAJECTORY_ANALYSIS;
@@ -21,7 +21,7 @@ const plotType = plotTypes.TRAJECTORY_ANALYSIS;
 const TrajectoryAnalysisPage = ({ experimentId }) => {
   const dispatch = useDispatch();
 
-  // Currenty monocle3 only trajectory analysis only supports
+  // Currenty monocle3 trajectory analysis only supports
   // UMAP embedding. Therefore, this embedding is specifically fetched.
   const embeddingMethod = 'umap';
 
@@ -122,7 +122,15 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
         plotUuid={plotUuid}
         plotType={plotType}
         plotStylingConfig={plotStylingConfig}
-        plotInfo='The trajectory analysis plot displays the result of trajectory analysis for the given cell set.'
+        plotInfo={(
+          <>
+            Trajectory inference (TI) or pseudotemporal ordering is a computational technique used in single-cell transcriptomics to determine the pattern of a dynamic process experienced by cells and then arrange cells based on their progression through the process by projecting the cells onto an axis called pseudotime. A “trajectory” shows the path of the progression. Currently, Trajectory Analysis is implemented using the
+            {' '}
+            <a href='https://cole-trapnell-lab.github.io/monocle3/'> Monocle3 </a>
+            {' '}
+            workflow.
+          </>
+        )}
         defaultActiveKey='group-by'
       >
         <TrajectoryAnalysisPlot
@@ -132,6 +140,7 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
           plotData={plotData}
           plotLoading={plotLoading}
           onUpdate={updatePlotWithChanges}
+          actions={{ export: true, editor: false, source: false }}
         />
       </PlotContainer>
     </>

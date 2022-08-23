@@ -318,7 +318,6 @@ const trajectoryAnalysisInitialConfig = {
   },
   selectedCellSet: 'louvain',
   selectedSample: 'All',
-  viewChanged: false,
 };
 
 // EMBEDDING PREVIEW - Coloured by sample

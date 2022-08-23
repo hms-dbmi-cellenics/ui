@@ -1,6 +1,6 @@
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
-import getStartingNodes from 'redux/actions/plotData/getTrajectoryPlotStartingNodes';
+import getStartingNodes from 'redux/actions/componentConfig/getTrajectoryPlotStartingNodes';
 import { fetchWork } from 'utils/work/fetchWork';
 import handleError from 'utils/http/handleError';
 

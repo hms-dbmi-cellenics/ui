@@ -1,9 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Vega } from 'react-vega';
+import 'vega-webgl-renderer';
+import _ from 'lodash';
 
-import { generateData as generateCategoricalEmbeddingData } from 'utils/plotSpecs/generateEmbeddingCategoricalSpec';
+import { generateData as generateEmbeddingCategoricalData } from 'utils/plotSpecs/generateEmbeddingCategoricalSpec';
 import {
   generateSpec,
   generateData as generateStartingNodesData,
@@ -11,7 +13,6 @@ import {
 import { loadEmbedding } from 'redux/actions/embedding';
 import { loadCellSets } from 'redux/actions/cellSets';
 import { loadProcessingSettings } from 'redux/actions/experimentSettings';
-import 'vega-webgl-renderer';
 
 import { getCellSets } from 'redux/selectors';
 import PlatformError from 'components/PlatformError';
@@ -19,10 +20,9 @@ import Loader from 'components/Loader';
 import { Alert } from 'antd';
 
 import changeEmbeddingAxesIfNecessary from 'components/plots/helpers/changeEmbeddingAxesIfNecessary';
-import debounce from 'lodash/debounce';
 
 const TrajectoryAnalysisPlot = (props) => {
-  // Currenty monocle3 only trajectory analysis only supports
+  // Currenty monocle3 trajectory analysis only supports
   // UMAP embedding. Therefore, this embedding is specifically fetched.
   const embeddingMethod = 'umap';
 
@@ -34,6 +34,8 @@ const TrajectoryAnalysisPlot = (props) => {
     actions,
     onUpdate,
   } = props;
+
+  console.log('*** actions', actions);
 
   const dispatch = useDispatch();
 
@@ -53,6 +55,7 @@ const TrajectoryAnalysisPlot = (props) => {
 
   const [plotSpec, setPlotSpec] = useState(null);
   const [plotState, setPlotState] = useState({
+    isZoomOrPanned: false,
     xdom: [-10, 10],
     ydom: [-10, 10],
   });
@@ -80,29 +83,37 @@ const TrajectoryAnalysisPlot = (props) => {
     changeEmbeddingAxesIfNecessary(config, embeddingMethod, onUpdate);
   }, [config, embeddingMethod]);
 
-  useEffect(() => {
+  const { plotData: embeddingPlotData, cellSetLegendsData } = useMemo(() => {
     if (
       !config
       || !cellSets.accessible
       || cellSets.error
       || !embeddingData?.length
-      || !startingNodesPlotData
-      || !startingNodesPlotData?.nodes
-    ) {
-      return;
-    }
+    ) return {};
 
-    const {
-      plotData: embeddingPlotData,
-      cellSetLegendsData,
-    } = generateCategoricalEmbeddingData(
+    return generateEmbeddingCategoricalData(
       cellSets,
       config.selectedSample,
       config.selectedCellSet,
       embeddingData,
     );
+  }, [config, cellSets, embeddingData]);
 
-    const startingNodesData = generateStartingNodesData(startingNodesPlotData);
+  const startingNodesData = useMemo(() => {
+    if (
+      !startingNodesPlotData
+      || !startingNodesPlotData?.nodes
+    ) return;
+
+    return generateStartingNodesData(startingNodesPlotData);
+  }, [startingNodesPlotData]);
+
+  useEffect(() => {
+    if (
+      !embeddingPlotData
+      || !cellSetLegendsData
+      || !startingNodesPlotData
+    ) return;
 
     setPlotSpec(
       generateSpec(
@@ -113,13 +124,12 @@ const TrajectoryAnalysisPlot = (props) => {
         plotState,
       ),
     );
-  }, [config, cellSets, embeddingData, startingNodesPlotData]);
+  }, [embeddingPlotData, cellSetLegendsData, startingNodesPlotData, config]);
 
   const listeners = {
     domUpdates: (e, val) => {
       const [xdom, ydom] = val;
-      setPlotState({ ...plotState, xdom, ydom });
-      if (!config.viewChanged) debounce(onUpdate, 2000)({ viewChanged: true });
+      setPlotState({ isZoomOrPanned: true, xdom, ydom });
     },
   };
 
@@ -163,7 +173,11 @@ const TrajectoryAnalysisPlot = (props) => {
             type='warning'
             message={(
               <>
-                Due to Monocle3 limitations, only UMAP embeddings are supported for Trajectory Analysis.
+                Due to
+                {' '}
+                <a href='https://cole-trapnell-lab.github.io/monocle3/' target='_blank' rel='noreferrer'>Monocle3</a>
+                {' '}
+                limitations, only UMAP embeddings are supported for Trajectory Analysis.
                 <br />
                 The embedding and trajectory below are generated from a UMAP embedding of your data.
               </>

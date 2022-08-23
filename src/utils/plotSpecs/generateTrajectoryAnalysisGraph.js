@@ -19,7 +19,8 @@ const generateSpec = (config, embeddingData, pathData, cellSetLegendsData, plotS
       if (val > max) max = val;
     });
 
-    return [min, max];
+    // Add/subtract 1 to give some padding to the plot
+    return [min - 1, max + 1];
   };
 
   if (config.legend.enabled) {
@@ -138,11 +139,15 @@ const generateSpec = (config, embeddingData, pathData, cellSetLegendsData, plotS
       // Signals for zooming
       {
         name: 'initXdom',
-        value: config.viewChanged ? plotState.xdom : extent(embeddingData.map((data) => data.x)),
+        value: plotState.isZoomOrPanned
+          ? plotState.xdom
+          : extent(embeddingData.map((data) => data.x)),
       },
       {
         name: 'initYdom',
-        value: config.viewChanged ? plotState.ydom : extent(embeddingData.map((data) => data.y)),
+        value: plotState.isZoomOrPanned
+          ? plotState.ydom
+          : extent(embeddingData.map((data) => data.y)),
       },
       { name: 'xrange', update: '[0, width]' },
       { name: 'yrange', update: '[height, 0]' },
