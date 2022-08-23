@@ -24,8 +24,6 @@ const getStartingNodes = (
     ?.configureEmbedding
     ?.embeddingSettings;
 
-  if (!embeddingSettings) return null;
-
   const { methodSettings } = embeddingSettings;
 
   const { environment } = getState().networkResources;
