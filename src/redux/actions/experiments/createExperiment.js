@@ -1,7 +1,8 @@
 /* eslint-disable no-param-reassign */
 import fetchAPI from 'utils/http/fetchAPI';
 import moment from 'moment';
-import hash from 'object-hash';
+
+import { v4 as uuidv4 } from 'uuid';
 import {
   EXPERIMENTS_CREATED,
   EXPERIMENTS_ERROR,
@@ -16,7 +17,7 @@ const createExperiment = (
   name, description,
 ) => async (dispatch) => {
   const createdAt = moment().toISOString();
-  const experimentId = hash.MD5(createdAt);
+  const experimentId = uuidv4();
 
   const newExperimentProperties = {
     id: experimentId,
