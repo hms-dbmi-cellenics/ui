@@ -5,7 +5,6 @@ import handleError from 'utils/http/handleError';
 import endUserMessages from 'utils/endUserMessages';
 import { fetchWork, generateETag } from 'utils/work/fetchWork';
 import { getBackendStatus } from 'redux/selectors';
-import { getEmbeddingWorkRequestBody } from 'redux/actions/embedding/loadEmbedding';
 
 const getPseudoTime = (
   rootNodes,
@@ -23,8 +22,6 @@ const getPseudoTime = (
     ?.configureEmbedding
     ?.embeddingSettings;
 
-  if (!embeddingState) return null;
-
   const {
     methodSettings,
     method: embeddingMethod,
@@ -34,9 +31,13 @@ const getPseudoTime = (
   const backendStatus = getBackendStatus(experimentId)(getState()).status;
   const { pipeline: { startDate: qcPipelineStartDate } } = backendStatus;
 
-  const embeddingBody = getEmbeddingWorkRequestBody(methodSettings, embeddingMethod);
+  const embeddingBody = {
+    name: 'GetEmbedding',
+    type: embeddingMethod,
+    config: methodSettings[embeddingMethod],
+  };
 
-  const timeout = getTimeoutForWorkerTask(getState(), 'TrajectoryAnalysis');
+  const timeout = getTimeoutForWorkerTask(getState(), 'TrajectoryAnalysisPseudotime');
 
   const embeddingETag = generateETag(
     experimentId,
@@ -65,11 +66,9 @@ const getPseudoTime = (
       payload: { plotUuid },
     });
 
-    const res = await fetchWork(
+    const data = await fetchWork(
       experimentId, body, getState, { timeout, rerun: true },
     );
-
-    const { data } = res;
 
     const { plotData } = getState().componentConfig[plotUuid];
 

@@ -5,35 +5,36 @@ import handleError from 'utils/http/handleError';
 import endUserMessages from 'utils/endUserMessages';
 import { fetchWork, generateETag } from 'utils/work/fetchWork';
 import { getBackendStatus } from 'redux/selectors';
-import { getEmbeddingWorkRequestBody } from 'redux/actions/embedding/loadEmbedding';
 
-const getTrajectoryGraph = (
+const getStartingNodes = (
   experimentId,
   plotUuid,
 ) => async (dispatch, getState) => {
+  // Currenty monocle3 only trajectory analysis only supports
+  // UMAP embedding. Therefore, this embedding is specifically fetched.
+  const embeddingMethod = 'umap';
+
   const {
-    embeddingSettings,
     clusteringSettings,
   } = getState().experimentSettings.processing?.configureEmbedding || {};
 
-  const embeddingState = getState()
+  const embeddingSettings = getState()
     .experimentSettings
     ?.processing
     ?.configureEmbedding
     ?.embeddingSettings;
 
-  if (!embeddingState) return null;
-
-  const {
-    methodSettings,
-    method: embeddingMethod,
-  } = embeddingState;
+  const { methodSettings } = embeddingSettings;
 
   const { environment } = getState().networkResources;
   const backendStatus = getBackendStatus(experimentId)(getState()).status;
   const { pipeline: { startDate: qcPipelineStartDate } } = backendStatus;
 
-  const embeddingBody = getEmbeddingWorkRequestBody(methodSettings, embeddingMethod);
+  const embeddingBody = {
+    name: 'GetEmbedding',
+    type: embeddingMethod,
+    config: methodSettings[embeddingMethod],
+  };
 
   const embeddingETag = generateETag(
     experimentId,
@@ -43,12 +44,13 @@ const getTrajectoryGraph = (
     environment,
   );
 
-  const timeout = getTimeoutForWorkerTask(getState(), 'TrajectoryAnalysis');
+  const timeout = getTimeoutForWorkerTask(getState(), 'TrajectoryAnalysisStartingNodes');
 
   const body = {
-    name: 'GetTrajectoryGraph',
+    name: 'GetStartingNodes',
     embedding: {
-      method: embeddingSettings.method,
+      method: embeddingMethod,
+      methodSettings: methodSettings[embeddingMethod],
       ETag: embeddingETag,
     },
     clustering: {
@@ -92,4 +94,4 @@ const getTrajectoryGraph = (
   }
 };
 
-export default getTrajectoryGraph;
+export default getStartingNodes;

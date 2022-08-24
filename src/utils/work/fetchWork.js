@@ -24,7 +24,7 @@ const generateETag = (
 ) => {
   // If caching is disabled, we add an additional randomized key to the hash so we never reuse
   // past results.
-  let cacheUniquenessKey = null;
+  let cacheUniquenessKey = 1;
 
   if (
     environment !== Environment.PRODUCTION

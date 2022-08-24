@@ -3,12 +3,37 @@ import _ from 'lodash';
 import { getAllCells, getSampleCells } from 'utils/cellSets';
 
 const generateSpec = (config, plotData, cellSetLegendsData) => {
+  const xScaleDomain = config.axesRanges.xAxisAuto
+    ? { data: 'values', field: 'x' }
+    : [config.axesRanges.xMin, config.axesRanges.xMax];
+
+  const yScaleDomain = config.axesRanges.yAxisAuto
+    ? { data: 'values', field: 'y' }
+    : [config.axesRanges.yMin, config.axesRanges.yMax];
+
   let legend = [];
+
+  // removing empty/unused entries from the data. This was causing issues with the legend
+  // example of an entry {
+  //   "cellId": 0,
+  //     "cellSetKey": "25ca1d7f-40ac-4bdc-9625-2272478e7db7",
+  //       "cellSetName": "New Cluster3",
+  //         "color": "#c9080a",
+  //           "x": 10.914,
+  //             "y": -1.4774
+  // }
+  // entries not part of the plotted data look like this and need to be removed
+  // { "x": -6.6343, "y": 0.0962 }
+
+  plotData = plotData.filter((entry) => entry.cellSetKey);
 
   if (config?.legend.enabled) {
     const positionIsRight = config.legend.position === 'right';
 
-    const legendColumns = positionIsRight ? 1 : Math.floor(config.dimensions.width / 85);
+    // only 20 rows per column if the legend is on the right
+    const legendColumns = positionIsRight
+      ? Math.ceil(cellSetLegendsData.length / 20)
+      : Math.floor(config.dimensions.width / 85);
     const labelLimit = positionIsRight ? 0 : 85;
 
     legend = [
@@ -19,8 +44,8 @@ const generateSpec = (config, plotData, cellSetLegendsData) => {
         type: 'symbol',
         orient: config?.legend.position,
         offset: 40,
-        symbolType: 'square',
-        symbolSize: 200,
+        symbolType: 'circle',
+        symbolSize: 100,
         encode: {
           labels: {
             update: {
@@ -74,18 +99,17 @@ const generateSpec = (config, plotData, cellSetLegendsData) => {
       {
         name: 'x',
         type: 'linear',
-        round: true,
         nice: true,
-        domain: { data: 'values', field: 'x' },
+        zero: false,
+        domain: xScaleDomain,
         range: 'width',
       },
       {
         name: 'y',
         type: 'linear',
-        round: true,
         nice: true,
-        zero: true,
-        domain: { data: 'values', field: 'y' },
+        zero: false,
+        domain: yScaleDomain,
         range: 'height',
       },
       {
@@ -152,21 +176,29 @@ const generateSpec = (config, plotData, cellSetLegendsData) => {
     marks: [
       {
         type: 'symbol',
+        clip: true,
         from: { data: 'values' },
         encode: {
           enter: {
             x: { scale: 'x', field: 'x' },
             y: { scale: 'y', field: 'y' },
-            size: { value: config?.marker.size },
+            size: [
+              {
+                test: "inrange(datum.x, domain('x')) && inrange(datum.y, domain('y'))",
+                value: config?.marker.size,
+              },
+              { value: 0 },
+            ],
             stroke: { scale: 'cellSetMarkColors', field: 'cellSetKey' },
             fill: { scale: 'cellSetMarkColors', field: 'cellSetKey' },
-            shape: { value: config?.marker.shape },
+            shape: { value: 'circle' },
             fillOpacity: { value: config?.marker.opacity / 10 },
           },
         },
       },
       {
         type: 'text',
+        clip: true,
         from: { data: 'labels' },
         encode: {
           enter: {

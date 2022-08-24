@@ -66,7 +66,7 @@ const FrequencyPlotPage = ({ experimentId }) => {
     },
     {
       panelTitle: 'Axes and margins',
-      controls: ['axes'],
+      controls: ['axesWithRanges'],
     },
     {
       panelTitle: 'Legend',

@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import ChangesNotAppliedModal from './ChangesNotAppliedModal';
+import ChangesNotAppliedModal from 'components/data-processing/ChangesNotAppliedModal';
 
 const DataProcessingIntercept = (props) => {
   const {

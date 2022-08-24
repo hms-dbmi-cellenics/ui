@@ -1,13 +1,9 @@
-import { initialPlotConfigStates } from 'redux/reducers/componentConfig/initialState';
 import getTimeoutForWorkerTask from 'utils/getTimeoutForWorkerTask';
 import { PLOT_DATA_LOADED, PLOT_DATA_LOADING, PLOT_DATA_ERROR } from 'redux/actionTypes/componentConfig';
 
 import handleError from 'utils/http/handleError';
 import endUserMessages from 'utils/endUserMessages';
 import { fetchWork } from 'utils/work/fetchWork';
-import { plotTypes } from 'utils/constants';
-
-const plotType = plotTypes.DOT_PLOT;
 
 const getClusterNames = (state) => {
   const clusterIds = state.cellSets.hierarchy.reduce(
@@ -19,11 +15,11 @@ const getClusterNames = (state) => {
   return clusterNames;
 };
 
-const getDotPlotData = (
+const getDotPlot = (
   experimentId,
   plotUuid,
+  config,
 ) => async (dispatch, getState) => {
-  const config = getState().componentConfig[plotUuid]?.config ?? initialPlotConfigStates[plotType];
   const clusterNames = getClusterNames(getState());
   const timeout = getTimeoutForWorkerTask(getState(), 'PlotData');
 
@@ -73,4 +69,4 @@ const getDotPlotData = (
   }
 };
 
-export default getDotPlotData;
+export default getDotPlot;

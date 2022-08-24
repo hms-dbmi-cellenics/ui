@@ -29,7 +29,7 @@ import {
   updatePlotData,
 } from 'redux/actions/componentConfig';
 
-import getDotPlotData from 'components/plots/helpers/dot-plot/getDotPlotData';
+import getDotPlot from 'redux/actions/componentConfig/getDotPlot';
 
 import { getCellSets } from 'redux/selectors';
 import { plotNames, plotTypes } from 'utils/constants';
@@ -224,13 +224,13 @@ const DotPlotPage = (props) => {
           setReorderAfterFetch(true);
         }
 
-        dispatch(getDotPlotData(experimentId, plotUuid));
+        dispatch(getDotPlot(experimentId, plotUuid, config));
         return;
       }
 
       // if a gene was added
       if (currentSelected.length > previousSelected.length) {
-        dispatch(getDotPlotData(experimentId, plotUuid));
+        dispatch(getDotPlot(experimentId, plotUuid, config));
         setReorderAfterFetch(true);
         return;
       }
@@ -345,7 +345,7 @@ const DotPlotPage = (props) => {
   useEffect(() => {
     if (!reset) return;
 
-    dispatch(getDotPlotData(experimentId, plotUuid));
+    dispatch(getDotPlot(experimentId, plotUuid, config));
     setReorderAfterFetch(true);
     setReset(false);
   }, [config]);
@@ -409,7 +409,7 @@ const DotPlotPage = (props) => {
           <PlatformError
             description='Error loading plot data.'
             reason='Check the options that you have selected and try again.'
-            onClick={() => dispatch(getDotPlotData(experimentId, plotUuid))}
+            onClick={() => dispatch(getDotPlot(experimentId, plotUuid, config))}
           />
         </center>
       );

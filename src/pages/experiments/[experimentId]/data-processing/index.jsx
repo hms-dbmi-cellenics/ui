@@ -25,6 +25,10 @@ import React, {
   useEffect,
   useState,
 } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+
+import config from 'config';
+
 import {
   addChangedQCFilter,
   discardChangedQCFilters,
@@ -33,7 +37,6 @@ import {
   setQCStepEnabled,
 } from 'redux/actions/experimentSettings';
 import { getUserFriendlyQCStepName, qcSteps } from 'utils/qcSteps';
-import { useDispatch, useSelector } from 'react-redux';
 
 import CellSizeDistribution from 'components/data-processing/CellSizeDistribution/CellSizeDistribution';
 import Classifier from 'components/data-processing/Classifier/Classifier';
@@ -50,11 +53,15 @@ import SingleComponentMultipleDataContainer from 'components/SingleComponentMult
 import StatusIndicator from 'components/data-processing/StatusIndicator';
 import _ from 'lodash';
 import { getBackendStatus } from 'redux/selectors';
+
 import { loadCellSets } from 'redux/actions/cellSets';
 import { loadSamples } from 'redux/actions/samples';
+import { cloneExperiment, loadExperiments } from 'redux/actions/experiments';
 import { runQC } from 'redux/actions/pipeline';
+
 import { useAppRouter } from 'utils/AppRouteProvider';
 import { modules } from 'utils/constants';
+import QCRerunDisabledModal from 'components/QCRerunDisabledModal';
 
 const { Text } = Typography;
 const { Option } = Select;
@@ -66,7 +73,11 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
   const pipelineStatus = useSelector(getBackendStatus(experimentId))?.status?.pipeline;
 
   const processingConfig = useSelector((state) => state.experimentSettings.processing);
-  const sampleKeys = useSelector((state) => state.experimentSettings.info.sampleIds);
+  const {
+    sampleIds: sampleKeys,
+    pipelineVersion,
+  } = useSelector((state) => state.experimentSettings.info);
+
   const samples = useSelector((state) => state.samples);
 
   const pipelineStatusKey = pipelineStatus?.status;
@@ -84,6 +95,7 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
   );
 
   const changesOutstanding = Boolean(changedQCFilters.size);
+  const qcRerunDisabled = pipelineVersion < config.pipelineVersionToRerunQC;
 
   const [stepIdx, setStepIdx] = useState(0);
   const [runQCModalVisible, setRunQCModalVisible] = useState(false);
@@ -235,18 +247,18 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
       key: 'doubletScores',
       name: getUserFriendlyQCStepName('doubletScores'),
       description:
-  <span>
-    Droplets may contain more than one cell.
-    In such cases, it is not possible to distinguish which reads came from which cell.
-    Such “cells” cause problems in the downstream analysis as they appear as an intermediate type.
-    “Cells” with a high probability of being a doublet should be excluded.
-    The probability of being a doublet is calculated using ‘scDblFinder’.
-    For each sample, the default threshold tries to minimize both the deviation in the
-    expected number of doublets and the error of a trained classifier. For more details see
-    {' '}
-    <a href='https://bioconductor.org/packages/devel/bioc/vignettes/scDblFinder/inst/doc/scDblFinder.html#thresholding' rel='noreferrer' target='_blank'>scDblFinder thresholding</a>
-    .
-  </span>,
+        <span>
+          Droplets may contain more than one cell.
+          In such cases, it is not possible to distinguish which reads came from which cell.
+          Such “cells” cause problems in the downstream analysis as they appear as an intermediate type.
+          “Cells” with a high probability of being a doublet should be excluded.
+          The probability of being a doublet is calculated using ‘scDblFinder’.
+          For each sample, the default threshold tries to minimize both the deviation in the
+          expected number of doublets and the error of a trained classifier. For more details see
+          {' '}
+          <a href='https://bioconductor.org/packages/devel/bioc/vignettes/scDblFinder/inst/doc/scDblFinder.html#thresholding' rel='noreferrer' target='_blank'>scDblFinder thresholding</a>
+          .
+        </span>,
       multiSample: true,
       render: (key) => (
         <SingleComponentMultipleDataContainer
@@ -434,16 +446,16 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
                               ) : pipelineNotFinished
                                 && !pipelineRunning
                                 && !isStepComplete(key) ? (
-                                  <>
-                                    <Text
-                                      type='danger'
-                                      strong
-                                    >
-                                      <WarningOutlined />
-                                    </Text>
-                                    <span style={{ marginLeft: '0.25rem' }}>{text}</span>
-                                  </>
-                                ) : <></>}
+                                <>
+                                  <Text
+                                    type='danger'
+                                    strong
+                                  >
+                                    <WarningOutlined />
+                                  </Text>
+                                  <span style={{ marginLeft: '0.25rem' }}>{text}</span>
+                                </>
+                              ) : <></>}
                             </Option>
                           );
                         },
@@ -600,6 +612,46 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
     );
   };
 
+  const cloneExperimentAndSelectIt = async () => {
+    dispatch(discardChangedQCFilters());
+    const newExperimentId = await dispatch(cloneExperiment(experimentId, `Clone of ${experimentData.experimentName}`));
+    await dispatch(loadExperiments());
+
+    navigateTo(modules.DATA_MANAGEMENT, { experimentId: newExperimentId }, true);
+  };
+
+  const qcRerunDisabledAlert = () => (
+    <>
+      <p>
+        Due to a recent update, re-running the pipeline will initiate the run from the beginning
+        and you will lose all of your annotated cell sets. You have 3 options:
+      </p>
+      <ul>
+        <li>
+          Click
+          <Text code>Start</Text>
+          {' '}
+          to re-run this project analysis from the beginning. Note that you will
+          lose all of your annotated cell sets.
+        </li>
+        <li>
+          Click
+          <Text code>Clone Project</Text>
+          {' '}
+          to clone this project and run from the beginning for the new project only.
+          Your current project will not re-run, and will still be available to explore.
+        </li>
+        <li>
+          Click
+          <Text code>Cancel</Text>
+          {' '}
+          to close this popup. You can then choose to discard the changed
+          settings in your current project.
+        </li>
+      </ul>
+    </>
+  );
+
   return (
     <>
       <Header
@@ -608,21 +660,31 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
         title='Data Processing'
       />
       <Space direction='vertical' style={{ width: '100%', padding: '0 10px' }}>
-
         {runQCModalVisible && (
-          <Modal
-            title='Run data processing with the changed settings'
-            visible
-            onCancel={() => setRunQCModalVisible(false)}
-            onOk={() => onPipelineRun()}
-            okText='Start'
-          >
-            <p>
-              This might take several minutes.
-              Your navigation within Cellenics will be restricted during this time.
-              Do you want to start?
-            </p>
-          </Modal>
+          qcRerunDisabled ? (
+            <QCRerunDisabledModal
+              experimentId={experimentId}
+              onFinish={() => setRunQCModalVisible(false)}
+            />
+          ) : (
+            <Modal
+              title='Run data processing with the changed settings'
+              visible
+              onCancel={() => setRunQCModalVisible(false)}
+              footer={
+                [
+                  <Button type='primary' onClick={() => onPipelineRun()}>Start</Button>,
+                  <Button onClick={() => setRunQCModalVisible(false)}>Cancel</Button>,
+                ]
+              }
+            >
+              <p>
+                This might take several minutes.
+                Your navigation within Cellenics will be restricted during this time.
+                Do you want to start?
+              </p>
+            </Modal>
+          )
         )}
         <Card
           title={renderTitle()}

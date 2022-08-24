@@ -2,6 +2,7 @@
 const generateBaseSpec = (
   config,
   embeddingData,
+  plotState,
 ) => ({
   $schema: 'https://vega.github.io/schema/vega/v5.json',
   description: 'Trajectory analysis plot',
@@ -26,10 +27,6 @@ const generateBaseSpec = (
         type: 'json',
         copy: true,
       },
-      transform: [
-        { type: 'extent', field: 'x', signal: 'xext' },
-        { type: 'extent', field: 'y', signal: 'yext' },
-      ],
     },
     {
       name: 'labels',
@@ -37,6 +34,178 @@ const generateBaseSpec = (
       transform: [
         {
           type: 'aggregate', groupby: ['cellSetKey', 'cellSetName'], fields: ['x', 'y'], ops: ['mean', 'mean'], as: ['meanX', 'meanY'],
+        },
+      ],
+    },
+  ],
+  signals: [
+    // Signal for selection
+    {
+      name: 'chooseNode',
+      on: [{ events: '@pathNodes:click', update: 'datum', force: true }],
+    },
+    {
+      name: 'lassoSelection',
+      value: null,
+      on: [
+        {
+          events: 'mouseup[event.shiftKey]',
+          update: "[invert('xscale', lassoStart[0]), invert('yscale', lassoStart[1]), invert('xscale', lassoEnd[0]), invert('yscale', lassoEnd[1])]",
+        },
+      ],
+    },
+    {
+      name: 'lassoStart',
+      value: null,
+      on: [
+        { events: 'mousedown[event.shiftKey]', update: 'xy()' },
+        { events: 'mouseup[event.shiftKey]', update: 'null' },
+      ],
+    },
+    {
+      name: 'lassoEnd',
+      value: [0, 0],
+      on: [
+        {
+          events: [
+            {
+              source: 'window',
+              type: 'mousemove',
+              between: [
+                { type: 'mousedown', filter: 'event.shiftKey' },
+                { source: 'window', type: 'mouseup' },
+              ],
+            },
+          ],
+          update: 'lassoStart ? xy() : [0,0]',
+        },
+      ],
+    },
+    // Signals for zooming
+    {
+      name: 'initXdom',
+      value: config.isZoomOrPanned
+        ? plotState.xdom
+        : extent(embeddingData.map((data) => data.x)),
+    },
+    {
+      name: 'initYdom',
+      value: config.isZoomOrPanned
+        ? plotState.ydom
+        : extent(embeddingData.map((data) => data.y)),
+    },
+    { name: 'xrange', update: '[0, width]' },
+    { name: 'yrange', update: '[height, 0]' },
+    {
+      name: 'down',
+      value: null,
+      on: [
+        { events: 'mousedown[!event.shiftKey]', update: 'xy()' },
+        { events: 'mouseup[!event.shiftKey]', update: 'null' },
+      ],
+    },
+    {
+      name: 'xcur',
+      value: null,
+      on: [
+        {
+          events: 'mousedown',
+          update: 'slice(xdom)',
+        },
+      ],
+    },
+    {
+      name: 'ycur',
+      value: null,
+      on: [
+        {
+          events: 'mousedown',
+          update: 'slice(ydom)',
+        },
+      ],
+    },
+    {
+      name: 'delta',
+      value: [0, 0],
+      on: [
+        {
+          events: [
+            {
+              source: 'window',
+              type: 'mousemove',
+              between: [
+                { type: 'mousedown', filter: '!event.shiftKey' },
+                { source: 'window', type: 'mouseup' },
+              ],
+            },
+          ],
+          update: 'down ? [down[0]-x(), y()-down[1]] : [0,0]',
+        },
+      ],
+    },
+    {
+      name: 'anchor',
+      value: [0, 0],
+      on: [
+        {
+          events: 'wheel',
+          update: "[invert('xscale', x()), invert('yscale', y())]",
+        },
+      ],
+    },
+    {
+      name: 'zoom',
+      value: 1,
+      on: [
+        {
+          events: 'wheel!',
+          force: true,
+          update: 'pow(1.001, event.deltaY * pow(2, event.deltaMode))',
+        },
+      ],
+    },
+    {
+      name: 'xdom',
+      update: 'initXdom',
+      on: [
+        {
+          events: { signal: 'delta' },
+          update: '[xcur[0] + span(xcur) * delta[0] / width, xcur[1] + span(xcur) * delta[0] / width]',
+        },
+        {
+          events: { signal: 'zoom' },
+          update: '[anchor[0] + (xdom[0] - anchor[0]) * zoom, anchor[0] + (xdom[1] - anchor[0]) * zoom]',
+        },
+      ],
+    },
+    {
+      name: 'ydom',
+      update: 'initYdom',
+      on: [
+        {
+          events: { signal: 'delta' },
+          update: '[ycur[0] + span(ycur) * delta[1] / height, ycur[1] + span(ycur) * delta[1] / height]',
+        },
+        {
+          events: { signal: 'zoom' },
+          update: '[anchor[1] + (ydom[0] - anchor[1]) * zoom, anchor[1] + (ydom[1] - anchor[1]) * zoom]',
+        },
+      ],
+    },
+    {
+      name: 'size',
+      update: `clamp(${config.marker.size * 4} / span(xdom), ${config.marker.size}, ${config.marker.size * 4})`,
+    },
+    {
+      name: 'domUpdates',
+      on: [
+        {
+          events: { signal: 'delta' },
+          update: '[[xcur[0] + span(xcur) * delta[0] / width, xcur[1] + span(xcur) * delta[0] / width], [ycur[0] + span(ycur) * delta[1] / height, ycur[1] + span(ycur) * delta[1] / height]]',
+        },
+        {
+          events: { signal: 'zoom' },
+          update: '[[anchor[0] + (xdom[0] - anchor[0]) * zoom, anchor[0] + (xdom[1] - anchor[0]) * zoom], [anchor[1] + (ydom[0] - anchor[1]) * zoom, anchor[1] + (ydom[1] - anchor[1]) * zoom]]',
         },
       ],
     },
@@ -109,6 +278,20 @@ const generateBaseSpec = (
       dx: 10,
       fontSize: config?.title.fontSize,
     },
+  marks: [
+    {
+      name: 'bounding-group',
+      type: 'group',
+      encode: {
+        update: {
+          width: { signal: 'width ' },
+          height: { signal: 'height' },
+          clip: { value: true },
+        },
+      },
+      marks: [],
+    },
+  ],
 });
 
 const insertClusterColorsSpec = (
@@ -176,53 +359,63 @@ const insertClusterColorsSpec = (
     },
   );
 
-  spec.marks = [
+  spec.marks[0].marks = [
+    ...spec.marks[0].marks,
     {
-      name: 'bounding-group',
-      type: 'group',
+      type: 'text',
+      from: { data: 'labels' },
       encode: {
         update: {
-          width: { signal: 'width ' },
-          height: { signal: 'height' },
-          clip: { value: true },
+          x: { scale: 'xscale', field: 'meanX' },
+          y: { scale: 'yscale', field: 'meanY' },
+          text: { field: 'cellSetName' },
+          fontSize: { value: config?.labels.size },
+          strokeWidth: { value: 1.2 },
+          fill: { value: config?.colour.masterColour },
+          fillOpacity: { value: config?.labels.enabled },
+          font: { value: config?.fontStyle.font },
         },
       },
-      marks: [
-        {
-          type: 'text',
-          from: { data: 'labels' },
-          encode: {
-            update: {
-              x: { scale: 'xscale', field: 'meanX' },
-              y: { scale: 'yscale', field: 'meanY' },
-              text: { field: 'cellSetName' },
-              fontSize: { value: config?.labels.size },
-              strokeWidth: { value: 1.2 },
-              fill: { value: config?.colour.masterColour },
-              fillOpacity: { value: config?.labels.enabled },
-              font: { value: config?.fontStyle.font },
-            },
-          },
+    },
+    {
+      name: 'embedding',
+      type: 'symbol',
+      from: { data: 'embeddingData' },
+      encode: {
+        update: {
+          x: { scale: 'xscale', field: 'x' },
+          y: { scale: 'yscale', field: 'y' },
+          size: { signal: 'size' },
+          stroke: { scale: 'cellSetMarkColors', field: 'cellSetKey' },
+          fill: { scale: 'cellSetMarkColors', field: 'cellSetKey' },
+          shape: { value: config?.marker.shape },
+          fillOpacity: { value: config?.marker.opacity / 10 },
         },
-        {
-          name: 'embedding',
-          type: 'symbol',
-          from: { data: 'embeddingData' },
-          encode: {
-            update: {
-              x: { scale: 'xscale', field: 'x' },
-              y: { scale: 'yscale', field: 'y' },
-              size: { signal: 'size' },
-              stroke: { scale: 'cellSetMarkColors', field: 'cellSetKey' },
-              fill: { scale: 'cellSetMarkColors', field: 'cellSetKey' },
-              shape: { value: config?.marker.shape },
-              fillOpacity: { value: config?.marker.opacity / 10 },
-            },
-          },
-        },
-      ],
+      },
     },
   ];
+};
+
+const extent = (arr) => {
+  let min;
+  let max;
+  let rest = [];
+
+  if (arr.length === 2) {
+    [min, max] = arr;
+    if (min < max) return [min, max];
+    return [max, min];
+  }
+
+  [min, max, ...rest] = arr;
+
+  rest.forEach((val) => {
+    if (val < min) min = val;
+    if (val > max) max = val;
+  });
+
+  // Add/subtract 1 to give some padding to the plot
+  return [min - 1, max + 1];
 };
 
 const insertTrajectorySpec = (
@@ -252,10 +445,6 @@ const insertTrajectorySpec = (
       },
     },
   ];
-
-  spec.data.push(
-
-  );
 
   spec.marks[0].marks = [
     ...spec.marks[0].marks,
@@ -330,154 +519,6 @@ const insertTrajectorySpec = (
       },
     },
   ];
-
-  spec.signals = [
-    // Signal for selection
-    {
-      name: 'chooseNode',
-      on: [{ events: '@pathNodes:click', update: 'datum', force: true }],
-    },
-    {
-      name: 'lassoSelection',
-      value: null,
-      on: [
-        {
-          events: 'mouseup[event.shiftKey]',
-          update: "[invert('xscale', lassoStart[0]), invert('yscale', lassoStart[1]), invert('xscale', lassoEnd[0]), invert('yscale', lassoEnd[1])]",
-        },
-      ],
-    },
-    {
-      name: 'lassoStart',
-      value: null,
-      on: [
-        { events: 'mousedown[event.shiftKey]', update: 'xy()' },
-        { events: 'mouseup[event.shiftKey]', update: 'null' },
-      ],
-    },
-    {
-      name: 'lassoEnd',
-      value: [0, 0],
-      on: [
-        {
-          events: [
-            {
-              source: 'window',
-              type: 'mousemove',
-              between: [
-                { type: 'mousedown', filter: 'event.shiftKey' },
-                { source: 'window', type: 'mouseup' },
-              ],
-            },
-          ],
-          update: 'lassoStart ? xy() : [0,0]',
-        },
-      ],
-    },
-    // Signals for zooming
-    { name: 'xrange', update: '[0, width]' },
-    { name: 'yrange', update: '[height, 0]' },
-    {
-      name: 'down',
-      value: null,
-      on: [
-        { events: 'mousedown[!event.shiftKey]', update: 'xy()' },
-        { events: 'mouseup[!event.shiftKey]', update: 'null' },
-      ],
-    },
-    {
-      name: 'xcur',
-      value: null,
-      on: [
-        {
-          events: 'mousedown',
-          update: 'slice(xdom)',
-        },
-      ],
-    },
-    {
-      name: 'ycur',
-      value: null,
-      on: [
-        {
-          events: 'mousedown',
-          update: 'slice(ydom)',
-        },
-      ],
-    },
-    {
-      name: 'delta',
-      value: [0, 0],
-      on: [
-        {
-          events: [
-            {
-              source: 'window',
-              type: 'mousemove',
-              between: [
-                { type: 'mousedown', filter: '!event.shiftKey' },
-                { source: 'window', type: 'mouseup' },
-              ],
-            },
-          ],
-          update: 'down ? [down[0]-x(), y()-down[1]] : [0,0]',
-        },
-      ],
-    },
-    {
-      name: 'anchor',
-      value: [0, 0],
-      on: [
-        {
-          events: 'wheel',
-          update: "[invert('xscale', x()), invert('yscale', y())]",
-        },
-      ],
-    },
-    {
-      name: 'zoom',
-      value: 1,
-      on: [
-        {
-          events: 'wheel!',
-          force: true,
-          update: 'pow(1.001, event.deltaY * pow(2, event.deltaMode))',
-        },
-      ],
-    },
-    {
-      name: 'xdom',
-      update: 'slice(xext)',
-      on: [
-        {
-          events: { signal: 'delta' },
-          update: '[xcur[0] + span(xcur) * delta[0] / width, xcur[1] + span(xcur) * delta[0] / width]',
-        },
-        {
-          events: { signal: 'zoom' },
-          update: '[anchor[0] + (xdom[0] - anchor[0]) * zoom, anchor[0] + (xdom[1] - anchor[0]) * zoom]',
-        },
-      ],
-    },
-    {
-      name: 'ydom',
-      update: 'slice(yext)',
-      on: [
-        {
-          events: { signal: 'delta' },
-          update: '[ycur[0] + span(ycur) * delta[1] / height, ycur[1] + span(ycur) * delta[1] / height]',
-        },
-        {
-          events: { signal: 'zoom' },
-          update: '[anchor[1] + (ydom[0] - anchor[1]) * zoom, anchor[1] + (ydom[1] - anchor[1]) * zoom]',
-        },
-      ],
-    },
-    {
-      name: 'size',
-      update: 'clamp(20 / span(xdom), 20, 1000)',
-    },
-  ];
 };
 
 const insertPseudotimeSpec = (spec, config, pseudotime) => {
@@ -520,27 +561,29 @@ const insertPseudotimeSpec = (spec, config, pseudotime) => {
     },
   );
 
-  spec.marks = [{
-    type: 'symbol',
-    from: { data: 'pseudotime' },
-    encode: {
-      update: {
-        x: { scale: 'xscale', field: 'x' },
-        y: { scale: 'yscale', field: 'y' },
-        size: { value: config.marker.size },
-        stroke: {
-          scale: 'color',
-          field: 'value',
+  spec.marks[0].marks.push(
+    {
+      type: 'symbol',
+      from: { data: 'pseudotime' },
+      encode: {
+        update: {
+          x: { scale: 'xscale', field: 'x' },
+          y: { scale: 'yscale', field: 'y' },
+          size: { value: config.marker.size },
+          stroke: {
+            scale: 'color',
+            field: 'value',
+          },
+          fill: {
+            scale: 'color',
+            field: 'value',
+          },
+          shape: { value: config.marker.shape },
+          fillOpacity: { value: config.marker.opacity / 10 },
         },
-        fill: {
-          scale: 'color',
-          field: 'value',
-        },
-        shape: { value: config.marker.shape },
-        fillOpacity: { value: config.marker.opacity / 10 },
       },
     },
-  }];
+  );
 };
 
 // Filter for nodes that appear later than the current node
@@ -554,7 +597,7 @@ const getConnectedNodes = (nodeId, connectedNodes) => {
 
 // Data returned from the trajectory analysis worker is 0 centered
 // This has to be remapped onto the embedding
-const generateTrajectoryData = (nodes) => {
+const generateStartingNodesData = (nodes) => {
   const trajectoryNodes = [];
 
   Object.values(nodes).forEach((node) => {
@@ -579,5 +622,5 @@ export {
   insertTrajectorySpec,
   insertPseudotimeSpec,
   generateBaseSpec,
-  generateTrajectoryData,
+  generateStartingNodesData,
 };

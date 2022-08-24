@@ -229,7 +229,7 @@ const ConfigureEmbedding = (props) => {
     },
     {
       panelTitle: 'Axes and margins',
-      controls: ['axes'],
+      controls: ['axesWithRanges'],
     },
     ...plotSpecificStylingControl[selectedPlot],
   ];
@@ -362,6 +362,7 @@ const ConfigureEmbedding = (props) => {
                 formConfig={plotStylingControlsConfig}
                 config={selectedConfig}
                 onUpdate={updatePlotWithChanges}
+                showShapeType={false}
               />
             </Panel>
           </Collapse>

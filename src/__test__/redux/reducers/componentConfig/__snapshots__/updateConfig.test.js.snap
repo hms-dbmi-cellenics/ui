@@ -19,6 +19,14 @@ Object {
         "xAxisText": "Umap 1",
         "yAxisText": "Umap 2",
       },
+      "axesRanges": Object {
+        "xAxisAuto": true,
+        "xMax": 10,
+        "xMin": 0,
+        "yAxisAuto": true,
+        "yMax": 10,
+        "yMin": 0,
+      },
       "colour": Object {
         "gradient": "default",
         "invert": "standard",
@@ -83,6 +91,14 @@ Object {
         "xAxisRotateLabels": false,
         "xAxisText": "log fold change",
         "yAxisText": "-log10(adj p-value)",
+      },
+      "axesRanges": Object {
+        "xAxisAuto": true,
+        "xMax": 10,
+        "xMin": 0,
+        "yAxisAuto": true,
+        "yMax": 10,
+        "yMin": 0,
       },
       "colour": Object {
         "gradient": "default",

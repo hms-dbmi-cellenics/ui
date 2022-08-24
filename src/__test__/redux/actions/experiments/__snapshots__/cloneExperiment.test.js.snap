@@ -1,0 +1,18 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`cloneExperiment Throws an error if cloning experiment throws an error 1`] = `"{\\"name\\":\\"clonedExperiment\\"}"`;
+
+exports[`cloneExperiment Works correctly 1`] = `
+Array [
+  Array [
+    "http://localhost:3000/v2/experiments/experiment-1/clone",
+    Object {
+      "body": "{\\"name\\":\\"clonedExperiment\\"}",
+      "headers": Object {
+        "Content-Type": "application/json",
+      },
+      "method": "POST",
+    },
+  ],
+]
+`;

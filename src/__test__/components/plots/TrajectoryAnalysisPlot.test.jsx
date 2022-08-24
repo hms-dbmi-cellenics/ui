@@ -17,9 +17,10 @@ import { seekFromS3 } from 'utils/work/seekWorkResponse';
 import { loadBackendStatus } from 'redux/actions/backendStatus';
 import WorkResponseError from 'utils/http/errors/WorkResponseError';
 
-import mockTrajectoryGraph from '__test__/data/trajectory_graph.json';
+import mockStartingNodes from '__test__/data/starting_nodes.json';
 
 import { plotTypes } from 'utils/constants';
+import userEvent from '@testing-library/user-event';
 
 enableFetchMocks();
 
@@ -46,14 +47,18 @@ const mockWorkerResponses = {
   embedding: () => Promise.resolve(mockEmbedding),
 };
 
+const mockOnPlotDataErrorRetry = jest.fn();
+
 const defaultAPIResponse = generateDefaultMockAPIResponses(experimentId);
 
 const defaultProps = {
   experimentId,
   config: initialPlotConfigStates[plotTypes.TRAJECTORY_ANALYSIS],
-  plotData: mockTrajectoryGraph,
+  plotData: mockStartingNodes,
   actions: false,
   onUpdate: jest.fn(),
+  plotDataError: false,
+  onPlotDataErrorRetry: mockOnPlotDataErrorRetry,
 };
 
 const trajectoryAnalysisPlotFactory = createTestComponentFactory(
@@ -168,5 +173,19 @@ describe('Trajectory analysis plot', () => {
     await waitFor(async () => {
       await expect(screen.queryByRole('graphics-document', { name: 'Trajectory analysis plot' })).toBeNull();
     });
+  });
+
+  it('Shows an error if there is an error fetching plot data', async () => {
+    await renderTrajectoryAnalysisPlot(storeState, { plotDataError: true });
+
+    expect(screen.getByText(/We're sorry, we couldn't load this./i)).toBeInTheDocument();
+    await waitFor(async () => {
+      await expect(screen.queryByRole('graphics-document', { name: 'Trajectory analysis plot' })).toBeNull();
+    });
+
+    // Clicking retry will fire onPlotDataErroRetry
+    userEvent.click(screen.getByText(/Try again/));
+
+    expect(mockOnPlotDataErrorRetry).toHaveBeenCalledTimes(1);
   });
 });

@@ -2,12 +2,6 @@ import { EMBEDDINGS_LOADING, EMBEDDINGS_LOADED, EMBEDDINGS_ERROR } from 'redux/a
 import { fetchWork } from 'utils/work/fetchWork';
 import getTimeoutForWorkerTask from 'utils/getTimeoutForWorkerTask';
 
-const getEmbeddingWorkRequestBody = (embeddingMethodSettings, embeddingType) => ({
-  name: 'GetEmbedding',
-  type: embeddingType,
-  config: embeddingMethodSettings[embeddingType],
-});
-
 const loadEmbedding = (
   experimentId,
   embeddingType,
@@ -40,7 +34,11 @@ const loadEmbedding = (
     },
   });
 
-  const body = getEmbeddingWorkRequestBody(methodSettings, embeddingType);
+  const body = {
+    name: 'GetEmbedding',
+    type: embeddingType,
+    config: methodSettings[embeddingType],
+  };
 
   const timeout = getTimeoutForWorkerTask(getState(), 'GetEmbedding', { type: embeddingType });
 
@@ -69,4 +67,3 @@ const loadEmbedding = (
 };
 
 export default loadEmbedding;
-export { getEmbeddingWorkRequestBody };

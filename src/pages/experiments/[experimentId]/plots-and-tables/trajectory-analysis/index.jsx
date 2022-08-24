@@ -15,12 +15,14 @@ import {
 import Loader from 'components/Loader';
 import { loadEmbedding } from 'redux/actions/embedding';
 import { loadProcessingSettings } from 'redux/actions/experimentSettings';
+import getStartingNodes from 'redux/actions/componentConfig/getTrajectoryPlotStartingNodes';
+import getPseudoTime from 'redux/actions/componentConfig/getTrajectoryPlotPseudoTime';
+
 import Header from 'components/Header';
-import TrajectoryAnalysisPlot from 'components/plots/TrajectoryAnalysisPlot';
 import PlotContainer from 'components/plots/PlotContainer';
+import TrajectoryAnalysisPlot from 'components/plots/TrajectoryAnalysisPlot';
+
 import { plotNames, plotTypes } from 'utils/constants';
-import getTrajectoryGraph from 'components/plots/helpers/trajectory-analysis/getTrajectoryGraph';
-import getPseudoTime from 'components/plots/helpers/trajectory-analysis/getPseudoTime';
 
 const { Panel } = Collapse;
 
@@ -29,17 +31,26 @@ const plotType = plotTypes.TRAJECTORY_ANALYSIS;
 
 const TrajectoryAnalysisPage = ({ experimentId }) => {
   const dispatch = useDispatch();
+
+  const [resetToggle, setResetToggle] = useState([]);
+
+  // Currenty monocle3 trajectory analysis only supports
+  // UMAP embedding. Therefore, this embedding is specifically fetched.
+  const embeddingMethod = 'umap';
+
   const {
     config,
     loading: configLoading,
     plotData,
+    loading: plotLoading,
+    error: plotDataError,
   } = useSelector((state) => state.componentConfig[plotUuid]) || {};
 
-  const [resetToggle, setResetToggle] = useState([]);
+  const { selectedNodes } = config || {};
 
-  const { method: embeddingMethod } = useSelector(
+  const embeddingSettings = useSelector(
     (state) => state.experimentSettings.originalProcessing
-      ?.configureEmbedding?.embeddingSettings || {},
+      ?.configureEmbedding?.embeddingSettings,
   );
 
   const {
@@ -50,14 +61,17 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
 
   useEffect(() => {
     if (!config) dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
-    if (!embeddingMethod) dispatch(loadProcessingSettings(experimentId));
+    dispatch(loadProcessingSettings(experimentId));
   }, []);
 
   useEffect(() => {
-    if (embeddingMethod && embeddingData?.length === 0) {
+    if (embeddingMethod
+      && !embeddingData?.length
+      && embeddingSettings
+    ) {
       dispatch(loadEmbedding(experimentId, embeddingMethod));
     }
-  }, [embeddingMethod]);
+  }, [embeddingMethod, !embeddingSettings]);
 
   useEffect(() => {
     if (
@@ -66,16 +80,21 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
       || embeddingError
       || !embeddingData?.length
     ) return;
-    dispatch(getTrajectoryGraph(experimentId, plotUuid));
-  }, [config, embeddingMethod, embeddingLoading]);
+    dispatch(getStartingNodes(experimentId, plotUuid));
+  }, [embeddingMethod, embeddingLoading, embeddingSettings]);
+
+  useEffect(() => {
+    if (
+      !selectedNodes?.length
+      || !config?.display.pseudotime
+    ) return;
+
+    dispatch(getPseudoTime(selectedNodes, experimentId, plotUuid));
+  }, [selectedNodes, config?.display]);
 
   const updatePlotWithChanges = (obj) => {
     dispatch(updatePlotConfig(plotUuid, obj));
   };
-
-  const {
-    selectedNodes,
-  } = config || {};
 
   const plotStylingConfig = [
     {
@@ -214,16 +233,29 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
         plotType={plotType}
         plotStylingConfig={plotStylingConfig}
         extraControlPanels={renderExtraPanels()}
-        plotInfo='The trajectory analysis plot displays the result of trajectory analysis for the given cell set.'
+        plotInfo={(
+          <>
+            Trajectory inference (TI) or pseudotemporal ordering is a computational technique used in single-cell transcriptomics to determine the pattern of a dynamic process experienced by cells and then arrange cells based on their progression through the process by projecting the cells onto an axis called pseudotime. A “trajectory” shows the path of the progression. Currently, Trajectory Analysis is implemented using the
+            {' '}
+            <a href='https://cole-trapnell-lab.github.io/monocle3/'> Monocle3 </a>
+            {' '}
+            workflow.
+          </>
+        )}
         defaultActiveKey='trajectory-analysis'
       >
         <TrajectoryAnalysisPlot
           experimentId={experimentId}
-          plotUuid={plotUuid}
-          resetPlot={resetToggle}
+          config={config}
           onUpdate={updatePlotWithChanges}
+          resetPlot={resetToggle}
+          plotData={plotData}
+          plotLoading={plotLoading}
+          plotDataError={plotDataError}
+          onPlotDataErrorRetry={() => dispatch(getStartingNodes(experimentId, plotUuid))}
           onClickNode={clickNode}
           onSelectNodes={addNodes}
+          actions={{ export: true, editor: true, source: false }}
         />
       </PlotContainer>
     </>

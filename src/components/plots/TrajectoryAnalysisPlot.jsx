@@ -1,16 +1,17 @@
-/* eslint-disable camelcase */
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Vega } from 'react-vega';
+import 'vega-webgl-renderer';
+import _ from 'lodash';
 
-import { generateData as generateCategoricalEmbeddingData } from 'utils/plotSpecs/generateEmbeddingCategoricalSpec';
+import { generateData as generateEmbeddingCategoricalData } from 'utils/plotSpecs/generateEmbeddingCategoricalSpec';
 import {
   insertTrajectorySpec,
   insertPseudotimeSpec,
   insertClusterColorsSpec,
   generateBaseSpec,
-  generateTrajectoryData,
+  generateStartingNodesData,
 } from 'utils/plotSpecs/generateTrajectoryAnalysisSpec';
 import {
   generateData as generatePseudotimeData,
@@ -18,26 +19,40 @@ import {
 import { loadEmbedding } from 'redux/actions/embedding';
 import { loadCellSets } from 'redux/actions/cellSets';
 import { loadProcessingSettings } from 'redux/actions/experimentSettings';
-import 'vega-webgl-renderer';
 
 import { getCellSets } from 'redux/selectors';
 import PlatformError from 'components/PlatformError';
 import Loader from 'components/Loader';
+import { Alert } from 'antd';
+
 import changeEmbeddingAxesIfNecessary from 'components/plots/helpers/changeEmbeddingAxesIfNecessary';
 
 const TrajectoryAnalysisPlot = (props) => {
+  // Currenty monocle3 trajectory analysis only supports
+  // UMAP embedding. Therefore, this embedding is specifically fetched.
+  const embeddingMethod = 'umap';
+
   const {
     experimentId,
-    plotUuid,
+    config,
+    plotData: startingNodesPlotData,
+    plotLoading,
+    plotDataError,
+    onPlotDataErrorRetry,
     actions,
     onUpdate,
     onClickNode,
     onSelectNodes,
     resetPlot,
   } = props;
+
   const dispatch = useDispatch();
 
   const [plotSpec, setPlotSpec] = useState({});
+  const [plotState, setPlotState] = useState({
+    xdom: [-10, 10],
+    ydom: [-10, 10],
+  });
 
   const cellSets = useSelector(getCellSets());
 
@@ -46,16 +61,11 @@ const TrajectoryAnalysisPlot = (props) => {
   );
 
   const {
-    config,
-    plotData,
-  } = useSelector((state) => state.componentConfig[plotUuid]);
-
-  const {
     data: embeddingData,
     loading: embeddingLoading,
     error: embeddingError,
   } = useSelector(
-    (state) => state.embeddings[embeddingSettings?.method],
+    (state) => state.embeddings[embeddingMethod],
   ) || {};
 
   useEffect(() => {
@@ -65,75 +75,104 @@ const TrajectoryAnalysisPlot = (props) => {
     if (!embeddingSettings) {
       dispatch(loadProcessingSettings(experimentId));
     }
+  }, [experimentId]);
 
-    if (!embeddingData && embeddingSettings?.method) {
-      dispatch(loadEmbedding(experimentId, embeddingSettings?.method));
+  useEffect(() => {
+    if (!embeddingData
+      && embeddingMethod
+      && embeddingSettings
+    ) {
+      dispatch(loadEmbedding(experimentId, embeddingMethod));
     }
-  }, [experimentId, embeddingSettings?.method]);
+  }, [experimentId, embeddingMethod, embeddingSettings]);
 
   useEffect(() => {
-    changeEmbeddingAxesIfNecessary(config, embeddingSettings?.method, onUpdate);
-  }, [config, embeddingSettings?.method]);
+    changeEmbeddingAxesIfNecessary(config, embeddingMethod, onUpdate);
+  }, [config, embeddingMethod]);
 
-  useEffect(() => {
+  const { plotData: embeddingPlotData, cellSetLegendsData } = useMemo(() => {
     if (
       !config
       || !cellSets.accessible
       || cellSets.error
       || !embeddingData?.length
-      || !plotData
-      || !plotData?.nodes
-    ) {
-      return;
-    }
+    ) return {};
 
-    const {
-      selectedSample,
-      selectedCellSet,
-      display,
-    } = config;
-
-    const {
-      plotData: plotEmbedding,
-      cellSetLegendsData,
-    } = generateCategoricalEmbeddingData(
+    return generateEmbeddingCategoricalData(
       cellSets,
-      selectedSample,
-      selectedCellSet,
+      config.selectedSample,
+      config.selectedCellSet,
       embeddingData,
     );
+  }, [config, cellSets, embeddingData]);
 
-    const baseSpec = generateBaseSpec(config, plotEmbedding);
+  const startingNodesData = useMemo(() => {
+    if (
+      !startingNodesPlotData
+      || !startingNodesPlotData?.nodes
+    ) return;
 
-    if (display.pseudotime) {
-      const pseudotimeData = generatePseudotimeData(
-        cellSets,
-        selectedSample,
-        plotData.pseudotime,
-        embeddingData,
-      );
+    return generateStartingNodesData(startingNodesPlotData.nodes);
+  }, [startingNodesPlotData?.nodes]);
+
+  const pseudotimeData = useMemo(() => {
+    if (
+      !startingNodesPlotData
+      || !startingNodesPlotData?.pseudotime
+    ) return;
+
+    return generatePseudotimeData(
+      cellSets,
+      config.selectedSample,
+      startingNodesPlotData.pseudotime,
+      embeddingData,
+    );
+  }, [
+    embeddingData,
+    cellSets,
+    startingNodesPlotData?.pseudotime,
+    config.selectedSample,
+  ]);
+
+  useEffect(() => {
+    if (
+      !embeddingPlotData
+      || !cellSetLegendsData
+      || !startingNodesPlotData?.nodes
+    ) return;
+
+    const baseSpec = generateBaseSpec(config, embeddingPlotData, plotState);
+
+    if (config.display.pseudotime) {
       insertPseudotimeSpec(baseSpec, config, pseudotimeData);
     } else {
       insertClusterColorsSpec(baseSpec, config, cellSetLegendsData);
     }
 
-    if (display.trajectory) {
-      const trajectoryData = generateTrajectoryData(plotData.nodes);
-      const selectedNodes = config.selectedNodes.map((nodeId) => plotData.nodes[nodeId]);
+    if (config.display.trajectory) {
+      const selectedNodes = config.selectedNodes.map(
+        (nodeId) => startingNodesPlotData.nodes[nodeId],
+      );
 
       insertTrajectorySpec(
         baseSpec,
-        trajectoryData,
+        startingNodesData,
         selectedNodes,
         resetPlot,
       );
     }
 
     setPlotSpec(baseSpec);
-  }, [config, cellSets, embeddingData, plotData, resetPlot]);
+  }, [config, cellSets, embeddingData, startingNodesPlotData, resetPlot]);
 
-  const plotListener = {
+  const plotListeners = {
+    domUpdates: (e, val) => {
+      const [xdom, ydom] = val;
+      setPlotState({ xdom, ydom });
+      if (!config.isZoomOrPanned) _.debounce(onUpdate, 2000)({ isZoomOrPanned: true });
+    },
     chooseNode: (eventName, payload) => {
+      // eslint-disable-next-line camelcase
       const { node_id } = payload;
       onClickNode(node_id);
     },
@@ -145,7 +184,7 @@ const TrajectoryAnalysisPlot = (props) => {
       const yStart = Math.min(y1, y2);
       const yEnd = Math.max(y1, y2);
 
-      const selectedNodes = Object.values(plotData.nodes).map(
+      const selectedNodes = Object.values(startingNodesPlotData.nodes).map(
         (node) => {
           const inSelection = xStart <= node.x && node.x <= xEnd
             && yStart <= node.y && node.y <= yEnd;
@@ -178,10 +217,20 @@ const TrajectoryAnalysisPlot = (props) => {
       );
     }
 
+    if (plotDataError) {
+      return (
+        <PlatformError
+          error={plotDataError}
+          onClick={onPlotDataErrorRetry}
+        />
+      );
+    }
+
     if (!config
+      || embeddingLoading
+      || plotLoading
       || !cellSets.accessible
       || !embeddingData
-      || embeddingLoading
       || !plotSpec
     ) {
       return (
@@ -193,12 +242,23 @@ const TrajectoryAnalysisPlot = (props) => {
 
     return (
       <center>
-        <Vega
-          spec={plotSpec}
-          renderer='webgl'
-          actions={actions}
-          signalListeners={plotListener}
-        />
+        {embeddingSettings?.method === 'tsne' && (
+          <Alert
+            type='warning'
+            message={(
+              <>
+                Due to
+                {' '}
+                <a href='https://cole-trapnell-lab.github.io/monocle3/' target='_blank' rel='noreferrer'>Monocle3</a>
+                {' '}
+                limitations, only UMAP embeddings are supported for Trajectory Analysis.
+                <br />
+                The embedding and trajectory below are generated from a UMAP embedding of your data.
+              </>
+            )}
+          />
+        )}
+        <Vega spec={plotSpec} renderer='webgl' actions={actions} signalListeners={plotListeners} />
       </center>
     );
   };
@@ -208,7 +268,11 @@ const TrajectoryAnalysisPlot = (props) => {
 
 TrajectoryAnalysisPlot.propTypes = {
   experimentId: PropTypes.string.isRequired,
-  plotUuid: PropTypes.string.isRequired,
+  config: PropTypes.object,
+  plotData: PropTypes.object.isRequired,
+  plotDataError: PropTypes.bool || PropTypes.string,
+  onPlotDataErrorRetry: PropTypes.func,
+  plotLoading: PropTypes.bool,
   actions: PropTypes.oneOfType([
     PropTypes.bool,
     PropTypes.object,
@@ -221,8 +285,11 @@ TrajectoryAnalysisPlot.propTypes = {
 
 TrajectoryAnalysisPlot.defaultProps = {
   actions: true,
-  onClickNode: () => {},
-  onSelectNodes: () => {},
+  plotLoading: false,
+  plotDataError: false,
+  onPlotDataErrorRetry: () => {},
+  onClickNode: () => { },
+  onSelectNodes: () => { },
   resetPlot: false,
 };
 

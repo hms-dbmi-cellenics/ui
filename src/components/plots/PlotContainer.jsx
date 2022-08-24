@@ -165,7 +165,7 @@ PlotContainer.propTypes = {
   experimentId: PropTypes.string.isRequired,
   plotUuid: PropTypes.string.isRequired,
   plotType: PropTypes.string.isRequired,
-  plotInfo: PropTypes.string,
+  plotInfo: PropTypes.node,
   plotStylingConfig: PropTypes.arrayOf(PropTypes.object),
   defaultActiveKey: PropTypes.string || PropTypes.arrayOf(PropTypes.string),
   extraToolbarControls: PropTypes.node || PropTypes.arrayOf(PropTypes.node),

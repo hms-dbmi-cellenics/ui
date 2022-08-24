@@ -3,7 +3,7 @@ import fake from '__test__/test-utils/constants';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
 
 import { updateCellSetsClustering, loadCellSets } from 'redux/actions/cellSets';
-import { updateProcessingSettingsFromQC, loadedProcessingConfig } from 'redux/actions/experimentSettings';
+import { updateProcessingSettingsFromQC, loadedProcessingConfig, updatePipelineVersion } from 'redux/actions/experimentSettings';
 import { updateBackendStatus } from 'redux/actions/backendStatus';
 import { updatePlotData } from 'redux/actions/componentConfig';
 import endUserMessages from 'utils/endUserMessages';
@@ -12,6 +12,7 @@ jest.mock('redux/actions/cellSets/updateCellSetsClustering');
 jest.mock('redux/actions/experimentSettings', () => ({
   updateProcessingSettingsFromQC: jest.fn(),
   loadedProcessingConfig: jest.fn(),
+  updatePipelineVersion: jest.fn(),
 }));
 jest.mock('redux/actions/backendStatus/updateBackendStatus');
 jest.mock('redux/actions/componentConfig/updatePlotData');
@@ -63,6 +64,7 @@ const mockQcUpdate = {
       status: 'RUNNING',
     },
   },
+  pipelineVersion: 2,
 };
 
 const mockGem2sUpdate = {
@@ -143,12 +145,16 @@ describe('ExperimentUpdatesHandler', () => {
     const updateParams = updateProcessingSettingsFromQC.mock.calls[0];
     expect(updateParams).toMatchSnapshot();
 
-    // Dispatch 3 - update plot data
+    // Dispatch 3 - update pipeline version
+    expect(updatePipelineVersion).toHaveBeenCalledTimes(1);
+    expect(updatePipelineVersion.mock.calls).toMatchSnapshot();
+
+    // Dispatch 4 - update plot data
     expect(updatePlotData).toHaveBeenCalledTimes(1);
     const plotDataParams = updatePlotData.mock.calls[0];
     expect(plotDataParams).toMatchSnapshot();
 
-    expect(mockDispatch).toHaveBeenCalledTimes(3);
+    expect(mockDispatch).toHaveBeenCalledTimes(4);
 
     // Does not load cell sets
     expect(loadCellSets).not.toHaveBeenCalled();
@@ -178,12 +184,16 @@ describe('ExperimentUpdatesHandler', () => {
     const plotDataParams = updatePlotData.mock.calls[0];
     expect(plotDataParams).toMatchSnapshot();
 
+    // Dispatch 3 - update pipeline version
+    expect(updatePipelineVersion).toHaveBeenCalledTimes(1);
+    expect(updatePipelineVersion.mock.calls).toMatchSnapshot();
+
     // Dispatch 3 - load cellsets on pipeline finish
     expect(loadCellSets).toHaveBeenCalledTimes(1);
     const loadCellSetsParams = loadCellSets.mock.calls[0];
     expect(loadCellSetsParams).toMatchSnapshot();
 
-    expect(mockDispatch).toHaveBeenCalledTimes(4);
+    expect(mockDispatch).toHaveBeenCalledTimes(5);
     expect(pushNotificationMessage).not.toHaveBeenCalled();
   });
 

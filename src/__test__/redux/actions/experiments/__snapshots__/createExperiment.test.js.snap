@@ -5,10 +5,10 @@ Object {
   "experiment": Object {
     "createdAt": "2020-01-01T00:00:00.000Z",
     "description": "description",
-    "id": "b3f6c0ca86ec045c84f380cd5016972e",
+    "id": "f85035ac-de1e-4928-bed6-f55ef15b58f1",
     "name": "name",
   },
 }
 `;
 
-exports[`createExperiment Works correctly 2`] = `"{\\"id\\":\\"b3f6c0ca86ec045c84f380cd5016972e\\",\\"name\\":\\"name\\",\\"description\\":\\"description\\"}"`;
+exports[`createExperiment Works correctly 2`] = `"{\\"id\\":\\"f85035ac-de1e-4928-bed6-f55ef15b58f1\\",\\"name\\":\\"name\\",\\"description\\":\\"description\\"}"`;

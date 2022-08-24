@@ -13,6 +13,7 @@ import LegendEditor from './LegendEditor';
 import LabelsDesign from './LabelsDesign';
 import DimensionsRangeEditor from './DimensionsRangeEditor';
 import AxesDesign from './AxesDesign';
+import AxesWithRangesDesign from './AxesWithRangesDesign';
 import PointDesign from './PointDesign';
 import ColourbarDesign from './ColourbarDesign';
 import ColourInversion from './ColourInversion';
@@ -21,7 +22,6 @@ import ExpressionValuesCapping from './ExpressionValuesCapping';
 
 import ViolinMarkersEditor from './violin/MarkersEditor';
 
-import VolcanoDimensionsRangeEditor from './volcano/DimensionsRangeEditor';
 import VolcanoThresholdsGuidesEditor from './volcano/ThresholdsGuidesEditor';
 import VolcanoMarkersEditor from './volcano/MarkersEditor';
 import VolcanoDisplayLabels from './volcano/DisplayLabels';
@@ -30,7 +30,7 @@ const { Panel } = Collapse;
 
 const PlotStyling = (props) => {
   const {
-    formConfig, config, onUpdate, extraPanels, defaultActiveKey,
+    formConfig, config, onUpdate, extraPanels, defaultActiveKey, showShapeType
   } = props;
 
   const ComponentMapping = {
@@ -38,15 +38,15 @@ const PlotStyling = (props) => {
     title: (attr) => <TitleDesign key='title' config={config} onUpdate={onUpdate} {...attr} />,
     font: (attr) => <FontDesign key='font' config={config} onUpdate={onUpdate} {...attr} />,
     axes: (attr) => <AxesDesign key='axes' config={config} onUpdate={onUpdate} {...attr} />,
+    axesWithRanges: (attr) => <AxesWithRangesDesign key='axesWithRanges' config={config} onUpdate={onUpdate} {...attr} />,
     colourScheme: (attr) => <ColourbarDesign key='colourScheme' config={config} onUpdate={onUpdate} {...attr} />,
     colourInversion: (attr) => <ColourInversion key='colourInversion' config={config} onUpdate={onUpdate} {...attr} />,
     expressionValuesType: (attr) => <ExpressionValuesType key='expressionValuesType' config={config} onUpdate={onUpdate} {...attr} />,
     expressionValuesCapping: (attr) => <ExpressionValuesCapping key='expressionValuesCapping' config={config} onUpdate={onUpdate} {...attr} />,
-    markers: (attr) => <PointDesign key='markers' config={config} onUpdate={onUpdate} {...attr} />,
+    markers: (attr) => <PointDesign key='markers' config={config} onUpdate={onUpdate} showShapeType={showShapeType} {...attr} />,
     legend: (attr) => <LegendEditor key='legend' onUpdate={onUpdate} config={config} {...attr} />,
     labels: (attr) => <LabelsDesign key='legend' onUpdate={onUpdate} config={config} {...attr} />,
     violinMarkers: (attr) => <ViolinMarkersEditor key='violinMarkers' config={config} onUpdate={onUpdate} {...attr} />,
-    volcanoDimensions: (attr) => <VolcanoDimensionsRangeEditor key='volcanoDimensions' config={config} onUpdate={onUpdate} {...attr} />,
     volcanoThresholds: (attr) => <VolcanoThresholdsGuidesEditor key='volcanoThresholds' config={config} onUpdate={onUpdate} {...attr} />,
     volcanoMarkers: (attr) => <VolcanoMarkersEditor key='volcanoMarkers' config={config} onUpdate={onUpdate} {...attr} />,
     volcanoLabels: (attr) => <VolcanoDisplayLabels key='volcanoLabels' config={config} onUpdate={onUpdate} {...attr} />,
@@ -105,6 +105,7 @@ PlotStyling.propTypes = {
     PropTypes.string,
     PropTypes.array,
   ]),
+  showShapeType: PropTypes.bool
 };
 
 PlotStyling.defaultProps = {
