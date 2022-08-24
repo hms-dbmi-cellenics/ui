@@ -4,6 +4,7 @@ import {
   legendBaseState,
   dimensionsBaseState,
   axesBaseState,
+  axesRangesBaseState,
   titleBaseState,
   fontStyleBaseState,
   colourBaseState,
@@ -28,8 +29,9 @@ const embeddingCategoricalInitialConfig = {
     xAxisText: 'Umap 1',
     yAxisText: 'Umap 2',
     defaultValues: ['x', 'y'],
-    offset: 10,
+    offset: 0,
   },
+  axesRanges: axesRangesBaseState,
   title: {
     ...titleBaseState,
     fontSize: 20,
@@ -61,6 +63,7 @@ const embeddingContinuousInitialConfig = {
     defaultValues: ['x', 'y'],
     offset: 10,
   },
+  axesRanges: axesRangesBaseState,
   title: {
     ...titleBaseState,
     dx: 0,
@@ -140,6 +143,7 @@ const volcanoInitialConfig = {
     gridOpacity: 5,
     offset: 10,
   },
+  axesRanges: axesRangesBaseState,
   title: titleBaseState,
   fontStyle: fontStyleBaseState,
   colour: colourBaseState,
@@ -189,6 +193,11 @@ const frequencyInitialConfig = {
     xAxisRotateLabels: true,
     offset: 10,
   },
+  axesRanges: {
+    yAxisAuto: true,
+    yMin: 0,
+    yMax: 10,
+  },
   fontStyle: fontStyleBaseState,
   proportionGrouping: 'louvain',
   xAxisGrouping: 'sample',
@@ -213,6 +222,11 @@ const violinConfig = {
     ...axesBaseState,
     offset: 10,
     xAxisRotateLabels: true,
+  },
+  axesRanges: {
+    yAxisAuto: true,
+    yMin: 0,
+    yMax: 10,
   },
   title: {
     ...titleBaseState,
@@ -272,6 +286,41 @@ const dotPlotConfig = {
   keepValuesOnReset: ['selectedGenes'],
 };
 
+// PLOTS & TABLES - Trajectory Analysis
+const trajectoryAnalysisInitialConfig = {
+  spec: '1.0.0',
+  legend: {
+    ...legendBaseState,
+    position: 'top',
+  },
+  dimensions: {
+    ...dimensionsBaseState,
+    width: 700,
+    height: 550,
+  },
+  axes: {
+    ...axesBaseState,
+    xAxisText: 'Umap 1',
+    yAxisText: 'Umap 2',
+    defaultValues: ['x', 'y'],
+    offset: 10,
+  },
+  title: {
+    ...titleBaseState,
+    fontSize: 20,
+  },
+  fontStyle: fontStyleBaseState,
+  colour: colourBaseState,
+  marker: markerBaseState,
+  labels: {
+    ...labelBaseState,
+    enabled: false,
+  },
+  selectedCellSet: 'louvain',
+  selectedSample: 'All',
+  isZoomOrPanned: false,
+};
+
 // EMBEDDING PREVIEW - Coloured by sample
 const embeddingPreviewBySampleInitialConfig = {
   spec: '1.0.0',
@@ -291,6 +340,7 @@ const embeddingPreviewBySampleInitialConfig = {
     defaultValues: ['x', 'y'],
     offset: 10,
   },
+  axesRanges: axesRangesBaseState,
   title: {
     ...titleBaseState,
     fontSize: 20,
@@ -325,6 +375,7 @@ const embeddingPreviewByCellSetsInitialConfig = {
     defaultValues: ['x', 'y'],
     offset: 10,
   },
+  axesRanges: axesRangesBaseState,
   title: {
     ...titleBaseState,
     fontSize: 20,
@@ -356,6 +407,7 @@ const embeddingPreviewMitochondrialContentInitialConfig = {
     defaultValues: ['x', 'y'],
     offset: 10,
   },
+  axesRanges: axesRangesBaseState,
   title: {
     ...titleBaseState,
     dx: 0,
@@ -385,6 +437,7 @@ const embeddingPreviewDoubletScoreInitialConfig = {
     defaultValues: ['x', 'y'],
     offset: 10,
   },
+  axesRanges: axesRangesBaseState,
   title: {
     ...titleBaseState,
     dx: 0,
@@ -423,6 +476,7 @@ const cellSizeDistributionHistogram = {
     xAxisText: '#UMIs in cell',
     yAxisText: '#UMIs * #Cells',
   },
+  axesRanges: axesRangesBaseState,
   title: {
     ...titleBaseState,
     fontSize: 20,
@@ -450,6 +504,11 @@ const cellSizeDistributionKneePlot = {
     ...axesBaseState,
     xAxisText: 'Cell rank',
     yAxisText: '#UMIs in cell',
+  },
+  axesRanges: {
+    ...axesRangesBaseState,
+    xMin: 1,
+    yMin: 1,
   },
   title: {
     ...titleBaseState,
@@ -479,6 +538,7 @@ const mitochondrialFractionHistogram = {
     xAxisText: 'Percentage of mitochondrial reads',
     yAxisText: 'Percentage of cells',
   },
+  axesRanges: axesRangesBaseState,
   title: {
     ...titleBaseState,
     fontSize: 20,
@@ -508,6 +568,7 @@ const mitochondrialFractionLogHistogram = {
     xAxisText: 'Percentage of mitochondrial reads',
     yAxisText: 'Num of UMIs in cell',
   },
+  axesRanges: axesRangesBaseState,
   title: {
     ...titleBaseState,
     fontSize: 20,
@@ -536,6 +597,11 @@ const classifierKneePlot = {
     ...axesBaseState,
     xAxisText: 'Droplet Rank',
     yAxisText: 'Droplet #UMIs',
+  },
+  axesRanges: {
+    ...axesRangesBaseState,
+    xMin: 1,
+    yMin: 1,
   },
   title: {
     ...titleBaseState,
@@ -566,6 +632,7 @@ const classifierEmptyDropsPlot = {
     yAxisText: 'FDR (emptyDrops)',
     gridOpacity: 10,
   },
+  axesRanges: axesRangesBaseState,
   title: {
     ...titleBaseState,
     fontSize: 20,
@@ -592,6 +659,7 @@ const featuresVsUMIsScatterplot = {
     yAxisText: 'log10 [gene counts]',
     gridOpacity: 10,
   },
+  axesRanges: axesRangesBaseState,
   title: {
     ...titleBaseState,
     fontSize: 20,
@@ -620,6 +688,7 @@ const doubletScoreHistogram = {
     xAxisText: 'Probability of being a doublet',
     yAxisText: 'Frequency',
   },
+  axesRanges: axesRangesBaseState,
   title: {
     ...titleBaseState,
     fontSize: 20,
@@ -650,6 +719,7 @@ const dataIntegrationEmbeddingInitialConfig = {
     defaultValues: ['x', 'y'],
     offset: 10,
   },
+  axesRanges: axesRangesBaseState,
   title: {
     ...titleBaseState,
     fontSize: 20,
@@ -689,6 +759,11 @@ const dataIntegrationFrequencyInitialConfig = {
     xAxisRotateLabels: true,
     offset: 10,
   },
+  axesRanges: {
+    yAxisAuto: true,
+    yMin: 0,
+    yMax: 10,
+  },
   fontStyle: fontStyleBaseState,
 };
 
@@ -716,6 +791,7 @@ const dataIntegrationElbowPlotInitialConfig = {
     offset: 0,
     gridOpacity: 10,
   },
+  axesRanges: axesRangesBaseState,
   colour: {
     toggleInvert: '#FFFFFF',
   },
@@ -762,6 +838,7 @@ const initialPlotConfigStates = {
   markerHeatmap: markerHeatmapInitialConfig,
   violin: violinConfig,
   [plotTypes.DOT_PLOT]: dotPlotConfig,
+  [plotTypes.TRAJECTORY_ANALYSIS]: trajectoryAnalysisInitialConfig,
   frequency: frequencyInitialConfig,
   embeddingPreviewBySample: embeddingPreviewBySampleInitialConfig,
   embeddingPreviewByCellSets: embeddingPreviewByCellSetsInitialConfig,

@@ -12,6 +12,7 @@ const plotTypes = {
   FREQUENCY_PLOT: 'FrequencyPlot',
   VIOLIN_PLOT: 'ViolinPlot',
   DOT_PLOT: 'DotPlot',
+  TRAJECTORY_ANALYSIS: 'TrajectoryAnalysis',
 };
 
 const plotNames = {
@@ -23,6 +24,7 @@ const plotNames = {
   FREQUENCY_PLOT: 'Frequency Plot',
   VIOLIN_PLOT: 'Violin Plot',
   DOT_PLOT: 'Dot Plot',
+  TRAJECTORY_ANALYSIS: 'Trajectory Analysis',
 };
 
 const modules = {

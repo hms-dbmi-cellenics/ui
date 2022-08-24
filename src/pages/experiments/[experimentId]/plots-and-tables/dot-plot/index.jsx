@@ -26,14 +26,14 @@ import fileNames from 'utils/fileNames';
 import {
   updatePlotConfig,
   loadPlotConfig,
-  fetchPlotDataWork,
   updatePlotData,
 } from 'redux/actions/componentConfig';
-import PlatformError from 'components/PlatformError';
+
+import getDotPlot from 'redux/actions/componentConfig/getDotPlot';
 
 import { getCellSets } from 'redux/selectors';
-
 import { plotNames, plotTypes } from 'utils/constants';
+import PlatformError from 'components/PlatformError';
 
 import ScrollOnDrag from 'components/plots/ScrollOnDrag';
 
@@ -97,13 +97,6 @@ const DotPlotPage = (props) => {
 
   const cellSets = useSelector(getCellSets());
 
-  const {
-    loading: cellSetsLoading,
-    error: cellSetsError,
-    hierarchy: cellSetHierarchy,
-    properties: cellSetProperties,
-  } = cellSets;
-
   const [moreThanTwoGroups, setMoreThanTwoGroups] = useState(false);
   const [reorderAfterFetch, setReorderAfterFetch] = useState(false);
   const [reset, setReset] = useState(false);
@@ -113,7 +106,7 @@ const DotPlotPage = (props) => {
 
   useEffect(() => {
     if (!config) dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
-    if (cellSetHierarchy.length === 0) dispatch(loadCellSets(experimentId));
+    if (cellSets.hierarchy.length === 0) dispatch(loadCellSets(experimentId));
   }, []);
 
   const previousComparedConfig = useRef(null);
@@ -130,17 +123,18 @@ const DotPlotPage = (props) => {
     // filterBy has the shape louvain/louvain-1
     const [filterRootNode, filterKey] = filterCluster.split('/');
 
-    // If 'All" is chosen for the dropdown, there will always be representation from more than 1 group
+    // If 'All" is chosen for the dropdown,
+    // there will always be representation from more than 1 group
     if (filterRootNode === 'All') return true;
 
     // Ensure that filterKey exists in cellSetProperties
-    if (filterKey && !cellSetProperties[filterKey]) return false;
+    if (filterKey && !cellSets.properties[filterKey]) return false;
 
-    const filterClusterCellIds = Array.from(cellSetProperties[filterKey].cellIds);
+    const filterClusterCellIds = Array.from(cellSets.properties[filterKey].cellIds);
 
-    const baseClusterParent = cellSetHierarchy.find((cellSet) => cellSet.key === baseCluster);
+    const baseClusterParent = cellSets.hierarchy.find((cellSet) => cellSet.key === baseCluster);
     const baseClusterKeys = baseClusterParent.children.map((child) => child.key);
-    const baseClusterCellIds = baseClusterKeys.map((key) => cellSetProperties[key].cellIds);
+    const baseClusterCellIds = baseClusterKeys.map((key) => cellSets.properties[key].cellIds);
 
     // Check if there is at least 2 baseClusters with elements common to filterCluster
     let numIntersections = 0;
@@ -155,14 +149,16 @@ const DotPlotPage = (props) => {
 
   const hasMoreThanTwoGroupsToCompare = useMemo(
     () => {
-      if (cellSetsLoading || cellSetsError || !config?.selectedCellSet || !config?.selectedPoints) return false;
+      if (!cellSets.accessible || !config?.selectedCellSet || !config?.selectedPoints) {
+        return false;
+      }
+
       return hasGroupsToCompare(config.selectedCellSet, config.selectedPoints);
-    },
-    [cellSetsLoading, cellSetsError, config?.selectedCellSet, config?.selectedPoints],
+    }, [cellSets.accessible, config?.selectedCellSet, config?.selectedPoints],
   );
 
   const shouldFetchPlotData = () => {
-    if (cellSetsLoading || !config) return false;
+    if (!cellSets.accessible || !config) return false;
 
     // If using custom genes, check that there are genes in the list
     if (!config.useMarkerGenes && config.selectedGenes.length === 0) return false;
@@ -184,7 +180,9 @@ const DotPlotPage = (props) => {
       // choose data for a given cell set
       const data = plotData.filter((elem) => elem.cellSets === set);
       // re-order genes for each cell set based on order in selected genes
-      const reordered = data.slice().sort((a, b) => order.indexOf(a.geneName) - order.indexOf(b.geneName));
+      const reordered = data.slice().sort(
+        (a, b) => order.indexOf(a.geneName) - order.indexOf(b.geneName),
+      );
       reorderedData.push(...reordered);
     });
 
@@ -219,7 +217,6 @@ const DotPlotPage = (props) => {
       const previousUseMarker = previousComparedConfig.current?.useMarkerGenes ?? false;
 
       previousComparedConfig.current = currentComparedConfig;
-
       // if the selected genes don't change
       if (_.isEqual(currentSelected, previousSelected)) {
         // if switching back from marker genes to custom genes, reorder data
@@ -227,13 +224,13 @@ const DotPlotPage = (props) => {
           setReorderAfterFetch(true);
         }
 
-        dispatch(fetchPlotDataWork(experimentId, plotUuid, plotType));
+        dispatch(getDotPlot(experimentId, plotUuid, config));
         return;
       }
 
       // if a gene was added
       if (currentSelected.length > previousSelected.length) {
-        dispatch(fetchPlotDataWork(experimentId, plotUuid, plotType));
+        dispatch(getDotPlot(experimentId, plotUuid, config));
         setReorderAfterFetch(true);
         return;
       }
@@ -248,7 +245,7 @@ const DotPlotPage = (props) => {
       const removedGenes = previousSelected.filter((gene) => !currentSelected.includes(gene));
       deleteData(removedGenes);
     }
-  }, [config, cellSetProperties]);
+  }, [config, cellSets.properties]);
 
   // if all selected genes are removed, deleteData will not run. Remove plotData manually instead
   useEffect(() => {
@@ -284,11 +281,17 @@ const DotPlotPage = (props) => {
 
   // find genes with highest dispersion from list of genes sorted by name
   const loadHighestDispersionGenes = () => {
-    const highestDispersions = Object.values(geneData).map((gene) => gene.dispersions).sort().splice(-config.nMarkerGenes);
+    const highestDispersions = Object.values(geneData)
+      .map((gene) => gene.dispersions)
+      .sort()
+      .splice(-config.nMarkerGenes);
 
-    const getKeyByValue = (value) => Object.keys(geneData).find((key) => geneData[key].dispersions === value);
+    const getKeyByValue = (value) => Object.keys(geneData)
+      .find((key) => geneData[key].dispersions === value);
 
-    const highestDispersionGenes = highestDispersions.map((dispersion) => getKeyByValue(dispersion));
+    const highestDispersionGenes = highestDispersions.map(
+      (dispersion) => getKeyByValue(dispersion),
+    );
 
     updatePlotWithChanges({ selectedGenes: highestDispersionGenes });
   };
@@ -303,7 +306,10 @@ const DotPlotPage = (props) => {
 
   // When fetching new genes, reorder data to match selected genes
   useEffect(() => {
-    if (plotData?.length !== cellSetHierarchy[0]?.children.length * config?.selectedGenes.length || !reorderAfterFetch) return;
+    if (
+      plotData?.length !== cellSets.hierarchy[0]?.children.length * config?.selectedGenes.length
+      || !reorderAfterFetch
+    ) return;
 
     reorderData(config.selectedGenes);
     setReorderAfterFetch(false);
@@ -339,7 +345,7 @@ const DotPlotPage = (props) => {
   useEffect(() => {
     if (!reset) return;
 
-    dispatch(fetchPlotDataWork(experimentId, plotUuid, plotType));
+    dispatch(getDotPlot(experimentId, plotUuid, config));
     setReorderAfterFetch(true);
     setReset(false);
   }, [config]);
@@ -386,7 +392,7 @@ const DotPlotPage = (props) => {
   }
 
   const renderPlot = () => {
-    if (cellSetsError) {
+    if (cellSets.error) {
       return (
         <center>
           <PlatformError
@@ -403,13 +409,13 @@ const DotPlotPage = (props) => {
           <PlatformError
             description='Error loading plot data.'
             reason='Check the options that you have selected and try again.'
-            onClick={() => dispatch(fetchPlotDataWork(experimentId, plotUuid, plotType))}
+            onClick={() => dispatch(getDotPlot(experimentId, plotUuid, config))}
           />
         </center>
       );
     }
 
-    if (cellSetsLoading || plotDataLoading) {
+    if (!cellSets.accessible || plotDataLoading) {
       return (
         <center>
           <Loader experimentId={experimentId} />

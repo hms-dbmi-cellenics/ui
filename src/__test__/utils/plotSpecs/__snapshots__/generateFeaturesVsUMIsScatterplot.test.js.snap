@@ -1,0 +1,4378 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`features vs umis plot picks correct linesData point if prediction interval is 0.999999 1`] = `
+Object {
+  "$schema": "https://vega.github.io/schema/vega/v5.json",
+  "autosize": Object {
+    "resize": true,
+    "type": "fit",
+  },
+  "axes": Array [
+    Object {
+      "domain": false,
+      "grid": true,
+      "gridOpacity": 0.5,
+      "labelAlign": "center",
+      "labelAngle": 0,
+      "labelFont": "sans-serif",
+      "labelFontSize": 12,
+      "offset": 0,
+      "orient": "bottom",
+      "scale": "x",
+      "tickCount": 5,
+      "title": "log10 [molecule counts]",
+      "titleFont": "sans-serif",
+      "titleFontSize": 13,
+      "zindex": 1,
+    },
+    Object {
+      "domain": false,
+      "grid": true,
+      "gridOpacity": 0.5,
+      "labelFont": "sans-serif",
+      "labelFontSize": 12,
+      "offset": 0,
+      "orient": "left",
+      "scale": "y",
+      "title": "log10 [gene counts]",
+      "titleFont": "sans-serif",
+      "titleFontSize": 13,
+      "titlePadding": 5,
+      "zindex": 1,
+    },
+  ],
+  "data": Array [
+    Object {
+      "format": Object {
+        "copy": true,
+        "type": "json",
+      },
+      "name": "pointsData",
+      "transform": Array [
+        Object {
+          "expr": "datum['log_genes'] != null && datum['log_molecules'] != null",
+          "type": "filter",
+        },
+        Object {
+          "expr": "datum.log_genes >= 1.7545782168801844 && datum.log_genes <= 4.438242783119816",
+          "type": "filter",
+        },
+      ],
+      "values": Array [
+        Object {
+          "log_genes": 2.515874,
+          "log_molecules": 2.69897,
+        },
+        Object {
+          "log_genes": 2.390935,
+          "log_molecules": 2.699838,
+        },
+        Object {
+          "log_genes": 2.369216,
+          "log_molecules": 2.701568,
+        },
+        Object {
+          "log_genes": 1.544068,
+          "log_molecules": 2.701568,
+        },
+        Object {
+          "log_genes": 2.409933,
+          "log_molecules": 2.703291,
+        },
+        Object {
+          "log_genes": 2.501059,
+          "log_molecules": 2.706718,
+        },
+        Object {
+          "log_genes": 2.495544,
+          "log_molecules": 2.71265,
+        },
+        Object {
+          "log_genes": 2.376577,
+          "log_molecules": 2.713491,
+        },
+        Object {
+          "log_genes": 2.296665,
+          "log_molecules": 2.716838,
+        },
+        Object {
+          "log_genes": 2.474216,
+          "log_molecules": 2.716838,
+        },
+        Object {
+          "log_genes": 2.494155,
+          "log_molecules": 2.723456,
+        },
+        Object {
+          "log_genes": 1.633468,
+          "log_molecules": 2.727541,
+        },
+        Object {
+          "log_genes": 2.509203,
+          "log_molecules": 2.730782,
+        },
+        Object {
+          "log_genes": 2.419956,
+          "log_molecules": 2.730782,
+        },
+        Object {
+          "log_genes": 2.444045,
+          "log_molecules": 2.733999,
+        },
+        Object {
+          "log_genes": 2.348305,
+          "log_molecules": 2.736397,
+        },
+        Object {
+          "log_genes": 2.565848,
+          "log_molecules": 2.739572,
+        },
+        Object {
+          "log_genes": 2.320146,
+          "log_molecules": 2.750508,
+        },
+        Object {
+          "log_genes": 2.521138,
+          "log_molecules": 2.750508,
+        },
+        Object {
+          "log_genes": 1.968483,
+          "log_molecules": 2.754348,
+        },
+        Object {
+          "log_genes": 1.591065,
+          "log_molecules": 2.761176,
+        },
+        Object {
+          "log_genes": 2.503791,
+          "log_molecules": 2.764176,
+        },
+        Object {
+          "log_genes": 2.431364,
+          "log_molecules": 2.768638,
+        },
+        Object {
+          "log_genes": 2.459392,
+          "log_molecules": 2.775974,
+        },
+        Object {
+          "log_genes": 2.385606,
+          "log_molecules": 2.780317,
+        },
+        Object {
+          "log_genes": 2.466868,
+          "log_molecules": 2.781037,
+        },
+        Object {
+          "log_genes": 2.494155,
+          "log_molecules": 2.782473,
+        },
+        Object {
+          "log_genes": 2.491362,
+          "log_molecules": 2.78533,
+        },
+        Object {
+          "log_genes": 2.499687,
+          "log_molecules": 2.788875,
+        },
+        Object {
+          "log_genes": 2.558709,
+          "log_molecules": 2.791691,
+        },
+        Object {
+          "log_genes": 2.44248,
+          "log_molecules": 2.79379,
+        },
+        Object {
+          "log_genes": 2.603144,
+          "log_molecules": 2.795185,
+        },
+        Object {
+          "log_genes": 1.94939,
+          "log_molecules": 2.795185,
+        },
+        Object {
+          "log_genes": 2.555094,
+          "log_molecules": 2.797268,
+        },
+        Object {
+          "log_genes": 2.448706,
+          "log_molecules": 2.798651,
+        },
+        Object {
+          "log_genes": 2.440909,
+          "log_molecules": 2.805501,
+        },
+        Object {
+          "log_genes": 2.465383,
+          "log_molecules": 2.806858,
+        },
+        Object {
+          "log_genes": 2.445604,
+          "log_molecules": 2.810904,
+        },
+        Object {
+          "log_genes": 2.478566,
+          "log_molecules": 2.812913,
+        },
+        Object {
+          "log_genes": 2.570543,
+          "log_molecules": 2.813581,
+        },
+        Object {
+          "log_genes": 2.603144,
+          "log_molecules": 2.818885,
+        },
+        Object {
+          "log_genes": 2.40654,
+          "log_molecules": 2.826723,
+        },
+        Object {
+          "log_genes": 2.513218,
+          "log_molecules": 2.82866,
+        },
+        Object {
+          "log_genes": 2.414973,
+          "log_molecules": 2.830589,
+        },
+        Object {
+          "log_genes": 1.845098,
+          "log_molecules": 2.83123,
+        },
+        Object {
+          "log_genes": 2.463893,
+          "log_molecules": 2.834421,
+        },
+        Object {
+          "log_genes": 1.792392,
+          "log_molecules": 2.835691,
+        },
+        Object {
+          "log_genes": 2.459392,
+          "log_molecules": 2.835691,
+        },
+        Object {
+          "log_genes": 1.755875,
+          "log_molecules": 2.839478,
+        },
+        Object {
+          "log_genes": 1.770852,
+          "log_molecules": 2.841985,
+        },
+        Object {
+          "log_genes": 2.565848,
+          "log_molecules": 2.844477,
+        },
+        Object {
+          "log_genes": 1.799341,
+          "log_molecules": 2.844477,
+        },
+        Object {
+          "log_genes": 2.563481,
+          "log_molecules": 2.845098,
+        },
+        Object {
+          "log_genes": 1.732394,
+          "log_molecules": 2.846337,
+        },
+        Object {
+          "log_genes": 2.462398,
+          "log_molecules": 2.850646,
+        },
+        Object {
+          "log_genes": 1.643453,
+          "log_molecules": 2.863323,
+        },
+        Object {
+          "log_genes": 2.617,
+          "log_molecules": 2.865104,
+        },
+        Object {
+          "log_genes": 2.480007,
+          "log_molecules": 2.867467,
+        },
+        Object {
+          "log_genes": 2.372912,
+          "log_molecules": 2.868644,
+        },
+        Object {
+          "log_genes": 2.481443,
+          "log_molecules": 2.869818,
+        },
+        Object {
+          "log_genes": 2.647383,
+          "log_molecules": 2.877947,
+        },
+        Object {
+          "log_genes": 2.567026,
+          "log_molecules": 2.880242,
+        },
+        Object {
+          "log_genes": 2.582063,
+          "log_molecules": 2.883093,
+        },
+        Object {
+          "log_genes": 1.812913,
+          "log_molecules": 2.883093,
+        },
+        Object {
+          "log_genes": 2.434569,
+          "log_molecules": 2.884795,
+        },
+        Object {
+          "log_genes": 2.668386,
+          "log_molecules": 2.888741,
+        },
+        Object {
+          "log_genes": 2.716838,
+          "log_molecules": 2.893762,
+        },
+        Object {
+          "log_genes": 2.686636,
+          "log_molecules": 2.89487,
+        },
+        Object {
+          "log_genes": 2.478566,
+          "log_molecules": 2.895423,
+        },
+        Object {
+          "log_genes": 2.638489,
+          "log_molecules": 2.905256,
+        },
+        Object {
+          "log_genes": 2.553883,
+          "log_molecules": 2.910091,
+        },
+        Object {
+          "log_genes": 2.539076,
+          "log_molecules": 2.91169,
+        },
+        Object {
+          "log_genes": 1.913814,
+          "log_molecules": 2.91698,
+        },
+        Object {
+          "log_genes": 2.466868,
+          "log_molecules": 2.917506,
+        },
+        Object {
+          "log_genes": 2.683047,
+          "log_molecules": 2.91803,
+        },
+        Object {
+          "log_genes": 2.621176,
+          "log_molecules": 2.924279,
+        },
+        Object {
+          "log_genes": 2.70757,
+          "log_molecules": 2.924796,
+        },
+        Object {
+          "log_genes": 2.583199,
+          "log_molecules": 2.925312,
+        },
+        Object {
+          "log_genes": 2.752816,
+          "log_molecules": 2.933487,
+        },
+        Object {
+          "log_genes": 2.643453,
+          "log_molecules": 2.935003,
+        },
+        Object {
+          "log_genes": 2.547775,
+          "log_molecules": 2.942504,
+        },
+        Object {
+          "log_genes": 2.704151,
+          "log_molecules": 2.950851,
+        },
+        Object {
+          "log_genes": 2.136721,
+          "log_molecules": 2.952792,
+        },
+        Object {
+          "log_genes": 2.518514,
+          "log_molecules": 2.953276,
+        },
+        Object {
+          "log_genes": 2.592177,
+          "log_molecules": 2.956649,
+        },
+        Object {
+          "log_genes": 2.781037,
+          "log_molecules": 2.956649,
+        },
+        Object {
+          "log_genes": 2.722634,
+          "log_molecules": 2.957607,
+        },
+        Object {
+          "log_genes": 2.572872,
+          "log_molecules": 2.959041,
+        },
+        Object {
+          "log_genes": 1.892095,
+          "log_molecules": 2.961421,
+        },
+        Object {
+          "log_genes": 2.749736,
+          "log_molecules": 2.965202,
+        },
+        Object {
+          "log_genes": 1.897627,
+          "log_molecules": 2.980458,
+        },
+        Object {
+          "log_genes": 2.09691,
+          "log_molecules": 2.984527,
+        },
+        Object {
+          "log_genes": 2.726727,
+          "log_molecules": 2.989005,
+        },
+        Object {
+          "log_genes": 2.716003,
+          "log_molecules": 2.992554,
+        },
+        Object {
+          "log_genes": 2.729974,
+          "log_molecules": 3.001734,
+        },
+        Object {
+          "log_genes": 2.7348,
+          "log_molecules": 3.004751,
+        },
+        Object {
+          "log_genes": 2.744293,
+          "log_molecules": 3.009876,
+        },
+        Object {
+          "log_genes": 2.806858,
+          "log_molecules": 3.01494,
+        },
+        Object {
+          "log_genes": 2.646404,
+          "log_molecules": 3.017033,
+        },
+        Object {
+          "log_genes": 1.832509,
+          "log_molecules": 3.017868,
+        },
+        Object {
+          "log_genes": 1.826075,
+          "log_molecules": 3.018284,
+        },
+        Object {
+          "log_genes": 2.756636,
+          "log_molecules": 3.0306,
+        },
+        Object {
+          "log_genes": 2.716838,
+          "log_molecules": 3.033826,
+        },
+        Object {
+          "log_genes": 2.761176,
+          "log_molecules": 3.037825,
+        },
+        Object {
+          "log_genes": 1.732394,
+          "log_molecules": 3.041393,
+        },
+        Object {
+          "log_genes": 1.653213,
+          "log_molecules": 3.043362,
+        },
+        Object {
+          "log_genes": 1.69897,
+          "log_molecules": 3.044932,
+        },
+        Object {
+          "log_genes": 2.751279,
+          "log_molecules": 3.045714,
+        },
+        Object {
+          "log_genes": 2.817565,
+          "log_molecules": 3.046105,
+        },
+        Object {
+          "log_genes": 2.784617,
+          "log_molecules": 3.050766,
+        },
+        Object {
+          "log_genes": 2.756636,
+          "log_molecules": 3.052694,
+        },
+        Object {
+          "log_genes": 2.806858,
+          "log_molecules": 3.057286,
+        },
+        Object {
+          "log_genes": 2.814248,
+          "log_molecules": 3.057286,
+        },
+        Object {
+          "log_genes": 1.838849,
+          "log_molecules": 3.061075,
+        },
+        Object {
+          "log_genes": 2.724276,
+          "log_molecules": 3.062206,
+        },
+        Object {
+          "log_genes": 2.733999,
+          "log_molecules": 3.062958,
+        },
+        Object {
+          "log_genes": 1.716003,
+          "log_molecules": 3.065206,
+        },
+        Object {
+          "log_genes": 2.570543,
+          "log_molecules": 3.06558,
+        },
+        Object {
+          "log_genes": 2.781037,
+          "log_molecules": 3.065953,
+        },
+        Object {
+          "log_genes": 2.710117,
+          "log_molecules": 3.072985,
+        },
+        Object {
+          "log_genes": 2.738781,
+          "log_molecules": 3.078457,
+        },
+        Object {
+          "log_genes": 2.870989,
+          "log_molecules": 3.079543,
+        },
+        Object {
+          "log_genes": 2.806858,
+          "log_molecules": 3.079543,
+        },
+        Object {
+          "log_genes": 2.833784,
+          "log_molecules": 3.084934,
+        },
+        Object {
+          "log_genes": 2.848189,
+          "log_molecules": 3.091315,
+        },
+        Object {
+          "log_genes": 1.886491,
+          "log_molecules": 3.094122,
+        },
+        Object {
+          "log_genes": 2.790285,
+          "log_molecules": 3.097604,
+        },
+        Object {
+          "log_genes": 2.802774,
+          "log_molecules": 3.098298,
+        },
+        Object {
+          "log_genes": 2.786751,
+          "log_molecules": 3.108565,
+        },
+        Object {
+          "log_genes": 2.807535,
+          "log_molecules": 3.109916,
+        },
+        Object {
+          "log_genes": 2.835056,
+          "log_molecules": 3.11294,
+        },
+        Object {
+          "log_genes": 2.782473,
+          "log_molecules": 3.117603,
+        },
+        Object {
+          "log_genes": 2.826075,
+          "log_molecules": 3.120245,
+        },
+        Object {
+          "log_genes": 1.78533,
+          "log_molecules": 3.123525,
+        },
+        Object {
+          "log_genes": 2.694605,
+          "log_molecules": 3.123852,
+        },
+        Object {
+          "log_genes": 2.727541,
+          "log_molecules": 3.125481,
+        },
+        Object {
+          "log_genes": 2.798651,
+          "log_molecules": 3.125806,
+        },
+        Object {
+          "log_genes": 2.797268,
+          "log_molecules": 3.127105,
+        },
+        Object {
+          "log_genes": 2.89098,
+          "log_molecules": 3.130655,
+        },
+        Object {
+          "log_genes": 2.701568,
+          "log_molecules": 3.134814,
+        },
+        Object {
+          "log_genes": 2.755875,
+          "log_molecules": 3.136721,
+        },
+        Object {
+          "log_genes": 2.824776,
+          "log_molecules": 3.136721,
+        },
+        Object {
+          "log_genes": 2.830589,
+          "log_molecules": 3.137354,
+        },
+        Object {
+          "log_genes": 1.633468,
+          "log_molecules": 3.138303,
+        },
+        Object {
+          "log_genes": 2.876795,
+          "log_molecules": 3.139249,
+        },
+        Object {
+          "log_genes": 2.799341,
+          "log_molecules": 3.140508,
+        },
+        Object {
+          "log_genes": 1.643453,
+          "log_molecules": 3.140508,
+        },
+        Object {
+          "log_genes": 2.778874,
+          "log_molecules": 3.140822,
+        },
+        Object {
+          "log_genes": 2.872739,
+          "log_molecules": 3.144885,
+        },
+        Object {
+          "log_genes": 2.804139,
+          "log_molecules": 3.145196,
+        },
+        Object {
+          "log_genes": 2.799341,
+          "log_molecules": 3.145818,
+        },
+        Object {
+          "log_genes": 2.877371,
+          "log_molecules": 3.146128,
+        },
+        Object {
+          "log_genes": 2.762679,
+          "log_molecules": 3.147367,
+        },
+        Object {
+          "log_genes": 2.779596,
+          "log_molecules": 3.150142,
+        },
+        Object {
+          "log_genes": 2.717671,
+          "log_molecules": 3.15137,
+        },
+        Object {
+          "log_genes": 2.856124,
+          "log_molecules": 3.1529,
+        },
+        Object {
+          "log_genes": 2.865696,
+          "log_molecules": 3.15351,
+        },
+        Object {
+          "log_genes": 2.732394,
+          "log_molecules": 3.157154,
+        },
+        Object {
+          "log_genes": 2.71433,
+          "log_molecules": 3.161068,
+        },
+        Object {
+          "log_genes": 2.720986,
+          "log_molecules": 3.162266,
+        },
+        Object {
+          "log_genes": 2.737987,
+          "log_molecules": 3.163161,
+        },
+        Object {
+          "log_genes": 2.848189,
+          "log_molecules": 3.165244,
+        },
+        Object {
+          "log_genes": 2.838849,
+          "log_molecules": 3.165838,
+        },
+        Object {
+          "log_genes": 2.804139,
+          "log_molecules": 3.165838,
+        },
+        Object {
+          "log_genes": 1.60206,
+          "log_molecules": 3.167908,
+        },
+        Object {
+          "log_genes": 2.669317,
+          "log_molecules": 3.169674,
+        },
+        Object {
+          "log_genes": 2.810904,
+          "log_molecules": 3.171141,
+        },
+        Object {
+          "log_genes": 2.906874,
+          "log_molecules": 3.171434,
+        },
+        Object {
+          "log_genes": 2.718502,
+          "log_molecules": 3.174641,
+        },
+        Object {
+          "log_genes": 2.857935,
+          "log_molecules": 3.176381,
+        },
+        Object {
+          "log_genes": 2.780317,
+          "log_molecules": 3.176959,
+        },
+        Object {
+          "log_genes": 2.708421,
+          "log_molecules": 3.179264,
+        },
+        Object {
+          "log_genes": 2.700704,
+          "log_molecules": 3.179839,
+        },
+        Object {
+          "log_genes": 2.873321,
+          "log_molecules": 3.180699,
+        },
+        Object {
+          "log_genes": 2.829947,
+          "log_molecules": 3.183555,
+        },
+        Object {
+          "log_genes": 2.838849,
+          "log_molecules": 3.186108,
+        },
+        Object {
+          "log_genes": 2.836957,
+          "log_molecules": 3.186108,
+        },
+        Object {
+          "log_genes": 2.943,
+          "log_molecules": 3.186956,
+        },
+        Object {
+          "log_genes": 2.833784,
+          "log_molecules": 3.187521,
+        },
+        Object {
+          "log_genes": 2.935507,
+          "log_molecules": 3.18949,
+        },
+        Object {
+          "log_genes": 2.833784,
+          "log_molecules": 3.18949,
+        },
+        Object {
+          "log_genes": 2.78533,
+          "log_molecules": 3.190332,
+        },
+        Object {
+          "log_genes": 2.854913,
+          "log_molecules": 3.190612,
+        },
+        Object {
+          "log_genes": 2.857332,
+          "log_molecules": 3.191451,
+        },
+        Object {
+          "log_genes": 2.751279,
+          "log_molecules": 3.192289,
+        },
+        Object {
+          "log_genes": 2.854306,
+          "log_molecules": 3.192567,
+        },
+        Object {
+          "log_genes": 2.803457,
+          "log_molecules": 3.193403,
+        },
+        Object {
+          "log_genes": 2.720986,
+          "log_molecules": 3.1959,
+        },
+        Object {
+          "log_genes": 2.750508,
+          "log_molecules": 3.196176,
+        },
+        Object {
+          "log_genes": 2.83123,
+          "log_molecules": 3.196176,
+        },
+        Object {
+          "log_genes": 2.835056,
+          "log_molecules": 3.196176,
+        },
+        Object {
+          "log_genes": 2.850033,
+          "log_molecules": 3.196453,
+        },
+        Object {
+          "log_genes": 2.718502,
+          "log_molecules": 3.197832,
+        },
+        Object {
+          "log_genes": 2.872156,
+          "log_molecules": 3.198382,
+        },
+        Object {
+          "log_genes": 2.778874,
+          "log_molecules": 3.199206,
+        },
+        Object {
+          "log_genes": 2.775974,
+          "log_molecules": 3.201397,
+        },
+        Object {
+          "log_genes": 2.7348,
+          "log_molecules": 3.201943,
+        },
+        Object {
+          "log_genes": 2.846337,
+          "log_molecules": 3.201943,
+        },
+        Object {
+          "log_genes": 2.903633,
+          "log_molecules": 3.202488,
+        },
+        Object {
+          "log_genes": 1.826075,
+          "log_molecules": 3.202488,
+        },
+        Object {
+          "log_genes": 2.756636,
+          "log_molecules": 3.203033,
+        },
+        Object {
+          "log_genes": 2.881955,
+          "log_molecules": 3.205204,
+        },
+        Object {
+          "log_genes": 2.814248,
+          "log_molecules": 3.205204,
+        },
+        Object {
+          "log_genes": 2.92737,
+          "log_molecules": 3.206286,
+        },
+        Object {
+          "log_genes": 2.816904,
+          "log_molecules": 3.206826,
+        },
+        Object {
+          "log_genes": 2.764176,
+          "log_molecules": 3.207904,
+        },
+        Object {
+          "log_genes": 2.861534,
+          "log_molecules": 3.209515,
+        },
+        Object {
+          "log_genes": 2.767156,
+          "log_molecules": 3.209783,
+        },
+        Object {
+          "log_genes": 2.778151,
+          "log_molecules": 3.209783,
+        },
+        Object {
+          "log_genes": 2.786751,
+          "log_molecules": 3.21272,
+        },
+        Object {
+          "log_genes": 2.750508,
+          "log_molecules": 3.213252,
+        },
+        Object {
+          "log_genes": 2.761928,
+          "log_molecules": 3.213518,
+        },
+        Object {
+          "log_genes": 2.855519,
+          "log_molecules": 3.214314,
+        },
+        Object {
+          "log_genes": 2.863917,
+          "log_molecules": 3.214579,
+        },
+        Object {
+          "log_genes": 2.840106,
+          "log_molecules": 3.215902,
+        },
+        Object {
+          "log_genes": 2.775974,
+          "log_molecules": 3.21643,
+        },
+        Object {
+          "log_genes": 2.818885,
+          "log_molecules": 3.219323,
+        },
+        Object {
+          "log_genes": 2.834421,
+          "log_molecules": 3.22037,
+        },
+        Object {
+          "log_genes": 2.760422,
+          "log_molecules": 3.220892,
+        },
+        Object {
+          "log_genes": 2.863323,
+          "log_molecules": 3.221414,
+        },
+        Object {
+          "log_genes": 2.720986,
+          "log_molecules": 3.221675,
+        },
+        Object {
+          "log_genes": 1.812913,
+          "log_molecules": 3.222456,
+        },
+        Object {
+          "log_genes": 2.892651,
+          "log_molecules": 3.222456,
+        },
+        Object {
+          "log_genes": 2.947924,
+          "log_molecules": 3.223236,
+        },
+        Object {
+          "log_genes": 1.94939,
+          "log_molecules": 3.224274,
+        },
+        Object {
+          "log_genes": 2.963788,
+          "log_molecules": 3.224533,
+        },
+        Object {
+          "log_genes": 2.885926,
+          "log_molecules": 3.225826,
+        },
+        Object {
+          "log_genes": 2.818885,
+          "log_molecules": 3.2284,
+        },
+        Object {
+          "log_genes": 2.885361,
+          "log_molecules": 3.228913,
+        },
+        Object {
+          "log_genes": 2.733999,
+          "log_molecules": 3.230193,
+        },
+        Object {
+          "log_genes": 2.790988,
+          "log_molecules": 3.230193,
+        },
+        Object {
+          "log_genes": 2.95376,
+          "log_molecules": 3.23325,
+        },
+        Object {
+          "log_genes": 2.804821,
+          "log_molecules": 3.233757,
+        },
+        Object {
+          "log_genes": 2.850646,
+          "log_molecules": 3.233757,
+        },
+        Object {
+          "log_genes": 2.808886,
+          "log_molecules": 3.234517,
+        },
+        Object {
+          "log_genes": 2.962843,
+          "log_molecules": 3.235023,
+        },
+        Object {
+          "log_genes": 2.83187,
+          "log_molecules": 3.235276,
+        },
+        Object {
+          "log_genes": 2.828015,
+          "log_molecules": 3.237795,
+        },
+        Object {
+          "log_genes": 2.783904,
+          "log_molecules": 3.239299,
+        },
+        Object {
+          "log_genes": 2.745075,
+          "log_molecules": 3.240799,
+        },
+        Object {
+          "log_genes": 2.89098,
+          "log_molecules": 3.241795,
+        },
+        Object {
+          "log_genes": 2.813581,
+          "log_molecules": 3.244277,
+        },
+        Object {
+          "log_genes": 1.851258,
+          "log_molecules": 3.245019,
+        },
+        Object {
+          "log_genes": 2.847573,
+          "log_molecules": 3.245513,
+        },
+        Object {
+          "log_genes": 2.826723,
+          "log_molecules": 3.246252,
+        },
+        Object {
+          "log_genes": 2.841985,
+          "log_molecules": 3.246499,
+        },
+        Object {
+          "log_genes": 2.851258,
+          "log_molecules": 3.246499,
+        },
+        Object {
+          "log_genes": 2.862728,
+          "log_molecules": 3.247728,
+        },
+        Object {
+          "log_genes": 2.936011,
+          "log_molecules": 3.248709,
+        },
+        Object {
+          "log_genes": 2.786751,
+          "log_molecules": 3.254306,
+        },
+        Object {
+          "log_genes": 2.900367,
+          "log_molecules": 3.255031,
+        },
+        Object {
+          "log_genes": 2.826075,
+          "log_molecules": 3.255031,
+        },
+        Object {
+          "log_genes": 2.763428,
+          "log_molecules": 3.255273,
+        },
+        Object {
+          "log_genes": 2.978637,
+          "log_molecules": 3.256237,
+        },
+        Object {
+          "log_genes": 2.924279,
+          "log_molecules": 3.257679,
+        },
+        Object {
+          "log_genes": 2.80618,
+          "log_molecules": 3.259594,
+        },
+        Object {
+          "log_genes": 2.837588,
+          "log_molecules": 3.259833,
+        },
+        Object {
+          "log_genes": 2.838849,
+          "log_molecules": 3.261025,
+        },
+        Object {
+          "log_genes": 2.866878,
+          "log_molecules": 3.261263,
+        },
+        Object {
+          "log_genes": 2.79796,
+          "log_molecules": 3.262214,
+        },
+        Object {
+          "log_genes": 2.901458,
+          "log_molecules": 3.263873,
+        },
+        Object {
+          "log_genes": 2.884229,
+          "log_molecules": 3.26529,
+        },
+        Object {
+          "log_genes": 2.799341,
+          "log_molecules": 3.265761,
+        },
+        Object {
+          "log_genes": 2.834421,
+          "log_molecules": 3.265996,
+        },
+        Object {
+          "log_genes": 2.773786,
+          "log_molecules": 3.266937,
+        },
+        Object {
+          "log_genes": 1.944483,
+          "log_molecules": 3.267172,
+        },
+        Object {
+          "log_genes": 2.825426,
+          "log_molecules": 3.267875,
+        },
+        Object {
+          "log_genes": 2.127105,
+          "log_molecules": 3.268344,
+        },
+        Object {
+          "log_genes": 2.893762,
+          "log_molecules": 3.268344,
+        },
+        Object {
+          "log_genes": 2.846955,
+          "log_molecules": 3.269513,
+        },
+        Object {
+          "log_genes": 2.817565,
+          "log_molecules": 3.270213,
+        },
+        Object {
+          "log_genes": 2.838219,
+          "log_molecules": 3.270679,
+        },
+        Object {
+          "log_genes": 2.87564,
+          "log_molecules": 3.271144,
+        },
+        Object {
+          "log_genes": 2.93044,
+          "log_molecules": 3.271377,
+        },
+        Object {
+          "log_genes": 2.952792,
+          "log_molecules": 3.271609,
+        },
+        Object {
+          "log_genes": 2.79796,
+          "log_molecules": 3.271609,
+        },
+        Object {
+          "log_genes": 2.850033,
+          "log_molecules": 3.271842,
+        },
+        Object {
+          "log_genes": 2.91698,
+          "log_molecules": 3.271842,
+        },
+        Object {
+          "log_genes": 2.757396,
+          "log_molecules": 3.272306,
+        },
+        Object {
+          "log_genes": 2.820858,
+          "log_molecules": 3.272306,
+        },
+        Object {
+          "log_genes": 2.967548,
+          "log_molecules": 3.274158,
+        },
+        Object {
+          "log_genes": 2.841985,
+          "log_molecules": 3.274389,
+        },
+        Object {
+          "log_genes": 2.771587,
+          "log_molecules": 3.27462,
+        },
+        Object {
+          "log_genes": 2.879669,
+          "log_molecules": 3.275311,
+        },
+        Object {
+          "log_genes": 2.810904,
+          "log_molecules": 3.275311,
+        },
+        Object {
+          "log_genes": 2.842609,
+          "log_molecules": 3.275772,
+        },
+        Object {
+          "log_genes": 2.815578,
+          "log_molecules": 3.276692,
+        },
+        Object {
+          "log_genes": 2.904174,
+          "log_molecules": 3.276921,
+        },
+        Object {
+          "log_genes": 2.726727,
+          "log_molecules": 3.277151,
+        },
+        Object {
+          "log_genes": 2.992111,
+          "log_molecules": 3.27738,
+        },
+        Object {
+          "log_genes": 2.949878,
+          "log_molecules": 3.277609,
+        },
+        Object {
+          "log_genes": 2.92737,
+          "log_molecules": 3.277838,
+        },
+        Object {
+          "log_genes": 2.932474,
+          "log_molecules": 3.278296,
+        },
+        Object {
+          "log_genes": 2.82866,
+          "log_molecules": 3.279667,
+        },
+        Object {
+          "log_genes": 2.819544,
+          "log_molecules": 3.279895,
+        },
+        Object {
+          "log_genes": 2.863917,
+          "log_molecules": 3.280123,
+        },
+        Object {
+          "log_genes": 2.771587,
+          "log_molecules": 3.280351,
+        },
+        Object {
+          "log_genes": 2.904174,
+          "log_molecules": 3.280578,
+        },
+        Object {
+          "log_genes": 2.848805,
+          "log_molecules": 3.280806,
+        },
+        Object {
+          "log_genes": 2.856124,
+          "log_molecules": 3.281033,
+        },
+        Object {
+          "log_genes": 2.846337,
+          "log_molecules": 3.281033,
+        },
+      ],
+    },
+    Object {
+      "format": Object {
+        "copy": true,
+        "type": "json",
+      },
+      "name": "linesData",
+      "values": Array [
+        Object {
+          "log_molecules": 2.69897,
+          "lower_cutoff": 2.092375,
+          "upper_cutoff": 2.817468,
+        },
+        Object {
+          "log_molecules": 2.906867,
+          "lower_cutoff": 2.235197,
+          "upper_cutoff": 2.959697,
+        },
+        Object {
+          "log_molecules": 3.114763,
+          "lower_cutoff": 2.377937,
+          "upper_cutoff": 3.102006,
+        },
+        Object {
+          "log_molecules": 3.32266,
+          "lower_cutoff": 2.520597,
+          "upper_cutoff": 3.244397,
+        },
+        Object {
+          "log_molecules": 3.530557,
+          "lower_cutoff": 2.663175,
+          "upper_cutoff": 3.386869,
+        },
+        Object {
+          "log_molecules": 3.738454,
+          "lower_cutoff": 2.805673,
+          "upper_cutoff": 3.529422,
+        },
+        Object {
+          "log_molecules": 3.94635,
+          "lower_cutoff": 2.948088,
+          "upper_cutoff": 3.672056,
+        },
+        Object {
+          "log_molecules": 4.154247,
+          "lower_cutoff": 3.090423,
+          "upper_cutoff": 3.814772,
+        },
+        Object {
+          "log_molecules": 4.362144,
+          "lower_cutoff": 3.232677,
+          "upper_cutoff": 3.957568,
+        },
+        Object {
+          "log_molecules": 4.570041,
+          "lower_cutoff": 3.37485,
+          "upper_cutoff": 4.100446,
+        },
+      ],
+    },
+  ],
+  "height": 500,
+  "marks": Array [
+    Object {
+      "clip": true,
+      "encode": Object {
+        "update": Object {
+          "fill": Object {
+            "value": "blue",
+          },
+          "opacity": Object {
+            "value": 0.9,
+          },
+          "size": Object {
+            "value": 15,
+          },
+          "strokeWidth": Object {
+            "value": 2,
+          },
+          "x": Object {
+            "field": "log_molecules",
+            "scale": "x",
+          },
+          "y": Object {
+            "field": "log_genes",
+            "scale": "y",
+          },
+        },
+      },
+      "from": Object {
+        "data": "pointsData",
+      },
+      "name": "marks",
+      "type": "symbol",
+    },
+    Object {
+      "clip": true,
+      "encode": Object {
+        "update": Object {
+          "stroke": Object {
+            "value": "red",
+          },
+          "strokeDash": Object {
+            "value": Array [
+              8,
+              4,
+            ],
+          },
+          "strokeWidth": Object {
+            "value": 2,
+          },
+          "x": Object {
+            "field": "log_molecules",
+            "scale": "x",
+          },
+          "y": Object {
+            "field": "upper_cutoff",
+            "scale": "y",
+          },
+        },
+      },
+      "from": Object {
+        "data": "linesData",
+      },
+      "type": "line",
+    },
+    Object {
+      "clip": true,
+      "encode": Object {
+        "update": Object {
+          "stroke": Object {
+            "value": "red",
+          },
+          "strokeDash": Object {
+            "value": Array [
+              8,
+              4,
+            ],
+          },
+          "strokeWidth": Object {
+            "value": 2,
+          },
+          "x": Object {
+            "field": "log_molecules",
+            "scale": "x",
+          },
+          "y": Object {
+            "field": "lower_cutoff",
+            "scale": "y",
+          },
+        },
+      },
+      "from": Object {
+        "data": "linesData",
+      },
+      "type": "line",
+    },
+  ],
+  "padding": 5,
+  "scales": Array [
+    Object {
+      "domain": Object {
+        "data": "pointsData",
+        "field": "log_molecules",
+      },
+      "name": "x",
+      "range": "width",
+      "round": true,
+      "type": "linear",
+      "zero": false,
+    },
+    Object {
+      "domain": Array [
+        1.7545782168801844,
+        4.438242783119816,
+      ],
+      "name": "y",
+      "range": "height",
+      "round": true,
+      "type": "linear",
+      "zero": false,
+    },
+  ],
+  "title": Object {
+    "anchor": "start",
+    "color": "#000000",
+    "dx": 10,
+    "font": "sans-serif",
+    "fontSize": 20,
+    "text": "",
+  },
+  "width": 630,
+}
+`;
+
+exports[`features vs umis plot picks correct linesData point if prediction interval is between 0 and 0.99 1`] = `
+Object {
+  "$schema": "https://vega.github.io/schema/vega/v5.json",
+  "autosize": Object {
+    "resize": true,
+    "type": "fit",
+  },
+  "axes": Array [
+    Object {
+      "domain": false,
+      "grid": true,
+      "gridOpacity": 0.5,
+      "labelAlign": "center",
+      "labelAngle": 0,
+      "labelFont": "sans-serif",
+      "labelFontSize": 12,
+      "offset": 0,
+      "orient": "bottom",
+      "scale": "x",
+      "tickCount": 5,
+      "title": "log10 [molecule counts]",
+      "titleFont": "sans-serif",
+      "titleFontSize": 13,
+      "zindex": 1,
+    },
+    Object {
+      "domain": false,
+      "grid": true,
+      "gridOpacity": 0.5,
+      "labelFont": "sans-serif",
+      "labelFontSize": 12,
+      "offset": 0,
+      "orient": "left",
+      "scale": "y",
+      "title": "log10 [gene counts]",
+      "titleFont": "sans-serif",
+      "titleFontSize": 13,
+      "titlePadding": 5,
+      "zindex": 1,
+    },
+  ],
+  "data": Array [
+    Object {
+      "format": Object {
+        "copy": true,
+        "type": "json",
+      },
+      "name": "pointsData",
+      "transform": Array [
+        Object {
+          "expr": "datum['log_genes'] != null && datum['log_molecules'] != null",
+          "type": "filter",
+        },
+        Object {
+          "expr": "datum.log_genes >= 2.0129872168801843 && datum.log_genes <= 4.179654783119816",
+          "type": "filter",
+        },
+      ],
+      "values": Array [
+        Object {
+          "log_genes": 2.515874,
+          "log_molecules": 2.69897,
+        },
+        Object {
+          "log_genes": 2.390935,
+          "log_molecules": 2.699838,
+        },
+        Object {
+          "log_genes": 2.369216,
+          "log_molecules": 2.701568,
+        },
+        Object {
+          "log_genes": 1.544068,
+          "log_molecules": 2.701568,
+        },
+        Object {
+          "log_genes": 2.409933,
+          "log_molecules": 2.703291,
+        },
+        Object {
+          "log_genes": 2.501059,
+          "log_molecules": 2.706718,
+        },
+        Object {
+          "log_genes": 2.495544,
+          "log_molecules": 2.71265,
+        },
+        Object {
+          "log_genes": 2.376577,
+          "log_molecules": 2.713491,
+        },
+        Object {
+          "log_genes": 2.296665,
+          "log_molecules": 2.716838,
+        },
+        Object {
+          "log_genes": 2.474216,
+          "log_molecules": 2.716838,
+        },
+        Object {
+          "log_genes": 2.494155,
+          "log_molecules": 2.723456,
+        },
+        Object {
+          "log_genes": 1.633468,
+          "log_molecules": 2.727541,
+        },
+        Object {
+          "log_genes": 2.509203,
+          "log_molecules": 2.730782,
+        },
+        Object {
+          "log_genes": 2.419956,
+          "log_molecules": 2.730782,
+        },
+        Object {
+          "log_genes": 2.444045,
+          "log_molecules": 2.733999,
+        },
+        Object {
+          "log_genes": 2.348305,
+          "log_molecules": 2.736397,
+        },
+        Object {
+          "log_genes": 2.565848,
+          "log_molecules": 2.739572,
+        },
+        Object {
+          "log_genes": 2.320146,
+          "log_molecules": 2.750508,
+        },
+        Object {
+          "log_genes": 2.521138,
+          "log_molecules": 2.750508,
+        },
+        Object {
+          "log_genes": 1.968483,
+          "log_molecules": 2.754348,
+        },
+        Object {
+          "log_genes": 1.591065,
+          "log_molecules": 2.761176,
+        },
+        Object {
+          "log_genes": 2.503791,
+          "log_molecules": 2.764176,
+        },
+        Object {
+          "log_genes": 2.431364,
+          "log_molecules": 2.768638,
+        },
+        Object {
+          "log_genes": 2.459392,
+          "log_molecules": 2.775974,
+        },
+        Object {
+          "log_genes": 2.385606,
+          "log_molecules": 2.780317,
+        },
+        Object {
+          "log_genes": 2.466868,
+          "log_molecules": 2.781037,
+        },
+        Object {
+          "log_genes": 2.494155,
+          "log_molecules": 2.782473,
+        },
+        Object {
+          "log_genes": 2.491362,
+          "log_molecules": 2.78533,
+        },
+        Object {
+          "log_genes": 2.499687,
+          "log_molecules": 2.788875,
+        },
+        Object {
+          "log_genes": 2.558709,
+          "log_molecules": 2.791691,
+        },
+        Object {
+          "log_genes": 2.44248,
+          "log_molecules": 2.79379,
+        },
+        Object {
+          "log_genes": 2.603144,
+          "log_molecules": 2.795185,
+        },
+        Object {
+          "log_genes": 1.94939,
+          "log_molecules": 2.795185,
+        },
+        Object {
+          "log_genes": 2.555094,
+          "log_molecules": 2.797268,
+        },
+        Object {
+          "log_genes": 2.448706,
+          "log_molecules": 2.798651,
+        },
+        Object {
+          "log_genes": 2.440909,
+          "log_molecules": 2.805501,
+        },
+        Object {
+          "log_genes": 2.465383,
+          "log_molecules": 2.806858,
+        },
+        Object {
+          "log_genes": 2.445604,
+          "log_molecules": 2.810904,
+        },
+        Object {
+          "log_genes": 2.478566,
+          "log_molecules": 2.812913,
+        },
+        Object {
+          "log_genes": 2.570543,
+          "log_molecules": 2.813581,
+        },
+        Object {
+          "log_genes": 2.603144,
+          "log_molecules": 2.818885,
+        },
+        Object {
+          "log_genes": 2.40654,
+          "log_molecules": 2.826723,
+        },
+        Object {
+          "log_genes": 2.513218,
+          "log_molecules": 2.82866,
+        },
+        Object {
+          "log_genes": 2.414973,
+          "log_molecules": 2.830589,
+        },
+        Object {
+          "log_genes": 1.845098,
+          "log_molecules": 2.83123,
+        },
+        Object {
+          "log_genes": 2.463893,
+          "log_molecules": 2.834421,
+        },
+        Object {
+          "log_genes": 1.792392,
+          "log_molecules": 2.835691,
+        },
+        Object {
+          "log_genes": 2.459392,
+          "log_molecules": 2.835691,
+        },
+        Object {
+          "log_genes": 1.755875,
+          "log_molecules": 2.839478,
+        },
+        Object {
+          "log_genes": 1.770852,
+          "log_molecules": 2.841985,
+        },
+        Object {
+          "log_genes": 2.565848,
+          "log_molecules": 2.844477,
+        },
+        Object {
+          "log_genes": 1.799341,
+          "log_molecules": 2.844477,
+        },
+        Object {
+          "log_genes": 2.563481,
+          "log_molecules": 2.845098,
+        },
+        Object {
+          "log_genes": 1.732394,
+          "log_molecules": 2.846337,
+        },
+        Object {
+          "log_genes": 2.462398,
+          "log_molecules": 2.850646,
+        },
+        Object {
+          "log_genes": 1.643453,
+          "log_molecules": 2.863323,
+        },
+        Object {
+          "log_genes": 2.617,
+          "log_molecules": 2.865104,
+        },
+        Object {
+          "log_genes": 2.480007,
+          "log_molecules": 2.867467,
+        },
+        Object {
+          "log_genes": 2.372912,
+          "log_molecules": 2.868644,
+        },
+        Object {
+          "log_genes": 2.481443,
+          "log_molecules": 2.869818,
+        },
+        Object {
+          "log_genes": 2.647383,
+          "log_molecules": 2.877947,
+        },
+        Object {
+          "log_genes": 2.567026,
+          "log_molecules": 2.880242,
+        },
+        Object {
+          "log_genes": 2.582063,
+          "log_molecules": 2.883093,
+        },
+        Object {
+          "log_genes": 1.812913,
+          "log_molecules": 2.883093,
+        },
+        Object {
+          "log_genes": 2.434569,
+          "log_molecules": 2.884795,
+        },
+        Object {
+          "log_genes": 2.668386,
+          "log_molecules": 2.888741,
+        },
+        Object {
+          "log_genes": 2.716838,
+          "log_molecules": 2.893762,
+        },
+        Object {
+          "log_genes": 2.686636,
+          "log_molecules": 2.89487,
+        },
+        Object {
+          "log_genes": 2.478566,
+          "log_molecules": 2.895423,
+        },
+        Object {
+          "log_genes": 2.638489,
+          "log_molecules": 2.905256,
+        },
+        Object {
+          "log_genes": 2.553883,
+          "log_molecules": 2.910091,
+        },
+        Object {
+          "log_genes": 2.539076,
+          "log_molecules": 2.91169,
+        },
+        Object {
+          "log_genes": 1.913814,
+          "log_molecules": 2.91698,
+        },
+        Object {
+          "log_genes": 2.466868,
+          "log_molecules": 2.917506,
+        },
+        Object {
+          "log_genes": 2.683047,
+          "log_molecules": 2.91803,
+        },
+        Object {
+          "log_genes": 2.621176,
+          "log_molecules": 2.924279,
+        },
+        Object {
+          "log_genes": 2.70757,
+          "log_molecules": 2.924796,
+        },
+        Object {
+          "log_genes": 2.583199,
+          "log_molecules": 2.925312,
+        },
+        Object {
+          "log_genes": 2.752816,
+          "log_molecules": 2.933487,
+        },
+        Object {
+          "log_genes": 2.643453,
+          "log_molecules": 2.935003,
+        },
+        Object {
+          "log_genes": 2.547775,
+          "log_molecules": 2.942504,
+        },
+        Object {
+          "log_genes": 2.704151,
+          "log_molecules": 2.950851,
+        },
+        Object {
+          "log_genes": 2.136721,
+          "log_molecules": 2.952792,
+        },
+        Object {
+          "log_genes": 2.518514,
+          "log_molecules": 2.953276,
+        },
+        Object {
+          "log_genes": 2.592177,
+          "log_molecules": 2.956649,
+        },
+        Object {
+          "log_genes": 2.781037,
+          "log_molecules": 2.956649,
+        },
+        Object {
+          "log_genes": 2.722634,
+          "log_molecules": 2.957607,
+        },
+        Object {
+          "log_genes": 2.572872,
+          "log_molecules": 2.959041,
+        },
+        Object {
+          "log_genes": 1.892095,
+          "log_molecules": 2.961421,
+        },
+        Object {
+          "log_genes": 2.749736,
+          "log_molecules": 2.965202,
+        },
+        Object {
+          "log_genes": 1.897627,
+          "log_molecules": 2.980458,
+        },
+        Object {
+          "log_genes": 2.09691,
+          "log_molecules": 2.984527,
+        },
+        Object {
+          "log_genes": 2.726727,
+          "log_molecules": 2.989005,
+        },
+        Object {
+          "log_genes": 2.716003,
+          "log_molecules": 2.992554,
+        },
+        Object {
+          "log_genes": 2.729974,
+          "log_molecules": 3.001734,
+        },
+        Object {
+          "log_genes": 2.7348,
+          "log_molecules": 3.004751,
+        },
+        Object {
+          "log_genes": 2.744293,
+          "log_molecules": 3.009876,
+        },
+        Object {
+          "log_genes": 2.806858,
+          "log_molecules": 3.01494,
+        },
+        Object {
+          "log_genes": 2.646404,
+          "log_molecules": 3.017033,
+        },
+        Object {
+          "log_genes": 1.832509,
+          "log_molecules": 3.017868,
+        },
+        Object {
+          "log_genes": 1.826075,
+          "log_molecules": 3.018284,
+        },
+        Object {
+          "log_genes": 2.756636,
+          "log_molecules": 3.0306,
+        },
+        Object {
+          "log_genes": 2.716838,
+          "log_molecules": 3.033826,
+        },
+        Object {
+          "log_genes": 2.761176,
+          "log_molecules": 3.037825,
+        },
+        Object {
+          "log_genes": 1.732394,
+          "log_molecules": 3.041393,
+        },
+        Object {
+          "log_genes": 1.653213,
+          "log_molecules": 3.043362,
+        },
+        Object {
+          "log_genes": 1.69897,
+          "log_molecules": 3.044932,
+        },
+        Object {
+          "log_genes": 2.751279,
+          "log_molecules": 3.045714,
+        },
+        Object {
+          "log_genes": 2.817565,
+          "log_molecules": 3.046105,
+        },
+        Object {
+          "log_genes": 2.784617,
+          "log_molecules": 3.050766,
+        },
+        Object {
+          "log_genes": 2.756636,
+          "log_molecules": 3.052694,
+        },
+        Object {
+          "log_genes": 2.806858,
+          "log_molecules": 3.057286,
+        },
+        Object {
+          "log_genes": 2.814248,
+          "log_molecules": 3.057286,
+        },
+        Object {
+          "log_genes": 1.838849,
+          "log_molecules": 3.061075,
+        },
+        Object {
+          "log_genes": 2.724276,
+          "log_molecules": 3.062206,
+        },
+        Object {
+          "log_genes": 2.733999,
+          "log_molecules": 3.062958,
+        },
+        Object {
+          "log_genes": 1.716003,
+          "log_molecules": 3.065206,
+        },
+        Object {
+          "log_genes": 2.570543,
+          "log_molecules": 3.06558,
+        },
+        Object {
+          "log_genes": 2.781037,
+          "log_molecules": 3.065953,
+        },
+        Object {
+          "log_genes": 2.710117,
+          "log_molecules": 3.072985,
+        },
+        Object {
+          "log_genes": 2.738781,
+          "log_molecules": 3.078457,
+        },
+        Object {
+          "log_genes": 2.870989,
+          "log_molecules": 3.079543,
+        },
+        Object {
+          "log_genes": 2.806858,
+          "log_molecules": 3.079543,
+        },
+        Object {
+          "log_genes": 2.833784,
+          "log_molecules": 3.084934,
+        },
+        Object {
+          "log_genes": 2.848189,
+          "log_molecules": 3.091315,
+        },
+        Object {
+          "log_genes": 1.886491,
+          "log_molecules": 3.094122,
+        },
+        Object {
+          "log_genes": 2.790285,
+          "log_molecules": 3.097604,
+        },
+        Object {
+          "log_genes": 2.802774,
+          "log_molecules": 3.098298,
+        },
+        Object {
+          "log_genes": 2.786751,
+          "log_molecules": 3.108565,
+        },
+        Object {
+          "log_genes": 2.807535,
+          "log_molecules": 3.109916,
+        },
+        Object {
+          "log_genes": 2.835056,
+          "log_molecules": 3.11294,
+        },
+        Object {
+          "log_genes": 2.782473,
+          "log_molecules": 3.117603,
+        },
+        Object {
+          "log_genes": 2.826075,
+          "log_molecules": 3.120245,
+        },
+        Object {
+          "log_genes": 1.78533,
+          "log_molecules": 3.123525,
+        },
+        Object {
+          "log_genes": 2.694605,
+          "log_molecules": 3.123852,
+        },
+        Object {
+          "log_genes": 2.727541,
+          "log_molecules": 3.125481,
+        },
+        Object {
+          "log_genes": 2.798651,
+          "log_molecules": 3.125806,
+        },
+        Object {
+          "log_genes": 2.797268,
+          "log_molecules": 3.127105,
+        },
+        Object {
+          "log_genes": 2.89098,
+          "log_molecules": 3.130655,
+        },
+        Object {
+          "log_genes": 2.701568,
+          "log_molecules": 3.134814,
+        },
+        Object {
+          "log_genes": 2.755875,
+          "log_molecules": 3.136721,
+        },
+        Object {
+          "log_genes": 2.824776,
+          "log_molecules": 3.136721,
+        },
+        Object {
+          "log_genes": 2.830589,
+          "log_molecules": 3.137354,
+        },
+        Object {
+          "log_genes": 1.633468,
+          "log_molecules": 3.138303,
+        },
+        Object {
+          "log_genes": 2.876795,
+          "log_molecules": 3.139249,
+        },
+        Object {
+          "log_genes": 2.799341,
+          "log_molecules": 3.140508,
+        },
+        Object {
+          "log_genes": 1.643453,
+          "log_molecules": 3.140508,
+        },
+        Object {
+          "log_genes": 2.778874,
+          "log_molecules": 3.140822,
+        },
+        Object {
+          "log_genes": 2.872739,
+          "log_molecules": 3.144885,
+        },
+        Object {
+          "log_genes": 2.804139,
+          "log_molecules": 3.145196,
+        },
+        Object {
+          "log_genes": 2.799341,
+          "log_molecules": 3.145818,
+        },
+        Object {
+          "log_genes": 2.877371,
+          "log_molecules": 3.146128,
+        },
+        Object {
+          "log_genes": 2.762679,
+          "log_molecules": 3.147367,
+        },
+        Object {
+          "log_genes": 2.779596,
+          "log_molecules": 3.150142,
+        },
+        Object {
+          "log_genes": 2.717671,
+          "log_molecules": 3.15137,
+        },
+        Object {
+          "log_genes": 2.856124,
+          "log_molecules": 3.1529,
+        },
+        Object {
+          "log_genes": 2.865696,
+          "log_molecules": 3.15351,
+        },
+        Object {
+          "log_genes": 2.732394,
+          "log_molecules": 3.157154,
+        },
+        Object {
+          "log_genes": 2.71433,
+          "log_molecules": 3.161068,
+        },
+        Object {
+          "log_genes": 2.720986,
+          "log_molecules": 3.162266,
+        },
+        Object {
+          "log_genes": 2.737987,
+          "log_molecules": 3.163161,
+        },
+        Object {
+          "log_genes": 2.848189,
+          "log_molecules": 3.165244,
+        },
+        Object {
+          "log_genes": 2.838849,
+          "log_molecules": 3.165838,
+        },
+        Object {
+          "log_genes": 2.804139,
+          "log_molecules": 3.165838,
+        },
+        Object {
+          "log_genes": 1.60206,
+          "log_molecules": 3.167908,
+        },
+        Object {
+          "log_genes": 2.669317,
+          "log_molecules": 3.169674,
+        },
+        Object {
+          "log_genes": 2.810904,
+          "log_molecules": 3.171141,
+        },
+        Object {
+          "log_genes": 2.906874,
+          "log_molecules": 3.171434,
+        },
+        Object {
+          "log_genes": 2.718502,
+          "log_molecules": 3.174641,
+        },
+        Object {
+          "log_genes": 2.857935,
+          "log_molecules": 3.176381,
+        },
+        Object {
+          "log_genes": 2.780317,
+          "log_molecules": 3.176959,
+        },
+        Object {
+          "log_genes": 2.708421,
+          "log_molecules": 3.179264,
+        },
+        Object {
+          "log_genes": 2.700704,
+          "log_molecules": 3.179839,
+        },
+        Object {
+          "log_genes": 2.873321,
+          "log_molecules": 3.180699,
+        },
+        Object {
+          "log_genes": 2.829947,
+          "log_molecules": 3.183555,
+        },
+        Object {
+          "log_genes": 2.838849,
+          "log_molecules": 3.186108,
+        },
+        Object {
+          "log_genes": 2.836957,
+          "log_molecules": 3.186108,
+        },
+        Object {
+          "log_genes": 2.943,
+          "log_molecules": 3.186956,
+        },
+        Object {
+          "log_genes": 2.833784,
+          "log_molecules": 3.187521,
+        },
+        Object {
+          "log_genes": 2.935507,
+          "log_molecules": 3.18949,
+        },
+        Object {
+          "log_genes": 2.833784,
+          "log_molecules": 3.18949,
+        },
+        Object {
+          "log_genes": 2.78533,
+          "log_molecules": 3.190332,
+        },
+        Object {
+          "log_genes": 2.854913,
+          "log_molecules": 3.190612,
+        },
+        Object {
+          "log_genes": 2.857332,
+          "log_molecules": 3.191451,
+        },
+        Object {
+          "log_genes": 2.751279,
+          "log_molecules": 3.192289,
+        },
+        Object {
+          "log_genes": 2.854306,
+          "log_molecules": 3.192567,
+        },
+        Object {
+          "log_genes": 2.803457,
+          "log_molecules": 3.193403,
+        },
+        Object {
+          "log_genes": 2.720986,
+          "log_molecules": 3.1959,
+        },
+        Object {
+          "log_genes": 2.750508,
+          "log_molecules": 3.196176,
+        },
+        Object {
+          "log_genes": 2.83123,
+          "log_molecules": 3.196176,
+        },
+        Object {
+          "log_genes": 2.835056,
+          "log_molecules": 3.196176,
+        },
+        Object {
+          "log_genes": 2.850033,
+          "log_molecules": 3.196453,
+        },
+        Object {
+          "log_genes": 2.718502,
+          "log_molecules": 3.197832,
+        },
+        Object {
+          "log_genes": 2.872156,
+          "log_molecules": 3.198382,
+        },
+        Object {
+          "log_genes": 2.778874,
+          "log_molecules": 3.199206,
+        },
+        Object {
+          "log_genes": 2.775974,
+          "log_molecules": 3.201397,
+        },
+        Object {
+          "log_genes": 2.7348,
+          "log_molecules": 3.201943,
+        },
+        Object {
+          "log_genes": 2.846337,
+          "log_molecules": 3.201943,
+        },
+        Object {
+          "log_genes": 2.903633,
+          "log_molecules": 3.202488,
+        },
+        Object {
+          "log_genes": 1.826075,
+          "log_molecules": 3.202488,
+        },
+        Object {
+          "log_genes": 2.756636,
+          "log_molecules": 3.203033,
+        },
+        Object {
+          "log_genes": 2.881955,
+          "log_molecules": 3.205204,
+        },
+        Object {
+          "log_genes": 2.814248,
+          "log_molecules": 3.205204,
+        },
+        Object {
+          "log_genes": 2.92737,
+          "log_molecules": 3.206286,
+        },
+        Object {
+          "log_genes": 2.816904,
+          "log_molecules": 3.206826,
+        },
+        Object {
+          "log_genes": 2.764176,
+          "log_molecules": 3.207904,
+        },
+        Object {
+          "log_genes": 2.861534,
+          "log_molecules": 3.209515,
+        },
+        Object {
+          "log_genes": 2.767156,
+          "log_molecules": 3.209783,
+        },
+        Object {
+          "log_genes": 2.778151,
+          "log_molecules": 3.209783,
+        },
+        Object {
+          "log_genes": 2.786751,
+          "log_molecules": 3.21272,
+        },
+        Object {
+          "log_genes": 2.750508,
+          "log_molecules": 3.213252,
+        },
+        Object {
+          "log_genes": 2.761928,
+          "log_molecules": 3.213518,
+        },
+        Object {
+          "log_genes": 2.855519,
+          "log_molecules": 3.214314,
+        },
+        Object {
+          "log_genes": 2.863917,
+          "log_molecules": 3.214579,
+        },
+        Object {
+          "log_genes": 2.840106,
+          "log_molecules": 3.215902,
+        },
+        Object {
+          "log_genes": 2.775974,
+          "log_molecules": 3.21643,
+        },
+        Object {
+          "log_genes": 2.818885,
+          "log_molecules": 3.219323,
+        },
+        Object {
+          "log_genes": 2.834421,
+          "log_molecules": 3.22037,
+        },
+        Object {
+          "log_genes": 2.760422,
+          "log_molecules": 3.220892,
+        },
+        Object {
+          "log_genes": 2.863323,
+          "log_molecules": 3.221414,
+        },
+        Object {
+          "log_genes": 2.720986,
+          "log_molecules": 3.221675,
+        },
+        Object {
+          "log_genes": 1.812913,
+          "log_molecules": 3.222456,
+        },
+        Object {
+          "log_genes": 2.892651,
+          "log_molecules": 3.222456,
+        },
+        Object {
+          "log_genes": 2.947924,
+          "log_molecules": 3.223236,
+        },
+        Object {
+          "log_genes": 1.94939,
+          "log_molecules": 3.224274,
+        },
+        Object {
+          "log_genes": 2.963788,
+          "log_molecules": 3.224533,
+        },
+        Object {
+          "log_genes": 2.885926,
+          "log_molecules": 3.225826,
+        },
+        Object {
+          "log_genes": 2.818885,
+          "log_molecules": 3.2284,
+        },
+        Object {
+          "log_genes": 2.885361,
+          "log_molecules": 3.228913,
+        },
+        Object {
+          "log_genes": 2.733999,
+          "log_molecules": 3.230193,
+        },
+        Object {
+          "log_genes": 2.790988,
+          "log_molecules": 3.230193,
+        },
+        Object {
+          "log_genes": 2.95376,
+          "log_molecules": 3.23325,
+        },
+        Object {
+          "log_genes": 2.804821,
+          "log_molecules": 3.233757,
+        },
+        Object {
+          "log_genes": 2.850646,
+          "log_molecules": 3.233757,
+        },
+        Object {
+          "log_genes": 2.808886,
+          "log_molecules": 3.234517,
+        },
+        Object {
+          "log_genes": 2.962843,
+          "log_molecules": 3.235023,
+        },
+        Object {
+          "log_genes": 2.83187,
+          "log_molecules": 3.235276,
+        },
+        Object {
+          "log_genes": 2.828015,
+          "log_molecules": 3.237795,
+        },
+        Object {
+          "log_genes": 2.783904,
+          "log_molecules": 3.239299,
+        },
+        Object {
+          "log_genes": 2.745075,
+          "log_molecules": 3.240799,
+        },
+        Object {
+          "log_genes": 2.89098,
+          "log_molecules": 3.241795,
+        },
+        Object {
+          "log_genes": 2.813581,
+          "log_molecules": 3.244277,
+        },
+        Object {
+          "log_genes": 1.851258,
+          "log_molecules": 3.245019,
+        },
+        Object {
+          "log_genes": 2.847573,
+          "log_molecules": 3.245513,
+        },
+        Object {
+          "log_genes": 2.826723,
+          "log_molecules": 3.246252,
+        },
+        Object {
+          "log_genes": 2.841985,
+          "log_molecules": 3.246499,
+        },
+        Object {
+          "log_genes": 2.851258,
+          "log_molecules": 3.246499,
+        },
+        Object {
+          "log_genes": 2.862728,
+          "log_molecules": 3.247728,
+        },
+        Object {
+          "log_genes": 2.936011,
+          "log_molecules": 3.248709,
+        },
+        Object {
+          "log_genes": 2.786751,
+          "log_molecules": 3.254306,
+        },
+        Object {
+          "log_genes": 2.900367,
+          "log_molecules": 3.255031,
+        },
+        Object {
+          "log_genes": 2.826075,
+          "log_molecules": 3.255031,
+        },
+        Object {
+          "log_genes": 2.763428,
+          "log_molecules": 3.255273,
+        },
+        Object {
+          "log_genes": 2.978637,
+          "log_molecules": 3.256237,
+        },
+        Object {
+          "log_genes": 2.924279,
+          "log_molecules": 3.257679,
+        },
+        Object {
+          "log_genes": 2.80618,
+          "log_molecules": 3.259594,
+        },
+        Object {
+          "log_genes": 2.837588,
+          "log_molecules": 3.259833,
+        },
+        Object {
+          "log_genes": 2.838849,
+          "log_molecules": 3.261025,
+        },
+        Object {
+          "log_genes": 2.866878,
+          "log_molecules": 3.261263,
+        },
+        Object {
+          "log_genes": 2.79796,
+          "log_molecules": 3.262214,
+        },
+        Object {
+          "log_genes": 2.901458,
+          "log_molecules": 3.263873,
+        },
+        Object {
+          "log_genes": 2.884229,
+          "log_molecules": 3.26529,
+        },
+        Object {
+          "log_genes": 2.799341,
+          "log_molecules": 3.265761,
+        },
+        Object {
+          "log_genes": 2.834421,
+          "log_molecules": 3.265996,
+        },
+        Object {
+          "log_genes": 2.773786,
+          "log_molecules": 3.266937,
+        },
+        Object {
+          "log_genes": 1.944483,
+          "log_molecules": 3.267172,
+        },
+        Object {
+          "log_genes": 2.825426,
+          "log_molecules": 3.267875,
+        },
+        Object {
+          "log_genes": 2.127105,
+          "log_molecules": 3.268344,
+        },
+        Object {
+          "log_genes": 2.893762,
+          "log_molecules": 3.268344,
+        },
+        Object {
+          "log_genes": 2.846955,
+          "log_molecules": 3.269513,
+        },
+        Object {
+          "log_genes": 2.817565,
+          "log_molecules": 3.270213,
+        },
+        Object {
+          "log_genes": 2.838219,
+          "log_molecules": 3.270679,
+        },
+        Object {
+          "log_genes": 2.87564,
+          "log_molecules": 3.271144,
+        },
+        Object {
+          "log_genes": 2.93044,
+          "log_molecules": 3.271377,
+        },
+        Object {
+          "log_genes": 2.952792,
+          "log_molecules": 3.271609,
+        },
+        Object {
+          "log_genes": 2.79796,
+          "log_molecules": 3.271609,
+        },
+        Object {
+          "log_genes": 2.850033,
+          "log_molecules": 3.271842,
+        },
+        Object {
+          "log_genes": 2.91698,
+          "log_molecules": 3.271842,
+        },
+        Object {
+          "log_genes": 2.757396,
+          "log_molecules": 3.272306,
+        },
+        Object {
+          "log_genes": 2.820858,
+          "log_molecules": 3.272306,
+        },
+        Object {
+          "log_genes": 2.967548,
+          "log_molecules": 3.274158,
+        },
+        Object {
+          "log_genes": 2.841985,
+          "log_molecules": 3.274389,
+        },
+        Object {
+          "log_genes": 2.771587,
+          "log_molecules": 3.27462,
+        },
+        Object {
+          "log_genes": 2.879669,
+          "log_molecules": 3.275311,
+        },
+        Object {
+          "log_genes": 2.810904,
+          "log_molecules": 3.275311,
+        },
+        Object {
+          "log_genes": 2.842609,
+          "log_molecules": 3.275772,
+        },
+        Object {
+          "log_genes": 2.815578,
+          "log_molecules": 3.276692,
+        },
+        Object {
+          "log_genes": 2.904174,
+          "log_molecules": 3.276921,
+        },
+        Object {
+          "log_genes": 2.726727,
+          "log_molecules": 3.277151,
+        },
+        Object {
+          "log_genes": 2.992111,
+          "log_molecules": 3.27738,
+        },
+        Object {
+          "log_genes": 2.949878,
+          "log_molecules": 3.277609,
+        },
+        Object {
+          "log_genes": 2.92737,
+          "log_molecules": 3.277838,
+        },
+        Object {
+          "log_genes": 2.932474,
+          "log_molecules": 3.278296,
+        },
+        Object {
+          "log_genes": 2.82866,
+          "log_molecules": 3.279667,
+        },
+        Object {
+          "log_genes": 2.819544,
+          "log_molecules": 3.279895,
+        },
+        Object {
+          "log_genes": 2.863917,
+          "log_molecules": 3.280123,
+        },
+        Object {
+          "log_genes": 2.771587,
+          "log_molecules": 3.280351,
+        },
+        Object {
+          "log_genes": 2.904174,
+          "log_molecules": 3.280578,
+        },
+        Object {
+          "log_genes": 2.848805,
+          "log_molecules": 3.280806,
+        },
+        Object {
+          "log_genes": 2.856124,
+          "log_molecules": 3.281033,
+        },
+        Object {
+          "log_genes": 2.846337,
+          "log_molecules": 3.281033,
+        },
+      ],
+    },
+    Object {
+      "format": Object {
+        "copy": true,
+        "type": "json",
+      },
+      "name": "linesData",
+      "values": Array [
+        Object {
+          "log_molecules": 2.69897,
+          "lower_cutoff": 2.350784,
+          "upper_cutoff": 2.559059,
+        },
+        Object {
+          "log_molecules": 2.906867,
+          "lower_cutoff": 2.493394,
+          "upper_cutoff": 2.701499,
+        },
+        Object {
+          "log_molecules": 3.114763,
+          "lower_cutoff": 2.635981,
+          "upper_cutoff": 2.843962,
+        },
+        Object {
+          "log_molecules": 3.32266,
+          "lower_cutoff": 2.778545,
+          "upper_cutoff": 2.986449,
+        },
+        Object {
+          "log_molecules": 3.530557,
+          "lower_cutoff": 2.921085,
+          "upper_cutoff": 3.128959,
+        },
+        Object {
+          "log_molecules": 3.738454,
+          "lower_cutoff": 3.063603,
+          "upper_cutoff": 3.271492,
+        },
+        Object {
+          "log_molecules": 3.94635,
+          "lower_cutoff": 3.206096,
+          "upper_cutoff": 3.414048,
+        },
+        Object {
+          "log_molecules": 4.154247,
+          "lower_cutoff": 3.348567,
+          "upper_cutoff": 3.556628,
+        },
+        Object {
+          "log_molecules": 4.362144,
+          "lower_cutoff": 3.491014,
+          "upper_cutoff": 3.699231,
+        },
+        Object {
+          "log_molecules": 4.570041,
+          "lower_cutoff": 3.633438,
+          "upper_cutoff": 3.841858,
+        },
+      ],
+    },
+  ],
+  "height": 500,
+  "marks": Array [
+    Object {
+      "clip": true,
+      "encode": Object {
+        "update": Object {
+          "fill": Object {
+            "value": "blue",
+          },
+          "opacity": Object {
+            "value": 0.9,
+          },
+          "size": Object {
+            "value": 15,
+          },
+          "strokeWidth": Object {
+            "value": 2,
+          },
+          "x": Object {
+            "field": "log_molecules",
+            "scale": "x",
+          },
+          "y": Object {
+            "field": "log_genes",
+            "scale": "y",
+          },
+        },
+      },
+      "from": Object {
+        "data": "pointsData",
+      },
+      "name": "marks",
+      "type": "symbol",
+    },
+    Object {
+      "clip": true,
+      "encode": Object {
+        "update": Object {
+          "stroke": Object {
+            "value": "red",
+          },
+          "strokeDash": Object {
+            "value": Array [
+              8,
+              4,
+            ],
+          },
+          "strokeWidth": Object {
+            "value": 2,
+          },
+          "x": Object {
+            "field": "log_molecules",
+            "scale": "x",
+          },
+          "y": Object {
+            "field": "upper_cutoff",
+            "scale": "y",
+          },
+        },
+      },
+      "from": Object {
+        "data": "linesData",
+      },
+      "type": "line",
+    },
+    Object {
+      "clip": true,
+      "encode": Object {
+        "update": Object {
+          "stroke": Object {
+            "value": "red",
+          },
+          "strokeDash": Object {
+            "value": Array [
+              8,
+              4,
+            ],
+          },
+          "strokeWidth": Object {
+            "value": 2,
+          },
+          "x": Object {
+            "field": "log_molecules",
+            "scale": "x",
+          },
+          "y": Object {
+            "field": "lower_cutoff",
+            "scale": "y",
+          },
+        },
+      },
+      "from": Object {
+        "data": "linesData",
+      },
+      "type": "line",
+    },
+  ],
+  "padding": 5,
+  "scales": Array [
+    Object {
+      "domain": Object {
+        "data": "pointsData",
+        "field": "log_molecules",
+      },
+      "name": "x",
+      "range": "width",
+      "round": true,
+      "type": "linear",
+      "zero": false,
+    },
+    Object {
+      "domain": Array [
+        2.0129872168801843,
+        4.179654783119816,
+      ],
+      "name": "y",
+      "range": "height",
+      "round": true,
+      "type": "linear",
+      "zero": false,
+    },
+  ],
+  "title": Object {
+    "anchor": "start",
+    "color": "#000000",
+    "dx": 10,
+    "font": "sans-serif",
+    "fontSize": 20,
+    "text": "",
+  },
+  "width": 630,
+}
+`;
+
+exports[`features vs umis plot picks correct linesData point if prediction interval is null 1`] = `
+Object {
+  "$schema": "https://vega.github.io/schema/vega/v5.json",
+  "autosize": Object {
+    "resize": true,
+    "type": "fit",
+  },
+  "axes": Array [
+    Object {
+      "domain": false,
+      "grid": true,
+      "gridOpacity": 0.5,
+      "labelAlign": "center",
+      "labelAngle": 0,
+      "labelFont": "sans-serif",
+      "labelFontSize": 12,
+      "offset": 0,
+      "orient": "bottom",
+      "scale": "x",
+      "tickCount": 5,
+      "title": "log10 [molecule counts]",
+      "titleFont": "sans-serif",
+      "titleFontSize": 13,
+      "zindex": 1,
+    },
+    Object {
+      "domain": false,
+      "grid": true,
+      "gridOpacity": 0.5,
+      "labelFont": "sans-serif",
+      "labelFontSize": 12,
+      "offset": 0,
+      "orient": "left",
+      "scale": "y",
+      "title": "log10 [gene counts]",
+      "titleFont": "sans-serif",
+      "titleFontSize": 13,
+      "titlePadding": 5,
+      "zindex": 1,
+    },
+  ],
+  "data": Array [
+    Object {
+      "format": Object {
+        "copy": true,
+        "type": "json",
+      },
+      "name": "pointsData",
+      "transform": Array [
+        Object {
+          "expr": "datum['log_genes'] != null && datum['log_molecules'] != null",
+          "type": "filter",
+        },
+        Object {
+          "expr": "datum.log_genes >= 1.8456702168801842 && datum.log_genes <= 4.347086783119816",
+          "type": "filter",
+        },
+      ],
+      "values": Array [
+        Object {
+          "log_genes": 2.515874,
+          "log_molecules": 2.69897,
+        },
+        Object {
+          "log_genes": 2.390935,
+          "log_molecules": 2.699838,
+        },
+        Object {
+          "log_genes": 2.369216,
+          "log_molecules": 2.701568,
+        },
+        Object {
+          "log_genes": 1.544068,
+          "log_molecules": 2.701568,
+        },
+        Object {
+          "log_genes": 2.409933,
+          "log_molecules": 2.703291,
+        },
+        Object {
+          "log_genes": 2.501059,
+          "log_molecules": 2.706718,
+        },
+        Object {
+          "log_genes": 2.495544,
+          "log_molecules": 2.71265,
+        },
+        Object {
+          "log_genes": 2.376577,
+          "log_molecules": 2.713491,
+        },
+        Object {
+          "log_genes": 2.296665,
+          "log_molecules": 2.716838,
+        },
+        Object {
+          "log_genes": 2.474216,
+          "log_molecules": 2.716838,
+        },
+        Object {
+          "log_genes": 2.494155,
+          "log_molecules": 2.723456,
+        },
+        Object {
+          "log_genes": 1.633468,
+          "log_molecules": 2.727541,
+        },
+        Object {
+          "log_genes": 2.509203,
+          "log_molecules": 2.730782,
+        },
+        Object {
+          "log_genes": 2.419956,
+          "log_molecules": 2.730782,
+        },
+        Object {
+          "log_genes": 2.444045,
+          "log_molecules": 2.733999,
+        },
+        Object {
+          "log_genes": 2.348305,
+          "log_molecules": 2.736397,
+        },
+        Object {
+          "log_genes": 2.565848,
+          "log_molecules": 2.739572,
+        },
+        Object {
+          "log_genes": 2.320146,
+          "log_molecules": 2.750508,
+        },
+        Object {
+          "log_genes": 2.521138,
+          "log_molecules": 2.750508,
+        },
+        Object {
+          "log_genes": 1.968483,
+          "log_molecules": 2.754348,
+        },
+        Object {
+          "log_genes": 1.591065,
+          "log_molecules": 2.761176,
+        },
+        Object {
+          "log_genes": 2.503791,
+          "log_molecules": 2.764176,
+        },
+        Object {
+          "log_genes": 2.431364,
+          "log_molecules": 2.768638,
+        },
+        Object {
+          "log_genes": 2.459392,
+          "log_molecules": 2.775974,
+        },
+        Object {
+          "log_genes": 2.385606,
+          "log_molecules": 2.780317,
+        },
+        Object {
+          "log_genes": 2.466868,
+          "log_molecules": 2.781037,
+        },
+        Object {
+          "log_genes": 2.494155,
+          "log_molecules": 2.782473,
+        },
+        Object {
+          "log_genes": 2.491362,
+          "log_molecules": 2.78533,
+        },
+        Object {
+          "log_genes": 2.499687,
+          "log_molecules": 2.788875,
+        },
+        Object {
+          "log_genes": 2.558709,
+          "log_molecules": 2.791691,
+        },
+        Object {
+          "log_genes": 2.44248,
+          "log_molecules": 2.79379,
+        },
+        Object {
+          "log_genes": 2.603144,
+          "log_molecules": 2.795185,
+        },
+        Object {
+          "log_genes": 1.94939,
+          "log_molecules": 2.795185,
+        },
+        Object {
+          "log_genes": 2.555094,
+          "log_molecules": 2.797268,
+        },
+        Object {
+          "log_genes": 2.448706,
+          "log_molecules": 2.798651,
+        },
+        Object {
+          "log_genes": 2.440909,
+          "log_molecules": 2.805501,
+        },
+        Object {
+          "log_genes": 2.465383,
+          "log_molecules": 2.806858,
+        },
+        Object {
+          "log_genes": 2.445604,
+          "log_molecules": 2.810904,
+        },
+        Object {
+          "log_genes": 2.478566,
+          "log_molecules": 2.812913,
+        },
+        Object {
+          "log_genes": 2.570543,
+          "log_molecules": 2.813581,
+        },
+        Object {
+          "log_genes": 2.603144,
+          "log_molecules": 2.818885,
+        },
+        Object {
+          "log_genes": 2.40654,
+          "log_molecules": 2.826723,
+        },
+        Object {
+          "log_genes": 2.513218,
+          "log_molecules": 2.82866,
+        },
+        Object {
+          "log_genes": 2.414973,
+          "log_molecules": 2.830589,
+        },
+        Object {
+          "log_genes": 1.845098,
+          "log_molecules": 2.83123,
+        },
+        Object {
+          "log_genes": 2.463893,
+          "log_molecules": 2.834421,
+        },
+        Object {
+          "log_genes": 1.792392,
+          "log_molecules": 2.835691,
+        },
+        Object {
+          "log_genes": 2.459392,
+          "log_molecules": 2.835691,
+        },
+        Object {
+          "log_genes": 1.755875,
+          "log_molecules": 2.839478,
+        },
+        Object {
+          "log_genes": 1.770852,
+          "log_molecules": 2.841985,
+        },
+        Object {
+          "log_genes": 2.565848,
+          "log_molecules": 2.844477,
+        },
+        Object {
+          "log_genes": 1.799341,
+          "log_molecules": 2.844477,
+        },
+        Object {
+          "log_genes": 2.563481,
+          "log_molecules": 2.845098,
+        },
+        Object {
+          "log_genes": 1.732394,
+          "log_molecules": 2.846337,
+        },
+        Object {
+          "log_genes": 2.462398,
+          "log_molecules": 2.850646,
+        },
+        Object {
+          "log_genes": 1.643453,
+          "log_molecules": 2.863323,
+        },
+        Object {
+          "log_genes": 2.617,
+          "log_molecules": 2.865104,
+        },
+        Object {
+          "log_genes": 2.480007,
+          "log_molecules": 2.867467,
+        },
+        Object {
+          "log_genes": 2.372912,
+          "log_molecules": 2.868644,
+        },
+        Object {
+          "log_genes": 2.481443,
+          "log_molecules": 2.869818,
+        },
+        Object {
+          "log_genes": 2.647383,
+          "log_molecules": 2.877947,
+        },
+        Object {
+          "log_genes": 2.567026,
+          "log_molecules": 2.880242,
+        },
+        Object {
+          "log_genes": 2.582063,
+          "log_molecules": 2.883093,
+        },
+        Object {
+          "log_genes": 1.812913,
+          "log_molecules": 2.883093,
+        },
+        Object {
+          "log_genes": 2.434569,
+          "log_molecules": 2.884795,
+        },
+        Object {
+          "log_genes": 2.668386,
+          "log_molecules": 2.888741,
+        },
+        Object {
+          "log_genes": 2.716838,
+          "log_molecules": 2.893762,
+        },
+        Object {
+          "log_genes": 2.686636,
+          "log_molecules": 2.89487,
+        },
+        Object {
+          "log_genes": 2.478566,
+          "log_molecules": 2.895423,
+        },
+        Object {
+          "log_genes": 2.638489,
+          "log_molecules": 2.905256,
+        },
+        Object {
+          "log_genes": 2.553883,
+          "log_molecules": 2.910091,
+        },
+        Object {
+          "log_genes": 2.539076,
+          "log_molecules": 2.91169,
+        },
+        Object {
+          "log_genes": 1.913814,
+          "log_molecules": 2.91698,
+        },
+        Object {
+          "log_genes": 2.466868,
+          "log_molecules": 2.917506,
+        },
+        Object {
+          "log_genes": 2.683047,
+          "log_molecules": 2.91803,
+        },
+        Object {
+          "log_genes": 2.621176,
+          "log_molecules": 2.924279,
+        },
+        Object {
+          "log_genes": 2.70757,
+          "log_molecules": 2.924796,
+        },
+        Object {
+          "log_genes": 2.583199,
+          "log_molecules": 2.925312,
+        },
+        Object {
+          "log_genes": 2.752816,
+          "log_molecules": 2.933487,
+        },
+        Object {
+          "log_genes": 2.643453,
+          "log_molecules": 2.935003,
+        },
+        Object {
+          "log_genes": 2.547775,
+          "log_molecules": 2.942504,
+        },
+        Object {
+          "log_genes": 2.704151,
+          "log_molecules": 2.950851,
+        },
+        Object {
+          "log_genes": 2.136721,
+          "log_molecules": 2.952792,
+        },
+        Object {
+          "log_genes": 2.518514,
+          "log_molecules": 2.953276,
+        },
+        Object {
+          "log_genes": 2.592177,
+          "log_molecules": 2.956649,
+        },
+        Object {
+          "log_genes": 2.781037,
+          "log_molecules": 2.956649,
+        },
+        Object {
+          "log_genes": 2.722634,
+          "log_molecules": 2.957607,
+        },
+        Object {
+          "log_genes": 2.572872,
+          "log_molecules": 2.959041,
+        },
+        Object {
+          "log_genes": 1.892095,
+          "log_molecules": 2.961421,
+        },
+        Object {
+          "log_genes": 2.749736,
+          "log_molecules": 2.965202,
+        },
+        Object {
+          "log_genes": 1.897627,
+          "log_molecules": 2.980458,
+        },
+        Object {
+          "log_genes": 2.09691,
+          "log_molecules": 2.984527,
+        },
+        Object {
+          "log_genes": 2.726727,
+          "log_molecules": 2.989005,
+        },
+        Object {
+          "log_genes": 2.716003,
+          "log_molecules": 2.992554,
+        },
+        Object {
+          "log_genes": 2.729974,
+          "log_molecules": 3.001734,
+        },
+        Object {
+          "log_genes": 2.7348,
+          "log_molecules": 3.004751,
+        },
+        Object {
+          "log_genes": 2.744293,
+          "log_molecules": 3.009876,
+        },
+        Object {
+          "log_genes": 2.806858,
+          "log_molecules": 3.01494,
+        },
+        Object {
+          "log_genes": 2.646404,
+          "log_molecules": 3.017033,
+        },
+        Object {
+          "log_genes": 1.832509,
+          "log_molecules": 3.017868,
+        },
+        Object {
+          "log_genes": 1.826075,
+          "log_molecules": 3.018284,
+        },
+        Object {
+          "log_genes": 2.756636,
+          "log_molecules": 3.0306,
+        },
+        Object {
+          "log_genes": 2.716838,
+          "log_molecules": 3.033826,
+        },
+        Object {
+          "log_genes": 2.761176,
+          "log_molecules": 3.037825,
+        },
+        Object {
+          "log_genes": 1.732394,
+          "log_molecules": 3.041393,
+        },
+        Object {
+          "log_genes": 1.653213,
+          "log_molecules": 3.043362,
+        },
+        Object {
+          "log_genes": 1.69897,
+          "log_molecules": 3.044932,
+        },
+        Object {
+          "log_genes": 2.751279,
+          "log_molecules": 3.045714,
+        },
+        Object {
+          "log_genes": 2.817565,
+          "log_molecules": 3.046105,
+        },
+        Object {
+          "log_genes": 2.784617,
+          "log_molecules": 3.050766,
+        },
+        Object {
+          "log_genes": 2.756636,
+          "log_molecules": 3.052694,
+        },
+        Object {
+          "log_genes": 2.806858,
+          "log_molecules": 3.057286,
+        },
+        Object {
+          "log_genes": 2.814248,
+          "log_molecules": 3.057286,
+        },
+        Object {
+          "log_genes": 1.838849,
+          "log_molecules": 3.061075,
+        },
+        Object {
+          "log_genes": 2.724276,
+          "log_molecules": 3.062206,
+        },
+        Object {
+          "log_genes": 2.733999,
+          "log_molecules": 3.062958,
+        },
+        Object {
+          "log_genes": 1.716003,
+          "log_molecules": 3.065206,
+        },
+        Object {
+          "log_genes": 2.570543,
+          "log_molecules": 3.06558,
+        },
+        Object {
+          "log_genes": 2.781037,
+          "log_molecules": 3.065953,
+        },
+        Object {
+          "log_genes": 2.710117,
+          "log_molecules": 3.072985,
+        },
+        Object {
+          "log_genes": 2.738781,
+          "log_molecules": 3.078457,
+        },
+        Object {
+          "log_genes": 2.870989,
+          "log_molecules": 3.079543,
+        },
+        Object {
+          "log_genes": 2.806858,
+          "log_molecules": 3.079543,
+        },
+        Object {
+          "log_genes": 2.833784,
+          "log_molecules": 3.084934,
+        },
+        Object {
+          "log_genes": 2.848189,
+          "log_molecules": 3.091315,
+        },
+        Object {
+          "log_genes": 1.886491,
+          "log_molecules": 3.094122,
+        },
+        Object {
+          "log_genes": 2.790285,
+          "log_molecules": 3.097604,
+        },
+        Object {
+          "log_genes": 2.802774,
+          "log_molecules": 3.098298,
+        },
+        Object {
+          "log_genes": 2.786751,
+          "log_molecules": 3.108565,
+        },
+        Object {
+          "log_genes": 2.807535,
+          "log_molecules": 3.109916,
+        },
+        Object {
+          "log_genes": 2.835056,
+          "log_molecules": 3.11294,
+        },
+        Object {
+          "log_genes": 2.782473,
+          "log_molecules": 3.117603,
+        },
+        Object {
+          "log_genes": 2.826075,
+          "log_molecules": 3.120245,
+        },
+        Object {
+          "log_genes": 1.78533,
+          "log_molecules": 3.123525,
+        },
+        Object {
+          "log_genes": 2.694605,
+          "log_molecules": 3.123852,
+        },
+        Object {
+          "log_genes": 2.727541,
+          "log_molecules": 3.125481,
+        },
+        Object {
+          "log_genes": 2.798651,
+          "log_molecules": 3.125806,
+        },
+        Object {
+          "log_genes": 2.797268,
+          "log_molecules": 3.127105,
+        },
+        Object {
+          "log_genes": 2.89098,
+          "log_molecules": 3.130655,
+        },
+        Object {
+          "log_genes": 2.701568,
+          "log_molecules": 3.134814,
+        },
+        Object {
+          "log_genes": 2.755875,
+          "log_molecules": 3.136721,
+        },
+        Object {
+          "log_genes": 2.824776,
+          "log_molecules": 3.136721,
+        },
+        Object {
+          "log_genes": 2.830589,
+          "log_molecules": 3.137354,
+        },
+        Object {
+          "log_genes": 1.633468,
+          "log_molecules": 3.138303,
+        },
+        Object {
+          "log_genes": 2.876795,
+          "log_molecules": 3.139249,
+        },
+        Object {
+          "log_genes": 2.799341,
+          "log_molecules": 3.140508,
+        },
+        Object {
+          "log_genes": 1.643453,
+          "log_molecules": 3.140508,
+        },
+        Object {
+          "log_genes": 2.778874,
+          "log_molecules": 3.140822,
+        },
+        Object {
+          "log_genes": 2.872739,
+          "log_molecules": 3.144885,
+        },
+        Object {
+          "log_genes": 2.804139,
+          "log_molecules": 3.145196,
+        },
+        Object {
+          "log_genes": 2.799341,
+          "log_molecules": 3.145818,
+        },
+        Object {
+          "log_genes": 2.877371,
+          "log_molecules": 3.146128,
+        },
+        Object {
+          "log_genes": 2.762679,
+          "log_molecules": 3.147367,
+        },
+        Object {
+          "log_genes": 2.779596,
+          "log_molecules": 3.150142,
+        },
+        Object {
+          "log_genes": 2.717671,
+          "log_molecules": 3.15137,
+        },
+        Object {
+          "log_genes": 2.856124,
+          "log_molecules": 3.1529,
+        },
+        Object {
+          "log_genes": 2.865696,
+          "log_molecules": 3.15351,
+        },
+        Object {
+          "log_genes": 2.732394,
+          "log_molecules": 3.157154,
+        },
+        Object {
+          "log_genes": 2.71433,
+          "log_molecules": 3.161068,
+        },
+        Object {
+          "log_genes": 2.720986,
+          "log_molecules": 3.162266,
+        },
+        Object {
+          "log_genes": 2.737987,
+          "log_molecules": 3.163161,
+        },
+        Object {
+          "log_genes": 2.848189,
+          "log_molecules": 3.165244,
+        },
+        Object {
+          "log_genes": 2.838849,
+          "log_molecules": 3.165838,
+        },
+        Object {
+          "log_genes": 2.804139,
+          "log_molecules": 3.165838,
+        },
+        Object {
+          "log_genes": 1.60206,
+          "log_molecules": 3.167908,
+        },
+        Object {
+          "log_genes": 2.669317,
+          "log_molecules": 3.169674,
+        },
+        Object {
+          "log_genes": 2.810904,
+          "log_molecules": 3.171141,
+        },
+        Object {
+          "log_genes": 2.906874,
+          "log_molecules": 3.171434,
+        },
+        Object {
+          "log_genes": 2.718502,
+          "log_molecules": 3.174641,
+        },
+        Object {
+          "log_genes": 2.857935,
+          "log_molecules": 3.176381,
+        },
+        Object {
+          "log_genes": 2.780317,
+          "log_molecules": 3.176959,
+        },
+        Object {
+          "log_genes": 2.708421,
+          "log_molecules": 3.179264,
+        },
+        Object {
+          "log_genes": 2.700704,
+          "log_molecules": 3.179839,
+        },
+        Object {
+          "log_genes": 2.873321,
+          "log_molecules": 3.180699,
+        },
+        Object {
+          "log_genes": 2.829947,
+          "log_molecules": 3.183555,
+        },
+        Object {
+          "log_genes": 2.838849,
+          "log_molecules": 3.186108,
+        },
+        Object {
+          "log_genes": 2.836957,
+          "log_molecules": 3.186108,
+        },
+        Object {
+          "log_genes": 2.943,
+          "log_molecules": 3.186956,
+        },
+        Object {
+          "log_genes": 2.833784,
+          "log_molecules": 3.187521,
+        },
+        Object {
+          "log_genes": 2.935507,
+          "log_molecules": 3.18949,
+        },
+        Object {
+          "log_genes": 2.833784,
+          "log_molecules": 3.18949,
+        },
+        Object {
+          "log_genes": 2.78533,
+          "log_molecules": 3.190332,
+        },
+        Object {
+          "log_genes": 2.854913,
+          "log_molecules": 3.190612,
+        },
+        Object {
+          "log_genes": 2.857332,
+          "log_molecules": 3.191451,
+        },
+        Object {
+          "log_genes": 2.751279,
+          "log_molecules": 3.192289,
+        },
+        Object {
+          "log_genes": 2.854306,
+          "log_molecules": 3.192567,
+        },
+        Object {
+          "log_genes": 2.803457,
+          "log_molecules": 3.193403,
+        },
+        Object {
+          "log_genes": 2.720986,
+          "log_molecules": 3.1959,
+        },
+        Object {
+          "log_genes": 2.750508,
+          "log_molecules": 3.196176,
+        },
+        Object {
+          "log_genes": 2.83123,
+          "log_molecules": 3.196176,
+        },
+        Object {
+          "log_genes": 2.835056,
+          "log_molecules": 3.196176,
+        },
+        Object {
+          "log_genes": 2.850033,
+          "log_molecules": 3.196453,
+        },
+        Object {
+          "log_genes": 2.718502,
+          "log_molecules": 3.197832,
+        },
+        Object {
+          "log_genes": 2.872156,
+          "log_molecules": 3.198382,
+        },
+        Object {
+          "log_genes": 2.778874,
+          "log_molecules": 3.199206,
+        },
+        Object {
+          "log_genes": 2.775974,
+          "log_molecules": 3.201397,
+        },
+        Object {
+          "log_genes": 2.7348,
+          "log_molecules": 3.201943,
+        },
+        Object {
+          "log_genes": 2.846337,
+          "log_molecules": 3.201943,
+        },
+        Object {
+          "log_genes": 2.903633,
+          "log_molecules": 3.202488,
+        },
+        Object {
+          "log_genes": 1.826075,
+          "log_molecules": 3.202488,
+        },
+        Object {
+          "log_genes": 2.756636,
+          "log_molecules": 3.203033,
+        },
+        Object {
+          "log_genes": 2.881955,
+          "log_molecules": 3.205204,
+        },
+        Object {
+          "log_genes": 2.814248,
+          "log_molecules": 3.205204,
+        },
+        Object {
+          "log_genes": 2.92737,
+          "log_molecules": 3.206286,
+        },
+        Object {
+          "log_genes": 2.816904,
+          "log_molecules": 3.206826,
+        },
+        Object {
+          "log_genes": 2.764176,
+          "log_molecules": 3.207904,
+        },
+        Object {
+          "log_genes": 2.861534,
+          "log_molecules": 3.209515,
+        },
+        Object {
+          "log_genes": 2.767156,
+          "log_molecules": 3.209783,
+        },
+        Object {
+          "log_genes": 2.778151,
+          "log_molecules": 3.209783,
+        },
+        Object {
+          "log_genes": 2.786751,
+          "log_molecules": 3.21272,
+        },
+        Object {
+          "log_genes": 2.750508,
+          "log_molecules": 3.213252,
+        },
+        Object {
+          "log_genes": 2.761928,
+          "log_molecules": 3.213518,
+        },
+        Object {
+          "log_genes": 2.855519,
+          "log_molecules": 3.214314,
+        },
+        Object {
+          "log_genes": 2.863917,
+          "log_molecules": 3.214579,
+        },
+        Object {
+          "log_genes": 2.840106,
+          "log_molecules": 3.215902,
+        },
+        Object {
+          "log_genes": 2.775974,
+          "log_molecules": 3.21643,
+        },
+        Object {
+          "log_genes": 2.818885,
+          "log_molecules": 3.219323,
+        },
+        Object {
+          "log_genes": 2.834421,
+          "log_molecules": 3.22037,
+        },
+        Object {
+          "log_genes": 2.760422,
+          "log_molecules": 3.220892,
+        },
+        Object {
+          "log_genes": 2.863323,
+          "log_molecules": 3.221414,
+        },
+        Object {
+          "log_genes": 2.720986,
+          "log_molecules": 3.221675,
+        },
+        Object {
+          "log_genes": 1.812913,
+          "log_molecules": 3.222456,
+        },
+        Object {
+          "log_genes": 2.892651,
+          "log_molecules": 3.222456,
+        },
+        Object {
+          "log_genes": 2.947924,
+          "log_molecules": 3.223236,
+        },
+        Object {
+          "log_genes": 1.94939,
+          "log_molecules": 3.224274,
+        },
+        Object {
+          "log_genes": 2.963788,
+          "log_molecules": 3.224533,
+        },
+        Object {
+          "log_genes": 2.885926,
+          "log_molecules": 3.225826,
+        },
+        Object {
+          "log_genes": 2.818885,
+          "log_molecules": 3.2284,
+        },
+        Object {
+          "log_genes": 2.885361,
+          "log_molecules": 3.228913,
+        },
+        Object {
+          "log_genes": 2.733999,
+          "log_molecules": 3.230193,
+        },
+        Object {
+          "log_genes": 2.790988,
+          "log_molecules": 3.230193,
+        },
+        Object {
+          "log_genes": 2.95376,
+          "log_molecules": 3.23325,
+        },
+        Object {
+          "log_genes": 2.804821,
+          "log_molecules": 3.233757,
+        },
+        Object {
+          "log_genes": 2.850646,
+          "log_molecules": 3.233757,
+        },
+        Object {
+          "log_genes": 2.808886,
+          "log_molecules": 3.234517,
+        },
+        Object {
+          "log_genes": 2.962843,
+          "log_molecules": 3.235023,
+        },
+        Object {
+          "log_genes": 2.83187,
+          "log_molecules": 3.235276,
+        },
+        Object {
+          "log_genes": 2.828015,
+          "log_molecules": 3.237795,
+        },
+        Object {
+          "log_genes": 2.783904,
+          "log_molecules": 3.239299,
+        },
+        Object {
+          "log_genes": 2.745075,
+          "log_molecules": 3.240799,
+        },
+        Object {
+          "log_genes": 2.89098,
+          "log_molecules": 3.241795,
+        },
+        Object {
+          "log_genes": 2.813581,
+          "log_molecules": 3.244277,
+        },
+        Object {
+          "log_genes": 1.851258,
+          "log_molecules": 3.245019,
+        },
+        Object {
+          "log_genes": 2.847573,
+          "log_molecules": 3.245513,
+        },
+        Object {
+          "log_genes": 2.826723,
+          "log_molecules": 3.246252,
+        },
+        Object {
+          "log_genes": 2.841985,
+          "log_molecules": 3.246499,
+        },
+        Object {
+          "log_genes": 2.851258,
+          "log_molecules": 3.246499,
+        },
+        Object {
+          "log_genes": 2.862728,
+          "log_molecules": 3.247728,
+        },
+        Object {
+          "log_genes": 2.936011,
+          "log_molecules": 3.248709,
+        },
+        Object {
+          "log_genes": 2.786751,
+          "log_molecules": 3.254306,
+        },
+        Object {
+          "log_genes": 2.900367,
+          "log_molecules": 3.255031,
+        },
+        Object {
+          "log_genes": 2.826075,
+          "log_molecules": 3.255031,
+        },
+        Object {
+          "log_genes": 2.763428,
+          "log_molecules": 3.255273,
+        },
+        Object {
+          "log_genes": 2.978637,
+          "log_molecules": 3.256237,
+        },
+        Object {
+          "log_genes": 2.924279,
+          "log_molecules": 3.257679,
+        },
+        Object {
+          "log_genes": 2.80618,
+          "log_molecules": 3.259594,
+        },
+        Object {
+          "log_genes": 2.837588,
+          "log_molecules": 3.259833,
+        },
+        Object {
+          "log_genes": 2.838849,
+          "log_molecules": 3.261025,
+        },
+        Object {
+          "log_genes": 2.866878,
+          "log_molecules": 3.261263,
+        },
+        Object {
+          "log_genes": 2.79796,
+          "log_molecules": 3.262214,
+        },
+        Object {
+          "log_genes": 2.901458,
+          "log_molecules": 3.263873,
+        },
+        Object {
+          "log_genes": 2.884229,
+          "log_molecules": 3.26529,
+        },
+        Object {
+          "log_genes": 2.799341,
+          "log_molecules": 3.265761,
+        },
+        Object {
+          "log_genes": 2.834421,
+          "log_molecules": 3.265996,
+        },
+        Object {
+          "log_genes": 2.773786,
+          "log_molecules": 3.266937,
+        },
+        Object {
+          "log_genes": 1.944483,
+          "log_molecules": 3.267172,
+        },
+        Object {
+          "log_genes": 2.825426,
+          "log_molecules": 3.267875,
+        },
+        Object {
+          "log_genes": 2.127105,
+          "log_molecules": 3.268344,
+        },
+        Object {
+          "log_genes": 2.893762,
+          "log_molecules": 3.268344,
+        },
+        Object {
+          "log_genes": 2.846955,
+          "log_molecules": 3.269513,
+        },
+        Object {
+          "log_genes": 2.817565,
+          "log_molecules": 3.270213,
+        },
+        Object {
+          "log_genes": 2.838219,
+          "log_molecules": 3.270679,
+        },
+        Object {
+          "log_genes": 2.87564,
+          "log_molecules": 3.271144,
+        },
+        Object {
+          "log_genes": 2.93044,
+          "log_molecules": 3.271377,
+        },
+        Object {
+          "log_genes": 2.952792,
+          "log_molecules": 3.271609,
+        },
+        Object {
+          "log_genes": 2.79796,
+          "log_molecules": 3.271609,
+        },
+        Object {
+          "log_genes": 2.850033,
+          "log_molecules": 3.271842,
+        },
+        Object {
+          "log_genes": 2.91698,
+          "log_molecules": 3.271842,
+        },
+        Object {
+          "log_genes": 2.757396,
+          "log_molecules": 3.272306,
+        },
+        Object {
+          "log_genes": 2.820858,
+          "log_molecules": 3.272306,
+        },
+        Object {
+          "log_genes": 2.967548,
+          "log_molecules": 3.274158,
+        },
+        Object {
+          "log_genes": 2.841985,
+          "log_molecules": 3.274389,
+        },
+        Object {
+          "log_genes": 2.771587,
+          "log_molecules": 3.27462,
+        },
+        Object {
+          "log_genes": 2.879669,
+          "log_molecules": 3.275311,
+        },
+        Object {
+          "log_genes": 2.810904,
+          "log_molecules": 3.275311,
+        },
+        Object {
+          "log_genes": 2.842609,
+          "log_molecules": 3.275772,
+        },
+        Object {
+          "log_genes": 2.815578,
+          "log_molecules": 3.276692,
+        },
+        Object {
+          "log_genes": 2.904174,
+          "log_molecules": 3.276921,
+        },
+        Object {
+          "log_genes": 2.726727,
+          "log_molecules": 3.277151,
+        },
+        Object {
+          "log_genes": 2.992111,
+          "log_molecules": 3.27738,
+        },
+        Object {
+          "log_genes": 2.949878,
+          "log_molecules": 3.277609,
+        },
+        Object {
+          "log_genes": 2.92737,
+          "log_molecules": 3.277838,
+        },
+        Object {
+          "log_genes": 2.932474,
+          "log_molecules": 3.278296,
+        },
+        Object {
+          "log_genes": 2.82866,
+          "log_molecules": 3.279667,
+        },
+        Object {
+          "log_genes": 2.819544,
+          "log_molecules": 3.279895,
+        },
+        Object {
+          "log_genes": 2.863917,
+          "log_molecules": 3.280123,
+        },
+        Object {
+          "log_genes": 2.771587,
+          "log_molecules": 3.280351,
+        },
+        Object {
+          "log_genes": 2.904174,
+          "log_molecules": 3.280578,
+        },
+        Object {
+          "log_genes": 2.848805,
+          "log_molecules": 3.280806,
+        },
+        Object {
+          "log_genes": 2.856124,
+          "log_molecules": 3.281033,
+        },
+        Object {
+          "log_genes": 2.846337,
+          "log_molecules": 3.281033,
+        },
+      ],
+    },
+    Object {
+      "format": Object {
+        "copy": true,
+        "type": "json",
+      },
+      "name": "linesData",
+      "values": Array [
+        Object {
+          "log_molecules": 2.69897,
+          "lower_cutoff": 2.183467,
+          "upper_cutoff": 2.726376,
+        },
+        Object {
+          "log_molecules": 2.906867,
+          "lower_cutoff": 2.326215,
+          "upper_cutoff": 2.868679,
+        },
+        Object {
+          "log_molecules": 3.114763,
+          "lower_cutoff": 2.468901,
+          "upper_cutoff": 3.011043,
+        },
+        Object {
+          "log_molecules": 3.32266,
+          "lower_cutoff": 2.611527,
+          "upper_cutoff": 3.153467,
+        },
+        Object {
+          "log_molecules": 3.530557,
+          "lower_cutoff": 2.754092,
+          "upper_cutoff": 3.295952,
+        },
+        Object {
+          "log_molecules": 3.738454,
+          "lower_cutoff": 2.896596,
+          "upper_cutoff": 3.438498,
+        },
+        Object {
+          "log_molecules": 3.94635,
+          "lower_cutoff": 3.039039,
+          "upper_cutoff": 3.581105,
+        },
+        Object {
+          "log_molecules": 4.154247,
+          "lower_cutoff": 3.181422,
+          "upper_cutoff": 3.723773,
+        },
+        Object {
+          "log_molecules": 4.362144,
+          "lower_cutoff": 3.323744,
+          "upper_cutoff": 3.866501,
+        },
+        Object {
+          "log_molecules": 4.570041,
+          "lower_cutoff": 3.466005,
+          "upper_cutoff": 4.00929,
+        },
+      ],
+    },
+  ],
+  "height": 500,
+  "marks": Array [
+    Object {
+      "clip": true,
+      "encode": Object {
+        "update": Object {
+          "fill": Object {
+            "value": "blue",
+          },
+          "opacity": Object {
+            "value": 0.9,
+          },
+          "size": Object {
+            "value": 15,
+          },
+          "strokeWidth": Object {
+            "value": 2,
+          },
+          "x": Object {
+            "field": "log_molecules",
+            "scale": "x",
+          },
+          "y": Object {
+            "field": "log_genes",
+            "scale": "y",
+          },
+        },
+      },
+      "from": Object {
+        "data": "pointsData",
+      },
+      "name": "marks",
+      "type": "symbol",
+    },
+    Object {
+      "clip": true,
+      "encode": Object {
+        "update": Object {
+          "stroke": Object {
+            "value": "red",
+          },
+          "strokeDash": Object {
+            "value": Array [
+              8,
+              4,
+            ],
+          },
+          "strokeWidth": Object {
+            "value": 2,
+          },
+          "x": Object {
+            "field": "log_molecules",
+            "scale": "x",
+          },
+          "y": Object {
+            "field": "upper_cutoff",
+            "scale": "y",
+          },
+        },
+      },
+      "from": Object {
+        "data": "linesData",
+      },
+      "type": "line",
+    },
+    Object {
+      "clip": true,
+      "encode": Object {
+        "update": Object {
+          "stroke": Object {
+            "value": "red",
+          },
+          "strokeDash": Object {
+            "value": Array [
+              8,
+              4,
+            ],
+          },
+          "strokeWidth": Object {
+            "value": 2,
+          },
+          "x": Object {
+            "field": "log_molecules",
+            "scale": "x",
+          },
+          "y": Object {
+            "field": "lower_cutoff",
+            "scale": "y",
+          },
+        },
+      },
+      "from": Object {
+        "data": "linesData",
+      },
+      "type": "line",
+    },
+  ],
+  "padding": 5,
+  "scales": Array [
+    Object {
+      "domain": Object {
+        "data": "pointsData",
+        "field": "log_molecules",
+      },
+      "name": "x",
+      "range": "width",
+      "round": true,
+      "type": "linear",
+      "zero": false,
+    },
+    Object {
+      "domain": Array [
+        1.8456702168801842,
+        4.347086783119816,
+      ],
+      "name": "y",
+      "range": "height",
+      "round": true,
+      "type": "linear",
+      "zero": false,
+    },
+  ],
+  "title": Object {
+    "anchor": "start",
+    "color": "#000000",
+    "dx": 10,
+    "font": "sans-serif",
+    "fontSize": 20,
+    "text": "",
+  },
+  "width": 630,
+}
+`;

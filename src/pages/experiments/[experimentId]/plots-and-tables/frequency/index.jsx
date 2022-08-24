@@ -37,10 +37,6 @@ const FrequencyPlotPage = ({ experimentId }) => {
   const dispatch = useDispatch();
   const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
   const cellSets = useSelector(getCellSets());
-  const {
-    loading: cellSetsLoading,
-    error: cellSetsError,
-  } = cellSets;
 
   const cellSetClusters = useSelector(getCellSetsHierarchyByKeys(config?.proportionGrouping || ''));
   const experimentName = useSelector((state) => state.experimentSettings.info.experimentName);
@@ -70,7 +66,7 @@ const FrequencyPlotPage = ({ experimentId }) => {
     },
     {
       panelTitle: 'Axes and margins',
-      controls: ['axes'],
+      controls: ['axesWithRanges'],
     },
     {
       panelTitle: 'Legend',
@@ -154,15 +150,15 @@ const FrequencyPlotPage = ({ experimentId }) => {
   );
 
   const renderPlot = () => {
-    if (cellSetsError) {
+    if (cellSets.error) {
       return (
         <PlatformError
-          description={cellSetsError}
+          description={cellSets.error}
           onClick={() => loadCellSets(experimentId)}
         />
       );
     }
-    if (!config || cellSetsLoading) {
+    if (!config || !cellSets.accessible) {
       return (
         <center>
           <Loader experimentId={experimentId} />

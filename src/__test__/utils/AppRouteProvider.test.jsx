@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Button } from 'antd';
 import { useRouter } from 'next/router';
@@ -18,7 +18,7 @@ import DataProcessingIntercept from 'components/data-processing/DataProcessingIn
 
 import addChangedQCFilter from 'redux/actions/experimentSettings/processingConfig/addChangedQCFilter';
 import {
-  updateExperiment, loadExperiments, switchExperiment,
+  updateExperiment, switchExperiment, setActiveExperiment,
 } from 'redux/actions/experiments';
 
 jest.mock('next/router', () => ({
@@ -28,12 +28,13 @@ jest.mock('next/router', () => ({
 
 jest.mock('components/data-processing/DataProcessingIntercept',
   () => jest.fn(() => <>Data Processing Intercept</>));
-
 jest.mock('redux/actions/experiments/switchExperiment');
 jest.mock('redux/actions/experiments/updateExperiment');
+jest.mock('redux/actions/experiments/setActiveExperiment');
 
 switchExperiment.mockImplementation(() => ({ type: 'MOCK_ACTION ' }));
 updateExperiment.mockImplementation(() => ({ type: 'MOCK_ACTION ' }));
+setActiveExperiment.mockImplementation(() => ({ type: 'MOCK_ACTION ' }));
 
 enableFetchMocks();
 
@@ -56,18 +57,17 @@ const expectedPath = PATHS[testModule].replace('[experimentId]', experimentId);
 
 const TestComponent = (props) => {
   // eslint-disable-next-line react/prop-types
-  const { module, params, refreshPage = false } = props;
+  const { module, params } = props;
   const { navigateTo } = useAppRouter();
 
   const testParams = {
-    experimentId,
     experimentId,
     ...params,
   };
 
   return (
     <div>
-      <Button onClick={() => navigateTo(module, testParams, refreshPage)}>
+      <Button onClick={() => navigateTo(module, testParams)}>
         {buttonText}
       </Button>
     </div>
@@ -111,8 +111,6 @@ describe('AppRouteProvider', () => {
   });
 
   it('Switch experiment when navigating from DataManagement', async () => {
-    await storeState.dispatch(loadExperiments());
-
     render(
       <Provider store={storeState}>
         <AppRouteProvider>
@@ -127,6 +125,27 @@ describe('AppRouteProvider', () => {
 
     expect(switchExperiment).toHaveBeenCalledTimes(1);
 
+    expect(mockRouter.push).toHaveBeenCalled();
+  });
+
+  it('Switch active experiment when navigating to DataManagement if an experiment is specified', async () => {
+    render(
+      <Provider store={storeState}>
+        <AppRouteProvider>
+          <TestComponent module={modules.DATA_MANAGEMENT} />
+        </AppRouteProvider>
+      </Provider>,
+    );
+
+    mockRouter.pathname = '/data-processing';
+
+    userEvent.click(screen.getByText(buttonText));
+
+    await waitFor(() => {
+      expect(setActiveExperiment).toHaveBeenCalledTimes(1);
+    });
+
+    expect(setActiveExperiment).toHaveBeenCalledWith(experimentId);
     expect(mockRouter.push).toHaveBeenCalled();
   });
 

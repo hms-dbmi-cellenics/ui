@@ -93,13 +93,7 @@ const VolcanoPlotPage = (props) => {
   const plotStylingConfig = [
     {
       panelTitle: 'Main schema',
-      controls: [{
-        name: 'volcanoDimensions',
-        props: {
-          xMax: 20,
-          yMax: maxYAxis * 2,
-        },
-      }],
+      controls: ['dimensions'],
       children: [
         {
           panelTitle: 'Title',
@@ -117,7 +111,7 @@ const VolcanoPlotPage = (props) => {
     },
     {
       panelTitle: 'Axes and margins',
-      controls: ['axes'],
+      controls: ['axesWithRanges'],
     },
     {
       panelTitle: 'Colours',

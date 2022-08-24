@@ -151,7 +151,7 @@ const CalculationConfig = (props) => {
           <Form.Item>
             <Text>
               <strong style={{ marginRight: '0.5rem' }}>Data integration settings:</strong>
-              <Tooltip title='Integration of multiple samples corrects for batch effect. These methods identify shared cell states that are present across different datasets, even if they were collected from different individuals, experimental conditions, technologies, or even species. The user selects the integration method and sets the controls, as appropriate. The latest Seurat method is selected as default.'>
+              <Tooltip title='Integration of multiple samples corrects for batch effect. These methods identify shared cell states that are present across different datasets, even if they were collected from different individuals, experimental conditions, technologies, or even species. The user selects the integration method and sets the controls, as appropriate. Harmony is selected as default.'>
                 <QuestionCircleOutlined />
               </Tooltip>
             </Text>
@@ -224,27 +224,42 @@ const CalculationConfig = (props) => {
                 readOnly
               />
             </Form.Item>
-            <Form.Item label='Exclude genes categories'>
-              <Tooltip title='Normalization can be biased by certain gene categories such the ones listed here.
-              Checking them will ignore those categories.
-              For example, cell cycle genes should be removed if sampling timepoints occured throughout the day.
-              Those genes can otherwise introduces within-cell-type heterogeneity that can obscure the differences
-              in expression between cell types.
-              This is not implemented yet'
-              >
-                <QuestionCircleOutlined />
-              </Tooltip>
+            <Form.Item
+              label={(
+                <span>
+                  Exclude genes categories&nbsp;
+                  <Tooltip
+                    title='Normalization can be biased by certain gene categories such the ones listed here.
+                    Checking them will ignore those categories.
+                    For example, cell cycle genes should be removed if sampling timepoints occured throughout the day.
+                    Those genes can otherwise introduce within-cell-type heterogeneity that can obscure the differences
+                    in expression between cell types.'
+                  >
+                    <QuestionCircleOutlined />
+                  </Tooltip>
+                </span>
+              )}
+            >
+
               <Checkbox.Group
                 onChange={(val) => updateSettings(
                   { dimensionalityReduction: { excludeGeneCategories: val } },
                 )}
                 value={dimensionalityReduction.excludeGeneCategories}
-                disabled
               >
                 <Space direction='vertical'>
-                  <Checkbox value='ribosomal'>ribosomal</Checkbox>
-                  <Checkbox value='mitochondrial'>mitochondrial</Checkbox>
-                  <Checkbox value='cellCycle'>cell cycle</Checkbox>
+                  <Checkbox disabled value='ribosomal'>Ribosomal</Checkbox>
+                  <Checkbox disabled value='mitochondrial'>Mitochondrial</Checkbox>
+                  <Checkbox value='cellCycle'>
+                    <span>
+                      Cell cycle genes&nbsp;
+                      <Tooltip
+                        title='Currently only available for human and mice species. Do not check this box if your cells are from a different species.'
+                      >
+                        <QuestionCircleOutlined />
+                      </Tooltip>
+                    </span>
+                  </Checkbox>
                 </Space>
               </Checkbox.Group>
             </Form.Item>
