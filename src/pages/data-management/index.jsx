@@ -46,6 +46,13 @@ const DataManagementPage = () => {
   };
 
   useEffect(() => {
+    // If the active experiment isnt loaded, reload
+    if (activeExperimentId && !activeExperiment) {
+      dispatch(loadExperiments());
+    }
+  }, [activeExperiment]);
+
+  useEffect(() => {
     if (!activeExperimentId
       || !activeExperiment
       || privacyPolicyIsNotAccepted(user, domainName)
