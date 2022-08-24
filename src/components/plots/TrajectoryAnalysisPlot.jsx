@@ -71,6 +71,7 @@ const TrajectoryAnalysisPlot = (props) => {
   useEffect(() => {
     dispatch(loadCellSets(experimentId));
   }, []);
+
   useEffect(() => {
     if (!embeddingSettings) {
       dispatch(loadProcessingSettings(experimentId));

@@ -11,21 +11,20 @@ const getPseudoTime = (
   experimentId,
   plotUuid,
 ) => async (dispatch, getState) => {
+  // Currenty monocle3 only trajectory analysis only supports
+  // UMAP embedding. Therefore, this embedding is specifically fetched.
+  const embeddingMethod = 'umap';
+
   const {
-    embeddingSettings,
     clusteringSettings,
   } = getState().experimentSettings.processing?.configureEmbedding || {};
 
-  const embeddingState = getState()
+  const methodSettings = getState()
     .experimentSettings
     ?.processing
     ?.configureEmbedding
-    ?.embeddingSettings;
-
-  const {
-    methodSettings,
-    method: embeddingMethod,
-  } = embeddingState;
+    ?.embeddingSettings
+    ?.methodSettings;
 
   const { environment } = getState().networkResources;
   const backendStatus = getBackendStatus(experimentId)(getState()).status;
@@ -50,7 +49,8 @@ const getPseudoTime = (
   const body = {
     name: 'GetPseudoTime',
     embedding: {
-      method: embeddingSettings.method,
+      method: embeddingMethod,
+      methodSettings: methodSettings[embeddingMethod],
       ETag: embeddingETag,
     },
     clustering: {

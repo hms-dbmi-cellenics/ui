@@ -21,7 +21,6 @@ import getPseudoTime from 'redux/actions/componentConfig/getTrajectoryPlotPseudo
 import Header from 'components/Header';
 import PlotContainer from 'components/plots/PlotContainer';
 import TrajectoryAnalysisPlot from 'components/plots/TrajectoryAnalysisPlot';
-
 import { plotNames, plotTypes } from 'utils/constants';
 
 const { Panel } = Collapse;
