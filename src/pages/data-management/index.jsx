@@ -45,14 +45,17 @@ const DataManagementPage = () => {
   };
 
   useEffect(() => {
-    if (!activeExperimentId || privacyPolicyIsNotAccepted(user, domainName)) return;
+    if (!activeExperimentId
+      || !activeExperiment
+      || privacyPolicyIsNotAccepted(user, domainName)
+    ) return;
 
     dispatch(loadProcessingSettings(activeExperimentId));
 
     if (!samplesAreLoaded()) dispatch(loadSamples(activeExperimentId));
 
     dispatch(loadBackendStatus(activeExperimentId));
-  }, [activeExperimentId, user]);
+  }, [activeExperimentId, activeExperiment, user]);
 
   const PROJECTS_LIST = 'Projects';
   const PROJECT_DETAILS = 'Project Details';
@@ -70,7 +73,7 @@ const DataManagementPage = () => {
     [PROJECT_DETAILS]: {
       toolbarControls: [],
       component: (width, height) => {
-        if (!activeExperimentId) {
+        if (!activeExperimentId || !activeExperiment) {
           return <ExampleExperimentsSpace introductionText='You have no projects yet.' />;
         }
 

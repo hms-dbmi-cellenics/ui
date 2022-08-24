@@ -1,5 +1,6 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 /* eslint-disable react/jsx-props-no-spreading */
+import _ from 'lodash';
 import React, { useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
@@ -9,10 +10,12 @@ import {
 
 import { updateExperiment } from 'redux/actions/experiments';
 
-import { layout } from 'utils/constants';
 import EditableParagraph from 'components/EditableParagraph';
-import SamplesTable from './SamplesTable';
+import Loader from 'components/Loader';
+import { layout } from 'utils/constants';
+
 import ProjectMenu from './ProjectMenu';
+import SamplesTable from './SamplesTable';
 
 const {
   Title, Text,
