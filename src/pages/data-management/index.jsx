@@ -16,6 +16,7 @@ import loadBackendStatus from 'redux/actions/backendStatus/loadBackendStatus';
 import { loadSamples } from 'redux/actions/samples';
 import ExampleExperimentsSpace from 'components/data-management/ExampleExperimentsSpace';
 import { privacyPolicyIsNotAccepted } from 'utils/deploymentInfo';
+import Loader from 'components/Loader';
 
 const DataManagementPage = () => {
   const dispatch = useDispatch();
@@ -75,6 +76,14 @@ const DataManagementPage = () => {
       component: (width, height) => {
         if (!activeExperimentId || !activeExperiment) {
           return <ExampleExperimentsSpace introductionText='You have no projects yet.' />;
+        }
+
+        if (!activeExperiment) {
+          return (
+            <center>
+              <Loader />
+            </center>
+          );
         }
 
         return (

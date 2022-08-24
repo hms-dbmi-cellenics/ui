@@ -1,6 +1,5 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 /* eslint-disable react/jsx-props-no-spreading */
-import _ from 'lodash';
 import React, { useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
@@ -11,7 +10,6 @@ import {
 import { updateExperiment } from 'redux/actions/experiments';
 
 import EditableParagraph from 'components/EditableParagraph';
-import Loader from 'components/Loader';
 import { layout } from 'utils/constants';
 
 import ProjectMenu from './ProjectMenu';
