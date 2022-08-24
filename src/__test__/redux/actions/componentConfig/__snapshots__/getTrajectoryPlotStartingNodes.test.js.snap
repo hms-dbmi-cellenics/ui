@@ -1,0 +1,100 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Get trajectory plot starting nodes Dispatches the correct events 1`] = `
+Object {
+  "payload": Object {
+    "plotData": Object {
+      "nodes": Object {
+        "Y_1": Object {
+          "connected_nodes": Array [
+            "Y_2",
+          ],
+          "node_id": "Y_1",
+          "x": 7.5735,
+          "y": 6.3022,
+        },
+        "Y_10": Object {
+          "connected_nodes": Array [
+            "Y_11",
+          ],
+          "node_id": "Y_10",
+          "x": 11.5128,
+          "y": 7.8589,
+        },
+        "Y_11": Object {
+          "connected_nodes": Array [],
+          "node_id": "Y_11",
+          "x": 9.1538,
+          "y": 6.6533,
+        },
+        "Y_2": Object {
+          "connected_nodes": Array [
+            "Y_3",
+          ],
+          "node_id": "Y_2",
+          "x": 13.5819,
+          "y": 4.3054,
+        },
+        "Y_3": Object {
+          "connected_nodes": Array [
+            "Y_4",
+          ],
+          "node_id": "Y_3",
+          "x": 12.1746,
+          "y": 2.7184,
+        },
+        "Y_4": Object {
+          "connected_nodes": Array [
+            "Y_5",
+          ],
+          "node_id": "Y_4",
+          "x": 7.381,
+          "y": 6.1275,
+        },
+        "Y_5": Object {
+          "connected_nodes": Array [
+            "Y_6",
+          ],
+          "node_id": "Y_5",
+          "x": 11.8568,
+          "y": 11.7834,
+        },
+        "Y_6": Object {
+          "connected_nodes": Array [
+            "Y_7",
+          ],
+          "node_id": "Y_6",
+          "x": 13.7215,
+          "y": 8.0585,
+        },
+        "Y_7": Object {
+          "connected_nodes": Array [
+            "Y_8",
+          ],
+          "node_id": "Y_7",
+          "x": 11.4873,
+          "y": 6.7254,
+        },
+        "Y_8": Object {
+          "connected_nodes": Array [
+            "Y_9",
+          ],
+          "node_id": "Y_8",
+          "x": 7.9824,
+          "y": 6.6455,
+        },
+        "Y_9": Object {
+          "connected_nodes": Array [
+            "Y_10",
+          ],
+          "node_id": "Y_9",
+          "x": 10.8745,
+          "y": 8.3806,
+        },
+      },
+    },
+    "plotUuid": "trajectoryAnalysisMock",
+  },
+  "type": "componentConfig/plotDataLoaded",
+}
+`;

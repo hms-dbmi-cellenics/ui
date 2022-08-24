@@ -11,7 +11,7 @@ import endUserMessages from 'utils/endUserMessages';
 import { waitFor } from '@testing-library/dom';
 
 jest.mock('utils/work/fetchWork', () => ({
-  fetchWork: jest.fn(),
+  fetchWork: jest.fn(() => ({})),
 }));
 jest.mock('utils/pushNotificationMessage');
 
@@ -37,7 +37,7 @@ describe('createCellSetByExpression', () => {
     jest.clearAllMocks();
   });
 
-  it('Dispatces the correct body', async () => {
+  it('Dispatches the correct body', async () => {
     await store.dispatch(createCellSetByExpression(experimentId, mockData));
 
     const params = fetchWork.mock.calls[0];

@@ -198,7 +198,7 @@ const LaunchPathwayAnalysisModal = (props) => {
                 downloadFromUrl(fileUrl, 'reference_genes_list.txt');
               }}
             >
-              Click here the download the reference genes list
+              Click here to download the reference genes list
             </Button>
             .
           </Paragraph>
