@@ -74,7 +74,7 @@ const DataManagementPage = () => {
     [PROJECT_DETAILS]: {
       toolbarControls: [],
       component: (width, height) => {
-        if (!activeExperimentId || !activeExperiment) {
+        if (!activeExperimentId) {
           return <ExampleExperimentsSpace introductionText='You have no projects yet.' />;
         }
 
