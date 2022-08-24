@@ -12,8 +12,8 @@ import { updateExperiment } from 'redux/actions/experiments';
 import EditableParagraph from 'components/EditableParagraph';
 import { layout } from 'utils/constants';
 
-import ProjectMenu from './ProjectMenu';
-import SamplesTable from './SamplesTable';
+import SamplesTable from 'components/data-management/SamplesTable';
+import ProjectMenu from 'components/data-management/ProjectMenu';
 
 const {
   Title, Text,
