@@ -30,6 +30,8 @@ const TrajectoryAnalysisPlot = (props) => {
     config,
     plotData: startingNodesPlotData,
     plotLoading,
+    plotDataError,
+    onPlotDataErrorRetry,
     actions,
     onUpdate,
   } = props;
@@ -149,6 +151,15 @@ const TrajectoryAnalysisPlot = (props) => {
       );
     }
 
+    if (plotDataError) {
+      return (
+        <PlatformError
+          error={plotDataError}
+          onClick={onPlotDataErrorRetry}
+        />
+      );
+    }
+
     if (!config
       || embeddingLoading
       || plotLoading
@@ -193,6 +204,8 @@ TrajectoryAnalysisPlot.propTypes = {
   experimentId: PropTypes.string.isRequired,
   config: PropTypes.object,
   plotData: PropTypes.object.isRequired,
+  plotDataError: PropTypes.bool,
+  onPlotDataErrorRetry: PropTypes.func,
   plotLoading: PropTypes.bool,
   actions: PropTypes.oneOfType([
     PropTypes.bool,
@@ -202,9 +215,11 @@ TrajectoryAnalysisPlot.propTypes = {
 };
 
 TrajectoryAnalysisPlot.defaultProps = {
+  config: null,
   actions: true,
   plotLoading: false,
-  config: null,
+  plotDataError: false,
+  onPlotDataErrorRetry: () => {},
 };
 
 export default TrajectoryAnalysisPlot;

@@ -31,6 +31,7 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
     config,
     plotData,
     loading: plotLoading,
+    error: plotDataError,
   } = useSelector((state) => state.componentConfig[plotUuid]) || {};
 
   const embeddingSettings = useSelector(
@@ -138,9 +139,10 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
         <TrajectoryAnalysisPlot
           experimentId={experimentId}
           config={config}
-          plotUuid={plotUuid}
           plotData={plotData}
           plotLoading={plotLoading}
+          plotDataError={plotDataError}
+          onPlotDataErrorRetry={() => dispatch(getStartingNodes(experimentId, plotUuid))}
           onUpdate={updatePlotWithChanges}
           actions={{ export: true, editor: false, source: false }}
         />
