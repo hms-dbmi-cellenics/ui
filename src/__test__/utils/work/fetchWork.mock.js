@@ -123,6 +123,8 @@ const mockSeekWorkResponseModule = {
   dispatchWorkRequest: mockDispatchWorkRequest,
 };
 
+const mockQcPipelineStartDate = '2021-01-01T01:01:01.000Z';
+
 const mockReduxState = (experimentId, environment = 'testing') => () => ({
   networkResources: {
     environment,
@@ -132,7 +134,7 @@ const mockReduxState = (experimentId, environment = 'testing') => () => ({
       status: {
         pipeline: {
           status: 'SUCCEEDED',
-          startDate: '2021-01-01T01:01:01.000Z',
+          startDate: mockQcPipelineStartDate,
         },
       },
     },
@@ -145,6 +147,6 @@ export {
   mockCacheKeyMappings,
   mockCacheGet, mockCacheSet,
   mockDispatchWorkRequest, mockSeekFromS3,
-  mockReduxState,
+  mockReduxState, mockQcPipelineStartDate,
   mockCacheModule, mockSeekWorkResponseModule,
 };

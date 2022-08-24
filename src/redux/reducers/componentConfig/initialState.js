@@ -29,7 +29,7 @@ const embeddingCategoricalInitialConfig = {
     xAxisText: 'Umap 1',
     yAxisText: 'Umap 2',
     defaultValues: ['x', 'y'],
-    offset: 10,
+    offset: 0,
   },
   axesRanges: axesRangesBaseState,
   title: {
@@ -284,6 +284,41 @@ const dotPlotConfig = {
   selectedCellSet: 'louvain',
   selectedPoints: 'All',
   keepValuesOnReset: ['selectedGenes'],
+};
+
+// PLOTS & TABLES - Trajectory Analysis
+const trajectoryAnalysisInitialConfig = {
+  spec: '1.0.0',
+  legend: {
+    ...legendBaseState,
+    position: 'top',
+  },
+  dimensions: {
+    ...dimensionsBaseState,
+    width: 700,
+    height: 550,
+  },
+  axes: {
+    ...axesBaseState,
+    xAxisText: 'Umap 1',
+    yAxisText: 'Umap 2',
+    defaultValues: ['x', 'y'],
+    offset: 10,
+  },
+  title: {
+    ...titleBaseState,
+    fontSize: 20,
+  },
+  fontStyle: fontStyleBaseState,
+  colour: colourBaseState,
+  marker: markerBaseState,
+  labels: {
+    ...labelBaseState,
+    enabled: false,
+  },
+  selectedCellSet: 'louvain',
+  selectedSample: 'All',
+  isZoomOrPanned: false,
 };
 
 // EMBEDDING PREVIEW - Coloured by sample
@@ -803,6 +838,7 @@ const initialPlotConfigStates = {
   markerHeatmap: markerHeatmapInitialConfig,
   violin: violinConfig,
   [plotTypes.DOT_PLOT]: dotPlotConfig,
+  [plotTypes.TRAJECTORY_ANALYSIS]: trajectoryAnalysisInitialConfig,
   frequency: frequencyInitialConfig,
   embeddingPreviewBySample: embeddingPreviewBySampleInitialConfig,
   embeddingPreviewByCellSets: embeddingPreviewByCellSetsInitialConfig,
