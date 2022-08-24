@@ -1,5 +1,7 @@
 import getTimeoutForWorkerTask from 'utils/getTimeoutForWorkerTask';
-import { PLOT_DATA_LOADED, PLOT_DATA_LOADING, PLOT_DATA_ERROR } from 'redux/actionTypes/componentConfig';
+import {
+  PLOT_DATA_LOADED, PLOT_DATA_LOADING, PLOT_DATA_ERROR, UPDATE_CONFIG,
+} from 'redux/actionTypes/componentConfig';
 
 import handleError from 'utils/http/handleError';
 import endUserMessages from 'utils/endUserMessages';
@@ -81,6 +83,15 @@ const getPseudoTime = (
           pseudotime: data.pseudotime,
         },
       },
+    });
+
+    dispatch({
+      type: UPDATE_CONFIG,
+      payload:
+        {
+          plotUuid,
+          configChanges: { display: { pseudotime: true } },
+        },
     });
   } catch (e) {
     const errorMessage = handleError(e, endUserMessages.ERROR_FETCHING_PLOT_DATA);
