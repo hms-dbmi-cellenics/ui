@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Vega } from 'react-vega';
 import 'vega-webgl-renderer';
+import _ from 'lodash';
 
 import { generateData as generateEmbeddingCategoricalData } from 'utils/plotSpecs/generateEmbeddingCategoricalSpec';
 import {
@@ -54,7 +55,6 @@ const TrajectoryAnalysisPlot = (props) => {
 
   const [plotSpec, setPlotSpec] = useState(null);
   const [plotState, setPlotState] = useState({
-    isZoomOrPanned: false,
     xdom: [-10, 10],
     ydom: [-10, 10],
   });
@@ -128,7 +128,8 @@ const TrajectoryAnalysisPlot = (props) => {
   const listeners = {
     domUpdates: (e, val) => {
       const [xdom, ydom] = val;
-      setPlotState({ isZoomOrPanned: true, xdom, ydom });
+      setPlotState({ xdom, ydom });
+      if (!config.isZoomOrPanned) _.debounce(onUpdate, 2000)({ isZoomOrPanned: true });
     },
   };
 

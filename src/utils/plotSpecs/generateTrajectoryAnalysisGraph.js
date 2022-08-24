@@ -139,13 +139,13 @@ const generateSpec = (config, embeddingData, pathData, cellSetLegendsData, plotS
       // Signals for zooming
       {
         name: 'initXdom',
-        value: plotState.isZoomOrPanned
+        value: config.isZoomOrPanned
           ? plotState.xdom
           : extent(embeddingData.map((data) => data.x)),
       },
       {
         name: 'initYdom',
-        value: plotState.isZoomOrPanned
+        value: config.isZoomOrPanned
           ? plotState.ydom
           : extent(embeddingData.map((data) => data.y)),
       },

@@ -139,6 +139,7 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
         <TrajectoryAnalysisPlot
           experimentId={experimentId}
           config={config}
+          plotUuid={plotUuid}
           plotData={plotData}
           plotLoading={plotLoading}
           plotDataError={plotDataError}
