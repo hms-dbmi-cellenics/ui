@@ -7,6 +7,7 @@ import {
   Collapse,
   Space,
   Radio,
+  Alert,
 } from 'antd';
 import {
   updatePlotConfig,
@@ -148,9 +149,26 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
   const renderExtraPanels = () => (
     <>
       <Panel header='Trajectory analysis' key='trajectory-analysis'>
-        <p>
-          {selectedNodes.length ? `${selectedNodes.length} nodes selected` : 'Select root nodes to get started'}
-        </p>
+        <Space direction='vertical'>
+          <Alert
+            type='info'
+            message={(
+              <>
+                <p>
+                  Select root nodes by clicking on the nodes. You can select multiple nodes by drawing a lasso. To do this, hold down Shift, and then click and drag to draw the lasso.
+                </p>
+                <p>
+                  Deselect nodes by clicking on the node, or clicking "Clear Selection".
+                </p>
+              </>
+            )}
+          />
+          <p>
+            <strong>
+              {selectedNodes.length ? `${selectedNodes.length} nodes selected` : 'Select root nodes to get started'}
+            </strong>
+          </p>
+        </Space>
         {selectedNodes.length > 0 && (
           <Space direction='vertical' style={{ width: '100%' }}>
             <Button
