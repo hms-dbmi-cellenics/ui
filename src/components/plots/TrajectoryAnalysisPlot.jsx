@@ -121,8 +121,6 @@ const TrajectoryAnalysisPlot = (props) => {
       || !startingNodesPlotData?.pseudotime
     ) return;
 
-    console.log('*** ere');
-
     return generatePseudotimeData(
       cellSets,
       config.selectedSample,
@@ -268,7 +266,13 @@ const TrajectoryAnalysisPlot = (props) => {
             )}
           />
         )}
-        <Vega spec={plotSpec} renderer={config?.display.pseudotime ? 'canvas' : 'webgl'} actions={actions} signalListeners={plotListeners} />
+        <Vega
+          spec={plotSpec}
+          // renderer={config?.display.pseudotime ? 'canvas' : 'webgl'}
+          renderer='canvas'
+          actions={actions}
+          signalListeners={config?.display.trajectory ? plotListeners : {}}
+        />
       </center>
     );
   };

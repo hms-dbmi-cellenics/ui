@@ -150,22 +150,37 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
     <>
       <Panel header='Trajectory analysis' key='trajectory-analysis'>
         <Space direction='vertical'>
-          <Alert
-            type='info'
-            message={(
-              <>
-                <p>
-                  Select root nodes by clicking on the nodes. You can select multiple nodes by drawing a lasso. To do this, hold down Shift, and then click and drag to draw the lasso.
-                </p>
-                <p>
-                  Deselect nodes by clicking on the node, or clicking "Clear Selection".
-                </p>
-              </>
-            )}
-          />
+          {
+            config?.display.trajectory && (
+              <Alert
+                type='info'
+                message={(
+                  <>
+                    <p>
+                      To get started, select root nodes by
+                      {' '}
+                      <strong>clicking on the white points</strong>
+                      . You can select multiple nodes by drawing a selection. To do this,
+                      {' '}
+                      <strong>
+                        hold down the Shift key, and then hold click and drag
+                      </strong>
+                      . Nodes inside the selection will be added to the selection.
+                    </p>
+                    <p>
+                      Deselect nodes by clicking on a selected node, or by clicking
+                      {' '}
+                      <strong>Clear Selection</strong>
+                      .
+                    </p>
+                  </>
+                )}
+              />
+            )
+          }
           <p>
             <strong>
-              {selectedNodes.length ? `${selectedNodes.length} nodes selected` : 'Select root nodes to get started'}
+              {selectedNodes.length ? `${selectedNodes.length} nodes selected` : ''}
             </strong>
           </p>
         </Space>

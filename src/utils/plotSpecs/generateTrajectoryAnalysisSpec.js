@@ -48,6 +48,10 @@ const generateBaseSpec = (
         type: 'json',
         copy: true,
       },
+      transform: [
+        { type: 'extent', field: 'x', signal: 'xext' },
+        { type: 'extent', field: 'y', signal: 'yext' },
+      ],
     },
     {
       name: 'labels',
@@ -107,13 +111,13 @@ const generateBaseSpec = (
       name: 'initXdom',
       value: config.isZoomOrPanned
         ? plotState.xdom
-        : extent(embeddingData.map((data) => data.x)),
+        : 'slice(xext)',
     },
     {
       name: 'initYdom',
       value: config.isZoomOrPanned
         ? plotState.ydom
-        : extent(embeddingData.map((data) => data.y)),
+        : 'slice(yext)',
     },
     { name: 'xrange', update: '[0, width]' },
     { name: 'yrange', update: '[height, 0]' },
@@ -414,28 +418,6 @@ const insertClusterColorsSpec = (
   ];
 };
 
-const extent = (arr) => {
-  let min;
-  let max;
-  let rest = [];
-
-  if (arr.length === 2) {
-    [min, max] = arr;
-    if (min < max) return [min, max];
-    return [max, min];
-  }
-
-  [min, max, ...rest] = arr;
-
-  rest.forEach((val) => {
-    if (val < min) min = val;
-    if (val > max) max = val;
-  });
-
-  // Add/subtract 1 to give some padding to the plot
-  return [min - 1, max + 1];
-};
-
 const insertTrajectorySpec = (
   spec,
   pathData,
@@ -612,7 +594,7 @@ const insertPseudotimeSpec = (spec, config, pseudotime) => {
           x: { scale: 'xscale', field: 'x' },
           y: { scale: 'yscale', field: 'y' },
           size: { value: config.marker.size },
-          fill: { value: 'grey' },
+          fill: { value: 'lightgrey' },
           shape: { value: config.marker.shape },
           fillOpacity: { value: config.marker.opacity / 10 },
         },
@@ -713,8 +695,6 @@ const generatePseudotimeData = (
         cellsWithoutPseudotimeValue.push(cellData);
       }
     });
-
-  console.log('*** here');
 
   return {
     cellsWithPseudotimeValue,
