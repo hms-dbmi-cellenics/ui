@@ -476,7 +476,6 @@ const insertTrajectorySpec = (
           y: { scale: 'yscale', field: 'y' },
           size: { value: 25 },
           stroke: { value: '#ccc' },
-          fillOpacity: { value: 0.2 },
           defined: {
             signal: 'isValid(datum["x"]) && isFinite(+datum["x"]) && isValid(datum["y"]) && isFinite(+datum["y"])',
           },
@@ -496,12 +495,19 @@ const insertTrajectorySpec = (
           y: { scale: 'yscale', field: 'y' },
           size: { signal: 'size' },
           stroke: { value: 'black' },
+          strokeOpacity: [
+            { test: 'isValid(datum.x)', value: 1 },
+            { value: 0 },
+          ],
           fill: [
             { test: 'datum.selected', value: 'red' },
             { value: 'white' },
           ],
           shape: { value: 'circle' },
-          fillOpacity: { value: 1 },
+          fillOpacity: [
+            { test: 'isValid(datum.x)', value: 1 },
+            { value: 0 },
+          ],
           defined: {
             signal: 'isValid(datum["x"]) && isFinite(+datum["x"]) && isValid(datum["y"]) && isFinite(+datum["y"])',
           },
