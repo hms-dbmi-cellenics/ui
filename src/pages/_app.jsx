@@ -52,10 +52,16 @@ Amplify.configure({
   ssr: true,
 });
 
+const addDashesToExperimentId = (experimentId) => experimentId.replace(/(.{8})(.{4})(.{4})(.{4})(.{12})/, '$1-$2-$3-$4-$5');
+
 const WrappedApp = ({ Component, pageProps }) => {
   const { httpError, amplifyConfig } = pageProps;
   const router = useRouter();
-  const { experimentId } = router.query;
+  const { experimentId: queryExperimentId } = router.query;
+
+  // If the experimentId is the old version (without dashes), then add them
+  const experimentId = !queryExperimentId || queryExperimentId.includes('-') ? queryExperimentId : addDashesToExperimentId(queryExperimentId);
+
   const experimentData = useSelector(
     (state) => (experimentId ? state.experimentSettings.info : {}),
   );
