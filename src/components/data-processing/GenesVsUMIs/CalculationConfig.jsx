@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import {
   Space,
@@ -12,45 +12,29 @@ import {
   Button,
 } from 'antd';
 import { InfoCircleOutlined } from '@ant-design/icons';
-import { useDispatch, useSelector } from 'react-redux';
 
-import config from 'config';
-
-import { runQC } from 'redux/actions/pipeline';
 import useUpdateThrottled from 'utils/customHooks/useUpdateThrottled';
-import QCRerunDisabledModal from 'components/QCRerunDisabledModal';
 
 const { Option } = Select;
 
 const GenesVsUMIsConfig = (props) => {
   const {
-    config: calculationConfig, updateSettings, disabled, rerunRequired, experimentId,
+    config, updateSettings, disabled, rerunRequired, onQCRunClick,
   } = props;
 
-  const dispatch = useDispatch();
-  const pipelineVersion = useSelector((state) => state.experimentSettings.info.pipelineVersion);
+  const [newConfig, handleChange] = useUpdateThrottled(updateSettings, config);
 
-  const [newConfig, handleChange] = useUpdateThrottled(updateSettings, calculationConfig);
-  const [QCDisabledModalVisible, setQCDisabledModalVisible] = useState(false);
-
-  const qcRerunDisabled = pipelineVersion < config.pipelineVersionToRerunQC;
-  const defaultPredictionInterval = 1 - calculationConfig.regressionTypeSettings[calculationConfig.regressionType]['p.level'];
+  const defaultPredictionInterval = 1 - config.regressionTypeSettings[config.regressionType]['p.level'];
 
   const getPLevelValue = () => {
-    if (!calculationConfig.predictionInterval && calculationConfig.predictionInterval !== 0) {
-      return calculationConfig.regressionTypeSettings[calculationConfig.regressionType]['p.level'];
+    if (!config.predictionInterval && config.predictionInterval !== 0) {
+      return config.regressionTypeSettings[config.regressionType]['p.level'];
     }
-    return parseFloat(1 - calculationConfig.predictionInterval).toFixed(6);
+    return parseFloat(1 - config.predictionInterval).toFixed(6);
   };
 
   return (
     <>
-      <QCRerunDisabledModal
-        experimentId={experimentId}
-        onFinish={setQCDisabledModalVisible(false)}
-        visible={QCDisabledModalVisible}
-      />
-
       {/* only display info message for datasets which have
       not rerun the pipeline to see the new interractive plot */}
       {rerunRequired && (
@@ -65,14 +49,7 @@ const GenesVsUMIsConfig = (props) => {
           />
           <Button
             type='primary'
-            onClick={() => {
-              if (qcRerunDisabled) {
-                setQCDisabledModalVisible(true);
-                return;
-              }
-
-              dispatch(runQC(experimentId));
-            }}
+            onClick={() => onQCRunClick()}
           >
             Re-run
           </Button>
@@ -96,7 +73,7 @@ const GenesVsUMIsConfig = (props) => {
       )}
       >
         <Select
-          value={calculationConfig.regressionType}
+          value={config.regressionType}
           onChange={(val) => updateSettings({ regressionType: val })}
         >
           <Option value='linear'>linear</Option>
@@ -128,7 +105,7 @@ const GenesVsUMIsConfig = (props) => {
         />
 
         <Radio.Group
-          value={calculationConfig.predictionInterval}
+          value={config.predictionInterval}
           onChange={(val) => updateSettings({ predictionInterval: val.target.value })}
           disabled={disabled}
         >
@@ -170,7 +147,7 @@ GenesVsUMIsConfig.propTypes = {
   config: PropTypes.object.isRequired,
   disabled: PropTypes.bool.isRequired,
   rerunRequired: PropTypes.bool.isRequired,
-  experimentId: PropTypes.string.isRequired,
+  onQCRunClick: PropTypes.func.isRequired,
 };
 
 export default GenesVsUMIsConfig;

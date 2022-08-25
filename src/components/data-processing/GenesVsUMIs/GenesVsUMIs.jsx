@@ -33,7 +33,7 @@ const plotType = 'featuresVsUMIsScatterplot';
 
 const GenesVsUMIs = (props) => {
   const {
-    experimentId, sampleId, sampleIds, onConfigChange, stepDisabled,
+    experimentId, sampleId, sampleIds, onConfigChange, stepDisabled, onQCRunClick,
   } = props;
 
   const plotUuid = generateDataProcessingPlotUuid(sampleId, filterName, 0);
@@ -144,7 +144,7 @@ const GenesVsUMIs = (props) => {
               >
                 <CalculationConfig
                   rerunRequired={plotData?.linesData && !plotData?.linesData[0]?.length}
-                  experimentId={experimentId}
+                  onQCRunClick={onQCRunClick}
                 />
               </CalculationConfigContainer>
             </Panel>
@@ -169,6 +169,7 @@ GenesVsUMIs.propTypes = {
   sampleIds: PropTypes.array.isRequired,
   onConfigChange: PropTypes.func.isRequired,
   stepDisabled: PropTypes.bool,
+  onQCRunClick: PropTypes.func.isRequired,
 };
 
 GenesVsUMIs.defaultProps = {
