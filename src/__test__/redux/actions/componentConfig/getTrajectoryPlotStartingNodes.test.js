@@ -63,6 +63,9 @@ const initialState = {
     umap: initialEmbeddingState,
     Etag: 'mockEtag',
   },
+  componentConfig: {
+    [plotUuid]: {},
+  },
   backendStatus: { [experimentId]: { status: { pipeline: { startDate } } } },
   networkResources: {
     environment: 'testing',
