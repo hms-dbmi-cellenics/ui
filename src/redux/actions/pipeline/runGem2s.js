@@ -12,7 +12,10 @@ import {
 
 import loadBackendStatus from 'redux/actions/backendStatus/loadBackendStatus';
 
-const runGem2s = (experimentId, paramsHash) => async (dispatch) => {
+const runGem2s = (experimentId, paramsHash) => async (dispatch, getState) => {
+  const paramsHashToSend = paramsHash
+    ?? getState().backendStatus[experimentId].status.gem2s.paramsHash;
+
   dispatch({
     type: BACKEND_STATUS_LOADING,
     payload: {
@@ -28,7 +31,7 @@ const runGem2s = (experimentId, paramsHash) => async (dispatch) => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ paramsHash }),
+        body: JSON.stringify({ paramsHash: paramsHashToSend }),
       },
     );
 
