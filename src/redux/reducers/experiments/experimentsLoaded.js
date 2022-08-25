@@ -17,7 +17,7 @@ const experimentsLoaded = produce((draft, action) => {
 
   const ids = _.map(experiments, 'id');
 
-  draft.meta.activeExperimentId = experiments[0]?.id;
+  draft.meta.activeExperimentId = newActiveExperimentId;
   draft.meta.loading = false;
   draft.ids = ids;
 

@@ -9,10 +9,11 @@ import {
 
 import { updateExperiment } from 'redux/actions/experiments';
 
-import { layout } from 'utils/constants';
 import EditableParagraph from 'components/EditableParagraph';
-import SamplesTable from './SamplesTable';
-import ProjectMenu from './ProjectMenu';
+import { layout } from 'utils/constants';
+
+import SamplesTable from 'components/data-management/SamplesTable';
+import ProjectMenu from 'components/data-management/ProjectMenu';
 
 const {
   Title, Text,
