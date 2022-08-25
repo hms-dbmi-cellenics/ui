@@ -1,4 +1,30 @@
 /* eslint-disable no-param-reassign */
+import { getAllCells, getSampleCells } from 'utils/cellSets';
+
+const generatePadding = (plotConfig) => {
+  const showLegend = plotConfig.legend.enabled;
+  const legendPosition = plotConfig.legend.position;
+  const axesOffset = plotConfig.axes.offset;
+
+  const defaultPadding = {
+    top: 80,
+    left: 80,
+    bottom: 80,
+    right: 80,
+  };
+
+  if (!showLegend) return defaultPadding;
+
+  const padding = {
+    top: defaultPadding.top + axesOffset,
+    left: defaultPadding.left + axesOffset,
+    bottom: (legendPosition === 'bottom' ? 120 : defaultPadding.bottom) + axesOffset,
+    right: (legendPosition === 'right' ? 120 : defaultPadding.right) + axesOffset,
+  };
+
+  return padding;
+};
+
 const generateBaseSpec = (
   config,
   embeddingData,
@@ -10,15 +36,10 @@ const generateBaseSpec = (
   height: config?.dimensions.height,
   autosize: 'none',
   background: config?.colour.toggleInvert,
-  padding: {
-    top: 80,
-    left: 60,
-    bottom: 60,
-    right: 40,
-  },
+  padding: generatePadding(config),
   data: [
     {
-      name: 'embeddingData',
+      name: 'embedding',
       values: embeddingData,
       // Vega internally modifies objects during data transforms. If the plot data is frozen,
       // Vega is not able to carry out the transform and will throw an error.
@@ -30,7 +51,7 @@ const generateBaseSpec = (
     },
     {
       name: 'labels',
-      source: 'embeddingData',
+      source: 'embedding',
       transform: [
         {
           type: 'aggregate', groupby: ['cellSetKey', 'cellSetName'], fields: ['x', 'y'], ops: ['mean', 'mean'], as: ['meanX', 'meanY'],
@@ -311,12 +332,18 @@ const insertClusterColorsSpec = (
         name: 'cellSetLabelColors',
         type: 'ordinal',
         range: cellSetLegendsData.map(({ color }) => color),
-        domain: { data: 'embeddingData', field: 'cellSetKey' },
+        domain: { data: 'embedding', field: 'cellSetKey' },
       },
       {
         name: 'sampleToName',
         type: 'ordinal',
         range: cellSetLegendsData.map(({ name }) => name),
+      },
+      {
+        name: 'cellSetMarkColors',
+        type: 'ordinal',
+        range: { data: 'embedding', field: 'color' },
+        domain: { data: 'embedding', field: 'cellSetKey' },
       },
     ];
 
@@ -341,7 +368,7 @@ const insertClusterColorsSpec = (
 
           },
         },
-        direction: 'horizontal',
+        direction: positionIsRight ? 'vertical' : 'horizontal',
         labelFont: config?.fontStyle.font,
         titleFont: config?.fontStyle.font,
         columns: legendColumns,
@@ -349,15 +376,6 @@ const insertClusterColorsSpec = (
       },
     ];
   }
-
-  spec.scales.push(
-    {
-      name: 'cellSetMarkColors',
-      type: 'ordinal',
-      range: { data: 'embeddingData', field: 'color' },
-      domain: { data: 'embeddingData', field: 'cellSetKey' },
-    },
-  );
 
   spec.marks[0].marks = [
     ...spec.marks[0].marks,
@@ -380,7 +398,7 @@ const insertClusterColorsSpec = (
     {
       name: 'embedding',
       type: 'symbol',
-      from: { data: 'embeddingData' },
+      from: { data: 'embedding' },
       encode: {
         update: {
           x: { scale: 'xscale', field: 'x' },
@@ -427,7 +445,7 @@ const insertTrajectorySpec = (
   spec.resetToggle = resetToggle;
 
   spec.data = [
-    ...spec.data,
+    ...spec?.data,
     {
       name: 'pathData',
       values: pathData,
@@ -522,60 +540,89 @@ const insertTrajectorySpec = (
 };
 
 const insertPseudotimeSpec = (spec, config, pseudotime) => {
-  spec.scales.push({
-    name: 'color',
-    type: 'linear',
-    range: {
-      scheme: config.colour.gradient === 'default'
-        ? (config.colour.toggleInvert === '#FFFFFF' ? 'purplered' : 'darkgreen')
-        : config.colour.gradient,
+  const positionIsRight = config.legend.position === 'right';
+
+  const legendColumns = positionIsRight ? 1 : Math.floor(config.dimensions.width / 85);
+  const labelLimit = positionIsRight ? 0 : 85;
+
+  spec.data = [
+    ...spec?.data,
+    {
+      name: 'backgroundPseudotime',
+      values: pseudotime.cellsWithoutPseudotimeValue,
+
     },
-    domain: { data: 'pseudotime', field: 'value' },
-    reverse: config.colour.reverseCbar,
-  });
+    {
+      name: 'pseudotime',
+      values: pseudotime.cellsWithPseudotimeValue,
+    },
+  ];
+
+  spec.scales = [
+    ...spec.scales,
+    {
+      name: 'pseudotimeScale',
+      type: 'linear',
+      range: {
+        scheme: config.colour.gradient === 'default'
+          ? (config.colour.toggleInvert === '#FFFFFF' ? 'purplered' : 'darkgreen')
+          : config.colour.gradient,
+      },
+      domain: { data: 'pseudotime', field: 'value' },
+    },
+  ];
 
   if (config.legend.enabled) {
     spec.legends = [
       {
-        fill: 'color',
+        fill: 'pseudotimeScale',
         type: 'gradient',
         orient: config.legend.position,
         title: 'Pseudotime',
         gradientLength: 100,
         labelColor: config.colour.masterColour,
         titleColor: config.colour.masterColour,
+        direction: positionIsRight ? 'vertical' : 'horizontal',
         labels: {
-          interactive: true,
           update: {
             fontSize: 12,
             fill: { value: config.colour.masterColour },
           },
         },
-      }];
+        columns: legendColumns,
+        labelLimit,
+      },
+    ];
   }
 
-  spec.data.push(
-    {
-      name: 'pseudotime',
-      values: pseudotime,
-    },
-  );
-
-  spec.marks[0].marks.push(
+  spec.marks[0].marks = [
+    ...spec.marks[0].marks,
     {
       type: 'symbol',
+      name: 'cellsWithNoPseudotimeValue',
+      from: { data: 'backgroundPseudotime' },
+      encode: {
+        update: {
+          x: { scale: 'xscale', field: 'x' },
+          y: { scale: 'yscale', field: 'y' },
+          size: { value: config.marker.size },
+          fill: { value: 'grey' },
+          shape: { value: config.marker.shape },
+          fillOpacity: { value: config.marker.opacity / 10 },
+        },
+      },
+    },
+    {
+      type: 'symbol',
+      name: 'cellsWithPseudotimeValue',
       from: { data: 'pseudotime' },
       encode: {
         update: {
           x: { scale: 'xscale', field: 'x' },
           y: { scale: 'yscale', field: 'y' },
           size: { value: config.marker.size },
-          stroke: {
-            scale: 'color',
-            field: 'value',
-          },
           fill: {
-            scale: 'color',
+            scale: 'pseudotimeScale',
             field: 'value',
           },
           shape: { value: config.marker.shape },
@@ -583,7 +630,7 @@ const insertPseudotimeSpec = (spec, config, pseudotime) => {
         },
       },
     },
-  );
+  ];
 };
 
 // Filter for nodes that appear later than the current node
@@ -617,10 +664,63 @@ const generateStartingNodesData = (nodes) => {
   return trajectoryNodes;
 };
 
+const selectSampleCells = (cellSets, selectedSample) => {
+  let filteredCells = [];
+
+  if (selectedSample === 'All') {
+    filteredCells = getAllCells(cellSets);
+  } else {
+    filteredCells = getSampleCells(cellSets, selectedSample);
+  }
+
+  return filteredCells.map((cell) => cell.cellId);
+};
+
+const generatePseudotimeData = (
+  cellSets,
+  selectedSample,
+  plotData,
+  embeddingData,
+) => {
+  const selectedSampleCells = selectSampleCells(cellSets, selectedSample, embeddingData);
+
+  const cellsWithPseudotimeValue = [];
+  const cellsWithoutPseudotimeValue = [];
+
+  const filteredCells = embeddingData
+    .map((coordinates, cellId) => ({ cellId, coordinates }))
+    .filter(({ cellId }) => selectedSampleCells.includes(cellId))
+    .filter(({ coordinates }) => coordinates !== undefined);
+
+  filteredCells
+    .forEach((data) => {
+      const { cellId, coordinates } = data;
+      const cellData = {
+        x: coordinates[0],
+        y: coordinates[1],
+        value: plotData[cellId],
+      };
+
+      if (cellData.value) {
+        cellsWithPseudotimeValue.push(cellData);
+      } else {
+        cellsWithoutPseudotimeValue.push(cellData);
+      }
+    });
+
+  console.log('*** here');
+
+  return {
+    cellsWithPseudotimeValue,
+    cellsWithoutPseudotimeValue,
+  };
+};
+
 export {
   insertClusterColorsSpec,
   insertTrajectorySpec,
   insertPseudotimeSpec,
   generateBaseSpec,
   generateStartingNodesData,
+  generatePseudotimeData,
 };

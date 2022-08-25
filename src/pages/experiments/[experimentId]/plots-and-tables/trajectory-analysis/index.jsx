@@ -85,6 +85,10 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
   useEffect(() => {
     if (
       !selectedNodes?.length
+      || !embeddingMethod
+      || embeddingLoading
+      || embeddingError
+      || !embeddingData?.length
       || !config?.display.pseudotime
     ) return;
 

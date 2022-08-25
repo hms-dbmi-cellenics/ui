@@ -310,7 +310,10 @@ const trajectoryAnalysisInitialConfig = {
   },
   fontStyle: fontStyleBaseState,
   colour: colourBaseState,
-  marker: markerBaseState,
+  marker: {
+    ...markerBaseState,
+    size: 20,
+  },
   labels: {
     ...labelBaseState,
     enabled: false,

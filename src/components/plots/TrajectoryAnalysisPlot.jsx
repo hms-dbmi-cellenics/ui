@@ -12,10 +12,8 @@ import {
   insertClusterColorsSpec,
   generateBaseSpec,
   generateStartingNodesData,
+  generatePseudotimeData,
 } from 'utils/plotSpecs/generateTrajectoryAnalysisSpec';
-import {
-  generateData as generatePseudotimeData,
-} from 'utils/plotSpecs/generateEmbeddingContinuousSpec';
 import { loadEmbedding } from 'redux/actions/embedding';
 import { loadCellSets } from 'redux/actions/cellSets';
 import { loadProcessingSettings } from 'redux/actions/experimentSettings';
@@ -118,9 +116,12 @@ const TrajectoryAnalysisPlot = (props) => {
 
   const pseudotimeData = useMemo(() => {
     if (
-      !startingNodesPlotData
+      !config
+      || !startingNodesPlotData
       || !startingNodesPlotData?.pseudotime
     ) return;
+
+    console.log('*** ere');
 
     return generatePseudotimeData(
       cellSets,
@@ -132,7 +133,8 @@ const TrajectoryAnalysisPlot = (props) => {
     embeddingData,
     cellSets,
     startingNodesPlotData?.pseudotime,
-    config.selectedSample,
+    config?.selectedSample,
+    config?.selectedNodes,
   ]);
 
   useEffect(() => {
@@ -144,7 +146,7 @@ const TrajectoryAnalysisPlot = (props) => {
 
     const baseSpec = generateBaseSpec(config, embeddingPlotData, plotState);
 
-    if (config.display.pseudotime) {
+    if (config.display.pseudotime && pseudotimeData) {
       insertPseudotimeSpec(baseSpec, config, pseudotimeData);
     } else {
       insertClusterColorsSpec(baseSpec, config, cellSetLegendsData);
@@ -164,7 +166,14 @@ const TrajectoryAnalysisPlot = (props) => {
     }
 
     setPlotSpec(baseSpec);
-  }, [config, cellSets, embeddingData, startingNodesPlotData, resetPlot]);
+  }, [
+    config,
+    cellSets,
+    embeddingData,
+    pseudotimeData,
+    startingNodesPlotData,
+    resetPlot,
+  ]);
 
   const plotListeners = {
     domUpdates: (e, val) => {
@@ -259,7 +268,7 @@ const TrajectoryAnalysisPlot = (props) => {
             )}
           />
         )}
-        <Vega spec={plotSpec} renderer='webgl' actions={actions} signalListeners={plotListeners} />
+        <Vega spec={plotSpec} renderer={config?.display.pseudotime ? 'canvas' : 'webgl'} actions={actions} signalListeners={plotListeners} />
       </center>
     );
   };
