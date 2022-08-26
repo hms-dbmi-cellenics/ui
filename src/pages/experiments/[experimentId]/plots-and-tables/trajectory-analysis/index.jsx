@@ -29,10 +29,16 @@ const { Panel } = Collapse;
 const plotUuid = 'trajectoryAnalysisMain';
 const plotType = plotTypes.TRAJECTORY_ANALYSIS;
 
+const initialPlotState = {
+  displayTrajectory: true,
+  displayPseudotime: false,
+  isZoomOrPanned: false,
+};
+
 const TrajectoryAnalysisPage = ({ experimentId }) => {
   const dispatch = useDispatch();
-
-  const [resetToggle, setResetToggle] = useState([]);
+  const [resetPlot, setResetPlot] = useState(false);
+  const [plotState, setPlotState] = useState(initialPlotState);
 
   // Currenty monocle3 trajectory analysis only supports
   // UMAP embedding. Therefore, this embedding is specifically fetched.
@@ -90,11 +96,10 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
       || embeddingLoading
       || embeddingError
       || !embeddingData?.length
-      || !config?.display.pseudotime
     ) return;
 
     dispatch(getPseudoTime(selectedNodes, experimentId, plotUuid));
-  }, [selectedNodes, config?.display]);
+  }, [selectedNodes]);
 
   const updatePlotWithChanges = (obj) => {
     dispatch(updatePlotConfig(plotUuid, obj));
@@ -151,7 +156,7 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
       <Panel header='Trajectory analysis' key='trajectory-analysis'>
         <Space direction='vertical'>
           {
-            config?.display.trajectory && (
+            plotState.displayTrajectory && (
               <Alert
                 type='info'
                 message={(
@@ -166,6 +171,9 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
                         hold down the Shift key, and then hold click and drag
                       </strong>
                       . Nodes inside the selection will be added to the selection.
+                    </p>
+                    <p>
+                      Move around the plot by panning (clicking and dragging) and zooming (scrolling).
                     </p>
                     <p>
                       Deselect nodes by clicking on a selected node, or by clicking
@@ -191,7 +199,6 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
               disabled={configLoading}
               onClick={() => {
                 dispatch(updatePlotConfig(plotUuid, { selectedNodes: [] }));
-                setResetToggle(!resetToggle);
               }}
             >
               Clear selection
@@ -202,7 +209,6 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
               disabled={configLoading}
               onClick={() => {
                 dispatch(getPseudoTime(selectedNodes, experimentId, plotUuid));
-                dispatch(updatePlotConfig(plotUuid, { display: { pseudotime: true } }));
               }}
             >
               Calculate
@@ -217,25 +223,30 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
         >
           <b>Plot values</b>
           <Radio.Group
-            value={config?.display?.pseudotime}
+            value={plotState.displayPseudotime}
             onChange={(e) => dispatch(
-              updatePlotConfig(plotUuid, { display: { pseudotime: e.target.value } }),
+              setPlotState({
+                ...plotState,
+                displayPseudotime: e.target.value,
+              }),
             )}
           >
             <Space>
               <Radio value={false}>Clusters</Radio>
               <Radio disabled={!plotData?.pseudotime} value>
-
                 Pseudotime
               </Radio>
             </Space>
           </Radio.Group>
           <b>Trajectory</b>
           <Radio.Group
-            value={config?.display?.trajectory}
-            onChange={(e) => dispatch(
-              updatePlotConfig(plotUuid, { display: { trajectory: e.target.value } }),
-            )}
+            value={plotState.displayTrajectory}
+            onChange={(e) => {
+              setPlotState({
+                ...plotState,
+                displayTrajectory: e.target.value,
+              });
+            }}
           >
             <Space>
               <Radio value>Show</Radio>
@@ -269,6 +280,11 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
         plotType={plotType}
         plotStylingConfig={plotStylingConfig}
         extraControlPanels={renderExtraPanels()}
+        resetPlot={resetPlot}
+        onPlotReset={() => {
+          setResetPlot(false);
+          setPlotState(initialPlotState);
+        }}
         plotInfo={(
           <>
             Trajectory inference (TI) or pseudotemporal ordering is a computational technique used in single-cell transcriptomics to determine the pattern of a dynamic process experienced by cells and then arrange cells based on their progression through the process by projecting the cells onto an axis called pseudotime. A “trajectory” shows the path of the progression. Currently, Trajectory Analysis is implemented using the
@@ -284,13 +300,24 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
           experimentId={experimentId}
           config={config}
           onUpdate={updatePlotWithChanges}
-          resetPlot={resetToggle}
+          plotState={plotState}
           plotData={plotData}
           plotLoading={plotLoading}
           plotDataError={plotDataError}
           onPlotDataErrorRetry={() => dispatch(getStartingNodes(experimentId, plotUuid))}
           onClickNode={clickNode}
           onSelectNodes={addNodes}
+          onZoomOrPan={() => {
+            if (!plotState.isZoomOrPanned) {
+              setPlotState({
+                ...plotState,
+                isZoomOrPanned: true,
+              });
+            }
+            if (!resetPlot) {
+              setResetPlot(true);
+            }
+          }}
           actions={{ export: true, editor: true, source: false }}
         />
       </PlotContainer>

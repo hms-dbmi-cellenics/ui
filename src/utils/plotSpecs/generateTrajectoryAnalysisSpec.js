@@ -25,10 +25,33 @@ const generatePadding = (plotConfig) => {
   return padding;
 };
 
+const extent = (arr) => {
+  let min;
+  let max;
+  let rest = [];
+
+  if (arr.length === 2) {
+    [min, max] = arr;
+    if (min < max) return [min, max];
+    return [max, min];
+  }
+
+  [min, max, ...rest] = arr;
+
+  rest.forEach((val) => {
+    if (val < min) min = val;
+    if (val > max) max = val;
+  });
+
+  // Add/subtract 1 to give some padding to the plot
+  return [min - 1, max + 1];
+};
+
 const generateBaseSpec = (
   config,
   embeddingData,
-  plotState,
+  viewState,
+  isZoomOrPanned,
 ) => ({
   $schema: 'https://vega.github.io/schema/vega/v5.json',
   description: 'Trajectory analysis plot',
@@ -64,60 +87,18 @@ const generateBaseSpec = (
     },
   ],
   signals: [
-    // Signal for selection
-    {
-      name: 'chooseNode',
-      on: [{ events: '@pathNodes:click', update: 'datum', force: true }],
-    },
-    {
-      name: 'lassoSelection',
-      value: null,
-      on: [
-        {
-          events: 'mouseup[event.shiftKey]',
-          update: "[invert('xscale', lassoStart[0]), invert('yscale', lassoStart[1]), invert('xscale', lassoEnd[0]), invert('yscale', lassoEnd[1])]",
-        },
-      ],
-    },
-    {
-      name: 'lassoStart',
-      value: null,
-      on: [
-        { events: 'mousedown[event.shiftKey]', update: 'xy()' },
-        { events: 'mouseup[event.shiftKey]', update: 'null' },
-      ],
-    },
-    {
-      name: 'lassoEnd',
-      value: [0, 0],
-      on: [
-        {
-          events: [
-            {
-              source: 'window',
-              type: 'mousemove',
-              between: [
-                { type: 'mousedown', filter: 'event.shiftKey' },
-                { source: 'window', type: 'mouseup' },
-              ],
-            },
-          ],
-          update: 'lassoStart ? xy() : [0,0]',
-        },
-      ],
-    },
-    // Signals for zooming
+    // Signals for zooming and panning
     {
       name: 'initXdom',
-      value: config.isZoomOrPanned
-        ? plotState.xdom
-        : 'slice(xext)',
+      value: isZoomOrPanned
+        ? viewState.xdom
+        : extent(embeddingData.map((data) => data.x)),
     },
     {
       name: 'initYdom',
-      value: config.isZoomOrPanned
-        ? plotState.ydom
-        : 'slice(yext)',
+      value: isZoomOrPanned
+        ? viewState.ydom
+        : extent(embeddingData.map((data) => data.y)),
     },
     { name: 'xrange', update: '[0, width]' },
     { name: 'yrange', update: '[height, 0]' },
@@ -422,10 +403,7 @@ const insertTrajectorySpec = (
   spec,
   pathData,
   selectedNodes,
-  resetToggle,
 ) => {
-  spec.resetToggle = resetToggle;
-
   spec.data = [
     ...spec?.data,
     {
@@ -443,6 +421,52 @@ const insertTrajectorySpec = (
         type: 'json',
         copy: true,
       },
+    },
+  ];
+
+  spec.signals = [
+    ...spec.signals,
+    // Signal for selection
+    {
+      name: 'chooseNode',
+      on: [{ events: '@pathNodes:click', update: 'datum', force: true }],
+    },
+    {
+      name: 'lassoSelection',
+      value: null,
+      on: [
+        {
+          events: 'mouseup[event.shiftKey]',
+          update: "[invert('xscale', lassoStart[0]), invert('yscale', lassoStart[1]), invert('xscale', lassoEnd[0]), invert('yscale', lassoEnd[1])]",
+        },
+      ],
+    },
+    {
+      name: 'lassoStart',
+      value: null,
+      on: [
+        { events: 'mousedown[event.shiftKey]', update: 'xy()' },
+        { events: 'mouseup[event.shiftKey]', update: 'null' },
+      ],
+    },
+    {
+      name: 'lassoEnd',
+      value: [0, 0],
+      on: [
+        {
+          events: [
+            {
+              source: 'window',
+              type: 'mousemove',
+              between: [
+                { type: 'mousedown', filter: 'event.shiftKey' },
+                { source: 'window', type: 'mouseup' },
+              ],
+            },
+          ],
+          update: 'lassoStart ? xy() : [0,0]',
+        },
+      ],
     },
   ];
 

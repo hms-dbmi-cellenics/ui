@@ -1,4 +1,6 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, {
+  useState, useEffect, useMemo,
+} from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Vega } from 'react-vega';
@@ -33,6 +35,7 @@ const TrajectoryAnalysisPlot = (props) => {
   const {
     experimentId,
     config,
+    plotState,
     plotData: startingNodesPlotData,
     plotLoading,
     plotDataError,
@@ -41,13 +44,13 @@ const TrajectoryAnalysisPlot = (props) => {
     onUpdate,
     onClickNode,
     onSelectNodes,
-    resetPlot,
+    onZoomOrPan,
   } = props;
 
   const dispatch = useDispatch();
 
   const [plotSpec, setPlotSpec] = useState({});
-  const [plotState, setPlotState] = useState({
+  const [viewState, setViewState] = useState({
     xdom: [-10, 10],
     ydom: [-10, 10],
   });
@@ -142,15 +145,20 @@ const TrajectoryAnalysisPlot = (props) => {
       || !startingNodesPlotData?.nodes
     ) return;
 
-    const baseSpec = generateBaseSpec(config, embeddingPlotData, plotState);
+    const baseSpec = generateBaseSpec(
+      config,
+      embeddingPlotData,
+      viewState,
+      plotState.isZoomOrPanned,
+    );
 
-    if (config.display.pseudotime && pseudotimeData) {
+    if (plotState.displayPseudotime && pseudotimeData) {
       insertPseudotimeSpec(baseSpec, config, pseudotimeData);
     } else {
       insertClusterColorsSpec(baseSpec, config, cellSetLegendsData);
     }
 
-    if (config.display.trajectory) {
+    if (plotState.displayTrajectory) {
       const selectedNodes = config.selectedNodes.map(
         (nodeId) => startingNodesPlotData.nodes[nodeId],
       );
@@ -159,7 +167,6 @@ const TrajectoryAnalysisPlot = (props) => {
         baseSpec,
         startingNodesData,
         selectedNodes,
-        resetPlot,
       );
     }
 
@@ -170,14 +177,16 @@ const TrajectoryAnalysisPlot = (props) => {
     embeddingData,
     pseudotimeData,
     startingNodesPlotData,
-    resetPlot,
+    plotState.displayPseudotime,
+    plotState.displayTrajectory,
+    plotState.isZoomOrPanned,
   ]);
 
   const plotListeners = {
     domUpdates: (e, val) => {
       const [xdom, ydom] = val;
-      setPlotState({ xdom, ydom });
-      if (!config.isZoomOrPanned) _.debounce(onUpdate, 2000)({ isZoomOrPanned: true });
+      setViewState({ xdom, ydom });
+      onZoomOrPan();
     },
     chooseNode: (eventName, payload) => {
       // eslint-disable-next-line camelcase
@@ -268,10 +277,12 @@ const TrajectoryAnalysisPlot = (props) => {
         )}
         <Vega
           spec={plotSpec}
-          // renderer={config?.display.pseudotime ? 'canvas' : 'webgl'}
-          renderer='canvas'
+          // We still have to use 'canvas' for pseudotime because the 'webgl' renderer can not
+          // display legend with linear scale
+          renderer={plotState.displayPseudotime ? 'canvas' : 'webgl'}
+          // renderer='canvas'
           actions={actions}
-          signalListeners={config?.display.trajectory ? plotListeners : {}}
+          signalListeners={plotState.displayTrajectory ? plotListeners : {}}
         />
       </center>
     );
@@ -283,6 +294,7 @@ const TrajectoryAnalysisPlot = (props) => {
 TrajectoryAnalysisPlot.propTypes = {
   experimentId: PropTypes.string.isRequired,
   config: PropTypes.object,
+  plotState: PropTypes.object.isRequired,
   plotData: PropTypes.object.isRequired,
   plotDataError: PropTypes.bool || PropTypes.string,
   onPlotDataErrorRetry: PropTypes.func,
@@ -294,7 +306,7 @@ TrajectoryAnalysisPlot.propTypes = {
   onUpdate: PropTypes.func.isRequired,
   onClickNode: PropTypes.func,
   onSelectNodes: PropTypes.func,
-  resetPlot: PropTypes.bool,
+  onZoomOrPan: PropTypes.func,
 };
 
 TrajectoryAnalysisPlot.defaultProps = {
@@ -304,7 +316,7 @@ TrajectoryAnalysisPlot.defaultProps = {
   onPlotDataErrorRetry: () => {},
   onClickNode: () => { },
   onSelectNodes: () => { },
-  resetPlot: false,
+  onZoomOrPan: () => { },
 };
 
 export default TrajectoryAnalysisPlot;
