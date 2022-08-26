@@ -141,75 +141,6 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
 
   const renderExtraPanels = () => (
     <>
-      <Panel header='Trajectory analysis' key='trajectory-analysis'>
-        <Space direction='vertical'>
-          {
-            plotState.displayTrajectory && (
-              <Alert
-                type='info'
-                message={(
-                  <>
-                    <p>
-                      To get started, select root nodes by
-                      {' '}
-                      <strong>clicking on the white points</strong>
-                      . You can select multiple nodes by drawing a selection. To do this,
-                      {' '}
-                      <strong>
-                        hold down the Shift key, and then hold click and drag
-                      </strong>
-                      . Nodes inside the selection will be added to the selection.
-                    </p>
-                    <p>
-                      Move around the plot by panning (clicking and dragging) and zooming (scrolling).
-                    </p>
-                    <p>
-                      Deselect nodes by clicking on a selected node, or by clicking
-                      {' '}
-                      <strong>Clear Selection</strong>
-                      .
-                    </p>
-                  </>
-                )}
-              />
-            )
-          }
-          <p>
-            <strong>
-              {selectedNodes.length ? `${selectedNodes.length} nodes selected` : ''}
-            </strong>
-          </p>
-        </Space>
-        {selectedNodes.length > 0 && (
-          <Space direction='vertical' style={{ width: '100%' }}>
-            <Button
-              block
-              disabled={configLoading}
-              onClick={() => {
-                dispatch(updatePlotConfig(plotUuid, { selectedNodes: [] }));
-              }}
-            >
-              Clear selection
-            </Button>
-            <Button
-              type='primary'
-              block
-              disabled={configLoading}
-              onClick={async () => {
-                const result = await dispatch(getPseudoTime(selectedNodes, experimentId, plotUuid));
-                if (!result) return;
-
-                setPlotState({
-                  ...plotState,
-                  displayPseudotime: true,
-                });
-              }}
-            >
-              Calculate
-            </Button>
-          </Space>
-        ) }
-      </Panel>
       <Panel header='Display' key='display'>
         <Space
           style={{ marginLeft: '5%' }}
@@ -246,6 +177,85 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
             </Space>
           </Radio.Group>
         </Space>
+      </Panel>
+      <Panel header='Trajectory analysis' key='trajectory-analysis'>
+        {
+          plotState.displayTrajectory ? (
+            <Space direction='vertical' style={{ width: '100%' }}>
+              <Alert
+                type='info'
+                message={(
+                  <>
+                    <p>
+                      To get started, select root nodes by
+                      {' '}
+                      <strong>clicking on the white points</strong>
+                      . You can select multiple nodes by drawing a selection. To do this,
+                      {' '}
+                      <strong>
+                        hold down the Shift key, and then hold click and drag
+                      </strong>
+                      . Nodes inside the selection will be added to the selection.
+                    </p>
+                    <p>
+                      Move around the plot by panning (clicking and dragging) and zooming (scrolling).
+                    </p>
+                    <p>
+                      Deselect nodes by clicking on a selected node, or by clicking
+                      {' '}
+                      <strong>Clear Selection</strong>
+                      .
+                    </p>
+                  </>
+                )}
+              />
+              <strong>
+                {selectedNodes.length ? `${selectedNodes.length} nodes selected` : ''}
+              </strong>
+              {selectedNodes.length > 0 && (
+              <>
+                <Button
+                  block
+                  disabled={configLoading}
+                  onClick={() => {
+                    dispatch(updatePlotConfig(plotUuid, { selectedNodes: [] }));
+                  }}
+                >
+                  Clear selection
+                </Button>
+                <Button
+                  type='primary'
+                  block
+                  disabled={configLoading}
+                  onClick={async () => {
+                    const result = await dispatch(getPseudoTime(selectedNodes, experimentId, plotUuid));
+                    if (!result) return;
+
+                    setPlotState({
+                      ...plotState,
+                      displayPseudotime: true,
+                    });
+                  }}
+                >
+                  Calculate
+                </Button>
+              </>
+              )}
+            </Space>
+          ) : (
+            <p>
+              Choose
+              {' '}
+              <strong>Trajectory > Show</strong>
+              {' '}
+              under
+              {' '}
+              <strong>Display</strong>
+              {' '}
+              to show the trajectory path.
+            </p>
+          )
+        }
       </Panel>
     </>
   );
@@ -286,7 +296,7 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
             workflow.
           </>
         )}
-        defaultActiveKey='trajectory-analysis'
+        defaultActiveKey='display'
       >
         <TrajectoryAnalysisPlot
           experimentId={experimentId}
@@ -310,7 +320,7 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
               setResetPlot(true);
             }
           }}
-          actions={{ export: true, editor: true, source: false }}
+          actions={{ export: true, editor: false, source: false }}
         />
       </PlotContainer>
     </>
