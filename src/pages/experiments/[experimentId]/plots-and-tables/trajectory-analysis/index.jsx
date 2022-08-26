@@ -190,15 +190,15 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
                       To get started, select root nodes by
                       {' '}
                       <strong>clicking on the white points</strong>
-                      . You can select multiple nodes by drawing a selection. To do this,
+                      . You can select multiple nodes at once by drawing a selection. To do this,
                       {' '}
                       <strong>
-                        hold down the Shift key, and then hold click and drag
+                        hold down the Shift key, and then click and drag
                       </strong>
                       . Nodes inside the selection will be added to the selection.
                     </p>
                     <p>
-                      Move around the plot by panning (clicking and dragging) and zooming (scrolling).
+                      Move around the plot by panning (click and drag) and zooming (pinch and zoom/scroll).
                     </p>
                     <p>
                       Deselect nodes by clicking on a selected node, or by clicking
