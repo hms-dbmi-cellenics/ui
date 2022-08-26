@@ -89,18 +89,6 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
     dispatch(getStartingNodes(experimentId, plotUuid));
   }, [embeddingMethod, embeddingLoading, embeddingSettings]);
 
-  useEffect(() => {
-    if (
-      !selectedNodes?.length
-      || !embeddingMethod
-      || embeddingLoading
-      || embeddingError
-      || !embeddingData?.length
-    ) return;
-
-    dispatch(getPseudoTime(selectedNodes, experimentId, plotUuid));
-  }, [selectedNodes]);
-
   const updatePlotWithChanges = (obj) => {
     dispatch(updatePlotConfig(plotUuid, obj));
   };
@@ -207,8 +195,14 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
               type='primary'
               block
               disabled={configLoading}
-              onClick={() => {
-                dispatch(getPseudoTime(selectedNodes, experimentId, plotUuid));
+              onClick={async () => {
+                const result = await dispatch(getPseudoTime(selectedNodes, experimentId, plotUuid));
+                if (!result) return;
+
+                setPlotState({
+                  ...plotState,
+                  displayPseudotime: true,
+                });
               }}
             >
               Calculate
@@ -224,12 +218,10 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
           <b>Plot values</b>
           <Radio.Group
             value={plotState.displayPseudotime}
-            onChange={(e) => dispatch(
-              setPlotState({
-                ...plotState,
-                displayPseudotime: e.target.value,
-              }),
-            )}
+            onChange={(e) => setPlotState({
+              ...plotState,
+              displayPseudotime: e.target.value,
+            })}
           >
             <Space>
               <Radio value={false}>Clusters</Radio>

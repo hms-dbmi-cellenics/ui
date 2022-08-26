@@ -86,14 +86,7 @@ const getPseudoTime = (
       },
     });
 
-    // dispatch({
-    //   type: UPDATE_CONFIG,
-    //   payload:
-    //     {
-    //       plotUuid,
-    //       configChanges: { display: { pseudotime: true } },
-    //     },
-    // });
+    return true;
   } catch (e) {
     const errorMessage = handleError(e, endUserMessages.ERROR_FETCHING_PLOT_DATA);
 
@@ -104,6 +97,8 @@ const getPseudoTime = (
         error: errorMessage,
       },
     });
+
+    return false;
   }
 };
 
