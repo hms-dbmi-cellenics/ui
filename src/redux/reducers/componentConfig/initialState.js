@@ -321,7 +321,7 @@ const trajectoryAnalysisInitialConfig = {
   selectedNodes: [],
   selectedCellSet: 'louvain',
   selectedSample: 'All',
-  isZoomOrPanned: false,
+  isZoomedOrPanned: false,
   display: {
     trajectory: true,
     pseudotime: false,

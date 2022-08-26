@@ -174,9 +174,9 @@ PlotContainer.propTypes = {
   extraToolbarControls: PropTypes.node || PropTypes.arrayOf(PropTypes.node),
   extraControlPanels: PropTypes.node || PropTypes.arrayOf(PropTypes.node),
   children: PropTypes.node,
-  onPlotReset: PropTypes.func,
   showReset: PropTypes.bool,
   resetPlot: PropTypes.bool,
+  onPlotReset: PropTypes.func,
 };
 
 PlotContainer.defaultProps = {
@@ -184,9 +184,9 @@ PlotContainer.defaultProps = {
   extraToolbarControls: null,
   extraControlPanels: null,
   children: null,
-  onPlotReset: null,
   showReset: true,
   resetPlot: false,
+  onPlotReset: () => {},
 };
 
 export default PlotContainer;

@@ -149,7 +149,7 @@ const TrajectoryAnalysisPlot = (props) => {
       config,
       embeddingPlotData,
       viewState,
-      plotState.isZoomOrPanned,
+      plotState.isZoomedOrPanned,
     );
 
     if (plotState.displayPseudotime && pseudotimeData) {
@@ -179,14 +179,14 @@ const TrajectoryAnalysisPlot = (props) => {
     startingNodesPlotData,
     plotState.displayPseudotime,
     plotState.displayTrajectory,
-    plotState.isZoomOrPanned,
+    plotState.isZoomedOrPanned,
   ]);
 
   const plotListeners = {
     domUpdates: (e, val) => {
       const [xdom, ydom] = val;
       setViewState({ xdom, ydom });
-      if (!plotState.isZoomOrPanned) _.debounce(onZoomOrPan, 2000)();
+      if (!plotState.isZoomedOrPanned) _.debounce(onZoomOrPan, 2000)();
     },
     chooseNode: (eventName, payload) => {
       // eslint-disable-next-line camelcase
@@ -275,6 +275,7 @@ const TrajectoryAnalysisPlot = (props) => {
             )}
           />
         )}
+        <br />
         <Vega
           spec={plotSpec}
           // We still have to use 'canvas' for pseudotime because the 'webgl' renderer can not

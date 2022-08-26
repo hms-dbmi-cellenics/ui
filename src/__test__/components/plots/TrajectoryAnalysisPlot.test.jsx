@@ -51,14 +51,30 @@ const mockOnPlotDataErrorRetry = jest.fn();
 
 const defaultAPIResponse = generateDefaultMockAPIResponses(experimentId);
 
+const mockPlotState = {
+  displayTrajectory: true,
+  displayPseudotime: false,
+  isZoomedOrPanned: false,
+};
+
+const mockOnUpdate = jest.fn();
+const mockOnClickNode = jest.fn();
+const mockOnSelectNodes = jest.fn();
+const mockOnZoomOrPan = jest.fn();
+
 const defaultProps = {
   experimentId,
   config: initialPlotConfigStates[plotTypes.TRAJECTORY_ANALYSIS],
+  plotState: mockPlotState,
   plotData: mockStartingNodes,
-  actions: false,
-  onUpdate: jest.fn(),
+  plotLoading: false,
   plotDataError: false,
   onPlotDataErrorRetry: mockOnPlotDataErrorRetry,
+  actions: false,
+  onUpdate: mockOnUpdate,
+  onClickNode: mockOnClickNode,
+  onSelectNodes: mockOnSelectNodes,
+  onZoomOrPan: mockOnZoomOrPan,
 };
 
 const trajectoryAnalysisPlotFactory = createTestComponentFactory(
@@ -101,13 +117,7 @@ describe('Trajectory analysis plot', () => {
   });
 
   it('Shows a loader if there is no config', async () => {
-    await act(async () => {
-      render(
-        <Provider store={storeState}>
-          <TrajectoryAnalysisPlot experimentId={experimentId} config={null} />
-        </Provider>,
-      );
-    });
+    await renderTrajectoryAnalysisPlot(storeState, { config: null });
 
     expect(screen.getByText(/We're getting your data/i)).toBeInTheDocument();
     await waitFor(async () => {

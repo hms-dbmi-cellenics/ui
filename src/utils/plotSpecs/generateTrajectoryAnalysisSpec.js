@@ -51,7 +51,7 @@ const generateBaseSpec = (
   config,
   embeddingData,
   viewState,
-  isZoomOrPanned,
+  isZoomedOrPanned,
 ) => ({
   $schema: 'https://vega.github.io/schema/vega/v5.json',
   description: 'Trajectory analysis plot',
@@ -90,13 +90,13 @@ const generateBaseSpec = (
     // Signals for zooming and panning
     {
       name: 'initXdom',
-      value: isZoomOrPanned
+      value: isZoomedOrPanned
         ? viewState.xdom
         : extent(embeddingData.map((data) => data.x)),
     },
     {
       name: 'initYdom',
-      value: isZoomOrPanned
+      value: isZoomedOrPanned
         ? viewState.ydom
         : extent(embeddingData.map((data) => data.y)),
     },

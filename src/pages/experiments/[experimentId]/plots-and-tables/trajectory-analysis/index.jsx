@@ -32,7 +32,7 @@ const plotType = plotTypes.TRAJECTORY_ANALYSIS;
 const initialPlotState = {
   displayTrajectory: true,
   displayPseudotime: false,
-  isZoomOrPanned: false,
+  isZoomedOrPanned: false,
 };
 
 const TrajectoryAnalysisPage = ({ experimentId }) => {
@@ -310,10 +310,10 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
           onClickNode={clickNode}
           onSelectNodes={addNodes}
           onZoomOrPan={() => {
-            if (!plotState.isZoomOrPanned) {
+            if (!plotState.isZoomedOrPanned) {
               setPlotState({
                 ...plotState,
-                isZoomOrPanned: true,
+                isZoomedOrPanned: true,
               });
             }
             if (!resetPlot) {
