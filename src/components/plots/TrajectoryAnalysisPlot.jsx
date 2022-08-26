@@ -186,7 +186,7 @@ const TrajectoryAnalysisPlot = (props) => {
     domUpdates: (e, val) => {
       const [xdom, ydom] = val;
       setViewState({ xdom, ydom });
-      onZoomOrPan();
+      if (!plotState.isZoomOrPanned) _.debounce(onZoomOrPan, 2000)();
     },
     chooseNode: (eventName, payload) => {
       // eslint-disable-next-line camelcase
@@ -209,7 +209,7 @@ const TrajectoryAnalysisPlot = (props) => {
           if (inSelection) return node.node_id;
           return false;
         },
-      ).filter((inSelection) => inSelection);
+      ).filter((inSelection) => inSelection !== false);
 
       onSelectNodes(selectedNodes);
     },
@@ -280,7 +280,6 @@ const TrajectoryAnalysisPlot = (props) => {
           // We still have to use 'canvas' for pseudotime because the 'webgl' renderer can not
           // display legend with linear scale
           renderer={plotState.displayPseudotime ? 'canvas' : 'webgl'}
-          // renderer='canvas'
           actions={actions}
           signalListeners={plotState.displayTrajectory ? plotListeners : {}}
         />
