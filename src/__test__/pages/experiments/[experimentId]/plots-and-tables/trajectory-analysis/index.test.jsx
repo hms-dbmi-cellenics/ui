@@ -135,8 +135,8 @@ describe('Trajectory analysis plot', () => {
   it('Loads controls and elements', async () => {
     await renderTrajectoryAnalysisPage(storeState);
 
-    expect(screen.getByText('Display')).toBeInTheDocument();
     expect(screen.getByText('Trajectory analysis')).toBeInTheDocument();
+    expect(screen.getByText('Display')).toBeInTheDocument();
     expect(screen.getByText('Main schema')).toBeInTheDocument();
     expect(screen.getByText('Axes and margins')).toBeInTheDocument();
     expect(screen.getByText('Colours')).toBeInTheDocument();
@@ -216,6 +216,7 @@ describe('Trajectory analysis plot', () => {
   it('Hides trajectory if hidden option is selected', async () => {
     await renderTrajectoryAnalysisPage(storeState);
 
+    userEvent.click(screen.getByText(/Display/i));
     userEvent.click(screen.getByText(/Hide/i));
 
     await waitFor(async () => {
