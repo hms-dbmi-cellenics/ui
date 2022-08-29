@@ -22,8 +22,8 @@ const generateSpec = (config, plotData) => {
         title: config.shownGene,
         labelColor: config.colour.masterColour,
         titleColor: config.colour.masterColour,
-        symbolType: 'square',
-        symbolSize: 200,
+        symbolType: 'circle',
+        symbolSize: 100,
         offset: 40,
       }];
   }
@@ -61,10 +61,13 @@ const generateSpec = (config, plotData) => {
       },
       {
         name: 'color',
-        type: 'linear',
-        scheme: config.colour.gradient === 'default'
-          ? (config.colour.toggleInvert === '#FFFFFF' ? 'purplered' : 'darkgreen')
-          : config.colour.gradient,
+        type: 'quantize',
+        range: {
+          scheme: config.colour.gradient === 'default'
+            ? (config.colour.toggleInvert === '#FFFFFF' ? 'purplered' : 'darkgreen')
+            : config.colour.gradient,
+          count: 5,
+        },
         domain: { data: 'plotData', field: 'value' },
         reverse: config.colour.reverseCbar,
       },
