@@ -328,12 +328,6 @@ const insertClusterColorsSpec = (
         type: 'ordinal',
         range: cellSetLegendsData.map(({ name }) => name),
       },
-      {
-        name: 'cellSetMarkColors',
-        type: 'ordinal',
-        range: { data: 'embedding', field: 'color' },
-        domain: { data: 'embedding', field: 'cellSetKey' },
-      },
     ];
 
     spec.legends = [
@@ -365,6 +359,16 @@ const insertClusterColorsSpec = (
       },
     ];
   }
+
+  spec.scales = [
+    ...spec.scales,
+    {
+      name: 'cellSetMarkColors',
+      type: 'ordinal',
+      range: { data: 'embedding', field: 'color' },
+      domain: { data: 'embedding', field: 'cellSetKey' },
+    },
+  ];
 
   spec.marks[0].marks = [
     ...spec.marks[0].marks,
