@@ -112,19 +112,21 @@ describe('Trajectory analysis plot', () => {
   it('Loads controls and elements', async () => {
     await renderTrajectoryAnalysisPage(storeState);
 
-    expect(screen.getByText(/Main schema/i)).toBeInTheDocument();
-    expect(screen.getByText(/Axes and margins/i)).toBeInTheDocument();
-    expect(screen.getByText(/Colour inversion/i)).toBeInTheDocument();
-    expect(screen.getByText(/Markers/i)).toBeInTheDocument();
-    expect(screen.getByText(/Legend/i)).toBeInTheDocument();
-    expect(screen.getByText(/Labels/i)).toBeInTheDocument();
+    expect(screen.getByText('Display')).toBeInTheDocument();
+    expect(screen.getByText('Trajectory analysis')).toBeInTheDocument();
+    expect(screen.getByText('Main schema')).toBeInTheDocument();
+    expect(screen.getByText('Axes and margins')).toBeInTheDocument();
+    expect(screen.getByText('Colours')).toBeInTheDocument();
+    expect(screen.getByText('Markers')).toBeInTheDocument();
+    expect(screen.getByText('Legend')).toBeInTheDocument();
+    expect(screen.getByText('Labels')).toBeInTheDocument();
   });
 
-  it('Renders the plots correctly', async () => {
+  it('Renders the plot with cluster and trajectory by default', async () => {
     await renderTrajectoryAnalysisPage(storeState);
 
     await waitFor(async () => {
-      expect(screen.getByRole('graphics-document', { name: 'Trajectory analysis plot' })).toBeInTheDocument();
+      expect(screen.getByRole('graphics-document', { name: 'Trajectory analysis plot showing clusters with trajectory' })).toBeInTheDocument();
     });
   });
 });

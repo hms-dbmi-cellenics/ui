@@ -330,6 +330,8 @@ const insertClusterColorsSpec = (
       },
     ];
 
+    spec.description = `${spec.description} showing clusters`;
+
     spec.legends = [
       {
         fill: 'cellSetLabelColors',
@@ -412,6 +414,8 @@ const insertTrajectorySpec = (
   pathData,
   selectedNodes,
 ) => {
+  spec.description = `${spec.description} with trajectory`;
+
   spec.data = [
     ...spec?.data,
     {
@@ -564,6 +568,8 @@ const insertPseudotimeSpec = (spec, config, pseudotime) => {
 
   const legendColumns = positionIsRight ? 1 : Math.floor(config.dimensions.width / 85);
   const labelLimit = positionIsRight ? 0 : 85;
+
+  spec.description = `${spec.description} showing pseudotime`;
 
   spec.data = [
     ...spec?.data,
