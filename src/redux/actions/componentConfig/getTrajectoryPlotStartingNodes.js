@@ -16,7 +16,7 @@ const getStartingNodes = (
 
   const {
     clusteringSettings,
-  } = getState().experimentSettings.processing?.configureEmbedding || {};
+  } = getState().experimentSettings.processing.configureEmbedding;
 
   const embeddingSettings = getState()
     .experimentSettings
