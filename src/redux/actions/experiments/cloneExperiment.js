@@ -1,11 +1,10 @@
 /* eslint-disable no-param-reassign */
 import fetchAPI from 'utils/http/fetchAPI';
-import moment from 'moment';
 
 import {
-  EXPERIMENTS_CREATED,
   EXPERIMENTS_ERROR,
   EXPERIMENTS_SAVING,
+  EXPERIMENTS_SAVED,
 } from 'redux/actionTypes/experiments';
 
 import endUserMessages from 'utils/endUserMessages';
@@ -20,8 +19,6 @@ const cloneExperiment = (
   });
 
   try {
-    const createdAt = moment().toISOString();
-
     const newExperimentId = await fetchAPI(`/v2/experiments/${originalId}/clone`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -29,10 +26,7 @@ const cloneExperiment = (
     });
 
     dispatch({
-      type: EXPERIMENTS_CREATED,
-      payload: {
-        experiment: { id: newExperimentId, name, createdAt },
-      },
+      type: EXPERIMENTS_SAVED,
     });
 
     return newExperimentId;

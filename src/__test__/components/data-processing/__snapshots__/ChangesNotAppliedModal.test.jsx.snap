@@ -12,11 +12,5 @@ Array [
       "method": "POST",
     },
   ],
-  Array [
-    "http://localhost:3000/v2/experiments",
-    Object {
-      "headers": Object {},
-    },
-  ],
 ]
 `;

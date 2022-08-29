@@ -238,6 +238,7 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
               sampleIds={sampleKeys}
               onConfigChange={() => onConfigChange(key)}
               stepDisabled={!processingConfig[key].enabled}
+              onQCRunClick={() => setRunQCModalVisible(true)}
             />
           )}
         />
@@ -246,7 +247,7 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
     {
       key: 'doubletScores',
       name: getUserFriendlyQCStepName('doubletScores'),
-      description:
+      description: (
         <span>
           Droplets may contain more than one cell.
           In such cases, it is not possible to distinguish which reads came from which cell.
@@ -258,7 +259,7 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
           {' '}
           <a href='https://bioconductor.org/packages/devel/bioc/vignettes/scDblFinder/inst/doc/scDblFinder.html#thresholding' rel='noreferrer' target='_blank'>scDblFinder thresholding</a>
           .
-        </span>,
+        </span>),
       multiSample: true,
       render: (key) => (
         <SingleComponentMultipleDataContainer
@@ -446,16 +447,16 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
                               ) : pipelineNotFinished
                                 && !pipelineRunning
                                 && !isStepComplete(key) ? (
-                                <>
-                                  <Text
-                                    type='danger'
-                                    strong
-                                  >
-                                    <WarningOutlined />
-                                  </Text>
-                                  <span style={{ marginLeft: '0.25rem' }}>{text}</span>
-                                </>
-                              ) : <></>}
+                                  <>
+                                    <Text
+                                      type='danger'
+                                      strong
+                                    >
+                                      <WarningOutlined />
+                                    </Text>
+                                    <span style={{ marginLeft: '0.25rem' }}>{text}</span>
+                                  </>
+                                ) : <></>}
                             </Option>
                           );
                         },

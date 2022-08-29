@@ -1,10 +1,8 @@
-import { initialPlotConfigStates } from 'redux/reducers/componentConfig/initialState';
 import getTimeoutForWorkerTask from 'utils/getTimeoutForWorkerTask';
 import { PLOT_DATA_LOADED, PLOT_DATA_LOADING, PLOT_DATA_ERROR } from 'redux/actionTypes/componentConfig';
 
 import handleError from 'utils/http/handleError';
 import endUserMessages from 'utils/endUserMessages';
-import generatePlotWorkBody from 'utils/work/generatePlotWorkBody';
 import { fetchWork } from 'utils/work/fetchWork';
 
 const getClusterNames = (state) => {
@@ -16,7 +14,6 @@ const getClusterNames = (state) => {
   const clusterNames = clusterIds?.map((clusterId) => state.cellSets.properties[clusterId].name);
   return clusterNames;
 };
-
 const orderCellSets = (data, state, config) => {
   // reordering data based on the sample order
   const { selectedCellSet } = config;
@@ -31,24 +28,31 @@ const orderCellSets = (data, state, config) => {
     ));
   }
 };
-
-const fetchDotPlotData = (
+const getDotPlot = (
   experimentId,
   plotUuid,
-  plotType,
+  config,
 ) => async (dispatch, getState) => {
-  let config = getState().componentConfig[plotUuid]?.config ?? initialPlotConfigStates[plotType];
   const clusterNames = getClusterNames(getState());
   const timeout = getTimeoutForWorkerTask(getState(), 'PlotData');
 
-  config = {
-    ...config,
+  const [filterGroup, filterKey] = config.selectedPoints.split('/');
+
+  const body = {
+    name: 'DotPlot',
+    useMarkerGenes: config.useMarkerGenes,
+    numberOfMarkers: config.nMarkerGenes,
+    customGenesList: config.selectedGenes,
+    groupBy: config.selectedCellSet,
+    filterBy: {
+      group: filterGroup,
+      key: filterKey || 'All',
+    },
+    // clusterNames is used for triggering a work request upon cluster name change
     clusterNames,
   };
 
   try {
-    const body = generatePlotWorkBody(plotType, config);
-
     dispatch({
       type: PLOT_DATA_LOADING,
       payload: { plotUuid },
@@ -80,4 +84,4 @@ const fetchDotPlotData = (
   }
 };
 
-export default fetchDotPlotData;
+export default getDotPlot;

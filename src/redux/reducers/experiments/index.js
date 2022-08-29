@@ -6,6 +6,7 @@ import {
   EXPERIMENTS_LOADING,
   EXPERIMENTS_ERROR,
   EXPERIMENTS_SAVING,
+  EXPERIMENTS_SAVED,
   EXPERIMENTS_DELETED,
   EXPERIMENTS_METADATA_CREATE,
   EXPERIMENTS_METADATA_DELETE,
@@ -29,6 +30,7 @@ import experimentsSaving from './experimentsSaving';
 import experimentsMetadataCreate from './experimentsMetadataCreate';
 import experimentsMetadataRename from './experimentsMetadataRename';
 import experimentsMetadataDelete from './experimentsMetadataDelete';
+import experimentsSaved from './experimentsSaved';
 
 import samplesCreate from './samplesCreate';
 import samplesDelete from './samplesDelete';
@@ -67,6 +69,10 @@ const experimentsReducer = (state = initialState, action) => {
 
     case EXPERIMENTS_SAVING: {
       return experimentsSaving(state, action);
+    }
+
+    case EXPERIMENTS_SAVED: {
+      return experimentsSaved(state, action);
     }
 
     case SAMPLES_CREATE: {

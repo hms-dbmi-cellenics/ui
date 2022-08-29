@@ -26,14 +26,15 @@ import fileNames from 'utils/fileNames';
 import {
   updatePlotConfig,
   loadPlotConfig,
-  fetchDotPlotData,
+  getDotPlot,
   updatePlotData,
 } from 'redux/actions/componentConfig';
-import PlatformError from 'components/PlatformError';
+
+import getDotPlot from 'redux/actions/componentConfig/getDotPlot';
 
 import { getCellSets } from 'redux/selectors';
-
 import { plotNames, plotTypes } from 'utils/constants';
+import PlatformError from 'components/PlatformError';
 
 import ScrollOnDrag from 'components/plots/ScrollOnDrag';
 
@@ -123,8 +124,8 @@ const DotPlotPage = (props) => {
     // filterBy has the shape louvain/louvain-1
     const [filterRootNode, filterKey] = filterCluster.split('/');
 
-    // If 'All" is chosen for the dropdown, there will
-    //  always be representation from more than 1 group
+    // If 'All" is chosen for the dropdown,
+    // there will always be representation from more than 1 group
     if (filterRootNode === 'All') return true;
 
     // Ensure that filterKey exists in cellSetProperties
@@ -217,7 +218,6 @@ const DotPlotPage = (props) => {
       const previousUseMarker = previousComparedConfig.current?.useMarkerGenes ?? false;
 
       previousComparedConfig.current = currentComparedConfig;
-
       // if the selected genes don't change
       if (_.isEqual(currentSelected, previousSelected)) {
         // if switching back from marker genes to custom genes, reorder data
@@ -225,13 +225,13 @@ const DotPlotPage = (props) => {
           setReorderAfterFetch(true);
         }
 
-        dispatch(fetchDotPlotData(experimentId, plotUuid, plotType));
+        dispatch(getDotPlot(experimentId, plotUuid, config));
         return;
       }
 
       // if a gene was added
       if (currentSelected.length > previousSelected.length) {
-        dispatch(fetchDotPlotData(experimentId, plotUuid, plotType));
+        dispatch(getDotPlot(experimentId, plotUuid, config));
         setReorderAfterFetch(true);
         return;
       }
@@ -346,7 +346,7 @@ const DotPlotPage = (props) => {
   useEffect(() => {
     if (!reset) return;
 
-    dispatch(fetchDotPlotData(experimentId, plotUuid, plotType));
+    dispatch(getDotPlot(experimentId, plotUuid, config));
     setReorderAfterFetch(true);
     setReset(false);
   }, [config]);
@@ -410,7 +410,7 @@ const DotPlotPage = (props) => {
           <PlatformError
             description='Error loading plot data.'
             reason='Check the options that you have selected and try again.'
-            onClick={() => dispatch(fetchDotPlotData(experimentId, plotUuid, plotType))}
+            onClick={() => dispatch(getDotPlot(experimentId, plotUuid, config))}
           />
         </center>
       );

@@ -185,4 +185,17 @@ describe('Data Management page', () => {
       expect(screen.getByText(samples[sample].name)).toBeInTheDocument();
     });
   });
+
+  it('Doesnt crash on render if the activeExperiment isnt loaded yet', async () => {
+    storeState.dispatch(setActiveExperiment('not-loaded-experiment-id'));
+
+    // Load render
+    await act(async () => {
+      render(
+        <Provider store={storeState}>
+          {dataManagementPageFactory()}
+        </Provider>,
+      );
+    });
+  });
 });
