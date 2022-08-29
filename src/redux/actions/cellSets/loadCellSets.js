@@ -10,8 +10,6 @@ const loadCellSets = (experimentId, forceReload = false) => async (dispatch, get
     loading, error, updatingClustering, initialLoadPending,
   } = getState().cellSets;
 
-  const samplesOrder = getState().experimentSettings?.info?.sampleIds || [];
-
   const loadingBlocked = loading || updatingClustering;
   const requiresLoading = initialLoadPending || error;
 
@@ -27,12 +25,6 @@ const loadCellSets = (experimentId, forceReload = false) => async (dispatch, get
 
   try {
     const data = await fetchAPI(`/v2/experiments/${experimentId}/cellSets`);
-
-    // reordering cell sets based on the sampleIds recorded in the experiment table
-    const samplesHierarchyIndex = data.cellSets.findIndex((cellSet) => cellSet.key === 'sample');
-    data.cellSets[samplesHierarchyIndex].children.sort((a, b) => (
-      samplesOrder.indexOf(a.key) - samplesOrder.indexOf(b.key)
-    ));
 
     dispatch({
       type: CELL_SETS_LOADED,
