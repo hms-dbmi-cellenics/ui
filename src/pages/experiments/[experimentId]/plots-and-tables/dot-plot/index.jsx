@@ -30,8 +30,6 @@ import {
   updatePlotData,
 } from 'redux/actions/componentConfig';
 
-import getDotPlot from 'redux/actions/componentConfig/getDotPlot';
-
 import { getCellSets } from 'redux/selectors';
 import { plotNames, plotTypes } from 'utils/constants';
 import PlatformError from 'components/PlatformError';
