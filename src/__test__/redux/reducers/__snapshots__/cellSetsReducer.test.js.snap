@@ -141,7 +141,8 @@ Object {
       "key": "2",
     },
   ],
-  "loading": true,
+  "initialLoadPending": true,
+  "loading": false,
   "properties": Object {
     "1": Object {
       "cellIds": undefined,

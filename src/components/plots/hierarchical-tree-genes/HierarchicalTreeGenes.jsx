@@ -12,17 +12,18 @@ const HierarchicalTreeGenes = (props) => {
 
   const onDrop = (info) => {
     const {
-      dragNode, dropPosition, dropToGap,
+      dragNode, node, dropPosition,
     } = info;
 
     // if dropped in place, ignore
     // dragNode.key is str, dropPosition is int
     if (dragNode.key == dropPosition) return;
 
-    // If not dropped in gap, ignore
-    if (!dropToGap) return;
+    // dragOver is true for positions where dropToGap is false
+    const addDragOverPosition = node.dragOver ? 1 : 0;
 
-    let newPosition = dropPosition - (dragNode.key < dropPosition ? 1 : 0);
+    // if dropping below the initial position subtract 1, if dropping to secondary position add 1
+    let newPosition = dropPosition - (dragNode.key < dropPosition ? 1 : 0) + addDragOverPosition;
     newPosition = Math.max(0, newPosition);
 
     onGeneReorder(dragNode.key, newPosition);

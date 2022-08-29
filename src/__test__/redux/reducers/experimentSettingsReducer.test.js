@@ -5,6 +5,7 @@ import generateExperimentSettingsMock from '__test__/test-utils/experimentSettin
 
 import {
   EXPERIMENT_SETTINGS_NON_SAMPLE_FILTER_UPDATE,
+  EXPERIMENT_SETTINGS_PIPELINE_VERSION_UPDATED,
   EXPERIMENT_SETTINGS_PROCESSING_CONFIG_LOADED,
   EXPERIMENT_SETTINGS_PROCESSING_ERROR,
   EXPERIMENT_SETTINGS_SAMPLE_FILTER_UPDATE,
@@ -154,6 +155,18 @@ describe('experimentSettingsReducer', () => {
     expect(newState.processing.cellSizeDistribution).toEqual(expectedCellSizeDistribution);
 
     // Nothing else changes
+    expect(newState).toMatchSnapshot();
+  });
+
+  it('Correctly updates pipelineVersion', () => {
+    const newState = experimentSettingsReducer(initialExperimentState, {
+      type: EXPERIMENT_SETTINGS_PIPELINE_VERSION_UPDATED,
+      payload: {
+        pipelineVersion: 2,
+      },
+    });
+
+    expect(newState.info.pipelineVersion).toEqual(2);
     expect(newState).toMatchSnapshot();
   });
 });

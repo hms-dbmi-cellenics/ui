@@ -20,12 +20,7 @@ const SelectData = (props) => {
     onUpdate, config, cellSets, firstSelectionText, secondSelectionText,
   } = props;
 
-  const {
-    loading: cellSetsLoading,
-    error: cellSetsError,
-    hierarchy,
-    properties,
-  } = cellSets;
+  const { hierarchy, properties } = cellSets;
 
   const getDefaultCellSetNotIn = (rootNodeKey) => {
     const fallBackRootNodesKeys = ['sample', 'louvain'];
@@ -71,13 +66,12 @@ const SelectData = (props) => {
       );
     });
   };
-
-  if (!config || cellSetsLoading) {
-    return <Skeleton.Input style={{ width: 200 }} active />;
+  if (cellSets.error) {
+    return <InlineError message='Error loading cell set' />;
   }
 
-  if (cellSetsError) {
-    return <InlineError message='Error loading cell set' />;
+  if (!config || !cellSets.accessible) {
+    return <Skeleton.Input style={{ width: 200 }} active />;
   }
 
   return (

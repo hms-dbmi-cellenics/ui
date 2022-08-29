@@ -14,6 +14,14 @@ Object {
       "xAxisText": "#UMIs in cell",
       "yAxisText": "#UMIs * #Cells",
     },
+    "axesRanges": Object {
+      "xAxisAuto": true,
+      "xMax": 10,
+      "xMin": 0,
+      "yAxisAuto": true,
+      "yMax": 10,
+      "yMin": 0,
+    },
     "colour": Object {
       "gradient": "default",
       "invert": "standard",
@@ -80,6 +88,14 @@ Object {
       "xAxisRotateLabels": false,
       "xAxisText": "#UMIs in cell",
       "yAxisText": "#UMIs * #Cells",
+    },
+    "axesRanges": Object {
+      "xAxisAuto": true,
+      "xMax": 10,
+      "xMin": 0,
+      "yAxisAuto": true,
+      "yMax": 10,
+      "yMin": 0,
     },
     "colour": Object {
       "gradient": "default",

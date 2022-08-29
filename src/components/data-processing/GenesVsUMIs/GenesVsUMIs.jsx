@@ -33,7 +33,7 @@ const plotType = 'featuresVsUMIsScatterplot';
 
 const GenesVsUMIs = (props) => {
   const {
-    experimentId, sampleId, sampleIds, onConfigChange, stepDisabled,
+    experimentId, sampleId, sampleIds, onConfigChange, stepDisabled, onQCRunClick,
   } = props;
 
   const plotUuid = generateDataProcessingPlotUuid(sampleId, filterName, 0);
@@ -58,8 +58,6 @@ const GenesVsUMIs = (props) => {
 
   useEffect(() => {
     if (!config) {
-      const newConfig = _.clone(config);
-      _.merge(newConfig, expConfig);
       dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
     }
   }, [config]);
@@ -80,7 +78,7 @@ const GenesVsUMIs = (props) => {
     },
     {
       panelTitle: 'Axes',
-      controls: ['axes'],
+      controls: ['axesWithRanges'],
     },
     {
       panelTitle: 'Title',
@@ -105,10 +103,10 @@ const GenesVsUMIs = (props) => {
     if (config && plotData) {
       return (
         <FeaturesVsUMIsScatterplot
-          experimentId={experimentId}
           config={config}
           plotData={plotData}
           actions={allowedPlotActions}
+          expConfig={expConfig}
         />
       );
     }
@@ -144,7 +142,10 @@ const GenesVsUMIs = (props) => {
                 plotType='unused'
                 stepDisabled={stepDisabled}
               >
-                <CalculationConfig />
+                <CalculationConfig
+                  rerunRequired={plotData?.linesData && !plotData?.linesData[0]?.length}
+                  onQCRunClick={onQCRunClick}
+                />
               </CalculationConfigContainer>
             </Panel>
             <Panel header='Plot styling' key='styling'>
@@ -168,6 +169,7 @@ GenesVsUMIs.propTypes = {
   sampleIds: PropTypes.array.isRequired,
   onConfigChange: PropTypes.func.isRequired,
   stepDisabled: PropTypes.bool,
+  onQCRunClick: PropTypes.func.isRequired,
 };
 
 GenesVsUMIs.defaultProps = {

@@ -50,7 +50,7 @@ const CellSetsTool = (props) => {
   const dispatch = useDispatch();
   const cellSets = useSelector(getCellSets());
   const {
-    loading, error, hierarchy, properties, hidden, selected: allSelected,
+    accessible, error, hierarchy, properties, hidden, selected: allSelected,
   } = cellSets;
 
   const genes = useSelector(
@@ -211,7 +211,7 @@ const CellSetsTool = (props) => {
     );
   };
 
-  if (loading) return <Skeleton active={false} title={false} />;
+  if (!accessible) return <Skeleton active={false} title={false} />;
   if (!cellSetTreeData || !metadataTreeData) return <Skeleton active title={false} avatar />;
 
   if (error) {

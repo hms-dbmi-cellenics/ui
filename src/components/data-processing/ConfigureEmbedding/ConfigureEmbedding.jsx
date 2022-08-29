@@ -229,7 +229,7 @@ const ConfigureEmbedding = (props) => {
     },
     {
       panelTitle: 'Axes and margins',
-      controls: ['axes'],
+      controls: ['axesWithRanges'],
     },
     ...plotSpecificStylingControl[selectedPlot],
   ];
@@ -277,11 +277,7 @@ const ConfigureEmbedding = (props) => {
     const plotActions = {
       export: true,
     };
-    if (!cellSets.loading
-      && !cellSets.error
-      && !cellSets.updateCellSetsClustering
-      && selectedConfig
-    ) {
+    if (cellSets.accessible && selectedConfig) {
       setPlot(plots[selectedPlot].plot(selectedConfig, plotActions));
     }
   }, [selectedConfig, cellSets]);
@@ -301,7 +297,7 @@ const ConfigureEmbedding = (props) => {
       );
     }
 
-    if (selectedPlot === 'sample' && !cellSets.loading && isUnisample(cellSets.hierarchy)
+    if (selectedPlot === 'sample' && cellSets.accessible && isUnisample(cellSets.hierarchy)
     ) {
       return (
         <center>
@@ -366,6 +362,7 @@ const ConfigureEmbedding = (props) => {
                 formConfig={plotStylingControlsConfig}
                 config={selectedConfig}
                 onUpdate={updatePlotWithChanges}
+                showShapeType={false}
               />
             </Panel>
           </Collapse>

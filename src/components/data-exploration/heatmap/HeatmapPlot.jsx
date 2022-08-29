@@ -64,15 +64,7 @@ const HeatmapPlot = (props) => {
   } = useSelector((state) => state.genes.markers);
 
   const cellSets = useSelector(getCellSets());
-
   const louvainClusterCount = useSelector(getCellSetsHierarchyByKeys(['louvain']), _.isEqual)[0]?.children.length ?? 0;
-
-  const {
-    properties: cellSetsProperties,
-    hierarchy: cellSetsHierarchy,
-    loading: cellSetsLoading,
-    hidden: cellSetsHidden,
-  } = cellSets;
 
   const heatmapSettings = useSelector((state) => state.componentConfig[COMPONENT_TYPE]?.config,
     _.isEqual) || {};
@@ -134,7 +126,7 @@ const HeatmapPlot = (props) => {
 
   useConditionalEffect(() => {
     if (!selectedGenes?.length > 0
-      || cellSetsHierarchy.length === 0
+      || cellSets.hierarchy.length === 0
     ) {
       return;
     }
@@ -163,11 +155,11 @@ const HeatmapPlot = (props) => {
   }, [
     selectedGenes,
     heatmapSettings,
-    cellSetsHidden,
+    cellSets.hidden,
     // To reorder tracks when the track is reordered in hierarchy
-    cellSetsHierarchy,
+    cellSets.hierarchy,
     // For when tracks colors change
-    cellSetsProperties,
+    cellSets.properties,
   ]);
 
   useEffect(() => {
@@ -186,7 +178,7 @@ const HeatmapPlot = (props) => {
     }
   }, [cellHighlight]);
 
-  if (isHeatmapGenesLoading || cellSetsLoading) {
+  if (isHeatmapGenesLoading || !cellSets.accessible) {
     return (
       <center>
         <Loader experimentId={experimentId} />

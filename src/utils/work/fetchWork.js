@@ -10,6 +10,55 @@ import { dispatchWorkRequest, seekFromS3 } from 'utils/work/seekWorkResponse';
 
 const createObjectHash = (object) => MD5(object);
 
+// Disable unique keys to reallow reuse of work results in development
+const DISABLE_UNIQUE_KEYS = [
+  'GetEmbedding',
+];
+
+const generateETag = (
+  experimentId,
+  body,
+  extras,
+  qcPipelineStartDate,
+  environment,
+) => {
+  // If caching is disabled, we add an additional randomized key to the hash so we never reuse
+  // past results.
+  let cacheUniquenessKey = null;
+
+  if (
+    environment !== Environment.PRODUCTION
+    && localStorage.getItem('disableCache') === 'true'
+    && !DISABLE_UNIQUE_KEYS.includes(body.name)
+  ) {
+    cacheUniquenessKey = Math.random();
+  }
+
+  let ETagBody = {
+    experimentId,
+    body,
+    qcPipelineStartDate,
+    extras,
+    cacheUniquenessKey,
+  };
+
+  // They `body` key to create ETAg for gene expression is different
+  // from the others, causing the generated ETag to be different
+  if (body.name === 'GeneExpression') {
+    ETagBody = {
+      experimentId,
+      missingGenesBody: body,
+      qcPipelineStartDate,
+      extras,
+      cacheUniquenessKey,
+    };
+  }
+
+  const ETag = createObjectHash(ETagBody);
+
+  return ETag;
+};
+
 const decomposeBody = async (body, experimentId) => {
   const { genes: requestedGenes } = body;
   const missingDataKeys = {};
@@ -20,6 +69,7 @@ const decomposeBody = async (body, experimentId) => {
       ...body,
       genes: g,
     };
+
     const key = createObjectHash({ experimentId, newBody });
     const data = await cache.get(key);
     if (data) {
@@ -56,16 +106,13 @@ const fetchGeneExpressionWork = async (
 
   const missingGenesBody = { ...body, genes: missingGenes };
 
-  // If caching is disabled, we add an additional randomized key to the hash so we never reuse
-  // past results.
-  let cacheUniquenessKey = null;
-  if (environment !== Environment.PRODUCTION && localStorage.getItem('disableCache') === 'true') {
-    cacheUniquenessKey = Math.random();
-  }
-
-  const ETag = createObjectHash({
-    experimentId, missingGenesBody, qcPipelineStartDate, extras, cacheUniquenessKey,
-  });
+  const ETag = generateETag(
+    experimentId,
+    missingGenesBody,
+    extras,
+    qcPipelineStartDate,
+    environment,
+  );
 
   // Then, we may be able to find this in S3.
   let response = await seekFromS3(ETag, experimentId);
@@ -115,7 +162,6 @@ const fetchWork = async (
   const backendStatus = getBackendStatus(experimentId)(getState()).status;
 
   const { environment } = getState().networkResources;
-
   if (!isBrowser) {
     throw new Error('Disabling network interaction on server');
   }
@@ -131,21 +177,13 @@ const fetchWork = async (
     );
   }
 
-  // If caching is disabled, we add an additional randomized key to the hash so we never reuse
-  // past results.
-
-  const cacheUniquenessKey = null;
-  // if (environment !== Environment.PRODUCTION && localStorage.getItem('disableCache') === 'true') {
-  //   cacheUniquenessKey = Math.random();
-  // }
-
-  let ETag = createObjectHash({
+  let ETag = generateETag(
     experimentId,
     body,
-    qcPipelineStartDate,
     extras,
-    cacheUniquenessKey,
-  });
+    qcPipelineStartDate,
+    environment,
+  );
 
   if (body.name === 'MarkerHeatmap') {
     ETag += 1;
@@ -197,4 +235,7 @@ const fetchWork = async (
   return response;
 };
 
-export { fetchWork, fetchGeneExpressionWork, createObjectHash };
+export {
+  fetchWork,
+  generateETag,
+};

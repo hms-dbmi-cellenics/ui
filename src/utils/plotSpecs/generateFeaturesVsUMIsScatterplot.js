@@ -1,11 +1,46 @@
+import { round } from 'lodash';
 import { stdev } from '../mathFormulas';
 
-const generateSpec = (config, plotData) => {
+const generateSpec = (config, plotData, expConfig) => {
   const { pointsData, linesData } = plotData;
+  const { predictionInterval } = expConfig;
 
   const sd = stdev(pointsData.map((p) => p.log_genes));
-  const lowerCutoff = Math.min(...linesData.map((p) => p.lower_cutoff)) - sd;
-  const upperCutoff = Math.max(...linesData.map((p) => p.upper_cutoff)) + sd;
+  let predictionIntervalIndex;
+
+  // if the prediction interval is not set yet
+  // use a default value which is the last index in linesData
+  if (!predictionInterval && predictionInterval !== 0) {
+    predictionIntervalIndex = linesData.length - 1;
+  } else if (predictionInterval <= 0.99) {
+    predictionIntervalIndex = round((predictionInterval || 0) * 100);
+  } else if (predictionInterval === 0.999) {
+    predictionIntervalIndex = 100;
+  } else if (predictionInterval === 0.9999) {
+    predictionIntervalIndex = 101;
+  } else if (predictionInterval === 0.99999) {
+    predictionIntervalIndex = 102;
+  } else if (predictionInterval === 0.999999) {
+    predictionIntervalIndex = 103;
+  }
+
+  // if its the old model of the data, do not use the prediction interval variable
+  const selectedLinesData = linesData[0].length ? linesData[predictionIntervalIndex] : linesData;
+
+  const lowerCutoff = Math.min(
+    ...selectedLinesData.map((p) => p.lower_cutoff),
+  ) - sd;
+  const upperCutoff = Math.max(
+    ...selectedLinesData.map((p) => p.upper_cutoff),
+  ) + sd;
+
+  const xScaleDomain = config.axesRanges.xAxisAuto
+    ? { data: 'pointsData', field: 'log_molecules' }
+    : [config.axesRanges.xMin, config.axesRanges.xMax];
+
+  const yScaleDomain = config.axesRanges.yAxisAuto
+    ? [lowerCutoff, upperCutoff]
+    : [config.axesRanges.yMin, config.axesRanges.yMax];
 
   return {
     $schema: 'https://vega.github.io/schema/vega/v5.json',
@@ -38,7 +73,7 @@ const generateSpec = (config, plotData) => {
       },
       {
         name: 'linesData',
-        values: linesData,
+        values: selectedLinesData,
         // Vega internally modifies objects during data transforms. If the plot data is frozen,
         // Vega is not able to carry out the transform and will throw an error.
         // https://github.com/vega/vega/issues/2453#issuecomment-604516777
@@ -55,7 +90,7 @@ const generateSpec = (config, plotData) => {
         type: 'linear',
         round: true,
         zero: false,
-        domain: { data: 'pointsData', field: 'log_molecules' },
+        domain: xScaleDomain,
         range: 'width',
       },
       {
@@ -63,10 +98,7 @@ const generateSpec = (config, plotData) => {
         type: 'linear',
         round: true,
         zero: false,
-        domain: [
-          lowerCutoff,
-          upperCutoff,
-        ],
+        domain: yScaleDomain,
         range: 'height',
       },
     ],
@@ -110,6 +142,7 @@ const generateSpec = (config, plotData) => {
       {
         name: 'marks',
         type: 'symbol',
+        clip: true,
         from: { data: 'pointsData' },
         encode: {
           update: {
@@ -124,6 +157,7 @@ const generateSpec = (config, plotData) => {
       },
       {
         type: 'line',
+        clip: true,
         from: { data: 'linesData' },
         encode: {
           update: {
@@ -137,6 +171,7 @@ const generateSpec = (config, plotData) => {
       },
       {
         type: 'line',
+        clip: true,
         from: { data: 'linesData' },
         encode: {
           update: {

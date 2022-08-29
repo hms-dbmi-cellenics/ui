@@ -83,7 +83,8 @@ class ExpressionMatrix {
     return !_.isNil(this.loadedExpressionsIndexes[geneSymbol]);
   }
 
-  setGeneExpression(newGeneSymbols, newRawGeneExpression, newTruncatedGeneExpression, stats) {
+  // setGeneExpression(newGeneSymbols, newRawGeneExpression, newTruncatedGeneExpression, stats) {
+  setGeneExpression(newGeneSymbols, newRawGeneExpression, newTruncatedGeneExpression) {
     this.rawGeneExpressions = newRawGeneExpression;
     this.truncatedGeneExpressions = newTruncatedGeneExpression;
 
@@ -108,7 +109,8 @@ class ExpressionMatrix {
    * Each key is a gene symbol,
    * Each value has this shape: {rawMean, rawStdev, truncatedMin, truncatedMax}
    */
-  pushGeneExpression(newGeneSymbols, newRawGeneExpression, newTruncatedGeneExpression, stats) {
+  // pushGeneExpression(newGeneSymbols, newRawGeneExpression, newTruncatedGeneExpression, stats) {
+  pushGeneExpression(newGeneSymbols, newRawGeneExpression, newTruncatedGeneExpression) {
     const [, cellsCount] = this.rawGeneExpressions.size();
 
     // If the matrix was empty previously we need to set the correct column size

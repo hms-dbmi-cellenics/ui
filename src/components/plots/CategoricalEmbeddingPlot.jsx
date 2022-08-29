@@ -11,6 +11,7 @@ import { getCellSets } from 'redux/selectors';
 import PlatformError from 'components/PlatformError';
 import Loader from 'components/Loader';
 import changeEmbeddingAxesIfNecessary from 'components/plots/helpers/changeEmbeddingAxesIfNecessary';
+import 'vega-webgl-renderer';
 
 const CategoricalEmbeddingPlot = (props) => {
   const {
@@ -39,7 +40,7 @@ const CategoricalEmbeddingPlot = (props) => {
       dispatch(loadProcessingSettings(experimentId));
     }
 
-    if (cellSets.loading && !cellSets.error) {
+    if (!cellSets.error) {
       dispatch(loadCellSets(experimentId));
     }
 
@@ -53,11 +54,7 @@ const CategoricalEmbeddingPlot = (props) => {
   }, [config, embeddingSettings?.method]);
 
   useEffect(() => {
-    if (!config
-      || cellSets.loading
-      || cellSets.error) {
-      return;
-    }
+    if (!config || !cellSets.accessible) return;
 
     if (embeddingData?.length) {
       const {
@@ -89,7 +86,7 @@ const CategoricalEmbeddingPlot = (props) => {
     }
 
     if (!config
-      || cellSets.loading
+      || !cellSets.accessible
       || !embeddingData
       || embeddingLoading
       || !config
@@ -104,7 +101,7 @@ const CategoricalEmbeddingPlot = (props) => {
 
     return (
       <center>
-        <Vega spec={plotSpec} renderer='canvas' actions={actions} />
+        <Vega spec={plotSpec} renderer='webgl' actions={actions} />
       </center>
     );
   };

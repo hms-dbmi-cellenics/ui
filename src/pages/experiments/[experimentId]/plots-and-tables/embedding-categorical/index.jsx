@@ -36,7 +36,7 @@ const EmbeddingCategoricalPage = ({ experimentId }) => {
   }, []);
 
   const generateGroupByOptions = () => {
-    if (cellSets.loading) {
+    if (!cellSets.accessible) {
       return [];
     }
     return hierarchy.map(({ key, children }) => ({
@@ -66,7 +66,7 @@ const EmbeddingCategoricalPage = ({ experimentId }) => {
     },
     {
       panelTitle: 'Axes and margins',
-      controls: ['axes'],
+      controls: ['axesWithRanges'],
     },
     {
       panelTitle: 'Colour Inversion',
@@ -111,7 +111,6 @@ const EmbeddingCategoricalPage = ({ experimentId }) => {
             labelInValue
             style={{ width: '100%' }}
             placeholder='Select cell set...'
-            loading={config}
             value={{ value: config.selectedCellSet }}
             options={generateGroupByOptions()}
             onChange={({ value }) => updatePlotWithChanges({ selectedCellSet: value })}

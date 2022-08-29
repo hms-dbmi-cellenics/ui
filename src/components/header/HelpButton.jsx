@@ -15,7 +15,16 @@ const HelpButton = () => {
     <Card size='small' style={{ padding: '1em', width: '265px' }}>
       {accountId !== AccountId.HMS && (
         <>
-          For tutorial videos, ‘how to’ guides and FAQs on how to use Cellenics, visit
+          The
+          {' '}
+          <a href='https://www.biomage.net/user-guide' target='_blank' rel='noreferrer'>
+            Cellenics user guide
+          </a>
+          {' '}
+          is now available!
+          <br />
+          <br />
+          Tutorial videos, ‘how to’ guides and FAQs are also available on
           {' '}
           <a href='https://www.biomage.net/get-started' target='_blank' rel='noreferrer'>our website</a>
           .

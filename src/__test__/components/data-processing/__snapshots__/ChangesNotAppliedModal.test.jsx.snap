@@ -1,0 +1,16 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ChangesNotAppliedModal Shows the QCRerunDisabledModal if the pipelineVersion is too old 1`] = `
+Array [
+  Array [
+    "http://localhost:3000/v2/experiments/experiment-id/clone",
+    Object {
+      "body": "{\\"name\\":\\"Clone of expName\\"}",
+      "headers": Object {
+        "Content-Type": "application/json",
+      },
+      "method": "POST",
+    },
+  ],
+]
+`;
