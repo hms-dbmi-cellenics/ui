@@ -1,5 +1,5 @@
 /* eslint-disable no-param-reassign */
-import { getAllCells, getSampleCells } from 'utils/cellSets';
+import { getAllCells } from 'utils/cellSets';
 
 const generatePadding = (plotConfig) => {
   const showLegend = plotConfig.legend.enabled;
@@ -25,27 +25,8 @@ const generatePadding = (plotConfig) => {
   return padding;
 };
 
-const extent = (arr) => {
-  let min;
-  let max;
-  let rest = [];
-
-  if (arr.length === 2) {
-    [min, max] = arr;
-    if (min < max) return [min, max];
-    return [max, min];
-  }
-
-  [min, max, ...rest] = arr;
-
-  rest.forEach((val) => {
-    if (val < min) min = val;
-    if (val > max) max = val;
-  });
-
-  // Add/subtract 1 to give some padding to the plot
-  return [min - 1, max + 1];
-};
+// Add/subtract 1 to give some padding to the plot
+const extent = (arr) => [Math.min(...arr) - 1, Math.max(...arr) + 1];
 
 const generateBaseSpec = (
   config,
@@ -690,25 +671,12 @@ const generateStartingNodesData = (nodes) => {
   return trajectoryNodes;
 };
 
-const selectSampleCells = (cellSets, selectedSample) => {
-  let filteredCells = [];
-
-  if (selectedSample === 'All') {
-    filteredCells = getAllCells(cellSets);
-  } else {
-    filteredCells = getSampleCells(cellSets, selectedSample);
-  }
-
-  return filteredCells.map((cell) => cell.cellId);
-};
-
 const generatePseudotimeData = (
   cellSets,
-  selectedSample,
   plotData,
   embeddingData,
 ) => {
-  const selectedSampleCells = selectSampleCells(cellSets, selectedSample, embeddingData);
+  const selectedSampleCells = getAllCells(cellSets).map((cell) => cell.cellId);
 
   const cellsWithPseudotimeValue = [];
   const cellsWithoutPseudotimeValue = [];

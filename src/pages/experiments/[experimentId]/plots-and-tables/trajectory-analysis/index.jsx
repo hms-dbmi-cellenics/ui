@@ -152,43 +152,6 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
 
   const renderExtraPanels = () => (
     <>
-      <Panel header='Display' key='display'>
-        <Space
-          style={{ marginLeft: '5%' }}
-          direction='vertical'
-        >
-          <b>Plot values</b>
-          <Radio.Group
-            value={plotState.displayPseudotime}
-            onChange={(e) => setPlotState({
-              ...plotState,
-              displayPseudotime: e.target.value,
-            })}
-          >
-            <Space>
-              <Radio value={false}>Clusters</Radio>
-              <Radio disabled={!plotData?.pseudotime} value>
-                Pseudotime
-              </Radio>
-            </Space>
-          </Radio.Group>
-          <b>Trajectory</b>
-          <Radio.Group
-            value={plotState.displayTrajectory}
-            onChange={(e) => {
-              setPlotState({
-                ...plotState,
-                displayTrajectory: e.target.value,
-              });
-            }}
-          >
-            <Space>
-              <Radio value>Show</Radio>
-              <Radio value={false}>Hide</Radio>
-            </Space>
-          </Radio.Group>
-        </Space>
-      </Panel>
       <Panel header='Trajectory analysis' key='trajectory-analysis'>
         {
           plotState.displayTrajectory ? (
@@ -268,6 +231,43 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
           )
         }
       </Panel>
+      <Panel header='Display' key='display'>
+        <Space
+          style={{ marginLeft: '5%' }}
+          direction='vertical'
+        >
+          <b>Plot values</b>
+          <Radio.Group
+            value={plotState.displayPseudotime}
+            onChange={(e) => setPlotState({
+              ...plotState,
+              displayPseudotime: e.target.value,
+            })}
+          >
+            <Space>
+              <Radio value={false}>Clusters</Radio>
+              <Radio disabled={!plotData?.pseudotime} value>
+                Pseudotime
+              </Radio>
+            </Space>
+          </Radio.Group>
+          <b>Trajectory</b>
+          <Radio.Group
+            value={plotState.displayTrajectory}
+            onChange={(e) => {
+              setPlotState({
+                ...plotState,
+                displayTrajectory: e.target.value,
+              });
+            }}
+          >
+            <Space>
+              <Radio value>Show</Radio>
+              <Radio value={false}>Hide</Radio>
+            </Space>
+          </Radio.Group>
+        </Space>
+      </Panel>
     </>
   );
 
@@ -307,7 +307,7 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
             workflow.
           </>
         )}
-        defaultActiveKey='display'
+        defaultActiveKey='trajectory-analysis'
       >
         <TrajectoryAnalysisPlot
           experimentId={experimentId}

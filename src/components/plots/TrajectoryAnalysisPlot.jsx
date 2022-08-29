@@ -27,6 +27,9 @@ import { Alert } from 'antd';
 
 import changeEmbeddingAxesIfNecessary from 'components/plots/helpers/changeEmbeddingAxesIfNecessary';
 
+const selectedCellSet = 'louvain';
+const selectedSample = 'All';
+
 const TrajectoryAnalysisPlot = (props) => {
   // Currenty monocle3 trajectory analysis only supports
   // UMAP embedding. Therefore, this embedding is specifically fetched.
@@ -102,8 +105,8 @@ const TrajectoryAnalysisPlot = (props) => {
 
     return generateEmbeddingCategoricalData(
       cellSets,
-      config.selectedSample,
-      config.selectedCellSet,
+      selectedSample,
+      selectedCellSet,
       embeddingData,
     );
   }, [config, cellSets, embeddingData]);
@@ -126,7 +129,6 @@ const TrajectoryAnalysisPlot = (props) => {
 
     return generatePseudotimeData(
       cellSets,
-      config.selectedSample,
       startingNodesPlotData.pseudotime,
       embeddingData,
     );
@@ -134,7 +136,6 @@ const TrajectoryAnalysisPlot = (props) => {
     embeddingData,
     cellSets,
     startingNodesPlotData?.pseudotime,
-    config?.selectedSample,
     config?.selectedNodes,
   ]);
 
