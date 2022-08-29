@@ -18,13 +18,12 @@ const getStartingNodes = (
     clusteringSettings,
   } = getState().experimentSettings.processing.configureEmbedding;
 
-  const embeddingSettings = getState()
+  const methodSettings = getState()
     .experimentSettings
     ?.processing
     ?.configureEmbedding
-    ?.embeddingSettings;
-
-  const { methodSettings } = embeddingSettings;
+    ?.embeddingSettings
+    ?.methodSettings;
 
   const { environment } = getState().networkResources;
   const backendStatus = getBackendStatus(experimentId)(getState()).status;

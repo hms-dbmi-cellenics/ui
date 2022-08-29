@@ -1,8 +1,5 @@
 import getTimeoutForWorkerTask from 'utils/getTimeoutForWorkerTask';
-import {
-  PLOT_DATA_LOADED, PLOT_DATA_LOADING, PLOT_DATA_ERROR,
-  // UPDATE_CONFIG,
-} from 'redux/actionTypes/componentConfig';
+import { PLOT_DATA_LOADED, PLOT_DATA_LOADING, PLOT_DATA_ERROR } from 'redux/actionTypes/componentConfig';
 
 import handleError from 'utils/http/handleError';
 import endUserMessages from 'utils/endUserMessages';
@@ -20,7 +17,7 @@ const getPseudoTime = (
 
   const {
     clusteringSettings,
-  } = getState().experimentSettings.originalProcessing?.configureEmbedding || {};
+  } = getState().experimentSettings.processing.configureEmbedding;
 
   const methodSettings = getState()
     .experimentSettings
@@ -39,8 +36,6 @@ const getPseudoTime = (
     config: methodSettings[embeddingMethod],
   };
 
-  const timeout = getTimeoutForWorkerTask(getState(), 'TrajectoryAnalysisPseudotime');
-
   const embeddingETag = generateETag(
     experimentId,
     embeddingBody,
@@ -48,6 +43,8 @@ const getPseudoTime = (
     qcPipelineStartDate,
     environment,
   );
+
+  const timeout = getTimeoutForWorkerTask(getState(), 'TrajectoryAnalysisPseudotime');
 
   const body = {
     name: 'GetPseudoTime',
