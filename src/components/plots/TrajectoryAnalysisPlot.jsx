@@ -186,7 +186,7 @@ const TrajectoryAnalysisPlot = (props) => {
     domUpdates: (e, val) => {
       const [xdom, ydom] = val;
       setViewState({ xdom, ydom });
-      if (!plotState.isZoomedOrPanned) _.debounce(onZoomOrPan, 2000)();
+      if (!plotState.isZoomedOrPanned) _.debounce(onZoomOrPan)();
     },
     chooseNode: (eventName, payload) => {
       // eslint-disable-next-line camelcase

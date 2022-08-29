@@ -92,13 +92,17 @@ const generateBaseSpec = (
       name: 'initXdom',
       value: isZoomedOrPanned
         ? viewState.xdom
-        : extent(embeddingData.map((data) => data.x)),
+        : config.axesRanges.xAxisAuto
+          ? extent(embeddingData.map((data) => data.x))
+          : [config.axesRanges.xMin, config.axesRanges.xMax],
     },
     {
       name: 'initYdom',
       value: isZoomedOrPanned
         ? viewState.ydom
-        : extent(embeddingData.map((data) => data.y)),
+        : config.axesRanges.xAxisAuto
+          ? extent(embeddingData.map((data) => data.y))
+          : [config.axesRanges.yMin, config.axesRanges.yMax],
     },
     { name: 'xrange', update: '[0, width]' },
     { name: 'yrange', update: '[height, 0]' },

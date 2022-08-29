@@ -304,6 +304,7 @@ const trajectoryAnalysisInitialConfig = {
     yAxisText: 'Umap 2',
     defaultValues: ['x', 'y'],
   },
+  axesRanges: axesRangesBaseState,
   title: {
     ...titleBaseState,
     fontSize: 20,

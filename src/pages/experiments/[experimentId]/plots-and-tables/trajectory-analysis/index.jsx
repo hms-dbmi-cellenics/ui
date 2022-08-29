@@ -80,6 +80,15 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
   }, [embeddingMethod, !embeddingSettings]);
 
   useEffect(() => {
+    if (plotState.isZoomedOrPanned) {
+      setPlotState({
+        ...plotState,
+        isZoomedOrPanned: false,
+      });
+    }
+  }, [config?.axesRanges.xAxisAuto, config?.axesRanges.xAxisAuto]);
+
+  useEffect(() => {
     if (
       !embeddingMethod
       || embeddingLoading
@@ -110,7 +119,7 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
     },
     {
       panelTitle: 'Axes and margins',
-      controls: ['axes'],
+      controls: ['axesWithRanges'],
     },
     {
       panelTitle: 'Colours',
