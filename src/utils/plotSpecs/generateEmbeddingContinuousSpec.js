@@ -20,17 +20,11 @@ const generateSpec = (config, plotData) => {
         type: 'symbol',
         orient: config.legend.position,
         title: config.shownGene,
-        gradientLength: 100,
         labelColor: config.colour.masterColour,
         titleColor: config.colour.masterColour,
-        labels: {
-          interactive: true,
-          update: {
-            fontSize: 12,
-            fill: { value: config.colour.masterColour },
-          },
-
-        },
+        symbolType: 'square',
+        symbolSize: 200,
+        offset: 40,
       }];
   }
   return {
