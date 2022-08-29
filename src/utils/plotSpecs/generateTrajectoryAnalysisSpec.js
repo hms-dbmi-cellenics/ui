@@ -321,7 +321,7 @@ const insertClusterColorsSpec = (
         type: 'symbol',
         orient: config?.legend.position,
         offset: 40,
-        symbolType: 'square',
+        symbolType: 'circle',
         symbolSize: 200,
         encode: {
           labels: {
@@ -569,11 +569,12 @@ const insertPseudotimeSpec = (spec, config, pseudotime) => {
     ...spec.scales,
     {
       name: 'pseudotimeScale',
-      type: 'linear',
+      type: 'quantize',
       range: {
         scheme: config.colour.gradient === 'default'
           ? (config.colour.toggleInvert === '#FFFFFF' ? 'purplered' : 'darkgreen')
           : config.colour.gradient,
+        count: 5,
       },
       domain: { data: 'pseudotime', field: 'value' },
     },
@@ -583,19 +584,16 @@ const insertPseudotimeSpec = (spec, config, pseudotime) => {
     spec.legends = [
       {
         fill: 'pseudotimeScale',
-        type: 'gradient',
+        type: 'symbol',
         orient: config.legend.position,
         title: 'Pseudotime',
         gradientLength: 100,
         labelColor: config.colour.masterColour,
         titleColor: config.colour.masterColour,
         direction: positionIsRight ? 'vertical' : 'horizontal',
-        labels: {
-          update: {
-            fontSize: 12,
-            fill: { value: config.colour.masterColour },
-          },
-        },
+        symbolType: 'circle',
+        symbolSize: 100,
+        offset: 40,
         columns: legendColumns,
         labelLimit,
       },

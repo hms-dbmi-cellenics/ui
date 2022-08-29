@@ -279,9 +279,7 @@ const TrajectoryAnalysisPlot = (props) => {
         <br />
         <Vega
           spec={plotSpec}
-          // We still have to use 'canvas' for pseudotime because the 'webgl' renderer can not
-          // display legend with linear scale
-          renderer={plotState.displayPseudotime ? 'canvas' : 'webgl'}
+          renderer='webgl'
           actions={actions}
           signalListeners={plotState.displayTrajectory ? plotListeners : {}}
         />
