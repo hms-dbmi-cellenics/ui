@@ -17,7 +17,7 @@ const generateSpec = (config, plotData) => {
     legend = [
       {
         fill: 'color',
-        type: 'gradient',
+        type: 'symbol',
         orient: config.legend.position,
         title: config.shownGene,
         gradientLength: 100,
@@ -68,12 +68,10 @@ const generateSpec = (config, plotData) => {
       {
         name: 'color',
         type: 'linear',
-        range: {
-          scheme: config.colour.gradient === 'default'
-            ? (config.colour.toggleInvert === '#FFFFFF' ? 'purplered' : 'darkgreen')
-            : config.colour.gradient,
-        },
-        domain: { data: 'plotData', field: 'value' },
+        scheme: config.colour.gradient === 'default'
+          ? (config.colour.toggleInvert === '#FFFFFF' ? 'purplered' : 'darkgreen')
+          : config.colour.gradient,
+        domain: [0, 1],
         reverse: config.colour.reverseCbar,
       },
     ],
