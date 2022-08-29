@@ -142,7 +142,7 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
         },
       }],
     },
-    {
+    !plotState.displayPseudotime && {
       panelTitle: 'Labels',
       controls: ['labels'],
     },

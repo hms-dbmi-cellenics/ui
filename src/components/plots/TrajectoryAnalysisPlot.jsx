@@ -145,7 +145,7 @@ const TrajectoryAnalysisPlot = (props) => {
       || !startingNodesPlotData?.nodes
     ) return;
 
-    const baseSpec = generateBaseSpec(
+    const spec = generateBaseSpec(
       config,
       embeddingPlotData,
       viewState,
@@ -153,9 +153,9 @@ const TrajectoryAnalysisPlot = (props) => {
     );
 
     if (plotState.displayPseudotime && pseudotimeData) {
-      insertPseudotimeSpec(baseSpec, config, pseudotimeData);
+      insertPseudotimeSpec(spec, config, pseudotimeData);
     } else {
-      insertClusterColorsSpec(baseSpec, config, cellSetLegendsData);
+      insertClusterColorsSpec(spec, config, cellSetLegendsData);
     }
 
     if (plotState.displayTrajectory) {
@@ -164,13 +164,13 @@ const TrajectoryAnalysisPlot = (props) => {
       );
 
       insertTrajectorySpec(
-        baseSpec,
+        spec,
         startingNodesData,
         selectedNodes,
       );
     }
 
-    setPlotSpec(baseSpec);
+    setPlotSpec(spec);
   }, [
     config,
     cellSets,
