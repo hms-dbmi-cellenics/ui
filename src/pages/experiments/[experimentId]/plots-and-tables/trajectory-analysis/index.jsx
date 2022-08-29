@@ -113,8 +113,10 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
       controls: ['axes'],
     },
     {
-      panelTitle: 'Colour Inversion',
-      controls: ['colourInversion'],
+      panelTitle: 'Colours',
+      controls: plotState.displayPseudotime
+        ? ['colourScheme', 'colourInversion']
+        : ['colourInversion'],
     },
     {
       panelTitle: 'Markers',
