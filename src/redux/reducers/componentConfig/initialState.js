@@ -322,11 +322,6 @@ const trajectoryAnalysisInitialConfig = {
   selectedNodes: [],
   selectedCellSet: 'louvain',
   selectedSample: 'All',
-  isZoomedOrPanned: false,
-  display: {
-    trajectory: true,
-    pseudotime: false,
-  },
 };
 
 // EMBEDDING PREVIEW - Coloured by sample

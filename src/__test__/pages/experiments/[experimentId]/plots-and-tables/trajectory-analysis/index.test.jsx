@@ -10,6 +10,7 @@ import { makeStore } from 'redux/store';
 import { seekFromS3 } from 'utils/work/seekWorkResponse';
 import mockEmbedding from '__test__/data/embedding.json';
 import mockStartingNodes from '__test__/data/starting_nodes.json';
+import mockPseudoTime from '__test__/data/pseudotime.json';
 
 import preloadAll from 'jest-next-dynamic';
 
@@ -20,6 +21,8 @@ import mockAPI, {
   statusResponse,
 } from '__test__/test-utils/mockAPI';
 import createTestComponentFactory from '__test__/test-utils/testComponentFactory';
+import userEvent from '@testing-library/user-event';
+import { updatePlotConfig } from 'redux/actions/componentConfig';
 
 jest.mock('components/header/UserButton', () => () => <></>);
 jest.mock('react-resize-detector', () => (props) => {
@@ -48,6 +51,7 @@ jest.mock('utils/work/seekWorkResponse', () => ({
 const mockWorkerResponses = {
   GetEmbedding: mockEmbedding,
   GetStartingNodes: mockStartingNodes,
+  GetPseudoTime: mockPseudoTime,
 };
 
 const experimentId = fake.EXPERIMENT_ID;
@@ -73,6 +77,8 @@ const trajectoryAnalysisPageFactory = createTestComponentFactory(
   defaultProps,
 );
 
+const selectedRootNodes = ['Y_1', 'Y_2', 'Y_3'];
+
 const renderTrajectoryAnalysisPage = async (store) => {
   await act(async () => (
     render(
@@ -81,6 +87,21 @@ const renderTrajectoryAnalysisPage = async (store) => {
       </Provider>,
     )
   ));
+
+  // Select several nodes by default
+  await store.dispatch(updatePlotConfig(plotUuid, {
+    selectedNodes: selectedRootNodes,
+  }));
+};
+
+const runPseudotime = () => {
+  userEvent.click(screen.getByText('Trajectory analysis'));
+  userEvent.click(screen.getByText(/Calculate/i));
+
+  // Pseudotime under display should no longer be disabled
+  userEvent.click(screen.getByText(/Display/i));
+
+  expect(screen.getByText(/Pseudotime/i)).not.toBeDisabled();
 };
 
 describe('Trajectory analysis plot', () => {
@@ -93,6 +114,8 @@ describe('Trajectory analysis plot', () => {
 
     seekFromS3
       .mockReset()
+      .mockImplementationOnce(() => null)
+      .mockImplementationOnce((Etag) => mockWorkerResponses[Etag])
       .mockImplementationOnce(() => null)
       .mockImplementationOnce((Etag) => mockWorkerResponses[Etag])
       .mockImplementationOnce(() => null)
@@ -127,6 +150,76 @@ describe('Trajectory analysis plot', () => {
 
     await waitFor(async () => {
       expect(screen.getByRole('graphics-document', { name: 'Trajectory analysis plot showing clusters with trajectory' })).toBeInTheDocument();
+    });
+  });
+
+  it('Does not display colours options if displaying clusters', async () => {
+    await renderTrajectoryAnalysisPage(storeState);
+
+    userEvent.click(screen.getByText('Colours'));
+
+    expect(screen.getByText(/Background Color/i)).toBeInTheDocument();
+    expect(screen.queryByText(/Colour Schemes/i)).toBeNull();
+  });
+
+  it('Shows the number of nodes that are selected', async () => {
+    await renderTrajectoryAnalysisPage(storeState);
+
+    userEvent.click(screen.getByText('Trajectory analysis'));
+
+    expect(screen.getByText(`${selectedRootNodes.length} nodes selected`)).toBeInTheDocument();
+    expect(screen.getByText(/Calculate/i).closest('button')).not.toBeDisabled();
+
+    // The "Clear selection" button is the 2nd element in the body with "Clear selection" text
+    // The 1st "Clear selection" text is inside the information text
+    const clearSelectionButton = screen.queryAllByText(/Clear selection/i)[1].closest('button');
+    expect(clearSelectionButton).toBeInTheDocument();
+  });
+
+  it('Trajectory buttons should not be shown if there are no selected nodes', async () => {
+    await renderTrajectoryAnalysisPage(storeState);
+
+    userEvent.click(screen.getByText('Trajectory analysis'));
+
+    // The "Clear selection" button is the 2nd element in the body with "Clear selection" text
+    // The 1st "Clear selection" text is inside the information text
+    const clearSelectionButton = screen.queryAllByText(/Clear selection/i)[1].closest('button');
+
+    // Clearing nodes should hide the text and the buttons
+    userEvent.click(clearSelectionButton);
+
+    // Thes is only 1 "Clear selection" text now, which is in the information text
+    expect(screen.queryAllByText(/Clear selection/i).length).toEqual(1);
+
+    expect(screen.queryByText(`${selectedRootNodes.length} nodes selected`)).toBeNull();
+    expect(screen.queryByText(/Calculate/i)).toBeNull();
+  });
+
+  it('Clicking "Calculate" shows for pseudotime', async () => {
+    await renderTrajectoryAnalysisPage(storeState);
+    runPseudotime();
+
+    await waitFor(async () => {
+      expect(screen.getByRole('graphics-document', { name: 'Trajectory analysis plot showing pseudotime with trajectory' })).toBeInTheDocument();
+    });
+  });
+
+  it('Does not display labels options if displaying pseudotime', async () => {
+    await renderTrajectoryAnalysisPage(storeState);
+    runPseudotime();
+
+    await waitFor(() => {
+      expect(screen.queryByText('Labels')).toBeNull();
+    });
+  });
+
+  it('Hides trajectory if hidden option is selected', async () => {
+    await renderTrajectoryAnalysisPage(storeState);
+
+    userEvent.click(screen.getByText(/Hide/i));
+
+    await waitFor(async () => {
+      expect(screen.getByRole('graphics-document', { name: 'Trajectory analysis plot showing clusters' })).toBeInTheDocument();
     });
   });
 });

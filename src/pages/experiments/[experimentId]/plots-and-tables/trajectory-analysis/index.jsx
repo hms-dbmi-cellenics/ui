@@ -86,7 +86,7 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
         isZoomedOrPanned: false,
       });
     }
-  }, [config?.axesRanges.xAxisAuto, config?.axesRanges.xAxisAuto]);
+  }, [config?.axesRanges?.xAxisAuto, config?.axesRanges?.xAxisAuto]);
 
   useEffect(() => {
     if (
@@ -214,7 +214,7 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
                     <p>
                       Deselect nodes by clicking on a selected node, or by clicking
                       {' '}
-                      <strong>Clear Selection</strong>
+                      <strong>Clear selection</strong>
                       .
                     </p>
                   </>

@@ -91,6 +91,8 @@ const renderTrajectoryAnalysisPlot = async (store, props) => {
   });
 };
 
+const defaultShownPlotDescription = 'Trajectory analysis plot showing clusters with trajectory';
+
 let storeState = null;
 describe('Trajectory analysis plot', () => {
   beforeEach(async () => {
@@ -112,7 +114,7 @@ describe('Trajectory analysis plot', () => {
     await renderTrajectoryAnalysisPlot(storeState);
 
     await waitFor(async () => {
-      await expect(screen.getByRole('graphics-document', { name: 'Trajectory analysis plot' })).toBeInTheDocument();
+      await expect(screen.getByRole('graphics-document', { name: defaultShownPlotDescription })).toBeInTheDocument();
     });
   });
 
@@ -121,7 +123,7 @@ describe('Trajectory analysis plot', () => {
 
     expect(screen.getByText(/We're getting your data/i)).toBeInTheDocument();
     await waitFor(async () => {
-      await expect(screen.queryByRole('graphics-document', { name: 'Trajectory analysis plot' })).toBeNull();
+      await expect(screen.queryByRole('graphics-document', { name: defaultShownPlotDescription })).toBeNull();
     });
   });
 
@@ -137,7 +139,7 @@ describe('Trajectory analysis plot', () => {
 
     expect(screen.getByText(/We're getting your data/i)).toBeInTheDocument();
     await waitFor(async () => {
-      await expect(screen.queryByRole('graphics-document', { name: 'Trajectory analysis plot' })).toBeNull();
+      await expect(screen.queryByRole('graphics-document', { name: defaultShownPlotDescription })).toBeNull();
     });
   });
 
@@ -153,7 +155,7 @@ describe('Trajectory analysis plot', () => {
 
     expect(screen.getByText(/We're sorry, we couldn't load this/i)).toBeInTheDocument();
     await waitFor(async () => {
-      await expect(screen.queryByRole('graphics-document', { name: 'Trajectory analysis plot' })).toBeNull();
+      await expect(screen.queryByRole('graphics-document', { name: defaultShownPlotDescription })).toBeNull();
     });
   });
 
@@ -167,7 +169,7 @@ describe('Trajectory analysis plot', () => {
 
     expect(screen.getByText(/We're getting your data/i)).toBeInTheDocument();
     await waitFor(async () => {
-      await expect(screen.queryByRole('graphics-document', { name: 'Trajectory analysis plot' })).toBeNull();
+      await expect(screen.queryByRole('graphics-document', { name: defaultShownPlotDescription })).toBeNull();
     });
   });
 
@@ -181,7 +183,7 @@ describe('Trajectory analysis plot', () => {
 
     expect(screen.getByText(/We had an error on our side while we were completing your request/i)).toBeInTheDocument();
     await waitFor(async () => {
-      await expect(screen.queryByRole('graphics-document', { name: 'Trajectory analysis plot' })).toBeNull();
+      await expect(screen.queryByRole('graphics-document', { name: defaultShownPlotDescription })).toBeNull();
     });
   });
 
@@ -190,7 +192,7 @@ describe('Trajectory analysis plot', () => {
 
     expect(screen.getByText(/We're sorry, we couldn't load this./i)).toBeInTheDocument();
     await waitFor(async () => {
-      await expect(screen.queryByRole('graphics-document', { name: 'Trajectory analysis plot' })).toBeNull();
+      await expect(screen.queryByRole('graphics-document', { name: defaultShownPlotDescription })).toBeNull();
     });
 
     // Clicking retry will fire onPlotDataErroRetry
