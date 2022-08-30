@@ -25,8 +25,6 @@ const ReferralButton = () => {
   const [isEmailValid, setIsEmailValid] = useState(false);
   const [customMessage, setCustomMessage] = useState(initialMessage);
 
-  const HOOK_URL = 'aHR0cHM6Ly9ob29rcy5zbGFjay5jb20vc2VydmljZXMvVDAxNTVEWkZWTTAvQjAyQVk0ODQxQ0cvQ0x3Mms4dTBtMkUzcDBVNUhhbjBqeTBv'; // pragma: allowlist secret
-
   const submitReferral = async () => {
     setVisible(false);
 
@@ -96,7 +94,8 @@ const ReferralButton = () => {
     };
 
     try {
-      const r = await fetch(atob(HOOK_URL), {
+      const { getReferralWebhookUrl } = await import('utils/slack');
+      const r = await fetch(getReferralWebhookUrl(), {
         method: 'POST',
         body: JSON.stringify(referralData),
       });

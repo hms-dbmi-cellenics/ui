@@ -28,7 +28,11 @@ exports[`PostErrorToSlack Posts requests correctly 5`] = `"UI-error-testae48e318
 exports[`PostErrorToSlack Posts requests correctly 6`] = `
 "
     ===== ERROR STACK =====
-    Mock error stack
+    Message:
+    mockMessage
+    At:
+    line1
+line2
 
     === DETAILS ===
     User: John Doe <fake@email.com> 5152fake-eb52-474c-user-mocke8c8user

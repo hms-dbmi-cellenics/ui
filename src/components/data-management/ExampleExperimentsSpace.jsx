@@ -7,23 +7,28 @@ import {
 
 import { setActiveExperiment, loadExperiments } from 'redux/actions/experiments';
 import fetchAPI from 'utils/http/fetchAPI';
+import { privacyPolicyIsNotAccepted } from 'utils/deploymentInfo';
 
 const { Paragraph, Text } = Typography;
 
 const ExampleExperimentsSpace = ({ introductionText, imageStyle }) => {
   const dispatch = useDispatch();
 
-  const environment = useSelector((state) => state?.networkResources?.environment);
+  const {
+    environment = undefined, domainName = undefined,
+  } = useSelector((state) => state?.networkResources ?? {});
+
+  const user = useSelector((state) => state?.user?.current);
 
   const [exampleExperiments, setExampleExperiments] = useState([]);
 
   useEffect(() => {
-    if (!environment) return;
+    if (!environment || privacyPolicyIsNotAccepted(user, domainName)) return;
 
     fetchAPI('/v2/experiments/examples').then((experiments) => {
       setExampleExperiments(experiments);
     }).catch(() => { });
-  }, [environment]);
+  }, [environment, user]);
 
   const cloneIntoCurrentExperiment = async (exampleExperimentId) => {
     const url = `/v2/experiments/${exampleExperimentId}/clone`;

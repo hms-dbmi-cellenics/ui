@@ -3,8 +3,9 @@ import { v4 as uuidv4 } from 'uuid';
 
 import fetchAPI from 'utils/http/fetchAPI';
 import { SAMPLES_FILE_UPDATE } from 'redux/actionTypes/samples';
-import handleError from 'utils/http/handleError';
-import endUserMessages from 'utils/endUserMessages';
+
+import UploadStatus from 'utils/upload/UploadStatus';
+import updateSampleFileUpload from 'redux/actions/samples/updateSampleFileUpload';
 
 const fileNameForApiV1 = {
   matrix10x: 'matrix.mtx.gz',
@@ -23,12 +24,6 @@ const createSampleFile = (
 ) => async (dispatch) => {
   const updatedAt = moment().toISOString();
 
-  console.log(`sampleId: ${sampleId}`);
-  console.log(`type: ${type}`);
-  console.log(`size: ${size}`);
-  console.log(`metadata: ${metadata}`);
-  console.log(`fileForApiV1: ${fileForApiV1}`);
-
   try {
     const url = `/v2/experiments/${experimentId}/samples/${sampleId}/sampleFiles/${type}`;
     const body = {
@@ -36,6 +31,19 @@ const createSampleFile = (
       size,
       metadata,
     };
+
+    dispatch({
+      type: SAMPLES_FILE_UPDATE,
+      payload: {
+        sampleUuid: sampleId,
+        lastModified: updatedAt,
+        fileName: fileNameForApiV1[type],
+        fileDiff: {
+          upload: { status: UploadStatus.UPLOADING },
+          ...fileForApiV1,
+        },
+      },
+    });
 
     const signedUrl = await fetchAPI(
       url,
@@ -48,23 +56,9 @@ const createSampleFile = (
       },
     );
 
-    console.log('HERE!!!--====');
-    console.log('type:', type);
-
-    dispatch({
-      type: SAMPLES_FILE_UPDATE,
-      payload: {
-        sampleUuid: sampleId,
-        lastModified: updatedAt,
-        fileName: fileNameForApiV1[type],
-        fileDiff: fileForApiV1,
-      },
-    });
-
     return signedUrl;
   } catch (e) {
-    // Can't update the upload status becuase we didn't even get to create the sample file
-    handleError(e, endUserMessages.ERROR_BEGIN_SAMPLE_FILE_UPLOAD);
+    dispatch(updateSampleFileUpload(experimentId, sampleId, type, UploadStatus.UPLOAD_ERROR));
 
     throw e;
   }

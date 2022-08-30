@@ -1,21 +1,41 @@
 import React, { useState } from 'react';
 import { Button, Dropdown, Card } from 'antd';
 import { QuestionCircleOutlined, DownOutlined } from '@ant-design/icons';
+import nextConfig from 'next/config';
+
+import config from 'config';
+import { AccountId } from 'utils/deploymentInfo';
+
+const accountId = nextConfig()?.publicRuntimeConfig?.accountId;
 
 const HelpButton = () => {
   const [visible, setVisible] = useState(false);
 
   const overlay = () => (
     <Card size='small' style={{ padding: '1em', width: '265px' }}>
-      For tutorial videos, ‘how to’ guides and FAQs on how to use Cellenics, visit
-      {' '}
-      <a href='https://www.biomage.net/get-started' target='_blank' rel='noreferrer'>our website</a>
-      .
-      <br />
-      <br />
+      {accountId !== AccountId.HMS && (
+        <>
+          The
+          {' '}
+          <a href='https://www.biomage.net/user-guide' target='_blank' rel='noreferrer'>
+            Cellenics user guide
+          </a>
+          {' '}
+          is now available!
+          <br />
+          <br />
+          Tutorial videos, ‘how to’ guides and FAQs are also available on
+          {' '}
+          <a href='https://www.biomage.net/get-started' target='_blank' rel='noreferrer'>our website</a>
+          .
+          <br />
+          <br />
+        </>
+      )}
+
       If you need additional help with your analysis, email:
       {' '}
-      <a href='mailto:hello@biomage.net'>hello@biomage.net</a>
+      <a href={`mailto:${config.supportEmail}`}>{config.supportEmail}</a>
     </Card>
   );
 

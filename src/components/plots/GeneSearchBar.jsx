@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
-import _ from 'lodash';
-import { AutoComplete } from 'antd';
-import { useSelector, useDispatch } from 'react-redux';
-import { loadGeneExpression } from 'redux/actions/genes';
+import { AutoComplete, Button, Input } from 'antd';
+import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
+import _ from 'lodash';
 
 const filterGenes = (searchText, geneList, loadedGenes) => {
   const searchTextUpper = searchText.toUpperCase();
@@ -17,9 +16,9 @@ const filterGenes = (searchText, geneList, loadedGenes) => {
 };
 
 const GeneSearchBar = (props) => {
-  const { plotUuid, experimentId, searchBarUuid } = props;
-
-  const dispatch = useDispatch();
+  const {
+    plotUuid, searchBarUuid, onSelect,
+  } = props;
 
   const geneList = useSelector((state) => state.genes.properties.views[searchBarUuid]?.data);
 
@@ -27,42 +26,66 @@ const GeneSearchBar = (props) => {
 
   const [options, setOptions] = useState([]);
 
-  // pass reactive component as value (search text) to allow auto clear on select
   const [value, setValue] = useState('');
 
-  const onSelect = (newGene) => {
-    if (!geneList.includes(newGene) || config?.selectedGenes.includes(newGene)) {
-      return;
-    }
+  const GENES_REGEX = /(?<!-)[,\s]+(?!-)/;
+  const genes = value.split(GENES_REGEX);
 
-    const genes = _.clone(config?.selectedGenes);
-    genes.push(newGene);
-    dispatch(loadGeneExpression(experimentId, genes, plotUuid));
-    setValue('');
+  const onOptionSelect = (newGene) => {
+    genes.splice(-1, 1, `${newGene}, `);
+    setValue(genes.join(', '));
+    setOptions([]);
   };
 
-  const onSearch = (searchText) => {
-    setValue(searchText);
+  const onSearch = (input) => {
+    setValue(input);
+
+    const inputGenes = input.split(GENES_REGEX);
+
+    const searchText = inputGenes[inputGenes.length - 1];
+
     setOptions(!searchText ? [] : filterGenes(searchText, geneList, config?.selectedGenes));
   };
 
+  const addGenes = () => {
+    if (value === '') return;
+
+    const newGenes = genes.filter((gene) => geneList.includes(gene));
+    const allGenes = _.uniq([...config?.selectedGenes, ...newGenes]);
+
+    if (_.isEqual(allGenes, config?.selectedGenes)) return;
+
+    onSelect(allGenes);
+    setValue('');
+    setOptions([]);
+  };
+
   return (
-    <AutoComplete
-      allowClear
-      value={value}
-      options={options}
-      style={{ width: '100%' }}
-      onSelect={onSelect}
-      onSearch={onSearch}
-      placeholder='Search for genes...'
-    />
+    <Input.Group compact>
+      <AutoComplete
+        allowClear
+        style={{ width: '80%' }}
+        value={value}
+        options={options}
+        onSelect={onOptionSelect}
+        onSearch={onSearch}
+        placeholder='Search for genes...'
+      />
+      <Button
+        type='primary'
+        onClick={addGenes}
+        style={{ width: '20%' }}
+      >
+        Add
+      </Button>
+    </Input.Group>
   );
 };
 
 GeneSearchBar.propTypes = {
   plotUuid: PropTypes.string.isRequired,
-  experimentId: PropTypes.string.isRequired,
   searchBarUuid: PropTypes.string.isRequired,
+  onSelect: PropTypes.func.isRequired,
 };
 
 export default GeneSearchBar;

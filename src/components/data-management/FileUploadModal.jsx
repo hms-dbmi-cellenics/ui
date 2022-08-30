@@ -15,10 +15,11 @@ import {
 } from 'antd';
 import { CheckCircleTwoTone, CloseCircleTwoTone, DeleteOutlined } from '@ant-design/icons';
 import Dropzone from 'react-dropzone';
+
+import config from 'config';
 import techOptions from 'utils/upload/fileUploadSpecifications';
 import handleError from 'utils/http/handleError';
 import { fileObjectToFileRecord } from 'utils/upload/processUpload';
-
 import integrationTestConstants from 'utils/integrationTestConstants';
 import endUserMessages from 'utils/endUserMessages';
 
@@ -159,7 +160,7 @@ const FileUploadModal = (props) => {
             <Text type='secondary'>
               <i>
                 Is your dataset generated using another single cell RNA-seq technology (e.g. Nadia, BD Rhapsody, etc.)? Email us to find out if we can support your data:
-                <a href='mailto:hello@biomage.net'> hello@biomage.net</a>
+                <a href={`mailto:${config.supportEmail}`}>{config.supportEmail}</a>
               </i>
             </Text>
           </Space>
@@ -182,7 +183,7 @@ const FileUploadModal = (props) => {
           <Paragraph type='secondary'>
             <i>
               Don’t have the data in the accepted format? Email us for help with file conversion (e.g. from Fastq or H5 file):
-              <a href='mailto:hello@biomage.net'> hello@biomage.net</a>
+              <a href={`mailto:${config.supportEmail}`}>{config.supportEmail}</a>
             </i>
             <span style={{ display: 'block', height: '0.6rem' }} />
             <i>

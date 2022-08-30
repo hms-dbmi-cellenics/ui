@@ -3,7 +3,7 @@ import { Space, Input } from 'antd';
 import { useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 
-import { updateMetadataTrack } from 'redux/actions/experiments';
+import { renameMetadataTrack } from 'redux/actions/experiments';
 
 import validateInputs, { rules } from 'utils/validateInputs';
 import { metadataNameToKey } from 'utils/data-management/metadataUtils';
@@ -62,7 +62,7 @@ const MetadataTitle = (props) => {
         deleteEnabled
         onDelete={(e, currentName) => deleteMetadataColumn(currentName)}
         onAfterSubmit={(newName) => dispatch(
-          updateMetadataTrack(name, newName, activeExperimentId),
+          renameMetadataTrack(name, newName, activeExperimentId),
         )}
         value={name}
         validationFunc={

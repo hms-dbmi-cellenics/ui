@@ -8,7 +8,7 @@ import transformOldFeaturesVsUMIsPlotData from './helpers/transformOldFeaturesVs
 
 const FeaturesVsUMIsScatterplot = (props) => {
   const {
-    config, plotData, actions,
+    config, plotData, actions, expConfig,
   } = props;
 
   // we can remove this if we migrate old plotData to the new schema
@@ -19,12 +19,12 @@ const FeaturesVsUMIsScatterplot = (props) => {
     : plotData;
 
   const [plotSpec, setPlotSpec] = useState(config);
-
+  const { predictionInterval } = expConfig;
   useEffect(() => {
     if (config && newPlotData?.pointsData?.length) {
-      setPlotSpec(generateSpec(config, newPlotData));
+      setPlotSpec(generateSpec(config, newPlotData, expConfig));
     }
-  }, [config, plotData]);
+  }, [config, plotData, predictionInterval]);
 
   if (!newPlotData?.pointsData?.length) {
     return (
@@ -49,6 +49,7 @@ FeaturesVsUMIsScatterplot.propTypes = {
     PropTypes.bool,
     PropTypes.object,
   ]),
+  expConfig: PropTypes.object.isRequired,
 };
 
 FeaturesVsUMIsScatterplot.defaultProps = {

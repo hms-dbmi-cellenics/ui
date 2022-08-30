@@ -1,5 +1,4 @@
 import React from 'react';
-import { act } from 'react-dom/test-utils';
 import { screen, render } from '@testing-library/react';
 
 import HelpButton from 'components/header/HelpButton';
@@ -20,7 +19,8 @@ describe('HelpButton', () => {
 
     userEvent.click(screen.getByText(/Help & resources/i));
 
-    expect(screen.getByText(/how to use Cellenics, visit/i)).toBeDefined();
+    expect(screen.getByText(/Cellenics user guide/i)).toBeDefined();
+    expect(screen.getByText(/Tutorial videos, ‘how to’ guides and FAQs are also available on/i)).toBeDefined();
     expect(screen.getByText(/our website/i)).toBeDefined();
     expect(screen.getByText(/help with your analysis, email:/i)).toBeDefined();
     expect(screen.getByText(/hello@biomage.net/i)).toBeDefined();
@@ -30,6 +30,10 @@ describe('HelpButton', () => {
     renderHelpButton();
 
     userEvent.click(screen.getByText(/Help & resources/i));
+
+    const guideLink = screen.getByText(/Cellenics user guide/i).closest('a');
+    expect(guideLink).toHaveAttribute('href', 'https://www.biomage.net/user-guide');
+    expect(guideLink).toHaveAttribute('target', '_blank');
 
     const websiteLink = screen.getByText(/our website/i).closest('a');
     expect(websiteLink).toHaveAttribute('href', 'https://www.biomage.net/get-started');

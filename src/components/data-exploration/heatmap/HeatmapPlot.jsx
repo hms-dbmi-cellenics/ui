@@ -24,6 +24,7 @@ import HeatmapTracksCellInfo from 'components/data-exploration/heatmap/HeatmapTr
 
 import getContainingCellSetsProperties from 'utils/cellSets/getContainingCellSetsProperties';
 import useConditionalEffect from 'utils/customHooks/useConditionalEffect';
+import generateVitessceData from 'components/plots/helpers/heatmap/vitessce/generateVitessceData';
 
 const COMPONENT_TYPE = 'interactiveHeatmap';
 
@@ -63,15 +64,7 @@ const HeatmapPlot = (props) => {
   } = useSelector((state) => state.genes.markers);
 
   const cellSets = useSelector(getCellSets());
-
   const louvainClusterCount = useSelector(getCellSetsHierarchyByKeys(['louvain']), _.isEqual)[0]?.children.length ?? 0;
-
-  const {
-    properties: cellSetsProperties,
-    hierarchy: cellSetsHierarchy,
-    loading: cellSetsLoading,
-    hidden: cellSetsHidden,
-  } = cellSets;
 
   const heatmapSettings = useSelector((state) => state.componentConfig[COMPONENT_TYPE]?.config,
     _.isEqual) || {};
@@ -129,24 +122,34 @@ const HeatmapPlot = (props) => {
 
   useConditionalEffect(() => {
     if (!selectedGenes?.length > 0
-      || cellSetsHierarchy.length === 0
+      || cellSets.hierarchy.length === 0
     ) {
       return;
     }
 
-    const data = populateHeatmapData(
-      cellSets, heatmapSettings, expressionData, selectedGenes, true, true,
+    const cellOrder = populateHeatmapData(cellSets, heatmapSettings, true);
+
+    // Selected genes is not contained in heatmap settings for the
+    // data exploration marker heatmap, so must be passed spearatedly.
+    // Trying to assign it to heatmapSettings will throw an error because
+    // heatmapSettings is is frozen in redux by immer.
+    const data = generateVitessceData(
+      cellOrder,
+      heatmapSettings,
+      expressionData,
+      selectedGenes,
+      cellSets,
     );
 
     setHeatmapData(data);
   }, [
     selectedGenes,
     heatmapSettings,
-    cellSetsHidden,
+    cellSets.hidden,
     // To reorder tracks when the track is reordered in hierarchy
-    cellSetsHierarchy,
+    cellSets.hierarchy,
     // For when tracks colors change
-    cellSetsProperties,
+    cellSets.properties,
   ]);
 
   useEffect(() => {
@@ -165,7 +168,7 @@ const HeatmapPlot = (props) => {
     }
   }, [cellHighlight]);
 
-  if (isHeatmapGenesLoading || cellSetsLoading) {
+  if (isHeatmapGenesLoading || !cellSets.accessible) {
     return (
       <center>
         <Loader experimentId={experimentId} />

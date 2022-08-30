@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
 import produce from 'immer';
 
-import _ from 'lodash';
+import { arrayMoveMutable } from 'utils/array-move';
 
 const cellSetsReorder = produce((draft, action) => {
   const { cellSetKey, newPosition, cellClassKey } = action.payload;
@@ -10,11 +10,8 @@ const cellSetsReorder = produce((draft, action) => {
 
   const cellClassOrder = draft.hierarchy[cellClassIndex].children;
 
-  // Remove from current position
-  _.remove(cellClassOrder, ({ key: currentKey }) => currentKey === cellSetKey);
-
-  // Insert in new position
-  cellClassOrder.splice(newPosition, 0, { key: cellSetKey });
+  const currentPosition = cellClassOrder.findIndex((cellSet) => cellSet.key === cellSetKey);
+  arrayMoveMutable(cellClassOrder, currentPosition, newPosition);
 });
 
 export default cellSetsReorder;

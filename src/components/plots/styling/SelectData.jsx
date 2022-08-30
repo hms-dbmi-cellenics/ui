@@ -17,15 +17,10 @@ const { Option, OptGroup } = Select;
 
 const SelectData = (props) => {
   const {
-    onUpdate, config, cellSets, axisName,
+    onUpdate, config, cellSets, firstSelectionText, secondSelectionText,
   } = props;
 
-  const {
-    loading: cellSetsLoading,
-    error: cellSetsError,
-    hierarchy,
-    properties,
-  } = cellSets;
+  const { hierarchy, properties } = cellSets;
 
   const getDefaultCellSetNotIn = (rootNodeKey) => {
     const fallBackRootNodesKeys = ['sample', 'louvain'];
@@ -71,21 +66,19 @@ const SelectData = (props) => {
       );
     });
   };
-
-  if (!config || cellSetsLoading) {
-    return <Skeleton.Input style={{ width: 200 }} active />;
+  if (cellSets.error) {
+    return <InlineError message='Error loading cell set' />;
   }
 
-  if (cellSetsError) {
-    return <InlineError message='Error loading cell set' />;
+  if (!config || !cellSets.accessible) {
+    return <Skeleton.Input style={{ width: 200 }} active />;
   }
 
   return (
     <>
-      <div>
-        {`Select the Cell sets or Metadata that cells are grouped by (determines the ${axisName}-axis)`}
-        :
-      </div>
+      <p>
+        {firstSelectionText}
+      </p>
       <Form.Item>
         <Select
           aria-label='selectCellSets'
@@ -104,9 +97,9 @@ const SelectData = (props) => {
           }
         </Select>
       </Form.Item>
-      <div>
-        Select the Cell sets or Metadata to be shown as data:
-      </div>
+      <p>
+        {secondSelectionText}
+      </p>
       <Form.Item>
         <Select
           aria-label='selectPoints'
@@ -134,12 +127,14 @@ SelectData.propTypes = {
   config: PropTypes.object,
   onUpdate: PropTypes.func.isRequired,
   cellSets: PropTypes.object.isRequired,
-  axisName: PropTypes.oneOf(['x', 'y']),
+  firstSelectionText: PropTypes.string,
+  secondSelectionText: PropTypes.string,
 };
 
 SelectData.defaultProps = {
   config: null,
-  axisName: 'y',
+  firstSelectionText: 'Select the cell sets or metadata that cells are grouped by',
+  secondSelectionText: 'Select the cell sets or metadata to be shown as data',
 };
 
 export default SelectData;

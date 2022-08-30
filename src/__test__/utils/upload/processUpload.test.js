@@ -14,6 +14,8 @@ import { waitFor } from '@testing-library/dom';
 import processUpload from 'utils/upload/processUpload';
 
 import loadAndCompressIfNecessary from 'utils/upload/loadAndCompressIfNecessary';
+import validate from 'utils/upload/sampleValidator';
+import pushNotificationMessage from 'utils/pushNotificationMessage';
 
 enableFetchMocks();
 
@@ -122,9 +124,9 @@ jest.mock('axios', () => ({
   request: jest.fn(),
 }));
 
-jest.mock('redux/actions/samples/deleteSamples', () => ({
-  sendDeleteSamplesRequest: jest.fn(),
-}));
+jest.mock('utils/pushNotificationMessage');
+
+jest.mock('utils/upload/sampleValidator');
 
 let store = null;
 
@@ -426,6 +428,26 @@ describe('processUpload', () => {
 
     // We do not expect uploads to happen
     await waitFor(() => {
+      expect(axios.request).not.toHaveBeenCalled();
+    });
+  });
+
+  it('Should not upload sample and show notification if uploaded sample is invalid', async () => {
+    validate.mockImplementationOnce(
+      () => (['Some file error']),
+    );
+
+    await processUpload(
+      getValidFiles('v2'),
+      sampleType,
+      store.getState().samples,
+      mockExperimentId,
+      store.dispatch,
+    );
+
+    // We do not expect uploads to happen
+    await waitFor(() => {
+      expect(pushNotificationMessage).toHaveBeenCalledTimes(1);
       expect(axios.request).not.toHaveBeenCalled();
     });
   });

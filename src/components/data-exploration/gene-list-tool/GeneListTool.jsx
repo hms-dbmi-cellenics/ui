@@ -5,7 +5,6 @@ import {
 import _ from 'lodash';
 import PropTypes from 'prop-types';
 import { v4 as uuidv4 } from 'uuid';
-import { geneTableUpdateReason } from 'utils/geneTable/geneTableUpdateReason';
 import { loadPaginatedGeneProperties } from 'redux/actions/genes';
 import GeneTable from '../generic-gene-table/GeneTable';
 
@@ -68,17 +67,13 @@ const GeneListTool = (props) => {
     },
   ];
 
-  const onUpdate = (newState, reason) => {
-    // We handle `loading` and `loaded` in the HOC, no need to react to these.
-    if (reason === geneTableUpdateReason.loaded || reason === geneTableUpdateReason.loading) {
-      return;
-    }
-
-    dispatch(loadPaginatedGeneProperties(experimentId, PROPERTIES, tableUuid, newState));
+  const loadData = (loadAllState) => {
+    dispatch(loadPaginatedGeneProperties(experimentId, PROPERTIES, tableUuid, loadAllState));
   };
 
   // When data changes, update rows.
   useEffect(() => {
+
     if (!tableRowKeys || tableRowKeys.length === 0) {
       return;
     }
@@ -107,11 +102,11 @@ const GeneListTool = (props) => {
           order: 'descend',
         },
       }}
-      onUpdate={onUpdate}
       columns={columns}
       loading={isTableLoading()}
       error={error || false}
-      data={dataShown}
+      propData={dataShown}
+      loadData={loadData}
       total={total || 0}
       width={width}
       height={height}

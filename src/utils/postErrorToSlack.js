@@ -1,4 +1,5 @@
 import Auth from '@aws-amplify/auth';
+import StackTrace from 'stacktrace-js';
 import { getLoggerBotToken } from 'utils/slack';
 
 const extractExperimentId = (url) => {
@@ -33,14 +34,20 @@ const trimOutput = (key, item) => {
   return item;
 };
 
-const buildErrorMessage = (errorObject, reduxState, context) => {
+const buildErrorMessage = async (errorObject, reduxState, context) => {
   const {
     user, timestamp, experimentId, url,
   } = context;
 
+  const stack = await StackTrace.fromError(errorObject);
+  const stringifiedStack = stack.map((sf) => sf.toString()).join('\n');
+
   let message = `
     ===== ERROR STACK =====
-    ${errorObject.stack}
+    Message:
+    ${errorObject.message}
+    At:
+    ${stringifiedStack}
 
     === DETAILS ===
     User: ${user.attributes.name} <${user.attributes.email}> ${user.username}
@@ -116,7 +123,7 @@ const postErrorToSlack = async (errorObject, reduxState) => {
     environment,
   };
 
-  const errorLog = buildErrorMessage(errorObject, reduxState, context);
+  const errorLog = await buildErrorMessage(errorObject, reduxState, context);
   await postError(errorLog, context);
 };
 

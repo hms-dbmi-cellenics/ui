@@ -11,17 +11,27 @@ import { inspectFile, Verdict } from 'utils/upload/fileInspector';
 
 import getFileTypeV2 from 'utils/getFileTypeV2';
 
-const putInS3 = async (loadedFileData, signedUrl, onUploadProgress) => (
-  await axios.request({
-    method: 'put',
-    url: signedUrl,
-    data: loadedFileData,
-    headers: {
-      'Content-Type': 'application/octet-stream',
-    },
-    onUploadProgress,
-  })
-);
+const MAX_RETRIES = 2;
+
+const putInS3 = async (loadedFileData, signedUrl, onUploadProgress, currentRetry = 0) => {
+  try {
+    await axios.request({
+      method: 'put',
+      url: signedUrl,
+      data: loadedFileData,
+      headers: {
+        'Content-Type': 'application/octet-stream',
+      },
+      onUploadProgress,
+    });
+  } catch (e) {
+    if (currentRetry < MAX_RETRIES) {
+      await putInS3(loadedFileData, signedUrl, onUploadProgress, currentRetry + 1);
+    }
+
+    throw e;
+  }
+};
 
 const prepareAndUploadFileToS3 = async (
   projectId, sampleId, fileType, file, signedUrl, dispatch,
@@ -100,18 +110,11 @@ const createAndUpload = async (sample, experimentId, dispatch) => (
   ));
 
 const processUpload = async (filesList, sampleType, samples, experimentId, dispatch) => {
-  console.log(`filesList ${filesList}`);
-  console.log(`sampleType ${sampleType}`);
-  console.log(`samples ${samples}`);
-  console.log(`experimentId ${experimentId}`);
-
   const samplesMap = filesList.reduce((acc, file) => {
     const pathToArray = file.name.trim().replace(/[\s]{2,}/ig, ' ').split('/');
 
     const sampleName = pathToArray[0];
     const fileName = _.last(pathToArray);
-
-    console.log('PROCESSING UPLOAD');
 
     // Update the file name so that instead of being saved as
     // e.g. WT13/matrix.tsv.gz, we save it as matrix.tsv.gz
@@ -141,7 +144,13 @@ const processUpload = async (filesList, sampleType, samples, experimentId, dispa
     // Create sample if not exists.
     try {
       sample.uuid ??= await dispatch(
-        createSample(experimentId, name, 'seurat', filesToUploadForSample),
+        createSample(
+          experimentId,
+          name,
+          sample,
+          sampleType,
+          filesToUploadForSample,
+        ),
       );
     } catch (e) {
       // If sample creation fails, sample should not be created
@@ -177,7 +186,7 @@ const fileObjectToFileRecord = async (fileObject, technology) => {
     error = 'Invalid file format.';
   }
 
-  const fileRecord = {
+  return {
     name: filename,
     fileObject,
     size: fileObject.size,
@@ -190,10 +199,6 @@ const fileObjectToFileRecord = async (fileObject, technology) => {
     errors: error,
     compressed: verdict === Verdict.VALID_ZIPPED,
   };
-
-  console.log('fileRecord:', fileRecord);
-
-  return fileRecord;
 };
 
 export {

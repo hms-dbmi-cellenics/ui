@@ -29,7 +29,8 @@ Object {
     "error": false,
     "hidden": Set {},
     "hierarchy": Array [],
-    "loading": true,
+    "initialLoadPending": true,
+    "loading": false,
     "properties": Object {},
     "selected": Object {},
     "updatingClustering": false,
@@ -183,6 +184,7 @@ Object {
     },
   },
   "networkResources": Object {
+    "domainName": undefined,
     "environment": undefined,
   },
   "samples": Object {
@@ -320,6 +322,9 @@ Object {
       "type": "10X Chromium",
       "uuid": "test9188-d682-test-mock-cb6d644cmock-2",
     },
+  },
+  "user": Object {
+    "current": null,
   },
 }
 `;
@@ -353,7 +358,8 @@ Object {
     "error": false,
     "hidden": Set {},
     "hierarchy": Array [],
-    "loading": true,
+    "initialLoadPending": true,
+    "loading": false,
     "properties": Object {},
     "selected": Object {},
     "updatingClustering": false,
@@ -507,6 +513,7 @@ Object {
     },
   },
   "networkResources": Object {
+    "domainName": undefined,
     "environment": undefined,
   },
   "samples": Object {
@@ -644,6 +651,9 @@ Object {
       "type": "10X Chromium",
       "uuid": "test9188-d682-test-mock-cb6d644cmock-2",
     },
+  },
+  "user": Object {
+    "current": null,
   },
 }
 `;
