@@ -35,7 +35,6 @@ const loadCellSets = (experimentId, forceReload = false) => async (dispatch, get
     });
   } catch (e) {
     const errorMessage = handleError(e, endUserMessages.ERROR_FETCHING_CELL_SETS);
-
     dispatch({
       type: CELL_SETS_ERROR,
       payload: { error: errorMessage },

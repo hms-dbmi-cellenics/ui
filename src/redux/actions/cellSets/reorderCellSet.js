@@ -1,5 +1,4 @@
 import { CELL_SETS_REORDER } from 'redux/actionTypes/cellSets';
-
 import fetchAPI from 'utils/http/fetchAPI';
 import handleError from 'utils/http/handleError';
 import endUserMessages from 'utils/endUserMessages';
@@ -51,6 +50,7 @@ const reorderCellSet = (
         cellClassKey: parentNodeKey,
       },
     });
+
   } catch (e) {
     handleError(e, endUserMessages.ERROR_SAVING);
   }
