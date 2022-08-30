@@ -50,7 +50,6 @@ const reorderCellSet = (
         cellClassKey: parentNodeKey,
       },
     });
-
   } catch (e) {
     handleError(e, endUserMessages.ERROR_SAVING);
   }
