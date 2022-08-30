@@ -95,7 +95,7 @@ describe('ProjectMenu', () => {
     });
 
     // Has add samples button
-    expect(screen.getByText('Add samples').closest('button')).toBeInTheDocument();
+    expect(screen.getByText('Add data').closest('button')).toBeInTheDocument();
 
     // Has Download button
     expect(screen.getByText('Download')).toBeInTheDocument();
@@ -116,7 +116,7 @@ describe('ProjectMenu', () => {
       );
     });
 
-    const addSamplesButton = screen.getByText('Add samples').closest('button');
+    const addSamplesButton = screen.getByText('Add data').closest('button');
 
     await act(async () => {
       userEvent.click(addSamplesButton);

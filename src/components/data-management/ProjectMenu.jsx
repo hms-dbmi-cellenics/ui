@@ -31,7 +31,7 @@ const ProjectMenu = () => {
           data-test-id={integrationTestConstants.ids.ADD_SAMPLES_BUTTON}
           onClick={() => setUploadModalVisible(true)}
         >
-          Add samples
+          Add data
         </Button>
         <DownloadDataButton />
         <Button

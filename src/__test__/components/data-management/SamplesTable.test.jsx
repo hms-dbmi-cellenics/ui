@@ -116,7 +116,7 @@ describe('Samples table', () => {
   it('Does not show prompt to upload datasets if samples are available', async () => {
     await renderSamplesTable(storeState);
 
-    expect(screen.queryByText(/Start uploading your samples by clicking on Add samples./i)).toBeNull();
+    expect(screen.queryByText(/Start uploading your samples by clicking on Add data./i)).toBeNull();
     expect(screen.queryByText(/Don't have data\? Get started using one of our example datasets:/i)).toBeNull();
   });
 
@@ -246,7 +246,7 @@ describe('Samples table', () => {
     });
 
     it('Example experiments show up in an empty experiment', async () => {
-      expect(screen.getByText(/Start uploading your samples by clicking on Add samples./i)).toBeInTheDocument();
+      expect(screen.getByText(/Start uploading your samples by clicking on Add data./i)).toBeInTheDocument();
       expect(screen.getByText(/Don't have data\? Get started using one of our example datasets:/i)).toBeInTheDocument();
 
       const exampleExperimentNames = _.map(mockDemoExperiments, 'name');

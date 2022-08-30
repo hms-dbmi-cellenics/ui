@@ -172,7 +172,7 @@ describe('ProjectDetails', () => {
       </Provider>,
     );
 
-    expect(screen.getByText('Add samples')).toBeDefined();
+    expect(screen.getByText('Add data')).toBeDefined();
     expect(screen.getByText('Add metadata')).toBeDefined();
     expect(screen.getByText('Download')).toBeDefined();
     expect(screen.getByText('Process project')).toBeDefined();

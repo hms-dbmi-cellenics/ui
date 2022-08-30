@@ -252,7 +252,7 @@ const SamplesTable = forwardRef((props, ref) => {
 
   const noDataComponent = (
     <ExampleExperimentsSpace
-      introductionText='Start uploading your samples by clicking on Add samples.'
+      introductionText='Start uploading your samples by clicking on Add data.'
       imageStyle={{ height: 60 }}
     />
   );

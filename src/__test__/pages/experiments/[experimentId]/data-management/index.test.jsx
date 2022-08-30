@@ -147,7 +147,7 @@ describe('Data Management page', () => {
 
     expect(addMetadataButton).toBeInTheDocument();
 
-    // We do this because the instruction to add samples also contain "Add samples"
+    // We do this because the instruction to add samples also contain "Add data"
     const addSamplesElement = screen.getAllByText(/Add Samples/i);
     const addSampleButton = addSamplesElement.find((el) => el.closest('button'));
 
