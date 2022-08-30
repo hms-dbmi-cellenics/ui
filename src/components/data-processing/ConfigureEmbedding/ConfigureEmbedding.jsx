@@ -129,7 +129,7 @@ const ConfigureEmbedding = (props) => {
         panelTitle: 'Colour Inversion',
         controls: ['colourInversion'],
         footer: <Alert
-          message='Changing plot colours is not available here. Use the Data Management tool in Data Exploration to customise cell set and metadata colours'
+          message='Changing plot colours is not available here. Use the Cell sets and Metadata tool in Data Exploration to customise cell set and metadata colours'
           type='info'
         />,
       },
@@ -158,7 +158,7 @@ const ConfigureEmbedding = (props) => {
         panelTitle: 'Colours',
         controls: ['colourInversion'],
         footer: <Alert
-          message='Changing plot colours is not available here. Use the Data Management tool in Data Exploration to customise cell set and metadata colours'
+          message='Changing plot colours is not available here. Use the Cell sets and Metadata tool in Data Exploration to customise cell set and metadata colours'
           type='info'
         />,
       },
