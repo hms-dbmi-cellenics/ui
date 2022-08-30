@@ -3,7 +3,7 @@ import { mount } from 'enzyme';
 import EditableField from 'components/EditableField';
 import '__test__/test-utils/setupTests';
 
-import { render } from '@testing-library/react';
+import { fireEvent, render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { act } from 'react-dom/test-utils';
 
@@ -211,14 +211,13 @@ describe('EditableField', () => {
 
     // Write new text
     const input = component.getByRole('textbox');
-    act(() => userEvent.clear(input));
-    act(() => userEvent.type(input, 'p'));
+    fireEvent.change(input, { target: { value: 'ImNotFormatted' } });
 
     // save new text
     const saveButton = component.getByRole('button', { name: 'Save' });
     act(() => userEvent.click(saveButton));
 
     // New text is sent
-    expect(mockOnAfterSubmit).toHaveBeenCalledWith('formattedp');
+    expect(mockOnAfterSubmit).toHaveBeenCalledWith('formattedImNotFormatted');
   });
 });
