@@ -52,6 +52,6 @@ describe('loadAndCompressIfNecessary', () => {
       fn(mockError, buffer);
     });
 
-    await expect(loadAndCompressIfNecessary(uncompressedFile)).rejects.toThrow(errorString);
+    await expect(loadAndCompressIfNecessary(uncompressedFile)).rejects.toThrow('error');
   });
 });
