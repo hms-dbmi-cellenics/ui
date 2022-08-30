@@ -124,7 +124,13 @@ const generateSpec = (config, plotData) => {
           enter: {
             x: { scale: 'x', field: 'x' },
             y: { scale: 'y', field: 'y' },
-            size: { value: config.marker.size },
+            size: [
+              {
+                test: "inrange(datum.x, domain('x')) && inrange(datum.y, domain('y'))",
+                value: config?.marker.size,
+              },
+              { value: 0 },
+            ],
             stroke: {
               scale: 'color',
               field: 'value',
