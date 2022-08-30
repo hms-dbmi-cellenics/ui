@@ -14,7 +14,20 @@ const getClusterNames = (state) => {
   const clusterNames = clusterIds?.map((clusterId) => state.cellSets.properties[clusterId].name);
   return clusterNames;
 };
-
+const orderCellSets = (data, state, config) => {
+  // reordering data based on the sample order
+  const { selectedCellSet } = config;
+  const { hierarchy, properties } = state.cellSets;
+  if (hierarchy.length) {
+    const cellSetOrderKeys = hierarchy.filter((rootNode) => rootNode.key === selectedCellSet)[0]
+      .children
+      .map((cellSet) => cellSet.key);
+    const cellSetOrderNames = cellSetOrderKeys.map((cellSet) => properties[cellSet].name);
+    data.sort((a, b) => (
+      cellSetOrderNames.indexOf(a.cellSets) - cellSetOrderNames.indexOf(b.cellSets)
+    ));
+  }
+};
 const getDotPlot = (
   experimentId,
   plotUuid,
@@ -48,6 +61,8 @@ const getDotPlot = (
     const data = await fetchWork(
       experimentId, body, getState, { timeout },
     );
+
+    orderCellSets(data, getState(), config);
 
     dispatch({
       type: PLOT_DATA_LOADED,
