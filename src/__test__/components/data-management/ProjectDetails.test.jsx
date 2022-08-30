@@ -11,13 +11,16 @@ import configureStore from 'redux-mock-store';
 import { act } from 'react-dom/test-utils';
 import { fireEvent } from '@testing-library/dom';
 import userEvent from '@testing-library/user-event';
-import { screen, render, waitFor } from '@testing-library/react';
+import { screen, render } from '@testing-library/react';
 
 import * as createMetadataTrack from 'redux/actions/experiments/createMetadataTrack';
+import * as updateValueInMetadataTrack from 'redux/actions/experiments/updateValueInMetadataTrack';
+
 import initialSamplesState, { sampleTemplate } from 'redux/reducers/samples/initialState';
 import initialExperimentsState from 'redux/reducers/experiments/initialState';
 import initialExperimentSettingsState from 'redux/reducers/experimentSettings/initialState';
 import { initialExperimentBackendStatus } from 'redux/reducers/backendStatus/initialState';
+
 import PipelineStatus from 'utils/pipelineStatusValues';
 import UploadStatus from 'utils/upload/UploadStatus';
 import ProjectDetails from 'components/data-management/ProjectDetails';
@@ -142,10 +145,12 @@ const withDataState = {
 };
 
 describe('ProjectDetails', () => {
-  let metadataCreated;
+  let mockedCreateMetadataTrack;
+  let mockedUpdateValueInMetadataTrack;
   beforeEach(() => {
     jest.clearAllMocks();
-    metadataCreated = jest.spyOn(createMetadataTrack, 'default');
+    mockedCreateMetadataTrack = jest.spyOn(createMetadataTrack, 'default');
+    mockedUpdateValueInMetadataTrack = jest.spyOn(updateValueInMetadataTrack, 'default');
   });
 
   it('Has a title, project ID and description', () => {
@@ -234,12 +239,14 @@ describe('ProjectDetails', () => {
       );
     });
 
-    const addMetadata = screen.getByText('Add metadata');
-    userEvent.click(addMetadata);
-    const field = screen.getByRole('textbox');
-    userEvent.type(field, 'myBrandNewMetadata');
-    fireEvent.keyDown(field, { key: 'Enter', code: 'Enter' });
-    await waitFor(() => expect(metadataCreated).toBeCalledTimes(1));
+    userEvent.click(screen.getByText('Add metadata'));
+
+    const input = screen.getByDisplayValue('Track 1');
+    fireEvent.change(input, { target: { value: 'myBrandNewMetadata' } });
+    fireEvent.keyDown(input, { key: 'Enter', code: 'Enter' });
+
+    expect(mockedCreateMetadataTrack).toBeCalledTimes(1);
+    expect(mockedCreateMetadataTrack).toHaveBeenCalledWith('myBrandNewMetadata', 'experiment-1');
   });
 
   it('Cancels metadata creation', () => {
@@ -256,5 +263,52 @@ describe('ProjectDetails', () => {
     fireEvent.keyDown(field, { key: 'Escape', code: 'Escape' });
 
     expect(store.getState().experiments[experiment1id].metadataKeys).toEqual(['metadata-1']);
+  });
+
+  it('Creates a metadata column trimming whitespaces in its name', async () => {
+    const store = createStore(rootReducer, _.cloneDeep(withDataState), applyMiddleware(thunk));
+    await act(async () => {
+      render(
+        <Provider store={store}>
+          <ProjectDetails width={width} height={height} />
+        </Provider>,
+      );
+    });
+
+    userEvent.click(screen.getByText('Add metadata'));
+
+    const input = screen.getByDisplayValue('Track 1');
+    fireEvent.change(input, { target: { value: '  myBrandNewMetadata     ' } });
+    fireEvent.keyDown(input, { key: 'Enter', code: 'Enter' });
+
+    expect(mockedCreateMetadataTrack).toBeCalledTimes(1);
+    expect(mockedCreateMetadataTrack).toHaveBeenCalledWith('myBrandNewMetadata', 'experiment-1');
+  });
+
+  it('Trims whitespaces in metadata track values', async () => {
+    const store = createStore(rootReducer, _.cloneDeep(withDataState), applyMiddleware(thunk));
+    await act(async () => {
+      render(
+        <Provider store={store}>
+          <ProjectDetails width={width} height={height} />
+        </Provider>,
+      );
+    });
+
+    // Add track column
+    userEvent.click(screen.getByText('Add metadata'));
+    fireEvent.keyDown(screen.getByDisplayValue('Track 1'), { key: 'Enter', code: 'Enter' });
+
+    // Change track value for sample
+
+    act(() => userEvent.click(screen.getAllByRole('button', { name: 'Edit' })[1]));
+
+    const input = screen.getByRole('textbox');
+    fireEvent.change(input, { target: { value: '  myBrandNewMetadataWithWhitespaces     ' } });
+
+    act(() => userEvent.click(screen.getByRole('button', { name: 'Save' })));
+
+    expect(mockedUpdateValueInMetadataTrack).toHaveBeenCalledTimes(1);
+    expect(mockedUpdateValueInMetadataTrack).toHaveBeenCalledWith('experiment-1', 'sample-1', 'metadata-1', 'myBrandNewMetadataWithWhitespaces');
   });
 });

@@ -68,6 +68,7 @@ const MetadataTitle = (props) => {
         validationFunc={
           (newName) => validateInput(newName, metadataNameValidation)
         }
+        formatter={(value) => value.trim()}
       />
       <MetadataEditor
         onReplaceEmpty={(value) => setCells(value, metaKey, 'REPLACE_EMPTY')}
