@@ -17,20 +17,14 @@ const generateSpec = (config, plotData) => {
     legend = [
       {
         fill: 'color',
-        type: 'gradient',
+        type: 'symbol',
         orient: config.legend.position,
         title: config.shownGene,
-        gradientLength: 100,
         labelColor: config.colour.masterColour,
         titleColor: config.colour.masterColour,
-        labels: {
-          interactive: true,
-          update: {
-            fontSize: 12,
-            fill: { value: config.colour.masterColour },
-          },
-
-        },
+        symbolType: 'circle',
+        symbolSize: 100,
+        offset: 40,
       }];
   }
   return {
@@ -67,11 +61,12 @@ const generateSpec = (config, plotData) => {
       },
       {
         name: 'color',
-        type: 'linear',
+        type: 'quantize',
         range: {
           scheme: config.colour.gradient === 'default'
             ? (config.colour.toggleInvert === '#FFFFFF' ? 'purplered' : 'darkgreen')
             : config.colour.gradient,
+          count: 5,
         },
         domain: { data: 'plotData', field: 'value' },
         reverse: config.colour.reverseCbar,
@@ -129,7 +124,13 @@ const generateSpec = (config, plotData) => {
           enter: {
             x: { scale: 'x', field: 'x' },
             y: { scale: 'y', field: 'y' },
-            size: { value: config.marker.size },
+            size: [
+              {
+                test: "inrange(datum.x, domain('x')) && inrange(datum.y, domain('y'))",
+                value: config?.marker.size,
+              },
+              { value: 0 },
+            ],
             stroke: {
               scale: 'color',
               field: 'value',
