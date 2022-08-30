@@ -153,7 +153,7 @@ const ContinuousEmbeddingPage = ({ experimentId }) => {
         plotType={plotType}
         plotStylingConfig={plotStylingConfig}
         extraControlPanels={renderExtraPanels()}
-        defaultActiveKey={['gene-selection', 'select-data']}
+        defaultActiveKey='gene-selection'
       >
         <ContinuousEmbeddingPlot
           experimentId={experimentId}

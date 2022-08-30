@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Vega } from 'react-vega';
+import 'vega-webgl-renderer';
 
 import { getCellSets, getCellSetsHierarchyByKeys } from 'redux/selectors';
 
@@ -172,7 +173,7 @@ const ViolinPlot = (props) => {
       return <Loader experimentId={experimentId} />;
     }
 
-    return <Vega spec={plotSpec} renderer='canvas' />;
+    return <Vega spec={plotSpec} renderer='webgl' />;
   };
 
   return render();
