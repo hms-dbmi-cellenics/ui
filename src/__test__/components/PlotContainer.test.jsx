@@ -86,7 +86,7 @@ describe('PlotContainer', () => {
   });
 
   it('Not showing reset removes the reset button', async () => {
-    renderPlotContainer(store, { showReset: false });
+    renderPlotContainer(store, { showResetButton: false });
 
     expect(screen.queryByText('Reset')).toBeNull();
   });

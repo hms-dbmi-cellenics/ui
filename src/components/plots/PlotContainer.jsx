@@ -27,13 +27,13 @@ const PlotContainer = (props) => {
     plotUuid, plotType, plotInfo,
     plotStylingConfig, defaultActiveKey,
     extraToolbarControls, extraControlPanels,
-    showReset, resetPlot, onPlotReset,
+    showResetButton, shouldPlotResetFunc, onPlotReset,
     children,
   } = props;
 
   const dispatch = useDispatch();
 
-  const [resetDisabled, setResetDisabled] = useState(true);
+  const [isResetDisabled, setIsResetDisabled] = useState(true);
   const [tileDirection, setTileDirection] = useState(DEFAULT_ORIENTATION);
   const { config } = useSelector((state) => state.componentConfig[plotUuid] || {});
   const debounceSave = useCallback(
@@ -74,19 +74,17 @@ const PlotContainer = (props) => {
     }
     debounceSave();
 
-    if (
-      !isConfigEqual(config, initialPlotConfigStates[plotType]) || resetPlot
-    ) {
-      setResetDisabled(false);
-      return;
-    }
-    setResetDisabled(true);
-  }, [config, resetPlot]);
+    const disableReset = shouldPlotResetFunc
+      ? !shouldPlotResetFunc()
+      : isConfigEqual(config, initialPlotConfigStates[plotType]);
+
+    setIsResetDisabled(disableReset);
+  }, [config, shouldPlotResetFunc]);
 
   const onClickReset = () => {
     onPlotReset();
     dispatch(resetPlotConfig(experimentId, plotUuid, plotType));
-    setResetDisabled(true);
+    setIsResetDisabled(true);
   };
 
   if (!config) {
@@ -100,13 +98,13 @@ const PlotContainer = (props) => {
   const renderPlotToolbarControls = () => (
     <Space style={{ marginRight: '0.5em' }}>
       {extraToolbarControls}
-      {showReset ? (
+      {showResetButton ? (
         <Button
           key='reset'
           type='primary'
           size='small'
           onClick={onClickReset}
-          disabled={resetDisabled}
+          disabled={isResetDisabled}
         >
           Reset
         </Button>
@@ -174,8 +172,8 @@ PlotContainer.propTypes = {
   extraToolbarControls: PropTypes.node || PropTypes.arrayOf(PropTypes.node),
   extraControlPanels: PropTypes.node || PropTypes.arrayOf(PropTypes.node),
   children: PropTypes.node,
-  showReset: PropTypes.bool,
-  resetPlot: PropTypes.bool,
+  showResetButton: PropTypes.bool,
+  shouldPlotResetFunc: PropTypes.func,
   onPlotReset: PropTypes.func,
 };
 
@@ -184,8 +182,8 @@ PlotContainer.defaultProps = {
   extraToolbarControls: null,
   extraControlPanels: null,
   children: null,
-  showReset: true,
-  resetPlot: false,
+  showResetButton: true,
+  shouldPlotResetFunc: null,
   onPlotReset: () => {},
 };
 

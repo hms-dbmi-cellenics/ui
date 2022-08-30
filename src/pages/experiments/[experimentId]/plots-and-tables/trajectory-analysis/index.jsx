@@ -293,7 +293,7 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
         plotType={plotType}
         plotStylingConfig={plotStylingConfig}
         extraControlPanels={renderExtraPanels()}
-        resetPlot={resetPlot}
+        shouldPlotResetFunc={() => resetPlot}
         onPlotReset={() => {
           setResetPlot(false);
           setPlotState(initialPlotState);
