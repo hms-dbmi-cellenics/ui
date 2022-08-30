@@ -9,10 +9,7 @@ import _ from 'lodash';
 
 import { generateData as generateEmbeddingCategoricalData } from 'utils/plotSpecs/generateEmbeddingCategoricalSpec';
 import {
-  insertTrajectorySpec,
-  insertPseudotimeSpec,
-  insertClusterColorsSpec,
-  generateBaseSpec,
+  generateTrajectoryAnalysisSpec,
   generateStartingNodesData,
   generatePseudotimeData,
 } from 'utils/plotSpecs/generateTrajectoryAnalysisSpec';
@@ -26,9 +23,6 @@ import Loader from 'components/Loader';
 import { Alert } from 'antd';
 
 import changeEmbeddingAxesIfNecessary from 'components/plots/helpers/changeEmbeddingAxesIfNecessary';
-
-const selectedCellSet = 'louvain';
-const selectedSample = 'All';
 
 const TrajectoryAnalysisPlot = (props) => {
   // Currenty monocle3 trajectory analysis only supports
@@ -105,8 +99,8 @@ const TrajectoryAnalysisPlot = (props) => {
 
     return generateEmbeddingCategoricalData(
       cellSets,
-      selectedSample,
-      selectedCellSet,
+      config.selectedSample,
+      config.selectedCellSet,
       embeddingData,
     );
   }, [config, cellSets, embeddingData]);
@@ -146,32 +140,22 @@ const TrajectoryAnalysisPlot = (props) => {
       || !startingNodesPlotData?.nodes
     ) return;
 
-    const spec = generateBaseSpec(
-      config,
-      embeddingPlotData,
-      viewState,
-      plotState.isZoomedOrPanned,
+    const selectedNodeIds = config.selectedNodes.map(
+      (nodeId) => startingNodesPlotData.nodes[nodeId],
     );
 
-    if (plotState.displayPseudotime && pseudotimeData) {
-      insertPseudotimeSpec(spec, config, pseudotimeData);
-    } else {
-      insertClusterColorsSpec(spec, config, cellSetLegendsData);
-    }
-
-    if (plotState.displayTrajectory) {
-      const selectedNodes = config.selectedNodes.map(
-        (nodeId) => startingNodesPlotData.nodes[nodeId],
-      );
-
-      insertTrajectorySpec(
-        spec,
+    setPlotSpec(
+      generateTrajectoryAnalysisSpec(
+        config,
+        viewState,
+        plotState,
+        embeddingPlotData,
+        pseudotimeData,
+        cellSetLegendsData,
         startingNodesData,
-        selectedNodes,
-      );
-    }
-
-    setPlotSpec(spec);
+        selectedNodeIds,
+      ),
+    );
   }, [
     config,
     cellSets,
@@ -202,15 +186,18 @@ const TrajectoryAnalysisPlot = (props) => {
       const yStart = Math.min(y1, y2);
       const yEnd = Math.max(y1, y2);
 
-      const selectedNodes = Object.values(startingNodesPlotData.nodes).map(
-        (node) => {
-          const inSelection = xStart <= node.x && node.x <= xEnd
-            && yStart <= node.y && node.y <= yEnd;
+      const inSelection = (node) => {
+        const isInSelection = (
+          xStart <= node.x && node.x <= xEnd
+          && yStart <= node.y && node.y <= yEnd
+        );
 
-          if (inSelection) return node.node_id;
-          return false;
-        },
-      ).filter((inSelection) => inSelection !== false);
+        return isInSelection ? node.node_id : null;
+      };
+
+      const selectedNodes = Object.values(startingNodesPlotData.nodes)
+        .map((node) => (inSelection(node) ? node.node_id : null))
+        .filter((node) => node !== null);
 
       onSelectNodes(selectedNodes);
     },

@@ -6,7 +6,7 @@ import endUserMessages from 'utils/endUserMessages';
 import { fetchWork, generateETag } from 'utils/work/fetchWork';
 import { getBackendStatus } from 'redux/selectors';
 
-const getStartingNodes = (
+const getTrajectoryPlotStartingNodes = (
   experimentId,
   plotUuid,
 ) => async (dispatch, getState) => {
@@ -16,18 +16,14 @@ const getStartingNodes = (
 
   const {
     clusteringSettings,
+    embeddingSettings: { methodSettings },
   } = getState().experimentSettings.processing.configureEmbedding;
 
-  const methodSettings = getState()
-    .experimentSettings
-    ?.processing
-    ?.configureEmbedding
-    ?.embeddingSettings
-    ?.methodSettings;
-
   const { environment } = getState().networkResources;
-  const backendStatus = getBackendStatus(experimentId)(getState()).status;
-  const { pipeline: { startDate: qcPipelineStartDate } } = backendStatus;
+  const {
+    pipeline:
+    { startDate: qcPipelineStartDate },
+  } = getBackendStatus(experimentId)(getState()).status;
 
   const embeddingBody = {
     name: 'GetEmbedding',
@@ -93,4 +89,4 @@ const getStartingNodes = (
   }
 };
 
-export default getStartingNodes;
+export default getTrajectoryPlotStartingNodes;

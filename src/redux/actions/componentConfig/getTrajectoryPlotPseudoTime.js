@@ -6,7 +6,7 @@ import endUserMessages from 'utils/endUserMessages';
 import { fetchWork, generateETag } from 'utils/work/fetchWork';
 import { getBackendStatus } from 'redux/selectors';
 
-const getPseudoTime = (
+const getTrajectoryPlotPseudoTime = (
   rootNodes,
   experimentId,
   plotUuid,
@@ -17,18 +17,14 @@ const getPseudoTime = (
 
   const {
     clusteringSettings,
+    embeddingSettings: { methodSettings },
   } = getState().experimentSettings.processing.configureEmbedding;
 
-  const methodSettings = getState()
-    .experimentSettings
-    ?.processing
-    ?.configureEmbedding
-    ?.embeddingSettings
-    ?.methodSettings;
-
   const { environment } = getState().networkResources;
-  const backendStatus = getBackendStatus(experimentId)(getState()).status;
-  const { pipeline: { startDate: qcPipelineStartDate } } = backendStatus;
+  const {
+    pipeline:
+    { startDate: qcPipelineStartDate },
+  } = getBackendStatus(experimentId)(getState()).status;
 
   const embeddingBody = {
     name: 'GetEmbedding',
@@ -99,4 +95,4 @@ const getPseudoTime = (
   }
 };
 
-export default getPseudoTime;
+export default getTrajectoryPlotPseudoTime;

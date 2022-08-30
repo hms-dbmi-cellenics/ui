@@ -45,10 +45,13 @@ describe('loadAndCompressIfNecessary', () => {
       compressed: false,
     };
 
+    const errorString = 'some error';
+    const mockError = new Error(errorString);
+
     gzip.mockImplementation((buffer, opt, fn) => {
-      fn('someError', buffer);
+      fn(mockError, buffer);
     });
 
-    await expect(loadAndCompressIfNecessary(uncompressedFile)).rejects.toThrow('someError');
+    await expect(loadAndCompressIfNecessary(uncompressedFile)).rejects.toThrow(errorString);
   });
 });

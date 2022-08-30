@@ -706,11 +706,42 @@ const generatePseudotimeData = (
   };
 };
 
+const generateTrajectoryAnalysisSpec = (
+  config,
+  viewState,
+  plotState,
+  embeddingPlotData,
+  pseudotimeData,
+  cellSetLegendsData,
+  startingNodesData,
+  selectedNodeIds,
+) => {
+  const spec = generateBaseSpec(
+    config,
+    embeddingPlotData,
+    viewState,
+    plotState.isZoomedOrPanned,
+  );
+
+  if (plotState.displayPseudotime && pseudotimeData) {
+    insertPseudotimeSpec(spec, config, pseudotimeData);
+  } else {
+    insertClusterColorsSpec(spec, config, cellSetLegendsData);
+  }
+
+  if (plotState.displayTrajectory) {
+    insertTrajectorySpec(
+      spec,
+      startingNodesData,
+      selectedNodeIds,
+    );
+  }
+
+  return spec;
+};
+
 export {
-  insertClusterColorsSpec,
-  insertTrajectorySpec,
-  insertPseudotimeSpec,
-  generateBaseSpec,
+  generateTrajectoryAnalysisSpec,
   generateStartingNodesData,
   generatePseudotimeData,
 };

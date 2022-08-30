@@ -320,6 +320,8 @@ const trajectoryAnalysisInitialConfig = {
     enabled: false,
   },
   selectedNodes: [],
+  selectedCellSet: 'louvain',
+  selectedSample: 'All',
 };
 
 // EMBEDDING PREVIEW - Coloured by sample

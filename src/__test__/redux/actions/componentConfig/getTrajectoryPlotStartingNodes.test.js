@@ -1,6 +1,6 @@
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
-import getStartingNodes from 'redux/actions/componentConfig/getTrajectoryPlotStartingNodes';
+import getTrajectoryPlotStartingNodes from 'redux/actions/componentConfig/getTrajectoryPlotStartingNodes';
 import { fetchWork } from 'utils/work/fetchWork';
 import handleError from 'utils/http/handleError';
 
@@ -84,7 +84,7 @@ describe('Get trajectory plot starting nodes', () => {
   });
 
   it('Dispatches the correct events', async () => {
-    await store.dispatch(getStartingNodes(experimentId, plotUuid));
+    await store.dispatch(getTrajectoryPlotStartingNodes(experimentId, plotUuid));
 
     const actions = store.getActions();
     expect(actions.length).toEqual(2);
@@ -96,7 +96,7 @@ describe('Get trajectory plot starting nodes', () => {
   it('Dispatches error if there are errors when fetching work', async () => {
     fetchWork.mockImplementationOnce(() => new Promise((resolve, reject) => reject(new Error('random error!'))));
 
-    await store.dispatch(getStartingNodes(experimentId, plotUuid));
+    await store.dispatch(getTrajectoryPlotStartingNodes(experimentId, plotUuid));
 
     const actions = store.getActions();
     expect(actions.length).toEqual(2);

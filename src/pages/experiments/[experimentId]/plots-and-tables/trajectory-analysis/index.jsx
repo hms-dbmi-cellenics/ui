@@ -16,8 +16,8 @@ import {
 import Loader from 'components/Loader';
 import { loadEmbedding } from 'redux/actions/embedding';
 import { loadProcessingSettings } from 'redux/actions/experimentSettings';
-import getStartingNodes from 'redux/actions/componentConfig/getTrajectoryPlotStartingNodes';
-import getPseudoTime from 'redux/actions/componentConfig/getTrajectoryPlotPseudoTime';
+import getTrajectoryPlotStartingNodes from 'redux/actions/componentConfig/getTrajectoryPlotStartingNodes';
+import getTrajectoryPlotPseudoTime from 'redux/actions/componentConfig/getTrajectoryPlotPseudoTime';
 
 import Header from 'components/Header';
 import PlotContainer from 'components/plots/PlotContainer';
@@ -95,7 +95,7 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
       || embeddingError
       || !embeddingData?.length
     ) return;
-    dispatch(getStartingNodes(experimentId, plotUuid));
+    dispatch(getTrajectoryPlotStartingNodes(experimentId, plotUuid));
   }, [embeddingMethod, embeddingLoading, embeddingSettings]);
 
   const updatePlotWithChanges = (obj) => {
@@ -202,7 +202,7 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
                   block
                   disabled={configLoading}
                   onClick={async () => {
-                    const result = await dispatch(getPseudoTime(selectedNodes, experimentId, plotUuid));
+                    const result = await dispatch(getTrajectoryPlotPseudoTime(selectedNodes, experimentId, plotUuid));
                     if (!result) return;
 
                     setPlotState({
@@ -317,7 +317,7 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
           plotData={plotData}
           plotLoading={plotLoading}
           plotDataError={plotDataError}
-          onPlotDataErrorRetry={() => dispatch(getStartingNodes(experimentId, plotUuid))}
+          onPlotDataErrorRetry={() => dispatch(getTrajectoryPlotStartingNodes(experimentId, plotUuid))}
           onClickNode={clickNode}
           onSelectNodes={addNodes}
           onZoomOrPan={() => {
