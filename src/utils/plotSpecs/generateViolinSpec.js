@@ -413,8 +413,8 @@ const generateSpec = (config, plotData) => {
       {
         fill: 'legend',
         type: 'symbol',
-        symbolType: 'square',
-        symbolSize: 200,
+        symbolType: 'circle',
+        symbolSize: 100,
         orient: config?.legend.position,
         offset: 40,
         direction: 'horizontal',
