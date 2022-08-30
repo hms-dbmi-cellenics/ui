@@ -34,18 +34,19 @@ const fileUploadSpecifications = {
     validMimeTypes: ['text/tsv', 'application/gzip', 'application/x-gzip', 'text/tab-separated-values'],
     validExtensionTypes: ['.rds'],
     inputInfo: [
-      ['object@reductions$umap'],
-      ['object$seurat_clusters'],
-      ['object$orig.ident'],
+      ['embedding'],
+      ['counts'],
+      ['clusters'],
+      ['sample identity'],
     ],
     requiredFiles: [
       'r.rds',
     ],
     fileUploadParagraphs: [
       // eslint-disable-next-line
-      <p>For your dataset, upload a single <code>r.rds</code> file with the Seurat object.</p>,
+      <p>For your dataset, upload a single <code>*.rds</code> file with the Seurat object.</p>,
       // eslint-disable-next-line
-      <p>The required slots for the Seurat <code>object</code> include:</p>
+      <p>The Seurat <code>object</code> must contain the following slots and metadata:</p>
     ],
   },
 

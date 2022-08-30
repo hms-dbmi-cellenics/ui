@@ -76,7 +76,13 @@ const FileUploadModal = (props) => {
         fileObjectToFileRecord(file, selectedTech)
       )));
 
-      setFilesList([...filesList, ...newFiles]);
+      const allFiles = [...filesList, ...newFiles];
+      console.log(`allFiles: ${JSON.stringify(allFiles)}`);
+      if (allFiles.length > 1) {
+        handleError('error', endUserMessages.ERROR_SEURAT_MULTIPLE_FILES);
+      }
+
+      setFilesList([allFiles[0]]);
     }
   };
 
