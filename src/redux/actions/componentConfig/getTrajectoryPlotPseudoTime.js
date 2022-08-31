@@ -43,7 +43,7 @@ const getTrajectoryPlotPseudoTime = (
   const timeout = getTimeoutForWorkerTask(getState(), 'TrajectoryAnalysisPseudotime');
 
   const body = {
-    name: 'GetPseudoTime',
+    name: 'GetTrajectoryAnalysisPseudoTime',
     embedding: {
       method: embeddingMethod,
       methodSettings: methodSettings[embeddingMethod],

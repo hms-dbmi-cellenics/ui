@@ -51,7 +51,7 @@ jest.mock('utils/work/seekWorkResponse', () => ({
 const mockWorkerResponses = {
   GetEmbedding: mockEmbedding,
   GetStartingNodes: mockStartingNodes,
-  GetPseudoTime: mockPseudoTime,
+  GetTrajectoryAnalysisPseudoTime: mockPseudoTime,
 };
 
 const experimentId = fake.EXPERIMENT_ID;
