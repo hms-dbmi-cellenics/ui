@@ -3,6 +3,10 @@ import { mount } from 'enzyme';
 import EditableField from 'components/EditableField';
 import '__test__/test-utils/setupTests';
 
+import { fireEvent, render } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { act } from 'react-dom/test-utils';
+
 const eventStub = {
   stopPropagation: () => { },
 };
@@ -190,5 +194,30 @@ describe('EditableField', () => {
 
     // False on close by cancel
     expect(mockOnEditing.mock.results[4].value).toBe(false);
+  });
+
+  test('formatter works correctly', async () => {
+    const mockFormatter = jest.fn((value) => `formatted${value}`);
+    const mockOnAfterSubmit = jest.fn();
+
+    const component = render(<EditableField value='Cluster X' formatter={mockFormatter} onAfterSubmit={mockOnAfterSubmit} />);
+
+    // Starts with original value
+    expect(component.getByText(/Cluster X/)).toBeInTheDocument();
+
+    // Click edit
+    const editButton = component.getByRole('button', { name: 'Edit' });
+    act(() => userEvent.click(editButton));
+
+    // Write new text
+    const input = component.getByRole('textbox');
+    fireEvent.change(input, { target: { value: 'ImNotFormatted' } });
+
+    // save new text
+    const saveButton = component.getByRole('button', { name: 'Save' });
+    act(() => userEvent.click(saveButton));
+
+    // New text is sent
+    expect(mockOnAfterSubmit).toHaveBeenCalledWith('formattedImNotFormatted');
   });
 });
