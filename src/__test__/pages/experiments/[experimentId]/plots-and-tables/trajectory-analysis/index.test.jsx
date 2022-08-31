@@ -112,14 +112,15 @@ describe('Trajectory analysis plot', () => {
   beforeEach(async () => {
     jest.clearAllMocks();
 
+    let toggleReturnNull = true;
+
     seekFromS3
       .mockReset()
-      .mockImplementationOnce(() => null)
-      .mockImplementationOnce((Etag) => mockWorkerResponses[Etag])
-      .mockImplementationOnce(() => null)
-      .mockImplementationOnce((Etag) => mockWorkerResponses[Etag])
-      .mockImplementationOnce(() => null)
-      .mockImplementationOnce((Etag) => mockWorkerResponses[Etag]);
+      .mockImplementation((mockETag) => {
+        const result = toggleReturnNull ? null : mockWorkerResponses[mockETag];
+        toggleReturnNull = !toggleReturnNull;
+        return result;
+      });
 
     enableFetchMocks();
     fetchMock.resetMocks();
