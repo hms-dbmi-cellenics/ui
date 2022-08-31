@@ -47,12 +47,12 @@ const runQC = (experimentId) => async (dispatch, getState) => {
     return;
   }
 
-  dispatch({
-    type: BACKEND_STATUS_LOADING,
-    payload: {
-      experimentId,
-    },
-  });
+  // dispatch({
+  //   type: BACKEND_STATUS_LOADING,
+  //   payload: {
+  //     experimentId,
+  //   },
+  // });
 
   const changesToProcessingConfig = Array.from(changedQCFilters).map((key) => {
     const currentConfig = processing[key];
@@ -96,13 +96,13 @@ const runQC = (experimentId) => async (dispatch, getState) => {
       errorMessage += ' Refresh the page to continue with your analysis.';
     }
     // TODO refactor this better once everything is working
-    dispatch({
-      type: BACKEND_STATUS_ERROR,
-      payload: {
-        experimentId,
-        error: errorMessage,
-      },
-    });
+    // dispatch({
+    //   type: BACKEND_STATUS_ERROR,
+    //   payload: {
+    //     experimentId,
+    //     error: errorMessage,
+    //   },
+    // });
   }
 };
 
