@@ -7,9 +7,8 @@ import {
 import useUpdateThrottled from 'utils/customHooks/useUpdateThrottled';
 
 const PointDesign = (props) => {
-  const { onUpdate, config } = props;
+  const { onUpdate, config, showShapeType } = props;
   const [newConfig, handleChange] = useUpdateThrottled(onUpdate, config);
-
 
   return (
     <Space direction='vertical' style={{ width: '80%' }}>
@@ -52,7 +51,7 @@ const PointDesign = (props) => {
           )
         }
         {
-          props.showShapeType
+          showShapeType
           && (
             <>
               <p><strong>Point Shape</strong></p>
@@ -73,11 +72,11 @@ const PointDesign = (props) => {
 PointDesign.propTypes = {
   config: PropTypes.object.isRequired,
   onUpdate: PropTypes.func.isRequired,
-  showShapeType: PropTypes.bool
+  showShapeType: PropTypes.bool,
 };
 
 PointDesign.defaultProps = {
-  showShapeType: true
-}
+  showShapeType: true,
+};
 
 export default PointDesign;
