@@ -23,6 +23,7 @@ const EditableField = (props) => {
     defaultEditing,
     validationFunc,
     onEditing,
+    formatter,
   } = props;
 
   const [editing, setEditing] = useState(defaultEditing);
@@ -57,7 +58,9 @@ const EditableField = (props) => {
   };
 
   const onChange = (e) => {
-    const { value: newValue } = e.target;
+    const { value: newValueRaw } = e.target;
+
+    const newValue = formatter(newValueRaw);
 
     if (validationFunc) {
       const valid = value === newValue || validationFunc(newValue);
@@ -191,6 +194,7 @@ EditableField.defaultProps = {
   showEdit: true,
   deleteEnabled: true,
   defaultEditing: false,
+  formatter: (value) => value,
 };
 
 EditableField.propTypes = {
@@ -204,6 +208,7 @@ EditableField.propTypes = {
   showEdit: PropTypes.bool,
   renderBold: PropTypes.bool,
   defaultEditing: PropTypes.bool,
+  formatter: PropTypes.func,
 };
 
 export default EditableField;
