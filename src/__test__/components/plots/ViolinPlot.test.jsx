@@ -22,8 +22,15 @@ const plotUuid = 'ViolinMain'; // At some point this will stop being hardcoded
 
 const defaultStore = {
   cellSets: {
-    hierarchy: [{ key: 'louvain' }],
-    properties: {},
+    hierarchy: [{
+      key: 'louvain',
+      children: [{ key: 'louvain-0' }],
+    }],
+    properties: {
+      'louvain-0': {
+        cellIds: new Set([]),
+      },
+    },
   },
   componentConfig: initialComponentConfigStates,
   embeddings: {},

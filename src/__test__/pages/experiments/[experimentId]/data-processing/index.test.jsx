@@ -22,7 +22,7 @@ import generateExperimentSettingsMock from '__test__/test-utils/experimentSettin
 import { modules } from 'utils/constants';
 import { act } from 'react-dom/test-utils';
 import { saveProcessingSettings } from 'redux/actions/experimentSettings';
-import { cloneExperiment, loadExperiments } from 'redux/actions/experiments';
+import { cloneExperiment } from 'redux/actions/experiments';
 import { EXPERIMENT_SETTINGS_SET_QC_STEP_ENABLED } from 'redux/actionTypes/experimentSettings';
 import config from 'config';
 
@@ -281,11 +281,11 @@ describe('DataProcessingPage', () => {
     expect(cancelButton).toBeInTheDocument();
 
     // Clicking the Clone Project button will call the clone experiment action
+
     userEvent.click(cloneProjectButton);
 
-    waitFor(() => {
+    await waitFor(() => {
       expect(cloneExperiment).toHaveBeenCalledTimes(1);
-      expect(loadExperiments).toHaveBeenCalledTimes(1);
       expect(mockNavigateTo).toHaveBeenCalledTimes(1);
     });
   });
