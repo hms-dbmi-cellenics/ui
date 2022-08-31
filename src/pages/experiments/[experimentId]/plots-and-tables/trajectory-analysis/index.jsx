@@ -32,6 +32,7 @@ const plotType = plotTypes.TRAJECTORY_ANALYSIS;
 const initialPlotState = {
   displayTrajectory: true,
   displayPseudotime: false,
+  configLoaded: false,
   hasRunPseudotime: false,
   isZoomedOrPanned: false,
 };
@@ -67,7 +68,11 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
   } = useSelector((state) => state.embeddings[embeddingMethod]) || {};
 
   useEffect(() => {
-    if (!config) dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
+    if (!config) {
+      dispatch(loadPlotConfig(experimentId, plotUuid, plotType)).then(() => {
+        setPlotState({ ...plotState, configLoaded: true });
+      });
+    } else { setPlotState({ ...plotState, configLoaded: true }); }
     dispatch(loadProcessingSettings(experimentId));
   }, []);
 
@@ -91,13 +96,22 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
 
   useEffect(() => {
     if (
-      !embeddingMethod
+      // `plotState.configLoaded` is used instead of `config` this block should only be called
+      // once when the config is loaded or when embedding settings changes. using `config`
+      // in the dependency array will make this code be executed everytime there is a config change
+      !plotState.configLoaded
+      || !embeddingMethod
       || embeddingLoading
       || embeddingError
       || !embeddingData?.length
     ) return;
     dispatch(getTrajectoryPlotStartingNodes(experimentId, plotUuid));
-  }, [embeddingMethod, embeddingLoading, embeddingSettings]);
+  }, [
+    plotState.configLoaded,
+    embeddingMethod,
+    embeddingLoading,
+    embeddingSettings,
+  ]);
 
   const updatePlotWithChanges = (obj) => {
     dispatch(updatePlotConfig(plotUuid, obj));
