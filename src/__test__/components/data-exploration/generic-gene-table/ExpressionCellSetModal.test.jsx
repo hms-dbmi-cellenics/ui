@@ -130,7 +130,5 @@ describe('ExpressionCellSetModal', () => {
     expect(pushNotificationMessage).toHaveBeenCalledTimes(1);
     expect(pushNotificationMessage).toHaveBeenCalledWith('error', endUserMessages.ERROR_FETCHING_CELL_SETS);
     expect(mockOnCancel).not.toHaveBeenCalled();
-
-    screen.debug(null, Infinity);
   });
 });
