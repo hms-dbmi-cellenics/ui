@@ -119,14 +119,28 @@ describe('dispatchWorkRequest unit tests', () => {
   });
 
   it('Returns an error if there is error in the response.', async () => {
-    socketConnectionMocks.mockOn.mockImplementation(async (x, f) => {
-      f({
-        response: {
+    socketConnectionMocks.mockOn.mockImplementation(async (channelName, cb) => {
+      let response = null;
+
+      if (channelName.match('WorkerInfo')) {
+        response = {
+          podInfo: {
+            name: 'worker-pod',
+            creationTimestamp: '2022-04-29T07:48:47.000Z',
+            phase: 'Pending',
+          },
+        };
+      }
+
+      if (channelName.match('WorkResponse')) {
+        response = {
           error: true,
           errorCode: 'MOCK_ERROR_CODE',
           userMessage: 'Mock worker error message',
-        },
-      });
+        };
+      }
+
+      cb({ response });
     });
 
     expect(async () => {

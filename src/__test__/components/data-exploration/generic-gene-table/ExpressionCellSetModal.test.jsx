@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { act } from 'react-dom/test-utils';
 import { Provider } from 'react-redux';
@@ -15,11 +15,14 @@ import { updateExperimentInfo } from 'redux/actions/experimentSettings';
 
 import mockAPI, { generateDefaultMockAPIResponses } from '__test__/test-utils/mockAPI';
 import fake from '__test__/test-utils/constants';
+import pushNotificationMessage from 'utils/pushNotificationMessage';
 import endUserMessages from 'utils/endUserMessages';
 
 enableFetchMocks();
 
 const mockOnCancel = jest.fn();
+
+jest.mock('utils/pushNotificationMessage');
 
 jest.mock('utils/work/seekWorkResponse', () => ({
   seekFromS3: jest.fn(),
@@ -109,11 +112,6 @@ describe('ExpressionCellSetModal', () => {
       userEvent.click(screen.getByText(createButtonText).closest('button'));
     });
 
-    waitFor(() => {
-      expect(screen.getByText(loadingText)).toBeInTheDocument();
-      expect(screen.getByText(loadingText).closest('button')).toBeDisabled();
-    });
-
     expect(screen.getByText(createButtonText)).not.toBeDisabled();
     expect(screen.queryByText(loadingText)).toBeNull();
 
@@ -129,10 +127,8 @@ describe('ExpressionCellSetModal', () => {
       await userEvent.click(screen.getByText(createButtonText).closest('button'));
     });
 
-    waitFor(() => {
-      expect(screen.getByText(endUserMessages.ERROR_FETCHING_CELL_SETS)).toBeInTheDocument();
-    });
-
+    expect(pushNotificationMessage).toHaveBeenCalledTimes(1);
+    expect(pushNotificationMessage).toHaveBeenCalledWith('error', endUserMessages.ERROR_FETCHING_CELL_SETS);
     expect(mockOnCancel).not.toHaveBeenCalled();
   });
 });
