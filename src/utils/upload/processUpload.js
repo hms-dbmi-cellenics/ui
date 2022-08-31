@@ -109,7 +109,53 @@ const createAndUpload = async (sample, experimentId, dispatch) => (
     (file) => createAndUploadSingleFile(file, experimentId, sample.uuid, dispatch),
   ));
 
-const processUpload = async (filesList, sampleType, samples, experimentId, dispatch) => {
+const processSeuratUpload = async (filesList, sampleType, samples, experimentId, dispatch) => {
+  const samplesMap = filesList.reduce((acc, file) => {
+    const fileNameToArray = file.name.trim().replace(/[\s]{2,}/ig, ' ').split('.');
+    const sampleName = fileNameToArray[0];
+
+    const sampleUuid = Object.values(samples).filter(
+      (s) => s.name === sampleName
+        && s.experimentId === experimentId,
+    )[0]?.uuid;
+
+    return {
+      ...acc,
+      [sampleName]: {
+        ...acc[sampleName],
+        uuid: sampleUuid,
+        files: {
+          ...acc[sampleName]?.files,
+          [file.name]: file,
+        },
+      },
+    };
+  }, {});
+
+  Object.entries(samplesMap).forEach(async ([name, sample]) => {
+    const filesToUploadForSample = Object.keys(sample.files);
+
+    // Create sample if not exists.
+    try {
+      sample.uuid ??= await dispatch(
+        createSample(
+          experimentId,
+          name,
+          sample,
+          sampleType,
+          filesToUploadForSample,
+        ),
+      );
+    } catch (e) {
+      // If sample creation fails, sample should not be created
+      return;
+    }
+
+    createAndUpload(sample, experimentId, dispatch);
+  });
+};
+
+const process10XUpload = async (filesList, sampleType, samples, experimentId, dispatch) => {
   const samplesMap = filesList.reduce((acc, file) => {
     const pathToArray = file.name.trim().replace(/[\s]{2,}/ig, ' ').split('/');
 
@@ -204,6 +250,6 @@ const fileObjectToFileRecord = async (fileObject, technology) => {
 export {
   fileObjectToFileRecord,
   createAndUploadSingleFile,
+  process10XUpload,
+  processSeuratUpload,
 };
-
-export default processUpload;

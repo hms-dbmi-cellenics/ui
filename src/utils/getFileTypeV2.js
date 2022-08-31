@@ -5,7 +5,7 @@ const fileTypes = {
   barcodes: 'barcodes10x',
   features: 'features10x',
   genes: 'features10x',
-  seurat: 'r.rds',
+  seurat: 'features10x',
 };
 
 const getFileTypeV2 = (fileName) => {

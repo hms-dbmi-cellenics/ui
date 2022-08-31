@@ -47,23 +47,22 @@ const createSample = (
       .reduce((acc, curr) => ({ ...acc, [curr]: METADATA_DEFAULT_VALUE }), {}) || {},
   };
 
-  console.log(newSample);
-
   const url = `/v2/experiments/${experimentId}/samples/${newSampleUuid}`;
 
   let sampleTechnology;
   if (type === '10X Chromium') {
     sampleTechnology = '10x';
+
+    const errors = await validate(sample);
+    if (errors && errors.length > 0) {
+      const errorMessage = `Error uploading sample ${name}.\n${errors.join('\n')}`;
+      pushNotificationMessage('error', errorMessage, 15);
+      throw new Error(errorMessage);
+    }
   } else if (type === 'Seurat') {
     sampleTechnology = 'seurat';
   } else {
     throw new Error(`Sample technology ${type} is not recognized`);
-  }
-  const errors = await validate(sample);
-  if (errors && errors.length > 0) {
-    const errorMessage = `Error uploading sample ${name}.\n${errors.join('\n')}`;
-    pushNotificationMessage('error', errorMessage, 15);
-    throw new Error(errorMessage);
   }
 
   filesToUpload.forEach((fileName) => {

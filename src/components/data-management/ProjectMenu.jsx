@@ -4,7 +4,7 @@ import {
   Space, Button,
 } from 'antd';
 import integrationTestConstants from 'utils/integrationTestConstants';
-import processUpload from 'utils/upload/processUpload';
+import { process10XUpload, processSeuratUpload } from 'utils/upload/processUpload';
 import DownloadDataButton from './DownloadDataButton';
 import LaunchAnalysisButton from './LaunchAnalysisButton';
 import FileUploadModal from './FileUploadModal';
@@ -20,7 +20,11 @@ const ProjectMenu = () => {
   const [shareExperimentModalVisible, setShareExperimentModalVisible] = useState(false);
 
   const uploadFiles = (filesList, sampleType) => {
-    processUpload(filesList, sampleType, samples, activeExperimentId, dispatch);
+    if (sampleType === '10X Chromium') {
+      process10XUpload(filesList, sampleType, samples, activeExperimentId, dispatch);
+    } else if (sampleType == 'Seurat') {
+      processSeuratUpload(filesList, sampleType, samples, activeExperimentId, dispatch);
+    }
     setUploadModalVisible(false);
   };
 
