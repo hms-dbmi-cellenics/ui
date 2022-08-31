@@ -3,7 +3,7 @@ const initialState = {
     direction: 'row',
     first: {
       first: {
-        first: 'UMAP', second: 'Data Management', direction: 'row', splitPercentage: 60,
+        first: 'UMAP', second: 'Cell sets and Metadata', direction: 'row', splitPercentage: 60,
       },
       second: 'Heatmap',
       direction: 'column',

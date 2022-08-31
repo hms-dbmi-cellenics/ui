@@ -40,7 +40,7 @@ describe('Data exploration index page', () => {
     await renderExplorationPage();
 
     expect(screen.getAllByText('UMAP')[0]).toHaveClass('mosaic-window-title');
-    expect(screen.getAllByText('Data Management')[0]).toHaveClass('mosaic-window-title');
+    expect(screen.getAllByText('Cell sets and Metadata')[0]).toHaveClass('mosaic-window-title');
     expect(screen.getAllByText('Genes')[0]).toHaveClass('mosaic-window-title');
     expect(screen.getAllByText('Heatmap')[0]).toHaveClass('mosaic-window-title');
   });

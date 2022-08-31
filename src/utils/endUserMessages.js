@@ -38,7 +38,7 @@ export default {
   REFERRAL_ERROR: 'We couldn\'t process your referral. Please try submitting again.',
   REFERRAL_EMAIL_ERROR: 'The error you submitted was invalid. Please check again.',
   REFERRAL_SUCCESSFUL: 'Your invitation has been successfully sent. Thank you!',
-  SUCCESS_NEW_CLUSTER_CREATED: 'Created a new cluster. Check the `Data Management` window.',
+  SUCCESS_NEW_CLUSTER_CREATED: 'Created a new cluster. Check the `Cell sets and Metadata` window.',
   SUCCESS_CELL_SETS_RECLUSTERED: 'Cell sets have been reclustered. Your cell sets have changed.',
   NO_CLUSTERS: 'No custom cell sets available, to create more go to data-exploration.',
   SAVING_SAMPLE: 'Saving sample...',
