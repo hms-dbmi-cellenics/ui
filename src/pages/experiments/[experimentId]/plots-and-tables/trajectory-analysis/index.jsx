@@ -32,6 +32,7 @@ const plotType = plotTypes.TRAJECTORY_ANALYSIS;
 const initialPlotState = {
   displayTrajectory: true,
   displayPseudotime: false,
+  hasRunPseudotime: false,
   isZoomedOrPanned: false,
 };
 
@@ -183,11 +184,9 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
                   </>
                 )}
               />
-              <strong>
-                {selectedNodes.length ? `${selectedNodes.length} nodes selected` : ''}
-              </strong>
               {selectedNodes.length > 0 && (
               <>
+                <strong>{`${selectedNodes.length} nodes selected`}</strong>
                 <Button
                   block
                   disabled={configLoading}
@@ -208,10 +207,11 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
                     setPlotState({
                       ...plotState,
                       displayPseudotime: true,
+                      hasRunPseudotime: true,
                     });
                   }}
                 >
-                  Calculate
+                  {plotState.hasRunPseudotime ? 'Recalculate' : 'Calculate' }
                 </Button>
               </>
               )}
@@ -272,9 +272,12 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
   );
 
   const clickNode = (selectedNodeId) => {
+    const removeFromSelection = (nodeId) => selectedNodes.filter((node) => nodeId !== node);
+    const addToSelection = (nodeId) => [...selectedNodes, nodeId];
+
     const updatedSelection = selectedNodes.includes(selectedNodeId)
-      ? selectedNodes.filter((nodeId) => selectedNodeId !== nodeId)
-      : [...selectedNodes, selectedNodeId];
+      ? removeFromSelection(selectedNodeId)
+      : addToSelection(selectedNodeId);
 
     dispatch(updatePlotConfig(plotUuid, { selectedNodes: updatedSelection }));
   };
