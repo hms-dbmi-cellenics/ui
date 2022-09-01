@@ -202,7 +202,7 @@ const generateBaseSpec = (
     },
     {
       name: 'size',
-      update: `clamp(${config.marker.size * 4} / span(xdom), ${config.marker.size}, ${config.marker.size * 4})`,
+      update: `max(${config.marker.size * 40} / span(xdom), ${config.marker.size})`,
     },
     {
       name: 'domUpdates',
