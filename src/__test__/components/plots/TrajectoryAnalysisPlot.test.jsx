@@ -59,7 +59,7 @@ const mockPlotState = {
 
 const mockOnUpdate = jest.fn();
 const mockOnClickNode = jest.fn();
-const mockOnSelectNodes = jest.fn();
+const mockOnLassoSelection = jest.fn();
 const mockOnZoomOrPan = jest.fn();
 
 const defaultProps = {
@@ -73,7 +73,7 @@ const defaultProps = {
   actions: false,
   onUpdate: mockOnUpdate,
   onClickNode: mockOnClickNode,
-  onSelectNodes: mockOnSelectNodes,
+  onLassoSelection: mockOnLassoSelection,
   onZoomOrPan: mockOnZoomOrPan,
 };
 

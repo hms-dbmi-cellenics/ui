@@ -40,7 +40,7 @@ const TrajectoryAnalysisPlot = (props) => {
     actions,
     onUpdate,
     onClickNode,
-    onSelectNodes,
+    onLassoSelection,
     onZoomOrPan,
   } = props;
 
@@ -199,7 +199,7 @@ const TrajectoryAnalysisPlot = (props) => {
         .map((node) => (inSelection(node) ? node.node_id : null))
         .filter((node) => node !== null);
 
-      onSelectNodes(selectedNodes);
+      onLassoSelection(selectedNodes);
     },
   };
 
@@ -291,7 +291,7 @@ TrajectoryAnalysisPlot.propTypes = {
   ]),
   onUpdate: PropTypes.func.isRequired,
   onClickNode: PropTypes.func,
-  onSelectNodes: PropTypes.func,
+  onLassoSelection: PropTypes.func,
   onZoomOrPan: PropTypes.func,
 };
 
@@ -301,7 +301,7 @@ TrajectoryAnalysisPlot.defaultProps = {
   plotDataError: false,
   onPlotDataErrorRetry: () => {},
   onClickNode: () => { },
-  onSelectNodes: () => { },
+  onLassoSelection: () => { },
   onZoomOrPan: () => { },
 };
 

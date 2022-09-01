@@ -296,7 +296,7 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
     </>
   );
 
-  const clickNode = (selectedNodeId) => {
+  const handleClickNode = (selectedNodeId) => {
     const removeFromSelection = (nodeId) => selectedNodes.filter((node) => nodeId !== node);
     const addToSelection = (nodeId) => [...selectedNodes, nodeId];
 
@@ -307,9 +307,9 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
     dispatch(updatePlotConfig(plotUuid, { selectedNodes: updatedSelection }));
   };
 
-  const addNodes = (nodesInSelection) => {
-    const updatedSelection = [...new Set([...selectedNodes, ...nodesInSelection])];
-    dispatch(updatePlotConfig(plotUuid, { selectedNodes: updatedSelection }));
+  const handleLassoSelection = (nodesInLasso) => {
+    const newSelectedNodes = [...new Set([...selectedNodes, ...nodesInLasso])];
+    dispatch(updatePlotConfig(plotUuid, { selectedNodes: newSelectedNodes }));
   };
 
   return (
@@ -345,8 +345,8 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
           plotLoading={plotLoading}
           plotDataError={plotDataError}
           onPlotDataErrorRetry={() => dispatch(getTrajectoryPlotStartingNodes(experimentId, plotUuid))}
-          onClickNode={clickNode}
-          onSelectNodes={addNodes}
+          onClickNode={handleClickNode}
+          onLassoSelection={handleLassoSelection}
           onZoomOrPan={() => {
             if (!plotState.isZoomedOrPanned) {
               setPlotState({
