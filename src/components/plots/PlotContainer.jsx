@@ -27,7 +27,7 @@ const PlotContainer = (props) => {
     plotUuid, plotType, plotInfo,
     plotStylingConfig, defaultActiveKey,
     extraToolbarControls, extraControlPanels,
-    showResetButton, shouldPlotResetFunc, onPlotReset,
+    showResetButton, onPlotReset,
     children,
   } = props;
 
@@ -74,12 +74,10 @@ const PlotContainer = (props) => {
     }
     debounceSave();
 
-    const disableReset = shouldPlotResetFunc
-      ? !shouldPlotResetFunc()
-      : isConfigEqual(config, initialPlotConfigStates[plotType]);
-
-    setIsResetDisabled(disableReset);
-  }, [config, shouldPlotResetFunc]);
+    setIsResetDisabled(
+      isConfigEqual(config, initialPlotConfigStates[plotType]),
+    );
+  }, [config]);
 
   const onClickReset = () => {
     onPlotReset();
@@ -106,7 +104,7 @@ const PlotContainer = (props) => {
           onClick={onClickReset}
           disabled={isResetDisabled}
         >
-          Reset
+          Reset Plot
         </Button>
       ) : ''}
       {plotInfo ? (
@@ -173,7 +171,6 @@ PlotContainer.propTypes = {
   extraControlPanels: PropTypes.node || PropTypes.arrayOf(PropTypes.node),
   children: PropTypes.node,
   showResetButton: PropTypes.bool,
-  shouldPlotResetFunc: PropTypes.func,
   onPlotReset: PropTypes.func,
 };
 
@@ -183,7 +180,6 @@ PlotContainer.defaultProps = {
   extraControlPanels: null,
   children: null,
   showResetButton: true,
-  shouldPlotResetFunc: null,
   onPlotReset: () => {},
 };
 

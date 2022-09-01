@@ -32,15 +32,14 @@ const plotType = plotTypes.TRAJECTORY_ANALYSIS;
 const initialPlotState = {
   displayTrajectory: true,
   displayPseudotime: false,
-  configLoaded: false,
   hasRunPseudotime: false,
   isZoomedOrPanned: false,
 };
 
 const TrajectoryAnalysisPage = ({ experimentId }) => {
   const dispatch = useDispatch();
-  const [resetPlot, setResetPlot] = useState(false);
   const [plotState, setPlotState] = useState(initialPlotState);
+  const [configLoaded, setConfigLoaded] = useState(false);
 
   // Currenty monocle3 trajectory analysis only supports
   // UMAP embedding. Therefore, this embedding is specifically fetched.
@@ -70,9 +69,9 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
   useEffect(() => {
     if (!config) {
       dispatch(loadPlotConfig(experimentId, plotUuid, plotType)).then(() => {
-        setPlotState({ ...plotState, configLoaded: true });
+        setConfigLoaded(true);
       });
-    } else { setPlotState({ ...plotState, configLoaded: true }); }
+    } else { setConfigLoaded(true); }
     dispatch(loadProcessingSettings(experimentId));
   }, []);
 
@@ -96,10 +95,10 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
 
   useEffect(() => {
     if (
-      // `plotState.configLoaded` is used instead of `config` this block should only be called
+      // `configLoaded` is used instead of `config` this block should only be called
       // once when the config is loaded or when embedding settings changes. using `config`
       // in the dependency array will make this code be executed everytime there is a config change
-      !plotState.configLoaded
+      !configLoaded
       || !embeddingMethod
       || embeddingLoading
       || embeddingError
@@ -107,7 +106,7 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
     ) return;
     dispatch(getTrajectoryPlotStartingNodes(experimentId, plotUuid));
   }, [
-    plotState.configLoaded,
+    configLoaded,
     embeddingMethod,
     embeddingLoading,
     embeddingSettings,
@@ -285,6 +284,18 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
     </>
   );
 
+  const renderExtraToolbarControls = () => (
+    <>
+      <Button
+        size='small'
+        disabled={!plotState.isZoomedOrPanned}
+        onClick={() => { setPlotState({ ...plotState, isZoomedOrPanned: false }); }}
+      >
+        Reset Zoom
+      </Button>
+    </>
+  );
+
   const clickNode = (selectedNodeId) => {
     const removeFromSelection = (nodeId) => selectedNodes.filter((node) => nodeId !== node);
     const addToSelection = (nodeId) => [...selectedNodes, nodeId];
@@ -309,10 +320,9 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
         plotUuid={plotUuid}
         plotType={plotType}
         plotStylingConfig={plotStylingConfig}
+        extraToolbarControls={renderExtraToolbarControls()}
         extraControlPanels={renderExtraPanels()}
-        shouldPlotResetFunc={() => resetPlot}
         onPlotReset={() => {
-          setResetPlot(false);
           setPlotState(initialPlotState);
         }}
         plotInfo={(
@@ -343,9 +353,6 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
                 ...plotState,
                 isZoomedOrPanned: true,
               });
-            }
-            if (!resetPlot) {
-              setResetPlot(true);
             }
           }}
           actions={{ export: true, editor: false, source: false }}
