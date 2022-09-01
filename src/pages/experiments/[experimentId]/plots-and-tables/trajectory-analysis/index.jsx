@@ -198,35 +198,35 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
                 )}
               />
               {selectedNodes.length > 0 && (
-              <>
-                <strong>{`${selectedNodes.length} nodes selected`}</strong>
-                <Button
-                  block
-                  disabled={configLoading}
-                  onClick={() => {
-                    dispatch(updatePlotConfig(plotUuid, { selectedNodes: [] }));
-                  }}
-                >
-                  Clear selection
-                </Button>
-                <Button
-                  type='primary'
-                  block
-                  disabled={configLoading}
-                  onClick={async () => {
-                    const result = await dispatch(getTrajectoryPlotPseudoTime(selectedNodes, experimentId, plotUuid));
-                    if (!result) return;
+                <>
+                  <strong>{`${selectedNodes.length} nodes selected`}</strong>
+                  <Button
+                    block
+                    disabled={configLoading}
+                    onClick={() => {
+                      dispatch(updatePlotConfig(plotUuid, { selectedNodes: [] }));
+                    }}
+                  >
+                    Clear selection
+                  </Button>
+                  <Button
+                    type='primary'
+                    block
+                    disabled={configLoading}
+                    onClick={async () => {
+                      const result = await dispatch(getTrajectoryPlotPseudoTime(selectedNodes, experimentId, plotUuid));
+                      if (!result) return;
 
-                    setPlotState({
-                      ...plotState,
-                      displayPseudotime: true,
-                      hasRunPseudotime: true,
-                    });
-                  }}
-                >
-                  {plotState.hasRunPseudotime ? 'Recalculate' : 'Calculate' }
-                </Button>
-              </>
+                      setPlotState({
+                        ...plotState,
+                        displayPseudotime: true,
+                        hasRunPseudotime: true,
+                      });
+                    }}
+                  >
+                    {plotState.hasRunPseudotime ? 'Recalculate' : 'Calculate'}
+                  </Button>
+                </>
               )}
             </Space>
           ) : (
@@ -335,6 +335,7 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
           </>
         )}
         defaultActiveKey='trajectory-analysis'
+        saveDebounceTime={10}
       >
         <TrajectoryAnalysisPlot
           experimentId={experimentId}
