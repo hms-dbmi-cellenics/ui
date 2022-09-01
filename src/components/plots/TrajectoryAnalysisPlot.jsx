@@ -1,5 +1,5 @@
 import React, {
-  useState, useEffect, useMemo,
+  useState, useEffect, useMemo, useRef,
 } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
@@ -47,10 +47,8 @@ const TrajectoryAnalysisPlot = (props) => {
   const dispatch = useDispatch();
 
   const [plotSpec, setPlotSpec] = useState({});
-  const [viewState, setViewState] = useState({
-    xdom: [-10, 10],
-    ydom: [-10, 10],
-  });
+
+  const viewState = useRef({ xdom: [-10, 10], ydom: [-10, 10] });
 
   const cellSets = useSelector(getCellSets());
 
@@ -147,7 +145,7 @@ const TrajectoryAnalysisPlot = (props) => {
     setPlotSpec(
       generateTrajectoryAnalysisSpec(
         config,
-        viewState,
+        viewState.current,
         plotState,
         embeddingPlotData,
         pseudotimeData,
@@ -170,7 +168,7 @@ const TrajectoryAnalysisPlot = (props) => {
   const plotListeners = {
     domUpdates: (e, val) => {
       const [xdom, ydom] = val;
-      setViewState({ xdom, ydom });
+      viewState.current = { xdom, ydom };
       if (!plotState.isZoomedOrPanned) _.debounce(onZoomOrPan)();
     },
     chooseNode: (eventName, payload) => {
@@ -299,7 +297,7 @@ TrajectoryAnalysisPlot.defaultProps = {
   actions: true,
   plotLoading: false,
   plotDataError: false,
-  onPlotDataErrorRetry: () => {},
+  onPlotDataErrorRetry: () => { },
   onClickNode: () => { },
   onLassoSelection: () => { },
   onZoomOrPan: () => { },
