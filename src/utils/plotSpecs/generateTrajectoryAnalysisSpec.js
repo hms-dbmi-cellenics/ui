@@ -1,7 +1,10 @@
 /* eslint-disable no-param-reassign */
 import { getAllCells } from 'utils/cellSets';
 
-const generatePadding = (plotConfig) => {
+const maxLabelLength = 85;
+const clustersPerLegendColumn = 20;
+
+const generatePadding = (plotConfig, numClusters) => {
   const showLegend = plotConfig.legend.enabled;
   const legendPosition = plotConfig.legend.position;
   const axesOffset = plotConfig.axes.offset;
@@ -15,11 +18,24 @@ const generatePadding = (plotConfig) => {
 
   if (!showLegend) return defaultPadding;
 
+  const legendPadding = (paddingPosition, currentLegendPosition) => {
+    const limitPerLineOrColumn = ['top', 'bottom'].includes(currentLegendPosition) ? 8 : clustersPerLegendColumn;
+    const paddingPerLine = ['top', 'bottom'].includes(currentLegendPosition) ? 25 : maxLabelLength;
+
+    const numLines = Math.ceil(numClusters / limitPerLineOrColumn);
+
+    if (currentLegendPosition === paddingPosition) {
+      return numLines * paddingPerLine;
+    }
+
+    return 0;
+  };
+
   const padding = {
-    top: defaultPadding.top + axesOffset,
+    top: defaultPadding.top + legendPadding('top', legendPosition) + axesOffset,
+    right: defaultPadding.right + legendPadding('right', legendPosition) + axesOffset,
+    bottom: defaultPadding.bottom + legendPadding('bottom', legendPosition) + axesOffset,
     left: defaultPadding.left + axesOffset,
-    bottom: (legendPosition === 'bottom' ? 120 : defaultPadding.bottom) + axesOffset,
-    right: (legendPosition === 'right' ? 120 : defaultPadding.right) + axesOffset,
   };
 
   return padding;
@@ -33,6 +49,7 @@ const generateBaseSpec = (
   embeddingData,
   viewState,
   isZoomedOrPanned,
+  numClusters,
 ) => ({
   $schema: 'https://vega.github.io/schema/vega/v5.json',
   description: 'Trajectory analysis plot',
@@ -40,7 +57,7 @@ const generateBaseSpec = (
   height: config?.dimensions.height,
   autosize: 'none',
   background: config?.colour.toggleInvert,
-  padding: generatePadding(config),
+  padding: generatePadding(config, numClusters),
   data: [
     {
       name: 'embedding',
@@ -289,12 +306,12 @@ const insertClusterColorsSpec = (
   spec,
   config,
   cellSetLegendsData,
+  numClusters,
 ) => {
   if (config?.legend.enabled) {
     const positionIsRight = config.legend.position === 'right';
-
-    const legendColumns = positionIsRight ? 1 : Math.floor(config.dimensions.width / 85);
-    const labelLimit = positionIsRight ? 0 : 85;
+    const legendColumns = positionIsRight ? Math.ceil(numClusters / clustersPerLegendColumn) : 0;
+    const labelLimit = positionIsRight ? maxLabelLength : 0;
 
     spec.scales = [
       ...spec.scales,
@@ -547,8 +564,8 @@ const insertTrajectorySpec = (
 const insertPseudotimeSpec = (spec, config, pseudotime) => {
   const positionIsRight = config.legend.position === 'right';
 
-  const legendColumns = positionIsRight ? 1 : Math.floor(config.dimensions.width / 85);
-  const labelLimit = positionIsRight ? 0 : 85;
+  const legendColumns = positionIsRight ? 1 : 0;
+  const labelLimit = positionIsRight ? 0 : maxLabelLength;
 
   spec.description = `${spec.description} showing pseudotime`;
 
@@ -721,12 +738,13 @@ const generateTrajectoryAnalysisSpec = (
     embeddingPlotData,
     viewState,
     plotState.isZoomedOrPanned,
+    cellSetLegendsData.length,
   );
 
   if (plotState.displayPseudotime && pseudotimeData) {
     insertPseudotimeSpec(spec, config, pseudotimeData);
   } else {
-    insertClusterColorsSpec(spec, config, cellSetLegendsData);
+    insertClusterColorsSpec(spec, config, cellSetLegendsData, cellSetLegendsData.length);
   }
 
   if (plotState.displayTrajectory) {
