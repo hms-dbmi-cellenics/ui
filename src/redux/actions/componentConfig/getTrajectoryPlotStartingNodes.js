@@ -42,7 +42,7 @@ const getTrajectoryPlotStartingNodes = (
   const timeout = getTimeoutForWorkerTask(getState(), 'TrajectoryAnalysisStartingNodes');
 
   const body = {
-    name: 'GetStartingNodes',
+    name: 'GetTrajectoryAnalysisStartingNodes',
     embedding: {
       method: embeddingMethod,
       methodSettings: methodSettings[embeddingMethod],
