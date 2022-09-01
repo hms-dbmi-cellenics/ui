@@ -6,10 +6,10 @@ import {
   EXPERIMENT_SETTINGS_DISCARD_CHANGED_QC_FILTERS,
 } from 'redux/actionTypes/experimentSettings';
 
-import {
-  BACKEND_STATUS_LOADING,
-  BACKEND_STATUS_ERROR,
-} from 'redux/actionTypes/backendStatus';
+// import {
+//   BACKEND_STATUS_LOADING,
+//   BACKEND_STATUS_ERROR,
+// } from 'redux/actionTypes/backendStatus';
 
 import { saveProcessingSettings } from 'redux/actions/experimentSettings';
 import { loadBackendStatus } from 'redux/actions/backendStatus';
