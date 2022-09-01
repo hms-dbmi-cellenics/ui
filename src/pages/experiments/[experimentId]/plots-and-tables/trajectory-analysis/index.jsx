@@ -95,9 +95,9 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
 
   useEffect(() => {
     if (
-      // `configLoaded` is used instead of `config` this block should only be called
-      // once when the config is loaded or when embedding settings changes. using `config`
-      // in the dependency array will make this code be executed everytime there is a config change
+      // `configLoaded` is used instead of `config` because this block of code should only be called
+      // once when the config is loaded, or when embedding settings changes. Using `config`
+      // in the dependency array will make this code be executed everytime there is a config change.
       !configLoaded
       || !embeddingMethod
       || embeddingLoading
