@@ -98,7 +98,7 @@ const PlotContainer = (props) => {
       {extraToolbarControls}
       {showResetButton ? (
         <Button
-          key='reset'
+          key='reset-plot'
           type='primary'
           size='small'
           onClick={onClickReset}
