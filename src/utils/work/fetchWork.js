@@ -20,19 +20,19 @@ const generateETag = (
   body,
   extras,
   qcPipelineStartDate,
-  environment,
+  // environment,
 ) => {
   // If caching is disabled, we add an additional randomized key to the hash so we never reuse
   // past results.
-  let cacheUniquenessKey = null;
+  const cacheUniquenessKey = null;
 
-  if (
-    environment !== Environment.PRODUCTION
-    && localStorage.getItem('disableCache') === 'true'
-    && !DISABLE_UNIQUE_KEYS.includes(body.name)
-  ) {
-    cacheUniquenessKey = Math.random();
-  }
+  // if (
+  //   environment !== Environment.PRODUCTION
+  //   && localStorage.getItem('disableCache') === 'true'
+  //   && !DISABLE_UNIQUE_KEYS.includes(body.name)
+  // ) {
+  //   cacheUniquenessKey = Math.random();
+  // }
 
   let ETagBody = {
     experimentId,

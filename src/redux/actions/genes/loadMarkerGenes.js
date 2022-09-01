@@ -1,4 +1,5 @@
 import { SparseMatrix } from 'mathjs';
+import * as math from 'mathjs';
 
 import {
   MARKER_GENES_ERROR, MARKER_GENES_LOADING, MARKER_GENES_LOADED,
@@ -36,15 +37,41 @@ const loadMarkerGenes = (
       truncatedExpression: truncatedExpressionJson,
       stats,
     } = await fetchWork(experimentId, body, getState, { timeout });
+
+    const a = math.sparse([[1, 2, 0, 0], [3, 4, 0, 0]]);
+    const b = math.sparse([5, 0, 0, 6]);
+    console.log('aDebug');
+    console.log(a);
+    console.log('bDebug');
+    console.log(b);
+
+    const testtest = math.sparse([
+      [1, 2, 0, 3, 0, 5],
+      [7, 0, 0, 0, 8, 0],
+      [0, 0, 0, 0, 0, 0],
+    ]);
+
+    console.log('testtestDebug');
+    console.log(testtest);
+    try {
+      const c = math.concat(b, a, 1);
+
+      console.log('cDebug');
+      console.log(c);
+    } catch (e) {
+      console.log('eerrorDebug');
+      console.log(e);
+    }
+
     console.log('[DEBUG] - FINISHED fetchWork');
 
     console.log('[DEBUG] - BEGUN const rawExpression = SparseMatrix.fromJSON');
-    const rawExpression = SparseMatrix.fromJSON(rawExpressionJson);
+    const rawExpression = math.transpose(SparseMatrix.fromJSON(rawExpressionJson));
     console.log('rawExpressionJsonDebug');
     console.log(rawExpressionJson);
     console.log('[DEBUG] - FINISHED const rawExpression = SparseMatrix.fromJSON');
     console.log('[DEBUG] - BEGUN const truncatedExpression = SparseMatrix.fromJSON');
-    const truncatedExpression = SparseMatrix.fromJSON(truncatedExpressionJson);
+    const truncatedExpression = math.transpose(SparseMatrix.fromJSON(truncatedExpressionJson));
     console.log('[DEBUG] - FINISHED const truncatedExpression = SparseMatrix.fromJSON');
 
     console.log('rawExpressionDebug');

@@ -25,7 +25,13 @@ const markerGenesLoaded = produce((draft, action) => {
   console.log('[DEBUG] - FINISHED GETTING GENE EXPRESSION MATRIX');
 
   console.log('[DEBUG] - BEGUN SETTING GENE EXPRESSION MATRIX');
-  expressionMatrix.setGeneExpression(
+  // expressionMatrix.setGeneExpression(
+  //   order,
+  //   rawExpression,
+  //   truncatedExpression,
+  //   stats,
+  // );
+  expressionMatrix.pushGeneExpression(
     order,
     rawExpression,
     truncatedExpression,
