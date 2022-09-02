@@ -2,6 +2,7 @@
 import { getAllCells } from 'utils/cellSets';
 
 const maxLabelLength = 85;
+const maxLabelHeight = 25;
 const clustersPerLegendColumn = 20;
 
 const generatePadding = (plotConfig, numClusters) => {
@@ -10,25 +11,30 @@ const generatePadding = (plotConfig, numClusters) => {
   const axesOffset = plotConfig.axes.offset;
 
   const defaultPadding = {
-    top: 80,
+    top: 40,
     left: 80,
     bottom: 80,
-    right: 80,
+    right: 0,
   };
 
   if (!showLegend) return defaultPadding;
 
   const legendPadding = (paddingPosition, currentLegendPosition) => {
-    const limitPerLineOrColumn = ['top', 'bottom'].includes(currentLegendPosition) ? 8 : clustersPerLegendColumn;
-    const paddingPerLine = ['top', 'bottom'].includes(currentLegendPosition) ? 25 : maxLabelLength;
+    if (currentLegendPosition !== paddingPosition) return 0;
 
-    const numLines = Math.ceil(numClusters / limitPerLineOrColumn);
+    const isPositionRight = currentLegendPosition === 'right';
 
-    if (currentLegendPosition === paddingPosition) {
-      return numLines * paddingPerLine;
-    }
+    const numClustersPerLineOrColumn = isPositionRight
+      ? clustersPerLegendColumn
+      : Math.ceil(plotConfig.dimensions.width / maxLabelLength);
 
-    return 0;
+    const paddingPerLine = isPositionRight ? maxLabelLength : maxLabelHeight;
+
+    const numLines = Math.ceil(numClusters / numClustersPerLineOrColumn);
+    const titleHeight = isPositionRight ? 0 : maxLabelHeight;
+    const legendHeight = numLines * paddingPerLine;
+
+    return legendHeight + titleHeight;
   };
 
   const padding = {
@@ -283,7 +289,8 @@ const generateBaseSpec = (
       color: config?.colour.masterColour,
       anchor: config?.title.anchor,
       font: config?.fontStyle.font,
-      dx: 10,
+      dx: 40,
+      dy: -10,
       fontSize: config?.title.fontSize,
     },
   marks: [
@@ -310,7 +317,9 @@ const insertClusterColorsSpec = (
 ) => {
   if (config?.legend.enabled) {
     const positionIsRight = config.legend.position === 'right';
-    const legendColumns = positionIsRight ? Math.ceil(numClusters / clustersPerLegendColumn) : 0;
+    const legendColumns = positionIsRight
+      ? Math.ceil(numClusters / clustersPerLegendColumn)
+      : Math.floor(config.dimensions.width / maxLabelLength);
     const labelLimit = positionIsRight ? maxLabelLength : 0;
 
     spec.scales = [
@@ -337,7 +346,7 @@ const insertClusterColorsSpec = (
         titleColor: config?.colour.masterColour,
         type: 'symbol',
         orient: config?.legend.position,
-        offset: 40,
+        offset: 20,
         symbolType: 'circle',
         symbolSize: 200,
         encode: {
