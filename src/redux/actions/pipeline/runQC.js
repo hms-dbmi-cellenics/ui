@@ -77,7 +77,12 @@ const runQC = (experimentId) => async (dispatch, getState) => {
 
     dispatch(loadBackendStatus(experimentId));
   } catch (e) {
-    handleError(e, endUserMessages.ERROR_STARTING_PIPLELINE);
+    const errorMessage = handleError(e, endUserMessages.ERROR_STARTING_PIPLELINE);
+
+    // get the backend status only if the error is not  a permission issue
+    if (errorMessage !== endUserMessages.ERROR_NO_PERMISSIONS) {
+      dispatch(loadBackendStatus(experimentId));
+    }
   }
 };
 
