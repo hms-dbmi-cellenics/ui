@@ -1,5 +1,7 @@
 import _ from 'lodash';
 import { SparseMatrix, Index, Range } from 'mathjs';
+
+import { appendMatrix } from 'utils/ExpressionMatrix/sparseMatrixOperations';
 // import * as math from 'mathjs';
 
 // https://github.com/josdejong/mathjs/issues/1148
@@ -152,7 +154,7 @@ class ExpressionMatrix {
       return acum;
     }, {});
 
-    this.lastFreeIndex = this.loadedExpressionsIndexes + 1;
+    this.lastFreeIndex = newGeneSymbols.length + 1;
   }
 
   /**
@@ -169,39 +171,20 @@ class ExpressionMatrix {
    */
   // pushGeneExpression(newGeneSymbols, newRawGeneExpression, newTruncatedGeneExpression, stats) {
   pushGeneExpression(newGeneSymbols, newRawGeneExpression, newTruncatedGeneExpression) {
-    const [cellsCount, genesCount] = this.rawGeneExpressions.size();
+    const [, genesCount] = this.rawGeneExpressions.size();
 
-    console.log('cellsCountDebug');
-    console.log(cellsCount);
-
-    // If the matrix was empty previously we can just replace it with the new ones
+    // If the matrix was empty previously we can just replace it with the ones that are being pushed
     if (genesCount === 0) {
-      // this.setGeneExpression(newGeneSymbols, newRawGeneExpression, newTruncatedGeneExpression);
-      // return;
-
-      // const [count1, count2] = newRawGeneExpression.size();
-
       this.setGeneExpression(newGeneSymbols, newRawGeneExpression, newTruncatedGeneExpression);
-      // this.rawGeneExpressions.reshape([count1, count2]);
-      // this.truncatedGeneExpressions.resize([count1, count2]);
+      return;
     }
 
-    console.log('thisrawGeneExpressionsnewRawGeneExpressionDebug');
-    console.log(this.rawGeneExpressions, newRawGeneExpression);
+    appendMatrix(this.rawGeneExpressions, newRawGeneExpression);
+    appendMatrix(this.truncatedGeneExpressions, newTruncatedGeneExpression);
 
-    // math.concat(this.truncatedGeneExpressions, newTruncatedGeneExpression, 0);
-    // newGeneSymbols.forEach((geneSymbol, index) => {
-    //   // Get new gene expression
-    //   const newRawGeneExpressionRow = getRow(index, newRawGeneExpression);
-    //   const newTruncatedGeneExpressionRow = getRow(index, newTruncatedGeneExpression);
-    //   // const newZScoreRow = calculateZScore(newRawGeneExpressionRow, stats[geneSymbol]);
-
-    //   // And store it in the matrix
-    //   const geneIndex = this.generateIndexFor(geneSymbol);
-    //   setRow(geneIndex, newRawGeneExpressionRow, this.rawGeneExpressions);
-    //   setRow(geneIndex, newTruncatedGeneExpressionRow, this.truncatedGeneExpressions);
-    //   // setRow(geneIndex, newZScoreRow, this.zScores);
-    // });
+    newGeneSymbols.forEach((geneSymbol) => {
+      this.generateIndexFor(geneSymbol);
+    });
   }
 
   getIndexFor(geneSymbol) {
