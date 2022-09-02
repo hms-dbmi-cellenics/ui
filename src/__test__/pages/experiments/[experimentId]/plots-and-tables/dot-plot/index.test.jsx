@@ -245,62 +245,62 @@ describe('Dot plot page', () => {
     expect(screen.getByText(/Select another option from the 'Select data' menu/i)).toBeInTheDocument();
   });
 
-  // it('Should show a no data error if user is using marker gene and selected filter sets are not represented in more than 1 group in the base cell set', async () => {
-  //   await renderDotPlot(storeState);
+  it('Should show a no data error if user is using marker gene and selected filter sets are not represented in more than 1 group in the base cell set', async () => {
+    await renderDotPlot(storeState);
 
-  //   seekFromS3
-  //     .mockReset()
-  //     // 1st call to list genes
-  //     .mockImplementationOnce(() => null)
-  //     .mockImplementationOnce((Etag) => mockWorkerResponses[Etag]())
-  //     // 2nd call to load dot plot
-  //     .mockImplementationOnce(() => null)
-  //     .mockImplementationOnce((Etag) => mockWorkerResponses[Etag]())
-  //     // 3rd call to load dot plot
-  //     .mockImplementationOnce(() => null)
-  //     .mockImplementationOnce((Etag) => mockWorkerResponses[Etag]());
+    seekFromS3
+      .mockReset()
+      // 1st call to list genes
+      .mockImplementationOnce(() => null)
+      .mockImplementationOnce((Etag) => mockWorkerResponses[Etag]())
+      // 2nd call to load dot plot
+      .mockImplementationOnce(() => null)
+      .mockImplementationOnce((Etag) => mockWorkerResponses[Etag]())
+      // 3rd call to load dot plot
+      .mockImplementationOnce(() => null)
+      .mockImplementationOnce((Etag) => mockWorkerResponses[Etag]());
 
-  //   // Use marker genes
-  //   await act(async () => {
-  //     userEvent.click(screen.getByText(/Marker genes/i));
-  //   });
+    // Use marker genes
+    await act(async () => {
+      userEvent.click(screen.getByText(/Marker genes/i));
+    });
 
-  //   // Select data
-  //   await act(async () => {
-  //     userEvent.click(screen.getByText(/Select data/i));
-  //   });
+    // Select data
+    await act(async () => {
+      userEvent.click(screen.getByText(/Select data/i));
+    });
 
-  //   // Select samples
-  //   const selectBaseCells = screen.getByRole('combobox', { name: 'selectCellSets' });
+    // Select samples
+    const selectBaseCells = screen.getByRole('combobox', { name: 'selectCellSets' });
 
-  //   await act(async () => {
-  //     fireEvent.change(selectBaseCells, { target: { value: 'Samples' } });
-  //   });
+    await act(async () => {
+      fireEvent.change(selectBaseCells, { target: { value: 'Samples' } });
+    });
 
-  //   const baseOption = screen.getByText(/Samples/);
+    const baseOption = screen.getByText(/Samples/);
 
-  //   await act(async () => {
-  //     fireEvent.click(baseOption);
-  //   });
+    await act(async () => {
+      fireEvent.click(baseOption);
+    });
 
-  //   // Select the filter sets
-  //   const selectFilterCells = screen.getByRole('combobox', { name: 'selectPoints' });
+    // Select the filter sets
+    const selectFilterCells = screen.getByRole('combobox', { name: 'selectPoints' });
 
-  //   await act(async () => {
-  //     fireEvent.change(selectFilterCells, { target: { value: 'Samples' } });
-  //   });
+    await act(async () => {
+      fireEvent.change(selectFilterCells, { target: { value: 'Samples' } });
+    });
 
-  //   const filterOption = screen.getByText(/Copied WT2/);
+    const filterOption = screen.getByText(/Copied WT2/);
 
-  //   await act(async () => {
-  //     fireEvent.click(filterOption);
-  //   });
+    await act(async () => {
+      fireEvent.click(filterOption);
+    });
 
-  //   expect(screen.getByText(/There is no data to show/i)).toBeInTheDocument();
-  //   expect(screen.getByText(/The cell set that you have chosen to display is repesented by only one group/i)).toBeInTheDocument();
-  //   expect(screen.getByText(/A comparison can not be run to determine the top marker genes/i)).toBeInTheDocument();
-  //   expect(screen.getByText(/Select another option from the 'Select data' menu/i)).toBeInTheDocument();
-  // });
+    expect(screen.getByText(/There is no data to show/i)).toBeInTheDocument();
+    expect(screen.getByText(/The cell set that you have chosen to display is repesented by only one group/i)).toBeInTheDocument();
+    expect(screen.getByText(/A comparison can not be run to determine the top marker genes/i)).toBeInTheDocument();
+    expect(screen.getByText(/Select another option from the 'Select data' menu/i)).toBeInTheDocument();
+  });
 
   it('removing a gene keeps the order', async () => {
     await renderDotPlot(storeState);

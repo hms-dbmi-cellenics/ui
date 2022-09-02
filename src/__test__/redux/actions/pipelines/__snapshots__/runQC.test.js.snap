@@ -1,5 +1,29 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`runQC action Dispatches events properly 1`] = `
+Array [
+  Object {
+    "payload": Object {},
+    "type": "experimentSettings/startQC",
+  },
+]
+`;
+
+exports[`runQC action Dispatches events properly 2`] = `
+Array [
+  "http://localhost:3000/v2/experiments/experiment-id/qc",
+  Object {
+    "body": "{\\"processingConfig\\":[{\\"name\\":\\"cellSizeDistribution\\",\\"body\\":{\\"enabled\\":true,\\"sample1, sample2\\":{\\"auto\\":true,\\"enabled\\":true,\\"filterSettings\\":{\\"minCellSize\\":10800,\\"binStep\\":200}}}}]}",
+    "headers": Object {
+      "Content-Type": "application/json",
+    },
+    "method": "POST",
+  },
+]
+`;
+
+exports[`runQC action Dispatches status error if loading fails 1`] = `Array []`;
+
 exports[`runQC action Runs only the embedding if only changed filter was configureEmbedding 1`] = `
 Array [
   Object {
