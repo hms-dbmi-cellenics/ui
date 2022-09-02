@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import { SparseMatrix, Index, Range } from 'mathjs';
-import * as math from 'mathjs';
+// import * as math from 'mathjs';
 
 // https://github.com/josdejong/mathjs/issues/1148
 // /**
@@ -52,22 +52,23 @@ import * as math from 'mathjs';
 //   return Make_Mat(math.concat(a, b, dir));
 // }
 
-const getRow = (rowIndex, sparseMatrix) => {
-  const [, cellsCount] = sparseMatrix.size();
-  return sparseMatrix.subset(new Index(rowIndex, new Range(0, cellsCount)));
-};
+// const getRow = (rowIndex, sparseMatrix) => {
+//   const [, cellsCount] = sparseMatrix.size();
+//   return sparseMatrix.subset(new Index(rowIndex, new Range(0, cellsCount)));
+// };
 
 const getColumn = (columnIndex, sparseMatrix) => {
-  const [cellsCount, genesCount] = sparseMatrix.size();
+  // const [cellsCount, genesCount] = sparseMatrix.size();
+  const cellsCount = sparseMatrix.size()[0];
 
   return sparseMatrix.subset(new Index(new Range(0, cellsCount), columnIndex));
 };
 
-const setRow = (rowIndex, newRow, sparseMatrix) => {
-  const [, cellsCount] = sparseMatrix.size();
+// const setRow = (rowIndex, newRow, sparseMatrix) => {
+//   const [, cellsCount] = sparseMatrix.size();
 
-  sparseMatrix.subset(new Index(rowIndex, new Range(0, cellsCount)), newRow);
-};
+//   sparseMatrix.subset(new Index(rowIndex, new Range(0, cellsCount)), newRow);
+// };
 
 // Commented out pending decision on whether to calculate zScore in the UI or not
 // const calculateZScore = (expressionsRow, { rawMean: mean, rawStdev: stdev }) => {
@@ -172,12 +173,6 @@ class ExpressionMatrix {
 
     console.log('cellsCountDebug');
     console.log(cellsCount);
-
-    // console.log('count1Debug');
-    // console.log(count1);
-
-    // console.log('count2Debug');
-    // console.log(count2);
 
     // If the matrix was empty previously we can just replace it with the new ones
     if (genesCount === 0) {

@@ -9,7 +9,8 @@ import { initialViewState } from './initialState';
 
 //   const {
 //     data, componentUuid, genes,
-//     loadingStatus = _.difference(upperCaseArray(state.expression.loading), upperCaseArray(genes)),
+//     loadingStatus = _.difference(upperCaseArray
+// (state.expression.loading), upperCaseArray(genes)),
 //   } = action.payload;
 
 //   console.log('genesDebug');
@@ -52,7 +53,9 @@ const genesExpressionLoaded = (state, action) => {
   const { rawExpression, truncatedExpression } = data[genes[0]];
 
   const rawSparseMatrix = new SparseMatrix(rawExpression.expression.map((val) => val ?? 0));
-  const truncatedSparseMatrix = new SparseMatrix(truncatedExpression.expression.map((val) => val ?? 0));
+  const truncatedSparseMatrix = new SparseMatrix(
+    truncatedExpression.expression.map((val) => val ?? 0),
+  );
 
   console.log('rawSparseMatrixtruncatedSparseMatrixDebug');
   console.log(rawSparseMatrix, truncatedSparseMatrix);

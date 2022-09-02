@@ -1,7 +1,8 @@
 /* eslint-disable no-underscore-dangle */
 import { MD5 } from 'object-hash';
 
-import { Environment, isBrowser } from 'utils/deploymentInfo';
+// import { Environment, isBrowser } from 'utils/deploymentInfo';
+import { isBrowser } from 'utils/deploymentInfo';
 import { calculateZScore } from 'utils/postRequestProcessing';
 import { getBackendStatus } from 'redux/selectors';
 
@@ -11,9 +12,9 @@ import { dispatchWorkRequest, seekFromS3 } from 'utils/work/seekWorkResponse';
 const createObjectHash = (object) => MD5(object);
 
 // Disable unique keys to reallow reuse of work results in development
-const DISABLE_UNIQUE_KEYS = [
-  'GetEmbedding',
-];
+// const DISABLE_UNIQUE_KEYS = [
+//   'GetEmbedding',
+// ];
 
 const generateETag = (
   experimentId,

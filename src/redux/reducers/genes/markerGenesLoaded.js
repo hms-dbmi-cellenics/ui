@@ -25,18 +25,18 @@ const markerGenesLoaded = produce((draft, action) => {
   console.log('[DEBUG] - FINISHED GETTING GENE EXPRESSION MATRIX');
 
   console.log('[DEBUG] - BEGUN SETTING GENE EXPRESSION MATRIX');
-  // expressionMatrix.setGeneExpression(
-  //   order,
-  //   rawExpression,
-  //   truncatedExpression,
-  //   stats,
-  // );
-  expressionMatrix.pushGeneExpression(
+  expressionMatrix.setGeneExpression(
     order,
     rawExpression,
     truncatedExpression,
     stats,
   );
+  // expressionMatrix.pushGeneExpression(
+  //   order,
+  //   rawExpression,
+  //   truncatedExpression,
+  //   stats,
+  // );
   console.log('[DEBUG] - FINISHED SETTING GENE EXPRESSION');
 
   draft.expression.views[plotUuid] = { fetching: false, error: false, data: order };

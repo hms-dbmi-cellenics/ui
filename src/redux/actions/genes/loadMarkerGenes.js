@@ -38,31 +38,6 @@ const loadMarkerGenes = (
       stats,
     } = await fetchWork(experimentId, body, getState, { timeout });
 
-    const a = math.sparse([[1, 2, 0, 0], [3, 4, 0, 0]]);
-    const b = math.sparse([5, 0, 0, 6]);
-    console.log('aDebug');
-    console.log(a);
-    console.log('bDebug');
-    console.log(b);
-
-    const testtest = math.sparse([
-      [1, 2, 0, 3, 0, 5],
-      [7, 0, 0, 0, 8, 0],
-      [0, 0, 0, 0, 0, 0],
-    ]);
-
-    console.log('testtestDebug');
-    console.log(testtest);
-    try {
-      const c = math.concat(b, a, 1);
-
-      console.log('cDebug');
-      console.log(c);
-    } catch (e) {
-      console.log('eerrorDebug');
-      console.log(e);
-    }
-
     console.log('[DEBUG] - FINISHED fetchWork');
 
     console.log('[DEBUG] - BEGUN const rawExpression = SparseMatrix.fromJSON');
