@@ -11,6 +11,7 @@ import { seekFromS3 } from 'utils/work/seekWorkResponse';
 import mockEmbedding from '__test__/data/embedding.json';
 import mockStartingNodes from '__test__/data/starting_nodes.json';
 import mockPseudoTime from '__test__/data/pseudotime.json';
+import WorkResponseError from 'utils/http/errors/WorkResponseError';
 
 import preloadAll from 'jest-next-dynamic';
 
@@ -19,6 +20,7 @@ import mockAPI, {
   generateDefaultMockAPIResponses,
   promiseResponse,
   statusResponse,
+  delayedResponse,
 } from '__test__/test-utils/mockAPI';
 import createTestComponentFactory from '__test__/test-utils/testComponentFactory';
 import userEvent from '@testing-library/user-event';
@@ -77,6 +79,7 @@ const trajectoryAnalysisPageFactory = createTestComponentFactory(
   defaultProps,
 );
 
+const defaultShownPlotDescription = 'Trajectory analysis plot showing clusters with trajectory';
 const selectedRootNodes = ['Y_1', 'Y_2', 'Y_3'];
 
 const renderTrajectoryAnalysisPage = async (store) => {
@@ -222,6 +225,82 @@ describe('Trajectory analysis plot', () => {
 
     await waitFor(async () => {
       expect(screen.getByRole('graphics-document', { name: 'Trajectory analysis plot showing clusters' })).toBeInTheDocument();
+    });
+  });
+
+  it('Shows a loader if there is no config', async () => {
+    const delayedConfigResponse = {
+      ...defaultResponses,
+      [`experiments/${experimentId}/processingConfig`]: () => delayedResponse({ body: 'Not found', status: 404 }, 4000),
+    };
+
+    fetchMock.mockIf(/.*/, mockAPI(delayedConfigResponse));
+
+    await renderTrajectoryAnalysisPage(storeState);
+
+    expect(screen.getByText(/We're getting your data/i)).toBeInTheDocument();
+    await waitFor(async () => {
+      await expect(screen.queryByRole('graphics-document', { name: defaultShownPlotDescription })).toBeNull();
+    });
+  });
+
+  it('Shows a loader if cell sets is loading', async () => {
+    const cellSetErrorResponse = {
+      ...defaultResponses,
+      [`experiments/${experimentId}/cellSets`]: () => delayedResponse({ body: 'Not found', status: 404 }, 4000),
+    };
+
+    fetchMock.mockIf(/.*/, mockAPI(cellSetErrorResponse));
+
+    await renderTrajectoryAnalysisPage(storeState);
+
+    expect(screen.getByText(/We're getting your data/i)).toBeInTheDocument();
+    await waitFor(async () => {
+      await expect(screen.queryByRole('graphics-document', { name: defaultShownPlotDescription })).toBeNull();
+    });
+  });
+
+  it('Shows an error if fetching cell sets throw an error', async () => {
+    const cellSetErrorResponse = {
+      ...defaultResponses,
+      [`experiments/${experimentId}/cellSets`]: () => statusResponse(500, 'some random error'),
+    };
+
+    fetchMock.mockIf(/.*/, mockAPI(cellSetErrorResponse));
+
+    await renderTrajectoryAnalysisPage(storeState);
+
+    expect(screen.getByText(/We're sorry, we couldn't load this/i)).toBeInTheDocument();
+    await waitFor(async () => {
+      await expect(screen.queryByRole('graphics-document', { name: defaultShownPlotDescription })).toBeNull();
+    });
+  });
+
+  it('Shows a loader if embedding data is loading', async () => {
+    seekFromS3
+      .mockReset()
+      .mockImplementationOnce(() => null)
+      .mockImplementationOnce(() => delayedResponse({ body: 'Not found', status: 404 }, 4000));
+
+    await renderTrajectoryAnalysisPage(storeState);
+
+    expect(screen.getByText(/We're getting your data/i)).toBeInTheDocument();
+    await waitFor(async () => {
+      await expect(screen.queryByRole('graphics-document', { name: defaultShownPlotDescription })).toBeNull();
+    });
+  });
+
+  it('Shows an error if there is an error fetching embedding', async () => {
+    seekFromS3
+      .mockReset()
+      .mockImplementationOnce(() => null)
+      .mockImplementationOnce(() => Promise.reject(new WorkResponseError('some random error')));
+
+    await renderTrajectoryAnalysisPage(storeState);
+
+    expect(screen.getByText(/We had an error on our side while we were completing your request/i)).toBeInTheDocument();
+    await waitFor(async () => {
+      await expect(screen.queryByRole('graphics-document', { name: defaultShownPlotDescription })).toBeNull();
     });
   });
 });

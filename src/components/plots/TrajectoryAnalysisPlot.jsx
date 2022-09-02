@@ -18,8 +18,7 @@ import { loadCellSets } from 'redux/actions/cellSets';
 import { loadProcessingSettings } from 'redux/actions/experimentSettings';
 
 import { getCellSets } from 'redux/selectors';
-import PlatformError from 'components/PlatformError';
-import Loader from 'components/Loader';
+
 import { Alert } from 'antd';
 
 import changeEmbeddingAxesIfNecessary from 'components/plots/helpers/changeEmbeddingAxesIfNecessary';
@@ -34,9 +33,6 @@ const TrajectoryAnalysisPlot = (props) => {
     config,
     plotState,
     plotData: startingNodesPlotData,
-    plotLoading,
-    plotDataError,
-    onPlotDataErrorRetry,
     actions,
     onUpdate,
     onClickNode,
@@ -58,8 +54,6 @@ const TrajectoryAnalysisPlot = (props) => {
 
   const {
     data: embeddingData,
-    loading: embeddingLoading,
-    error: embeddingError,
   } = useSelector(
     (state) => state.embeddings[embeddingMethod],
   ) || {};
@@ -201,76 +195,33 @@ const TrajectoryAnalysisPlot = (props) => {
     },
   };
 
-  const render = () => {
-    if (cellSets.error) {
-      return (
-        <PlatformError
-          error={cellSets.error}
-          onClick={() => { dispatch(loadCellSets(experimentId)); }}
+  const render = () => (
+    <center>
+      {embeddingSettings?.method === 'tsne' && (
+        <Alert
+          type='warning'
+          message={(
+            <>
+              Due to
+              {' '}
+              <a href='https://cole-trapnell-lab.github.io/monocle3/' target='_blank' rel='noreferrer'>Monocle3</a>
+              {' '}
+              limitations, only UMAP embeddings are supported for Trajectory Analysis.
+              <br />
+              The embedding and trajectory below are generated from a UMAP embedding of your data.
+            </>
+          )}
         />
-      );
-    }
-
-    if (embeddingError) {
-      return (
-        <PlatformError
-          error={embeddingError}
-          onClick={() => { dispatch(loadEmbedding(experimentId, embeddingSettings?.method)); }}
-        />
-      );
-    }
-
-    if (plotDataError) {
-      return (
-        <PlatformError
-          error={plotDataError}
-          onClick={onPlotDataErrorRetry}
-        />
-      );
-    }
-
-    if (!config
-      || embeddingLoading
-      || plotLoading
-      || !cellSets.accessible
-      || !embeddingData
-      || !plotSpec
-    ) {
-      return (
-        <center>
-          <Loader experimentId={experimentId} />
-        </center>
-      );
-    }
-
-    return (
-      <center>
-        {embeddingSettings?.method === 'tsne' && (
-          <Alert
-            type='warning'
-            message={(
-              <>
-                Due to
-                {' '}
-                <a href='https://cole-trapnell-lab.github.io/monocle3/' target='_blank' rel='noreferrer'>Monocle3</a>
-                {' '}
-                limitations, only UMAP embeddings are supported for Trajectory Analysis.
-                <br />
-                The embedding and trajectory below are generated from a UMAP embedding of your data.
-              </>
-            )}
-          />
-        )}
-        <br />
-        <Vega
-          spec={plotSpec}
-          renderer='webgl'
-          actions={actions}
-          signalListeners={plotState.displayTrajectory ? plotListeners : {}}
-        />
-      </center>
-    );
-  };
+      )}
+      <br />
+      <Vega
+        spec={plotSpec}
+        renderer='webgl'
+        actions={actions}
+        signalListeners={plotState.displayTrajectory ? plotListeners : {}}
+      />
+    </center>
+  );
 
   return render();
 };
@@ -280,9 +231,6 @@ TrajectoryAnalysisPlot.propTypes = {
   config: PropTypes.object,
   plotState: PropTypes.object.isRequired,
   plotData: PropTypes.object.isRequired,
-  plotDataError: PropTypes.bool || PropTypes.string,
-  onPlotDataErrorRetry: PropTypes.func,
-  plotLoading: PropTypes.bool,
   actions: PropTypes.oneOfType([
     PropTypes.bool,
     PropTypes.object,
@@ -295,9 +243,6 @@ TrajectoryAnalysisPlot.propTypes = {
 
 TrajectoryAnalysisPlot.defaultProps = {
   actions: true,
-  plotLoading: false,
-  plotDataError: false,
-  onPlotDataErrorRetry: () => { },
   onClickNode: () => { },
   onLassoSelection: () => { },
   onZoomOrPan: () => { },

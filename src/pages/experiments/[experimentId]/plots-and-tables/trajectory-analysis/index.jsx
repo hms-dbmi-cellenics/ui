@@ -16,12 +16,17 @@ import {
 import Loader from 'components/Loader';
 import { loadEmbedding } from 'redux/actions/embedding';
 import { loadProcessingSettings } from 'redux/actions/experimentSettings';
+import { loadCellSets } from 'redux/actions/cellSets';
+import { getCellSets } from 'redux/selectors';
+
 import getTrajectoryPlotStartingNodes from 'redux/actions/componentConfig/getTrajectoryPlotStartingNodes';
 import getTrajectoryPlotPseudoTime from 'redux/actions/componentConfig/getTrajectoryPlotPseudoTime';
 
 import Header from 'components/Header';
 import PlotContainer from 'components/plots/PlotContainer';
 import TrajectoryAnalysisPlot from 'components/plots/TrajectoryAnalysisPlot';
+import PlatformError from 'components/PlatformError';
+
 import { plotNames, plotTypes } from 'utils/constants';
 
 const { Panel } = Collapse;
@@ -72,6 +77,7 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
         setConfigLoaded(true);
       });
     } else { setConfigLoaded(true); }
+    dispatch(loadCellSets(experimentId));
     dispatch(loadProcessingSettings(experimentId));
   }, []);
 
@@ -162,7 +168,72 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
     },
   ];
 
-  if (!config) return <Loader />;
+  const cellSets = useSelector(getCellSets());
+
+  const render = () => {
+    if (cellSets.error) {
+      return (
+        <PlatformError
+          error={cellSets.error}
+          onClick={() => { dispatch(loadCellSets(experimentId)); }}
+        />
+      );
+    }
+
+    if (embeddingError) {
+      return (
+        <PlatformError
+          error={embeddingError}
+          onClick={() => { dispatch(loadEmbedding(experimentId, embeddingSettings?.method)); }}
+        />
+      );
+    }
+
+    if (plotDataError) {
+      return (
+        <PlatformError
+          error={plotDataError}
+          onClick={() => dispatch(getTrajectoryPlotStartingNodes(experimentId, plotUuid))}
+        />
+      );
+    }
+
+    if (!config
+      || embeddingLoading
+      || plotLoading
+      || !cellSets.accessible
+      || !embeddingData
+    ) {
+      return (
+        <center>
+          <Loader experimentId={experimentId} />
+        </center>
+      );
+    }
+
+    return (
+      <TrajectoryAnalysisPlot
+        experimentId={experimentId}
+        config={config}
+        onUpdate={updatePlotWithChanges}
+        plotState={plotState}
+        plotData={plotData}
+        plotLoading={plotLoading}
+        plotDataError={plotDataError}
+        onClickNode={handleClickNode}
+        onLassoSelection={handleLassoSelection}
+        onZoomOrPan={() => {
+          if (!plotState.isZoomedOrPanned) {
+            setPlotState({
+              ...plotState,
+              isZoomedOrPanned: true,
+            });
+          }
+        }}
+        actions={{ export: true, editor: false, source: false }}
+      />
+    );
+  };
 
   const renderExtraPanels = () => (
     <>
@@ -197,7 +268,7 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
                   </>
                 )}
               />
-              {selectedNodes.length > 0 && (
+              {selectedNodes?.length > 0 && (
                 <>
                   <strong>{`${selectedNodes.length} nodes selected`}</strong>
                   <Button
@@ -337,27 +408,7 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
         defaultActiveKey='trajectory-analysis'
         saveDebounceTime={10}
       >
-        <TrajectoryAnalysisPlot
-          experimentId={experimentId}
-          config={config}
-          onUpdate={updatePlotWithChanges}
-          plotState={plotState}
-          plotData={plotData}
-          plotLoading={plotLoading}
-          plotDataError={plotDataError}
-          onPlotDataErrorRetry={() => dispatch(getTrajectoryPlotStartingNodes(experimentId, plotUuid))}
-          onClickNode={handleClickNode}
-          onLassoSelection={handleLassoSelection}
-          onZoomOrPan={() => {
-            if (!plotState.isZoomedOrPanned) {
-              setPlotState({
-                ...plotState,
-                isZoomedOrPanned: true,
-              });
-            }
-          }}
-          actions={{ export: true, editor: false, source: false }}
-        />
+        {render()}
       </PlotContainer>
     </>
   );
