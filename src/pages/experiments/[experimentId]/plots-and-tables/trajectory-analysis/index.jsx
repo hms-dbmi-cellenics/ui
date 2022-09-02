@@ -28,6 +28,7 @@ import TrajectoryAnalysisPlot from 'components/plots/TrajectoryAnalysisPlot';
 import PlatformError from 'components/PlatformError';
 
 import { plotNames, plotTypes } from 'utils/constants';
+import useConditionalEffect from 'utils/customHooks/useConditionalEffect';
 
 const { Panel } = Collapse;
 
@@ -99,7 +100,7 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
     }
   }, [config?.axesRanges?.xAxisAuto, config?.axesRanges?.xAxisAuto]);
 
-  useEffect(() => {
+  useConditionalEffect(() => {
     if (
       // `configLoaded` is used instead of `config` because this block of code should only be called
       // once when the config is loaded, or when embedding settings changes. Using `config`
