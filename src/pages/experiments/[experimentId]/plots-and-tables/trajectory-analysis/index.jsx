@@ -367,13 +367,13 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
     </>
   );
 
-  const handleClickNode = (selectedNodeId) => {
+  const handleClickNode = (action, selectedNodeId) => {
     const removeFromSelection = (nodeId) => selectedNodes.filter((node) => nodeId !== node);
     const addToSelection = (nodeId) => [...selectedNodes, nodeId];
 
-    const updatedSelection = selectedNodes.includes(selectedNodeId)
-      ? removeFromSelection(selectedNodeId)
-      : addToSelection(selectedNodeId);
+    const updatedSelection = action === 'add'
+      ? addToSelection(selectedNodeId)
+      : removeFromSelection(selectedNodeId);
 
     dispatch(updatePlotConfig(plotUuid, { selectedNodes: updatedSelection }));
   };

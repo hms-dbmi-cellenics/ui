@@ -165,10 +165,17 @@ const TrajectoryAnalysisPlot = (props) => {
       viewState.current = { xdom, ydom };
       if (!plotState.isZoomedOrPanned) _.debounce(onZoomOrPan)();
     },
-    chooseNode: (eventName, payload) => {
+    addNode: (eventName, payload) => {
       // eslint-disable-next-line camelcase
       const { node_id } = payload;
-      onClickNode(node_id);
+
+      onClickNode('add', node_id);
+    },
+    removeNode: (eventName, payload) => {
+      // eslint-disable-next-line camelcase
+      const { node_id } = payload;
+
+      onClickNode('remove', node_id);
     },
     lassoSelection: (eventName, payload) => {
       const [x1, y1, x2, y2] = payload;

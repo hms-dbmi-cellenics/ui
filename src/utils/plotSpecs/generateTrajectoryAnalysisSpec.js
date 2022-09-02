@@ -447,8 +447,12 @@ const insertTrajectorySpec = (
     ...spec.signals,
     // Signal for selection
     {
-      name: 'chooseNode',
-      on: [{ events: '@pathNodes:click', update: 'datum', force: true }],
+      name: 'addNode',
+      on: [{ events: '@unselectedNode:click', update: 'datum', force: true }],
+    },
+    {
+      name: 'removeNode',
+      on: [{ events: '@selectedNodes:click', update: 'datum', force: true }],
     },
     {
       name: 'lassoSelection',
@@ -502,18 +506,16 @@ const insertTrajectorySpec = (
           size: { value: 25 },
           stroke: { value: '#ccc' },
           defined: {
-            signal: 'isValid(datum["x"]) && isFinite(+datum["x"]) && isValid(datum["y"]) && isFinite(+datum["y"])',
+            signal: 'isValid(datum["x"])',
           },
         },
       },
     },
     {
       type: 'symbol',
-      name: 'pathNodes',
+      name: 'unselectedNode',
       interactive: true,
-      from: {
-        data: 'pathData',
-      },
+      from: { data: 'pathData' },
       encode: {
         update: {
           x: { scale: 'xscale', field: 'x' },
@@ -524,23 +526,17 @@ const insertTrajectorySpec = (
             { test: 'isValid(datum.x)', value: 1 },
             { value: 0 },
           ],
-          fill: [
-            { test: 'datum.selected', value: 'red' },
-            { value: 'white' },
-          ],
+          fill: { value: 'white' },
           shape: { value: 'circle' },
           fillOpacity: [
             { test: 'isValid(datum.x)', value: 1 },
             { value: 0 },
           ],
-          defined: {
-            signal: 'isValid(datum["x"]) && isFinite(+datum["x"]) && isValid(datum["y"]) && isFinite(+datum["y"])',
-          },
         },
       },
     },
     {
-      name: 'highlightNodes',
+      name: 'selectedNodes',
       type: 'symbol',
       from: { data: 'highlight' },
       encode: {
