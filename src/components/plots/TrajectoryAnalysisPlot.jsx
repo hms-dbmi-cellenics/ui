@@ -39,7 +39,7 @@ const TrajectoryAnalysisPlot = forwardRef((props, ref) => {
   } = props;
 
   const dispatch = useDispatch();
-  const preventRenderRef = useRef(ref.current);
+  const resetZoomCountRef = useRef(ref.current);
 
   const [plotSpec, setPlotSpec] = useState({});
 
@@ -134,7 +134,7 @@ const TrajectoryAnalysisPlot = forwardRef((props, ref) => {
       || !startingNodesPlotData?.nodes
     ) return;
 
-    preventRenderRef.current = resetZoomCount;
+    resetZoomCountRef.current = resetZoomCount;
 
     const selectedNodeIds = config.selectedNodes.map(
       (nodeId) => startingNodesPlotData.nodes[nodeId],
@@ -207,7 +207,7 @@ const TrajectoryAnalysisPlot = forwardRef((props, ref) => {
   };
 
   const render = () => {
-    if (preventRenderRef.current !== resetZoomCount) return <Loader />;
+    if (resetZoomCountRef.current !== resetZoomCount) return <Loader />;
 
     return (
       <center>
