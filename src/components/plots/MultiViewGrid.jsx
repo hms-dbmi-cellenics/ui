@@ -23,7 +23,9 @@ const MultiViewGrid = (props) => {
   } = props;
 
   // the config can be initialised using updatePlotConfig
-  const multiViewGridConfig = useSelector((state) => state.componentConfig[multiViewGridUuid]?.config);
+  const multiViewGridConfig = useSelector((state) => (
+    state.componentConfig[multiViewGridUuid]?.config
+  ));
 
   const plotConfigs = useSelector((state) => {
     const plotConfigsToReturn = multiViewGridConfig.plotUuids.reduce((acum, plotUuid) => {

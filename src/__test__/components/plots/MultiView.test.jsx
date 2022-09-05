@@ -45,7 +45,7 @@ const renderMultiView = (store) => {
     <Provider store={store}>
       <MultiViewGrid
         renderPlot={mockRenderPlot}
-        multiViewUuid={multiViewGridUuid}
+        multiViewGridUuid={multiViewGridUuid}
       />
     </Provider>,
   );
