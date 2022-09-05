@@ -55,6 +55,8 @@ let store = null;
 
 describe('MultiView', () => {
   beforeEach(async () => {
+    jest.clearAllMocks();
+
     store = makeStore();
 
     await store.dispatch(updatePlotConfig(multiViewGridUuid, mockMultiViewConfig));
@@ -73,6 +75,8 @@ describe('MultiView', () => {
 
     await store.dispatch(updatePlotConfig(multiViewGridUuid, { plotUuids: [...plotUuids, 'ViolinMain-3'] }));
     await waitFor(() => expect(screen.getByText('ViolinMain-3')).toBeInTheDocument());
+
+    expect(mockRenderPlot).toHaveBeenCalledTimes(4);
   });
 
   it('Re-orders plots in multi view', async () => {
@@ -86,6 +90,8 @@ describe('MultiView', () => {
 
     await store.dispatch(updatePlotConfig(multiViewGridUuid, { plotUuids: reorderedUuids }));
     await waitFor(() => expect(multiViewContainer.textContent).toBe(reorderedUuids.join('')));
+
+    expect(mockRenderPlot).toHaveBeenCalledTimes(3);
   });
 
   it('Removes plots from multi view', async () => {
@@ -93,5 +99,7 @@ describe('MultiView', () => {
 
     await store.dispatch(updatePlotConfig(multiViewGridUuid, { plotUuids: plotUuids.slice(1) }));
     await waitForElementToBeRemoved(() => screen.getByText(plotUuids[0]));
+
+    expect(mockRenderPlot).toHaveBeenCalledTimes(3);
   });
 });
