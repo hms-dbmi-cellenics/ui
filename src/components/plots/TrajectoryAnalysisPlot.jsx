@@ -184,7 +184,7 @@ const TrajectoryAnalysisPlot = forwardRef((props, ref) => {
     domUpdates: (e, val) => {
       const [xdom, ydom] = val;
       // eslint-disable-next-line no-param-reassign
-      ref.current.viewState = { xdom, ydom };
+      viewStateRef.current = { xdom, ydom };
     },
     addNode: (eventName, payload) => {
       // eslint-disable-next-line camelcase
