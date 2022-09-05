@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { AutoComplete } from 'antd';
+import { AutoComplete, Button, Input } from 'antd';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
+import _ from 'lodash';
 
 const filterGenes = (searchText, geneList, loadedGenes) => {
   const searchTextUpper = searchText.toUpperCase();
@@ -25,31 +26,59 @@ const GeneSearchBar = (props) => {
 
   const [options, setOptions] = useState([]);
 
-  // pass reactive component as value (search text) to allow auto clear on select
   const [value, setValue] = useState('');
 
-  const onOptionSelect = (newGene) => {
-    const genes = [...config?.selectedGenes, newGene];
+  const GENES_REGEX = /(?<!-)[,\s]+(?!-)/;
+  const genes = value.split(GENES_REGEX);
 
-    onSelect(genes);
-    setValue('');
+  const onOptionSelect = (newGene) => {
+    genes.splice(-1, 1, `${newGene}, `);
+    setValue(genes.join(', '));
+    setOptions([]);
   };
 
-  const onSearch = (searchText) => {
-    setValue(searchText);
+  const onSearch = (input) => {
+    setValue(input);
+
+    const inputGenes = input.split(GENES_REGEX);
+
+    const searchText = inputGenes[inputGenes.length - 1];
+
     setOptions(!searchText ? [] : filterGenes(searchText, geneList, config?.selectedGenes));
   };
 
+  const addGenes = () => {
+    if (value === '') return;
+
+    const newGenes = genes.filter((gene) => geneList.includes(gene));
+    const allGenes = _.uniq([...config?.selectedGenes, ...newGenes]);
+
+    if (_.isEqual(allGenes, config?.selectedGenes)) return;
+
+    onSelect(allGenes);
+    setValue('');
+    setOptions([]);
+  };
+
   return (
-    <AutoComplete
-      allowClear
-      value={value}
-      options={options}
-      style={{ width: '100%' }}
-      onSelect={onOptionSelect}
-      onSearch={onSearch}
-      placeholder='Search for genes...'
-    />
+    <Input.Group compact>
+      <AutoComplete
+        allowClear
+        style={{ width: '80%' }}
+        value={value}
+        options={options}
+        onSelect={onOptionSelect}
+        onSearch={onSearch}
+        placeholder='Search for genes...'
+      />
+      <Button
+        type='primary'
+        onClick={addGenes}
+        style={{ width: '20%' }}
+      >
+        Add
+      </Button>
+    </Input.Group>
   );
 };
 

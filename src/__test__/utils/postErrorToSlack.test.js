@@ -3,7 +3,7 @@ import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 
 enableFetchMocks();
 
-const mockError = { stack: 'Mock error stack' };
+const mockError = { message: 'mockMessage', stack: 'Mock error stack' };
 const mockReduxDump = {
   cellInfo: {
     focus: {
@@ -51,6 +51,10 @@ jest.mock('@aws-amplify/auth', () => ({
   }),
 }));
 
+jest.mock('stacktrace-js', () => ({
+  fromError: () => Promise.resolve(['line1', 'line2']),
+}));
+
 describe('PostErrorToSlack', () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -77,9 +81,7 @@ describe('PostErrorToSlack', () => {
   it('Should not throw an error if POSTing fails', async () => {
     fetchMock.mockIf(/.*/, () => Promise.resolve(new Response('Server error', { status: 500 })));
 
-    await expect(async () => {
-      await postErrorToSlack(mockError, mockReduxDump);
-    }).not.toThrow();
+    await postErrorToSlack(mockError, mockReduxDump);
 
     expect(fetchMock).toHaveBeenCalledTimes(1);
   });

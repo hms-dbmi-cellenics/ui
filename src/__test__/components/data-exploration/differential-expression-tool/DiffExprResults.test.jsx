@@ -62,19 +62,19 @@ const backendStatus = {
 
 const mockGeneExpressionData = [
   {
-    p_val: 1.496, p_val_adj: 1.647, logFC: -1.427, gene_names: 'A', auc: '0.1', pct_1: '100', pct_2: '100', Gene: "EN123123123123123",
+    p_val: 1.496, p_val_adj: 1.647, logFC: -1.427, gene_names: 'A', auc: '0.1', pct_1: '100', pct_2: '100', Gene: 'EN123123123123123',
   },
   {
-    p_val: 2.496, p_val_adj: 2.647, logFC: -2.427, gene_names: 'B', auc: '0.2', pct_1: '90', pct_2: '90', Gene: "EN123123123123123",
+    p_val: 2.496, p_val_adj: 2.647, logFC: -2.427, gene_names: 'B', auc: '0.2', pct_1: '90', pct_2: '90', Gene: 'EN123123123123123',
   },
   {
-    p_val: 3.496, p_val_adj: 3.647, logFC: -3.427, gene_names: 'C', auc: '0.3', pct_1: '80', pct_2: '80', Gene: "EN123123123123123",
+    p_val: 3.496, p_val_adj: 3.647, logFC: -3.427, gene_names: 'C', auc: '0.3', pct_1: '80', pct_2: '80', Gene: 'EN123123123123123',
   },
   {
-    p_val: 4.496, p_val_adj: 4.647, logFC: -4.427, gene_names: 'D', auc: '0.4', pct_1: '70', pct_2: '70', Gene: "EN123123123123123",
+    p_val: 4.496, p_val_adj: 4.647, logFC: -4.427, gene_names: 'D', auc: '0.4', pct_1: '70', pct_2: '70', Gene: 'EN123123123123123',
   },
   {
-    p_val: 5.496, p_val_adj: 5.647, logFC: -5.427, gene_names: 'E', auc: '0.5', pct_1: '60', pct_2: '60', Gene: "EN123123123123123",
+    p_val: 5.496, p_val_adj: 5.647, logFC: -5.427, gene_names: 'E', auc: '0.5', pct_1: '60', pct_2: '60', Gene: 'EN123123123123123',
   },
 ];
 
@@ -211,8 +211,6 @@ describe('DiffExprResults', () => {
       total: mockGeneExpressionData.length,
     };
 
-
-
     const newSorter = {
       column: {
         dataIndex: 'gene_names',
@@ -243,7 +241,7 @@ describe('DiffExprResults', () => {
 
     // // Wait for side-effect to propagate (properties loading and loaded).
     await waitForActions(withResultStore, [DIFF_EXPR_ORDERING_SET, DIFF_EXPR_LOADING, DIFF_EXPR_LOADED]);
-    const entries = component.find(".ant-table-tbody").children();
+    const entries = component.find('.ant-table-tbody').children();
 
     expect(fetchWork).toHaveBeenCalledWith(
       '1234',
@@ -259,7 +257,7 @@ describe('DiffExprResults', () => {
       {
         extras: {
           pagination: {
-            limit: newPagination.total, offset: 0, orderBy: 'logFC', orderDirection: 'DESC', responseKey: 0,
+            limit: 1000000, offset: 0, orderBy: 'logFC', orderDirection: 'DESC', responseKey: 0,
           },
         },
         timeout: 60,
@@ -286,11 +284,11 @@ describe('DiffExprResults', () => {
 
     searchBox.simulate('change', { target: { value: 'A' } });
 
-    const entries = component.find(".ant-table-tbody").children();
+    const entries = component.find('.ant-table-tbody').children();
 
     expect(entries.at(1).text()).toEqual('A-1.4271.6471001000.1');
     expect(entries).toHaveLength(2);
-  })
+  });
 
   it('Having a focused gene triggers focused view for `eye` button.', () => {
     // Redefine store from `beforeEach`.
