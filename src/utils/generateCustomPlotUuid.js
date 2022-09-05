@@ -5,4 +5,8 @@ const generateDataProcessingPlotUuid = (sampleId, filterName, plotIdx) => {
   return `${filterName}-${plotIdx}`;
 };
 
-export default generateDataProcessingPlotUuid;
+const generateMultiViewGridPlotUuid = (plotUuid, plotIdx) => (
+  `${plotUuid}-${plotIdx}`
+);
+
+export default { generateDataProcessingPlotUuid, generateMultiViewGridPlotUuid };

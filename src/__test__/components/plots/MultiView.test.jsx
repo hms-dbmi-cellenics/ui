@@ -9,7 +9,7 @@ import {
 import { Provider } from 'react-redux';
 
 import MultiViewGrid from 'components/plots/MultiViewGrid';
-import generateMultiViewPlotUuid from 'utils/generateMultiViewPlotUuid';
+import { generateMultiViewGridPlotUuid} from 'utils/generateCustomPlotUuid';
 
 import { makeStore } from 'redux/store';
 import { updatePlotConfig } from 'redux/actions/componentConfig';

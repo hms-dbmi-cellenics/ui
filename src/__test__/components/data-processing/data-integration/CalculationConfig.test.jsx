@@ -1,5 +1,4 @@
 import React from 'react';
-import _ from 'lodash';
 import {
   Form, Select,
 } from 'antd';
@@ -11,10 +10,7 @@ import { act } from 'react-dom/test-utils';
 
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 
-import {
-  EXPERIMENT_SETTINGS_NON_SAMPLE_FILTER_UPDATE,
-} from 'redux/actionTypes/experimentSettings';
-import generateDataProcessingPlotUuid from 'utils/generateDataProcessingPlotUuid';
+import { generateDataProcessingPlotUuid } from 'utils/generateCustomPlotUuid';
 import CalculationConfig from 'components/data-processing/DataIntegration/CalculationConfig';
 import generateExperimentSettingsMock from '../../../test-utils/experimentSettings.mock';
 import '__test__/test-utils/setupTests';
