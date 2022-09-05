@@ -5,7 +5,6 @@ import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Vega } from 'react-vega';
 import 'vega-webgl-renderer';
-import _ from 'lodash';
 
 import { generateData as generateEmbeddingCategoricalData } from 'utils/plotSpecs/generateEmbeddingCategoricalSpec';
 import {
@@ -30,9 +29,9 @@ const TrajectoryAnalysisPlot = forwardRef((props, ref) => {
 
   const {
     experimentId,
-    config,
+    // config,
+    // plotData: startingNodesPlotData,
     plotState,
-    plotData: startingNodesPlotData,
     actions,
     onUpdate,
     onClickNode,
@@ -49,6 +48,13 @@ const TrajectoryAnalysisPlot = forwardRef((props, ref) => {
   const embeddingSettings = useSelector(
     (state) => state.experimentSettings.originalProcessing?.configureEmbedding?.embeddingSettings,
   );
+
+  const {
+    config,
+    plotData: startingNodesPlotData,
+    // loading: plotLoading,
+    // error: plotDataError,
+  } = useSelector((state) => state.componentConfig.trajectoryAnalysisMain) || {};
 
   const {
     data: embeddingData,
@@ -142,10 +148,10 @@ const TrajectoryAnalysisPlot = forwardRef((props, ref) => {
     },
   }));
 
-  // useEffect(() => {
-  //   // eslint-disable-next-line no-param-reassign
-  //   viewStateRef.current = { xdom: xExtent, ydom: yExtent };
-  // }, [xExtent, yExtent]);
+  useEffect(() => {
+    // eslint-disable-next-line no-param-reassign
+    viewStateRef.current = { xdom: xExtent, ydom: yExtent };
+  }, [xExtent, yExtent]);
 
   useEffect(() => {
     if (
@@ -178,6 +184,7 @@ const TrajectoryAnalysisPlot = forwardRef((props, ref) => {
     startingNodesPlotData,
     plotState.displayPseudotime,
     plotState.displayTrajectory,
+    viewStateRef.current,
   ]);
 
   const plotListeners = {
@@ -256,9 +263,7 @@ const TrajectoryAnalysisPlot = forwardRef((props, ref) => {
 
 TrajectoryAnalysisPlot.propTypes = {
   experimentId: PropTypes.string.isRequired,
-  config: PropTypes.object.isRequired,
   plotState: PropTypes.object.isRequired,
-  plotData: PropTypes.object.isRequired,
   actions: PropTypes.oneOfType([
     PropTypes.bool,
     PropTypes.object,

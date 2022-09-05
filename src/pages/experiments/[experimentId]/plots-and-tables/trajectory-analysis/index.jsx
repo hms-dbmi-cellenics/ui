@@ -2,15 +2,10 @@
 import React, {
   useEffect, useState, useRef,
 } from 'react';
+import _ from 'lodash';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
-import {
-  Button,
-  Collapse,
-  Space,
-  Radio,
-  Alert,
-} from 'antd';
+import { Button } from 'antd';
 import {
   updatePlotConfig,
   loadPlotConfig,
@@ -22,7 +17,7 @@ import { loadCellSets } from 'redux/actions/cellSets';
 import { getCellSets } from 'redux/selectors';
 
 import getTrajectoryPlotStartingNodes from 'redux/actions/componentConfig/getTrajectoryPlotStartingNodes';
-import getTrajectoryPlotPseudoTime from 'redux/actions/componentConfig/getTrajectoryPlotPseudoTime';
+// import getTrajectoryPlotPseudoTime from 'redux/actions/componentConfig/getTrajectoryPlotPseudoTime';
 
 import Header from 'components/Header';
 import PlotContainer from 'components/plots/PlotContainer';
@@ -31,8 +26,8 @@ import PlatformError from 'components/PlatformError';
 
 import { plotNames, plotTypes } from 'utils/constants';
 import useConditionalEffect from 'utils/customHooks/useConditionalEffect';
-
-const { Panel } = Collapse;
+import updateTrajectoryNodes from 'redux/actions/componentConfig/updateTrajectoryNodes';
+import TrajectoryExtraPanels from './TrajectoryExtraPanels';
 
 const plotUuid = 'trajectoryAnalysisMain';
 const plotType = plotTypes.TRAJECTORY_ANALYSIS;
@@ -47,7 +42,7 @@ const initialPlotState = {
 const TrajectoryAnalysisPage = ({ experimentId }) => {
   const dispatch = useDispatch();
   const [plotState, setPlotState] = useState(initialPlotState);
-  const [configLoaded, setConfigLoaded] = useState(false);
+  // const [configLoaded, setConfigLoaded] = useState(false);
   const resetZoomRef = useRef();
 
   // Currenty monocle3 trajectory analysis only supports
@@ -56,15 +51,26 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
 
   const cellSets = useSelector(getCellSets());
 
-  const {
-    config,
-    loading: configLoading,
-    plotData,
-    loading: plotLoading,
-    error: plotDataError,
-  } = useSelector((state) => state.componentConfig[plotUuid]) || {};
+  // const {
+  //   // config,
+  //   // plotData,
+  //   // loading: plotLoading,
+  //   // error: plotDataError,
+  // } = useSelector((state) => state.componentConfig[plotUuid]);
 
-  const { selectedNodes } = config || {};
+  const plotLoading = useSelector((state) => state.componentConfig[plotUuid]?.loading, _.isEqual);
+  const plotDataError = useSelector((state) => state.componentConfig[plotUuid]?.error, _.isEqual);
+
+  const configIsLoaded = useSelector((state) => !_.isNil(state.componentConfig[plotUuid]), _.isEqual);
+
+  // const selectedNodes = useSelector((state) => state.componentConfig[plotUuid]?.config?.selectedNodes, _.isEqual);
+  // const {
+  //   config,
+  //   loading: configLoading,
+  //   plotData,
+  //   loading: plotLoading,
+  //   error: plotDataError,
+  // } = useSelector((state) => state.componentConfig[plotUuid].loading) || {};
 
   const embeddingSettings = useSelector(
     (state) => state.experimentSettings.originalProcessing
@@ -78,11 +84,10 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
   } = useSelector((state) => state.embeddings[embeddingMethod]) || {};
 
   useEffect(() => {
-    if (!config) {
-      dispatch(loadPlotConfig(experimentId, plotUuid, plotType)).then(() => {
-        setConfigLoaded(true);
-      });
-    } else { setConfigLoaded(true); }
+    if (!configIsLoaded) {
+      dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
+    }
+
     if (!cellSets.accessible) dispatch(loadCellSets(experimentId));
     if (!embeddingSettings) dispatch(loadProcessingSettings(experimentId));
   }, []);
@@ -96,24 +101,12 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
     }
   }, [embeddingMethod, !embeddingSettings]);
 
-  // useEffect(() => {
-  //   const xdom = config?.axesRanges.xAxisAuto
-  //     ? [config.axesRanges.xMin, config.axesRanges.xMax]
-  //     : xExtent;
-
-  //   const ydom = config?.axesRanges.yAxisAuto
-  //     ? [config.axesRanges.yMin, config.axesRanges.yMax]
-  //     : yExtent;
-
-  //   viewState.current = { xdom, ydom };
-  // }, [config?.axesRanges?.xAxisAuto, config?.axesRanges?.xAxisAuto]);
-
   useConditionalEffect(() => {
     if (
       // `configLoaded` is used instead of `config` because this block of code should only be called
       // once when the config is loaded, or when embedding settings changes. Using `config`
       // in the dependency array will make this code be executed everytime there is a config change.
-      !configLoaded
+      !configIsLoaded
       || !embeddingMethod
       || embeddingLoading
       || embeddingError
@@ -121,7 +114,7 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
     ) return;
     dispatch(getTrajectoryPlotStartingNodes(experimentId, plotUuid));
   }, [
-    configLoaded,
+    configIsLoaded,
     embeddingMethod,
     embeddingLoading,
     embeddingSettings,
@@ -205,8 +198,8 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
       );
     }
 
-    if (!config
-      || embeddingLoading
+    // if (!config
+    if (embeddingLoading
       || plotLoading
       || !cellSets.accessible
       || !embeddingData
@@ -222,10 +215,10 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
       <TrajectoryAnalysisPlot
         ref={resetZoomRef}
         experimentId={experimentId}
-        config={config}
+        // config={config}
         onUpdate={updatePlotWithChanges}
         plotState={plotState}
-        plotData={plotData}
+        // plotData={plotData}
         plotLoading={plotLoading}
         plotDataError={plotDataError}
         onClickNode={handleClickNode}
@@ -234,133 +227,6 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
       />
     );
   };
-
-  const renderExtraPanels = () => (
-    <>
-      <Panel header='Trajectory analysis' key='trajectory-analysis'>
-        {
-          plotState.displayTrajectory ? (
-            <Space direction='vertical' style={{ width: '100%' }}>
-              <Alert
-                type='info'
-                message={(
-                  <>
-                    <p>
-                      To get started, select root nodes by
-                      {' '}
-                      <strong>clicking on the white points</strong>
-                      . You can select multiple nodes at once by drawing a selection. To do this,
-                      {' '}
-                      <strong>
-                        hold down the Shift key, and then click and drag
-                      </strong>
-                      . Nodes inside the selection will be added to the selection.
-                    </p>
-                    <p>
-                      Move around the plot by panning (click and drag) and zooming (pinch and zoom/scroll).
-                    </p>
-                    <p>
-                      Deselect nodes by clicking on a selected node, or by clicking
-                      {' '}
-                      <strong>Clear selection</strong>
-                      .
-                    </p>
-                  </>
-                )}
-              />
-              {selectedNodes?.length > 0 && (
-                <>
-                  <strong>{`${selectedNodes.length} nodes selected`}</strong>
-                  <Button
-                    block
-                    disabled={configLoading}
-                    onClick={() => {
-                      dispatch(updatePlotConfig(plotUuid, { selectedNodes: [] }));
-                    }}
-                  >
-                    Clear selection
-                  </Button>
-                  <Button
-                    type='primary'
-                    block
-                    disabled={configLoading}
-                    onClick={async () => {
-                      // Optimistic result to prevent flickering
-                      setPlotState({
-                        ...plotState,
-                        displayPseudotime: true,
-                        hasRunPseudotime: true,
-                      });
-
-                      const success = await dispatch(getTrajectoryPlotPseudoTime(selectedNodes, experimentId, plotUuid));
-                      if (!success) {
-                        setPlotState({
-                          ...plotState,
-                          displayPseudotime: false,
-                          hasRunPseudotime: false,
-                        });
-                      }
-                    }}
-                  >
-                    {plotState.hasRunPseudotime ? 'Recalculate' : 'Calculate'}
-                  </Button>
-                </>
-              )}
-            </Space>
-          ) : (
-            <p>
-              Choose
-              {' '}
-              <strong>Trajectory > Show</strong>
-              {' '}
-              under
-              {' '}
-              <strong>Display</strong>
-              {' '}
-              to show the trajectory path.
-            </p>
-          )
-        }
-      </Panel>
-      <Panel header='Display' key='display'>
-        <Space
-          style={{ marginLeft: '5%' }}
-          direction='vertical'
-        >
-          <b>Plot values</b>
-          <Radio.Group
-            value={plotState.displayPseudotime}
-            onChange={(e) => setPlotState({
-              ...plotState,
-              displayPseudotime: e.target.value,
-            })}
-          >
-            <Space>
-              <Radio value={false}>Clusters</Radio>
-              <Radio disabled={!plotData?.pseudotime} value>
-                Pseudotime
-              </Radio>
-            </Space>
-          </Radio.Group>
-          <b>Trajectory</b>
-          <Radio.Group
-            value={plotState.displayTrajectory}
-            onChange={(e) => {
-              setPlotState({
-                ...plotState,
-                displayTrajectory: e.target.value,
-              });
-            }}
-          >
-            <Space>
-              <Radio value>Show</Radio>
-              <Radio value={false}>Hide</Radio>
-            </Space>
-          </Radio.Group>
-        </Space>
-      </Panel>
-    </>
-  );
 
   console.log('*** rendered');
 
@@ -379,19 +245,19 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
   );
 
   const handleClickNode = (action, selectedNodeId) => {
-    const removeFromSelection = (nodeId) => selectedNodes.filter((node) => nodeId !== node);
-    const addToSelection = (nodeId) => [...selectedNodes, nodeId];
+    // const removeFromSelection = (nodeId) => selectedNodes.filter((node) => nodeId !== node);
+    // const addToSelection = (nodeId) => [...selectedNodes, nodeId];
 
-    const updatedSelection = action === 'add'
-      ? addToSelection(selectedNodeId)
-      : removeFromSelection(selectedNodeId);
+    // const updatedSelection = action === 'add'
+    //   ? addToSelection(selectedNodeId)
+    //   : removeFromSelection(selectedNodeId);
 
-    dispatch(updatePlotConfig(plotUuid, { selectedNodes: updatedSelection }));
+    dispatch(updateTrajectoryNodes(plotUuid, [selectedNodeId], action));
   };
 
   const handleLassoSelection = (nodesInLasso) => {
-    const newSelectedNodes = [...new Set([...selectedNodes, ...nodesInLasso])];
-    dispatch(updatePlotConfig(plotUuid, { selectedNodes: newSelectedNodes }));
+    // const newSelectedNodes = [...new Set([...selectedNodes, ...nodesInLasso])];
+    dispatch(updateTrajectoryNodes(plotUuid, nodesInLasso, 'add'));
   };
 
   return (
@@ -403,7 +269,7 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
         plotType={plotType}
         plotStylingConfig={plotStylingConfig}
         extraToolbarControls={renderExtraToolbarControls()}
-        extraControlPanels={renderExtraPanels()}
+        extraControlPanels={<TrajectoryExtraPanels experimentId={experimentId} setPlotState={setPlotState} plotState={plotState} />}
         onPlotReset={() => {
           setPlotState(initialPlotState);
         }}
