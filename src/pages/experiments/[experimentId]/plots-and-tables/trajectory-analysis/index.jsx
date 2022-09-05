@@ -51,6 +51,8 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
   // UMAP embedding. Therefore, this embedding is specifically fetched.
   const embeddingMethod = 'umap';
 
+  const cellSets = useSelector(getCellSets());
+
   const {
     config,
     loading: configLoading,
@@ -78,8 +80,8 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
         setConfigLoaded(true);
       });
     } else { setConfigLoaded(true); }
-    dispatch(loadCellSets(experimentId));
-    dispatch(loadProcessingSettings(experimentId));
+    if (!cellSets.accessible) dispatch(loadCellSets(experimentId));
+    if (!embeddingSettings) dispatch(loadProcessingSettings(experimentId));
   }, []);
 
   useEffect(() => {
@@ -168,8 +170,6 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
       controls: ['labels'],
     },
   ];
-
-  const cellSets = useSelector(getCellSets());
 
   const render = () => {
     if (cellSets.error) {
@@ -286,14 +286,21 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
                     block
                     disabled={configLoading}
                     onClick={async () => {
-                      const result = await dispatch(getTrajectoryPlotPseudoTime(selectedNodes, experimentId, plotUuid));
-                      if (!result) return;
-
+                      // Optimistic result to prevent flickering
                       setPlotState({
                         ...plotState,
                         displayPseudotime: true,
                         hasRunPseudotime: true,
                       });
+
+                      const success = await dispatch(getTrajectoryPlotPseudoTime(selectedNodes, experimentId, plotUuid));
+                      if (!success) {
+                        setPlotState({
+                          ...plotState,
+                          displayPseudotime: false,
+                          hasRunPseudotime: false,
+                        });
+                      }
                     }}
                   >
                     {plotState.hasRunPseudotime ? 'Recalculate' : 'Calculate'}
