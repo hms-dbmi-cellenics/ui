@@ -97,7 +97,7 @@ describe('runQC action', () => {
 
     const actions = store.getActions();
 
-    expect(loadBackendStatus).not.toHaveBeenCalled();
+    expect(loadBackendStatus).toHaveBeenCalled();
 
     expect(actions).toMatchSnapshot();
   });
