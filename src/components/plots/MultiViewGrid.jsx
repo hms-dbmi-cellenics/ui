@@ -5,29 +5,6 @@ import { useSelector } from 'react-redux';
 import _ from 'lodash';
 import { Col, Row, Space } from 'antd';
 
-const generateGrid = (ncols, nrows, gridPlots) => (
-  <Space
-    direction='vertical'
-    align='start'
-    id='multiViewContainer'
-    style={{ width: '100%', height: '100%' }}
-  >
-    {
-      _.times(nrows, (i) => (
-        <Row wrap={false} key={i}>
-          {
-            _.times(ncols, (j) => (
-              <Col flex key={ncols * i + j}>
-                {gridPlots[ncols * i + j]}
-              </Col>
-            ))
-          }
-        </Row>
-      ))
-    }
-  </Space>
-);
-
 // multi view will use a config generated in index.jsx
 // the structure of the config will be:
 // ${plotUuid}-MultiView: {
@@ -39,16 +16,17 @@ const generateGrid = (ncols, nrows, gridPlots) => (
 
 // renderPlot will need to receive shownGene, config, plotUuid as props
 
-const MultiView = (props) => {
+const MultiViewGrid = (props) => {
   const {
     renderPlot,
     multiViewUuid,
   } = props;
 
-  const config = useSelector((state) => state.componentConfig[multiViewUuid]?.config);
+  // the config can be initialised using updatePlotConfig
+  const multiViewConfig = useSelector((state) => state.componentConfig[multiViewUuid]?.config);
 
   const plotConfigs = useSelector((state) => {
-    const plotConfigsToReturn = config.plotUuids.reduce((acum, plotUuid) => {
+    const plotConfigsToReturn = multiViewConfig.plotUuids.reduce((acum, plotUuid) => {
       // eslint-disable-next-line no-param-reassign
       acum[plotUuid] = state.componentConfig[plotUuid]?.config;
       return acum;
@@ -61,12 +39,12 @@ const MultiView = (props) => {
   const previousConfig = useRef(null);
 
   useEffect(() => {
-    if (!config || _.isEqual(previousConfig.current, config)) return;
+    if (!multiViewConfig || _.isEqual(previousConfig.current, multiViewConfig)) return;
 
     const previousPlots = previousConfig.current?.plotUuids ?? [];
-    const currentPlots = config.plotUuids;
+    const currentPlots = multiViewConfig.plotUuids;
 
-    previousConfig.current = _.clone(config);
+    previousConfig.current = _.clone(multiViewConfig);
 
     // if new plots are added
     if (currentPlots.length > previousPlots.length) {
@@ -102,14 +80,35 @@ const MultiView = (props) => {
       !plotsToRemove.includes(previousPlots[index])
     ));
     setPlots(filteredPlots);
-  }, [config]);
+  }, [multiViewConfig]);
 
-  return generateGrid(config.ncols, config.nrows, plots);
+  return (
+    <Space
+      direction='vertical'
+      align='start'
+      id='multiViewContainer'
+      style={{ width: '100%', height: '100%' }}
+    >
+      {
+        _.times(multiViewConfig.nrows, (i) => (
+          <Row wrap={false} key={i}>
+            {
+              _.times(multiViewConfig.ncols, (j) => (
+                <Col flex key={multiViewConfig.ncols * i + j}>
+                  {plots[multiViewConfig.ncols * i + j]}
+                </Col>
+              ))
+            }
+          </Row>
+        ))
+      }
+    </Space>
+  );
 };
 
-MultiView.propTypes = {
+MultiViewGrid.propTypes = {
   renderPlot: PropTypes.func.isRequired,
   multiViewUuid: PropTypes.string.isRequired,
 };
 
-export default MultiView;
+export default MultiViewGrid;

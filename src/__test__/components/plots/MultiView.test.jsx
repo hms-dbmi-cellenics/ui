@@ -8,7 +8,7 @@ import {
 } from '@testing-library/react';
 import { Provider } from 'react-redux';
 
-import MultiView from 'components/plots/MultiView';
+import MultiViewGrid from 'components/plots/MultiViewGrid';
 import generateMultiViewPlotUuid from 'utils/generateMultiViewPlotUuid';
 
 import { makeStore } from 'redux/store';
@@ -43,7 +43,7 @@ const mockMultiViewConfig = {
 const renderMultiView = (store) => {
   render(
     <Provider store={store}>
-      <MultiView
+      <MultiViewGrid
         renderPlot={mockRenderPlot}
         multiViewUuid={multiViewUuid}
       />
