@@ -9,4 +9,4 @@ const generateMultiViewGridPlotUuid = (plotUuid, plotIdx) => (
   `${plotUuid}-${plotIdx}`
 );
 
-export default { generateDataProcessingPlotUuid, generateMultiViewGridPlotUuid };
+export { generateDataProcessingPlotUuid, generateMultiViewGridPlotUuid };
