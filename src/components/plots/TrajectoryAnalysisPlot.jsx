@@ -19,6 +19,7 @@ import { loadProcessingSettings } from 'redux/actions/experimentSettings';
 import { getCellSets } from 'redux/selectors';
 
 import { Alert } from 'antd';
+import Loader from 'components/Loader';
 
 import changeEmbeddingAxesIfNecessary from 'components/plots/helpers/changeEmbeddingAxesIfNecessary';
 
@@ -206,7 +207,7 @@ const TrajectoryAnalysisPlot = forwardRef((props, ref) => {
   };
 
   const render = () => {
-    if (preventRenderRef.current !== resetZoomCount) return <></>;
+    if (preventRenderRef.current !== resetZoomCount) return <Loader />;
 
     return (
       <center>

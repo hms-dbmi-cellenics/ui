@@ -726,8 +726,6 @@ const generateTrajectoryAnalysisSpec = (
   startingNodesData,
   selectedNodeIds,
 ) => {
-  console.log('*** viewState', viewState);
-
   const spec = generateBaseSpec(
     config,
     embeddingPlotData,
