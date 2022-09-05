@@ -1,5 +1,5 @@
 import React, {
-  useState, useEffect, useMemo, useRef, forwardRef, useImperativeHandle,
+  useState, useEffect, useMemo, forwardRef, useRef,
 } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
@@ -29,19 +29,18 @@ const TrajectoryAnalysisPlot = forwardRef((props, ref) => {
 
   const {
     experimentId,
-    // config,
-    // plotData: startingNodesPlotData,
     plotState,
     actions,
     onUpdate,
     onClickNode,
     onLassoSelection,
+    resetZoomCount,
   } = props;
 
   const dispatch = useDispatch();
+  const preventRenderRef = useRef(ref.current);
 
   const [plotSpec, setPlotSpec] = useState({});
-  const viewStateRef = useRef({ xdom: [-2, 2], ydom: [-2, 2] });
 
   const cellSets = useSelector(getCellSets());
 
@@ -52,8 +51,6 @@ const TrajectoryAnalysisPlot = forwardRef((props, ref) => {
   const {
     config,
     plotData: startingNodesPlotData,
-    // loading: plotLoading,
-    // error: plotDataError,
   } = useSelector((state) => state.componentConfig.trajectoryAnalysisMain) || {};
 
   const {
@@ -129,36 +126,14 @@ const TrajectoryAnalysisPlot = forwardRef((props, ref) => {
     config?.selectedNodes,
   ]);
 
-  // Add/subtract 1 to give some padding to the plot
-  const extent = (arr) => [Math.min(...arr) - 1, Math.max(...arr) + 1];
-
-  const xExtent = useMemo(() => {
-    if (!embeddingData) return [-10, 10];
-    return extent(embeddingData.filter((data) => data !== undefined).map((data) => data[0]));
-  }, [embeddingData]);
-
-  const yExtent = useMemo(() => {
-    if (!embeddingData) return [-10, 10];
-    return extent(embeddingData.filter((data) => data !== undefined).map((data) => data[1]));
-  }, [embeddingData]);
-
-  useImperativeHandle(ref, () => ({
-    resetZoom() {
-      viewStateRef.current = { xdom: xExtent, ydom: yExtent };
-    },
-  }));
-
-  useEffect(() => {
-    // eslint-disable-next-line no-param-reassign
-    viewStateRef.current = { xdom: xExtent, ydom: yExtent };
-  }, [xExtent, yExtent]);
-
   useEffect(() => {
     if (
       !embeddingPlotData
       || !cellSetLegendsData
       || !startingNodesPlotData?.nodes
     ) return;
+
+    preventRenderRef.current = resetZoomCount;
 
     const selectedNodeIds = config.selectedNodes.map(
       (nodeId) => startingNodesPlotData.nodes[nodeId],
@@ -167,7 +142,7 @@ const TrajectoryAnalysisPlot = forwardRef((props, ref) => {
     setPlotSpec(
       generateTrajectoryAnalysisSpec(
         config,
-        viewStateRef.current,
+        ref.current,
         plotState,
         embeddingPlotData,
         pseudotimeData,
@@ -184,14 +159,14 @@ const TrajectoryAnalysisPlot = forwardRef((props, ref) => {
     startingNodesPlotData,
     plotState.displayPseudotime,
     plotState.displayTrajectory,
-    viewStateRef.current,
+    resetZoomCount,
   ]);
 
   const plotListeners = {
     domUpdates: (e, val) => {
       const [xdom, ydom] = val;
       // eslint-disable-next-line no-param-reassign
-      viewStateRef.current = { xdom, ydom };
+      ref.current = { xdom, ydom };
     },
     addNode: (eventName, payload) => {
       // eslint-disable-next-line camelcase
@@ -230,33 +205,37 @@ const TrajectoryAnalysisPlot = forwardRef((props, ref) => {
     },
   };
 
-  const render = () => (
-    <center>
-      {embeddingSettings?.method === 'tsne' && (
-        <Alert
-          type='warning'
-          message={(
-            <>
-              Due to
-              {' '}
-              <a href='https://cole-trapnell-lab.github.io/monocle3/' target='_blank' rel='noreferrer'>Monocle3</a>
-              {' '}
-              limitations, only UMAP embeddings are supported for Trajectory Analysis.
-              <br />
-              The embedding and trajectory below are generated from a UMAP embedding of your data.
-            </>
-          )}
+  const render = () => {
+    if (preventRenderRef.current !== resetZoomCount) return <></>;
+
+    return (
+      <center>
+        {embeddingSettings?.method === 'tsne' && (
+          <Alert
+            type='warning'
+            message={(
+              <>
+                Due to
+                {' '}
+                <a href='https://cole-trapnell-lab.github.io/monocle3/' target='_blank' rel='noreferrer'>Monocle3</a>
+                {' '}
+                limitations, only UMAP embeddings are supported for Trajectory Analysis.
+                <br />
+                The embedding and trajectory below are generated from a UMAP embedding of your data.
+              </>
+            )}
+          />
+        )}
+        <br />
+        <Vega
+          spec={plotSpec}
+          renderer='webgl'
+          actions={actions}
+          signalListeners={plotState.displayTrajectory ? plotListeners : {}}
         />
-      )}
-      <br />
-      <Vega
-        spec={plotSpec}
-        renderer='webgl'
-        actions={actions}
-        signalListeners={plotState.displayTrajectory ? plotListeners : {}}
-      />
-    </center>
-  );
+      </center>
+    );
+  };
 
   return render();
 });
@@ -268,6 +247,7 @@ TrajectoryAnalysisPlot.propTypes = {
     PropTypes.bool,
     PropTypes.object,
   ]),
+  resetZoomCount: PropTypes.number,
   onUpdate: PropTypes.func.isRequired,
   onClickNode: PropTypes.func,
   onLassoSelection: PropTypes.func,
@@ -275,9 +255,9 @@ TrajectoryAnalysisPlot.propTypes = {
 
 TrajectoryAnalysisPlot.defaultProps = {
   actions: true,
+  resetZoomCount: 0,
   onClickNode: () => { },
   onLassoSelection: () => { },
-  onZoomOrPan: () => { },
 };
 
 export default TrajectoryAnalysisPlot;

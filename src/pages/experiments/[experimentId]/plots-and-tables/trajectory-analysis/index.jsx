@@ -1,6 +1,6 @@
 /* eslint-disable no-param-reassign */
 import React, {
-  useEffect, useState, useRef,
+  useEffect, useState, useRef, useMemo,
 } from 'react';
 import _ from 'lodash';
 import { useSelector, useDispatch } from 'react-redux';
@@ -43,7 +43,8 @@ const initialPlotState = {
 const TrajectoryAnalysisPage = ({ experimentId }) => {
   const dispatch = useDispatch();
   const [plotState, setPlotState] = useState(initialPlotState);
-  const resetZoomRef = useRef();
+  const viewStateRef = useRef({ xdom: [-10, 10], ydom: [-10, 10] });
+  const [resetZoomCount, setResetZoomCount] = useState(1);
 
   // Currenty monocle3 trajectory analysis only supports
   // UMAP embedding. Therefore, this embedding is specifically fetched.
@@ -83,6 +84,24 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
       dispatch(loadEmbedding(experimentId, embeddingMethod));
     }
   }, [embeddingMethod, !embeddingSettings]);
+
+  // Add/subtract 1 to give some padding to the plot
+  const extent = (arr) => [Math.min(...arr) - 1, Math.max(...arr) + 1];
+
+  const xExtent = useMemo(() => {
+    if (!embeddingData) return [-10, 10];
+    return extent(embeddingData.filter((data) => data !== undefined).map((data) => data[0]));
+  }, [embeddingData]);
+
+  const yExtent = useMemo(() => {
+    if (!embeddingData) return [-10, 10];
+    return extent(embeddingData.filter((data) => data !== undefined).map((data) => data[1]));
+  }, [embeddingData]);
+
+  useEffect(() => {
+    // eslint-disable-next-line no-param-reassign
+    viewStateRef.current = { xdom: xExtent, ydom: yExtent };
+  }, [xExtent, yExtent]);
 
   useConditionalEffect(() => {
     if (
@@ -193,7 +212,7 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
 
     return (
       <TrajectoryAnalysisPlot
-        ref={resetZoomRef}
+        ref={viewStateRef}
         experimentId={experimentId}
         onUpdate={updatePlotWithChanges}
         plotState={plotState}
@@ -201,6 +220,7 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
         plotDataError={plotDataError}
         onClickNode={handleClickNode}
         onLassoSelection={handleLassoSelection}
+        resetZoomCount={resetZoomCount}
         actions={{ export: true, editor: false, source: false }}
       />
     );
@@ -211,7 +231,8 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
       <Button
         size='small'
         onClick={() => {
-          resetZoomRef.current.resetZoom();
+          viewStateRef.current = { xdom: xExtent, ydom: yExtent };
+          setResetZoomCount(resetZoomCount + 1);
         }}
       >
         Reset Zoom
