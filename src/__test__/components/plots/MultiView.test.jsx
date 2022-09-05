@@ -9,7 +9,7 @@ import {
 import { Provider } from 'react-redux';
 
 import MultiViewGrid from 'components/plots/MultiViewGrid';
-import { generateMultiViewGridPlotUuid} from 'utils/generateCustomPlotUuid';
+import { generateMultiViewGridPlotUuid } from 'utils/generateCustomPlotUuid';
 
 import { makeStore } from 'redux/store';
 import { updatePlotConfig } from 'redux/actions/componentConfig';
@@ -30,7 +30,7 @@ const mockRenderPlot = jest.fn((props) => {
 
 const genes = ['gene 0', 'gene 1', 'gene 2'];
 const plotUuids = genes.map(
-  (gene, index) => generateMultiViewPlotUuid(plotUuid, index),
+  (gene, index) => generateMultiViewGridPlotUuid(plotUuid, index),
 );
 
 const mockMultiViewConfig = {
