@@ -5,7 +5,7 @@ import React, {
 import _ from 'lodash';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
-import { Button } from 'antd';
+import { Button, Collapse } from 'antd';
 import {
   updatePlotConfig,
   loadPlotConfig,
@@ -17,7 +17,6 @@ import { loadCellSets } from 'redux/actions/cellSets';
 import { getCellSets } from 'redux/selectors';
 
 import getTrajectoryPlotStartingNodes from 'redux/actions/componentConfig/getTrajectoryPlotStartingNodes';
-// import getTrajectoryPlotPseudoTime from 'redux/actions/componentConfig/getTrajectoryPlotPseudoTime';
 
 import Header from 'components/Header';
 import PlotContainer from 'components/plots/PlotContainer';
@@ -27,7 +26,10 @@ import PlatformError from 'components/PlatformError';
 import { plotNames, plotTypes } from 'utils/constants';
 import useConditionalEffect from 'utils/customHooks/useConditionalEffect';
 import updateTrajectoryNodes from 'redux/actions/componentConfig/updateTrajectoryNodes';
-import TrajectoryExtraPanels from './TrajectoryExtraPanels';
+import TrajectoryAnalysisNodeSelection from './TrajectoryAnalysisNodeSelection';
+import TrajectoryAnalysisDisplay from './TrajectoryAnalysisDisplay';
+
+const { Panel } = Collapse;
 
 const plotUuid = 'trajectoryAnalysisMain';
 const plotType = plotTypes.TRAJECTORY_ANALYSIS;
@@ -36,13 +38,11 @@ const initialPlotState = {
   displayTrajectory: true,
   displayPseudotime: false,
   hasRunPseudotime: false,
-  // isZoomedOrPanned: false,
 };
 
 const TrajectoryAnalysisPage = ({ experimentId }) => {
   const dispatch = useDispatch();
   const [plotState, setPlotState] = useState(initialPlotState);
-  // const [configLoaded, setConfigLoaded] = useState(false);
   const resetZoomRef = useRef();
 
   // Currenty monocle3 trajectory analysis only supports
@@ -51,26 +51,9 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
 
   const cellSets = useSelector(getCellSets());
 
-  // const {
-  //   // config,
-  //   // plotData,
-  //   // loading: plotLoading,
-  //   // error: plotDataError,
-  // } = useSelector((state) => state.componentConfig[plotUuid]);
-
-  const plotLoading = useSelector((state) => state.componentConfig[plotUuid]?.loading, _.isEqual);
-  const plotDataError = useSelector((state) => state.componentConfig[plotUuid]?.error, _.isEqual);
-
-  const configIsLoaded = useSelector((state) => !_.isNil(state.componentConfig[plotUuid]), _.isEqual);
-
-  // const selectedNodes = useSelector((state) => state.componentConfig[plotUuid]?.config?.selectedNodes, _.isEqual);
-  // const {
-  //   config,
-  //   loading: configLoading,
-  //   plotData,
-  //   loading: plotLoading,
-  //   error: plotDataError,
-  // } = useSelector((state) => state.componentConfig[plotUuid].loading) || {};
+  const plotLoading = useSelector((state) => state.componentConfig[plotUuid]?.loading);
+  const plotDataError = useSelector((state) => state.componentConfig[plotUuid]?.error);
+  const configIsLoaded = useSelector((state) => !_.isNil(state.componentConfig[plotUuid]));
 
   const embeddingSettings = useSelector(
     (state) => state.experimentSettings.originalProcessing
@@ -103,9 +86,6 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
 
   useConditionalEffect(() => {
     if (
-      // `configLoaded` is used instead of `config` because this block of code should only be called
-      // once when the config is loaded, or when embedding settings changes. Using `config`
-      // in the dependency array will make this code be executed everytime there is a config change.
       !configIsLoaded
       || !embeddingMethod
       || embeddingLoading
@@ -215,10 +195,8 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
       <TrajectoryAnalysisPlot
         ref={resetZoomRef}
         experimentId={experimentId}
-        // config={config}
         onUpdate={updatePlotWithChanges}
         plotState={plotState}
-        // plotData={plotData}
         plotLoading={plotLoading}
         plotDataError={plotDataError}
         onClickNode={handleClickNode}
@@ -228,13 +206,10 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
     );
   };
 
-  console.log('*** rendered');
-
   const renderExtraToolbarControls = () => (
     <>
       <Button
         size='small'
-        // disabled={!plotState.isZoomedOrPanned}
         onClick={() => {
           resetZoomRef.current.resetZoom();
         }}
@@ -245,18 +220,10 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
   );
 
   const handleClickNode = (action, selectedNodeId) => {
-    // const removeFromSelection = (nodeId) => selectedNodes.filter((node) => nodeId !== node);
-    // const addToSelection = (nodeId) => [...selectedNodes, nodeId];
-
-    // const updatedSelection = action === 'add'
-    //   ? addToSelection(selectedNodeId)
-    //   : removeFromSelection(selectedNodeId);
-
     dispatch(updateTrajectoryNodes(plotUuid, [selectedNodeId], action));
   };
 
   const handleLassoSelection = (nodesInLasso) => {
-    // const newSelectedNodes = [...new Set([...selectedNodes, ...nodesInLasso])];
     dispatch(updateTrajectoryNodes(plotUuid, nodesInLasso, 'add'));
   };
 
@@ -269,7 +236,21 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
         plotType={plotType}
         plotStylingConfig={plotStylingConfig}
         extraToolbarControls={renderExtraToolbarControls()}
-        extraControlPanels={<TrajectoryExtraPanels experimentId={experimentId} setPlotState={setPlotState} plotState={plotState} />}
+        extraControlPanels={(
+          <>
+            <Panel header='Trajectory analysis' key='trajectory-analysis'>
+              <TrajectoryAnalysisNodeSelection
+                experimentId={experimentId}
+                plotUuid={plotUuid}
+                setPlotState={setPlotState}
+                plotState={plotState}
+              />
+            </Panel>
+            <Panel header='Display' key='display'>
+              <TrajectoryAnalysisDisplay experimentId={experimentId} setPlotState={setPlotState} plotState={plotState} />
+            </Panel>
+          </>
+        )}
         onPlotReset={() => {
           setPlotState(initialPlotState);
         }}
