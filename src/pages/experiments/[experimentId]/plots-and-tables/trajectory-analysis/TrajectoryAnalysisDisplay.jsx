@@ -11,13 +11,10 @@ const plotUuid = 'trajectoryAnalysisMain';
 const TrajectoryAnalysisDisplay = (props) => {
   const { setPlotState, plotState } = props;
 
-  const pseudotime = useSelector((state) => state.componentConfig[plotUuid]?.pseudotime);
+  const pseudotime = useSelector((state) => state.componentConfig[plotUuid]?.plotData?.pseudotime);
 
   return (
-    <Space
-      style={{ marginLeft: '5%' }}
-      direction='vertical'
-    >
+    <Space direction='vertical'>
       <b>Plot values</b>
       <Radio.Group
         value={plotState.displayPseudotime}
@@ -28,7 +25,7 @@ const TrajectoryAnalysisDisplay = (props) => {
       >
         <Space>
           <Radio value={false}>Clusters</Radio>
-          <Radio disabled={pseudotime} value>
+          <Radio disabled={!pseudotime} value>
             Pseudotime
           </Radio>
         </Space>
