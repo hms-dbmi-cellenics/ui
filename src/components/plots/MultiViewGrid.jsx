@@ -5,9 +5,9 @@ import { useSelector } from 'react-redux';
 import _ from 'lodash';
 import { Col, Row, Space } from 'antd';
 
-// multi view will use a config generated in index.jsx
+// multi view grid will use a config generated in index.jsx
 // the structure of the config will be:
-// ${plotUuid}-MultiView: {
+// {
 //   ncols: number,
 //   nrows: number,
 //   genes: ['gene name', 'gene name', ...],
@@ -23,10 +23,10 @@ const MultiViewGrid = (props) => {
   } = props;
 
   // the config can be initialised using updatePlotConfig
-  const multiViewConfig = useSelector((state) => state.componentConfig[multiViewUuid]?.config);
+  const multiViewGridConfig = useSelector((state) => state.componentConfig[multiViewUuid]?.config);
 
   const plotConfigs = useSelector((state) => {
-    const plotConfigsToReturn = multiViewConfig.plotUuids.reduce((acum, plotUuid) => {
+    const plotConfigsToReturn = multiViewGridConfig.plotUuids.reduce((acum, plotUuid) => {
       // eslint-disable-next-line no-param-reassign
       acum[plotUuid] = state.componentConfig[plotUuid]?.config;
       return acum;
@@ -39,12 +39,12 @@ const MultiViewGrid = (props) => {
   const previousConfig = useRef(null);
 
   useEffect(() => {
-    if (!multiViewConfig || _.isEqual(previousConfig.current, multiViewConfig)) return;
+    if (!multiViewGridConfig || _.isEqual(previousConfig.current, multiViewGridConfig)) return;
 
     const previousPlots = previousConfig.current?.plotUuids ?? [];
-    const currentPlots = multiViewConfig.plotUuids;
+    const currentPlots = multiViewGridConfig.plotUuids;
 
-    previousConfig.current = _.clone(multiViewConfig);
+    previousConfig.current = multiViewGridConfig;
 
     // if new plots are added
     if (currentPlots.length > previousPlots.length) {
@@ -80,7 +80,7 @@ const MultiViewGrid = (props) => {
       !plotsToRemove.includes(previousPlots[index])
     ));
     setPlots(filteredPlots);
-  }, [multiViewConfig]);
+  }, [multiViewGridConfig]);
 
   return (
     <Space
@@ -90,12 +90,12 @@ const MultiViewGrid = (props) => {
       style={{ width: '100%', height: '100%' }}
     >
       {
-        _.times(multiViewConfig.nrows, (i) => (
+        _.times(multiViewGridConfig.nrows, (i) => (
           <Row wrap={false} key={i}>
             {
-              _.times(multiViewConfig.ncols, (j) => (
-                <Col flex key={multiViewConfig.ncols * i + j}>
-                  {plots[multiViewConfig.ncols * i + j]}
+              _.times(multiViewGridConfig.ncols, (j) => (
+                <Col flex key={multiViewGridConfig.ncols * i + j}>
+                  {plots[multiViewGridConfig.ncols * i + j]}
                 </Col>
               ))
             }
