@@ -1,5 +1,7 @@
 /* eslint-disable no-param-reassign */
-import React, { useEffect, useState } from 'react';
+import React, {
+  useEffect, useState, useRef,
+} from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import {
@@ -39,13 +41,14 @@ const initialPlotState = {
   displayTrajectory: true,
   displayPseudotime: false,
   hasRunPseudotime: false,
-  isZoomedOrPanned: false,
+  // isZoomedOrPanned: false,
 };
 
 const TrajectoryAnalysisPage = ({ experimentId }) => {
   const dispatch = useDispatch();
   const [plotState, setPlotState] = useState(initialPlotState);
   const [configLoaded, setConfigLoaded] = useState(false);
+  const resetZoomRef = useRef();
 
   // Currenty monocle3 trajectory analysis only supports
   // UMAP embedding. Therefore, this embedding is specifically fetched.
@@ -93,14 +96,17 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
     }
   }, [embeddingMethod, !embeddingSettings]);
 
-  useEffect(() => {
-    if (plotState.isZoomedOrPanned) {
-      setPlotState({
-        ...plotState,
-        isZoomedOrPanned: false,
-      });
-    }
-  }, [config?.axesRanges?.xAxisAuto, config?.axesRanges?.xAxisAuto]);
+  // useEffect(() => {
+  //   const xdom = config?.axesRanges.xAxisAuto
+  //     ? [config.axesRanges.xMin, config.axesRanges.xMax]
+  //     : xExtent;
+
+  //   const ydom = config?.axesRanges.yAxisAuto
+  //     ? [config.axesRanges.yMin, config.axesRanges.yMax]
+  //     : yExtent;
+
+  //   viewState.current = { xdom, ydom };
+  // }, [config?.axesRanges?.xAxisAuto, config?.axesRanges?.xAxisAuto]);
 
   useConditionalEffect(() => {
     if (
@@ -214,6 +220,7 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
 
     return (
       <TrajectoryAnalysisPlot
+        ref={resetZoomRef}
         experimentId={experimentId}
         config={config}
         onUpdate={updatePlotWithChanges}
@@ -223,14 +230,6 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
         plotDataError={plotDataError}
         onClickNode={handleClickNode}
         onLassoSelection={handleLassoSelection}
-        onZoomOrPan={() => {
-          if (!plotState.isZoomedOrPanned) {
-            setPlotState({
-              ...plotState,
-              isZoomedOrPanned: true,
-            });
-          }
-        }}
         actions={{ export: true, editor: false, source: false }}
       />
     );
@@ -363,12 +362,16 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
     </>
   );
 
+  console.log('*** rendered');
+
   const renderExtraToolbarControls = () => (
     <>
       <Button
         size='small'
-        disabled={!plotState.isZoomedOrPanned}
-        onClick={() => { setPlotState({ ...plotState, isZoomedOrPanned: false }); }}
+        // disabled={!plotState.isZoomedOrPanned}
+        onClick={() => {
+          resetZoomRef.current.resetZoom();
+        }}
       >
         Reset Zoom
       </Button>

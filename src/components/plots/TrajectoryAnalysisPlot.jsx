@@ -1,5 +1,5 @@
 import React, {
-  useState, useEffect, useMemo, useRef,
+  useState, useEffect, useMemo, useRef, forwardRef, useImperativeHandle,
 } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
@@ -23,7 +23,7 @@ import { Alert } from 'antd';
 
 import changeEmbeddingAxesIfNecessary from 'components/plots/helpers/changeEmbeddingAxesIfNecessary';
 
-const TrajectoryAnalysisPlot = (props) => {
+const TrajectoryAnalysisPlot = forwardRef((props, ref) => {
   // Currenty monocle3 trajectory analysis only supports
   // UMAP embedding. Therefore, this embedding is specifically fetched.
   const embeddingMethod = 'umap';
@@ -37,14 +37,12 @@ const TrajectoryAnalysisPlot = (props) => {
     onUpdate,
     onClickNode,
     onLassoSelection,
-    onZoomOrPan,
   } = props;
 
   const dispatch = useDispatch();
 
   const [plotSpec, setPlotSpec] = useState({});
-
-  const viewState = useRef({ xdom: [-10, 10], ydom: [-10, 10] });
+  const viewStateRef = useRef({ xdom: [-2, 2], ydom: [-2, 2] });
 
   const cellSets = useSelector(getCellSets());
 
@@ -125,6 +123,30 @@ const TrajectoryAnalysisPlot = (props) => {
     config?.selectedNodes,
   ]);
 
+  // Add/subtract 1 to give some padding to the plot
+  const extent = (arr) => [Math.min(...arr) - 1, Math.max(...arr) + 1];
+
+  const xExtent = useMemo(() => {
+    if (!embeddingData) return [-10, 10];
+    return extent(embeddingData.filter((data) => data !== undefined).map((data) => data[0]));
+  }, [embeddingData]);
+
+  const yExtent = useMemo(() => {
+    if (!embeddingData) return [-10, 10];
+    return extent(embeddingData.filter((data) => data !== undefined).map((data) => data[1]));
+  }, [embeddingData]);
+
+  useImperativeHandle(ref, () => ({
+    resetZoom() {
+      viewStateRef.current = { xdom: xExtent, ydom: yExtent };
+    },
+  }));
+
+  // useEffect(() => {
+  //   // eslint-disable-next-line no-param-reassign
+  //   viewStateRef.current = { xdom: xExtent, ydom: yExtent };
+  // }, [xExtent, yExtent]);
+
   useEffect(() => {
     if (
       !embeddingPlotData
@@ -139,7 +161,7 @@ const TrajectoryAnalysisPlot = (props) => {
     setPlotSpec(
       generateTrajectoryAnalysisSpec(
         config,
-        viewState.current,
+        viewStateRef.current,
         plotState,
         embeddingPlotData,
         pseudotimeData,
@@ -156,14 +178,13 @@ const TrajectoryAnalysisPlot = (props) => {
     startingNodesPlotData,
     plotState.displayPseudotime,
     plotState.displayTrajectory,
-    plotState.isZoomedOrPanned,
   ]);
 
   const plotListeners = {
     domUpdates: (e, val) => {
       const [xdom, ydom] = val;
-      viewState.current = { xdom, ydom };
-      if (!plotState.isZoomedOrPanned) _.debounce(onZoomOrPan)();
+      // eslint-disable-next-line no-param-reassign
+      ref.current.viewState = { xdom, ydom };
     },
     addNode: (eventName, payload) => {
       // eslint-disable-next-line camelcase
@@ -231,11 +252,11 @@ const TrajectoryAnalysisPlot = (props) => {
   );
 
   return render();
-};
+});
 
 TrajectoryAnalysisPlot.propTypes = {
   experimentId: PropTypes.string.isRequired,
-  config: PropTypes.object,
+  config: PropTypes.object.isRequired,
   plotState: PropTypes.object.isRequired,
   plotData: PropTypes.object.isRequired,
   actions: PropTypes.oneOfType([
@@ -245,7 +266,6 @@ TrajectoryAnalysisPlot.propTypes = {
   onUpdate: PropTypes.func.isRequired,
   onClickNode: PropTypes.func,
   onLassoSelection: PropTypes.func,
-  onZoomOrPan: PropTypes.func,
 };
 
 TrajectoryAnalysisPlot.defaultProps = {

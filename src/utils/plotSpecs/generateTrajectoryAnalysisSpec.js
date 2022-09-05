@@ -47,14 +47,10 @@ const generatePadding = (plotConfig, numClusters) => {
   return padding;
 };
 
-// Add/subtract 1 to give some padding to the plot
-const extent = (arr) => [Math.min(...arr) - 1, Math.max(...arr) + 1];
-
 const generateBaseSpec = (
   config,
   embeddingData,
   viewState,
-  isZoomedOrPanned,
   numClusters,
 ) => ({
   $schema: 'https://vega.github.io/schema/vega/v5.json',
@@ -94,19 +90,11 @@ const generateBaseSpec = (
     // Signals for zooming and panning
     {
       name: 'initXdom',
-      value: isZoomedOrPanned
-        ? viewState.xdom
-        : config.axesRanges.xAxisAuto
-          ? extent(embeddingData.map((data) => data.x))
-          : [config.axesRanges.xMin, config.axesRanges.xMax],
+      value: viewState.xdom,
     },
     {
       name: 'initYdom',
-      value: isZoomedOrPanned
-        ? viewState.ydom
-        : config.axesRanges.xAxisAuto
-          ? extent(embeddingData.map((data) => data.y))
-          : [config.axesRanges.yMin, config.axesRanges.yMax],
+      value: viewState.ydom,
     },
     { name: 'xrange', update: '[0, width]' },
     { name: 'yrange', update: '[height, 0]' },
@@ -738,11 +726,12 @@ const generateTrajectoryAnalysisSpec = (
   startingNodesData,
   selectedNodeIds,
 ) => {
+  console.log('*** viewState', viewState);
+
   const spec = generateBaseSpec(
     config,
     embeddingPlotData,
     viewState,
-    plotState.isZoomedOrPanned,
     cellSetLegendsData.length,
   );
 
