@@ -19,7 +19,7 @@ import {
 
 import _ from 'lodash';
 
-import generateDataProcessingPlotUuid from 'utils/generateDataProcessingPlotUuid';
+import { generateDataProcessingPlotUuid } from 'utils/generateCustomPlotUuid';
 import { updateFilterSettings } from 'redux/actions/experimentSettings';
 import NormalisationOptions from './NormalisationOptions';
 

@@ -11,7 +11,7 @@ import CalculationConfig from 'components/data-processing/DataIntegration/Calcul
 
 import { initialPlotConfigStates } from 'redux/reducers/componentConfig/initialState';
 import { initialEmbeddingState } from 'redux/reducers/embeddings/initialState';
-import generateDataProcessingPlotUuid from 'utils/generateDataProcessingPlotUuid';
+import { generateDataProcessingPlotUuid } from 'utils/generateCustomPlotUuid';
 
 import { getBackendStatus, getCellSets } from 'redux/selectors';
 import generateExperimentSettingsMock from '__test__/test-utils/experimentSettings.mock';

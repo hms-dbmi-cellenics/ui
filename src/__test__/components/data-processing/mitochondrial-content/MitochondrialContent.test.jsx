@@ -7,7 +7,7 @@ import { Vega } from 'react-vega';
 
 import { Table } from 'antd';
 import { initialPlotConfigStates } from 'redux/reducers/componentConfig/initialState';
-import generateDataProcessingPlotUuid from 'utils/generateDataProcessingPlotUuid';
+import { generateDataProcessingPlotUuid } from 'utils/generateCustomPlotUuid';
 import MitochondrialContent from 'components/data-processing/MitochondrialContent/MitochondrialContent';
 import CalculationConfig from 'components/data-processing/MitochondrialContent/CalculationConfig';
 import generateExperimentSettingsMock from '../../../test-utils/experimentSettings.mock';
