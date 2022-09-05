@@ -19,11 +19,11 @@ import { Col, Row, Space } from 'antd';
 const MultiViewGrid = (props) => {
   const {
     renderPlot,
-    multiViewUuid,
+    multiViewGridUuid,
   } = props;
 
   // the config can be initialised using updatePlotConfig
-  const multiViewGridConfig = useSelector((state) => state.componentConfig[multiViewUuid]?.config);
+  const multiViewGridConfig = useSelector((state) => state.componentConfig[multiViewGridUuid]?.config);
 
   const plotConfigs = useSelector((state) => {
     const plotConfigsToReturn = multiViewGridConfig.plotUuids.reduce((acum, plotUuid) => {
@@ -108,7 +108,7 @@ const MultiViewGrid = (props) => {
 
 MultiViewGrid.propTypes = {
   renderPlot: PropTypes.func.isRequired,
-  multiViewUuid: PropTypes.string.isRequired,
+  multiViewGridUuid: PropTypes.string.isRequired,
 };
 
 export default MultiViewGrid;
