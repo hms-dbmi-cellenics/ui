@@ -12,10 +12,7 @@ import {
   EXPERIMENT_SETTINGS_QC_START,
   EXPERIMENT_SETTINGS_DISCARD_CHANGED_QC_FILTERS,
 } from 'redux/actionTypes/experimentSettings';
-import {
-  BACKEND_STATUS_ERROR,
-  BACKEND_STATUS_LOADING,
-} from 'redux/actionTypes/backendStatus';
+
 import { EMBEDDINGS_LOADING } from 'redux/actionTypes/embeddings';
 
 import { runQC } from 'redux/actions/pipeline';
@@ -82,8 +79,7 @@ describe('runQC action', () => {
 
     const actions = store.getActions();
 
-    expect(actions[0].type).toEqual(BACKEND_STATUS_LOADING);
-    expect(actions[1].type).toEqual(EXPERIMENT_SETTINGS_QC_START);
+    expect(actions[0].type).toEqual(EXPERIMENT_SETTINGS_QC_START);
     expect(loadBackendStatus).toHaveBeenCalled();
     expect(actions).toMatchSnapshot();
 
@@ -92,16 +88,16 @@ describe('runQC action', () => {
 
   it('Dispatches status error if loading fails', async () => {
     fetchMock.resetMocks();
-    fetchMock.mockResponse(JSON.stringify({ message: 'some weird error that happened' }), { status: 400 });
+    fetchMock.mockResponse(
+      JSON.stringify({ message: 'some weird error that happened' }), { status: 400 },
+    );
 
     const store = mockStore(initialState);
     await store.dispatch(runQC(experimentId));
 
     const actions = store.getActions();
 
-    expect(actions[0].type).toEqual(BACKEND_STATUS_LOADING);
-    expect(loadBackendStatus).not.toHaveBeenCalled();
-    expect(actions[1].type).toEqual(BACKEND_STATUS_ERROR);
+    expect(loadBackendStatus).toHaveBeenCalled();
 
     expect(actions).toMatchSnapshot();
   });
