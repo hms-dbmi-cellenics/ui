@@ -72,7 +72,7 @@ const FrequencyPlotPage = ({ experimentId }) => {
       panelTitle: 'Legend',
       footer: <Alert
         message={
-          ['Changing cell set colours is not currently available here. Use the Data Management tool in ',
+          ['Changing cell set colours is not currently available here. Use the Cell sets and Metadata tool in ',
             <Link as={dataExplorationPath.replace('[experimentId]', experimentId)} href={dataExplorationPath} passHref>Data Exploration</Link>,
             ' to customise cell set colours.']
         }

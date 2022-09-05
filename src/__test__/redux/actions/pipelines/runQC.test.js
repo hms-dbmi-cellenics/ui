@@ -23,17 +23,18 @@ import { runQC } from 'redux/actions/pipeline';
 import generateExperimentSettingsMock from '__test__/test-utils/experimentSettings.mock';
 import '__test__/test-utils/setupTests';
 
-const mockStore = configureStore([thunk]);
-
-enableFetchMocks();
+jest.mock('utils/getTimeoutForWorkerTask', () => () => 1);
 
 jest.mock('redux/actions/backendStatus/loadBackendStatus',
   () => jest.fn().mockImplementation(() => async () => { }));
 
 jest.mock('redux/actions/experimentSettings/processingConfig/saveProcessingSettings');
 
-const experimentId = 'experiment-id';
+const mockStore = configureStore([thunk]);
 
+enableFetchMocks();
+
+const experimentId = 'experiment-id';
 const sampleIds = ['sample1, sample2'];
 
 const initialExperimentState = generateExperimentSettingsMock(sampleIds);
@@ -50,8 +51,15 @@ const initialState = {
   },
   backendStatus: {
     [experimentId]: {
-      status: {},
+      status: {
+        pipeline: {
+          startDate: '2021-01-01T01:01:01.000Z',
+        },
+      },
     },
+  },
+  networkResources: {
+    environment: 'testing',
   },
 };
 
