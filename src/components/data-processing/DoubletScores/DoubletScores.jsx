@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import {
   Collapse, Row, Col, Space, Skeleton, Divider,
 } from 'antd';
-import generateDataProcessingPlotUuid from 'utils/generateDataProcessingPlotUuid';
+import { generateDataProcessingPlotUuid } from 'utils/generateCustomPlotUuid';
 import {
   updatePlotConfig,
   loadPlotConfig,

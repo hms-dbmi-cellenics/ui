@@ -19,7 +19,7 @@ import {
 import CategoricalEmbeddingPlot from 'components/plots/CategoricalEmbeddingPlot';
 import FrequencyPlot from 'components/plots/FrequencyPlot';
 import ElbowPlot from 'components/plots/ElbowPlot';
-import generateDataProcessingPlotUuid from 'utils/generateDataProcessingPlotUuid';
+import { generateDataProcessingPlotUuid } from 'utils/generateCustomPlotUuid';
 import EmptyPlot from 'components/plots/helpers/EmptyPlot';
 import MiniPlot from 'components/plots/MiniPlot';
 import PlotStyling from 'components/plots/styling/PlotStyling';

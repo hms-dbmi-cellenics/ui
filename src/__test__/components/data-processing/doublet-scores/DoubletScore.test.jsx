@@ -7,7 +7,7 @@ import { Vega } from 'react-vega';
 import { Table } from 'antd';
 
 import { initialPlotConfigStates } from 'redux/reducers/componentConfig/initialState';
-import generateDataProcessingPlotUuid from 'utils/generateDataProcessingPlotUuid';
+import { generateDataProcessingPlotUuid } from 'utils/generateCustomPlotUuid';
 import DoubletScores from 'components/data-processing/DoubletScores/DoubletScores';
 import CalculationConfig from 'components/data-processing/DoubletScores/CalculationConfig';
 import generateExperimentSettingsMock from '../../../test-utils/experimentSettings.mock';
