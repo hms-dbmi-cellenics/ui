@@ -1,5 +1,5 @@
 import React, {
-  useState, useEffect, useMemo, forwardRef, useRef,
+  useState, useEffect, useMemo, forwardRef, useRef, useImperativeHandle,
 } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
@@ -19,7 +19,6 @@ import { loadProcessingSettings } from 'redux/actions/experimentSettings';
 import { getCellSets } from 'redux/selectors';
 
 import { Alert } from 'antd';
-import Loader from 'components/Loader';
 
 import changeEmbeddingAxesIfNecessary from 'components/plots/helpers/changeEmbeddingAxesIfNecessary';
 
@@ -30,18 +29,15 @@ const TrajectoryAnalysisPlot = forwardRef((props, ref) => {
 
   const {
     experimentId,
+    plotUuid,
     displaySettings,
     actions,
     onUpdate,
     onClickNode,
     onLassoSelection,
-    resetZoomCount,
   } = props;
 
   const dispatch = useDispatch();
-  const resetZoomCountRef = useRef(0);
-  const wasXAxisAuto = useRef(true);
-  const wasYAxisAuto = useRef(true);
 
   const [plotSpec, setPlotSpec] = useState(null);
   const [forceReset, setForceReset] = useState(0);
@@ -165,8 +161,6 @@ const TrajectoryAnalysisPlot = forwardRef((props, ref) => {
       || !cellSetLegendsData
       || !startingNodesPlotData?.nodes
     ) return;
-
-    resetZoomCountRef.current = resetZoomCount;
 
     const selectedNodeIds = config.selectedNodes.map(
       (nodeId) => startingNodesPlotData.nodes[nodeId],
@@ -298,12 +292,12 @@ const TrajectoryAnalysisPlot = forwardRef((props, ref) => {
 
 TrajectoryAnalysisPlot.propTypes = {
   experimentId: PropTypes.string.isRequired,
+  plotUuid: PropTypes.string.isRequired,
   displaySettings: PropTypes.object.isRequired,
   actions: PropTypes.oneOfType([
     PropTypes.bool,
     PropTypes.object,
   ]),
-  resetZoomCount: PropTypes.number,
   onUpdate: PropTypes.func.isRequired,
   onClickNode: PropTypes.func,
   onLassoSelection: PropTypes.func,
@@ -311,7 +305,6 @@ TrajectoryAnalysisPlot.propTypes = {
 
 TrajectoryAnalysisPlot.defaultProps = {
   actions: true,
-  resetZoomCount: 0,
   onClickNode: () => { },
   onLassoSelection: () => { },
 };

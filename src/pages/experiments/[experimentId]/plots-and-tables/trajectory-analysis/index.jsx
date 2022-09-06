@@ -1,6 +1,6 @@
 /* eslint-disable no-param-reassign */
 import React, {
-  useEffect, useState, useRef, useMemo,
+  useEffect, useState, useRef,
 } from 'react';
 import _ from 'lodash';
 import { useSelector, useDispatch } from 'react-redux';
@@ -83,24 +83,6 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
       dispatch(loadEmbedding(experimentId, embeddingMethod));
     }
   }, [embeddingMethod, !embeddingSettings]);
-
-  // Add/subtract 1 to give some padding to the plot
-  const extent = (arr) => [Math.min(...arr) - 1, Math.max(...arr) + 1];
-
-  const xExtent = useMemo(() => {
-    if (!embeddingData) return [-10, 10];
-    return extent(embeddingData.filter((data) => data !== undefined).map((data) => data[0]));
-  }, [embeddingData]);
-
-  const yExtent = useMemo(() => {
-    if (!embeddingData) return [-10, 10];
-    return extent(embeddingData.filter((data) => data !== undefined).map((data) => data[1]));
-  }, [embeddingData]);
-
-  useEffect(() => {
-    // eslint-disable-next-line no-param-reassign
-    viewStateRef.current = { xdom: xExtent, ydom: yExtent };
-  }, [xExtent, yExtent]);
 
   useConditionalEffect(() => {
     if (
@@ -211,7 +193,7 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
 
     return (
       <TrajectoryAnalysisPlot
-        ref={viewStateRef}
+        ref={resetZoomRef}
         experimentId={experimentId}
         plotUuid={plotUuid}
         onUpdate={updatePlotWithChanges}
@@ -220,7 +202,6 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
         plotDataError={plotDataError}
         onClickNode={handleClickNode}
         onLassoSelection={handleLassoSelection}
-        resetZoomCount={resetZoomCount}
         actions={{ export: true, editor: false, source: false }}
       />
     );
@@ -231,8 +212,7 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
       <Button
         size='small'
         onClick={() => {
-          viewStateRef.current = { xdom: xExtent, ydom: yExtent };
-          setResetZoomCount(resetZoomCount + 1);
+          resetZoomRef.current.resetZoom();
         }}
       >
         Reset Zoom
