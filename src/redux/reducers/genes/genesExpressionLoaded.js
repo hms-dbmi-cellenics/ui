@@ -17,12 +17,16 @@ const genesExpressionLoaded = produce((draft, action) => {
 
   // If there's any data to load, load it
   if (Object.keys(data).length > 0) {
+    // All of this code preparing the matrixes is unnecessary
+    // once the worker sends us a sparse matrix
     const rawExpressions = [];
     const truncatedExpressions = [];
 
     geneSymbols.forEach((geneSymbol) => {
       rawExpressions.push(data[geneSymbol].rawExpression.expression.map((val) => val ?? 0));
-      truncatedExpressions.push(data[geneSymbol].truncatedExpression.expression.map((val) => val ?? 0));
+      truncatedExpressions.push(
+        data[geneSymbol].truncatedExpression.expression.map((val) => val ?? 0),
+      );
     });
 
     const rawSparseMatrix = math.transpose(new SparseMatrix(rawExpressions));
