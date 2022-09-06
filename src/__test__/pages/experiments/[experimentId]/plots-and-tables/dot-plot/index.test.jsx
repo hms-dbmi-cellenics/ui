@@ -293,7 +293,7 @@ describe('Dot plot page', () => {
     const filterOption = screen.getByText(/Copied WT2/);
 
     await act(async () => {
-      fireEvent.click(filterOption);
+      userEvent.click(filterOption, undefined, { skipPointerEventsCheck: true });
     });
 
     expect(screen.getByText(/There is no data to show/i)).toBeInTheDocument();
