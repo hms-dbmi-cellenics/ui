@@ -214,6 +214,7 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
       <TrajectoryAnalysisPlot
         ref={viewStateRef}
         experimentId={experimentId}
+        plotUuid={plotUuid}
         onUpdate={updatePlotWithChanges}
         plotState={plotState}
         plotLoading={plotLoading}

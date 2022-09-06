@@ -7,19 +7,23 @@ import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 
 import TrajectoryAnalysisPlot from 'components/plots/TrajectoryAnalysisPlot';
 
-import { initialPlotConfigStates } from 'redux/reducers/componentConfig/initialState';
-
-import mockAPI, { generateDefaultMockAPIResponses, promiseResponse } from '__test__/test-utils/mockAPI';
+import mockAPI, { generateDefaultMockAPIResponses, promiseResponse, statusResponse } from '__test__/test-utils/mockAPI';
 import createTestComponentFactory from '__test__/test-utils/testComponentFactory';
 import fake from '__test__/test-utils/constants';
 import mockEmbedding from '__test__/data/embedding.json';
-import { seekFromS3 } from 'utils/work/seekWorkResponse';
-import { loadBackendStatus } from 'redux/actions/backendStatus';
-
 import mockStartingNodes from '__test__/data/starting_nodes.json';
 import mockProcessingConfig from '__test__/data/processing_config.json';
 
+import { seekFromS3 } from 'utils/work/seekWorkResponse';
+import { loadBackendStatus } from 'redux/actions/backendStatus';
+import { loadPlotConfig } from 'redux/actions/componentConfig';
+import getTrajectoryPlotStartingNodes from 'redux/actions/componentConfig/getTrajectoryPlotStartingNodes';
+
+import _ from 'lodash';
+
 import { plotTypes } from 'utils/constants';
+import { loadProcessingSettings } from 'redux/actions/experimentSettings';
+import { loadEmbedding } from 'redux/actions/embedding';
 
 enableFetchMocks();
 
@@ -31,7 +35,7 @@ jest.mock('object-hash', () => {
   const objectHash = jest.requireActual('object-hash');
   const mockWorkResultETag = jest.requireActual('__test__/test-utils/mockWorkResultETag').default;
 
-  const mockWorkRequestETag = () => 'embedding';
+  const mockWorkRequestETag = (ETagParams) => `${ETagParams.body.name}`;
 
   return mockWorkResultETag(objectHash, mockWorkRequestETag);
 });
@@ -43,12 +47,24 @@ jest.mock('utils/work/seekWorkResponse', () => ({
 }));
 
 const mockWorkerResponses = {
-  embedding: () => Promise.resolve(mockEmbedding),
+  GetTrajectoryAnalysisStartingNodes: mockStartingNodes,
+  GetEmbedding: mockEmbedding,
 };
 
-const mockOnPlotDataErrorRetry = jest.fn();
+const plotUuid = 'trajectoryAnalysisMain';
+const plotType = plotTypes.TRAJECTORY_ANALYSIS;
 
-const defaultAPIResponse = generateDefaultMockAPIResponses(experimentId);
+const customAPIResponses = {
+  [`/plots/${plotUuid}`]: (req) => {
+    if (req.method === 'PUT') return promiseResponse(JSON.stringify('OK'));
+    return statusResponse(404, 'Not Found');
+  },
+};
+
+const defaultAPIResponse = _.merge(
+  generateDefaultMockAPIResponses(experimentId),
+  customAPIResponses,
+);
 
 const mockPlotState = {
   displayTrajectory: true,
@@ -63,17 +79,15 @@ const mockOnZoomOrPan = jest.fn();
 
 const defaultProps = {
   experimentId,
-  config: initialPlotConfigStates[plotTypes.TRAJECTORY_ANALYSIS],
+  plotUuid,
   plotState: mockPlotState,
-  plotData: mockStartingNodes,
-  plotLoading: false,
-  plotDataError: false,
-  onPlotDataErrorRetry: mockOnPlotDataErrorRetry,
   actions: false,
   onUpdate: mockOnUpdate,
   onClickNode: mockOnClickNode,
   onLassoSelection: mockOnLassoSelection,
   onZoomOrPan: mockOnZoomOrPan,
+  resetZoomCount: 0,
+  ref: { current: { xdom: [-1, 1], ydom: [-1, 1] } },
 };
 
 const trajectoryAnalysisPlotFactory = createTestComponentFactory(
@@ -100,13 +114,22 @@ describe('Trajectory analysis plot', () => {
     fetchMock.resetMocks();
     fetchMock.mockIf(/.*/, mockAPI(defaultAPIResponse));
 
+    let toggleReturnNull = true;
+
     seekFromS3
       .mockReset()
-      .mockImplementationOnce(() => null)
-      .mockImplementationOnce((mockEtag) => mockWorkerResponses[mockEtag]());
+      .mockImplementation((mockETag) => {
+        const result = toggleReturnNull ? null : mockWorkerResponses[mockETag];
+        toggleReturnNull = !toggleReturnNull;
+        return result;
+      });
 
     storeState = makeStore();
     await storeState.dispatch(loadBackendStatus(experimentId));
+    await storeState.dispatch(loadProcessingSettings(experimentId));
+    await storeState.dispatch(loadEmbedding(experimentId, 'umap'));
+    await storeState.dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
+    await storeState.dispatch(getTrajectoryPlotStartingNodes(experimentId, plotUuid));
   });
 
   it('Renders correctly with data', async () => {
@@ -129,7 +152,14 @@ describe('Trajectory analysis plot', () => {
       ),
     }));
 
-    await renderTrajectoryAnalysisPlot(storeState);
+    const tsneStore = makeStore();
+    await tsneStore.dispatch(loadBackendStatus(experimentId));
+    await tsneStore.dispatch(loadProcessingSettings(experimentId));
+    await tsneStore.dispatch(loadEmbedding(experimentId, 'tsne'));
+    await tsneStore.dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
+    await tsneStore.dispatch(getTrajectoryPlotStartingNodes(experimentId, plotUuid));
+
+    await renderTrajectoryAnalysisPlot(tsneStore);
 
     await waitFor(async () => {
       expect(screen.getByText(/The embedding and trajectory below are generated from a UMAP embedding of your data/)).toBeInTheDocument();

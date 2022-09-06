@@ -31,6 +31,7 @@ const TrajectoryAnalysisPlot = forwardRef((props, ref) => {
   const {
     experimentId,
     plotState,
+    plotUuid,
     actions,
     onUpdate,
     onClickNode,
@@ -39,7 +40,7 @@ const TrajectoryAnalysisPlot = forwardRef((props, ref) => {
   } = props;
 
   const dispatch = useDispatch();
-  const resetZoomCountRef = useRef(ref.current);
+  const resetZoomCountRef = useRef(0);
 
   const [plotSpec, setPlotSpec] = useState({});
 
@@ -52,7 +53,7 @@ const TrajectoryAnalysisPlot = forwardRef((props, ref) => {
   const {
     config,
     plotData: startingNodesPlotData,
-  } = useSelector((state) => state.componentConfig.trajectoryAnalysisMain) || {};
+  } = useSelector((state) => state.componentConfig[plotUuid]) || {};
 
   const {
     data: embeddingData,
@@ -243,6 +244,7 @@ const TrajectoryAnalysisPlot = forwardRef((props, ref) => {
 
 TrajectoryAnalysisPlot.propTypes = {
   experimentId: PropTypes.string.isRequired,
+  plotUuid: PropTypes.string.isRequired,
   plotState: PropTypes.object.isRequired,
   actions: PropTypes.oneOfType([
     PropTypes.bool,
