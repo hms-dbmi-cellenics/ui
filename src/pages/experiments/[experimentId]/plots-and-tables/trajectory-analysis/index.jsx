@@ -196,7 +196,7 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
         ref={resetZoomRef}
         experimentId={experimentId}
         onUpdate={updatePlotWithChanges}
-        plotState={displaySettings}
+        displaySettings={displaySettings}
         plotLoading={plotLoading}
         plotDataError={plotDataError}
         onClickNode={handleClickNode}
@@ -243,7 +243,7 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
                 experimentId={experimentId}
                 plotUuid={plotUuid}
                 setDisplaySettings={setDisplaySettings}
-                plotState={displaySettings}
+                displaySettings={displaySettings}
               />
             </Panel>
             <Panel header='Display' key='display'>
@@ -251,13 +251,13 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
                 experimentId={experimentId}
                 plotUuid={plotUuid}
                 setDisplaySettings={setDisplaySettings}
-                plotState={displaySettings}
+                displaySettings={displaySettings}
               />
             </Panel>
           </>
         )}
         onPlotReset={() => {
-          setDisplaySettings(initialPlotState);
+          setDisplaySettings(initialDisplaySettings);
           resetZoomRef.current.resetZoom();
         }}
         plotInfo={(
