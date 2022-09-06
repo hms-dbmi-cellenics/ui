@@ -42,6 +42,8 @@ const TrajectoryAnalysisPlot = forwardRef((props, ref) => {
   const [forceReset, setForceReset] = useState(0);
   const viewStateRef = useRef({ xdom: [-2, 2], ydom: [-2, 2] });
   const isZoomedOrPannedRef = useRef(false);
+  const previousXAxisAutoSettings = useRef(null);
+  const previousYAxisAutoSettings = useRef(null);
 
   const cellSets = useSelector(getCellSets());
 
@@ -167,9 +169,34 @@ const TrajectoryAnalysisPlot = forwardRef((props, ref) => {
       (nodeId) => startingNodesPlotData.nodes[nodeId],
     );
 
+    const {
+      xAxisAuto, yAxisAuto, xMin, xMax, yMin, yMax,
+    } = config.axesRanges;
+
+    const viewState = {};
+
+    if (previousXAxisAutoSettings.current === xAxisAuto) {
+      viewState.xdom = viewStateRef.current.xdom;
+    } else if (xAxisAuto) {
+      viewState.xdom = xExtent;
+    } else {
+      viewState.xdom = [xMin, xMax];
+    }
+
+    if (previousYAxisAutoSettings.current === yAxisAuto) {
+      viewState.ydom = viewStateRef.current.ydom;
+    } else if (yAxisAuto) {
+      viewState.ydom = yExtent;
+    } else {
+      viewState.ydom = [yMin, yMax];
+    }
+
+    previousXAxisAutoSettings.current = xAxisAuto;
+    previousYAxisAutoSettings.current = yAxisAuto;
+
     const spec = generateTrajectoryAnalysisSpec(
       config,
-      viewStateRef.current,
+      viewState,
       displaySettings,
       embeddingPlotData,
       pseudotimeData,
