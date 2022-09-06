@@ -30,10 +30,7 @@ const TrajectoryAnalysisPlot = forwardRef((props, ref) => {
 
   const {
     experimentId,
-    plotState,
-    xExtent,
-    yExtent,
-    plotUuid,
+    displaySettings,
     actions,
     onUpdate,
     onClickNode,
@@ -46,7 +43,11 @@ const TrajectoryAnalysisPlot = forwardRef((props, ref) => {
   const wasXAxisAuto = useRef(true);
   const wasYAxisAuto = useRef(true);
 
-  const [plotSpec, setPlotSpec] = useState({});
+  const [plotSpec, setPlotSpec] = useState(null);
+  const [forceReset, setForceReset] = useState(0);
+  const viewStateRef = useRef({ xdom: [-2, 2], ydom: [-2, 2] });
+  const previousXAxisAutoSettings = useRef(null);
+  const previousYAxisAutoSettings = useRef(null);
 
   const cellSets = useSelector(getCellSets());
 
@@ -132,7 +133,33 @@ const TrajectoryAnalysisPlot = forwardRef((props, ref) => {
     config?.selectedNodes,
   ]);
 
+  // Add/subtract 1 to give some padding to the plot
+  const extent = (arr) => [Math.min(...arr) - 1, Math.max(...arr) + 1];
+
+  const xExtent = useMemo(() => {
+    if (!embeddingData) return [-10, 10];
+    return extent(embeddingData.filter((data) => data !== undefined).map((data) => data[0]));
+  }, [embeddingData]);
+
+  const yExtent = useMemo(() => {
+    if (!embeddingData) return [-10, 10];
+    return extent(embeddingData.filter((data) => data !== undefined).map((data) => data[1]));
+  }, [embeddingData]);
+
+  useImperativeHandle(ref, () => ({
+    resetZoom() {
+      viewStateRef.current = { xdom: xExtent, ydom: yExtent };
+      setPlotSpec(calculatePlotSpec());
+      setForceReset(forceReset + 1);
+    },
+  }));
+
   useEffect(() => {
+    // eslint-disable-next-line no-param-reassign
+    viewStateRef.current = { xdom: xExtent, ydom: yExtent };
+  }, [xExtent, yExtent]);
+
+  const calculatePlotSpec = () => {
     if (
       !embeddingPlotData
       || !cellSetLegendsData
@@ -149,56 +176,68 @@ const TrajectoryAnalysisPlot = forwardRef((props, ref) => {
       xAxisAuto, yAxisAuto, xMin, xMax, yMin, yMax,
     } = config.axesRanges;
 
-    const viewState = {
-      xdom: wasXAxisAuto.current === xAxisAuto ? ref.current.xdom
-        : xAxisAuto ? xExtent : [xMin, xMax],
-      ydom: wasYAxisAuto.current === yAxisAuto ? ref.current.ydom
-        : yAxisAuto ? yExtent : [yMin, yMax],
-    };
+    const viewState = {};
 
-    wasXAxisAuto.current = xAxisAuto;
-    wasYAxisAuto.current = yAxisAuto;
+    if (previousXAxisAutoSettings.current === xAxisAuto) {
+      viewState.xdom = viewStateRef.current.xdom;
+    } else if (xAxisAuto) {
+      viewState.xdom = xExtent;
+    } else {
+      viewState.xdom = [xMin, xMax];
+    }
 
-    setPlotSpec(
-      generateTrajectoryAnalysisSpec(
-        config,
-        viewState,
-        plotState,
-        embeddingPlotData,
-        pseudotimeData,
-        cellSetLegendsData,
-        startingNodesData,
-        selectedNodeIds,
-      ),
+    if (previousYAxisAutoSettings.current === yAxisAuto) {
+      viewState.ydom = viewStateRef.current.ydom;
+    } else if (yAxisAuto) {
+      viewState.ydom = yExtent;
+    } else {
+      viewState.ydom = [yMin, yMax];
+    }
+
+    previousXAxisAutoSettings.current = xAxisAuto;
+    previousYAxisAutoSettings.current = yAxisAuto;
+
+    const spec = generateTrajectoryAnalysisSpec(
+      config,
+      viewState,
+      displaySettings,
+      embeddingPlotData,
+      pseudotimeData,
+      cellSetLegendsData,
+      startingNodesData,
+      selectedNodeIds,
     );
+
+    return spec;
+  };
+
+  useEffect(() => {
+    setPlotSpec(calculatePlotSpec());
   }, [
     config,
     cellSets,
     embeddingData,
     pseudotimeData,
     startingNodesPlotData,
-    plotState.displayPseudotime,
-    plotState.displayTrajectory,
-    resetZoomCount,
+    displaySettings.usePseudotimeValues,
+    displaySettings.showStartingNodes,
   ]);
 
   const plotListeners = {
     domUpdates: (e, val) => {
       const [xdom, ydom] = val;
       // eslint-disable-next-line no-param-reassign
-      ref.current = { xdom, ydom };
+      viewStateRef.current = { xdom, ydom };
     },
     addNode: (eventName, payload) => {
-      // eslint-disable-next-line camelcase
-      const { node_id } = payload;
+      const { node_id: nodeId } = payload;
 
-      onClickNode('add', node_id);
+      onClickNode('add', nodeId);
     },
     removeNode: (eventName, payload) => {
-      // eslint-disable-next-line camelcase
-      const { node_id } = payload;
+      const { node_id: nodeId } = payload;
 
-      onClickNode('remove', node_id);
+      onClickNode('remove', nodeId);
     },
     lassoSelection: (eventName, payload) => {
       const [x1, y1, x2, y2] = payload;
@@ -225,47 +264,41 @@ const TrajectoryAnalysisPlot = forwardRef((props, ref) => {
     },
   };
 
-  const render = () => {
-    if (resetZoomCountRef.current !== resetZoomCount) return <Loader />;
-
-    return (
-      <center>
-        {embeddingSettings?.method === 'tsne' && (
-          <Alert
-            type='warning'
-            message={(
-              <>
-                Due to
-                {' '}
-                <a href='https://cole-trapnell-lab.github.io/monocle3/' target='_blank' rel='noreferrer'>Monocle3</a>
-                {' '}
-                limitations, only UMAP embeddings are supported for Trajectory Analysis.
-                <br />
-                The embedding and trajectory below are generated from a UMAP embedding of your data.
-              </>
-            )}
-          />
-        )}
-        <br />
-        <Vega
-          spec={plotSpec}
-          renderer='webgl'
-          actions={actions}
-          signalListeners={plotState.displayTrajectory ? plotListeners : {}}
+  const render = () => (
+    <center>
+      {embeddingSettings?.method === 'tsne' && (
+        <Alert
+          type='warning'
+          message={(
+            <>
+              Due to
+              {' '}
+              <a href='https://cole-trapnell-lab.github.io/monocle3/' target='_blank' rel='noreferrer'>Monocle3</a>
+              {' '}
+              limitations, only UMAP embeddings are supported for Trajectory Analysis.
+              <br />
+              The embedding and trajectory below are generated from a UMAP embedding of your data.
+            </>
+          )}
         />
-      </center>
-    );
-  };
+      )}
+      <br />
+      <Vega
+        reset={forceReset}
+        spec={plotSpec || {}}
+        renderer='webgl'
+        actions={actions}
+        signalListeners={displaySettings.showStartingNodes ? plotListeners : {}}
+      />
+    </center>
+  );
 
   return render();
 });
 
 TrajectoryAnalysisPlot.propTypes = {
   experimentId: PropTypes.string.isRequired,
-  plotUuid: PropTypes.string.isRequired,
-  plotState: PropTypes.object.isRequired,
-  xExtent: PropTypes.array.isRequired,
-  yExtent: PropTypes.array.isRequired,
+  displaySettings: PropTypes.object.isRequired,
   actions: PropTypes.oneOfType([
     PropTypes.bool,
     PropTypes.object,

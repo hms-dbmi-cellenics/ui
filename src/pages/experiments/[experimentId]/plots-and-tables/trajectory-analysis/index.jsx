@@ -25,26 +25,25 @@ import PlatformError from 'components/PlatformError';
 
 import { plotNames, plotTypes } from 'utils/constants';
 import useConditionalEffect from 'utils/customHooks/useConditionalEffect';
-import updateTrajectoryNodes from 'redux/actions/componentConfig/updateTrajectoryNodes';
-import TrajectoryAnalysisNodeSelection from './TrajectoryAnalysisNodeSelection';
-import TrajectoryAnalysisDisplay from './TrajectoryAnalysisDisplay';
+import updateTrajectoryPlotSelectedNodes from 'redux/actions/componentConfig/updateTrajectoryPlotSelectedNodes';
+import TrajectoryAnalysisNodeSelector from './TrajectoryAnalysisNodeSelector';
+import TrajectoryAnalysisDisplaySettings from './TrajectoryAnalysisDisplaySettings';
 
 const { Panel } = Collapse;
 
 const plotUuid = 'trajectoryAnalysisMain';
 const plotType = plotTypes.TRAJECTORY_ANALYSIS;
 
-const initialPlotState = {
-  displayTrajectory: true,
-  displayPseudotime: false,
+const initialDisplaySettings = {
+  showStartingNodes: true,
+  usePseudotimeValues: false,
   hasRunPseudotime: false,
 };
 
 const TrajectoryAnalysisPage = ({ experimentId }) => {
   const dispatch = useDispatch();
-  const [plotState, setPlotState] = useState(initialPlotState);
-  const viewStateRef = useRef({ xdom: [-10, 10], ydom: [-10, 10] });
-  const [resetZoomCount, setResetZoomCount] = useState(1);
+  const [displaySettings, setDisplaySettings] = useState(initialDisplaySettings);
+  const resetZoomRef = useRef();
 
   // Currenty monocle3 trajectory analysis only supports
   // UMAP embedding. Therefore, this embedding is specifically fetched.
@@ -144,7 +143,7 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
     },
     {
       panelTitle: 'Colours',
-      controls: plotState.displayPseudotime
+      controls: displaySettings.usePseudotimeValues
         ? ['colourScheme', 'colourInversion']
         : ['colourInversion'],
     },
@@ -163,7 +162,7 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
         },
       }],
     },
-    !plotState.displayPseudotime && {
+    !displaySettings.usePseudotimeValues && {
       panelTitle: 'Labels',
       controls: ['labels'],
     },
@@ -216,9 +215,7 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
         experimentId={experimentId}
         plotUuid={plotUuid}
         onUpdate={updatePlotWithChanges}
-        plotState={plotState}
-        xExtent={xExtent}
-        yExtent={yExtent}
+        displaySettings={displaySettings}
         plotLoading={plotLoading}
         plotDataError={plotDataError}
         onClickNode={handleClickNode}
@@ -244,11 +241,11 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
   );
 
   const handleClickNode = (action, selectedNodeId) => {
-    dispatch(updateTrajectoryNodes(plotUuid, [selectedNodeId], action));
+    dispatch(updateTrajectoryPlotSelectedNodes(plotUuid, [selectedNodeId], action));
   };
 
   const handleLassoSelection = (nodesInLasso) => {
-    dispatch(updateTrajectoryNodes(plotUuid, nodesInLasso, 'add'));
+    dispatch(updateTrajectoryPlotSelectedNodes(plotUuid, nodesInLasso, 'add'));
   };
 
   return (
@@ -263,21 +260,26 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
         extraControlPanels={(
           <>
             <Panel header='Trajectory analysis' key='trajectory-analysis'>
-              <TrajectoryAnalysisNodeSelection
+              <TrajectoryAnalysisNodeSelector
                 experimentId={experimentId}
                 plotUuid={plotUuid}
-                setPlotState={setPlotState}
-                plotState={plotState}
+                setDisplaySettings={setDisplaySettings}
+                displaySettings={displaySettings}
               />
             </Panel>
             <Panel header='Display' key='display'>
-              <TrajectoryAnalysisDisplay experimentId={experimentId} setPlotState={setPlotState} plotState={plotState} />
+              <TrajectoryAnalysisDisplaySettings
+                experimentId={experimentId}
+                plotUuid={plotUuid}
+                setDisplaySettings={setDisplaySettings}
+                displaySettings={displaySettings}
+              />
             </Panel>
           </>
         )}
         onPlotReset={() => {
-          viewStateRef.current = { xdom: xExtent, ydom: yExtent };
-          setPlotState(initialPlotState);
+          setDisplaySettings(initialDisplaySettings);
+          resetZoomRef.current.resetZoom();
         }}
         plotInfo={(
           <>

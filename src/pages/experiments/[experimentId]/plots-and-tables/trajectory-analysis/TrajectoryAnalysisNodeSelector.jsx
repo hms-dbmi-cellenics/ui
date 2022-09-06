@@ -8,12 +8,12 @@ import {
 import { updatePlotConfig } from 'redux/actions/componentConfig';
 import getTrajectoryPlotPseudoTime from 'redux/actions/componentConfig/getTrajectoryPlotPseudoTime';
 
-const TrajectoryAnalysisNodeSelection = (props) => {
+const TrajectoryAnalysisNodeSelector = (props) => {
   const {
     experimentId,
     plotUuid,
-    setPlotState,
-    plotState,
+    setDisplaySettings,
+    displaySettings,
   } = props;
 
   const dispatch = useDispatch();
@@ -22,7 +22,7 @@ const TrajectoryAnalysisNodeSelection = (props) => {
   const plotLoading = useSelector((state) => state.componentConfig[plotUuid]?.loading);
 
   const render = () => {
-    if (!plotState.displayTrajectory) {
+    if (!displaySettings.showStartingNodes) {
       return (
         <p>
           Choose
@@ -85,23 +85,23 @@ const TrajectoryAnalysisNodeSelection = (props) => {
             disabled={plotLoading}
             onClick={async () => {
             // Optimistic result to prevent flickering
-              setPlotState({
-                ...plotState,
-                displayPseudotime: true,
+              setDisplaySettings({
+                ...displaySettings,
+                usePseudotimeValues: true,
                 hasRunPseudotime: true,
               });
 
               const success = await dispatch(getTrajectoryPlotPseudoTime(selectedNodes, experimentId, plotUuid));
               if (!success) {
-                setPlotState({
-                  ...plotState,
-                  displayPseudotime: false,
+                setDisplaySettings({
+                  ...displaySettings,
+                  usePseudotimeValues: false,
                   hasRunPseudotime: false,
                 });
               }
             }}
           >
-            {plotState.hasRunPseudotime ? 'Recalculate' : 'Calculate'}
+            {displaySettings.hasRunPseudotime ? 'Recalculate' : 'Calculate'}
           </Button>
         </>
         )}
@@ -112,11 +112,11 @@ const TrajectoryAnalysisNodeSelection = (props) => {
   return render();
 };
 
-TrajectoryAnalysisNodeSelection.propTypes = {
+TrajectoryAnalysisNodeSelector.propTypes = {
   experimentId: PropTypes.string.isRequired,
   plotUuid: PropTypes.string.isRequired,
-  setPlotState: PropTypes.func.isRequired,
-  plotState: PropTypes.object.isRequired,
+  setDisplaySettings: PropTypes.func.isRequired,
+  displaySettings: PropTypes.object.isRequired,
 };
 
-export default TrajectoryAnalysisNodeSelection;
+export default TrajectoryAnalysisNodeSelector;

@@ -66,9 +66,9 @@ const defaultAPIResponse = _.merge(
   customAPIResponses,
 );
 
-const mockPlotState = {
-  displayTrajectory: true,
-  displayPseudotime: false,
+const mockDisplaySettings = {
+  showStartingNodes: true,
+  usePseudotimeValues: false,
   isZoomedOrPanned: false,
 };
 
@@ -80,9 +80,7 @@ const mockOnZoomOrPan = jest.fn();
 const defaultProps = {
   experimentId,
   plotUuid,
-  plotState: mockPlotState,
-  xExtent: [-1, 1],
-  yExtent: [-1, 1],
+  displaySettings: mockDisplaySettings,
   actions: false,
   onUpdate: mockOnUpdate,
   onClickNode: mockOnClickNode,
