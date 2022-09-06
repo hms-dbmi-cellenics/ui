@@ -280,7 +280,7 @@ describe('Dot plot page', () => {
     const baseOption = screen.getByText(/Samples/);
 
     await act(async () => {
-      fireEvent.click(baseOption);
+      userEvent.click(baseOption, undefined, { skipPointerEventsCheck: true });
     });
 
     // Select the filter sets
