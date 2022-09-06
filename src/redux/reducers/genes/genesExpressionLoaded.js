@@ -3,42 +3,46 @@ import produce, { original } from 'immer';
 
 import _ from 'lodash';
 import { SparseMatrix } from 'mathjs';
+import * as math from 'mathjs';
+
+const upperCaseArray = (array) => (array?.map((element) => element.toUpperCase()));
 
 const genesExpressionLoaded = produce((draft, action) => {
-  const upperCaseArray = (array) => (array?.map((element) => element.toUpperCase()));
-
   const {
-    data, componentUuid, genes,
+    componentUuid, genes: geneSymbols, data,
     loadingStatus = _.difference(
-      upperCaseArray(original(draft.expression.loading)), upperCaseArray(genes),
+      upperCaseArray(original(draft.expression.loading)), upperCaseArray(geneSymbols),
     ),
   } = action.payload;
 
-  const { rawExpression, truncatedExpression } = data[genes[0]];
+  // If there's any data to load, load it
+  if (Object.keys(data).length > 0) {
+    const rawExpressions = [];
+    const truncatedExpressions = [];
 
-  const rawSparseMatrix = new SparseMatrix(
-    rawExpression.expression.map((val) => val ?? 0),
-  );
+    geneSymbols.forEach((geneSymbol) => {
+      rawExpressions.push(data[geneSymbol].rawExpression.expression.map((val) => val ?? 0));
+      truncatedExpressions.push(data[geneSymbol].truncatedExpression.expression.map((val) => val ?? 0));
+    });
 
-  const truncatedSparseMatrix = new SparseMatrix(
-    truncatedExpression.expression.map((val) => val ?? 0),
-  );
+    const rawSparseMatrix = math.transpose(new SparseMatrix(rawExpressions));
+    const truncatedSparseMatrix = math.transpose(new SparseMatrix(truncatedExpressions));
 
-  const expressionMatrix = original(draft).expression.matrix;
+    const expressionMatrix = original(draft).expression.matrix;
 
-  expressionMatrix.pushGeneExpression(
-    genes,
-    rawSparseMatrix,
-    truncatedSparseMatrix,
-    // stats,
-  );
+    expressionMatrix.pushGeneExpression(
+      geneSymbols,
+      rawSparseMatrix,
+      truncatedSparseMatrix,
+      // stats,
+    );
+  }
 
   draft.expression.views[componentUuid].fetching = false;
   draft.expression.views[componentUuid].error = false;
-  draft.expression.views[componentUuid].data = genes;
+  draft.expression.views[componentUuid].data = geneSymbols;
 
-  draft.expression.loading = data;
-  draft.expression.data = loadingStatus;
+  draft.expression.loading = loadingStatus;
 });
 
 export default genesExpressionLoaded;

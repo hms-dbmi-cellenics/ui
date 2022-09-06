@@ -42,18 +42,10 @@ const loadMarkerGenes = (
 
     console.log('[DEBUG] - BEGUN const rawExpression = SparseMatrix.fromJSON');
     const rawExpression = math.transpose(SparseMatrix.fromJSON(rawExpressionJson));
-    console.log('rawExpressionJsonDebug');
-    console.log(rawExpressionJson);
     console.log('[DEBUG] - FINISHED const rawExpression = SparseMatrix.fromJSON');
     console.log('[DEBUG] - BEGUN const truncatedExpression = SparseMatrix.fromJSON');
     const truncatedExpression = math.transpose(SparseMatrix.fromJSON(truncatedExpressionJson));
     console.log('[DEBUG] - FINISHED const truncatedExpression = SparseMatrix.fromJSON');
-
-    console.log('rawExpressionDebug');
-    console.log(rawExpression);
-
-    console.log('truncatedExpressionDebug');
-    console.log(truncatedExpression);
 
     dispatch({
       type: MARKER_GENES_LOADED,
