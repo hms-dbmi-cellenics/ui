@@ -719,15 +719,13 @@ const generatePseudotimeData = (
 const generateTrajectoryAnalysisSpec = (
   config,
   viewState,
-  plotState,
+  displaySettings,
   embeddingPlotData,
   pseudotimeData,
   cellSetLegendsData,
   startingNodesData,
   selectedNodeIds,
 ) => {
-  console.log('*** viewState', viewState);
-
   const spec = generateBaseSpec(
     config,
     embeddingPlotData,
@@ -735,13 +733,13 @@ const generateTrajectoryAnalysisSpec = (
     cellSetLegendsData.length,
   );
 
-  if (plotState.displayPseudotime && pseudotimeData) {
+  if (displaySettings.usePseudotimeValues && pseudotimeData) {
     insertPseudotimeSpec(spec, config, pseudotimeData);
   } else {
     insertClusterColorsSpec(spec, config, cellSetLegendsData, cellSetLegendsData.length);
   }
 
-  if (plotState.displayTrajectory) {
+  if (displaySettings.showStartingNodes) {
     insertTrajectorySpec(
       spec,
       startingNodesData,

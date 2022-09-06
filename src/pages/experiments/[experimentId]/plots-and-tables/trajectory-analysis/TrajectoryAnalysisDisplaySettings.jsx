@@ -6,10 +6,8 @@ import {
   Radio, Space,
 } from 'antd';
 
-const plotUuid = 'trajectoryAnalysisMain';
-
-const TrajectoryAnalysisDisplay = (props) => {
-  const { setPlotState, plotState } = props;
+const TrajectoryAnalysisDisplaySettings = (props) => {
+  const { setDisplaySettings, displaySettings, plotUuid } = props;
 
   const pseudotime = useSelector((state) => state.componentConfig[plotUuid]?.pseudotime);
 
@@ -20,10 +18,10 @@ const TrajectoryAnalysisDisplay = (props) => {
     >
       <b>Plot values</b>
       <Radio.Group
-        value={plotState.displayPseudotime}
-        onChange={(e) => setPlotState({
-          ...plotState,
-          displayPseudotime: e.target.value,
+        value={displaySettings.usePseudotimeValues}
+        onChange={(e) => setDisplaySettings({
+          ...displaySettings,
+          usePseudotimeValues: e.target.value,
         })}
       >
         <Space>
@@ -35,11 +33,11 @@ const TrajectoryAnalysisDisplay = (props) => {
       </Radio.Group>
       <b>Trajectory</b>
       <Radio.Group
-        value={plotState.displayTrajectory}
+        value={displaySettings.showStartingNodes}
         onChange={(e) => {
-          setPlotState({
-            ...plotState,
-            displayTrajectory: e.target.value,
+          setDisplaySettings({
+            ...displaySettings,
+            showStartingNodes: e.target.value,
           });
         }}
       >
@@ -52,9 +50,10 @@ const TrajectoryAnalysisDisplay = (props) => {
   );
 };
 
-TrajectoryAnalysisDisplay.propTypes = {
-  setPlotState: PropTypes.func.isRequired,
-  plotState: PropTypes.object.isRequired,
+TrajectoryAnalysisDisplaySettings.propTypes = {
+  setDisplaySettings: PropTypes.func.isRequired,
+  displaySettings: PropTypes.object.isRequired,
+  plotUuid: PropTypes.string.isRequired,
 };
 
-export default TrajectoryAnalysisDisplay;
+export default TrajectoryAnalysisDisplaySettings;

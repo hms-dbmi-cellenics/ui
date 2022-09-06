@@ -29,9 +29,7 @@ const TrajectoryAnalysisPlot = forwardRef((props, ref) => {
 
   const {
     experimentId,
-    // config,
-    // plotData: startingNodesPlotData,
-    plotState,
+    displaySettings,
     actions,
     onUpdate,
     onClickNode,
@@ -40,8 +38,10 @@ const TrajectoryAnalysisPlot = forwardRef((props, ref) => {
 
   const dispatch = useDispatch();
 
-  const [plotSpec, setPlotSpec] = useState({});
+  const [plotSpec, setPlotSpec] = useState(null);
+  const [forceReset, setForceReset] = useState(0);
   const viewStateRef = useRef({ xdom: [-2, 2], ydom: [-2, 2] });
+  const isZoomedOrPannedRef = useRef(false);
 
   const cellSets = useSelector(getCellSets());
 
@@ -145,6 +145,9 @@ const TrajectoryAnalysisPlot = forwardRef((props, ref) => {
   useImperativeHandle(ref, () => ({
     resetZoom() {
       viewStateRef.current = { xdom: xExtent, ydom: yExtent };
+      setPlotSpec(calculatePlotSpec());
+      isZoomedOrPannedRef.current = false;
+      setForceReset(forceReset + 1);
     },
   }));
 
@@ -153,7 +156,7 @@ const TrajectoryAnalysisPlot = forwardRef((props, ref) => {
     viewStateRef.current = { xdom: xExtent, ydom: yExtent };
   }, [xExtent, yExtent]);
 
-  useEffect(() => {
+  const calculatePlotSpec = () => {
     if (
       !embeddingPlotData
       || !cellSetLegendsData
@@ -164,27 +167,30 @@ const TrajectoryAnalysisPlot = forwardRef((props, ref) => {
       (nodeId) => startingNodesPlotData.nodes[nodeId],
     );
 
-    setPlotSpec(
-      generateTrajectoryAnalysisSpec(
-        config,
-        viewStateRef.current,
-        plotState,
-        embeddingPlotData,
-        pseudotimeData,
-        cellSetLegendsData,
-        startingNodesData,
-        selectedNodeIds,
-      ),
+    const spec = generateTrajectoryAnalysisSpec(
+      config,
+      viewStateRef.current,
+      displaySettings,
+      embeddingPlotData,
+      pseudotimeData,
+      cellSetLegendsData,
+      startingNodesData,
+      selectedNodeIds,
     );
+
+    return spec;
+  };
+
+  useEffect(() => {
+    setPlotSpec(calculatePlotSpec());
   }, [
     config,
     cellSets,
     embeddingData,
     pseudotimeData,
     startingNodesPlotData,
-    plotState.displayPseudotime,
-    plotState.displayTrajectory,
-    viewStateRef.current,
+    displaySettings.usePseudotimeValues,
+    displaySettings.showStartingNodes,
   ]);
 
   const plotListeners = {
@@ -192,18 +198,17 @@ const TrajectoryAnalysisPlot = forwardRef((props, ref) => {
       const [xdom, ydom] = val;
       // eslint-disable-next-line no-param-reassign
       viewStateRef.current = { xdom, ydom };
+      isZoomedOrPannedRef.current = true;
     },
     addNode: (eventName, payload) => {
-      // eslint-disable-next-line camelcase
-      const { node_id } = payload;
+      const { node_id: nodeId } = payload;
 
-      onClickNode('add', node_id);
+      onClickNode('add', nodeId);
     },
     removeNode: (eventName, payload) => {
-      // eslint-disable-next-line camelcase
-      const { node_id } = payload;
+      const { node_id: nodeId } = payload;
 
-      onClickNode('remove', node_id);
+      onClickNode('remove', nodeId);
     },
     lassoSelection: (eventName, payload) => {
       const [x1, y1, x2, y2] = payload;
@@ -250,10 +255,11 @@ const TrajectoryAnalysisPlot = forwardRef((props, ref) => {
       )}
       <br />
       <Vega
-        spec={plotSpec}
+        reset={forceReset}
+        spec={plotSpec || {}}
         renderer='webgl'
         actions={actions}
-        signalListeners={plotState.displayTrajectory ? plotListeners : {}}
+        signalListeners={displaySettings.showStartingNodes ? plotListeners : {}}
       />
     </center>
   );
@@ -263,7 +269,7 @@ const TrajectoryAnalysisPlot = forwardRef((props, ref) => {
 
 TrajectoryAnalysisPlot.propTypes = {
   experimentId: PropTypes.string.isRequired,
-  plotState: PropTypes.object.isRequired,
+  displaySettings: PropTypes.object.isRequired,
   actions: PropTypes.oneOfType([
     PropTypes.bool,
     PropTypes.object,
@@ -277,7 +283,6 @@ TrajectoryAnalysisPlot.defaultProps = {
   actions: true,
   onClickNode: () => { },
   onLassoSelection: () => { },
-  onZoomOrPan: () => { },
 };
 
 export default TrajectoryAnalysisPlot;

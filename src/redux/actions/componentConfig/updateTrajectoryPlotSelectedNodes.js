@@ -1,6 +1,6 @@
 import { TRAJECTORY_NODES_SELECTION_UPDATED } from '../../actionTypes/componentConfig';
 
-const updateTrajectoryNodes = (plotUuid, nodes, action) => (dispatch) => {
+const updateTrajectoryPlotSelectedNodes = (plotUuid, nodes, action) => (dispatch) => {
   dispatch({
     type: TRAJECTORY_NODES_SELECTION_UPDATED,
     payload:
@@ -8,4 +8,4 @@ const updateTrajectoryNodes = (plotUuid, nodes, action) => (dispatch) => {
   });
 };
 
-export default updateTrajectoryNodes;
+export default updateTrajectoryPlotSelectedNodes;

@@ -50,9 +50,9 @@ const mockOnPlotDataErrorRetry = jest.fn();
 
 const defaultAPIResponse = generateDefaultMockAPIResponses(experimentId);
 
-const mockPlotState = {
-  displayTrajectory: true,
-  displayPseudotime: false,
+const mockDisplaySettings = {
+  showStartingNodes: true,
+  usePseudotimeValues: false,
   isZoomedOrPanned: false,
 };
 
@@ -64,7 +64,7 @@ const mockOnZoomOrPan = jest.fn();
 const defaultProps = {
   experimentId,
   config: initialPlotConfigStates[plotTypes.TRAJECTORY_ANALYSIS],
-  plotState: mockPlotState,
+  displaySettings: mockDisplaySettings,
   plotData: mockStartingNodes,
   plotLoading: false,
   plotDataError: false,
