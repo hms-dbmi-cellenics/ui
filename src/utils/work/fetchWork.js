@@ -190,19 +190,15 @@ const fetchWork = async (
     ETag += 1;
   }
 
-  console.log('[DEBUG] - BEGUN cache.get');
   // First, let's try to fetch this information from the local cache.
-  // const data = await cache.get(ETag);
-  console.log('[DEBUG] - FINISHED cache.get');
+  const data = await cache.get(ETag);
 
-  // if (data) {
-  //   return data;
-  // }
+  if (data) {
+    return data;
+  }
 
   // Then, we may be able to find this in S3.
-  console.log('[DEBUG] - BEGUN let response = await seekFromS3');
   let response = await seekFromS3(ETag, experimentId);
-  console.log('[DEBUG] - FINISHED let response = await seekFromS3');
 
   // If there is no response in S3, dispatch workRequest via the worker
   if (!response) {
@@ -224,15 +220,11 @@ const fetchWork = async (
     }
   }
 
-  console.log('[DEBUG] - BEGUN response = await seekFromS3');
   response = await seekFromS3(ETag, experimentId);
-  console.log('[DEBUG] - FINISHED response = await seekFromS3');
 
   // If a work response is in s3, it is cacheable
   // (the cacheable or not option is managed in the worker)
-  console.log('[DEBUG] - BEGUN await cache.set');
-  // await cache.set(ETag, response);
-  console.log('[DEBUG] - FINISHED await cache.set');
+  await cache.set(ETag, response);
   return response;
 };
 

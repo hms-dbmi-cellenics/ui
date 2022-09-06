@@ -29,8 +29,6 @@ const loadMarkerGenes = (
   try {
     const timeout = getTimeoutForWorkerTask(getState(), 'MarkerHeatmap');
 
-    console.log('[DEBUG] - BEGUN fetchWork');
-
     const {
       order,
       rawExpression: rawExpressionJson,
@@ -38,14 +36,8 @@ const loadMarkerGenes = (
       stats,
     } = await fetchWork(experimentId, body, getState, { timeout });
 
-    console.log('[DEBUG] - FINISHED fetchWork');
-
-    console.log('[DEBUG] - BEGUN const rawExpression = SparseMatrix.fromJSON');
     const rawExpression = math.transpose(SparseMatrix.fromJSON(rawExpressionJson));
-    console.log('[DEBUG] - FINISHED const rawExpression = SparseMatrix.fromJSON');
-    console.log('[DEBUG] - BEGUN const truncatedExpression = SparseMatrix.fromJSON');
     const truncatedExpression = math.transpose(SparseMatrix.fromJSON(truncatedExpressionJson));
-    console.log('[DEBUG] - FINISHED const truncatedExpression = SparseMatrix.fromJSON');
 
     dispatch({
       type: MARKER_GENES_LOADED,

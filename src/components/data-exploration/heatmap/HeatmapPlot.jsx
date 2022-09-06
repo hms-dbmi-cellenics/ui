@@ -131,15 +131,12 @@ const HeatmapPlot = (props) => {
       return;
     }
 
-    console.log('[DEBUG] - BEGUN populateHeatmapData');
     const cellOrder = populateHeatmapData(cellSets, heatmapSettings, true);
-    console.log('[DEBUG] - FINISHED populateHeatmapData');
 
     // Selected genes is not contained in heatmap settings for the
     // data exploration marker heatmap, so must be passed spearatedly.
     // Trying to assign it to heatmapSettings will throw an error because
     // heatmapSettings is is frozen in redux by immer.
-    console.log('[DEBUG] - BEGUN generateVitessceData');
     const data = generateVitessceData(
       cellOrder,
       heatmapSettings,
@@ -147,11 +144,7 @@ const HeatmapPlot = (props) => {
       selectedGenes,
       cellSets,
     );
-    console.log('[DEBUG] - FINISHED generateVitessceData');
-
-    console.log('[DEBUG] - BEGUN setHeatmapData');
     setHeatmapData(data);
-    console.log('[DEBUG] - FINISHED setHeatmapData');
   }, [
     selectedGenes,
     heatmapSettings,
