@@ -14,18 +14,13 @@ const toApiV1 = (samples, experimentId) => {
     const fileNames = [];
     const apiV1Files = {};
 
-    console.log('here2========');
-    console.log(files, 'files');
-
     Object.keys(files).forEach((key) => {
       const fileNameConvert = {
         features10x: 'features.tsv.gz',
         barcodes10x: 'barcodes.tsv.gz',
         matrix10x: 'matrix.mtx.gz',
-        seurat: 'r.rds',
       };
       const fileType = files[key]?.sampleFileType;
-      console.log('fileType:', fileType);
       if (!fileType) throw new Error('No sample file found');
 
       const fileName = fileNameConvert[fileType];
@@ -41,7 +36,6 @@ const toApiV1 = (samples, experimentId) => {
         },
       };
 
-      console.log(res);
       apiV1Files[fileName] = res;
     });
 
