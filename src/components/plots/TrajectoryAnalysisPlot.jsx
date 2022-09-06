@@ -31,6 +31,8 @@ const TrajectoryAnalysisPlot = forwardRef((props, ref) => {
   const {
     experimentId,
     plotState,
+    xExtent,
+    yExtent,
     plotUuid,
     actions,
     onUpdate,
@@ -41,6 +43,8 @@ const TrajectoryAnalysisPlot = forwardRef((props, ref) => {
 
   const dispatch = useDispatch();
   const resetZoomCountRef = useRef(0);
+  const wasXAxisAuto = useRef(true);
+  const wasYAxisAuto = useRef(true);
 
   const [plotSpec, setPlotSpec] = useState({});
 
@@ -141,10 +145,24 @@ const TrajectoryAnalysisPlot = forwardRef((props, ref) => {
       (nodeId) => startingNodesPlotData.nodes[nodeId],
     );
 
+    const {
+      xAxisAuto, yAxisAuto, xMin, xMax, yMin, yMax,
+    } = config.axesRanges;
+
+    const viewState = {
+      xdom: wasXAxisAuto.current === xAxisAuto ? ref.current.xdom
+        : xAxisAuto ? xExtent : [xMin, xMax],
+      ydom: wasYAxisAuto.current === yAxisAuto ? ref.current.ydom
+        : yAxisAuto ? yExtent : [yMin, yMax],
+    };
+
+    wasXAxisAuto.current = xAxisAuto;
+    wasYAxisAuto.current = yAxisAuto;
+
     setPlotSpec(
       generateTrajectoryAnalysisSpec(
         config,
-        ref.current,
+        viewState,
         plotState,
         embeddingPlotData,
         pseudotimeData,
@@ -246,6 +264,8 @@ TrajectoryAnalysisPlot.propTypes = {
   experimentId: PropTypes.string.isRequired,
   plotUuid: PropTypes.string.isRequired,
   plotState: PropTypes.object.isRequired,
+  xExtent: PropTypes.array.isRequired,
+  yExtent: PropTypes.array.isRequired,
   actions: PropTypes.oneOfType([
     PropTypes.bool,
     PropTypes.object,

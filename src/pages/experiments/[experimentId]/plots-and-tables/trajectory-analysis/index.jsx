@@ -217,6 +217,8 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
         plotUuid={plotUuid}
         onUpdate={updatePlotWithChanges}
         plotState={plotState}
+        xExtent={xExtent}
+        yExtent={yExtent}
         plotLoading={plotLoading}
         plotDataError={plotDataError}
         onClickNode={handleClickNode}
@@ -274,6 +276,7 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
           </>
         )}
         onPlotReset={() => {
+          viewStateRef.current = { xdom: xExtent, ydom: yExtent };
           setPlotState(initialPlotState);
         }}
         plotInfo={(

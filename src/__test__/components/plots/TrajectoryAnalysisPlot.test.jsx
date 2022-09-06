@@ -81,6 +81,8 @@ const defaultProps = {
   experimentId,
   plotUuid,
   plotState: mockPlotState,
+  xExtent: [-1, 1],
+  yExtent: [-1, 1],
   actions: false,
   onUpdate: mockOnUpdate,
   onClickNode: mockOnClickNode,
