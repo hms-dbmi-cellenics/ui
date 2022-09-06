@@ -25,13 +25,13 @@ const TrajectoryAnalysisDisplaySettings = (props) => {
         })}
       >
         <Space>
-          <Radio value={false}>Clusters</Radio>
+          <Radio value={false}>Cell sets</Radio>
           <Radio disabled={pseudotime} value>
             Pseudotime
           </Radio>
         </Space>
       </Radio.Group>
-      <b>Trajectory</b>
+      <b>Starting nodes</b>
       <Radio.Group
         value={displaySettings.showStartingNodes}
         onChange={(e) => {
