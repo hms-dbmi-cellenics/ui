@@ -3,12 +3,6 @@
 exports[`runQC action Dispatches events properly 1`] = `
 Array [
   Object {
-    "payload": Object {
-      "experimentId": "experiment-id",
-    },
-    "type": "backendStatus/backendStatusLoading",
-  },
-  Object {
     "payload": Object {},
     "type": "experimentSettings/startQC",
   },
@@ -28,23 +22,7 @@ Array [
 ]
 `;
 
-exports[`runQC action Dispatches status error if loading fails 1`] = `
-Array [
-  Object {
-    "payload": Object {
-      "experimentId": "experiment-id",
-    },
-    "type": "backendStatus/backendStatusLoading",
-  },
-  Object {
-    "payload": Object {
-      "error": "We couldn't start working on your data.",
-      "experimentId": "experiment-id",
-    },
-    "type": "backendStatus/backendStatusError",
-  },
-]
-`;
+exports[`runQC action Dispatches status error if loading fails 1`] = `Array []`;
 
 exports[`runQC action Runs only the embedding if only changed filter was configureEmbedding 1`] = `
 Array [

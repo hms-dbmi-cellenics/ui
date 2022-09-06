@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Vega } from 'react-vega';
+import 'vega-webgl-renderer';
 
 import { loadCellSets } from 'redux/actions/cellSets';
 import { loadEmbedding } from 'redux/actions/embedding';
@@ -116,7 +117,7 @@ const ContinuousEmbeddingPlot = (props) => {
 
     return (
       <center>
-        <Vega spec={plotSpec} renderer='canvas' actions={actions} />
+        <Vega spec={plotSpec} renderer='webgl' actions={actions} />
       </center>
     );
   };

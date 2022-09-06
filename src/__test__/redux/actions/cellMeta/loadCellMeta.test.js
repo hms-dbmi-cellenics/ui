@@ -6,6 +6,7 @@ import initialState from 'redux/reducers/cellMeta/initialState';
 import '__test__/test-utils/setupTests';
 
 jest.mock('utils/work/fetchWork');
+jest.mock('utils/getTimeoutForWorkerTask', () => () => 1);
 
 enableFetchMocks();
 const mockStore = configureStore([thunk]);

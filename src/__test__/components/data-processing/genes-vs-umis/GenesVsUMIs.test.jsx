@@ -5,7 +5,7 @@ import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 
 import { initialPlotConfigStates } from 'redux/reducers/componentConfig/initialState';
-import generateDataProcessingPlotUuid from 'utils/generateDataProcessingPlotUuid';
+import { generateDataProcessingPlotUuid } from 'utils/generateCustomPlotUuid';
 import GenesVsUMIs from 'components/data-processing/GenesVsUMIs/GenesVsUMIs';
 import generateExperimentSettingsMock from '../../../test-utils/experimentSettings.mock';
 

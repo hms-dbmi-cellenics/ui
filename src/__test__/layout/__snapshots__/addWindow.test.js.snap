@@ -13,7 +13,7 @@ Object {
           "first": Object {
             "direction": "row",
             "first": "UMAP",
-            "second": "Data Management",
+            "second": "Cell sets and Metadata",
             "splitPercentage": 60,
           },
           "second": "Heatmap",
@@ -43,7 +43,7 @@ Object {
           "first": Object {
             "direction": "row",
             "first": "UMAP",
-            "second": "Data Management",
+            "second": "Cell sets and Metadata",
             "splitPercentage": 60,
           },
           "second": "Heatmap",
@@ -71,7 +71,7 @@ Object {
         "first": Object {
           "direction": "row",
           "first": "UMAP",
-          "second": "Data Management",
+          "second": "Cell sets and Metadata",
           "splitPercentage": 60,
         },
         "second": "Heatmap",

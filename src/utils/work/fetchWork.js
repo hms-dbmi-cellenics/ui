@@ -2,7 +2,7 @@
 import { MD5 } from 'object-hash';
 
 // import { Environment, isBrowser } from 'utils/deploymentInfo';
-import { isBrowser } from 'utils/deploymentInfo';
+import { Environment, isBrowser } from 'utils/deploymentInfo';
 import { calculateZScore } from 'utils/postRequestProcessing';
 import { getBackendStatus } from 'redux/selectors';
 
@@ -12,28 +12,28 @@ import { dispatchWorkRequest, seekFromS3 } from 'utils/work/seekWorkResponse';
 const createObjectHash = (object) => MD5(object);
 
 // Disable unique keys to reallow reuse of work results in development
-// const DISABLE_UNIQUE_KEYS = [
-//   'GetEmbedding',
-// ];
+const DISABLE_UNIQUE_KEYS = [
+  'GetEmbedding',
+];
 
 const generateETag = (
   experimentId,
   body,
   extras,
   qcPipelineStartDate,
-  // environment,
+  environment,
 ) => {
   // If caching is disabled, we add an additional randomized key to the hash so we never reuse
   // past results.
-  const cacheUniquenessKey = null;
+  let cacheUniquenessKey = null;
 
-  // if (
-  //   environment !== Environment.PRODUCTION
-  //   && localStorage.getItem('disableCache') === 'true'
-  //   && !DISABLE_UNIQUE_KEYS.includes(body.name)
-  // ) {
-  //   cacheUniquenessKey = Math.random();
-  // }
+  if (
+    environment !== Environment.PRODUCTION
+    && localStorage.getItem('disableCache') === 'true'
+    && !DISABLE_UNIQUE_KEYS.includes(body.name)
+  ) {
+    cacheUniquenessKey = Math.random();
+  }
 
   let ETagBody = {
     experimentId,
@@ -178,17 +178,13 @@ const fetchWork = async (
     );
   }
 
-  let ETag = generateETag(
+  const ETag = generateETag(
     experimentId,
     body,
     extras,
     qcPipelineStartDate,
     environment,
   );
-
-  if (body.name === 'MarkerHeatmap') {
-    ETag += 1;
-  }
 
   // First, let's try to fetch this information from the local cache.
   const data = await cache.get(ETag);

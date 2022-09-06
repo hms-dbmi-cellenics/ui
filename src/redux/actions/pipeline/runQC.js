@@ -6,11 +6,6 @@ import {
   EXPERIMENT_SETTINGS_DISCARD_CHANGED_QC_FILTERS,
 } from 'redux/actionTypes/experimentSettings';
 
-import {
-  BACKEND_STATUS_LOADING,
-  BACKEND_STATUS_ERROR,
-} from 'redux/actionTypes/backendStatus';
-
 import { saveProcessingSettings } from 'redux/actions/experimentSettings';
 import { loadBackendStatus } from 'redux/actions/backendStatus';
 import { loadEmbedding } from 'redux/actions/embedding';
@@ -47,13 +42,6 @@ const runQC = (experimentId) => async (dispatch, getState) => {
     return;
   }
 
-  dispatch({
-    type: BACKEND_STATUS_LOADING,
-    payload: {
-      experimentId,
-    },
-  });
-
   const changesToProcessingConfig = Array.from(changedQCFilters).map((key) => {
     const currentConfig = processing[key];
     return {
@@ -89,20 +77,12 @@ const runQC = (experimentId) => async (dispatch, getState) => {
 
     dispatch(loadBackendStatus(experimentId));
   } catch (e) {
-    let errorMessage = handleError(e, endUserMessages.ERROR_STARTING_PIPLELINE);
+    const errorMessage = handleError(e, endUserMessages.ERROR_STARTING_PIPLELINE);
 
-    // temporarily give the user more info if the error is permission denied
-    if (errorMessage.includes('does not have access to experiment')) {
-      errorMessage += ' Refresh the page to continue with your analysis.';
+    // get the backend status only if the error is not  a permission issue
+    if (errorMessage !== endUserMessages.ERROR_NO_PERMISSIONS) {
+      dispatch(loadBackendStatus(experimentId));
     }
-    // TODO refactor this better once everything is working
-    dispatch({
-      type: BACKEND_STATUS_ERROR,
-      payload: {
-        experimentId,
-        error: errorMessage,
-      },
-    });
   }
 };
 

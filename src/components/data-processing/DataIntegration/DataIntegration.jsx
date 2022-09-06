@@ -19,7 +19,7 @@ import {
 import CategoricalEmbeddingPlot from 'components/plots/CategoricalEmbeddingPlot';
 import FrequencyPlot from 'components/plots/FrequencyPlot';
 import ElbowPlot from 'components/plots/ElbowPlot';
-import generateDataProcessingPlotUuid from 'utils/generateDataProcessingPlotUuid';
+import { generateDataProcessingPlotUuid } from 'utils/generateCustomPlotUuid';
 import EmptyPlot from 'components/plots/helpers/EmptyPlot';
 import MiniPlot from 'components/plots/MiniPlot';
 import PlotStyling from 'components/plots/styling/PlotStyling';
@@ -102,7 +102,7 @@ const DataIntegration = (props) => {
         panelTitle: 'Colour Inversion',
         controls: ['colourInversion'],
         footer: <Alert
-          message='Changing plot colours is not available here. Use the Data Management tool in Data Exploration to customise cell set and metadata colours'
+          message='Changing plot colours is not available here. Use the Cell sets and Metadata tool in Data Exploration to customise cell set and metadata colours'
           type='info'
         />,
       },
@@ -131,7 +131,7 @@ const DataIntegration = (props) => {
         panelTitle: 'Colours',
         controls: ['colourInversion'],
         footer: <Alert
-          message='Changing plot colours is not available here. Use the Data Management tool in Data Exploration to customise cell set and metadata colours'
+          message='Changing plot colours is not available here. Use the Cell sets and Metadata tool in Data Exploration to customise cell set and metadata colours'
           type='info'
         />,
       },
