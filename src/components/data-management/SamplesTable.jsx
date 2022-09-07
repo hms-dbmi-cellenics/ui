@@ -2,7 +2,7 @@
 import React, {
   useEffect, useState, forwardRef, useImperativeHandle,
 } from 'react';
-
+import PropTypes from 'prop-types';
 import { useSelector, useDispatch } from 'react-redux';
 import {
   Table, Row, Col, Typography, Space,
@@ -127,7 +127,7 @@ const SamplesTable = forwardRef((props, ref) => {
   useEffect(() => {
     const samplesLoaded = activeExperiment?.sampleIds.every((sampleId) => samples[sampleId]);
 
-    if (activeExperiment?.sampleIds.length > 0 && samplesLoaded) {
+    if (activeExperiment?.sampleIds.length > 0 && samplesLoaded && technology) {
       // if there are samples - build the table columns
       const sanitizedSampleNames = new Set(
         activeExperiment.sampleIds.map((id) => samples[id]?.name.trim()),
@@ -143,7 +143,7 @@ const SamplesTable = forwardRef((props, ref) => {
       setTableColumns([]);
       setSampleNames(new Set());
     }
-  }, [samples, activeExperiment]);
+  }, [samples, activeExperiment, technology]);
 
   useConditionalEffect(() => {
     dispatch(loadSamples(activeExperimentId));
@@ -246,7 +246,7 @@ const SamplesTable = forwardRef((props, ref) => {
   };
 
   useEffect(() => {
-    if (activeExperiment.sampleIds.length === 0) {
+    if (activeExperiment.sampleIds.length === 0 || !technology) {
       setTableData([]);
       return;
     }
@@ -278,7 +278,7 @@ const SamplesTable = forwardRef((props, ref) => {
       };
     });
     setTableData(newData);
-  }, [experiments, samples, activeExperimentId]);
+  }, [experiments, samples, activeExperimentId, technology]);
 
   const noDataComponent = (
     <ExampleExperimentsSpace
@@ -370,5 +370,9 @@ const SamplesTable = forwardRef((props, ref) => {
     </>
   );
 });
+
+SamplesTable.propTypes = {
+  technology: PropTypes.string.isRequired,
+};
 
 export default React.memo(SamplesTable);

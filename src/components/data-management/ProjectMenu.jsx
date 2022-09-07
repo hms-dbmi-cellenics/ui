@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   Space, Button,
@@ -10,7 +10,8 @@ import LaunchAnalysisButton from './LaunchAnalysisButton';
 import FileUploadModal from './FileUploadModal';
 import ShareExperimentModal from './ShareExperimentModal';
 
-const ProjectMenu = () => {
+const ProjectMenu = (props) => {
+  const { technology } = props;
   const dispatch = useDispatch();
   const samples = useSelector((state) => state.samples);
   const activeExperimentId = useSelector((state) => state.experiments.meta.activeExperimentId);
@@ -50,7 +51,7 @@ const ProjectMenu = () => {
             experiment={activeExperiment}
           />
         )}
-        <LaunchAnalysisButton />
+        <LaunchAnalysisButton technology={technology} />
       </Space>
       {uploadModalVisible ? (
         <FileUploadModal

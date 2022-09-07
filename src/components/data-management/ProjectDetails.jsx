@@ -67,7 +67,9 @@ const ProjectDetails = ({ width, height }) => {
               >
                 Add metadata
               </Button>
-              <ProjectMenu />
+              <ProjectMenu
+                technology={technology}
+              />
             </Space>
           </div>
           <Text type='secondary'>
