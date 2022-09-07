@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 /* eslint-disable react/jsx-props-no-spreading */
-import React, { useRef } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import {
@@ -26,9 +26,23 @@ const paddingLeft = layout.PANEL_PADDING;
 const ProjectDetails = ({ width, height }) => {
   const dispatch = useDispatch();
 
+  const samples = useSelector((state) => state.samples);
   const { activeExperimentId } = useSelector((state) => state.experiments.meta);
   const activeExperiment = useSelector((state) => state.experiments[activeExperimentId]);
   const samplesTableRef = useRef();
+
+  const [technology, setTechnology] = useState();
+
+  useEffect(() => {
+    const samplesLoaded = activeExperiment?.sampleIds.every((sampleId) => samples[sampleId]);
+
+    if (activeExperiment?.sampleIds.length > 0 && samplesLoaded) {
+      const isSeurat = activeExperiment.sampleIds.some((sampleId) => samples[sampleId].type === 'Seurat');
+      setTechnology(isSeurat ? 'seurat' : '10x');
+    } else {
+      setTechnology(null);
+    }
+  }, [samples, activeExperiment]);
 
   return (
     // The height of this div has to be fixed to enable sample scrolling
@@ -74,6 +88,7 @@ const ProjectDetails = ({ width, height }) => {
           />
           <SamplesTable
             ref={samplesTableRef}
+            technology={technology}
           />
         </div>
       </div>

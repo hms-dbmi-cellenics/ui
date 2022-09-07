@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   Space, Button,
@@ -22,7 +22,7 @@ const ProjectMenu = () => {
   const uploadFiles = (filesList, sampleType) => {
     if (sampleType === '10X Chromium') {
       process10XUpload(filesList, sampleType, samples, activeExperimentId, dispatch);
-    } else if (sampleType == 'Seurat') {
+    } else if (sampleType === 'Seurat') {
       processSeuratUpload(filesList, sampleType, samples, activeExperimentId, dispatch);
     }
     setUploadModalVisible(false);

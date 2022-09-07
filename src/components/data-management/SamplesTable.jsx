@@ -41,6 +41,7 @@ const { Text } = Typography;
 const SamplesTable = forwardRef((props, ref) => {
   const dispatch = useDispatch();
   const [tableData, setTableData] = useState([]);
+  const { technology } = props;
 
   const experiments = useSelector((state) => state.experiments);
   const samples = useSelector((state) => state.samples);
@@ -137,10 +138,7 @@ const SamplesTable = forwardRef((props, ref) => {
         (metadataKey) => createInitializedMetadataColumn(metadataKeyToName(metadataKey)),
       ) || [];
 
-      const isSeurat = activeExperiment.sampleIds.some((sampleId) => samples[sampleId].type === 'Seurat');
-      const tech = isSeurat ? 'seurat' : '10x';
-
-      setTableColumns([...initialTableColumns[tech], ...metadataColumns]);
+      setTableColumns([...initialTableColumns[technology], ...metadataColumns]);
     } else {
       setTableColumns([]);
       setSampleNames(new Set());
@@ -260,8 +258,6 @@ const SamplesTable = forwardRef((props, ref) => {
       // user from removing the dataset or uploading another one.
       const sampleFiles = samples[sampleUuid]?.files || {};
 
-      const isSeurat = Object.keys(sampleFiles).includes('r.rds');
-
       const barcodesFile = sampleFiles['barcodes.tsv.gz'] ?? { upload: { status: UploadStatus.FILE_NOT_FOUND } };
       const genesFile = sampleFiles['features.tsv.gz'] ?? { upload: { status: UploadStatus.FILE_NOT_FOUND } };
       const matrixFile = sampleFiles['matrix.mtx.gz'] ?? { upload: { status: UploadStatus.FILE_NOT_FOUND } };
@@ -276,8 +272,8 @@ const SamplesTable = forwardRef((props, ref) => {
         key: idx,
         name: samples[sampleUuid]?.name || 'UPLOAD ERROR: Please reupload sample',
         uuid: sampleUuid,
-        ...(!isSeurat && { barcodes: barcodesData, genes: genesData, matrix: matrixData }),
-        ...(isSeurat && { seurat: seuratData }),
+        ...(technology === '10x' && { barcodes: barcodesData, genes: genesData, matrix: matrixData }),
+        ...(technology === 'seurat' && { seurat: seuratData }),
         ...samples[sampleUuid]?.metadata,
       };
     });
