@@ -52,13 +52,13 @@ const getColumn = (columnIndex, sparseMatrix) => {
 
 class ExpressionMatrix {
   constructor() {
-    this.lastFreeIndex = 0;
-
-    this.loadedExpressionsIndexes = {};
-
     this.rawGeneExpressions = new SparseMatrix();
     this.truncatedGeneExpressions = new SparseMatrix();
     // this.ZScores = new SparseMatrix();
+    this.stats = {};
+
+    this.lastFreeIndex = 0;
+    this.loadedExpressionsIndexes = {};
   }
 
   getRawExpression(geneSymbol) {
@@ -81,10 +81,15 @@ class ExpressionMatrix {
     return !_.isNil(this.loadedExpressionsIndexes[geneSymbol]);
   }
 
+  getStoredGenes() {
+    return Object.keys(this.loadedExpressionsIndexes);
+  }
+
   // setGeneExpression(newGeneSymbols, newRawGeneExpression, newTruncatedGeneExpression, stats) {
-  setGeneExpression(newGeneSymbols, newRawGeneExpression, newTruncatedGeneExpression) {
+  setGeneExpression(newGeneSymbols, newRawGeneExpression, newTruncatedGeneExpression, stats) {
     this.rawGeneExpressions = newRawGeneExpression;
     this.truncatedGeneExpressions = newTruncatedGeneExpression;
+    this.stats = stats;
 
     this.loadedExpressionsIndexes = newGeneSymbols.reduce((acum, currentSymbol, index) => {
       // eslint-disable-next-line no-param-reassign
@@ -103,12 +108,11 @@ class ExpressionMatrix {
    *  raw gene expressions for each of the genes
    * @param {*} newTruncatedGeneExpression A mathjs SparseMatrix with the
    *  raw gene expressions for each of the genes
-   * @param {*} stats An object which with the stats for each gene's expression
+   * @param {*} newStats An object which with the stats for each gene's expression
    * Each key is a gene symbol,
    * Each value has this shape: {rawMean, rawStdev, truncatedMin, truncatedMax}
    */
-  // pushGeneExpression(newGeneSymbols, newRawGeneExpression, newTruncatedGeneExpression, stats) {
-  pushGeneExpression(newGeneSymbols, newRawGeneExpression, newTruncatedGeneExpression) {
+  pushGeneExpression(newGeneSymbols, newRawGeneExpression, newTruncatedGeneExpression, newStats) {
     const [, genesCount] = this.rawGeneExpressions.size();
 
     // If the matrix was empty previously we can just replace it with the ones that are being pushed
@@ -119,6 +123,8 @@ class ExpressionMatrix {
 
     appendMatrix(this.rawGeneExpressions, newRawGeneExpression);
     appendMatrix(this.truncatedGeneExpressions, newTruncatedGeneExpression);
+
+    _.merge(this.stats, newStats);
 
     newGeneSymbols.forEach((geneSymbol) => {
       this.generateIndexFor(geneSymbol);

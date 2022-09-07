@@ -32,22 +32,6 @@ const markerGenesLoaded = produce((draft, action) => {
 
   draft.expression.views[plotUuid] = { fetching: false, error: false, data: order };
 
-  // eslint-disable-next-line max-len
-  // const currentTruncatedExpressionExpression = current(draft.expression.data.truncatedExpression);
-
-  // order.forEach((geneSymbol, index) => {
-  //   draft.expression.data.rawExpression.
-  // });
-
-  // draft.expression.data.rawExpression;
-
-  // draft.expression.stats = {
-  //   ...draft.expression.stats,
-  //   stats,
-  // };
-
-  // // draft.expression.data = { ...draft.expression.data };
-
   draft.markers.loading = false;
   draft.markers.error = false;
 }, initialState);

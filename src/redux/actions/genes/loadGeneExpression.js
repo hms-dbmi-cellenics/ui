@@ -12,7 +12,7 @@ const loadGeneExpression = (
   experimentId, genes, componentUuid, forceReloadAll = false,
 ) => async (dispatch, getState) => {
   const {
-    loading, data: geneData,
+    loading, matrix,
   } = getState().genes.expression;
 
   // If other gene expression data is already being loaded, don't dispatch.
@@ -36,7 +36,8 @@ const loadGeneExpression = (
   // we are not forced to reload all of the data.
 
   let genesToFetch = [...genes];
-  const genesAlreadyLoaded = Object.keys(geneData);
+  const genesAlreadyLoaded = matrix.getStoredGenes();
+
   if (!forceReloadAll) {
     genesToFetch = genesToFetch.filter(
       (gene) => !new Set(upperCaseArray(genesAlreadyLoaded)).has(gene.toUpperCase()),

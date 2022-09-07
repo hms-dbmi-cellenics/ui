@@ -16,6 +16,7 @@ const appendMatrix = (sparseMatrix1, sparseMatrix2) => {
     throw new Error('Append matrix error: Amount of cells doesnt match');
   }
 
+  // Can't use .push(...array) because it may exceed the call stack size
   sparseMatrix1._index = sparseMatrix1._index.concat(sparseMatrix2._index);
   sparseMatrix1._values = sparseMatrix1._values.concat(sparseMatrix2._values);
 
