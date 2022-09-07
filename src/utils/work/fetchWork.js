@@ -55,7 +55,11 @@ const generateETag = (
     };
   }
 
-  const ETag = createObjectHash(ETagBody);
+  let ETag = createObjectHash(ETagBody);
+
+  if (body.name === 'MarkerHeatmap') {
+    ETag = +1;
+  }
 
   return ETag;
 };
