@@ -42,8 +42,14 @@ const TrajectoryAnalysisPlot = forwardRef((props, ref) => {
   const [plotSpec, setPlotSpec] = useState(null);
   const [forceReset, setForceReset] = useState(0);
   const viewStateRef = useRef({ xdom: [-2, 2], ydom: [-2, 2] });
-  const previousXAxisAutoSettings = useRef(null);
-  const previousYAxisAutoSettings = useRef(null);
+  const previousAxisSettings = useRef({
+    xAxisAuto: null,
+    xMin: null,
+    xMax: null,
+    yAxisAuto: null,
+    yMin: null,
+    yMax: null,
+  });
 
   const cellSets = useSelector(getCellSets());
 
@@ -172,7 +178,10 @@ const TrajectoryAnalysisPlot = forwardRef((props, ref) => {
 
     const viewState = {};
 
-    if (previousXAxisAutoSettings.current === xAxisAuto) {
+    if (previousAxisSettings.current.xAxisAuto === xAxisAuto
+      && previousAxisSettings.current.xMin === xMin
+      && previousAxisSettings.current.xMax === xMax
+    ) {
       viewState.xdom = viewStateRef.current.xdom;
     } else if (xAxisAuto) {
       viewState.xdom = xExtent;
@@ -180,7 +189,10 @@ const TrajectoryAnalysisPlot = forwardRef((props, ref) => {
       viewState.xdom = [xMin, xMax];
     }
 
-    if (previousYAxisAutoSettings.current === yAxisAuto) {
+    if (previousAxisSettings.current.yAxisAuto === yAxisAuto
+      && previousAxisSettings.current.yMin === yMin
+      && previousAxisSettings.current.yMax === yMax
+    ) {
       viewState.ydom = viewStateRef.current.ydom;
     } else if (yAxisAuto) {
       viewState.ydom = yExtent;
@@ -188,8 +200,7 @@ const TrajectoryAnalysisPlot = forwardRef((props, ref) => {
       viewState.ydom = [yMin, yMax];
     }
 
-    previousXAxisAutoSettings.current = xAxisAuto;
-    previousYAxisAutoSettings.current = yAxisAuto;
+    previousAxisSettings.current = config.axesRanges;
 
     const spec = generateTrajectoryAnalysisSpec(
       config,

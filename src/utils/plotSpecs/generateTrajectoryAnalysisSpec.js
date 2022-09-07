@@ -14,7 +14,7 @@ const generatePadding = (plotConfig, numClusters) => {
     top: 40,
     left: 80,
     bottom: 80,
-    right: 0,
+    right: 20,
   };
 
   if (!showLegend) return defaultPadding;
