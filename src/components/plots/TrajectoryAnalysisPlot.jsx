@@ -224,7 +224,7 @@ const TrajectoryAnalysisPlot = forwardRef((props, ref) => {
     embeddingData,
     pseudotimeData,
     startingNodesPlotData,
-    displaySettings.usePseudotimeValues,
+    displaySettings.showPseudotimeValues,
     displaySettings.showStartingNodes,
   ]);
 
@@ -292,7 +292,7 @@ const TrajectoryAnalysisPlot = forwardRef((props, ref) => {
         reset={forceReset}
         spec={plotSpec || {}}
         // webgl renderer doesn't support gradient legend, so we need to use canvas for plotting pseudotime
-        renderer={displaySettings.usePseudotimeValues ? 'canvas' : 'webgl'}
+        renderer={displaySettings.showPseudotimeValues ? 'canvas' : 'webgl'}
         actions={actions}
         signalListeners={displaySettings.showStartingNodes ? plotListeners : {}}
       />

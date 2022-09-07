@@ -730,7 +730,7 @@ const generateTrajectoryAnalysisSpec = (
     cellSetLegendsData.length,
   );
 
-  if (displaySettings.usePseudotimeValues && pseudotimeData) {
+  if (displaySettings.showPseudotimeValues && pseudotimeData) {
     insertPseudotimeSpec(spec, config, pseudotimeData);
   } else {
     insertClusterColorsSpec(spec, config, cellSetLegendsData, cellSetLegendsData.length);

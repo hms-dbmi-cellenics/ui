@@ -68,7 +68,7 @@ const defaultAPIResponse = _.merge(
 
 const mockDisplaySettings = {
   showStartingNodes: true,
-  usePseudotimeValues: false,
+  showPseudotimeValues: false,
   isZoomedOrPanned: false,
 };
 
