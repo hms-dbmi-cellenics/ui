@@ -23,8 +23,11 @@ const getTimeoutForWorkerTaskUncapped = (state, taskName, options) => {
     case 'DifferentialExpression': {
       return 180;
     }
-    case 'TrajectoryAnalysis': {
+    case 'TrajectoryAnalysisStartingNodes': {
       return 0.005 * nCells + 60;
+    }
+    case 'TrajectoryAnalysisPseudotime': {
+      return 0.01 * nCells + 60;
     }
     case 'ListGenes':
     case 'GeneExpression':

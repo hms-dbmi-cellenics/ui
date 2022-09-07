@@ -58,14 +58,12 @@ const plots = [
         key: 'frequency-key',
         link: 'frequency',
       },
-      // IN DEVELOPMENT - Will be enabled once ticket below is done
-      // https://biomage.atlassian.net/browse/BIOMAGE-1939
-      // {
-      //   name: 'Trajectory Analysis',
-      //   image: trajectoryAnalysis,
-      //   key: 'trajectory-analysis-key',
-      //   link: 'trajectory-analysis',
-      // },
+      {
+        name: 'Trajectory Analysis',
+        image: trajectoryAnalysis,
+        key: 'trajectory-analysis-key',
+        link: 'trajectory-analysis',
+      },
     ],
   },
   {
