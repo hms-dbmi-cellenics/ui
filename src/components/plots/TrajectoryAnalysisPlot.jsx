@@ -291,7 +291,8 @@ const TrajectoryAnalysisPlot = forwardRef((props, ref) => {
       <Vega
         reset={forceReset}
         spec={plotSpec || {}}
-        renderer='webgl'
+        // webgl renderer doesn't support gradient legend, so we need to use canvas for plotting pseudotime
+        renderer={displaySettings.usePseudotimeValues ? 'canvas' : 'webgl'}
         actions={actions}
         signalListeners={displaySettings.showStartingNodes ? plotListeners : {}}
       />
