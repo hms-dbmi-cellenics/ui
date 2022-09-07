@@ -41,6 +41,7 @@ const { Text } = Typography;
 const SamplesTable = forwardRef((props, ref) => {
   const dispatch = useDispatch();
   const [tableData, setTableData] = useState([]);
+  const [technology, setTechnology] = useState('10x');
 
   const experiments = useSelector((state) => state.experiments);
   const samples = useSelector((state) => state.samples);
@@ -52,54 +53,85 @@ const SamplesTable = forwardRef((props, ref) => {
   const [sampleNames, setSampleNames] = useState(new Set());
   const DragHandle = sortableHandle(() => <MenuOutlined style={{ cursor: 'grab', color: '#999' }} />);
 
-  const initialTableColumns = [
-    {
-      fixed: 'left',
-      index: 0,
-      key: 'sort',
-      dataIndex: 'sort',
-      width: 30,
-      render: () => <DragHandle />,
-    },
-    {
-      className: `${integrationTestConstants.classes.SAMPLE_CELL}`,
-      index: 1,
-      key: 'sample',
-      title: 'Sample',
-      dataIndex: 'name',
-      fixed: true,
-      render: (text, record, indx) => <SampleNameCell cellInfo={{ text, record, indx }} />,
-    },
-    {
-      index: 2,
-      key: 'barcodes',
-      title: 'barcodes.tsv',
-      dataIndex: 'barcodes',
-      render: (tableCellData) => <UploadCell columnId='barcodes' tableCellData={tableCellData} />,
-    },
-    {
-      index: 3,
-      key: 'genes',
-      title: 'genes.tsv',
-      dataIndex: 'genes',
-      render: (tableCellData) => <UploadCell columnId='genes' tableCellData={tableCellData} />,
-    },
-    {
-      index: 4,
-      key: 'matrix',
-      title: 'matrix.mtx',
-      dataIndex: 'matrix',
-      render: (tableCellData) => <UploadCell columnId='matrix' tableCellData={tableCellData} />,
-    },
-  ];
+  const initialTableColumns = {
+    '10x': [
+      {
+        fixed: 'left',
+        index: 0,
+        key: 'sort',
+        dataIndex: 'sort',
+        width: 30,
+        render: () => <DragHandle />,
+      },
+      {
+        className: `${integrationTestConstants.classes.SAMPLE_CELL}`,
+        index: 1,
+        key: 'sample',
+        title: 'Sample',
+        dataIndex: 'name',
+        fixed: true,
+        render: (text, record, indx) => <SampleNameCell cellInfo={{ text, record, indx }} />,
+      },
+      {
+        index: 2,
+        key: 'barcodes',
+        title: 'barcodes.tsv',
+        dataIndex: 'barcodes',
+        render: (tableCellData) => <UploadCell columnId='barcodes' tableCellData={tableCellData} />,
+      },
+      {
+        index: 3,
+        key: 'genes',
+        title: 'genes.tsv',
+        dataIndex: 'genes',
+        render: (tableCellData) => <UploadCell columnId='genes' tableCellData={tableCellData} />,
+      },
+      {
+        index: 4,
+        key: 'matrix',
+        title: 'matrix.mtx',
+        dataIndex: 'matrix',
+        render: (tableCellData) => <UploadCell columnId='matrix' tableCellData={tableCellData} />,
+      },
+    ],
+    seurat: [
+      {
+        fixed: 'left',
+        index: 0,
+        key: 'sort',
+        dataIndex: 'sort',
+        width: 30,
+        render: () => <DragHandle />,
+      },
+      {
+        className: `${integrationTestConstants.classes.SAMPLE_CELL}`,
+        index: 1,
+        key: 'sample',
+        title: 'File',
+        dataIndex: 'name',
+        fixed: true,
+        render: (text, record, indx) => <SampleNameCell cellInfo={{ text, record, indx }} />,
+      },
+      {
+        index: 2,
+        key: 'seurat',
+        title: 'seurat rds',
+        dataIndex: 'seurat',
+        render: (tableCellData) => <UploadCell columnId='seurat' tableCellData={tableCellData} />,
+      },
+    ],
+  };
 
-  const [tableColumns, setTableColumns] = useState(initialTableColumns);
+  const [tableColumns, setTableColumns] = useState(initialTableColumns['10x']);
 
   useEffect(() => {
     const samplesLoaded = activeExperiment?.sampleIds.every((sampleId) => samples[sampleId]);
 
     if (activeExperiment?.sampleIds.length > 0 && samplesLoaded) {
       // if there are samples - build the table columns
+
+      const isSeurat = activeExperiment.sampleIds.some((sampleId) => samples[sampleId].type === 'Seurat');
+      setTechnology(isSeurat ? 'seurat' : '10x');
 
       const sanitizedSampleNames = new Set(
         activeExperiment.sampleIds.map((id) => samples[id]?.name.trim()),
@@ -109,7 +141,8 @@ const SamplesTable = forwardRef((props, ref) => {
       const metadataColumns = activeExperiment.metadataKeys.map(
         (metadataKey) => createInitializedMetadataColumn(metadataKeyToName(metadataKey)),
       ) || [];
-      setTableColumns([...initialTableColumns, ...metadataColumns]);
+
+      setTableColumns([...initialTableColumns[technology], ...metadataColumns]);
     } else {
       setTableColumns([]);
       setSampleNames(new Set());
@@ -232,23 +265,24 @@ const SamplesTable = forwardRef((props, ref) => {
       const barcodesFile = sampleFiles['barcodes.tsv.gz'] ?? { upload: { status: UploadStatus.FILE_NOT_FOUND } };
       const genesFile = sampleFiles['features.tsv.gz'] ?? { upload: { status: UploadStatus.FILE_NOT_FOUND } };
       const matrixFile = sampleFiles['matrix.mtx.gz'] ?? { upload: { status: UploadStatus.FILE_NOT_FOUND } };
+      const seuratFile = sampleFiles['r.rds'] ?? { upload: { status: UploadStatus.FILE_NOT_FOUND } };
 
       const barcodesData = { sampleUuid, file: barcodesFile };
       const genesData = { sampleUuid, file: genesFile };
       const matrixData = { sampleUuid, file: matrixFile };
+      const seuratData = { sampleUuid, file: seuratFile };
 
       return {
         key: idx,
         name: samples[sampleUuid]?.name || 'UPLOAD ERROR: Please reupload sample',
         uuid: sampleUuid,
-        barcodes: barcodesData,
-        genes: genesData,
-        matrix: matrixData,
+        ...(technology === '10x' && { barcodes: barcodesData, genes: genesData, matrix: matrixData }),
+        ...(technology === 'seurat' && { seurat: seuratData }),
         ...samples[sampleUuid]?.metadata,
       };
     });
     setTableData(newData);
-  }, [experiments, samples, activeExperimentId]);
+  }, [experiments, samples, activeExperimentId, technology]);
 
   const noDataComponent = (
     <ExampleExperimentsSpace

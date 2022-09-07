@@ -15,10 +15,10 @@ const MATRIX_SIGNATURE = Buffer.from('%%MatrixMarket');
 const GZIP_SIGNATURE = Buffer.from([0x1f, 0x8b]);
 
 const inspectFile = async (file, technology) => {
-  if (technology === '10X Genomics') {
-    inspect10XFile(file, technology);
-  } else if (technology === 'Seurat') {
-    inspectSeuratFile(file, technology);
+  if (technology === '10X Chromium') {
+    return inspect10XFile(file, technology);
+  } if (technology === 'Seurat') {
+    return inspectSeuratFile(file, technology);
   }
 };
 
@@ -70,17 +70,17 @@ const inspectSeuratFile = async (file, technology) => {
   // Validate a file requested for upload to the platform.
 
   // immediately discard file if filename is not in valid set
-  const validNames = techOptions[technology].acceptedFiles;
-  if (!validNames.has(file.name)) {
-    return Verdict.INVALID_NAME;
+  const validExtensions = techOptions[technology].validExtensionTypes;
+
+  const isValidExtension = validExtensions.some(
+    (validExtension) => file.name.endsWith(validExtension),
+  );
+
+  if (!isValidExtension) {
+    return Verdict.INVALID_FORMAT;
   }
 
-  // check rds files ends with .rds
-  if (file.name.endsWith('rds')) {
-    return Verdict.VALID_UNZIPPED;
-  }
-
-  return Verdict.INVALID_FORMAT;
+  return Verdict.VALID_ZIPPED;
 };
 
 export {

@@ -11,7 +11,7 @@ const fileUploadSpecifications = {
       'matrix.mtx.gz',
     ]),
     validMimeTypes: ['text/tsv', 'application/gzip', 'application/x-gzip', 'text/tab-separated-values'],
-    validExtensionTypes: ['.mtx', '.rds'],
+    validExtensionTypes: ['.mtx'],
     inputInfo: [
       ['features.tsv', 'features.tsv.gz', 'genes.tsv', 'genes.tsv.gz'],
       ['barcodes.tsv', 'barcodes.tsv.gz'],
@@ -28,9 +28,6 @@ const fileUploadSpecifications = {
     ],
   },
   Seurat: {
-    acceptedFiles: new Set([
-      'r.rds',
-    ]),
     validMimeTypes: ['text/tsv', 'application/gzip', 'application/x-gzip', 'text/tab-separated-values'],
     validExtensionTypes: ['.rds'],
     inputInfo: [
@@ -38,9 +35,6 @@ const fileUploadSpecifications = {
       ['counts'],
       ['clusters'],
       ['sample identity'],
-    ],
-    requiredFiles: [
-      'r.rds',
     ],
     fileUploadParagraphs: [
       // eslint-disable-next-line

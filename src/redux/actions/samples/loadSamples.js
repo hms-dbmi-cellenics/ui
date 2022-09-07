@@ -19,6 +19,7 @@ const toApiV1 = (samples, experimentId) => {
         features10x: 'features.tsv.gz',
         barcodes10x: 'barcodes.tsv.gz',
         matrix10x: 'matrix.mtx.gz',
+        seurat: 'r.rds',
       };
       const fileType = files[key]?.sampleFileType;
       if (!fileType) throw new Error('No sample file found');
@@ -44,6 +45,7 @@ const toApiV1 = (samples, experimentId) => {
 
   const sampleTechnologyConvert = (technology) => {
     if (technology === '10x') return '10X Chromium';
+    if (technology === 'seurat') return 'Seurat';
 
     throw new Error('Unknown sample technology');
   };
