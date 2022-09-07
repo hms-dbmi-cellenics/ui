@@ -36,7 +36,7 @@ const plotType = plotTypes.TRAJECTORY_ANALYSIS;
 
 const initialDisplaySettings = {
   showStartingNodes: true,
-  usePseudotimeValues: false,
+  showPseudotimeValues: false,
   hasRunPseudotime: false,
 };
 
@@ -125,7 +125,7 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
     },
     {
       panelTitle: 'Colours',
-      controls: displaySettings.usePseudotimeValues
+      controls: displaySettings.showPseudotimeValues
         ? ['colourScheme', 'colourInversion']
         : ['colourInversion'],
     },
@@ -144,7 +144,7 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
         },
       }],
     },
-    !displaySettings.usePseudotimeValues && {
+    !displaySettings.showPseudotimeValues && {
       panelTitle: 'Labels',
       controls: ['labels'],
     },

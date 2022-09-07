@@ -579,12 +579,11 @@ const insertPseudotimeSpec = (spec, config, pseudotime) => {
     ...spec.scales,
     {
       name: 'pseudotimeScale',
-      type: 'quantize',
+      type: 'linear',
       range: {
         scheme: config.colour.gradient === 'default'
           ? (config.colour.toggleInvert === '#FFFFFF' ? 'purplered' : 'darkgreen')
           : config.colour.gradient,
-        count: 5,
       },
       domain: { data: 'pseudotime', field: 'value' },
     },
@@ -594,15 +593,13 @@ const insertPseudotimeSpec = (spec, config, pseudotime) => {
     spec.legends = [
       {
         fill: 'pseudotimeScale',
-        type: 'symbol',
+        type: 'gradient',
         orient: config.legend.position,
         title: 'Pseudotime',
         gradientLength: 100,
         labelColor: config.colour.masterColour,
         titleColor: config.colour.masterColour,
         direction: positionIsRight ? 'vertical' : 'horizontal',
-        symbolType: 'circle',
-        symbolSize: 100,
         offset: 40,
         columns: legendColumns,
         labelLimit,
@@ -733,7 +730,7 @@ const generateTrajectoryAnalysisSpec = (
     cellSetLegendsData.length,
   );
 
-  if (displaySettings.usePseudotimeValues && pseudotimeData) {
+  if (displaySettings.showPseudotimeValues && pseudotimeData) {
     insertPseudotimeSpec(spec, config, pseudotimeData);
   } else {
     insertClusterColorsSpec(spec, config, cellSetLegendsData, cellSetLegendsData.length);

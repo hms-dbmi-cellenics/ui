@@ -15,10 +15,10 @@ const TrajectoryAnalysisDisplaySettings = (props) => {
     <Space direction='vertical'>
       <b>Plot values</b>
       <Radio.Group
-        value={displaySettings.usePseudotimeValues}
+        value={displaySettings.showPseudotimeValues}
         onChange={(e) => setDisplaySettings({
           ...displaySettings,
-          usePseudotimeValues: e.target.value,
+          showPseudotimeValues: e.target.value,
         })}
       >
         <Space>

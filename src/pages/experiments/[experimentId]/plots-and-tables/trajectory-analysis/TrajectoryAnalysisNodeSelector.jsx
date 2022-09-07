@@ -87,7 +87,7 @@ const TrajectoryAnalysisNodeSelector = (props) => {
             // Optimistic result to prevent flickering
               setDisplaySettings({
                 ...displaySettings,
-                usePseudotimeValues: true,
+                showPseudotimeValues: true,
                 hasRunPseudotime: true,
               });
 
@@ -95,7 +95,7 @@ const TrajectoryAnalysisNodeSelector = (props) => {
               if (!success) {
                 setDisplaySettings({
                   ...displaySettings,
-                  usePseudotimeValues: false,
+                  showPseudotimeValues: false,
                   hasRunPseudotime: false,
                 });
               }
