@@ -81,8 +81,9 @@ const LaunchAnalysisButton = () => {
     const allSampleFilesUploaded = (sample) => {
       // Check if all files for a given tech has been uploaded
       const { fileNames } = sample;
+      const { requiredFiles } = fileUploadSpecifications[sample.type];
       if (
-        !fileUploadSpecifications[sample.type].requiredFiles?.every(
+        requiredFiles && !requiredFiles.every(
           (file) => fileNames.includes(file),
         )
       ) { return false; }
