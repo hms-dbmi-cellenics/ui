@@ -62,7 +62,7 @@ const ProjectDetails = ({ width, height }) => {
             <Title level={3}>{activeExperiment.name}</Title>
             <Space>
               <Button
-                disabled={activeExperiment.sampleIds?.length === 0}
+                disabled={activeExperiment.sampleIds?.length === 0 || technology === 'seurat'}
                 onClick={() => samplesTableRef.current.createMetadataColumn()}
               >
                 Add metadata

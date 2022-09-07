@@ -36,6 +36,9 @@ const fileUploadSpecifications = {
       ['clusters'],
       ['sample identity'],
     ],
+    requiredFiles: [
+      'r.rds',
+    ],
     fileUploadParagraphs: [
       // eslint-disable-next-line
       <p>For your dataset, upload a single <code>*.rds</code> file with the Seurat object.</p>,

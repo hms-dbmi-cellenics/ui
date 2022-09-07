@@ -19,7 +19,7 @@ import { modules } from 'utils/constants';
 
 import { useAppRouter } from 'utils/AppRouteProvider';
 
-import calculateGem2sRerunStatus from 'utils/data-management/calculateGem2sRerunStatus';
+import calculatePipelineRerunStatus from 'utils/data-management/calculatePipelineRerunStatus';
 import GEM2SLoadingScreen from 'components/GEM2SLoadingScreen';
 import PipelineRedirectToDataProcessing from 'components/PipelineRedirectToDataProcessing';
 import PreloadContent from 'components/PreloadContent';
@@ -131,7 +131,7 @@ const ContentWrapper = (props) => {
   useEffect(() => {
     if (!activeExperiment) return;
 
-    const gem2sStatus = calculateGem2sRerunStatus(
+    const gem2sStatus = calculatePipelineRerunStatus(
       gem2sBackendStatus, activeExperiment, samples, experiment,
     );
 
