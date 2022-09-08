@@ -58,7 +58,7 @@ const generateETag = (
   let ETag = createObjectHash(ETagBody);
 
   if (body.name === 'MarkerHeatmap') {
-    ETag = +1;
+    ETag += 1;
   }
 
   return ETag;
