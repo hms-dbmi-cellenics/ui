@@ -40,6 +40,8 @@ import PrivacyPolicyIntercept from './data-management/PrivacyPolicyIntercept';
 const { Sider } = Layout;
 const { Text } = Typography;
 
+const checkEveryIsValue = (arr, value) => arr.every((item) => item === value);
+
 const ContentWrapper = (props) => {
   const dispatch = useDispatch();
 
@@ -98,6 +100,7 @@ const ContentWrapper = (props) => {
   const seuratRunning = seuratStatusKey === 'RUNNING';
   const seuratRunningError = backendErrors.includes(seuratStatusKey);
   const completedSeuratSteps = backendStatus?.seurat?.completedSteps;
+  const seuratComplete = seuratStatusKey === pipelineStatusValues.SUCCEEDED;
 
   // This is used to prevent a race condition where the page would start loading immediately
   // when the backend status was previously loaded. In that case, `backendLoading` is `false`
@@ -236,6 +239,7 @@ const ContentWrapper = (props) => {
       name: 'Data Management',
       disableIfNoExperiment: false,
       disabledByPipelineStatus: true,
+      disabledIfSeurat: false,
     },
     {
       module: modules.DATA_PROCESSING,
@@ -243,6 +247,7 @@ const ContentWrapper = (props) => {
       name: 'Data Processing',
       disableIfNoExperiment: true,
       disabledByPipelineStatus: false,
+      disabledIfSeurat: true,
     },
     {
       module: modules.DATA_EXPLORATION,
@@ -250,6 +255,7 @@ const ContentWrapper = (props) => {
       name: 'Data Exploration',
       disableIfNoExperiment: true,
       disabledByPipelineStatus: true,
+      disabledIfSeurat: false,
     },
     {
       module: modules.PLOTS_AND_TABLES,
@@ -257,6 +263,7 @@ const ContentWrapper = (props) => {
       name: 'Plots and Tables',
       disableIfNoExperiment: true,
       disabledByPipelineStatus: true,
+      disabledIfSeurat: false,
     },
   ];
 
@@ -279,10 +286,14 @@ const ContentWrapper = (props) => {
       }
 
       if (gem2sRunning || waitingForQcToLaunch) {
-        return <PipelineLoadingScreen experimentId={routeExperimentId} pipelineStatus='running' completedSteps={completedGem2sSteps} />;
+        return <PipelineLoadingScreen experimentId={routeExperimentId} pipelineStatus='running' completedSteps={completedGem2sSteps} pipelineType='gem2s' />;
       }
 
-      if ([gem2sStatusKey, seuratStatusKey].every((statusKey) => statusKey === pipelineStatusValues.NOT_CREATED)) {
+      if (seuratRunning) {
+        return <PipelineLoadingScreen experimentId={routeExperimentId} pipelineStatus='running' completedSteps={completedSeuratSteps} pipelineType='seurat' />;
+      }
+
+      if (checkEveryIsValue([gem2sStatusKey, seuratStatusKey], pipelineStatusValues.NOT_CREATED)) {
         return <PipelineLoadingScreen experimentId={routeExperimentId} pipelineStatus='toBeRun' />;
       }
 
@@ -292,6 +303,10 @@ const ContentWrapper = (props) => {
 
       if (pipelineRunning && currentModule !== modules.DATA_PROCESSING) {
         return <PipelineRedirectToDataProcessing experimentId={routeExperimentId} pipelineStatus='running' />;
+      }
+
+      if (seuratComplete && currentModule !== modules.DATA_EXPLORATION) {
+        navigateTo(modules.DATA_EXPLORATION, { experimentId: routeExperimentId });
       }
 
       if (process.env.NODE_ENV === 'development') {
@@ -307,10 +322,12 @@ const ContentWrapper = (props) => {
   };
 
   const menuItemRender = ({
-    module, icon, name, disableIfNoExperiment, disabledByPipelineStatus,
+    module, icon, name, disableIfNoExperiment, disabledByPipelineStatus, disabledIfSeurat,
   }) => {
     const notProcessedExperimentDisable = !routeExperimentId && disableIfNoExperiment
       && (!gem2sRerunStatus || gem2sRerunStatus.rerun);
+
+    const notProcessedIsSeurat = seuratStatusKey && disabledIfSeurat;
 
     const pipelineStatusDisable = disabledByPipelineStatus && (
       backendError || gem2sRunning || gem2sRunningError
@@ -320,7 +337,7 @@ const ContentWrapper = (props) => {
     return (
       <Menu.Item
         id={module}
-        disabled={notProcessedExperimentDisable || pipelineStatusDisable}
+        disabled={notProcessedExperimentDisable || pipelineStatusDisable || notProcessedIsSeurat}
         key={module}
         icon={icon}
         onClick={() => navigateTo(
