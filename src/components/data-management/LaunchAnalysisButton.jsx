@@ -14,6 +14,17 @@ import calculatePipelineRerunStatus from 'utils/data-management/calculatePipelin
 
 import { useAppRouter } from 'utils/AppRouteProvider';
 
+const runnersByTechnology = {
+  '10x': runGem2s,
+  seurat: runSeurat,
+};
+
+const pipelineByTechnology = {
+  '10x': 'gem2s',
+  seurat: 'seurat',
+
+};
+
 const LaunchButtonTemplate = (props) => {
   const {
     // eslint-disable-next-line react/prop-types
@@ -50,21 +61,16 @@ const LaunchAnalysisButton = (props) => {
   );
 
   const launchAnalysis = () => {
-    if (technology === '10x') {
-      if (pipelineRerunStatus.rerun) {
-        dispatch(runGem2s(activeExperimentId, pipelineRerunStatus.paramsHash));
-      }
-      navigateTo(modules.DATA_PROCESSING, { experimentId: activeExperimentId });
-    } else if (technology === 'seurat') {
-      if (pipelineRerunStatus.rerun) {
-        dispatch(runSeurat(activeExperimentId, pipelineRerunStatus.paramsHash));
-      }
+    const runner = runnersByTechnology[technology];
+    if (pipelineRerunStatus.rerun) {
+      dispatch(runner(activeExperimentId, pipelineRerunStatus.paramsHash));
     }
+    navigateTo(modules.DATA_PROCESSING, { experimentId: activeExperimentId });
   };
 
   useEffect(() => {
     // The value of backend status is null for new experiments that have never run
-    const pipeline = technology === 'seurat' ? 'seurat' : 'gem2s';
+    const pipeline = pipelineByTechnology[technology];
     const pipelineBackendStatus = backendStatus[activeExperimentId]?.status?.[pipeline];
 
     if (

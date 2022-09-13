@@ -1,9 +1,6 @@
 import fetchAPI from 'utils/http/fetchAPI';
 import handleError from 'utils/http/handleError';
 import endUserMessages from 'utils/endUserMessages';
-import {
-  EXPERIMENT_SETTINGS_QC_START,
-} from 'redux/actionTypes/experimentSettings';
 
 import {
   BACKEND_STATUS_LOADING,
@@ -31,11 +28,6 @@ const runSeurat = (experimentId, paramsHash) => async (dispatch) => {
         body: JSON.stringify({ paramsHash }),
       },
     );
-
-    dispatch({
-      type: EXPERIMENT_SETTINGS_QC_START,
-      payload: {},
-    });
 
     dispatch(loadBackendStatus(experimentId));
   } catch (e) {

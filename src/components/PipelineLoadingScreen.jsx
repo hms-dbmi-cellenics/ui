@@ -6,29 +6,49 @@ import { useDispatch } from 'react-redux';
 import Link from 'next/link';
 import PropTypes from 'prop-types';
 import runGem2s from 'redux/actions/pipeline/runGem2s';
+import runSeurat from 'redux/actions/pipeline/runSeurat';
 import NotifyByEmail from './NotifyByEmail';
 
 const { Title, Text } = Typography;
 
-const gem2sStepsInfo = [
-  'Downloading sample files',
-  'Preprocessing samples',
-  'Computing metrics',
-  'Converting samples',
-  'Preparing analysis',
-  'Uploading completed data',
-];
+const pipelineStepsInfoByType = {
+  gem2s: [
+    'Downloading sample files',
+    'Preprocessing samples',
+    'Computing metrics',
+    'Converting samples',
+    'Preparing analysis',
+    'Uploading completed data',
+  ],
 
-const GEM2SLoadingScreen = (props) => {
+  seurat: [
+    'Downloading sample files',
+    'Preprocessing samples',
+    'Uploading completed data',
+  ],
+};
+
+const runnerByType = {
+  gem2s: runGem2s,
+  seurat: runSeurat,
+};
+
+const PipelineLoadingScreen = (props) => {
   const {
-    gem2sStatus, paramsHash, completedSteps, experimentId,
+    pipelineStatus, paramsHash, completedSteps, experimentId, pipelineType,
   } = props;
+
+  console.log('pipelineStatus');
+  console.log(pipelineStatus);
+
+  const pipelineStepsInfo = pipelineStepsInfoByType[pipelineType];
+  const runner = runnerByType[pipelineType];
 
   const dispatch = useDispatch();
 
   const dataManagementPath = '/data-management';
   const relaunchExperiment = () => {
-    dispatch(runGem2s(experimentId, paramsHash));
+    dispatch(runner(experimentId, paramsHash));
   };
 
   const texts = {
@@ -60,10 +80,10 @@ const GEM2SLoadingScreen = (props) => {
 
   const {
     status, title, subTitle, image, alt,
-  } = texts[gem2sStatus];
+  } = texts[pipelineStatus];
 
   const renderExtra = () => {
-    if (gem2sStatus === 'toBeRun') {
+    if (pipelineStatus === 'toBeRun') {
       return (
         <Link as={dataManagementPath} href={dataManagementPath} passHref>
           <Button type='primary' key='console'>
@@ -73,7 +93,7 @@ const GEM2SLoadingScreen = (props) => {
       );
     }
 
-    if (gem2sStatus === 'error') {
+    if (pipelineStatus === 'error') {
       return (
         <Space size='large'>
           <Link as={dataManagementPath} href={dataManagementPath} passHref>
@@ -95,8 +115,8 @@ const GEM2SLoadingScreen = (props) => {
             <br />
             <div>
               <Space direction='vertical' style={{ width: '100%' }}>
-                <Progress strokeWidth={10} type='line' percent={Math.floor((completedSteps.length / gem2sStepsInfo.length) * 100)} />
-                <Text type='secondary'>{(gem2sStepsInfo[completedSteps.length])}</Text>
+                <Progress strokeWidth={10} type='line' percent={Math.floor((completedSteps.length / pipelineStepsInfo.length) * 100)} />
+                <Text type='secondary'>{(pipelineStepsInfo[completedSteps.length])}</Text>
               </Space>
             </div>
             <div>
@@ -131,17 +151,19 @@ const GEM2SLoadingScreen = (props) => {
   );
 };
 
-GEM2SLoadingScreen.propTypes = {
-  gem2sStatus: PropTypes.oneOf(['error', 'running', 'toBeRun']).isRequired,
+PipelineLoadingScreen.propTypes = {
+  pipelineStatus: PropTypes.oneOf(['error', 'running', 'toBeRun']).isRequired,
   completedSteps: PropTypes.array,
   experimentId: PropTypes.string,
   paramsHash: PropTypes.string,
+  pipelineType: PropTypes.string,
 };
 
-GEM2SLoadingScreen.defaultProps = {
+PipelineLoadingScreen.defaultProps = {
   completedSteps: [],
   experimentId: null,
   paramsHash: null,
+  pipelineType: 'gem2s',
 };
 
-export default GEM2SLoadingScreen;
+export default PipelineLoadingScreen;

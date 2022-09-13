@@ -20,7 +20,7 @@ import { modules } from 'utils/constants';
 import { useAppRouter } from 'utils/AppRouteProvider';
 
 import calculatePipelineRerunStatus from 'utils/data-management/calculatePipelineRerunStatus';
-import GEM2SLoadingScreen from 'components/GEM2SLoadingScreen';
+import PipelineLoadingScreen from 'components/PipelineLoadingScreen';
 import PipelineRedirectToDataProcessing from 'components/PipelineRedirectToDataProcessing';
 import PreloadContent from 'components/PreloadContent';
 
@@ -32,7 +32,7 @@ import { isBrowser, privacyPolicyIsNotAccepted } from 'utils/deploymentInfo';
 import Error from 'pages/_error';
 
 import integrationTestConstants from 'utils/integrationTestConstants';
-import pipelineStatus from 'utils/pipelineStatusValues';
+import pipelineStatusValues from 'utils/pipelineStatusValues';
 import BrowserAlert from 'components/BrowserAlert';
 import { loadUser } from 'redux/actions/user';
 import PrivacyPolicyIntercept from './data-management/PrivacyPolicyIntercept';
@@ -81,7 +81,7 @@ const ContentWrapper = (props) => {
     status: backendStatus,
   } = useSelector(getBackendStatus(currentExperimentId));
   const gem2sBackendStatus = backendStatus?.gem2s;
-  const backendErrors = [pipelineStatus.FAILED, pipelineStatus.TIMED_OUT, pipelineStatus.ABORTED];
+  const backendErrors = [pipelineStatusValues.FAILED, pipelineStatusValues.TIMED_OUT, pipelineStatusValues.ABORTED];
 
   const pipelineStatusKey = backendStatus?.pipeline?.status;
   const pipelineRunning = pipelineStatusKey === 'RUNNING';
@@ -92,6 +92,12 @@ const ContentWrapper = (props) => {
   const gem2sRunning = gem2sStatusKey === 'RUNNING';
   const gem2sRunningError = backendErrors.includes(gem2sStatusKey);
   const completedGem2sSteps = backendStatus?.gem2s?.completedSteps;
+
+  const seuratStatusKey = backendStatus?.seurat?.status;
+  const seuratparamsHash = backendStatus?.seurat?.paramsHash;
+  const seuratRunning = seuratStatusKey === 'RUNNING';
+  const seuratRunningError = backendErrors.includes(seuratStatusKey);
+  const completedSeuratSteps = backendStatus?.seurat?.completedSteps;
 
   // This is used to prevent a race condition where the page would start loading immediately
   // when the backend status was previously loaded. In that case, `backendLoading` is `false`
@@ -131,11 +137,11 @@ const ContentWrapper = (props) => {
   useEffect(() => {
     if (!activeExperiment) return;
 
-    const gem2sStatus = calculatePipelineRerunStatus(
+    const pipelineStatus = calculatePipelineRerunStatus(
       gem2sBackendStatus, activeExperiment, samples, experiment,
     );
 
-    setGem2sRerunStatus(gem2sStatus);
+    setGem2sRerunStatus(pipelineStatus);
   }, [gem2sBackendStatus, activeExperiment, samples, experiment]);
 
   useEffect(() => {
@@ -254,8 +260,8 @@ const ContentWrapper = (props) => {
     },
   ];
 
-  const waitingForQcToLaunch = gem2sStatusKey === pipelineStatus.SUCCEEDED
-    && pipelineStatusKey === pipelineStatus.NOT_CREATED;
+  const waitingForQcToLaunch = gem2sStatusKey === pipelineStatusValues.SUCCEEDED
+    && pipelineStatusKey === pipelineStatusValues.NOT_CREATED;
 
   const renderContent = () => {
     if (routeExperimentId) {
@@ -269,15 +275,15 @@ const ContentWrapper = (props) => {
       }
 
       if (gem2sRunningError) {
-        return <GEM2SLoadingScreen paramsHash={gem2sparamsHash} experimentId={routeExperimentId} gem2sStatus='error' />;
+        return <PipelineLoadingScreen paramsHash={gem2sparamsHash} experimentId={routeExperimentId} pipelineStatus='error' />;
       }
 
       if (gem2sRunning || waitingForQcToLaunch) {
-        return <GEM2SLoadingScreen experimentId={routeExperimentId} gem2sStatus='running' completedSteps={completedGem2sSteps} />;
+        return <PipelineLoadingScreen experimentId={routeExperimentId} pipelineStatus='running' completedSteps={completedGem2sSteps} />;
       }
 
-      if (gem2sStatusKey === pipelineStatus.NOT_CREATED) {
-        return <GEM2SLoadingScreen experimentId={routeExperimentId} gem2sStatus='toBeRun' />;
+      if ([gem2sStatusKey, seuratStatusKey].every((statusKey) => statusKey === pipelineStatusValues.NOT_CREATED)) {
+        return <PipelineLoadingScreen experimentId={routeExperimentId} pipelineStatus='toBeRun' />;
       }
 
       if (pipelineRunningError && currentModule !== modules.DATA_PROCESSING) {
@@ -292,7 +298,7 @@ const ContentWrapper = (props) => {
         return children;
       }
 
-      if (pipelineStatusKey === pipelineStatus.NOT_CREATED && currentModule !== modules.DATA_PROCESSING) {
+      if (pipelineStatusKey === pipelineStatusValues.NOT_CREATED && currentModule !== modules.DATA_PROCESSING) {
         return <PipelineRedirectToDataProcessing experimentId={routeExperimentId} pipelineStatus='toBeRun' />;
       }
     }
