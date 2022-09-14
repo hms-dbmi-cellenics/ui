@@ -22,8 +22,6 @@ import { Alert } from 'antd';
 
 import changeEmbeddingAxesIfNecessary from 'components/plots/helpers/changeEmbeddingAxesIfNecessary';
 
-// Remove comment before merging
-
 const TrajectoryAnalysisPlot = forwardRef((props, ref) => {
   // Currenty monocle3 trajectory analysis only supports
   // UMAP embedding. Therefore, this embedding is specifically fetched.
