@@ -5,32 +5,24 @@ import { useSelector } from 'react-redux';
 import _ from 'lodash';
 import { Col, Row, Space } from 'antd';
 
-// multi view grid will use a config generated in index.jsx
-// the structure of the config will be:
-// {
-//   ncols: number,
-//   nrows: number,
-//   genes: ['gene name', 'gene name', ...],
-//   plotUuids: ['plotUuid-0', 'plotUuid-1', ...]
-// }
-
-// renderPlot will need to receive shownGene, config, plotUuid as props
-
 const MultiViewGrid = (props) => {
   const {
     renderPlot,
-    multiViewGridUuid,
+    multiViewUuid,
   } = props;
 
   // the config can be initialised using updatePlotConfig
-  const multiViewGridConfig = useSelector((state) => (
-    state.componentConfig[multiViewGridUuid]?.config
+  const multiViewConfig = useSelector((state) => (
+    state.componentConfig[multiViewUuid]?.config
   ));
 
   const plotConfigs = useSelector((state) => {
-    const plotConfigsToReturn = multiViewGridConfig.plotUuids.reduce((acum, plotUuid) => {
-      // eslint-disable-next-line no-param-reassign
-      acum[plotUuid] = state.componentConfig[plotUuid]?.config;
+    const plotConfigsToReturn = multiViewConfig.plotUuids.reduce((acum, plotUuid) => {
+      const plotConfig = state.componentConfig[plotUuid]?.config;
+      if (plotConfig) {
+        // eslint-disable-next-line no-param-reassign
+        acum[plotUuid] = plotConfig;
+      }
       return acum;
     }, {});
 
@@ -38,15 +30,25 @@ const MultiViewGrid = (props) => {
   });
 
   const [plots, setPlots] = useState([]);
-  const previousConfig = useRef(null);
+  const previousMultiViewConfig = useRef({});
+
+  const shouldUpdatePlots = () => {
+    if (!multiViewConfig) return false;
+
+    if (_.isEqual(previousMultiViewConfig.current, multiViewConfig)) return false;
+
+    if (Object.values(plotConfigs).includes(undefined)) return false;
+
+    return true;
+  };
 
   useEffect(() => {
-    if (!multiViewGridConfig || _.isEqual(previousConfig.current, multiViewGridConfig)) return;
+    if (!shouldUpdatePlots()) return;
 
-    const previousPlots = previousConfig.current?.plotUuids ?? [];
-    const currentPlots = multiViewGridConfig.plotUuids;
+    const previousPlots = previousMultiViewConfig.current.plotUuids ?? [];
+    const currentPlots = multiViewConfig.plotUuids;
 
-    previousConfig.current = multiViewGridConfig;
+    previousMultiViewConfig.current = multiViewConfig;
 
     // if new plots are added
     if (currentPlots.length > previousPlots.length) {
@@ -55,10 +57,7 @@ const MultiViewGrid = (props) => {
       const newPlots = [];
 
       plotsToAdd.forEach((plotUuid) => {
-        const plotConfig = plotConfigs[plotUuid] ?? {};
-        newPlots.push(renderPlot(
-          { shownGene: plotConfig.shownGene, config: plotConfig, plotUuid },
-        ));
+        newPlots.push(renderPlot(plotUuid));
       });
 
       setPlots([...plots, ...newPlots]);
@@ -82,7 +81,7 @@ const MultiViewGrid = (props) => {
       !plotsToRemove.includes(previousPlots[index])
     ));
     setPlots(filteredPlots);
-  }, [multiViewGridConfig]);
+  }, [multiViewConfig, plotConfigs]);
 
   return (
     <Space
@@ -92,12 +91,12 @@ const MultiViewGrid = (props) => {
       style={{ width: '100%', height: '100%' }}
     >
       {
-        _.times(multiViewGridConfig.nrows, (i) => (
+        _.times(multiViewConfig.nrows, (i) => (
           <Row wrap={false} key={i}>
             {
-              _.times(multiViewGridConfig.ncols, (j) => (
-                <Col flex key={multiViewGridConfig.ncols * i + j}>
-                  {plots[multiViewGridConfig.ncols * i + j]}
+              _.times(multiViewConfig.ncols, (j) => (
+                <Col flex key={multiViewConfig.ncols * i + j}>
+                  {plots[multiViewConfig.ncols * i + j]}
                 </Col>
               ))
             }
@@ -110,7 +109,7 @@ const MultiViewGrid = (props) => {
 
 MultiViewGrid.propTypes = {
   renderPlot: PropTypes.func.isRequired,
-  multiViewGridUuid: PropTypes.string.isRequired,
+  multiViewUuid: PropTypes.string.isRequired,
 };
 
 export default MultiViewGrid;

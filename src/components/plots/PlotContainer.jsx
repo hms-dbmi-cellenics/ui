@@ -29,6 +29,7 @@ const PlotContainer = (props) => {
     extraToolbarControls, extraControlPanels,
     showReset,
     children,
+    onUpdate,
   } = props;
 
   const dispatch = useDispatch();
@@ -135,7 +136,7 @@ const PlotContainer = (props) => {
           <PlotStyling
             formConfig={plotStylingConfig}
             config={config}
-            onUpdate={updatePlotWithChanges}
+            onUpdate={onUpdate ?? updatePlotWithChanges}
             extraPanels={extraControlPanels}
             defaultActiveKey={defaultActiveKey}
           />
@@ -172,6 +173,7 @@ PlotContainer.propTypes = {
   extraControlPanels: PropTypes.node || PropTypes.arrayOf(PropTypes.node),
   children: PropTypes.node,
   showReset: PropTypes.bool,
+  onUpdate: PropTypes.func,
 };
 
 PlotContainer.defaultProps = {
@@ -180,6 +182,7 @@ PlotContainer.defaultProps = {
   extraControlPanels: null,
   children: null,
   showReset: true,
+  onUpdate: null,
 };
 
 export default PlotContainer;

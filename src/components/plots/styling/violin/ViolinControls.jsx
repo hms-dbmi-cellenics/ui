@@ -4,21 +4,36 @@ import {
   Collapse, Radio, Form, Slider, Skeleton,
 } from 'antd';
 import SelectData from 'components/plots/styling/SelectData';
-import SingleGeneSelection from '../SingleGeneSelection';
+import SingleGeneSelection from 'components/plots/styling/SingleGeneSelection';
+import MultiViewEditor from 'components/plots/styling/MultiViewEditor';
 
 const { Panel } = Collapse;
 
 const ViolinControls = (props) => {
   const {
-    config, onUpdate, setSearchedGene, cellSets,
+    config,
+    multiViewConfig,
+    onUpdate,
+    onMultiViewUpdate,
+    setSearchedGene,
+    setSelectedPlot,
+    addGeneToMultiView,
+    cellSets,
   } = props;
-
   return (
     <Collapse>
       <Panel header='Gene selection' key='gene-selection'>
         <SingleGeneSelection
           config={config}
           setSearchedGene={setSearchedGene}
+        />
+      </Panel>
+      <Panel header='Plot multi-view' key='plot-multi-view'>
+        <MultiViewEditor
+          multiViewConfig={multiViewConfig}
+          addGeneToMultiView={addGeneToMultiView}
+          onMultiViewUpdate={onMultiViewUpdate}
+          setSelectedPlot={setSelectedPlot}
         />
       </Panel>
       <Panel header='Select data' key='select-data'>
@@ -60,8 +75,12 @@ const ViolinControls = (props) => {
 
 ViolinControls.propTypes = {
   config: PropTypes.object.isRequired,
+  multiViewConfig: PropTypes.object.isRequired,
   onUpdate: PropTypes.func.isRequired,
+  onMultiViewUpdate: PropTypes.func.isRequired,
   setSearchedGene: PropTypes.func.isRequired,
+  addGeneToMultiView: PropTypes.func.isRequired,
+  setSelectedPlot: PropTypes.func.isRequired,
   cellSets: PropTypes.object.isRequired,
 };
 

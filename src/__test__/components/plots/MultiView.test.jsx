@@ -16,17 +16,9 @@ import { updatePlotConfig } from 'redux/actions/componentConfig';
 import { arrayMoveImmutable } from 'utils/array-move';
 
 const plotUuid = 'ViolinMain';
-const multiViewGridUuid = 'ViolinMain-MultiView';
+const multiViewUuid = 'ViolinMain-MultiView';
 
-const mockRenderPlot = jest.fn((props) => {
-  const { plotUuid } = props;
-
-  return (
-    <>
-      {plotUuid}
-    </>
-  );
-});
+const mockRenderPlot = jest.fn((plotUuid) => (<>{plotUuid}</>));
 
 const genes = ['gene 0', 'gene 1', 'gene 2'];
 const plotUuids = genes.map(
@@ -45,7 +37,7 @@ const renderMultiView = (store) => {
     <Provider store={store}>
       <MultiViewGrid
         renderPlot={mockRenderPlot}
-        multiViewGridUuid={multiViewGridUuid}
+        multiViewUuid={multiViewUuid}
       />
     </Provider>,
   );
@@ -59,7 +51,7 @@ describe('MultiView', () => {
 
     store = makeStore();
 
-    await store.dispatch(updatePlotConfig(multiViewGridUuid, mockMultiViewConfig));
+    await store.dispatch(updatePlotConfig(multiViewUuid, mockMultiViewConfig));
   });
 
   it('Renders itself and its children', async () => {
@@ -73,7 +65,7 @@ describe('MultiView', () => {
   it('Adds plots to multi view', async () => {
     renderMultiView(store);
 
-    await store.dispatch(updatePlotConfig(multiViewGridUuid, { plotUuids: [...plotUuids, 'ViolinMain-3'] }));
+    await store.dispatch(updatePlotConfig(multiViewUuid, { plotUuids: [...plotUuids, 'ViolinMain-3'] }));
     await waitFor(() => expect(screen.getByText('ViolinMain-3')).toBeInTheDocument());
 
     expect(mockRenderPlot).toHaveBeenCalledTimes(4);
@@ -88,7 +80,7 @@ describe('MultiView', () => {
 
     const reorderedUuids = arrayMoveImmutable(plotUuids, 0, 2);
 
-    await store.dispatch(updatePlotConfig(multiViewGridUuid, { plotUuids: reorderedUuids }));
+    await store.dispatch(updatePlotConfig(multiViewUuid, { plotUuids: reorderedUuids }));
     await waitFor(() => expect(multiViewContainer.textContent).toBe(reorderedUuids.join('')));
 
     expect(mockRenderPlot).toHaveBeenCalledTimes(3);
@@ -97,7 +89,7 @@ describe('MultiView', () => {
   it('Removes plots from multi view', async () => {
     renderMultiView(store);
 
-    await store.dispatch(updatePlotConfig(multiViewGridUuid, { plotUuids: plotUuids.slice(1) }));
+    await store.dispatch(updatePlotConfig(multiViewUuid, { plotUuids: plotUuids.slice(1) }));
     await waitForElementToBeRemoved(() => screen.getByText(plotUuids[0]));
 
     expect(mockRenderPlot).toHaveBeenCalledTimes(3);
