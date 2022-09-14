@@ -135,7 +135,10 @@ const ConfigureEmbedding = (props) => {
       },
       {
         panelTitle: 'Markers',
-        controls: ['markers'],
+        controls: [{
+          name: 'markers',
+          props: { showShapeType: false },
+        }],
       },
       {
         panelTitle: 'Legend',
@@ -164,7 +167,10 @@ const ConfigureEmbedding = (props) => {
       },
       {
         panelTitle: 'Markers',
-        controls: ['markers'],
+        controls: [{
+          name: 'markers',
+          props: { showShapeType: false },
+        }],
       },
       {
         panelTitle: 'Legend',
@@ -189,7 +195,10 @@ const ConfigureEmbedding = (props) => {
       },
       {
         panelTitle: 'Markers',
-        controls: ['markers'],
+        controls: [{
+          name: 'markers',
+          props: { showShapeType: false },
+        }],
       },
       {
         panelTitle: 'Legend',
@@ -203,7 +212,10 @@ const ConfigureEmbedding = (props) => {
       },
       {
         panelTitle: 'Markers',
-        controls: ['markers'],
+        controls: [{
+          name: 'markers',
+          props: { showShapeType: false },
+        }],
       },
       {
         panelTitle: 'Legend',
@@ -362,7 +374,6 @@ const ConfigureEmbedding = (props) => {
                 formConfig={plotStylingControlsConfig}
                 config={selectedConfig}
                 onUpdate={updatePlotWithChanges}
-                showShapeType={false}
               />
             </Panel>
           </Collapse>

@@ -4,7 +4,7 @@ import _ from 'lodash';
 import { act } from 'react-dom/test-utils';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { mount } from 'enzyme';
-import { within } from '@testing-library/dom';
+import { waitFor, within } from '@testing-library/dom';
 import '@testing-library/jest-dom';
 import { Provider } from 'react-redux';
 
@@ -280,7 +280,7 @@ describe('Dot plot page', () => {
     const baseOption = screen.getByText(/Samples/);
 
     await act(async () => {
-      fireEvent.click(baseOption);
+      userEvent.click(baseOption, undefined, { skipPointerEventsCheck: true });
     });
 
     // Select the filter sets
@@ -293,13 +293,15 @@ describe('Dot plot page', () => {
     const filterOption = screen.getByText(/Copied WT2/);
 
     await act(async () => {
-      fireEvent.click(filterOption);
+      userEvent.click(filterOption, undefined, { skipPointerEventsCheck: true });
     });
 
-    expect(screen.getByText(/There is no data to show/i)).toBeInTheDocument();
-    expect(screen.getByText(/The cell set that you have chosen to display is repesented by only one group/i)).toBeInTheDocument();
-    expect(screen.getByText(/A comparison can not be run to determine the top marker genes/i)).toBeInTheDocument();
-    expect(screen.getByText(/Select another option from the 'Select data' menu/i)).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText(/There is no data to show/i)).toBeInTheDocument();
+      expect(screen.getByText(/The cell set that you have chosen to display is repesented by only one group/i)).toBeInTheDocument();
+      expect(screen.getByText(/A comparison can not be run to determine the top marker genes/i)).toBeInTheDocument();
+      expect(screen.getByText(/Select another option from the 'Select data' menu/i)).toBeInTheDocument();
+    });
   });
 
   it('removing a gene keeps the order', async () => {
@@ -423,7 +425,7 @@ describe('Dot plot page', () => {
       userEvent.click(option, undefined, { skipPointerEventsCheck: true });
     });
 
-    const resetButton = screen.getAllByText('Reset')[1];
+    const resetButton = screen.getByText('Reset Plot');
 
     await act(async () => {
       userEvent.click(resetButton);
