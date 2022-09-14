@@ -53,14 +53,22 @@ const ViolinIndex = ({ experimentId }) => {
     setReloadHighestDispersion,
   } = useHighestDispersionGenes(experimentId, multiViewUuid, 1);
 
+  const geneExpression = useSelector((state) => state.genes.expression);
+
   const [selectedPlot, setSelectedPlot] = useState(customPlotUuid);
   const selectedConfig = plotConfigs[selectedPlot];
 
   const [searchedGene, setSearchedGene] = useState();
 
+  useEffect(() => {
+    dispatch(loadCellSets(experimentId));
+  }, []);
+
   // initialise a single plot in multi view with highest dispersion gene
   useEffect(() => {
-    if (!multiViewConfig && highestDispersionGenes.length) {
+    if (!highestDispersionGenes.length) return;
+
+    if (!multiViewConfig) {
       dispatch(updatePlotConfig(multiViewUuid, {
         ncols: 2,
         nrows: 2,
@@ -69,26 +77,37 @@ const ViolinIndex = ({ experimentId }) => {
       }));
     }
 
-    dispatch(loadCellSets(experimentId));
-  }, [highestDispersionGenes]);
-
-  // load data for genes in multi view
-  useEffect(() => {
-    if (multiViewGenes && multiViewGenes.length) {
-      dispatch(loadGeneExpression(experimentId, multiViewGenes, plotUuid));
+    if (!plotConfigs[selectedPlot]) {
+      dispatch(loadPlotConfig(experimentId, customPlotUuid, plotType, { shownGene: highestDispersionGenes[0] }));
     }
-  }, [multiViewGenes]);
+  }, [highestDispersionGenes]);
 
   // load plot configs for plots added to multi view
   useEffect(() => {
     if (!multiViewConfig) return;
 
-    multiViewConfig.plotUuids.forEach((selectedPlotUuid, index) => {
-      if (!plotConfigs[selectedPlotUuid]) {
-        const customPlotConfig = { ...plotConfigs[customPlotUuid], shownGene: multiViewConfig.genes[index] };
-        dispatch(loadPlotConfig(experimentId, selectedPlotUuid, plotType, customPlotConfig));
+    multiViewConfig.plotUuids.forEach((multiViewPlotUuid, index) => {
+      if (!plotConfigs[multiViewPlotUuid]) {
+        const loadedConfig = plotConfigs[customPlotUuid];
+        const geneToShow = multiViewConfig.genes[index];
+        const initialPlotConfig = { ...loadedConfig, shownGene: geneToShow };
+
+        dispatch(updatePlotConfig(multiViewPlotUuid, initialPlotConfig));
       }
     });
+  }, [multiViewGenes]);
+
+  // load data for genes in multi view
+  useEffect(() => {
+    if (multiViewGenes?.length) {
+      const genesToLoad = multiViewGenes.filter((gene) => (
+        !geneExpression.loading.includes(gene) && !Object.keys(geneExpression.data).includes(gene)
+      ));
+
+      if (genesToLoad.length) {
+        dispatch(loadGeneExpression(experimentId, genesToLoad, plotUuid));
+      }
+    }
   }, [multiViewGenes]);
 
   // update gene shown on selected plot
