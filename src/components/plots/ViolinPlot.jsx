@@ -79,7 +79,7 @@ const ViolinPlot = (props) => {
     }
 
     if (
-      geneExpression.loading.length
+      geneExpression.loading.includes(config?.shownGene)
       || !cellSets.accessible
     ) {
       return <Loader experimentId={experimentId} />;

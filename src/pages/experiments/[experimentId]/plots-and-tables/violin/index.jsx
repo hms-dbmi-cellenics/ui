@@ -66,20 +66,16 @@ const ViolinIndex = ({ experimentId }) => {
 
   // initialise a single plot in multi view with highest dispersion gene
   useEffect(() => {
-    if (!highestDispersionGenes.length) return;
+    if (!highestDispersionGenes.length || multiViewConfig) return;
 
-    if (!multiViewConfig) {
-      dispatch(updatePlotConfig(multiViewUuid, {
-        ncols: 2,
-        nrows: 2,
-        genes: highestDispersionGenes,
-        plotUuids: [customPlotUuid],
-      }));
-    }
+    dispatch(updatePlotConfig(multiViewUuid, {
+      ncols: 2,
+      nrows: 2,
+      genes: highestDispersionGenes,
+      plotUuids: [customPlotUuid],
+    }));
 
-    if (!plotConfigs[selectedPlot]) {
-      dispatch(loadPlotConfig(experimentId, customPlotUuid, plotType, { shownGene: highestDispersionGenes[0] }));
-    }
+    dispatch(loadPlotConfig(experimentId, customPlotUuid, plotType, { shownGene: highestDispersionGenes[0] }));
   }, [highestDispersionGenes]);
 
   // load plot configs for plots added to multi view
