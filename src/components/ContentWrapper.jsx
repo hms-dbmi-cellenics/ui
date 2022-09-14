@@ -96,9 +96,7 @@ const ContentWrapper = (props) => {
   const completedGem2sSteps = backendStatus?.gem2s?.completedSteps;
 
   const seuratStatusKey = backendStatus?.seurat?.status;
-  // const seuratparamsHash = backendStatus?.seurat?.paramsHash;
   const seuratRunning = seuratStatusKey === 'RUNNING';
-  // const seuratRunningError = backendErrors.includes(seuratStatusKey);
   const completedSeuratSteps = backendStatus?.seurat?.completedSteps;
   const seuratComplete = seuratStatusKey === pipelineStatusValues.SUCCEEDED;
 
@@ -297,16 +295,17 @@ const ContentWrapper = (props) => {
         return <PipelineLoadingScreen experimentId={routeExperimentId} pipelineStatus='toBeRun' />;
       }
 
+      if (seuratComplete && currentModule === modules.DATA_PROCESSING) {
+        navigateTo(modules.DATA_EXPLORATION, { experimentId: routeExperimentId });
+        return children;
+      }
+
       if (pipelineRunningError && currentModule !== modules.DATA_PROCESSING) {
         return <PipelineRedirectToDataProcessing experimentId={routeExperimentId} pipelineStatus='error' />;
       }
 
       if (pipelineRunning && currentModule !== modules.DATA_PROCESSING) {
         return <PipelineRedirectToDataProcessing experimentId={routeExperimentId} pipelineStatus='running' />;
-      }
-
-      if (seuratComplete && currentModule !== modules.DATA_EXPLORATION) {
-        navigateTo(modules.DATA_EXPLORATION, { experimentId: routeExperimentId });
       }
 
       if (process.env.NODE_ENV === 'development') {
