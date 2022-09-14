@@ -22,6 +22,15 @@ const fileUploadSpecifications = {
       'barcodes.tsv.gz',
       'matrix.mtx.gz',
     ],
+    info: ` For each sample, upload a folder containing the 3 count matrix files. The 
+    folder's name will be used to name the sample in it. You can change this name later in Data Management.`,
+  },
+  'BD Rhapsody': {
+    acceptedFiles: new Set(['expression_matrix.mt']),
+    requiredFiles: ['expression_matrix.mt'],
+    inputInfo: [['expression_matrix.mt']],
+    info: `Upload a folder for each sample. The folder's name will be used to name the sample in it. 
+    You can change this name later in Data Management. Each folder must contain the following file:`,
   },
 
 };
