@@ -16,7 +16,7 @@ const plotsAndTablesPageFactory = createTestComponentFactory(PlotsTablesHome);
 
 let storeState = null;
 
-const hiddenPlotNames = [];
+const hiddenPlotNames = ['Trajectory Analysis'];
 const shownPlotNames = Object.values(plotNames).filter((name) => !hiddenPlotNames.includes(name));
 
 describe('Plots and Tables page', () => {
