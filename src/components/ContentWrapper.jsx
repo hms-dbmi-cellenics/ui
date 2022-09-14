@@ -96,9 +96,9 @@ const ContentWrapper = (props) => {
   const completedGem2sSteps = backendStatus?.gem2s?.completedSteps;
 
   const seuratStatusKey = backendStatus?.seurat?.status;
-  const seuratparamsHash = backendStatus?.seurat?.paramsHash;
+  // const seuratparamsHash = backendStatus?.seurat?.paramsHash;
   const seuratRunning = seuratStatusKey === 'RUNNING';
-  const seuratRunningError = backendErrors.includes(seuratStatusKey);
+  // const seuratRunningError = backendErrors.includes(seuratStatusKey);
   const completedSeuratSteps = backendStatus?.seurat?.completedSteps;
   const seuratComplete = seuratStatusKey === pipelineStatusValues.SUCCEEDED;
 

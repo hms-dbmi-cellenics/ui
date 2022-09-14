@@ -22,8 +22,8 @@ const pipelineStepsInfoByType = {
   ],
 
   seurat: [
-    'Downloading sample files',
-    'Preprocessing samples',
+    'Downloading RDS file',
+    'Processing Seurat object',
     'Uploading completed data',
   ],
 };
@@ -37,9 +37,6 @@ const PipelineLoadingScreen = (props) => {
   const {
     pipelineStatus, paramsHash, completedSteps, experimentId, pipelineType,
   } = props;
-
-  console.log('pipelineStatus');
-  console.log(pipelineStatus);
 
   const pipelineStepsInfo = pipelineStepsInfoByType[pipelineType];
   const runner = runnerByType[pipelineType];
@@ -163,7 +160,7 @@ PipelineLoadingScreen.defaultProps = {
   completedSteps: [],
   experimentId: null,
   paramsHash: null,
-  pipelineType: 'gem2s',
+  pipelineType: null,
 };
 
 export default PipelineLoadingScreen;

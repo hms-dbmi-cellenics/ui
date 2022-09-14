@@ -24,7 +24,7 @@ const loadEmbedding = (
 
   if (!embeddingState) return null;
 
-  const { methodSettings } = embeddingState;
+  const { methodSettings, useSaved } = embeddingState;
 
   // Set up loading state.
   dispatch({
@@ -37,6 +37,7 @@ const loadEmbedding = (
   const body = {
     name: 'GetEmbedding',
     type: embeddingType,
+    useSaved,
     config: methodSettings[embeddingType],
   };
 

@@ -34,14 +34,6 @@ const ExplorationViewPage = ({
     state.experimentSettings.processing?.configureEmbedding?.embeddingSettings
   )) || false;
 
-  const blah = useSelector((state) => {
-    console.log('state:');
-    console.log(state);
-  });
-
-  console.log('method:');
-  console.log(method);
-
   useEffect(() => {
     setSelectedTab(panel);
   }, [panel]);
