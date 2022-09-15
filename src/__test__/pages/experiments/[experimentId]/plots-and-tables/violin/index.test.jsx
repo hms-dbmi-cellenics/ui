@@ -1,5 +1,5 @@
 import { render, screen, waitFor } from '@testing-library/react';
-// import userEvent from '@testing-library/user-event';
+import userEvent from '@testing-library/user-event';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import _ from 'lodash';
 import ViolinPlot from 'pages/experiments/[experimentId]/plots-and-tables/violin/index';
@@ -110,6 +110,7 @@ describe('ViolinIndex', () => {
     await renderViolinPage(storeState);
 
     expect(screen.getByText(/Gene selection/i)).toBeInTheDocument();
+    expect(screen.getByText(/Plot multi-view/i)).toBeInTheDocument();
     expect(screen.getByText(/Select data/i)).toBeInTheDocument();
     expect(screen.getByText(/Data transformation/i)).toBeInTheDocument();
     expect(screen.getByText(/Main schema/i)).toBeInTheDocument();
@@ -122,5 +123,18 @@ describe('ViolinIndex', () => {
     await renderViolinPage(storeState);
 
     expect(screen.getByRole('graphics-document', { name: 'Violin plot' })).toBeInTheDocument();
+  });
+
+  it('Adds a new plot to multi view', async () => {
+    await renderViolinPage(storeState);
+
+    userEvent.click(screen.getByText(/Plot multi-view/i));
+
+    const addGenesInput = screen.getByRole('textbox', { name: 'addMultiViewGene' });
+
+    userEvent.type(addGenesInput, 'S100A6');
+    userEvent.click(screen.getByText('Add'));
+
+    await waitFor(() => expect(screen.getAllByRole('graphics-document', { name: 'Violin plot' }).length).toBe(2));
   });
 });

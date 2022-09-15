@@ -6,8 +6,8 @@ import {
   Select,
   Input,
 } from 'antd';
-import HierarchicalTreeGenes from '../hierarchical-tree-genes/HierarchicalTreeGenes';
 import { arrayMoveImmutable } from 'utils/array-move';
+import HierarchicalTreeGenes from '../hierarchical-tree-genes/HierarchicalTreeGenes';
 
 const { Search } = Input;
 
@@ -40,8 +40,9 @@ const MultiViewEditor = (props) => {
   return (
     <Space direction='vertical'>
       <Search
+        aria-label='addMultiViewGene'
         style={{ width: '100%' }}
-        enterButton='Search'
+        enterButton='Add'
         value={localShownGene}
         onChange={(e) => { setLocalShownGene(e.target.value); }}
         onSearch={(val) => addGeneToMultiView(val)}
