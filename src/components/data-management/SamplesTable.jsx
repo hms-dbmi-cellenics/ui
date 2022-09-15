@@ -49,7 +49,7 @@ const SamplesTable = forwardRef((props, ref) => {
 
   const activeExperimentId = useSelector((state) => state.experiments.meta.activeExperimentId);
   const activeExperiment = useSelector((state) => state.experiments[activeExperimentId]);
-  const selectedTech = samples[activeExperiment.sampleIds[0]]?.type;
+  const selectedTech = samples[activeExperiment?.sampleIds[0]]?.type;
   const [sampleNames, setSampleNames] = useState(new Set());
   const DragHandle = sortableHandle(() => <MenuOutlined style={{ cursor: 'grab', color: '#999' }} />);
 
