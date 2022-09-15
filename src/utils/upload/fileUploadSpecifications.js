@@ -29,8 +29,10 @@ const fileUploadSpecifications = {
   //   acceptedFiles: new Set(['expression_matrix.mt']),
   //   requiredFiles: ['expression_matrix.mt'],
   //   inputInfo: [['expression_matrix.mt']],
-  //   info: `Upload a folder for each sample. The folder's name will be used to name the sample in it.
-  //   You can change this name later in Data Management. Each folder must contain the following file:`,
+  //   info: `Upload a folder for each sample.
+  // The folder's name will be used to name the sample in it.
+  //   You can change this name later in Data Management.
+  //  Each folder must contain the following file:`,
   // },
 
 };

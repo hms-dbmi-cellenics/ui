@@ -47,9 +47,9 @@ const LaunchAnalysisButton = () => {
     { rerun: true, paramsHash: null, reasons: [] },
   );
 
-  const launchAnalysis = () => {
+  const launchAnalysis = async () => {
     if (gem2sRerunStatus.rerun) {
-      dispatch(runGem2s(activeExperimentId, gem2sRerunStatus.paramsHash));
+      await dispatch(runGem2s(activeExperimentId, gem2sRerunStatus.paramsHash));
     }
     navigateTo(modules.DATA_PROCESSING, { experimentId: activeExperimentId });
   };
