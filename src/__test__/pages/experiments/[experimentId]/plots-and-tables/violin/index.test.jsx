@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 // import userEvent from '@testing-library/user-event';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import _ from 'lodash';
@@ -52,7 +52,7 @@ const mockWorkerResponses = {
 };
 
 const experimentId = fake.EXPERIMENT_ID;
-const plotUuid = 'ViolinMain';
+const plotUuid = 'ViolinMain-0';
 
 const customAPIResponses = {
   [`/plots/${plotUuid}`]: (req) => {
@@ -84,7 +84,7 @@ const renderViolinPage = async (store) => {
 
 let storeState = null;
 
-describe.skip('ViolinIndex', () => {
+describe('ViolinIndex', () => {
   beforeEach(async () => {
     jest.clearAllMocks();
 

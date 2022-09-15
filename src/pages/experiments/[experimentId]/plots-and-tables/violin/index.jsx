@@ -82,13 +82,15 @@ const ViolinIndex = ({ experimentId }) => {
   useEffect(() => {
     if (!multiViewConfig) return;
 
-    multiViewConfig.plotUuids.forEach((multiViewPlotUuid, index) => {
-      if (!plotConfigs[multiViewPlotUuid]) {
+    const additionalPlotUuids = _.without(multiViewConfig.plotUuids, customPlotUuid);
+
+    additionalPlotUuids.forEach((plot, index) => {
+      if (!plotConfigs[plot]) {
         const loadedConfig = plotConfigs[customPlotUuid];
         const geneToShow = multiViewConfig.genes[index];
         const initialPlotConfig = { ...loadedConfig, shownGene: geneToShow };
 
-        dispatch(updatePlotConfig(multiViewPlotUuid, initialPlotConfig));
+        dispatch(updatePlotConfig(plot, initialPlotConfig));
       }
     });
   }, [multiViewGenes]);
@@ -147,7 +149,6 @@ const ViolinIndex = ({ experimentId }) => {
   };
 
   const updateAllWithChanges = (updateField) => {
-    console.log(multiViewPlotUuids);
     multiViewPlotUuids.forEach((Uuid) => {
       dispatch(updatePlotConfig(Uuid, updateField));
     });

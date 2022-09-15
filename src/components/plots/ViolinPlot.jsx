@@ -96,8 +96,4 @@ ViolinPlot.propTypes = {
   plotUuid: PropTypes.string.isRequired,
 };
 
-ViolinPlot.defaultProps = {
-  searchedGene: null,
-};
-
 export default ViolinPlot;
