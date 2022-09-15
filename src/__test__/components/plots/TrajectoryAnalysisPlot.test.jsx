@@ -7,20 +7,23 @@ import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 
 import TrajectoryAnalysisPlot from 'components/plots/TrajectoryAnalysisPlot';
 
-import { initialPlotConfigStates } from 'redux/reducers/componentConfig/initialState';
-
-import mockAPI, { generateDefaultMockAPIResponses, statusResponse, delayedResponse } from '__test__/test-utils/mockAPI';
+import mockAPI, { generateDefaultMockAPIResponses, promiseResponse, statusResponse } from '__test__/test-utils/mockAPI';
 import createTestComponentFactory from '__test__/test-utils/testComponentFactory';
 import fake from '__test__/test-utils/constants';
 import mockEmbedding from '__test__/data/embedding.json';
+import mockStartingNodes from '__test__/data/starting_nodes.json';
+import mockProcessingConfig from '__test__/data/processing_config.json';
+
 import { seekFromS3 } from 'utils/work/seekWorkResponse';
 import { loadBackendStatus } from 'redux/actions/backendStatus';
-import WorkResponseError from 'utils/http/errors/WorkResponseError';
+import { loadPlotConfig } from 'redux/actions/componentConfig';
+import getTrajectoryPlotStartingNodes from 'redux/actions/componentConfig/getTrajectoryPlotStartingNodes';
 
-import mockStartingNodes from '__test__/data/starting_nodes.json';
+import _ from 'lodash';
 
 import { plotTypes } from 'utils/constants';
-import userEvent from '@testing-library/user-event';
+import { loadProcessingSettings } from 'redux/actions/experimentSettings';
+import { loadEmbedding } from 'redux/actions/embedding';
 
 enableFetchMocks();
 
@@ -32,7 +35,7 @@ jest.mock('object-hash', () => {
   const objectHash = jest.requireActual('object-hash');
   const mockWorkResultETag = jest.requireActual('__test__/test-utils/mockWorkResultETag').default;
 
-  const mockWorkRequestETag = () => 'embedding';
+  const mockWorkRequestETag = (ETagParams) => `${ETagParams.body.name}`;
 
   return mockWorkResultETag(objectHash, mockWorkRequestETag);
 });
@@ -44,21 +47,47 @@ jest.mock('utils/work/seekWorkResponse', () => ({
 }));
 
 const mockWorkerResponses = {
-  embedding: () => Promise.resolve(mockEmbedding),
+  GetTrajectoryAnalysisStartingNodes: mockStartingNodes,
+  GetEmbedding: mockEmbedding,
 };
 
-const mockOnPlotDataErrorRetry = jest.fn();
+const plotUuid = 'trajectoryAnalysisMain';
+const plotType = plotTypes.TRAJECTORY_ANALYSIS;
 
-const defaultAPIResponse = generateDefaultMockAPIResponses(experimentId);
+const customAPIResponses = {
+  [`/plots/${plotUuid}`]: (req) => {
+    if (req.method === 'PUT') return promiseResponse(JSON.stringify('OK'));
+    return statusResponse(404, 'Not Found');
+  },
+};
+
+const defaultAPIResponse = _.merge(
+  generateDefaultMockAPIResponses(experimentId),
+  customAPIResponses,
+);
+
+const mockDisplaySettings = {
+  showStartingNodes: true,
+  showPseudotimeValues: false,
+  isZoomedOrPanned: false,
+};
+
+const mockOnUpdate = jest.fn();
+const mockOnClickNode = jest.fn();
+const mockOnLassoSelection = jest.fn();
+const mockOnZoomOrPan = jest.fn();
 
 const defaultProps = {
   experimentId,
-  config: initialPlotConfigStates[plotTypes.TRAJECTORY_ANALYSIS],
-  plotData: mockStartingNodes,
+  plotUuid,
+  displaySettings: mockDisplaySettings,
   actions: false,
-  onUpdate: jest.fn(),
-  plotDataError: false,
-  onPlotDataErrorRetry: mockOnPlotDataErrorRetry,
+  onUpdate: mockOnUpdate,
+  onClickNode: mockOnClickNode,
+  onLassoSelection: mockOnLassoSelection,
+  onZoomOrPan: mockOnZoomOrPan,
+  resetZoomCount: 0,
+  ref: { current: { xdom: [-1, 1], ydom: [-1, 1] } },
 };
 
 const trajectoryAnalysisPlotFactory = createTestComponentFactory(
@@ -75,6 +104,8 @@ const renderTrajectoryAnalysisPlot = async (store, props) => {
   });
 };
 
+const defaultShownPlotDescription = 'Trajectory analysis plot showing clusters with trajectory';
+
 let storeState = null;
 describe('Trajectory analysis plot', () => {
   beforeEach(async () => {
@@ -83,109 +114,56 @@ describe('Trajectory analysis plot', () => {
     fetchMock.resetMocks();
     fetchMock.mockIf(/.*/, mockAPI(defaultAPIResponse));
 
+    let toggleReturnNull = true;
+
     seekFromS3
       .mockReset()
-      .mockImplementationOnce(() => null)
-      .mockImplementationOnce((mockEtag) => mockWorkerResponses[mockEtag]());
+      .mockImplementation((mockETag) => {
+        const result = toggleReturnNull ? null : mockWorkerResponses[mockETag];
+        toggleReturnNull = !toggleReturnNull;
+        return result;
+      });
 
     storeState = makeStore();
     await storeState.dispatch(loadBackendStatus(experimentId));
+    await storeState.dispatch(loadProcessingSettings(experimentId));
+    await storeState.dispatch(loadEmbedding(experimentId, 'umap'));
+    await storeState.dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
+    await storeState.dispatch(getTrajectoryPlotStartingNodes(experimentId, plotUuid));
   });
 
   it('Renders correctly with data', async () => {
     await renderTrajectoryAnalysisPlot(storeState);
 
     await waitFor(async () => {
-      await expect(screen.getByRole('graphics-document', { name: 'Trajectory analysis plot' })).toBeInTheDocument();
+      await expect(screen.getByRole('graphics-document', { name: defaultShownPlotDescription })).toBeInTheDocument();
     });
   });
 
-  it('Shows a loader if there is no config', async () => {
-    await act(async () => {
-      render(
-        <Provider store={storeState}>
-          <TrajectoryAnalysisPlot experimentId={experimentId} config={null} />
-        </Provider>,
-      );
-    });
+  it('Shows warning if embedding method is tsne', async () => {
+    const tsneSettings = { ...mockProcessingConfig };
+    tsneSettings.processingConfig.configureEmbedding.embeddingSettings.method = 'tsne';
 
-    expect(screen.getByText(/We're getting your data/i)).toBeInTheDocument();
-    await waitFor(async () => {
-      await expect(screen.queryByRole('graphics-document', { name: 'Trajectory analysis plot' })).toBeNull();
-    });
-  });
-
-  it('Shows a loader if cell sets is loading', async () => {
-    const cellSetErrorResponse = {
+    fetchMock.resetMocks();
+    fetchMock.mockIf(/.*/, mockAPI({
       ...defaultAPIResponse,
-      [`experiments/${experimentId}/cellSets`]: () => delayedResponse({ body: 'Not found', status: 404 }, 4000),
-    };
+      [`experiments/${experimentId}/processingConfig`]: () => promiseResponse(
+        JSON.stringify(tsneSettings),
+      ),
+    }));
 
-    fetchMock.mockIf(/.*/, mockAPI(cellSetErrorResponse));
+    const tsneStore = makeStore();
+    await tsneStore.dispatch(loadBackendStatus(experimentId));
+    await tsneStore.dispatch(loadProcessingSettings(experimentId));
+    await tsneStore.dispatch(loadEmbedding(experimentId, 'tsne'));
+    await tsneStore.dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
+    await tsneStore.dispatch(getTrajectoryPlotStartingNodes(experimentId, plotUuid));
 
-    await renderTrajectoryAnalysisPlot(storeState);
+    await renderTrajectoryAnalysisPlot(tsneStore);
 
-    expect(screen.getByText(/We're getting your data/i)).toBeInTheDocument();
     await waitFor(async () => {
-      await expect(screen.queryByRole('graphics-document', { name: 'Trajectory analysis plot' })).toBeNull();
+      expect(screen.getByText(/The embedding and trajectory below are generated from a UMAP embedding of your data/)).toBeInTheDocument();
+      expect(screen.getByRole('graphics-document', { name: defaultShownPlotDescription })).toBeInTheDocument();
     });
-  });
-
-  it('Shows an error if fetching cell sets throw an error', async () => {
-    const cellSetErrorResponse = {
-      ...defaultAPIResponse,
-      [`experiments/${experimentId}/cellSets`]: () => statusResponse(500, 'some random error'),
-    };
-
-    fetchMock.mockIf(/.*/, mockAPI(cellSetErrorResponse));
-
-    await renderTrajectoryAnalysisPlot(storeState);
-
-    expect(screen.getByText(/We're sorry, we couldn't load this/i)).toBeInTheDocument();
-    await waitFor(async () => {
-      await expect(screen.queryByRole('graphics-document', { name: 'Trajectory analysis plot' })).toBeNull();
-    });
-  });
-
-  it('Shows a loader if embedding data is loading', async () => {
-    seekFromS3
-      .mockReset()
-      .mockImplementationOnce(() => null)
-      .mockImplementationOnce(() => delayedResponse({ body: 'Not found', status: 404 }, 4000));
-
-    await renderTrajectoryAnalysisPlot(storeState);
-
-    expect(screen.getByText(/We're getting your data/i)).toBeInTheDocument();
-    await waitFor(async () => {
-      await expect(screen.queryByRole('graphics-document', { name: 'Trajectory analysis plot' })).toBeNull();
-    });
-  });
-
-  it('Shows an error if there is an error fetching embedding', async () => {
-    seekFromS3
-      .mockReset()
-      .mockImplementationOnce(() => null)
-      .mockImplementationOnce(() => Promise.reject(new WorkResponseError('some random error')));
-
-    await renderTrajectoryAnalysisPlot(storeState);
-
-    expect(screen.getByText(/We had an error on our side while we were completing your request/i)).toBeInTheDocument();
-    await waitFor(async () => {
-      await expect(screen.queryByRole('graphics-document', { name: 'Trajectory analysis plot' })).toBeNull();
-    });
-  });
-
-  it('Shows an error if there is an error fetching plot data', async () => {
-    await renderTrajectoryAnalysisPlot(storeState, { plotDataError: true });
-
-    expect(screen.getByText(/We're sorry, we couldn't load this./i)).toBeInTheDocument();
-    await waitFor(async () => {
-      await expect(screen.queryByRole('graphics-document', { name: 'Trajectory analysis plot' })).toBeNull();
-    });
-
-    // Clicking retry will fire onPlotDataErroRetry
-    userEvent.click(screen.getByText(/Try again/));
-
-    expect(mockOnPlotDataErrorRetry).toHaveBeenCalledTimes(1);
   });
 });

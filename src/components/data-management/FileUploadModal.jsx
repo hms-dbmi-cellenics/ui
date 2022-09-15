@@ -77,11 +77,7 @@ const FileUploadModal = (props) => {
     <>
       <Space direction='vertical' style={{ width: '100%' }}>
         <Paragraph>
-          For each sample, upload a folder containing the
-          {' '}
-          {techOptions[selectedTech].inputInfo.length}
-          {' '}
-          count matrix files. The folder&apos;s name will be used to name the sample in it. You can change this name later in Data Management.
+          {techOptions[selectedTech].info}
         </Paragraph>
         <Paragraph>
           The required files for each sample are:
@@ -149,8 +145,11 @@ const FileUploadModal = (props) => {
             </Space>
             <Text type='secondary'>
               <i>
-                Is your dataset generated using another single cell RNA-seq technology (e.g. Nadia, BD Rhapsody, etc.)? Email us to find out if we can support your data:
-                <a href={`mailto:${config.supportEmail}`}>{config.supportEmail}</a>
+                Is your dataset generated using another single cell RNA-seq technology (e.g. Nadia, inDrop, etc.)? Email us to find out if we can support your data:
+                <a href={`mailto:${config.supportEmail}`}>
+                  {' '}
+                  {config.supportEmail}
+                </a>
               </i>
             </Text>
           </Space>

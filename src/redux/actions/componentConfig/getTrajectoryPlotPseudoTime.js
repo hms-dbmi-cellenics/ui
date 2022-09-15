@@ -6,7 +6,8 @@ import endUserMessages from 'utils/endUserMessages';
 import { fetchWork, generateETag } from 'utils/work/fetchWork';
 import { getBackendStatus } from 'redux/selectors';
 
-const getTrajectoryPlotStartingNodes = (
+const getTrajectoryPlotPseudoTime = (
+  rootNodes,
   experimentId,
   plotUuid,
 ) => async (dispatch, getState) => {
@@ -39,10 +40,10 @@ const getTrajectoryPlotStartingNodes = (
     environment,
   );
 
-  const timeout = getTimeoutForWorkerTask(getState(), 'TrajectoryAnalysisStartingNodes');
+  const timeout = getTimeoutForWorkerTask(getState(), 'TrajectoryAnalysisPseudotime');
 
   const body = {
-    name: 'GetTrajectoryAnalysisStartingNodes',
+    name: 'GetTrajectoryAnalysisPseudoTime',
     embedding: {
       method: embeddingMethod,
       methodSettings: methodSettings[embeddingMethod],
@@ -52,6 +53,7 @@ const getTrajectoryPlotStartingNodes = (
       method: clusteringSettings.method,
       resolution: clusteringSettings.methodSettings[clusteringSettings.method].resolution,
     },
+    rootNodes,
   };
 
   try {
@@ -72,10 +74,12 @@ const getTrajectoryPlotStartingNodes = (
         plotUuid,
         plotData: {
           ...plotData,
-          nodes: data.nodes,
+          pseudotime: data.pseudotime,
         },
       },
     });
+
+    return true;
   } catch (e) {
     const errorMessage = handleError(e, endUserMessages.ERROR_FETCHING_PLOT_DATA);
 
@@ -86,7 +90,9 @@ const getTrajectoryPlotStartingNodes = (
         error: errorMessage,
       },
     });
+
+    return false;
   }
 };
 
-export default getTrajectoryPlotStartingNodes;
+export default getTrajectoryPlotPseudoTime;

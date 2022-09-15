@@ -23,7 +23,8 @@ const sampleIds = ['sample-WT', 'sample-WT1', 'sample-KO'];
 const filterName = 'classifier';
 const experimentId = 'e1234';
 
-const plotData1 = generateDataProcessingPlotUuid(sampleId, filterName, 0);
+const classifierKneePlot = generateDataProcessingPlotUuid(sampleId, filterName, 1);
+const emptyDropsPlot = generateDataProcessingPlotUuid(sampleId, filterName, 0);
 const filterStatistics = generateDataProcessingPlotUuid(sampleId, filterName, 2);
 
 const initialExperimentState = generateExperimentSettingsMock(sampleIds);
@@ -33,7 +34,11 @@ const noData = {
     ...initialExperimentState,
   },
   componentConfig: {
-    [plotData1]: {
+    [classifierKneePlot]: {
+      config: initialPlotConfigStates.classifierKneePlot,
+      plotData: [],
+    },
+    [emptyDropsPlot]: {
       config: initialPlotConfigStates.classifierEmptyDropsPlot,
       plotData: [],
     },
@@ -47,8 +52,32 @@ const withData = {
   ...noData,
   componentConfig: {
     ...noData.componentConfig,
-    [plotData1]: {
-      ...noData.componentConfig[plotData1],
+    [classifierKneePlot]: {
+      ...noData.componentConfig[classifierKneePlot],
+      plotData: [
+        {
+          rank: 1,
+          fdr: 0,
+          ndrops: 1,
+          u: 15844,
+        },
+        {
+          rank: 2,
+          fdr: 0,
+          ndrops: 1,
+          u: 15301,
+        },
+        {
+          rank: 3,
+          fdr: 0,
+          ndrops: 1,
+          u: 10783,
+        },
+      ],
+
+    },
+    [emptyDropsPlot]: {
+      ...noData.componentConfig[emptyDropsPlot],
       plotData: [
         {
           classifierP: 0.994553522823595,
@@ -118,8 +147,8 @@ describe('Classifier', () => {
     const plots = page.find(Vega);
     const tables = page.find(Table);
 
-    // 1 main
-    expect(plots.length).toEqual(1);
+    // 3 plots: 1 main 2 small
+    expect(plots.length).toEqual(3);
     expect(tables.length).toEqual(1);
   });
 });

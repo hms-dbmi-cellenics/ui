@@ -303,22 +303,25 @@ const trajectoryAnalysisInitialConfig = {
     xAxisText: 'Umap 1',
     yAxisText: 'Umap 2',
     defaultValues: ['x', 'y'],
-    offset: 10,
   },
+  axesRanges: axesRangesBaseState,
   title: {
     ...titleBaseState,
     fontSize: 20,
   },
   fontStyle: fontStyleBaseState,
   colour: colourBaseState,
-  marker: markerBaseState,
+  marker: {
+    ...markerBaseState,
+    size: 20,
+  },
   labels: {
     ...labelBaseState,
     enabled: false,
   },
+  selectedNodes: [],
   selectedCellSet: 'louvain',
   selectedSample: 'All',
-  isZoomOrPanned: false,
 };
 
 // EMBEDDING PREVIEW - Coloured by sample
