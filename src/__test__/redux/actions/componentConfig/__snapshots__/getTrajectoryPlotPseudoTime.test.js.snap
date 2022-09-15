@@ -1,0 +1,44 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Get trajectory plot pseudotime Dispatches the correct events 1`] = `
+Object {
+  "payload": Object {
+    "plotData": Object {
+      "pseudotime": Array [
+        null,
+        null,
+        3.6079,
+        0,
+        4.6453,
+        3.7158,
+        6.5359,
+        0.0928,
+        5.1992,
+        null,
+        null,
+        0.8893,
+        5.4535,
+        8.7028,
+        6.3447,
+        2.1209,
+        8.2872,
+        3.7128,
+        0.8894,
+        8.19,
+        null,
+        null,
+        2.6617,
+        1.0728,
+        0.8894,
+        2.1377,
+        6.1423,
+        2.9233,
+        3.9823,
+        0.0346,
+      ],
+    },
+    "plotUuid": "trajectoryAnalysisMock",
+  },
+  "type": "componentConfig/plotDataLoaded",
+}
+`;

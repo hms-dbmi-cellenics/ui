@@ -68,7 +68,7 @@ describe('PlotContainer', () => {
     renderPlotContainer(store);
 
     expect(screen.getByText('Mock plot')).toBeInTheDocument();
-    expect(screen.getByText('Reset')).toBeInTheDocument();
+    expect(screen.getByText('Reset Plot')).toBeInTheDocument();
   });
 
   it('Renders extra toolbar button', async () => {
@@ -86,9 +86,9 @@ describe('PlotContainer', () => {
   });
 
   it('Not showing reset removes the reset button', async () => {
-    renderPlotContainer(store, { showReset: false });
+    renderPlotContainer(store, { showResetButton: false });
 
-    expect(screen.queryByText('Reset')).toBeNull();
+    expect(screen.queryByText('Reset Plot')).toBeNull();
   });
 
   it('Renders tooltips', async () => {
@@ -112,7 +112,7 @@ describe('PlotContainer', () => {
     renderPlotContainer(store);
 
     // Reset button should be disabled because there are no changes to config
-    expect(screen.getByText('Reset').closest('button')).toBeDisabled();
+    expect(screen.getByText('Reset Plot').closest('button')).toBeDisabled();
 
     act(() => {
       store.dispatch(updatePlotConfig(plotUuid, { dimensions: { width: 1000 } }));
@@ -123,8 +123,8 @@ describe('PlotContainer', () => {
     expect(changedWidth).not.toEqual(defaultWidth);
 
     // Clicking reset should reset the width
-    expect(screen.getByText('Reset').closest('button')).not.toBeDisabled();
-    userEvent.click(screen.getByText('Reset'));
+    expect(screen.getByText('Reset Plot').closest('button')).not.toBeDisabled();
+    userEvent.click(screen.getByText('Reset Plot'));
 
     await waitFor(() => {
       const resetWidth = store.getState().componentConfig[plotUuid].config.dimensions.width;

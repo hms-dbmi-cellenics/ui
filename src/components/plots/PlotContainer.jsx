@@ -27,17 +27,18 @@ const PlotContainer = (props) => {
     plotUuid, plotType, plotInfo,
     plotStylingConfig, defaultActiveKey,
     extraToolbarControls, extraControlPanels,
-    showReset,
+    showResetButton, onPlotReset,
     children,
+    saveDebounceTime,
   } = props;
 
   const dispatch = useDispatch();
 
-  const [resetDisabled, setResetDisabled] = useState(true);
+  const [isResetDisabled, setIsResetDisabled] = useState(true);
   const [tileDirection, setTileDirection] = useState(DEFAULT_ORIENTATION);
   const { config } = useSelector((state) => state.componentConfig[plotUuid] || {});
   const debounceSave = useCallback(
-    _.debounce(() => dispatch(savePlotConfig(experimentId, plotUuid)), 2000), [],
+    _.debounce(() => dispatch(savePlotConfig(experimentId, plotUuid)), saveDebounceTime), [],
   );
 
   const updatePlotWithChanges = (obj) => {
@@ -74,16 +75,15 @@ const PlotContainer = (props) => {
     }
     debounceSave();
 
-    if (isConfigEqual(config, initialPlotConfigStates[plotType])) {
-      setResetDisabled(true);
-      return;
-    }
-    setResetDisabled(false);
+    setIsResetDisabled(
+      isConfigEqual(config, initialPlotConfigStates[plotType]),
+    );
   }, [config]);
 
   const onClickReset = () => {
+    onPlotReset();
     dispatch(resetPlotConfig(experimentId, plotUuid, plotType));
-    setResetDisabled(true);
+    setIsResetDisabled(true);
   };
 
   if (!config) {
@@ -97,15 +97,15 @@ const PlotContainer = (props) => {
   const renderPlotToolbarControls = () => (
     <Space style={{ marginRight: '0.5em' }}>
       {extraToolbarControls}
-      {showReset ? (
+      {showResetButton ? (
         <Button
-          key='reset'
+          key='reset-plot'
           type='primary'
           size='small'
           onClick={onClickReset}
-          disabled={resetDisabled}
+          disabled={isResetDisabled}
         >
-          Reset
+          Reset Plot
         </Button>
       ) : ''}
       {plotInfo ? (
@@ -171,7 +171,9 @@ PlotContainer.propTypes = {
   extraToolbarControls: PropTypes.node || PropTypes.arrayOf(PropTypes.node),
   extraControlPanels: PropTypes.node || PropTypes.arrayOf(PropTypes.node),
   children: PropTypes.node,
-  showReset: PropTypes.bool,
+  showResetButton: PropTypes.bool,
+  onPlotReset: PropTypes.func,
+  saveDebounceTime: PropTypes.number,
 };
 
 PlotContainer.defaultProps = {
@@ -179,7 +181,9 @@ PlotContainer.defaultProps = {
   extraToolbarControls: null,
   extraControlPanels: null,
   children: null,
-  showReset: true,
+  showResetButton: true,
+  onPlotReset: () => { },
+  saveDebounceTime: 2000,
 };
 
 export default PlotContainer;
