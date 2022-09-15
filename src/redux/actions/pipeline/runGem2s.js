@@ -28,12 +28,12 @@ const runGem2s = (experimentId, paramsHash) => async (dispatch, getState) => {
       payload: {},
     });
 
-    dispatch(loadBackendStatus(experimentId));
+    await dispatch(loadBackendStatus(experimentId));
   } catch (e) {
     const errorMessage = handleError(e, endUserMessages.ERROR_STARTING_PIPLELINE);
 
     if (errorMessage !== endUserMessages.ERROR_NO_PERMISSIONS) {
-      dispatch(loadBackendStatus(experimentId));
+      await dispatch(loadBackendStatus(experimentId));
     }
   }
 };
