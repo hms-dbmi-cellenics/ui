@@ -1,3 +1,11 @@
+const unionByCellClass = (cellClassKey, hierarchy, properties) => {
+  const cellSetKeys = hierarchy
+    .find(({ key }) => key === cellClassKey).children
+    .map(({ key }) => key);
+
+  return union(cellSetKeys, properties);
+};
+
 const union = (listOfSets, properties) => {
   if (!listOfSets) {
     return new Set();
@@ -69,4 +77,9 @@ const complement = (listOfSets, properties) => {
   return complementSet;
 };
 
-export { union, intersection, complement };
+export {
+  union,
+  intersection,
+  complement,
+  unionByCellClass,
+};

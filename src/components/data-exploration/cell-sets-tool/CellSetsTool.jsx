@@ -25,7 +25,9 @@ import { loadGeneExpression } from 'redux/actions/genes';
 import { composeTree } from 'utils/cellSets';
 import PlatformError from 'components/PlatformError';
 import HierarchicalTree from 'components/data-exploration/hierarchical-tree/HierarchicalTree';
-import { complement, intersection, union } from 'utils/cellSetOperations';
+import {
+  complement, intersection, union, unionByCellClass,
+} from 'utils/cellSetOperations';
 import { getCellSets } from 'redux/selectors';
 import CellSetOperation from './CellSetOperation';
 
@@ -33,37 +35,26 @@ const { Text } = Typography;
 
 const { TabPane } = Tabs;
 
-const generateFilteredCellIndices = (geneExpressions) => {
-  // Determine filtered cells from gene expression data. This is currently
-  // the only way to determine whether a cell is filtered.
-  const [arbitraryGeneExpression] = Object.values(geneExpressions);
-  const expressionValues = arbitraryGeneExpression?.rawExpression.expression ?? [];
-  return new Set(_.filter(
-    _.range(expressionValues.length),
-    (i) => expressionValues[i] === null,
-  ));
-};
-
 const CellSetsTool = (props) => {
   const { experimentId, width, height } = props;
 
   const dispatch = useDispatch();
   const cellSets = useSelector(getCellSets());
+  const genes = useSelector((state) => state.genes);
+
   const {
     accessible, error, hierarchy, properties, hidden, selected: allSelected,
   } = cellSets;
 
-  const genes = useSelector(
-    (state) => state.genes,
-  );
-  const filteredCells = useRef(new Set());
+  const filteredCellIds = useRef(new Set());
 
   const [activeTab, setActiveTab] = useState('cellSets');
 
   useEffect(() => {
-    // TMP - disable for poc
-    // filteredCells.current = generateFilteredCellIndices(genes.expression.data);
-  }, [genes.expression.data]);
+    if (accessible && filteredCellIds.current.size === 0) {
+      filteredCellIds.current = unionByCellClass('louvain', hierarchy, properties);
+    }
+  }, [accessible, hierarchy]);
 
   useEffect(() => {
     // load the expression data for an arbitrary gene so that we can determine
@@ -94,9 +85,10 @@ const CellSetsTool = (props) => {
     const selected = allSelected[activeTab];
     const selectedCells = union(selected, properties);
 
-    const numSelectedUnfiltered = new Set([...selectedCells]
-      .filter((cellIndex) => !filteredCells.current.has(cellIndex)));
-    setNumSelected(numSelectedUnfiltered.size);
+    const numSelectedFiltered = new Set([...selectedCells]
+      .filter((cellIndex) => filteredCellIds.current.has(cellIndex)));
+
+    setNumSelected(numSelectedFiltered.size);
   }, [activeTab, allSelected, properties]);
 
   const onNodeUpdate = useCallback((key, data) => {

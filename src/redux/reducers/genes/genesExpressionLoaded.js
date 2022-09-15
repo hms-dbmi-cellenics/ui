@@ -20,12 +20,6 @@ const genesExpressionLoaded = (state, action) => {
     const truncatedExpressions = [];
     const stats = {};
 
-    console.log('internalgenesDebug');
-    console.log(genes);
-
-    console.log('internaldataDebug');
-    console.log(data);
-
     Object.keys(data).forEach((geneSymbol) => {
       const dataForGene = data[geneSymbol];
 
