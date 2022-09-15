@@ -5,6 +5,10 @@ jest.mock('redux/selectors/getNumberOfCellsInGrouping', () => ({
   default: () => 20,
 }));
 
+jest.mock('redux/selectors', () => ({
+  getCellSetsHierarchyByKeys: () => () => 1,
+}));
+
 describe('getTimeoutForWorkerTask', () => {
   const stateMock = {};
 
