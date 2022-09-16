@@ -1,3 +1,10 @@
+/**
+ *
+ * @param {*} cellClassKey The key of the cell class we want to unite by, e.g.: 'louvain'
+ * @param {*} hierarchy
+ * @param {*} properties
+ * @returns A Set of all cell ids of the cellClassKey
+ */
 const unionByCellClass = (cellClassKey, hierarchy, properties) => {
   const cellSetKeys = hierarchy
     .find(({ key }) => key === cellClassKey).children
