@@ -6,6 +6,7 @@ import { useDispatch } from 'react-redux';
 import Link from 'next/link';
 import PropTypes from 'prop-types';
 import runGem2s from 'redux/actions/pipeline/runGem2s';
+
 import NotifyByEmail from './NotifyByEmail';
 
 const { Title, Text } = Typography;
@@ -27,8 +28,8 @@ const GEM2SLoadingScreen = (props) => {
   const dispatch = useDispatch();
 
   const dataManagementPath = '/data-management';
-  const relaunchExperiment = () => {
-    dispatch(runGem2s(experimentId, paramsHash));
+  const relaunchExperiment = async () => {
+    await dispatch(runGem2s(experimentId, paramsHash));
   };
 
   const texts = {
