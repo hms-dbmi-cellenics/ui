@@ -78,25 +78,6 @@ const ViolinIndex = ({ experimentId }) => {
     dispatch(loadPlotConfig(experimentId, customPlotUuid, plotType, { shownGene: highestDispersionGenes[0] }));
   }, [highestDispersionGenes]);
 
-  // load plot configs for plots added to multi view
-  useEffect(() => {
-    if (!multiViewConfig) return;
-
-    const additionalPlotUuids = _.without(multiViewPlotUuids, customPlotUuid);
-
-    additionalPlotUuids.forEach((plot) => {
-      if (!plotConfigs[plot]) {
-        const index = multiViewPlotUuids.indexOf(plot);
-        const loadedConfig = Object.values(plotConfigs)[0];
-        const geneToShow = multiViewGenes[index];
-        const titleToShow = { ...loadedConfig.title, text: geneToShow };
-        const initialPlotConfig = { ...loadedConfig, shownGene: geneToShow, title: titleToShow };
-
-        dispatch(updatePlotConfig(plot, initialPlotConfig));
-      }
-    });
-  }, [multiViewGenes]);
-
   // load data for genes in multi view
   useEffect(() => {
     if (multiViewGenes?.length) {
@@ -136,9 +117,14 @@ const ViolinIndex = ({ experimentId }) => {
     const plotUuidIndexes = multiViewPlotUuids.map((Uuid) => parseInt(Uuid.match(/[0-9]+/g), 10));
     const maxIndex = _.max(plotUuidIndexes);
 
-    const newPlotUuids = _.concat(multiViewPlotUuids, generateMultiViewGridPlotUuid(plotUuid, maxIndex + 1));
+    const plotToAdd = generateMultiViewGridPlotUuid(plotUuid, maxIndex + 1);
+    const newPlotUuids = _.concat(multiViewPlotUuids, plotToAdd);
 
     dispatch(updatePlotConfig(multiViewUuid, { genes: newGenes, plotUuids: newPlotUuids }));
+
+    const loadedConfig = Object.values(plotConfigs)[0];
+    const titleToShow = { ...loadedConfig.title, text: geneName };
+    dispatch(updatePlotConfig(plotToAdd, { ...loadedConfig, shownGene: geneName, title: titleToShow }));
   };
 
   const updateMultiViewWithChanges = (updateField) => {
