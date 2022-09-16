@@ -1,5 +1,4 @@
 import { SparseMatrix } from 'mathjs';
-import * as math from 'mathjs';
 
 import {
   MARKER_GENES_ERROR, MARKER_GENES_LOADING, MARKER_GENES_LOADED,
@@ -36,8 +35,8 @@ const loadMarkerGenes = (
       stats,
     } = await fetchWork(experimentId, body, getState, { timeout });
 
-    const rawExpression = math.transpose(SparseMatrix.fromJSON(rawExpressionJson));
-    const truncatedExpression = math.transpose(SparseMatrix.fromJSON(truncatedExpressionJson));
+    const rawExpression = SparseMatrix.fromJSON(rawExpressionJson);
+    const truncatedExpression = SparseMatrix.fromJSON(truncatedExpressionJson);
 
     dispatch({
       type: MARKER_GENES_LOADED,
