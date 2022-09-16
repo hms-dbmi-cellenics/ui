@@ -31,7 +31,7 @@ const fileUploadSpecifications = {
     folder's name will be used to name the sample in it. You can change this name later in Data Management.`,
   },
   // 'BD Rhapsody': {
-  //   acceptedFiles: new Set(['expression_matrix.mt']),
+  //   acceptedFiles: new Set(['expression_matrix.mt', 'expression_matrix.mt.gz']),
   //   requiredFiles: ['expression_matrix.mt.gz'],
   //   inputInfo: [['expression_matrix.mt']],
   //   displayedFiles: ['expression_matrix.mt'],
