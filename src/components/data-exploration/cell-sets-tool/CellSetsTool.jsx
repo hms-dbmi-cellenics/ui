@@ -1,4 +1,3 @@
-import _ from 'lodash';
 import React, {
   useEffect, useRef, useState, useCallback,
 } from 'react';
@@ -21,7 +20,7 @@ import {
   updateCellSetProperty,
   updateCellSetSelected,
 } from 'redux/actions/cellSets';
-import { loadGeneExpression } from 'redux/actions/genes';
+
 import { composeTree } from 'utils/cellSets';
 import PlatformError from 'components/PlatformError';
 import HierarchicalTree from 'components/data-exploration/hierarchical-tree/HierarchicalTree';
@@ -40,7 +39,6 @@ const CellSetsTool = (props) => {
 
   const dispatch = useDispatch();
   const cellSets = useSelector(getCellSets());
-  const genes = useSelector((state) => state.genes);
 
   const {
     accessible, error, hierarchy, properties, hidden, selected: allSelected,
@@ -55,15 +53,6 @@ const CellSetsTool = (props) => {
       filteredCellIds.current = unionByCellClass('louvain', hierarchy, properties);
     }
   }, [accessible, hierarchy]);
-
-  useEffect(() => {
-    // load the expression data for an arbitrary gene so that we can determine
-    // which cells are filtered
-    const [gene] = Object.keys(genes.properties.data);
-    if (Object.is(gene, undefined)) return;
-
-    dispatch(loadGeneExpression(experimentId, [gene], 'CellSetsTool'));
-  }, [genes.properties.data]);
 
   const FOCUS_TYPE = 'cellSets';
 
