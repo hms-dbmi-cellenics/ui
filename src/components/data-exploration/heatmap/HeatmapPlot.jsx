@@ -10,7 +10,6 @@ import _ from 'lodash';
 import { getCellSets, getCellSetsHierarchyByKeys } from 'redux/selectors';
 import calculateIdealNMarkerGenes from 'utils/calculateIdealNMarkerGenes';
 
-import { loadCellSets } from 'redux/actions/cellSets';
 import { loadGeneExpression, loadMarkerGenes } from 'redux/actions/genes';
 import { loadComponentConfig } from 'redux/actions/componentConfig';
 import { updateCellInfo } from 'redux/actions/cellInfo';
@@ -94,14 +93,6 @@ const HeatmapPlot = (props) => {
       };
     }
   };
-
-  /**
-   * Loads cell set on initial render if it does not already exist in the store.
-   */
-  // TODO fix correctly before merging this
-  // useEffect(() => {
-  //   dispatch(loadCellSets(experimentId));
-  // }, []);
 
   useEffect(() => {
     if (!_.isEmpty(heatmapSettings)) {
