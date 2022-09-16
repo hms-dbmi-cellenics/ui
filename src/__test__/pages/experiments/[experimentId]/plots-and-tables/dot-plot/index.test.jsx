@@ -246,8 +246,6 @@ describe('Dot plot page', () => {
   });
 
   it('Should show a no data error if user is using marker gene and selected filter sets are not represented in more than 1 group in the base cell set', async () => {
-    await renderDotPlot(storeState);
-
     seekFromS3
       .mockReset()
       // 1st call to list genes
@@ -258,7 +256,12 @@ describe('Dot plot page', () => {
       .mockImplementationOnce((Etag) => mockWorkerResponses[Etag]())
       // 3rd call to load dot plot
       .mockImplementationOnce(() => null)
+      .mockImplementationOnce((Etag) => mockWorkerResponses[Etag]())
+      // 4th call to load dot plot
+      .mockImplementationOnce(() => null)
       .mockImplementationOnce((Etag) => mockWorkerResponses[Etag]());
+
+    await renderDotPlot(storeState);
 
     // Use marker genes
     await act(async () => {
@@ -274,10 +277,10 @@ describe('Dot plot page', () => {
     const selectBaseCells = screen.getByRole('combobox', { name: 'selectCellSets' });
 
     await act(async () => {
-      fireEvent.change(selectBaseCells, { target: { value: 'Samples' } });
+      userEvent.click(selectBaseCells);
     });
 
-    const baseOption = screen.getByText(/Samples/);
+    const baseOption = screen.getByTitle(/Samples/);
 
     await act(async () => {
       userEvent.click(baseOption, undefined, { skipPointerEventsCheck: true });
@@ -287,10 +290,10 @@ describe('Dot plot page', () => {
     const selectFilterCells = screen.getByRole('combobox', { name: 'selectPoints' });
 
     await act(async () => {
-      fireEvent.change(selectFilterCells, { target: { value: 'Samples' } });
+      userEvent.click(selectFilterCells);
     });
 
-    const filterOption = screen.getByText(/Copied WT2/);
+    const filterOption = screen.getByTitle(/Copied WT2/);
 
     await act(async () => {
       userEvent.click(filterOption, undefined, { skipPointerEventsCheck: true });
@@ -400,8 +403,6 @@ describe('Dot plot page', () => {
   });
 
   it('resets the data', async () => {
-    await renderDotPlot(storeState);
-
     seekFromS3
       .mockReset()
       // 1st call to list genes
@@ -413,6 +414,8 @@ describe('Dot plot page', () => {
       // 3rd call to load dot plot
       .mockImplementationOnce(() => null)
       .mockImplementationOnce((Etag) => mockWorkerResponses[Etag]());
+
+    await renderDotPlot(storeState);
 
     // add a gene to prepare for reset
     const searchBox = screen.getByRole('combobox');
