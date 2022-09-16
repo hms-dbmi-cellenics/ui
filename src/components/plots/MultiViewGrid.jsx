@@ -83,10 +83,14 @@ const MultiViewGrid = (props) => {
     setPlots(filteredPlots);
   }, [multiViewConfig, plotConfigs]);
 
+  const spaceAlign = (multiViewConfig.genes.length > 1)
+    ? 'start'
+    : 'center';
+
   return (
     <Space
       direction='vertical'
-      align='start'
+      align={spaceAlign}
       id='multiViewContainer'
       style={{ width: '100%', height: '100%' }}
     >

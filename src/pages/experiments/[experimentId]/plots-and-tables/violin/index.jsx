@@ -82,13 +82,15 @@ const ViolinIndex = ({ experimentId }) => {
   useEffect(() => {
     if (!multiViewConfig) return;
 
-    const additionalPlotUuids = _.without(multiViewConfig.plotUuids, customPlotUuid);
+    const additionalPlotUuids = _.without(multiViewPlotUuids, customPlotUuid);
 
-    additionalPlotUuids.forEach((plot, index) => {
+    additionalPlotUuids.forEach((plot) => {
       if (!plotConfigs[plot]) {
-        const loadedConfig = plotConfigs[customPlotUuid];
-        const geneToShow = multiViewConfig.genes[index];
-        const initialPlotConfig = { ...loadedConfig, shownGene: geneToShow };
+        const index = multiViewPlotUuids.indexOf(plot);
+        const loadedConfig = Object.values(plotConfigs)[0];
+        const geneToShow = multiViewGenes[index];
+        const titleToShow = { ...loadedConfig.title, text: geneToShow };
+        const initialPlotConfig = { ...loadedConfig, shownGene: geneToShow, title: titleToShow };
 
         dispatch(updatePlotConfig(plot, initialPlotConfig));
       }
