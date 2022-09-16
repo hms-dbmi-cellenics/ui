@@ -77,6 +77,10 @@ class ExpressionMatrix {
     return getColumn(geneIndex, this.truncatedGeneExpressions).valueOf();
   }
 
+  getStats(geneSymbol) {
+    return this.stats[geneSymbol];
+  }
+
   geneIsLoaded(geneSymbol) {
     return !_.isNil(this.loadedExpressionsIndexes[geneSymbol]);
   }
@@ -117,15 +121,23 @@ class ExpressionMatrix {
 
     // If the matrix was empty previously we can just replace it with the ones that are being pushed
     if (genesCount === 0) {
-      this.setGeneExpression(newGeneSymbols, newRawGeneExpression, newTruncatedGeneExpression);
+      this.setGeneExpression(
+        newGeneSymbols,
+        newRawGeneExpression,
+        newTruncatedGeneExpression,
+        newStats,
+      );
       return;
     }
 
+    // Append new gene expressions
     appendMatrix(this.rawGeneExpressions, newRawGeneExpression);
     appendMatrix(this.truncatedGeneExpressions, newTruncatedGeneExpression);
 
+    // Add new gene stats
     _.merge(this.stats, newStats);
 
+    // Store indexes for the new genes
     newGeneSymbols.forEach((geneSymbol) => {
       this.generateIndexFor(geneSymbol);
     });
