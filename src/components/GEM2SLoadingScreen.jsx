@@ -6,7 +6,7 @@ import { useDispatch } from 'react-redux';
 import Link from 'next/link';
 import PropTypes from 'prop-types';
 import runGem2s from 'redux/actions/pipeline/runGem2s';
-import { loadBackendStatus } from 'redux/actions/backendStatus';
+
 import NotifyByEmail from './NotifyByEmail';
 
 const { Title, Text } = Typography;
