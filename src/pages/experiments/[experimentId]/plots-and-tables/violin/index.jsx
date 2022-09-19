@@ -78,8 +78,8 @@ const ViolinIndex = ({ experimentId }) => {
     if (!highestDispersionGenes.length || multiViewConfig) return;
 
     updateMultiViewWithChanges({
-      ncols: 2,
-      nrows: 2,
+      ncols: 1,
+      nrows: 1,
       genes: highestDispersionGenes,
       plotUuids: [customPlotUuid],
     });

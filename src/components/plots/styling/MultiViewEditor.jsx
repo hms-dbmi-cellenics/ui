@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import {
   Skeleton,
@@ -35,12 +35,27 @@ const MultiViewEditor = (props) => {
   const [localNRows, setLocalNRows] = useState(multiViewConfig.nrows);
   const [localNCols, setLocalNCols] = useState(multiViewConfig.ncols);
 
-  const options = multiViewConfig.plotUuids.map((plotUuid) => ({ value: plotUuid }));
+  useEffect(() => {
+    if (localNRows !== multiViewConfig.nrows) {
+      setLocalNRows(multiViewConfig.nrows);
+    }
+
+    if (localNCols !== multiViewConfig.ncols) {
+      setLocalNCols(multiViewConfig.ncols);
+    }
+  }, multiViewConfig);
+
+  const options = multiViewConfig.plotUuids.map((plotUuid, index) => {
+    const row = Math.floor(index / localNCols) + 1;
+    const col = (index % localNCols) + 1;
+    return { label: `${row}.${col} ${multiViewConfig.genes[index]}`, value: plotUuid };
+  });
 
   const onGeneReorder = (key, newPosition) => {
     const newPlotUuids = arrayMoveImmutable(multiViewConfig.plotUuids, key, newPosition);
+    const newGenes = arrayMoveImmutable(multiViewConfig.genes, key, newPosition);
 
-    onMultiViewUpdate({ plotUuids: newPlotUuids });
+    onMultiViewUpdate({ genes: newGenes, plotUuids: newPlotUuids });
   };
 
   const onSearch = (value) => {
@@ -65,23 +80,27 @@ const MultiViewEditor = (props) => {
     setLocalNCols(value);
 
     if (value) onMultiViewUpdate({ ncols: value });
-  }
+  };
 
   const hideDeleteButton = (multiViewConfig.genes.length === 1);
-  const renderTitle = (gene, key) => (
-    <Space>
-      {gene}
-      <Button
-        type='text'
-        hidden={hideDeleteButton}
-        onClick={() => {
-          onNodeDelete(key);
-        }}
-      >
-        <CloseOutlined />
-      </Button>
-    </Space>
-  );
+  const renderTitle = (gene, key) => {
+    const row = Math.floor(key / localNCols) + 1;
+    const col = (key % localNCols) + 1;
+    return (
+      <Space>
+        {`${row}.${col} ${gene}`}
+        <Button
+          type='text'
+          hidden={hideDeleteButton}
+          onClick={() => {
+            onNodeDelete(key);
+          }}
+        >
+          <CloseOutlined />
+        </Button>
+      </Space>
+    );
+  };
 
   const treeData = multiViewConfig.genes.map((gene, index) => (
     { key: index, title: renderTitle(gene, index) }
