@@ -139,6 +139,7 @@ const ViolinIndex = ({ experimentId }) => {
     }
   }, [multiViewPlotUuids]);
 
+  // rescale plots once when adding a second plot
   useEffect(() => {
     if (!multiViewConfig) return;
 
