@@ -28,7 +28,7 @@ const ViolinControls = (props) => {
           setSearchedGene={setSearchedGene}
         />
       </Panel>
-      <Panel header='Plot multi-view' key='plot-multi-view'>
+      <Panel header='View multiple plots' key='view-multiple-plots'>
         <MultiViewEditor
           multiViewConfig={multiViewConfig}
           addGeneToMultiView={addGeneToMultiView}

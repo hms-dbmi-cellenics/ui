@@ -52,7 +52,7 @@ const mockWorkerResponses = {
 };
 
 const experimentId = fake.EXPERIMENT_ID;
-const plotUuid = 'ViolinMain-0';
+const plotUuid = 'ViolinMain';
 
 const customAPIResponses = {
   [`/plots/${plotUuid}`]: (req) => {
@@ -110,7 +110,7 @@ describe('ViolinIndex', () => {
     await renderViolinPage(storeState);
 
     expect(screen.getByText(/Gene selection/i)).toBeInTheDocument();
-    expect(screen.getByText(/Plot multi-view/i)).toBeInTheDocument();
+    expect(screen.getByText(/View multiple plots/i)).toBeInTheDocument();
     expect(screen.getByText(/Select data/i)).toBeInTheDocument();
     expect(screen.getByText(/Data transformation/i)).toBeInTheDocument();
     expect(screen.getByText(/Main schema/i)).toBeInTheDocument();
@@ -128,7 +128,7 @@ describe('ViolinIndex', () => {
   it('Adds a new plot to multi view', async () => {
     await renderViolinPage(storeState);
 
-    userEvent.click(screen.getByText(/Plot multi-view/i));
+    userEvent.click(screen.getByText(/View multiple plots/i));
 
     const addGenesInput = screen.getByRole('textbox', { name: 'addMultiViewGene' });
 

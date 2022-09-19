@@ -43,13 +43,15 @@ const MultiViewEditor = (props) => {
     if (localNCols !== multiViewConfig.ncols) {
       setLocalNCols(multiViewConfig.ncols);
     }
-  }, multiViewConfig);
+  }, [multiViewConfig]);
 
   const options = multiViewConfig.plotUuids.map((plotUuid, index) => {
     const row = Math.floor(index / localNCols) + 1;
     const col = (index % localNCols) + 1;
     return { label: `${row}.${col} ${multiViewConfig.genes[index]}`, value: plotUuid };
   });
+
+  const [localSelectedPlot, setLocalSelectedPlot] = useState(options[0].value);
 
   const onGeneReorder = (key, newPosition) => {
     const newPlotUuids = arrayMoveImmutable(multiViewConfig.plotUuids, key, newPosition);
@@ -63,9 +65,21 @@ const MultiViewEditor = (props) => {
     setLocalShownGene('');
   };
 
+  const onSelectedPlotChange = (value) => {
+    setLocalSelectedPlot(value);
+    setSelectedPlot(value);
+  };
+
   const onNodeDelete = (key) => {
     const newPlotUuids = multiViewConfig.plotUuids.slice();
     newPlotUuids.splice(key, 1);
+
+    if (multiViewConfig.plotUuids[key] === localSelectedPlot) {
+      const newIndexToSelect = key === 0 ? 1 : 0;
+      const newPlotToselect = options[newIndexToSelect].value;
+      setLocalSelectedPlot(newPlotToselect);
+      setSelectedPlot(newPlotToselect);
+    }
 
     onMultiViewUpdate({ plotUuids: newPlotUuids });
   };
@@ -120,9 +134,9 @@ const MultiViewEditor = (props) => {
         Selected plot:
         <Select
           aria-label='selectPlot'
-          defaultValue={options[0].value}
+          value={localSelectedPlot}
           options={options}
-          onChange={(value) => setSelectedPlot(value)}
+          onChange={(value) => onSelectedPlotChange(value)}
         />
       </Space>
       <Row justify='space-evenly' align='middle'>

@@ -23,7 +23,6 @@ import PlatformError from 'components/PlatformError';
 import { generateMultiViewGridPlotUuid } from 'utils/generateCustomPlotUuid';
 
 const plotUuid = 'ViolinMain';
-const customPlotUuid = 'ViolinMain-0';
 const plotType = 'violin';
 const multiViewUuid = 'ViolinMain-MultiView';
 
@@ -55,10 +54,12 @@ const ViolinIndex = ({ experimentId }) => {
 
   const geneExpression = useSelector((state) => state.genes.expression);
 
-  const [selectedPlot, setSelectedPlot] = useState(customPlotUuid);
+  const [selectedPlot, setSelectedPlot] = useState(plotUuid);
   const selectedConfig = plotConfigs[selectedPlot];
 
   const [searchedGene, setSearchedGene] = useState();
+
+  const [rescaleOnce, setRescaleOnce] = useState(true);
 
   const updateMultiViewWithChanges = (updateField) => {
     dispatch(updatePlotConfig(multiViewUuid, updateField));
@@ -67,6 +68,12 @@ const ViolinIndex = ({ experimentId }) => {
   // updateField is a subset of what default config has and contains only the things we want change
   const updatePlotWithChanges = (updateField) => {
     dispatch(updatePlotConfig(selectedPlot, updateField));
+  };
+
+  const updateAllWithChanges = (updateField) => {
+    multiViewPlotUuids.forEach((Uuid) => {
+      dispatch(updatePlotConfig(Uuid, updateField));
+    });
   };
 
   useEffect(() => {
@@ -81,11 +88,11 @@ const ViolinIndex = ({ experimentId }) => {
       ncols: 1,
       nrows: 1,
       genes: highestDispersionGenes,
-      plotUuids: [customPlotUuid],
+      plotUuids: [plotUuid],
     });
 
     dispatch(loadPlotConfig(
-      experimentId, customPlotUuid, plotType, { shownGene: highestDispersionGenes[0] },
+      experimentId, plotUuid, plotType, { shownGene: highestDispersionGenes[0] },
     ));
   }, [highestDispersionGenes]);
 
@@ -132,10 +139,19 @@ const ViolinIndex = ({ experimentId }) => {
     }
   }, [multiViewPlotUuids]);
 
+  useEffect(() => {
+    if (!multiViewConfig) return;
+
+    if (multiViewPlotUuids.length > 1 && rescaleOnce) {
+      updateAllWithChanges({ dimensions: { width: 550, height: 400 } });
+      setRescaleOnce(false);
+    }
+  }, [multiViewPlotUuids]);
+
   const addGeneToMultiView = (geneName) => {
     const newGenes = _.concat(multiViewGenes, geneName);
 
-    const plotUuidIndexes = multiViewPlotUuids.map((Uuid) => parseInt(Uuid.match(/[0-9]+/g), 10));
+    const plotUuidIndexes = multiViewPlotUuids.map((Uuid) => parseInt(Uuid.match(/[0-9]+/g), 10) || 0);
     const maxIndex = _.max(plotUuidIndexes);
 
     const plotToAdd = generateMultiViewGridPlotUuid(plotUuid, maxIndex + 1);
@@ -146,12 +162,6 @@ const ViolinIndex = ({ experimentId }) => {
     const loadedConfig = Object.values(plotConfigs)[0];
     const titleToShow = { ...loadedConfig.title, text: geneName };
     dispatch(updatePlotConfig(plotToAdd, { ...loadedConfig, shownGene: geneName, title: titleToShow }));
-  };
-
-  const updateAllWithChanges = (updateField) => {
-    multiViewPlotUuids.forEach((Uuid) => {
-      dispatch(updatePlotConfig(Uuid, updateField));
-    });
   };
 
   const plotStylingConfig = [
@@ -249,7 +259,7 @@ const ViolinIndex = ({ experimentId }) => {
       <Header title={plotNames.VIOLIN_PLOT} />
       <PlotContainer
         experimentId={experimentId}
-        plotUuid={customPlotUuid}
+        plotUuid={plotUuid}
         plotType={plotType}
         plotStylingConfig={plotStylingConfig}
         plotInfo='In order to rename existing clusters or create new ones, use the cell set tool, located in the Data Exploration page.'
