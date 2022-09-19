@@ -66,7 +66,7 @@ class ExpressionMatrix {
 
     if (_.isNil(geneIndex)) return undefined;
 
-    return getColumn(geneIndex, this.rawGeneExpressions).valueOf();
+    return getColumn(geneIndex, this.rawGeneExpressions).valueOf().flat();
   }
 
   getTruncatedExpression(geneSymbol) {
@@ -74,7 +74,7 @@ class ExpressionMatrix {
 
     if (_.isNil(geneIndex)) return undefined;
 
-    return getColumn(geneIndex, this.truncatedGeneExpressions).valueOf();
+    return getColumn(geneIndex, this.truncatedGeneExpressions).valueOf().flat();
   }
 
   getStats(geneSymbol) {
@@ -101,7 +101,7 @@ class ExpressionMatrix {
       return acum;
     }, {});
 
-    this.lastFreeIndex = newGeneSymbols.length + 1;
+    this.lastFreeIndex = newGeneSymbols.length;
   }
 
   /**

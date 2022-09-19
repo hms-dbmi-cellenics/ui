@@ -7,7 +7,7 @@
  * which use the structure Compressed Column Matrix,
  * it is efficient at adding/accessing new columns
  *
- * @param {*} sparseMatrix1 Matrix to receive the new columns
+ * @param {*} sparseMatrix1 Matrix to receive the new columns, mutates
  * @param {*} sparseMatrix2 Matrix with the columns to append
  */
 const appendMatrix = (sparseMatrix1, sparseMatrix2) => {
@@ -23,12 +23,8 @@ const appendMatrix = (sparseMatrix1, sparseMatrix2) => {
   const nonZeroValuesLength = sparseMatrix1._values.length;
 
   sparseMatrix2._ptr.forEach((value, i) => {
-    if (i !== 0) sparseMatrix1._ptr.push(value);
+    if (i !== 0) sparseMatrix1._ptr.push(nonZeroValuesLength + value);
   });
-
-  sparseMatrix1._ptr = sparseMatrix1._ptr.concat(sparseMatrix2._ptr.map(
-    (index) => index + nonZeroValuesLength,
-  ));
 
   // Add the amount of new columns
   sparseMatrix1._size[1] += sparseMatrix2._size[1];
