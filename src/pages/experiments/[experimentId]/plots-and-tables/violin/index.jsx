@@ -60,6 +60,15 @@ const ViolinIndex = ({ experimentId }) => {
 
   const [searchedGene, setSearchedGene] = useState();
 
+  const updateMultiViewWithChanges = (updateField) => {
+    dispatch(updatePlotConfig(multiViewUuid, updateField));
+  };
+
+  // updateField is a subset of what default config has and contains only the things we want change
+  const updatePlotWithChanges = (updateField) => {
+    dispatch(updatePlotConfig(selectedPlot, updateField));
+  };
+
   useEffect(() => {
     dispatch(loadCellSets(experimentId));
   }, []);
@@ -68,14 +77,16 @@ const ViolinIndex = ({ experimentId }) => {
   useEffect(() => {
     if (!highestDispersionGenes.length || multiViewConfig) return;
 
-    dispatch(updatePlotConfig(multiViewUuid, {
+    updateMultiViewWithChanges({
       ncols: 2,
       nrows: 2,
       genes: highestDispersionGenes,
       plotUuids: [customPlotUuid],
-    }));
+    });
 
-    dispatch(loadPlotConfig(experimentId, customPlotUuid, plotType, { shownGene: highestDispersionGenes[0] }));
+    dispatch(loadPlotConfig(
+      experimentId, customPlotUuid, plotType, { shownGene: highestDispersionGenes[0] },
+    ));
   }, [highestDispersionGenes]);
 
   // load data for genes in multi view
@@ -95,8 +106,7 @@ const ViolinIndex = ({ experimentId }) => {
   useEffect(() => {
     if (!searchedGene) return;
 
-    dispatch(updatePlotConfig(selectedPlot,
-      { shownGene: searchedGene, title: { text: searchedGene } }));
+    updatePlotWithChanges({ shownGene: searchedGene, title: { text: searchedGene } });
   }, [searchedGene]);
 
   // update multi view genes according to exisitng plot configs
@@ -108,8 +118,19 @@ const ViolinIndex = ({ experimentId }) => {
     if (_.isEqual(genes, multiViewConfig.genes)
     || genes.length > multiViewConfig.genes.length) return;
 
-    dispatch(updatePlotConfig(multiViewUuid, { genes }));
+    updateMultiViewWithChanges({ genes });
   }, [plotConfigs]);
+
+  // update grid size when adding plots
+  useEffect(() => {
+    if (!multiViewConfig) return;
+
+    const gridSize = multiViewConfig.nrows * multiViewConfig.ncols;
+    if (gridSize < multiViewConfig.plotUuids.length) {
+      const newSize = Math.ceil(Math.sqrt(multiViewConfig.plotUuids.length));
+      updateMultiViewWithChanges({ nrows: newSize, ncols: newSize });
+    }
+  }, [multiViewPlotUuids]);
 
   const addGeneToMultiView = (geneName) => {
     const newGenes = _.concat(multiViewGenes, geneName);
@@ -125,15 +146,6 @@ const ViolinIndex = ({ experimentId }) => {
     const loadedConfig = Object.values(plotConfigs)[0];
     const titleToShow = { ...loadedConfig.title, text: geneName };
     dispatch(updatePlotConfig(plotToAdd, { ...loadedConfig, shownGene: geneName, title: titleToShow }));
-  };
-
-  const updateMultiViewWithChanges = (updateField) => {
-    dispatch(updatePlotConfig(multiViewUuid, updateField));
-  };
-
-  // updateField is a subset of what default config has and contains only the things we want change
-  const updatePlotWithChanges = (updateField) => {
-    dispatch(updatePlotConfig(selectedPlot, updateField));
   };
 
   const updateAllWithChanges = (updateField) => {
@@ -197,14 +209,12 @@ const ViolinIndex = ({ experimentId }) => {
     />
   );
 
-  const renderPlot = (selectedPlotUuid) => {
-    return (
-      <ViolinPlot
-        experimentId={experimentId}
-        plotUuid={selectedPlotUuid}
-      />
-    );
-  };
+  const renderPlot = (selectedPlotUuid) => (
+    <ViolinPlot
+      experimentId={experimentId}
+      plotUuid={selectedPlotUuid}
+    />
+  );
 
   const renderMultiView = () => {
     if (highestDispersionLoading) {

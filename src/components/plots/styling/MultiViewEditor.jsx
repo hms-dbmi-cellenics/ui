@@ -100,6 +100,7 @@ const MultiViewEditor = (props) => {
       <Space>
         Selected plot:
         <Select
+          aria-label='selectPlot'
           defaultValue={options[0].value}
           options={options}
           onChange={(value) => setSelectedPlot(value)}
@@ -111,6 +112,7 @@ const MultiViewEditor = (props) => {
         </Col>
         <Col span={3}>
           <Input
+            aria-label='setNRows'
             value={localNRows}
             onChange={(e) => { onRowsChange(e.target.value); }}
           />
@@ -122,6 +124,7 @@ const MultiViewEditor = (props) => {
         </Col>
         <Col span={3}>
           <Input
+            aria-label='setNCols'
             value={localNCols}
             onChange={(e) => { onColsChange(e.target.value); }}
           />

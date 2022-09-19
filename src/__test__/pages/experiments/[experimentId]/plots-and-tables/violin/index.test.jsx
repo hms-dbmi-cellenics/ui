@@ -125,17 +125,15 @@ describe('ViolinIndex', () => {
     expect(screen.getByRole('graphics-document', { name: 'Violin plot' })).toBeInTheDocument();
   });
 
-  it.skip('Adds a new plot to multi view', async () => {
+  it('Adds a new plot to multi view', async () => {
     await renderViolinPage(storeState);
 
     userEvent.click(screen.getByText(/Plot multi-view/i));
 
     const addGenesInput = screen.getByRole('textbox', { name: 'addMultiViewGene' });
 
-    userEvent.type(addGenesInput, 'S100A6');
+    userEvent.type(addGenesInput, 'S100a6');
     userEvent.click(screen.getByText('Add'));
-
-    expect(screen.getAllByRole('graphics-document', { name: 'Violin plot' })).toBe(1);
 
     await waitFor(() => expect(screen.getAllByRole('graphics-document', { name: 'Violin plot' }).length).toBe(2));
   });
