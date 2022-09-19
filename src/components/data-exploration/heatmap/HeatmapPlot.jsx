@@ -73,10 +73,7 @@ const HeatmapPlot = (props) => {
       .configureEmbedding?.clusteringSettings.methodSettings.louvain.resolution,
   );
 
-  // const focusedExpression = useSelector((state) => state.genes.expression.data[geneHighlight]);
   const expressionMatrix = useSelector((state) => state.genes.expression.matrix);
-
-  const focusedRawExpression = expressionMatrix.getRawExpression(geneHighlight);
 
   const { error: expressionDataError } = expressionData;
   const viewError = useSelector((state) => state.genes.expression.views[COMPONENT_TYPE]?.error);
@@ -262,7 +259,9 @@ const HeatmapPlot = (props) => {
               containerHeight={height}
               cellId={cellHighlight}
               geneName={geneHighlight}
-              geneExpression={focusedRawExpression[cellHighlight]}
+              geneExpression={
+                expressionMatrix.getRawExpressionSingle(geneHighlight, parseInt(cellHighlight, 10))
+              }
               coordinates={cellCoordinatesRef.current}
             />
           ) : <></>
