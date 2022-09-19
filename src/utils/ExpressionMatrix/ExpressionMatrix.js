@@ -87,6 +87,10 @@ class ExpressionMatrix {
     return !_.isNil(this.loadedExpressionsIndexes[geneSymbol]);
   }
 
+  genesAreLoaded(geneSymbols) {
+    return geneSymbols.every((geneSymbol) => this.geneIsLoaded(geneSymbol));
+  }
+
   getStoredGenes() {
     return Object.keys(this.loadedExpressionsIndexes);
   }

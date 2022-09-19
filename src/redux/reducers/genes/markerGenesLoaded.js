@@ -26,7 +26,6 @@ const markerGenesLoaded = produce((draft, action) => {
     truncatedExpression,
     stats,
   );
-  console.log('[DEBUG] - FINISHED SETTING GENE EXPRESSION');
 
   draft.expression.views[plotUuid] = { fetching: false, error: false, data: order };
 
