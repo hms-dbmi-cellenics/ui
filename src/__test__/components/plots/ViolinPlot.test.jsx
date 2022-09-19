@@ -1,131 +1,110 @@
 import React from 'react';
-import * as rtl from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-import { Provider } from 'react-redux';
-import configureMockStore from 'redux-mock-store';
-import thunk from 'redux-thunk';
-import _ from 'lodash';
+import { screen, render } from '@testing-library/react';
 
-import {
-  initialComponentConfigStates,
-  initialPlotConfigStates,
-} from 'redux/reducers/componentConfig/initialState';
-import initialExperimentState from 'redux/reducers/experimentSettings/initialState';
-import genes from 'redux/reducers/genes/initialState';
-import ViolinPlot from 'components/plots/ViolinPlot';
+import { Provider } from 'react-redux';
+
+import { act } from 'react-dom/test-utils';
+import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
+
 import '__test__/test-utils/setupTests';
 
-const mockStore = configureMockStore([thunk]);
+import ViolinPlot from 'components/plots/ViolinPlot';
 
-const experimentId = 'mockExperimentId';
+import createTestComponentFactory from '__test__/test-utils/testComponentFactory';
+import { makeStore } from 'redux/store';
+import { loadCellSets } from 'redux/actions/cellSets';
+import { loadPlotConfig } from 'redux/actions/componentConfig';
+
+import endUserMessages from 'utils/endUserMessages';
+
+import _ from 'lodash';
+import mockAPI, {
+  generateDefaultMockAPIResponses,
+  statusResponse,
+} from '__test__/test-utils/mockAPI';
+
+import fake from '__test__/test-utils/constants';
+import { plotTypes } from 'utils/constants';
+
+enableFetchMocks();
+
+const plotType = plotTypes.VIOLIN_PLOT;
+const experimentId = fake.EXPERIMENT_ID;
 const plotUuid = 'ViolinMain'; // At some point this will stop being hardcoded
 
-const defaultStore = {
-  cellSets: {
-    hierarchy: [{
-      key: 'louvain',
-      children: [{ key: 'louvain-0' }],
-    }],
-    properties: {
-      'louvain-0': {
-        cellIds: new Set([]),
-      },
-    },
-  },
-  componentConfig: initialComponentConfigStates,
-  embeddings: {},
-  experimentSettings: {
-    ...initialExperimentState,
-  },
-  genes,
-  backendStatus: {
-    [experimentId]: {
-      status: {},
-    },
-  },
+const customAPIResponses = {
+  [`/plots/${plotUuid}`]: () => statusResponse(404, 'Not found'),
 };
 
-describe.skip('ViolinPlot', () => {
-  let store = null;
+const mockAPIResponses = _.merge(
+  generateDefaultMockAPIResponses(experimentId),
+  customAPIResponses,
+);
 
-  beforeEach(() => {
-    jest.clearAllMocks(); // Do not mistake with resetAllMocks()!
-  });
+const defaultProps = {
+  experimentId,
+  plotUuid,
+}
 
-  const renderViolinPlot = (initialMockStore, config = initialPlotConfigStates.violin) => {
-    store = mockStore(_.cloneDeep(initialMockStore));
-    rtl.render(
-      <Provider store={store}>
-        <ViolinPlot
-          experimentId={experimentId}
-          plotUuid={plotUuid}
-          config={config}
-        />
+const violinPlotFactory = createTestComponentFactory(ViolinPlot, defaultProps);
+
+const renderViolinPlot = async (storeState) => {
+  await act(async () => {
+    render(
+      <Provider store={storeState}>
+        {violinPlotFactory()}
       </Provider>,
     );
-  };
+  });
+};
 
-  const actionCount = (action) => store.getActions().filter(
-    (item) => (item.type === action),
-  ).length;
+let storeState = null;
 
-  it('displays an error panel with Try Again if cellSets has an error', () => {
-    const actionOnTryAgain = 'cellSets/loading';
-    const storeContents = {
-      ..._.cloneDeep(defaultStore),
-      cellSets: {
-        hierarchy: [],
-        error: 'Broken CellSet',
-        accessible: false,
-        loading: false,
-        updatingClustering: false,
-        initialLoadPending: false,
-      },
-    };
-    renderViolinPlot(storeContents);
-    const loadingActions = actionCount(actionOnTryAgain);
-    userEvent.click(rtl.screen.getByRole('button'));
-    expect(actionCount(actionOnTryAgain)).toBe(loadingActions + 1);
+describe('ViolinPlot', () => {
+  beforeEach(async () => {
+    fetchMock.resetMocks();
+    fetchMock.doMock();
+    fetchMock.mockIf(/.*/, mockAPI(mockAPIResponses));
+
+    storeState = makeStore();
+    await storeState.dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
   });
 
-  it('displays an error panel with Try Again if error getting gene disperssion', () => {
-    const actionOnTryAgain = 'genes/propertiesLoading';
-    const storeContents = {
-      ..._.cloneDeep(defaultStore),
-    };
+  it('Shows a loader screen if cell sets are not loaded / still loading', async () => {
+    await renderViolinPlot(storeState);
 
-    storeContents.genes.properties.views[plotUuid] = {
-      error: 'Broken dispersion',
-    };
-
-    renderViolinPlot(storeContents);
-    const loadingActions = actionCount(actionOnTryAgain);
-    userEvent.click(rtl.screen.getByRole('button'));
-    expect(actionCount(actionOnTryAgain)).toBe(loadingActions + 1);
+    expect(screen.getByText("We're getting your data ...")).toBeInTheDocument();
   });
 
-  it('displays an error panel with Try Again if error getting gene expression', () => {
-    const actionOnTryAgain = 'genes/expressionLoading';
-    const storeContents = {
-      ..._.cloneDeep(defaultStore),
-    };
-    storeContents.genes.expression.error = 'Broken expression';
+  it('Renders a plot', async () => {
+    await renderViolinPlot(storeState);
 
-    renderViolinPlot(storeContents);
-    const loadingActions = actionCount(actionOnTryAgain);
-    userEvent.click(rtl.screen.getByRole('button'));
-    expect(actionCount(actionOnTryAgain)).toBe(loadingActions + 1);
+    await act(async () => {
+      storeState.dispatch(loadCellSets(experimentId));
+    });
+
+    expect(screen.getByRole('graphics-document', { name: 'Vega visualization' })).toBeInTheDocument();
   });
 
-  it('does not fetch dispersion if gene already selected', () => {
-    renderViolinPlot(defaultStore);
-    expect(actionCount('genes/propertiesLoading')).toBe(1);
-    store.clearActions();
-    const config = {
-      ..._.cloneDeep(initialPlotConfigStates.violin),
-      shownGene: 'GeneName',
+  it('Shows an error if there is an error while loading cellSets', async () => {
+    const errorResponse = {
+      ...mockAPIResponses,
+      [`experiments/${experimentId}/cellSets`]: () => statusResponse(500, 'Some random error'),
     };
-    renderViolinPlot(defaultStore, config);
-    expect(actionCount('genes/propertiesLoading')).toBe(0);
+
+    fetchMock.mockIf(/.*/, mockAPI(errorResponse));
+
+    renderViolinPlot(storeState);
+
+    // Load cell sets for the plot and get error
+    await act(async () => {
+      storeState.dispatch(loadCellSets(experimentId));
+    });
+
+    // No plot should be rendered
+    expect(screen.queryByRole('graphics-document', { name: 'Vega visualization' })).toBeNull();
+
+    // Error message should be shown
+    expect(screen.getByText(endUserMessages.ERROR_FETCHING_CELL_SETS)).toBeInTheDocument();
   });
 });

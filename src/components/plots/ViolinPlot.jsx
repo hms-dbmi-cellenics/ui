@@ -29,12 +29,6 @@ const ViolinPlot = (props) => {
   const [plotSpec, setPlotSpec] = useState({});
 
   useEffect(() => {
-    if (!cellSets.error) {
-      dispatch(loadCellSets(experimentId));
-    }
-  }, [experimentId, cellSets.accessible, cellSets.error]);
-
-  useEffect(() => {
     if (config
       && Object.getOwnPropertyDescriptor(geneExpression.data, config?.shownGene)
       && !geneExpression.error
@@ -61,19 +55,10 @@ const ViolinPlot = (props) => {
       return (
         <PlatformError
           error={cellSets.error}
+          reason={cellSets.error}
           onClick={() => {
             dispatch(loadCellSets(experimentId));
           }}
-        />
-      );
-    }
-
-    if (!selectedCellSetClassAvailable) {
-      return (
-        <PlatformError
-          description='No clustering available.'
-          reason='Set up your clustering in the configure embedding step in Data Processing to view this plot, or select different data.'
-          actionable={false}
         />
       );
     }
