@@ -160,10 +160,10 @@ const ContinuousEmbeddingPage = ({ experimentId }) => {
           config={config}
           plotUuid={plotUuid}
           plotData={
-            geneExpression.data[config?.shownGene]?.rawExpression.expression
+            geneExpression.matrix.getRawExpression(config?.shownGene)
           }
           truncatedPlotData={
-            geneExpression.data[config?.shownGene]?.truncatedExpression.expression
+            geneExpression.matrix.getTruncatedExpression(config?.shownGene)
           }
           loading={geneExpression.loading.length > 0}
           error={geneExpression.error}
