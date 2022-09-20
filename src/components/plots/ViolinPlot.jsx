@@ -101,12 +101,18 @@ const ViolinPlot = (props) => {
 
   useEffect(() => {
     if (config
-      && Object.getOwnPropertyDescriptor(geneExpression.data, config.shownGene)
       && !geneExpression.error
+      && geneExpression.matrix.geneIsLoaded(config.shownGene)
       && cellSets.accessible) {
-      const geneExpressionData = config.normalised === 'normalised'
-        ? geneExpression.data[config.shownGene].zScore
-        : geneExpression.data[config.shownGene].rawExpression.expression;
+      if (config.normalised === 'normalised') {
+        throw new Error('Not implemented DO NOT MERGE:Zscore needs to be implemented for sparse matrix in the worker first');
+      }
+
+      const geneExpressionData = geneExpression.matrix.getRawExpression(config.shownGene);
+      // const geneExpressionData = config.normalised === 'normalised'
+      //   ? geneExpression.data[config.shownGene].zScore
+      //   : geneExpression.matrix.getRawExpression(config.shownGene);
+
       if (selectedCellSetClassAvailable) {
         const generatedPlotData = generateData(
           cellSets,

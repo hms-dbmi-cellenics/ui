@@ -29,7 +29,7 @@ const generateVegaGeneExpressionsData = (cellOrder, geneOrder, expression, heatm
       const expressionValues = {};
 
       if (expressionValue === 'zScore') {
-        throw new Error('DO NOT MERGE: Needs to be implemented for sparse matrix in the worker first');
+        throw new Error('Not implemented DO NOT MERGE: Zscore needs to be implemented for sparse matrix in the worker first');
         // expressionValues = {
         //   color: expressionDataForGene.zScore, display: expressionDataForGene.zScore,
         // };
