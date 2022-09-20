@@ -1,5 +1,6 @@
 import React from 'react';
 import { screen, render } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 
 import { Provider } from 'react-redux';
 
@@ -106,5 +107,8 @@ describe('ViolinPlot', () => {
 
     // Error message should be shown
     expect(screen.getByText(endUserMessages.ERROR_FETCHING_CELL_SETS)).toBeInTheDocument();
+
+    const reloadButton = screen.getByText('Try again');
+    userEvent.click(reloadButton);
   });
 });

@@ -137,4 +137,31 @@ describe('ViolinIndex', () => {
 
     await waitFor(() => expect(screen.getAllByRole('graphics-document', { name: 'Violin plot' }).length).toBe(2));
   });
+
+  it.only('Changes the shown gene', async () => {
+    seekFromS3
+      .mockReset()
+      .mockImplementationOnce(() => null)
+      .mockImplementationOnce((Etag) => mockWorkerResponses[Etag])
+      .mockImplementationOnce(() => null)
+      .mockImplementationOnce((Etag) => mockWorkerResponses[Etag])
+      .mockImplementationOnce(() => null)
+      .mockImplementationOnce((Etag) => mockWorkerResponses[Etag]);
+
+    await renderViolinPage(storeState);
+
+    userEvent.click(screen.getByText(/Gene selection/i));
+
+    const changeShownGeneInput = screen.getByRole('textbox');
+
+    userEvent.clear(changeShownGeneInput);
+    userEvent.type(changeShownGeneInput, 'S100a6');
+    userEvent.click(screen.getByText('Search'));
+
+    expect(changeShownGeneInput.textContent).toBe('');
+
+    await waitFor(() => expect(screen.getByRole('graphics-document', { name: 'Violin plot' })).toBeInTheDocument());
+
+    expect(storeState.getState().componentConfig[plotUuid].config.shownGene).toBe('S100a6');
+  });
 });
