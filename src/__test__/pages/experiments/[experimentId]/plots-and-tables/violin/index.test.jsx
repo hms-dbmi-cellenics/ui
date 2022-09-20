@@ -82,6 +82,8 @@ const renderViolinPage = async (store) => {
   ));
 };
 
+const errorResponse = () => Promise.reject(new Error('error'));
+
 let storeState = null;
 
 describe('ViolinIndex', () => {
@@ -90,6 +92,8 @@ describe('ViolinIndex', () => {
 
     seekFromS3
       .mockReset()
+      .mockImplementationOnce(() => null)
+      .mockImplementationOnce((Etag) => mockWorkerResponses[Etag])
       .mockImplementationOnce(() => null)
       .mockImplementationOnce((Etag) => mockWorkerResponses[Etag])
       .mockImplementationOnce(() => null)
@@ -138,7 +142,7 @@ describe('ViolinIndex', () => {
     await waitFor(() => expect(screen.getAllByRole('graphics-document', { name: 'Violin plot' }).length).toBe(2));
   });
 
-  it.only('Changes the shown gene', async () => {
+  it('Changes the shown gene', async () => {
     seekFromS3
       .mockReset()
       .mockImplementationOnce(() => null)
@@ -163,5 +167,24 @@ describe('ViolinIndex', () => {
     await waitFor(() => expect(screen.getByRole('graphics-document', { name: 'Violin plot' })).toBeInTheDocument());
 
     expect(storeState.getState().componentConfig[plotUuid].config.shownGene).toBe('S100a6');
+  });
+
+  it.skip('Shows an error if there is an error while loading highest dispersion genes', async () => {
+    const customWorkerResponses = {
+      ...mockWorkerResponses,
+      'list-genes': errorResponse,
+    };
+
+    seekFromS3
+      .mockReset()
+      .mockImplementationOnce((Etag) => customWorkerResponses[Etag]())
+      .mockImplementationOnce(() => null)
+      .mockImplementationOnce((Etag) => customWorkerResponses[Etag]())
+      .mockImplementationOnce(() => null)
+      .mockImplementationOnce((Etag) => customWorkerResponses[Etag]());
+
+    await renderViolinPage(storeState);
+
+    expect(screen.getByText(/We're sorry we couldn't load this/i)).toBeInTheDocument();
   });
 });

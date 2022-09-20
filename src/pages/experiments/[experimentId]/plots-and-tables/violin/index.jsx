@@ -77,6 +77,7 @@ const ViolinIndex = ({ experimentId }) => {
   };
 
   useEffect(() => {
+    dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
     dispatch(loadCellSets(experimentId));
   }, []);
 
@@ -228,7 +229,7 @@ const ViolinIndex = ({ experimentId }) => {
   );
 
   const renderMultiView = () => {
-    if (highestDispersionLoading) {
+    if (!multiViewConfig || highestDispersionLoading) {
       return (
         <center>
           <Loader experimentId={experimentId} />
