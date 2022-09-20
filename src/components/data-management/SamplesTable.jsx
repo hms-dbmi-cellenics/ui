@@ -35,6 +35,7 @@ import 'utils/css/data-management.css';
 import { ClipLoader } from 'react-spinners';
 import useConditionalEffect from 'utils/customHooks/useConditionalEffect';
 import { METADATA_DEFAULT_VALUE } from 'redux/reducers/experiments/initialState';
+import fileUploadSpecifications from 'utils/upload/fileUploadSpecifications';
 
 const { Text } = Typography;
 
@@ -48,7 +49,7 @@ const SamplesTable = forwardRef((props, ref) => {
 
   const activeExperimentId = useSelector((state) => state.experiments.meta.activeExperimentId);
   const activeExperiment = useSelector((state) => state.experiments[activeExperimentId]);
-
+  const selectedTech = samples[activeExperiment?.sampleIds[0]]?.type;
   const [sampleNames, setSampleNames] = useState(new Set());
   const DragHandle = sortableHandle(() => <MenuOutlined style={{ cursor: 'grab', color: '#999' }} />);
 
@@ -70,27 +71,24 @@ const SamplesTable = forwardRef((props, ref) => {
       fixed: true,
       render: (text, record, indx) => <SampleNameCell cellInfo={{ text, record, indx }} />,
     },
-    {
-      index: 2,
-      key: 'barcodes',
-      title: 'barcodes.tsv',
-      dataIndex: 'barcodes',
-      render: (tableCellData) => <UploadCell columnId='barcodes' tableCellData={tableCellData} />,
-    },
-    {
-      index: 3,
-      key: 'genes',
-      title: 'genes.tsv',
-      dataIndex: 'genes',
-      render: (tableCellData) => <UploadCell columnId='genes' tableCellData={tableCellData} />,
-    },
-    {
-      index: 4,
-      key: 'matrix',
-      title: 'matrix.mtx',
-      dataIndex: 'matrix',
-      render: (tableCellData) => <UploadCell columnId='matrix' tableCellData={tableCellData} />,
-    },
+    ...fileUploadSpecifications[selectedTech]?.displayedFiles?.map((fileName, indx) => {
+      const fileNameWithoutExtension = fileName.split('.')[0];
+
+      return ({
+        index: 2 + indx,
+        title: fileName,
+        key: fileNameWithoutExtension,
+        dataIndex: fileNameWithoutExtension,
+        render: (tableCellData) => (
+          tableCellData && (
+            <UploadCell
+              columnId={fileNameWithoutExtension}
+              tableCellData={tableCellData}
+            />
+          )),
+      });
+    }) || [],
+
   ];
 
   const [tableColumns, setTableColumns] = useState(initialTableColumns);
