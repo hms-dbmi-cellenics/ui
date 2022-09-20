@@ -18,14 +18,16 @@ const generateVegaGeneExpressionsData = (cellOrder, geneOrder, expression, heatm
   // Preload all genes so that their arrays are generated only once
   const preloadedExpressions = {};
   geneOrder.forEach((gene) => {
-    const geneExpression = { rawExpression: expression.matrix.getRawExpression(gene) };
-    geneExpression.truncatedExpression = expression.matrix.getTruncatedExpression(gene);
+    const geneExpression = { rawExpression: expression.matrix.getRawExpression(gene, cellOrder) };
+    geneExpression.truncatedExpression = expression.matrix.getTruncatedExpression(gene, cellOrder);
 
     preloadedExpressions[gene] = geneExpression;
   });
 
-  cartesian(geneOrder, cellOrder).forEach(
-    ([gene, cellId]) => {
+  const cellOrderWithIndexes = cellOrder.map((cellId, index) => ({ cellId, index }));
+
+  cartesian(geneOrder, cellOrderWithIndexes).forEach(
+    ([gene, { cellId, index }]) => {
       const expressionValues = {};
 
       if (expressionValue === 'zScore') {
@@ -43,8 +45,8 @@ const generateVegaGeneExpressionsData = (cellOrder, geneOrder, expression, heatm
       geneExpressionsData.push({
         cellId,
         gene,
-        expression: expressionValues.color[cellId],
-        displayExpression: expressionValues.display[cellId],
+        expression: expressionValues.color[index],
+        displayExpression: expressionValues.display[index],
       });
     },
   );
