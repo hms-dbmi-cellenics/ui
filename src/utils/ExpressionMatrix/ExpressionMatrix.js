@@ -1,8 +1,7 @@
 import _ from 'lodash';
 import { SparseMatrix } from 'mathjs';
-import * as math from 'mathjs';
 
-import { appendMatrix } from 'utils/ExpressionMatrix/sparseMatrixOperations';
+import { appendMatrix, getColumn } from 'utils/ExpressionMatrix/sparseMatrixOperations';
 
 // Commented out pending decision on whether to calculate zScore in the UI or not
 // const calculateZScore = (expressionsRow, { rawMean: mean, rawStdev: stdev }) => {
@@ -55,20 +54,22 @@ class ExpressionMatrix {
     this.loadedExpressionsIndexes = {};
   }
 
-  getRawExpression(geneSymbol) {
+  getRawExpression(geneSymbol, cellIndexes = undefined) {
     const geneIndex = this.getIndexFor(geneSymbol);
 
     if (_.isNil(geneIndex)) return undefined;
 
-    return math.column(this.rawGeneExpressions, geneIndex).valueOf().flat();
+    return getColumn(geneIndex, this.truncatedGeneExpressions, cellIndexes)
+      .valueOf().flat();
   }
 
-  getTruncatedExpression(geneSymbol) {
+  getTruncatedExpression(geneSymbol, cellIndexes = undefined) {
     const geneIndex = this.getIndexFor(geneSymbol);
 
     if (_.isNil(geneIndex)) return undefined;
 
-    return math.column(this.truncatedGeneExpressions, geneIndex).valueOf().flat();
+    return getColumn(geneIndex, this.truncatedGeneExpressions, cellIndexes)
+      .valueOf().flat();
   }
 
   getRawExpressionSingle(geneSymbol, cellIndex) {
@@ -95,7 +96,6 @@ class ExpressionMatrix {
     return Object.keys(this.loadedExpressionsIndexes);
   }
 
-  // setGeneExpression(newGeneSymbols, newRawGeneExpression, newTruncatedGeneExpression, stats) {
   setGeneExpression(newGeneSymbols, newRawGeneExpression, newTruncatedGeneExpression, stats) {
     this.rawGeneExpressions = newRawGeneExpression;
     this.truncatedGeneExpressions = newTruncatedGeneExpression;

@@ -15,17 +15,15 @@ const generateVitessceHeatmapExpressionsMatrix = (cellOrder, geneOrder, expressi
     const { matrix } = expression;
 
     if (!matrix.geneIsLoaded(gene)) return;
-    const truncatedExpression = matrix.getTruncatedExpression(gene);
+    const truncatedExpression = matrix.getTruncatedExpression(gene, cellOrder);
 
-    const geneExpressions = cellOrder.map((cellId) => truncatedExpression[cellId]);
-    const scaledGeneExpressions = scaledTo255(geneExpressions);
+    // const geneExpressions = cellOrder.map((cellId) => truncatedExpression[cellId]);
+    const scaledGeneExpressions = scaledTo255(truncatedExpression);
 
     geneExpressionsDataMatrix.push(scaledGeneExpressions);
   });
 
-  const cellExpressionsData = _.flatten(_.unzip(geneExpressionsDataMatrix));
-
-  return cellExpressionsData;
+  return _.flatten(_.unzip(geneExpressionsDataMatrix));
 };
 
 export default generateVitessceHeatmapExpressionsMatrix;

@@ -1,5 +1,7 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable no-underscore-dangle */
+import { Index, Range } from 'mathjs';
+
 /**
  * Mutates sparseMatrix1
  * Appends the columns of sparseMatrix2 into sparseMatrix1.
@@ -30,5 +32,11 @@ const appendMatrix = (sparseMatrix1, sparseMatrix2) => {
   sparseMatrix1._size[1] += sparseMatrix2._size[1];
 };
 
+const getColumn = (
+  columnIndex,
+  sparseMatrix,
+  rowIndexes = new Range(0, sparseMatrix.size()[0]),
+) => sparseMatrix.subset(new Index(rowIndexes, columnIndex));
+
 // eslint-disable-next-line import/prefer-default-export
-export { appendMatrix };
+export { appendMatrix, getColumn };
