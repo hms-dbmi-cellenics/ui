@@ -68,7 +68,6 @@ const Embedding = (props) => {
   const selectedCell = useSelector((state) => state.cellInfo.cellId);
   const expressionLoading = useSelector((state) => state.genes.expression.loading);
 
-  // const loadedGenes = useSelector((state) => Object.keys(state.genes.expression.data));
   const expressionMatrix = useSelector((state) => state.genes.expression.matrix);
 
   const focusedExpression = useSelector(
