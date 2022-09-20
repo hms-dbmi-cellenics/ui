@@ -55,13 +55,7 @@ const generateETag = (
     };
   }
 
-  let ETag = createObjectHash(ETagBody);
-
-  if (body.name === 'MarkerHeatmap') {
-    ETag += 1;
-  }
-
-  return ETag;
+  return createObjectHash(ETagBody);
 };
 
 const decomposeBody = async (body, experimentId) => {
@@ -77,6 +71,7 @@ const decomposeBody = async (body, experimentId) => {
 
     const key = createObjectHash({ experimentId, newBody });
     const data = await cache.get(key);
+
     if (data) {
       cachedData[g] = data;
     } else {
@@ -171,9 +166,9 @@ const fetchWork = async (
     throw new Error('Disabling network interaction on server');
   }
 
-  // if (environment === Environment.DEVELOPMENT && !localStorage.getItem('disableCache')) {
-  //   localStorage.setItem('disableCache', 'true');
-  // }
+  if (environment === Environment.DEVELOPMENT && !localStorage.getItem('disableCache')) {
+    localStorage.setItem('disableCache', 'true');
+  }
 
   const { pipeline: { startDate: qcPipelineStartDate } } = backendStatus;
   if (body.name === 'GeneExpression') {
