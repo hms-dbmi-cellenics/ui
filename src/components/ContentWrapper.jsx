@@ -283,6 +283,11 @@ const ContentWrapper = (props) => {
         return <PipelineLoadingScreen paramsHash={gem2sparamsHash} experimentId={routeExperimentId} pipelineStatus='error' />;
       }
 
+      if (seuratComplete && currentModule === modules.DATA_PROCESSING) {
+        navigateTo(modules.DATA_EXPLORATION, { experimentId: routeExperimentId });
+        return children;
+      }
+
       if (gem2sRunning || waitingForQcToLaunch) {
         return <PipelineLoadingScreen experimentId={routeExperimentId} pipelineStatus='running' completedSteps={completedGem2sSteps} pipelineType='gem2s' />;
       }
@@ -293,11 +298,6 @@ const ContentWrapper = (props) => {
 
       if (checkEveryIsValue([gem2sStatusKey, seuratStatusKey], pipelineStatusValues.NOT_CREATED)) {
         return <PipelineLoadingScreen experimentId={routeExperimentId} pipelineStatus='toBeRun' />;
-      }
-
-      if (seuratComplete && currentModule === modules.DATA_PROCESSING) {
-        navigateTo(modules.DATA_EXPLORATION, { experimentId: routeExperimentId });
-        return children;
       }
 
       if (pipelineRunningError && currentModule !== modules.DATA_PROCESSING) {
