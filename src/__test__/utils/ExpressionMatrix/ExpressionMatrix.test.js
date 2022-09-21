@@ -1,7 +1,7 @@
 // import { SparseMatrix } from 'mathjs';
 
 import ExpressionMatrix from 'utils/ExpressionMatrix/ExpressionMatrix';
-import { getTwoGenesMatrix } from '__test__/utils/ExpressionMatrix/testMatrixes';
+import { getOtherTwoGenesMatrix, getTwoGenesMatrix } from '__test__/utils/ExpressionMatrix/testMatrixes';
 
 describe('ExpressionMatrix', () => {
   let matrix;
@@ -27,7 +27,7 @@ describe('ExpressionMatrix', () => {
     });
 
     it('genesAreLoaded works', () => {
-      expect(matrix.genesAreLoaded(['Gzma, Lyz2'])).toEqual(false);
+      expect(matrix.genesAreLoaded(['Gzma', 'Lyz2'])).toEqual(false);
     });
 
     it('getStoredGenes works', () => {
@@ -103,12 +103,34 @@ describe('ExpressionMatrix', () => {
       expect(matrix.genesAreLoaded(['Lyz2', 'IdontExist', 'Gzma'])).toEqual(false);
     });
 
-    it('getStoredGenes works', () => { });
+    it('getStoredGenes works', () => {
+      expect(matrix.getStoredGenes()).toEqual(['Gzma', 'Lyz2']);
+    });
 
-    it('setGeneExpression works', () => { });
+    it('setGeneExpression replaces existing data', () => {
+      const {
+        order, rawExpression, truncatedExpression, stats,
+      } = getOtherTwoGenesMatrix();
 
-    it('pushGeneExpression works', () => { });
+      matrix.setGeneExpression(order, rawExpression, truncatedExpression, stats);
 
-    it('generateIndexFor works', () => { });
+      expect(matrix).toMatchSnapshot();
+    });
+
+    it('pushGeneExpression adds new data keeping previous', () => {
+      const {
+        order, rawExpression, truncatedExpression, stats,
+      } = getOtherTwoGenesMatrix();
+
+      matrix.pushGeneExpression(order, rawExpression, truncatedExpression, stats);
+
+      expect(matrix).toMatchSnapshot();
+    });
+
+    it('generateIndexFor works', () => {
+      matrix.generateIndexFor('Hba-x');
+
+      expect(matrix).toMatchSnapshot();
+    });
   });
 });

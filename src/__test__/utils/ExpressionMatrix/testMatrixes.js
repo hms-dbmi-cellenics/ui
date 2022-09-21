@@ -22,5 +22,27 @@ const getTwoGenesMatrix = () => ({
   },
 });
 
+const getOtherTwoGenesMatrix = () => ({
+  order: ['Hba-x', 'Rbp4'],
+  rawExpression: new SparseMatrix([
+    [5, 2],
+    [8, 9],
+    [9, 5],
+  ]),
+  truncatedExpression: new SparseMatrix([
+    [1, 2],
+    [1, 5],
+    [6, 3],
+  ]),
+  stats: {
+    'Hba-x': {
+      rawMean: 5, rawStdev: 0.4, truncatedMin: 10, truncatedMax: 15,
+    },
+    Rbp4: {
+      rawMean: 10, rawStdev: 1.9, truncatedMin: 0, truncatedMax: 6,
+    },
+  },
+});
+
 // eslint-disable-next-line import/prefer-default-export
-export { getTwoGenesMatrix };
+export { getTwoGenesMatrix, getOtherTwoGenesMatrix };
