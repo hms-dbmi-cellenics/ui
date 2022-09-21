@@ -51,7 +51,7 @@ class ExpressionMatrix {
     this.stats = {};
 
     this.lastFreeIndex = 0;
-    this.loadedExpressionsIndexes = {};
+    this.geneIndexes = {};
   }
 
   getRawExpression(geneSymbol, cellIndexes = undefined) {
@@ -67,7 +67,7 @@ class ExpressionMatrix {
   }
 
   geneIsLoaded(geneSymbol) {
-    return !_.isNil(this.loadedExpressionsIndexes[geneSymbol]);
+    return !_.isNil(this.geneIndexes[geneSymbol]);
   }
 
   genesAreLoaded(geneSymbols) {
@@ -75,7 +75,7 @@ class ExpressionMatrix {
   }
 
   getStoredGenes() {
-    return Object.keys(this.loadedExpressionsIndexes);
+    return Object.keys(this.geneIndexes);
   }
 
   setGeneExpression(newGeneSymbols, newRawGeneExpression, newTruncatedGeneExpression, stats) {
@@ -83,7 +83,7 @@ class ExpressionMatrix {
     this.truncatedGeneExpressions = newTruncatedGeneExpression;
     this.stats = stats;
 
-    this.loadedExpressionsIndexes = newGeneSymbols.reduce((acum, currentSymbol, index) => {
+    this.geneIndexes = newGeneSymbols.reduce((acum, currentSymbol, index) => {
       // eslint-disable-next-line no-param-reassign
       acum[currentSymbol] = index;
       return acum;
@@ -131,10 +131,6 @@ class ExpressionMatrix {
     });
   }
 
-  getIndexFor(geneSymbol) {
-    return this.loadedExpressionsIndexes[geneSymbol];
-  }
-
   /**
    * If the gene already has an assigned index, it returns it.
    * If it doesn't, it generates a new one for it
@@ -144,18 +140,18 @@ class ExpressionMatrix {
    */
   generateIndexFor(geneSymbol) {
     // If not loaded, assign an index to it
-    if (_.isNil(this.loadedExpressionsIndexes[geneSymbol])) {
-      this.loadedExpressionsIndexes[geneSymbol] = this.lastFreeIndex;
+    if (_.isNil(this.geneIndexes[geneSymbol])) {
+      this.geneIndexes[geneSymbol] = this.lastFreeIndex;
 
       // This index is now assigned, so move it one step
       this.lastFreeIndex += 1;
     }
 
-    return this.loadedExpressionsIndexes[geneSymbol];
+    return this.geneIndexes[geneSymbol];
   }
 
   getExpression(geneSymbol, cellIndexes, matrix) {
-    const geneIndex = this.getIndexFor(geneSymbol);
+    const geneIndex = this.geneIndexes[geneSymbol];
 
     if (_.isNil(geneIndex)) return undefined;
 
