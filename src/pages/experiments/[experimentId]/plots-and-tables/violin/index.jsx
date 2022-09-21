@@ -229,22 +229,22 @@ const ViolinIndex = ({ experimentId }) => {
   );
 
   const renderMultiView = () => {
+    if (highestDispersionError) {
+      return (
+        <PlatformError
+          error={highestDispersionError}
+          onClick={() => {
+            setReloadHighestDispersion(true);
+          }}
+        />
+      );
+    }
+
     if (!multiViewConfig || highestDispersionLoading) {
       return (
         <center>
           <Loader experimentId={experimentId} />
         </center>
-      );
-    }
-
-    if (highestDispersionError) {
-      return (
-        <PlatformError
-          error={cellSets.error}
-          onClick={() => {
-            setReloadHighestDispersion(true);
-          }}
-        />
       );
     }
 

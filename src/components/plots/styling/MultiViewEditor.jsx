@@ -172,10 +172,14 @@ const MultiViewEditor = (props) => {
 };
 
 MultiViewEditor.propTypes = {
-  multiViewConfig: PropTypes.object.isRequired,
+  multiViewConfig: PropTypes.object,
   addGeneToMultiView: PropTypes.func.isRequired,
   onMultiViewUpdate: PropTypes.func.isRequired,
   setSelectedPlot: PropTypes.func.isRequired,
+};
+
+MultiViewEditor.defaultProps = {
+  multiViewConfig: null,
 };
 
 export default MultiViewEditor;

@@ -74,14 +74,19 @@ const ViolinControls = (props) => {
 };
 
 ViolinControls.propTypes = {
-  config: PropTypes.object.isRequired,
-  multiViewConfig: PropTypes.object.isRequired,
+  config: PropTypes.object,
+  multiViewConfig: PropTypes.object,
   onUpdate: PropTypes.func.isRequired,
   onMultiViewUpdate: PropTypes.func.isRequired,
   setSearchedGene: PropTypes.func.isRequired,
   addGeneToMultiView: PropTypes.func.isRequired,
   setSelectedPlot: PropTypes.func.isRequired,
   cellSets: PropTypes.object.isRequired,
+};
+
+ViolinControls.defaultProps = {
+  config: null,
+  multiViewConfig: null,
 };
 
 export default ViolinControls;
