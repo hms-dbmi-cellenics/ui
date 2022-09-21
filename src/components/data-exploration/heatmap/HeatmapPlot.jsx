@@ -260,7 +260,7 @@ const HeatmapPlot = (props) => {
               cellId={cellHighlight}
               geneName={geneHighlight}
               geneExpression={
-                expressionMatrix.getRawExpressionSingle(geneHighlight, parseInt(cellHighlight, 10))
+                expressionMatrix.getRawExpression(geneHighlight, [parseInt(cellHighlight, 10)])
               }
               coordinates={cellCoordinatesRef.current}
             />
