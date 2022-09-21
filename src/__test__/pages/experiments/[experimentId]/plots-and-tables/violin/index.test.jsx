@@ -53,6 +53,7 @@ const mockWorkerResponses = {
 
 const experimentId = fake.EXPERIMENT_ID;
 const plotUuid = 'ViolinMain';
+const multiViewUuid = 'ViolinMain-MultiView';
 
 const customAPIResponses = {
   [`/plots/${plotUuid}`]: (req) => {
@@ -132,6 +133,8 @@ describe('ViolinIndex', () => {
   it('Adds a new plot to multi view', async () => {
     await renderViolinPage(storeState);
 
+    const initialDimensions = storeState.getState().componentConfig[plotUuid].config.dimensions;
+
     userEvent.click(screen.getByText(/View multiple plots/i));
 
     const addGenesInput = screen.getByRole('textbox', { name: 'addMultiViewGene' });
@@ -140,6 +143,14 @@ describe('ViolinIndex', () => {
     userEvent.click(screen.getByText('Add'));
 
     await waitFor(() => expect(screen.getAllByRole('graphics-document', { name: 'Violin plot' }).length).toBe(2));
+
+    // check the plots were rescaled
+    const newDimensions = storeState.getState().componentConfig[plotUuid].config.dimensions;
+    expect(_.isEqual(initialDimensions, newDimensions)).toBe(false);
+
+    // check the multi view was expanded
+    const multiViewConfig = storeState.getState().componentConfig[multiViewUuid].config;
+    expect(_.isEqual([multiViewConfig.nrows, multiViewConfig.ncols], [2, 2])).toBe(true);
   });
 
   it('Changes the shown gene', async () => {
@@ -177,7 +188,6 @@ describe('ViolinIndex', () => {
 
     seekFromS3
       .mockReset()
-      .mockImplementationOnce((Etag) => customWorkerResponses[Etag]())
       .mockImplementationOnce(() => null)
       .mockImplementationOnce((Etag) => customWorkerResponses[Etag]())
       .mockImplementationOnce(() => null)
