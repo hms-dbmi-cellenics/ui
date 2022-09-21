@@ -83,8 +83,6 @@ const renderViolinPage = async (store) => {
   ));
 };
 
-const errorResponse = () => Promise.reject(new Error('error'));
-
 let storeState = null;
 
 describe('ViolinIndex', () => {
@@ -180,21 +178,14 @@ describe('ViolinIndex', () => {
     expect(storeState.getState().componentConfig[plotUuid].config.shownGene).toBe('S100a6');
   });
 
-  it.skip('Shows an error if there is an error while loading highest dispersion genes', async () => {
-    const customWorkerResponses = {
-      ...mockWorkerResponses,
-      'list-genes': errorResponse,
-    };
-
-    seekFromS3
-      .mockReset()
-      .mockImplementationOnce(() => null)
-      .mockImplementationOnce((Etag) => customWorkerResponses[Etag]())
-      .mockImplementationOnce(() => null)
-      .mockImplementationOnce((Etag) => customWorkerResponses[Etag]());
-
+  it('Changes to raw expression', async () => {
     await renderViolinPage(storeState);
 
-    expect(screen.getByText(/We're sorry we couldn't load this/i)).toBeInTheDocument();
+    userEvent.click(screen.getByText(/Data transformation/i));
+
+    userEvent.click(screen.getByText('Raw values'));
+
+    expect(screen.getByRole('graphics-document', { name: 'Violin plot' })).toBeInTheDocument();
+    expect(storeState.getState().componentConfig[plotUuid].config.normalised).toBe('raw');
   });
 });
