@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 const fileUploadSpecifications = {
   '10X Chromium': {
     acceptedFiles: new Set([
@@ -22,18 +23,24 @@ const fileUploadSpecifications = {
       'barcodes.tsv.gz',
       'matrix.mtx.gz',
     ],
+    displayedFiles: [
+      'barcodes.tsv',
+      'genes.tsv',
+      'matrix.mtx',
+    ],
     info: ` For each sample, upload a folder containing the 3 count matrix files. The 
     folder's name will be used to name the sample in it. You can change this name later in Data Management.`,
   },
   /* eslint-disable max-len */
   // 'BD Rhapsody': {
-  //   acceptedFiles: new Set(['expression_matrix.mt']),
-  //   requiredFiles: ['expression_matrix.mt'],
+  //   acceptedFiles: new Set(['expression_matrix.mt', 'expression_matrix.mt.gz']),
+  //   requiredFiles: ['expression_matrix.mt.gz'],
   //   inputInfo: [['expression_matrix.mt']],
-  //   info: `Upload a folder for each sample.
-  // The folder's name will be used to name the sample in it.
+  //   displayedFiles: ['expression_matrix.mt'],
+  //   info: `Upload a folder for each sample. The folder's
+  //   name will be used to name the sample in it.
   //   You can change this name later in Data Management.
-  //  Each folder must contain the following file:`,
+  //   Each folder must contain the following file:`,
   // },
 
 };

@@ -21,8 +21,8 @@ const QCRerunDisabledModal = (props) => {
 
   const experimentName = useSelector((state) => state.experimentSettings.info.experimentName);
 
-  const triggerOnRunGem2s = () => {
-    dispatch(runGem2s(experimentId));
+  const triggerOnRunGem2s = async () => {
+    await dispatch(runGem2s(experimentId));
     onFinish();
   };
 
