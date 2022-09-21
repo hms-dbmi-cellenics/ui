@@ -54,12 +54,12 @@ class ExpressionMatrix {
     this.loadedExpressionsIndexes = {};
   }
 
-  getRawExpression(geneSymbol, cellIndexes = undefined) {
+  getExpression(geneSymbol, cellIndexes, matrix) {
     const geneIndex = this.getIndexFor(geneSymbol);
 
     if (_.isNil(geneIndex)) return undefined;
 
-    const result = getColumn(geneIndex, this.truncatedGeneExpressions, cellIndexes);
+    const result = getColumn(geneIndex, matrix, cellIndexes);
 
     // If it's a single number wrap in an array
     if (typeof result === 'number') return [result];
@@ -67,17 +67,12 @@ class ExpressionMatrix {
     return result.valueOf().flat();
   }
 
+  getRawExpression(geneSymbol, cellIndexes = undefined) {
+    return this.getExpression(geneSymbol, cellIndexes, this.rawGeneExpressions);
+  }
+
   getTruncatedExpression(geneSymbol, cellIndexes = undefined) {
-    const geneIndex = this.getIndexFor(geneSymbol);
-
-    if (_.isNil(geneIndex)) return undefined;
-
-    const result = getColumn(geneIndex, this.truncatedGeneExpressions, cellIndexes);
-
-    // If it's a single number wrap in an array
-    if (typeof result === 'number') return [result];
-    // If its a matrix transform it to an array
-    return result.valueOf().flat();
+    return this.getExpression(geneSymbol, cellIndexes, this.truncatedGeneExpressions);
   }
 
   getStats(geneSymbol) {
