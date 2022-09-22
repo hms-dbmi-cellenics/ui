@@ -7,7 +7,7 @@ class ExpressionMatrix {
   constructor() {
     this.rawGeneExpressions = new SparseMatrix();
     this.truncatedGeneExpressions = new SparseMatrix();
-    this.ZScore = new SparseMatrix();
+    this.zScore = new SparseMatrix();
     this.stats = {};
 
     this.lastFreeIndex = 0;
@@ -23,7 +23,7 @@ class ExpressionMatrix {
   }
 
   getZScore(geneSymbol, cellIndexes = undefined) {
-    return this.getExpression(geneSymbol, cellIndexes, this.ZScore);
+    return this.getExpression(geneSymbol, cellIndexes, this.zScore);
   }
 
   getStats(geneSymbol) {
@@ -51,7 +51,7 @@ class ExpressionMatrix {
   ) {
     this.rawGeneExpressions = newRawGeneExpression;
     this.truncatedGeneExpressions = newTruncatedGeneExpression;
-    this.ZScore = newZScore;
+    this.zScore = newZScore;
     this.stats = newStats;
 
     this.geneIndexes = newGeneSymbols.reduce((acum, currentSymbol, index) => {
@@ -101,7 +101,7 @@ class ExpressionMatrix {
     // Append new gene expressions
     appendMatrix(this.rawGeneExpressions, newRawGeneExpression);
     appendMatrix(this.truncatedGeneExpressions, newTruncatedGeneExpression);
-    appendMatrix(this.ZScore, newZScore);
+    appendMatrix(this.zScore, newZScore);
 
     // Add new gene stats
     _.merge(this.stats, newStats);

@@ -1,5 +1,3 @@
-// import { SparseMatrix } from 'mathjs';
-
 import ExpressionMatrix from 'utils/ExpressionMatrix/ExpressionMatrix';
 import { getOtherTwoGenesMatrix, getTwoGenesMatrix } from '__test__/utils/ExpressionMatrix/testMatrixes';
 
@@ -36,20 +34,20 @@ describe('ExpressionMatrix', () => {
 
     it('setGeneExpression works', () => {
       const {
-        order, rawExpression, truncatedExpression, ZScore, stats,
+        order, rawExpression, truncatedExpression, zScore, stats,
       } = getTwoGenesMatrix();
 
-      matrix.setGeneExpression(order, rawExpression, truncatedExpression, ZScore, stats);
+      matrix.setGeneExpression(order, rawExpression, truncatedExpression, zScore, stats);
 
       expect(matrix).toMatchSnapshot();
     });
 
     it('pushGeneExpression works', () => {
       const {
-        order, rawExpression, truncatedExpression, ZScore, stats,
+        order, rawExpression, truncatedExpression, zScore, stats,
       } = getTwoGenesMatrix();
 
-      matrix.pushGeneExpression(order, rawExpression, truncatedExpression, ZScore, stats);
+      matrix.pushGeneExpression(order, rawExpression, truncatedExpression, zScore, stats);
 
       expect(matrix).toMatchSnapshot();
     });
@@ -65,10 +63,10 @@ describe('ExpressionMatrix', () => {
     beforeEach(() => {
       matrix = new ExpressionMatrix();
       const {
-        order, rawExpression, truncatedExpression, ZScore, stats,
+        order, rawExpression, truncatedExpression, zScore, stats,
       } = getTwoGenesMatrix();
 
-      matrix.setGeneExpression(order, rawExpression, truncatedExpression, ZScore, stats);
+      matrix.setGeneExpression(order, rawExpression, truncatedExpression, zScore, stats);
     });
 
     it('getRawExpression on existing gene works', () => {
@@ -113,20 +111,20 @@ describe('ExpressionMatrix', () => {
 
     it('setGeneExpression replaces existing data', () => {
       const {
-        order, rawExpression, truncatedExpression, ZScore, stats,
+        order, rawExpression, truncatedExpression, zScore, stats,
       } = getOtherTwoGenesMatrix();
 
-      matrix.setGeneExpression(order, rawExpression, truncatedExpression, ZScore, stats);
+      matrix.setGeneExpression(order, rawExpression, truncatedExpression, zScore, stats);
 
       expect(matrix).toMatchSnapshot();
     });
 
     it('pushGeneExpression adds new data keeping previous', () => {
       const {
-        order, rawExpression, truncatedExpression, ZScore, stats,
+        order, rawExpression, truncatedExpression, zScore, stats,
       } = getOtherTwoGenesMatrix();
 
-      matrix.pushGeneExpression(order, rawExpression, truncatedExpression, ZScore, stats);
+      matrix.pushGeneExpression(order, rawExpression, truncatedExpression, zScore, stats);
 
       expect(matrix).toMatchSnapshot();
     });

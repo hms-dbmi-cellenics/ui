@@ -12,7 +12,7 @@ const getTwoGenesMatrix = () => ({
     [0, 0],
     [0, 3],
   ]),
-  ZScore: new SparseMatrix([
+  zScore: new SparseMatrix([
     [1, 1],
     [0, 0],
     [0, 3],
@@ -39,7 +39,7 @@ const getOtherTwoGenesMatrix = () => ({
     [1, 5],
     [6, 3],
   ]),
-  ZScore: new SparseMatrix([
+  zScore: new SparseMatrix([
     [0, 1],
     [2, 2],
     [4, 3],
