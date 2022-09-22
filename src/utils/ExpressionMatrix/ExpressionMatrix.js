@@ -3,51 +3,11 @@ import { SparseMatrix } from 'mathjs';
 
 import { appendMatrix, getColumn } from 'utils/ExpressionMatrix/sparseMatrixOperations';
 
-// Commented out pending decision on whether to calculate zScore in the UI or not
-// const calculateZScore = (expressionsRow, { rawMean: mean, rawStdev: stdev }) => {
-//   const [, cellsCount] = expressionsRow.size();
-
-//   const zScoreRow = new SparseMatrix();
-
-//   cellsCount.forEach((cellIndex) => {
-//     const index = new Index(0, cellIndex);
-
-//     const expression = expressionsRow.get(index);
-
-//     const zScore = (expression - mean) / stdev;
-
-//     zScoreRow.set(index, zScore);
-//   });
-
-//   const expressionsArray = expressionsRow.valueOf()[0];
-//   const zScore = expressionsArray.map((expression) => (
-//     expression !== null ? (
-//       expression - mean) / stdev
-//       : null
-//   ));
-// };
-
-// const calculateZScore = (responseData) => {
-//   const dataWithZScore = Object.entries(responseData).reduce((acc, [gene, value]) => {
-//     const { mean, stdev, expression } = value.rawExpression;
-//     const zScore = expression.map((x) => (x !== null ? ((x - mean) / stdev) : null));
-
-//     acc[gene] = {
-//       ...value,
-//       zScore,
-//     };
-
-//     return acc;
-//   }, {});
-
-//   return dataWithZScore;
-// };
-
 class ExpressionMatrix {
   constructor() {
     this.rawGeneExpressions = new SparseMatrix();
     this.truncatedGeneExpressions = new SparseMatrix();
-    // this.ZScores = new SparseMatrix();
+    this.ZScore = new SparseMatrix();
     this.stats = {};
 
     this.lastFreeIndex = 0;
@@ -60,6 +20,10 @@ class ExpressionMatrix {
 
   getTruncatedExpression(geneSymbol, cellIndexes = undefined) {
     return this.getExpression(geneSymbol, cellIndexes, this.truncatedGeneExpressions);
+  }
+
+  getZScore(geneSymbol, cellIndexes = undefined) {
+    return this.getExpression(geneSymbol, cellIndexes, this.ZScore);
   }
 
   getStats(geneSymbol) {
@@ -78,10 +42,17 @@ class ExpressionMatrix {
     return Object.keys(this.geneIndexes);
   }
 
-  setGeneExpression(newGeneSymbols, newRawGeneExpression, newTruncatedGeneExpression, stats) {
+  setGeneExpression(
+    newGeneSymbols,
+    newRawGeneExpression,
+    newTruncatedGeneExpression,
+    newZScore,
+    newStats,
+  ) {
     this.rawGeneExpressions = newRawGeneExpression;
     this.truncatedGeneExpressions = newTruncatedGeneExpression;
-    this.stats = stats;
+    this.ZScore = newZScore;
+    this.stats = newStats;
 
     this.geneIndexes = newGeneSymbols.reduce((acum, currentSymbol, index) => {
       // eslint-disable-next-line no-param-reassign
@@ -100,11 +71,19 @@ class ExpressionMatrix {
    *  raw gene expressions for each of the genes
    * @param {*} newTruncatedGeneExpression A mathjs SparseMatrix with the
    *  raw gene expressions for each of the genes
+   * @param {*} newZScore A mathjs SparseMatrix with the
+   *  zScore values for each of the genes
    * @param {*} newStats An object which with the stats for each gene's expression
    * Each key is a gene symbol,
    * Each value has this shape: {rawMean, rawStdev, truncatedMin, truncatedMax}
    */
-  pushGeneExpression(newGeneSymbols, newRawGeneExpression, newTruncatedGeneExpression, newStats) {
+  pushGeneExpression(
+    newGeneSymbols,
+    newRawGeneExpression,
+    newTruncatedGeneExpression,
+    newZScore,
+    newStats,
+  ) {
     const [, genesCount] = this.rawGeneExpressions.size();
 
     // If the matrix was empty previously we can just replace it with the ones that are being pushed
@@ -113,6 +92,7 @@ class ExpressionMatrix {
         newGeneSymbols,
         newRawGeneExpression,
         newTruncatedGeneExpression,
+        newZScore,
         newStats,
       );
       return;
@@ -121,6 +101,7 @@ class ExpressionMatrix {
     // Append new gene expressions
     appendMatrix(this.rawGeneExpressions, newRawGeneExpression);
     appendMatrix(this.truncatedGeneExpressions, newTruncatedGeneExpression);
+    appendMatrix(this.ZScore, newZScore);
 
     // Add new gene stats
     _.merge(this.stats, newStats);
