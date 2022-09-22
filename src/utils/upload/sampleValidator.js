@@ -5,6 +5,7 @@ import {
 const errorMessages = {
   invalidBarcodesFile: (expected, found) => `Invalid barcodes.tsv file. ${expected} barcodes expected, but ${found} found.`,
   invalidFeaturesFile: (expected, found) => `Invalid features/genes.tsv file. ${expected} genes expected, but ${found} found.`,
+  invalidMatrixFormat: () => 'Invalid matrix.mtx file: Matrix Market format is "array". Please convert to sparse "coordinate" format.',
   transposedMatrixFile: () => 'Invalid matrix.mtx file: Matrix is transposed.',
 };
 
@@ -26,22 +27,11 @@ const decompress = async (arrBuffer) => {
   return result;
 };
 
-const extractSampleSizes = async (matrix) => {
-  const { compressed, fileObject } = matrix;
+const extractSampleSizes = (matrixHead) => {
+  // The size line is the first line in the file that does not begin with a comment (%)
+  const sizeLine = matrixHead.split('\n').find((line) => line[0] !== '%');
 
-  let header = '';
-  let matrixHeader = '';
-
-  const fileArrBuffer = await fileObject.slice(0, 300).arrayBuffer();
-
-  matrixHeader = compressed
-    ? await decode(await decompress(fileArrBuffer))
-    : await decode(fileArrBuffer);
-
-  // The matrix header is the first line in the file that splits into 3
-  header = matrixHeader.split('\n').find((line) => line.split(' ').length === 3);
-
-  const [featuresSize, barcodeSize, matrixSize] = header.split(' ');
+  const [featuresSize, barcodeSize, matrixSize] = sizeLine.split(' ');
   return [Number.parseInt(featuresSize, 10),
     Number.parseInt(barcodeSize, 10),
     Number.parseInt(matrixSize, 10)];
@@ -77,20 +67,55 @@ const getNumLines = async (sampleFile) => {
   return numLines;
 };
 
-const validateFileSizes = async (sample) => {
+const getMatrixHead = async (matrix) => {
+  const { compressed, fileObject } = matrix;
+
+  let matrixHeader = '';
+
+  const fileArrBuffer = await fileObject.slice(0, 300).arrayBuffer();
+
+  matrixHeader = compressed
+    ? await decode(await decompress(fileArrBuffer))
+    : await decode(fileArrBuffer);
+
+  return matrixHeader;
+};
+
+const getSampleFiles = (sample) => {
   const barcodes = sample.files['barcodes.tsv.gz'] || sample.files['barcodes.tsv'];
   const features = sample.files['features.tsv.gz'] || sample.files['features.tsv'] || sample.files['genes.tsv.gz'] || sample.files['genes.tsv'];
   const matrix = sample.files['matrix.mtx.gz'] || sample.files['matrix.mtx'];
 
+  return { barcodes, features, matrix };
+};
+
+const validateMatrixFormat = async (sample) => {
+  const { matrix } = getSampleFiles(sample);
+
+  const matrixHead = await getMatrixHead(matrix);
+
+  // Reject sample if type of count matrix is "array" not "coordinate"
+  // See https://networkrepository.com/mtx-matrix-market-format.html
+  const headerLine = matrixHead.split('\n')[0];
+  const errors = [];
+
+  if (headerLine.match('array')) errors.push(errorMessages.invalidMatrixFormat());
+  if (errors.length) throw new Error(errors.join('\n'));
+};
+
+const validateFileSizes = async (sample) => {
+  const { barcodes, features, matrix } = getSampleFiles(sample);
+  const errors = [];
+
+  const matrixHead = await getMatrixHead(matrix);
+
   const [
     expectedNumFeatures,
     expectedNumBarcodes,
-  ] = await extractSampleSizes(matrix);
+  ] = extractSampleSizes(matrixHead);
 
   const numBarcodesFound = await getNumLines(barcodes);
   const numFeaturesFound = await getNumLines(features);
-
-  const errors = [];
 
   if (numBarcodesFound === expectedNumFeatures
     && numFeaturesFound === expectedNumBarcodes) {
@@ -109,12 +134,12 @@ const validateFileSizes = async (sample) => {
     );
   }
 
-  return errors;
+  if (errors.length) throw new Error(errors.join('\n'));
 };
 
 const validate = async (sample) => {
-  const errors = await validateFileSizes(sample);
-  return errors;
+  await validateMatrixFormat(sample);
+  await validateFileSizes(sample);
 };
 
 export default validate;

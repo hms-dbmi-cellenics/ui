@@ -8,6 +8,7 @@ import { createSample, createSampleFile, updateSampleFileUpload } from 'redux/ac
 import UploadStatus from 'utils/upload/UploadStatus';
 import loadAndCompressIfNecessary from 'utils/upload/loadAndCompressIfNecessary';
 import { inspectFile, Verdict } from 'utils/upload/fileInspector';
+import pushNotificationMessage from 'utils/pushNotificationMessage';
 
 import getFileTypeV2 from 'utils/getFileTypeV2';
 
@@ -154,6 +155,8 @@ const processUpload = async (filesList, sampleType, samples, experimentId, dispa
       );
     } catch (e) {
       // If sample creation fails, sample should not be created
+      const errorMessage = `Error uploading sample ${name}.\n${e.message}`;
+      pushNotificationMessage('error', errorMessage, 15);
       return;
     }
 

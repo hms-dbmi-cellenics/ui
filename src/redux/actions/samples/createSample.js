@@ -13,7 +13,6 @@ import { METADATA_DEFAULT_VALUE } from 'redux/reducers/experiments/initialState'
 import { sampleTemplate } from 'redux/reducers/samples/initialState';
 
 import UploadStatus from 'utils/upload/UploadStatus';
-import pushNotificationMessage from 'utils/pushNotificationMessage';
 import validate from 'utils/upload/sampleValidator';
 
 const createSample = (
@@ -23,6 +22,8 @@ const createSample = (
   type,
   filesToUpload,
 ) => async (dispatch, getState) => {
+  await validate(sample);
+
   const experiment = getState().experiments[experimentId];
 
   const newSampleUuid = uuidv4();
@@ -54,12 +55,6 @@ const createSample = (
     sampleTechnology = '10x';
   } else {
     throw new Error(`Sample technology ${type} is not recognized`);
-  }
-  const errors = await validate(sample);
-  if (errors && errors.length > 0) {
-    const errorMessage = `Error uploading sample ${name}.\n${errors.join('\n')}`;
-    pushNotificationMessage('error', errorMessage, 15);
-    throw new Error(errorMessage);
   }
 
   filesToUpload.forEach((fileName) => {
