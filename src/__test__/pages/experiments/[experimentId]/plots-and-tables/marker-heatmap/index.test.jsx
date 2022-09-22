@@ -278,9 +278,10 @@ describe('Marker heatmap plot', () => {
       .mockReset()
       // load genes list
       .mockImplementationOnce(() => null)
-      .mockImplementationOnce((Etag) => mockWorkerResponses[Etag])
-      // throw error on gene expression load
       .mockImplementationOnce(() => null)
+      .mockImplementationOnce(() => null)
+      .mockImplementationOnce(() => null)
+      // throw error on gene expression load
       .mockImplementationOnce(() => { throw new Error('Not found'); });
 
     await renderHeatmapPage(storeState);
