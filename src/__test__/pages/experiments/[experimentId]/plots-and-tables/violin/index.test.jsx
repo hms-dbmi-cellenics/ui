@@ -94,8 +94,6 @@ describe('ViolinIndex', () => {
       .mockImplementationOnce(() => null)
       .mockImplementationOnce((Etag) => mockWorkerResponses[Etag])
       .mockImplementationOnce(() => null)
-      .mockImplementationOnce((Etag) => mockWorkerResponses[Etag])
-      .mockImplementationOnce(() => null)
       .mockImplementationOnce((Etag) => mockWorkerResponses[Etag]);
 
     enableFetchMocks();
@@ -187,5 +185,25 @@ describe('ViolinIndex', () => {
 
     expect(screen.getByRole('graphics-document', { name: 'Violin plot' })).toBeInTheDocument();
     expect(storeState.getState().componentConfig[plotUuid].config.normalised).toBe('raw');
+  });
+
+  it('Displays an error if there is an error fetching dispersion', async () => {
+    const errorResponse = {
+      ...mockWorkerResponses,
+      'list-genes': () => Promise.reject(new Error('error')),
+    };
+
+    seekFromS3
+      .mockReset()
+      .mockImplementationOnce(() => null)
+      .mockImplementationOnce((Etag) => errorResponse[Etag])
+      .mockImplementationOnce(() => null)
+      .mockImplementationOnce((Etag) => errorResponse[Etag]);
+
+    await renderViolinPage(storeState);
+
+    expect(screen.getByText(/We're sorry, we couldn't load this./)).toBeInTheDocument();
+
+    userEvent.click(screen.getByText('Try again'));
   });
 });
