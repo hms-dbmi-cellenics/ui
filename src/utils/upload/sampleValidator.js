@@ -3,10 +3,15 @@ import {
 } from 'fflate';
 
 const errorMessages = {
-  invalidBarcodesFile: (expected, found) => `Invalid barcodes.tsv file. ${expected} barcodes expected, but ${found} found.`,
-  invalidFeaturesFile: (expected, found) => `Invalid features/genes.tsv file. ${expected} genes expected, but ${found} found.`,
-  invalidMatrixFormat: () => 'Invalid matrix.mtx file: Matrix Market format is "array". Please convert to sparse "coordinate" format.',
+  invalidBarcodesFile: (expected, found) => `Invalid barcodes.tsv file: ${expected} barcodes expected, but ${found} found.`,
+  invalidFeaturesFile: (expected, found) => `Invalid features/genes.tsv file: ${expected} genes expected, but ${found} found.`,
   transposedMatrixFile: () => 'Invalid matrix.mtx file: Matrix is transposed.',
+  missingFiles: (missingFiles) => `Incomplete sample: Sample does not contain "${missingFiles.join('" and "')}" file(s). Please include the file in the sample.`,
+  invalidMatrixFormat: (type) => {
+    let errMessage = 'Invalid matrix.mtx file: Invalid matrix format type';
+    if (type === 'array') errMessage = 'Invalid matrix.mtx file: Matrix file format is "array". Please convert to sparse "coordinate" format.';
+    return errMessage;
+  },
 };
 
 const CHUNK_SIZE = 2 ** 18; // 256 kB
@@ -89,22 +94,33 @@ const getSampleFiles = (sample) => {
   return { barcodes, features, matrix };
 };
 
-const validateMatrixFormat = async (sample) => {
-  const { matrix } = getSampleFiles(sample);
+const validateSampleCompleteness = async (sampleFiles) => {
+  const { barcodes, features, matrix } = sampleFiles;
+
+  const missingFiles = [];
+
+  if (!barcodes) missingFiles.push('barcodes');
+  if (!features) missingFiles.push('features');
+  if (!matrix) missingFiles.push('matrix');
+
+  if (missingFiles.length) throw new Error(errorMessages.missingFiles(missingFiles));
+};
+
+const validateMatrixFormat = async (sampleFiles) => {
+  const { matrix } = sampleFiles;
 
   const matrixHead = await getMatrixHead(matrix);
 
   // Reject sample if type of count matrix is "array" not "coordinate"
   // See https://networkrepository.com/mtx-matrix-market-format.html
   const headerLine = matrixHead.split('\n')[0];
-  const errors = [];
 
-  if (headerLine.match('array')) errors.push(errorMessages.invalidMatrixFormat());
-  if (errors.length) throw new Error(errors.join('\n'));
+  if (headerLine.match('array')) throw new Error(errorMessages.invalidMatrixFormat('array'));
+  if (!headerLine.match('coordinate')) throw new Error(errorMessages.invalidMatrixFormat());
 };
 
-const validateFileSizes = async (sample) => {
-  const { barcodes, features, matrix } = getSampleFiles(sample);
+const validateFileSizes = async (sampleFiles) => {
+  const { barcodes, features, matrix } = sampleFiles;
   const errors = [];
 
   const matrixHead = await getMatrixHead(matrix);
@@ -138,8 +154,11 @@ const validateFileSizes = async (sample) => {
 };
 
 const validate = async (sample) => {
-  await validateMatrixFormat(sample);
-  await validateFileSizes(sample);
+  const sampleFiles = getSampleFiles(sample);
+
+  await validateSampleCompleteness(sampleFiles);
+  await validateMatrixFormat(sampleFiles);
+  await validateFileSizes(sampleFiles);
 };
 
 export default validate;
