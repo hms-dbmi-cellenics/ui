@@ -434,7 +434,7 @@ describe('processUpload', () => {
 
   it('Should not upload sample and show notification if uploaded sample is invalid', async () => {
     validate.mockImplementationOnce(
-      () => (['Some file error']),
+      () => { throw new Error('Some file error'); },
     );
 
     await processUpload(
