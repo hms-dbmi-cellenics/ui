@@ -3,7 +3,6 @@ import { MD5 } from 'object-hash';
 
 // import { Environment, isBrowser } from 'utils/deploymentInfo';
 import { Environment, isBrowser } from 'utils/deploymentInfo';
-import { calculateZScore } from 'utils/postRequestProcessing';
 import { getBackendStatus } from 'redux/selectors';
 
 import cache from 'utils/cache';
@@ -138,7 +137,6 @@ const fetchGeneExpressionWork = async (
   }
 
   response = await seekFromS3(ETag, experimentId);
-  response = calculateZScore(response);
 
   Object.keys(missingDataKeys).forEach(async (gene) => {
     await cache.set(missingDataKeys[gene], response[gene]);

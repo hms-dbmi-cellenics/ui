@@ -1,10 +1,10 @@
 import _ from 'lodash';
+import { SparseMatrix } from 'mathjs';
 
 import {
   GENES_EXPRESSION_LOADING, GENES_EXPRESSION_ERROR, GENES_EXPRESSION_LOADED,
 } from 'redux/actionTypes/genes';
 
-import pushNotificationMessage from 'utils/pushNotificationMessage';
 import { fetchWork } from 'utils/work/fetchWork';
 import getTimeoutForWorkerTask from 'utils/getTimeoutForWorkerTask';
 
@@ -69,32 +69,33 @@ const loadGeneExpression = (
   const timeout = getTimeoutForWorkerTask(getState(), 'GeneExpression');
 
   try {
-    const data = await fetchWork(
+    const {
+      order,
+      rawExpression: rawExpressionJson,
+      truncatedExpression: truncatedExpressionJson,
+      stats,
+    } = await fetchWork(
       experimentId, body, getState, { timeout },
     );
 
-    if (data[genesToFetch[0]]?.error) {
-      pushNotificationMessage('error', data[genesToFetch[0]].message);
-      dispatch({
-        type: GENES_EXPRESSION_LOADED,
-        payload: {
-          data: [],
-          genes: genesAlreadyLoaded,
-          loadingStatus: [],
+    const rawExpression = SparseMatrix.fromJSON(rawExpressionJson);
+    const truncatedExpression = SparseMatrix.fromJSON(truncatedExpressionJson);
+
+    const fetchedGenes = _.concat(displayedGenes, order);
+
+    dispatch({
+      type: GENES_EXPRESSION_LOADED,
+      payload: {
+        componentUuid,
+        genes: fetchedGenes,
+        newGenes: {
+          order,
+          stats,
+          rawExpression,
+          truncatedExpression,
         },
-      });
-    } else {
-      const fetchedGenes = _.concat(displayedGenes, Object.keys(data));
-      dispatch({
-        type: GENES_EXPRESSION_LOADED,
-        payload: {
-          experimentId,
-          componentUuid,
-          genes: fetchedGenes,
-          data,
-        },
-      });
-    }
+      },
+    });
   } catch (error) {
     dispatch({
       type: GENES_EXPRESSION_ERROR,

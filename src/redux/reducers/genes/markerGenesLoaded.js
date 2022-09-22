@@ -1,7 +1,6 @@
 /* eslint-disable no-param-reassign */
 import produce, { original } from 'immer';
 
-// import { calculateZScore } from 'utils/postRequestProcessing';
 import initialState from 'redux/reducers/genes/initialState';
 
 const markerGenesLoaded = produce((draft, action) => {
@@ -14,9 +13,6 @@ const markerGenesLoaded = produce((draft, action) => {
       stats,
     },
   } = action.payload;
-
-  // // const dataWithZScore = calculateZScore(data);
-  // draft.expression.views[plotUuid] = { fetching: false, error: false, data: order };
 
   const expressionMatrix = original(draft).expression.matrix;
 
