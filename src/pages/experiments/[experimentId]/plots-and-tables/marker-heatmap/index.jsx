@@ -207,6 +207,7 @@ const MarkerHeatmap = ({ experimentId }) => {
     }
 
     const cellOrder = populateHeatmapData(cellSets, config, true);
+
     const data = generateVegaData(cellOrder, expressionData, config, cellSets);
     const spec = generateSpec(config, 'Cluster ID', data, true);
 
