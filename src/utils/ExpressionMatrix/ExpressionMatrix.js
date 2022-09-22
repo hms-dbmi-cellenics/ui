@@ -136,7 +136,7 @@ class ExpressionMatrix {
 
     if (_.isNil(geneIndex)) return undefined;
 
-    if (cellIndexes.length === 0) return [];
+    if (cellIndexes?.length === 0) return [];
 
     const result = getColumn(geneIndex, matrix, cellIndexes);
 
