@@ -19,7 +19,11 @@ const generateVegaHeatmapTracksData = (cellOrder, track, cellSets, showGuardline
   }
 
   const childrenCellSets = [];
-  rootNodes.forEach((rootNode) => childrenCellSets.push(...rootNode.children));
+  rootNodes.forEach((rootNode) => {
+    rootNode.children.forEach((cellId) => {
+      childrenCellSets.push(cellId);
+    });
+  });
 
   const trackColorData = [];
   const groupData = [];
