@@ -32,11 +32,13 @@ const loadMarkerGenes = (
       order,
       rawExpression: rawExpressionJson,
       truncatedExpression: truncatedExpressionJson,
+      zScore: zScoreJson,
       stats,
     } = await fetchWork(experimentId, body, getState, { timeout });
 
     const rawExpression = SparseMatrix.fromJSON(rawExpressionJson);
     const truncatedExpression = SparseMatrix.fromJSON(truncatedExpressionJson);
+    const zScore = SparseMatrix.fromJSON(zScoreJson);
 
     dispatch({
       type: MARKER_GENES_LOADED,
@@ -46,6 +48,7 @@ const loadMarkerGenes = (
           order,
           rawExpression,
           truncatedExpression,
+          zScore,
           stats,
         },
       },

@@ -17,6 +17,7 @@ const genesExpressionLoaded = (state, action) => {
       order,
       rawExpression,
       truncatedExpression,
+      zScore,
       stats,
     } = newGenes;
 
@@ -26,6 +27,7 @@ const genesExpressionLoaded = (state, action) => {
       order,
       rawExpression,
       truncatedExpression,
+      zScore,
       stats,
     );
   }

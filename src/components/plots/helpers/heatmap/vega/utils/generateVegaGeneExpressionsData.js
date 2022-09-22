@@ -18,8 +18,18 @@ const generateVegaGeneExpressionsData = (cellOrder, geneOrder, expression, heatm
   // Preload all genes so that their arrays are generated only once
   const preloadedExpressions = {};
   geneOrder.forEach((gene) => {
+    if (expressionValue === 'zScore') {
+      preloadedExpressions[gene] = { zScore: expression.matrix.getZScore(gene, cellOrder) };
+      return;
+    }
+
     const geneExpression = { rawExpression: expression.matrix.getRawExpression(gene, cellOrder) };
-    geneExpression.truncatedExpression = expression.matrix.getTruncatedExpression(gene, cellOrder);
+
+    if (truncatedValues) {
+      geneExpression.truncatedExpression = expression.matrix.getTruncatedExpression(
+        gene, cellOrder,
+      );
+    }
 
     preloadedExpressions[gene] = geneExpression;
   });
@@ -28,13 +38,12 @@ const generateVegaGeneExpressionsData = (cellOrder, geneOrder, expression, heatm
 
   cartesian(geneOrder, cellOrderWithIndexes).forEach(
     ([gene, { cellId, index }]) => {
-      const expressionValues = {};
+      let expressionValues = {};
 
       if (expressionValue === 'zScore') {
-        throw new Error('Not implemented DO NOT MERGE: Zscore needs to be implemented for sparse matrix in the worker first');
-        // expressionValues = {
-        //   color: expressionDataForGene.zScore, display: expressionDataForGene.zScore,
-        // };
+        expressionValues = {
+          color: preloadedExpressions[gene].zScore, display: preloadedExpressions[gene].zScore,
+        };
       } else {
         expressionValues.display = preloadedExpressions[gene].rawExpression;
         expressionValues.color = truncatedValues

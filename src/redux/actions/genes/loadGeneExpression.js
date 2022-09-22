@@ -73,6 +73,7 @@ const loadGeneExpression = (
       order,
       rawExpression: rawExpressionJson,
       truncatedExpression: truncatedExpressionJson,
+      zScore: zScoreJson,
       stats,
     } = await fetchWork(
       experimentId, body, getState, { timeout },
@@ -80,6 +81,7 @@ const loadGeneExpression = (
 
     const rawExpression = SparseMatrix.fromJSON(rawExpressionJson);
     const truncatedExpression = SparseMatrix.fromJSON(truncatedExpressionJson);
+    const zScore = SparseMatrix.fromJSON(zScoreJson);
 
     const fetchedGenes = _.concat(displayedGenes, order);
 
@@ -93,6 +95,7 @@ const loadGeneExpression = (
           stats,
           rawExpression,
           truncatedExpression,
+          zScore,
         },
       },
     });

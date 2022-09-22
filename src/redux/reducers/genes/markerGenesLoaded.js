@@ -10,6 +10,7 @@ const markerGenesLoaded = produce((draft, action) => {
       order,
       rawExpression,
       truncatedExpression,
+      zScore,
       stats,
     },
   } = action.payload;
@@ -20,6 +21,7 @@ const markerGenesLoaded = produce((draft, action) => {
     order,
     rawExpression,
     truncatedExpression,
+    zScore,
     stats,
   );
 
