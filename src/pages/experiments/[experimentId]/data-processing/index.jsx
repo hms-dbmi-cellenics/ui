@@ -147,6 +147,9 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
     }
   }, [samples, sampleKeys]);
 
+  const checkIfSampleIsEnabled = (step) => (
+    sampleKeys.some((key) => processingConfig[step][key]?.enabled));
+
   const steps = [
     {
 
@@ -167,7 +170,7 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
               sampleId={sample.key}
               sampleIds={sampleKeys}
               onConfigChange={() => onConfigChange(key)}
-              stepDisabled={!processingConfig[key]?.enabled}
+              stepDisabled={!checkIfSampleIsEnabled(key)}
             />
           )}
         />
@@ -190,7 +193,7 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
               sampleId={sample.key}
               sampleIds={sampleKeys}
               onConfigChange={() => onConfigChange(key)}
-              stepDisabled={!processingConfig[key].enabled}
+              stepDisabled={!checkIfSampleIsEnabled(key)}
             />
           )}
         />
@@ -213,7 +216,7 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
               sampleId={sample.key}
               sampleIds={sampleKeys}
               onConfigChange={() => onConfigChange(key)}
-              stepDisabled={!processingConfig[key].enabled}
+              stepDisabled={!checkIfSampleIsEnabled(key)}
             />
           )}
         />
@@ -236,7 +239,7 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
               sampleId={sample.key}
               sampleIds={sampleKeys}
               onConfigChange={() => onConfigChange(key)}
-              stepDisabled={!processingConfig[key].enabled}
+              stepDisabled={!checkIfSampleIsEnabled(key)}
               onQCRunClick={() => setRunQCModalVisible(true)}
             />
           )}
@@ -272,7 +275,7 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
               sampleId={sample.key}
               sampleIds={sampleKeys}
               onConfigChange={() => onConfigChange(key)}
-              stepDisabled={!processingConfig[key].enabled}
+              stepDisabled={!checkIfSampleIsEnabled(key)}
             />
           )}
         />
@@ -371,7 +374,8 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
   };
 
   const renderTitle = () => {
-    const stepEnabled = processingConfig[currentStep.key]?.enabled;
+    // const stepEnabled = processingConfig[currentStep.key]?.enabled;
+    const stepEnabled = checkIfSampleIsEnabled(currentStep.key);
     const prefiltered = processingConfig[currentStep.key]?.prefiltered || false;
 
     return (
@@ -404,7 +408,7 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
                                 disabledByPipeline
                               }
                             >
-                              {processingConfig[key]?.enabled === false ? (
+                              {!stepEnabled ? (
                                 <>
                                   {/* disabled */}
                                   <Text
