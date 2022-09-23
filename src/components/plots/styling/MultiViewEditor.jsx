@@ -11,7 +11,7 @@ import {
 } from 'antd';
 import { CloseOutlined } from '@ant-design/icons';
 import { arrayMoveImmutable } from 'utils/array-move';
-import HierarchicalTreeGenes from '../hierarchical-tree-genes/HierarchicalTreeGenes';
+import HierarchicalTreeGenes from 'src/components/plots/hierarchical-tree-genes/HierarchicalTreeGenes';
 
 const { Search } = Input;
 
