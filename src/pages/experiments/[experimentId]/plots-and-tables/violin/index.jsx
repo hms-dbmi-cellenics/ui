@@ -107,7 +107,9 @@ const ViolinIndex = ({ experimentId }) => {
   useEffect(() => {
     if (multiViewGenes?.length) {
       const genesToLoad = multiViewGenes.filter((gene) => (
-        !geneExpression.loading.includes(gene) && !Object.keys(geneExpression.data).includes(gene)
+        !geneExpression.loading.includes(gene)
+        && !Object.keys(geneExpression.data).includes(gene)
+        && gene !== 'notSelected'
       ));
 
       if (genesToLoad.length) {
