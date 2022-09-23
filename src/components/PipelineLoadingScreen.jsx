@@ -150,17 +150,16 @@ const PipelineLoadingScreen = (props) => {
 
 PipelineLoadingScreen.propTypes = {
   pipelineStatus: PropTypes.oneOf(['error', 'running', 'toBeRun']).isRequired,
+  pipelineType: PropTypes.oneOf(['gem2s', 'seurat']).isRequired,
   completedSteps: PropTypes.array,
   experimentId: PropTypes.string,
   paramsHash: PropTypes.string,
-  pipelineType: PropTypes.string,
 };
 
 PipelineLoadingScreen.defaultProps = {
   completedSteps: [],
   experimentId: null,
   paramsHash: null,
-  pipelineType: null,
 };
 
 export default PipelineLoadingScreen;

@@ -55,6 +55,7 @@ jest.mock('react-sortable-hoc', () => ({
 
 const defaultProps = {
   height: 100,
+  technology: '10x',
 };
 
 const samplesTableFactory = createTestComponentFactory(SamplesTable, defaultProps);

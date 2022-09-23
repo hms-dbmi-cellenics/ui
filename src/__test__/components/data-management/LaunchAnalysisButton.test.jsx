@@ -17,10 +17,10 @@ import initialSamplesState, { sampleTemplate } from 'redux/reducers/samples/init
 import { initialExperimentBackendStatus } from 'redux/reducers/backendStatus/initialState';
 
 import UploadStatus from 'utils/upload/UploadStatus';
-import generateGem2sParamsHash from 'utils/data-management/generateGem2sParamsHash';
+import generatePipelineParamsHash from 'utils/data-management/generatePipelineParamsHash';
 import '__test__/test-utils/setupTests';
 
-jest.mock('utils/data-management/generateGem2sParamsHash');
+jest.mock('utils/data-management/generatePipelineParamsHash');
 jest.mock('redux/actions/experimentSettings/updateExperimentInfo', () => jest.fn().mockReturnValue({ type: 'UPDATE_EXPERIMENT_INFO' }));
 jest.mock('redux/actions/pipeline', () => ({
   runGem2s: jest.fn().mockReturnValue({ type: 'RUN_GEM2S' }),
@@ -71,6 +71,9 @@ const noDataState = {
           status: PipelineStatus.NOT_CREATED,
         },
         pipeline: {
+          status: PipelineStatus.NOT_CREATED,
+        },
+        seurat: {
           status: PipelineStatus.NOT_CREATED,
         },
       },
@@ -131,6 +134,9 @@ const withDataState = {
         pipeline: {
           status: PipelineStatus.SUCCEEDED,
         },
+        seurat: {
+          status: PipelineStatus.NOT_CREATED,
+        },
       },
     },
   },
@@ -156,7 +162,7 @@ describe('LaunchAnalysisButton', () => {
     await act(async () => {
       render(
         <Provider store={mockStore(notAllMetadataInserted)}>
-          <LaunchAnalysisButton />
+          <LaunchAnalysisButton technology='10x' />
         </Provider>,
       );
     });
@@ -170,7 +176,7 @@ describe('LaunchAnalysisButton', () => {
     await act(async () => {
       render(
         <Provider store={mockStore(noDataState)}>
-          <LaunchAnalysisButton />
+          <LaunchAnalysisButton technology='10x' />
         </Provider>,
       );
     });
@@ -198,7 +204,7 @@ describe('LaunchAnalysisButton', () => {
     await act(async () => {
       render(
         <Provider store={mockStore(notAllDataUploaded)}>
-          <LaunchAnalysisButton />
+          <LaunchAnalysisButton technology='10x' />
         </Provider>,
       );
     });
@@ -212,7 +218,7 @@ describe('LaunchAnalysisButton', () => {
     await act(async () => {
       render(
         <Provider store={mockStore(withDataState)}>
-          <LaunchAnalysisButton />
+          <LaunchAnalysisButton technology='10x' />
         </Provider>,
       );
     });
@@ -223,12 +229,12 @@ describe('LaunchAnalysisButton', () => {
   });
 
   it('Shows Go to Data Processing if there are no changes to the experiment (same hash)', async () => {
-    generateGem2sParamsHash.mockReturnValueOnce('old-params-hash');
+    generatePipelineParamsHash.mockReturnValueOnce('old-params-hash');
 
     await act(async () => {
       render(
         <Provider store={mockStore(withDataState)}>
-          <LaunchAnalysisButton />
+          <LaunchAnalysisButton technology='10x' />
         </Provider>,
       );
     });
@@ -239,12 +245,12 @@ describe('LaunchAnalysisButton', () => {
   });
 
   it('Shows Process project if there are changes to the experiment (different hash)', async () => {
-    generateGem2sParamsHash.mockReturnValueOnce('new-params-hash');
+    generatePipelineParamsHash.mockReturnValueOnce('new-params-hash');
 
     await act(async () => {
       render(
         <Provider store={mockStore(withDataState)}>
-          <LaunchAnalysisButton />
+          <LaunchAnalysisButton technology='10x' />
         </Provider>,
       );
     });
@@ -255,12 +261,12 @@ describe('LaunchAnalysisButton', () => {
   });
 
   it('Dispatches request for GEM2S if there are changes to the experiment', async () => {
-    generateGem2sParamsHash.mockReturnValueOnce('new-params-hash');
+    generatePipelineParamsHash.mockReturnValueOnce('new-params-hash');
 
     await act(async () => {
       render(
         <Provider store={mockStore(withDataState)}>
-          <LaunchAnalysisButton />
+          <LaunchAnalysisButton technology='10x' />
         </Provider>,
       );
     });
@@ -279,12 +285,12 @@ describe('LaunchAnalysisButton', () => {
   });
 
   it('Does not dispatch request for GEM2S if there are no changes to the experiment', async () => {
-    generateGem2sParamsHash.mockReturnValueOnce('old-params-hash');
+    generatePipelineParamsHash.mockReturnValueOnce('old-params-hash');
 
     await act(async () => {
       render(
         <Provider store={mockStore(withDataState)}>
-          <LaunchAnalysisButton />
+          <LaunchAnalysisButton technology='10x' />
         </Provider>,
       );
     });
@@ -294,12 +300,12 @@ describe('LaunchAnalysisButton', () => {
   });
 
   it('Going to Data Processing should dispatch the correct actions', async () => {
-    generateGem2sParamsHash.mockReturnValueOnce('old-params-hash');
+    generatePipelineParamsHash.mockReturnValueOnce('old-params-hash');
 
     await act(async () => {
       render(
         <Provider store={mockStore(withDataState)}>
-          <LaunchAnalysisButton />
+          <LaunchAnalysisButton technology='10x' />
         </Provider>,
       );
     });

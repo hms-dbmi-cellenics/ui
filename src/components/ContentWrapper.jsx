@@ -99,6 +99,7 @@ const ContentWrapper = (props) => {
   const seuratRunning = seuratStatusKey === 'RUNNING';
   const completedSeuratSteps = backendStatus?.seurat?.completedSteps;
   const seuratComplete = seuratStatusKey === pipelineStatusValues.SUCCEEDED;
+  const isSeurat = (seuratStatusKey && seuratStatusKey !== pipelineStatusValues.NOT_CREATED) || false;
 
   // This is used to prevent a race condition where the page would start loading immediately
   // when the backend status was previously loaded. In that case, `backendLoading` is `false`
@@ -326,8 +327,6 @@ const ContentWrapper = (props) => {
     const notProcessedExperimentDisable = !routeExperimentId && disableIfNoExperiment
       && (!gem2sRerunStatus || gem2sRerunStatus.rerun);
 
-    const notProcessedIsSeurat = seuratStatusKey && disabledIfSeurat;
-
     const pipelineStatusDisable = disabledByPipelineStatus && (
       backendError || gem2sRunning || gem2sRunningError
       || waitingForQcToLaunch || pipelineRunning || pipelineRunningError
@@ -336,7 +335,7 @@ const ContentWrapper = (props) => {
     return (
       <Menu.Item
         id={module}
-        disabled={notProcessedExperimentDisable || pipelineStatusDisable || notProcessedIsSeurat}
+        disabled={notProcessedExperimentDisable || pipelineStatusDisable || (isSeurat && disabledIfSeurat)}
         key={module}
         icon={icon}
         onClick={() => navigateTo(

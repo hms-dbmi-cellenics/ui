@@ -18,7 +18,7 @@ import { getBackendStatus } from 'redux/selectors';
 import { loadExperiments, setActiveExperiment } from 'redux/actions/experiments';
 
 import { updateExperimentInfo } from 'redux/actions/experimentSettings';
-import generateGem2sParamsHash from 'utils/data-management/generateGem2sParamsHash';
+import generatePipelineParamsHash from 'utils/data-management/generatePipelineParamsHash';
 
 import mockAPI, {
   generateDefaultMockAPIResponses,
@@ -28,7 +28,7 @@ import { experiments } from '__test__/test-utils/mockData';
 
 jest.mock('redux/selectors');
 jest.mock('utils/socketConnection');
-jest.mock('utils/data-management/generateGem2sParamsHash');
+jest.mock('utils/data-management/generatePipelineParamsHash');
 
 jest.mock('next/router', () => ({
   __esModule: true,
@@ -60,7 +60,7 @@ Object.defineProperty(navigator, 'userAgent', { value: chromeUA, writable: true 
 
 enableFetchMocks();
 
-generateGem2sParamsHash.mockImplementation(() => 'mockParamsHash');
+generatePipelineParamsHash.mockImplementation(() => 'mockParamsHash');
 
 const experimentWithSamples = experiments.find((experiment) => experiment.samplesOrder.length > 0);
 
@@ -170,6 +170,10 @@ describe('ContentWrapper', () => {
         },
         gem2s: {
           status: 'SUCCEEDED',
+          paramsHash: 'mockParamsHash',
+        },
+        seurat: {
+          status: 'NOT_CREATED',
           paramsHash: 'mockParamsHash',
         },
       },

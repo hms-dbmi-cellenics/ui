@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`processUpload Uploads and updates redux correctly when there are no errors with cellranger v2 1`] = `
+exports[`process10XUpload Uploads and updates redux correctly when there are no errors with cellranger v2 1`] = `
 Array [
   Object {
     "compressed": true,
@@ -50,7 +50,7 @@ Array [
 ]
 `;
 
-exports[`processUpload Uploads and updates redux correctly when there are no errors with cellranger v2 2`] = `
+exports[`process10XUpload Uploads and updates redux correctly when there are no errors with cellranger v2 2`] = `
 Array [
   Object {
     "data": "loadedGzippedFile",
@@ -82,7 +82,7 @@ Array [
 ]
 `;
 
-exports[`processUpload Uploads and updates redux correctly when there are no errors with cellranger v3 1`] = `
+exports[`process10XUpload Uploads and updates redux correctly when there are no errors with cellranger v3 1`] = `
 Array [
   Object {
     "compressed": true,
@@ -132,7 +132,7 @@ Array [
 ]
 `;
 
-exports[`processUpload Uploads and updates redux correctly when there are no errors with cellranger v3 2`] = `
+exports[`process10XUpload Uploads and updates redux correctly when there are no errors with cellranger v3 2`] = `
 Array [
   Object {
     "data": "loadedGzippedFile",
