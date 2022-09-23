@@ -1,5 +1,6 @@
 /* eslint-disable no-param-reassign */
 import _ from 'lodash';
+import { SAMPLES_SAVED } from 'redux/actionTypes/samples';
 
 import axios from 'axios';
 
@@ -157,6 +158,11 @@ const processUpload = async (filesList, sampleType, samples, experimentId, dispa
       // If sample creation fails, sample should not be created
       const errorMessage = `Error uploading sample ${name}.\n${e.message}`;
       pushNotificationMessage('error', errorMessage, 15);
+
+      dispatch({
+        type: SAMPLES_SAVED,
+      });
+
       return;
     }
 

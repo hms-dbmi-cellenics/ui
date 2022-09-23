@@ -22,8 +22,6 @@ const createSample = (
   type,
   filesToUpload,
 ) => async (dispatch, getState) => {
-  await validate(sample);
-
   const experiment = getState().experiments[experimentId];
 
   const newSampleUuid = uuidv4();
@@ -35,6 +33,8 @@ const createSample = (
       message: endUserMessages.SAVING_SAMPLE,
     },
   });
+
+  await validate(sample);
 
   const newSample = {
     ..._.cloneDeep(sampleTemplate),
@@ -80,7 +80,6 @@ const createSample = (
 
     await dispatch({
       type: SAMPLES_SAVED,
-      payload: { sample: newSample, experimentId },
     });
 
     return newSampleUuid;
