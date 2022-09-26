@@ -55,6 +55,36 @@ const getOtherTwoGenesMatrix = () => ({
   },
 });
 
+const getThreeGenesMatrix = () => ({
+  order: ['GeneA', 'GeneB', 'GeneC'],
+  rawExpression: new SparseMatrix([
+    [1, 2, 1],
+    [0, 0, 0],
+    [0, 5, 6],
+  ]),
+  truncatedExpression: new SparseMatrix([
+    [1, 2, 0.5],
+    [0, 0, 0],
+    [0, 3, 1],
+  ]),
+  zScore: new SparseMatrix([
+    [1, 1, 3],
+    [0, 0, 0],
+    [0, 3, 1],
+  ]),
+  stats: {
+    GeneA: {
+      rawMean: 0.3, rawStdev: 0.4, truncatedMin: 0, truncatedMax: 1,
+    },
+    GeneB: {
+      rawMean: 2.3, rawStdev: 2.0, truncatedMin: 2, truncatedMax: 3,
+    },
+    GeneC: {
+      rawMean: 1.3, rawStdev: 1.0, truncatedMin: 1, truncatedMax: 5,
+    },
+  },
+});
+
 const getTwoGenesExpressionMatrix = () => {
   const matrix = new ExpressionMatrix();
 
@@ -68,4 +98,6 @@ const getTwoGenesExpressionMatrix = () => {
 };
 
 // eslint-disable-next-line import/prefer-default-export
-export { getTwoGenesMatrix, getOtherTwoGenesMatrix, getTwoGenesExpressionMatrix };
+export {
+  getTwoGenesMatrix, getOtherTwoGenesMatrix, getThreeGenesMatrix, getTwoGenesExpressionMatrix,
+};
