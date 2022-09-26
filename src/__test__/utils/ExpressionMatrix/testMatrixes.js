@@ -1,4 +1,5 @@
 import { SparseMatrix } from 'mathjs';
+import ExpressionMatrix from 'utils/ExpressionMatrix/ExpressionMatrix';
 
 const getTwoGenesMatrix = () => ({
   order: ['Gzma', 'Lyz2'],
@@ -54,5 +55,17 @@ const getOtherTwoGenesMatrix = () => ({
   },
 });
 
+const getTwoGenesExpressionMatrix = () => {
+  const matrix = new ExpressionMatrix();
+
+  const {
+    order, rawExpression, truncatedExpression, zScore, stats,
+  } = getTwoGenesMatrix();
+
+  matrix.setGeneExpression(order, rawExpression, truncatedExpression, zScore, stats);
+
+  return matrix;
+};
+
 // eslint-disable-next-line import/prefer-default-export
-export { getTwoGenesMatrix, getOtherTwoGenesMatrix };
+export { getTwoGenesMatrix, getOtherTwoGenesMatrix, getTwoGenesExpressionMatrix };
