@@ -1,6 +1,7 @@
 import {
   DecodeUTF8, Decompress,
 } from 'fflate';
+import SampleValidationError from 'utils/errors/upload/SampleValidationError';
 
 const errorMessages = {
   invalidBarcodesFile: (expected, found) => `Invalid barcodes.tsv file: ${expected} barcodes expected, but ${found} found.`,
@@ -103,7 +104,9 @@ const validateSampleCompleteness = async (sampleFiles) => {
   if (!features) missingFiles.push('features');
   if (!matrix) missingFiles.push('matrix');
 
-  if (missingFiles.length) throw new Error(errorMessages.missingFiles(missingFiles));
+  if (missingFiles.length) {
+    throw new SampleValidationError(errorMessages.missingFiles(missingFiles));
+  }
 };
 
 const validateMatrixFormat = async (sampleFiles) => {
@@ -115,8 +118,8 @@ const validateMatrixFormat = async (sampleFiles) => {
   // See https://networkrepository.com/mtx-matrix-market-format.html
   const headerLine = matrixHead.split('\n')[0];
 
-  if (headerLine.match('array')) throw new Error(errorMessages.invalidMatrixFormat('array'));
-  if (!headerLine.match('coordinate')) throw new Error(errorMessages.invalidMatrixFormat());
+  if (headerLine.match('array')) throw new SampleValidationError(errorMessages.invalidMatrixFormat('array'));
+  if (!headerLine.match('coordinate')) throw new SampleValidationError(errorMessages.invalidMatrixFormat());
 };
 
 const validateFileSizes = async (sampleFiles) => {
@@ -150,7 +153,7 @@ const validateFileSizes = async (sampleFiles) => {
     );
   }
 
-  if (errors.length) throw new Error(errors.join('\n'));
+  if (errors.length) throw new SampleValidationError(errors.join('\n'));
 };
 
 const validate = async (sample) => {

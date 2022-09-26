@@ -10,8 +10,9 @@ import UploadStatus from 'utils/upload/UploadStatus';
 import loadAndCompressIfNecessary from 'utils/upload/loadAndCompressIfNecessary';
 import { inspectFile, Verdict } from 'utils/upload/fileInspector';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
-
 import getFileTypeV2 from 'utils/getFileTypeV2';
+
+import SampleValidationError from 'utils/errors/upload/SampleValidationError';
 
 const MAX_RETRIES = 2;
 
@@ -155,10 +156,18 @@ const processUpload = async (filesList, sampleType, samples, experimentId, dispa
         ),
       );
     } catch (e) {
-      // If sample creation fails, sample should not be created
-      const errorMessage = `Error uploading sample ${name}.\n${e.message}`;
-      pushNotificationMessage('error', errorMessage, 15);
+      let errorMessage = `Error uploading sample ${name}.\n${e.message}`;
 
+      if ((e instanceof SampleValidationError)) {
+        errorMessage = `Error uploading sample ${name}.\n${e.message}`;
+        pushNotificationMessage('error', errorMessage, 15);
+      } else {
+        errorMessage = `Error uploading sample ${name}. Please report this error via the feedback button.`;
+        pushNotificationMessage('error', errorMessage);
+        console.error(e.message);
+      }
+
+      // Dispatch this to remove the saving spinner
       dispatch({
         type: SAMPLES_SAVED,
       });
