@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import React, {
   useState, useEffect, useMemo, forwardRef, useRef, useImperativeHandle,
 } from 'react';
@@ -136,7 +137,7 @@ const TrajectoryAnalysisPlot = forwardRef((props, ref) => {
   ]);
 
   // Add/subtract 1 to give some padding to the plot
-  const extent = (arr) => [Math.min(...arr) - 1, Math.max(...arr) + 1];
+  const extent = (arr) => [_.min(arr) - 1, _.max(arr) + 1];
 
   const xExtent = useMemo(() => {
     if (!embeddingData) return [-10, 10];
