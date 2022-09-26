@@ -502,7 +502,7 @@ describe('CellSetsTool', () => {
     userEvent.click(wt1Cluster);
 
     // Cells in wt1 minus all the ones that are not in louvain (they were filtered out)
-    screen.getByText('27 cells selected');
+    screen.getByText('28 cells selected');
   });
 
   it('Displays a cell set hidden message when cluster is hidden', async () => {
