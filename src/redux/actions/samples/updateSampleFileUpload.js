@@ -24,8 +24,6 @@ const updateSampleFileUpload = (
     const url = `/v2/experiments/${experimentId}/samples/${sampleId}/sampleFiles/${type}`;
     const body = { uploadStatus };
 
-    console.log('HERE3======');
-
     try {
       await fetchAPI(
         url,

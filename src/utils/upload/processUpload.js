@@ -1,70 +1,60 @@
 /* eslint-disable no-param-reassign */
 import _ from 'lodash';
 
-import axios from 'axios';
-
 import { createSample, createSampleFile, updateSampleFileUpload } from 'redux/actions/samples';
 
 import UploadStatus from 'utils/upload/UploadStatus';
 import loadAndCompressIfNecessary from 'utils/upload/loadAndCompressIfNecessary';
 import { inspectFile, Verdict } from 'utils/upload/fileInspector';
+import fetchAPI from 'utils/http/fetchAPI';
 
 import getFileTypeV2 from 'utils/getFileTypeV2';
-
-const MAX_RETRIES = 2;
-
-const putInS3 = async (loadedFileData, signedUrl, onUploadProgress, currentRetry = 0) => {
-  try {
-    await axios.request({
-      method: 'put',
-      url: signedUrl,
-      data: loadedFileData,
-      headers: {
-        'Content-Type': 'application/octet-stream',
-      },
-      onUploadProgress,
-    });
-  } catch (e) {
-    if (currentRetry < MAX_RETRIES) {
-      await putInS3(loadedFileData, signedUrl, onUploadProgress, currentRetry + 1);
-    }
-
-    throw e;
-  }
-};
+import uploadParts from './processMultipartUpload';
 
 const prepareAndUploadFileToS3 = async (
-  projectId, sampleId, fileType, file, signedUrl, dispatch,
+  projectId, sampleId, fileType, file, signedUrls, dispatch,
 ) => {
-  let loadedFile = null;
+  let resParts = null;
+  let compressedFile = file;
 
-  try {
-    loadedFile = await loadAndCompressIfNecessary(file, () => {
-      dispatch(updateSampleFileUpload(projectId, sampleId, fileType, UploadStatus.COMPRESSING));
-    });
-  } catch (e) {
-    const fileErrorStatus = e.message === 'aborted' ? UploadStatus.FILE_READ_ABORTED : UploadStatus.FILE_READ_ERROR;
+  if (!file.compressed) {
+    try {
+      compressedFile = await loadAndCompressIfNecessary(file, () => {
+        dispatch(updateSampleFileUpload(projectId, sampleId, fileType, UploadStatus.COMPRESSING));
+      });
+    } catch (e) {
+      const fileErrorStatus = e.message === 'aborted' ? UploadStatus.FILE_READ_ABORTED : UploadStatus.FILE_READ_ERROR;
 
-    dispatch(updateSampleFileUpload(projectId, sampleId, fileType, fileErrorStatus));
-    return;
+      dispatch(updateSampleFileUpload(projectId, sampleId, fileType, fileErrorStatus));
+      return;
+    }
   }
 
   try {
-    await putInS3(loadedFile, signedUrl, (progress) => {
-      const percentProgress = Math.round((progress.loaded / progress.total) * 100);
-
-      dispatch(
-        updateSampleFileUpload(
-          projectId, sampleId, fileType, UploadStatus.UPLOADING, percentProgress ?? 0,
-        ),
-      );
-    });
+    resParts = await uploadParts(compressedFile, signedUrls);
   } catch (e) {
     dispatch(updateSampleFileUpload(projectId, sampleId, fileType, UploadStatus.UPLOAD_ERROR));
     return;
   }
 
+  const requestUrl = '/v2/completeMultipartUpload';
+  const body = {
+    parts: resParts,
+    uploadId: signedUrls.UploadId,
+    sampleFileId: sampleId,
+
+  };
+  await fetchAPI(requestUrl,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(body),
+    });
+
   dispatch(updateSampleFileUpload(projectId, sampleId, fileType, UploadStatus.UPLOADED));
+  return (resParts);
 };
 
 const getMetadata = (file) => {
@@ -83,9 +73,9 @@ const createAndUploadSingleFile = async (file, projectId, sampleId, dispatch) =>
   const metadata = getMetadata(file);
   const fileType = getFileTypeV2(file.fileObject.name, file.fileObject.type);
 
-  let signedUrl;
+  let signedUrls;
   try {
-    signedUrl = await dispatch(
+    signedUrls = await dispatch(
       createSampleFile(
         projectId,
         sampleId,
@@ -101,7 +91,7 @@ const createAndUploadSingleFile = async (file, projectId, sampleId, dispatch) =>
     return;
   }
 
-  await prepareAndUploadFileToS3(projectId, sampleId, fileType, file, signedUrl, dispatch);
+  await prepareAndUploadFileToS3(projectId, sampleId, fileType, file, signedUrls, dispatch);
 };
 
 const createAndUpload = async (sample, experimentId, dispatch) => (
