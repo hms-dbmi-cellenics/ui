@@ -24,7 +24,7 @@ const mockFileLocations = {
     'invalid_features.tsv': 'src/__test__/data/mock_files/invalidFeatures.tsv',
     'transposed_matrix.mtx': 'src/__test__/data/mock_files/transposedMatrix.mtx',
     'matrix_array_format.mtx': 'src/__test__/data/mock_files/matrixArrayFormat.mtx',
-    'matrix_invalid_format.mtx': 'src/__test__/data/mock_files/matrixNonExistent.mtx',
+    'matrix_invalid_format.mtx': 'src/__test__/data/mock_files/matrixNonExistentFormat.mtx',
   },
   zipped: {
     'barcodes.tsv.gz': 'src/__test__/data/mock_files/barcodes.tsv.gz',
@@ -34,7 +34,7 @@ const mockFileLocations = {
     'invalid_features.tsv.gz': 'src/__test__/data/mock_files/invalidFeatures.tsv.gz',
     'transposed_matrix.mtx.gz': 'src/__test__/data/mock_files/transposedMatrix.mtx.gz',
     'matrix_array_format.mtx.gz': 'src/__test__/data/mock_files/matrixArrayFormat.mtx.gz',
-    'matrix_invalid_format.mtx.gz': 'src/__test__/data/mock_files/matrixNonExistent.mtx.gz',
+    'matrix_invalid_format.mtx.gz': 'src/__test__/data/mock_files/matrixNonExistentFormat.mtx.gz',
   },
 };
 
