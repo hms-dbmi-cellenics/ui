@@ -381,12 +381,7 @@ describe('DataProcessingPage', () => {
           processing: {
             classifier: {
               [sampleIds[0]]: {
-                prefiltered: false,
                 enabled: false,
-                auto: true,
-                filterSettings: {
-                  FDR: 0.1,
-                },
               },
             },
           },
