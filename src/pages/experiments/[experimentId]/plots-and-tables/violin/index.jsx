@@ -21,10 +21,12 @@ import { loadGeneExpression } from 'redux/actions/genes';
 import useHighestDispersionGenes from 'utils/customHooks/useHighestDispersionGenes';
 import PlatformError from 'components/PlatformError';
 import { generateMultiViewGridPlotUuid } from 'utils/generateCustomPlotUuid';
+import loadConditionalComponentConfig from 'redux/actions/componentConfig/loadConditionalComponentConfig';
 
 const plotUuid = 'ViolinMain';
 const plotType = 'violin';
-const multiViewUuid = 'ViolinMain-MultiView';
+const multiViewType = 'multiView';
+const multiViewUuid = multiViewType.concat('-', plotUuid);
 
 const ViolinIndex = ({ experimentId }) => {
   const dispatch = useDispatch();
@@ -61,11 +63,16 @@ const ViolinIndex = ({ experimentId }) => {
 
   const [rescaleOnce, setRescaleOnce] = useState(true);
 
+  const loadComponent = (componentUuid, type, skipAPI, customConfig) => {
+    dispatch(loadConditionalComponentConfig(
+      experimentId, componentUuid, type, skipAPI, customConfig,
+    ));
+  };
+
   const updateMultiViewWithChanges = (updateField) => {
     dispatch(updatePlotConfig(multiViewUuid, updateField));
   };
 
-  // updateField is a subset of what default config has and contains only the things we want change
   const updatePlotWithChanges = (updateField) => {
     dispatch(updatePlotConfig(selectedPlot, updateField));
   };
@@ -83,12 +90,8 @@ const ViolinIndex = ({ experimentId }) => {
     }
 
     if (!multiViewConfig) {
-      updateMultiViewWithChanges({
-        ncols: 1,
-        nrows: 1,
-        genes: [],
-        plotUuids: [plotUuid],
-      });
+      const customConfig = { plotUuids: [plotUuid] };
+      loadComponent(multiViewUuid, multiViewType, false, customConfig);
     }
 
     dispatch(loadCellSets(experimentId));
@@ -107,8 +110,7 @@ const ViolinIndex = ({ experimentId }) => {
   useEffect(() => {
     if (multiViewGenes?.length) {
       const genesToLoad = multiViewGenes.filter((gene) => (
-        !geneExpression.loading.includes(gene)
-        && !Object.keys(geneExpression.data).includes(gene)
+        !Object.keys(geneExpression.data).includes(gene)
         && gene !== 'notSelected'
       ));
 
@@ -159,18 +161,22 @@ const ViolinIndex = ({ experimentId }) => {
 
   const addGeneToMultiView = (geneName) => {
     const newGenes = _.concat(multiViewGenes, geneName);
+    if (newGenes.length > 16) return;
 
-    const plotUuidIndexes = multiViewPlotUuids.map((Uuid) => parseInt(Uuid.match(/[0-9]+/g), 10) || 0);
-    const maxIndex = _.max(plotUuidIndexes);
+    const plotUuidIndexes = multiViewPlotUuids.map((Uuid) => parseInt(Uuid.match(/[0-9]+/g), 10));
+    const possibleIndexes = [...Array(16).keys()];
+    console.log(possibleIndexes);
+    const newIndex = _.min(possibleIndexes.filter((index) => !plotUuidIndexes.includes(index)));
+    console.log(newIndex);
 
-    const plotToAdd = generateMultiViewGridPlotUuid(plotUuid, maxIndex + 1);
-    const newPlotUuids = _.concat(multiViewPlotUuids, plotToAdd);
+    const plotUuidToAdd = generateMultiViewGridPlotUuid(plotUuid, newIndex);
+    const newPlotUuids = _.concat(multiViewPlotUuids, plotUuidToAdd);
 
-    dispatch(updatePlotConfig(multiViewUuid, { genes: newGenes, plotUuids: newPlotUuids }));
+    updateMultiViewWithChanges({ genes: newGenes, plotUuids: newPlotUuids });
 
-    const loadedConfig = Object.values(plotConfigs)[0];
-    const titleToShow = { ...loadedConfig.title, text: geneName };
-    dispatch(updatePlotConfig(plotToAdd, { ...loadedConfig, shownGene: geneName, title: titleToShow }));
+    const customConfig = { shownGene: geneName, title: { text: geneName } };
+
+    loadComponent(plotUuidToAdd, plotType, true, customConfig);
   };
 
   const plotStylingConfig = [
