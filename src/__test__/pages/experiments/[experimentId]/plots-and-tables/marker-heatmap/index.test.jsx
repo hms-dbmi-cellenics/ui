@@ -54,7 +54,7 @@ jest.mock('object-hash', () => {
 
 // Disable local cache
 jest.mock('localforage', () => ({
-  getItem: () => null,
+  getItem: () => Promise.resolve(undefined),
   setItem: () => Promise.resolve(),
 }));
 
@@ -65,9 +65,9 @@ jest.mock('utils/work/seekWorkResponse', () => ({
 }));
 
 const mockWorkerResponses = {
-  '5-marker-genes': markerGenesData5,
-  '2-marker-genes': markerGenesData2,
-  'FAKEGENE-expression': expressionDataFAKEGENE,
+  '5-marker-genes': _.cloneDeep(markerGenesData5),
+  '2-marker-genes': _.cloneDeep(markerGenesData2),
+  'FAKEGENE-expression': _.cloneDeep(expressionDataFAKEGENE),
   ListGenes: geneList,
 };
 
@@ -285,7 +285,7 @@ describe('Marker heatmap plot', () => {
     const genesToLoad = [...markerGenesData5.order, 'FAKEGENE'];
 
     await act(async () => {
-      await storeState.dispatch(loadGeneExpression(experimentId, genesToLoad, plotUuid, () => { console.log('holaholahola'); }));
+      await storeState.dispatch(loadGeneExpression(experimentId, genesToLoad, plotUuid));
     });
 
     // It shouldn't show the plot
