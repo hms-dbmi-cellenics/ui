@@ -285,7 +285,7 @@ describe('Marker heatmap plot', () => {
     const genesToLoad = [...markerGenesData5.order, 'FAKEGENE'];
 
     await act(async () => {
-      await storeState.dispatch(loadGeneExpression(experimentId, genesToLoad, plotUuid));
+      await storeState.dispatch(loadGeneExpression(experimentId, genesToLoad, plotUuid, () => { console.log('holaholahola'); }));
     });
 
     // It shouldn't show the plot

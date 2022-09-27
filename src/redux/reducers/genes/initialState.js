@@ -36,5 +36,26 @@ const initialState = {
   },
 };
 
-export { initialViewState, initialExpressionState };
+const constructInitialState = () => ({
+  properties: {
+    loading: [],
+    views: {},
+    data: {},
+  },
+  expression: {
+    loading: [],
+    error: false,
+    data: {},
+    matrix: new ExpressionMatrix(),
+    views: {},
+  },
+  selected: [],
+  focused: undefined,
+  markers: {
+    loading: false,
+    error: false,
+  },
+});
+
+export { constructInitialState, initialViewState, initialExpressionState };
 export default initialState;
