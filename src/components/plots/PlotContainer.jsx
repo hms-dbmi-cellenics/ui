@@ -29,7 +29,7 @@ const PlotContainer = (props) => {
     extraToolbarControls, extraControlPanels,
     showResetButton, onPlotReset,
     children,
-    onUpdate,
+    onUpdate = defaultOnUpdate,
     saveDebounceTime,
   } = props;
 
@@ -42,7 +42,7 @@ const PlotContainer = (props) => {
     _.debounce(() => dispatch(savePlotConfig(experimentId, plotUuid)), saveDebounceTime), [],
   );
 
-  const updatePlotWithChanges = (obj) => {
+  const defaultOnUpdate = (obj) => {
     dispatch(updatePlotConfig(plotUuid, obj));
   };
 
@@ -136,7 +136,7 @@ const PlotContainer = (props) => {
           <PlotStyling
             formConfig={plotStylingConfig}
             config={config}
-            onUpdate={onUpdate ?? updatePlotWithChanges}
+            onUpdate={onUpdate}
             extraPanels={extraControlPanels}
             defaultActiveKey={defaultActiveKey}
           />
@@ -183,7 +183,7 @@ PlotContainer.defaultProps = {
   extraToolbarControls: null,
   extraControlPanels: null,
   children: null,
-  onUpdate: null,
+  onUpdate: undefined,
   showResetButton: true,
   onPlotReset: () => { },
   saveDebounceTime: 2000,

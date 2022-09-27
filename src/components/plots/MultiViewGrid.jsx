@@ -83,7 +83,7 @@ const MultiViewGrid = (props) => {
     setPlots(filteredPlots);
   }, [multiViewConfig, plotConfigs]);
 
-  const spaceAlign = (multiViewConfig.genes.length > 1)
+  const spaceAlign = (multiViewConfig.plotUuids.length > 1)
     ? 'start'
     : 'center';
 
