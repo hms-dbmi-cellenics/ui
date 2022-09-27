@@ -97,7 +97,22 @@ const getTwoGenesExpressionMatrix = () => {
   return matrix;
 };
 
+const getExpressionMatrixFromWorkResult = (workResult) => {
+  const matrix = new ExpressionMatrix();
+
+  matrix.pushGeneExpression(
+    workResult.order,
+    SparseMatrix.fromJSON(workResult.rawExpression),
+    SparseMatrix.fromJSON(workResult.truncatedExpression),
+    SparseMatrix.fromJSON(workResult.zScore),
+    workResult.stats,
+  );
+
+  return matrix;
+};
+
 // eslint-disable-next-line import/prefer-default-export
 export {
-  getTwoGenesMatrix, getOtherTwoGenesMatrix, getThreeGenesMatrix, getTwoGenesExpressionMatrix,
+  getTwoGenesMatrix, getOtherTwoGenesMatrix, getThreeGenesMatrix,
+  getTwoGenesExpressionMatrix, getExpressionMatrixFromWorkResult,
 };
