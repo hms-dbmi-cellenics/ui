@@ -11,7 +11,7 @@ import { seekFromS3 } from 'utils/work/seekWorkResponse';
 import mockEmbedding from '__test__/data/embedding.json';
 import mockStartingNodes from '__test__/data/starting_nodes.json';
 import mockPseudoTime from '__test__/data/pseudotime.json';
-import WorkResponseError from 'utils/errors/http//WorkResponseError';
+import WorkResponseError from 'utils/errors/http/WorkResponseError';
 
 import preloadAll from 'jest-next-dynamic';
 
