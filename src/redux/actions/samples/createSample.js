@@ -13,7 +13,7 @@ import { METADATA_DEFAULT_VALUE } from 'redux/reducers/experiments/initialState'
 import { sampleTemplate } from 'redux/reducers/samples/initialState';
 
 import UploadStatus from 'utils/upload/UploadStatus';
-import validate from 'utils/upload/sampleValidator';
+import validate from 'utils/upload/validate';
 
 const createSample = (
   experimentId,

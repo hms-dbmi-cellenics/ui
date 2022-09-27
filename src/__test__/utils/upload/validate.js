@@ -1,4 +1,4 @@
-import validate from 'utils/upload/sampleValidator';
+import validate from 'utils/upload/validate';
 import initialState, { sampleFileTemplate, sampleTemplate } from 'redux/reducers/samples/initialState';
 
 import * as fs from 'fs';
@@ -24,7 +24,7 @@ const mockFileLocations = {
     'invalid_features.tsv': 'src/__test__/data/mock_files/invalidFeatures.tsv',
     'transposed_matrix.mtx': 'src/__test__/data/mock_files/transposedMatrix.mtx',
     'matrix_array_format.mtx': 'src/__test__/data/mock_files/matrixArrayFormat.mtx',
-    'matrix_invalid_format.mtx': 'src/__test__/data/mock_files/matrixInvalidFormat.mtx',
+    'matrix_invalid_format.mtx': 'src/__test__/data/mock_files/matrixNonExistent.mtx',
   },
   zipped: {
     'barcodes.tsv.gz': 'src/__test__/data/mock_files/barcodes.tsv.gz',
@@ -34,7 +34,7 @@ const mockFileLocations = {
     'invalid_features.tsv.gz': 'src/__test__/data/mock_files/invalidFeatures.tsv.gz',
     'transposed_matrix.mtx.gz': 'src/__test__/data/mock_files/transposedMatrix.mtx.gz',
     'matrix_array_format.mtx.gz': 'src/__test__/data/mock_files/matrixArrayFormat.mtx.gz',
-    'matrix_invalid_format.mtx.gz': 'src/__test__/data/mock_files/matrixInvalidFormat.mtx.gz',
+    'matrix_invalid_format.mtx.gz': 'src/__test__/data/mock_files/matrixNonExistent.mtx.gz',
   },
 };
 
@@ -140,7 +140,7 @@ const mockUnzippedSample = {
   },
 };
 
-describe('sampleValidator', () => {
+describe('validate', () => {
   it('Correctly pass valid zipped samples', async () => {
     await expect(validate(mockZippedSample)).resolves.toBeUndefined();
   });
@@ -192,11 +192,11 @@ describe('sampleValidator', () => {
   });
 
   it('Throws an error invalid matrix format', async () => {
-    const mockMatrixInvalidFormat = _.cloneDeep(mockZippedSample);
-    mockMatrixInvalidFormat.files['matrix.mtx.gz'].fileObject = mockZippedFileObjects['matrix_invalid_format.mtx.gz'];
-    mockMatrixInvalidFormat.files['matrix.mtx.gz'].size = mockZippedFileObjects['matrix_invalid_format.mtx.gz'].size;
+    const mockMatrixNonExistentFormat = _.cloneDeep(mockZippedSample);
+    mockMatrixNonExistentFormat.files['matrix.mtx.gz'].fileObject = mockZippedFileObjects['matrix_invalid_format.mtx.gz'];
+    mockMatrixNonExistentFormat.files['matrix.mtx.gz'].size = mockZippedFileObjects['matrix_invalid_format.mtx.gz'].size;
 
-    await expect(validate(mockMatrixInvalidFormat)).rejects.toThrowErrorMatchingSnapshot();
+    await expect(validate(mockMatrixNonExistentFormat)).rejects.toThrowErrorMatchingSnapshot();
   });
 
   it('Throws an error for invalid barcodes file', async () => {
