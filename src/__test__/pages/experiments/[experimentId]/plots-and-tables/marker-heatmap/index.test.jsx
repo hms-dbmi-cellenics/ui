@@ -52,6 +52,12 @@ jest.mock('object-hash', () => {
   return mockWorkResultETag(objectHash, mockWorkRequestETag, mockGeneExpressionETag);
 });
 
+// Disable local cache
+jest.mock('localforage', () => ({
+  getItem: () => null,
+  setItem: () => Promise.resolve(),
+}));
+
 jest.mock('utils/work/seekWorkResponse', () => ({
   __esModule: true,
   dispatchWorkRequest: jest.fn(() => true),
@@ -131,10 +137,8 @@ describe('Marker heatmap plot', () => {
     seekFromS3
       .mockReset()
       // load gene list
-      .mockImplementationOnce(() => null)
       .mockImplementationOnce((Etag) => mockWorkerResponses[Etag])
       // load gene expression
-      .mockImplementationOnce(() => null)
       .mockImplementationOnce((Etag) => mockWorkerResponses[Etag]);
 
     enableFetchMocks();
@@ -172,10 +176,8 @@ describe('Marker heatmap plot', () => {
     seekFromS3
       .mockReset()
       // load genes list
-      .mockImplementationOnce(() => null)
       .mockImplementationOnce((Etag) => mockWorkerResponses[Etag])
       // throw error on marker genes load
-      .mockImplementationOnce(() => null)
       .mockImplementationOnce(() => { throw new Error('Not found'); });
 
     await renderHeatmapPage(storeState);
@@ -224,13 +226,10 @@ describe('Marker heatmap plot', () => {
     seekFromS3
       .mockReset()
       // load genes list
-      .mockImplementationOnce(() => null)
       .mockImplementationOnce((Etag) => mockWorkerResponses[Etag])
       // 1st load
-      .mockImplementationOnce(() => null)
       .mockImplementationOnce((ETag) => mockWorkerResponses[ETag])
       // 2nd load
-      .mockImplementationOnce(() => null)
       .mockImplementationOnce((ETag) => mockWorkerResponses[ETag]);
 
     await renderHeatmapPage(storeState);
@@ -275,14 +274,11 @@ describe('Marker heatmap plot', () => {
 
   it('Shows an error message if gene expression fails to load', async () => {
     seekFromS3
-      .mockReset()
-      // load genes list
-      .mockImplementationOnce(() => null)
-      .mockImplementationOnce(() => null)
-      .mockImplementationOnce(() => null)
-      .mockImplementationOnce(() => null)
-      // throw error on gene expression load
-      .mockImplementationOnce(() => { throw new Error('Not found'); });
+      .mockImplementation((Etag) => {
+        if (Etag === '5-marker-genes' || Etag === 'ListGenes') return mockWorkerResponses[Etag];
+
+        if (Etag === 'FAKEGENE-expression') { throw new Error('Not found'); }
+      });
 
     await renderHeatmapPage(storeState);
 
@@ -404,10 +400,8 @@ describe('Drag and drop enzyme tests', () => {
     seekFromS3
       .mockReset()
       // load gene list
-      .mockImplementationOnce(() => null)
       .mockImplementationOnce((Etag) => mockWorkerResponses[Etag])
       // load gene expression
-      .mockImplementationOnce(() => null)
       .mockImplementationOnce((Etag) => mockWorkerResponses[Etag]);
 
     enableFetchMocks();
