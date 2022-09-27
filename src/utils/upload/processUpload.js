@@ -162,7 +162,7 @@ const processUpload = async (filesList, sampleType, samples, experimentId, dispa
         errorMessage = `Error uploading sample ${name}.\n${e.message}`;
         pushNotificationMessage('error', errorMessage, 15);
       } else {
-        errorMessage = `Error uploading sample ${name}. Please report this error using the Feedback button.`;
+        errorMessage = `Error uploading sample ${name}. Please send an email to hello@biomage.net with the sample files you're trying to upload.`;
         pushNotificationMessage('error', errorMessage);
         console.error(e.message);
       }
