@@ -4,6 +4,7 @@
 
 import * as backendSelectors from './selectors/backendStatus';
 import * as cellSetsSelectors from './selectors/cellSets';
+import * as multiViewSelectors from './selectors/multiView';
 
 const getBackendStatus = (...params) => (state) => (
   backendSelectors.getBackendStatus(...params)(state.backendStatus));
@@ -20,10 +21,14 @@ const getCellSetsHierarchyByType = (...params) => (state) => (
 const getCellSetsHierarchyByKeys = (...params) => (state) => (
   cellSetsSelectors.getCellSetsHierarchyByKeys(...params)(state.cellSets));
 
+const getPlotConfigs = (...params) => (state) => (
+  multiViewSelectors.getPlotConfigs(...params)(state.componentConfig));
+
 export {
   getBackendStatus,
   getCellSets,
   getCellSetsHierarchy,
   getCellSetsHierarchyByType,
   getCellSetsHierarchyByKeys,
+  getPlotConfigs,
 };

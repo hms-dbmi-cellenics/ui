@@ -14,7 +14,7 @@ import { loadCellSets } from 'redux/actions/cellSets';
 import Header from 'components/Header';
 import PlotContainer from 'components/plots/PlotContainer';
 import ViolinPlot from 'components/plots/ViolinPlot';
-import { getCellSets } from 'redux/selectors';
+import { getCellSets, getPlotConfigs } from 'redux/selectors';
 import { plotNames } from 'utils/constants';
 import MultiViewGrid from 'components/plots/MultiViewGrid';
 import { loadGeneExpression } from 'redux/actions/genes';
@@ -35,15 +35,7 @@ const ViolinIndex = ({ experimentId }) => {
   const multiViewGenes = multiViewConfig?.genes;
   const multiViewPlotUuids = multiViewConfig?.plotUuids;
 
-  const plotConfigs = useSelector((state) => {
-    if (!multiViewConfig) return {};
-    const plotConfigsToReturn = multiViewConfig.plotUuids.reduce((acum, selectedPlotUuid) => {
-      acum[selectedPlotUuid] = state.componentConfig[selectedPlotUuid]?.config;
-      return acum;
-    }, {});
-
-    return plotConfigsToReturn;
-  });
+  const plotConfigs = useSelector(getPlotConfigs(multiViewPlotUuids));
 
   const cellSets = useSelector(getCellSets());
 
@@ -264,7 +256,7 @@ const ViolinIndex = ({ experimentId }) => {
     return (
       <MultiViewGrid
         renderPlot={renderPlot}
-        multiViewUuid={multiViewUuid}
+        multiViewConfig={multiViewConfig}
       />
     );
   };

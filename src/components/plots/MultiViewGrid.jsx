@@ -4,30 +4,15 @@ import { useSelector } from 'react-redux';
 
 import _ from 'lodash';
 import { Col, Row, Space } from 'antd';
+import { getPlotConfigs } from 'redux/selectors';
 
 const MultiViewGrid = (props) => {
   const {
     renderPlot,
-    multiViewUuid,
+    multiViewConfig,
   } = props;
 
-  // the config can be initialised using updatePlotConfig
-  const multiViewConfig = useSelector((state) => (
-    state.componentConfig[multiViewUuid]?.config
-  ));
-
-  const plotConfigs = useSelector((state) => {
-    const plotConfigsToReturn = multiViewConfig.plotUuids.reduce((acum, plotUuid) => {
-      const plotConfig = state.componentConfig[plotUuid]?.config;
-      if (plotConfig) {
-        // eslint-disable-next-line no-param-reassign
-        acum[plotUuid] = plotConfig;
-      }
-      return acum;
-    }, {});
-
-    return plotConfigsToReturn;
-  });
+  const plotConfigs = useSelector(getPlotConfigs(multiViewConfig.plotUuids));
 
   const [plots, setPlots] = useState([]);
   const previousMultiViewConfig = useRef({});
@@ -113,7 +98,7 @@ const MultiViewGrid = (props) => {
 
 MultiViewGrid.propTypes = {
   renderPlot: PropTypes.func.isRequired,
-  multiViewUuid: PropTypes.string.isRequired,
+  multiViewConfig: PropTypes.object.isRequired,
 };
 
 export default MultiViewGrid;
