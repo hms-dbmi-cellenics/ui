@@ -5,7 +5,7 @@
 import * as backendSelectors from './selectors/backendStatus';
 import * as cellSetsSelectors from './selectors/cellSets';
 import * as multiViewSelectors from './selectors/multiView';
-import * as geneListSelectors from './selectors/geneList'
+import * as geneListSelectors from './selectors/geneList';
 
 const getBackendStatus = (...params) => (state) => (
   backendSelectors.getBackendStatus(...params)(state.backendStatus));

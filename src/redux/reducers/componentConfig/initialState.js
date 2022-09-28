@@ -328,7 +328,6 @@ const trajectoryAnalysisInitialConfig = {
 const multiViewInitialConfig = {
   ncols: 1,
   nrows: 1,
-  genes: [],
   plotUuids: [],
 };
 
