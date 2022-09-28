@@ -1,13 +1,11 @@
 import React, { useState } from 'react';
 import { AutoComplete, Button, Input } from 'antd';
-import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
-import _ from 'lodash';
 
-const filterGenes = (searchText, geneList, loadedGenes) => {
+const filterGenes = (searchText, geneList, genesToDisable) => {
   const searchTextUpper = searchText.toUpperCase();
   const filteredList = geneList.filter((gene) => gene.toUpperCase().includes(searchTextUpper));
-  const disableLoaded = filteredList.map((gene) => loadedGenes.includes(gene));
+  const disableLoaded = filteredList.map((gene) => genesToDisable.includes(gene));
 
   // options needs to be an array of objects, set disabled for loaded genes
   return filteredList.map((geneName, index) => ({
@@ -17,12 +15,8 @@ const filterGenes = (searchText, geneList, loadedGenes) => {
 
 const GeneSearchBar = (props) => {
   const {
-    plotUuid, searchBarUuid, onSelect,
+    geneList, genesToDisable, onSelect,
   } = props;
-
-  const geneList = useSelector((state) => state.genes.properties.views[searchBarUuid]?.data);
-
-  const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
 
   const [options, setOptions] = useState([]);
 
@@ -44,18 +38,15 @@ const GeneSearchBar = (props) => {
 
     const searchText = inputGenes[inputGenes.length - 1];
 
-    setOptions(!searchText ? [] : filterGenes(searchText, geneList, config?.selectedGenes));
+    setOptions(!searchText ? [] : filterGenes(searchText, geneList, genesToDisable));
   };
 
-  const addGenes = () => {
+  const selectGenes = () => {
     if (value === '') return;
 
     const newGenes = genes.filter((gene) => geneList.includes(gene));
-    const allGenes = _.uniq([...config?.selectedGenes, ...newGenes]);
 
-    if (_.isEqual(allGenes, config?.selectedGenes)) return;
-
-    onSelect(allGenes);
+    onSelect(newGenes);
     setValue('');
     setOptions([]);
   };
@@ -73,7 +64,7 @@ const GeneSearchBar = (props) => {
       />
       <Button
         type='primary'
-        onClick={addGenes}
+        onClick={selectGenes}
         style={{ width: '20%' }}
       >
         Add
@@ -83,8 +74,8 @@ const GeneSearchBar = (props) => {
 };
 
 GeneSearchBar.propTypes = {
-  plotUuid: PropTypes.string.isRequired,
-  searchBarUuid: PropTypes.string.isRequired,
+  geneList: PropTypes.array.isRequired,
+  genesToDisable: PropTypes.array.isRequired,
   onSelect: PropTypes.func.isRequired,
 };
 

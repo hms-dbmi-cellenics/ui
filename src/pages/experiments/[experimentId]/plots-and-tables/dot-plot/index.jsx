@@ -30,7 +30,7 @@ import {
   updatePlotData,
 } from 'redux/actions/componentConfig';
 
-import { getCellSets } from 'redux/selectors';
+import { getCellSets, getGeneList } from 'redux/selectors';
 import { plotNames, plotTypes } from 'utils/constants';
 import PlatformError from 'components/PlatformError';
 
@@ -40,7 +40,7 @@ const { Panel } = Collapse;
 
 const plotUuid = 'dotPlotMain';
 const plotType = plotTypes.DOT_PLOT;
-const searchBarUuid = 'geneSearchBar';
+const geneListUuid = 'geneList';
 
 const plotStylingConfig = [
   {
@@ -95,6 +95,8 @@ const DotPlotPage = (props) => {
   const { data: geneData } = useSelector((state) => state.genes.properties || {});
 
   const cellSets = useSelector(getCellSets());
+
+  const geneList = useSelector(getGeneList());
 
   const [moreThanTwoGroups, setMoreThanTwoGroups] = useState(false);
   const [reorderAfterFetch, setReorderAfterFetch] = useState(false);
@@ -269,7 +271,7 @@ const DotPlotPage = (props) => {
       pageSizeFilter: null,
     };
 
-    dispatch(loadPaginatedGeneProperties(experimentId, ['dispersions'], searchBarUuid, state));
+    dispatch(loadPaginatedGeneProperties(experimentId, ['dispersions'], geneListUuid, state));
   }, []);
 
   const treeScrollable = document.getElementById('ScrollWrapper');
@@ -336,6 +338,14 @@ const DotPlotPage = (props) => {
     updatePlotWithChanges({ selectedGenes: genes });
   };
 
+  const onGenesSelect = (genes) => {
+    const allGenes = _.uniq([...config?.selectedGenes, ...genes]);
+
+    if (_.isEqual(allGenes, config?.selectedGenes)) return;
+
+    updatePlotWithChanges({ selectedGenes: allGenes });
+  };
+
   const onReset = () => {
     setReset(true);
     loadHighestDispersionGenes();
@@ -355,11 +365,12 @@ const DotPlotPage = (props) => {
         <MarkerGeneSelection
           config={config}
           plotUuid={plotUuid}
-          searchBarUuid={searchBarUuid}
-          experimentId={experimentId}
+          geneList={Object.keys(geneList.geneData)}
+          genesToDisable={config.selectedGenes}
           onUpdate={updatePlotWithChanges}
           onReset={onReset}
           onGenesChange={onGenesChange}
+          onGenesSelect={onGenesSelect}
         />
       </Panel>
       <Panel header='Select data' key='select-data'>

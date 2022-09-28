@@ -13,7 +13,7 @@ import PropTypes from 'prop-types';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
 import endUserMessages from 'utils/endUserMessages';
 
-import { getCellSets, getCellSetsHierarchyByKeys } from 'redux/selectors';
+import { getCellSets, getCellSetsHierarchyByKeys, getGeneList } from 'redux/selectors';
 
 import HeatmapGroupBySettings from 'components/data-exploration/heatmap/HeatmapGroupBySettings';
 import HeatmapMetadataTracksSettings from 'components/data-exploration/heatmap/HeatmapMetadataTrackSettings';
@@ -38,7 +38,7 @@ import ScrollOnDrag from 'components/plots/ScrollOnDrag';
 const { Panel } = Collapse;
 const plotUuid = 'markerHeatmapPlotMain';
 const plotType = 'markerHeatmap';
-const searchBarUuid = 'geneSearchBar';
+const geneListUuid = 'geneList';
 
 const MarkerHeatmap = ({ experimentId }) => {
   const dispatch = useDispatch();
@@ -70,6 +70,8 @@ const MarkerHeatmap = ({ experimentId }) => {
     (state) => state.experimentSettings.processing
       .configureEmbedding?.clusteringSettings.methodSettings.louvain.resolution,
   ) || false;
+
+  const geneList = useSelector(getGeneList(experimentId));
 
   useEffect(() => {
     if (!louvainClustersResolution) dispatch(loadProcessingSettings(experimentId));
@@ -246,7 +248,7 @@ const MarkerHeatmap = ({ experimentId }) => {
       pageSizeFilter: null,
     };
 
-    dispatch(loadPaginatedGeneProperties(experimentId, ['dispersions'], searchBarUuid, state));
+    dispatch(loadPaginatedGeneProperties(experimentId, ['dispersions'], geneListUuid, state));
   }, []);
 
   const treeScrollable = document.getElementById('ScrollWrapper');
@@ -302,6 +304,14 @@ const MarkerHeatmap = ({ experimentId }) => {
     dispatch(loadGeneExpression(experimentId, genes, plotUuid));
   };
 
+  const onGenesSelect = (genes) => {
+    const allGenes = _.uniq([...config?.selectedGenes, ...genes]);
+
+    if (_.isEqual(allGenes, config?.selectedGenes)) return;
+
+    dispatch(loadGeneExpression(experimentId, allGenes, plotUuid));
+  };
+
   const onReset = () => {
     onGenesChange([]);
     dispatch(loadMarkerGenes(
@@ -323,11 +333,12 @@ const MarkerHeatmap = ({ experimentId }) => {
         <MarkerGeneSelection
           config={config}
           plotUuid={plotUuid}
-          searchBarUuid={searchBarUuid}
-          experimentId={experimentId}
+          geneList={Object.keys(geneList.geneData)}
+          genesToDisable={config.selectedGenes}
           onUpdate={updatePlotWithChanges}
           onReset={onReset}
           onGenesChange={onGenesChange}
+          onGenesSelect={onGenesSelect}
         />
         <div style={{ paddingTop: '10px' }}>
           <p>Gene labels:</p>
