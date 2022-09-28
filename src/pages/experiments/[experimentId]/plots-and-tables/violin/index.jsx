@@ -132,7 +132,8 @@ const ViolinIndex = ({ experimentId }) => {
     }
   }, [multiViewPlotUuids]);
 
-  const addGeneToMultiView = (geneName) => {
+  const addGeneToMultiView = (genes) => {
+    const [geneName] = genes;
     if (!Object.keys(geneList.geneData).includes(geneName)) return;
     if (multiViewPlotUuids.length === 30) return;
 
@@ -213,6 +214,7 @@ const ViolinIndex = ({ experimentId }) => {
       cellSets={cellSets}
       multiViewConfig={multiViewConfig}
       shownGenes={shownGenes}
+      geneList={Object.keys(geneList.geneData)}
     />
   );
 

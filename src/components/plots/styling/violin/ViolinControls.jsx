@@ -20,6 +20,7 @@ const ViolinControls = (props) => {
     addGeneToMultiView,
     cellSets,
     shownGenes,
+    geneList,
   } = props;
   return (
     <Collapse>
@@ -36,6 +37,7 @@ const ViolinControls = (props) => {
           onMultiViewUpdate={onMultiViewUpdate}
           setSelectedPlot={setSelectedPlot}
           shownGenes={shownGenes}
+          geneList={geneList}
         />
       </Panel>
       <Panel header='Select data' key='select-data'>
@@ -85,6 +87,7 @@ ViolinControls.propTypes = {
   setSelectedPlot: PropTypes.func.isRequired,
   cellSets: PropTypes.object.isRequired,
   shownGenes: PropTypes.array,
+  geneList: PropTypes.array.isRequired,
 };
 
 ViolinControls.defaultProps = {

@@ -12,8 +12,7 @@ import {
 import { CloseOutlined } from '@ant-design/icons';
 import { arrayMoveImmutable } from 'utils/array-move';
 import HierarchicalTreeGenes from 'components/plots/hierarchical-tree-genes/HierarchicalTreeGenes';
-
-const { Search } = Input;
+import GeneSearchBar from 'components/plots/GeneSearchBar';
 
 const MultiViewEditor = (props) => {
   const {
@@ -22,6 +21,7 @@ const MultiViewEditor = (props) => {
     onMultiViewUpdate,
     setSelectedPlot,
     shownGenes,
+    geneList,
   } = props;
 
   if (!multiViewConfig) {
@@ -32,7 +32,6 @@ const MultiViewEditor = (props) => {
     );
   }
 
-  const [localShownGene, setLocalShownGene] = useState('');
   const [localNRows, setLocalNRows] = useState(multiViewConfig.nrows);
   const [localNCols, setLocalNCols] = useState(multiViewConfig.ncols);
 
@@ -58,11 +57,6 @@ const MultiViewEditor = (props) => {
     const newPlotUuids = arrayMoveImmutable(multiViewConfig.plotUuids, key, newPosition);
 
     onMultiViewUpdate({ plotUuids: newPlotUuids });
-  };
-
-  const onSearch = (value) => {
-    addGeneToMultiView(value);
-    setLocalShownGene('');
   };
 
   const onSelectedPlotChange = (value) => {
@@ -122,13 +116,11 @@ const MultiViewEditor = (props) => {
 
   return (
     <Space direction='vertical'>
-      <Search
+      <GeneSearchBar
         aria-label='addMultiViewGene'
-        style={{ width: '100%' }}
-        enterButton='Add'
-        value={localShownGene}
-        onChange={(e) => { setLocalShownGene(e.target.value); }}
-        onSearch={(value) => onSearch(value)}
+        geneList={geneList}
+        genesToDisable={[]}
+        onSelect={addGeneToMultiView}
       />
       <Space>
         Selected plot:
@@ -177,6 +169,7 @@ MultiViewEditor.propTypes = {
   onMultiViewUpdate: PropTypes.func.isRequired,
   setSelectedPlot: PropTypes.func.isRequired,
   shownGenes: PropTypes.array.isRequired,
+  geneList: PropTypes.array.isRequired,
 };
 
 MultiViewEditor.defaultProps = {
