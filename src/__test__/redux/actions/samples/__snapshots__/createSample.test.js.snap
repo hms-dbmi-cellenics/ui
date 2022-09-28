@@ -55,38 +55,7 @@ Array [
       "uuid": "abc123",
     },
   },
-  Object {
-    "experimentId": "exp234",
-    "sample": Object {
-      "complete": false,
-      "createdDate": "2020-01-01T00:00:00.000Z",
-      "error": false,
-      "experimentId": "exp234",
-      "fileNames": Array [],
-      "files": Object {
-        "barcodes.tsv.gz": Object {
-          "upload": Object {
-            "status": "uploading",
-          },
-        },
-        "features.tsv.gz": Object {
-          "upload": Object {
-            "status": "uploading",
-          },
-        },
-        "matrix.tsv.gz": Object {
-          "upload": Object {
-            "status": "uploading",
-          },
-        },
-      },
-      "lastModified": "2020-01-01T00:00:00.000Z",
-      "metadata": Object {},
-      "name": "test sample",
-      "type": "10X Chromium",
-      "uuid": "abc123",
-    },
-  },
+  undefined,
 ]
 `;
 
@@ -124,27 +93,6 @@ Array [
       "uuid": "abc123",
     },
   },
-  Object {
-    "experimentId": "exp234",
-    "sample": Object {
-      "complete": false,
-      "createdDate": "2020-01-01T00:00:00.000Z",
-      "error": false,
-      "experimentId": "exp234",
-      "fileNames": Array [],
-      "files": Object {
-        "matrix.tsv.gz": Object {
-          "upload": Object {
-            "status": "uploading",
-          },
-        },
-      },
-      "lastModified": "2020-01-01T00:00:00.000Z",
-      "metadata": Object {},
-      "name": "test sample",
-      "type": "10X Chromium",
-      "uuid": "abc123",
-    },
-  },
+  undefined,
 ]
 `;

@@ -15,7 +15,7 @@ import fake from '__test__/test-utils/constants';
 import mockEmbedding from '__test__/data/embedding.json';
 import { seekFromS3 } from 'utils/work/seekWorkResponse';
 import { loadBackendStatus } from 'redux/actions/backendStatus';
-import WorkResponseError from 'utils/http/errors/WorkResponseError';
+import WorkResponseError from 'utils/errors/http/WorkResponseError';
 
 enableFetchMocks();
 
