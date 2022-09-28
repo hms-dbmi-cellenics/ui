@@ -8,20 +8,20 @@ import _ from 'lodash';
 
 import {
   updatePlotConfig,
-  loadPlotConfig,
 } from 'redux/actions/componentConfig/index';
 import { loadCellSets } from 'redux/actions/cellSets';
 import Header from 'components/Header';
 import PlotContainer from 'components/plots/PlotContainer';
 import ViolinPlot from 'components/plots/ViolinPlot';
-import { getCellSets, getPlotConfigs } from 'redux/selectors';
+import { getCellSets, getGeneList, getPlotConfigs } from 'redux/selectors';
 import { plotNames } from 'utils/constants';
 import MultiViewGrid from 'components/plots/MultiViewGrid';
 import { loadGeneExpression } from 'redux/actions/genes';
-import useHighestDispersionGenes from 'utils/customHooks/useHighestDispersionGenes';
 import PlatformError from 'components/PlatformError';
 import { generateMultiViewGridPlotUuid } from 'utils/generateCustomPlotUuid';
 import loadConditionalComponentConfig from 'redux/actions/componentConfig/loadConditionalComponentConfig';
+import loadGeneList from 'redux/actions/genes/loadGeneList';
+import getHighestDispersionGenes from 'utils/getHighestDispersionGenes';
 
 const plotUuid = 'ViolinMain';
 const plotType = 'violin';
@@ -32,21 +32,19 @@ const ViolinIndex = ({ experimentId }) => {
   const dispatch = useDispatch();
 
   const multiViewConfig = useSelector((state) => state.componentConfig[multiViewUuid]?.config);
-  const multiViewGenes = multiViewConfig?.genes;
   const multiViewPlotUuids = multiViewConfig?.plotUuids;
 
   const plotConfigs = useSelector(getPlotConfigs(multiViewPlotUuids));
 
+  const shownGenes = _.compact(multiViewPlotUuids?.map((uuid) => plotConfigs[uuid]?.shownGene));
+
   const cellSets = useSelector(getCellSets());
 
-  const {
-    highestDispersionGenes,
-    highestDispersionLoading,
-    highestDispersionError,
-    setReloadHighestDispersion,
-  } = useHighestDispersionGenes(experimentId, multiViewUuid, 1);
+  const geneList = useSelector(getGeneList());
 
   const geneExpression = useSelector((state) => state.genes.expression);
+
+  const [highestDispersionGene, setHighestDispersionGene] = useState();
 
   const [selectedPlot, setSelectedPlot] = useState(plotUuid);
   const selectedConfig = plotConfigs[selectedPlot];
@@ -75,71 +73,54 @@ const ViolinIndex = ({ experimentId }) => {
     });
   };
 
-  // initialise the page with a single plot in multi-view
+  // initialise the page with the list of all genes
   useEffect(() => {
+    dispatch(loadCellSets(experimentId));
+
+    dispatch(loadGeneList(experimentId));
+  }, []);
+
+  // find highest dispersion genes for initial plot state
+  useEffect(() => {
+    if (typeof geneList.fetching === 'undefined' || geneList.fetching || highestDispersionGene) return;
+
+    const [gene] = getHighestDispersionGenes(geneList.geneData, 1);
+    setHighestDispersionGene(gene);
+  }, [geneList]);
+
+  // set initial config to highest dispersion gene if configs not found
+  useEffect(() => {
+    if (!highestDispersionGene) return;
+
     if (!plotConfigs[plotUuid]) {
-      dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
+      const customConfig = { shownGene: highestDispersionGene, title: { text: highestDispersionGene } };
+      loadComponent(plotUuid, plotType, false, customConfig);
     }
 
     if (!multiViewConfig) {
-      const customConfig = { plotUuids: [plotUuid] };
+      const customConfig = { genes: [highestDispersionGene], plotUuids: [plotUuid] };
       loadComponent(multiViewUuid, multiViewType, false, customConfig);
     }
-
-    dispatch(loadCellSets(experimentId));
-  }, []);
-
-  // set initial config to highest dispersion gene if gene not selected
-  useEffect(() => {
-    if (!plotConfigs[plotUuid] || !highestDispersionGenes.length) return;
-
-    if (plotConfigs[plotUuid].shownGene === 'notSelected') {
-      updatePlotWithChanges({ shownGene: highestDispersionGenes[0] });
-    }
-  }, [plotConfigs, highestDispersionGenes]);
+  }, [highestDispersionGene]);
 
   // load data for genes in multi view
   useEffect(() => {
-    if (multiViewGenes?.length) {
-      const genesToLoad = multiViewGenes.filter((gene) => (
-        !Object.keys(geneExpression.data).includes(gene)
-        && gene !== 'notSelected'
-      ));
+    if (!Object.values(plotConfigs).every((config) => config) || !multiViewConfig) return;
 
-      if (genesToLoad.length) {
-        dispatch(loadGeneExpression(experimentId, genesToLoad, plotUuid));
-      }
-    }
-  }, [multiViewGenes]);
+    const genesToLoad = shownGenes.filter((gene) => !Object.keys(geneExpression.data).includes(gene));
+
+    if (!genesToLoad.length) return;
+
+    dispatch(loadGeneExpression(experimentId, genesToLoad, plotUuid));
+  }, [plotConfigs]);
 
   // update gene shown on selected plot
+  // remove this and pass a function to gene selection instead of setState
   useEffect(() => {
     if (!searchedGene) return;
 
     updatePlotWithChanges({ shownGene: searchedGene, title: { text: searchedGene } });
   }, [searchedGene]);
-
-  // update multi view genes according to exisitng plot configs
-  useEffect(() => {
-    if (!Object.values(plotConfigs).every((config) => config) || !multiViewConfig) return;
-
-    const genes = multiViewPlotUuids.map((uuid) => plotConfigs[uuid].shownGene);
-
-    if (_.isEqual(genes, multiViewConfig.genes)) return;
-
-    updateMultiViewWithChanges({ genes });
-  }, [plotConfigs]);
-
-  // update grid size when adding plots
-  useEffect(() => {
-    if (!multiViewConfig) return;
-
-    const gridSize = multiViewConfig.nrows * multiViewConfig.ncols;
-    if (gridSize < multiViewConfig.plotUuids.length) {
-      const newSize = Math.ceil(Math.sqrt(multiViewConfig.plotUuids.length));
-      updateMultiViewWithChanges({ nrows: newSize, ncols: newSize });
-    }
-  }, [multiViewPlotUuids]);
 
   // rescale plots once when adding a second plot
   useEffect(() => {
@@ -152,21 +133,29 @@ const ViolinIndex = ({ experimentId }) => {
   }, [multiViewPlotUuids]);
 
   const addGeneToMultiView = (geneName) => {
-    const newGenes = _.concat(multiViewGenes, geneName);
-    if (newGenes.length > 16) return;
+    if (!Object.keys(geneList.geneData).includes(geneName)) return;
+    if (multiViewPlotUuids.length === 30) return;
 
     const plotUuidIndexes = multiViewPlotUuids.map((Uuid) => parseInt(Uuid.match(/[0-9]+/g), 10));
-    const possibleIndexes = [...Array(16).keys()];
-    console.log(possibleIndexes);
+    const possibleIndexes = [...Array(30).keys()];
+
     const newIndex = _.min(possibleIndexes.filter((index) => !plotUuidIndexes.includes(index)));
-    console.log(newIndex);
 
     const plotUuidToAdd = generateMultiViewGridPlotUuid(plotUuid, newIndex);
     const newPlotUuids = _.concat(multiViewPlotUuids, plotUuidToAdd);
 
-    updateMultiViewWithChanges({ genes: newGenes, plotUuids: newPlotUuids });
+    const multiViewUpdatedFields = { plotUuids: newPlotUuids };
 
-    const customConfig = { shownGene: geneName, title: { text: geneName } };
+    const gridSize = multiViewConfig.nrows * multiViewConfig.ncols;
+    if (gridSize < newPlotUuids.length) {
+      const newSize = Math.ceil(Math.sqrt(newPlotUuids.length));
+      _.merge(multiViewUpdatedFields, { nrows: newSize, ncols: newSize });
+    }
+
+    updateMultiViewWithChanges(multiViewUpdatedFields);
+
+    const dimensionsToUse = plotConfigs[multiViewPlotUuids[0]].dimensions;
+    const customConfig = { shownGene: geneName, title: { text: geneName }, dimensions: dimensionsToUse };
 
     loadComponent(plotUuidToAdd, plotType, true, customConfig);
   };
@@ -223,6 +212,7 @@ const ViolinIndex = ({ experimentId }) => {
       setSelectedPlot={setSelectedPlot}
       cellSets={cellSets}
       multiViewConfig={multiViewConfig}
+      shownGenes={shownGenes}
     />
   );
 
@@ -234,18 +224,16 @@ const ViolinIndex = ({ experimentId }) => {
   );
 
   const renderMultiView = () => {
-    if (highestDispersionError) {
+    if (geneList.error) {
       return (
         <PlatformError
-          error={highestDispersionError}
-          onClick={() => {
-            setReloadHighestDispersion(true);
-          }}
+          error={geneList.error}
+          onClick={() => {}}
         />
       );
     }
 
-    if (!multiViewConfig || highestDispersionLoading) {
+    if (!multiViewConfig || geneList.fetching) {
       return (
         <center>
           <Loader experimentId={experimentId} />

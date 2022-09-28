@@ -87,14 +87,6 @@ const PlotContainer = (props) => {
     setIsResetDisabled(true);
   };
 
-  if (!config) {
-    return (
-      <div style={{ paddingLeft: '2em' }}>
-        <Skeleton active paragraph={{ rows: 1 }} title={{ width: 500 }} />
-      </div>
-    );
-  }
-
   const renderPlotToolbarControls = () => (
     <Space style={{ marginRight: '0.5em' }}>
       {extraToolbarControls}

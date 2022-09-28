@@ -21,6 +21,7 @@ const MultiViewEditor = (props) => {
     addGeneToMultiView,
     onMultiViewUpdate,
     setSelectedPlot,
+    shownGenes,
   } = props;
 
   if (!multiViewConfig) {
@@ -48,16 +49,15 @@ const MultiViewEditor = (props) => {
   const options = multiViewConfig.plotUuids.map((plotUuid, index) => {
     const row = Math.floor(index / localNCols) + 1;
     const col = (index % localNCols) + 1;
-    return { label: `${row}.${col} ${multiViewConfig.genes[index]}`, value: plotUuid };
+    return { label: `${row}.${col} ${shownGenes[index]}`, value: plotUuid };
   });
 
   const [localSelectedPlot, setLocalSelectedPlot] = useState(options[0].value);
 
   const onGeneReorder = (key, newPosition) => {
     const newPlotUuids = arrayMoveImmutable(multiViewConfig.plotUuids, key, newPosition);
-    const newGenes = arrayMoveImmutable(multiViewConfig.genes, key, newPosition);
 
-    onMultiViewUpdate({ genes: newGenes, plotUuids: newPlotUuids });
+    onMultiViewUpdate({ plotUuids: newPlotUuids });
   };
 
   const onSearch = (value) => {
@@ -96,7 +96,7 @@ const MultiViewEditor = (props) => {
     if (value) onMultiViewUpdate({ ncols: value });
   };
 
-  const hideDeleteButton = (multiViewConfig.genes.length === 1);
+  const hideDeleteButton = (shownGenes.length === 1);
   const renderTitle = (gene, key) => {
     const row = Math.floor(key / localNCols) + 1;
     const col = (key % localNCols) + 1;
@@ -116,7 +116,7 @@ const MultiViewEditor = (props) => {
     );
   };
 
-  const treeData = multiViewConfig.genes.map((gene, index) => (
+  const treeData = shownGenes.map((gene, index) => (
     { key: index, title: renderTitle(gene, index) }
   ));
 
@@ -176,6 +176,7 @@ MultiViewEditor.propTypes = {
   addGeneToMultiView: PropTypes.func.isRequired,
   onMultiViewUpdate: PropTypes.func.isRequired,
   setSelectedPlot: PropTypes.func.isRequired,
+  shownGenes: PropTypes.array.isRequired,
 };
 
 MultiViewEditor.defaultProps = {

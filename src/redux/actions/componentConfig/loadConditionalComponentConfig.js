@@ -11,6 +11,9 @@ const loadConditionalComponentConfig = (
 ) => async (dispatch) => {
   const defaultConfig = initialPlotConfigStates[type] ?? initialComponentConfigStates[type];
   const configToUse = _.merge({}, defaultConfig, customConfig);
+  const dimensionsToUse = customConfig.dimensions
+    ? { dimensions: customConfig.dimensions }
+    : {};
 
   const dispatchLoad = (config) => {
     dispatch({
@@ -33,7 +36,7 @@ const loadConditionalComponentConfig = (
   try {
     const data = await fetchAPI(`/v2/experiments/${experimentId}/plots/${componentUuid}`);
 
-    const plotConfig = _.merge({}, configToUse, data.config);
+    const plotConfig = _.merge({}, defaultConfig, data.config, dimensionsToUse);
     dispatchLoad(plotConfig);
   } catch (e) {
     // load default plot config if it not found

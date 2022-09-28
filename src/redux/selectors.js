@@ -5,6 +5,7 @@
 import * as backendSelectors from './selectors/backendStatus';
 import * as cellSetsSelectors from './selectors/cellSets';
 import * as multiViewSelectors from './selectors/multiView';
+import * as geneListSelectors from './selectors/geneList'
 
 const getBackendStatus = (...params) => (state) => (
   backendSelectors.getBackendStatus(...params)(state.backendStatus));
@@ -24,6 +25,9 @@ const getCellSetsHierarchyByKeys = (...params) => (state) => (
 const getPlotConfigs = (...params) => (state) => (
   multiViewSelectors.getPlotConfigs(...params)(state.componentConfig));
 
+const getGeneList = (...params) => (state) => (
+  geneListSelectors.getGeneList(...params)(state.genes.properties));
+
 export {
   getBackendStatus,
   getCellSets,
@@ -31,4 +35,5 @@ export {
   getCellSetsHierarchyByType,
   getCellSetsHierarchyByKeys,
   getPlotConfigs,
+  getGeneList,
 };
