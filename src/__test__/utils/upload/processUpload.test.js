@@ -14,7 +14,7 @@ import { waitFor } from '@testing-library/dom';
 import processUpload from 'utils/upload/processUpload';
 
 import loadAndCompressIfNecessary from 'utils/upload/loadAndCompressIfNecessary';
-import validate from 'utils/upload/sampleValidator';
+import validate from 'utils/upload/validate';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
 
 enableFetchMocks();
@@ -126,7 +126,7 @@ jest.mock('axios', () => ({
 
 jest.mock('utils/pushNotificationMessage');
 
-jest.mock('utils/upload/sampleValidator');
+jest.mock('utils/upload/validate');
 
 let store = null;
 
@@ -434,7 +434,7 @@ describe('processUpload', () => {
 
   it('Should not upload sample and show notification if uploaded sample is invalid', async () => {
     validate.mockImplementationOnce(
-      () => (['Some file error']),
+      () => { throw new Error('Some file error'); },
     );
 
     await processUpload(
