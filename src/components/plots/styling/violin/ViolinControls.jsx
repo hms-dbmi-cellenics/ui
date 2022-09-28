@@ -6,6 +6,7 @@ import {
 import SelectData from 'components/plots/styling/SelectData';
 import SingleGeneSelection from 'components/plots/styling/SingleGeneSelection';
 import MultiViewEditor from 'components/plots/styling/MultiViewEditor';
+import GeneSearchBar from 'components/plots/GeneSearchBar';
 
 const { Panel } = Collapse;
 
@@ -15,7 +16,6 @@ const ViolinControls = (props) => {
     multiViewConfig,
     onUpdate,
     onMultiViewUpdate,
-    setSearchedGene,
     setSelectedPlot,
     addGeneToMultiView,
     cellSets,
@@ -25,9 +25,12 @@ const ViolinControls = (props) => {
   return (
     <Collapse>
       <Panel header='Gene selection' key='gene-selection'>
-        <SingleGeneSelection
-          config={config}
-          setSearchedGene={setSearchedGene}
+        <GeneSearchBar
+          geneList={geneList}
+          genesToDisable={[]}
+          onSelect={(gene) => onUpdate({ shownGene: gene, title: { text: gene } })}
+          allowMultiple={false}
+          buttonText='Search'
         />
       </Panel>
       <Panel header='View multiple plots' key='view-multiple-plots'>
@@ -82,7 +85,6 @@ ViolinControls.propTypes = {
   multiViewConfig: PropTypes.object,
   onUpdate: PropTypes.func.isRequired,
   onMultiViewUpdate: PropTypes.func.isRequired,
-  setSearchedGene: PropTypes.func.isRequired,
   addGeneToMultiView: PropTypes.func.isRequired,
   setSelectedPlot: PropTypes.func.isRequired,
   cellSets: PropTypes.object.isRequired,

@@ -15,7 +15,7 @@ const filterGenes = (searchText, geneList, genesToDisable) => {
 
 const GeneSearchBar = (props) => {
   const {
-    geneList, genesToDisable, onSelect,
+    geneList, genesToDisable, onSelect, allowMultiple, buttonText,
   } = props;
 
   const [options, setOptions] = useState([]);
@@ -26,27 +26,38 @@ const GeneSearchBar = (props) => {
   const genes = value.split(GENES_REGEX);
 
   const onOptionSelect = (newGene) => {
-    genes.splice(-1, 1, `${newGene}, `);
-    setValue(genes.join(', '));
+    if (allowMultiple) {
+      genes.splice(-1, 1, `${newGene}, `);
+      setValue(genes.join(', '));
+    } else {
+      setValue(newGene);
+    }
     setOptions([]);
   };
 
   const onSearch = (input) => {
     setValue(input);
 
-    const inputGenes = input.split(GENES_REGEX);
-
-    const searchText = inputGenes[inputGenes.length - 1];
-
-    setOptions(!searchText ? [] : filterGenes(searchText, geneList, genesToDisable));
+    if (allowMultiple) {
+      const inputGenes = input.split(GENES_REGEX);
+      const searchText = inputGenes[inputGenes.length - 1];
+      setOptions(!searchText ? [] : filterGenes(searchText, geneList, genesToDisable));
+    } else {
+      setOptions(!input ? [] : filterGenes(input, geneList, genesToDisable));
+    }
+    
   };
 
   const selectGenes = () => {
     if (value === '') return;
 
-    const newGenes = genes.filter((gene) => geneList.includes(gene));
+    if (allowMultiple) {
+      const newGenes = genes.filter((gene) => geneList.includes(gene));
+      onSelect(newGenes);
+    } else if (geneList.includes(value)) {
+      onSelect(value);
+    }
 
-    onSelect(newGenes);
     setValue('');
     setOptions([]);
   };
@@ -67,7 +78,7 @@ const GeneSearchBar = (props) => {
         onClick={selectGenes}
         style={{ width: '20%' }}
       >
-        Add
+        {buttonText}
       </Button>
     </Input.Group>
   );
@@ -77,6 +88,13 @@ GeneSearchBar.propTypes = {
   geneList: PropTypes.array.isRequired,
   genesToDisable: PropTypes.array.isRequired,
   onSelect: PropTypes.func.isRequired,
+  buttonText: PropTypes.string,
+  allowMultiple: PropTypes.bool,
+};
+
+GeneSearchBar.defaultProps = {
+  buttonText: 'Add',
+  allowMultiple: true,
 };
 
 export default GeneSearchBar;

@@ -49,8 +49,6 @@ const ViolinIndex = ({ experimentId }) => {
   const [selectedPlot, setSelectedPlot] = useState(plotUuid);
   const selectedConfig = plotConfigs[selectedPlot];
 
-  const [searchedGene, setSearchedGene] = useState();
-
   const [rescaleOnce, setRescaleOnce] = useState(true);
 
   const loadComponent = (componentUuid, type, skipAPI, customConfig) => {
@@ -113,14 +111,6 @@ const ViolinIndex = ({ experimentId }) => {
 
     dispatch(loadGeneExpression(experimentId, genesToLoad, plotUuid));
   }, [plotConfigs]);
-
-  // update gene shown on selected plot
-  // remove this and pass a function to gene selection instead of setState
-  useEffect(() => {
-    if (!searchedGene) return;
-
-    updatePlotWithChanges({ shownGene: searchedGene, title: { text: searchedGene } });
-  }, [searchedGene]);
 
   // rescale plots once when adding a second plot
   useEffect(() => {
@@ -208,7 +198,6 @@ const ViolinIndex = ({ experimentId }) => {
       config={selectedConfig}
       onUpdate={updatePlotWithChanges}
       onMultiViewUpdate={updateMultiViewWithChanges}
-      setSearchedGene={setSearchedGene}
       addGeneToMultiView={addGeneToMultiView}
       setSelectedPlot={setSelectedPlot}
       cellSets={cellSets}
