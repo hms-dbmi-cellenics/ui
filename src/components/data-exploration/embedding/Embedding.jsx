@@ -216,7 +216,7 @@ const Embedding = (props) => {
     return (<center><Loader experimentId={experimentId} size='large' /></center>);
   }
 
-  // The selected gene in can be present in both expression.loading and expression.data.
+  // The selected gene in can be present in both expression.loading and expression.matrix loaded genes.
   // To make sure that the gene is really loading, we have to check if
   // it exists in the loading array and is not present in the data array
   if (focusData.store === 'genes'

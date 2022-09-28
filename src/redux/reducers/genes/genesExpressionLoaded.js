@@ -46,10 +46,6 @@ const genesExpressionLoaded = (state, action) => {
           data: genes,
         },
       },
-      // data: {
-      //   ...state.expression.data,
-      //   ...data,
-      // },
       loading: loadingStatus,
     },
   };
