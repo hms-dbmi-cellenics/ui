@@ -29,7 +29,7 @@ const PlotContainer = (props) => {
     extraToolbarControls, extraControlPanels,
     showResetButton, onPlotReset,
     children,
-    onUpdate = defaultOnUpdate,
+    onUpdate,
     saveDebounceTime,
   } = props;
 
@@ -87,6 +87,14 @@ const PlotContainer = (props) => {
     setIsResetDisabled(true);
   };
 
+  if (!config) {
+    return (
+      <div style={{ paddingLeft: '2em' }}>
+        <Skeleton active paragraph={{ rows: 1 }} title={{ width: 500 }} />
+      </div>
+    );
+  }
+
   const renderPlotToolbarControls = () => (
     <Space style={{ marginRight: '0.5em' }}>
       {extraToolbarControls}
@@ -128,7 +136,7 @@ const PlotContainer = (props) => {
           <PlotStyling
             formConfig={plotStylingConfig}
             config={config}
-            onUpdate={onUpdate}
+            onUpdate={onUpdate ?? defaultOnUpdate}
             extraPanels={extraControlPanels}
             defaultActiveKey={defaultActiveKey}
           />

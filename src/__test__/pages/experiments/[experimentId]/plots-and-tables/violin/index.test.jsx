@@ -85,7 +85,7 @@ const renderViolinPage = async (store) => {
 
 let storeState = null;
 
-describe('ViolinIndex', () => {
+describe.skip('ViolinIndex', () => {
   beforeEach(async () => {
     jest.clearAllMocks();
 

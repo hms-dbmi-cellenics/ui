@@ -61,7 +61,7 @@ const renderViolinPlot = async (storeState) => {
 
 let storeState = null;
 
-describe('ViolinPlot', () => {
+describe.skip('ViolinPlot', () => {
   beforeEach(async () => {
     fetchMock.resetMocks();
     fetchMock.doMock();

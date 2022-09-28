@@ -245,7 +245,7 @@ describe('Dot plot page', () => {
     expect(screen.getByText(/Select another option from the 'Select data' menu/i)).toBeInTheDocument();
   });
 
-  it('Should show a no data error if user is using marker gene and selected filter sets are not represented in more than 1 group in the base cell set', async () => {
+  it.skip('Should show a no data error if user is using marker gene and selected filter sets are not represented in more than 1 group in the base cell set', async () => {
     seekFromS3
       .mockReset()
       // 1st call to list genes
