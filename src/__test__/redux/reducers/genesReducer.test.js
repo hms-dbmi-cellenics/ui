@@ -6,7 +6,7 @@ import {
   GENES_SELECT, GENES_DESELECT,
   GENES_PROPERTIES_LOADING, GENES_PROPERTIES_ERROR, GENES_PROPERTIES_LOADED_PAGINATED,
 } from 'redux/actionTypes/genes';
-import { getTwoGenesMatrix } from '__test__/utils/ExpressionMatrix/testMatrixes';
+import { getTwoGenesMatrix, getThreeGenesMatrix } from '__test__/utils/ExpressionMatrix/testMatrixes';
 
 describe('genesReducer', () => {
   it('Reduces identical state on unknown action', () => expect(
@@ -67,33 +67,24 @@ describe('genesReducer', () => {
   });
 
   it('Expression loaded state handled appropriately when other things are still loading', () => {
+    const loadedMatrix = getThreeGenesMatrix();
+
     const newState = genesReducer({
       ...constructInitialState(),
       expression: {
         ...constructInitialState().expression,
-        loading: ['a', 'b', 'c', 'd', 'e'],
+        loading: ['geneA', 'geneB', 'geneC', 'geneD', 'geneE'],
       },
     }, {
       type: GENES_EXPRESSION_LOADED,
       payload: {
         componentUuid: 'asd',
-        genes: ['a', 'b', 'c'],
-        data: {
-          gene1: {
-            a: 5,
-            b: 6,
-            c: 7,
-          },
-          gene2: {
-            a: 7,
-            b: 8,
-            c: 9,
-          },
-        },
+        genes: ['geneA', 'geneB', 'geneC'],
+        newGenes: loadedMatrix,
       },
     });
 
-    expect(newState.expression.loading).toEqual(['D', 'E']);
+    expect(newState.expression.loading).toEqual(['GENED', 'GENEE']);
     expect(newState).toMatchSnapshot();
   });
 
