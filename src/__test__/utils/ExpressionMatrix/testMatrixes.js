@@ -1,5 +1,19 @@
+import _ from 'lodash';
 import { SparseMatrix } from 'mathjs';
+
 import ExpressionMatrix from 'utils/ExpressionMatrix/ExpressionMatrix';
+
+const getOneGeneMatrix = (geneSymbol, cellsCount = 10) => ({
+  order: [geneSymbol],
+  rawExpression: new SparseMatrix(_.times(cellsCount, 1)),
+  truncatedExpression: new SparseMatrix(_.times(cellsCount, 1)),
+  zScore: new SparseMatrix(_.times(cellsCount, 1)),
+  stats: {
+    a: {
+      rawMean: 1, rawStdev: 0, truncatedMin: 1, truncatedMax: 1,
+    },
+  },
+});
 
 const getTwoGenesMatrix = () => ({
   order: ['Gzma', 'Lyz2'],
@@ -113,6 +127,6 @@ const getExpressionMatrixFromWorkResult = (workResult) => {
 
 // eslint-disable-next-line import/prefer-default-export
 export {
-  getTwoGenesMatrix, getOtherTwoGenesMatrix, getThreeGenesMatrix,
+  getOneGeneMatrix, getTwoGenesMatrix, getOtherTwoGenesMatrix, getThreeGenesMatrix,
   getTwoGenesExpressionMatrix, getExpressionMatrixFromWorkResult,
 };

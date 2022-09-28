@@ -1,16 +1,17 @@
+import _ from 'lodash';
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
+import { SparseMatrix } from 'mathjs';
+
+import loadGeneExpression from 'redux/actions/genes/loadGeneExpression';
+import { constructInitialState } from 'redux/reducers/genes/initialState';
+import { GENES_EXPRESSION_LOADING, GENES_EXPRESSION_LOADED, GENES_EXPRESSION_ERROR } from 'redux/actionTypes/genes';
+
 import { fetchWork } from 'utils/work/fetchWork';
 import pipelineStatusValues from 'utils/pipelineStatusValues';
-import loadGeneExpression from 'redux/actions/genes/loadGeneExpression';
-import initialState from 'redux/reducers/genes/initialState';
-
-import {
-  GENES_EXPRESSION_LOADING,
-  GENES_EXPRESSION_LOADED, GENES_EXPRESSION_ERROR,
-} from 'redux/actionTypes/genes';
 
 import '__test__/test-utils/setupTests';
+import { getOneGeneMatrix } from '__test__/utils/ExpressionMatrix/testMatrixes';
 
 jest.mock('utils/work/fetchWork');
 
@@ -37,10 +38,30 @@ describe('loadGeneExpression action', () => {
     },
   };
 
+  let initialGenesState;
+
+  const loadGene = (matrix) => {
+    matrix.pushGeneExpression(
+      ['a'],
+      new SparseMatrix([0, 0, 0, 0, 0]),
+      new SparseMatrix([0, 0, 0, 0, 0]),
+      new SparseMatrix([0, 0, 0, 0, 0]),
+      {
+        a: {
+          rawMean: 0, rawStdev: 0, truncatedMin: 0, truncatedMax: 0,
+        },
+      },
+    );
+  };
+
+  beforeEach(() => {
+    initialGenesState = constructInitialState();
+  });
+
   it('Does not dispatch when expression is already loading', async () => {
     const store = mockStore({
       genes:
-        { ...initialState, expression: { ...initialState.expression, loading: ['d'] } },
+        { ...initialGenesState, expression: { ...initialGenesState.expression, loading: ['d'] } },
     });
 
     store.dispatch(loadGeneExpression(experimentId, loadingGenes, componentUuid));
@@ -48,23 +69,8 @@ describe('loadGeneExpression action', () => {
   });
 
   it('Does not send work for already loaded expression data.', async () => {
-    const store = mockStore({
-      genes: {
-        ...initialState,
-        expression: {
-          ...initialState.expression,
-          data: {
-            ...initialState.expression.data,
-            a: {
-              min: 0,
-              max: 0,
-              expression: [0, 0, 0, 0, 0],
-            },
-          },
-        },
-      },
-      backendStatus,
-    });
+    loadGene(initialGenesState.expression.matrix);
+    const store = mockStore({ genes: initialGenesState, backendStatus });
 
     fetchWork.mockImplementationOnce(() => (
       // No need to mock the result accurately.
@@ -79,23 +85,8 @@ describe('loadGeneExpression action', () => {
   });
 
   it('Sends work for already loaded expression data if forced to do so.', async () => {
-    const store = mockStore({
-      genes: {
-        ...initialState,
-        expression: {
-          ...initialState.expression,
-          data: {
-            ...initialState.expression.data,
-            a: {
-              min: 0,
-              max: 0,
-              expression: [0, 0, 0, 0, 0],
-            },
-          },
-        },
-      },
-      backendStatus,
-    });
+    loadGene(initialGenesState.expression.matrix);
+    const store = mockStore({ genes: initialGenesState, backendStatus });
 
     fetchWork.mockImplementationOnce(() => (
       // No need to mock the result accurately.
@@ -113,19 +104,12 @@ describe('loadGeneExpression action', () => {
   it('Dispatches appropriately on success', async () => {
     const store = mockStore({
       genes: {
-        ...initialState,
+        ...initialGenesState,
       },
       backendStatus,
     });
 
-    const mockResult = {
-      geneA: {
-        expression: [1],
-        mean: 1,
-        stdev: 1,
-        zScore: [0],
-      },
-    };
+    const mockResult = getOneGeneMatrix('geneA', 1);
 
     fetchWork.mockImplementationOnce(() => new Promise((resolve) => resolve(mockResult)));
 
@@ -133,20 +117,17 @@ describe('loadGeneExpression action', () => {
       loadGeneExpression(experimentId, loadingGenes, componentUuid, true),
     );
 
-    const loadingAction = store.getActions()[0];
-    expect(loadingAction.type).toEqual(GENES_EXPRESSION_LOADING);
-    expect(loadingAction).toMatchSnapshot();
+    const actions = store.getActions();
+    expect(_.map(actions, 'type')).toEqual([GENES_EXPRESSION_LOADING, GENES_EXPRESSION_LOADED]);
+    expect(_.map(actions, 'payload')).toMatchSnapshot();
 
-    const loadedAction = store.getActions()[1];
-    expect(loadedAction.type).toEqual(GENES_EXPRESSION_LOADED);
-    expect(loadedAction.payload.data).toEqual(mockResult);
-    expect(loadedAction).toMatchSnapshot();
+    expect(actions[1].payload.newGenes).toEqual(mockResult);
   });
 
   it('Dispatches appropriately on failure', async () => {
     const store = mockStore({
       genes: {
-        ...initialState,
+        ...initialGenesState,
       },
       backendStatus,
     });
@@ -168,7 +149,7 @@ describe('loadGeneExpression action', () => {
   it('Dispatches appropriately on unrun pipeline', async () => {
     const store = mockStore({
       genes: {
-        ...initialState,
+        ...initialGenesState,
       },
       backendStatus: {
         [experimentId]: {

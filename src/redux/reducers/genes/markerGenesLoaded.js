@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
 import produce, { original } from 'immer';
 
-import initialState from 'redux/reducers/genes/initialState';
+import { constructInitialState } from 'redux/reducers/genes/initialState';
 
 const markerGenesLoaded = produce((draft, action) => {
   const {
@@ -29,6 +29,6 @@ const markerGenesLoaded = produce((draft, action) => {
 
   draft.markers.loading = false;
   draft.markers.error = false;
-}, initialState);
+}, constructInitialState());
 
 export default markerGenesLoaded;
