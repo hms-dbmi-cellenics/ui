@@ -1,10 +1,10 @@
 import moment from 'moment';
 
 import getAuthJWT from 'utils/getAuthJWT';
-import WorkTimeoutError from 'utils/http/errors/WorkTimeoutError';
 import fetchAPI from 'utils/http/fetchAPI';
 import unpackResult from 'utils/work/unpackResult';
-import WorkResponseError from 'utils/http/errors/WorkResponseError';
+import WorkTimeoutError from 'utils/errors/http/WorkTimeoutError';
+import WorkResponseError from 'utils/errors/http/WorkResponseError';
 import httpStatusCodes from 'utils/http/httpStatusCodes';
 
 const throwResponseError = (response) => {
