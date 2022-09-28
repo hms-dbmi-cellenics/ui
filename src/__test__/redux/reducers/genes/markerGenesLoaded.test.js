@@ -1,30 +1,15 @@
+import { constructInitialState } from 'redux/reducers/genes/initialState';
 import markerGenesLoadedReducer from 'redux/reducers/genes/markerGenesLoaded';
+import { getOneGeneMatrix } from '__test__/utils/ExpressionMatrix/testMatrixes';
 
 describe('markerGenesLoaded', () => {
   it('returns correct state', () => {
-    const initialState = {
-      expression: {
-        views: {},
-        data: {},
-      },
-      markers: {},
-    };
-
     const genes = ['geneA'];
-    const data = {
-      geneA: {
-        rawExpression: {
-          expression: [1],
-          mean: 1,
-          stdev: 1,
-        },
-      },
-    };
 
-    const newState = markerGenesLoadedReducer(initialState, {
+    const newState = markerGenesLoadedReducer(constructInitialState(), {
       payload: {
         genes,
-        data,
+        data: getOneGeneMatrix('geneA'),
         plotUuid: 'interactiveHeatmap',
       },
     });
