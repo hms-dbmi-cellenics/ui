@@ -21,7 +21,7 @@ import { initTracking } from 'utils/tracking';
 import UnauthorizedPage from 'pages/401';
 import NotFoundPage from 'pages/404';
 import Error from 'pages/_error';
-import APIError from 'utils/http/errors/APIError';
+import APIError from 'utils/errors/http/APIError';
 
 const mockCredentialsForInframock = () => {
   Credentials.get = async () => ({

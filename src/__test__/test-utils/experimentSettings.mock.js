@@ -15,18 +15,16 @@ const sampleifiedConfig = (sampleIds, configToReplicate) => {
 
 const generateProcessingConfigMock = (sampleIds) => ({
   classifier: {
-    enabled: true,
-    prefiltred: false,
     ...sampleifiedConfig(sampleIds, {
       auto: true,
       enabled: true,
+      prefiltered: false,
       filterSettings: {
         FDR: 0.1,
       },
     }),
   },
   cellSizeDistribution: {
-    enabled: true,
     ...sampleifiedConfig(sampleIds, {
       auto: true,
       enabled: true,
@@ -37,7 +35,6 @@ const generateProcessingConfigMock = (sampleIds) => ({
     }),
   },
   mitochondrialContent: {
-    enabled: true,
     ...sampleifiedConfig(sampleIds, {
       auto: true,
       enabled: true,
@@ -53,7 +50,6 @@ const generateProcessingConfigMock = (sampleIds) => ({
     }),
   },
   numGenesVsNumUmis: {
-    enabled: true,
     ...sampleifiedConfig(sampleIds, {
       auto: true,
       enabled: true,
@@ -68,7 +64,6 @@ const generateProcessingConfigMock = (sampleIds) => ({
     }),
   },
   doubletScores: {
-    enabled: true,
     ...sampleifiedConfig(sampleIds, {
       auto: true,
       enabled: true,

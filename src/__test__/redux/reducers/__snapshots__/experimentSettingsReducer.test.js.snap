@@ -78,7 +78,6 @@ Object {
   },
   "originalProcessing": Object {
     "cellSizeDistribution": Object {
-      "enabled": true,
       "sample-KO": Object {
         "auto": true,
         "enabled": true,
@@ -89,14 +88,13 @@ Object {
       },
     },
     "classifier": Object {
-      "enabled": true,
-      "prefiltred": false,
       "sample-KO": Object {
         "auto": true,
         "enabled": true,
         "filterSettings": Object {
           "FDR": 0.1,
         },
+        "prefiltered": false,
       },
     },
     "configureEmbedding": Object {
@@ -149,7 +147,6 @@ Object {
       "enabled": true,
     },
     "doubletScores": Object {
-      "enabled": true,
       "sample-KO": Object {
         "auto": true,
         "enabled": true,
@@ -166,7 +163,6 @@ Object {
       "loadingSettingsError": false,
     },
     "mitochondrialContent": Object {
-      "enabled": true,
       "sample-KO": Object {
         "auto": true,
         "enabled": true,
@@ -182,7 +178,6 @@ Object {
       },
     },
     "numGenesVsNumUmis": Object {
-      "enabled": true,
       "sample-KO": Object {
         "auto": true,
         "enabled": true,
@@ -199,7 +194,6 @@ Object {
   },
   "processing": Object {
     "cellSizeDistribution": Object {
-      "enabled": false,
       "sample-KO": Object {
         "auto": true,
         "enabled": false,
@@ -210,14 +204,13 @@ Object {
       },
     },
     "classifier": Object {
-      "enabled": true,
-      "prefiltred": false,
       "sample-KO": Object {
         "auto": true,
         "enabled": true,
         "filterSettings": Object {
           "FDR": 0.1,
         },
+        "prefiltered": false,
       },
     },
     "configureEmbedding": Object {
@@ -270,7 +263,6 @@ Object {
       "enabled": true,
     },
     "doubletScores": Object {
-      "enabled": true,
       "sample-KO": Object {
         "auto": true,
         "enabled": true,
@@ -289,7 +281,6 @@ Object {
       "loadingSettingsError": false,
     },
     "mitochondrialContent": Object {
-      "enabled": true,
       "sample-KO": Object {
         "auto": true,
         "enabled": true,
@@ -305,7 +296,6 @@ Object {
       },
     },
     "numGenesVsNumUmis": Object {
-      "enabled": true,
       "sample-KO": Object {
         "auto": true,
         "enabled": true,
@@ -333,7 +323,6 @@ Object {
   },
   "originalProcessing": Object {
     "cellSizeDistribution": Object {
-      "enabled": true,
       "sample-KO": Object {
         "auto": true,
         "enabled": true,
@@ -344,14 +333,13 @@ Object {
       },
     },
     "classifier": Object {
-      "enabled": true,
-      "prefiltred": false,
       "sample-KO": Object {
         "auto": true,
         "enabled": true,
         "filterSettings": Object {
           "FDR": 0.1,
         },
+        "prefiltered": false,
       },
     },
     "configureEmbedding": Object {
@@ -404,7 +392,6 @@ Object {
       "enabled": true,
     },
     "doubletScores": Object {
-      "enabled": true,
       "sample-KO": Object {
         "auto": true,
         "enabled": true,
@@ -421,7 +408,6 @@ Object {
       "loadingSettingsError": false,
     },
     "mitochondrialContent": Object {
-      "enabled": true,
       "sample-KO": Object {
         "auto": true,
         "enabled": true,
@@ -437,7 +423,6 @@ Object {
       },
     },
     "numGenesVsNumUmis": Object {
-      "enabled": true,
       "sample-KO": Object {
         "auto": true,
         "enabled": true,
@@ -454,7 +439,6 @@ Object {
   },
   "processing": Object {
     "cellSizeDistribution": Object {
-      "enabled": true,
       "sample-KO": Object {
         "auto": true,
         "enabled": true,
@@ -465,14 +449,13 @@ Object {
       },
     },
     "classifier": Object {
-      "enabled": true,
-      "prefiltred": false,
       "sample-KO": Object {
         "auto": true,
         "enabled": true,
         "filterSettings": Object {
           "FDR": 0.1,
         },
+        "prefiltered": false,
       },
     },
     "configureEmbedding": Object {
@@ -525,7 +508,6 @@ Object {
       "enabled": true,
     },
     "doubletScores": Object {
-      "enabled": true,
       "sample-KO": Object {
         "auto": true,
         "enabled": true,
@@ -542,7 +524,6 @@ Object {
       "loadingSettingsError": false,
     },
     "mitochondrialContent": Object {
-      "enabled": true,
       "sample-KO": Object {
         "auto": true,
         "enabled": true,
@@ -558,7 +539,6 @@ Object {
       },
     },
     "numGenesVsNumUmis": Object {
-      "enabled": true,
       "sample-KO": Object {
         "auto": true,
         "enabled": true,
@@ -617,7 +597,6 @@ Object {
   },
   "originalProcessing": Object {
     "cellSizeDistribution": Object {
-      "enabled": true,
       "sample-KO": Object {
         "auto": true,
         "enabled": true,
@@ -628,14 +607,13 @@ Object {
       },
     },
     "classifier": Object {
-      "enabled": true,
-      "prefiltred": false,
       "sample-KO": Object {
         "auto": true,
         "enabled": true,
         "filterSettings": Object {
           "FDR": 0.1,
         },
+        "prefiltered": false,
       },
     },
     "configureEmbedding": Object {
@@ -688,7 +666,6 @@ Object {
       "enabled": true,
     },
     "doubletScores": Object {
-      "enabled": true,
       "sample-KO": Object {
         "auto": true,
         "enabled": true,
@@ -705,7 +682,6 @@ Object {
       "loadingSettingsError": false,
     },
     "mitochondrialContent": Object {
-      "enabled": true,
       "sample-KO": Object {
         "auto": true,
         "enabled": true,
@@ -721,7 +697,6 @@ Object {
       },
     },
     "numGenesVsNumUmis": Object {
-      "enabled": true,
       "sample-KO": Object {
         "auto": true,
         "enabled": true,
@@ -738,7 +713,6 @@ Object {
   },
   "processing": Object {
     "cellSizeDistribution": Object {
-      "enabled": true,
       "sample-KO": Object {
         "auto": true,
         "enabled": true,
@@ -749,14 +723,13 @@ Object {
       },
     },
     "classifier": Object {
-      "enabled": true,
-      "prefiltred": false,
       "sample-KO": Object {
         "auto": true,
         "enabled": true,
         "filterSettings": Object {
           "FDR": 0.1,
         },
+        "prefiltered": false,
       },
     },
     "configureEmbedding": Object {
@@ -809,7 +782,6 @@ Object {
       "enabled": true,
     },
     "doubletScores": Object {
-      "enabled": true,
       "sample-KO": Object {
         "auto": true,
         "enabled": true,
@@ -826,7 +798,6 @@ Object {
       "loadingSettingsError": false,
     },
     "mitochondrialContent": Object {
-      "enabled": true,
       "sample-KO": Object {
         "auto": true,
         "enabled": true,
@@ -842,7 +813,6 @@ Object {
       },
     },
     "numGenesVsNumUmis": Object {
-      "enabled": true,
       "sample-KO": Object {
         "auto": true,
         "enabled": true,

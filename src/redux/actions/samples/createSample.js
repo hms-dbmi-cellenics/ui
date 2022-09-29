@@ -13,8 +13,7 @@ import { METADATA_DEFAULT_VALUE } from 'redux/reducers/experiments/initialState'
 import { sampleTemplate } from 'redux/reducers/samples/initialState';
 
 import UploadStatus from 'utils/upload/UploadStatus';
-import pushNotificationMessage from 'utils/pushNotificationMessage';
-import validate from 'utils/upload/sampleValidator';
+import validate10x from 'utils/upload/validate10x';
 
 const createSample = (
   experimentId,
@@ -51,17 +50,12 @@ const createSample = (
 
   let sampleTechnology;
   if (type === '10X Chromium') {
+    await validate10x(sample);
     sampleTechnology = '10x';
   } else if (type === 'BD Rhapsody') {
     sampleTechnology = 'rhapsody';
   } else {
     throw new Error(`Sample technology ${type} is not recognized`);
-  }
-  const errors = await validate(sample);
-  if (errors && errors.length > 0) {
-    const errorMessage = `Error uploading sample ${name}.\n${errors.join('\n')}`;
-    pushNotificationMessage('error', errorMessage, 15);
-    throw new Error(errorMessage);
   }
 
   filesToUpload.forEach((fileName) => {
@@ -87,7 +81,6 @@ const createSample = (
 
     await dispatch({
       type: SAMPLES_SAVED,
-      payload: { sample: newSample, experimentId },
     });
 
     return newSampleUuid;

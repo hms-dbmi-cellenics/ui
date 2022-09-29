@@ -61,6 +61,7 @@ import { runQC } from 'redux/actions/pipeline';
 import { useAppRouter } from 'utils/AppRouteProvider';
 import { modules } from 'utils/constants';
 import QCRerunDisabledModal from 'components/QCRerunDisabledModal';
+import { current } from 'immer';
 
 const { Text } = Typography;
 const { Option } = Select;
@@ -147,6 +148,22 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
     }
   }, [samples, sampleKeys]);
 
+  const checkIfSampleIsEnabled = (step) => {
+    if (['configureEmbedding', 'dataIntegration'].includes(step)) {
+      return true;
+    }
+    return (processingConfig[step] && sampleKeys.some((key) => (
+      processingConfig[step][key]?.enabled)));
+  };
+
+  const checkIfSampleIsPrefiltered = (step) => {
+    if (step !== 'classifier') return false;
+
+    return (
+      processingConfig[step] && sampleKeys.some((key) => (
+      processingConfig[step][key]?.prefiltered)));
+  };
+
   const steps = [
     {
 
@@ -167,7 +184,7 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
               sampleId={sample.key}
               sampleIds={sampleKeys}
               onConfigChange={() => onConfigChange(key)}
-              stepDisabled={!processingConfig[key]?.enabled}
+              stepDisabled={!checkIfSampleIsEnabled(key)}
             />
           )}
         />
@@ -190,7 +207,7 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
               sampleId={sample.key}
               sampleIds={sampleKeys}
               onConfigChange={() => onConfigChange(key)}
-              stepDisabled={!processingConfig[key].enabled}
+              stepDisabled={!checkIfSampleIsEnabled(key)}
             />
           )}
         />
@@ -213,7 +230,7 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
               sampleId={sample.key}
               sampleIds={sampleKeys}
               onConfigChange={() => onConfigChange(key)}
-              stepDisabled={!processingConfig[key].enabled}
+              stepDisabled={!checkIfSampleIsEnabled(key)}
             />
           )}
         />
@@ -236,7 +253,7 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
               sampleId={sample.key}
               sampleIds={sampleKeys}
               onConfigChange={() => onConfigChange(key)}
-              stepDisabled={!processingConfig[key].enabled}
+              stepDisabled={!checkIfSampleIsEnabled(key)}
               onQCRunClick={() => setRunQCModalVisible(true)}
             />
           )}
@@ -272,7 +289,7 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
               sampleId={sample.key}
               sampleIds={sampleKeys}
               onConfigChange={() => onConfigChange(key)}
-              stepDisabled={!processingConfig[key].enabled}
+              stepDisabled={!checkIfSampleIsEnabled(key)}
             />
           )}
         />
@@ -371,8 +388,8 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
   };
 
   const renderTitle = () => {
-    const stepEnabled = processingConfig[currentStep.key]?.enabled;
-    const prefiltered = processingConfig[currentStep.key]?.prefiltered || false;
+    const stepEnabled = checkIfSampleIsEnabled(currentStep.key);
+    const stepPrefiltered = checkIfSampleIsPrefiltered(currentStep.key) || false;
 
     return (
       <>
@@ -404,7 +421,7 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
                                 disabledByPipeline
                               }
                             >
-                              {processingConfig[key]?.enabled === false ? (
+                              {!checkIfSampleIsEnabled(key) ? (
                                 <>
                                   {/* disabled */}
                                   <Text
@@ -470,7 +487,7 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
                   {currentStep.multiSample && (
                     <Tooltip title={`${!stepEnabled ? 'Enable this filter' : 'Disable this filter'}`}>
                       <Button
-                        disabled={prefiltered}
+                        disabled={stepPrefiltered}
                         data-testid='enableFilterButton'
                         onClick={async () => {
                           await dispatch(saveProcessingSettings(experimentId, currentStep.key));
@@ -596,9 +613,9 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
     return (
       <Space direction='vertical' style={{ width: '100%' }}>
         {
-          'enabled' in processingConfig[key] && !processingConfig[key].enabled ? (
+          !checkIfSampleIsEnabled(key) ? (
             <Alert
-              message={processingConfig[key]?.prefiltered
+              message={checkIfSampleIsPrefiltered(key)
                 ? 'This filter is disabled because the one of the sample(s) is pre-filtered. Click \'Next\' to continue processing your data.'
                 : 'This filter is disabled. You can still modify and save changes, but the filter will not be applied to your data.'}
               type='info'

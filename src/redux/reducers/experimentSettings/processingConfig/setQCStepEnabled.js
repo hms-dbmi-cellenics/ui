@@ -10,8 +10,6 @@ const setQCStepEnabled = produce((draft, action) => {
     enabled: oldEnable, auto, filterSettings, prefiltered, ...sampleIds
   } = draft.processing[step];
 
-  draft.processing[step].enabled = enabled;
-
   // Filter is applied per samples in the pipeline
   Object.keys(sampleIds).forEach((sampleId) => {
     draft.processing[step][sampleId].enabled = enabled;
