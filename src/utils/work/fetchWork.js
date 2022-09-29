@@ -112,7 +112,7 @@ const fetchGeneExpressionWorkWithoutLocalCache = async (
   try {
     await dispatchWorkRequest(
       experimentId,
-      body.genes,
+      body,
       timeout,
       ETag,
       {
