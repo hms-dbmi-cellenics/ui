@@ -126,7 +126,7 @@ jest.mock('axios', () => ({
 
 jest.mock('utils/pushNotificationMessage');
 
-jest.mock('utils/upload/validate');
+jest.mock('utils/upload/validate10x');
 
 let store = null;
 

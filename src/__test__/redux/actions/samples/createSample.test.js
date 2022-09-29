@@ -16,7 +16,7 @@ import {
 import endUserMessages from 'utils/endUserMessages';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
 
-jest.mock('utils/upload/validate');
+jest.mock('utils/upload/validate10x');
 pushNotificationMessage.mockImplementation(() => async () => { });
 
 enableFetchMocks();
