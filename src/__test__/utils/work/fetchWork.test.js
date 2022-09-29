@@ -1,12 +1,10 @@
 /* eslint-disable global-require */
 import { fetchWork, generateETag } from 'utils/work/fetchWork';
 import { Environment } from 'utils/deploymentInfo';
+import { getFourGenesMatrix } from '../ExpressionMatrix/testMatrixes';
 
 const {
-  mockGeneExpressionData,
-  mockGeneExpressionDataZScore,
   mockGenesListData,
-  mockCacheKeyMappings,
   mockCacheGet,
   mockCacheSet,
   mockDispatchWorkRequest,
@@ -26,7 +24,8 @@ jest.mock(
 
 const experimentId = '1234';
 const NON_GENE_EXPRESSION_ETAG = '013c3026bb7156d222ccd18919745195'; // pragma: allowlist secret
-const GENE_EXPRESSION_ETAG = '34c05c9d07fd24ce0c22d2bec7fd7437'; // pragma: allowlist secret
+const GENE_EXPRESSION_ABCD_ETAG = 'ea5b7688659715fbca937e3ff0065883'; // pragma: allowlist secret
+const GENE_EXPRESSION_D_ETAG = '34c05c9d07fd24ce0c22d2bec7fd7437'; // pragma: allowlist secret
 const timeout = 10;
 const mockExtras = undefined;
 
@@ -55,7 +54,7 @@ describe('fetchWork', () => {
     mockSeekFromS3
       .mockReset()
       .mockImplementationOnce(() => null)
-      .mockImplementation(() => ({ D: mockGeneExpressionData.D }));
+      .mockImplementation(() => (getFourGenesMatrix()));
 
     const res = await fetchWork(
       experimentId,
@@ -64,29 +63,25 @@ describe('fetchWork', () => {
       { timeout },
     );
 
+    // Temporarily disabled the cache for gene expression
     expect(mockDispatchWorkRequest).toHaveBeenCalledWith(
       experimentId,
-      { name: 'GeneExpression', genes: ['D'] },
+      { name: 'GeneExpression', genes: ['A', 'B', 'C', 'D'] },
       timeout,
-      GENE_EXPRESSION_ETAG,
+      GENE_EXPRESSION_ABCD_ETAG,
       expect.anything(),
     );
 
-    // The expected response should contain the ZScore
-    const expectedResponse = {
-      D: {
-        ...mockGeneExpressionData.D,
-        ...mockGeneExpressionDataZScore.D,
-      },
-    };
+    // The expected response should be fine
 
-    expect(mockCacheGet).toHaveBeenCalledTimes(4);
-    expect(mockCacheSet).toHaveBeenCalledTimes(1);
-    expect(mockCacheSet).toHaveBeenCalledWith(
-      mockCacheKeyMappings.D,
-      expectedResponse.D,
-    );
-    expect(res).toEqual(expectedResponse);
+    // Disabled gene expression cache, so the whole thing is being loaded
+    // expect(mockCacheGet).toHaveBeenCalledTimes(4);
+    // expect(mockCacheSet).toHaveBeenCalledTimes(1);
+    // expect(mockCacheSet).toHaveBeenCalledWith(
+    //   mockCacheKeyMappings.D,
+    //   expectedResponse.D,
+    // );
+    expect(res).toMatchSnapshot();
     expect(mockSeekFromS3).toHaveBeenCalledTimes(2);
   });
 
@@ -239,7 +234,7 @@ describe('generateEtag', () => {
       Environment.PRODUCTION,
     );
 
-    expect(ETag).toEqual(GENE_EXPRESSION_ETAG);
+    expect(ETag).toEqual(GENE_EXPRESSION_D_ETAG);
   });
 
   it('Generates unique key for dev environment', async () => {
