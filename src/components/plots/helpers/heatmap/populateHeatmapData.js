@@ -71,7 +71,7 @@ const populateHeatmapData = (
 
       currentCellSetIntersection.push(leftOverCellIds);
 
-      intersectedCellSets.push(...currentCellSetIntersection);
+      currentCellSetIntersection.forEach((array) => intersectedCellSets.push(array));
     });
 
     return intersectedCellSets;
@@ -139,7 +139,7 @@ const populateHeatmapData = (
     const cellIds = [];
 
     buckets.forEach((bucket) => {
-      cellIds.push(...bucket);
+      bucket.forEach((bucketCellId) => cellIds.push(bucketCellId));
     });
 
     return cellIds;

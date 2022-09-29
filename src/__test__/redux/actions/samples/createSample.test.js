@@ -7,7 +7,7 @@ import { v4 as uuidv4 } from 'uuid';
 import createSample from 'redux/actions/samples/createSample';
 import initialSampleState from 'redux/reducers/samples/initialState';
 import initialExperimentState, { experimentTemplate } from 'redux/reducers/experiments/initialState';
-import 'utils/upload/sampleValidator';
+import 'utils/upload/validate';
 
 import {
   SAMPLES_CREATE, SAMPLES_SAVING, SAMPLES_ERROR, SAMPLES_SAVED,
@@ -16,7 +16,7 @@ import {
 import endUserMessages from 'utils/endUserMessages';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
 
-jest.mock('utils/upload/sampleValidator');
+jest.mock('utils/upload/validate');
 pushNotificationMessage.mockImplementation(() => async () => { });
 
 enableFetchMocks();

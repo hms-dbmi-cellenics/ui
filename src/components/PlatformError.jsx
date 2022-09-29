@@ -5,9 +5,9 @@ import {
 import PropTypes from 'prop-types';
 import moment from 'moment';
 
-import WorkResponseError from 'utils/http/errors/WorkResponseError';
-import WorkGenericError from 'utils/http/errors/WorkGenericError';
-import WorkTimeoutError from 'utils/http/errors/WorkTimeoutError';
+import WorkResponseError from 'utils/errors/http/WorkResponseError';
+import WorkGenericError from 'utils/errors/http/WorkGenericError';
+import WorkTimeoutError from 'utils/errors/http/WorkTimeoutError';
 
 const { Text } = Typography;
 
