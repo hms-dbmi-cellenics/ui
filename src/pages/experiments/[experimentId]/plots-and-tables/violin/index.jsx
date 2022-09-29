@@ -87,11 +87,16 @@ const ViolinIndex = ({ experimentId }) => {
     });
   };
 
-  // initialise the page with the list of all genes
+  // initialise the page with the list of all genes and multi view
   useEffect(() => {
     dispatch(loadCellSets(experimentId));
 
     dispatch(loadGeneList(experimentId));
+
+    if (!multiViewConfig) {
+      const customConfig = { plotUuids: [plotUuid] };
+      loadComponent(multiViewUuid, multiViewType, true, customConfig);
+    }
   }, []);
 
   // find highest dispersion genes for initial plot state
@@ -102,20 +107,17 @@ const ViolinIndex = ({ experimentId }) => {
     setHighestDispersionGene(gene);
   }, [geneList]);
 
-  // set initial config to highest dispersion gene if configs not found
+  // load new plots for all multi view plotUuids, with highest dispersion gene if not saved
   useEffect(() => {
-    if (!highestDispersionGene) return;
+    if (!highestDispersionGene || !multiViewConfig) return;
 
-    if (!plotConfigs[plotUuid]) {
-      const customConfig = { shownGene: highestDispersionGene, title: { text: highestDispersionGene } };
-      loadComponent(plotUuid, plotType, false, customConfig);
-    }
-
-    if (!multiViewConfig) {
-      const customConfig = { genes: [highestDispersionGene], plotUuids: [plotUuid] };
-      loadComponent(multiViewUuid, multiViewType, true, customConfig);
-    }
-  }, [highestDispersionGene]);
+    multiViewPlotUuids.forEach((Uuid) => {
+      if (!plotConfigs[Uuid]) {
+        const customConfig = { shownGene: highestDispersionGene, title: { text: highestDispersionGene } };
+        loadComponent(plotUuid, plotType, false, customConfig);
+      }
+    });
+  }, [multiViewConfig, highestDispersionGene]);
 
   // load data for genes in multi view
   useEffect(() => {
