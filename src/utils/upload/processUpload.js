@@ -79,8 +79,12 @@ const getMetadata = (file) => {
   return metadata;
 };
 
-const createAndUploadSingleFile = async (file, projectId, sampleId, dispatch) => {
-  const metadata = getMetadata(file);
+const createAndUploadSingleFile = async (file, projectId, sampleId, dispatch, selectedTech) => {
+  console.log('file is !!!', file);
+  let metadata = {};
+  if (selectedTech === '10X Chromium') {
+    metadata = getMetadata(file);
+  }
   const fileType = getFileTypeV2(file.fileObject.name, file.fileObject.type);
 
   let signedUrl;
@@ -104,11 +108,6 @@ const createAndUploadSingleFile = async (file, projectId, sampleId, dispatch) =>
   await prepareAndUploadFileToS3(projectId, sampleId, fileType, file, signedUrl, dispatch);
 };
 
-const createAndUpload = async (sample, experimentId, dispatch) => (
-  Object.values(sample.files).map(
-    (file) => createAndUploadSingleFile(file, experimentId, sample.uuid, dispatch),
-  ));
-
 const processUpload = async (filesList, sampleType, samples, experimentId, dispatch) => {
   const samplesMap = filesList.reduce((acc, file) => {
     const pathToArray = file.name.trim().replace(/[\s]{2,}/ig, ' ').split('/');
@@ -119,6 +118,7 @@ const processUpload = async (filesList, sampleType, samples, experimentId, dispa
     // Update the file name so that instead of being saved as
     // e.g. WT13/matrix.tsv.gz, we save it as matrix.tsv.gz
     file.name = fileName;
+    console.log('sampes and sjhit ', sampleName, samples);
 
     const sampleUuid = Object.values(samples).filter(
       (s) => s.name === sampleName
@@ -137,10 +137,8 @@ const processUpload = async (filesList, sampleType, samples, experimentId, dispa
       },
     };
   }, {});
-
   Object.entries(samplesMap).forEach(async ([name, sample]) => {
     const filesToUploadForSample = Object.keys(sample.files);
-
     // Create sample if not exists.
     try {
       sample.uuid ??= await dispatch(
@@ -156,8 +154,9 @@ const processUpload = async (filesList, sampleType, samples, experimentId, dispa
       // If sample creation fails, sample should not be created
       return;
     }
-
-    createAndUpload(sample, experimentId, dispatch);
+    Object.values(sample.files).map(
+      (file) => createAndUploadSingleFile(file, experimentId, sample.uuid, dispatch, sampleType),
+    );
   });
 };
 

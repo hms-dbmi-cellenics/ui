@@ -52,6 +52,8 @@ const createSample = (
   let sampleTechnology;
   if (type === '10X Chromium') {
     sampleTechnology = '10x';
+  } else if (type === 'BD Rhapsody') {
+    sampleTechnology = 'rhapsody';
   } else {
     throw new Error(`Sample technology ${type} is not recognized`);
   }

@@ -78,38 +78,40 @@ const getNumLines = async (sampleFile) => {
 };
 
 const validateFileSizes = async (sample) => {
-  const barcodes = sample.files['barcodes.tsv.gz'] || sample.files['barcodes.tsv'];
-  const features = sample.files['features.tsv.gz'] || sample.files['features.tsv'] || sample.files['genes.tsv.gz'] || sample.files['genes.tsv'];
-  const matrix = sample.files['matrix.mtx.gz'] || sample.files['matrix.mtx'];
+  if (sample.type === '10x Chromium') {
+    const barcodes = sample.files['barcodes.tsv.gz'] || sample.files['barcodes.tsv'];
+    const features = sample.files['features.tsv.gz'] || sample.files['features.tsv'] || sample.files['genes.tsv.gz'] || sample.files['genes.tsv'];
+    const matrix = sample.files['matrix.mtx.gz'] || sample.files['matrix.mtx'];
 
-  const [
-    expectedNumFeatures,
-    expectedNumBarcodes,
-  ] = await extractSampleSizes(matrix);
+    const [
+      expectedNumFeatures,
+      expectedNumBarcodes,
+    ] = await extractSampleSizes(matrix);
 
-  const numBarcodesFound = await getNumLines(barcodes);
-  const numFeaturesFound = await getNumLines(features);
+    const numBarcodesFound = await getNumLines(barcodes);
+    const numFeaturesFound = await getNumLines(features);
 
-  const errors = [];
+    const errors = [];
 
-  if (numBarcodesFound === expectedNumFeatures
+    if (numBarcodesFound === expectedNumFeatures
     && numFeaturesFound === expectedNumBarcodes) {
-    errors.push(errorMessages.transposedMatrixFile());
-  }
+      errors.push(errorMessages.transposedMatrixFile());
+    }
 
-  if (numBarcodesFound !== expectedNumBarcodes) {
-    errors.push(
-      errorMessages.invalidBarcodesFile(expectedNumBarcodes, numBarcodesFound),
-    );
-  }
+    if (numBarcodesFound !== expectedNumBarcodes) {
+      errors.push(
+        errorMessages.invalidBarcodesFile(expectedNumBarcodes, numBarcodesFound),
+      );
+    }
 
-  if (numFeaturesFound !== expectedNumFeatures) {
-    errors.push(
-      errorMessages.invalidFeaturesFile(expectedNumFeatures, numFeaturesFound),
-    );
-  }
+    if (numFeaturesFound !== expectedNumFeatures) {
+      errors.push(
+        errorMessages.invalidFeaturesFile(expectedNumFeatures, numFeaturesFound),
+      );
+    }
 
-  return errors;
+    return errors;
+  }
 };
 
 const validate = async (sample) => {

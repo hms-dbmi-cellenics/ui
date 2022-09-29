@@ -31,17 +31,16 @@ const fileUploadSpecifications = {
     info: ` For each sample, upload a folder containing the 3 count matrix files. The 
     folder's name will be used to name the sample in it. You can change this name later in Data Management.`,
   },
-  /* eslint-disable max-len */
-  // 'BD Rhapsody': {
-  //   acceptedFiles: new Set(['expression_matrix.mt', 'expression_matrix.mt.gz']),
-  //   requiredFiles: ['expression_matrix.mt.gz'],
-  //   inputInfo: [['expression_matrix.mt']],
-  //   displayedFiles: ['expression_matrix.mt'],
-  //   info: `Upload a folder for each sample. The folder's
-  //   name will be used to name the sample in it.
-  //   You can change this name later in Data Management.
-  //   Each folder must contain the following file:`,
-  // },
+  'BD Rhapsody': {
+    acceptedFiles: new Set(['expression_data.st', 'expression_data.st.gz']),
+    requiredFiles: ['expression_data.st.gz'],
+    inputInfo: [['expression_data.st']],
+    displayedFiles: ['expression_data.st'],
+    info: `Upload a folder for each sample. The folder's
+    name will be used to name the sample in it.
+    You can change this name later in Data Management.
+    Each folder must contain the following file:`,
+  },
 
 };
 

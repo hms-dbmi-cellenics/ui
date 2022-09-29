@@ -1,5 +1,6 @@
 import fetchAPI from 'utils/http/fetchAPI';
 import handleError from 'utils/http/handleError';
+import fileNameConvert from 'utils/upload/fileNameConverter';
 
 import {
   SAMPLES_LOADED,
@@ -15,11 +16,6 @@ const toApiV1 = (samples, experimentId) => {
     const apiV1Files = {};
 
     Object.keys(files).forEach((key) => {
-      const fileNameConvert = {
-        features10x: 'features.tsv.gz',
-        barcodes10x: 'barcodes.tsv.gz',
-        matrix10x: 'matrix.mtx.gz',
-      };
       const fileType = files[key]?.sampleFileType;
       if (!fileType) throw new Error('No sample file found');
 
@@ -42,6 +38,7 @@ const toApiV1 = (samples, experimentId) => {
 
   const sampleTechnologyConvert = (technology) => {
     if (technology === '10x') return '10X Chromium';
+    if (technology === 'rhapsody') return 'BD Rhapsody';
 
     throw new Error('Unknown sample technology');
   };
