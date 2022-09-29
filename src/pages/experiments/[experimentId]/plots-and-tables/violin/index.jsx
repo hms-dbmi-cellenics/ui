@@ -45,10 +45,6 @@ const ViolinIndex = ({ experimentId }) => {
     });
   }, 2000), [allComponentUuids]);
 
-  const debounceSaveMultiView = useCallback(_.debounce(() => {
-    dispatch(savePlotConfig(experimentId, multiViewUuid));
-  }), []);
-
   const plotConfigs = useSelector(getPlotConfigs(multiViewPlotUuids));
 
   const shownGenes = _.compact(multiViewPlotUuids?.map((uuid) => plotConfigs[uuid]?.shownGene));
@@ -95,7 +91,7 @@ const ViolinIndex = ({ experimentId }) => {
 
     if (!multiViewConfig) {
       const customConfig = { plotUuids: [plotUuid] };
-      loadComponent(multiViewUuid, multiViewType, true, customConfig);
+      loadComponent(multiViewUuid, multiViewType, false, customConfig);
     }
   }, []);
 
@@ -114,37 +110,36 @@ const ViolinIndex = ({ experimentId }) => {
     multiViewPlotUuids.forEach((Uuid) => {
       if (!plotConfigs[Uuid]) {
         const customConfig = { shownGene: highestDispersionGene, title: { text: highestDispersionGene } };
-        loadComponent(plotUuid, plotType, false, customConfig);
+        loadComponent(Uuid, plotType, false, customConfig);
       }
     });
   }, [multiViewConfig, highestDispersionGene]);
 
   // load data for genes in multi view
   useEffect(() => {
-    if (!Object.values(plotConfigs).every((config) => config) || !multiViewConfig) return;
+    if (!multiViewConfig || !multiViewPlotUuids.every((Uuid) => plotConfigs[Uuid]) || geneExpression.loading.length) return;
 
     const genesToLoad = shownGenes.filter((gene) => !Object.keys(geneExpression.data).includes(gene));
 
     if (!genesToLoad.length) return;
-
+    console.log(genesToLoad);
     dispatch(loadGeneExpression(experimentId, genesToLoad, plotUuid));
   }, [plotConfigs]);
 
   // rescale plots once when adding a second plot
-  useEffect(() => {
-    if (!multiViewConfig) return;
+  // useEffect(() => {
+  //   if (!multiViewConfig) return;
 
-    if (multiViewPlotUuids.length > 1 && rescaleOnce) {
-      updateAllWithChanges({ dimensions: { width: 550, height: 400 } });
-      setRescaleOnce(false);
-    }
-  }, [multiViewPlotUuids]);
+  //   if (multiViewPlotUuids.length > 1 && rescaleOnce) {
+  //     updateAllWithChanges({ dimensions: { width: 550, height: 400 } });
+  //     setRescaleOnce(false);
+  //   }
+  // }, [multiViewPlotUuids]);
 
   useEffect(() => {
     if (!multiViewConfig || !multiViewPlotUuids.every((Uuid) => plotConfigs[Uuid])) return;
 
-    // debounceSaveMultiView();
-    // debounceSaveAll();
+    debounceSaveAll();
   }, [plotConfigs, multiViewConfig]);
 
   const addGeneToMultiView = (genes) => {
