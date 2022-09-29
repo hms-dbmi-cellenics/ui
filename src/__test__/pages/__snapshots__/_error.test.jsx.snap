@@ -99,7 +99,6 @@ Array [
     },
     "genes": Object {
       "expression": Object {
-        "data": Object {},
         "error": false,
         "loading": Array [],
         "matrix": ExpressionMatrix {
@@ -296,7 +295,6 @@ Array [
     },
     "genes": Object {
       "expression": Object {
-        "data": Object {},
         "error": false,
         "loading": Array [],
         "matrix": ExpressionMatrix {

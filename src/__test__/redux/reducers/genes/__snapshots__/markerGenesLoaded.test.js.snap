@@ -3,7 +3,6 @@
 exports[`markerGenesLoaded returns correct state 1`] = `
 Object {
   "expression": Object {
-    "data": Object {},
     "error": false,
     "loading": Array [],
     "matrix": ExpressionMatrix {

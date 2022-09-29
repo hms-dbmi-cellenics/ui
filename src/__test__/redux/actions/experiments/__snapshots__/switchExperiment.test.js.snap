@@ -150,7 +150,6 @@ Object {
   },
   "genes": Object {
     "expression": Object {
-      "data": Object {},
       "error": false,
       "loading": Array [],
       "matrix": ExpressionMatrix {
@@ -526,7 +525,6 @@ Object {
   },
   "genes": Object {
     "expression": Object {
-      "data": Object {},
       "error": false,
       "loading": Array [],
       "matrix": ExpressionMatrix {

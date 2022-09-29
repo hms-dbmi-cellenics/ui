@@ -24,7 +24,6 @@ const initialState = {
   expression: {
     loading: [],
     error: false,
-    data: {},
     matrix: new ExpressionMatrix(),
     views: {},
   },
@@ -45,7 +44,6 @@ const constructInitialState = () => ({
   expression: {
     loading: [],
     error: false,
-    data: {},
     matrix: new ExpressionMatrix(),
     views: {},
   },

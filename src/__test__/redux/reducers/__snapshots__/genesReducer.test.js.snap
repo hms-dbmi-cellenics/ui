@@ -3,7 +3,6 @@
 exports[`genesReducer Deselecting all genes updates to empty list 1`] = `
 Object {
   "expression": Object {
-    "data": Object {},
     "error": false,
     "loading": Array [],
     "matrix": ExpressionMatrix {
@@ -69,7 +68,6 @@ Object {
 exports[`genesReducer Deselecting non-selected genes is handled gracefully 1`] = `
 Object {
   "expression": Object {
-    "data": Object {},
     "error": false,
     "loading": Array [],
     "matrix": ExpressionMatrix {
@@ -139,7 +137,6 @@ Object {
 exports[`genesReducer Deselecting part of all genes updates list as set 1`] = `
 Object {
   "expression": Object {
-    "data": Object {},
     "error": false,
     "loading": Array [],
     "matrix": ExpressionMatrix {
@@ -208,7 +205,6 @@ Object {
 exports[`genesReducer Error state handled appropriately 1`] = `
 Object {
   "expression": Object {
-    "data": Object {},
     "error": false,
     "loading": Array [],
     "matrix": ExpressionMatrix {
@@ -280,7 +276,6 @@ Object {
 exports[`genesReducer Expression loaded state handled appropriately when other things are still loading 1`] = `
 Object {
   "expression": Object {
-    "data": Object {},
     "error": false,
     "loading": Array [
       "GENED",
@@ -427,7 +422,6 @@ Object {
 exports[`genesReducer Loaded paginated state handled appropriately 1`] = `
 Object {
   "expression": Object {
-    "data": Object {},
     "error": false,
     "loading": Array [],
     "matrix": ExpressionMatrix {
@@ -514,7 +508,6 @@ Object {
 exports[`genesReducer Loaded paginated state handled appropriately when other things are still loading 1`] = `
 Object {
   "expression": Object {
-    "data": Object {},
     "error": false,
     "loading": Array [],
     "matrix": ExpressionMatrix {
@@ -604,7 +597,6 @@ Object {
 exports[`genesReducer Loading on error state causes error to reset 1`] = `
 Object {
   "expression": Object {
-    "data": Object {},
     "error": false,
     "loading": Array [],
     "matrix": ExpressionMatrix {
@@ -679,7 +671,6 @@ Object {
 exports[`genesReducer Multiple components loading some of same expression triggers appropriate action 1`] = `
 Object {
   "expression": Object {
-    "data": Object {},
     "error": false,
     "loading": Array [
       "a",
@@ -760,7 +751,6 @@ Object {
 exports[`genesReducer Multiple components loading some of same property triggers appropriate action 1`] = `
 Object {
   "expression": Object {
-    "data": Object {},
     "error": false,
     "loading": Array [],
     "matrix": ExpressionMatrix {
@@ -841,7 +831,6 @@ Object {
 exports[`genesReducer Properties loading triggers appropriate changes 1`] = `
 Object {
   "expression": Object {
-    "data": Object {},
     "error": false,
     "loading": Array [],
     "matrix": ExpressionMatrix {
@@ -916,7 +905,6 @@ Object {
 exports[`genesReducer Selected genes get added as a set to a non-empty list 1`] = `
 Object {
   "expression": Object {
-    "data": Object {},
     "error": false,
     "loading": Array [],
     "matrix": ExpressionMatrix {
@@ -986,7 +974,6 @@ Object {
 exports[`genesReducer Selected genes get added on empty list 1`] = `
 Object {
   "expression": Object {
-    "data": Object {},
     "error": false,
     "loading": Array [],
     "matrix": ExpressionMatrix {
@@ -1056,7 +1043,6 @@ Object {
 exports[`genesReducer Sets error state on expression error action 1`] = `
 Object {
   "expression": Object {
-    "data": Object {},
     "error": "asd",
     "loading": Array [],
     "matrix": ExpressionMatrix {
@@ -1128,7 +1114,6 @@ Object {
 exports[`genesReducer Sets loaded state on expression loading action 1`] = `
 Object {
   "expression": Object {
-    "data": Object {},
     "error": false,
     "loading": Array [],
     "matrix": ExpressionMatrix {
@@ -1249,7 +1234,6 @@ Object {
 exports[`genesReducer Sets loading state on expression loading action 1`] = `
 Object {
   "expression": Object {
-    "data": Object {},
     "error": false,
     "loading": Array [
       "A",
