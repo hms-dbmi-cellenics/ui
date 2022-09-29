@@ -80,7 +80,6 @@ const getMetadata = (file) => {
 };
 
 const createAndUploadSingleFile = async (file, projectId, sampleId, dispatch, selectedTech) => {
-  console.log('file is !!!', file);
   let metadata = {};
   if (selectedTech === '10X Chromium') {
     metadata = getMetadata(file);
@@ -118,7 +117,6 @@ const processUpload = async (filesList, sampleType, samples, experimentId, dispa
     // Update the file name so that instead of being saved as
     // e.g. WT13/matrix.tsv.gz, we save it as matrix.tsv.gz
     file.name = fileName;
-    console.log('sampes and sjhit ', sampleName, samples);
 
     const sampleUuid = Object.values(samples).filter(
       (s) => s.name === sampleName
