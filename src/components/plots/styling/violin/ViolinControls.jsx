@@ -4,7 +4,6 @@ import {
   Collapse, Radio, Form, Slider, Skeleton,
 } from 'antd';
 import SelectData from 'components/plots/styling/SelectData';
-import SingleGeneSelection from 'components/plots/styling/SingleGeneSelection';
 import MultiViewEditor from 'components/plots/styling/MultiViewEditor';
 import GeneSearchBar from 'components/plots/GeneSearchBar';
 

@@ -1,5 +1,5 @@
 /* eslint-disable no-param-reassign */
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import Loader from 'components/Loader';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
@@ -8,6 +8,7 @@ import _ from 'lodash';
 
 import {
   updatePlotConfig,
+  savePlotConfig
 } from 'redux/actions/componentConfig/index';
 import { loadCellSets } from 'redux/actions/cellSets';
 import Header from 'components/Header';
@@ -34,6 +35,20 @@ const ViolinIndex = ({ experimentId }) => {
   const multiViewConfig = useSelector((state) => state.componentConfig[multiViewUuid]?.config);
   const multiViewPlotUuids = multiViewConfig?.plotUuids;
 
+  const allComponentUuids = _.concat(multiViewUuid, multiViewPlotUuids);
+
+  const debounceSaveAll = useCallback(_.debounce(() => {
+    allComponentUuids.forEach((Uuid) => {
+      if (Uuid) {
+        dispatch(savePlotConfig(experimentId, Uuid));
+      }
+    });
+  }, 2000), [allComponentUuids]);
+
+  const debounceSaveMultiView = useCallback(_.debounce(() => {
+    dispatch(savePlotConfig(experimentId, multiViewUuid));
+  }), []);
+
   const plotConfigs = useSelector(getPlotConfigs(multiViewPlotUuids));
 
   const shownGenes = _.compact(multiViewPlotUuids?.map((uuid) => plotConfigs[uuid]?.shownGene));
@@ -41,6 +56,7 @@ const ViolinIndex = ({ experimentId }) => {
   const cellSets = useSelector(getCellSets());
 
   const geneList = useSelector(getGeneList());
+  const geneNames = Object.keys(geneList.geneData);
 
   const geneExpression = useSelector((state) => state.genes.expression);
 
@@ -97,7 +113,7 @@ const ViolinIndex = ({ experimentId }) => {
 
     if (!multiViewConfig) {
       const customConfig = { genes: [highestDispersionGene], plotUuids: [plotUuid] };
-      loadComponent(multiViewUuid, multiViewType, false, customConfig);
+      loadComponent(multiViewUuid, multiViewType, true, customConfig);
     }
   }, [highestDispersionGene]);
 
@@ -122,18 +138,33 @@ const ViolinIndex = ({ experimentId }) => {
     }
   }, [multiViewPlotUuids]);
 
+  useEffect(() => {
+    if (!multiViewConfig || !multiViewPlotUuids.every((Uuid) => plotConfigs[Uuid])) return;
+
+    // debounceSaveMultiView();
+    // debounceSaveAll();
+  }, [plotConfigs, multiViewConfig]);
+
   const addGeneToMultiView = (genes) => {
-    const [geneName] = genes;
-    if (!Object.keys(geneList.geneData).includes(geneName)) return;
-    if (multiViewPlotUuids.length === 30) return;
+    const validGenes = genes.filter((gene) => geneNames.includes(gene));
+    const genesToAdd = validGenes.slice(0, 30 - multiViewPlotUuids.length);
+
+    if (genesToAdd.length === 0) return;
 
     const plotUuidIndexes = multiViewPlotUuids.map((Uuid) => parseInt(Uuid.match(/[0-9]+/g), 10));
-    const possibleIndexes = [...Array(30).keys()];
+    const newIndexes = [...Array(30).keys()].filter((index) => !plotUuidIndexes.includes(index));
 
-    const newIndex = _.min(possibleIndexes.filter((index) => !plotUuidIndexes.includes(index)));
+    const newPlotUuids = [...multiViewPlotUuids];
 
-    const plotUuidToAdd = generateMultiViewGridPlotUuid(plotUuid, newIndex);
-    const newPlotUuids = _.concat(multiViewPlotUuids, plotUuidToAdd);
+    const dimensionsToUse = plotConfigs[multiViewPlotUuids[0]].dimensions;
+
+    genesToAdd.forEach((gene, index) => {
+      const plotUuidToAdd = generateMultiViewGridPlotUuid(plotUuid, newIndexes[index]);
+      newPlotUuids.push(plotUuidToAdd);
+
+      const customConfig = { shownGene: gene, title: { text: gene }, dimensions: dimensionsToUse };
+      loadComponent(plotUuidToAdd, plotType, true, customConfig);
+    });
 
     const multiViewUpdatedFields = { plotUuids: newPlotUuids };
 
@@ -144,11 +175,6 @@ const ViolinIndex = ({ experimentId }) => {
     }
 
     updateMultiViewWithChanges(multiViewUpdatedFields);
-
-    const dimensionsToUse = plotConfigs[multiViewPlotUuids[0]].dimensions;
-    const customConfig = { shownGene: geneName, title: { text: geneName }, dimensions: dimensionsToUse };
-
-    loadComponent(plotUuidToAdd, plotType, true, customConfig);
   };
 
   const plotStylingConfig = [
@@ -203,7 +229,7 @@ const ViolinIndex = ({ experimentId }) => {
       cellSets={cellSets}
       multiViewConfig={multiViewConfig}
       shownGenes={shownGenes}
-      geneList={Object.keys(geneList.geneData)}
+      geneList={geneNames}
     />
   );
 
