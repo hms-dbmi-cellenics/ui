@@ -54,7 +54,8 @@ const generateETag = (
     };
   }
 
-  return createObjectHash(ETagBody);
+  const etagPlusOne = `${createObjectHash(ETagBody)}1`;
+  return etagPlusOne;
 };
 
 // const decomposeBody = async (body, experimentId) => {
