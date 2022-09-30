@@ -5,6 +5,11 @@ import HelpButton from 'components/header/HelpButton';
 import userEvent from '@testing-library/user-event';
 
 const renderHelpButton = () => render(<HelpButton />);
+jest.mock('next/config', () => () => ({
+  publicRuntimeConfig: {
+    accountId: '242905224710',
+  },
+}));
 
 describe('HelpButton', () => {
   it('Renders the testing buttton properly', () => {

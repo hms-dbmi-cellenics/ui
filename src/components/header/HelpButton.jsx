@@ -2,8 +2,6 @@ import React, { useState } from 'react';
 import { Button, Dropdown, Card } from 'antd';
 import { QuestionCircleOutlined, DownOutlined } from '@ant-design/icons';
 import nextConfig from 'next/config';
-
-import config from 'config';
 import { AccountId } from 'utils/deploymentInfo';
 
 const accountId = nextConfig()?.publicRuntimeConfig?.accountId;
@@ -13,7 +11,7 @@ const HelpButton = () => {
 
   const overlay = () => (
     <Card size='small' style={{ padding: '1em', width: '265px' }}>
-      {accountId !== AccountId.HMS && (
+      {(accountId === AccountId.BIOMAGE) && (
         <>
           Ask questions about how to use Cellenics and make feature requests on the
           {' '}
@@ -22,17 +20,24 @@ const HelpButton = () => {
           The Biomage team will reply to your message as soon as possible.
           <br />
           <br />
-          Check out the
+        </>
+      )}
+      Check out the
+      {' '}
+      <a href='https://www.biomage.net/user-guide' target='_blank' rel='noreferrer'>
+        user guide
+      </a>
+      {' '}
+      and
+      <a href='https://www.biomage.net/resources' target='_blank' rel='noreferrer'> tutorial videos </a>
+      that are available on our website!
+      <br />
+      <br />
+      {accountId !== AccountId.BIOMAGE && (
+        <>
+          For 1-2-1 support with your analysis, contact
           {' '}
-          <a href='https://www.biomage.net/user-guide' target='_blank' rel='noreferrer'>
-            user guide
-          </a>
-          {' '}
-          and
-          <a href='https://www.biomage.net/resources' target='_blank' rel='noreferrer'> tutorial videos </a>
-          that are available on our website!
-          <br />
-          <br />
+          <a href='mailto: vicky@biomage.net'>vicky@biomage.net</a>
         </>
       )}
     </Card>
