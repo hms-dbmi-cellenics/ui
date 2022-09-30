@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import { SparseMatrix } from 'mathjs';
 
-import { appendMatrix, getColumn } from 'utils/ExpressionMatrix/sparseMatrixOperations';
+import { appendColumns, getColumn } from 'utils/ExpressionMatrix/sparseMatrixOperations';
 
 class ExpressionMatrix {
   constructor() {
@@ -98,18 +98,25 @@ class ExpressionMatrix {
       return;
     }
 
-    // Append new gene expressions
-    appendMatrix(this.rawGeneExpressions, newRawGeneExpression);
-    appendMatrix(this.truncatedGeneExpressions, newTruncatedGeneExpression);
-    appendMatrix(this.zScore, newZScore);
+    const genesToAddIndexes = [];
+
+    // Store indexes for the new genes
+    newGeneSymbols.forEach((geneSymbol, index) => {
+      // Skip if gene is already loaded
+      if (this.geneIsLoaded(geneSymbol)) return;
+
+      genesToAddIndexes.push(index);
+
+      this.generateIndexFor(geneSymbol);
+    });
+
+    // Add the expression only for the new genes (genesToAddIndexes)
+    appendColumns(this.rawGeneExpressions, newRawGeneExpression, genesToAddIndexes);
+    appendColumns(this.truncatedGeneExpressions, newTruncatedGeneExpression, genesToAddIndexes);
+    appendColumns(this.zScore, newZScore, genesToAddIndexes);
 
     // Add new gene stats
     _.merge(this.stats, newStats);
-
-    // Store indexes for the new genes
-    newGeneSymbols.forEach((geneSymbol) => {
-      this.generateIndexFor(geneSymbol);
-    });
   }
 
   /**

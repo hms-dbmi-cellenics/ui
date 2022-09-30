@@ -1,35 +1,42 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable no-underscore-dangle */
+import _ from 'lodash';
+
 import { Index, Range } from 'mathjs';
 
 /**
  * Mutates sparseMatrix1
- * Appends the columns of sparseMatrix2 into sparseMatrix1.
+ * Appends the columns at columnIndexes of sparseMatrix2 into sparseMatrix1.
  * This method works using the SparseMatrix's of mathjs,
  * which use the structure Compressed Column Matrix,
- * it is efficient at adding/accessing new columns
+ * it is efficient at adding/accessing columns
  *
  * @param {*} sparseMatrix1 Matrix to receive the new columns, mutates
  * @param {*} sparseMatrix2 Matrix with the columns to append
+ * @param {*} columnIndexes Indexes of the columns from sparseMatrix2 to append to sparseMatrix1
  */
-const appendMatrix = (sparseMatrix1, sparseMatrix2) => {
-  // Check they have the same cell size
-  if (sparseMatrix1.size()[0] !== sparseMatrix2.size()[0]) {
-    throw new Error('Append matrix error: Amount of cells doesnt match');
-  }
+const appendColumns = (sparseMatrix1, sparseMatrix2, columnIndexes) => {
+  columnIndexes.forEach((columnIndex) => {
+    // Indexes at which the column begins and ends
+    const startIndex = sparseMatrix2._ptr[columnIndex];
+    const endIndex = sparseMatrix2._ptr[columnIndex + 1];
 
-  // Can't use .push(...array) because it may exceed the call stack size
-  sparseMatrix1._index = sparseMatrix1._index.concat(sparseMatrix2._index);
-  sparseMatrix1._values = sparseMatrix1._values.concat(sparseMatrix2._values);
+    // Concatenate the _index and _values we need to for this column
+    sparseMatrix1._index = sparseMatrix1._index.concat(
+      sparseMatrix2._index.slice(startIndex, endIndex),
+    );
+    sparseMatrix1._values = sparseMatrix1._values.concat(
+      sparseMatrix2._values.slice(startIndex, endIndex),
+    );
 
-  const nonZeroValuesLength = sparseMatrix1._values.length;
+    const amountOfNewValues = endIndex - startIndex;
 
-  sparseMatrix2._ptr.forEach((value, i) => {
-    if (i !== 0) sparseMatrix1._ptr.push(nonZeroValuesLength + value);
+    // Store the amount of new values in ptr
+    sparseMatrix1._ptr.push(_.last(sparseMatrix1._ptr) + amountOfNewValues);
   });
 
-  // Add the amount of new columns
-  sparseMatrix1._size[1] += sparseMatrix2._size[1];
+  // We added columnIndexes.length columns
+  sparseMatrix1._size[1] += columnIndexes.length;
 };
 
 const getColumn = (
@@ -39,4 +46,4 @@ const getColumn = (
 ) => sparseMatrix.subset(new Index(rowIndexes, columnIndex));
 
 // eslint-disable-next-line import/prefer-default-export
-export { appendMatrix, getColumn };
+export { appendColumns, getColumn };
