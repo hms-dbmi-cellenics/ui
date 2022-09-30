@@ -1,5 +1,7 @@
+import _ from 'lodash';
+
 import ExpressionMatrix from 'utils/ExpressionMatrix/ExpressionMatrix';
-import { getOtherTwoGenesMatrix, getTwoGenesMatrix } from '__test__/utils/ExpressionMatrix/testMatrixes';
+import { getOtherThreeGenesMatrix, getOtherTwoGenesMatrix, getTwoGenesMatrix } from '__test__/utils/ExpressionMatrix/testMatrixes';
 
 describe('ExpressionMatrix', () => {
   let matrix;
@@ -127,6 +129,33 @@ describe('ExpressionMatrix', () => {
       matrix.pushGeneExpression(order, rawExpression, truncatedExpression, zScore, stats);
 
       expect(matrix).toMatchSnapshot();
+    });
+
+    it('pushGeneExpression adds only the data that is new, it skips columns that were already added ', () => {
+      const {
+        order, rawExpression, truncatedExpression, zScore, stats,
+      } = getOtherThreeGenesMatrix();
+
+      matrix.pushGeneExpression(order, rawExpression, truncatedExpression, zScore, stats);
+
+      expect(matrix).toMatchSnapshot();
+    });
+
+    it('pushGeneExpression adds nothing is there is nothing new', () => {
+      const {
+        order, rawExpression, truncatedExpression, zScore, stats,
+      } = getTwoGenesMatrix();
+
+      const previousMatrix = _.cloneDeep(matrix);
+
+      // Add the same data matrix already has
+      matrix.pushGeneExpression(order, rawExpression, truncatedExpression, zScore, stats);
+
+      console.log('previousMatrixDebug');
+      console.log(previousMatrix);
+
+      // Nothing changed
+      expect(matrix).toEqual(previousMatrix);
     });
 
     it('generateIndexFor works', () => {
