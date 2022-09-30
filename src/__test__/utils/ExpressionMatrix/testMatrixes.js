@@ -99,36 +99,6 @@ const getThreeGenesMatrix = () => ({
   },
 });
 
-const getOtherThreeGenesMatrix = () => ({
-  order: ['Gzma', 'Rbp4', 'Ms4a4b'],
-  rawExpression: new SparseMatrix([
-    [1, 9, 1],
-    [0, 0, 0],
-    [0, 1, 2],
-  ]),
-  truncatedExpression: new SparseMatrix([
-    [0.5, 5, 0.5],
-    [0, 0, 0],
-    [0, 0.5, 1],
-  ]),
-  zScore: new SparseMatrix([
-    [0, 4, 1],
-    [0, 0, 0],
-    [0, 1, 3],
-  ]),
-  stats: {
-    Gzma: {
-      rawMean: 0.5, rawStdev: 0.9, truncatedMin: 0.2, truncatedMax: 2,
-    },
-    Rbp4: {
-      rawMean: 1.3, rawStdev: 1.5, truncatedMin: 0, truncatedMax: 5,
-    },
-    Ms4a4b: {
-      rawMean: 0.3, rawStdev: 1.2, truncatedMin: 0.4, truncatedMax: 0.5,
-    },
-  },
-});
-
 const getFourGenesMatrix = () => ({
   order: ['A', 'B', 'C', 'D'],
   rawExpression: new SparseMatrix([
@@ -153,8 +123,44 @@ const getFourGenesMatrix = () => ({
     B: {
       rawMean: 2.3, rawStdev: 2.0, truncatedMin: 2, truncatedMax: 3,
     },
-    GeneC: {
+    C: {
       rawMean: 1.3, rawStdev: 1.0, truncatedMin: 1, truncatedMax: 5,
+    },
+    D: {
+      rawMean: 14.2, rawStdev: 1.2, truncatedMin: 0.1, truncatedMax: 0.5,
+    },
+  },
+});
+
+const getOtherFourGenesMatrix = () => ({
+  order: ['Gzma', 'Rbp4', 'Lyz2', 'Ms4a4b'],
+  rawExpression: new SparseMatrix([
+    [1, 9, 1, 1],
+    [0, 0, 0, 0],
+    [0, 1, 9, 2],
+  ]),
+  truncatedExpression: new SparseMatrix([
+    [0.5, 5, 9, 0.5],
+    [0, 0, 0, 0],
+    [0, 0.5, 4, 1],
+  ]),
+  zScore: new SparseMatrix([
+    [0, 4, 1, 1],
+    [0, 0, 0, 0],
+    [0, 1, 0, 3],
+  ]),
+  stats: {
+    Gzma: {
+      rawMean: 0.5, rawStdev: 0.9, truncatedMin: 0.2, truncatedMax: 2,
+    },
+    Rbp4: {
+      rawMean: 1.3, rawStdev: 1.5, truncatedMin: 0, truncatedMax: 5,
+    },
+    Ms4a4b: {
+      rawMean: 0.3, rawStdev: 1.2, truncatedMin: 0.4, truncatedMax: 0.5,
+    },
+    Lyz2: {
+      rawMean: 2.3, rawStdev: 2.0, truncatedMin: 2, truncatedMax: 3,
     },
   },
 });
@@ -188,6 +194,6 @@ const getExpressionMatrixFromWorkResult = (workResult) => {
 // eslint-disable-next-line import/prefer-default-export
 export {
   getOneGeneMatrix, getTwoGenesMatrix, getOtherTwoGenesMatrix,
-  getThreeGenesMatrix, getOtherThreeGenesMatrix, getFourGenesMatrix,
+  getThreeGenesMatrix, getFourGenesMatrix, getOtherFourGenesMatrix,
   getTwoGenesExpressionMatrix, getExpressionMatrixFromWorkResult,
 };

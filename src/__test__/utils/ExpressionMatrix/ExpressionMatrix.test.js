@@ -1,7 +1,7 @@
 import _ from 'lodash';
 
 import ExpressionMatrix from 'utils/ExpressionMatrix/ExpressionMatrix';
-import { getOtherThreeGenesMatrix, getOtherTwoGenesMatrix, getTwoGenesMatrix } from '__test__/utils/ExpressionMatrix/testMatrixes';
+import { getOtherFourGenesMatrix, getOtherTwoGenesMatrix, getTwoGenesMatrix } from '__test__/utils/ExpressionMatrix/testMatrixes';
 
 describe('ExpressionMatrix', () => {
   let matrix;
@@ -134,7 +134,7 @@ describe('ExpressionMatrix', () => {
     it('pushGeneExpression adds only the data that is new, it skips columns that were already added ', () => {
       const {
         order, rawExpression, truncatedExpression, zScore, stats,
-      } = getOtherThreeGenesMatrix();
+      } = getOtherFourGenesMatrix();
 
       matrix.pushGeneExpression(order, rawExpression, truncatedExpression, zScore, stats);
 
@@ -150,9 +150,6 @@ describe('ExpressionMatrix', () => {
 
       // Add the same data matrix already has
       matrix.pushGeneExpression(order, rawExpression, truncatedExpression, zScore, stats);
-
-      console.log('previousMatrixDebug');
-      console.log(previousMatrix);
 
       // Nothing changed
       expect(matrix).toEqual(previousMatrix);
