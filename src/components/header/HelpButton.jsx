@@ -15,27 +15,26 @@ const HelpButton = () => {
     <Card size='small' style={{ padding: '1em', width: '265px' }}>
       {accountId !== AccountId.HMS && (
         <>
-          The
+          Ask questions about how to use Cellenics and make feature requests on the
           {' '}
-          <a href='https://www.biomage.net/user-guide' target='_blank' rel='noreferrer'>
-            Cellenics user guide
+          <a href='https://community.biomage.net/'>Cellenics community forum</a>
+          !
+          The Biomage team will reply to your message as soon as possible.
+          <br />
+          <br />
+          Check out the
+          {' '}
+          <a href='https://www.biomage.net/user-guide'>
+            user guide
           </a>
           {' '}
-          is now available!
-          <br />
-          <br />
-          Tutorial videos, ‘how to’ guides and FAQs are also available on
-          {' '}
-          <a href='https://www.biomage.net/get-started' target='_blank' rel='noreferrer'>our website</a>
-          .
+          and
+          <a href='https://www.biomage.net/resources'> tutorial videos </a>
+          that are available on our website!
           <br />
           <br />
         </>
       )}
-
-      If you need additional help with your analysis, email:
-      {' '}
-      <a href={`mailto:${config.supportEmail}`}>{config.supportEmail}</a>
     </Card>
   );
 
@@ -51,7 +50,7 @@ const HelpButton = () => {
         type='dashed'
         icon={<QuestionCircleOutlined />}
       >
-        Help & resources
+        Need help?
         <DownOutlined />
       </Button>
     </Dropdown>
