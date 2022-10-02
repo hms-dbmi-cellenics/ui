@@ -5,7 +5,7 @@ import {
   Skeleton,
   Space,
   Select,
-  Input,
+  InputNumber,
   Button,
   Row,
   Col,
@@ -143,10 +143,14 @@ const MultiViewEditor = (props) => {
           Grid dimesions:
         </Col>
         <Col span={3}>
-          <Input
+          <InputNumber
             aria-label='setNRows'
+            style={{ width: '100%' }}
+            controls={false}
+            min={1}
+            max={30}
             value={localNRows}
-            onChange={(e) => { onRowsChange(e.target.value); }}
+            onChange={(value) => { onRowsChange(value); }}
           />
         </Col>
         <Col span={2}>
@@ -155,10 +159,14 @@ const MultiViewEditor = (props) => {
           </center>
         </Col>
         <Col span={3}>
-          <Input
+          <InputNumber
             aria-label='setNCols'
+            style={{ width: '100%' }}
+            controls={false}
+            min={1}
+            max={30}
             value={localNCols}
-            onChange={(e) => { onColsChange(e.target.value); }}
+            onChange={(value) => { onColsChange(value); }}
           />
         </Col>
       </Row>
