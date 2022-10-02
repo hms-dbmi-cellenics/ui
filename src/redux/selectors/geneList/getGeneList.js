@@ -6,7 +6,7 @@ const getGeneList = () => (state) => {
   return {
     fetching: list?.fetching,
     error: list?.error,
-    geneData: state.data,
+    data: state.data,
   };
 };
 

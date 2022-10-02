@@ -30,7 +30,7 @@ import {
   updatePlotData,
 } from 'redux/actions/componentConfig';
 
-import { getCellSets, getGeneList } from 'redux/selectors';
+import { getCellSets } from 'redux/selectors';
 import { plotNames, plotTypes } from 'utils/constants';
 import PlatformError from 'components/PlatformError';
 

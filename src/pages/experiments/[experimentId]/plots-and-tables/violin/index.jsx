@@ -52,7 +52,7 @@ const ViolinIndex = ({ experimentId }) => {
   const cellSets = useSelector(getCellSets());
 
   const geneList = useSelector(getGeneList());
-  const geneNames = Object.keys(geneList.geneData);
+  const geneNames = Object.keys(geneList.data);
 
   const geneExpression = useSelector((state) => state.genes.expression);
 
@@ -99,7 +99,7 @@ const ViolinIndex = ({ experimentId }) => {
   useEffect(() => {
     if (typeof geneList.fetching === 'undefined' || geneList.fetching || highestDispersionGene) return;
 
-    const [gene] = getHighestDispersionGenes(geneList.geneData, 1);
+    const [gene] = getHighestDispersionGenes(geneList.data, 1);
     setHighestDispersionGene(gene);
   }, [geneList]);
 

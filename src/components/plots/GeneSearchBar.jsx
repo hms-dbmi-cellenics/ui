@@ -20,8 +20,8 @@ const GeneSearchBar = (props) => {
     genesToDisable, onSelect, allowMultiple, buttonText,
   } = props;
 
-  const { geneData } = useSelector(getGeneList());
-  const geneList = Object.keys(geneData);
+  const { data } = useSelector(getGeneList());
+  const geneList = Object.keys(data);
 
   const [options, setOptions] = useState([]);
 
