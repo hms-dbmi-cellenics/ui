@@ -73,8 +73,8 @@ const MultiViewEditor = (props) => {
   };
 
   const onNodeDelete = (index) => {
-    const newPlotUuids = multiViewConfig.plotUuids.slice();
-    newPlotUuids.splice(index, 1);
+    const newPlotUuids = [...multiViewConfig.plotUuids];
+    _.pullAt(newPlotUuids, index);
 
     // if selected plot is deleted, change the selection
     if (multiViewConfig.plotUuids[index] === localSelectedPlot) {
