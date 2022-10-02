@@ -114,8 +114,8 @@ const getStore = (experimentId, settings = {}) => {
       },
     },
   };
-
-  const store = mockStore(_.merge(initialState, settings));
+  const newState = _.cloneDeep(initialState);
+  const store = mockStore(_.merge(newState, settings));
 
   return store;
 };
@@ -326,8 +326,14 @@ describe('DataProcessingPage', () => {
         experimentSettings: {
           processing: {
             classifier: {
-              enabled: false,
-              prefiltered: true,
+              [sampleIds[0]]: {
+                prefiltered: true,
+                enabled: false,
+                auto: true,
+                filterSettings: {
+                  FDR: 0.1,
+                },
+              },
             },
           },
         },
@@ -349,22 +355,10 @@ describe('DataProcessingPage', () => {
     expect(screen.getByText(/is pre-filtered/i)).toBeInTheDocument();
   });
 
-  it('Classifier filter (1st filter) should not be disabled and not show error if not prefiltered ', () => {
-    const store = getStore(
-      experimentId,
-      {
-        experimentSettings: {
-          processing: {
-            classifier: {
-              enabled: true,
-              prefiltered: false,
-            },
-          },
-        },
-      },
-    );
+  it('Classifier filter (1st filter) should not be disabled and not show error if not prefiltered ', async () => {
+    const store = getStore();
 
-    render(
+    await render(
       <Provider store={store}>
         {dataProcessingPageFactory()}
       </Provider>,
@@ -386,7 +380,9 @@ describe('DataProcessingPage', () => {
         experimentSettings: {
           processing: {
             classifier: {
-              enabled: false,
+              [sampleIds[0]]: {
+                enabled: false,
+              },
             },
           },
         },
@@ -405,20 +401,8 @@ describe('DataProcessingPage', () => {
   });
 
   it('Disabling a filter saves and dispatches appropriate actions', async () => {
-    const store = getStore(
-      experimentId,
-      {
-        experimentSettings: {
-          processing: {
-            classifier: {
-              enabled: true,
-            },
-          },
-        },
-      },
-    );
+    const store = getStore(experimentId);
     saveProcessingSettings.mockImplementation(() => () => Promise.resolve());
-
     render(
       <Provider store={store}>
         {dataProcessingPageFactory()}

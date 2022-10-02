@@ -110,7 +110,6 @@ describe('experimentSettingsReducer', () => {
       });
 
     const expectedCellSizeDistribution = {
-      enabled: true,
       'sample-KO': {
         auto: true,
         enabled: true,
@@ -140,7 +139,6 @@ describe('experimentSettingsReducer', () => {
       });
 
     const expectedCellSizeDistribution = {
-      enabled: false,
       'sample-KO': {
         auto: true,
         enabled: false,
