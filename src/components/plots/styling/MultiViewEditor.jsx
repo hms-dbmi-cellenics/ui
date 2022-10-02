@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import _ from 'lodash';
 import PropTypes from 'prop-types';
 import {
   Skeleton,
@@ -31,8 +32,20 @@ const MultiViewEditor = (props) => {
     );
   }
 
+  const renderUuidOptions = (plotUuids) => {
+    return plotUuids.map((plotUuid, index) => {
+      const row = Math.floor(index / localNCols) + 1;
+      const col = (index % localNCols) + 1;
+      return { label: `${row}.${col} ${shownGenes[index]}`, value: plotUuid };
+    });
+  };
+
   const [localNRows, setLocalNRows] = useState(multiViewConfig.nrows);
   const [localNCols, setLocalNCols] = useState(multiViewConfig.ncols);
+  const [options, setOptions] = useState(
+    renderUuidOptions(multiViewConfig.plotUuids),
+  );
+  const [localSelectedPlot, setLocalSelectedPlot] = useState(multiViewConfig.plotUuids[0]);
 
   useEffect(() => {
     if (localNRows !== multiViewConfig.nrows) {
@@ -42,15 +55,11 @@ const MultiViewEditor = (props) => {
     if (localNCols !== multiViewConfig.ncols) {
       setLocalNCols(multiViewConfig.ncols);
     }
+
+    if (_.isEqual((options.map((option) => option.value)), multiViewConfig.plotUuids)) {
+      setOptions(renderUuidOptions(multiViewConfig.plotUuids));
+    }
   }, [multiViewConfig]);
-
-  const options = multiViewConfig.plotUuids.map((plotUuid, index) => {
-    const row = Math.floor(index / localNCols) + 1;
-    const col = (index % localNCols) + 1;
-    return { label: `${row}.${col} ${shownGenes[index]}`, value: plotUuid };
-  });
-
-  const [localSelectedPlot, setLocalSelectedPlot] = useState(options[0].value);
 
   const onGeneReorder = (key, newPosition) => {
     const newPlotUuids = arrayMoveImmutable(multiViewConfig.plotUuids, key, newPosition);
@@ -69,7 +78,7 @@ const MultiViewEditor = (props) => {
 
     if (multiViewConfig.plotUuids[key] === localSelectedPlot) {
       const newIndexToSelect = key === 0 ? 1 : 0;
-      const newPlotToselect = options[newIndexToSelect].value;
+      const newPlotToselect = multiViewConfig.plotUuids[newIndexToSelect];
       setLocalSelectedPlot(newPlotToselect);
       setSelectedPlot(newPlotToselect);
     }
