@@ -1,22 +1,27 @@
 import React, { useState } from 'react';
 import { AutoComplete, Button, Input } from 'antd';
 import PropTypes from 'prop-types';
+import { useSelector } from 'react-redux';
+import { getGeneList } from 'redux/selectors';
 
 const filterGenes = (searchText, geneList, genesToDisable) => {
   const searchTextUpper = searchText.toUpperCase();
   const filteredList = geneList.filter((gene) => gene.toUpperCase().includes(searchTextUpper));
-  const disableLoaded = filteredList.map((gene) => genesToDisable.includes(gene));
+  const disabledList = filteredList.map((gene) => genesToDisable.includes(gene));
 
   // options needs to be an array of objects, set disabled for loaded genes
   return filteredList.map((geneName, index) => ({
-    value: geneName, disabled: disableLoaded[index],
+    value: geneName, disabled: disabledList[index],
   }));
 };
 
 const GeneSearchBar = (props) => {
   const {
-    geneList, genesToDisable, onSelect, allowMultiple, buttonText,
+    genesToDisable, onSelect, allowMultiple, buttonText,
   } = props;
+
+  const { geneData } = useSelector(getGeneList());
+  const geneList = Object.keys(geneData);
 
   const [options, setOptions] = useState([]);
 
@@ -45,7 +50,6 @@ const GeneSearchBar = (props) => {
     } else {
       setOptions(!input ? [] : filterGenes(input, geneList, genesToDisable));
     }
-    
   };
 
   const selectGenes = () => {
@@ -85,14 +89,14 @@ const GeneSearchBar = (props) => {
 };
 
 GeneSearchBar.propTypes = {
-  geneList: PropTypes.array.isRequired,
-  genesToDisable: PropTypes.array.isRequired,
+  genesToDisable: PropTypes.array,
   onSelect: PropTypes.func.isRequired,
   buttonText: PropTypes.string,
   allowMultiple: PropTypes.bool,
 };
 
 GeneSearchBar.defaultProps = {
+  genesToDisable: [],
   buttonText: 'Add',
   allowMultiple: true,
 };

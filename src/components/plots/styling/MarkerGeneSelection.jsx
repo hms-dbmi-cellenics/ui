@@ -12,7 +12,7 @@ import GeneSearchBar from 'components/plots/GeneSearchBar';
 
 const MarkerGeneSelection = (props) => {
   const {
-    config, plotUuid, geneList, genesToDisable, onUpdate, onReset, onGenesChange, onGenesSelect,
+    config, plotUuid, genesToDisable, onUpdate, onReset, onGenesChange, onGenesSelect,
   } = props;
   const [numGenes, setNumGenes] = useState(config.nMarkerGenes);
 
@@ -52,7 +52,6 @@ const MarkerGeneSelection = (props) => {
           Hold an element above or below the table to scroll.
         </p>
         <GeneSearchBar
-          geneList={geneList}
           genesToDisable={genesToDisable}
           onSelect={onGenesSelect}
         />
@@ -92,7 +91,6 @@ MarkerGeneSelection.propTypes = {
   config: propTypes.object.isRequired,
   onReset: propTypes.func.isRequired,
   plotUuid: propTypes.string.isRequired,
-  geneList: propTypes.array.isRequired,
   genesToDisable: propTypes.array.isRequired,
   onGenesChange: propTypes.func.isRequired,
   onGenesSelect: propTypes.func.isRequired,

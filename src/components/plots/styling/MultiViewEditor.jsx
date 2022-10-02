@@ -21,7 +21,6 @@ const MultiViewEditor = (props) => {
     onMultiViewUpdate,
     setSelectedPlot,
     shownGenes,
-    geneList,
   } = props;
 
   if (!multiViewConfig) {
@@ -118,8 +117,6 @@ const MultiViewEditor = (props) => {
     <Space direction='vertical'>
       <GeneSearchBar
         aria-label='addMultiViewGene'
-        geneList={geneList}
-        genesToDisable={[]}
         onSelect={addGeneToMultiView}
       />
       <Space>
@@ -169,7 +166,6 @@ MultiViewEditor.propTypes = {
   onMultiViewUpdate: PropTypes.func.isRequired,
   setSelectedPlot: PropTypes.func.isRequired,
   shownGenes: PropTypes.array.isRequired,
-  geneList: PropTypes.array.isRequired,
 };
 
 MultiViewEditor.defaultProps = {

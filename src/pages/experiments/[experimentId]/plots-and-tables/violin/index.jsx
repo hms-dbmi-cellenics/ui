@@ -226,7 +226,6 @@ const ViolinIndex = ({ experimentId }) => {
       cellSets={cellSets}
       multiViewConfig={multiViewConfig}
       shownGenes={shownGenes}
-      geneList={geneNames}
     />
   );
 

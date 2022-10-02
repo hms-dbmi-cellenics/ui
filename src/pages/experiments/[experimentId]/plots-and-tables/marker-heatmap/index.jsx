@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import {
-  Space,
   Collapse,
   Skeleton,
   Empty,
@@ -70,8 +69,6 @@ const MarkerHeatmap = ({ experimentId }) => {
     (state) => state.experimentSettings.processing
       .configureEmbedding?.clusteringSettings.methodSettings.louvain.resolution,
   ) || false;
-
-  const geneList = useSelector(getGeneList(experimentId));
 
   useEffect(() => {
     if (!louvainClustersResolution) dispatch(loadProcessingSettings(experimentId));
@@ -333,7 +330,6 @@ const MarkerHeatmap = ({ experimentId }) => {
         <MarkerGeneSelection
           config={config}
           plotUuid={plotUuid}
-          geneList={Object.keys(geneList.geneData)}
           genesToDisable={config.selectedGenes}
           onUpdate={updatePlotWithChanges}
           onReset={onReset}

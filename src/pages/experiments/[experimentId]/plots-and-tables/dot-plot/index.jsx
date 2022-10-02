@@ -96,8 +96,6 @@ const DotPlotPage = (props) => {
 
   const cellSets = useSelector(getCellSets());
 
-  const geneList = useSelector(getGeneList());
-
   const [moreThanTwoGroups, setMoreThanTwoGroups] = useState(false);
   const [reorderAfterFetch, setReorderAfterFetch] = useState(false);
   const [reset, setReset] = useState(false);
@@ -365,7 +363,6 @@ const DotPlotPage = (props) => {
         <MarkerGeneSelection
           config={config}
           plotUuid={plotUuid}
-          geneList={Object.keys(geneList.geneData)}
           genesToDisable={config.selectedGenes}
           onUpdate={updatePlotWithChanges}
           onReset={onReset}
