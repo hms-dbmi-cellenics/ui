@@ -1,3 +1,5 @@
+import createMemoizedSelector from 'redux/selectors/createMemoizedSelector';
+
 const getPlotConfigs = (plotUuids) => (state) => {
   if (!plotUuids) return {};
 
@@ -10,4 +12,4 @@ const getPlotConfigs = (plotUuids) => (state) => {
   return plotConfigsToReturn;
 };
 
-export default getPlotConfigs;
+export default createMemoizedSelector(getPlotConfigs);
