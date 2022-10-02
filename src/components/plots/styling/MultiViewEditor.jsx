@@ -61,8 +61,8 @@ const MultiViewEditor = (props) => {
     }
   }, [multiViewConfig]);
 
-  const onGeneReorder = (key, newPosition) => {
-    const newPlotUuids = arrayMoveImmutable(multiViewConfig.plotUuids, key, newPosition);
+  const onGeneReorder = (index, newPosition) => {
+    const newPlotUuids = arrayMoveImmutable(multiViewConfig.plotUuids, index, newPosition);
 
     onMultiViewUpdate({ plotUuids: newPlotUuids });
   };
@@ -72,12 +72,13 @@ const MultiViewEditor = (props) => {
     setSelectedPlot(value);
   };
 
-  const onNodeDelete = (key) => {
+  const onNodeDelete = (index) => {
     const newPlotUuids = multiViewConfig.plotUuids.slice();
-    newPlotUuids.splice(key, 1);
+    newPlotUuids.splice(index, 1);
 
-    if (multiViewConfig.plotUuids[key] === localSelectedPlot) {
-      const newIndexToSelect = key === 0 ? 1 : 0;
+    // if selected plot is deleted, change the selection
+    if (multiViewConfig.plotUuids[index] === localSelectedPlot) {
+      const newIndexToSelect = index === 0 ? 1 : 0;
       const newPlotToselect = multiViewConfig.plotUuids[newIndexToSelect];
       setLocalSelectedPlot(newPlotToselect);
       setSelectedPlot(newPlotToselect);
@@ -99,9 +100,9 @@ const MultiViewEditor = (props) => {
   };
 
   const hideDeleteButton = (shownGenes.length === 1);
-  const renderTitle = (gene, key) => {
-    const row = Math.floor(key / localNCols) + 1;
-    const col = (key % localNCols) + 1;
+  const renderTitle = (gene, index) => {
+    const row = Math.floor(index / localNCols) + 1;
+    const col = (index % localNCols) + 1;
     return (
       <Space>
         {`${row}.${col} ${gene}`}
@@ -109,7 +110,7 @@ const MultiViewEditor = (props) => {
           type='text'
           hidden={hideDeleteButton}
           onClick={() => {
-            onNodeDelete(key);
+            onNodeDelete(index);
           }}
         >
           <CloseOutlined />
