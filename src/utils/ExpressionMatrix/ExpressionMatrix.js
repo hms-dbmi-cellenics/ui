@@ -120,20 +120,16 @@ class ExpressionMatrix {
   }
 
   /**
-   * If the gene already has an assigned index, it returns it.
-   * If it doesn't, it generates a new one for it
+   * Generates a new index for the geneSymbol
    *
    * @param {*} geneSymbol The symbol of the gene
-   * @returns The index of the gene inside the raw and truncated matrixes
+   * @returns The index of the gene inside the matrices
    */
   generateIndexFor(geneSymbol) {
-    // If not loaded, assign an index to it
-    if (_.isNil(this.geneIndexes[geneSymbol])) {
-      this.geneIndexes[geneSymbol] = this.lastFreeIndex;
+    this.geneIndexes[geneSymbol] = this.lastFreeIndex;
 
-      // This index is now assigned, so move it one step
-      this.lastFreeIndex += 1;
-    }
+    // This index is now assigned, so move it one step
+    this.lastFreeIndex += 1;
 
     return this.geneIndexes[geneSymbol];
   }
