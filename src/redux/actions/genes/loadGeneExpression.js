@@ -49,7 +49,6 @@ const loadGeneExpression = (
   );
 
   if (genesToFetch.length === 0) {
-    console.log('All genes are already loaded.');
     // All genes are already loaded.
     return dispatch({
       type: GENES_EXPRESSION_LOADED,
