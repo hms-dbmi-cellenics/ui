@@ -169,7 +169,7 @@ describe('Marker heatmap plot', () => {
     expect(screen.getByText(/Legend/i)).toBeInTheDocument();
   });
 
-  it.only('Loads the plot', async () => {
+  it('Loads the plot', async () => {
     await renderHeatmapPage(storeState);
 
     expect(screen.getByRole('graphics-document', { name: 'Marker heatmap' })).toBeInTheDocument();
