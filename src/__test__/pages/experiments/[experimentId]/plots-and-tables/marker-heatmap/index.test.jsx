@@ -56,6 +56,9 @@ jest.mock('object-hash', () => {
 jest.mock('localforage', () => ({
   getItem: () => Promise.resolve(undefined),
   setItem: () => Promise.resolve(),
+  config: () => { },
+  ready: () => Promise.resolve(),
+  length: () => 0,
 }));
 
 jest.mock('utils/work/seekWorkResponse', () => ({
@@ -166,7 +169,7 @@ describe('Marker heatmap plot', () => {
     expect(screen.getByText(/Legend/i)).toBeInTheDocument();
   });
 
-  it('Loads the plot', async () => {
+  it.only('Loads the plot', async () => {
     await renderHeatmapPage(storeState);
 
     expect(screen.getByRole('graphics-document', { name: 'Marker heatmap' })).toBeInTheDocument();
