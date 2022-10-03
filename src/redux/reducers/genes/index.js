@@ -1,4 +1,4 @@
-import initialState, { constructInitialState } from './initialState';
+import constructInitialState from './constructInitialState';
 import {
   GENES_PROPERTIES_LOADING, GENES_PROPERTIES_LOADED_PAGINATED, GENES_PROPERTIES_ERROR,
   GENES_SELECT, GENES_DESELECT,
@@ -49,7 +49,7 @@ const genesReducer = (state = constructInitialState(), action) => {
       return genesExpressionError(state, action);
     }
     case EXPERIMENT_SETTINGS_QC_START: {
-      return initialState;
+      return constructInitialState();
     }
     case MARKER_GENES_LOADING: {
       return markerGenesLoading(state, action);

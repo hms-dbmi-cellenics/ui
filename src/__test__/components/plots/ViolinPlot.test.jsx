@@ -11,7 +11,7 @@ import {
   initialPlotConfigStates,
 } from 'redux/reducers/componentConfig/initialState';
 import initialExperimentState from 'redux/reducers/experimentSettings/initialState';
-import genes from 'redux/reducers/genes/initialState';
+import constructInitialState from 'redux/reducers/genes/constructInitialState';
 import ViolinPlot from 'components/plots/ViolinPlot';
 import '__test__/test-utils/setupTests';
 
@@ -37,7 +37,7 @@ const defaultStore = {
   experimentSettings: {
     ...initialExperimentState,
   },
-  genes,
+  genes: constructInitialState(),
   backendStatus: {
     [experimentId]: {
       status: {},

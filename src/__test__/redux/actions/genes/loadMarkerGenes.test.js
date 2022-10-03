@@ -4,7 +4,7 @@ import thunk from 'redux-thunk';
 import { fetchWork } from 'utils/work/fetchWork';
 import loadMarkerGenes from 'redux/actions/genes/loadMarkerGenes';
 import { MARKER_GENES_ERROR, MARKER_GENES_LOADED, MARKER_GENES_LOADING } from 'redux/actionTypes/genes';
-import { constructInitialState } from 'redux/reducers/genes/initialState';
+import constructInitialState from 'redux/reducers/genes/constructInitialState';
 
 import '__test__/test-utils/setupTests';
 import { getOneGeneMatrix } from '__test__/utils/ExpressionMatrix/testMatrixes';

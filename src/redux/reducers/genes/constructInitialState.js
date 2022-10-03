@@ -15,26 +15,6 @@ const initialExpressionState = {
   zScore: [],
 };
 
-const initialState = {
-  properties: {
-    loading: [],
-    views: {},
-    data: {},
-  },
-  expression: {
-    loading: [],
-    error: false,
-    matrix: new ExpressionMatrix(),
-    views: {},
-  },
-  selected: [],
-  focused: undefined,
-  markers: {
-    loading: false,
-    error: false,
-  },
-};
-
 const constructInitialState = () => ({
   properties: {
     loading: [],
@@ -55,5 +35,5 @@ const constructInitialState = () => ({
   },
 });
 
-export { constructInitialState, initialViewState, initialExpressionState };
-export default initialState;
+export { initialViewState, initialExpressionState };
+export default constructInitialState;

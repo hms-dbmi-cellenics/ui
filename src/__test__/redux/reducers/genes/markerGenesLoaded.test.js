@@ -1,4 +1,4 @@
-import { constructInitialState } from 'redux/reducers/genes/initialState';
+import constructInitialState from 'redux/reducers/genes/constructInitialState';
 import markerGenesLoadedReducer from 'redux/reducers/genes/markerGenesLoaded';
 import { getOneGeneMatrix } from '__test__/utils/ExpressionMatrix/testMatrixes';
 

@@ -1,6 +1,6 @@
 import _ from 'lodash';
 
-import { initialViewState } from './initialState';
+import { initialViewState } from './constructInitialState';
 
 const upperCaseArray = (array) => (array?.map((element) => element.toUpperCase()));
 

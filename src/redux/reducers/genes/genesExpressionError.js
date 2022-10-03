@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { initialViewState } from './initialState';
+import { initialViewState } from './constructInitialState';
 
 const genesExpressionError = (state, action) => {
   const { error, componentUuid, genes } = action.payload;
