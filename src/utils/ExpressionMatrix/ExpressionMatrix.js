@@ -42,13 +42,13 @@ class ExpressionMatrix {
     return Object.keys(this.geneIndexes);
   }
 
-  setGeneExpression(
+  #setGeneExpression = (
     newGeneSymbols,
     newRawGeneExpression,
     newTruncatedGeneExpression,
     newZScore,
     newStats,
-  ) {
+  ) => {
     this.rawGeneExpressions = newRawGeneExpression;
     this.truncatedGeneExpressions = newTruncatedGeneExpression;
     this.zScore = newZScore;
@@ -88,7 +88,7 @@ class ExpressionMatrix {
 
     // If the matrix was empty previously we can just replace it with the ones that are being pushed
     if (genesCount === 0) {
-      this.setGeneExpression(
+      this.#setGeneExpression(
         newGeneSymbols,
         newRawGeneExpression,
         newTruncatedGeneExpression,

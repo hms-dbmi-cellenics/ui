@@ -172,7 +172,7 @@ const getTwoGenesExpressionMatrix = () => {
     order, rawExpression, truncatedExpression, zScore, stats,
   } = getTwoGenesMatrix();
 
-  matrix.setGeneExpression(order, rawExpression, truncatedExpression, zScore, stats);
+  matrix.pushGeneExpression(order, rawExpression, truncatedExpression, zScore, stats);
 
   return matrix;
 };

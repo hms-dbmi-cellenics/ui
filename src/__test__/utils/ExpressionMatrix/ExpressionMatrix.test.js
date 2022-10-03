@@ -39,7 +39,7 @@ describe('ExpressionMatrix', () => {
         order, rawExpression, truncatedExpression, zScore, stats,
       } = getTwoGenesMatrix();
 
-      matrix.setGeneExpression(order, rawExpression, truncatedExpression, zScore, stats);
+      matrix.pushGeneExpression(order, rawExpression, truncatedExpression, zScore, stats);
 
       expect(matrix).toMatchSnapshot();
     });
@@ -68,7 +68,7 @@ describe('ExpressionMatrix', () => {
         order, rawExpression, truncatedExpression, zScore, stats,
       } = getTwoGenesMatrix();
 
-      matrix.setGeneExpression(order, rawExpression, truncatedExpression, zScore, stats);
+      matrix.pushGeneExpression(order, rawExpression, truncatedExpression, zScore, stats);
     });
 
     it('getRawExpression on existing gene works', () => {
@@ -109,16 +109,6 @@ describe('ExpressionMatrix', () => {
 
     it('getStoredGenes works', () => {
       expect(matrix.getStoredGenes()).toEqual(['Gzma', 'Lyz2']);
-    });
-
-    it('setGeneExpression replaces existing data', () => {
-      const {
-        order, rawExpression, truncatedExpression, zScore, stats,
-      } = getOtherTwoGenesMatrix();
-
-      matrix.setGeneExpression(order, rawExpression, truncatedExpression, zScore, stats);
-
-      expect(matrix).toMatchSnapshot();
     });
 
     it('pushGeneExpression adds new data keeping previous', () => {
