@@ -1,7 +1,6 @@
 /* eslint-disable no-underscore-dangle */
 import { MD5 } from 'object-hash';
 
-// import { Environment, isBrowser } from 'utils/deploymentInfo';
 import { Environment, isBrowser } from 'utils/deploymentInfo';
 import { getBackendStatus } from 'redux/selectors';
 
