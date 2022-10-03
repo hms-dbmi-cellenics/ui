@@ -24,6 +24,7 @@ import HeatmapTracksCellInfo from 'components/data-exploration/heatmap/HeatmapTr
 import getContainingCellSetsProperties from 'utils/cellSets/getContainingCellSetsProperties';
 import useConditionalEffect from 'utils/customHooks/useConditionalEffect';
 import generateVitessceData from 'components/plots/helpers/heatmap/vitessce/generateVitessceData';
+import { loadCellSets } from 'redux/actions/cellSets';
 
 const COMPONENT_TYPE = 'interactiveHeatmap';
 
@@ -90,6 +91,13 @@ const HeatmapPlot = (props) => {
       };
     }
   };
+
+  /**
+     * Loads cell set on initial render if it does not already exist in the store.
+     */
+  useEffect(() => {
+    dispatch(loadCellSets(experimentId));
+  }, []);
 
   useEffect(() => {
     if (!_.isEmpty(heatmapSettings)) {
