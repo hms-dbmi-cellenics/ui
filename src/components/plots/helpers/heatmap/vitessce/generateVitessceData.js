@@ -22,13 +22,11 @@ const generateVitessceData = (
   const metadataTracksLabels = selectedTracks
     .map((cellClassKey) => cellSets.properties[cellClassKey].name);
 
-  const uint8Matrix = Uint8Array.from(expressionMatrix);
-
   return {
     expressionMatrix: {
       cols: selectedGenes,
       rows: cellOrder.map((x) => `${x}`),
-      matrix: uint8Matrix,
+      matrix: Uint8Array.from(expressionMatrix),
     },
     metadataTracks: {
       dataPoints: trackColorData,
