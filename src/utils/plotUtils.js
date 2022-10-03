@@ -54,7 +54,6 @@ const renderCellSetColors = (rootKey, cellSetHierarchy, cellSetProperties) => {
 };
 
 const colorByGeneExpression = (truncatedExpression, min, max) => {
-  // Use truncated values for coloring
   const scaleFunction = vega.scale('sequential')()
     .domain([min, max])
     .interpolator(colorInterpolator);
