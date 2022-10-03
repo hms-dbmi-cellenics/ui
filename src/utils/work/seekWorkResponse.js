@@ -43,8 +43,7 @@ const seekFromS3 = async (ETag, experimentId) => {
     throwResponseError(storageResp);
   }
 
-  const unpackedRes = unpackResult(storageResp);
-  return unpackedRes;
+  return unpackResult(storageResp);
 };
 
 const dispatchWorkRequest = async (
