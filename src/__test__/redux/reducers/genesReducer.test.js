@@ -1,5 +1,5 @@
 import genesReducer from 'redux/reducers/genes';
-import constructInitialState from 'redux/reducers/genes/constructInitialState';
+import getInitialState from 'redux/reducers/genes/getInitialState';
 
 import {
   GENES_EXPRESSION_LOADING, GENES_EXPRESSION_LOADED, GENES_EXPRESSION_ERROR,
@@ -14,10 +14,10 @@ describe('genesReducer', () => {
       action: 'well/this/is/not/a/valid/action',
       payload: {},
     }),
-  ).toEqual(constructInitialState()));
+  ).toEqual(getInitialState()));
 
   it('Sets loading state on expression loading action', () => {
-    const newState = genesReducer(constructInitialState(), {
+    const newState = genesReducer(getInitialState(), {
       type: GENES_EXPRESSION_LOADING,
       payload: {
         genes: ['A', 'B', 'C'],
@@ -34,7 +34,7 @@ describe('genesReducer', () => {
   it('Sets loaded state on expression loading action', () => {
     const newGenesMatrix = getTwoGenesMatrix();
 
-    const newState = genesReducer(constructInitialState(), {
+    const newState = genesReducer(getInitialState(), {
       type: GENES_EXPRESSION_LOADED,
       payload: {
         componentUuid: 'abc',
@@ -46,7 +46,7 @@ describe('genesReducer', () => {
   });
 
   it('Multiple components loading some of same expression triggers appropriate action', () => {
-    let newState = genesReducer(constructInitialState(), {
+    let newState = genesReducer(getInitialState(), {
       type: GENES_EXPRESSION_LOADING,
       payload: {
         componentUuid: 'abc',
@@ -70,9 +70,9 @@ describe('genesReducer', () => {
     const loadedMatrix = getThreeGenesMatrix();
 
     const newState = genesReducer({
-      ...constructInitialState(),
+      ...getInitialState(),
       expression: {
-        ...constructInitialState().expression,
+        ...getInitialState().expression,
         loading: ['geneA', 'geneB', 'geneC', 'geneD', 'geneE'],
       },
     }, {
@@ -89,7 +89,7 @@ describe('genesReducer', () => {
   });
 
   it('Sets error state on expression error action', () => {
-    const newState = genesReducer(constructInitialState(), {
+    const newState = genesReducer(getInitialState(), {
       type: GENES_EXPRESSION_ERROR,
       payload: {
         error: 'asd',
@@ -106,7 +106,7 @@ describe('genesReducer', () => {
   //
 
   it('Selected genes get added on empty list', () => {
-    const newState = genesReducer(constructInitialState(), {
+    const newState = genesReducer(getInitialState(), {
       type: GENES_SELECT,
       payload: {
         genes: ['a', 'b', 'c'],
@@ -118,7 +118,7 @@ describe('genesReducer', () => {
   });
 
   it('Selected genes get added as a set to a non-empty list', () => {
-    const newState = genesReducer({ ...constructInitialState(), selected: ['a', 'b'] }, {
+    const newState = genesReducer({ ...getInitialState(), selected: ['a', 'b'] }, {
       type: GENES_SELECT,
       payload: {
         genes: ['b', 'd'],
@@ -130,7 +130,7 @@ describe('genesReducer', () => {
   });
 
   it('Deselecting all genes updates to empty list', () => {
-    const newState = genesReducer({ ...constructInitialState(), selected: ['a', 'b'] }, {
+    const newState = genesReducer({ ...getInitialState(), selected: ['a', 'b'] }, {
       type: GENES_DESELECT,
       payload: {
         genes: ['a', 'b'],
@@ -142,7 +142,7 @@ describe('genesReducer', () => {
   });
 
   it('Deselecting part of all genes updates list as set', () => {
-    const newState = genesReducer({ ...constructInitialState(), selected: ['a', 'b', 'd'] }, {
+    const newState = genesReducer({ ...getInitialState(), selected: ['a', 'b', 'd'] }, {
       type: GENES_DESELECT,
       payload: {
         genes: ['b'],
@@ -154,7 +154,7 @@ describe('genesReducer', () => {
   });
 
   it('Deselecting non-selected genes is handled gracefully', () => {
-    const newState = genesReducer({ ...constructInitialState(), selected: ['a', 'b', 'd'] }, {
+    const newState = genesReducer({ ...getInitialState(), selected: ['a', 'b', 'd'] }, {
       type: GENES_DESELECT,
       payload: {
         genes: ['e'],
@@ -170,7 +170,7 @@ describe('genesReducer', () => {
   //
 
   it('Properties loading triggers appropriate changes', () => {
-    const newState = genesReducer(constructInitialState(), {
+    const newState = genesReducer(getInitialState(), {
       type: GENES_PROPERTIES_LOADING,
       payload: {
         componentUuid: 'asd',
@@ -184,7 +184,7 @@ describe('genesReducer', () => {
   });
 
   it('Multiple components loading some of same property triggers appropriate action', () => {
-    let newState = genesReducer(constructInitialState(), {
+    let newState = genesReducer(getInitialState(), {
       type: GENES_PROPERTIES_LOADING,
       payload: {
         componentUuid: 'asd',
@@ -205,7 +205,7 @@ describe('genesReducer', () => {
   });
 
   it('Error state handled appropriately', () => {
-    const newState = genesReducer(constructInitialState(), {
+    const newState = genesReducer(getInitialState(), {
       type: GENES_PROPERTIES_ERROR,
       payload: {
         componentUuid: 'asd',
@@ -218,7 +218,7 @@ describe('genesReducer', () => {
   });
 
   it('Loading on error state causes error to reset', () => {
-    let newState = genesReducer(constructInitialState(), {
+    let newState = genesReducer(getInitialState(), {
       type: GENES_PROPERTIES_ERROR,
       payload: {
         componentUuid: 'asd',
@@ -240,9 +240,9 @@ describe('genesReducer', () => {
 
   it('Loaded paginated state handled appropriately', () => {
     const newState = genesReducer({
-      ...constructInitialState(),
+      ...getInitialState(),
       properties: {
-        ...constructInitialState().properties,
+        ...getInitialState().properties,
         loading: ['a', 'b', 'c'],
       },
     }, {
@@ -272,9 +272,9 @@ describe('genesReducer', () => {
 
   it('Loaded paginated state handled appropriately when other things are still loading', () => {
     const newState = genesReducer({
-      ...constructInitialState(),
+      ...getInitialState(),
       properties: {
-        ...constructInitialState().properties,
+        ...getInitialState().properties,
         loading: ['a', 'b', 'c', 'd', 'e'],
       },
     }, {

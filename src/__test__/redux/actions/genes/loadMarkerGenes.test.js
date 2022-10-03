@@ -4,7 +4,7 @@ import thunk from 'redux-thunk';
 import { fetchWork } from 'utils/work/fetchWork';
 import loadMarkerGenes from 'redux/actions/genes/loadMarkerGenes';
 import { MARKER_GENES_ERROR, MARKER_GENES_LOADED, MARKER_GENES_LOADING } from 'redux/actionTypes/genes';
-import constructInitialState from 'redux/reducers/genes/constructInitialState';
+import getInitialState from 'redux/reducers/genes/getInitialState';
 
 import '__test__/test-utils/setupTests';
 import { getOneGeneMatrix } from '__test__/utils/ExpressionMatrix/testMatrixes';
@@ -75,7 +75,7 @@ describe('loadMarkerGenes action', () => {
 
   it('dispatches appropriately on success', async () => {
     const store = mockStore({
-      genes: constructInitialState(),
+      genes: getInitialState(),
       experimentSettings,
       backendStatus,
     });
@@ -93,7 +93,7 @@ describe('loadMarkerGenes action', () => {
 
   it('dispatches appropriately on error', async () => {
     const store = mockStore({
-      genes: constructInitialState(),
+      genes: getInitialState(),
       experimentSettings,
       backendStatus,
     });
@@ -109,7 +109,7 @@ describe('loadMarkerGenes action', () => {
 
   it('Defaults to louvain cluster if selected cell set is not provided', async () => {
     const store = mockStore({
-      genes: constructInitialState(),
+      genes: getInitialState(),
       experimentSettings,
       backendStatus,
     });

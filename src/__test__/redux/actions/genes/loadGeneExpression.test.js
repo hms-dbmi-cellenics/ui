@@ -4,7 +4,7 @@ import thunk from 'redux-thunk';
 import { SparseMatrix } from 'mathjs';
 
 import loadGeneExpression from 'redux/actions/genes/loadGeneExpression';
-import constructInitialState from 'redux/reducers/genes/constructInitialState';
+import getInitialState from 'redux/reducers/genes/getInitialState';
 import { GENES_EXPRESSION_LOADING, GENES_EXPRESSION_LOADED, GENES_EXPRESSION_ERROR } from 'redux/actionTypes/genes';
 
 import { fetchWork } from 'utils/work/fetchWork';
@@ -55,7 +55,7 @@ describe('loadGeneExpression action', () => {
   };
 
   beforeEach(() => {
-    initialGenesState = constructInitialState();
+    initialGenesState = getInitialState();
   });
 
   it('Does not dispatch when expression is already loading', async () => {

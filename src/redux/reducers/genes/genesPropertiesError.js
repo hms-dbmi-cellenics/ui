@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { initialViewState } from './constructInitialState';
+import { initialViewState } from './getInitialState';
 
 const genesPropertiesError = (state, action) => {
   const {

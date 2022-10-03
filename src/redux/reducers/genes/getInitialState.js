@@ -15,7 +15,7 @@ const initialExpressionState = {
   zScore: [],
 };
 
-const constructInitialState = () => ({
+const getInitialState = () => ({
   properties: {
     loading: [],
     views: {},
@@ -36,4 +36,4 @@ const constructInitialState = () => ({
 });
 
 export { initialViewState, initialExpressionState };
-export default constructInitialState;
+export default getInitialState;
