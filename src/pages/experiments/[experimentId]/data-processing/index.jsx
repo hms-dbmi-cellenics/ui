@@ -56,13 +56,11 @@ import { getBackendStatus } from 'redux/selectors';
 
 import { loadCellSets } from 'redux/actions/cellSets';
 import { loadSamples } from 'redux/actions/samples';
-import { cloneExperiment, loadExperiments } from 'redux/actions/experiments';
 import { runQC } from 'redux/actions/pipeline';
 
 import { useAppRouter } from 'utils/AppRouteProvider';
 import { modules } from 'utils/constants';
 import QCRerunDisabledModal from 'components/QCRerunDisabledModal';
-import { current } from 'immer';
 
 const { Text } = Typography;
 const { Option } = Select;
@@ -162,7 +160,7 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
 
     return (
       processingConfig[step] && sampleKeys.some((key) => (
-      processingConfig[step][key]?.prefiltered)));
+        processingConfig[step][key]?.prefiltered)));
   };
 
   const steps = [
@@ -464,16 +462,16 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
                               ) : pipelineNotFinished
                                 && !pipelineRunning
                                 && !isStepComplete(key) ? (
-                                  <>
-                                    <Text
-                                      type='danger'
-                                      strong
-                                    >
-                                      <WarningOutlined />
-                                    </Text>
-                                    <span style={{ marginLeft: '0.25rem' }}>{text}</span>
-                                  </>
-                                ) : <></>}
+                                <>
+                                  <Text
+                                    type='danger'
+                                    strong
+                                  >
+                                    <WarningOutlined />
+                                  </Text>
+                                  <span style={{ marginLeft: '0.25rem' }}>{text}</span>
+                                </>
+                              ) : <></>}
                             </Option>
                           );
                         },
@@ -629,46 +627,6 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
       </Space>
     );
   };
-
-  const cloneExperimentAndSelectIt = async () => {
-    dispatch(discardChangedQCFilters());
-    const newExperimentId = await dispatch(cloneExperiment(experimentId, `Clone of ${experimentData.experimentName}`));
-    await dispatch(loadExperiments());
-
-    navigateTo(modules.DATA_MANAGEMENT, { experimentId: newExperimentId }, true);
-  };
-
-  const qcRerunDisabledAlert = () => (
-    <>
-      <p>
-        Due to a recent update, re-running the pipeline will initiate the run from the beginning
-        and you will lose all of your annotated cell sets. You have 3 options:
-      </p>
-      <ul>
-        <li>
-          Click
-          <Text code>Start</Text>
-          {' '}
-          to re-run this project analysis from the beginning. Note that you will
-          lose all of your annotated cell sets.
-        </li>
-        <li>
-          Click
-          <Text code>Clone Project</Text>
-          {' '}
-          to clone this project and run from the beginning for the new project only.
-          Your current project will not re-run, and will still be available to explore.
-        </li>
-        <li>
-          Click
-          <Text code>Cancel</Text>
-          {' '}
-          to close this popup. You can then choose to discard the changed
-          settings in your current project.
-        </li>
-      </ul>
-    </>
-  );
 
   return (
     <>
