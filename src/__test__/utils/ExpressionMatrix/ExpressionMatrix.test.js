@@ -53,12 +53,6 @@ describe('ExpressionMatrix', () => {
 
       expect(matrix).toMatchSnapshot();
     });
-
-    it('generateIndexFor works', () => {
-      matrix.generateIndexFor('Gzma');
-
-      expect(matrix).toMatchSnapshot();
-    });
   });
 
   describe('Filled matrix', () => {
@@ -143,12 +137,6 @@ describe('ExpressionMatrix', () => {
 
       // Nothing changed
       expect(matrix).toEqual(previousMatrix);
-    });
-
-    it('generateIndexFor works', () => {
-      matrix.generateIndexFor('Hba-x');
-
-      expect(matrix).toMatchSnapshot();
     });
   });
 });

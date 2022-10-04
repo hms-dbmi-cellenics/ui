@@ -15,15 +15,15 @@ class ExpressionMatrix {
   }
 
   getRawExpression(geneSymbol, cellIndexes = undefined) {
-    return this.getExpression(geneSymbol, cellIndexes, this.rawGeneExpressions);
+    return this.#getExpression(geneSymbol, cellIndexes, this.rawGeneExpressions);
   }
 
   getTruncatedExpression(geneSymbol, cellIndexes = undefined) {
-    return this.getExpression(geneSymbol, cellIndexes, this.truncatedGeneExpressions);
+    return this.#getExpression(geneSymbol, cellIndexes, this.truncatedGeneExpressions);
   }
 
   getZScore(geneSymbol, cellIndexes = undefined) {
-    return this.getExpression(geneSymbol, cellIndexes, this.zScore);
+    return this.#getExpression(geneSymbol, cellIndexes, this.zScore);
   }
 
   getStats(geneSymbol) {
@@ -40,27 +40,6 @@ class ExpressionMatrix {
 
   getStoredGenes() {
     return Object.keys(this.geneIndexes);
-  }
-
-  #setGeneExpression = (
-    newGeneSymbols,
-    newRawGeneExpression,
-    newTruncatedGeneExpression,
-    newZScore,
-    newStats,
-  ) => {
-    this.rawGeneExpressions = newRawGeneExpression;
-    this.truncatedGeneExpressions = newTruncatedGeneExpression;
-    this.zScore = newZScore;
-    this.stats = newStats;
-
-    this.geneIndexes = newGeneSymbols.reduce((acum, currentSymbol, index) => {
-      // eslint-disable-next-line no-param-reassign
-      acum[currentSymbol] = index;
-      return acum;
-    }, {});
-
-    this.lastFreeIndex = newGeneSymbols.length;
   }
 
   /**
@@ -107,7 +86,7 @@ class ExpressionMatrix {
 
       genesToAddIndexes.push(index);
 
-      this.generateIndexFor(geneSymbol);
+      this.#generateIndexFor(geneSymbol);
     });
 
     // Add the expression only for the new genes (genesToAddIndexes)
@@ -119,13 +98,34 @@ class ExpressionMatrix {
     _.merge(this.stats, newStats);
   }
 
+  #setGeneExpression = (
+    newGeneSymbols,
+    newRawGeneExpression,
+    newTruncatedGeneExpression,
+    newZScore,
+    newStats,
+  ) => {
+    this.rawGeneExpressions = newRawGeneExpression;
+    this.truncatedGeneExpressions = newTruncatedGeneExpression;
+    this.zScore = newZScore;
+    this.stats = newStats;
+
+    this.geneIndexes = newGeneSymbols.reduce((acum, currentSymbol, index) => {
+      // eslint-disable-next-line no-param-reassign
+      acum[currentSymbol] = index;
+      return acum;
+    }, {});
+
+    this.lastFreeIndex = newGeneSymbols.length;
+  }
+
   /**
    * Generates a new index for the geneSymbol
    *
    * @param {*} geneSymbol The symbol of the gene
    * @returns The index of the gene inside the matrices
    */
-  generateIndexFor(geneSymbol) {
+  #generateIndexFor = (geneSymbol) => {
     this.geneIndexes[geneSymbol] = this.lastFreeIndex;
 
     // This index is now assigned, so move it one step
@@ -134,7 +134,7 @@ class ExpressionMatrix {
     return this.geneIndexes[geneSymbol];
   }
 
-  getExpression(geneSymbol, cellIndexes, matrix) {
+  #getExpression = (geneSymbol, cellIndexes, matrix) => {
     const geneIndex = this.geneIndexes[geneSymbol];
 
     if (_.isNil(geneIndex)) return undefined;
