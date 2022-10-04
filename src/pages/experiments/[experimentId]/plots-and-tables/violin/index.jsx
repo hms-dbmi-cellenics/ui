@@ -122,7 +122,6 @@ const ViolinIndex = ({ experimentId }) => {
     const genesToLoad = shownGenes.filter((gene) => !Object.keys(geneExpression.data).includes(gene));
 
     if (!genesToLoad.length) return;
-    console.log(genesToLoad);
     dispatch(loadGeneExpression(experimentId, genesToLoad, plotUuid));
   }, [plotConfigs]);
 
