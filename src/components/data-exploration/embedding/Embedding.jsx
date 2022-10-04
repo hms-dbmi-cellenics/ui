@@ -71,7 +71,7 @@ const Embedding = (props) => {
   const loadedGenes = useSelector((state) => Object.keys(state.genes.expression.data));
 
   const cellCoordinates = useRef({ x: 200, y: 300 });
-  const cellInfoTooltip = useRef();
+  const [cellInfoTooltip, setCellInfoTooltip] = useState();
   const [createClusterPopover, setCreateClusterPopover] = useState(false);
   const [selectedIds, setSelectedIds] = useState(new Set());
   const [cellColors, setCellColors] = useState({});
@@ -150,13 +150,13 @@ const Embedding = (props) => {
         });
       });
 
-      cellInfoTooltip.current = {
+      setCellInfoTooltip({
         cellSets: prefixedCellSetNames,
         cellId: selectedCell,
         componentType: embeddingType,
         expression: expressionToDispatch,
         geneName,
-      };
+      });
     }
   }, [selectedCell]);
 
@@ -311,14 +311,14 @@ const Embedding = (props) => {
               onCancel={onCancelCreateCluster}
             />
           ) : (
-            (cellInfoVisible && cellInfoTooltip.current) ? (
+            (cellInfoVisible && cellInfoTooltip) ? (
               <div>
                 <CellInfo
                   containerWidth={width}
                   containerHeight={height}
                   componentType={embeddingType}
                   coordinates={cellCoordinates.current}
-                  cellInfo={cellInfoTooltip.current}
+                  cellInfo={cellInfoTooltip}
                 />
                 <CrossHair
                   componentType={embeddingType}
