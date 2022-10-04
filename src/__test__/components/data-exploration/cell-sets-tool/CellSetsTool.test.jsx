@@ -17,7 +17,7 @@ import CellSetsTool from 'components/data-exploration/cell-sets-tool/CellSetsToo
 import { createCellSet } from 'redux/actions/cellSets';
 
 import '__test__/test-utils/setupTests';
-import withoutFilteredOutCells from 'utils/cellSets/withoutFilteredOutCells';
+import { withoutFilteredOutCells } from 'utils/cellSetOperations';
 
 jest.mock('utils/work/fetchWork');
 

@@ -1,6 +1,6 @@
 import _ from 'lodash';
 
-import SetOperations from 'utils/setOperations';
+import { difference } from 'utils/setOperations';
 import { union } from 'utils/cellSetOperations';
 
 const populateHeatmapData = (
@@ -67,7 +67,7 @@ const populateHeatmapData = (
 
       // The cellIds that werent part of any intersection are also added at the end
       const leftOverCellIds = currentCellSetIntersection
-        .reduce((acum, current) => SetOperations.difference(acum, current), currentCellSet);
+        .reduce((acum, current) => difference(acum, current), currentCellSet);
 
       currentCellSetIntersection.push(leftOverCellIds);
 
