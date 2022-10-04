@@ -70,7 +70,7 @@ const Embedding = (props) => {
   const expressionLoading = useSelector((state) => state.genes.expression.loading);
   const loadedGenes = useSelector((state) => Object.keys(state.genes.expression.data));
 
-  const cellCoordinates = useRef({ x: 200, y: 300 });
+  const cellCoordinatesRef = useRef({ x: 200, y: 300 });
   const [cellInfoTooltip, setCellInfoTooltip] = useState();
   const [createClusterPopover, setCreateClusterPopover] = useState(false);
   const [selectedIds, setSelectedIds] = useState(new Set());
@@ -141,7 +141,9 @@ const Embedding = (props) => {
       }
 
       // getting the cluster properties for every cluster that has the cellId
-      const cellProperties = getContainingCellSetsProperties(Number.parseInt(selectedCell, 10), rootClusterNodes, cellSets);
+      const cellProperties = getContainingCellSetsProperties(
+        Number.parseInt(selectedCell, 10), rootClusterNodes, cellSets,
+      );
 
       const prefixedCellSetNames = [];
       Object.values(cellProperties).forEach((clusterProperties) => {
@@ -163,7 +165,7 @@ const Embedding = (props) => {
   const updateCellCoordinates = (newView) => {
     if (selectedCell && newView.project) {
       const [x, y] = newView.project(selectedCell);
-      cellCoordinates.current = {
+      cellCoordinatesRef.current = {
         x,
         y,
         width,
@@ -306,7 +308,7 @@ const Embedding = (props) => {
           ? (
             <ClusterPopover
               visible
-              popoverPosition={cellCoordinates}
+              popoverPosition={cellCoordinatesRef}
               onCreate={onCreateCluster}
               onCancel={onCancelCreateCluster}
             />
@@ -317,12 +319,12 @@ const Embedding = (props) => {
                   containerWidth={width}
                   containerHeight={height}
                   componentType={embeddingType}
-                  coordinates={cellCoordinates.current}
+                  coordinates={cellCoordinatesRef.current}
                   cellInfo={cellInfoTooltip}
                 />
                 <CrossHair
                   componentType={embeddingType}
-                  coordinates={cellCoordinates}
+                  coordinates={cellCoordinatesRef}
                 />
               </div>
             ) : <></>
