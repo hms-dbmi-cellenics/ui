@@ -27,7 +27,7 @@ import getHighestDispersionGenes from 'utils/getHighestDispersionGenes';
 const plotUuid = 'ViolinMain';
 const plotType = 'violin';
 const multiViewType = 'multiView';
-const multiViewUuid = multiViewType.concat('-', plotUuid);
+const multiViewUuid = 'multiView-ViolinMain';
 
 const ViolinIndex = ({ experimentId }) => {
   const dispatch = useDispatch();

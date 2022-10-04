@@ -126,7 +126,6 @@ const MultiViewEditor = (props) => {
   return (
     <Space direction='vertical'>
       <GeneSearchBar
-        aria-label='addMultiViewGene'
         onSelect={addGeneToMultiView}
       />
       <Space>

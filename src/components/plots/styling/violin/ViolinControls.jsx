@@ -20,11 +20,14 @@ const ViolinControls = (props) => {
     cellSets,
     shownGenes,
   } = props;
+
+  const genesToDisable = config ? [config.shownGene] : [];
+
   return (
     <Collapse>
       <Panel header='Gene selection' key='gene-selection'>
         <GeneSearchBar
-          genesToDisable={[config.shownGene]}
+          genesToDisable={genesToDisable}
           onSelect={(gene) => onUpdate({ shownGene: gene, title: { text: gene } })}
           allowMultiple={false}
           buttonText='Search'

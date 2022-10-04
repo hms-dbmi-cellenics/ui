@@ -69,6 +69,7 @@ const GeneSearchBar = (props) => {
   return (
     <Input.Group compact>
       <AutoComplete
+        aria-label='SearchBar'
         allowClear
         style={{ width: '80%' }}
         value={value}

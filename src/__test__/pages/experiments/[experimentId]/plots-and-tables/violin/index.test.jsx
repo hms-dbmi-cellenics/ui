@@ -2,7 +2,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import _ from 'lodash';
-import ViolinPlot from 'pages/experiments/[experimentId]/plots-and-tables/violin/index';
+import ViolinIndex from 'pages/experiments/[experimentId]/plots-and-tables/violin/index';
 import React from 'react';
 import { act } from 'react-dom/test-utils';
 import { Provider } from 'react-redux';
@@ -53,7 +53,7 @@ const mockWorkerResponses = {
 
 const experimentId = fake.EXPERIMENT_ID;
 const plotUuid = 'ViolinMain';
-const multiViewUuid = 'ViolinMain-MultiView';
+const multiViewUuid = 'multiView-ViolinMain';
 
 const customAPIResponses = {
   [`/plots/${plotUuid}`]: (req) => {
@@ -69,36 +69,38 @@ const defaultResponses = _.merge(
 
 const defaultProps = { experimentId };
 
-const violinPageFactory = createTestComponentFactory(ViolinPlot, defaultProps);
+const violinPageFactory = createTestComponentFactory(ViolinIndex, defaultProps);
 
 const renderViolinPage = async (store) => {
-  await act(async () => (
+  await act(async () => {
     render(
       <Provider store={store}>
         <div width={800} height={800}>
           {violinPageFactory()}
         </div>
       </Provider>,
-    )
-  ));
+    );
+  });
 };
+
+enableFetchMocks();
 
 let storeState = null;
 
-describe.skip('ViolinIndex', () => {
+describe('ViolinIndex', () => {
   beforeEach(async () => {
     jest.clearAllMocks();
 
     seekFromS3
       .mockReset()
+      // 1st call to list genes
       .mockImplementationOnce(() => null)
       .mockImplementationOnce((Etag) => mockWorkerResponses[Etag])
+      // 2nd call to load gene expression
       .mockImplementationOnce(() => null)
       .mockImplementationOnce((Etag) => mockWorkerResponses[Etag]);
 
-    enableFetchMocks();
     fetchMock.resetMocks();
-    fetchMock.doMock();
     fetchMock.mockIf(/.*/, mockAPI(defaultResponses));
 
     storeState = makeStore();
@@ -127,22 +129,37 @@ describe.skip('ViolinIndex', () => {
   });
 
   it('Adds a new plot to multi view', async () => {
-    await renderViolinPage(storeState);
+    seekFromS3
+      .mockReset()
+      // 1st call to list genes
+      .mockImplementationOnce(() => null)
+      .mockImplementationOnce((Etag) => mockWorkerResponses[Etag])
+      // 2nd call to load gene expression
+      .mockImplementationOnce(() => null)
+      .mockImplementationOnce((Etag) => mockWorkerResponses[Etag])
+      // 3rd call to load gene expression
+      .mockImplementationOnce(() => null)
+      .mockImplementationOnce((Etag) => mockWorkerResponses[Etag]);
 
-    const initialDimensions = storeState.getState().componentConfig[plotUuid].config.dimensions;
+    await renderViolinPage(storeState);
 
     userEvent.click(screen.getByText(/View multiple plots/i));
 
-    const addGenesInput = screen.getByRole('textbox', { name: 'addMultiViewGene' });
+    const searchBox = screen.getByRole('combobox', { name: 'SearchBar' });
 
-    userEvent.type(addGenesInput, 'S100a6');
+    userEvent.type(searchBox, 's10');
+
+    const option = screen.getByTitle('S100a6');
+
+    await act(async () => {
+      // the element has pointer-events set to 'none', skip check
+      // based on https://stackoverflow.com/questions/61080116
+      userEvent.click(option, undefined, { skipPointerEventsCheck: true });
+    });
+
     userEvent.click(screen.getByText('Add'));
 
     await waitFor(() => expect(screen.getAllByRole('graphics-document', { name: 'Violin plot' }).length).toBe(2));
-
-    // check the plots were rescaled
-    const newDimensions = storeState.getState().componentConfig[plotUuid].config.dimensions;
-    expect(_.isEqual(initialDimensions, newDimensions)).toBe(false);
 
     // check the multi view was expanded
     const multiViewConfig = storeState.getState().componentConfig[multiViewUuid].config;
@@ -163,13 +180,22 @@ describe.skip('ViolinIndex', () => {
 
     userEvent.click(screen.getByText(/Gene selection/i));
 
-    const changeShownGeneInput = screen.getByRole('textbox');
+    const searchBox = screen.getByRole('combobox', { name: 'SearchBar' });
 
-    userEvent.clear(changeShownGeneInput);
-    userEvent.type(changeShownGeneInput, 'S100a6');
+    userEvent.clear(searchBox);
+    userEvent.type(searchBox, 's1');
+
+    const option = screen.getByTitle('S100a6');
+
+    await act(async () => {
+      // the element has pointer-events set to 'none', skip check
+      // based on https://stackoverflow.com/questions/61080116
+      userEvent.click(option, undefined, { skipPointerEventsCheck: true });
+    });
+
     userEvent.click(screen.getByText('Search'));
 
-    expect(changeShownGeneInput.textContent).toBe('');
+    expect(searchBox.textContent).toBe('');
 
     await waitFor(() => expect(screen.getByRole('graphics-document', { name: 'Violin plot' })).toBeInTheDocument());
 
@@ -187,7 +213,7 @@ describe.skip('ViolinIndex', () => {
     expect(storeState.getState().componentConfig[plotUuid].config.normalised).toBe('raw');
   });
 
-  it('Displays an error if there is an error fetching dispersion', async () => {
+  it.skip('Displays an error if there is an error fetching dispersion', async () => {
     const errorResponse = {
       ...mockWorkerResponses,
       'list-genes': () => Promise.reject(new Error('error')),

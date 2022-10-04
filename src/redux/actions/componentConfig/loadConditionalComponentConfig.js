@@ -16,6 +16,7 @@ const loadConditionalComponentConfig = (
     : {};
 
   const dispatchLoad = (config) => {
+    console.log('test 5');
     dispatch({
       type: LOAD_CONFIG,
       payload: {
@@ -34,13 +35,20 @@ const loadConditionalComponentConfig = (
   }
 
   try {
+    console.log('test 4');
     const data = await fetchAPI(`/v2/experiments/${experimentId}/plots/${componentUuid}`);
 
     const plotConfig = _.merge({}, defaultConfig, data.config, dimensionsToUse);
+    console.log('test 5');
     dispatchLoad(plotConfig);
   } catch (e) {
     // load default plot config if it not found
-    if (e.statusCode === httpStatusCodes.NOT_FOUND) {
+
+    // when loading multi view a different error is thrown
+    // APIError: [object Object] undefined, with 404 under e.statusCode.status
+    // while loading plot config for plotUuid throws
+    // Not Found: 404 Not Found, with 404 under e.statusCode
+    if ([e.statusCode, e.statusCode.status].includes(httpStatusCodes.NOT_FOUND)) {
       dispatchLoad(configToUse);
       return;
     }
