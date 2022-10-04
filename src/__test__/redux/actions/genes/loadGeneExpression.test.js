@@ -84,23 +84,6 @@ describe('loadGeneExpression action', () => {
     expect(fetchWork).toMatchSnapshot();
   });
 
-  it('Sends work for already loaded expression data if forced to do so.', async () => {
-    loadGene(initialGenesState.expression.matrix);
-    const store = mockStore({ genes: initialGenesState, backendStatus });
-
-    fetchWork.mockImplementationOnce(() => (
-      // No need to mock the result accurately.
-      new Promise((resolve) => resolve({}))));
-
-    await store.dispatch(
-      loadGeneExpression(experimentId, loadingGenes, componentUuid, true),
-    );
-
-    const firstCall = fetchWork.mock.calls[1];
-    expect(firstCall[1].genes).toEqual(['a', 'b', 'c']);
-    expect(fetchWork).toMatchSnapshot();
-  });
-
   it('Dispatches appropriately on success', async () => {
     const store = mockStore({
       genes: {
@@ -114,7 +97,7 @@ describe('loadGeneExpression action', () => {
     fetchWork.mockImplementationOnce(() => new Promise((resolve) => resolve(mockResult)));
 
     await store.dispatch(
-      loadGeneExpression(experimentId, loadingGenes, componentUuid, true),
+      loadGeneExpression(experimentId, loadingGenes, componentUuid),
     );
 
     const actions = store.getActions();
@@ -134,7 +117,7 @@ describe('loadGeneExpression action', () => {
 
     fetchWork.mockImplementationOnce(() => new Promise((resolve, reject) => reject(new Error('random error!'))));
     await store.dispatch(
-      loadGeneExpression(experimentId, loadingGenes, componentUuid, true),
+      loadGeneExpression(experimentId, loadingGenes, componentUuid),
     );
 
     const loadingAction = store.getActions()[0];
@@ -164,7 +147,7 @@ describe('loadGeneExpression action', () => {
     });
 
     fetchWork.mockImplementation(() => new Promise((resolve, reject) => reject(new Error('random error!'))));
-    await store.dispatch(loadGeneExpression(experimentId, loadingGenes, componentUuid, true));
+    await store.dispatch(loadGeneExpression(experimentId, loadingGenes, componentUuid));
 
     const loadingAction = store.getActions()[0];
     expect(loadingAction.type).toEqual(GENES_EXPRESSION_LOADING);

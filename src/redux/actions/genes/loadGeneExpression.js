@@ -9,7 +9,7 @@ import { fetchWork } from 'utils/work/fetchWork';
 import getTimeoutForWorkerTask from 'utils/getTimeoutForWorkerTask';
 
 const loadGeneExpression = (
-  experimentId, genes, componentUuid, forceReloadAll = false,
+  experimentId, genes, componentUuid,
 ) => async (dispatch, getState) => {
   const {
     loading, matrix,
@@ -38,11 +38,9 @@ const loadGeneExpression = (
   let genesToFetch = [...genes];
   const genesAlreadyLoaded = matrix.getStoredGenes();
 
-  if (!forceReloadAll) {
-    genesToFetch = genesToFetch.filter(
-      (gene) => !new Set(upperCaseArray(genesAlreadyLoaded)).has(gene.toUpperCase()),
-    );
-  }
+  genesToFetch = genesToFetch.filter(
+    (gene) => !new Set(upperCaseArray(genesAlreadyLoaded)).has(gene.toUpperCase()),
+  );
 
   const displayedGenes = genesAlreadyLoaded.filter(
     (gene) => upperCaseArray(genes).includes(gene.toUpperCase()),
