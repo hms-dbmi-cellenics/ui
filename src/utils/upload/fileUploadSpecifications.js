@@ -44,4 +44,10 @@ const fileUploadSpecifications = {
 
 };
 
+const technologies = {
+  '10x': '10X Chromium',
+  rhapsody: 'BD Rhapsody',
+};
+
+export { technologies };
 export default fileUploadSpecifications;

@@ -6,7 +6,7 @@ import { SAMPLES_FILE_UPDATE } from 'redux/actionTypes/samples';
 
 import UploadStatus from 'utils/upload/UploadStatus';
 import updateSampleFileUpload from 'redux/actions/samples/updateSampleFileUpload';
-import fileNameForApiV1 from 'utils/upload/fileNameConverter';
+import fileNameForApiV1 from 'utils/upload/fileNameForApiV1';
 
 const createSampleFile = (
   experimentId,

@@ -29,12 +29,12 @@ const UploadDetailsModal = (props) => {
 
   const { activeExperimentId } = useSelector((state) => state.experiments.meta);
   const samples = useSelector((state) => state.samples);
-  const SELECTED_TECH = useSelector((state) => state.samples[sampleUuid]?.type);
+  const selectedTech = useSelector((state) => state.samples[sampleUuid]?.type);
   const sampleName = samples[uploadDetailsModalDataRef.current?.sampleUuid]?.name;
 
   useEffect(() => {
     if (replacementFileObject) {
-      fileObjectToFileRecord(replacementFileObject, SELECTED_TECH).then((newFile) => {
+      fileObjectToFileRecord(replacementFileObject, selectedTech).then((newFile) => {
         if (newFile.valid) {
           uploadFile(newFile);
         } else {
@@ -65,7 +65,7 @@ const UploadDetailsModal = (props) => {
       return;
     }
 
-    createAndUploadSingleFile(newFile, activeExperimentId, sampleUuid, dispatch, SELECTED_TECH);
+    createAndUploadSingleFile(newFile, activeExperimentId, sampleUuid, dispatch, selectedTech);
     onCancel();
   };
 

@@ -1,12 +1,13 @@
 import fetchAPI from 'utils/http/fetchAPI';
 import handleError from 'utils/http/handleError';
-import fileNameConvert from 'utils/upload/fileNameConverter';
+import fileNameForApiV1 from 'utils/upload/fileNameForApiV1';
 
 import {
   SAMPLES_LOADED,
   SAMPLES_ERROR,
   SAMPLES_LOADING,
 } from 'redux/actionTypes/samples';
+import { technologies } from 'utils/upload/fileUploadSpecifications';
 
 const toApiV1 = (samples, experimentId) => {
   const apiV1Samples = {};
@@ -19,9 +20,9 @@ const toApiV1 = (samples, experimentId) => {
       const fileType = files[key]?.sampleFileType;
       if (!fileType) throw new Error('No sample file found');
 
-      const fileName = fileNameConvert[fileType];
+      const fileName = fileNameForApiV1[fileType];
 
-      fileNames.push(fileNameConvert[fileType]);
+      fileNames.push(fileNameForApiV1[fileType]);
 
       apiV1Files[fileName] = {
         size: files[key].size,
@@ -36,13 +37,6 @@ const toApiV1 = (samples, experimentId) => {
     return { apiV1Files, fileNames };
   };
 
-  const sampleTechnologyConvert = (technology) => {
-    if (technology === '10x') return '10X Chromium';
-    if (technology === 'rhapsody') return 'BD Rhapsody';
-
-    throw new Error('Unknown sample technology');
-  };
-
   samples.forEach((sample) => {
     const { apiV1Files, fileNames } = buildApiv1Files(sample.files);
     apiV1Samples[sample.id] = {
@@ -52,7 +46,7 @@ const toApiV1 = (samples, experimentId) => {
       name: sample.name,
       lastModified: sample.updatedAt,
       files: apiV1Files,
-      type: sampleTechnologyConvert(sample.sampleTechnology),
+      type: technologies[sample.sampleTechnology],
       fileNames,
       uuid: sample.id,
     };

@@ -5,7 +5,7 @@ import endUserMessages from 'utils/endUserMessages';
 import fetchAPI from 'utils/http/fetchAPI';
 import handleError from 'utils/http/handleError';
 import UploadStatus from 'utils/upload/UploadStatus';
-import fileNameForApiV1 from 'utils/upload/fileNameConverter';
+import fileNameForApiV1 from 'utils/upload/fileNameForApiV1';
 
 const updateSampleFileUpload = (
   experimentId, sampleId, type, uploadStatus, uploadProgress,

@@ -11,7 +11,7 @@ import endUserMessages from 'utils/endUserMessages';
 
 import { METADATA_DEFAULT_VALUE } from 'redux/reducers/experiments/initialState';
 import { sampleTemplate } from 'redux/reducers/samples/initialState';
-
+import { technologies } from 'utils/upload/fileUploadSpecifications';
 import UploadStatus from 'utils/upload/UploadStatus';
 import validate10x from 'utils/upload/validate10x';
 
@@ -49,10 +49,10 @@ const createSample = (
   const url = `/v2/experiments/${experimentId}/samples/${newSampleUuid}`;
 
   let sampleTechnology;
-  if (type === '10X Chromium') {
+  if (type === technologies['10x']) {
     await validate10x(sample);
     sampleTechnology = '10x';
-  } else if (type === 'BD Rhapsody') {
+  } else if (type === technologies.rhapsody) {
     sampleTechnology = 'rhapsody';
   } else {
     throw new Error(`Sample technology ${type} is not recognized`);

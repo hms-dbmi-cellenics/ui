@@ -11,7 +11,7 @@ import loadAndCompressIfNecessary from 'utils/upload/loadAndCompressIfNecessary'
 import { inspectFile, Verdict } from 'utils/upload/fileInspector';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
 import getFileTypeV2 from 'utils/getFileTypeV2';
-
+import { technologies } from 'utils/upload/fileUploadSpecifications';
 import SampleValidationError from 'utils/errors/upload/SampleValidationError';
 
 const MAX_RETRIES = 2;
@@ -70,23 +70,20 @@ const prepareAndUploadFileToS3 = async (
   dispatch(updateSampleFileUpload(projectId, sampleId, fileType, UploadStatus.UPLOADED));
 };
 
-const getMetadata = (file) => {
+const getMetadata = (file, selectedTech) => {
   const metadata = {};
-
-  if (file.name.includes('genes')) {
-    metadata.cellranger_version = 'v2';
-  } else if (file.name.includes('features')) {
-    metadata.cellranger_version = 'v3';
+  if (selectedTech === technologies['10x']) {
+    if (file.name.includes('genes')) {
+      metadata.cellranger_version = 'v2';
+    } else if (file.name.includes('features')) {
+      metadata.cellranger_version = 'v3';
+    }
   }
-
   return metadata;
 };
 
 const createAndUploadSingleFile = async (file, projectId, sampleId, dispatch, selectedTech) => {
-  let metadata = {};
-  if (selectedTech === '10X Chromium') {
-    metadata = getMetadata(file);
-  }
+  const metadata = getMetadata(file, selectedTech);
   const fileType = getFileTypeV2(file.fileObject.name, file.fileObject.type);
 
   let signedUrl;

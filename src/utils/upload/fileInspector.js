@@ -1,5 +1,6 @@
 import { Gunzip } from 'fflate';
 
+import { technologies } from 'utils/upload/fileUploadSpecifications';
 import techOptions from './fileUploadSpecifications';
 import readFileToBuffer from './readFileToBuffer';
 
@@ -17,11 +18,11 @@ const GZIP_SIGNATURE = Buffer.from([0x1f, 0x8b]);
 const inspectFile = async (file, technology) => {
   // Validate a file requested for upload to the platform.
 
-  if (technology === 'BD Rhapsody') {
+  if (technology === technologies.rhapsody) {
     if (!file.name.toLowerCase().includes('expression_data.st')) {
       return Verdict.INVALID_NAME;
     }
-  } else if (technology === '10X Chromium') {
+  } else if (technology === technologies['10x']) {
     // immediately discard file if filename is not in valid set
     const validNames = techOptions[technology].acceptedFiles;
     if (!validNames.has(file.name)) {
