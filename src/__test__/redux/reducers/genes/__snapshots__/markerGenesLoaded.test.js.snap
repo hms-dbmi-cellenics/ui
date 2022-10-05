@@ -9,7 +9,6 @@ Object {
       "geneIndexes": Object {
         "geneA": 0,
       },
-      "lastFreeIndex": 1,
       "rawGeneExpressions": Object {
         "datatype": undefined,
         "index": Array [

@@ -154,7 +154,6 @@ Object {
       "loading": Array [],
       "matrix": ExpressionMatrix {
         "geneIndexes": Object {},
-        "lastFreeIndex": 0,
         "rawGeneExpressions": Object {
           "datatype": undefined,
           "index": Array [],
@@ -529,7 +528,6 @@ Object {
       "loading": Array [],
       "matrix": ExpressionMatrix {
         "geneIndexes": Object {},
-        "lastFreeIndex": 0,
         "rawGeneExpressions": Object {
           "datatype": undefined,
           "index": Array [],

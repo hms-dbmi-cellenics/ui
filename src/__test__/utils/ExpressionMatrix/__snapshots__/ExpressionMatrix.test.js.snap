@@ -6,7 +6,6 @@ ExpressionMatrix {
     "Gzma": 0,
     "Lyz2": 1,
   },
-  "lastFreeIndex": 2,
   "rawGeneExpressions": Object {
     "datatype": undefined,
     "index": Array [
@@ -99,7 +98,6 @@ ExpressionMatrix {
     "Gzma": 0,
     "Lyz2": 1,
   },
-  "lastFreeIndex": 2,
   "rawGeneExpressions": Object {
     "datatype": undefined,
     "index": Array [
@@ -194,7 +192,6 @@ ExpressionMatrix {
     "Lyz2": 1,
     "Rbp4": 3,
   },
-  "lastFreeIndex": 4,
   "rawGeneExpressions": Object {
     "datatype": undefined,
     "index": Array [
@@ -341,7 +338,6 @@ ExpressionMatrix {
     "Ms4a4b": 3,
     "Rbp4": 2,
   },
-  "lastFreeIndex": 4,
   "rawGeneExpressions": Object {
     "datatype": undefined,
     "index": Array [

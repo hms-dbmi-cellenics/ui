@@ -9,8 +9,6 @@ class ExpressionMatrix {
     this.truncatedGeneExpressions = new SparseMatrix();
     this.zScore = new SparseMatrix();
     this.stats = {};
-
-    this.lastFreeIndex = 0;
     this.geneIndexes = {};
   }
 
@@ -115,8 +113,6 @@ class ExpressionMatrix {
       acum[currentSymbol] = index;
       return acum;
     }, {});
-
-    this.lastFreeIndex = newGeneSymbols.length;
   }
 
   /**
@@ -126,12 +122,11 @@ class ExpressionMatrix {
    * @returns The index of the gene inside the matrices
    */
   #generateIndexFor = (geneSymbol) => {
-    this.geneIndexes[geneSymbol] = this.lastFreeIndex;
+    const lastFreeIndex = Object.keys(this.geneIndexes).length;
 
-    // This index is now assigned, so move it one step
-    this.lastFreeIndex += 1;
+    this.geneIndexes[geneSymbol] = lastFreeIndex;
 
-    return this.geneIndexes[geneSymbol];
+    return lastFreeIndex;
   }
 
   #getExpression = (geneSymbol, cellIndexes, matrix) => {
