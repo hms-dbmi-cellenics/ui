@@ -2,7 +2,7 @@
 
 exports[`fetchWork runs correctly for gene expression work request 1`] = `
 Object {
-  "order": Array [
+  "orderedGeneNames": Array [
     "A",
     "B",
     "C",

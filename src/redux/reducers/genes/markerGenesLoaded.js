@@ -7,7 +7,7 @@ const markerGenesLoaded = produce((draft, action) => {
   const {
     plotUuid,
     data: {
-      order,
+      orderedGeneNames,
       rawExpression,
       truncatedExpression,
       zScore,
@@ -18,14 +18,14 @@ const markerGenesLoaded = produce((draft, action) => {
   const expressionMatrix = original(draft).expression.matrix;
 
   expressionMatrix.pushGeneExpression(
-    order,
+    orderedGeneNames,
     rawExpression,
     truncatedExpression,
     zScore,
     stats,
   );
 
-  draft.expression.views[plotUuid] = { fetching: false, error: false, data: order };
+  draft.expression.views[plotUuid] = { fetching: false, error: false, data: orderedGeneNames };
 
   draft.markers.loading = false;
   draft.markers.error = false;

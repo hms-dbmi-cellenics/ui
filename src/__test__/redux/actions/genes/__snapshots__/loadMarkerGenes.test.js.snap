@@ -14,7 +14,7 @@ Array [
   undefined,
   Object {
     "data": Object {
-      "order": Array [
+      "orderedGeneNames": Array [
         "geneA",
       ],
       "rawExpression": Object {

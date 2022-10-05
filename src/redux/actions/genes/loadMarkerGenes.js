@@ -29,7 +29,7 @@ const loadMarkerGenes = (
     const timeout = getTimeoutForWorkerTask(getState(), 'MarkerHeatmap');
 
     const {
-      order,
+      orderedGeneNames,
       rawExpression: rawExpressionJson,
       truncatedExpression: truncatedExpressionJson,
       zScore: zScoreJson,
@@ -45,7 +45,7 @@ const loadMarkerGenes = (
       payload: {
         plotUuid,
         data: {
-          order,
+          orderedGeneNames,
           rawExpression,
           truncatedExpression,
           zScore,

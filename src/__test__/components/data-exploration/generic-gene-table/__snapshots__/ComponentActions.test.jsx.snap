@@ -29,7 +29,7 @@ Object {
       "GeneC",
     ],
     "newGenes": Object {
-      "order": Array [
+      "orderedGeneNames": Array [
         "GeneA",
         "GeneB",
         "GeneC",

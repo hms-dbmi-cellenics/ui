@@ -14,7 +14,7 @@ const genesExpressionLoaded = (state, action) => {
   // If there's any data to load, load it
   if (newGenes) {
     const {
-      order,
+      orderedGeneNames,
       rawExpression,
       truncatedExpression,
       zScore,
@@ -24,7 +24,7 @@ const genesExpressionLoaded = (state, action) => {
     const expressionMatrix = state.expression.matrix;
 
     expressionMatrix.pushGeneExpression(
-      order,
+      orderedGeneNames,
       rawExpression,
       truncatedExpression,
       zScore,

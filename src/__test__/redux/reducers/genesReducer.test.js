@@ -38,7 +38,7 @@ describe('genesReducer', () => {
       type: GENES_EXPRESSION_LOADED,
       payload: {
         componentUuid: 'abc',
-        genes: newGenesMatrix.order,
+        genes: newGenesMatrix.orderedGeneNames,
         newGenes: newGenesMatrix,
       },
     });

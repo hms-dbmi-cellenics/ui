@@ -196,7 +196,7 @@ describe('Marker heatmap plot', () => {
     await renderHeatmapPage(storeState);
 
     // Check that initially there are 5 marker genes - the default
-    markerGenesData5.order.forEach((geneName) => {
+    markerGenesData5.orderedGeneNames.forEach((geneName) => {
       expect(screen.getByText(geneName)).toBeInTheDocument();
     });
 
@@ -220,7 +220,7 @@ describe('Marker heatmap plot', () => {
     });
 
     // The genes in Data 2 should exist
-    markerGenesData2.order.forEach((geneName) => {
+    markerGenesData2.orderedGeneNames.forEach((geneName) => {
       expect(screen.getByText(geneName)).toBeInTheDocument();
     });
   });
@@ -238,7 +238,7 @@ describe('Marker heatmap plot', () => {
     await renderHeatmapPage(storeState);
 
     // Add in a new gene
-    const genesToLoad = [...markerGenesData5.order, 'FAKEGENE'];
+    const genesToLoad = [...markerGenesData5.orderedGeneNames, 'FAKEGENE'];
 
     await act(async () => {
       await storeState.dispatch(loadGeneExpression(experimentId, genesToLoad, plotUuid));
@@ -285,7 +285,7 @@ describe('Marker heatmap plot', () => {
 
     await renderHeatmapPage(storeState);
 
-    const genesToLoad = [...markerGenesData5.order, 'FAKEGENE'];
+    const genesToLoad = [...markerGenesData5.orderedGeneNames, 'FAKEGENE'];
 
     await act(async () => {
       await storeState.dispatch(loadGeneExpression(experimentId, genesToLoad, plotUuid));
@@ -304,7 +304,7 @@ describe('Marker heatmap plot', () => {
     const geneTree = screen.getByRole('tree');
 
     // The genes in Data 5 should be in the tree
-    markerGenesData5.order.forEach((geneName) => {
+    markerGenesData5.orderedGeneNames.forEach((geneName) => {
       expect(within(geneTree).getByText(geneName)).toBeInTheDocument();
     });
 
@@ -429,7 +429,7 @@ describe('Drag and drop enzyme tests', () => {
 
   it('changes nothing on drop in place', async () => {
     // default genes are in the tree
-    markerGenesData5.order.forEach((geneName) => {
+    markerGenesData5.orderedGeneNames.forEach((geneName) => {
       expect(tree.containsMatchingElement(geneName));
     });
 
@@ -448,12 +448,12 @@ describe('Drag and drop enzyme tests', () => {
 
     const newOrder = getCurrentGeneOrder(component);
 
-    expect(_.isEqual(newOrder, markerGenesData5.order)).toEqual(true);
+    expect(_.isEqual(newOrder, markerGenesData5.orderedGeneNames)).toEqual(true);
   });
 
   it('re-orders genes correctly', async () => {
     // default genes are in the tree
-    markerGenesData5.order.forEach((geneName) => {
+    markerGenesData5.orderedGeneNames.forEach((geneName) => {
       expect(tree.containsMatchingElement(geneName));
     });
     // dropping to gap re-orders genes
@@ -471,7 +471,7 @@ describe('Drag and drop enzyme tests', () => {
 
     const newOrder = getCurrentGeneOrder(component);
 
-    const expectedOrder = arrayMoveImmutable(markerGenesData5.order, 1, 3);
+    const expectedOrder = arrayMoveImmutable(markerGenesData5.orderedGeneNames, 1, 3);
 
     expect(_.isEqual(newOrder, expectedOrder)).toEqual(true);
   });

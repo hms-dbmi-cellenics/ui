@@ -67,7 +67,7 @@ const loadGeneExpression = (
 
   try {
     const {
-      order,
+      orderedGeneNames,
       rawExpression: rawExpressionJson,
       truncatedExpression: truncatedExpressionJson,
       zScore: zScoreJson,
@@ -80,7 +80,7 @@ const loadGeneExpression = (
     const truncatedExpression = SparseMatrix.fromJSON(truncatedExpressionJson);
     const zScore = SparseMatrix.fromJSON(zScoreJson);
 
-    const fetchedGenes = _.concat(displayedGenes, order);
+    const fetchedGenes = _.concat(displayedGenes, orderedGeneNames);
 
     dispatch({
       type: GENES_EXPRESSION_LOADED,
@@ -88,7 +88,7 @@ const loadGeneExpression = (
         componentUuid,
         genes: fetchedGenes,
         newGenes: {
-          order,
+          orderedGeneNames,
           stats,
           rawExpression,
           truncatedExpression,

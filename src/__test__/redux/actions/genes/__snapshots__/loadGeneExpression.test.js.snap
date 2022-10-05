@@ -48,7 +48,7 @@ Array [
       "geneA",
     ],
     "newGenes": Object {
-      "order": Array [
+      "orderedGeneNames": Array [
         "geneA",
       ],
       "rawExpression": Object {

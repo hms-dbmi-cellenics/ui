@@ -42,7 +42,7 @@ class ExpressionMatrix {
 
   /**
    *
-   * @param {*} newGeneSymbols A row with the gene symbols corresponding
+   * @param {*} orderedNewGeneSymbols A row with the gene symbols corresponding
    * to each row in the geneExpressions (in the same order)
    * @param {*} newRawGeneExpression A mathjs SparseMatrix with the
    *  raw gene expressions for each of the genes
@@ -55,7 +55,7 @@ class ExpressionMatrix {
    * Each value has this shape: {rawMean, rawStdev, truncatedMin, truncatedMax}
    */
   pushGeneExpression(
-    newGeneSymbols,
+    orderedNewGeneSymbols,
     newRawGeneExpression,
     newTruncatedGeneExpression,
     newZScore,
@@ -66,7 +66,7 @@ class ExpressionMatrix {
     // If the matrix was empty previously we can just replace it with the ones that are being pushed
     if (genesCount === 0) {
       this.#setGeneExpression(
-        newGeneSymbols,
+        orderedNewGeneSymbols,
         newRawGeneExpression,
         newTruncatedGeneExpression,
         newZScore,
@@ -78,7 +78,7 @@ class ExpressionMatrix {
     const genesToAddIndexes = [];
 
     // Store indexes for the new genes
-    newGeneSymbols.forEach((geneSymbol, index) => {
+    orderedNewGeneSymbols.forEach((geneSymbol, index) => {
       // Skip if gene is already loaded
       if (this.geneIsLoaded(geneSymbol)) return;
 
@@ -97,7 +97,7 @@ class ExpressionMatrix {
   }
 
   #setGeneExpression = (
-    newGeneSymbols,
+    orderedNewGeneSymbols,
     newRawGeneExpression,
     newTruncatedGeneExpression,
     newZScore,
@@ -108,7 +108,7 @@ class ExpressionMatrix {
     this.zScore = newZScore;
     this.stats = newStats;
 
-    this.geneIndexes = newGeneSymbols.reduce((acum, currentSymbol, index) => {
+    this.geneIndexes = orderedNewGeneSymbols.reduce((acum, currentSymbol, index) => {
       // eslint-disable-next-line no-param-reassign
       acum[currentSymbol] = index;
       return acum;

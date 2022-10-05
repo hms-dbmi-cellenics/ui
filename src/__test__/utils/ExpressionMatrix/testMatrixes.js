@@ -4,7 +4,7 @@ import { SparseMatrix } from 'mathjs';
 import ExpressionMatrix from 'utils/ExpressionMatrix/ExpressionMatrix';
 
 const getOneGeneMatrix = (geneSymbol, cellsCount = 10) => ({
-  order: [geneSymbol],
+  orderedGeneNames: [geneSymbol],
   rawExpression: new SparseMatrix(_.times(cellsCount, 1)),
   truncatedExpression: new SparseMatrix(_.times(cellsCount, 1)),
   zScore: new SparseMatrix(_.times(cellsCount, 1)),
@@ -16,7 +16,7 @@ const getOneGeneMatrix = (geneSymbol, cellsCount = 10) => ({
 });
 
 const getTwoGenesMatrix = () => ({
-  order: ['Gzma', 'Lyz2'],
+  orderedGeneNames: ['Gzma', 'Lyz2'],
   rawExpression: new SparseMatrix([
     [1, 2],
     [0, 0],
@@ -43,7 +43,7 @@ const getTwoGenesMatrix = () => ({
 });
 
 const getOtherTwoGenesMatrix = () => ({
-  order: ['Hba-x', 'Rbp4'],
+  orderedGeneNames: ['Hba-x', 'Rbp4'],
   rawExpression: new SparseMatrix([
     [5, 2],
     [8, 9],
@@ -70,7 +70,7 @@ const getOtherTwoGenesMatrix = () => ({
 });
 
 const getThreeGenesMatrix = () => ({
-  order: ['GeneA', 'GeneB', 'GeneC'],
+  orderedGeneNames: ['GeneA', 'GeneB', 'GeneC'],
   rawExpression: new SparseMatrix([
     [1, 2, 1],
     [0, 0, 0],
@@ -100,7 +100,7 @@ const getThreeGenesMatrix = () => ({
 });
 
 const getFourGenesMatrix = () => ({
-  order: ['A', 'B', 'C', 'D'],
+  orderedGeneNames: ['A', 'B', 'C', 'D'],
   rawExpression: new SparseMatrix([
     [1, 2, 1],
     [0, 0, 0],
@@ -133,7 +133,7 @@ const getFourGenesMatrix = () => ({
 });
 
 const getOtherFourGenesMatrix = () => ({
-  order: ['Gzma', 'Rbp4', 'Lyz2', 'Ms4a4b'],
+  orderedGeneNames: ['Gzma', 'Rbp4', 'Lyz2', 'Ms4a4b'],
   rawExpression: new SparseMatrix([
     [1, 9, 1, 1],
     [0, 0, 0, 0],
@@ -169,10 +169,10 @@ const getTwoGenesExpressionMatrix = () => {
   const matrix = new ExpressionMatrix();
 
   const {
-    order, rawExpression, truncatedExpression, zScore, stats,
+    orderedGeneNames, rawExpression, truncatedExpression, zScore, stats,
   } = getTwoGenesMatrix();
 
-  matrix.pushGeneExpression(order, rawExpression, truncatedExpression, zScore, stats);
+  matrix.pushGeneExpression(orderedGeneNames, rawExpression, truncatedExpression, zScore, stats);
 
   return matrix;
 };
@@ -181,7 +181,7 @@ const getExpressionMatrixFromWorkResult = (workResult) => {
   const matrix = new ExpressionMatrix();
 
   matrix.pushGeneExpression(
-    workResult.order,
+    workResult.orderedGeneNames,
     SparseMatrix.fromJSON(workResult.rawExpression),
     SparseMatrix.fromJSON(workResult.truncatedExpression),
     SparseMatrix.fromJSON(workResult.zScore),

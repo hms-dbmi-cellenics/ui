@@ -186,7 +186,7 @@ describe('HeatmapPlot', () => {
 
     // A new gene is being loaded
     await act(async () => {
-      storeState.dispatch(loadGeneExpression(experimentId, [...markerGenesData5.order, 'loading_gene_id'], 'interactiveHeatmap'));
+      storeState.dispatch(loadGeneExpression(experimentId, [...markerGenesData5.orderedGeneNames, 'loading_gene_id'], 'interactiveHeatmap'));
     });
 
     // Loading screen shows up
@@ -241,7 +241,7 @@ describe('HeatmapPlot', () => {
 
     // A new gene is being loaded
     await act(async () => {
-      await storeState.dispatch(loadGeneExpression(experimentId, [...markerGenesData5.order, 'loading_gene_id'], 'interactiveHeatmap'));
+      await storeState.dispatch(loadGeneExpression(experimentId, [...markerGenesData5.orderedGeneNames, 'loading_gene_id'], 'interactiveHeatmap'));
     });
 
     // Error screen shows up
