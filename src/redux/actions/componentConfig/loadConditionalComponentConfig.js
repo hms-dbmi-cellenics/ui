@@ -16,7 +16,6 @@ const loadConditionalComponentConfig = (
     : {};
 
   const dispatchLoad = (config) => {
-    console.log('test 5');
     dispatch({
       type: LOAD_CONFIG,
       payload: {
