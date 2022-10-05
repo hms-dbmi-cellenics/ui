@@ -27,7 +27,7 @@ const { Text, Title, Paragraph } = Typography;
 const { Option } = Select;
 
 const FileUploadModal = (props) => {
-  const { onUpload, onCancel } = props;
+  const { onUpload, onCancel, currentSelectedTech } = props;
 
   const guidanceFileLink = 'https://drive.google.com/file/d/1VPaB-yofuExinY2pXyGEEx-w39_OPubO/view';
 
@@ -42,6 +42,11 @@ const FileUploadModal = (props) => {
   // Handle on Drop
   const onDrop = async (acceptedFiles) => {
     let filesNotInFolder = false;
+    if (currentSelectedTech && currentSelectedTech !== selectedTech) {
+      handleError('error', endUserMessages.ERROR_SAMPLE_TECHNOLOGY);
+      return;
+    }
+
     const filteredFiles = acceptedFiles
       // Remove all hidden files
       .filter((file) => !file.name.startsWith('.') && !file.name.startsWith('__MACOSX'))
@@ -246,11 +251,13 @@ const FileUploadModal = (props) => {
 FileUploadModal.propTypes = {
   onUpload: PropTypes.func,
   onCancel: PropTypes.func,
+  currentSelectedTech: PropTypes.string,
 };
 
 FileUploadModal.defaultProps = {
   onUpload: null,
   onCancel: null,
+  currentSelectedTech: null,
 };
 
 export default FileUploadModal;

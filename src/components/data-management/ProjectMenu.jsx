@@ -18,6 +18,7 @@ const ProjectMenu = () => {
 
   const [uploadModalVisible, setUploadModalVisible] = useState(false);
   const [shareExperimentModalVisible, setShareExperimentModalVisible] = useState(false);
+  const selectedTech = samples[activeExperiment?.sampleIds[0]]?.type;
 
   const uploadFiles = (filesList, sampleType) => {
     processUpload(filesList, sampleType, samples, activeExperimentId, dispatch);
@@ -51,6 +52,7 @@ const ProjectMenu = () => {
       {uploadModalVisible ? (
         <FileUploadModal
           onUpload={uploadFiles}
+          currentSelectedTech={selectedTech}
           onCancel={() => setUploadModalVisible(false)}
         />
       ) : <></>}
