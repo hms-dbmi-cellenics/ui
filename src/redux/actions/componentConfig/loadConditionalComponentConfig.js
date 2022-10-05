@@ -35,11 +35,10 @@ const loadConditionalComponentConfig = (
   }
 
   try {
-    console.log('test 4');
     const data = await fetchAPI(`/v2/experiments/${experimentId}/plots/${componentUuid}`);
 
     const plotConfig = _.merge({}, defaultConfig, data.config, dimensionsToUse);
-    console.log('test 5');
+
     dispatchLoad(plotConfig);
   } catch (e) {
     // load default plot config if it not found
