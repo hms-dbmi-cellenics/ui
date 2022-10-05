@@ -35,15 +35,15 @@ const ViolinIndex = ({ experimentId }) => {
   const multiViewConfig = useSelector((state) => state.componentConfig[multiViewUuid]?.config);
   const multiViewPlotUuids = multiViewConfig?.plotUuids;
 
-  const allComponentUuids = _.concat(multiViewUuid, multiViewPlotUuids);
-
   const debounceSaveAll = useCallback(_.debounce(() => {
+    const allComponentUuids = _.concat(multiViewUuid, multiViewPlotUuids);
+
     allComponentUuids.forEach((Uuid) => {
       if (Uuid) {
         dispatch(savePlotConfig(experimentId, Uuid));
       }
     });
-  }, 2000), [allComponentUuids]);
+  }, 2000), [multiViewConfig]);
 
   const plotConfigs = useSelector(getPlotConfigs(multiViewPlotUuids));
 
@@ -60,8 +60,6 @@ const ViolinIndex = ({ experimentId }) => {
 
   const [selectedPlot, setSelectedPlot] = useState(plotUuid);
   const selectedConfig = plotConfigs[selectedPlot];
-
-  const [rescaleOnce, setRescaleOnce] = useState(true);
 
   const loadComponent = (componentUuid, type, skipAPI, customConfig) => {
     dispatch(loadConditionalComponentConfig(
@@ -109,7 +107,11 @@ const ViolinIndex = ({ experimentId }) => {
 
     multiViewPlotUuids.forEach((Uuid) => {
       if (!plotConfigs[Uuid]) {
-        const customConfig = { shownGene: highestDispersionGene, title: { text: highestDispersionGene } };
+        const customConfig = {
+          shownGene: highestDispersionGene,
+          title: { text: highestDispersionGene },
+        };
+
         loadComponent(Uuid, plotType, false, customConfig);
       }
     });
@@ -117,23 +119,19 @@ const ViolinIndex = ({ experimentId }) => {
 
   // load data for genes in multi view
   useEffect(() => {
-    if (!multiViewConfig || !multiViewPlotUuids.every((Uuid) => plotConfigs[Uuid]) || geneExpression.loading.length) return;
+    if (!multiViewConfig
+      || !multiViewPlotUuids.every((Uuid) => plotConfigs[Uuid])
+      || geneExpression.loading.length > 0) return;
 
-    const genesToLoad = shownGenes.filter((gene) => !Object.keys(geneExpression.data).includes(gene));
+    // this is already done within loadGeneExpression
+    // filtering here prevents dispatching a loading state
+    const genesToLoad = shownGenes.filter(
+      (gene) => !Object.keys(geneExpression.data).includes(gene),
+    );
 
     if (!genesToLoad.length) return;
     dispatch(loadGeneExpression(experimentId, genesToLoad, plotUuid));
   }, [plotConfigs]);
-
-  // rescale plots once when adding a second plot
-  // useEffect(() => {
-  //   if (!multiViewConfig) return;
-
-  //   if (multiViewPlotUuids.length > 1 && rescaleOnce) {
-  //     updateAllWithChanges({ dimensions: { width: 550, height: 400 } });
-  //     setRescaleOnce(false);
-  //   }
-  // }, [multiViewPlotUuids]);
 
   useEffect(() => {
     if (!multiViewConfig || !multiViewPlotUuids.every((Uuid) => plotConfigs[Uuid])) return;
