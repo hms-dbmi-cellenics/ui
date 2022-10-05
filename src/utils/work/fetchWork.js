@@ -1,6 +1,8 @@
 /* eslint-disable no-underscore-dangle */
 import { MD5 } from 'object-hash';
 
+import config from 'config';
+
 import { Environment, isBrowser } from 'utils/deploymentInfo';
 import { getBackendStatus } from 'redux/selectors';
 
@@ -39,6 +41,7 @@ const generateETag = (
     qcPipelineStartDate,
     extras,
     cacheUniquenessKey,
+    workerVersion: config.workerVersion,
   };
 
   // They `body` key to create ETAg for gene expression is different
@@ -50,6 +53,7 @@ const generateETag = (
       qcPipelineStartDate,
       extras,
       cacheUniquenessKey,
+      workerVersion: config.workerVersion,
     };
   }
 
