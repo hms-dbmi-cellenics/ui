@@ -7,9 +7,13 @@ import { Index, Range } from 'mathjs';
 /**
  * Mutates sparseMatrix1
  * Appends the columns at columnIndexes of sparseMatrix2 into sparseMatrix1.
- * This method works using the SparseMatrix's of mathjs,
+ * This method works using the class SparseMatrix of mathjs,
  * which use the structure Compressed Column Matrix,
  * it is efficient at adding/accessing columns
+ *
+ * Using algorithms provided by mathjs for SparseMatrix should be done with caution,
+ * some of them are not guaranteed to preserve a specific index order.
+ * More info: https://github.com/josdejong/mathjs/issues/450#issuecomment-137060600
  *
  * @param {*} sparseMatrix1 Matrix to receive the new columns, mutates
  * @param {*} sparseMatrix2 Matrix with the columns to append
