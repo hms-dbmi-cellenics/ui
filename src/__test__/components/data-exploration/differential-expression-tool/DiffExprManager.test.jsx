@@ -10,7 +10,7 @@ import DiffExprCompute from 'components/data-exploration/differential-expression
 import DiffExprResults from 'components/data-exploration/differential-expression-tool/DiffExprResults';
 
 import initialState from 'redux/reducers/differentialExpression/initialState';
-import genesInitialState from 'redux/reducers/genes/initialState';
+import getInitialState from 'redux/reducers/genes/getInitialState';
 import cellSetsInitialState from 'redux/reducers/cellSets/initialState';
 
 import { mockCellSets } from '__test__/test-utils/cellSets.mock';
@@ -25,7 +25,7 @@ const emptyState = {
     properties: {},
   },
   genes: {
-    ...genesInitialState,
+    ...getInitialState(),
     focused: undefined,
   },
 };

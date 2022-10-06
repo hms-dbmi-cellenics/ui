@@ -1,0 +1,467 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ExpressionMatrix Empty matrix pushGeneExpression works 1`] = `
+ExpressionMatrix {
+  "geneIndexes": Object {
+    "Gzma": 0,
+    "Lyz2": 1,
+  },
+  "rawGeneExpressions": Object {
+    "datatype": undefined,
+    "index": Array [
+      0,
+      0,
+      2,
+    ],
+    "mathjs": "SparseMatrix",
+    "ptr": Array [
+      0,
+      1,
+      3,
+    ],
+    "size": Array [
+      3,
+      2,
+    ],
+    "values": Array [
+      1,
+      2,
+      5,
+    ],
+  },
+  "stats": Object {
+    "Gzma": Object {
+      "rawMean": 0.3,
+      "rawStdev": 0.4,
+      "truncatedMax": 1,
+      "truncatedMin": 0,
+    },
+    "Lyz2": Object {
+      "rawMean": 2.3,
+      "rawStdev": 2,
+      "truncatedMax": 3,
+      "truncatedMin": 2,
+    },
+  },
+  "truncatedGeneExpressions": Object {
+    "datatype": undefined,
+    "index": Array [
+      0,
+      0,
+      2,
+    ],
+    "mathjs": "SparseMatrix",
+    "ptr": Array [
+      0,
+      1,
+      3,
+    ],
+    "size": Array [
+      3,
+      2,
+    ],
+    "values": Array [
+      1,
+      2,
+      3,
+    ],
+  },
+  "zScore": Object {
+    "datatype": undefined,
+    "index": Array [
+      0,
+      0,
+      2,
+    ],
+    "mathjs": "SparseMatrix",
+    "ptr": Array [
+      0,
+      1,
+      3,
+    ],
+    "size": Array [
+      3,
+      2,
+    ],
+    "values": Array [
+      1,
+      1,
+      3,
+    ],
+  },
+}
+`;
+
+exports[`ExpressionMatrix Empty matrix setGeneExpression works 1`] = `
+ExpressionMatrix {
+  "geneIndexes": Object {
+    "Gzma": 0,
+    "Lyz2": 1,
+  },
+  "rawGeneExpressions": Object {
+    "datatype": undefined,
+    "index": Array [
+      0,
+      0,
+      2,
+    ],
+    "mathjs": "SparseMatrix",
+    "ptr": Array [
+      0,
+      1,
+      3,
+    ],
+    "size": Array [
+      3,
+      2,
+    ],
+    "values": Array [
+      1,
+      2,
+      5,
+    ],
+  },
+  "stats": Object {
+    "Gzma": Object {
+      "rawMean": 0.3,
+      "rawStdev": 0.4,
+      "truncatedMax": 1,
+      "truncatedMin": 0,
+    },
+    "Lyz2": Object {
+      "rawMean": 2.3,
+      "rawStdev": 2,
+      "truncatedMax": 3,
+      "truncatedMin": 2,
+    },
+  },
+  "truncatedGeneExpressions": Object {
+    "datatype": undefined,
+    "index": Array [
+      0,
+      0,
+      2,
+    ],
+    "mathjs": "SparseMatrix",
+    "ptr": Array [
+      0,
+      1,
+      3,
+    ],
+    "size": Array [
+      3,
+      2,
+    ],
+    "values": Array [
+      1,
+      2,
+      3,
+    ],
+  },
+  "zScore": Object {
+    "datatype": undefined,
+    "index": Array [
+      0,
+      0,
+      2,
+    ],
+    "mathjs": "SparseMatrix",
+    "ptr": Array [
+      0,
+      1,
+      3,
+    ],
+    "size": Array [
+      3,
+      2,
+    ],
+    "values": Array [
+      1,
+      1,
+      3,
+    ],
+  },
+}
+`;
+
+exports[`ExpressionMatrix Filled matrix pushGeneExpression adds new data keeping previous 1`] = `
+ExpressionMatrix {
+  "geneIndexes": Object {
+    "Gzma": 0,
+    "Hba-x": 2,
+    "Lyz2": 1,
+    "Rbp4": 3,
+  },
+  "rawGeneExpressions": Object {
+    "datatype": undefined,
+    "index": Array [
+      0,
+      0,
+      2,
+      0,
+      1,
+      2,
+      0,
+      1,
+      2,
+    ],
+    "mathjs": "SparseMatrix",
+    "ptr": Array [
+      0,
+      1,
+      3,
+      6,
+      9,
+    ],
+    "size": Array [
+      3,
+      4,
+    ],
+    "values": Array [
+      1,
+      2,
+      5,
+      5,
+      8,
+      9,
+      2,
+      9,
+      5,
+    ],
+  },
+  "stats": Object {
+    "Gzma": Object {
+      "rawMean": 0.3,
+      "rawStdev": 0.4,
+      "truncatedMax": 1,
+      "truncatedMin": 0,
+    },
+    "Hba-x": Object {
+      "rawMean": 5,
+      "rawStdev": 0.4,
+      "truncatedMax": 15,
+      "truncatedMin": 10,
+    },
+    "Lyz2": Object {
+      "rawMean": 2.3,
+      "rawStdev": 2,
+      "truncatedMax": 3,
+      "truncatedMin": 2,
+    },
+    "Rbp4": Object {
+      "rawMean": 10,
+      "rawStdev": 1.9,
+      "truncatedMax": 6,
+      "truncatedMin": 0,
+    },
+  },
+  "truncatedGeneExpressions": Object {
+    "datatype": undefined,
+    "index": Array [
+      0,
+      0,
+      2,
+      0,
+      1,
+      2,
+      0,
+      1,
+      2,
+    ],
+    "mathjs": "SparseMatrix",
+    "ptr": Array [
+      0,
+      1,
+      3,
+      6,
+      9,
+    ],
+    "size": Array [
+      3,
+      4,
+    ],
+    "values": Array [
+      1,
+      2,
+      3,
+      1,
+      1,
+      6,
+      2,
+      5,
+      3,
+    ],
+  },
+  "zScore": Object {
+    "datatype": undefined,
+    "index": Array [
+      0,
+      0,
+      2,
+      1,
+      2,
+      0,
+      1,
+      2,
+    ],
+    "mathjs": "SparseMatrix",
+    "ptr": Array [
+      0,
+      1,
+      3,
+      5,
+      8,
+    ],
+    "size": Array [
+      3,
+      4,
+    ],
+    "values": Array [
+      1,
+      1,
+      3,
+      2,
+      4,
+      1,
+      2,
+      3,
+    ],
+  },
+}
+`;
+
+exports[`ExpressionMatrix Filled matrix pushGeneExpression adds only the data that is new, it skips columns that were already added  1`] = `
+ExpressionMatrix {
+  "geneIndexes": Object {
+    "Gzma": 0,
+    "Lyz2": 1,
+    "Ms4a4b": 3,
+    "Rbp4": 2,
+  },
+  "rawGeneExpressions": Object {
+    "datatype": undefined,
+    "index": Array [
+      0,
+      0,
+      2,
+      0,
+      2,
+      0,
+      2,
+    ],
+    "mathjs": "SparseMatrix",
+    "ptr": Array [
+      0,
+      1,
+      3,
+      5,
+      7,
+    ],
+    "size": Array [
+      3,
+      4,
+    ],
+    "values": Array [
+      1,
+      2,
+      5,
+      9,
+      1,
+      1,
+      2,
+    ],
+  },
+  "stats": Object {
+    "Gzma": Object {
+      "rawMean": 0.5,
+      "rawStdev": 0.9,
+      "truncatedMax": 2,
+      "truncatedMin": 0.2,
+    },
+    "Lyz2": Object {
+      "rawMean": 2.3,
+      "rawStdev": 2,
+      "truncatedMax": 3,
+      "truncatedMin": 2,
+    },
+    "Ms4a4b": Object {
+      "rawMean": 0.3,
+      "rawStdev": 1.2,
+      "truncatedMax": 0.5,
+      "truncatedMin": 0.4,
+    },
+    "Rbp4": Object {
+      "rawMean": 1.3,
+      "rawStdev": 1.5,
+      "truncatedMax": 5,
+      "truncatedMin": 0,
+    },
+  },
+  "truncatedGeneExpressions": Object {
+    "datatype": undefined,
+    "index": Array [
+      0,
+      0,
+      2,
+      0,
+      2,
+      0,
+      2,
+    ],
+    "mathjs": "SparseMatrix",
+    "ptr": Array [
+      0,
+      1,
+      3,
+      5,
+      7,
+    ],
+    "size": Array [
+      3,
+      4,
+    ],
+    "values": Array [
+      1,
+      2,
+      3,
+      5,
+      0.5,
+      0.5,
+      1,
+    ],
+  },
+  "zScore": Object {
+    "datatype": undefined,
+    "index": Array [
+      0,
+      0,
+      2,
+      0,
+      2,
+      0,
+      2,
+    ],
+    "mathjs": "SparseMatrix",
+    "ptr": Array [
+      0,
+      1,
+      3,
+      5,
+      7,
+    ],
+    "size": Array [
+      3,
+      4,
+    ],
+    "values": Array [
+      1,
+      1,
+      3,
+      4,
+      1,
+      1,
+      3,
+    ],
+  },
+}
+`;

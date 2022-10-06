@@ -1,18 +1,34 @@
 /* eslint-disable no-param-reassign */
-import produce from 'immer';
+import produce, { original } from 'immer';
 
-import { calculateZScore } from 'utils/postRequestProcessing';
-import initialState from 'redux/reducers/genes/initialState';
+import getInitialState from 'redux/reducers/genes/getInitialState';
 
 const markerGenesLoaded = produce((draft, action) => {
-  const { data, genes, plotUuid } = action.payload;
-  const dataWithZScore = calculateZScore(data);
-  draft.expression.views[plotUuid] = { fetching: false, error: false, data: genes };
+  const {
+    plotUuid,
+    data: {
+      orderedGeneNames,
+      rawExpression,
+      truncatedExpression,
+      zScore,
+      stats,
+    },
+  } = action.payload;
 
-  draft.expression.data = { ...draft.expression.data, ...dataWithZScore };
+  const expressionMatrix = original(draft).expression.matrix;
+
+  expressionMatrix.pushGeneExpression(
+    orderedGeneNames,
+    rawExpression,
+    truncatedExpression,
+    zScore,
+    stats,
+  );
+
+  draft.expression.views[plotUuid] = { fetching: false, error: false, data: orderedGeneNames };
 
   draft.markers.loading = false;
   draft.markers.error = false;
-}, initialState);
+}, getInitialState());
 
 export default markerGenesLoaded;
