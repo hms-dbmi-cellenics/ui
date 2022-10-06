@@ -17,9 +17,7 @@ import createTestComponentFactory from '__test__/test-utils/testComponentFactory
 import fake from '__test__/test-utils/constants';
 import mockEmbedding from '__test__/data/embedding.json';
 import mockGeneExpression from '__test__/data/gene_expression.json';
-
 import WorkResponseError from 'utils/errors/http/WorkResponseError';
-import { getExpressionMatrixFromWorkResult } from '__test__/utils/ExpressionMatrix/testMatrixes';
 
 enableFetchMocks();
 
@@ -48,9 +46,10 @@ const mockWorkerResponses = {
 
 const defaultAPIResponse = generateDefaultMockAPIResponses(experimentId);
 
-const matrix = getExpressionMatrixFromWorkResult(mockGeneExpression);
-const truncatedPlotData = matrix.getTruncatedExpression('TestGene');
-const plotData = matrix.getRawExpression('TestGene');
+const {
+  truncatedExpression: { expression: truncatedPlotData },
+  rawExpression: { expression: plotData },
+} = mockGeneExpression.TestGene;
 
 const defaultProps = {
   experimentId,

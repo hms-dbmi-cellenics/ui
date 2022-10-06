@@ -101,13 +101,12 @@ const ViolinPlot = (props) => {
 
   useEffect(() => {
     if (config
+      && Object.getOwnPropertyDescriptor(geneExpression.data, config.shownGene)
       && !geneExpression.error
-      && geneExpression.matrix.geneIsLoaded(config.shownGene)
       && cellSets.accessible) {
       const geneExpressionData = config.normalised === 'normalised'
-        ? geneExpression.matrix.getZScore(config.shownGene)
-        : geneExpression.matrix.getRawExpression(config.shownGene);
-
+        ? geneExpression.data[config.shownGene].zScore
+        : geneExpression.data[config.shownGene].rawExpression.expression;
       if (selectedCellSetClassAvailable) {
         const generatedPlotData = generateData(
           cellSets,

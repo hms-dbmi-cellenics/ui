@@ -1,6 +1,6 @@
 import _ from 'lodash';
 
-import { difference } from 'utils/setOperations';
+import SetOperations from 'utils/setOperations';
 import { union } from 'utils/cellSetOperations';
 
 const populateHeatmapData = (
@@ -67,7 +67,7 @@ const populateHeatmapData = (
 
       // The cellIds that werent part of any intersection are also added at the end
       const leftOverCellIds = currentCellSetIntersection
-        .reduce((acum, current) => difference(acum, current), currentCellSet);
+        .reduce((acum, current) => SetOperations.difference(acum, current), currentCellSet);
 
       currentCellSetIntersection.push(leftOverCellIds);
 
@@ -129,7 +129,6 @@ const populateHeatmapData = (
     if (!groupByRootNodes.length) {
       return [];
     }
-
     const { buckets, size } = splitByCartesianProductIntersections(groupByRootNodes);
 
     if (downsampling) {
@@ -137,7 +136,6 @@ const populateHeatmapData = (
     }
 
     const cellIds = [];
-
     buckets.forEach((bucket) => {
       bucket.forEach((bucketCellId) => cellIds.push(bucketCellId));
     });

@@ -1,9 +1,8 @@
 /* eslint-disable no-underscore-dangle */
 import { MD5 } from 'object-hash';
 
-import config from 'config';
-
 import { Environment, isBrowser } from 'utils/deploymentInfo';
+import { calculateZScore } from 'utils/postRequestProcessing';
 import { getBackendStatus } from 'redux/selectors';
 
 import cache from 'utils/cache';
@@ -41,7 +40,6 @@ const generateETag = (
     qcPipelineStartDate,
     extras,
     cacheUniquenessKey,
-    workerVersion: config.workerVersion,
   };
 
   // They `body` key to create ETAg for gene expression is different
@@ -53,39 +51,38 @@ const generateETag = (
       qcPipelineStartDate,
       extras,
       cacheUniquenessKey,
-      workerVersion: config.workerVersion,
     };
   }
 
-  return createObjectHash(ETagBody);
+  const ETag = createObjectHash(ETagBody);
+
+  return ETag;
 };
 
-// const decomposeBody = async (body, experimentId) => {
-//   const { genes: requestedGenes } = body;
-//   const missingDataKeys = {};
-//   const cachedData = {};
+const decomposeBody = async (body, experimentId) => {
+  const { genes: requestedGenes } = body;
+  const missingDataKeys = {};
+  const cachedData = {};
 
-//   await Promise.all(requestedGenes.map(async (g) => {
-//     const newBody = {
-//       ...body,
-//       genes: g,
-//     };
+  await Promise.all(requestedGenes.map(async (g) => {
+    const newBody = {
+      ...body,
+      genes: g,
+    };
 
-//     const key = createObjectHash({ experimentId, newBody });
-//     const data = await cache.get(key);
+    const key = createObjectHash({ experimentId, newBody });
+    const data = await cache.get(key);
+    if (data) {
+      cachedData[g] = data;
+    } else {
+      missingDataKeys[g] = key;
+    }
+  }));
 
-//     if (data) {
-//       cachedData[g] = data;
-//     } else {
-//       missingDataKeys[g] = key;
-//     }
-//   }));
+  return { missingDataKeys, cachedData };
+};
 
-//   return { missingDataKeys, cachedData };
-// };
-
-// Temporarily using gene expression without local cache
-const fetchGeneExpressionWorkWithoutLocalCache = async (
+const fetchGeneExpressionWork = async (
   experimentId,
   timeout,
   body,
@@ -94,107 +91,61 @@ const fetchGeneExpressionWorkWithoutLocalCache = async (
   broadcast,
   extras,
 ) => {
+  // Get only genes that are not already found in local storage.
+  const { missingDataKeys, cachedData } = await decomposeBody(body, experimentId);
+
+  const missingGenes = Object.keys(missingDataKeys);
+
+  if (missingGenes.length === 0) {
+    return cachedData;
+  }
+
   // If new genes are needed, construct payload, try S3 for results,
   // and send out to worker if there's a miss.
   const { pipeline: { startDate: qcPipelineStartDate } } = backendStatus;
 
+  const missingGenesBody = { ...body, genes: missingGenes };
+
   const ETag = generateETag(
     experimentId,
-    body,
+    missingGenesBody,
     extras,
     qcPipelineStartDate,
     environment,
   );
 
   // Then, we may be able to find this in S3.
-  const response = await seekFromS3(ETag, experimentId);
-
-  if (response) return response;
+  let response = await seekFromS3(ETag, experimentId);
 
   // If there is no response in S3, dispatch workRequest via the worker
-  try {
-    await dispatchWorkRequest(
-      experimentId,
-      body,
-      timeout,
-      ETag,
-      {
-        ETagPipelineRun: qcPipelineStartDate,
-        broadcast,
-        ...extras,
-      },
-    );
-  } catch (error) {
-    console.error('Error dispatching work request: ', error);
-    throw error;
+  if (!response) {
+    try {
+      await dispatchWorkRequest(
+        experimentId,
+        missingGenesBody,
+        timeout,
+        ETag,
+        {
+          ETagPipelineRun: qcPipelineStartDate,
+          broadcast,
+          ...extras,
+        },
+      );
+    } catch (error) {
+      console.error('Error dispatching work request: ', error);
+      throw error;
+    }
   }
 
-  return await seekFromS3(ETag, experimentId);
+  response = await seekFromS3(ETag, experimentId);
+  response = calculateZScore(response);
+
+  Object.keys(missingDataKeys).forEach(async (gene) => {
+    await cache.set(missingDataKeys[gene], response[gene]);
+  });
+
+  return response;
 };
-
-// const fetchGeneExpressionWork = async (
-//   experimentId,
-//   timeout,
-//   body,
-//   backendStatus,
-//   environment,
-//   broadcast,
-//   extras,
-// ) => {
-//   // Get only genes that are not already found in local storage.
-//   const { missingDataKeys, cachedData } = await decomposeBody(body, experimentId);
-
-//   const missingGenes = Object.keys(missingDataKeys);
-
-//   if (missingGenes.length === 0) {
-//     return cachedData;
-//   }
-
-//   // If new genes are needed, construct payload, try S3 for results,
-//   // and send out to worker if there's a miss.
-//   const { pipeline: { startDate: qcPipelineStartDate } } = backendStatus;
-
-//   const missingGenesBody = { ...body, genes: missingGenes };
-
-//   const ETag = generateETag(
-//     experimentId,
-//     missingGenesBody,
-//     extras,
-//     qcPipelineStartDate,
-//     environment,
-//   );
-
-//   // Then, we may be able to find this in S3.
-//   let response = await seekFromS3(ETag, experimentId);
-
-//   // If there is no response in S3, dispatch workRequest via the worker
-//   if (!response) {
-//     try {
-//       await dispatchWorkRequest(
-//         experimentId,
-//         missingGenesBody,
-//         timeout,
-//         ETag,
-//         {
-//           ETagPipelineRun: qcPipelineStartDate,
-//           broadcast,
-//           ...extras,
-//         },
-//       );
-//     } catch (error) {
-//       console.error('Error dispatching work request: ', error);
-//       throw error;
-//     }
-//   }
-
-//   response = await seekFromS3(ETag, experimentId);
-
-//   Object.keys(missingDataKeys).forEach(async (gene) => {
-//     await cache.set(missingDataKeys[gene], response[gene]);
-//   });
-
-//   return response;
-// };
 
 const fetchWork = async (
   experimentId,
@@ -221,7 +172,7 @@ const fetchWork = async (
 
   const { pipeline: { startDate: qcPipelineStartDate } } = backendStatus;
   if (body.name === 'GeneExpression') {
-    return fetchGeneExpressionWorkWithoutLocalCache(
+    return fetchGeneExpressionWork(
       experimentId, timeout, body, backendStatus, environment, broadcast, extras,
     );
   }
@@ -244,27 +195,27 @@ const fetchWork = async (
   // Then, we may be able to find this in S3.
   let response = await seekFromS3(ETag, experimentId);
 
-  if (response) return response;
-
   // If there is no response in S3, dispatch workRequest via the worker
-  try {
-    await dispatchWorkRequest(
-      experimentId,
-      body,
-      timeout,
-      ETag,
-      {
-        PipelineRunETag: qcPipelineStartDate,
-        broadcast,
-        ...extras,
-      },
-    );
-
-    response = await seekFromS3(ETag, experimentId);
-  } catch (error) {
-    console.error('Error dispatching work request', error);
-    throw error;
+  if (!response) {
+    try {
+      await dispatchWorkRequest(
+        experimentId,
+        body,
+        timeout,
+        ETag,
+        {
+          PipelineRunETag: qcPipelineStartDate,
+          broadcast,
+          ...extras,
+        },
+      );
+    } catch (error) {
+      console.error('Error dispatching work request', error);
+      throw error;
+    }
   }
+
+  response = await seekFromS3(ETag, experimentId);
 
   // If a work response is in s3, it is cacheable
   // (the cacheable or not option is managed in the worker)

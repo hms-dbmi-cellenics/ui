@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { initialViewState } from './getInitialState';
+import { initialViewState } from './initialState';
 
 const genesPropertiesLoading = (state, action) => {
   const { properties, componentUuid } = action.payload;

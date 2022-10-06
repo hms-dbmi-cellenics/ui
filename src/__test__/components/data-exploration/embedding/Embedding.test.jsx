@@ -18,8 +18,6 @@ import { initialEmbeddingState } from 'redux/reducers/embeddings/initialState';
 import generateExperimentSettingsMock from '__test__/test-utils/experimentSettings.mock';
 import { CELL_INFO_UPDATE } from 'redux/actionTypes/cellInfo';
 import '__test__/test-utils/setupTests';
-import { getTwoGenesExpressionMatrix } from '__test__/utils/ExpressionMatrix/testMatrixes';
-import ExpressionMatrix from 'utils/ExpressionMatrix/ExpressionMatrix';
 
 const mockStore = configureMockStore([thunk]);
 let component;
@@ -61,7 +59,7 @@ describe('Embedding', () => {
     genes: {
       expression: {
         loading: false,
-        matrix: new ExpressionMatrix(),
+        data: {},
       },
     },
     cellInfo: {
@@ -317,7 +315,20 @@ describe('Embedding', () => {
         ...initialState.genes,
         expression: {
           loading: [],
-          matrix: getTwoGenesExpressionMatrix(),
+          data: {
+            REALGENE: {
+              rawExpression: {
+                min: 0,
+                max: 1.6,
+                expression: [0, 0.4, 0.5, 1.6],
+              },
+              truncatedExpression: {
+                min: 0,
+                max: 1.6,
+                expression: [0, 0.4, 0.5, 1.6],
+              },
+            },
+          },
         },
       },
       cellInfo: {
@@ -325,7 +336,7 @@ describe('Embedding', () => {
         focus: {
           ...initialState.cellInfo.focus,
           store: 'genes',
-          key: 'Gzma',
+          key: 'REALGENE',
         },
       },
     };
@@ -340,6 +351,6 @@ describe('Embedding', () => {
 
     const focusedGeneInfo = embedding.find('Embedding div label strong');
     expect(focusedGeneInfo.length).toEqual(1);
-    expect(focusedGeneInfo.props().children).toEqual('Gzma');
+    expect(focusedGeneInfo.props().children).toEqual('REALGENE');
   });
 });

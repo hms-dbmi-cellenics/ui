@@ -44,6 +44,7 @@ const Embedding = (props) => {
 
   const dispatch = useDispatch();
 
+  const [view, setView] = useState({ target: [4, -4, 0], zoom: INITIAL_ZOOM });
   const [cellRadius, setCellRadius] = useState(cellRadiusFromZoom(INITIAL_ZOOM));
   const rootClusterNodes = useSelector(getCellSetsHierarchyByType('cellSets')).map(({ key }) => key);
 
@@ -57,7 +58,7 @@ const Embedding = (props) => {
   const { data, loading, error } = useSelector((state) => state.embeddings[embeddingType]) || {};
 
   const focusData = useSelector((state) => state.cellInfo.focus);
-
+  const focusedExpression = useSelector((state) => state.genes.expression.data[focusData.key]);
   const cellSets = useSelector(getCellSets());
   const {
     properties: cellSetProperties,
@@ -67,12 +68,7 @@ const Embedding = (props) => {
 
   const selectedCell = useSelector((state) => state.cellInfo.cellId);
   const expressionLoading = useSelector((state) => state.genes.expression.loading);
-
-  const expressionMatrix = useSelector((state) => state.genes.expression.matrix);
-
-  const focusedExpression = useSelector(
-    (state) => state.genes.expression.matrix.getRawExpression(focusData.key),
-  );
+  const loadedGenes = useSelector((state) => Object.keys(state.genes.expression.data));
 
   const cellCoordinatesRef = useRef({ x: 200, y: 300 });
   const [cellInfoTooltip, setCellInfoTooltip] = useState();
@@ -80,7 +76,6 @@ const Embedding = (props) => {
   const [selectedIds, setSelectedIds] = useState(new Set());
   const [cellColors, setCellColors] = useState({});
   const [cellInfoVisible, setCellInfoVisible] = useState(true);
-  const [view, setView] = useState({ target: [4, -4, 0], zoom: INITIAL_ZOOM });
 
   // Load embedding settings if they aren't already.
   useEffect(() => {
@@ -132,11 +127,8 @@ const Embedding = (props) => {
       return;
     }
 
-    const truncatedExpression = expressionMatrix.getTruncatedExpression(focusData.key);
-    const { truncatedMin, truncatedMax } = expressionMatrix.getStats(focusData.key);
-
-    setCellColors(colorByGeneExpression(truncatedExpression, truncatedMin, truncatedMax));
-  }, [focusData.key, expressionLoading]);
+    setCellColors(colorByGeneExpression(focusedExpression));
+  }, [focusedExpression]);
 
   useEffect(() => {
     if (selectedCell) {
@@ -145,14 +137,12 @@ const Embedding = (props) => {
 
       if (focusedExpression) {
         geneName = focusData.key;
-        expressionToDispatch = focusedExpression[selectedCell];
+        expressionToDispatch = focusedExpression.rawExpression.expression[selectedCell];
       }
 
       // getting the cluster properties for every cluster that has the cellId
       const cellProperties = getContainingCellSetsProperties(
-        Number.parseInt(selectedCell, 10),
-        rootClusterNodes,
-        cellSets,
+        Number.parseInt(selectedCell, 10), rootClusterNodes, cellSets,
       );
 
       const prefixedCellSetNames = [];
@@ -215,12 +205,11 @@ const Embedding = (props) => {
     return (<center><Loader experimentId={experimentId} size='large' /></center>);
   }
 
-  // The selected gene in can be present in both expression.loading
-  // and expression.matrix loaded genes.
+  // The selected gene in can be present in both expression.loading and expression.data.
   // To make sure that the gene is really loading, we have to check if
   // it exists in the loading array and is not present in the data array
   if (focusData.store === 'genes'
-    && !expressionMatrix.geneIsLoaded(focusData.key)
+    && !loadedGenes.includes(focusData.key)
     && expressionLoading.includes(focusData.key)) {
     return (<center><Loader experimentId={experimentId} size='large' /></center>);
   }

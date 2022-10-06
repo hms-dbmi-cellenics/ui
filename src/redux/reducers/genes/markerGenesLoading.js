@@ -1,11 +1,11 @@
 /* eslint-disable no-param-reassign */
 import produce from 'immer';
 
-import getInitialState from './getInitialState';
+import initialState from './initialState';
 
 const markerGenesLoading = produce((draft) => {
   draft.markers.loading = true;
   draft.markers.error = false;
-}, getInitialState());
+}, initialState);
 
 export default markerGenesLoading;

@@ -1,20 +1,3 @@
-import * as setOperations from 'utils/setOperations';
-
-/**
- *
- * @param {*} cellClassKey The key of the cell class we want to unite by, e.g.: 'louvain'
- * @param {*} hierarchy
- * @param {*} properties
- * @returns A Set of all cell ids of the cellClassKey
- */
-const unionByCellClass = (cellClassKey, hierarchy, properties) => {
-  const cellSetKeys = hierarchy
-    .find(({ key }) => key === cellClassKey).children
-    .map(({ key }) => key);
-
-  return union(cellSetKeys, properties);
-};
-
 const union = (listOfSets, properties) => {
   if (!listOfSets) {
     return new Set();
@@ -86,21 +69,4 @@ const complement = (listOfSets, properties) => {
   return complementSet;
 };
 
-const withoutFilteredOutCells = (cellSets, originalCellIds) => {
-  const louvainClusters = cellSets.find(({ key }) => key === 'louvain').children;
-
-  const filteredInCellIds = louvainClusters.reduce(
-    (filteredInCellIdsAcum, { cellIds }) => setOperations.union(filteredInCellIdsAcum, cellIds),
-    new Set(),
-  );
-
-  return setOperations.intersection(filteredInCellIds, originalCellIds);
-};
-
-export {
-  union,
-  intersection,
-  complement,
-  unionByCellClass,
-  withoutFilteredOutCells,
-};
+export { union, intersection, complement };

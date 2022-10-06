@@ -14,7 +14,6 @@ const getClusterNames = (state) => {
   const clusterNames = clusterIds?.map((clusterId) => state.cellSets.properties[clusterId].name);
   return clusterNames;
 };
-
 const orderCellSets = (data, state, config) => {
   // reordering data based on the sample order
   const { selectedCellSet } = config;
@@ -29,7 +28,6 @@ const orderCellSets = (data, state, config) => {
     ));
   }
 };
-
 const getDotPlot = (
   experimentId,
   plotUuid,

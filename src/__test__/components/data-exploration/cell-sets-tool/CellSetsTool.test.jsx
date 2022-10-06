@@ -9,15 +9,16 @@ import { act } from 'react-dom/test-utils';
 
 import { Provider } from 'react-redux';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
+import { fetchWork } from 'utils/work/fetchWork';
 
 import createTestComponentFactory from '__test__/test-utils/testComponentFactory';
 import { makeStore } from 'redux/store';
 
 import CellSetsTool from 'components/data-exploration/cell-sets-tool/CellSetsTool';
 import { createCellSet } from 'redux/actions/cellSets';
+import { loadGeneExpression } from 'redux/actions/genes';
 
 import '__test__/test-utils/setupTests';
-import { withoutFilteredOutCells } from 'utils/cellSetOperations';
 
 jest.mock('utils/work/fetchWork');
 
@@ -32,6 +33,8 @@ const cellSetsData = require('__test__/data/cell_sets.json');
 
 const louvainClusters = cellSetsData.cellSets.find(({ key }) => key === 'louvain').children;
 const sampleList = cellSetsData.cellSets.find(({ key }) => key === 'sample').children;
+
+const geneExpressionData = require('__test__/data/gene_expression.json');
 
 const experimentId = '1234';
 
@@ -352,10 +355,7 @@ describe('CellSetsTool', () => {
     const newClusterKey = getClusterByName('New Cluster');
 
     const cluster0CellIds = louvainClusters.find(({ name }) => name === 'Cluster 0').cellIds;
-    const allCellIds = sampleList.reduce(
-      (sumCellIds, { cellIds }) => sumCellIds.concat(cellIds),
-      [],
-    );
+    const allCellIds = sampleList.reduce((sumCellIds, { cellIds }) => sumCellIds.concat(cellIds), []);
 
     const actualComplement = storeState.getState().cellSets.properties[newClusterKey].cellIds;
     const expectedComplement = new Set(
@@ -447,13 +447,11 @@ describe('CellSetsTool', () => {
     const wt2Cluster = screen.getByText('WT2');
     userEvent.click(wt2Cluster);
 
-    const cellsWT1 = sampleList.find(({ name }) => name === 'WT1').cellIds;
-    const cellsWT2 = sampleList.find(({ name }) => name === 'WT2').cellIds;
-    const selectedCellIds = [...cellsWT1, ...cellsWT2];
+    const numCellsWT1 = sampleList.find(({ name }) => name === 'WT1').cellIds.length;
+    const numCellsWT2 = sampleList.find(({ name }) => name === 'WT2').cellIds.length;
+    const numCellsTotal = numCellsWT1 + numCellsWT2;
 
-    const numSelectedCells = withoutFilteredOutCells(cellSetsData.cellSets, selectedCellIds).size;
-
-    screen.getByText(`${numSelectedCells} cells selected`);
+    screen.getByText(`${numCellsTotal} cells selected`);
   });
 
   it('Scratchpad cluster deletion works ', async () => {
@@ -491,16 +489,17 @@ describe('CellSetsTool', () => {
       );
     });
 
-    // go to the metadata tab
-    const metadataTabButton = screen.getByText(/Metadata/i);
-    userEvent.click(metadataTabButton);
+    fetchWork.mockImplementationOnce(() => new Promise((resolve) => resolve(geneExpressionData)));
 
-    // select a sample cluster
-    const wt1Cluster = screen.getByText('WT1');
-    userEvent.click(wt1Cluster);
+    await act(async () => {
+      storeState.dispatch(loadGeneExpression(experimentId, ['TestGene'], '1234'));
+    });
 
-    // Cells in wt1 minus all the ones that are not in louvain (they were filtered out)
-    screen.getByText('28 cells selected');
+    // select the first louvain cluster
+    const louvain0Cluster = screen.getByText('Cluster 0');
+    userEvent.click(louvain0Cluster);
+
+    screen.getByText('24 cells selected');
   });
 
   it('Displays a cell set hidden message when cluster is hidden', async () => {
