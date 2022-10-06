@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import {
   Skeleton,
   Empty,
   Space,
-  Select,
 } from 'antd';
 
 import { useSelector, useDispatch } from 'react-redux';
@@ -36,9 +35,8 @@ const NormalizedMatrixPage = (props) => {
 
   const {
     config,
-    plotData,
-    loading: plotDataLoading,
-    error: plotDataError,
+    loading: configLoading,
+    error: configError,
   } = useSelector((state) => state.componentConfig[plotUuid]) || {};
 
   const cellSets = useSelector(getCellSets());
@@ -81,7 +79,7 @@ const NormalizedMatrixPage = (props) => {
       );
     }
 
-    if (plotDataError) {
+    if (configError) {
       return (
         <center>
           <PlatformError />
@@ -89,7 +87,7 @@ const NormalizedMatrixPage = (props) => {
       );
     }
 
-    if (!cellSets.accessible || plotDataLoading) {
+    if (!cellSets.accessible || configLoading) {
       return (
         <center>
           <Loader experimentId={experimentId} />
@@ -101,7 +99,10 @@ const NormalizedMatrixPage = (props) => {
       <center>
         <Empty description={(
           <>
-            <p>Click on "Download the normalized expression matrix" to obtain it as a .csv file</p>
+            <p>
+              Click on &quot;Download the normalized expression matrix&quot;
+              to obtain it as a .csv file
+            </p>
           </>
         )}
         />
