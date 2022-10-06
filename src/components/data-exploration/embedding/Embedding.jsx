@@ -74,14 +74,13 @@ const Embedding = (props) => {
     (state) => state.genes.expression.matrix.getRawExpression(focusData.key),
   );
 
+  const cellCoordinatesRef = useRef({ x: 200, y: 300 });
+  const [cellInfoTooltip, setCellInfoTooltip] = useState();
   const [createClusterPopover, setCreateClusterPopover] = useState(false);
   const [selectedIds, setSelectedIds] = useState(new Set());
   const [cellColors, setCellColors] = useState({});
   const [cellInfoVisible, setCellInfoVisible] = useState(true);
   const [view, setView] = useState({ target: [4, -4, 0], zoom: INITIAL_ZOOM });
-
-  const cellCoordinates = useRef({ x: 200, y: 300 });
-  const cellInfoTooltip = useRef();
 
   // Load embedding settings if they aren't already.
   useEffect(() => {
@@ -163,20 +162,20 @@ const Embedding = (props) => {
         });
       });
 
-      cellInfoTooltip.current = {
+      setCellInfoTooltip({
         cellSets: prefixedCellSetNames,
         cellId: selectedCell,
         componentType: embeddingType,
         expression: expressionToDispatch,
         geneName,
-      };
+      });
     }
   }, [selectedCell]);
 
   const updateCellCoordinates = (newView) => {
     if (selectedCell && newView.project) {
       const [x, y] = newView.project(selectedCell);
-      cellCoordinates.current = {
+      cellCoordinatesRef.current = {
         x,
         y,
         width,
@@ -216,7 +215,8 @@ const Embedding = (props) => {
     return (<center><Loader experimentId={experimentId} size='large' /></center>);
   }
 
-  // The selected gene in can be present in both expression.loading and expression.matrix loaded genes.
+  // The selected gene in can be present in both expression.loading
+  // and expression.matrix loaded genes.
   // To make sure that the gene is really loading, we have to check if
   // it exists in the loading array and is not present in the data array
   if (focusData.store === 'genes'
@@ -319,23 +319,23 @@ const Embedding = (props) => {
           ? (
             <ClusterPopover
               visible
-              popoverPosition={cellCoordinates}
+              popoverPosition={cellCoordinatesRef}
               onCreate={onCreateCluster}
               onCancel={onCancelCreateCluster}
             />
           ) : (
-            (cellInfoVisible && cellInfoTooltip.current) ? (
+            (cellInfoVisible && cellInfoTooltip) ? (
               <div>
                 <CellInfo
                   containerWidth={width}
                   containerHeight={height}
                   componentType={embeddingType}
-                  coordinates={cellCoordinates.current}
-                  cellInfo={cellInfoTooltip.current}
+                  coordinates={cellCoordinatesRef.current}
+                  cellInfo={cellInfoTooltip}
                 />
                 <CrossHair
                   componentType={embeddingType}
-                  coordinates={cellCoordinates}
+                  coordinates={cellCoordinatesRef}
                 />
               </div>
             ) : <></>
