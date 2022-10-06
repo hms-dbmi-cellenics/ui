@@ -31,10 +31,11 @@ const HelpButton = () => {
       and
       <a href='https://www.biomage.net/resources' target='_blank' rel='noreferrer'> tutorial videos </a>
       that are available on our website!
-      <br />
-      <br />
+
       {accountId !== AccountId.BIOMAGE && (
         <>
+          <br />
+          <br />
           For 1-2-1 support with your analysis, contact
           {' '}
           <a href='mailto: vicky@biomage.net'>vicky@biomage.net</a>
