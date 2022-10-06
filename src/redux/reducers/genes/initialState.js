@@ -1,5 +1,3 @@
-import ExpressionMatrix from 'utils/ExpressionMatrix/ExpressionMatrix';
-
 const initialViewState = {
   fetching: false,
   error: false,
@@ -15,7 +13,7 @@ const initialExpressionState = {
   zScore: [],
 };
 
-const getInitialState = () => ({
+const initialState = {
   properties: {
     loading: [],
     views: {},
@@ -24,7 +22,7 @@ const getInitialState = () => ({
   expression: {
     loading: [],
     error: false,
-    matrix: new ExpressionMatrix(),
+    data: {},
     views: {},
   },
   selected: [],
@@ -33,7 +31,7 @@ const getInitialState = () => ({
     loading: false,
     error: false,
   },
-});
+};
 
 export { initialViewState, initialExpressionState };
-export default getInitialState;
+export default initialState;

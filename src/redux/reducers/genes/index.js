@@ -1,4 +1,4 @@
-import getInitialState from './getInitialState';
+import initialState from './initialState';
 import {
   GENES_PROPERTIES_LOADING, GENES_PROPERTIES_LOADED_PAGINATED, GENES_PROPERTIES_ERROR,
   GENES_SELECT, GENES_DESELECT,
@@ -22,7 +22,7 @@ import markerGenesLoaded from './markerGenesLoaded';
 import genesSelect from './genesSelect';
 import genesDeselect from './genesDeselect';
 
-const genesReducer = (state = getInitialState(), action) => {
+const genesReducer = (state = initialState, action) => {
   switch (action.type) {
     case GENES_PROPERTIES_LOADING: {
       return genesPropertiesLoading(state, action);
@@ -49,7 +49,7 @@ const genesReducer = (state = getInitialState(), action) => {
       return genesExpressionError(state, action);
     }
     case EXPERIMENT_SETTINGS_QC_START: {
-      return getInitialState();
+      return initialState;
     }
     case MARKER_GENES_LOADING: {
       return markerGenesLoading(state, action);

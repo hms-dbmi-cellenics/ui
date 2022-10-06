@@ -12,15 +12,8 @@ const cellSets = {
   hierarchy: createHierarchyFromTree(mockCellSet.cellSets),
 };
 
-const sampleCellClass = mockCellSet.cellSets.find(({ key }) => key === 'sample');
-const louvainCellClass = mockCellSet.cellSets.find(({ key }) => key === 'louvain');
-
-const louvainNumCells = louvainCellClass.children.reduce(
-  (sum, cellSet) => sum + cellSet.cellIds.length,
-  0,
-);
-
-const numCells = sampleCellClass.children.reduce(
+const sampleCellSet = mockCellSet.cellSets.find(({ key }) => key === 'sample');
+const numCells = sampleCellSet.children.reduce(
   (sum, cellSet) => sum + cellSet.cellIds.length,
   0,
 );
@@ -40,7 +33,7 @@ describe('Get all cells', () => {
 
   it('Passing group by inserts the key of the group to the result', () => {
     const allCellIds = getAllCells(cellSets, 'louvain');
-    expect(allCellIds.length).toEqual(louvainNumCells);
+    expect(allCellIds.length).toEqual(numCells);
 
     expect(allCellIds[0]).toMatchInlineSnapshot(`
       Object {

@@ -120,7 +120,7 @@ const MarkerHeatmap = ({ experimentId }) => {
     const getCellIdsForCluster = (clusterId) => properties[clusterId].cellIds;
 
     const getAverageExpressionForGene = (gene, currentCellIds) => {
-      const expressionValues = expressionData.matrix.getRawExpression(gene);
+      const expressionValues = expressionData.data[gene].rawExpression.expression;
       let totalValue = 0;
       currentCellIds.forEach((cellId) => {
         totalValue += expressionValues[cellId];
@@ -139,7 +139,6 @@ const MarkerHeatmap = ({ experimentId }) => {
           maxAverageExpression.clusterId = clusterIndx;
         }
       });
-
       return maxAverageExpression.clusterId;
     };
 
@@ -157,7 +156,6 @@ const MarkerHeatmap = ({ experimentId }) => {
         }
       });
     });
-
     return newOrder;
   };
 
@@ -207,8 +205,8 @@ const MarkerHeatmap = ({ experimentId }) => {
     }
 
     const cellOrder = populateHeatmapData(cellSets, config, true);
-
     const data = generateVegaData(cellOrder, expressionData, config, cellSets);
+
     const spec = generateSpec(config, 'Cluster ID', data, true);
 
     spec.description = 'Marker heatmap';

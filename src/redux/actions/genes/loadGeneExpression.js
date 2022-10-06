@@ -1,18 +1,18 @@
 import _ from 'lodash';
-import { SparseMatrix } from 'mathjs';
 
 import {
   GENES_EXPRESSION_LOADING, GENES_EXPRESSION_ERROR, GENES_EXPRESSION_LOADED,
 } from 'redux/actionTypes/genes';
 
+import pushNotificationMessage from 'utils/pushNotificationMessage';
 import { fetchWork } from 'utils/work/fetchWork';
 import getTimeoutForWorkerTask from 'utils/getTimeoutForWorkerTask';
 
 const loadGeneExpression = (
-  experimentId, genes, componentUuid,
+  experimentId, genes, componentUuid, forceReloadAll = false,
 ) => async (dispatch, getState) => {
   const {
-    loading, matrix,
+    loading, data: geneData,
   } = getState().genes.expression;
 
   // If other gene expression data is already being loaded, don't dispatch.
@@ -36,12 +36,12 @@ const loadGeneExpression = (
   // we are not forced to reload all of the data.
 
   let genesToFetch = [...genes];
-  const genesAlreadyLoaded = matrix.getStoredGenes();
-
-  genesToFetch = genesToFetch.filter(
-    (gene) => !new Set(upperCaseArray(genesAlreadyLoaded)).has(gene.toUpperCase()),
-  );
-
+  const genesAlreadyLoaded = Object.keys(geneData);
+  if (!forceReloadAll) {
+    genesToFetch = genesToFetch.filter(
+      (gene) => !new Set(upperCaseArray(genesAlreadyLoaded)).has(gene.toUpperCase()),
+    );
+  }
   const displayedGenes = genesAlreadyLoaded.filter(
     (gene) => upperCaseArray(genes).includes(gene.toUpperCase()),
   );
@@ -66,36 +66,32 @@ const loadGeneExpression = (
   const timeout = getTimeoutForWorkerTask(getState(), 'GeneExpression');
 
   try {
-    const {
-      orderedGeneNames,
-      rawExpression: rawExpressionJson,
-      truncatedExpression: truncatedExpressionJson,
-      zScore: zScoreJson,
-      stats,
-    } = await fetchWork(
+    const data = await fetchWork(
       experimentId, body, getState, { timeout },
     );
 
-    const rawExpression = SparseMatrix.fromJSON(rawExpressionJson);
-    const truncatedExpression = SparseMatrix.fromJSON(truncatedExpressionJson);
-    const zScore = SparseMatrix.fromJSON(zScoreJson);
-
-    const fetchedGenes = _.concat(displayedGenes, orderedGeneNames);
-
-    dispatch({
-      type: GENES_EXPRESSION_LOADED,
-      payload: {
-        componentUuid,
-        genes: fetchedGenes,
-        newGenes: {
-          orderedGeneNames,
-          stats,
-          rawExpression,
-          truncatedExpression,
-          zScore,
+    if (data[genesToFetch[0]]?.error) {
+      pushNotificationMessage('error', data[genesToFetch[0]].message);
+      dispatch({
+        type: GENES_EXPRESSION_LOADED,
+        payload: {
+          data: [],
+          genes: genesAlreadyLoaded,
+          loadingStatus: [],
         },
-      },
-    });
+      });
+    } else {
+      const fetchedGenes = _.concat(displayedGenes, Object.keys(data));
+      dispatch({
+        type: GENES_EXPRESSION_LOADED,
+        payload: {
+          experimentId,
+          componentUuid,
+          genes: fetchedGenes,
+          data,
+        },
+      });
+    }
   } catch (error) {
     dispatch({
       type: GENES_EXPRESSION_ERROR,

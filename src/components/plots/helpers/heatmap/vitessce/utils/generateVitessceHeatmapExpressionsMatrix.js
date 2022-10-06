@@ -1,27 +1,31 @@
 import _ from 'lodash';
 import { convertRange } from 'utils/plotUtils';
 
-const scaledTo255 = (rowOfExpressions, min, max) => (
-  rowOfExpressions.map((value) => convertRange(value, [min, max], [0, 255]))
-);
+const scaledTo255 = (rowOfExpressions) => {
+  const min = _.min(rowOfExpressions);
+  const max = _.max(rowOfExpressions);
+
+  return rowOfExpressions.map((value) => convertRange(value, [min, max], [0, 255]));
+};
 
 const generateVitessceHeatmapExpressionsMatrix = (cellOrder, geneOrder, expression) => {
   const geneExpressionsDataMatrix = [];
 
   geneOrder.forEach((gene) => {
-    const { matrix } = expression;
+    if (!expression.data[gene]) return;
 
-    if (!matrix.geneIsLoaded(gene)) return;
-    const truncatedExpression = matrix.getTruncatedExpression(gene, cellOrder);
+    const geneExpressions = cellOrder.map(
+      (cellId) => expression.data[gene].truncatedExpression.expression[cellId],
+    );
 
-    const { truncatedMin, truncatedMax } = matrix.getStats(gene);
-
-    const scaledGeneExpressions = scaledTo255(truncatedExpression, truncatedMin, truncatedMax);
+    const scaledGeneExpressions = scaledTo255(geneExpressions);
 
     geneExpressionsDataMatrix.push(scaledGeneExpressions);
   });
 
-  return _.flatten(_.unzip(geneExpressionsDataMatrix));
+  const cellExpressionsData = _.flatten(_.unzip(geneExpressionsDataMatrix));
+
+  return cellExpressionsData;
 };
 
 export default generateVitessceHeatmapExpressionsMatrix;

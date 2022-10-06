@@ -2,7 +2,7 @@ import React from 'react';
 import _ from 'lodash';
 
 import { act } from 'react-dom/test-utils';
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { mount } from 'enzyme';
 import { waitFor, within } from '@testing-library/dom';
 import '@testing-library/jest-dom';
@@ -480,10 +480,7 @@ describe('Drag and drop enzyme tests', () => {
 
     // antd renders 5 elements, use the first one
     tree = component.find({ 'data-testid': 'HierachicalTreeGenes' }).at(0);
-    loadedGenes = paginatedGeneExpressionData.rows
-      .map((row) => (row.gene_names))
-      .slice(0, 3)
-      .reverse();
+    loadedGenes = paginatedGeneExpressionData.rows.map((row) => (row.gene_names)).slice(0, 3).reverse();
   });
 
   it('changes nothing on drop in place', async () => {
