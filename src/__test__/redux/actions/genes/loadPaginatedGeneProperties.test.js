@@ -1,7 +1,7 @@
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import loadPaginatedGeneProperties from 'redux/actions/genes/loadPaginatedGeneProperties';
-import initialState from 'redux/reducers/genes/initialState';
+import getInitialState from 'redux/reducers/genes/getInitialState';
 
 import { dispatchWorkRequest, seekFromS3 } from 'utils/work/seekWorkResponse';
 
@@ -49,6 +49,7 @@ describe('loadPaginatedGeneProperties action', () => {
   });
 
   it('Does not dispatch when some of the properties are already loading', async () => {
+    const initialState = getInitialState();
     const store = mockStore({
       backendStatus,
       genes:
@@ -66,6 +67,7 @@ describe('loadPaginatedGeneProperties action', () => {
   });
 
   it('Dispatches appropriately on success condition', async () => {
+    const initialState = getInitialState();
     const store = mockStore({
       genes:
       {
@@ -127,7 +129,7 @@ describe('loadPaginatedGeneProperties action', () => {
     const store = mockStore({
       genes:
       {
-        ...initialState,
+        ...getInitialState(),
       },
       backendStatus,
       networkResources: {

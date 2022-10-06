@@ -8,7 +8,7 @@ import { Provider } from 'react-redux';
 import { loadBackendStatus } from 'redux/actions/backendStatus';
 import { makeStore } from 'redux/store';
 import { seekFromS3 } from 'utils/work/seekWorkResponse';
-import markerGenesData1 from '__test__/data/marker_genes_1.json';
+import markerGenes1 from '__test__/data/marker_genes_1.json';
 import listGenesViolinPlot from '__test__/data/list_genes_violin_plot.json';
 import mockEmbedding from '__test__/data/embedding.json';
 
@@ -48,7 +48,7 @@ jest.mock('utils/work/seekWorkResponse', () => ({
 }));
 
 const mockWorkerResponses = {
-  '1-marker-genes': markerGenesData1.data,
+  '1-marker-genes': markerGenes1,
   ListGenes: listGenesViolinPlot,
   GetEmbedding: mockEmbedding,
 };

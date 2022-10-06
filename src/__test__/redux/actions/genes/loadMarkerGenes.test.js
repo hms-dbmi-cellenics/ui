@@ -1,11 +1,13 @@
+import _ from 'lodash';
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import { fetchWork } from 'utils/work/fetchWork';
 import loadMarkerGenes from 'redux/actions/genes/loadMarkerGenes';
 import { MARKER_GENES_ERROR, MARKER_GENES_LOADED, MARKER_GENES_LOADING } from 'redux/actionTypes/genes';
-import initialState from 'redux/reducers/genes/initialState';
+import getInitialState from 'redux/reducers/genes/getInitialState';
 
 import '__test__/test-utils/setupTests';
+import { getOneGeneMatrix } from '__test__/utils/ExpressionMatrix/testMatrixes';
 
 jest.mock('utils/work/fetchWork');
 
@@ -73,44 +75,25 @@ describe('loadMarkerGenes action', () => {
 
   it('dispatches appropriately on success', async () => {
     const store = mockStore({
-      genes: {
-        ...initialState,
-      },
+      genes: getInitialState(),
       experimentSettings,
       backendStatus,
     });
 
-    const order = ['geneA'];
-    const data = {
-      geneA: {
-        expression: [1],
-        mean: 1,
-        stdev: 1,
-      },
-    };
-
-    const mockResult = { order, data };
+    const mockResult = getOneGeneMatrix('geneA', 1);
 
     fetchWork.mockImplementationOnce(() => new Promise((resolve) => resolve(mockResult)));
 
     await store.dispatch(loadMarkerGenes(experimentId, 10, 'interactiveHeatmap'));
 
-    const loadingAction = store.getActions()[0];
-    expect(loadingAction.type).toEqual(MARKER_GENES_LOADING);
-    expect(loadingAction).toMatchSnapshot();
-
-    const loadedAction = store.getActions()[1];
-    expect(loadedAction.type).toEqual(MARKER_GENES_LOADED);
-    expect(loadedAction.payload.genes).toEqual(order);
-    expect(loadedAction.payload.data).toEqual(data);
-    expect(loadedAction).toMatchSnapshot();
+    const actions = store.getActions();
+    expect(_.map(actions, 'type')).toEqual([MARKER_GENES_LOADING, MARKER_GENES_LOADED]);
+    expect(_.map(actions, 'payload')).toMatchSnapshot();
   });
 
   it('dispatches appropriately on error', async () => {
     const store = mockStore({
-      genes: {
-        ...initialState,
-      },
+      genes: getInitialState(),
       experimentSettings,
       backendStatus,
     });
@@ -119,20 +102,14 @@ describe('loadMarkerGenes action', () => {
 
     await store.dispatch(loadMarkerGenes(experimentId, 10));
 
-    const loadingAction = store.getActions()[0];
-    expect(loadingAction.type).toEqual(MARKER_GENES_LOADING);
-    expect(loadingAction).toMatchSnapshot();
-
-    const loadedAction = store.getActions()[1];
-    expect(loadedAction.type).toEqual(MARKER_GENES_ERROR);
-    expect(loadedAction).toMatchSnapshot();
+    const actions = store.getActions();
+    expect(_.map(actions, 'type')).toEqual([MARKER_GENES_LOADING, MARKER_GENES_ERROR]);
+    expect(_.map(actions, 'payload')).toMatchSnapshot();
   });
 
   it('Defaults to louvain cluster if selected cell set is not provided', async () => {
     const store = mockStore({
-      genes: {
-        ...initialState,
-      },
+      genes: getInitialState(),
       experimentSettings,
       backendStatus,
     });
