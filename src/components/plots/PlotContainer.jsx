@@ -26,7 +26,7 @@ const PlotContainer = (props) => {
     experimentId,
     plotUuid, plotType, plotInfo,
     plotStylingConfig, defaultActiveKey,
-    extraToolbarControls, extraControlPanels,
+    extraToolbarControls, extraControlPanels, customControlPanel,
     showResetButton, onPlotReset,
     children,
     saveDebounceTime,
@@ -116,6 +116,18 @@ const PlotContainer = (props) => {
     </Space>
   );
 
+  const renderDefaultControlPanel = (height) => (
+    <div style={{ height, overflowY: 'auto' }}>
+      <PlotStyling
+        formConfig={plotStylingConfig}
+        config={config}
+        onUpdate={updatePlotWithChanges}
+        extraPanels={extraControlPanels}
+        defaultActiveKey={defaultActiveKey}
+      />
+    </div>
+  );
+
   const TILE_MAP = {
     [PLOT]: {
       toolbarControls: renderPlotToolbarControls(),
@@ -131,15 +143,7 @@ const PlotContainer = (props) => {
     [CONTROLS]: {
       toolbarControls: [],
       component: (width, height) => (
-        <div style={{ height, overflowY: 'auto' }}>
-          <PlotStyling
-            formConfig={plotStylingConfig}
-            config={config}
-            onUpdate={updatePlotWithChanges}
-            extraPanels={extraControlPanels}
-            defaultActiveKey={defaultActiveKey}
-          />
-        </div>
+        customControlPanel ?? renderDefaultControlPanel(height)
       ),
       style: { margin: '-10px' },
     },
@@ -170,6 +174,7 @@ PlotContainer.propTypes = {
   defaultActiveKey: PropTypes.string || PropTypes.arrayOf(PropTypes.string),
   extraToolbarControls: PropTypes.node || PropTypes.arrayOf(PropTypes.node),
   extraControlPanels: PropTypes.node || PropTypes.arrayOf(PropTypes.node),
+  customControlPanel: PropTypes.node,
   children: PropTypes.node,
   showResetButton: PropTypes.bool,
   onPlotReset: PropTypes.func,
@@ -180,6 +185,7 @@ PlotContainer.defaultProps = {
   plotInfo: null,
   extraToolbarControls: null,
   extraControlPanels: null,
+  customControlPanel: null,
   children: null,
   showResetButton: true,
   onPlotReset: () => { },
