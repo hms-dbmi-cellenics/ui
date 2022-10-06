@@ -71,12 +71,12 @@ const SamplesTable = forwardRef((props, ref) => {
       fixed: true,
       render: (text, record, indx) => <SampleNameCell cellInfo={{ text, record, indx }} />,
     },
-    ...fileUploadSpecifications[selectedTech]?.displayedFiles?.map((fileName, indx) => {
-      const fileNameWithoutExtension = fileName.split('.')[0];
+    ...fileUploadSpecifications[selectedTech]?.requiredFiles?.map((fileName, indx) => {
+      const fileNameWithoutExtension = fileName.key.split('.')[0];
 
       return ({
         index: 2 + indx,
-        title: fileName,
+        title: fileName.displayedName,
         key: fileNameWithoutExtension,
         dataIndex: fileNameWithoutExtension,
         render: (tableCellData) => (
@@ -232,10 +232,8 @@ const SamplesTable = forwardRef((props, ref) => {
 
       const fileData = {};
       sampleFileNames.forEach((key) => {
-        let displayedFileInTable = key.split('.')[0];
-        if (key === 'features.tsv.gz') {
-          displayedFileInTable = 'genes';
-        }
+        const displayedFileInTable = key.split('.')[0];
+
         const currentFile = sampleFiles[key] ?? { upload: { status: UploadStatus.FILE_NOT_FOUND } };
         const currentFileData = { sampleUuid, file: currentFile };
         fileData[displayedFileInTable] = currentFileData;
