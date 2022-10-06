@@ -53,7 +53,15 @@ const NormalizedMatrixPage = (props) => {
       <Space direction='vertical' split={<></>} style={{ marginLeft: '10px', marginRight: '10px' }}>
         <Space>Select the parameters for subsetting the normalized expression matrix.</Space>
         <Space direction='vertical'>
-          Select the samples to subset the data by:
+          Subset by samples:
+          <MultiSelect items={items} />
+        </Space>
+        <Space direction='vertical'>
+          Subset by clusters:
+          <MultiSelect items={items} />
+        </Space>
+        <Space direction='vertical'>
+          Subset by metadata group:
           <MultiSelect items={items} />
         </Space>
 
