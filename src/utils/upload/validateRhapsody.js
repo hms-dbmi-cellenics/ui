@@ -19,8 +19,9 @@ const decompress = async (arrBuffer) => {
   return result;
 };
 
-const columnsToSearch = [['Cell_Index'], ['Bioproduct', 'Gene'], ['RSEC_Reads'], ['Raw_Molecules'], ['RSEC_Adjusted_Molecules'],
-  ['DBEC_Reads'],
+const columnsToSearch = [
+  ['Cell_Index'], ['Bioproduct', 'Gene'], ['RSEC_Reads'],
+  ['Raw_Molecules'], ['RSEC_Adjusted_Molecules'], ['DBEC_Reads'],
   ['DBEC_Adjusted_Molecules']];
 
 const validateRhapsody = async (sample) => {
