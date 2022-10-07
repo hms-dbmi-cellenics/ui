@@ -52,15 +52,16 @@ const NormalizedMatrixPage = (props) => {
 
   const [metadataCellSets, setMetadataCellSets] = useState([]);
 
-  // const selectedItems = useRef([]);
+  const selectedItemsRef = useRef({
+    sample: [],
+    louvain: [],
+    metadata: [],
+    scratchpad: [],
+  });
 
-  const onSelectedItemsChanged = () => {
-
+  const onSelectedItemsChanged = (type) => (newItems) => {
+    selectedItemsRef.current[type] = newItems;
   };
-
-  useEffect(() => {
-
-  }, []);
 
   useEffect(() => {
     setMetadataCellSets(metadataTracks.map((track) => track.children).flat());
@@ -113,19 +114,19 @@ const NormalizedMatrixPage = (props) => {
           <Space>Select the parameters for subsetting the normalized expression matrix.</Space>
           <Space direction='vertical'>
             Subset by samples:
-            <MultiSelect items={_.map(sample.children, 'name')} onChange={onSelectedItemsChanged} placeholder='All' />
+            <MultiSelect items={_.map(sample.children, 'name')} onChange={onSelectedItemsChanged('sample')} placeholder='All' />
           </Space>
           <Space direction='vertical'>
             Subset by clusters:
-            <MultiSelect items={_.map(louvain.children, 'name')} onChange={onSelectedItemsChanged} placeholder='All' />
+            <MultiSelect items={_.map(louvain.children, 'name')} onChange={onSelectedItemsChanged('louvain')} placeholder='All' />
           </Space>
           <Space direction='vertical'>
             Subset by metadata group:
-            <MultiSelect items={_.map(metadataCellSets, 'name')} onChange={onSelectedItemsChanged} placeholder='All' />
+            <MultiSelect items={_.map(metadataCellSets, 'name')} onChange={onSelectedItemsChanged('metadata')} placeholder='All' />
           </Space>
           <Space direction='vertical'>
             Subset by custom cell sets:
-            <MultiSelect items={_.map(scratchpad.children, 'name')} onChange={onSelectedItemsChanged} placeholder='All' />
+            <MultiSelect items={_.map(scratchpad.children, 'name')} onChange={onSelectedItemsChanged('scratchpad')} placeholder='All' />
           </Space>
 
           <Button
