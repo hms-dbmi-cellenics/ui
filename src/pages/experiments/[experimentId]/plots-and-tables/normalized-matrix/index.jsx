@@ -1,7 +1,5 @@
 import _ from 'lodash';
-import React, {
-  useCallback, useEffect, useRef, useState,
-} from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   Skeleton,
   Empty,
@@ -22,7 +20,7 @@ import Header from 'components/Header';
 import PlotContainer from 'components/plots/PlotContainer';
 import Loader from 'components/Loader';
 
-import { loadPlotConfig } from 'redux/actions/componentConfig';
+import { downloadNormalizedMatrix, loadPlotConfig } from 'redux/actions/componentConfig';
 
 import { plotNames, plotTypes } from 'utils/constants';
 import PlatformError from 'components/PlatformError';
@@ -52,7 +50,7 @@ const NormalizedMatrixPage = (props) => {
 
   const [metadataCellSets, setMetadataCellSets] = useState([]);
 
-  const selectedItemsRef = useRef({
+  const filterByRef = useRef({
     sample: [],
     louvain: [],
     metadata: [],
@@ -60,7 +58,7 @@ const NormalizedMatrixPage = (props) => {
   });
 
   const onSelectedItemsChanged = (type) => (newItems) => {
-    selectedItemsRef.current[type] = newItems;
+    filterByRef.current[type] = newItems;
   };
 
   useEffect(() => {
@@ -68,12 +66,8 @@ const NormalizedMatrixPage = (props) => {
   }, [metadataTracks]);
 
   useEffect(() => {
-    if (!config) dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
+    if (!config) { dispatch(loadPlotConfig(experimentId, plotUuid, plotType)); }
     dispatch(loadCellSets(experimentId));
-  }, []);
-
-  const downloadMatrix = useCallback(() => {
-
   }, []);
 
   const renderControlPanel = () => {
@@ -131,7 +125,7 @@ const NormalizedMatrixPage = (props) => {
 
           <Button
             size='small'
-            onClick={() => downloadMatrix()}
+            onClick={() => dispatch(downloadNormalizedMatrix(experimentId, filterByRef.current))}
           >
             Download
           </Button>
