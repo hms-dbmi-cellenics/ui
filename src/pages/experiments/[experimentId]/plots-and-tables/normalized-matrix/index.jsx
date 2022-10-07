@@ -1,4 +1,5 @@
-import React, { useEffect } from 'react';
+import _ from 'lodash';
+import React, { useEffect, useState } from 'react';
 import {
   Skeleton,
   Empty,
@@ -8,7 +9,9 @@ import {
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 
-import { getCellSets } from 'redux/selectors';
+import {
+  getCellSets, getCellSetsHierarchyByKeys, getCellSetsHierarchyByType,
+} from 'redux/selectors';
 
 import { loadCellSets } from 'redux/actions/cellSets';
 
@@ -40,42 +43,25 @@ const NormalizedMatrixPage = (props) => {
   } = useSelector((state) => state.componentConfig[plotUuid]) || {};
 
   const cellSets = useSelector(getCellSets());
+  const [louvain, sample] = useSelector(getCellSetsHierarchyByKeys(['louvain', 'sample']));
+  const metadataTracks = useSelector(getCellSetsHierarchyByType('metadataCategorical', ['sample']));
 
-  const items = ['hola', 'chau', 'Qonda'];
+  const [metadataCellSets, setMetadataCellSets] = useState([]);
+
+  useEffect(() => {
+    setMetadataCellSets(metadataTracks.map((track) => track.children).flat());
+  }, [metadataTracks]);
 
   useEffect(() => {
     if (!config) dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
-    if (cellSets.hierarchy.length === 0) dispatch(loadCellSets(experimentId));
+    dispatch(loadCellSets(experimentId));
   }, []);
 
-  const renderControlPanel = () => (
-    <>
-      <Space direction='vertical' split={<></>} style={{ marginLeft: '10px', marginRight: '10px' }}>
-        <Space>Select the parameters for subsetting the normalized expression matrix.</Space>
-        <Space direction='vertical'>
-          Subset by samples:
-          <MultiSelect items={items} />
-        </Space>
-        <Space direction='vertical'>
-          Subset by clusters:
-          <MultiSelect items={items} />
-        </Space>
-        <Space direction='vertical'>
-          Subset by metadata group:
-          <MultiSelect items={items} />
-        </Space>
+  const renderControlPanel = () => {
+    if (!config) {
+      return <Skeleton />;
+    }
 
-        <ExportAsCSV data={[]} filename='' />
-      </Space>
-      {/* <div>Select the samples to subset the data:</div> */}
-    </>
-  );
-
-  if (!config) {
-    return <Skeleton />;
-  }
-
-  const renderPlot = () => {
     if (cellSets.error) {
       return (
         <center>
@@ -104,17 +90,25 @@ const NormalizedMatrixPage = (props) => {
     }
 
     return (
-      <center>
-        <Empty description={(
-          <>
-            <p>
-              Click on &quot;Download the normalized expression matrix&quot;
-              to obtain it as a .csv file
-            </p>
-          </>
-        )}
-        />
-      </center>
+      <>
+        <Space direction='vertical' split={<></>} style={{ marginLeft: '10px', marginRight: '10px' }}>
+          <Space>Select the parameters for subsetting the normalized expression matrix.</Space>
+          <Space direction='vertical'>
+            Subset by samples:
+            <MultiSelect items={_.map(sample.children, 'name')} />
+          </Space>
+          <Space direction='vertical'>
+            Subset by clusters:
+            <MultiSelect items={_.map(louvain.children, 'name')} />
+          </Space>
+          <Space direction='vertical'>
+            Subset by metadata group:
+            <MultiSelect items={_.map(metadataCellSets, 'name')} />
+          </Space>
+
+          <ExportAsCSV data={[]} filename='' />
+        </Space>
+      </>
     );
   };
 
@@ -129,7 +123,17 @@ const NormalizedMatrixPage = (props) => {
         customControlPanel={renderControlPanel()}
         defaultActiveKey='gene-selection'
       >
-        {renderPlot()}
+        <center>
+          <Empty description={(
+            <>
+              <p>
+                Click on &quot;Download the normalized expression matrix&quot;
+                to obtain it as a .csv file
+              </p>
+            </>
+          )}
+          />
+        </center>
       </PlotContainer>
     </>
   );
