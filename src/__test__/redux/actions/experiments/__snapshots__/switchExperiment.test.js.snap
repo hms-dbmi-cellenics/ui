@@ -150,9 +150,51 @@ Object {
   },
   "genes": Object {
     "expression": Object {
-      "data": Object {},
       "error": false,
       "loading": Array [],
+      "matrix": ExpressionMatrix {
+        "geneIndexes": Object {},
+        "rawGeneExpressions": Object {
+          "datatype": undefined,
+          "index": Array [],
+          "mathjs": "SparseMatrix",
+          "ptr": Array [
+            0,
+          ],
+          "size": Array [
+            0,
+            0,
+          ],
+          "values": Array [],
+        },
+        "stats": Object {},
+        "truncatedGeneExpressions": Object {
+          "datatype": undefined,
+          "index": Array [],
+          "mathjs": "SparseMatrix",
+          "ptr": Array [
+            0,
+          ],
+          "size": Array [
+            0,
+            0,
+          ],
+          "values": Array [],
+        },
+        "zScore": Object {
+          "datatype": undefined,
+          "index": Array [],
+          "mathjs": "SparseMatrix",
+          "ptr": Array [
+            0,
+          ],
+          "size": Array [
+            0,
+            0,
+          ],
+          "values": Array [],
+        },
+      },
       "views": Object {},
     },
     "focused": undefined,
@@ -482,9 +524,51 @@ Object {
   },
   "genes": Object {
     "expression": Object {
-      "data": Object {},
       "error": false,
       "loading": Array [],
+      "matrix": ExpressionMatrix {
+        "geneIndexes": Object {},
+        "rawGeneExpressions": Object {
+          "datatype": undefined,
+          "index": Array [],
+          "mathjs": "SparseMatrix",
+          "ptr": Array [
+            0,
+          ],
+          "size": Array [
+            0,
+            0,
+          ],
+          "values": Array [],
+        },
+        "stats": Object {},
+        "truncatedGeneExpressions": Object {
+          "datatype": undefined,
+          "index": Array [],
+          "mathjs": "SparseMatrix",
+          "ptr": Array [
+            0,
+          ],
+          "size": Array [
+            0,
+            0,
+          ],
+          "values": Array [],
+        },
+        "zScore": Object {
+          "datatype": undefined,
+          "index": Array [],
+          "mathjs": "SparseMatrix",
+          "ptr": Array [
+            0,
+          ],
+          "size": Array [
+            0,
+            0,
+          ],
+          "values": Array [],
+        },
+      },
       "views": Object {},
     },
     "focused": undefined,
