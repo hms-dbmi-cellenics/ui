@@ -91,7 +91,7 @@ const NormalizedMatrixPage = (props) => {
 
     return (
       <>
-        <Space direction='vertical' split={<></>} style={{ marginLeft: '10px', marginRight: '10px' }}>
+        <Space direction='vertical' split={<></>} style={{ marginLeft: '10px', marginRight: '10px', paddingTop: '10px' }}>
           <Space>Select the parameters for subsetting the normalized expression matrix.</Space>
           <Space direction='vertical'>
             Subset by samples:
