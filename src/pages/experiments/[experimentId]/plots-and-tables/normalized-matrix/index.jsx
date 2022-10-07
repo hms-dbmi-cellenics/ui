@@ -50,7 +50,7 @@ const NormalizedMatrixPage = (props) => {
 
   const [metadataCellSets, setMetadataCellSets] = useState([]);
 
-  const filterByRef = useRef({
+  const subsetByRef = useRef({
     sample: [],
     louvain: [],
     metadata: [],
@@ -58,7 +58,7 @@ const NormalizedMatrixPage = (props) => {
   });
 
   const onSelectedItemsChanged = (type) => (newItems) => {
-    filterByRef.current[type] = newItems;
+    subsetByRef.current[type] = newItems;
   };
 
   useEffect(() => {
@@ -104,7 +104,13 @@ const NormalizedMatrixPage = (props) => {
 
     return (
       <>
-        <Space direction='vertical' split={<></>} style={{ marginLeft: '10px', marginRight: '10px', paddingTop: '10px' }}>
+        <Space
+          direction='vertical'
+          split={<></>}
+          style={{
+            overflow: 'scroll', marginLeft: '10px', marginRight: '10px', paddingTop: '10px',
+          }}
+        >
           <Space>Select the parameters for subsetting the normalized expression matrix.</Space>
           <Space direction='vertical'>
             Subset by samples:
@@ -125,7 +131,7 @@ const NormalizedMatrixPage = (props) => {
 
           <Button
             size='small'
-            onClick={() => dispatch(downloadNormalizedMatrix(experimentId, filterByRef.current))}
+            onClick={() => dispatch(downloadNormalizedMatrix(experimentId, subsetByRef.current))}
           >
             Download
           </Button>
