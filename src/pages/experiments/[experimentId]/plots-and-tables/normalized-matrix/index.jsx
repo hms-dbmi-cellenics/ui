@@ -1,9 +1,12 @@
 import _ from 'lodash';
-import React, { useEffect, useState } from 'react';
+import React, {
+  useCallback, useEffect, useRef, useState,
+} from 'react';
 import {
   Skeleton,
   Empty,
   Space,
+  Button,
 } from 'antd';
 
 import { useSelector, useDispatch } from 'react-redux';
@@ -18,7 +21,6 @@ import { loadCellSets } from 'redux/actions/cellSets';
 import Header from 'components/Header';
 import PlotContainer from 'components/plots/PlotContainer';
 import Loader from 'components/Loader';
-import ExportAsCSV from 'components/plots/ExportAsCSV';
 
 import { loadPlotConfig } from 'redux/actions/componentConfig';
 
@@ -43,10 +45,22 @@ const NormalizedMatrixPage = (props) => {
   } = useSelector((state) => state.componentConfig[plotUuid]) || {};
 
   const cellSets = useSelector(getCellSets());
-  const [louvain, sample] = useSelector(getCellSetsHierarchyByKeys(['louvain', 'sample']));
+  const [sample] = useSelector(getCellSetsHierarchyByKeys(['sample']));
+  const [louvain] = useSelector(getCellSetsHierarchyByKeys(['louvain']));
+  const [scratchpad] = useSelector(getCellSetsHierarchyByKeys(['scratchpad']));
   const metadataTracks = useSelector(getCellSetsHierarchyByType('metadataCategorical', ['sample']));
 
   const [metadataCellSets, setMetadataCellSets] = useState([]);
+
+  // const selectedItems = useRef([]);
+
+  const onSelectedItemsChanged = () => {
+
+  };
+
+  useEffect(() => {
+
+  }, []);
 
   useEffect(() => {
     setMetadataCellSets(metadataTracks.map((track) => track.children).flat());
@@ -55,6 +69,10 @@ const NormalizedMatrixPage = (props) => {
   useEffect(() => {
     if (!config) dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
     dispatch(loadCellSets(experimentId));
+  }, []);
+
+  const downloadMatrix = useCallback(() => {
+
   }, []);
 
   const renderControlPanel = () => {
@@ -95,18 +113,27 @@ const NormalizedMatrixPage = (props) => {
           <Space>Select the parameters for subsetting the normalized expression matrix.</Space>
           <Space direction='vertical'>
             Subset by samples:
-            <MultiSelect items={_.map(sample.children, 'name')} />
+            <MultiSelect items={_.map(sample.children, 'name')} onChange={onSelectedItemsChanged} placeholder='All' />
           </Space>
           <Space direction='vertical'>
             Subset by clusters:
-            <MultiSelect items={_.map(louvain.children, 'name')} />
+            <MultiSelect items={_.map(louvain.children, 'name')} onChange={onSelectedItemsChanged} placeholder='All' />
           </Space>
           <Space direction='vertical'>
             Subset by metadata group:
-            <MultiSelect items={_.map(metadataCellSets, 'name')} />
+            <MultiSelect items={_.map(metadataCellSets, 'name')} onChange={onSelectedItemsChanged} placeholder='All' />
+          </Space>
+          <Space direction='vertical'>
+            Subset by custom cell sets:
+            <MultiSelect items={_.map(scratchpad.children, 'name')} onChange={onSelectedItemsChanged} placeholder='All' />
           </Space>
 
-          <ExportAsCSV data={[]} filename='' />
+          <Button
+            size='small'
+            onClick={() => downloadMatrix()}
+          >
+            Download
+          </Button>
         </Space>
       </>
     );

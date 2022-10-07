@@ -3,7 +3,7 @@ import { Select } from 'antd';
 import PropTypes from 'prop-types';
 
 const MultiSelect = (props) => {
-  const { items, onChange } = props;
+  const { items, onChange, placeholder } = props;
 
   const [selectedItems, setSelectedItems] = useState([]);
 
@@ -19,6 +19,7 @@ const MultiSelect = (props) => {
       onChange={setSelectedItems}
       value={selectedItems}
       style={{ width: '200px' }}
+      placeholder={placeholder}
     >
       {filteredItems.map((item) => <Select.Option key={item} value={item} />)}
     </Select>
@@ -28,10 +29,12 @@ const MultiSelect = (props) => {
 MultiSelect.propTypes = {
   items: PropTypes.array.isRequired,
   onChange: PropTypes.func,
+  placeholder: PropTypes.node,
 };
 
 MultiSelect.defaultProps = {
   onChange: () => { },
+  placeholder: null,
 };
 
 export default MultiSelect;
