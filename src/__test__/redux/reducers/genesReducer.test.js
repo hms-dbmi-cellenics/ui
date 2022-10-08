@@ -1,11 +1,12 @@
 import genesReducer from 'redux/reducers/genes';
-import initialState from 'redux/reducers/genes/initialState';
+import getInitialState from 'redux/reducers/genes/getInitialState';
 
 import {
   GENES_EXPRESSION_LOADING, GENES_EXPRESSION_LOADED, GENES_EXPRESSION_ERROR,
   GENES_SELECT, GENES_DESELECT,
   GENES_PROPERTIES_LOADING, GENES_PROPERTIES_ERROR, GENES_PROPERTIES_LOADED_PAGINATED,
 } from 'redux/actionTypes/genes';
+import { getTwoGenesMatrix, getThreeGenesMatrix } from '__test__/utils/ExpressionMatrix/testMatrixes';
 
 describe('genesReducer', () => {
   it('Reduces identical state on unknown action', () => expect(
@@ -13,10 +14,10 @@ describe('genesReducer', () => {
       action: 'well/this/is/not/a/valid/action',
       payload: {},
     }),
-  ).toEqual(initialState));
+  ).toEqual(getInitialState()));
 
   it('Sets loading state on expression loading action', () => {
-    const newState = genesReducer(initialState, {
+    const newState = genesReducer(getInitialState(), {
       type: GENES_EXPRESSION_LOADING,
       payload: {
         genes: ['A', 'B', 'C'],
@@ -31,24 +32,21 @@ describe('genesReducer', () => {
   });
 
   it('Sets loaded state on expression loading action', () => {
-    const newState = genesReducer(initialState, {
+    const newGenesMatrix = getTwoGenesMatrix();
+
+    const newState = genesReducer(getInitialState(), {
       type: GENES_EXPRESSION_LOADED,
       payload: {
-        data: {
-          GENE1: {
-            min: 0,
-            max: 0,
-            expression: [0, 0, 0, 0],
-          },
-        },
         componentUuid: 'abc',
+        genes: newGenesMatrix.orderedGeneNames,
+        newGenes: newGenesMatrix,
       },
     });
     expect(newState).toMatchSnapshot();
   });
 
   it('Multiple components loading some of same expression triggers appropriate action', () => {
-    let newState = genesReducer(initialState, {
+    let newState = genesReducer(getInitialState(), {
       type: GENES_EXPRESSION_LOADING,
       payload: {
         componentUuid: 'abc',
@@ -69,38 +67,29 @@ describe('genesReducer', () => {
   });
 
   it('Expression loaded state handled appropriately when other things are still loading', () => {
+    const loadedMatrix = getThreeGenesMatrix();
+
     const newState = genesReducer({
-      ...initialState,
+      ...getInitialState(),
       expression: {
-        ...initialState.expression,
-        loading: ['a', 'b', 'c', 'd', 'e'],
+        ...getInitialState().expression,
+        loading: ['geneA', 'geneB', 'geneC', 'geneD', 'geneE'],
       },
     }, {
       type: GENES_EXPRESSION_LOADED,
       payload: {
         componentUuid: 'asd',
-        genes: ['a', 'b', 'c'],
-        data: {
-          gene1: {
-            a: 5,
-            b: 6,
-            c: 7,
-          },
-          gene2: {
-            a: 7,
-            b: 8,
-            c: 9,
-          },
-        },
+        genes: ['geneA', 'geneB', 'geneC'],
+        newGenes: loadedMatrix,
       },
     });
 
-    expect(newState.expression.loading).toEqual(['D', 'E']);
+    expect(newState.expression.loading).toEqual(['GENED', 'GENEE']);
     expect(newState).toMatchSnapshot();
   });
 
   it('Sets error state on expression error action', () => {
-    const newState = genesReducer(initialState, {
+    const newState = genesReducer(getInitialState(), {
       type: GENES_EXPRESSION_ERROR,
       payload: {
         error: 'asd',
@@ -117,7 +106,7 @@ describe('genesReducer', () => {
   //
 
   it('Selected genes get added on empty list', () => {
-    const newState = genesReducer(initialState, {
+    const newState = genesReducer(getInitialState(), {
       type: GENES_SELECT,
       payload: {
         genes: ['a', 'b', 'c'],
@@ -129,7 +118,7 @@ describe('genesReducer', () => {
   });
 
   it('Selected genes get added as a set to a non-empty list', () => {
-    const newState = genesReducer({ ...initialState, selected: ['a', 'b'] }, {
+    const newState = genesReducer({ ...getInitialState(), selected: ['a', 'b'] }, {
       type: GENES_SELECT,
       payload: {
         genes: ['b', 'd'],
@@ -141,7 +130,7 @@ describe('genesReducer', () => {
   });
 
   it('Deselecting all genes updates to empty list', () => {
-    const newState = genesReducer({ ...initialState, selected: ['a', 'b'] }, {
+    const newState = genesReducer({ ...getInitialState(), selected: ['a', 'b'] }, {
       type: GENES_DESELECT,
       payload: {
         genes: ['a', 'b'],
@@ -153,7 +142,7 @@ describe('genesReducer', () => {
   });
 
   it('Deselecting part of all genes updates list as set', () => {
-    const newState = genesReducer({ ...initialState, selected: ['a', 'b', 'd'] }, {
+    const newState = genesReducer({ ...getInitialState(), selected: ['a', 'b', 'd'] }, {
       type: GENES_DESELECT,
       payload: {
         genes: ['b'],
@@ -165,7 +154,7 @@ describe('genesReducer', () => {
   });
 
   it('Deselecting non-selected genes is handled gracefully', () => {
-    const newState = genesReducer({ ...initialState, selected: ['a', 'b', 'd'] }, {
+    const newState = genesReducer({ ...getInitialState(), selected: ['a', 'b', 'd'] }, {
       type: GENES_DESELECT,
       payload: {
         genes: ['e'],
@@ -181,7 +170,7 @@ describe('genesReducer', () => {
   //
 
   it('Properties loading triggers appropriate changes', () => {
-    const newState = genesReducer(initialState, {
+    const newState = genesReducer(getInitialState(), {
       type: GENES_PROPERTIES_LOADING,
       payload: {
         componentUuid: 'asd',
@@ -195,7 +184,7 @@ describe('genesReducer', () => {
   });
 
   it('Multiple components loading some of same property triggers appropriate action', () => {
-    let newState = genesReducer(initialState, {
+    let newState = genesReducer(getInitialState(), {
       type: GENES_PROPERTIES_LOADING,
       payload: {
         componentUuid: 'asd',
@@ -216,7 +205,7 @@ describe('genesReducer', () => {
   });
 
   it('Error state handled appropriately', () => {
-    const newState = genesReducer(initialState, {
+    const newState = genesReducer(getInitialState(), {
       type: GENES_PROPERTIES_ERROR,
       payload: {
         componentUuid: 'asd',
@@ -229,7 +218,7 @@ describe('genesReducer', () => {
   });
 
   it('Loading on error state causes error to reset', () => {
-    let newState = genesReducer(initialState, {
+    let newState = genesReducer(getInitialState(), {
       type: GENES_PROPERTIES_ERROR,
       payload: {
         componentUuid: 'asd',
@@ -251,9 +240,9 @@ describe('genesReducer', () => {
 
   it('Loaded paginated state handled appropriately', () => {
     const newState = genesReducer({
-      ...initialState,
+      ...getInitialState(),
       properties: {
-        ...initialState.properties,
+        ...getInitialState().properties,
         loading: ['a', 'b', 'c'],
       },
     }, {
@@ -283,9 +272,9 @@ describe('genesReducer', () => {
 
   it('Loaded paginated state handled appropriately when other things are still loading', () => {
     const newState = genesReducer({
-      ...initialState,
+      ...getInitialState(),
       properties: {
-        ...initialState.properties,
+        ...getInitialState().properties,
         loading: ['a', 'b', 'c', 'd', 'e'],
       },
     }, {

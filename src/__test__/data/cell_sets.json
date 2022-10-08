@@ -14,7 +14,7 @@
                     "color": "#e377c2",
                     "cellIds": [
                         1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
-                        11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
+                        11, 12, 16, 17, 18, 19, 20,
                         21, 22, 23, 24, 25, 26, 27, 28, 29, 30
                     ]
                 },
@@ -26,7 +26,7 @@
                     "color": "#8c564b",
                     "cellIds": [
                         31, 32, 33, 34, 35, 36, 37, 38, 39, 40,
-                        41, 42, 43, 44, 45, 46, 47, 48, 49, 50
+                        41, 42, 43, 47, 48, 49, 50, 51, 52, 53, 54, 55
                     ]
                 },
                 {
@@ -36,7 +36,7 @@
                     "type": "cellSets",
                     "color": "#d62728",
                     "cellIds": [
-                        51, 52, 53, 54, 55, 56, 57, 58, 59, 60
+                        57, 58, 59, 60
                     ]
                 },
                 {
@@ -45,7 +45,7 @@
                     "rootNode": false,
                     "type": "cellSets",
                     "color": "#2ca02c",
-                    "cellIds": [61, 62, 63, 64, 65]
+                    "cellIds": [61, 62, 64, 65]
                 },
                 {
                     "key": "louvain-4",
@@ -53,7 +53,7 @@
                     "rootNode": false,
                     "type": "cellSets",
                     "color": "#ff7f0e",
-                    "cellIds": [66, 67, 68, 69, 70]
+                    "cellIds": [66, 68, 69, 70]
                 },
                 {
                     "key": "louvain-5",
@@ -61,7 +61,7 @@
                     "rootNode": false,
                     "type": "cellSets",
                     "color": "#1f77b4",
-                    "cellIds": [71, 72, 73, 74, 75]
+                    "cellIds": [71, 72, 73, 75]
                 },
                 {
                     "key": "louvain-6",
@@ -69,7 +69,7 @@
                     "rootNode": false,
                     "type": "cellSets",
                     "color": "#f8e71c",
-                    "cellIds": [76, 77, 78, 79, 80]
+                    "cellIds": [76, 77, 79, 80]
                 },
                 {
                     "key": "louvain-7",
@@ -77,7 +77,7 @@
                     "rootNode": false,
                     "type": "cellSets",
                     "color": "#3957ff",
-                    "cellIds": [81, 82, 83, 84, 85]
+                    "cellIds": [81, 82, 84, 85]
                 },
                 {
                     "key": "louvain-8",
@@ -85,7 +85,7 @@
                     "rootNode": false,
                     "type": "cellSets",
                     "color": "#d3fe14",
-                    "cellIds": [86, 87, 88, 89, 90]
+                    "cellIds": [88, 89, 90]
                 },
                 {
                     "key": "louvain-9",

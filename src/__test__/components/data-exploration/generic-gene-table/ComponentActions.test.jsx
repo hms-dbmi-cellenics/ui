@@ -9,30 +9,16 @@ import configureMockStore from 'redux-mock-store';
 import { GENES_EXPRESSION_LOADING, GENES_EXPRESSION_LOADED } from 'redux/actionTypes/genes';
 import { fetchWork } from 'utils/work/fetchWork';
 import ComponentActions from 'components/data-exploration/generic-gene-table/ComponentActions';
+import { getTwoGenesExpressionMatrix, getThreeGenesMatrix } from '__test__/utils/ExpressionMatrix/testMatrixes';
 
 jest.mock('utils/getTimeoutForWorkerTask', () => ({
   __esModule: true, // this property makes it work
   default: () => 60,
 }));
 
+const mockThreeGenesMatrix = getThreeGenesMatrix();
 jest.mock('utils/work/fetchWork', () => ({
-  fetchWork: jest.fn(() => new Promise((resolve) => resolve({
-    A: {
-      min: 0,
-      max: 1.6,
-      expression: [0, 0.4, 0.5, 1.6],
-    },
-    B: {
-      min: 0,
-      max: 1.6,
-      expression: [0, 0.4, 0.5, 1.6],
-    },
-    C: {
-      min: 0,
-      max: 1.6,
-      expression: [0, 0.4, 0.5, 1.6],
-    },
-  }))),
+  fetchWork: jest.fn(() => new Promise((resolve) => resolve(mockThreeGenesMatrix))),
 }));
 
 const mockStore = configureMockStore([thunk]);
@@ -56,27 +42,17 @@ const initialState = {
   genes: {
     expression: {
       loading: [],
-      data: {
-        D: {
-          min: 0,
-          max: 1.6,
-          expression: [0, 0.4, 0.5, 1.6],
-        },
-        E: {
-          min: 0,
-          max: 1.6,
-          expression: [0, 0.4, 0.5, 1.6],
-        },
-      },
+      matrix: getTwoGenesExpressionMatrix(),
+
       views: {
         [componentType]: {
-          data: ['D', 'E'],
+          data: ['Gzma', 'Lyz2'],
           fetching: false,
           error: false,
         },
       },
     },
-    selected: ['A'],
+    selected: ['GeneA'],
   },
   backendStatus,
 };
@@ -129,7 +105,7 @@ describe('ComponentActions', () => {
       ...initialState,
       genes: {
         ...initialState.genes,
-        selected: ['A', 'B', 'C'],
+        selected: ['GeneA', 'GeneB', 'GeneC'],
       },
     });
 
@@ -149,7 +125,7 @@ describe('ComponentActions', () => {
       experimentId,
       {
         name: 'GeneExpression',
-        genes: ['A', 'B', 'C'],
+        genes: ['GeneA', 'GeneB', 'GeneC'],
       },
       store.getState,
       { timeout: 60 },
@@ -167,7 +143,7 @@ describe('ComponentActions', () => {
       ...initialState,
       genes: {
         ...initialState.genes,
-        selected: ['D'],
+        selected: ['Gzma'],
       },
     });
 
@@ -197,7 +173,7 @@ describe('ComponentActions', () => {
       ...initialState,
       genes: {
         ...initialState.genes,
-        selected: ['D'],
+        selected: ['Gzma'],
       },
     });
 
