@@ -6,11 +6,11 @@ Object {
     "componentUuid": "asd",
     "experimentId": "1234",
     "genes": Array [
-      "D",
-      "E",
-      "A",
-      "B",
-      "C",
+      "Gzma",
+      "Lyz2",
+      "GeneA",
+      "GeneB",
+      "GeneC",
     ],
   },
   "type": "genes/expressionLoading",
@@ -21,46 +21,124 @@ exports[`ComponentActions Dispatches loadGeneExpression action with the right li
 Object {
   "payload": Object {
     "componentUuid": "asd",
-    "data": Object {
-      "A": Object {
-        "expression": Array [
+    "genes": Array [
+      "Gzma",
+      "Lyz2",
+      "GeneA",
+      "GeneB",
+      "GeneC",
+    ],
+    "newGenes": Object {
+      "orderedGeneNames": Array [
+        "GeneA",
+        "GeneB",
+        "GeneC",
+      ],
+      "rawExpression": Object {
+        "datatype": undefined,
+        "index": Array [
           0,
-          0.4,
-          0.5,
-          1.6,
+          0,
+          2,
+          0,
+          2,
         ],
-        "max": 1.6,
-        "min": 0,
+        "mathjs": "SparseMatrix",
+        "ptr": Array [
+          0,
+          1,
+          3,
+          5,
+        ],
+        "size": Array [
+          3,
+          3,
+        ],
+        "values": Array [
+          1,
+          2,
+          5,
+          1,
+          6,
+        ],
       },
-      "B": Object {
-        "expression": Array [
-          0,
-          0.4,
-          0.5,
-          1.6,
-        ],
-        "max": 1.6,
-        "min": 0,
+      "stats": Object {
+        "GeneA": Object {
+          "rawMean": 0.3,
+          "rawStdev": 0.4,
+          "truncatedMax": 1,
+          "truncatedMin": 0,
+        },
+        "GeneB": Object {
+          "rawMean": 2.3,
+          "rawStdev": 2,
+          "truncatedMax": 3,
+          "truncatedMin": 2,
+        },
+        "GeneC": Object {
+          "rawMean": 1.3,
+          "rawStdev": 1,
+          "truncatedMax": 5,
+          "truncatedMin": 1,
+        },
       },
-      "C": Object {
-        "expression": Array [
+      "truncatedExpression": Object {
+        "datatype": undefined,
+        "index": Array [
           0,
-          0.4,
-          0.5,
-          1.6,
+          0,
+          2,
+          0,
+          2,
         ],
-        "max": 1.6,
-        "min": 0,
+        "mathjs": "SparseMatrix",
+        "ptr": Array [
+          0,
+          1,
+          3,
+          5,
+        ],
+        "size": Array [
+          3,
+          3,
+        ],
+        "values": Array [
+          1,
+          2,
+          3,
+          0.5,
+          1,
+        ],
+      },
+      "zScore": Object {
+        "datatype": undefined,
+        "index": Array [
+          0,
+          0,
+          2,
+          0,
+          2,
+        ],
+        "mathjs": "SparseMatrix",
+        "ptr": Array [
+          0,
+          1,
+          3,
+          5,
+        ],
+        "size": Array [
+          3,
+          3,
+        ],
+        "values": Array [
+          1,
+          1,
+          3,
+          3,
+          1,
+        ],
       },
     },
-    "experimentId": "1234",
-    "genes": Array [
-      "D",
-      "E",
-      "A",
-      "B",
-      "C",
-    ],
   },
   "type": "genes/expressionLoaded",
 }
@@ -72,7 +150,7 @@ Object {
     "componentUuid": "asd",
     "experimentId": "1234",
     "genes": Array [
-      "D",
+      "Gzma",
     ],
   },
   "type": "genes/expressionLoading",
@@ -85,7 +163,7 @@ Object {
     "componentUuid": "asd",
     "experimentId": "1234",
     "genes": Array [
-      "D",
+      "Gzma",
     ],
   },
   "type": "genes/expressionLoaded",
@@ -98,7 +176,7 @@ Object {
     "componentUuid": "asd",
     "experimentId": "1234",
     "genes": Array [
-      "E",
+      "Lyz2",
     ],
   },
   "type": "genes/expressionLoading",
@@ -111,7 +189,7 @@ Object {
     "componentUuid": "asd",
     "experimentId": "1234",
     "genes": Array [
-      "E",
+      "Lyz2",
     ],
   },
   "type": "genes/expressionLoaded",

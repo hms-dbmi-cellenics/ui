@@ -7,11 +7,14 @@ const unpackResult = async (storageResp) => {
   const arrayBuf = await storageResp.arrayBuffer();
 
   const resultPromise = new Promise((resolve, reject) => {
-    decompress(new Uint8Array(arrayBuf), (err, decompressed) => {
+    const uint8array = new Uint8Array(arrayBuf);
+
+    decompress(uint8array, (err, decompressed) => {
       if (err) {
         reject(err);
       } else {
         resolve(JSON_parse(decompressed));
+        resolve();
       }
     });
   });
