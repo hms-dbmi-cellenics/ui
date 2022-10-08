@@ -73,7 +73,6 @@ const GeneListTool = (props) => {
 
   // When data changes, update rows.
   useEffect(() => {
-
     if (!tableRowKeys || tableRowKeys.length === 0) {
       return;
     }

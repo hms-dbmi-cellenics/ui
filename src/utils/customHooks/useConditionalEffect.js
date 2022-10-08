@@ -12,10 +12,7 @@ const useConditionalEffect = (callback, dependencies, optionals = {}) => {
   const dependenciesRef = useRef(dependencies);
 
   React.useEffect((...args) => {
-    const somethingChanged = _.some(
-      dependenciesRef.current,
-      (currDependency, index) => !comparator(currDependency, dependencies[index]),
-    );
+    const somethingChanged = !comparator(dependenciesRef.current, dependencies);
 
     if ((firstRenderRef.current && !lazy) || somethingChanged) {
       callback(...args);

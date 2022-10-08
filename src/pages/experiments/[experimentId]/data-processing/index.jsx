@@ -61,7 +61,6 @@ import { runQC } from 'redux/actions/pipeline';
 import { useAppRouter } from 'utils/AppRouteProvider';
 import { modules } from 'utils/constants';
 import QCRerunDisabledModal from 'components/QCRerunDisabledModal';
-import { current } from 'immer';
 
 const { Text } = Typography;
 const { Option } = Select;
@@ -161,7 +160,7 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
 
     return (
       processingConfig[step] && sampleKeys.some((key) => (
-      processingConfig[step][key]?.prefiltered)));
+        processingConfig[step][key]?.prefiltered)));
   };
 
   const steps = [
@@ -463,16 +462,16 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
                               ) : pipelineNotFinished
                                 && !pipelineRunning
                                 && !isStepComplete(key) ? (
-                                  <>
-                                    <Text
-                                      type='danger'
-                                      strong
-                                    >
-                                      <WarningOutlined />
-                                    </Text>
-                                    <span style={{ marginLeft: '0.25rem' }}>{text}</span>
-                                  </>
-                                ) : <></>}
+                                <>
+                                  <Text
+                                    type='danger'
+                                    strong
+                                  >
+                                    <WarningOutlined />
+                                  </Text>
+                                  <span style={{ marginLeft: '0.25rem' }}>{text}</span>
+                                </>
+                              ) : <></>}
                             </Option>
                           );
                         },
