@@ -86,13 +86,20 @@ const complement = (listOfSets, properties) => {
   return complementSet;
 };
 
-const withoutFilteredOutCells = (cellSets, originalCellIds) => {
-  const louvainClusters = cellSets.find(({ key }) => key === 'louvain').children;
+const getFilteredCells = (cellSets) => {
+  const louvainClusters = cellSets.hierarchy.find(({ key }) => key === 'louvain').children;
+  const louvainClustersCellIds = louvainClusters.map(({ key }) => cellSets.properties[key].cellIds);
 
-  const filteredInCellIds = louvainClusters.reduce(
-    (filteredInCellIdsAcum, { cellIds }) => setOperations.union(filteredInCellIdsAcum, cellIds),
+  const filteredInCellIds = louvainClustersCellIds.reduce(
+    (filteredInCellIdsAcum, cellIds) => setOperations.union(filteredInCellIdsAcum, cellIds),
     new Set(),
   );
+
+  return filteredInCellIds;
+};
+
+const withoutFilteredOutCells = (cellSets, originalCellIds) => {
+  const filteredInCellIds = getFilteredCells(cellSets);
 
   return setOperations.intersection(filteredInCellIds, originalCellIds);
 };
@@ -102,5 +109,6 @@ export {
   intersection,
   complement,
   unionByCellClass,
+  getFilteredCells,
   withoutFilteredOutCells,
 };
