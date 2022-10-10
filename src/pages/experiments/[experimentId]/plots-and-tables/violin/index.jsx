@@ -58,8 +58,8 @@ const ViolinIndex = ({ experimentId }) => {
 
   const [highestDispersionGene, setHighestDispersionGene] = useState();
 
-  const [selectedPlot, setSelectedPlot] = useState(plotUuid);
-  const selectedConfig = plotConfigs[selectedPlot];
+  const [selectedPlotUuid, setSelectedPlotUuid] = useState(plotUuid);
+  const selectedConfig = plotConfigs[selectedPlotUuid];
 
   const loadComponent = (componentUuid, type, skipAPI, customConfig) => {
     dispatch(loadConditionalComponentConfig(
@@ -72,7 +72,7 @@ const ViolinIndex = ({ experimentId }) => {
   };
 
   const updatePlotWithChanges = (updateField) => {
-    dispatch(updatePlotConfig(selectedPlot, updateField));
+    dispatch(updatePlotConfig(selectedPlotUuid, updateField));
   };
 
   const updateAllWithChanges = (updateField) => {
@@ -92,6 +92,15 @@ const ViolinIndex = ({ experimentId }) => {
       loadComponent(multiViewUuid, multiViewType, false, customConfig);
     }
   }, []);
+
+  // if selected plot uuid is not shown, change selection
+  useEffect(() => {
+    if (!multiViewConfig) return;
+
+    if (!multiViewPlotUuids.includes(selectedPlotUuid)) {
+      setSelectedPlotUuid(multiViewPlotUuids[0]);
+    }
+  }, [multiViewConfig]);
 
   // find highest dispersion genes for initial plot state
   useEffect(() => {
@@ -219,17 +228,18 @@ const ViolinIndex = ({ experimentId }) => {
       onUpdate={updatePlotWithChanges}
       onMultiViewUpdate={updateMultiViewWithChanges}
       addGeneToMultiView={addGeneToMultiView}
-      setSelectedPlot={setSelectedPlot}
+      selectedPlotUuid={selectedPlotUuid}
+      setSelectedPlotUuid={setSelectedPlotUuid}
       cellSets={cellSets}
       multiViewConfig={multiViewConfig}
       shownGenes={shownGenes}
     />
   );
 
-  const renderPlot = (selectedPlotUuid) => (
+  const renderPlot = (plotUuidToRender) => (
     <ViolinPlot
       experimentId={experimentId}
-      plotUuid={selectedPlotUuid}
+      plotUuid={plotUuidToRender}
     />
   );
 
@@ -264,7 +274,7 @@ const ViolinIndex = ({ experimentId }) => {
       <Header title={plotNames.VIOLIN_PLOT} />
       <PlotContainer
         experimentId={experimentId}
-        plotUuid={plotUuid}
+        plotUuid={selectedPlotUuid}
         plotType={plotType}
         plotStylingConfig={plotStylingConfig}
         plotInfo='In order to rename existing clusters or create new ones, use the cell set tool, located in the Data Exploration page.'

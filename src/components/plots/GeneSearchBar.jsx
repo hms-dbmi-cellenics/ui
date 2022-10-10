@@ -4,12 +4,12 @@ import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
 import { getGeneList } from 'redux/selectors';
 
-const filterGenes = (searchText, geneList, genesToDisable) => {
+const renderOptions = (searchText, geneList, genesToDisable) => {
   const searchTextUpper = searchText.toUpperCase();
   const filteredList = geneList.filter((gene) => gene.toUpperCase().includes(searchTextUpper));
   const disabledList = filteredList.map((gene) => genesToDisable.includes(gene));
 
-  // options needs to be an array of objects, set disabled for loaded genes
+  // options needs to be an array of objects, set disabled for genes that shouldn't be selectable
   return filteredList.map((geneName, index) => ({
     value: geneName, disabled: disabledList[index],
   }));
@@ -46,9 +46,9 @@ const GeneSearchBar = (props) => {
     if (allowMultiple) {
       const inputGenes = input.split(GENES_REGEX);
       const searchText = inputGenes[inputGenes.length - 1];
-      setOptions(!searchText ? [] : filterGenes(searchText, geneList, genesToDisable));
+      setOptions(!searchText ? [] : renderOptions(searchText, geneList, genesToDisable));
     } else {
-      setOptions(!input ? [] : filterGenes(input, geneList, genesToDisable));
+      setOptions(!input ? [] : renderOptions(input, geneList, genesToDisable));
     }
   };
 

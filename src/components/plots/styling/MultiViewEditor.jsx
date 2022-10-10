@@ -20,9 +20,40 @@ const MultiViewEditor = (props) => {
     multiViewConfig,
     addGeneToMultiView,
     onMultiViewUpdate,
-    setSelectedPlot,
+    selectedPlotUuid,
+    setSelectedPlotUuid,
     shownGenes,
   } = props;
+
+  const [localNRows, setLocalNRows] = useState(null);
+  const [localNCols, setLocalNCols] = useState(null);
+  const [options, setOptions] = useState([]);
+
+  const renderUuidOptions = (plotUuids) => {
+    if (!plotUuids) return [];
+
+    return plotUuids.map((plotUuid, index) => {
+      const row = Math.floor(index / localNCols) + 1;
+      const col = (index % localNCols) + 1;
+      return { label: `${row}.${col} ${shownGenes[index]}`, value: plotUuid };
+    });
+  };
+
+  useEffect(() => {
+    if (!multiViewConfig) return;
+
+    if (localNRows !== multiViewConfig.nrows) {
+      setLocalNRows(multiViewConfig.nrows);
+    }
+
+    if (localNCols !== multiViewConfig.ncols) {
+      setLocalNCols(multiViewConfig.ncols);
+    }
+
+    if (!_.isEqual((options.map((option) => option?.value)), multiViewConfig.plotUuids)) {
+      setOptions(renderUuidOptions(multiViewConfig.plotUuids));
+    }
+  }, [multiViewConfig]);
 
   if (!multiViewConfig) {
     return (
@@ -32,57 +63,15 @@ const MultiViewEditor = (props) => {
     );
   }
 
-  const renderUuidOptions = (plotUuids) => {
-    return plotUuids.map((plotUuid, index) => {
-      const row = Math.floor(index / localNCols) + 1;
-      const col = (index % localNCols) + 1;
-      return { label: `${row}.${col} ${shownGenes[index]}`, value: plotUuid };
-    });
-  };
-
-  const [localNRows, setLocalNRows] = useState(multiViewConfig.nrows);
-  const [localNCols, setLocalNCols] = useState(multiViewConfig.ncols);
-  const [options, setOptions] = useState(
-    renderUuidOptions(multiViewConfig.plotUuids),
-  );
-  const [localSelectedPlot, setLocalSelectedPlot] = useState(multiViewConfig.plotUuids[0]);
-
-  useEffect(() => {
-    if (localNRows !== multiViewConfig.nrows) {
-      setLocalNRows(multiViewConfig.nrows);
-    }
-
-    if (localNCols !== multiViewConfig.ncols) {
-      setLocalNCols(multiViewConfig.ncols);
-    }
-
-    if (_.isEqual((options.map((option) => option.value)), multiViewConfig.plotUuids)) {
-      setOptions(renderUuidOptions(multiViewConfig.plotUuids));
-    }
-  }, [multiViewConfig]);
-
   const onGeneReorder = (index, newPosition) => {
     const newPlotUuids = arrayMoveImmutable(multiViewConfig.plotUuids, index, newPosition);
 
     onMultiViewUpdate({ plotUuids: newPlotUuids });
   };
 
-  const onSelectedPlotChange = (value) => {
-    setLocalSelectedPlot(value);
-    setSelectedPlot(value);
-  };
-
   const onNodeDelete = (index) => {
     const newPlotUuids = [...multiViewConfig.plotUuids];
     _.pullAt(newPlotUuids, index);
-
-    // if selected plot is deleted, change the selection
-    if (multiViewConfig.plotUuids[index] === localSelectedPlot) {
-      const newIndexToSelect = index === 0 ? 1 : 0;
-      const newPlotToselect = multiViewConfig.plotUuids[newIndexToSelect];
-      setLocalSelectedPlot(newPlotToselect);
-      setSelectedPlot(newPlotToselect);
-    }
 
     onMultiViewUpdate({ plotUuids: newPlotUuids });
   };
@@ -132,9 +121,9 @@ const MultiViewEditor = (props) => {
         Selected plot:
         <Select
           aria-label='selectPlot'
-          value={localSelectedPlot}
+          value={selectedPlotUuid}
           options={options}
-          onChange={(value) => onSelectedPlotChange(value)}
+          onChange={(value) => setSelectedPlotUuid(value)}
         />
       </Space>
       <Row justify='space-evenly' align='middle'>
@@ -148,7 +137,7 @@ const MultiViewEditor = (props) => {
             controls={false}
             min={1}
             max={30}
-            value={localNRows}
+            defaultValue={multiViewConfig.nrows}
             onChange={(value) => { onRowsChange(value); }}
           />
         </Col>
@@ -181,7 +170,8 @@ MultiViewEditor.propTypes = {
   multiViewConfig: PropTypes.object,
   addGeneToMultiView: PropTypes.func.isRequired,
   onMultiViewUpdate: PropTypes.func.isRequired,
-  setSelectedPlot: PropTypes.func.isRequired,
+  selectedPlotUuid: PropTypes.string.isRequired,
+  setSelectedPlotUuid: PropTypes.func.isRequired,
   shownGenes: PropTypes.array.isRequired,
 };
 

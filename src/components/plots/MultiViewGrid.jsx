@@ -30,14 +30,14 @@ const MultiViewGrid = (props) => {
   useEffect(() => {
     if (!shouldUpdatePlots()) return;
 
-    const previousPlots = previousMultiViewConfig.current.plotUuids ?? [];
-    const currentPlots = multiViewConfig.plotUuids;
+    const previousPlotUuids = previousMultiViewConfig.current.plotUuids ?? [];
+    const currentPlotUuids = multiViewConfig.plotUuids;
 
     previousMultiViewConfig.current = multiViewConfig;
 
     // if new plots are added
-    if (currentPlots.length > previousPlots.length) {
-      const plotsToAdd = _.difference(currentPlots, previousPlots);
+    if (currentPlotUuids.length > previousPlotUuids.length) {
+      const plotsToAdd = _.difference(currentPlotUuids, previousPlotUuids);
 
       const newPlots = [];
 
@@ -51,8 +51,8 @@ const MultiViewGrid = (props) => {
     }
 
     // if plots are re-ordered
-    if (currentPlots.length === previousPlots.length) {
-      const order = currentPlots.map((plot) => previousPlots.indexOf(plot));
+    if (currentPlotUuids.length === previousPlotUuids.length) {
+      const order = currentPlotUuids.map((plot) => previousPlotUuids.indexOf(plot));
       const reorderedPlots = order.map((index) => plots[index]);
 
       setPlots(reorderedPlots);
@@ -61,9 +61,9 @@ const MultiViewGrid = (props) => {
     }
 
     // if a plot is removed
-    const plotsToRemove = _.difference(previousPlots, currentPlots);
+    const plotsToRemove = _.difference(previousPlotUuids, currentPlotUuids);
     const filteredPlots = _.filter(plots, (value, index) => (
-      !plotsToRemove.includes(previousPlots[index])
+      !plotsToRemove.includes(previousPlotUuids[index])
     ));
     setPlots(filteredPlots);
   }, [multiViewConfig, plotConfigs]);

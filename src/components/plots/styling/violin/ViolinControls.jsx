@@ -15,7 +15,8 @@ const ViolinControls = (props) => {
     multiViewConfig,
     onUpdate,
     onMultiViewUpdate,
-    setSelectedPlot,
+    selectedPlotUuid,
+    setSelectedPlotUuid,
     addGeneToMultiView,
     cellSets,
     shownGenes,
@@ -38,7 +39,8 @@ const ViolinControls = (props) => {
           multiViewConfig={multiViewConfig}
           addGeneToMultiView={addGeneToMultiView}
           onMultiViewUpdate={onMultiViewUpdate}
-          setSelectedPlot={setSelectedPlot}
+          selectedPlotUuid={selectedPlotUuid}
+          setSelectedPlotUuid={setSelectedPlotUuid}
           shownGenes={shownGenes}
         />
       </Panel>
@@ -85,7 +87,8 @@ ViolinControls.propTypes = {
   onUpdate: PropTypes.func.isRequired,
   onMultiViewUpdate: PropTypes.func.isRequired,
   addGeneToMultiView: PropTypes.func.isRequired,
-  setSelectedPlot: PropTypes.func.isRequired,
+  selectedPlotUuid: PropTypes.string.isRequired,
+  setSelectedPlotUuid: PropTypes.func.isRequired,
   cellSets: PropTypes.object.isRequired,
   shownGenes: PropTypes.array,
 };
