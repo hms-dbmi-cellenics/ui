@@ -1,4 +1,3 @@
-import _ from 'lodash';
 import React, { useEffect, useRef, useState } from 'react';
 import {
   Skeleton,
@@ -58,7 +57,7 @@ const NormalizedMatrixPage = (props) => {
   });
 
   const onSelectedItemsChanged = (type) => (newItems) => {
-    subsetByRef.current[type] = newItems;
+    subsetByRef.current[type] = newItems.map(({ key }) => key);
   };
 
   useEffect(() => {
@@ -114,19 +113,19 @@ const NormalizedMatrixPage = (props) => {
           <Space>Select the parameters for subsetting the normalized expression matrix.</Space>
           <Space direction='vertical'>
             Subset by samples:
-            <MultiSelect items={_.map(sample.children, 'name')} onChange={onSelectedItemsChanged('sample')} placeholder='All' />
+            <MultiSelect items={sample.children.map(({ key, name }) => ({ key, name }))} onChange={onSelectedItemsChanged('sample')} placeholder='All' />
           </Space>
           <Space direction='vertical'>
             Subset by metadata group:
-            <MultiSelect items={_.map(metadataCellSets, 'name')} onChange={onSelectedItemsChanged('metadata')} placeholder='All' />
+            <MultiSelect items={metadataCellSets.map(({ key, name }) => ({ key, name }))} onChange={onSelectedItemsChanged('metadata')} placeholder='All' />
           </Space>
           <Space direction='vertical'>
             Subset by clusters:
-            <MultiSelect items={_.map(louvain.children, 'name')} onChange={onSelectedItemsChanged('louvain')} placeholder='All' />
+            <MultiSelect items={louvain.children.map(({ key, name }) => ({ key, name }))} onChange={onSelectedItemsChanged('louvain')} placeholder='All' />
           </Space>
           <Space direction='vertical'>
             Subset by custom cell sets:
-            <MultiSelect items={_.map(scratchpad.children, 'name')} onChange={onSelectedItemsChanged('scratchpad')} placeholder='All' />
+            <MultiSelect items={scratchpad.children.map(({ key, name }) => ({ key, name }))} onChange={onSelectedItemsChanged('scratchpad')} placeholder='All' />
           </Space>
 
           <Button

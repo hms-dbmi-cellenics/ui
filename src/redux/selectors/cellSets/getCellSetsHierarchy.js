@@ -3,8 +3,8 @@ import createMemoizedSelector from 'redux/selectors/createMemoizedSelector';
 import getCellSets from 'redux/selectors/cellSets/getCellSets';
 
 const getCellSetsData = (children, properties) => (
-  children.map((child) => {
-    const { key, name } = properties[child.key];
+  children.map(({ key }) => {
+    const { name } = properties[key];
     return { key, name };
   })
 );

@@ -3,7 +3,7 @@ import { Select } from 'antd';
 import PropTypes from 'prop-types';
 
 const MultiSelect = (props) => {
-  const { items, onChange, placeholder } = props;
+  const { items: inputItems, onChange, placeholder } = props;
 
   const [selectedItems, setSelectedItems] = useState([]);
 
@@ -11,17 +11,25 @@ const MultiSelect = (props) => {
     onChange(selectedItems);
   }, [selectedItems]);
 
-  const filteredItems = items.filter((o) => !selectedItems.includes(o));
+  const filteredItems = inputItems.filter(
+    (inputItem) => !selectedItems.find((selectedItem) => selectedItem.key === inputItem.key),
+  );
 
   return (
     <Select
       mode='multiple'
-      onChange={setSelectedItems}
-      value={selectedItems}
+      labelInValue
+      onChange={(newItems) => setSelectedItems(
+        newItems.map(({ key, label: name }) => ({ key, name })),
+      )}
       style={{ width: '200px' }}
       placeholder={placeholder}
     >
-      {filteredItems.map((item) => <Select.Option key={item} value={item} />)}
+      {filteredItems.map((item) => (
+        <Select.Option value={item.key}>
+          {item.name}
+        </Select.Option>
+      ))}
     </Select>
   );
 };
