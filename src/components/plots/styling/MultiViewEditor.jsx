@@ -49,11 +49,15 @@ const MultiViewEditor = (props) => {
     if (localNCols !== multiViewConfig.ncols) {
       setLocalNCols(multiViewConfig.ncols);
     }
+  }, [multiViewConfig]);
+
+  useEffect(() => {
+    if (!multiViewConfig || !localNRows || !localNCols) return;
 
     if (!_.isEqual((options.map((option) => option?.value)), multiViewConfig.plotUuids)) {
       setOptions(renderUuidOptions(multiViewConfig.plotUuids));
     }
-  }, [multiViewConfig]);
+  }, [multiViewConfig, localNRows, localNCols]);
 
   if (!multiViewConfig) {
     return (
