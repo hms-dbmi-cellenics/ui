@@ -23,47 +23,45 @@ const GeneSearchBar = (props) => {
   const { data } = useSelector(getGeneList());
   const geneList = Object.keys(data);
 
-  const [options, setOptions] = useState([]);
-
-  const [value, setValue] = useState('');
+  const [searchState, setSearchState] = useState({ value: '', options: [] });
 
   const GENES_REGEX = /(?<!-)[,\s]+(?!-)/;
-  const genes = value.split(GENES_REGEX);
+  const genes = searchState.value.split(GENES_REGEX);
 
   const onOptionSelect = (newGene) => {
+    let value;
     if (allowMultiple) {
       genes.splice(-1, 1, `${newGene}, `);
-      setValue(genes.join(', '));
+      value = genes.join(', ');
     } else {
-      setValue(newGene);
+      value = newGene;
     }
-    setOptions([]);
+    setSearchState({ value, options: [] });
   };
 
   const onSearch = (input) => {
-    setValue(input);
-
+    let options;
     if (allowMultiple) {
       const inputGenes = input.split(GENES_REGEX);
       const searchText = inputGenes[inputGenes.length - 1];
-      setOptions(!searchText ? [] : renderOptions(searchText, geneList, genesToDisable));
+      options = !searchText ? [] : renderOptions(searchText, geneList, genesToDisable);
     } else {
-      setOptions(!input ? [] : renderOptions(input, geneList, genesToDisable));
+      options = !input ? [] : renderOptions(input, geneList, genesToDisable);
     }
+    setSearchState({ value: input, options });
   };
 
   const selectGenes = () => {
-    if (value === '') return;
+    if (searchState.value === '') return;
 
     if (allowMultiple) {
       const newGenes = genes.filter((gene) => geneList.includes(gene));
       onSelect(newGenes);
-    } else if (geneList.includes(value)) {
-      onSelect(value);
+    } else if (geneList.includes(searchState.value)) {
+      onSelect(searchState.value);
     }
 
-    setValue('');
-    setOptions([]);
+    setSearchState({ value: '', options: [] });
   };
 
   return (
@@ -72,8 +70,8 @@ const GeneSearchBar = (props) => {
         aria-label='SearchBar'
         allowClear
         style={{ width: '80%' }}
-        value={value}
-        options={options}
+        value={searchState.value}
+        options={searchState.options}
         onSelect={onOptionSelect}
         onSearch={onSearch}
         placeholder='Search for genes...'
