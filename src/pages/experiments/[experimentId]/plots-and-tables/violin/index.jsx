@@ -104,7 +104,7 @@ const ViolinIndex = ({ experimentId }) => {
 
   // find highest dispersion genes for initial plot state
   useEffect(() => {
-    if (typeof geneList.fetching === 'undefined' || geneList.fetching || highestDispersionGene) return;
+    if (geneList.fetching === undefined || geneList.fetching || highestDispersionGene) return;
 
     const [gene] = getHighestDispersionGenes(geneList.data, 1);
     setHighestDispersionGene(gene);
