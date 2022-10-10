@@ -6,6 +6,8 @@ import {
   waitFor,
   waitForElementToBeRemoved,
 } from '@testing-library/react';
+import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
+import _ from 'lodash';
 import { Provider } from 'react-redux';
 
 import MultiViewGrid from 'components/plots/MultiViewGrid';
@@ -13,49 +15,75 @@ import { generateMultiViewGridPlotUuid } from 'utils/generateCustomPlotUuid';
 
 import { makeStore } from 'redux/store';
 import { updatePlotConfig } from 'redux/actions/componentConfig';
+import loadConditionalComponentConfig from 'redux/actions/componentConfig/loadConditionalComponentConfig';
 import { arrayMoveImmutable } from 'utils/array-move';
 
+import fake from '__test__/test-utils/constants';
+import mockAPI, {
+  generateDefaultMockAPIResponses,
+} from '__test__/test-utils/mockAPI';
+
+const experimentId = fake.EXPERIMENT_ID;
 const plotUuid = 'ViolinMain';
-const multiViewUuid = 'ViolinMain-MultiView';
+const plotType = 'violin';
+const multiViewType = 'multiView';
+const multiViewUuid = 'multiView-ViolinMain';
 
 const mockRenderPlot = jest.fn((plotUuid) => (<>{plotUuid}</>));
+const mockUpdateAllWithChanges = jest.fn(() => {});
 
-const genes = ['gene 0', 'gene 1', 'gene 2'];
-const plotUuids = genes.map(
-  (gene, index) => generateMultiViewGridPlotUuid(plotUuid, index),
+const plotUuids = [generateMultiViewGridPlotUuid(plotUuid, 0)];
+
+const defaultResponses = _.merge(
+  generateDefaultMockAPIResponses(experimentId),
 );
 
-const mockMultiViewConfig = {
-  nrows: 2,
-  ncols: 2,
-  genes,
-  plotUuids,
-};
-
-const renderMultiView = (store) => {
+const renderMultiView = (store, multiViewConfig) => {
   render(
     <Provider store={store}>
       <MultiViewGrid
         renderPlot={mockRenderPlot}
-        multiViewUuid={multiViewUuid}
+        multiViewConfig={multiViewConfig}
+        updateAllWithChanges={mockUpdateAllWithChanges}
       />
     </Provider>,
   );
 };
 
-let store = null;
+enableFetchMocks();
 
-describe.skip('MultiViewGrid', () => {
+let store = null;
+let multiViewConfig = null;
+
+const loadComponent = async (componentUuid, type, skipAPI, customConfig) => {
+  store.dispatch(
+    loadConditionalComponentConfig(experimentId, componentUuid, type, skipAPI, customConfig),
+  );
+};
+
+describe('MultiViewGrid', () => {
   beforeEach(async () => {
     jest.clearAllMocks();
 
+    fetchMock.resetMocks();
+    fetchMock.mockIf(/.*/, mockAPI(defaultResponses));
+
     store = makeStore();
 
-    await store.dispatch(updatePlotConfig(multiViewUuid, mockMultiViewConfig));
+    const customMultiViewConfig = { plotUuids };
+    await loadComponent(multiViewUuid, multiViewType, true, customMultiViewConfig);
+
+    multiViewConfig = store.getState().componentConfig[multiViewUuid].config;
+
+    const customPlotConfig = {
+      shownGene: 'gene 1',
+      title: { text: 'gene 1' },
+    };
+    await loadComponent(plotUuids[0], plotType, true, customPlotConfig);
   });
 
-  it('Renders itself and its children', async () => {
-    renderMultiView(store);
+  it.only('Renders itself and its children', async () => {
+    renderMultiView(store, multiViewConfig);
 
     plotUuids.forEach((plotUuid) => {
       expect(screen.getByText(plotUuid)).toBeInTheDocument();
