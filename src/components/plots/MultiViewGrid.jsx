@@ -14,7 +14,7 @@ const MultiViewGrid = (props) => {
 
   const plotConfigs = useSelector(getPlotConfigs(multiViewConfig.plotUuids));
 
-  const [plots, setPlots] = useState([]);
+  const [plots, setPlots] = useState({});
   const previousMultiViewConfig = useRef({});
 
   const shouldUpdatePlots = () => {
@@ -39,33 +39,14 @@ const MultiViewGrid = (props) => {
     if (currentPlotUuids.length > previousPlotUuids.length) {
       const plotsToAdd = _.difference(currentPlotUuids, previousPlotUuids);
 
-      const newPlots = [];
+      const newPlots = { ...plots };
 
       plotsToAdd.forEach((plotUuid) => {
-        newPlots.push(renderPlot(plotUuid));
+        newPlots[plotUuid] = renderPlot(plotUuid);
       });
 
-      setPlots([...plots, ...newPlots]);
-
-      return;
+      setPlots(newPlots);
     }
-
-    // if plots are re-ordered
-    if (currentPlotUuids.length === previousPlotUuids.length) {
-      const order = currentPlotUuids.map((plot) => previousPlotUuids.indexOf(plot));
-      const reorderedPlots = order.map((index) => plots[index]);
-
-      setPlots(reorderedPlots);
-
-      return;
-    }
-
-    // if a plot is removed
-    const plotsToRemove = _.difference(previousPlotUuids, currentPlotUuids);
-    const filteredPlots = _.filter(plots, (value, index) => (
-      !plotsToRemove.includes(previousPlotUuids[index])
-    ));
-    setPlots(filteredPlots);
   }, [multiViewConfig, plotConfigs]);
 
   const spaceAlign = (multiViewConfig.plotUuids.length > 1)
@@ -85,7 +66,7 @@ const MultiViewGrid = (props) => {
             {
               _.times(multiViewConfig.ncols, (j) => (
                 <Col flex key={multiViewConfig.ncols * i + j}>
-                  {plots[multiViewConfig.ncols * i + j]}
+                  {plots[multiViewConfig.plotUuids[multiViewConfig.ncols * i + j]]}
                 </Col>
               ))
             }
