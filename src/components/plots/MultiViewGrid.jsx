@@ -10,6 +10,7 @@ const MultiViewGrid = (props) => {
   const {
     renderPlot,
     multiViewConfig,
+    updateAllWithChanges,
   } = props;
 
   const plotConfigs = useSelector(getPlotConfigs(multiViewConfig.plotUuids));
@@ -27,6 +28,10 @@ const MultiViewGrid = (props) => {
     return true;
   };
 
+  const updatePlotSize = () => {
+    updateAllWithChanges({ dimensions: { width: 550, height: 400 } });
+  };
+
   useEffect(() => {
     if (!shouldUpdatePlots()) return;
 
@@ -37,6 +42,10 @@ const MultiViewGrid = (props) => {
 
     // if new plots are added
     if (currentPlotUuids.length > previousPlotUuids.length) {
+      if (previousPlotUuids.length === 1) {
+        updatePlotSize();
+      }
+
       const plotsToAdd = _.difference(currentPlotUuids, previousPlotUuids);
 
       const newPlots = { ...plots };
@@ -80,6 +89,7 @@ const MultiViewGrid = (props) => {
 MultiViewGrid.propTypes = {
   renderPlot: PropTypes.func.isRequired,
   multiViewConfig: PropTypes.object.isRequired,
+  updateAllWithChanges: PropTypes.func.isRequired,
 };
 
 export default MultiViewGrid;
