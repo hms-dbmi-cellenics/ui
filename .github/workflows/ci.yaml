@@ -113,10 +113,10 @@ jobs:
         name: Send failure notification to Slack
         if: failure() && github.event_name == 'push'
         env:
-          SLACK_BOT_TOKEN: ${{ secrets.BUILD_STATUS_BOT_TOKEN }}
+          SLACK_BOT_TOKEN: ${{ secrets.WORKFLOW_STATUS_BOT_TOKEN }}
         uses: voxmedia/github-action-slack-notify-build@v1
         with:
-          channel: pipelines
+          channel: workflow-failures
           status: FAILED
           color: danger
 
@@ -232,10 +232,10 @@ jobs:
         name: Send failure notification to Slack
         if: failure() && github.event_name == 'push'
         env:
-          SLACK_BOT_TOKEN: ${{ secrets.BUILD_STATUS_BOT_TOKEN }}
+          SLACK_BOT_TOKEN: ${{ secrets.WORKFLOW_STATUS_BOT_TOKEN }}
         uses: voxmedia/github-action-slack-notify-build@v1
         with:
-          channel: pipelines
+          channel: workflow-failures
           status: FAILED
           color: danger
 
@@ -370,10 +370,10 @@ jobs:
         name: Send failure notification to Slack
         if: failure() && github.event_name == 'push'
         env:
-          SLACK_BOT_TOKEN: ${{ secrets.BUILD_STATUS_BOT_TOKEN }}
+          SLACK_BOT_TOKEN: ${{ secrets.WORKFLOW_STATUS_BOT_TOKEN }}
         uses: voxmedia/github-action-slack-notify-build@v1
         with:
-          channel: pipelines
+          channel: workflow-failures
           status: FAILED
           color: danger
 
