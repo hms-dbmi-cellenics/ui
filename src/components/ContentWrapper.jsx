@@ -2,6 +2,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
+
 import {
   BuildOutlined,
   DatabaseOutlined,
@@ -15,27 +16,26 @@ import {
   Tooltip,
   Typography,
 } from 'antd';
-import { modules } from 'utils/constants';
-
-import { useAppRouter } from 'utils/AppRouteProvider';
-
-import calculateGem2sRerunStatus from 'utils/data-management/calculateGem2sRerunStatus';
-import GEM2SLoadingScreen from 'components/GEM2SLoadingScreen';
-import PipelineRedirectToDataProcessing from 'components/PipelineRedirectToDataProcessing';
-import PreloadContent from 'components/PreloadContent';
-
-import experimentUpdatesHandler from 'utils/experimentUpdatesHandler';
-import { getBackendStatus } from 'redux/selectors';
-import { loadBackendStatus } from 'redux/actions/backendStatus';
-import { isBrowser, privacyPolicyIsNotAccepted } from 'utils/deploymentInfo';
 
 import Error from 'pages/_error';
 
+import BrowserAlert from 'components/BrowserAlert';
+import PreloadContent from 'components/PreloadContent';
+import GEM2SLoadingScreen from 'components/GEM2SLoadingScreen';
+import PipelineRedirectToDataProcessing from 'components/PipelineRedirectToDataProcessing';
+import PrivacyPolicyIntercept from 'components/data-management/PrivacyPolicyIntercept';
+
+import { getBackendStatus } from 'redux/selectors';
+import { loadUser } from 'redux/actions/user';
+import { loadBackendStatus } from 'redux/actions/backendStatus';
+
+import { isBrowser, privacyPolicyIsNotAccepted } from 'utils/deploymentInfo';
+import { modules } from 'utils/constants';
+import { useAppRouter } from 'utils/AppRouteProvider';
+import experimentUpdatesHandler from 'utils/experimentUpdatesHandler';
 import integrationTestConstants from 'utils/integrationTestConstants';
 import pipelineStatus from 'utils/pipelineStatusValues';
-import BrowserAlert from 'components/BrowserAlert';
-import { loadUser } from 'redux/actions/user';
-import PrivacyPolicyIntercept from './data-management/PrivacyPolicyIntercept';
+import calculateGem2sRerunStatus from 'utils/data-management/calculateGem2sRerunStatus';
 
 const { Sider } = Layout;
 const { Text } = Typography;

@@ -3,10 +3,8 @@ import { screen, render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import { Provider } from 'react-redux';
-
 import { act } from 'react-dom/test-utils';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
-
 import '__test__/test-utils/setupTests';
 
 import ViolinPlot from 'components/plots/ViolinPlot';
