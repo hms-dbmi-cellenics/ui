@@ -18,6 +18,7 @@ import { createCellSet } from 'redux/actions/cellSets';
 
 import '__test__/test-utils/setupTests';
 import { withoutFilteredOutCells } from 'utils/cellSetOperations';
+import { createHierarchyFromTree, createPropertiesFromTree } from 'redux/reducers/cellSets/helpers';
 
 jest.mock('utils/work/fetchWork');
 
@@ -451,7 +452,12 @@ describe('CellSetsTool', () => {
     const cellsWT2 = sampleList.find(({ name }) => name === 'WT2').cellIds;
     const selectedCellIds = [...cellsWT1, ...cellsWT2];
 
-    const numSelectedCells = withoutFilteredOutCells(cellSetsData.cellSets, selectedCellIds).size;
+    const cellSets = {
+      properties: createPropertiesFromTree(cellSetsData.cellSets),
+      hierarchy: createHierarchyFromTree(cellSetsData.cellSets),
+    };
+
+    const numSelectedCells = withoutFilteredOutCells(cellSets, selectedCellIds).size;
 
     screen.getByText(`${numSelectedCells} cells selected`);
   });
