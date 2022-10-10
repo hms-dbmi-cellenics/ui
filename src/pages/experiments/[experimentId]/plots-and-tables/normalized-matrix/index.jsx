@@ -117,12 +117,12 @@ const NormalizedMatrixPage = (props) => {
             <MultiSelect items={_.map(sample.children, 'name')} onChange={onSelectedItemsChanged('sample')} placeholder='All' />
           </Space>
           <Space direction='vertical'>
-            Subset by clusters:
-            <MultiSelect items={_.map(louvain.children, 'name')} onChange={onSelectedItemsChanged('louvain')} placeholder='All' />
-          </Space>
-          <Space direction='vertical'>
             Subset by metadata group:
             <MultiSelect items={_.map(metadataCellSets, 'name')} onChange={onSelectedItemsChanged('metadata')} placeholder='All' />
+          </Space>
+          <Space direction='vertical'>
+            Subset by clusters:
+            <MultiSelect items={_.map(louvain.children, 'name')} onChange={onSelectedItemsChanged('louvain')} placeholder='All' />
           </Space>
           <Space direction='vertical'>
             Subset by custom cell sets:
