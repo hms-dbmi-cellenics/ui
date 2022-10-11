@@ -54,10 +54,6 @@ jobs:
     env:
       CI: true
     steps:
-      - id: test-failure-notif
-        name: Test workflow failure
-        run: exit 1
-
       - id: checkout
         name: Check out source code
         uses: actions/checkout@v3
@@ -362,7 +358,7 @@ jobs:
     name: Report if workflow failed
     runs-on: ubuntu-20.04
     needs: [build, build-docker, deploy]
-    if: failure()
+    if: failure() && github.ref == 'refs/heads/master'
     steps:
       - id: send-to-slack
         name: Send failure notification to Slack on failure
