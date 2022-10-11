@@ -362,7 +362,7 @@ jobs:
     name: Report if workflow failed
     runs-on: ubuntu-20.04
     needs: [build, build-docker, deploy]
-    if: failure() && github.ref == 'refs/heads/master'
+    if: failure()
     steps:
       - id: send-to-slack
         name: Send failure notification to Slack on failure
