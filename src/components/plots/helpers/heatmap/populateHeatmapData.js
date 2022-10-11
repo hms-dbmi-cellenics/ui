@@ -1,7 +1,7 @@
 import _ from 'lodash';
 
-import { difference } from 'utils/setOperations';
-import { union } from 'utils/cellSetOperations';
+import { difference, intersection } from 'utils/setOperations';
+import { getFilteredCells, union } from 'utils/cellSetOperations';
 
 const populateHeatmapData = (
   cellSets, heatmapSettings,
@@ -12,8 +12,16 @@ const populateHeatmapData = (
     groupedTracks, selectedCellSet, selectedPoints,
   } = heatmapSettings;
 
+  const allFilteredCellIds = getFilteredCells(cellSets);
+
   const maxCells = 1000;
-  const getCellsInSet = (cellSetName) => properties[cellSetName].cellIds;
+  const getCellsInSet = (cellSetName) => {
+    const unfilteredCellIds = properties[cellSetName].cellIds;
+
+    const filteredCellIds = intersection(allFilteredCellIds, unfilteredCellIds);
+
+    return filteredCellIds;
+  };
 
   // return a set with all the cells found in group node
   // e.g: node = {key: louvain, children: []}, {...}
