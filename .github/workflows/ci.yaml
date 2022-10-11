@@ -54,7 +54,7 @@ jobs:
     env:
       CI: true
     steps:
-      - id: test
+      - id: test-failure-notif
         name: Test workflow failure
         run: exit 1
 
