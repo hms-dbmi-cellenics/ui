@@ -11,7 +11,7 @@ import { makeStore } from 'redux/store';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 
 import handleError from 'utils/http/handleError';
-import downloadFromUrl from 'utils/data-management/downloadFromUrl';
+import downloadFromUrl from 'utils/downloadFromUrl';
 import writeToFile from 'utils/writeToFileURL';
 
 import launchPathwayService from 'utils/pathwayAnalysis/launchPathwayService';

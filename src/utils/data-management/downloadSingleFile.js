@@ -1,4 +1,4 @@
-import downloadFromUrl from 'utils/data-management/downloadFromUrl';
+import downloadFromUrl from 'utils/downloadFromUrl';
 import fetchAPI from 'utils/http/fetchAPI';
 
 import getFileTypeV2 from 'utils/getFileTypeV2';

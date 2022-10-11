@@ -10,7 +10,7 @@ import { saveAs } from 'file-saver';
 import downloadTypes from 'utils/data-management/downloadTypes';
 import fetchAPI from 'utils/http/fetchAPI';
 import endUserMessages from 'utils/endUserMessages';
-import downloadFromUrl from 'utils/data-management/downloadFromUrl';
+import downloadFromUrl from 'utils/downloadFromUrl';
 import pipelineStatus from 'utils/pipelineStatusValues';
 import { exportQCParameters, filterQCParameters } from 'utils/data-management/exportQCParameters';
 
