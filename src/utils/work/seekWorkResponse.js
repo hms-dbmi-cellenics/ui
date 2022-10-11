@@ -25,10 +25,17 @@ const getRemainingWorkerStartTime = (creationTimestamp) => {
   return remainingTime + 60;
 };
 
-const seekFromS3 = async (ETag, experimentId) => {
+const seekFromS3 = async (ETag, experimentId, extras = {}) => {
+  const { customFileName = undefined, customResultHandler = undefined } = extras;
+
   let response;
   try {
-    response = await fetchAPI(`/v2/workResults/${experimentId}/${ETag}`);
+    let url = `/v2/workResults/${experimentId}/${ETag}`;
+    if (customFileName) {
+      url += `?downloadFileName=${customFileName}`;
+    }
+
+    response = await fetchAPI(url);
   } catch (e) {
     if (e.statusCode === httpStatusCodes.NOT_FOUND) {
       return null;
@@ -36,6 +43,8 @@ const seekFromS3 = async (ETag, experimentId) => {
 
     throw e;
   }
+
+  if (customResultHandler) return await customResultHandler(response);
 
   const storageResp = await fetch(response.signedUrl);
 
