@@ -10,41 +10,41 @@ const downloadNormalizedMatrix = (
   experimentId,
   subsetBy,
 ) => async (dispatch, getState) => {
-  // try {
-  const body = {
-    name: 'GetNormalizedExpression',
-    subsetBy,
-  };
+  try {
+    const body = {
+      name: 'GetNormalizedExpression',
+      subsetBy,
+    };
 
-  await fetchWork(
-    experimentId,
-    body,
-    getState,
-    {
-      cacheable: false,
-      customFileName: 'NormalizedExpression.csv.gz',
-      customResultHandler: async (response) => {
-        downloadFromUrl(response.signedUrl);
+    await fetchWork(
+      experimentId,
+      body,
+      getState,
+      {
+        cacheable: false,
+        customFileName: 'NormalizedExpression.csv.gz',
+        customResultHandler: async (response) => {
+          downloadFromUrl(response.signedUrl);
 
-        return true;
+          return true;
+        },
       },
-    },
-  );
+    );
 
-  // console.log('dataDebug');
-  // console.log(data);
+    // console.log('dataDebug');
+    // console.log(data);
+  } catch (e) {
+    // const errorMessage = handleError(e,
+    // endUserMessages.ERROR_FETCHING_NORMALIZED_EXPRESSION_MATRIX);
 
-  // } catch (e) {
-  //   const errorMessage = handleError(e, endUserMessages.ERROR_FETCHING_PLOT_DATA);
-
-  //   // dispatch({
-  //   //   type: PLOT_DATA_ERROR,
-  //   //   payload: {
-  //   //     plotUuid,
-  //   //     error: errorMessage,
-  //   //   },
-  //   // });
-  // }
+    // dispatch({
+    //   type: PLOT_DATA_ERROR,
+    //   payload: {
+    //     plotUuid,
+    //     error: errorMessage,
+    //   },
+    // });
+  }
 };
 
 export default downloadNormalizedMatrix;
