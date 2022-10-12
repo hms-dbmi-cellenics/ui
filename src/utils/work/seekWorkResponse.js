@@ -37,8 +37,7 @@ const seekFromS3 = async (ETag, experimentId) => {
     throw e;
   }
 
-  const { signedUrl } = response;
-  const storageResp = await fetch(signedUrl);
+  const storageResp = await fetch(response.signedUrl);
 
   if (!storageResp.ok) {
     throwResponseError(storageResp);

@@ -115,7 +115,7 @@ const FeedbackButton = () => {
               setFeedbackText(e.target.value);
             }}
             rows={4}
-            placeholder={'Please write your feedback/issues here. We\'ll get back to you ASAP'}
+            placeholder='Please write your message here to provide feedback or report issues on Cellenics. A member of our team will get back to you as soon as possible.'
             bordered={false}
             ref={(ref) => { if (ref) { ref.focus(); } }}
             style={{

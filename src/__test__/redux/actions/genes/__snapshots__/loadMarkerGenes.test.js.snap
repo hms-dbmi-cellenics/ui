@@ -1,45 +1,74 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`loadMarkerGenes action dispatches appropriately on error 1`] = `
-Object {
-  "type": "genes/markerGenesLoading",
-}
-`;
-
-exports[`loadMarkerGenes action dispatches appropriately on error 2`] = `
-Object {
-  "payload": Object {
+Array [
+  undefined,
+  Object {
     "error": "We couldn't get the marker genes",
-    "experimentId": "1234",
   },
-  "type": "genes/markerGenesError",
-}
+]
 `;
 
 exports[`loadMarkerGenes action dispatches appropriately on success 1`] = `
-Object {
-  "type": "genes/markerGenesLoading",
-}
-`;
-
-exports[`loadMarkerGenes action dispatches appropriately on success 2`] = `
-Object {
-  "payload": Object {
+Array [
+  undefined,
+  Object {
     "data": Object {
-      "geneA": Object {
-        "expression": Array [
+      "orderedGeneNames": Array [
+        "geneA",
+      ],
+      "rawExpression": Object {
+        "datatype": undefined,
+        "index": Array [],
+        "mathjs": "SparseMatrix",
+        "ptr": Array [
+          0,
+          0,
+        ],
+        "size": Array [
+          1,
           1,
         ],
-        "mean": 1,
-        "stdev": 1,
+        "values": Array [],
+      },
+      "stats": Object {
+        "a": Object {
+          "rawMean": 1,
+          "rawStdev": 0,
+          "truncatedMax": 1,
+          "truncatedMin": 1,
+        },
+      },
+      "truncatedExpression": Object {
+        "datatype": undefined,
+        "index": Array [],
+        "mathjs": "SparseMatrix",
+        "ptr": Array [
+          0,
+          0,
+        ],
+        "size": Array [
+          1,
+          1,
+        ],
+        "values": Array [],
+      },
+      "zScore": Object {
+        "datatype": undefined,
+        "index": Array [],
+        "mathjs": "SparseMatrix",
+        "ptr": Array [
+          0,
+          0,
+        ],
+        "size": Array [
+          1,
+          1,
+        ],
+        "values": Array [],
       },
     },
-    "experimentId": "1234",
-    "genes": Array [
-      "geneA",
-    ],
     "plotUuid": "interactiveHeatmap",
   },
-  "type": "genes/markerGenesLoaded",
-}
+]
 `;

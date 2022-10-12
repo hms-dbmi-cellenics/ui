@@ -29,7 +29,7 @@ import { loadGeneExpression } from 'redux/actions/genes';
 import { loadBackendStatus } from 'redux/actions/backendStatus';
 
 import fake from '__test__/test-utils/constants';
-import { setCellSetHiddenStatus } from 'redux/actions/cellSets';
+import { loadCellSets, setCellSetHiddenStatus } from 'redux/actions/cellSets';
 import { isSubset } from 'utils/arrayUtils';
 import { updatePlotConfig } from 'redux/actions/componentConfig';
 
@@ -118,6 +118,8 @@ describe('HeatmapPlot', () => {
   });
 
   it('Renders the heatmap component by default if everything loads', async () => {
+    await storeState.dispatch(loadCellSets(experimentId));
+
     await loadAndRenderDefaultHeatmap(storeState);
 
     expect(screen.getByText(/Sup Im a heatmap/i)).toBeInTheDocument();
@@ -135,18 +137,7 @@ describe('HeatmapPlot', () => {
 
     fetchMock.mockIf(/.*/, mockAPI(mockLoadingAPIResponses));
 
-    await loadAndRenderDefaultHeatmap(storeState);
-
-    expect(screen.getByText(/We're getting your data .../i)).toBeInTheDocument();
-  });
-
-  it('Shows loader message if cellSets are loading in v2', async () => {
-    const mockLoadingAPIResponses = {
-      ...mockWorkerResponses,
-      [`experiments/${experimentId}/cellSets`]: () => delayedResponse({ body: 'Not found', status: 404 }, 4000),
-    };
-
-    fetchMock.mockIf(/.*/, mockAPI(mockLoadingAPIResponses));
+    await storeState.dispatch(loadCellSets(experimentId));
 
     await loadAndRenderDefaultHeatmap(storeState);
 
@@ -158,6 +149,8 @@ describe('HeatmapPlot', () => {
       ...mockWorkerResponses,
       '5-marker-genes': () => delayedResponse({ body: 'Not found', status: 404 }, 4000),
     };
+
+    await storeState.dispatch(loadCellSets(experimentId));
 
     seekFromS3
       .mockReset()
@@ -184,6 +177,8 @@ describe('HeatmapPlot', () => {
       .mockImplementationOnce(() => null)
       .mockImplementationOnce((mockEtag) => customWorkerResponses[mockEtag]());
 
+    await storeState.dispatch(loadCellSets(experimentId));
+
     await loadAndRenderDefaultHeatmap(storeState);
 
     // Renders correctly
@@ -191,7 +186,7 @@ describe('HeatmapPlot', () => {
 
     // A new gene is being loaded
     await act(async () => {
-      storeState.dispatch(loadGeneExpression(experimentId, [...markerGenesData5.order, 'loading_gene_id'], 'interactiveHeatmap'));
+      storeState.dispatch(loadGeneExpression(experimentId, [...markerGenesData5.orderedGeneNames, 'loading_gene_id'], 'interactiveHeatmap'));
     });
 
     // Loading screen shows up
@@ -209,6 +204,8 @@ describe('HeatmapPlot', () => {
       .mockReset()
       .mockImplementationOnce(() => Promise.resolve(null))
       .mockImplementationOnce((mockEtag) => customWorkerResponses[mockEtag]());
+
+    await storeState.dispatch(loadCellSets(experimentId));
 
     await loadAndRenderDefaultHeatmap(storeState);
 
@@ -235,6 +232,8 @@ describe('HeatmapPlot', () => {
       .mockImplementationOnce(() => Promise.resolve(null))
       .mockImplementationOnce((mockEtag) => customWorkerResponses[mockEtag]());
 
+    await storeState.dispatch(loadCellSets(experimentId));
+
     await loadAndRenderDefaultHeatmap(storeState);
 
     // Renders correctly
@@ -242,7 +241,7 @@ describe('HeatmapPlot', () => {
 
     // A new gene is being loaded
     await act(async () => {
-      await storeState.dispatch(loadGeneExpression(experimentId, [...markerGenesData5.order, 'loading_gene_id'], 'interactiveHeatmap'));
+      await storeState.dispatch(loadGeneExpression(experimentId, [...markerGenesData5.orderedGeneNames, 'loading_gene_id'], 'interactiveHeatmap'));
     });
 
     // Error screen shows up
@@ -250,6 +249,8 @@ describe('HeatmapPlot', () => {
   });
 
   it('Does not display hidden cell sets', async () => {
+    await storeState.dispatch(loadCellSets(experimentId));
+
     await loadAndRenderDefaultHeatmap(storeState);
 
     // Renders correctly
@@ -292,6 +293,8 @@ describe('HeatmapPlot', () => {
   });
 
   it('Shows an empty message when all cell sets are hidden ', async () => {
+    await storeState.dispatch(loadCellSets(experimentId));
+
     await loadAndRenderDefaultHeatmap(storeState);
 
     // Renders correctly
@@ -315,6 +318,8 @@ describe('HeatmapPlot', () => {
   });
 
   it('Reacts to cellClass groupby being changed', async () => {
+    await storeState.dispatch(loadCellSets(experimentId));
+
     await loadAndRenderDefaultHeatmap(storeState);
 
     // Renders correctly
@@ -336,6 +341,8 @@ describe('HeatmapPlot', () => {
   });
 
   it('Responds correctly to vitessce Heatmap callbacks', async (done) => {
+    await storeState.dispatch(loadCellSets(experimentId));
+
     await loadAndRenderDefaultHeatmap(storeState);
 
     expect(screen.getByText(/Sup Im a heatmap/i)).toBeInTheDocument();
