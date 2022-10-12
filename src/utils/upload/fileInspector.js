@@ -22,7 +22,11 @@ const inspectFile = async (file, technology) => {
     if (!file.name.toLowerCase().includes('expression_data.st')) {
       return Verdict.INVALID_NAME;
     }
-  } else if (technology === technologies['10x']) {
+    const data = await readFileToBuffer(file.slice(0, 16));
+    const isGzipped = !data.slice(0, 2).compare(GZIP_SIGNATURE);
+    const valid = isGzipped ? Verdict.VALID_ZIPPED : Verdict.VALID_UNZIPPED;
+    return valid;
+  } if (technology === technologies['10x']) {
     // immediately discard file if filename is not in valid set
     const validNames = techOptions[technology].acceptedFiles;
     if (!validNames.has(file.name)) {
@@ -62,9 +66,8 @@ const inspectFile = async (file, technology) => {
     }
 
     return Verdict.INVALID_FORMAT;
-  } else {
-    return Verdict.INVALID_FORMAT;
   }
+  return Verdict.INVALID_FORMAT;
 };
 
 export {
