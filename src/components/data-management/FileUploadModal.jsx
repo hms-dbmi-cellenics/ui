@@ -105,6 +105,9 @@ const FileUploadModal = (props) => {
             </List.Item>
           )}
         />
+        <Paragraph>
+          If your folder has extra files (Have a red cross after choosing the folder), please remove them and you will be able to upload.
+        </Paragraph>
       </Space>
     </>
   );

@@ -20,9 +20,8 @@ const decompress = async (arrBuffer) => {
 };
 
 const columnsToSearch = [
-  ['Cell_Index'], ['Bioproduct', 'Gene'], ['RSEC_Reads'],
-  ['Raw_Molecules'], ['RSEC_Adjusted_Molecules'], ['DBEC_Reads'],
-  ['DBEC_Adjusted_Molecules']];
+  ['Cell_Index'], ['Bioproduct', 'Gene'], ['DBEC_Adjusted_Molecules', 'RSEC_Adjusted_Molecules'],
+];
 
 const validateRhapsody = async (sample) => {
   const fileObjectKey = Object.keys(sample.files).filter((key) => key.toLowerCase().includes('expression_data.st'))[0];
