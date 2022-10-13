@@ -32,18 +32,18 @@ const multiViewUuid = 'multiView-ViolinMain';
 const mockRenderPlot = jest.fn((plotUuid) => (<>{plotUuid}</>));
 const mockUpdateAllWithChanges = jest.fn(() => {});
 
-const plotUuids = [generateMultiViewGridPlotUuid(plotUuid, 0)];
+const plotUuids = [0, 1, 2].map((index) => generateMultiViewGridPlotUuid(plotUuid, index));
 
 const defaultResponses = _.merge(
   generateDefaultMockAPIResponses(experimentId),
 );
 
-const renderMultiView = (store, multiViewConfig) => {
+const renderMultiView = (store) => {
   render(
     <Provider store={store}>
       <MultiViewGrid
         renderPlot={mockRenderPlot}
-        multiViewConfig={multiViewConfig}
+        multiViewUuid={multiViewUuid}
         updateAllWithChanges={mockUpdateAllWithChanges}
       />
     </Provider>,
@@ -53,7 +53,6 @@ const renderMultiView = (store, multiViewConfig) => {
 enableFetchMocks();
 
 let store = null;
-let multiViewConfig = null;
 
 const loadComponent = async (componentUuid, type, skipAPI, customConfig) => {
   store.dispatch(
@@ -70,20 +69,16 @@ describe('MultiViewGrid', () => {
 
     store = makeStore();
 
-    const customMultiViewConfig = { plotUuids };
+    const customMultiViewConfig = { nrows: 2, ncols: 2, plotUuids };
     await loadComponent(multiViewUuid, multiViewType, true, customMultiViewConfig);
 
-    multiViewConfig = store.getState().componentConfig[multiViewUuid].config;
-
-    const customPlotConfig = {
-      shownGene: 'gene 1',
-      title: { text: 'gene 1' },
-    };
-    await loadComponent(plotUuids[0], plotType, true, customPlotConfig);
+    plotUuids.map(async (uuid) => {
+      await loadComponent(uuid, plotType, true);
+    });
   });
 
-  it.only('Renders itself and its children', async () => {
-    renderMultiView(store, multiViewConfig);
+  it('Renders itself and its children', async () => {
+    renderMultiView(store);
 
     plotUuids.forEach((plotUuid) => {
       expect(screen.getByText(plotUuid)).toBeInTheDocument();
@@ -93,7 +88,14 @@ describe('MultiViewGrid', () => {
   it('Adds plots to multi view', async () => {
     renderMultiView(store);
 
-    await store.dispatch(updatePlotConfig(multiViewUuid, { plotUuids: [...plotUuids, 'ViolinMain-3'] }));
+    await store.dispatch(updatePlotConfig(multiViewUuid, {
+      nrows: 2,
+      ncols: 2,
+      plotUuids: [...plotUuids, 'ViolinMain-3'],
+    }));
+
+    await loadComponent('ViolinMain-3', plotType, true);
+
     await waitFor(() => expect(screen.getByText('ViolinMain-3')).toBeInTheDocument());
 
     expect(mockRenderPlot).toHaveBeenCalledTimes(4);
@@ -117,8 +119,14 @@ describe('MultiViewGrid', () => {
   it('Removes plots from multi view', async () => {
     renderMultiView(store);
 
-    await store.dispatch(updatePlotConfig(multiViewUuid, { plotUuids: plotUuids.slice(1) }));
-    await waitForElementToBeRemoved(() => screen.getByText(plotUuids[0]));
+    const multiViewContainer = document.getElementById('multiViewContainer');
+
+    expect(multiViewContainer.textContent).toBe(plotUuids.join(''));
+
+    const newUuids = plotUuids.slice(1);
+
+    await store.dispatch(updatePlotConfig(multiViewUuid, { plotUuids: newUuids }));
+    await waitFor(() => expect(multiViewContainer.textContent).toBe(newUuids.join('')));
 
     expect(mockRenderPlot).toHaveBeenCalledTimes(3);
   });
