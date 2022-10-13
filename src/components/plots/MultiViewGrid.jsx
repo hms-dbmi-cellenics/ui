@@ -29,10 +29,6 @@ const MultiViewGrid = (props) => {
     return true;
   };
 
-  const updatePlotSize = () => {
-    updateAllWithChanges({ dimensions: { width: 550, height: 400 } });
-  };
-
   useEffect(() => {
     if (!shouldUpdatePlots()) return;
 
@@ -43,8 +39,9 @@ const MultiViewGrid = (props) => {
 
     // if new plots are added
     if (currentPlotUuids.length > previousPlotUuids.length) {
+      // when adding the second plot rescale all to fit
       if (previousPlotUuids.length === 1) {
-        updatePlotSize();
+        updateAllWithChanges({ dimensions: { width: 550, height: 400 } });
       }
 
       const plotsToAdd = _.difference(currentPlotUuids, previousPlotUuids);
