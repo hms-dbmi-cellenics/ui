@@ -47,6 +47,7 @@ const toApiV1 = (samples, experimentId) => {
       lastModified: sample.updatedAt,
       files: apiV1Files,
       type: technologies[sample.sampleTechnology],
+      options: sample.options,
       fileNames,
       uuid: sample.id,
     };
