@@ -109,17 +109,6 @@ jobs:
             .next/
             !.next/cache
 
-      - id: send-to-slack
-        name: Send failure notification to Slack
-        if: failure() && github.event_name == 'push'
-        env:
-          SLACK_BOT_TOKEN: ${{ secrets.BUILD_STATUS_BOT_TOKEN }}
-        uses: voxmedia/github-action-slack-notify-build@v1
-        with:
-          channel: pipelines
-          status: FAILED
-          color: danger
-
   build-docker:
     name: Build Docker container
     runs-on: ubuntu-20.04
@@ -227,17 +216,6 @@ jobs:
           docker push $IMAGE_NAME
         env:
           IMAGE_NAME: ${{ format('{0}/{1}:{2}', steps.login-ecr.outputs.registry, steps.ref.outputs.repo-name, steps.ref.outputs.image-tag) }}
-
-      - id: send-to-slack
-        name: Send failure notification to Slack
-        if: failure() && github.event_name == 'push'
-        env:
-          SLACK_BOT_TOKEN: ${{ secrets.BUILD_STATUS_BOT_TOKEN }}
-        uses: voxmedia/github-action-slack-notify-build@v1
-        with:
-          channel: pipelines
-          status: FAILED
-          color: danger
 
   deploy:
     name: Deploy to Kubernetes
@@ -366,17 +344,6 @@ jobs:
           user_email: ci@biomage.net
           user_name: 'Biomage CI/CD'
 
-      - id: send-to-slack
-        name: Send failure notification to Slack
-        if: failure() && github.event_name == 'push'
-        env:
-          SLACK_BOT_TOKEN: ${{ secrets.BUILD_STATUS_BOT_TOKEN }}
-        uses: voxmedia/github-action-slack-notify-build@v1
-        with:
-          channel: pipelines
-          status: FAILED
-          color: danger
-
   ready-to-merge:
     name: Ready for merging
     runs-on: ubuntu-20.04
@@ -386,3 +353,19 @@ jobs:
         name: Signal readiness to merge
         run: |-
           exit 0
+
+  report-if-failed:
+    name: Report if workflow failed
+    runs-on: ubuntu-20.04
+    needs: [build, build-docker, deploy]
+    if: failure() && github.ref == 'refs/heads/master'
+    steps:
+      - id: send-to-slack
+        name: Send failure notification to Slack on failure
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.WORKFLOW_STATUS_BOT_TOKEN }}
+        uses: voxmedia/github-action-slack-notify-build@v1
+        with:
+          channel: workflow-failures
+          status: FAILED
+          color: danger

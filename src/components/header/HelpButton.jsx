@@ -2,8 +2,6 @@ import React, { useState } from 'react';
 import { Button, Dropdown, Card } from 'antd';
 import { QuestionCircleOutlined, DownOutlined } from '@ant-design/icons';
 import nextConfig from 'next/config';
-
-import config from 'config';
 import { AccountId } from 'utils/deploymentInfo';
 
 const accountId = nextConfig()?.publicRuntimeConfig?.accountId;
@@ -13,29 +11,36 @@ const HelpButton = () => {
 
   const overlay = () => (
     <Card size='small' style={{ padding: '1em', width: '265px' }}>
-      {accountId !== AccountId.HMS && (
+      {(accountId === AccountId.BIOMAGE) && (
         <>
-          The
+          Ask questions about how to use Cellenics and make feature requests on the
           {' '}
-          <a href='https://www.biomage.net/user-guide' target='_blank' rel='noreferrer'>
-            Cellenics user guide
-          </a>
-          {' '}
-          is now available!
-          <br />
-          <br />
-          Tutorial videos, ‘how to’ guides and FAQs are also available on
-          {' '}
-          <a href='https://www.biomage.net/get-started' target='_blank' rel='noreferrer'>our website</a>
-          .
+          <a href='https://community.biomage.net/' target='_blank' rel='noreferrer'>Cellenics community forum</a>
+          !
+          The Biomage team will reply to your message as soon as possible.
           <br />
           <br />
         </>
       )}
-
-      If you need additional help with your analysis, email:
+      Check out the
       {' '}
-      <a href={`mailto:${config.supportEmail}`}>{config.supportEmail}</a>
+      <a href='https://www.biomage.net/user-guide' target='_blank' rel='noreferrer'>
+        user guide
+      </a>
+      {' '}
+      and
+      <a href='https://www.biomage.net/resources' target='_blank' rel='noreferrer'> tutorial videos </a>
+      that are available on our website!
+
+      {accountId !== AccountId.BIOMAGE && (
+        <>
+          <br />
+          <br />
+          For 1-2-1 support with your analysis, contact
+          {' '}
+          <a href='mailto: vicky@biomage.net'>vicky@biomage.net</a>
+        </>
+      )}
     </Card>
   );
 
@@ -51,7 +56,7 @@ const HelpButton = () => {
         type='dashed'
         icon={<QuestionCircleOutlined />}
       >
-        Help & resources
+        Need help?
         <DownOutlined />
       </Button>
     </Dropdown>
