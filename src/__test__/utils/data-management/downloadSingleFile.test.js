@@ -5,7 +5,7 @@ import downloadFromUrl from 'utils/downloadFromUrl';
 
 import fake from '__test__/test-utils/constants';
 
-jest.mock('utils/data-management/downloadFromUrl');
+jest.mock('utils/downloadFromUrl');
 
 enableFetchMocks();
 

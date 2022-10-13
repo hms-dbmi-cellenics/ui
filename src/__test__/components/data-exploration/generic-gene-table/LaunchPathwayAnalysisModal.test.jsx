@@ -26,7 +26,7 @@ jest.mock('utils/differentialExpression/getDiffExprGenes');
 jest.mock('utils/differentialExpression/getBackgroundExpressedGenes');
 
 jest.mock('utils/http/handleError');
-jest.mock('utils/data-management/downloadFromUrl');
+jest.mock('utils/downloadFromUrl');
 jest.mock('utils/writeToFileURL');
 
 const onCancel = jest.fn();

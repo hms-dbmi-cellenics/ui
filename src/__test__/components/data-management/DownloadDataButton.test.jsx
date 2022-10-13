@@ -24,7 +24,7 @@ import fetchAPI from 'utils/http/fetchAPI';
 jest.mock('redux/selectors');
 jest.mock('utils/pushNotificationMessage');
 jest.mock('utils/http/fetchAPI');
-jest.mock('utils/data-management/downloadFromUrl');
+jest.mock('utils/downloadFromUrl');
 
 const mockStore = configureMockStore([thunk]);
 const experimentName = 'Experiment 1';
