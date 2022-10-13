@@ -10,17 +10,8 @@ import mockStartingNodes from '__test__/data/starting_nodes.json';
 import { initialEmbeddingState } from 'redux/reducers/embeddings/initialState';
 import initialExperimentSettingsState from 'redux/reducers/experimentSettings/initialState';
 
-jest.mock('utils/work/fetchWork', () => {
-  const originalModule = jest.requireActual('utils/work/fetchWork');
-
-  return {
-    ...originalModule,
-    fetchWork: jest.fn(() => ({})),
-  };
-});
-
 jest.mock('utils/http/handleError');
-
+jest.mock('utils/work/fetchWork', () => jest.fn(() => ({})));
 jest.mock('utils/getTimeoutForWorkerTask', () => () => 60);
 
 const mockStore = configureStore([thunk]);
