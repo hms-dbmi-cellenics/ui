@@ -16,7 +16,6 @@ const downloadNormalizedMatrix = (
       subsetBy,
     };
 
-    console.log('QONDAAA');
     await fetchWork(
       experimentId,
       body,

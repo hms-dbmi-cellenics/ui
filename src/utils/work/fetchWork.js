@@ -182,8 +182,6 @@ const fetchWork = async (
     environment,
   );
 
-  console.log('cacheableDebug');
-  console.log(cacheable);
   if (cacheable) {
     // First, let's try to fetch this information from the local cache.
     const data = await cache.get(ETag);
@@ -192,8 +190,6 @@ const fetchWork = async (
       return data;
     }
   }
-
-  console.log('supsup');
 
   // Then, we may be able to find this in S3.
   let response = await seekFromS3(ETag, experimentId, { customResultHandler, customFileName });

@@ -28,8 +28,6 @@ const getRemainingWorkerStartTime = (creationTimestamp) => {
 const seekFromS3 = async (ETag, experimentId, extras = {}) => {
   const { customFileName = undefined, customResultHandler = undefined } = extras;
 
-  console.log('CHAUCHUA');
-
   let response;
   try {
     let url = `/v2/workResults/${experimentId}/${ETag}`;
@@ -43,7 +41,6 @@ const seekFromS3 = async (ETag, experimentId, extras = {}) => {
       return null;
     }
 
-    console.log('HOLAHOLA');
     throw e;
   }
 
