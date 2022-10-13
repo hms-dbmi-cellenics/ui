@@ -3,6 +3,7 @@
 
 import downloadFromUrl from 'utils/downloadFromUrl';
 import fetchWork from 'utils/work/fetchWork';
+import writeToFileURL from 'utils/writeToFileURL';
 // import handleError from 'utils/http/handleError';
 // import endUserMessages from 'utils/endUserMessages';
 
@@ -16,20 +17,14 @@ const downloadNormalizedMatrix = (
       subsetBy,
     };
 
-    await fetchWork(
+    const data = await fetchWork(
       experimentId,
       body,
       getState,
-      {
-        cacheable: false,
-        customFileName: 'NormalizedExpression.csv.gz',
-        customResultHandler: async (response) => {
-          downloadFromUrl(response.signedUrl);
-
-          return true;
-        },
-      },
+      { isJson: false },
     );
+
+    downloadFromUrl(writeToFileURL(data), 'NormalizedExpression.csv');
   } catch (e) {
     // const errorMessage = handleError(e,
     // endUserMessages.ERROR_FETCHING_NORMALIZED_EXPRESSION_MATRIX);

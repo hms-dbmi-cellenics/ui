@@ -151,9 +151,7 @@ const fetchWork = async (
     extras = undefined,
     timeout = 180,
     broadcast = false,
-    customResultHandler = undefined,
-    customFileName = undefined,
-    cacheable = true,
+    isJson = true,
   } = optionals;
 
   const backendStatus = getBackendStatus(experimentId)(getState()).status;
@@ -182,17 +180,15 @@ const fetchWork = async (
     environment,
   );
 
-  if (cacheable) {
-    // First, let's try to fetch this information from the local cache.
-    const data = await cache.get(ETag);
+  // First, let's try to fetch this information from the local cache.
+  const data = await cache.get(ETag);
 
-    if (data) {
-      return data;
-    }
+  if (data) {
+    return data;
   }
 
   // Then, we may be able to find this in S3.
-  let response = await seekFromS3(ETag, experimentId, { customResultHandler, customFileName });
+  let response = await seekFromS3(ETag, experimentId, isJson);
 
   if (response) return response;
 
@@ -210,15 +206,13 @@ const fetchWork = async (
       },
     );
 
-    response = await seekFromS3(ETag, experimentId, { customResultHandler, customFileName });
+    response = await seekFromS3(ETag, experimentId, isJson);
   } catch (error) {
     console.error('Error dispatching work request', error);
     throw error;
   }
 
-  if (cacheable) {
-    await cache.set(ETag, response);
-  }
+  await cache.set(ETag, response);
 
   return response;
 };

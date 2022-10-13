@@ -3,7 +3,7 @@ import { decompress } from 'fflate';
 // eslint-disable-next-line camelcase
 import { JSON_parse } from 'uint8array-json-parser';
 
-const unpackResult = async (storageResp) => {
+const unpackResult = async (storageResp, isJson) => {
   const arrayBuf = await storageResp.arrayBuffer();
 
   const resultPromise = new Promise((resolve, reject) => {
@@ -13,7 +13,11 @@ const unpackResult = async (storageResp) => {
       if (err) {
         reject(err);
       } else {
-        resolve(JSON_parse(decompressed));
+        if (isJson) {
+          resolve(JSON_parse(decompressed));
+        } else {
+          resolve(decompressed);
+        }
         resolve();
       }
     });
