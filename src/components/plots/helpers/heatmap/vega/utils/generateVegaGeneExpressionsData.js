@@ -48,7 +48,7 @@ const generateVegaGeneExpressionsData = (cellOrder, geneOrder, expression, heatm
         expressionValues.display = preloadedExpressions[gene].rawExpression;
         expressionValues.color = truncatedValues
           ? preloadedExpressions[gene].truncatedExpression
-          : preloadedExpressions[gene].display;
+          : preloadedExpressions[gene].rawExpression;
       }
 
       geneExpressionsData.push({
