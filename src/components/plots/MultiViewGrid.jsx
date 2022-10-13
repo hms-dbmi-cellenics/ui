@@ -9,10 +9,11 @@ import { getPlotConfigs } from 'redux/selectors';
 const MultiViewGrid = (props) => {
   const {
     renderPlot,
-    multiViewConfig,
+    multiViewUuid,
     updateAllWithChanges,
   } = props;
 
+  const multiViewConfig = useSelector((state) => state.componentConfig[multiViewUuid].config);
   const plotConfigs = useSelector(getPlotConfigs(multiViewConfig.plotUuids));
 
   const [plots, setPlots] = useState({});
@@ -88,7 +89,7 @@ const MultiViewGrid = (props) => {
 
 MultiViewGrid.propTypes = {
   renderPlot: PropTypes.func.isRequired,
-  multiViewConfig: PropTypes.object.isRequired,
+  multiViewUuid: PropTypes.string.isRequired,
   updateAllWithChanges: PropTypes.func.isRequired,
 };
 

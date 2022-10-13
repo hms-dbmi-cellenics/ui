@@ -260,7 +260,7 @@ const ViolinIndex = ({ experimentId }) => {
     return (
       <MultiViewGrid
         renderPlot={renderPlot}
-        multiViewConfig={multiViewConfig}
+        multiViewUuid={multiViewUuid}
         updateAllWithChanges={updateAllWithChanges}
       />
     );
