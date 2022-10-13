@@ -42,9 +42,7 @@ const NormalizedMatrixPage = (props) => {
   } = useSelector((state) => state.componentConfig[plotUuid]) || {};
 
   const cellSets = useSelector(getCellSets());
-  const [sample] = useSelector(getCellSetsHierarchyByKeys(['sample']));
-  const [louvain] = useSelector(getCellSetsHierarchyByKeys(['louvain']));
-  const [scratchpad] = useSelector(getCellSetsHierarchyByKeys(['scratchpad']));
+  const [sample, louvain, scratchpad] = useSelector(getCellSetsHierarchyByKeys(['sample', 'louvain', 'scratchpad']));
   const metadataTracks = useSelector(getCellSetsHierarchyByType('metadataCategorical', ['sample']));
 
   const [metadataCellSets, setMetadataCellSets] = useState([]);
