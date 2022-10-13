@@ -112,6 +112,7 @@ const resultState = {
 // State with less gene expression fields
 const partialState = _.cloneDeep(resultState);
 const partialGeneExpData = mockGeneExpressionData.map((data) => {
+  // eslint-disable-next-line camelcase
   const { pct_1, pct_2, ...remaining } = data;
   return remaining;
 });
@@ -236,14 +237,6 @@ describe('DiffExprResults', () => {
     act(() => {
       table.getElement().props.onChange(newPagination, {}, newSorter);
     });
-
-    // Based on https://stackoverflow.com/a/51045733
-    const flushPromises = () => new Promise(setImmediate);
-
-    await flushPromises();
-
-    console.log('withResultStoreDebug');
-    console.log(withResultStore.getActions());
 
     // Wait for side-effect to propagate (properties loading and loaded).
     await waitForActions(
