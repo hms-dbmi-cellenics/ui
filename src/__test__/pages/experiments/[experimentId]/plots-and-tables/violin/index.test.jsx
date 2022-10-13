@@ -129,27 +129,15 @@ describe('ViolinIndex', () => {
   });
 
   it('Adds a new plot to multi view', async () => {
-    seekFromS3
-      .mockReset()
-      // 1st call to list genes
-      .mockImplementationOnce(() => null)
-      .mockImplementationOnce((Etag) => mockWorkerResponses[Etag])
-      // 2nd call to load gene expression
-      .mockImplementationOnce(() => null)
-      .mockImplementationOnce((Etag) => mockWorkerResponses[Etag])
-      // 3rd call to load gene expression
-      .mockImplementationOnce(() => null)
-      .mockImplementationOnce((Etag) => mockWorkerResponses[Etag]);
-
     await renderViolinPage(storeState);
 
     userEvent.click(screen.getByText(/View multiple plots/i));
 
     const searchBox = screen.getByRole('combobox', { name: 'SearchBar' });
 
-    userEvent.type(searchBox, 's10');
+    userEvent.type(searchBox, 'cc');
 
-    const option = screen.getByTitle('S100a6');
+    const option = screen.getByTitle('Ccl5');
 
     await act(async () => {
       // the element has pointer-events set to 'none', skip check
@@ -167,15 +155,6 @@ describe('ViolinIndex', () => {
   });
 
   it('Changes the shown gene', async () => {
-    seekFromS3
-      .mockReset()
-      .mockImplementationOnce(() => null)
-      .mockImplementationOnce((Etag) => mockWorkerResponses[Etag])
-      .mockImplementationOnce(() => null)
-      .mockImplementationOnce((Etag) => mockWorkerResponses[Etag])
-      .mockImplementationOnce(() => null)
-      .mockImplementationOnce((Etag) => mockWorkerResponses[Etag]);
-
     await renderViolinPage(storeState);
 
     userEvent.click(screen.getByText(/Gene selection/i));
@@ -183,9 +162,9 @@ describe('ViolinIndex', () => {
     const searchBox = screen.getByRole('combobox', { name: 'SearchBar' });
 
     userEvent.clear(searchBox);
-    userEvent.type(searchBox, 's1');
+    userEvent.type(searchBox, 'cc');
 
-    const option = screen.getByTitle('S100a6');
+    const option = screen.getByTitle('Ccl5');
 
     await act(async () => {
       // the element has pointer-events set to 'none', skip check
@@ -199,7 +178,7 @@ describe('ViolinIndex', () => {
 
     await waitFor(() => expect(screen.getByRole('graphics-document', { name: 'Violin plot' })).toBeInTheDocument());
 
-    expect(storeState.getState().componentConfig[plotUuid].config.shownGene).toBe('S100a6');
+    expect(storeState.getState().componentConfig[plotUuid].config.shownGene).toBe('Ccl5');
   });
 
   it('Changes to raw expression', async () => {

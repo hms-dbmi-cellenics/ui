@@ -7,69 +7,19 @@
             "_row": "ENSMUSG00000001020"
         },
         {
-            "gene_names": "S100a6",
-            "dispersions": 2.3931,
-            "_row": "ENSMUSG00000001025"
-        },
-        {
-            "gene_names": "Rps15a",
-            "dispersions": 0.8032,
-            "_row": "ENSMUSG00000008683"
-        },
-        {
-            "gene_names": "Il7r",
-            "dispersions": 1.0265,
-            "_row": "ENSMUSG00000003882"
-        },
-        {
             "gene_names": "5830411N06Rik",
             "dispersions": 2.1978,
             "_row": "ENSMUSG00000054672"
         },
         {
-            "gene_names": "Ly6c2",
-            "dispersions": 4.6741,
-            "_row": "ENSMUSG00000022584"
+            "gene_names": "Ccl5",
+            "dispersions": 14.3142,
+            "_row": "ENSMUSG00000035042"
         },
         {
-            "gene_names": "Nkg7",
-            "dispersions": 4.577,
-            "_row": "ENSMUSG00000004612"
-        },
-        {
-            "gene_names": "Cd244",
-            "dispersions": 1.2672,
-            "_row": "ENSMUSG00000004709"
-        },
-        {
-            "gene_names": "Cdc45",
-            "dispersions": 1.1998,
-            "_row": "ENSMUSG00000000028"
-        },
-        {
-            "gene_names": "Bcl11a",
-            "dispersions": 1.6315,
-            "_row": "ENSMUSG00000000861"
-        },
-        {
-            "gene_names": "Pparg",
-            "dispersions": 1.453,
-            "_row": "ENSMUSG00000000440"
-        },
-        {
-            "gene_names": "Clec10a",
-            "dispersions": 1.5644,
-            "_row": "ENSMUSG00000000318"
-        },
-        {
-            "gene_names": "Cav2",
-            "dispersions": 2.4226,
-            "_row": "ENSMUSG00000000058"
-        },
-        {
-            "gene_names": "Gmpr",
-            "dispersions": 1.3867,
-            "_row": "ENSMUSG00000000253"
+            "gene_names": "Gzma",
+            "dispersions": 39.2263,
+            "_row": "ENSMUSG00000023132"
         }
     ]
 }
