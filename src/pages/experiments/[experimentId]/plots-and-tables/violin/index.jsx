@@ -38,9 +38,9 @@ const ViolinIndex = ({ experimentId }) => {
   const debounceSaveAll = useCallback(_.debounce(() => {
     const allComponentUuids = _.concat(multiViewUuid, multiViewPlotUuids);
 
-    allComponentUuids.forEach((Uuid) => {
-      if (Uuid) {
-        dispatch(savePlotConfig(experimentId, Uuid));
+    allComponentUuids.forEach((uuid) => {
+      if (uuid) {
+        dispatch(savePlotConfig(experimentId, uuid));
       }
     });
   }, 2000), [multiViewConfig]);
@@ -76,8 +76,8 @@ const ViolinIndex = ({ experimentId }) => {
   };
 
   const updateAllWithChanges = (updateField) => {
-    multiViewPlotUuids.forEach((Uuid) => {
-      dispatch(updatePlotConfig(Uuid, updateField));
+    multiViewPlotUuids.forEach((uuid) => {
+      dispatch(updatePlotConfig(uuid, updateField));
     });
   };
 
@@ -114,14 +114,14 @@ const ViolinIndex = ({ experimentId }) => {
   useEffect(() => {
     if (!highestDispersionGene || !multiViewConfig) return;
 
-    multiViewPlotUuids.forEach((Uuid) => {
-      if (!plotConfigs[Uuid]) {
+    multiViewPlotUuids.forEach((uuid) => {
+      if (!plotConfigs[uuid]) {
         const customConfig = {
           shownGene: highestDispersionGene,
           title: { text: highestDispersionGene },
         };
 
-        loadComponent(Uuid, plotType, false, customConfig);
+        loadComponent(uuid, plotType, false, customConfig);
       }
     });
   }, [multiViewConfig, highestDispersionGene]);
@@ -129,7 +129,7 @@ const ViolinIndex = ({ experimentId }) => {
   // load data for genes in multi view
   useEffect(() => {
     if (!multiViewConfig
-      || !multiViewPlotUuids.every((Uuid) => plotConfigs[Uuid])) return;
+      || !multiViewPlotUuids.every((uuid) => plotConfigs[uuid])) return;
 
     const genesToLoad = shownGenes.filter((gene) => !geneExpression.views[plotUuid]?.data.includes(gene));
 
@@ -139,7 +139,7 @@ const ViolinIndex = ({ experimentId }) => {
   }, [plotConfigs]);
 
   useEffect(() => {
-    if (!multiViewConfig || !multiViewPlotUuids.every((Uuid) => plotConfigs[Uuid])) return;
+    if (!multiViewConfig || !multiViewPlotUuids.every((uuid) => plotConfigs[uuid])) return;
 
     debounceSaveAll();
   }, [plotConfigs, multiViewConfig]);
@@ -150,7 +150,7 @@ const ViolinIndex = ({ experimentId }) => {
 
     if (genesToAdd.length === 0) return;
 
-    const plotUuidIndexes = multiViewPlotUuids.map((Uuid) => parseInt(Uuid.match(/[0-9]+/g), 10));
+    const plotUuidIndexes = multiViewPlotUuids.map((uuid) => parseInt(uuid.match(/[0-9]+/g), 10));
     const newIndexes = [...Array(30).keys()].filter((index) => !plotUuidIndexes.includes(index));
 
     const newPlotUuids = [...multiViewPlotUuids];
