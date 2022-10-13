@@ -2,7 +2,7 @@
 // from 'redux/actionTypes/componentConfig';
 
 import downloadFromUrl from 'utils/downloadFromUrl';
-import { fetchWork } from 'utils/work/fetchWork';
+import fetchWork from 'utils/work/fetchWork';
 // import handleError from 'utils/http/handleError';
 // import endUserMessages from 'utils/endUserMessages';
 
@@ -16,6 +16,7 @@ const downloadNormalizedMatrix = (
       subsetBy,
     };
 
+    console.log('QONDAAA');
     await fetchWork(
       experimentId,
       body,
@@ -30,9 +31,6 @@ const downloadNormalizedMatrix = (
         },
       },
     );
-
-    // console.log('dataDebug');
-    // console.log(data);
   } catch (e) {
     // const errorMessage = handleError(e,
     // endUserMessages.ERROR_FETCHING_NORMALIZED_EXPRESSION_MATRIX);

@@ -1,64 +1,9 @@
-/* eslint-disable no-underscore-dangle */
-import { MD5 } from 'object-hash';
-
-import config from 'config';
-
 import { Environment, isBrowser } from 'utils/deploymentInfo';
 import { getBackendStatus } from 'redux/selectors';
 
 import cache from 'utils/cache';
 import { dispatchWorkRequest, seekFromS3 } from 'utils/work/seekWorkResponse';
-
-const createObjectHash = (object) => MD5(object);
-
-// Disable unique keys to reallow reuse of work results in development
-const DISABLE_UNIQUE_KEYS = [
-  'GetEmbedding',
-];
-
-const generateETag = (
-  experimentId,
-  body,
-  extras,
-  qcPipelineStartDate,
-  environment,
-) => {
-  // If caching is disabled, we add an additional randomized key to the hash so we never reuse
-  // past results.
-  let cacheUniquenessKey = null;
-
-  if (
-    environment !== Environment.PRODUCTION
-    && localStorage.getItem('disableCache') === 'true'
-    && !DISABLE_UNIQUE_KEYS.includes(body.name)
-  ) {
-    cacheUniquenessKey = Math.random();
-  }
-
-  let ETagBody = {
-    experimentId,
-    body,
-    qcPipelineStartDate,
-    extras,
-    cacheUniquenessKey,
-    workerVersion: config.workerVersion,
-  };
-
-  // They `body` key to create ETAg for gene expression is different
-  // from the others, causing the generated ETag to be different
-  if (body.name === 'GeneExpression') {
-    ETagBody = {
-      experimentId,
-      missingGenesBody: body,
-      qcPipelineStartDate,
-      extras,
-      cacheUniquenessKey,
-      workerVersion: config.workerVersion,
-    };
-  }
-
-  return createObjectHash(ETagBody);
-};
+import generateETag from 'utils/work/generateETag';
 
 // const decomposeBody = async (body, experimentId) => {
 //   const { genes: requestedGenes } = body;
@@ -237,6 +182,8 @@ const fetchWork = async (
     environment,
   );
 
+  console.log('cacheableDebug');
+  console.log(cacheable);
   if (cacheable) {
     // First, let's try to fetch this information from the local cache.
     const data = await cache.get(ETag);
@@ -245,6 +192,8 @@ const fetchWork = async (
       return data;
     }
   }
+
+  console.log('supsup');
 
   // Then, we may be able to find this in S3.
   let response = await seekFromS3(ETag, experimentId, { customResultHandler, customFileName });
@@ -278,7 +227,4 @@ const fetchWork = async (
   return response;
 };
 
-export {
-  fetchWork,
-  generateETag,
-};
+export default fetchWork;

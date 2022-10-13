@@ -5,7 +5,7 @@ import createCellSetByExpression from 'redux/actions/cellSets/createCellSetByExp
 
 import fake from '__test__/test-utils/constants';
 
-import { fetchWork } from 'utils/work/fetchWork';
+import fetchWork from 'utils/work/fetchWork';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
 import endUserMessages from 'utils/endUserMessages';
 import { waitFor } from '@testing-library/dom';
