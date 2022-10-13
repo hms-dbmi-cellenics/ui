@@ -90,6 +90,7 @@ const ViolinIndex = ({ experimentId }) => {
     if (!multiViewConfig) {
       const customConfig = { plotUuids: [plotUuid] };
       loadComponent(multiViewUuid, multiViewType, false, customConfig);
+      loadComponent(plotUuid, plotType, false);
     }
   }, []);
 
@@ -112,26 +113,39 @@ const ViolinIndex = ({ experimentId }) => {
 
   // load new plots for all multi view plotUuids, with highest dispersion gene if not saved
   useEffect(() => {
-    if (!highestDispersionGene || !multiViewConfig) return;
+    if (!multiViewConfig) return;
 
     multiViewPlotUuids.forEach((uuid) => {
       if (!plotConfigs[uuid]) {
-        const customConfig = {
+        loadComponent(uuid, plotType, false);
+      }
+    });
+  }, [multiViewConfig]);
+
+  useEffect(() => {
+    if (!highestDispersionGene || !multiViewConfig) return;
+
+    multiViewPlotUuids.forEach((uuid) => {
+      if (!plotConfigs[uuid]) return;
+
+      if (plotConfigs[uuid].shownGene === 'notSelected') {
+        const updatedFields = {
           shownGene: highestDispersionGene,
           title: { text: highestDispersionGene },
         };
-
-        loadComponent(uuid, plotType, false, customConfig);
+        dispatch(updatePlotConfig(uuid, updatedFields));
       }
     });
-  }, [multiViewConfig, highestDispersionGene]);
+  }, [multiViewConfig, plotConfigs, highestDispersionGene]);
 
   // load data for genes in multi view
   useEffect(() => {
     if (!multiViewConfig
       || !multiViewPlotUuids.every((uuid) => plotConfigs[uuid])) return;
 
-    const genesToLoad = shownGenes.filter((gene) => !geneExpression.views[plotUuid]?.data.includes(gene));
+    const genesToLoad = shownGenes.filter((gene) => (
+      !geneExpression.views[plotUuid]?.data.includes(gene) || gene !== 'notSelected'
+    ));
 
     if (genesToLoad.length > 0) {
       dispatch(loadGeneExpression(experimentId, genesToLoad, plotUuid));

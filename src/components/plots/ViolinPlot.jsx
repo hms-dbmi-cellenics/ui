@@ -64,6 +64,15 @@ const ViolinPlot = (props) => {
       );
     }
 
+    if (geneExpression.error) {
+      return (
+        <PlatformError
+          error={geneExpression.error}
+          reason={geneExpression.error}
+        />
+      );
+    }
+
     if (
       geneExpression.loading.includes(config?.shownGene)
       || !cellSets.accessible
