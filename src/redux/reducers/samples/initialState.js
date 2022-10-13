@@ -10,6 +10,7 @@ const sampleTemplate = {
   fileNames: [],
   files: {},
   metadata: {},
+  options: {},
 };
 
 const sampleFileTemplate = {
