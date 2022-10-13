@@ -8,16 +8,14 @@ import {
 } from 'antd';
 
 import { updateExperiment } from 'redux/actions/experiments';
-
+import SampleOptions from 'components/data-management/SampleOptions';
 import EditableParagraph from 'components/EditableParagraph';
 import { layout } from 'utils/constants';
 
 import SamplesTable from 'components/data-management/SamplesTable';
 import ProjectMenu from 'components/data-management/ProjectMenu';
 
-const {
-  Title, Text,
-} = Typography;
+const { Text, Title } = Typography;
 
 const paddingTop = layout.PANEL_PADDING;
 const paddingBottom = layout.PANEL_PADDING;
@@ -73,6 +71,7 @@ const ProjectDetails = ({ width, height }) => {
               }
             }}
           />
+          <SampleOptions />
           <SamplesTable
             ref={samplesTableRef}
           />
