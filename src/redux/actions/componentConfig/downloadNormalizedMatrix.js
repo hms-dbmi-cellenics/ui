@@ -1,13 +1,13 @@
-// import { PLOT_DATA_LOADED, PLOT_DATA_LOADING, PLOT_DATA_ERROR }
-// from 'redux/actionTypes/componentConfig';
+import { PLOT_DATA_LOADED, PLOT_DATA_LOADING, PLOT_DATA_ERROR } from 'redux/actionTypes/componentConfig';
 
 import downloadFromUrl from 'utils/downloadFromUrl';
+import endUserMessages from 'utils/endUserMessages';
+import handleError from 'utils/http/handleError';
 import fetchWork from 'utils/work/fetchWork';
 import writeToFileURL from 'utils/writeToFileURL';
-// import handleError from 'utils/http/handleError';
-// import endUserMessages from 'utils/endUserMessages';
 
 const downloadNormalizedMatrix = (
+  plotUuid,
   experimentId,
   subsetBy,
 ) => async (dispatch, getState) => {
@@ -17,6 +17,11 @@ const downloadNormalizedMatrix = (
       subsetBy,
     };
 
+    dispatch({
+      type: PLOT_DATA_LOADING,
+      payload: { plotUuid },
+    });
+
     const data = await fetchWork(
       experimentId,
       body,
@@ -25,17 +30,26 @@ const downloadNormalizedMatrix = (
     );
 
     downloadFromUrl(writeToFileURL(data), 'NormalizedExpression.csv');
-  } catch (e) {
-    // const errorMessage = handleError(e,
-    // endUserMessages.ERROR_FETCHING_NORMALIZED_EXPRESSION_MATRIX);
 
-    // dispatch({
-    //   type: PLOT_DATA_ERROR,
-    //   payload: {
-    //     plotUuid,
-    //     error: errorMessage,
-    //   },
-    // });
+    dispatch({
+      type: PLOT_DATA_LOADED,
+      payload: {
+        plotUuid,
+        plotData: null,
+      },
+    });
+  } catch (e) {
+    const errorMessage = handleError(
+      e, endUserMessages.ERROR_FETCHING_NORMALIZED_EXPRESSION_MATRIX,
+    );
+
+    dispatch({
+      type: PLOT_DATA_ERROR,
+      payload: {
+        plotUuid,
+        error: errorMessage,
+      },
+    });
   }
 };
 

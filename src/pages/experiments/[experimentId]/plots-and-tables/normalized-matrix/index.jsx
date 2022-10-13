@@ -130,7 +130,9 @@ const NormalizedMatrixPage = (props) => {
 
           <Button
             size='small'
-            onClick={() => dispatch(downloadNormalizedMatrix(experimentId, subsetByRef.current))}
+            onClick={
+              () => dispatch(downloadNormalizedMatrix(plotUuid, experimentId, subsetByRef.current))
+            }
           >
             Download
           </Button>
