@@ -191,3 +191,5 @@ NormalizedMatrixPage.propTypes = {
 };
 
 export default NormalizedMatrixPage;
+
+export { plotUuid };

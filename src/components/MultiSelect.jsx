@@ -28,14 +28,16 @@ const MultiSelect = (props) => {
       mode='multiple'
       labelInValue
       value={selectedItems.map(({ key, name }) => ({ key, label: name }))}
-      onChange={(newItems) => setSelectedItems(
-        newItems.map(({ key, label: name }) => ({ key, name })),
-      )}
+      onChange={(newItems) => {
+        setSelectedItems(
+          newItems.map(({ key, label: name }) => ({ key, name })),
+        );
+      }}
       style={{ width: '200px' }}
       placeholder={placeholder}
     >
       {filteredItems.map((item) => (
-        <Select.Option value={item.key}>
+        <Select.Option key={item.key} value={item.key}>
           {item.name}
         </Select.Option>
       ))}
