@@ -825,7 +825,12 @@ const dataIntegrationElbowPlotInitialConfig = {
   ],
 };
 
-const normalizedMatrixPlotConfig = {};
+const normalizedMatrixPlotConfig = {
+  sample: [],
+  louvain: [],
+  metadata: [],
+  scratchpad: [],
+};
 
 const initialPlotConfigStates = {
   cellSizeDistributionHistogram,

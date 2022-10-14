@@ -73,6 +73,7 @@ const PlotContainer = (props) => {
     if (!config) {
       return;
     }
+
     debounceSave();
 
     setIsResetDisabled(

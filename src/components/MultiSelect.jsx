@@ -2,10 +2,18 @@ import React, { useEffect, useState } from 'react';
 import { Select } from 'antd';
 import PropTypes from 'prop-types';
 
-const MultiSelect = (props) => {
-  const { items: inputItems, onChange, placeholder } = props;
+const itemsFromKeys = (initialSelectedKeys, inputItems) => (
+  initialSelectedKeys.map((key) => (inputItems.find((item) => item.key === key)))
+);
 
-  const [selectedItems, setSelectedItems] = useState([]);
+const MultiSelect = (props) => {
+  const {
+    items: inputItems, onChange, placeholder, initialSelectedKeys,
+  } = props;
+
+  const [selectedItems, setSelectedItems] = useState(
+    itemsFromKeys(initialSelectedKeys, inputItems),
+  );
 
   useEffect(() => {
     onChange(selectedItems);
@@ -19,6 +27,7 @@ const MultiSelect = (props) => {
     <Select
       mode='multiple'
       labelInValue
+      value={selectedItems.map(({ key, name }) => ({ key, label: name }))}
       onChange={(newItems) => setSelectedItems(
         newItems.map(({ key, label: name }) => ({ key, name })),
       )}
@@ -36,11 +45,13 @@ const MultiSelect = (props) => {
 
 MultiSelect.propTypes = {
   items: PropTypes.array.isRequired,
+  initialSelectedKeys: PropTypes.array,
   onChange: PropTypes.func,
   placeholder: PropTypes.node,
 };
 
 MultiSelect.defaultProps = {
+  initialSelectedKeys: [],
   onChange: () => { },
   placeholder: null,
 };

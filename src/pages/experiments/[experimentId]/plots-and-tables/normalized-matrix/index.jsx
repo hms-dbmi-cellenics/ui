@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Skeleton,
   Empty,
@@ -19,7 +19,9 @@ import Header from 'components/Header';
 import PlotContainer from 'components/plots/PlotContainer';
 import Loader from 'components/Loader';
 
-import { downloadNormalizedMatrix, loadPlotConfig } from 'redux/actions/componentConfig';
+import {
+  downloadNormalizedMatrix, loadPlotConfig, updatePlotConfig,
+} from 'redux/actions/componentConfig';
 
 import { plotNames, plotTypes } from 'utils/constants';
 import PlatformError from 'components/PlatformError';
@@ -47,15 +49,13 @@ const NormalizedMatrixPage = (props) => {
 
   const [metadataCellSets, setMetadataCellSets] = useState([]);
 
-  const subsetByRef = useRef({
-    sample: [],
-    louvain: [],
-    metadata: [],
-    scratchpad: [],
-  });
-
   const onSelectedItemsChanged = (type) => (newItems) => {
-    subsetByRef.current[type] = newItems.map(({ key }) => key);
+    const newConfig = {
+      ...config,
+      [type]: newItems.map(({ key }) => key),
+    };
+
+    dispatch(updatePlotConfig(plotUuid, newConfig));
   };
 
   useEffect(() => {
@@ -111,25 +111,45 @@ const NormalizedMatrixPage = (props) => {
           <Space>Select the parameters for subsetting the normalized expression matrix.</Space>
           <Space direction='vertical'>
             Subset by samples:
-            <MultiSelect items={sample.children.map(({ key, name }) => ({ key, name }))} onChange={onSelectedItemsChanged('sample')} placeholder='All' />
+            <MultiSelect
+              items={sample.children.map(({ key, name }) => ({ key, name }))}
+              onChange={onSelectedItemsChanged('sample')}
+              initialSelectedKeys={config.sample}
+              placeholder='All'
+            />
           </Space>
           <Space direction='vertical'>
             Subset by metadata group:
-            <MultiSelect items={metadataCellSets.map(({ key, name }) => ({ key, name }))} onChange={onSelectedItemsChanged('metadata')} placeholder='All' />
+            <MultiSelect
+              items={metadataCellSets.map(({ key, name }) => ({ key, name }))}
+              onChange={onSelectedItemsChanged('metadata')}
+              initialSelectedKeys={config.metadata}
+              placeholder='All'
+            />
           </Space>
           <Space direction='vertical'>
             Subset by clusters:
-            <MultiSelect items={louvain.children.map(({ key, name }) => ({ key, name }))} onChange={onSelectedItemsChanged('louvain')} placeholder='All' />
+            <MultiSelect
+              items={louvain.children.map(({ key, name }) => ({ key, name }))}
+              onChange={onSelectedItemsChanged('louvain')}
+              initialSelectedKeys={config.louvain}
+              placeholder='All'
+            />
           </Space>
           <Space direction='vertical'>
             Subset by custom cell sets:
-            <MultiSelect items={scratchpad.children.map(({ key, name }) => ({ key, name }))} onChange={onSelectedItemsChanged('scratchpad')} placeholder='All' />
+            <MultiSelect
+              items={scratchpad.children.map(({ key, name }) => ({ key, name }))}
+              onChange={onSelectedItemsChanged('scratchpad')}
+              initialSelectedKeys={config.scratchpad}
+              placeholder='All'
+            />
           </Space>
 
           <Button
             size='small'
             onClick={
-              () => dispatch(downloadNormalizedMatrix(plotUuid, experimentId, subsetByRef.current))
+              () => dispatch(downloadNormalizedMatrix(plotUuid, experimentId, config))
             }
           >
             Download
