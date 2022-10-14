@@ -10,10 +10,6 @@ import { technologies } from 'utils/upload/fileUploadSpecifications';
 
 const { Text, Paragraph } = Typography;
 
-const technologyHasOptions = [
-  technologies.rhapsody,
-];
-
 const SampleOptions = () => {
   const dispatch = useDispatch();
 
@@ -36,35 +32,35 @@ const SampleOptions = () => {
     );
   };
 
-  const render = () => {
-    if (selectedTech === technologies.rhapsody) {
-      return (
-        <>
-          <Paragraph>
-            <Checkbox
-              checked={sampleOptions?.includeAbseq}
-              onChange={(e) => updateAllSamples({ includeAbseq: e.target.checked })}
-            >
-              Include AbSeq data
-              {' '}
-              <Tooltip title='AbSeq data is filtered out by default. Checking this box includes the AbSeq data. Support for AbSeq is currently for visualization purposes only, as experiment-wide normalization will be slightly skewed. In case there is AbSeq data in your experiment, we suggest you create two projects; one including AbSeq data and one without, and compare the results.'>
-                <QuestionCircleOutlined />
-              </Tooltip>
-            </Checkbox>
-          </Paragraph>
-        </>
-      );
-    }
+  const renderRhapsodyOption = () => (
+    <>
+      <Paragraph>
+        <Checkbox
+          checked={sampleOptions?.includeAbseq}
+          onChange={(e) => updateAllSamples({ includeAbseq: e.target.checked })}
+        >
+          Include AbSeq data
+          {' '}
+          <Tooltip title='AbSeq data is filtered out by default. Checking this box includes the AbSeq data. Support for AbSeq is currently for visualization purposes only, as experiment-wide normalization will be slightly skewed. In case there is AbSeq data in your experiment, we suggest you create two projects; one including AbSeq data and one without, and compare the results.'>
+            <QuestionCircleOutlined />
+          </Tooltip>
+        </Checkbox>
+      </Paragraph>
+    </>
+  );
+
+  const renderOptions = {
+    [technologies.rhapsody]: renderRhapsodyOption,
   };
 
-  if (!technologyHasOptions.includes(selectedTech)) return <></>;
+  if (!renderOptions[selectedTech]) return <></>;
 
   return (
     <>
       <Text strong>
         Project Options
       </Text>
-      { render() }
+      {renderOptions[selectedTech]() }
     </>
   );
 };
