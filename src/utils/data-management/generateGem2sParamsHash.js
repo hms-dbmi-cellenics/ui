@@ -18,6 +18,7 @@ const generateGem2sParamsHash = (experiment, samples) => {
     input: { type: '10x' },
     sampleIds: orderInvariantSampleIds,
     sampleNames: orderInvariantSampleIds.map((sampleId) => samples[sampleId].name),
+    sampleOptions: orderInvariantSampleIds.map((sampleId) => samples[sampleId].options),
   };
 
   if (experiment.metadataKeys.length) {
