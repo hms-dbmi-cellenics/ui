@@ -57,10 +57,11 @@ const MultiViewEditor = (props) => {
   useEffect(() => {
     if (!multiViewConfig || !localNRows || !localNCols) return;
 
-    if (!_.isEqual((options.map((option) => option?.value)), multiViewConfig.plotUuids)) {
+    if (!_.isEqual((options.map((option) => option?.value)), multiViewConfig.plotUuids)
+      || !options.every((option, i) => option?.label.includes(shownGenes[i]))) {
       setOptions(renderUuidOptions(multiViewConfig.plotUuids));
     }
-  }, [multiViewConfig, localNRows, localNCols]);
+  }, [multiViewConfig, shownGenes, localNRows, localNCols]);
 
   if (!multiViewConfig) {
     return (
