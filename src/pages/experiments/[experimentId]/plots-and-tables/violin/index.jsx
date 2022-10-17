@@ -146,7 +146,7 @@ const ViolinIndex = ({ experimentId }) => {
       || !multiViewPlotUuids.every((uuid) => plotConfigs[uuid])) return;
 
     const genesToLoad = shownGenes.filter((gene) => (
-      !geneExpression.views[plotUuid]?.data.includes(gene) || gene !== 'notSelected'
+      !geneExpression.views[plotUuid]?.data.includes(gene) && gene !== 'notSelected'
     ));
 
     if (genesToLoad.length > 0) {
