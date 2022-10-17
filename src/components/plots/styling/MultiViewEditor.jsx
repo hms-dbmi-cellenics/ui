@@ -9,6 +9,7 @@ import {
   Button,
   Row,
   Col,
+  Radio,
 } from 'antd';
 import { CloseOutlined } from '@ant-design/icons';
 import { arrayMoveImmutable } from 'utils/array-move';
@@ -19,6 +20,8 @@ const MultiViewEditor = (props) => {
   const {
     multiViewConfig,
     addGeneToMultiView,
+    updateAll,
+    setUpdateAll,
     onMultiViewUpdate,
     selectedPlotUuid,
     setSelectedPlotUuid,
@@ -130,6 +133,21 @@ const MultiViewEditor = (props) => {
           onChange={(value) => setSelectedPlotUuid(value)}
         />
       </Space>
+      <Space>
+        Controls update:
+        <Radio.Group
+          onChange={(e) => setUpdateAll(e.target.value)}
+          value={updateAll}
+        >
+          <Radio value={false}>Selected plot</Radio>
+          <Radio
+            // eslint-disable-next-line react/jsx-boolean-value
+            value={true}
+          >
+            All plots
+          </Radio>
+        </Radio.Group>
+      </Space>
       <Row justify='space-evenly' align='middle'>
         <Col span={7}>
           Grid dimesions:
@@ -173,6 +191,8 @@ const MultiViewEditor = (props) => {
 MultiViewEditor.propTypes = {
   multiViewConfig: PropTypes.object,
   addGeneToMultiView: PropTypes.func.isRequired,
+  updateAll: PropTypes.bool.isRequired,
+  setUpdateAll: PropTypes.func.isRequired,
   onMultiViewUpdate: PropTypes.func.isRequired,
   selectedPlotUuid: PropTypes.string.isRequired,
   setSelectedPlotUuid: PropTypes.func.isRequired,

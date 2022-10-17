@@ -61,6 +61,8 @@ const ViolinIndex = ({ experimentId }) => {
   const [selectedPlotUuid, setSelectedPlotUuid] = useState(plotUuid);
   const selectedConfig = plotConfigs[selectedPlotUuid];
 
+  const [updateAll, setUpdateAll] = useState(true);
+
   const loadComponent = (componentUuid, type, skipAPI, customConfig) => {
     dispatch(loadConditionalComponentConfig(
       experimentId, componentUuid, type, skipAPI, customConfig,
@@ -240,6 +242,9 @@ const ViolinIndex = ({ experimentId }) => {
     <ViolinControls
       config={selectedConfig}
       onUpdate={updatePlotWithChanges}
+      onUpdateConditional={updateAll ? updateAllWithChanges : updatePlotWithChanges}
+      updateAll={updateAll}
+      setUpdateAll={setUpdateAll}
       onMultiViewUpdate={updateMultiViewWithChanges}
       addGeneToMultiView={addGeneToMultiView}
       selectedPlotUuid={selectedPlotUuid}
@@ -295,7 +300,7 @@ const ViolinIndex = ({ experimentId }) => {
         plotInfo='In order to rename existing clusters or create new ones, use the cell set tool, located in the Data Exploration page.'
         extraControlPanels={renderExtraPanels()}
         defaultActiveKey='gene-selection'
-        onUpdate={updateAllWithChanges}
+        onUpdate={updateAll ? updateAllWithChanges : updatePlotWithChanges}
         onPlotReset={resetMultiView}
       >
         {renderMultiView()}
