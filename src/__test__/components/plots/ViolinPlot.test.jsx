@@ -13,7 +13,6 @@ import createTestComponentFactory from '__test__/test-utils/testComponentFactory
 import { makeStore } from 'redux/store';
 import { loadCellSets } from 'redux/actions/cellSets';
 import loadConditionalComponentConfig from 'redux/actions/componentConfig/loadConditionalComponentConfig';
-import { loadPlotConfig } from 'redux/actions/componentConfig';
 
 import endUserMessages from 'utils/endUserMessages';
 
