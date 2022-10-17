@@ -41,7 +41,10 @@ const SampleOptions = () => {
         >
           Include AbSeq data
           {' '}
-          <Tooltip title='AbSeq data is filtered out by default. Checking this box includes the AbSeq data. Support for AbSeq is currently for visualization purposes only, as experiment-wide normalization will be slightly skewed. In case there is AbSeq data in your experiment, we suggest you create two projects; one including AbSeq data and one without, and compare the results.'>
+          <Tooltip
+            overlayStyle={{ minWidth: '400px' }}
+            title='AbSeq data is filtered out by default. Checking this box includes the AbSeq data. Support for AbSeq is currently for visualization purposes only, as experiment-wide normalization will be slightly skewed. In case there is AbSeq data in your experiment, we suggest you create two projects; one including AbSeq data and one without, and compare the results.'
+          >
             <QuestionCircleOutlined />
           </Tooltip>
         </Checkbox>
