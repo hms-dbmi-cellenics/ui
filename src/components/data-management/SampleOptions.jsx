@@ -35,8 +35,8 @@ const SampleOptions = () => {
     <>
       <Paragraph>
         <Checkbox
-          checked={sampleOptions?.includeAbseq}
-          onChange={(e) => updateAllSamples({ includeAbseq: e.target.checked })}
+          checked={sampleOptions?.includeAbSeq}
+          onChange={(e) => updateAllSamples({ includeAbSeq: e.target.checked })}
         >
           Include AbSeq data
           {' '}

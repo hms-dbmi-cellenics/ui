@@ -61,7 +61,7 @@ describe('bulkUpdateSampleOptions action', () => {
     fetchMock.mockResponseOnce(() => Promise.resolve(JSON.stringify({})));
 
     const sampleDiff = {
-      includeAbseq: false,
+      includeAbSeq: false,
     };
 
     const store = mockStore(mockState);

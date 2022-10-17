@@ -57,7 +57,7 @@ const platformState = {
       name: 'Rhapsody Experiment',
       sampleIds: [sampleIdRhapsody],
       options: {
-        includeAbseq: false,
+        includeAbSeq: false,
       },
     },
     ids: [experimentId10x, experimentIdRhapsody],
