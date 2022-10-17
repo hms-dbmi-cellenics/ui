@@ -106,7 +106,20 @@ const FileUploadModal = (props) => {
           )}
         />
         <Paragraph>
-          If your folder has extra files (Have a red cross after choosing the folder), please remove them and you will be able to upload.
+          <ul>
+            <li>
+              Each folder corresponds to a sample, it
+              should contain an “_Expression_Data.st” file
+            </li>
+            <li>
+              Any other file will show up with a red
+              cross and should be removed by clicking the red trash can button.
+            </li>
+            <li>
+              The folder with Multiplet and Undetermined
+              cells should not be uploaded since it would distort the analysis.
+            </li>
+          </ul>
         </Paragraph>
       </Space>
     </>
