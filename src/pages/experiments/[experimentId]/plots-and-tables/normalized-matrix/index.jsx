@@ -168,6 +168,7 @@ const NormalizedMatrixPage = (props) => {
         plotType={plotType}
         plotStylingConfig={plotStylingConfig}
         customControlPanel={renderControlPanel()}
+        controlsOnly
         defaultActiveKey='gene-selection'
       >
         <center>
