@@ -75,7 +75,8 @@ const FileUploadModal = (props) => {
         filesNotInFolder ||= !inFolder;
 
         return inFolder;
-      });
+      })
+      .filter((file) => techOptions[selectedTech].fileNameFilter(file.name));
 
     if (filesNotInFolder) {
       handleError('error', endUserMessages.ERROR_FILES_FOLDER);
