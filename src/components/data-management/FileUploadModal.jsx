@@ -26,6 +26,24 @@ import endUserMessages from 'utils/endUserMessages';
 const { Text, Title, Paragraph } = Typography;
 const { Option } = Select;
 
+const extraHelpText = {
+  '10X Chromium': () => <></>,
+  'BD Rhapsody': () => (
+    <Paragraph>
+      <ul>
+        <li>
+          The zip files that are output by the primary processing pipeline contain
+          the .st files that should be uploaded and they must be unzipped first.
+        </li>
+        <li>
+          The folder with Multiplet and Undetermined
+          cells should not be uploaded since it would distort the analysis.
+        </li>
+      </ul>
+    </Paragraph>
+  ),
+};
+
 const FileUploadModal = (props) => {
   const { onUpload, onCancel, currentSelectedTech } = props;
 
@@ -105,22 +123,7 @@ const FileUploadModal = (props) => {
             </List.Item>
           )}
         />
-        <Paragraph>
-          <ul>
-            <li>
-              Each folder corresponds to a sample, it
-              should contain an “_Expression_Data.st” file
-            </li>
-            <li>
-              Any other file will show up with a red
-              cross and should be removed by clicking the red trash can button.
-            </li>
-            <li>
-              The folder with Multiplet and Undetermined
-              cells should not be uploaded since it would distort the analysis.
-            </li>
-          </ul>
-        </Paragraph>
+        {extraHelpText[selectedTech]() ?? extraHelpText.default()}
       </Space>
     </>
   );
