@@ -106,7 +106,6 @@ describe('Normalized matrix index page', () => {
         },
       }),
       expect.anything(),
-      { isJson: false },
     );
 
     await waitFor(() => {
@@ -153,7 +152,6 @@ describe('Normalized matrix index page', () => {
         },
       }),
       expect.anything(),
-      { isJson: false },
     );
 
     await waitFor(() => {

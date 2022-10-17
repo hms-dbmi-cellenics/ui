@@ -1,9 +1,6 @@
 import { decompress } from 'fflate';
 
-// eslint-disable-next-line camelcase
-import { JSON_parse } from 'uint8array-json-parser';
-
-const unpackResult = async (storageResp, isJson) => {
+const unpackResult = async (storageResp) => {
   const arrayBuf = await storageResp.arrayBuffer();
 
   const resultPromise = new Promise((resolve, reject) => {
@@ -12,8 +9,6 @@ const unpackResult = async (storageResp, isJson) => {
     decompress(uint8array, (err, decompressed) => {
       if (err) {
         reject(err);
-      } else if (isJson) {
-        resolve(JSON_parse(decompressed));
       } else {
         resolve(decompressed);
       }

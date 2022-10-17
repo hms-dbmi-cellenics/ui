@@ -6,6 +6,7 @@ import unpackResult from 'utils/work/unpackResult';
 import WorkTimeoutError from 'utils/errors/http/WorkTimeoutError';
 import WorkResponseError from 'utils/errors/http/WorkResponseError';
 import httpStatusCodes from 'utils/http/httpStatusCodes';
+import parseResult from './parseResult';
 
 const throwResponseError = (response) => {
   throw new Error(`Error ${response.status}: ${response.text}`, { cause: response });
@@ -25,7 +26,7 @@ const getRemainingWorkerStartTime = (creationTimestamp) => {
   return remainingTime + 60;
 };
 
-const seekFromS3 = async (ETag, experimentId, isJson) => {
+const seekFromS3 = async (ETag, experimentId, taskName) => {
   let response;
   try {
     const url = `/v2/workResults/${experimentId}/${ETag}`;
@@ -45,7 +46,10 @@ const seekFromS3 = async (ETag, experimentId, isJson) => {
     throwResponseError(storageResp);
   }
 
-  return unpackResult(storageResp, isJson);
+  const unpackedResult = await unpackResult(storageResp);
+  const parsedResult = parseResult(unpackedResult, taskName);
+
+  return parsedResult;
 };
 
 const dispatchWorkRequest = async (

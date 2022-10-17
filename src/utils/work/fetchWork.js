@@ -52,7 +52,7 @@ const fetchGeneExpressionWorkWithoutLocalCache = async (
   );
 
   // Then, we may be able to find this in S3.
-  const response = await seekFromS3(ETag, experimentId);
+  const response = await seekFromS3(ETag, experimentId, body.name);
 
   if (response) return response;
 
@@ -74,7 +74,7 @@ const fetchGeneExpressionWorkWithoutLocalCache = async (
     throw error;
   }
 
-  return await seekFromS3(ETag, experimentId);
+  return await seekFromS3(ETag, experimentId, body.name);
 };
 
 // const fetchGeneExpressionWork = async (
@@ -151,7 +151,6 @@ const fetchWork = async (
     extras = undefined,
     timeout = 180,
     broadcast = false,
-    isJson = true,
   } = optionals;
 
   const backendStatus = getBackendStatus(experimentId)(getState()).status;
@@ -188,7 +187,7 @@ const fetchWork = async (
   }
 
   // Then, we may be able to find this in S3.
-  let response = await seekFromS3(ETag, experimentId, isJson);
+  let response = await seekFromS3(ETag, experimentId, body.name);
 
   if (response) return response;
 
@@ -206,7 +205,7 @@ const fetchWork = async (
       },
     );
 
-    response = await seekFromS3(ETag, experimentId, isJson);
+    response = await seekFromS3(ETag, experimentId, body.name);
   } catch (error) {
     console.error('Error dispatching work request', error);
     throw error;
