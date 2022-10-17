@@ -190,6 +190,10 @@ const ViolinIndex = ({ experimentId }) => {
     updateMultiViewWithChanges(multiViewUpdatedFields);
   };
 
+  const resetMultiView = () => {
+    updateMultiViewWithChanges({ nrows: 1, ncols: 1, plotUuids: [selectedPlotUuid] });
+  };
+
   const plotStylingConfig = [
     {
       panelTitle: 'Main schema',
@@ -292,6 +296,7 @@ const ViolinIndex = ({ experimentId }) => {
         extraControlPanels={renderExtraPanels()}
         defaultActiveKey='gene-selection'
         onUpdate={updateAllWithChanges}
+        onPlotReset={resetMultiView}
       >
         {renderMultiView()}
       </PlotContainer>

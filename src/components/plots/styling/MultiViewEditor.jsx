@@ -141,7 +141,7 @@ const MultiViewEditor = (props) => {
             controls={false}
             min={1}
             max={30}
-            defaultValue={multiViewConfig.nrows}
+            value={localNRows}
             onChange={(value) => { onRowsChange(value); }}
           />
         </Col>
