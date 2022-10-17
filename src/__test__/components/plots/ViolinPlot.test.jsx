@@ -12,6 +12,7 @@ import ViolinPlot from 'components/plots/ViolinPlot';
 import createTestComponentFactory from '__test__/test-utils/testComponentFactory';
 import { makeStore } from 'redux/store';
 import { loadCellSets } from 'redux/actions/cellSets';
+import loadConditionalComponentConfig from 'redux/actions/componentConfig/loadConditionalComponentConfig';
 import { loadPlotConfig } from 'redux/actions/componentConfig';
 
 import endUserMessages from 'utils/endUserMessages';
@@ -43,7 +44,7 @@ const mockAPIResponses = _.merge(
 const defaultProps = {
   experimentId,
   plotUuid,
-}
+};
 
 const violinPlotFactory = createTestComponentFactory(ViolinPlot, defaultProps);
 
@@ -59,14 +60,17 @@ const renderViolinPlot = async (storeState) => {
 
 let storeState = null;
 
-describe.skip('ViolinPlot', () => {
+describe('ViolinPlot', () => {
   beforeEach(async () => {
     fetchMock.resetMocks();
     fetchMock.doMock();
     fetchMock.mockIf(/.*/, mockAPI(mockAPIResponses));
 
     storeState = makeStore();
-    await storeState.dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
+    const customConfig = { shownGene: 'gene1' };
+    await storeState.dispatch(
+      loadConditionalComponentConfig(experimentId, plotUuid, plotType, false, customConfig),
+    );
   });
 
   it('Shows a loader screen if cell sets are not loaded / still loading', async () => {
