@@ -169,20 +169,7 @@ const NormalizedMatrixPage = (props) => {
         plotStylingConfig={plotStylingConfig}
         customControlPanel={renderControlPanel()}
         controlsOnly
-        defaultActiveKey='gene-selection'
-      >
-        <center>
-          <Empty description={(
-            <>
-              <p>
-                Click on &quot;Download the normalized expression matrix&quot;
-                to obtain it as a .csv file
-              </p>
-            </>
-          )}
-          />
-        </center>
-      </PlotContainer>
+      />
     </>
   );
 };
