@@ -1,3 +1,5 @@
+import { technologies } from 'utils/upload/fileUploadSpecifications';
+
 const sampleTemplate = {
   name: null,
   experimentId: null,
@@ -28,6 +30,12 @@ const sampleFileTemplate = {
   },
 };
 
+const defaultSampleOptions = {
+  [technologies.rhapsody]: {
+    includeAbSeq: false,
+  },
+};
+
 const initialState = {
   meta: {
     loading: false,
@@ -37,4 +45,8 @@ const initialState = {
 };
 
 export default initialState;
-export { sampleTemplate, sampleFileTemplate };
+export {
+  sampleTemplate,
+  sampleFileTemplate,
+  defaultSampleOptions,
+};
