@@ -52,6 +52,7 @@ Object {
         "timePoint": "BL",
       },
       "name": "BLp7",
+      "options": undefined,
       "type": "10X Chromium",
       "uuid": "e03ef6ea-5014-4e57-aecd-59964ac9172c",
     },

@@ -8,9 +8,13 @@ import {
 import handleError from 'utils/http/handleError';
 import fetchAPI from 'utils/http/fetchAPI';
 
-const bulkUpdateSampleOptions = (experimentId, sampleIds, diff) => async (dispatch, getState) => {
+const bulkUpdateSampleOptions = (experimentId, diff) => async (dispatch, getState) => {
   const url = `/v2/experiments/${experimentId}/samples/bulkUpdate/options`;
 
+  const { sampleIds } = getState().experiments[experimentId];
+
+  // The code assumes that the option of all samples are the same
+  // This is the case until we support options at the sample level
   const oldOptions = getState().samples[sampleIds[0]].options;
   const newOptions = _.merge({}, oldOptions, diff);
 

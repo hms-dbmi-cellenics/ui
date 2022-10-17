@@ -26,7 +26,6 @@ const SampleOptions = () => {
     dispatch(
       bulkUpdateSampleOptions(
         activeExperimentId,
-        activeExperiment.sampleIds,
         diff,
       ),
     );
