@@ -17,7 +17,8 @@ import { CheckCircleTwoTone, CloseCircleTwoTone, DeleteOutlined } from '@ant-des
 import Dropzone from 'react-dropzone';
 
 import config from 'config';
-import techOptions, { technologies } from 'utils/upload/fileUploadSpecifications';
+import { sampleTech } from 'utils/constants';
+import techOptions, { techNames } from 'utils/upload/fileUploadSpecifications';
 import handleError from 'utils/http/handleError';
 import { fileObjectToFileRecord } from 'utils/upload/processUpload';
 import integrationTestConstants from 'utils/integrationTestConstants';
@@ -31,7 +32,7 @@ const FileUploadModal = (props) => {
 
   const guidanceFileLink = 'https://drive.google.com/file/d/1VPaB-yofuExinY2pXyGEEx-w39_OPubO/view';
 
-  const [selectedTech, setSelectedTech] = useState('10X Chromium');
+  const [selectedTech, setSelectedTech] = useState(sampleTech['10X']);
   const [canUpload, setCanUpload] = useState(false);
   const [filesList, setFilesList] = useState([]);
 
@@ -143,8 +144,8 @@ const FileUploadModal = (props) => {
                 defaultValue={selectedTech}
                 onChange={(value) => setSelectedTech(value)}
               >
-                {Object.values(technologies).map((val) => (
-                  <Option key={`key-${val}`} value={val}>{val}</Option>
+                {Object.values(sampleTech).map((tech) => (
+                  <Option key={`key-${tech}`} value={tech}>{techNames[tech]}</Option>
                 ))}
               </Select>
             </Space>

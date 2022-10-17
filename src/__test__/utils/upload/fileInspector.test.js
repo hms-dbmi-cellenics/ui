@@ -1,3 +1,4 @@
+import { sampleTech } from 'utils/constants';
 import { inspectFile, Verdict } from 'utils/upload/fileInspector';
 import readFileToBuffer from 'utils/upload/readFileToBuffer';
 
@@ -9,7 +10,7 @@ describe('fileInspector', () => {
       name: 'random_file.gz',
     };
 
-    expect(await inspectFile(file, '10X Chromium'))
+    expect(await inspectFile(file, sampleTech['10X']))
       .toEqual(Verdict.INVALID_NAME);
   });
 
@@ -27,10 +28,10 @@ describe('fileInspector', () => {
         Promise.resolve(Buffer.from('Def. not a matrix')),
       );
 
-    expect(await inspectFile(file, '10X Chromium'))
+    expect(await inspectFile(file, sampleTech['10X']))
       .toEqual(Verdict.VALID_UNZIPPED);
 
-    expect(await inspectFile(file, '10X Chromium'))
+    expect(await inspectFile(file, sampleTech['10X']))
       .toEqual(Verdict.INVALID_FORMAT);
   });
 
@@ -54,16 +55,16 @@ describe('fileInspector', () => {
         Promise.resolve(Buffer.from('"lnc_inter_chr1_')),
       );
 
-    expect(await inspectFile(file, '10X Chromium'))
+    expect(await inspectFile(file, sampleTech['10X']))
       .toEqual(Verdict.VALID_UNZIPPED);
 
-    expect(await inspectFile(file, '10X Chromium'))
+    expect(await inspectFile(file, sampleTech['10X']))
       .toEqual(Verdict.VALID_UNZIPPED);
 
-    expect(await inspectFile(file, '10X Chromium'))
+    expect(await inspectFile(file, sampleTech['10X']))
       .toEqual(Verdict.VALID_UNZIPPED);
 
-    expect(await inspectFile(file, '10X Chromium'))
+    expect(await inspectFile(file, sampleTech['10X']))
       .toEqual(Verdict.VALID_UNZIPPED);
   });
 
@@ -81,10 +82,10 @@ describe('fileInspector', () => {
         Promise.resolve(Buffer.from('ACGTACGTACGT-1\t')),
       );
 
-    expect(await inspectFile(file, '10X Chromium'))
+    expect(await inspectFile(file, sampleTech['10X']))
       .toEqual(Verdict.VALID_UNZIPPED);
 
-    expect(await inspectFile(file, '10X Chromium'))
+    expect(await inspectFile(file, sampleTech['10X']))
       .toEqual(Verdict.INVALID_FORMAT);
   });
 });

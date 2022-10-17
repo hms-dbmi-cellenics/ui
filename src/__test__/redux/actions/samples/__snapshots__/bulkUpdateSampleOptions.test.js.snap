@@ -19,7 +19,7 @@ Array [
   undefined,
   Object {
     "diff": Object {
-      "includeAbseq": false,
+      "includeAbSeq": false,
     },
     "sampleUuids": Array [
       "sample-1",

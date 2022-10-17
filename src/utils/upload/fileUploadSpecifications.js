@@ -1,11 +1,13 @@
-const technologies = {
-  '10x': '10X Chromium',
-  rhapsody: 'BD Rhapsody',
+import { sampleTech } from 'utils/constants';
+
+const techNames = {
+  [sampleTech['10X']]: '10X Chromium',
+  [sampleTech.RHAPSODY]: 'BD Rhapsody',
 };
 
 /* eslint-disable max-len */
 const fileUploadSpecifications = {
-  [technologies['10x']]: {
+  [sampleTech['10X']]: {
     acceptedFiles: new Set([
       'barcodes.tsv',
       'barcodes.tsv.gz',
@@ -29,7 +31,7 @@ const fileUploadSpecifications = {
     info: ` For each sample, upload a folder containing the 3 count matrix files. The 
     folder's name will be used to name the sample in it. You can change this name later in Data Management.`,
   },
-  [technologies.rhapsody]: {
+  [sampleTech.RHAPSODY]: {
     acceptedFiles: new Set(['expression_data.st', 'expression_data.st.gz']),
     requiredFiles: [{ key: 'expression_data.st.gz', displayedName: 'expression_data.st' }],
     inputInfo: [['expression_data.st']],
@@ -41,5 +43,5 @@ const fileUploadSpecifications = {
 
 };
 
-export { technologies };
+export { techNames };
 export default fileUploadSpecifications;

@@ -15,6 +15,7 @@ import {
 
 import endUserMessages from 'utils/endUserMessages';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
+import { sampleTech } from 'utils/constants';
 
 jest.mock('utils/upload/validate10x');
 pushNotificationMessage.mockImplementation(() => async () => { });
@@ -33,7 +34,7 @@ const sample = {};
 describe('createSample action', () => {
   const experimentId = 'exp234';
 
-  const mockType = '10X Chromium';
+  const mockType = sampleTech['10X'];
 
   const mockExperiment = {
     ...experimentTemplate,

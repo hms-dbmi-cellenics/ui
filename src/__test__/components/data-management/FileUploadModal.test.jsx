@@ -4,7 +4,8 @@ import {
 import '@testing-library/jest-dom';
 import { act } from 'react-dom/test-utils';
 
-import techOptions from 'utils/upload/fileUploadSpecifications';
+import techOptions, { techNames } from 'utils/upload/fileUploadSpecifications';
+import { sampleTech } from 'utils/constants';
 
 import componentFactory from '__test__/test-utils/testComponentFactory';
 import FileUploadModal from 'components/data-management/FileUploadModal';
@@ -16,7 +17,7 @@ const defaultProps = {
 
 const FileUploadModalFactory = componentFactory(FileUploadModal, defaultProps);
 
-const chosenTech = Object.keys(techOptions)[0];
+const chosenTech = sampleTech['10X'];
 
 const renderFileUploadModal = async (customProps = {}) => {
   await act(() => {
@@ -29,7 +30,7 @@ describe('FileUploadModal', () => {
     await renderFileUploadModal();
 
     // It has a select button to select technology
-    expect(screen.getByText(chosenTech)).toBeInTheDocument();
+    expect(screen.getByText(techNames[chosenTech])).toBeInTheDocument();
 
     // It contains instructions on what files can be uploaded
     expect(screen.getByText(/For each sample, upload a folder containing/i)).toBeInTheDocument();

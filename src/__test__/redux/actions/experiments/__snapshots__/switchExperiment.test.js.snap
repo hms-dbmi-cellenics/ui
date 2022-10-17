@@ -279,7 +279,7 @@ Object {
       },
       "name": "Mock sample 0",
       "options": undefined,
-      "type": "10X Chromium",
+      "type": "10x",
       "uuid": "test9188-d682-test-mock-cb6d644cmock-0",
     },
     "test9188-d682-test-mock-cb6d644cmock-1": Object {
@@ -323,7 +323,7 @@ Object {
       },
       "name": "Mock sample 1",
       "options": undefined,
-      "type": "10X Chromium",
+      "type": "10x",
       "uuid": "test9188-d682-test-mock-cb6d644cmock-1",
     },
     "test9188-d682-test-mock-cb6d644cmock-2": Object {
@@ -367,7 +367,7 @@ Object {
       },
       "name": "Mock sample 2",
       "options": undefined,
-      "type": "10X Chromium",
+      "type": "10x",
       "uuid": "test9188-d682-test-mock-cb6d644cmock-2",
     },
   },
@@ -656,7 +656,7 @@ Object {
       },
       "name": "Mock sample 0",
       "options": undefined,
-      "type": "10X Chromium",
+      "type": "10x",
       "uuid": "test9188-d682-test-mock-cb6d644cmock-0",
     },
     "test9188-d682-test-mock-cb6d644cmock-1": Object {
@@ -700,7 +700,7 @@ Object {
       },
       "name": "Mock sample 1",
       "options": undefined,
-      "type": "10X Chromium",
+      "type": "10x",
       "uuid": "test9188-d682-test-mock-cb6d644cmock-1",
     },
     "test9188-d682-test-mock-cb6d644cmock-2": Object {
@@ -744,7 +744,7 @@ Object {
       },
       "name": "Mock sample 2",
       "options": undefined,
-      "type": "10X Chromium",
+      "type": "10x",
       "uuid": "test9188-d682-test-mock-cb6d644cmock-2",
     },
   },

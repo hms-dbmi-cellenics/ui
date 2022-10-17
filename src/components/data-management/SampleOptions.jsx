@@ -6,7 +6,7 @@ import { Typography, Checkbox, Tooltip } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import bulkUpdateSampleOptions from 'redux/actions/samples/bulkUpdateSampleOptions';
 
-import { technologies } from 'utils/upload/fileUploadSpecifications';
+import { sampleTech } from 'utils/constants';
 
 const { Text, Paragraph } = Typography;
 
@@ -52,7 +52,7 @@ const SampleOptions = () => {
   );
 
   const renderOptions = {
-    [technologies.rhapsody]: renderRhapsodyOption,
+    [sampleTech.RHAPSODY]: renderRhapsodyOption,
   };
 
   if (!renderOptions[selectedTech]) return <></>;

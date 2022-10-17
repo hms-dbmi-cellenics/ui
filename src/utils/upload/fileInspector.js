@@ -1,8 +1,8 @@
 import { Gunzip } from 'fflate';
 
-import { technologies } from 'utils/upload/fileUploadSpecifications';
-import techOptions from './fileUploadSpecifications';
-import readFileToBuffer from './readFileToBuffer';
+import { sampleTech } from 'utils/constants';
+import techOptions from 'utils/upload/fileUploadSpecifications';
+import readFileToBuffer from 'utils/upload/readFileToBuffer';
 
 const Verdict = {
   INVALID_NAME: -2,
@@ -18,11 +18,11 @@ const GZIP_SIGNATURE = Buffer.from([0x1f, 0x8b]);
 const inspectFile = async (file, technology) => {
   // Validate a file requested for upload to the platform.
 
-  if (technology === technologies.rhapsody) {
+  if (technology === sampleTech.RHAPSODY) {
     if (!file.name.toLowerCase().includes('expression_data.st')) {
       return Verdict.INVALID_NAME;
     }
-  } else if (technology === technologies['10x']) {
+  } else if (technology === sampleTech['10X']) {
     // immediately discard file if filename is not in valid set
     const validNames = techOptions[technology].acceptedFiles;
     if (!validNames.has(file.name)) {

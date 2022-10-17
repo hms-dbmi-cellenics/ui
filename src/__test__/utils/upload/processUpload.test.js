@@ -16,6 +16,7 @@ import processUpload from 'utils/upload/processUpload';
 import loadAndCompressIfNecessary from 'utils/upload/loadAndCompressIfNecessary';
 import validate from 'utils/upload/validate10x';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
+import { sampleTech } from 'utils/constants';
 
 enableFetchMocks();
 
@@ -65,7 +66,7 @@ const getValidFiles = (cellrangerVersion) => {
   ]);
 };
 
-const sampleType = '10X Chromium';
+const sampleType = sampleTech['10X'];
 const mockSampleUuid = 'sample-uuid';
 const mockExperimentId = 'project-uuid';
 const sampleName = 'mockSampleName';
