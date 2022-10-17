@@ -12,13 +12,10 @@ const unpackResult = async (storageResp, isJson) => {
     decompress(uint8array, (err, decompressed) => {
       if (err) {
         reject(err);
+      } else if (isJson) {
+        resolve(JSON_parse(decompressed));
       } else {
-        if (isJson) {
-          resolve(JSON_parse(decompressed));
-        } else {
-          resolve(decompressed);
-        }
-        resolve();
+        resolve(decompressed);
       }
     });
   });
