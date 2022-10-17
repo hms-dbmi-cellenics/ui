@@ -11,7 +11,7 @@ import endUserMessages from 'utils/endUserMessages';
 
 import { METADATA_DEFAULT_VALUE } from 'redux/reducers/experiments/initialState';
 import { defaultSampleOptions, sampleTemplate } from 'redux/reducers/samples/initialState';
-import { technologies } from 'utils/upload/fileUploadSpecifications';
+import { sampleTech } from 'utils/constants';
 import UploadStatus from 'utils/upload/UploadStatus';
 import validate10x from 'utils/upload/validate10x';
 import validateRhapsody from 'utils/upload/validateRhapsody';
@@ -35,19 +35,14 @@ const createSample = (
     },
   });
 
-  let sampleTechnology;
-  if (type === technologies['10x']) {
-    sampleTechnology = '10x';
-  } else if (type === technologies.rhapsody) {
-    sampleTechnology = 'rhapsody';
-  }
+  console.log('*** sampleType', type);
 
   const validateSample = {
-    [technologies['10x']]: validate10x,
-    [technologies.rhapsody]: validateRhapsody,
+    [sampleTech['10X']]: validate10x,
+    [sampleTech.RHAPSODY]: validateRhapsody,
   };
 
-  if (!Object.values(technologies).includes(type)) throw new Error(`Sample technology ${type} is not recognized`);
+  if (!Object.values(sampleTech).includes(type)) throw new Error(`Sample technology ${type} is not recognized`);
 
   await validateSample[type](sample);
   const defaultOptions = defaultSampleOptions[type] || {};
@@ -79,7 +74,11 @@ const createSample = (
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ name, sampleTechnology, options: defaultOptions }),
+        body: JSON.stringify({
+          name,
+          sampleTechnology: type,
+          options: defaultOptions,
+        }),
       },
     );
 

@@ -1,6 +1,20 @@
-const layout = {
-  PANEL_HEADING_HEIGHT: 30,
-  PANEL_PADDING: 10,
+const api = {
+  V1: 'v1',
+  V2: 'v2',
+};
+
+const modules = {
+  DATA_MANAGEMENT: 'DATA_MANAGEMENT',
+  DATA_PROCESSING: 'DATA_PROCESSING',
+  DATA_EXPLORATION: 'DATA_EXPLORATION',
+  PLOTS_AND_TABLES: 'PLOTS_AND_TABLES',
+  SETTINGS: 'SETTINGS',
+  DEFAULT: '',
+};
+
+const sampleTech = {
+  '10X': '10x',
+  RHAPSODY: 'rhapsody',
 };
 
 const plotTypes = {
@@ -27,24 +41,16 @@ const plotNames = {
   TRAJECTORY_ANALYSIS: 'Trajectory Analysis',
 };
 
-const modules = {
-  DATA_MANAGEMENT: 'DATA_MANAGEMENT',
-  DATA_PROCESSING: 'DATA_PROCESSING',
-  DATA_EXPLORATION: 'DATA_EXPLORATION',
-  PLOTS_AND_TABLES: 'PLOTS_AND_TABLES',
-  SETTINGS: 'SETTINGS',
-  DEFAULT: '',
-};
-
-const api = {
-  V1: 'v1',
-  V2: 'v2',
+const layout = {
+  PANEL_HEADING_HEIGHT: 30,
+  PANEL_PADDING: 10,
 };
 
 export {
-  layout,
-  plotNames,
-  plotTypes,
-  modules,
   api,
+  modules,
+  sampleTech,
+  plotTypes,
+  plotNames,
+  layout,
 };

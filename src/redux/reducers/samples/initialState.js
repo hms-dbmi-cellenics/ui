@@ -1,4 +1,4 @@
-import { technologies } from 'utils/upload/fileUploadSpecifications';
+import { sampleTech } from 'utils/constants';
 
 const sampleTemplate = {
   name: null,
@@ -31,7 +31,7 @@ const sampleFileTemplate = {
 };
 
 const defaultSampleOptions = {
-  [technologies.rhapsody]: {
+  [sampleTech.RHAPSODY]: {
     includeAbSeq: false,
   },
 };
