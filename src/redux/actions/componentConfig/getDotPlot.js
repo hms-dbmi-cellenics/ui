@@ -61,7 +61,7 @@ const getDotPlot = (
     });
 
     const data = await fetchWork(
-      experimentId, body, getState, { timeout },
+      experimentId, body, getState, dispatch, { timeout },
     );
 
     orderCellSets(data, getState(), config);

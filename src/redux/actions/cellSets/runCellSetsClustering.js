@@ -39,6 +39,7 @@ const runCellSetsClustering = (experimentId, resolution) => async (dispatch, get
       experimentId,
       body,
       getState,
+      dispatch,
       {
         timeout,
         broadcast: true,

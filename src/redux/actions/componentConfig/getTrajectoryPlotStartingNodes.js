@@ -37,6 +37,7 @@ const getTrajectoryPlotStartingNodes = (
     undefined,
     qcPipelineStartDate,
     environment,
+    clusteringSettings,
   );
 
   const timeout = getTimeoutForWorkerTask(getState(), 'TrajectoryAnalysisStartingNodes');
@@ -61,7 +62,7 @@ const getTrajectoryPlotStartingNodes = (
     });
 
     const data = await fetchWork(
-      experimentId, body, getState, { timeout, rerun: true },
+      experimentId, body, getState, dispatch, { timeout, rerun: true },
     );
 
     const { plotData } = getState().componentConfig[plotUuid];

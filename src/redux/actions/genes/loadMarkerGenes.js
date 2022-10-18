@@ -34,7 +34,7 @@ const loadMarkerGenes = (
       truncatedExpression: truncatedExpressionJson,
       zScore: zScoreJson,
       stats,
-    } = await fetchWork(experimentId, body, getState, { timeout });
+    } = await fetchWork(experimentId, body, getState, dispatch, { timeout });
 
     const rawExpression = SparseMatrix.fromJSON(rawExpressionJson);
     const truncatedExpression = SparseMatrix.fromJSON(truncatedExpressionJson);

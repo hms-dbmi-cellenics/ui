@@ -8,6 +8,7 @@ import { getBackendStatus } from 'redux/selectors';
 
 import cache from 'utils/cache';
 import { dispatchWorkRequest, seekFromS3 } from 'utils/work/seekWorkResponse';
+import { loadProcessingSettings } from 'redux/actions/experimentSettings';
 
 const createObjectHash = (object) => MD5(object);
 
@@ -16,12 +17,27 @@ const DISABLE_UNIQUE_KEYS = [
   'GetEmbedding',
 ];
 
+const getClusteringSettings = async (experimentId, dispatch, getState) => {
+  let clusteringSettings = getState().experimentSettings
+    .processing.configureEmbedding?.clusteringSettings;
+
+  if (!clusteringSettings) {
+    await dispatch(loadProcessingSettings(experimentId));
+
+    clusteringSettings = getState().experimentSettings
+      .processing.configureEmbedding?.clusteringSettings;
+  }
+
+  return clusteringSettings;
+};
+
 const generateETag = (
   experimentId,
   body,
   extras,
   qcPipelineStartDate,
   environment,
+  clusteringSettings = null,
 ) => {
   // If caching is disabled, we add an additional randomized key to the hash so we never reuse
   // past results.
@@ -35,17 +51,11 @@ const generateETag = (
     cacheUniquenessKey = Math.random();
   }
 
-  let ETagBody = {
-    experimentId,
-    body,
-    qcPipelineStartDate,
-    extras,
-    cacheUniquenessKey,
-    workerVersion: config.workerVersion,
-  };
+  let ETagBody;
 
   // They `body` key to create ETAg for gene expression is different
   // from the others, causing the generated ETag to be different
+  // Clustering settings don't matter for GeneExpression
   if (body.name === 'GeneExpression') {
     ETagBody = {
       experimentId,
@@ -53,6 +63,20 @@ const generateETag = (
       qcPipelineStartDate,
       extras,
       cacheUniquenessKey,
+      workerVersion: config.workerVersion,
+    };
+  } else {
+    if (!clusteringSettings) {
+      throw new Error('Clustering settings required to launch work request');
+    }
+
+    ETagBody = {
+      experimentId,
+      body,
+      qcPipelineStartDate,
+      extras,
+      cacheUniquenessKey,
+      clusteringSettings,
       workerVersion: config.workerVersion,
     };
   }
@@ -200,6 +224,7 @@ const fetchWork = async (
   experimentId,
   body,
   getState,
+  dispatch,
   optionals = {},
 ) => {
   const {
@@ -226,12 +251,15 @@ const fetchWork = async (
     );
   }
 
+  const clusteringSettings = await getClusteringSettings(experimentId, dispatch, getState);
+
   const ETag = generateETag(
     experimentId,
     body,
     extras,
     qcPipelineStartDate,
     environment,
+    clusteringSettings,
   );
 
   // First, let's try to fetch this information from the local cache.

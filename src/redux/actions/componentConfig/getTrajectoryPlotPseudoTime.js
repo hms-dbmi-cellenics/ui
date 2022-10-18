@@ -38,6 +38,7 @@ const getTrajectoryPlotPseudoTime = (
     undefined,
     qcPipelineStartDate,
     environment,
+    clusteringSettings,
   );
 
   const timeout = getTimeoutForWorkerTask(getState(), 'TrajectoryAnalysisPseudotime');
@@ -63,7 +64,7 @@ const getTrajectoryPlotPseudoTime = (
     });
 
     const data = await fetchWork(
-      experimentId, body, getState, { timeout, rerun: true },
+      experimentId, body, getState, dispatch, { timeout, rerun: true },
     );
 
     const { plotData } = getState().componentConfig[plotUuid];
