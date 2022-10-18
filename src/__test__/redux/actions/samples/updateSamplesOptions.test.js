@@ -46,7 +46,7 @@ const mockState = {
   },
 };
 
-const endpointUrl = `http://localhost:3000/v2/experiments/${mockExperimentId}/samples/bulkUpdate/options`;
+const endpointUrl = `http://localhost:3000/v2/experiments/${mockExperimentId}/samples/options`;
 
 describe('updateSamplesOptions action', () => {
   beforeEach(() => {
@@ -75,12 +75,9 @@ describe('updateSamplesOptions action', () => {
     expect(fetchMock).toHaveBeenCalledWith(
       endpointUrl,
       {
-        body: JSON.stringify({
-          sampleIds: mockSampleIds,
-          options: sampleDiff,
-        }),
+        body: JSON.stringify(sampleDiff),
         headers: { 'Content-Type': 'application/json' },
-        method: 'PATCH',
+        method: 'PUT',
       },
     );
   });

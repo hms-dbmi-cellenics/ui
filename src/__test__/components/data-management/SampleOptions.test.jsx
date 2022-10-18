@@ -18,7 +18,7 @@ import updateSamplesOptions from 'redux/actions/experiments/updateSamplesOptions
 import _ from 'lodash';
 import userEvent from '@testing-library/user-event';
 
-jest.mock('redux/actions/samples/bulkUpdateSampleOptions', () => jest.fn(() => ({ type: 'MOCK_ACTION' })));
+jest.mock('redux/actions/experiments/updateSamplesOptions', () => jest.fn(() => ({ type: 'MOCK_ACTION' })));
 
 const experimentId10x = 'experimentId10x';
 const experimentIdRhapsody = 'experimentIdRhapsody';

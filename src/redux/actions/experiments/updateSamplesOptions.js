@@ -18,9 +18,6 @@ const updateSamplesOptions = (experimentId, diff) => async (dispatch, getState) 
   const oldOptions = getState().samples[sampleIds[0]].options;
   const newOptions = _.merge({}, oldOptions, diff);
 
-  console.log('*** old options', oldOptions);
-  console.log('*** newOptions', newOptions);
-
   dispatch({
     type: SAMPLES_SAVING,
     payload: {
@@ -36,9 +33,7 @@ const updateSamplesOptions = (experimentId, diff) => async (dispatch, getState) 
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          options: newOptions,
-        }),
+        body: JSON.stringify(newOptions),
       },
     );
 

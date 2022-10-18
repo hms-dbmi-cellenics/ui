@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`bulkUpdateSampleOptions action Error handling works 1`] = `
+exports[`updateSamplesOptions action Error handling works 1`] = `
 Array [
   Object {
     "message": "Saving sample...",
@@ -11,7 +11,7 @@ Array [
 ]
 `;
 
-exports[`bulkUpdateSampleOptions action Works correctly 1`] = `
+exports[`updateSamplesOptions action Works correctly 1`] = `
 Array [
   Object {
     "message": "Saving sample...",
