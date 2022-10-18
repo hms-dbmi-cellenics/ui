@@ -15,6 +15,7 @@ export default {
   ERROR_FETCHING_PLOT_CONFIG: 'We couldn\'t get the plot settings.',
   ERROR_FETCHING_PLOT_DATA: 'We couldn\'t get the plot data.',
   ERROR_FETCHING_NORMALIZED_EXPRESSION_MATRIX: 'We couldn\'t download the normalized expression matrix.',
+  ERROR_NO_MATCHING_CELLS_NORMALIZED_EXPRESSION_MATRIX: 'No cells match requested filters.',
   ERROR_FETCHING_PROCESSING: 'We couldn\'t get the filter settings.',
   ERROR_FETCHING_DATA_PROCESSING_SETTINGS: 'We couldn\'t get the data processing settings.',
   ERROR_FETCHING_PROJECTS: 'We couldn\'t get the list of projects.',
