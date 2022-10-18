@@ -245,7 +245,7 @@ describe('Dot plot page', () => {
     expect(screen.getByText(/Select another option from the 'Select data' menu/i)).toBeInTheDocument();
   });
 
-  it('Should show a no data error if user is using marker gene and selected filter sets are not represented in more than 1 group in the base cell set', async () => {
+  it.only('Should show a no data error if user is using marker gene and selected filter sets are not represented in more than 1 group in the base cell set', async () => {
     seekFromS3
       .mockReset()
       // 1st call to list genes
@@ -304,7 +304,7 @@ describe('Dot plot page', () => {
       expect(screen.getByText(/The cell set that you have chosen to display is repesented by only one group/i)).toBeInTheDocument();
       expect(screen.getByText(/A comparison can not be run to determine the top marker genes/i)).toBeInTheDocument();
       expect(screen.getByText(/Select another option from the 'Select data' menu/i)).toBeInTheDocument();
-    });
+    }, { timeout: 15000, onTimeout: () => console.log('*** test timeout ') });
   });
 
   it('removing a gene keeps the order', async () => {
