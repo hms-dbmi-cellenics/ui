@@ -27,7 +27,7 @@ const fileUploadSpecifications = {
   'BD Rhapsody': {
     acceptedFiles: new Set(['expression_data.st', 'expression_data.st.gz']),
     requiredFiles: [{ key: 'expression_data.st.gz', displayedName: 'expression_data.st' }],
-    inputInfo: [['expression_data.st']],
+    inputInfo: [['expression_data.st', 'expression_data.st.gz']],
     info: `For each sample, upload a folder containing the required file. The folder's
     name will be used to name the sample in it.
     You can change this name later in Data Management.`,

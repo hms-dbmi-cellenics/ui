@@ -158,6 +158,7 @@ const FileUploadModal = (props) => {
                 <span style={{ color: 'red', marginRight: '2em' }}>*</span>
               </Title>
               <Select
+                aria-label='selectSampleTechnology'
                 defaultValue={selectedTech}
                 onChange={(value) => setSelectedTech(value)}
               >
