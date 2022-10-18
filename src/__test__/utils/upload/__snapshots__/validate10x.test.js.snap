@@ -1,0 +1,19 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`validate10x Throws an error for invalid barcodes file 1`] = `"Invalid barcodes.tsv file: 2 barcodes expected, but 1 found."`;
+
+exports[`validate10x Throws an error for invalid features file 1`] = `"Invalid features/genes.tsv file: 3 genes expected, but 2 found."`;
+
+exports[`validate10x Throws an error for missing barcodes file 1`] = `"Incomplete sample: Sample does not contain \\"barcodes\\" file(s). Please include the file in the sample."`;
+
+exports[`validate10x Throws an error for missing features file 1`] = `"Incomplete sample: Sample does not contain \\"features\\" file(s). Please include the file in the sample."`;
+
+exports[`validate10x Throws an error for transposed matrix file 1`] = `
+"Invalid matrix.mtx file: Matrix is transposed.
+Invalid barcodes.tsv file: 3 barcodes expected, but 2 found.
+Invalid features/genes.tsv file: 2 genes expected, but 3 found."
+`;
+
+exports[`validate10x Throws an error invalid matrix format 1`] = `"Invalid matrix.mtx file: Invalid matrix format type"`;
+
+exports[`validate10x Throws an error matrix with array format 1`] = `"Invalid matrix.mtx file: Matrix file format is \\"array\\". Please convert to sparse \\"coordinate\\" format."`;
