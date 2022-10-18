@@ -12,10 +12,11 @@ const generateGem2sParamsHash = (experiment, samples) => {
 
   // Different sample order should not change the hash.
   const orderInvariantSampleIds = [...existingSampleIds].sort();
+  const sampleTechnology = samples[orderInvariantSampleIds[0]]?.type;
 
   const hashParams = {
     organism: null,
-    input: { type: '10x' },
+    sampleTechnology,
     sampleIds: orderInvariantSampleIds,
     sampleNames: orderInvariantSampleIds.map((sampleId) => samples[sampleId].name),
     sampleOptions: orderInvariantSampleIds.map((sampleId) => samples[sampleId].options),
