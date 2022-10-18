@@ -58,16 +58,14 @@ const FileUploadModal = (props) => {
   }, [filesList]);
 
   // Handle on Drop
-  const onDrop = async (acceptedFiles) => {
+  const onDrop = async (droppedFiles) => {
     let filesNotInFolder = false;
     if (currentSelectedTech && currentSelectedTech !== selectedTech) {
       handleError('error', endUserMessages.ERROR_SAMPLE_TECHNOLOGY);
       return;
     }
 
-    const filteredFiles = acceptedFiles
-      // Remove all hidden files
-      .filter((file) => !file.name.startsWith('.') && !file.name.startsWith('__MACOSX'))
+    const filteredFiles = droppedFiles
       // Remove all files that aren't in a folder
       .filter((file) => {
         const inFolder = file.path.includes('/');
@@ -76,7 +74,7 @@ const FileUploadModal = (props) => {
 
         return inFolder;
       })
-      .filter((file) => techOptions[selectedTech].fileNameFilter(file.name));
+      .filter((file) => techOptions[selectedTech].acceptedFiles.has(file.name));
 
     if (filesNotInFolder) {
       handleError('error', endUserMessages.ERROR_FILES_FOLDER);
