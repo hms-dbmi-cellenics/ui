@@ -40,6 +40,7 @@ describe('createSample action', () => {
     ...experimentTemplate,
     name: 'Experiment 1',
     id: experimentId,
+    metadataKeys: ['meta-1', 'meta-2'],
   };
 
   const initialState = {
