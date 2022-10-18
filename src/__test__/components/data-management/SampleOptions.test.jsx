@@ -13,7 +13,7 @@ import experimentsInitialState, { experimentTemplate } from 'redux/reducers/expe
 import samplesInitialState, { sampleTemplate } from 'redux/reducers/samples/initialState';
 import SampleOptions from 'components/data-management/SampleOptions';
 
-import bulkUpdateSampleOptions from 'redux/actions/samples/bulkUpdateSampleOptions';
+import updateSamplesOptions from 'redux/actions/experiments/updateSamplesOptions';
 
 import _ from 'lodash';
 import userEvent from '@testing-library/user-event';
@@ -123,6 +123,6 @@ describe('SampleOptions', () => {
 
     // Checkbox should be clickable and dispatch action
     userEvent.click(screen.getByText('Include AbSeq data'));
-    expect(bulkUpdateSampleOptions).toHaveBeenCalledTimes(1);
+    expect(updateSamplesOptions).toHaveBeenCalledTimes(1);
   });
 });

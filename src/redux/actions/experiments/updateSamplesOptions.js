@@ -2,14 +2,14 @@ import endUserMessages from 'utils/endUserMessages';
 import _ from 'lodash';
 
 import {
-  SAMPLES_BULK_OPTIONS_UPDATE, SAMPLES_SAVING, SAMPLES_SAVED, SAMPLES_ERROR,
+  SAMPLES_OPTIONS_UPDATE, SAMPLES_SAVING, SAMPLES_SAVED, SAMPLES_ERROR,
 } from 'redux/actionTypes/samples';
 
 import handleError from 'utils/http/handleError';
 import fetchAPI from 'utils/http/fetchAPI';
 
-const bulkUpdateSampleOptions = (experimentId, diff) => async (dispatch, getState) => {
-  const url = `/v2/experiments/${experimentId}/samples/bulkUpdate/options`;
+const updateSamplesOptions = (experimentId, diff) => async (dispatch, getState) => {
+  const url = `/v2/experiments/${experimentId}/samples/options`;
 
   const { sampleIds } = getState().experiments[experimentId];
 
@@ -17,6 +17,9 @@ const bulkUpdateSampleOptions = (experimentId, diff) => async (dispatch, getStat
   // This is the case until we support options at the sample level
   const oldOptions = getState().samples[sampleIds[0]].options;
   const newOptions = _.merge({}, oldOptions, diff);
+
+  console.log('*** old options', oldOptions);
+  console.log('*** newOptions', newOptions);
 
   dispatch({
     type: SAMPLES_SAVING,
@@ -29,12 +32,11 @@ const bulkUpdateSampleOptions = (experimentId, diff) => async (dispatch, getStat
     await fetchAPI(
       url,
       {
-        method: 'PATCH',
+        method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          sampleIds,
           options: newOptions,
         }),
       },
@@ -45,7 +47,7 @@ const bulkUpdateSampleOptions = (experimentId, diff) => async (dispatch, getStat
     });
 
     dispatch({
-      type: SAMPLES_BULK_OPTIONS_UPDATE,
+      type: SAMPLES_OPTIONS_UPDATE,
       payload: {
         sampleUuids: sampleIds,
         diff,
@@ -63,4 +65,4 @@ const bulkUpdateSampleOptions = (experimentId, diff) => async (dispatch, getStat
   }
 };
 
-export default bulkUpdateSampleOptions;
+export default updateSamplesOptions;

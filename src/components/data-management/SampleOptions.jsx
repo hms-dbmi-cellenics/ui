@@ -4,7 +4,7 @@ import { useSelector, useDispatch } from 'react-redux';
 
 import { Typography, Checkbox, Tooltip } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
-import bulkUpdateSampleOptions from 'redux/actions/samples/bulkUpdateSampleOptions';
+import updateSamplesOptions from 'redux/actions/experiments/updateSamplesOptions';
 
 import { sampleTech } from 'utils/constants';
 
@@ -24,7 +24,7 @@ const SampleOptions = () => {
 
   const updateAllSamples = (diff) => {
     dispatch(
-      bulkUpdateSampleOptions(
+      updateSamplesOptions(
         activeExperimentId,
         diff,
       ),

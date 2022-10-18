@@ -35,8 +35,6 @@ const createSample = (
     },
   });
 
-  console.log('*** sampleType', type);
-
   const validateSample = {
     [sampleTech['10X']]: validate10x,
     [sampleTech.RHAPSODY]: validateRhapsody,

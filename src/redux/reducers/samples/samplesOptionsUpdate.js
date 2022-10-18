@@ -4,7 +4,7 @@ import produce from 'immer';
 import _ from 'lodash';
 import initialState from './initialState';
 
-const samplesBulkOptionUpdate = produce((draft, action) => {
+const samplesOptionsUpdate = produce((draft, action) => {
   const { sampleUuids, diff } = action.payload;
 
   sampleUuids.forEach((sampleUuid) => {
@@ -13,4 +13,4 @@ const samplesBulkOptionUpdate = produce((draft, action) => {
   });
 }, initialState);
 
-export default samplesBulkOptionUpdate;
+export default samplesOptionsUpdate;

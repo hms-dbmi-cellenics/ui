@@ -3,12 +3,12 @@ import configureStore from 'redux-mock-store';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import thunk from 'redux-thunk';
 
-import bulkUpdateSampleOptions from 'redux/actions/samples/bulkUpdateSampleOptions';
+import updateSamplesOptions from 'redux/actions/experiments/updateSamplesOptions';
 import initialSamplesState, { sampleTemplate } from 'redux/reducers/samples/initialState';
 import initialExperimentState, { experimentTemplate } from 'redux/reducers/experiments/initialState';
 
 import {
-  SAMPLES_BULK_OPTIONS_UPDATE,
+  SAMPLES_OPTIONS_UPDATE,
   SAMPLES_ERROR, SAMPLES_SAVED, SAMPLES_SAVING,
 } from 'redux/actionTypes/samples';
 
@@ -48,7 +48,7 @@ const mockState = {
 
 const endpointUrl = `http://localhost:3000/v2/experiments/${mockExperimentId}/samples/bulkUpdate/options`;
 
-describe('bulkUpdateSampleOptions action', () => {
+describe('updateSamplesOptions action', () => {
   beforeEach(() => {
     jest.clearAllMocks();
 
@@ -66,10 +66,10 @@ describe('bulkUpdateSampleOptions action', () => {
 
     const store = mockStore(mockState);
 
-    await store.dispatch(bulkUpdateSampleOptions(mockExperimentId, sampleDiff));
+    await store.dispatch(updateSamplesOptions(mockExperimentId, sampleDiff));
 
     const actions = store.getActions();
-    expect(_.map(actions, 'type')).toEqual([SAMPLES_SAVING, SAMPLES_SAVED, SAMPLES_BULK_OPTIONS_UPDATE]);
+    expect(_.map(actions, 'type')).toEqual([SAMPLES_SAVING, SAMPLES_SAVED, SAMPLES_OPTIONS_UPDATE]);
     expect(_.map(actions, 'payload')).toMatchSnapshot();
 
     expect(fetchMock).toHaveBeenCalledWith(
@@ -93,7 +93,7 @@ describe('bulkUpdateSampleOptions action', () => {
     };
 
     const store = mockStore(mockState);
-    await store.dispatch(bulkUpdateSampleOptions(mockExperimentId, sampleDiff));
+    await store.dispatch(updateSamplesOptions(mockExperimentId, sampleDiff));
 
     const actions = store.getActions();
     expect(_.map(actions, 'type')).toEqual([SAMPLES_SAVING, SAMPLES_ERROR]);

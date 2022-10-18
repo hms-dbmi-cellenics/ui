@@ -11,14 +11,14 @@ import {
   SAMPLES_METADATA_DELETE,
   SAMPLES_LOADING,
   SAMPLES_VALUE_IN_METADATA_TRACK_UPDATED,
-  SAMPLES_BULK_OPTIONS_UPDATE,
+  SAMPLES_OPTIONS_UPDATE,
 } from '../../actionTypes/samples';
 import initialState from './initialState';
 import samplesCreate from './samplesCreate';
 import samplesUpdate from './samplesUpdate';
 import samplesDelete from './samplesDelete';
 import samplesFileUpdate from './samplesFileUpdate';
-import samplesBulkOptionUpdate from './samplesBulkOptionUpdate';
+import samplesOptionsUpdate from './samplesOptionsUpdate';
 import samplesLoaded from './samplesLoaded';
 import samplesSaving from './samplesSaving';
 import samplesError from './samplesError';
@@ -47,8 +47,8 @@ const samplesReducer = (state = initialState, action) => {
       return samplesFileUpdate(state, action);
     }
 
-    case SAMPLES_BULK_OPTIONS_UPDATE: {
-      return samplesBulkOptionUpdate(state, action);
+    case SAMPLES_OPTIONS_UPDATE: {
+      return samplesOptionsUpdate(state, action);
     }
 
     case SAMPLES_LOADED: {
