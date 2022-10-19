@@ -98,7 +98,7 @@ describe('fileInspector', () => {
       .mockReturnValueOnce(
         Promise.resolve(Buffer.from([0x1f, 0x8b])),
       );
-    expect(await inspectFile(file, 'BD Rhapsody'))
+    expect(await inspectFile(file, sampleTech.RHAPSODY))
       .toEqual(Verdict.VALID_ZIPPED);
   });
 
@@ -111,7 +111,7 @@ describe('fileInspector', () => {
       .mockReturnValueOnce(
         Promise.resolve(),
       );
-    expect(await inspectFile(file, 'BD Rhapsody'))
+    expect(await inspectFile(file, sampleTech.RHAPSODY))
       .toEqual(Verdict.INVALID_NAME);
   });
 
