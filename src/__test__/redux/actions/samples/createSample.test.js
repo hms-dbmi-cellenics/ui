@@ -139,7 +139,7 @@ describe('createSample action', () => {
   it('Works correctly with BDRhapsody file being uploaded', async () => {
     fetchMock.mockResponse(JSON.stringify({}), { url: 'mockedUrl', status: 200 });
 
-    const newUuid = await store.dispatch(createSample(experimentId, sampleName, sample, 'BD Rhapsody', ['asdasda_Expression_Data.st']));
+    const newUuid = await store.dispatch(createSample(experimentId, sampleName, sample, sampleTech.RHAPSODY, ['asdasda_Expression_Data.st']));
 
     // Returns a new sampleUuid
     expect(newUuid).toEqual(sampleUuid);

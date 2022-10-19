@@ -14,6 +14,9 @@ Array [
 exports[`createSample action Works correctly with BDRhapsody file being uploaded 1`] = `
 Object {
   "name": "test sample",
+  "options": Object {
+    "includeAbSeq": false,
+  },
   "sampleTechnology": "rhapsody",
 }
 `;
@@ -44,7 +47,10 @@ Array [
         "meta-2": "N.A.",
       },
       "name": "test sample",
-      "type": "BD Rhapsody",
+      "options": Object {
+        "includeAbSeq": false,
+      },
+      "type": "rhapsody",
       "uuid": "abc123",
     },
   },
