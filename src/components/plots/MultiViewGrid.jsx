@@ -1,17 +1,25 @@
 import React, { useEffect, useState, useRef } from 'react';
 import PropTypes from 'prop-types';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import _ from 'lodash';
 import { Col, Row, Space } from 'antd';
-import { getPlotConfigs } from 'redux/selectors';
+import { getPlotConfigs, getCellSets } from 'redux/selectors';
+import { loadCellSets } from 'redux/actions/cellSets';
+
+import PlatformError from 'components/PlatformError';
 
 const MultiViewGrid = (props) => {
   const {
+    experimentId,
     renderPlot,
     multiViewUuid,
     updateAllWithChanges,
   } = props;
+
+  const dispatch = useDispatch();
+
+  const cellSets = useSelector(getCellSets());
 
   const multiViewConfig = useSelector((state) => state.componentConfig[multiViewUuid].config);
   const plotConfigs = useSelector(getPlotConfigs(multiViewConfig.plotUuids));
@@ -60,31 +68,48 @@ const MultiViewGrid = (props) => {
     ? 'start'
     : 'center';
 
-  return (
-    <Space
-      direction='vertical'
-      align={spaceAlign}
-      id='multiViewContainer'
-      style={{ width: '100%', height: '100%' }}
-    >
-      {
-        _.times(multiViewConfig.nrows, (i) => (
-          <Row wrap={false} key={i}>
-            {
-              _.times(multiViewConfig.ncols, (j) => (
-                <Col flex key={multiViewConfig.ncols * i + j}>
-                  {plots[multiViewConfig.plotUuids[multiViewConfig.ncols * i + j]]}
-                </Col>
-              ))
-            }
-          </Row>
-        ))
-      }
-    </Space>
-  );
+  const render = () => {
+    if (cellSets.error) {
+      return (
+        <PlatformError
+          error={cellSets.error}
+          reason={cellSets.error}
+          onClick={() => {
+            dispatch(loadCellSets(experimentId));
+          }}
+        />
+      );
+    }
+
+    return (
+      <Space
+        direction='vertical'
+        align={spaceAlign}
+        id='multiViewContainer'
+        style={{ width: '100%', height: '100%' }}
+      >
+        {
+          _.times(multiViewConfig.nrows, (i) => (
+            <Row wrap={false} key={i}>
+              {
+                _.times(multiViewConfig.ncols, (j) => (
+                  <Col flex key={multiViewConfig.ncols * i + j}>
+                    {plots[multiViewConfig.plotUuids[multiViewConfig.ncols * i + j]]}
+                  </Col>
+                ))
+              }
+            </Row>
+          ))
+        }
+      </Space>
+    );
+  };
+
+  return render();
 };
 
 MultiViewGrid.propTypes = {
+  experimentId: PropTypes.string.isRequired,
   renderPlot: PropTypes.func.isRequired,
   multiViewUuid: PropTypes.string.isRequired,
   updateAllWithChanges: PropTypes.func.isRequired,

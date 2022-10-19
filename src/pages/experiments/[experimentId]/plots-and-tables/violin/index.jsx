@@ -124,6 +124,7 @@ const ViolinIndex = ({ experimentId }) => {
     });
   }, [multiViewConfig]);
 
+  // update default configs to show highest dispersion gene
   useEffect(() => {
     if (!highestDispersionGene || !multiViewConfig) return;
 
@@ -146,7 +147,7 @@ const ViolinIndex = ({ experimentId }) => {
       || !multiViewPlotUuids.every((uuid) => plotConfigs[uuid])) return;
 
     const genesToLoad = shownGenes.filter((gene) => (
-      !geneExpression.views[plotUuid]?.data.includes(gene) && gene !== 'notSelected'
+      !geneExpression.matrix.geneIsLoaded(gene) && gene !== 'notSelected'
     ));
 
     if (genesToLoad.length > 0) {
@@ -267,7 +268,7 @@ const ViolinIndex = ({ experimentId }) => {
       return (
         <PlatformError
           error={geneList.error}
-          onClick={() => {}}
+          onClick={() => dispatch(loadGeneList(experimentId))}
         />
       );
     }
@@ -282,6 +283,7 @@ const ViolinIndex = ({ experimentId }) => {
 
     return (
       <MultiViewGrid
+        experimentId={experimentId}
         renderPlot={renderPlot}
         multiViewUuid={multiViewUuid}
         updateAllWithChanges={updateAllWithChanges}

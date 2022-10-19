@@ -5,9 +5,10 @@ import { Vega } from 'react-vega';
 import 'vega-webgl-renderer';
 
 import { getCellSets, getCellSetsHierarchyByKeys } from 'redux/selectors';
+import { loadGeneExpression } from 'redux/actions/genes';
 
 import { generateSpec, generateData } from 'utils/plotSpecs/generateViolinSpec';
-import { loadCellSets } from 'redux/actions/cellSets';
+
 import PlatformError from 'components/PlatformError';
 import Loader from 'components/Loader';
 
@@ -52,23 +53,26 @@ const ViolinPlot = (props) => {
   const render = () => {
     if (!config || config?.shownGene === 'notSelected') return <Loader experimentId={experimentId} />;
 
-    if (cellSets.error) {
+    if (!selectedCellSetClassAvailable) {
       return (
         <PlatformError
-          error={cellSets.error}
-          reason={cellSets.error}
-          onClick={() => {
-            dispatch(loadCellSets(experimentId));
-          }}
+          description='No clustering available.'
+          reason='Set up your clustering in the configure embedding step in Data Processing to view this plot, or select different data.'
+          actionable={false}
         />
       );
     }
 
-    if (geneExpression.error) {
+    if (geneExpression.error && !geneExpression.matrix.geneIsLoaded(config.shownGene)) {
       return (
         <PlatformError
           error={geneExpression.error}
           reason={geneExpression.error}
+          onClick={() => {
+            dispatch(loadGeneExpression(
+              experimentId, [config?.shownGene], plotUuid,
+            ));
+          }}
         />
       );
     }
