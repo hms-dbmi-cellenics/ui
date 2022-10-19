@@ -66,8 +66,8 @@ jest.mock('utils/work/seekWorkResponse', () => ({
 }));
 
 const mockWorkerResponses = {
-  'paginated-gene-expression': () => paginatedGeneExpressionData,
-  'dot-plot-data': () => dotPlotData,
+  'paginated-gene-expression': () => Promise.resolve(paginatedGeneExpressionData),
+  'dot-plot-data': () => Promise.resolve(dotPlotData),
 };
 
 const experimentId = fake.EXPERIMENT_ID;
@@ -248,25 +248,20 @@ describe('Dot plot page', () => {
   it('Should show a no data error if user is using marker gene and selected filter sets are not represented in more than 1 group in the base cell set', async () => {
     seekFromS3
       .mockReset()
-      // 1st call to list genes
-      .mockImplementationOnce(() => null)
-      .mockImplementationOnce((Etag) => mockWorkerResponses[Etag]())
-      // 2nd call to load dot plot
-      .mockImplementationOnce(() => null)
-      .mockImplementationOnce((Etag) => mockWorkerResponses[Etag]())
-      // 3rd call to load dot plot
-      .mockImplementationOnce(() => null)
-      .mockImplementationOnce((Etag) => mockWorkerResponses[Etag]())
-      // 4th call to load dot plot
-      .mockImplementationOnce(() => null)
-      .mockImplementationOnce((Etag) => mockWorkerResponses[Etag]());
+      .mockImplementation((Etag) => mockWorkerResponses[Etag]());
 
     await renderDotPlot(storeState);
+
+    // Call to list genes
+    expect(seekFromS3).toHaveBeenCalledTimes(1);
 
     // Use marker genes
     await act(async () => {
       userEvent.click(screen.getByText(/Marker genes/i));
     });
+
+    // Call to load dot plot
+    expect(seekFromS3).toHaveBeenCalledTimes(2);
 
     // Select data
     await act(async () => {
@@ -285,6 +280,9 @@ describe('Dot plot page', () => {
     await act(async () => {
       userEvent.click(baseOption, undefined, { skipPointerEventsCheck: true });
     });
+
+    // Call to load dot plot
+    expect(seekFromS3).toHaveBeenCalledTimes(3);
 
     // Select the filter sets
     const selectFilterCells = screen.getByRole('combobox', { name: 'selectPoints' });
@@ -305,6 +303,12 @@ describe('Dot plot page', () => {
       expect(screen.getByText(/A comparison can not be run to determine the top marker genes/i)).toBeInTheDocument();
       expect(screen.getByText(/Select another option from the 'Select data' menu/i)).toBeInTheDocument();
     });
+
+    // No new calls to load dot plot
+    expect(seekFromS3).toHaveBeenCalledTimes(3);
+
+    // Calls are correct
+    expect(seekFromS3.mock.calls).toMatchSnapshot();
   });
 
   it('removing a gene keeps the order', async () => {

@@ -62,9 +62,8 @@ const inspectFile = async (file, technology) => {
     }
 
     return Verdict.INVALID_FORMAT;
-  } else {
-    return Verdict.INVALID_FORMAT;
   }
+  return Verdict.INVALID_FORMAT;
 };
 
 export {

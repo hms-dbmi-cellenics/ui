@@ -1,28 +1,9 @@
-import {
-  DecodeUTF8, Decompress,
-} from 'fflate';
+import { decode, decompress } from 'utils/upload/decompressionUtils';
 import SampleValidationError from 'utils/errors/upload/SampleValidationError';
 
-const decode = async (arrBuffer) => {
-  let result = '';
-  const utfDecode = new DecodeUTF8((data) => { result += data; });
-  utfDecode.push(new Uint8Array(arrBuffer));
-
-  return result;
-};
-
-const decompress = async (arrBuffer) => {
-  let result = '';
-  const decompressor = new Decompress((chunk) => { result = chunk; });
-  decompressor.push(new Uint8Array(arrBuffer));
-
-  return result;
-};
-
 const columnsToSearch = [
-  ['Cell_Index'], ['Bioproduct', 'Gene'], ['RSEC_Reads'],
-  ['Raw_Molecules'], ['RSEC_Adjusted_Molecules'], ['DBEC_Reads'],
-  ['DBEC_Adjusted_Molecules']];
+  ['Cell_Index'], ['Bioproduct', 'Gene'], ['DBEC_Adjusted_Molecules', 'RSEC_Adjusted_Molecules'],
+];
 
 const validateRhapsody = async (sample) => {
   const fileObjectKey = Object.keys(sample.files).filter((key) => key.toLowerCase().includes('expression_data.st'))[0];

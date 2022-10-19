@@ -28,19 +28,17 @@ const fileUploadSpecifications = {
       { key: 'features.tsv.gz', displayedName: 'genes.tsv' },
       { key: 'matrix.mtx.gz', displayedName: 'matrix.mtx' },
     ],
-    info: ` For each sample, upload a folder containing the 3 count matrix files. The 
+    info: ` For each sample, upload a folder containing the 3 count matrix files. The
     folder's name will be used to name the sample in it. You can change this name later in Data Management.`,
   },
   [sampleTech.RHAPSODY]: {
     acceptedFiles: new Set(['expression_data.st', 'expression_data.st.gz']),
     requiredFiles: [{ key: 'expression_data.st.gz', displayedName: 'expression_data.st' }],
-    inputInfo: [['expression_data.st']],
-    info: `Upload a folder for each sample. The folder's
+    inputInfo: [['expression_data.st', 'expression_data.st.gz']],
+    info: `For each sample, upload a folder containing the required file. The folder's
     name will be used to name the sample in it.
-    You can change this name later in Data Management.
-    Each folder must contain the following file:`,
+    You can change this name later in Data Management.`,
   },
-
 };
 
 export { techNames };

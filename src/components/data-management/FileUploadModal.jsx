@@ -27,6 +27,24 @@ import endUserMessages from 'utils/endUserMessages';
 const { Text, Title, Paragraph } = Typography;
 const { Option } = Select;
 
+const extraHelpText = {
+  [sampleTech['10X']]: () => <></>,
+  [sampleTech.RHAPSODY]: () => (
+    <Paragraph>
+      <ul>
+        <li>
+          The zip files that are output by the primary processing pipeline contain
+          the .st files that should be uploaded and they must be unzipped first.
+        </li>
+        <li>
+          The folder with Multiplet and Undetermined
+          cells should not be uploaded since it would distort the analysis.
+        </li>
+      </ul>
+    </Paragraph>
+  ),
+};
+
 const FileUploadModal = (props) => {
   const { onUpload, onCancel, currentSelectedTech } = props;
 
@@ -41,16 +59,14 @@ const FileUploadModal = (props) => {
   }, [filesList]);
 
   // Handle on Drop
-  const onDrop = async (acceptedFiles) => {
+  const onDrop = async (droppedFiles) => {
     let filesNotInFolder = false;
     if (currentSelectedTech && currentSelectedTech !== selectedTech) {
       handleError('error', endUserMessages.ERROR_SAMPLE_TECHNOLOGY);
       return;
     }
 
-    const filteredFiles = acceptedFiles
-      // Remove all hidden files
-      .filter((file) => !file.name.startsWith('.') && !file.name.startsWith('__MACOSX'))
+    const filteredFiles = droppedFiles
       // Remove all files that aren't in a folder
       .filter((file) => {
         const inFolder = file.path.includes('/');
@@ -58,7 +74,8 @@ const FileUploadModal = (props) => {
         filesNotInFolder ||= !inFolder;
 
         return inFolder;
-      });
+      })
+      .filter((file) => techOptions[selectedTech].acceptedFiles.has(file.name));
 
     if (filesNotInFolder) {
       handleError('error', endUserMessages.ERROR_FILES_FOLDER);
@@ -106,6 +123,7 @@ const FileUploadModal = (props) => {
             </List.Item>
           )}
         />
+        {extraHelpText[selectedTech]() ?? <></>}
       </Space>
     </>
   );
@@ -141,6 +159,7 @@ const FileUploadModal = (props) => {
                 <span style={{ color: 'red', marginRight: '2em' }}>*</span>
               </Title>
               <Select
+                aria-label='sampleTechnologySelection'
                 defaultValue={selectedTech}
                 onChange={(value) => setSelectedTech(value)}
               >
