@@ -66,6 +66,8 @@ const FileUploadModal = (props) => {
     }
 
     const filteredFiles = droppedFiles
+      // Remove all hidden files
+      .filter((file) => !file.name.startsWith('.') && !file.name.startsWith('__MACOSX'))
       // Remove all files that aren't in a folder
       .filter((file) => {
         const inFolder = file.path.includes('/');
@@ -74,7 +76,7 @@ const FileUploadModal = (props) => {
 
         return inFolder;
       })
-      .filter((file) => techOptions[selectedTech].acceptedFiles.has(file.name.toLowerCase()));
+      .filter((file) => techOptions[selectedTech].fileNameFilter(file.name));
 
     if (filesNotInFolder) {
       handleError('error', endUserMessages.ERROR_FILES_FOLDER);
