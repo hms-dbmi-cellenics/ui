@@ -7,7 +7,6 @@ import React from 'react';
 import { act } from 'react-dom/test-utils';
 import { Provider } from 'react-redux';
 import { loadBackendStatus } from 'redux/actions/backendStatus';
-// import { loadGeneExpression } from 'redux/actions/genes';
 import { makeStore } from 'redux/store';
 import { seekFromS3 } from 'utils/work/seekWorkResponse';
 import markerGenes1 from '__test__/data/marker_genes_1.json';

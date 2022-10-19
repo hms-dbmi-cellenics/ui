@@ -5,6 +5,7 @@ import { Vega } from 'react-vega';
 import 'vega-webgl-renderer';
 
 import { getCellSets, getCellSetsHierarchyByKeys } from 'redux/selectors';
+import { loadCellSets } from 'redux/actions/cellSets';
 import { loadGeneExpression } from 'redux/actions/genes';
 
 import { generateSpec, generateData } from 'utils/plotSpecs/generateViolinSpec';
@@ -51,7 +52,26 @@ const ViolinPlot = (props) => {
   }, [experimentId, config, geneExpression, cellSets]);
 
   const render = () => {
-    if (!config || config?.shownGene === 'notSelected') return <Loader experimentId={experimentId} />;
+    if (cellSets.error) {
+      return (
+        <PlatformError
+          error={cellSets.error}
+          reason={cellSets.error}
+          onClick={() => {
+            dispatch(loadCellSets(experimentId));
+          }}
+        />
+      );
+    }
+
+    if (
+      !config
+      || config?.shownGene === 'notSelected'
+      || geneExpression.loading.includes(config?.shownGene)
+      || !cellSets.accessible
+    ) {
+      return <Loader experimentId={experimentId} />;
+    }
 
     if (!selectedCellSetClassAvailable) {
       return (
@@ -75,13 +95,6 @@ const ViolinPlot = (props) => {
           }}
         />
       );
-    }
-
-    if (
-      geneExpression.loading.includes(config?.shownGene)
-      || !cellSets.accessible
-    ) {
-      return <Loader experimentId={experimentId} />;
     }
 
     return <Vega spec={plotSpec} renderer='webgl' />;

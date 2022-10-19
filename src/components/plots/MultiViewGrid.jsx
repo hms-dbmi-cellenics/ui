@@ -27,18 +27,12 @@ const MultiViewGrid = (props) => {
   const [plots, setPlots] = useState({});
   const previousMultiViewConfig = useRef({});
 
-  const shouldUpdatePlots = () => {
-    if (!multiViewConfig) return false;
-
-    if (_.isEqual(previousMultiViewConfig.current, multiViewConfig)) return false;
-
-    if (Object.values(plotConfigs).includes(undefined)) return false;
-
-    return true;
-  };
-
   useEffect(() => {
-    if (!shouldUpdatePlots()) return;
+    if (
+      !multiViewConfig
+      || _.isEqual(previousMultiViewConfig.current, multiViewConfig)
+      || Object.values(plotConfigs).includes(undefined)
+    ) return;
 
     const previousPlotUuids = previousMultiViewConfig.current.plotUuids ?? [];
     const currentPlotUuids = multiViewConfig.plotUuids;
