@@ -1,4 +1,4 @@
-import validate from 'utils/upload/validate';
+import validate10x from 'utils/upload/validate10x';
 import initialState, { sampleFileTemplate, sampleTemplate } from 'redux/reducers/samples/initialState';
 
 import * as fs from 'fs';
@@ -20,11 +20,6 @@ const mockFileLocations = {
     'barcodes.tsv': 'src/__test__/data/mock_files/barcodes.tsv',
     'features.tsv': 'src/__test__/data/mock_files/features.tsv',
     'matrix.mtx': 'src/__test__/data/mock_files/matrix.mtx',
-    'invalid_barcodes.tsv': 'src/__test__/data/mock_files/invalidBarcodes.tsv',
-    'invalid_features.tsv': 'src/__test__/data/mock_files/invalidFeatures.tsv',
-    'transposed_matrix.mtx': 'src/__test__/data/mock_files/transposedMatrix.mtx',
-    'matrix_array_format.mtx': 'src/__test__/data/mock_files/matrixArrayFormat.mtx',
-    'matrix_invalid_format.mtx': 'src/__test__/data/mock_files/matrixNonExistentFormat.mtx',
   },
   zipped: {
     'barcodes.tsv.gz': 'src/__test__/data/mock_files/barcodes.tsv.gz',
@@ -140,13 +135,13 @@ const mockUnzippedSample = {
   },
 };
 
-describe('validate', () => {
+describe('validate10x', () => {
   it('Correctly pass valid zipped samples', async () => {
-    await expect(validate(mockZippedSample)).resolves.toBeUndefined();
+    await expect(validate10x(mockZippedSample)).resolves.toBeUndefined();
   });
 
   it('Correctly pass valid unzipped samples', async () => {
-    await expect(validate(mockUnzippedSample)).resolves.toBeUndefined();
+    await expect(validate10x(mockUnzippedSample)).resolves.toBeUndefined();
   });
 
   it('Throws an error for missing barcodes file', async () => {
@@ -158,7 +153,7 @@ describe('validate', () => {
     );
     delete missingBarcodesFile.files[missingFile];
 
-    await expect(validate(missingBarcodesFile)).rejects.toThrowErrorMatchingSnapshot();
+    await expect(validate10x(missingBarcodesFile)).rejects.toThrowErrorMatchingSnapshot();
   });
 
   it('Throws an error for missing features file', async () => {
@@ -170,7 +165,7 @@ describe('validate', () => {
     );
     delete missingFeaturesFile.files[missingFile];
 
-    await expect(validate(missingFeaturesFile)).rejects.toThrowErrorMatchingSnapshot();
+    await expect(validate10x(missingFeaturesFile)).rejects.toThrowErrorMatchingSnapshot();
   });
 
   it('Throws an error for missing matrix file', async () => {
@@ -188,7 +183,7 @@ describe('validate', () => {
     mockMatrixArrayFormat.files['matrix.mtx.gz'].fileObject = mockZippedFileObjects['matrix_array_format.mtx.gz'];
     mockMatrixArrayFormat.files['matrix.mtx.gz'].size = mockZippedFileObjects['matrix_array_format.mtx.gz'].size;
 
-    await expect(validate(mockMatrixArrayFormat)).rejects.toThrowErrorMatchingSnapshot();
+    await expect(validate10x(mockMatrixArrayFormat)).rejects.toThrowErrorMatchingSnapshot();
   });
 
   it('Throws an error invalid matrix format', async () => {
@@ -196,7 +191,7 @@ describe('validate', () => {
     mockMatrixNonExistentFormat.files['matrix.mtx.gz'].fileObject = mockZippedFileObjects['matrix_invalid_format.mtx.gz'];
     mockMatrixNonExistentFormat.files['matrix.mtx.gz'].size = mockZippedFileObjects['matrix_invalid_format.mtx.gz'].size;
 
-    await expect(validate(mockMatrixNonExistentFormat)).rejects.toThrowErrorMatchingSnapshot();
+    await expect(validate10x(mockMatrixNonExistentFormat)).rejects.toThrowErrorMatchingSnapshot();
   });
 
   it('Throws an error for invalid barcodes file', async () => {
@@ -204,7 +199,7 @@ describe('validate', () => {
     mockInvalidBarcodesFile.files['barcodes.tsv.gz'].fileObject = mockZippedFileObjects['invalid_barcodes.tsv.gz'];
     mockInvalidBarcodesFile.files['barcodes.tsv.gz'].size = mockZippedFileObjects['invalid_barcodes.tsv.gz'].size;
 
-    await expect(validate(mockInvalidBarcodesFile)).rejects.toThrowErrorMatchingSnapshot();
+    await expect(validate10x(mockInvalidBarcodesFile)).rejects.toThrowErrorMatchingSnapshot();
   });
 
   it('Throws an error for invalid features file', async () => {
@@ -212,7 +207,7 @@ describe('validate', () => {
     mockInvalidFeaturesFile.files['features.tsv.gz'].fileObject = mockZippedFileObjects['invalid_features.tsv.gz'];
     mockInvalidFeaturesFile.files['features.tsv.gz'].size = mockZippedFileObjects['invalid_features.tsv.gz'].size;
 
-    await expect(validate(mockInvalidFeaturesFile)).rejects.toThrowErrorMatchingSnapshot();
+    await expect(validate10x(mockInvalidFeaturesFile)).rejects.toThrowErrorMatchingSnapshot();
   });
 
   it('Throws an error for transposed matrix file', async () => {
@@ -220,6 +215,6 @@ describe('validate', () => {
     mockTransposedFile.files['matrix.mtx.gz'].fileObject = mockZippedFileObjects['transposed_matrix.mtx.gz'];
     mockTransposedFile.files['matrix.mtx.gz'].size = mockZippedFileObjects['transposed_matrix.mtx.gz'].size;
 
-    await expect(validate(mockTransposedFile)).rejects.toThrowErrorMatchingSnapshot();
+    await expect(validate10x(mockTransposedFile)).rejects.toThrowErrorMatchingSnapshot();
   });
 });

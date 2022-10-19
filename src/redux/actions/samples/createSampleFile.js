@@ -6,12 +6,7 @@ import { SAMPLES_FILE_UPDATE } from 'redux/actionTypes/samples';
 
 import UploadStatus from 'utils/upload/UploadStatus';
 import updateSampleFileUpload from 'redux/actions/samples/updateSampleFileUpload';
-
-const fileNameForApiV1 = {
-  matrix10x: 'matrix.mtx.gz',
-  barcodes10x: 'barcodes.tsv.gz',
-  features10x: 'features.tsv.gz',
-};
+import fileNameForApiV1 from 'utils/upload/fileNameForApiV1';
 
 const createSampleFile = (
   experimentId,

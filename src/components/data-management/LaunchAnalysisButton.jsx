@@ -83,7 +83,7 @@ const LaunchAnalysisButton = () => {
       const { fileNames } = sample;
       if (
         !fileUploadSpecifications[sample.type].requiredFiles.every(
-          (file) => fileNames.includes(file),
+          (file) => fileNames.includes(file.key),
         )
       ) { return false; }
 

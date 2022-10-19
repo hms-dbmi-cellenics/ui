@@ -5,12 +5,7 @@ import endUserMessages from 'utils/endUserMessages';
 import fetchAPI from 'utils/http/fetchAPI';
 import handleError from 'utils/http/handleError';
 import UploadStatus from 'utils/upload/UploadStatus';
-
-const fileNameForApiV1 = {
-  matrix10x: 'matrix.mtx.gz',
-  barcodes10x: 'barcodes.tsv.gz',
-  features10x: 'features.tsv.gz',
-};
+import fileNameForApiV1 from 'utils/upload/fileNameForApiV1';
 
 const updateSampleFileUpload = (
   experimentId, sampleId, type, uploadStatus, uploadProgress,

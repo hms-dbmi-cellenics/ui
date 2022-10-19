@@ -14,7 +14,7 @@ import { waitFor } from '@testing-library/dom';
 import processUpload from 'utils/upload/processUpload';
 
 import loadAndCompressIfNecessary from 'utils/upload/loadAndCompressIfNecessary';
-import validate from 'utils/upload/validate';
+import validate from 'utils/upload/validate10x';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
 
 enableFetchMocks();
@@ -126,7 +126,7 @@ jest.mock('axios', () => ({
 
 jest.mock('utils/pushNotificationMessage');
 
-jest.mock('utils/upload/validate');
+jest.mock('utils/upload/validate10x');
 
 let store = null;
 

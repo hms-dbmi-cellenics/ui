@@ -71,12 +71,12 @@ const SamplesTable = forwardRef((props, ref) => {
       fixed: true,
       render: (text, record, indx) => <SampleNameCell cellInfo={{ text, record, indx }} />,
     },
-    ...fileUploadSpecifications[selectedTech]?.displayedFiles?.map((fileName, indx) => {
-      const fileNameWithoutExtension = fileName.split('.')[0];
+    ...fileUploadSpecifications[selectedTech]?.requiredFiles?.map((fileName, indx) => {
+      const fileNameWithoutExtension = fileName.key.split('.')[0];
 
       return ({
         index: 2 + indx,
-        title: fileName,
+        title: fileName.displayedName,
         key: fileNameWithoutExtension,
         dataIndex: fileNameWithoutExtension,
         render: (tableCellData) => (
@@ -225,23 +225,25 @@ const SamplesTable = forwardRef((props, ref) => {
       // in this situation it's possible that the sampleUuid does not exist
       // this a temporary fix so that the whole UI doesn't crash preventing the
       // user from removing the dataset or uploading another one.
-      const sampleFiles = samples[sampleUuid]?.files || {};
 
-      const barcodesFile = sampleFiles['barcodes.tsv.gz'] ?? { upload: { status: UploadStatus.FILE_NOT_FOUND } };
-      const genesFile = sampleFiles['features.tsv.gz'] ?? { upload: { status: UploadStatus.FILE_NOT_FOUND } };
-      const matrixFile = sampleFiles['matrix.mtx.gz'] ?? { upload: { status: UploadStatus.FILE_NOT_FOUND } };
+      if (!samples[sampleUuid]) return {};
 
-      const barcodesData = { sampleUuid, file: barcodesFile };
-      const genesData = { sampleUuid, file: genesFile };
-      const matrixData = { sampleUuid, file: matrixFile };
+      const { files: sampleFiles, fileNames: sampleFileNames } = samples[sampleUuid];
+
+      const fileData = {};
+      sampleFileNames.forEach((key) => {
+        const displayedFileInTable = key.split('.')[0];
+
+        const currentFile = sampleFiles[key] ?? { upload: { status: UploadStatus.FILE_NOT_FOUND } };
+        const currentFileData = { sampleUuid, file: currentFile };
+        fileData[displayedFileInTable] = currentFileData;
+      });
 
       return {
         key: idx,
         name: samples[sampleUuid]?.name || 'UPLOAD ERROR: Please reupload sample',
         uuid: sampleUuid,
-        barcodes: barcodesData,
-        genes: genesData,
-        matrix: matrixData,
+        ...fileData,
         ...samples[sampleUuid]?.metadata,
       };
     });

@@ -7,7 +7,7 @@ import { v4 as uuidv4 } from 'uuid';
 import createSample from 'redux/actions/samples/createSample';
 import initialSampleState from 'redux/reducers/samples/initialState';
 import initialExperimentState, { experimentTemplate } from 'redux/reducers/experiments/initialState';
-import 'utils/upload/validate';
+import 'utils/upload/validate10x';
 
 import {
   SAMPLES_CREATE, SAMPLES_SAVING, SAMPLES_ERROR, SAMPLES_SAVED,
@@ -16,7 +16,8 @@ import {
 import endUserMessages from 'utils/endUserMessages';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
 
-jest.mock('utils/upload/validate');
+jest.mock('utils/upload/validate10x');
+jest.mock('utils/upload/validateRhapsody');
 pushNotificationMessage.mockImplementation(() => async () => { });
 
 enableFetchMocks();
@@ -39,6 +40,7 @@ describe('createSample action', () => {
     ...experimentTemplate,
     name: 'Experiment 1',
     id: experimentId,
+    metadataKeys: ['meta-1', 'meta-2'],
   };
 
   const initialState = {
@@ -131,5 +133,28 @@ describe('createSample action', () => {
         createSample(experimentId, sampleName, sample, 'unrecognizable type', ['matrix.tsv.gz', 'features.tsv.gz', 'barcodes.tsv.gz']),
       ),
     ).rejects.toThrow('Sample technology unrecognizable type is not recognized');
+  });
+
+  it('Works correctly with BDRhapsody file being uploaded', async () => {
+    fetchMock.mockResponse(JSON.stringify({}), { url: 'mockedUrl', status: 200 });
+
+    const newUuid = await store.dispatch(createSample(experimentId, sampleName, sample, 'BD Rhapsody', ['asdasda_Expression_Data.st']));
+
+    // Returns a new sampleUuid
+    expect(newUuid).toEqual(sampleUuid);
+
+    // Fetch call is made
+    const fetchMockFirstCall = fetchMock.mock.calls[0];
+
+    const { body: fetchBody, method: fetchMethod } = fetchMockFirstCall[1];
+    expect(fetchMockFirstCall[0]).toEqual(`http://localhost:3000/v2/experiments/${mockExperiment.id}/samples/${sampleUuid}`);
+
+    expect(fetchMethod).toEqual('POST');
+    expect(JSON.parse(fetchBody)).toMatchSnapshot();
+
+    // Sends correct actions
+    const actions = store.getActions();
+    expect(_.map(actions, 'type')).toEqual([SAMPLES_SAVING, SAMPLES_CREATE, SAMPLES_SAVED]);
+    expect(_.map(actions, 'payload')).toMatchSnapshot();
   });
 });
