@@ -74,7 +74,7 @@ const FileUploadModal = (props) => {
 
         return inFolder;
       })
-      .filter((file) => techOptions[selectedTech].acceptedFiles.has(file.name));
+      .filter((file) => techOptions[selectedTech].acceptedFiles.has(file.name.toLowerCase()));
 
     if (filesNotInFolder) {
       handleError('error', endUserMessages.ERROR_FILES_FOLDER);
