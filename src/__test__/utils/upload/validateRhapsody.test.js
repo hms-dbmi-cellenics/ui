@@ -18,10 +18,7 @@ const makeBlob = (data) => ({
 const mockFileLocations = {
   unziped: {
     'expression_data.st': 'src/__test__/data/mock_files/expressionData.st',
-  },
-  zipped: {
-    'expression_data.st.gz': 'src/__test__/data/mock_files/expressionData.st.gz',
-    'expression_data_invalid_column.st.gz': 'src/__test__/data/mock_files/expressionDataInvalidColumn.st.gz',
+    'expression_data_invalid_column.st': 'src/__test__/data/mock_files/expressionDataInvalidColumn.st',
   },
 };
 
@@ -49,28 +46,8 @@ const prepareMockFiles = (fileLocations) => {
 };
 
 const mockUnzippedFileObjects = prepareMockFiles(mockFileLocations.unziped);
-const mockZippedFileObjects = prepareMockFiles(mockFileLocations.zipped);
 
 jest.mock('utils/upload/readFileToBuffer');
-
-const mockZippedSample = {
-  ...sampleTemplate,
-  ...initialState,
-  name: 'mockZippedSample',
-  fileNames: [
-    'expression_data.st.gz',
-  ],
-  files: {
-    'expression_data.st.gz': {
-      ...sampleFileTemplate,
-      name: 'expression_data.st.gz',
-      fileObject: mockZippedFileObjects['expression_data.st.gz'],
-      size: mockZippedFileObjects['expression_data.st.gz'].size,
-      path: '/sample1/expression_data.st.gz',
-      compressed: true,
-    },
-  },
-};
 
 const mockUnzippedSample = {
   ...sampleTemplate,
@@ -92,18 +69,14 @@ const mockUnzippedSample = {
 };
 
 describe('validateRhapsody', () => {
-  it('Correctly pass valid zipped samples', async () => {
-    await expect(validateRhapsody(mockZippedSample)).resolves.toBeUndefined();
-  });
-
   it('Correctly pass valid unzipped samples', async () => {
     await expect(validateRhapsody(mockUnzippedSample)).resolves.toBeUndefined();
   });
 
   it('Throws an error invalid column format', async () => {
-    const mockInvalidColumn = _.cloneDeep(mockZippedSample);
-    mockInvalidColumn.files['expression_data.st.gz'].fileObject = mockZippedFileObjects['expression_data_invalid_column.st.gz'];
-    mockInvalidColumn.files['expression_data.st.gz'].size = mockZippedFileObjects['expression_data_invalid_column.st.gz'].size;
+    const mockInvalidColumn = _.cloneDeep(mockUnzippedSample);
+    mockInvalidColumn.files['expression_data.st'].fileObject = mockUnzippedFileObjects['expression_data_invalid_column.st'];
+    mockInvalidColumn.files['expression_data.st'].size = mockUnzippedFileObjects['expression_data_invalid_column.st'].size;
 
     await expect(validateRhapsody(mockInvalidColumn)).rejects.toThrowErrorMatchingSnapshot();
   });
