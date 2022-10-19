@@ -11,6 +11,47 @@ Array [
 ]
 `;
 
+exports[`createSample action Works correctly with BDRhapsody file being uploaded 1`] = `
+Object {
+  "name": "test sample",
+  "sampleTechnology": "rhapsody",
+}
+`;
+
+exports[`createSample action Works correctly with BDRhapsody file being uploaded 2`] = `
+Array [
+  Object {
+    "message": "Saving sample...",
+  },
+  Object {
+    "experimentId": "exp234",
+    "sample": Object {
+      "complete": false,
+      "createdDate": "2020-01-01T00:00:00.000Z",
+      "error": false,
+      "experimentId": "exp234",
+      "fileNames": Array [],
+      "files": Object {
+        "asdasda_Expression_Data.st": Object {
+          "upload": Object {
+            "status": "uploading",
+          },
+        },
+      },
+      "lastModified": "2020-01-01T00:00:00.000Z",
+      "metadata": Object {
+        "meta-1": "N.A.",
+        "meta-2": "N.A.",
+      },
+      "name": "test sample",
+      "type": "BD Rhapsody",
+      "uuid": "abc123",
+    },
+  },
+  undefined,
+]
+`;
+
 exports[`createSample action Works correctly with many files being uploaded 1`] = `
 Object {
   "name": "test sample",
@@ -49,7 +90,10 @@ Array [
         },
       },
       "lastModified": "2020-01-01T00:00:00.000Z",
-      "metadata": Object {},
+      "metadata": Object {
+        "meta-1": "N.A.",
+        "meta-2": "N.A.",
+      },
       "name": "test sample",
       "type": "10X Chromium",
       "uuid": "abc123",
@@ -87,7 +131,10 @@ Array [
         },
       },
       "lastModified": "2020-01-01T00:00:00.000Z",
-      "metadata": Object {},
+      "metadata": Object {
+        "meta-1": "N.A.",
+        "meta-2": "N.A.",
+      },
       "name": "test sample",
       "type": "10X Chromium",
       "uuid": "abc123",

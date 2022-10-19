@@ -2,6 +2,7 @@ import {
   DecodeUTF8, Decompress,
 } from 'fflate';
 import SampleValidationError from 'utils/errors/upload/SampleValidationError';
+import { decode, decompress } from 'utils/upload/decompressionUtils';
 
 const errorMessages = {
   invalidBarcodesFile: (expected, found) => `Invalid barcodes.tsv file: ${expected} barcodes expected, but ${found} found.`,
@@ -16,22 +17,6 @@ const errorMessages = {
 };
 
 const CHUNK_SIZE = 2 ** 18; // 256 kB
-
-const decode = async (arrBuffer) => {
-  let result = '';
-  const utfDecode = new DecodeUTF8((data) => { result += data; });
-  utfDecode.push(new Uint8Array(arrBuffer));
-
-  return result;
-};
-
-const decompress = async (arrBuffer) => {
-  let result = '';
-  const decompressor = new Decompress((chunk) => { result = chunk; });
-  decompressor.push(new Uint8Array(arrBuffer));
-
-  return result;
-};
 
 const extractSampleSizes = (matrixHead) => {
   // The size line is the first line in the file that does not begin with a comment (%)
@@ -156,7 +141,7 @@ const validateFileSizes = async (sampleFiles) => {
   if (errors.length) throw new SampleValidationError(errors.join('\n'));
 };
 
-const validate = async (sample) => {
+const validate10x = async (sample) => {
   const sampleFiles = getSampleFiles(sample);
 
   await validateSampleCompleteness(sampleFiles);
@@ -164,4 +149,4 @@ const validate = async (sample) => {
   await validateFileSizes(sampleFiles);
 };
 
-export default validate;
+export default validate10x;

@@ -15,10 +15,6 @@ import { createAndUploadSingleFile, fileObjectToFileRecord } from 'utils/upload/
 import UploadStatus, { messageForStatus } from 'utils/upload/UploadStatus';
 import downloadSingleFile from 'utils/data-management/downloadSingleFile';
 
-// we'll need to remove the hard-coded 10x tech type once we start
-// supporting other types and save the chosen tech type in redux
-const SELECTED_TECH = '10X Chromium';
-
 const UploadDetailsModal = (props) => {
   const dispatch = useDispatch();
   const {
@@ -33,13 +29,13 @@ const UploadDetailsModal = (props) => {
 
   const { activeExperimentId } = useSelector((state) => state.experiments.meta);
   const samples = useSelector((state) => state.samples);
-
+  const selectedTech = useSelector((state) => state.samples[sampleUuid]?.type);
   const sampleName = samples[uploadDetailsModalDataRef.current?.sampleUuid]?.name;
 
   useEffect(() => {
     if (replacementFileObject) {
-      fileObjectToFileRecord(replacementFileObject, SELECTED_TECH).then((newFile) => {
-        if (newFile.valid) { // && newFile.name === file.name ?
+      fileObjectToFileRecord(replacementFileObject, selectedTech).then((newFile) => {
+        if (newFile.valid) {
           uploadFile(newFile);
         } else {
           handleError('error', endUserMessages.ERROR_FILE_CATEGORY);
@@ -69,7 +65,7 @@ const UploadDetailsModal = (props) => {
       return;
     }
 
-    createAndUploadSingleFile(newFile, activeExperimentId, sampleUuid, dispatch);
+    createAndUploadSingleFile(newFile, activeExperimentId, sampleUuid, dispatch, selectedTech);
     onCancel();
   };
 

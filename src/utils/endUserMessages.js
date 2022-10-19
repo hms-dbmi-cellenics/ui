@@ -30,6 +30,7 @@ export default {
   ERROR_SAVING: 'We couldn\'t save your data.',
   ERROR_BEGIN_SAMPLE_FILE_UPLOAD: 'We couldn\'t begin the files upload',
   ERROR_UPDATE_SERVER_ON_UPLOAD_STATE: 'We couldn\'t update the upload state in our servers. Try refreshing the page.',
+  ERROR_SAMPLE_TECHNOLOGY: 'Selected technology does not match across all samples. Select the right technology and try again.',
   ERROR_SAVING_PLOT_CONFIG: 'We couldn\'t save your plot configuration.',
   ERROR_STARTING_PIPLELINE: 'We couldn\'t start working on your data.',
   ERROR_SIGN_IN: 'We couldn\'t sign you in. Please try again.',
