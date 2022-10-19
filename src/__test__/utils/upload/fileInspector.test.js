@@ -87,4 +87,39 @@ describe('fileInspector', () => {
     expect(await inspectFile(file, '10X Chromium'))
       .toEqual(Verdict.INVALID_FORMAT);
   });
+
+  it('Inspects a BD Rhapsody file properly', async () => {
+    const file = {
+      name: 'Sample_asdasd_someNAming_Expression_Data.st',
+      slice() { },
+    };
+    readFileToBuffer
+      .mockReturnValueOnce(
+        Promise.resolve(Buffer.from([0x1f, 0x8b])),
+      );
+    expect(await inspectFile(file, 'BD Rhapsody'))
+      .toEqual(Verdict.VALID_ZIPPED);
+  });
+
+  it('Wrong BD Rhapsody file return invalid verdict', async () => {
+    const file = {
+      name: 'BD_Rhapsody_fileInvalid_Expression_Data.exe',
+      slice() { },
+    };
+    readFileToBuffer
+      .mockReturnValueOnce(
+        Promise.resolve(),
+      );
+    expect(await inspectFile(file, 'BD Rhapsody'))
+      .toEqual(Verdict.INVALID_NAME);
+  });
+
+  it('Unrecognised technology returns invalid verdict', async () => {
+    const file = {
+      name: 'someFile.exe',
+      slice() { },
+    };
+    expect(await inspectFile(file, 'Invalid technology'))
+      .toEqual(Verdict.INVALID_FORMAT);
+  });
 });

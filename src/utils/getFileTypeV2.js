@@ -5,13 +5,14 @@ const fileTypes = {
   barcodes: 'barcodes10x',
   features: 'features10x',
   genes: 'features10x',
+  expression_data: 'rhapsody',
 };
 
 const getFileTypeV2 = (fileName) => {
   let fileType;
 
   _.forEach(Object.entries(fileTypes), ([name, type]) => {
-    if (fileName.includes(name)) {
+    if (fileName.toLowerCase().includes(name)) {
       fileType = type;
       return false;
     }

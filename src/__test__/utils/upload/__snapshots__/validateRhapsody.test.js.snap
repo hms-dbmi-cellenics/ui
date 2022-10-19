@@ -1,0 +1,3 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`validateRhapsody Throws an error invalid column format 1`] = `".st file does not contain the required columns"`;

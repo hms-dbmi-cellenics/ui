@@ -1,10 +1,10 @@
 import {
-  render, screen,
+  render, screen, fireEvent,
 } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { act } from 'react-dom/test-utils';
 
-import techOptions from 'utils/upload/fileUploadSpecifications';
+import techOptions, { technologies } from 'utils/upload/fileUploadSpecifications';
 
 import componentFactory from '__test__/test-utils/testComponentFactory';
 import FileUploadModal from 'components/data-management/FileUploadModal';
@@ -16,26 +16,24 @@ const defaultProps = {
 
 const FileUploadModalFactory = componentFactory(FileUploadModal, defaultProps);
 
-const chosenTech = Object.keys(techOptions)[0];
-
 const renderFileUploadModal = async (customProps = {}) => {
-  await act(() => {
+  act(() => {
     render(FileUploadModalFactory(customProps));
   });
 };
 
 describe('FileUploadModal', () => {
-  it('contains required components', async () => {
+  it('shows required components required to upload files', async () => {
     await renderFileUploadModal();
 
+    // The default chosen tech is 10x
+    const defaultTech = technologies['10x'];
+
     // It has a select button to select technology
-    expect(screen.getByText(chosenTech)).toBeInTheDocument();
+    expect(screen.getByText(defaultTech)).toBeInTheDocument();
 
     // It contains instructions on what files can be uploaded
     expect(screen.getByText(/For each sample, upload a folder containing/i)).toBeInTheDocument();
-    techOptions[chosenTech].acceptedFiles.forEach((filename) => {
-      expect(screen.getByText(filename)).toBeInTheDocument();
-    });
 
     // Tells the user that the folder's name will be used as the sample name
     expect(screen.getByText(/The folder's name will be used to name the sample in it/i)).toBeInTheDocument();
@@ -52,5 +50,42 @@ describe('FileUploadModal', () => {
     const uploadButton = uploadButtonText.closest('button');
 
     expect(uploadButton).toBeDisabled();
+  });
+
+  it('Shows what files can be uploaded for 10x samples', async () => {
+    await renderFileUploadModal();
+
+    // The default chosen tech is 10x
+    const chosenTech = technologies['10x'];
+
+    // It contains what files can be uploaded
+    techOptions[chosenTech].acceptedFiles.forEach((filename) => {
+      expect(screen.getByText(filename)).toBeInTheDocument();
+    });
+  });
+
+  it('Shows what files can be uploaded for Rhapsody samples', async () => {
+    await renderFileUploadModal();
+
+    // Switch file upload to Rhapsody
+    const chosenTech = technologies.rhapsody;
+
+    const techSelection = screen.getByRole('combobox', { name: 'selectSampleTechnology' });
+
+    act(() => {
+      fireEvent.change(techSelection, { target: { value: technologies.rhapsody } });
+    });
+
+    // The 2nd option is the selection
+    const option = screen.getAllByText(chosenTech)[1];
+
+    act(() => {
+      fireEvent.click(option);
+    });
+
+    // It contains what files can be uploaded
+    techOptions[chosenTech].acceptedFiles.forEach((filename) => {
+      expect(screen.getByText(filename)).toBeInTheDocument();
+    });
   });
 });
