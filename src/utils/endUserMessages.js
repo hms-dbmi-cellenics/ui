@@ -44,6 +44,7 @@ export default {
   SUCCESS_NEW_CLUSTER_CREATED: 'Created a new cluster. Check the `Cell sets and Metadata` window.',
   SUCCESS_CELL_SETS_RECLUSTERED: 'Cell sets have been reclustered. Your cell sets have changed.',
   NO_CLUSTERS: 'No custom cell sets available, to create more go to data-exploration.',
+  WORK_REQUEST_TIMED_OUT_RETRY: 'The work is taking longer than expected, please retry.',
   SAVING_SAMPLE: 'Saving sample...',
   SAVING_PROJECT: 'Saving project...',
 };

@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import {
   Skeleton,
-  Empty,
-  Space,
   Button,
+  Space,
 } from 'antd';
 
 import { useSelector, useDispatch } from 'react-redux';
@@ -26,11 +25,24 @@ import {
 import { plotNames, plotTypes } from 'utils/constants';
 import PlatformError from 'components/PlatformError';
 import MultiSelect from 'components/MultiSelect';
+import useConditionalEffect from 'utils/customHooks/useConditionalEffect';
+import endUserMessages from 'utils/endUserMessages';
+import pushNotificationMessage from 'utils/pushNotificationMessage';
 
 const plotUuid = 'normalized-matrix';
 const plotType = plotTypes.NORMALIZED_EXPRESSION_MATRIX;
 
 const plotStylingConfig = [];
+
+const displayDownloadNormalizedError = (configError) => {
+  if (configError.includes('R_WORKER_EMPTY_CELL_SET')) {
+    pushNotificationMessage('warning', endUserMessages.ERROR_NO_MATCHING_CELLS_NORMALIZED_EXPRESSION_MATRIX);
+  } else if (configError.includes('Your request took past the timeout')) {
+    pushNotificationMessage('error', endUserMessages.WORK_REQUEST_TIMED_OUT_RETRY);
+  } else {
+    pushNotificationMessage('error', endUserMessages.ERROR_FETCHING_NORMALIZED_EXPRESSION_MATRIX);
+  }
+};
 
 const NormalizedMatrixPage = (props) => {
   const { experimentId } = props;
@@ -67,6 +79,12 @@ const NormalizedMatrixPage = (props) => {
     dispatch(loadCellSets(experimentId));
   }, []);
 
+  useConditionalEffect(() => {
+    if (configError) {
+      displayDownloadNormalizedError(configError);
+    }
+  }, [configError], { lazy: true });
+
   const renderControlPanel = () => {
     if (!config) {
       return <Skeleton />;
@@ -79,14 +97,6 @@ const NormalizedMatrixPage = (props) => {
             description='Error loading cell sets'
             onClick={() => dispatch(loadCellSets(experimentId))}
           />
-        </center>
-      );
-    }
-
-    if (configError) {
-      return (
-        <center>
-          <PlatformError />
         </center>
       );
     }
