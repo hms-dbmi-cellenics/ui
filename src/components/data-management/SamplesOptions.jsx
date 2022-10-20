@@ -10,17 +10,27 @@ import { sampleTech } from 'utils/constants';
 
 const { Text, Paragraph } = Typography;
 
-const SampleOptions = () => {
+const SamplesOptions = () => {
   const dispatch = useDispatch();
 
   const activeExperimentId = useSelector((state) => state.experiments.meta.activeExperimentId);
-  const activeExperiment = useSelector((state) => state.experiments[activeExperimentId]);
 
-  const firstSampleId = activeExperiment?.sampleIds[0];
-  const {
-    type: selectedTech,
-    options: sampleOptions,
-  } = useSelector((state) => state.samples[firstSampleId] || {});
+  // Before sample-specific options are supported, we assume that the tech and options values
+  // of the first sample applies for all samples in the experiment
+  const getExperimentWideValue = (experimentId) => {
+    if (!experimentId) return {};
+
+    const activeExperiment = useSelector((state) => state.experiments[experimentId]);
+    const firstSampleId = activeExperiment?.sampleIds[0];
+    const {
+      type: selectedTech,
+      options: sampleOptions,
+    } = useSelector((state) => state.samples[firstSampleId] || {});
+
+    return { selectedTech, sampleOptions };
+  };
+
+  const { selectedTech, sampleOptions } = getExperimentWideValue(activeExperimentId);
 
   const updateAllSamples = (diff) => {
     dispatch(
@@ -55,16 +65,16 @@ const SampleOptions = () => {
     [sampleTech.RHAPSODY]: renderRhapsodyOption,
   };
 
-  if (!renderOptions[selectedTech]) return <></>;
-
   return (
-    <>
-      <Text strong>
-        Project Options
-      </Text>
-      {renderOptions[selectedTech]() }
-    </>
+    renderOptions[selectedTech] ? (
+      <>
+        <Text strong>
+          Project Options
+        </Text>
+        {renderOptions[selectedTech]() }
+      </>
+    ) : null
   );
 };
 
-export default SampleOptions;
+export default SamplesOptions;

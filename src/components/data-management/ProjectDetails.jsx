@@ -8,7 +8,7 @@ import {
 } from 'antd';
 
 import { updateExperiment } from 'redux/actions/experiments';
-import SampleOptions from 'components/data-management/SampleOptions';
+import SampleOptions from 'components/data-management/SamplesOptions';
 import EditableParagraph from 'components/EditableParagraph';
 import { layout } from 'utils/constants';
 

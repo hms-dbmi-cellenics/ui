@@ -11,7 +11,7 @@ import { sampleTech } from 'utils/constants';
 
 import experimentsInitialState, { experimentTemplate } from 'redux/reducers/experiments/initialState';
 import samplesInitialState, { sampleTemplate } from 'redux/reducers/samples/initialState';
-import SampleOptions from 'components/data-management/SampleOptions';
+import SamplesOptions from 'components/data-management/SamplesOptions';
 
 import updateSamplesOptions from 'redux/actions/experiments/updateSamplesOptions';
 
@@ -71,7 +71,7 @@ const platformState = {
 
 const mockStore = configureMockStore([thunk]);
 
-describe('SampleOptions', () => {
+describe('10X sample options', () => {
   it('Should not display anything for sample type 10x', () => {
     const show10xState = _.merge({}, platformState, {
       experiments: {
@@ -83,13 +83,15 @@ describe('SampleOptions', () => {
 
     render(
       <Provider store={mockStore(show10xState)}>
-        <SampleOptions />
+        <SamplesOptions />
       </Provider>,
     );
 
     expect(screen.queryByText('Project Options')).toBeNull();
   });
+});
 
+describe('Rhapsody sample options', () => {
   it('Should display the correct options if sample type is Rhapsody', async () => {
     const showRhapsodyState = _.merge({}, platformState, {
       experiments: {
@@ -101,7 +103,7 @@ describe('SampleOptions', () => {
 
     render(
       <Provider store={mockStore(showRhapsodyState)}>
-        <SampleOptions />
+        <SamplesOptions />
       </Provider>,
     );
 
@@ -120,6 +122,22 @@ describe('SampleOptions', () => {
     await waitFor(() => {
       expect(screen.getByText(/AbSeq data is filtered out by default/i)).toBeInTheDocument();
     });
+  });
+
+  it('Include abseq checkbox should work properly', () => {
+    const showRhapsodyState = _.merge({}, platformState, {
+      experiments: {
+        meta: {
+          activeExperimentId: experimentIdRhapsody,
+        },
+      },
+    });
+
+    render(
+      <Provider store={mockStore(showRhapsodyState)}>
+        <SamplesOptions />
+      </Provider>,
+    );
 
     // Checkbox should be clickable and dispatch action
     userEvent.click(screen.getByText('Include AbSeq data'));
