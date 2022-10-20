@@ -5,13 +5,9 @@ const generateGem2sParamsHash = (experiment, samples) => {
   if (!experiment || !samples) {
     return false;
   }
-  const projectSamples = Object.entries(samples)
-    .filter(([key]) => experiment?.sampleIds?.includes(key))
-    .sort();
-  const existingSampleIds = projectSamples.map(([, sample]) => sample.uuid);
 
   // Different sample order should not change the hash.
-  const orderInvariantSampleIds = [...existingSampleIds].sort();
+  const orderInvariantSampleIds = [...experiment.sampleIds].sort();
   const sampleTechnology = samples[orderInvariantSampleIds[0]]?.type;
 
   const hashParams = {
@@ -29,7 +25,7 @@ const generateGem2sParamsHash = (experiment, samples) => {
       // Make sure the key does not contain '-' as it will cause failure in GEM2S
       const sanitizedKey = key.replace(/-+/g, '_');
 
-      acc[sanitizedKey] = projectSamples.map(
+      acc[sanitizedKey] = orderInvariantSampleIds.map(
         ([, sample]) => sample.metadata[key] || METADATA_DEFAULT_VALUE,
       );
       return acc;
