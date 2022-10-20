@@ -11,6 +11,8 @@ const samplesOptionsUpdate = produce((draft, action) => {
     const oldOption = draft[sampleUuid].options;
     draft[sampleUuid].options = _.merge(oldOption, diff);
   });
+
+  draft.meta.saving = false;
 }, initialState);
 
 export default samplesOptionsUpdate;

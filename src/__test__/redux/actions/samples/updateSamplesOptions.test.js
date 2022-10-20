@@ -9,7 +9,7 @@ import initialExperimentState, { experimentTemplate } from 'redux/reducers/exper
 
 import {
   SAMPLES_OPTIONS_UPDATE,
-  SAMPLES_ERROR, SAMPLES_SAVED, SAMPLES_SAVING,
+  SAMPLES_ERROR, SAMPLES_SAVING,
 } from 'redux/actionTypes/samples';
 
 const mockStore = configureStore([thunk]);
@@ -69,7 +69,7 @@ describe('updateSamplesOptions action', () => {
     await store.dispatch(updateSamplesOptions(mockExperimentId, sampleDiff));
 
     const actions = store.getActions();
-    expect(_.map(actions, 'type')).toEqual([SAMPLES_SAVING, SAMPLES_SAVED, SAMPLES_OPTIONS_UPDATE]);
+    expect(_.map(actions, 'type')).toEqual([SAMPLES_SAVING, SAMPLES_OPTIONS_UPDATE]);
     expect(_.map(actions, 'payload')).toMatchSnapshot();
 
     expect(fetchMock).toHaveBeenCalledWith(

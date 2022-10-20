@@ -16,7 +16,6 @@ Array [
   Object {
     "message": "Saving sample...",
   },
-  undefined,
   Object {
     "diff": Object {
       "includeAbSeq": false,

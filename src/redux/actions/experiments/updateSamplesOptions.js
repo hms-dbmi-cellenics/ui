@@ -2,7 +2,7 @@ import endUserMessages from 'utils/endUserMessages';
 import _ from 'lodash';
 
 import {
-  SAMPLES_OPTIONS_UPDATE, SAMPLES_SAVING, SAMPLES_SAVED, SAMPLES_ERROR,
+  SAMPLES_OPTIONS_UPDATE, SAMPLES_SAVING, SAMPLES_ERROR,
 } from 'redux/actionTypes/samples';
 
 import handleError from 'utils/http/handleError';
@@ -36,10 +36,6 @@ const updateSamplesOptions = (experimentId, diff) => async (dispatch, getState) 
         body: JSON.stringify(newOptions),
       },
     );
-
-    dispatch({
-      type: SAMPLES_SAVED,
-    });
 
     dispatch({
       type: SAMPLES_OPTIONS_UPDATE,
