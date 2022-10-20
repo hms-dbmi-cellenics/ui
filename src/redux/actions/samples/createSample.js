@@ -43,7 +43,14 @@ const createSample = (
   if (!Object.values(sampleTech).includes(type)) throw new Error(`Sample technology ${type} is not recognized`);
 
   await validateSample[type](sample);
-  const defaultOptions = defaultSampleOptions[type] || {};
+
+  let options = defaultSampleOptions[type] || {};
+
+  // If there are other samples in the same experiment, use the options value from the other samples
+  if (experiment.sampleIds.length) {
+    const firstSampleId = experiment.sampleIds[0];
+    options = getState().samples[firstSampleId].options;
+  }
 
   const newSample = {
     ..._.cloneDeep(sampleTemplate),
@@ -53,7 +60,7 @@ const createSample = (
     uuid: newSampleUuid,
     createdDate,
     lastModified: createdDate,
-    options: defaultOptions,
+    options,
     metadata: experiment?.metadataKeys
       .reduce((acc, curr) => ({ ...acc, [curr]: METADATA_DEFAULT_VALUE }), {}) || {},
   };
@@ -75,7 +82,7 @@ const createSample = (
         body: JSON.stringify({
           name,
           sampleTechnology: type,
-          options: defaultOptions,
+          options,
         }),
       },
     );
