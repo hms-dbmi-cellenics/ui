@@ -1,5 +1,16 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`createSample action Creates sample with options value that is the same as existing samples 1`] = `
+Object {
+  "name": "test sample",
+  "options": Object {
+    "otherOption": false,
+    "someOption": true,
+  },
+  "sampleTechnology": "rhapsody",
+}
+`;
+
 exports[`createSample action Throws if the api fails 1`] = `
 Array [
   Object {

@@ -5,7 +5,7 @@ import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import { v4 as uuidv4 } from 'uuid';
 
 import createSample from 'redux/actions/samples/createSample';
-import initialSampleState from 'redux/reducers/samples/initialState';
+import initialSampleState, { sampleTemplate } from 'redux/reducers/samples/initialState';
 import initialExperimentState, { experimentTemplate } from 'redux/reducers/experiments/initialState';
 import 'utils/upload/validate10x';
 
@@ -157,5 +157,49 @@ describe('createSample action', () => {
     const actions = store.getActions();
     expect(_.map(actions, 'type')).toEqual([SAMPLES_SAVING, SAMPLES_CREATE, SAMPLES_SAVED]);
     expect(_.map(actions, 'payload')).toMatchSnapshot();
+  });
+
+  it('Creates sample with options value that is the same as existing samples', async () => {
+    fetchMock.mockResponse(JSON.stringify({}), { url: 'mockedUrl', status: 200 });
+
+    const existingSampleId = 'mock-sample';
+    const mockOptions = { someOption: true, otherOption: false };
+
+    const existingSampleState = {
+      ...initialState,
+      experiments: {
+        ...initialState.experiments,
+        [experimentId]: {
+          ...initialState.experiments[experimentId],
+          sampleIds: [existingSampleId],
+        },
+      },
+      samples: {
+        ...initialSampleState,
+        [existingSampleId]: {
+          ...sampleTemplate,
+          options: mockOptions,
+        },
+      },
+    };
+
+    store = mockStore(existingSampleState);
+
+    const newUuid = await store.dispatch(
+      createSample(experimentId, sampleName, sample, sampleTech.RHAPSODY, ['asdasda_Expression_Data.st']),
+    );
+
+    // Returns a new sampleUuid
+    expect(newUuid).toEqual(sampleUuid);
+
+    // Fetch call is made
+    const fetchMockFirstCall = fetchMock.mock.calls[0];
+
+    const { body: fetchBody } = fetchMockFirstCall[1];
+
+    const payload = JSON.parse(fetchBody);
+
+    expect(payload.options).toEqual(mockOptions);
+    expect(payload).toMatchSnapshot();
   });
 });
