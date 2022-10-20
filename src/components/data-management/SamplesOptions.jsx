@@ -69,7 +69,7 @@ const SamplesOptions = () => {
     renderOptions[selectedTech] ? (
       <>
         <Text strong>
-          Project Options
+          Options
         </Text>
         {renderOptions[selectedTech]() }
       </>

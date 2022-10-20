@@ -87,7 +87,7 @@ describe('10X sample options', () => {
       </Provider>,
     );
 
-    expect(screen.queryByText('Project Options')).toBeNull();
+    expect(screen.queryByText('Options')).toBeNull();
   });
 });
 
@@ -107,8 +107,8 @@ describe('Rhapsody sample options', () => {
       </Provider>,
     );
 
-    // Should show the project options heading
-    expect(screen.getByText('Project Options')).toBeInTheDocument();
+    // Should show the options heading
+    expect(screen.getByText('Options')).toBeInTheDocument();
 
     // There should be the option "include AbSeq data"
     expect(screen.getByText('Include AbSeq data')).toBeInTheDocument();

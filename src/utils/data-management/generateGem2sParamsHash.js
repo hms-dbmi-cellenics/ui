@@ -14,8 +14,8 @@ const generateGem2sParamsHash = (experiment, samples) => {
     organism: null,
     sampleTechnology,
     sampleIds: orderInvariantSampleIds,
-    sampleNames: orderInvariantSampleIds.map((sampleId) => samples[sampleId].name),
-    sampleOptions: orderInvariantSampleIds.map((sampleId) => samples[sampleId].options),
+    sampleNames: orderInvariantSampleIds.map((sampleId) => samples[sampleId]?.name),
+    sampleOptions: orderInvariantSampleIds.map((sampleId) => samples[sampleId]?.options),
   };
 
   if (experiment.metadataKeys.length) {
