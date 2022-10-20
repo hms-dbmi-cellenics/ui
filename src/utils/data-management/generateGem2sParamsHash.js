@@ -6,8 +6,8 @@ const generateGem2sParamsHash = (experiment, samples) => {
     return false;
   }
   const projectSamples = Object.entries(samples)
-    .sort()
-    .filter(([key]) => experiment?.sampleIds?.includes(key));
+    .filter(([key]) => experiment?.sampleIds?.includes(key))
+    .sort();
   const existingSampleIds = projectSamples.map(([, sample]) => sample.uuid);
 
   // Different sample order should not change the hash.
