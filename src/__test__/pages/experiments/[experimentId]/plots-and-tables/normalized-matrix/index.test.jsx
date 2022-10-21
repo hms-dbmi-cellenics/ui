@@ -192,7 +192,7 @@ describe('Normalized matrix index page', () => {
   // Based on https://stackoverflow.com/a/51045733
   const flushPromises = () => new Promise(setImmediate);
 
-  it('Displays a pushNotification if there is an empty cells result error', async () => {
+  it('Displays an alert if there is an empty cells result error', async () => {
     mockResponse.mockImplementation((req) => {
       if (req.method === 'PUT') return promiseResponse(JSON.stringify('OK'));
       return promiseResponse(JSON.stringify({
@@ -218,10 +218,12 @@ describe('Normalized matrix index page', () => {
 
     await flushPromises();
 
-    expect(pushNotificationMessage).toHaveBeenCalledWith('warning', endUserMessages.ERROR_NO_MATCHING_CELLS_NORMALIZED_EXPRESSION_MATRIX);
+    expect(
+      screen.getByText(endUserMessages.ERROR_NO_MATCHING_CELLS_NORMALIZED_EXPRESSION_MATRIX),
+    ).toBeDefined();
   });
 
-  it('Displays a pushNotification if there is a timeout error', async () => {
+  it('Displays an alert if there is a timeout error', async () => {
     mockResponse.mockImplementation((req) => {
       if (req.method === 'PUT') return promiseResponse(JSON.stringify('OK'));
       return promiseResponse(JSON.stringify({
@@ -245,10 +247,12 @@ describe('Normalized matrix index page', () => {
       userEvent.click(screen.getByRole('button', { name: 'Download' }));
     });
 
-    expect(pushNotificationMessage).toHaveBeenCalledWith('error', endUserMessages.WORK_REQUEST_TIMED_OUT_RETRY);
+    expect(
+      screen.getByText(endUserMessages.WORK_REQUEST_TIMED_OUT_RETRY),
+    ).toBeDefined();
   });
 
-  it('Displays a pushNotification if there is a different, undetermined error', async () => {
+  it('Displays an alert if there is a different, undetermined error', async () => {
     mockResponse.mockImplementation((req) => {
       if (req.method === 'PUT') return promiseResponse(JSON.stringify('OK'));
       return promiseResponse(JSON.stringify({
@@ -272,6 +276,8 @@ describe('Normalized matrix index page', () => {
       userEvent.click(screen.getByRole('button', { name: 'Download' }));
     });
 
-    expect(pushNotificationMessage).toHaveBeenCalledWith('error', endUserMessages.ERROR_FETCHING_NORMALIZED_EXPRESSION_MATRIX);
+    expect(
+      screen.getByText(endUserMessages.ERROR_FETCHING_NORMALIZED_EXPRESSION_MATRIX),
+    ).toBeDefined();
   });
 });
