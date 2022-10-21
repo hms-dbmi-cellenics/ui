@@ -20,35 +20,31 @@ const renderWindow = (tile, width, height, style) => {
   );
 };
 
-const MultiTileContainer = ({ tileMap, initialArrangement }) => {
-  console.log('tileMapDebug');
-  console.log(tileMap);
-  return (
-    <div style={{ height: '100%', width: '100%', margin: 0 }}>
-      <Mosaic
-        renderTile={(id, path) => (
-          <ReactResizeDetector
-            handleWidth
-            handleHeight
-            refreshMode='throttle'
-            refreshRate={500}
-          >
-            {({ width, height }) => (
-              <MosaicWindow
-                path={path}
-                title={id}
-                toolbarControls={tileMap[id]?.toolbarControls}
-              >
-                {renderWindow(tileMap[id]?.component, width, height, tileMap[id]?.style)}
-              </MosaicWindow>
-            )}
-          </ReactResizeDetector>
-        )}
-        initialValue={initialArrangement}
-      />
-    </div>
-  );
-};
+const MultiTileContainer = ({ tileMap, initialArrangement }) => (
+  <div style={{ height: '100%', width: '100%', margin: 0 }}>
+    <Mosaic
+      renderTile={(id, path) => (
+        <ReactResizeDetector
+          handleWidth
+          handleHeight
+          refreshMode='throttle'
+          refreshRate={500}
+        >
+          {({ width, height }) => (
+            <MosaicWindow
+              path={path}
+              title={id}
+              toolbarControls={tileMap[id]?.toolbarControls}
+            >
+              {renderWindow(tileMap[id]?.component, width, height, tileMap[id]?.style)}
+            </MosaicWindow>
+          )}
+        </ReactResizeDetector>
+      )}
+      initialValue={initialArrangement}
+    />
+  </div>
+);
 
 MultiTileContainer.propTypes = {
   tileMap: PropTypes.object.isRequired,

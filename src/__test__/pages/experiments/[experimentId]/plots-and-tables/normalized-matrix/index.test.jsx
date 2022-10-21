@@ -11,6 +11,7 @@ import userEvent from '@testing-library/user-event';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 
 import { plotNames } from 'utils/constants';
+import endUserMessages from 'utils/endUserMessages';
 
 import { makeStore } from 'redux/store';
 import { selectOption } from '__test__/test-utils/rtlHelpers';
@@ -19,10 +20,12 @@ import mockAPI, { generateDefaultMockAPIResponses, promiseResponse, statusRespon
 import fetchWork from 'utils/work/fetchWork';
 import writeToFileURL from 'utils/writeToFileURL';
 import downloadFromUrl from 'utils/downloadFromUrl';
+import pushNotificationMessage from 'utils/pushNotificationMessage';
 
 jest.mock('utils/work/fetchWork');
 jest.mock('utils/writeToFileURL');
 jest.mock('utils/downloadFromUrl');
+jest.mock('utils/pushNotificationMessage');
 
 jest.mock('react-resize-detector', () => (props) => {
   // eslint-disable-next-line react/prop-types
@@ -184,5 +187,91 @@ describe('Normalized matrix index page', () => {
     expect(screen.getByText('Cluster 3')).toBeDefined();
     expect(screen.getByText('Cluster 6')).toBeDefined();
     expect(screen.getByText('KO')).toBeDefined();
+  });
+
+  // Based on https://stackoverflow.com/a/51045733
+  const flushPromises = () => new Promise(setImmediate);
+
+  it('Displays a pushNotification if there is an empty cells result error', async () => {
+    mockResponse.mockImplementation((req) => {
+      if (req.method === 'PUT') return promiseResponse(JSON.stringify('OK'));
+      return promiseResponse(JSON.stringify({
+        config: {
+          louvain: ['louvain-3', 'louvain-6'],
+          sample: ['b62028a1-ffa0-4f10-823d-93c9ddb88898'],
+          metadata: [],
+          scratchpad: [],
+        },
+      }));
+    });
+
+    fetchWork
+      .mockReset()
+      .mockImplementation(() => Promise.reject(new Error('R_WORKER_EMPTY_CELL_SET: blablabla')));
+
+    await renderNormalizedMatrixIndex();
+
+    // Click download
+    await act(async () => {
+      userEvent.click(screen.getByRole('button', { name: 'Download' }));
+    });
+
+    await flushPromises();
+
+    expect(pushNotificationMessage).toHaveBeenCalledWith('warning', endUserMessages.ERROR_NO_MATCHING_CELLS_NORMALIZED_EXPRESSION_MATRIX);
+  });
+
+  it('Displays a pushNotification if there is a timeout error', async () => {
+    mockResponse.mockImplementation((req) => {
+      if (req.method === 'PUT') return promiseResponse(JSON.stringify('OK'));
+      return promiseResponse(JSON.stringify({
+        config: {
+          louvain: ['louvain-3', 'louvain-6'],
+          sample: ['b62028a1-ffa0-4f10-823d-93c9ddb88898'],
+          metadata: [],
+          scratchpad: [],
+        },
+      }));
+    });
+
+    fetchWork
+      .mockReset()
+      .mockImplementation(() => Promise.reject(new Error('Your request took past the timeout because blablabla')));
+
+    await renderNormalizedMatrixIndex();
+
+    // Click download
+    await act(async () => {
+      userEvent.click(screen.getByRole('button', { name: 'Download' }));
+    });
+
+    expect(pushNotificationMessage).toHaveBeenCalledWith('error', endUserMessages.WORK_REQUEST_TIMED_OUT_RETRY);
+  });
+
+  it('Displays a pushNotification if there is a different, undetermined error', async () => {
+    mockResponse.mockImplementation((req) => {
+      if (req.method === 'PUT') return promiseResponse(JSON.stringify('OK'));
+      return promiseResponse(JSON.stringify({
+        config: {
+          louvain: ['louvain-3', 'louvain-6'],
+          sample: ['b62028a1-ffa0-4f10-823d-93c9ddb88898'],
+          metadata: [],
+          scratchpad: [],
+        },
+      }));
+    });
+
+    fetchWork
+      .mockReset()
+      .mockImplementation(() => Promise.reject(new Error('oh no! blablablabla!!')));
+
+    await renderNormalizedMatrixIndex();
+
+    // Click download
+    await act(async () => {
+      userEvent.click(screen.getByRole('button', { name: 'Download' }));
+    });
+
+    expect(pushNotificationMessage).toHaveBeenCalledWith('error', endUserMessages.ERROR_FETCHING_NORMALIZED_EXPRESSION_MATRIX);
   });
 });

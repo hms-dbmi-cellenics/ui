@@ -37,9 +37,6 @@ const downloadNormalizedMatrix = (
       },
     });
   } catch (e) {
-    // If the error is that the returning expression matrix is empty just let
-    // the user know, don't show error state
-
     const errorMessage = handleError(e, null, false);
 
     dispatch({
