@@ -3,6 +3,7 @@ import {
   Skeleton,
   Button,
   Space,
+  Alert,
 } from 'antd';
 
 import { useSelector, useDispatch } from 'react-redux';
@@ -25,23 +26,35 @@ import {
 import { plotNames, plotTypes } from 'utils/constants';
 import PlatformError from 'components/PlatformError';
 import MultiSelect from 'components/MultiSelect';
-import useConditionalEffect from 'utils/customHooks/useConditionalEffect';
 import endUserMessages from 'utils/endUserMessages';
-import pushNotificationMessage from 'utils/pushNotificationMessage';
 
 const plotUuid = 'normalized-matrix';
 const plotType = plotTypes.NORMALIZED_EXPRESSION_MATRIX;
 
 const plotStylingConfig = [];
 
-const displayDownloadNormalizedError = (configError) => {
+const renderDownloadNormalizedError = (configError) => {
+  let alertType;
+  let description;
+
   if (configError.includes('R_WORKER_EMPTY_CELL_SET')) {
-    pushNotificationMessage('warning', endUserMessages.ERROR_NO_MATCHING_CELLS_NORMALIZED_EXPRESSION_MATRIX);
+    alertType = 'warning';
+    description = endUserMessages.ERROR_NO_MATCHING_CELLS_NORMALIZED_EXPRESSION_MATRIX;
   } else if (configError.includes('Your request took past the timeout')) {
-    pushNotificationMessage('error', endUserMessages.WORK_REQUEST_TIMED_OUT_RETRY);
+    alertType = 'error';
+    description = endUserMessages.WORK_REQUEST_TIMED_OUT_RETRY;
   } else {
-    pushNotificationMessage('error', endUserMessages.ERROR_FETCHING_NORMALIZED_EXPRESSION_MATRIX);
+    alertType = 'error';
+    description = endUserMessages.ERROR_FETCHING_NORMALIZED_EXPRESSION_MATRIX;
   }
+
+  return (
+    <Alert
+      description={description}
+      type={alertType}
+      showIcon
+    />
+  );
 };
 
 const NormalizedMatrixPage = (props) => {
@@ -78,12 +91,6 @@ const NormalizedMatrixPage = (props) => {
     if (!config) { dispatch(loadPlotConfig(experimentId, plotUuid, plotType)); }
     dispatch(loadCellSets(experimentId));
   }, []);
-
-  useConditionalEffect(() => {
-    if (configError) {
-      displayDownloadNormalizedError(configError);
-    }
-  }, [configError], { lazy: true });
 
   const renderControlPanel = () => {
     if (!config) {
@@ -164,6 +171,7 @@ const NormalizedMatrixPage = (props) => {
           >
             Download
           </Button>
+          {configError && renderDownloadNormalizedError(configError)}
         </Space>
       </>
     );
