@@ -3,10 +3,10 @@ import moment from 'moment';
 import getAuthJWT from 'utils/getAuthJWT';
 import fetchAPI from 'utils/http/fetchAPI';
 import unpackResult from 'utils/work/unpackResult';
+import parseResult from 'utils/work/parseResult';
 import WorkTimeoutError from 'utils/errors/http/WorkTimeoutError';
 import WorkResponseError from 'utils/errors/http/WorkResponseError';
 import httpStatusCodes from 'utils/http/httpStatusCodes';
-import parseResult from './parseResult';
 
 const throwResponseError = (response) => {
   throw new Error(`Error ${response.status}: ${response.text}`, { cause: response });
