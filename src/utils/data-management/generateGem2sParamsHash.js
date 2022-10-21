@@ -26,7 +26,7 @@ const generateGem2sParamsHash = (experiment, samples) => {
       const sanitizedKey = key.replace(/-+/g, '_');
 
       acc[sanitizedKey] = orderInvariantSampleIds.map(
-        ([, sample]) => sample.metadata[key] || METADATA_DEFAULT_VALUE,
+        (sampleId) => samples[sampleId].metadata[key] || METADATA_DEFAULT_VALUE,
       );
       return acc;
     }, {});

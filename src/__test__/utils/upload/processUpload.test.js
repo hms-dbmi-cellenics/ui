@@ -80,6 +80,7 @@ const initialState = {
     [mockExperimentId]: {
       ...experimentTemplate,
       id: mockExperimentId,
+      sampleIds: [mockSampleUuid],
     },
   },
   samples: {
@@ -376,7 +377,7 @@ describe('processUpload', () => {
       getValidFiles('v3'),
       sampleType,
       store.getState().samples,
-      'errorProjectUuid',
+      mockExperimentId,
       store.dispatch,
     );
 
