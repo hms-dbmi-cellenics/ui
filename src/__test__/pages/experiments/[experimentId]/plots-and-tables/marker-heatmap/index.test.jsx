@@ -278,6 +278,7 @@ describe('Marker heatmap plot', () => {
 
   it('Shows an error message if gene expression fails to load', async () => {
     seekFromS3
+      .mockReset()
       .mockImplementation((Etag) => {
         if (Etag === '5-marker-genes' || Etag === 'ListGenes') return mockWorkerResponses[Etag]();
 

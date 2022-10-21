@@ -391,9 +391,6 @@ const DotPlotPage = (props) => {
     </>
   );
 
-  console.log('configDebug');
-  console.log(config);
-
   if (!config) {
     return <Skeleton />;
   }
