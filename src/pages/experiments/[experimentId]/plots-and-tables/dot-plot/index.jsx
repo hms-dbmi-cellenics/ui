@@ -281,7 +281,7 @@ const DotPlotPage = (props) => {
   }, [treeScrollable]);
 
   // find genes with highest dispersion from list of genes sorted by name
-  const loadHighestDispersionGenes = () => {
+  const setHighestDispersionGenes = () => {
     const highestDispersions = Object.values(geneData)
       .map((gene) => gene.dispersions)
       .sort()
@@ -294,8 +294,6 @@ const DotPlotPage = (props) => {
       (dispersion) => getKeyByValue(dispersion),
     );
 
-    highestWereLoadedRef.current = true;
-
     updatePlotWithChanges({ selectedGenes: highestDispersionGenes });
   };
 
@@ -305,7 +303,8 @@ const DotPlotPage = (props) => {
       return;
     }
 
-    loadHighestDispersionGenes();
+    setHighestDispersionGenes();
+    highestWereLoadedRef.current = true;
   }, [geneData, config]);
 
   // When fetching new genes, reorder data to match selected genes
@@ -343,7 +342,7 @@ const DotPlotPage = (props) => {
 
   const onReset = () => {
     setReset(true);
-    loadHighestDispersionGenes();
+    setHighestDispersionGenes();
   };
 
   useEffect(() => {
