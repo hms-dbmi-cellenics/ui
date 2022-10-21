@@ -99,6 +99,7 @@ const DotPlotPage = (props) => {
   const [moreThanTwoGroups, setMoreThanTwoGroups] = useState(false);
   const [reorderAfterFetch, setReorderAfterFetch] = useState(false);
   const [reset, setReset] = useState(false);
+  const highestWereLoadedRef = useRef(false);
 
   const experimentName = useSelector((state) => state.experimentSettings.info.experimentName);
   const csvFileName = fileNames(experimentName, 'DOT_PLOT', [config?.selectedCellSet, config?.selectedPoints]);
@@ -208,6 +209,7 @@ const DotPlotPage = (props) => {
     setMoreThanTwoGroups(true);
 
     const currentComparedConfig = getComparedConfig(config);
+
     if (config && !_.isEqual(previousComparedConfig.current, currentComparedConfig)) {
       // previous compared config is null on first load, use [] for previous selected genes instead
       const previousSelected = previousComparedConfig.current?.selectedGenes ?? [];
@@ -292,16 +294,19 @@ const DotPlotPage = (props) => {
       (dispersion) => getKeyByValue(dispersion),
     );
 
+    highestWereLoadedRef.current = true;
+
     updatePlotWithChanges({ selectedGenes: highestDispersionGenes });
   };
 
   // load initial state, based on highest dispersion genes from all genes
   useEffect(() => {
-    if (_.isEmpty(geneData) || !config || plotDataLoading) {
+    if (_.isEmpty(geneData) || !config || highestWereLoadedRef.current || plotDataLoading) {
       return;
     }
+
     loadHighestDispersionGenes();
-  }, [geneData]);
+  }, [geneData, config]);
 
   // When fetching new genes, reorder data to match selected genes
   useEffect(() => {
@@ -385,6 +390,9 @@ const DotPlotPage = (props) => {
       </Panel>
     </>
   );
+
+  console.log('configDebug');
+  console.log(config);
 
   if (!config) {
     return <Skeleton />;

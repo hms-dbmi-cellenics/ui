@@ -18,10 +18,12 @@ const promiseResponse = (
   options = {},
 ) => Promise.resolve(new Response(response, options));
 
-const statusResponse = (code, body) => Promise.resolve({
-  status: code,
-  body: JSON.stringify(body),
-});
+const statusResponse = (code, body) => (
+  Promise.resolve({
+    status: code,
+    body: JSON.stringify(body),
+  })
+);
 
 const delayedResponse = (response, delay = 10000, options = {}) => new Promise((resolve) => {
   setTimeout(() => {

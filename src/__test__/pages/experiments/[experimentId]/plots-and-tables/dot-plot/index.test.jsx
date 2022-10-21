@@ -4,7 +4,7 @@ import _ from 'lodash';
 import { act } from 'react-dom/test-utils';
 import { render, screen } from '@testing-library/react';
 import { mount } from 'enzyme';
-import { waitFor, within } from '@testing-library/dom';
+import { fireEvent, waitFor, within } from '@testing-library/dom';
 import '@testing-library/jest-dom';
 import { Provider } from 'react-redux';
 
@@ -136,12 +136,13 @@ describe('Dot plot page', () => {
 
     seekFromS3
       .mockReset()
-      // 1st call to list genes
-      .mockImplementationOnce(() => null)
-      .mockImplementationOnce((Etag) => mockWorkerResponses[Etag]())
-      // 2nd call to paginated gene expression
-      .mockImplementationOnce(() => null)
-      .mockImplementationOnce((Etag) => mockWorkerResponses[Etag]());
+      .mockImplementation((Etag) => mockWorkerResponses[Etag]());
+    // 1st call to list genes
+    // .mockImplementationOnce(() => null)
+    // .mockImplementationOnce((Etag) => mockWorkerResponses[Etag]())
+    // // 2nd call to paginated gene expression
+    // // .mockImplementationOnce(() => null)
+    // .mockImplementationOnce((Etag) => mockWorkerResponses[Etag]());
 
     fetchMock.resetMocks();
     fetchMock.mockIf(/.*/, mockAPI(mockAPIResponse));
@@ -184,7 +185,7 @@ describe('Dot plot page', () => {
   it('Shows a skeleton if config is not loaded', async () => {
     const noConfigResponse = {
       ...mockAPIResponse,
-      [`/plots/${plotUuid}`]: () => delayedResponse({ body: 'Not found', status: 404 }),
+      [`/plots/${plotUuid}`]: () => new Promise(() => { }),
     };
 
     fetchMock.mockIf(/.*/, mockAPI(noConfigResponse));
@@ -253,7 +254,9 @@ describe('Dot plot page', () => {
     await renderDotPlot(storeState);
 
     // Call to list genes
-    expect(seekFromS3).toHaveBeenCalledTimes(1);
+    await waitFor(() => {
+      expect(seekFromS3).toHaveBeenCalledTimes(2);
+    });
 
     // Use marker genes
     await act(async () => {
@@ -261,7 +264,7 @@ describe('Dot plot page', () => {
     });
 
     // Call to load dot plot
-    expect(seekFromS3).toHaveBeenCalledTimes(2);
+    expect(seekFromS3).toHaveBeenCalledTimes(3);
 
     // Select data
     await act(async () => {
@@ -272,30 +275,32 @@ describe('Dot plot page', () => {
     const selectBaseCells = screen.getByRole('combobox', { name: 'selectCellSets' });
 
     await act(async () => {
-      userEvent.click(selectBaseCells);
+      await userEvent.click(selectBaseCells);
     });
 
     const baseOption = screen.getByTitle(/Samples/);
 
     await act(async () => {
-      userEvent.click(baseOption, undefined, { skipPointerEventsCheck: true });
+      fireEvent.click(baseOption);
+      // userEvent.click(baseOption, undefined, { skipPointerEventsCheck: true });
     });
 
     // Call to load dot plot
-    expect(seekFromS3).toHaveBeenCalledTimes(3);
+    expect(seekFromS3).toHaveBeenCalledTimes(4);
 
     // Select the filter sets
     const selectFilterCells = screen.getByRole('combobox', { name: 'selectPoints' });
 
     await act(async () => {
-      userEvent.click(selectFilterCells);
+      await userEvent.click(selectFilterCells);
     });
 
     const filterOption = screen.getByTitle(/Copied WT2/);
 
-    await act(async () => {
-      userEvent.click(filterOption, undefined, { skipPointerEventsCheck: true });
-    });
+    // await act(async () => {
+    fireEvent.click(filterOption);
+    // userEvent.click(filterOption, undefined, { skipPointerEventsCheck: true });
+    // });
 
     await waitFor(() => {
       expect(screen.getByText(/There is no data to show/i)).toBeInTheDocument();
@@ -305,7 +310,7 @@ describe('Dot plot page', () => {
     });
 
     // No new calls to load dot plot
-    expect(seekFromS3).toHaveBeenCalledTimes(3);
+    expect(seekFromS3).toHaveBeenCalledTimes(4);
 
     // Calls are correct
     expect(seekFromS3.mock.calls).toMatchSnapshot();
