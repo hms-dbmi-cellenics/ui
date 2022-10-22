@@ -18,7 +18,7 @@ import Dropzone from 'react-dropzone';
 
 import config from 'config';
 import { sampleTech } from 'utils/constants';
-import techOptions, { techNames } from 'utils/upload/fileUploadSpecifications';
+import techOptions, { techNamesToDisplay } from 'utils/upload/fileUploadSpecifications';
 import handleError from 'utils/http/handleError';
 import { fileObjectToFileRecord } from 'utils/upload/processUpload';
 import integrationTestConstants from 'utils/integrationTestConstants';
@@ -125,7 +125,7 @@ const FileUploadModal = (props) => {
             </List.Item>
           )}
         />
-        {extraHelpText[selectedTech]() ?? <></>}
+        {extraHelpText[selectedTech]()}
       </Space>
     </>
   );
@@ -161,12 +161,12 @@ const FileUploadModal = (props) => {
                 <span style={{ color: 'red', marginRight: '2em' }}>*</span>
               </Title>
               <Select
-                aria-label='sampleTechnologySelection'
+                aria-label='sampleTechnologySelect'
                 defaultValue={selectedTech}
                 onChange={(value) => setSelectedTech(value)}
               >
                 {Object.values(sampleTech).map((tech) => (
-                  <Option key={`key-${tech}`} value={tech}>{techNames[tech]}</Option>
+                  <Option key={`key-${tech}`} value={tech}>{techNamesToDisplay[tech]}</Option>
                 ))}
               </Select>
             </Space>

@@ -1,6 +1,6 @@
 import { sampleTech } from 'utils/constants';
 
-const techNames = {
+const techNamesToDisplay = {
   [sampleTech['10X']]: '10X Chromium',
   [sampleTech.RHAPSODY]: 'BD Rhapsody',
 };
@@ -43,5 +43,5 @@ const fileUploadSpecifications = {
   },
 };
 
-export { techNames };
+export { techNamesToDisplay };
 export default fileUploadSpecifications;

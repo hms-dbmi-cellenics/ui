@@ -4,7 +4,7 @@ import {
 import '@testing-library/jest-dom';
 import { act } from 'react-dom/test-utils';
 
-import techOptions, { techNames } from 'utils/upload/fileUploadSpecifications';
+import techOptions, { techNamesToDisplay } from 'utils/upload/fileUploadSpecifications';
 import { sampleTech } from 'utils/constants';
 
 import componentFactory from '__test__/test-utils/testComponentFactory';
@@ -28,7 +28,7 @@ describe('FileUploadModal', () => {
     await renderFileUploadModal();
 
     // The default chosen tech is 10x
-    const defaultTech = techNames[sampleTech['10X']];
+    const defaultTech = techNamesToDisplay[sampleTech['10X']];
 
     // It has a select button to select technology
     expect(screen.getByText(defaultTech)).toBeInTheDocument();
@@ -70,9 +70,9 @@ describe('FileUploadModal', () => {
 
     // Switch file upload to Rhapsody
     const chosenTech = sampleTech.RHAPSODY;
-    const displayedName = techNames[chosenTech];
+    const displayedName = techNamesToDisplay[chosenTech];
 
-    const techSelection = screen.getByRole('combobox', { name: 'sampleTechnologySelection' });
+    const techSelection = screen.getByRole('combobox', { name: 'sampleTechnologySelect' });
 
     act(() => {
       fireEvent.change(techSelection, { target: { value: sampleTech.RHAPSODY } });
