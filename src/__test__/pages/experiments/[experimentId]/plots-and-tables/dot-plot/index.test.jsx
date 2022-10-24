@@ -4,7 +4,7 @@ import _ from 'lodash';
 import { act } from 'react-dom/test-utils';
 import { render, screen } from '@testing-library/react';
 import { mount } from 'enzyme';
-import { waitFor, within } from '@testing-library/dom';
+import { fireEvent, waitFor, within } from '@testing-library/dom';
 import '@testing-library/jest-dom';
 import { Provider } from 'react-redux';
 
@@ -66,8 +66,8 @@ jest.mock('utils/work/seekWorkResponse', () => ({
 }));
 
 const mockWorkerResponses = {
-  'paginated-gene-expression': () => Promise.resolve(paginatedGeneExpressionData),
-  'dot-plot-data': () => Promise.resolve(dotPlotData),
+  'paginated-gene-expression': () => Promise.resolve(_.cloneDeep(paginatedGeneExpressionData)),
+  'dot-plot-data': () => Promise.resolve(_.cloneDeep(dotPlotData)),
 };
 
 const experimentId = fake.EXPERIMENT_ID;
@@ -75,7 +75,7 @@ const plotUuid = 'dotPlotMain';
 
 const customAPIResponses = {
   [`experiments/${experimentId}/cellSets`]: () => promiseResponse(
-    JSON.stringify(cellSetsDataWithScratchpad),
+    JSON.stringify(_.cloneDeep(cellSetsDataWithScratchpad)),
   ),
   [`/plots/${plotUuid}`]: (req) => {
     if (req.method === 'PUT') return promiseResponse(JSON.stringify('OK'));
@@ -136,12 +136,7 @@ describe('Dot plot page', () => {
 
     seekFromS3
       .mockReset()
-      // 1st call to list genes
-      .mockImplementationOnce(() => null)
-      .mockImplementationOnce((Etag) => mockWorkerResponses[Etag]())
-      // 2nd call to paginated gene expression
-      .mockImplementationOnce(() => null)
-      .mockImplementationOnce((Etag) => mockWorkerResponses[Etag]());
+      .mockImplementation((Etag) => mockWorkerResponses[Etag]());
 
     fetchMock.resetMocks();
     fetchMock.mockIf(/.*/, mockAPI(mockAPIResponse));
@@ -184,7 +179,7 @@ describe('Dot plot page', () => {
   it('Shows a skeleton if config is not loaded', async () => {
     const noConfigResponse = {
       ...mockAPIResponse,
-      [`/plots/${plotUuid}`]: () => delayedResponse({ body: 'Not found', status: 404 }),
+      [`/plots/${plotUuid}`]: () => new Promise(() => { }),
     };
 
     fetchMock.mockIf(/.*/, mockAPI(noConfigResponse));
@@ -229,15 +224,12 @@ describe('Dot plot page', () => {
   it('Shows an empty message if there is no data to show in the plot', async () => {
     const emptyResponse = {
       ...mockWorkerResponses,
-      'dot-plot-data': () => [],
+      'dot-plot-data': () => Promise.resolve([]),
     };
 
     seekFromS3
       .mockReset()
-      .mockImplementationOnce(() => null)
-      .mockImplementationOnce((Etag) => emptyResponse[Etag]())
-      .mockImplementationOnce(() => null)
-      .mockImplementationOnce((Etag) => emptyResponse[Etag]());
+      .mockImplementation((Etag) => emptyResponse[Etag]());
 
     await renderDotPlot(storeState);
 
@@ -253,7 +245,9 @@ describe('Dot plot page', () => {
     await renderDotPlot(storeState);
 
     // Call to list genes
-    expect(seekFromS3).toHaveBeenCalledTimes(1);
+    await waitFor(() => {
+      expect(seekFromS3).toHaveBeenCalledTimes(2);
+    });
 
     // Use marker genes
     await act(async () => {
@@ -261,7 +255,7 @@ describe('Dot plot page', () => {
     });
 
     // Call to load dot plot
-    expect(seekFromS3).toHaveBeenCalledTimes(2);
+    expect(seekFromS3).toHaveBeenCalledTimes(3);
 
     // Select data
     await act(async () => {
@@ -272,29 +266,29 @@ describe('Dot plot page', () => {
     const selectBaseCells = screen.getByRole('combobox', { name: 'selectCellSets' });
 
     await act(async () => {
-      userEvent.click(selectBaseCells);
+      await userEvent.click(selectBaseCells);
     });
 
     const baseOption = screen.getByTitle(/Samples/);
 
     await act(async () => {
-      userEvent.click(baseOption, undefined, { skipPointerEventsCheck: true });
+      fireEvent.click(baseOption);
     });
 
     // Call to load dot plot
-    expect(seekFromS3).toHaveBeenCalledTimes(3);
+    expect(seekFromS3).toHaveBeenCalledTimes(4);
 
     // Select the filter sets
     const selectFilterCells = screen.getByRole('combobox', { name: 'selectPoints' });
 
     await act(async () => {
-      userEvent.click(selectFilterCells);
+      await userEvent.click(selectFilterCells);
     });
 
     const filterOption = screen.getByTitle(/Copied WT2/);
 
     await act(async () => {
-      userEvent.click(filterOption, undefined, { skipPointerEventsCheck: true });
+      fireEvent.click(filterOption);
     });
 
     await waitFor(() => {
@@ -305,7 +299,7 @@ describe('Dot plot page', () => {
     });
 
     // No new calls to load dot plot
-    expect(seekFromS3).toHaveBeenCalledTimes(3);
+    expect(seekFromS3).toHaveBeenCalledTimes(4);
 
     // Calls are correct
     expect(seekFromS3.mock.calls).toMatchSnapshot();

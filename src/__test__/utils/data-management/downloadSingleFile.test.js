@@ -1,11 +1,11 @@
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 
 import downloadSingleFile from 'utils/data-management/downloadSingleFile';
-import downloadFromUrl from 'utils/data-management/downloadFromUrl';
+import downloadFromUrl from 'utils/downloadFromUrl';
 
 import fake from '__test__/test-utils/constants';
 
-jest.mock('utils/data-management/downloadFromUrl');
+jest.mock('utils/downloadFromUrl');
 
 enableFetchMocks();
 

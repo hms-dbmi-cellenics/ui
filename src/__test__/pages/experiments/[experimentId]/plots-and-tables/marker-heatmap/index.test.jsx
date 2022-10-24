@@ -68,10 +68,10 @@ jest.mock('utils/work/seekWorkResponse', () => ({
 }));
 
 const mockWorkerResponses = {
-  '5-marker-genes': _.cloneDeep(markerGenesData5),
-  '2-marker-genes': _.cloneDeep(markerGenesData2),
-  'FAKEGENE-expression': _.cloneDeep(expressionDataFAKEGENE),
-  ListGenes: geneList,
+  '5-marker-genes': () => Promise.resolve(_.cloneDeep(markerGenesData5)),
+  '2-marker-genes': () => Promise.resolve(_.cloneDeep(markerGenesData2)),
+  'FAKEGENE-expression': () => Promise.resolve(_.cloneDeep(expressionDataFAKEGENE)),
+  ListGenes: () => Promise.resolve(geneList),
 };
 
 const experimentId = fake.EXPERIMENT_ID;
@@ -140,9 +140,9 @@ describe('Marker heatmap plot', () => {
     seekFromS3
       .mockReset()
       // load gene list
-      .mockImplementationOnce((Etag) => mockWorkerResponses[Etag])
+      .mockImplementationOnce((Etag) => mockWorkerResponses[Etag]())
       // load gene expression
-      .mockImplementationOnce((Etag) => mockWorkerResponses[Etag]);
+      .mockImplementationOnce((Etag) => mockWorkerResponses[Etag]());
 
     enableFetchMocks();
     fetchMock.resetMocks();
@@ -178,10 +178,11 @@ describe('Marker heatmap plot', () => {
   it('Shows an error message if marker genes failed to load', async () => {
     seekFromS3
       .mockReset()
-      // load genes list
-      .mockImplementationOnce((Etag) => mockWorkerResponses[Etag])
-      // throw error on marker genes load
-      .mockImplementationOnce(() => { throw new Error('Not found'); });
+      .mockImplementation((ETag) => {
+        if (ETag === '5-marker-genes') throw new Error('Not found');
+
+        return mockWorkerResponses[ETag]();
+      });
 
     await renderHeatmapPage(storeState);
 
@@ -229,11 +230,11 @@ describe('Marker heatmap plot', () => {
     seekFromS3
       .mockReset()
       // load genes list
-      .mockImplementationOnce((Etag) => mockWorkerResponses[Etag])
+      .mockImplementationOnce((Etag) => mockWorkerResponses[Etag]())
       // 1st load
-      .mockImplementationOnce((ETag) => mockWorkerResponses[ETag])
+      .mockImplementationOnce((ETag) => mockWorkerResponses[ETag]())
       // 2nd load
-      .mockImplementationOnce((ETag) => mockWorkerResponses[ETag]);
+      .mockImplementationOnce((ETag) => mockWorkerResponses[ETag]());
 
     await renderHeatmapPage(storeState);
 
@@ -277,8 +278,9 @@ describe('Marker heatmap plot', () => {
 
   it('Shows an error message if gene expression fails to load', async () => {
     seekFromS3
+      .mockReset()
       .mockImplementation((Etag) => {
-        if (Etag === '5-marker-genes' || Etag === 'ListGenes') return mockWorkerResponses[Etag];
+        if (Etag === '5-marker-genes' || Etag === 'ListGenes') return mockWorkerResponses[Etag]();
 
         if (Etag === 'FAKEGENE-expression') { throw new Error('Not found'); }
       });
@@ -403,9 +405,9 @@ describe('Drag and drop enzyme tests', () => {
     seekFromS3
       .mockReset()
       // load gene list
-      .mockImplementationOnce((Etag) => mockWorkerResponses[Etag])
+      .mockImplementationOnce((Etag) => mockWorkerResponses[Etag]())
       // load gene expression
-      .mockImplementationOnce((Etag) => mockWorkerResponses[Etag]);
+      .mockImplementationOnce((Etag) => mockWorkerResponses[Etag]());
 
     enableFetchMocks();
     fetchMock.resetMocks();

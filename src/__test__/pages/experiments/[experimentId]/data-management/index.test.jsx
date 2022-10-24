@@ -23,7 +23,7 @@ import { setActiveExperiment } from 'redux/actions/experiments';
 import loadDeploymentInfo from 'redux/actions/networkResources/loadDeploymentInfo';
 import { loadUser } from 'redux/actions/user';
 
-jest.mock('utils/data-management/downloadFromUrl');
+jest.mock('utils/downloadFromUrl');
 jest.mock('react-resize-detector', () => (props) => props.children({ width: 100, height: 100 }));
 
 const mockNavigateTo = jest.fn();

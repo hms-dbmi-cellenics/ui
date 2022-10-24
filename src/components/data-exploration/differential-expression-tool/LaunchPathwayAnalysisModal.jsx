@@ -8,7 +8,7 @@ import PropTypes from 'prop-types';
 import launchPathwayService from 'utils/pathwayAnalysis/launchPathwayService';
 import getDiffExprGenes from 'utils/differentialExpression/getDiffExprGenes';
 import writeToFileURL from 'utils/writeToFileURL';
-import downloadFromUrl from 'utils/data-management/downloadFromUrl';
+import downloadFromUrl from 'utils/downloadFromUrl';
 
 import getBackgroundExpressedGenes from 'utils/differentialExpression/getBackgroundExpressedGenes';
 import enrichrSpecies from 'utils/pathwayAnalysis/enrichrConstants';

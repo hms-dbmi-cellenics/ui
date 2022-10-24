@@ -1,5 +1,5 @@
 import { makeStore } from 'redux/store';
-import { fetchWork } from 'utils/work/fetchWork';
+import fetchWork from 'utils/work/fetchWork';
 
 import getBackgroundExpressedGenes from 'utils/differentialExpression/getBackgroundExpressedGenes';
 

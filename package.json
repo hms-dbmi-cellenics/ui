@@ -19,7 +19,7 @@
     "build": "next build",
     "prod": "NODE_ENV=production node server.js",
     "pretest": "eslint ./src",
-    "test": "jest --silent --runInBand --bail",
+    "test": "jest --silent --runInBand",
     "coverage": "jest --coverage --silent --runInBand",
     "test:debug": "node --inspect node_modules/.bin/jest --runInBand",
     "lint": "eslint ./src",

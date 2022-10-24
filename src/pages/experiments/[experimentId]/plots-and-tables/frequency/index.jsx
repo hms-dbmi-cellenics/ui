@@ -38,7 +38,10 @@ const FrequencyPlotPage = ({ experimentId }) => {
   const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
   const cellSets = useSelector(getCellSets());
 
-  const cellSetClusters = useSelector(getCellSetsHierarchyByKeys(config?.proportionGrouping || ''));
+  const [cellSetClusters] = useSelector(
+    getCellSetsHierarchyByKeys([config?.proportionGrouping]),
+  );
+
   const experimentName = useSelector((state) => state.experimentSettings.info.experimentName);
 
   const [csvData, setCsvData] = useState([]);
@@ -98,7 +101,7 @@ const FrequencyPlotPage = ({ experimentId }) => {
   const formatCSVData = (plotData) => {
     const newCsvData = [];
 
-    cellSetClusters[0].children.forEach((cluster) => {
+    cellSetClusters.children.forEach((cluster) => {
       const entriesForCluster = plotData.filter((entry) => entry.yCellSetKey === cluster.key);
 
       const cellSetName = cellSets.properties[cluster.key].name;

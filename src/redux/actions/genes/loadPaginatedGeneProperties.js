@@ -6,7 +6,7 @@ import {
   GENES_PROPERTIES_LOADED_PAGINATED, GENES_PROPERTIES_ERROR,
 } from 'redux/actionTypes/genes';
 
-import { fetchWork } from 'utils/work/fetchWork';
+import fetchWork from 'utils/work/fetchWork';
 import getTimeoutForWorkerTask from 'utils/getTimeoutForWorkerTask';
 
 const loadPaginatedGeneProperties = (
