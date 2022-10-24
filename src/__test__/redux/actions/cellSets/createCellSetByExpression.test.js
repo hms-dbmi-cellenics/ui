@@ -5,14 +5,12 @@ import createCellSetByExpression from 'redux/actions/cellSets/createCellSetByExp
 
 import fake from '__test__/test-utils/constants';
 
-import { fetchWork } from 'utils/work/fetchWork';
+import fetchWork from 'utils/work/fetchWork';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
 import endUserMessages from 'utils/endUserMessages';
 import { waitFor } from '@testing-library/dom';
 
-jest.mock('utils/work/fetchWork', () => ({
-  fetchWork: jest.fn(() => ({})),
-}));
+jest.mock('utils/work/fetchWork', () => (jest.fn(() => ({}))));
 jest.mock('utils/pushNotificationMessage');
 
 const mockStore = configureMockStore([thunk]);

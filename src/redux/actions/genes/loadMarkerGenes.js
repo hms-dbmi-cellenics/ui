@@ -4,7 +4,7 @@ import {
   MARKER_GENES_ERROR, MARKER_GENES_LOADING, MARKER_GENES_LOADED,
 } from 'redux/actionTypes/genes';
 
-import { fetchWork } from 'utils/work/fetchWork';
+import fetchWork from 'utils/work/fetchWork';
 import getTimeoutForWorkerTask from 'utils/getTimeoutForWorkerTask';
 import handleError from 'utils/http/handleError';
 import endUserMessages from 'utils/endUserMessages';

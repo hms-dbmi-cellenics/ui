@@ -11,7 +11,7 @@ import configureMockStore from 'redux-mock-store';
 
 import DownloadDataButton from 'components/data-management/DownloadDataButton';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
-import downloadFromUrl from 'utils/data-management/downloadFromUrl';
+import downloadFromUrl from 'utils/downloadFromUrl';
 
 import initialSamplesState from 'redux/reducers/samples/initialState';
 import initialExperimentsState from 'redux/reducers/experiments/initialState';
@@ -24,7 +24,7 @@ import fetchAPI from 'utils/http/fetchAPI';
 jest.mock('redux/selectors');
 jest.mock('utils/pushNotificationMessage');
 jest.mock('utils/http/fetchAPI');
-jest.mock('utils/data-management/downloadFromUrl');
+jest.mock('utils/downloadFromUrl');
 
 const mockStore = configureMockStore([thunk]);
 const experimentName = 'Experiment 1';

@@ -14,6 +14,8 @@ export default {
   ERROR_FETCHING_EXPERIMENTS: 'We couldn\'t get the list of experiments.',
   ERROR_FETCHING_PLOT_CONFIG: 'We couldn\'t get the plot settings.',
   ERROR_FETCHING_PLOT_DATA: 'We couldn\'t get the plot data.',
+  ERROR_FETCHING_NORMALIZED_EXPRESSION_MATRIX: 'We couldn\'t download the normalized expression matrix.',
+  ERROR_NO_MATCHING_CELLS_NORMALIZED_EXPRESSION_MATRIX: 'No cells match requested filters.',
   ERROR_FETCHING_PROCESSING: 'We couldn\'t get the filter settings.',
   ERROR_FETCHING_DATA_PROCESSING_SETTINGS: 'We couldn\'t get the data processing settings.',
   ERROR_FETCHING_PROJECTS: 'We couldn\'t get the list of projects.',
@@ -42,6 +44,7 @@ export default {
   SUCCESS_NEW_CLUSTER_CREATED: 'Created a new cluster. Check the `Cell sets and Metadata` window.',
   SUCCESS_CELL_SETS_RECLUSTERED: 'Cell sets have been reclustered. Your cell sets have changed.',
   NO_CLUSTERS: 'No custom cell sets available, to create more go to data-exploration.',
+  WORK_REQUEST_TIMED_OUT_RETRY: 'The task is taking longer than expected, please retry.',
   SAVING_SAMPLE: 'Saving sample...',
   SAVING_PROJECT: 'Saving project...',
 };

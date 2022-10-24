@@ -1,5 +1,56 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Get cell sets hierarchy selector by key test returns correctly by more than one key 1`] = `Array []`;
+exports[`Get cell sets hierarchy selector by key test returns correctly by more than one key 1`] = `
+Array [
+  Object {
+    "children": Array [
+      Object {
+        "key": "sample-1",
+        "name": "Sample 1",
+      },
+      Object {
+        "key": "sample-2",
+        "name": "Sample 2",
+      },
+    ],
+    "key": "sample",
+    "name": "Samples",
+    "type": "metadataCategorical",
+  },
+  Object {
+    "children": Array [
+      Object {
+        "key": "scratchpad-a",
+        "name": "New Cluster",
+      },
+    ],
+    "key": "scratchpad",
+    "name": "Scratchpad",
+    "type": "cellSets",
+  },
+]
+`;
 
-exports[`Get cell sets hierarchy selector by key test returns correctly by one key 1`] = `Array []`;
+exports[`Get cell sets hierarchy selector by key test returns correctly by one key 1`] = `
+Array [
+  Object {
+    "children": Array [
+      Object {
+        "key": "cluster-a",
+        "name": "cluster a",
+      },
+      Object {
+        "key": "cluster-b",
+        "name": "cluster b",
+      },
+      Object {
+        "key": "cluster-c",
+        "name": "cluster c",
+      },
+    ],
+    "key": "louvain",
+    "name": "Louvain clusters",
+    "type": "cellSets",
+  },
+]
+`;

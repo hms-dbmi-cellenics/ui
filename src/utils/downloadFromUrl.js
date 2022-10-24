@@ -15,4 +15,5 @@ const downloadFromUrl = (url, filename = null) => {
     link.parentNode.removeChild(link);
   }, 0);
 };
+
 export default downloadFromUrl;

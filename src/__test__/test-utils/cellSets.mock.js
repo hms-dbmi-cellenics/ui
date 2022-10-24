@@ -1,25 +1,26 @@
+const mockCellSetsHierarchy = [
+  {
+    key: 'louvain',
+    children: [{ key: 'cluster-a' }, { key: 'cluster-b' }, { key: 'cluster-c' }],
+    cellIds: new Set(),
+  },
+  {
+    key: 'sample',
+    children: [{ key: 'sample-1' }, { key: 'sample-2' }],
+    cellIds: new Set(),
+  },
+  {
+    key: 'scratchpad',
+    children: [{ key: 'scratchpad-a' }],
+    cellIds: new Set(),
+  },
+];
+
 const mockCellSets = {
   initialLoadPending: false,
   error: false,
   loading: false,
-  accessible: true,
-  hierarchy: [
-    {
-      key: 'louvain',
-      children: [{ key: 'cluster-a' }, { key: 'cluster-b' }, { key: 'cluster-c' }],
-      cellIds: new Set(),
-    },
-    {
-      key: 'sample',
-      children: [{ key: 'sample-1' }, { key: 'sample-2' }],
-      cellIds: new Set(),
-    },
-    {
-      key: 'scratchpad',
-      children: [{ key: 'scratchpad-a' }],
-      cellIds: new Set(),
-    },
-  ],
+  hierarchy: mockCellSetsHierarchy,
   properties: {
     'cluster-a': {
       name: 'cluster a',
