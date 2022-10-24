@@ -3,6 +3,7 @@ import moment from 'moment';
 import getAuthJWT from 'utils/getAuthJWT';
 import fetchAPI from 'utils/http/fetchAPI';
 import unpackResult from 'utils/work/unpackResult';
+import parseResult from 'utils/work/parseResult';
 import WorkTimeoutError from 'utils/errors/http/WorkTimeoutError';
 import WorkResponseError from 'utils/errors/http/WorkResponseError';
 import httpStatusCodes from 'utils/http/httpStatusCodes';
@@ -25,10 +26,12 @@ const getRemainingWorkerStartTime = (creationTimestamp) => {
   return remainingTime + 60;
 };
 
-const seekFromS3 = async (ETag, experimentId) => {
+const seekFromS3 = async (ETag, experimentId, taskName) => {
   let response;
   try {
-    response = await fetchAPI(`/v2/workResults/${experimentId}/${ETag}`);
+    const url = `/v2/workResults/${experimentId}/${ETag}`;
+
+    response = await fetchAPI(url);
   } catch (e) {
     if (e.statusCode === httpStatusCodes.NOT_FOUND) {
       return null;
@@ -43,7 +46,10 @@ const seekFromS3 = async (ETag, experimentId) => {
     throwResponseError(storageResp);
   }
 
-  return unpackResult(storageResp);
+  const unpackedResult = await unpackResult(storageResp);
+  const parsedResult = parseResult(unpackedResult, taskName);
+
+  return parsedResult;
 };
 
 const dispatchWorkRequest = async (

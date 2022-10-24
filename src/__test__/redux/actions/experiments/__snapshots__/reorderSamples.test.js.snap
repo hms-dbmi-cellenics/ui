@@ -4,7 +4,7 @@ exports[`updateExperiment Handles error and then rethrows (so the UI doesnt reor
 Array [
   undefined,
   Object {
-    "error": undefined,
+    "error": "Error: Some api error",
   },
 ]
 `;

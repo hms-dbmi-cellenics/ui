@@ -6,6 +6,7 @@ import fake from '__test__/test-utils/constants';
 import mockAPI, { generateDefaultMockAPIResponses } from '__test__/test-utils/mockAPI';
 
 import unpackResult from 'utils/work/unpackResult';
+import parseResult from 'utils/work/parseResult';
 
 /**
  * jest.mock calls are automatically hoisted to the top of the javascript
@@ -37,12 +38,15 @@ jest.mock('utils/socketConnection', () => {
 });
 
 jest.mock('utils/work/unpackResult');
+jest.mock('utils/work/parseResult');
+
+const taskName = 'GetEmbedding';
 
 describe('dispatchWorkRequest unit tests', () => {
   const experimentId = fake.EXPERIMENT_ID;
   const timeout = 30;
   const body = {
-    name: 'ImportantTask',
+    name: taskName,
     type: 'fake task',
   };
 
@@ -95,7 +99,7 @@ describe('dispatchWorkRequest unit tests', () => {
       socketId: '5678',
       experimentId: fake.EXPERIMENT_ID,
       timeout: '4022-01-01T00:00:30.000Z',
-      body: { name: 'ImportantTask', type: 'fake task' },
+      body: { name: taskName, type: 'fake task' },
     });
 
     expect(socketConnectionMocks.mockOn).toHaveBeenCalledTimes(2);
@@ -112,7 +116,7 @@ describe('dispatchWorkRequest unit tests', () => {
       socketId: '5678',
       experimentId: fake.EXPERIMENT_ID,
       timeout: '4022-01-01T00:00:30.000Z',
-      body: { name: 'ImportantTask', type: 'fake task' },
+      body: { name: taskName, type: 'fake task' },
     });
 
     expect(socketConnectionMocks.mockOn).toHaveBeenCalledTimes(2);
@@ -158,7 +162,7 @@ describe('dispatchWorkRequest unit tests', () => {
       socketId: '5678',
       experimentId: fake.EXPERIMENT_ID,
       timeout: '4022-01-01T00:00:30.000Z',
-      body: { name: 'ImportantTask', type: 'fake task' },
+      body: { name: taskName, type: 'fake task' },
     });
   });
 });
@@ -203,36 +207,41 @@ describe('seekFromS3 unit tests', () => {
   });
 
   it('Should return results correctly', async () => {
-    await seekFromS3(validResultPath, experimentId);
+    unpackResult.mockReturnValueOnce('mockUnpackedResult');
+    parseResult.mockReturnValueOnce('mockParsedResult');
+
+    const finalResult = await seekFromS3(validResultPath, experimentId, taskName);
+
+    expect(finalResult).toEqual('mockParsedResult');
 
     expect(unpackResult).toHaveBeenCalledTimes(1);
-
     const response = unpackResult.mock.calls[0][0];
     const mockResponsePayload = await response.text();
-
     expect(mockResponsePayload).toEqual(result);
+
+    expect(parseResult).toHaveBeenCalledWith('mockUnpackedResult', taskName);
   });
 
   it('Should return null if the work results is not found', async () => {
-    const response = await seekFromS3(nonExistentResultPath, experimentId);
+    const response = await seekFromS3(nonExistentResultPath, experimentId, taskName);
     expect(response).toEqual(null);
   });
 
   it('Should throw an error if the API returned an error (except 404)', async () => {
     expect(async () => {
-      await seekFromS3(APIErrorPath, experimentId);
+      await seekFromS3(APIErrorPath, experimentId, taskName);
     }).rejects.toThrow();
   });
 
   it('should throw an error if fetching to S3 returns an error', async () => {
     expect(async () => {
-      await seekFromS3(S3ErrorPath, experimentId);
+      await seekFromS3(S3ErrorPath, experimentId, taskName);
     }).rejects.toThrow();
   });
 
   it('Works for apiv2 ', async () => {
     // fetchMock.mockResponseOnce(JSON.stringify({ signedUrl: 'http://www.apiUrl:portNum/path/blabla' }));
-    await seekFromS3(validResultPath, experimentId);
+    await seekFromS3(validResultPath, experimentId, taskName);
     expect(fetchMock.mock.calls[0]).toEqual(['http://localhost:3000/v2/workResults/testae48e318dab9a1bd0bexperiment/validResultPath', { headers: {} }]);
   });
 });

@@ -15,16 +15,15 @@ import { DIFF_EXPR_LOADING, DIFF_EXPR_LOADED, DIFF_EXPR_ORDERING_SET } from 'red
 import { mockCellSets } from '__test__/test-utils/cellSets.mock';
 
 import Loader from 'components/Loader';
-import { fetchWork } from 'utils/work/fetchWork';
+import fetchWork from 'utils/work/fetchWork';
 
 jest.mock('utils/getTimeoutForWorkerTask', () => ({
   __esModule: true, // this property makes it work
   default: () => 60,
 }));
 
-jest.mock('utils/work/fetchWork', () => ({
-  __esModule: true, // this property makes it work
-  fetchWork: jest.fn(() => new Promise((resolve) => resolve({
+jest.mock('utils/work/fetchWork',
+  () => (jest.fn(() => new Promise((resolve) => resolve({
     rows: [
       {
         p_val: 1.496, p_val_adj: 1.647, logFC: -1.427, gene_names: 'A', auc: '0.1', pct_1: '100', pct_2: '100',
@@ -43,8 +42,7 @@ jest.mock('utils/work/fetchWork', () => ({
       },
     ],
     total: 500,
-  }))),
-}));
+  })))));
 
 const mockStore = configureMockStore([thunk]);
 
@@ -114,6 +112,7 @@ const resultState = {
 // State with less gene expression fields
 const partialState = _.cloneDeep(resultState);
 const partialGeneExpData = mockGeneExpressionData.map((data) => {
+  // eslint-disable-next-line camelcase
   const { pct_1, pct_2, ...remaining } = data;
   return remaining;
 });
@@ -239,8 +238,12 @@ describe('DiffExprResults', () => {
       table.getElement().props.onChange(newPagination, {}, newSorter);
     });
 
-    // // Wait for side-effect to propagate (properties loading and loaded).
-    await waitForActions(withResultStore, [DIFF_EXPR_ORDERING_SET, DIFF_EXPR_LOADING, DIFF_EXPR_LOADED]);
+    // Wait for side-effect to propagate (properties loading and loaded).
+    await waitForActions(
+      withResultStore,
+      [DIFF_EXPR_ORDERING_SET, DIFF_EXPR_LOADING, DIFF_EXPR_LOADED],
+    );
+
     const entries = component.find('.ant-table-tbody').children();
 
     expect(fetchWork).toHaveBeenCalledWith(

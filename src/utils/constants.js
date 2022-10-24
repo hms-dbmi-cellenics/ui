@@ -13,6 +13,7 @@ const plotTypes = {
   VIOLIN_PLOT: 'ViolinPlot',
   DOT_PLOT: 'DotPlot',
   TRAJECTORY_ANALYSIS: 'TrajectoryAnalysis',
+  NORMALIZED_EXPRESSION_MATRIX: 'NormalizedExpressionMatrix',
 };
 
 const plotNames = {
@@ -25,6 +26,7 @@ const plotNames = {
   VIOLIN_PLOT: 'Violin Plot',
   DOT_PLOT: 'Dot Plot',
   TRAJECTORY_ANALYSIS: 'Trajectory Analysis',
+  NORMALIZED_EXPRESSION_MATRIX: 'Normalized Expression Matrix',
 };
 
 const modules = {
