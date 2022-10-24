@@ -273,7 +273,6 @@ describe('Dot plot page', () => {
 
     await act(async () => {
       fireEvent.click(baseOption);
-      // userEvent.click(baseOption, undefined, { skipPointerEventsCheck: true });
     });
 
     // Call to load dot plot
@@ -288,10 +287,9 @@ describe('Dot plot page', () => {
 
     const filterOption = screen.getByTitle(/Copied WT2/);
 
-    // await act(async () => {
-    fireEvent.click(filterOption);
-    // userEvent.click(filterOption, undefined, { skipPointerEventsCheck: true });
-    // });
+    await act(async () => {
+      fireEvent.click(filterOption);
+    });
 
     await waitFor(() => {
       expect(screen.getByText(/There is no data to show/i)).toBeInTheDocument();
