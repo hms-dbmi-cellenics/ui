@@ -144,7 +144,8 @@ const ViolinIndex = ({ experimentId }) => {
   // load data for genes in multi view
   useEffect(() => {
     if (!multiViewConfig
-      || !multiViewPlotUuids.every((uuid) => plotConfigs[uuid])) return;
+      || !multiViewPlotUuids.every((uuid) => plotConfigs[uuid])
+      || geneExpression.loading.length > 0) return;
 
     const genesToLoad = shownGenes.filter((gene) => (
       !geneExpression.matrix.geneIsLoaded(gene) && gene !== 'notSelected'
@@ -153,7 +154,7 @@ const ViolinIndex = ({ experimentId }) => {
     if (genesToLoad.length > 0) {
       dispatch(loadGeneExpression(experimentId, genesToLoad, plotUuid));
     }
-  }, [plotConfigs]);
+  }, [plotConfigs, geneExpression]);
 
   useEffect(() => {
     if (!multiViewConfig || !multiViewPlotUuids.every((uuid) => plotConfigs[uuid])) return;
