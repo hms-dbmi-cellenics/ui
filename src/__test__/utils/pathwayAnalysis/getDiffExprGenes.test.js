@@ -2,7 +2,7 @@ import {
   DIFF_EXPR_LOADING,
 } from 'redux/actionTypes/differentialExpression';
 import { makeStore } from 'redux/store';
-import { fetchWork } from 'utils/work/fetchWork';
+import fetchWork from 'utils/work/fetchWork';
 
 import setGeneOrdering from 'redux/actions/differentialExpression/setGeneOrdering';
 import getDiffExprGenes from 'utils/differentialExpression/getDiffExprGenes';

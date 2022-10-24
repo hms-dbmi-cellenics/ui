@@ -1,6 +1,6 @@
 /* eslint-disable no-param-reassign */
 import { generateDiffExprBody } from 'redux/actions/differentialExpression/loadDifferentialExpression';
-import { fetchWork } from 'utils/work/fetchWork';
+import fetchWork from 'utils/work/fetchWork';
 import getTimeoutForWorkerTask from 'utils/getTimeoutForWorkerTask';
 
 const getBackgroundExpressedGenes = () => async (dispatch, getState) => {

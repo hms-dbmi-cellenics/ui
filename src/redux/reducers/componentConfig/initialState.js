@@ -832,6 +832,13 @@ const dataIntegrationElbowPlotInitialConfig = {
   ],
 };
 
+const normalizedMatrixPlotConfig = {
+  sample: [],
+  louvain: [],
+  metadata: [],
+  scratchpad: [],
+};
+
 const initialPlotConfigStates = {
   cellSizeDistributionHistogram,
   cellSizeDistributionKneePlot,
@@ -847,6 +854,7 @@ const initialPlotConfigStates = {
   volcano: volcanoInitialConfig,
   markerHeatmap: markerHeatmapInitialConfig,
   violin: violinConfig,
+  [plotTypes.NORMALIZED_EXPRESSION_MATRIX]: normalizedMatrixPlotConfig,
   [plotTypes.DOT_PLOT]: dotPlotConfig,
   [plotTypes.TRAJECTORY_ANALYSIS]: trajectoryAnalysisInitialConfig,
   frequency: frequencyInitialConfig,

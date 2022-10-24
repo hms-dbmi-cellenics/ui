@@ -1,5 +1,6 @@
 /* eslint-disable global-require */
-import { fetchWork, generateETag } from 'utils/work/fetchWork';
+import fetchWork from 'utils/work/fetchWork';
+import generateETag from 'utils/work/generateETag';
 import { Environment } from 'utils/deploymentInfo';
 import { getFourGenesMatrix } from '../ExpressionMatrix/testMatrixes';
 

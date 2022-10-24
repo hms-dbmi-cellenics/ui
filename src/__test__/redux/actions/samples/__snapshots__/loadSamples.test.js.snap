@@ -4,7 +4,7 @@ exports[`loadSample action Dispatches error correctly 1`] = `
 Array [
   undefined,
   Object {
-    "error": undefined,
+    "error": "Error: An api error",
   },
 ]
 `;

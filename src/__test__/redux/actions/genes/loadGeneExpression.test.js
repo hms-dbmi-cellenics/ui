@@ -7,7 +7,7 @@ import loadGeneExpression from 'redux/actions/genes/loadGeneExpression';
 import getInitialState from 'redux/reducers/genes/getInitialState';
 import { GENES_EXPRESSION_LOADING, GENES_EXPRESSION_LOADED, GENES_EXPRESSION_ERROR } from 'redux/actionTypes/genes';
 
-import { fetchWork } from 'utils/work/fetchWork';
+import fetchWork from 'utils/work/fetchWork';
 import pipelineStatusValues from 'utils/pipelineStatusValues';
 
 import '__test__/test-utils/setupTests';

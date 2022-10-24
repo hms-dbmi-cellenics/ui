@@ -1,4 +1,4 @@
-import { fetchWork } from 'utils/work/fetchWork';
+import fetchWork from 'utils/work/fetchWork';
 import getTimeoutForWorkerTask from 'utils/getTimeoutForWorkerTask';
 
 import {
