@@ -3,7 +3,7 @@ import Auth from '@aws-amplify/auth';
 import nextConfig from 'next/config';
 import { Environment, AccountId } from './deploymentInfo';
 
-const accountId = nextConfig()?.publicRuntimeConfig?.accountId;
+const accountId = nextConfig()?.publicRuntimeConfig?.accountId ?? AccountId.HMS;
 
 const matomoUrlByAccountId = {
   [AccountId.HMS]: 'https://cellenics.matomo.cloud',
@@ -54,7 +54,6 @@ const trackingInfoByAccountId = {
 };
 
 const trackingInfo = trackingInfoByAccountId[accountId];
-
 let env = Environment.DEVELOPMENT;
 
 const getTrackingDetails = (e) => ({ ...trackingInfo[e], accountId });
