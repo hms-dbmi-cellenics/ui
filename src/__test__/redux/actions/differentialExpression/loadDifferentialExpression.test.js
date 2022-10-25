@@ -78,6 +78,7 @@ describe('loadDifferentialExpression action', () => {
         experimentId: '1234',
       },
       store.getState,
+      expect.any(Function),
       {
         extras: {
           pagination: {
@@ -147,6 +148,7 @@ describe('loadDifferentialExpression action', () => {
         experimentId: '1234',
       },
       store.getState,
+      expect.any(Function),
       {
         extras: {
           pagination: {
