@@ -22,6 +22,7 @@ import initialExperimentSettingsState from 'redux/reducers/experimentSettings/in
 import { initialExperimentBackendStatus } from 'redux/reducers/backendStatus/initialState';
 
 import PipelineStatus from 'utils/pipelineStatusValues';
+import { sampleTech } from 'utils/constants';
 import UploadStatus from 'utils/upload/UploadStatus';
 import ProjectDetails from 'components/data-management/ProjectDetails';
 
@@ -103,7 +104,7 @@ const withDataState = {
       name: sample1Name,
       experimentId: experiment1id,
       uuid: sample1Uuid,
-      type: '10X Chromium',
+      type: sampleTech['10X'],
       metadata: ['value-1'],
       fileNames: ['features.tsv.gz', 'barcodes.tsv.gz', 'matrix.mtx.gz'],
       files: {
@@ -118,7 +119,7 @@ const withDataState = {
       name: sample2Name,
       experimentId: experiment1id,
       uuid: sample2Uuid,
-      type: '10X Chromium',
+      type: sampleTech['10X'],
       metadata: ['value-2'],
       fileNames: ['features.tsv.gz', 'barcodes.tsv.gz', 'matrix.mtx.gz'],
       files: {

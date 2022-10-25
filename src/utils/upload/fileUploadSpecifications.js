@@ -1,6 +1,13 @@
+import { sampleTech } from 'utils/constants';
+
+const techNamesToDisplay = {
+  [sampleTech['10X']]: '10X Chromium',
+  [sampleTech.RHAPSODY]: 'BD Rhapsody',
+};
+
 /* eslint-disable max-len */
 const fileUploadSpecifications = {
-  '10X Chromium': {
+  [sampleTech['10X']]: {
     acceptedFiles: new Set([
       'barcodes.tsv',
       'barcodes.tsv.gz',
@@ -25,7 +32,7 @@ const fileUploadSpecifications = {
     folder's name will be used to name the sample in it. You can change this name later in Data Management.`,
     fileNameFilter(fileName) { return this.acceptedFiles.has(fileName); },
   },
-  'BD Rhapsody': {
+  [sampleTech.RHAPSODY]: {
     acceptedFiles: new Set(['expression_data.st', 'expression_data.st.gz']),
     requiredFiles: [{ key: 'expression_data.st.gz', displayedName: 'expression_data.st' }],
     inputInfo: [['expression_data.st', 'expression_data.st.gz']],
@@ -36,10 +43,5 @@ const fileUploadSpecifications = {
   },
 };
 
-const technologies = {
-  '10x': '10X Chromium',
-  rhapsody: 'BD Rhapsody',
-};
-
-export { technologies };
+export { techNamesToDisplay };
 export default fileUploadSpecifications;
