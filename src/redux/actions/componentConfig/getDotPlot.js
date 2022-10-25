@@ -3,7 +3,7 @@ import { PLOT_DATA_LOADED, PLOT_DATA_LOADING, PLOT_DATA_ERROR } from 'redux/acti
 
 import handleError from 'utils/http/handleError';
 import endUserMessages from 'utils/endUserMessages';
-import { fetchWork } from 'utils/work/fetchWork';
+import fetchWork from 'utils/work/fetchWork';
 
 const getClusterNames = (state) => {
   const clusterIds = state.cellSets.hierarchy.reduce(

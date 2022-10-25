@@ -1,6 +1,4 @@
 import { decompress } from 'fflate';
-// eslint-disable-next-line camelcase
-import { JSON_parse } from 'uint8array-json-parser';
 
 import unpackResult from 'utils/work/unpackResult';
 
@@ -9,12 +7,7 @@ jest.mock('fflate', () => ({
   decompress: jest.fn(),
 }));
 
-jest.mock('uint8array-json-parser', () => ({
-  __esModule: true, // this property makes it work
-  JSON_parse: jest.fn(),
-}));
-
-describe('unpackResult', () => {
+describe('unpackResult with json result', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
@@ -25,20 +18,16 @@ describe('unpackResult', () => {
     const storageResp = { arrayBuffer: () => Promise.resolve(storageArrayBuffer) };
 
     const decompressedUint8 = new Uint8Array();
-    const decompressedObject = { hi: 'bye' };
 
     decompress.mockImplementation((aUint8array, callback) => {
       callback(null, decompressedUint8);
     });
 
-    JSON_parse.mockImplementation(() => decompressedObject);
-
     const result = await unpackResult(storageResp);
 
     expect(decompress).toHaveBeenCalledTimes(1);
-    expect(JSON_parse).toHaveBeenCalledWith(decompressedUint8);
 
-    expect(result).toEqual(decompressedObject);
+    expect(result).toEqual(decompressedUint8);
   });
 
   it('rejects if decompress fails', async () => {

@@ -3,7 +3,7 @@ import {
 } from 'redux/actionTypes/cellSets';
 
 import getTimeoutForWorkerTask from 'utils/getTimeoutForWorkerTask';
-import { fetchWork } from 'utils/work/fetchWork';
+import fetchWork from 'utils/work/fetchWork';
 
 const runCellSetsClustering = (experimentId, resolution) => async (dispatch, getState) => {
   const {

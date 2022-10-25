@@ -14,9 +14,8 @@ import { mockCellSets } from '__test__/test-utils/cellSets.mock';
 
 import { DIFF_EXPR_LOADING, DIFF_EXPR_LOADED, DIFF_EXPR_ORDERING_SET } from 'redux/actionTypes/differentialExpression';
 
-jest.mock('utils/work/fetchWork', () => ({
-  __esModule: true, // this property makes it work
-  fetchWork: jest.fn(() => new Promise((resolve) => resolve({
+jest.mock('utils/work/fetchWork', () => (
+  jest.fn(() => new Promise((resolve) => resolve({
     rows: [
       {
         p_val: 1.496, p_val_adj: 1.647, logFC: -1.427, gene_names: 'A', auc: '0.1', pct_1: '100', pct_2: '100',
@@ -35,8 +34,8 @@ jest.mock('utils/work/fetchWork', () => ({
       },
     ],
     total: 500,
-  }))),
-}));
+  })))
+));
 
 const mockStore = configureMockStore([thunk]);
 

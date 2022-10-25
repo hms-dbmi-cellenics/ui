@@ -32,13 +32,6 @@ Array [
   ],
   Array [
     Object {
-      "data": Array [],
-      "filename": "Test_Experiment-dot_plot-louvain-All",
-    },
-    Object {},
-  ],
-  Array [
-    Object {
       "data": Array [
         Object {
           "Average expression": 0.0417,
@@ -503,14 +496,22 @@ Array [
   Array [
     "paginated-gene-expression",
     "testae48e318dab9a1bd0bexperiment",
+    "ListGenes",
   ],
   Array [
     "dot-plot-data",
     "testae48e318dab9a1bd0bexperiment",
+    "DotPlot",
   ],
   Array [
     "dot-plot-data",
     "testae48e318dab9a1bd0bexperiment",
+    "DotPlot",
+  ],
+  Array [
+    "dot-plot-data",
+    "testae48e318dab9a1bd0bexperiment",
+    "DotPlot",
   ],
 ]
 `;

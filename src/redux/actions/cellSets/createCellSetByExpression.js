@@ -1,4 +1,4 @@
-import { fetchWork } from 'utils/work/fetchWork';
+import fetchWork from 'utils/work/fetchWork';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
 import endUserMessages from 'utils/endUserMessages';
 import WorkResponseError from 'utils/errors/http/WorkResponseError';
