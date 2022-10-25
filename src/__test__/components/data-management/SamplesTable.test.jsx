@@ -45,7 +45,7 @@ jest.mock('@aws-amplify/storage', () => ({
   ])),
 }));
 
-jest.mock('utils/data-management/downloadFromUrl');
+jest.mock('utils/downloadFromUrl');
 
 jest.mock('react-sortable-hoc', () => ({
   sortableContainer: jest.fn(jest.requireActual('react-sortable-hoc').sortableContainer),

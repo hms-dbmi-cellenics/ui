@@ -1,7 +1,7 @@
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import getTrajectoryPlotStartingNodes from 'redux/actions/componentConfig/getTrajectoryPlotStartingNodes';
-import { fetchWork } from 'utils/work/fetchWork';
+import fetchWork from 'utils/work/fetchWork';
 import handleError from 'utils/http/handleError';
 
 import { PLOT_DATA_ERROR, PLOT_DATA_LOADED, PLOT_DATA_LOADING } from 'redux/actionTypes/componentConfig';
@@ -10,17 +10,8 @@ import mockStartingNodes from '__test__/data/starting_nodes.json';
 import { initialEmbeddingState } from 'redux/reducers/embeddings/initialState';
 import initialExperimentSettingsState from 'redux/reducers/experimentSettings/initialState';
 
-jest.mock('utils/work/fetchWork', () => {
-  const originalModule = jest.requireActual('utils/work/fetchWork');
-
-  return {
-    ...originalModule,
-    fetchWork: jest.fn(() => ({})),
-  };
-});
-
 jest.mock('utils/http/handleError');
-
+jest.mock('utils/work/fetchWork', () => jest.fn(() => ({})));
 jest.mock('utils/getTimeoutForWorkerTask', () => () => 60);
 
 const mockStore = configureStore([thunk]);

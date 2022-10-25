@@ -7,7 +7,7 @@ import thunk from 'redux-thunk';
 import preloadAll from 'jest-next-dynamic';
 import configureMockStore from 'redux-mock-store';
 import { GENES_EXPRESSION_LOADING, GENES_EXPRESSION_LOADED } from 'redux/actionTypes/genes';
-import { fetchWork } from 'utils/work/fetchWork';
+import fetchWork from 'utils/work/fetchWork';
 import ComponentActions from 'components/data-exploration/generic-gene-table/ComponentActions';
 import { getTwoGenesExpressionMatrix, getThreeGenesMatrix } from '__test__/utils/ExpressionMatrix/testMatrixes';
 
@@ -17,9 +17,7 @@ jest.mock('utils/getTimeoutForWorkerTask', () => ({
 }));
 
 const mockThreeGenesMatrix = getThreeGenesMatrix();
-jest.mock('utils/work/fetchWork', () => ({
-  fetchWork: jest.fn(() => new Promise((resolve) => resolve(mockThreeGenesMatrix))),
-}));
+jest.mock('utils/work/fetchWork', () => (jest.fn(() => new Promise((resolve) => resolve(mockThreeGenesMatrix)))));
 
 const mockStore = configureMockStore([thunk]);
 

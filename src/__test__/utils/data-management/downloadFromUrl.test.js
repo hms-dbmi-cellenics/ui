@@ -1,4 +1,4 @@
-import downloadFromUrl from 'utils/data-management/downloadFromUrl';
+import downloadFromUrl from 'utils/downloadFromUrl';
 
 const mockDownloadUrl = 'https://www.example.com/download';
 
