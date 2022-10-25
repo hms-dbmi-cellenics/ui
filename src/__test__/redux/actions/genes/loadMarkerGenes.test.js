@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
-import { fetchWork } from 'utils/work/fetchWork';
+import fetchWork from 'utils/work/fetchWork';
 import loadMarkerGenes from 'redux/actions/genes/loadMarkerGenes';
 import { MARKER_GENES_ERROR, MARKER_GENES_LOADED, MARKER_GENES_LOADING } from 'redux/actionTypes/genes';
 import getInitialState from 'redux/reducers/genes/getInitialState';

@@ -68,7 +68,7 @@ const mockedStore = mockStore({
 
 describe('DataIntegration', () => {
   beforeEach(() => {
-    getCellSets.mockReturnValue(() => (mockCellSets));
+    getCellSets.mockReturnValue(() => ({ accessible: true, ...mockCellSets }));
   });
 
   it('renders correctly', () => {
