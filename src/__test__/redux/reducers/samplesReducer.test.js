@@ -10,6 +10,7 @@ import {
   SAMPLES_DELETE,
   SAMPLES_SAVING,
   SAMPLES_SAVED,
+  SAMPLES_OPTIONS_UPDATE,
   SAMPLES_METADATA_DELETE,
   SAMPLES_VALUE_IN_METADATA_TRACK_UPDATED,
 } from 'redux/actionTypes/samples';
@@ -315,6 +316,30 @@ describe('samplesReducer', () => {
 
     expect(newState[mockUuid1].metadata[newMetadataKey]).toEqual(metadataValue);
     expect(newState[mockUuid1].metadata[oldMetadataKey]).not.toBeDefined();
+    expect(newState).toMatchSnapshot();
+  });
+
+  it('Updates options correctly', () => {
+    const stateWithOldOptions = {
+      ...twoSamplesState,
+      [mockUuid1]: {
+        ...sample1,
+        options: { someOption: false },
+      },
+      [mockUuid2]: {
+        ...sample2,
+        options: { someOption: false },
+      },
+    };
+
+    const newState = samplesReducer(stateWithOldOptions, {
+      type: SAMPLES_OPTIONS_UPDATE,
+      payload: {
+        sampleUuids: [mockUuid1, mockUuid2],
+        diff: { someOption: true },
+      },
+    });
+
     expect(newState).toMatchSnapshot();
   });
 });

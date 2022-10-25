@@ -1,5 +1,16 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`createSample action Creates sample with options value that is the same as existing samples 1`] = `
+Object {
+  "name": "test sample",
+  "options": Object {
+    "otherOption": false,
+    "someOption": true,
+  },
+  "sampleTechnology": "rhapsody",
+}
+`;
+
 exports[`createSample action Throws if the api fails 1`] = `
 Array [
   Object {
@@ -14,6 +25,9 @@ Array [
 exports[`createSample action Works correctly with BDRhapsody file being uploaded 1`] = `
 Object {
   "name": "test sample",
+  "options": Object {
+    "includeAbSeq": false,
+  },
   "sampleTechnology": "rhapsody",
 }
 `;
@@ -44,7 +58,10 @@ Array [
         "meta-2": "N.A.",
       },
       "name": "test sample",
-      "type": "BD Rhapsody",
+      "options": Object {
+        "includeAbSeq": false,
+      },
+      "type": "rhapsody",
       "uuid": "abc123",
     },
   },
@@ -55,6 +72,7 @@ Array [
 exports[`createSample action Works correctly with many files being uploaded 1`] = `
 Object {
   "name": "test sample",
+  "options": Object {},
   "sampleTechnology": "10x",
 }
 `;
@@ -95,7 +113,8 @@ Array [
         "meta-2": "N.A.",
       },
       "name": "test sample",
-      "type": "10X Chromium",
+      "options": Object {},
+      "type": "10x",
       "uuid": "abc123",
     },
   },
@@ -106,6 +125,7 @@ Array [
 exports[`createSample action Works correctly with one file being uploaded 1`] = `
 Object {
   "name": "test sample",
+  "options": Object {},
   "sampleTechnology": "10x",
 }
 `;
@@ -136,7 +156,8 @@ Array [
         "meta-2": "N.A.",
       },
       "name": "test sample",
-      "type": "10X Chromium",
+      "options": Object {},
+      "type": "10x",
       "uuid": "abc123",
     },
   },

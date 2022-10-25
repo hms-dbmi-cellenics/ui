@@ -17,7 +17,8 @@ import { CheckCircleTwoTone, CloseCircleTwoTone, DeleteOutlined } from '@ant-des
 import Dropzone from 'react-dropzone';
 
 import config from 'config';
-import techOptions from 'utils/upload/fileUploadSpecifications';
+import { sampleTech } from 'utils/constants';
+import techOptions, { techNamesToDisplay } from 'utils/upload/fileUploadSpecifications';
 import handleError from 'utils/http/handleError';
 import { fileObjectToFileRecord } from 'utils/upload/processUpload';
 import integrationTestConstants from 'utils/integrationTestConstants';
@@ -27,8 +28,8 @@ const { Text, Title, Paragraph } = Typography;
 const { Option } = Select;
 
 const extraHelpText = {
-  '10X Chromium': () => <></>,
-  'BD Rhapsody': () => (
+  [sampleTech['10X']]: () => <></>,
+  [sampleTech.RHAPSODY]: () => (
     <Paragraph>
       <ul>
         <li>
@@ -49,7 +50,7 @@ const FileUploadModal = (props) => {
 
   const guidanceFileLink = 'https://drive.google.com/file/d/1VPaB-yofuExinY2pXyGEEx-w39_OPubO/view';
 
-  const [selectedTech, setSelectedTech] = useState('10X Chromium');
+  const [selectedTech, setSelectedTech] = useState(sampleTech['10X']);
   const [canUpload, setCanUpload] = useState(false);
   const [filesList, setFilesList] = useState([]);
 
@@ -124,7 +125,7 @@ const FileUploadModal = (props) => {
             </List.Item>
           )}
         />
-        {extraHelpText[selectedTech]() ?? extraHelpText.default()}
+        {extraHelpText[selectedTech]()}
       </Space>
     </>
   );
@@ -160,12 +161,12 @@ const FileUploadModal = (props) => {
                 <span style={{ color: 'red', marginRight: '2em' }}>*</span>
               </Title>
               <Select
-                aria-label='selectSampleTechnology'
+                aria-label='sampleTechnologySelect'
                 defaultValue={selectedTech}
                 onChange={(value) => setSelectedTech(value)}
               >
-                {Object.keys(techOptions).map((val) => (
-                  <Option key={`key-${val}`} value={val}>{val}</Option>
+                {Object.values(sampleTech).map((tech) => (
+                  <Option key={`key-${tech}`} value={tech}>{techNamesToDisplay[tech]}</Option>
                 ))}
               </Select>
             </Space>
@@ -193,7 +194,6 @@ const FileUploadModal = (props) => {
       </Row>
 
       <Row>
-        {/* eslint-disable react/jsx-props-no-spreading */}
         <Col span={24}>
           <Paragraph type='secondary'>
             <i>
@@ -207,6 +207,12 @@ const FileUploadModal = (props) => {
               .
             </i>
           </Paragraph>
+        </Col>
+      </Row>
+
+      <Row>
+        {/* eslint-disable react/jsx-props-no-spreading */}
+        <Col span={24}>
           <Dropzone onDrop={onDrop} multiple>
             {({ getRootProps, getInputProps }) => (
               <div
@@ -221,48 +227,52 @@ const FileUploadModal = (props) => {
             )}
           </Dropzone>
         </Col>
-        {/* eslint-enable react/jsx-props-no-spreading */}
+      </Row>
+      <Row>
+        <Col span={24}>
+          {/* eslint-enable react/jsx-props-no-spreading */}
 
-        {filesList.length ? (
-          <>
-            <Divider orientation='center'>To upload</Divider>
-            <List
-              dataSource={filesList}
-              size='small'
-              itemLayout='horizontal'
-              grid='{column: 4}'
-              renderItem={(file) => (
+          {filesList.length ? (
+            <>
+              <Divider orientation='center'>To upload</Divider>
+              <List
+                dataSource={filesList}
+                size='small'
+                itemLayout='horizontal'
+                grid='{column: 4}'
+                renderItem={(file) => (
 
-                <List.Item
-                  key={file.name}
-                  style={{ width: '100%' }}
-                >
-                  <Space>
-                    {file.valid
-                      ? (
-                        <>
-                          <CheckCircleTwoTone twoToneColor='#52c41a' />
-                        </>
-                      ) : (
-                        <>
-                          <CloseCircleTwoTone twoToneColor='#f5222d' />
-                        </>
-                      )}
-                    <Text
-                      ellipsis={{ tooltip: file.name }}
-                      style={{ width: '200px' }}
-                    >
-                      {file.name}
+                  <List.Item
+                    key={file.name}
+                    style={{ width: '100%' }}
+                  >
+                    <Space>
+                      {file.valid
+                        ? (
+                          <>
+                            <CheckCircleTwoTone twoToneColor='#52c41a' />
+                          </>
+                        ) : (
+                          <>
+                            <CloseCircleTwoTone twoToneColor='#f5222d' />
+                          </>
+                        )}
+                      <Text
+                        ellipsis={{ tooltip: file.name }}
+                        style={{ width: '200px' }}
+                      >
+                        {file.name}
 
-                    </Text>
-                    <DeleteOutlined style={{ color: 'crimson' }} onClick={() => { removeFile(file.name); }} />
-                  </Space>
-                </List.Item>
+                      </Text>
+                      <DeleteOutlined style={{ color: 'crimson' }} onClick={() => { removeFile(file.name); }} />
+                    </Space>
+                  </List.Item>
 
-              )}
-            />
-          </>
-        ) : ''}
+                )}
+              />
+            </>
+          ) : ''}
+        </Col>
       </Row>
     </Modal>
 
