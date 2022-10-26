@@ -21,6 +21,11 @@ const SAMPLES_DELETE = `${SAMPLES}/delete`;
 const SAMPLES_FILE_UPDATE = `${SAMPLES}/fileUpdate`;
 
 /**
+ * Bulk update sample options.
+ */
+const SAMPLES_OPTIONS_UPDATE = `${SAMPLES}/optionsUpdate`;
+
+/**
  * Load sample.
  */
 const SAMPLES_LOADED = `${SAMPLES}/loaded`;
@@ -57,6 +62,7 @@ export {
   SAMPLES_UPDATE,
   SAMPLES_DELETE,
   SAMPLES_FILE_UPDATE,
+  SAMPLES_OPTIONS_UPDATE,
   SAMPLES_LOADED,
   SAMPLES_SAVING,
   SAMPLES_ERROR,
