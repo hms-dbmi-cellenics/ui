@@ -5,7 +5,6 @@ const experimentTemplate = {
   createdAt: null,
   updatedAt: null,
   notifyByEmail: true,
-  meta: { organism: null, type: '10x' },
   sampleIds: [],
   metadataKeys: [],
   pipelineVersion: 1,

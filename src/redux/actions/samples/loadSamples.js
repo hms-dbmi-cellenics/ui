@@ -7,7 +7,6 @@ import {
   SAMPLES_ERROR,
   SAMPLES_LOADING,
 } from 'redux/actionTypes/samples';
-import { technologies } from 'utils/upload/fileUploadSpecifications';
 
 const toApiV1 = (samples, experimentId) => {
   const apiV1Samples = {};
@@ -46,7 +45,8 @@ const toApiV1 = (samples, experimentId) => {
       name: sample.name,
       lastModified: sample.updatedAt,
       files: apiV1Files,
-      type: technologies[sample.sampleTechnology],
+      type: sample.sampleTechnology,
+      options: sample.options,
       fileNames,
       uuid: sample.id,
     };

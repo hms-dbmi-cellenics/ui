@@ -11,6 +11,7 @@ import {
 import { runGem2s } from 'redux/actions/pipeline';
 
 import PipelineStatus from 'utils/pipelineStatusValues';
+import { sampleTech } from 'utils/constants';
 import LaunchAnalysisButton from 'components/data-management/LaunchAnalysisButton';
 import initialExperimentsState, { experimentTemplate } from 'redux/reducers/experiments/initialState';
 import initialSamplesState, { sampleTemplate } from 'redux/reducers/samples/initialState';
@@ -96,7 +97,7 @@ const withDataState = {
       name: sample1Name,
       experimentId: experiment1id,
       uuid: sample1Uuid,
-      type: '10X Chromium',
+      type: sampleTech['10X'],
       metadata: ['value-1'],
       fileNames: ['features.tsv.gz', 'barcodes.tsv.gz', 'matrix.mtx.gz'],
       files: {
@@ -110,7 +111,7 @@ const withDataState = {
       name: sample2Name,
       experimentId: experiment1id,
       uuid: sample2Uuid,
-      type: '10X Chromium',
+      type: sampleTech['10X'],
       metadata: ['value-2'],
       fileNames: ['features.tsv.gz', 'barcodes.tsv.gz', 'matrix.mtx.gz'],
       files: {

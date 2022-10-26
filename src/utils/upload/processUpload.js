@@ -11,7 +11,7 @@ import loadAndCompressIfNecessary from 'utils/upload/loadAndCompressIfNecessary'
 import { inspectFile, Verdict } from 'utils/upload/fileInspector';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
 import getFileTypeV2 from 'utils/getFileTypeV2';
-import { technologies } from 'utils/upload/fileUploadSpecifications';
+import { sampleTech } from 'utils/constants';
 import SampleValidationError from 'utils/errors/upload/SampleValidationError';
 
 const MAX_RETRIES = 2;
@@ -72,7 +72,7 @@ const prepareAndUploadFileToS3 = async (
 
 const getMetadata = (file, selectedTech) => {
   const metadata = {};
-  if (selectedTech === technologies['10x']) {
+  if (selectedTech === sampleTech['10X']) {
     if (file.name.includes('genes')) {
       metadata.cellranger_version = 'v2';
     } else if (file.name.includes('features')) {
