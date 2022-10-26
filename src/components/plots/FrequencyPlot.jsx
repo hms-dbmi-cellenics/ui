@@ -8,6 +8,7 @@ import { getCellSets } from 'redux/selectors';
 
 import { generateSpec, generateData } from 'utils/plotSpecs/generateFrequencySpec';
 import Loader from 'components/Loader';
+import 'vega-webgl-renderer';
 
 const FrequencyPlot = (props) => {
   const {
@@ -47,7 +48,7 @@ const FrequencyPlot = (props) => {
     return <Loader experimentId={experimentId} />;
   }
 
-  return <Vega spec={plotSpec} renderer='canvas' actions={actions} />;
+  return <Vega spec={plotSpec} renderer='webgl' actions={actions} />;
 };
 
 FrequencyPlot.propTypes = {
