@@ -99,6 +99,7 @@ const DotPlotPage = (props) => {
   const [moreThanTwoGroups, setMoreThanTwoGroups] = useState(false);
   const [reorderAfterFetch, setReorderAfterFetch] = useState(false);
   const [reset, setReset] = useState(false);
+  const highestGenesLoadedRef = useRef(false);
 
   const experimentName = useSelector((state) => state.experimentSettings.info.experimentName);
   const csvFileName = fileNames(experimentName, 'DOT_PLOT', [config?.selectedCellSet, config?.selectedPoints]);
@@ -208,6 +209,7 @@ const DotPlotPage = (props) => {
     setMoreThanTwoGroups(true);
 
     const currentComparedConfig = getComparedConfig(config);
+
     if (config && !_.isEqual(previousComparedConfig.current, currentComparedConfig)) {
       // previous compared config is null on first load, use [] for previous selected genes instead
       const previousSelected = previousComparedConfig.current?.selectedGenes ?? [];
@@ -279,7 +281,7 @@ const DotPlotPage = (props) => {
   }, [treeScrollable]);
 
   // find genes with highest dispersion from list of genes sorted by name
-  const loadHighestDispersionGenes = () => {
+  const setHighestDispersionGenes = () => {
     const highestDispersions = Object.values(geneData)
       .map((gene) => gene.dispersions)
       .sort()
@@ -297,11 +299,13 @@ const DotPlotPage = (props) => {
 
   // load initial state, based on highest dispersion genes from all genes
   useEffect(() => {
-    if (_.isEmpty(geneData) || !config || plotDataLoading) {
+    if (_.isEmpty(geneData) || !config || highestGenesLoadedRef.current || plotDataLoading) {
       return;
     }
-    loadHighestDispersionGenes();
-  }, [geneData]);
+
+    setHighestDispersionGenes();
+    highestGenesLoadedRef.current = true;
+  }, [geneData, config]);
 
   // When fetching new genes, reorder data to match selected genes
   useEffect(() => {
@@ -346,7 +350,7 @@ const DotPlotPage = (props) => {
 
   const onReset = () => {
     setReset(true);
-    loadHighestDispersionGenes();
+    setHighestDispersionGenes();
   };
 
   useEffect(() => {
