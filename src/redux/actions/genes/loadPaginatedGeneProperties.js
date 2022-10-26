@@ -50,10 +50,9 @@ const loadPaginatedGeneProperties = (
     );
 
     const loadedProperties = {};
-    rows.forEach((row) => {
-      const { gene_names: geneName, ...rest } = row;
 
-      loadedProperties[geneName] = rest;
+    rows.gene_names.forEach((gene, indx) => {
+      loadedProperties[gene] = { dispersions: rows.dispersions[indx] };
     });
 
     return dispatch({
