@@ -66,9 +66,10 @@ const generateSpec = (configSrc, plotData) => {
     ];
   }
   const spec = {
+    $schema: 'https://vega.github.io/schema/vega/v5.json',
     width: config.dimensions.width,
     height: config.dimensions.height,
-    $schema: 'https://vega.github.io/schema/vega/v5.json',
+    autosize: { type: 'fit', resize: true },
     background: config.colour.toggleInvert,
     padding: 5,
     data: [
