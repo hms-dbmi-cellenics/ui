@@ -175,24 +175,35 @@ const generateSpec = (config, plotData, xNamesToDisplay, yNamesToDisplay) => {
         domainWidth: config.axes.domainWidth,
       },
     ],
-
     marks: [
       {
-        type: 'rect',
-        clip: true,
-        from: { data: 'plotData' },
+        name: 'bounding-group',
+        type: 'group',
         encode: {
-          enter: {
-            x: { scale: 'x', field: 'x' },
-            width: { scale: 'x', band: 1, offset: -1 },
-            y: { scale: 'y', field: 'y0' },
-            y2: { scale: 'y', field: 'y1' },
-            fill: { scale: 'cellSetColors', field: 'yCellSetKey' },
-          },
           update: {
-            fillOpacity: 1,
+            width: { signal: 'width ' },
+            height: { signal: 'height' },
+            clip: { value: true },
           },
         },
+        marks: [
+          {
+            type: 'rect',
+            from: { data: 'plotData' },
+            encode: {
+              enter: {
+                x: { scale: 'x', field: 'x' },
+                width: { scale: 'x', band: 1, offset: -1 },
+                y: { scale: 'y', field: 'y0' },
+                y2: { scale: 'y', field: 'y1' },
+                fill: { scale: 'cellSetColors', field: 'yCellSetKey' },
+              },
+              update: {
+                fillOpacity: 1,
+              },
+            },
+          },
+        ],
       },
     ],
     legends: legend,
