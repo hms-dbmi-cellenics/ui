@@ -1,91 +1,103 @@
 import React, { useState } from 'react';
 import { AutoComplete, Button, Input } from 'antd';
-import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
-import _ from 'lodash';
+import { useSelector } from 'react-redux';
+import { getGeneList } from 'redux/selectors';
 
-const filterGenes = (searchText, geneList, loadedGenes) => {
+const renderOptions = (searchText, geneList, genesToDisable) => {
   const searchTextUpper = searchText.toUpperCase();
   const filteredList = geneList.filter((gene) => gene.toUpperCase().includes(searchTextUpper));
-  const disableLoaded = filteredList.map((gene) => loadedGenes.includes(gene));
+  const disabledList = filteredList.map((gene) => genesToDisable.includes(gene));
 
-  // options needs to be an array of objects, set disabled for loaded genes
+  // options needs to be an array of objects, set disabled for genes that shouldn't be selectable
   return filteredList.map((geneName, index) => ({
-    value: geneName, disabled: disableLoaded[index],
+    value: geneName, disabled: disabledList[index],
   }));
 };
 
 const GeneSearchBar = (props) => {
   const {
-    plotUuid, searchBarUuid, onSelect,
+    genesToDisable, onSelect, allowMultiple, buttonText,
   } = props;
 
-  const geneList = useSelector((state) => state.genes.properties.views[searchBarUuid]?.data);
+  const { data } = useSelector(getGeneList());
+  const geneList = Object.keys(data);
 
-  const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
-
-  const [options, setOptions] = useState([]);
-
-  const [value, setValue] = useState('');
+  const [searchState, setSearchState] = useState({ value: '', options: [] });
 
   const GENES_REGEX = /(?<!-)[,\s]+(?!-)/;
-  const genes = value.split(GENES_REGEX);
+  const genes = searchState.value.split(GENES_REGEX);
 
   const onOptionSelect = (newGene) => {
-    genes.splice(-1, 1, `${newGene}, `);
-    setValue(genes.join(', '));
-    setOptions([]);
+    let value;
+    if (allowMultiple) {
+      genes.splice(-1, 1, `${newGene}, `);
+      value = genes.join(', ');
+    } else {
+      value = newGene;
+    }
+    setSearchState({ value, options: [] });
   };
 
   const onSearch = (input) => {
-    setValue(input);
-
-    const inputGenes = input.split(GENES_REGEX);
-
-    const searchText = inputGenes[inputGenes.length - 1];
-
-    setOptions(!searchText ? [] : filterGenes(searchText, geneList, config?.selectedGenes));
+    let options;
+    if (allowMultiple) {
+      const inputGenes = input.split(GENES_REGEX);
+      const searchText = inputGenes[inputGenes.length - 1];
+      options = !searchText ? [] : renderOptions(searchText, geneList, genesToDisable);
+    } else {
+      options = !input ? [] : renderOptions(input, geneList, genesToDisable);
+    }
+    setSearchState({ value: input, options });
   };
 
-  const addGenes = () => {
-    if (value === '') return;
+  const selectGenes = () => {
+    if (searchState.value === '') return;
 
-    const newGenes = genes.filter((gene) => geneList.includes(gene));
-    const allGenes = _.uniq([...config?.selectedGenes, ...newGenes]);
+    if (allowMultiple) {
+      const newGenes = genes.filter((gene) => geneList.includes(gene));
+      onSelect(newGenes);
+    } else if (geneList.includes(searchState.value)) {
+      onSelect(searchState.value);
+    }
 
-    if (_.isEqual(allGenes, config?.selectedGenes)) return;
-
-    onSelect(allGenes);
-    setValue('');
-    setOptions([]);
+    setSearchState({ value: '', options: [] });
   };
 
   return (
     <Input.Group compact>
       <AutoComplete
+        aria-label='SearchBar'
         allowClear
         style={{ width: '80%' }}
-        value={value}
-        options={options}
+        value={searchState.value}
+        options={searchState.options}
         onSelect={onOptionSelect}
         onSearch={onSearch}
         placeholder='Search for genes...'
       />
       <Button
         type='primary'
-        onClick={addGenes}
+        onClick={selectGenes}
         style={{ width: '20%' }}
       >
-        Add
+        {buttonText}
       </Button>
     </Input.Group>
   );
 };
 
 GeneSearchBar.propTypes = {
-  plotUuid: PropTypes.string.isRequired,
-  searchBarUuid: PropTypes.string.isRequired,
+  genesToDisable: PropTypes.array,
   onSelect: PropTypes.func.isRequired,
+  buttonText: PropTypes.string,
+  allowMultiple: PropTypes.bool,
+};
+
+GeneSearchBar.defaultProps = {
+  genesToDisable: [],
+  buttonText: 'Add',
+  allowMultiple: true,
 };
 
 export default GeneSearchBar;

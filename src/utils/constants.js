@@ -24,7 +24,7 @@ const plotTypes = {
   MARKER_HEATMAP: 'MarkerHeatmap',
   VOLCANO_PLOT: 'VolcanoPlot',
   FREQUENCY_PLOT: 'FrequencyPlot',
-  VIOLIN_PLOT: 'ViolinPlot',
+  VIOLIN_PLOT: 'violin',
   DOT_PLOT: 'DotPlot',
   TRAJECTORY_ANALYSIS: 'TrajectoryAnalysis',
   NORMALIZED_EXPRESSION_MATRIX: 'NormalizedExpressionMatrix',
