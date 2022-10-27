@@ -73,7 +73,7 @@ const getTrajectoryPlotStartingNodes = (
         plotUuid,
         plotData: {
           ...plotData,
-          nodes: data.nodes,
+          nodes: data,
         },
       },
     });

@@ -272,15 +272,15 @@ const generateBaseSpec = (
     },
   ],
   title:
-    {
-      text: config?.title.text,
-      color: config?.colour.masterColour,
-      anchor: config?.title.anchor,
-      font: config?.fontStyle.font,
-      dx: 40,
-      dy: -10,
-      fontSize: config?.title.fontSize,
-    },
+  {
+    text: config?.title.text,
+    color: config?.colour.masterColour,
+    anchor: config?.title.anchor,
+    font: config?.fontStyle.font,
+    dx: 40,
+    dy: -10,
+    fontSize: config?.title.fontSize,
+  },
   marks: [
     {
       name: 'bounding-group',
@@ -646,29 +646,34 @@ const insertPseudotimeSpec = (spec, config, pseudotime) => {
 };
 
 // Filter for nodes that appear later than the current node
-const getConnectedNodes = (nodeId, connectedNodes) => {
-  const parseNode = (id) => Number.parseInt(id.slice(2), 10);
-  const root = parseNode(nodeId);
-
-  const filteredNodes = connectedNodes.map((id) => parseNode(id)).filter((id) => id > root);
-  return filteredNodes.map((id) => `Y_${id}`);
-};
+const getConnectedNodes = (nodeIndex, connectedNodes) => (
+  connectedNodes[nodeIndex].filter((index) => index > nodeIndex)
+);
 
 // Data returned from the trajectory analysis worker is 0 centered
 // This has to be remapped onto the embedding
 const generateStartingNodesData = (nodes) => {
+  const {
+    names,
+    connectedNodes,
+    x,
+    y,
+  } = nodes;
+
   const trajectoryNodes = [];
 
-  Object.values(nodes).forEach((node) => {
-    const connectedNodes = getConnectedNodes(node.node_id, node.connected_nodes);
+  Object.values(nodes.names).forEach((node, nodeIdx) => {
+    const connectedNodesIdx = getConnectedNodes(nodeIdx, connectedNodes);
 
-    if (!connectedNodes.length) return;
+    if (!connectedNodesIdx.length) return;
 
-    connectedNodes.forEach((connectedNodeId) => {
-      const connNode = nodes[connectedNodeId];
-
-      trajectoryNodes.push({ x: node.x, y: node.y, node_id: node.node_id });
-      trajectoryNodes.push({ x: connNode.x, y: connNode.y, node_id: connectedNodeId });
+    connectedNodesIdx.forEach((connectedIdx) => {
+      trajectoryNodes.push(
+        { x: x[nodeIdx], y: y[nodeIdx], node_id: names[nodeIdx] },
+      );
+      trajectoryNodes.push(
+        { x: x[connectedIdx], y: y[connectedIdx], node_id: names[connectedIdx] },
+      );
       trajectoryNodes.push({ x: null, y: null, node_id: null });
     });
   });
