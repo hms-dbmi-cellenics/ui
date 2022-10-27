@@ -29,6 +29,7 @@ const PlotContainer = (props) => {
     extraToolbarControls, extraControlPanels, customControlPanel, controlsOnly,
     showResetButton, onPlotReset,
     children,
+    onUpdate,
     saveDebounceTime,
   } = props;
 
@@ -38,10 +39,10 @@ const PlotContainer = (props) => {
   const [tileDirection, setTileDirection] = useState(DEFAULT_ORIENTATION);
   const { config } = useSelector((state) => state.componentConfig[plotUuid] || {});
   const debounceSave = useCallback(
-    _.debounce(() => dispatch(savePlotConfig(experimentId, plotUuid)), saveDebounceTime), [],
+    _.debounce(() => dispatch(savePlotConfig(experimentId, plotUuid)), saveDebounceTime), [plotUuid],
   );
 
-  const updatePlotWithChanges = (obj) => {
+  const defaultOnUpdate = (obj) => {
     dispatch(updatePlotConfig(plotUuid, obj));
   };
 
@@ -122,7 +123,7 @@ const PlotContainer = (props) => {
       <PlotStyling
         formConfig={plotStylingConfig}
         config={config}
-        onUpdate={updatePlotWithChanges}
+        onUpdate={onUpdate ?? defaultOnUpdate}
         extraPanels={extraControlPanels}
         defaultActiveKey={defaultActiveKey}
       />
@@ -196,6 +197,7 @@ PlotContainer.propTypes = {
   customControlPanel: PropTypes.node,
   controlsOnly: PropTypes.bool,
   children: PropTypes.node,
+  onUpdate: PropTypes.func,
   showResetButton: PropTypes.bool,
   onPlotReset: PropTypes.func,
   saveDebounceTime: PropTypes.number,
@@ -208,6 +210,7 @@ PlotContainer.defaultProps = {
   customControlPanel: null,
   controlsOnly: false,
   children: null,
+  onUpdate: undefined,
   showResetButton: true,
   onPlotReset: () => { },
   saveDebounceTime: 2000,
