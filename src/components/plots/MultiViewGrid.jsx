@@ -1,116 +1,112 @@
 import React, { useEffect, useState, useRef } from 'react';
 import PropTypes from 'prop-types';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import _ from 'lodash';
 import { Col, Row, Space } from 'antd';
+import { getPlotConfigs, getCellSets } from 'redux/selectors';
+import { loadCellSets } from 'redux/actions/cellSets';
 
-// multi view grid will use a config generated in index.jsx
-// the structure of the config will be:
-// {
-//   ncols: number,
-//   nrows: number,
-//   genes: ['gene name', 'gene name', ...],
-//   plotUuids: ['plotUuid-0', 'plotUuid-1', ...]
-// }
-
-// renderPlot will need to receive shownGene, config, plotUuid as props
+import PlatformError from 'components/PlatformError';
 
 const MultiViewGrid = (props) => {
   const {
+    experimentId,
     renderPlot,
-    multiViewGridUuid,
+    multiViewUuid,
+    updateAllWithChanges,
   } = props;
 
-  // the config can be initialised using updatePlotConfig
-  const multiViewGridConfig = useSelector((state) => (
-    state.componentConfig[multiViewGridUuid]?.config
-  ));
+  const dispatch = useDispatch();
 
-  const plotConfigs = useSelector((state) => {
-    const plotConfigsToReturn = multiViewGridConfig.plotUuids.reduce((acum, plotUuid) => {
-      // eslint-disable-next-line no-param-reassign
-      acum[plotUuid] = state.componentConfig[plotUuid]?.config;
-      return acum;
-    }, {});
+  const cellSets = useSelector(getCellSets());
 
-    return plotConfigsToReturn;
-  });
+  const multiViewConfig = useSelector((state) => state.componentConfig[multiViewUuid].config);
+  const plotConfigs = useSelector(getPlotConfigs(multiViewConfig.plotUuids));
 
-  const [plots, setPlots] = useState([]);
-  const previousConfig = useRef(null);
+  const [plots, setPlots] = useState({});
+  const previousMultiViewConfig = useRef({});
 
   useEffect(() => {
-    if (!multiViewGridConfig || _.isEqual(previousConfig.current, multiViewGridConfig)) return;
+    if (
+      !multiViewConfig
+      || _.isEqual(previousMultiViewConfig.current, multiViewConfig)
+      || Object.values(plotConfigs).includes(undefined)
+    ) return;
 
-    const previousPlots = previousConfig.current?.plotUuids ?? [];
-    const currentPlots = multiViewGridConfig.plotUuids;
+    const previousPlotUuids = previousMultiViewConfig.current.plotUuids ?? [];
+    const currentPlotUuids = multiViewConfig.plotUuids;
 
-    previousConfig.current = multiViewGridConfig;
+    previousMultiViewConfig.current = multiViewConfig;
 
     // if new plots are added
-    if (currentPlots.length > previousPlots.length) {
-      const plotsToAdd = _.difference(currentPlots, previousPlots);
+    if (currentPlotUuids.length > previousPlotUuids.length) {
+      // when adding the second plot rescale all to fit
+      if (previousPlotUuids.length === 1) {
+        updateAllWithChanges({ dimensions: { width: 550, height: 400 } });
+      }
 
-      const newPlots = [];
+      const plotsToAdd = _.difference(currentPlotUuids, previousPlotUuids);
+
+      const newPlots = { ...plots };
 
       plotsToAdd.forEach((plotUuid) => {
-        const plotConfig = plotConfigs[plotUuid] ?? {};
-        newPlots.push(renderPlot(
-          { shownGene: plotConfig.shownGene, config: plotConfig, plotUuid },
-        ));
+        newPlots[plotUuid] = renderPlot(plotUuid);
       });
 
-      setPlots([...plots, ...newPlots]);
+      setPlots(newPlots);
+    }
+  }, [multiViewConfig, plotConfigs]);
 
-      return;
+  const spaceAlign = (multiViewConfig.plotUuids.length > 1)
+    ? 'start'
+    : 'center';
+
+  const render = () => {
+    if (cellSets.error) {
+      return (
+        <PlatformError
+          error={cellSets.error}
+          reason={cellSets.error}
+          onClick={() => {
+            dispatch(loadCellSets(experimentId));
+          }}
+        />
+      );
     }
 
-    // if plots are re-ordered
-    if (currentPlots.length === previousPlots.length) {
-      const order = currentPlots.map((plot) => previousPlots.indexOf(plot));
-      const reorderedPlots = order.map((index) => plots[index]);
+    return (
+      <Space
+        direction='vertical'
+        align={spaceAlign}
+        id='multiViewContainer'
+        style={{ width: '100%', height: '100%' }}
+      >
+        {
+          _.times(multiViewConfig.nrows, (i) => (
+            <Row wrap={false} key={i}>
+              {
+                _.times(multiViewConfig.ncols, (j) => (
+                  <Col flex key={multiViewConfig.ncols * i + j}>
+                    {plots[multiViewConfig.plotUuids[multiViewConfig.ncols * i + j]]}
+                  </Col>
+                ))
+              }
+            </Row>
+          ))
+        }
+      </Space>
+    );
+  };
 
-      setPlots(reorderedPlots);
-
-      return;
-    }
-
-    // if a plot is removed
-    const plotsToRemove = _.difference(previousPlots, currentPlots);
-    const filteredPlots = _.filter(plots, (value, index) => (
-      !plotsToRemove.includes(previousPlots[index])
-    ));
-    setPlots(filteredPlots);
-  }, [multiViewGridConfig]);
-
-  return (
-    <Space
-      direction='vertical'
-      align='start'
-      id='multiViewContainer'
-      style={{ width: '100%', height: '100%' }}
-    >
-      {
-        _.times(multiViewGridConfig.nrows, (i) => (
-          <Row wrap={false} key={i}>
-            {
-              _.times(multiViewGridConfig.ncols, (j) => (
-                <Col flex key={multiViewGridConfig.ncols * i + j}>
-                  {plots[multiViewGridConfig.ncols * i + j]}
-                </Col>
-              ))
-            }
-          </Row>
-        ))
-      }
-    </Space>
-  );
+  return render();
 };
 
 MultiViewGrid.propTypes = {
+  experimentId: PropTypes.string.isRequired,
   renderPlot: PropTypes.func.isRequired,
-  multiViewGridUuid: PropTypes.string.isRequired,
+  multiViewUuid: PropTypes.string.isRequired,
+  updateAllWithChanges: PropTypes.func.isRequired,
 };
 
 export default MultiViewGrid;

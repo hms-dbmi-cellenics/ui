@@ -3,8 +3,23 @@
     "rows": [
         {
             "gene_names": "S100a4",
-            "dispersions": 55.5983,
-            "_row": "ENSMUSG00000069516"
+            "dispersions": 1.8387,
+            "_row": "ENSMUSG00000001020"
+        },
+        {
+            "gene_names": "5830411N06Rik",
+            "dispersions": 2.1978,
+            "_row": "ENSMUSG00000054672"
+        },
+        {
+            "gene_names": "Ccl5",
+            "dispersions": 14.3142,
+            "_row": "ENSMUSG00000035042"
+        },
+        {
+            "gene_names": "Gzma",
+            "dispersions": 39.2263,
+            "_row": "ENSMUSG00000023132"
         }
     ]
 }

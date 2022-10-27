@@ -324,6 +324,13 @@ const trajectoryAnalysisInitialConfig = {
   selectedSample: 'All',
 };
 
+// PLOTS & TABLES - Multi view
+const multiViewInitialConfig = {
+  ncols: 1,
+  nrows: 1,
+  plotUuids: [],
+};
+
 // EMBEDDING PREVIEW - Coloured by sample
 const embeddingPreviewBySampleInitialConfig = {
   spec: '1.0.0',
@@ -862,6 +869,7 @@ const initialPlotConfigStates = {
 
 const initialComponentConfigStates = {
   interactiveHeatmap: interactiveHeatmapInitialConfig,
+  multiView: multiViewInitialConfig,
 };
 
 const initialPlotDataState = {
