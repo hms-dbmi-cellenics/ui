@@ -15,6 +15,21 @@ const getClusterNames = (state) => {
   return clusterNames;
 };
 
+const rehydrate = (data) => {
+  const result = [];
+
+  data.cellSetsIdx.forEach((cellSetIdx, arrIdx) => {
+    result.push({
+      avgExpression: data.avgExpression[arrIdx],
+      cellSets: data.cellSetsNames[cellSetIdx],
+      cellsPercentage: data.cellsPercentage[arrIdx],
+      geneName: data.geneNames[data.geneNameIdx[arrIdx]],
+    });
+  });
+
+  return result;
+};
+
 const orderCellSets = (data, state, config) => {
   // reordering data based on the sample order
   const { selectedCellSet } = config;
@@ -64,13 +79,14 @@ const getDotPlot = (
       experimentId, body, getState, { timeout },
     );
 
-    orderCellSets(data, getState(), config);
+    const rehydratedData = rehydrate(data);
+    orderCellSets(rehydratedData, getState(), config);
 
     dispatch({
       type: PLOT_DATA_LOADED,
       payload: {
         plotUuid,
-        plotData: data,
+        plotData: rehydratedData,
       },
     });
   } catch (e) {
