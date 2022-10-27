@@ -408,6 +408,7 @@ const insertTrajectorySpec = (
   spec,
   pathData,
   selectedNodes,
+  nodesData,
 ) => {
   spec.description = `${spec.description} with trajectory`;
 
@@ -423,7 +424,10 @@ const insertTrajectorySpec = (
     },
     {
       name: 'highlight',
-      values: selectedNodes,
+      values: selectedNodes.map((nodeIdx) => ({
+        x: nodesData.x[nodeIdx],
+        y: nodesData.y[nodeIdx],
+      })),
       format: {
         type: 'json',
         copy: true,
@@ -654,7 +658,6 @@ const getConnectedNodes = (nodeIndex, connectedNodes) => (
 // This has to be remapped onto the embedding
 const generateStartingNodesData = (nodes) => {
   const {
-    names,
     connectedNodes,
     x,
     y,
@@ -669,10 +672,10 @@ const generateStartingNodesData = (nodes) => {
 
     connectedNodesIdx.forEach((connectedIdx) => {
       trajectoryNodes.push(
-        { x: x[nodeIdx], y: y[nodeIdx], node_id: names[nodeIdx] },
+        { x: x[nodeIdx], y: y[nodeIdx], node_id: nodeIdx },
       );
       trajectoryNodes.push(
-        { x: x[connectedIdx], y: y[connectedIdx], node_id: names[connectedIdx] },
+        { x: x[connectedIdx], y: y[connectedIdx], node_id: connectedIdx },
       );
       trajectoryNodes.push({ x: null, y: null, node_id: null });
     });
@@ -727,6 +730,7 @@ const generateTrajectoryAnalysisSpec = (
   cellSetLegendsData,
   startingNodesData,
   selectedNodeIds,
+  nodesData,
 ) => {
   const spec = generateBaseSpec(
     config,
@@ -746,6 +750,7 @@ const generateTrajectoryAnalysisSpec = (
       spec,
       startingNodesData,
       selectedNodeIds,
+      nodesData,
     );
   }
 
