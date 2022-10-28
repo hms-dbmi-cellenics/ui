@@ -649,11 +649,6 @@ const insertPseudotimeSpec = (spec, config, pseudotime) => {
   ];
 };
 
-// Filter for nodes that appear later than the current node
-const getConnectedNodes = (nodeIndex, connectedNodes) => (
-  connectedNodes[nodeIndex].filter((index) => index > nodeIndex)
-);
-
 // Data returned from the trajectory analysis worker is 0 centered
 // This has to be remapped onto the embedding
 const generateStartingNodesData = (nodes) => {
@@ -666,11 +661,10 @@ const generateStartingNodesData = (nodes) => {
   const trajectoryNodes = [];
 
   Object.values(nodes.names).forEach((node, nodeIdx) => {
-    const connectedNodesIdx = getConnectedNodes(nodeIdx, connectedNodes);
+    // This line is unnecessary
+    // if (!connectedNodes[nodeIdx].length) return;
 
-    if (!connectedNodesIdx.length) return;
-
-    connectedNodesIdx.forEach((connectedIdx) => {
+    connectedNodes[nodeIdx].forEach((connectedIdx) => {
       trajectoryNodes.push(
         { x: x[nodeIdx], y: y[nodeIdx], node_id: nodeIdx },
       );
