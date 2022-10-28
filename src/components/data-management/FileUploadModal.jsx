@@ -77,7 +77,6 @@ const FileUploadModal = (props) => {
       )));
 
       const allFiles = [...filesList, ...newFiles];
-      console.log(`allFiles: ${JSON.stringify(allFiles)}`);
       if (allFiles.length > 1) {
         handleError('error', endUserMessages.ERROR_SEURAT_MULTIPLE_FILES);
       }
@@ -94,7 +93,7 @@ const FileUploadModal = (props) => {
     setFilesList(newArray);
   };
 
-  const { fileUploadParagraphs } = techOptions[selectedTech];
+  const { fileUploadParagraphs, dropzoneText, webkitdirectory } = techOptions[selectedTech];
 
   const renderHelpText = () => (
     <>
@@ -206,8 +205,8 @@ const FileUploadModal = (props) => {
                 {...getRootProps({ className: 'dropzone' })}
                 id='dropzone'
               >
-                <input data-test-id={integrationTestConstants.ids.FILE_UPLOAD_INPUT} {...getInputProps()} webkitdirectory='' />
-                <Empty description='Drag and drop folders here or click to browse.' image={Empty.PRESENTED_IMAGE_SIMPLE} />
+                <input data-test-id={integrationTestConstants.ids.FILE_UPLOAD_INPUT} {...getInputProps()} webkitdirectory={webkitdirectory} />
+                <Empty description={dropzoneText} image={Empty.PRESENTED_IMAGE_SIMPLE} />
               </div>
             )}
           </Dropzone>
