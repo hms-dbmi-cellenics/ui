@@ -180,7 +180,11 @@ const LaunchAnalysisButton = (props) => {
 };
 
 LaunchAnalysisButton.propTypes = {
-  technology: PropTypes.string.isRequired,
+  technology: PropTypes.string,
+};
+
+LaunchAnalysisButton.defaultProps = {
+  technology: null,
 };
 
 export default LaunchAnalysisButton;

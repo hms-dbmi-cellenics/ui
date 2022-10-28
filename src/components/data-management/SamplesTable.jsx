@@ -372,7 +372,11 @@ const SamplesTable = forwardRef((props, ref) => {
 });
 
 SamplesTable.propTypes = {
-  technology: PropTypes.string.isRequired,
+  technology: PropTypes.string,
+};
+
+SamplesTable.defaultProps = {
+  technology: null,
 };
 
 export default React.memo(SamplesTable);
