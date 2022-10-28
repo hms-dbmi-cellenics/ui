@@ -15,19 +15,16 @@ const getClusteringSettings = async (experimentId, dispatch, getState) => {
 };
 
 const dependencyGetters = {
+  ClusterCells: [],
+  GetExpressionCellSets: [],
   GetEmbedding: [],
   ListGenes: [],
-  // Este q onda
-  DifferentialExpression: [],
+  DifferentialExpression: [getClusteringSettings],
   GeneExpression: [],
-  // Este q onda
-  GetBackgroundExpressedGenes: [],
-  ClusterCells: [],
-  // Este q onda
-  DotPlot: [],
+  GetBackgroundExpressedGenes: [getClusteringSettings],
+  DotPlot: [getClusteringSettings],
   GetDoubletScore: [],
   GetMitochondrialContent: [],
-  GetExpressionCellSets: [],
   MarkerHeatmap: [getClusteringSettings],
   GetTrajectoryAnalysisStartingNodes: [getClusteringSettings],
   GetTrajectoryAnalysisPseudoTime: [getClusteringSettings],
