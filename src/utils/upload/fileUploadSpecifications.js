@@ -31,7 +31,6 @@ const fileUploadSpecifications = {
     webkitdirectory: '',
   },
   Seurat: {
-    validMimeTypes: ['text/tsv', 'application/gzip', 'application/x-gzip', 'application/octet-stream'],
     validExtensionTypes: ['.rds'],
     inputInfo: [
       ['embedding'],
