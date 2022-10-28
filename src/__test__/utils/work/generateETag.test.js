@@ -4,7 +4,7 @@ import { Environment } from 'utils/deploymentInfo';
 import { mockQcPipelineStartDate } from '__test__/utils/work/fetchWork.mock';
 import processingConfigData from '__test__/data/processing_config.json';
 
-const NON_GENE_EXPRESSION_ETAG = 'f255925e708bf92a4ac6bb5125987bf2'; // pragma: allowlist secret
+const NON_GENE_EXPRESSION_ETAG = 'f0eb883ef077c296b9ca0922af1a9cbe'; // pragma: allowlist secret
 const GENE_EXPRESSION_D_ETAG = '78cf13c1fb1596e64f07fa93d6d028a9'; // pragma: allowlist secret
 
 const experimentId = '1234';
@@ -77,17 +77,5 @@ describe('generateEtag', () => {
     );
 
     expect(global.Math.random).not.toHaveBeenCalled();
-  });
-
-  it('Throws if clusteringSetting is not passed', async () => {
-    Storage.prototype.getItem = jest.fn(() => 'true');
-
-    expect(() => generateETag(
-      experimentId,
-      { name: 'GetEmbedding' },
-      mockExtras,
-      mockQcPipelineStartDate,
-      Environment.DEVELOPMENT,
-    )).toThrow(new Error('Clustering settings required to launch work request'));
   });
 });
