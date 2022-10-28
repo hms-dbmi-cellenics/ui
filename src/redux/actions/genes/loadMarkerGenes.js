@@ -12,7 +12,7 @@ const loadMarkerGenes = (
 ) => async (dispatch, getState) => {
   // Disabled linter because we are using == to check for both null and undefined values
   // eslint-disable-next-line eqeqeq
-  if (experimentId == null || resolution == null) throw new Error('Null or undefined parameter/s for loadMarkerGenes');
+  if (experimentId == null) throw new Error('Null or undefined parameter/s for loadMarkerGenes');
   const body = {
     name: 'MarkerHeatmap',
     nGenes: numGenes,
