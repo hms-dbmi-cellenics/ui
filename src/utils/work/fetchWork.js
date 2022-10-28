@@ -1,25 +1,11 @@
 import { Environment, isBrowser } from 'utils/deploymentInfo';
 
 import { getBackendStatus } from 'redux/selectors';
-import { loadProcessingSettings } from 'redux/actions/experimentSettings';
 
 import cache from 'utils/cache';
 import generateETag from 'utils/work/generateETag';
 import { dispatchWorkRequest, seekFromS3 } from 'utils/work/seekWorkResponse';
-
-const getClusteringSettings = async (experimentId, dispatch, getState) => {
-  let clusteringSettings = getState().experimentSettings
-    .processing.configureEmbedding?.clusteringSettings;
-
-  if (!clusteringSettings) {
-    await dispatch(loadProcessingSettings(experimentId));
-
-    clusteringSettings = getState().experimentSettings
-      .processing.configureEmbedding?.clusteringSettings;
-  }
-
-  return clusteringSettings;
-};
+import getExtraDependencies from 'utils/work/getExtraDependencies';
 
 // Temporarily using gene expression without local cache
 const fetchGeneExpressionWorkWithoutLocalCache = async (
@@ -100,7 +86,7 @@ const fetchWork = async (
     );
   }
 
-  const clusteringSettings = await getClusteringSettings(experimentId, dispatch, getState);
+  const extraDependencies = await getExtraDependencies(experimentId, body.name, dispatch, getState);
 
   const ETag = generateETag(
     experimentId,
@@ -108,7 +94,7 @@ const fetchWork = async (
     extras,
     qcPipelineStartDate,
     environment,
-    clusteringSettings,
+    extraDependencies,
   );
 
   // First, let's try to fetch this information from the local cache.

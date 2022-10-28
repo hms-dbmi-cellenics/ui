@@ -17,7 +17,7 @@ const generateETag = (
   extras,
   qcPipelineStartDate,
   environment,
-  clusteringSettings = null,
+  extraDependencies,
 ) => {
   // If caching is disabled, we add an additional randomized key to the hash so we never reuse
   // past results.
@@ -45,18 +45,14 @@ const generateETag = (
       workerVersion: config.workerVersion,
     };
   } else {
-    if (!clusteringSettings) {
-      throw new Error('Clustering settings required to launch work request');
-    }
-
     ETagBody = {
       experimentId,
       body,
       qcPipelineStartDate,
       extras,
       cacheUniquenessKey,
-      clusteringSettings,
       workerVersion: config.workerVersion,
+      extraDependencies,
     };
   }
 
