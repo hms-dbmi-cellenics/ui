@@ -250,7 +250,7 @@ const TrajectoryAnalysisPlot = forwardRef((props, ref) => {
       const yStart = Math.min(y1, y2);
       const yEnd = Math.max(y1, y2);
 
-      const { x, y, names: nodeNames } = startingNodesPlotData.nodes;
+      const { x, y } = startingNodesPlotData.nodes;
 
       const isInSelection = (nodeIdx) => {
         const inRange = (number, start, end) => start <= number && number <= end;
@@ -260,7 +260,7 @@ const TrajectoryAnalysisPlot = forwardRef((props, ref) => {
 
       const selection = [];
 
-      nodeNames.forEach((name, index) => {
+      x.forEach((currX, index) => {
         if (isInSelection(index)) {
           selection.push(index);
         }
