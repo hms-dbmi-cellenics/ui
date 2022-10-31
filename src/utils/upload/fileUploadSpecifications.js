@@ -35,8 +35,8 @@ const fileUploadSpecifications = {
     inputInfo: [
       ['embedding'],
       ['counts'],
-      ['clusters'],
-      ['sample identity'],
+      ['seurat_clusters'],
+      ['samples'],
     ],
     requiredFiles: [
       'r.rds',

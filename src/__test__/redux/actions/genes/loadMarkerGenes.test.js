@@ -53,22 +53,6 @@ describe('loadMarkerGenes action', () => {
     } catch (e) {
       expect(e.message).toEqual(errorMessage);
     }
-
-    try {
-      await store.dispatch(loadMarkerGenes(1, undefined));
-      // eslint-disable-next-line no-undef
-      fail('it should not reach here');
-    } catch (e) {
-      expect(e.message).toEqual(errorMessage);
-    }
-
-    try {
-      await store.dispatch(loadMarkerGenes(1));
-      // eslint-disable-next-line no-undef
-      fail('it should not reach here');
-    } catch (e) {
-      expect(e.message).toEqual(errorMessage);
-    }
   });
 
   it('dispatches appropriately on success', async () => {
