@@ -68,42 +68,42 @@ const TrajectoryAnalysisNodeSelector = (props) => {
           )}
         />
         {selectedNodes?.length > 0 && (
-        <>
-          <strong>{`${selectedNodes.length} nodes selected`}</strong>
-          <Button
-            block
-            disabled={plotLoading}
-            onClick={() => {
-              dispatch(updatePlotConfig(plotUuid, { selectedNodes: [] }));
-            }}
-          >
-            Clear selection
-          </Button>
-          <Button
-            type='primary'
-            block
-            disabled={plotLoading}
-            onClick={async () => {
-            // Optimistic result to prevent flickering
-              setDisplaySettings({
-                ...displaySettings,
-                showPseudotimeValues: true,
-                hasRunPseudotime: true,
-              });
-
-              const success = await dispatch(getTrajectoryPlotPseudoTime(selectedNodes, experimentId, plotUuid));
-              if (!success) {
+          <>
+            <strong>{`${selectedNodes.length} nodes selected`}</strong>
+            <Button
+              block
+              disabled={plotLoading}
+              onClick={() => {
+                dispatch(updatePlotConfig(plotUuid, { selectedNodes: [] }));
+              }}
+            >
+              Clear selection
+            </Button>
+            <Button
+              type='primary'
+              block
+              disabled={plotLoading}
+              onClick={async () => {
+                // Optimistic result to prevent flickering
                 setDisplaySettings({
                   ...displaySettings,
-                  showPseudotimeValues: false,
-                  hasRunPseudotime: false,
+                  showPseudotimeValues: true,
+                  hasRunPseudotime: true,
                 });
-              }
-            }}
-          >
-            {displaySettings.hasRunPseudotime ? 'Recalculate' : 'Calculate'}
-          </Button>
-        </>
+
+                const success = await dispatch(getTrajectoryPlotPseudoTime(selectedNodes, experimentId, plotUuid));
+                if (!success) {
+                  setDisplaySettings({
+                    ...displaySettings,
+                    showPseudotimeValues: false,
+                    hasRunPseudotime: false,
+                  });
+                }
+              }}
+            >
+              {displaySettings.hasRunPseudotime ? 'Recalculate' : 'Calculate'}
+            </Button>
+          </>
         )}
       </Space>
     );
