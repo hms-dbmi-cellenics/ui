@@ -4,6 +4,7 @@ import { getBackendStatus } from 'redux/selectors';
 import cache from 'utils/cache';
 import { dispatchWorkRequest, seekFromS3 } from 'utils/work/seekWorkResponse';
 import generateETag from 'utils/work/generateETag';
+import Chronometer from 'utils/Chronometer';
 
 // const decomposeBody = async (body, experimentId) => {
 //   const { genes: requestedGenes } = body;
@@ -187,7 +188,10 @@ const fetchWork = async (
   }
 
   // Then, we may be able to find this in S3.
+  const chronometer = new Chronometer();
   let response = await seekFromS3(ETag, experimentId, body.name);
+  const time = chronometer.stop().milliseconds();
+  console.log(`ms to run seekFromS3 ${body.name}: ${time}`);
 
   if (response) return response;
 

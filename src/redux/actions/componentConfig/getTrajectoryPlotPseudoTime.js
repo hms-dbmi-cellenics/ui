@@ -6,12 +6,15 @@ import endUserMessages from 'utils/endUserMessages';
 import fetchWork from 'utils/work/fetchWork';
 import generateETag from 'utils/work/generateETag';
 import getTimeoutForWorkerTask from 'utils/getTimeoutForWorkerTask';
+import Chronometer from 'utils/Chronometer';
 
 const getTrajectoryPlotPseudoTime = (
   rootNodes,
   experimentId,
   plotUuid,
 ) => async (dispatch, getState) => {
+  new Chronometer('trajectoryGet').start();
+
   // Currenty monocle3 only trajectory analysis only supports
   // UMAP embedding. Therefore, this embedding is specifically fetched.
   const embeddingMethod = 'umap';
