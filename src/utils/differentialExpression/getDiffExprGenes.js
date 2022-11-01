@@ -40,7 +40,7 @@ const getDiffExprGenes = (getAllGenes, numGenes) => async (dispatch, getState) =
 
   try {
     const data = await fetchWork(
-      experimentId, body, getState, { timeout, extras: { pagination } },
+      experimentId, body, getState, dispatch, { timeout, extras: { pagination } },
     );
 
     const { rows } = data;

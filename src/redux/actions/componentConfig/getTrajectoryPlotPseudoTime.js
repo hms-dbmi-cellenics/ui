@@ -33,12 +33,15 @@ const getTrajectoryPlotPseudoTime = (
     config: methodSettings[embeddingMethod],
   };
 
-  const embeddingETag = generateETag(
+  const embeddingETag = await generateETag(
     experimentId,
     embeddingBody,
     undefined,
     qcPipelineStartDate,
     environment,
+    clusteringSettings,
+    dispatch,
+    getState,
   );
 
   const timeout = getTimeoutForWorkerTask(getState(), 'TrajectoryAnalysisPseudotime');
@@ -64,7 +67,7 @@ const getTrajectoryPlotPseudoTime = (
     });
 
     const data = await fetchWork(
-      experimentId, body, getState, { timeout, rerun: true },
+      experimentId, body, getState, dispatch, { timeout, rerun: true },
     );
 
     const { plotData } = getState().componentConfig[plotUuid];
