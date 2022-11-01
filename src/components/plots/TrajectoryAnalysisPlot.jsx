@@ -212,8 +212,10 @@ const TrajectoryAnalysisPlot = forwardRef((props, ref) => {
       startingNodesPlotData?.nodes,
     );
 
-    const time = Chronometer.get('trajectoryGet').stop().milliseconds();
-    console.log(`ms from getTrajectoryPlotPseudoTime to finish setting spec: ${time}`);
+    const time = Chronometer.get('trajectoryGet')?.stop().milliseconds();
+    if (!_.isNil(time)) {
+      console.log(`ms from getTrajectoryPlotPseudoTime to finish setting spec: ${time}`);
+    }
 
     return spec;
   };
