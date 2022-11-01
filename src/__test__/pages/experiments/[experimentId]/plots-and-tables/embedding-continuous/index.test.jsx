@@ -95,12 +95,7 @@ describe('Categorical embedding plot', () => {
 
     seekFromS3
       .mockReset()
-      .mockImplementationOnce(() => null)
-      .mockImplementationOnce((Etag) => mockWorkerResponses[Etag])
-      .mockImplementationOnce(() => null)
-      .mockImplementationOnce((Etag) => mockWorkerResponses[Etag])
-      .mockImplementationOnce(() => null)
-      .mockImplementationOnce((Etag) => mockWorkerResponses[Etag]);
+      .mockImplementation((Etag) => mockWorkerResponses[Etag]);
 
     enableFetchMocks();
     fetchMock.resetMocks();
