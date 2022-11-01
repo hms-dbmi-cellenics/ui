@@ -32,13 +32,14 @@ const getTrajectoryPlotStartingNodes = (
     config: methodSettings[embeddingMethod],
   };
 
-  const embeddingETag = generateETag(
+  const embeddingETag = await generateETag(
     experimentId,
     embeddingBody,
     undefined,
     qcPipelineStartDate,
     environment,
-    clusteringSettings,
+    dispatch,
+    getState,
   );
 
   const timeout = getTimeoutForWorkerTask(getState(), 'TrajectoryAnalysisStartingNodes');

@@ -1,8 +1,8 @@
 import { MD5 } from 'object-hash';
 
-import { Environment } from 'utils/deploymentInfo';
-
 import config from 'config';
+import { Environment } from 'utils/deploymentInfo';
+import getExtraDependencies from 'utils/work/getExtraDependencies';
 
 const createObjectHash = (object) => MD5(object);
 
@@ -11,13 +11,14 @@ const DISABLE_UNIQUE_KEYS = [
   'GetEmbedding',
 ];
 
-const generateETag = (
+const generateETag = async (
   experimentId,
   body,
   extras,
   qcPipelineStartDate,
   environment,
-  extraDependencies,
+  dispatch,
+  getState,
 ) => {
   // If caching is disabled, we add an additional randomized key to the hash so we never reuse
   // past results.
@@ -30,6 +31,8 @@ const generateETag = (
   ) {
     cacheUniquenessKey = Math.random();
   }
+
+  const extraDependencies = await getExtraDependencies(experimentId, body.name, dispatch, getState);
 
   let ETagBody;
 

@@ -5,7 +5,6 @@ import { getBackendStatus } from 'redux/selectors';
 import cache from 'utils/cache';
 import generateETag from 'utils/work/generateETag';
 import { dispatchWorkRequest, seekFromS3 } from 'utils/work/seekWorkResponse';
-import getExtraDependencies from 'utils/work/getExtraDependencies';
 
 // Temporarily using gene expression without local cache
 const fetchGeneExpressionWorkWithoutLocalCache = async (
@@ -16,17 +15,21 @@ const fetchGeneExpressionWorkWithoutLocalCache = async (
   environment,
   broadcast,
   extras,
+  dispatch,
+  getState,
 ) => {
   // If new genes are needed, construct payload, try S3 for results,
   // and send out to worker if there's a miss.
   const { pipeline: { startDate: qcPipelineStartDate } } = backendStatus;
 
-  const ETag = generateETag(
+  const ETag = await generateETag(
     experimentId,
     body,
     extras,
     qcPipelineStartDate,
     environment,
+    dispatch,
+    getState,
   );
 
   // Then, we may be able to find this in S3.
@@ -80,21 +83,29 @@ const fetchWork = async (
   }
 
   const { pipeline: { startDate: qcPipelineStartDate } } = backendStatus;
+
   if (body.name === 'GeneExpression') {
     return fetchGeneExpressionWorkWithoutLocalCache(
-      experimentId, timeout, body, backendStatus, environment, broadcast, extras,
+      experimentId,
+      timeout,
+      body,
+      backendStatus,
+      environment,
+      broadcast,
+      extras,
+      dispatch,
+      getState,
     );
   }
 
-  const extraDependencies = await getExtraDependencies(experimentId, body.name, dispatch, getState);
-
-  const ETag = generateETag(
+  const ETag = await generateETag(
     experimentId,
     body,
     extras,
     qcPipelineStartDate,
     environment,
-    extraDependencies,
+    dispatch,
+    getState,
   );
 
   // First, let's try to fetch this information from the local cache.
