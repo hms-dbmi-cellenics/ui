@@ -30,7 +30,7 @@ class Chronometer {
   }
 
   stop() {
-    return moment.duration(moment().diff(this.startDate));
+    return moment.duration(moment().diff(this.startTime));
   }
 }
 
