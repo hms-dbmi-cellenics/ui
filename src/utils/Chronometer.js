@@ -9,7 +9,7 @@ class Chronometer {
    * @returns
    */
   static get(key) {
-    return this.chronometers[key];
+    return Chronometer.chronometers[key];
   }
 
   /**
