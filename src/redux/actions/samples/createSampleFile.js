@@ -56,7 +56,13 @@ const createSampleFile = (
       },
     );
 
-    return signedUrls;
+    console.log('signedUrls!!!');
+    console.log(signedUrls);
+
+    return {
+      ...signedUrls,
+      sampleFileId: body.sampleFileId,
+    };
   } catch (e) {
     dispatch(updateSampleFileUpload(experimentId, sampleId, type, UploadStatus.UPLOAD_ERROR));
 

@@ -41,7 +41,7 @@ const prepareAndUploadFileToS3 = async (
   const body = {
     parts: resParts,
     uploadId: signedUrls.UploadId,
-    sampleFileId: sampleId,
+    sampleFileId: signedUrls.sampleFileId,
 
   };
   await fetchAPI(requestUrl,
