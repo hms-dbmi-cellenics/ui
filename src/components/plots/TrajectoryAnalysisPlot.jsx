@@ -215,7 +215,7 @@ const TrajectoryAnalysisPlot = forwardRef((props, ref) => {
       selectedNodeIds,
     );
 
-    const time = Chronometer('trajectoryGet').stop().milliseconds();
+    const time = Chronometer.get('trajectoryGet').stop().milliseconds();
     console.log(`ms from getTrajectoryPlotPseudoTime to finish setting spec: ${time}`);
 
     return spec;
