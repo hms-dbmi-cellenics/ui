@@ -1,8 +1,8 @@
 import { MD5 } from 'object-hash';
 
-import { Environment } from 'utils/deploymentInfo';
-
 import config from 'config';
+import { Environment } from 'utils/deploymentInfo';
+import getExtraDependencies from 'utils/work/getExtraDependencies';
 
 const createObjectHash = (object) => MD5(object);
 
@@ -11,12 +11,14 @@ const DISABLE_UNIQUE_KEYS = [
   'GetEmbedding',
 ];
 
-const generateETag = (
+const generateETag = async (
   experimentId,
   body,
   extras,
   qcPipelineStartDate,
   environment,
+  dispatch,
+  getState,
 ) => {
   // If caching is disabled, we add an additional randomized key to the hash so we never reuse
   // past results.
@@ -30,14 +32,9 @@ const generateETag = (
     cacheUniquenessKey = Math.random();
   }
 
-  let ETagBody = {
-    experimentId,
-    body,
-    qcPipelineStartDate,
-    extras,
-    cacheUniquenessKey,
-    workerVersion: config.workerVersion,
-  };
+  const extraDependencies = await getExtraDependencies(experimentId, body.name, dispatch, getState);
+
+  let ETagBody;
 
   // They `body` key to create ETAg for gene expression is different
   // from the others, causing the generated ETag to be different
@@ -49,6 +46,16 @@ const generateETag = (
       extras,
       cacheUniquenessKey,
       workerVersion: config.workerVersion,
+    };
+  } else {
+    ETagBody = {
+      experimentId,
+      body,
+      qcPipelineStartDate,
+      extras,
+      cacheUniquenessKey,
+      workerVersion: config.workerVersion,
+      extraDependencies,
     };
   }
 

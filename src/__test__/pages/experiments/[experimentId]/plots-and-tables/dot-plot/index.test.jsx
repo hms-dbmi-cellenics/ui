@@ -173,7 +173,8 @@ describe('Dot plot page', () => {
     expect(screen.getByRole('graphics-document', { name: 'Vega visualization' })).toBeInTheDocument();
 
     // csv data is passed correctly
-    expect(ExportAsCSV.mock.calls).toMatchSnapshot();
+    const loadedData = ExportAsCSV.mock.calls.find(([{ data }]) => data.length > 0);
+    expect(loadedData).toMatchSnapshot();
   });
 
   it('Shows a skeleton if config is not loaded', async () => {

@@ -60,7 +60,7 @@ const loadDifferentialExpression = (
 
   try {
     const data = await fetchWork(
-      experimentId, body, getState, { timeout, extras },
+      experimentId, body, getState, dispatch, { timeout, extras },
     );
     let { total } = data;
     const { rows } = data;

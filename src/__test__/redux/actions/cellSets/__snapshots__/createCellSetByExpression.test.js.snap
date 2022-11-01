@@ -19,6 +19,7 @@ Array [
     "name": "GetExpressionCellSets",
   },
   [Function],
+  [Function],
   Object {
     "broadcast": true,
   },

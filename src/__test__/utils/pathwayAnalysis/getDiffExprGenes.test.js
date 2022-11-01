@@ -50,7 +50,7 @@ describe('getDiffExpr test', () => {
     expect(fetchWork).toHaveBeenCalledTimes(1);
 
     const args = fetchWork.mock.calls[0];
-    const { pagination } = args[3].extras;
+    const { pagination } = args[4].extras;
 
     expect(pagination).toEqual(
       expect.objectContaining({
@@ -74,7 +74,7 @@ describe('getDiffExpr test', () => {
     expect(fetchWork).toHaveBeenCalledTimes(1);
 
     const args = fetchWork.mock.calls[0];
-    const { pagination } = args[3].extras;
+    const { pagination } = args[4].extras;
 
     expect(pagination).toEqual(
       expect.objectContaining({
@@ -117,7 +117,7 @@ describe('getDiffExpr test', () => {
     expect(fetchWork).toHaveBeenCalledTimes(1);
 
     const args = fetchWork.mock.calls[0];
-    const { pagination } = args[3].extras;
+    const { pagination } = args[4].extras;
 
     expect(pagination).toEqual(
       expect.objectContaining({
