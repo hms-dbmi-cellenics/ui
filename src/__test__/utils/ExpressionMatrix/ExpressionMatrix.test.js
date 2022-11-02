@@ -88,7 +88,14 @@ describe('ExpressionMatrix', () => {
     });
 
     it('getStats works', () => {
-      expect(matrix.getStats('Gzma')).toEqual(getTwoGenesMatrix().stats.Gzma);
+      const { stats } = getTwoGenesMatrix();
+
+      expect(matrix.getStats('Gzma')).toEqual({
+        rawMean: stats.rawMean[0],
+        rawStdev: stats.rawStdev[0],
+        truncatedMin: stats.truncatedMin[0],
+        truncatedMax: stats.truncatedMax[0],
+      });
     });
 
     it('geneIsLoaded on existing gene returns true', () => {
