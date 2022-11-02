@@ -22,7 +22,6 @@ import { getCellSets } from 'redux/selectors';
 import { Alert } from 'antd';
 
 import changeEmbeddingAxesIfNecessary from 'components/plots/helpers/changeEmbeddingAxesIfNecessary';
-import Chronometer from 'utils/Chronometer';
 
 const TrajectoryAnalysisPlot = forwardRef((props, ref) => {
   // Currenty monocle3 trajectory analysis only supports
@@ -211,11 +210,6 @@ const TrajectoryAnalysisPlot = forwardRef((props, ref) => {
       config.selectedNodes,
       startingNodesPlotData?.nodes,
     );
-
-    const time = Chronometer.get('trajectoryGet')?.stop().milliseconds();
-    if (!_.isNil(time)) {
-      console.log(`ms from getTrajectoryPlotPseudoTime to finish setting spec: ${time}`);
-    }
 
     return spec;
   };
