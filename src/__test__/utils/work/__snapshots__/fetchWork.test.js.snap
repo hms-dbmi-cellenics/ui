@@ -37,30 +37,30 @@ Object {
     ],
   },
   "stats": Object {
-    "A": Object {
-      "rawMean": 0.3,
-      "rawStdev": 0.4,
-      "truncatedMax": 1,
-      "truncatedMin": 0,
-    },
-    "B": Object {
-      "rawMean": 2.3,
-      "rawStdev": 2,
-      "truncatedMax": 3,
-      "truncatedMin": 2,
-    },
-    "C": Object {
-      "rawMean": 1.3,
-      "rawStdev": 1,
-      "truncatedMax": 5,
-      "truncatedMin": 1,
-    },
-    "D": Object {
-      "rawMean": 14.2,
-      "rawStdev": 1.2,
-      "truncatedMax": 0.5,
-      "truncatedMin": 0.1,
-    },
+    "rawMean": Array [
+      0.3,
+      2.3,
+      1.3,
+      14.2,
+    ],
+    "rawStdev": Array [
+      0.4,
+      2,
+      1,
+      1.2,
+    ],
+    "truncatedMax": Array [
+      1,
+      3,
+      5,
+      0.5,
+    ],
+    "truncatedMin": Array [
+      0,
+      2,
+      1,
+      0.1,
+    ],
   },
   "truncatedExpression": Object {
     "datatype": undefined,
