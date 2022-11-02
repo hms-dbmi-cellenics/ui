@@ -9,9 +9,10 @@ const getOneGeneMatrix = (geneSymbol, cellsCount = 10) => ({
   truncatedExpression: new SparseMatrix(_.times(cellsCount, 1)),
   zScore: new SparseMatrix(_.times(cellsCount, 1)),
   stats: {
-    a: {
-      rawMean: 1, rawStdev: 0, truncatedMin: 1, truncatedMax: 1,
-    },
+    rawMean: [1],
+    rawStdev: [0],
+    truncatedMin: [1],
+    truncatedMax: [1],
   },
 });
 
@@ -33,12 +34,10 @@ const getTwoGenesMatrix = () => ({
     [0, 3],
   ]),
   stats: {
-    Gzma: {
-      rawMean: 0.3, rawStdev: 0.4, truncatedMin: 0, truncatedMax: 1,
-    },
-    Lyz2: {
-      rawMean: 2.3, rawStdev: 2.0, truncatedMin: 2, truncatedMax: 3,
-    },
+    rawMean: [0.3, 2.3],
+    rawStdev: [0.4, 2.0],
+    truncatedMin: [0, 2],
+    truncatedMax: [1, 3],
   },
 });
 
@@ -60,12 +59,10 @@ const getOtherTwoGenesMatrix = () => ({
     [4, 3],
   ]),
   stats: {
-    'Hba-x': {
-      rawMean: 5, rawStdev: 0.4, truncatedMin: 10, truncatedMax: 15,
-    },
-    Rbp4: {
-      rawMean: 10, rawStdev: 1.9, truncatedMin: 0, truncatedMax: 6,
-    },
+    rawMean: [5, 10],
+    rawStdev: [0.4, 1.9],
+    truncatedMin: [10, 0],
+    truncatedMax: [15, 6],
   },
 });
 
@@ -87,15 +84,10 @@ const getThreeGenesMatrix = () => ({
     [0, 3, 1],
   ]),
   stats: {
-    GeneA: {
-      rawMean: 0.3, rawStdev: 0.4, truncatedMin: 0, truncatedMax: 1,
-    },
-    GeneB: {
-      rawMean: 2.3, rawStdev: 2.0, truncatedMin: 2, truncatedMax: 3,
-    },
-    GeneC: {
-      rawMean: 1.3, rawStdev: 1.0, truncatedMin: 1, truncatedMax: 5,
-    },
+    rawMean: [0.3, 2.3, 1.3],
+    rawStdev: [0.4, 2.0, 1.0],
+    truncatedMin: [0, 2, 1],
+    truncatedMax: [1, 3, 5],
   },
 });
 
@@ -117,18 +109,10 @@ const getFourGenesMatrix = () => ({
     [0, 3, 1],
   ]),
   stats: {
-    A: {
-      rawMean: 0.3, rawStdev: 0.4, truncatedMin: 0, truncatedMax: 1,
-    },
-    B: {
-      rawMean: 2.3, rawStdev: 2.0, truncatedMin: 2, truncatedMax: 3,
-    },
-    C: {
-      rawMean: 1.3, rawStdev: 1.0, truncatedMin: 1, truncatedMax: 5,
-    },
-    D: {
-      rawMean: 14.2, rawStdev: 1.2, truncatedMin: 0.1, truncatedMax: 0.5,
-    },
+    rawMean: [0.3, 2.3, 1.3, 14.2],
+    rawStdev: [0.4, 2.0, 1.0, 1.2],
+    truncatedMin: [0, 2, 1, 0.1],
+    truncatedMax: [1, 3, 5, 0.5],
   },
 });
 
@@ -150,18 +134,10 @@ const getOtherFourGenesMatrix = () => ({
     [0, 1, 0, 3],
   ]),
   stats: {
-    Gzma: {
-      rawMean: 0.5, rawStdev: 0.9, truncatedMin: 0.2, truncatedMax: 2,
-    },
-    Rbp4: {
-      rawMean: 1.3, rawStdev: 1.5, truncatedMin: 0, truncatedMax: 5,
-    },
-    Ms4a4b: {
-      rawMean: 0.3, rawStdev: 1.2, truncatedMin: 0.4, truncatedMax: 0.5,
-    },
-    Lyz2: {
-      rawMean: 2.3, rawStdev: 2.0, truncatedMin: 2, truncatedMax: 3,
-    },
+    rawMean: [0.5, 1.3, 2.3, 0.3],
+    rawStdev: [0.9, 1.5, 2.0, 1.2],
+    truncatedMin: [0.2, 0, 0.5, 0.4],
+    truncatedMax: [2, 5, 3, 0.5],
   },
 });
 
