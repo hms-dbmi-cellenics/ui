@@ -140,7 +140,7 @@ const ContentWrapper = (props) => {
     if (!activeExperiment) return;
 
     const pipelineStatus = calculatePipelineRerunStatus(
-      gem2sBackendStatus, activeExperiment, samples, experiment,
+      gem2sBackendStatus, activeExperiment, samples,
     );
 
     setGem2sRerunStatus(pipelineStatus);
@@ -269,6 +269,8 @@ const ContentWrapper = (props) => {
   const waitingForQcToLaunch = gem2sStatusKey === pipelineStatusValues.SUCCEEDED
     && pipelineStatusKey === pipelineStatusValues.NOT_CREATED;
 
+  const pipelineNotCreated = checkEveryIsValue([gem2sStatusKey, seuratStatusKey], pipelineStatusValues.NOT_CREATED);
+
   const renderContent = () => {
     if (routeExperimentId) {
       if (
@@ -281,12 +283,12 @@ const ContentWrapper = (props) => {
       }
 
       if (gem2sRunningError) {
-        return <PipelineLoadingScreen paramsHash={gem2sparamsHash} experimentId={routeExperimentId} pipelineStatus='error' />;
+        return <PipelineLoadingScreen paramsHash={gem2sparamsHash} experimentId={routeExperimentId} pipelineStatus='error' pipelineType='gem2s' />;
       }
 
       if (seuratComplete && currentModule === modules.DATA_PROCESSING) {
         navigateTo(modules.DATA_EXPLORATION, { experimentId: routeExperimentId });
-        return <></>;
+        return children;
       }
 
       if (gem2sRunning || waitingForQcToLaunch) {
@@ -297,7 +299,7 @@ const ContentWrapper = (props) => {
         return <PipelineLoadingScreen experimentId={routeExperimentId} pipelineStatus='running' completedSteps={completedSeuratSteps} pipelineType='seurat' />;
       }
 
-      if (checkEveryIsValue([gem2sStatusKey, seuratStatusKey], pipelineStatusValues.NOT_CREATED)) {
+      if (pipelineNotCreated) {
         return <PipelineLoadingScreen experimentId={routeExperimentId} pipelineStatus='toBeRun' />;
       }
 
@@ -313,7 +315,7 @@ const ContentWrapper = (props) => {
         return children;
       }
 
-      if (pipelineStatusKey === pipelineStatusValues.NOT_CREATED && currentModule !== modules.DATA_PROCESSING) {
+      if (pipelineNotCreated && currentModule !== modules.DATA_PROCESSING) {
         return <PipelineRedirectToDataProcessing experimentId={routeExperimentId} pipelineStatus='toBeRun' />;
       }
     }
