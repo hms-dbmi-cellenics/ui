@@ -257,6 +257,7 @@ describe('DiffExprResults', () => {
         name: 'DifferentialExpression',
       },
       withResultStore.getState,
+      expect.any(Function),
       {
         extras: {
           pagination: {

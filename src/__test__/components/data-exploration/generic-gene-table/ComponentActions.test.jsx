@@ -126,6 +126,7 @@ describe('ComponentActions', () => {
         genes: ['GeneA', 'GeneB', 'GeneC'],
       },
       store.getState,
+      expect.any(Function),
       { timeout: 60 },
     );
 

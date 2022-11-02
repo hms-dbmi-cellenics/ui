@@ -8,7 +8,6 @@ import {
 
 import fetchWork from 'utils/work/fetchWork';
 import getTimeoutForWorkerTask from 'utils/getTimeoutForWorkerTask';
-import workRequestVersions from 'utils/work/workRequestVersions';
 
 const loadPaginatedGeneProperties = (
   experimentId, properties, componentUuid, tableState,
@@ -46,9 +45,8 @@ const loadPaginatedGeneProperties = (
   const timeout = getTimeoutForWorkerTask(getState(), 'ListGenes');
 
   try {
-    const workRequestVersion = workRequestVersions.geneList;
     const { gene_names: geneNames, dispersions, total } = await fetchWork(
-      experimentId, body, getState, { timeout, extras: { version: workRequestVersion } },
+      experimentId, body, getState, dispatch, { timeout },
     );
 
     const loadedProperties = {};
