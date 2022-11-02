@@ -2805,11 +2805,9 @@
       ]
   },
   "stats": {
-      "FAKEGENE": {
-          "rawMean": 0.5538,
-          "rawStdev": 0.8409,
-          "truncatedMin": 0,
-          "truncatedMax": 2.1813
-      }
+    "rawMean": [ 0.5538 ],
+    "rawStdev": [ 0.8409 ],
+    "truncatedMin": [ 0 ],
+    "truncatedMax": [ 2.1813 ]
   }
 }

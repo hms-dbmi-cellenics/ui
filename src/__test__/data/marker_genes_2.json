@@ -37961,89 +37961,69 @@
       ]
   },
   "stats": {
-      "Ms4a4b": {
-          "rawMean": 2.0342,
-          "rawStdev": 1.3509,
-          "truncatedMin": 0,
-          "truncatedMax": 3.755
-      },
-      "Smc4": {
-          "rawMean": 0.8138,
-          "rawStdev": 1.0471,
-          "truncatedMin": 0,
-          "truncatedMax": 2.8366
-      },
-      "S100a4": {
-          "rawMean": 1.5989,
-          "rawStdev": 1.6216,
-          "truncatedMin": 0,
-          "truncatedMax": 3.9599
-      },
-      "S100a6": {
-          "rawMean": 2.1982,
-          "rawStdev": 1.7074,
-          "truncatedMin": 0,
-          "truncatedMax": 4.5022
-      },
-      "5830411N06Rik": {
-          "rawMean": 0.6293,
-          "rawStdev": 1.0236,
-          "truncatedMin": 0,
-          "truncatedMax": 2.6782
-      },
-      "Lmo4": {
-          "rawMean": 0.9553,
-          "rawStdev": 1.1244,
-          "truncatedMin": 0,
-          "truncatedMax": 2.9767
-      },
-      "Ccl5": {
-          "rawMean": 1.3205,
-          "rawStdev": 2.0962,
-          "truncatedMin": 0,
-          "truncatedMax": 5.5218
-      },
-      "Nkg7": {
-          "rawMean": 1.0068,
-          "rawStdev": 1.3086,
-          "truncatedMin": 0,
-          "truncatedMax": 3.434
-      },
-      "Gzma": {
-          "rawMean": 0.5559,
-          "rawStdev": 1.4916,
-          "truncatedMin": 0,
-          "truncatedMax": 5.0996
-      },
-      "Stmn1": {
-          "rawMean": 0.3348,
-          "rawStdev": 0.8183,
-          "truncatedMin": 0,
-          "truncatedMax": 2.4131
-      },
-      "Lyz2": {
-          "rawMean": 0.312,
-          "rawStdev": 1.1898,
-          "truncatedMin": 0,
-          "truncatedMax": 4.198
-      },
-      "Ifitm3": {
-          "rawMean": 0.2523,
-          "rawStdev": 0.9507,
-          "truncatedMin": 0,
-          "truncatedMax": 3.6423
-      },
-      "Cd74": {
-          "rawMean": 0.3653,
-          "rawStdev": 1.1008,
-          "truncatedMin": 0,
-          "truncatedMax": 3.0513
-      },
-      "Igkc": {
-          "rawMean": 0.1991,
-          "rawStdev": 0.9485,
-          "truncatedMin": 0,
-          "truncatedMax": 2.6532
-      }
+    "rawMean": [
+        2.0342,
+        0.8138,
+        1.5989,
+        2.1982,
+        0.6293,
+        0.9553,
+        1.3205,
+        1.0068,
+        0.5559,
+        0.3348,
+        0.312,
+        0.2523,
+        0.3653,
+        0.1991
+    ],
+    "rawStdev": [
+        1.3509,
+        1.0471,
+        1.6216,
+        1.7074,
+        1.0236,
+        1.1244,
+        2.0962,
+        1.3086,
+        1.4916,
+        0.8183,
+        1.1898,
+        0.9507,
+        1.1008,
+        0.9485
+    ],
+    "truncatedMin": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+    ],
+    "truncatedMax": [
+        3.755,
+        2.8366,
+        3.9599,
+        4.5022,
+        2.6782,
+        2.9767,
+        5.5218,
+        3.434,
+        5.0996,
+        2.4131,
+        4.198,
+        3.6423,
+        3.0513,
+        2.6532
+    ]
   }
 }
