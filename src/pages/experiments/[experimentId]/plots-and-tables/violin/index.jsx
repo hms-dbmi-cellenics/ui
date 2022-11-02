@@ -8,7 +8,7 @@ import _ from 'lodash';
 
 import {
   updatePlotConfig,
-  savePlotConfig
+  savePlotConfig,
 } from 'redux/actions/componentConfig/index';
 import { loadCellSets } from 'redux/actions/cellSets';
 import Header from 'components/Header';
@@ -52,6 +52,7 @@ const ViolinIndex = ({ experimentId }) => {
   const cellSets = useSelector(getCellSets());
 
   const geneList = useSelector(getGeneList());
+  console.log('GENE LIST ', geneList);
   const geneNames = Object.keys(geneList.data);
 
   const geneExpression = useSelector((state) => state.genes.expression);

@@ -1,4 +1,5 @@
 const { loadProcessingSettings } = require('redux/actions/experimentSettings');
+const workerVersions = require('./workerVersions');
 
 const getClusteringSettings = async (experimentId, dispatch, getState) => {
   let clusteringSettings = getState().experimentSettings
@@ -37,6 +38,10 @@ const getExtraDependencies = async (experimentId, name, dispatch, getState) => {
       (dependencyGetter) => dependencyGetter(experimentId, dispatch, getState),
     ),
   );
+
+  if (workerVersions[name]) {
+    dependencies.push(workerVersions[name]);
+  }
 
   return dependencies;
 };
