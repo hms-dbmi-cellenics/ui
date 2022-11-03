@@ -4,7 +4,6 @@ import { getBackendStatus } from 'redux/selectors';
 
 import cache from 'utils/cache';
 import generateETag from 'utils/work/generateETag';
-
 import { dispatchWorkRequest, seekFromS3 } from 'utils/work/seekWorkResponse';
 
 // Temporarily using gene expression without local cache
