@@ -661,9 +661,6 @@ const generateStartingNodesData = (nodes) => {
   const trajectoryNodes = [];
 
   Object.values(nodes.x).forEach((nodeIdxX, nodeIdx) => {
-    // This line is unnecessary
-    // if (!connectedNodes[nodeIdx].length) return;
-
     connectedNodes[nodeIdx].forEach((connectedIdx) => {
       trajectoryNodes.push(
         { x: nodeIdxX, y: y[nodeIdx], node_id: nodeIdx },
