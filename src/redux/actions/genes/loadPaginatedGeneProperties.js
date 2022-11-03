@@ -45,7 +45,7 @@ const loadPaginatedGeneProperties = (
   const timeout = getTimeoutForWorkerTask(getState(), 'ListGenes');
 
   try {
-    const { gene_names: geneNames, dispersions, total } = await fetchWork(
+    const { geneNames, dispersions, total } = await fetchWork(
       experimentId, body, getState, dispatch, { timeout },
     );
 
