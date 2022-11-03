@@ -21,7 +21,7 @@ const getBackgroundExpressedGenes = () => async (dispatch, getState) => {
 
   try {
     const data = await fetchWork(
-      experimentId, body, getState, { timeout },
+      experimentId, body, getState, dispatch, { timeout },
     );
 
     const { genes } = data;

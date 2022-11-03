@@ -73,7 +73,7 @@ const loadGeneExpression = (
       zScore: zScoreJson,
       stats,
     } = await fetchWork(
-      experimentId, body, getState, { timeout },
+      experimentId, body, getState, dispatch, { timeout },
     );
 
     const rawExpression = SparseMatrix.fromJSON(rawExpressionJson);
