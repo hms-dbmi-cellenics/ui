@@ -52,7 +52,7 @@ const ViolinIndex = ({ experimentId }) => {
   const cellSets = useSelector(getCellSets());
 
   const geneList = useSelector(getGeneList());
-  console.log('GENE LIST ', geneList);
+
   const geneNames = Object.keys(geneList.data);
 
   const geneExpression = useSelector((state) => state.genes.expression);
