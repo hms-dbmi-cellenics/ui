@@ -15,7 +15,7 @@ const getClusterNames = (state) => {
   return clusterNames;
 };
 
-const rehydrate = (data) => {
+const transformToPlotData = (data) => {
   const result = [];
 
   data.cellSetsIdx.forEach((cellSetIdx, arrIdx) => {
@@ -30,10 +30,10 @@ const rehydrate = (data) => {
   return result;
 };
 
-const orderCellSets = (data, state, config) => {
+const orderCellSets = (data, cellSets, config) => {
   // reordering data based on the sample order
   const { selectedCellSet } = config;
-  const { hierarchy, properties } = state.cellSets;
+  const { hierarchy, properties } = cellSets;
   if (hierarchy.length) {
     const cellSetOrderKeys = hierarchy.filter((rootNode) => rootNode.key === selectedCellSet)[0]
       .children
@@ -79,14 +79,14 @@ const getDotPlot = (
       experimentId, body, getState, dispatch, { timeout },
     );
 
-    const rehydratedData = rehydrate(data);
-    orderCellSets(rehydratedData, getState(), config);
+    const plotData = transformToPlotData(data);
+    orderCellSets(plotData, getState().cellSets, config);
 
     dispatch({
       type: PLOT_DATA_LOADED,
       payload: {
         plotUuid,
-        plotData: rehydratedData,
+        plotData,
       },
     });
   } catch (e) {
