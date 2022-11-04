@@ -56,9 +56,6 @@ const createSampleFile = (
       },
     );
 
-    console.log('signedUrls!!!');
-    console.log(signedUrls);
-
     return {
       ...signedUrls,
       sampleFileId: body.sampleFileId,
