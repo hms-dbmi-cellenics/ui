@@ -96,7 +96,7 @@ describe('loadPaginatedGeneProperties action', () => {
       .mockImplementationOnce(() => null)
       .mockImplementation(() => Promise.resolve({
         total: 2,
-        geneNames: ['a', 'b'],
+        gene_names: ['a', 'b'],
         dispersions: [1, 1],
       }));
 
