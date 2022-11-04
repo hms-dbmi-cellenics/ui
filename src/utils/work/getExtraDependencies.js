@@ -1,5 +1,5 @@
-const { loadProcessingSettings } = require('redux/actions/experimentSettings');
-const workerVersions = require('utils/work/workerVersions').default;
+import { loadProcessingSettings } from 'redux/actions/experimentSettings';
+import workerVersions from 'utils/work/workerVersions';
 
 const getClusteringSettings = async (experimentId, dispatch, getState) => {
   let clusteringSettings = getState().experimentSettings
@@ -38,7 +38,6 @@ const getExtraDependencies = async (experimentId, name, dispatch, getState) => {
       (dependencyGetter) => dependencyGetter(experimentId, dispatch, getState),
     ),
   );
-
   if (workerVersions[name]) {
     dependencies.push(workerVersions[name]);
   }
