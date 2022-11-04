@@ -1,5 +1,5 @@
 {
   "total": 5,
-  "gene_names": [ "Lyz2", "Chil3", "Ccl5", "Apoe", "Ifitm3", "Tmem176a"],
+  "geneNames": [ "Lyz2", "Chil3", "Ccl5", "Apoe", "Ifitm3", "Tmem176a"],
   "dispersions": [ 55.7422, 45.7339, 38.8161, 31.3993, 26.0879, 23]
 }
