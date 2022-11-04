@@ -8,7 +8,7 @@ import { act } from 'react-dom/test-utils';
 import {
   screen, render, waitFor, fireEvent,
 } from '@testing-library/react';
-import { runGem2s } from 'redux/actions/pipeline';
+import { runGem2s, runSeurat } from 'redux/actions/pipeline';
 
 import PipelineStatus from 'utils/pipelineStatusValues';
 import LaunchAnalysisButton from 'components/data-management/LaunchAnalysisButton';
@@ -24,6 +24,7 @@ jest.mock('utils/data-management/generatePipelineParamsHash');
 jest.mock('redux/actions/experimentSettings/updateExperimentInfo', () => jest.fn().mockReturnValue({ type: 'UPDATE_EXPERIMENT_INFO' }));
 jest.mock('redux/actions/pipeline', () => ({
   runGem2s: jest.fn().mockReturnValue({ type: 'RUN_GEM2S' }),
+  runSeurat: jest.fn().mockReturnValue({ type: 'RUN_SEURAT' }),
 }));
 
 const mockNavigateTo = jest.fn();
@@ -142,6 +143,49 @@ const withDataState = {
   },
 };
 
+const withSeuratDataState = {
+  ...noDataState,
+  experiments: {
+    ...noDataState.experiments,
+    [experiment1id]: {
+      ...experimentTemplate,
+      ...noDataState.experiments[experiment1id],
+      sampleIds: [sample1Uuid],
+    },
+  },
+  samples: {
+    ...noDataState.samples,
+    [sample1Uuid]: {
+      ...sampleTemplate,
+      name: sample1Name,
+      experimentId: experiment1id,
+      uuid: sample1Uuid,
+      type: 'Seurat',
+      fileNames: ['r.rds'],
+      files: {
+        'r.rds': { valid: true, upload: { status: UploadStatus.UPLOADED } },
+      },
+    },
+  },
+  backendStatus: {
+    [experiment1id]: {
+      ...initialExperimentBackendStatus,
+      status: {
+        gem2s: {
+          status: PipelineStatus.NOT_CREATED,
+        },
+        pipeline: {
+          status: PipelineStatus.NOT_CREATED,
+        },
+        seurat: {
+          paramsHash: 'old-params-hash',
+          status: PipelineStatus.SUCCEEDED,
+        },
+      },
+    },
+  },
+};
+
 describe('LaunchAnalysisButton', () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -186,7 +230,21 @@ describe('LaunchAnalysisButton', () => {
     expect(button).toBeDisabled();
   });
 
-  it('Process project button is disabled if not all data are uploaded', async () => {
+  it('Process project button is disabled if there is no data or technology', async () => {
+    await act(async () => {
+      render(
+        <Provider store={mockStore(noDataState)}>
+          <LaunchAnalysisButton />
+        </Provider>,
+      );
+    });
+
+    const button = screen.getByText('Process project').closest('button');
+
+    expect(button).toBeDisabled();
+  });
+
+  it('Process project button is disabled if not all 10X data are uploaded', async () => {
     const notAllDataUploaded = {
       ...withDataState,
       samples: {
@@ -214,7 +272,35 @@ describe('LaunchAnalysisButton', () => {
     expect(button).toBeDisabled();
   });
 
-  it('Process project button is enabled if there is data and all metadata for all samples are uplaoded', async () => {
+  it('Process project button is disabled if not all Seurat data is uploaded', async () => {
+    const notAllSeuratDataUploaded = {
+      ...withSeuratDataState,
+      samples: {
+        ...withSeuratDataState.samples,
+        [sample1Uuid]: {
+          ...withSeuratDataState.samples[sample1Uuid],
+          files: {
+            ...withSeuratDataState.samples[sample1Uuid].files,
+            'r.rds': { valid: true, upload: { status: UploadStatus.UPLOADING } },
+          },
+        },
+      },
+    };
+
+    await act(async () => {
+      render(
+        <Provider store={mockStore(notAllSeuratDataUploaded)}>
+          <LaunchAnalysisButton technology='seurat' />
+        </Provider>,
+      );
+    });
+
+    const button = screen.getByText('Process project').closest('button');
+
+    expect(button).toBeDisabled();
+  });
+
+  it('Process project button is enabled if there is data and all metadata for all samples are uploaded', async () => {
     await act(async () => {
       render(
         <Provider store={mockStore(withDataState)}>
@@ -228,7 +314,21 @@ describe('LaunchAnalysisButton', () => {
     expect(button).not.toBeDisabled();
   });
 
-  it('Shows Go to Data Processing if there are no changes to the experiment (same hash)', async () => {
+  it('Process project button is enabled if all Seurat data is uploaded', async () => {
+    await act(async () => {
+      render(
+        <Provider store={mockStore(withSeuratDataState)}>
+          <LaunchAnalysisButton technology='seurat' />
+        </Provider>,
+      );
+    });
+
+    const button = screen.getByText('Process project').closest('button');
+
+    expect(button).not.toBeDisabled();
+  });
+
+  it('Shows Go to Data Processing if there are no changes to the 10X experiment (same hash)', async () => {
     generatePipelineParamsHash.mockReturnValueOnce('old-params-hash');
 
     await act(async () => {
@@ -244,13 +344,45 @@ describe('LaunchAnalysisButton', () => {
     });
   });
 
-  it('Shows Process project if there are changes to the experiment (different hash)', async () => {
+  it('Shows Go to Data Processing if there are no changes to the Seurat experiment (same hash)', async () => {
+    generatePipelineParamsHash.mockReturnValueOnce('old-params-hash');
+
+    await act(async () => {
+      render(
+        <Provider store={mockStore(withSeuratDataState)}>
+          <LaunchAnalysisButton technology='seurat' />
+        </Provider>,
+      );
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText('Go to Data Processing')).toBeDefined();
+    });
+  });
+
+  it('Shows Process project if there are changes to the 10X experiment (different hash)', async () => {
     generatePipelineParamsHash.mockReturnValueOnce('new-params-hash');
 
     await act(async () => {
       render(
         <Provider store={mockStore(withDataState)}>
           <LaunchAnalysisButton technology='10x' />
+        </Provider>,
+      );
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText('Process project')).toBeDefined();
+    });
+  });
+
+  it('Shows Process project if there are changes to the Seurat experiment (different hash)', async () => {
+    generatePipelineParamsHash.mockReturnValueOnce('new-params-hash');
+
+    await act(async () => {
+      render(
+        <Provider store={mockStore(withSeuratDataState)}>
+          <LaunchAnalysisButton technology='seurat' />
         </Provider>,
       );
     });
@@ -277,7 +409,7 @@ describe('LaunchAnalysisButton', () => {
 
     // fireEvent is used here instead of user event
     // because fireEvent does not check for pointer-events: none
-    // whiich is checked by userEvents disables interaction with the button
+    // which is checked by userEvents disables interaction with the button
     // See https://github.com/ant-design/ant-design/issues/31105
     fireEvent.click(screen.getByText('Yes'));
 
@@ -312,8 +444,42 @@ describe('LaunchAnalysisButton', () => {
 
     userEvent.click(screen.getByText('Go to Data Processing'));
     expect(runGem2s).not.toHaveBeenCalled();
+    expect(runSeurat).not.toHaveBeenCalled();
 
     // Call on navigation to go
     expect(mockNavigateTo).toHaveBeenCalled();
+  });
+
+  it('Does dispatch a request to runSeurat for an unprocessed experiment', async () => {
+    const notProcessedSeuratDataState = {
+      ...withSeuratDataState,
+      backendStatus: {
+        ...noDataState.backendStatus,
+        seurat: {
+          status: PipelineStatus.NOT_CREATED,
+        },
+      },
+    };
+
+    await act(async () => {
+      render(
+        <Provider store={mockStore(notProcessedSeuratDataState)}>
+          <LaunchAnalysisButton technology='seurat' />
+        </Provider>,
+      );
+    });
+
+    userEvent.click(screen.getByText('Process project'));
+
+    await waitFor(() => screen.getByText('Yes'));
+
+    // fireEvent is used here instead of user event
+    // because fireEvent does not check for pointer-events: none
+    // which is checked by userEvents disables interaction with the button
+    // See https://github.com/ant-design/ant-design/issues/31105
+    fireEvent.click(screen.getByText('Yes'));
+
+    expect(runGem2s).not.toHaveBeenCalled();
+    expect(runSeurat).toHaveBeenCalled();
   });
 });
