@@ -313,7 +313,7 @@ describe('Dot plot page', () => {
     // first three genes of the data should be loaded by default
     const loadedGenes = {};
     // The genes in Data 5 should be in the tree
-    paginatedGeneExpressionData.geneNames.forEach((gene, indx) => {
+    paginatedGeneExpressionData.gene_names.forEach((gene, indx) => {
       loadedGenes[gene] = { dispersions: paginatedGeneExpressionData.dispersions[indx] };
     });
 
@@ -478,7 +478,7 @@ describe('Drag and drop enzyme tests', () => {
     // antd renders 5 elements, use the first one
     tree = component.find({ 'data-testid': 'HierachicalTreeGenes' }).at(0);
 
-    paginatedGeneExpressionData.geneNames.slice(0, 3).reverse().forEach((gene, indx) => {
+    paginatedGeneExpressionData.gene_names.slice(0, 3).reverse().forEach((gene, indx) => {
       loadedGenes[gene] = { dispersions: paginatedGeneExpressionData.dispersions[indx] };
     });
   });
