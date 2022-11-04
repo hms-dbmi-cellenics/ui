@@ -99,7 +99,7 @@ const FileUploadModal = (props) => {
     <>
       <Space direction='vertical' style={{ width: '100%' }}>
         {
-          fileUploadParagraphs.map((text) => <Paragraph>{text}</Paragraph>)
+          fileUploadParagraphs.map((text) => <Paragraph><div dangerouslySetInnerHTML={{ __html: text }}></div></Paragraph>)
         }
         <List
           dataSource={techOptions[selectedTech].inputInfo}
@@ -110,10 +110,7 @@ const FileUploadModal = (props) => {
             <List.Item>
               {
                 item.map((fileName, i) => (
-                  <span key={fileName}>
-                    <Text code>{`${fileName}`}</Text>
-                    {i !== item.length - 1 && ' or '}
-                  </span>
+                  <span key={fileName} class="ant-typography" dangerouslySetInnerHTML={{ __html: item }}></span>
                 ))
               }
             </List.Item>

@@ -13,9 +13,9 @@ const fileUploadSpecifications = {
     validMimeTypes: ['text/tsv', 'application/gzip', 'application/x-gzip', 'text/tab-separated-values'],
     validExtensionTypes: ['.mtx'],
     inputInfo: [
-      ['features.tsv', 'features.tsv.gz', 'genes.tsv', 'genes.tsv.gz'],
-      ['barcodes.tsv', 'barcodes.tsv.gz'],
-      ['matrix.mtx', 'matrix.mtx.gz'],
+      ['<code>features.tsv</code> or <code>features.tsv.gz</code> or <code>genes.tsv</code> or <code>genes.tsv.gz</code>'],
+      ['<code>barcodes.tsv</code> or <code>barcodes.tsv.gz</code>'],
+      ['<code>matrix.mtx</code> or <code>matrix.mtx.gz</code>'],
     ],
     requiredFiles: [
       'features.tsv.gz',
@@ -33,21 +33,22 @@ const fileUploadSpecifications = {
   Seurat: {
     validExtensionTypes: ['.rds'],
     inputInfo: [
-      ['embedding'],
-      ['counts'],
-      ['seurat_clusters'],
-      ['samples'],
+      ['<code>HVFInfo(scdata)</code>: result of call to <code>FindVariableFeatures</code> or <code>SCTransform</code>.'],
+      ['<code>scdata$seurat_clusters</code>: cluster assignment.'],
+      ['<code>scdata$samples</code>: sample assignment. If absent, treated as unisample.'],
+      ['<code>scdata[[\'RNA\']]@counts</code>: raw feature counts.'],
+      ['<code>scdata[[\'RNA\']]@data</code>: log transformed counts.'],
+      ['<code>scdata@reductions</code>: contains the embedding indicated by <code>DefaultDimReduc(scdata)</code>.'],
+      ['sample level metadata in <code>scdata@meta.data</code> that groups samples in <code>scdata$samples</code> is auto-detected.'],
     ],
     requiredFiles: [
       'r.rds',
     ],
     fileUploadParagraphs: [
-      // eslint-disable-next-line
-      <p>For your dataset, upload a single <code>*.rds</code> file with the Seurat object.</p>,
-      // eslint-disable-next-line
-      <p>The Seurat object must contain the following slots and metadata:</p>
+      '<p>For your dataset, upload a single <code>*.rds</code> file with the Seurat object.</p>',
+      '<p>The Seurat object must contain the following slots and metadata:</p>',
     ],
-    dropzoneText: 'Drag and drop file here or click to browse.',
+    dropzoneText: 'Drag and drop *.rds file here or click to browse.',
     // setting to null allows file upload on dropzone click
     webkitdirectory: null,
   },
