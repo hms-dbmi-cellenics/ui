@@ -40,7 +40,7 @@ describe('loadMarkerGenes action', () => {
     },
   };
 
-  it('throws when parameters are undefined or null', async () => {
+  it('throws when experimentId is undefined or null', async () => {
     const store = mockStore({});
 
     const errorMessage = 'Null or undefined parameter/s for loadMarkerGenes';
@@ -53,6 +53,13 @@ describe('loadMarkerGenes action', () => {
     } catch (e) {
       expect(e.message).toEqual(errorMessage);
     }
+  });
+
+  it('does not throw when resolution is undefined or null', async () => {
+    const store = mockStore({});
+
+    await expect(store.dispatch(loadMarkerGenes(1, undefined))).resolves.not.toThrowError();
+    await expect(store.dispatch(loadMarkerGenes(1))).resolves.not.toThrowError();
   });
 
   it('dispatches appropriately on success', async () => {
