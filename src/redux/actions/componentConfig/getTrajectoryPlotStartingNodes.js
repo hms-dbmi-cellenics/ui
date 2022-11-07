@@ -21,6 +21,7 @@ const getTrajectoryPlotStartingNodes = (
   } = getState().experimentSettings.processing.configureEmbedding;
 
   const { environment } = getState().networkResources;
+
   const {
     pipeline:
     { startDate: qcPipelineStartDate },
