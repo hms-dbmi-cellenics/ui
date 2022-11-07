@@ -30,8 +30,23 @@ const prepareAndUploadFileToS3 = async (
     }
   }
 
+  const uploadedPartSizes = new Array(signedUrls.length).fill(0);
+  const totalSize = file.fileObject.size;
+
+  const createOnUploadProgressForPart = (partIndex) => (progress) => {
+    uploadedPartSizes[partIndex] = progress.loaded;
+    const totalUploaded = _.sum(uploadedPartSizes);
+    const percentProgress = Math.floor((totalUploaded * 100) / totalSize);
+
+    dispatch(
+      updateSampleFileUpload(
+        projectId, sampleId, fileType, UploadStatus.UPLOADING, percentProgress ?? 0,
+      ),
+    );
+  };
+
   try {
-    resParts = await uploadParts(compressedFile, signedUrls);
+    resParts = await uploadParts(compressedFile, signedUrls, createOnUploadProgressForPart);
   } catch (e) {
     dispatch(updateSampleFileUpload(projectId, sampleId, fileType, UploadStatus.UPLOAD_ERROR));
     return;

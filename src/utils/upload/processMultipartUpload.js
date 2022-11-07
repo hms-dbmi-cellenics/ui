@@ -2,7 +2,7 @@ import Axios from 'axios';
 
 const FILE_CHUNK_SIZE = 10000000;
 
-const uploadParts = async (file, urls) => {
+const uploadParts = async (file, urls, createOnUploadProgressForPart) => {
   const axios = Axios.create();
   delete axios.defaults.headers.put['Content-Type'];
 
@@ -16,7 +16,11 @@ const uploadParts = async (file, urls) => {
       ? file.fileObject.slice(start, end)
       : file.fileObject.slice(start);
 
-    promises.push(axios.put(signedUrl, blob));
+    const config = {
+      onUploadProgress: createOnUploadProgressForPart(index),
+    };
+
+    promises.push(axios.put(signedUrl, blob, config));
   });
 
   const resParts = await Promise.all(promises);
