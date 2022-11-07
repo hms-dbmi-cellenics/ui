@@ -76,13 +76,17 @@ jobs:
 
       - id: test
         name: Run unit tests
-        uses: mattallty/jest-github-action@v1
-        env:
-          AWS_DEFAULT_REGION: eu-west-1
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          test-command: 'npm run coverage'
-          coverage-comment: true
+        run: |-
+          npm run coverage
+      # - id: test
+      #   name: Run unit tests
+      #   uses: mattallty/jest-github-action@v1
+      #   env:
+      #     AWS_DEFAULT_REGION: eu-west-1
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #   with:
+      #     test-command: 'npm run coverage'
+      #     coverage-comment: true
 
       - id: upload-coverage
         name: Upload coverage to Codecov
