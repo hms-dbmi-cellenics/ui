@@ -288,7 +288,7 @@ const ContentWrapper = (props) => {
 
       if (seuratComplete && currentModule === modules.DATA_PROCESSING) {
         navigateTo(modules.DATA_EXPLORATION, { experimentId: routeExperimentId });
-        return children;
+        return <></>;
       }
 
       if (gem2sRunning || waitingForQcToLaunch) {
