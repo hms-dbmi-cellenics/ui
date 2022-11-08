@@ -5,11 +5,17 @@ import { appendColumns, getColumn } from 'utils/ExpressionMatrix/sparseMatrixOpe
 
 class ExpressionMatrix {
   constructor() {
+    this.geneIndexes = {};
+
     this.rawGeneExpressions = new SparseMatrix();
     this.truncatedGeneExpressions = new SparseMatrix();
     this.zScore = new SparseMatrix();
-    this.stats = {};
-    this.geneIndexes = {};
+    this.stats = {
+      rawMean: [],
+      rawStdev: [],
+      truncatedMin: [],
+      truncatedMax: [],
+    };
   }
 
   getRawExpression(geneSymbol, cellIndexes = undefined) {
@@ -25,7 +31,16 @@ class ExpressionMatrix {
   }
 
   getStats(geneSymbol) {
-    return this.stats[geneSymbol];
+    const geneIndex = this.geneIndexes[geneSymbol];
+
+    if (_.isNil(geneIndex)) return undefined;
+
+    return {
+      rawMean: this.stats.rawMean[geneIndex],
+      rawStdev: this.stats.rawStdev[geneIndex],
+      truncatedMin: this.stats.truncatedMin[geneIndex],
+      truncatedMax: this.stats.truncatedMax[geneIndex],
+    };
   }
 
   geneIsLoaded(geneSymbol) {
@@ -92,8 +107,13 @@ class ExpressionMatrix {
     appendColumns(this.truncatedGeneExpressions, newTruncatedGeneExpression, genesToAddIndexes);
     appendColumns(this.zScore, newZScore, genesToAddIndexes);
 
-    // Add new gene stats
-    _.merge(this.stats, newStats);
+    // Add new stats only for the genes that were added
+    genesToAddIndexes.forEach((index) => {
+      this.stats.rawMean.push(newStats.rawMean[index]);
+      this.stats.rawStdev.push(newStats.rawStdev[index]);
+      this.stats.truncatedMin.push(newStats.truncatedMin[index]);
+      this.stats.truncatedMax.push(newStats.truncatedMax[index]);
+    });
   }
 
   #setGeneExpression = (

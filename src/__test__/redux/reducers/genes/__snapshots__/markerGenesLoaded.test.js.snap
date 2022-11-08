@@ -44,12 +44,18 @@ Object {
         ],
       },
       "stats": Object {
-        "a": Object {
-          "rawMean": 1,
-          "rawStdev": 0,
-          "truncatedMax": 1,
-          "truncatedMin": 1,
-        },
+        "rawMean": Array [
+          1,
+        ],
+        "rawStdev": Array [
+          0,
+        ],
+        "truncatedMax": Array [
+          1,
+        ],
+        "truncatedMin": Array [
+          1,
+        ],
       },
       "truncatedGeneExpressions": Object {
         "datatype": undefined,

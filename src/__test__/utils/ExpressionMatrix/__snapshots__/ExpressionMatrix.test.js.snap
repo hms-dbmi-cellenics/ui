@@ -30,18 +30,22 @@ ExpressionMatrix {
     ],
   },
   "stats": Object {
-    "Gzma": Object {
-      "rawMean": 0.3,
-      "rawStdev": 0.4,
-      "truncatedMax": 1,
-      "truncatedMin": 0,
-    },
-    "Lyz2": Object {
-      "rawMean": 2.3,
-      "rawStdev": 2,
-      "truncatedMax": 3,
-      "truncatedMin": 2,
-    },
+    "rawMean": Array [
+      0.3,
+      2.3,
+    ],
+    "rawStdev": Array [
+      0.4,
+      2,
+    ],
+    "truncatedMax": Array [
+      1,
+      3,
+    ],
+    "truncatedMin": Array [
+      0,
+      2,
+    ],
   },
   "truncatedGeneExpressions": Object {
     "datatype": undefined,
@@ -122,18 +126,22 @@ ExpressionMatrix {
     ],
   },
   "stats": Object {
-    "Gzma": Object {
-      "rawMean": 0.3,
-      "rawStdev": 0.4,
-      "truncatedMax": 1,
-      "truncatedMin": 0,
-    },
-    "Lyz2": Object {
-      "rawMean": 2.3,
-      "rawStdev": 2,
-      "truncatedMax": 3,
-      "truncatedMin": 2,
-    },
+    "rawMean": Array [
+      0.3,
+      2.3,
+    ],
+    "rawStdev": Array [
+      0.4,
+      2,
+    ],
+    "truncatedMax": Array [
+      1,
+      3,
+    ],
+    "truncatedMin": Array [
+      0,
+      2,
+    ],
   },
   "truncatedGeneExpressions": Object {
     "datatype": undefined,
@@ -230,30 +238,30 @@ ExpressionMatrix {
     ],
   },
   "stats": Object {
-    "Gzma": Object {
-      "rawMean": 0.3,
-      "rawStdev": 0.4,
-      "truncatedMax": 1,
-      "truncatedMin": 0,
-    },
-    "Hba-x": Object {
-      "rawMean": 5,
-      "rawStdev": 0.4,
-      "truncatedMax": 15,
-      "truncatedMin": 10,
-    },
-    "Lyz2": Object {
-      "rawMean": 2.3,
-      "rawStdev": 2,
-      "truncatedMax": 3,
-      "truncatedMin": 2,
-    },
-    "Rbp4": Object {
-      "rawMean": 10,
-      "rawStdev": 1.9,
-      "truncatedMax": 6,
-      "truncatedMin": 0,
-    },
+    "rawMean": Array [
+      0.3,
+      2.3,
+      5,
+      10,
+    ],
+    "rawStdev": Array [
+      0.4,
+      2,
+      0.4,
+      1.9,
+    ],
+    "truncatedMax": Array [
+      1,
+      3,
+      15,
+      6,
+    ],
+    "truncatedMin": Array [
+      0,
+      2,
+      10,
+      0,
+    ],
   },
   "truncatedGeneExpressions": Object {
     "datatype": undefined,
@@ -372,30 +380,30 @@ ExpressionMatrix {
     ],
   },
   "stats": Object {
-    "Gzma": Object {
-      "rawMean": 0.5,
-      "rawStdev": 0.9,
-      "truncatedMax": 2,
-      "truncatedMin": 0.2,
-    },
-    "Lyz2": Object {
-      "rawMean": 2.3,
-      "rawStdev": 2,
-      "truncatedMax": 3,
-      "truncatedMin": 2,
-    },
-    "Ms4a4b": Object {
-      "rawMean": 0.3,
-      "rawStdev": 1.2,
-      "truncatedMax": 0.5,
-      "truncatedMin": 0.4,
-    },
-    "Rbp4": Object {
-      "rawMean": 1.3,
-      "rawStdev": 1.5,
-      "truncatedMax": 5,
-      "truncatedMin": 0,
-    },
+    "rawMean": Array [
+      0.3,
+      2.3,
+      1.3,
+      0.3,
+    ],
+    "rawStdev": Array [
+      0.4,
+      2,
+      1.5,
+      1.2,
+    ],
+    "truncatedMax": Array [
+      1,
+      3,
+      5,
+      0.5,
+    ],
+    "truncatedMin": Array [
+      0,
+      2,
+      0,
+      0.4,
+    ],
   },
   "truncatedGeneExpressions": Object {
     "datatype": undefined,
