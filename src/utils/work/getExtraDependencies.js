@@ -1,6 +1,6 @@
-import workerVersions from 'utils/work/workerVersions';
-
 import { loadProcessingSettings } from 'redux/actions/experimentSettings';
+
+import workerVersions from 'utils/work/workerVersions';
 
 const getClusteringSettings = async (experimentId, dispatch, getState) => {
   let clusteringSettings = getState().experimentSettings

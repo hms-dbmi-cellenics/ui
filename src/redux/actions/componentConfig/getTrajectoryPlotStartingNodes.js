@@ -21,6 +21,7 @@ const getTrajectoryPlotStartingNodes = (
   } = getState().experimentSettings.processing.configureEmbedding;
 
   const { environment } = getState().networkResources;
+
   const {
     pipeline:
     { startDate: qcPipelineStartDate },
@@ -75,7 +76,7 @@ const getTrajectoryPlotStartingNodes = (
         plotUuid,
         plotData: {
           ...plotData,
-          nodes: data.nodes,
+          nodes: data,
         },
       },
     });

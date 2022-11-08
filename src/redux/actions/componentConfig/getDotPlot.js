@@ -15,10 +15,25 @@ const getClusterNames = (state) => {
   return clusterNames;
 };
 
-const orderCellSets = (data, state, config) => {
+const transformToPlotData = (data) => {
+  const result = [];
+
+  data.cellSetsIdx.forEach((cellSetIdx, arrIdx) => {
+    result.push({
+      avgExpression: data.avgExpression[arrIdx],
+      cellSets: data.cellSetsNames[cellSetIdx],
+      cellsPercentage: data.cellsPercentage[arrIdx],
+      geneName: data.geneNames[data.geneNameIdx[arrIdx]],
+    });
+  });
+
+  return result;
+};
+
+const orderCellSets = (data, cellSets, config) => {
   // reordering data based on the sample order
   const { selectedCellSet } = config;
-  const { hierarchy, properties } = state.cellSets;
+  const { hierarchy, properties } = cellSets;
   if (hierarchy.length) {
     const cellSetOrderKeys = hierarchy.filter((rootNode) => rootNode.key === selectedCellSet)[0]
       .children
@@ -64,13 +79,14 @@ const getDotPlot = (
       experimentId, body, getState, dispatch, { timeout },
     );
 
-    orderCellSets(data, getState(), config);
+    const plotData = transformToPlotData(data);
+    orderCellSets(plotData, getState().cellSets, config);
 
     dispatch({
       type: PLOT_DATA_LOADED,
       payload: {
         plotUuid,
-        plotData: data,
+        plotData,
       },
     });
   } catch (e) {
