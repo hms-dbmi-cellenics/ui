@@ -224,7 +224,14 @@ describe('Dot plot page', () => {
   it('Shows an empty message if there is no data to show in the plot', async () => {
     const emptyResponse = {
       ...mockWorkerResponses,
-      'dot-plot-data': () => Promise.resolve([]),
+      'dot-plot-data': () => Promise.resolve({
+        cellSetsIdx: [],
+        cellSetsNames: [],
+        cellsPercentage: [],
+        avgExpression: [],
+        geneNameIdx: [],
+        geneNames: [],
+      }),
     };
 
     seekFromS3
