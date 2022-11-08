@@ -16,6 +16,8 @@ import { process10XUpload } from 'utils/upload/processUpload';
 import validate from 'utils/upload/sampleValidator';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
 
+const FILE_SIZE = 1024;
+
 enableFetchMocks();
 
 const getValidFiles = (cellrangerVersion, compressed = true) => {
@@ -49,7 +51,7 @@ const getValidFiles = (cellrangerVersion, compressed = true) => {
   ]);
 };
 
-const mockFile = (name, path = `/WT13/${name}`, size = 1024, mimeType = 'application/gzip') => {
+const mockFile = (name, path = `/WT13/${name}`, size = FILE_SIZE, mimeType = 'application/gzip') => {
   function range(count) {
     let output = '';
     for (let i = 0; i < count; i += 1) {
@@ -206,7 +208,7 @@ describe('process10XUpload', () => {
     expect(axios.request.mock.calls.map((call) => call[0])).toMatchSnapshot();
 
     // If we trigger axios onUploadProgress it updates the progress correctly
-    axios.request.mock.calls[0][0].onUploadProgress({ loaded: 1024 / 2 });
+    axios.request.mock.calls[0][0].onUploadProgress({ loaded: FILE_SIZE / 2 });
 
     await waitForActions(
       store,
@@ -277,7 +279,7 @@ describe('process10XUpload', () => {
     expect(axios.request.mock.calls.map((call) => call[0])).toMatchSnapshot();
 
     // If we trigger axios onUploadProgress it updates the progress correctly
-    axios.request.mock.calls[0][0].onUploadProgress({ loaded: 1024 / 2 });
+    axios.request.mock.calls[0][0].onUploadProgress({ loaded: FILE_SIZE / 2 });
 
     await waitForActions(
       store,
