@@ -91,6 +91,20 @@ const mockWorkResponseUpdate = {
   },
 };
 
+const mockSeuratUpdate = {
+  type: updateTypes.SEURAT,
+  item: {
+    processingConfig: {
+      mockProcessingConfig: 'mockProcessingConfig',
+    },
+  },
+  status: {
+    seurat: {
+      status: 'RUNNING',
+    },
+  },
+};
+
 describe('ExperimentUpdatesHandler', () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -122,6 +136,59 @@ describe('ExperimentUpdatesHandler', () => {
     // Dispatch 2 - Loaded processingConfig
     const updateParams = loadedProcessingConfig.mock.calls[1];
     expect(updateParams).toMatchSnapshot();
+
+    expect(mockDispatch).toHaveBeenCalledTimes(2);
+    expect(pushNotificationMessage).not.toHaveBeenCalled();
+  });
+
+  it('Triggers properly for SEURAT updates ', () => {
+    const mockUpdate = mockSeuratUpdate;
+
+    triggerExperimentUpdate(mockUpdate);
+
+    // Dispatch 1 - Update backend status
+    expect(updateBackendStatus).toHaveBeenCalledTimes(1);
+    const backendStatus = updateBackendStatus.mock.calls[0];
+    expect(backendStatus).toMatchSnapshot();
+
+    expect(mockDispatch).toHaveBeenCalledTimes(1);
+    expect(pushNotificationMessage).not.toHaveBeenCalled();
+  });
+
+  it('Triggers properly for SEURAT updates ', () => {
+    const mockUpdate = mockSeuratUpdate;
+
+    triggerExperimentUpdate(mockUpdate);
+
+    // Dispatch 1 - Update backend status
+    expect(updateBackendStatus).toHaveBeenCalledTimes(1);
+    const backendStatus = updateBackendStatus.mock.calls[0];
+    expect(backendStatus).toMatchSnapshot();
+
+    expect(mockDispatch).toHaveBeenCalledTimes(1);
+  });
+
+  it('Loads cell sets if Seurat pipeline completes ', () => {
+    const mockUpdate = {
+      ...mockSeuratUpdate,
+      status: {
+        seurat: {
+          status: 'SUCCEEDED',
+        },
+      },
+    };
+
+    triggerExperimentUpdate(mockUpdate);
+
+    // Dispatch 1 - Update backend status
+    expect(updateBackendStatus).toHaveBeenCalledTimes(1);
+    const backendStatus = updateBackendStatus.mock.calls[0];
+    expect(backendStatus).toMatchSnapshot();
+
+    // Dispatch 2 - load cellsets on seurat finish
+    expect(loadCellSets).toHaveBeenCalledTimes(1);
+    const loadCellSetsParams = loadCellSets.mock.calls[0];
+    expect(loadCellSetsParams).toMatchSnapshot();
 
     expect(mockDispatch).toHaveBeenCalledTimes(2);
     expect(pushNotificationMessage).not.toHaveBeenCalled();
