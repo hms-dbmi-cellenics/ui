@@ -81,7 +81,7 @@ jobs:
           AWS_DEFAULT_REGION: eu-west-1
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          test-command: 'npm run coverage -- --json --outputFile=/home/runner/work/_actions/mattallty/jest-github-action/v1/dist/jest.results.json'
+          test-command: 'npm run coverage -- --testLocationInResults --json --outputFile=jest.results.json'
           coverage-comment: true
 
       - id: upload-coverage
