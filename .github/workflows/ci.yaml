@@ -81,8 +81,8 @@ jobs:
           AWS_DEFAULT_REGION: eu-west-1
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          test-command: 'npm run coverage -- --testLocationInResults --json --outputFile=jest.results.json'
-          coverage-comment: true
+          test-command: 'npm run coverage'
+          coverage-comment: false
 
       - id: upload-coverage
         name: Upload coverage to Codecov
