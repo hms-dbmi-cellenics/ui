@@ -226,12 +226,7 @@ describe('Marker heatmap plot', () => {
   it('adds genes correctly into the plot', async () => {
     seekFromS3
       .mockReset()
-      // load genes list
-      .mockImplementationOnce((Etag) => mockWorkerResponses[Etag]())
-      // 1st load
-      .mockImplementationOnce((ETag) => mockWorkerResponses[ETag]())
-      // 2nd load
-      .mockImplementationOnce((ETag) => mockWorkerResponses[ETag]());
+      .mockImplementation((Etag) => mockWorkerResponses[Etag]());
 
     await renderHeatmapPage(storeState);
 
@@ -401,10 +396,7 @@ describe('Drag and drop enzyme tests', () => {
 
     seekFromS3
       .mockReset()
-      // load gene list
-      .mockImplementationOnce((Etag) => mockWorkerResponses[Etag]())
-      // load gene expression
-      .mockImplementationOnce((Etag) => mockWorkerResponses[Etag]());
+      .mockImplementation((Etag) => mockWorkerResponses[Etag]());
 
     enableFetchMocks();
     fetchMock.resetMocks();
