@@ -12,10 +12,11 @@ import getFileTypeV2 from 'utils/getFileTypeV2';
 import uploadParts from './processMultipartUpload';
 
 const prepareAndUploadFileToS3 = async (
-  projectId, sampleId, fileType, file, signedUrls, dispatch,
+  projectId, sampleId, fileType, file, uploadUrlParams, dispatch,
 ) => {
-  let resParts = null;
+  let parts = null;
   let compressedFile = file;
+  const { signedUrls, uploadId, sampleFileId } = uploadUrlParams;
 
   if (!file.compressed) {
     try {
@@ -46,7 +47,7 @@ const prepareAndUploadFileToS3 = async (
   };
 
   try {
-    resParts = await uploadParts(compressedFile, signedUrls, createOnUploadProgressForPart);
+    parts = await uploadParts(compressedFile, signedUrls, createOnUploadProgressForPart);
   } catch (e) {
     dispatch(updateSampleFileUpload(projectId, sampleId, fileType, UploadStatus.UPLOAD_ERROR));
     return;
@@ -54,11 +55,11 @@ const prepareAndUploadFileToS3 = async (
 
   const requestUrl = '/v2/completeMultipartUpload';
   const body = {
-    parts: resParts,
-    uploadId: signedUrls.UploadId,
-    sampleFileId: signedUrls.sampleFileId,
-
+    parts,
+    uploadId,
+    sampleFileId,
   };
+
   await fetchAPI(requestUrl,
     {
       method: 'POST',
@@ -69,7 +70,7 @@ const prepareAndUploadFileToS3 = async (
     });
 
   dispatch(updateSampleFileUpload(projectId, sampleId, fileType, UploadStatus.UPLOADED));
-  return (resParts);
+  return parts;
 };
 
 const getMetadata = (file) => {
@@ -88,9 +89,9 @@ const createAndUploadSingleFile = async (file, projectId, sampleId, dispatch) =>
   const metadata = getMetadata(file);
   const fileType = getFileTypeV2(file.fileObject.name, file.fileObject.type);
 
-  let signedUrls;
+  let uploadUrlParams;
   try {
-    signedUrls = await dispatch(
+    uploadUrlParams = await dispatch(
       createSampleFile(
         projectId,
         sampleId,
@@ -106,7 +107,7 @@ const createAndUploadSingleFile = async (file, projectId, sampleId, dispatch) =>
     return;
   }
 
-  await prepareAndUploadFileToS3(projectId, sampleId, fileType, file, signedUrls, dispatch);
+  await prepareAndUploadFileToS3(projectId, sampleId, fileType, file, uploadUrlParams, dispatch);
 };
 
 const createAndUpload = async (sample, experimentId, dispatch) => (
