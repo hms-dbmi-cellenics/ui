@@ -121,7 +121,9 @@ const renderHeatmapPage = async (store) => {
   ));
 };
 
-const renderHeatmapPageForEnzyme = async (store) => (
+enableFetchMocks();
+
+const renderHeatmapPageForEnzyme = (store) => (
   mount(
     <Provider store={store}>
       {heatmapPageFactory()}
@@ -141,7 +143,6 @@ describe('Marker heatmap plot', () => {
       .mockReset()
       .mockImplementation((Etag) => mockWorkerResponses[Etag]());
 
-    enableFetchMocks();
     fetchMock.resetMocks();
     fetchMock.doMock();
     fetchMock.mockIf(/.*/, mockAPI(defaultResponses));
@@ -176,7 +177,7 @@ describe('Marker heatmap plot', () => {
     seekFromS3
       .mockReset()
       .mockImplementation((ETag) => {
-        if (ETag === '5-marker-genes') throw new Error('Not found');
+        if (ETag === '5-marker-genes') return Promise.reject(new Error('Not found'));
 
         return mockWorkerResponses[ETag]();
       });
@@ -402,7 +403,6 @@ describe('Drag and drop enzyme tests', () => {
       .mockReset()
       .mockImplementation((Etag) => mockWorkerResponses[Etag]());
 
-    enableFetchMocks();
     fetchMock.resetMocks();
     fetchMock.doMock();
     fetchMock.mockIf(/.*/, mockAPI(defaultResponses));
@@ -412,7 +412,7 @@ describe('Drag and drop enzyme tests', () => {
     // Set up state for backend status
     await storeState.dispatch(loadBackendStatus(experimentId));
 
-    component = await renderHeatmapPageForEnzyme(storeState);
+    component = renderHeatmapPageForEnzyme(storeState);
 
     await waitForComponentToPaint(component);
 
