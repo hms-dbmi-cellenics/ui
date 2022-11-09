@@ -7,7 +7,7 @@ import { makeStore } from 'redux/store';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import mockAPI, { generateDefaultMockAPIResponses } from '__test__/test-utils/mockAPI';
 
-const NON_GENE_EXPRESSION_ETAG = 'a6052b2fb1ff0684862e938a66abef9c'; // pragma: allowlist secret
+const NON_GENE_EXPRESSION_ETAG = '0992ea2e4ebbd56d891dceb91a1a54dc'; // pragma: allowlist secret
 const GENE_EXPRESSION_D_ETAG = '78cf13c1fb1596e64f07fa93d6d028a9'; // pragma: allowlist secret
 
 const experimentId = '1234';
