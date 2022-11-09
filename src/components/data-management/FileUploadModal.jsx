@@ -99,7 +99,11 @@ const FileUploadModal = (props) => {
     <>
       <Space direction='vertical' style={{ width: '100%' }}>
         {
-          fileUploadParagraphs.map((text) => <Paragraph><div dangerouslySetInnerHTML={{ __html: text }}></div></Paragraph>)
+          fileUploadParagraphs.map((text) => (
+            <Paragraph key={text}>
+              <div dangerouslySetInnerHTML={{ __html: text }} />
+            </Paragraph>
+          ))
         }
         <List
           dataSource={techOptions[selectedTech].inputInfo}
@@ -109,8 +113,8 @@ const FileUploadModal = (props) => {
           renderItem={(item) => (
             <List.Item>
               {
-                item.map((fileName, i) => (
-                  <span key={fileName} class="ant-typography" dangerouslySetInnerHTML={{ __html: item }}></span>
+                item.map((fileName) => (
+                  <span key={fileName} className='ant-typography' dangerouslySetInnerHTML={{ __html: item }} />
                 ))
               }
             </List.Item>
@@ -153,6 +157,7 @@ const FileUploadModal = (props) => {
               <Select
                 defaultValue={selectedTech}
                 onChange={(value) => setSelectedTech(value)}
+                data-testid='uploadTechSelect'
               >
                 {Object.keys(techOptions).map((val) => (
                   <Option key={`key-${val}`} value={val}>{val}</Option>
