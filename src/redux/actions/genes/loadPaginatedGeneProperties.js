@@ -45,15 +45,14 @@ const loadPaginatedGeneProperties = (
   const timeout = getTimeoutForWorkerTask(getState(), 'ListGenes');
 
   try {
-    const { rows, total } = await fetchWork(
+    const { gene_names: geneNames, dispersions, total } = await fetchWork(
       experimentId, body, getState, dispatch, { timeout },
     );
 
     const loadedProperties = {};
-    rows.forEach((row) => {
-      const { gene_names: geneName, ...rest } = row;
 
-      loadedProperties[geneName] = rest;
+    geneNames.forEach((gene, indx) => {
+      loadedProperties[gene] = { dispersions: dispersions[indx] };
     });
 
     return dispatch({

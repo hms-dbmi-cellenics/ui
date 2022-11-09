@@ -33,7 +33,6 @@ const generateETag = async (
   }
 
   const extraDependencies = await getExtraDependencies(experimentId, body.name, dispatch, getState);
-
   let ETagBody;
 
   // They `body` key to create ETAg for gene expression is different
