@@ -26,7 +26,7 @@ jest.mock(
 );
 
 const experimentId = '1234';
-const NON_GENE_EXPRESSION_ETAG = '538add0e3e0dadc1254aa47770bebc72'; // pragma: allowlist secret
+const NON_GENE_EXPRESSION_ETAG = '0c939867c2b8ac9327a9dc5296ec8cb9'; // pragma: allowlist secret
 const GENE_EXPRESSION_ABCD_ETAG = 'c2adef166f733e8323504790fe546c57'; // pragma: allowlist secret
 const timeout = 10;
 
