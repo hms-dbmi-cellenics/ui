@@ -73,7 +73,7 @@ jobs:
 
           git config --global url."https://".insteadOf ssh://
           npm ci
-
+          
       - id: test
         name: Run unit tests
         uses: mattallty/jest-github-action@v1

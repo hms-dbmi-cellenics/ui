@@ -20,7 +20,12 @@ Object {
         ],
         "values": Array [],
       },
-      "stats": Object {},
+      "stats": Object {
+        "rawMean": Array [],
+        "rawStdev": Array [],
+        "truncatedMax": Array [],
+        "truncatedMin": Array [],
+      },
       "truncatedGeneExpressions": Object {
         "datatype": undefined,
         "index": Array [],
@@ -84,7 +89,12 @@ Object {
         ],
         "values": Array [],
       },
-      "stats": Object {},
+      "stats": Object {
+        "rawMean": Array [],
+        "rawStdev": Array [],
+        "truncatedMax": Array [],
+        "truncatedMin": Array [],
+      },
       "truncatedGeneExpressions": Object {
         "datatype": undefined,
         "index": Array [],
@@ -152,7 +162,12 @@ Object {
         ],
         "values": Array [],
       },
-      "stats": Object {},
+      "stats": Object {
+        "rawMean": Array [],
+        "rawStdev": Array [],
+        "truncatedMax": Array [],
+        "truncatedMin": Array [],
+      },
       "truncatedGeneExpressions": Object {
         "datatype": undefined,
         "index": Array [],
@@ -219,7 +234,12 @@ Object {
         ],
         "values": Array [],
       },
-      "stats": Object {},
+      "stats": Object {
+        "rawMean": Array [],
+        "rawStdev": Array [],
+        "truncatedMax": Array [],
+        "truncatedMin": Array [],
+      },
       "truncatedGeneExpressions": Object {
         "datatype": undefined,
         "index": Array [],
@@ -312,24 +332,26 @@ Object {
         ],
       },
       "stats": Object {
-        "GeneA": Object {
-          "rawMean": 0.3,
-          "rawStdev": 0.4,
-          "truncatedMax": 1,
-          "truncatedMin": 0,
-        },
-        "GeneB": Object {
-          "rawMean": 2.3,
-          "rawStdev": 2,
-          "truncatedMax": 3,
-          "truncatedMin": 2,
-        },
-        "GeneC": Object {
-          "rawMean": 1.3,
-          "rawStdev": 1,
-          "truncatedMax": 5,
-          "truncatedMin": 1,
-        },
+        "rawMean": Array [
+          0.3,
+          2.3,
+          1.3,
+        ],
+        "rawStdev": Array [
+          0.4,
+          2,
+          1,
+        ],
+        "truncatedMax": Array [
+          1,
+          3,
+          5,
+        ],
+        "truncatedMin": Array [
+          0,
+          2,
+          1,
+        ],
       },
       "truncatedGeneExpressions": Object {
         "datatype": undefined,
@@ -434,7 +456,12 @@ Object {
         ],
         "values": Array [],
       },
-      "stats": Object {},
+      "stats": Object {
+        "rawMean": Array [],
+        "rawStdev": Array [],
+        "truncatedMax": Array [],
+        "truncatedMin": Array [],
+      },
       "truncatedGeneExpressions": Object {
         "datatype": undefined,
         "index": Array [],
@@ -519,7 +546,12 @@ Object {
         ],
         "values": Array [],
       },
-      "stats": Object {},
+      "stats": Object {
+        "rawMean": Array [],
+        "rawStdev": Array [],
+        "truncatedMax": Array [],
+        "truncatedMin": Array [],
+      },
       "truncatedGeneExpressions": Object {
         "datatype": undefined,
         "index": Array [],
@@ -607,7 +639,12 @@ Object {
         ],
         "values": Array [],
       },
-      "stats": Object {},
+      "stats": Object {
+        "rawMean": Array [],
+        "rawStdev": Array [],
+        "truncatedMax": Array [],
+        "truncatedMin": Array [],
+      },
       "truncatedGeneExpressions": Object {
         "datatype": undefined,
         "index": Array [],
@@ -684,7 +721,12 @@ Object {
         ],
         "values": Array [],
       },
-      "stats": Object {},
+      "stats": Object {
+        "rawMean": Array [],
+        "rawStdev": Array [],
+        "truncatedMax": Array [],
+        "truncatedMin": Array [],
+      },
       "truncatedGeneExpressions": Object {
         "datatype": undefined,
         "index": Array [],
@@ -759,7 +801,12 @@ Object {
         ],
         "values": Array [],
       },
-      "stats": Object {},
+      "stats": Object {
+        "rawMean": Array [],
+        "rawStdev": Array [],
+        "truncatedMax": Array [],
+        "truncatedMin": Array [],
+      },
       "truncatedGeneExpressions": Object {
         "datatype": undefined,
         "index": Array [],
@@ -838,7 +885,12 @@ Object {
         ],
         "values": Array [],
       },
-      "stats": Object {},
+      "stats": Object {
+        "rawMean": Array [],
+        "rawStdev": Array [],
+        "truncatedMax": Array [],
+        "truncatedMin": Array [],
+      },
       "truncatedGeneExpressions": Object {
         "datatype": undefined,
         "index": Array [],
@@ -911,7 +963,12 @@ Object {
         ],
         "values": Array [],
       },
-      "stats": Object {},
+      "stats": Object {
+        "rawMean": Array [],
+        "rawStdev": Array [],
+        "truncatedMax": Array [],
+        "truncatedMin": Array [],
+      },
       "truncatedGeneExpressions": Object {
         "datatype": undefined,
         "index": Array [],
@@ -979,7 +1036,12 @@ Object {
         ],
         "values": Array [],
       },
-      "stats": Object {},
+      "stats": Object {
+        "rawMean": Array [],
+        "rawStdev": Array [],
+        "truncatedMax": Array [],
+        "truncatedMin": Array [],
+      },
       "truncatedGeneExpressions": Object {
         "datatype": undefined,
         "index": Array [],
@@ -1047,7 +1109,12 @@ Object {
         ],
         "values": Array [],
       },
-      "stats": Object {},
+      "stats": Object {
+        "rawMean": Array [],
+        "rawStdev": Array [],
+        "truncatedMax": Array [],
+        "truncatedMin": Array [],
+      },
       "truncatedGeneExpressions": Object {
         "datatype": undefined,
         "index": Array [],
@@ -1131,18 +1198,22 @@ Object {
         ],
       },
       "stats": Object {
-        "Gzma": Object {
-          "rawMean": 0.3,
-          "rawStdev": 0.4,
-          "truncatedMax": 1,
-          "truncatedMin": 0,
-        },
-        "Lyz2": Object {
-          "rawMean": 2.3,
-          "rawStdev": 2,
-          "truncatedMax": 3,
-          "truncatedMin": 2,
-        },
+        "rawMean": Array [
+          0.3,
+          2.3,
+        ],
+        "rawStdev": Array [
+          0.4,
+          2,
+        ],
+        "truncatedMax": Array [
+          1,
+          3,
+        ],
+        "truncatedMin": Array [
+          0,
+          2,
+        ],
       },
       "truncatedGeneExpressions": Object {
         "datatype": undefined,
@@ -1240,7 +1311,12 @@ Object {
         ],
         "values": Array [],
       },
-      "stats": Object {},
+      "stats": Object {
+        "rawMean": Array [],
+        "rawStdev": Array [],
+        "truncatedMax": Array [],
+        "truncatedMin": Array [],
+      },
       "truncatedGeneExpressions": Object {
         "datatype": undefined,
         "index": Array [],

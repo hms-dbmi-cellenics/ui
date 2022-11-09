@@ -5,6 +5,8 @@ import TrajectoryAnalysis from 'pages/experiments/[experimentId]/plots-and-table
 import React from 'react';
 import { act } from 'react-dom/test-utils';
 import { Provider } from 'react-redux';
+import { Vega } from 'react-vega';
+
 import { loadBackendStatus } from 'redux/actions/backendStatus';
 import { makeStore } from 'redux/store';
 import { seekFromS3 } from 'utils/work/seekWorkResponse';
@@ -50,6 +52,14 @@ jest.mock('utils/work/seekWorkResponse', () => ({
   seekFromS3: jest.fn(),
 }));
 
+jest.mock('react-vega', () => {
+  const originalModule = jest.requireActual('react-vega');
+  return {
+    ...originalModule,
+    Vega: jest.fn((...params) => new originalModule.Vega(...params)),
+  };
+});
+
 const mockWorkerResponses = {
   GetEmbedding: mockEmbedding,
   GetTrajectoryAnalysisStartingNodes: mockStartingNodes,
@@ -80,7 +90,7 @@ const trajectoryAnalysisPageFactory = createTestComponentFactory(
 );
 
 const defaultShownPlotDescription = 'Trajectory analysis plot showing clusters with trajectory';
-const selectedRootNodes = ['Y_1', 'Y_2', 'Y_3'];
+const selectedRootNodes = [0, 1, 2];
 
 const renderTrajectoryAnalysisPage = async (store) => {
   await act(async () => (
@@ -91,7 +101,7 @@ const renderTrajectoryAnalysisPage = async (store) => {
     )
   ));
 
-  // Select several nodes by default
+  // Select several nodes
   await store.dispatch(updatePlotConfig(plotUuid, {
     selectedNodes: selectedRootNodes,
   }));
@@ -302,5 +312,35 @@ describe('Trajectory analysis plot', () => {
     await waitFor(async () => {
       await expect(screen.queryByRole('graphics-document', { name: defaultShownPlotDescription })).toBeNull();
     });
+  });
+
+  it('lassoSelection handling works well', async () => {
+    await renderTrajectoryAnalysisPage(storeState);
+
+    const { signalListeners } = _.last(Vega.mock.calls)[0];
+
+    signalListeners.lassoSelection('eventName', [0, 2, -10, 4]);
+
+    expect(screen.getByText('9 nodes selected')).toBeInTheDocument();
+  });
+
+  it('addNode handling works well', async () => {
+    await renderTrajectoryAnalysisPage(storeState);
+
+    const { signalListeners } = _.last(Vega.mock.calls)[0];
+
+    signalListeners.addNode('eventName', { node_id: 5 });
+
+    expect(screen.getByText('4 nodes selected')).toBeInTheDocument();
+  });
+
+  it('removeNode handling works well', async () => {
+    await renderTrajectoryAnalysisPage(storeState);
+
+    const { signalListeners } = _.last(Vega.mock.calls)[0];
+
+    signalListeners.removeNode('eventName', { node_id: 1 });
+
+    expect(screen.getByText('2 nodes selected')).toBeInTheDocument();
   });
 });

@@ -169,10 +169,6 @@ const TrajectoryAnalysisPlot = forwardRef((props, ref) => {
       || !startingNodesPlotData?.nodes
     ) return;
 
-    const selectedNodeIds = config.selectedNodes.map(
-      (nodeId) => startingNodesPlotData.nodes[nodeId],
-    );
-
     const {
       xAxisAuto, yAxisAuto, xMin, xMax, yMin, yMax,
     } = config.axesRanges;
@@ -211,7 +207,8 @@ const TrajectoryAnalysisPlot = forwardRef((props, ref) => {
       pseudotimeData,
       cellSetLegendsData,
       startingNodesData,
-      selectedNodeIds,
+      config.selectedNodes,
+      startingNodesPlotData?.nodes,
     );
 
     return spec;
@@ -253,20 +250,23 @@ const TrajectoryAnalysisPlot = forwardRef((props, ref) => {
       const yStart = Math.min(y1, y2);
       const yEnd = Math.max(y1, y2);
 
-      const inSelection = (node) => {
-        const isInSelection = (
-          xStart <= node.x && node.x <= xEnd
-          && yStart <= node.y && node.y <= yEnd
-        );
+      const { x, y } = startingNodesPlotData.nodes;
 
-        return isInSelection ? node.node_id : null;
+      const isInSelection = (nodeIdx) => {
+        const inRange = (number, start, end) => start <= number && number <= end;
+
+        return inRange(x[nodeIdx], xStart, xEnd) && inRange(y[nodeIdx], yStart, yEnd);
       };
 
-      const selectedNodes = Object.values(startingNodesPlotData.nodes)
-        .map((node) => (inSelection(node) ? node.node_id : null))
-        .filter((node) => node !== null);
+      const selection = [];
 
-      onLassoSelection(selectedNodes);
+      x.forEach((currX, index) => {
+        if (isInSelection(index)) {
+          selection.push(index);
+        }
+      });
+
+      onLassoSelection(selection);
     },
   };
 
@@ -292,7 +292,8 @@ const TrajectoryAnalysisPlot = forwardRef((props, ref) => {
       <Vega
         reset={forceReset}
         spec={plotSpec || {}}
-        // webgl renderer doesn't support gradient legend, so we need to use canvas for plotting pseudotime
+        // webgl renderer doesn't support gradient legend,
+        // so we need to use canvas for plotting pseudotime
         renderer={displaySettings.showPseudotimeValues ? 'canvas' : 'webgl'}
         actions={actions}
         signalListeners={displaySettings.showStartingNodes ? plotListeners : {}}
