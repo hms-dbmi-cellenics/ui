@@ -182,8 +182,8 @@
             "rootNode": true,
             "children": [
                 {
-                    "key": "Track_1-KOMeta",
-                    "name": "KOMeta",
+                    "key": "Track_1-KMeta",
+                    "name": "KMeta",
                     "color": "#8c564b",
                     "cellIds": [
                         1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
@@ -193,8 +193,8 @@
                     ]
                 },
                 {
-                    "key": "Track_1-WTMeta",
-                    "name": "WTMeta",
+                    "key": "Track_1-WMetaT",
+                    "name": "WMetaT",
                     "color": "#d62728",
                     "cellIds": [
                         41, 42, 43, 44, 45, 46, 47, 48, 49, 50,

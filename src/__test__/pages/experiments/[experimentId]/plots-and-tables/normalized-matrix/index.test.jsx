@@ -194,7 +194,7 @@ describe('Normalized matrix index page', () => {
       return promiseResponse(JSON.stringify({
         config: {
           louvain: ['louvain-3', 'louvain-6'],
-          metadata: ['Track_1-KOMeta'],
+          metadata: ['Track_1-KMeta'],
           scratchpad: [],
         },
       }));
@@ -210,7 +210,7 @@ describe('Normalized matrix index page', () => {
 
     expect(screen.getByText('Cluster 3')).toBeDefined();
     expect(screen.getByText('Cluster 6')).toBeDefined();
-    expect(screen.getByText('KOMeta')).toBeDefined();
+    expect(screen.getByText('KMeta')).toBeDefined();
   });
 
   // Based on https://stackoverflow.com/a/51045733
