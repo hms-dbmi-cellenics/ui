@@ -1,5 +1,4 @@
 import { render, screen } from '@testing-library/react';
-import { mount } from 'enzyme';
 import { within } from '@testing-library/dom';
 import userEvent from '@testing-library/user-event';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
@@ -26,8 +25,6 @@ import mockAPI, {
   statusResponse,
 } from '__test__/test-utils/mockAPI';
 import createTestComponentFactory from '__test__/test-utils/testComponentFactory';
-import waitForComponentToPaint from '__test__/test-utils/waitForComponentToPaint';
-import { arrayMoveImmutable } from 'utils/array-move';
 
 jest.mock('components/header/UserButton', () => () => <></>);
 jest.mock('react-resize-detector', () => (props) => {
@@ -100,17 +97,6 @@ const getTreeGenes = (container) => {
   return Array.from(treeNodeList).map((node) => node.textContent);
 };
 
-// Helper function to get current order of displayed genes in enzyme tests
-const getCurrentGeneOrder = (component) => {
-  const treeNodes = component.find('div.ant-tree-treenode');
-  const newOrder = [];
-  treeNodes.forEach((node) => {
-    newOrder.push(node.text());
-  });
-  newOrder.splice(0, 1);
-  return newOrder;
-};
-
 const renderHeatmapPage = async (store) => {
   await act(async () => (
     render(
@@ -122,14 +108,6 @@ const renderHeatmapPage = async (store) => {
 };
 
 enableFetchMocks();
-
-const renderHeatmapPageForEnzyme = (store) => (
-  mount(
-    <Provider store={store}>
-      {heatmapPageFactory()}
-    </Provider>,
-  )
-);
 
 describe('Marker heatmap plot', () => {
   beforeAll(async () => {
@@ -384,84 +362,5 @@ describe('Marker heatmap plot', () => {
     userEvent.click(clearButton);
 
     expect(searchBox.value).toBe('');
-  });
-});
-
-// drag and drop is impossible in RTL, use enzyme
-describe('Drag and drop enzyme tests', () => {
-  let component;
-  let tree;
-
-  beforeAll(async () => {
-    await preloadAll();
-  });
-
-  beforeEach(async () => {
-    jest.clearAllMocks();
-
-    seekFromS3
-      .mockReset()
-      .mockImplementation((Etag) => mockWorkerResponses[Etag]());
-
-    fetchMock.resetMocks();
-    fetchMock.doMock();
-    fetchMock.mockIf(/.*/, mockAPI(defaultResponses));
-
-    storeState = makeStore();
-
-    // Set up state for backend status
-    await storeState.dispatch(loadBackendStatus(experimentId));
-
-    component = renderHeatmapPageForEnzyme(storeState);
-
-    await waitForComponentToPaint(component);
-
-    // antd renders 5 elements, use the first one
-    tree = component.find({ 'data-testid': 'HierachicalTreeGenes' }).at(0);
-  });
-
-  it('changes nothing on drop in place', async () => {
-    // default genes are in the tree
-    markerGenesData5.orderedGeneNames.forEach((geneName) => {
-      expect(tree.containsMatchingElement(geneName));
-    });
-
-    // dropping in place does nothing
-    const info = {
-      dragNode: { key: 1, pos: '0-1' },
-      dropPosition: 1,
-      node: { dragOver: false },
-    };
-
-    tree.getElement().props.onDrop(info);
-
-    await act(async () => {
-      component.update();
-    });
-
-    const newOrder = getCurrentGeneOrder(component);
-
-    expect(_.isEqual(newOrder, markerGenesData5.orderedGeneNames)).toEqual(true);
-  });
-
-  it('re-orders genes correctly', async () => {
-    // dropping to gap re-orders genes
-    const info = {
-      dragNode: { key: 1, pos: '0-1' },
-      dropPosition: 4,
-      node: { dragOver: false },
-    };
-
-    tree.getElement().props.onDrop(info);
-
-    await act(async () => {
-      component.update();
-    });
-
-    const newOrder = getCurrentGeneOrder(component);
-
-    const expectedOrder = arrayMoveImmutable(markerGenesData5.orderedGeneNames, 1, 3);
-
-    expect(_.isEqual(newOrder, expectedOrder)).toEqual(true);
   });
 });
