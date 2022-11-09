@@ -391,6 +391,10 @@ describe('Drag and drop enzyme tests', () => {
   let component;
   let tree;
 
+  beforeAll(async () => {
+    await preloadAll();
+  });
+
   beforeEach(async () => {
     jest.clearAllMocks();
 
@@ -411,8 +415,6 @@ describe('Drag and drop enzyme tests', () => {
     component = await renderHeatmapPageForEnzyme(storeState);
 
     await waitForComponentToPaint(component);
-
-    component.update();
 
     // antd renders 5 elements, use the first one
     tree = component.find({ 'data-testid': 'HierachicalTreeGenes' }).at(0);
@@ -443,10 +445,6 @@ describe('Drag and drop enzyme tests', () => {
   });
 
   it('re-orders genes correctly', async () => {
-    // default genes are in the tree
-    markerGenesData5.orderedGeneNames.forEach((geneName) => {
-      expect(tree.containsMatchingElement(geneName));
-    });
     // dropping to gap re-orders genes
     const info = {
       dragNode: { key: 1, pos: '0-1' },
