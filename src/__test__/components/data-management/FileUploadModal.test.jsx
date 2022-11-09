@@ -10,6 +10,23 @@ import techOptions from 'utils/upload/fileUploadSpecifications';
 import componentFactory from '__test__/test-utils/testComponentFactory';
 import FileUploadModal from 'components/data-management/FileUploadModal';
 
+const mockFile = (name, path = `/WT13/${name}`, size = 1024, mimeType = 'application/gzip') => {
+  function range(count) {
+    let output = '';
+    for (let i = 0; i < count; i += 1) {
+      output += 'a';
+    }
+    return output;
+  }
+
+  const blob = new Blob([range(size)], { type: mimeType });
+  blob.lastModifiedDate = new Date();
+  blob.name = name;
+  blob.path = path;
+
+  return blob;
+};
+
 const defaultProps = {
   onUpload: jest.fn(),
   onCancel: jest.fn(),
@@ -131,6 +148,163 @@ describe('FileUploadModal', () => {
 
     expect(uploadInput.getAttribute('webkitdirectory')).toBe(null);
 
+    // It has a disabled upload button if there are no uploaded files
+    // Upload button is the last "Upload" text in the document
+    const uploadButtonText = screen.getAllByText(/Upload/i).pop();
+    const uploadButton = uploadButtonText.closest('button');
+
+    expect(uploadButton).toBeDisabled();
+  });
+
+  it('drag and drop works with valid 10X Chromium file', async () => {
+    await renderFileUploadModal();
+
+    expect(await screen.queryByText(/To upload/)).not.toBeInTheDocument();
+    // It has a select button to select technology
+    const uploadInput = document.querySelector(
+      `[data-test-id="${integrationTestConstants.ids.FILE_UPLOAD_INPUT}"]`,
+    );
+
+    // create a features file
+    const file = mockFile('features.tsv.gz');
+
+    //  drop it into drop-zone
+    await act(async () => {
+      Object.defineProperty(uploadInput, 'files', {
+        value: [file],
+      });
+
+      fireEvent.drop(uploadInput);
+    });
+
+    //  it was valid and shows up
+    expect(await screen.findByText(/To upload/)).toBeInTheDocument();
+    expect(await screen.findByText(file.path.slice(1))).toBeInTheDocument();
+
+    // upload is enabled
+    // It has a disabled upload button if there are no uploaded files
+    // Upload button is the last "Upload" text in the document
+    const uploadButtonText = screen.getAllByText(/Upload/i).pop();
+    const uploadButton = uploadButtonText.closest('button');
+
+    expect(uploadButton).not.toBeDisabled();
+  });
+
+  it('drag and drop works with valid Seurat file', async () => {
+    await renderFileUploadModal();
+
+    // get the select
+    const select = document.querySelector(
+      '[data-testid="uploadTechSelect"] > .ant-select-selector',
+    );
+
+    expect(select).not.toBeNull();
+
+    // click the select input
+    fireEvent.mouseDown(select);
+
+    // wait for the ant dropdown element to appear
+    await waitFor(() => expect(
+      document.querySelector('.ant-select-dropdown'),
+    ).toBeInTheDocument());
+
+    //
+    const seuratOption = await screen.queryByRole('option', { selected: false, title: seuratTech });
+    expect(seuratOption).toBeInTheDocument();
+
+    // select a single dropdown option
+    fireEvent.click(screen.getAllByText(seuratTech)[1]);
+
+    // wait for Seurat info to appear
+    await waitFor(() => expect(
+      screen.getByText(/Seurat object[.]/),
+    ).toBeInTheDocument());
+
+    expect(await screen.queryByText(/To upload/)).not.toBeInTheDocument();
+
+    // get the dropzone input
+    const uploadInput = document.querySelector(
+      `[data-test-id="${integrationTestConstants.ids.FILE_UPLOAD_INPUT}"]`,
+    );
+
+    // create a seurat file
+    const file = mockFile('scdata.rds', 'scdata.rds');
+
+    //  drop it into drop-zone
+    await act(async () => {
+      Object.defineProperty(uploadInput, 'files', {
+        value: [file],
+      });
+
+      fireEvent.drop(uploadInput);
+    });
+
+    //  it was valid and shows up
+    expect(await screen.findByText(/To upload/)).toBeInTheDocument();
+    expect(await screen.findByText('scdata.rds')).toBeInTheDocument();
+
+    // upload is enabled
+    // It has a disabled upload button if there are no uploaded files
+    // Upload button is the last "Upload" text in the document
+    const uploadButtonText = screen.getAllByText(/Upload/i).pop();
+    const uploadButton = uploadButtonText.closest('button');
+
+    expect(uploadButton).not.toBeDisabled();
+  });
+  it('drag and drop does not work with invalid Seurat file', async () => {
+    await renderFileUploadModal();
+
+    // get the select
+    const select = document.querySelector(
+      '[data-testid="uploadTechSelect"] > .ant-select-selector',
+    );
+
+    expect(select).not.toBeNull();
+
+    // click the select input
+    fireEvent.mouseDown(select);
+
+    // wait for the ant dropdown element to appear
+    await waitFor(() => expect(
+      document.querySelector('.ant-select-dropdown'),
+    ).toBeInTheDocument());
+
+    //
+    const seuratOption = await screen.queryByRole('option', { selected: false, title: seuratTech });
+    expect(seuratOption).toBeInTheDocument();
+
+    // select a single dropdown option
+    fireEvent.click(screen.getAllByText(seuratTech)[1]);
+
+    // wait for Seurat info to appear
+    await waitFor(() => expect(
+      screen.getByText(/Seurat object[.]/),
+    ).toBeInTheDocument());
+
+    expect(await screen.queryByText(/To upload/)).not.toBeInTheDocument();
+
+    // get the dropzone input
+    const uploadInput = document.querySelector(
+      `[data-test-id="${integrationTestConstants.ids.FILE_UPLOAD_INPUT}"]`,
+    );
+
+    // create a seurat file
+    const file = mockFile('scdata.txt', 'scdata.txt');
+
+    //  drop it into drop-zone
+    await act(async () => {
+      Object.defineProperty(uploadInput, 'files', {
+        value: [file],
+      });
+
+      fireEvent.drop(uploadInput);
+    });
+
+    //  it was valid and shows up
+    expect(await screen.findByText(/To upload/)).toBeInTheDocument();
+    expect(await screen.findByText('scdata.txt')).toBeInTheDocument();
+
+    // upload is enabled
     // It has a disabled upload button if there are no uploaded files
     // Upload button is the last "Upload" text in the document
     const uploadButtonText = screen.getAllByText(/Upload/i).pop();
