@@ -26,9 +26,12 @@ describe('loadAndCompressIfNecessary', () => {
       fn(null, buffer);
     });
 
-    const result = await loadAndCompressIfNecessary(uncompressedFile);
+    const mockOnCompression = jest.fn();
+
+    const result = await loadAndCompressIfNecessary(uncompressedFile, mockOnCompression);
 
     expect(gzip).toHaveBeenCalledTimes(1);
+    expect(mockOnCompression).toHaveBeenCalledTimes(1);
     expect(result.toString()).toEqual(mockContent);
   });
 
