@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 import {
   Row, Col, Space, PageHeader, Collapse, Empty, Alert,
 } from 'antd';
+import SelectData from 'components/plots/styling/embedding-continuous/SelectData';
 
 import { isUnisample } from 'utils/experimentPredicates';
 import MiniPlot from 'components/plots/MiniPlot';
@@ -368,8 +369,17 @@ const ConfigureEmbedding = (props) => {
         <Col flex='1 0px'>
           <CalculationConfig experimentId={experimentId} onConfigChange={onConfigChange} />
           <Collapse>
-            <Panel header='Plot styling' key='styling'>
+            <Panel header='Plot options' key='styling'>
               <div style={{ height: 8 }} />
+              <Collapse>
+                <Panel header='Select data' key='select-data'>
+                  <SelectData
+                    config={selectedConfig}
+                    onUpdate={updatePlotWithChanges}
+                    cellSets={cellSets}
+                  />
+                </Panel>
+              </Collapse>
               <PlotStyling
                 formConfig={plotStylingControlsConfig}
                 config={selectedConfig}
