@@ -38,9 +38,6 @@ const getExtraDependencies = async (experimentId, name, dispatch, getState) => {
       (dependencyGetter) => dependencyGetter(experimentId, dispatch, getState),
     ),
   );
-  if (workerVersions[name]) {
-    dependencies.push(workerVersions[name]);
-  }
 
   if (workerVersions[name]) {
     dependencies.push(workerVersions[name]);
