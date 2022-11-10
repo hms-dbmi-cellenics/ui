@@ -1,30 +1,5 @@
 {
-  "rows": [
-    {
-      "gene_names": "Lyz2",
-      "dispersions": 55.7422,
-      "_row": "ENSMUSG00000069516"
-    },
-    {
-      "gene_names": "Chil3",
-      "dispersions": 45.7339,
-      "_row": "ENSMUSG00000040809"
-    },
-    {
-      "gene_names": "Gzma",
-      "dispersions": 38.8161,
-      "_row": "ENSMUSG00000023132"
-    },
-    {
-      "gene_names": "Apoe",
-      "dispersions": 31.3993,
-      "_row": "ENSMUSG00000002985"
-    },
-    {
-      "gene_names": "Ifitm3",
-      "dispersions": 26.0879,
-      "_row": "ENSMUSG00000025492"
-    }
-  ],
-  "total": 5
+  "total": 5,
+  "gene_names": [ "Lyz2", "Chil3", "Ccl5", "Apoe", "Ifitm3", "Tmem176a"],
+  "dispersions": [ 55.7422, 45.7339, 38.8161, 31.3993, 26.0879, 23]
 }

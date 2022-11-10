@@ -318,11 +318,10 @@ describe('Dot plot page', () => {
     const geneTree = screen.getByRole('tree');
 
     // first three genes of the data should be loaded by default
-    const loadedGenes = paginatedGeneExpressionData.rows.map((row) => (row.gene_names)).slice(0, 3);
-
+    const loadedGenes = {};
     // The genes in Data 5 should be in the tree
-    loadedGenes.forEach((geneName) => {
-      expect(within(geneTree).getByText(geneName)).toBeInTheDocument();
+    paginatedGeneExpressionData.gene_names.forEach((gene, indx) => {
+      loadedGenes[gene] = { dispersions: paginatedGeneExpressionData.dispersions[indx] };
     });
 
     // Remove a gene using the X button
@@ -448,7 +447,7 @@ describe('Dot plot page', () => {
 describe('Drag and drop enzyme tests', () => {
   let component;
   let tree;
-  let loadedGenes;
+  const loadedGenes = {};
 
   beforeEach(async () => {
     jest.clearAllMocks();
@@ -485,15 +484,16 @@ describe('Drag and drop enzyme tests', () => {
 
     // antd renders 5 elements, use the first one
     tree = component.find({ 'data-testid': 'HierachicalTreeGenes' }).at(0);
-    loadedGenes = paginatedGeneExpressionData.rows
-      .map((row) => (row.gene_names))
-      .slice(0, 3)
-      .reverse();
+
+    paginatedGeneExpressionData.gene_names.slice(0, 3).reverse().forEach((gene, indx) => {
+      loadedGenes[gene] = { dispersions: paginatedGeneExpressionData.dispersions[indx] };
+    });
   });
 
   it('changes nothing on drop in place', async () => {
     // default genes are in the tree
-    loadedGenes.forEach((geneName) => {
+
+    Object.keys(loadedGenes).forEach((geneName) => {
       expect(tree.containsMatchingElement(geneName));
     });
 
@@ -511,13 +511,12 @@ describe('Drag and drop enzyme tests', () => {
     });
 
     const newOrder = getCurrentGeneOrder(component);
-
-    expect(_.isEqual(newOrder, loadedGenes)).toEqual(true);
+    expect(_.isEqual(newOrder, Object.keys(loadedGenes))).toEqual(true);
   });
 
   it('re-orders genes correctly', async () => {
     // default genes are in the tree
-    loadedGenes.forEach((geneName) => {
+    Object.keys(loadedGenes).forEach((geneName) => {
       expect(tree.containsMatchingElement(geneName));
     });
     // dropping to gap re-orders genes
@@ -534,9 +533,7 @@ describe('Drag and drop enzyme tests', () => {
     });
 
     const newOrder = getCurrentGeneOrder(component);
-
-    const expectedOrder = arrayMoveImmutable(loadedGenes, 0, 1);
-
+    const expectedOrder = arrayMoveImmutable(Object.keys(loadedGenes), 0, 1);
     expect(_.isEqual(newOrder, expectedOrder)).toEqual(true);
   });
 });

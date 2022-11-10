@@ -15,7 +15,7 @@ import { seekFromS3 } from 'utils/work/seekWorkResponse';
 import expressionDataFAKEGENE from '__test__/data/gene_expression_FAKEGENE.json';
 import markerGenesData2 from '__test__/data/marker_genes_2.json';
 import markerGenesData5 from '__test__/data/marker_genes_5.json';
-import geneList from '__test__/data/list_genes.json';
+import geneList from '__test__/data/paginated_gene_expression.json';
 
 import preloadAll from 'jest-next-dynamic';
 

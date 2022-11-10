@@ -9,8 +9,9 @@ import { loadBackendStatus } from 'redux/actions/backendStatus';
 import { makeStore } from 'redux/store';
 import { seekFromS3 } from 'utils/work/seekWorkResponse';
 import markerGenes1 from '__test__/data/marker_genes_1.json';
-import listGenesViolinPlot from '__test__/data/list_genes_violin_plot.json';
+
 import mockEmbedding from '__test__/data/embedding.json';
+import paginatedGeneExpressionData from '__test__/data/paginated_gene_expression.json';
 
 import preloadAll from 'jest-next-dynamic';
 
@@ -49,7 +50,7 @@ jest.mock('utils/work/seekWorkResponse', () => ({
 
 const mockWorkerResponses = {
   '1-marker-genes': markerGenes1,
-  ListGenes: listGenesViolinPlot,
+  ListGenes: paginatedGeneExpressionData,
   GetEmbedding: mockEmbedding,
 };
 const experimentId = fake.EXPERIMENT_ID;

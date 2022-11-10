@@ -10,7 +10,7 @@ import { loadBackendStatus } from 'redux/actions/backendStatus';
 import { makeStore } from 'redux/store';
 import { seekFromS3 } from 'utils/work/seekWorkResponse';
 import markerGenes1 from '__test__/data/marker_genes_1.json';
-import listGenesViolinPlot from '__test__/data/list_genes_violin_plot.json';
+import paginatedGeneExpressionData from '__test__/data/paginated_gene_expression.json';
 
 import fake from '__test__/test-utils/constants';
 import mockAPI, {
@@ -46,7 +46,7 @@ jest.mock('utils/work/seekWorkResponse', () => ({
 }));
 
 const mockWorkerResponses = {
-  'list-genes': listGenesViolinPlot,
+  'list-genes': paginatedGeneExpressionData,
   '1-marker-genes': markerGenes1,
 };
 

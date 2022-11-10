@@ -96,16 +96,8 @@ describe('loadPaginatedGeneProperties action', () => {
       .mockImplementationOnce(() => null)
       .mockImplementation(() => Promise.resolve({
         total: 2,
-        rows: [
-          {
-            gene_names: 'a',
-            dispersions: 1,
-          },
-          {
-            gene_names: 'b',
-            dispersions: 1,
-          },
-        ],
+        gene_names: ['a', 'b'],
+        dispersions: [1, 1],
       }));
 
     const tableState = {
