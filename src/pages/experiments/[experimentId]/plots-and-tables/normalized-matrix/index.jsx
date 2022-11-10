@@ -86,8 +86,10 @@ const NormalizedMatrixPage = (props) => {
   };
 
   useConditionalEffect(() => {
+    if (!cellSets.accessible) return;
+
     setMetadataCellSets(metadataTracks.map((track) => track.children).flat());
-  }, [metadataTracks], { lazy: true });
+  }, [metadataTracks, cellSets.accessible]);
 
   useEffect(() => {
     if (!config) { dispatch(loadPlotConfig(experimentId, plotUuid, plotType)); }
