@@ -20,7 +20,6 @@ import mockAPI, { generateDefaultMockAPIResponses, promiseResponse, statusRespon
 import fetchWork from 'utils/work/fetchWork';
 import writeToFileURL from 'utils/writeToFileURL';
 import downloadFromUrl from 'utils/downloadFromUrl';
-import pushNotificationMessage from 'utils/pushNotificationMessage';
 
 jest.mock('utils/work/fetchWork');
 jest.mock('utils/writeToFileURL');
@@ -187,6 +186,31 @@ describe('Normalized matrix index page', () => {
     expect(screen.getByText('Cluster 3')).toBeDefined();
     expect(screen.getByText('Cluster 6')).toBeDefined();
     expect(screen.getByText('KO')).toBeDefined();
+  });
+
+  it('Displays the persisted metadata tracks config', async () => {
+    mockResponse.mockImplementation((req) => {
+      if (req.method === 'PUT') return promiseResponse(JSON.stringify('OK'));
+      return promiseResponse(JSON.stringify({
+        config: {
+          louvain: ['louvain-3', 'louvain-6'],
+          metadata: ['Track_1-KMeta'],
+          scratchpad: [],
+        },
+      }));
+    });
+
+    const result = 'csvFormatData';
+    const writeToFileURLResult = 'writeToFileURL';
+
+    fetchWork.mockImplementationOnce(() => Promise.resolve(result));
+    writeToFileURL.mockImplementationOnce(() => writeToFileURLResult);
+
+    await renderNormalizedMatrixIndex();
+
+    expect(screen.getByText('Cluster 3')).toBeDefined();
+    expect(screen.getByText('Cluster 6')).toBeDefined();
+    expect(screen.getByText('KMeta')).toBeDefined();
   });
 
   // Based on https://stackoverflow.com/a/51045733

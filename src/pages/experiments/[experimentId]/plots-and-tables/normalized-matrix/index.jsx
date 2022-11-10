@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import React, { useEffect, useState } from 'react';
 import {
   Skeleton,
@@ -27,6 +28,7 @@ import { plotNames, plotTypes } from 'utils/constants';
 import PlatformError from 'components/PlatformError';
 import MultiSelect from 'components/MultiSelect';
 import endUserMessages from 'utils/endUserMessages';
+import useConditionalEffect from 'utils/customHooks/useConditionalEffect';
 
 const plotUuid = 'normalized-matrix';
 const plotType = plotTypes.NORMALIZED_EXPRESSION_MATRIX;
@@ -72,7 +74,7 @@ const NormalizedMatrixPage = (props) => {
   const [sample, louvain, scratchpad] = useSelector(getCellSetsHierarchyByKeys(['sample', 'louvain', 'scratchpad']));
   const metadataTracks = useSelector(getCellSetsHierarchyByType('metadataCategorical', ['sample']));
 
-  const [metadataCellSets, setMetadataCellSets] = useState([]);
+  const [metadataCellSets, setMetadataCellSets] = useState(null);
 
   const onSelectedItemsChanged = (type) => (newItems) => {
     const newConfig = {
@@ -83,9 +85,11 @@ const NormalizedMatrixPage = (props) => {
     dispatch(updatePlotConfig(plotUuid, newConfig));
   };
 
-  useEffect(() => {
+  useConditionalEffect(() => {
+    if (!cellSets.accessible) return;
+
     setMetadataCellSets(metadataTracks.map((track) => track.children).flat());
-  }, [metadataTracks]);
+  }, [metadataTracks, cellSets.accessible]);
 
   useEffect(() => {
     if (!config) { dispatch(loadPlotConfig(experimentId, plotUuid, plotType)); }
@@ -108,7 +112,7 @@ const NormalizedMatrixPage = (props) => {
       );
     }
 
-    if (!cellSets.accessible || configLoading) {
+    if (!cellSets.accessible || configLoading || _.isNil(metadataCellSets)) {
       return (
         <center>
           <Loader experimentId={experimentId} />
