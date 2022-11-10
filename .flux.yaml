@@ -5,7 +5,18 @@ metadata:
   labels:
     sandboxId: FILLED_IN_BY_CI
 ---
-apiVersion: helm.fluxcd.io/v1
+apiVersion: source.toolkit.fluxcd.io/v1beta2
+kind: GitRepository
+metadata:
+  name: FILLED_IN_BY_CI
+  namespace: FILLED_IN_BY_CI
+spec:
+  interval: 10m0s
+  url: https://github.com/biomage-org/iac
+  ref:
+    branch: FILLED_IN_BY_CI
+---
+apiVersion: helm.toolkit.fluxcd.io/v1beta2
 kind: HelmRelease
 metadata:
   name: FILLED_IN_BY_CI
@@ -13,14 +24,11 @@ metadata:
   labels:
     sandboxId: FILLED_IN_BY_CI
   annotations:
-    fluxcd.io/automated: "true"
     filter.fluxcd.io/chart-image: FILLED_IN_BY_CI
 spec:
   releaseName: FILLED_IN_BY_CI
-  chart:
-    git: https://github.com/biomage-org/iac
-    path: charts/nodejs
-    ref: FILLED_IN_BY_CI
+  interval: 2m0s
+  chart: charts/nodejs
   values:
     # disable readiness probes as load balancer performs
     # its own health checks/cordoning

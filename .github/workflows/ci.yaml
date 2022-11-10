@@ -282,22 +282,24 @@ jobs:
 
           echo "::set-output name=kubernetes-env::$KUBERNETES_ENV"
 
-          yq w -d1 .flux.yaml metadata.name "$DEPLOYMENT_NAME" \
-          | yq w -d1 - metadata.namespace "$DEPLOYMENT_NAME-$SANDBOX_ID" \
-          | yq w -d0 - metadata.name "$DEPLOYMENT_NAME-$SANDBOX_ID" \
+          yq w -d0 .flux.yaml metadata.name "$DEPLOYMENT_NAME-$SANDBOX_ID" \
           | yq w -d0 - metadata.labels.sandboxId "$SANDBOX_ID" \
-          | yq w -d1 - metadata.labels.sandboxId "$SANDBOX_ID" \
-          | yq w -d1 - "metadata.annotations[filter.fluxcd.io/chart-image]" "$IMAGE_GLOB" \
-          | yq w -d1 - spec.releaseName "$DEPLOYMENT_NAME" \
-          | yq w -d1 - spec.chart.ref "$CHART_REF" \
-          | yq w -d1 - spec.values.kubernetes.env "$KUBERNETES_ENV" \
-          | yq w -d1 - spec.values.biomageCi.repo "$GITHUB_REPOSITORY" \
-          | yq w -d1 - spec.values.biomageCi.sandboxId "$SANDBOX_ID" \
-          | yq w -d1 - spec.values.image.registry "${{ steps.login-ecr.outputs.registry }}" \
-          | yq w -d1 - spec.values.image.repository "$DEPLOYMENT_NAME" \
-          | yq w -d1 - spec.values.image.tag "$IMAGE_TAG" \
-          | yq w -d1 - spec.values.replicaCount $REPLICA_COUNT \
-          | yq w -d1 - spec.values.serviceAccount.iamRole "ui-role-$KUBERNETES_ENV" \
+          | yq w -d1 - metadata.name "$DEPLOYMENT_NAME" \
+          | yq w -d1 - metadata.namespace "$DEPLOYMENT_NAME-$SANDBOX_ID" \
+          | yq w -d1 - spec.ref.branch "$CHART_REF" \
+          | yq w -d2 - metadata.name "$DEPLOYMENT_NAME" \
+          | yq w -d2 - metadata.namespace "$DEPLOYMENT_NAME-$SANDBOX_ID" \
+          | yq w -d2 - metadata.labels.sandboxId "$SANDBOX_ID" \
+          | yq w -d2 - "metadata.annotations[filter.fluxcd.io/chart-image]" "$IMAGE_GLOB" \
+          | yq w -d2 - spec.releaseName "$DEPLOYMENT_NAME" \
+          | yq w -d2 - spec.values.kubernetes.env "$KUBERNETES_ENV" \
+          | yq w -d2 - spec.values.biomageCi.repo "$GITHUB_REPOSITORY" \
+          | yq w -d2 - spec.values.biomageCi.sandboxId "$SANDBOX_ID" \
+          | yq w -d2 - spec.values.image.registry "${{ steps.login-ecr.outputs.registry }}" \
+          | yq w -d2 - spec.values.image.repository "$DEPLOYMENT_NAME" \
+          | yq w -d2 - spec.values.image.tag "$IMAGE_TAG" \
+          | yq w -d2 - spec.values.replicaCount $REPLICA_COUNT \
+          | yq w -d2 - spec.values.serviceAccount.iamRole "ui-role-$KUBERNETES_ENV" \
           > $DEPLOYMENT_NAME-without-host.yaml
 
           if [ "${{ matrix.environment }}" = "production" ]
@@ -339,7 +341,7 @@ jobs:
           API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
         with:
           source_file: ${{ needs.build-docker.outputs.ref-id }}.yaml
-          destination_repo: ${{ github.repository_owner }}/releases
+          destination_repo: ${{ github.repository_owner }}/flux-v2-migration
           destination_folder: staging-candidates/${{ steps.fill-metadata.outputs.deployment-name }}
           user_email: ci@biomage.net
           user_name: 'Biomage CI/CD'
