@@ -45,6 +45,7 @@ const generateETag = async (
       extras,
       cacheUniquenessKey,
       workerVersion: config.workerVersion,
+      extraDependencies,
     };
   } else {
     ETagBody = {
