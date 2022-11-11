@@ -16,7 +16,7 @@ spec:
   ref:
     branch: FILLED_IN_BY_CI
 ---
-apiVersion: helm.toolkit.fluxcd.io/v1beta2
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
   name: FILLED_IN_BY_CI
@@ -28,7 +28,13 @@ metadata:
 spec:
   releaseName: FILLED_IN_BY_CI
   interval: 2m0s
-  chart: charts/nodejs
+  chart:
+    spec:
+      chart: charts/nodejs
+      sourceRef:
+        kind: GitRepository
+        name: FILLED_IN_BY_CI
+        namespace: FILLED_IN_BY_CI
   values:
     # disable readiness probes as load balancer performs
     # its own health checks/cordoning
@@ -43,8 +49,8 @@ spec:
     service:
       additionalHosts: FILLED_IN_BY_CI
   valuesFrom:
-  - configMapKeyRef:
+    - kind: ConfigMap
       name: account-config
-      namespace: flux
+      namespace: FILLED_IN_BY_CI
       key: account-config.yaml
-    # filled in by CI. do not modify.
+      # filled in by CI. do not modify.
