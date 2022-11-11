@@ -1,25 +1,23 @@
-// import { initialPlotDataState } from 'redux/reducers/componentConfig/initialState';
+/* eslint-disable no-param-reassign */
+import produce, { original } from 'immer';
+import _ from 'lodash';
 
-const configsReplaced = (state, action) => {
+import { initialPlotConfigStates } from 'redux/reducers/componentConfig/initialState';
+
+const configsReplaced = produce((draft, action) => {
   const { updatedConfigs } = action.payload;
 
-  console.log('updatedConfigsDebug');
-  console.log(updatedConfigs);
+  const originalState = original(draft);
 
-  return state;
+  updatedConfigs.forEach(({ plotId, updatedConfig }) => {
+    // If config is not loaded, no need to update it
+    if (_.isNil(originalState[plotId])) return;
 
-  // return {
-  //   ...state,
-  //   [plotUuid]: {
-  //     ...initialPlotDataState,
-  //     ...state[plotUuid],
-  //     experimentId,
-  //     plotType,
-  //     plotData,
-  //     config,
-  //     outstandingChanges: false,
-  //   },
-  // };
-};
+    const { plotType } = originalState[plotId];
+
+    const newConfig = _.merge({}, initialPlotConfigStates[plotType], updatedConfig);
+    draft[plotId].config = newConfig;
+  });
+});
 
 export default configsReplaced;
