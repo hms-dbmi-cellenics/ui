@@ -11,7 +11,7 @@ metadata:
   name: FILLED_IN_BY_CI
   namespace: FILLED_IN_BY_CI
 spec:
-  interval: 10m0s
+  interval: 5m0s
   url: https://github.com/biomage-org/iac
   ref:
     branch: FILLED_IN_BY_CI
