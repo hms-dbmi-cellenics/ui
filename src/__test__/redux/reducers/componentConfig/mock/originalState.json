@@ -1,0 +1,1401 @@
+{
+  "5722a512-6b29-497c-92af-3f09cde02f6e-classifier-2": {
+      "plotData": {
+          "before": {
+              "num_cells": 918,
+              "total_genes": 15002,
+              "median_genes": 1379,
+              "median_umis": 3438
+          },
+          "after": {
+              "num_cells": 918,
+              "total_genes": 15002,
+              "median_genes": 1379,
+              "median_umis": 3438
+          }
+      },
+      "loading": false,
+      "error": false,
+      "experimentId": "a964fa90-f6e8-4a18-9a85-0f93394713ca",
+      "plotType": "filterTable",
+      "config": {},
+      "outstandingChanges": false
+  },
+  "5722a512-6b29-497c-92af-3f09cde02f6e-classifier-0": {
+      "plotData": [],
+      "loading": false,
+      "error": false,
+      "experimentId": "a964fa90-f6e8-4a18-9a85-0f93394713ca",
+      "plotType": "classifierEmptyDropsPlot",
+      "config": {
+          "spec": "1.0.0",
+          "legend": {
+              "enabled": false,
+              "position": "top-right",
+              "colour": "#000000"
+          },
+          "dimensions": {
+              "width": 630,
+              "height": 500
+          },
+          "axes": {
+              "xAxisText": "log10[ cell size (UMIs) ]",
+              "yAxisText": "FDR (emptyDrops)",
+              "titleFontSize": 13,
+              "labelFontSize": 12,
+              "offset": 0,
+              "gridOpacity": 10,
+              "gridWidth": 10,
+              "domainWidth": 2,
+              "xAxisRotateLabels": false
+          },
+          "axesRanges": {
+              "xAxisAuto": true,
+              "yAxisAuto": true,
+              "xMin": 0,
+              "xMax": 10,
+              "yMin": 0,
+              "yMax": 10
+          },
+          "title": {
+              "text": "",
+              "fontSize": 20,
+              "anchor": "start",
+              "dx": 10
+          },
+          "fontStyle": {
+              "font": "sans-serif",
+              "colour": "#000000"
+          },
+          "colour": {
+              "masterColour": "#000000",
+              "gradient": "default",
+              "toggleInvert": "#FFFFFF",
+              "invert": "standard",
+              "reverseColourBar": false
+          },
+          "marker": {
+              "shape": "circle",
+              "showOpacity": true,
+              "opacity": 5,
+              "size": 5
+          },
+          "labels": {
+              "enabled": true,
+              "size": 18
+          },
+          "minProbability": 0.82,
+          "bandwidth": -1
+      },
+      "outstandingChanges": false
+  },
+  "5722a512-6b29-497c-92af-3f09cde02f6e-classifier-1": {
+      "plotData": [],
+      "loading": false,
+      "error": false,
+      "experimentId": "a964fa90-f6e8-4a18-9a85-0f93394713ca",
+      "plotType": "classifierKneePlot",
+      "config": {
+          "spec": "1.0.0",
+          "legend": {
+              "enabled": true,
+              "position": "top-right",
+              "colour": "#000000"
+          },
+          "dimensions": {
+              "width": 530,
+              "height": 400
+          },
+          "axes": {
+              "xAxisText": "Droplet Rank",
+              "yAxisText": "Droplet #UMIs",
+              "titleFontSize": 13,
+              "labelFontSize": 12,
+              "offset": 0,
+              "gridOpacity": 0,
+              "gridWidth": 10,
+              "domainWidth": 2,
+              "xAxisRotateLabels": false
+          },
+          "axesRanges": {
+              "xAxisAuto": true,
+              "yAxisAuto": true,
+              "xMin": 1,
+              "xMax": 10,
+              "yMin": 1,
+              "yMax": 10
+          },
+          "title": {
+              "text": "",
+              "fontSize": 20,
+              "anchor": "start",
+              "dx": 10
+          },
+          "fontStyle": {
+              "font": "sans-serif",
+              "colour": "#000000"
+          },
+          "colour": {
+              "masterColour": "#000000",
+              "gradient": "default",
+              "toggleInvert": "#FFFFFF",
+              "invert": "standard",
+              "reverseColourBar": false
+          },
+          "marker": {
+              "shape": "circle",
+              "showOpacity": true,
+              "opacity": 5,
+              "size": 5
+          },
+          "labels": {
+              "enabled": true,
+              "size": 18
+          },
+          "minCellSize": 990
+      },
+      "outstandingChanges": false
+  },
+  "frequencyPlotMain": {
+      "plotData": [],
+      "loading": false,
+      "error": false,
+      "experimentId": "a964fa90-f6e8-4a18-9a85-0f93394713ca",
+      "plotType": "frequency",
+      "config": {
+          "spec": "1.0.0",
+          "frequencyType": "proportional",
+          "legend": {
+              "enabled": true,
+              "position": "top",
+              "colour": "#000000",
+              "title": "Cell Set",
+              "offset": 40
+          },
+          "labels": {
+              "enabled": true,
+              "size": 18
+          },
+          "dimensions": {
+              "width": 500,
+              "height": 500
+          },
+          "marker": {
+              "shape": "circle",
+              "showOpacity": true,
+              "opacity": 5,
+              "size": 5
+          },
+          "colour": {
+              "masterColour": "#000000",
+              "gradient": "default",
+              "toggleInvert": "#FFFFFF",
+              "invert": "standard",
+              "reverseColourBar": false
+          },
+          "title": {
+              "text": "",
+              "fontSize": 15,
+              "anchor": "start",
+              "dx": 10
+          },
+          "axes": {
+              "xAxisText": "Sample",
+              "yAxisText": "Proportion",
+              "titleFontSize": 13,
+              "labelFontSize": 12,
+              "offset": 10,
+              "gridOpacity": 0,
+              "gridWidth": 10,
+              "domainWidth": 2,
+              "xAxisRotateLabels": true
+          },
+          "axesRanges": {
+              "yAxisAuto": true,
+              "yMin": 0,
+              "yMax": 10
+          },
+          "fontStyle": {
+              "font": "sans-serif",
+              "colour": "#000000"
+          },
+          "proportionGrouping": "louvain",
+          "xAxisGrouping": "sample",
+          "axisTitlesize": 13,
+          "geneexpLegendloc": ""
+      },
+      "outstandingChanges": false
+  },
+  "embeddingCategoricalMain": {
+      "plotData": [],
+      "loading": false,
+      "error": false,
+      "experimentId": "a964fa90-f6e8-4a18-9a85-0f93394713ca",
+      "plotType": "embeddingCategorical",
+      "config": {
+          "spec": "1.0.0",
+          "legend": {
+              "enabled": true,
+              "position": "top",
+              "colour": "#000000"
+          },
+          "dimensions": {
+              "width": 700,
+              "height": 550
+          },
+          "axes": {
+              "xAxisText": "Umap 1",
+              "yAxisText": "Umap 2",
+              "titleFontSize": 13,
+              "labelFontSize": 12,
+              "offset": 0,
+              "gridOpacity": 0,
+              "gridWidth": 10,
+              "domainWidth": 2,
+              "xAxisRotateLabels": false,
+              "defaultValues": [
+                  "x",
+                  "y"
+              ]
+          },
+          "axesRanges": {
+              "xAxisAuto": true,
+              "yAxisAuto": true,
+              "xMin": 0,
+              "xMax": 10,
+              "yMin": 0,
+              "yMax": 10
+          },
+          "title": {
+              "text": "",
+              "fontSize": 20,
+              "anchor": "start",
+              "dx": 10
+          },
+          "fontStyle": {
+              "font": "sans-serif",
+              "colour": "#000000"
+          },
+          "colour": {
+              "masterColour": "#000000",
+              "gradient": "default",
+              "toggleInvert": "#FFFFFF",
+              "invert": "standard",
+              "reverseColourBar": false
+          },
+          "marker": {
+              "shape": "circle",
+              "showOpacity": true,
+              "opacity": 5,
+              "size": 5
+          },
+          "labels": {
+              "enabled": false,
+              "size": 18
+          },
+          "selectedCellSet": "louvain",
+          "selectedSample": "All"
+      },
+      "outstandingChanges": false
+  },
+  "trajectoryAnalysisMain": {
+      "plotData": {
+          "nodes": {
+              "connectedNodes": [
+                  [
+                      9,
+                      50
+                  ],
+                  [
+                      32
+                  ],
+                  [
+                      19,
+                      34
+                  ],
+                  [
+                      30,
+                      36
+                  ],
+                  [
+                      28,
+                      44
+                  ],
+                  [
+                      15,
+                      57
+                  ],
+                  [
+                      45,
+                      55
+                  ],
+                  [
+                      15,
+                      41
+                  ],
+                  [
+                      37,
+                      53
+                  ],
+                  [
+                      26
+                  ],
+                  [
+                      46,
+                      62
+                  ],
+                  [
+                      48,
+                      51
+                  ],
+                  [
+                      17,
+                      20
+                  ],
+                  [
+                      19,
+                      54
+                  ],
+                  [
+                      16,
+                      48
+                  ],
+                  [],
+                  [
+                      20
+                  ],
+                  [
+                      24,
+                      43
+                  ],
+                  [
+                      37,
+                      52
+                  ],
+                  [],
+                  [],
+                  [
+                      41,
+                      51
+                  ],
+                  [
+                      40,
+                      45
+                  ],
+                  [
+                      43,
+                      55
+                  ],
+                  [
+                      49
+                  ],
+                  [
+                      48,
+                      60
+                  ],
+                  [
+                      38
+                  ],
+                  [
+                      29,
+                      58
+                  ],
+                  [
+                      53
+                  ],
+                  [
+                      49
+                  ],
+                  [
+                      50
+                  ],
+                  [
+                      47
+                  ],
+                  [
+                      59
+                  ],
+                  [
+                      34,
+                      35
+                  ],
+                  [],
+                  [],
+                  [
+                      54
+                  ],
+                  [],
+                  [
+                      40
+                  ],
+                  [
+                      56,
+                      58
+                  ],
+                  [],
+                  [],
+                  [
+                      56,
+                      59
+                  ],
+                  [],
+                  [
+                      61
+                  ],
+                  [],
+                  [
+                      60
+                  ],
+                  [
+                      57
+                  ],
+                  [],
+                  [],
+                  [],
+                  [],
+                  [],
+                  [],
+                  [],
+                  [],
+                  [],
+                  [
+                      61
+                  ],
+                  [],
+                  [],
+                  [],
+                  [],
+                  [],
+                  [
+                      69
+                  ],
+                  [
+                      71
+                  ],
+                  [
+                      68,
+                      158
+                  ],
+                  [
+                      74,
+                      147
+                  ],
+                  [
+                      84,
+                      115
+                  ],
+                  [
+                      151
+                  ],
+                  [
+                      103,
+                      132
+                  ],
+                  [
+                      81,
+                      127
+                  ],
+                  [
+                      136
+                  ],
+                  [
+                      114,
+                      130
+                  ],
+                  [
+                      104,
+                      145
+                  ],
+                  [
+                      124
+                  ],
+                  [
+                      156
+                  ],
+                  [
+                      85,
+                      110
+                  ],
+                  [
+                      78,
+                      90
+                  ],
+                  [
+                      131
+                  ],
+                  [
+                      112,
+                      134
+                  ],
+                  [
+                      117,
+                      129
+                  ],
+                  [
+                      111
+                  ],
+                  [
+                      86,
+                      99
+                  ],
+                  [
+                      117,
+                      123,
+                      145
+                  ],
+                  [
+                      146
+                  ],
+                  [
+                      155
+                  ],
+                  [
+                      120
+                  ],
+                  [
+                      96,
+                      126
+                  ],
+                  [
+                      97,
+                      98
+                  ],
+                  [
+                      128,
+                      150
+                  ],
+                  [
+                      134
+                  ],
+                  [
+                      109,
+                      118
+                  ],
+                  [
+                      95,
+                      116
+                  ],
+                  [
+                      113,
+                      147
+                  ],
+                  [
+                      126,
+                      146
+                  ],
+                  [
+                      155
+                  ],
+                  [
+                      120
+                  ],
+                  [
+                      129
+                  ],
+                  [
+                      156
+                  ],
+                  [
+                      106
+                  ],
+                  [
+                      105,
+                      151
+                  ],
+                  [
+                      125,
+                      148
+                  ],
+                  [
+                      140,
+                      148
+                  ],
+                  [
+                      136,
+                      142
+                  ],
+                  [
+                      128
+                  ],
+                  [
+                      141
+                  ],
+                  [
+                      114
+                  ],
+                  [
+                      123,
+                      158
+                  ],
+                  [
+                      116,
+                      159
+                  ],
+                  [
+                      112
+                  ],
+                  [
+                      149
+                  ],
+                  [
+                      154
+                  ],
+                  [],
+                  [
+                      137
+                  ],
+                  [],
+                  [
+                      135
+                  ],
+                  [],
+                  [],
+                  [
+                      143
+                  ],
+                  [
+                      137
+                  ],
+                  [],
+                  [
+                      130,
+                      153
+                  ],
+                  [
+                      131,
+                      138
+                  ],
+                  [],
+                  [
+                      125
+                  ],
+                  [],
+                  [],
+                  [
+                      152
+                  ],
+                  [],
+                  [],
+                  [],
+                  [],
+                  [
+                      138
+                  ],
+                  [
+                      141,
+                      157
+                  ],
+                  [],
+                  [
+                      144
+                  ],
+                  [],
+                  [],
+                  [],
+                  [
+                      151
+                  ],
+                  [
+                      159
+                  ],
+                  [],
+                  [
+                      157
+                  ],
+                  [],
+                  [
+                      152
+                  ],
+                  [],
+                  [],
+                  [],
+                  [],
+                  [
+                      153
+                  ],
+                  [
+                      154
+                  ],
+                  [],
+                  [],
+                  [],
+                  [],
+                  [],
+                  [],
+                  [],
+                  [],
+                  [],
+                  [
+                      162
+                  ],
+                  [
+                      162,
+                      163
+                  ],
+                  [],
+                  [],
+                  [
+                      175
+                  ],
+                  [
+                      167,
+                      175
+                  ],
+                  [
+                      170,
+                      171
+                  ],
+                  [
+                      168
+                  ],
+                  [
+                      170
+                  ],
+                  [
+                      173
+                  ],
+                  [],
+                  [
+                      172
+                  ],
+                  [
+                      174
+                  ],
+                  [
+                      174
+                  ],
+                  [],
+                  []
+              ],
+              "x": [
+                  0.9333,
+                  0.1767,
+                  0.1522,
+                  0.8375,
+                  -0.3968,
+                  0.03274,
+                  0.9057,
+                  0.1861,
+                  -0.7039,
+                  0.8775,
+                  0.7457,
+                  0.6252,
+                  0.8614,
+                  0.4575,
+                  0.8644,
+                  0.1609,
+                  0.9879,
+                  0.8424,
+                  -0.8723,
+                  0.2958,
+                  0.9429,
+                  0.3437,
+                  0.8342,
+                  0.9706,
+                  0.7317,
+                  0.8165,
+                  0.8167,
+                  0.3664,
+                  -0.5349,
+                  0.4897,
+                  0.9416,
+                  -0.2699,
+                  0.09378,
+                  -0.1404,
+                  0.005825,
+                  -0.3029,
+                  0.7229,
+                  -0.7277,
+                  0.8293,
+                  0.12,
+                  0.8318,
+                  0.2521,
+                  -0.05931,
+                  0.9078,
+                  -0.2978,
+                  0.8377,
+                  0.7377,
+                  -0.1616,
+                  0.7737,
+                  0.6017,
+                  0.9487,
+                  0.4758,
+                  -0.963,
+                  -0.6407,
+                  0.5926,
+                  0.9811,
+                  0.0001329,
+                  -0.1045,
+                  0.241,
+                  0.0492,
+                  0.8163,
+                  -0.2026,
+                  0.8337,
+                  23.83,
+                  23.62,
+                  25.1,
+                  19.88,
+                  24.97,
+                  24.9,
+                  23.75,
+                  25.45,
+                  23.67,
+                  23.26,
+                  25.91,
+                  20.11,
+                  25.92,
+                  22.52,
+                  22.8,
+                  22.91,
+                  22.76,
+                  25.9,
+                  25.5,
+                  23.83,
+                  25.74,
+                  24.86,
+                  22.36,
+                  23.95,
+                  24.35,
+                  26.06,
+                  26.01,
+                  22.77,
+                  22.87,
+                  21.84,
+                  19.39,
+                  24.64,
+                  22.01,
+                  24.22,
+                  26.08,
+                  26.02,
+                  23.7,
+                  24.62,
+                  20.76,
+                  21.12,
+                  23.81,
+                  26.04,
+                  24.51,
+                  23.56,
+                  25.46,
+                  21.56,
+                  22.84,
+                  22.69,
+                  25.54,
+                  22.78,
+                  19.13,
+                  23.41,
+                  25.07,
+                  21.71,
+                  25.82,
+                  22.9,
+                  18.89,
+                  24.09,
+                  23.01,
+                  23.2,
+                  25.6,
+                  20.32,
+                  20.55,
+                  24.45,
+                  25.36,
+                  26.03,
+                  25.99,
+                  23.13,
+                  22.98,
+                  23.59,
+                  24.21,
+                  22.74,
+                  25.13,
+                  23.74,
+                  18.95,
+                  23.4,
+                  24.65,
+                  21.25,
+                  24.36,
+                  23.95,
+                  22.92,
+                  25.17,
+                  25.83,
+                  24.78,
+                  19.63,
+                  20.94,
+                  22.84,
+                  25.86,
+                  24.72,
+                  25.27,
+                  22.93,
+                  25.74,
+                  22.17,
+                  25.98,
+                  24.09,
+                  25.3,
+                  21.4,
+                  7.254,
+                  7.156,
+                  7.17,
+                  7.134,
+                  -0.06066,
+                  -0.01671,
+                  0.1811,
+                  0.02861,
+                  0.07401,
+                  0.2869,
+                  0.1233,
+                  0.2291,
+                  0.2556,
+                  0.2774,
+                  0.2694,
+                  -0.04773
+              ],
+              "y": [
+                  -3.159,
+                  -4.446,
+                  -2.64,
+                  -2.77,
+                  -6.716,
+                  -6.834,
+                  -4.534,
+                  -6.573,
+                  -6.529,
+                  -3.325,
+                  -6.749,
+                  -6.206,
+                  -5.505,
+                  -2.764,
+                  -6.026,
+                  -6.731,
+                  -5.89,
+                  -5.287,
+                  -6.313,
+                  -2.705,
+                  -5.692,
+                  -6.325,
+                  -4.127,
+                  -4.922,
+                  -5.245,
+                  -6.328,
+                  -3.503,
+                  -5.116,
+                  -6.698,
+                  -5.15,
+                  -2.846,
+                  -7.252,
+                  -4.471,
+                  -2.528,
+                  -2.581,
+                  -2.484,
+                  -2.737,
+                  -6.401,
+                  -3.695,
+                  -5.044,
+                  -3.911,
+                  -6.433,
+                  -4.815,
+                  -5.105,
+                  -6.763,
+                  -4.338,
+                  -6.577,
+                  -7.099,
+                  -6.184,
+                  -5.204,
+                  -2.991,
+                  -6.246,
+                  -6.141,
+                  -6.626,
+                  -2.728,
+                  -4.735,
+                  -4.998,
+                  -6.933,
+                  -5.082,
+                  -4.646,
+                  -6.474,
+                  -6.852,
+                  -6.903,
+                  -3.192,
+                  -3.718,
+                  -3.174,
+                  1.561,
+                  -0.3729,
+                  -3.143,
+                  -3.209,
+                  -1.163,
+                  -3.582,
+                  -0.03459,
+                  -2.306,
+                  1.577,
+                  -3.412,
+                  0.9345,
+                  -2.676,
+                  -2.801,
+                  -2.159,
+                  -2.82,
+                  -1.314,
+                  0.1733,
+                  -2.683,
+                  -0.2669,
+                  1.051,
+                  0.1595,
+                  0.06745,
+                  -3.065,
+                  -1.818,
+                  -2.505,
+                  -1.664,
+                  1.345,
+                  1.553,
+                  -0.0539,
+                  1.234,
+                  0.134,
+                  -2.934,
+                  -3.197,
+                  0.2114,
+                  -3.289,
+                  1.589,
+                  1.552,
+                  -3.373,
+                  -2.152,
+                  -3.473,
+                  0.1263,
+                  -2.973,
+                  1.62,
+                  -1.838,
+                  0.8046,
+                  -1.473,
+                  -1.991,
+                  1.551,
+                  0.04275,
+                  -0.4965,
+                  1.492,
+                  -2.751,
+                  -1.487,
+                  1.79,
+                  0.1824,
+                  0.2656,
+                  -2.981,
+                  -2.827,
+                  1.598,
+                  1.607,
+                  -0.08822,
+                  -1.034,
+                  -1.973,
+                  -2.876,
+                  0.1015,
+                  -2.951,
+                  -3.066,
+                  -3.53,
+                  -2.33,
+                  -0.6346,
+                  -3.48,
+                  1.662,
+                  -2.96,
+                  -2.928,
+                  1.616,
+                  -3.48,
+                  -3.425,
+                  -1.338,
+                  -0.7924,
+                  -2.501,
+                  -0.1352,
+                  1.557,
+                  1.564,
+                  0.6986,
+                  -1.694,
+                  -3.118,
+                  -0.9046,
+                  0.4815,
+                  -1.54,
+                  1.132,
+                  -3.307,
+                  -3.478,
+                  -3.084,
+                  1.665,
+                  12.1,
+                  12.23,
+                  12.12,
+                  12.34,
+                  15.15,
+                  15.09,
+                  15.01,
+                  15.04,
+                  15,
+                  15.32,
+                  14.99,
+                  15.05,
+                  15.11,
+                  15.25,
+                  15.18,
+                  15.13
+              ]
+          }
+      },
+      "loading": false,
+      "error": false,
+      "experimentId": "a964fa90-f6e8-4a18-9a85-0f93394713ca",
+      "plotType": "TrajectoryAnalysis",
+      "config": {
+          "spec": "1.0.0",
+          "legend": {
+              "enabled": true,
+              "position": "top",
+              "colour": "#000000"
+          },
+          "dimensions": {
+              "width": 700,
+              "height": 550
+          },
+          "axes": {
+              "xAxisText": "Umap 1",
+              "yAxisText": "Umap 2",
+              "titleFontSize": 13,
+              "labelFontSize": 12,
+              "offset": 0,
+              "gridOpacity": 0,
+              "gridWidth": 10,
+              "domainWidth": 2,
+              "xAxisRotateLabels": false,
+              "defaultValues": [
+                  "x",
+                  "y"
+              ]
+          },
+          "axesRanges": {
+              "xAxisAuto": true,
+              "yAxisAuto": true,
+              "xMin": 0,
+              "xMax": 10,
+              "yMin": 0,
+              "yMax": 10
+          },
+          "title": {
+              "text": "",
+              "fontSize": 20,
+              "anchor": "start",
+              "dx": 10
+          },
+          "fontStyle": {
+              "font": "sans-serif",
+              "colour": "#000000"
+          },
+          "colour": {
+              "masterColour": "#000000",
+              "gradient": "default",
+              "toggleInvert": "#FFFFFF",
+              "invert": "standard",
+              "reverseColourBar": false
+          },
+          "marker": {
+              "shape": "circle",
+              "showOpacity": true,
+              "opacity": 5,
+              "size": 20
+          },
+          "labels": {
+              "enabled": false,
+              "size": 18
+          },
+          "selectedNodes": [
+              164,
+              165,
+              166,
+              167,
+              168,
+              169,
+              170,
+              171,
+              172,
+              173,
+              174,
+              175,
+              66,
+              74,
+              76,
+              85,
+              92,
+              93,
+              95,
+              101,
+              102,
+              108,
+              110,
+              113,
+              116,
+              119,
+              121,
+              124,
+              125,
+              137,
+              140,
+              147,
+              148,
+              149,
+              153,
+              155,
+              159
+          ],
+          "selectedCellSet": "louvain",
+          "selectedSample": "All"
+      },
+      "outstandingChanges": false
+  },
+  "ViolinMain": {
+      "plotData": [],
+      "loading": false,
+      "error": false,
+      "experimentId": "a964fa90-f6e8-4a18-9a85-0f93394713ca",
+      "plotType": "violin",
+      "config": {
+          "spec": "1.0.0",
+          "legend": {
+              "enabled": false,
+              "position": "top",
+              "colour": "#000000"
+          },
+          "dimensions": {
+              "width": 550,
+              "height": 400
+          },
+          "axes": {
+              "xAxisText": "",
+              "yAxisText": "",
+              "titleFontSize": 13,
+              "labelFontSize": 12,
+              "offset": 10,
+              "gridOpacity": 0,
+              "gridWidth": 10,
+              "domainWidth": 2,
+              "xAxisRotateLabels": true
+          },
+          "axesRanges": {
+              "yAxisAuto": true,
+              "yMin": 0,
+              "yMax": 10
+          },
+          "title": {
+              "text": "Gzma",
+              "fontSize": 20,
+              "anchor": "start",
+              "dx": 0
+          },
+          "fontStyle": {
+              "font": "sans-serif",
+              "colour": "#000000"
+          },
+          "colour": {
+              "masterColour": "#000000",
+              "gradient": "default",
+              "toggleInvert": "#FFFFFF",
+              "invert": "standard",
+              "reverseColourBar": false
+          },
+          "marker": {
+              "shape": "circle",
+              "showOpacity": true,
+              "opacity": 5,
+              "size": 5
+          },
+          "labels": {
+              "enabled": true,
+              "size": 18
+          },
+          "shownGene": "Gzma",
+          "selectedCellSet": "louvain",
+          "selectedPoints": "All",
+          "selectedPointsVisible": true,
+          "statisticsVisible": false,
+          "kdeBandwidth": 0.3,
+          "normalised": "normalised",
+          "keepValuesOnReset": [
+              "shownGene",
+              "title"
+          ]
+      },
+      "outstandingChanges": false
+  },
+  "multiView-ViolinMain": {
+      "plotData": [],
+      "loading": false,
+      "error": false,
+      "experimentId": "a964fa90-f6e8-4a18-9a85-0f93394713ca",
+      "plotType": "multiView",
+      "config": {
+          "ncols": 2,
+          "nrows": 2,
+          "plotUuids": [
+              "ViolinMain",
+              "ViolinMain-0"
+          ]
+      },
+      "outstandingChanges": false
+  },
+  "ViolinMain-0": {
+      "plotData": [],
+      "loading": false,
+      "error": false,
+      "experimentId": "a964fa90-f6e8-4a18-9a85-0f93394713ca",
+      "plotType": "violin",
+      "config": {
+          "spec": "1.0.0",
+          "legend": {
+              "enabled": false,
+              "position": "top",
+              "colour": "#000000"
+          },
+          "dimensions": {
+              "width": 550,
+              "height": 400
+          },
+          "axes": {
+              "xAxisText": "",
+              "yAxisText": "",
+              "titleFontSize": 13,
+              "labelFontSize": 12,
+              "offset": 10,
+              "gridOpacity": 0,
+              "gridWidth": 10,
+              "domainWidth": 2,
+              "xAxisRotateLabels": true
+          },
+          "axesRanges": {
+              "yAxisAuto": true,
+              "yMin": 0,
+              "yMax": 10
+          },
+          "title": {
+              "text": "Lyz2",
+              "fontSize": 20,
+              "anchor": "start",
+              "dx": 0
+          },
+          "fontStyle": {
+              "font": "sans-serif",
+              "colour": "#000000"
+          },
+          "colour": {
+              "masterColour": "#000000",
+              "gradient": "default",
+              "toggleInvert": "#FFFFFF",
+              "invert": "standard",
+              "reverseColourBar": false
+          },
+          "marker": {
+              "shape": "circle",
+              "showOpacity": true,
+              "opacity": 5,
+              "size": 5
+          },
+          "labels": {
+              "enabled": true,
+              "size": 18
+          },
+          "shownGene": "Lyz2",
+          "selectedCellSet": "louvain",
+          "selectedPoints": "All",
+          "selectedPointsVisible": true,
+          "statisticsVisible": false,
+          "kdeBandwidth": 0.3,
+          "normalised": "normalised",
+          "keepValuesOnReset": [
+              "shownGene",
+              "title"
+          ]
+      },
+      "outstandingChanges": false
+  }
+}
