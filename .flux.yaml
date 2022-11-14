@@ -51,6 +51,6 @@ spec:
   valuesFrom:
     - kind: ConfigMap
       name: account-config
-      namespace: FILLED_IN_BY_CI
-      key: account-config.yaml
+      valuesKey: account-config.yaml
+      optional: false
       # filled in by CI. do not modify.
