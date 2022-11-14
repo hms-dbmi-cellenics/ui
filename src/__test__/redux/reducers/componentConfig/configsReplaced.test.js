@@ -1,13 +1,15 @@
 import configsReplacedReducer from 'redux/reducers/componentConfig/configsReplaced';
 
 import updatedConfigs from '__test__/redux/reducers/componentConfig/mock/updatedConfigs.json';
-import originalState from '__test__/redux/reducers/componentConfig/mock/originalState.json';
+import _ from 'lodash';
+
+import reduxState from '__test__/redux/reducers/componentConfig/mock/reduxState.json';
 import { CONFIGS_REPLACED } from 'redux/actionTypes/componentConfig';
 
 describe('configsReplaced', () => {
   it('Replaces existing state', () => {
     const newState = configsReplacedReducer(
-      originalState,
+      reduxState,
       {
         type: CONFIGS_REPLACED,
         payload: { updatedConfigs },
@@ -31,5 +33,27 @@ describe('configsReplaced', () => {
 
     // Nothing else changed
     expect(newState).toMatchSnapshot();
+  });
+
+  // This is expected because, in most plots, we assume that
+  // if the config was loaded, then the plotData was too.
+  // However, these config updates received from the api don't contain the plotData
+  // so we shouldn't store them to maintain the invariant
+  it('Doesnt to redux config that was not loaded', () => {
+    const originalState = _.cloneDeep(reduxState);
+
+    delete originalState.embeddingCategoricalMain;
+
+    const newState = configsReplacedReducer(
+      originalState,
+      {
+        type: CONFIGS_REPLACED,
+        payload: { updatedConfigs },
+      },
+    );
+
+    // While there is an update for embeddingCategoricalMain, the new state doesnt store it
+    expect(updatedConfigs.find(({ plotId }) => plotId === 'embeddingCategoricalMain')).toBeDefined();
+    expect(newState.embeddingCategoricalMain).not.toBeDefined();
   });
 });
