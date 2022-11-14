@@ -15,6 +15,7 @@ import {
 } from 'antd';
 import { CheckCircleTwoTone, CloseCircleTwoTone, DeleteOutlined } from '@ant-design/icons';
 import Dropzone from 'react-dropzone';
+import { useSelector } from 'react-redux';
 
 import config from 'config';
 import techOptions from 'utils/upload/fileUploadSpecifications';
@@ -26,8 +27,14 @@ import endUserMessages from 'utils/endUserMessages';
 const { Text, Title, Paragraph } = Typography;
 const { Option } = Select;
 
+// allow at most 15 GiB .rds object uploads
+const SEURAT_MAX_FILE_SIZE = 15 * 1024 * 1024 * 1024;
+
 const FileUploadModal = (props) => {
   const { onUpload, onCancel } = props;
+
+  const samples = useSelector((state) => state.samples);
+  const previouslyUploadedSamples = Object.keys(samples).filter((key) => key !== 'meta');
 
   const guidanceFileLink = 'https://drive.google.com/file/d/1VPaB-yofuExinY2pXyGEEx-w39_OPubO/view';
 
@@ -76,12 +83,23 @@ const FileUploadModal = (props) => {
         fileObjectToFileRecord(file, selectedTech)
       )));
 
+      if (previouslyUploadedSamples.length) {
+        handleError('error', endUserMessages.ERROR_SEURAT_EXISTING_FILE);
+        return;
+      }
+
       const allFiles = [...filesList, ...newFiles];
       if (allFiles.length > 1) {
         handleError('error', endUserMessages.ERROR_SEURAT_MULTIPLE_FILES);
       }
 
-      setFilesList([allFiles[0]]);
+      const seuratFile = allFiles[0];
+      if (seuratFile.size > SEURAT_MAX_FILE_SIZE) {
+        handleError('error', endUserMessages.ERROR_SEURAT_MAX_FILE_SIZE);
+        return;
+      }
+
+      setFilesList([seuratFile]);
     }
   };
 

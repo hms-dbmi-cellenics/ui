@@ -25,6 +25,8 @@ export default {
   ERROR_FILE_CATEGORY: 'The selected file name does not match the expected category.',
   ERROR_FILES_FOLDER: 'Only files contained in a folder are accepted for 10X uploads.',
   ERROR_SEURAT_MULTIPLE_FILES: 'Only a single rds file is accepted for Seurat uploads.',
+  ERROR_SEURAT_EXISTING_FILE: 'Please remove existing seurat rds file before uploading a new one.',
+  ERROR_SEURAT_MAX_FILE_SIZE: 'rds objects must be less than 15 GB.',
   ERROR_SEURAT_RDS: 'We couldn\'t read the uploaded rds file. Please re-upload after fixing.',
   ERROR_SEURAT_COUNTS: 'We couldn\'t get the `counts` slot from the `RNA` assay of the uploaded Seurat object. Please re-upload after fixing.',
   ERROR_SEURAT_HVFINFO: 'We couldn\'t extract `HVFInfo` from the uploaded Seurat object. Please re-upload after fixing.',
