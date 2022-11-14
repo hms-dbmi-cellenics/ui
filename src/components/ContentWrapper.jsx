@@ -30,6 +30,7 @@ import { loadBackendStatus } from 'redux/actions/backendStatus';
 import { isBrowser, privacyPolicyIsNotAccepted } from 'utils/deploymentInfo';
 
 import Error from 'pages/_error';
+import endUserMessages from 'utils/endUserMessages';
 
 import integrationTestConstants from 'utils/integrationTestConstants';
 import pipelineStatusValues from 'utils/pipelineStatusValues';
@@ -96,10 +97,21 @@ const ContentWrapper = (props) => {
   const completedGem2sSteps = backendStatus?.gem2s?.completedSteps;
 
   const seuratStatusKey = backendStatus?.seurat?.status;
+  const seuratErrorCause = backendStatus?.seurat?.error?.cause;
+  const seuratparamsHash = backendStatus?.seurat?.paramsHash;
   const seuratRunning = seuratStatusKey === 'RUNNING';
+  const seuratRunningError = backendErrors.includes(seuratStatusKey);
   const completedSeuratSteps = backendStatus?.seurat?.completedSteps;
   const seuratComplete = seuratStatusKey === pipelineStatusValues.SUCCEEDED;
   const isSeurat = (seuratStatusKey && seuratStatusKey !== pipelineStatusValues.NOT_CREATED) || false;
+
+  const [seuratErrorObject, setSeuratErrorObject] = useState();
+  useEffect(() => {
+    if (!seuratErrorCause) return;
+    const seuratErrorCode = seuratErrorCause.match(/ERROR_SEURAT_[A-Z]+/);
+
+    setSeuratErrorObject({ subTitle: endUserMessages[seuratErrorCode] });
+  }, [seuratErrorCause]);
 
   // This is used to prevent a race condition where the page would start loading immediately
   // when the backend status was previously loaded. In that case, `backendLoading` is `false`
@@ -284,6 +296,10 @@ const ContentWrapper = (props) => {
 
       if (gem2sRunningError) {
         return <PipelineLoadingScreen paramsHash={gem2sparamsHash} experimentId={routeExperimentId} pipelineStatus='error' pipelineType='gem2s' />;
+      }
+
+      if (seuratRunningError) {
+        return <PipelineLoadingScreen paramsHash={seuratparamsHash} experimentId={routeExperimentId} pipelineStatus='error' pipelineType='seurat' customErrorObject={seuratErrorObject} />;
       }
 
       if (seuratComplete && currentModule === modules.DATA_PROCESSING) {

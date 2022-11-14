@@ -35,7 +35,7 @@ const runnerByType = {
 
 const PipelineLoadingScreen = (props) => {
   const {
-    pipelineStatus, paramsHash, completedSteps, experimentId, pipelineType,
+    pipelineStatus, paramsHash, completedSteps, experimentId, pipelineType, customErrorObject,
   } = props;
 
   const pipelineStepsInfo = pipelineStepsInfoByType[pipelineType];
@@ -72,6 +72,7 @@ const PipelineLoadingScreen = (props) => {
       image: '/undraw_Abstract_re_l9xy.svg',
       alt: 'A woman confusedly staring at an abstract drawing.',
       showProgress: false,
+      ...customErrorObject,
     },
   };
 
@@ -90,6 +91,17 @@ const PipelineLoadingScreen = (props) => {
       );
     }
 
+    if (pipelineStatus === 'error' && pipelineType === 'seurat') {
+      return (
+        <Space size='large'>
+          <Link as={dataManagementPath} href={dataManagementPath} passHref>
+            <Button type='primary' key='console'>
+              Return to Data Management
+            </Button>
+          </Link>
+        </Space>
+      );
+    }
     if (pipelineStatus === 'error') {
       return (
         <Space size='large'>
@@ -154,12 +166,14 @@ PipelineLoadingScreen.propTypes = {
   completedSteps: PropTypes.array,
   experimentId: PropTypes.string,
   paramsHash: PropTypes.string,
+  customErrorObject: PropTypes.object,
 };
 
 PipelineLoadingScreen.defaultProps = {
   completedSteps: [],
   experimentId: null,
   paramsHash: null,
+  customErrorObject: {},
 };
 
 export default PipelineLoadingScreen;
