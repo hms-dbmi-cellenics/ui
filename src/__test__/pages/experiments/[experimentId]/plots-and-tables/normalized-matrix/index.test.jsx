@@ -107,7 +107,8 @@ describe('Normalized matrix index page', () => {
           louvain: [], metadata: [], sample: [], scratchpad: [],
         },
       }),
-      expect.anything(),
+      storeState.getState,
+      expect.any(Function),
     );
 
     await waitFor(() => {
@@ -153,7 +154,8 @@ describe('Normalized matrix index page', () => {
           louvain: ['louvain-1', 'louvain-5'], metadata: [], sample: ['ab568662-27fa-462c-9435-625594341314'], scratchpad: [],
         },
       }),
-      expect.anything(),
+      storeState.getState,
+      expect.any(Function),
     );
 
     await waitFor(() => {

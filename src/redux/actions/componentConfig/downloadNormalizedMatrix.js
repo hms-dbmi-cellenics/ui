@@ -25,6 +25,7 @@ const downloadNormalizedMatrix = (
       experimentId,
       body,
       getState,
+      dispatch,
     );
 
     downloadFromUrl(writeToFileURL(data), 'NormalizedExpression.csv');
