@@ -67,8 +67,7 @@ const Embedding = (props) => {
     hidden: cellSetHidden,
   } = cellSets;
 
-  const selectedCell = useSelector((state) => state.cellInfo.cellId, _.isEqual);
-  // const selectedCell = 5;
+  const selectedCell = useSelector((state) => state.cellInfo.cellId);
   const expressionLoading = useSelector((state) => state.genes.expression.loading);
 
   const expressionMatrix = useSelector((state) => state.genes.expression.matrix);
@@ -76,9 +75,6 @@ const Embedding = (props) => {
   const focusedExpression = useSelector(
     (state) => state.genes.expression.matrix.getRawExpression(focusData.key),
   );
-
-  // console.log('RERENDER');
-  console.log('RERENDER');
 
   const cellCoordinatesRef = useRef({ x: 200, y: 300 });
   const [cellInfoTooltip, setCellInfoTooltip] = useState();
@@ -288,8 +284,6 @@ const Embedding = (props) => {
     return <div />;
   };
 
-  // console.log('HOLAHOLADebug');
-
   return (
     <div
       className='vitessce-container vitessce-theme-light'
@@ -309,16 +303,13 @@ const Embedding = (props) => {
             cellOpacity={0.8}
             cellRadius={cellRadius}
             setCellHighlight={updateCellsHover}
-            // setCellHighlight={() => { }}
             theme='light'
             uuid={embeddingType}
             viewState={view}
             updateViewInfo={updateCellCoordinates}
-            // updateViewInfo={() => { }}
             cells={convertedCellsData}
             mapping='PCA'
-            // cellSelection={selectedCellIds}
-            cellSelection={() => { }}
+            cellSelection={selectedCellIds}
             cellColors={cellColors}
             //   (selectedCell)
             //     ? new Map(Object.entries({ ...cellColors, [selectedCell]: [0, 0, 0] }))
@@ -331,8 +322,7 @@ const Embedding = (props) => {
             }}
             getExpressionValue={() => { }}
             getCellIsSelected={() => { }}
-            // setCellSelection={updateCellsSelection}
-            setCellSelection={() => { }}
+            setCellSelection={updateCellsSelection}
 
           />
         ) : ''
