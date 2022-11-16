@@ -28,6 +28,10 @@ const defaultStylingConfig = [
     panelTitle: 'Axes and margins',
     controls: ['axesWithRanges'],
   },
+  {
+    panelTitle: 'Add labels',
+    controls: ['volcanoLabels'],
+  }
 ];
 
 const defaultProps = {
@@ -43,6 +47,10 @@ const renderPlotStyling = (props) => {
 };
 
 describe('PlotStyling', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
   it('Renders properly with the correct config', () => {
     renderPlotStyling();
     expect(screen.getByText('Main schema')).toBeInTheDocument();
@@ -104,6 +112,18 @@ describe('PlotStyling', () => {
     userEvent.type(xMax, '{backspace}{backspace}20');
     expect(xMax).toHaveValue('20');
 
+    userEvent.click(save);
+    expect(mockOnUpdate).toHaveBeenCalledTimes(1);
+  });
+
+  it('Changes and saves gene label threshold', () => {
+    renderPlotStyling();
+    userEvent.click(screen.getByText('Add labels'));
+
+    const thresholdInput = screen.getByTestId('thresholdInput');
+    const save = screen.getByTestId('saveThreshold');
+
+    userEvent.type(thresholdInput, 20);
     userEvent.click(save);
     expect(mockOnUpdate).toHaveBeenCalledTimes(1);
   });

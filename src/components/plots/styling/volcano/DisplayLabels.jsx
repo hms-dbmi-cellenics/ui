@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import {
-  Form, Space, InputNumber, Button
+  Form, Space, InputNumber, Button,
 } from 'antd';
 import useUpdateThrottled from 'utils/customHooks/useUpdateThrottled';
 
@@ -29,6 +29,7 @@ const DisplayLabels = (props) => {
         >
           <>  </>
           <InputNumber
+            data-testid='thresholdInput'
             value={localTextThresholdValue}
             min={min}
             max={max}
@@ -39,7 +40,7 @@ const DisplayLabels = (props) => {
         </Form.Item>
         <Form.Item>
           <Button
-            data-testid='LabelSave'
+            data-testid='saveThreshold'
             size='small'
             type='primary'
             onClick={() => {
