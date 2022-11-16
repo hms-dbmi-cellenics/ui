@@ -1,7 +1,7 @@
 // eslint-disable-file import/no-extraneous-dependencies
-import _ from 'lodash';
-
-import React, { useState, useEffect, useRef } from 'react';
+import React, {
+  useState, useEffect, useRef, useMemo,
+} from 'react';
 import dynamic from 'next/dynamic';
 import {
   useSelector, useDispatch,
@@ -49,8 +49,6 @@ const Embedding = (props) => {
   const [cellRadius, setCellRadius] = useState(cellRadiusFromZoom(INITIAL_ZOOM));
   const rootClusterNodes = useSelector(getCellSetsHierarchyByType('cellSets')).map(({ key }) => key);
 
-  const selectedCellIds = new Set();
-
   const embeddingSettings = useSelector(
     (state) => state.experimentSettings?.originalProcessing?.configureEmbedding?.embeddingSettings,
   );
@@ -80,7 +78,7 @@ const Embedding = (props) => {
   const [cellInfoTooltip, setCellInfoTooltip] = useState();
   const [createClusterPopover, setCreateClusterPopover] = useState(false);
   const [selectedIds, setSelectedIds] = useState(new Set());
-  const [cellColors, setCellColors] = useState(new Map());
+  const [cellColors, setCellColors] = useState(new Map([]));
   const [cellInfoVisible, setCellInfoVisible] = useState(true);
   const [view, setView] = useState({ target: [4, -4, 0], zoom: INITIAL_ZOOM });
 
@@ -114,16 +112,14 @@ const Embedding = (props) => {
 
       // Cell sets are easy, just return the appropriate color and set them up.
       case 'cellSets': {
-        const a = renderCellSetColors(key, cellSetHierarchy, cellSetProperties);
-        setCellColors(new Map(Object.entries(a)));
-        // setCellColors(renderCellSetColors(key, cellSetHierarchy, cellSetProperties));
+        setCellColors(renderCellSetColors(key, cellSetHierarchy, cellSetProperties));
         setCellInfoVisible(false);
         return;
       }
 
       // If there is no focus, we can just delete all the colors.
       default: {
-        setCellColors(new Map());
+        setCellColors({});
         setCellInfoVisible(false);
         break;
       }
@@ -139,8 +135,7 @@ const Embedding = (props) => {
     const truncatedExpression = expressionMatrix.getTruncatedExpression(focusData.key);
     const { truncatedMin, truncatedMax } = expressionMatrix.getStats(focusData.key);
 
-    const a = colorByGeneExpression(truncatedExpression, truncatedMin, truncatedMax);
-    setCellColors(new Map(Object.entries(a)));
+    setCellColors(colorByGeneExpression(truncatedExpression, truncatedMin, truncatedMax));
   }, [focusData.key, expressionLoading]);
 
   const [convertedCellsData, setConvertedCellsData] = useState();
@@ -196,6 +191,8 @@ const Embedding = (props) => {
       };
     }
   };
+
+  const cellColorsMap = useMemo(() => new Map(Object.entries(cellColors)), [cellColors]);
 
   const updateCellsHover = (cell) => dispatch(updateCellInfo({ cellId: cell }));
 
@@ -309,12 +306,8 @@ const Embedding = (props) => {
             updateViewInfo={updateCellCoordinates}
             cells={convertedCellsData}
             mapping='PCA'
-            cellSelection={selectedCellIds}
-            cellColors={cellColors}
-            //   (selectedCell)
-            //     ? new Map(Object.entries({ ...cellColors, [selectedCell]: [0, 0, 0] }))
-            //     : new Map(Object.entries(cellColors))
-            // }
+            cellSelection={[selectedCell]}
+            cellColors={cellColorsMap}
             setViewState={({ zoom, target }) => {
               setCellRadius(cellRadiusFromZoom(zoom));
 
