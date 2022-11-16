@@ -6,7 +6,7 @@ const accountId = nextConfig()?.publicRuntimeConfig?.accountId ?? AccountId.BIOM
 
 const supportEmailsByAccountId = {
   [AccountId.BIOMAGE]: 'hello@biomage.net',
-  [AccountId.HMS]: 'alex_pickering@hms.harvard.edu',
+  [AccountId.HMS]: 'ccbhelp@hms.harvard.edu',
 };
 
 const botTokensByAccountId = {
