@@ -46,6 +46,7 @@ Your changes will be ready for merging after all of the steps below have been co
 ### Code updates
 Have best practices and ongoing refactors being observed in this PR
 - [ ] Migrated any selector / reducer used to the new format.
+- [ ] All new dependency licenses have been checked for compatibility
 
 ### Manual/unit testing
 - [ ] Tested changes using InfraMock locally **or** no tests required for change, e.g. Kubernetes chart updates.
