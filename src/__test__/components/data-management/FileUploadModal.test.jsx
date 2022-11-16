@@ -501,7 +501,7 @@ describe('FileUploadModal', () => {
       fireEvent.drop(uploadInput);
     });
 
-    //  it was valid and shows up
+    //  it was not valid and shows up
     expect(await screen.findByText(/To upload/)).toBeInTheDocument();
     expect(await screen.findByText('scdata.txt')).toBeInTheDocument();
 
