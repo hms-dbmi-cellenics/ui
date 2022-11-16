@@ -16,7 +16,7 @@ import FileUploadModal from 'components/data-management/FileUploadModal';
 
 const mockStore = configureMockStore([thunk]);
 
-const store = mockStore({
+const initialStore = mockStore({
   samples: {},
   experiments: {
     meta: {
@@ -25,7 +25,16 @@ const store = mockStore({
   },
 });
 
-const renderFileUploadModal = async () => {
+const previouslyUploadedStore = mockStore({
+  samples: { 'sample-1': { experimentId: 'experiment-1234' } },
+  experiments: {
+    meta: {
+      activeExperimentId: 'experiment-1234',
+    },
+  },
+});
+
+const renderFileUploadModal = async (store) => {
   await act(async () => (render(
     <Provider store={store}>
       <FileUploadModal onUpload={jest.fn()} onCancel={jest.fn()} />
@@ -38,7 +47,7 @@ const seuratTech = Object.keys(techOptions)[1];
 
 describe('FileUploadModal', () => {
   it('contains required components for Chromium 10X', async () => {
-    await renderFileUploadModal();
+    await renderFileUploadModal(initialStore);
 
     // It has a select button to select technology
     expect(screen.getByText(chromiumTech)).toBeInTheDocument();
@@ -74,7 +83,7 @@ describe('FileUploadModal', () => {
   });
 
   it('contains required components for Seurat', async () => {
-    await renderFileUploadModal();
+    await renderFileUploadModal(initialStore);
 
     // It has default chromium selected
     expect(screen.queryAllByText(chromiumTech).length).toBe(1);
@@ -150,7 +159,7 @@ describe('FileUploadModal', () => {
   });
 
   it('drag and drop works with valid 10X Chromium file', async () => {
-    await renderFileUploadModal();
+    await renderFileUploadModal(initialStore);
 
     expect(await screen.queryByText(/To upload/)).not.toBeInTheDocument();
     // It has a select button to select technology
@@ -184,7 +193,7 @@ describe('FileUploadModal', () => {
   });
 
   it('drag and drop works with valid Seurat file', async () => {
-    await renderFileUploadModal();
+    await renderFileUploadModal(initialStore);
 
     // get the select
     const select = document.querySelector(
@@ -245,7 +254,130 @@ describe('FileUploadModal', () => {
     expect(uploadButton).not.toBeDisabled();
   });
   it('drag and drop does not work with invalid Seurat file', async () => {
-    await renderFileUploadModal();
+    await renderFileUploadModal(initialStore);
+
+    // get the select
+    const select = document.querySelector(
+      '[data-testid="uploadTechSelect"] > .ant-select-selector',
+    );
+
+    expect(select).not.toBeNull();
+
+    // click the select input
+    fireEvent.mouseDown(select);
+
+    // wait for the ant dropdown element to appear
+    await waitFor(() => expect(
+      document.querySelector('.ant-select-dropdown'),
+    ).toBeInTheDocument());
+
+    //
+    const seuratOption = await screen.queryByRole('option', { selected: false, title: seuratTech });
+    expect(seuratOption).toBeInTheDocument();
+
+    // select a single dropdown option
+    fireEvent.click(screen.getAllByText(seuratTech)[1]);
+
+    // wait for Seurat info to appear
+    await waitFor(() => expect(
+      screen.getByText(/Seurat object[.]/),
+    ).toBeInTheDocument());
+
+    expect(await screen.queryByText(/To upload/)).not.toBeInTheDocument();
+
+    // get the dropzone input
+    const uploadInput = document.querySelector(
+      `[data-test-id="${integrationTestConstants.ids.FILE_UPLOAD_INPUT}"]`,
+    );
+
+    // create a seurat file
+    const file = mockFile('scdata.txt');
+
+    //  drop it into drop-zone
+    await act(async () => {
+      Object.defineProperty(uploadInput, 'files', {
+        value: [file],
+      });
+
+      fireEvent.drop(uploadInput);
+    });
+
+    //  it was valid and shows up
+    expect(await screen.findByText(/To upload/)).toBeInTheDocument();
+    expect(await screen.findByText('scdata.txt')).toBeInTheDocument();
+
+    // upload is enabled
+    // It has a disabled upload button if there are no uploaded files
+    // Upload button is the last "Upload" text in the document
+    const uploadButtonText = screen.getAllByText(/Upload/i).pop();
+    const uploadButton = uploadButtonText.closest('button');
+
+    expect(uploadButton).toBeDisabled();
+  });
+
+  it('drag and drop fails with valid Seurat file when pre-existing Seurat file exists for experiment', async () => {
+    await renderFileUploadModal(previouslyUploadedStore);
+
+    // get the select
+    const select = document.querySelector(
+      '[data-testid="uploadTechSelect"] > .ant-select-selector',
+    );
+
+    expect(select).not.toBeNull();
+
+    // click the select input
+    fireEvent.mouseDown(select);
+
+    // wait for the ant dropdown element to appear
+    await waitFor(() => expect(
+      document.querySelector('.ant-select-dropdown'),
+    ).toBeInTheDocument());
+
+    //
+    const seuratOption = await screen.queryByRole('option', { selected: false, title: seuratTech });
+    expect(seuratOption).toBeInTheDocument();
+
+    // select a single dropdown option
+    fireEvent.click(screen.getAllByText(seuratTech)[1]);
+
+    // wait for Seurat info to appear
+    await waitFor(() => expect(
+      screen.getByText(/Seurat object[.]/),
+    ).toBeInTheDocument());
+
+    expect(await screen.queryByText(/To upload/)).not.toBeInTheDocument();
+
+    // get the dropzone input
+    const uploadInput = document.querySelector(
+      `[data-test-id="${integrationTestConstants.ids.FILE_UPLOAD_INPUT}"]`,
+    );
+
+    // create a seurat file
+    const file = mockFile('scdata.rds');
+
+    //  drop it into drop-zone
+    await act(async () => {
+      Object.defineProperty(uploadInput, 'files', {
+        value: [file],
+      });
+
+      fireEvent.drop(uploadInput);
+    });
+
+    //  it was not valid and doesn't shows up
+    expect(await screen.queryByText('scdata.rds')).not.toBeInTheDocument();
+
+    // upload is disabled
+    // It has a disabled upload button if there are no uploaded files
+    // Upload button is the last "Upload" text in the document
+    const uploadButtonText = screen.getAllByText(/Upload/i).pop();
+    const uploadButton = uploadButtonText.closest('button');
+
+    expect(uploadButton).toBeDisabled();
+  });
+
+  it('drag and drop does not work with invalid Seurat file', async () => {
+    await renderFileUploadModal(initialStore);
 
     // get the select
     const select = document.querySelector(
