@@ -34,7 +34,9 @@ const FileUploadModal = (props) => {
   const { onUpload, onCancel } = props;
 
   const samples = useSelector((state) => state.samples);
-  const previouslyUploadedSamples = Object.keys(samples).filter((key) => key !== 'meta');
+  const activeExperimentId = useSelector((state) => state.experiments.meta.activeExperimentId);
+  const previouslyUploadedSamples = Object.keys(samples)
+    .filter((key) => samples[key].experimentId === activeExperimentId);
 
   const guidanceFileLink = 'https://drive.google.com/file/d/1VPaB-yofuExinY2pXyGEEx-w39_OPubO/view';
 
