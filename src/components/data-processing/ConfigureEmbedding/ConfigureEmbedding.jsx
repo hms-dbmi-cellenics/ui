@@ -300,6 +300,16 @@ const ConfigureEmbedding = (props) => {
     debounceSave(plots[selectedPlot].plotUuid);
   };
 
+  const renderExtraControlPanels = () => (
+    <Panel header='Select data' key='select-data'>
+      <SelectData
+        config={selectedConfig}
+        onUpdate={updatePlotWithChanges}
+        cellSets={cellSets}
+      />
+    </Panel>
+  );
+
   const renderPlot = () => {
     // Spinner for main window
     if (!selectedConfig) {
@@ -371,19 +381,11 @@ const ConfigureEmbedding = (props) => {
           <Collapse>
             <Panel header='Plot options' key='styling'>
               <div style={{ height: 8 }} />
-              <Collapse>
-                <Panel header='Select data' key='select-data'>
-                  <SelectData
-                    config={selectedConfig}
-                    onUpdate={updatePlotWithChanges}
-                    cellSets={cellSets}
-                  />
-                </Panel>
-              </Collapse>
               <PlotStyling
                 formConfig={plotStylingControlsConfig}
                 config={selectedConfig}
                 onUpdate={updatePlotWithChanges}
+                extraPanels={renderExtraControlPanels()}
               />
             </Panel>
           </Collapse>
