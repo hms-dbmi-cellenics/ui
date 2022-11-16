@@ -1,5 +1,5 @@
 import loadAndCompressIfNecessary from 'utils/upload/loadAndCompressIfNecessary';
-import mockFile from '__test__/test-utils/mockFile';
+import mockFile, { range } from '__test__/test-utils/mockFile';
 
 import { gzip } from 'fflate';
 
@@ -7,7 +7,7 @@ jest.mock('fflate', () => ({
   gzip: jest.fn(),
 }));
 
-const mockContent = 'mock_file';
+const mockContent = range(1024);
 
 describe('loadAndCompressIfNecessary', () => {
   it('compresses a file', async () => {

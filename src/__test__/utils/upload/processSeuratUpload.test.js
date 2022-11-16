@@ -75,7 +75,6 @@ jest.mock('axios', () => ({
 }));
 
 jest.mock('utils/pushNotificationMessage');
-
 jest.mock('utils/upload/sampleValidator');
 
 let store = null;
@@ -238,6 +237,14 @@ describe('processSeuratUpload', () => {
   });
 
   it('Should not validate .rds files', async () => {
+    const mockAxiosCalls = [];
+    const uploadSuccess = (params) => {
+      mockAxiosCalls.push(params);
+      return Promise.resolve({ headers: { etag: 'etag-blah' } });
+    };
+
+    axios.request.mockImplementation(uploadSuccess);
+
     validate.mockImplementationOnce(
       () => (['Some file error']),
     );
@@ -255,6 +262,7 @@ describe('processSeuratUpload', () => {
       expect();
       expect(pushNotificationMessage).toHaveBeenCalledTimes(0);
       expect(axios.request).toHaveBeenCalledTimes(2);
+      expect(validate).toHaveBeenCalledTimes(0);
     });
   });
 });
