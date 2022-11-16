@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import {
-  Slider, Form, Space,
+  Form, Space, InputNumber, Button
 } from 'antd';
 import useUpdateThrottled from 'utils/customHooks/useUpdateThrottled';
 
@@ -9,7 +9,11 @@ const DisplayLabels = (props) => {
   const {
     config, onUpdate, min, max,
   } = props;
-  const [newConfig, handleChange] = useUpdateThrottled(onUpdate, config);
+  const [newConfig, handleChange] = useUpdateThrottled(onUpdate, config, 200);
+  const [
+    localTextThresholdValue,
+    setLocalTextThresholdValue,
+  ] = useState(newConfig.textThresholdValue);
 
   return (
     <Space direction='vertical' style={{ width: '80%' }}>
@@ -24,14 +28,26 @@ const DisplayLabels = (props) => {
           label='Min. -log10 pvalue'
         >
           <>  </>
-          <Slider
-            value={newConfig.textThresholdValue}
+          <InputNumber
+            value={localTextThresholdValue}
             min={min}
             max={max}
             onChange={(value) => {
-              handleChange({ textThresholdValue: value });
+              setLocalTextThresholdValue(value);
             }}
           />
+        </Form.Item>
+        <Form.Item>
+          <Button
+            data-testid='LabelSave'
+            size='small'
+            type='primary'
+            onClick={() => {
+              handleChange({ textThresholdValue: localTextThresholdValue });
+            }}
+          >
+            Save
+          </Button>
         </Form.Item>
       </Form>
     </Space>
