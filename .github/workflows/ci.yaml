@@ -145,15 +145,17 @@ jobs:
           # in push events, the latest commit of the master branch is GITHUB_SHA
           # in PR synch the latest commit of the branch is found in github.event.pull_request.head.sha instead
 
+          TIMESTAMP=$(date +%s)
+
           if [ "${{ github.event_name }}" = "release" ] && [ "${{ github.event.action }}" = "released" ]; then
             COMMIT_SHA=""
-            IMAGE_TAG="${REF_ID/refs-tags-/}"
+            IMAGE_TAG="${REF_ID/refs-tags-/}-$TIMESTAMP"
           elif [ "${{ github.event_name }}" = "pull_request" ]; then
             COMMIT_SHA="${{ github.event.pull_request.head.sha }}"
-            IMAGE_TAG="$REF_ID-$COMMIT_SHA"
+            IMAGE_TAG="$REF_ID-$COMMIT_SHA-$TIMESTAMP"
           else
             COMMIT_SHA=$GITHUB_SHA
-            IMAGE_TAG="$REF_ID-$COMMIT_SHA"
+            IMAGE_TAG="$REF_ID-$COMMIT_SHA-$TIMESTAMP"
           fi
 
           echo "::set-output name=commit-sha::$COMMIT_SHA"
