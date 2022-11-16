@@ -95,7 +95,7 @@ jobs:
           EXCLUDE_PACKAGES: "cartocolor@4.0.2;turf-jsts@1.2.3"
         run: |-
           npm install -g license-checker
-          license-checker --production --json --onlyAllow="${ALLOWED_LICENSES} --excludePackages="${EXCLUDE_PACKAGES}"
+          license-checker --production --json --onlyAllow="${ALLOWED_LICENSES}" --excludePackages="${EXCLUDE_PACKAGES}"
 
       - id: next-cache-seek
         name: Look up the Next.js build cache
