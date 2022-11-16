@@ -1,47 +1,40 @@
+import React from 'react';
 import {
   render, screen, waitFor, fireEvent,
 } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { act } from 'react-dom/test-utils';
 import integrationTestConstants from 'utils/integrationTestConstants';
+import { Provider } from 'react-redux';
+import thunk from 'redux-thunk';
+import configureMockStore from 'redux-mock-store';
 
 import techOptions from 'utils/upload/fileUploadSpecifications';
 
-import componentFactory from '__test__/test-utils/testComponentFactory';
+import mockFile from '__test__/test-utils/mockFile';
 import FileUploadModal from 'components/data-management/FileUploadModal';
 
-const mockFile = (name, path = `/WT13/${name}`, size = 1024, mimeType = 'application/gzip') => {
-  function range(count) {
-    let output = '';
-    for (let i = 0; i < count; i += 1) {
-      output += 'a';
-    }
-    return output;
-  }
+const mockStore = configureMockStore([thunk]);
 
-  const blob = new Blob([range(size)], { type: mimeType });
-  blob.lastModifiedDate = new Date();
-  blob.name = name;
-  blob.path = path;
+const store = mockStore({
+  samples: {},
+  experiments: {
+    meta: {
+      activeExperimentId: 'experiment-1234',
+    },
+  },
+});
 
-  return blob;
+const renderFileUploadModal = async () => {
+  await act(async () => (render(
+    <Provider store={store}>
+      <FileUploadModal onUpload={jest.fn()} onCancel={jest.fn()} />
+    </Provider>,
+  )));
 };
-
-const defaultProps = {
-  onUpload: jest.fn(),
-  onCancel: jest.fn(),
-};
-
-const FileUploadModalFactory = componentFactory(FileUploadModal, defaultProps);
 
 const chromiumTech = Object.keys(techOptions)[0];
 const seuratTech = Object.keys(techOptions)[1];
-
-const renderFileUploadModal = async (customProps) => {
-  await act(async () => {
-    render(FileUploadModalFactory(customProps));
-  });
-};
 
 describe('FileUploadModal', () => {
   it('contains required components for Chromium 10X', async () => {
@@ -166,7 +159,7 @@ describe('FileUploadModal', () => {
     );
 
     // create a features file
-    const file = mockFile('features.tsv.gz');
+    const file = mockFile('features.tsv.gz', '/WT13');
 
     //  drop it into drop-zone
     await act(async () => {
@@ -228,7 +221,7 @@ describe('FileUploadModal', () => {
     );
 
     // create a seurat file
-    const file = mockFile('scdata.rds', 'scdata.rds');
+    const file = mockFile('scdata.rds');
 
     //  drop it into drop-zone
     await act(async () => {
@@ -289,7 +282,7 @@ describe('FileUploadModal', () => {
     );
 
     // create a seurat file
-    const file = mockFile('scdata.txt', 'scdata.txt');
+    const file = mockFile('scdata.txt');
 
     //  drop it into drop-zone
     await act(async () => {

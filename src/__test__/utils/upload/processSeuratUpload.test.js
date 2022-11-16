@@ -15,6 +15,7 @@ import { processSeuratUpload } from 'utils/upload/processUpload';
 
 import validate from 'utils/upload/sampleValidator';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
+import mockFile from '__test__/test-utils/mockFile';
 
 const FILE_SIZE = 1024 * 1024 * 15;
 
@@ -23,7 +24,7 @@ enableFetchMocks();
 const getValidFiles = (compressed = true) => {
   const seuratFiles = [{
     name: 'r.rds',
-    fileObject: mockFile('r.rds'),
+    fileObject: mockFile('r.rds', '', FILE_SIZE),
     upload: { status: UploadStatus.UPLOADING },
     errors: '',
     compressed,
@@ -31,23 +32,6 @@ const getValidFiles = (compressed = true) => {
   }];
 
   return seuratFiles;
-};
-
-const mockFile = (name, path = name, size = FILE_SIZE, mimeType = 'application/gzip') => {
-  function range(count) {
-    let output = '';
-    for (let i = 0; i < count; i += 1) {
-      output += 'a';
-    }
-    return output;
-  }
-
-  const blob = new Blob([range(size)], { type: mimeType });
-  blob.lastModifiedDate = new Date();
-  blob.name = name;
-  blob.path = path;
-
-  return blob;
 };
 
 const sampleType = 'Seurat';

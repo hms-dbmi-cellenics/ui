@@ -15,8 +15,7 @@ import { process10XUpload } from 'utils/upload/processUpload';
 
 import validate from 'utils/upload/sampleValidator';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
-
-const FILE_SIZE = 1024;
+import mockFile from '__test__/test-utils/mockFile';
 
 enableFetchMocks();
 
@@ -26,7 +25,7 @@ const getValidFiles = (cellrangerVersion, compressed = true) => {
   return ([
     {
       name: `WT13/${filename}`,
-      fileObject: mockFile(filename),
+      fileObject: mockFile(filename, '/'),
       upload: { status: UploadStatus.UPLOADING },
       errors: '',
       compressed,
@@ -34,7 +33,7 @@ const getValidFiles = (cellrangerVersion, compressed = true) => {
     },
     {
       name: 'WT13/barcodes.tsv.gz',
-      fileObject: mockFile('barcodes.tsv.gz'),
+      fileObject: mockFile('barcodes.tsv.gz', '/'),
       upload: { status: UploadStatus.UPLOADING },
       errors: '',
       compressed,
@@ -42,30 +41,13 @@ const getValidFiles = (cellrangerVersion, compressed = true) => {
     },
     {
       name: 'WT13/matrix.mtx.gz',
-      fileObject: mockFile('matrix.mtx.gz'),
+      fileObject: mockFile('matrix.mtx.gz', '/'),
       upload: { status: UploadStatus.UPLOADING },
       errors: '',
       compressed,
       valid: true,
     },
   ]);
-};
-
-const mockFile = (name, path = `/WT13/${name}`, size = FILE_SIZE, mimeType = 'application/gzip') => {
-  function range(count) {
-    let output = '';
-    for (let i = 0; i < count; i += 1) {
-      output += 'a';
-    }
-    return output;
-  }
-
-  const blob = new Blob([range(size)], { type: mimeType });
-  blob.lastModifiedDate = new Date();
-  blob.name = name;
-  blob.path = path;
-
-  return blob;
 };
 
 const sampleType = '10X Chromium';
@@ -160,8 +142,10 @@ describe('process10XUpload', () => {
       .mockImplementationOnce(uploadSuccess)
       .mockImplementationOnce(uploadSuccess);
 
+    const filesList = getValidFiles('v3');
+
     await process10XUpload(
-      getValidFiles('v3'),
+      filesList,
       sampleType,
       store.getState().samples,
       mockExperimentId,
@@ -208,7 +192,7 @@ describe('process10XUpload', () => {
     expect(axios.request.mock.calls.map((call) => call[0])).toMatchSnapshot();
 
     // If we trigger axios onUploadProgress it updates the progress correctly
-    axios.request.mock.calls[0][0].onUploadProgress({ loaded: FILE_SIZE / 2 });
+    axios.request.mock.calls[0][0].onUploadProgress({ loaded: filesList[0].fileObject.size / 2 });
 
     await waitForActions(
       store,
@@ -231,8 +215,10 @@ describe('process10XUpload', () => {
       .mockImplementationOnce(uploadSuccess)
       .mockImplementationOnce(uploadSuccess);
 
+    const filesList = getValidFiles('v2');
+
     await process10XUpload(
-      getValidFiles('v2'),
+      filesList,
       sampleType,
       store.getState().samples,
       mockExperimentId,
@@ -279,7 +265,7 @@ describe('process10XUpload', () => {
     expect(axios.request.mock.calls.map((call) => call[0])).toMatchSnapshot();
 
     // If we trigger axios onUploadProgress it updates the progress correctly
-    axios.request.mock.calls[0][0].onUploadProgress({ loaded: FILE_SIZE / 2 });
+    axios.request.mock.calls[0][0].onUploadProgress({ loaded: filesList[0].fileObject.size / 2 });
 
     await waitForActions(
       store,
