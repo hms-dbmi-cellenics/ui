@@ -115,7 +115,7 @@ jobs:
     needs: build
     outputs:
       ref-id: ${{ steps.ref.outputs.ref-id }}
-      commit-sha: ${{ steps.ref.outputs.commit-sha }}
+      image-tag: ${{ steps.ref.outputs.image-tag }}
     steps:
       - id: checkout
         name: Check out source code
@@ -155,8 +155,6 @@ jobs:
             COMMIT_SHA=$GITHUB_SHA
             IMAGE_TAG="$REF_ID-$COMMIT_SHA"
           fi
-
-          echo "::set-output name=commit-sha::$COMMIT_SHA"
 
           # IMAGE_TAG is used in the Build Docker Image step.
           # We can easily build the image-tag from REF_ID and COMMIT_SHA for non-production releases.
@@ -252,7 +250,6 @@ jobs:
             export SANDBOX_ID="default"
             export CHART_REF="master"
             export KUBERNETES_ENV="production"
-            export IMAGE_TAG="${REF_ID/refs-tags-/}"
             export IMAGE_GLOB="semver:>=0.0.0"
             export REPLICA_COUNT="4"
           fi
@@ -261,7 +258,6 @@ jobs:
             export SANDBOX_ID="default"
             export CHART_REF="master"
             export KUBERNETES_ENV="staging"
-            export IMAGE_TAG="$REF_ID-$COMMIT_SHA"
             export IMAGE_GLOB="glob:$REF_ID-*"
             export REPLICA_COUNT="2"
           fi
@@ -270,7 +266,6 @@ jobs:
             export SANDBOX_ID="STAGING_SANDBOX_ID"
             export CHART_REF="STAGING_CHART_REF"
             export KUBERNETES_ENV="staging"
-            export IMAGE_TAG="$REF_ID-$COMMIT_SHA"
             export IMAGE_GLOB="glob:$REF_ID-*"
             export REPLICA_COUNT="1"
           fi
@@ -315,7 +310,7 @@ jobs:
 
         env:
           REF_ID: ${{ needs.build-docker.outputs.ref-id }}
-          COMMIT_SHA: ${{ needs.build-docker.outputs.commit-sha }}
+          IMAGE_TAG: ${{ needs.build-docker.outputs.image-tag }}
           REGISTRY: ${{ steps.login-ecr.outputs.registry }}
 
       - name: Push production/develop template to releases repo for deployment
