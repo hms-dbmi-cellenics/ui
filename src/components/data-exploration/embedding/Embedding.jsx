@@ -78,7 +78,7 @@ const Embedding = (props) => {
   const [cellInfoTooltip, setCellInfoTooltip] = useState();
   const [createClusterPopover, setCreateClusterPopover] = useState(false);
   const [selectedIds, setSelectedIds] = useState(new Set());
-  const [cellColors, setCellColors] = useState(new Map([]));
+  const [cellColors, setCellColors] = useState({});
   const [cellInfoVisible, setCellInfoVisible] = useState(true);
   const [view, setView] = useState({ target: [4, -4, 0], zoom: INITIAL_ZOOM });
 
