@@ -281,7 +281,7 @@ jobs:
 
           yq -i 'select(documentIndex == 1) |
             .metadata.name = strenv(DEPLOYMENT_NAME) |
-            .metadata.namespace = strenv(DEPLOYMENT_NAME) + "-" + strenv(SANDBOX_ID)
+            .metadata.namespace = strenv(DEPLOYMENT_NAME) + "-" + strenv(SANDBOX_ID) |
             .metadata.labels.sandboxId = strenv(SANDBOX_ID) |
             .metadata.annotations["filter.fluxcd.io/chart-image"] = strenv(IMAGE_GLOB) |
             .spec.releaseName = strenv(DEPLOYMENT_NAME) |
