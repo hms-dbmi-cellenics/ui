@@ -295,7 +295,7 @@ jobs:
             .spec.values.biomageCi.repo = strenv(GITHUB_REPOSITORY) |
             .spec.values.biomageCi.sandboxId = strenv(SANDBOX_ID) |
             .spec.values.image.registry = strenv(REGISTRY) |
-            .spec.values.image.repository = strenvv(DEPLOYMENT_NAME) |
+            .spec.values.image.repository = strenv(DEPLOYMENT_NAME) |
             .spec.values.image.tag = strenv(IMAGE_TAG) |
             .spec.values.replicaCount = strenv(REPLICA_COUNT) |
             .spec.values.serviceAccount.iamRole = "ui-role-" + strenv(KUBERNETES_ENV)
