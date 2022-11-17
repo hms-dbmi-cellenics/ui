@@ -192,7 +192,7 @@ const Embedding = (props) => {
     }
   };
 
-  const cellColorsMap = useMemo(() => new Map(Object.entries(cellColors)), [cellColors]);
+  const cellColorsForVitessce = useMemo(() => new Map(Object.entries(cellColors)), [cellColors]);
 
   const updateCellsHover = (cell) => dispatch(updateCellInfo({ cellId: cell }));
 
@@ -307,7 +307,7 @@ const Embedding = (props) => {
             cells={convertedCellsData}
             mapping='PCA'
             cellSelection={[selectedCell]}
-            cellColors={cellColorsMap}
+            cellColors={cellColorsForVitessce}
             setViewState={({ zoom, target }) => {
               setCellRadius(cellRadiusFromZoom(zoom));
 
