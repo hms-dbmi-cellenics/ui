@@ -288,7 +288,7 @@ jobs:
             .metadata.name = strenv(DEPLOYMENT_NAME) |
             .metadata.namespace = strenv(DEPLOYMENT_NAME) + "-" + strenv(SANDBOX_ID)
             .metadata.labels.sandboxId = strenv(SANDBOX_ID) |
-            .metadata.annotations[filter.fluxcd.io/chart-image] = strenv(IMAGE_GLOB) |
+            .metadata.annotations["filter.fluxcd.io/chart-image"] = strenv(IMAGE_GLOB) |
             .spec.releaseName = strenv(DEPLOYMENT_NAME) |
             .spec.chart.ref = strenv(CHART_REF) |
             .spec.values.kubernetes.env = strenv(KUBERNETES_ENV) |
