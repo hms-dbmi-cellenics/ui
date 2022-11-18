@@ -67,12 +67,7 @@ const Embedding = (props) => {
 
   const selectedCell = useSelector((state) => state.cellInfo.cellId);
   const expressionLoading = useSelector((state) => state.genes.expression.loading);
-
   const expressionMatrix = useSelector((state) => state.genes.expression.matrix);
-
-  const focusedExpression = useSelector(
-    (state) => state.genes.expression.matrix.getRawExpression(focusData.key),
-  );
 
   const cellCoordinatesRef = useRef({ x: 200, y: 300 });
   const [cellInfoTooltip, setCellInfoTooltip] = useState();
@@ -128,7 +123,7 @@ const Embedding = (props) => {
 
   // Handle loading of expression for focused gene.
   useEffect(() => {
-    if (!focusedExpression) {
+    if (!expressionMatrix.geneIsLoaded(focusData.key)) {
       return;
     }
 
@@ -151,9 +146,15 @@ const Embedding = (props) => {
       let expressionToDispatch;
       let geneName;
 
-      if (focusedExpression) {
+      if (expressionMatrix.geneIsLoaded(focusData.key)) {
         geneName = focusData.key;
-        expressionToDispatch = focusedExpression[selectedCell];
+
+        const [expression] = expressionMatrix.getRawExpression(
+          focusData.key,
+          [parseInt(selectedCell, 10)],
+        );
+
+        expressionToDispatch = expression;
       }
 
       // getting the cluster properties for every cluster that has the cellId
