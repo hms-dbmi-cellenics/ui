@@ -108,6 +108,7 @@ const createAndUploadSingleFile = async (file, projectId, sampleId, dispatch, se
 };
 
 const processUpload = async (filesList, sampleType, samples, experimentId, dispatch) => {
+  // First use map to make it easy to add files in the already existing sample entry
   const samplesMap = filesList.reduce((acc, file) => {
     const pathToArray = file.name.trim().replace(/[\s]{2,}/ig, ' ').split('/');
 
@@ -135,7 +136,18 @@ const processUpload = async (filesList, sampleType, samples, experimentId, dispa
       },
     };
   }, {});
-  Object.entries(samplesMap).forEach(async ([name, sample]) => {
+
+  const samplesList = Object.entries(samplesMap);
+  samplesList.sort(([oneName], [otherName]) => oneName > otherName);
+
+  await dispatch(
+    createSamples(
+      experimentId,
+      sampleType,
+    ),
+  );
+
+  samplesList.forEach(async ([name, sample]) => {
     const filesToUploadForSample = Object.keys(sample.files);
     // Create sample if not exists.
     try {

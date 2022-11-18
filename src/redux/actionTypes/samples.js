@@ -6,6 +6,11 @@ const SAMPLES = 'samples';
 const SAMPLES_CREATE = `${SAMPLES}/create`;
 
 /**
+ * Samples created.
+ */
+const SAMPLES_CREATED = `${SAMPLES}/created`;
+
+/**
  * Update sample.
  */
 const SAMPLES_UPDATE = `${SAMPLES}/update`;
@@ -58,6 +63,7 @@ const SAMPLES_VALUE_IN_METADATA_TRACK_UPDATED = `${SAMPLES}/valueInMetadataTrack
 const SAMPLES_LOADING = `${SAMPLES}/loading`;
 
 export {
+  SAMPLES_CREATED,
   SAMPLES_CREATE,
   SAMPLES_UPDATE,
   SAMPLES_DELETE,

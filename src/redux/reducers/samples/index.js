@@ -12,9 +12,11 @@ import {
   SAMPLES_LOADING,
   SAMPLES_VALUE_IN_METADATA_TRACK_UPDATED,
   SAMPLES_OPTIONS_UPDATE,
+  SAMPLES_CREATED,
 } from '../../actionTypes/samples';
 import initialState from './initialState';
 import samplesCreate from './samplesCreate';
+import samplesCreated from './samplesCreated';
 import samplesUpdate from './samplesUpdate';
 import samplesDelete from './samplesDelete';
 import samplesFileUpdate from './samplesFileUpdate';
@@ -31,6 +33,10 @@ import experimentsMetadataRename from './experimentsMetadataRename';
 
 const samplesReducer = (state = initialState, action) => {
   switch (action.type) {
+    case SAMPLES_CREATED: {
+      return samplesCreated(state, action);
+    }
+
     case SAMPLES_CREATE: {
       return samplesCreate(state, action);
     }

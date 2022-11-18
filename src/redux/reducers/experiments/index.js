@@ -15,7 +15,7 @@ import {
 } from 'redux/actionTypes/experiments';
 
 import {
-  SAMPLES_CREATE, SAMPLES_DELETE,
+  SAMPLES_CREATE, SAMPLES_CREATED, SAMPLES_DELETE,
 } from 'redux/actionTypes/samples';
 
 import { EXPERIMENT_SETTINGS_PIPELINE_VERSION_UPDATED } from 'redux/actionTypes/experimentSettings';
@@ -36,6 +36,7 @@ import samplesCreate from './samplesCreate';
 import samplesDelete from './samplesDelete';
 
 import pipelineVersionUpdated from './pipelineVersionUpdated';
+import samplesCreated from './samplesCreated';
 
 const experimentsReducer = (state = initialState, action) => {
   switch (action.type) {
@@ -77,6 +78,10 @@ const experimentsReducer = (state = initialState, action) => {
 
     case SAMPLES_CREATE: {
       return samplesCreate(state, action);
+    }
+
+    case SAMPLES_CREATED: {
+      return samplesCreated(state, action);
     }
 
     case SAMPLES_DELETE: {
