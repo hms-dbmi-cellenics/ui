@@ -303,6 +303,8 @@ jobs:
             ' $DEPLOYMENT_NAME.yaml
           fi
 
+          cat $DEPLOYMENT_NAME.yaml
+
         env:
           REF_ID: ${{ needs.build-docker.outputs.ref-id }}
           IMAGE_TAG: ${{ needs.build-docker.outputs.image-tag }}
