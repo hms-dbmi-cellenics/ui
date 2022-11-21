@@ -299,12 +299,12 @@ jobs:
           if [ "${{ matrix.environment }}" = "production" ]
           then
             yq -i 'select(documentIndex == 1) |
-              spec.values.service.additionalHosts = "true"
+              .spec.values.service.additionalHosts = "true"
             ' $DEPLOYMENT_NAME.yaml
 
           else
             yq -i 'select(documentIndex == 1) |
-              spec.values.service.additionalHosts = "false"
+              .spec.values.service.additionalHosts = "false"
             ' $DEPLOYMENT_NAME.yaml
           fi
 
