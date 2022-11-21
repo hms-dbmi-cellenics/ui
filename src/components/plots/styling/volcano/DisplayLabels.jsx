@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import {
-  Form, Space, InputNumber, Button,
+  Form, Space, InputNumber,
 } from 'antd';
 import useUpdateThrottled from 'utils/customHooks/useUpdateThrottled';
 
@@ -10,10 +10,6 @@ const DisplayLabels = (props) => {
     config, onUpdate, min, max,
   } = props;
   const [newConfig, handleChange] = useUpdateThrottled(onUpdate, config, 200);
-  const [
-    localTextThresholdValue,
-    setLocalTextThresholdValue,
-  ] = useState(newConfig.textThresholdValue);
 
   return (
     <Space direction='vertical' style={{ width: '80%' }}>
@@ -30,25 +26,13 @@ const DisplayLabels = (props) => {
           <>  </>
           <InputNumber
             data-testid='thresholdInput'
-            value={localTextThresholdValue}
+            value={newConfig.textThresholdValue}
             min={min}
             max={max}
             onChange={(value) => {
-              setLocalTextThresholdValue(value);
+              handleChange({ textThresholdValue: value });
             }}
           />
-        </Form.Item>
-        <Form.Item>
-          <Button
-            data-testid='saveThreshold'
-            size='small'
-            type='primary'
-            onClick={() => {
-              handleChange({ textThresholdValue: localTextThresholdValue });
-            }}
-          >
-            Save
-          </Button>
         </Form.Item>
       </Form>
     </Space>

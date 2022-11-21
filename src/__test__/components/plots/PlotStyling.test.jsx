@@ -115,16 +115,4 @@ describe('PlotStyling', () => {
     userEvent.click(save);
     expect(mockOnUpdate).toHaveBeenCalledTimes(1);
   });
-
-  it('Changes and saves gene label threshold', () => {
-    renderPlotStyling();
-    userEvent.click(screen.getByText('Add labels'));
-
-    const thresholdInput = screen.getByTestId('thresholdInput');
-    const save = screen.getByTestId('saveThreshold');
-
-    userEvent.type(thresholdInput, 20);
-    userEvent.click(save);
-    expect(mockOnUpdate).toHaveBeenCalledTimes(1);
-  });
 });
