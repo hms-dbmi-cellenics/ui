@@ -162,7 +162,7 @@ const generateSpec = (config, groupName, data, displayLabels = true) => {
       },
       {
         name: 'color',
-        type: 'linear',
+        type: 'quantize',
         range: {
           scheme: config.colour.gradient === 'default'
             ? 'purplered'
