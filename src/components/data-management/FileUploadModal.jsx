@@ -195,11 +195,6 @@ const FileUploadModal = (props) => {
             </Space>
             <Text type='secondary'>
               <i>
-                Data from one technology can be uploaded
-              </i>
-            </Text>
-            <Text type='secondary'>
-              <i>
                 Is your dataset generated using another single cell RNA-seq technology (e.g. Nadia, BD Rhapsody, etc.)? Email us to find out if we can support your data:
                 <a href={`mailto:${config.supportEmail}`}>{config.supportEmail}</a>
               </i>
