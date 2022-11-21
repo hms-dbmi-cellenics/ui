@@ -28,10 +28,6 @@ const defaultStylingConfig = [
     panelTitle: 'Axes and margins',
     controls: ['axesWithRanges'],
   },
-  {
-    panelTitle: 'Add labels',
-    controls: ['volcanoLabels'],
-  }
 ];
 
 const defaultProps = {
@@ -47,10 +43,6 @@ const renderPlotStyling = (props) => {
 };
 
 describe('PlotStyling', () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
-  });
-
   it('Renders properly with the correct config', () => {
     renderPlotStyling();
     expect(screen.getByText('Main schema')).toBeInTheDocument();
