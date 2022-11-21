@@ -11,28 +11,22 @@ const DisplayLabels = (props) => {
   } = props;
 
   return (
-    <Space direction='vertical' style={{ width: '80%' }}>
-      <Form
-        size='middle'
-        labelCol={{ span: 10 }}
-        wrapperCol={{ span: 14 }}
-      >
-        <p><strong>Display Gene Labels Above (-log10 pvalue)</strong></p>
+    <Space direction='vertical' style={{ width: '100%' }}>
+      <p><strong>Display Gene Labels Above (-log10 pvalue)</strong></p>
 
-        <Form.Item
-          label='Min. -log10 pvalue'
-        >
-          <SliderWithInput
-            data-testid='thresholdInput'
-            value={config.textThresholdValue}
-            min={min}
-            max={max}
-            onUpdate={(value) => {
-              onUpdate({ textThresholdValue: value });
-            }}
-          />
-        </Form.Item>
-      </Form>
+      <Form.Item
+        label='Min. -log10 pvalue'
+      >
+        <SliderWithInput
+          data-testid='thresholdInput'
+          value={config.textThresholdValue}
+          min={min}
+          max={max}
+          onUpdate={(value) => {
+            onUpdate({ textThresholdValue: value });
+          }}
+        />
+      </Form.Item>
     </Space>
   );
 };
