@@ -54,10 +54,6 @@ const FileUploadModal = (props) => {
     setFilesList([]);
   }, [selectedTech]);
 
-  const handleTechChange = (e) => {
-    console.log(e);
-  };
-
   // Handle on Drop
   const onDrop = async (acceptedFiles) => {
     // Remove all hidden files
@@ -180,7 +176,11 @@ const FileUploadModal = (props) => {
                 Technology:
                 <span style={{ color: 'red', marginRight: '2em' }}>*</span>
               </Title>
-              <Tooltip title={previousDataTechnology && 'Remove existing data to change technology.'} placement='bottom'>
+              <Tooltip
+                title={previousDataTechnology
+                  && 'Remove existing data or create a new project to change technology.'}
+                placement='bottom'
+              >
                 <Select
                   defaultValue={selectedTech}
                   onChange={(value) => setSelectedTech(value)}

@@ -11,7 +11,8 @@ import configureMockStore from 'redux-mock-store';
 import handleError from 'utils/http/handleError';
 import endUserMessages from 'utils/endUserMessages';
 
-import techOptions from 'utils/upload/fileUploadSpecifications';
+import fileUploadSpecifications from 'utils/upload/fileUploadSpecifications';
+import { techTypes } from 'utils/constants';
 
 import mockFile from '__test__/test-utils/mockFile';
 import FileUploadModal from 'components/data-management/FileUploadModal';
@@ -51,16 +52,20 @@ const initialStore = mockStore(initialState);
 const prevUpStore = mockStore(prevUpState);
 const prevUpDiffExpStore = mockStore(prevUpDiffExpState);
 
-const renderFileUploadModal = async (store) => {
+const renderFileUploadModal = async (store, previousDataTechnology = null) => {
   await act(async () => (render(
     <Provider store={store}>
-      <FileUploadModal onUpload={jest.fn()} onCancel={jest.fn()} />
+      <FileUploadModal
+        onUpload={jest.fn()}
+        onCancel={jest.fn()}
+        previousDataTechnology={previousDataTechnology}
+      />
     </Provider>,
   )));
 };
 
-const chromiumTech = Object.keys(techOptions)[0];
-const seuratTech = Object.keys(techOptions)[1];
+const chromiumTech = Object.keys(fileUploadSpecifications)[0];
+const seuratTech = Object.keys(fileUploadSpecifications)[1];
 
 describe('FileUploadModal', () => {
   it('contains required components for Chromium 10X', async () => {
@@ -71,7 +76,7 @@ describe('FileUploadModal', () => {
 
     // It contains instructions on what files can be uploaded
     expect(screen.getByText(/For each sample, upload a folder containing/i)).toBeInTheDocument();
-    techOptions[chromiumTech].acceptedFiles.forEach((filename) => {
+    fileUploadSpecifications[chromiumTech].acceptedFiles.forEach((filename) => {
       expect(screen.getByText(filename)).toBeInTheDocument();
     });
 
@@ -130,7 +135,7 @@ describe('FileUploadModal', () => {
 
     // wait for Seurat info to appear
     await waitFor(() => expect(
-      screen.getByText(/Seurat object[.]/),
+      screen.getByText(/Seurat object \(max 15GB\)/),
     ).toBeInTheDocument());
 
     // Lists the requirements of the Seurat object
@@ -155,7 +160,7 @@ describe('FileUploadModal', () => {
     expect(screen.getByText(/scdata@reductions/i)).toBeInTheDocument();
 
     // inform used that metadata is auto-detected
-    expect(screen.getByText(/sample level metadata .+ is auto-detected\./i)).toBeInTheDocument();
+    expect(screen.getByText(/sample level metadata .+ is auto-detected/i)).toBeInTheDocument();
 
     // told to drag and drop rds file
     expect(screen.getByText(/Drag and drop \*\.rds file here or click to browse\./i)).toBeInTheDocument();
@@ -236,7 +241,7 @@ describe('FileUploadModal', () => {
 
     // wait for Seurat info to appear
     await waitFor(() => expect(
-      screen.getByText(/Seurat object[.]/),
+      screen.getByText(/Seurat object \(max 15GB\)/),
     ).toBeInTheDocument());
 
     expect(await screen.queryByText(/To upload/)).not.toBeInTheDocument();
@@ -298,7 +303,7 @@ describe('FileUploadModal', () => {
 
     // wait for Seurat info to appear
     await waitFor(() => expect(
-      screen.getByText(/Seurat object[.]/),
+      screen.getByText(/Seurat object \(max 15GB\)/),
     ).toBeInTheDocument());
 
     expect(await screen.queryByText(/To upload/)).not.toBeInTheDocument();
@@ -336,6 +341,13 @@ describe('FileUploadModal', () => {
   it('drag and drop does not work with invalid Seurat file', async () => {
     await renderFileUploadModal(initialStore);
 
+    // technology input should be enabled because there is no previously uploaded data
+    const techInput = document.querySelector(
+      '[data-testid="uploadTechSelect"] input',
+    );
+
+    expect(techInput).toBeEnabled();
+
     // get the select
     const select = document.querySelector(
       '[data-testid="uploadTechSelect"] > .ant-select-selector',
@@ -360,7 +372,7 @@ describe('FileUploadModal', () => {
 
     // wait for Seurat info to appear
     await waitFor(() => expect(
-      screen.getByText(/Seurat object[.]/),
+      screen.getByText(/Seurat object \(max 15GB\)/),
     ).toBeInTheDocument());
 
     expect(await screen.queryByText(/To upload/)).not.toBeInTheDocument();
@@ -394,34 +406,19 @@ describe('FileUploadModal', () => {
   });
 
   it('drag and drop fails with valid Seurat file when pre-existing Seurat file exists for experiment', async () => {
-    await renderFileUploadModal(prevUpStore);
+    await renderFileUploadModal(prevUpStore, techTypes.SEURAT);
 
-    // get the select
-    const select = document.querySelector(
-      '[data-testid="uploadTechSelect"] > .ant-select-selector',
+    // Seurat info should show up as their is previous Seurat data uploaded
+    await waitFor(() => expect(
+      screen.getByText(/Seurat object \(max 15GB\)/),
+    ).toBeInTheDocument());
+
+    // technology input should be disable because we have existing data
+    const techInput = document.querySelector(
+      '[data-testid="uploadTechSelect"] input',
     );
 
-    expect(select).not.toBeNull();
-
-    // click the select input
-    fireEvent.mouseDown(select);
-
-    // wait for the ant dropdown element to appear
-    await waitFor(() => expect(
-      document.querySelector('.ant-select-dropdown'),
-    ).toBeInTheDocument());
-
-    //
-    const seuratOption = await screen.queryByRole('option', { selected: false, title: seuratTech });
-    expect(seuratOption).toBeInTheDocument();
-
-    // select a single dropdown option
-    fireEvent.click(screen.getAllByText(seuratTech)[1]);
-
-    // wait for Seurat info to appear
-    await waitFor(() => expect(
-      screen.getByText(/Seurat object[.]/),
-    ).toBeInTheDocument());
+    expect(techInput).toBeDisabled();
 
     expect(await screen.queryByText(/To upload/)).not.toBeInTheDocument();
 
