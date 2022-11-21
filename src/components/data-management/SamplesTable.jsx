@@ -35,6 +35,7 @@ import 'utils/css/data-management.css';
 import { ClipLoader } from 'react-spinners';
 import useConditionalEffect from 'utils/customHooks/useConditionalEffect';
 import { METADATA_DEFAULT_VALUE } from 'redux/reducers/experiments/initialState';
+import { techTypes } from 'utils/constants';
 
 const { Text } = Typography;
 
@@ -54,7 +55,7 @@ const SamplesTable = forwardRef((props, ref) => {
   const DragHandle = sortableHandle(() => <MenuOutlined style={{ cursor: 'grab', color: '#999' }} />);
 
   const initialTableColumns = {
-    '10x': [
+    [techTypes.CHROMIUM]: [
       {
         fixed: 'left',
         index: 0,
@@ -94,7 +95,7 @@ const SamplesTable = forwardRef((props, ref) => {
         render: (tableCellData) => <UploadCell columnId='matrix' tableCellData={tableCellData} />,
       },
     ],
-    seurat: [
+    [techTypes.SEURAT]: [
       {
         fixed: 'left',
         index: 0,
@@ -122,7 +123,7 @@ const SamplesTable = forwardRef((props, ref) => {
     ],
   };
 
-  const [tableColumns, setTableColumns] = useState(initialTableColumns['10x']);
+  const [tableColumns, setTableColumns] = useState(initialTableColumns[techTypes.CHROMIUM]);
 
   useEffect(() => {
     const samplesLoaded = activeExperiment?.sampleIds.every((sampleId) => samples[sampleId]);
@@ -272,8 +273,8 @@ const SamplesTable = forwardRef((props, ref) => {
         key: idx,
         name: samples[sampleUuid]?.name || 'UPLOAD ERROR: Please reupload sample',
         uuid: sampleUuid,
-        ...(technology === '10x' && { barcodes: barcodesData, genes: genesData, matrix: matrixData }),
-        ...(technology === 'seurat' && { seurat: seuratData }),
+        ...(technology === techTypes.CHROMIUM && { barcodes: barcodesData, genes: genesData, matrix: matrixData }),
+        ...(technology === techTypes.SEURAT && { seurat: seuratData }),
         ...samples[sampleUuid]?.metadata,
       };
     });

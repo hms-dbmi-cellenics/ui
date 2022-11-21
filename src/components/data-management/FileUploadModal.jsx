@@ -12,6 +12,7 @@ import {
   Empty,
   Divider,
   List,
+  Tooltip,
 } from 'antd';
 import { CheckCircleTwoTone, CloseCircleTwoTone, DeleteOutlined } from '@ant-design/icons';
 import Dropzone from 'react-dropzone';
@@ -23,6 +24,7 @@ import handleError from 'utils/http/handleError';
 import { fileObjectToFileRecord } from 'utils/upload/processUpload';
 import integrationTestConstants from 'utils/integrationTestConstants';
 import endUserMessages from 'utils/endUserMessages';
+import { techTypes } from 'utils/constants';
 
 const { Text, Title, Paragraph } = Typography;
 const { Option } = Select;
@@ -31,7 +33,7 @@ const { Option } = Select;
 const SEURAT_MAX_FILE_SIZE = 15 * 1024 * 1024 * 1024;
 
 const FileUploadModal = (props) => {
-  const { onUpload, onCancel } = props;
+  const { onUpload, onCancel, previousDataTechnology } = props;
 
   const samples = useSelector((state) => state.samples);
   const activeExperimentId = useSelector((state) => state.experiments.meta.activeExperimentId);
@@ -40,7 +42,7 @@ const FileUploadModal = (props) => {
 
   const guidanceFileLink = 'https://drive.google.com/file/d/1VPaB-yofuExinY2pXyGEEx-w39_OPubO/view';
 
-  const [selectedTech, setSelectedTech] = useState('10X Chromium');
+  const [selectedTech, setSelectedTech] = useState(previousDataTechnology ?? techTypes.CHROMIUM);
   const [canUpload, setCanUpload] = useState(false);
   const [filesList, setFilesList] = useState([]);
 
@@ -52,13 +54,17 @@ const FileUploadModal = (props) => {
     setFilesList([]);
   }, [selectedTech]);
 
+  const handleTechChange = (e) => {
+    console.log(e);
+  };
+
   // Handle on Drop
   const onDrop = async (acceptedFiles) => {
     // Remove all hidden files
     let filteredFiles = acceptedFiles
       .filter((file) => !file.name.startsWith('.') && !file.name.startsWith('__MACOSX'));
 
-    if (selectedTech === '10X Chromium') {
+    if (selectedTech === techTypes.CHROMIUM) {
       let filesNotInFolder = false;
 
       // Remove all files that aren't in a folder
@@ -80,7 +86,7 @@ const FileUploadModal = (props) => {
       )));
 
       setFilesList([...filesList, ...newFiles]);
-    } else if (selectedTech === 'Seurat') {
+    } else if (selectedTech === techTypes.SEURAT) {
       const newFiles = await Promise.all(filteredFiles.map((file) => (
         fileObjectToFileRecord(file, selectedTech)
       )));
@@ -174,16 +180,24 @@ const FileUploadModal = (props) => {
                 Technology:
                 <span style={{ color: 'red', marginRight: '2em' }}>*</span>
               </Title>
-              <Select
-                defaultValue={selectedTech}
-                onChange={(value) => setSelectedTech(value)}
-                data-testid='uploadTechSelect'
-              >
-                {Object.keys(techOptions).map((val) => (
-                  <Option key={`key-${val}`} value={val}>{val}</Option>
-                ))}
-              </Select>
+              <Tooltip title={previousDataTechnology && 'Remove existing data to change technology.'} placement='bottom'>
+                <Select
+                  defaultValue={selectedTech}
+                  onChange={(value) => setSelectedTech(value)}
+                  disabled={Boolean(previousDataTechnology)}
+                  data-testid='uploadTechSelect'
+                >
+                  {Object.keys(techOptions).map((val) => (
+                    <Option key={`key-${val}`} value={val}>{val}</Option>
+                  ))}
+                </Select>
+              </Tooltip>
             </Space>
+            <Text type='secondary'>
+              <i>
+                Data from one technology can be uploaded
+              </i>
+            </Text>
             <Text type='secondary'>
               <i>
                 Is your dataset generated using another single cell RNA-seq technology (e.g. Nadia, BD Rhapsody, etc.)? Email us to find out if we can support your data:

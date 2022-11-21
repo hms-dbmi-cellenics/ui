@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import {
   Button, Tooltip, Popconfirm,
 } from 'antd';
-import { modules } from 'utils/constants';
+import { modules, techTypes } from 'utils/constants';
 import PropTypes from 'prop-types';
 
 import fileUploadSpecifications from 'utils/upload/fileUploadSpecifications';
@@ -15,13 +15,13 @@ import calculatePipelineRerunStatus from 'utils/data-management/calculatePipelin
 import { useAppRouter } from 'utils/AppRouteProvider';
 
 const runnersByTechnology = {
-  '10x': runGem2s,
-  seurat: runSeurat,
+  [techTypes.CHROMIUM]: runGem2s,
+  [techTypes.SEURAT]: runSeurat,
 };
 
 const pipelineByTechnology = {
-  '10x': 'gem2s',
-  seurat: 'seurat',
+  [techTypes.CHROMIUM]: 'gem2s',
+  [techTypes.SEURAT]: 'seurat',
 
 };
 
