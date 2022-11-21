@@ -38,14 +38,15 @@ const fileUploadSpecifications = {
       ['<code>scdata$samples</code>: sample assignment. If absent, treated as unisample.'],
       ['<code>scdata[[\'RNA\']]@counts</code>: raw feature counts.'],
       ['<code>scdata[[\'RNA\']]@data</code>: log transformed counts.'],
-      ['<code>scdata@reductions</code>: contains the embedding indicated by <code>DefaultDimReduc(scdata)</code>.'],
-      ['sample level metadata in <code>scdata@meta.data</code> that groups samples in <code>scdata$samples</code> is auto-detected.'],
+      ['<code>scdata@reductions</code>: contains the <code>pca</code> embedding and that indicated by <code>DefaultDimReduc(scdata)</code>.'],
+      ['\uD83D\uDCA1sample level metadata in <code>scdata@meta.data</code> that groups samples in <code>scdata$samples</code> is auto-detected for downstream analysis.'],
+      ['\uD83D\uDCA1if file size is over 15GB, try removing any assays not indicated above.'],
     ],
     requiredFiles: [
       'r.rds',
     ],
     fileUploadParagraphs: [
-      '<p>For your dataset, upload a single <code>*.rds</code> file with the Seurat object.</p>',
+      '<p>For your dataset, upload a single <code>*.rds</code> file with the Seurat object (max 15GB).</p>',
       '<p>The Seurat object must contain the following slots and metadata:</p>',
     ],
     dropzoneText: 'Drag and drop *.rds file here or click to browse.',
