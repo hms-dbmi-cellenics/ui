@@ -272,39 +272,34 @@ jobs:
 
           echo "::set-output name=kubernetes-env::$KUBERNETES_ENV"
 
-          cp .flux.yaml $DEPLOYMENT_NAME.yaml
-
-          yq -i 'select(documentIndex == 0) |
-            .metadata.name = strenv(DEPLOYMENT_NAME) + "-" + strenv(SANDBOX_ID) |
-            .metadata.labels.sandboxId = strenv(SANDBOX_ID)
-          ' $DEPLOYMENT_NAME.yaml
-
-          yq -i 'select(documentIndex == 1) |
-            .metadata.name = strenv(DEPLOYMENT_NAME) |
-            .metadata.namespace = strenv(DEPLOYMENT_NAME) + "-" + strenv(SANDBOX_ID) |
-            .metadata.labels.sandboxId = strenv(SANDBOX_ID) |
-            .metadata.annotations["filter.fluxcd.io/chart-image"] = strenv(IMAGE_GLOB) |
-            .spec.releaseName = strenv(DEPLOYMENT_NAME) |
-            .spec.chart.ref = strenv(CHART_REF) |
-            .spec.values.kubernetes.env = strenv(KUBERNETES_ENV) |
-            .spec.values.biomageCi.repo = strenv(GITHUB_REPOSITORY) |
-            .spec.values.biomageCi.sandboxId = strenv(SANDBOX_ID) |
-            .spec.values.image.registry = strenv(REGISTRY) |
-            .spec.values.image.repository = strenv(DEPLOYMENT_NAME) |
-            .spec.values.image.tag = strenv(IMAGE_TAG) |
-            .spec.values.replicaCount = strenv(REPLICA_COUNT) |
-            .spec.values.serviceAccount.iamRole = "ui-role-" + strenv(KUBERNETES_ENV)
-          ' $DEPLOYMENT_NAME.yaml
+          yq -i '
+            select(di == 0).metadata.name = strenv(DEPLOYMENT_NAME) + "-" + strenv(SANDBOX_ID) |
+            select(di == 0).metadata.labels.sandboxId = strenv(SANDBOX_ID) |
+            select(di == 1).metadata.name = strenv(DEPLOYMENT_NAME) |
+            select(di == 1).metadata.namespace = strenv(DEPLOYMENT_NAME) + "-" + strenv(SANDBOX_ID) |
+            select(di == 1).metadata.labels.sandboxId = strenv(SANDBOX_ID) |
+            select(di == 1).metadata.annotations["filter.fluxcd.io/chart-image"] = strenv(IMAGE_GLOB) |
+            select(di == 1).spec.releaseName = strenv(DEPLOYMENT_NAME) |
+            select(di == 1).spec.chart.ref = strenv(CHART_REF) |
+            select(di == 1).spec.values.kubernetes.env = strenv(KUBERNETES_ENV) |
+            select(di == 1).spec.values.biomageCi.repo = strenv(GITHUB_REPOSITORY) |
+            select(di == 1).spec.values.biomageCi.sandboxId = strenv(SANDBOX_ID) |
+            select(di == 1).spec.values.image.registry = strenv(REGISTRY) |
+            select(di == 1).spec.values.image.repository = strenv(DEPLOYMENT_NAME) |
+            select(di == 1).spec.values.image.tag = strenv(IMAGE_TAG) |
+            select(di == 1).spec.values.replicaCount = strenv(REPLICA_COUNT) |
+            select(di == 1).spec.values.serviceAccount.iamRole = "ui-role-" + strenv(KUBERNETES_ENV)
+          ' .flux.yaml > $DEPLOYMENT_NAME.yaml
 
           if [ "${{ matrix.environment }}" = "production" ]
           then
-            yq -i 'select(documentIndex == 1) |
-              .spec.values.service.additionalHosts = "true"
+            yq -i '
+              select(di == 1).spec.values.service.additionalHosts = "true"
             ' $DEPLOYMENT_NAME.yaml
 
           else
-            yq -i 'select(documentIndex == 1) |
-              .spec.values.service.additionalHosts = "false"
+            yq -i '
+              select(di == 1).spec.values.service.additionalHosts = "false"
             ' $DEPLOYMENT_NAME.yaml
           fi
 
