@@ -1,36 +1,34 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {
-  Form, Space, InputNumber,
+  Form, Space,
 } from 'antd';
-import useUpdateThrottled from 'utils/customHooks/useUpdateThrottled';
+import SliderWithInput from 'components/SliderWithInput';
 
 const DisplayLabels = (props) => {
   const {
     config, onUpdate, min, max,
   } = props;
-  const [newConfig, handleChange] = useUpdateThrottled(onUpdate, config, 200);
 
   return (
     <Space direction='vertical' style={{ width: '80%' }}>
       <Form
-        size='small'
-        labelCol={{ span: 12 }}
-        wrapperCol={{ span: 12 }}
+        size='middle'
+        labelCol={{ span: 10 }}
+        wrapperCol={{ span: 14 }}
       >
         <p><strong>Display Gene Labels Above (-log10 pvalue)</strong></p>
 
         <Form.Item
           label='Min. -log10 pvalue'
         >
-          <>  </>
-          <InputNumber
+          <SliderWithInput
             data-testid='thresholdInput'
-            value={newConfig.textThresholdValue}
+            value={config.textThresholdValue}
             min={min}
             max={max}
-            onChange={(value) => {
-              handleChange({ textThresholdValue: value });
+            onUpdate={(value) => {
+              onUpdate({ textThresholdValue: value });
             }}
           />
         </Form.Item>
