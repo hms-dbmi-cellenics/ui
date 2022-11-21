@@ -272,7 +272,7 @@ jobs:
 
           echo "::set-output name=kubernetes-env::$KUBERNETES_ENV"
 
-          yq -i '
+          yq '
             select(di == 0).metadata.name = strenv(DEPLOYMENT_NAME) + "-" + strenv(SANDBOX_ID) |
             select(di == 0).metadata.labels.sandboxId = strenv(SANDBOX_ID) |
             select(di == 1).metadata.name = strenv(DEPLOYMENT_NAME) |
