@@ -97,7 +97,7 @@ const ContentWrapper = (props) => {
   const completedGem2sSteps = backendStatus?.gem2s?.completedSteps;
 
   const seuratStatusKey = backendStatus?.seurat?.status;
-  const seuratErrorCause = backendStatus?.seurat?.error?.cause;
+  const seuratErrorCode = backendStatus?.seurat?.error?.error;
   const seuratparamsHash = backendStatus?.seurat?.paramsHash;
   const seuratRunning = seuratStatusKey === 'RUNNING';
   const seuratRunningError = backendErrors.includes(seuratStatusKey);
@@ -107,11 +107,9 @@ const ContentWrapper = (props) => {
 
   const [seuratErrorObject, setSeuratErrorObject] = useState();
   useEffect(() => {
-    if (!seuratErrorCause) return;
-    const seuratErrorCode = seuratErrorCause.match(/ERROR_SEURAT_[A-Z]+/);
-
+    if (!seuratErrorCode) return;
     setSeuratErrorObject({ subTitle: pipelineErrorUserMessages[seuratErrorCode] });
-  }, [seuratErrorCause]);
+  }, [seuratErrorCode]);
 
   // This is used to prevent a race condition where the page would start loading immediately
   // when the backend status was previously loaded. In that case, `backendLoading` is `false`
