@@ -1,8 +1,8 @@
 import _ from 'lodash';
 import moment from 'moment';
-import { v4 as uuidv4 } from 'uuid';
+
 import {
-  SAMPLES_CREATE, SAMPLES_CREATED, SAMPLES_ERROR, SAMPLES_SAVED, SAMPLES_SAVING,
+  SAMPLES_CREATED, SAMPLES_ERROR, SAMPLES_SAVED, SAMPLES_SAVING,
 } from 'redux/actionTypes/samples';
 
 import fetchAPI from 'utils/http/fetchAPI';
@@ -13,21 +13,12 @@ import { METADATA_DEFAULT_VALUE } from 'redux/reducers/experiments/initialState'
 import { defaultSampleOptions, sampleTemplate } from 'redux/reducers/samples/initialState';
 import { sampleTech } from 'utils/constants';
 import UploadStatus from 'utils/upload/UploadStatus';
-import validate10x from 'utils/upload/validate10x';
-import validateRhapsody from 'utils/upload/validateRhapsody';
 
 const createSamples = (
   experimentId,
-  name,
-  sample,
-  type,
-  filesToUpload,
+  newSamples,
+  sampleTechnology,
 ) => async (dispatch, getState) => {
-  const experiment = getState().experiments[experimentId];
-
-  const newSampleUuid = uuidv4();
-  const createdDate = moment().toISOString();
-
   dispatch({
     type: SAMPLES_SAVING,
     payload: {
@@ -35,68 +26,90 @@ const createSamples = (
     },
   });
 
-  const validateSample = {
-    [sampleTech['10X']]: validate10x,
-    [sampleTech.RHAPSODY]: validateRhapsody,
-  };
+  const experiment = getState().experiments[experimentId];
+  const { samples } = getState();
 
-  if (!Object.values(sampleTech).includes(type)) throw new Error(`Sample technology ${type} is not recognized`);
+  const createdDate = moment().toISOString();
 
-  await validateSample[type](sample);
+  if (!Object.values(sampleTech).includes(sampleTechnology)) throw new Error(`Sample technology ${sampleTechnology} is not recognized`);
 
-  let options = defaultSampleOptions[type] || {};
+  let options = defaultSampleOptions[sampleTechnology] || {};
 
   // If there are other samples in the same experiment, use the options value from the other samples
   if (experiment.sampleIds.length) {
     const firstSampleId = experiment.sampleIds[0];
-    options = getState().samples[firstSampleId].options;
+    options = samples[firstSampleId].options;
   }
 
-  const newSample = {
-    ..._.cloneDeep(sampleTemplate),
-    name,
-    type,
-    experimentId,
-    uuid: newSampleUuid,
-    createdDate,
-    lastModified: createdDate,
-    options,
-    metadata: experiment?.metadataKeys
-      .reduce((acc, curr) => ({ ...acc, [curr]: METADATA_DEFAULT_VALUE }), {}) || {},
-  };
+  const alreadyCreatedSampleIds = {};
 
-  const url = `/v2/experiments/${experimentId}/samples/${newSampleUuid}`;
+  experiment.sampleIds.forEach((sampleId) => {
+    const [
+      repeatedSampleName = null,
+    ] = newSamples.find(([name]) => name === samples[sampleId].name) ?? [];
 
-  filesToUpload.forEach((fileName) => {
-    newSample.files[fileName] = { upload: { status: UploadStatus.UPLOADING } };
+    if (!repeatedSampleName) return;
+
+    alreadyCreatedSampleIds[repeatedSampleName] = sampleId;
   });
 
+  const url = `/v2/experiments/${experimentId}/samples`;
+
+  const sampleToCreate = newSamples
+    // Upload only the samples that don't have a repeated name
+    .filter(([name]) => !alreadyCreatedSampleIds[name])
+    .map(([name]) => ({
+      name,
+      sampleTechnology,
+      options,
+    }));
+
+  if (sampleToCreate.length === 0) return alreadyCreatedSampleIds;
+
   try {
-    await fetchAPI(
+    const newSampleIdsByName = await fetchAPI(
       url,
       {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          name,
-          sampleTechnology: type,
-          options,
-        }),
+        body: JSON.stringify(sampleToCreate),
       },
     );
 
+    const sampleIdsByName = { ...alreadyCreatedSampleIds, ...newSampleIdsByName };
+
+    const newSamplesToRedux = newSamples
+      .map(([name, { files }]) => ({
+        ..._.cloneDeep(sampleTemplate),
+        name,
+        type: sampleTechnology,
+        experimentId,
+        uuid: sampleIdsByName[name],
+        createdDate,
+        lastModified: createdDate,
+        options,
+        metadata: experiment?.metadataKeys
+          .reduce((acc, curr) => ({ ...acc, [curr]: METADATA_DEFAULT_VALUE }), {}) || {},
+        files: Object.values(files).reduce(((acc, curr) => (
+          { ...acc, [curr.name]: { upload: { status: UploadStatus.UPLOADING } } }
+        )), {}),
+      }));
+
     await dispatch({
       type: SAMPLES_CREATED,
-      payload: { sample: newSample, experimentId },
+      payload: {
+        experimentId,
+        samples: newSamplesToRedux,
+      },
     });
 
     await dispatch({
       type: SAMPLES_SAVED,
     });
 
-    return newSampleUuid;
+    return sampleIdsByName;
   } catch (e) {
     const errorMessage = handleError(e, endUserMessages.ERROR_CREATING_SAMPLE);
 
