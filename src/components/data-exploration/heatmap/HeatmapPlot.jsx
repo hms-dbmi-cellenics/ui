@@ -152,14 +152,19 @@ const HeatmapPlot = (props) => {
   ]);
 
   useEffect(() => {
-    if (louvainClusterCount > 0 && !markerGenesLoadingError && !markerGenesLoading) {
+    if (
+      louvainClustersResolution
+      && louvainClusterCount > 0
+      && !markerGenesLoadingError
+      && !markerGenesLoading
+    ) {
       const nMarkerGenes = calculateIdealNMarkerGenes(louvainClusterCount);
 
       dispatch(loadMarkerGenes(
         experimentId, louvainClustersResolution, COMPONENT_TYPE, nMarkerGenes,
       ));
     }
-  }, [louvainClusterCount]);
+  }, [louvainClusterCount, louvainClustersResolution]);
 
   useEffect(() => {
     if (cellHighlight) {

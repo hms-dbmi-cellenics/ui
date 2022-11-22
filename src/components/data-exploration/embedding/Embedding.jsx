@@ -1,5 +1,7 @@
 // eslint-disable-file import/no-extraneous-dependencies
-import React, { useState, useEffect, useRef } from 'react';
+import React, {
+  useState, useEffect, useRef, useMemo,
+} from 'react';
 import dynamic from 'next/dynamic';
 import {
   useSelector, useDispatch,
@@ -47,8 +49,6 @@ const Embedding = (props) => {
   const [cellRadius, setCellRadius] = useState(cellRadiusFromZoom(INITIAL_ZOOM));
   const rootClusterNodes = useSelector(getCellSetsHierarchyByType('cellSets')).map(({ key }) => key);
 
-  const selectedCellIds = new Set();
-
   const embeddingSettings = useSelector(
     (state) => state.experimentSettings?.originalProcessing?.configureEmbedding?.embeddingSettings,
   );
@@ -67,12 +67,7 @@ const Embedding = (props) => {
 
   const selectedCell = useSelector((state) => state.cellInfo.cellId);
   const expressionLoading = useSelector((state) => state.genes.expression.loading);
-
   const expressionMatrix = useSelector((state) => state.genes.expression.matrix);
-
-  const focusedExpression = useSelector(
-    (state) => state.genes.expression.matrix.getRawExpression(focusData.key),
-  );
 
   const cellCoordinatesRef = useRef({ x: 200, y: 300 });
   const [cellInfoTooltip, setCellInfoTooltip] = useState();
@@ -128,7 +123,7 @@ const Embedding = (props) => {
 
   // Handle loading of expression for focused gene.
   useEffect(() => {
-    if (!focusedExpression) {
+    if (!expressionMatrix.geneIsLoaded(focusData.key)) {
       return;
     }
 
@@ -138,14 +133,28 @@ const Embedding = (props) => {
     setCellColors(colorByGeneExpression(truncatedExpression, truncatedMin, truncatedMax));
   }, [focusData.key, expressionLoading]);
 
+  const [convertedCellsData, setConvertedCellsData] = useState();
+
+  useEffect(() => {
+    if (!data || !cellSetHidden || !cellSetProperties) return;
+
+    setConvertedCellsData(convertCellsData(data, cellSetHidden, cellSetProperties));
+  }, [data, cellSetHidden, cellSetProperties]);
+
   useEffect(() => {
     if (selectedCell) {
       let expressionToDispatch;
       let geneName;
 
-      if (focusedExpression) {
+      if (expressionMatrix.geneIsLoaded(focusData.key)) {
         geneName = focusData.key;
-        expressionToDispatch = focusedExpression[selectedCell];
+
+        const [expression] = expressionMatrix.getRawExpression(
+          focusData.key,
+          [parseInt(selectedCell, 10)],
+        );
+
+        expressionToDispatch = expression;
       }
 
       // getting the cluster properties for every cluster that has the cellId
@@ -183,6 +192,8 @@ const Embedding = (props) => {
       };
     }
   };
+
+  const cellColorsForVitessce = useMemo(() => new Map(Object.entries(cellColors)), [cellColors]);
 
   const updateCellsHover = (cell) => dispatch(updateCellInfo({ cellId: cell }));
 
@@ -294,14 +305,10 @@ const Embedding = (props) => {
             uuid={embeddingType}
             viewState={view}
             updateViewInfo={updateCellCoordinates}
-            cells={convertCellsData(data, cellSetHidden, cellSetProperties)}
+            cells={convertedCellsData}
             mapping='PCA'
-            cellSelection={selectedCellIds}
-            cellColors={
-              (selectedCell)
-                ? new Map(Object.entries({ ...cellColors, [selectedCell]: [0, 0, 0] }))
-                : new Map(Object.entries(cellColors))
-            }
+            cellSelection={[selectedCell]}
+            cellColors={cellColorsForVitessce}
             setViewState={({ zoom, target }) => {
               setCellRadius(cellRadiusFromZoom(zoom));
 
