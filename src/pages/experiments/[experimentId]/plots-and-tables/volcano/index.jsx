@@ -123,7 +123,7 @@ const VolcanoPlotPage = (props) => {
       controls: ['markers'],
     },
     {
-      panelTitle: 'Add Labels',
+      panelTitle: 'Add labels',
       controls: [{
         name: 'volcanoLabels',
         props: {
