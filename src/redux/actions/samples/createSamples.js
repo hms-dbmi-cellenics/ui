@@ -64,7 +64,11 @@ const createSamples = (
       options,
     }));
 
-  if (sampleToCreate.length === 0) return alreadyCreatedSampleIds;
+  if (sampleToCreate.length === 0) {
+    dispatch({ type: SAMPLES_SAVED });
+
+    return alreadyCreatedSampleIds;
+  }
 
   try {
     const newSampleIdsByName = await fetchAPI(
@@ -97,7 +101,7 @@ const createSamples = (
         )), {}),
       }));
 
-    await dispatch({
+    dispatch({
       type: SAMPLES_CREATED,
       payload: {
         experimentId,
@@ -105,9 +109,7 @@ const createSamples = (
       },
     });
 
-    await dispatch({
-      type: SAMPLES_SAVED,
-    });
+    dispatch({ type: SAMPLES_SAVED });
 
     return sampleIdsByName;
   } catch (e) {
