@@ -289,18 +289,18 @@ jobs:
             select(di == 1).spec.values.image.tag = strenv(IMAGE_TAG) |
             select(di == 1).spec.values.replicaCount = strenv(REPLICA_COUNT) |
             select(di == 1).spec.values.serviceAccount.iamRole = "ui-role-" + strenv(KUBERNETES_ENV)
-          ' .flux.yaml > $DEPLOYMENT_NAME.yaml
+          ' .flux.yaml > $DEPLOYMENT_NAME-without-host.yaml
 
           if [ "${{ matrix.environment }}" = "production" ]
           then
-            yq -i '
+            yq '
               select(di == 1).spec.values.service.additionalHosts = true
-            ' $DEPLOYMENT_NAME.yaml
+            ' $DEPLOYMENT_NAME-without-host.yaml > $DEPLOYMENT_NAME.yaml
 
           else
-            yq -i '
+            yq '
               select(di == 1).spec.values.service.additionalHosts = false
-            ' $DEPLOYMENT_NAME.yaml
+            ' $DEPLOYMENT_NAME-without-host.yaml > $DEPLOYMENT_NAME.yaml
           fi
 
           cat $DEPLOYMENT_NAME.yaml
