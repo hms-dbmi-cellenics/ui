@@ -19,6 +19,7 @@ import { initialExperimentBackendStatus } from 'redux/reducers/backendStatus/ini
 import UploadStatus from 'utils/upload/UploadStatus';
 import generatePipelineParamsHash from 'utils/data-management/generatePipelineParamsHash';
 import '__test__/test-utils/setupTests';
+import { techTypes } from 'utils/constants';
 
 jest.mock('utils/data-management/generatePipelineParamsHash');
 jest.mock('redux/actions/experimentSettings/updateExperimentInfo', () => jest.fn().mockReturnValue({ type: 'UPDATE_EXPERIMENT_INFO' }));
@@ -206,7 +207,7 @@ describe('LaunchAnalysisButton', () => {
     await act(async () => {
       render(
         <Provider store={mockStore(notAllMetadataInserted)}>
-          <LaunchAnalysisButton technology='10x' />
+          <LaunchAnalysisButton technology={techTypes.CHROMIUM} />
         </Provider>,
       );
     });
@@ -220,7 +221,7 @@ describe('LaunchAnalysisButton', () => {
     await act(async () => {
       render(
         <Provider store={mockStore(noDataState)}>
-          <LaunchAnalysisButton technology='10x' />
+          <LaunchAnalysisButton technology={techTypes.CHROMIUM} />
         </Provider>,
       );
     });
@@ -262,7 +263,7 @@ describe('LaunchAnalysisButton', () => {
     await act(async () => {
       render(
         <Provider store={mockStore(notAllDataUploaded)}>
-          <LaunchAnalysisButton technology='10x' />
+          <LaunchAnalysisButton technology={techTypes.CHROMIUM} />
         </Provider>,
       );
     });
@@ -290,7 +291,7 @@ describe('LaunchAnalysisButton', () => {
     await act(async () => {
       render(
         <Provider store={mockStore(notAllSeuratDataUploaded)}>
-          <LaunchAnalysisButton technology='seurat' />
+          <LaunchAnalysisButton technology={techTypes.SEURAT} />
         </Provider>,
       );
     });
@@ -304,7 +305,7 @@ describe('LaunchAnalysisButton', () => {
     await act(async () => {
       render(
         <Provider store={mockStore(withDataState)}>
-          <LaunchAnalysisButton technology='10x' />
+          <LaunchAnalysisButton technology={techTypes.CHROMIUM} />
         </Provider>,
       );
     });
@@ -318,7 +319,7 @@ describe('LaunchAnalysisButton', () => {
     await act(async () => {
       render(
         <Provider store={mockStore(withSeuratDataState)}>
-          <LaunchAnalysisButton technology='seurat' />
+          <LaunchAnalysisButton technology={techTypes.SEURAT} />
         </Provider>,
       );
     });
@@ -334,7 +335,7 @@ describe('LaunchAnalysisButton', () => {
     await act(async () => {
       render(
         <Provider store={mockStore(withDataState)}>
-          <LaunchAnalysisButton technology='10x' />
+          <LaunchAnalysisButton technology={techTypes.CHROMIUM} />
         </Provider>,
       );
     });
@@ -350,7 +351,7 @@ describe('LaunchAnalysisButton', () => {
     await act(async () => {
       render(
         <Provider store={mockStore(withSeuratDataState)}>
-          <LaunchAnalysisButton technology='seurat' />
+          <LaunchAnalysisButton technology={techTypes.SEURAT} />
         </Provider>,
       );
     });
@@ -366,7 +367,7 @@ describe('LaunchAnalysisButton', () => {
     await act(async () => {
       render(
         <Provider store={mockStore(withDataState)}>
-          <LaunchAnalysisButton technology='10x' />
+          <LaunchAnalysisButton technology={techTypes.CHROMIUM} />
         </Provider>,
       );
     });
@@ -382,7 +383,7 @@ describe('LaunchAnalysisButton', () => {
     await act(async () => {
       render(
         <Provider store={mockStore(withSeuratDataState)}>
-          <LaunchAnalysisButton technology='seurat' />
+          <LaunchAnalysisButton technology={techTypes.SEURAT} />
         </Provider>,
       );
     });
@@ -398,7 +399,7 @@ describe('LaunchAnalysisButton', () => {
     await act(async () => {
       render(
         <Provider store={mockStore(withDataState)}>
-          <LaunchAnalysisButton technology='10x' />
+          <LaunchAnalysisButton technology={techTypes.CHROMIUM} />
         </Provider>,
       );
     });
@@ -422,7 +423,7 @@ describe('LaunchAnalysisButton', () => {
     await act(async () => {
       render(
         <Provider store={mockStore(withDataState)}>
-          <LaunchAnalysisButton technology='10x' />
+          <LaunchAnalysisButton technology={techTypes.CHROMIUM} />
         </Provider>,
       );
     });
@@ -437,7 +438,7 @@ describe('LaunchAnalysisButton', () => {
     await act(async () => {
       render(
         <Provider store={mockStore(withDataState)}>
-          <LaunchAnalysisButton technology='10x' />
+          <LaunchAnalysisButton technology={techTypes.CHROMIUM} />
         </Provider>,
       );
     });
@@ -464,7 +465,7 @@ describe('LaunchAnalysisButton', () => {
     await act(async () => {
       render(
         <Provider store={mockStore(notProcessedSeuratDataState)}>
-          <LaunchAnalysisButton technology='seurat' />
+          <LaunchAnalysisButton technology={techTypes.SEURAT} />
         </Provider>,
       );
     });

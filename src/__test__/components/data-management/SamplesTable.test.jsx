@@ -24,6 +24,7 @@ import { loadSamples } from 'redux/actions/samples';
 
 import mockDemoExperiments from '__test__/test-utils/mockData/mockDemoExperiments.json';
 import { loadUser } from 'redux/actions/user';
+import { techTypes } from 'utils/constants';
 
 jest.mock('@aws-amplify/auth', () => ({
   currentAuthenticatedUser: jest.fn(() => Promise.resolve({
@@ -55,7 +56,7 @@ jest.mock('react-sortable-hoc', () => ({
 
 const defaultProps = {
   height: 100,
-  technology: '10x',
+  technology: techTypes.CHROMIUM,
 };
 
 const samplesTableFactory = createTestComponentFactory(SamplesTable, defaultProps);
