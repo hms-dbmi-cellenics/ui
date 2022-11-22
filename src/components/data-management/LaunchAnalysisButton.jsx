@@ -153,7 +153,7 @@ const LaunchAnalysisButton = (props) => {
     } else if (seuratComplete) {
       buttonText = 'Go to Data Exploration';
     } else {
-      buttonText = 'Go To Data Processing';
+      buttonText = 'Go to Data Processing';
     }
 
     if (!backendStatus[activeExperimentId] || backendStatus[activeExperimentId]?.loading) {
