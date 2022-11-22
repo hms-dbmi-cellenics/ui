@@ -11,7 +11,7 @@ const DisplayLabels = (props) => {
   } = props;
 
   return (
-    <Space direction='vertical' style={{ width: '100%' }}>
+    <Space direction='vertical' style={{ width: '80%' }}>
       <p><strong>Display Gene Labels Above (-log10 pvalue)</strong></p>
 
       <Form.Item
