@@ -57,15 +57,26 @@ const LaunchAnalysisButton = (props) => {
   const activeExperiment = experiments[activeExperimentId];
 
   const [pipelineRerunStatus, setPipelineRerunStatus] = useState(
-    { rerun: true, paramsHash: null, reasons: [] },
+    {
+      rerun: true, paramsHash: null, reasons: [], complete: false,
+    },
   );
+
+  const [seuratComplete, setSeuratComplete] = useState(false);
+
+  useEffect(() => {
+    const isSeuratComplete = technology === techTypes.SEURAT && pipelineRerunStatus.complete;
+    setSeuratComplete(isSeuratComplete);
+  }, [pipelineRerunStatus, technology]);
 
   const launchAnalysis = () => {
     const runner = runnersByTechnology[technology];
     if (pipelineRerunStatus.rerun) {
       dispatch(runner(activeExperimentId, pipelineRerunStatus.paramsHash));
     }
-    navigateTo(modules.DATA_PROCESSING, { experimentId: activeExperimentId });
+
+    const moduleName = seuratComplete ? modules.DATA_EXPLORATION : modules.DATA_PROCESSING;
+    navigateTo(moduleName, { experimentId: activeExperimentId });
   };
 
   useEffect(() => {
@@ -135,7 +146,15 @@ const LaunchAnalysisButton = (props) => {
   }, [samples, activeExperiment?.sampleIds, activeExperiment?.metadataKeys]);
 
   const renderLaunchButton = () => {
-    const buttonText = !pipelineRerunStatus.rerun ? 'Go to Data Processing' : 'Process project';
+    let buttonText;
+
+    if (pipelineRerunStatus.rerun) {
+      buttonText = 'Process project';
+    } else if (seuratComplete) {
+      buttonText = 'Go to Data Exploration';
+    } else {
+      buttonText = 'Go To Data Processing';
+    }
 
     if (!backendStatus[activeExperimentId] || backendStatus[activeExperimentId]?.loading) {
       return <LaunchButtonTemplate text='Loading project...' disabled loading />;

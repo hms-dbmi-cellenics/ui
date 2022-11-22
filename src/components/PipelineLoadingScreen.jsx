@@ -51,7 +51,7 @@ const PipelineLoadingScreen = (props) => {
   const texts = {
     toBeRun: {
       status: 'toBeRun',
-      title: 'Let\'s upload and pre-process data your data.',
+      title: 'Let\'s upload and pre-process your data.',
       subTitle: 'Your data needs to be uploaded and pre-processed before it can be explored. To begin, go to Data Management.',
       showProgress: false,
       image: '/undraw_To_the_stars_qhyy.svg',
@@ -68,7 +68,7 @@ const PipelineLoadingScreen = (props) => {
     error: {
       status: 'error',
       title: 'We\'ve had an issue while launching your analysis.',
-      subTitle: pipelineErrorMessage || 'You can launch another analysis or retry to launch the current analysis.',
+      subTitle: pipelineErrorMessage || 'You can return to Data Management or try to re-launch the current analysis.',
       image: '/undraw_Abstract_re_l9xy.svg',
       alt: 'A woman confusedly staring at an abstract drawing.',
       showProgress: false,
@@ -90,23 +90,12 @@ const PipelineLoadingScreen = (props) => {
       );
     }
 
-    if (pipelineStatus === 'error' && pipelineType === 'seurat') {
-      return (
-        <Space size='large'>
-          <Link as={dataManagementPath} href={dataManagementPath} passHref>
-            <Button type='primary' key='console'>
-              Return to Data Management
-            </Button>
-          </Link>
-        </Space>
-      );
-    }
     if (pipelineStatus === 'error') {
       return (
         <Space size='large'>
           <Link as={dataManagementPath} href={dataManagementPath} passHref>
             <Button type='primary' key='console'>
-              Launch Another Analysis
+              Return to Data Management
             </Button>
           </Link>
           <Button type='primary' key='console' onClick={relaunchExperiment}>

@@ -26,6 +26,7 @@ const calculatePipelineRerunStatus = (
     rerun: !pipelineSuccessful || !projectHashEqual,
     paramsHash: newParamsHash,
     reasons: rerunReasons,
+    complete: pipelineStatus === pipelineStatusValues.SUCCEEDED,
   });
 };
 
