@@ -167,53 +167,53 @@ jobs:
           IMAGE_REPO_NAME=$(echo $GITHUB_REPOSITORY | awk -F '/' '{print $2}')
           echo "::set-output name=repo-name::$IMAGE_REPO_NAME"
 
-      # - id: set-up-creds
-      #   name: Configure AWS credentials
-      #   uses: aws-actions/configure-aws-credentials@v1
-      #   with:
-      #     aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      #     aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      #     aws-region: eu-west-1
+      - id: set-up-creds
+        name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-west-1
 
-      # - id: login-ecr
-      #   name: Login to Amazon ECR
-      #   uses: aws-actions/amazon-ecr-login@v1
+      - id: login-ecr
+        name: Login to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v1
 
-      # - id: create-ecr-registry
-      #   name: Create an ECR repository (if needed)
-      #   # This will fail if the registry already exists, which is fine. If there is some other
-      #   # error, the `push` step will fail instead.
-      #   continue-on-error: true
-      #   run: |-
-      #     aws ecr create-repository --repository-name $REPO_NAME --image-tag-mutability IMMUTABLE
-      #   env:
-      #     REPO_NAME: ${{ steps.ref.outputs.repo-name }}
+      - id: create-ecr-registry
+        name: Create an ECR repository (if needed)
+        # This will fail if the registry already exists, which is fine. If there is some other
+        # error, the `push` step will fail instead.
+        continue-on-error: true
+        run: |-
+          aws ecr create-repository --repository-name $REPO_NAME --image-tag-mutability IMMUTABLE
+        env:
+          REPO_NAME: ${{ steps.ref.outputs.repo-name }}
 
-      # - id: setup-buildx
-      #   name: Set up Docker Buildx
-      #   uses: docker/setup-buildx-action@v2
+      - id: setup-buildx
+        name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
 
-      # - id: build
-      #   name: Build Docker image
-      #   uses: docker/build-push-action@v2
-      #   with:
-      #     context: .
-      #     file: ./Dockerfile
-      #     platforms: linux/amd64
-      #     tags: ${{ format('{0}/{1}:{2}', steps.login-ecr.outputs.registry, steps.ref.outputs.repo-name, steps.ref.outputs.image-tag) }}
-      #     push: false
-      #     load: true
-      #     build-args: READONLY_API_TOKEN_GITHUB=${{ secrets.READONLY_API_TOKEN_GITHUB }}
-      #     cache-from: type=gha
-      #     cache-to: type=gha,mode=max
+      - id: build
+        name: Build Docker image
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          file: ./Dockerfile
+          platforms: linux/amd64
+          tags: ${{ format('{0}/{1}:{2}', steps.login-ecr.outputs.registry, steps.ref.outputs.repo-name, steps.ref.outputs.image-tag) }}
+          push: false
+          load: true
+          build-args: READONLY_API_TOKEN_GITHUB=${{ secrets.READONLY_API_TOKEN_GITHUB }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
-      # - id: push
-      #   name: Push docker image to ECR
-      #   run: |-
-      #     echo Pushing image $IMAGE_NAME to ECR.
-      #     docker push $IMAGE_NAME
-      #   env:
-      #     IMAGE_NAME: ${{ format('{0}/{1}:{2}', steps.login-ecr.outputs.registry, steps.ref.outputs.repo-name, steps.ref.outputs.image-tag) }}
+      - id: push
+        name: Push docker image to ECR
+        run: |-
+          echo Pushing image $IMAGE_NAME to ECR.
+          docker push $IMAGE_NAME
+        env:
+          IMAGE_NAME: ${{ format('{0}/{1}:{2}', steps.login-ecr.outputs.registry, steps.ref.outputs.repo-name, steps.ref.outputs.image-tag) }}
 
   deploy:
     name: Deploy to Kubernetes
@@ -246,29 +246,29 @@ jobs:
           export DEPLOYMENT_NAME=$(echo $GITHUB_REPOSITORY | awk -F '/' '{print $2}')
           echo "::set-output name=deployment-name::$DEPLOYMENT_NAME"
 
-          # if [ "${{ matrix.environment }}" = "production" ]; then
+          if [ "${{ matrix.environment }}" = "production" ]; then
             export SANDBOX_ID="default"
             export CHART_REF="master"
             export KUBERNETES_ENV="production"
             export IMAGE_GLOB="semver:>=0.0.0"
             export REPLICA_COUNT="4"
-          # fi
+          fi
 
-          # if [ "${{ matrix.environment }}" = "develop" ]; then
-          #   export SANDBOX_ID="default"
-          #   export CHART_REF="master"
-          #   export KUBERNETES_ENV="staging"
-          #   export IMAGE_GLOB="glob:$REF_ID-*"
-          #   export REPLICA_COUNT="2"
-          # fi
+          if [ "${{ matrix.environment }}" = "develop" ]; then
+            export SANDBOX_ID="default"
+            export CHART_REF="master"
+            export KUBERNETES_ENV="staging"
+            export IMAGE_GLOB="glob:$REF_ID-*"
+            export REPLICA_COUNT="2"
+          fi
 
-          # if [ "${{ matrix.environment }}" = "staging" ]; then
-          #   export SANDBOX_ID="STAGING_SANDBOX_ID"
-          #   export CHART_REF="STAGING_CHART_REF"
-          #   export KUBERNETES_ENV="staging"
-          #   export IMAGE_GLOB="glob:$REF_ID-*"
-          #   export REPLICA_COUNT="1"
-          # fi
+          if [ "${{ matrix.environment }}" = "staging" ]; then
+            export SANDBOX_ID="STAGING_SANDBOX_ID"
+            export CHART_REF="STAGING_CHART_REF"
+            export KUBERNETES_ENV="staging"
+            export IMAGE_GLOB="glob:$REF_ID-*"
+            export REPLICA_COUNT="1"
+          fi
 
           echo "::set-output name=kubernetes-env::$KUBERNETES_ENV"
 
@@ -291,17 +291,17 @@ jobs:
             select(di == 1).spec.values.serviceAccount.iamRole = "ui-role-" + strenv(KUBERNETES_ENV)
           ' .flux.yaml > $DEPLOYMENT_NAME-without-host.yaml
 
-          # if [ "${{ matrix.environment }}" = "production" ]
-          # then
+          if [ "${{ matrix.environment }}" = "production" ]
+          then
             yq '
               select(di == 1).spec.values.service.additionalHosts = true
             ' $DEPLOYMENT_NAME-without-host.yaml > $DEPLOYMENT_NAME.yaml
 
-          # else
-          #   yq '
-          #     select(di == 1).spec.values.service.additionalHosts = false
-          #   ' $DEPLOYMENT_NAME-without-host.yaml > $DEPLOYMENT_NAME.yaml
-          # fi
+          else
+            yq '
+              select(di == 1).spec.values.service.additionalHosts = false
+            ' $DEPLOYMENT_NAME-without-host.yaml > $DEPLOYMENT_NAME.yaml
+          fi
 
           cat $DEPLOYMENT_NAME.yaml
 
@@ -310,37 +310,37 @@ jobs:
           IMAGE_TAG: ${{ needs.build-docker.outputs.image-tag }}
           REGISTRY: ${{ steps.login-ecr.outputs.registry }}
 
-      # - name: Push production/develop template to releases repo for deployment
-      #   if: (matrix.environment == 'production' && github.event_name == 'release' && github.event.action == 'released') || (matrix.environment == 'develop' && github.event_name == 'push')
-      #   uses: dmnemec/copy_file_to_another_repo_action@v1.0.4
-      #   env:
-      #     API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
-      #   with:
-      #     source_file: ${{ steps.fill-metadata.outputs.deployment-name }}.yaml
-      #     destination_repo: ${{ github.repository_owner }}/releases
-      #     destination_folder: ${{ steps.fill-metadata.outputs.kubernetes-env }}
-      #     user_email: ci@biomage.net
-      #     user_name: Biomage CI/CD
+      - name: Push production/develop template to releases repo for deployment
+        if: (matrix.environment == 'production' && github.event_name == 'release' && github.event.action == 'released') || (matrix.environment == 'develop' && github.event_name == 'push')
+        uses: dmnemec/copy_file_to_another_repo_action@v1.0.4
+        env:
+          API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
+        with:
+          source_file: ${{ steps.fill-metadata.outputs.deployment-name }}.yaml
+          destination_repo: ${{ github.repository_owner }}/releases
+          destination_folder: ${{ steps.fill-metadata.outputs.kubernetes-env }}
+          user_email: ci@biomage.net
+          user_name: Biomage CI/CD
 
-      # - name: Change name of deployment file for staging deployment
-      #   if: (github.event_name == 'pull_request' || github.event_name == 'push') && matrix.environment == 'staging'
-      #   env:
-      #     DEPLOYMENT_NAME: ${{ steps.fill-metadata.outputs.deployment-name }}
-      #     REF_ID: ${{ needs.build-docker.outputs.ref-id }}
-      #   run: |-
-      #     mv $DEPLOYMENT_NAME.yaml $REF_ID.yaml
+      - name: Change name of deployment file for staging deployment
+        if: (github.event_name == 'pull_request' || github.event_name == 'push') && matrix.environment == 'staging'
+        env:
+          DEPLOYMENT_NAME: ${{ steps.fill-metadata.outputs.deployment-name }}
+          REF_ID: ${{ needs.build-docker.outputs.ref-id }}
+        run: |-
+          mv $DEPLOYMENT_NAME.yaml $REF_ID.yaml
 
-      # - name: Push staging deployment template to releases
-      #   if: (github.event_name == 'pull_request' || github.event_name == 'push') && matrix.environment == 'staging'
-      #   uses: dmnemec/copy_file_to_another_repo_action@v1.0.4
-      #   env:
-      #     API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
-      #   with:
-      #     source_file: ${{ needs.build-docker.outputs.ref-id }}.yaml
-      #     destination_repo: ${{ github.repository_owner }}/releases
-      #     destination_folder: staging-candidates/${{ steps.fill-metadata.outputs.deployment-name }}
-      #     user_email: ci@biomage.net
-      #     user_name: 'Biomage CI/CD'
+      - name: Push staging deployment template to releases
+        if: (github.event_name == 'pull_request' || github.event_name == 'push') && matrix.environment == 'staging'
+        uses: dmnemec/copy_file_to_another_repo_action@v1.0.4
+        env:
+          API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
+        with:
+          source_file: ${{ needs.build-docker.outputs.ref-id }}.yaml
+          destination_repo: ${{ github.repository_owner }}/releases
+          destination_folder: staging-candidates/${{ steps.fill-metadata.outputs.deployment-name }}
+          user_email: ci@biomage.net
+          user_name: 'Biomage CI/CD'
 
   ready-to-merge:
     name: Ready for merging
