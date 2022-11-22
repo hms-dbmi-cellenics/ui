@@ -96,6 +96,7 @@ const ContentWrapper = (props) => {
   const gem2sRunningError = backendErrors.includes(gem2sStatusKey);
   const completedGem2sSteps = backendStatus?.gem2s?.completedSteps;
 
+  const seuratBackendStatus = backendStatus?.seurat;
   const seuratStatusKey = backendStatus?.seurat?.status;
   const seuratErrorCode = backendStatus?.seurat?.error?.error;
   const seuratparamsHash = backendStatus?.seurat?.paramsHash;
@@ -105,10 +106,9 @@ const ContentWrapper = (props) => {
   const seuratComplete = seuratStatusKey === pipelineStatusValues.SUCCEEDED;
   const isSeurat = (seuratStatusKey && seuratStatusKey !== pipelineStatusValues.NOT_CREATED) || false;
 
-  const [seuratErrorObject, setSeuratErrorObject] = useState();
+  const [seuratErrorMessage, setSeuratErrorMessage] = useState();
   useEffect(() => {
-    if (!seuratErrorCode) return;
-    setSeuratErrorObject({ subTitle: pipelineErrorUserMessages[seuratErrorCode] });
+    setSeuratErrorMessage(pipelineErrorUserMessages[seuratErrorCode]);
   }, [seuratErrorCode]);
 
   // This is used to prevent a race condition where the page would start loading immediately
@@ -154,6 +154,18 @@ const ContentWrapper = (props) => {
     );
 
     setGem2sRerunStatus(pipelineStatus);
+  }, [gem2sBackendStatus, activeExperiment, samples, experiment]);
+
+  const [seuratRerunStatus, setSeuratRerunStatus] = useState(null);
+
+  useEffect(() => {
+    if (!activeExperiment) return;
+
+    const pipelineStatus = calculatePipelineRerunStatus(
+      seuratBackendStatus, activeExperiment, samples,
+    );
+
+    setSeuratRerunStatus(pipelineStatus);
   }, [gem2sBackendStatus, activeExperiment, samples, experiment]);
 
   useEffect(() => {
@@ -248,7 +260,7 @@ const ContentWrapper = (props) => {
       name: 'Data Management',
       disableIfNoExperiment: false,
       disabledByPipelineStatus: true,
-      disabledIfSeurat: false,
+      disabledIfSeuratComplete: false,
     },
     {
       module: modules.DATA_PROCESSING,
@@ -256,7 +268,7 @@ const ContentWrapper = (props) => {
       name: 'Data Processing',
       disableIfNoExperiment: true,
       disabledByPipelineStatus: false,
-      disabledIfSeurat: true,
+      disabledIfSeuratComplete: true,
     },
     {
       module: modules.DATA_EXPLORATION,
@@ -264,7 +276,7 @@ const ContentWrapper = (props) => {
       name: 'Data Exploration',
       disableIfNoExperiment: true,
       disabledByPipelineStatus: true,
-      disabledIfSeurat: false,
+      disabledIfSeuratComplete: false,
     },
     {
       module: modules.PLOTS_AND_TABLES,
@@ -272,7 +284,7 @@ const ContentWrapper = (props) => {
       name: 'Plots and Tables',
       disableIfNoExperiment: true,
       disabledByPipelineStatus: true,
-      disabledIfSeurat: false,
+      disabledIfSeuratComplete: false,
     },
   ];
 
@@ -297,7 +309,7 @@ const ContentWrapper = (props) => {
       }
 
       if (seuratRunningError) {
-        return <PipelineLoadingScreen paramsHash={seuratparamsHash} experimentId={routeExperimentId} pipelineStatus='error' pipelineType='seurat' customErrorObject={seuratErrorObject} />;
+        return <PipelineLoadingScreen paramsHash={seuratparamsHash} experimentId={routeExperimentId} pipelineStatus='error' pipelineType='seurat' pipelineErrorMessage={seuratErrorMessage} />;
       }
 
       if (seuratComplete && currentModule === modules.DATA_PROCESSING) {
@@ -338,20 +350,26 @@ const ContentWrapper = (props) => {
   };
 
   const menuItemRender = ({
-    module, icon, name, disableIfNoExperiment, disabledByPipelineStatus, disabledIfSeurat,
+    module, icon, name, disableIfNoExperiment, disabledByPipelineStatus, disabledIfSeuratComplete,
   }) => {
+    const needRunGem2s = !isSeurat && (!gem2sRerunStatus || gem2sRerunStatus.rerun);
+    const needRunSeurat = isSeurat && (!seuratRerunStatus || seuratRerunStatus.rerun);
+
     const notProcessedExperimentDisable = !routeExperimentId && disableIfNoExperiment
-      && (!gem2sRerunStatus || gem2sRerunStatus.rerun);
+      && (needRunGem2s || needRunSeurat);
 
     const pipelineStatusDisable = disabledByPipelineStatus && (
       backendError || gem2sRunning || gem2sRunningError
       || waitingForQcToLaunch || pipelineRunning || pipelineRunningError
+      || seuratRunning || seuratRunningError
     );
+
+    const seuratCompleteDisable = disabledIfSeuratComplete && seuratComplete;
 
     return (
       <Menu.Item
         id={module}
-        disabled={notProcessedExperimentDisable || pipelineStatusDisable || (isSeurat && disabledIfSeurat)}
+        disabled={notProcessedExperimentDisable || pipelineStatusDisable || seuratCompleteDisable}
         key={module}
         icon={icon}
         onClick={() => navigateTo(

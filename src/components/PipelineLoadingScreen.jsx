@@ -35,7 +35,7 @@ const runnerByType = {
 
 const PipelineLoadingScreen = (props) => {
   const {
-    pipelineStatus, paramsHash, completedSteps, experimentId, pipelineType, customErrorObject,
+    pipelineStatus, paramsHash, completedSteps, experimentId, pipelineType, pipelineErrorMessage,
   } = props;
 
   const pipelineStepsInfo = pipelineStepsInfoByType[pipelineType];
@@ -68,11 +68,10 @@ const PipelineLoadingScreen = (props) => {
     error: {
       status: 'error',
       title: 'We\'ve had an issue while launching your analysis.',
-      subTitle: 'You can launch another analysis or retry to launch the current analysis.',
+      subTitle: pipelineErrorMessage || 'You can launch another analysis or retry to launch the current analysis.',
       image: '/undraw_Abstract_re_l9xy.svg',
       alt: 'A woman confusedly staring at an abstract drawing.',
       showProgress: false,
-      ...customErrorObject,
     },
   };
 
@@ -166,14 +165,14 @@ PipelineLoadingScreen.propTypes = {
   completedSteps: PropTypes.array,
   experimentId: PropTypes.string,
   paramsHash: PropTypes.string,
-  customErrorObject: PropTypes.object,
+  pipelineErrorMessage: PropTypes.string,
 };
 
 PipelineLoadingScreen.defaultProps = {
   completedSteps: [],
   experimentId: null,
   paramsHash: null,
-  customErrorObject: {},
+  pipelineErrorMessage: null,
 };
 
 export default PipelineLoadingScreen;
