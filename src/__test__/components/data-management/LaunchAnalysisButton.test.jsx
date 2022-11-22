@@ -345,7 +345,7 @@ describe('LaunchAnalysisButton', () => {
     });
   });
 
-  it('Shows Go to Data Processing if there are no changes to the Seurat experiment (same hash)', async () => {
+  it('Shows Go to Data Exploration if there are no changes to the Seurat experiment (same hash)', async () => {
     generatePipelineParamsHash.mockReturnValueOnce('old-params-hash');
 
     await act(async () => {
@@ -357,7 +357,7 @@ describe('LaunchAnalysisButton', () => {
     });
 
     await waitFor(() => {
-      expect(screen.getByText('Go to Data Processing')).toBeDefined();
+      expect(screen.getByText('Go to Data Exploration')).toBeDefined();
     });
   });
 
