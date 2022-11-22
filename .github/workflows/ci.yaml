@@ -273,7 +273,8 @@ jobs:
           fi
 
           echo "::set-output name=kubernetes-env::$KUBERNETES_ENV"
-          NAMESPACE="$DEPLOYMENT_NAME-$SANDBOX_ID"
+
+          export NAMESPACE="$DEPLOYMENT_NAME-$SANDBOX_ID"
 
           yq '
             select(di == 0).metadata.name = strenv(NAMESPACE) |
@@ -281,7 +282,7 @@ jobs:
             select(di == 1).metadata.name = strenv(DEPLOYMENT_NAME) |
             select(di == 1).metadata.namespace = strenv(NAMESPACE) |
             select(di == 1).spec.ref.branch = strenv(CHART_REF) |
-            select(di == 2).metadata.name = strenv($DEPLOYMENT_NAME) |
+            select(di == 2).metadata.name = strenv(DEPLOYMENT_NAME) |
             select(di == 2).metadata.namespace = strenv(NAMESPACE) |
             select(di == 2).metadata.labels.sandboxId = strenv(SANDBOX_ID) |
             select(di == 2).metadata.annotations["filter.fluxcd.io/chart-image"] = strenv(IMAGE_GLOB) |
