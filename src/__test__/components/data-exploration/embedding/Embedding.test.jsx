@@ -104,10 +104,8 @@ describe('Embedding', () => {
     expect(scatterplot.getElement().props.cellColors).toEqual(
       new Map(
         Object.entries({
-          // cell #2 is currently being hovered over, so it is black
-          2: [0, 0, 0],
-
-          // cell #3 is in louvain, which is currently in focus. it should be red.
+          // cell #2 and #3 are in louvain which is currently in focus. They should be red.
+          2: [255, 0, 0],
           3: [255, 0, 0],
         }),
       ),
