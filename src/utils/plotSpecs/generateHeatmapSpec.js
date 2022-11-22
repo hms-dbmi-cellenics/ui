@@ -167,6 +167,7 @@ const generateSpec = (config, groupName, data, displayLabels = true) => {
           scheme: config.colour.gradient === 'default'
             ? 'purplered'
             : config.colour.gradient,
+          count: 100,
         },
         domain: {
           data: 'geneExpressionsData',
