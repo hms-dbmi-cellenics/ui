@@ -287,7 +287,7 @@ jobs:
             select(di == 1).spec.values.image.registry = strenv(REGISTRY) |
             select(di == 1).spec.values.image.repository = strenv(DEPLOYMENT_NAME) |
             select(di == 1).spec.values.image.tag = strenv(IMAGE_TAG) |
-            select(di == 1).spec.values.replicaCount = strenv(REPLICA_COUNT) |
+            select(di == 1).spec.values.replicaCount = env(REPLICA_COUNT) |
             select(di == 1).spec.values.serviceAccount.iamRole = "ui-role-" + strenv(KUBERNETES_ENV)
           ' .flux.yaml > $DEPLOYMENT_NAME-without-host.yaml
 
