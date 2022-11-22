@@ -38,7 +38,7 @@ const fileUploadSpecifications = {
       ['<code>scdata$samples</code>: sample assignment. If absent, treated as unisample.'],
       ['<code>scdata[[\'RNA\']]@counts</code>: raw feature counts.'],
       ['<code>scdata[[\'RNA\']]@data</code>: log transformed counts.'],
-      ['<code>scdata@reductions</code>: contains the <code>pca</code> embedding and that indicated by <code>DefaultDimReduc(scdata)</code>.'],
+      ['<code>scdata@reductions</code>: contains the <code>pca</code> embedding as well as the embedding indicated by <code>DefaultDimReduc(scdata)</code>.'],
       ['\uD83D\uDCA1sample level metadata in <code>scdata@meta.data</code> that groups samples in <code>scdata$samples</code> is auto-detected for downstream analysis.'],
       ['\uD83D\uDCA1if file size is over 15GB, try removing any assays not indicated above.'],
     ],

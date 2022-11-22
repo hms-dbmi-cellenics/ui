@@ -30,7 +30,7 @@ import { loadBackendStatus } from 'redux/actions/backendStatus';
 import { isBrowser, privacyPolicyIsNotAccepted } from 'utils/deploymentInfo';
 
 import Error from 'pages/_error';
-import endUserMessages from 'utils/endUserMessages';
+import pipelineErrorUserMessages from 'utils/pipelineErrorUserMessages';
 
 import integrationTestConstants from 'utils/integrationTestConstants';
 import pipelineStatusValues from 'utils/pipelineStatusValues';
@@ -110,7 +110,7 @@ const ContentWrapper = (props) => {
     if (!seuratErrorCause) return;
     const seuratErrorCode = seuratErrorCause.match(/ERROR_SEURAT_[A-Z]+/);
 
-    setSeuratErrorObject({ subTitle: endUserMessages[seuratErrorCode] });
+    setSeuratErrorObject({ subTitle: pipelineErrorUserMessages[seuratErrorCode] });
   }, [seuratErrorCause]);
 
   // This is used to prevent a race condition where the page would start loading immediately
