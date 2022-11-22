@@ -245,19 +245,19 @@ describe('ExperimentUpdatesHandler', () => {
   });
 
   it('Triggers properly for PlotConfigRefresh updates', () => {
+    const normalizedMatrixConfig = {
+      plotId: 'normalized-matrix',
+      updatedConfig: {
+        sample: [],
+        louvain: [],
+        metadata: [],
+        scratchpad: [],
+      },
+    };
+
     const mockUpdate = {
       type: updateTypes.PLOT_CONFIG_REFRESH,
-      updatedConfigs: [
-        {
-          plotId: 'normalized-matrix',
-          updatedConfig: {
-            sample: [],
-            louvain: [],
-            metadata: [],
-            scratchpad: [],
-          },
-        },
-      ],
+      updatedConfigs: [normalizedMatrixConfig],
     };
 
     triggerExperimentUpdate(mockUpdate);
@@ -265,16 +265,6 @@ describe('ExperimentUpdatesHandler', () => {
     expect(mockDispatch).toHaveBeenCalledTimes(1);
     expect(replaceLoadedConfigs).toHaveBeenCalledTimes(1);
 
-    expect(replaceLoadedConfigs).toHaveBeenCalledWith([
-      {
-        plotId: 'normalized-matrix',
-        updatedConfig: {
-          sample: [],
-          louvain: [],
-          metadata: [],
-          scratchpad: [],
-        },
-      },
-    ]);
+    expect(replaceLoadedConfigs).toHaveBeenCalledWith([normalizedMatrixConfig]);
   });
 });
