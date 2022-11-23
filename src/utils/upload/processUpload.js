@@ -170,44 +170,6 @@ const processUpload = async (filesList, technology, samples, experimentId, dispa
       createAndUploadSingleFile(file, experimentId, sampleIdsByName[name], dispatch, technology)
     ));
   });
-  // Object.values(sample.files).map(
-  //   (file) => createAndUploadSingleFile(file, experimentId, sample.uuid, dispatch, sampleType),
-  // );
-
-  // samplesList.forEach(async ([name, sample]) => {
-  //   const filesToUploadForSample = Object.keys(sample.files);
-  //   // Create sample if not exists.
-  //   try {
-  //     sample.uuid ??= await dispatch(
-  //       createSample(
-  //         experimentId,
-  //         name,
-  //         sample,
-  //         sampleType,
-  //         filesToUploadForSample,
-  //       ),
-  //     );
-  //   } catch (e) {
-  //     let errorMessage = `Error uploading sample ${name}.\n${e.message}`;
-
-  //     if ((e instanceof SampleValidationError)) {
-  //       errorMessage = `Error uploading sample ${name}.\n${e.message}`;
-  //       pushNotificationMessage('error', errorMessage, 15);
-  //     } else {
-  //       errorMessage = `Error uploading sample ${name}. Please send an email
-  // to hello@biomage.net with the sample files you're trying to upload.`;
-  //       pushNotificationMessage('error', errorMessage);
-  //       console.error(e.message);
-  //     }
-
-  //     // Dispatch this to remove the saving spinner
-  //     dispatch({
-  //       type: SAMPLES_SAVED,
-  //     });
-
-  //     return;
-  //   }
-  // });
 };
 
 /**
