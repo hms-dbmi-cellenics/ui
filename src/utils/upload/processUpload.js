@@ -15,6 +15,7 @@ import { sampleTech } from 'utils/constants';
 // import SampleValidationError from 'utils/errors/upload/SampleValidationError';
 import SampleValidationError from 'utils/errors/upload/SampleValidationError';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
+import updateSamplesValidating from 'redux/actions/samples/updateSamplesValidating';
 import sampleValidators from './sampleValidators';
 
 const MAX_RETRIES = 2;
@@ -153,6 +154,8 @@ const processUpload = async (filesList, technology, samples, experimentId, dispa
 
   const samplesList = Object.entries(samplesMap);
 
+  dispatch(updateSamplesValidating(true));
+
   const results = await Promise.allSettled(samplesList.map(
     async ([sampleName, sample]) => {
       try {
@@ -164,6 +167,8 @@ const processUpload = async (filesList, technology, samples, experimentId, dispa
       }
     },
   ));
+
+  dispatch(updateSamplesValidating(false));
 
   const validSamplesList = results
     .filter((result) => result.status === 'fulfilled')
