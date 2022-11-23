@@ -13,6 +13,8 @@ import { inspectFile, Verdict } from 'utils/upload/fileInspector';
 import getFileTypeV2 from 'utils/getFileTypeV2';
 import { sampleTech } from 'utils/constants';
 // import SampleValidationError from 'utils/errors/upload/SampleValidationError';
+import SampleValidationError from 'utils/errors/upload/SampleValidationError';
+import pushNotificationMessage from 'utils/pushNotificationMessage';
 import sampleValidators from './sampleValidators';
 
 const MAX_RETRIES = 2;
@@ -108,6 +110,17 @@ const createAndUploadSingleFile = async (file, experimentId, sampleId, dispatch,
   await prepareAndUploadFileToS3(experimentId, sampleId, fileType, file, signedUrl, dispatch);
 };
 
+const handleValidatorError = (e, sampleName) => {
+  if (e instanceof SampleValidationError) {
+    const errorMessage = `Error uploading sample ${sampleName}.\n${e.message}`;
+    pushNotificationMessage('error', errorMessage, 15);
+  } else {
+    const errorMessage = `Error uploading sample ${sampleName}. Please send an email to hello@biomage.net with the sample files you're trying to upload.`;
+    pushNotificationMessage('error', errorMessage);
+    console.error(e.message);
+  }
+};
+
 const processUpload = async (filesList, technology, samples, experimentId, dispatch) => {
   // First use map to make it easy to add files in the already existing sample entry
   const samplesMap = filesList.reduce((acc, file) => {
@@ -141,19 +154,23 @@ const processUpload = async (filesList, technology, samples, experimentId, dispa
   const samplesList = Object.entries(samplesMap);
 
   const results = await Promise.allSettled(samplesList.map(
-    async ([name, sample]) => {
-      await sampleValidators[technology](sample);
-      return [name, sample];
+    async ([sampleName, sample]) => {
+      try {
+        await sampleValidators[technology](sample);
+        return [sampleName, sample];
+      } catch (e) {
+        handleValidatorError(e, sampleName);
+        throw e;
+      }
     },
   ));
 
-  const [fulfilled, rejected] = _.partition(results, (result) => result.status === 'fulfilled');
+  const validSamplesList = results
+    .filter((result) => result.status === 'fulfilled')
+    .map((result) => result.value);
 
-  const validSamplesList = fulfilled.map(({ value }) => value);
-  const invalidSamplesList = rejected.map(({ value }) => value);
-
-  console.log('invalidSamplesListDebug');
-  console.log(invalidSamplesList);
+  // If none of the files are in valid format, return
+  if (validSamplesList.length === 0) return;
 
   validSamplesList.sort(([oneName], [otherName]) => oneName.localeCompare(otherName));
 
