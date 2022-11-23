@@ -149,7 +149,7 @@ jobs:
 
           if [ "${{ github.event_name }}" = "release" ] && [ "${{ github.event.action }}" = "released" ]; then
             COMMIT_SHA=""
-            IMAGE_TAG="${REF_ID/refs-tags-/}-$TIMESTAMP"
+            IMAGE_TAG="${REF_ID/refs-tags-/}"
           elif [ "${{ github.event_name }}" = "pull_request" ]; then
             COMMIT_SHA="${{ github.event.pull_request.head.sha }}"
             IMAGE_TAG="$REF_ID-$COMMIT_SHA-$TIMESTAMP"
@@ -314,6 +314,7 @@ jobs:
             select(di == 5).spec.values.image.registry = strenv(REGISTRY) |
             select(di == 5).spec.values.image.repository = strenv(DEPLOYMENT_NAME) |
             select(di == 5).spec.values.image.tag = strenv(IMAGE_TAG) |
+            select(di == 5).spec.values.image.tag line_comment = strenv(IMAGE_POLICY_TAG) |
             select(di == 5).spec.values.replicaCount = env(REPLICA_COUNT) |
             select(di == 5).spec.values.serviceAccount.iamRole = "ui-role-" + strenv(KUBERNETES_ENV)
           ' .flux.yaml > $DEPLOYMENT_NAME-without-host.yaml
