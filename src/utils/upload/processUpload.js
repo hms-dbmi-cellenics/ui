@@ -174,19 +174,24 @@ const processUpload = async (filesList, technology, samples, experimentId, dispa
 
   validSamplesList.sort(([oneName], [otherName]) => oneName.localeCompare(otherName));
 
-  const sampleIdsByName = await dispatch(
-    createSamples(
-      experimentId,
-      validSamplesList,
-      technology,
-    ),
-  );
+  try {
+    const sampleIdsByName = await dispatch(
+      createSamples(
+        experimentId,
+        validSamplesList,
+        technology,
+      ),
+    );
 
-  validSamplesList.forEach(([name, sample]) => {
-    Object.values(sample.files).forEach((file) => (
-      createAndUploadSingleFile(file, experimentId, sampleIdsByName[name], dispatch, technology)
-    ));
-  });
+    validSamplesList.forEach(([name, sample]) => {
+      Object.values(sample.files).forEach((file) => (
+        createAndUploadSingleFile(file, experimentId, sampleIdsByName[name], dispatch, technology)
+      ));
+    });
+  } catch (e) {
+    // Ignore the error, if createSamples fails we throw to
+    // avoid attempting to upload any of these broken samples
+  }
 };
 
 /**
