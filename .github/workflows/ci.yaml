@@ -250,7 +250,6 @@ jobs:
 
           if [ "${{ matrix.environment }}" = "production" ]; then
             export SANDBOX_ID="default"
-            export CHART_REF="master"
             export KUBERNETES_ENV="production"
             export IMAGE_GLOB="semver:>=0.0.0"
             export REPLICA_COUNT="4"
@@ -258,7 +257,6 @@ jobs:
 
           if [ "${{ matrix.environment }}" = "develop" ]; then
             export SANDBOX_ID="default"
-            export CHART_REF="master"
             export KUBERNETES_ENV="staging"
             export IMAGE_GLOB="glob:$REF_ID-*"
             export REPLICA_COUNT="2"
@@ -266,7 +264,6 @@ jobs:
 
           if [ "${{ matrix.environment }}" = "staging" ]; then
             export SANDBOX_ID="STAGING_SANDBOX_ID"
-            export CHART_REF="STAGING_CHART_REF"
             export KUBERNETES_ENV="staging"
             export IMAGE_GLOB="glob:$REF_ID-*"
             export REPLICA_COUNT="1"
@@ -281,7 +278,6 @@ jobs:
             select(di == 0).metadata.labels.sandboxId = strenv(SANDBOX_ID) |
             select(di == 1).metadata.name = strenv(DEPLOYMENT_NAME) |
             select(di == 1).metadata.namespace = strenv(NAMESPACE) |
-            select(di == 1).spec.ref.branch = strenv(CHART_REF) |
             select(di == 2).metadata.name = strenv(DEPLOYMENT_NAME) |
             select(di == 2).metadata.namespace = strenv(NAMESPACE) |
             select(di == 2).metadata.labels.sandboxId = strenv(SANDBOX_ID) |
