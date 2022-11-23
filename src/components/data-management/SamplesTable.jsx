@@ -45,7 +45,8 @@ const SamplesTable = forwardRef((props, ref) => {
 
   const experiments = useSelector((state) => state.experiments);
   const samples = useSelector((state) => state.samples);
-  const areSamplesLoading = useSelector((state) => state.samples.meta.loading);
+  const samplesLoading = useSelector((state) => state.samples.meta.loading);
+  const samplesValidating = useSelector((state) => state.samples.meta.validating);
 
   const activeExperimentId = useSelector((state) => state.experiments.meta.activeExperimentId);
   const activeExperiment = useSelector((state) => state.experiments[activeExperimentId]);
@@ -302,7 +303,11 @@ const SamplesTable = forwardRef((props, ref) => {
 
       <Row justify='center'>
         <Text>
-          We&apos;re getting your samples ...
+          {
+            samplesLoading ? 'We\'re getting your samples ...'
+              : samplesValidating ? 'We\'re validating your samples ...'
+                : ''
+          }
         </Text>
       </Row>
     </>
@@ -336,7 +341,7 @@ const SamplesTable = forwardRef((props, ref) => {
 
   return (
     <>
-      {areSamplesLoading ? renderLoader() : renderSamplesTable()}
+      {samplesLoading || samplesValidating ? renderLoader() : renderSamplesTable()}
     </>
   );
 });
