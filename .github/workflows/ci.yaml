@@ -289,7 +289,7 @@ jobs:
           yq '
             select(di == 0).metadata.name = strenv(NAMESPACE) |
             select(di == 0).metadata.labels.sandboxId = strenv(SANDBOX_ID) |
-            select(di == 1).metadata.name = strenv(DEPLOYMENT_NAME) + "-chart" |
+            select(di == 1).metadata.name = strenv(DEPLOYMENT_NAME) |
             select(di == 1).metadata.namespace = strenv(NAMESPACE) |
             select(di == 2).metadata.name = strenv(DEPLOYMENT_NAME) |
             select(di == 2).metadata.namespace = strenv(NAMESPACE) |
