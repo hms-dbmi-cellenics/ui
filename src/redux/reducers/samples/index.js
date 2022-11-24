@@ -1,6 +1,5 @@
 import { EXPERIMENTS_METADATA_RENAME } from 'redux/actionTypes/experiments';
 import {
-  SAMPLES_CREATE,
   SAMPLES_UPDATE,
   SAMPLES_DELETE,
   SAMPLES_FILE_UPDATE,
@@ -16,7 +15,6 @@ import {
   SAMPLES_VALIDATING_UPDATED,
 } from '../../actionTypes/samples';
 import initialState from './initialState';
-import samplesCreate from './samplesCreate';
 import samplesCreated from './samplesCreated';
 import samplesUpdate from './samplesUpdate';
 import samplesDelete from './samplesDelete';
@@ -36,10 +34,6 @@ const samplesReducer = (state = initialState, action) => {
   switch (action.type) {
     case SAMPLES_CREATED: {
       return samplesCreated(state, action);
-    }
-
-    case SAMPLES_CREATE: {
-      return samplesCreate(state, action);
     }
 
     case SAMPLES_UPDATE: {

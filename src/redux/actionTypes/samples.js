@@ -1,11 +1,6 @@
 const SAMPLES = 'samples';
 
 /**
- * Save sample.
- */
-const SAMPLES_CREATE = `${SAMPLES}/create`;
-
-/**
  * Samples created.
  */
 const SAMPLES_CREATED = `${SAMPLES}/created`;
@@ -66,7 +61,6 @@ const SAMPLES_VALIDATING_UPDATED = `${SAMPLES}/validatingUpdated`;
 
 export {
   SAMPLES_CREATED,
-  SAMPLES_CREATE,
   SAMPLES_UPDATE,
   SAMPLES_DELETE,
   SAMPLES_FILE_UPDATE,

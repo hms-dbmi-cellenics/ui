@@ -2,7 +2,6 @@ import samplesReducer from 'redux/reducers/samples';
 import initialState, { sampleTemplate, sampleFileTemplate } from 'redux/reducers/samples/initialState';
 
 import {
-  SAMPLES_CREATE,
   SAMPLES_UPDATE,
   SAMPLES_FILE_UPDATE,
   SAMPLES_LOADED,
@@ -13,6 +12,7 @@ import {
   SAMPLES_OPTIONS_UPDATE,
   SAMPLES_METADATA_DELETE,
   SAMPLES_VALUE_IN_METADATA_TRACK_UPDATED,
+  SAMPLES_CREATED,
 } from 'redux/actionTypes/samples';
 import { EXPERIMENTS_METADATA_RENAME } from 'redux/actionTypes/experiments';
 
@@ -66,9 +66,9 @@ describe('samplesReducer', () => {
 
   it('Inserts a new sample correctly', () => {
     const newState = samplesReducer(initialState, {
-      type: SAMPLES_CREATE,
+      type: SAMPLES_CREATED,
       payload: {
-        sample: sample1,
+        samples: [sample1],
       },
     });
 
@@ -78,9 +78,9 @@ describe('samplesReducer', () => {
 
   it('Adds a new sample correctly', () => {
     const newState = samplesReducer(oneSampleState, {
-      type: SAMPLES_CREATE,
+      type: SAMPLES_CREATED,
       payload: {
-        sample: sample2,
+        samples: [sample2],
       },
     });
 
