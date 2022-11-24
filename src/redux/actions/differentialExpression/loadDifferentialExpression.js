@@ -62,8 +62,19 @@ const loadDifferentialExpression = (
     const data = await fetchWork(
       experimentId, body, getState, dispatch, { timeout, extras },
     );
+
     let { total } = data;
-    const { rows } = data;
+    const rows = data.Gene.map((gene, indx) => ({
+      p_val: data.p_val[indx],
+      logFC: data.logFC[indx],
+      pct_1: data.pct_1[indx],
+      pct_2: data.pct_2[indx],
+      p_val_adj: data.p_val_adj[indx],
+      auc: data.auc[indx],
+      gene_names: data.gene_names[indx],
+      Gene: gene,
+    }));
+
     if (!total && !Object.keys(pagination).length) {
       total = rows.length;
     }
