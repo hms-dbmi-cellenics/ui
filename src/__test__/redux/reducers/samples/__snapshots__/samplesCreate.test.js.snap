@@ -6,6 +6,7 @@ Object {
     "error": false,
     "loading": false,
     "saving": false,
+    "validating": false,
   },
   "oldUuid": Object {
     "complete": false,
@@ -44,6 +45,7 @@ Object {
     "error": false,
     "loading": false,
     "saving": false,
+    "validating": false,
   },
   "uuid": Object {
     "complete": false,

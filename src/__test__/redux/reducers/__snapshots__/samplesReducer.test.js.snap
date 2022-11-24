@@ -20,6 +20,7 @@ Object {
     "error": false,
     "loading": false,
     "saving": false,
+    "validating": false,
   },
   "qwe234": Object {
     "complete": false,
@@ -58,6 +59,7 @@ Object {
     "error": false,
     "loading": false,
     "saving": false,
+    "validating": false,
   },
 }
 `;
@@ -87,6 +89,7 @@ Object {
     "error": false,
     "loading": false,
     "saving": false,
+    "validating": false,
   },
 }
 `;
@@ -103,6 +106,7 @@ Object {
     "error": false,
     "loading": false,
     "saving": false,
+    "validating": false,
   },
 }
 `;
@@ -118,6 +122,7 @@ Object {
     "error": false,
     "loading": false,
     "saving": false,
+    "validating": false,
   },
 }
 `;
@@ -142,6 +147,7 @@ Object {
     "error": false,
     "loading": false,
     "saving": false,
+    "validating": false,
   },
 }
 `;
@@ -171,6 +177,7 @@ Object {
     "error": false,
     "loading": false,
     "saving": false,
+    "validating": false,
   },
 }
 `;
@@ -199,6 +206,7 @@ Object {
     "error": false,
     "loading": false,
     "saving": false,
+    "validating": false,
   },
   "qwe234": Object {
     "complete": false,
@@ -309,6 +317,7 @@ Object {
     "error": false,
     "loading": false,
     "saving": false,
+    "validating": false,
   },
 }
 `;
@@ -335,6 +344,7 @@ Object {
     "error": false,
     "loading": false,
     "saving": false,
+    "validating": false,
   },
   "qwe234": Object {
     "complete": false,
@@ -392,6 +402,7 @@ Object {
     "error": false,
     "loading": false,
     "saving": false,
+    "validating": false,
   },
 }
 `;
