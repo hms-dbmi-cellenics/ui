@@ -119,34 +119,11 @@ describe('DownloadDataButton', () => {
 
     await renderDownloadDataButton(withDataState);
     const options = await getMenuItems();
-    expect(options).toHaveLength(3);
-    expect(options[0]).toHaveTextContent('Raw Seurat object (.rds)');
-    expect(options[1]).toHaveTextContent('Processed Seurat object (.rds)');
-    expect(options[2]).toHaveTextContent('Data Processing settings (.txt)');
+    expect(options).toHaveLength(2);
+    expect(options[0]).toHaveTextContent('Processed Seurat object (.rds)');
+    expect(options[1]).toHaveTextContent('Data Processing settings (.txt)');
     expect(options[0]).toHaveAttribute('aria-disabled', 'false');
     expect(options[1]).toHaveAttribute('aria-disabled', 'false');
-    expect(options[2]).toHaveAttribute('aria-disabled', 'false');
-  });
-
-  it('Raw seurat object option is disabled if gem2s has not ran', async () => {
-    getBackendStatus.mockImplementation(() => () => ({
-      ...initialExperimentBackendStatus,
-      status: {
-        pipeline: {
-          status: 'SUCCEEDED',
-        },
-        gem2s: {
-          status: 'DEFINETELY NOT SUCCEEDED',
-        },
-      },
-    }));
-
-    const state = { ...withDataState };
-    await renderDownloadDataButton(state);
-    const options = await getMenuItems();
-    expect(options[0]).toHaveAttribute('aria-disabled', 'true');
-    expect(options[1]).toHaveAttribute('aria-disabled', 'false');
-    expect(options[2]).toHaveAttribute('aria-disabled', 'false');
   });
 
   it('Processed Seurat object option is disabled if qc has not ran', async () => {
@@ -166,9 +143,8 @@ describe('DownloadDataButton', () => {
 
     await renderDownloadDataButton(state);
     const options = await getMenuItems();
-    expect(options[0]).toHaveAttribute('aria-disabled', 'false');
-    expect(options[1]).toHaveAttribute('aria-disabled', 'true');
-    expect(options[2]).toHaveAttribute('aria-disabled', 'false');
+    expect(options[0]).toHaveAttribute('aria-disabled', 'true');
+    expect(options[1]).toHaveAttribute('aria-disabled', 'false');
   });
 
   it('Data procesing settings option is disabled if a step misses a sample', async () => {
@@ -198,8 +174,7 @@ describe('DownloadDataButton', () => {
     await renderDownloadDataButton(state);
     const options = await getMenuItems();
     expect(options[0]).toHaveAttribute('aria-disabled', 'false');
-    expect(options[1]).toHaveAttribute('aria-disabled', 'false');
-    expect(options[2]).toHaveAttribute('aria-disabled', 'true');
+    expect(options[1]).toHaveAttribute('aria-disabled', 'true');
   });
 
   it('Downolods data properly', async () => {
@@ -221,7 +196,7 @@ describe('DownloadDataButton', () => {
     // Open the Download dropdown
     userEvent.click(screen.getByText(/Download/i));
 
-    const downloadButton = screen.getByText(/Raw Seurat object/i);
+    const downloadButton = screen.getByText(/Processed Seurat object/i);
 
     await act(async () => {
       fireEvent.click(downloadButton);
@@ -249,7 +224,7 @@ describe('DownloadDataButton', () => {
     // Open the Download dropdown
     userEvent.click(screen.getByText(/Download/i));
 
-    const downloadButton = screen.getByText(/Raw Seurat object/i);
+    const downloadButton = screen.getByText(/Processed Seurat object/i);
 
     await act(async () => {
       fireEvent.click(downloadButton);
@@ -271,6 +246,5 @@ describe('DownloadDataButton', () => {
 
     expect(options[0]).toHaveAttribute('aria-disabled', 'true');
     expect(options[1]).toHaveAttribute('aria-disabled', 'true');
-    expect(options[2]).toHaveAttribute('aria-disabled', 'true');
   });
 });
