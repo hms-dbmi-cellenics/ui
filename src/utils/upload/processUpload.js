@@ -1,6 +1,5 @@
 /* eslint-disable no-param-reassign */
 import _ from 'lodash';
-// import { SAMPLES_SAVED } from 'redux/actionTypes/samples';
 
 import axios from 'axios';
 
@@ -9,10 +8,8 @@ import { createSamples, createSampleFile, updateSampleFileUpload } from 'redux/a
 import UploadStatus from 'utils/upload/UploadStatus';
 import loadAndCompressIfNecessary from 'utils/upload/loadAndCompressIfNecessary';
 import { inspectFile, Verdict } from 'utils/upload/fileInspector';
-// import pushNotificationMessage from 'utils/pushNotificationMessage';
 import getFileTypeV2 from 'utils/getFileTypeV2';
 import { sampleTech } from 'utils/constants';
-// import SampleValidationError from 'utils/errors/upload/SampleValidationError';
 import SampleValidationError from 'utils/errors/upload/SampleValidationError';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
 import updateSamplesValidating from 'redux/actions/samples/updateSamplesValidating';

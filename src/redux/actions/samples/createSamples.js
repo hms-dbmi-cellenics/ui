@@ -14,6 +14,36 @@ import { defaultSampleOptions, sampleTemplate } from 'redux/reducers/samples/ini
 import { sampleTech } from 'utils/constants';
 import UploadStatus from 'utils/upload/UploadStatus';
 
+// If the sample name of new samples coincides with already existing
+// ones we should not create new samples,
+// just reuse their sampleIds and upload the new files
+const splitByAlreadyExistingSamples = (
+  newSamples, sampleIds, samples, sampleTechnology, options,
+) => {
+  const alreadyCreatedSampleIds = {};
+
+  sampleIds.forEach((sampleId) => {
+    const [
+      repeatedSampleName = null,
+    ] = newSamples.find(([name]) => name === samples[sampleId].name) ?? [];
+
+    if (!repeatedSampleName) return;
+
+    alreadyCreatedSampleIds[repeatedSampleName] = sampleId;
+  });
+
+  const samplesToCreate = newSamples
+    // Upload only the samples that don't have a repeated name
+    .filter(([name]) => !alreadyCreatedSampleIds[name])
+    .map(([name]) => ({
+      name,
+      sampleTechnology,
+      options,
+    }));
+
+  return { samplesToCreate, alreadyCreatedSampleIds };
+};
+
 const createSamples = (
   experimentId,
   newSamples,
@@ -41,34 +71,19 @@ const createSamples = (
     options = samples[firstSampleId].options;
   }
 
-  const alreadyCreatedSampleIds = {};
+  const {
+    samplesToCreate, alreadyCreatedSampleIds,
+  } = splitByAlreadyExistingSamples(
+    newSamples, experiment.sampleIds, samples, sampleTechnology, options,
+  );
 
-  experiment.sampleIds.forEach((sampleId) => {
-    const [
-      repeatedSampleName = null,
-    ] = newSamples.find(([name]) => name === samples[sampleId].name) ?? [];
-
-    if (!repeatedSampleName) return;
-
-    alreadyCreatedSampleIds[repeatedSampleName] = sampleId;
-  });
-
-  const url = `/v2/experiments/${experimentId}/samples`;
-
-  const sampleToCreate = newSamples
-    // Upload only the samples that don't have a repeated name
-    .filter(([name]) => !alreadyCreatedSampleIds[name])
-    .map(([name]) => ({
-      name,
-      sampleTechnology,
-      options,
-    }));
-
-  if (sampleToCreate.length === 0) {
+  if (samplesToCreate.length === 0) {
     dispatch({ type: SAMPLES_SAVED });
 
     return alreadyCreatedSampleIds;
   }
+
+  const url = `/v2/experiments/${experimentId}/samples`;
 
   try {
     const newSampleIdsByName = await fetchAPI(
@@ -78,10 +93,12 @@ const createSamples = (
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(sampleToCreate),
+        body: JSON.stringify(samplesToCreate),
       },
     );
 
+    // Join the already existing sampleIds with the new ones,
+    // order is preserved in newSamples
     const sampleIdsByName = { ...alreadyCreatedSampleIds, ...newSampleIdsByName };
 
     const newSamplesToRedux = newSamples.map(([name, { files }]) => ({
