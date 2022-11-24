@@ -84,22 +84,21 @@ const createSamples = (
 
     const sampleIdsByName = { ...alreadyCreatedSampleIds, ...newSampleIdsByName };
 
-    const newSamplesToRedux = newSamples
-      .map(([name, { files }]) => ({
-        ..._.cloneDeep(sampleTemplate),
-        name,
-        type: sampleTechnology,
-        experimentId,
-        uuid: sampleIdsByName[name],
-        createdDate,
-        lastModified: createdDate,
-        options,
-        metadata: experiment?.metadataKeys
-          .reduce((acc, curr) => ({ ...acc, [curr]: METADATA_DEFAULT_VALUE }), {}) || {},
-        files: Object.values(files).reduce(((acc, curr) => (
-          { ...acc, [curr.name]: { upload: { status: UploadStatus.UPLOADING } } }
-        )), {}),
-      }));
+    const newSamplesToRedux = newSamples.map(([name, { files }]) => ({
+      ..._.cloneDeep(sampleTemplate),
+      name,
+      type: sampleTechnology,
+      experimentId,
+      uuid: sampleIdsByName[name],
+      createdDate,
+      lastModified: createdDate,
+      options,
+      metadata: experiment?.metadataKeys
+        .reduce((acc, curr) => ({ ...acc, [curr]: METADATA_DEFAULT_VALUE }), {}) || {},
+      files: Object.values(files).reduce(((acc, curr) => (
+        { ...acc, [curr.name]: { upload: { status: UploadStatus.UPLOADING } } }
+      )), {}),
+    }));
 
     dispatch({
       type: SAMPLES_CREATED,
