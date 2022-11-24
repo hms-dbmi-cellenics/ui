@@ -83,24 +83,6 @@ const DownloadDataButton = () => {
       overlay={() => (
         <Menu>
           <Menu.Item
-            key='download-raw-seurat'
-            disabled={!gem2sHasRun || backendLoading}
-            onClick={() => {
-              downloadExperimentData('biomage-source');
-            }}
-          >
-            <Tooltip
-              title={
-                gem2sHasRun
-                  ? 'Samples have been merged'
-                  : 'Launch analysis to merge samples'
-              }
-              placement='left'
-            >
-              Raw Seurat object (.rds)
-            </Tooltip>
-          </Menu.Item>
-          <Menu.Item
             key='download-processed-seurat'
             disabled={!qcHasRun || backendLoading}
             onClick={() => {
