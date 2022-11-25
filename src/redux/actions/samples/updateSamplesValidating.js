@@ -2,12 +2,10 @@ import {
   SAMPLES_VALIDATING_UPDATED,
 } from 'redux/actionTypes/samples';
 
-const updateSamplesValidating = (
-  validating,
-) => async (dispatch) => {
+const updateSamplesValidating = (experimentId, validating) => async (dispatch) => {
   dispatch({
     type: SAMPLES_VALIDATING_UPDATED,
-    payload: { validating },
+    payload: { experimentId, validating },
   });
 };
 

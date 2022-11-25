@@ -151,7 +151,7 @@ const processUpload = async (filesList, technology, samples, experimentId, dispa
 
   const samplesList = Object.entries(samplesMap);
 
-  dispatch(updateSamplesValidating(true));
+  dispatch(updateSamplesValidating(experimentId, true));
 
   const results = await Promise.allSettled(samplesList.map(
     async ([sampleName, sample]) => {
@@ -165,7 +165,7 @@ const processUpload = async (filesList, technology, samples, experimentId, dispa
     },
   ));
 
-  dispatch(updateSamplesValidating(false));
+  dispatch(updateSamplesValidating(experimentId, false));
 
   const validSamplesList = results
     .filter((result) => result.status === 'fulfilled')

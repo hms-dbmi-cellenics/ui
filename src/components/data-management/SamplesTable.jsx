@@ -46,9 +46,11 @@ const SamplesTable = forwardRef((props, ref) => {
   const experiments = useSelector((state) => state.experiments);
   const samples = useSelector((state) => state.samples);
   const samplesLoading = useSelector((state) => state.samples.meta.loading);
-  const samplesValidating = useSelector((state) => state.samples.meta.validating);
-
   const activeExperimentId = useSelector((state) => state.experiments.meta.activeExperimentId);
+
+  const samplesValidating = useSelector(
+    (state) => state.samples.meta.validating.includes(activeExperimentId),
+  );
   const activeExperiment = useSelector((state) => state.experiments[activeExperimentId]);
   const selectedTech = samples[activeExperiment?.sampleIds[0]]?.type;
   const [sampleNames, setSampleNames] = useState(new Set());
