@@ -9,14 +9,15 @@ const configsReplaced = produce((draft, action) => {
 
   const originalState = original(draft);
 
-  updatedConfigs.forEach(({ plotId, updatedConfig }) => {
+  updatedConfigs.forEach(({ id, updatedConfig }) => {
     // If config is not loaded, no need to update it
-    if (_.isNil(originalState[plotId])) return;
+    if (_.isNil(originalState[id])) return;
 
-    const { plotType } = originalState[plotId];
+    const { plotType } = originalState[id];
 
     const newConfig = _.merge({}, initialPlotConfigStates[plotType], updatedConfig);
-    draft[plotId].config = newConfig;
+
+    draft[id].config = newConfig;
   });
 });
 
