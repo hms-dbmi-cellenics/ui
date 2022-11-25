@@ -31,9 +31,9 @@ import experimentsMetadataDelete from './experimentsMetadataDelete';
 import experimentsSaved from './experimentsSaved';
 
 import samplesDelete from './samplesDelete';
+import samplesCreated from './samplesCreated';
 
 import pipelineVersionUpdated from './pipelineVersionUpdated';
-import samplesCreated from './samplesCreated';
 
 const experimentsReducer = (state = initialState, action) => {
   switch (action.type) {
