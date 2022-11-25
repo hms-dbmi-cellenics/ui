@@ -51,7 +51,7 @@ spec:
   git:
     commit:
       author:
-        name: Flux CI/CD
+        name: Flux - UI image update
         email: ci@biomage.net
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
