@@ -193,7 +193,7 @@ describe('Data Management page', () => {
 
     const apiResponses = {
       ...mockAPIResponse,
-      [`experiments/${experimentWithSamplesId}/samples`]: () => { console.log('qondusa'); return loadingResponsePromise; },
+      [`experiments/${experimentWithSamplesId}/samples`]: () => loadingResponsePromise,
     };
 
     fetchMock.resetMocks({ sticky: true });
