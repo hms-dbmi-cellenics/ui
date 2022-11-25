@@ -1,8 +1,6 @@
 import '../../assets/self-styles.less';
 import '../../assets/nprogress.css';
 
-// TEST FLUX IMAGE UPDATE - REMOVE TAG BEFORE MERGING
-
 import Amplify, { Credentials } from '@aws-amplify/core';
 /* eslint-disable react/jsx-props-no-spreading */
 import React, { useEffect, useState } from 'react';
