@@ -251,7 +251,7 @@ jobs:
           if [ "${{ matrix.environment }}" = "production" ]; then
             export SANDBOX_ID="default"
             export KUBERNETES_ENV="production"
-            export IMAGE_PATTERN="^(?P<version>[0-9]+\.[0-9]+\.[0-9])+$"
+            export IMAGE_PATTERN="^(?P<version>[0-9]+\.[0-9]+\.[0-9]+)$"
             export IMAGE_EXTRACT='$version'
             export IMAGE_POLICY_TYPE="semver"
             export IMAGE_POLICY_KEY="range"
