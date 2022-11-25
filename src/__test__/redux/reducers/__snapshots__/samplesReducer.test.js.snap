@@ -20,7 +20,7 @@ Object {
     "error": false,
     "loading": false,
     "saving": false,
-    "validating": false,
+    "validating": Array [],
   },
   "qwe234": Object {
     "complete": false,
@@ -59,7 +59,7 @@ Object {
     "error": false,
     "loading": false,
     "saving": false,
-    "validating": false,
+    "validating": Array [],
   },
 }
 `;
@@ -89,7 +89,7 @@ Object {
     "error": false,
     "loading": false,
     "saving": false,
-    "validating": false,
+    "validating": Array [],
   },
 }
 `;
@@ -106,7 +106,7 @@ Object {
     "error": false,
     "loading": false,
     "saving": false,
-    "validating": false,
+    "validating": Array [],
   },
 }
 `;
@@ -122,7 +122,7 @@ Object {
     "error": false,
     "loading": false,
     "saving": false,
-    "validating": false,
+    "validating": Array [],
   },
 }
 `;
@@ -147,7 +147,7 @@ Object {
     "error": false,
     "loading": false,
     "saving": false,
-    "validating": false,
+    "validating": Array [],
   },
 }
 `;
@@ -177,7 +177,7 @@ Object {
     "error": false,
     "loading": false,
     "saving": false,
-    "validating": false,
+    "validating": Array [],
   },
 }
 `;
@@ -206,7 +206,7 @@ Object {
     "error": false,
     "loading": false,
     "saving": false,
-    "validating": false,
+    "validating": Array [],
   },
   "qwe234": Object {
     "complete": false,
@@ -317,7 +317,7 @@ Object {
     "error": false,
     "loading": false,
     "saving": false,
-    "validating": false,
+    "validating": Array [],
   },
 }
 `;
@@ -344,7 +344,7 @@ Object {
     "error": false,
     "loading": false,
     "saving": false,
-    "validating": false,
+    "validating": Array [],
   },
   "qwe234": Object {
     "complete": false,
@@ -402,7 +402,7 @@ Object {
     "error": false,
     "loading": false,
     "saving": false,
-    "validating": false,
+    "validating": Array [],
   },
 }
 `;
