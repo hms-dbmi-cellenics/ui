@@ -246,7 +246,7 @@ describe('ExperimentUpdatesHandler', () => {
 
   it('Triggers properly for PlotConfigRefresh updates', () => {
     const normalizedMatrixConfig = {
-      plotId: 'normalized-matrix',
+      id: 'normalized-matrix',
       updatedConfig: {
         sample: [],
         louvain: [],

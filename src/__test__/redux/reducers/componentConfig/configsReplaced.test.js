@@ -53,7 +53,7 @@ describe('configsReplaced', () => {
     );
 
     // While there is an update for embeddingCategoricalMain, the new state doesnt store it
-    expect(updatedConfigs.find(({ plotId }) => plotId === 'embeddingCategoricalMain')).toBeDefined();
+    expect(updatedConfigs.find(({ id }) => id === 'embeddingCategoricalMain')).toBeDefined();
     expect(newState.embeddingCategoricalMain).not.toBeDefined();
   });
 });

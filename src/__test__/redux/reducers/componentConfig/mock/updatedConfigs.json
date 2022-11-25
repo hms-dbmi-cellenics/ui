@@ -1,6 +1,6 @@
 [
   {
-    "plotId": "embeddingCategoricalMain",
+    "id": "embeddingCategoricalMain",
     "updatedConfig": {
       "axes": {
         "offset": 0,
@@ -65,7 +65,7 @@
     }
   },
   {
-    "plotId": "frequencyPlotMain",
+    "id": "frequencyPlotMain",
     "updatedConfig": {
       "axes": {
         "offset": 10,
@@ -128,7 +128,7 @@
     }
   },
   {
-    "plotId": "trajectoryAnalysisMain",
+    "id": "trajectoryAnalysisMain",
     "updatedConfig": {
       "axes": {
         "offset": 0,
@@ -195,7 +195,7 @@
     }
   },
   {
-    "plotId": "ViolinMain",
+    "id": "ViolinMain",
     "updatedConfig": {
       "axes": {
         "offset": 10,
@@ -262,7 +262,7 @@
     }
   },
   {
-    "plotId": "ViolinMain-0",
+    "id": "ViolinMain-0",
     "updatedConfig": {
       "axes": {
         "offset": 10,
