@@ -13,6 +13,7 @@ import {
   SAMPLES_METADATA_DELETE,
   SAMPLES_VALUE_IN_METADATA_TRACK_UPDATED,
   SAMPLES_CREATED,
+  SAMPLES_VALIDATING_UPDATED,
 } from 'redux/actionTypes/samples';
 import { EXPERIMENTS_METADATA_RENAME } from 'redux/actionTypes/experiments';
 
@@ -339,6 +340,61 @@ describe('samplesReducer', () => {
         diff: { someOption: true },
       },
     });
+
+    expect(newState).toMatchSnapshot();
+  });
+
+  it('Adds validating to an experiment', () => {
+    const stateWithOldOptions = {
+      ...twoSamplesState,
+      [mockUuid1]: {
+        ...sample1,
+        options: { someOption: false },
+      },
+      [mockUuid2]: {
+        ...sample2,
+        options: { someOption: false },
+      },
+    };
+
+    const newState = samplesReducer(stateWithOldOptions, {
+      type: SAMPLES_VALIDATING_UPDATED,
+      payload: {
+        experimentId: 'validatingExperimentId',
+        validating: true,
+      },
+    });
+
+    expect(newState.meta.validating.includes('validatingExperimentId'));
+
+    expect(newState).toMatchSnapshot();
+  });
+
+  it('Removes validating from an experiment', () => {
+    const stateWithOldOptions = {
+      ...twoSamplesState,
+      [mockUuid1]: {
+        ...sample1,
+        options: { someOption: false },
+      },
+      [mockUuid2]: {
+        ...sample2,
+        options: { someOption: false },
+      },
+      meta: {
+        validating: ['validatingExperimentId', 'otherValidatingExperimentId'],
+      },
+    };
+
+    const newState = samplesReducer(stateWithOldOptions, {
+      type: SAMPLES_VALIDATING_UPDATED,
+      payload: {
+        experimentId: 'validatingExperimentId',
+        validating: false,
+      },
+    });
+
+    expect(newState.meta.validating).toEqual(['otherValidatingExperimentId']);
 
     expect(newState).toMatchSnapshot();
   });
