@@ -102,4 +102,13 @@ describe('Configure Embedding', () => {
     userEvent.click(screen.getByText('Plot options'));
     expect(screen.getAllByText('Select data')).toBeDefined();
   });
+  it('renders correctly ', async () => {
+    await renderConfigureEmbedding();
+
+    // can select other plots
+    userEvent.click(screen.getByText('Samples'));
+    userEvent.click(screen.getByText('Mitochondrial fraction reads'));
+    userEvent.click(screen.getByText('Doublet score'));
+    userEvent.click(screen.getByText('Cell sets'));
+  });
 });
