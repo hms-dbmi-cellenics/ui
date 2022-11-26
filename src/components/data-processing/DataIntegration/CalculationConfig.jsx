@@ -33,7 +33,7 @@ const CalculationConfig = (props) => {
   } = props;
   const FILTER_UUID = 'dataIntegration';
   const dispatch = useDispatch();
-  const { dataIntegration, dimensionalityReduction } = useSelector(
+  const { dataIntegration, dimensionalityReduction, downsampling } = useSelector(
     (state) => state.experimentSettings.processing.dataIntegration,
   );
   const elbowPlotUuid = generateDataProcessingPlotUuid(null, FILTER_UUID, 1);
@@ -78,6 +78,7 @@ const CalculationConfig = (props) => {
   ];
 
   const [numPCs, setNumPCs] = useState(dimensionalityReduction.numPCs);
+  // const [percentageToKeep, setPercentageToKeep] = useState(downsampling?.percentageToKeep);
 
   const updateSettings = (diff) => {
     onConfigChange();
@@ -144,10 +145,11 @@ const CalculationConfig = (props) => {
   );
 
   return (
-    <Collapse defaultActiveKey='data-integration'>
-      <Panel header='Data Integration' key='data-integration'>
-        <Space direction='vertical' style={{ width: '100%' }} />
-        <Form size='small'>
+    <Form size='small'>
+
+      <Collapse defaultActiveKey='data-integration'>
+        <Panel header='Data Integration' key='data-integration'>
+          <Space direction='vertical' style={{ width: '100%' }} />
           <Form.Item>
             <Text>
               <strong style={{ marginRight: '0.5rem' }}>Data integration settings:</strong>
@@ -267,9 +269,41 @@ const CalculationConfig = (props) => {
             {dataIntegration.method === 'seuratv4' ? renderDimReductionMethod() : <></>}
 
           </div>
-        </Form>
-      </Panel>
-    </Collapse>
+        </Panel>
+      </Collapse>
+      <Collapse>
+        <Panel header='Downsampling Options' key='downsampling-opts'>
+          <Form.Item label='Downsampling Method'>
+            <Select
+              value={downsampling?.method || 'none'}
+              onChange={(val) => {
+                // if (val !== 'none') setPercentageToKeep(5);
+                // else setPercentageToKeep(100);
+                const percentageToKeep = val !== 'none' ? 5 : 100;
+                updateSettings({ downsampling: { method: val, percentageToKeep } });
+              }}
+            >
+              <Option value='none'>No Downsampling</Option>
+              <Option value='geosketching'>Geometric Sketching</Option>
+            </Select>
+          </Form.Item>
+          <Form.Item label='% of cells to keep'>
+            <InputNumber
+              disabled={downsampling?.method !== 'geosketching'}
+              value={downsampling?.percentageToKeep || 100}
+              max={100}
+              min={0}
+              onChange={(value) => {
+                // onConfigChange(); // why is this needed
+                // setPercentageToKeep(parseInt(value, 0));
+                updateSettings({ downsampling: { percentageToKeep: parseInt(value, 0) } });
+              }}
+            />
+          </Form.Item>
+        </Panel>
+      </Collapse>
+    </Form>
+
   );
 };
 

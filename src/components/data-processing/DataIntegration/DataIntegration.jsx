@@ -3,8 +3,9 @@ import React, {
 } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import {
-  Row, Col, Space, PageHeader, Collapse, Alert, Empty,
+  Row, Col, Space, PageHeader, Select, Collapse, Form, InputNumber, Alert, Empty,
 } from 'antd';
+
 import _ from 'lodash';
 import PropTypes from 'prop-types';
 
@@ -25,6 +26,8 @@ import MiniPlot from 'components/plots/MiniPlot';
 import PlotStyling from 'components/plots/styling/PlotStyling';
 import { isUnisample } from 'utils/experimentPredicates';
 import CalculationConfig from './CalculationConfig';
+
+const { Option } = Select;
 
 const { Panel } = Collapse;
 const DataIntegration = (props) => {
@@ -327,6 +330,7 @@ const DataIntegration = (props) => {
             disabled={stepDisabled}
             disableDataIntegration={disableDataIntegration}
           />
+
           <Collapse>
             <Panel header='Plot styling' key='styling'>
               <div style={{ height: 8 }} />
