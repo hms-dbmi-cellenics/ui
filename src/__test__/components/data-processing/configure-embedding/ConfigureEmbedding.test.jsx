@@ -88,11 +88,12 @@ describe('Configure Embedding', () => {
   it('renders correctly ', async () => {
     await renderConfigureEmbedding();
 
-    // four mini-plots and one fullsize rendered
+    // one fullsize plot rendered
     const plots = screen.getAllByRole('graphics-document');
-    expect(plots.length).toEqual(5);
+    expect(plots.length).toEqual(1);
 
     // styling and settings options available
+    expect(screen.getByText('Plot view')).toBeDefined();
     expect(screen.getByText('Embedding settings')).toBeDefined();
     expect(screen.getByText('Clustering settings')).toBeDefined();
     expect(screen.getByText('Plot options')).toBeDefined();
@@ -100,5 +101,14 @@ describe('Configure Embedding', () => {
     // additional select data option available
     userEvent.click(screen.getByText('Plot options'));
     expect(screen.getAllByText('Select data')).toBeDefined();
+  });
+  it('renders correctly ', async () => {
+    await renderConfigureEmbedding();
+
+    // can select other plots
+    userEvent.click(screen.getByText('Samples'));
+    userEvent.click(screen.getByText('Mitochondrial fraction reads'));
+    userEvent.click(screen.getByText('Doublet score'));
+    userEvent.click(screen.getByText('Cell sets'));
   });
 });
