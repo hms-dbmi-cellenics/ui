@@ -268,6 +268,7 @@ jobs:
           if [ "${{ matrix.environment }}" = "production" ]; then
             export SANDBOX_ID="default"
             export KUBERNETES_ENV="production"
+            export CHART_BRANCH="master"
             export IMAGE_NAME=$IMAGE_TAG
             export IMAGE_PATTERN="^(?P<version>[0-9]+\.[0-9]+\.[0-9]+)$"
             export IMAGE_EXTRACT='$version'
@@ -280,6 +281,7 @@ jobs:
           if [ "${{ matrix.environment }}" = "develop" ]; then
             export SANDBOX_ID="default"
             export KUBERNETES_ENV="staging"
+            export CHART_BRANCH="master"
             export IMAGE_NAME="$IMAGE_TAG-$TIMESTAMP"
             export IMAGE_PATTERN="^$REF_ID-[a-f0-9]+-(?P<timestamp>[0-9]+)$"
             export IMAGE_EXTRACT='$timestamp'
@@ -292,6 +294,7 @@ jobs:
           if [ "${{ matrix.environment }}" = "staging" ]; then
             export SANDBOX_ID="STAGING_SANDBOX_ID"
             export KUBERNETES_ENV="staging"
+            export CHART_BRANCH="FILLED_IN_BY_BIOMAGE_STAGE"
             export IMAGE_NAME="$IMAGE_TAG-$TIMESTAMP"
             export IMAGE_PATTERN="^$REF_ID-[a-f0-9]+-(?P<timestamp>[0-9]+)$"
             export IMAGE_EXTRACT='$timestamp'
@@ -312,6 +315,7 @@ jobs:
             select(di == 0).metadata.labels.sandboxId = strenv(SANDBOX_ID) |
             select(di == 1).metadata.name = strenv(CHART_CRD_NAME) |
             select(di == 1).metadata.namespace = strenv(NAMESPACE) |
+            select(di == 1).spec.ref.branch = strenv(CHART_BRANCH) |
             select(di == 2).metadata.name = strenv(DEPLOYMENT_NAME) |
             select(di == 2).metadata.namespace = strenv(NAMESPACE) |
             select(di == 2).spec.image = strenv(REGISTRY) + "/" + strenv(DEPLOYMENT_NAME) |
