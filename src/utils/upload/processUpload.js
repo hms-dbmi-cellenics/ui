@@ -3,17 +3,15 @@ import _ from 'lodash';
 
 import axios from 'axios';
 
-import { createSamples, createSampleFile, updateSampleFileUpload } from 'redux/actions/samples';
+import {
+  createSamples, createSampleFile, updateSampleFileUpload, validateSamples,
+} from 'redux/actions/samples';
 
 import UploadStatus from 'utils/upload/UploadStatus';
 import loadAndCompressIfNecessary from 'utils/upload/loadAndCompressIfNecessary';
 import { inspectFile, Verdict } from 'utils/upload/fileInspector';
 import getFileTypeV2 from 'utils/getFileTypeV2';
 import { sampleTech } from 'utils/constants';
-import SampleValidationError from 'utils/errors/upload/SampleValidationError';
-import pushNotificationMessage from 'utils/pushNotificationMessage';
-import updateSamplesValidating from 'redux/actions/samples/updateSamplesValidating';
-import sampleValidators from './sampleValidators';
 
 const MAX_RETRIES = 2;
 
@@ -108,17 +106,6 @@ const createAndUploadSingleFile = async (file, experimentId, sampleId, dispatch,
   await prepareAndUploadFileToS3(experimentId, sampleId, fileType, file, signedUrl, dispatch);
 };
 
-const handleValidatorError = (e, sampleName) => {
-  if (e instanceof SampleValidationError) {
-    const errorMessage = `Error uploading sample ${sampleName}.\n${e.message}`;
-    pushNotificationMessage('error', errorMessage, 15);
-  } else {
-    const errorMessage = `Error uploading sample ${sampleName}. Please send an email to hello@biomage.net with the sample files you're trying to upload.`;
-    pushNotificationMessage('error', errorMessage);
-    console.error(e.message);
-  }
-};
-
 const processUpload = async (filesList, technology, samples, experimentId, dispatch) => {
   // First use map to make it easy to add files in the already existing sample entry
   const samplesMap = filesList.reduce((acc, file) => {
@@ -149,31 +136,12 @@ const processUpload = async (filesList, technology, samples, experimentId, dispa
     };
   }, {});
 
-  const samplesList = Object.entries(samplesMap);
-
-  dispatch(updateSamplesValidating(experimentId, true));
-
-  const results = await Promise.allSettled(samplesList.map(
-    async ([sampleName, sample]) => {
-      try {
-        await sampleValidators[technology](sample);
-        return [sampleName, sample];
-      } catch (e) {
-        handleValidatorError(e, sampleName);
-        throw e;
-      }
-    },
-  ));
-
-  dispatch(updateSamplesValidating(experimentId, false));
-
-  const validSamplesList = results
-    .filter((result) => result.status === 'fulfilled')
-    .map((result) => result.value);
+  const validSamplesList = await dispatch(validateSamples(experimentId, samplesMap, technology));
 
   // If none of the files are in valid format, return
   if (validSamplesList.length === 0) return;
 
+  // Sort alphabetically
   validSamplesList.sort(([oneName], [otherName]) => oneName.localeCompare(otherName));
 
   try {

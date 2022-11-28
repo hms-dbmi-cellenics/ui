@@ -4,6 +4,7 @@ import loadSamples from './loadSamples';
 import deleteSamples from './deleteSamples';
 import createSampleFile from './createSampleFile';
 import updateSampleFileUpload from './updateSampleFileUpload';
+import validateSamples from './validateSamples';
 
 export {
   createSamples,
@@ -12,4 +13,5 @@ export {
   deleteSamples,
   createSampleFile,
   updateSampleFileUpload,
+  validateSamples,
 };
