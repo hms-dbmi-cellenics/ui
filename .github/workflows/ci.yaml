@@ -225,7 +225,7 @@ jobs:
           docker push $IMAGE_NAME
 
           if [ ! -z "$TIMESTAMP" ]; then
-            echo Pushing timestamped $IMAGE_NAME to ECR
+            echo Pushing timestamped $IMAGE_NAME-$TIMESTAMP to ECR
 
             docker tag $IMAGE_NAME $IMAGE_NAME-$TIMESTAMP
             docker push $IMAGE_NAME-$TIMESTAMP
@@ -356,7 +356,7 @@ jobs:
         env:
           REF_ID: ${{ needs.build-docker.outputs.ref-id }}
           IMAGE_TAG: ${{ needs.build-docker.outputs.image-tag }}
-          TIMESTAMP: ${{ steps.build-docker.outputs.timestamp }}
+          TIMESTAMP: ${{ needs.build-docker.outputs.timestamp }}
           REGISTRY: ${{ steps.login-ecr.outputs.registry }}
 
       - name: Push production/develop template to releases repo for deployment
