@@ -250,7 +250,11 @@ const DotPlotPage = (props) => {
 
   // if all selected genes are removed, deleteData will not run. Remove plotData manually instead
   useEffect(() => {
-    if (config?.useMarkerGenes || config?.selectedGenes.length || !plotData?.length) return;
+    if (config?.useMarkerGenes
+      || config?.selectedGenes.length
+      || !plotData?.length
+      || !previousComparedConfig.current
+    ) return;
 
     previousComparedConfig.current.selectedGenes = [];
     dispatch(updatePlotData(plotUuid, []));
