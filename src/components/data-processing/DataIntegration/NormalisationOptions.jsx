@@ -79,7 +79,8 @@ const NormalisationOptions = (props) => {
             <span>
               Normalization aims to remove technical variation that is not biologically relevant, e.g. sequencing depth.
               There are several methods to achieve normalization.
-              "sctransform" claims to recover sharper biological distinction compared to log-normalization.
+              "SCTransform" claims to recover sharper biological distinction compared to log-normalization.
+              SCTransform can only be applied when the integration method is set to Seurat v4.
               Normalization is applied to each sample before integration.
               Further info can be found
               <a
