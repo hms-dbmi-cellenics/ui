@@ -79,7 +79,8 @@ const NormalisationOptions = (props) => {
             <span>
               Normalization aims to remove technical variation that is not biologically relevant, e.g. sequencing depth.
               There are several methods to achieve normalization.
-              "sctransform" claims to recover sharper biological distinction compared to log-normalization.
+              "SCTransform" claims to recover sharper biological distinction compared to log-normalization.
+              SCTransform can only be applied when the integration method is set to Seurat v4.
               Normalization is applied to each sample before integration.
               Further info can be found
               <a
@@ -111,11 +112,8 @@ const NormalisationOptions = (props) => {
         >
           <Option value='logNormalize'>LogNormalize</Option>
 
-          {/* scTransform is disabled until implemented in the QC pipeline */}
-          <Option disabled value='scTransform'>
-            <Tooltip title='Will be supported in a later version' placement='left'>
-              SCTransform
-            </Tooltip>
+          <Option value='SCT' disabled={methodId !== 'seuratv4'}>
+            SCTransform
           </Option>
         </Select>
 

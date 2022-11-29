@@ -5,7 +5,7 @@ import pushNotificationMessage from 'utils/pushNotificationMessage';
 import { updateCellSetsClustering, loadCellSets } from 'redux/actions/cellSets';
 import { updateProcessingSettingsFromQC, loadedProcessingConfig, updatePipelineVersion } from 'redux/actions/experimentSettings';
 import { updateBackendStatus } from 'redux/actions/backendStatus';
-import { updatePlotData } from 'redux/actions/componentConfig';
+import { updatePlotData, replaceLoadedConfigs } from 'redux/actions/componentConfig';
 import endUserMessages from 'utils/endUserMessages';
 
 jest.mock('redux/actions/cellSets/updateCellSetsClustering');
@@ -17,6 +17,7 @@ jest.mock('redux/actions/experimentSettings', () => ({
 jest.mock('redux/actions/backendStatus/updateBackendStatus');
 jest.mock('redux/actions/componentConfig/updatePlotData');
 jest.mock('redux/actions/cellSets/loadCellSets');
+jest.mock('redux/actions/componentConfig/replaceLoadedConfigs');
 
 jest.mock('utils/pushNotificationMessage');
 jest.spyOn(global.console, 'error');
@@ -241,5 +242,29 @@ describe('ExperimentUpdatesHandler', () => {
       'success',
       endUserMessages.SUCCESS_NEW_CLUSTER_CREATED,
     );
+  });
+
+  it('Triggers properly for PlotConfigRefresh updates', () => {
+    const normalizedMatrixConfig = {
+      id: 'normalized-matrix',
+      updatedConfig: {
+        sample: [],
+        louvain: [],
+        metadata: [],
+        scratchpad: [],
+      },
+    };
+
+    const mockUpdate = {
+      type: updateTypes.PLOT_CONFIG_REFRESH,
+      updatedConfigs: [normalizedMatrixConfig],
+    };
+
+    triggerExperimentUpdate(mockUpdate);
+
+    expect(mockDispatch).toHaveBeenCalledTimes(1);
+    expect(replaceLoadedConfigs).toHaveBeenCalledTimes(1);
+
+    expect(replaceLoadedConfigs).toHaveBeenCalledWith([normalizedMatrixConfig]);
   });
 });
