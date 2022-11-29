@@ -1,6 +1,7 @@
 import loadPlotConfig from 'redux/actions/componentConfig/loadPlotConfig';
 import loadComponentConfig from 'redux/actions/componentConfig/loadComponentConfig';
 import updatePlotConfig from 'redux/actions/componentConfig/updatePlotConfig';
+import replaceLoadedConfigs from 'redux/actions/componentConfig/replaceLoadedConfigs';
 import savePlotConfig from 'redux/actions/componentConfig/savePlotConfig';
 import updatePlotData from 'redux/actions/componentConfig/updatePlotData';
 import resetPlotConfig from 'redux/actions/componentConfig/resetPlotConfig';
@@ -11,6 +12,7 @@ export {
   loadPlotConfig,
   loadComponentConfig,
   updatePlotConfig,
+  replaceLoadedConfigs,
   savePlotConfig,
   updatePlotData,
   resetPlotConfig,

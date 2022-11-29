@@ -1,7 +1,7 @@
 import updateCellSetsClustering from 'redux/actions/cellSets/updateCellSetsClustering';
 import { updateProcessingSettingsFromQC, loadedProcessingConfig, updatePipelineVersion } from 'redux/actions/experimentSettings';
 import { updateBackendStatus } from 'redux/actions/backendStatus';
-import { updatePlotData } from 'redux/actions/componentConfig';
+import { replaceLoadedConfigs, updatePlotData } from 'redux/actions/componentConfig';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
 
 import { loadCellSets } from 'redux/actions/cellSets';
@@ -11,6 +11,7 @@ const updateTypes = {
   QC: 'qc',
   GEM2S: 'gem2s',
   WORK_RESPONSE: 'WorkResponse',
+  PLOT_CONFIG_REFRESH: 'PlotConfigRefresh',
 };
 
 const experimentUpdatesHandler = (dispatch) => (experimentId, update) => {
@@ -32,6 +33,9 @@ const experimentUpdatesHandler = (dispatch) => (experimentId, update) => {
     }
     case updateTypes.WORK_RESPONSE: {
       return onWorkResponseUpdate(update, dispatch, experimentId);
+    }
+    case updateTypes.PLOT_CONFIG_REFRESH: {
+      return onPlotConfigRefresh(update, dispatch);
     }
     default: {
       console.log(`Error, unrecognized message type ${update.type}`);
@@ -86,6 +90,10 @@ const onWorkResponseUpdate = (update, dispatch, experimentId) => {
     dispatch(loadCellSets(experimentId, true));
     pushNotificationMessage('success', endUserMessages.SUCCESS_NEW_CLUSTER_CREATED);
   }
+};
+
+const onPlotConfigRefresh = (update, dispatch) => {
+  dispatch(replaceLoadedConfigs(update.updatedConfigs));
 };
 
 export default experimentUpdatesHandler;
