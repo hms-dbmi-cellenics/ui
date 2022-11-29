@@ -307,7 +307,7 @@ jobs:
           echo "::set-output name=kubernetes-env::$KUBERNETES_ENV"
 
           export NAMESPACE="$DEPLOYMENT_NAME-$SANDBOX_ID"
-          export CHART_SOURCE_NAME="$DEPLOYENT_NAME-chart"
+          export CHART_SOURCE_NAME="$DEPLOYMENT_NAME-chart"
           export IMAGE_POLICY_TAG="{\"\$imagepolicy\": \"$NAMESPACE:$DEPLOYMENT_NAME:tag\"}"
 
           yq '
@@ -331,7 +331,7 @@ jobs:
             select(di == 5).metadata.namespace = strenv(NAMESPACE) |
             select(di == 5).metadata.labels.sandboxId = strenv(SANDBOX_ID) |
             select(di == 5).spec.releaseName = strenv(DEPLOYMENT_NAME) |
-            select(di == 5).spec.chart.spec.sourceRef.name = strenv(CHART_CRD_NAME) |
+            select(di == 5).spec.chart.spec.sourceRef.name = strenv(CHART_SOURCE_NAME) |
             select(di == 5).spec.chart.spec.sourceRef.namespace = strenv(NAMESPACE) |
             select(di == 5).spec.values.kubernetes.env = strenv(KUBERNETES_ENV) |
             select(di == 5).spec.values.biomageCi.repo = strenv(GITHUB_REPOSITORY) |
