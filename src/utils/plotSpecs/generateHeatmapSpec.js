@@ -25,7 +25,7 @@ const generateSpec = (config, groupName, data, displayLabels = true) => {
       gradientLength: {
         signal: 'width',
       },
-      tickMinStep: 1
+      tickMinStep: 25
     },
     {
       fill: 'cellSetColors',
