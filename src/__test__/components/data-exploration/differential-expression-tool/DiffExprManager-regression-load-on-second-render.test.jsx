@@ -16,15 +16,17 @@ import { DIFF_EXPR_LOADING, DIFF_EXPR_LOADED, DIFF_EXPR_ORDERING_SET } from 'red
 
 jest.mock('utils/work/fetchWork', () => (
   jest.fn(() => new Promise((resolve) => resolve({
-    p_val: [1.496, 2.496, 3.496, 4.496, 5.496],
-    p_val_adj: [1.647, 2.647, 3.647, 4.647, 5.647],
-    logFC: [-1.427, -2.427, -3.427, -4.427, -5.427],
-    gene_names: ['A', 'B', 'C', 'D', 'E'],
-    Gene: ['EASAD0', 'ENASD23', 'EN34S', 'ENSD33', 'ENASD233'],
+    data: {
+      p_val: [1.496, 2.496, 3.496, 4.496, 5.496],
+      p_val_adj: [1.647, 2.647, 3.647, 4.647, 5.647],
+      logFC: [-1.427, -2.427, -3.427, -4.427, -5.427],
+      gene_names: ['A', 'B', 'C', 'D', 'E'],
+      Gene: ['EASAD0', 'ENASD23', 'EN34S', 'ENSD33', 'ENASD233'],
 
-    auc: ['0.1', '0.2', '0.3', '0.4', '0.5'],
-    pct_1: ['100', '90', '80', '70', '60'],
-    pct_2: ['100', '90', '80', '70', '60'],
+      auc: ['0.1', '0.2', '0.3', '0.4', '0.5'],
+      pct_1: ['100', '90', '80', '70', '60'],
+      pct_2: ['100', '90', '80', '70', '60'],
+    },
     total: 500,
   })))
 ));

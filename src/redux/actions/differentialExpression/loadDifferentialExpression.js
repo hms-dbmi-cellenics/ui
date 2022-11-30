@@ -63,15 +63,18 @@ const loadDifferentialExpression = (
       experimentId, body, getState, dispatch, { timeout, extras },
     );
 
-    let { total } = data;
-    const rows = data.Gene.map((gene, indx) => ({
-      p_val: data.p_val[indx],
-      logFC: data.logFC[indx],
-      pct_1: data.pct_1[indx],
-      pct_2: data.pct_2[indx],
-      p_val_adj: data.p_val_adj[indx],
-      auc: data.auc[indx],
-      gene_names: data.gene_names[indx],
+    // eslint-disable-next-line prefer-const
+    let { total, data: diffExprData } = data;
+    const { Gene } = diffExprData;
+
+    const rows = Gene.map((gene, indx) => ({
+      p_val: diffExprData.p_val[indx],
+      logFC: diffExprData.logFC[indx],
+      pct_1: diffExprData.pct_1[indx],
+      pct_2: diffExprData.pct_2[indx],
+      p_val_adj: diffExprData.p_val_adj[indx],
+      auc: diffExprData.auc[indx],
+      gene_names: diffExprData.gene_names[indx],
       Gene: gene,
     }));
 
@@ -90,6 +93,7 @@ const loadDifferentialExpression = (
       },
     });
   } catch (error) {
+    console.log('error is ', error);
     dispatch({
       type: DIFF_EXPR_ERROR,
       payload: {
