@@ -22,10 +22,8 @@ const generateSpec = (config, groupName, data, displayLabels = true) => {
       title: ['Intensity'],
       labelFont: config.fontStyle.font,
       titleFont: config.fontStyle.font,
-      gradientLength: {
-        signal: 'width',
-      },
-      tickMinStep: 25
+      gradientLength: { signal: 'width' },
+      labelSeparation: { signal: 'width' },
     },
     {
       fill: 'cellSetColors',
@@ -58,9 +56,8 @@ const generateSpec = (config, groupName, data, displayLabels = true) => {
         orient: 'left',
         labelFont: config.fontStyle.font,
         titleFont: config.fontStyle.font,
-        gradientLength: {
-          signal: 'height / 3',
-        },
+        gradientLength: { signal: 'height / 3' },
+        labelSeparation: { signal: 'height / 3' },
       },
       {
         fill: 'cellSetColors',
