@@ -3,6 +3,8 @@ import {
   Skeleton, Empty, Collapse, Space, Select, Button,
 } from 'antd';
 import _ from 'lodash';
+import 'vega-webgl-renderer';
+
 import { useSelector, useDispatch } from 'react-redux';
 import { Vega } from 'react-vega';
 import PropTypes from 'prop-types';
@@ -223,7 +225,7 @@ const HeatmapPlot = ({ experimentId }) => {
     }
 
     if (vegaSpec) {
-      return <Vega spec={vegaSpec} renderer='canvas' />;
+      return <Vega spec={vegaSpec} renderer='webgl' />;
     }
   };
 
