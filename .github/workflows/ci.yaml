@@ -323,7 +323,7 @@ jobs:
             select(di == 5).spec.values.biomageCi.sandboxId = strenv(SANDBOX_ID) |
             select(di == 5).spec.values.image.registry = strenv(REGISTRY) |
             select(di == 5).spec.values.image.repository = strenv(DEPLOYMENT_NAME) |
-            select(di == 5).spec.values.image.tag = strenv(IMAGE_NAME) |
+            select(di == 5).spec.values.image.tag = strenv(IMAGE_TAG) |
             select(di == 5).spec.values.image.tag line_comment = strenv(IMAGE_POLICY_TAG) |
             select(di == 5).spec.values.replicaCount = env(REPLICA_COUNT) |
             select(di == 5).spec.values.serviceAccount.iamRole = "ui-role-" + strenv(KUBERNETES_ENV)
