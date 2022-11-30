@@ -1,5 +1,3 @@
-// TESTING IMAGE UPDATE - REMOVE BEFORE MERGING
-
 import '../../assets/self-styles.less';
 import '../../assets/nprogress.css';
 
