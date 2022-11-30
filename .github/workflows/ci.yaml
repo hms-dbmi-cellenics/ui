@@ -121,7 +121,6 @@ jobs:
     outputs:
       ref-id: ${{ steps.ref.outputs.ref-id }}
       image-tag: ${{ steps.ref.outputs.image-tag }}
-      timestamp: ${{ steps.ref.outputs.timestamp }}
     steps:
       - id: checkout
         name: Check out source code
@@ -156,26 +155,18 @@ jobs:
           if [ "${{ github.event_name }}" = "release" ] && [ "${{ github.event.action }}" = "released" ]; then
             COMMIT_SHA=""
             IMAGE_TAG="${REF_ID/refs-tags-/}"
-            TIMESTAMP=""
           elif [ "${{ github.event_name }}" = "pull_request" ]; then
             COMMIT_SHA="${{ github.event.pull_request.head.sha }}"
-            IMAGE_TAG="$REF_ID-$COMMIT_SHA"
-            TIMESTAMP=$TIMESTAMP
+            IMAGE_TAG="$REF_ID-$COMMIT_SHA-$TIMESTAMP"
           else
             COMMIT_SHA=$GITHUB_SHA
-            IMAGE_TAG="$REF_ID-$COMMIT_SHA"
-            TIMESTAMP=$TIMESTAMP
+            IMAGE_TAG="$REF_ID-$COMMIT_SHA-$TIMESTAMP"
           fi
 
           # IMAGE_TAG is used in the Build Docker Image step.
           # We can easily build the image-tag from REF_ID and COMMIT_SHA for non-production releases.
           # But we can not easily create the image tag for production releases, so we're bulding it here
           echo "::set-output name=image-tag::$IMAGE_TAG"
-
-          # TIMESTAMP is used to postfix images in the "push docker images to ECR" step.
-          # The timestamp is used by Flux to auto update images for staging environments.
-          # Images for production uses semantic versioning to determine the latest image.
-          echo "::set-output name=timestamp::$TIMESTAMP"
 
           # This will take a GitHub repo name like `biomage-org/releases`
           # and turns it into `releases`. This will be the name of the
@@ -228,16 +219,8 @@ jobs:
         run: |-
           echo Pushing image $IMAGE_NAME to ECR.
           docker push $IMAGE_NAME
-
-          if [ ! -z "$TIMESTAMP" ]; then
-            echo Pushing timestamped $IMAGE_NAME-$TIMESTAMP to ECR
-
-            docker tag $IMAGE_NAME $IMAGE_NAME-$TIMESTAMP
-            docker push $IMAGE_NAME-$TIMESTAMP
-          fi
         env:
           IMAGE_NAME: ${{ format('{0}/{1}:{2}', steps.login-ecr.outputs.registry, steps.ref.outputs.repo-name, steps.ref.outputs.image-tag) }}
-          TIMESTAMP: ${{ steps.ref.outputs.timestamp }}
 
   deploy:
     name: Deploy to Kubernetes
@@ -274,7 +257,6 @@ jobs:
             export SANDBOX_ID="default"
             export KUBERNETES_ENV="production"
             export CHART_REF="master"
-            export IMAGE_NAME=$IMAGE_TAG
             export IMAGE_PATTERN="^(?P<version>[0-9]+\.[0-9]+\.[0-9]+)$"
             export IMAGE_EXTRACT='$version'
             export IMAGE_POLICY_TYPE="semver"
@@ -287,7 +269,6 @@ jobs:
             export SANDBOX_ID="default"
             export KUBERNETES_ENV="staging"
             export CHART_REF="master"
-            export IMAGE_NAME="$IMAGE_TAG-$TIMESTAMP"
             export IMAGE_PATTERN="^$REF_ID-[a-f0-9]+-(?P<timestamp>[0-9]+)$"
             export IMAGE_EXTRACT='$timestamp'
             export IMAGE_POLICY_TYPE="numerical"
@@ -300,7 +281,6 @@ jobs:
             export SANDBOX_ID="STAGING_SANDBOX_ID"
             export KUBERNETES_ENV="staging"
             export CHART_REF="FILLED_IN_BY_BIOMAGE_STAGE"
-            export IMAGE_NAME="$IMAGE_TAG-$TIMESTAMP"
             export IMAGE_PATTERN="^$REF_ID-[a-f0-9]+-(?P<timestamp>[0-9]+)$"
             export IMAGE_EXTRACT='$timestamp'
             export IMAGE_POLICY_TYPE="numerical"
@@ -366,7 +346,6 @@ jobs:
         env:
           REF_ID: ${{ needs.build-docker.outputs.ref-id }}
           IMAGE_TAG: ${{ needs.build-docker.outputs.image-tag }}
-          TIMESTAMP: ${{ needs.build-docker.outputs.timestamp }}
           REGISTRY: ${{ steps.login-ecr.outputs.registry }}
 
       - name: Push production/develop template to releases repo for deployment
