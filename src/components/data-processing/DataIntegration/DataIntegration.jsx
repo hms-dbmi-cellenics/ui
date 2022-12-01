@@ -3,7 +3,7 @@ import React, {
 } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import {
-  Row, Col, Space, PageHeader, Collapse, Alert, Empty,
+  Row, Col, Radio, PageHeader, Collapse, Alert, Empty,
 } from 'antd';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
@@ -21,7 +21,6 @@ import FrequencyPlot from 'components/plots/FrequencyPlot';
 import ElbowPlot from 'components/plots/ElbowPlot';
 import { generateDataProcessingPlotUuid } from 'utils/generateCustomPlotUuid';
 import EmptyPlot from 'components/plots/helpers/EmptyPlot';
-import MiniPlot from 'components/plots/MiniPlot';
 import PlotStyling from 'components/plots/styling/PlotStyling';
 import { isUnisample } from 'utils/experimentPredicates';
 import CalculationConfig from './CalculationConfig';
@@ -44,7 +43,7 @@ const DataIntegration = (props) => {
 
   const [plots] = useState({
     embedding: {
-      title: 'Sample embedding',
+      title: 'Embedding coloured by sample',
       plotUuid: generateDataProcessingPlotUuid(null, configureEmbeddingFilterName, 1),
       plotType: 'dataIntegrationEmbedding',
       plot: (config, plotData, actions) => (
@@ -68,7 +67,7 @@ const DataIntegration = (props) => {
       blockedByConfigureEmbedding: true,
     },
     frequency: {
-      title: 'Frequency plot',
+      title: 'Frequency plot coloured by sample',
       plotUuid: 'dataIntegrationFrequency',
       plotType: 'dataIntegrationFrequency',
       plot: (config, plotData, actions) => (
@@ -81,7 +80,7 @@ const DataIntegration = (props) => {
       blockedByConfigureEmbedding: true,
     },
     elbow: {
-      title: 'Elbow plot',
+      title: 'Elbow plot showing principal components',
       plotUuid: generateDataProcessingPlotUuid(null, filterName, 1),
       plotType: 'dataIntegrationElbow',
       plot: (config, plotData, actions) => (
@@ -272,6 +271,10 @@ const DataIntegration = (props) => {
       return plot;
     }
   };
+  const radioStyle = {
+    display: 'block',
+    height: '30px',
+  };
 
   return (
     <>
@@ -281,45 +284,23 @@ const DataIntegration = (props) => {
       />
       <Row gutter={16}>
         <Col flex='auto'>
-          {renderPlot()}
+          <center>
+            {renderPlot()}
+          </center>
         </Col>
 
         <Col flex='1 0px'>
-          <Space direction='vertical'>
-            {Object.entries(plots).map(([key, plotObj]) => (
-              <button
-                type='button'
-                key={key}
-                onClick={() => setSelectedPlot(key)}
-                style={{
-                  margin: 0,
-                  backgroundColor: 'transparent',
-                  align: 'center',
-                  padding: '8px',
-                  border: '1px solid #000',
-                  cursor: 'pointer',
-                }}
-              >
-                {plotObj.blockedByConfigureEmbedding && !configureEmbeddingFinished.current
-                  ? (
-                    <center>
-                      <EmptyPlot mini />
-                    </center>
-                  )
-                  : (
-                    <MiniPlot
-                      experimentId={experimentId}
-                      plotUuid={plotObj.plotUuid}
-                      plotFn={plotObj.plot}
-                      actions={false}
-                    />
-                  )}
-              </button>
-            ))}
-          </Space>
-        </Col>
-
-        <Col flex='1 0px'>
+          <Collapse defaultActiveKey={['plot-selector']}>
+            <Panel header='Plot view' key='plot-selector'>
+              <Radio.Group onChange={(e) => setSelectedPlot(e.target.value)} value={selectedPlot}>
+                {Object.entries(plots).map(([key, plotObj]) => (
+                  <Radio key={key} style={radioStyle} value={key}>
+                    {plotObj.title}
+                  </Radio>
+                ))}
+              </Radio.Group>
+            </Panel>
+          </Collapse>
           <CalculationConfig
             experimentId={experimentId}
             onConfigChange={onConfigChange}

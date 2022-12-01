@@ -357,7 +357,7 @@ const ConfigureEmbedding = (props) => {
             <Panel header='Plot view' key='plot-selector'>
               <Radio.Group onChange={(e) => setSelectedPlot(e.target.value)} value={selectedPlot}>
                 {Object.entries(plots).map(([key, plotObj]) => (
-                  <Radio style={radioStyle} value={key}>
+                  <Radio key={key} style={radioStyle} value={key}>
                     {plotObj.title}
                   </Radio>
                 ))}
