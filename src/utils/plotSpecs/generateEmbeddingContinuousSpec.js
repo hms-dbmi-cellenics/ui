@@ -167,7 +167,7 @@ const filterCells = (cellSets, selectedSample) => {
     filteredCells = getSampleCells(cellSets, selectedSample);
   }
 
-  return filteredCells.map((cell) => cell.cellId);
+  return new Set(filteredCells.map((cell) => cell.cellId));
 };
 
 const generateData = (
@@ -181,7 +181,7 @@ const generateData = (
   const cells = embeddingData
     .map((coordinates, cellId) => ({ cellId, coordinates }))
     .filter(({ coordinates }) => coordinates !== undefined)
-    .filter(({ cellId }) => filteredCells.includes(cellId))
+    .filter(({ cellId }) => filteredCells.has(cellId))
     .map((data) => {
       const { cellId, coordinates } = data;
 
