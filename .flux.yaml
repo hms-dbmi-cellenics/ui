@@ -5,22 +5,72 @@ metadata:
   labels:
     sandboxId: FILLED_IN_BY_CI
 ---
-apiVersion: helm.fluxcd.io/v1
+apiVersion: source.toolkit.fluxcd.io/v1beta2
+kind: GitRepository
+metadata:
+  name: FILLED_IN_BY_CI
+  namespace: FILLED_IN_BY_CI
+spec:
+  interval: 5m0s
+  url: https://github.com/biomage-org/iac
+  ref:
+    branch: FILLED_IN_BY_CI
+---
+apiVersion: image.toolkit.fluxcd.io/v1beta1
+kind: ImageRepository
+metadata:
+  name: FILLED_IN_BY_CI
+  namespace: FILLED_IN_BY_CI
+spec:
+  image: FILLED_IN_BY_CI
+  interval: 2m0s
+---
+apiVersion: image.toolkit.fluxcd.io/v1beta1
+kind: ImagePolicy
+metadata:
+  name: FILLED_IN_BY_CI
+  namespace: FILLED_IN_BY_CI
+spec:
+  imageRepositoryRef:
+    name: FILLED_IN_BY_CI
+  filterTags:
+    pattern: FILLED_IN_BY_CI
+    extract: FILLED_IN_BY_CI
+---
+apiVersion: image.toolkit.fluxcd.io/v1beta1
+kind: ImageUpdateAutomation
+metadata:
+  name: FILLED_IN_BY_CI
+  namespace: FILLED_IN_BY_CI
+spec:
+  interval: 2m0s
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  git:
+    commit:
+      author:
+        name: Flux - UI image update
+        email: ci@biomage.net
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
   name: FILLED_IN_BY_CI
   namespace: FILLED_IN_BY_CI
   labels:
     sandboxId: FILLED_IN_BY_CI
-  annotations:
-    fluxcd.io/automated: "true"
-    filter.fluxcd.io/chart-image: FILLED_IN_BY_CI
 spec:
   releaseName: FILLED_IN_BY_CI
+  interval: 2m0s
   chart:
-    git: https://github.com/biomage-org/iac
-    path: charts/nodejs
-    ref: FILLED_IN_BY_CI
+    spec:
+      chart: charts/nodejs
+      sourceRef:
+        kind: GitRepository
+        name: FILLED_IN_BY_CI
+        namespace: FILLED_IN_BY_CI
   values:
     # disable readiness probes as load balancer performs
     # its own health checks/cordoning
@@ -35,8 +85,8 @@ spec:
     service:
       additionalHosts: FILLED_IN_BY_CI
   valuesFrom:
-  - configMapKeyRef:
+    - kind: ConfigMap
       name: account-config
-      namespace: flux
-      key: account-config.yaml
-    # filled in by CI. do not modify.
+      valuesKey: account-config.yaml
+      optional: false
+      # filled in by CI. do not modify.
