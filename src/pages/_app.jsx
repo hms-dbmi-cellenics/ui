@@ -200,18 +200,18 @@ WrappedApp.getInitialProps = async ({ Component, ctx }) => {
     ? await Component.getInitialProps(ctx)
     : {};
 
-  const promises = [];
-
-  const { default: getEnvironmentInfo } = (await import('utils/ssr/getEnvironmentInfo'));
-  promises.push(getEnvironmentInfo);
-
-  const { default: getAuthenticationInfo } = (await import('utils/ssr/getAuthenticationInfo'));
-  promises.push(getAuthenticationInfo);
-
-  let results = await Promise.all(promises.map((f) => f(ctx, store)));
-  results = _.merge(...results);
-
   try {
+    const promises = [];
+
+    const { default: getEnvironmentInfo } = (await import('utils/ssr/getEnvironmentInfo'));
+    promises.push(getEnvironmentInfo);
+
+    const { default: getAuthenticationInfo } = (await import('utils/ssr/getAuthenticationInfo'));
+    promises.push(getAuthenticationInfo);
+
+    let results = await Promise.all(promises.map((f) => f(ctx, store)));
+    results = _.merge(...results);
+
     const { withSSRContext } = (await import('aws-amplify'));
 
     const { Auth } = withSSRContext(ctx);
@@ -225,6 +225,8 @@ WrappedApp.getInitialProps = async ({ Component, ctx }) => {
 
     return { pageProps: { ...pageProps, ...results } };
   } catch (e) {
+    console.error('UI SERVER ERROR: ', e.message);
+
     if (!(e instanceof APIError)) {
       // eslint-disable-next-line no-ex-assign
       e = new APIError(500);
