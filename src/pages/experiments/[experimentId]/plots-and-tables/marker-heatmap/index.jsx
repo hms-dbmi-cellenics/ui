@@ -9,6 +9,8 @@ import _ from 'lodash';
 import { useSelector, useDispatch } from 'react-redux';
 import { Vega } from 'react-vega';
 import PropTypes from 'prop-types';
+import 'vega-webgl-renderer';
+
 import pushNotificationMessage from 'utils/pushNotificationMessage';
 import endUserMessages from 'utils/endUserMessages';
 
@@ -444,7 +446,7 @@ const MarkerHeatmap = ({ experimentId }) => {
     }
 
     if (vegaSpec) {
-      return <Vega spec={vegaSpec} renderer='canvas' />;
+      return <Vega spec={vegaSpec} renderer='webgl' />;
     }
   };
 
