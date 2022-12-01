@@ -33,6 +33,7 @@ metadata:
 spec:
   imageRepositoryRef:
     name: FILLED_IN_BY_CI
+    namespace: FILLED_IN_BY_CI
   filterTags:
     pattern: FILLED_IN_BY_CI
     extract: FILLED_IN_BY_CI

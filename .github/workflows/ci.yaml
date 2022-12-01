@@ -316,6 +316,7 @@ jobs:
             select(di == 3).metadata.name = strenv(DEPLOYMENT_NAME) |
             select(di == 3).metadata.namespace = strenv(NAMESPACE) |
             select(di == 3).spec.imageRepositoryRef.name = strenv(DEPLOYMENT_NAME) |
+            select(di == 3).spec.imageRepositoryRef.namespace = strenv(NAMESPACE) |
             select(di == 3).spec.filterTags.pattern = strenv(IMAGE_PATTERN) |
             select(di == 3).spec.filterTags.extract = strenv(IMAGE_EXTRACT) |
             select(di == 3).spec.policy.[strenv(IMAGE_POLICY_TYPE)].[strenv(IMAGE_POLICY_KEY)] = strenv(IMAGE_POLICY_VALUE) |
