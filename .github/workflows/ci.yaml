@@ -279,15 +279,9 @@ jobs:
 
           if [ "${{ matrix.environment }}" = "staging" ]; then
 
-            export CHART_REF="$GITHUB_HEAD_REF"
-
-            # $GITHUB_HEAD_REF references the source branch of the pull request in a workflow run
-            # $GITHUB_HEAD_REF does not have a value when we merge, because merging is counted as a "push" event to master branch
-            # Therefore we set this value to "master" manually
-            if [ -z "$CHART_REF" ]; then
-              export CHART_REF="master"
-            fi
-
+            # The chart template for the UI repo is stored in IAC branch master
+            # If you are working on the chart for UI/API, you can modify this value manualy in in your PR's release
+            export CHART_REF="master"
             export SANDBOX_ID="STAGING_SANDBOX_ID"
             export KUBERNETES_ENV="staging"
             export IMAGE_PATTERN="^$REF_ID-[a-f0-9]+-(?P<timestamp>[0-9]+)$"
