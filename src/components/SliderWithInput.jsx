@@ -37,7 +37,9 @@ const SliderWithInput = (props) => {
         onAfterChange={() => handleChange(localValue)}
         step={stepToSet}
         disabled={disabled}
-        style={{ minWidth: 100, display: 'inline-block', flexGrow: 100 }}
+        style={{
+          minWidth: 100, display: 'inline-block', flexGrow: 100, margin: '0.5em',
+        }}
       />
 
       <InputNumber
