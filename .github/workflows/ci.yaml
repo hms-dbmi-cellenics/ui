@@ -279,8 +279,8 @@ jobs:
 
           if [ "${{ matrix.environment }}" = "staging" ]; then
 
-            # The chart for the UI repo is stored in IAC branch master
-            # If you are working on the chart for UI/API, you can modify this value manualy in releases
+            # The chart template for the UI repo is stored in IAC branch master
+            # If you are working on the chart for UI/API, you can modify this value manualy in in your PR's release
             export CHART_REF="master"
             export SANDBOX_ID="STAGING_SANDBOX_ID"
             export KUBERNETES_ENV="staging"
