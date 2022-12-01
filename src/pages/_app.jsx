@@ -217,11 +217,20 @@ WrappedApp.getInitialProps = async ({ Component, ctx }) => {
     const { Auth } = withSSRContext(ctx);
     Auth.configure(results.amplifyConfig.Auth);
 
+    console.log('*** results', results);
+
     if (query?.experimentId) {
+      console.log('*** querying expermentId', query?.experimentId);
+
       const { default: getExperimentInfo } = (await import('utils/ssr/getExperimentInfo'));
       const experimentInfo = await getExperimentInfo(ctx, store, Auth);
+
+      console.log('*** experimentInfo', experimentInfo);
+
       results = _.merge(results, experimentInfo);
     }
+
+    console.log('*** results', results);
 
     return { pageProps: { ...pageProps, ...results } };
   } catch (e) {

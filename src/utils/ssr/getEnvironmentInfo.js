@@ -7,6 +7,9 @@ const getEnvironmentInfo = async (context, store) => {
 
   const { environment, domainName } = ssrGetDeploymentInfo();
 
+  console.log('*** ssrGetDeploymentInfo.environment', environment);
+  console.log('*** ssrGetDeploymentInfo.domainName', domainName);
+
   store.dispatch(loadDeploymentInfo({ environment, domainName }));
 
   return {};
