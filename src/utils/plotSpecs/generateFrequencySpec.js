@@ -19,11 +19,19 @@ const generateSpec = (config, plotData, xNamesToDisplay, yNamesToDisplay) => {
     const positionIsRight = config.legend.position === 'right';
     plotDataReversed = plotData.slice().reverse();
 
+    // Approximate the size of each name.
+    // All names can have that size or less, so can use it calculate the amount of columns
+    //
+    // The size of each name is calculated by getting the amount of chars in
+    //  each name and multiplying by each approx char size, 8
+    const nameSize = _.max(yNamesToDisplay.map((legendName) => legendName.length * 8));
+
+    // only 20 rows per column if the legend is on the right
     const legendColumns = positionIsRight
       ? Math.ceil(yNamesToDisplay.length / 20)
-      : Math.floor(config.dimensions.width / 85);
+      : Math.floor((config.dimensions.width) / nameSize);
+    const labelLimit = positionIsRight ? 0 : nameSize;
 
-    const labelLimit = positionIsRight ? 0 : 85;
     legend = [
       {
         fill: positionIsRight ? 'cellSetColorsReversed' : 'cellSetColors',
@@ -50,6 +58,7 @@ const generateSpec = (config, plotData, xNamesToDisplay, yNamesToDisplay) => {
         titleFont: config.fontStyle.font,
         columns: legendColumns,
         labelLimit,
+        symbolLimit: 0,
       },
 
     ];
