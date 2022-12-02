@@ -8,7 +8,9 @@ import {
   Alert, Button, Empty, Skeleton, Space, Tabs, Typography,
 } from 'antd';
 
-import { BlockOutlined, MergeCellsOutlined, SplitCellsOutlined } from '@ant-design/icons';
+import {
+  BlockOutlined, MergeCellsOutlined, SplitCellsOutlined, PieChartOutlined,
+} from '@ant-design/icons';
 
 import { Element } from 'react-scroll';
 import {
@@ -106,7 +108,13 @@ const CellSetsTool = (props) => {
 
     if (numSelected) {
       operations = (
-        <Space>
+        <Space style={{ marginLeft: '0.5em' }}>
+          <CellSetOperation
+            icon={<PieChartOutlined />}
+            onCreate={() => {}}
+            ariaLabel='Subset cellsets'
+            helpTitle='Subset selected cell sets to a new analysis.'
+          />
           <CellSetOperation
             icon={<MergeCellsOutlined />}
             onCreate={(name, color) => {
