@@ -62,8 +62,22 @@ const loadDifferentialExpression = (
     const data = await fetchWork(
       experimentId, body, getState, dispatch, { timeout, extras },
     );
-    let { total } = data;
-    const { rows } = data;
+
+    // eslint-disable-next-line prefer-const
+    let { total, data: diffExprData } = data;
+    const { Gene } = diffExprData;
+
+    const rows = Gene.map((gene, indx) => ({
+      p_val: diffExprData.p_val[indx],
+      logFC: diffExprData.logFC[indx],
+      pct_1: diffExprData.pct_1[indx],
+      pct_2: diffExprData.pct_2[indx],
+      p_val_adj: diffExprData.p_val_adj[indx],
+      auc: diffExprData.auc[indx],
+      gene_names: diffExprData.gene_names[indx],
+      Gene: gene,
+    }));
+
     if (!total && !Object.keys(pagination).length) {
       total = rows.length;
     }
