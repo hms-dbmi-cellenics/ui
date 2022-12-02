@@ -30,7 +30,6 @@ const SubsetCellSetsOperation = () => {
             onOk={(subsetExperimentName) => {
               // Send request to API here
               // createSubsetExperiment(subsetExperimentName)
-              console.log('*** subsetExperimentName', subsetExperimentName);
               setShowSubsetCellSets(false);
             }}
             onCancel={() => setShowSubsetCellSets(false)}
