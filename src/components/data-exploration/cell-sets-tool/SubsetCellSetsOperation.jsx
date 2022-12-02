@@ -26,7 +26,6 @@ const SubsetCellSetsOperation = () => {
         showSubsetCellSets && (
           <SubsetCellSetsModal
             experimentName={experimentName}
-            showModal={showSubsetCellSets}
             onOk={(subsetExperimentName) => {
               // Send request to API here
               // createSubsetExperiment(subsetExperimentName)
