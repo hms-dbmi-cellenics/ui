@@ -97,3 +97,29 @@ Object {
   "type": "diffExpr/loaded",
 }
 `;
+
+exports[`loadDifferentialExpression action Doesnt crash if total is 0 1`] = `
+Array [
+  Object {
+    "payload": Object {
+      "advancedFilters": Array [],
+      "experimentId": "1234",
+    },
+    "type": "diffExpr/loading",
+  },
+  Object {
+    "payload": Object {
+      "comparisonGroup": Object {
+        "basis": "condition/condition-control",
+        "cellSet": "louvain/louvain-0",
+        "compareWith": "louvain/louvain-1",
+      },
+      "comparisonType": "within",
+      "data": Array [],
+      "experimentId": "1234",
+      "total": 0,
+    },
+    "type": "diffExpr/loaded",
+  },
+]
+`;

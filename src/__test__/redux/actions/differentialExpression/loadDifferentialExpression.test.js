@@ -153,4 +153,35 @@ describe('loadDifferentialExpression action', () => {
     expect(loadedAction.type).toEqual(DIFF_EXPR_LOADED);
     expect(loadedAction).toMatchSnapshot();
   });
+
+  it('Doesnt crash if total is 0', async () => {
+    const store = mockStore({
+      differentialExpression: {
+        ...initialState,
+      },
+      backendStatus,
+    });
+    fetchWork.mockImplementationOnce(() => {
+      const resolveWith = {
+        data: {
+          p_val: [],
+          p_val_adj: [],
+          logFC: [],
+          gene_names: [],
+          Gene: [],
+          auc: [],
+          pct_1: [],
+          pct_2: [],
+        },
+        total: 0,
+      };
+
+      return new Promise((resolve) => resolve(resolveWith));
+    });
+    await store.dispatch(
+      loadDifferentialExpression(experimentId, cellSets, comparisonType, defaultTableState),
+    );
+    const loadedActions = store.getActions();
+    expect(loadedActions).toMatchSnapshot();
+  });
 });
