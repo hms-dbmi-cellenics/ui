@@ -199,18 +199,18 @@ WrappedApp.getInitialProps = async ({ Component, ctx }) => {
     ? await Component.getInitialProps(ctx)
     : {};
 
+  const promises = [];
+
+  const { default: getEnvironmentInfo } = (await import('utils/ssr/getEnvironmentInfo'));
+  promises.push(getEnvironmentInfo);
+
+  const { default: getAuthenticationInfo } = (await import('utils/ssr/getAuthenticationInfo'));
+  promises.push(getAuthenticationInfo);
+
+  const results = await Promise.all(promises.map((f) => f(ctx, store)));
+  const amplifyConfig = results[1];
+
   try {
-    const promises = [];
-
-    const { default: getEnvironmentInfo } = (await import('utils/ssr/getEnvironmentInfo'));
-    promises.push(getEnvironmentInfo);
-
-    const { default: getAuthenticationInfo } = (await import('utils/ssr/getAuthenticationInfo'));
-    promises.push(getAuthenticationInfo);
-
-    const results = await Promise.all(promises.map((f) => f(ctx, store)));
-    const amplifyConfig = results[1];
-
     const { withSSRContext } = (await import('aws-amplify'));
 
     const { Auth } = withSSRContext(ctx);
@@ -223,7 +223,7 @@ WrappedApp.getInitialProps = async ({ Component, ctx }) => {
 
     return { pageProps: { ...pageProps, amplifyConfig } };
   } catch (e) {
-    console.error('[UI SERVER ERROR]: ', e);
+    console.error(e);
 
     if (!(e instanceof APIError)) {
       // eslint-disable-next-line no-ex-assign
