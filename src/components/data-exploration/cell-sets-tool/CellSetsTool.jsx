@@ -3,7 +3,7 @@ import React, {
 } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
-import SubsetCellSetsModal from 'components/data-exploration/cell-sets-tool/SubsetCellSetsModal';
+import SubsetCellSetsOperation from 'components/data-exploration/cell-sets-tool/SubsetCellSetsOperation';
 
 import {
   Alert, Button, Empty, Skeleton, Space, Tabs, Typography, Tooltip,
@@ -50,9 +50,6 @@ const CellSetsTool = (props) => {
   const filteredCellIds = useRef(new Set());
 
   const [activeTab, setActiveTab] = useState('cellSets');
-  const [showSubsetCellSets, setShowSubsetCellSets] = useState(false);
-
-  const experimentName = useSelector((store) => store.experimentSettings.info.experimentName);
 
   useEffect(() => {
     if (accessible && filteredCellIds.current.size === 0) {
@@ -113,15 +110,7 @@ const CellSetsTool = (props) => {
     if (numSelected) {
       operations = (
         <Space style={{ marginLeft: '0.5em' }}>
-          <Tooltip placement='top' title='Subset selected cell sets to a new analysis.'>
-            <Button
-              type='dashed'
-              aria-label='Subset cellsets'
-              size='small'
-              icon={<PieChartOutlined />}
-              onClick={() => { setShowSubsetCellSets(true); }}
-            />
-          </Tooltip>
+          <SubsetCellSetsOperation />
           <CellSetOperation
             icon={<MergeCellsOutlined />}
             onCreate={(name, color) => {
@@ -238,17 +227,6 @@ const CellSetsTool = (props) => {
             message={`${hidden.size} cell set${hidden.size > 1 ? 's are' : ' is'} currently hidden.`}
             type='warning'
             action={<Button type='link' size='small' onClick={() => dispatch(unhideAllCellSets(experimentId))}>Unhide all</Button>}
-          />
-        )}
-        { showSubsetCellSets && (
-          <SubsetCellSetsModal
-            experimentName={experimentName}
-            showModal={showSubsetCellSets}
-            onOk={(subsetExperimentName) => {
-              // Send request to API here
-              // createSubsetExperiment(subsetExperimentName)
-            }}
-            onCancel={() => setShowSubsetCellSets(false)}
           />
         )}
         {renderContent()}
