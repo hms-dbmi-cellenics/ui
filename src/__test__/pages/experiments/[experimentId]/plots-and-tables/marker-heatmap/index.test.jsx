@@ -355,14 +355,18 @@ describe('Marker heatmap plot', () => {
       userEvent.click(option, undefined, { skipPointerEventsCheck: true });
     });
 
-    // check the search text is cleared after selecting a valid option
-    expect(searchBox.value).toBe('');
+    // check the search text is modified after selecting a valid option
+    expect(searchBox.value).toBe('Tmem176a, ');
+
+    const geneAddButton = screen.getByText('Add');
+
+    userEvent.click(geneAddButton);
 
     // check the selected gene was added
     expect(within(geneTree).getByText('Tmem176a')).toBeInTheDocument();
   });
 
-  it('adds an already loaded gene and clears the input', async () => {
+  it('tries to select an already loaded gene and clears the input', async () => {
     await renderHeatmapPage(storeState);
 
     const searchBox = screen.getByRole('combobox');
@@ -435,31 +439,7 @@ describe('Drag and drop enzyme tests', () => {
     const info = {
       dragNode: { key: 1, pos: '0-1' },
       dropPosition: 1,
-      dropToGap: true,
-    };
-
-    tree.getElement().props.onDrop(info);
-
-    await act(async () => {
-      component.update();
-    });
-
-    const newOrder = getCurrentGeneOrder(component);
-
-    expect(_.isEqual(newOrder, markerGenesData5.order)).toEqual(true);
-  });
-
-  it('changes nothing when not dropped in gap', async () => {
-    // default genes are in the tree
-    markerGenesData5.order.forEach((geneName) => {
-      expect(tree.containsMatchingElement(geneName));
-    });
-
-    // not dropping to gap does nothing
-    const info = {
-      dragNode: { key: 1, pos: '0-1' },
-      dropPosition: 4,
-      dropToGap: false,
+      node: { dragOver: false },
     };
 
     tree.getElement().props.onDrop(info);
@@ -482,7 +462,7 @@ describe('Drag and drop enzyme tests', () => {
     const info = {
       dragNode: { key: 1, pos: '0-1' },
       dropPosition: 4,
-      dropToGap: true,
+      node: { dragOver: false },
     };
 
     tree.getElement().props.onDrop(info);

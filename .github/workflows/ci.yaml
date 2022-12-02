@@ -78,7 +78,7 @@ jobs:
         name: Run unit tests
         uses: mattallty/jest-github-action@v1
         env:
-          AWS_DEFAULT_REGION: eu-west-1
+          AWS_DEFAULT_REGION: us-east-1
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           test-command: 'npm run coverage'
@@ -87,6 +87,15 @@ jobs:
       - id: upload-coverage
         name: Upload coverage to Codecov
         uses: codecov/codecov-action@v1
+
+      - id: check-licenses
+        name: Check licenses
+        env:
+          ALLOWED_LICENSES: "MIT;Apache-2.0;BSD-3-Clause;ISC;BSD-2-Clause;BSD;CC0-1.0;0BSD;Unlicense;(MIT AND Zlib);(Unlicense OR Apache-2.0);BSD-3-Clause OR MIT;(MIT OR Apache-2.0);CC-BY-4.0;Apache-Style;(Apache-2.0 OR MPL-1.1);WTFPL;(WTFPL OR MIT);EPL-1.0;(MIT AND BSD-3-Clause);(MIT OR CC0-1.0);Custom: https://github.com/aws-amplify/amplify-js"
+          EXCLUDE_PACKAGES: "cartocolor@4.0.2;turf-jsts@1.2.3"
+        run: |-
+          npm install -g license-checker
+          license-checker --production --json --onlyAllow="${ALLOWED_LICENSES}" --excludePackages="${EXCLUDE_PACKAGES}"
 
       - id: next-cache-seek
         name: Look up the Next.js build cache
@@ -186,7 +195,7 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: eu-west-1
+          aws-region: us-east-1
 
       - id: login-ecr
         name: Login to Amazon ECR
@@ -258,7 +267,7 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: eu-west-1
+          aws-region: us-east-1
 
       - id: login-ecr
         name: Login to Amazon ECR
