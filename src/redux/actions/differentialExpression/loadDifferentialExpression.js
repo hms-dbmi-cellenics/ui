@@ -93,7 +93,6 @@ const loadDifferentialExpression = (
       },
     });
   } catch (error) {
-    console.log('error is ', error);
     dispatch({
       type: DIFF_EXPR_ERROR,
       payload: {
