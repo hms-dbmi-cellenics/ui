@@ -22,7 +22,11 @@ const SubsetCellSetsModal = (props) => {
       <p>This action will create a new project containing cells only from the selected cell sets.</p>
       <Space>
         <span>New project name</span>
-        <Input defaultValue={defaultName} onChange={(e) => { subsetExperimentName.current = e.target.value; }} />
+        <Input
+          aria-label='Subset experiment name'
+          defaultValue={defaultName}
+          onChange={(e) => { subsetExperimentName.current = e.target.value; }}
+        />
       </Space>
     </Modal>
   );
