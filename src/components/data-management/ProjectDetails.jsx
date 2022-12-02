@@ -6,7 +6,9 @@ import PropTypes from 'prop-types';
 import {
   Space, Typography, Button,
 } from 'antd';
-import { cloneExperiment, updateExperiment, loadExperiments } from 'redux/actions/experiments';
+import {
+  cloneExperiment, updateExperiment, loadExperiments, setActiveExperiment,
+} from 'redux/actions/experiments';
 
 import SampleOptions from 'components/data-management/SamplesOptions';
 import EditableParagraph from 'components/EditableParagraph';
@@ -30,8 +32,9 @@ const ProjectDetails = ({ width, height }) => {
   const samplesTableRef = useRef();
 
   const clone = async () => {
-    await dispatch(cloneExperiment(activeExperimentId, `Copy of ${activeExperiment.name}`));
-    dispatch(loadExperiments());
+    const newExperimentId = await dispatch(cloneExperiment(activeExperimentId, `Copy of ${activeExperiment.name}`));
+    await dispatch(loadExperiments());
+    dispatch(setActiveExperiment(newExperimentId));
   };
 
   return (
