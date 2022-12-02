@@ -23,8 +23,11 @@ const generateSpec = (config, plotData, xNamesToDisplay, yNamesToDisplay) => {
     // All names can have that size or less, so can use it calculate the amount of columns
     //
     // The size of each name is calculated by getting the amount of chars in
-    //  each name and multiplying by each approx char size, 8
-    const nameSize = _.max(yNamesToDisplay.map((legendName) => legendName.length * 8));
+    //  each name and multiplying by each approx char size, 5.5
+    //  plus 30 for the color symbol and offset
+    const nameSize = 30 + _.max(
+      yNamesToDisplay.map((legendName) => legendName.length * 5.5),
+    );
 
     // only 20 rows per column if the legend is on the right
     const legendColumns = positionIsRight
