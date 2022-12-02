@@ -31,7 +31,7 @@ describe('SubsetCellSetsOperation', async () => {
     userEvent.hover(button);
 
     await waitFor(() => {
-      expect(screen.getByText(/Subset selected cell sets to a new analysis./i));
+      expect(screen.getByText(/Subset selected cell sets to a new project./i));
     });
 
     // Should not show modal by default

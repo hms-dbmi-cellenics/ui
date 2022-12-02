@@ -12,7 +12,7 @@ const SubsetCellSetsOperation = () => {
 
   return (
     <>
-      <Tooltip placement='top' title='Subset selected cell sets to a new analysis.'>
+      <Tooltip placement='top' title='Subset selected cell sets to a new project.'>
         <Button
           type='dashed'
           aria-label='Create new experiment from selected cellsets'

@@ -6,11 +6,11 @@ import PropTypes from 'prop-types';
 import SubsetCellSetsOperation from 'components/data-exploration/cell-sets-tool/SubsetCellSetsOperation';
 
 import {
-  Alert, Button, Empty, Skeleton, Space, Tabs, Typography, Tooltip,
+  Alert, Button, Empty, Skeleton, Space, Tabs, Typography,
 } from 'antd';
 
 import {
-  BlockOutlined, MergeCellsOutlined, SplitCellsOutlined, PieChartOutlined,
+  BlockOutlined, MergeCellsOutlined, SplitCellsOutlined,
 } from '@ant-design/icons';
 
 import { Element } from 'react-scroll';
