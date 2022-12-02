@@ -208,7 +208,7 @@ WrappedApp.getInitialProps = async ({ Component, ctx }) => {
   promises.push(getAuthenticationInfo);
 
   const results = await Promise.all(promises.map((f) => f(ctx, store)));
-  const amplifyConfig = results[1];
+  const { amplifyConfig } = results[1];
 
   try {
     const { withSSRContext } = (await import('aws-amplify'));
@@ -231,7 +231,7 @@ WrappedApp.getInitialProps = async ({ Component, ctx }) => {
     }
     res.statusCode = e.statusCode;
 
-    return { pageProps: { ...pageProps, httpError: e.statusCode || true } };
+    return { pageProps: { ...pageProps, amplifyConfig, httpError: e.statusCode || true } };
   }
 };
 /* eslint-enable global-require */
