@@ -6,10 +6,6 @@ const getEnvironmentInfo = async (context, store) => {
   if (networkResources.environment && networkResources.domainName) return;
 
   const { environment, domainName } = ssrGetDeploymentInfo();
-
-  console.log('*** ssrGetDeploymentInfo.environment', environment);
-  console.log('*** ssrGetDeploymentInfo.domainName', domainName);
-
   store.dispatch(loadDeploymentInfo({ environment, domainName }));
 
   return {};

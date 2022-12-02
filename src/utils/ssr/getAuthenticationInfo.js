@@ -18,11 +18,6 @@ const getAuthenticationInfo = async () => {
   // We use Node's `global` as a store for caching the results on the server-side.
   // Once we grab the cognito pool information there is no need to re-fetch again.
 
-  console.log(
-    '*** global.cachedAuthenticationInfo',
-    JSON.stringify(global.cachedAuthenticationInfo, null, 4),
-  );
-
   if (global.cachedAuthenticationInfo) {
     return global.cachedAuthenticationInfo;
   }
@@ -36,13 +31,6 @@ const getAuthenticationInfo = async () => {
       }),
     };
   }
-
-  console.log(
-    '*** additionalClientParams',
-    JSON.stringify(additionalClientParams, null, 4),
-  );
-
-  console.log('*** getAWSRegion()', getAWSRegion());
 
   const identityPoolClient = new CognitoIdentityClient(
     {
