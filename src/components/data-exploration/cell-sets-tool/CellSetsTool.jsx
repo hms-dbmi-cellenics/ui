@@ -3,7 +3,7 @@ import React, {
 } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
-import SubsetCellSetsOperation from 'components/data-exploration/cell-sets-tool/SubsetCellSetsOperation';
+// import SubsetCellSetsOperation from 'components/data-exploration/cell-sets-tool/SubsetCellSetsOperation';
 
 import {
   Alert, Button, Empty, Skeleton, Space, Tabs, Typography,
@@ -110,7 +110,7 @@ const CellSetsTool = (props) => {
     if (numSelected) {
       operations = (
         <Space style={{ marginLeft: '0.5em' }}>
-          <SubsetCellSetsOperation />
+          {/* <SubsetCellSetsOperation /> */}
           <CellSetOperation
             icon={<MergeCellsOutlined />}
             onCreate={(name, color) => {
