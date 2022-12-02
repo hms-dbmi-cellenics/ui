@@ -53,4 +53,50 @@ describe('SubsetCellSetsOperation', async () => {
       expect(screen.getByText(/New project name/i)).toBeInTheDocument();
     });
   });
+
+  it('Clicking on Create closes the modal', async () => {
+    render(
+      <Provider store={storeState}>
+        {SubsetCellSetsOperationFactory()}
+      </Provider>,
+    );
+
+    const button = screen.getByLabelText(/Create new experiment from selected cellsets/i);
+
+    userEvent.click(button);
+
+    await waitFor(() => {
+      expect(screen.getByText(/New project name/i)).toBeInTheDocument();
+    });
+
+    userEvent.click(screen.getByText('Create'));
+
+    // Modal should close
+    await waitFor(() => {
+      expect(screen.queryByText(/New project name/i)).toBeNull();
+    });
+  });
+
+  it('Clicking on Cancel closes the modal', async () => {
+    render(
+      <Provider store={storeState}>
+        {SubsetCellSetsOperationFactory()}
+      </Provider>,
+    );
+
+    const button = screen.getByLabelText(/Create new experiment from selected cellsets/i);
+
+    userEvent.click(button);
+
+    await waitFor(() => {
+      expect(screen.getByText(/New project name/i)).toBeInTheDocument();
+    });
+
+    userEvent.click(screen.getByText('Cancel'));
+
+    // Modal should close
+    await waitFor(() => {
+      expect(screen.queryByText(/New project name/i)).toBeNull();
+    });
+  });
 });
