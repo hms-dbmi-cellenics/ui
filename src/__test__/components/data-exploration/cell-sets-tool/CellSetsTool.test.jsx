@@ -128,7 +128,7 @@ describe('CellSetsTool', () => {
     expect(cellSetOperations).toEqual(null);
   });
 
-  it.only('cell set operations should render when cell sets are selected', async () => {
+  it('cell set operations should render when cell sets are selected', async () => {
     await act(async () => {
       render(
         <Provider store={storeState}>
