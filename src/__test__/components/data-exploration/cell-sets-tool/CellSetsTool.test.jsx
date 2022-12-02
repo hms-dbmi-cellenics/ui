@@ -128,7 +128,7 @@ describe('CellSetsTool', () => {
     expect(cellSetOperations).toEqual(null);
   });
 
-  it('cell set operations should render when cell sets are selected', async () => {
+  it.only('cell set operations should render when cell sets are selected', async () => {
     await act(async () => {
       render(
         <Provider store={storeState}>
@@ -145,6 +145,10 @@ describe('CellSetsTool', () => {
 
     // There should be three operations rendered.
     expect(cellSetOperations.length).toEqual(3);
+
+    // There should be a button for subsetting cellsets
+    const subsetCellSetsOperation = screen.getByLabelText(/Create new experiment from selected cellsets/i);
+    expect(subsetCellSetsOperation).toBeInTheDocument();
   });
 
   it('can compute a union of 2 cell sets', async () => {

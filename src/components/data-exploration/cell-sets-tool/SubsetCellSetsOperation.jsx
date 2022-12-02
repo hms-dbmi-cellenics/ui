@@ -15,7 +15,7 @@ const SubsetCellSetsOperation = () => {
       <Tooltip placement='top' title='Subset selected cell sets to a new analysis.'>
         <Button
           type='dashed'
-          aria-label='Subset cellsets'
+          aria-label='Create new experiment from selected cellsets'
           size='small'
           icon={<PieChartOutlined />}
           onClick={() => { setShowSubsetCellSets(true); }}
