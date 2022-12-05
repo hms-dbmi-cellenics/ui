@@ -27,6 +27,8 @@ const { Option } = Select;
 const { Text } = Typography;
 const { Panel } = Collapse;
 
+const GEOSKETCH = 'geosketch';
+
 const CalculationConfig = (props) => {
   const {
     onConfigChange, disabled, disableDataIntegration,
@@ -273,29 +275,43 @@ const CalculationConfig = (props) => {
       </Collapse>
       <Collapse>
         <Panel header='Downsampling Options' key='downsampling-opts'>
-          <Form.Item label='Downsampling Method'>
-            <Select
-              value={downsampling?.method || 'none'}
-              onChange={(val) => {
-                // if (val !== 'none') setPercentageToKeep(5);
-                // else setPercentageToKeep(100);
-                const percentageToKeep = val !== 'none' ? 5 : 100;
-                updateSettings({ downsampling: { method: val, percentageToKeep } });
-              }}
-            >
-              <Option value='none'>No Downsampling</Option>
-              <Option value='geosketching'>Geometric Sketching</Option>
-            </Select>
-          </Form.Item>
+          <Tooltip title='Large datasets (e.g. >100,000 cells) can be downsampled specifically for the integration step. This speeds up the time it takes to integrate large datasets using some methods (especially Seurat_v4 and FastMNN), and enables large datasets to successfully complete the pipeline. Once the data are integrated, the full data are available for downstream analysis and visualization.'>
+            <Form.Item label='Downsampling Method'>
+              <Select
+                value={downsampling?.method || 'none'}
+                onChange={(val) => {
+                  const percentageToKeep = val !== 'none' ? 5 : 100;
+                  updateSettings({ downsampling: { method: val, percentageToKeep } });
+                }}
+              >
+                <Option value='none'>No Downsampling</Option>
+                <Tooltip overlay={(
+                  <span>
+                    Geometric sketching finds random subsamples of a dataset that preserve the underlying geometry,
+                    which is described in the paper
+                    <a
+                      href='https://www.sciencedirect.com/science/article/pii/S2405471219301528'
+                      target='_blank'
+                      rel='noreferrer'
+                    >
+                      {' '}
+                      <code>Geometric sketching compactly summarizes the single-cell transcriptomic landscape</code>
+                    </a>
+                  </span>
+                )}
+                >
+                  <Option value={GEOSKETCH}>Geometric Sketching</Option>
+                </Tooltip>
+              </Select>
+            </Form.Item>
+          </Tooltip>
           <Form.Item label='% of cells to keep'>
             <InputNumber
-              disabled={downsampling?.method !== 'geosketching'}
+              disabled={downsampling?.method !== GEOSKETCH}
               value={downsampling?.percentageToKeep || 100}
               max={100}
               min={0}
               onChange={(value) => {
-                // onConfigChange(); // why is this needed
-                // setPercentageToKeep(parseInt(value, 0));
                 updateSettings({ downsampling: { percentageToKeep: parseInt(value, 0) } });
               }}
             />
