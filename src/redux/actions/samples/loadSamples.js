@@ -86,3 +86,5 @@ const loadSamples = (experimentId) => async (dispatch) => {
 };
 
 export default loadSamples;
+
+export { toApiV1 };

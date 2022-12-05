@@ -146,6 +146,42 @@ describe('Samples table', () => {
     });
   });
 
+  it('Should NOT show the samples until theres validation going on for active experiment', async () => {
+    const validatingExpState = _.cloneDeep(storeState.getState());
+    const createMockStore = configureMockStore([thunk]);
+
+    // Set the active experiment as being validated
+    validatingExpState.samples.meta.validating = [experimentWithSamplesId];
+
+    const validatingExpStore = createMockStore(validatingExpState);
+
+    await renderSamplesTable(validatingExpStore);
+
+    Object.values(samples).forEach((sample) => {
+      expect(screen.queryByText(sample.name)).not.toBeInTheDocument();
+    });
+
+    expect(screen.getByText('We\'re validating your samples ...')).toBeDefined();
+  });
+
+  it('Should show the samples if theres validation going on but not for active experiment', async () => {
+    const validatingExpState = _.cloneDeep(storeState.getState());
+    const createMockStore = configureMockStore([thunk]);
+
+    // Set the active experiment as being validated
+    validatingExpState.samples.meta.validating = ['inactiveExperiment'];
+
+    const validatingExpStore = createMockStore(validatingExpState);
+
+    await renderSamplesTable(validatingExpStore);
+
+    Object.values(samples).forEach((sample) => {
+      expect(screen.getByText(sample.name)).toBeInTheDocument();
+    });
+
+    expect(screen.queryByText('We\'re validating your samples ...')).not.toBeInTheDocument();
+  });
+
   it('Renaming the sample renames the sample', async () => {
     const newSampleName = 'New Sample Name';
 
