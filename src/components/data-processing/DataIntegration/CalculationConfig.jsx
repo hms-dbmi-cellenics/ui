@@ -80,7 +80,6 @@ const CalculationConfig = (props) => {
   ];
 
   const [numPCs, setNumPCs] = useState(dimensionalityReduction.numPCs);
-  // const [percentageToKeep, setPercentageToKeep] = useState(downsampling?.percentageToKeep);
 
   const updateSettings = (diff) => {
     onConfigChange();

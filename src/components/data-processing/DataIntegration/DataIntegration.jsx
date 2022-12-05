@@ -5,7 +5,6 @@ import { useSelector, useDispatch } from 'react-redux';
 import {
   Row, Col, Radio, PageHeader, Collapse, Alert, Empty,
 } from 'antd';
-
 import _ from 'lodash';
 import PropTypes from 'prop-types';
 
@@ -309,7 +308,6 @@ const DataIntegration = (props) => {
             disabled={stepDisabled}
             disableDataIntegration={disableDataIntegration}
           />
-
           <Collapse>
             <Panel header='Plot styling' key='styling'>
               <div style={{ height: 8 }} />
