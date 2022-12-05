@@ -145,6 +145,11 @@ describe('CellSetsTool', () => {
 
     // There should be three operations rendered.
     expect(cellSetOperations.length).toEqual(3);
+
+    // Uncomment test to test for the existence of the cell sets test
+    // There should be a button for subsetting cellsets
+    // const subsetCellSetsOperation = screen.getByLabelText(/Create new experiment from selected cellsets/i);
+    // expect(subsetCellSetsOperation).toBeInTheDocument();
   });
 
   it('can compute a union of 2 cell sets', async () => {

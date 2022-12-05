@@ -3,12 +3,15 @@ import React, {
 } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
+// import SubsetCellSetsOperation from 'components/data-exploration/cell-sets-tool/SubsetCellSetsOperation';
 
 import {
   Alert, Button, Empty, Skeleton, Space, Tabs, Typography,
 } from 'antd';
 
-import { BlockOutlined, MergeCellsOutlined, SplitCellsOutlined } from '@ant-design/icons';
+import {
+  BlockOutlined, MergeCellsOutlined, SplitCellsOutlined,
+} from '@ant-design/icons';
 
 import { Element } from 'react-scroll';
 import {
@@ -106,7 +109,8 @@ const CellSetsTool = (props) => {
 
     if (numSelected) {
       operations = (
-        <Space>
+        <Space style={{ marginLeft: '0.5em' }}>
+          {/* <SubsetCellSetsOperation /> */}
           <CellSetOperation
             icon={<MergeCellsOutlined />}
             onCreate={(name, color) => {
@@ -218,13 +222,13 @@ const CellSetsTool = (props) => {
       }}
     >
       <Space direction='vertical'>
-        {hidden.size > 0 ? (
+        {hidden.size > 0 && (
           <Alert
             message={`${hidden.size} cell set${hidden.size > 1 ? 's are' : ' is'} currently hidden.`}
             type='warning'
             action={<Button type='link' size='small' onClick={() => dispatch(unhideAllCellSets(experimentId))}>Unhide all</Button>}
           />
-        ) : (<></>)}
+        )}
         {renderContent()}
       </Space>
     </Element>
