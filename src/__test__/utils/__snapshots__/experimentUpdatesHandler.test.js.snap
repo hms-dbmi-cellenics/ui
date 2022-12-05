@@ -25,6 +25,24 @@ Array [
 ]
 `;
 
+exports[`ExperimentUpdatesHandler Loads cell sets if Seurat pipeline completes  1`] = `
+Array [
+  "testae48e318dab9a1bd0bexperiment",
+  Object {
+    "seurat": Object {
+      "status": "SUCCEEDED",
+    },
+  },
+]
+`;
+
+exports[`ExperimentUpdatesHandler Loads cell sets if Seurat pipeline completes  2`] = `
+Array [
+  "testae48e318dab9a1bd0bexperiment",
+  true,
+]
+`;
+
 exports[`ExperimentUpdatesHandler Logs error if there is an error returned as an experiment update 1`] = `
 [MockFunction] {
   "calls": Array [
@@ -109,5 +127,27 @@ exports[`ExperimentUpdatesHandler Triggers properly for QC updates  3`] = `
 Array [
   "mockPlotUuid",
   "mockPlotData",
+]
+`;
+
+exports[`ExperimentUpdatesHandler Triggers properly for SEURAT updates  1`] = `
+Array [
+  "testae48e318dab9a1bd0bexperiment",
+  Object {
+    "seurat": Object {
+      "status": "RUNNING",
+    },
+  },
+]
+`;
+
+exports[`ExperimentUpdatesHandler Triggers properly for SEURAT updates  2`] = `
+Array [
+  "testae48e318dab9a1bd0bexperiment",
+  Object {
+    "seurat": Object {
+      "status": "RUNNING",
+    },
+  },
 ]
 `;

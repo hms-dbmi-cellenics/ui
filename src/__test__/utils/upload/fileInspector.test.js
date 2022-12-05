@@ -87,4 +87,22 @@ describe('fileInspector', () => {
     expect(await inspectFile(file, '10X Chromium'))
       .toEqual(Verdict.INVALID_FORMAT);
   });
+
+  it('Detects a Seurat *.rds file properly', async () => {
+    const file = {
+      name: 'scdata.rds',
+    };
+
+    expect(await inspectFile(file, 'Seurat'))
+      .toEqual(Verdict.VALID_ZIPPED);
+  });
+
+  it('Detects invalid Seurat file names properly', async () => {
+    const file = {
+      name: 'blah.txt',
+    };
+
+    expect(await inspectFile(file, 'Seurat'))
+      .toEqual(Verdict.INVALID_FORMAT);
+  });
 });

@@ -1,7 +1,7 @@
 import objectHash from 'object-hash';
 import { METADATA_DEFAULT_VALUE } from 'redux/reducers/experiments/initialState';
 
-const generateGem2sParamsHash = (experiment, samples) => {
+const generatePipelineParamsHash = (experiment, samples) => {
   if (!experiment || !samples) {
     return false;
   }
@@ -24,7 +24,7 @@ const generateGem2sParamsHash = (experiment, samples) => {
     const orderInvariantProjectMetadataKeys = [...experiment.metadataKeys].sort();
 
     hashParams.metadata = orderInvariantProjectMetadataKeys.reduce((acc, key) => {
-      // Make sure the key does not contain '-' as it will cause failure in GEM2S
+      // Make sure the key does not contain '-' as it will cause failure in Pipeline
       const sanitizedKey = key.replace(/-+/g, '_');
 
       acc[sanitizedKey] = projectSamples.map(
@@ -42,4 +42,4 @@ const generateGem2sParamsHash = (experiment, samples) => {
   return newHash;
 };
 
-export default generateGem2sParamsHash;
+export default generatePipelineParamsHash;

@@ -15,6 +15,14 @@ const MATRIX_SIGNATURE = Buffer.from('%%MatrixMarket');
 const GZIP_SIGNATURE = Buffer.from([0x1f, 0x8b]);
 
 const inspectFile = async (file, technology) => {
+  if (technology === '10X Chromium') {
+    return inspect10XFile(file, technology);
+  } if (technology === 'Seurat') {
+    return inspectSeuratFile(file, technology);
+  }
+};
+
+const inspect10XFile = async (file, technology) => {
   // Validate a file requested for upload to the platform.
 
   // immediately discard file if filename is not in valid set
@@ -51,11 +59,28 @@ const inspectFile = async (file, technology) => {
 
   // check barcodes file starts with a 16 digit DNA sequence
   if (file.name.startsWith('barcodes')
-      && !data.toString().match(/\t/)) {
+    && !data.toString().match(/\t/)) {
     return valid;
   }
 
   return Verdict.INVALID_FORMAT;
+};
+
+const inspectSeuratFile = async (file, technology) => {
+  // Validate a file requested for upload to the platform.
+
+  // immediately discard file if filename is not in valid set
+  const validExtensions = techOptions[technology].validExtensionTypes;
+
+  const isValidExtension = validExtensions.some(
+    (validExtension) => file.name.endsWith(validExtension),
+  );
+
+  if (!isValidExtension) {
+    return Verdict.INVALID_FORMAT;
+  }
+
+  return Verdict.VALID_ZIPPED;
 };
 
 export {

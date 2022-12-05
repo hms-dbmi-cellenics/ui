@@ -39,10 +39,16 @@ const api = {
   V2: 'v2',
 };
 
+const techTypes = {
+  CHROMIUM: '10X Chromium',
+  SEURAT: 'Seurat',
+};
+
 export {
   layout,
   plotNames,
   plotTypes,
   modules,
   api,
+  techTypes,
 };

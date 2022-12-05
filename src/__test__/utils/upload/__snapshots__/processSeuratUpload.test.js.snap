@@ -1,0 +1,24 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`processSeuratUpload Uploads and updates redux correctly when there are no errors 1`] = `
+Array [
+  Object {
+    "data": Blob {},
+    "headers": Object {
+      "Content-Type": "application/octet-stream",
+    },
+    "method": "put",
+    "onUploadProgress": [Function],
+    "url": "theSignedUrl1",
+  },
+  Object {
+    "data": Blob {},
+    "headers": Object {
+      "Content-Type": "application/octet-stream",
+    },
+    "method": "put",
+    "onUploadProgress": [Function],
+    "url": "theSignedUrl2",
+  },
+]
+`;

@@ -4,13 +4,15 @@ import {
   Space, Button,
 } from 'antd';
 import integrationTestConstants from 'utils/integrationTestConstants';
-import processUpload from 'utils/upload/processUpload';
+import { process10XUpload, processSeuratUpload } from 'utils/upload/processUpload';
+import { techTypes } from 'utils/constants';
 import DownloadDataButton from './DownloadDataButton';
 import LaunchAnalysisButton from './LaunchAnalysisButton';
 import FileUploadModal from './FileUploadModal';
 import ShareExperimentModal from './ShareExperimentModal';
 
-const ProjectMenu = () => {
+const ProjectMenu = (props) => {
+  const { technology } = props;
   const dispatch = useDispatch();
   const samples = useSelector((state) => state.samples);
   const activeExperimentId = useSelector((state) => state.experiments.meta.activeExperimentId);
@@ -20,7 +22,11 @@ const ProjectMenu = () => {
   const [shareExperimentModalVisible, setShareExperimentModalVisible] = useState(false);
 
   const uploadFiles = (filesList, sampleType) => {
-    processUpload(filesList, sampleType, samples, activeExperimentId, dispatch);
+    if (sampleType === techTypes.CHROMIUM) {
+      process10XUpload(filesList, sampleType, samples, activeExperimentId, dispatch);
+    } else if (sampleType === techTypes.SEURAT) {
+      processSeuratUpload(filesList, sampleType, samples, activeExperimentId, dispatch);
+    }
     setUploadModalVisible(false);
   };
 
@@ -31,7 +37,7 @@ const ProjectMenu = () => {
           data-test-id={integrationTestConstants.ids.ADD_SAMPLES_BUTTON}
           onClick={() => setUploadModalVisible(true)}
         >
-          Add samples
+          Add data
         </Button>
         <DownloadDataButton />
         <Button
@@ -46,12 +52,13 @@ const ProjectMenu = () => {
             experiment={activeExperiment}
           />
         )}
-        <LaunchAnalysisButton />
+        <LaunchAnalysisButton technology={technology} />
       </Space>
       {uploadModalVisible ? (
         <FileUploadModal
           onUpload={uploadFiles}
           onCancel={() => setUploadModalVisible(false)}
+          previousDataTechnology={technology}
         />
       ) : <></>}
     </>

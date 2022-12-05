@@ -1,70 +1,76 @@
 /* eslint-disable no-param-reassign */
 import _ from 'lodash';
 
-import axios from 'axios';
-
 import { createSample, createSampleFile, updateSampleFileUpload } from 'redux/actions/samples';
 
 import UploadStatus from 'utils/upload/UploadStatus';
 import loadAndCompressIfNecessary from 'utils/upload/loadAndCompressIfNecessary';
 import { inspectFile, Verdict } from 'utils/upload/fileInspector';
+import fetchAPI from 'utils/http/fetchAPI';
 
 import getFileTypeV2 from 'utils/getFileTypeV2';
-
-const MAX_RETRIES = 2;
-
-const putInS3 = async (loadedFileData, signedUrl, onUploadProgress, currentRetry = 0) => {
-  try {
-    await axios.request({
-      method: 'put',
-      url: signedUrl,
-      data: loadedFileData,
-      headers: {
-        'Content-Type': 'application/octet-stream',
-      },
-      onUploadProgress,
-    });
-  } catch (e) {
-    if (currentRetry < MAX_RETRIES) {
-      await putInS3(loadedFileData, signedUrl, onUploadProgress, currentRetry + 1);
-    }
-
-    throw e;
-  }
-};
+import uploadParts from './processMultipartUpload';
 
 const prepareAndUploadFileToS3 = async (
-  projectId, sampleId, fileType, file, signedUrl, dispatch,
+  projectId, sampleId, fileType, file, uploadUrlParams, dispatch,
 ) => {
-  let loadedFile = null;
+  let parts = null;
+  let compressedFile = file;
+  const { signedUrls, uploadId, sampleFileId } = uploadUrlParams;
 
-  try {
-    loadedFile = await loadAndCompressIfNecessary(file, () => {
-      dispatch(updateSampleFileUpload(projectId, sampleId, fileType, UploadStatus.COMPRESSING));
-    });
-  } catch (e) {
-    const fileErrorStatus = e.message === 'aborted' ? UploadStatus.FILE_READ_ABORTED : UploadStatus.FILE_READ_ERROR;
+  if (!file.compressed) {
+    try {
+      compressedFile = await loadAndCompressIfNecessary(file, () => {
+        dispatch(updateSampleFileUpload(projectId, sampleId, fileType, UploadStatus.COMPRESSING));
+      });
+    } catch (e) {
+      const fileErrorStatus = e.message === 'aborted' ? UploadStatus.FILE_READ_ABORTED : UploadStatus.FILE_READ_ERROR;
 
-    dispatch(updateSampleFileUpload(projectId, sampleId, fileType, fileErrorStatus));
-    return;
+      dispatch(updateSampleFileUpload(projectId, sampleId, fileType, fileErrorStatus));
+      return;
+    }
   }
 
-  try {
-    await putInS3(loadedFile, signedUrl, (progress) => {
-      const percentProgress = Math.round((progress.loaded / progress.total) * 100);
+  const uploadedPartSizes = new Array(signedUrls.length).fill(0);
+  const totalSize = file.fileObject.size;
 
-      dispatch(
-        updateSampleFileUpload(
-          projectId, sampleId, fileType, UploadStatus.UPLOADING, percentProgress ?? 0,
-        ),
-      );
-    });
+  const createOnUploadProgressForPart = (partIndex) => (progress) => {
+    uploadedPartSizes[partIndex] = progress.loaded;
+    const totalUploaded = _.sum(uploadedPartSizes);
+    const percentProgress = Math.floor((totalUploaded * 100) / totalSize);
+
+    dispatch(
+      updateSampleFileUpload(
+        projectId, sampleId, fileType, UploadStatus.UPLOADING, percentProgress ?? 0,
+      ),
+    );
+  };
+
+  try {
+    parts = await uploadParts(compressedFile, signedUrls, createOnUploadProgressForPart);
   } catch (e) {
     dispatch(updateSampleFileUpload(projectId, sampleId, fileType, UploadStatus.UPLOAD_ERROR));
     return;
   }
 
+  const requestUrl = '/v2/completeMultipartUpload';
+  const body = {
+    parts,
+    uploadId,
+    sampleFileId,
+  };
+
+  await fetchAPI(requestUrl,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(body),
+    });
+
   dispatch(updateSampleFileUpload(projectId, sampleId, fileType, UploadStatus.UPLOADED));
+  return parts;
 };
 
 const getMetadata = (file) => {
@@ -83,9 +89,9 @@ const createAndUploadSingleFile = async (file, projectId, sampleId, dispatch) =>
   const metadata = getMetadata(file);
   const fileType = getFileTypeV2(file.fileObject.name, file.fileObject.type);
 
-  let signedUrl;
+  let uploadUrlParams;
   try {
-    signedUrl = await dispatch(
+    uploadUrlParams = await dispatch(
       createSampleFile(
         projectId,
         sampleId,
@@ -101,7 +107,7 @@ const createAndUploadSingleFile = async (file, projectId, sampleId, dispatch) =>
     return;
   }
 
-  await prepareAndUploadFileToS3(projectId, sampleId, fileType, file, signedUrl, dispatch);
+  await prepareAndUploadFileToS3(projectId, sampleId, fileType, file, uploadUrlParams, dispatch);
 };
 
 const createAndUpload = async (sample, experimentId, dispatch) => (
@@ -109,7 +115,53 @@ const createAndUpload = async (sample, experimentId, dispatch) => (
     (file) => createAndUploadSingleFile(file, experimentId, sample.uuid, dispatch),
   ));
 
-const processUpload = async (filesList, sampleType, samples, experimentId, dispatch) => {
+const processSeuratUpload = async (filesList, sampleType, samples, experimentId, dispatch) => {
+  const samplesMap = filesList.reduce((acc, file) => {
+    const fileNameToArray = file.name.trim().replace(/[\s]{2,}/ig, ' ').split('.');
+    const sampleName = fileNameToArray[0];
+
+    const sampleUuid = Object.values(samples).filter(
+      (s) => s.name === sampleName
+        && s.experimentId === experimentId,
+    )[0]?.uuid;
+
+    return {
+      ...acc,
+      [sampleName]: {
+        ...acc[sampleName],
+        uuid: sampleUuid,
+        files: {
+          ...acc[sampleName]?.files,
+          [file.name]: file,
+        },
+      },
+    };
+  }, {});
+
+  Object.entries(samplesMap).forEach(async ([name, sample]) => {
+    const filesToUploadForSample = Object.keys(sample.files);
+
+    // Create sample if not exists.
+    try {
+      sample.uuid ??= await dispatch(
+        createSample(
+          experimentId,
+          name,
+          sample,
+          sampleType,
+          filesToUploadForSample,
+        ),
+      );
+    } catch (e) {
+      // If sample creation fails, sample should not be created
+      return;
+    }
+
+    createAndUpload(sample, experimentId, dispatch);
+  });
+};
+
+const process10XUpload = async (filesList, sampleType, samples, experimentId, dispatch) => {
   const samplesMap = filesList.reduce((acc, file) => {
     const pathToArray = file.name.trim().replace(/[\s]{2,}/ig, ' ').split('/');
 
@@ -204,6 +256,6 @@ const fileObjectToFileRecord = async (fileObject, technology) => {
 export {
   fileObjectToFileRecord,
   createAndUploadSingleFile,
+  process10XUpload,
+  processSeuratUpload,
 };
-
-export default processUpload;

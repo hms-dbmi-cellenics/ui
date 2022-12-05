@@ -11,6 +11,7 @@ const fileNameForApiV1 = {
   matrix10x: 'matrix.mtx.gz',
   barcodes10x: 'barcodes.tsv.gz',
   features10x: 'features.tsv.gz',
+  seurat: 'r.rds',
 };
 
 const createSampleFile = (
@@ -44,7 +45,7 @@ const createSampleFile = (
       },
     });
 
-    const signedUrl = await fetchAPI(
+    const uploadUrlParams = await fetchAPI(
       url,
       {
         method: 'POST',
@@ -55,7 +56,10 @@ const createSampleFile = (
       },
     );
 
-    return signedUrl;
+    return {
+      ...uploadUrlParams,
+      sampleFileId: body.sampleFileId,
+    };
   } catch (e) {
     dispatch(updateSampleFileUpload(experimentId, sampleId, type, UploadStatus.UPLOAD_ERROR));
 

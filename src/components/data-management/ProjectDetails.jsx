@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 /* eslint-disable react/jsx-props-no-spreading */
-import React, { useRef } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import {
@@ -9,7 +9,7 @@ import {
 
 import { updateExperiment } from 'redux/actions/experiments';
 
-import { layout } from 'utils/constants';
+import { layout, techTypes } from 'utils/constants';
 import EditableParagraph from 'components/EditableParagraph';
 import SamplesTable from './SamplesTable';
 import ProjectMenu from './ProjectMenu';
@@ -26,9 +26,25 @@ const paddingLeft = layout.PANEL_PADDING;
 const ProjectDetails = ({ width, height }) => {
   const dispatch = useDispatch();
 
+  const samples = useSelector((state) => state.samples);
   const { activeExperimentId } = useSelector((state) => state.experiments.meta);
   const activeExperiment = useSelector((state) => state.experiments[activeExperimentId]);
   const samplesTableRef = useRef();
+
+  const [technology, setTechnology] = useState();
+
+  useEffect(() => {
+    const samplesLoaded = activeExperiment?.sampleIds.every((sampleId) => samples[sampleId]);
+
+    if (activeExperiment?.sampleIds.length > 0 && samplesLoaded) {
+      const isSeurat = activeExperiment.sampleIds.some(
+        (sampleId) => samples[sampleId].type === techTypes.SEURAT,
+      );
+      setTechnology(isSeurat ? techTypes.SEURAT : techTypes.CHROMIUM);
+    } else {
+      setTechnology(null);
+    }
+  }, [samples, activeExperiment]);
 
   return (
     // The height of this div has to be fixed to enable sample scrolling
@@ -48,12 +64,14 @@ const ProjectDetails = ({ width, height }) => {
             <Title level={3}>{activeExperiment.name}</Title>
             <Space>
               <Button
-                disabled={activeExperiment.sampleIds?.length === 0}
+                disabled={activeExperiment.sampleIds?.length === 0 || technology === techTypes.SEURAT}
                 onClick={() => samplesTableRef.current.createMetadataColumn()}
               >
                 Add metadata
               </Button>
-              <ProjectMenu />
+              <ProjectMenu
+                technology={technology}
+              />
             </Space>
           </div>
           <Text type='secondary'>
@@ -74,6 +92,7 @@ const ProjectDetails = ({ width, height }) => {
           />
           <SamplesTable
             ref={samplesTableRef}
+            technology={technology}
           />
         </div>
       </div>

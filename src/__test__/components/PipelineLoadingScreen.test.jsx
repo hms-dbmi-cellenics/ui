@@ -7,7 +7,7 @@ import {
 } from 'antd';
 import configureMockStore from 'redux-mock-store';
 import fetchAPI from 'utils/http/fetchAPI';
-import GEM2SLoadingScreen from 'components/GEM2SLoadingScreen';
+import PipelineLoadingScreen from 'components/PipelineLoadingScreen';
 import '__test__/test-utils/setupTests';
 
 const mockStore = configureMockStore([thunk]);
@@ -17,15 +17,15 @@ const store = mockStore({ experiments: {} });
 jest.mock('utils/http/fetchAPI');
 fetchAPI.mockImplementation(() => Promise.resolve(new Response(JSON.stringify({}))));
 
-describe('GEM2SLoadingScreen', () => {
+describe('PipelineLoadingScreen', () => {
   it('Does not render without gem2s status', () => {
-    expect(() => shallow(<GEM2SLoadingScreen />)).toThrow();
+    expect(() => shallow(<PipelineLoadingScreen />)).toThrow();
   });
 
   it('Renders toBeRun state correctly', () => {
     const component = mount(
       <Provider store={store}>
-        <GEM2SLoadingScreen gem2sStatus='toBeRun' />
+        <PipelineLoadingScreen pipelineStatus='toBeRun' pipelineType='gem2s' />
       </Provider>,
     );
 
@@ -39,7 +39,7 @@ describe('GEM2SLoadingScreen', () => {
   it('Renders error state correctly', () => {
     const component = mount(
       <Provider store={store}>
-        <GEM2SLoadingScreen gem2sStatus='error' />
+        <PipelineLoadingScreen pipelineStatus='error' pipelineType='gem2s' />
       </Provider>,
     );
 
@@ -58,7 +58,7 @@ describe('GEM2SLoadingScreen', () => {
 
     const component = mount(
       <Provider store={store}>
-        <GEM2SLoadingScreen experimentId='experimentId' paramsHash={mockParamsHash} gem2sStatus='error' />
+        <PipelineLoadingScreen experimentId='experimentId' paramsHash={mockParamsHash} pipelineStatus='error' pipelineType='gem2s' />
       </Provider>,
     );
 
@@ -88,7 +88,7 @@ describe('GEM2SLoadingScreen', () => {
 
     const component = mount(
       <Provider store={store}>
-        <GEM2SLoadingScreen gem2sStatus='running' completedSteps={completedSteps} steps={steps} />
+        <PipelineLoadingScreen pipelineStatus='running' completedSteps={completedSteps} steps={steps} pipelineType='gem2s' />
       </Provider>,
     );
 
