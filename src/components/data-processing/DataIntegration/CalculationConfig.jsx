@@ -274,8 +274,48 @@ const CalculationConfig = (props) => {
       </Collapse>
       <Collapse>
         <Panel header='Downsampling Options' key='downsampling-opts'>
-          <Tooltip title='Large datasets (e.g. >100,000 cells) can be downsampled specifically for the integration step. This speeds up the time it takes to integrate large datasets using some methods (especially Seurat_v4 and FastMNN), and enables large datasets to successfully complete the pipeline. Once the data are integrated, the full data are available for downstream analysis and visualization.'>
-            <Form.Item label='Downsampling Method'>
+          <Space direction='vertical' style={{ width: '100%' }} />
+          <Form.Item>
+            <Text>
+              <strong style={{ marginRight: '0.5rem' }}>Downsampling settings:</strong>
+              <Tooltip title='Large datasets (e.g. >100,000 cells) can be downsampled specifically for the integration step. This speeds up the time it takes to integrate large datasets using some methods (especially Seurat_v4 and FastMNN), and enables large datasets to successfully complete the pipeline. Once the data are integrated, the full data are available for downstream analysis and visualization.'>
+                <QuestionCircleOutlined />
+              </Tooltip>
+            </Text>
+          </Form.Item>
+          <div style={{ paddingLeft: '1rem' }}>
+
+            <Form.Item label={(
+              <span>
+                Method&nbsp;
+                <Tooltip
+                  // visible={downsampling?.method === GEOSKETCH}
+                  overlay={(
+                    <>
+                      <span style={downsampling?.method === GEOSKETCH ? {} : { display: 'none' }}>
+                        Geometric sketching finds random subsamples of a dataset that preserve the underlying geometry,
+                        which is described in the paper
+                        <a
+                          href='https://www.sciencedirect.com/science/article/pii/S2405471219301528'
+                          target='_blank'
+                          rel='noreferrer'
+                        >
+                          {' '}
+                          <code>Geometric sketching compactly summarizes the single-cell transcriptomic landscape</code>
+                        </a>
+                      </span>
+                      <span style={downsampling === undefined || downsampling?.method === 'none' ? {} : { display: 'none' }}>
+                        No downsampling will be used during the data integration
+                      </span>
+                    </>
+                  )}
+                >
+                  <QuestionCircleOutlined />
+                </Tooltip>
+              </span>
+            )}
+            >
+
               <Select
                 value={downsampling?.method || 'none'}
                 onChange={(val) => {
@@ -284,37 +324,25 @@ const CalculationConfig = (props) => {
                 }}
               >
                 <Option value='none'>No Downsampling</Option>
-                <Tooltip overlay={(
-                  <span>
-                    Geometric sketching finds random subsamples of a dataset that preserve the underlying geometry,
-                    which is described in the paper
-                    <a
-                      href='https://www.sciencedirect.com/science/article/pii/S2405471219301528'
-                      target='_blank'
-                      rel='noreferrer'
-                    >
-                      {' '}
-                      <code>Geometric sketching compactly summarizes the single-cell transcriptomic landscape</code>
-                    </a>
-                  </span>
-                )}
-                >
-                  <Option value={GEOSKETCH}>Geometric Sketching</Option>
-                </Tooltip>
+
+                <Option value={GEOSKETCH}>
+                  Geometric Sketching
+                </Option>
+
               </Select>
             </Form.Item>
-          </Tooltip>
-          <Form.Item label='% of cells to keep'>
-            <InputNumber
-              disabled={downsampling?.method !== GEOSKETCH}
-              value={downsampling?.percentageToKeep || 100}
-              max={100}
-              min={0}
-              onChange={(value) => {
-                updateSettings({ downsampling: { percentageToKeep: parseInt(value, 0) } });
-              }}
-            />
-          </Form.Item>
+            <Form.Item label='% of cells to keep'>
+              <InputNumber
+                disabled={downsampling?.method !== GEOSKETCH}
+                value={downsampling?.percentageToKeep || 100}
+                max={100}
+                min={0}
+                onChange={(value) => {
+                  updateSettings({ downsampling: { percentageToKeep: parseInt(value, 0) } });
+                }}
+              />
+            </Form.Item>
+          </div>
         </Panel>
       </Collapse>
     </Form>
