@@ -2,7 +2,6 @@ import samplesReducer from 'redux/reducers/samples';
 import initialState, { sampleTemplate, sampleFileTemplate } from 'redux/reducers/samples/initialState';
 
 import {
-  SAMPLES_CREATE,
   SAMPLES_UPDATE,
   SAMPLES_FILE_UPDATE,
   SAMPLES_LOADED,
@@ -13,6 +12,8 @@ import {
   SAMPLES_OPTIONS_UPDATE,
   SAMPLES_METADATA_DELETE,
   SAMPLES_VALUE_IN_METADATA_TRACK_UPDATED,
+  SAMPLES_CREATED,
+  SAMPLES_VALIDATING_UPDATED,
 } from 'redux/actionTypes/samples';
 import { EXPERIMENTS_METADATA_RENAME } from 'redux/actionTypes/experiments';
 
@@ -66,9 +67,9 @@ describe('samplesReducer', () => {
 
   it('Inserts a new sample correctly', () => {
     const newState = samplesReducer(initialState, {
-      type: SAMPLES_CREATE,
+      type: SAMPLES_CREATED,
       payload: {
-        sample: sample1,
+        samples: [sample1],
       },
     });
 
@@ -78,9 +79,9 @@ describe('samplesReducer', () => {
 
   it('Adds a new sample correctly', () => {
     const newState = samplesReducer(oneSampleState, {
-      type: SAMPLES_CREATE,
+      type: SAMPLES_CREATED,
       payload: {
-        sample: sample2,
+        samples: [sample2],
       },
     });
 
@@ -339,6 +340,61 @@ describe('samplesReducer', () => {
         diff: { someOption: true },
       },
     });
+
+    expect(newState).toMatchSnapshot();
+  });
+
+  it('Adds validating to an experiment', () => {
+    const stateWithOldOptions = {
+      ...twoSamplesState,
+      [mockUuid1]: {
+        ...sample1,
+        options: { someOption: false },
+      },
+      [mockUuid2]: {
+        ...sample2,
+        options: { someOption: false },
+      },
+    };
+
+    const newState = samplesReducer(stateWithOldOptions, {
+      type: SAMPLES_VALIDATING_UPDATED,
+      payload: {
+        experimentId: 'validatingExperimentId',
+        validating: true,
+      },
+    });
+
+    expect(newState.meta.validating.includes('validatingExperimentId'));
+
+    expect(newState).toMatchSnapshot();
+  });
+
+  it('Removes validating from an experiment', () => {
+    const stateWithOldOptions = {
+      ...twoSamplesState,
+      [mockUuid1]: {
+        ...sample1,
+        options: { someOption: false },
+      },
+      [mockUuid2]: {
+        ...sample2,
+        options: { someOption: false },
+      },
+      meta: {
+        validating: ['validatingExperimentId', 'otherValidatingExperimentId'],
+      },
+    };
+
+    const newState = samplesReducer(stateWithOldOptions, {
+      type: SAMPLES_VALIDATING_UPDATED,
+      payload: {
+        experimentId: 'validatingExperimentId',
+        validating: false,
+      },
+    });
+
+    expect(newState.meta.validating).toEqual(['otherValidatingExperimentId']);
 
     expect(newState).toMatchSnapshot();
   });

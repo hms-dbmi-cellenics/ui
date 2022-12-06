@@ -1,5 +1,6 @@
 const samplesLoad = (state, action) => {
   const { samples } = action.payload;
+
   return {
     ...state,
     meta: {

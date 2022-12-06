@@ -23,9 +23,11 @@ const extractSampleSizes = (matrixHead) => {
   const sizeLine = matrixHead.split('\n').find((line) => line[0] !== '%');
 
   const [featuresSize, barcodeSize, matrixSize] = sizeLine.split(' ');
-  return [Number.parseInt(featuresSize, 10),
+  return [
+    Number.parseInt(featuresSize, 10),
     Number.parseInt(barcodeSize, 10),
-    Number.parseInt(matrixSize, 10)];
+    Number.parseInt(matrixSize, 10),
+  ];
 };
 const getNumLines = async (sampleFile) => {
   const { compressed, fileObject } = sampleFile;
