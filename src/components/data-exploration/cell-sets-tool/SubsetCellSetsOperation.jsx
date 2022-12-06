@@ -30,8 +30,8 @@ const SubsetCellSetsOperation = (props) => {
         showSubsetCellSets && (
           <SubsetCellSetsModal
             experimentName={experimentName}
-            onOk={() => {
-              onCreate(experimentName);
+            onOk={(subsetName) => {
+              onCreate(subsetName);
               setShowSubsetCellSets(false);
             }}
             onCancel={() => setShowSubsetCellSets(false)}
