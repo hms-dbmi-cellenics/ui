@@ -19,7 +19,9 @@ const SubsetCellSetsModal = (props) => {
       cancelText='Cancel'
       onCancel={onCancel}
     >
-      <p>This action will create a new project containing cells only from the selected cell sets.</p>
+      <p>
+        This action will create a new project containing cells only from the selected cell sets.
+      </p>
       <Space>
         <span>New project name</span>
         <Input
