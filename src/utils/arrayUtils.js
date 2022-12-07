@@ -6,4 +6,6 @@ const isSubset = (
 // Like reverse but it doesn't mutate underlying array
 const reversed = (array) => [...array].reverse();
 
-export { isSubset, reversed };
+const removed = (item, array) => array.filter((currExpId) => currExpId !== item);
+
+export { isSubset, reversed, removed };

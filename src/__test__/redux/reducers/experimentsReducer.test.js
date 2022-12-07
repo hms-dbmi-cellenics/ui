@@ -16,7 +16,7 @@ import {
   EXPERIMENTS_METADATA_DELETE,
 } from 'redux/actionTypes/experiments';
 
-import { SAMPLES_CREATE, SAMPLES_DELETE } from 'redux/actionTypes/samples';
+import { SAMPLES_CREATED, SAMPLES_DELETE } from 'redux/actionTypes/samples';
 import { EXPERIMENT_SETTINGS_PIPELINE_VERSION_UPDATED } from 'redux/actionTypes/experimentSettings';
 
 describe('experimentsReducer', () => {
@@ -233,10 +233,10 @@ describe('experimentsReducer', () => {
 
   it('Adds new sampleId when sample is created', () => {
     const newState = experimentsReducer(oneExperimentState, {
-      type: SAMPLES_CREATE,
+      type: SAMPLES_CREATED,
       payload: {
         experimentId: experiment1.id,
-        sample,
+        samples: [sample],
       },
     });
 
@@ -254,10 +254,10 @@ describe('experimentsReducer', () => {
     };
 
     const newState = experimentsReducer(oneExperimentWithSampleState, {
-      type: SAMPLES_CREATE,
+      type: SAMPLES_CREATED,
       payload: {
         experimentId: experiment1.id,
-        sample: anotherSample,
+        samples: [anotherSample],
       },
     });
 

@@ -201,6 +201,7 @@ Array [
         "error": false,
         "loading": false,
         "saving": false,
+        "validating": Array [],
       },
     },
     "user": Object {
@@ -411,6 +412,7 @@ Array [
         "error": false,
         "loading": false,
         "saving": false,
+        "validating": Array [],
       },
     },
     "user": Object {
