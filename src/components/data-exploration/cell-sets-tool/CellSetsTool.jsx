@@ -75,15 +75,15 @@ const CellSetsTool = (props) => {
   const [numSelected, setNumSelected] = useState(0);
 
   useEffect(() => {
-    if (!hierarchy[1]?.children || !cellSetTreeData[1]?.children) return;
+    const louvainClusters = hierarchy.find(({ key }) => key === 'louvain')?.children;
+    const customClusters = hierarchy.find(({ key }) => key === 'scratchpad')?.children;
+    const treeClusters = cellSetTreeData?.find(({ key }) => key === 'scratchpad')?.children;
 
-    const currentClusterCount = hierarchy[0].children.length;
-    const currentCustomCellSetsCount = hierarchy[1].children.length;
-    const previousCustomCellSetsCount = cellSetTreeData[1].children.length;
+    if (!customClusters || !treeClusters) return;
 
-    if (currentCustomCellSetsCount > previousCustomCellSetsCount) {
+    if (customClusters.length > treeClusters.length) {
       // scroll to bottom based on total number of cell sets, overshoot to show new cluster
-      const newHeight = (currentClusterCount + currentCustomCellSetsCount) * 30 + 200;
+      const newHeight = (louvainClusters.length + customClusters.length) * 30 + 200;
       animateScroll.scrollTo(newHeight, { containerId: 'cell-set-tool-container' });
     }
   }, [hierarchy]);
