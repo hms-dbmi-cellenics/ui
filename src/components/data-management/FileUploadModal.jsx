@@ -19,12 +19,12 @@ import Dropzone from 'react-dropzone';
 import { useSelector } from 'react-redux';
 
 import config from 'config';
-import techOptions from 'utils/upload/fileUploadSpecifications';
+import { sampleTech } from 'utils/constants';
+import techOptions, { techNamesToDisplay } from 'utils/upload/fileUploadSpecifications';
 import handleError from 'utils/http/handleError';
 import { fileObjectToFileRecord } from 'utils/upload/processUpload';
 import integrationTestConstants from 'utils/integrationTestConstants';
 import endUserMessages from 'utils/endUserMessages';
-import { sampleTech } from 'utils/constants';
 
 const { Text, Title, Paragraph } = Typography;
 const { Option } = Select;
@@ -34,6 +34,7 @@ const SEURAT_MAX_FILE_SIZE = 15 * 1024 * 1024 * 1024;
 
 const extraHelpText = {
   [sampleTech['10X']]: () => <></>,
+  [sampleTech.SEURAT]: () => <></>,
   [sampleTech.RHAPSODY]: () => (
     <Paragraph>
       <ul>
@@ -51,7 +52,7 @@ const extraHelpText = {
 };
 
 const FileUploadModal = (props) => {
-  const { onUpload, onCancel, previousDataTechnology } = props;
+  const { onUpload, onCancel, currentSelectedTech } = props;
 
   const samples = useSelector((state) => state.samples);
   const activeExperimentId = useSelector((state) => state.experiments.meta.activeExperimentId);
@@ -60,7 +61,7 @@ const FileUploadModal = (props) => {
 
   const guidanceFileLink = 'https://drive.google.com/file/d/1VPaB-yofuExinY2pXyGEEx-w39_OPubO/view';
 
-  const [selectedTech, setSelectedTech] = useState(previousDataTechnology ?? sampleTech['10X']);
+  const [selectedTech, setSelectedTech] = useState(currentSelectedTech ?? sampleTech['10X']);
   const [canUpload, setCanUpload] = useState(false);
   const [filesList, setFilesList] = useState([]);
 
@@ -196,26 +197,29 @@ const FileUploadModal = (props) => {
                 <span style={{ color: 'red', marginRight: '2em' }}>*</span>
               </Title>
               <Tooltip
-                title={previousDataTechnology
+                title={currentSelectedTech
                   && 'Remove existing data or create a new project to change technology.'}
                 placement='bottom'
               >
                 <Select
                   defaultValue={selectedTech}
                   onChange={(value) => setSelectedTech(value)}
-                  disabled={Boolean(previousDataTechnology)}
+                  disabled={Boolean(currentSelectedTech)}
                   data-testid='uploadTechSelect'
                 >
-                  {Object.keys(techOptions).map((val) => (
-                    <Option key={`key-${val}`} value={val}>{val}</Option>
+                  {Object.values(sampleTech).map((tech) => (
+                    <Option key={`key-${tech}`} value={tech}>{techNamesToDisplay[tech]}</Option>
                   ))}
                 </Select>
               </Tooltip>
             </Space>
             <Text type='secondary'>
               <i>
-                Is your dataset generated using another single cell RNA-seq technology (e.g. Nadia, BD Rhapsody, etc.)? Email us to find out if we can support your data:
-                <a href={`mailto:${config.supportEmail}`}>{config.supportEmail}</a>
+                Is your dataset generated using another single cell RNA-seq technology (e.g. Nadia, inDrop, etc.)? Email us to find out if we can support your data:
+                <a href={`mailto:${config.supportEmail}`}>
+                  {' '}
+                  {config.supportEmail}
+                </a>
               </i>
             </Text>
           </Space>
@@ -321,11 +325,13 @@ const FileUploadModal = (props) => {
 FileUploadModal.propTypes = {
   onUpload: PropTypes.func,
   onCancel: PropTypes.func,
+  currentSelectedTech: PropTypes.string,
 };
 
 FileUploadModal.defaultProps = {
   onUpload: null,
   onCancel: null,
+  currentSelectedTech: null,
 };
 
 export default FileUploadModal;

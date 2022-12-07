@@ -4,7 +4,6 @@ import {
   Button, Tooltip, Popconfirm,
 } from 'antd';
 import { modules, sampleTech } from 'utils/constants';
-import PropTypes from 'prop-types';
 
 import fileUploadSpecifications from 'utils/upload/fileUploadSpecifications';
 import UploadStatus from 'utils/upload/UploadStatus';
@@ -44,8 +43,7 @@ const LaunchButtonTemplate = (props) => {
   );
 };
 
-const LaunchAnalysisButton = (props) => {
-  const { technology } = props;
+const LaunchAnalysisButton = () => {
   const dispatch = useDispatch();
   const { navigateTo } = useAppRouter();
 
@@ -55,6 +53,7 @@ const LaunchAnalysisButton = (props) => {
 
   const { activeExperimentId } = experiments.meta;
   const activeExperiment = experiments[activeExperimentId];
+  const selectedTech = samples[activeExperiment?.sampleIds[0]]?.type;
 
   const [pipelineRerunStatus, setPipelineRerunStatus] = useState(
     {
@@ -65,12 +64,13 @@ const LaunchAnalysisButton = (props) => {
   const [seuratComplete, setSeuratComplete] = useState(false);
 
   useEffect(() => {
-    const isSeuratComplete = technology === sampleTech.SEURAT && pipelineRerunStatus.complete;
+    const isSeuratComplete = selectedTech === sampleTech.SEURAT && pipelineRerunStatus.complete;
     setSeuratComplete(isSeuratComplete);
-  }, [pipelineRerunStatus, technology]);
+  }, [pipelineRerunStatus, selectedTech]);
 
   const launchAnalysis = () => {
-    const runner = runnersByTechnology[technology];
+    const runner = runnersByTechnology[selectedTech];
+
     if (pipelineRerunStatus.rerun) {
       dispatch(runner(activeExperimentId, pipelineRerunStatus.paramsHash));
     }
@@ -81,7 +81,7 @@ const LaunchAnalysisButton = (props) => {
 
   useEffect(() => {
     // The value of backend status is null for new experiments that have never run
-    const pipeline = pipelineByTechnology[technology];
+    const pipeline = pipelineByTechnology[selectedTech];
     const pipelineBackendStatus = backendStatus[activeExperimentId]?.status?.[pipeline];
 
     if (
@@ -109,7 +109,7 @@ const LaunchAnalysisButton = (props) => {
       const { fileNames } = sample;
 
       if (!fileUploadSpecifications[sample.type].requiredFiles.every(
-        (file) => fileNames.includes(file),
+        (file) => fileNames.includes(file.key),
       )) { return false; }
 
       let allUploaded = true;
@@ -196,14 +196,6 @@ const LaunchAnalysisButton = (props) => {
   };
 
   return renderLaunchButton();
-};
-
-LaunchAnalysisButton.propTypes = {
-  technology: PropTypes.string,
-};
-
-LaunchAnalysisButton.defaultProps = {
-  technology: null,
 };
 
 export default LaunchAnalysisButton;

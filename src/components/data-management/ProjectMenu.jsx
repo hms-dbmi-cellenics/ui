@@ -10,8 +10,7 @@ import LaunchAnalysisButton from './LaunchAnalysisButton';
 import FileUploadModal from './FileUploadModal';
 import ShareExperimentModal from './ShareExperimentModal';
 
-const ProjectMenu = (props) => {
-  const { technology } = props;
+const ProjectMenu = () => {
   const dispatch = useDispatch();
   const samples = useSelector((state) => state.samples);
   const activeExperimentId = useSelector((state) => state.experiments.meta.activeExperimentId);
@@ -48,14 +47,13 @@ const ProjectMenu = (props) => {
             experiment={activeExperiment}
           />
         )}
-        <LaunchAnalysisButton technology={technology} />
+        <LaunchAnalysisButton />
       </Space>
       {uploadModalVisible ? (
         <FileUploadModal
           onUpload={uploadFiles}
           currentSelectedTech={selectedTech}
           onCancel={() => setUploadModalVisible(false)}
-          previousDataTechnology={technology}
         />
       ) : <></>}
     </>

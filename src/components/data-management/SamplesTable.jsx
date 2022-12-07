@@ -35,6 +35,7 @@ import { ClipLoader } from 'react-spinners';
 import useConditionalEffect from 'utils/customHooks/useConditionalEffect';
 import { METADATA_DEFAULT_VALUE } from 'redux/reducers/experiments/initialState';
 import fileUploadSpecifications from 'utils/upload/fileUploadSpecifications';
+import { sampleTech } from 'utils/constants';
 
 const { Text } = Typography;
 
@@ -68,7 +69,7 @@ const SamplesTable = forwardRef((props, ref) => {
       className: `${integrationTestConstants.classes.SAMPLE_CELL}`,
       index: 1,
       key: 'sample',
-      title: 'Sample',
+      title: selectedTech === sampleTech.SEURAT ? 'File' : 'Sample',
       dataIndex: 'name',
       fixed: true,
       render: (text, record, indx) => <SampleNameCell cellInfo={{ text, record, indx }} />,
@@ -248,6 +249,7 @@ const SamplesTable = forwardRef((props, ref) => {
         ...samples[sampleUuid]?.metadata,
       };
     });
+
     setTableData(newData);
   }, [experiments, samples, activeExperimentId]);
 

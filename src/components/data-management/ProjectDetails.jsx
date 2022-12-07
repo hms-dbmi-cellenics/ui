@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 /* eslint-disable react/jsx-props-no-spreading */
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import {
@@ -8,15 +8,14 @@ import {
 } from 'antd';
 
 import { updateExperiment } from 'redux/actions/experiments';
-
-import { layout, sampleTech } from 'utils/constants';
+import SampleOptions from 'components/data-management/SamplesOptions';
 import EditableParagraph from 'components/EditableParagraph';
-import SamplesTable from './SamplesTable';
-import ProjectMenu from './ProjectMenu';
+import { layout, sampleTech } from 'utils/constants';
 
-const {
-  Title, Text,
-} = Typography;
+import SamplesTable from 'components/data-management/SamplesTable';
+import ProjectMenu from 'components/data-management/ProjectMenu';
+
+const { Text, Title } = Typography;
 
 const paddingTop = layout.PANEL_PADDING;
 const paddingBottom = layout.PANEL_PADDING;
@@ -26,25 +25,12 @@ const paddingLeft = layout.PANEL_PADDING;
 const ProjectDetails = ({ width, height }) => {
   const dispatch = useDispatch();
 
-  const samples = useSelector((state) => state.samples);
   const { activeExperimentId } = useSelector((state) => state.experiments.meta);
   const activeExperiment = useSelector((state) => state.experiments[activeExperimentId]);
   const samplesTableRef = useRef();
 
-  const [technology, setTechnology] = useState();
-
-  useEffect(() => {
-    const samplesLoaded = activeExperiment?.sampleIds.every((sampleId) => samples[sampleId]);
-
-    if (activeExperiment?.sampleIds.length > 0 && samplesLoaded) {
-      const isSeurat = activeExperiment.sampleIds.some(
-        (sampleId) => samples[sampleId].type === sampleTech.SEURAT,
-      );
-      setTechnology(isSeurat ? sampleTech.SEURAT : sampleTech['10X']);
-    } else {
-      setTechnology(null);
-    }
-  }, [samples, activeExperiment]);
+  const samples = useSelector((state) => state.samples);
+  const selectedTech = samples[activeExperiment?.sampleIds[0]]?.type;
 
   return (
     // The height of this div has to be fixed to enable sample scrolling
@@ -64,14 +50,12 @@ const ProjectDetails = ({ width, height }) => {
             <Title level={3}>{activeExperiment.name}</Title>
             <Space>
               <Button
-                disabled={activeExperiment.sampleIds?.length === 0 || technology === sampleTech.SEURAT}
+                disabled={activeExperiment.sampleIds?.length === 0 || selectedTech === sampleTech.SEURAT}
                 onClick={() => samplesTableRef.current.createMetadataColumn()}
               >
                 Add metadata
               </Button>
-              <ProjectMenu
-                technology={technology}
-              />
+              <ProjectMenu />
             </Space>
           </div>
           <Text type='secondary'>
@@ -90,9 +74,9 @@ const ProjectDetails = ({ width, height }) => {
               }
             }}
           />
+          <SampleOptions />
           <SamplesTable
             ref={samplesTableRef}
-            technology={technology}
           />
         </div>
       </div>

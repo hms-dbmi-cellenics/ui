@@ -18,7 +18,7 @@ const getTrajectoryPlotPseudoTime = (
 
   const {
     clusteringSettings,
-    embeddingSettings: { methodSettings },
+    embeddingSettings: { methodSettings, useSaved },
   } = getState().experimentSettings.processing.configureEmbedding;
 
   const { environment } = getState().networkResources;
@@ -31,6 +31,7 @@ const getTrajectoryPlotPseudoTime = (
     name: 'GetEmbedding',
     type: embeddingMethod,
     config: methodSettings[embeddingMethod],
+    useSaved,
   };
 
   const embeddingETag = await generateETag(

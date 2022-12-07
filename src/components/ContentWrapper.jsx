@@ -15,28 +15,27 @@ import {
   Tooltip,
   Typography,
 } from 'antd';
-import { modules } from 'utils/constants';
-
-import { useAppRouter } from 'utils/AppRouteProvider';
-
-import calculatePipelineRerunStatus from 'utils/data-management/calculatePipelineRerunStatus';
-import PipelineLoadingScreen from 'components/PipelineLoadingScreen';
-import PipelineRedirectToDataProcessing from 'components/PipelineRedirectToDataProcessing';
-import PreloadContent from 'components/PreloadContent';
-
-import experimentUpdatesHandler from 'utils/experimentUpdatesHandler';
-import { getBackendStatus } from 'redux/selectors';
-import { loadBackendStatus } from 'redux/actions/backendStatus';
-import { isBrowser, privacyPolicyIsNotAccepted } from 'utils/deploymentInfo';
 
 import Error from 'pages/_error';
 import pipelineErrorUserMessages from 'utils/pipelineErrorUserMessages';
 
+import BrowserAlert from 'components/BrowserAlert';
+import PreloadContent from 'components/PreloadContent';
+import PipelineLoadingScreen from 'components/PipelineLoadingScreen';
+import PipelineRedirectToDataProcessing from 'components/PipelineRedirectToDataProcessing';
+import PrivacyPolicyIntercept from 'components/data-management/PrivacyPolicyIntercept';
+
+import { getBackendStatus } from 'redux/selectors';
+import { loadUser } from 'redux/actions/user';
+import { loadBackendStatus } from 'redux/actions/backendStatus';
+import { isBrowser, privacyPolicyIsNotAccepted } from 'utils/deploymentInfo';
+import { modules } from 'utils/constants';
+import { useAppRouter } from 'utils/AppRouteProvider';
+import experimentUpdatesHandler from 'utils/experimentUpdatesHandler';
+
 import integrationTestConstants from 'utils/integrationTestConstants';
 import pipelineStatusValues from 'utils/pipelineStatusValues';
-import BrowserAlert from 'components/BrowserAlert';
-import { loadUser } from 'redux/actions/user';
-import PrivacyPolicyIntercept from './data-management/PrivacyPolicyIntercept';
+import calculatePipelineRerunStatus from 'utils/data-management/calculatePipelineRerunStatus';
 
 const { Sider } = Layout;
 const { Text } = Typography;
@@ -166,7 +165,7 @@ const ContentWrapper = (props) => {
     );
 
     setSeuratRerunStatus(pipelineStatus);
-  }, [gem2sBackendStatus, activeExperiment, samples, experiment]);
+  }, [seuratBackendStatus, activeExperiment, samples, experiment]);
 
   useEffect(() => {
     dispatch(loadUser());

@@ -3,6 +3,7 @@ import { sampleTech } from 'utils/constants';
 const techNamesToDisplay = {
   [sampleTech['10X']]: '10X Chromium',
   [sampleTech.RHAPSODY]: 'BD Rhapsody',
+  [sampleTech.SEURAT]: 'Seurat',
 };
 
 /* eslint-disable max-len */
@@ -62,12 +63,16 @@ const fileUploadSpecifications = {
   [sampleTech.RHAPSODY]: {
     acceptedFiles: new Set(['expression_data.st', 'expression_data.st.gz']),
     requiredFiles: [{ key: 'expression_data.st.gz', displayedName: 'expression_data.st' }],
-    inputInfo: [['expression_data.st', 'expression_data.st.gz']],
+    inputInfo: [
+      ['<code>expression_data.st</code> or <code>expression_data.st.gz</code>'],
+    ],
     fileUploadParagraphs: [
       `For each sample, upload a folder containing the required file. The folder's
       name will be used to name the sample in it.
       You can change this name later in Data Management.`,
     ],
+    dropzoneText: 'Drag and drop folders here or click to browse.',
+    webkitdirectory: '',
   },
 
 };
