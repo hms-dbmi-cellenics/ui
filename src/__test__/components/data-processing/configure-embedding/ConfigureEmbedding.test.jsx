@@ -48,6 +48,16 @@ const mockedStore = mockStore({
       error: false,
       data: [6, 7, 8, 9, 10],
     },
+    numOfGenes: {
+      loading: false,
+      error: false,
+      data: [6, 7, 8, 9, 10],
+    },
+    numOfUmis: {
+      loading: false,
+      error: false,
+      data: [6, 7, 8, 9, 10],
+    },
   },
   experimentSettings: {
     ...initialExperimentState,
