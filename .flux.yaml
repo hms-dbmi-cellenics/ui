@@ -54,6 +54,9 @@ spec:
       author:
         name: Flux - UI image update
         email: ci@biomage.net
+  update:
+    strategy: Setters
+    path: FILLED_IN_BY_CI
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
