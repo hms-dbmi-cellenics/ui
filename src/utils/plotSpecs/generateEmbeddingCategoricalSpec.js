@@ -30,11 +30,24 @@ const generateSpec = (config, plotData, cellSetLegendsData) => {
   if (config?.legend.enabled) {
     const positionIsRight = config.legend.position === 'right';
 
+    // Approximate the size of each name.
+    // All names can have that size or less, so can use it calculate the amount of columns
+    //
+    // The size of each name is calculated by getting the amount of chars in
+    //  each name and multiplying by each approx char size, 5.5
+    //  plus 30 for the color symbol and offset
+    const colorSymbolSize = 30;
+    const characterSize = 5.5;
+
+    const legendSize = colorSymbolSize + _.max(
+      cellSetLegendsData.map((legendData) => legendData.name.length * characterSize),
+    );
+
     // only 20 rows per column if the legend is on the right
     const legendColumns = positionIsRight
       ? Math.ceil(cellSetLegendsData.length / 20)
-      : Math.floor(config.dimensions.width / 85);
-    const labelLimit = positionIsRight ? 0 : 85;
+      : Math.floor((config.dimensions.width) / legendSize);
+    const labelLimit = positionIsRight ? 0 : legendSize;
 
     legend = [
       {
@@ -54,12 +67,12 @@ const generateSpec = (config, plotData, cellSetLegendsData) => {
               },
               fill: { value: config?.colour.masterColour },
             },
-
           },
         },
         direction: 'horizontal',
         labelFont: config?.fontStyle.font,
         titleFont: config?.fontStyle.font,
+        symbolLimit: 0,
         columns: legendColumns,
         labelLimit,
       },
