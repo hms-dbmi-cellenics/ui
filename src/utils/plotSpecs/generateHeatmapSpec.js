@@ -44,6 +44,7 @@ const generateSpec = (config, groupName, data, displayLabels = true) => {
       columns: verticalLegendColumns,
       labelFont: config.fontStyle.font,
       titleFont: config.fontStyle.font,
+      symbolLimit: 0,
     },
   ];
 
