@@ -1,9 +1,9 @@
 const SAMPLES = 'samples';
 
 /**
- * Save sample.
+ * Samples created.
  */
-const SAMPLES_CREATE = `${SAMPLES}/create`;
+const SAMPLES_CREATED = `${SAMPLES}/created`;
 
 /**
  * Update sample.
@@ -57,8 +57,10 @@ const SAMPLES_VALUE_IN_METADATA_TRACK_UPDATED = `${SAMPLES}/valueInMetadataTrack
 
 const SAMPLES_LOADING = `${SAMPLES}/loading`;
 
+const SAMPLES_VALIDATING_UPDATED = `${SAMPLES}/validatingUpdated`;
+
 export {
-  SAMPLES_CREATE,
+  SAMPLES_CREATED,
   SAMPLES_UPDATE,
   SAMPLES_DELETE,
   SAMPLES_FILE_UPDATE,
@@ -70,4 +72,5 @@ export {
   SAMPLES_METADATA_DELETE,
   SAMPLES_VALUE_IN_METADATA_TRACK_UPDATED,
   SAMPLES_LOADING,
+  SAMPLES_VALIDATING_UPDATED,
 };

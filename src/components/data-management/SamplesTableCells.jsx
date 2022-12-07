@@ -34,6 +34,7 @@ const UploadCell = (props) => {
     sampleUuid,
     file,
   } = tableCellData;
+
   const { progress = null, status = null } = file?.upload ?? {};
 
   const [uploadDetailsModalVisible, setUploadDetailsModalVisible] = useState(false);
