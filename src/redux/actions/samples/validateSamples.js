@@ -6,12 +6,14 @@ import SampleValidationError from 'utils/errors/upload/SampleValidationError';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
 import sampleValidators from 'utils/upload/sampleValidators';
 
+import config from 'config';
+
 const handleValidatorError = (e, sampleName) => {
   if (e instanceof SampleValidationError) {
     const errorMessage = `Error uploading sample ${sampleName}.\n${e.message}`;
     pushNotificationMessage('error', errorMessage, 15);
   } else {
-    const errorMessage = `Error uploading sample ${sampleName}. Please send an email to hello@biomage.net with the sample files you're trying to upload.`;
+    const errorMessage = `Error uploading sample ${sampleName}. Please send an email to ${config.supportEmail} with the sample files you're trying to upload.`;
     pushNotificationMessage('error', errorMessage);
     console.error(e.message);
   }

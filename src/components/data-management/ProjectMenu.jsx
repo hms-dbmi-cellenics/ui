@@ -4,8 +4,7 @@ import {
   Space, Button,
 } from 'antd';
 import integrationTestConstants from 'utils/integrationTestConstants';
-import { process10XUpload, processSeuratUpload } from 'utils/upload/processUpload';
-import { sampleTech } from 'utils/constants';
+import processUpload from 'utils/upload/processUpload';
 import DownloadDataButton from './DownloadDataButton';
 import LaunchAnalysisButton from './LaunchAnalysisButton';
 import FileUploadModal from './FileUploadModal';
@@ -23,11 +22,7 @@ const ProjectMenu = (props) => {
   const selectedTech = samples[activeExperiment?.sampleIds[0]]?.type;
 
   const uploadFiles = (filesList, sampleType) => {
-    if (sampleType === sampleTech['10X']) {
-      process10XUpload(filesList, sampleType, samples, activeExperimentId, dispatch);
-    } else if (sampleType === sampleTech.SEURAT) {
-      processSeuratUpload(filesList, sampleType, samples, activeExperimentId, dispatch);
-    }
+    processUpload(filesList, sampleType, samples, activeExperimentId, dispatch);
     setUploadModalVisible(false);
   };
 

@@ -11,7 +11,7 @@ import initialExperimentState, { experimentTemplate } from 'redux/reducers/exper
 import UploadStatus from 'utils/upload/UploadStatus';
 import { waitFor } from '@testing-library/dom';
 
-import { process10XUpload } from 'utils/upload/processUpload';
+import processUpload from 'utils/upload/processUpload';
 
 import loadAndCompressIfNecessary from 'utils/upload/loadAndCompressIfNecessary';
 import validate from 'utils/upload/sampleValidators';
@@ -116,7 +116,7 @@ jest.mock('utils/upload/sampleValidator');
 
 let store = null;
 
-describe('process10XUpload', () => {
+describe('processUpload', () => {
   beforeEach(() => {
     jest.clearAllMocks();
 
@@ -145,7 +145,7 @@ describe('process10XUpload', () => {
 
     const filesList = getValidFiles('v3');
 
-    await process10XUpload(
+    await processUpload(
       filesList,
       sampleType,
       store.getState().samples,
@@ -234,7 +234,7 @@ describe('process10XUpload', () => {
 
     const filesList = getValidFiles('v2');
 
-    await process10XUpload(
+    await processUpload(
       filesList,
       sampleType,
       store.getState().samples,
@@ -313,7 +313,7 @@ describe('process10XUpload', () => {
   it('Updates redux correctly when there are file load and compress errors', async () => {
     const invalidFiles = getValidFiles('v3').map((file) => ({ ...file, valid: false }));
 
-    await process10XUpload(
+    await processUpload(
       invalidFiles,
       sampleType,
       store.getState().samples,
@@ -366,7 +366,7 @@ describe('process10XUpload', () => {
       .mockImplementationOnce(uploadError)
       .mockImplementationOnce(uploadError);
 
-    await process10XUpload(
+    await processUpload(
       getValidFiles('v3'),
       sampleType,
       store.getState().samples,
@@ -413,7 +413,7 @@ describe('process10XUpload', () => {
   it('Should not upload files if there are errors creating samples in the api', async () => {
     fetchMock.mockReject(new Error('Error'));
 
-    await process10XUpload(
+    await processUpload(
       getValidFiles('v3'),
       sampleType,
       store.getState().samples,
@@ -432,7 +432,7 @@ describe('process10XUpload', () => {
       () => (['Some file error']),
     );
 
-    await process10XUpload(
+    await processUpload(
       getValidFiles('v2'),
       sampleType,
       store.getState().samples,

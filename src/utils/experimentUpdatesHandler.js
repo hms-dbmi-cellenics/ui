@@ -1,7 +1,7 @@
 import updateCellSetsClustering from 'redux/actions/cellSets/updateCellSetsClustering';
-import { updateProcessingSettingsFromQC, loadedProcessingConfig } from 'redux/actions/experimentSettings';
+import { updateProcessingSettingsFromQC, loadedProcessingConfig, updatePipelineVersion } from 'redux/actions/experimentSettings';
 import { updateBackendStatus } from 'redux/actions/backendStatus';
-import { updatePlotData } from 'redux/actions/componentConfig';
+import { replaceLoadedConfigs, updatePlotData } from 'redux/actions/componentConfig';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
 
 import { loadCellSets } from 'redux/actions/cellSets';
