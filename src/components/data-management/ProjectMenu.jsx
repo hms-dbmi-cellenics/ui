@@ -5,7 +5,7 @@ import {
 } from 'antd';
 import integrationTestConstants from 'utils/integrationTestConstants';
 import { process10XUpload, processSeuratUpload } from 'utils/upload/processUpload';
-import { techTypes } from 'utils/constants';
+import { sampleTech } from 'utils/constants';
 import DownloadDataButton from './DownloadDataButton';
 import LaunchAnalysisButton from './LaunchAnalysisButton';
 import FileUploadModal from './FileUploadModal';
@@ -20,11 +20,12 @@ const ProjectMenu = (props) => {
 
   const [uploadModalVisible, setUploadModalVisible] = useState(false);
   const [shareExperimentModalVisible, setShareExperimentModalVisible] = useState(false);
+  const selectedTech = samples[activeExperiment?.sampleIds[0]]?.type;
 
   const uploadFiles = (filesList, sampleType) => {
-    if (sampleType === techTypes.CHROMIUM) {
+    if (sampleType === sampleTech['10X']) {
       process10XUpload(filesList, sampleType, samples, activeExperimentId, dispatch);
-    } else if (sampleType === techTypes.SEURAT) {
+    } else if (sampleType === sampleTech.SEURAT) {
       processSeuratUpload(filesList, sampleType, samples, activeExperimentId, dispatch);
     }
     setUploadModalVisible(false);
@@ -57,6 +58,7 @@ const ProjectMenu = (props) => {
       {uploadModalVisible ? (
         <FileUploadModal
           onUpload={uploadFiles}
+          currentSelectedTech={selectedTech}
           onCancel={() => setUploadModalVisible(false)}
           previousDataTechnology={technology}
         />

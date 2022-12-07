@@ -5,6 +5,7 @@ Object {
   "info": Object {
     "experimentId": null,
     "experimentName": null,
+    "pipelineVersion": null,
     "sampleIds": Array [],
   },
   "originalProcessing": Object {
@@ -41,6 +42,7 @@ Object {
   "info": Object {
     "experimentId": null,
     "experimentName": null,
+    "pipelineVersion": null,
     "sampleIds": Array [],
   },
   "originalProcessing": Object {
@@ -71,11 +73,11 @@ Object {
   "info": Object {
     "experimentId": null,
     "experimentName": null,
+    "pipelineVersion": 1,
     "sampleIds": Array [],
   },
   "originalProcessing": Object {
     "cellSizeDistribution": Object {
-      "enabled": true,
       "sample-KO": Object {
         "auto": true,
         "enabled": true,
@@ -86,14 +88,13 @@ Object {
       },
     },
     "classifier": Object {
-      "enabled": true,
-      "prefiltred": false,
       "sample-KO": Object {
         "auto": true,
         "enabled": true,
         "filterSettings": Object {
           "FDR": 0.1,
         },
+        "prefiltered": false,
       },
     },
     "configureEmbedding": Object {
@@ -146,7 +147,6 @@ Object {
       "enabled": true,
     },
     "doubletScores": Object {
-      "enabled": true,
       "sample-KO": Object {
         "auto": true,
         "enabled": true,
@@ -163,7 +163,6 @@ Object {
       "loadingSettingsError": false,
     },
     "mitochondrialContent": Object {
-      "enabled": true,
       "sample-KO": Object {
         "auto": true,
         "enabled": true,
@@ -179,7 +178,6 @@ Object {
       },
     },
     "numGenesVsNumUmis": Object {
-      "enabled": true,
       "sample-KO": Object {
         "auto": true,
         "enabled": true,
@@ -196,7 +194,6 @@ Object {
   },
   "processing": Object {
     "cellSizeDistribution": Object {
-      "enabled": false,
       "sample-KO": Object {
         "auto": true,
         "enabled": false,
@@ -207,14 +204,13 @@ Object {
       },
     },
     "classifier": Object {
-      "enabled": true,
-      "prefiltred": false,
       "sample-KO": Object {
         "auto": true,
         "enabled": true,
         "filterSettings": Object {
           "FDR": 0.1,
         },
+        "prefiltered": false,
       },
     },
     "configureEmbedding": Object {
@@ -267,7 +263,6 @@ Object {
       "enabled": true,
     },
     "doubletScores": Object {
-      "enabled": true,
       "sample-KO": Object {
         "auto": true,
         "enabled": true,
@@ -286,7 +281,6 @@ Object {
       "loadingSettingsError": false,
     },
     "mitochondrialContent": Object {
-      "enabled": true,
       "sample-KO": Object {
         "auto": true,
         "enabled": true,
@@ -302,7 +296,249 @@ Object {
       },
     },
     "numGenesVsNumUmis": Object {
+      "sample-KO": Object {
+        "auto": true,
+        "enabled": true,
+        "filterSettings": Object {
+          "regressionType": "gam",
+          "regressionTypeSettings": Object {
+            "gam": Object {
+              "p.level": 0.00009,
+            },
+          },
+        },
+      },
+    },
+  },
+}
+`;
+
+exports[`experimentSettingsReducer Correctly updates pipelineVersion 1`] = `
+Object {
+  "info": Object {
+    "experimentId": null,
+    "experimentName": null,
+    "pipelineVersion": 2,
+    "sampleIds": Array [],
+  },
+  "originalProcessing": Object {
+    "cellSizeDistribution": Object {
+      "sample-KO": Object {
+        "auto": true,
+        "enabled": true,
+        "filterSettings": Object {
+          "binStep": 200,
+          "minCellSize": 10800,
+        },
+      },
+    },
+    "classifier": Object {
+      "sample-KO": Object {
+        "auto": true,
+        "enabled": true,
+        "filterSettings": Object {
+          "FDR": 0.1,
+        },
+        "prefiltered": false,
+      },
+    },
+    "configureEmbedding": Object {
+      "clusteringSettings": Object {
+        "method": "louvain",
+        "methodSettings": Object {
+          "louvain": Object {
+            "resolution": 0.5,
+          },
+        },
+      },
+      "embeddingSettings": Object {
+        "method": "umap",
+        "methodSettings": Object {
+          "tsne": Object {
+            "learningRate": 200,
+            "perplexity": 30,
+          },
+          "umap": Object {
+            "distanceMetric": "euclidean",
+            "minimumDistance": 0.1,
+          },
+        },
+      },
       "enabled": true,
+    },
+    "dataIntegration": Object {
+      "dataIntegration": Object {
+        "method": "seuratv4",
+        "methodSettings": Object {
+          "fastmnn": Object {
+            "normalisation": "logNormalize",
+            "numGenes": 2000,
+          },
+          "seuratv4": Object {
+            "normalisation": "logNormalize",
+            "numGenes": 2000,
+          },
+          "unisample": Object {
+            "normalisation": "logNormalize",
+            "numGenes": 2000,
+          },
+        },
+      },
+      "dimensionalityReduction": Object {
+        "excludeGeneCategories": Array [],
+        "method": "rpca",
+        "numPCs": 30,
+      },
+      "enabled": true,
+    },
+    "doubletScores": Object {
+      "sample-KO": Object {
+        "auto": true,
+        "enabled": true,
+        "filterSettings": Object {
+          "binStep": 0.05,
+          "probabilityThreshold": 0.2,
+        },
+      },
+    },
+    "meta": Object {
+      "changedQCFilters": Set {},
+      "completingStepError": false,
+      "loading": false,
+      "loadingSettingsError": false,
+    },
+    "mitochondrialContent": Object {
+      "sample-KO": Object {
+        "auto": true,
+        "enabled": true,
+        "filterSettings": Object {
+          "method": "absoluteThreshold",
+          "methodSettings": Object {
+            "absoluteThreshold": Object {
+              "binStep": 200,
+              "maxFraction": 0.1,
+            },
+          },
+        },
+      },
+    },
+    "numGenesVsNumUmis": Object {
+      "sample-KO": Object {
+        "auto": true,
+        "enabled": true,
+        "filterSettings": Object {
+          "regressionType": "gam",
+          "regressionTypeSettings": Object {
+            "gam": Object {
+              "p.level": 0.00009,
+            },
+          },
+        },
+      },
+    },
+  },
+  "processing": Object {
+    "cellSizeDistribution": Object {
+      "sample-KO": Object {
+        "auto": true,
+        "enabled": true,
+        "filterSettings": Object {
+          "binStep": 200,
+          "minCellSize": 10800,
+        },
+      },
+    },
+    "classifier": Object {
+      "sample-KO": Object {
+        "auto": true,
+        "enabled": true,
+        "filterSettings": Object {
+          "FDR": 0.1,
+        },
+        "prefiltered": false,
+      },
+    },
+    "configureEmbedding": Object {
+      "clusteringSettings": Object {
+        "method": "louvain",
+        "methodSettings": Object {
+          "louvain": Object {
+            "resolution": 0.5,
+          },
+        },
+      },
+      "embeddingSettings": Object {
+        "method": "umap",
+        "methodSettings": Object {
+          "tsne": Object {
+            "learningRate": 200,
+            "perplexity": 30,
+          },
+          "umap": Object {
+            "distanceMetric": "euclidean",
+            "minimumDistance": 0.1,
+          },
+        },
+      },
+      "enabled": true,
+    },
+    "dataIntegration": Object {
+      "dataIntegration": Object {
+        "method": "seuratv4",
+        "methodSettings": Object {
+          "fastmnn": Object {
+            "normalisation": "logNormalize",
+            "numGenes": 2000,
+          },
+          "seuratv4": Object {
+            "normalisation": "logNormalize",
+            "numGenes": 2000,
+          },
+          "unisample": Object {
+            "normalisation": "logNormalize",
+            "numGenes": 2000,
+          },
+        },
+      },
+      "dimensionalityReduction": Object {
+        "excludeGeneCategories": Array [],
+        "method": "rpca",
+        "numPCs": 30,
+      },
+      "enabled": true,
+    },
+    "doubletScores": Object {
+      "sample-KO": Object {
+        "auto": true,
+        "enabled": true,
+        "filterSettings": Object {
+          "binStep": 0.05,
+          "probabilityThreshold": 0.2,
+        },
+      },
+    },
+    "meta": Object {
+      "changedQCFilters": Set {},
+      "completingStepError": false,
+      "loading": false,
+      "loadingSettingsError": false,
+    },
+    "mitochondrialContent": Object {
+      "sample-KO": Object {
+        "auto": true,
+        "enabled": true,
+        "filterSettings": Object {
+          "method": "absoluteThreshold",
+          "methodSettings": Object {
+            "absoluteThreshold": Object {
+              "binStep": 200,
+              "maxFraction": 0.1,
+            },
+          },
+        },
+      },
+    },
+    "numGenesVsNumUmis": Object {
       "sample-KO": Object {
         "auto": true,
         "enabled": true,
@@ -325,6 +561,7 @@ Object {
   "info": Object {
     "experimentId": null,
     "experimentName": null,
+    "pipelineVersion": null,
     "sampleIds": Array [],
   },
   "originalProcessing": Object {
@@ -355,11 +592,11 @@ Object {
   "info": Object {
     "experimentId": null,
     "experimentName": null,
+    "pipelineVersion": 1,
     "sampleIds": Array [],
   },
   "originalProcessing": Object {
     "cellSizeDistribution": Object {
-      "enabled": true,
       "sample-KO": Object {
         "auto": true,
         "enabled": true,
@@ -370,14 +607,13 @@ Object {
       },
     },
     "classifier": Object {
-      "enabled": true,
-      "prefiltred": false,
       "sample-KO": Object {
         "auto": true,
         "enabled": true,
         "filterSettings": Object {
           "FDR": 0.1,
         },
+        "prefiltered": false,
       },
     },
     "configureEmbedding": Object {
@@ -430,7 +666,6 @@ Object {
       "enabled": true,
     },
     "doubletScores": Object {
-      "enabled": true,
       "sample-KO": Object {
         "auto": true,
         "enabled": true,
@@ -447,7 +682,6 @@ Object {
       "loadingSettingsError": false,
     },
     "mitochondrialContent": Object {
-      "enabled": true,
       "sample-KO": Object {
         "auto": true,
         "enabled": true,
@@ -463,7 +697,6 @@ Object {
       },
     },
     "numGenesVsNumUmis": Object {
-      "enabled": true,
       "sample-KO": Object {
         "auto": true,
         "enabled": true,
@@ -480,7 +713,6 @@ Object {
   },
   "processing": Object {
     "cellSizeDistribution": Object {
-      "enabled": true,
       "sample-KO": Object {
         "auto": true,
         "enabled": true,
@@ -491,14 +723,13 @@ Object {
       },
     },
     "classifier": Object {
-      "enabled": true,
-      "prefiltred": false,
       "sample-KO": Object {
         "auto": true,
         "enabled": true,
         "filterSettings": Object {
           "FDR": 0.1,
         },
+        "prefiltered": false,
       },
     },
     "configureEmbedding": Object {
@@ -551,7 +782,6 @@ Object {
       "enabled": true,
     },
     "doubletScores": Object {
-      "enabled": true,
       "sample-KO": Object {
         "auto": true,
         "enabled": true,
@@ -568,7 +798,6 @@ Object {
       "loadingSettingsError": false,
     },
     "mitochondrialContent": Object {
-      "enabled": true,
       "sample-KO": Object {
         "auto": true,
         "enabled": true,
@@ -584,7 +813,6 @@ Object {
       },
     },
     "numGenesVsNumUmis": Object {
-      "enabled": true,
       "sample-KO": Object {
         "auto": true,
         "enabled": true,

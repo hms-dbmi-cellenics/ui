@@ -16,7 +16,10 @@ const plotsAndTablesPageFactory = createTestComponentFactory(PlotsTablesHome);
 
 let storeState = null;
 
-describe('Data Management page', () => {
+const hiddenPlotNames = [];
+const shownPlotNames = Object.values(plotNames).filter((name) => !hiddenPlotNames.includes(name));
+
+describe('Plots and Tables page', () => {
   beforeEach(() => {
     storeState = makeStore();
   });
@@ -30,8 +33,12 @@ describe('Data Management page', () => {
       );
     });
 
-    Object.values(plotNames).forEach((name) => {
+    shownPlotNames.forEach((name) => {
       expect(screen.getByText(new RegExp(name, 'i'))).toBeInTheDocument();
+    });
+
+    hiddenPlotNames.forEach((name) => {
+      expect(screen.queryByText(new RegExp(name, 'i'))).toBeNull();
     });
   });
 });

@@ -35,7 +35,7 @@ import 'utils/css/data-management.css';
 import { ClipLoader } from 'react-spinners';
 import useConditionalEffect from 'utils/customHooks/useConditionalEffect';
 import { METADATA_DEFAULT_VALUE } from 'redux/reducers/experiments/initialState';
-import { techTypes } from 'utils/constants';
+import { sampleTech } from 'utils/constants';
 
 const { Text } = Typography;
 
@@ -55,7 +55,7 @@ const SamplesTable = forwardRef((props, ref) => {
   const DragHandle = sortableHandle(() => <MenuOutlined style={{ cursor: 'grab', color: '#999' }} />);
 
   const initialTableColumns = {
-    [techTypes.CHROMIUM]: [
+    [sampleTech['10X']]: [
       {
         fixed: 'left',
         index: 0,
@@ -95,7 +95,7 @@ const SamplesTable = forwardRef((props, ref) => {
         render: (tableCellData) => <UploadCell columnId='matrix' tableCellData={tableCellData} />,
       },
     ],
-    [techTypes.SEURAT]: [
+    [sampleTech.SEURAT]: [
       {
         fixed: 'left',
         index: 0,
@@ -123,7 +123,7 @@ const SamplesTable = forwardRef((props, ref) => {
     ],
   };
 
-  const [tableColumns, setTableColumns] = useState(initialTableColumns[techTypes.CHROMIUM]);
+  const [tableColumns, setTableColumns] = useState(initialTableColumns[sampleTech['10X']]);
 
   useEffect(() => {
     const samplesLoaded = activeExperiment?.sampleIds.every((sampleId) => samples[sampleId]);
@@ -247,7 +247,7 @@ const SamplesTable = forwardRef((props, ref) => {
   };
 
   useEffect(() => {
-    if (activeExperiment.sampleIds.length === 0 || !technology) {
+    if (!activeExperiment?.sampleIds.length || !technology) {
       setTableData([]);
       return;
     }
@@ -273,8 +273,8 @@ const SamplesTable = forwardRef((props, ref) => {
         key: idx,
         name: samples[sampleUuid]?.name || 'UPLOAD ERROR: Please reupload sample',
         uuid: sampleUuid,
-        ...(technology === techTypes.CHROMIUM && { barcodes: barcodesData, genes: genesData, matrix: matrixData }),
-        ...(technology === techTypes.SEURAT && { seurat: seuratData }),
+        ...(technology === sampleTech['10X'] && { barcodes: barcodesData, genes: genesData, matrix: matrixData }),
+        ...(technology === sampleTech.SEURAT && { seurat: seuratData }),
         ...samples[sampleUuid]?.metadata,
       };
     });

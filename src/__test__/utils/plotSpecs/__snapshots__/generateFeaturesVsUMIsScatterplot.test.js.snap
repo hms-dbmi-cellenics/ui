@@ -1328,6 +1328,7 @@ Object {
   "height": 500,
   "marks": Array [
     Object {
+      "clip": true,
       "encode": Object {
         "update": Object {
           "fill": Object {
@@ -1359,6 +1360,7 @@ Object {
       "type": "symbol",
     },
     Object {
+      "clip": true,
       "encode": Object {
         "update": Object {
           "stroke": Object {
@@ -1389,6 +1391,7 @@ Object {
       "type": "line",
     },
     Object {
+      "clip": true,
       "encode": Object {
         "update": Object {
           "stroke": Object {
@@ -2784,6 +2787,7 @@ Object {
   "height": 500,
   "marks": Array [
     Object {
+      "clip": true,
       "encode": Object {
         "update": Object {
           "fill": Object {
@@ -2815,6 +2819,7 @@ Object {
       "type": "symbol",
     },
     Object {
+      "clip": true,
       "encode": Object {
         "update": Object {
           "stroke": Object {
@@ -2845,6 +2850,7 @@ Object {
       "type": "line",
     },
     Object {
+      "clip": true,
       "encode": Object {
         "update": Object {
           "stroke": Object {
@@ -4240,6 +4246,7 @@ Object {
   "height": 500,
   "marks": Array [
     Object {
+      "clip": true,
       "encode": Object {
         "update": Object {
           "fill": Object {
@@ -4271,6 +4278,7 @@ Object {
       "type": "symbol",
     },
     Object {
+      "clip": true,
       "encode": Object {
         "update": Object {
           "stroke": Object {
@@ -4301,6 +4309,7 @@ Object {
       "type": "line",
     },
     Object {
+      "clip": true,
       "encode": Object {
         "update": Object {
           "stroke": Object {

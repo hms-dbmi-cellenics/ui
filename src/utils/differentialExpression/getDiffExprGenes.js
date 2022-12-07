@@ -1,6 +1,7 @@
 /* eslint-disable no-param-reassign */
 import { generateDiffExprBody } from 'redux/actions/differentialExpression/loadDifferentialExpression';
-import { fetchWork } from 'utils/work/fetchWork';
+
+import fetchWork from 'utils/work/fetchWork';
 import getTimeoutForWorkerTask from 'utils/getTimeoutForWorkerTask';
 
 const getDiffExprGenes = (getAllGenes, numGenes) => async (dispatch, getState) => {
@@ -39,7 +40,7 @@ const getDiffExprGenes = (getAllGenes, numGenes) => async (dispatch, getState) =
 
   try {
     const data = await fetchWork(
-      experimentId, body, getState, { timeout, extras: { pagination } },
+      experimentId, body, getState, dispatch, { timeout, extras: { pagination } },
     );
 
     const { rows } = data;

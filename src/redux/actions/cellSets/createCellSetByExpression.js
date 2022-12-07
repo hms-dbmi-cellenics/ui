@@ -1,7 +1,7 @@
-import { fetchWork } from 'utils/work/fetchWork';
+import fetchWork from 'utils/work/fetchWork';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
 import endUserMessages from 'utils/endUserMessages';
-import WorkResponseError from 'utils/http/errors/WorkResponseError';
+import WorkResponseError from 'utils/errors/http/WorkResponseError';
 
 const createCellSetByExpression = (
   experimentId, selectedGenes,
@@ -11,8 +11,8 @@ const createCellSetByExpression = (
     genesConfig: selectedGenes,
   };
   try {
-    const result = await fetchWork(experimentId, body, getState, { broadcast: true });
-    return result;
+    const data = await fetchWork(experimentId, body, getState, dispatch, { broadcast: true });
+    return data;
   } catch (e) {
     let errorMessage = endUserMessages.ERROR_FETCHING_CELL_SETS;
     if (e instanceof WorkResponseError) errorMessage = e.userMessage;

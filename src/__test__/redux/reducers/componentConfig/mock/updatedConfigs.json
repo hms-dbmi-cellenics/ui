@@ -1,0 +1,331 @@
+[
+  {
+    "id": "embeddingCategoricalMain",
+    "updatedConfig": {
+      "axes": {
+        "offset": 0,
+        "gridWidth": 10,
+        "xAxisText": "Umap 1",
+        "yAxisText": "Umap 2",
+        "domainWidth": 2,
+        "gridOpacity": 0,
+        "defaultValues": [
+          "x",
+          "y"
+        ],
+        "labelFontSize": 12,
+        "titleFontSize": 13,
+        "xAxisRotateLabels": false
+      },
+      "spec": "1.0.0",
+      "title": {
+        "dx": 10,
+        "text": "",
+        "anchor": "start",
+        "fontSize": 20
+      },
+      "colour": {
+        "invert": "standard",
+        "gradient": "default",
+        "masterColour": "#000000",
+        "toggleInvert": "#FFFFFF",
+        "reverseColourBar": false
+      },
+      "labels": {
+        "size": 18,
+        "enabled": false
+      },
+      "legend": {
+        "colour": "#000000",
+        "enabled": true,
+        "position": "top"
+      },
+      "marker": {
+        "size": 5,
+        "shape": "circle",
+        "opacity": 5,
+        "showOpacity": true
+      },
+      "fontStyle": {
+        "font": "sans-serif",
+        "colour": "#000000"
+      },
+      "axesRanges": {
+        "xMax": 10,
+        "xMin": 0,
+        "yMax": 10,
+        "yMin": 0,
+        "xAxisAuto": true,
+        "yAxisAuto": true
+      },
+      "dimensions": {
+        "width": 700,
+        "height": 550
+      }
+    }
+  },
+  {
+    "id": "frequencyPlotMain",
+    "updatedConfig": {
+      "axes": {
+        "offset": 10,
+        "gridWidth": 10,
+        "xAxisText": "Sample",
+        "yAxisText": "Proportion",
+        "domainWidth": 2,
+        "gridOpacity": 0,
+        "labelFontSize": 12,
+        "titleFontSize": 13,
+        "xAxisRotateLabels": true
+      },
+      "spec": "1.0.0",
+      "title": {
+        "dx": 10,
+        "text": "",
+        "anchor": "start",
+        "fontSize": 15
+      },
+      "colour": {
+        "invert": "standard",
+        "gradient": "default",
+        "masterColour": "#000000",
+        "toggleInvert": "#FFFFFF",
+        "reverseColourBar": false
+      },
+      "labels": {
+        "size": 18,
+        "enabled": true
+      },
+      "legend": {
+        "title": "Cell Set",
+        "colour": "#000000",
+        "offset": 40,
+        "enabled": true,
+        "position": "top"
+      },
+      "marker": {
+        "size": 5,
+        "shape": "circle",
+        "opacity": 5,
+        "showOpacity": true
+      },
+      "fontStyle": {
+        "font": "sans-serif",
+        "colour": "#000000"
+      },
+      "axesRanges": {
+        "yMax": 10,
+        "yMin": 0,
+        "yAxisAuto": true
+      },
+      "dimensions": {
+        "width": 500,
+        "height": 500
+      },
+      "axisTitlesize": 13,
+      "frequencyType": "proportional",
+      "geneexpLegendloc": ""
+    }
+  },
+  {
+    "id": "trajectoryAnalysisMain",
+    "updatedConfig": {
+      "axes": {
+        "offset": 0,
+        "gridWidth": 10,
+        "xAxisText": "Umap 1",
+        "yAxisText": "Umap 2",
+        "domainWidth": 2,
+        "gridOpacity": 0,
+        "defaultValues": [
+          "x",
+          "y"
+        ],
+        "labelFontSize": 12,
+        "titleFontSize": 13,
+        "xAxisRotateLabels": false
+      },
+      "spec": "1.0.0",
+      "title": {
+        "dx": 10,
+        "text": "",
+        "anchor": "start",
+        "fontSize": 20
+      },
+      "colour": {
+        "invert": "standard",
+        "gradient": "default",
+        "masterColour": "#000000",
+        "toggleInvert": "#FFFFFF",
+        "reverseColourBar": false
+      },
+      "labels": {
+        "size": 18,
+        "enabled": false
+      },
+      "legend": {
+        "colour": "#000000",
+        "enabled": true,
+        "position": "top"
+      },
+      "marker": {
+        "size": 20,
+        "shape": "circle",
+        "opacity": 5,
+        "showOpacity": true
+      },
+      "fontStyle": {
+        "font": "sans-serif",
+        "colour": "#000000"
+      },
+      "axesRanges": {
+        "xMax": 10,
+        "xMin": 0,
+        "yMax": 10,
+        "yMin": 0,
+        "xAxisAuto": true,
+        "yAxisAuto": true
+      },
+      "dimensions": {
+        "width": 700,
+        "height": 550
+      },
+      "selectedSample": "All",
+      "selectedCellSet": "louvain"
+    }
+  },
+  {
+    "id": "ViolinMain",
+    "updatedConfig": {
+      "axes": {
+        "offset": 10,
+        "gridWidth": 10,
+        "xAxisText": "",
+        "yAxisText": "",
+        "domainWidth": 2,
+        "gridOpacity": 0,
+        "labelFontSize": 12,
+        "titleFontSize": 13,
+        "xAxisRotateLabels": true
+      },
+      "spec": "1.0.0",
+      "title": {
+        "dx": 0,
+        "text": "Gzma",
+        "anchor": "start",
+        "fontSize": 20
+      },
+      "colour": {
+        "invert": "standard",
+        "gradient": "default",
+        "masterColour": "#000000",
+        "toggleInvert": "#FFFFFF",
+        "reverseColourBar": false
+      },
+      "labels": {
+        "size": 18,
+        "enabled": true
+      },
+      "legend": {
+        "colour": "#000000",
+        "enabled": false,
+        "position": "top"
+      },
+      "marker": {
+        "size": 5,
+        "shape": "circle",
+        "opacity": 5,
+        "showOpacity": true
+      },
+      "fontStyle": {
+        "font": "sans-serif",
+        "colour": "#000000"
+      },
+      "shownGene": "Gzma",
+      "axesRanges": {
+        "yMax": 10,
+        "yMin": 0,
+        "yAxisAuto": true
+      },
+      "dimensions": {
+        "width": 550,
+        "height": 400
+      },
+      "normalised": "normalised",
+      "kdeBandwidth": 0.3,
+      "keepValuesOnReset": [
+        "shownGene",
+        "title"
+      ],
+      "statisticsVisible": false,
+      "selectedPointsVisible": true
+    }
+  },
+  {
+    "id": "ViolinMain-0",
+    "updatedConfig": {
+      "axes": {
+        "offset": 10,
+        "gridWidth": 10,
+        "xAxisText": "",
+        "yAxisText": "",
+        "domainWidth": 2,
+        "gridOpacity": 0,
+        "labelFontSize": 12,
+        "titleFontSize": 13,
+        "xAxisRotateLabels": true
+      },
+      "spec": "1.0.0",
+      "title": {
+        "dx": 0,
+        "text": "Lyz2",
+        "anchor": "start",
+        "fontSize": 20
+      },
+      "colour": {
+        "invert": "standard",
+        "gradient": "default",
+        "masterColour": "#000000",
+        "toggleInvert": "#FFFFFF",
+        "reverseColourBar": false
+      },
+      "labels": {
+        "size": 18,
+        "enabled": true
+      },
+      "legend": {
+        "colour": "#000000",
+        "enabled": false,
+        "position": "top"
+      },
+      "marker": {
+        "size": 5,
+        "shape": "circle",
+        "opacity": 5,
+        "showOpacity": true
+      },
+      "fontStyle": {
+        "font": "sans-serif",
+        "colour": "#000000"
+      },
+      "shownGene": "Lyz2",
+      "axesRanges": {
+        "yMax": 10,
+        "yMin": 0,
+        "yAxisAuto": true
+      },
+      "dimensions": {
+        "width": 550,
+        "height": 400
+      },
+      "normalised": "normalised",
+      "kdeBandwidth": 0.3,
+      "keepValuesOnReset": [
+        "shownGene",
+        "title"
+      ],
+      "statisticsVisible": false,
+      "selectedPointsVisible": true
+    }
+  }
+]

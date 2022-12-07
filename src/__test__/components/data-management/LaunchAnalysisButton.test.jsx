@@ -11,6 +11,7 @@ import {
 import { runGem2s, runSeurat } from 'redux/actions/pipeline';
 
 import PipelineStatus from 'utils/pipelineStatusValues';
+import { sampleTech } from 'utils/constants';
 import LaunchAnalysisButton from 'components/data-management/LaunchAnalysisButton';
 import initialExperimentsState, { experimentTemplate } from 'redux/reducers/experiments/initialState';
 import initialSamplesState, { sampleTemplate } from 'redux/reducers/samples/initialState';
@@ -19,7 +20,6 @@ import { initialExperimentBackendStatus } from 'redux/reducers/backendStatus/ini
 import UploadStatus from 'utils/upload/UploadStatus';
 import generatePipelineParamsHash from 'utils/data-management/generatePipelineParamsHash';
 import '__test__/test-utils/setupTests';
-import { techTypes } from 'utils/constants';
 
 jest.mock('utils/data-management/generatePipelineParamsHash');
 jest.mock('redux/actions/experimentSettings/updateExperimentInfo', () => jest.fn().mockReturnValue({ type: 'UPDATE_EXPERIMENT_INFO' }));
@@ -101,7 +101,7 @@ const withDataState = {
       name: sample1Name,
       experimentId: experiment1id,
       uuid: sample1Uuid,
-      type: '10X Chromium',
+      type: sampleTech['10X'],
       metadata: ['value-1'],
       fileNames: ['features.tsv.gz', 'barcodes.tsv.gz', 'matrix.mtx.gz'],
       files: {
@@ -115,7 +115,7 @@ const withDataState = {
       name: sample2Name,
       experimentId: experiment1id,
       uuid: sample2Uuid,
-      type: '10X Chromium',
+      type: sampleTech['10X'],
       metadata: ['value-2'],
       fileNames: ['features.tsv.gz', 'barcodes.tsv.gz', 'matrix.mtx.gz'],
       files: {
@@ -207,7 +207,7 @@ describe('LaunchAnalysisButton', () => {
     await act(async () => {
       render(
         <Provider store={mockStore(notAllMetadataInserted)}>
-          <LaunchAnalysisButton technology={techTypes.CHROMIUM} />
+          <LaunchAnalysisButton technology={sampleTech['10X']} />
         </Provider>,
       );
     });
@@ -221,7 +221,7 @@ describe('LaunchAnalysisButton', () => {
     await act(async () => {
       render(
         <Provider store={mockStore(noDataState)}>
-          <LaunchAnalysisButton technology={techTypes.CHROMIUM} />
+          <LaunchAnalysisButton technology={sampleTech['10X']} />
         </Provider>,
       );
     });
@@ -263,7 +263,7 @@ describe('LaunchAnalysisButton', () => {
     await act(async () => {
       render(
         <Provider store={mockStore(notAllDataUploaded)}>
-          <LaunchAnalysisButton technology={techTypes.CHROMIUM} />
+          <LaunchAnalysisButton technology={sampleTech['10X']} />
         </Provider>,
       );
     });
@@ -291,7 +291,7 @@ describe('LaunchAnalysisButton', () => {
     await act(async () => {
       render(
         <Provider store={mockStore(notAllSeuratDataUploaded)}>
-          <LaunchAnalysisButton technology={techTypes.SEURAT} />
+          <LaunchAnalysisButton technology={sampleTech.SEURAT} />
         </Provider>,
       );
     });
@@ -305,7 +305,7 @@ describe('LaunchAnalysisButton', () => {
     await act(async () => {
       render(
         <Provider store={mockStore(withDataState)}>
-          <LaunchAnalysisButton technology={techTypes.CHROMIUM} />
+          <LaunchAnalysisButton technology={sampleTech['10X']} />
         </Provider>,
       );
     });
@@ -319,7 +319,7 @@ describe('LaunchAnalysisButton', () => {
     await act(async () => {
       render(
         <Provider store={mockStore(withSeuratDataState)}>
-          <LaunchAnalysisButton technology={techTypes.SEURAT} />
+          <LaunchAnalysisButton technology={sampleTech.SEURAT} />
         </Provider>,
       );
     });
@@ -335,7 +335,7 @@ describe('LaunchAnalysisButton', () => {
     await act(async () => {
       render(
         <Provider store={mockStore(withDataState)}>
-          <LaunchAnalysisButton technology={techTypes.CHROMIUM} />
+          <LaunchAnalysisButton technology={sampleTech['10X']} />
         </Provider>,
       );
     });
@@ -351,7 +351,7 @@ describe('LaunchAnalysisButton', () => {
     await act(async () => {
       render(
         <Provider store={mockStore(withSeuratDataState)}>
-          <LaunchAnalysisButton technology={techTypes.SEURAT} />
+          <LaunchAnalysisButton technology={sampleTech.SEURAT} />
         </Provider>,
       );
     });
@@ -367,7 +367,7 @@ describe('LaunchAnalysisButton', () => {
     await act(async () => {
       render(
         <Provider store={mockStore(withDataState)}>
-          <LaunchAnalysisButton technology={techTypes.CHROMIUM} />
+          <LaunchAnalysisButton technology={sampleTech['10X']} />
         </Provider>,
       );
     });
@@ -383,7 +383,7 @@ describe('LaunchAnalysisButton', () => {
     await act(async () => {
       render(
         <Provider store={mockStore(withSeuratDataState)}>
-          <LaunchAnalysisButton technology={techTypes.SEURAT} />
+          <LaunchAnalysisButton technology={sampleTech.SEURAT} />
         </Provider>,
       );
     });
@@ -399,7 +399,7 @@ describe('LaunchAnalysisButton', () => {
     await act(async () => {
       render(
         <Provider store={mockStore(withDataState)}>
-          <LaunchAnalysisButton technology={techTypes.CHROMIUM} />
+          <LaunchAnalysisButton technology={sampleTech['10X']} />
         </Provider>,
       );
     });
@@ -423,7 +423,7 @@ describe('LaunchAnalysisButton', () => {
     await act(async () => {
       render(
         <Provider store={mockStore(withDataState)}>
-          <LaunchAnalysisButton technology={techTypes.CHROMIUM} />
+          <LaunchAnalysisButton technology={sampleTech['10X']} />
         </Provider>,
       );
     });
@@ -438,7 +438,7 @@ describe('LaunchAnalysisButton', () => {
     await act(async () => {
       render(
         <Provider store={mockStore(withDataState)}>
-          <LaunchAnalysisButton technology={techTypes.CHROMIUM} />
+          <LaunchAnalysisButton technology={sampleTech['10X']} />
         </Provider>,
       );
     });
@@ -465,7 +465,7 @@ describe('LaunchAnalysisButton', () => {
     await act(async () => {
       render(
         <Provider store={mockStore(notProcessedSeuratDataState)}>
-          <LaunchAnalysisButton technology={techTypes.SEURAT} />
+          <LaunchAnalysisButton technology={sampleTech.SEURAT} />
         </Provider>,
       );
     });

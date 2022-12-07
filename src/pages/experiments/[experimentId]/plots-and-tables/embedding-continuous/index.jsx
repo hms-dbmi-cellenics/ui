@@ -110,7 +110,7 @@ const ContinuousEmbeddingPage = ({ experimentId }) => {
     },
     {
       panelTitle: 'Axes and margins',
-      controls: ['axes'],
+      controls: ['axesWithRanges'],
     },
     {
       panelTitle: 'Colours',
@@ -153,17 +153,17 @@ const ContinuousEmbeddingPage = ({ experimentId }) => {
         plotType={plotType}
         plotStylingConfig={plotStylingConfig}
         extraControlPanels={renderExtraPanels()}
-        defaultActiveKey={['gene-selection', 'select-data']}
+        defaultActiveKey='gene-selection'
       >
         <ContinuousEmbeddingPlot
           experimentId={experimentId}
           config={config}
           plotUuid={plotUuid}
           plotData={
-            geneExpression.data[config?.shownGene]?.rawExpression.expression
+            geneExpression.matrix.getRawExpression(config?.shownGene)
           }
           truncatedPlotData={
-            geneExpression.data[config?.shownGene]?.truncatedExpression.expression
+            geneExpression.matrix.getTruncatedExpression(config?.shownGene)
           }
           loading={geneExpression.loading.length > 0}
           error={geneExpression.error}

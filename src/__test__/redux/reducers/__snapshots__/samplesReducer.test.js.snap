@@ -12,6 +12,7 @@ Object {
     "lastModified": "2021-01-01T14:48:00.000Z",
     "metadata": Object {},
     "name": "test sample",
+    "options": Object {},
     "type": null,
     "uuid": "asd123",
   },
@@ -19,6 +20,7 @@ Object {
     "error": false,
     "loading": false,
     "saving": false,
+    "validating": Array [],
   },
   "qwe234": Object {
     "complete": false,
@@ -30,6 +32,52 @@ Object {
     "lastModified": "2021-01-02T14:48:00.000Z",
     "metadata": Object {},
     "name": "test sample 2",
+    "options": Object {},
+    "type": null,
+    "uuid": "qwe234",
+  },
+}
+`;
+
+exports[`samplesReducer Adds validating to an experiment 1`] = `
+Object {
+  "asd123": Object {
+    "complete": false,
+    "createdDate": "2021-01-01T14:48:00.000Z",
+    "error": false,
+    "experimentId": null,
+    "fileNames": Array [],
+    "files": Object {},
+    "lastModified": "2021-01-01T14:48:00.000Z",
+    "metadata": Object {},
+    "name": "test sample",
+    "options": Object {
+      "someOption": false,
+    },
+    "type": null,
+    "uuid": "asd123",
+  },
+  "meta": Object {
+    "error": false,
+    "loading": false,
+    "saving": false,
+    "validating": Array [
+      "validatingExperimentId",
+    ],
+  },
+  "qwe234": Object {
+    "complete": false,
+    "createdDate": "2021-01-02T14:48:00.000Z",
+    "error": false,
+    "experimentId": null,
+    "fileNames": Array [],
+    "files": Object {},
+    "lastModified": "2021-01-02T14:48:00.000Z",
+    "metadata": Object {},
+    "name": "test sample 2",
+    "options": Object {
+      "someOption": false,
+    },
     "type": null,
     "uuid": "qwe234",
   },
@@ -48,6 +96,7 @@ Object {
     "lastModified": "2021-01-01T14:48:00.000Z",
     "metadata": Object {},
     "name": "test sample",
+    "options": Object {},
     "type": null,
     "uuid": "asd123",
   },
@@ -55,6 +104,7 @@ Object {
     "error": false,
     "loading": false,
     "saving": false,
+    "validating": Array [],
   },
 }
 `;
@@ -76,6 +126,7 @@ Object {
     "lastModified": "2021-01-01T14:48:00.000Z",
     "metadata": Object {},
     "name": "test sample",
+    "options": Object {},
     "type": null,
     "uuid": "asd123",
   },
@@ -83,6 +134,7 @@ Object {
     "error": false,
     "loading": false,
     "saving": false,
+    "validating": Array [],
   },
 }
 `;
@@ -99,6 +151,7 @@ Object {
     "error": false,
     "loading": false,
     "saving": false,
+    "validating": Array [],
   },
 }
 `;
@@ -114,6 +167,7 @@ Object {
     "error": false,
     "loading": false,
     "saving": false,
+    "validating": Array [],
   },
 }
 `;
@@ -130,6 +184,7 @@ Object {
     "lastModified": "2021-01-01T14:48:00.000Z",
     "metadata": Object {},
     "name": "test sample",
+    "options": Object {},
     "type": null,
     "uuid": "asd123",
   },
@@ -137,6 +192,7 @@ Object {
     "error": false,
     "loading": false,
     "saving": false,
+    "validating": Array [],
   },
 }
 `;
@@ -158,6 +214,7 @@ Object {
       "metadata-test": "value",
     },
     "name": "test sample",
+    "options": Object {},
     "type": null,
     "uuid": "asd123",
   },
@@ -165,6 +222,7 @@ Object {
     "error": false,
     "loading": false,
     "saving": false,
+    "validating": Array [],
   },
 }
 `;
@@ -181,6 +239,7 @@ Object {
     "lastModified": "2021-01-01T14:48:00.000Z",
     "metadata": Object {},
     "name": "test sample",
+    "options": Object {},
     "type": null,
     "uuid": "asd123",
   },
@@ -192,6 +251,7 @@ Object {
     "error": false,
     "loading": false,
     "saving": false,
+    "validating": Array [],
   },
   "qwe234": Object {
     "complete": false,
@@ -203,6 +263,49 @@ Object {
     "lastModified": "2021-01-02T14:48:00.000Z",
     "metadata": Object {},
     "name": "test sample 2",
+    "options": Object {},
+    "type": null,
+    "uuid": "qwe234",
+  },
+}
+`;
+
+exports[`samplesReducer Removes validating from an experiment 1`] = `
+Object {
+  "asd123": Object {
+    "complete": false,
+    "createdDate": "2021-01-01T14:48:00.000Z",
+    "error": false,
+    "experimentId": null,
+    "fileNames": Array [],
+    "files": Object {},
+    "lastModified": "2021-01-01T14:48:00.000Z",
+    "metadata": Object {},
+    "name": "test sample",
+    "options": Object {
+      "someOption": false,
+    },
+    "type": null,
+    "uuid": "asd123",
+  },
+  "meta": Object {
+    "validating": Array [
+      "otherValidatingExperimentId",
+    ],
+  },
+  "qwe234": Object {
+    "complete": false,
+    "createdDate": "2021-01-02T14:48:00.000Z",
+    "error": false,
+    "experimentId": null,
+    "fileNames": Array [],
+    "files": Object {},
+    "lastModified": "2021-01-02T14:48:00.000Z",
+    "metadata": Object {},
+    "name": "test sample 2",
+    "options": Object {
+      "someOption": false,
+    },
     "type": null,
     "uuid": "qwe234",
   },
@@ -221,6 +324,7 @@ Object {
     "lastModified": "2021-01-01T14:48:00.000Z",
     "metadata": Object {},
     "name": "test sample",
+    "options": Object {},
     "type": null,
     "uuid": "asd123",
   },
@@ -244,6 +348,7 @@ Object {
     "lastModified": "2021-01-01T14:48:00.000Z",
     "metadata": Object {},
     "name": "test sample",
+    "options": Object {},
     "type": null,
     "uuid": "asd123",
   },
@@ -267,6 +372,7 @@ Object {
     "lastModified": "2021-01-01T14:48:00.000Z",
     "metadata": Object {},
     "name": "test sample",
+    "options": Object {},
     "type": null,
     "uuid": "asd123",
   },
@@ -290,6 +396,7 @@ Object {
     "lastModified": "2021-01-01T14:48:00.000Z",
     "metadata": Object {},
     "name": "updated name",
+    "options": Object {},
     "type": null,
     "uuid": "asd123",
   },
@@ -297,6 +404,50 @@ Object {
     "error": false,
     "loading": false,
     "saving": false,
+    "validating": Array [],
+  },
+}
+`;
+
+exports[`samplesReducer Updates options correctly 1`] = `
+Object {
+  "asd123": Object {
+    "complete": false,
+    "createdDate": "2021-01-01T14:48:00.000Z",
+    "error": false,
+    "experimentId": null,
+    "fileNames": Array [],
+    "files": Object {},
+    "lastModified": "2021-01-01T14:48:00.000Z",
+    "metadata": Object {},
+    "name": "test sample",
+    "options": Object {
+      "someOption": true,
+    },
+    "type": null,
+    "uuid": "asd123",
+  },
+  "meta": Object {
+    "error": false,
+    "loading": false,
+    "saving": false,
+    "validating": Array [],
+  },
+  "qwe234": Object {
+    "complete": false,
+    "createdDate": "2021-01-02T14:48:00.000Z",
+    "error": false,
+    "experimentId": null,
+    "fileNames": Array [],
+    "files": Object {},
+    "lastModified": "2021-01-02T14:48:00.000Z",
+    "metadata": Object {},
+    "name": "test sample 2",
+    "options": Object {
+      "someOption": true,
+    },
+    "type": null,
+    "uuid": "qwe234",
   },
 }
 `;
@@ -330,6 +481,7 @@ Object {
     "lastModified": "newLastModified",
     "metadata": Object {},
     "name": "test sample",
+    "options": Object {},
     "type": null,
     "uuid": "asd123",
   },
@@ -337,6 +489,7 @@ Object {
     "error": false,
     "loading": false,
     "saving": false,
+    "validating": Array [],
   },
 }
 `;

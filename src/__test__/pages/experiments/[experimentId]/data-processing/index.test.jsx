@@ -22,10 +22,16 @@ import generateExperimentSettingsMock from '__test__/test-utils/experimentSettin
 import { modules } from 'utils/constants';
 import { act } from 'react-dom/test-utils';
 import { saveProcessingSettings } from 'redux/actions/experimentSettings';
+import { cloneExperiment } from 'redux/actions/experiments';
 import { EXPERIMENT_SETTINGS_SET_QC_STEP_ENABLED } from 'redux/actionTypes/experimentSettings';
+import config from 'config';
 
 jest.mock('components/header/UserButton', () => () => <></>);
 jest.mock('redux/actions/experimentSettings/processingConfig/saveProcessingSettings');
+jest.mock('redux/actions/experiments', () => ({
+  cloneExperiment: jest.fn(() => () => { }),
+  loadExperiments: jest.fn(() => () => { }),
+}));
 
 // Mock all filter components
 jest.mock('components/data-processing/CellSizeDistribution/CellSizeDistribution', () => () => <></>);
@@ -78,6 +84,7 @@ const getStore = (experimentId, settings = {}) => {
       ...initialExperimentState,
       info: {
         ...initialExperimentState.info,
+        pipelineVersion: config.pipelineVersionToRerunQC,
         sampleIds,
       },
       processing: {
@@ -107,8 +114,8 @@ const getStore = (experimentId, settings = {}) => {
       },
     },
   };
-
-  const store = mockStore(_.merge(initialState, settings));
+  const newState = _.cloneDeep(initialState);
+  const store = mockStore(_.merge(newState, settings));
 
   return store;
 };
@@ -215,9 +222,101 @@ describe('DataProcessingPage', () => {
     // Click on the run button
     userEvent.click(screen.getByText('Run'));
 
+    // Click on the start button
     userEvent.click(screen.getByText('Start'));
 
     expect(runQC).toHaveBeenCalled();
+  });
+
+  it('Shows extra information if there is a new version of the QC pipeline', async () => {
+    const store = getStore(experimentId, {
+      experimentSettings: {
+        info: { pipelineVersion: config.pipelineVersionToRerunQC - 1 },
+        processing: { meta: { changedQCFilters: new Set(['classifier']) } },
+      },
+    });
+
+    render(
+      <Provider store={store}>
+        {dataProcessingPageFactory()}
+      </Provider>,
+    );
+
+    // Change settings by clicking on the "manual" radio button
+    userEvent.click(screen.getByText('Manual'));
+
+    // Click on the run button
+    userEvent.click(screen.getByText('Run'));
+
+    expect(screen.getByText(/Due to a recent update, re-running the pipeline will initiate the run from the beginning/)).toBeInTheDocument();
+
+    // The Start text is the 1st element with "Start" in it
+    const startText = screen.getAllByText('Start')[0];
+
+    expect(startText).toBeInTheDocument();
+    expect(screen.getByText(/to re-run this project analysis from the beginning. Note that you will lose all of your annotated cell sets./)).toBeInTheDocument();
+
+    // The Clone Project text is the 1st element with "Clone Project" in it
+    const cloneProjectText = screen.getAllByText('Clone Project')[0];
+    expect(cloneProjectText).toBeInTheDocument();
+    expect(screen.getByText(/to clone this project and run from the beginning for the new project only./)).toBeInTheDocument();
+    expect(screen.getByText(/Your current project will not re-run, and will still be available to explore./)).toBeInTheDocument();
+
+    // The Cancel text is the 1st element with "Cancel" in it
+    const cancelText = screen.getAllByText('Cancel')[0];
+    expect(cancelText).toBeInTheDocument();
+    expect(screen.getByText(/to close this popup. You can then choose to discard the changed settings in your current project./)).toBeInTheDocument();
+
+    // There should be 3 buttons
+    // The start button is the 2nd element with "Start" in it
+    const startButton = screen.getAllByText('Start')[1];
+    expect(startButton).toBeInTheDocument();
+
+    // The clone project button is the 2nd element with "Clone Project" in it
+    const cloneProjectButton = screen.getAllByText('Clone Project')[1];
+    expect(cloneProjectButton).toBeInTheDocument();
+
+    // The cancel button is the 3rd element with "Cancel" in it
+    const cancelButton = screen.getAllByText('Cancel')[1];
+    expect(cancelButton).toBeInTheDocument();
+
+    // Clicking the Clone Project button will call the clone experiment action
+
+    userEvent.click(cloneProjectButton);
+
+    await waitFor(() => {
+      expect(cloneExperiment).toHaveBeenCalledTimes(1);
+      expect(mockNavigateTo).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  it('Should not show extra information if there is no new version of the QC pipeline', () => {
+    const store = getStore(experimentId, {
+      experimentSettings: {
+        processing: { meta: { changedQCFilters: new Set(['classifier']) } },
+      },
+    });
+
+    render(
+      <Provider store={store}>
+        {dataProcessingPageFactory()}
+      </Provider>,
+    );
+
+    // Change settings by clicking on the "manual" radio button
+    const manualButton = screen.getByText('Manual');
+
+    userEvent.click(manualButton);
+
+    // Click on the run button
+    userEvent.click(screen.getByText('Run'));
+
+    // There should be no update information
+    expect(screen.queryByText(/Due to a recent update, re-running the pipeline will initiate the run from the beginning/)).toBeNull();
+
+    // There should only be 2 buttons
+    expect(screen.getByText('Start')).toBeInTheDocument();
+    expect(screen.getByText('Cancel')).toBeInTheDocument();
   });
 
   it('Classifier filter (1st filter) should show custom disabled message if sample is prefiltered ', () => {
@@ -227,8 +326,14 @@ describe('DataProcessingPage', () => {
         experimentSettings: {
           processing: {
             classifier: {
-              enabled: false,
-              prefiltered: true,
+              [sampleIds[0]]: {
+                prefiltered: true,
+                enabled: false,
+                auto: true,
+                filterSettings: {
+                  FDR: 0.1,
+                },
+              },
             },
           },
         },
@@ -250,22 +355,10 @@ describe('DataProcessingPage', () => {
     expect(screen.getByText(/is pre-filtered/i)).toBeInTheDocument();
   });
 
-  it('Classifier filter (1st filter) should not be disabled and not show error if not prefiltered ', () => {
-    const store = getStore(
-      experimentId,
-      {
-        experimentSettings: {
-          processing: {
-            classifier: {
-              enabled: true,
-              prefiltered: false,
-            },
-          },
-        },
-      },
-    );
+  it('Classifier filter (1st filter) should not be disabled and not show error if not prefiltered ', async () => {
+    const store = getStore();
 
-    render(
+    await render(
       <Provider store={store}>
         {dataProcessingPageFactory()}
       </Provider>,
@@ -287,7 +380,9 @@ describe('DataProcessingPage', () => {
         experimentSettings: {
           processing: {
             classifier: {
-              enabled: false,
+              [sampleIds[0]]: {
+                enabled: false,
+              },
             },
           },
         },
@@ -306,20 +401,8 @@ describe('DataProcessingPage', () => {
   });
 
   it('Disabling a filter saves and dispatches appropriate actions', async () => {
-    const store = getStore(
-      experimentId,
-      {
-        experimentSettings: {
-          processing: {
-            classifier: {
-              enabled: true,
-            },
-          },
-        },
-      },
-    );
+    const store = getStore(experimentId);
     saveProcessingSettings.mockImplementation(() => () => Promise.resolve());
-
     render(
       <Provider store={store}>
         {dataProcessingPageFactory()}

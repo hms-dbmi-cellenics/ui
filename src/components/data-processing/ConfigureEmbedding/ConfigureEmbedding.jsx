@@ -3,11 +3,11 @@ import { useSelector, useDispatch } from 'react-redux';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
 import {
-  Row, Col, Space, PageHeader, Collapse, Empty, Alert,
+  Row, Col, PageHeader, Radio, Form, Collapse, Empty, Alert,
 } from 'antd';
+import SelectData from 'components/plots/styling/embedding-continuous/SelectData';
 
 import { isUnisample } from 'utils/experimentPredicates';
-import MiniPlot from 'components/plots/MiniPlot';
 
 import CategoricalEmbeddingPlot from 'components/plots/CategoricalEmbeddingPlot';
 import ContinuousEmbeddingPlot from 'components/plots/ContinuousEmbeddingPlot';
@@ -20,7 +20,7 @@ import {
 
 import PlotStyling from 'components/plots/styling/PlotStyling';
 import loadCellMeta from 'redux/actions/cellMeta';
-import generateDataProcessingPlotUuid from 'utils/generateDataProcessingPlotUuid';
+import { generateDataProcessingPlotUuid } from 'utils/generateCustomPlotUuid';
 import Loader from 'components/Loader';
 import { getCellSets } from 'redux/selectors';
 import CalculationConfig from 'components/data-processing/ConfigureEmbedding/CalculationConfig';
@@ -52,7 +52,7 @@ const ConfigureEmbedding = (props) => {
 
   const plots = {
     cellCluster: {
-      title: 'Colored by CellSets',
+      title: 'Cell sets',
       plotUuid: generateDataProcessingPlotUuid(null, filterName, 0),
       plotType: 'embeddingPreviewByCellSets',
       plot: (config, actions) => (
@@ -66,7 +66,7 @@ const ConfigureEmbedding = (props) => {
       ,
     },
     sample: {
-      title: 'Colored by Samples',
+      title: 'Samples',
       plotUuid: generateDataProcessingPlotUuid(null, filterName, 1),
       plotType: 'embeddingPreviewBySample',
       plot: (config, actions) => (
@@ -104,7 +104,7 @@ const ConfigureEmbedding = (props) => {
       ),
     },
     doubletScores: {
-      title: 'Cell doublet score',
+      title: 'Doublet score',
       plotUuid: generateDataProcessingPlotUuid(null, filterName, 3),
       plotType: 'embeddingPreviewDoubletScore',
       plot: (config, actions) => (
@@ -129,13 +129,16 @@ const ConfigureEmbedding = (props) => {
         panelTitle: 'Colour Inversion',
         controls: ['colourInversion'],
         footer: <Alert
-          message='Changing plot colours is not available here. Use the Data Management tool in Data Exploration to customise cell set and metadata colours'
+          message='Changing plot colours is not available here. Use the Cell sets and Metadata tool in Data Exploration to customise cell set and metadata colours'
           type='info'
         />,
       },
       {
         panelTitle: 'Markers',
-        controls: ['markers'],
+        controls: [{
+          name: 'markers',
+          props: { showShapeType: false },
+        }],
       },
       {
         panelTitle: 'Legend',
@@ -158,13 +161,16 @@ const ConfigureEmbedding = (props) => {
         panelTitle: 'Colours',
         controls: ['colourInversion'],
         footer: <Alert
-          message='Changing plot colours is not available here. Use the Data Management tool in Data Exploration to customise cell set and metadata colours'
+          message='Changing plot colours is not available here. Use the Cell sets and Metadata tool in Data Exploration to customise cell set and metadata colours'
           type='info'
         />,
       },
       {
         panelTitle: 'Markers',
-        controls: ['markers'],
+        controls: [{
+          name: 'markers',
+          props: { showShapeType: false },
+        }],
       },
       {
         panelTitle: 'Legend',
@@ -189,7 +195,10 @@ const ConfigureEmbedding = (props) => {
       },
       {
         panelTitle: 'Markers',
-        controls: ['markers'],
+        controls: [{
+          name: 'markers',
+          props: { showShapeType: false },
+        }],
       },
       {
         panelTitle: 'Legend',
@@ -203,7 +212,10 @@ const ConfigureEmbedding = (props) => {
       },
       {
         panelTitle: 'Markers',
-        controls: ['markers'],
+        controls: [{
+          name: 'markers',
+          props: { showShapeType: false },
+        }],
       },
       {
         panelTitle: 'Legend',
@@ -229,7 +241,7 @@ const ConfigureEmbedding = (props) => {
     },
     {
       panelTitle: 'Axes and margins',
-      controls: ['axes'],
+      controls: ['axesWithRanges'],
     },
     ...plotSpecificStylingControl[selectedPlot],
   ];
@@ -287,6 +299,16 @@ const ConfigureEmbedding = (props) => {
     debounceSave(plots[selectedPlot].plotUuid);
   };
 
+  const renderExtraControlPanels = () => (
+    <Panel header='Select data' key='select-data'>
+      <SelectData
+        config={selectedConfig}
+        onUpdate={updatePlotWithChanges}
+        cellSets={cellSets}
+      />
+    </Panel>
+  );
+
   const renderPlot = () => {
     // Spinner for main window
     if (!selectedConfig) {
@@ -314,6 +336,11 @@ const ConfigureEmbedding = (props) => {
     }
   };
 
+  const radioStyle = {
+    display: 'block',
+    height: '30px',
+  };
+
   return (
     <>
       <PageHeader
@@ -326,42 +353,27 @@ const ConfigureEmbedding = (props) => {
         </Col>
 
         <Col flex='1 0px'>
-          <Space direction='vertical'>
-            {Object.entries(plots).map(([key, plotObj]) => (
-              <button
-                type='button'
-                key={key}
-                onClick={() => setSelectedPlot(key)}
-                style={{
-                  margin: 0,
-                  backgroundColor: 'transparent',
-                  align: 'center',
-                  padding: '8px',
-                  border: '1px solid #000',
-                  cursor: 'pointer',
-                }}
-              >
-                <MiniPlot
-                  experimentId={experimentId}
-                  plotUuid={plotObj.plotUuid}
-                  plotFn={plotObj.plot}
-                  actions={false}
-                />
-              </button>
+          <Collapse defaultActiveKey={['plot-selector']}>
+            <Panel header='Plot view' key='plot-selector'>
+              <Radio.Group onChange={(e) => setSelectedPlot(e.target.value)} value={selectedPlot}>
+                {Object.entries(plots).map(([key, plotObj]) => (
+                  <Radio key={key} style={radioStyle} value={key}>
+                    {plotObj.title}
+                  </Radio>
+                ))}
+              </Radio.Group>
+            </Panel>
+          </Collapse>
 
-            ))}
-          </Space>
-        </Col>
-
-        <Col flex='1 0px'>
           <CalculationConfig experimentId={experimentId} onConfigChange={onConfigChange} />
           <Collapse>
-            <Panel header='Plot styling' key='styling'>
+            <Panel header='Plot options' key='styling'>
               <div style={{ height: 8 }} />
               <PlotStyling
                 formConfig={plotStylingControlsConfig}
                 config={selectedConfig}
                 onUpdate={updatePlotWithChanges}
+                extraPanels={renderExtraControlPanels()}
               />
             </Panel>
           </Collapse>

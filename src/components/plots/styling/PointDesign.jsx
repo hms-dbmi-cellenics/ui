@@ -7,7 +7,7 @@ import {
 import useUpdateThrottled from 'utils/customHooks/useUpdateThrottled';
 
 const PointDesign = (props) => {
-  const { onUpdate, config } = props;
+  const { onUpdate, config, showShapeType } = props;
   const [newConfig, handleChange] = useUpdateThrottled(onUpdate, config);
 
   return (
@@ -32,29 +32,38 @@ const PointDesign = (props) => {
           />
         </Form.Item>
 
-        {config.marker.showOpacity ? (
-          <Form.Item
-            label='Point Fill Opacity'
-          >
-            <Slider
-              value={newConfig.marker.opacity}
-              min={1}
-              max={10}
-              onChange={(value) => {
-                handleChange({ marker: { opacity: value } });
-              }}
-              marks={{ 1: 1, 10: 10 }}
-            />
-          </Form.Item>
-        ) : <></>}
-
-        <p><strong>Point Shape</strong></p>
-        <Form.Item>
-          <Radio.Group onChange={(e) => onUpdate({ marker: { shape: e.target.value } })} value={config.marker.shape}>
-            <Radio value='circle'>Circle</Radio>
-            <Radio value='diamond'>Diamond</Radio>
-          </Radio.Group>
-        </Form.Item>
+        {
+          config.marker.showOpacity
+          && (
+            <Form.Item
+              label='Point Fill Opacity'
+            >
+              <Slider
+                value={newConfig.marker.opacity}
+                min={1}
+                max={10}
+                onChange={(value) => {
+                  handleChange({ marker: { opacity: value } });
+                }}
+                marks={{ 1: 1, 10: 10 }}
+              />
+            </Form.Item>
+          )
+        }
+        {
+          showShapeType
+          && (
+            <>
+              <p><strong>Point Shape</strong></p>
+              <Form.Item>
+                <Radio.Group onChange={(e) => onUpdate({ marker: { shape: e.target.value } })} value={config.marker.shape}>
+                  <Radio value='circle'>Circle</Radio>
+                  <Radio value='diamond'>Diamond</Radio>
+                </Radio.Group>
+              </Form.Item>
+            </>
+          )
+        }
       </Form>
     </Space>
   );
@@ -63,6 +72,11 @@ const PointDesign = (props) => {
 PointDesign.propTypes = {
   config: PropTypes.object.isRequired,
   onUpdate: PropTypes.func.isRequired,
+  showShapeType: PropTypes.bool,
+};
+
+PointDesign.defaultProps = {
+  showShapeType: true,
 };
 
 export default PointDesign;

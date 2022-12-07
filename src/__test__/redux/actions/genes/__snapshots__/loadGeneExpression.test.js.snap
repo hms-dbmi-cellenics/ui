@@ -32,8 +32,8 @@ Object {
 `;
 
 exports[`loadGeneExpression action Dispatches appropriately on success 1`] = `
-Object {
-  "payload": Object {
+Array [
+  Object {
     "componentUuid": "asd",
     "experimentId": "1234",
     "genes": Array [
@@ -42,33 +42,74 @@ Object {
       "c",
     ],
   },
-  "type": "genes/expressionLoading",
-}
-`;
-
-exports[`loadGeneExpression action Dispatches appropriately on success 2`] = `
-Object {
-  "payload": Object {
+  Object {
     "componentUuid": "asd",
-    "data": Object {
-      "geneA": Object {
-        "expression": Array [
-          1,
-        ],
-        "mean": 1,
-        "stdev": 1,
-        "zScore": Array [
-          0,
-        ],
-      },
-    },
-    "experimentId": "1234",
     "genes": Array [
       "geneA",
     ],
+    "newGenes": Object {
+      "orderedGeneNames": Array [
+        "geneA",
+      ],
+      "rawExpression": Object {
+        "datatype": undefined,
+        "index": Array [],
+        "mathjs": "SparseMatrix",
+        "ptr": Array [
+          0,
+          0,
+        ],
+        "size": Array [
+          1,
+          1,
+        ],
+        "values": Array [],
+      },
+      "stats": Object {
+        "rawMean": Array [
+          1,
+        ],
+        "rawStdev": Array [
+          0,
+        ],
+        "truncatedMax": Array [
+          1,
+        ],
+        "truncatedMin": Array [
+          1,
+        ],
+      },
+      "truncatedExpression": Object {
+        "datatype": undefined,
+        "index": Array [],
+        "mathjs": "SparseMatrix",
+        "ptr": Array [
+          0,
+          0,
+        ],
+        "size": Array [
+          1,
+          1,
+        ],
+        "values": Array [],
+      },
+      "zScore": Object {
+        "datatype": undefined,
+        "index": Array [],
+        "mathjs": "SparseMatrix",
+        "ptr": Array [
+          0,
+          0,
+        ],
+        "size": Array [
+          1,
+          1,
+        ],
+        "values": Array [],
+      },
+    },
   },
-  "type": "genes/expressionLoaded",
-}
+]
 `;
 
 exports[`loadGeneExpression action Dispatches appropriately on unrun pipeline 1`] = `
@@ -115,47 +156,6 @@ exports[`loadGeneExpression action Does not send work for already loaded express
         "name": "GeneExpression",
       },
       [Function],
-      Object {
-        "timeout": 60,
-      },
-    ],
-  ],
-  "results": Array [
-    Object {
-      "type": "return",
-      "value": Promise {},
-    },
-  ],
-}
-`;
-
-exports[`loadGeneExpression action Sends work for already loaded expression data if forced to do so. 1`] = `
-[MockFunction] {
-  "calls": Array [
-    Array [
-      "1234",
-      Object {
-        "genes": Array [
-          "b",
-          "c",
-        ],
-        "name": "GeneExpression",
-      },
-      [Function],
-      Object {
-        "timeout": 60,
-      },
-    ],
-    Array [
-      "1234",
-      Object {
-        "genes": Array [
-          "a",
-          "b",
-          "c",
-        ],
-        "name": "GeneExpression",
-      },
       [Function],
       Object {
         "timeout": 60,
@@ -163,10 +163,6 @@ exports[`loadGeneExpression action Sends work for already loaded expression data
     ],
   ],
   "results": Array [
-    Object {
-      "type": "return",
-      "value": Promise {},
-    },
     Object {
       "type": "return",
       "value": Promise {},

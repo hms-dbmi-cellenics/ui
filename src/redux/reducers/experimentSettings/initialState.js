@@ -10,6 +10,7 @@ const initialState = {
     experimentId: null,
     experimentName: null,
     sampleIds: [],
+    pipelineVersion: null,
   },
   processing: {
     meta: metaInitialState,

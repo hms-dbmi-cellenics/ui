@@ -65,8 +65,8 @@ describe('HeatmapMetadataTrackSettings', () => {
     const items = screen.getAllByTestId('reorderableListItem');
 
     checkReorderableListState(
-      ['louvain clusters', 'Custom cell sets', 'Samples'],
-      [true, false, false],
+      ['louvain clusters', 'Custom cell sets', 'Samples', 'Track_1'],
+      [true, false, false, false],
       items,
     );
   });
@@ -84,8 +84,8 @@ describe('HeatmapMetadataTrackSettings', () => {
     items = screen.getAllByTestId('reorderableListItem');
 
     checkReorderableListState(
-      ['louvain clusters', 'Samples', 'Custom cell sets'],
-      [true, true, false],
+      ['louvain clusters', 'Samples', 'Custom cell sets', 'Track_1'],
+      [true, true, false, false],
       items,
     );
 
@@ -100,8 +100,8 @@ describe('HeatmapMetadataTrackSettings', () => {
 
     // Louvain is now second
     checkReorderableListState(
-      ['Samples', 'louvain clusters', 'Custom cell sets'],
-      [true, true, false],
+      ['Samples', 'louvain clusters', 'Custom cell sets', 'Track_1'],
+      [true, true, false, false],
       items,
     );
 
@@ -117,8 +117,8 @@ describe('HeatmapMetadataTrackSettings', () => {
 
     // Nothing changes, because custom cell sets is disabled
     checkReorderableListState(
-      ['Samples', 'louvain clusters', 'Custom cell sets'],
-      [true, true, false],
+      ['Samples', 'louvain clusters', 'Custom cell sets', 'Track_1'],
+      [true, true, false, false],
       items,
     );
   });

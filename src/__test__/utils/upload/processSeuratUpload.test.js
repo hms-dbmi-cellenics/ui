@@ -11,9 +11,9 @@ import initialExperimentState, { experimentTemplate } from 'redux/reducers/exper
 import UploadStatus from 'utils/upload/UploadStatus';
 import { waitFor } from '@testing-library/dom';
 
-import { processSeuratUpload } from 'utils/upload/processUpload';
+import processUpload from 'utils/upload/processUpload';
 
-import validate from 'utils/upload/sampleValidator';
+import validate from 'utils/upload/sampleValidators';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
 import mockFile from '__test__/test-utils/mockFile';
 
@@ -79,7 +79,7 @@ jest.mock('utils/upload/sampleValidator');
 
 let store = null;
 
-describe('processSeuratUpload', () => {
+describe('processUpload', () => {
   beforeEach(() => {
     jest.clearAllMocks();
 
@@ -104,7 +104,7 @@ describe('processSeuratUpload', () => {
 
     axios.request.mockImplementation(uploadSuccess);
 
-    await processSeuratUpload(
+    await processUpload(
       getValidFiles(),
       sampleType,
       store.getState().samples,
@@ -175,7 +175,7 @@ describe('processSeuratUpload', () => {
 
     axios.request.mockImplementation(uploadError);
 
-    await processSeuratUpload(
+    await processUpload(
       getValidFiles(),
       sampleType,
       store.getState().samples,
@@ -222,7 +222,7 @@ describe('processSeuratUpload', () => {
   it('Should not upload files if there are errors creating samples in the api', async () => {
     fetchMock.mockReject(new Error('Error'));
 
-    await processSeuratUpload(
+    await processUpload(
       getValidFiles(),
       sampleType,
       store.getState().samples,
@@ -249,7 +249,7 @@ describe('processSeuratUpload', () => {
       () => (['Some file error']),
     );
 
-    await processSeuratUpload(
+    await processUpload(
       getValidFiles(),
       sampleType,
       store.getState().samples,

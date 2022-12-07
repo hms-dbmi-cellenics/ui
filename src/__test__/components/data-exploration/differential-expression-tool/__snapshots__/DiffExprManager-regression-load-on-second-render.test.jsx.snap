@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`DiffExprManager regression test -- diff exp would not reload after \`go back\` was hit and a new cluster selected if we then go back and change the parameters again, the new differential expression data should be loading 1`] = `
+exports[`DiffExprManager regression test - diff exp would not reload after \`go back\` was hit and a new cluster selected if we then go back and change the parameters again, the new differential expression data should be loading 1`] = `
 Object {
   "payload": Object {
     "advancedFilters": Array [],
@@ -10,7 +10,7 @@ Object {
 }
 `;
 
-exports[`DiffExprManager regression test -- diff exp would not reload after \`go back\` was hit and a new cluster selected if we then go back and change the parameters again, the new differential expression data should be loading 2`] = `
+exports[`DiffExprManager regression test - diff exp would not reload after \`go back\` was hit and a new cluster selected if we then go back and change the parameters again, the new differential expression data should be loading 2`] = `
 Object {
   "payload": Object {
     "comparisonGroup": Object {
@@ -21,6 +21,7 @@ Object {
     "comparisonType": "between",
     "data": Array [
       Object {
+        "Gene": "EASAD0",
         "auc": "0.1",
         "gene_names": "A",
         "logFC": -1.427,
@@ -30,6 +31,7 @@ Object {
         "pct_2": "100",
       },
       Object {
+        "Gene": "ENASD23",
         "auc": "0.2",
         "gene_names": "B",
         "logFC": -2.427,
@@ -39,6 +41,7 @@ Object {
         "pct_2": "90",
       },
       Object {
+        "Gene": "EN34S",
         "auc": "0.3",
         "gene_names": "C",
         "logFC": -3.427,
@@ -48,6 +51,7 @@ Object {
         "pct_2": "80",
       },
       Object {
+        "Gene": "ENSD33",
         "auc": "0.4",
         "gene_names": "D",
         "logFC": -4.427,
@@ -57,6 +61,7 @@ Object {
         "pct_2": "70",
       },
       Object {
+        "Gene": "ENASD233",
         "auc": "0.5",
         "gene_names": "E",
         "logFC": -5.427,
@@ -73,7 +78,7 @@ Object {
 }
 `;
 
-exports[`DiffExprManager regression test -- diff exp would not reload after \`go back\` was hit and a new cluster selected if we then go back and change the parameters again, the new differential expression data should be loading 3`] = `
+exports[`DiffExprManager regression test - diff exp would not reload after \`go back\` was hit and a new cluster selected if we then go back and change the parameters again, the new differential expression data should be loading 3`] = `
 Object {
   "payload": Object {
     "comparisonGroup": Object {
@@ -84,6 +89,7 @@ Object {
     "comparisonType": "between",
     "data": Array [
       Object {
+        "Gene": "EASAD0",
         "auc": "0.1",
         "gene_names": "A",
         "logFC": -1.427,
@@ -93,6 +99,7 @@ Object {
         "pct_2": "100",
       },
       Object {
+        "Gene": "ENASD23",
         "auc": "0.2",
         "gene_names": "B",
         "logFC": -2.427,
@@ -102,6 +109,7 @@ Object {
         "pct_2": "90",
       },
       Object {
+        "Gene": "EN34S",
         "auc": "0.3",
         "gene_names": "C",
         "logFC": -3.427,
@@ -111,6 +119,7 @@ Object {
         "pct_2": "80",
       },
       Object {
+        "Gene": "ENSD33",
         "auc": "0.4",
         "gene_names": "D",
         "logFC": -4.427,
@@ -120,6 +129,7 @@ Object {
         "pct_2": "70",
       },
       Object {
+        "Gene": "ENASD233",
         "auc": "0.5",
         "gene_names": "E",
         "logFC": -5.427,
@@ -136,7 +146,7 @@ Object {
 }
 `;
 
-exports[`DiffExprManager regression test -- diff exp would not reload after \`go back\` was hit and a new cluster selected if we then go back and change the parameters again, the new differential expression data should be loading 4`] = `
+exports[`DiffExprManager regression test - diff exp would not reload after \`go back\` was hit and a new cluster selected if we then go back and change the parameters again, the new differential expression data should be loading 4`] = `
 Object {
   "payload": Object {
     "orderBy": "logFC",
@@ -146,7 +156,7 @@ Object {
 }
 `;
 
-exports[`DiffExprManager regression test -- diff exp would not reload after \`go back\` was hit and a new cluster selected on click of compute with changed parameters, DiffExprManager calls the results view and dispatches the appropriate actions 1`] = `
+exports[`DiffExprManager regression test - diff exp would not reload after \`go back\` was hit and a new cluster selected on click of compute with changed parameters, DiffExprManager calls the results view and dispatches the appropriate actions 1`] = `
 Object {
   "payload": Object {
     "advancedFilters": Array [],
@@ -156,7 +166,7 @@ Object {
 }
 `;
 
-exports[`DiffExprManager regression test -- diff exp would not reload after \`go back\` was hit and a new cluster selected on click of compute with changed parameters, DiffExprManager calls the results view and dispatches the appropriate actions 2`] = `
+exports[`DiffExprManager regression test - diff exp would not reload after \`go back\` was hit and a new cluster selected on click of compute with changed parameters, DiffExprManager calls the results view and dispatches the appropriate actions 2`] = `
 Object {
   "payload": Object {
     "comparisonGroup": Object {
@@ -167,6 +177,7 @@ Object {
     "comparisonType": "between",
     "data": Array [
       Object {
+        "Gene": "EASAD0",
         "auc": "0.1",
         "gene_names": "A",
         "logFC": -1.427,
@@ -176,6 +187,7 @@ Object {
         "pct_2": "100",
       },
       Object {
+        "Gene": "ENASD23",
         "auc": "0.2",
         "gene_names": "B",
         "logFC": -2.427,
@@ -185,6 +197,7 @@ Object {
         "pct_2": "90",
       },
       Object {
+        "Gene": "EN34S",
         "auc": "0.3",
         "gene_names": "C",
         "logFC": -3.427,
@@ -194,6 +207,7 @@ Object {
         "pct_2": "80",
       },
       Object {
+        "Gene": "ENSD33",
         "auc": "0.4",
         "gene_names": "D",
         "logFC": -4.427,
@@ -203,6 +217,7 @@ Object {
         "pct_2": "70",
       },
       Object {
+        "Gene": "ENASD233",
         "auc": "0.5",
         "gene_names": "E",
         "logFC": -5.427,

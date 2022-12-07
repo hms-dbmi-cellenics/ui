@@ -4,8 +4,12 @@ import getCellSets from 'redux/selectors/cellSets/getCellSets';
 
 describe('Get cell sets selector test', () => {
   it('should return store cellsets if available', () => {
-    expect(getCellSets()(mockCellSets)).toEqual(mockCellSets);
+    expect(getCellSets()(mockCellSets)).toEqual({
+      ...mockCellSets,
+      accessible: true,
+    });
   });
+
   it('should return default cell sets if unavailable', () => {
     expect(getCellSets()({})).toEqual({
       ...initialCellSetsState,

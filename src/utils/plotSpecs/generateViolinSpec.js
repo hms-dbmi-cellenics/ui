@@ -6,6 +6,10 @@ const generateSpec = (config, plotData) => {
   let plotWidth = Math.round(Math.min(100, 0.9 * (config.dimensions.width / numGroups)));
   plotWidth += (plotWidth % 2);
 
+  const yScaleDomain = config.axesRanges.yAxisAuto
+    ? { data: 'cells', field: 'y' }
+    : [config.axesRanges.yMin, config.axesRanges.yMax];
+
   const spec = {
     $schema: 'https://vega.github.io/schema/vega/v5.json',
     description: 'Violin plot',
@@ -106,12 +110,7 @@ const generateSpec = (config, plotData) => {
         name: 'yscale',
         type: 'linear',
         range: 'height',
-        round: true,
-        domain: {
-          data: 'cells',
-          field: 'y',
-        },
-        zero: true,
+        domain: yScaleDomain,
         nice: true,
       },
       {
@@ -194,6 +193,7 @@ const generateSpec = (config, plotData) => {
     marks: [
       {
         type: 'group',
+        clip: true,
         from: {
           facet: {
             data: 'density',
@@ -388,18 +388,21 @@ const generateSpec = (config, plotData) => {
   }
 
   if (config?.legend.enabled) {
+    const groups = _.keys(plotData.groups);
+    const groupNames = groups.map((id) => plotData.groups[id].name);
+    const groupColors = groups.map((id) => plotData.groups[id].color);
+
     const positionIsRight = config.legend.position === 'right';
 
-    const legendColumns = positionIsRight ? 1 : Math.floor(config.dimensions.width / 85);
+    const legendColumns = positionIsRight
+      ? Math.ceil(groups.length / 20)
+      : Math.floor(config.dimensions.width / 85);
     const labelLimit = positionIsRight ? 0 : 85;
     if (positionIsRight) {
       const plotWidthIndex = spec.signals.findIndex((item) => item.name === 'plotWidth');
       spec.signals[plotWidthIndex].value = plotWidth * 0.85;
     }
 
-    const groups = _.keys(plotData.groups);
-    const groupNames = groups.map((id) => plotData.groups[id].name);
-    const groupColors = groups.map((id) => plotData.groups[id].color);
     spec.scales.push({
       name: 'legend',
       type: 'ordinal',
@@ -410,8 +413,8 @@ const generateSpec = (config, plotData) => {
       {
         fill: 'legend',
         type: 'symbol',
-        symbolType: 'square',
-        symbolSize: 200,
+        symbolType: 'circle',
+        symbolSize: 100,
         orient: config?.legend.position,
         offset: 40,
         direction: 'horizontal',

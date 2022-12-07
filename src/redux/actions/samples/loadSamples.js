@@ -1,5 +1,6 @@
 import fetchAPI from 'utils/http/fetchAPI';
 import handleError from 'utils/http/handleError';
+import fileNameForApiV1 from 'utils/upload/fileNameForApiV1';
 
 import {
   SAMPLES_LOADED,
@@ -15,20 +16,14 @@ const toApiV1 = (samples, experimentId) => {
     const apiV1Files = {};
 
     Object.keys(files).forEach((key) => {
-      const fileNameConvert = {
-        features10x: 'features.tsv.gz',
-        barcodes10x: 'barcodes.tsv.gz',
-        matrix10x: 'matrix.mtx.gz',
-        seurat: 'r.rds',
-      };
       const fileType = files[key]?.sampleFileType;
       if (!fileType) throw new Error('No sample file found');
 
-      const fileName = fileNameConvert[fileType];
+      const fileName = fileNameForApiV1[fileType];
 
-      fileNames.push(fileNameConvert[fileType]);
+      fileNames.push(fileNameForApiV1[fileType]);
 
-      const res = {
+      apiV1Files[fileName] = {
         size: files[key].size,
         valid: true,
         name: fileName,
@@ -36,18 +31,9 @@ const toApiV1 = (samples, experimentId) => {
           status: files[key].uploadStatus,
         },
       };
-
-      apiV1Files[fileName] = res;
     });
 
     return { apiV1Files, fileNames };
-  };
-
-  const sampleTechnologyConvert = (technology) => {
-    if (technology === '10x') return '10X Chromium';
-    if (technology === 'seurat') return 'Seurat';
-
-    throw new Error('Unknown sample technology');
   };
 
   samples.forEach((sample) => {
@@ -59,7 +45,8 @@ const toApiV1 = (samples, experimentId) => {
       name: sample.name,
       lastModified: sample.updatedAt,
       files: apiV1Files,
-      type: sampleTechnologyConvert(sample.sampleTechnology),
+      type: sample.sampleTechnology,
+      options: sample.options,
       fileNames,
       uuid: sample.id,
     };
@@ -99,3 +86,5 @@ const loadSamples = (experimentId) => async (dispatch) => {
 };
 
 export default loadSamples;
+
+export { toApiV1 };

@@ -6,6 +6,7 @@ import {
   EXPERIMENTS_LOADING,
   EXPERIMENTS_ERROR,
   EXPERIMENTS_SAVING,
+  EXPERIMENTS_SAVED,
   EXPERIMENTS_DELETED,
   EXPERIMENTS_METADATA_CREATE,
   EXPERIMENTS_METADATA_DELETE,
@@ -13,10 +14,9 @@ import {
   EXPERIMENTS_SET_ACTIVE,
 } from 'redux/actionTypes/experiments';
 
-import {
-  SAMPLES_CREATE, SAMPLES_DELETE,
-} from 'redux/actionTypes/samples';
+import { SAMPLES_CREATED, SAMPLES_DELETE } from 'redux/actionTypes/samples';
 
+import { EXPERIMENT_SETTINGS_PIPELINE_VERSION_UPDATED } from 'redux/actionTypes/experimentSettings';
 import experimentsCreate from './experimentsCreate';
 import experimentsUpdate from './experimentsUpdate';
 import experimentsDelete from './experimentsDelete';
@@ -28,9 +28,12 @@ import experimentsSaving from './experimentsSaving';
 import experimentsMetadataCreate from './experimentsMetadataCreate';
 import experimentsMetadataRename from './experimentsMetadataRename';
 import experimentsMetadataDelete from './experimentsMetadataDelete';
+import experimentsSaved from './experimentsSaved';
 
-import samplesCreate from './samplesCreate';
 import samplesDelete from './samplesDelete';
+import samplesCreated from './samplesCreated';
+
+import pipelineVersionUpdated from './pipelineVersionUpdated';
 
 const experimentsReducer = (state = initialState, action) => {
   switch (action.type) {
@@ -66,8 +69,12 @@ const experimentsReducer = (state = initialState, action) => {
       return experimentsSaving(state, action);
     }
 
-    case SAMPLES_CREATE: {
-      return samplesCreate(state, action);
+    case EXPERIMENTS_SAVED: {
+      return experimentsSaved(state, action);
+    }
+
+    case SAMPLES_CREATED: {
+      return samplesCreated(state, action);
     }
 
     case SAMPLES_DELETE: {
@@ -84,6 +91,10 @@ const experimentsReducer = (state = initialState, action) => {
 
     case EXPERIMENTS_METADATA_DELETE: {
       return experimentsMetadataDelete(state, action);
+    }
+
+    case EXPERIMENT_SETTINGS_PIPELINE_VERSION_UPDATED: {
+      return pipelineVersionUpdated(state, action);
     }
 
     default: {

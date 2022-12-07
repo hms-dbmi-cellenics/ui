@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { initialViewState } from './initialState';
+import { initialViewState } from './getInitialState';
 
 const genesPropertiesLoadedPaginated = (state, action) => {
   const {

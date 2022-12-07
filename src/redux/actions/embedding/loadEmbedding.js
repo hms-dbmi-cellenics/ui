@@ -1,5 +1,5 @@
 import { EMBEDDINGS_LOADING, EMBEDDINGS_LOADED, EMBEDDINGS_ERROR } from 'redux/actionTypes/embeddings';
-import { fetchWork } from 'utils/work/fetchWork';
+import fetchWork from 'utils/work/fetchWork';
 import getTimeoutForWorkerTask from 'utils/getTimeoutForWorkerTask';
 
 const loadEmbedding = (
@@ -45,7 +45,7 @@ const loadEmbedding = (
 
   try {
     const data = await fetchWork(
-      experimentId, body, getState, { timeout },
+      experimentId, body, getState, dispatch, { timeout },
     );
     return dispatch({
       type: EMBEDDINGS_LOADED,

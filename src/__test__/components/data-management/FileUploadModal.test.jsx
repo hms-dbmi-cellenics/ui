@@ -12,7 +12,7 @@ import handleError from 'utils/http/handleError';
 import endUserMessages from 'utils/endUserMessages';
 
 import fileUploadSpecifications from 'utils/upload/fileUploadSpecifications';
-import { techTypes } from 'utils/constants';
+import { sampleTech } from 'utils/constants';
 
 import mockFile from '__test__/test-utils/mockFile';
 import FileUploadModal from 'components/data-management/FileUploadModal';
@@ -406,7 +406,7 @@ describe('FileUploadModal', () => {
   });
 
   it('drag and drop fails with valid Seurat file when pre-existing Seurat file exists for experiment', async () => {
-    await renderFileUploadModal(prevUpStore, techTypes.SEURAT);
+    await renderFileUploadModal(prevUpStore, sampleTech.SEURAT);
 
     // Seurat info should show up as their is previous Seurat data uploaded
     await waitFor(() => expect(

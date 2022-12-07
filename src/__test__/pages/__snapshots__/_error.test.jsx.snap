@@ -75,6 +75,7 @@ Array [
       "info": Object {
         "experimentId": null,
         "experimentName": null,
+        "pipelineVersion": null,
         "sampleIds": Array [],
       },
       "originalProcessing": Object {},
@@ -98,9 +99,56 @@ Array [
     },
     "genes": Object {
       "expression": Object {
-        "data": Object {},
         "error": false,
         "loading": Array [],
+        "matrix": ExpressionMatrix {
+          "geneIndexes": Object {},
+          "rawGeneExpressions": Object {
+            "datatype": undefined,
+            "index": Array [],
+            "mathjs": "SparseMatrix",
+            "ptr": Array [
+              0,
+            ],
+            "size": Array [
+              0,
+              0,
+            ],
+            "values": Array [],
+          },
+          "stats": Object {
+            "rawMean": Array [],
+            "rawStdev": Array [],
+            "truncatedMax": Array [],
+            "truncatedMin": Array [],
+          },
+          "truncatedGeneExpressions": Object {
+            "datatype": undefined,
+            "index": Array [],
+            "mathjs": "SparseMatrix",
+            "ptr": Array [
+              0,
+            ],
+            "size": Array [
+              0,
+              0,
+            ],
+            "values": Array [],
+          },
+          "zScore": Object {
+            "datatype": undefined,
+            "index": Array [],
+            "mathjs": "SparseMatrix",
+            "ptr": Array [
+              0,
+            ],
+            "size": Array [
+              0,
+              0,
+            ],
+            "values": Array [],
+          },
+        },
         "views": Object {},
       },
       "focused": undefined,
@@ -124,7 +172,7 @@ Array [
           "first": Object {
             "direction": "row",
             "first": "UMAP",
-            "second": "Data Management",
+            "second": "Cell sets and Metadata",
             "splitPercentage": 60,
           },
           "second": "Heatmap",
@@ -143,6 +191,7 @@ Array [
         "error": false,
         "loading": false,
         "saving": false,
+        "validating": Array [],
       },
     },
     "user": Object {
@@ -227,6 +276,7 @@ Array [
       "info": Object {
         "experimentId": null,
         "experimentName": null,
+        "pipelineVersion": null,
         "sampleIds": Array [],
       },
       "originalProcessing": Object {},
@@ -250,9 +300,56 @@ Array [
     },
     "genes": Object {
       "expression": Object {
-        "data": Object {},
         "error": false,
         "loading": Array [],
+        "matrix": ExpressionMatrix {
+          "geneIndexes": Object {},
+          "rawGeneExpressions": Object {
+            "datatype": undefined,
+            "index": Array [],
+            "mathjs": "SparseMatrix",
+            "ptr": Array [
+              0,
+            ],
+            "size": Array [
+              0,
+              0,
+            ],
+            "values": Array [],
+          },
+          "stats": Object {
+            "rawMean": Array [],
+            "rawStdev": Array [],
+            "truncatedMax": Array [],
+            "truncatedMin": Array [],
+          },
+          "truncatedGeneExpressions": Object {
+            "datatype": undefined,
+            "index": Array [],
+            "mathjs": "SparseMatrix",
+            "ptr": Array [
+              0,
+            ],
+            "size": Array [
+              0,
+              0,
+            ],
+            "values": Array [],
+          },
+          "zScore": Object {
+            "datatype": undefined,
+            "index": Array [],
+            "mathjs": "SparseMatrix",
+            "ptr": Array [
+              0,
+            ],
+            "size": Array [
+              0,
+              0,
+            ],
+            "values": Array [],
+          },
+        },
         "views": Object {},
       },
       "focused": undefined,
@@ -276,7 +373,7 @@ Array [
           "first": Object {
             "direction": "row",
             "first": "UMAP",
-            "second": "Data Management",
+            "second": "Cell sets and Metadata",
             "splitPercentage": 60,
           },
           "second": "Heatmap",
@@ -295,6 +392,7 @@ Array [
         "error": false,
         "loading": false,
         "saving": false,
+        "validating": Array [],
       },
     },
     "user": Object {

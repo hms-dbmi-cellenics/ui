@@ -25,6 +25,10 @@ import React, {
   useEffect,
   useState,
 } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+
+import config from 'config';
+
 import {
   addChangedQCFilter,
   discardChangedQCFilters,
@@ -33,7 +37,6 @@ import {
   setQCStepEnabled,
 } from 'redux/actions/experimentSettings';
 import { getUserFriendlyQCStepName, qcSteps } from 'utils/qcSteps';
-import { useDispatch, useSelector } from 'react-redux';
 
 import CellSizeDistribution from 'components/data-processing/CellSizeDistribution/CellSizeDistribution';
 import Classifier from 'components/data-processing/Classifier/Classifier';
@@ -50,11 +53,14 @@ import SingleComponentMultipleDataContainer from 'components/SingleComponentMult
 import StatusIndicator from 'components/data-processing/StatusIndicator';
 import _ from 'lodash';
 import { getBackendStatus } from 'redux/selectors';
+
 import { loadCellSets } from 'redux/actions/cellSets';
 import { loadSamples } from 'redux/actions/samples';
 import { runQC } from 'redux/actions/pipeline';
+
 import { useAppRouter } from 'utils/AppRouteProvider';
 import { modules } from 'utils/constants';
+import QCRerunDisabledModal from 'components/QCRerunDisabledModal';
 
 const { Text } = Typography;
 const { Option } = Select;
@@ -66,7 +72,11 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
   const pipelineStatus = useSelector(getBackendStatus(experimentId))?.status?.pipeline;
 
   const processingConfig = useSelector((state) => state.experimentSettings.processing);
-  const sampleKeys = useSelector((state) => state.experimentSettings.info.sampleIds);
+  const {
+    sampleIds: sampleKeys,
+    pipelineVersion,
+  } = useSelector((state) => state.experimentSettings.info);
+
   const samples = useSelector((state) => state.samples);
 
   const pipelineStatusKey = pipelineStatus?.status;
@@ -84,6 +94,7 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
   );
 
   const changesOutstanding = Boolean(changedQCFilters.size);
+  const qcRerunDisabled = pipelineVersion < config.pipelineVersionToRerunQC;
 
   const [stepIdx, setStepIdx] = useState(0);
   const [runQCModalVisible, setRunQCModalVisible] = useState(false);
@@ -136,6 +147,22 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
     }
   }, [samples, sampleKeys]);
 
+  const checkIfSampleIsEnabled = (step) => {
+    if (['configureEmbedding', 'dataIntegration'].includes(step)) {
+      return true;
+    }
+    return (processingConfig[step] && sampleKeys.some((key) => (
+      processingConfig[step][key]?.enabled)));
+  };
+
+  const checkIfSampleIsPrefiltered = (step) => {
+    if (step !== 'classifier') return false;
+
+    return (
+      processingConfig[step] && sampleKeys.some((key) => (
+        processingConfig[step][key]?.prefiltered)));
+  };
+
   const steps = [
     {
 
@@ -156,7 +183,7 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
               sampleId={sample.key}
               sampleIds={sampleKeys}
               onConfigChange={() => onConfigChange(key)}
-              stepDisabled={!processingConfig[key]?.enabled}
+              stepDisabled={!checkIfSampleIsEnabled(key)}
             />
           )}
         />
@@ -179,7 +206,7 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
               sampleId={sample.key}
               sampleIds={sampleKeys}
               onConfigChange={() => onConfigChange(key)}
-              stepDisabled={!processingConfig[key].enabled}
+              stepDisabled={!checkIfSampleIsEnabled(key)}
             />
           )}
         />
@@ -202,7 +229,7 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
               sampleId={sample.key}
               sampleIds={sampleKeys}
               onConfigChange={() => onConfigChange(key)}
-              stepDisabled={!processingConfig[key].enabled}
+              stepDisabled={!checkIfSampleIsEnabled(key)}
             />
           )}
         />
@@ -225,7 +252,8 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
               sampleId={sample.key}
               sampleIds={sampleKeys}
               onConfigChange={() => onConfigChange(key)}
-              stepDisabled={!processingConfig[key].enabled}
+              stepDisabled={!checkIfSampleIsEnabled(key)}
+              onQCRunClick={() => setRunQCModalVisible(true)}
             />
           )}
         />
@@ -234,19 +262,19 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
     {
       key: 'doubletScores',
       name: getUserFriendlyQCStepName('doubletScores'),
-      description:
-  <span>
-    Droplets may contain more than one cell.
-    In such cases, it is not possible to distinguish which reads came from which cell.
-    Such “cells” cause problems in the downstream analysis as they appear as an intermediate type.
-    “Cells” with a high probability of being a doublet should be excluded.
-    The probability of being a doublet is calculated using ‘scDblFinder’.
-    For each sample, the default threshold tries to minimize both the deviation in the
-    expected number of doublets and the error of a trained classifier. For more details see
-    {' '}
-    <a href='https://bioconductor.org/packages/devel/bioc/vignettes/scDblFinder/inst/doc/scDblFinder.html#thresholding' rel='noreferrer' target='_blank'>scDblFinder thresholding</a>
-    .
-  </span>,
+      description: (
+        <span>
+          Droplets may contain more than one cell.
+          In such cases, it is not possible to distinguish which reads came from which cell.
+          Such “cells” cause problems in the downstream analysis as they appear as an intermediate type.
+          “Cells” with a high probability of being a doublet should be excluded.
+          The probability of being a doublet is calculated using ‘scDblFinder’.
+          For each sample, the default threshold tries to minimize both the deviation in the
+          expected number of doublets and the error of a trained classifier. For more details see
+          {' '}
+          <a href='https://bioconductor.org/packages/devel/bioc/vignettes/scDblFinder/inst/doc/scDblFinder.html#thresholding' rel='noreferrer' target='_blank'>scDblFinder thresholding</a>
+          .
+        </span>),
       multiSample: true,
       render: (key) => (
         <SingleComponentMultipleDataContainer
@@ -260,7 +288,7 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
               sampleId={sample.key}
               sampleIds={sampleKeys}
               onConfigChange={() => onConfigChange(key)}
-              stepDisabled={!processingConfig[key].enabled}
+              stepDisabled={!checkIfSampleIsEnabled(key)}
             />
           )}
         />
@@ -359,8 +387,8 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
   };
 
   const renderTitle = () => {
-    const stepEnabled = processingConfig[currentStep.key]?.enabled;
-    const prefiltered = processingConfig[currentStep.key]?.prefiltered || false;
+    const stepEnabled = checkIfSampleIsEnabled(currentStep.key);
+    const stepPrefiltered = checkIfSampleIsPrefiltered(currentStep.key) || false;
 
     return (
       <>
@@ -392,7 +420,7 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
                                 disabledByPipeline
                               }
                             >
-                              {processingConfig[key]?.enabled === false ? (
+                              {!checkIfSampleIsEnabled(key) ? (
                                 <>
                                   {/* disabled */}
                                   <Text
@@ -434,16 +462,16 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
                               ) : pipelineNotFinished
                                 && !pipelineRunning
                                 && !isStepComplete(key) ? (
-                                  <>
-                                    <Text
-                                      type='danger'
-                                      strong
-                                    >
-                                      <WarningOutlined />
-                                    </Text>
-                                    <span style={{ marginLeft: '0.25rem' }}>{text}</span>
-                                  </>
-                                ) : <></>}
+                                <>
+                                  <Text
+                                    type='danger'
+                                    strong
+                                  >
+                                    <WarningOutlined />
+                                  </Text>
+                                  <span style={{ marginLeft: '0.25rem' }}>{text}</span>
+                                </>
+                              ) : <></>}
                             </Option>
                           );
                         },
@@ -458,7 +486,7 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
                   {currentStep.multiSample && (
                     <Tooltip title={`${!stepEnabled ? 'Enable this filter' : 'Disable this filter'}`}>
                       <Button
-                        disabled={prefiltered}
+                        disabled={stepPrefiltered}
                         data-testid='enableFilterButton'
                         onClick={async () => {
                           await dispatch(saveProcessingSettings(experimentId, currentStep.key));
@@ -584,9 +612,9 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
     return (
       <Space direction='vertical' style={{ width: '100%' }}>
         {
-          'enabled' in processingConfig[key] && !processingConfig[key].enabled ? (
+          !checkIfSampleIsEnabled(key) ? (
             <Alert
-              message={processingConfig[key]?.prefiltered
+              message={checkIfSampleIsPrefiltered(key)
                 ? 'This filter is disabled because the one of the sample(s) is pre-filtered. Click \'Next\' to continue processing your data.'
                 : 'This filter is disabled. You can still modify and save changes, but the filter will not be applied to your data.'}
               type='info'
@@ -608,21 +636,31 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
         title='Data Processing'
       />
       <Space direction='vertical' style={{ width: '100%', padding: '0 10px' }}>
-
         {runQCModalVisible && (
-          <Modal
-            title='Run data processing with the changed settings'
-            visible
-            onCancel={() => setRunQCModalVisible(false)}
-            onOk={() => onPipelineRun()}
-            okText='Start'
-          >
-            <p>
-              This might take several minutes.
-              Your navigation within Cellenics will be restricted during this time.
-              Do you want to start?
-            </p>
-          </Modal>
+          qcRerunDisabled ? (
+            <QCRerunDisabledModal
+              experimentId={experimentId}
+              onFinish={() => setRunQCModalVisible(false)}
+            />
+          ) : (
+            <Modal
+              title='Run data processing with the changed settings'
+              visible
+              onCancel={() => setRunQCModalVisible(false)}
+              footer={
+                [
+                  <Button type='primary' onClick={() => onPipelineRun()}>Start</Button>,
+                  <Button onClick={() => setRunQCModalVisible(false)}>Cancel</Button>,
+                ]
+              }
+            >
+              <p>
+                This might take several minutes.
+                Your navigation within Cellenics will be restricted during this time.
+                Do you want to start?
+              </p>
+            </Modal>
+          )
         )}
         <Card
           title={renderTitle()}

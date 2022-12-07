@@ -9,7 +9,7 @@ import {
 
 import { updateExperiment } from 'redux/actions/experiments';
 
-import { layout, techTypes } from 'utils/constants';
+import { layout, sampleTech } from 'utils/constants';
 import EditableParagraph from 'components/EditableParagraph';
 import SamplesTable from './SamplesTable';
 import ProjectMenu from './ProjectMenu';
@@ -38,9 +38,9 @@ const ProjectDetails = ({ width, height }) => {
 
     if (activeExperiment?.sampleIds.length > 0 && samplesLoaded) {
       const isSeurat = activeExperiment.sampleIds.some(
-        (sampleId) => samples[sampleId].type === techTypes.SEURAT,
+        (sampleId) => samples[sampleId].type === sampleTech.SEURAT,
       );
-      setTechnology(isSeurat ? techTypes.SEURAT : techTypes.CHROMIUM);
+      setTechnology(isSeurat ? sampleTech.SEURAT : sampleTech['10X']);
     } else {
       setTechnology(null);
     }
@@ -64,7 +64,7 @@ const ProjectDetails = ({ width, height }) => {
             <Title level={3}>{activeExperiment.name}</Title>
             <Space>
               <Button
-                disabled={activeExperiment.sampleIds?.length === 0 || technology === techTypes.SEURAT}
+                disabled={activeExperiment.sampleIds?.length === 0 || technology === sampleTech.SEURAT}
                 onClick={() => samplesTableRef.current.createMetadataColumn()}
               >
                 Add metadata

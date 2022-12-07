@@ -1,7 +1,7 @@
 import fetchAPI from 'utils/http/fetchAPI';
 import updateExperimentInfo from 'redux/actions/experimentSettings/updateExperimentInfo';
 
-import APIError from 'utils/http/errors/APIError';
+import APIError from 'utils/errors/http/APIError';
 import httpStatusCodes from 'utils/http/httpStatusCodes';
 
 const toApiV1 = (experimentV2) => {

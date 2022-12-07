@@ -16,6 +16,7 @@ import loadBackendStatus from 'redux/actions/backendStatus/loadBackendStatus';
 import { loadSamples } from 'redux/actions/samples';
 import ExampleExperimentsSpace from 'components/data-management/ExampleExperimentsSpace';
 import { privacyPolicyIsNotAccepted } from 'utils/deploymentInfo';
+import Loader from 'components/Loader';
 
 const DataManagementPage = () => {
   const dispatch = useDispatch();
@@ -45,14 +46,24 @@ const DataManagementPage = () => {
   };
 
   useEffect(() => {
-    if (!activeExperimentId || privacyPolicyIsNotAccepted(user, domainName)) return;
+    // If the active experiment isnt loaded, reload
+    if (activeExperimentId && !activeExperiment) {
+      dispatch(loadExperiments());
+    }
+  }, [activeExperiment]);
+
+  useEffect(() => {
+    if (!activeExperimentId
+      || !activeExperiment
+      || privacyPolicyIsNotAccepted(user, domainName)
+    ) return;
 
     dispatch(loadProcessingSettings(activeExperimentId));
 
     if (!samplesAreLoaded()) dispatch(loadSamples(activeExperimentId));
 
     dispatch(loadBackendStatus(activeExperimentId));
-  }, [activeExperimentId, user]);
+  }, [activeExperimentId, activeExperiment, user]);
 
   const PROJECTS_LIST = 'Projects';
   const PROJECT_DETAILS = 'Project Details';
@@ -72,6 +83,14 @@ const DataManagementPage = () => {
       component: (width, height) => {
         if (!activeExperimentId) {
           return <ExampleExperimentsSpace introductionText='You have no projects yet.' />;
+        }
+
+        if (!activeExperiment) {
+          return (
+            <center>
+              <Loader />
+            </center>
+          );
         }
 
         return (

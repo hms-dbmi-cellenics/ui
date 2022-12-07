@@ -10,8 +10,9 @@ import endUserMessages from 'utils/endUserMessages';
 const updateTypes = {
   QC: 'qc',
   GEM2S: 'gem2s',
-  WORK_RESPONSE: 'WorkResponse',
   SEURAT: 'seurat',
+  WORK_RESPONSE: 'WorkResponse',
+  PLOT_CONFIG_REFRESH: 'PlotConfigRefresh',
 };
 
 const experimentUpdatesHandler = (dispatch) => (experimentId, update) => {
@@ -37,6 +38,9 @@ const experimentUpdatesHandler = (dispatch) => (experimentId, update) => {
     case updateTypes.WORK_RESPONSE: {
       return onWorkResponseUpdate(update, dispatch, experimentId);
     }
+    case updateTypes.PLOT_CONFIG_REFRESH: {
+      return onPlotConfigRefresh(update, dispatch);
+    }
     default: {
       console.log(`Error, unrecognized message type ${update.type}`);
     }
@@ -44,7 +48,7 @@ const experimentUpdatesHandler = (dispatch) => (experimentId, update) => {
 };
 
 const onQCUpdate = (update, dispatch, experimentId) => {
-  const { input, output } = update;
+  const { input, output, pipelineVersion } = update;
 
   const processingConfigUpdate = output?.config;
 
@@ -60,6 +64,8 @@ const onQCUpdate = (update, dispatch, experimentId) => {
       dispatch(updatePlotData(plotUuid, plotData));
     });
   }
+
+  dispatch(updatePipelineVersion(experimentId, pipelineVersion));
 
   // If the pipeline finished we have a new clustering, so fetch it
   if (update.status.pipeline.status === 'SUCCEEDED') {
@@ -88,6 +94,10 @@ const onWorkResponseUpdate = (update, dispatch, experimentId) => {
     dispatch(loadCellSets(experimentId, true));
     pushNotificationMessage('success', endUserMessages.SUCCESS_NEW_CLUSTER_CREATED);
   }
+};
+
+const onPlotConfigRefresh = (update, dispatch) => {
+  dispatch(replaceLoadedConfigs(update.updatedConfigs));
 };
 
 const onSeuratUpdate = (update, dispatch, experimentId) => {

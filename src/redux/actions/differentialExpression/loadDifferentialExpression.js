@@ -2,7 +2,7 @@ import {
   DIFF_EXPR_LOADING, DIFF_EXPR_LOADED, DIFF_EXPR_ERROR,
 } from 'redux/actionTypes/differentialExpression';
 
-import { fetchWork } from 'utils/work/fetchWork';
+import fetchWork from 'utils/work/fetchWork';
 import getTimeoutForWorkerTask from 'utils/getTimeoutForWorkerTask';
 
 import { getCellSetKey } from 'utils/cellSets';
@@ -60,10 +60,24 @@ const loadDifferentialExpression = (
 
   try {
     const data = await fetchWork(
-      experimentId, body, getState, { timeout, extras },
+      experimentId, body, getState, dispatch, { timeout, extras },
     );
-    let { total } = data;
-    const { rows } = data;
+
+    // eslint-disable-next-line prefer-const
+    let { total, data: diffExprData } = data;
+    const { Gene } = diffExprData;
+
+    const rows = Gene.map((gene, indx) => ({
+      p_val: diffExprData.p_val[indx],
+      logFC: diffExprData.logFC[indx],
+      pct_1: diffExprData.pct_1[indx],
+      pct_2: diffExprData.pct_2[indx],
+      p_val_adj: diffExprData.p_val_adj[indx],
+      auc: diffExprData.auc[indx],
+      gene_names: diffExprData.gene_names[indx],
+      Gene: gene,
+    }));
+
     if (!total && !Object.keys(pagination).length) {
       total = rows.length;
     }

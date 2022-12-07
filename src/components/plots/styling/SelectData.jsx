@@ -82,7 +82,7 @@ const SelectData = (props) => {
       <Form.Item>
         <Select
           aria-label='selectCellSets'
-          defaultValue={config.selectedCellSet}
+          value={config.selectedCellSet}
           style={{ width: 200 }}
           onChange={(value) => {
             handleChangeRootNode(value);

@@ -3,6 +3,8 @@ const generateSpec = (config, groupName, data, displayLabels = true) => {
 
   // Do not display gene labels by default if thre are more than 53
   // as the gene names will squash up
+
+  const verticalLegendColumns = Math.ceil(cellSetNames.length / 20);
   const extraLabels = displayLabels ? [
     {
       domain: false,
@@ -20,9 +22,8 @@ const generateSpec = (config, groupName, data, displayLabels = true) => {
       title: ['Intensity'],
       labelFont: config.fontStyle.font,
       titleFont: config.fontStyle.font,
-      gradientLength: {
-        signal: 'width',
-      },
+      gradientLength: { signal: 'width' },
+      labelSeparation: { signal: 'width' },
     },
     {
       fill: 'cellSetColors',
@@ -40,6 +41,7 @@ const generateSpec = (config, groupName, data, displayLabels = true) => {
           },
         },
       },
+      columns: verticalLegendColumns,
       labelFont: config.fontStyle.font,
       titleFont: config.fontStyle.font,
     },
@@ -54,9 +56,8 @@ const generateSpec = (config, groupName, data, displayLabels = true) => {
         orient: 'left',
         labelFont: config.fontStyle.font,
         titleFont: config.fontStyle.font,
-        gradientLength: {
-          signal: 'height / 3',
-        },
+        gradientLength: { signal: 'height / 3' },
+        labelSeparation: { signal: 'height / 3' },
       },
       {
         fill: 'cellSetColors',
@@ -159,11 +160,12 @@ const generateSpec = (config, groupName, data, displayLabels = true) => {
       },
       {
         name: 'color',
-        type: 'linear',
+        type: 'quantize',
         range: {
           scheme: config.colour.gradient === 'default'
             ? 'purplered'
             : config.colour.gradient,
+          count: 100,
         },
         domain: {
           data: 'geneExpressionsData',

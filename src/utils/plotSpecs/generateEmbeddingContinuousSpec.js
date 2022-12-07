@@ -3,26 +3,28 @@
 import { getAllCells, getSampleCells } from 'utils/cellSets';
 
 const generateSpec = (config, plotData) => {
+  const xScaleDomain = config.axesRanges.xAxisAuto
+    ? { data: 'plotData', field: 'x' }
+    : [config.axesRanges.xMin, config.axesRanges.xMax];
+
+  const yScaleDomain = config.axesRanges.yAxisAuto
+    ? { data: 'plotData', field: 'y' }
+    : [config.axesRanges.yMin, config.axesRanges.yMax];
+
   let legend = [];
 
   if (config.legend.enabled) {
     legend = [
       {
         fill: 'color',
-        type: 'gradient',
+        type: 'symbol',
         orient: config.legend.position,
         title: config.shownGene,
-        gradientLength: 100,
         labelColor: config.colour.masterColour,
         titleColor: config.colour.masterColour,
-        labels: {
-          interactive: true,
-          update: {
-            fontSize: 12,
-            fill: { value: config.colour.masterColour },
-          },
-
-        },
+        symbolType: 'circle',
+        symbolSize: 100,
+        offset: 40,
       }];
   }
   return {
@@ -44,26 +46,27 @@ const generateSpec = (config, plotData) => {
       {
         name: 'x',
         type: 'linear',
-        round: true,
         nice: true,
-        domain: { data: 'plotData', field: 'x' },
+        zero: false,
+        domain: xScaleDomain,
         range: 'width',
       },
       {
         name: 'y',
         type: 'linear',
-        round: true,
         nice: true,
-        domain: { data: 'plotData', field: 'y' },
+        zero: false,
+        domain: yScaleDomain,
         range: 'height',
       },
       {
         name: 'color',
-        type: 'linear',
+        type: 'quantize',
         range: {
           scheme: config.colour.gradient === 'default'
             ? (config.colour.toggleInvert === '#FFFFFF' ? 'purplered' : 'darkgreen')
             : config.colour.gradient,
+          count: 5,
         },
         domain: { data: 'plotData', field: 'value' },
         reverse: config.colour.reverseCbar,
@@ -115,12 +118,19 @@ const generateSpec = (config, plotData) => {
     marks: [
       {
         type: 'symbol',
+        clip: true,
         from: { data: 'plotData' },
         encode: {
           enter: {
             x: { scale: 'x', field: 'x' },
             y: { scale: 'y', field: 'y' },
-            size: { value: config.marker.size },
+            size: [
+              {
+                test: "inrange(datum.x, domain('x')) && inrange(datum.y, domain('y'))",
+                value: config?.marker.size,
+              },
+              { value: 0 },
+            ],
             stroke: {
               scale: 'color',
               field: 'value',
@@ -134,7 +144,6 @@ const generateSpec = (config, plotData) => {
           },
         },
       },
-
     ],
     legends: legend,
     title:
@@ -158,7 +167,7 @@ const filterCells = (cellSets, selectedSample) => {
     filteredCells = getSampleCells(cellSets, selectedSample);
   }
 
-  return filteredCells.map((cell) => cell.cellId);
+  return new Set(filteredCells.map((cell) => cell.cellId));
 };
 
 const generateData = (
@@ -172,7 +181,7 @@ const generateData = (
   const cells = embeddingData
     .map((coordinates, cellId) => ({ cellId, coordinates }))
     .filter(({ coordinates }) => coordinates !== undefined)
-    .filter(({ cellId }) => filteredCells.includes(cellId))
+    .filter(({ cellId }) => filteredCells.has(cellId))
     .map((data) => {
       const { cellId, coordinates } = data;
 

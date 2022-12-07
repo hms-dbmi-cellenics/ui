@@ -44,6 +44,7 @@ const MetadataPopover = (props) => {
       validationFunc={(name) => validateInputs(
         metadataKeyToName(metadataNameToKey(name)), validationChecks, validationParams,
       ).isValid}
+      formatter={(value) => value.trim()}
     />
   );
 

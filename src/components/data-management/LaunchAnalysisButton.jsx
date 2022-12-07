@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import {
   Button, Tooltip, Popconfirm,
 } from 'antd';
-import { modules, techTypes } from 'utils/constants';
+import { modules, sampleTech } from 'utils/constants';
 import PropTypes from 'prop-types';
 
 import fileUploadSpecifications from 'utils/upload/fileUploadSpecifications';
@@ -15,13 +15,13 @@ import calculatePipelineRerunStatus from 'utils/data-management/calculatePipelin
 import { useAppRouter } from 'utils/AppRouteProvider';
 
 const runnersByTechnology = {
-  [techTypes.CHROMIUM]: runGem2s,
-  [techTypes.SEURAT]: runSeurat,
+  [sampleTech['10X']]: runGem2s,
+  [sampleTech.SEURAT]: runSeurat,
 };
 
 const pipelineByTechnology = {
-  [techTypes.CHROMIUM]: 'gem2s',
-  [techTypes.SEURAT]: 'seurat',
+  [sampleTech['10X']]: 'gem2s',
+  [sampleTech.SEURAT]: 'seurat',
 
 };
 
@@ -65,7 +65,7 @@ const LaunchAnalysisButton = (props) => {
   const [seuratComplete, setSeuratComplete] = useState(false);
 
   useEffect(() => {
-    const isSeuratComplete = technology === techTypes.SEURAT && pipelineRerunStatus.complete;
+    const isSeuratComplete = technology === sampleTech.SEURAT && pipelineRerunStatus.complete;
     setSeuratComplete(isSeuratComplete);
   }, [pipelineRerunStatus, technology]);
 

@@ -3,17 +3,126 @@
 exports[`markerGenesLoaded returns correct state 1`] = `
 Object {
   "expression": Object {
-    "data": Object {
-      "geneA": Object {
-        "rawExpression": Object {
-          "expression": Array [
-            1,
-          ],
-          "mean": 1,
-          "stdev": 1,
-        },
-        "zScore": Array [
+    "error": false,
+    "loading": Array [],
+    "matrix": ExpressionMatrix {
+      "geneIndexes": Object {
+        "geneA": 0,
+      },
+      "rawGeneExpressions": Object {
+        "datatype": undefined,
+        "index": Array [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+        ],
+        "mathjs": "SparseMatrix",
+        "ptr": Array [
           0,
+          9,
+        ],
+        "size": Array [
+          10,
+          1,
+        ],
+        "values": Array [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+        ],
+      },
+      "stats": Object {
+        "rawMean": Array [
+          1,
+        ],
+        "rawStdev": Array [
+          0,
+        ],
+        "truncatedMax": Array [
+          1,
+        ],
+        "truncatedMin": Array [
+          1,
+        ],
+      },
+      "truncatedGeneExpressions": Object {
+        "datatype": undefined,
+        "index": Array [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+        ],
+        "mathjs": "SparseMatrix",
+        "ptr": Array [
+          0,
+          9,
+        ],
+        "size": Array [
+          10,
+          1,
+        ],
+        "values": Array [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+        ],
+      },
+      "zScore": Object {
+        "datatype": undefined,
+        "index": Array [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+        ],
+        "mathjs": "SparseMatrix",
+        "ptr": Array [
+          0,
+          9,
+        ],
+        "size": Array [
+          10,
+          1,
+        ],
+        "values": Array [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
         ],
       },
     },
@@ -27,9 +136,16 @@ Object {
       },
     },
   },
+  "focused": undefined,
   "markers": Object {
     "error": false,
     "loading": false,
   },
+  "properties": Object {
+    "data": Object {},
+    "loading": Array [],
+    "views": Object {},
+  },
+  "selected": Array [],
 }
 `;

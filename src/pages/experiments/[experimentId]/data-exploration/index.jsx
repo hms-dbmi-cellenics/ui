@@ -105,7 +105,7 @@ const ExplorationViewPage = ({
         </Tabs>
       ),
     },
-    'Data Management': {
+    'Cell sets and Metadata': {
       toolbarControls: <MosaicCloseButton key='remove-button-data-management' />,
       component: (width, height) => (
         <CellSetsTool
@@ -121,7 +121,7 @@ const ExplorationViewPage = ({
     Genes: [
       {
         description: 'Create and manage interesting groupings of cells.',
-        key: 'Data Management',
+        key: 'Cell sets and Metadata',
       },
       {
         description: 'Find, organize, and annotate genes in your data set.',

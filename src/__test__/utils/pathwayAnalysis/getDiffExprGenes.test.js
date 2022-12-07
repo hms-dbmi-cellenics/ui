@@ -2,7 +2,7 @@ import {
   DIFF_EXPR_LOADING,
 } from 'redux/actionTypes/differentialExpression';
 import { makeStore } from 'redux/store';
-import { fetchWork } from 'utils/work/fetchWork';
+import fetchWork from 'utils/work/fetchWork';
 
 import setGeneOrdering from 'redux/actions/differentialExpression/setGeneOrdering';
 import getDiffExprGenes from 'utils/differentialExpression/getDiffExprGenes';
@@ -50,7 +50,7 @@ describe('getDiffExpr test', () => {
     expect(fetchWork).toHaveBeenCalledTimes(1);
 
     const args = fetchWork.mock.calls[0];
-    const { pagination } = args[3].extras;
+    const { pagination } = args[4].extras;
 
     expect(pagination).toEqual(
       expect.objectContaining({
@@ -74,7 +74,7 @@ describe('getDiffExpr test', () => {
     expect(fetchWork).toHaveBeenCalledTimes(1);
 
     const args = fetchWork.mock.calls[0];
-    const { pagination } = args[3].extras;
+    const { pagination } = args[4].extras;
 
     expect(pagination).toEqual(
       expect.objectContaining({
@@ -117,7 +117,7 @@ describe('getDiffExpr test', () => {
     expect(fetchWork).toHaveBeenCalledTimes(1);
 
     const args = fetchWork.mock.calls[0];
-    const { pagination } = args[3].extras;
+    const { pagination } = args[4].extras;
 
     expect(pagination).toEqual(
       expect.objectContaining({

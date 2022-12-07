@@ -24,13 +24,31 @@ import handleError from 'utils/http/handleError';
 import { fileObjectToFileRecord } from 'utils/upload/processUpload';
 import integrationTestConstants from 'utils/integrationTestConstants';
 import endUserMessages from 'utils/endUserMessages';
-import { techTypes } from 'utils/constants';
+import { sampleTech } from 'utils/constants';
 
 const { Text, Title, Paragraph } = Typography;
 const { Option } = Select;
 
 // allow at most 15 GiB .rds object uploads
 const SEURAT_MAX_FILE_SIZE = 15 * 1024 * 1024 * 1024;
+
+const extraHelpText = {
+  [sampleTech['10X']]: () => <></>,
+  [sampleTech.RHAPSODY]: () => (
+    <Paragraph>
+      <ul>
+        <li>
+          The zip files that are output by the primary processing pipeline contain
+          the .st files that should be uploaded and they must be unzipped first.
+        </li>
+        <li>
+          The folder with Multiplet and Undetermined
+          cells should not be uploaded since it would distort the analysis.
+        </li>
+      </ul>
+    </Paragraph>
+  ),
+};
 
 const FileUploadModal = (props) => {
   const { onUpload, onCancel, previousDataTechnology } = props;
@@ -42,7 +60,7 @@ const FileUploadModal = (props) => {
 
   const guidanceFileLink = 'https://drive.google.com/file/d/1VPaB-yofuExinY2pXyGEEx-w39_OPubO/view';
 
-  const [selectedTech, setSelectedTech] = useState(previousDataTechnology ?? techTypes.CHROMIUM);
+  const [selectedTech, setSelectedTech] = useState(previousDataTechnology ?? sampleTech['10X']);
   const [canUpload, setCanUpload] = useState(false);
   const [filesList, setFilesList] = useState([]);
 
@@ -60,7 +78,7 @@ const FileUploadModal = (props) => {
     let filteredFiles = acceptedFiles
       .filter((file) => !file.name.startsWith('.') && !file.name.startsWith('__MACOSX'));
 
-    if (selectedTech === techTypes.CHROMIUM) {
+    if (selectedTech === sampleTech['10X']) {
       let filesNotInFolder = false;
 
       // Remove all files that aren't in a folder
@@ -82,7 +100,7 @@ const FileUploadModal = (props) => {
       )));
 
       setFilesList([...filesList, ...newFiles]);
-    } else if (selectedTech === techTypes.SEURAT) {
+    } else if (selectedTech === sampleTech.SEURAT) {
       const newFiles = await Promise.all(filteredFiles.map((file) => (
         fileObjectToFileRecord(file, selectedTech)
       )));
@@ -142,6 +160,7 @@ const FileUploadModal = (props) => {
             </List.Item>
           )}
         />
+        {extraHelpText[selectedTech]()}
       </Space>
     </>
   );
@@ -214,7 +233,6 @@ const FileUploadModal = (props) => {
       </Row>
 
       <Row>
-        {/* eslint-disable react/jsx-props-no-spreading */}
         <Col span={24}>
           <Paragraph type='secondary'>
             <i>
@@ -228,6 +246,12 @@ const FileUploadModal = (props) => {
               .
             </i>
           </Paragraph>
+        </Col>
+      </Row>
+
+      <Row>
+        {/* eslint-disable react/jsx-props-no-spreading */}
+        <Col span={24}>
           <Dropzone onDrop={onDrop} multiple>
             {({ getRootProps, getInputProps }) => (
               <div
@@ -242,48 +266,52 @@ const FileUploadModal = (props) => {
             )}
           </Dropzone>
         </Col>
-        {/* eslint-enable react/jsx-props-no-spreading */}
+      </Row>
+      <Row>
+        <Col span={24}>
+          {/* eslint-enable react/jsx-props-no-spreading */}
 
-        {filesList.length ? (
-          <>
-            <Divider orientation='center'>To upload</Divider>
-            <List
-              dataSource={filesList}
-              size='small'
-              itemLayout='horizontal'
-              grid='{column: 4}'
-              renderItem={(file) => (
+          {filesList.length ? (
+            <>
+              <Divider orientation='center'>To upload</Divider>
+              <List
+                dataSource={filesList}
+                size='small'
+                itemLayout='horizontal'
+                grid='{column: 4}'
+                renderItem={(file) => (
 
-                <List.Item
-                  key={file.name}
-                  style={{ width: '100%' }}
-                >
-                  <Space>
-                    {file.valid
-                      ? (
-                        <>
-                          <CheckCircleTwoTone twoToneColor='#52c41a' />
-                        </>
-                      ) : (
-                        <>
-                          <CloseCircleTwoTone twoToneColor='#f5222d' />
-                        </>
-                      )}
-                    <Text
-                      ellipsis={{ tooltip: file.name }}
-                      style={{ width: '200px' }}
-                    >
-                      {file.name}
+                  <List.Item
+                    key={file.name}
+                    style={{ width: '100%' }}
+                  >
+                    <Space>
+                      {file.valid
+                        ? (
+                          <>
+                            <CheckCircleTwoTone twoToneColor='#52c41a' />
+                          </>
+                        ) : (
+                          <>
+                            <CloseCircleTwoTone twoToneColor='#f5222d' />
+                          </>
+                        )}
+                      <Text
+                        ellipsis={{ tooltip: file.name }}
+                        style={{ width: '200px' }}
+                      >
+                        {file.name}
 
-                    </Text>
-                    <DeleteOutlined style={{ color: 'crimson' }} onClick={() => { removeFile(file.name); }} />
-                  </Space>
-                </List.Item>
+                      </Text>
+                      <DeleteOutlined style={{ color: 'crimson' }} onClick={() => { removeFile(file.name); }} />
+                    </Space>
+                  </List.Item>
 
-              )}
-            />
-          </>
-        ) : ''}
+                )}
+              />
+            </>
+          ) : ''}
+        </Col>
       </Row>
     </Modal>
 

@@ -1,6 +1,6 @@
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
-import { fetchWork } from 'utils/work/fetchWork';
+import fetchWork from 'utils/work/fetchWork';
 import loadDifferentialExpression from 'redux/actions/differentialExpression/loadDifferentialExpression';
 
 import initialState from 'redux/reducers/differentialExpression/initialState';
@@ -78,6 +78,7 @@ describe('loadDifferentialExpression action', () => {
         experimentId: '1234',
       },
       store.getState,
+      expect.any(Function),
       {
         extras: {
           pagination: {
@@ -103,26 +104,17 @@ describe('loadDifferentialExpression action', () => {
 
     fetchWork.mockImplementationOnce(() => {
       const resolveWith = {
-        rows: [
-          {
-            p_val: 1.16, p_val_adj: 2.16, logFC: 3.45, gene_names: 'A',
-          },
-          {
-            p_val: 2.16, p_val_adj: 3.16, logFC: 4.45, gene_names: 'B',
-          },
-          {
-            p_val: 3.16, p_val_adj: 4.16, logFC: 5.45, gene_names: 'C',
-          },
-          {
-            p_val: 4.16, p_val_adj: 5.16, logFC: 6.45, gene_names: 'D',
-          },
-          {
-            p_val: 5.16, p_val_adj: 6.16, logFC: 7.45, gene_names: 'E',
-          },
-          {
-            p_val: 6.16, p_val_adj: 7.16, logFC: 8.45, gene_names: 'F',
-          },
-        ],
+        data: {
+          p_val: [1.496, 2.496, 3.496, 4.496, 5.496],
+          p_val_adj: [1.647, 2.647, 3.647, 4.647, 5.647],
+          logFC: [-1.427, -2.427, -3.427, -4.427, -5.427],
+          gene_names: ['A', 'B', 'C', 'D', 'E'],
+          Gene: ['EASAD0', 'ENASD23', 'EN34S', 'ENSD33', 'ENASD233'],
+          auc: ['0.1', '0.2', '0.3', '0.4', '0.5'],
+          pct_1: ['100', '90', '80', '70', '60'],
+          pct_2: ['100', '90', '80', '70', '60'],
+        },
+        total: 500,
       };
 
       return new Promise((resolve) => resolve(resolveWith));
@@ -147,6 +139,7 @@ describe('loadDifferentialExpression action', () => {
         experimentId: '1234',
       },
       store.getState,
+      expect.any(Function),
       {
         extras: {
           pagination: {
@@ -159,5 +152,36 @@ describe('loadDifferentialExpression action', () => {
     const loadedAction = store.getActions()[1];
     expect(loadedAction.type).toEqual(DIFF_EXPR_LOADED);
     expect(loadedAction).toMatchSnapshot();
+  });
+
+  it('Doesnt crash if total is 0', async () => {
+    const store = mockStore({
+      differentialExpression: {
+        ...initialState,
+      },
+      backendStatus,
+    });
+    fetchWork.mockImplementationOnce(() => {
+      const resolveWith = {
+        data: {
+          p_val: [],
+          p_val_adj: [],
+          logFC: [],
+          gene_names: [],
+          Gene: [],
+          auc: [],
+          pct_1: [],
+          pct_2: [],
+        },
+        total: 0,
+      };
+
+      return new Promise((resolve) => resolve(resolveWith));
+    });
+    await store.dispatch(
+      loadDifferentialExpression(experimentId, cellSets, comparisonType, defaultTableState),
+    );
+    const loadedActions = store.getActions();
+    expect(loadedActions).toMatchSnapshot();
   });
 });

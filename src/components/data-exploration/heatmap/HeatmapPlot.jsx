@@ -10,7 +10,6 @@ import _ from 'lodash';
 import { getCellSets, getCellSetsHierarchyByKeys } from 'redux/selectors';
 import calculateIdealNMarkerGenes from 'utils/calculateIdealNMarkerGenes';
 
-import { loadCellSets } from 'redux/actions/cellSets';
 import { loadGeneExpression, loadMarkerGenes } from 'redux/actions/genes';
 import { loadComponentConfig } from 'redux/actions/componentConfig';
 import { updateCellInfo } from 'redux/actions/cellInfo';
@@ -25,6 +24,7 @@ import HeatmapTracksCellInfo from 'components/data-exploration/heatmap/HeatmapTr
 import getContainingCellSetsProperties from 'utils/cellSets/getContainingCellSetsProperties';
 import useConditionalEffect from 'utils/customHooks/useConditionalEffect';
 import generateVitessceData from 'components/plots/helpers/heatmap/vitessce/generateVitessceData';
+import { loadCellSets } from 'redux/actions/cellSets';
 
 const COMPONENT_TYPE = 'interactiveHeatmap';
 
@@ -74,7 +74,7 @@ const HeatmapPlot = (props) => {
       .configureEmbedding?.clusteringSettings.methodSettings.louvain.resolution,
   );
 
-  const focusedExpression = useSelector((state) => state.genes.expression.data[geneHighlight]);
+  const expressionMatrix = useSelector((state) => state.genes.expression.matrix);
 
   const { error: expressionDataError } = expressionData;
   const viewError = useSelector((state) => state.genes.expression.views[COMPONENT_TYPE]?.error);
@@ -93,8 +93,8 @@ const HeatmapPlot = (props) => {
   };
 
   /**
-   * Loads cell set on initial render if it does not already exist in the store.
-   */
+     * Loads cell set on initial render if it does not already exist in the store.
+     */
   useEffect(() => {
     dispatch(loadCellSets(experimentId));
   }, []);
@@ -140,7 +140,6 @@ const HeatmapPlot = (props) => {
       selectedGenes,
       cellSets,
     );
-
     setHeatmapData(data);
   }, [
     selectedGenes,
@@ -153,14 +152,19 @@ const HeatmapPlot = (props) => {
   ]);
 
   useEffect(() => {
-    if (louvainClusterCount > 0 && !markerGenesLoadingError && !markerGenesLoading) {
+    if (
+      louvainClustersResolution
+      && louvainClusterCount > 0
+      && !markerGenesLoadingError
+      && !markerGenesLoading
+    ) {
       const nMarkerGenes = calculateIdealNMarkerGenes(louvainClusterCount);
 
       dispatch(loadMarkerGenes(
         experimentId, louvainClustersResolution, COMPONENT_TYPE, nMarkerGenes,
       ));
     }
-  }, [louvainClusterCount]);
+  }, [louvainClusterCount, louvainClustersResolution]);
 
   useEffect(() => {
     if (cellHighlight) {
@@ -268,7 +272,9 @@ const HeatmapPlot = (props) => {
               containerHeight={height}
               cellId={cellHighlight}
               geneName={geneHighlight}
-              geneExpression={focusedExpression?.rawExpression.expression[cellHighlight]}
+              geneExpression={
+                expressionMatrix.getRawExpression(geneHighlight, [parseInt(cellHighlight, 10)])
+              }
               coordinates={cellCoordinatesRef.current}
             />
           ) : <></>

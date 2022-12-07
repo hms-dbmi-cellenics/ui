@@ -57,6 +57,7 @@ describe('loadSample action', () => {
             barcodes10X: { uploadStatus: 'uploaded', sampleFileType: 'barcodes10x' },
             features10X: { uploadStatus: 'uploaded', sampleFileType: 'features10x' },
           },
+          options: {},
         }],
 
       ),

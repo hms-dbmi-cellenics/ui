@@ -13,7 +13,8 @@ import { waitFor } from '@testing-library/dom';
 
 import { process10XUpload } from 'utils/upload/processUpload';
 
-import validate from 'utils/upload/sampleValidator';
+import loadAndCompressIfNecessary from 'utils/upload/loadAndCompressIfNecessary';
+import validate from 'utils/upload/sampleValidators';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
 import mockFile from '__test__/test-utils/mockFile';
 
@@ -188,6 +189,22 @@ describe('process10XUpload', () => {
     // There are 3 files actions with status uploaded
     expect(uploadedStatusProperties.length).toEqual(3);
 
+    // Calls to loadAndCompressIfNecessary are done correctly
+    expect(loadAndCompressIfNecessary.mock.calls.map((calls) => calls[0])).toMatchSnapshot();
+
+    // If we trigger onCompression then an action to update uploadStatus to COMPRESSING is made
+    const onCompression = loadAndCompressIfNecessary.mock.calls[0][1];
+    onCompression();
+
+    await waitForActions(
+      store,
+      [{
+        type: SAMPLES_FILE_UPDATE,
+        payload: { fileDiff: { upload: { status: UploadStatus.COMPRESSING } } },
+      }],
+      { matcher: waitForActions.matchers.containing },
+    );
+
     // axios request calls are correct
     expect(axios.request.mock.calls.map((call) => call[0])).toMatchSnapshot();
 
@@ -261,6 +278,22 @@ describe('process10XUpload', () => {
     // There are 3 files actions with status uploaded
     expect(uploadedStatusProperties.length).toEqual(3);
 
+    // Calls to loadAndCompressIfNecessary are done correctly
+    expect(loadAndCompressIfNecessary.mock.calls.map((calls) => calls[0])).toMatchSnapshot();
+
+    // If we trigger onCompression then an action to update uploadStatus to COMPRESSING is made
+    const onCompression = loadAndCompressIfNecessary.mock.calls[0][1];
+    onCompression();
+
+    await waitForActions(
+      store,
+      [{
+        type: SAMPLES_FILE_UPDATE,
+        payload: { fileDiff: { upload: { status: UploadStatus.COMPRESSING } } },
+      }],
+      { matcher: waitForActions.matchers.containing },
+    );
+
     // axios request calls are correct
     expect(axios.request.mock.calls.map((call) => call[0])).toMatchSnapshot();
 
@@ -275,6 +308,50 @@ describe('process10XUpload', () => {
       }],
       { matcher: waitForActions.matchers.containing },
     );
+  });
+
+  it('Updates redux correctly when there are file load and compress errors', async () => {
+    const invalidFiles = getValidFiles('v3').map((file) => ({ ...file, valid: false }));
+
+    await process10XUpload(
+      invalidFiles,
+      sampleType,
+      store.getState().samples,
+      mockExperimentId,
+      store.dispatch,
+    );
+
+    // Wait for uploads to be made
+    await waitForActions(
+      store,
+      new Array(3).fill({
+        type: SAMPLES_FILE_UPDATE,
+        payload: { fileDiff: { upload: { status: UploadStatus.FILE_READ_ERROR } } },
+      }),
+      { matcher: waitForActions.matchers.containing },
+    );
+
+    const fileUpdateActions = store.getActions().filter(
+      (action) => action.type === SAMPLES_FILE_UPDATE,
+    );
+
+    const uploadProperties = fileUpdateActions.map((action) => action.payload.fileDiff.upload);
+
+    const uploadingFileProperties = uploadProperties.filter(
+      ({ status }) => status === UploadStatus.UPLOADING,
+    );
+    const errorFileProperties = uploadProperties.filter(
+      ({ status }) => status === UploadStatus.FILE_READ_ERROR,
+    );
+    const uploadedFileProperties = uploadProperties.filter(
+      ({ status }) => status === UploadStatus.UPLOADED,
+    );
+    // There are 3 files actions with status uploading
+    expect(uploadingFileProperties.length).toEqual(3);
+    // There are 3 files actions with status upload error
+    expect(errorFileProperties.length).toEqual(3);
+    // There are no file actions with status successfully uploaded
+    expect(uploadedFileProperties.length).toEqual(0);
   });
 
   it('Updates redux correctly when there are file upload errors', async () => {

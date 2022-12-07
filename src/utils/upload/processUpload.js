@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
 import _ from 'lodash';
 
-import { createSample, createSampleFile, updateSampleFileUpload } from 'redux/actions/samples';
+import { createSamples, createSampleFile, updateSampleFileUpload } from 'redux/actions/samples';
 
 import UploadStatus from 'utils/upload/UploadStatus';
 import loadAndCompressIfNecessary from 'utils/upload/loadAndCompressIfNecessary';
@@ -144,7 +144,7 @@ const processSeuratUpload = async (filesList, sampleType, samples, experimentId,
     // Create sample if not exists.
     try {
       sample.uuid ??= await dispatch(
-        createSample(
+        createSamples(
           experimentId,
           name,
           sample,
@@ -196,7 +196,7 @@ const process10XUpload = async (filesList, sampleType, samples, experimentId, di
     // Create sample if not exists.
     try {
       sample.uuid ??= await dispatch(
-        createSample(
+        createSamples(
           experimentId,
           name,
           sample,

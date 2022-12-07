@@ -1,3 +1,11 @@
+import { sampleTech } from 'utils/constants';
+
+const techNamesToDisplay = {
+  [sampleTech['10X']]: '10X Chromium',
+  [sampleTech.RHAPSODY]: 'BD Rhapsody',
+};
+
+/* eslint-disable max-len */
 const fileUploadSpecifications = {
   '10X Chromium': {
     acceptedFiles: new Set([
@@ -10,8 +18,6 @@ const fileUploadSpecifications = {
       'matrix.mtx',
       'matrix.mtx.gz',
     ]),
-    validMimeTypes: ['text/tsv', 'application/gzip', 'application/x-gzip', 'text/tab-separated-values'],
-    validExtensionTypes: ['.mtx'],
     inputInfo: [
       ['<code>features.tsv</code> or <code>features.tsv.gz</code> or <code>genes.tsv</code> or <code>genes.tsv.gz</code>'],
       ['<code>barcodes.tsv</code> or <code>barcodes.tsv.gz</code>'],
@@ -53,7 +59,17 @@ const fileUploadSpecifications = {
     // setting to null allows file upload on dropzone click
     webkitdirectory: null,
   },
+  [sampleTech.RHAPSODY]: {
+    acceptedFiles: new Set(['expression_data.st', 'expression_data.st.gz']),
+    requiredFiles: [{ key: 'expression_data.st.gz', displayedName: 'expression_data.st' }],
+    inputInfo: [['expression_data.st', 'expression_data.st.gz']],
+    info: `For each sample, upload a folder containing the required file. The folder's
+    name will be used to name the sample in it.
+    You can change this name later in Data Management.`,
+    fileNameFilter: (fileName) => fileName.toLowerCase().match(/.*expression_data.st(.gz)?$/),
+  },
 
 };
 
+export { techNamesToDisplay };
 export default fileUploadSpecifications;
