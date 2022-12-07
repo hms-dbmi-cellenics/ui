@@ -1,6 +1,7 @@
 import React, {
   useEffect, useRef, useState, useCallback,
 } from 'react';
+import { animateScroll } from 'react-scroll';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Element } from 'react-scroll';
@@ -73,6 +74,20 @@ const CellSetsTool = (props) => {
   }, [hierarchy, properties]);
 
   const [numSelected, setNumSelected] = useState(0);
+
+  useEffect(() => {
+    const louvainClusters = hierarchy.find(({ key }) => key === 'louvain')?.children;
+    const customClusters = hierarchy.find(({ key }) => key === 'scratchpad')?.children;
+    const treeClusters = cellSetTreeData?.find(({ key }) => key === 'scratchpad')?.children;
+
+    if (!customClusters || !treeClusters) return;
+
+    if (customClusters.length > treeClusters.length) {
+      // scroll to bottom based on total number of cell sets, overshoot to show new cluster
+      const newHeight = (louvainClusters.length + customClusters.length) * 30 + 200;
+      animateScroll.scrollTo(newHeight, { containerId: 'cell-set-tool-container' });
+    }
+  }, [hierarchy]);
 
   useEffect(() => {
     const selected = allSelected[activeTab];
