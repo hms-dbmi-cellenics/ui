@@ -114,6 +114,7 @@ const LaunchAnalysisButton = () => {
       if (!samples[sampleUuid]) return false;
 
       const checkedSample = samples[sampleUuid];
+
       return allSampleFilesUploaded(checkedSample)
         && allSampleMetadataInserted(checkedSample);
     });

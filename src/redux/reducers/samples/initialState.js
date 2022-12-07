@@ -41,6 +41,7 @@ const initialState = {
     loading: false,
     error: false,
     saving: false,
+    validating: [],
   },
 };
 
