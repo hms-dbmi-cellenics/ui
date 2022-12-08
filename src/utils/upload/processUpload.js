@@ -18,24 +18,10 @@ const prepareAndUploadFileToS3 = async (
   projectId, sampleId, fileType, file, uploadUrlParams, dispatch,
 ) => {
   let parts = null;
-  let compressedFile = file.fileObject;
   const { signedUrls, uploadId, sampleFileId } = uploadUrlParams;
 
-  if (!file.compressed) {
-    try {
-      compressedFile = await loadAndCompressIfNecessary(file, () => {
-        dispatch(updateSampleFileUpload(projectId, sampleId, fileType, UploadStatus.COMPRESSING));
-      });
-    } catch (e) {
-      const fileErrorStatus = e.message === 'aborted' ? UploadStatus.FILE_READ_ABORTED : UploadStatus.FILE_READ_ERROR;
-
-      dispatch(updateSampleFileUpload(projectId, sampleId, fileType, fileErrorStatus));
-      return;
-    }
-  }
-
   const uploadedPartSizes = new Array(signedUrls.length).fill(0);
-  const totalSize = compressedFile.size;
+  const totalSize = file.size;
 
   const createOnUploadProgressForPart = (partIndex) => (progress) => {
     uploadedPartSizes[partIndex] = progress.loaded;
@@ -50,7 +36,7 @@ const prepareAndUploadFileToS3 = async (
   };
 
   try {
-    parts = await uploadParts(compressedFile, signedUrls, createOnUploadProgressForPart);
+    parts = await uploadParts(file, signedUrls, createOnUploadProgressForPart);
   } catch (e) {
     dispatch(updateSampleFileUpload(projectId, sampleId, fileType, UploadStatus.UPLOAD_ERROR));
     return;
@@ -92,6 +78,20 @@ const getMetadata = (file, selectedTech) => {
 const createAndUploadSingleFile = async (file, projectId, sampleId, dispatch, selectedTech) => {
   const metadata = getMetadata(file, selectedTech);
   const fileType = getFileTypeV2(file.fileObject.name, file.fileObject.type);
+
+  if (!file.compressed) {
+    try {
+      file.fileObject = await loadAndCompressIfNecessary(file, () => {
+        dispatch(updateSampleFileUpload(projectId, sampleId, fileType, UploadStatus.COMPRESSING));
+      });
+      file.size = Buffer.byteLength(file.fileObject);
+    } catch (e) {
+      const fileErrorStatus = e.message === 'aborted' ? UploadStatus.FILE_READ_ABORTED : UploadStatus.FILE_READ_ERROR;
+
+      dispatch(updateSampleFileUpload(projectId, sampleId, fileType, fileErrorStatus));
+      return;
+    }
+  }
 
   let uploadUrlParams;
   try {

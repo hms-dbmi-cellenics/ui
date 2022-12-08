@@ -15,11 +15,13 @@ import { useAppRouter } from 'utils/AppRouteProvider';
 
 const runnersByTechnology = {
   [sampleTech['10X']]: runGem2s,
+  [sampleTech.RHAPSODY]: runGem2s,
   [sampleTech.SEURAT]: runSeurat,
 };
 
 const pipelineByTechnology = {
   [sampleTech['10X']]: 'gem2s',
+  [sampleTech.RHAPSODY]: 'gem2s',
   [sampleTech.SEURAT]: 'seurat',
 
 };
