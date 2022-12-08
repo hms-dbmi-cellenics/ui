@@ -79,29 +79,7 @@ const FileUploadModal = (props) => {
     let filteredFiles = acceptedFiles
       .filter((file) => !file.name.startsWith('.') && !file.name.startsWith('__MACOSX'));
 
-    if (selectedTech === sampleTech['10X']) {
-      let filesNotInFolder = false;
-
-      // Remove all files that aren't in a folder
-      filteredFiles = filteredFiles
-        .filter((file) => {
-          const inFolder = file.path.includes('/');
-
-          filesNotInFolder ||= !inFolder;
-
-          return inFolder;
-        });
-
-      if (filesNotInFolder) {
-        handleError('error', endUserMessages.ERROR_FILES_FOLDER);
-      }
-
-      const newFiles = await Promise.all(filteredFiles.map((file) => (
-        fileObjectToFileRecord(file, selectedTech)
-      )));
-
-      setFilesList([...filesList, ...newFiles]);
-    } else if (selectedTech === sampleTech.SEURAT) {
+    if (selectedTech === sampleTech.SEURAT) {
       const newFiles = await Promise.all(filteredFiles.map((file) => (
         fileObjectToFileRecord(file, selectedTech)
       )));
@@ -123,6 +101,28 @@ const FileUploadModal = (props) => {
       }
 
       setFilesList([seuratFile]);
+    } else {
+      let filesNotInFolder = false;
+
+      // Remove all files that aren't in a folder
+      filteredFiles = filteredFiles
+        .filter((file) => {
+          const inFolder = file.path.includes('/');
+
+          filesNotInFolder ||= !inFolder;
+
+          return inFolder;
+        });
+
+      if (filesNotInFolder) {
+        handleError('error', endUserMessages.ERROR_FILES_FOLDER);
+      }
+
+      const newFiles = await Promise.all(filteredFiles.map((file) => (
+        fileObjectToFileRecord(file, selectedTech)
+      )));
+
+      setFilesList([...filesList, ...newFiles]);
     }
   };
 

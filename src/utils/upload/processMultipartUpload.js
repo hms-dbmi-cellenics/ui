@@ -18,15 +18,15 @@ const putPartInS3 = (blob, signedUrl, onUploadProgress, currentRetry = 0) => axi
     }
   });
 
-const uploadParts = async (file, signedUrls, createOnUploadProgressForPart) => {
+const uploadParts = async (fileObject, signedUrls, createOnUploadProgressForPart) => {
   const promises = [];
 
   signedUrls.forEach((signedUrl, index) => {
     const start = index * FILE_CHUNK_SIZE;
     const end = (index + 1) * FILE_CHUNK_SIZE;
     const blob = index < signedUrls.length
-      ? file.fileObject.slice(start, end)
-      : file.fileObject.slice(start);
+      ? fileObject.slice(start, end)
+      : fileObject.slice(start);
 
     const req = putPartInS3(blob, signedUrl, createOnUploadProgressForPart(index));
     promises.push(req);

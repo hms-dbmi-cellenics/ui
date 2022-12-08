@@ -18,7 +18,7 @@ const prepareAndUploadFileToS3 = async (
   projectId, sampleId, fileType, file, uploadUrlParams, dispatch,
 ) => {
   let parts = null;
-  let compressedFile = file;
+  let compressedFile = file.fileObject;
   const { signedUrls, uploadId, sampleFileId } = uploadUrlParams;
 
   if (!file.compressed) {
@@ -35,7 +35,7 @@ const prepareAndUploadFileToS3 = async (
   }
 
   const uploadedPartSizes = new Array(signedUrls.length).fill(0);
-  const totalSize = file.fileObject.size;
+  const totalSize = compressedFile.size;
 
   const createOnUploadProgressForPart = (partIndex) => (progress) => {
     uploadedPartSizes[partIndex] = progress.loaded;
