@@ -11,10 +11,13 @@ import configureStore from 'redux-mock-store';
 import { act } from 'react-dom/test-utils';
 import { fireEvent } from '@testing-library/dom';
 import userEvent from '@testing-library/user-event';
-import { screen, render } from '@testing-library/react';
+import { screen, render, waitFor } from '@testing-library/react';
 
 import * as createMetadataTrack from 'redux/actions/experiments/createMetadataTrack';
 import * as updateValueInMetadataTrack from 'redux/actions/experiments/updateValueInMetadataTrack';
+import * as cloneExperiment from 'redux/actions/experiments/cloneExperiment';
+import * as loadExperiments from 'redux/actions/experiments/loadExperiments';
+import * as setActiveExperiment from 'redux/actions/experiments/setActiveExperiment';
 
 import initialSamplesState, { sampleTemplate } from 'redux/reducers/samples/initialState';
 import initialExperimentsState from 'redux/reducers/experiments/initialState';
@@ -148,10 +151,16 @@ const withDataState = {
 describe('ProjectDetails', () => {
   let mockedCreateMetadataTrack;
   let mockedUpdateValueInMetadataTrack;
+  let mockedCloneExperiment;
+  let mockedLoadExperiments;
+  let mockedSetActiveExperiment;
   beforeEach(() => {
     jest.clearAllMocks();
     mockedCreateMetadataTrack = jest.spyOn(createMetadataTrack, 'default');
     mockedUpdateValueInMetadataTrack = jest.spyOn(updateValueInMetadataTrack, 'default');
+    mockedCloneExperiment = jest.spyOn(cloneExperiment, 'default');
+    mockedLoadExperiments = jest.spyOn(loadExperiments, 'default');
+    mockedSetActiveExperiment = jest.spyOn(setActiveExperiment, 'default');
   });
 
   it('Has a title, project ID and description', () => {
@@ -171,7 +180,7 @@ describe('ProjectDetails', () => {
     expect(screen.queryByText(experimentDescription)).toBeDefined();
   });
 
-  it('Has 4 buttons', () => {
+  it('Has 5 buttons', () => {
     render(
       <Provider store={mockStore(noDataState)}>
         <ProjectDetails width={width} height={height} />
@@ -182,6 +191,7 @@ describe('ProjectDetails', () => {
     expect(screen.getByText('Add metadata')).toBeDefined();
     expect(screen.getByText('Download')).toBeDefined();
     expect(screen.getByText('Process project')).toBeDefined();
+    expect(screen.getByText('Copy')).toBeDefined();
   });
 
   it('Add metadata button is disabled if there is no data', () => {
@@ -311,5 +321,20 @@ describe('ProjectDetails', () => {
 
     expect(mockedUpdateValueInMetadataTrack).toHaveBeenCalledTimes(1);
     expect(mockedUpdateValueInMetadataTrack).toHaveBeenCalledWith('experiment-1', 'sample-1', 'metadata-1', 'myBrandNewMetadataWithWhitespaces');
+  });
+
+  it('Copy experiment button works', async () => {
+    const store = mockStore(withDataState);
+    await act(async () => {
+      render(
+        <Provider store={store}>
+          <ProjectDetails width={width} height={height} />
+        </Provider>,
+      );
+    });
+    act(() => userEvent.click(screen.getByText('Copy')));
+    expect(mockedCloneExperiment).toHaveBeenCalledTimes(1);
+    await waitFor(() => expect(mockedLoadExperiments).toHaveBeenCalledTimes(1));
+    expect(mockedSetActiveExperiment).toHaveBeenCalledTimes(1);
   });
 });
