@@ -75,6 +75,7 @@ spec:
         kind: GitRepository
         name: FILLED_IN_BY_CI
         namespace: FILLED_IN_BY_CI
+      reconcileStrategy: Revision
   values:
     # disable readiness probes as load balancer performs
     # its own health checks/cordoning
