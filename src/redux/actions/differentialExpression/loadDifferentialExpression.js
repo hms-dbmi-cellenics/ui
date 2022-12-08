@@ -7,6 +7,18 @@ import getTimeoutForWorkerTask from 'utils/getTimeoutForWorkerTask';
 
 import { getCellSetKey } from 'utils/cellSets';
 
+function getArray(object) {
+  return Object.keys(object).reduce((r, k) => {
+    object[k].forEach((a, i) => {
+      // eslint-disable-next-line no-param-reassign
+      r[i] = r[i] || {};
+      // eslint-disable-next-line no-param-reassign
+      r[i][k] = a;
+    });
+    return r;
+  }, []);
+}
+
 const generateDiffExprBody = (experimentId, comparisonGroup, comparisonType, extras) => ({
   name: 'DifferentialExpression',
   experimentId,
@@ -65,18 +77,8 @@ const loadDifferentialExpression = (
 
     // eslint-disable-next-line prefer-const
     let { total, data: diffExprData } = data;
-    const { Gene } = diffExprData;
 
-    const rows = Gene.map((gene, indx) => ({
-      p_val: diffExprData.p_val[indx],
-      logFC: diffExprData.logFC[indx],
-      pct_1: diffExprData.pct_1[indx],
-      pct_2: diffExprData.pct_2[indx],
-      p_val_adj: diffExprData.p_val_adj[indx],
-      auc: diffExprData.auc[indx],
-      gene_names: diffExprData.gene_names[indx],
-      Gene: gene,
-    }));
+    const rows = getArray(diffExprData);
 
     if (!total && !Object.keys(pagination).length) {
       total = rows.length;
