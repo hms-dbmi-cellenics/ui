@@ -52,6 +52,17 @@ const seekFromS3 = async (ETag, experimentId, taskName) => {
   return parsedResult;
 };
 
+// getTimeoutDate returns the date resulting of adding 'timeout' seconds to
+// current time.
+const getTimeoutDate = (timeout) => moment().add(timeout, 's').toISOString();
+
+const resetTimeout = (id, request, newTimeout, reject) => {
+  clearTimeout(id);
+  setTimeout(() => {
+    reject(new WorkTimeoutError(getTimeoutDate(newTimeout), request));
+  }, (newTimeout) * 1000);
+};
+
 const dispatchWorkRequest = async (
   experimentId,
   body,
@@ -63,7 +74,7 @@ const dispatchWorkRequest = async (
   const { default: connectionPromise } = await import('utils/socketConnection');
   const io = await connectionPromise;
 
-  const timeoutDate = moment().add(timeout, 's').toISOString();
+  const timeoutDate = getTimeoutDate(timeout);
   const authJWT = await getAuthJWT();
 
   const request = {
@@ -83,15 +94,27 @@ const dispatchWorkRequest = async (
 
     io.on(`WorkerInfo-${experimentId}`, (res) => {
       const { response: { podInfo: { name, creationTimestamp, phase } } } = res;
-
+      console.log('received worker info: ', res); // TODO: remove
       const extraTime = getRemainingWorkerStartTime(creationTimestamp);
+
+      // this worker info indicates that the work request has been received but the worker
+      // is still spinning up so we will add extra time to account for that.
       if (phase === 'Pending' && extraTime > 0) {
-        console.log(`worker ${name} started at ${creationTimestamp}. Adding ${extraTime} seconds to timeout.`);
-        clearTimeout(id);
-        setTimeout(() => {
-          reject(new WorkTimeoutError(timeoutDate, request));
-        }, (timeout + extraTime) * 1000);
+        console.log(`WorkerInfo-${experimentId}: ${name} [${creationTimestamp}]: adding ${extraTime} seconds to timeout.`);
+        const newTimeout = timeout + extraTime;
+        resetTimeout(id, request, newTimeout, reject);
       }
+    });
+
+    // this experiment update is received whenever a worker finishes any work request
+    // related to the current experiment. We extend the timeout because we know
+    // the worker is alive and was working on another request of our experiment //
+    // (so this request was in queue)
+    io.on(`ExperimentUpdates-${experimentId}`, (res) => {
+      const { request: completedRequest } = res;
+      console.log('received experiment update: ', completedRequest); // TODO: remove
+      console.log(`ExperimentUpdates-${experimentId}: refreshing ${timeout} seconds timeout.`);
+      resetTimeout(id, request, timeout, reject);
     });
   });
 

@@ -102,7 +102,7 @@ describe('dispatchWorkRequest unit tests', () => {
       body: { name: taskName, type: 'fake task' },
     });
 
-    expect(socketConnectionMocks.mockOn).toHaveBeenCalledTimes(2);
+    expect(socketConnectionMocks.mockOn).toHaveBeenCalledTimes(3);
   });
 
   it('Sends work to the backend when called', async () => {
@@ -119,7 +119,7 @@ describe('dispatchWorkRequest unit tests', () => {
       body: { name: taskName, type: 'fake task' },
     });
 
-    expect(socketConnectionMocks.mockOn).toHaveBeenCalledTimes(2);
+    expect(socketConnectionMocks.mockOn).toHaveBeenCalledTimes(3);
   });
 
   it('Returns an error if there is error in the response.', async () => {
