@@ -289,7 +289,6 @@ const CalculationConfig = (props) => {
               <span>
                 Method&nbsp;
                 <Tooltip
-                  // visible={downsampling?.method === GEOSKETCH}
                   overlay={(
                     <>
                       <span style={downsampling?.method === GEOSKETCH ? {} : { display: 'none' }}>
