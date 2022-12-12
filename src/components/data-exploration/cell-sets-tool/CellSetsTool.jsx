@@ -1,10 +1,9 @@
 import React, {
   useEffect, useRef, useState, useCallback,
 } from 'react';
-import { animateScroll } from 'react-scroll';
+import { animateScroll, Element } from 'react-scroll';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
-import { Element } from 'react-scroll';
 
 import {
   Alert, Button, Empty, Skeleton, Space, Tabs, Typography,
@@ -126,9 +125,10 @@ const CellSetsTool = (props) => {
     if (numSelected) {
       operations = (
         <Space style={{ marginLeft: '0.5em' }}>
-          <SubsetCellSetsOperation onCreate={(name) => {
-            dispatch(runSubsetExperiment(experimentId, name, selected));
-          }}
+          <SubsetCellSetsOperation
+            onCreate={(name) => {
+              dispatch(runSubsetExperiment(experimentId, name, selected));
+            }}
           />
           <CellSetOperation
             icon={<MergeCellsOutlined />}

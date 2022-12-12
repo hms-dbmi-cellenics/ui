@@ -12,6 +12,7 @@ const SubsetCellSetsModal = (props) => {
 
   return (
     <Modal
+      data-testid='subsetCellSetsModal'
       title='Subset cell sets'
       okText='Create'
       visible
