@@ -3,6 +3,7 @@ import thunk from 'redux-thunk';
 import waitForActions from 'redux-mock-store-await-actions';
 import axios from 'axios';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
+import { sampleTech } from 'utils/constants';
 
 import { SAMPLES_FILE_UPDATE } from 'redux/actionTypes/samples';
 import initialSampleState, { sampleTemplate } from 'redux/reducers/samples/initialState';
@@ -13,8 +14,7 @@ import { waitFor } from '@testing-library/dom';
 
 import processUpload from 'utils/upload/processUpload';
 
-import loadAndCompressIfNecessary from 'utils/upload/loadAndCompressIfNecessary';
-import validate from 'utils/upload/sampleValidators';
+import validate from 'utils/upload/validate10x';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
 import mockFile from '__test__/test-utils/mockFile';
 
@@ -23,7 +23,7 @@ enableFetchMocks();
 const getValidFiles = (cellrangerVersion, compressed = true) => {
   const filename = cellrangerVersion === 'v2' ? 'genes.tsv.gz' : 'features.tsv.gz';
 
-  return ([
+  let fileList = [
     {
       name: `WT13/${filename}`,
       fileObject: mockFile(filename, '/'),
@@ -48,10 +48,13 @@ const getValidFiles = (cellrangerVersion, compressed = true) => {
       compressed,
       valid: true,
     },
-  ]);
+  ];
+
+  fileList = fileList.map((file) => ({ ...file, size: file.fileObject.size }));
+  return fileList;
 };
 
-const sampleType = '10X Chromium';
+const sampleType = sampleTech['10X'];
 const mockSampleUuid = 'sample-uuid';
 const mockExperimentId = 'project-uuid';
 const sampleName = 'mockSampleName';
@@ -112,7 +115,7 @@ jest.mock('axios', () => ({
 
 jest.mock('utils/pushNotificationMessage');
 
-jest.mock('utils/upload/sampleValidator');
+jest.mock('utils/upload/validate10x');
 
 let store = null;
 
@@ -189,22 +192,6 @@ describe('processUpload', () => {
     // There are 3 files actions with status uploaded
     expect(uploadedStatusProperties.length).toEqual(3);
 
-    // Calls to loadAndCompressIfNecessary are done correctly
-    expect(loadAndCompressIfNecessary.mock.calls.map((calls) => calls[0])).toMatchSnapshot();
-
-    // If we trigger onCompression then an action to update uploadStatus to COMPRESSING is made
-    const onCompression = loadAndCompressIfNecessary.mock.calls[0][1];
-    onCompression();
-
-    await waitForActions(
-      store,
-      [{
-        type: SAMPLES_FILE_UPDATE,
-        payload: { fileDiff: { upload: { status: UploadStatus.COMPRESSING } } },
-      }],
-      { matcher: waitForActions.matchers.containing },
-    );
-
     // axios request calls are correct
     expect(axios.request.mock.calls.map((call) => call[0])).toMatchSnapshot();
 
@@ -278,22 +265,6 @@ describe('processUpload', () => {
     // There are 3 files actions with status uploaded
     expect(uploadedStatusProperties.length).toEqual(3);
 
-    // Calls to loadAndCompressIfNecessary are done correctly
-    expect(loadAndCompressIfNecessary.mock.calls.map((calls) => calls[0])).toMatchSnapshot();
-
-    // If we trigger onCompression then an action to update uploadStatus to COMPRESSING is made
-    const onCompression = loadAndCompressIfNecessary.mock.calls[0][1];
-    onCompression();
-
-    await waitForActions(
-      store,
-      [{
-        type: SAMPLES_FILE_UPDATE,
-        payload: { fileDiff: { upload: { status: UploadStatus.COMPRESSING } } },
-      }],
-      { matcher: waitForActions.matchers.containing },
-    );
-
     // axios request calls are correct
     expect(axios.request.mock.calls.map((call) => call[0])).toMatchSnapshot();
 
@@ -308,50 +279,6 @@ describe('processUpload', () => {
       }],
       { matcher: waitForActions.matchers.containing },
     );
-  });
-
-  it('Updates redux correctly when there are file load and compress errors', async () => {
-    const invalidFiles = getValidFiles('v3').map((file) => ({ ...file, valid: false }));
-
-    await processUpload(
-      invalidFiles,
-      sampleType,
-      store.getState().samples,
-      mockExperimentId,
-      store.dispatch,
-    );
-
-    // Wait for uploads to be made
-    await waitForActions(
-      store,
-      new Array(3).fill({
-        type: SAMPLES_FILE_UPDATE,
-        payload: { fileDiff: { upload: { status: UploadStatus.FILE_READ_ERROR } } },
-      }),
-      { matcher: waitForActions.matchers.containing },
-    );
-
-    const fileUpdateActions = store.getActions().filter(
-      (action) => action.type === SAMPLES_FILE_UPDATE,
-    );
-
-    const uploadProperties = fileUpdateActions.map((action) => action.payload.fileDiff.upload);
-
-    const uploadingFileProperties = uploadProperties.filter(
-      ({ status }) => status === UploadStatus.UPLOADING,
-    );
-    const errorFileProperties = uploadProperties.filter(
-      ({ status }) => status === UploadStatus.FILE_READ_ERROR,
-    );
-    const uploadedFileProperties = uploadProperties.filter(
-      ({ status }) => status === UploadStatus.UPLOADED,
-    );
-    // There are 3 files actions with status uploading
-    expect(uploadingFileProperties.length).toEqual(3);
-    // There are 3 files actions with status upload error
-    expect(errorFileProperties.length).toEqual(3);
-    // There are no file actions with status successfully uploaded
-    expect(uploadedFileProperties.length).toEqual(0);
   });
 
   it('Updates redux correctly when there are file upload errors', async () => {
@@ -370,7 +297,7 @@ describe('processUpload', () => {
       getValidFiles('v3'),
       sampleType,
       store.getState().samples,
-      'errorProjectUuid',
+      mockExperimentId,
       store.dispatch,
     );
 
@@ -429,7 +356,7 @@ describe('processUpload', () => {
 
   it('Should not upload sample and show notification if uploaded sample is invalid', async () => {
     validate.mockImplementationOnce(
-      () => (['Some file error']),
+      () => { throw new Error('Some file error'); },
     );
 
     await processUpload(

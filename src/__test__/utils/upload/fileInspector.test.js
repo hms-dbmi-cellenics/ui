@@ -129,7 +129,7 @@ describe('fileInspector', () => {
       name: 'scdata.rds',
     };
 
-    expect(await inspectFile(file, 'Seurat'))
+    expect(await inspectFile(file, sampleTech.SEURAT))
       .toEqual(Verdict.VALID_ZIPPED);
   });
 
@@ -138,7 +138,7 @@ describe('fileInspector', () => {
       name: 'blah.txt',
     };
 
-    expect(await inspectFile(file, 'Seurat'))
+    expect(await inspectFile(file, sampleTech.SEURAT))
       .toEqual(Verdict.INVALID_FORMAT);
   });
 });

@@ -161,7 +161,7 @@ const withSeuratDataState = {
       name: sample1Name,
       experimentId: experiment1id,
       uuid: sample1Uuid,
-      type: 'Seurat',
+      type: sampleTech.SEURAT,
       fileNames: ['r.rds'],
       files: {
         'r.rds': { valid: true, upload: { status: UploadStatus.UPLOADED } },

@@ -23,6 +23,8 @@ const inspectFile = async (file, technology) => {
   } if (technology === sampleTech.RHAPSODY) {
     return inspectRhapsodyFile(file);
   }
+
+  return Verdict.INVALID_FORMAT;
 };
 
 const inspect10XFile = async (file, technology) => {
