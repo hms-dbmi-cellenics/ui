@@ -111,32 +111,22 @@ describe('FileUploadModal', () => {
     expect(screen.queryAllByText(chromiumTech).length).toBe(1);
     expect(screen.queryAllByText(seuratTech).length).toBe(0);
 
-    // get the select
-    const select = document.querySelector(
-      '[data-testid="uploadTechSelect"] > .ant-select-selector',
-    );
+    // Switch file upload to Seurat
+    const chosenTech = sampleTech.SEURAT;
+    const displayedName = techNamesToDisplay[chosenTech];
 
-    expect(select).not.toBeNull();
+    const techSelection = screen.getByRole('combobox', { name: 'sampleTechnologySelect' });
 
-    // click the select input
-    fireEvent.mouseDown(select);
+    act(() => {
+      fireEvent.change(techSelection, { target: { value: sampleTech.SEURAT } });
+    });
 
-    // wait for the ant dropdown element to appear
-    await waitFor(() => expect(
-      document.querySelector('.ant-select-dropdown'),
-    ).toBeInTheDocument());
+    // The 2nd option is the selection
+    const option = screen.getByText(displayedName);
 
-    //
-    const seuratOption = await screen.queryByRole('option', { selected: false, title: seuratTech });
-    expect(seuratOption).toBeInTheDocument();
-
-    // select a single dropdown option
-    fireEvent.click(screen.getByText(seuratTech));
-
-    // wait for Seurat info to appear
-    await waitFor(() => expect(
-      screen.getByText(/Seurat object \(max 15GB\)/),
-    ).toBeInTheDocument());
+    act(() => {
+      fireEvent.click(option);
+    });
 
     // Lists the requirements of the Seurat object
     expect(screen.getByText(/The Seurat object must contain the following slots and metadata:/i)).toBeInTheDocument();
@@ -217,32 +207,22 @@ describe('FileUploadModal', () => {
   it('drag and drop works with valid Seurat file', async () => {
     await renderFileUploadModal(initialStore);
 
-    // get the select
-    const select = document.querySelector(
-      '[data-testid="uploadTechSelect"] > .ant-select-selector',
-    );
+    // Switch file upload to Seurat
+    const chosenTech = sampleTech.SEURAT;
+    const displayedName = techNamesToDisplay[chosenTech];
 
-    expect(select).not.toBeNull();
+    const techSelection = screen.getByRole('combobox', { name: 'sampleTechnologySelect' });
 
-    // click the select input
-    fireEvent.mouseDown(select);
+    act(() => {
+      fireEvent.change(techSelection, { target: { value: sampleTech.SEURAT } });
+    });
 
-    // wait for the ant dropdown element to appear
-    await waitFor(() => expect(
-      document.querySelector('.ant-select-dropdown'),
-    ).toBeInTheDocument());
+    // The 2nd option is the selection
+    const option = screen.getByText(displayedName);
 
-    //
-    const seuratOption = await screen.queryByRole('option', { selected: false, title: seuratTech });
-    expect(seuratOption).toBeInTheDocument();
-
-    // select a single dropdown option
-    fireEvent.click(screen.getByText(seuratTech));
-
-    // wait for Seurat info to appear
-    await waitFor(() => expect(
-      screen.getByText(/Seurat object \(max 15GB\)/),
-    ).toBeInTheDocument());
+    act(() => {
+      fireEvent.click(option);
+    });
 
     expect(await screen.queryByText(/To upload/)).not.toBeInTheDocument();
 
@@ -279,32 +259,22 @@ describe('FileUploadModal', () => {
   it('drag and drop works with valid Seurat file when different experiment has valid uploaded Seurat object', async () => {
     await renderFileUploadModal(prevUpDiffExpStore);
 
-    // get the select
-    const select = document.querySelector(
-      '[data-testid="uploadTechSelect"] > .ant-select-selector',
-    );
+    // Switch file upload to Seurat
+    const chosenTech = sampleTech.SEURAT;
+    const displayedName = techNamesToDisplay[chosenTech];
 
-    expect(select).not.toBeNull();
+    const techSelection = screen.getByRole('combobox', { name: 'sampleTechnologySelect' });
 
-    // click the select input
-    fireEvent.mouseDown(select);
+    act(() => {
+      fireEvent.change(techSelection, { target: { value: sampleTech.SEURAT } });
+    });
 
-    // wait for the ant dropdown element to appear
-    await waitFor(() => expect(
-      document.querySelector('.ant-select-dropdown'),
-    ).toBeInTheDocument());
+    // The 2nd option is the selection
+    const option = screen.getByText(displayedName);
 
-    //
-    const seuratOption = await screen.queryByRole('option', { selected: false, title: seuratTech });
-    expect(seuratOption).toBeInTheDocument();
-
-    // select a single dropdown option
-    fireEvent.click(screen.getByText(seuratTech));
-
-    // wait for Seurat info to appear
-    await waitFor(() => expect(
-      screen.getByText(/Seurat object \(max 15GB\)/),
-    ).toBeInTheDocument());
+    act(() => {
+      fireEvent.click(option);
+    });
 
     expect(await screen.queryByText(/To upload/)).not.toBeInTheDocument();
 
@@ -348,32 +318,22 @@ describe('FileUploadModal', () => {
 
     expect(techInput).toBeEnabled();
 
-    // get the select
-    const select = document.querySelector(
-      '[data-testid="uploadTechSelect"] > .ant-select-selector',
-    );
+    // Switch file upload to Seurat
+    const chosenTech = sampleTech.SEURAT;
+    const displayedName = techNamesToDisplay[chosenTech];
 
-    expect(select).not.toBeNull();
+    const techSelection = screen.getByRole('combobox', { name: 'sampleTechnologySelect' });
 
-    // click the select input
-    fireEvent.mouseDown(select);
+    act(() => {
+      fireEvent.change(techSelection, { target: { value: sampleTech.SEURAT } });
+    });
 
-    // wait for the ant dropdown element to appear
-    await waitFor(() => expect(
-      document.querySelector('.ant-select-dropdown'),
-    ).toBeInTheDocument());
+    // The 2nd option is the selection
+    const option = screen.getByText(displayedName);
 
-    //
-    const seuratOption = await screen.queryByRole('option', { selected: false, title: seuratTech });
-    expect(seuratOption).toBeInTheDocument();
-
-    // select a single dropdown option
-    fireEvent.click(screen.getByText(seuratTech));
-
-    // wait for Seurat info to appear
-    await waitFor(() => expect(
-      screen.getByText(/Seurat object \(max 15GB\)/),
-    ).toBeInTheDocument());
+    act(() => {
+      fireEvent.click(option);
+    });
 
     expect(await screen.queryByText(/To upload/)).not.toBeInTheDocument();
 
