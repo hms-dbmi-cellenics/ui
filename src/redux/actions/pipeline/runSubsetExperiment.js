@@ -2,7 +2,7 @@ import fetchAPI from 'utils/http/fetchAPI';
 import handleError from 'utils/http/handleError';
 import endUserMessages from 'utils/endUserMessages';
 
-const runSubsetExperiment = (experimentId, name, cellSetKeys) => async () => {
+const runSubsetExperiment = (experimentId, newExperimentName, cellSetKeys) => async () => {
   try {
     await fetchAPI(
       `/v2/experiments/${experimentId}/subset`,
@@ -12,7 +12,7 @@ const runSubsetExperiment = (experimentId, name, cellSetKeys) => async () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          name,
+          name: newExperimentName,
           cellSetKeys,
         }),
       },
