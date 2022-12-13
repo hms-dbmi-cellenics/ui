@@ -202,6 +202,7 @@ const FileUploadModal = (props) => {
                 placement='bottom'
               >
                 <Select
+                  aria-label='sampleTechnologySelect'
                   defaultValue={selectedTech}
                   onChange={(value) => setSelectedTech(value)}
                   disabled={Boolean(currentSelectedTech)}

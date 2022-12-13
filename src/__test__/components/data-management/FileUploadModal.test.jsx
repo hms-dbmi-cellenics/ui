@@ -11,7 +11,7 @@ import configureMockStore from 'redux-mock-store';
 import handleError from 'utils/http/handleError';
 import endUserMessages from 'utils/endUserMessages';
 
-import fileUploadSpecifications from 'utils/upload/fileUploadSpecifications';
+import techOptions, { techNamesToDisplay } from 'utils/upload/fileUploadSpecifications';
 import { sampleTech } from 'utils/constants';
 
 import mockFile from '__test__/test-utils/mockFile';
@@ -52,20 +52,20 @@ const initialStore = mockStore(initialState);
 const prevUpStore = mockStore(prevUpState);
 const prevUpDiffExpStore = mockStore(prevUpDiffExpState);
 
-const renderFileUploadModal = async (store, previousDataTechnology = null) => {
+const renderFileUploadModal = async (store, currentSelectedTech = null) => {
   await act(async () => (render(
     <Provider store={store}>
       <FileUploadModal
         onUpload={jest.fn()}
         onCancel={jest.fn()}
-        previousDataTechnology={previousDataTechnology}
+        currentSelectedTech={currentSelectedTech}
       />
     </Provider>,
   )));
 };
 
-const chromiumTech = Object.keys(fileUploadSpecifications)[0];
-const seuratTech = Object.keys(fileUploadSpecifications)[1];
+const chromiumTech = techNamesToDisplay[sampleTech['10X']];
+const seuratTech = techNamesToDisplay[sampleTech.SEURAT];
 
 describe('FileUploadModal', () => {
   it('contains required components for Chromium 10X', async () => {
@@ -76,7 +76,7 @@ describe('FileUploadModal', () => {
 
     // It contains instructions on what files can be uploaded
     expect(screen.getByText(/For each sample, upload a folder containing/i)).toBeInTheDocument();
-    fileUploadSpecifications[chromiumTech].acceptedFiles.forEach((filename) => {
+    techOptions[sampleTech['10X']].acceptedFiles.forEach((filename) => {
       expect(screen.getByText(filename)).toBeInTheDocument();
     });
 
@@ -131,7 +131,7 @@ describe('FileUploadModal', () => {
     expect(seuratOption).toBeInTheDocument();
 
     // select a single dropdown option
-    fireEvent.click(screen.getAllByText(seuratTech)[1]);
+    fireEvent.click(screen.getByText(seuratTech));
 
     // wait for Seurat info to appear
     await waitFor(() => expect(
@@ -237,7 +237,7 @@ describe('FileUploadModal', () => {
     expect(seuratOption).toBeInTheDocument();
 
     // select a single dropdown option
-    fireEvent.click(screen.getAllByText(seuratTech)[1]);
+    fireEvent.click(screen.getByText(seuratTech));
 
     // wait for Seurat info to appear
     await waitFor(() => expect(
@@ -299,7 +299,7 @@ describe('FileUploadModal', () => {
     expect(seuratOption).toBeInTheDocument();
 
     // select a single dropdown option
-    fireEvent.click(screen.getAllByText(seuratTech)[1]);
+    fireEvent.click(screen.getByText(seuratTech));
 
     // wait for Seurat info to appear
     await waitFor(() => expect(
@@ -368,7 +368,7 @@ describe('FileUploadModal', () => {
     expect(seuratOption).toBeInTheDocument();
 
     // select a single dropdown option
-    fireEvent.click(screen.getAllByText(seuratTech)[1]);
+    fireEvent.click(screen.getByText(seuratTech));
 
     // wait for Seurat info to appear
     await waitFor(() => expect(
@@ -450,5 +450,33 @@ describe('FileUploadModal', () => {
 
     // error message was displayed to user
     expect(handleError).toHaveBeenCalledWith('error', endUserMessages.ERROR_SEURAT_EXISTING_FILE);
+  });
+
+  it('Shows what files can be uploaded for Rhapsody samples', async () => {
+    act(() => {
+      renderFileUploadModal(initialStore);
+    });
+
+    // Switch file upload to Rhapsody
+    const chosenTech = sampleTech.RHAPSODY;
+    const displayedName = techNamesToDisplay[chosenTech];
+
+    const techSelection = screen.getByRole('combobox', { name: 'sampleTechnologySelect' });
+
+    act(() => {
+      fireEvent.change(techSelection, { target: { value: sampleTech.RHAPSODY } });
+    });
+
+    // The 2nd option is the selection
+    const option = screen.getByText(displayedName);
+
+    act(() => {
+      fireEvent.click(option);
+    });
+
+    // It contains what files can be uploaded
+    techOptions[chosenTech].acceptedFiles.forEach((filename) => {
+      expect(screen.getByText(filename)).toBeInTheDocument();
+    });
   });
 });
