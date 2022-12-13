@@ -453,9 +453,7 @@ describe('FileUploadModal', () => {
   });
 
   it('Shows what files can be uploaded for Rhapsody samples', async () => {
-    act(() => {
-      renderFileUploadModal(initialStore);
-    });
+    await renderFileUploadModal(initialStore);
 
     // Switch file upload to Rhapsody
     const chosenTech = sampleTech.RHAPSODY;
