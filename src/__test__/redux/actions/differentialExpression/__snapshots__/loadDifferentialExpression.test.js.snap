@@ -78,64 +78,6 @@ Object {
 }
 `;
 
-exports[`loadDifferentialExpression action Dispatches appropriately on success for comparison between samples 3`] = `
-Object {
-  "payload": Object {
-    "advancedFilters": Array [],
-    "experimentId": "1234",
-  },
-  "type": "diffExpr/loading",
-}
-`;
-
-exports[`loadDifferentialExpression action Dispatches appropriately on success for comparison between samples 4`] = `
-Object {
-  "payload": Object {
-    "comparisonGroup": Object {
-      "basis": "condition/condition-control",
-      "cellSet": "louvain/louvain-0",
-      "compareWith": "louvain/louvain-1",
-    },
-    "comparisonType": "within",
-    "data": Array [
-      Object {
-        "AveExpr": 3.054,
-        "Gene": "EASAD0",
-        "gene_names": "A",
-        "logFC": -1.427,
-      },
-      Object {
-        "AveExpr": 2.356,
-        "Gene": "ENASD23",
-        "gene_names": "B",
-        "logFC": -2.427,
-      },
-      Object {
-        "AveExpr": 2.19,
-        "Gene": "EN34S",
-        "gene_names": "C",
-        "logFC": -3.427,
-      },
-      Object {
-        "AveExpr": 2.189,
-        "Gene": "ENSD33",
-        "gene_names": "D",
-        "logFC": -4.427,
-      },
-      Object {
-        "AveExpr": 1.788,
-        "Gene": "ENASD233",
-        "gene_names": "E",
-        "logFC": -5.427,
-      },
-    ],
-    "experimentId": "1234",
-    "total": 500,
-  },
-  "type": "diffExpr/loaded",
-}
-`;
-
 exports[`loadDifferentialExpression action Dispatches appropriately on success for comparison within a sample 1`] = `
 Object {
   "payload": Object {
