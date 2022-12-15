@@ -26,6 +26,8 @@ const dependencyGetters = {
   DotPlot: [getClusteringSettings],
   GetDoubletScore: [],
   GetMitochondrialContent: [],
+  GetNGenes: [],
+  GetNUmis: [],
   MarkerHeatmap: [getClusteringSettings],
   GetTrajectoryAnalysisStartingNodes: [getClusteringSettings],
   GetTrajectoryAnalysisPseudoTime: [getClusteringSettings],
