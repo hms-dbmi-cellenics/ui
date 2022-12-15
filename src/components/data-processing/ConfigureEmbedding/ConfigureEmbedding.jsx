@@ -94,7 +94,6 @@ const ConfigureEmbedding = (props) => {
           experimentId={experimentId}
           config={config}
           actions={actions}
-          plotUuid={generateDataProcessingPlotUuid(null, filterName, 2)}
           plotData={cellMeta.mitochondrialContent.data}
           loading={cellMeta.mitochondrialContent.loading}
           error={cellMeta.mitochondrialContent.error}
@@ -112,7 +111,6 @@ const ConfigureEmbedding = (props) => {
           experimentId={experimentId}
           config={config}
           actions={actions}
-          plotUuid={generateDataProcessingPlotUuid(null, filterName, 2)}
           plotData={cellMeta.doubletScores.data}
           loading={cellMeta.doubletScores.loading}
           error={cellMeta.doubletScores.error}
@@ -130,7 +128,6 @@ const ConfigureEmbedding = (props) => {
           experimentId={experimentId}
           config={config}
           actions={actions}
-          plotUuid={generateDataProcessingPlotUuid(null, filterName, 3)}
           plotData={cellMeta.numOfGenes.data}
           loading={cellMeta.numOfGenes.loading}
           error={cellMeta.numOfGenes.error}
@@ -148,7 +145,6 @@ const ConfigureEmbedding = (props) => {
           experimentId={experimentId}
           config={config}
           actions={actions}
-          plotUuid={generateDataProcessingPlotUuid(null, filterName, 4)}
           plotData={cellMeta.numOfUmis.data}
           loading={cellMeta.numOfUmis.loading}
           error={cellMeta.numOfUmis.error}
