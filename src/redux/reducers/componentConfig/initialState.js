@@ -460,6 +460,61 @@ const embeddingPreviewDoubletScoreInitialConfig = {
   selectedSample: 'All',
 };
 
+const embeddingPreviewNumOfGenesInitialConfig = {
+  spec: '1.0.0',
+  legend: legendBaseState,
+  dimensions: {
+    ...dimensionsBaseState,
+    width: 700,
+    height: 550,
+  },
+  axes: {
+    ...axesBaseState,
+    xAxisText: '',
+    yAxisText: '',
+    defaultValues: ['x', 'y'],
+    offset: 10,
+  },
+  axesRanges: axesRangesBaseState,
+  title: {
+    ...titleBaseState,
+    dx: 0,
+    fontSize: 20,
+  },
+  fontStyle: fontStyleBaseState,
+  colour: colourBaseState,
+  marker: markerBaseState,
+  labels: labelBaseState,
+  selectedSample: 'All',
+};
+const embeddingPreviewNumOfUmisInitialConfig = {
+  spec: '1.0.0',
+  legend: legendBaseState,
+  dimensions: {
+    ...dimensionsBaseState,
+    width: 700,
+    height: 550,
+  },
+  axes: {
+    ...axesBaseState,
+    xAxisText: '',
+    yAxisText: '',
+    defaultValues: ['x', 'y'],
+    offset: 10,
+  },
+  axesRanges: axesRangesBaseState,
+  title: {
+    ...titleBaseState,
+    dx: 0,
+    fontSize: 20,
+  },
+  fontStyle: fontStyleBaseState,
+  colour: colourBaseState,
+  marker: markerBaseState,
+  labels: labelBaseState,
+  selectedSample: 'All',
+};
+
 const interactiveHeatmapInitialConfig = {
   selectedCellSet: 'louvain',
   selectedPoints: 'All',
@@ -862,6 +917,8 @@ const initialPlotConfigStates = {
   embeddingPreviewByCellSets: embeddingPreviewByCellSetsInitialConfig,
   embeddingPreviewMitochondrialContent: embeddingPreviewMitochondrialContentInitialConfig,
   embeddingPreviewDoubletScore: embeddingPreviewDoubletScoreInitialConfig,
+  embeddingPreviewNumOfGenes: embeddingPreviewNumOfGenesInitialConfig,
+  embeddingPreviewNumOfUmis: embeddingPreviewNumOfUmisInitialConfig,
   dataIntegrationEmbedding: dataIntegrationEmbeddingInitialConfig,
   dataIntegrationFrequency: dataIntegrationFrequencyInitialConfig,
   dataIntegrationElbow: dataIntegrationElbowPlotInitialConfig,

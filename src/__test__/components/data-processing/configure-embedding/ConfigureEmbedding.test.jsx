@@ -48,6 +48,16 @@ const mockedStore = mockStore({
       error: false,
       data: [6, 7, 8, 9, 10],
     },
+    numOfGenes: {
+      loading: false,
+      error: false,
+      data: [6, 7, 8, 9, 10],
+    },
+    numOfUmis: {
+      loading: false,
+      error: false,
+      data: [6, 7, 8, 9, 10],
+    },
   },
   experimentSettings: {
     ...initialExperimentState,
@@ -107,7 +117,7 @@ describe('Configure Embedding', () => {
     await renderConfigureEmbedding();
 
     // can select other plots
-    ['Samples', 'Mitochondrial fraction reads', 'Doublet score', 'Cell sets'].forEach((plot) => {
+    ['Samples', 'Mitochondrial fraction reads', 'Doublet score', 'Cell sets', 'Number of genes', 'Number of UMIs'].forEach((plot) => {
       userEvent.click(screen.getByText(plot));
       // check that there are two elements with the plot name:
       // * the main plot title
