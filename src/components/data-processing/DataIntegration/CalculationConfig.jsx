@@ -18,6 +18,7 @@ import {
 } from '@ant-design/icons';
 
 import _ from 'lodash';
+import { downsamplingMethods } from 'utils/constants';
 
 import { generateDataProcessingPlotUuid } from 'utils/generateCustomPlotUuid';
 import { updateFilterSettings } from 'redux/actions/experimentSettings';
@@ -27,7 +28,22 @@ const { Option } = Select;
 const { Text } = Typography;
 const { Panel } = Collapse;
 
-const GEOSKETCH = 'geosketch';
+const getDownsampling = (downsamplingConfig) => {
+  if (downsamplingConfig === undefined) {
+    return { method: downsamplingMethods.NONE };
+  }
+
+  const { method, percentageToKeep } = downsamplingConfig;
+
+  if (method === downsamplingMethods.NONE) {
+    return { method };
+  }
+  // only return percentage to keep when method is not None
+  return {
+    method,
+    percentageToKeep,
+  };
+};
 
 const CalculationConfig = (props) => {
   const {
@@ -35,11 +51,12 @@ const CalculationConfig = (props) => {
   } = props;
   const FILTER_UUID = 'dataIntegration';
   const dispatch = useDispatch();
-  const { dataIntegration, dimensionalityReduction, downsampling } = useSelector(
+  const { dataIntegration, dimensionalityReduction, downsamplingConfig } = useSelector(
     (state) => state.experimentSettings.processing.dataIntegration,
   );
   const elbowPlotUuid = generateDataProcessingPlotUuid(null, FILTER_UUID, 1);
   const data = useSelector((state) => state.componentConfig[elbowPlotUuid]?.plotData);
+  const downsampling = getDownsampling(downsamplingConfig);
 
   const methods = [
     {
@@ -102,7 +119,8 @@ const CalculationConfig = (props) => {
   const renderDimReductionMethod = () => (
     <Form.Item label={(
       <span>
-        Method&nbsp;
+        Method
+        {' '}
         <Tooltip overlay={(
           <span>
             To integrate data, dimensional reduction is performed to find so called "anchors".
@@ -230,7 +248,8 @@ const CalculationConfig = (props) => {
             <Form.Item
               label={(
                 <span>
-                  Exclude genes categories&nbsp;
+                  Exclude genes categories
+                  {' '}
                   <Tooltip
                     title='Normalization can be biased by certain gene categories such the ones listed here.
                     Checking them will ignore those categories.
@@ -255,7 +274,8 @@ const CalculationConfig = (props) => {
                   <Checkbox disabled value='mitochondrial'>Mitochondrial</Checkbox>
                   <Checkbox value='cellCycle'>
                     <span>
-                      Cell cycle genes&nbsp;
+                      Cell cycle genes
+                      {' '}
                       <Tooltip
                         title='Currently only available for human and mice species. Do not check this box if your cells are from a different species.'
                       >
@@ -273,7 +293,7 @@ const CalculationConfig = (props) => {
         </Panel>
       </Collapse>
       <Collapse>
-        <Panel header='Downsampling Options' key='downsampling-opts'>
+        <Panel header='Downsampling Options' key='downsampling-options'>
           <Space direction='vertical' style={{ width: '100%' }} />
           <Form.Item>
             <Text>
@@ -287,13 +307,14 @@ const CalculationConfig = (props) => {
 
             <Form.Item label={(
               <span>
-                Method&nbsp;
+                Method
+                {' '}
                 <Tooltip
                   overlay={(
                     <>
-                      <span style={downsampling?.method === GEOSKETCH ? {} : { display: 'none' }}>
+                      <span style={downsampling.method === downsamplingMethods.GEOSKETCH ? {} : { display: 'none' }}>
                         Geometric sketching finds random subsamples of a dataset that preserve the underlying geometry,
-                        which is described in the paper
+                        which is described in this paper:
                         <a
                           href='https://www.sciencedirect.com/science/article/pii/S2405471219301528'
                           target='_blank'
@@ -303,7 +324,7 @@ const CalculationConfig = (props) => {
                           <code>Geometric sketching compactly summarizes the single-cell transcriptomic landscape</code>
                         </a>
                       </span>
-                      <span style={downsampling === undefined || downsampling?.method === 'none' ? {} : { display: 'none' }}>
+                      <span style={downsampling.method === downsamplingMethods.NONE ? {} : { display: 'none' }}>
                         No downsampling will be used during the data integration
                       </span>
                     </>
@@ -316,15 +337,25 @@ const CalculationConfig = (props) => {
             >
 
               <Select
-                value={downsampling?.method || 'none'}
+                value={downsampling.method}
                 onChange={(val) => {
-                  const percentageToKeep = val !== 'none' ? 5 : 100;
-                  updateSettings({ downsampling: { method: val, percentageToKeep } });
+                  let downsamplingSettings = {};
+                  // only update the percentageToKeep value when the method is not None
+                  if (val !== downsamplingMethods.NONE) {
+                    downsamplingSettings = {
+                      method: val,
+                      percentageToKeep: downsamplingMethods.DEFAULT_PERC_TO_KEEP,
+                    };
+                  } else {
+                    downsamplingSettings = { method: val };
+                  }
+                  updateSettings({ downsampling: downsamplingSettings });
                 }}
               >
-                <Option value='none'>No Downsampling</Option>
-
-                <Option value={GEOSKETCH}>
+                <Option value={downsamplingMethods.NONE}>
+                  No Downsampling
+                </Option>
+                <Option value={downsamplingMethods.GEOSKETCH}>
                   Geometric Sketching
                 </Option>
 
@@ -332,8 +363,8 @@ const CalculationConfig = (props) => {
             </Form.Item>
             <Form.Item label='% of cells to keep'>
               <InputNumber
-                disabled={downsampling?.method !== GEOSKETCH}
-                value={downsampling?.percentageToKeep || 100}
+                disabled={downsampling.method !== downsamplingMethods.GEOSKETCH}
+                value={downsampling.percentageToKeep}
                 max={100}
                 min={0}
                 onChange={(value) => {
