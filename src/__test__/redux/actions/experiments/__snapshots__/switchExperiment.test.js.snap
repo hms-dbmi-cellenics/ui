@@ -24,6 +24,16 @@ Object {
       "error": false,
       "loading": true,
     },
+    "numOfGenes": Object {
+      "data": Array [],
+      "error": false,
+      "loading": true,
+    },
+    "numOfUmis": Object {
+      "data": Array [],
+      "error": false,
+      "loading": true,
+    },
   },
   "cellSets": Object {
     "error": false,
@@ -403,6 +413,16 @@ Object {
       "loading": true,
     },
     "mitochondrialContent": Object {
+      "data": Array [],
+      "error": false,
+      "loading": true,
+    },
+    "numOfGenes": Object {
+      "data": Array [],
+      "error": false,
+      "loading": true,
+    },
+    "numOfUmis": Object {
       "data": Array [],
       "error": false,
       "loading": true,

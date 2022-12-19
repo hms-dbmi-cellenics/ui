@@ -33,16 +33,16 @@ const getDownsampling = (downsamplingConfig) => {
     return { method: downsamplingMethods.NONE };
   }
 
-  const { method, percentageToKeep } = downsamplingConfig;
+  const { method, methodSettings } = downsamplingConfig;
 
-  if (method === downsamplingMethods.NONE) {
-    return { method };
+  // only return percentage to keep for geosketch
+  if (method === downsamplingMethods.GEOSKETCH && method in methodSettings) {
+    const { percentageToKeep } = methodSettings[method];
+    return { method, percentageToKeep };
   }
-  // only return percentage to keep when method is not None
-  return {
-    method,
-    percentageToKeep,
-  };
+
+  // by default return none method
+  return { method: downsamplingMethods.NONE };
 };
 
 const CalculationConfig = (props) => {
@@ -51,12 +51,14 @@ const CalculationConfig = (props) => {
   } = props;
   const FILTER_UUID = 'dataIntegration';
   const dispatch = useDispatch();
-  const { dataIntegration, dimensionalityReduction, downsamplingConfig } = useSelector(
+  const { dataIntegration, dimensionalityReduction } = useSelector(
     (state) => state.experimentSettings.processing.dataIntegration,
   );
   const elbowPlotUuid = generateDataProcessingPlotUuid(null, FILTER_UUID, 1);
   const data = useSelector((state) => state.componentConfig[elbowPlotUuid]?.plotData);
-  const downsampling = getDownsampling(downsamplingConfig);
+  const downsampling = getDownsampling(
+    useSelector((state) => state.experimentSettings.processing.dataIntegration.downsampling),
+  );
 
   const methods = [
     {
@@ -344,7 +346,11 @@ const CalculationConfig = (props) => {
                   if (val !== downsamplingMethods.NONE) {
                     downsamplingSettings = {
                       method: val,
-                      percentageToKeep: downsamplingMethods.DEFAULT_PERC_TO_KEEP,
+                      methodSettings: {
+                        [val]: {
+                          percentageToKeep: downsamplingMethods.DEFAULT_PERC_TO_KEEP,
+                        },
+                      },
                     };
                   } else {
                     downsamplingSettings = { method: val };
@@ -368,7 +374,15 @@ const CalculationConfig = (props) => {
                 max={100}
                 min={0}
                 onChange={(value) => {
-                  updateSettings({ downsampling: { percentageToKeep: parseInt(value, 0) } });
+                  updateSettings({
+                    downsampling: {
+                      methodSettings:
+                       {
+                         [downsampling.method]: { percentageToKeep: parseInt(value, 0) },
+                       },
+
+                    },
+                  });
                 }}
               />
             </Form.Item>

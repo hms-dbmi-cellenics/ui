@@ -209,62 +209,6 @@ describe('loadDifferentialExpression action', () => {
     expect(loadedAction).toMatchSnapshot();
   });
 
-  it('Dispatches appropriately on success for comparison between samples', async () => {
-    const store = mockStore({
-      differentialExpression: {
-        ...initialState,
-      },
-      backendStatus,
-    });
-
-    fetchWork.mockImplementationOnce(() => {
-      const resolveWith = {
-        data: {
-          AveExpr: [3.054, 2.356, 2.19, 2.189, 1.788],
-          logFC: [-1.427, -2.427, -3.427, -4.427, -5.427],
-          gene_names: ['A', 'B', 'C', 'D', 'E'],
-          Gene: ['EASAD0', 'ENASD23', 'EN34S', 'ENSD33', 'ENASD233'],
-        },
-        total: 500,
-      };
-
-      return new Promise((resolve) => resolve(resolveWith));
-    });
-
-    await store.dispatch(
-      loadDifferentialExpression(experimentId, cellSets, comparisonType, defaultTableState),
-    );
-
-    const loadingAction = store.getActions()[0];
-    expect(loadingAction.type).toEqual(DIFF_EXPR_LOADING);
-    expect(loadingAction).toMatchSnapshot();
-
-    expect(fetchWork).toHaveBeenCalledTimes(1);
-    expect(fetchWork).toHaveBeenCalledWith('1234',
-      {
-        cellSet: 'louvain-0',
-        compareWith: 'louvain-1',
-        basis: 'condition-control',
-        comparisonType: 'within',
-        name: 'DifferentialExpression',
-        experimentId: '1234',
-      },
-      store.getState,
-      expect.any(Function),
-      {
-        extras: {
-          pagination: {
-            limit: 50, offset: 0, orderBy: 'p_val_adj', orderDirection: 'ASC', responseKey: 0,
-          },
-        },
-        timeout: 60,
-      });
-
-    const loadedAction = store.getActions()[1];
-    expect(loadedAction.type).toEqual(DIFF_EXPR_LOADED);
-    expect(loadedAction).toMatchSnapshot();
-  });
-
   it('Doesnt crash if total is 0', async () => {
     const store = mockStore({
       differentialExpression: {

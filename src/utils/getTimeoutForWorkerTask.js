@@ -38,6 +38,8 @@ const getTimeoutForWorkerTaskUncapped = (state, taskName, options) => {
     case 'GetMitochondrialContent':
     case 'GetDoubletScore':
     case 'GetNormalizedExpression':
+    case 'GetNUmis':
+    case 'GetNGenes':
     case 'PlotData': {
       return 60;
     }
