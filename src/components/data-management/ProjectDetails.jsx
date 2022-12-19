@@ -6,8 +6,10 @@ import PropTypes from 'prop-types';
 import {
   Space, Typography, Button,
 } from 'antd';
+import {
+  cloneExperiment, updateExperiment, loadExperiments, setActiveExperiment,
+} from 'redux/actions/experiments';
 
-import { updateExperiment } from 'redux/actions/experiments';
 import SampleOptions from 'components/data-management/SamplesOptions';
 import EditableParagraph from 'components/EditableParagraph';
 import { layout, sampleTech } from 'utils/constants';
@@ -32,6 +34,13 @@ const ProjectDetails = ({ width, height }) => {
   const samples = useSelector((state) => state.samples);
   const selectedTech = samples[activeExperiment?.sampleIds[0]]?.type;
 
+
+  const clone = async () => {
+    const newExperimentId = await dispatch(cloneExperiment(activeExperimentId, `Copy of ${activeExperiment.name}`));
+    await dispatch(loadExperiments());
+    dispatch(setActiveExperiment(newExperimentId));
+  };
+
   return (
     // The height of this div has to be fixed to enable sample scrolling
     <div
@@ -49,6 +58,9 @@ const ProjectDetails = ({ width, height }) => {
           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
             <Title level={3}>{activeExperiment.name}</Title>
             <Space>
+              <Button onClick={() => clone()}>
+                Copy
+              </Button>
               <Button
                 disabled={activeExperiment.sampleIds?.length === 0 || selectedTech === sampleTech.SEURAT}
                 onClick={() => samplesTableRef.current.createMetadataColumn()}

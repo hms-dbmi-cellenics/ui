@@ -19,11 +19,25 @@ const generateSpec = (config, plotData, xNamesToDisplay, yNamesToDisplay) => {
     const positionIsRight = config.legend.position === 'right';
     plotDataReversed = plotData.slice().reverse();
 
+    // Approximate the size of each name.
+    // All names can have that size or less, so can use it calculate the amount of columns
+    //
+    // The size of each name is calculated by getting the amount of chars in
+    //  each name and multiplying by each approx char size, 5.5
+    //  plus 30 for the color symbol and offset
+    const colorSymbolSize = 30;
+    const characterSize = 5.5;
+
+    const legendSize = colorSymbolSize + _.max(
+      yNamesToDisplay.map((legendName) => legendName.length * characterSize),
+    );
+
+    // only 20 rows per column if the legend is on the right
     const legendColumns = positionIsRight
       ? Math.ceil(yNamesToDisplay.length / 20)
-      : Math.floor(config.dimensions.width / 85);
+      : Math.floor((config.dimensions.width) / legendSize);
+    const labelLimit = positionIsRight ? 0 : legendSize;
 
-    const labelLimit = positionIsRight ? 0 : 85;
     legend = [
       {
         fill: positionIsRight ? 'cellSetColorsReversed' : 'cellSetColors',
@@ -50,6 +64,7 @@ const generateSpec = (config, plotData, xNamesToDisplay, yNamesToDisplay) => {
         titleFont: config.fontStyle.font,
         columns: legendColumns,
         labelLimit,
+        symbolLimit: 0,
       },
 
     ];
@@ -241,10 +256,11 @@ const generateData = (hierarchy, properties, config) => {
     // Get the total number of cells in each cell set.
     cellSets.x.forEach((xCellSet, indx) => {
       let total = 0;
+      const xCellSetIds = Array.from(properties[xCellSet.key].cellIds);
+
       cellSets.y.forEach((yCellSet) => {
-        const yCellSetIds = Array.from(properties[yCellSet.key].cellIds);
-        const xCellSetIds = Array.from(properties[xCellSet.key].cellIds);
-        total += xCellSetIds.filter((id) => yCellSetIds.includes(id)).length;
+        const yCellSetIds = properties[yCellSet.key].cellIds;
+        total += xCellSetIds.filter((id) => yCellSetIds.has(id)).length;
       });
 
       totalYDict[cellSets.x[indx].key] = total;
@@ -277,6 +293,7 @@ const generateData = (hierarchy, properties, config) => {
 
   const yNamesToDisplay = cellSets.y.map(({ key }) => properties[key].name);
   const xNamesToDisplay = cellSets.x.map(({ key }) => properties[key].name);
+
   return { xNamesToDisplay, yNamesToDisplay, plotData };
 };
 
