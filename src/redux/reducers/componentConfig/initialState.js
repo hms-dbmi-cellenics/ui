@@ -1,4 +1,4 @@
-import { plotTypes } from 'utils/constants';
+import { plotTypes, plotUuids } from 'utils/constants';
 
 import {
   legendBaseState,
@@ -329,6 +329,32 @@ const multiViewInitialConfig = {
   ncols: 1,
   nrows: 1,
   plotUuids: [],
+};
+
+// PLOTS & TABLES - Saved plots
+const savedPlotsInitialConfig = {
+  selectedPlots: {
+    [plotTypes.CONTINUOUS_EMBEDDING]: 0,
+    [plotTypes.CATEGORICAL_EMBEDDING]: 0,
+    [plotTypes.HEATMAP]: 0,
+    [plotTypes.MARKER_HEATMAP]: 0,
+    [plotTypes.VOLCANO_PLOT]: 0,
+    [plotTypes.FREQUENCY_PLOT]: 0,
+    [plotTypes.VIOLIN_PLOT]: 0,
+    [plotTypes.DOT_PLOT]: 0,
+    [plotTypes.TRAJECTORY_ANALYSIS]: 0,
+    [plotTypes.NORMALIZED_EXPRESSION_MATRIX]: 0,
+  },
+  [plotTypes.CONTINUOUS_EMBEDDING]: [plotUuids.CONTINUOUS_EMBEDDING],
+  [plotTypes.CATEGORICAL_EMBEDDING]: [plotUuids.CONTINUOUS_EMBEDDING],
+  [plotTypes.HEATMAP]: [plotUuids.HEATMAP],
+  [plotTypes.MARKER_HEATMAP]: [plotUuids.MARKER_HEATMAP],
+  [plotTypes.VOLCANO_PLOT]: [plotUuids.VOLCANO_PLOT],
+  [plotTypes.FREQUENCY_PLOT]: [plotUuids.FREQUENCY_PLOT],
+  [plotTypes.VIOLIN_PLOT]: [plotUuids.VIOLIN_PLOT],
+  [plotTypes.DOT_PLOT]: [plotUuids.DOT_PLOT],
+  [plotTypes.TRAJECTORY_ANALYSIS]: [plotUuids.TRAJECTORY_ANALYSIS],
+  [plotTypes.NORMALIZED_EXPRESSION_MATRIX]: [plotUuids.NORMALIZED_EXPRESSION_MATRIX],
 };
 
 // EMBEDDING PREVIEW - Coloured by sample
@@ -927,6 +953,7 @@ const initialPlotConfigStates = {
 const initialComponentConfigStates = {
   interactiveHeatmap: interactiveHeatmapInitialConfig,
   multiView: multiViewInitialConfig,
+  savedPlots: savedPlotsInitialConfig,
 };
 
 const initialPlotDataState = {
