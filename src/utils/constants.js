@@ -18,12 +18,12 @@ const sampleTech = {
 };
 
 const plotTypes = {
-  CONTINUOUS_EMBEDDING: 'ContinuousEmbedding',
-  CATEGORICAL_EMBEDDING: 'CategoricalEmbedding',
-  HEATMAP: 'Heatmap',
-  MARKER_HEATMAP: 'MarkerHeatmap',
-  VOLCANO_PLOT: 'VolcanoPlot',
-  FREQUENCY_PLOT: 'FrequencyPlot',
+  CONTINUOUS_EMBEDDING: 'embeddingContinuous',
+  CATEGORICAL_EMBEDDING: 'embeddingCategorical',
+  HEATMAP: 'heatmap',
+  MARKER_HEATMAP: 'markerHeatmap',
+  VOLCANO_PLOT: 'volcano',
+  FREQUENCY_PLOT: 'frequency',
   VIOLIN_PLOT: 'violin',
   DOT_PLOT: 'DotPlot',
   TRAJECTORY_ANALYSIS: 'TrajectoryAnalysis',
