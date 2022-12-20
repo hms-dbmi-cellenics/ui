@@ -30,6 +30,19 @@ const plotTypes = {
   NORMALIZED_EXPRESSION_MATRIX: 'NormalizedExpressionMatrix',
 };
 
+const plotUuids = {
+  CONTINUOUS_EMBEDDING: 'embeddingContinuousMain',
+  CATEGORICAL_EMBEDDING: 'embeddingCategoricalMain',
+  HEATMAP: 'heatmapPlotMain',
+  MARKER_HEATMAP: 'markerHeatmapPlotMain',
+  VOLCANO_PLOT: 'volcanoPlotMain',
+  FREQUENCY_PLOT: 'frequencyPlotMain',
+  VIOLIN_PLOT: 'ViolinMain',
+  DOT_PLOT: 'DotPlotMain',
+  TRAJECTORY_ANALYSIS: 'trajectoryAnalysisMain',
+  NORMALIZED_EXPRESSION_MATRIX: 'normalized-matrix',
+};
+
 const plotNames = {
   CONTINUOUS_EMBEDDING: 'Continuous Embedding',
   CATEGORICAL_EMBEDDING: 'Categorical Embedding',
@@ -53,6 +66,7 @@ export {
   modules,
   sampleTech,
   plotTypes,
+  plotUuids,
   plotNames,
   layout,
 };
