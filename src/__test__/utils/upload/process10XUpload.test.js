@@ -22,7 +22,7 @@ enableFetchMocks();
 const getValidFiles = (cellrangerVersion, compressed = true) => {
   const filename = cellrangerVersion === 'v2' ? 'genes.tsv.gz' : 'features.tsv.gz';
 
-  return ([
+  let fileList = [
     {
       name: `WT13/${filename}`,
       fileObject: mockFile(filename, '/'),
@@ -47,7 +47,10 @@ const getValidFiles = (cellrangerVersion, compressed = true) => {
       compressed,
       valid: true,
     },
-  ]);
+  ];
+
+  fileList = fileList.map((file) => ({ ...file, size: file.fileObject.size }));
+  return fileList;
 };
 
 const sampleType = '10X Chromium';
