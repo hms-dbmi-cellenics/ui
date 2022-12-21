@@ -18,16 +18,29 @@ const sampleTech = {
 };
 
 const plotTypes = {
-  CONTINUOUS_EMBEDDING: 'ContinuousEmbedding',
-  CATEGORICAL_EMBEDDING: 'CategoricalEmbedding',
-  HEATMAP: 'Heatmap',
-  MARKER_HEATMAP: 'MarkerHeatmap',
-  VOLCANO_PLOT: 'VolcanoPlot',
-  FREQUENCY_PLOT: 'FrequencyPlot',
+  CONTINUOUS_EMBEDDING: 'embeddingContinuous',
+  CATEGORICAL_EMBEDDING: 'embeddingCategorical',
+  HEATMAP: 'heatmap',
+  MARKER_HEATMAP: 'markerHeatmap',
+  VOLCANO_PLOT: 'volcano',
+  FREQUENCY_PLOT: 'frequency',
   VIOLIN_PLOT: 'violin',
   DOT_PLOT: 'DotPlot',
   TRAJECTORY_ANALYSIS: 'TrajectoryAnalysis',
   NORMALIZED_EXPRESSION_MATRIX: 'NormalizedExpressionMatrix',
+};
+
+const plotUuids = {
+  CONTINUOUS_EMBEDDING: 'embeddingContinuousMain',
+  CATEGORICAL_EMBEDDING: 'embeddingCategoricalMain',
+  HEATMAP: 'heatmapPlotMain',
+  MARKER_HEATMAP: 'markerHeatmapPlotMain',
+  VOLCANO_PLOT: 'volcanoPlotMain',
+  FREQUENCY_PLOT: 'frequencyPlotMain',
+  VIOLIN_PLOT: 'ViolinMain',
+  DOT_PLOT: 'DotPlotMain',
+  TRAJECTORY_ANALYSIS: 'trajectoryAnalysisMain',
+  NORMALIZED_EXPRESSION_MATRIX: 'normalized-matrix',
 };
 
 const plotNames = {
@@ -59,6 +72,7 @@ export {
   modules,
   sampleTech,
   plotTypes,
+  plotUuids,
   plotNames,
   layout,
   downsamplingMethods,

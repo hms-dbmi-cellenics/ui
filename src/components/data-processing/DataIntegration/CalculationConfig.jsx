@@ -36,7 +36,7 @@ const getDownsampling = (downsamplingConfig = {}) => {
   }
 
   // only return percentage to keep if not NONE
-  return { method, methodSettings: methodSettings[method] };
+  return { method, percentageToKeep: methodSettings[method].percentageToKeep };
 };
 
 const CalculationConfig = (props) => {
