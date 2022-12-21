@@ -29,7 +29,7 @@ const { Text } = Typography;
 const { Panel } = Collapse;
 
 const getDownsampling = (downsamplingConfig = {}) => {
-  const { method = downsamplingMethods.NONE, methodSettings = undefined } = downsamplingConfig;
+  const { method = downsamplingMethods.NONE, methodSettings = {} } = downsamplingConfig;
 
   if (method === downsamplingMethods.NONE || !(method in methodSettings)) {
     return { method };
@@ -288,7 +288,7 @@ const CalculationConfig = (props) => {
           </div>
         </Panel>
       </Collapse>
-      <Collapse>
+      <Collapse style={{ display: 'none' }}>
         <Panel header='Downsampling Options' key='downsampling-options'>
           <Space direction='vertical' style={{ width: '100%' }} />
           <Form.Item>
