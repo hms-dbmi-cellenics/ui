@@ -25,6 +25,7 @@ const getValidFiles = (compressed = true) => {
   const seuratFiles = [{
     name: 'r.rds',
     fileObject: mockFile('r.rds', '', FILE_SIZE),
+    size: FILE_SIZE,
     upload: { status: UploadStatus.UPLOADING },
     errors: '',
     compressed,
