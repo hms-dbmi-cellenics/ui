@@ -220,6 +220,7 @@ const CalculationConfig = (props) => {
             <Form.Item label='Number of Principal Components'>
               <InputNumber
                 value={numPCs}
+                aria-label='Number of Principal Components'
                 max={data?.length || 100}
                 min={0}
                 onChange={(value) => {
@@ -288,7 +289,8 @@ const CalculationConfig = (props) => {
           </div>
         </Panel>
       </Collapse>
-      <Collapse style={{ display: 'none' }}>
+      <Collapse>
+        {/* <Collapse style={{ display: 'none' }}> */}
         <Panel header='Downsampling Options' key='downsampling-options'>
           <Space direction='vertical' style={{ width: '100%' }} />
           <Form.Item>
@@ -333,6 +335,7 @@ const CalculationConfig = (props) => {
             >
 
               <Select
+                aria-label='Downsampling method'
                 value={downsampling.method}
                 onChange={(val) => {
                   let downsamplingSettings = {};
@@ -363,6 +366,7 @@ const CalculationConfig = (props) => {
             </Form.Item>
             <Form.Item label='% of cells to keep'>
               <InputNumber
+                aria-label='% of cells to keep'
                 disabled={downsampling.method !== downsamplingMethods.GEOSKETCH}
                 value={downsampling.percentageToKeep}
                 max={100}
