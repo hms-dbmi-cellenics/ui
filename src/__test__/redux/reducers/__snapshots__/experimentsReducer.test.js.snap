@@ -224,6 +224,7 @@ Object {
 exports[`experimentsReducer Inserts a new experiment correctly 1`] = `
 Object {
   "experiment-1": Object {
+    "canRerunGem2S": true,
     "createdAt": "2021-01-01",
     "description": "this is a test description",
     "id": "experiment-1",

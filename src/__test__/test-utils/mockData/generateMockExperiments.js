@@ -21,6 +21,7 @@ const experimentFromTemplate = (idx) => (
     },
     notifyByEmail: true,
     pipelineVersion: 1,
+    canRerunGem2S: true,
     createdAt: fake.MOCK_DATETIME,
     updatedAt: fake.MOCK_DATETIME,
   }

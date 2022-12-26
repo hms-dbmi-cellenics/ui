@@ -110,6 +110,7 @@ Object {
       "saving": false,
     },
     "testae48e318dab9a1bd0bexperiment-0": Object {
+      "canRerunGem2S": true,
       "createdAt": "0000-00-00T00:00:00.000Z",
       "description": "Mock experiment 0",
       "id": "testae48e318dab9a1bd0bexperiment-0",
@@ -136,6 +137,7 @@ Object {
       "updatedAt": "0000-00-00T00:00:00.000Z",
     },
     "testae48e318dab9a1bd0bexperiment-1": Object {
+      "canRerunGem2S": true,
       "createdAt": "0000-00-00T00:00:00.000Z",
       "description": "Mock experiment 1",
       "id": "testae48e318dab9a1bd0bexperiment-1",
@@ -503,6 +505,7 @@ Object {
       "saving": false,
     },
     "testae48e318dab9a1bd0bexperiment-0": Object {
+      "canRerunGem2S": true,
       "createdAt": "0000-00-00T00:00:00.000Z",
       "description": "Mock experiment 0",
       "id": "testae48e318dab9a1bd0bexperiment-0",
@@ -529,6 +532,7 @@ Object {
       "updatedAt": "0000-00-00T00:00:00.000Z",
     },
     "testae48e318dab9a1bd0bexperiment-1": Object {
+      "canRerunGem2S": true,
       "createdAt": "0000-00-00T00:00:00.000Z",
       "description": "Mock experiment 1",
       "id": "testae48e318dab9a1bd0bexperiment-1",
