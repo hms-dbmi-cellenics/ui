@@ -289,8 +289,8 @@ const CalculationConfig = (props) => {
           </div>
         </Panel>
       </Collapse>
-      <Collapse>
-        {/* <Collapse style={{ display: 'none' }}> */}
+      {/* TODO: reenable when geometric sketching pipeline PRs are released */}
+      <Collapse style={{ display: 'none' }}>
         <Panel header='Downsampling Options' key='downsampling-options'>
           <Space direction='vertical' style={{ width: '100%' }} />
           <Form.Item>
