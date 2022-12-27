@@ -61,6 +61,12 @@ const layout = {
   PANEL_PADDING: 10,
 };
 
+const downsamplingMethods = {
+  GEOSKETCH: 'geosketch',
+  NONE: 'none',
+  DEFAULT_PERC_TO_KEEP: 5,
+};
+
 export {
   api,
   modules,
@@ -69,4 +75,5 @@ export {
   plotUuids,
   plotNames,
   layout,
+  downsamplingMethods,
 };
