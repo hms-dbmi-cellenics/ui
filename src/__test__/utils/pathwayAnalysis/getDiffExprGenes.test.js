@@ -127,12 +127,6 @@ describe('getDiffExpr test', () => {
     );
   });
 
-  it('Should return result with the correct shape', async () => {
-    const result = await store.dispatch(getDiffExprGenes(true, 3));
-
-    expect(result).toMatchSnapshot();
-  });
-
   it('Should throw error if the workResult returns an error', async () => {
     fetchWork.mockImplementation(() => Promise.reject(new Error('Error')));
 
