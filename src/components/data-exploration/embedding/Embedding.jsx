@@ -85,8 +85,16 @@ const Embedding = (props) => {
     cellInfoTimerRef.current = timeoutRef;
   };
 
+  const hideCellInfoOnClick = () => {
+    document.addEventListener('click', () => {
+      if (cellInfoVisible) setCellInfoVisible(false);
+    });
+  };
+
   // Load embedding settings if they aren't already.
   useEffect(() => {
+    hideCellInfoOnClick();
+
     if (!embeddingSettings) {
       dispatch(loadProcessingSettings(experimentId));
     }
