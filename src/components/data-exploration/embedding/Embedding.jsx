@@ -75,7 +75,15 @@ const Embedding = (props) => {
   const [selectedIds, setSelectedIds] = useState(new Set());
   const [cellColors, setCellColors] = useState({});
   const [cellInfoVisible, setCellInfoVisible] = useState(true);
+  const cellInfoTimerRef = useRef();
   const [view, setView] = useState({ target: [4, -4, 0], zoom: INITIAL_ZOOM });
+
+  const hideCellInfoAfterTime = (timeMs = 2000) => {
+    const timeoutRef = setTimeout(() => { setCellInfoVisible(false); }, timeMs);
+
+    if (timeoutRef !== cellInfoTimerRef) clearTimeout(cellInfoTimerRef);
+    cellInfoTimerRef.current = timeoutRef;
+  };
 
   // Load embedding settings if they aren't already.
   useEffect(() => {
@@ -291,6 +299,7 @@ const Embedding = (props) => {
       onMouseMove={() => {
         if (!cellInfoVisible) {
           setCellInfoVisible(true);
+          hideCellInfoAfterTime();
         }
       }}
     >
