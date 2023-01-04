@@ -68,7 +68,7 @@
     "cssnano": "^4.1.10",
     "dotenv": "^8.2.0",
     "es6-promise": "^4.2.5",
-    "express": "^4.16.3",
+    "express": "^4.17.3",
     "fflate": "^0.6.9",
     "file-saver": "^2.0.5",
     "identity-obj-proxy": "^3.0.0",
