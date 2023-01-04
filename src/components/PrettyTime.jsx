@@ -22,13 +22,17 @@ const PrettyTime = (props) => {
       onMouseEnter={() => setDisplayedTime(`on ${localIsoTime}`)}
       onMouseLeave={() => setDisplayedTime(relativeTime)}
     >
-      {displayedTime}
+      {!isoTime ? 'invalid date' : displayedTime}
     </span>
   );
 };
 
 PrettyTime.propTypes = {
-  isoTime: PropTypes.string.isRequired,
+  isoTime: PropTypes.string,
+};
+
+PrettyTime.defaultProps = {
+  isoTime: null,
 };
 
 export default PrettyTime;
