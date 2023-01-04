@@ -1,5 +1,5 @@
 import React from 'react';
-import moment from 'moment';
+import dayjs from 'dayjs';
 
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
@@ -17,8 +17,8 @@ import ProjectCard from 'components/data-management/ProjectCard';
 const experimentId = 'experimentId1';
 const experimentName = 'Test Experiment';
 const samplesIdsArray = new Array(13).fill(null).map((_, i) => (`sample-${i}`));
-const createdAt = moment().subtract(30, 'days').format();
-const updatedAt = moment().subtract(30, 'minutes').format();
+const createdAt = dayjs().subtract(30, 'days').format();
+const updatedAt = dayjs().subtract(30, 'minutes').format();
 
 const experimentState = {
   experiments: {
@@ -60,10 +60,10 @@ describe('ProjectCard', () => {
     expect(screen.getByText(samplesIdsArray.length)).toBeInTheDocument();
 
     // Created date is shown
-    expect(screen.getByText(moment(createdAt).fromNow())).toBeInTheDocument();
+    expect(screen.getByText(dayjs(createdAt).fromNow())).toBeInTheDocument();
 
     // Last modified is shown
-    expect(screen.getByText(moment(updatedAt).fromNow())).toBeInTheDocument();
+    expect(screen.getByText(dayjs(updatedAt).fromNow())).toBeInTheDocument();
   });
 
   it('Displays the delete project modal when delete experiment is clicked', async () => {
