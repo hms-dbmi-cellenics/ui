@@ -17,7 +17,6 @@ const PrettyTime = (props) => {
   const [displayedTime, setDisplayedTime] = useState(relativeTime);
 
   return (
-
     <span
       style={{ textDecoration: 'underline dotted' }}
       onMouseEnter={() => setDisplayedTime(`on ${localIsoTime}`)}
@@ -25,7 +24,6 @@ const PrettyTime = (props) => {
     >
       {displayedTime}
     </span>
-
   );
 };
 
