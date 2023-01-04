@@ -77,16 +77,8 @@ const Embedding = (props) => {
   const [cellInfoVisible, setCellInfoVisible] = useState(true);
   const [view, setView] = useState({ target: [4, -4, 0], zoom: INITIAL_ZOOM });
 
-  const hideCellInfoOnClick = () => {
-    document.addEventListener('click', () => {
-      if (cellInfoVisible) setCellInfoVisible(false);
-    });
-  };
-
   // Load embedding settings if they aren't already.
   useEffect(() => {
-    hideCellInfoOnClick();
-
     if (!embeddingSettings) {
       dispatch(loadProcessingSettings(experimentId));
     }
