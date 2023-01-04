@@ -2,7 +2,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
-import moment from 'moment';
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
 import {
   Modal, Button, Col, Row,
 } from 'antd';
@@ -14,6 +15,8 @@ import { createAndUploadSingleFile, fileObjectToFileRecord } from 'utils/upload/
 
 import UploadStatus, { messageForStatus } from 'utils/upload/UploadStatus';
 import downloadSingleFile from 'utils/data-management/downloadSingleFile';
+
+dayjs.extend(utc);
 
 const UploadDetailsModal = (props) => {
   const dispatch = useDispatch();
@@ -50,7 +53,7 @@ const UploadDetailsModal = (props) => {
   const toMBytes = (sizeInBytes) => (sizeInBytes / (1000 * 1000)).toFixed(2);
 
   const fromISODateToFormatted = (ISOStringDate) => {
-    const date = moment(ISOStringDate);
+    const date = dayjs(ISOStringDate);
 
     const weekDayName = date.format('dddd');
 

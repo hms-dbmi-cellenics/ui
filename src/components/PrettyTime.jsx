@@ -1,13 +1,16 @@
 import React, { useState } from 'react';
-import moment from 'moment';
+import dayjs from 'dayjs';
+import relativeTimePlugin from 'dayjs/plugin/relativeTime';
 import PropTypes from 'prop-types';
+
+dayjs.extend(relativeTimePlugin);
+dayjs.locale('en-US');
 
 const PrettyTime = (props) => {
   const { isoTime } = props;
 
-  moment.locale('en-US');
-  const relativeTime = moment(isoTime).fromNow();
-  const localIsoTime = moment(isoTime).format('LLLL');
+  const relativeTime = dayjs(isoTime).fromNow();
+  const localIsoTime = dayjs(isoTime).format('LLLL');
 
   const [displayedTime, setDisplayedTime] = useState(relativeTime);
 
