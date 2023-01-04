@@ -3,8 +3,11 @@ import launchPathwayService from 'utils/pathwayAnalysis/launchPathwayService';
 import { pathwayServices } from 'utils/pathwayAnalysis/pathwayConstants';
 
 const genesList = {
-  gene_names: ['gene1', 'gene2'],
-  gene_id: ['ENMUSG00000001', 'ENMUSG00000002'],
+  total: 2,
+  data: {
+    gene_names: ['gene1', 'gene2'],
+    gene_id: ['ENMUSG00000001', 'ENMUSG00000002'],
+  },
 };
 const enrichrSpecies = 'sapiens';
 const pantherDBSpecies = 'HUMAN';
