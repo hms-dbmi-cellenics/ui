@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import dayjs from 'dayjs';
 import relativeTimePlugin from 'dayjs/plugin/relativeTime';
+import localizedFormatPlugin from 'dayjs/plugin/localizedFormat';
 import PropTypes from 'prop-types';
 
 dayjs.extend(relativeTimePlugin);
+dayjs.extend(localizedFormatPlugin);
 dayjs.locale('en-US');
 
 const PrettyTime = (props) => {
