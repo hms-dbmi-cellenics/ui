@@ -38,8 +38,6 @@ const PlatformError = (props) => {
   const renderMessage = () => {
     reason = reason ?? 'That\'s all we know';
 
-    console.log('*** relativeTime', relativeTime);
-
     if (error instanceof WorkResponseError) {
       reason = 'We had an error on our side while we were completing your request.';
     } else if (error instanceof WorkTimeoutError) {
