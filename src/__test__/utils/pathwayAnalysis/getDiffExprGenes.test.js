@@ -11,19 +11,25 @@ import fake from '__test__/test-utils/constants';
 
 jest.mock('utils/work/fetchWork');
 
+const expectedResult = {
+  total: 3,
+  data: {
+    gene_names: ['gene1', 'gene2', 'gene3'],
+    gene_id: ['ENMUSG00000001', 'ENMUSG00000002', 'ENMUSG00000003'],
+  },
+};
+
+let store = null;
+
 describe('getDiffExpr test', () => {
   beforeEach(async () => {
     jest.clearAllMocks();
-    fetchWork.mockImplementation(() => Promise.resolve({
-      rows: {
-        gene_names: ['gene1', 'gene2', 'gene3'],
-        gene_ids: ['ENMUSG00000001', 'ENMUSG00000002', 'ENMUSG00000003'],
-      },
-    }));
+
+    store = makeStore();
+    fetchWork.mockImplementation(() => Promise.resolve(expectedResult));
   });
 
   it('Dispatch correctly', async () => {
-    const store = makeStore();
     await store.dispatch(getDiffExprGenes(true, 0));
 
     expect(fetchWork).toHaveBeenCalledTimes(1);
@@ -41,8 +47,6 @@ describe('getDiffExpr test', () => {
   });
 
   it('Pass on the correct number of genes', async () => {
-    const store = makeStore();
-
     const numGenes = 10;
 
     await store.dispatch(getDiffExprGenes(false, numGenes));
@@ -60,8 +64,6 @@ describe('getDiffExpr test', () => {
   });
 
   it('Should pass the gene ordering correctly', async () => {
-    const store = makeStore();
-
     const orderBy = 'gene_names';
     const orderDirection = 'ASC';
 
@@ -85,7 +87,6 @@ describe('getDiffExpr test', () => {
   });
 
   it('Should pass filters into the request', async () => {
-    const store = makeStore();
     const advancedFilters = [
       {
         type: 'numeric',
@@ -128,8 +129,6 @@ describe('getDiffExpr test', () => {
 
   it('Should throw error if the workResult returns an error', async () => {
     fetchWork.mockImplementation(() => Promise.reject(new Error('Error')));
-
-    const store = makeStore();
 
     expect(async () => {
       await store.dispatch(getDiffExprGenes(true, 0));

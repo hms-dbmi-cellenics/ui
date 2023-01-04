@@ -20,6 +20,8 @@ const loadCellMeta = (
   const plotWorkName = {
     mitochondrialContent: 'GetMitochondrialContent',
     doubletScores: 'GetDoubletScore',
+    numOfGenes: 'GetNGenes',
+    numOfUmis: 'GetNUmis',
   };
 
   dispatch({

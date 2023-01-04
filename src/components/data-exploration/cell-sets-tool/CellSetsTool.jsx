@@ -1,19 +1,23 @@
 import React, {
   useEffect, useRef, useState, useCallback,
 } from 'react';
+import { animateScroll, Element } from 'react-scroll';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
-// import SubsetCellSetsOperation from 'components/data-exploration/cell-sets-tool/SubsetCellSetsOperation';
 
 import {
   Alert, Button, Empty, Skeleton, Space, Tabs, Typography,
 } from 'antd';
-
 import {
   BlockOutlined, MergeCellsOutlined, SplitCellsOutlined,
 } from '@ant-design/icons';
 
-import { Element } from 'react-scroll';
+// import SubsetCellSetsOperation from
+// 'components/data-exploration/cell-sets-tool/SubsetCellSetsOperation';
+import CellSetOperation from 'components/data-exploration/cell-sets-tool/CellSetOperation';
+import PlatformError from 'components/PlatformError';
+import HierarchicalTree from 'components/data-exploration/hierarchical-tree/HierarchicalTree';
+
 import {
   createCellSet,
   deleteCellSet,
@@ -23,15 +27,13 @@ import {
   updateCellSetProperty,
   updateCellSetSelected,
 } from 'redux/actions/cellSets';
+// import { runSubsetExperiment } from 'redux/actions/pipeline';
+import { getCellSets } from 'redux/selectors';
 
 import { composeTree } from 'utils/cellSets';
-import PlatformError from 'components/PlatformError';
-import HierarchicalTree from 'components/data-exploration/hierarchical-tree/HierarchicalTree';
 import {
   complement, intersection, union, unionByCellClass,
 } from 'utils/cellSetOperations';
-import { getCellSets } from 'redux/selectors';
-import CellSetOperation from './CellSetOperation';
 
 const { Text } = Typography;
 
@@ -74,6 +76,20 @@ const CellSetsTool = (props) => {
   const [numSelected, setNumSelected] = useState(0);
 
   useEffect(() => {
+    const louvainClusters = hierarchy.find(({ key }) => key === 'louvain')?.children;
+    const customClusters = hierarchy.find(({ key }) => key === 'scratchpad')?.children;
+    const treeClusters = cellSetTreeData?.find(({ key }) => key === 'scratchpad')?.children;
+
+    if (!customClusters || !treeClusters) return;
+
+    if (customClusters.length > treeClusters.length) {
+      // scroll to bottom based on total number of cell sets, overshoot to show new cluster
+      const newHeight = (louvainClusters.length + customClusters.length) * 30 + 200;
+      animateScroll.scrollTo(newHeight, { containerId: 'cell-set-tool-container' });
+    }
+  }, [hierarchy]);
+
+  useEffect(() => {
     const selected = allSelected[activeTab];
     const selectedCells = union(selected, properties);
 
@@ -110,7 +126,11 @@ const CellSetsTool = (props) => {
     if (numSelected) {
       operations = (
         <Space style={{ marginLeft: '0.5em' }}>
-          {/* <SubsetCellSetsOperation /> */}
+          {/* <SubsetCellSetsOperation
+            onCreate={(name) => {
+              dispatch(runSubsetExperiment(experimentId, name, selected));
+            }}
+          /> */}
           <CellSetOperation
             icon={<MergeCellsOutlined />}
             onCreate={(name, color) => {
