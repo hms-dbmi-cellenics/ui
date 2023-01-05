@@ -178,6 +178,8 @@ const Embedding = (props) => {
         expression: expressionToDispatch,
         geneName,
       });
+    } else {
+      setCellInfoTooltip(null);
     }
   }, [selectedCell]);
 
