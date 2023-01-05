@@ -91,9 +91,11 @@ describe('DataIntegration', () => {
     }));
 
     await renderDataIntegration();
+    screen.debug(null, Infinity);
 
     expect(screen.getByText('Plot view')).toBeDefined();
     expect(screen.getByText('Data Integration')).toBeDefined();
+    expect(screen.getByText('Downsampling Options')).toBeDefined();
     expect(screen.getByText('Plot styling')).toBeDefined();
 
     const plots = screen.getAllByRole('graphics-document');

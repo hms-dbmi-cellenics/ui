@@ -162,6 +162,7 @@ const SamplesTable = forwardRef((props, ref) => {
 
     createMetadataColumn() {
       const key = temporaryMetadataKey(tableColumns);
+      const previousTableColumns = tableColumns;
       const metadataCreateColumn = {
         key,
         fixed: 'right',
@@ -172,7 +173,7 @@ const SamplesTable = forwardRef((props, ref) => {
               onMetadataCreate(name);
             }}
             onCancel={() => {
-              deleteMetadataColumn(key);
+              setTableColumns(previousTableColumns);
             }}
             message='Provide new metadata track name'
             visible
