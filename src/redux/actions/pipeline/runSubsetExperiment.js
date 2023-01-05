@@ -1,10 +1,13 @@
 import fetchAPI from 'utils/http/fetchAPI';
 import handleError from 'utils/http/handleError';
 import endUserMessages from 'utils/endUserMessages';
+import { loadBackendStatus } from 'redux/actions/backendStatus';
+import { setActiveExperiment } from 'redux/actions/experiments';
 
-const runSubsetExperiment = (experimentId, newExperimentName, cellSetKeys) => async () => {
+const runSubsetExperiment = (experimentId, newExperimentName, cellSetKeys) => async (dispatch) => {
+  // const { navigateTo } = useAppRouter();
   try {
-    await fetchAPI(
+    const newExperimentId = await fetchAPI(
       `/v2/experiments/${experimentId}/subset`,
       {
         method: 'POST',
@@ -17,6 +20,10 @@ const runSubsetExperiment = (experimentId, newExperimentName, cellSetKeys) => as
         }),
       },
     );
+    dispatch(setActiveExperiment(newExperimentId));
+    dispatch(loadBackendStatus(newExperimentId));
+
+    return newExperimentId;
   } catch (e) {
     handleError(e, endUserMessages.ERROR_STARTING_PIPLELINE);
   }
