@@ -21,7 +21,7 @@ uuidv4.mockImplementation(() => 'my-random-uuid');
 
 jest.mock('uuid');
 
-jest.mock('moment', () => () => jest.requireActual('moment')('4022-01-01T00:00:00.000Z'));
+jest.mock('dayjs', () => () => jest.requireActual('dayjs')('4022-01-01T00:00:00.000Z'));
 
 jest.mock('utils/socketConnection', () => {
   const mockEmit = jest.fn();

@@ -1,4 +1,4 @@
-import moment from 'moment';
+import dayjs from 'dayjs';
 
 import getAuthJWT from 'utils/getAuthJWT';
 import fetchAPI from 'utils/http/fetchAPI';
@@ -54,7 +54,7 @@ const seekFromS3 = async (ETag, experimentId, taskName) => {
 
 // getTimeoutDate returns the date resulting of adding 'timeout' seconds to
 // current time.
-const getTimeoutDate = (timeout) => moment().add(timeout, 's').toISOString();
+const getTimeoutDate = (timeout) => dayjs().add(timeout, 's').toISOString();
 
 const resetTimeout = (id, request, newTimeout, reject) => {
   clearTimeout(id);
@@ -74,7 +74,7 @@ const dispatchWorkRequest = async (
   const { default: connectionPromise } = await import('utils/socketConnection');
   const io = await connectionPromise;
 
-  const timeoutDate = getTimeoutDate(timeout);
+  const timeoutDate = dayjs().add(timeout, 's').toISOString();
   const authJWT = await getAuthJWT();
 
   const request = {

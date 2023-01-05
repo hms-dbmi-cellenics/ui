@@ -13,9 +13,17 @@ import createTestComponentFactory from '__test__/test-utils/testComponentFactory
 
 const storeState = makeStore();
 
-const SubsetCellSetsOperationFactory = createTestComponentFactory(SubsetCellSetsOperation);
+const mockOnCreate = jest.fn();
+const SubsetCellSetsOperationFactory = createTestComponentFactory(
+  SubsetCellSetsOperation,
+  { onCreate: mockOnCreate },
+);
 
-describe('SubsetCellSetsOperation', async () => {
+describe('SubsetCellSetsOperation', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
   it('Renders properly', async () => {
     render(
       <Provider store={storeState}>
@@ -75,6 +83,8 @@ describe('SubsetCellSetsOperation', async () => {
     await waitFor(() => {
       expect(screen.queryByText(/New project name/i)).toBeNull();
     });
+
+    expect(mockOnCreate).toHaveBeenCalled();
   });
 
   it('Clicking on Cancel closes the modal', async () => {
@@ -98,5 +108,7 @@ describe('SubsetCellSetsOperation', async () => {
     await waitFor(() => {
       expect(screen.queryByText(/New project name/i)).toBeNull();
     });
+
+    expect(mockOnCreate).not.toHaveBeenCalled();
   });
 });

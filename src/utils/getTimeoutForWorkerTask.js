@@ -38,6 +38,8 @@ const getTimeoutForWorkerTaskUncapped = (state, taskName, options) => {
     case 'GetDoubletScore':
     case 'GetNormalizedExpression':
     case 'DifferentialExpression':
+    case 'GetNUmis':
+    case 'GetNGenes':
     case 'PlotData': {
       return baseTimeout;
     }
