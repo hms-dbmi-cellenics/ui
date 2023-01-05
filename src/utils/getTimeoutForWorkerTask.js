@@ -8,38 +8,38 @@ const getTimeoutForWorkerTaskUncapped = (state, taskName, options) => {
   const nCells = getNumberOfCellsInGrouping('louvain', state) ?? getNumberOfCellsInGrouping('sample', state);
   const nClusters = getCellSetsHierarchyByKeys(['louvain'])(state)[0]?.children.length ?? 1;
 
+  const baseTimeout = 180; // some big datasets take up to 2-3 minutes to be downloaded & loaded
   switch (taskName) {
     case 'GetEmbedding': {
       const { type } = options;
 
       // Tsne is slower than tsne, so we give a bigger timeout to tsne
-      if (type === 'umap') return 0.002 * nCells + 60;
-      if (type === 'tsne') return 0.02 * nCells + 60;
+      if (type === 'umap') return 0.002 * nCells + baseTimeout;
+      if (type === 'tsne') return 0.02 * nCells + baseTimeout;
 
       throw new Error('GetEmbedding type isn\'t specified');
     }
     case 'ClusterCells':
     case 'MarkerHeatmap': {
-      return 0.002 * nCells + 60;
+      return 0.002 * nCells + baseTimeout;
     }
-    case 'DifferentialExpression': {
-      return 180;
-    }
+
     case 'TrajectoryAnalysisStartingNodes': {
       // Number of clusters is inversely proportional to running time
       // Larger custers produce more possible trajectories
-      return ((0.3 * nCells) / nClusters) + 60;
+      return ((0.3 * nCells) / nClusters) + baseTimeout;
     }
     case 'TrajectoryAnalysisPseudotime': {
-      return ((0.6 * nCells) / nClusters) + 60;
+      return ((0.6 * nCells) / nClusters) + baseTimeout;
     }
     case 'ListGenes':
     case 'GeneExpression':
     case 'GetMitochondrialContent':
     case 'GetDoubletScore':
     case 'GetNormalizedExpression':
+    case 'DifferentialExpression':
     case 'PlotData': {
-      return 60;
+      return baseTimeout;
     }
     default: {
       throw new Error('Task doesn\'t exist');
