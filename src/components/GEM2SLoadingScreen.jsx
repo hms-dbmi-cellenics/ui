@@ -117,9 +117,12 @@ const GEM2SLoadingScreen = (props) => {
                 </Title>
               )}
               {gem2sStatus === 'running' && (<Title level={3}>We&apos;re launching your analysis...</Title>)}
-              <Text type='secondary'>You can wait or leave this screen and check again later</Text>
+              <Text type='secondary'>You can wait or leave this screen and check again later.</Text>
               {gem2sStatus === 'subsetting' && (
-                <Text type='secondary'> Your new project containing only the selected cell sets will be available in the Data Management module</Text>
+                <Text type='secondary'>
+                  <br />
+                  Your new project containing only the selected cell sets will be available in the Data Management module
+                </Text>
               )}
             </div>
             <NotifyByEmail experimentId={experimentId} />
