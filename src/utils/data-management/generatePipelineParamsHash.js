@@ -1,5 +1,6 @@
 import objectHash from 'object-hash';
 import { METADATA_DEFAULT_VALUE } from 'redux/reducers/experiments/initialState';
+import _ from 'lodash';
 
 const generatePipelineParamsHash = (experiment, samples) => {
   if (!experiment || !samples) {
@@ -15,7 +16,7 @@ const generatePipelineParamsHash = (experiment, samples) => {
     sampleTechnology,
     sampleIds: orderInvariantSampleIds,
     sampleNames: orderInvariantSampleIds.map((sampleId) => samples[sampleId]?.name),
-    sampleOptions: orderInvariantSampleIds.map((sampleId) => samples[sampleId]?.options),
+    sampleOptions: orderInvariantSampleIds.map((sampleId) => _.cloneDeep(samples[sampleId]?.options)),
   };
 
   if (experiment.metadataKeys.length) {
