@@ -3,7 +3,6 @@ import React from 'react';
 import {
   render, screen, fireEvent, waitFor,
 } from '@testing-library/react';
-import { within } from '@testing-library/dom';
 import userEvent from '@testing-library/user-event';
 
 import { act } from 'react-dom/test-utils';
@@ -28,6 +27,14 @@ jest.mock('utils/socketConnection', () => ({
   default: new Promise((resolve) => {
     resolve({ emit: jest.fn(), on: jest.fn(), id: '5678' });
   }),
+}));
+
+const mockNavigateTo = jest.fn();
+
+jest.mock('utils/AppRouteProvider', () => ({
+  useAppRouter: jest.fn(() => ({
+    navigateTo: mockNavigateTo,
+  })),
 }));
 
 const cellSetsData = require('__test__/data/cell_sets.json');

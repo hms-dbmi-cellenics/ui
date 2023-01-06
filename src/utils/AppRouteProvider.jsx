@@ -88,7 +88,6 @@ const AppRouteProvider = (props) => {
       const { experimentId } = params;
       dispatch(switchExperiment(experimentId));
     }
-    await dispatch(loadExperiments());
 
     if (nextRoute.match(PATH_STUBS.DATA_MANAGEMENT)) {
       await dispatch(loadExperiments());
