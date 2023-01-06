@@ -15,7 +15,6 @@ const updateTypes = {
 };
 
 const experimentUpdatesHandler = (dispatch) => (experimentId, update) => {
-  console.log('RECEIVED UPDATE ????ASDASDASDASDA');
   if (update.status) {
     dispatch(updateBackendStatus(experimentId, update.status));
   }
@@ -24,7 +23,7 @@ const experimentUpdatesHandler = (dispatch) => (experimentId, update) => {
     console.error('Experiment updates error:', update);
     return;
   }
-  console.log('UPDATE IS ', update);
+
   switch (update.type) {
     case updateTypes.QC: {
       return onQCUpdate(update, dispatch, experimentId);
