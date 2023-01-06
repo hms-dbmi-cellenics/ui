@@ -6,6 +6,7 @@ import {
 import userEvent from '@testing-library/user-event';
 
 import { act } from 'react-dom/test-utils';
+import { within } from '@testing-library/dom';
 
 import { Provider } from 'react-redux';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
@@ -605,45 +606,45 @@ describe('CellSetsTool', () => {
     expect(screen.queryByText('Unhide')).toBeNull();
   });
 
-  // it('Runs subset experiment correctly', async () => {
-  //   await act(async () => {
-  //     render(
-  //       <Provider store={storeState}>
-  //         {cellSetsToolFactory()}
-  //       </Provider>,
-  //     );
-  //   });
+  it('Runs subset experiment correctly', async () => {
+    await act(async () => {
+      render(
+        <Provider store={storeState}>
+          {cellSetsToolFactory()}
+        </Provider>,
+      );
+    });
 
-  //   // select the third louvain cluster
-  //   const louvain3Cluster = screen.getByText('Cluster 3');
-  //   userEvent.click(louvain3Cluster);
+    // select the third louvain cluster
+    const louvain3Cluster = screen.getByText('Cluster 3');
+    userEvent.click(louvain3Cluster);
 
-  //   // select the fourth louvain cluster
-  //   const louvain4Cluster = screen.getByText('Cluster 4');
-  //   userEvent.click(louvain4Cluster);
+    // select the fourth louvain cluster
+    const louvain4Cluster = screen.getByText('Cluster 4');
+    userEvent.click(louvain4Cluster);
 
-  //   const subsetOperation = screen.getByLabelText('Create new experiment from selected cellsets');
-  //   userEvent.click(subsetOperation);
+    const subsetOperation = screen.getByLabelText('Create new experiment from selected cellsets');
+    userEvent.click(subsetOperation);
 
-  //   const createModal = screen.getByTestId('subsetCellSetsModal');
-  //   const createButton = within(createModal).getByRole('button', { name: /Create/i });
+    const createModal = screen.getByTestId('subsetCellSetsModal');
+    const createButton = within(createModal).getByRole('button', { name: /Create/i });
 
-  //   await act(async () => {
-  //     fireEvent(
-  //       createButton,
-  //       new MouseEvent('click', {
-  //         bubbles: true,
-  //         cancelable: true,
-  //       }),
-  //     );
-  //   });
+    await act(async () => {
+      fireEvent(
+        createButton,
+        new MouseEvent('click', {
+          bubbles: true,
+          cancelable: true,
+        }),
+      );
+    });
 
-  //   expect(fetchMock).toHaveBeenCalledWith(
-  //     expect.stringContaining(`/v2/experiments/${experimentId}/subset`),
-  //     expect.objectContaining({
-  //       body: expect.stringContaining('"cellSetKeys":["louvain-3","louvain-4"]'),
-  //       method: 'POST',
-  //     }),
-  //   );
-  // });
+    expect(fetchMock).toHaveBeenCalledWith(
+      expect.stringContaining(`/v2/experiments/${experimentId}/subset`),
+      expect.objectContaining({
+        body: expect.stringContaining('"cellSetKeys":["louvain-3","louvain-4"]'),
+        method: 'POST',
+      }),
+    );
+  });
 });
