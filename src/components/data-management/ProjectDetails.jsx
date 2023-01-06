@@ -30,6 +30,7 @@ const ProjectDetails = ({ width, height }) => {
   const { activeExperimentId } = useSelector((state) => state.experiments.meta);
   const activeExperiment = useSelector((state) => state.experiments[activeExperimentId]);
   const samplesTableRef = useRef();
+  const subsettedExperiment = activeExperiment?.canRerunGem2S === false;
 
   const clone = async () => {
     const newExperimentId = await dispatch(cloneExperiment(activeExperimentId, `Copy of ${activeExperiment.name}`));
@@ -54,16 +55,21 @@ const ProjectDetails = ({ width, height }) => {
           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
             <Title level={3}>{activeExperiment.name}</Title>
             <Space>
-              <Button onClick={() => clone()}>
+              <Button
+                onClick={() => clone()}
+                disabled={subsettedExperiment}
+              >
                 Copy
               </Button>
               <Button
-                disabled={activeExperiment.sampleIds?.length === 0}
+                disabled={activeExperiment.sampleIds?.length === 0 || subsettedExperiment}
                 onClick={() => samplesTableRef.current.createMetadataColumn()}
               >
                 Add metadata
               </Button>
-              <ProjectMenu />
+              <ProjectMenu
+                subsettedExperiment={subsettedExperiment}
+              />
             </Space>
           </div>
           <Text type='secondary'>
@@ -85,6 +91,7 @@ const ProjectDetails = ({ width, height }) => {
           <SampleOptions />
           <SamplesTable
             ref={samplesTableRef}
+            subsettedExperiment={subsettedExperiment}
           />
         </div>
       </div>

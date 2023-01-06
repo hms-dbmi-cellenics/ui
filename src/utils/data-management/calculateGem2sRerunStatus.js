@@ -23,7 +23,7 @@ const calculateGem2sRerunStatus = (
   if (!projectHashEqual) rerunReasons.push('the project samples/metadata have been modified');
 
   return ({
-    rerun: !gem2sSuccessful || !projectHashEqual,
+    rerun: (!gem2sSuccessful || !projectHashEqual) && activeExperiment.canRerunGem2S !== false,
     paramsHash: newParamsHash,
     reasons: rerunReasons,
   });

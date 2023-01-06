@@ -5,7 +5,7 @@ import React, {
 
 import { useSelector, useDispatch } from 'react-redux';
 import {
-  Table, Row, Col, Typography, Space,
+  Table, Row, Col, Typography, Space, Alert,
 } from 'antd';
 import {
   MenuOutlined,
@@ -16,6 +16,7 @@ import ExampleExperimentsSpace from 'components/data-management/ExampleExperimen
 import MetadataPopover from 'components/data-management/MetadataPopover';
 import MetadataColumnTitle from 'components/data-management/MetadataColumn';
 import { UploadCell, SampleNameCell, EditableFieldCell } from 'components/data-management/SamplesTableCells';
+import PropTypes from 'prop-types';
 
 import {
   deleteMetadataTrack,
@@ -41,6 +42,7 @@ const { Text } = Typography;
 
 const SamplesTable = forwardRef((props, ref) => {
   const dispatch = useDispatch();
+  const { subsettedExperiment } = props;
   const [tableData, setTableData] = useState([]);
 
   const experiments = useSelector((state) => state.experiments);
@@ -344,9 +346,31 @@ const SamplesTable = forwardRef((props, ref) => {
 
   return (
     <>
-      {samplesLoading || samplesValidating ? renderLoader() : renderSamplesTable()}
+      {subsettedExperiment ? (
+        <center>
+          <Alert
+            type='info'
+            message='Subsetted experiment'
+            description={(
+              <>
+                This is a subset of another experiment, therefore the samples table is not shown.
+                <br />
+                Please refer to your original experiment.
+                <br />
+                The included samples can be also
+                viewed in the Data Processing or Data Exploration pages.
+              </>
+            )}
+          />
+        </center>
+      )
+        : samplesLoading || samplesValidating ? renderLoader() : renderSamplesTable() }
     </>
   );
 });
+
+SamplesTable.propTypes = {
+  subsettedExperiment: PropTypes.bool.isRequired,
+};
 
 export default React.memo(SamplesTable);

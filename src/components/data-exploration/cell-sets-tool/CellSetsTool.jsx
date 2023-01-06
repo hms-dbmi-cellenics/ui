@@ -130,9 +130,10 @@ const CellSetsTool = (props) => {
         <Space style={{ marginLeft: '0.5em' }}>
           <SubsetCellSetsOperation
             onCreate={async (name) => {
-              const newExperimentId = await dispatch(runSubsetExperiment(experimentId, name, selected));
-              console.log('NEW EXPERIMENT ', newExperimentId);
-              navigateTo(modules.DATA_PROCESSING, { experimentId: newExperimentId });
+              const newExperimentId = await dispatch(
+                runSubsetExperiment(experimentId, name, selected),
+              );
+              navigateTo(modules.DATA_PROCESSING, { experimentId: newExperimentId }, false, true);
             }}
           />
           <CellSetOperation

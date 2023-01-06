@@ -118,6 +118,9 @@ const GEM2SLoadingScreen = (props) => {
               )}
               {gem2sStatus === 'running' && (<Title level={3}>We&apos;re launching your analysis...</Title>)}
               <Text type='secondary'>You can wait or leave this screen and check again later</Text>
+              {gem2sStatus === 'subsetting' && (
+                <Text type='secondary'> Your new project containing only the selected cell sets will be available in the Data Management module</Text>
+              )}
             </div>
             <NotifyByEmail experimentId={experimentId} />
           </Space>
@@ -148,7 +151,7 @@ const GEM2SLoadingScreen = (props) => {
 };
 
 GEM2SLoadingScreen.propTypes = {
-  gem2sStatus: PropTypes.oneOf(['error', 'running', 'toBeRun']).isRequired,
+  gem2sStatus: PropTypes.oneOf(['error', 'running', 'toBeRun', 'subsetting']).isRequired,
   completedSteps: PropTypes.array,
   experimentId: PropTypes.string,
   paramsHash: PropTypes.string,
