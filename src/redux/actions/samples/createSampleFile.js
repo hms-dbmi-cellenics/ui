@@ -1,4 +1,4 @@
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { v4 as uuidv4 } from 'uuid';
 
 import fetchAPI from 'utils/http/fetchAPI';
@@ -16,7 +16,7 @@ const createSampleFile = (
   metadata,
   fileForApiV1,
 ) => async (dispatch) => {
-  const updatedAt = moment().toISOString();
+  const updatedAt = dayjs().toISOString();
 
   try {
     const url = `/v2/experiments/${experimentId}/samples/${sampleId}/sampleFiles/${type}`;

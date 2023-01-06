@@ -1,14 +1,12 @@
 /* eslint-disable no-param-reassign */
 const webpack = require('webpack');
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
-const MomentLocalesPlugin = require('moment-locales-webpack-plugin');
 
 const webpackConfigPlugins = (config, { dev }) => {
   const plugins = [
     new webpack.IgnorePlugin(
       /pages.*\/test.*/,
     ),
-    new MomentLocalesPlugin(),
   ];
 
   if (process.env.NODE_ENV === 'analyse') {

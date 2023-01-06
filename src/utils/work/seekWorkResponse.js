@@ -1,4 +1,4 @@
-import moment from 'moment';
+import dayjs from 'dayjs';
 
 import getAuthJWT from 'utils/getAuthJWT';
 import fetchAPI from 'utils/http/fetchAPI';
@@ -63,7 +63,7 @@ const dispatchWorkRequest = async (
   const { default: connectionPromise } = await import('utils/socketConnection');
   const io = await connectionPromise;
 
-  const timeoutDate = moment().add(timeout, 's').toISOString();
+  const timeoutDate = dayjs().add(timeout, 's').toISOString();
   const authJWT = await getAuthJWT();
 
   const request = {
