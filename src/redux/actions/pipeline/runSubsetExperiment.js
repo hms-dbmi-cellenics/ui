@@ -2,8 +2,7 @@ import fetchAPI from 'utils/http/fetchAPI';
 import handleError from 'utils/http/handleError';
 import endUserMessages from 'utils/endUserMessages';
 
-const runSubsetExperiment = (experimentId, newExperimentName, cellSetKeys) => async (dispatch) => {
-  // const { navigateTo } = useAppRouter();
+const runSubsetExperiment = (experimentId, newExperimentName, cellSetKeys) => async () => {
   try {
     const newExperimentId = await fetchAPI(
       `/v2/experiments/${experimentId}/subset`,
