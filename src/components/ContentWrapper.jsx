@@ -112,11 +112,10 @@ const ContentWrapper = (props) => {
           // Unload all previous socket.io hooks that may have been created for a different
           // experiment.
           io.off();
-          console.log('SUBSCRIBED TO THIS ', currentExperimentId);
           io.on(`ExperimentUpdates-${currentExperimentId}`, (update) => cb(currentExperimentId, update));
         });
     }
-  }, [currentExperimentId]);
+  }, [routeExperimentId]);
 
   useEffect(() => {
     if (backendStatusRequested) {
