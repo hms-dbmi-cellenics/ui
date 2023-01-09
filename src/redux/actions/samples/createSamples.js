@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import moment from 'moment';
+import dayjs from 'dayjs';
 
 import {
   SAMPLES_CREATED, SAMPLES_ERROR, SAMPLES_SAVED, SAMPLES_SAVING,
@@ -59,7 +59,7 @@ const createSamples = (
   const experiment = getState().experiments[experimentId];
   const { samples } = getState();
 
-  const createdDate = moment().toISOString();
+  const createdDate = dayjs().toISOString();
 
   if (!Object.values(sampleTech).includes(sampleTechnology)) throw new Error(`Sample technology ${sampleTechnology} is not recognized`);
 
