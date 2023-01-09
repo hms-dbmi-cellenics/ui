@@ -74,7 +74,11 @@ const dispatchWorkRequest = async (
   const { default: connectionPromise } = await import('utils/socketConnection');
   const io = await connectionPromise;
 
+  // this timeout is how much we expect to be waiting for a given task,
+  // it can be refreshed (as opposed to the worker timeout)
   const timeoutDate = dayjs().add(timeout, 's').toISOString();
+  // if the worker encounters this timeout it will ignore the message
+  const workerTimeoutDate = dayjs().add(1800, 's').toISOString();
   const authJWT = await getAuthJWT();
 
   const request = {
@@ -82,7 +86,7 @@ const dispatchWorkRequest = async (
     socketId: io.id,
     experimentId,
     ...(authJWT && { Authorization: `Bearer ${authJWT}` }),
-    timeout: timeoutDate,
+    timeout: workerTimeoutDate,
     body,
     ...requestProps,
   };
@@ -110,11 +114,16 @@ const dispatchWorkRequest = async (
     // related to the current experiment. We extend the timeout because we know
     // the worker is alive and was working on another request of our experiment //
     // (so this request was in queue)
-    io.on(`ExperimentUpdates-${experimentId}`, (res) => {
+    io.on(`Heartbeat-${experimentId}`, (res) => {
       // const { request: completedRequest } = res;
       console.log('received experiment update: ', res); // TODO: remove
-      console.log(`ExperimentUpdates-${experimentId}: refreshing ${timeout} seconds timeout at ${dayjs().toISOString()}.`);
-      resetTimeout(id, request, timeout, reject);
+      const newTimeoutDate = getTimeoutDate(timeout);
+      if (newTimeoutDate < workerTimeoutDate) {
+        console.log(`Heartbeat-${experimentId}: refreshing ${timeout} seconds timeout at ${dayjs().toISOString()}.`);
+        resetTimeout(id, request, timeout, reject);
+      } else {
+        console.log(`Heartbeat-${experimentId}: not refreshing ${newTimeoutDate} < ${workerTimeoutDate} at ${dayjs().toISOString()}.`);
+      }
     });
   });
 

@@ -98,7 +98,7 @@ describe('dispatchWorkRequest unit tests', () => {
       ETag: 'facefeed',
       socketId: '5678',
       experimentId: fake.EXPERIMENT_ID,
-      timeout: '4022-01-01T00:00:30.000Z',
+      timeout: '4022-01-01T00:30:00.000Z',
       body: { name: taskName, type: 'fake task' },
     });
 
@@ -115,7 +115,7 @@ describe('dispatchWorkRequest unit tests', () => {
       ETag: 'facefeed',
       socketId: '5678',
       experimentId: fake.EXPERIMENT_ID,
-      timeout: '4022-01-01T00:00:30.000Z',
+      timeout: '4022-01-01T00:30:00.000Z',
       body: { name: taskName, type: 'fake task' },
     });
 
@@ -161,7 +161,7 @@ describe('dispatchWorkRequest unit tests', () => {
       ETag: 'facefeed',
       socketId: '5678',
       experimentId: fake.EXPERIMENT_ID,
-      timeout: '4022-01-01T00:00:30.000Z',
+      timeout: '4022-01-01T00:30:00.000Z',
       body: { name: taskName, type: 'fake task' },
     });
   });
