@@ -100,7 +100,7 @@ const dispatchWorkRequest = async (
       // this worker info indicates that the work request has been received but the worker
       // is still spinning up so we will add extra time to account for that.
       if (phase === 'Pending' && extraTime > 0) {
-        console.log(`WorkerInfo-${experimentId}: ${name} [${creationTimestamp}]: adding ${extraTime} seconds to timeout at ${dayjs().format()}.`);
+        console.log(`WorkerInfo-${experimentId}: ${name} [${creationTimestamp}]: adding ${extraTime} seconds to timeout at ${dayjs().toISOString()}.`);
         const newTimeout = timeout + extraTime;
         resetTimeout(id, request, newTimeout, reject);
       }
@@ -113,7 +113,7 @@ const dispatchWorkRequest = async (
     io.on(`ExperimentUpdates-${experimentId}`, (res) => {
       // const { request: completedRequest } = res;
       console.log('received experiment update: ', res); // TODO: remove
-      console.log(`ExperimentUpdates-${experimentId}: refreshing ${timeout} seconds timeout at ${dayjs().format()}.`);
+      console.log(`ExperimentUpdates-${experimentId}: refreshing ${timeout} seconds timeout at ${dayjs().toISOString()}.`);
       resetTimeout(id, request, timeout, reject);
     });
   });
