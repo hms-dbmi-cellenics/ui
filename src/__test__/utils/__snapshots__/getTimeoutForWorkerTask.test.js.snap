@@ -10,10 +10,10 @@ exports[`getTimeoutForWorkerTask works correctly for GetDoubletScore 1`] = `180`
 
 exports[`getTimeoutForWorkerTask works correctly for GetEmbedding with tsne 1`] = `180.4`;
 
-exports[`getTimeoutForWorkerTask works correctly for GetEmbedding with umap 1`] = `180.04`;
+exports[`getTimeoutForWorkerTask works correctly for GetEmbedding with umap 1`] = `180.4`;
 
 exports[`getTimeoutForWorkerTask works correctly for GetMitochondrialContent 1`] = `180`;
 
-exports[`getTimeoutForWorkerTask works correctly for ListGenes 1`] = `180`;
+exports[`getTimeoutForWorkerTask works correctly for ListGenes 1`] = `180.4`;
 
-exports[`getTimeoutForWorkerTask works correctly for MarkerHeatmap 1`] = `180.04`;
+exports[`getTimeoutForWorkerTask works correctly for MarkerHeatmap 1`] = `180.4`;
