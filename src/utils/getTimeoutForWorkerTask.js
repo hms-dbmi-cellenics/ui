@@ -8,6 +8,8 @@ const getTimeoutForWorkerTaskUncapped = (state, taskName) => {
   const nCells = getNumberOfCellsInGrouping('louvain', state) ?? getNumberOfCellsInGrouping('sample', state);
   const nClusters = getCellSetsHierarchyByKeys(['louvain'])(state)[0]?.children.length ?? 1;
 
+  console.log(`getTimeoutForWorkerTaskUncapped ${taskName}: nCells ${nCells}`);
+  console.log(`getTimeoutForWorkerTaskUncapped ${taskName}: state `, state);
   const baseTimeout = 180; // some big datasets take up to 2-3 minutes to be downloaded & loaded
 
   switch (taskName) {
@@ -23,7 +25,9 @@ const getTimeoutForWorkerTaskUncapped = (state, taskName) => {
       // const markerTimeout = 0.002 * nCells + baseTimeout;
       const tsneTimeout = 0.02 * nCells + baseTimeout;
       // we return the longest timeout because these calls can overlap
-      return tsneTimeout;
+      console.log('tsneTimeout: ', tsneTimeout);
+      return 900;
+      // return tsneTimeout;
     }
     case 'ClusterCells': {
       return 0.002 * nCells + baseTimeout;

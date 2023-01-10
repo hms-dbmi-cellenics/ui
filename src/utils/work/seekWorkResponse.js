@@ -12,6 +12,8 @@ const throwResponseError = (response) => {
   throw new Error(`Error ${response.status}: ${response.text}`, { cause: response });
 };
 
+const timeoutIds = {};
+
 // getRemainingWorkerStartTime returns how many more seconds the worker is expected to
 // need to be running with an extra 1 minute for a bit of leeway
 const getRemainingWorkerStartTime = (creationTimestamp) => {
@@ -56,11 +58,16 @@ const seekFromS3 = async (ETag, experimentId, taskName) => {
 // current time.
 const getTimeoutDate = (timeout) => dayjs().add(timeout, 's').toISOString();
 
-const resetTimeout = (id, request, newTimeout, reject) => {
-  clearTimeout(id);
-  setTimeout(() => {
-    reject(new WorkTimeoutError(getTimeoutDate(newTimeout), request));
+const resetTimeout = (request, newTimeout, reject, ETag) => {
+  if (timeoutIds[ETag]) {
+    console.log(`clearing timeout ${ETag} ${timeoutIds[ETag]}`);
+    clearTimeout(timeoutIds[ETag]);
+  }
+  const timeoutDate = getTimeoutDate(newTimeout);
+  const id = setTimeout(() => {
+    reject(new WorkTimeoutError(newTimeout, timeoutDate, request, ETag));
   }, (newTimeout) * 1000);
+  return id;
 };
 
 const dispatchWorkRequest = async (
@@ -70,7 +77,6 @@ const dispatchWorkRequest = async (
   ETag,
   requestProps,
 ) => {
-  console.error('dispatching work request', body);
   const { default: connectionPromise } = await import('utils/socketConnection');
   const io = await connectionPromise;
 
@@ -90,11 +96,11 @@ const dispatchWorkRequest = async (
     body,
     ...requestProps,
   };
+  console.error(`dispatch: ${ETag} [UI, worker]:  [${dayjs().toISOString()}+${timeout} (${timeoutDate}),  ${workerTimeoutDate}]`, body);
 
   const timeoutPromise = new Promise((resolve, reject) => {
-    const id = setTimeout(() => {
-      reject(new WorkTimeoutError(timeoutDate, request));
-    }, timeout * 1000);
+    timeoutIds[ETag] = resetTimeout(request, timeout, reject, ETag);
+    console.log('0. timeoutIds: ', timeoutIds);
 
     io.on(`WorkerInfo-${experimentId}`, (res) => {
       const { response: { podInfo: { name, creationTimestamp, phase } } } = res;
@@ -104,9 +110,10 @@ const dispatchWorkRequest = async (
       // this worker info indicates that the work request has been received but the worker
       // is still spinning up so we will add extra time to account for that.
       if (phase === 'Pending' && extraTime > 0) {
-        console.log(`WorkerInfo-${experimentId}: ${name} [${creationTimestamp}]: adding ${extraTime} seconds to timeout at ${dayjs().toISOString()}.`);
+        console.log(`WorkerInfo-${experimentId}: ${ETag} ${name} [${creationTimestamp}]: adding ${extraTime} seconds to timeout at ${dayjs().toISOString()}.`);
         const newTimeout = timeout + extraTime;
-        resetTimeout(id, request, newTimeout, reject);
+        timeoutIds[ETag] = resetTimeout(request, newTimeout, reject, ETag);
+        console.log('1. timeoutIds: ', timeoutIds);
       }
     });
 
@@ -119,10 +126,11 @@ const dispatchWorkRequest = async (
       console.log('received experiment update: ', res); // TODO: remove
       const newTimeoutDate = getTimeoutDate(timeout);
       if (newTimeoutDate < workerTimeoutDate) {
-        console.log(`Heartbeat-${experimentId}: refreshing ${timeout} seconds timeout at ${dayjs().toISOString()}.`);
-        resetTimeout(id, request, timeout, reject);
+        console.log(`Heartbeat-${experimentId}: ${ETag} refreshing ${timeout} seconds (${newTimeoutDate}) timeout at ${dayjs().toISOString()}.`);
+        timeoutIds[ETag] = resetTimeout(request, timeout, reject, ETag);
+        console.log('2. timeoutIds: ', timeoutIds);
       } else {
-        console.log(`Heartbeat-${experimentId}: not refreshing ${newTimeoutDate} < ${workerTimeoutDate} at ${dayjs().toISOString()}.`);
+        console.log(`Heartbeat-${experimentId}: ${ETag} not refreshing ${newTimeoutDate} < ${workerTimeoutDate} at ${dayjs().toISOString()}.`);
       }
     });
   });
