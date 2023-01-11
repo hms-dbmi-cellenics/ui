@@ -131,11 +131,11 @@ const ContentWrapper = (props) => {
   useEffect(() => {
     if (!activeExperiment) return;
 
-    const gem2sStatus = calculateGem2sRerunStatus(
-      gem2sBackendStatus, activeExperiment, samples, experiment,
-    );
-
-    setGem2sRerunStatus(gem2sStatus);
+    calculateGem2sRerunStatus(gem2sBackendStatus, activeExperimentId)
+      .then((status) => {
+        setGem2sRerunStatus(status);
+      })
+      .catch((err) => console.error(err));
   }, [gem2sBackendStatus, activeExperiment, samples, experiment]);
 
   useEffect(() => {

@@ -1,18 +1,11 @@
+import fetchAPI from 'utils/http/fetchAPI';
 import pipelineStatus from 'utils/pipelineStatusValues';
-import generateGem2sParamsHash from './generateGem2sParamsHash';
 
-const calculateGem2sRerunStatus = (
-  gem2sBackendStatus, activeExperiment, samples,
+const calculateGem2sRerunStatus = async (
+  gem2sBackendStatus, experimentId,
 ) => {
   const gem2sStatus = gem2sBackendStatus?.status;
-  const existingParamsHash = gem2sBackendStatus?.paramsHash;
-
-  const newParamsHash = generateGem2sParamsHash(
-    activeExperiment,
-    samples,
-  );
-
-  const projectHashEqual = existingParamsHash === newParamsHash;
+  const projectModified = await fetchAPI(`/v2/experiments/${experimentId}/rerunStatus`);
 
   const gem2sSuccessful = [
     pipelineStatus.SUCCEEDED, pipelineStatus.RUNNING,
@@ -20,11 +13,10 @@ const calculateGem2sRerunStatus = (
 
   const rerunReasons = [];
   if (!gem2sSuccessful) rerunReasons.push('data has not been processed sucessfully');
-  if (!projectHashEqual) rerunReasons.push('the project samples/metadata have been modified');
+  if (projectModified) rerunReasons.push('the project samples/metadata have been modified');
 
   return ({
-    rerun: !gem2sSuccessful || !projectHashEqual,
-    paramsHash: newParamsHash,
+    rerun: !gem2sSuccessful || projectModified,
     reasons: rerunReasons,
   });
 };
