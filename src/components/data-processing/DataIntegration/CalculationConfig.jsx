@@ -18,6 +18,7 @@ import {
 } from '@ant-design/icons';
 
 import _ from 'lodash';
+import { downsamplingMethods } from 'utils/constants';
 
 import { generateDataProcessingPlotUuid } from 'utils/generateCustomPlotUuid';
 import { updateFilterSettings } from 'redux/actions/experimentSettings';
@@ -26,6 +27,17 @@ import NormalisationOptions from './NormalisationOptions';
 const { Option } = Select;
 const { Text } = Typography;
 const { Panel } = Collapse;
+
+const getDownsampling = (downsamplingConfig = {}) => {
+  const { method = downsamplingMethods.NONE, methodSettings = {} } = downsamplingConfig;
+
+  if (method === downsamplingMethods.NONE || !(method in methodSettings)) {
+    return { method };
+  }
+
+  // only return percentage to keep if not NONE
+  return { method, percentageToKeep: methodSettings[method].percentageToKeep };
+};
 
 const CalculationConfig = (props) => {
   const {
@@ -38,6 +50,9 @@ const CalculationConfig = (props) => {
   );
   const elbowPlotUuid = generateDataProcessingPlotUuid(null, FILTER_UUID, 1);
   const data = useSelector((state) => state.componentConfig[elbowPlotUuid]?.plotData);
+  const downsampling = getDownsampling(
+    useSelector((state) => state.experimentSettings.processing.dataIntegration.downsampling),
+  );
 
   const methods = [
     {
@@ -100,7 +115,8 @@ const CalculationConfig = (props) => {
   const renderDimReductionMethod = () => (
     <Form.Item label={(
       <span>
-        Method&nbsp;
+        Method
+        {' '}
         <Tooltip overlay={(
           <span>
             To integrate data, dimensional reduction is performed to find so called "anchors".
@@ -144,10 +160,11 @@ const CalculationConfig = (props) => {
   );
 
   return (
-    <Collapse defaultActiveKey='data-integration'>
-      <Panel header='Data Integration' key='data-integration'>
-        <Space direction='vertical' style={{ width: '100%' }} />
-        <Form size='small'>
+    <Form size='small'>
+
+      <Collapse defaultActiveKey='data-integration'>
+        <Panel header='Data Integration' key='data-integration'>
+          <Space direction='vertical' style={{ width: '100%' }} />
           <Form.Item>
             <Text>
               <strong style={{ marginRight: '0.5rem' }}>Data integration settings:</strong>
@@ -203,6 +220,7 @@ const CalculationConfig = (props) => {
             <Form.Item label='Number of Principal Components'>
               <InputNumber
                 value={numPCs}
+                aria-label='Number of Principal Components'
                 max={data?.length || 100}
                 min={0}
                 onChange={(value) => {
@@ -227,7 +245,8 @@ const CalculationConfig = (props) => {
             <Form.Item
               label={(
                 <span>
-                  Exclude genes categories&nbsp;
+                  Exclude genes categories
+                  {' '}
                   <Tooltip
                     title='Normalization can be biased by certain gene categories such the ones listed here.
                     Checking them will ignore those categories.
@@ -252,7 +271,8 @@ const CalculationConfig = (props) => {
                   <Checkbox disabled value='mitochondrial'>Mitochondrial</Checkbox>
                   <Checkbox value='cellCycle'>
                     <span>
-                      Cell cycle genes&nbsp;
+                      Cell cycle genes
+                      {' '}
                       <Tooltip
                         title='Currently only available for human and mice species. Do not check this box if your cells are from a different species.'
                       >
@@ -267,9 +287,108 @@ const CalculationConfig = (props) => {
             {dataIntegration.method === 'seuratv4' ? renderDimReductionMethod() : <></>}
 
           </div>
-        </Form>
-      </Panel>
-    </Collapse>
+        </Panel>
+      </Collapse>
+      {/* TODO: reenable when geometric sketching pipeline PRs are released */}
+      <Collapse style={{ display: 'none' }}>
+        <Panel header='Downsampling Options' key='downsampling-options'>
+          <Space direction='vertical' style={{ width: '100%' }} />
+          <Form.Item>
+            <Text>
+              <strong style={{ marginRight: '0.5rem' }}>Downsampling settings:</strong>
+              <Tooltip title='Large datasets (e.g. >100,000 cells) can be downsampled specifically for the integration step. This speeds up the time it takes to integrate large datasets using some methods (especially Seurat_v4 and FastMNN), and enables large datasets to successfully complete the pipeline. Once the data are integrated, the full data are available for downstream analysis and visualization.'>
+                <QuestionCircleOutlined />
+              </Tooltip>
+            </Text>
+          </Form.Item>
+          <div style={{ paddingLeft: '1rem' }}>
+
+            <Form.Item label={(
+              <span>
+                Method
+                {' '}
+                <Tooltip
+                  overlay={(
+                    <>
+                      <span style={downsampling.method === downsamplingMethods.GEOSKETCH ? {} : { display: 'none' }}>
+                        Geometric sketching finds random subsamples of a dataset that preserve the underlying geometry,
+                        which is described in this paper:
+                        <a
+                          href='https://www.sciencedirect.com/science/article/pii/S2405471219301528'
+                          target='_blank'
+                          rel='noreferrer'
+                        >
+                          {' '}
+                          <code>Geometric sketching compactly summarizes the single-cell transcriptomic landscape</code>
+                        </a>
+                      </span>
+                      <span style={downsampling.method === downsamplingMethods.NONE ? {} : { display: 'none' }}>
+                        No downsampling will be used during the data integration
+                      </span>
+                    </>
+                  )}
+                >
+                  <QuestionCircleOutlined />
+                </Tooltip>
+              </span>
+            )}
+            >
+
+              <Select
+                aria-label='Downsampling method'
+                value={downsampling.method}
+                onChange={(val) => {
+                  let downsamplingSettings = {};
+                  // only update the percentageToKeep value when the method is not None
+                  if (val !== downsamplingMethods.NONE) {
+                    downsamplingSettings = {
+                      method: val,
+                      methodSettings: {
+                        [val]: {
+                          percentageToKeep: downsamplingMethods.DEFAULT_PERC_TO_KEEP,
+                        },
+                      },
+                    };
+                  } else {
+                    downsamplingSettings = { method: val };
+                  }
+                  updateSettings({ downsampling: downsamplingSettings });
+                }}
+              >
+                <Option value={downsamplingMethods.NONE}>
+                  No Downsampling
+                </Option>
+                <Option value={downsamplingMethods.GEOSKETCH}>
+                  Geometric Sketching
+                </Option>
+
+              </Select>
+            </Form.Item>
+            <Form.Item label='% of cells to keep'>
+              <InputNumber
+                aria-label='% of cells to keep'
+                disabled={downsampling.method !== downsamplingMethods.GEOSKETCH}
+                value={downsampling.percentageToKeep}
+                max={100}
+                min={0}
+                onChange={(value) => {
+                  updateSettings({
+                    downsampling: {
+                      methodSettings:
+                       {
+                         [downsampling.method]: { percentageToKeep: parseInt(value, 0) },
+                       },
+
+                    },
+                  });
+                }}
+              />
+            </Form.Item>
+          </div>
+        </Panel>
+      </Collapse>
+    </Form>
+
   );
 };
 
