@@ -42,7 +42,7 @@ const { Text } = Typography;
 
 const SamplesTable = forwardRef((props, ref) => {
   const dispatch = useDispatch();
-  const { subsettedExperiment } = props;
+  const { isExperimentSubsetted } = props;
   const [tableData, setTableData] = useState([]);
 
   const experiments = useSelector((state) => state.experiments);
@@ -346,7 +346,7 @@ const SamplesTable = forwardRef((props, ref) => {
 
   return (
     <>
-      {subsettedExperiment ? (
+      {isExperimentSubsetted ? (
         <center>
           <Alert
             type='info'
@@ -370,7 +370,7 @@ const SamplesTable = forwardRef((props, ref) => {
 });
 
 SamplesTable.propTypes = {
-  subsettedExperiment: PropTypes.bool.isRequired,
+  isExperimentSubsetted: PropTypes.bool.isRequired,
 };
 
 export default React.memo(SamplesTable);

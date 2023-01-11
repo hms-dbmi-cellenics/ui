@@ -18,7 +18,7 @@ const ProjectMenu = (props) => {
   const activeExperimentId = useSelector((state) => state.experiments.meta.activeExperimentId);
   const activeExperiment = useSelector((state) => state.experiments[activeExperimentId]);
 
-  const { subsettedExperiment } = props;
+  const { isExperimentSubsetted } = props;
   const [uploadModalVisible, setUploadModalVisible] = useState(false);
   const [shareExperimentModalVisible, setShareExperimentModalVisible] = useState(false);
   const selectedTech = samples[activeExperiment?.sampleIds[0]]?.type;
@@ -34,7 +34,7 @@ const ProjectMenu = (props) => {
         <Button
           data-test-id={integrationTestConstants.ids.ADD_SAMPLES_BUTTON}
           onClick={() => setUploadModalVisible(true)}
-          disabled={subsettedExperiment}
+          disabled={isExperimentSubsetted}
         >
           Add samples
         </Button>
@@ -65,7 +65,7 @@ const ProjectMenu = (props) => {
 };
 
 ProjectMenu.propTypes = {
-  subsettedExperiment: PropTypes.bool.isRequired,
+  isExperimentSubsetted: PropTypes.bool.isRequired,
 };
 
 export default ProjectMenu;
