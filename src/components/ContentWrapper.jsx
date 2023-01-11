@@ -88,7 +88,6 @@ const ContentWrapper = (props) => {
   const pipelineRunningError = backendErrors.includes(pipelineStatusKey);
 
   const gem2sStatusKey = backendStatus?.gem2s?.status;
-  const gem2sparamsHash = backendStatus?.gem2s?.paramsHash;
   const gem2sRunning = gem2sStatusKey === 'RUNNING';
   const gem2sRunningError = backendErrors.includes(gem2sStatusKey);
   const completedGem2sSteps = backendStatus?.gem2s?.completedSteps;
@@ -269,7 +268,7 @@ const ContentWrapper = (props) => {
       }
 
       if (gem2sRunningError) {
-        return <GEM2SLoadingScreen paramsHash={gem2sparamsHash} experimentId={routeExperimentId} gem2sStatus='error' />;
+        return <GEM2SLoadingScreen experimentId={routeExperimentId} gem2sStatus='error' />;
       }
 
       if (gem2sRunning || waitingForQcToLaunch) {

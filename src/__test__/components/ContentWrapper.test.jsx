@@ -18,7 +18,9 @@ import { getBackendStatus } from 'redux/selectors';
 import { loadExperiments, setActiveExperiment } from 'redux/actions/experiments';
 
 import { updateExperimentInfo } from 'redux/actions/experimentSettings';
-import generateGem2sParamsHash from 'utils/data-management/generateGem2sParamsHash';
+
+// import generateGem2sParamsHash from 'utils/data-management/generateGem2sParamsHash';
+import calculateGem2sRerunStatus from 'utils/data-management/calculateGem2sRerunStatus';
 
 import mockAPI, {
   generateDefaultMockAPIResponses,
@@ -28,7 +30,8 @@ import { experiments } from '__test__/test-utils/mockData';
 
 jest.mock('redux/selectors');
 jest.mock('utils/socketConnection');
-jest.mock('utils/data-management/generateGem2sParamsHash');
+// jest.mock('utils/data-management/generateGem2sParamsHash');
+jest.mock('utils/data-management/calculateGem2sRerunStatus');
 
 jest.mock('next/router', () => ({
   __esModule: true,
@@ -60,7 +63,7 @@ Object.defineProperty(navigator, 'userAgent', { value: chromeUA, writable: true 
 
 enableFetchMocks();
 
-generateGem2sParamsHash.mockImplementation(() => 'mockParamsHash');
+// generateGem2sParamsHash.mockImplementation(() => 'mockParamsHash');
 
 const experimentWithSamples = experiments.find((experiment) => experiment.samplesOrder.length > 0);
 
@@ -98,6 +101,12 @@ const renderContentWrapper = async (expId, expData) => {
   return result;
 };
 
+getBackendStatus.mockImplementation(() => () => ({
+  loading: false,
+  error: false,
+  status: null,
+}));
+
 describe('ContentWrapper', () => {
   beforeAll(async () => {
     await preloadAll();
@@ -117,15 +126,17 @@ describe('ContentWrapper', () => {
 
     navigator.userAgent = chromeUA;
 
-    getBackendStatus.mockImplementation(() => () => ({
-      loading: false,
-      error: false,
-      status: null,
+    calculateGem2sRerunStatus.mockImplementation(() => new Promise((resolve) => {
+      resolve({ rerun: true, reasons: [] });
     }));
 
     await store.dispatch(loadExperiments());
     await store.dispatch(setActiveExperiment(experimentId));
     await store.dispatch(updateExperimentInfo({ experimentId, experimentName, sampleIds }));
+  });
+
+  afterEach(() => {
+    calculateGem2sRerunStatus.mockRestore();
   });
 
   it('renders correctly', async () => {
@@ -161,6 +172,10 @@ describe('ContentWrapper', () => {
   });
 
   it('Links are enabled if the selected project is processed', async () => {
+    calculateGem2sRerunStatus.mockImplementationOnce(() => new Promise((resolve) => {
+      resolve({ rerun: false, reasons: [] });
+    }));
+
     const mockBackendStatus = {
       loading: false,
       error: false,
