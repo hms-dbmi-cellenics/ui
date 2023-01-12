@@ -5,7 +5,6 @@ Array [
   Object {
     "createdAt": "2021-12-07 17:36:27.773+00",
     "experimentId": Object {
-      "canRerunGem2S": true,
       "createdAt": "0000-00-00T00:00:00.000Z",
       "description": "Mock experiment 0",
       "id": "testae48e318dab9a1bd0bexperiment-0",
@@ -64,7 +63,6 @@ Array [
   Object {
     "createdAt": "2021-12-07 17:36:27.773+00",
     "experimentId": Object {
-      "canRerunGem2S": true,
       "createdAt": "0000-00-00T00:00:00.000Z",
       "description": "Mock experiment 0",
       "id": "testae48e318dab9a1bd0bexperiment-0",
@@ -123,7 +121,6 @@ Array [
   Object {
     "createdAt": "2021-12-07 17:36:27.773+00",
     "experimentId": Object {
-      "canRerunGem2S": true,
       "createdAt": "0000-00-00T00:00:00.000Z",
       "description": "Mock experiment 0",
       "id": "testae48e318dab9a1bd0bexperiment-0",
@@ -185,7 +182,6 @@ Array [
 exports[`Mock response data Describes experiment response 1`] = `
 Array [
   Object {
-    "canRerunGem2S": true,
     "createdAt": "0000-00-00T00:00:00.000Z",
     "description": "Mock experiment 0",
     "id": "testae48e318dab9a1bd0bexperiment-0",
@@ -212,7 +208,6 @@ Array [
     "updatedAt": "0000-00-00T00:00:00.000Z",
   },
   Object {
-    "canRerunGem2S": true,
     "createdAt": "0000-00-00T00:00:00.000Z",
     "description": "Mock experiment 1",
     "id": "testae48e318dab9a1bd0bexperiment-1",
@@ -243,7 +238,6 @@ Array [
     Object {
       "createdAt": "2021-12-07 17:36:27.773+00",
       "experimentId": Object {
-        "canRerunGem2S": true,
         "createdAt": "0000-00-00T00:00:00.000Z",
         "description": "Mock experiment 0",
         "id": "testae48e318dab9a1bd0bexperiment-0",
@@ -302,7 +296,6 @@ Array [
     Object {
       "createdAt": "2021-12-07 17:36:27.773+00",
       "experimentId": Object {
-        "canRerunGem2S": true,
         "createdAt": "0000-00-00T00:00:00.000Z",
         "description": "Mock experiment 0",
         "id": "testae48e318dab9a1bd0bexperiment-0",
@@ -361,7 +354,6 @@ Array [
     Object {
       "createdAt": "2021-12-07 17:36:27.773+00",
       "experimentId": Object {
-        "canRerunGem2S": true,
         "createdAt": "0000-00-00T00:00:00.000Z",
         "description": "Mock experiment 0",
         "id": "testae48e318dab9a1bd0bexperiment-0",

@@ -8,7 +8,6 @@ const experimentTemplate = {
   sampleIds: [],
   metadataKeys: [],
   pipelineVersion: 1,
-  canRerunGem2S: true,
 };
 
 const initialState = {
