@@ -58,21 +58,20 @@ const seekFromS3 = async (ETag, experimentId, taskName) => {
 // current time.
 const getTimeoutDate = (timeout) => dayjs().add(timeout, 's').toISOString();
 
-// set a timeout and save it's ID in the timeoutIds map
+// set a timeout and save its ID in the timeoutIds map
 // if there was a timeout for the current ETag, clear it before reseting it
-const setOrRefreshTimeout = (request, newTimeout, reject, ETag) => {
+const setOrRefreshTimeout = (request, timeoutDuration, reject, ETag) => {
   if (timeoutIds[ETag]) {
-    console.log(`clearing timeout ${ETag} ${timeoutIds[ETag]}`);
     clearTimeout(timeoutIds[ETag]);
   }
+
   // timeoutDate needs to be initialized outside the timeout callback
   // or it will be computed when the error is raised instead of (now)
   // when the timeout is set
-  const timeoutDate = getTimeoutDate(newTimeout);
-  const id = setTimeout(() => {
-    reject(new WorkTimeoutError(newTimeout, timeoutDate, request, ETag));
-  }, newTimeout * 1000);
-  return id;
+  const timeoutDate = getTimeoutDate(timeoutDuration);
+  timeoutIds[ETag] = setTimeout(() => {
+    reject(new WorkTimeoutError(timeoutDuration, timeoutDate, request, ETag));
+  }, timeoutDuration * 1000);
 };
 
 const getWorkerTimeout = (taskName, defaultTimeout) => {
@@ -99,14 +98,11 @@ const dispatchWorkRequest = async (
   const { default: connectionPromise } = await import('utils/socketConnection');
   const io = await connectionPromise;
 
-  // this timeout is how much we expect to be waiting for a given task,
-  // it can be refreshed (as opposed to the worker timeout)
-  const timeoutDate = dayjs().add(timeout, 's').toISOString();
   const { name: taskName } = body;
 
-  // for listGenes, markerHeatmap, & getEmbedding we set a 30 minutes timeout for the worker
+  // for listGenes, markerHeatmap, & getEmbedding we set a long timeout for the worker
   // after that timeout the worker will skip those requests
-  // meanwhile in the UI we set a 15 minutes timeout. The UI will be prolonging this timeout
+  // meanwhile in the UI we set a shorter timeout. The UI will be prolonging this timeout
   // as long as it receives "heartbeats" from the worker because that means the worker is alive
   // and progresing.
   // this should be removed if we make each request run in a different worker
@@ -122,40 +118,29 @@ const dispatchWorkRequest = async (
     body,
     ...requestProps,
   };
-  console.error(`dispatch: ${ETag} [UI, worker]:  [${dayjs().toISOString()}+${timeout} (${timeoutDate}),  ${workerTimeoutDate}]`, body);
 
   const timeoutPromise = new Promise((resolve, reject) => {
-    timeoutIds[ETag] = setOrRefreshTimeout(request, timeout, reject, ETag);
-    console.log('0. timeoutIds: ', timeoutIds);
+    setOrRefreshTimeout(request, timeout, reject, ETag);
 
     io.on(`WorkerInfo-${experimentId}`, (res) => {
-      const { response: { podInfo: { name, creationTimestamp, phase } } } = res;
-      console.log('received worker info: ', res); // TODO: remove
+      const { response: { podInfo: { creationTimestamp, phase } } } = res;
       const extraTime = getRemainingWorkerStartTime(creationTimestamp);
 
       // this worker info indicates that the work request has been received but the worker
       // is still spinning up so we will add extra time to account for that.
       if (phase === 'Pending' && extraTime > 0) {
-        console.log(`WorkerInfo-${experimentId}: ${ETag} ${name} [${creationTimestamp}]: adding ${extraTime} seconds to timeout at ${dayjs().toISOString()}.`);
         const newTimeout = timeout + extraTime;
-        timeoutIds[ETag] = setOrRefreshTimeout(request, newTimeout, reject, ETag);
-        console.log('1. timeoutIds: ', timeoutIds);
+        setOrRefreshTimeout(request, newTimeout, reject, ETag);
       }
     });
 
     // this experiment update is received whenever a worker finishes any work request
     // related to the current experiment. We extend the timeout because we know
     // the worker is alive and was working on another request of our experiment
-    io.on(`Heartbeat-${experimentId}`, (res) => {
-      // const { request: completedRequest } = res;
-      console.log('received experiment update: ', res); // TODO: remove
+    io.on(`Heartbeat-${experimentId}`, () => {
       const newTimeoutDate = getTimeoutDate(timeout);
       if (newTimeoutDate < workerTimeoutDate) {
-        console.log(`Heartbeat-${experimentId}: ${ETag} refreshing ${timeout} seconds (${newTimeoutDate}) timeout at ${dayjs().toISOString()}.`);
-        timeoutIds[ETag] = setOrRefreshTimeout(request, timeout, reject, ETag);
-        console.log('2. timeoutIds: ', timeoutIds);
-      } else {
-        console.log(`Heartbeat-${experimentId}: ${ETag} not refreshing ${newTimeoutDate} < ${workerTimeoutDate} at ${dayjs().toISOString()}.`);
+        setOrRefreshTimeout(request, timeout, reject, ETag);
       }
     });
   });
