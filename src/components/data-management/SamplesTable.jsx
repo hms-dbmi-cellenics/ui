@@ -42,13 +42,13 @@ const { Text } = Typography;
 
 const SamplesTable = forwardRef((props, ref) => {
   const dispatch = useDispatch();
-  const { isExperimentSubsetted } = props;
+  const { parentExperimentId } = props;
   const [tableData, setTableData] = useState([]);
-
   const experiments = useSelector((state) => state.experiments);
   const samples = useSelector((state) => state.samples);
   const samplesLoading = useSelector((state) => state.samples.meta.loading);
   const activeExperimentId = useSelector((state) => state.experiments.meta.activeExperimentId);
+  const parentExperimentName = experiments[parentExperimentId]?.name;
 
   const samplesValidating = useSelector(
     (state) => state.samples.meta.validating.includes(activeExperimentId),
@@ -346,19 +346,20 @@ const SamplesTable = forwardRef((props, ref) => {
 
   return (
     <>
-      {isExperimentSubsetted ? (
+      {parentExperimentId ? (
         <center>
           <Alert
             type='info'
             message='Subsetted experiment'
             description={(
               <>
-                This is a subset of another experiment, therefore the samples table is not shown.
+                This is a subset of
+                {' '}
+                <b>{parentExperimentName}</b>
+                .
                 <br />
-                Please refer to your original experiment.
-                <br />
-                The included samples can be also
-                viewed in the Data Processing or Data Exploration pages.
+                You can  see remaining samples after subsetting in
+                the data processing and data exploration pages.
               </>
             )}
           />
@@ -370,7 +371,7 @@ const SamplesTable = forwardRef((props, ref) => {
 });
 
 SamplesTable.propTypes = {
-  isExperimentSubsetted: PropTypes.bool.isRequired,
+  parentExperimentId: PropTypes.bool.isRequired,
 };
 
 export default React.memo(SamplesTable);
