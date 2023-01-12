@@ -275,7 +275,7 @@ const ContentWrapper = (props) => {
         return <GEM2SLoadingScreen experimentId={routeExperimentId} gem2sStatus='subsetting' completedSteps={completedGem2sSteps} experimentName={activeExperiment.name} />;
       }
 
-      if (gem2sRunning || waitingForQcToLaunch !== false) {
+      if (gem2sRunning || waitingForQcToLaunch) {
         return <GEM2SLoadingScreen experimentId={routeExperimentId} gem2sStatus='running' completedSteps={completedGem2sSteps} />;
       }
 

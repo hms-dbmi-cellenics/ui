@@ -21,9 +21,8 @@ const calculateGem2sRerunStatus = (
   const rerunReasons = [];
   if (!gem2sSuccessful) rerunReasons.push('data has not been processed sucessfully');
   if (!projectHashEqual) rerunReasons.push('the project samples/metadata have been modified');
-
   return ({
-    rerun: (!gem2sSuccessful || !projectHashEqual) && activeExperiment.canRerunGem2S !== false,
+    rerun: (!gem2sSuccessful || !projectHashEqual) && !activeExperiment?.parentExperimentId,
     paramsHash: newParamsHash,
     reasons: rerunReasons,
   });
