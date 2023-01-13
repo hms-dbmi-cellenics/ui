@@ -126,7 +126,7 @@
     "vega-webgl-renderer": "^1.0.0-beta.2",
     "vitessce": "github:hms-dbmi-cellenics/vitessce",
     "webpack": "^4.43.0",
-    "webpack-bundle-analyzer": "^3.3.2"
+    "webpack-bundle-analyzer": "^4.7.0"
   },
   "devDependencies": {
     "@testing-library/dom": "^7.30.2",
