@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import {
-  Slider, InputNumber,
+  Slider, InputNumber, Space,
 } from 'antd';
 
 import _ from 'lodash';
@@ -28,7 +28,7 @@ const SliderWithInput = (props) => {
   const stepToSet = step ?? max / 200;
 
   return (
-    <div style={{ display: 'flex', whiteSpace: 'nowrap' }}>
+    <Space align='start'>
       <Slider
         value={localValue}
         min={min}
@@ -37,7 +37,9 @@ const SliderWithInput = (props) => {
         onAfterChange={() => handleChange(localValue)}
         step={stepToSet}
         disabled={disabled}
-        style={{ minWidth: 100, display: 'inline-block', flexGrow: 100 }}
+        style={{
+          minWidth: 100, display: 'inline-block', flexGrow: 100, margin: '0.5em',
+        }}
       />
 
       <InputNumber
@@ -61,7 +63,7 @@ const SliderWithInput = (props) => {
         disabled={disabled}
         style={{ width: 80, display: 'inline-block' }}
       />
-    </div>
+    </Space>
   );
 };
 

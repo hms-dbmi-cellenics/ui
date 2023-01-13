@@ -3,6 +3,7 @@ import thunk from 'redux-thunk';
 import waitForActions from 'redux-mock-store-await-actions';
 import axios from 'axios';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
+import { sampleTech } from 'utils/constants';
 
 import { SAMPLES_FILE_UPDATE } from 'redux/actionTypes/samples';
 import initialSampleState, { sampleTemplate } from 'redux/reducers/samples/initialState';
@@ -11,9 +12,9 @@ import initialExperimentState, { experimentTemplate } from 'redux/reducers/exper
 import UploadStatus from 'utils/upload/UploadStatus';
 import { waitFor } from '@testing-library/dom';
 
-import { processSeuratUpload } from 'utils/upload/processUpload';
+import processUpload from 'utils/upload/processUpload';
 
-import validate from 'utils/upload/sampleValidator';
+import validate from 'utils/upload/validateSeurat';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
 import mockFile from '__test__/test-utils/mockFile';
 
@@ -35,7 +36,7 @@ const getValidFiles = (compressed = true) => {
   return seuratFiles;
 };
 
-const sampleType = 'Seurat';
+const sampleType = sampleTech.SEURAT;
 const mockSampleUuid = 'sample-uuid';
 const mockExperimentId = 'project-uuid';
 const sampleName = 'mockSampleName';
@@ -76,11 +77,11 @@ jest.mock('axios', () => ({
 }));
 
 jest.mock('utils/pushNotificationMessage');
-jest.mock('utils/upload/sampleValidator');
+jest.mock('utils/upload/validateSeurat');
 
 let store = null;
 
-describe('processSeuratUpload', () => {
+describe('processUpload', () => {
   beforeEach(() => {
     jest.clearAllMocks();
 
@@ -105,7 +106,7 @@ describe('processSeuratUpload', () => {
 
     axios.request.mockImplementation(uploadSuccess);
 
-    await processSeuratUpload(
+    await processUpload(
       getValidFiles(),
       sampleType,
       store.getState().samples,
@@ -176,11 +177,11 @@ describe('processSeuratUpload', () => {
 
     axios.request.mockImplementation(uploadError);
 
-    await processSeuratUpload(
+    await processUpload(
       getValidFiles(),
       sampleType,
       store.getState().samples,
-      'errorProjectUuid',
+      mockExperimentId,
       store.dispatch,
     );
 
@@ -223,7 +224,7 @@ describe('processSeuratUpload', () => {
   it('Should not upload files if there are errors creating samples in the api', async () => {
     fetchMock.mockReject(new Error('Error'));
 
-    await processSeuratUpload(
+    await processUpload(
       getValidFiles(),
       sampleType,
       store.getState().samples,
@@ -250,7 +251,7 @@ describe('processSeuratUpload', () => {
       () => (['Some file error']),
     );
 
-    await processSeuratUpload(
+    await processUpload(
       getValidFiles(),
       sampleType,
       store.getState().samples,
@@ -263,7 +264,7 @@ describe('processSeuratUpload', () => {
       expect();
       expect(pushNotificationMessage).toHaveBeenCalledTimes(0);
       expect(axios.request).toHaveBeenCalledTimes(2);
-      expect(validate).toHaveBeenCalledTimes(0);
+      expect(validate).toHaveBeenCalledTimes(1);
     });
   });
 });

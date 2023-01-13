@@ -1,15 +1,20 @@
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
+import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
+
+import initialStateExperimentSettings from 'redux/reducers/experimentSettings/initialState';
 import loadPaginatedGeneProperties from 'redux/actions/genes/loadPaginatedGeneProperties';
-import initialState from 'redux/reducers/genes/initialState';
-
-import { dispatchWorkRequest, seekFromS3 } from 'utils/work/seekWorkResponse';
-
+import getInitialState from 'redux/reducers/genes/getInitialState';
 import {
   GENES_PROPERTIES_LOADING,
   GENES_PROPERTIES_LOADED_PAGINATED,
   GENES_PROPERTIES_ERROR,
 } from 'redux/actionTypes/genes';
+
+import { dispatchWorkRequest, seekFromS3 } from 'utils/work/seekWorkResponse';
+
+import mockAPI, { generateDefaultMockAPIResponses } from '__test__/test-utils/mockAPI';
+import processingConfigData from '__test__/data/processing_config.json';
 
 jest.mock('utils/work/seekWorkResponse', () => ({
   __esModule: true, // this property makes it work
@@ -46,9 +51,15 @@ describe('loadPaginatedGeneProperties action', () => {
     seekFromS3
       .mockReset()
       .mockImplementation(() => null);
+
+    enableFetchMocks();
+    fetchMock.resetMocks();
+    fetchMock.doMock();
+    fetchMock.mockIf(/.*/, mockAPI(generateDefaultMockAPIResponses(experimentId)));
   });
 
   it('Does not dispatch when some of the properties are already loading', async () => {
+    const initialState = getInitialState();
     const store = mockStore({
       backendStatus,
       genes:
@@ -59,6 +70,7 @@ describe('loadPaginatedGeneProperties action', () => {
           loading: ['b'],
         },
       },
+      experimentSettings: initialStateExperimentSettings,
     });
 
     store.dispatch(loadPaginatedGeneProperties(experimentId, properties, componentUuid, {}));
@@ -66,14 +78,16 @@ describe('loadPaginatedGeneProperties action', () => {
   });
 
   it('Dispatches appropriately on success condition', async () => {
+    const initialState = getInitialState();
     const store = mockStore({
-      genes:
-      {
-        ...initialState,
-      },
+      genes: { ...initialState },
       backendStatus,
       networkResources: {
         environment: 'testing',
+      },
+      experimentSettings: {
+        ...initialStateExperimentSettings,
+        ...{ processing: processingConfigData.processingConfig },
       },
     });
 
@@ -82,16 +96,8 @@ describe('loadPaginatedGeneProperties action', () => {
       .mockImplementationOnce(() => null)
       .mockImplementation(() => Promise.resolve({
         total: 2,
-        rows: [
-          {
-            gene_names: 'a',
-            dispersions: 1,
-          },
-          {
-            gene_names: 'b',
-            dispersions: 1,
-          },
-        ],
+        gene_names: ['a', 'b'],
+        dispersions: [1, 1],
       }));
 
     const tableState = {
@@ -125,13 +131,14 @@ describe('loadPaginatedGeneProperties action', () => {
 
   it('Dispatches appropriately on error condition', async () => {
     const store = mockStore({
-      genes:
-      {
-        ...initialState,
-      },
+      genes: { ...getInitialState() },
       backendStatus,
       networkResources: {
         environment: 'testing',
+      },
+      experimentSettings: {
+        ...initialStateExperimentSettings,
+        ...{ processing: processingConfigData.processingConfig },
       },
     });
 

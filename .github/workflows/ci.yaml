@@ -9,6 +9,11 @@ on:
   pull_request:
     branches:
       - master
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   uncheck-integration-test:
     name: Mark integration test as not run
@@ -91,8 +96,8 @@ jobs:
       - id: check-licenses
         name: Check licenses
         env:
-          ALLOWED_LICENSES: "MIT;Apache-2.0;BSD-3-Clause;ISC;BSD-2-Clause;BSD;CC0-1.0;0BSD;Unlicense;(MIT AND Zlib);(Unlicense OR Apache-2.0);BSD-3-Clause OR MIT;(MIT OR Apache-2.0);CC-BY-4.0;Apache-Style;(Apache-2.0 OR MPL-1.1);WTFPL;(WTFPL OR MIT);EPL-1.0;(MIT AND BSD-3-Clause);(MIT OR CC0-1.0);Custom: https://github.com/aws-amplify/amplify-js"
-          EXCLUDE_PACKAGES: "cartocolor@4.0.2;turf-jsts@1.2.3"
+          ALLOWED_LICENSES: "MIT;Apache-2.0;BSD-3-Clause;ISC;BSD-2-Clause;BSD;CC0-1.0;0BSD;Unlicense;(MIT AND Zlib);(Unlicense OR Apache-2.0);BSD-3-Clause OR MIT;(MIT OR Apache-2.0);CC-BY-4.0;Apache-Style;(Apache-2.0 OR MPL-1.1);WTFPL;(WTFPL OR MIT);EPL-1.0;(MIT AND BSD-3-Clause);(MIT OR CC0-1.0);Custom: https://github.com/aws-amplify/amplify-js;SGI-B-2.0"
+          EXCLUDE_PACKAGES: "cartocolor@4.0.2;turf-jsts@1.2.3;gl-vec2@1.3.0;flatbuffers@1.12.0;text-encoding-utf-8@1.0.2"
         run: |-
           npm install -g license-checker
           license-checker --production --json --onlyAllow="${ALLOWED_LICENSES}" --excludePackages="${EXCLUDE_PACKAGES}"
@@ -118,24 +123,13 @@ jobs:
             .next/
             !.next/cache
 
-      - id: send-to-slack
-        name: Send failure notification to Slack
-        if: failure() && github.event_name == 'push'
-        env:
-          SLACK_BOT_TOKEN: ${{ secrets.BUILD_STATUS_BOT_TOKEN }}
-        uses: voxmedia/github-action-slack-notify-build@v1
-        with:
-          channel: pipelines
-          status: FAILED
-          color: danger
-
   build-docker:
     name: Build Docker container
     runs-on: ubuntu-20.04
     needs: build
     outputs:
       ref-id: ${{ steps.ref.outputs.ref-id }}
-      commit-sha: ${{ steps.ref.outputs.commit-sha }}
+      image-tag: ${{ steps.ref.outputs.image-tag }}
     steps:
       - id: checkout
         name: Check out source code
@@ -165,18 +159,18 @@ jobs:
           # in push events, the latest commit of the master branch is GITHUB_SHA
           # in PR synch the latest commit of the branch is found in github.event.pull_request.head.sha instead
 
+          TIMESTAMP=$(date +%s)
+
           if [ "${{ github.event_name }}" = "release" ] && [ "${{ github.event.action }}" = "released" ]; then
             COMMIT_SHA=""
             IMAGE_TAG="${REF_ID/refs-tags-/}"
           elif [ "${{ github.event_name }}" = "pull_request" ]; then
             COMMIT_SHA="${{ github.event.pull_request.head.sha }}"
-            IMAGE_TAG="$REF_ID-$COMMIT_SHA"
+            IMAGE_TAG="$REF_ID-$COMMIT_SHA-$TIMESTAMP"
           else
             COMMIT_SHA=$GITHUB_SHA
-            IMAGE_TAG="$REF_ID-$COMMIT_SHA"
+            IMAGE_TAG="$REF_ID-$COMMIT_SHA-$TIMESTAMP"
           fi
-
-          echo "::set-output name=commit-sha::$COMMIT_SHA"
 
           # IMAGE_TAG is used in the Build Docker Image step.
           # We can easily build the image-tag from REF_ID and COMMIT_SHA for non-production releases.
@@ -237,17 +231,6 @@ jobs:
         env:
           IMAGE_NAME: ${{ format('{0}/{1}:{2}', steps.login-ecr.outputs.registry, steps.ref.outputs.repo-name, steps.ref.outputs.image-tag) }}
 
-      - id: send-to-slack
-        name: Send failure notification to Slack
-        if: failure() && github.event_name == 'push'
-        env:
-          SLACK_BOT_TOKEN: ${{ secrets.BUILD_STATUS_BOT_TOKEN }}
-        uses: voxmedia/github-action-slack-notify-build@v1
-        with:
-          channel: pipelines
-          status: FAILED
-          color: danger
-
   deploy:
     name: Deploy to Kubernetes
     runs-on: ubuntu-20.04
@@ -273,75 +256,114 @@ jobs:
         name: Login to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v1
 
-      - id: install-yq
-        name: Install yq for modifying the deployment spec.
-        run: |-
-          sudo wget https://github.com/mikefarah/yq/releases/download/3.4.1/yq_linux_amd64 -O /usr/local/bin/yq && sudo chmod +x /usr/local/bin/yq
-
       - id: fill-metadata
         name: Fill out a new HelmRelease resource
         run: |-
-          DEPLOYMENT_NAME=$(echo $GITHUB_REPOSITORY | awk -F '/' '{print $2}')
+          export DEPLOYMENT_NAME=$(echo $GITHUB_REPOSITORY | awk -F '/' '{print $2}')
           echo "::set-output name=deployment-name::$DEPLOYMENT_NAME"
 
           if [ "${{ matrix.environment }}" = "production" ]; then
-            SANDBOX_ID="default"
-            CHART_REF="master"
-            KUBERNETES_ENV="production"
-            IMAGE_TAG="${REF_ID/refs-tags-/}"
-            IMAGE_GLOB="semver:>=0.0.0"
-            REPLICA_COUNT="4"
+            export SANDBOX_ID="default"
+            export KUBERNETES_ENV="production"
+            export CHART_REF="master"
+            export IMAGE_PATTERN="^(?P<version>[0-9]+\.[0-9]+\.[0-9]+)$"
+            export IMAGE_EXTRACT='$version'
+            export IMAGE_POLICY_TYPE="semver"
+            export IMAGE_POLICY_KEY="range"
+            export IMAGE_POLICY_VALUE=">=0.0.0"
+            export REPLICA_COUNT="4"
+            export MANIFEST_PATH="./production"
           fi
 
           if [ "${{ matrix.environment }}" = "develop" ]; then
-            SANDBOX_ID="default"
-            CHART_REF="master"
-            KUBERNETES_ENV="staging"
-            IMAGE_TAG="$REF_ID-$COMMIT_SHA"
-            IMAGE_GLOB="glob:$REF_ID-*"
-            REPLICA_COUNT="2"
+            export SANDBOX_ID="default"
+            export KUBERNETES_ENV="staging"
+            export CHART_REF="master"
+            export IMAGE_PATTERN="^$REF_ID-[a-f0-9]+-(?P<timestamp>[0-9]+)$"
+            export IMAGE_EXTRACT='$timestamp'
+            export IMAGE_POLICY_TYPE="numerical"
+            export IMAGE_POLICY_KEY="order"
+            export IMAGE_POLICY_VALUE="asc"
+            export REPLICA_COUNT="2"
+            export MANIFEST_PATH="./staging"
           fi
 
           if [ "${{ matrix.environment }}" = "staging" ]; then
-            SANDBOX_ID="STAGING_SANDBOX_ID"
-            CHART_REF="STAGING_CHART_REF"
-            KUBERNETES_ENV="staging"
-            IMAGE_TAG="$REF_ID-$COMMIT_SHA"
-            IMAGE_GLOB="glob:$REF_ID-*"
-            REPLICA_COUNT="1"
+
+            # The chart template for the UI repo is stored in IAC branch master
+            # If you are working on the chart for UI/API, you can modify this value manualy in in your PR's release
+            export CHART_REF="master"
+            export SANDBOX_ID="STAGING_SANDBOX_ID"
+            export KUBERNETES_ENV="staging"
+            export IMAGE_PATTERN="^$REF_ID-[a-f0-9]+-(?P<timestamp>[0-9]+)$"
+            export IMAGE_EXTRACT='$timestamp'
+            export IMAGE_POLICY_TYPE="numerical"
+            export IMAGE_POLICY_KEY="order"
+            export IMAGE_POLICY_VALUE="asc"
+            export REPLICA_COUNT="1"
+            export MANIFEST_PATH="./staging"
           fi
 
           echo "::set-output name=kubernetes-env::$KUBERNETES_ENV"
 
-          yq w -d1 .flux.yaml metadata.name "$DEPLOYMENT_NAME" \
-          | yq w -d1 - metadata.namespace "$DEPLOYMENT_NAME-$SANDBOX_ID" \
-          | yq w -d0 - metadata.name "$DEPLOYMENT_NAME-$SANDBOX_ID" \
-          | yq w -d0 - metadata.labels.sandboxId "$SANDBOX_ID" \
-          | yq w -d1 - metadata.labels.sandboxId "$SANDBOX_ID" \
-          | yq w -d1 - "metadata.annotations[filter.fluxcd.io/chart-image]" "$IMAGE_GLOB" \
-          | yq w -d1 - spec.releaseName "$DEPLOYMENT_NAME" \
-          | yq w -d1 - spec.chart.ref "$CHART_REF" \
-          | yq w -d1 - spec.values.kubernetes.env "$KUBERNETES_ENV" \
-          | yq w -d1 - spec.values.biomageCi.repo "$GITHUB_REPOSITORY" \
-          | yq w -d1 - spec.values.biomageCi.sandboxId "$SANDBOX_ID" \
-          | yq w -d1 - spec.values.image.registry "${{ steps.login-ecr.outputs.registry }}" \
-          | yq w -d1 - spec.values.image.repository "$DEPLOYMENT_NAME" \
-          | yq w -d1 - spec.values.image.tag "$IMAGE_TAG" \
-          | yq w -d1 - spec.values.replicaCount $REPLICA_COUNT \
-          | yq w -d1 - spec.values.serviceAccount.iamRole "ui-role-$KUBERNETES_ENV" \
-          > $DEPLOYMENT_NAME-without-host.yaml
+          export NAMESPACE="$DEPLOYMENT_NAME-$SANDBOX_ID"
+          export CHART_SOURCE_NAME="$DEPLOYMENT_NAME-chart"
+          export IMAGE_POLICY_TAG="{\"\$imagepolicy\": \"$NAMESPACE:$DEPLOYMENT_NAME:tag\"}"
+
+          yq '
+            select(di == 0).metadata.name = strenv(NAMESPACE) |
+            select(di == 0).metadata.labels.sandboxId = strenv(SANDBOX_ID) |
+            select(di == 1).metadata.name = strenv(CHART_SOURCE_NAME) |
+            select(di == 1).metadata.namespace = strenv(NAMESPACE) |
+            select(di == 1).spec.ref.branch = strenv(CHART_REF) |
+            select(di == 2).metadata.name = strenv(DEPLOYMENT_NAME) |
+            select(di == 2).metadata.namespace = strenv(NAMESPACE) |
+            select(di == 2).spec.image = strenv(REGISTRY) + "/" + strenv(DEPLOYMENT_NAME) |
+            select(di == 3).metadata.name = strenv(DEPLOYMENT_NAME) |
+            select(di == 3).metadata.namespace = strenv(NAMESPACE) |
+            select(di == 3).spec.imageRepositoryRef.name = strenv(DEPLOYMENT_NAME) |
+            select(di == 3).spec.imageRepositoryRef.namespace = strenv(NAMESPACE) |
+            select(di == 3).spec.filterTags.pattern = strenv(IMAGE_PATTERN) |
+            select(di == 3).spec.filterTags.extract = strenv(IMAGE_EXTRACT) |
+            select(di == 3).spec.policy.[strenv(IMAGE_POLICY_TYPE)].[strenv(IMAGE_POLICY_KEY)] = strenv(IMAGE_POLICY_VALUE) |
+            select(di == 4).metadata.name = strenv(DEPLOYMENT_NAME) + "-image-update" |
+            select(di == 4).metadata.namespace = strenv(NAMESPACE) |
+            select(di == 4).spec.update.path = strenv(MANIFEST_PATH) |
+            select(di == 5).metadata.name = strenv(DEPLOYMENT_NAME) |
+            select(di == 5).metadata.namespace = strenv(NAMESPACE) |
+            select(di == 5).metadata.labels.sandboxId = strenv(SANDBOX_ID) |
+            select(di == 5).spec.releaseName = strenv(DEPLOYMENT_NAME) |
+            select(di == 5).spec.chart.spec.sourceRef.name = strenv(CHART_SOURCE_NAME) |
+            select(di == 5).spec.chart.spec.sourceRef.namespace = strenv(NAMESPACE) |
+            select(di == 5).spec.values.kubernetes.env = strenv(KUBERNETES_ENV) |
+            select(di == 5).spec.values.biomageCi.repo = strenv(GITHUB_REPOSITORY) |
+            select(di == 5).spec.values.biomageCi.sandboxId = strenv(SANDBOX_ID) |
+            select(di == 5).spec.values.image.registry = strenv(REGISTRY) |
+            select(di == 5).spec.values.image.repository = strenv(DEPLOYMENT_NAME) |
+            select(di == 5).spec.values.image.tag = strenv(IMAGE_TAG) |
+            select(di == 5).spec.values.image.tag line_comment = strenv(IMAGE_POLICY_TAG) |
+            select(di == 5).spec.values.replicaCount = env(REPLICA_COUNT) |
+            select(di == 5).spec.values.serviceAccount.iamRole = "ui-role-" + strenv(KUBERNETES_ENV)
+          ' .flux.yaml > $DEPLOYMENT_NAME-without-host.yaml
 
           if [ "${{ matrix.environment }}" = "production" ]
-          then
-            yq w -d1 $DEPLOYMENT_NAME-without-host.yaml spec.values.service.additionalHosts "true" > $DEPLOYMENT_NAME.yaml
-          else
-            yq w -d1 $DEPLOYMENT_NAME-without-host.yaml spec.values.service.additionalHosts "false" > $DEPLOYMENT_NAME.yaml
-          fi
+            then
+              yq '
+                select(di == 5).spec.values.service.additionalHosts = true
+              ' $DEPLOYMENT_NAME-without-host.yaml > $DEPLOYMENT_NAME.yaml
 
-          cat $DEPLOYMENT_NAME.yaml
+            else
+              yq '
+                select(di == 5).spec.values.service.additionalHosts = false
+              ' $DEPLOYMENT_NAME-without-host.yaml > $DEPLOYMENT_NAME.yaml
+            fi
+
+            cat $DEPLOYMENT_NAME.yaml
+
         env:
           REF_ID: ${{ needs.build-docker.outputs.ref-id }}
-          COMMIT_SHA: ${{ needs.build-docker.outputs.commit-sha }}
+          IMAGE_TAG: ${{ needs.build-docker.outputs.image-tag }}
+          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
 
       - name: Push production/develop template to releases repo for deployment
         if: (matrix.environment == 'production' && github.event_name == 'release' && github.event.action == 'released') || (matrix.environment == 'develop' && github.event_name == 'push')
@@ -375,17 +397,6 @@ jobs:
           user_email: ci@biomage.net
           user_name: 'Biomage CI/CD'
 
-      - id: send-to-slack
-        name: Send failure notification to Slack
-        if: failure() && github.event_name == 'push'
-        env:
-          SLACK_BOT_TOKEN: ${{ secrets.BUILD_STATUS_BOT_TOKEN }}
-        uses: voxmedia/github-action-slack-notify-build@v1
-        with:
-          channel: pipelines
-          status: FAILED
-          color: danger
-
   ready-to-merge:
     name: Ready for merging
     runs-on: ubuntu-20.04
@@ -395,3 +406,19 @@ jobs:
         name: Signal readiness to merge
         run: |-
           exit 0
+
+  report-if-failed:
+    name: Report if workflow failed
+    runs-on: ubuntu-20.04
+    needs: [build, build-docker, deploy]
+    if: failure() && github.ref == 'refs/heads/master'
+    steps:
+      - id: send-to-slack
+        name: Send failure notification to Slack on failure
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.WORKFLOW_STATUS_BOT_TOKEN }}
+        uses: voxmedia/github-action-slack-notify-build@v1
+        with:
+          channel: workflow-failures
+          status: FAILED
+          color: danger

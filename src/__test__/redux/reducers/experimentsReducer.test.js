@@ -16,7 +16,8 @@ import {
   EXPERIMENTS_METADATA_DELETE,
 } from 'redux/actionTypes/experiments';
 
-import { SAMPLES_CREATE, SAMPLES_DELETE } from 'redux/actionTypes/samples';
+import { SAMPLES_CREATED, SAMPLES_DELETE } from 'redux/actionTypes/samples';
+import { EXPERIMENT_SETTINGS_PIPELINE_VERSION_UPDATED } from 'redux/actionTypes/experimentSettings';
 
 describe('experimentsReducer', () => {
   const experimentId1 = 'experiment-1';
@@ -31,6 +32,7 @@ describe('experimentsReducer', () => {
     notifyByEmail: true,
     createdAt: '2021-01-01',
     updatedAt: '2022-01-17',
+    pipelineVersion: 1,
   };
 
   const experiment2 = {
@@ -42,6 +44,7 @@ describe('experimentsReducer', () => {
     notifyByEmail: true,
     createdAt: '2021-01-01',
     updatedAt: '2022-01-17',
+    pipelineVersion: 1,
   };
 
   const sampleId = 'testSampleId';
@@ -230,10 +233,10 @@ describe('experimentsReducer', () => {
 
   it('Adds new sampleId when sample is created', () => {
     const newState = experimentsReducer(oneExperimentState, {
-      type: SAMPLES_CREATE,
+      type: SAMPLES_CREATED,
       payload: {
         experimentId: experiment1.id,
-        sample,
+        samples: [sample],
       },
     });
 
@@ -251,10 +254,10 @@ describe('experimentsReducer', () => {
     };
 
     const newState = experimentsReducer(oneExperimentWithSampleState, {
-      type: SAMPLES_CREATE,
+      type: SAMPLES_CREATED,
       payload: {
         experimentId: experiment1.id,
-        sample: anotherSample,
+        samples: [anotherSample],
       },
     });
 
@@ -360,6 +363,19 @@ describe('experimentsReducer', () => {
     });
 
     expect(newState[experiment1.id].metadataKeys).toEqual([]);
+    expect(newState).toMatchSnapshot();
+  });
+
+  it('Correctly updates pipelineVersion', () => {
+    const newState = experimentsReducer(oneExperimentWithSampleState, {
+      type: EXPERIMENT_SETTINGS_PIPELINE_VERSION_UPDATED,
+      payload: {
+        experimentId: experiment1.id,
+        pipelineVersion: 2,
+      },
+    });
+
+    expect(newState[experiment1.id].pipelineVersion).toEqual(2);
     expect(newState).toMatchSnapshot();
   });
 });

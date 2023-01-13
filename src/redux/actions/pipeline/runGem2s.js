@@ -5,20 +5,11 @@ import {
   EXPERIMENT_SETTINGS_QC_START,
 } from 'redux/actionTypes/experimentSettings';
 
-import {
-  BACKEND_STATUS_LOADING,
-  BACKEND_STATUS_ERROR,
-} from 'redux/actionTypes/backendStatus';
-
 import loadBackendStatus from 'redux/actions/backendStatus/loadBackendStatus';
 
-const runGem2s = (experimentId, paramsHash) => async (dispatch) => {
-  dispatch({
-    type: BACKEND_STATUS_LOADING,
-    payload: {
-      experimentId,
-    },
-  });
+const runGem2s = (experimentId, paramsHash) => async (dispatch, getState) => {
+  const paramsHashToSend = paramsHash
+    ?? getState().backendStatus[experimentId].status.gem2s.paramsHash;
 
   try {
     await fetchAPI(
@@ -28,7 +19,7 @@ const runGem2s = (experimentId, paramsHash) => async (dispatch) => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ paramsHash }),
+        body: JSON.stringify({ paramsHash: paramsHashToSend }),
       },
     );
 
@@ -37,22 +28,13 @@ const runGem2s = (experimentId, paramsHash) => async (dispatch) => {
       payload: {},
     });
 
-    dispatch(loadBackendStatus(experimentId));
+    await dispatch(loadBackendStatus(experimentId));
   } catch (e) {
-    let errorMessage = handleError(e, endUserMessages.ERROR_STARTING_PIPLELINE);
+    const errorMessage = handleError(e, endUserMessages.ERROR_STARTING_PIPLELINE);
 
-    // temporarily give the user more info if the error is permission denied
-    if (errorMessage.includes('does not have access to experiment')) {
-      errorMessage += ' Refresh the page to continue with your analysis.';
+    if (errorMessage !== endUserMessages.ERROR_NO_PERMISSIONS) {
+      await dispatch(loadBackendStatus(experimentId));
     }
-
-    dispatch({
-      type: BACKEND_STATUS_ERROR,
-      payload: {
-        experimentId,
-        error: errorMessage,
-      },
-    });
   }
 };
 

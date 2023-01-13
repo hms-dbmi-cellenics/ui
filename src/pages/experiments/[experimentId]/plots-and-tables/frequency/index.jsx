@@ -38,7 +38,10 @@ const FrequencyPlotPage = ({ experimentId }) => {
   const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
   const cellSets = useSelector(getCellSets());
 
-  const cellSetClusters = useSelector(getCellSetsHierarchyByKeys(config?.proportionGrouping || ''));
+  const [cellSetClusters] = useSelector(
+    getCellSetsHierarchyByKeys([config?.proportionGrouping]),
+  );
+
   const experimentName = useSelector((state) => state.experimentSettings.info.experimentName);
 
   const [csvData, setCsvData] = useState([]);
@@ -66,13 +69,13 @@ const FrequencyPlotPage = ({ experimentId }) => {
     },
     {
       panelTitle: 'Axes and margins',
-      controls: ['axes'],
+      controls: ['axesWithRanges'],
     },
     {
       panelTitle: 'Legend',
       footer: <Alert
         message={
-          ['Changing cell set colours is not currently available here. Use the Data Management tool in ',
+          ['Changing cell set colours is not currently available here. Use the Cell sets and Metadata tool in ',
             <Link as={dataExplorationPath.replace('[experimentId]', experimentId)} href={dataExplorationPath} passHref>Data Exploration</Link>,
             ' to customise cell set colours.']
         }
@@ -98,7 +101,7 @@ const FrequencyPlotPage = ({ experimentId }) => {
   const formatCSVData = (plotData) => {
     const newCsvData = [];
 
-    cellSetClusters[0].children.forEach((cluster) => {
+    cellSetClusters.children.forEach((cluster) => {
       const entriesForCluster = plotData.filter((entry) => entry.yCellSetKey === cluster.key);
 
       const cellSetName = cellSets.properties[cluster.key].name;

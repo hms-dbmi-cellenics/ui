@@ -30,6 +30,7 @@ const mockSampleTemplate = (experimentId, sampleId, idx) => ({
       s3Path: 'testcfd8122f-25af-4f1a-a306-3268d44ed403',
     },
   },
+  options: {},
 });
 
 const generateMockSamples = (experimentId, numSamples = 3) => {

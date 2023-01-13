@@ -11,18 +11,17 @@ import {
   Radio,
   Button,
 } from 'antd';
-import { useDispatch } from 'react-redux';
 import { InfoCircleOutlined } from '@ant-design/icons';
+
 import useUpdateThrottled from 'utils/customHooks/useUpdateThrottled';
-import { runQC } from 'redux/actions/pipeline';
 
 const { Option } = Select;
 
 const GenesVsUMIsConfig = (props) => {
-  const dispatch = useDispatch();
   const {
-    config, updateSettings, disabled, rerunRequired, experimentId,
+    config, updateSettings, disabled, rerunRequired, onQCRunClick,
   } = props;
+
   const [newConfig, handleChange] = useUpdateThrottled(updateSettings, config);
 
   const defaultPredictionInterval = 1 - config.regressionTypeSettings[config.regressionType]['p.level'];
@@ -50,7 +49,7 @@ const GenesVsUMIsConfig = (props) => {
           />
           <Button
             type='primary'
-            onClick={() => dispatch(runQC(experimentId))}
+            onClick={() => onQCRunClick()}
           >
             Re-run
           </Button>
@@ -148,7 +147,7 @@ GenesVsUMIsConfig.propTypes = {
   config: PropTypes.object.isRequired,
   disabled: PropTypes.bool.isRequired,
   rerunRequired: PropTypes.bool.isRequired,
-  experimentId: PropTypes.string.isRequired,
+  onQCRunClick: PropTypes.func.isRequired,
 };
 
 export default GenesVsUMIsConfig;

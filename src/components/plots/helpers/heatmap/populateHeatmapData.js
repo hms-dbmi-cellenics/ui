@@ -1,7 +1,7 @@
 import _ from 'lodash';
 
-import SetOperations from 'utils/setOperations';
-import { union } from 'utils/cellSetOperations';
+import { difference, intersection } from 'utils/setOperations';
+import { getFilteredCells, union } from 'utils/cellSetOperations';
 
 const populateHeatmapData = (
   cellSets, heatmapSettings,
@@ -12,8 +12,16 @@ const populateHeatmapData = (
     groupedTracks, selectedCellSet, selectedPoints,
   } = heatmapSettings;
 
+  const allFilteredCellIds = getFilteredCells(cellSets);
+
   const maxCells = 1000;
-  const getCellsInSet = (cellSetName) => properties[cellSetName].cellIds;
+  const getCellsInSet = (cellSetName) => {
+    const unfilteredCellIds = properties[cellSetName].cellIds;
+
+    const filteredCellIds = intersection(allFilteredCellIds, unfilteredCellIds);
+
+    return filteredCellIds;
+  };
 
   // return a set with all the cells found in group node
   // e.g: node = {key: louvain, children: []}, {...}
@@ -67,11 +75,11 @@ const populateHeatmapData = (
 
       // The cellIds that werent part of any intersection are also added at the end
       const leftOverCellIds = currentCellSetIntersection
-        .reduce((acum, current) => SetOperations.difference(acum, current), currentCellSet);
+        .reduce((acum, current) => difference(acum, current), currentCellSet);
 
       currentCellSetIntersection.push(leftOverCellIds);
 
-      intersectedCellSets.push(...currentCellSetIntersection);
+      currentCellSetIntersection.forEach((array) => intersectedCellSets.push(array));
     });
 
     return intersectedCellSets;
@@ -129,6 +137,7 @@ const populateHeatmapData = (
     if (!groupByRootNodes.length) {
       return [];
     }
+
     const { buckets, size } = splitByCartesianProductIntersections(groupByRootNodes);
 
     if (downsampling) {
@@ -136,8 +145,9 @@ const populateHeatmapData = (
     }
 
     const cellIds = [];
+
     buckets.forEach((bucket) => {
-      cellIds.push(...bucket);
+      bucket.forEach((bucketCellId) => cellIds.push(bucketCellId));
     });
 
     return cellIds;

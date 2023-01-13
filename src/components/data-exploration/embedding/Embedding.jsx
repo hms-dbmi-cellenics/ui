@@ -1,5 +1,7 @@
 // eslint-disable-file import/no-extraneous-dependencies
-import React, { useState, useEffect, useRef } from 'react';
+import React, {
+  useState, useEffect, useRef, useMemo,
+} from 'react';
 import dynamic from 'next/dynamic';
 import {
   useSelector, useDispatch,
@@ -44,11 +46,8 @@ const Embedding = (props) => {
 
   const dispatch = useDispatch();
 
-  const [view, setView] = useState({ target: [4, -4, 0], zoom: INITIAL_ZOOM });
   const [cellRadius, setCellRadius] = useState(cellRadiusFromZoom(INITIAL_ZOOM));
   const rootClusterNodes = useSelector(getCellSetsHierarchyByType('cellSets')).map(({ key }) => key);
-
-  const selectedCellIds = new Set();
 
   const embeddingSettings = useSelector(
     (state) => state.experimentSettings?.originalProcessing?.configureEmbedding?.embeddingSettings,
@@ -58,7 +57,7 @@ const Embedding = (props) => {
   const { data, loading, error } = useSelector((state) => state.embeddings[embeddingType]) || {};
 
   const focusData = useSelector((state) => state.cellInfo.focus);
-  const focusedExpression = useSelector((state) => state.genes.expression.data[focusData.key]);
+
   const cellSets = useSelector(getCellSets());
   const {
     properties: cellSetProperties,
@@ -68,14 +67,15 @@ const Embedding = (props) => {
 
   const selectedCell = useSelector((state) => state.cellInfo.cellId);
   const expressionLoading = useSelector((state) => state.genes.expression.loading);
-  const loadedGenes = useSelector((state) => Object.keys(state.genes.expression.data));
+  const expressionMatrix = useSelector((state) => state.genes.expression.matrix);
 
-  const cellCoordinates = useRef({ x: 200, y: 300 });
-  const cellInfoTooltip = useRef();
+  const cellCoordinatesRef = useRef({ x: 200, y: 300 });
+  const [cellInfoTooltip, setCellInfoTooltip] = useState();
   const [createClusterPopover, setCreateClusterPopover] = useState(false);
   const [selectedIds, setSelectedIds] = useState(new Set());
   const [cellColors, setCellColors] = useState({});
   const [cellInfoVisible, setCellInfoVisible] = useState(true);
+  const [view, setView] = useState({ target: [4, -4, 0], zoom: INITIAL_ZOOM });
 
   // Load embedding settings if they aren't already.
   useEffect(() => {
@@ -123,25 +123,46 @@ const Embedding = (props) => {
 
   // Handle loading of expression for focused gene.
   useEffect(() => {
-    if (!focusedExpression) {
+    if (!expressionMatrix.geneIsLoaded(focusData.key)) {
       return;
     }
 
-    setCellColors(colorByGeneExpression(focusedExpression));
-  }, [focusedExpression]);
+    const truncatedExpression = expressionMatrix.getTruncatedExpression(focusData.key);
+    const { truncatedMin, truncatedMax } = expressionMatrix.getStats(focusData.key);
+
+    setCellColors(colorByGeneExpression(truncatedExpression, truncatedMin, truncatedMax));
+  }, [focusData.key, expressionLoading]);
+
+  const [convertedCellsData, setConvertedCellsData] = useState();
+
+  useEffect(() => {
+    if (!data || !cellSetHidden || !cellSetProperties) return;
+
+    setConvertedCellsData(convertCellsData(data, cellSetHidden, cellSetProperties));
+  }, [data, cellSetHidden, cellSetProperties]);
 
   useEffect(() => {
     if (selectedCell) {
       let expressionToDispatch;
       let geneName;
 
-      if (focusedExpression) {
+      if (expressionMatrix.geneIsLoaded(focusData.key)) {
         geneName = focusData.key;
-        expressionToDispatch = focusedExpression.rawExpression.expression[selectedCell];
+
+        const [expression] = expressionMatrix.getRawExpression(
+          focusData.key,
+          [parseInt(selectedCell, 10)],
+        );
+
+        expressionToDispatch = expression;
       }
 
       // getting the cluster properties for every cluster that has the cellId
-      const cellProperties = getContainingCellSetsProperties(Number.parseInt(selectedCell, 10), rootClusterNodes, cellSets);
+      const cellProperties = getContainingCellSetsProperties(
+        Number.parseInt(selectedCell, 10),
+        rootClusterNodes,
+        cellSets,
+      );
 
       const prefixedCellSetNames = [];
       Object.values(cellProperties).forEach((clusterProperties) => {
@@ -150,20 +171,22 @@ const Embedding = (props) => {
         });
       });
 
-      cellInfoTooltip.current = {
+      setCellInfoTooltip({
         cellSets: prefixedCellSetNames,
         cellId: selectedCell,
         componentType: embeddingType,
         expression: expressionToDispatch,
         geneName,
-      };
+      });
+    } else {
+      setCellInfoTooltip(null);
     }
   }, [selectedCell]);
 
   const updateCellCoordinates = (newView) => {
     if (selectedCell && newView.project) {
       const [x, y] = newView.project(selectedCell);
-      cellCoordinates.current = {
+      cellCoordinatesRef.current = {
         x,
         y,
         width,
@@ -171,6 +194,8 @@ const Embedding = (props) => {
       };
     }
   };
+
+  const cellColorsForVitessce = useMemo(() => new Map(Object.entries(cellColors)), [cellColors]);
 
   const updateCellsHover = (cell) => dispatch(updateCellInfo({ cellId: cell }));
 
@@ -203,11 +228,12 @@ const Embedding = (props) => {
     return (<center><Loader experimentId={experimentId} size='large' /></center>);
   }
 
-  // The selected gene in can be present in both expression.loading and expression.data.
+  // The selected gene in can be present in both expression.loading
+  // and expression.matrix loaded genes.
   // To make sure that the gene is really loading, we have to check if
   // it exists in the loading array and is not present in the data array
   if (focusData.store === 'genes'
-    && !loadedGenes.includes(focusData.key)
+    && !expressionMatrix.geneIsLoaded(focusData.key)
     && expressionLoading.includes(focusData.key)) {
     return (<center><Loader experimentId={experimentId} size='large' /></center>);
   }
@@ -281,14 +307,10 @@ const Embedding = (props) => {
             uuid={embeddingType}
             viewState={view}
             updateViewInfo={updateCellCoordinates}
-            cells={convertCellsData(data, cellSetHidden, cellSetProperties)}
+            cells={convertedCellsData}
             mapping='PCA'
-            cellSelection={selectedCellIds}
-            cellColors={
-              (selectedCell)
-                ? new Map(Object.entries({ ...cellColors, [selectedCell]: [0, 0, 0] }))
-                : new Map(Object.entries(cellColors))
-            }
+            cellSelection={[selectedCell]}
+            cellColors={cellColorsForVitessce}
             setViewState={({ zoom, target }) => {
               setCellRadius(cellRadiusFromZoom(zoom));
 
@@ -306,23 +328,23 @@ const Embedding = (props) => {
           ? (
             <ClusterPopover
               visible
-              popoverPosition={cellCoordinates}
+              popoverPosition={cellCoordinatesRef}
               onCreate={onCreateCluster}
               onCancel={onCancelCreateCluster}
             />
           ) : (
-            (cellInfoVisible && cellInfoTooltip.current) ? (
+            (cellInfoVisible && cellInfoTooltip) ? (
               <div>
                 <CellInfo
                   containerWidth={width}
                   containerHeight={height}
                   componentType={embeddingType}
-                  coordinates={cellCoordinates.current}
-                  cellInfo={cellInfoTooltip.current}
+                  coordinates={cellCoordinatesRef.current}
+                  cellInfo={cellInfoTooltip}
                 />
                 <CrossHair
                   componentType={embeddingType}
-                  coordinates={cellCoordinates}
+                  coordinates={cellCoordinatesRef}
                 />
               </div>
             ) : <></>

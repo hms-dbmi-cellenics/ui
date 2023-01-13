@@ -9,6 +9,7 @@ import addChangedQCFilter from './processingConfig/addChangedQCFilter';
 import discardChangedQCFilters from './processingConfig/discardChangedQCFilters';
 import updateProcessingSettingsFromQC from './processingConfig/updateProcessingSettingsFromQC';
 import updateExperimentInfo from './updateExperimentInfo';
+import updatePipelineVersion from './updatePipelineVersion';
 
 export {
   loadProcessingSettings,
@@ -22,4 +23,5 @@ export {
   discardChangedQCFilters,
   updateFilterSettings,
   updateProcessingSettingsFromQC,
+  updatePipelineVersion,
 };

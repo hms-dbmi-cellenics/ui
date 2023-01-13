@@ -1,5 +1,4 @@
 import { render, screen } from '@testing-library/react';
-import { mount } from 'enzyme';
 import { within } from '@testing-library/dom';
 import userEvent from '@testing-library/user-event';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
@@ -15,7 +14,7 @@ import { seekFromS3 } from 'utils/work/seekWorkResponse';
 import expressionDataFAKEGENE from '__test__/data/gene_expression_FAKEGENE.json';
 import markerGenesData2 from '__test__/data/marker_genes_2.json';
 import markerGenesData5 from '__test__/data/marker_genes_5.json';
-import geneList from '__test__/data/list_genes.json';
+import geneList from '__test__/data/paginated_gene_expression.json';
 
 import preloadAll from 'jest-next-dynamic';
 
@@ -26,8 +25,6 @@ import mockAPI, {
   statusResponse,
 } from '__test__/test-utils/mockAPI';
 import createTestComponentFactory from '__test__/test-utils/testComponentFactory';
-import waitForComponentToPaint from '__test__/test-utils/waitForComponentToPaint';
-import { arrayMoveImmutable } from 'utils/array-move';
 
 jest.mock('components/header/UserButton', () => () => <></>);
 jest.mock('react-resize-detector', () => (props) => {
@@ -52,6 +49,15 @@ jest.mock('object-hash', () => {
   return mockWorkResultETag(objectHash, mockWorkRequestETag, mockGeneExpressionETag);
 });
 
+// Disable local cache
+jest.mock('localforage', () => ({
+  getItem: () => Promise.resolve(undefined),
+  setItem: () => Promise.resolve(),
+  config: () => { },
+  ready: () => Promise.resolve(),
+  length: () => 0,
+}));
+
 jest.mock('utils/work/seekWorkResponse', () => ({
   __esModule: true,
   dispatchWorkRequest: jest.fn(() => true),
@@ -59,10 +65,10 @@ jest.mock('utils/work/seekWorkResponse', () => ({
 }));
 
 const mockWorkerResponses = {
-  '5-marker-genes': markerGenesData5,
-  '2-marker-genes': markerGenesData2,
-  'FAKEGENE-expression': expressionDataFAKEGENE,
-  ListGenes: geneList,
+  '5-marker-genes': () => Promise.resolve(_.cloneDeep(markerGenesData5)),
+  '2-marker-genes': () => Promise.resolve(_.cloneDeep(markerGenesData2)),
+  'FAKEGENE-expression': () => Promise.resolve(_.cloneDeep(expressionDataFAKEGENE)),
+  ListGenes: () => Promise.resolve(geneList),
 };
 
 const experimentId = fake.EXPERIMENT_ID;
@@ -91,17 +97,6 @@ const getTreeGenes = (container) => {
   return Array.from(treeNodeList).map((node) => node.textContent);
 };
 
-// Helper function to get current order of displayed genes in enzyme tests
-const getCurrentGeneOrder = (component) => {
-  const treeNodes = component.find('div.ant-tree-treenode');
-  const newOrder = [];
-  treeNodes.forEach((node) => {
-    newOrder.push(node.text());
-  });
-  newOrder.splice(0, 1);
-  return newOrder;
-};
-
 const renderHeatmapPage = async (store) => {
   await act(async () => (
     render(
@@ -112,13 +107,7 @@ const renderHeatmapPage = async (store) => {
   ));
 };
 
-const renderHeatmapPageForEnzyme = async (store) => (
-  mount(
-    <Provider store={store}>
-      {heatmapPageFactory()}
-    </Provider>,
-  )
-);
+enableFetchMocks();
 
 describe('Marker heatmap plot', () => {
   beforeAll(async () => {
@@ -130,14 +119,8 @@ describe('Marker heatmap plot', () => {
 
     seekFromS3
       .mockReset()
-      // load gene list
-      .mockImplementationOnce(() => null)
-      .mockImplementationOnce((Etag) => mockWorkerResponses[Etag])
-      // load gene expression
-      .mockImplementationOnce(() => null)
-      .mockImplementationOnce((Etag) => mockWorkerResponses[Etag]);
+      .mockImplementation((Etag) => mockWorkerResponses[Etag]());
 
-    enableFetchMocks();
     fetchMock.resetMocks();
     fetchMock.doMock();
     fetchMock.mockIf(/.*/, mockAPI(defaultResponses));
@@ -171,12 +154,11 @@ describe('Marker heatmap plot', () => {
   it('Shows an error message if marker genes failed to load', async () => {
     seekFromS3
       .mockReset()
-      // load genes list
-      .mockImplementationOnce(() => null)
-      .mockImplementationOnce((Etag) => mockWorkerResponses[Etag])
-      // throw error on marker genes load
-      .mockImplementationOnce(() => null)
-      .mockImplementationOnce(() => { throw new Error('Not found'); });
+      .mockImplementation((ETag) => {
+        if (ETag === '5-marker-genes') return Promise.reject(new Error('Not found'));
+
+        return mockWorkerResponses[ETag]();
+      });
 
     await renderHeatmapPage(storeState);
 
@@ -191,7 +173,7 @@ describe('Marker heatmap plot', () => {
     await renderHeatmapPage(storeState);
 
     // Check that initially there are 5 marker genes - the default
-    markerGenesData5.order.forEach((geneName) => {
+    markerGenesData5.orderedGeneNames.forEach((geneName) => {
       expect(screen.getByText(geneName)).toBeInTheDocument();
     });
 
@@ -215,7 +197,7 @@ describe('Marker heatmap plot', () => {
     });
 
     // The genes in Data 2 should exist
-    markerGenesData2.order.forEach((geneName) => {
+    markerGenesData2.orderedGeneNames.forEach((geneName) => {
       expect(screen.getByText(geneName)).toBeInTheDocument();
     });
   });
@@ -223,20 +205,12 @@ describe('Marker heatmap plot', () => {
   it('adds genes correctly into the plot', async () => {
     seekFromS3
       .mockReset()
-      // load genes list
-      .mockImplementationOnce(() => null)
-      .mockImplementationOnce((Etag) => mockWorkerResponses[Etag])
-      // 1st load
-      .mockImplementationOnce(() => null)
-      .mockImplementationOnce((ETag) => mockWorkerResponses[ETag])
-      // 2nd load
-      .mockImplementationOnce(() => null)
-      .mockImplementationOnce((ETag) => mockWorkerResponses[ETag]);
+      .mockImplementation((Etag) => mockWorkerResponses[Etag]());
 
     await renderHeatmapPage(storeState);
 
     // Add in a new gene
-    const genesToLoad = [...markerGenesData5.order, 'FAKEGENE'];
+    const genesToLoad = [...markerGenesData5.orderedGeneNames, 'FAKEGENE'];
 
     await act(async () => {
       await storeState.dispatch(loadGeneExpression(experimentId, genesToLoad, plotUuid));
@@ -276,16 +250,15 @@ describe('Marker heatmap plot', () => {
   it('Shows an error message if gene expression fails to load', async () => {
     seekFromS3
       .mockReset()
-      // load genes list
-      .mockImplementationOnce(() => null)
-      .mockImplementationOnce((Etag) => mockWorkerResponses[Etag])
-      // throw error on gene expression load
-      .mockImplementationOnce(() => null)
-      .mockImplementationOnce(() => { throw new Error('Not found'); });
+      .mockImplementation((Etag) => {
+        if (Etag === '5-marker-genes' || Etag === 'ListGenes') return mockWorkerResponses[Etag]();
+
+        if (Etag === 'FAKEGENE-expression') { return Promise.reject(new Error('Not found')); }
+      });
 
     await renderHeatmapPage(storeState);
 
-    const genesToLoad = [...markerGenesData5.order, 'FAKEGENE'];
+    const genesToLoad = [...markerGenesData5.orderedGeneNames, 'FAKEGENE'];
 
     await act(async () => {
       await storeState.dispatch(loadGeneExpression(experimentId, genesToLoad, plotUuid));
@@ -304,7 +277,7 @@ describe('Marker heatmap plot', () => {
     const geneTree = screen.getByRole('tree');
 
     // The genes in Data 5 should be in the tree
-    markerGenesData5.order.forEach((geneName) => {
+    markerGenesData5.orderedGeneNames.forEach((geneName) => {
       expect(within(geneTree).getByText(geneName)).toBeInTheDocument();
     });
 
@@ -389,92 +362,5 @@ describe('Marker heatmap plot', () => {
     userEvent.click(clearButton);
 
     expect(searchBox.value).toBe('');
-  });
-});
-
-// drag and drop is impossible in RTL, use enzyme
-describe('Drag and drop enzyme tests', () => {
-  let component;
-  let tree;
-
-  beforeEach(async () => {
-    jest.clearAllMocks();
-
-    seekFromS3
-      .mockReset()
-      // load gene list
-      .mockImplementationOnce(() => null)
-      .mockImplementationOnce((Etag) => mockWorkerResponses[Etag])
-      // load gene expression
-      .mockImplementationOnce(() => null)
-      .mockImplementationOnce((Etag) => mockWorkerResponses[Etag]);
-
-    enableFetchMocks();
-    fetchMock.resetMocks();
-    fetchMock.doMock();
-    fetchMock.mockIf(/.*/, mockAPI(defaultResponses));
-
-    storeState = makeStore();
-
-    // Set up state for backend status
-    await storeState.dispatch(loadBackendStatus(experimentId));
-
-    component = await renderHeatmapPageForEnzyme(storeState);
-
-    await waitForComponentToPaint(component);
-
-    component.update();
-
-    // antd renders 5 elements, use the first one
-    tree = component.find({ 'data-testid': 'HierachicalTreeGenes' }).at(0);
-  });
-
-  it('changes nothing on drop in place', async () => {
-    // default genes are in the tree
-    markerGenesData5.order.forEach((geneName) => {
-      expect(tree.containsMatchingElement(geneName));
-    });
-
-    // dropping in place does nothing
-    const info = {
-      dragNode: { key: 1, pos: '0-1' },
-      dropPosition: 1,
-      node: { dragOver: false },
-    };
-
-    tree.getElement().props.onDrop(info);
-
-    await act(async () => {
-      component.update();
-    });
-
-    const newOrder = getCurrentGeneOrder(component);
-
-    expect(_.isEqual(newOrder, markerGenesData5.order)).toEqual(true);
-  });
-
-  it('re-orders genes correctly', async () => {
-    // default genes are in the tree
-    markerGenesData5.order.forEach((geneName) => {
-      expect(tree.containsMatchingElement(geneName));
-    });
-    // dropping to gap re-orders genes
-    const info = {
-      dragNode: { key: 1, pos: '0-1' },
-      dropPosition: 4,
-      node: { dragOver: false },
-    };
-
-    tree.getElement().props.onDrop(info);
-
-    await act(async () => {
-      component.update();
-    });
-
-    const newOrder = getCurrentGeneOrder(component);
-
-    const expectedOrder = arrayMoveImmutable(markerGenesData5.order, 1, 3);
-
-    expect(_.isEqual(newOrder, expectedOrder)).toEqual(true);
   });
 });

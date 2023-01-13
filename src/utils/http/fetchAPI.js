@@ -1,5 +1,5 @@
-import APIError from 'utils/http/errors/APIError';
-import FetchError from 'utils/http/errors/FetchError';
+import APIError from 'utils/errors/http/APIError';
+import FetchError from 'utils/errors/http/FetchError';
 import getApiEndpoint from 'utils/apiEndpoint';
 import getAuthJWT from 'utils/getAuthJWT';
 

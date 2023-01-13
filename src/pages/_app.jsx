@@ -7,7 +7,6 @@ import React, { useEffect, useState } from 'react';
 import Router, { useRouter } from 'next/router';
 import NProgress from 'nprogress';
 import PropTypes from 'prop-types';
-import _ from 'lodash';
 import { DefaultSeo } from 'next-seo';
 
 import { wrapper } from 'redux/store';
@@ -21,7 +20,7 @@ import { initTracking } from 'utils/tracking';
 import UnauthorizedPage from 'pages/401';
 import NotFoundPage from 'pages/404';
 import Error from 'pages/_error';
-import APIError from 'utils/http/errors/APIError';
+import APIError from 'utils/errors/http/APIError';
 
 const mockCredentialsForInframock = () => {
   Credentials.get = async () => ({
@@ -52,10 +51,17 @@ Amplify.configure({
   ssr: true,
 });
 
+const addDashesToExperimentId = (experimentId) => experimentId.replace(/(.{8})(.{4})(.{4})(.{4})(.{12})/, '$1-$2-$3-$4-$5');
+
 const WrappedApp = ({ Component, pageProps }) => {
   const { httpError, amplifyConfig } = pageProps;
   const router = useRouter();
-  const { experimentId } = router.query;
+  const { experimentId: urlExperimentId } = router.query;
+
+  // If the experimentId exists (we are not is data management) and
+  // is the old version (without dashes), then add them
+  const experimentId = !urlExperimentId || urlExperimentId.includes('-') ? urlExperimentId : addDashesToExperimentId(urlExperimentId);
+
   const experimentData = useSelector(
     (state) => (experimentId ? state.experimentSettings.info : {}),
   );
@@ -116,8 +122,8 @@ const WrappedApp = ({ Component, pageProps }) => {
           <NotFoundPage
             title='Terms agreement required'
             subTitle='You cannot access your analysis in Cellenics until you have agreed to our updated privacy policy.'
-            hint='Go to data management to accept the terms.'
-            primaryActionText='Go to data management'
+            hint='Go to Data Management to accept the terms.'
+            primaryActionText='Go to Data Management'
           />
         );
       }
@@ -197,30 +203,31 @@ WrappedApp.getInitialProps = async ({ Component, ctx }) => {
   const { default: getAuthenticationInfo } = (await import('utils/ssr/getAuthenticationInfo'));
   promises.push(getAuthenticationInfo);
 
-  let results = await Promise.all(promises.map((f) => f(ctx, store)));
-  results = _.merge(...results);
+  const results = await Promise.all(promises.map((f) => f(ctx, store)));
+  const { amplifyConfig } = results[1];
 
   try {
     const { withSSRContext } = (await import('aws-amplify'));
 
     const { Auth } = withSSRContext(ctx);
-    Auth.configure(results.amplifyConfig.Auth);
+    Auth.configure(amplifyConfig.Auth);
 
     if (query?.experimentId) {
       const { default: getExperimentInfo } = (await import('utils/ssr/getExperimentInfo'));
-      const experimentInfo = await getExperimentInfo(ctx, store, Auth);
-      results = _.merge(results, experimentInfo);
+      await getExperimentInfo(ctx, store, Auth);
     }
 
-    return { pageProps: { ...pageProps, ...results } };
+    return { pageProps: { ...pageProps, amplifyConfig } };
   } catch (e) {
+    console.error(e);
+
     if (!(e instanceof APIError)) {
       // eslint-disable-next-line no-ex-assign
       e = new APIError(500);
     }
     res.statusCode = e.statusCode;
 
-    return { pageProps: { ...pageProps, ...results, httpError: e.statusCode || true } };
+    return { pageProps: { ...pageProps, amplifyConfig, httpError: e.statusCode || true } };
   }
 };
 /* eslint-enable global-require */

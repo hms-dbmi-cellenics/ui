@@ -3,11 +3,11 @@ import { useSelector, useDispatch } from 'react-redux';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
 import {
-  Row, Col, Space, PageHeader, Collapse, Empty, Alert,
+  Row, Col, PageHeader, Radio, Collapse, Empty, Alert,
 } from 'antd';
+import SelectData from 'components/plots/styling/embedding-continuous/SelectData';
 
 import { isUnisample } from 'utils/experimentPredicates';
-import MiniPlot from 'components/plots/MiniPlot';
 
 import CategoricalEmbeddingPlot from 'components/plots/CategoricalEmbeddingPlot';
 import ContinuousEmbeddingPlot from 'components/plots/ContinuousEmbeddingPlot';
@@ -20,7 +20,7 @@ import {
 
 import PlotStyling from 'components/plots/styling/PlotStyling';
 import loadCellMeta from 'redux/actions/cellMeta';
-import generateDataProcessingPlotUuid from 'utils/generateDataProcessingPlotUuid';
+import { generateDataProcessingPlotUuid } from 'utils/generateCustomPlotUuid';
 import Loader from 'components/Loader';
 import { getCellSets } from 'redux/selectors';
 import CalculationConfig from 'components/data-processing/ConfigureEmbedding/CalculationConfig';
@@ -40,7 +40,7 @@ const ConfigureEmbedding = (props) => {
     _.debounce((plotUuid) => dispatch(savePlotConfig(experimentId, plotUuid)), 2000), [],
   );
 
-  const continuousEmbeddingPlots = ['mitochondrialContent', 'doubletScores'];
+  const continuousEmbeddingPlots = ['mitochondrialContent', 'doubletScores', 'numOfGenes', 'numOfUmis'];
 
   useEffect(() => {
     continuousEmbeddingPlots.forEach((dataName) => {
@@ -52,7 +52,7 @@ const ConfigureEmbedding = (props) => {
 
   const plots = {
     cellCluster: {
-      title: 'Colored by CellSets',
+      title: 'Cell sets',
       plotUuid: generateDataProcessingPlotUuid(null, filterName, 0),
       plotType: 'embeddingPreviewByCellSets',
       plot: (config, actions) => (
@@ -66,7 +66,7 @@ const ConfigureEmbedding = (props) => {
       ,
     },
     sample: {
-      title: 'Colored by Samples',
+      title: 'Samples',
       plotUuid: generateDataProcessingPlotUuid(null, filterName, 1),
       plotType: 'embeddingPreviewBySample',
       plot: (config, actions) => (
@@ -94,7 +94,6 @@ const ConfigureEmbedding = (props) => {
           experimentId={experimentId}
           config={config}
           actions={actions}
-          plotUuid={generateDataProcessingPlotUuid(null, filterName, 2)}
           plotData={cellMeta.mitochondrialContent.data}
           loading={cellMeta.mitochondrialContent.loading}
           error={cellMeta.mitochondrialContent.error}
@@ -104,7 +103,7 @@ const ConfigureEmbedding = (props) => {
       ),
     },
     doubletScores: {
-      title: 'Cell doublet score',
+      title: 'Doublet score',
       plotUuid: generateDataProcessingPlotUuid(null, filterName, 3),
       plotType: 'embeddingPreviewDoubletScore',
       plot: (config, actions) => (
@@ -112,7 +111,6 @@ const ConfigureEmbedding = (props) => {
           experimentId={experimentId}
           config={config}
           actions={actions}
-          plotUuid={generateDataProcessingPlotUuid(null, filterName, 2)}
           plotData={cellMeta.doubletScores.data}
           loading={cellMeta.doubletScores.loading}
           error={cellMeta.doubletScores.error}
@@ -121,95 +119,98 @@ const ConfigureEmbedding = (props) => {
         />
       ),
     },
+    numOfGenes: {
+      title: 'Number of genes',
+      plotUuid: generateDataProcessingPlotUuid(null, filterName, 4),
+      plotType: 'embeddingPreviewNumOfGenes',
+      plot: (config, actions) => (
+        <ContinuousEmbeddingPlot
+          experimentId={experimentId}
+          config={config}
+          actions={actions}
+          plotData={cellMeta.numOfGenes.data}
+          loading={cellMeta.numOfGenes.loading}
+          error={cellMeta.numOfGenes.error}
+          reloadPlotData={() => dispatch(loadCellMeta(experimentId, 'numOfGenes'))}
+          onUpdate={updatePlotWithChanges}
+        />
+      ),
+    },
+    numOfUmis: {
+      title: 'Number of UMIs',
+      plotUuid: generateDataProcessingPlotUuid(null, filterName, 5),
+      plotType: 'embeddingPreviewNumOfUmis',
+      plot: (config, actions) => (
+        <ContinuousEmbeddingPlot
+          experimentId={experimentId}
+          config={config}
+          actions={actions}
+          plotData={cellMeta.numOfUmis.data}
+          loading={cellMeta.numOfUmis.loading}
+          error={cellMeta.numOfUmis.error}
+          reloadPlotData={() => dispatch(loadCellMeta(experimentId, 'numOfUmis'))}
+          onUpdate={updatePlotWithChanges}
+        />
+      ),
+    },
   };
+  const categoricalEmbStylingControls = [
+    {
+      panelTitle: 'Colour Inversion',
+      controls: ['colourInversion'],
+      footer: <Alert
+        message='Changing plot colours is not available here. Use the Cell sets and Metadata tool in Data Exploration to customise cell set and metadata colours'
+        type='info'
+      />,
+    },
+    {
+      panelTitle: 'Markers',
+      controls: [{
+        name: 'markers',
+        props: { showShapeType: false },
+      }],
+    },
+    {
+      panelTitle: 'Legend',
+      controls: [{
+        name: 'legend',
+        props: {
+          option: {
+            positions: 'top-bottom',
+          },
+        },
+      }],
+    },
+    {
+      panelTitle: 'Labels',
+      controls: ['labels'],
+    },
+  ];
+  const continuousEmbStylingControls = [
+    {
+      panelTitle: 'Colours',
+      controls: ['colourScheme', 'colourInversion'],
+    },
+    {
+      panelTitle: 'Markers',
+      controls: [{
+        name: 'markers',
+        props: { showShapeType: false },
+      }],
+    },
+    {
+      panelTitle: 'Legend',
+      controls: ['legend'],
+    },
+  ];
 
   const plotSpecificStylingControl = {
-    sample: [
-      {
-        panelTitle: 'Colour Inversion',
-        controls: ['colourInversion'],
-        footer: <Alert
-          message='Changing plot colours is not available here. Use the Data Management tool in Data Exploration to customise cell set and metadata colours'
-          type='info'
-        />,
-      },
-      {
-        panelTitle: 'Markers',
-        controls: ['markers'],
-      },
-      {
-        panelTitle: 'Legend',
-        controls: [{
-          name: 'legend',
-          props: {
-            option: {
-              positions: 'top-bottom',
-            },
-          },
-        }],
-      },
-      {
-        panelTitle: 'Labels',
-        controls: ['labels'],
-      },
-    ],
-    cellCluster: [
-      {
-        panelTitle: 'Colours',
-        controls: ['colourInversion'],
-        footer: <Alert
-          message='Changing plot colours is not available here. Use the Data Management tool in Data Exploration to customise cell set and metadata colours'
-          type='info'
-        />,
-      },
-      {
-        panelTitle: 'Markers',
-        controls: ['markers'],
-      },
-      {
-        panelTitle: 'Legend',
-        controls: [{
-          name: 'legend',
-          props: {
-            option: {
-              positions: 'top-bottom',
-            },
-          },
-        }],
-      },
-      {
-        panelTitle: 'Labels',
-        controls: ['labels'],
-      },
-    ],
-    mitochondrialContent: [
-      {
-        panelTitle: 'Colours',
-        controls: ['colourScheme', 'colourInversion'],
-      },
-      {
-        panelTitle: 'Markers',
-        controls: ['markers'],
-      },
-      {
-        panelTitle: 'Legend',
-        controls: ['legend'],
-      },
-    ],
-    doubletScores: [
-      {
-        panelTitle: 'Colours',
-        controls: ['colourScheme', 'colourInversion'],
-      },
-      {
-        panelTitle: 'Markers',
-        controls: ['markers'],
-      },
-      {
-        panelTitle: 'Legend',
-        controls: ['legend'],
-      },
-    ],
+    sample: categoricalEmbStylingControls,
+    cellCluster: categoricalEmbStylingControls,
+    mitochondrialContent: continuousEmbStylingControls,
+    doubletScores: continuousEmbStylingControls,
+    numOfGenes: continuousEmbStylingControls,
+    numOfUmis: continuousEmbStylingControls,
   };
 
   const plotStylingControlsConfig = [
@@ -229,7 +230,7 @@ const ConfigureEmbedding = (props) => {
     },
     {
       panelTitle: 'Axes and margins',
-      controls: ['axes'],
+      controls: ['axesWithRanges'],
     },
     ...plotSpecificStylingControl[selectedPlot],
   ];
@@ -287,6 +288,16 @@ const ConfigureEmbedding = (props) => {
     debounceSave(plots[selectedPlot].plotUuid);
   };
 
+  const renderExtraControlPanels = () => (
+    <Panel header='Select data' key='select-data'>
+      <SelectData
+        config={selectedConfig}
+        onUpdate={updatePlotWithChanges}
+        cellSets={cellSets}
+      />
+    </Panel>
+  );
+
   const renderPlot = () => {
     // Spinner for main window
     if (!selectedConfig) {
@@ -314,6 +325,11 @@ const ConfigureEmbedding = (props) => {
     }
   };
 
+  const radioStyle = {
+    display: 'block',
+    height: '30px',
+  };
+
   return (
     <>
       <PageHeader
@@ -326,42 +342,27 @@ const ConfigureEmbedding = (props) => {
         </Col>
 
         <Col flex='1 0px'>
-          <Space direction='vertical'>
-            {Object.entries(plots).map(([key, plotObj]) => (
-              <button
-                type='button'
-                key={key}
-                onClick={() => setSelectedPlot(key)}
-                style={{
-                  margin: 0,
-                  backgroundColor: 'transparent',
-                  align: 'center',
-                  padding: '8px',
-                  border: '1px solid #000',
-                  cursor: 'pointer',
-                }}
-              >
-                <MiniPlot
-                  experimentId={experimentId}
-                  plotUuid={plotObj.plotUuid}
-                  plotFn={plotObj.plot}
-                  actions={false}
-                />
-              </button>
+          <Collapse defaultActiveKey={['plot-selector']}>
+            <Panel header='Plot view' key='plot-selector'>
+              <Radio.Group onChange={(e) => setSelectedPlot(e.target.value)} value={selectedPlot}>
+                {Object.entries(plots).map(([key, plotObj]) => (
+                  <Radio key={key} style={radioStyle} value={key}>
+                    {plotObj.title}
+                  </Radio>
+                ))}
+              </Radio.Group>
+            </Panel>
+          </Collapse>
 
-            ))}
-          </Space>
-        </Col>
-
-        <Col flex='1 0px'>
           <CalculationConfig experimentId={experimentId} onConfigChange={onConfigChange} />
           <Collapse>
-            <Panel header='Plot styling' key='styling'>
+            <Panel header='Plot options' key='styling'>
               <div style={{ height: 8 }} />
               <PlotStyling
                 formConfig={plotStylingControlsConfig}
                 config={selectedConfig}
                 onUpdate={updatePlotWithChanges}
+                extraPanels={renderExtraControlPanels()}
               />
             </Panel>
           </Collapse>

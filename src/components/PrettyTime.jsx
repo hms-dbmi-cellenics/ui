@@ -1,31 +1,38 @@
 import React, { useState } from 'react';
-import moment from 'moment';
+import dayjs from 'dayjs';
+import relativeTimePlugin from 'dayjs/plugin/relativeTime';
+import localizedFormatPlugin from 'dayjs/plugin/localizedFormat';
 import PropTypes from 'prop-types';
+
+dayjs.extend(relativeTimePlugin);
+dayjs.extend(localizedFormatPlugin);
+dayjs.locale('en-US');
 
 const PrettyTime = (props) => {
   const { isoTime } = props;
 
-  moment.locale('en-US');
-  const relativeTime = moment(isoTime).fromNow();
-  const localIsoTime = moment(isoTime).format('LLLL');
+  const relativeTime = dayjs(isoTime).fromNow();
+  const localIsoTime = dayjs(isoTime).format('LLLL');
 
   const [displayedTime, setDisplayedTime] = useState(relativeTime);
 
   return (
-
     <span
       style={{ textDecoration: 'underline dotted' }}
       onMouseEnter={() => setDisplayedTime(`on ${localIsoTime}`)}
       onMouseLeave={() => setDisplayedTime(relativeTime)}
     >
-      {displayedTime}
+      {!isoTime ? 'invalid date' : displayedTime}
     </span>
-
   );
 };
 
 PrettyTime.propTypes = {
-  isoTime: PropTypes.string.isRequired,
+  isoTime: PropTypes.string,
+};
+
+PrettyTime.defaultProps = {
+  isoTime: null,
 };
 
 export default PrettyTime;

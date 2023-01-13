@@ -12,6 +12,16 @@ Object {
     "error": "error",
     "loading": false,
   },
+  "numOfGenes": Object {
+    "data": Array [],
+    "error": false,
+    "loading": true,
+  },
+  "numOfUmis": Object {
+    "data": Array [],
+    "error": false,
+    "loading": true,
+  },
 }
 `;
 
@@ -31,6 +41,16 @@ Object {
     "error": false,
     "loading": false,
   },
+  "numOfGenes": Object {
+    "data": Array [],
+    "error": false,
+    "loading": true,
+  },
+  "numOfUmis": Object {
+    "data": Array [],
+    "error": false,
+    "loading": true,
+  },
 }
 `;
 
@@ -42,6 +62,16 @@ Object {
     "loading": true,
   },
   "mitochondrialContent": Object {
+    "data": Array [],
+    "error": false,
+    "loading": true,
+  },
+  "numOfGenes": Object {
+    "data": Array [],
+    "error": false,
+    "loading": true,
+  },
+  "numOfUmis": Object {
     "data": Array [],
     "error": false,
     "loading": true,

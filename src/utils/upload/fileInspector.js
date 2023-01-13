@@ -1,7 +1,8 @@
 import { Gunzip } from 'fflate';
 
-import techOptions from './fileUploadSpecifications';
-import readFileToBuffer from './readFileToBuffer';
+import { sampleTech } from 'utils/constants';
+import techOptions from 'utils/upload/fileUploadSpecifications';
+import readFileToBuffer from 'utils/upload/readFileToBuffer';
 
 const Verdict = {
   INVALID_NAME: -2,
@@ -15,11 +16,15 @@ const MATRIX_SIGNATURE = Buffer.from('%%MatrixMarket');
 const GZIP_SIGNATURE = Buffer.from([0x1f, 0x8b]);
 
 const inspectFile = async (file, technology) => {
-  if (technology === '10X Chromium') {
+  if (technology === sampleTech['10X']) {
     return inspect10XFile(file, technology);
-  } if (technology === 'Seurat') {
+  } if (technology === sampleTech.SEURAT) {
     return inspectSeuratFile(file, technology);
+  } if (technology === sampleTech.RHAPSODY) {
+    return inspectRhapsodyFile(file);
   }
+
+  return Verdict.INVALID_FORMAT;
 };
 
 const inspect10XFile = async (file, technology) => {
@@ -81,6 +86,17 @@ const inspectSeuratFile = async (file, technology) => {
   }
 
   return Verdict.VALID_ZIPPED;
+};
+
+const inspectRhapsodyFile = async (file) => {
+  if (!file.name.toLowerCase().includes('expression_data.st')) {
+    return Verdict.INVALID_NAME;
+  }
+
+  const data = await readFileToBuffer(file.slice(0, 16));
+  const isGzipped = !data.slice(0, 2).compare(GZIP_SIGNATURE);
+  const valid = isGzipped ? Verdict.VALID_ZIPPED : Verdict.VALID_UNZIPPED;
+  return valid;
 };
 
 export {

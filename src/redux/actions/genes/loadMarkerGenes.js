@@ -1,8 +1,10 @@
+import { SparseMatrix } from 'mathjs';
+
 import {
   MARKER_GENES_ERROR, MARKER_GENES_LOADING, MARKER_GENES_LOADED,
 } from 'redux/actionTypes/genes';
 
-import { fetchWork } from 'utils/work/fetchWork';
+import fetchWork from 'utils/work/fetchWork';
 import getTimeoutForWorkerTask from 'utils/getTimeoutForWorkerTask';
 import handleError from 'utils/http/handleError';
 import endUserMessages from 'utils/endUserMessages';
@@ -26,16 +28,29 @@ const loadMarkerGenes = (
   try {
     const timeout = getTimeoutForWorkerTask(getState(), 'MarkerHeatmap');
 
-    const data = await fetchWork(experimentId, body, getState, { timeout });
-    const { data: markerGeneExpressions, order } = data;
+    const {
+      orderedGeneNames,
+      rawExpression: rawExpressionJson,
+      truncatedExpression: truncatedExpressionJson,
+      zScore: zScoreJson,
+      stats,
+    } = await fetchWork(experimentId, body, getState, dispatch, { timeout });
+
+    const rawExpression = SparseMatrix.fromJSON(rawExpressionJson);
+    const truncatedExpression = SparseMatrix.fromJSON(truncatedExpressionJson);
+    const zScore = SparseMatrix.fromJSON(zScoreJson);
 
     dispatch({
       type: MARKER_GENES_LOADED,
       payload: {
-        experimentId,
-        genes: order,
-        data: markerGeneExpressions,
         plotUuid,
+        data: {
+          orderedGeneNames,
+          rawExpression,
+          truncatedExpression,
+          zScore,
+          stats,
+        },
       },
     });
   } catch (e) {
@@ -43,7 +58,6 @@ const loadMarkerGenes = (
     dispatch({
       type: MARKER_GENES_ERROR,
       payload: {
-        experimentId,
         error: errorMessage,
       },
     });

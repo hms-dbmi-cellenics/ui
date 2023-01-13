@@ -6,13 +6,14 @@ const fileTypes = {
   features: 'features10x',
   genes: 'features10x',
   '.rds': 'seurat',
+  expression_data: 'rhapsody',
 };
 
 const getFileTypeV2 = (fileName) => {
   let fileType;
 
   _.forEach(Object.entries(fileTypes), ([name, type]) => {
-    if (fileName.includes(name)) {
+    if (fileName.toLowerCase().includes(name)) {
       fileType = type;
       return false;
     }

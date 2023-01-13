@@ -1,22 +1,16 @@
-import moment from 'moment';
+import dayjs from 'dayjs';
 
 import { SAMPLES_FILE_UPDATE } from 'redux/actionTypes/samples';
 import endUserMessages from 'utils/endUserMessages';
 import fetchAPI from 'utils/http/fetchAPI';
 import handleError from 'utils/http/handleError';
 import UploadStatus from 'utils/upload/UploadStatus';
-
-const fileNameForApiV1 = {
-  matrix10x: 'matrix.mtx.gz',
-  barcodes10x: 'barcodes.tsv.gz',
-  features10x: 'features.tsv.gz',
-  seurat: 'r.rds',
-};
+import fileNameForApiV1 from 'utils/upload/fileNameForApiV1';
 
 const updateSampleFileUpload = (
   experimentId, sampleId, type, uploadStatus, uploadProgress,
 ) => async (dispatch) => {
-  const updatedAt = moment().toISOString();
+  const updatedAt = dayjs().toISOString();
 
   // Don't send an api update whenever the progress bar is updated, only for uploadStatus changes
   // TODO: move progress to not even be a part of redux, manage it in a different way

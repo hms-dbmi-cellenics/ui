@@ -10,7 +10,7 @@ import { saveAs } from 'file-saver';
 import downloadTypes from 'utils/data-management/downloadTypes';
 import fetchAPI from 'utils/http/fetchAPI';
 import endUserMessages from 'utils/endUserMessages';
-import downloadFromUrl from 'utils/data-management/downloadFromUrl';
+import downloadFromUrl from 'utils/downloadFromUrl';
 import pipelineStatus from 'utils/pipelineStatusValues';
 import { exportQCParameters, filterQCParameters } from 'utils/data-management/exportQCParameters';
 
@@ -82,24 +82,6 @@ const DownloadDataButton = () => {
     <Dropdown
       overlay={() => (
         <Menu>
-          <Menu.Item
-            key='download-raw-seurat'
-            disabled={!gem2sHasRun || backendLoading}
-            onClick={() => {
-              downloadExperimentData('biomage-source');
-            }}
-          >
-            <Tooltip
-              title={
-                gem2sHasRun
-                  ? 'Samples have been merged'
-                  : 'Launch analysis to merge samples'
-              }
-              placement='left'
-            >
-              Raw Seurat object (.rds)
-            </Tooltip>
-          </Menu.Item>
           <Menu.Item
             key='download-processed-seurat'
             disabled={!qcHasRun || backendLoading}

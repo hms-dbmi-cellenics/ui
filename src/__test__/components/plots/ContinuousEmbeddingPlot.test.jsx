@@ -1,7 +1,6 @@
 import React from 'react';
 import { act } from 'react-dom/test-utils';
 import { screen, render } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import { Provider } from 'react-redux';
 import { makeStore } from 'redux/store';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
@@ -18,7 +17,9 @@ import createTestComponentFactory from '__test__/test-utils/testComponentFactory
 import fake from '__test__/test-utils/constants';
 import mockEmbedding from '__test__/data/embedding.json';
 import mockGeneExpression from '__test__/data/gene_expression.json';
-import WorkResponseError from 'utils/http/errors/WorkResponseError';
+
+import WorkResponseError from 'utils/errors/http/WorkResponseError';
+import { getExpressionMatrixFromWorkResult } from '__test__/utils/ExpressionMatrix/testMatrixes';
 
 enableFetchMocks();
 
@@ -47,10 +48,9 @@ const mockWorkerResponses = {
 
 const defaultAPIResponse = generateDefaultMockAPIResponses(experimentId);
 
-const {
-  truncatedExpression: { expression: truncatedPlotData },
-  rawExpression: { expression: plotData },
-} = mockGeneExpression.TestGene;
+const matrix = getExpressionMatrixFromWorkResult(mockGeneExpression);
+const truncatedPlotData = matrix.getTruncatedExpression('TestGene');
+const plotData = matrix.getRawExpression('TestGene');
 
 const defaultProps = {
   experimentId,

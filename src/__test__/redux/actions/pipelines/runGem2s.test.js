@@ -9,11 +9,6 @@ import {
   EXPERIMENT_SETTINGS_QC_START,
 } from 'redux/actionTypes/experimentSettings';
 
-import {
-  BACKEND_STATUS_LOADING,
-  BACKEND_STATUS_ERROR,
-} from 'redux/actionTypes/backendStatus';
-
 import { runGem2s } from 'redux/actions/pipeline';
 
 const mockStore = configureStore([thunk]);
@@ -67,9 +62,8 @@ describe('runGem2s action', () => {
     await store.dispatch(runGem2s(experimentId));
 
     const actions = store.getActions();
+    expect(actions[0].type).toEqual(EXPERIMENT_SETTINGS_QC_START);
 
-    expect(actions[0].type).toEqual(BACKEND_STATUS_LOADING);
-    expect(actions[1].type).toEqual(EXPERIMENT_SETTINGS_QC_START);
     expect(loadBackendStatus).toHaveBeenCalled();
 
     expect(actions).toMatchSnapshot();
@@ -82,13 +76,7 @@ describe('runGem2s action', () => {
     const store = mockStore(initialState);
     await store.dispatch(runGem2s(experimentId));
 
-    const actions = store.getActions();
-
-    expect(actions[0].type).toEqual(BACKEND_STATUS_LOADING);
-    expect(loadBackendStatus).not.toHaveBeenCalled();
-    expect(actions[1].type).toEqual(BACKEND_STATUS_ERROR);
-
-    expect(actions).toMatchSnapshot();
+    expect(loadBackendStatus).toHaveBeenCalled();
   });
 
   it('Dispatches properly without project data', async () => {

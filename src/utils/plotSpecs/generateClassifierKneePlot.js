@@ -37,6 +37,15 @@ const generateSpec = (config, { FDR }, plotData) => {
   // format with commas for thousandths
   const formatInt = (int) => int.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 
+  // plot is in log scale, minimum shouldn't be below 1
+  const xScaleDomain = config.axesRanges.xAxisAuto
+    ? { data: 'plotData', field: 'rank' }
+    : [Math.max(config.axesRanges.xMin, 1), config.axesRanges.xMax];
+
+  const yScaleDomain = config.axesRanges.yAxisAuto
+    ? { data: 'plotData', field: 'u' }
+    : [Math.max(config.axesRanges.yMin, 1), config.axesRanges.yMax];
+
   legend = !config.legend.enabled ? null : [
     {
       fill: 'keep',
@@ -146,14 +155,14 @@ const generateSpec = (config, { FDR }, plotData) => {
         name: 'xscale',
         type: 'log',
         range: 'width',
-        domain: { data: 'plotData', field: 'rank' },
+        domain: xScaleDomain,
       },
       {
         name: 'yscale',
         type: 'log',
         nice: true,
         range: 'height',
-        domain: { data: 'plotData', field: 'u' },
+        domain: yScaleDomain,
       },
       {
         name: 'color',

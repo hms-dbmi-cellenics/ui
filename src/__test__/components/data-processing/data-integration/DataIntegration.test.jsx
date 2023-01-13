@@ -1,21 +1,20 @@
 import React from 'react';
-import { mount } from 'enzyme';
 import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
-import { Vega } from 'react-vega';
 import { mockCellSets } from '__test__/test-utils/cellSets.mock';
 
 import DataIntegration from 'components/data-processing/DataIntegration/DataIntegration';
-import CalculationConfig from 'components/data-processing/DataIntegration/CalculationConfig';
 
 import { initialPlotConfigStates } from 'redux/reducers/componentConfig/initialState';
 import { initialEmbeddingState } from 'redux/reducers/embeddings/initialState';
-import generateDataProcessingPlotUuid from 'utils/generateDataProcessingPlotUuid';
+import { generateDataProcessingPlotUuid } from 'utils/generateCustomPlotUuid';
 
 import { getBackendStatus, getCellSets } from 'redux/selectors';
 import generateExperimentSettingsMock from '__test__/test-utils/experimentSettings.mock';
 import '__test__/test-utils/setupTests';
+import { screen, render } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 
 jest.mock('redux/selectors');
 
@@ -29,6 +28,10 @@ const configureEmbeddingFilterName = 'configureEmbedding';
 const mockStore = configureStore([thunk]);
 
 const initialExperimentState = generateExperimentSettingsMock([]);
+
+const embeddingsPlotTitle = 'Embedding coloured by sample';
+const elbowPlotTitle = 'Elbow plot showing principal components';
+const frequencyPlotTitle = 'Frequency plot coloured by sample';
 
 const mockedStore = mockStore({
   embeddings: {
@@ -68,96 +71,91 @@ const mockedStore = mockStore({
 
 describe('DataIntegration', () => {
   beforeEach(() => {
-    getCellSets.mockReturnValue(() => (mockCellSets));
+    getCellSets.mockReturnValue(() => ({ accessible: true, ...mockCellSets }));
   });
+  const renderDataIntegration = async () => await render(
+    <Provider store={mockedStore}>
+      <DataIntegration
+        experimentId='1234'
+        onPipelineRun={jest.fn()}
+        onConfigChange={jest.fn()}
+      />
+    </Provider>,
+  );
 
-  it('renders correctly', () => {
+  it('renders correctly', async () => {
     getBackendStatus.mockReturnValue(() => ({
       loading: false,
       error: false,
       status: { pipeline: { completedSteps: ['ConfigureEmbedding'] } },
     }));
 
-    const store = mockedStore;
-    const component = mount(
-      <Provider store={store}>
-        <DataIntegration
-          experimentId='1234'
-          onPipelineRun={jest.fn()}
-          onConfigChange={jest.fn()}
-        />
-      </Provider>,
-    );
+    await renderDataIntegration();
+    screen.debug(null, Infinity);
 
-    const dataIntegration = component.find(DataIntegration).at(0);
-    const calculationConfig = dataIntegration.find(CalculationConfig);
+    expect(screen.getByText('Plot view')).toBeDefined();
+    expect(screen.getByText('Data Integration')).toBeDefined();
+    expect(screen.getByText('Downsampling Options')).toBeDefined();
+    expect(screen.getByText('Plot styling')).toBeDefined();
 
-    // There is a config element
-    expect(calculationConfig.length).toEqual(1);
-
-    const plots = dataIntegration.find(Vega);
-
-    // There are 4 plots (1 main and 3 miniatures)
-    expect(plots.length).toEqual(4);
+    const plots = screen.getAllByRole('graphics-document');
+    expect(plots.length).toEqual(1);
   });
 
-  it('doesnt show plots that depend on configure embedding if it hasnt finished running yet', () => {
+  it('allows selecting other plots', async () => {
+    getBackendStatus.mockReturnValue(() => ({
+      loading: false,
+      error: false,
+      status: { pipeline: { completedSteps: ['ConfigureEmbedding'] } },
+    }));
+
+    await renderDataIntegration();
+    const plots = [frequencyPlotTitle, elbowPlotTitle, embeddingsPlotTitle];
+
+    plots.forEach((plot) => {
+      userEvent.click(screen.getByText(plot));
+      // check that there are two elements with the plot name:
+      // * the main plot title
+      // * the plot view selector
+      expect(screen.getAllByText(plot).length).toEqual(2);
+    });
+  });
+
+  it('doesnt show plots that depend on configure embedding if it hasnt finished running yet', async () => {
     getBackendStatus.mockReturnValue(() => ({
       loading: false,
       error: false,
       status: { pipeline: { completedSteps: [] } },
     }));
-    const store = mockedStore;
 
-    const component = mount(
-      <Provider store={store}>
-        <DataIntegration
-          experimentId='1234'
-          width={50}
-          height={50}
-        />
-      </Provider>,
-    );
+    await renderDataIntegration();
 
-    const dataIntegration = component.find(DataIntegration).at(0);
-    const calculationConfig = dataIntegration.find(CalculationConfig);
+    // embeddings & frequency plots depend on configure embeddings, if the step
+    // has not been completed they both should show the mssage "Nothing to show yet"
+    // we don't have to click the embedding as it's shown by default
+    expect(screen.getByText('Nothing to show yet')).toBeInTheDocument();
 
-    // There is a config element
-    expect(calculationConfig.length).toEqual(1);
+    userEvent.click(screen.getByText(frequencyPlotTitle));
+    expect(screen.queryByText('Nothing to show yet')).toBeInTheDocument();
 
-    // Only elbow plot is shown
-    expect(dataIntegration.find('ElbowPlot')).toHaveLength(1);
-    expect(dataIntegration.find('CategoricalEmbeddingPlot')).toHaveLength(0);
-    expect(dataIntegration.find('FrequencyPlot')).toHaveLength(0);
+    // elbow plot does not depend on the configure embedding step
+    userEvent.click(screen.getByText(elbowPlotTitle));
+    expect(screen.queryByText('Nothing to show yet')).not.toBeInTheDocument();
   });
 
-  it('doesnt crash if backend status is null', () => {
+  it('doesnt crash if backend status is null', async () => {
     getBackendStatus.mockReturnValue(() => ({
       loading: false,
       error: false,
       status: null,
     }));
-    const store = mockedStore;
 
-    const component = mount(
-      <Provider store={store}>
-        <DataIntegration
-          experimentId='1234'
-          width={50}
-          height={50}
-        />
-      </Provider>,
-    );
+    await renderDataIntegration();
 
-    const dataIntegration = component.find(DataIntegration).at(0);
-    const calculationConfig = dataIntegration.find(CalculationConfig);
+    expect(screen.getByText('Plot view')).toBeDefined();
+    expect(screen.getByText('Data Integration')).toBeDefined();
+    expect(screen.getByText('Plot styling')).toBeDefined();
 
-    // There is a config element
-    expect(calculationConfig.length).toEqual(1);
-
-    // Only elbow plot is shown
-    expect(dataIntegration.find('ElbowPlot')).toHaveLength(1);
-    expect(dataIntegration.find('CategoricalEmbeddingPlot')).toHaveLength(0);
-    expect(dataIntegration.find('FrequencyPlot')).toHaveLength(0);
+    expect(screen.getByText('Nothing to show yet')).toBeInTheDocument();
   });
 });

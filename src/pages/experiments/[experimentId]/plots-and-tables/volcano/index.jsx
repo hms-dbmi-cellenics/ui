@@ -5,7 +5,8 @@ import {
   Empty,
 } from 'antd';
 import { useSelector, useDispatch } from 'react-redux';
-import moment from 'moment';
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
 import _ from 'lodash';
 import ExportAsCSV from 'components/plots/ExportAsCSV';
 import PropTypes from 'prop-types';
@@ -28,6 +29,9 @@ import Loader from 'components/Loader';
 import { generateSpec } from 'utils/plotSpecs/generateVolcanoSpec';
 import calculateVolcanoDataPoints from 'components/plots/helpers/calculateVolcanoDataPoints';
 import { plotNames } from 'utils/constants';
+import 'vega-webgl-renderer';
+
+dayjs.extend(utc);
 
 const { Panel } = Collapse;
 
@@ -93,13 +97,7 @@ const VolcanoPlotPage = (props) => {
   const plotStylingConfig = [
     {
       panelTitle: 'Main schema',
-      controls: [{
-        name: 'volcanoDimensions',
-        props: {
-          xMax: 20,
-          yMax: maxYAxis * 2,
-        },
-      }],
+      controls: ['dimensions'],
       children: [
         {
           panelTitle: 'Title',
@@ -117,7 +115,7 @@ const VolcanoPlotPage = (props) => {
     },
     {
       panelTitle: 'Axes and margins',
-      controls: ['axes'],
+      controls: ['axesWithRanges'],
     },
     {
       panelTitle: 'Colours',
@@ -128,7 +126,7 @@ const VolcanoPlotPage = (props) => {
       controls: ['markers'],
     },
     {
-      panelTitle: 'Add Labels',
+      panelTitle: 'Add labels',
       controls: [{
         name: 'volcanoLabels',
         props: {
@@ -168,7 +166,7 @@ const VolcanoPlotPage = (props) => {
       compareWith = getCellSetKey(compareWith);
     }
 
-    const date = moment.utc().format('YYYY-MM-DD-HH-mm-ss');
+    const date = dayjs.utc().format('YYYY-MM-DD-HH-mm-ss');
     const fileName = `de_${experimentId}_${cellSet}_vs_${compareWith}_${date}.csv`;
     const disabled = plotData.length === 0 || diffExprLoading || diffExprError;
 
@@ -213,7 +211,7 @@ const VolcanoPlotPage = (props) => {
       return <Loader experimentId={experimentId} />;
     }
 
-    return <Vega spec={spec} renderer='canvas' />;
+    return <Vega spec={spec} renderer='webgl' />;
   };
 
   const renderExtraPanels = () => (

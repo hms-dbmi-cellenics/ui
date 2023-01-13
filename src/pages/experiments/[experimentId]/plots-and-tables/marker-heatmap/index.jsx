@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import {
-  Space,
   Collapse,
   Skeleton,
   Empty,
@@ -10,6 +9,8 @@ import _ from 'lodash';
 import { useSelector, useDispatch } from 'react-redux';
 import { Vega } from 'react-vega';
 import PropTypes from 'prop-types';
+import 'vega-webgl-renderer';
+
 import pushNotificationMessage from 'utils/pushNotificationMessage';
 import endUserMessages from 'utils/endUserMessages';
 
@@ -38,7 +39,7 @@ import ScrollOnDrag from 'components/plots/ScrollOnDrag';
 const { Panel } = Collapse;
 const plotUuid = 'markerHeatmapPlotMain';
 const plotType = 'markerHeatmap';
-const searchBarUuid = 'geneSearchBar';
+const geneListUuid = 'geneList';
 
 const MarkerHeatmap = ({ experimentId }) => {
   const dispatch = useDispatch();
@@ -120,7 +121,7 @@ const MarkerHeatmap = ({ experimentId }) => {
     const getCellIdsForCluster = (clusterId) => properties[clusterId].cellIds;
 
     const getAverageExpressionForGene = (gene, currentCellIds) => {
-      const expressionValues = expressionData.data[gene].rawExpression.expression;
+      const expressionValues = expressionData.matrix.getRawExpression(gene);
       let totalValue = 0;
       currentCellIds.forEach((cellId) => {
         totalValue += expressionValues[cellId];
@@ -139,6 +140,7 @@ const MarkerHeatmap = ({ experimentId }) => {
           maxAverageExpression.clusterId = clusterIndx;
         }
       });
+
       return maxAverageExpression.clusterId;
     };
 
@@ -156,6 +158,7 @@ const MarkerHeatmap = ({ experimentId }) => {
         }
       });
     });
+
     return newOrder;
   };
 
@@ -205,8 +208,8 @@ const MarkerHeatmap = ({ experimentId }) => {
     }
 
     const cellOrder = populateHeatmapData(cellSets, config, true);
-    const data = generateVegaData(cellOrder, expressionData, config, cellSets);
 
+    const data = generateVegaData(cellOrder, expressionData, config, cellSets);
     const spec = generateSpec(config, 'Cluster ID', data, true);
 
     spec.description = 'Marker heatmap';
@@ -246,7 +249,7 @@ const MarkerHeatmap = ({ experimentId }) => {
       pageSizeFilter: null,
     };
 
-    dispatch(loadPaginatedGeneProperties(experimentId, ['dispersions'], searchBarUuid, state));
+    dispatch(loadPaginatedGeneProperties(experimentId, ['dispersions'], geneListUuid, state));
   }, []);
 
   const treeScrollable = document.getElementById('ScrollWrapper');
@@ -302,6 +305,14 @@ const MarkerHeatmap = ({ experimentId }) => {
     dispatch(loadGeneExpression(experimentId, genes, plotUuid));
   };
 
+  const onGenesSelect = (genes) => {
+    const allGenes = _.uniq([...config?.selectedGenes, ...genes]);
+
+    if (_.isEqual(allGenes, config?.selectedGenes)) return;
+
+    dispatch(loadGeneExpression(experimentId, allGenes, plotUuid));
+  };
+
   const onReset = () => {
     onGenesChange([]);
     dispatch(loadMarkerGenes(
@@ -323,11 +334,11 @@ const MarkerHeatmap = ({ experimentId }) => {
         <MarkerGeneSelection
           config={config}
           plotUuid={plotUuid}
-          searchBarUuid={searchBarUuid}
-          experimentId={experimentId}
+          genesToDisable={config.selectedGenes}
           onUpdate={updatePlotWithChanges}
           onReset={onReset}
           onGenesChange={onGenesChange}
+          onGenesSelect={onGenesSelect}
         />
         <div style={{ paddingTop: '10px' }}>
           <p>Gene labels:</p>
@@ -435,7 +446,7 @@ const MarkerHeatmap = ({ experimentId }) => {
     }
 
     if (vegaSpec) {
-      return <Vega spec={vegaSpec} renderer='canvas' />;
+      return <Vega spec={vegaSpec} renderer='webgl' />;
     }
   };
 

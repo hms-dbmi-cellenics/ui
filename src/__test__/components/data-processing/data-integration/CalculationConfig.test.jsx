@@ -1,71 +1,98 @@
 import React from 'react';
-import _ from 'lodash';
-import {
-  Form, Select,
-} from 'antd';
-import { mount } from 'enzyme';
+import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
-import { Provider } from 'react-redux';
-import { act } from 'react-dom/test-utils';
+import { mockCellSets } from '__test__/test-utils/cellSets.mock';
+import { downsamplingMethods } from 'utils/constants';
 
-import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
+import { initialPlotConfigStates } from 'redux/reducers/componentConfig/initialState';
+import { initialEmbeddingState } from 'redux/reducers/embeddings/initialState';
+import { generateDataProcessingPlotUuid } from 'utils/generateCustomPlotUuid';
 
-import {
-  EXPERIMENT_SETTINGS_NON_SAMPLE_FILTER_UPDATE,
-} from 'redux/actionTypes/experimentSettings';
-import generateDataProcessingPlotUuid from 'utils/generateDataProcessingPlotUuid';
-import CalculationConfig from 'components/data-processing/DataIntegration/CalculationConfig';
-import generateExperimentSettingsMock from '../../../test-utils/experimentSettings.mock';
+import generateExperimentSettingsMock from '__test__/test-utils/experimentSettings.mock';
 import '__test__/test-utils/setupTests';
 
-enableFetchMocks();
+import { screen, render, fireEvent } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import CalculationConfig from 'components/data-processing/DataIntegration/CalculationConfig';
+import fake from '__test__/test-utils/constants';
+
+jest.mock('redux/selectors');
+
+const dataIntegrationEmbeddingConfig = initialPlotConfigStates.dataIntegrationEmbedding;
+const dataIntegrationFrequencyConfig = initialPlotConfigStates.dataIntegrationFrequency;
+const dataIntegrationElbowConfig = initialPlotConfigStates.dataIntegrationElbow;
+
+const filterName = 'dataIntegration';
+const configureEmbeddingFilterName = 'configureEmbedding';
+
 const mockStore = configureStore([thunk]);
 
 const initialExperimentState = generateExperimentSettingsMock([]);
 
-describe('Data Integration Calculation Config', () => {
-  const filterName = 'dataIntegration';
+const PCObject = () => ({ PC: 1, percent: 0.02, percentVariance: 0.02 });
 
-  const onConfigChange = jest.fn(() => { });
+const initialState = {
+  embeddings: {
+    ...initialEmbeddingState,
+    umap: {
+      data: [
+        [1, 2],
+        [3, 4],
+        [5, 6],
+        [7, 8],
+        [9, 10],
+        [11, 12],
+      ],
+      loading: false,
+      error: false,
+    },
+  },
 
-  const PCObject = () => ({ PC: 1, percent: 0.02, percentVariance: 0.02 });
-  const storeState = {
-    experimentSettings: {
-      ...initialExperimentState,
+  cellSets: mockCellSets,
+  experimentSettings: {
+    ...initialExperimentState,
+  },
+  componentConfig: {
+    [generateDataProcessingPlotUuid(null, filterName, 1)]: {
+      config: dataIntegrationElbowConfig,
+      plotData: Array(50).fill(PCObject()),
     },
-    componentConfig: {
-      [generateDataProcessingPlotUuid(null, filterName, 1)]: {
-        config: {},
-        plotData: Array(50).fill(PCObject()),
-      },
+    dataIntegrationFrequency: {
+      config: dataIntegrationFrequencyConfig,
+      plotData: [],
     },
+    [generateDataProcessingPlotUuid(null, configureEmbeddingFilterName, 1)]: {
+      config: dataIntegrationEmbeddingConfig,
+      plotData: [],
+    },
+  },
+
+};
+
+describe('DataIntegration.CalculationConfig', () => {
+  const renderCalculationConfig = async (storeState) => {
+    const mockedStore = mockStore(storeState);
+    return await render(
+      <Provider store={mockedStore}>
+        <CalculationConfig
+          experimentId={fake.EXPERIMENT_ID}
+          changedFilters={{ current: new Set() }}
+          onConfigChange={jest.fn()}
+        />
+      </Provider>,
+    );
   };
 
-  beforeEach(async () => {
-    const response = new Response(
-      JSON.stringify(
-        {
-          processingConfig:
-            { ...initialExperimentState },
-        },
-      ),
-    );
+  it('renders correctly when data is in the store', async () => {
+    await renderCalculationConfig(initialState);
 
-    fetchMock.resetMocks();
-    fetchMock.doMock();
-    fetchMock.mockResolvedValue(response);
+    expect(screen.getByText('Data Integration')).toBeDefined();
+    expect(screen.getByText('Downsampling Options')).toBeDefined();
   });
 
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
-
-  const experimentId = '1234';
-  const config = storeState.experimentSettings.processing.dataIntegration;
-
-  it('renders correctly when nothing is loaded', () => {
-    const store = mockStore({
+  it('renders correctly when nothing is loaded', async () => {
+    const state = {
       embeddings: {},
       experimentSettings: {
         ...initialExperimentState,
@@ -76,85 +103,51 @@ describe('Data Integration Calculation Config', () => {
           plotData: [],
         },
       },
-    });
+    };
 
-    const component = mount(
-      <Provider store={store}>
-        <CalculationConfig
-          experimentId={experimentId}
-          changedFilters={{ current: new Set() }}
-          config={config}
-          onConfigChange={onConfigChange}
-        />
-      </Provider>,
-    );
-
-    // As there is no state implemented yet
-    // There should be a form loaded.
-    const form = component.find(Form);
-    expect(form.length).toBeGreaterThan(0);
+    await renderCalculationConfig(state);
   });
 
-  it('renders correctly when the data is in the store', () => {
-    const store = mockStore(storeState);
+  it('downsampling options disabled by default', async () => {
+    await renderCalculationConfig(initialState);
 
-    const component = mount(
-      <Provider store={store}>
-        <CalculationConfig
-          experimentId={experimentId}
-          changedFilters={{ current: new Set() }}
-          config={config}
-          onConfigChange={onConfigChange}
-        />
-      </Provider>,
-    );
-
-    // There should no spinner anymore.
-    const spin = component.find('Loader');
-    expect(spin.length).toEqual(0);
-
-    // There should be a form loaded.
-    const form = component.find(Form);
-    expect(form.length).toBeGreaterThan(0);
+    userEvent.click(screen.getByText('Downsampling Options'));
+    expect(screen.getByText('No Downsampling')).toBeDefined();
+    const inputPercToKeep = screen.getByLabelText('% of cells to keep');
+    expect(inputPercToKeep).toBeDisabled();
   });
 
-  it('fires action to update config when a setting is changed', async () => {
-    const store = mockStore(storeState);
+  it('downsampling displays geosketch values correctly', async () => {
+    const stateWithDownsampling = initialState;
+    stateWithDownsampling.experimentSettings.processing.dataIntegration.downsampling = {
+      method: downsamplingMethods.GEOSKETCH,
+      methodSettings: {
+        [downsamplingMethods.GEOSKETCH]: {
+          percentageToKeep: 12,
+        },
+      },
+    };
 
-    const component = mount(
-      <Provider store={store}>
-        <CalculationConfig
-          experimentId={experimentId}
-          changedFilters={{ current: new Set() }}
-          config={config}
-          onConfigChange={onConfigChange}
-        />
-      </Provider>,
-    );
+    renderCalculationConfig(stateWithDownsampling);
 
-    act(() => { component.find(Select).at(0).getElement().props.onChange('seuratv3'); });
+    userEvent.click(screen.getByText('Downsampling Options'));
 
-    component.update();
+    expect(screen.getByText('Geometric Sketching')).toBeDefined();
+    const input = screen.getByLabelText('% of cells to keep');
+    expect(input.value).toEqual('12');
 
-    expect(onConfigChange).toHaveBeenCalledTimes(1);
+    userEvent.type(input, '{backspace}{backspace}3');
+    expect(input.value).toEqual('3');
   });
 
   it('displays the correct proportion of variation explained value', async () => {
-    const store = mockStore(storeState);
+    await renderCalculationConfig(initialState);
+    expect(screen.getByDisplayValue('60')).toBeDefined();
 
-    const component = mount(
-      <Provider store={store}>
-        <CalculationConfig
-          experimentId={experimentId}
-          changedFilters={{ current: new Set() }}
-          config={config}
-          onConfigChange={onConfigChange}
-        />
-      </Provider>,
-    );
+    const input = screen.getByLabelText('Number of Principal Components');
 
-    const variationExplainedComponent = component.find('InputNumber');
-
-    expect(variationExplainedComponent.at(2).props().value).toEqual(60);
+    userEvent.type(input, '{backspace}{backspace}10');
+    expect(input.value).toEqual('10');
+    // expect(screen.getByDisplayValue('60')).toBeDefined();
   });
 });

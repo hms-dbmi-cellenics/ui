@@ -3,6 +3,7 @@ import thunk from 'redux-thunk';
 import waitForActions from 'redux-mock-store-await-actions';
 import axios from 'axios';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
+import { sampleTech } from 'utils/constants';
 
 import { SAMPLES_FILE_UPDATE } from 'redux/actionTypes/samples';
 import initialSampleState, { sampleTemplate } from 'redux/reducers/samples/initialState';
@@ -11,9 +12,9 @@ import initialExperimentState, { experimentTemplate } from 'redux/reducers/exper
 import UploadStatus from 'utils/upload/UploadStatus';
 import { waitFor } from '@testing-library/dom';
 
-import { process10XUpload } from 'utils/upload/processUpload';
+import processUpload from 'utils/upload/processUpload';
 
-import validate from 'utils/upload/sampleValidator';
+import validate from 'utils/upload/validate10x';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
 import mockFile from '__test__/test-utils/mockFile';
 
@@ -53,7 +54,7 @@ const getValidFiles = (cellrangerVersion, compressed = true) => {
   return fileList;
 };
 
-const sampleType = '10X Chromium';
+const sampleType = sampleTech['10X'];
 const mockSampleUuid = 'sample-uuid';
 const mockExperimentId = 'project-uuid';
 const sampleName = 'mockSampleName';
@@ -114,11 +115,11 @@ jest.mock('axios', () => ({
 
 jest.mock('utils/pushNotificationMessage');
 
-jest.mock('utils/upload/sampleValidator');
+jest.mock('utils/upload/validate10x');
 
 let store = null;
 
-describe('process10XUpload', () => {
+describe('processUpload', () => {
   beforeEach(() => {
     jest.clearAllMocks();
 
@@ -147,7 +148,7 @@ describe('process10XUpload', () => {
 
     const filesList = getValidFiles('v3');
 
-    await process10XUpload(
+    await processUpload(
       filesList,
       sampleType,
       store.getState().samples,
@@ -220,7 +221,7 @@ describe('process10XUpload', () => {
 
     const filesList = getValidFiles('v2');
 
-    await process10XUpload(
+    await processUpload(
       filesList,
       sampleType,
       store.getState().samples,
@@ -292,11 +293,11 @@ describe('process10XUpload', () => {
       .mockImplementationOnce(uploadError)
       .mockImplementationOnce(uploadError);
 
-    await process10XUpload(
+    await processUpload(
       getValidFiles('v3'),
       sampleType,
       store.getState().samples,
-      'errorProjectUuid',
+      mockExperimentId,
       store.dispatch,
     );
 
@@ -339,7 +340,7 @@ describe('process10XUpload', () => {
   it('Should not upload files if there are errors creating samples in the api', async () => {
     fetchMock.mockReject(new Error('Error'));
 
-    await process10XUpload(
+    await processUpload(
       getValidFiles('v3'),
       sampleType,
       store.getState().samples,
@@ -355,10 +356,10 @@ describe('process10XUpload', () => {
 
   it('Should not upload sample and show notification if uploaded sample is invalid', async () => {
     validate.mockImplementationOnce(
-      () => (['Some file error']),
+      () => { throw new Error('Some file error'); },
     );
 
-    await process10XUpload(
+    await processUpload(
       getValidFiles('v2'),
       sampleType,
       store.getState().samples,

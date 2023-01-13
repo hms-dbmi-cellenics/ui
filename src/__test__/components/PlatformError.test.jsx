@@ -1,6 +1,6 @@
 import React from 'react';
 
-import moment from 'moment';
+import dayjs from 'dayjs';
 
 import {
   render, screen,
@@ -11,9 +11,9 @@ import { act } from 'react-dom/test-utils';
 
 import PlatformError from 'components/PlatformError';
 
-import WorkResponseError from 'utils/http/errors/WorkResponseError';
-import WorkGenericError from 'utils/http/errors/WorkGenericError';
-import WorkTimeoutError from 'utils/http/errors/WorkTimeoutError';
+import WorkResponseError from 'utils/errors/http/WorkResponseError';
+import WorkGenericError from 'utils/errors/http/WorkGenericError';
+import WorkTimeoutError from 'utils/errors/http/WorkTimeoutError';
 
 import '__test__/test-utils/setupTests';
 
@@ -123,7 +123,7 @@ describe('PlatformError', () => {
       })
     );
 
-    const timeoutDate = moment().add(120, 's').toISOString();
+    const timeoutDate = dayjs().add(120, 's').toISOString();
     const error = new WorkTimeoutError(timeoutDate, {});
 
     act(() => {

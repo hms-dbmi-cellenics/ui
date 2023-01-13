@@ -7,8 +7,9 @@ import httpStatusCodes from 'utils/http/httpStatusCodes';
 
 const { environment } = ssrGetDeploymentInfo();
 
-const handleCodedErrors = (error, message, notifyUser) => {
-  let errorMessage = message;
+const handleCodedErrors = (error, message = null, notifyUser = null) => {
+  let errorMessage = message ?? error.message;
+
   // let errorMessage = [message, error.userMessage].filter((x) => x).join(' ');
 
   // We might want to override the API message for some errors to make them
@@ -28,6 +29,8 @@ const handleCodedErrors = (error, message, notifyUser) => {
 };
 
 const handleGenericErrors = (error, message, notifyUser) => {
+  const errorMessage = message ?? error.message;
+
   if (notifyUser) {
     pushNotificationMessage('error', `${message}`);
   }
@@ -42,7 +45,7 @@ const handleGenericErrors = (error, message, notifyUser) => {
     postErrorToSlack(error);
   }
 
-  return message;
+  return errorMessage;
 };
 
 const handleError = (error, message, notifyUser = true) => {

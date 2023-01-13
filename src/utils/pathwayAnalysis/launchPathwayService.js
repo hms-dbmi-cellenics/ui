@@ -4,6 +4,8 @@ const launchPathwayService = (serviceName, genesList, species) => {
   let url = null;
   let params = null;
 
+  const { total, data } = genesList;
+
   switch (serviceName) {
     case pathwayServices.PANTHERDB:
       url = serviceUrls[pathwayServices.PANTHERDB];
@@ -12,7 +14,7 @@ const launchPathwayService = (serviceName, genesList, species) => {
         format: 'html',
         resource: 'PANTHER',
         ontology: 'biological_process',
-        input: genesList.gene_id.join('\n'),
+        input: data.gene_id.join('\n'),
         species,
       };
       postFormRequest(url, params);
@@ -20,8 +22,8 @@ const launchPathwayService = (serviceName, genesList, species) => {
     case pathwayServices.ENRICHR:
       url = serviceUrls[pathwayServices.ENRICHR][species];
       params = {
-        list: genesList.gene_names.join('\n'),
-        description: `Cellenics ENRICHR run with ${genesList.gene_names.length} genes`,
+        list: data.gene_names.join('\n'),
+        description: `Cellenics ENRICHR run with ${total} genes`,
       };
       postFormRequest(url, params, { enctype: 'multipart/form-data' });
       break;

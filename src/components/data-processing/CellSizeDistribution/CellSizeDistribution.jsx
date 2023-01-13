@@ -13,7 +13,7 @@ import {
   Divider,
 } from 'antd';
 
-import generateDataProcessingPlotUuid from 'utils/generateDataProcessingPlotUuid';
+import { generateDataProcessingPlotUuid } from 'utils/generateCustomPlotUuid';
 import {
   updatePlotConfig,
   loadPlotConfig,
@@ -146,7 +146,7 @@ const CellSizeDistribution = (props) => {
     },
     {
       panelTitle: 'Axes',
-      controls: ['axes'],
+      controls: ['axesWithRanges'],
     },
     {
       panelTitle: 'Title',

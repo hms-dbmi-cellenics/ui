@@ -3,17 +3,44 @@ import _ from 'lodash';
 import { intersection } from '../cellSetOperations';
 
 const generateSpec = (config, plotData, xNamesToDisplay, yNamesToDisplay) => {
-  let legend = [];
+  const frequencyProportional = config.frequencyType === 'proportional';
+  const yAutoDomain = frequencyProportional ? [0, 100] : { data: 'plotData', field: 'y1' };
+  const yManualMax = frequencyProportional
+    ? Math.min(config.axesRanges.yMax, 100)
+    : config.axesRanges.yMax;
 
+  const yScaleDomain = config.axesRanges.yAxisAuto
+    ? yAutoDomain
+    : [Math.max(config.axesRanges.yMin, 0), yManualMax];
+
+  let legend = [];
+  let plotDataReversed = [];
   if (config.legend.enabled) {
     const positionIsRight = config.legend.position === 'right';
+    plotDataReversed = plotData.slice().reverse();
 
-    const legendColumns = positionIsRight ? 1 : Math.floor(config.dimensions.width / 85);
-    const labelLimit = positionIsRight ? 0 : 85;
+    // Approximate the size of each name.
+    // All names can have that size or less, so can use it calculate the amount of columns
+    //
+    // The size of each name is calculated by getting the amount of chars in
+    //  each name and multiplying by each approx char size, 5.5
+    //  plus 30 for the color symbol and offset
+    const colorSymbolSize = 30;
+    const characterSize = 5.5;
+
+    const legendSize = colorSymbolSize + _.max(
+      yNamesToDisplay.map((legendName) => legendName.length * characterSize),
+    );
+
+    // only 20 rows per column if the legend is on the right
+    const legendColumns = positionIsRight
+      ? Math.ceil(yNamesToDisplay.length / 20)
+      : Math.floor((config.dimensions.width) / legendSize);
+    const labelLimit = positionIsRight ? 0 : legendSize;
 
     legend = [
       {
-        fill: 'color',
+        fill: positionIsRight ? 'cellSetColorsReversed' : 'cellSetColors',
         title: 'Cell Set',
         titleColor: config.colour.masterColour,
         type: 'symbol',
@@ -25,7 +52,8 @@ const generateSpec = (config, plotData, xNamesToDisplay, yNamesToDisplay) => {
           labels: {
             update: {
               text: {
-                scale: 'yCellSetKey', field: 'label',
+                scale: positionIsRight ? 'yCellSetKeyReversed' : 'yCellSetKey',
+                field: 'label',
               },
               fill: { value: config.colour.masterColour },
             },
@@ -36,6 +64,7 @@ const generateSpec = (config, plotData, xNamesToDisplay, yNamesToDisplay) => {
         titleFont: config.fontStyle.font,
         columns: legendColumns,
         labelLimit,
+        symbolLimit: 0,
       },
 
     ];
@@ -64,7 +93,6 @@ const generateSpec = (config, plotData, xNamesToDisplay, yNamesToDisplay) => {
           {
             type: 'stack',
             groupby: ['x'],
-            sort: { field: 'yCellSetKey' },
             field: 'y',
           },
         ],
@@ -88,8 +116,8 @@ const generateSpec = (config, plotData, xNamesToDisplay, yNamesToDisplay) => {
         type: 'linear',
         range: 'height',
         nice: true,
-        zero: true,
-        domain: config.frequencyType === 'proportional' ? [0, 100] : { data: 'plotData', field: 'y1' },
+        zero: false,
+        domain: yScaleDomain,
       },
       {
         name: 'yCellSetKey',
@@ -97,10 +125,21 @@ const generateSpec = (config, plotData, xNamesToDisplay, yNamesToDisplay) => {
         range: yNamesToDisplay,
       },
       {
-        name: 'color',
+        name: 'cellSetColors',
         type: 'ordinal',
-        range: { data: 'plotData', field: 'color' },
+        range: plotData.map(({ color }) => color),
         domain: { data: 'plotData', field: 'yCellSetKey' },
+      },
+      {
+        name: 'cellSetColorsReversed',
+        type: 'ordinal',
+        range: plotDataReversed.map(({ color }) => color),
+        domain: { data: 'plotData', field: 'yCellSetKey' },
+      },
+      {
+        name: 'yCellSetKeyReversed',
+        type: 'ordinal',
+        range: yNamesToDisplay.slice().reverse(),
       },
     ],
 
@@ -151,23 +190,35 @@ const generateSpec = (config, plotData, xNamesToDisplay, yNamesToDisplay) => {
         domainWidth: config.axes.domainWidth,
       },
     ],
-
     marks: [
       {
-        type: 'rect',
-        from: { data: 'plotData' },
+        name: 'bounding-group',
+        type: 'group',
         encode: {
-          enter: {
-            x: { scale: 'x', field: 'x' },
-            width: { scale: 'x', band: 1, offset: -1 },
-            y: { scale: 'y', field: 'y0' },
-            y2: { scale: 'y', field: 'y1' },
-            fill: { scale: 'color', field: 'yCellSetKey' },
-          },
           update: {
-            fillOpacity: 1,
+            width: { signal: 'width ' },
+            height: { signal: 'height' },
+            clip: { value: true },
           },
         },
+        marks: [
+          {
+            type: 'rect',
+            from: { data: 'plotData' },
+            encode: {
+              enter: {
+                x: { scale: 'x', field: 'x' },
+                width: { scale: 'x', band: 1, offset: -1 },
+                y: { scale: 'y', field: 'y0' },
+                y2: { scale: 'y', field: 'y1' },
+                fill: { scale: 'cellSetColors', field: 'yCellSetKey' },
+              },
+              update: {
+                fillOpacity: 1,
+              },
+            },
+          },
+        ],
       },
     ],
     legends: legend,
@@ -205,10 +256,11 @@ const generateData = (hierarchy, properties, config) => {
     // Get the total number of cells in each cell set.
     cellSets.x.forEach((xCellSet, indx) => {
       let total = 0;
+      const xCellSetIds = Array.from(properties[xCellSet.key].cellIds);
+
       cellSets.y.forEach((yCellSet) => {
-        const yCellSetIds = Array.from(properties[yCellSet.key].cellIds);
-        const xCellSetIds = Array.from(properties[xCellSet.key].cellIds);
-        total += xCellSetIds.filter((id) => yCellSetIds.includes(id)).length;
+        const yCellSetIds = properties[yCellSet.key].cellIds;
+        total += xCellSetIds.filter((id) => yCellSetIds.has(id)).length;
       });
 
       totalYDict[cellSets.x[indx].key] = total;
@@ -241,6 +293,7 @@ const generateData = (hierarchy, properties, config) => {
 
   const yNamesToDisplay = cellSets.y.map(({ key }) => properties[key].name);
   const xNamesToDisplay = cellSets.x.map(({ key }) => properties[key].name);
+
   return { xNamesToDisplay, yNamesToDisplay, plotData };
 };
 

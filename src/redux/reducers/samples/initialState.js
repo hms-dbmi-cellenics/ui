@@ -1,3 +1,5 @@
+import { sampleTech } from 'utils/constants';
+
 const sampleTemplate = {
   name: null,
   experimentId: null,
@@ -10,6 +12,7 @@ const sampleTemplate = {
   fileNames: [],
   files: {},
   metadata: {},
+  options: {},
 };
 
 const sampleFileTemplate = {
@@ -27,13 +30,24 @@ const sampleFileTemplate = {
   },
 };
 
+const defaultSampleOptions = {
+  [sampleTech.RHAPSODY]: {
+    includeAbSeq: false,
+  },
+};
+
 const initialState = {
   meta: {
     loading: false,
     error: false,
     saving: false,
+    validating: [],
   },
 };
 
 export default initialState;
-export { sampleTemplate, sampleFileTemplate };
+export {
+  sampleTemplate,
+  sampleFileTemplate,
+  defaultSampleOptions,
+};

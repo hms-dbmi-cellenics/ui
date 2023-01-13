@@ -14,6 +14,8 @@ import dotPlot from '../../../public/static/media/dotplot.png';
 import volcano from '../../../public/static/media/volcano.png';
 import frequency from '../../../public/static/media/frequency.png';
 import markerHeatmap from '../../../public/static/media/marker_heatmap.png';
+import normalizedExpressionMatrix from '../../../public/static/media/normalized_expression_matrix.png';
+import trajectoryAnalysis from '../../../public/static/media/trajectory_analysis.png';
 
 const CARD_STYLE = { marginBottom: '1em' };
 const CardItem = (({ onClick, item, href }) => (
@@ -57,6 +59,12 @@ const plots = [
         key: 'frequency-key',
         link: 'frequency',
       },
+      {
+        name: 'Trajectory Analysis',
+        image: trajectoryAnalysis,
+        key: 'trajectory-analysis-key',
+        link: 'trajectory-analysis',
+      },
     ],
   },
   {
@@ -91,6 +99,12 @@ const plots = [
         image: dotPlot,
         key: 'dot-key',
         link: 'dot-plot',
+      },
+      {
+        name: plotNames.NORMALIZED_EXPRESSION_MATRIX,
+        image: normalizedExpressionMatrix,
+        key: 'normalized-matrix-key',
+        link: 'normalized-matrix',
       },
     ],
   },

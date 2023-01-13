@@ -3,22 +3,23 @@ import React from 'react';
 import {
   render, screen, fireEvent, waitFor,
 } from '@testing-library/react';
-
+import { within } from '@testing-library/dom';
 import userEvent from '@testing-library/user-event';
+
 import { act } from 'react-dom/test-utils';
 
 import { Provider } from 'react-redux';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
-import { fetchWork } from 'utils/work/fetchWork';
 
 import createTestComponentFactory from '__test__/test-utils/testComponentFactory';
 import { makeStore } from 'redux/store';
 
 import CellSetsTool from 'components/data-exploration/cell-sets-tool/CellSetsTool';
 import { createCellSet } from 'redux/actions/cellSets';
-import { loadGeneExpression } from 'redux/actions/genes';
 
 import '__test__/test-utils/setupTests';
+import { withoutFilteredOutCells } from 'utils/cellSetOperations';
+import { createHierarchyFromTree, createPropertiesFromTree } from 'redux/reducers/cellSets/helpers';
 
 jest.mock('utils/work/fetchWork');
 
@@ -33,8 +34,6 @@ const cellSetsData = require('__test__/data/cell_sets.json');
 
 const louvainClusters = cellSetsData.cellSets.find(({ key }) => key === 'louvain').children;
 const sampleList = cellSetsData.cellSets.find(({ key }) => key === 'sample').children;
-
-const geneExpressionData = require('__test__/data/gene_expression.json');
 
 const experimentId = '1234';
 
@@ -147,6 +146,11 @@ describe('CellSetsTool', () => {
 
     // There should be three operations rendered.
     expect(cellSetOperations.length).toEqual(3);
+
+    // Uncomment test to test for the existence of the cell sets test
+    // There should be a button for subsetting cellsets
+    // const subsetCellSetsOperation = screen.getByLabelText(/Create new experiment from selected cellsets/i);
+    // expect(subsetCellSetsOperation).toBeInTheDocument();
   });
 
   it('can compute a union of 2 cell sets', async () => {
@@ -355,7 +359,10 @@ describe('CellSetsTool', () => {
     const newClusterKey = getClusterByName('New Cluster');
 
     const cluster0CellIds = louvainClusters.find(({ name }) => name === 'Cluster 0').cellIds;
-    const allCellIds = sampleList.reduce((sumCellIds, { cellIds }) => sumCellIds.concat(cellIds), []);
+    const allCellIds = sampleList.reduce(
+      (sumCellIds, { cellIds }) => sumCellIds.concat(cellIds),
+      [],
+    );
 
     const actualComplement = storeState.getState().cellSets.properties[newClusterKey].cellIds;
     const expectedComplement = new Set(
@@ -447,11 +454,18 @@ describe('CellSetsTool', () => {
     const wt2Cluster = screen.getByText('WT2');
     userEvent.click(wt2Cluster);
 
-    const numCellsWT1 = sampleList.find(({ name }) => name === 'WT1').cellIds.length;
-    const numCellsWT2 = sampleList.find(({ name }) => name === 'WT2').cellIds.length;
-    const numCellsTotal = numCellsWT1 + numCellsWT2;
+    const cellsWT1 = sampleList.find(({ name }) => name === 'WT1').cellIds;
+    const cellsWT2 = sampleList.find(({ name }) => name === 'WT2').cellIds;
+    const selectedCellIds = [...cellsWT1, ...cellsWT2];
 
-    screen.getByText(`${numCellsTotal} cells selected`);
+    const cellSets = {
+      properties: createPropertiesFromTree(cellSetsData.cellSets),
+      hierarchy: createHierarchyFromTree(cellSetsData.cellSets),
+    };
+
+    const numSelectedCells = withoutFilteredOutCells(cellSets, selectedCellIds).size;
+
+    screen.getByText(`${numSelectedCells} cells selected`);
   });
 
   it('Scratchpad cluster deletion works ', async () => {
@@ -489,17 +503,16 @@ describe('CellSetsTool', () => {
       );
     });
 
-    fetchWork.mockImplementationOnce(() => new Promise((resolve) => resolve(geneExpressionData)));
+    // go to the metadata tab
+    const metadataTabButton = screen.getByText(/Metadata/i);
+    userEvent.click(metadataTabButton);
 
-    await act(async () => {
-      storeState.dispatch(loadGeneExpression(experimentId, ['TestGene'], '1234'));
-    });
+    // select a sample cluster
+    const wt1Cluster = screen.getByText('WT1');
+    userEvent.click(wt1Cluster);
 
-    // select the first louvain cluster
-    const louvain0Cluster = screen.getByText('Cluster 0');
-    userEvent.click(louvain0Cluster);
-
-    screen.getByText('24 cells selected');
+    // Cells in wt1 minus all the ones that are not in louvain (they were filtered out)
+    screen.getByText('28 cells selected');
   });
 
   it('Displays a cell set hidden message when cluster is hidden', async () => {
@@ -584,4 +597,46 @@ describe('CellSetsTool', () => {
     expect(screen.queryByText(/2 cell sets are currently hidden./)).toBeNull();
     expect(screen.queryByText('Unhide')).toBeNull();
   });
+
+  // it('Runs subset experiment correctly', async () => {
+  //   await act(async () => {
+  //     render(
+  //       <Provider store={storeState}>
+  //         {cellSetsToolFactory()}
+  //       </Provider>,
+  //     );
+  //   });
+
+  //   // select the third louvain cluster
+  //   const louvain3Cluster = screen.getByText('Cluster 3');
+  //   userEvent.click(louvain3Cluster);
+
+  //   // select the fourth louvain cluster
+  //   const louvain4Cluster = screen.getByText('Cluster 4');
+  //   userEvent.click(louvain4Cluster);
+
+  //   const subsetOperation = screen.getByLabelText('Create new experiment from selected cellsets');
+  //   userEvent.click(subsetOperation);
+
+  //   const createModal = screen.getByTestId('subsetCellSetsModal');
+  //   const createButton = within(createModal).getByRole('button', { name: /Create/i });
+
+  //   await act(async () => {
+  //     fireEvent(
+  //       createButton,
+  //       new MouseEvent('click', {
+  //         bubbles: true,
+  //         cancelable: true,
+  //       }),
+  //     );
+  //   });
+
+  //   expect(fetchMock).toHaveBeenCalledWith(
+  //     expect.stringContaining(`/v2/experiments/${experimentId}/subset`),
+  //     expect.objectContaining({
+  //       body: expect.stringContaining('"cellSetKeys":["louvain-3","louvain-4"]'),
+  //       method: 'POST',
+  //     }),
+  //   );
+  // });
 });

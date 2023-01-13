@@ -26,14 +26,13 @@ import fileNames from 'utils/fileNames';
 import {
   updatePlotConfig,
   loadPlotConfig,
-  fetchPlotDataWork,
+  getDotPlot,
   updatePlotData,
 } from 'redux/actions/componentConfig';
-import PlatformError from 'components/PlatformError';
 
 import { getCellSets } from 'redux/selectors';
-
 import { plotNames, plotTypes } from 'utils/constants';
+import PlatformError from 'components/PlatformError';
 
 import ScrollOnDrag from 'components/plots/ScrollOnDrag';
 
@@ -41,7 +40,7 @@ const { Panel } = Collapse;
 
 const plotUuid = 'dotPlotMain';
 const plotType = plotTypes.DOT_PLOT;
-const searchBarUuid = 'geneSearchBar';
+const geneListUuid = 'geneList';
 
 const plotStylingConfig = [
   {
@@ -100,6 +99,7 @@ const DotPlotPage = (props) => {
   const [moreThanTwoGroups, setMoreThanTwoGroups] = useState(false);
   const [reorderAfterFetch, setReorderAfterFetch] = useState(false);
   const [reset, setReset] = useState(false);
+  const highestGenesLoadedRef = useRef(false);
 
   const experimentName = useSelector((state) => state.experimentSettings.info.experimentName);
   const csvFileName = fileNames(experimentName, 'DOT_PLOT', [config?.selectedCellSet, config?.selectedPoints]);
@@ -123,8 +123,8 @@ const DotPlotPage = (props) => {
     // filterBy has the shape louvain/louvain-1
     const [filterRootNode, filterKey] = filterCluster.split('/');
 
-    // If 'All" is chosen for the dropdown, there will
-    //  always be representation from more than 1 group
+    // If 'All" is chosen for the dropdown,
+    // there will always be representation from more than 1 group
     if (filterRootNode === 'All') return true;
 
     // Ensure that filterKey exists in cellSetProperties
@@ -209,6 +209,7 @@ const DotPlotPage = (props) => {
     setMoreThanTwoGroups(true);
 
     const currentComparedConfig = getComparedConfig(config);
+
     if (config && !_.isEqual(previousComparedConfig.current, currentComparedConfig)) {
       // previous compared config is null on first load, use [] for previous selected genes instead
       const previousSelected = previousComparedConfig.current?.selectedGenes ?? [];
@@ -217,7 +218,6 @@ const DotPlotPage = (props) => {
       const previousUseMarker = previousComparedConfig.current?.useMarkerGenes ?? false;
 
       previousComparedConfig.current = currentComparedConfig;
-
       // if the selected genes don't change
       if (_.isEqual(currentSelected, previousSelected)) {
         // if switching back from marker genes to custom genes, reorder data
@@ -225,13 +225,13 @@ const DotPlotPage = (props) => {
           setReorderAfterFetch(true);
         }
 
-        dispatch(fetchPlotDataWork(experimentId, plotUuid, plotType));
+        dispatch(getDotPlot(experimentId, plotUuid, config));
         return;
       }
 
       // if a gene was added
       if (currentSelected.length > previousSelected.length) {
-        dispatch(fetchPlotDataWork(experimentId, plotUuid, plotType));
+        dispatch(getDotPlot(experimentId, plotUuid, config));
         setReorderAfterFetch(true);
         return;
       }
@@ -250,7 +250,11 @@ const DotPlotPage = (props) => {
 
   // if all selected genes are removed, deleteData will not run. Remove plotData manually instead
   useEffect(() => {
-    if (config?.useMarkerGenes || config?.selectedGenes.length || !plotData?.length) return;
+    if (config?.useMarkerGenes
+      || config?.selectedGenes.length
+      || !plotData?.length
+      || !previousComparedConfig.current
+    ) return;
 
     previousComparedConfig.current.selectedGenes = [];
     dispatch(updatePlotData(plotUuid, []));
@@ -271,7 +275,7 @@ const DotPlotPage = (props) => {
       pageSizeFilter: null,
     };
 
-    dispatch(loadPaginatedGeneProperties(experimentId, ['dispersions'], searchBarUuid, state));
+    dispatch(loadPaginatedGeneProperties(experimentId, ['dispersions'], geneListUuid, state));
   }, []);
 
   const treeScrollable = document.getElementById('ScrollWrapper');
@@ -281,7 +285,7 @@ const DotPlotPage = (props) => {
   }, [treeScrollable]);
 
   // find genes with highest dispersion from list of genes sorted by name
-  const loadHighestDispersionGenes = () => {
+  const setHighestDispersionGenes = () => {
     const highestDispersions = Object.values(geneData)
       .map((gene) => gene.dispersions)
       .sort()
@@ -299,11 +303,13 @@ const DotPlotPage = (props) => {
 
   // load initial state, based on highest dispersion genes from all genes
   useEffect(() => {
-    if (_.isEmpty(geneData) || !config || plotDataLoading) {
+    if (_.isEmpty(geneData) || !config || highestGenesLoadedRef.current || plotDataLoading) {
       return;
     }
-    loadHighestDispersionGenes();
-  }, [geneData]);
+
+    setHighestDispersionGenes();
+    highestGenesLoadedRef.current = true;
+  }, [geneData, config]);
 
   // When fetching new genes, reorder data to match selected genes
   useEffect(() => {
@@ -338,15 +344,23 @@ const DotPlotPage = (props) => {
     updatePlotWithChanges({ selectedGenes: genes });
   };
 
+  const onGenesSelect = (genes) => {
+    const allGenes = _.uniq([...config?.selectedGenes, ...genes]);
+
+    if (_.isEqual(allGenes, config?.selectedGenes)) return;
+
+    updatePlotWithChanges({ selectedGenes: allGenes });
+  };
+
   const onReset = () => {
     setReset(true);
-    loadHighestDispersionGenes();
+    setHighestDispersionGenes();
   };
 
   useEffect(() => {
     if (!reset) return;
 
-    dispatch(fetchPlotDataWork(experimentId, plotUuid, plotType));
+    dispatch(getDotPlot(experimentId, plotUuid, config));
     setReorderAfterFetch(true);
     setReset(false);
   }, [config]);
@@ -357,11 +371,11 @@ const DotPlotPage = (props) => {
         <MarkerGeneSelection
           config={config}
           plotUuid={plotUuid}
-          searchBarUuid={searchBarUuid}
-          experimentId={experimentId}
+          genesToDisable={config.selectedGenes}
           onUpdate={updatePlotWithChanges}
           onReset={onReset}
           onGenesChange={onGenesChange}
+          onGenesSelect={onGenesSelect}
         />
       </Panel>
       <Panel header='Select data' key='select-data'>
@@ -410,7 +424,7 @@ const DotPlotPage = (props) => {
           <PlatformError
             description='Error loading plot data.'
             reason='Check the options that you have selected and try again.'
-            onClick={() => dispatch(fetchPlotDataWork(experimentId, plotUuid, plotType))}
+            onClick={() => dispatch(getDotPlot(experimentId, plotUuid, config))}
           />
         </center>
       );

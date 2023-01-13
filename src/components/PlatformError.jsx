@@ -3,13 +3,16 @@ import {
   Button, Empty, Typography,
 } from 'antd';
 import PropTypes from 'prop-types';
-import moment from 'moment';
+import dayjs from 'dayjs';
+import relativeTimePlugin from 'dayjs/plugin/relativeTime';
 
-import WorkResponseError from 'utils/http/errors/WorkResponseError';
-import WorkGenericError from 'utils/http/errors/WorkGenericError';
-import WorkTimeoutError from 'utils/http/errors/WorkTimeoutError';
+import WorkResponseError from 'utils/errors/http/WorkResponseError';
+import WorkGenericError from 'utils/errors/http/WorkGenericError';
+import WorkTimeoutError from 'utils/errors/http/WorkTimeoutError';
 
 const { Text } = Typography;
+
+dayjs.extend(relativeTimePlugin);
 
 const PlatformError = (props) => {
   const {
@@ -25,7 +28,7 @@ const PlatformError = (props) => {
       return;
     }
 
-    const interval = setInterval(() => setRelativeTime(moment(error.timeout).fromNow()), 1000);
+    const interval = setInterval(() => setRelativeTime(dayjs(error.timeout).fromNow()), 1000);
 
     return () => {
       clearInterval(interval);

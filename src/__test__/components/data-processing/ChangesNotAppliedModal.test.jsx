@@ -1,13 +1,18 @@
+import _ from 'lodash';
 import React from 'react';
-import { screen, render } from '@testing-library/react';
+import { screen, render, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
 import configureMockStore from 'redux-mock-store';
+import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 
 import { getBackendStatus } from 'redux/selectors';
 import experimentSettingsInitialState, { metaInitialState } from 'redux/reducers/experimentSettings/initialState';
 import ChangesNotAppliedModal from 'components/data-processing/ChangesNotAppliedModal';
+import mockAPI, { generateDefaultMockAPIResponses } from '__test__/test-utils/mockAPI';
+
+jest.mock('redux/selectors');
 
 jest.mock('utils/qcSteps', () => ({
   getUserFriendlyQCStepName: jest.fn().mockImplementation((step) => {
@@ -22,7 +27,12 @@ jest.mock('utils/qcSteps', () => ({
   }),
 }));
 
-jest.mock('redux/selectors');
+const mockNavigateTo = jest.fn();
+jest.mock('utils/AppRouteProvider', () => ({
+  useAppRouter: jest.fn(() => ({
+    navigateTo: mockNavigateTo,
+  })),
+}));
 
 getBackendStatus.mockImplementation(() => () => ({
   status: {
@@ -42,6 +52,8 @@ const noChangesState = {
     ...experimentSettingsInitialState,
     info: {
       ...experimentSettingsInitialState.info,
+      experimentName: 'expName',
+      pipelineVersion: 1,
       experimentId,
     },
     processing: {
@@ -67,7 +79,18 @@ const withChangesState = {
   },
 };
 
+enableFetchMocks();
+
+const mockAPIResponses = generateDefaultMockAPIResponses(experimentId);
+
 describe('ChangesNotAppliedModal', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+
+    fetchMock.resetMocks();
+    fetchMock.mockIf(/.*/, mockAPI(mockAPIResponses));
+  });
+
   it('Displays correctly', () => {
     render(
       <Provider store={mockStore(withChangesState)}>
@@ -156,5 +179,34 @@ describe('ChangesNotAppliedModal', () => {
 
     userEvent.click(screen.getByRole('button', { name: 'Close' }));
     expect(mockOnCloseModal).toHaveBeenCalled();
+  });
+
+  it('Shows the QCRerunDisabledModal if the pipelineVersion is too old', async () => {
+    const mockRunQC = jest.fn();
+
+    const oldPipelineState = _.cloneDeep(withChangesState);
+    oldPipelineState.experimentSettings.info.pipelineVersion = 0;
+
+    const onCloseModalMock = jest.fn();
+    render(
+      <Provider store={mockStore(oldPipelineState)}>
+        <ChangesNotAppliedModal onRunQC={() => mockRunQC()} onCloseModal={onCloseModalMock} />
+      </Provider>,
+    );
+
+    userEvent.click(screen.getByText('Run'));
+
+    expect(mockRunQC).not.toHaveBeenCalled();
+    expect(screen.getByText(/Due to a recent update, re-running the pipeline will initiate the run from the beginning/)).toBeInTheDocument();
+
+    // When clicking clone project, the modal disappears and navigateTo is called
+    await act(async () => {
+      userEvent.click(screen.getAllByText(/Clone Project/)[1]);
+    });
+
+    expect(onCloseModalMock).toHaveBeenCalled();
+    expect(mockNavigateTo).toHaveBeenCalled();
+
+    expect(fetchMock.mock.calls).toMatchSnapshot();
   });
 });

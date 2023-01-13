@@ -1,10 +1,11 @@
-import moment from 'moment';
+import dayjs from 'dayjs';
 
 import getAuthJWT from 'utils/getAuthJWT';
-import WorkTimeoutError from 'utils/http/errors/WorkTimeoutError';
 import fetchAPI from 'utils/http/fetchAPI';
 import unpackResult from 'utils/work/unpackResult';
-import WorkResponseError from 'utils/http/errors/WorkResponseError';
+import parseResult from 'utils/work/parseResult';
+import WorkTimeoutError from 'utils/errors/http/WorkTimeoutError';
+import WorkResponseError from 'utils/errors/http/WorkResponseError';
 import httpStatusCodes from 'utils/http/httpStatusCodes';
 
 const throwResponseError = (response) => {
@@ -25,10 +26,12 @@ const getRemainingWorkerStartTime = (creationTimestamp) => {
   return remainingTime + 60;
 };
 
-const seekFromS3 = async (ETag, experimentId) => {
+const seekFromS3 = async (ETag, experimentId, taskName) => {
   let response;
   try {
-    response = await fetchAPI(`/v2/workResults/${experimentId}/${ETag}`);
+    const url = `/v2/workResults/${experimentId}/${ETag}`;
+
+    response = await fetchAPI(url);
   } catch (e) {
     if (e.statusCode === httpStatusCodes.NOT_FOUND) {
       return null;
@@ -37,14 +40,16 @@ const seekFromS3 = async (ETag, experimentId) => {
     throw e;
   }
 
-  const { signedUrl } = response;
-  const storageResp = await fetch(signedUrl);
+  const storageResp = await fetch(response.signedUrl);
 
   if (!storageResp.ok) {
     throwResponseError(storageResp);
   }
 
-  return unpackResult(storageResp);
+  const unpackedResult = await unpackResult(storageResp);
+  const parsedResult = parseResult(unpackedResult, taskName);
+
+  return parsedResult;
 };
 
 const dispatchWorkRequest = async (
@@ -58,7 +63,7 @@ const dispatchWorkRequest = async (
   const { default: connectionPromise } = await import('utils/socketConnection');
   const io = await connectionPromise;
 
-  const timeoutDate = moment().add(timeout, 's').toISOString();
+  const timeoutDate = dayjs().add(timeout, 's').toISOString();
   const authJWT = await getAuthJWT();
 
   const request = {

@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 
 import {
-  Button, Skeleton, Space, Tooltip,
+  Button, Card, Skeleton, Space, Tooltip,
 } from 'antd';
 import { InfoCircleOutlined } from '@ant-design/icons';
 import { initialPlotConfigStates } from 'redux/reducers/componentConfig/initialState';
@@ -26,21 +26,23 @@ const PlotContainer = (props) => {
     experimentId,
     plotUuid, plotType, plotInfo,
     plotStylingConfig, defaultActiveKey,
-    extraToolbarControls, extraControlPanels,
-    showReset,
+    extraToolbarControls, extraControlPanels, customControlPanel, controlsOnly,
+    showResetButton, onPlotReset,
     children,
+    onUpdate,
+    saveDebounceTime,
   } = props;
 
   const dispatch = useDispatch();
 
-  const [resetDisabled, setResetDisabled] = useState(true);
+  const [isResetDisabled, setIsResetDisabled] = useState(true);
   const [tileDirection, setTileDirection] = useState(DEFAULT_ORIENTATION);
   const { config } = useSelector((state) => state.componentConfig[plotUuid] || {});
   const debounceSave = useCallback(
-    _.debounce(() => dispatch(savePlotConfig(experimentId, plotUuid)), 2000), [],
+    _.debounce(() => dispatch(savePlotConfig(experimentId, plotUuid)), saveDebounceTime), [plotUuid],
   );
 
-  const updatePlotWithChanges = (obj) => {
+  const defaultOnUpdate = (obj) => {
     dispatch(updatePlotConfig(plotUuid, obj));
   };
 
@@ -72,36 +74,40 @@ const PlotContainer = (props) => {
     if (!config) {
       return;
     }
+
     debounceSave();
 
-    if (isConfigEqual(config, initialPlotConfigStates[plotType])) {
-      setResetDisabled(true);
-      return;
-    }
-    setResetDisabled(false);
+    setIsResetDisabled(
+      isConfigEqual(config, initialPlotConfigStates[plotType]),
+    );
   }, [config]);
 
   const onClickReset = () => {
+    onPlotReset();
     dispatch(resetPlotConfig(experimentId, plotUuid, plotType));
-    setResetDisabled(true);
+    setIsResetDisabled(true);
   };
 
   if (!config) {
-    return <Skeleton active paragraph={{ rows: 1 }} title={{ width: 500 }} />;
+    return (
+      <div style={{ paddingLeft: '2em' }}>
+        <Skeleton active paragraph={{ rows: 1 }} title={{ width: 500 }} />
+      </div>
+    );
   }
 
   const renderPlotToolbarControls = () => (
     <Space style={{ marginRight: '0.5em' }}>
       {extraToolbarControls}
-      {showReset ? (
+      {showResetButton ? (
         <Button
-          key='reset'
+          key='reset-plot'
           type='primary'
           size='small'
           onClick={onClickReset}
-          disabled={resetDisabled}
+          disabled={isResetDisabled}
         >
-          Reset
+          Reset Plot
         </Button>
       ) : ''}
       {plotInfo ? (
@@ -110,6 +116,18 @@ const PlotContainer = (props) => {
         </Tooltip>
       ) : ''}
     </Space>
+  );
+
+  const renderDefaultControlPanel = (height) => (
+    <div style={{ height, overflowY: 'auto' }}>
+      <PlotStyling
+        formConfig={plotStylingConfig}
+        config={config}
+        onUpdate={onUpdate ?? defaultOnUpdate}
+        extraPanels={extraControlPanels}
+        defaultActiveKey={defaultActiveKey}
+      />
+    </div>
   );
 
   const TILE_MAP = {
@@ -127,15 +145,7 @@ const PlotContainer = (props) => {
     [CONTROLS]: {
       toolbarControls: [],
       component: (width, height) => (
-        <div style={{ height, overflowY: 'auto' }}>
-          <PlotStyling
-            formConfig={plotStylingConfig}
-            config={config}
-            onUpdate={updatePlotWithChanges}
-            extraPanels={extraControlPanels}
-            defaultActiveKey={defaultActiveKey}
-          />
-        </div>
+        customControlPanel ?? renderDefaultControlPanel(height)
       ),
       style: { margin: '-10px' },
     },
@@ -147,6 +157,24 @@ const PlotContainer = (props) => {
     second: CONTROLS,
     splitPercentage: 75,
   };
+
+  if (controlsOnly) {
+    return (
+      <div style={{
+        padding: '5px', background: '#aab5c1', width: '100%', height: '100%',
+      }}
+      >
+        <Card style={{ borderColor: '#FFFFFF' }}>
+          <div style={{
+            height: '100%', width: '100%', margin: 0,
+          }}
+          >
+            {TILE_MAP[CONTROLS].component()}
+          </div>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <MultiTileContainer
@@ -161,21 +189,31 @@ PlotContainer.propTypes = {
   experimentId: PropTypes.string.isRequired,
   plotUuid: PropTypes.string.isRequired,
   plotType: PropTypes.string.isRequired,
-  plotInfo: PropTypes.string,
+  plotInfo: PropTypes.node,
   plotStylingConfig: PropTypes.arrayOf(PropTypes.object),
   defaultActiveKey: PropTypes.string || PropTypes.arrayOf(PropTypes.string),
   extraToolbarControls: PropTypes.node || PropTypes.arrayOf(PropTypes.node),
   extraControlPanels: PropTypes.node || PropTypes.arrayOf(PropTypes.node),
+  customControlPanel: PropTypes.node,
+  controlsOnly: PropTypes.bool,
   children: PropTypes.node,
-  showReset: PropTypes.bool,
+  onUpdate: PropTypes.func,
+  showResetButton: PropTypes.bool,
+  onPlotReset: PropTypes.func,
+  saveDebounceTime: PropTypes.number,
 };
 
 PlotContainer.defaultProps = {
   plotInfo: null,
   extraToolbarControls: null,
   extraControlPanels: null,
+  customControlPanel: null,
+  controlsOnly: false,
   children: null,
-  showReset: true,
+  onUpdate: undefined,
+  showResetButton: true,
+  onPlotReset: () => { },
+  saveDebounceTime: 2000,
 };
 
 export default PlotContainer;

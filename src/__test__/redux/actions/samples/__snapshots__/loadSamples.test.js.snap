@@ -4,7 +4,7 @@ exports[`loadSample action Dispatches error correctly 1`] = `
 Array [
   undefined,
   Object {
-    "error": undefined,
+    "error": "Error: An api error",
   },
 ]
 `;
@@ -52,7 +52,8 @@ Object {
         "timePoint": "BL",
       },
       "name": "BLp7",
-      "type": "10X Chromium",
+      "options": Object {},
+      "type": "10x",
       "uuid": "e03ef6ea-5014-4e57-aecd-59964ac9172c",
     },
   },

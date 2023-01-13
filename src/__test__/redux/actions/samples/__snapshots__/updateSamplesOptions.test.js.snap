@@ -1,0 +1,29 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`updateSamplesOptions action Error handling works 1`] = `
+Array [
+  Object {
+    "message": "Saving sample...",
+  },
+  Object {
+    "error": "We couldn't save your data.",
+  },
+]
+`;
+
+exports[`updateSamplesOptions action Works correctly 1`] = `
+Array [
+  Object {
+    "message": "Saving sample...",
+  },
+  Object {
+    "diff": Object {
+      "includeAbSeq": false,
+    },
+    "sampleUuids": Array [
+      "sample-1",
+      "sample-2",
+    ],
+  },
+]
+`;

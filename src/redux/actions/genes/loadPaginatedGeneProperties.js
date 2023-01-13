@@ -6,7 +6,7 @@ import {
   GENES_PROPERTIES_LOADED_PAGINATED, GENES_PROPERTIES_ERROR,
 } from 'redux/actionTypes/genes';
 
-import { fetchWork } from 'utils/work/fetchWork';
+import fetchWork from 'utils/work/fetchWork';
 import getTimeoutForWorkerTask from 'utils/getTimeoutForWorkerTask';
 
 const loadPaginatedGeneProperties = (
@@ -45,15 +45,14 @@ const loadPaginatedGeneProperties = (
   const timeout = getTimeoutForWorkerTask(getState(), 'ListGenes');
 
   try {
-    const { rows, total } = await fetchWork(
-      experimentId, body, getState, { timeout },
+    const { gene_names: geneNames, dispersions, total } = await fetchWork(
+      experimentId, body, getState, dispatch, { timeout },
     );
 
     const loadedProperties = {};
-    rows.forEach((row) => {
-      const { gene_names: geneName, ...rest } = row;
 
-      loadedProperties[geneName] = rest;
+    geneNames.forEach((gene, indx) => {
+      loadedProperties[gene] = { dispersions: dispersions[indx] };
     });
 
     return dispatch({

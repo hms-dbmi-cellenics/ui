@@ -4,15 +4,13 @@ import {
   Space, Button,
 } from 'antd';
 import integrationTestConstants from 'utils/integrationTestConstants';
-import { process10XUpload, processSeuratUpload } from 'utils/upload/processUpload';
-import { techTypes } from 'utils/constants';
+import processUpload from 'utils/upload/processUpload';
 import DownloadDataButton from './DownloadDataButton';
 import LaunchAnalysisButton from './LaunchAnalysisButton';
 import FileUploadModal from './FileUploadModal';
 import ShareExperimentModal from './ShareExperimentModal';
 
-const ProjectMenu = (props) => {
-  const { technology } = props;
+const ProjectMenu = () => {
   const dispatch = useDispatch();
   const samples = useSelector((state) => state.samples);
   const activeExperimentId = useSelector((state) => state.experiments.meta.activeExperimentId);
@@ -20,13 +18,10 @@ const ProjectMenu = (props) => {
 
   const [uploadModalVisible, setUploadModalVisible] = useState(false);
   const [shareExperimentModalVisible, setShareExperimentModalVisible] = useState(false);
+  const selectedTech = samples[activeExperiment?.sampleIds[0]]?.type;
 
   const uploadFiles = (filesList, sampleType) => {
-    if (sampleType === techTypes.CHROMIUM) {
-      process10XUpload(filesList, sampleType, samples, activeExperimentId, dispatch);
-    } else if (sampleType === techTypes.SEURAT) {
-      processSeuratUpload(filesList, sampleType, samples, activeExperimentId, dispatch);
-    }
+    processUpload(filesList, sampleType, samples, activeExperimentId, dispatch);
     setUploadModalVisible(false);
   };
 
@@ -52,13 +47,13 @@ const ProjectMenu = (props) => {
             experiment={activeExperiment}
           />
         )}
-        <LaunchAnalysisButton technology={technology} />
+        <LaunchAnalysisButton />
       </Space>
       {uploadModalVisible ? (
         <FileUploadModal
           onUpload={uploadFiles}
+          currentSelectedTech={selectedTech}
           onCancel={() => setUploadModalVisible(false)}
-          previousDataTechnology={technology}
         />
       ) : <></>}
     </>

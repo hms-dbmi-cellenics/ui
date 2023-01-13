@@ -1,4 +1,4 @@
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { v4 as uuidv4 } from 'uuid';
 
 import fetchAPI from 'utils/http/fetchAPI';
@@ -6,13 +6,7 @@ import { SAMPLES_FILE_UPDATE } from 'redux/actionTypes/samples';
 
 import UploadStatus from 'utils/upload/UploadStatus';
 import updateSampleFileUpload from 'redux/actions/samples/updateSampleFileUpload';
-
-const fileNameForApiV1 = {
-  matrix10x: 'matrix.mtx.gz',
-  barcodes10x: 'barcodes.tsv.gz',
-  features10x: 'features.tsv.gz',
-  seurat: 'r.rds',
-};
+import fileNameForApiV1 from 'utils/upload/fileNameForApiV1';
 
 const createSampleFile = (
   experimentId,
@@ -22,7 +16,7 @@ const createSampleFile = (
   metadata,
   fileForApiV1,
 ) => async (dispatch) => {
-  const updatedAt = moment().toISOString();
+  const updatedAt = dayjs().toISOString();
 
   try {
     const url = `/v2/experiments/${experimentId}/samples/${sampleId}/sampleFiles/${type}`;

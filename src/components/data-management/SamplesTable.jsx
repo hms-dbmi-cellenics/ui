@@ -2,7 +2,6 @@
 import React, {
   useEffect, useState, forwardRef, useImperativeHandle,
 } from 'react';
-import PropTypes from 'prop-types';
 import { useSelector, useDispatch } from 'react-redux';
 import {
   Table, Row, Col, Typography, Space,
@@ -35,100 +34,72 @@ import 'utils/css/data-management.css';
 import { ClipLoader } from 'react-spinners';
 import useConditionalEffect from 'utils/customHooks/useConditionalEffect';
 import { METADATA_DEFAULT_VALUE } from 'redux/reducers/experiments/initialState';
-import { techTypes } from 'utils/constants';
+import fileUploadSpecifications from 'utils/upload/fileUploadSpecifications';
+import { sampleTech } from 'utils/constants';
 
 const { Text } = Typography;
 
 const SamplesTable = forwardRef((props, ref) => {
   const dispatch = useDispatch();
   const [tableData, setTableData] = useState([]);
-  const { technology } = props;
 
   const experiments = useSelector((state) => state.experiments);
   const samples = useSelector((state) => state.samples);
-  const areSamplesLoading = useSelector((state) => state.samples.meta.loading);
-
+  const samplesLoading = useSelector((state) => state.samples.meta.loading);
   const activeExperimentId = useSelector((state) => state.experiments.meta.activeExperimentId);
-  const activeExperiment = useSelector((state) => state.experiments[activeExperimentId]);
 
+  const samplesValidating = useSelector(
+    (state) => state.samples.meta.validating.includes(activeExperimentId),
+  );
+  const activeExperiment = useSelector((state) => state.experiments[activeExperimentId]);
+  const selectedTech = samples[activeExperiment?.sampleIds[0]]?.type;
   const [sampleNames, setSampleNames] = useState(new Set());
   const DragHandle = sortableHandle(() => <MenuOutlined style={{ cursor: 'grab', color: '#999' }} />);
 
-  const initialTableColumns = {
-    [techTypes.CHROMIUM]: [
-      {
-        fixed: 'left',
-        index: 0,
-        key: 'sort',
-        dataIndex: 'sort',
-        width: 30,
-        render: () => <DragHandle />,
-      },
-      {
-        className: `${integrationTestConstants.classes.SAMPLE_CELL}`,
-        index: 1,
-        key: 'sample',
-        title: 'Sample',
-        dataIndex: 'name',
-        fixed: true,
-        render: (text, record, indx) => <SampleNameCell cellInfo={{ text, record, indx }} />,
-      },
-      {
-        index: 2,
-        key: 'barcodes',
-        title: 'barcodes.tsv',
-        dataIndex: 'barcodes',
-        render: (tableCellData) => <UploadCell columnId='barcodes' tableCellData={tableCellData} />,
-      },
-      {
-        index: 3,
-        key: 'genes',
-        title: 'genes.tsv',
-        dataIndex: 'genes',
-        render: (tableCellData) => <UploadCell columnId='genes' tableCellData={tableCellData} />,
-      },
-      {
-        index: 4,
-        key: 'matrix',
-        title: 'matrix.mtx',
-        dataIndex: 'matrix',
-        render: (tableCellData) => <UploadCell columnId='matrix' tableCellData={tableCellData} />,
-      },
-    ],
-    [techTypes.SEURAT]: [
-      {
-        fixed: 'left',
-        index: 0,
-        key: 'sort',
-        dataIndex: 'sort',
-        width: 30,
-        render: () => <DragHandle />,
-      },
-      {
-        className: `${integrationTestConstants.classes.SAMPLE_CELL}`,
-        index: 1,
-        key: 'sample',
-        title: 'File',
-        dataIndex: 'name',
-        fixed: true,
-        render: (text, record, indx) => <SampleNameCell cellInfo={{ text, record, indx }} />,
-      },
-      {
-        index: 2,
-        key: 'seurat',
-        title: 'seurat rds',
-        dataIndex: 'seurat',
-        render: (tableCellData) => <UploadCell columnId='seurat' tableCellData={tableCellData} />,
-      },
-    ],
-  };
+  const initialTableColumns = [
+    {
+      fixed: 'left',
+      index: 0,
+      key: 'sort',
+      dataIndex: 'sort',
+      width: 30,
+      render: () => <DragHandle />,
+    },
+    {
+      className: `${integrationTestConstants.classes.SAMPLE_CELL}`,
+      index: 1,
+      key: 'sample',
+      title: selectedTech === sampleTech.SEURAT ? 'File' : 'Sample',
+      dataIndex: 'name',
+      fixed: true,
+      render: (text, record, indx) => <SampleNameCell cellInfo={{ text, record, indx }} />,
+    },
+    ...fileUploadSpecifications[selectedTech]?.requiredFiles?.map((fileName, indx) => {
+      const fileNameWithoutExtension = fileName.key.split('.')[0];
 
-  const [tableColumns, setTableColumns] = useState(initialTableColumns[techTypes.CHROMIUM]);
+      return ({
+        index: 2 + indx,
+        title: fileName.displayedName,
+        key: fileNameWithoutExtension,
+        dataIndex: fileNameWithoutExtension,
+        render: (tableCellData) => (
+          tableCellData && (
+            <UploadCell
+              columnId={fileNameWithoutExtension}
+              tableCellData={tableCellData}
+            />
+          )),
+      });
+    }) || [],
+
+  ];
+
+  const [tableColumns, setTableColumns] = useState(initialTableColumns);
 
   useEffect(() => {
     const samplesLoaded = activeExperiment?.sampleIds.every((sampleId) => samples[sampleId]);
 
-    if (activeExperiment?.sampleIds.length > 0 && samplesLoaded && technology) {
+    if (activeExperiment?.sampleIds.length > 0 && samplesLoaded) {
       // if there are samples - build the table columns
       const sanitizedSampleNames = new Set(
         activeExperiment.sampleIds.map((id) => samples[id]?.name.trim()),
@@ -139,16 +110,16 @@ const SamplesTable = forwardRef((props, ref) => {
         (metadataKey) => createInitializedMetadataColumn(metadataKeyToName(metadataKey)),
       ) || [];
 
-      setTableColumns([...initialTableColumns[technology], ...metadataColumns]);
+      setTableColumns([...initialTableColumns, ...metadataColumns]);
     } else {
       setTableColumns([]);
       setSampleNames(new Set());
     }
-  }, [samples, activeExperiment, technology]);
+  }, [samples, activeExperiment]);
 
   useConditionalEffect(() => {
     dispatch(loadSamples(activeExperimentId));
-  }, [activeExperiment?.sampleIds], { lazy: true });
+  }, [activeExperimentId], { lazy: true });
 
   const deleteMetadataColumn = (name) => {
     dispatch(deleteMetadataTrack(name, activeExperimentId));
@@ -191,6 +162,7 @@ const SamplesTable = forwardRef((props, ref) => {
 
     createMetadataColumn() {
       const key = temporaryMetadataKey(tableColumns);
+      const previousTableColumns = tableColumns;
       const metadataCreateColumn = {
         key,
         fixed: 'right',
@@ -201,7 +173,7 @@ const SamplesTable = forwardRef((props, ref) => {
               onMetadataCreate(name);
             }}
             onCancel={() => {
-              deleteMetadataColumn(key);
+              setTableColumns(previousTableColumns);
             }}
             message='Provide new metadata track name'
             visible
@@ -247,7 +219,7 @@ const SamplesTable = forwardRef((props, ref) => {
   };
 
   useEffect(() => {
-    if (activeExperiment.sampleIds.length === 0 || !technology) {
+    if (!activeExperiment?.sampleIds.length) {
       setTableData([]);
       return;
     }
@@ -257,29 +229,30 @@ const SamplesTable = forwardRef((props, ref) => {
       // in this situation it's possible that the sampleUuid does not exist
       // this a temporary fix so that the whole UI doesn't crash preventing the
       // user from removing the dataset or uploading another one.
-      const sampleFiles = samples[sampleUuid]?.files || {};
+      if (!samples[sampleUuid]) return {};
 
-      const barcodesFile = sampleFiles['barcodes.tsv.gz'] ?? { upload: { status: UploadStatus.FILE_NOT_FOUND } };
-      const genesFile = sampleFiles['features.tsv.gz'] ?? { upload: { status: UploadStatus.FILE_NOT_FOUND } };
-      const matrixFile = sampleFiles['matrix.mtx.gz'] ?? { upload: { status: UploadStatus.FILE_NOT_FOUND } };
-      const seuratFile = sampleFiles['r.rds'] ?? { upload: { status: UploadStatus.FILE_NOT_FOUND } };
+      const { files: sampleFiles, fileNames: sampleFileNames } = samples[sampleUuid];
 
-      const barcodesData = { sampleUuid, file: barcodesFile };
-      const genesData = { sampleUuid, file: genesFile };
-      const matrixData = { sampleUuid, file: matrixFile };
-      const seuratData = { sampleUuid, file: seuratFile };
+      const fileData = {};
+      sampleFileNames.forEach((key) => {
+        const displayedFileInTable = key.split('.')[0];
+
+        const currentFile = sampleFiles[key] ?? { upload: { status: UploadStatus.FILE_NOT_FOUND } };
+        const currentFileData = { sampleUuid, file: currentFile };
+        fileData[displayedFileInTable] = currentFileData;
+      });
 
       return {
         key: idx,
         name: samples[sampleUuid]?.name || 'UPLOAD ERROR: Please reupload sample',
         uuid: sampleUuid,
-        ...(technology === techTypes.CHROMIUM && { barcodes: barcodesData, genes: genesData, matrix: matrixData }),
-        ...(technology === techTypes.SEURAT && { seurat: seuratData }),
+        ...fileData,
         ...samples[sampleUuid]?.metadata,
       };
     });
+
     setTableData(newData);
-  }, [experiments, samples, activeExperimentId, technology]);
+  }, [experiments, samples, activeExperimentId]);
 
   const noDataComponent = (
     <ExampleExperimentsSpace
@@ -333,7 +306,11 @@ const SamplesTable = forwardRef((props, ref) => {
 
       <Row justify='center'>
         <Text>
-          We&apos;re getting your samples ...
+          {
+            samplesLoading ? 'We\'re getting your samples ...'
+              : samplesValidating ? 'We\'re validating your samples ...'
+                : ''
+          }
         </Text>
       </Row>
     </>
@@ -367,17 +344,9 @@ const SamplesTable = forwardRef((props, ref) => {
 
   return (
     <>
-      {areSamplesLoading ? renderLoader() : renderSamplesTable()}
+      {samplesLoading || samplesValidating ? renderLoader() : renderSamplesTable()}
     </>
   );
 });
-
-SamplesTable.propTypes = {
-  technology: PropTypes.string,
-};
-
-SamplesTable.defaultProps = {
-  technology: null,
-};
 
 export default React.memo(SamplesTable);

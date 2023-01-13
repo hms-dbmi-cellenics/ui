@@ -6,7 +6,7 @@ import {
   Collapse, Row, Col, Space, Skeleton, Divider,
 } from 'antd';
 
-import generateDataProcessingPlotUuid from 'utils/generateDataProcessingPlotUuid';
+import { generateDataProcessingPlotUuid } from 'utils/generateCustomPlotUuid';
 import {
   updatePlotConfig,
   loadPlotConfig,
@@ -40,7 +40,7 @@ const plotStylingControlsConfig = [
   },
   {
     panelTitle: 'Axes',
-    controls: ['axes'],
+    controls: ['axesWithRanges'],
   },
   {
     panelTitle: 'Title',
@@ -87,10 +87,10 @@ const Classifier = (props) => {
         />
       ),
     },
-    histogram: {
-      title: 'Histogram',
+    emptyDropsPlot: {
+      title: 'Empty Drops Plot',
       plotUuid: generateDataProcessingPlotUuid(sampleId, filterName, 0),
-      plotType: 'cellSizeDistributionHistogram',
+      plotType: 'classifierEmptyDropsPlot',
       plot: (config, plotData, actions) => (
         <ClassifierEmptyDropsPlot
           config={config}
