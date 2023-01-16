@@ -13,7 +13,7 @@
 #### Link to staging deployment URL (or set N/A)
 <!---
   Delete this comment and include the URL of the staging environment for this pull request.
-  Refer to https://github.com/hms-dbmi-cellenics/biomage-utils#stage on how to stage a staging environment.
+  Refer to https://github.com/hms-dbmi-cellenics/cellenics-utils#stage on how to stage a staging environment.
   If a staging environment for testing is not necessary for this PR, replace this comment with N/A 
   and explain why a staging environment is not required for this PR.
 
@@ -54,9 +54,9 @@ Have best practices and ongoing refactors being observed in this PR
 - [ ] Unit tests written **or** no unit tests required for change, e.g. documentation update.
 
 <!---
-  Download the latest production data using `biomage experiment pull`.
+  Download the latest production data using `cellenics experiment pull`.
   To set up easy local testing with inframock, follow the instructions here: https://github.com/hms-dbmi-cellenics/inframock
-  To deploy to the staging environment, follow the instructions here: https://github.com/hms-dbmi-cellenics/biomage-utils
+  To deploy to the staging environment, follow the instructions here: https://github.com/hms-dbmi-cellenics/cellenics-utils
 -->
 
 ### Integration testing

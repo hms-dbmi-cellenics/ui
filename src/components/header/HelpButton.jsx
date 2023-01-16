@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Button, Dropdown, Card } from 'antd';
 import { QuestionCircleOutlined, DownOutlined } from '@ant-design/icons';
 import nextConfig from 'next/config';
+
+import config from 'config';
 import { AccountId } from 'utils/deploymentInfo';
 
 const accountId = nextConfig()?.publicRuntimeConfig?.accountId;
@@ -38,7 +40,7 @@ const HelpButton = () => {
           <br />
           For 1-2-1 support with your analysis, contact
           {' '}
-          <a href='mailto: vicky@biomage.net'>vicky@biomage.net</a>
+          <a href={`mailto:${config.supportEmail}`}>{config.supportEmail}</a>
         </>
       )}
     </Card>

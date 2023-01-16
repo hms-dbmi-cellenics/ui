@@ -16,7 +16,9 @@ const generatePipelineParamsHash = (experiment, samples) => {
     sampleTechnology,
     sampleIds: orderInvariantSampleIds,
     sampleNames: orderInvariantSampleIds.map((sampleId) => samples[sampleId]?.name),
-    sampleOptions: orderInvariantSampleIds.map((sampleId) => _.cloneDeep(samples[sampleId]?.options)),
+    sampleOptions: orderInvariantSampleIds.map(
+      (sampleId) => _.cloneDeep(samples[sampleId]?.options),
+    ),
   };
 
   if (experiment.metadataKeys.length) {
