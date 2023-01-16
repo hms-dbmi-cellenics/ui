@@ -12,6 +12,10 @@ defaults:
     # change this if your nextjs app does not live at the root of the repo
     working-directory: ./
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   analyze:
     runs-on: ubuntu-latest

@@ -2,55 +2,51 @@ import getNumberOfCellsInGrouping from 'redux/selectors/getNumberOfCellsInGroupi
 import { getCellSetsHierarchyByKeys } from 'redux/selectors';
 
 // Timeouts calculated in https://docs.google.com/document/d/1vim9t9lWMLW8wALeJvDeYnofQa9tj9zPU3i1SOfMilM/edit
-const getTimeoutForWorkerTaskUncapped = (state, taskName, options) => {
+const getTimeoutForWorkerTask = (state, taskName) => {
   // Get filtered nCells for more accurate timeout//
   // if louvain is not calculated (unlikely) get all nCells
   const nCells = getNumberOfCellsInGrouping('louvain', state) ?? getNumberOfCellsInGrouping('sample', state);
   const nClusters = getCellSetsHierarchyByKeys(['louvain'])(state)[0]?.children.length ?? 1;
 
+  const baseTimeout = 180; // some big datasets take up to 2-3 minutes to be downloaded & loaded
+
   switch (taskName) {
-    case 'GetEmbedding': {
-      const { type } = options;
-
-      // Tsne is slower than tsne, so we give a bigger timeout to tsne
-      if (type === 'umap') return 0.002 * nCells + 60;
-      if (type === 'tsne') return 0.02 * nCells + 60;
-
-      throw new Error('GetEmbedding type isn\'t specified');
-    }
-    case 'ClusterCells':
+    case 'GetEmbedding':
+    case 'ListGenes':
     case 'MarkerHeatmap': {
-      return 0.002 * nCells + 60;
+      // all of this calls can happen at the same time and each of them can potentially have to
+      // wait for the others to finish before it starts processing (due to the SQS) so the timeout
+      // needs to be large enough for the slowest task to finish
+      // the 900s (15min) is based on the time it takes to create the marker heatmap
+      // for a 430k cells
+      return 900;
     }
-    case 'DifferentialExpression': {
-      return 180;
+    case 'ClusterCells': {
+      return 0.002 * nCells + baseTimeout;
     }
+
     case 'TrajectoryAnalysisStartingNodes': {
       // Number of clusters is inversely proportional to running time
       // Larger custers produce more possible trajectories
-      return ((0.3 * nCells) / nClusters) + 60;
+      return ((0.3 * nCells) / nClusters) + baseTimeout;
     }
     case 'TrajectoryAnalysisPseudotime': {
-      return ((0.6 * nCells) / nClusters) + 60;
+      return ((0.6 * nCells) / nClusters) + baseTimeout;
     }
-    case 'ListGenes':
     case 'GeneExpression':
     case 'GetMitochondrialContent':
     case 'GetDoubletScore':
     case 'GetNormalizedExpression':
+    case 'DifferentialExpression':
     case 'GetNUmis':
     case 'GetNGenes':
     case 'PlotData': {
-      return 60;
+      return baseTimeout;
     }
     default: {
       throw new Error('Task doesn\'t exist');
     }
   }
 };
-
-const getTimeoutForWorkerTask = (state, taskName, options) => (
-  Math.max(getTimeoutForWorkerTaskUncapped(state, taskName, options), 60)
-);
 
 export default getTimeoutForWorkerTask;
