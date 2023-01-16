@@ -22,22 +22,21 @@ const HelpButton = () => {
           The Biomage team will reply to your message as soon as possible.
           <br />
           <br />
+          Check out the
+          {' '}
+          <a href='https://www.biomage.net/user-guide' target='_blank' rel='noreferrer'>
+            user guide
+          </a>
+          {' '}
+          and
+          <a href='https://www.biomage.net/resources' target='_blank' rel='noreferrer'> tutorial videos </a>
+          that are available on our website!
+          <br />
+          <br />
         </>
       )}
-      Check out the
-      {' '}
-      <a href='https://www.biomage.net/user-guide' target='_blank' rel='noreferrer'>
-        user guide
-      </a>
-      {' '}
-      and
-      <a href='https://www.biomage.net/resources' target='_blank' rel='noreferrer'> tutorial videos </a>
-      that are available on our website!
-
       {accountId !== AccountId.BIOMAGE && (
         <>
-          <br />
-          <br />
           For 1-2-1 support with your analysis, contact
           {' '}
           <a href={`mailto:${config.supportEmail}`}>{config.supportEmail}</a>
