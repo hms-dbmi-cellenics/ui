@@ -35,11 +35,13 @@ const HelpButton = () => {
           <br />
         </>
       )}
-      <>
-        For 1-2-1 support with your analysis, contact
-        {' '}
-        <a href={`mailto:${config.supportEmail}`}>{config.supportEmail}</a>
-      </>
+      {accountId !== AccountId.BIOMAGE && (
+        <>
+          For 1-2-1 support with your analysis, contact
+          {' '}
+          <a href={`mailto:${config.supportEmail}`}>{config.supportEmail}</a>
+        </>
+      )}
     </Card>
   );
 
