@@ -98,11 +98,11 @@ describe('dispatchWorkRequest unit tests', () => {
       ETag: 'facefeed',
       socketId: '5678',
       experimentId: fake.EXPERIMENT_ID,
-      timeout: '4022-01-01T00:00:30.000Z',
+      timeout: '4022-01-01T00:30:00.000Z',
       body: { name: taskName, type: 'fake task' },
     });
 
-    expect(socketConnectionMocks.mockOn).toHaveBeenCalledTimes(2);
+    expect(socketConnectionMocks.mockOn).toHaveBeenCalledTimes(3);
   });
 
   it('Sends work to the backend when called', async () => {
@@ -115,11 +115,11 @@ describe('dispatchWorkRequest unit tests', () => {
       ETag: 'facefeed',
       socketId: '5678',
       experimentId: fake.EXPERIMENT_ID,
-      timeout: '4022-01-01T00:00:30.000Z',
+      timeout: '4022-01-01T00:30:00.000Z',
       body: { name: taskName, type: 'fake task' },
     });
 
-    expect(socketConnectionMocks.mockOn).toHaveBeenCalledTimes(2);
+    expect(socketConnectionMocks.mockOn).toHaveBeenCalledTimes(3);
   });
 
   it('Returns an error if there is error in the response.', async () => {
@@ -161,7 +161,7 @@ describe('dispatchWorkRequest unit tests', () => {
       ETag: 'facefeed',
       socketId: '5678',
       experimentId: fake.EXPERIMENT_ID,
-      timeout: '4022-01-01T00:00:30.000Z',
+      timeout: '4022-01-01T00:30:00.000Z',
       body: { name: taskName, type: 'fake task' },
     });
   });
