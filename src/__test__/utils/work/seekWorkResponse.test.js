@@ -7,6 +7,7 @@ import mockAPI, { generateDefaultMockAPIResponses } from '__test__/test-utils/mo
 
 import unpackResult from 'utils/work/unpackResult';
 import parseResult from 'utils/work/parseResult';
+import _ from 'lodash';
 
 /**
  * jest.mock calls are automatically hoisted to the top of the javascript
@@ -105,7 +106,7 @@ describe('dispatchWorkRequest unit tests', () => {
     expect(socketConnectionMocks.mockOn).toHaveBeenCalledTimes(3);
   });
 
-  it('Sends work to the backend when called', async () => {
+  it('Sends work to the backend when called for tasks with extended worker timeout', async () => {
     fetchMock.mockResponse(JSON.stringify({ signedUrl: 'http://www.apiUrl:portNum/path/blabla' }));
 
     await dispatchWorkRequest(
@@ -117,6 +118,25 @@ describe('dispatchWorkRequest unit tests', () => {
       experimentId: fake.EXPERIMENT_ID,
       timeout: '4022-01-01T00:30:00.000Z',
       body: { name: taskName, type: 'fake task' },
+    });
+
+    expect(socketConnectionMocks.mockOn).toHaveBeenCalledTimes(3);
+  });
+
+  it('Sends work to the backend when called for tasks without extended worker timeout', async () => {
+    fetchMock.mockResponse(JSON.stringify({ signedUrl: 'http://www.apiUrl:portNum/path/blabla' }));
+
+    const customBody = _.cloneDeepWith(body);
+    customBody.name = 'GeneExpression';
+    await dispatchWorkRequest(
+      experimentId, customBody, timeout, 'facefeed',
+    );
+    expect(socketConnectionMocks.mockEmit).toHaveBeenCalledWith('WorkRequest-v2', {
+      ETag: 'facefeed',
+      socketId: '5678',
+      experimentId: fake.EXPERIMENT_ID,
+      timeout: '4022-01-01T00:00:30.000Z',
+      body: { name: 'GeneExpression', type: 'fake task' },
     });
 
     expect(socketConnectionMocks.mockOn).toHaveBeenCalledTimes(3);
