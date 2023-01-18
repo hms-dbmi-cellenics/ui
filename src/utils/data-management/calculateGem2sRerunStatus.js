@@ -1,3 +1,5 @@
+import _ from 'lodash';
+
 import pipelineStatus from 'utils/pipelineStatusValues';
 import generateGem2sParamsHash from './generateGem2sParamsHash';
 
@@ -23,7 +25,7 @@ const calculateGem2sRerunStatus = (
   if (!projectHashEqual) rerunReasons.push('the project samples/metadata have been modified');
 
   return ({
-    rerun: !gem2sSuccessful || !projectHashEqual,
+    rerun: _.isNil(activeExperiment.parentExperimentId) && (!gem2sSuccessful || !projectHashEqual),
     paramsHash: newParamsHash,
     reasons: rerunReasons,
   });
