@@ -9,6 +9,8 @@ import {
 import endUserMessages from 'utils/endUserMessages';
 
 const loadBackendStatus = (experimentId) => async (dispatch) => {
+  console.error('FETCHING');
+
   dispatch({
     type: BACKEND_STATUS_LOADING,
     payload: {
