@@ -12,6 +12,8 @@ const throwResponseError = (response) => {
   throw new Error(`Error ${response.status}: ${response.text}`, { cause: response });
 };
 
+const timeoutIds = {};
+
 // getRemainingWorkerStartTime returns how many more seconds the worker is expected to
 // need to be running with an extra 1 minute for a bit of leeway
 const getRemainingWorkerStartTime = (creationTimestamp) => {
@@ -52,6 +54,40 @@ const seekFromS3 = async (ETag, experimentId, taskName) => {
   return parsedResult;
 };
 
+// getTimeoutDate returns the date resulting of adding 'timeout' seconds to
+// current time.
+const getTimeoutDate = (timeout) => dayjs().add(timeout, 's').toISOString();
+
+// set a timeout and save its ID in the timeoutIds map
+// if there was a timeout for the current ETag, clear it before reseting it
+const setOrRefreshTimeout = (request, timeoutDuration, reject, ETag) => {
+  if (timeoutIds[ETag]) {
+    clearTimeout(timeoutIds[ETag]);
+  }
+
+  // timeoutDate needs to be initialized outside the timeout callback
+  // or it will be computed when the error is raised instead of (now)
+  // when the timeout is set
+  const timeoutDate = getTimeoutDate(timeoutDuration);
+  timeoutIds[ETag] = setTimeout(() => {
+    reject(new WorkTimeoutError(timeoutDuration, timeoutDate, request, ETag));
+  }, timeoutDuration * 1000);
+};
+
+const getWorkerTimeout = (taskName, defaultTimeout) => {
+  switch (taskName) {
+    case 'GetEmbedding':
+    case 'ListGenes':
+    case 'MarkerHeatmap': {
+      return dayjs().add(1800, 's').toISOString();
+    }
+
+    default: {
+      return dayjs().add(defaultTimeout, 's').toISOString();
+    }
+  }
+};
+
 const dispatchWorkRequest = async (
   experimentId,
   body,
@@ -59,11 +95,18 @@ const dispatchWorkRequest = async (
   ETag,
   requestProps,
 ) => {
-  console.error('dispatching work request', body);
   const { default: connectionPromise } = await import('utils/socketConnection');
   const io = await connectionPromise;
 
-  const timeoutDate = dayjs().add(timeout, 's').toISOString();
+  const { name: taskName } = body;
+
+  // for listGenes, markerHeatmap, & getEmbedding we set a long timeout for the worker
+  // after that timeout the worker will skip those requests
+  // meanwhile in the UI we set a shorter timeout. The UI will be prolonging this timeout
+  // as long as it receives "heartbeats" from the worker because that means the worker is alive
+  // and progresing.
+  // this should be removed if we make each request run in a different worker
+  const workerTimeoutDate = getWorkerTimeout(taskName, timeout);
   const authJWT = await getAuthJWT();
 
   const request = {
@@ -71,26 +114,33 @@ const dispatchWorkRequest = async (
     socketId: io.id,
     experimentId,
     ...(authJWT && { Authorization: `Bearer ${authJWT}` }),
-    timeout: timeoutDate,
+    timeout: workerTimeoutDate,
     body,
     ...requestProps,
   };
 
   const timeoutPromise = new Promise((resolve, reject) => {
-    const id = setTimeout(() => {
-      reject(new WorkTimeoutError(timeoutDate, request));
-    }, timeout * 1000);
+    setOrRefreshTimeout(request, timeout, reject, ETag);
 
     io.on(`WorkerInfo-${experimentId}`, (res) => {
-      const { response: { podInfo: { name, creationTimestamp, phase } } } = res;
-
+      const { response: { podInfo: { creationTimestamp, phase } } } = res;
       const extraTime = getRemainingWorkerStartTime(creationTimestamp);
+
+      // this worker info indicates that the work request has been received but the worker
+      // is still spinning up so we will add extra time to account for that.
       if (phase === 'Pending' && extraTime > 0) {
-        console.log(`worker ${name} started at ${creationTimestamp}. Adding ${extraTime} seconds to timeout.`);
-        clearTimeout(id);
-        setTimeout(() => {
-          reject(new WorkTimeoutError(timeoutDate, request));
-        }, (timeout + extraTime) * 1000);
+        const newTimeout = timeout + extraTime;
+        setOrRefreshTimeout(request, newTimeout, reject, ETag);
+      }
+    });
+
+    // this experiment update is received whenever a worker finishes any work request
+    // related to the current experiment. We extend the timeout because we know
+    // the worker is alive and was working on another request of our experiment
+    io.on(`Heartbeat-${experimentId}`, () => {
+      const newTimeoutDate = getTimeoutDate(timeout);
+      if (newTimeoutDate < workerTimeoutDate) {
+        setOrRefreshTimeout(request, timeout, reject, ETag);
       }
     });
   });
