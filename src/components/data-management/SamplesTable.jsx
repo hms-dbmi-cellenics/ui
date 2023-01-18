@@ -16,7 +16,6 @@ import ExampleExperimentsSpace from 'components/data-management/ExampleExperimen
 import MetadataPopover from 'components/data-management/MetadataPopover';
 import MetadataColumnTitle from 'components/data-management/MetadataColumn';
 import { UploadCell, SampleNameCell, EditableFieldCell } from 'components/data-management/SamplesTableCells';
-import PropTypes from 'prop-types';
 
 import {
   deleteMetadataTrack,
@@ -42,18 +41,19 @@ const { Text } = Typography;
 
 const SamplesTable = forwardRef((props, ref) => {
   const dispatch = useDispatch();
-  const { parentExperimentId } = props;
   const [tableData, setTableData] = useState([]);
   const experiments = useSelector((state) => state.experiments);
   const samples = useSelector((state) => state.samples);
   const samplesLoading = useSelector((state) => state.samples.meta.loading);
   const activeExperimentId = useSelector((state) => state.experiments.meta.activeExperimentId);
-  const parentExperimentName = experiments[parentExperimentId]?.name;
 
   const samplesValidating = useSelector(
     (state) => state.samples.meta.validating.includes(activeExperimentId),
   );
   const activeExperiment = useSelector((state) => state.experiments[activeExperimentId]);
+  const parentExperimentId = activeExperiment?.parentExperimentId;
+  const parentExperimentName = experiments[parentExperimentId]?.name;
+
   const selectedTech = samples[activeExperiment?.sampleIds[0]]?.type;
   const [sampleNames, setSampleNames] = useState(new Set());
   const DragHandle = sortableHandle(() => <MenuOutlined style={{ cursor: 'grab', color: '#999' }} />);
@@ -369,9 +369,5 @@ const SamplesTable = forwardRef((props, ref) => {
     </>
   );
 });
-
-SamplesTable.propTypes = {
-  parentExperimentId: PropTypes.bool.isRequired,
-};
 
 export default React.memo(SamplesTable);

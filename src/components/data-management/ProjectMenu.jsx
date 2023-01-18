@@ -3,7 +3,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import {
   Space, Button,
 } from 'antd';
-import PropTypes from 'prop-types';
 
 import integrationTestConstants from 'utils/integrationTestConstants';
 import processUpload from 'utils/upload/processUpload';
@@ -12,13 +11,13 @@ import LaunchAnalysisButton from './LaunchAnalysisButton';
 import FileUploadModal from './FileUploadModal';
 import ShareExperimentModal from './ShareExperimentModal';
 
-const ProjectMenu = (props) => {
+const ProjectMenu = () => {
   const dispatch = useDispatch();
   const samples = useSelector((state) => state.samples);
   const activeExperimentId = useSelector((state) => state.experiments.meta.activeExperimentId);
   const activeExperiment = useSelector((state) => state.experiments[activeExperimentId]);
+  const parentExperimentId = activeExperiment?.parentExperimentId;
 
-  const { isExperimentSubsetted } = props;
   const [uploadModalVisible, setUploadModalVisible] = useState(false);
   const [shareExperimentModalVisible, setShareExperimentModalVisible] = useState(false);
   const selectedTech = samples[activeExperiment?.sampleIds[0]]?.type;
@@ -34,7 +33,7 @@ const ProjectMenu = (props) => {
         <Button
           data-test-id={integrationTestConstants.ids.ADD_SAMPLES_BUTTON}
           onClick={() => setUploadModalVisible(true)}
-          disabled={isExperimentSubsetted}
+          disabled={parentExperimentId}
         >
           Add samples
         </Button>
@@ -62,10 +61,6 @@ const ProjectMenu = (props) => {
       ) : <></>}
     </>
   );
-};
-
-ProjectMenu.propTypes = {
-  isExperimentSubsetted: PropTypes.bool.isRequired,
 };
 
 export default ProjectMenu;

@@ -56,7 +56,7 @@ const ProjectDetails = ({ width, height }) => {
             <Title level={3}>{activeExperiment.name}</Title>
             <Space>
               <Button
-                onClick={() => clone()}
+                onClick={clone}
                 disabled={parentExperimentId}
               >
                 Copy
@@ -67,9 +67,7 @@ const ProjectDetails = ({ width, height }) => {
               >
                 Add metadata
               </Button>
-              <ProjectMenu
-                parentExperimentId={parentExperimentId}
-              />
+              <ProjectMenu />
             </Space>
           </div>
           <Text type='secondary'>
@@ -91,7 +89,6 @@ const ProjectDetails = ({ width, height }) => {
           <SampleOptions />
           <SamplesTable
             ref={samplesTableRef}
-            parentExperimentId={parentExperimentId}
           />
         </div>
       </div>
