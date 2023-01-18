@@ -1,4 +1,8 @@
 // File containing data-test id and class values for use in Cypress tests.
+//
+// IMPORTANT:
+// Before removing any of these ids/classes from a component's attributes
+// check in https://github.com/biomage-org/testing that they are not being used anymore
 
 const ids = {
   NAVIGATION_MENU: 'navigation-menu',

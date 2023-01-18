@@ -1,6 +1,6 @@
 import React from 'react';
 
-import moment from 'moment';
+import dayjs from 'dayjs';
 
 import {
   render, screen,
@@ -123,8 +123,8 @@ describe('PlatformError', () => {
       })
     );
 
-    const timeoutDate = moment().add(120, 's').toISOString();
-    const error = new WorkTimeoutError(timeoutDate, {});
+    const timeoutDate = dayjs().add(120, 's').toISOString();
+    const error = new WorkTimeoutError(120, timeoutDate, {}, 'someETag');
 
     act(() => {
       render(<PlatformError error={error} />);
