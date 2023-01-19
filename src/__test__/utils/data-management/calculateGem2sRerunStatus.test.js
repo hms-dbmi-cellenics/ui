@@ -39,63 +39,11 @@ describe('calculateGem2sRerunStatus', () => {
     parentExperimentId: null,
   };
 
-  const samples = {
-    meta: {
-      loading: false,
-      error: false,
-      saving: false,
-      validating: [],
-    },
-    '4c4e6b81-33d1-4fb5-b745-d5f23e1604b2': {
-      experimentId: 'f5675a84-7d5b-4214-b774-dff7affca351',
-      metadata: {
-        Track_1: 'N.A.',
-      },
-      createdDate: '2023-01-13 00:15:58.079506+00',
-      name: 'WT1',
-      lastModified: '2023-01-13 00:15:58.079506+00',
-      files: {
-        'matrix.mtx.gz': {
-          size: 5079737,
-          valid: true,
-          name: 'matrix.mtx.gz',
-          upload: {
-            status: 'uploaded',
-          },
-        },
-        'barcodes.tsv.gz': {
-          size: 5331,
-          valid: true,
-          name: 'barcodes.tsv.gz',
-          upload: {
-            status: 'uploaded',
-          },
-        },
-        'features.tsv.gz': {
-          size: 279361,
-          valid: true,
-          name: 'features.tsv.gz',
-          upload: {
-            status: 'uploaded',
-          },
-        },
-      },
-      type: '10x',
-      options: {},
-      fileNames: [
-        'matrix.mtx.gz',
-        'barcodes.tsv.gz',
-        'features.tsv.gz',
-      ],
-      uuid: '4c4e6b81-33d1-4fb5-b745-d5f23e1604b2',
-    },
-  };
-
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  it('No rerun when gem2s is running', () => {
+  it('No rerun when gem2s is running with the latest params already', () => {
     const runningGem2sBackendStatus = {
       ...successfulGem2sBackendStatus,
       stopDate: null,
@@ -103,14 +51,14 @@ describe('calculateGem2sRerunStatus', () => {
         'DownloadGem',
       ],
       status: pipelineStatusValues.RUNNING,
+      shouldRerun: false,
     };
 
     const {
-      rerun, paramsHash: receivedParamsHash, reasons,
-    } = calculateGem2sRerunStatus(runningGem2sBackendStatus, experiment, samples);
+      rerun, reasons,
+    } = calculateGem2sRerunStatus(runningGem2sBackendStatus, experiment);
 
     expect(rerun).toEqual(false);
-    expect(receivedParamsHash).toEqual(oldParamsHash);
     expect(reasons).toEqual([]);
   });
 
@@ -118,44 +66,45 @@ describe('calculateGem2sRerunStatus', () => {
     const failedGem2sBackendStatus = {
       ...successfulGem2sBackendStatus,
       status: pipelineStatusValues.FAILED,
+      shouldRerun: false,
     };
 
     const { rerun } = calculateGem2sRerunStatus(
-      failedGem2sBackendStatus, experiment, samples,
+      failedGem2sBackendStatus, experiment,
     );
 
     expect(rerun).toEqual(true);
   });
 
-  it('No rerun when gem2s finished and its a normal experiment and paramsHash coincides', () => {
+  it('No rerun when gem2s finished and its a normal experiment and shouldRerun is false', () => {
     const { rerun } = calculateGem2sRerunStatus(
-      successfulGem2sBackendStatus, experiment, samples,
+      { ...successfulGem2sBackendStatus, shouldRerun: false },
+      experiment,
     );
 
     expect(rerun).toEqual(false);
   });
 
-  it('Rerun when gem2s finished and its a normal experiment and paramsHashes differ', () => {
+  it('Rerun when gem2s finished and its a normal experiment and shouldRerun is true', () => {
     const { rerun } = calculateGem2sRerunStatus(
-      successfulGem2sBackendStatus, experiment, samples,
+      { ...successfulGem2sBackendStatus, shouldRerun: true },
+      experiment,
     );
 
     expect(rerun).toEqual(true);
   });
 
   it('No rerun when its a subset experiment', () => {
-    const newParamsHash = 'newParamsHash';
-
     const subsetExperiment = {
       ...experiment,
       parentExperimentId: 'mockParentExperimentId',
     };
 
-    const {
-      rerun, paramsHash: receivedParamsHash,
-    } = calculateGem2sRerunStatus(successfulGem2sBackendStatus, subsetExperiment, samples);
+    const { rerun } = calculateGem2sRerunStatus(
+      { ...successfulGem2sBackendStatus, shouldRerun: true },
+      subsetExperiment,
+    );
 
     expect(rerun).toEqual(false);
-    expect(receivedParamsHash).toEqual(newParamsHash);
   });
 });
