@@ -1,10 +1,11 @@
-// import fetchAPI from 'utils/http/fetchAPI';
+import _ from 'lodash';
+
 import pipelineStatus from 'utils/pipelineStatusValues';
 
 const calculateGem2sRerunStatus = async (
-  gem2sBackendStatus,
+  activeExperiment, gem2sBackendStatus,
 ) => {
-  const { status: gem2sStatus, shouldRerun: experimentModified } = gem2sBackendStatus ?? {};
+  const { status: gem2sStatus, shouldRerun } = gem2sBackendStatus ?? {};
 
   const gem2sSuccessful = [
     pipelineStatus.SUCCEEDED, pipelineStatus.RUNNING,
@@ -12,10 +13,10 @@ const calculateGem2sRerunStatus = async (
 
   const rerunReasons = [];
   if (!gem2sSuccessful) rerunReasons.push('data has not been processed sucessfully');
-  if (experimentModified) rerunReasons.push('the experiment samples/metadata have been modified');
+  if (shouldRerun) rerunReasons.push('the experiment samples/metadata have been modified');
 
   return ({
-    rerun: !gem2sSuccessful || experimentModified,
+    rerun: _.isNil(activeExperiment.parentExperimentId) && (!gem2sSuccessful || !shouldRerun),
     reasons: rerunReasons,
   });
 };
