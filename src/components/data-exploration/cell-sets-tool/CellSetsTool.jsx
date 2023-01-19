@@ -12,7 +12,8 @@ import {
   BlockOutlined, MergeCellsOutlined, SplitCellsOutlined,
 } from '@ant-design/icons';
 
-import SubsetCellSetsOperation from 'components/data-exploration/cell-sets-tool/SubsetCellSetsOperation';
+// import SubsetCellSetsOperation from 'compo
+// nents/data-exploration/cell-sets-tool/SubsetCellSetsOperation';
 import CellSetOperation from 'components/data-exploration/cell-sets-tool/CellSetOperation';
 import PlatformError from 'components/PlatformError';
 import HierarchicalTree from 'components/data-exploration/hierarchical-tree/HierarchicalTree';
@@ -26,7 +27,7 @@ import {
   updateCellSetProperty,
   updateCellSetSelected,
 } from 'redux/actions/cellSets';
-import { runSubsetExperiment } from 'redux/actions/pipeline';
+// import { runSubsetExperiment } from 'redux/actions/pipeline';
 import { getCellSets } from 'redux/selectors';
 
 import { composeTree } from 'utils/cellSets';
@@ -125,11 +126,11 @@ const CellSetsTool = (props) => {
     if (numSelected) {
       operations = (
         <Space style={{ marginLeft: '0.5em' }}>
-          <SubsetCellSetsOperation
+          {/* <SubsetCellSetsOperation
             onCreate={(name) => {
               dispatch(runSubsetExperiment(experimentId, name, selected));
             }}
-          />
+          /> */}
           <CellSetOperation
             icon={<MergeCellsOutlined />}
             onCreate={(name, color) => {
