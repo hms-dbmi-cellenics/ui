@@ -2,9 +2,7 @@ import _ from 'lodash';
 
 import pipelineStatus from 'utils/pipelineStatusValues';
 
-const calculateGem2sRerunStatus = async (
-  activeExperiment, gem2sBackendStatus,
-) => {
+const calculateGem2sRerunStatus = (gem2sBackendStatus, activeExperiment) => {
   const { status: gem2sStatus, shouldRerun } = gem2sBackendStatus ?? {};
 
   const gem2sSuccessful = [
@@ -16,7 +14,7 @@ const calculateGem2sRerunStatus = async (
   if (shouldRerun) rerunReasons.push('the experiment samples/metadata have been modified');
 
   return ({
-    rerun: _.isNil(activeExperiment.parentExperimentId) && (!gem2sSuccessful || !shouldRerun),
+    rerun: _.isNil(activeExperiment.parentExperimentId) && (!gem2sSuccessful || shouldRerun),
     reasons: rerunReasons,
   });
 };

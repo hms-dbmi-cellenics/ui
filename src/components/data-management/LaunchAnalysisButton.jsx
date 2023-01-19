@@ -63,11 +63,9 @@ const LaunchAnalysisButton = () => {
       || !experiments[activeExperimentId]?.sampleIds?.length > 0
     ) return;
 
-    calculateGem2sRerunStatus(gem2sBackendStatus, activeExperiment)
-      .then((status) => {
-        setGem2sRerunStatus(status);
-      })
-      .catch((err) => console.error(err));
+    const status = calculateGem2sRerunStatus(gem2sBackendStatus, activeExperiment);
+
+    setGem2sRerunStatus(status);
   }, [backendStatus, activeExperimentId, samples, activeExperiment]);
 
   const canLaunchAnalysis = useCallback(() => {
