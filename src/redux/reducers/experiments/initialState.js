@@ -8,6 +8,7 @@ const experimentTemplate = {
   sampleIds: [],
   metadataKeys: [],
   pipelineVersion: 1,
+  parentExperimentId: null,
 };
 
 const initialState = {
