@@ -38,7 +38,6 @@ const updateValueInMetadataTrack = (
       },
     });
 
-    // console.error('NOOOO');
     await dispatch(loadBackendStatus(experimentId));
   } catch (e) {
     const errorMessage = handleError(e, endUserMessages.ERROR_SAVING);
