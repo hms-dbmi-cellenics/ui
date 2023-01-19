@@ -19,7 +19,6 @@ import { loadExperiments, setActiveExperiment } from 'redux/actions/experiments'
 
 import { updateExperimentInfo } from 'redux/actions/experimentSettings';
 
-// import generateGem2sParamsHash from 'utils/data-management/generateGem2sParamsHash';
 import calculateGem2sRerunStatus from 'utils/data-management/calculateGem2sRerunStatus';
 
 import mockAPI, {
@@ -30,7 +29,6 @@ import { experiments } from '__test__/test-utils/mockData';
 
 jest.mock('redux/selectors');
 jest.mock('utils/socketConnection');
-// jest.mock('utils/data-management/generateGem2sParamsHash');
 jest.mock('utils/data-management/calculateGem2sRerunStatus');
 
 jest.mock('next/router', () => ({
@@ -62,8 +60,6 @@ const firefoxUA = '"Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:96.0) Gecko
 Object.defineProperty(navigator, 'userAgent', { value: chromeUA, writable: true });
 
 enableFetchMocks();
-
-// generateGem2sParamsHash.mockImplementation(() => 'mockParamsHash');
 
 const experimentWithSamples = experiments.find((experiment) => experiment.samplesOrder.length > 0);
 
@@ -126,9 +122,7 @@ describe('ContentWrapper', () => {
 
     navigator.userAgent = chromeUA;
 
-    calculateGem2sRerunStatus.mockImplementation(() => new Promise((resolve) => {
-      resolve({ rerun: true, reasons: [] });
-    }));
+    calculateGem2sRerunStatus.mockImplementation(() => ({ rerun: true, reasons: [] }));
 
     await store.dispatch(loadExperiments());
     await store.dispatch(setActiveExperiment(experimentId));
@@ -172,9 +166,7 @@ describe('ContentWrapper', () => {
   });
 
   it('Links are enabled if the selected project is processed', async () => {
-    calculateGem2sRerunStatus.mockImplementationOnce(() => new Promise((resolve) => {
-      resolve({ rerun: false, reasons: [] });
-    }));
+    calculateGem2sRerunStatus.mockImplementationOnce(() => ({ rerun: false, reasons: [] }));
 
     const mockBackendStatus = {
       loading: false,
@@ -185,14 +177,14 @@ describe('ContentWrapper', () => {
         },
         gem2s: {
           status: 'SUCCEEDED',
-          paramsHash: 'mockParamsHash',
+          shouldRerun: false,
         },
       },
     };
 
     getBackendStatus.mockImplementation(() => () => mockBackendStatus);
 
-    await renderContentWrapper();
+    await renderContentWrapper(experimentId, experimentData);
 
     // Data Management is not disabled
     expect(screen.getByText('Data Management').closest('li')).toHaveAttribute('aria-disabled', 'false');
