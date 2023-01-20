@@ -5,7 +5,7 @@ import React, {
 
 import { useSelector, useDispatch } from 'react-redux';
 import {
-  Table, Row, Col, Typography, Space,
+  Table, Row, Col, Typography, Space, Alert,
 } from 'antd';
 import {
   MenuOutlined,
@@ -42,7 +42,6 @@ const { Text } = Typography;
 const SamplesTable = forwardRef((props, ref) => {
   const dispatch = useDispatch();
   const [tableData, setTableData] = useState([]);
-
   const experiments = useSelector((state) => state.experiments);
   const samples = useSelector((state) => state.samples);
   const samplesLoading = useSelector((state) => state.samples.meta.loading);
@@ -52,6 +51,9 @@ const SamplesTable = forwardRef((props, ref) => {
     (state) => state.samples.meta.validating.includes(activeExperimentId),
   );
   const activeExperiment = useSelector((state) => state.experiments[activeExperimentId]);
+  const parentExperimentId = activeExperiment?.parentExperimentId;
+  const parentExperimentName = experiments[parentExperimentId]?.name;
+
   const selectedTech = samples[activeExperiment?.sampleIds[0]]?.type;
   const [sampleNames, setSampleNames] = useState(new Set());
   const DragHandle = sortableHandle(() => <MenuOutlined style={{ cursor: 'grab', color: '#999' }} />);
@@ -344,7 +346,26 @@ const SamplesTable = forwardRef((props, ref) => {
 
   return (
     <>
-      {samplesLoading || samplesValidating ? renderLoader() : renderSamplesTable()}
+      {parentExperimentId ? (
+        <center>
+          <Alert
+            type='info'
+            message='Subsetted experiment'
+            description={(
+              <>
+                This is a subset of
+                {' '}
+                <b>{parentExperimentName}</b>
+                .
+                <br />
+                You can  see remaining samples after subsetting in
+                the data processing and data exploration pages.
+              </>
+            )}
+          />
+        </center>
+      )
+        : samplesLoading || samplesValidating ? renderLoader() : renderSamplesTable() }
     </>
   );
 });
