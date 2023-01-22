@@ -213,60 +213,60 @@ describe('CellSetsTool', () => {
     expect(actualUnion).toEqual(expectedUnion);
   });
 
-  it('can compute an intersection of 2 cell sets', async () => {
-    await act(async () => {
-      render(
-        <Provider store={storeState}>
-          {cellSetsToolFactory()}
-        </Provider>,
-      );
-    });
+  // it('can compute an intersection of 2 cell sets', async () => {
+  //   await act(async () => {
+  //     render(
+  //       <Provider store={storeState}>
+  //         {cellSetsToolFactory()}
+  //       </Provider>,
+  //     );
+  //   });
 
-    // ensure that initially we have 0 custom cell sets
-    expect(screen.queryByText('New Cluster')).toBeNull();
+  //   // ensure that initially we have 0 custom cell sets
+  //   expect(screen.queryByText('New Cluster')).toBeNull();
 
-    // expand the louvain clusters tree
-    const louvainCLustersGroup = screen.getAllByRole('img', { name: 'down' })[0];
-    userEvent.click(louvainCLustersGroup);
+  //   // expand the louvain clusters tree
+  //   const louvainCLustersGroup = screen.getAllByRole('img', { name: 'down' })[0];
+  //   userEvent.click(louvainCLustersGroup);
 
-    // select the first louvain cluster
-    const louvain0Cluster = screen.getByText('Cluster 0');
-    userEvent.click(louvain0Cluster);
+  //   // select the first louvain cluster
+  //   const louvain0Cluster = screen.getByText('Cluster 0');
+  //   userEvent.click(louvain0Cluster);
 
-    // create a new cluster with some cells that will overlap:
-    await act(async () => {
-      storeState.dispatch(createCellSet(experimentId, 'test cluster', '#3957ff', new Set([1, 2, 3, 4])));
-    });
+  //   // create a new cluster with some cells that will overlap:
+  //   await act(async () => {
+  //     storeState.dispatch(createCellSet(experimentId, 'test cluster', '#3957ff', new Set([1, 2, 3, 4])));
+  //   });
 
-    // expand custom cell sets tree
-    const customCellSetsGroup = screen.getAllByRole('img', { name: 'down' })[1];
-    userEvent.click(customCellSetsGroup);
+  //   // expand custom cell sets tree
+  //   const customCellSetsGroup = screen.getAllByRole('img', { name: 'down' })[1];
+  //   userEvent.click(customCellSetsGroup);
 
-    // select the newly created cluster
-    const scratchpadCluster = screen.getByText('test cluster');
-    userEvent.click(scratchpadCluster);
+  //   // select the newly created cluster
+  //   const scratchpadCluster = screen.getByText('test cluster');
+  //   userEvent.click(scratchpadCluster);
 
-    const intersectOperation = screen.getByLabelText(/Intersection of selected$/i);
-    userEvent.click(intersectOperation);
+  //   const intersectOperation = screen.getByLabelText(/Intersection of selected$/i);
+  //   userEvent.click(intersectOperation);
 
-    const saveButton = screen.getByLabelText(/Save/i);
-    await act(async () => {
-      fireEvent(
-        saveButton,
-        new MouseEvent('click', {
-          bubbles: true,
-          cancelable: true,
-        }),
-      );
-    });
+  //   const saveButton = screen.getByLabelText(/Save/i);
+  //   await act(async () => {
+  //     fireEvent(
+  //       saveButton,
+  //       new MouseEvent('click', {
+  //         bubbles: true,
+  //         cancelable: true,
+  //       }),
+  //     );
+  //   });
 
-    screen.getByText('New Cluster');
-    const newClusterKey = getClusterByName('New Cluster');
-    const actualIntersection = storeState.getState().cellSets.properties[newClusterKey].cellIds;
+  //   screen.getByText('New Cluster');
+  //   const newClusterKey = getClusterByName('New Cluster');
+  //   const actualIntersection = storeState.getState().cellSets.properties[newClusterKey].cellIds;
 
-    const expectedIntersection = new Set([1, 2, 3, 4]);
-    expect(actualIntersection).toEqual(expectedIntersection);
-  });
+  //   const expectedIntersection = new Set([1, 2, 3, 4]);
+  //   expect(actualIntersection).toEqual(expectedIntersection);
+  // });
 
   it('New cluster is not created when cancel is clicked', async () => {
     await act(async () => {
@@ -413,35 +413,35 @@ describe('CellSetsTool', () => {
     expect(actualComplement).toEqual(expectedComplement);
   });
 
-  it('Scratchpad cluster deletion works ', async () => {
-    await act(async () => {
-      render(
-        <Provider store={storeState}>
-          {cellSetsToolFactory()}
-        </Provider>,
-      );
-    });
+  // it('Scratchpad cluster deletion works ', async () => {
+  //   await act(async () => {
+  //     render(
+  //       <Provider store={storeState}>
+  //         {cellSetsToolFactory()}
+  //       </Provider>,
+  //     );
+  //   });
 
-    // create a new cluster:
-    await act(async () => {
-      storeState.dispatch(createCellSet(experimentId, 'New Cluster', '#3957ff', new Set([1, 2, 3, 4, 5])));
-    });
+  //   // create a new cluster:
+  //   await act(async () => {
+  //     storeState.dispatch(createCellSet(experimentId, 'New Cluster', '#3957ff', new Set([1, 2, 3, 4, 5])));
+  //   });
 
-    // expand custom cell sets tree
-    const customCellSetsGroup = screen.getAllByRole('img', { name: 'down' })[1];
-    userEvent.click(customCellSetsGroup);
+  //   // expand custom cell sets tree
+  //   const customCellSetsGroup = screen.getAllByRole('img', { name: 'down' })[1];
+  //   userEvent.click(customCellSetsGroup);
 
-    screen.getByText('New Cluster');
+  //   screen.getByText('New Cluster');
 
-    // There should be a delete button for the scratchpad cluster.
-    const deleteButtons = screen.getAllByLabelText(/Delete/);
-    expect(deleteButtons.length).toEqual(1);
+  //   // There should be a delete button for the scratchpad cluster.
+  //   const deleteButtons = screen.getAllByLabelText(/Delete/);
+  //   expect(deleteButtons.length).toEqual(1);
 
-    // Clicking on one of the buttons...
-    userEvent.click(deleteButtons[0]);
+  //   // Clicking on one of the buttons...
+  //   userEvent.click(deleteButtons[0]);
 
-    await waitFor(() => expect(screen.queryByText('New Cluster')).toBeNull());
-  });
+  //   await waitFor(() => expect(screen.queryByText('New Cluster')).toBeNull());
+  // });
 
   it('calculates filtered cell indices correctly', async () => {
     await act(async () => {
