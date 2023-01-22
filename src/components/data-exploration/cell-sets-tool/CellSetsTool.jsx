@@ -6,14 +6,14 @@ import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 
 import {
-  Alert, Button, Empty, Skeleton, Space, Tabs, Typography,
+  Alert, Button, Skeleton, Space, Typography,
 } from 'antd';
 import {
   BlockOutlined, MergeCellsOutlined, SplitCellsOutlined,
 } from '@ant-design/icons';
 
 import SubsetCellSetsOperation from
-'components/data-exploration/cell-sets-tool/SubsetCellSetsOperation';
+  'components/data-exploration/cell-sets-tool/SubsetCellSetsOperation';
 import CellSetOperation from 'components/data-exploration/cell-sets-tool/CellSetOperation';
 import PlatformError from 'components/PlatformError';
 import HierarchicalTree from 'components/data-exploration/hierarchical-tree/HierarchicalTree';
@@ -38,8 +38,6 @@ import {
 
 const { Text } = Typography;
 
-const { TabPane } = Tabs;
-
 const CellSetsTool = (props) => {
   const { experimentId, width, height } = props;
 
@@ -53,8 +51,6 @@ const CellSetsTool = (props) => {
 
   const filteredCellIds = useRef(new Set());
 
-  const [activeTab, setActiveTab] = useState('cellSets');
-
   useEffect(() => {
     if (accessible && filteredCellIds.current.size === 0) {
       filteredCellIds.current = unionByCellClass('louvain', hierarchy, properties);
@@ -67,12 +63,10 @@ const CellSetsTool = (props) => {
     dispatch(loadCellSets(experimentId));
   }, []);
 
-  const [cellSetTreeData, setCellSetTreeData] = useState(null);
-  const [metadataTreeData, setMetadataTreeData] = useState(null);
+  const [hierarchyTreeData, setHierarchyTreeData] = useState(null);
 
   useEffect(() => {
-    setCellSetTreeData(composeTree(hierarchy, properties, 'cellSets'));
-    setMetadataTreeData(composeTree(hierarchy, properties, 'metadataCategorical'));
+    setHierarchyTreeData(composeTree(hierarchy, properties));
   }, [hierarchy, properties]);
 
   const [numSelected, setNumSelected] = useState(0);
@@ -80,7 +74,7 @@ const CellSetsTool = (props) => {
   useEffect(() => {
     const louvainClusters = hierarchy.find(({ key }) => key === 'louvain')?.children;
     const customClusters = hierarchy.find(({ key }) => key === 'scratchpad')?.children;
-    const treeClusters = cellSetTreeData?.find(({ key }) => key === 'scratchpad')?.children;
+    const treeClusters = hierarchyTreeData?.find(({ key }) => key === 'scratchpad')?.children;
 
     if (!customClusters || !treeClusters) return;
 
@@ -92,14 +86,15 @@ const CellSetsTool = (props) => {
   }, [hierarchy]);
 
   useEffect(() => {
-    const selected = allSelected[activeTab];
+    const selected = allSelected;
+    console.log('About to call union 1 ', selected);
     const selectedCells = union(selected, properties);
 
     const numSelectedFiltered = new Set([...selectedCells]
       .filter((cellIndex) => filteredCellIds.current.has(cellIndex)));
 
     setNumSelected(numSelectedFiltered.size);
-  }, [activeTab, allSelected, properties]);
+  }, [allSelected, properties]);
 
   const onNodeUpdate = useCallback((key, data) => {
     dispatch(updateCellSetProperty(experimentId, key, data));
@@ -114,8 +109,8 @@ const CellSetsTool = (props) => {
   }, [experimentId]);
 
   const onCheck = useCallback((keys) => {
-    dispatch(updateCellSetSelected(keys, activeTab));
-  }, [experimentId, activeTab]);
+    dispatch(updateCellSetSelected(keys));
+  }, [experimentId]);
 
   /**
    * Renders the content inside the tool. Can be a skeleton during loading
@@ -123,7 +118,7 @@ const CellSetsTool = (props) => {
    */
   const renderContent = () => {
     let operations = null;
-    const selected = allSelected[activeTab];
+    const selected = allSelected;
 
     if (numSelected) {
       operations = (
@@ -139,6 +134,7 @@ const CellSetsTool = (props) => {
           <CellSetOperation
             icon={<MergeCellsOutlined />}
             onCreate={(name, color) => {
+              console.log('About to call union 2 ', selected);
               dispatch(createCellSet(experimentId, name, color, union(selected, properties)));
             }}
             ariaLabel='Union of selected'
@@ -164,65 +160,31 @@ const CellSetsTool = (props) => {
           />
           <Text type='primary' id='selectedCellSets'>
             {`${numSelected} cell${numSelected === 1 ? '' : 's'} selected`}
-            {activeTab === 'metadataCategorical'}
           </Text>
         </Space>
       );
     }
 
     return (
-      <>
-        <Tabs
-          size='small'
-          activeKey={activeTab}
-          onChange={(key) => setActiveTab(key)}
-          tabBarExtraContent={operations}
-        >
-          <TabPane tab='Cell sets' key='cellSets'>
-            <HierarchicalTree
-              experimentId={experimentId}
-              treeData={cellSetTreeData}
-              store={FOCUS_TYPE}
-              onCheck={onCheck}
-              onNodeUpdate={onNodeUpdate}
-              onNodeDelete={onNodeDelete}
-              onCellSetReorder={onCellSetReorder}
-              showHideButton
-              checkedKeys={selected}
-            />
-          </TabPane>
-          <TabPane tab='Metadata' key='metadataCategorical'>
-            {metadataTreeData?.length > 0 ? (
-              <HierarchicalTree
-                experimentId={experimentId}
-                treeData={metadataTreeData}
-                store={FOCUS_TYPE}
-                onCheck={onCheck}
-                onNodeUpdate={onNodeUpdate}
-                onNodeDelete={onNodeDelete}
-                onCellSetReorder={onCellSetReorder}
-                showHideButton
-                checkedKeys={selected}
-              />
-            )
-              : (
-                <Empty description={(
-                  <>
-                    <Text type='primary'>You don&apos;t have any metadata added yet.</Text>
-                    <Text type='secondary'>Metadata is an experimental feature for certain pre-processed or multi-sample data sets.</Text>
-                  </>
-                )}
-                />
-              )}
-          </TabPane>
-
-        </Tabs>
-      </>
+      <Space direction='vertical'>
+        {operations}
+        <HierarchicalTree
+          experimentId={experimentId}
+          treeData={hierarchyTreeData}
+          store={FOCUS_TYPE}
+          onCheck={onCheck}
+          onNodeUpdate={onNodeUpdate}
+          onNodeDelete={onNodeDelete}
+          onCellSetReorder={onCellSetReorder}
+          showHideButton
+          checkedKeys={selected}
+        />
+      </Space>
     );
   };
 
   if (!accessible) return <Skeleton active={false} title={false} />;
-  if (!cellSetTreeData || !metadataTreeData) return <Skeleton active title={false} avatar />;
+  if (!hierarchyTreeData) return <Skeleton active title={false} avatar />;
 
   if (error) {
     return (

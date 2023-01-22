@@ -10,10 +10,14 @@ const getCellSets = () => (state) => {
     && !stateToReturn.updatingClustering
     && !stateToReturn.error;
 
-  return {
+  const toReturn = {
     ...stateToReturn,
     accessible,
   };
+
+  console.log('IVA **** ', toReturn);
+
+  return toReturn;
 };
 
 export default createMemoizedSelector(getCellSets);

@@ -2,9 +2,9 @@
 import produce from 'immer';
 
 const cellSetsSetSelected = produce((draft, action) => {
-  const { keys, tab } = action.payload;
+  const { keys } = action.payload;
 
-  draft.selected[tab] = keys;
+  draft.selected = keys;
 });
 
 export default cellSetsSetSelected;
