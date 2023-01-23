@@ -48,7 +48,6 @@ const SamplesTable = forwardRef((props, ref) => {
 
   const lastListInfoRef = useRef({ start: -1, renderLen: -1 });
 
-  const experiments = useSelector((state) => state.experiments);
   const samples = useSelector((state) => state.samples);
   const samplesLoading = useSelector((state) => state.samples.meta.loading);
   const activeExperimentId = useSelector((state) => state.experiments.meta.activeExperimentId);
@@ -77,21 +76,25 @@ const SamplesTable = forwardRef((props, ref) => {
       title: 'Sample',
       dataIndex: 'name',
       fixed: true,
-      render: (text, record, indx) => <SampleNameCell cellInfo={{ text, record, indx }} />,
+      minWidth: '40%',
+      render: (text, record, indx) => (
+        <SampleNameCell cellInfo={{ text, record, indx }} />
+      ),
     },
     ...fileUploadSpecifications[selectedTech]?.requiredFiles?.map((fileName, indx) => {
       const fileNameWithoutExtension = fileName.key.split('.')[0];
 
       return ({
         index: 2 + indx,
-        title: fileName.displayedName,
+        title: <center>{fileName.displayedName}</center>,
         key: fileNameWithoutExtension,
         dataIndex: fileNameWithoutExtension,
+        width: '20%',
         render: (tableCellData) => (
           tableCellData && (
             <UploadCell
-              columnId={fileNameWithoutExtension}
-              tableCellData={tableCellData}
+              columnId={fileName.key}
+              sampleUuid={tableCellData.sampleUuid}
             />
           )),
       });
@@ -223,9 +226,7 @@ const SamplesTable = forwardRef((props, ref) => {
     );
   };
 
-  const generateDataForItem = useCallback((index) => {
-    const sampleUuid = activeExperiment.sampleIds[index];
-
+  const generateDataForItem = useCallback((sampleUuid) => {
     if (!samples[sampleUuid]) return {};
 
     const { files: sampleFiles, fileNames: sampleFileNames } = samples[sampleUuid];
@@ -240,7 +241,7 @@ const SamplesTable = forwardRef((props, ref) => {
     });
 
     return {
-      key: index,
+      key: sampleUuid,
       name: samples[sampleUuid]?.name || 'UPLOAD ERROR: Please reupload sample',
       uuid: sampleUuid,
       ...fileData,
@@ -248,18 +249,17 @@ const SamplesTable = forwardRef((props, ref) => {
     };
   }, [activeExperiment, samples]);
 
-  useEffect(() => {
-    if (!activeExperiment?.sampleIds.length) {
-      setFullTableData([]);
-      return;
-    }
+  // useEffect(() => {
+  //   if (!activeExperiment?.sampleIds.length) {
+  //     setFullTableData([]);
+  //   }
 
-    const newData = activeExperiment.sampleIds.map((sampleUuid, idx) => generateDataForItem(idx));
+  //   // const newData = activeExperiment.sampleIds.map((sampleUuid, idx) => generateDataForItem(idx));
 
-    console.log('newDatalengthDebug');
-    console.log(newData.length);
-    setFullTableData(newData);
-  }, [experiments, samples, activeExperimentId]);
+  //   // console.log('newDatalengthDebug');
+  //   // console.log(newData.length);
+  //   // setFullTableData(newData);
+  // }, [experiments, samples, activeExperimentId]);
 
   const noDataComponent = (
     <ExampleExperimentsSpace
@@ -328,33 +328,57 @@ const SamplesTable = forwardRef((props, ref) => {
   //   console.log(params);
   // };
 
+  useEffect(() => {
+    if (!activeExperiment?.sampleIds.length) {
+      setFullTableData([]);
+    }
+
+    const { start, renderLen } = lastListInfoRef?.current;
+
+    const newfullTableData = activeExperiment.sampleIds
+      .slice(start, start + renderLen)
+      .map((sampleUuid) => generateDataForItem(sampleUuid));
+
+    setFullTableData(newfullTableData);
+
+    // setFullTableData(
+    //   activeExperiment.sampleIds
+    //     .slice(start, start + renderLen)
+    //     .map((sampleUuid) => generateDataForItem(sampleUuid)),
+    // );
+  }, [activeExperiment?.sampleIds]);
+
+  const tableHeight = 600;
+
   const onListRenderHandler = useCallback((listInfo) => {
     const { start, renderLen } = listInfo;
 
     const lastInfo = lastListInfoRef?.current;
 
-    console.log('listInfoDebug');
-    console.log(listInfo);
-
-    console.log('lastListInfoRefcurrentDebug');
-    console.log(lastListInfoRef?.current);
-
     if (start !== lastInfo?.start || renderLen !== lastInfo?.renderLen) {
       lastListInfoRef.current = { start, renderLen };
-      // setFullTableData((pre) => {
-      //   const currentData = pre.slice(start, start + renderLen);
 
-      //   const newData = _.cloneDeep(pre);
+      const newfullTableData = activeExperiment.sampleIds
+        .slice(start, start + renderLen)
+        .map((sampleUuid) => generateDataForItem(sampleUuid));
 
-      //   return newData;
-      // });
+      console.log('newfullTableDataDebug');
+      console.log(newfullTableData);
+
+      setFullTableData(newfullTableData);
+
+      // setFullTableData(
+      //   activeExperiment.sampleIds
+      //     .slice(start, start + renderLen)
+      //     .map((sampleUuid) => generateDataForItem(sampleUuid)),
+      // );
     }
-  }, []);
+  }, [activeExperiment, samples]);
 
   const vComponents = useMemo(() =>
     // 使用VList 即可有虚拟列表的效果
     VList({
-      height: 800, // 此值和scrollY值相同. 必传. (required).  same value for scrolly
+      height: tableHeight, // 此值和scrollY值相同. 必传. (required).  same value for scrolly
       resetTopWhenDataChange: false,
       onListRender: onListRenderHandler,
     }), [onListRenderHandler]);
@@ -364,10 +388,10 @@ const SamplesTable = forwardRef((props, ref) => {
       <Col>
         <Table
           id='samples-table'
-          size='small'
+          size='middle'
           scroll={{
             x: 'max-content',
-            y: 800,
+            y: tableHeight,
           }}
           bordered
           columns={tableColumns}

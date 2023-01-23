@@ -5,7 +5,7 @@ import {
 import {
   UploadOutlined,
 } from '@ant-design/icons';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import {
@@ -29,11 +29,9 @@ const UploadCellStyle = styled.div`
 `;
 
 const UploadCell = (props) => {
-  const { columnId, tableCellData } = props;
-  const {
-    sampleUuid,
-    file,
-  } = tableCellData;
+  const { columnId, sampleUuid } = props;
+
+  const file = useSelector((state) => state.samples[sampleUuid].files[columnId]);
 
   const { progress = null, status = null } = file?.upload ?? {};
 
@@ -120,7 +118,9 @@ const UploadCell = (props) => {
   };
   return (
     <>
-      {render()}
+      <center>
+        {render()}
+      </center>
       <UploadDetailsModal
         uploadDetailsModalDataRef={uploadDetailsModalDataRef}
         visible={uploadDetailsModalVisible}
@@ -132,7 +132,7 @@ const UploadCell = (props) => {
 
 UploadCell.propTypes = {
   columnId: PropTypes.string.isRequired,
-  tableCellData: PropTypes.object.isRequired,
+  sampleUuid: PropTypes.string.isRequired,
 };
 
 const EditableFieldCell = (props) => {
