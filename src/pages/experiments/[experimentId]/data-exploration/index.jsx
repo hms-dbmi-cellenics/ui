@@ -72,39 +72,39 @@ const ExplorationViewPage = ({
         />
       ),
     },
-    // Heatmap: {
-    //   toolbarControls: (
-    //     <>
-    //       <HeatmapSettings componentType={COMPONENT_TYPE} key='heatmap-settings' />
-    //       <MosaicCloseButton key='remove-button-heatmap' />
-    //     </>
-    //   ),
-    //   component: (width, height) => (
-    //     <HeatmapPlot experimentId={experimentId} width={width} height={height} />
-    //   ),
-    // },
-    // Genes: {
-    //   toolbarControls: <MosaicCloseButton key='remove-button-genes' />,
-    //   component: (width, height) => (
-    //     <Tabs
-    //       size='small'
-    //       activeKey={selectedTab}
-    //       onChange={(key) => { setSelectedTab(key); }}
-    //     >
-    //       <TabPane tab='Gene list' key='Gene list'>
-    //         <GeneListTool experimentId={experimentId} width={width} height={height} />
-    //       </TabPane>
-    //       <TabPane tab='Differential expression' key='Differential expression'>
-    //         <DiffExprManager
-    //           experimentId={experimentId}
-    //           view='compute'
-    //           width={width}
-    //           height={height}
-    //         />
-    //       </TabPane>
-    //     </Tabs>
-    //   ),
-    // },
+    Heatmap: {
+      toolbarControls: (
+        <>
+          <HeatmapSettings componentType={COMPONENT_TYPE} key='heatmap-settings' />
+          <MosaicCloseButton key='remove-button-heatmap' />
+        </>
+      ),
+      component: (width, height) => (
+        <HeatmapPlot experimentId={experimentId} width={width} height={height} />
+      ),
+    },
+    Genes: {
+      toolbarControls: <MosaicCloseButton key='remove-button-genes' />,
+      component: (width, height) => (
+        <Tabs
+          size='small'
+          activeKey={selectedTab}
+          onChange={(key) => { setSelectedTab(key); }}
+        >
+          <TabPane tab='Gene list' key='Gene list'>
+            <GeneListTool experimentId={experimentId} width={width} height={height} />
+          </TabPane>
+          <TabPane tab='Differential expression' key='Differential expression'>
+            <DiffExprManager
+              experimentId={experimentId}
+              view='compute'
+              width={width}
+              height={height}
+            />
+          </TabPane>
+        </Tabs>
+      ),
+    },
     'Cell sets and Metadata': {
       toolbarControls: <MosaicCloseButton key='remove-button-data-management' />,
       component: (width, height) => (
