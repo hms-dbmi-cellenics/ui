@@ -171,7 +171,7 @@ const processUpload = async (filesList, technology, samples, experimentId, dispa
     });
 
     // 5 at a time
-    const chunkedPromises = _.chunk(promises, 8);
+    const chunkedPromises = _.chunk(promises, promises.length);
 
     // eslint-disable-next-line no-restricted-syntax
     for await (const promisesChunk of chunkedPromises) {

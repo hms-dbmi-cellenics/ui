@@ -1,7 +1,9 @@
 /* eslint-disable react/jsx-props-no-spreading */
+import _ from 'lodash';
 import React, {
-  useEffect, useState, forwardRef, useImperativeHandle,
+  useEffect, useState, forwardRef, useImperativeHandle, useMemo, useCallback, useRef,
 } from 'react';
+import { VList } from 'virtuallist-antd';
 
 import { useSelector, useDispatch } from 'react-redux';
 import {
@@ -41,7 +43,10 @@ const { Text } = Typography;
 
 const SamplesTable = forwardRef((props, ref) => {
   const dispatch = useDispatch();
-  const [tableData, setTableData] = useState([]);
+  const [fullTableData, setFullTableData] = useState([]);
+  // const [renderedTableData, setRenderedTableData] = useState([]);
+
+  const lastListInfoRef = useRef({ start: -1, renderLen: -1 });
 
   const experiments = useSelector((state) => state.experiments);
   const samples = useSelector((state) => state.samples);
@@ -218,40 +223,42 @@ const SamplesTable = forwardRef((props, ref) => {
     );
   };
 
+  const generateDataForItem = useCallback((index) => {
+    const sampleUuid = activeExperiment.sampleIds[index];
+
+    if (!samples[sampleUuid]) return {};
+
+    const { files: sampleFiles, fileNames: sampleFileNames } = samples[sampleUuid];
+
+    const fileData = {};
+    sampleFileNames.forEach((key) => {
+      const displayedFileInTable = key.split('.')[0];
+
+      const currentFile = sampleFiles[key] ?? { upload: { status: UploadStatus.FILE_NOT_FOUND } };
+      const currentFileData = { sampleUuid, file: currentFile };
+      fileData[displayedFileInTable] = currentFileData;
+    });
+
+    return {
+      key: index,
+      name: samples[sampleUuid]?.name || 'UPLOAD ERROR: Please reupload sample',
+      uuid: sampleUuid,
+      ...fileData,
+      ...samples[sampleUuid]?.metadata,
+    };
+  }, [activeExperiment, samples]);
+
   useEffect(() => {
     if (!activeExperiment?.sampleIds.length) {
-      setTableData([]);
+      setFullTableData([]);
       return;
     }
 
-    const newData = activeExperiment.sampleIds.map((sampleUuid, idx) => {
-      // upload problems sometimes lead to partial updates and incosistent states
-      // in this situation it's possible that the sampleUuid does not exist
-      // this a temporary fix so that the whole UI doesn't crash preventing the
-      // user from removing the dataset or uploading another one.
+    const newData = activeExperiment.sampleIds.map((sampleUuid, idx) => generateDataForItem(idx));
 
-      if (!samples[sampleUuid]) return {};
-
-      const { files: sampleFiles, fileNames: sampleFileNames } = samples[sampleUuid];
-
-      const fileData = {};
-      sampleFileNames.forEach((key) => {
-        const displayedFileInTable = key.split('.')[0];
-
-        const currentFile = sampleFiles[key] ?? { upload: { status: UploadStatus.FILE_NOT_FOUND } };
-        const currentFileData = { sampleUuid, file: currentFile };
-        fileData[displayedFileInTable] = currentFileData;
-      });
-
-      return {
-        key: idx,
-        name: samples[sampleUuid]?.name || 'UPLOAD ERROR: Please reupload sample',
-        uuid: sampleUuid,
-        ...fileData,
-        ...samples[sampleUuid]?.metadata,
-      };
-    });
-    setTableData(newData);
+    console.log('newDatalengthDebug');
+    console.log(newData.length);
+    setFullTableData(newData);
   }, [experiments, samples, activeExperimentId]);
 
   const noDataComponent = (
@@ -263,7 +270,7 @@ const SamplesTable = forwardRef((props, ref) => {
 
   const onSortEnd = async ({ oldIndex, newIndex }) => {
     if (oldIndex !== newIndex) {
-      const newData = arrayMoveImmutable(tableData, oldIndex, newIndex).filter((el) => !!el);
+      const newData = arrayMoveImmutable(fullTableData, oldIndex, newIndex).filter((el) => !!el);
       const newSampleOrder = newData.map((sample) => sample.uuid);
 
       try {
@@ -273,7 +280,7 @@ const SamplesTable = forwardRef((props, ref) => {
         return;
       }
 
-      setTableData(newData);
+      setFullTableData(newData);
     }
   };
 
@@ -291,7 +298,7 @@ const SamplesTable = forwardRef((props, ref) => {
   );
 
   const DraggableRow = (otherProps) => {
-    const index = tableData.findIndex((x) => x.key === otherProps['data-row-key']);
+    const index = fullTableData.findIndex((x) => x.key === otherProps['data-row-key']);
     return <SortableRow index={index} {...otherProps} />;
   };
 
@@ -316,6 +323,42 @@ const SamplesTable = forwardRef((props, ref) => {
     </>
   );
 
+  // const onReachEnd = (...params) => {
+  //   console.log('paramsDebug');
+  //   console.log(params);
+  // };
+
+  const onListRenderHandler = useCallback((listInfo) => {
+    const { start, renderLen } = listInfo;
+
+    const lastInfo = lastListInfoRef?.current;
+
+    console.log('listInfoDebug');
+    console.log(listInfo);
+
+    console.log('lastListInfoRefcurrentDebug');
+    console.log(lastListInfoRef?.current);
+
+    if (start !== lastInfo?.start || renderLen !== lastInfo?.renderLen) {
+      lastListInfoRef.current = { start, renderLen };
+      // setFullTableData((pre) => {
+      //   const currentData = pre.slice(start, start + renderLen);
+
+      //   const newData = _.cloneDeep(pre);
+
+      //   return newData;
+      // });
+    }
+  }, []);
+
+  const vComponents = useMemo(() =>
+    // 使用VList 即可有虚拟列表的效果
+    VList({
+      height: 800, // 此值和scrollY值相同. 必传. (required).  same value for scrolly
+      resetTopWhenDataChange: false,
+      onListRender: onListRenderHandler,
+    }), [onListRenderHandler]);
+
   const renderSamplesTable = () => (
     <Row>
       <Col>
@@ -324,19 +367,21 @@ const SamplesTable = forwardRef((props, ref) => {
           size='small'
           scroll={{
             x: 'max-content',
+            y: 800,
           }}
           bordered
           columns={tableColumns}
-          dataSource={tableData}
+          dataSource={fullTableData}
           sticky
           pagination={false}
           locale={{ emptyText: noDataComponent }}
-          components={{
-            body: {
-              wrapper: DragContainer,
-              row: DraggableRow,
-            },
-          }}
+          components={vComponents}
+        // components={{
+        //   body: {
+        //     wrapper: DragContainer,
+        //     row: DraggableRow,
+        //   },
+        // }}
         />
       </Col>
     </Row>
