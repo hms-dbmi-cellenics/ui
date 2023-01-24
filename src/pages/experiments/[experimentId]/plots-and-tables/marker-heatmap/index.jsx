@@ -4,6 +4,7 @@ import {
   Skeleton,
   Empty,
   Radio,
+  Space,
 } from 'antd';
 import _ from 'lodash';
 import { useSelector, useDispatch } from 'react-redux';
@@ -33,6 +34,9 @@ import SelectData from 'components/plots/styling/SelectData';
 import populateHeatmapData from 'components/plots/helpers/heatmap/populateHeatmapData';
 import generateVegaData from 'components/plots/helpers/heatmap/vega/generateVegaData';
 import { plotNames } from 'utils/constants';
+import generateLegendAlertHook from 'components/plots/helpers/generateLegendAlertHook';
+
+import PlotLegendAlert, { MAX_LEGEND_ITEMS } from 'components/plots/helpers/PlotLegendAlert';
 
 import ScrollOnDrag from 'components/plots/ScrollOnDrag';
 
@@ -58,6 +62,10 @@ const MarkerHeatmap = ({ experimentId }) => {
     getCellSetsHierarchyByKeys([config?.selectedCellSet]),
   ).length;
 
+  const numLegendItems = hierarchy.find(
+    ({ key }) => key === config?.selectedCellSet,
+  )?.children?.length;
+
   const loadedMarkerGenes = useSelector(
     (state) => state.genes.expression.views[plotUuid]?.data,
   ) || [];
@@ -74,9 +82,15 @@ const MarkerHeatmap = ({ experimentId }) => {
 
   useEffect(() => {
     if (!louvainClustersResolution) dispatch(loadProcessingSettings(experimentId));
-    if (!config) dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
     if (!hierarchy?.length) dispatch(loadCellSets(experimentId));
   }, []);
+
+  useEffect(() => {
+    if (config) return;
+
+    const beforeLoadConfigHook = generateLegendAlertHook(hierarchy, 'selectedCellSet');
+    dispatch(loadPlotConfig(experimentId, plotUuid, plotType, beforeLoadConfigHook));
+  }, [cellSets.accessible]);
 
   useEffect(() => {
     if (louvainClustersResolution && config?.nMarkerGenes && hierarchy?.length) {
@@ -446,7 +460,16 @@ const MarkerHeatmap = ({ experimentId }) => {
     }
 
     if (vegaSpec) {
-      return <Vega spec={vegaSpec} renderer='webgl' />;
+      return (
+        <Space direction='vertical'>
+          {config.legend.showAlert
+            && numLegendItems > MAX_LEGEND_ITEMS
+            && <PlotLegendAlert />}
+          <center>
+            <Vega spec={vegaSpec} renderer='webgl' />
+          </center>
+        </Space>
+      );
     }
   };
 
