@@ -1,0 +1,21 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`generateLegendAlertHook Should be able to use the hardcoded value for comparison 1`] = `
+Object {
+  "legend": Object {
+    "enabled": false,
+    "showAlert": true,
+  },
+  "selectedCellSet": "louvain",
+}
+`;
+
+exports[`generateLegendAlertHook Should use the plotConfig cellSet value for comparison 1`] = `
+Object {
+  "legend": Object {
+    "enabled": false,
+    "showAlert": true,
+  },
+  "selectedCellSet": "louvain",
+}
+`;

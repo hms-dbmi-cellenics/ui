@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { MAX_LEGEND_ITEMS } from './PlotLegendAlert';
+import { MAX_LEGEND_ITEMS } from 'components/plots/helpers/PlotLegendAlert';
 
 const generateLegendAlertHook = (hierarchy, cellSetKey, useConfigValue = true) => {
   const hookFn = (plotConfig) => {
@@ -11,7 +11,7 @@ const generateLegendAlertHook = (hierarchy, cellSetKey, useConfigValue = true) =
 
     if (numLegendItems <= MAX_LEGEND_ITEMS) return plotConfig;
 
-    const modifiedConfig = _.merge(plotConfig, {
+    const modifiedConfig = _.merge({}, plotConfig, {
       legend: {
         enabled: false,
         showAlert: true,
