@@ -10,12 +10,10 @@ const getCellSets = () => (state) => {
     && !stateToReturn.updatingClustering
     && !stateToReturn.error;
 
-  const toReturn = {
+  return {
     ...stateToReturn,
     accessible,
   };
-
-  return toReturn;
 };
 
 export default createMemoizedSelector(getCellSets);
