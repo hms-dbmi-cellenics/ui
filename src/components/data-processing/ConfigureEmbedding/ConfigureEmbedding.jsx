@@ -283,7 +283,7 @@ const ConfigureEmbedding = (props) => {
         beforeLoadConfigHook = generateLegendAlertHook(hierarchy, 'sample', false);
       }
 
-      if (plotUuid) dispatch(loadPlotConfig(experimentId, plotUuid, plotType, beforeLoadConfigHook));
+      dispatch(loadPlotConfig(experimentId, plotUuid, plotType, beforeLoadConfigHook));
     });
   }, [cellSets.accessible]);
 

@@ -3,7 +3,7 @@ import React, {
 } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import {
-  Row, Col, Radio, PageHeader, Collapse, Alert, Empty,
+  Row, Col, Radio, PageHeader, Collapse, Alert, Empty, Space,
 } from 'antd';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
@@ -23,6 +23,8 @@ import { generateDataProcessingPlotUuid } from 'utils/generateCustomPlotUuid';
 import EmptyPlot from 'components/plots/helpers/EmptyPlot';
 import PlotStyling from 'components/plots/styling/PlotStyling';
 import { isUnisample } from 'utils/experimentPredicates';
+import PlotLegendAlert, { MAX_LEGEND_ITEMS } from 'components/plots/helpers/PlotLegendAlert';
+import generateLegendAlertHook from 'components/plots/helpers/generateLegendAlertHook';
 import CalculationConfig from './CalculationConfig';
 
 const { Panel } = Collapse;
@@ -35,11 +37,18 @@ const DataIntegration = (props) => {
   const cellSets = useSelector(getCellSets());
   const filterName = 'dataIntegration';
   const configureEmbeddingFilterName = 'configureEmbedding';
+  const dataIntegrationEmbeddingPlotUuid = generateDataProcessingPlotUuid(
+    null, configureEmbeddingFilterName, 1,
+  );
+  const dataIntegrationFrequencyPlotUuid = 'dataIntegrationFrequency';
 
   const dispatch = useDispatch();
   const debounceSave = useCallback(
     _.debounce((plotUuid) => dispatch(savePlotConfig(experimentId, plotUuid)), 2000), [],
   );
+
+  const { hierarchy } = cellSets;
+  const numSamples = hierarchy.find(({ key }) => key === 'sample').children.length;
 
   const [plots] = useState({
     embedding: {
@@ -47,35 +56,41 @@ const DataIntegration = (props) => {
       plotUuid: generateDataProcessingPlotUuid(null, configureEmbeddingFilterName, 1),
       plotType: 'dataIntegrationEmbedding',
       plot: (config, plotData, actions) => (
-        <CategoricalEmbeddingPlot
-          experimentId={experimentId}
-          config={{
-            ...config,
-            legend: {
-              ...config.legend,
-              title: 'Sample Name',
-            },
-            selectedCellSet: 'sample',
-            axes: {
-              defaultValues: [],
-            },
-          }}
-          actions={actions}
-          onUpdate={updatePlotWithChanges}
-        />
+        <Space direction='vertical'>
+          {config?.legend?.showAlert && numSamples > MAX_LEGEND_ITEMS && <PlotLegendAlert />}
+          <CategoricalEmbeddingPlot
+            experimentId={experimentId}
+            config={{
+              ...config,
+              legend: {
+                ...config.legend,
+                title: 'Sample Name',
+              },
+              selectedCellSet: 'sample',
+              axes: {
+                defaultValues: [],
+              },
+            }}
+            actions={actions}
+            onUpdate={updatePlotWithChanges}
+          />
+        </Space>
       ),
       blockedByConfigureEmbedding: true,
     },
     frequency: {
       title: 'Frequency plot coloured by sample',
-      plotUuid: 'dataIntegrationFrequency',
+      plotUuid: dataIntegrationFrequencyPlotUuid,
       plotType: 'dataIntegrationFrequency',
       plot: (config, plotData, actions) => (
-        <FrequencyPlot
-          experimentId={experimentId}
-          config={config}
-          actions={actions}
-        />
+        <Space direction='vertical'>
+          {config?.legend?.showAlert && numSamples > MAX_LEGEND_ITEMS && <PlotLegendAlert />}
+          <FrequencyPlot
+            experimentId={experimentId}
+            config={config}
+            actions={actions}
+          />
+        </Space>
       ),
       blockedByConfigureEmbedding: true,
     },
@@ -213,9 +228,19 @@ const DataIntegration = (props) => {
 
   useEffect(() => {
     Object.values(plots).forEach((obj) => {
-      if (!plotConfigs[obj.plotUuid]) {
-        dispatch(loadPlotConfig(experimentId, obj.plotUuid, obj.plotType));
+      const { plotUuid, plotType } = obj;
+
+      if (plotConfigs[plotUuid]) return;
+
+      if (plotConfigs[plotUuid]) return;
+
+      let beforeLoadConfigHook = null;
+      if (plotUuid === dataIntegrationEmbeddingPlotUuid
+        || plotUuid === dataIntegrationFrequencyPlotUuid) {
+        beforeLoadConfigHook = generateLegendAlertHook(hierarchy, 'sample', false);
       }
+
+      dispatch(loadPlotConfig(experimentId, plotUuid, plotType, beforeLoadConfigHook));
     });
   }, []);
 
