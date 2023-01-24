@@ -13,8 +13,6 @@ import calculateGem2sRerunStatus from 'utils/data-management/calculateGem2sRerun
 
 import { useAppRouter } from 'utils/AppRouteProvider';
 
-jest.mock('utils/data-management/calculateGem2sRerunStatus');
-
 const LaunchButtonTemplate = (props) => {
   const {
     // eslint-disable-next-line react/prop-types
