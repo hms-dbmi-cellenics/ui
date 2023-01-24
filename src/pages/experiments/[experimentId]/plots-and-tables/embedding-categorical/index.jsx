@@ -34,7 +34,7 @@ const EmbeddingCategoricalPage = ({ experimentId }) => {
   const hierarchy = useSelector(getCellSetsHierarchy());
 
   const numLegendItems = hierarchy.find(
-    ({ key }) => key === config.selectedCellSet,
+    ({ key }) => key === config?.selectedCellSet,
   )?.children?.length;
 
   useEffect(() => {

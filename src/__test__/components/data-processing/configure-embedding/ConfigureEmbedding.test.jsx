@@ -106,10 +106,10 @@ describe('Configure Embedding', () => {
     expect(screen.getByText('Plot view')).toBeDefined();
     expect(screen.getByText('Embedding settings')).toBeDefined();
     expect(screen.getByText('Clustering settings')).toBeDefined();
-    expect(screen.getByText('Plot options')).toBeDefined();
+    expect(screen.getByText('Plot styling')).toBeDefined();
 
     // additional select data option available
-    userEvent.click(screen.getByText('Plot options'));
+    userEvent.click(screen.getByText('Plot styling'));
     expect(screen.getAllByText('Select data')).toBeDefined();
   });
 

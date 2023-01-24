@@ -15,9 +15,9 @@ const loadPlotConfig = (
   try {
     const { config, plotData } = await fetchAPI(`/v2/experiments/${experimentId}/plots/${plotUuid}`);
 
-    const modifiedConfig = beforeDispatchHook ? beforeDispatchHook(config) : {};
+    let plotConfig = beforeDispatchHook ? beforeDispatchHook(config) : config;
+    plotConfig = _.merge({}, initialPlotConfigStates[plotType], plotConfig);
 
-    const plotConfig = _.merge({}, initialPlotConfigStates[plotType], modifiedConfig);
     dispatch({
       type: LOAD_CONFIG,
       payload: {

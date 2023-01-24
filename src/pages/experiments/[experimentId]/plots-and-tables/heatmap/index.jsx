@@ -8,7 +8,7 @@ import 'vega-webgl-renderer';
 import { useSelector, useDispatch } from 'react-redux';
 import { Vega } from 'react-vega';
 import PropTypes from 'prop-types';
-import { updatePlotConfig, loadPlotConfig, savePlotConfig } from 'redux/actions/componentConfig';
+import { updatePlotConfig, loadPlotConfig } from 'redux/actions/componentConfig';
 import Header from 'components/Header';
 import PlotContainer from 'components/plots/PlotContainer';
 import { generateSpec } from 'utils/plotSpecs/generateHeatmapSpec';
@@ -44,7 +44,7 @@ const HeatmapPlot = ({ experimentId }) => {
   const displaySavedGenes = useRef(true);
 
   const numLegendItems = hierarchy.find(
-    ({ key }) => key === config.selectedCellSet,
+    ({ key }) => key === config?.selectedCellSet,
   )?.children?.length;
 
   useEffect(() => {

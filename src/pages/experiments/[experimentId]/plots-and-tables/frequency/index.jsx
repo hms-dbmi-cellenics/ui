@@ -44,7 +44,7 @@ const FrequencyPlotPage = ({ experimentId }) => {
   const hierarchy = useSelector(getCellSetsHierarchy());
 
   const numLegendItems = hierarchy.find(
-    ({ key }) => key === config.proportionGrouping,
+    ({ key }) => key === config?.proportionGrouping,
   )?.children?.length;
 
   const [cellSetClusters] = useSelector(

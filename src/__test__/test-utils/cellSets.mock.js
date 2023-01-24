@@ -21,6 +21,7 @@ const mockCellSets = {
   error: false,
   loading: false,
   hierarchy: mockCellSetsHierarchy,
+  accessible: true,
   properties: {
     'cluster-a': {
       name: 'cluster a',
