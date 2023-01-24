@@ -65,8 +65,6 @@ const FrequencyPlotPage = ({ experimentId }) => {
         ({ key }) => key === proportionGrouping,
       )?.children?.length;
 
-      console.log('*** numLegendItems', numLegendItems);
-
       if (numLegendItems <= MAX_LEGEND_ITEMS) return;
 
       const modifiedConfig = _.merge(plotConfig, {

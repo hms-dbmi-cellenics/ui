@@ -8,7 +8,7 @@ import 'vega-webgl-renderer';
 import { useSelector, useDispatch } from 'react-redux';
 import { Vega } from 'react-vega';
 import PropTypes from 'prop-types';
-import { updatePlotConfig, loadPlotConfig } from 'redux/actions/componentConfig';
+import { updatePlotConfig, loadPlotConfig, savePlotConfig } from 'redux/actions/componentConfig';
 import Header from 'components/Header';
 import PlotContainer from 'components/plots/PlotContainer';
 import { generateSpec } from 'utils/plotSpecs/generateHeatmapSpec';
@@ -17,11 +17,12 @@ import { loadCellSets } from 'redux/actions/cellSets';
 import PlatformError from 'components/PlatformError';
 import Loader from 'components/Loader';
 import populateHeatmapData from 'components/plots/helpers/heatmap/populateHeatmapData';
-import { getCellSets } from 'redux/selectors';
+import { getCellSets, getCellSetsHierarchy } from 'redux/selectors';
 import { plotNames } from 'utils/constants';
 import SelectData from 'components/plots/styling/SelectData';
 import HeatmapGroupBySettings from 'components/data-exploration/heatmap/HeatmapGroupBySettings';
 import HeatmapMetadataTrackSettings from 'components/data-exploration/heatmap/HeatmapMetadataTrackSettings';
+import PlotLegendAlert, { MAX_LEGEND_ITEMS } from 'components/plots/helpers/PlotLegendAlert';
 
 import generateVegaData from 'components/plots/helpers/heatmap/vega/generateVegaData';
 
@@ -36,12 +37,12 @@ const HeatmapPlot = ({ experimentId }) => {
   const { expression: expressionData } = useSelector((state) => state.genes);
   const { error, loading } = expressionData;
   const cellSets = useSelector(getCellSets());
+  const hierarchy = useSelector(getCellSetsHierarchy());
   const selectedGenes = useSelector((state) => state.genes.expression.views[plotUuid]?.data) || [];
   const [vegaSpec, setVegaSpec] = useState();
   const displaySavedGenes = useRef(true);
 
   useEffect(() => {
-    if (!config) dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
     dispatch(loadCellSets(experimentId));
   }, []);
 
@@ -55,6 +56,31 @@ const HeatmapPlot = ({ experimentId }) => {
       displaySavedGenes.current = false;
     }
   }, [config]);
+
+  useEffect(() => {
+    const beforeLoadConfigHook = (plotConfig) => {
+      const { selectedCellSet } = plotConfig;
+
+      const numLegendItems = hierarchy.find(
+        ({ key }) => key === selectedCellSet,
+      )?.children?.length;
+
+      if (numLegendItems <= MAX_LEGEND_ITEMS) return;
+
+      const modifiedConfig = _.merge(plotConfig, {
+        legend: {
+          enabled: false,
+          showAlert: true,
+        },
+      });
+
+      savePlotConfig(experimentId, plotUuid, modifiedConfig);
+
+      return modifiedConfig;
+    };
+
+    dispatch(loadPlotConfig(experimentId, plotUuid, plotType, beforeLoadConfigHook));
+  }, [cellSets.accessible]);
 
   useEffect(() => {
     if (!config || _.isEmpty(expressionData)) {
@@ -225,7 +251,14 @@ const HeatmapPlot = ({ experimentId }) => {
     }
 
     if (vegaSpec) {
-      return <Vega spec={vegaSpec} renderer='webgl' />;
+      return (
+        <Space direction='vertical'>
+          { config.legend.showAlert && <PlotLegendAlert /> }
+          <center>
+            <Vega spec={vegaSpec} renderer='webgl' />
+          </center>
+        </Space>
+      );
     }
   };
 
