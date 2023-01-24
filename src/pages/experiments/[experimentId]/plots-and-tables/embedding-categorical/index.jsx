@@ -4,6 +4,7 @@ import {
   Collapse,
   Select,
   Skeleton,
+  Space,
 } from 'antd';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
@@ -11,13 +12,16 @@ import { getCellSets, getCellSetsHierarchy } from 'redux/selectors';
 import {
   updatePlotConfig,
   loadPlotConfig,
+  savePlotConfig,
 } from 'redux/actions/componentConfig/index';
 import Header from 'components/Header';
 import { loadCellSets } from 'redux/actions/cellSets';
 import CategoricalEmbeddingPlot from 'components/plots/CategoricalEmbeddingPlot';
 import PlotContainer from 'components/plots/PlotContainer';
 import SelectData from 'components/plots/styling/embedding-continuous/SelectData';
+import PlotLegendAlert, { MAX_LEGEND_ITEMS } from 'components/plots/helpers/PlotLegendAlert';
 import { plotNames } from 'utils/constants';
+import _ from 'lodash';
 
 const { Panel } = Collapse;
 
@@ -31,9 +35,35 @@ const EmbeddingCategoricalPage = ({ experimentId }) => {
   const hierarchy = useSelector(getCellSetsHierarchy());
 
   useEffect(() => {
-    if (!config) dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
     dispatch(loadCellSets(experimentId));
   }, []);
+
+  useEffect(() => {
+    if (config) return;
+
+    const beforeLoadConfigHook = (plotConfig) => {
+      const { selectedCellSet } = plotConfig;
+
+      const numLegendItems = hierarchy.find(
+        ({ key }) => key === selectedCellSet,
+      )?.children?.length;
+
+      if (numLegendItems <= MAX_LEGEND_ITEMS) return;
+
+      const modifiedConfig = _.merge(plotConfig, {
+        legend: {
+          enabled: false,
+          showAlert: true,
+        },
+      });
+
+      savePlotConfig(experimentId, plotUuid, modifiedConfig.config);
+
+      return modifiedConfig;
+    };
+
+    dispatch(loadPlotConfig(experimentId, plotUuid, plotType, beforeLoadConfigHook));
+  }, [cellSets.accessible]);
 
   const generateGroupByOptions = () => {
     if (!cellSets.accessible) {
@@ -132,12 +162,15 @@ const EmbeddingCategoricalPage = ({ experimentId }) => {
         extraControlPanels={renderExtraPanels()}
         defaultActiveKey='group-by'
       >
-        <CategoricalEmbeddingPlot
-          experimentId={experimentId}
-          config={config}
-          plotUuid={plotUuid}
-          onUpdate={updatePlotWithChanges}
-        />
+        <Space direction='vertical'>
+          {config?.legend?.showAlert && <PlotLegendAlert />}
+          <CategoricalEmbeddingPlot
+            experimentId={experimentId}
+            config={config}
+            plotUuid={plotUuid}
+            onUpdate={updatePlotWithChanges}
+          />
+        </Space>
       </PlotContainer>
     </>
   );
