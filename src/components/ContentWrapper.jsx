@@ -112,7 +112,6 @@ const ContentWrapper = (props) => {
           // Unload all previous socket.io hooks that may have been created for a different
           // experiment.
           io.off();
-
           io.on(`ExperimentUpdates-${currentExperimentId}`, (update) => cb(currentExperimentId, update));
         });
     }
@@ -270,6 +269,10 @@ const ContentWrapper = (props) => {
 
       if (gem2sRunningError) {
         return <GEM2SLoadingScreen paramsHash={gem2sparamsHash} experimentId={routeExperimentId} gem2sStatus='error' />;
+      }
+
+      if (gem2sRunning && experiment?.parentExperimentId) {
+        return <GEM2SLoadingScreen experimentId={routeExperimentId} gem2sStatus='subsetting' completedSteps={completedGem2sSteps} experimentName={activeExperiment.name} />;
       }
 
       if (gem2sRunning || waitingForQcToLaunch) {

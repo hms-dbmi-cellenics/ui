@@ -124,7 +124,7 @@ describe('PlatformError', () => {
     );
 
     const timeoutDate = dayjs().add(120, 's').toISOString();
-    const error = new WorkTimeoutError(timeoutDate, {});
+    const error = new WorkTimeoutError(120, timeoutDate, {}, 'someETag');
 
     act(() => {
       render(<PlatformError error={error} />);

@@ -10,6 +10,7 @@ import renameMetadataTrack from './renameMetadataTrack';
 import deleteMetadataTrack from './deleteMetadataTrack';
 import updateValueInMetadataTrack from './updateValueInMetadataTrack';
 import cloneExperiment from './cloneExperiment';
+import reloadExperimentInfo from './reloadExperimentInfo';
 
 export {
   createExperiment,
@@ -24,4 +25,5 @@ export {
   deleteMetadataTrack,
   updateValueInMetadataTrack,
   cloneExperiment,
+  reloadExperimentInfo,
 };

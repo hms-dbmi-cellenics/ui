@@ -1,0 +1,19 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`getTimeoutForWorkerTask works correctly for ClusterCells 1`] = `180.04`;
+
+exports[`getTimeoutForWorkerTask works correctly for DifferentialExpression 1`] = `180`;
+
+exports[`getTimeoutForWorkerTask works correctly for GeneExpression 1`] = `180`;
+
+exports[`getTimeoutForWorkerTask works correctly for GetDoubletScore 1`] = `180`;
+
+exports[`getTimeoutForWorkerTask works correctly for GetEmbedding with tsne 1`] = `900`;
+
+exports[`getTimeoutForWorkerTask works correctly for GetEmbedding with umap 1`] = `900`;
+
+exports[`getTimeoutForWorkerTask works correctly for GetMitochondrialContent 1`] = `180`;
+
+exports[`getTimeoutForWorkerTask works correctly for ListGenes 1`] = `900`;
+
+exports[`getTimeoutForWorkerTask works correctly for MarkerHeatmap 1`] = `900`;

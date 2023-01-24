@@ -4,7 +4,7 @@ import endUserMessages from 'utils/endUserMessages';
 
 const runSubsetExperiment = (experimentId, newExperimentName, cellSetKeys) => async () => {
   try {
-    await fetchAPI(
+    const newExperimentId = await fetchAPI(
       `/v2/experiments/${experimentId}/subset`,
       {
         method: 'POST',
@@ -17,6 +17,8 @@ const runSubsetExperiment = (experimentId, newExperimentName, cellSetKeys) => as
         }),
       },
     );
+
+    return newExperimentId;
   } catch (e) {
     handleError(e, endUserMessages.ERROR_STARTING_PIPLELINE);
   }
