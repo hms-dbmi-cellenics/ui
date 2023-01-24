@@ -21,5 +21,12 @@ Array [
     "sampleUuid": "mockSampleId",
     "value": "mockNewValue",
   },
+  Object {
+    "experimentId": "mockExperimentId",
+  },
+  Object {
+    "error": "We couldn't get the status of the experiment's data processing.",
+    "experimentId": "mockExperimentId",
+  },
 ]
 `;

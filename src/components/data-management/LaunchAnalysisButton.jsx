@@ -13,6 +13,8 @@ import calculateGem2sRerunStatus from 'utils/data-management/calculateGem2sRerun
 
 import { useAppRouter } from 'utils/AppRouteProvider';
 
+jest.mock('utils/data-management/calculateGem2sRerunStatus');
+
 const LaunchButtonTemplate = (props) => {
   const {
     // eslint-disable-next-line react/prop-types
@@ -49,7 +51,7 @@ const LaunchAnalysisButton = () => {
 
   const launchAnalysis = async () => {
     if (gem2sRerunStatus.rerun) {
-      await dispatch(runGem2s(activeExperimentId, gem2sRerunStatus.paramsHash));
+      await dispatch(runGem2s(activeExperimentId));
     }
     navigateTo(modules.DATA_PROCESSING, { experimentId: activeExperimentId });
   };
@@ -64,7 +66,6 @@ const LaunchAnalysisButton = () => {
     ) return;
 
     const status = calculateGem2sRerunStatus(gem2sBackendStatus, activeExperiment);
-
     setGem2sRerunStatus(status);
   }, [backendStatus, activeExperimentId, samples, activeExperiment]);
 

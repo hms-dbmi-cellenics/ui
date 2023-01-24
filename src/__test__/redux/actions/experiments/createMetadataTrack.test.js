@@ -15,6 +15,7 @@ import {
 import '__test__/test-utils/setupTests';
 
 import { SAMPLES_UPDATE } from 'redux/actionTypes/samples';
+import { BACKEND_STATUS_ERROR, BACKEND_STATUS_LOADING } from 'redux/actionTypes/backendStatus';
 
 const mockStore = configureStore([thunk]);
 
@@ -66,7 +67,7 @@ describe('createMetadataTrack action', () => {
     const trackKeyRCompatible = 'Test_track';
 
     const actions = store.getActions();
-    expect(_.map(actions, 'type')).toEqual([EXPERIMENTS_METADATA_CREATE, SAMPLES_UPDATE]);
+    expect(_.map(actions, 'type')).toEqual([EXPERIMENTS_METADATA_CREATE, SAMPLES_UPDATE, BACKEND_STATUS_ERROR, BACKEND_STATUS_LOADING]);
     expect(_.map(actions, 'payload')).toMatchSnapshot();
 
     expect(fetchMock).toHaveBeenCalledWith(

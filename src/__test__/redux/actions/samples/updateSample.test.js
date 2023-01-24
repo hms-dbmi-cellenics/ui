@@ -9,6 +9,7 @@ import initialState, { sampleTemplate } from 'redux/reducers/samples/initialStat
 import {
   SAMPLES_ERROR, SAMPLES_SAVED, SAMPLES_SAVING, SAMPLES_UPDATE,
 } from 'redux/actionTypes/samples';
+import { BACKEND_STATUS_ERROR, BACKEND_STATUS_LOADING } from 'redux/actionTypes/backendStatus';
 
 const mockStore = configureStore([thunk]);
 
@@ -47,7 +48,10 @@ describe('updateSample action', () => {
     await store.dispatch(updateSample(mockUuid, sampleDiff));
 
     const actions = store.getActions();
-    expect(_.map(actions, 'type')).toEqual([SAMPLES_SAVING, SAMPLES_SAVED, SAMPLES_UPDATE]);
+
+    // For some reason an error is always thrown but SAMPLES_ERROR was not dispatched before,
+    // now that backend status is being awaited the action is dispatched
+    expect(_.map(actions, 'type')).toEqual([SAMPLES_SAVING, SAMPLES_SAVED, SAMPLES_UPDATE, BACKEND_STATUS_LOADING, BACKEND_STATUS_ERROR]);
     expect(_.map(actions, 'payload')).toMatchSnapshot();
 
     expect(fetchMock).toHaveBeenCalledWith(
