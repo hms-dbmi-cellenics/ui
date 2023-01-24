@@ -19,10 +19,6 @@ const union = (listOfSets, properties) => {
   if (!listOfSets) {
     return new Set();
   }
-  if (Object.keys(listOfSets).length === 0) {
-    console.log("it's 0");
-    return new Set();
-  }
 
   const sets = listOfSets.map((key) => properties[key]?.cellIds || []);
   const unionSet = new Set(

@@ -30,7 +30,7 @@ const HierarchicalTree = (props) => {
   } = props;
 
   const [checkedKeys, setCheckedKeys] = useState(propDefaultCheckedKeys);
-  const [expandedKeys, setExpandedKeys] = useState([]);
+  const [expandedKeys, setExpandedKeys] = useState(propDefaultCheckedKeys);
 
   useEffect(() => {
     if (checkedKeys.length > 0) {

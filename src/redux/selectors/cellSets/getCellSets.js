@@ -15,8 +15,6 @@ const getCellSets = () => (state) => {
     accessible,
   };
 
-  console.log('IVA **** ', toReturn);
-
   return toReturn;
 };
 

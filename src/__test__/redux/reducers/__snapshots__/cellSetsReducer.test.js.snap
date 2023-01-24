@@ -165,7 +165,7 @@ Object {
       "rootNode": true,
     },
   },
-  "selected": Object {},
+  "selected": Array [],
   "updatingClustering": false,
 }
 `;
