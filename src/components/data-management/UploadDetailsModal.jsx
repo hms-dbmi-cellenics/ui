@@ -21,10 +21,11 @@ dayjs.extend(utc);
 const UploadDetailsModal = (props) => {
   const dispatch = useDispatch();
   const {
-    visible, onCancel, uploadDetailsModalDataRef,
+    visible, onCancel, uploadDetailsModalData,
   } = props;
-  const { fileCategory, sampleUuid } = uploadDetailsModalDataRef.current ?? {};
-  const file = uploadDetailsModalDataRef.current?.file ?? {};
+  const { fileCategory, sampleUuid } = uploadDetailsModalData ?? {};
+  const file = uploadDetailsModalData?.file ?? {};
+
   const { upload } = file ?? {};
   const status = upload?.status;
   const inputFileRef = useRef(null);
@@ -33,7 +34,7 @@ const UploadDetailsModal = (props) => {
   const { activeExperimentId } = useSelector((state) => state.experiments.meta);
   const samples = useSelector((state) => state.samples);
   const selectedTech = useSelector((state) => state.samples[sampleUuid]?.type);
-  const sampleName = samples[uploadDetailsModalDataRef.current?.sampleUuid]?.name;
+  const sampleName = samples[uploadDetailsModalData?.sampleUuid]?.name;
 
   useEffect(() => {
     if (replacementFileObject) {
@@ -64,7 +65,7 @@ const UploadDetailsModal = (props) => {
   };
 
   const uploadFile = (newFile) => {
-    if (!uploadDetailsModalDataRef.current) {
+    if (!uploadDetailsModalData) {
       return;
     }
 
@@ -209,7 +210,7 @@ UploadDetailsModal.propTypes = {
   file: PropTypes.object,
   visible: PropTypes.bool,
   onCancel: PropTypes.func,
-  uploadDetailsModalDataRef: PropTypes.object.isRequired,
+  uploadDetailsModalData: PropTypes.object.isRequired,
 };
 
 UploadDetailsModal.defaultProps = {

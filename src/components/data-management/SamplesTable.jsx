@@ -43,12 +43,16 @@ const { Text } = Typography;
 
 const SamplesTable = forwardRef((props, ref) => {
   const dispatch = useDispatch();
+
   const [fullTableData, setFullTableData] = useState([]);
-  // const [renderedTableData, setRenderedTableData] = useState([]);
+
+  console.log('fullTableDataDebug');
+  console.log(fullTableData);
 
   const lastListInfoRef = useRef({ start: -1, renderLen: -1 });
 
   const samples = useSelector((state) => state.samples);
+
   const samplesLoading = useSelector((state) => state.samples.meta.loading);
   const activeExperimentId = useSelector((state) => state.experiments.meta.activeExperimentId);
 
@@ -56,11 +60,17 @@ const SamplesTable = forwardRef((props, ref) => {
     (state) => state.samples.meta.validating.includes(activeExperimentId),
   );
   const activeExperiment = useSelector((state) => state.experiments[activeExperimentId]);
-  const selectedTech = samples[activeExperiment?.sampleIds[0]]?.type;
+
+  const selectedTech = useSelector(
+    (state) => state.samples[activeExperiment?.sampleIds[0]]?.type,
+    _.isEqual,
+  );
+
+  // const selectedTech = samples[activeExperiment?.sampleIds[0]]?.type;
   const [sampleNames, setSampleNames] = useState(new Set());
   const DragHandle = sortableHandle(() => <MenuOutlined style={{ cursor: 'grab', color: '#999' }} />);
 
-  const initialTableColumns = [
+  const initialTableColumns = useMemo(() => ([
     {
       fixed: 'left',
       index: 0,
@@ -84,29 +94,41 @@ const SamplesTable = forwardRef((props, ref) => {
     ...fileUploadSpecifications[selectedTech]?.requiredFiles?.map((fileName, indx) => {
       const fileNameWithoutExtension = fileName.key.split('.')[0];
 
+      console.log('fileNameWithoutExtensionDebug');
+
       return ({
         index: 2 + indx,
         title: <center>{fileName.displayedName}</center>,
         key: fileNameWithoutExtension,
         dataIndex: fileNameWithoutExtension,
         width: '20%',
-        render: (tableCellData) => (
-          tableCellData && (
-            <UploadCell
-              columnId={fileName.key}
-              sampleUuid={tableCellData.sampleUuid}
-            />
-          )),
+        render: (tableCellData) => {
+          console.log('tableCellDataDebug');
+          console.log(tableCellData);
+          return (
+            tableCellData && (
+              <UploadCell
+                columnId={fileName.key}
+                sampleUuid={tableCellData.sampleUuid}
+              />
+            ));
+        },
       });
     }) || [],
 
-  ];
+  ]), [selectedTech]);
 
   const [tableColumns, setTableColumns] = useState(initialTableColumns);
 
   useEffect(() => {
-    const samplesLoaded = activeExperiment?.sampleIds.every((sampleId) => samples[sampleId]);
+    const alreadyLoaded = _.isEqual(
+      fullTableData.map(({ key }) => key),
+      activeExperiment.sampleIds,
+    );
 
+    if (alreadyLoaded) return;
+
+    const samplesLoaded = activeExperiment?.sampleIds.every((sampleId) => samples[sampleId]);
     if (activeExperiment?.sampleIds.length > 0 && samplesLoaded) {
       // if there are samples - build the table columns
 
@@ -123,7 +145,7 @@ const SamplesTable = forwardRef((props, ref) => {
       setTableColumns([]);
       setSampleNames(new Set());
     }
-  }, [samples, activeExperiment]);
+  }, [samples, activeExperiment?.sampleIds]);
 
   useConditionalEffect(() => {
     dispatch(loadSamples(activeExperimentId));
@@ -229,37 +251,39 @@ const SamplesTable = forwardRef((props, ref) => {
   const generateDataForItem = useCallback((sampleUuid) => {
     if (!samples[sampleUuid]) return {};
 
-    const { files: sampleFiles, fileNames: sampleFileNames } = samples[sampleUuid];
+    // fileUploadSpecifications[selectedTech]?.requiredFiles?.map((fileName, indx) => {
+    // const fileNameWithoutExtension = fileName.key.split('.')[0];
 
-    const fileData = {};
-    sampleFileNames.forEach((key) => {
-      const displayedFileInTable = key.split('.')[0];
+    const sampleFileNames = fileUploadSpecifications[selectedTech]?.requiredFiles
+      .map((fileName) => ([
+        fileName.key.split('.')[0],
+        { sampleUuid },
+      ]));
 
-      const currentFile = sampleFiles[key] ?? { upload: { status: UploadStatus.FILE_NOT_FOUND } };
-      const currentFileData = { sampleUuid, file: currentFile };
-      fileData[displayedFileInTable] = currentFileData;
-    });
+    // const { files: sampleFiles, fileNames: sampleFileNames } = samples[sampleUuid];
+
+    // const fileData = {};
+    // sampleFileNames.forEach((key) => {
+    //   const displayedFileInTable = key.split('.')[0];
+
+    //   const currentFile = sampleFiles[key] ?? { uploa
+    // d: { status: UploadStatus.FILE_NOT_FOUND } };
+    //   const currentFileData = { sampleUuid, file: currentFile };
+    //   fileData[displayedFileInTable] = currentFileData;
+    // });
+
+    console.log('sampleFileNamesDebug');
+    console.log(sampleFileNames);
 
     return {
       key: sampleUuid,
       name: samples[sampleUuid]?.name || 'UPLOAD ERROR: Please reupload sample',
       uuid: sampleUuid,
-      ...fileData,
-      ...samples[sampleUuid]?.metadata,
+      ...Object.fromEntries(sampleFileNames),
+      // ...fileData,
+      // ...samples[sampleUuid]?.metadata,
     };
-  }, [activeExperiment, samples]);
-
-  // useEffect(() => {
-  //   if (!activeExperiment?.sampleIds.length) {
-  //     setFullTableData([]);
-  //   }
-
-  //   // const newData = activeExperiment.sampleIds.map((sampleUuid, idx) => generateDataForItem(idx));
-
-  //   // console.log('newDatalengthDebug');
-  //   // console.log(newData.length);
-  //   // setFullTableData(newData);
-  // }, [experiments, samples, activeExperimentId]);
+  }, [activeExperiment?.sampleIds, selectedTech]);
 
   const noDataComponent = (
     <ExampleExperimentsSpace
@@ -269,19 +293,25 @@ const SamplesTable = forwardRef((props, ref) => {
   );
 
   const onSortEnd = async ({ oldIndex, newIndex }) => {
-    if (oldIndex !== newIndex) {
-      const newData = arrayMoveImmutable(fullTableData, oldIndex, newIndex).filter((el) => !!el);
-      const newSampleOrder = newData.map((sample) => sample.uuid);
+    // if (oldIndex !== newIndex) {
+    //   const newData = arrayMoveImmutable(fullTableData, oldIndex, newIndex).filter((el) => !!el);
+    //   const newSampleOrder = newData.map((sample) => sample.uuid);
 
-      try {
-        await dispatch(reorderSamples(activeExperimentId, oldIndex, newIndex, newSampleOrder));
-      } catch (e) {
-        // If the fetch fails, avoid doing setTableData(newData)
-        return;
-      }
+    //   try {
+    //     await dispatch(reorderSamples(activeExperimentId, oldIndex, newIndex, newSampleOrder));
+    //   } catch (e) {
+    //     // If the fetch fails, avoid doing setTableData(newData)
+    //     return;
+    //   }
 
-      setFullTableData(newData);
-    }
+    //   console.log('HOLAHOLA');
+
+    //   setFullTableData(() => {
+    //     console.log('newDataDebug');
+    //     console.log(newData);
+    //     return newData;
+    //   });
+    // }
   };
 
   const SortableRow = sortableElement((otherProps) => <tr {...otherProps} className={`${otherProps.className} drag-visible`} />);
@@ -333,62 +363,38 @@ const SamplesTable = forwardRef((props, ref) => {
       setFullTableData([]);
     }
 
-    const { start, renderLen } = lastListInfoRef?.current;
+    const alreadyLoaded = _.isEqual(
+      fullTableData.map(({ key }) => key),
+      activeExperiment.sampleIds,
+    );
 
-    const newfullTableData = activeExperiment.sampleIds
-      .slice(start, start + renderLen)
-      .map((sampleUuid) => generateDataForItem(sampleUuid));
+    if (alreadyLoaded) return;
 
-    setFullTableData(newfullTableData);
+    const newData = activeExperiment.sampleIds.map((sampleUuid) => generateDataForItem(sampleUuid));
 
-    // setFullTableData(
-    //   activeExperiment.sampleIds
-    //     .slice(start, start + renderLen)
-    //     .map((sampleUuid) => generateDataForItem(sampleUuid)),
-    // );
-  }, [activeExperiment?.sampleIds]);
+    console.log('newDataDEBUG');
+    console.log(newData);
+
+    setFullTableData(newData);
+  }, [activeExperiment?.sampleIds, samples]);
 
   const tableHeight = 600;
-
-  const onListRenderHandler = useCallback((listInfo) => {
-    const { start, renderLen } = listInfo;
-
-    const lastInfo = lastListInfoRef?.current;
-
-    if (start !== lastInfo?.start || renderLen !== lastInfo?.renderLen) {
-      lastListInfoRef.current = { start, renderLen };
-
-      const newfullTableData = activeExperiment.sampleIds
-        .slice(start, start + renderLen)
-        .map((sampleUuid) => generateDataForItem(sampleUuid));
-
-      console.log('newfullTableDataDebug');
-      console.log(newfullTableData);
-
-      setFullTableData(newfullTableData);
-
-      // setFullTableData(
-      //   activeExperiment.sampleIds
-      //     .slice(start, start + renderLen)
-      //     .map((sampleUuid) => generateDataForItem(sampleUuid)),
-      // );
-    }
-  }, [activeExperiment, samples]);
 
   const vComponents = useMemo(() =>
     // 使用VList 即可有虚拟列表的效果
     VList({
       height: tableHeight, // 此值和scrollY值相同. 必传. (required).  same value for scrolly
       resetTopWhenDataChange: false,
-      onListRender: onListRenderHandler,
-    }), [onListRenderHandler]);
+    }), []);
+  // onListRender: onListRenderHandler,
+  // }), [onListRenderHandler]);
 
   const renderSamplesTable = () => (
     <Row>
       <Col>
         <Table
           id='samples-table'
-          size='middle'
+          size='large'
           scroll={{
             x: 'max-content',
             y: tableHeight,

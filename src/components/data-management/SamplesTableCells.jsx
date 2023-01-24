@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Space, Typography, Progress, Tooltip, Button,
 } from 'antd';
@@ -31,19 +31,30 @@ const UploadCellStyle = styled.div`
 const UploadCell = (props) => {
   const { columnId, sampleUuid } = props;
 
+  console.log('propsDebug');
+  console.log(props);
+  console.log('sampleUuidDebug');
+  console.log(sampleUuid);
+  console.log('columnIdDebug');
+  console.log(columnId);
+
   const file = useSelector((state) => state.samples[sampleUuid].files[columnId]);
 
-  const { progress = null, status = null } = file?.upload ?? {};
-
   const [uploadDetailsModalVisible, setUploadDetailsModalVisible] = useState(false);
-  const uploadDetailsModalDataRef = useRef(null);
+  const [uploadDetailsModalData, setUploadDetailsModalData] = useState(false);
+
+  useEffect(() => {
+    setUploadDetailsModalData(file);
+  }, [file, file?.upload]);
+
+  const { progress = null, status = null } = uploadDetailsModalData?.upload ?? {};
 
   const showDetails = () => {
-    uploadDetailsModalDataRef.current = {
+    setUploadDetailsModalData({
       sampleUuid,
       fileCategory: columnId,
-      file,
-    };
+      uploadDetailsModalData,
+    });
     setUploadDetailsModalVisible(true);
   };
 
@@ -62,6 +73,8 @@ const UploadCell = (props) => {
         </UploadCellStyle>
       );
     }
+
+    // console.log('IMRERENDERING');
 
     if (
       [
@@ -122,7 +135,7 @@ const UploadCell = (props) => {
         {render()}
       </center>
       <UploadDetailsModal
-        uploadDetailsModalDataRef={uploadDetailsModalDataRef}
+        uploadDetailsModalData={uploadDetailsModalData}
         visible={uploadDetailsModalVisible}
         onCancel={() => setUploadDetailsModalVisible(false)}
       />
