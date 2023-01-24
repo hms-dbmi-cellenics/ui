@@ -21,14 +21,15 @@ import ExportAsCSV from 'components/plots/ExportAsCSV';
 import { getCellSets, getCellSetsHierarchyByKeys, getCellSetsHierarchy } from 'redux/selectors';
 import SelectCellSets from 'components/plots/styling/frequency/SelectCellSets';
 
-import { updatePlotConfig, loadPlotConfig, savePlotConfig } from 'redux/actions/componentConfig';
+import { updatePlotConfig, loadPlotConfig } from 'redux/actions/componentConfig';
 import loadCellSets from 'redux/actions/cellSets/loadCellSets';
 
 import plotCsvFilename from 'utils/fileNames';
 import { plotNames } from 'utils/constants';
 import PlotContainer from 'components/plots/PlotContainer';
+import generateLegendAlertHook from 'components/plots/helpers/generateLegendAlertHook';
+
 import PlotLegendAlert, { MAX_LEGEND_ITEMS } from 'components/plots/helpers/PlotLegendAlert';
-import _ from 'lodash';
 
 const { Panel } = Collapse;
 
@@ -41,6 +42,10 @@ const FrequencyPlotPage = ({ experimentId }) => {
   const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
   const cellSets = useSelector(getCellSets());
   const hierarchy = useSelector(getCellSetsHierarchy());
+
+  const numLegendItems = hierarchy.find(
+    ({ key }) => key === config.proportionGrouping,
+  )?.children?.length;
 
   const [cellSetClusters] = useSelector(
     getCellSetsHierarchyByKeys([config?.proportionGrouping]),
@@ -58,27 +63,7 @@ const FrequencyPlotPage = ({ experimentId }) => {
   useEffect(() => {
     if (config) return;
 
-    const beforeLoadConfigHook = (plotConfig) => {
-      const { proportionGrouping } = plotConfig;
-
-      const numLegendItems = hierarchy.find(
-        ({ key }) => key === proportionGrouping,
-      )?.children?.length;
-
-      if (numLegendItems <= MAX_LEGEND_ITEMS) return;
-
-      const modifiedConfig = _.merge(plotConfig, {
-        legend: {
-          enabled: false,
-          showAlert: true,
-        },
-      });
-
-      savePlotConfig(experimentId, plotUuid, modifiedConfig);
-
-      return modifiedConfig;
-    };
-
+    const beforeLoadConfigHook = generateLegendAlertHook(hierarchy, 'proportionGrouping');
     dispatch(loadPlotConfig(experimentId, plotUuid, plotType, beforeLoadConfigHook));
   }, [cellSets.accessible]);
 
@@ -201,7 +186,9 @@ const FrequencyPlotPage = ({ experimentId }) => {
 
     return (
       <Space direction='vertical'>
-        { config?.legend?.showAlert && <PlotLegendAlert /> }
+        { config?.legend?.showAlert
+          && numLegendItems > MAX_LEGEND_ITEMS
+          && <PlotLegendAlert />}
         <center>
           <FrequencyPlot
             experimentId={experimentId}

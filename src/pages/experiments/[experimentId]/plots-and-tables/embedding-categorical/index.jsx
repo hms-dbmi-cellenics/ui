@@ -12,7 +12,6 @@ import { getCellSets, getCellSetsHierarchy } from 'redux/selectors';
 import {
   updatePlotConfig,
   loadPlotConfig,
-  savePlotConfig,
 } from 'redux/actions/componentConfig/index';
 import Header from 'components/Header';
 import { loadCellSets } from 'redux/actions/cellSets';
@@ -21,7 +20,7 @@ import PlotContainer from 'components/plots/PlotContainer';
 import SelectData from 'components/plots/styling/embedding-continuous/SelectData';
 import PlotLegendAlert, { MAX_LEGEND_ITEMS } from 'components/plots/helpers/PlotLegendAlert';
 import { plotNames } from 'utils/constants';
-import _ from 'lodash';
+import generateLegendAlertHook from 'components/plots/helpers/generateLegendAlertHook';
 
 const { Panel } = Collapse;
 
@@ -34,6 +33,10 @@ const EmbeddingCategoricalPage = ({ experimentId }) => {
   const cellSets = useSelector(getCellSets());
   const hierarchy = useSelector(getCellSetsHierarchy());
 
+  const numLegendItems = hierarchy.find(
+    ({ key }) => key === config.selectedCellSet,
+  )?.children?.length;
+
   useEffect(() => {
     dispatch(loadCellSets(experimentId));
   }, []);
@@ -41,27 +44,7 @@ const EmbeddingCategoricalPage = ({ experimentId }) => {
   useEffect(() => {
     if (config) return;
 
-    const beforeLoadConfigHook = (plotConfig) => {
-      const { selectedCellSet } = plotConfig;
-
-      const numLegendItems = hierarchy.find(
-        ({ key }) => key === selectedCellSet,
-      )?.children?.length;
-
-      if (numLegendItems <= MAX_LEGEND_ITEMS) return;
-
-      const modifiedConfig = _.merge(plotConfig, {
-        legend: {
-          enabled: false,
-          showAlert: true,
-        },
-      });
-
-      savePlotConfig(experimentId, plotUuid, modifiedConfig.config);
-
-      return modifiedConfig;
-    };
-
+    const beforeLoadConfigHook = generateLegendAlertHook(hierarchy, 'selectedCellSet');
     dispatch(loadPlotConfig(experimentId, plotUuid, plotType, beforeLoadConfigHook));
   }, [cellSets.accessible]);
 
@@ -163,7 +146,9 @@ const EmbeddingCategoricalPage = ({ experimentId }) => {
         defaultActiveKey='group-by'
       >
         <Space direction='vertical'>
-          {config?.legend?.showAlert && <PlotLegendAlert />}
+          {config?.legend?.showAlert
+            && numLegendItems > MAX_LEGEND_ITEMS
+            && <PlotLegendAlert />}
           <CategoricalEmbeddingPlot
             experimentId={experimentId}
             config={config}

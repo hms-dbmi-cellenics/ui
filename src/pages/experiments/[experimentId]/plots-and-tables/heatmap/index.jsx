@@ -25,6 +25,7 @@ import HeatmapMetadataTrackSettings from 'components/data-exploration/heatmap/He
 import PlotLegendAlert, { MAX_LEGEND_ITEMS } from 'components/plots/helpers/PlotLegendAlert';
 
 import generateVegaData from 'components/plots/helpers/heatmap/vega/generateVegaData';
+import generateLegendAlertHook from 'components/plots/helpers/generateLegendAlertHook';
 
 const { Panel } = Collapse;
 
@@ -42,6 +43,10 @@ const HeatmapPlot = ({ experimentId }) => {
   const [vegaSpec, setVegaSpec] = useState();
   const displaySavedGenes = useRef(true);
 
+  const numLegendItems = hierarchy.find(
+    ({ key }) => key === config.selectedCellSet,
+  )?.children?.length;
+
   useEffect(() => {
     dispatch(loadCellSets(experimentId));
   }, []);
@@ -58,27 +63,7 @@ const HeatmapPlot = ({ experimentId }) => {
   }, [config]);
 
   useEffect(() => {
-    const beforeLoadConfigHook = (plotConfig) => {
-      const { selectedCellSet } = plotConfig;
-
-      const numLegendItems = hierarchy.find(
-        ({ key }) => key === selectedCellSet,
-      )?.children?.length;
-
-      if (numLegendItems <= MAX_LEGEND_ITEMS) return;
-
-      const modifiedConfig = _.merge(plotConfig, {
-        legend: {
-          enabled: false,
-          showAlert: true,
-        },
-      });
-
-      savePlotConfig(experimentId, plotUuid, modifiedConfig);
-
-      return modifiedConfig;
-    };
-
+    const beforeLoadConfigHook = generateLegendAlertHook(hierarchy, 'selectedCellSet');
     dispatch(loadPlotConfig(experimentId, plotUuid, plotType, beforeLoadConfigHook));
   }, [cellSets.accessible]);
 
@@ -253,7 +238,9 @@ const HeatmapPlot = ({ experimentId }) => {
     if (vegaSpec) {
       return (
         <Space direction='vertical'>
-          { config.legend.showAlert && <PlotLegendAlert /> }
+          {config.legend.showAlert
+          && numLegendItems > MAX_LEGEND_ITEMS
+          && <PlotLegendAlert />}
           <center>
             <Vega spec={vegaSpec} renderer='webgl' />
           </center>
