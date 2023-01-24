@@ -64,8 +64,6 @@ const cellSetsToolFactory = createTestComponentFactory(CellSetsTool, defaultProp
 
 let storeState;
 
-const flushPromises = () => new Promise(setImmediate);
-
 describe('CellSetsTool', () => {
   beforeEach(async () => {
     enableFetchMocks();
@@ -421,7 +419,7 @@ describe('CellSetsTool', () => {
     expect(actualComplement).toEqual(expectedComplement);
   });
 
-  fit('Scratchpad cluster deletion works ', async () => {
+  it('Scratchpad cluster deletion works ', async () => {
     await act(async () => {
       render(
         <Provider store={storeState}>
@@ -435,12 +433,18 @@ describe('CellSetsTool', () => {
       storeState.dispatch(createCellSet(experimentId, 'New Cluster', '#3957ff', new Set([1, 2, 3, 4, 5])));
     });
 
+    let cellCetsGroups = screen.getAllByRole('img', { name: 'down' });
+
     // expand custom cell sets tree
-    const customCellSetsGroup2 = screen.getAllByRole('img', { name: 'down' })[1];
-    userEvent.click(customCellSetsGroup2);
+    userEvent.click(cellCetsGroups[1]);
 
     screen.getByText('New Cluster');
-    // const newClusterKey = getClusterByName('New Cluster');
+    const newClusterKey = getClusterByName('New Cluster');
+
+    expect(cellCetsGroups.length).toEqual(4);
+
+    let isInRedux = Object.keys(storeState.getState().cellSets.properties).includes(newClusterKey[0]);
+    expect(isInRedux).toBe(true);
 
     // There should be a delete button for the scratchpad cluster.
     // const deleteButton = screen.getByLabelText(/Delete/);
@@ -459,15 +463,15 @@ describe('CellSetsTool', () => {
       );
     });
 
-    // // expand custom cell sets tree
-    // const customCellSetsGroup3 = screen.getAllByRole('img', { name: 'down' })[1];
-    // userEvent.click(customCellSetsGroup3);
-    flushPromises();
-    // await act(async () => {
-    //   screen.debug(undefined, Infinity);
-    // });
+    // get all the cell set groups
+    cellCetsGroups = screen.getAllByRole('img', { name: 'down' });
 
-    await waitFor(() => expect(screen.queryByText('New Cluster')).toBeNull());
+    await waitFor(() => {
+      expect(cellCetsGroups.length).toEqual(3);
+
+      isInRedux = Object.keys(storeState.getState().cellSets.properties).includes(newClusterKey[0]);
+      expect(isInRedux).toBe(false);
+    });
   });
 
   it('calculates filtered cell indices correctly', async () => {
