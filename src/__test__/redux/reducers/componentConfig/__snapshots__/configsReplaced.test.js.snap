@@ -205,6 +205,7 @@ Object {
         "colour": "#000000",
         "enabled": false,
         "position": "top",
+        "showAlert": false,
       },
       "marker": Object {
         "opacity": 5,
@@ -279,6 +280,7 @@ Object {
         "colour": "#000000",
         "enabled": false,
         "position": "top",
+        "showAlert": false,
       },
       "marker": Object {
         "opacity": 5,
@@ -355,6 +357,7 @@ Object {
         "colour": "#000000",
         "enabled": true,
         "position": "top",
+        "showAlert": false,
       },
       "marker": Object {
         "opacity": 5,
@@ -424,6 +427,7 @@ Object {
         "enabled": true,
         "offset": 40,
         "position": "top",
+        "showAlert": false,
         "title": "Cell Set",
       },
       "marker": Object {
@@ -513,6 +517,7 @@ Object {
         "colour": "#000000",
         "enabled": true,
         "position": "top",
+        "showAlert": false,
       },
       "marker": Object {
         "opacity": 5,
