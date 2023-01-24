@@ -8,6 +8,7 @@ import {
   Skeleton,
   Radio,
   Alert,
+  Space,
 } from 'antd';
 import Link from 'next/link';
 
@@ -17,15 +18,17 @@ import PlatformError from 'components/PlatformError';
 import FrequencyPlot from 'components/plots/FrequencyPlot';
 import ExportAsCSV from 'components/plots/ExportAsCSV';
 
-import { getCellSets, getCellSetsHierarchyByKeys } from 'redux/selectors';
+import { getCellSets, getCellSetsHierarchyByKeys, getCellSetsHierarchy } from 'redux/selectors';
 import SelectCellSets from 'components/plots/styling/frequency/SelectCellSets';
 
-import { updatePlotConfig, loadPlotConfig } from 'redux/actions/componentConfig';
+import { updatePlotConfig, loadPlotConfig, savePlotConfig } from 'redux/actions/componentConfig';
 import loadCellSets from 'redux/actions/cellSets/loadCellSets';
 
 import plotCsvFilename from 'utils/fileNames';
 import { plotNames } from 'utils/constants';
 import PlotContainer from 'components/plots/PlotContainer';
+import PlotLegendAlert, { MAX_LEGEND_ITEMS } from 'components/plots/helpers/PlotLegendAlert';
+import _ from 'lodash';
 
 const { Panel } = Collapse;
 
@@ -37,6 +40,7 @@ const FrequencyPlotPage = ({ experimentId }) => {
   const dispatch = useDispatch();
   const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
   const cellSets = useSelector(getCellSets());
+  const hierarchy = useSelector(getCellSetsHierarchy());
 
   const [cellSetClusters] = useSelector(
     getCellSetsHierarchyByKeys([config?.proportionGrouping]),
@@ -48,9 +52,37 @@ const FrequencyPlotPage = ({ experimentId }) => {
   const [csvFilename, setCsvFilename] = useState('');
 
   useEffect(() => {
-    if (!config) dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
     dispatch(loadCellSets(experimentId));
   }, []);
+
+  useEffect(() => {
+    if (config) return;
+
+    const beforeLoadConfigHook = (plotConfig) => {
+      const { proportionGrouping } = plotConfig;
+
+      const numLegendItems = hierarchy.find(
+        ({ key }) => key === proportionGrouping,
+      )?.children?.length;
+
+      console.log('*** numLegendItems', numLegendItems);
+
+      if (numLegendItems <= MAX_LEGEND_ITEMS) return;
+
+      const modifiedConfig = _.merge(plotConfig, {
+        legend: {
+          enabled: false,
+          showAlert: true,
+        },
+      });
+
+      savePlotConfig(experimentId, plotUuid, modifiedConfig);
+
+      return modifiedConfig;
+    };
+
+    dispatch(loadPlotConfig(experimentId, plotUuid, plotType, beforeLoadConfigHook));
+  }, [cellSets.accessible]);
 
   const plotStylingConfig = [
     {
@@ -170,13 +202,16 @@ const FrequencyPlotPage = ({ experimentId }) => {
     }
 
     return (
-      <center>
-        <FrequencyPlot
-          experimentId={experimentId}
-          config={config}
-          formatCSVData={formatCSVData}
-        />
-      </center>
+      <Space direction='vertical'>
+        { config?.legend?.showAlert && <PlotLegendAlert /> }
+        <center>
+          <FrequencyPlot
+            experimentId={experimentId}
+            config={config}
+            formatCSVData={formatCSVData}
+          />
+        </center>
+      </Space>
     );
   };
 
