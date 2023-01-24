@@ -102,6 +102,7 @@ const SamplesTable = forwardRef((props, ref) => {
         key: fileNameWithoutExtension,
         dataIndex: fileNameWithoutExtension,
         width: '20%',
+        onCell: () => ({ style: { margin: '0px', padding: '0px' } }),
         render: (tableCellData) => {
           console.log('tableCellDataDebug');
           console.log(tableCellData);

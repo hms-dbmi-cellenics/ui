@@ -21,12 +21,17 @@ const { Text } = Typography;
 
 const UploadCellStyle = styled.div`
   whiteSpace: 'nowrap';
-  height: '35px';
+  height: '45px';
   minWidth: '90px';
-  display: 'flex';
-  justifyContent: 'center';
-  alignItems: 'center';
 `;
+// const UploadCellStyle = styled.div`
+//   whiteSpace: 'nowrap';
+//   height: '45px';
+//   minWidth: '90px';
+//   display: 'flex';
+//   justifyContent: 'center';
+//   alignItems: 'center';
+// `;
 
 const UploadCell = (props) => {
   const { columnId, sampleUuid } = props;
@@ -64,12 +69,21 @@ const UploadCell = (props) => {
         <UploadCellStyle
           className='hoverSelectCursor'
         >
-          <Space
+          <div
             onClick={showDetails}
             onKeyDown={showDetails}
+            style={{
+              height: '45px',
+              padding: '0px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              verticalAlign: 'middle',
+              flexDirection: 'column',
+            }}
           >
             <Text type='success'>{messageForStatus(status)}</Text>
-          </Space>
+          </div>
         </UploadCellStyle>
       );
     }
@@ -84,10 +98,20 @@ const UploadCell = (props) => {
     ) {
       return (
         <UploadCellStyle>
-          <Space direction='vertical' size={[1, 1]}>
+          <div
+            style={{
+              height: '100%',
+              padding: '0px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              verticalAlign: 'middle',
+              flexDirection: 'column',
+            }}
+          >
             <Text type='warning'>{`${messageForStatus(status)}`}</Text>
-            {progress ? (<Progress percent={progress} size='small' />) : <div />}
-          </Space>
+            {progress ? (<Progress style={{ marginLeft: '10%', width: '50%' }} percent={progress} size='small' />) : <div />}
+          </div>
         </UploadCellStyle>
       );
     }
@@ -99,9 +123,19 @@ const UploadCell = (props) => {
           onClick={showDetails}
           onKeyDown={showDetails}
         >
-          <Space>
+          <div
+            style={{
+              padding: '0px',
+              height: '25px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              verticalAlign: 'middle',
+              flexDirection: 'column',
+            }}
+          >
             <Text type='danger'>{messageForStatus(status)}</Text>
-          </Space>
+          </div>
         </UploadCellStyle>
       );
     }
