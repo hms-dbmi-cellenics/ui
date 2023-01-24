@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
 import {
-  Row, Col, PageHeader, Radio, Collapse, Empty, Alert,
+  Row, Col, PageHeader, Radio, Collapse, Empty, Alert, Space,
 } from 'antd';
 import SelectData from 'components/plots/styling/embedding-continuous/SelectData';
 
@@ -24,6 +24,8 @@ import { generateDataProcessingPlotUuid } from 'utils/generateCustomPlotUuid';
 import Loader from 'components/Loader';
 import { getCellSets } from 'redux/selectors';
 import CalculationConfig from 'components/data-processing/ConfigureEmbedding/CalculationConfig';
+import generateLegendAlertHook from 'components/plots/helpers/generateLegendAlertHook';
+import PlotLegendAlert, { MAX_LEGEND_ITEMS } from 'components/plots/helpers/PlotLegendAlert';
 
 const { Panel } = Collapse;
 
@@ -35,6 +37,9 @@ const ConfigureEmbedding = (props) => {
   const cellMeta = useSelector((state) => state.cellMeta);
   const [selectedPlot, setSelectedPlot] = useState('cellCluster');
 
+  const embeddingPreviewByCellSetsPlotUuid = generateDataProcessingPlotUuid(null, filterName, 0);
+  const embeddingPreviewBySamplePlotUuid = generateDataProcessingPlotUuid(null, filterName, 1);
+
   const dispatch = useDispatch();
   const debounceSave = useCallback(
     _.debounce((plotUuid) => dispatch(savePlotConfig(experimentId, plotUuid)), 2000), [],
@@ -42,10 +47,14 @@ const ConfigureEmbedding = (props) => {
 
   const continuousEmbeddingPlots = ['mitochondrialContent', 'doubletScores', 'numOfGenes', 'numOfUmis'];
 
+  const { hierarchy } = cellSets;
+  const numSamples = hierarchy.find(({ key }) => key === 'sample').children.length;
+  const numCellSets = hierarchy.find(({ key }) => key === 'louvain').children.length;
+
   useEffect(() => {
     continuousEmbeddingPlots.forEach((dataName) => {
       if (cellMeta[dataName].loading && !cellMeta[dataName].error) {
-        dispatch(loadCellMeta(experimentId, dataName));
+        if (embeddingPreviewByCellSetsPlotUuid) dispatch(loadCellMeta(experimentId, dataName));
       }
     });
   }, []);
@@ -53,36 +62,42 @@ const ConfigureEmbedding = (props) => {
   const plots = {
     cellCluster: {
       title: 'Cell sets',
-      plotUuid: generateDataProcessingPlotUuid(null, filterName, 0),
+      plotUuid: embeddingPreviewByCellSetsPlotUuid,
       plotType: 'embeddingPreviewByCellSets',
       plot: (config, actions) => (
-        <CategoricalEmbeddingPlot
-          experimentId={experimentId}
-          config={config}
-          actions={actions}
-          onUpdate={updatePlotWithChanges}
-        />
+        <Space direction='vertical'>
+          {config?.legend?.showAlert && numCellSets > MAX_LEGEND_ITEMS && <PlotLegendAlert />}
+          <CategoricalEmbeddingPlot
+            experimentId={experimentId}
+            config={config}
+            actions={actions}
+            onUpdate={updatePlotWithChanges}
+          />
+        </Space>
       )
       ,
     },
     sample: {
       title: 'Samples',
-      plotUuid: generateDataProcessingPlotUuid(null, filterName, 1),
+      plotUuid: embeddingPreviewBySamplePlotUuid,
       plotType: 'embeddingPreviewBySample',
       plot: (config, actions) => (
-        <CategoricalEmbeddingPlot
-          experimentId={experimentId}
-          config={{
-            ...config,
-            legend: {
-              ...config.legend,
-              title: 'Sample Name',
-            },
-            selectedCellSet: 'sample',
-          }}
-          actions={actions}
-          onUpdate={updatePlotWithChanges}
-        />
+        <Space direction='vertical'>
+          {config?.legend?.showAlert && numSamples > MAX_LEGEND_ITEMS && <PlotLegendAlert />}
+          <CategoricalEmbeddingPlot
+            experimentId={experimentId}
+            config={{
+              ...config,
+              legend: {
+                ...config.legend,
+                title: 'Sample Name',
+              },
+              selectedCellSet: 'sample',
+            }}
+            actions={actions}
+            onUpdate={updatePlotWithChanges}
+          />
+        </Space>
       ),
     },
     mitochondrialContent: {
@@ -255,11 +270,22 @@ const ConfigureEmbedding = (props) => {
 
   useEffect(() => {
     Object.values(plots).forEach((obj) => {
-      if (!plotConfigs[obj.plotUuid]) {
-        dispatch(loadPlotConfig(experimentId, obj.plotUuid, obj.plotType));
+      const { plotUuid, plotType } = obj;
+
+      if (plotConfigs[plotUuid]) return;
+
+      let beforeLoadConfigHook = null;
+      if (plotUuid === embeddingPreviewByCellSetsPlotUuid) {
+        beforeLoadConfigHook = generateLegendAlertHook(hierarchy, 'louvain', false);
       }
+
+      if (plotUuid === embeddingPreviewBySamplePlotUuid) {
+        beforeLoadConfigHook = generateLegendAlertHook(hierarchy, 'sample', false);
+      }
+
+      if (plotUuid) dispatch(loadPlotConfig(experimentId, plotUuid, plotType, beforeLoadConfigHook));
     });
-  }, []);
+  }, [cellSets.accessible]);
 
   useEffect(() => {
     // if we change a plot and the config is not saved yet
@@ -341,7 +367,7 @@ const ConfigureEmbedding = (props) => {
           {renderPlot()}
         </Col>
 
-        <Col flex='1 0px'>
+        <Col flex='1 0px' style={{ minWidth: '300px' }}>
           <Collapse defaultActiveKey={['plot-selector']}>
             <Panel header='Plot view' key='plot-selector'>
               <Radio.Group onChange={(e) => setSelectedPlot(e.target.value)} value={selectedPlot}>
@@ -356,7 +382,7 @@ const ConfigureEmbedding = (props) => {
 
           <CalculationConfig experimentId={experimentId} onConfigChange={onConfigChange} />
           <Collapse>
-            <Panel header='Plot options' key='styling'>
+            <Panel header='Plot styling' key='styling'>
               <div style={{ height: 8 }} />
               <PlotStyling
                 formConfig={plotStylingControlsConfig}
