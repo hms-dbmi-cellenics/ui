@@ -4,7 +4,7 @@ import React, { useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import {
-  Space, Typography, Button,
+  Space, Typography, Button, Dropdown, Menu,
 } from 'antd';
 import {
   cloneExperiment, updateExperiment, loadExperiments, setActiveExperiment,
@@ -16,6 +16,7 @@ import { layout } from 'utils/constants';
 
 import SamplesTable from 'components/data-management/SamplesTable';
 import ProjectMenu from 'components/data-management/ProjectMenu';
+import AddMetadataButton from './AddMetadataButton';
 
 const { Text, Title } = Typography;
 
@@ -57,12 +58,9 @@ const ProjectDetails = ({ width, height }) => {
               <Button onClick={() => clone()}>
                 Copy
               </Button>
-              <Button
-                disabled={activeExperiment.sampleIds?.length === 0}
-                onClick={() => samplesTableRef.current.createMetadataColumn()}
-              >
-                Add metadata
-              </Button>
+
+              <AddMetadataButton samplesTableRef={samplesTableRef} />
+
               <ProjectMenu />
             </Space>
           </div>
