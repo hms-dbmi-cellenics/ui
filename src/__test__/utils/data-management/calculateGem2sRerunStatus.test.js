@@ -3,8 +3,6 @@ import calculateGem2sRerunStatus from 'utils/data-management/calculateGem2sRerun
 import pipelineStatusValues from 'utils/pipelineStatusValues';
 
 describe('calculateGem2sRerunStatus', () => {
-  const oldParamsHash = 'mockParamsHash';
-
   const successfulGem2sBackendStatus = {
     startDate: '2023-01-13T01:01:10.574Z',
     stopDate: '2023-01-13T01:02:16.435Z',
@@ -19,7 +17,7 @@ describe('calculateGem2sRerunStatus', () => {
       'PrepareExperiment',
       'UploadToAWS',
     ],
-    paramsHash: oldParamsHash,
+    shouldRerun: false,
   };
 
   const experiment = {
