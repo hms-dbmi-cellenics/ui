@@ -24,26 +24,11 @@ const UploadCellStyle = styled.div`
   height: '45px';
   minWidth: '90px';
 `;
-// const UploadCellStyle = styled.div`
-//   whiteSpace: 'nowrap';
-//   height: '45px';
-//   minWidth: '90px';
-//   display: 'flex';
-//   justifyContent: 'center';
-//   alignItems: 'center';
-// `;
 
 const UploadCell = (props) => {
   const { columnId, sampleUuid } = props;
 
-  console.log('propsDebug');
-  console.log(props);
-  console.log('sampleUuidDebug');
-  console.log(sampleUuid);
-  console.log('columnIdDebug');
-  console.log(columnId);
-
-  const file = useSelector((state) => state.samples[sampleUuid].files[columnId]);
+  const file = useSelector((state) => state.samples[sampleUuid]?.files[columnId]);
 
   const [uploadDetailsModalVisible, setUploadDetailsModalVisible] = useState(false);
   const [uploadDetailsModalData, setUploadDetailsModalData] = useState(false);
@@ -52,7 +37,7 @@ const UploadCell = (props) => {
     setUploadDetailsModalData(file);
   }, [file, file?.upload]);
 
-  const { progress = null, status = null } = uploadDetailsModalData?.upload ?? {};
+  const { progress = null, status = null } = uploadDetailsModalData?.upload ?? { status: UploadStatus.FILE_NOT_FOUND };
 
   const showDetails = () => {
     setUploadDetailsModalData({
@@ -87,8 +72,6 @@ const UploadCell = (props) => {
         </UploadCellStyle>
       );
     }
-
-    // console.log('IMRERENDERING');
 
     if (
       [

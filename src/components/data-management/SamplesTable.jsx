@@ -46,11 +46,6 @@ const SamplesTable = forwardRef((props, ref) => {
 
   const [fullTableData, setFullTableData] = useState([]);
 
-  console.log('fullTableDataDebug');
-  console.log(fullTableData);
-
-  const lastListInfoRef = useRef({ start: -1, renderLen: -1 });
-
   const samples = useSelector((state) => state.samples);
 
   const samplesLoading = useSelector((state) => state.samples.meta.loading);
@@ -103,17 +98,13 @@ const SamplesTable = forwardRef((props, ref) => {
         dataIndex: fileNameWithoutExtension,
         width: '20%',
         onCell: () => ({ style: { margin: '0px', padding: '0px' } }),
-        render: (tableCellData) => {
-          console.log('tableCellDataDebug');
-          console.log(tableCellData);
-          return (
-            tableCellData && (
-              <UploadCell
-                columnId={fileName.key}
-                sampleUuid={tableCellData.sampleUuid}
-              />
-            ));
-        },
+        render: (tableCellData) => (
+          tableCellData && (
+            <UploadCell
+              columnId={fileName.key}
+              sampleUuid={tableCellData.sampleUuid}
+            />
+          )),
       });
     }) || [],
 
@@ -252,29 +243,11 @@ const SamplesTable = forwardRef((props, ref) => {
   const generateDataForItem = useCallback((sampleUuid) => {
     if (!samples[sampleUuid]) return {};
 
-    // fileUploadSpecifications[selectedTech]?.requiredFiles?.map((fileName, indx) => {
-    // const fileNameWithoutExtension = fileName.key.split('.')[0];
-
     const sampleFileNames = fileUploadSpecifications[selectedTech]?.requiredFiles
       .map((fileName) => ([
         fileName.key.split('.')[0],
         { sampleUuid },
       ]));
-
-    // const { files: sampleFiles, fileNames: sampleFileNames } = samples[sampleUuid];
-
-    // const fileData = {};
-    // sampleFileNames.forEach((key) => {
-    //   const displayedFileInTable = key.split('.')[0];
-
-    //   const currentFile = sampleFiles[key] ?? { uploa
-    // d: { status: UploadStatus.FILE_NOT_FOUND } };
-    //   const currentFileData = { sampleUuid, file: currentFile };
-    //   fileData[displayedFileInTable] = currentFileData;
-    // });
-
-    console.log('sampleFileNamesDebug');
-    console.log(sampleFileNames);
 
     return {
       key: sampleUuid,
