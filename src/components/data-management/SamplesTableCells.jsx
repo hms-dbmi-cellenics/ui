@@ -87,10 +87,7 @@ const UploadCell = (props) => {
       return (
         <div
           className='hoverSelectCursor'
-          style={{
-            ...UploadDivStyle,
-            flexDirection: 'column',
-          }}
+          style={{ ...UploadDivStyle, flexDirection: 'column' }}
           onClick={showDetails}
           onKeyDown={showDetails}
         >
