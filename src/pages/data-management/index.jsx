@@ -112,21 +112,6 @@ const DataManagementPage = () => {
 
   return (
     <>
-      {/*
-       Do we need this loader? It looks kind of ugly and
-       I don't really see the benefit from having it
-       */}
-      {/* {experimentsSaving || samplesSaving ? (
-        <center>
-          <Space direction='vertical'>
-            <ClipLoader
-              size={50}
-              color='#8f0b10'
-            />
-            Loading...
-          </Space>
-        </center>
-      ) : (<></>)} */}
       <Header title='Data Management' />
       {newProjectModalVisible ? (
         <NewProjectModal
