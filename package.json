@@ -125,7 +125,7 @@
     "vega": "^5.21.0",
     "vega-lite": "^4.13.0",
     "vega-webgl-renderer": "^1.0.0-beta.2",
-    "virtuallist-antd": "^0.7.5-beta.2",
+    "virtualizedtableforantd4": "^1.2.2",
     "vitessce": "github:hms-dbmi-cellenics/vitessce",
     "webpack": "^4.43.0",
     "webpack-bundle-analyzer": "^3.3.2"
