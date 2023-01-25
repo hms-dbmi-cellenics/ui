@@ -98,13 +98,12 @@ const SamplesTable = forwardRef((props, ref) => {
         dataIndex: fileNameWithoutExtension,
         width: '20%',
         onCell: () => ({ style: { margin: '0px', padding: '0px' } }),
-        render: (tableCellData) => (
-          tableCellData && (
-            <UploadCell
-              columnId={fileName.key}
-              sampleUuid={tableCellData.sampleUuid}
-            />
-          )),
+        render: (tableCellData) => tableCellData && (
+          <UploadCell
+            columnId={fileName.key}
+            sampleUuid={tableCellData.sampleUuid}
+          />
+        ),
       });
     }) || [],
 
@@ -241,8 +240,6 @@ const SamplesTable = forwardRef((props, ref) => {
   };
 
   const generateDataForItem = useCallback((sampleUuid) => {
-    if (!samples[sampleUuid]) return {};
-
     const sampleFileNames = fileUploadSpecifications[selectedTech]?.requiredFiles
       .map((fileName) => ([
         fileName.key.split('.')[0],
@@ -257,7 +254,7 @@ const SamplesTable = forwardRef((props, ref) => {
       // ...fileData,
       // ...samples[sampleUuid]?.metadata,
     };
-  }, [activeExperiment?.sampleIds, selectedTech]);
+  }, [activeExperiment?.sampleIds, selectedTech, samples]);
 
   const noDataComponent = (
     <ExampleExperimentsSpace
@@ -337,22 +334,25 @@ const SamplesTable = forwardRef((props, ref) => {
       setFullTableData([]);
     }
 
-    const alreadyLoaded = _.isEqual(
+    const alreadyInTable = () => _.isEqual(
       fullTableData.map(({ key }) => key),
       activeExperiment.sampleIds,
     );
 
-    if (alreadyLoaded) return;
+    const anyNotLoadedYet = () => activeExperiment.sampleIds.some((sampleId) => !samples[sampleId]);
+
+    if (alreadyInTable() || anyNotLoadedYet()) return;
 
     const newData = activeExperiment.sampleIds.map((sampleUuid) => generateDataForItem(sampleUuid));
 
-    console.log('newDataDEBUG');
+    console.log('newDataDebug');
     console.log(newData);
 
     setFullTableData(newData);
   }, [activeExperiment?.sampleIds, samples]);
 
   const tableHeight = 600;
+  // const tableHeight = 'max-content';
 
   const vComponents = useMemo(() =>
     // 使用VList 即可有虚拟列表的效果
