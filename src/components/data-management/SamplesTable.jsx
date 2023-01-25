@@ -52,10 +52,10 @@ const SamplesTable = forwardRef((props, ref) => {
 
   const samplesLoading = useSelector((state) => state.samples.meta.loading);
   const activeExperimentId = useSelector((state) => state.experiments.meta.activeExperimentId);
-
   const samplesValidating = useSelector(
     (state) => state.samples.meta.validating.includes(activeExperimentId),
   );
+
   const activeExperiment = useSelector((state) => state.experiments[activeExperimentId]);
 
   const selectedTech = useSelector(
@@ -63,9 +63,10 @@ const SamplesTable = forwardRef((props, ref) => {
     _.isEqual,
   );
 
-  // const selectedTech = samples[activeExperiment?.sampleIds[0]]?.type;
   const [sampleNames, setSampleNames] = useState(new Set());
   const DragHandle = sortableHandle(() => <MenuOutlined style={{ cursor: 'grab', color: '#999' }} />);
+
+  const [samplesLoaded, setSamplesLoaded] = useState(false);
 
   const initialTableColumns = useMemo(() => ([
     {
@@ -91,8 +92,6 @@ const SamplesTable = forwardRef((props, ref) => {
     ...fileUploadSpecifications[selectedTech]?.requiredFiles?.map((fileName, indx) => {
       const fileNameWithoutExtension = fileName.key.split('.')[0];
 
-      console.log('fileNameWithoutExtensionDebug');
-
       return ({
         index: 2 + indx,
         title: <center>{fileName.displayedName}</center>,
@@ -114,17 +113,8 @@ const SamplesTable = forwardRef((props, ref) => {
   const [tableColumns, setTableColumns] = useState(initialTableColumns);
 
   useEffect(() => {
-    const alreadyLoaded = _.isEqual(
-      fullTableData.map(({ key }) => key),
-      activeExperiment.sampleIds,
-    );
-
-    if (alreadyLoaded) return;
-
-    const samplesLoaded = activeExperiment?.sampleIds.every((sampleId) => samples[sampleId]);
-    if (activeExperiment?.sampleIds.length > 0 && samplesLoaded) {
+    if (activeExperiment?.sampleIds.length > 0 || !samplesLoaded) {
       // if there are samples - build the table columns
-
       const sanitizedSampleNames = new Set(
         activeExperiment.sampleIds.map((id) => samples[id]?.name.trim()),
       );
@@ -141,8 +131,10 @@ const SamplesTable = forwardRef((props, ref) => {
   }, [samples, activeExperiment?.sampleIds]);
 
   useConditionalEffect(() => {
+    setSamplesLoaded(false);
+
     dispatch(loadSamples(activeExperimentId));
-  }, [activeExperimentId], { lazy: true });
+  }, [activeExperimentId]);
 
   const deleteMetadataColumn = (name) => {
     dispatch(deleteMetadataTrack(name, activeExperimentId));
@@ -326,11 +318,6 @@ const SamplesTable = forwardRef((props, ref) => {
     </>
   );
 
-  // const onReachEnd = (...params) => {
-  //   console.log('paramsDebug');
-  //   console.log(params);
-  // };
-
   useEffect(() => {
     if (!activeExperiment?.sampleIds.length) {
       setFullTableData([]);
@@ -347,57 +334,53 @@ const SamplesTable = forwardRef((props, ref) => {
 
     const newData = activeExperiment.sampleIds.map((sampleUuid) => generateDataForItem(sampleUuid));
 
-    console.log('newDataDebug');
-    console.log(newData);
-
     setFullTableData(newData);
   }, [activeExperiment?.sampleIds, samples]);
 
-  const [height, setHeight] = useState(null);
+  const [height, setHeight] = useState(0);
 
-  const onResize = (newHeight) => {
-    setHeight(newHeight);
-  };
+  useEffect(() => {
+    const newSamplesLoaded = activeExperiment?.sampleIds.every((sampleId) => samples[sampleId]);
+
+    if (newSamplesLoaded === true && samplesLoaded === false) {
+      setSamplesLoaded(true);
+    }
+  }, [activeExperiment, samples]);
 
   const vComponents = useMemo(() => VList({
     height,
     resetTopWhenDataChange: false,
-  }), [height]);
+  }), [height, samplesLoaded]);
 
-  // const tableHeight = 600;
   const renderSamplesTable = () => (
-    <Row>
-      <Col>
-        <ReactResizeDetector
-          handleHeight
-          onResize={onResize}
-          refreshMode='throttle'
-          refreshRate={500}
-        >
-          <Table
-            id='samples-table'
-            size='large'
-            scroll={{
-              x: 'max-content',
-              y: height,
-            }}
-            bordered
-            columns={tableColumns}
-            dataSource={fullTableData}
-            sticky
-            pagination={false}
-            locale={{ emptyText: noDataComponent }}
-            components={vComponents}
-          // components={{
-          //   body: {
-          //     wrapper: DragContainer,
-          //     row: DraggableRow,
-          //   },
-          // }}
-          />
-        </ReactResizeDetector>
-      </Col>
-    </Row>
+    <ReactResizeDetector
+      handleHeight
+      onResize={setHeight}
+      refreshMode='throttle'
+      refreshRate={500}
+    >
+      <Table
+        id='samples-table'
+        size='large'
+        scroll={{
+          x: 'max-content',
+          y: height,
+        }}
+        bordered
+        columns={tableColumns}
+        dataSource={fullTableData}
+        sticky
+        pagination={false}
+        locale={{ emptyText: noDataComponent }}
+        components={vComponents}
+      // components={{
+      //   body: {
+      //     wrapper: DragContainer,
+      //     row: DraggableRow,
+      //   },
+      // }}
+      />
+    </ReactResizeDetector>
   );
 
   return (
