@@ -45,7 +45,7 @@ const UploadCell = (props) => {
     setUploadDetailsModalData({
       sampleUuid,
       fileCategory: columnId,
-      uploadDetailsModalData,
+      ...uploadDetailsModalData,
     });
     setUploadDetailsModalVisible(true);
   };
@@ -123,7 +123,7 @@ const UploadCell = (props) => {
         {render()}
       </center>
       <UploadDetailsModal
-        uploadDetailsModalData={uploadDetailsModalData}
+        file={uploadDetailsModalData}
         visible={uploadDetailsModalVisible}
         onCancel={() => setUploadDetailsModalVisible(false)}
       />
