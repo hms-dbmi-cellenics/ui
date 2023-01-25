@@ -37,7 +37,8 @@ const UploadCell = (props) => {
     setUploadDetailsModalData(file);
   }, [file, file?.upload]);
 
-  const { progress = null, status = null } = uploadDetailsModalData?.upload ?? { status: UploadStatus.FILE_NOT_FOUND };
+  const { progress = null, status = null } = uploadDetailsModalData?.upload
+    ?? { status: UploadStatus.FILE_NOT_FOUND };
 
   const showDetails = () => {
     setUploadDetailsModalData({
