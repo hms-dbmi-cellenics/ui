@@ -14,6 +14,8 @@ import {
 } from '@ant-design/icons';
 import { sortableHandle, sortableContainer, sortableElement } from 'react-sortable-hoc';
 
+import ReactResizeDetector from 'react-resize-detector';
+
 import ExampleExperimentsSpace from 'components/data-management/ExampleExperimentsSpace';
 import MetadataPopover from 'components/data-management/MetadataPopover';
 import MetadataColumnTitle from 'components/data-management/MetadataColumn';
@@ -351,42 +353,49 @@ const SamplesTable = forwardRef((props, ref) => {
     setFullTableData(newData);
   }, [activeExperiment?.sampleIds, samples]);
 
-  const tableHeight = 600;
-  // const tableHeight = 'max-content';
+  const [height, setHeight] = useState(null);
 
-  const vComponents = useMemo(() =>
-    // 使用VList 即可有虚拟列表的效果
-    VList({
-      height: tableHeight, // 此值和scrollY值相同. 必传. (required).  same value for scrolly
-      resetTopWhenDataChange: false,
-    }), []);
-  // onListRender: onListRenderHandler,
-  // }), [onListRenderHandler]);
+  const onResize = (newHeight) => {
+    setHeight(newHeight);
+  };
 
+  const vComponents = useMemo(() => VList({
+    height,
+    resetTopWhenDataChange: false,
+  }), [height]);
+
+  // const tableHeight = 600;
   const renderSamplesTable = () => (
     <Row>
       <Col>
-        <Table
-          id='samples-table'
-          size='large'
-          scroll={{
-            x: 'max-content',
-            y: tableHeight,
-          }}
-          bordered
-          columns={tableColumns}
-          dataSource={fullTableData}
-          sticky
-          pagination={false}
-          locale={{ emptyText: noDataComponent }}
-          components={vComponents}
-        // components={{
-        //   body: {
-        //     wrapper: DragContainer,
-        //     row: DraggableRow,
-        //   },
-        // }}
-        />
+        <ReactResizeDetector
+          handleHeight
+          onResize={onResize}
+          refreshMode='throttle'
+          refreshRate={500}
+        >
+          <Table
+            id='samples-table'
+            size='large'
+            scroll={{
+              x: 'max-content',
+              y: height,
+            }}
+            bordered
+            columns={tableColumns}
+            dataSource={fullTableData}
+            sticky
+            pagination={false}
+            locale={{ emptyText: noDataComponent }}
+            components={vComponents}
+          // components={{
+          //   body: {
+          //     wrapper: DragContainer,
+          //     row: DraggableRow,
+          //   },
+          // }}
+          />
+        </ReactResizeDetector>
       </Col>
     </Row>
   );
