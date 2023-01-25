@@ -84,7 +84,6 @@ const SamplesTable = forwardRef((props, ref) => {
       title: 'Sample',
       dataIndex: 'name',
       fixed: true,
-      minWidth: '40%',
       render: (text, record, indx) => (
         <SampleNameCell cellInfo={{ text, record, indx }} />
       ),
@@ -97,7 +96,6 @@ const SamplesTable = forwardRef((props, ref) => {
         title: <center>{fileName.displayedName}</center>,
         key: fileNameWithoutExtension,
         dataIndex: fileNameWithoutExtension,
-        width: '20%',
         onCell: () => ({ style: { margin: '0px', padding: '0px' } }),
         render: (tableCellData) => tableCellData && (
           <UploadCell
@@ -356,12 +354,11 @@ const SamplesTable = forwardRef((props, ref) => {
     <ReactResizeDetector
       handleHeight
       onResize={setHeight}
-      refreshMode='throttle'
+      refreshMode='debounce'
       refreshRate={500}
     >
       <Table
         id='samples-table'
-        size='large'
         scroll={{
           x: 'max-content',
           y: height,
