@@ -3,7 +3,7 @@ import _ from 'lodash';
 import React, {
   useEffect, useState, forwardRef, useImperativeHandle, useMemo, useCallback, useRef,
 } from 'react';
-import { VList } from 'virtuallist-antd';
+import { useVT } from 'virtualizedtableforantd4';
 
 import { useSelector, useDispatch } from 'react-redux';
 import {
@@ -346,70 +346,32 @@ const SamplesTable = forwardRef((props, ref) => {
     }
   }, [activeExperiment, samples]);
 
-  const vComponents = useMemo(() => VList({
-    height,
-    resetTopWhenDataChange: false,
-  }), [height, samplesLoaded]);
-
-  console.log('fullTableDataDebug');
-  console.log(fullTableData);
-  const biggestSampleName = useMemo(() => _.maxBy(fullTableData, 'name'), [fullTableData]);
-
-  const getSampleNameWidth = (text) => {
-    const fontFamily = window.getComputedStyle(document.body, null).getPropertyValue('font-family');
-    const font = 'bold 14pt -apple-system';
-
-    console.log('fontFamilyDebug');
-    console.log(fontFamily);
-
-    const canvas = getSampleNameWidth.canvas || (getSampleNameWidth.canvas = document.createElement('canvas'));
-    const context = canvas.getContext('2d');
-    context.font = font;
-    const metrics = context.measureText(text);
-
-    console.log('metricswidthDebug');
-    console.log(metrics.width);
-
-    return metrics.width + 100;
-  };
+  const [components, setComponents] = useVT(
+    () => ({ scroll: { y: height } }),
+    [samplesLoaded, height],
+  );
 
   const renderSamplesTable = () => (
     <ReactResizeDetector
+      // handleWidth
       handleHeight
-      onResize={setHeight}
-      refreshMode='debounce'
+      refreshMode='throttle'
       refreshRate={500}
+      onResize={setHeight}
     >
-      {({ width }) => (
-        <div style={{ width: Math.max(_.sumBy(tableColumns, 'width') + getSampleNameWidth(biggestSampleName), width) }}>
-          <Table
-            id='samples-table'
-            scroll={{
-              y: height,
-            }}
-            tableLayout='fixed'
-            bordered
-            columns={tableColumns}
-            dataSource={fullTableData}
-            sticky
-            pagination={false}
-            locale={{ emptyText: noDataComponent }}
-            components={vComponents}
-          // components={{
-          //   body: {
-          //     wrapper: DragContainer,
-          //     row: DraggableRow,
-          //   },
-          // }}
-          />
-        </div>
-      )}
+      <Table
+        scroll={{ y: height }} // It's important for using VT!!! DO NOT FORGET!!!
+        components={components}
+        columns={tableColumns}
+        dataSource={fullTableData}
+        pagination={false}
+      />
     </ReactResizeDetector>
   );
 
   return (
     <>
-      {samplesLoading || samplesValidating ? renderLoader() : renderSamplesTable()}
+      {!samplesLoaded || samplesLoading || samplesValidating ? renderLoader() : renderSamplesTable()}
     </>
   );
 });
