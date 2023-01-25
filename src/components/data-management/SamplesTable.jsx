@@ -74,7 +74,7 @@ const SamplesTable = forwardRef((props, ref) => {
       index: 0,
       key: 'sort',
       dataIndex: 'sort',
-      width: 30,
+      width: 50,
       render: () => <DragHandle />,
     },
     {
@@ -96,6 +96,7 @@ const SamplesTable = forwardRef((props, ref) => {
         title: <center>{fileName.displayedName}</center>,
         key: fileNameWithoutExtension,
         dataIndex: fileNameWithoutExtension,
+        width: 120,
         onCell: () => ({ style: { margin: '0px', padding: '0px' } }),
         render: (tableCellData) => tableCellData && (
           <UploadCell
@@ -350,6 +351,28 @@ const SamplesTable = forwardRef((props, ref) => {
     resetTopWhenDataChange: false,
   }), [height, samplesLoaded]);
 
+  console.log('fullTableDataDebug');
+  console.log(fullTableData);
+  const biggestSampleName = useMemo(() => _.maxBy(fullTableData, 'name'), [fullTableData]);
+
+  const getSampleNameWidth = (text) => {
+    const fontFamily = window.getComputedStyle(document.body, null).getPropertyValue('font-family');
+    const font = 'bold 14pt -apple-system';
+
+    console.log('fontFamilyDebug');
+    console.log(fontFamily);
+
+    const canvas = getSampleNameWidth.canvas || (getSampleNameWidth.canvas = document.createElement('canvas'));
+    const context = canvas.getContext('2d');
+    context.font = font;
+    const metrics = context.measureText(text);
+
+    console.log('metricswidthDebug');
+    console.log(metrics.width);
+
+    return metrics.width + 100;
+  };
+
   const renderSamplesTable = () => (
     <ReactResizeDetector
       handleHeight
@@ -357,26 +380,30 @@ const SamplesTable = forwardRef((props, ref) => {
       refreshMode='debounce'
       refreshRate={500}
     >
-      <Table
-        id='samples-table'
-        scroll={{
-          x: 'max-content',
-          y: height,
-        }}
-        bordered
-        columns={tableColumns}
-        dataSource={fullTableData}
-        sticky
-        pagination={false}
-        locale={{ emptyText: noDataComponent }}
-        components={vComponents}
-      // components={{
-      //   body: {
-      //     wrapper: DragContainer,
-      //     row: DraggableRow,
-      //   },
-      // }}
-      />
+      {({ width }) => (
+        <div style={{ width: Math.max(_.sumBy(tableColumns, 'width') + getSampleNameWidth(biggestSampleName), width) }}>
+          <Table
+            id='samples-table'
+            scroll={{
+              y: height,
+            }}
+            tableLayout='fixed'
+            bordered
+            columns={tableColumns}
+            dataSource={fullTableData}
+            sticky
+            pagination={false}
+            locale={{ emptyText: noDataComponent }}
+            components={vComponents}
+          // components={{
+          //   body: {
+          //     wrapper: DragContainer,
+          //     row: DraggableRow,
+          //   },
+          // }}
+          />
+        </div>
+      )}
     </ReactResizeDetector>
   );
 
