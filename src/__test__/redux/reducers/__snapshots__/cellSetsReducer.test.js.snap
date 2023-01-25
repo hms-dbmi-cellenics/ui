@@ -64,24 +64,20 @@ Array [
 `;
 
 exports[`cellSetsReducer Selected cells are maintained 1`] = `
-Object {
-  "fakeTab": Array [
-    "a",
-    "b",
-    "c",
-  ],
-}
+Array [
+  "a",
+  "b",
+  "c",
+]
 `;
 
 exports[`cellSetsReducer Selected cells are maintained 2`] = `
-Object {
-  "fakeTab": Array [
-    1,
-    2,
-    "c",
-    3,
-  ],
-}
+Array [
+  1,
+  2,
+  "c",
+  3,
+]
 `;
 
 exports[`cellSetsReducer Sets up store properly for loaded cell sets. 1`] = `
@@ -169,7 +165,7 @@ Object {
       "rootNode": true,
     },
   },
-  "selected": Object {},
+  "selected": Array [],
   "updatingClustering": false,
 }
 `;
