@@ -180,12 +180,13 @@ describe('ProjectDetails', () => {
     expect(screen.queryByText(experimentDescription)).toBeDefined();
   });
 
-  it('Has 5 buttons', () => {
+  it.only('Has 5 buttons', () => {
     render(
       <Provider store={mockStore(noDataState)}>
         <ProjectDetails width={width} height={height} />
       </Provider>,
     );
+    screen.debug(null, Infinity);
 
     expect(screen.getByText('Add samples')).toBeDefined();
     expect(screen.getByText('Add metadata')).toBeDefined();

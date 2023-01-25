@@ -25,9 +25,9 @@ import readFileToString from 'utils/upload/readFileToString';
 const { Text, Title, Paragraph } = Typography;
 
 const formatExample = [
-  ['sampleName1', 'metadata_key_1', 'metadata_value_1'],
-  ['sampleName1', 'metadata_key_2', 'metadata_value_2'],
-  ['sampleName2', 'metadata_key_2', 'metadata_value_3'],
+  ['sample_name_1', 'metadata_key_1', 'metadata_value_1'],
+  ['sample_name_1', 'metadata_key_2', 'metadata_value_2'],
+  ['sample_name_2', 'metadata_key_2', 'metadata_value_3'],
 ];
 
 const MetadataUploadModal = (props) => {
@@ -54,7 +54,7 @@ const MetadataUploadModal = (props) => {
 
     // this line of code is checking if the first line of the file has
     // exactly 3 values when it's split by multiple spaces or tabs
-    if (data.trim().split('\n')[0].trim().split(/\s+/).length !== 3) {
+    if (data.trim().split('\n')[0].trim().split('\t').length !== 3) {
       handleError('error', endUserMessages.ERROR_METADATA_WRONG_FORMAT);
       return;
     }
@@ -101,7 +101,7 @@ const MetadataUploadModal = (props) => {
             <span style={{ color: 'red', marginRight: '2em' }}>*</span>
           </Title>
           <Paragraph>
-            Upload a single file containing the metadata in tag-value tab-separated format (.tsv)
+            Upload a single file containing the metadata in key-value tab-separated format (.tsv)
             as follows:
           </Paragraph>
           <List

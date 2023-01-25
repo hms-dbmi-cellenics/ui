@@ -12,7 +12,8 @@ import {
   BlockOutlined, MergeCellsOutlined, SplitCellsOutlined,
 } from '@ant-design/icons';
 
-import SubsetCellSetsOperation from 'components/data-exploration/cell-sets-tool/SubsetCellSetsOperation';
+import SubsetCellSetsOperation from
+'components/data-exploration/cell-sets-tool/SubsetCellSetsOperation';
 import CellSetOperation from 'components/data-exploration/cell-sets-tool/CellSetOperation';
 import PlatformError from 'components/PlatformError';
 import HierarchicalTree from 'components/data-exploration/hierarchical-tree/HierarchicalTree';
@@ -28,7 +29,8 @@ import {
 } from 'redux/actions/cellSets';
 import { runSubsetExperiment } from 'redux/actions/pipeline';
 import { getCellSets } from 'redux/selectors';
-
+import { useAppRouter } from 'utils/AppRouteProvider';
+import { modules } from 'utils/constants';
 import { composeTree } from 'utils/cellSets';
 import {
   complement, intersection, union, unionByCellClass,
@@ -42,6 +44,7 @@ const CellSetsTool = (props) => {
   const { experimentId, width, height } = props;
 
   const dispatch = useDispatch();
+  const { navigateTo } = useAppRouter();
   const cellSets = useSelector(getCellSets());
 
   const {
@@ -126,8 +129,11 @@ const CellSetsTool = (props) => {
       operations = (
         <Space style={{ marginLeft: '0.5em' }}>
           <SubsetCellSetsOperation
-            onCreate={(name) => {
-              dispatch(runSubsetExperiment(experimentId, name, selected));
+            onCreate={async (name) => {
+              const newExperimentId = await dispatch(
+                runSubsetExperiment(experimentId, name, selected),
+              );
+              navigateTo(modules.DATA_PROCESSING, { experimentId: newExperimentId }, false, true);
             }}
           />
           <CellSetOperation

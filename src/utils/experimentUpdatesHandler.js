@@ -6,6 +6,8 @@ import pushNotificationMessage from 'utils/pushNotificationMessage';
 
 import { loadCellSets } from 'redux/actions/cellSets';
 import endUserMessages from 'utils/endUserMessages';
+import { loadSamples } from 'redux/actions/samples';
+import { reloadExperimentInfo } from 'redux/actions/experiments';
 
 const updateTypes = {
   QC: 'qc',
@@ -73,6 +75,13 @@ const onGEM2SUpdate = (update, dispatch, experimentId) => {
   const processingConfig = update?.item?.processingConfig;
   if (processingConfig) {
     dispatch(loadedProcessingConfig(experimentId, processingConfig, true));
+  }
+
+  // If we finished subsetSeurat, then we now know which samples survived the subset
+  // So load them
+  if (update?.taskName === 'subsetSeurat') {
+    dispatch(reloadExperimentInfo());
+    dispatch(loadSamples(experimentId));
   }
 };
 

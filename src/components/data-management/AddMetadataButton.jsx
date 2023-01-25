@@ -15,6 +15,7 @@ const AddMetadataButton = ({ samplesTableRef }) => {
   const { activeExperimentId } = experiments.meta;
   const activeExperiment = experiments[activeExperimentId];
   const [uploadModalVisible, setUploadModalVisible] = useState(false);
+  const parentExperimentId = activeExperiment?.parentExperimentId;
 
   const uploadFiles = (file) => {
     dispatch(uploadMetadataFile(activeExperimentId, file));
@@ -46,8 +47,10 @@ const AddMetadataButton = ({ samplesTableRef }) => {
         placement='bottomRight'
         disabled={activeExperiment.sampleIds?.length === 0}
       >
-        <Button>
-          Add Metadata
+        <Button
+          disabled={activeExperiment.sampleIds?.length === 0 || parentExperimentId}
+        >
+          Add metadata
         </Button>
       </Dropdown>
       {uploadModalVisible ? (
