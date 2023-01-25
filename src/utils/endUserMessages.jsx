@@ -48,7 +48,7 @@ export default {
       <b>Custom cell sets</b>
       &nbsp; in the &nbsp;
       <b>Cell sets and Metadata </b>
-      tab.
+      tile.
     </>),
   SUCCESS_CELL_SETS_RECLUSTERED: 'Cell sets have been reclustered. Your cell sets have changed.',
   NO_CLUSTERS: 'No custom cell sets available, to create more go to data-exploration.',
