@@ -96,7 +96,7 @@ const SamplesTable = forwardRef((props, ref) => {
         title: <center>{fileName.displayedName}</center>,
         key: fileNameWithoutExtension,
         dataIndex: fileNameWithoutExtension,
-        width: 120,
+        width: 170,
         onCell: () => ({ style: { margin: '0px', padding: '0px' } }),
         render: (tableCellData) => tableCellData && (
           <UploadCell
@@ -173,7 +173,6 @@ const SamplesTable = forwardRef((props, ref) => {
   };
 
   useImperativeHandle(ref, () => ({
-
     createMetadataColumn() {
       const key = temporaryMetadataKey(tableColumns);
       const previousTableColumns = tableColumns;
@@ -360,10 +359,11 @@ const SamplesTable = forwardRef((props, ref) => {
       onResize={setHeight}
     >
       <Table
-        scroll={{ y: height }} // It's important for using VT!!! DO NOT FORGET!!!
+        scroll={{ y: height, x: 'max-content' }} // It's important for using VT!!! DO NOT FORGET!!!
         components={components}
         columns={tableColumns}
         dataSource={fullTableData}
+        bordered
         pagination={false}
       />
     </ReactResizeDetector>
