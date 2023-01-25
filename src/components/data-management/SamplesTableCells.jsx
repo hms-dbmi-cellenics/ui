@@ -19,8 +19,6 @@ import UploadDetailsModal from './UploadDetailsModal';
 
 const { Text } = Typography;
 
-const UploadCellStyle = styled.div``;
-
 const UploadDivStyle = {
   display: 'flex',
   alignItems: 'center',
@@ -55,17 +53,14 @@ const UploadCell = (props) => {
   const render = () => {
     if (status === UploadStatus.UPLOADED) {
       return (
-        <UploadCellStyle
+        <div
           className='hoverSelectCursor'
+          onClick={showDetails}
+          onKeyDown={showDetails}
+          style={{ ...UploadDivStyle, flexDirection: 'column' }}
         >
-          <div
-            onClick={showDetails}
-            onKeyDown={showDetails}
-            style={{ ...UploadDivStyle, flexDirection: 'column' }}
-          >
-            <Text type='success'>{messageForStatus(status)}</Text>
-          </div>
-        </UploadCellStyle>
+          <Text type='success'>{messageForStatus(status)}</Text>
+        </div>
       );
     }
 
@@ -76,36 +71,31 @@ const UploadCell = (props) => {
       ].includes(status)
     ) {
       return (
-        <UploadCellStyle>
-          <div
-            style={{
-              ...UploadDivStyle,
-              flexDirection: 'column',
-            }}
-          >
-            <Text type='warning'>{`${messageForStatus(status)}`}</Text>
-            {progress ? (<Progress style={{ marginLeft: '10%', width: '50%' }} percent={progress} size='small' />) : <div />}
-          </div>
-        </UploadCellStyle>
+        <div
+          style={{
+            ...UploadDivStyle,
+            flexDirection: 'column',
+          }}
+        >
+          <Text type='warning'>{`${messageForStatus(status)}`}</Text>
+          {progress ? (<Progress style={{ marginLeft: '10%', width: '50%' }} percent={progress} size='small' />) : <div />}
+        </div>
       );
     }
 
     if (status === UploadStatus.UPLOAD_ERROR) {
       return (
-        <UploadCellStyle
+        <div
           className='hoverSelectCursor'
+          style={{
+            ...UploadDivStyle,
+            flexDirection: 'column',
+          }}
           onClick={showDetails}
           onKeyDown={showDetails}
         >
-          <div
-            style={{
-              ...UploadDivStyle,
-              flexDirection: 'column',
-            }}
-          >
-            <Text type='danger'>{messageForStatus(status)}</Text>
-          </div>
-        </UploadCellStyle>
+          <Text type='danger'>{messageForStatus(status)}</Text>
+        </div>
       );
     }
     if (
@@ -116,19 +106,17 @@ const UploadCell = (props) => {
       ].includes(status)
     ) {
       return (
-        <UploadCellStyle>
-          <div style={UploadDivStyle}>
-            <Text type='danger'>{messageForStatus(status)}</Text>
-            <Tooltip placement='bottom' title='Upload missing' mouseLeaveDelay={0}>
-              <Button
-                size='large'
-                shape='link'
-                icon={<UploadOutlined />}
-                onClick={showDetails}
-              />
-            </Tooltip>
-          </div>
-        </UploadCellStyle>
+        <div style={UploadDivStyle}>
+          <Text type='danger'>{messageForStatus(status)}</Text>
+          <Tooltip placement='bottom' title='Upload missing' mouseLeaveDelay={0}>
+            <Button
+              size='large'
+              shape='link'
+              icon={<UploadOutlined />}
+              onClick={showDetails}
+            />
+          </Tooltip>
+        </div>
       );
     }
   };
