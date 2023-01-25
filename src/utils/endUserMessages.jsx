@@ -1,3 +1,4 @@
+/* eslint-disable react/react-in-jsx-scope */
 export default {
   ACCOUNT_DETAILS_UPDATED: 'Account details updated successfully.',
   CONNECTION_ERROR: 'Could not connect to the server. Check your internet connection and refresh the page.',
@@ -43,7 +44,14 @@ export default {
   REFERRAL_ERROR: 'We couldn\'t process your referral. Please try submitting again.',
   REFERRAL_EMAIL_ERROR: 'The error you submitted was invalid. Please check again.',
   REFERRAL_SUCCESSFUL: 'Your invitation has been successfully sent. Thank you!',
-  SUCCESS_NEW_CLUSTER_CREATED: 'Created a new cluster. Check the `Cell sets and Metadata` window.',
+  SUCCESS_NEW_CLUSTER_CREATED: (
+    <>
+      Created a new cluster. Check &nbsp;
+      <b>Custom cell sets</b>
+      &nbsp; in the &nbsp;
+      <b>Cell sets and Metadata </b>
+      tile.
+    </>),
   SUCCESS_CELL_SETS_RECLUSTERED: 'Cell sets have been reclustered. Your cell sets have changed.',
   NO_CLUSTERS: 'No custom cell sets available, to create more go to data-exploration.',
   WORK_REQUEST_TIMED_OUT_RETRY: 'The task is taking longer than expected, please retry.',
