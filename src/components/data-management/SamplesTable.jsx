@@ -99,6 +99,7 @@ const SamplesTable = forwardRef((props, ref) => {
   useEffect(() => {
     const samplesLoaded = activeExperiment?.sampleIds.every((sampleId) => samples[sampleId]);
 
+    console.log('sample table load');
     if (activeExperiment?.sampleIds.length > 0 && samplesLoaded) {
       // if there are samples - build the table columns
 

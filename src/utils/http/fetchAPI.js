@@ -24,11 +24,11 @@ const fetchAPI = async (path, params = {}, extras = {}) => {
     // wrap fetch errors in custom error
     throw new FetchError(e);
   }
-
   if (!response.ok) {
     let data;
     try {
       data = await response.json();
+      console.log('response data : ', response);
     } catch (e) {
       // if we can't get extra error info from the response we don't want to fail
       // just return the error code, this happens in many tests
