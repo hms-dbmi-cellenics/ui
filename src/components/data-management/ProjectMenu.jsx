@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import {
   Space, Button,
 } from 'antd';
+
 import integrationTestConstants from 'utils/integrationTestConstants';
 import processUpload from 'utils/upload/processUpload';
 import DownloadDataButton from './DownloadDataButton';
@@ -15,6 +16,7 @@ const ProjectMenu = () => {
   const samples = useSelector((state) => state.samples);
   const activeExperimentId = useSelector((state) => state.experiments.meta.activeExperimentId);
   const activeExperiment = useSelector((state) => state.experiments[activeExperimentId]);
+  const parentExperimentId = activeExperiment?.parentExperimentId;
 
   const [uploadModalVisible, setUploadModalVisible] = useState(false);
   const [shareExperimentModalVisible, setShareExperimentModalVisible] = useState(false);
@@ -31,6 +33,7 @@ const ProjectMenu = () => {
         <Button
           data-test-id={integrationTestConstants.ids.ADD_SAMPLES_BUTTON}
           onClick={() => setUploadModalVisible(true)}
+          disabled={parentExperimentId}
         >
           Add samples
         </Button>
@@ -59,4 +62,5 @@ const ProjectMenu = () => {
     </>
   );
 };
+
 export default ProjectMenu;
