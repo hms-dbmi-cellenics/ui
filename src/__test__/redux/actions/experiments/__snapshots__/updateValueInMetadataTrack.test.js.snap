@@ -25,8 +25,8 @@ Array [
     "experimentId": "mockExperimentId",
   },
   Object {
-    "error": "We couldn't get the status of the experiment's data processing.",
     "experimentId": "mockExperimentId",
+    "status": Object {},
   },
 ]
 `;

@@ -34,6 +34,8 @@ jest.mock('utils/AppRouteProvider', () => ({
   })),
 }));
 
+jest.mock('utils/data-management/calculateGem2sRerunStatus');
+
 const mockStore = configureMockStore([thunk]);
 
 const experiment1id = 'experiment-1';
