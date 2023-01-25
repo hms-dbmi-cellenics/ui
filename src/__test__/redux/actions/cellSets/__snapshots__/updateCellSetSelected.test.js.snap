@@ -9,7 +9,6 @@ Object {
       4,
       5,
     ],
-    "tab": "sampleTab",
   },
   "type": "cellSets/setSelected",
 }

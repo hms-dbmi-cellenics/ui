@@ -1,8 +1,10 @@
+import _ from 'lodash';
+
 import objectHash from 'object-hash';
 import { METADATA_DEFAULT_VALUE } from 'redux/reducers/experiments/initialState';
 
 const generateGem2sParamsHash = (experiment, samples) => {
-  if (!experiment || !samples) {
+  if (!experiment || !samples || Object.keys(samples).length === 1) {
     return false;
   }
 
@@ -14,8 +16,12 @@ const generateGem2sParamsHash = (experiment, samples) => {
     organism: null,
     sampleTechnology,
     sampleIds: orderInvariantSampleIds,
-    sampleNames: orderInvariantSampleIds.map((sampleId) => samples[sampleId]?.name),
-    sampleOptions: orderInvariantSampleIds.map((sampleId) => samples[sampleId]?.options),
+    sampleNames: orderInvariantSampleIds.map(
+      (sampleId) => samples[sampleId]?.name,
+    ),
+    sampleOptions: orderInvariantSampleIds.map(
+      (sampleId) => _.cloneDeep(samples[sampleId]?.options),
+    ),
   };
 
   if (experiment.metadataKeys.length) {

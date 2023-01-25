@@ -72,7 +72,7 @@ const AppRouteProvider = (props) => {
     ),
   };
 
-  const handleRouteChange = async (previousRoute, module, params, ignoreIntercepts) => {
+  const handleRouteChange = async (previousRoute, module, params, ignoreIntercepts, hardLoad) => {
     const nextRoute = PATHS[module].replace('[experimentId]', params.experimentId);
 
     if (
@@ -96,15 +96,19 @@ const AppRouteProvider = (props) => {
         dispatch(setActiveExperiment(params.experimentId));
       }
     }
-
-    router.push(nextRoute);
+    if (hardLoad) {
+      window.location = nextRoute;
+    } else {
+      router.push(nextRoute);
+    }
   };
 
   const navigateTo = async (
     module,
     params = {},
     ignoreIntercepts = false,
-  ) => handleRouteChange(router.pathname, module, params, ignoreIntercepts);
+    hardLoad = false,
+  ) => handleRouteChange(router.pathname, module, params, ignoreIntercepts, hardLoad);
 
   return (
     <AppRouterContext.Provider value={{ navigateTo, currentModule }}>

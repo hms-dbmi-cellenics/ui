@@ -24,6 +24,7 @@ const EditableField = (props) => {
     validationFunc,
     onEditing,
     formatter,
+    onDelete,
   } = props;
 
   const [editing, setEditing] = useState(defaultEditing);
@@ -44,7 +45,7 @@ const EditableField = (props) => {
 
   const deleteEditableField = (e) => {
     e.stopPropagation();
-    props.onDelete(e, editedValue);
+    onDelete(e, editedValue);
   };
 
   const onKeyDown = (e) => {

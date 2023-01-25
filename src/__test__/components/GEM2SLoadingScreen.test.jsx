@@ -101,4 +101,25 @@ describe('GEM2SLoadingScreen', () => {
     // Display step information as shown in steps
     expect(display.find('span.ant-typography').first().text()).toEqual(steps[completedSteps.length]);
   });
+
+  it('Shows correct screen for subsetting experiment ', async () => {
+    const completedSteps = [
+      'step 1',
+      'step 2',
+    ];
+
+    const steps = [
+      'Downloading sample files',
+      'Preprocessing samples',
+      'Computing metrics',
+    ];
+    const experimentName = 'newExperiment';
+    const component = mount(
+      <Provider store={store}>
+        <GEM2SLoadingScreen gem2sStatus='subsetting' completedSteps={completedSteps} steps={steps} experimentName={experimentName} />
+      </Provider>,
+    );
+
+    expect(component.find('Title').first().text()).toEqual(`Subsetting cell sets into${experimentName}`);
+  });
 });

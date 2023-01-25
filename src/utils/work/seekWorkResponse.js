@@ -106,7 +106,7 @@ const dispatchWorkRequest = async (
   // as long as it receives "heartbeats" from the worker because that means the worker is alive
   // and progresing.
   // this should be removed if we make each request run in a different worker
-  const workerTimeoutDate = getWorkerTimeout(taskName);
+  const workerTimeoutDate = getWorkerTimeout(taskName, timeout);
   const authJWT = await getAuthJWT();
 
   const request = {

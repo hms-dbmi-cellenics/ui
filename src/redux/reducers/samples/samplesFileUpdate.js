@@ -9,7 +9,7 @@ const samplesFileUpdate = (state, action) => {
   let newFile = fileDiff;
 
   if (oldFile) {
-    newFile = _.merge(oldFile, fileDiff);
+    newFile = _.merge({}, oldFile, fileDiff);
   }
 
   const newFileNames = _.cloneDeep(state[sampleUuid].fileNames);
