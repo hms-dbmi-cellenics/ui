@@ -3,5 +3,14 @@
 		{
 			"path": "."
 		}
-	]
+	],
+	"settings": {
+		"search.exclude": {
+			".vscode/": true,
+			"**.next/": true,
+			"**/build/": true,
+			"**/node_modules": false,
+			"**node_modules/": true
+		}
+	}
 }

@@ -9,7 +9,7 @@ dayjs.extend(relativeTimePlugin);
 
 const isoTime = '2021-01-01T01:01:01.000Z';
 const relativeTime = dayjs(isoTime).fromNow();
-const localIsoTime = 'Friday, January 1, 2021 1:01 AM';
+const localIsoTime = dayjs(isoTime).format('LLLL');
 
 describe('PrettyTime', () => {
   it('displays the relative time by default', () => {
