@@ -358,17 +358,7 @@ const SamplesTable = forwardRef((props, ref) => {
   const moveRow = async (fromIndex, toIndex) => {
     if (fromIndex === toIndex) return;
 
-    // const previousSamplesOrder = fullTableData.map((sample) => sample.key);
-
-    // const newSampleOrder = arrayMoveImmutable(
-    //   previousSamplesOrder, fromIndex, toIndex,
-    // );
-
-    try {
-      await dispatch(reorderSamples(activeExperimentId, fromIndex, toIndex));
-    } catch (e) {
-      // If the fetch fails, avoid doing setTableData(newData)
-    }
+    await dispatch(reorderSamples(activeExperimentId, fromIndex, toIndex));
   };
 
   const renderSamplesTable = () => (
