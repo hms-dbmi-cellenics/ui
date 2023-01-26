@@ -127,9 +127,6 @@ const SamplesTable = forwardRef((props, ref) => {
         (metadataKey) => createInitializedMetadataColumn(metadataKeyToName(metadataKey)),
       ) || [];
       setTableColumns([...initialTableColumns, ...metadataColumns]);
-    } else {
-      setTableColumns([]);
-      setSampleNames(new Set());
     }
   }, [samples, activeExperiment?.sampleIds]);
 
