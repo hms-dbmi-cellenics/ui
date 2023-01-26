@@ -71,8 +71,6 @@ const SamplesTable = forwardRef((props, ref) => {
 
   const [samplesLoaded, setSamplesLoaded] = useState(false);
 
-  const [metadataTracksWereRenamed, setMetadataTracksWereRenamed] = useState(false);
-
   const initialTableColumns = useMemo(() => ([
     {
       fixed: 'left',
@@ -129,7 +127,7 @@ const SamplesTable = forwardRef((props, ref) => {
       ) || [];
       setTableColumns([...initialTableColumns, ...metadataColumns]);
     }
-  }, [samples, activeExperiment?.sampleIds, metadataTracksWereRenamed]);
+  }, [samples, activeExperiment?.sampleIds]);
 
   useConditionalEffect(() => {
     setSamplesLoaded(false);
@@ -251,25 +249,19 @@ const SamplesTable = forwardRef((props, ref) => {
   }, [activeExperiment?.sampleIds, selectedTech, samples]);
 
   const onSortEnd = async ({ oldIndex, newIndex }) => {
-    // if (oldIndex !== newIndex) {
-    //   const newData = arrayMoveImmutable(fullTableData, oldIndex, newIndex).filter((el) => !!el);
-    //   const newSampleOrder = newData.map((sample) => sample.uuid);
+    if (oldIndex !== newIndex) {
+      const newData = arrayMoveImmutable(fullTableData, oldIndex, newIndex).filter((el) => !!el);
+      const newSampleOrder = newData.map((sample) => sample.uuid);
 
-    //   try {
-    //     await dispatch(reorderSamples(activeExperimentId, oldIndex, newIndex, newSampleOrder));
-    //   } catch (e) {
-    //     // If the fetch fails, avoid doing setTableData(newData)
-    //     return;
-    //   }
+      try {
+        await dispatch(reorderSamples(activeExperimentId, oldIndex, newIndex, newSampleOrder));
+      } catch (e) {
+        // If the fetch fails, avoid doing setTableData(newData)
+        return;
+      }
 
-    //   console.log('HOLAHOLA');
-
-    //   setFullTableData(() => {
-    //     console.log('newDataDebug');
-    //     console.log(newData);
-    //     return newData;
-    //   });
-    // }
+      setFullTableData(() => newData);
+    }
   };
 
   const SortableRow = sortableElement((otherProps) => <tr {...otherProps} className={`${otherProps.className} drag-visible`} />);
@@ -341,7 +333,9 @@ const SamplesTable = forwardRef((props, ref) => {
   }, [activeExperiment, samples]);
 
   const [components, setComponents] = useVT(
-    () => ({ scroll: { y: size.height } }),
+    () => ({
+      scroll: { y: size.height },
+    }),
     [samplesLoaded, size.height, tableColumns],
   );
 
@@ -363,7 +357,13 @@ const SamplesTable = forwardRef((props, ref) => {
     >
       <Table
         scroll={{ y: size.height, x: 'max-content' }}
-        components={components}
+        components={{
+          ...components,
+          body: {
+            wrapper: DragContainer,
+            row: DraggableRow,
+          },
+        }}
         columns={tableColumns}
         dataSource={fullTableData}
         locale={locale}
@@ -376,25 +376,30 @@ const SamplesTable = forwardRef((props, ref) => {
 
   return (
     <>
-      {parentExperimentId ? (
-        <center>
-          <Alert
-            type='info'
-            message='Subsetted experiment'
-            description={(
-              <>
-                This is a subset of
-                {' '}
-                <b>{parentExperimentName}</b>
-                .
-                <br />
-                You can  see remaining samples after subsetting in
-                the data processing and data exploration pages.
-              </>
-            )}
-          />
-        </center>
-      ) : !samplesLoaded || samplesLoading || samplesValidating ? renderLoader() : renderSamplesTable()}
+      {
+        parentExperimentId ? (
+          <center>
+            <Alert
+              type='info'
+              message='Subsetted experiment'
+              description={(
+                <>
+                  This is a subset of
+                  {' '}
+                  <b>{parentExperimentName}</b>
+                  .
+                  <br />
+                  You can  see remaining samples after subsetting in
+                  the data processing and data exploration pages.
+                </>
+              )}
+            />
+          </center>
+        )
+          : !samplesLoaded || samplesLoading || samplesValidating
+            ? renderLoader()
+            : renderSamplesTable()
+      }
     </>
   );
 });
