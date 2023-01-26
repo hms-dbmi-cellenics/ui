@@ -14,6 +14,7 @@ import {
 import integrationTestConstants from 'utils/integrationTestConstants';
 
 import UploadStatus, { messageForStatus } from 'utils/upload/UploadStatus';
+import { METADATA_DEFAULT_VALUE } from 'redux/reducers/experiments/initialState';
 import EditableField from '../EditableField';
 import UploadDetailsModal from './UploadDetailsModal';
 
@@ -138,29 +139,30 @@ UploadCell.propTypes = {
 
 const EditableFieldCell = (props) => {
   const {
-    cellText,
-    dataIndex, rowIdx, onAfterSubmit,
+    sampleUuid,
+    dataIndex: trackKey,
+    rowIdx,
+    onAfterSubmit,
   } = props;
+
+  const value = useSelector((state) => state.samples[sampleUuid]?.metadata[trackKey]);
+
   return (
-    <div key={`cell-${dataIndex}-${rowIdx}`} style={{ whiteSpace: 'nowrap' }}>
+    <div key={`cell-${trackKey}-${rowIdx}`} style={{ whiteSpace: 'nowrap' }}>
       <Space>
         <EditableField
           deleteEnabled={false}
-          value={cellText}
-          onAfterSubmit={(value) => onAfterSubmit(value)}
-          formatter={(value) => value.trim()}
+          value={value}
+          onAfterSubmit={(newValue) => onAfterSubmit(newValue)}
+          formatter={(rawValue) => rawValue.trim()}
         />
       </Space>
     </div>
   );
 };
 
-EditableFieldCell.defaultProps = {
-  cellText: 'N.A',
-};
-
 EditableFieldCell.propTypes = {
-  cellText: PropTypes.string,
+  sampleUuid: PropTypes.string.isRequired,
   dataIndex: PropTypes.string.isRequired,
   rowIdx: PropTypes.number.isRequired,
   onAfterSubmit: PropTypes.func.isRequired,

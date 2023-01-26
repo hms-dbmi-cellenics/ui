@@ -66,11 +66,12 @@ const SamplesTable = forwardRef((props, ref) => {
     _.isEqual,
   );
 
-
   const [sampleNames, setSampleNames] = useState(new Set());
   const DragHandle = sortableHandle(() => <MenuOutlined style={{ cursor: 'grab', color: '#999' }} />);
 
   const [samplesLoaded, setSamplesLoaded] = useState(false);
+
+  const [metadataTracksWereRenamed, setMetadataTracksWereRenamed] = useState(false);
 
   const initialTableColumns = useMemo(() => ([
     {
@@ -128,7 +129,7 @@ const SamplesTable = forwardRef((props, ref) => {
       ) || [];
       setTableColumns([...initialTableColumns, ...metadataColumns]);
     }
-  }, [samples, activeExperiment?.sampleIds]);
+  }, [samples, activeExperiment?.sampleIds, metadataTracksWereRenamed]);
 
   useConditionalEffect(() => {
     setSamplesLoaded(false);
@@ -158,7 +159,7 @@ const SamplesTable = forwardRef((props, ref) => {
       dataIndex: key,
       render: (cellValue, record, rowIdx) => (
         <EditableFieldCell
-          cellText={cellValue}
+          sampleUuid={record.uuid}
           dataIndex={key}
           rowIdx={rowIdx}
           onAfterSubmit={(newValue) => {
@@ -344,14 +345,13 @@ const SamplesTable = forwardRef((props, ref) => {
     [samplesLoaded, size.height, tableColumns],
   );
 
-
   const locale = {
     emptyText: (
       <ExampleExperimentsSpace
         introductionText='Start uploading your samples by clicking on Add samples.'
         imageStyle={{ height: 60 }}
       />
-    )
+    ),
   };
 
   const renderSamplesTable = () => (
