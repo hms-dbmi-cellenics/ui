@@ -249,13 +249,6 @@ const SamplesTable = forwardRef((props, ref) => {
     };
   }, [activeExperiment?.sampleIds, selectedTech, samples]);
 
-  const noDataComponent = (
-    <ExampleExperimentsSpace
-      introductionText='Start uploading your samples by clicking on Add samples.'
-      imageStyle={{ height: 60 }}
-    />
-  );
-
   const onSortEnd = async ({ oldIndex, newIndex }) => {
     // if (oldIndex !== newIndex) {
     //   const newData = arrayMoveImmutable(fullTableData, oldIndex, newIndex).filter((el) => !!el);
@@ -351,6 +344,16 @@ const SamplesTable = forwardRef((props, ref) => {
     [samplesLoaded, size.height, tableColumns],
   );
 
+
+  const locale = {
+    emptyText: (
+      <ExampleExperimentsSpace
+        introductionText='Start uploading your samples by clicking on Add samples.'
+        imageStyle={{ height: 60 }}
+      />
+    )
+  };
+
   const renderSamplesTable = () => (
     <ReactResizeDetector
       // handleWidth
@@ -364,6 +367,7 @@ const SamplesTable = forwardRef((props, ref) => {
         components={components}
         columns={tableColumns}
         dataSource={fullTableData}
+        locale={locale}
         showHeader={activeExperiment?.sampleIds.length > 0}
         bordered
         pagination={false}
