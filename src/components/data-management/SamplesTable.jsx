@@ -56,6 +56,9 @@ const SamplesTable = forwardRef((props, ref) => {
     (state) => state.samples.meta.validating.includes(activeExperimentId),
   );
 
+  const parentExperimentId = activeExperiment?.parentExperimentId;
+
+  const parentExperimentName = useSelector((state) => state.experiments[parentExperimentId]?.name);
   const activeExperiment = useSelector((state) => state.experiments[activeExperimentId]);
 
   const selectedTech = useSelector(
@@ -63,8 +66,6 @@ const SamplesTable = forwardRef((props, ref) => {
     _.isEqual,
   );
 
-  const parentExperimentId = activeExperiment?.parentExperimentId;
-  const parentExperimentName = experiments[parentExperimentId]?.name;
 
   const [sampleNames, setSampleNames] = useState(new Set());
   const DragHandle = sortableHandle(() => <MenuOutlined style={{ cursor: 'grab', color: '#999' }} />);
