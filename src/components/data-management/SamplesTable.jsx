@@ -87,7 +87,7 @@ const SamplesTable = forwardRef((props, ref) => {
       key: 'sample',
       title: 'Sample',
       dataIndex: 'name',
-      fixed: true,
+      fixed: 'left',
       render: (text, record, indx) => (
         <SampleNameCell cellInfo={{ text, record, indx }} />
       ),
@@ -339,7 +339,7 @@ const SamplesTable = forwardRef((props, ref) => {
     setFullTableData(newData);
   }, [activeExperiment?.sampleIds, samples]);
 
-  const [height, setHeight] = useState(0);
+  const [size, setSize] = useState({ width: 0, height: 0 });
 
   useEffect(() => {
     const newSamplesLoaded = activeExperiment?.sampleIds.every((sampleId) => samples[sampleId]);
@@ -350,8 +350,8 @@ const SamplesTable = forwardRef((props, ref) => {
   }, [activeExperiment, samples]);
 
   const [components, setComponents] = useVT(
-    () => ({ scroll: { y: height } }),
-    [samplesLoaded, height],
+    () => ({ scroll: { y: size.height } }),
+    [samplesLoaded, size.height, tableColumns],
   );
 
   const renderSamplesTable = () => (
@@ -360,10 +360,10 @@ const SamplesTable = forwardRef((props, ref) => {
       handleHeight
       refreshMode='throttle'
       refreshRate={500}
-      onResize={setHeight}
+      onResize={(height) => { setSize({ height }); }}
     >
       <Table
-        scroll={{ y: height, x: 'max-content' }} // It's important for using VT!!! DO NOT FORGET!!!
+        scroll={{ y: size.height, x: 'max-content' }}
         components={components}
         columns={tableColumns}
         dataSource={fullTableData}
