@@ -168,15 +168,19 @@ EditableFieldCell.propTypes = {
 
 const SampleNameCell = (props) => {
   const { cellInfo } = props;
-  const { text, record, idx } = cellInfo;
+  const { record: { uuid: sampleId }, idx } = cellInfo;
+
+  const name = useSelector((state) => state.samples[sampleId]?.name);
+
   const dispatch = useDispatch();
+
   return (
     <Text className={integrationTestConstants.classes.SAMPLES_TABLE_NAME_CELL} strong key={`sample-cell-${idx}`}>
       <EditableField
         deleteEnabled
-        value={text}
-        onAfterSubmit={(name) => dispatch(updateSample(record.uuid, { name }))}
-        onDelete={() => dispatch(deleteSamples([record.uuid]))}
+        value={name}
+        onAfterSubmit={(newName) => dispatch(updateSample(sampleId, { name: newName }))}
+        onDelete={() => dispatch(deleteSamples([sampleId]))}
       />
     </Text>
   );

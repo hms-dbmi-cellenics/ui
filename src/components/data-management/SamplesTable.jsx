@@ -356,7 +356,6 @@ const SamplesTable = forwardRef((props, ref) => {
 
   const renderSamplesTable = () => (
     <ReactResizeDetector
-      // handleWidth
       handleHeight
       refreshMode='throttle'
       refreshRate={500}
