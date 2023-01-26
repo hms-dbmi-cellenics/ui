@@ -12,7 +12,7 @@ import {
 import {
   MenuOutlined,
 } from '@ant-design/icons';
-import { sortableHandle, sortableContainer, sortableElement } from 'react-sortable-hoc';
+import { sortableHandle } from 'react-sortable-hoc';
 
 import ReactResizeDetector from 'react-resize-detector';
 
