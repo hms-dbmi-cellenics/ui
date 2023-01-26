@@ -1,21 +1,13 @@
-import generateLegendAlertHook from 'components/plots/helpers/generateLegendAlertHook';
-import * as PlotLegendAlert from 'components/plots/helpers/PlotLegendAlert';
+import generateLegendAlertHook, { MAX_LEGEND_ITEMS } from 'components/plots/helpers/generateLegendAlertHook';
 
 const hierarchy = [
   {
     key: 'louvain',
-    children: [
-      { key: 'louvain-1' },
-      { key: 'louvain-2' },
-      { key: 'louvain-3' },
-    ],
+    children: [...Array(100)].map((_, i) => `louvain-${i}`),
   },
   {
     key: 'sample',
-    children: [
-      { key: 'KO' },
-      { key: 'WT' },
-    ],
+    children: [...Array(100)].map((_, i) => `sample-${i}`),
   },
 ];
 
@@ -26,7 +18,6 @@ const config = {
 describe('generateLegendAlertHook', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    PlotLegendAlert.MAX_LEGEND_ITEMS = 1;
   });
 
   it('Should return a function', () => {
@@ -54,12 +45,19 @@ describe('generateLegendAlertHook', () => {
   });
 
   it('Should return original config if number of cellSets is less than maximum to be shown', () => {
-    PlotLegendAlert.MAX_LEGEND_ITEMS = 50;
+    const smallHierarchy = [{
+      key: 'louvain',
+      children: [...Array(10)].map((_, i) => `louvain-${i}`),
+    }];
 
-    const hookFn = generateLegendAlertHook(hierarchy, 'selectedCellSet');
+    const hookFn = generateLegendAlertHook(smallHierarchy, 'selectedCellSet');
 
     const modifiedConfig = hookFn(config);
 
     expect(JSON.stringify(config)).toEqual(JSON.stringify(modifiedConfig));
+  });
+
+  it('Exports the number of max legend items', () => {
+    expect(MAX_LEGEND_ITEMS).toMatchInlineSnapshot('50');
   });
 });

@@ -18,9 +18,9 @@ import { loadCellSets } from 'redux/actions/cellSets';
 import CategoricalEmbeddingPlot from 'components/plots/CategoricalEmbeddingPlot';
 import PlotContainer from 'components/plots/PlotContainer';
 import SelectData from 'components/plots/styling/embedding-continuous/SelectData';
-import PlotLegendAlert, { MAX_LEGEND_ITEMS } from 'components/plots/helpers/PlotLegendAlert';
+import PlotLegendAlert from 'components/plots/helpers/PlotLegendAlert';
 import { plotNames } from 'utils/constants';
-import generateLegendAlertHook from 'components/plots/helpers/generateLegendAlertHook';
+import generateLegendAlertHook, { MAX_LEGEND_ITEMS } from 'components/plots/helpers/generateLegendAlertHook';
 
 const { Panel } = Collapse;
 

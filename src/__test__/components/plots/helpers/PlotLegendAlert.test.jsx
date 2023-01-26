@@ -1,7 +1,5 @@
 import React from 'react';
-import PlotLegendAlert, {
-  MAX_LEGEND_ITEMS,
-} from 'components/plots/helpers/PlotLegendAlert';
+import PlotLegendAlert from 'components/plots/helpers/PlotLegendAlert';
 import { render, screen } from '@testing-library/react';
 
 describe('PlotLegendAlert', () => {
@@ -19,8 +17,4 @@ describe('PlotLegendAlert', () => {
       ),
     ).toBeInTheDocument();
   });
-
-  it('Exports the number of max legend items', () => {
-    expect(MAX_LEGEND_ITEMS).toMatchInlineSnapshot(`50`);
-  });
-})
+});

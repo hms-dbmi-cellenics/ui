@@ -22,10 +22,10 @@ import { plotNames } from 'utils/constants';
 import SelectData from 'components/plots/styling/SelectData';
 import HeatmapGroupBySettings from 'components/data-exploration/heatmap/HeatmapGroupBySettings';
 import HeatmapMetadataTrackSettings from 'components/data-exploration/heatmap/HeatmapMetadataTrackSettings';
-import PlotLegendAlert, { MAX_LEGEND_ITEMS } from 'components/plots/helpers/PlotLegendAlert';
+import PlotLegendAlert from 'components/plots/helpers/PlotLegendAlert';
 
 import generateVegaData from 'components/plots/helpers/heatmap/vega/generateVegaData';
-import generateLegendAlertHook from 'components/plots/helpers/generateLegendAlertHook';
+import generateLegendAlertHook, { MAX_LEGEND_ITEMS } from 'components/plots/helpers/generateLegendAlertHook';
 
 const { Panel } = Collapse;
 

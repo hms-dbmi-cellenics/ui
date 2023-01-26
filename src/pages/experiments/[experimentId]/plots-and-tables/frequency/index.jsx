@@ -27,9 +27,9 @@ import loadCellSets from 'redux/actions/cellSets/loadCellSets';
 import plotCsvFilename from 'utils/fileNames';
 import { plotNames } from 'utils/constants';
 import PlotContainer from 'components/plots/PlotContainer';
-import generateLegendAlertHook from 'components/plots/helpers/generateLegendAlertHook';
+import generateLegendAlertHook, { MAX_LEGEND_ITEMS } from 'components/plots/helpers/generateLegendAlertHook';
 
-import PlotLegendAlert, { MAX_LEGEND_ITEMS } from 'components/plots/helpers/PlotLegendAlert';
+import PlotLegendAlert from 'components/plots/helpers/PlotLegendAlert';
 
 const { Panel } = Collapse;
 

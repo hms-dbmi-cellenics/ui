@@ -23,8 +23,8 @@ import { generateDataProcessingPlotUuid } from 'utils/generateCustomPlotUuid';
 import EmptyPlot from 'components/plots/helpers/EmptyPlot';
 import PlotStyling from 'components/plots/styling/PlotStyling';
 import { isUnisample } from 'utils/experimentPredicates';
-import PlotLegendAlert, { MAX_LEGEND_ITEMS } from 'components/plots/helpers/PlotLegendAlert';
-import generateLegendAlertHook from 'components/plots/helpers/generateLegendAlertHook';
+import PlotLegendAlert from 'components/plots/helpers/PlotLegendAlert';
+import generateLegendAlertHook, { MAX_LEGEND_ITEMS } from 'components/plots/helpers/generateLegendAlertHook';
 import CalculationConfig from './CalculationConfig';
 
 const { Panel } = Collapse;

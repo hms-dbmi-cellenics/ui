@@ -3,8 +3,6 @@ import {
   Alert,
 } from 'antd';
 
-const MAX_LEGEND_ITEMS = 50;
-
 const PlotLegendAlert = () => (
   <center>
     <Alert
@@ -24,4 +22,3 @@ const PlotLegendAlert = () => (
 );
 
 export default PlotLegendAlert;
-export { MAX_LEGEND_ITEMS };

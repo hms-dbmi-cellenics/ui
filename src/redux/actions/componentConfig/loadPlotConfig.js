@@ -18,6 +18,8 @@ const loadPlotConfig = (
     let plotConfig = beforeDispatchHook ? beforeDispatchHook(config) : config;
     plotConfig = _.merge({}, initialPlotConfigStates[plotType], plotConfig);
 
+    console.log('*** plotConfig', plotUuid, 'in try', plotConfig.legend);
+
     dispatch({
       type: LOAD_CONFIG,
       payload: {
@@ -33,6 +35,8 @@ const loadPlotConfig = (
     if (e.statusCode === httpStatusCodes.NOT_FOUND) {
       let plotConfig = _.cloneDeep(initialPlotConfigStates[plotType]);
       if (beforeDispatchHook) plotConfig = beforeDispatchHook(plotConfig);
+
+      console.log('*** plotConfig', plotUuid, 'in except', plotConfig.legend);
 
       dispatch({
         type: LOAD_CONFIG,

@@ -24,8 +24,8 @@ import { generateDataProcessingPlotUuid } from 'utils/generateCustomPlotUuid';
 import Loader from 'components/Loader';
 import { getCellSets } from 'redux/selectors';
 import CalculationConfig from 'components/data-processing/ConfigureEmbedding/CalculationConfig';
-import generateLegendAlertHook from 'components/plots/helpers/generateLegendAlertHook';
-import PlotLegendAlert, { MAX_LEGEND_ITEMS } from 'components/plots/helpers/PlotLegendAlert';
+import generateLegendAlertHook, { MAX_LEGEND_ITEMS } from 'components/plots/helpers/generateLegendAlertHook';
+import PlotLegendAlert from 'components/plots/helpers/PlotLegendAlert';
 
 const { Panel } = Collapse;
 
@@ -64,17 +64,20 @@ const ConfigureEmbedding = (props) => {
       title: 'Cell sets',
       plotUuid: embeddingPreviewByCellSetsPlotUuid,
       plotType: 'embeddingPreviewByCellSets',
-      plot: (config, actions) => (
-        <Space direction='vertical'>
-          {config?.legend?.showAlert && numCellSets > MAX_LEGEND_ITEMS && <PlotLegendAlert />}
-          <CategoricalEmbeddingPlot
-            experimentId={experimentId}
-            config={config}
-            actions={actions}
-            onUpdate={updatePlotWithChanges}
-          />
-        </Space>
-      )
+      plot: (config, actions) => {
+        console.log('*** config?.legend?.showAlert', config?.legend?.showAlert);
+        return (
+          <Space direction='vertical'>
+            {config?.legend?.showAlert && numCellSets > MAX_LEGEND_ITEMS && <PlotLegendAlert />}
+            <CategoricalEmbeddingPlot
+              experimentId={experimentId}
+              config={config}
+              actions={actions}
+              onUpdate={updatePlotWithChanges}
+            />
+          </Space>
+        );
+      }
       ,
     },
     sample: {

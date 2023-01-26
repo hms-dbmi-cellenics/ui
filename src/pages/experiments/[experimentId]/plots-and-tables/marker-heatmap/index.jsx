@@ -34,9 +34,9 @@ import SelectData from 'components/plots/styling/SelectData';
 import populateHeatmapData from 'components/plots/helpers/heatmap/populateHeatmapData';
 import generateVegaData from 'components/plots/helpers/heatmap/vega/generateVegaData';
 import { plotNames } from 'utils/constants';
-import generateLegendAlertHook from 'components/plots/helpers/generateLegendAlertHook';
+import generateLegendAlertHook, { MAX_LEGEND_ITEMS } from 'components/plots/helpers/generateLegendAlertHook';
 
-import PlotLegendAlert, { MAX_LEGEND_ITEMS } from 'components/plots/helpers/PlotLegendAlert';
+import PlotLegendAlert from 'components/plots/helpers/PlotLegendAlert';
 
 import ScrollOnDrag from 'components/plots/ScrollOnDrag';
 

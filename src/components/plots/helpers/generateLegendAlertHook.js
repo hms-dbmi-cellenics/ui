@@ -1,5 +1,6 @@
 import _ from 'lodash';
-import { MAX_LEGEND_ITEMS } from 'components/plots/helpers/PlotLegendAlert';
+
+const MAX_LEGEND_ITEMS = 50;
 
 const generateLegendAlertHook = (hierarchy, cellSetKey, useConfigValue = true) => {
   const hookFn = (plotConfig) => {
@@ -25,3 +26,4 @@ const generateLegendAlertHook = (hierarchy, cellSetKey, useConfigValue = true) =
 };
 
 export default generateLegendAlertHook;
+export { MAX_LEGEND_ITEMS };

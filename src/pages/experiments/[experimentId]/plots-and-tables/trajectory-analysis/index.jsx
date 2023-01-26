@@ -26,8 +26,8 @@ import PlatformError from 'components/PlatformError';
 import { plotNames, plotTypes } from 'utils/constants';
 import useConditionalEffect from 'utils/customHooks/useConditionalEffect';
 import updateTrajectoryPlotSelectedNodes from 'redux/actions/componentConfig/updateTrajectoryPlotSelectedNodes';
-import generateLegendAlertHook from 'components/plots/helpers/generateLegendAlertHook';
-import PlotLegendAlert, { MAX_LEGEND_ITEMS } from 'components/plots/helpers/PlotLegendAlert';
+import generateLegendAlertHook, { MAX_LEGEND_ITEMS } from 'components/plots/helpers/generateLegendAlertHook';
+import PlotLegendAlert from 'components/plots/helpers/PlotLegendAlert';
 import TrajectoryAnalysisNodeSelector from './TrajectoryAnalysisNodeSelector';
 import TrajectoryAnalysisDisplaySettings from './TrajectoryAnalysisDisplaySettings';
 
