@@ -32,8 +32,6 @@ import {
 
 import { loadSamples } from 'redux/actions/samples';
 
-import { arrayMoveImmutable } from 'utils/array-move';
-
 import { metadataNameToKey, metadataKeyToName, temporaryMetadataKey } from 'utils/data-management/metadataUtils';
 import integrationTestConstants from 'utils/integrationTestConstants';
 import 'utils/css/data-management.css';
