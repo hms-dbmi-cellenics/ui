@@ -43,9 +43,9 @@ import { METADATA_DEFAULT_VALUE } from 'redux/reducers/experiments/initialState'
 import fileUploadSpecifications from 'utils/upload/fileUploadSpecifications';
 
 const { Text } = Typography;
-const type = 'DragableBodyRow';
+const type = 'DraggableBodyRow';
 
-const DragableBodyRow = React.forwardRef((props, ref) => {
+const DraggableBodyRow = React.forwardRef((props, ref) => {
   const {
     index, moveRow, className, style, ...restProps
   } = props;
@@ -53,26 +53,26 @@ const DragableBodyRow = React.forwardRef((props, ref) => {
   const [{ isOver, dropClassName }, drop] = useDrop({
     accept: type,
     collect: (monitor) => {
-      const { id: dragIndex } = monitor.getItem() || {};
+      const { index: dragIndex } = monitor.getItem() || {};
 
-      if (dragIndex === index) {
-        return {};
-      }
       return {
         isOver: monitor.isOver(),
         dropClassName: dragIndex < index ? ' drop-over-downward' : ' drop-over-upward',
       };
     },
     drop: (item) => {
-      moveRow((item).id, index);
+      moveRow((item).index, index);
     },
-  });
+  }, [index]);
 
-  const [, drag] = useDrag(() => ({ type, item: { id: index } }));
+  const [, drag] = useDrag(() => ({
+    type,
+    item: { type, index },
+  }), [index]);
 
   useEffect(() => {
-    drop(drag((ref)?.current));
-  }, [ref]);
+    drop(drag((ref?.current)));
+  }, []);
 
   return (
     <tr
@@ -341,14 +341,10 @@ const SamplesTable = forwardRef((props, ref) => {
     () => ({
       scroll: { y: size.height },
     }),
-    [samplesLoaded, size.height, tableColumns],
+    [size.height],
   );
 
-  useMemo(() => setVT({
-    body: {
-      row: DragableBodyRow,
-    },
-  }), []);
+  useMemo(() => setVT({ body: { row: DraggableBodyRow } }), []);
 
   const locale = {
     emptyText: (
@@ -359,30 +355,21 @@ const SamplesTable = forwardRef((props, ref) => {
     ),
   };
 
-  const moveRow = useCallback(
-    async (dragIndex, hoverIndex) => {
-      // console.log('dragIndexhoverIndexDebug');
-      // console.log(dragIndex, hoverIndex);
+  const moveRow = async (fromIndex, toIndex) => {
+    if (fromIndex === toIndex) return;
 
-      if (dragIndex !== hoverIndex) {
-        const newData = arrayMoveImmutable(
-          fullTableData, dragIndex, hoverIndex,
-        ).filter((el) => !!el);
+    // const previousSamplesOrder = fullTableData.map((sample) => sample.key);
 
-        const newSampleOrder = newData.map((sample) => sample.uuid);
+    // const newSampleOrder = arrayMoveImmutable(
+    //   previousSamplesOrder, fromIndex, toIndex,
+    // );
 
-        try {
-          await dispatch(reorderSamples(activeExperimentId, dragIndex, hoverIndex, newSampleOrder));
-        } catch (e) {
-          // If the fetch fails, avoid doing setTableData(newData)
-          return;
-        }
-
-        setFullTableData(() => newData);
-      }
-    },
-    [fullTableData],
-  );
+    try {
+      await dispatch(reorderSamples(activeExperimentId, fromIndex, toIndex));
+    } catch (e) {
+      // If the fetch fails, avoid doing setTableData(newData)
+    }
+  };
 
   const renderSamplesTable = () => (
     <ReactResizeDetector
