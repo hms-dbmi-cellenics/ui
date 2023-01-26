@@ -1,13 +1,13 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import _ from 'lodash';
 import React, {
-  useEffect, useState, forwardRef, useImperativeHandle, useMemo, useCallback, useRef,
+  useEffect, useState, forwardRef, useImperativeHandle, useMemo, useCallback,
 } from 'react';
 import { useVT } from 'virtualizedtableforantd4';
 
 import { useSelector, useDispatch } from 'react-redux';
 import {
-  Table, Row, Col, Typography, Space, Alert,
+  Table, Row, Typography, Space, Alert,
 } from 'antd';
 import {
   MenuOutlined,
@@ -15,6 +15,8 @@ import {
 import { sortableHandle, sortableContainer, sortableElement } from 'react-sortable-hoc';
 
 import ReactResizeDetector from 'react-resize-detector';
+
+import { useDrag, useDrop } from 'react-dnd';
 
 import ExampleExperimentsSpace from 'components/data-management/ExampleExperimentsSpace';
 import MetadataPopover from 'components/data-management/MetadataPopover';
@@ -30,7 +32,6 @@ import {
 
 import { loadSamples } from 'redux/actions/samples';
 
-import UploadStatus from 'utils/upload/UploadStatus';
 import { arrayMoveImmutable } from 'utils/array-move';
 
 import { metadataNameToKey, metadataKeyToName, temporaryMetadataKey } from 'utils/data-management/metadataUtils';
@@ -42,6 +43,46 @@ import { METADATA_DEFAULT_VALUE } from 'redux/reducers/experiments/initialState'
 import fileUploadSpecifications from 'utils/upload/fileUploadSpecifications';
 
 const { Text } = Typography;
+const type = 'DragableBodyRow';
+
+const DragableBodyRow = React.forwardRef((props, ref) => {
+  const {
+    index, moveRow, className, style, ...restProps
+  } = props;
+
+  const [{ isOver, dropClassName }, drop] = useDrop({
+    accept: type,
+    collect: (monitor) => {
+      const { id: dragIndex } = monitor.getItem() || {};
+
+      if (dragIndex === index) {
+        return {};
+      }
+      return {
+        isOver: monitor.isOver(),
+        dropClassName: dragIndex < index ? ' drop-over-downward' : ' drop-over-upward',
+      };
+    },
+    drop: (item) => {
+      moveRow((item).id, index);
+    },
+  });
+
+  const [, drag] = useDrag(() => ({ type, item: { id: index } }));
+
+  useEffect(() => {
+    drop(drag((ref)?.current));
+  }, [ref]);
+
+  return (
+    <tr
+      ref={ref}
+      className={`${className}${isOver ? dropClassName : ''}`}
+      style={{ cursor: 'move', ...style }}
+      {...restProps}
+    />
+  );
+});
 
 const SamplesTable = forwardRef((props, ref) => {
   const dispatch = useDispatch();
@@ -243,44 +284,8 @@ const SamplesTable = forwardRef((props, ref) => {
       name: samples[sampleUuid]?.name || 'UPLOAD ERROR: Please reupload sample',
       uuid: sampleUuid,
       ...Object.fromEntries(sampleFileNames),
-      // ...fileData,
-      // ...samples[sampleUuid]?.metadata,
     };
   }, [activeExperiment?.sampleIds, selectedTech, samples]);
-
-  const onSortEnd = async ({ oldIndex, newIndex }) => {
-    if (oldIndex !== newIndex) {
-      const newData = arrayMoveImmutable(fullTableData, oldIndex, newIndex).filter((el) => !!el);
-      const newSampleOrder = newData.map((sample) => sample.uuid);
-
-      try {
-        await dispatch(reorderSamples(activeExperimentId, oldIndex, newIndex, newSampleOrder));
-      } catch (e) {
-        // If the fetch fails, avoid doing setTableData(newData)
-        return;
-      }
-
-      setFullTableData(() => newData);
-    }
-  };
-
-  const SortableRow = sortableElement((otherProps) => <tr {...otherProps} className={`${otherProps.className} drag-visible`} />);
-  const SortableTable = sortableContainer((otherProps) => <tbody {...otherProps} />);
-
-  const DragContainer = (otherProps) => (
-    <SortableTable
-      useDragHandle
-      disableAutoscroll
-      helperClass='row-dragging'
-      onSortEnd={onSortEnd}
-      {...otherProps}
-    />
-  );
-
-  const DraggableRow = (otherProps) => {
-    const index = fullTableData.findIndex((x) => x.key === otherProps['data-row-key']);
-    return <SortableRow index={index} {...otherProps} />;
-  };
 
   const renderLoader = () => (
     <>
@@ -332,12 +337,18 @@ const SamplesTable = forwardRef((props, ref) => {
     }
   }, [activeExperiment, samples]);
 
-  const [components, setComponents] = useVT(
+  const [VT, setVT] = useVT(
     () => ({
       scroll: { y: size.height },
     }),
     [samplesLoaded, size.height, tableColumns],
   );
+
+  useMemo(() => setVT({
+    body: {
+      row: DragableBodyRow,
+    },
+  }), []);
 
   const locale = {
     emptyText: (
@@ -348,6 +359,31 @@ const SamplesTable = forwardRef((props, ref) => {
     ),
   };
 
+  const moveRow = useCallback(
+    async (dragIndex, hoverIndex) => {
+      // console.log('dragIndexhoverIndexDebug');
+      // console.log(dragIndex, hoverIndex);
+
+      if (dragIndex !== hoverIndex) {
+        const newData = arrayMoveImmutable(
+          fullTableData, dragIndex, hoverIndex,
+        ).filter((el) => !!el);
+
+        const newSampleOrder = newData.map((sample) => sample.uuid);
+
+        try {
+          await dispatch(reorderSamples(activeExperimentId, dragIndex, hoverIndex, newSampleOrder));
+        } catch (e) {
+          // If the fetch fails, avoid doing setTableData(newData)
+          return;
+        }
+
+        setFullTableData(() => newData);
+      }
+    },
+    [fullTableData],
+  );
+
   const renderSamplesTable = () => (
     <ReactResizeDetector
       handleHeight
@@ -357,19 +393,18 @@ const SamplesTable = forwardRef((props, ref) => {
     >
       <Table
         scroll={{ y: size.height, x: 'max-content' }}
-        components={{
-          ...components,
-          body: {
-            wrapper: DragContainer,
-            row: DraggableRow,
-          },
-        }}
+        components={VT}
         columns={tableColumns}
         dataSource={fullTableData}
         locale={locale}
         showHeader={activeExperiment?.sampleIds.length > 0}
-        bordered
         pagination={false}
+        onRow={(record, index) => ({
+          index,
+          moveRow,
+        })}
+        sticky
+        bordered
       />
     </ReactResizeDetector>
   );
@@ -404,4 +439,4 @@ const SamplesTable = forwardRef((props, ref) => {
   );
 });
 
-export default React.memo(SamplesTable);
+export default SamplesTable;
