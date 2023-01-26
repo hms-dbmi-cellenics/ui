@@ -95,10 +95,10 @@ const SamplesTable = forwardRef((props, ref) => {
     (state) => state.samples.meta.validating.includes(activeExperimentId),
   );
 
-  const parentExperimentId = activeExperiment?.parentExperimentId;
-
-  const parentExperimentName = useSelector((state) => state.experiments[parentExperimentId]?.name);
   const activeExperiment = useSelector((state) => state.experiments[activeExperimentId]);
+  const parentExperimentName = useSelector(
+    (state) => state.experiments[activeExperiment?.parentExperimentId]?.name,
+  );
 
   const selectedTech = useSelector(
     (state) => state.samples[activeExperiment?.sampleIds[0]]?.type,
@@ -387,7 +387,7 @@ const SamplesTable = forwardRef((props, ref) => {
   return (
     <>
       {
-        parentExperimentId ? (
+        activeExperiment?.parentExperimentId ? (
           <center>
             <Alert
               type='info'
