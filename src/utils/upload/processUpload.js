@@ -35,8 +35,8 @@ const putInS3 = async (loadedFileData, signedUrl, onUploadProgress, currentRetry
   }
 };
 
-const prepareAndUploadFileToS3 = async (
-  experimentId, sampleId, file, selectedTech, dispatch,
+const createAndUploadSingleFile = async (
+  file, experimentId, sampleId, dispatch, selectedTech,
 ) => {
   let loadedFile = null;
 
@@ -99,12 +99,6 @@ const getMetadata = (file, selectedTech) => {
     }
   }
   return metadata;
-};
-
-const createAndUploadSingleFile = async (file, experimentId, sampleId, dispatch, selectedTech) => {
-  console.log('BEGGINIGNPREPAREANDUPLAODDEBUG');
-
-  await prepareAndUploadFileToS3(experimentId, sampleId, file, selectedTech, dispatch);
 };
 
 const processUpload = async (filesList, technology, samples, experimentId, dispatch) => {
@@ -177,11 +171,6 @@ const processUpload = async (filesList, technology, samples, experimentId, dispa
     for await (const promisesChunk of chunkedPromises) {
       await Promise.all(promisesChunk.map((promise) => promise()));
     }
-    // chunkedPromises.forEach(async (promisesChunk) => {
-    //   console.log('promisesChunkDebug');
-    //   console.log(promisesChunk);
-    //   await Promise.all(promisesChunk.map((promise) => promise()));
-    // });
   } catch (e) {
     // Ignore the error, if createSamples fails we throw to
     // avoid attempting to upload any of these broken samples
