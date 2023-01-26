@@ -31,7 +31,7 @@ const AddMetadataButton = ({ samplesTableRef }) => {
               key='add-metadata-column'
               onClick={() => samplesTableRef.current.createMetadataColumn()}
             >
-              Create Track
+              Create track
             </Menu.Item>
             <Menu.Item
               key='upload-metadata-file'
@@ -39,7 +39,7 @@ const AddMetadataButton = ({ samplesTableRef }) => {
                 setUploadModalVisible(true);
               }}
             >
-              Upload File
+              Upload file
             </Menu.Item>
           </Menu>
         )}

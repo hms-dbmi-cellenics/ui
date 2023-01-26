@@ -30,6 +30,12 @@ const formatExample = [
   ['sample_name_2', 'metadata_key_2', 'metadata_value_3'],
 ];
 
+const exampleFile = [
+  ['Acute', 'Status', 'Tumor'],
+  ['Convalescent', 'Status', 'Normal'],
+  ['Convalescent', 'Gender', 'Female'],
+];
+
 const MetadataUploadModal = (props) => {
   const { onUpload, onCancel } = props;
 
@@ -106,6 +112,47 @@ const MetadataUploadModal = (props) => {
           </Paragraph>
           <List
             dataSource={formatExample}
+            size='small'
+            itemLayout='vertical'
+            bordered
+            renderItem={(item) => (
+              <List.Item>
+                {
+                  item.map((fileName, i) => (
+                    <span key={fileName}>
+                      <Text code>{`${fileName}`}</Text>
+                      {i !== item.length - 1 && '     '}
+                    </span>
+                  ))
+                }
+              </List.Item>
+            )}
+          />
+        </Col>
+      </Row>
+      <Row style={{ margin: '1rem 0' }}>
+        <Col span={24}>
+          <Paragraph>
+            For example, if you have two samples
+            {' '}
+            <Text code>Acute</Text>
+            {' '}
+            and
+            {' '}
+            <Text code>Convalescent</Text>
+            and you want to indicate their status (either
+            <Text code>Tumor</Text>
+            {' '}
+            or
+            {' '}
+            <Text code>Normal</Text>
+            ) and you know that the gender of one is
+            {' '}
+            <Text code>Female</Text>
+            you would write a file as follows:
+          </Paragraph>
+          <List
+            dataSource={exampleFile}
             size='small'
             itemLayout='vertical'
             bordered

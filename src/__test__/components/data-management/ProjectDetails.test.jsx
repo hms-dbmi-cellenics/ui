@@ -163,6 +163,18 @@ describe('ProjectDetails', () => {
     mockedSetActiveExperiment = jest.spyOn(setActiveExperiment, 'default');
   });
 
+  const getMenuItems = async () => {
+    const menu = await screen.getByText('Add metadata');
+    expect(menu).not.toBeDisabled();
+
+    await act(async () => {
+      userEvent.click(menu);
+    });
+
+    const options = await screen.getAllByRole('menuitem');
+    return options;
+  };
+
   it('Has a title, project ID and description', () => {
     render(
       <Provider store={mockStore(noDataState)}>
@@ -180,13 +192,12 @@ describe('ProjectDetails', () => {
     expect(screen.queryByText(experimentDescription)).toBeDefined();
   });
 
-  it.only('Has 5 buttons', () => {
+  it('Has 5 buttons', () => {
     render(
       <Provider store={mockStore(noDataState)}>
         <ProjectDetails width={width} height={height} />
       </Provider>,
     );
-    screen.debug(null, Infinity);
 
     expect(screen.getByText('Add samples')).toBeDefined();
     expect(screen.getByText('Add metadata')).toBeDefined();
@@ -219,6 +230,99 @@ describe('ProjectDetails', () => {
     expect(metadataButton).not.toBeDisabled();
   });
 
+  it('Creates a metadata column', async () => {
+    render(
+      <Provider store={mockStore(withDataState)}>
+        <ProjectDetails width={width} height={height} />
+      </Provider>,
+    );
+
+    const options = await getMenuItems();
+
+    fireEvent.click(options[0]);
+
+    const input = screen.getByDisplayValue('Track 1');
+    fireEvent.change(input, { target: { value: 'myBrandNewMetadata' } });
+    fireEvent.keyDown(input, { key: 'Enter', code: 'Enter' });
+
+    expect(mockedCreateMetadataTrack).toBeCalledTimes(1);
+    expect(mockedCreateMetadataTrack).toHaveBeenCalledWith('myBrandNewMetadata', 'experiment-1');
+  });
+
+  it('Cancels metadata creation', async () => {
+    const store = createStore(rootReducer, _.cloneDeep(withDataState), applyMiddleware(thunk));
+    render(
+      <Provider store={store}>
+        <ProjectDetails width={width} height={height} />
+      </Provider>,
+    );
+
+    const options = await getMenuItems();
+
+    fireEvent.click(options[0]);
+
+    const input = screen.getByDisplayValue('Track 1');
+    fireEvent.change(input, { target: { value: 'myBrandNewMetadata' } });
+    fireEvent.keyDown(input, { key: 'Escape', code: 'Escape' });
+
+    expect(store.getState().experiments[experiment1id].metadataKeys).toEqual(['metadata-1']);
+  });
+
+  it('Creates a metadata column trimming whitespaces in its name', async () => {
+    const store = createStore(rootReducer, _.cloneDeep(withDataState), applyMiddleware(thunk));
+    await act(async () => {
+      render(
+        <Provider store={store}>
+          <ProjectDetails width={width} height={height} />
+        </Provider>,
+      );
+    });
+
+    const options = await getMenuItems();
+
+    fireEvent.click(options[0]);
+    const input = screen.getByDisplayValue('Track 1');
+    fireEvent.change(input, { target: { value: '  myBrandNewMetadata     ' } });
+    fireEvent.keyDown(input, { key: 'Enter', code: 'Enter' });
+
+    expect(mockedCreateMetadataTrack).toBeCalledTimes(1);
+    expect(mockedCreateMetadataTrack).toHaveBeenCalledWith('myBrandNewMetadata', 'experiment-1');
+  });
+
+  it('Trims whitespaces in metadata track values', async () => {
+    const store = createStore(rootReducer, _.cloneDeep(withDataState), applyMiddleware(thunk));
+    await act(async () => {
+      render(
+        <Provider store={store}>
+          <ProjectDetails width={width} height={height} />
+        </Provider>,
+      );
+    });
+
+    // Wait and ensure that the dropdown is available before clicking
+    await waitFor(() => {
+      expect(screen.getByText('Add metadata')).toBeInTheDocument();
+    });
+
+    // Add track column
+    const options = await getMenuItems();
+
+    fireEvent.click(options[0]);
+    fireEvent.keyDown(screen.getByDisplayValue('Track 1'), { key: 'Enter', code: 'Enter' });
+
+    // Change track value for sample
+
+    act(() => userEvent.click(screen.getAllByRole('button', { name: 'Edit' })[1]));
+
+    const input = screen.getByRole('textbox');
+    fireEvent.change(input, { target: { value: '  myBrandNewMetadataWithWhitespaces     ' } });
+
+    act(() => userEvent.click(screen.getByRole('button', { name: 'Save' })));
+
+    expect(mockedUpdateValueInMetadataTrack).toHaveBeenCalledTimes(1);
+    expect(mockedUpdateValueInMetadataTrack).toHaveBeenCalledWith('experiment-1', 'sample-1', 'metadata-1', 'myBrandNewMetadataWithWhitespaces');
+  });
+
   it('Download dropdown is disabled if there are no samples', () => {
     const store = createStore(rootReducer, _.cloneDeep(noDataState), applyMiddleware(thunk));
     render(
@@ -239,89 +343,6 @@ describe('ProjectDetails', () => {
 
     expect(screen.getByText(sample1Name)).toBeDefined();
     expect(screen.getByText(sample2Name)).toBeDefined();
-  });
-
-  it('Creates a metadata column', async () => {
-    const store = createStore(rootReducer, _.cloneDeep(withDataState), applyMiddleware(thunk));
-    await act(async () => {
-      render(
-        <Provider store={store}>
-          <ProjectDetails width={width} height={height} />
-        </Provider>,
-      );
-    });
-
-    userEvent.click(screen.getByText('Add metadata'));
-
-    const input = screen.getByDisplayValue('Track 1');
-    fireEvent.change(input, { target: { value: 'myBrandNewMetadata' } });
-    fireEvent.keyDown(input, { key: 'Enter', code: 'Enter' });
-
-    expect(mockedCreateMetadataTrack).toBeCalledTimes(1);
-    expect(mockedCreateMetadataTrack).toHaveBeenCalledWith('myBrandNewMetadata', 'experiment-1');
-  });
-
-  it('Cancels metadata creation', () => {
-    const store = createStore(rootReducer, _.cloneDeep(withDataState), applyMiddleware(thunk));
-    render(
-      <Provider store={store}>
-        <ProjectDetails width={width} height={height} />
-      </Provider>,
-    );
-    const addMetadata = screen.getByText('Add metadata');
-    userEvent.click(addMetadata);
-    const field = screen.getByRole('textbox');
-    userEvent.type(field, 'somenewMeta');
-    fireEvent.keyDown(field, { key: 'Escape', code: 'Escape' });
-
-    expect(store.getState().experiments[experiment1id].metadataKeys).toEqual(['metadata-1']);
-  });
-
-  it('Creates a metadata column trimming whitespaces in its name', async () => {
-    const store = createStore(rootReducer, _.cloneDeep(withDataState), applyMiddleware(thunk));
-    await act(async () => {
-      render(
-        <Provider store={store}>
-          <ProjectDetails width={width} height={height} />
-        </Provider>,
-      );
-    });
-
-    userEvent.click(screen.getByText('Add metadata'));
-
-    const input = screen.getByDisplayValue('Track 1');
-    fireEvent.change(input, { target: { value: '  myBrandNewMetadata     ' } });
-    fireEvent.keyDown(input, { key: 'Enter', code: 'Enter' });
-
-    expect(mockedCreateMetadataTrack).toBeCalledTimes(1);
-    expect(mockedCreateMetadataTrack).toHaveBeenCalledWith('myBrandNewMetadata', 'experiment-1');
-  });
-
-  it('Trims whitespaces in metadata track values', async () => {
-    const store = createStore(rootReducer, _.cloneDeep(withDataState), applyMiddleware(thunk));
-    await act(async () => {
-      render(
-        <Provider store={store}>
-          <ProjectDetails width={width} height={height} />
-        </Provider>,
-      );
-    });
-
-    // Add track column
-    userEvent.click(screen.getByText('Add metadata'));
-    fireEvent.keyDown(screen.getByDisplayValue('Track 1'), { key: 'Enter', code: 'Enter' });
-
-    // Change track value for sample
-
-    act(() => userEvent.click(screen.getAllByRole('button', { name: 'Edit' })[1]));
-
-    const input = screen.getByRole('textbox');
-    fireEvent.change(input, { target: { value: '  myBrandNewMetadataWithWhitespaces     ' } });
-
-    act(() => userEvent.click(screen.getByRole('button', { name: 'Save' })));
-
-    expect(mockedUpdateValueInMetadataTrack).toHaveBeenCalledTimes(1);
-    expect(mockedUpdateValueInMetadataTrack).toHaveBeenCalledWith('experiment-1', 'sample-1', 'metadata-1', 'myBrandNewMetadataWithWhitespaces');
   });
 
   it('Copy experiment button works', async () => {
