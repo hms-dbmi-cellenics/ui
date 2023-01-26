@@ -364,6 +364,7 @@ const SamplesTable = forwardRef((props, ref) => {
         components={components}
         columns={tableColumns}
         dataSource={fullTableData}
+        showHeader={activeExperiment?.sampleIds.length > 0}
         bordered
         pagination={false}
       />
