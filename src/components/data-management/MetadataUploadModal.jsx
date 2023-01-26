@@ -18,7 +18,6 @@ import Dropzone from 'react-dropzone';
 import config from 'config';
 
 import handleError from 'utils/http/handleError';
-import integrationTestConstants from 'utils/integrationTestConstants';
 import endUserMessages from 'utils/endUserMessages';
 import readFileToString from 'utils/upload/readFileToString';
 
@@ -48,14 +47,12 @@ const MetadataUploadModal = (props) => {
 
   // Handle on Drop
   const onDrop = async (droppedFiles) => {
-    console.log('droppedFiles ', droppedFiles);
     if (droppedFiles.length !== 1 || !droppedFiles[0].name.endsWith('.tsv')) {
       handleError('error', endUserMessages.ERROR_METADATA_MULTIPLE_FILES);
       return;
     }
 
     const file = droppedFiles[0];
-
     const data = await readFileToString(file);
 
     // this line of code is checking if the first line of the file has
@@ -65,9 +62,6 @@ const MetadataUploadModal = (props) => {
       return;
     }
 
-    // console.log('data ', data);
-
-    // const newFile = await fileObjectToFileRecord(file);
     setFilesList([file]);
   };
 
@@ -186,14 +180,14 @@ const MetadataUploadModal = (props) => {
 
       <Row>
         <Col span={24}>
-          <Dropzone onDrop={onDrop} multiple>
+          <Dropzone data-testid='dropzone' onDrop={onDrop}>
             {({ getRootProps, getInputProps }) => (
               <div
                 style={{ border: '1px solid #ccc', padding: '2rem 0' }}
                 {...getRootProps({ className: 'dropzone' })}
                 id='dropzone'
               >
-                <input data-test-id={integrationTestConstants.ids.FILE_UPLOAD_INPUT} {...getInputProps()} />
+                <input data-testid='drop-input' {...getInputProps()} />
                 <Empty description='Drag and drop the metadata file here or click to browse.' image={Empty.PRESENTED_IMAGE_SIMPLE} />
               </div>
             )}
