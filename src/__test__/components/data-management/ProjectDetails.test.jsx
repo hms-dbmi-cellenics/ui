@@ -269,7 +269,7 @@ describe('ProjectDetails', () => {
   });
 
   it('Cancels metadata creation', async () => {
-    const store = createStore(rootReducer, _.cloneDeep(withDataState), applyMiddleware(thunk));
+    const store = mockStore(withDataState);
     render(
       <Provider store={store}>
         {projectDetailsFactory()}
@@ -288,7 +288,7 @@ describe('ProjectDetails', () => {
   });
 
   it('Creates a metadata column trimming whitespaces in its name', async () => {
-    const store = createStore(rootReducer, _.cloneDeep(withDataState), applyMiddleware(thunk));
+    const store = mockStore(withDataState);
     await act(async () => {
       render(
         <Provider store={store}>
@@ -309,7 +309,7 @@ describe('ProjectDetails', () => {
   });
 
   it('Trims whitespaces in metadata track values', async () => {
-    const store = createStore(rootReducer, _.cloneDeep(withDataState), applyMiddleware(thunk));
+    const store = mockStore(withDataState);
     await act(async () => {
       render(
         <Provider store={store}>
