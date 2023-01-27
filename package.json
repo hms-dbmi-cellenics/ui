@@ -99,6 +99,7 @@
     "react-dnd": "^14.0.4",
     "react-dnd-html5-backend": "^14.0.2",
     "react-dnd-multi-backend": "^6.0.2",
+    "react-dnd-test-utils": "^14.1.0",
     "react-dom": "^16.13.1",
     "react-dropzone": "^11.3.1",
     "react-keyboard-event-handler": "^1.5.4",
@@ -160,6 +161,7 @@
     "lint-staged": "^13.1.0",
     "pre-commit": "^1.2.2",
     "prettier": "^1.15.3",
+    "react-dnd-test-backend": "^14.0.1",
     "webpack": "^4.43.0"
   },
   "nextBundleAnalysis": {

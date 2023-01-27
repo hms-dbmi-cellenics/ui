@@ -54,8 +54,6 @@ const createAndUploadSingleFile = async (
     return;
   }
 
-  console.log('Putting in S3');
-
   try {
     const metadata = getMetadata(file, selectedTech);
 
@@ -69,8 +67,6 @@ const createAndUploadSingleFile = async (
         file,
       ),
     );
-
-    console.log('Puttingins3Debug');
 
     await putInS3(loadedFile, signedUrl, (progress) => {
       const percentProgress = Math.round((progress.loaded / progress.total) * 100);
