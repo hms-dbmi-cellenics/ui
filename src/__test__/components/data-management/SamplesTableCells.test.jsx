@@ -3,6 +3,7 @@ import { screen, render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { act } from 'react-dom/test-utils';
 import { Provider } from 'react-redux';
+import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 
 import '@testing-library/jest-dom';
 import {
@@ -12,6 +13,10 @@ import {
 } from 'components/data-management/SamplesTableCells';
 import UploadStatus, { messageForStatus } from 'utils/upload/UploadStatus';
 import { makeStore } from 'redux/store';
+import mockAPI, { generateDefaultMockAPIResponses } from '__test__/test-utils/mockAPI';
+import { loadSamples, updateSampleFileUpload } from 'redux/actions/samples';
+
+import fake from '__test__/test-utils/constants';
 
 jest.mock('swr', () => () => ({
   data: [
@@ -33,48 +38,48 @@ jest.mock('swr', () => () => ({
   ],
 }));
 
+const experimentId = `${fake.EXPERIMENT_ID}-0`;
+const sampleId = `${fake.SAMPLE_ID}-0`;
+
+enableFetchMocks();
+
 describe('UploadCell', () => {
+  const fileCategory = 'features.tsv.gz';
+
   let storeState = null;
 
-  beforeEach(() => {
+  beforeEach(async () => {
+    fetchMock.mockClear();
+    fetchMock.mockIf(/.*/, mockAPI(generateDefaultMockAPIResponses(experimentId)));
+
     storeState = makeStore();
+
+    await storeState.dispatch(loadSamples(experimentId));
   });
 
-  it('Correctly renders the status messages', () => {
-    Object.keys(UploadStatus).forEach((statusKey) => {
-      const cellData = {
-        file: {
-          upload: {
-            status: UploadStatus[statusKey],
-          },
-        },
-      };
+  it('Correctly renders the status message', async () => {
+    render(
+      <Provider store={storeState}>
+        <UploadCell columnId={fileCategory} sampleUuid={sampleId} />
+      </Provider>,
+    );
 
-      render(
-        <Provider store={storeState}>
-          <UploadCell columnId={1} tableCellData={cellData} />
-        </Provider>,
-      );
-
-      const statusMessage = messageForStatus(UploadStatus[statusKey]);
-      expect(screen.getByText(statusMessage)).toBeInTheDocument();
-    });
+    const statusMessage = messageForStatus(UploadStatus.UPLOADED);
+    expect(screen.getByText(statusMessage)).toBeInTheDocument();
   });
 
-  it('Correctly renders percent progress', () => {
+  it('Correctly renders percent progress', async () => {
     const percentUploaded = 67;
-    const uploadingCellData = {
-      file: {
-        upload: {
-          progress: percentUploaded,
-          status: UploadStatus.UPLOADING,
-        },
-      },
-    };
+
+    await storeState.dispatch(
+      updateSampleFileUpload(
+        experimentId, sampleId, 'features10x', UploadStatus.UPLOADING, percentUploaded,
+      ),
+    );
 
     render(
       <Provider store={storeState}>
-        <UploadCell columnId={1} tableCellData={uploadingCellData} />
+        <UploadCell columnId={fileCategory} sampleUuid={sampleId} />
       </Provider>,
     );
 
@@ -85,17 +90,9 @@ describe('UploadCell', () => {
     const status = UploadStatus.UPLOADED;
     const uploadMessage = messageForStatus(status);
 
-    const uploadingCellData = {
-      file: {
-        upload: {
-          status,
-        },
-      },
-    };
-
     render(
       <Provider store={storeState}>
-        <UploadCell columnId={1} tableCellData={uploadingCellData} />
+        <UploadCell columnId={fileCategory} sampleUuid={sampleId} />
       </Provider>,
     );
 
@@ -129,7 +126,7 @@ describe('EditableFieldCell', () => {
       cellText={mockCellText}
       dataIndex='mockIndex'
       rowIdx={1}
-      onAfterSubmit={() => {}}
+      onAfterSubmit={() => { }}
     />);
 
     expect(screen.getByText(mockCellText)).toBeInTheDocument();
