@@ -7,14 +7,13 @@ import {
 } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
-import styled from 'styled-components';
+
 import {
   deleteSamples, updateSample,
 } from 'redux/actions/samples';
 import integrationTestConstants from 'utils/integrationTestConstants';
 
 import UploadStatus, { messageForStatus } from 'utils/upload/UploadStatus';
-import { METADATA_DEFAULT_VALUE } from 'redux/reducers/experiments/initialState';
 import EditableField from '../EditableField';
 import UploadDetailsModal from './UploadDetailsModal';
 
