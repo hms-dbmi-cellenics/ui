@@ -67,7 +67,6 @@ const MetadataUploadModal = (props) => {
 
   const removeFile = (fileName) => {
     const newArray = _.cloneDeep(filesList);
-
     const fileIdx = newArray.findIndex((file) => file.name === fileName);
     newArray.splice(fileIdx, 1);
     setFilesList(newArray);

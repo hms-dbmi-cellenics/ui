@@ -11,11 +11,10 @@ import MetadataUploadModal from './MetadataUploadModal';
 
 const AddMetadataButton = ({ samplesTableRef }) => {
   const dispatch = useDispatch();
-  const experiments = useSelector((state) => state.experiments);
-  const { activeExperimentId } = experiments.meta;
-  const activeExperiment = experiments[activeExperimentId];
-  const [uploadModalVisible, setUploadModalVisible] = useState(false);
+  const { activeExperimentId } = useSelector((state) => state.experiments.meta);
+  const activeExperiment = useSelector((state) => state.experiments[activeExperimentId]);
   const parentExperimentId = activeExperiment?.parentExperimentId;
+  const [uploadModalVisible, setUploadModalVisible] = useState(false);
 
   const uploadFiles = (file) => {
     dispatch(uploadMetadataFile(activeExperimentId, file));
@@ -53,12 +52,12 @@ const AddMetadataButton = ({ samplesTableRef }) => {
           Add metadata
         </Button>
       </Dropdown>
-      {uploadModalVisible ? (
+      {uploadModalVisible && (
         <MetadataUploadModal
           onUpload={uploadFiles}
           onCancel={() => setUploadModalVisible(false)}
         />
-      ) : <></>}
+      )}
     </>
   );
 };
