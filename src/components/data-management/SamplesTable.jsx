@@ -15,8 +15,7 @@ import {
 import { sortableHandle } from 'react-sortable-hoc';
 
 import ReactResizeDetector from 'react-resize-detector';
-
-import { useDrag, useDrop } from 'react-dnd';
+import { ClipLoader } from 'react-spinners';
 
 import ExampleExperimentsSpace from 'components/data-management/ExampleExperimentsSpace';
 import MetadataPopover from 'components/data-management/MetadataPopover';
@@ -29,58 +28,18 @@ import {
   updateValueInMetadataTrack,
   reorderSamples,
 } from 'redux/actions/experiments';
-
 import { loadSamples } from 'redux/actions/samples';
+import { METADATA_DEFAULT_VALUE } from 'redux/reducers/experiments/initialState';
+
+import DraggableBodyRow from 'components/data-management/DraggableBodyRow';
 
 import { metadataNameToKey, metadataKeyToName, temporaryMetadataKey } from 'utils/data-management/metadataUtils';
 import integrationTestConstants from 'utils/integrationTestConstants';
-import 'utils/css/data-management.css';
-import { ClipLoader } from 'react-spinners';
 import useConditionalEffect from 'utils/customHooks/useConditionalEffect';
-import { METADATA_DEFAULT_VALUE } from 'redux/reducers/experiments/initialState';
 import fileUploadSpecifications from 'utils/upload/fileUploadSpecifications';
+import 'utils/css/data-management.css';
 
 const { Text } = Typography;
-const type = 'DraggableBodyRow';
-
-const DraggableBodyRow = React.forwardRef((props, ref) => {
-  const {
-    index, moveRow, className, style, ...restProps
-  } = props;
-
-  const [{ isOver, dropClassName }, drop] = useDrop({
-    accept: type,
-    collect: (monitor) => {
-      const { index: dragIndex } = monitor.getItem() || {};
-
-      return {
-        isOver: monitor.isOver(),
-        dropClassName: dragIndex < index ? ' drop-over-downward' : ' drop-over-upward',
-      };
-    },
-    drop: (item) => {
-      moveRow((item).index, index);
-    },
-  }, [index]);
-
-  const [, drag] = useDrag(() => ({
-    type,
-    item: { type, index },
-  }), [index]);
-
-  useEffect(() => {
-    drop(drag((ref?.current)));
-  }, []);
-
-  return (
-    <tr
-      ref={ref}
-      className={`${className}${isOver ? dropClassName : ''}`}
-      style={{ cursor: 'move', ...style }}
-      {...restProps}
-    />
-  );
-});
 
 const SamplesTable = forwardRef((props, ref) => {
   const dispatch = useDispatch();
