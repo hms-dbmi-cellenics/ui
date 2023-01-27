@@ -44,11 +44,9 @@ const AddMetadataButton = ({ samplesTableRef }) => {
         )}
         trigger={['click']}
         placement='bottomRight'
-        disabled={activeExperiment.sampleIds?.length === 0}
+        disabled={activeExperiment.sampleIds?.length === 0 || parentExperimentId}
       >
-        <Button
-          disabled={activeExperiment.sampleIds?.length === 0 || parentExperimentId}
-        >
+        <Button>
           Add metadata
         </Button>
       </Dropdown>

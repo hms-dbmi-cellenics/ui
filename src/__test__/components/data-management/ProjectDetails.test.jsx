@@ -230,6 +230,21 @@ describe('ProjectDetails', () => {
     expect(metadataButton).not.toBeDisabled();
   });
 
+  it('Add metadata button is disabled for subset experiments', () => {
+    const state = _.cloneDeep(withDataState);
+    state.experiments[experiment1id].parentExperimentId = '736de01d-cb70-439a-9fdf-9b269a72fc67';
+    console.log('state to be used: ', state);
+    render(
+      <Provider store={mockStore(state)}>
+        <ProjectDetails width={width} height={height} />
+      </Provider>,
+    );
+
+    const metadataButton = screen.getByText('Add metadata').closest('button');
+
+    expect(metadataButton).toBeDisabled();
+  });
+
   it('Creates a metadata column', async () => {
     render(
       <Provider store={mockStore(withDataState)}>
