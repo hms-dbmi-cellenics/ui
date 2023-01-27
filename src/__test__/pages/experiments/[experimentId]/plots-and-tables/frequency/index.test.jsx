@@ -26,7 +26,7 @@ jest.mock('react-resize-detector', () => (props) => {
   return children({ width: 800, height: 800 });
 });
 
-const frequencyIndexFactory = createTestComponentFactory(FrequencyIndex, {});
+const frequencyIndexFactory = createTestComponentFactory(FrequencyIndex);
 
 describe('Frequency plots and tables index page', () => {
   let storeState = null;
