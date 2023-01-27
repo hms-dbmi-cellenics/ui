@@ -61,10 +61,10 @@ describe('PlotContainer', () => {
     await store.dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
   });
 
-  it('Renders itself and its children properly', async () => {
+  it('Renders itself and its children properly', () => {
     renderPlotContainer(store);
 
-    expect(screen.getByText('Mock plot')).toBeInTheDocument();
+    expect(screen.getByTitle('Plot')).toBeInTheDocument();
     expect(screen.getByText('Reset Plot')).toBeInTheDocument();
   });
 
