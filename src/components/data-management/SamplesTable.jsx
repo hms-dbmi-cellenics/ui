@@ -366,21 +366,23 @@ const SamplesTable = forwardRef((props, ref) => {
       refreshRate={500}
       onResize={(height) => { setSize({ height }); }}
     >
-      <Table
-        scroll={{ y: size.height, x: 'max-content' }}
-        components={VT}
-        columns={tableColumns}
-        dataSource={fullTableData}
-        locale={locale}
-        showHeader={activeExperiment?.sampleIds.length > 0}
-        pagination={false}
-        onRow={(record, index) => ({
-          index,
-          moveRow,
-        })}
-        sticky
-        bordered
-      />
+      {() => (
+        <Table
+          scroll={{ y: size.height, x: 'max-content' }}
+          components={VT}
+          columns={tableColumns}
+          dataSource={fullTableData}
+          locale={locale}
+          showHeader={activeExperiment?.sampleIds.length > 0}
+          pagination={false}
+          onRow={(record, index) => ({
+            index,
+            moveRow,
+          })}
+          sticky
+          bordered
+        />
+      )}
     </ReactResizeDetector>
   );
 
