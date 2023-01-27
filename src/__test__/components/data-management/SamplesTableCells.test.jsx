@@ -105,40 +105,53 @@ describe('UploadCell', () => {
 });
 
 describe('EditableFieldCell', () => {
+  let storeState = null;
+
+  beforeEach(async () => {
+    fetchMock.mockClear();
+    fetchMock.mockIf(/.*/, mockAPI(generateDefaultMockAPIResponses(experimentId)));
+
+    storeState = makeStore();
+
+    await storeState.dispatch(loadSamples(experimentId));
+  });
+
   // These cells should not be deleted independently of the column.
   it('Field should not be deletable', () => {
     const mockOnAfterSubmit = jest.fn();
 
-    render(<EditableFieldCell
-      cellText
-      dataIndex='mockIndex'
-      rowIdx={1}
-      onAfterSubmit={mockOnAfterSubmit}
-    />);
+    render(
+      <Provider store={storeState}>
+        <EditableFieldCell
+          sampleUuid={sampleId}
+          dataIndex='age'
+          rowIdx={0}
+          onAfterSubmit={mockOnAfterSubmit}
+        />
+      </Provider>,
+    );
 
     expect(screen.queryByLabelText('delete')).toBeNull();
   });
 
   it('Shows the input text', () => {
-    const mockCellText = 'mock cell text';
+    render(
+      <Provider store={storeState}>
+        <EditableFieldCell
+          sampleUuid={sampleId}
+          dataIndex='age'
+          rowIdx={0}
+          onAfterSubmit={() => { }}
+        />
+      </Provider>,
+    );
 
-    render(<EditableFieldCell
-      cellText={mockCellText}
-      dataIndex='mockIndex'
-      rowIdx={1}
-      onAfterSubmit={() => { }}
-    />);
-
-    expect(screen.getByText(mockCellText)).toBeInTheDocument();
+    expect(screen.getByText('BL')).toBeInTheDocument();
   });
 });
 
 describe('SampleNameCell', () => {
-  let storeState = null;
-
-  beforeEach(() => {
-    storeState = makeStore();
-  });
+  const storeState = null;
 
   it('Shows the sample name', () => {
     const mockSampleName = 'my mocky name';
