@@ -16,6 +16,7 @@ import {
 import { makeStore } from 'redux/store';
 import { plotNames } from 'utils/constants';
 import ExportAsCSV from 'components/plots/ExportAsCSV';
+import createTestComponentFactory from '__test__/test-utils/testComponentFactory';
 
 jest.mock('components/plots/ExportAsCSV', () => jest.fn(() => (<></>)));
 jest.mock('components/header/UserButton', () => () => <></>);
@@ -24,6 +25,8 @@ jest.mock('react-resize-detector', () => (props) => {
   const { children } = props;
   return children({ width: 800, height: 800 });
 });
+
+const frequencyIndexFactory = createTestComponentFactory(FrequencyIndex, {});
 
 describe('Frequency plots and tables index page', () => {
   let storeState = null;
@@ -57,9 +60,7 @@ describe('Frequency plots and tables index page', () => {
   const renderFrequencyIndex = async () => {
     await act(async () => render(
       <Provider store={storeState}>
-        <FrequencyIndex
-          experimentId={fake.EXPERIMENT_ID}
-        />
+        {frequencyIndexFactory({ experimentId: fake.EXPERIMENT_ID })}
       </Provider>,
     ));
   };
