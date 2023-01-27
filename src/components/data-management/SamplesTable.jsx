@@ -268,6 +268,7 @@ const SamplesTable = forwardRef((props, ref) => {
   useEffect(() => {
     if (!activeExperiment?.sampleIds.length) {
       setFullTableData([]);
+      return;
     }
 
     const alreadyInTable = () => _.isEqual(
