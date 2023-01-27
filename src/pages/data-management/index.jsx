@@ -29,8 +29,6 @@ const DataManagementPage = () => {
   const domainName = useSelector((state) => state.networkResources?.domainName);
 
   const activeExperiment = experiments[activeExperimentId];
-  const { saving: experimentsSaving } = experiments.meta;
-  const { saving: samplesSaving } = samples.meta;
 
   const [newProjectModalVisible, setNewProjectModalVisible] = useState(false);
 
@@ -113,17 +111,6 @@ const DataManagementPage = () => {
   return (
     <>
       <Header title='Data Management' />
-      {experimentsSaving || samplesSaving ? (
-        <center>
-          <Space direction='vertical'>
-            <ClipLoader
-              size={50}
-              color='#8f0b10'
-            />
-            Loading...
-          </Space>
-        </center>
-      ) : (<></>)}
       {newProjectModalVisible ? (
         <NewProjectModal
           onCancel={() => { setNewProjectModalVisible(false); }}

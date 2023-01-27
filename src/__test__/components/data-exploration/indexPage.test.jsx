@@ -12,6 +12,7 @@ import { makeStore } from 'redux/store';
 import { loadBackendStatus } from 'redux/actions/backendStatus';
 import fake from '__test__/test-utils/constants';
 import { updateFilterSettings } from 'redux/actions/experimentSettings';
+import createTestComponentFactory from '__test__/test-utils/testComponentFactory';
 
 describe('Data exploration index page', () => {
   let storeState = null;
@@ -29,10 +30,13 @@ describe('Data exploration index page', () => {
     // Set up state for backend status
     storeState.dispatch(loadBackendStatus(experimentId));
   });
+
+  const dataExplorationFactory = createTestComponentFactory(DataExploration, { experimentId, route: '/some/route/lol.com', experimentData: {} });
+
   const renderExplorationPage = async () => {
     await render(
       <Provider store={storeState}>
-        <DataExploration experimentId={experimentId} route='/some/route/lol.com' experimentData={{}} />
+        {dataExplorationFactory()}
       </Provider>,
     );
   };
