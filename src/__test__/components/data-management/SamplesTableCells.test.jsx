@@ -151,14 +151,20 @@ describe('EditableFieldCell', () => {
 });
 
 describe('SampleNameCell', () => {
-  const storeState = null;
+  let storeState = null;
+
+  beforeEach(async () => {
+    fetchMock.mockClear();
+    fetchMock.mockIf(/.*/, mockAPI(generateDefaultMockAPIResponses(experimentId)));
+
+    storeState = makeStore();
+
+    await storeState.dispatch(loadSamples(experimentId));
+  });
 
   it('Shows the sample name', () => {
-    const mockSampleName = 'my mocky name';
-
     const cellInfo = {
-      text: mockSampleName,
-      record: { uuid: 'mock-uuid' },
+      record: { uuid: sampleId },
       idx: 1,
     };
 
@@ -168,6 +174,6 @@ describe('SampleNameCell', () => {
       </Provider>,
     );
 
-    expect(screen.getByText(mockSampleName)).toBeInTheDocument();
+    expect(screen.getByText('Mock sample 0')).toBeInTheDocument();
   });
 });
