@@ -30,6 +30,7 @@ import UploadStatus from 'utils/upload/UploadStatus';
 import ProjectDetails from 'components/data-management/ProjectDetails';
 
 import '__test__/test-utils/setupTests';
+import createTestComponentFactory from '__test__/test-utils/testComponentFactory';
 
 const mockNavigateTo = jest.fn();
 
@@ -148,12 +149,15 @@ const withDataState = {
   },
 };
 
+const projectDetailsFactory = createTestComponentFactory(ProjectDetails, { width, height });
+
 describe('ProjectDetails', () => {
   let mockedCreateMetadataTrack;
   let mockedUpdateValueInMetadataTrack;
   let mockedCloneExperiment;
   let mockedLoadExperiments;
   let mockedSetActiveExperiment;
+
   beforeEach(() => {
     jest.clearAllMocks();
     mockedCreateMetadataTrack = jest.spyOn(createMetadataTrack, 'default');
@@ -166,7 +170,7 @@ describe('ProjectDetails', () => {
   it('Has a title, project ID and description', () => {
     render(
       <Provider store={mockStore(noDataState)}>
-        <ProjectDetails width={width} height={height} />
+        {projectDetailsFactory()}
       </Provider>,
     );
 
@@ -183,7 +187,7 @@ describe('ProjectDetails', () => {
   it('Has 5 buttons', () => {
     render(
       <Provider store={mockStore(noDataState)}>
-        <ProjectDetails width={width} height={height} />
+        {projectDetailsFactory()}
       </Provider>,
     );
 
@@ -197,7 +201,7 @@ describe('ProjectDetails', () => {
   it('Add metadata button is disabled if there is no data', () => {
     render(
       <Provider store={mockStore(noDataState)}>
-        <ProjectDetails width={width} height={height} />
+        {projectDetailsFactory()}
       </Provider>,
     );
 
@@ -209,7 +213,7 @@ describe('ProjectDetails', () => {
   it('Add metadata button is enabled if there is data', () => {
     render(
       <Provider store={mockStore(withDataState)}>
-        <ProjectDetails width={width} height={height} />
+        {projectDetailsFactory()}
       </Provider>,
     );
 
@@ -222,7 +226,7 @@ describe('ProjectDetails', () => {
     const store = createStore(rootReducer, _.cloneDeep(noDataState), applyMiddleware(thunk));
     render(
       <Provider store={store}>
-        <ProjectDetails width={width} height={height} />
+        {projectDetailsFactory()}
       </Provider>,
     );
     const downloadDropdown = screen.getByText('Download').closest('button');
@@ -232,7 +236,7 @@ describe('ProjectDetails', () => {
   it('Shows all the samples that are uploaded', () => {
     render(
       <Provider store={mockStore(withDataState)}>
-        <ProjectDetails width={width} height={height} />
+        {projectDetailsFactory()}
       </Provider>,
     );
 
@@ -245,7 +249,7 @@ describe('ProjectDetails', () => {
     await act(async () => {
       render(
         <Provider store={store}>
-          <ProjectDetails width={width} height={height} />
+          {projectDetailsFactory()}
         </Provider>,
       );
     });
@@ -264,7 +268,7 @@ describe('ProjectDetails', () => {
     const store = createStore(rootReducer, _.cloneDeep(withDataState), applyMiddleware(thunk));
     render(
       <Provider store={store}>
-        <ProjectDetails width={width} height={height} />
+        {projectDetailsFactory()}
       </Provider>,
     );
     const addMetadata = screen.getByText('Add metadata');
@@ -281,7 +285,7 @@ describe('ProjectDetails', () => {
     await act(async () => {
       render(
         <Provider store={store}>
-          <ProjectDetails width={width} height={height} />
+          {projectDetailsFactory()}
         </Provider>,
       );
     });
@@ -301,7 +305,7 @@ describe('ProjectDetails', () => {
     await act(async () => {
       render(
         <Provider store={store}>
-          <ProjectDetails width={width} height={height} />
+          {projectDetailsFactory()}
         </Provider>,
       );
     });
@@ -328,7 +332,7 @@ describe('ProjectDetails', () => {
     await act(async () => {
       render(
         <Provider store={store}>
-          <ProjectDetails width={width} height={height} />
+          {projectDetailsFactory()}
         </Provider>,
       );
     });
