@@ -233,15 +233,18 @@ describe('ProjectDetails', () => {
     expect(downloadDropdown).toBeDisabled();
   });
 
-  it('Shows all the samples that are uploaded', () => {
+  it('Shows all the samples that are uploaded', async () => {
     render(
       <Provider store={mockStore(withDataState)}>
         {projectDetailsFactory()}
       </Provider>,
     );
 
-    expect(screen.getByText(sample1Name)).toBeDefined();
-    expect(screen.getByText(sample2Name)).toBeDefined();
+    // Rows are rendered separately and they load their own data, so we need to wait for them
+    await waitFor(() => {
+      expect(screen.getByText(sample1Name)).toBeDefined();
+      expect(screen.getByText(sample2Name)).toBeDefined();
+    });
   });
 
   it('Creates a metadata column', async () => {
