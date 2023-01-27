@@ -29,8 +29,6 @@ const DataManagementPage = () => {
   const domainName = useSelector((state) => state.networkResources?.domainName);
 
   const activeExperiment = experiments[activeExperimentId];
-  const { saving: experimentsSaving } = experiments.meta;
-  const { saving: samplesSaving } = samples.meta;
 
   const [newProjectModalVisible, setNewProjectModalVisible] = useState(false);
 
