@@ -58,7 +58,7 @@ const deleteExperiment = (
       },
     });
   } catch (e) {
-    const errorMessage = handleError(e, endUserMessages.ERROR_DELETING_PROJECT);
+    const errorMessage = handleError(e, e.userMessage ?? endUserMessages.ERROR_DELETING_PROJECT);
 
     dispatch({
       type: EXPERIMENTS_ERROR,
