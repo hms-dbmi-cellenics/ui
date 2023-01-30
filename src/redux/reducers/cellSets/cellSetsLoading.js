@@ -7,7 +7,6 @@ const cellSetsLoading = produce((draft) => {
   draft.initialLoadPending = false;
   draft.loading = true;
   draft.error = false;
-  draft.selected = {};
 }, initialState);
 
 export default cellSetsLoading;

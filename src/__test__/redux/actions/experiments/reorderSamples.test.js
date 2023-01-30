@@ -43,11 +43,11 @@ describe('updateExperiment', () => {
   });
 
   it('Updates properties correctly', async () => {
-    const response = new Response(JSON.stringify({}));
+    const response = new Response(JSON.stringify(newSampleOrder));
     fetchMock.mockResolvedValueOnce(response);
 
     const store = mockStore(mockState);
-    await store.dispatch(reorderSamples(experimentId, oldIndex, newIndex, newSampleOrder));
+    await store.dispatch(reorderSamples(experimentId, oldIndex, newIndex));
 
     const actions = store.getActions();
     expect(_.map(actions, 'type')).toEqual([EXPERIMENTS_SAVING, EXPERIMENTS_UPDATED]);
@@ -72,7 +72,7 @@ describe('updateExperiment', () => {
 
     const store = mockStore(mockState);
     await expect(
-      store.dispatch(reorderSamples(experimentId, oldIndex, newIndex, newSampleOrder)),
+      store.dispatch(reorderSamples(experimentId, oldIndex, newIndex)),
     ).rejects.toThrow(new Error(`Error: ${error.message}`));
 
     const actions = store.getActions();
