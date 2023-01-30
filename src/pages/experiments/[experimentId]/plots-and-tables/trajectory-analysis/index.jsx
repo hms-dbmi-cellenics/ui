@@ -14,7 +14,7 @@ import Loader from 'components/Loader';
 import { loadEmbedding } from 'redux/actions/embedding';
 import { loadProcessingSettings } from 'redux/actions/experimentSettings';
 import { loadCellSets } from 'redux/actions/cellSets';
-import { getCellSets, getCellSetsHierarchy } from 'redux/selectors';
+import { getCellSets, getCellSetsHierarchy, getCellSetsHierarchyByKeys } from 'redux/selectors';
 
 import getTrajectoryPlotStartingNodes from 'redux/actions/componentConfig/getTrajectoryPlotStartingNodes';
 
@@ -69,9 +69,9 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
       ?.configureEmbedding?.embeddingSettings,
   );
 
-  const numLegendItems = hierarchy.find(
-    ({ key }) => key === selectedCellSet,
-  )?.children?.length;
+  const numLegendItems = useSelector(
+    getCellSetsHierarchyByKeys([selectedCellSet]),
+  )[0]?.children?.length;
 
   const {
     data: embeddingData,

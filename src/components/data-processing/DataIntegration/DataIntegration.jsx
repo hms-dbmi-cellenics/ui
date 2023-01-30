@@ -8,7 +8,9 @@ import {
 import _ from 'lodash';
 import PropTypes from 'prop-types';
 
-import { getBackendStatus, getCellSets } from 'redux/selectors';
+import {
+  getBackendStatus, getCellSets, getCellSetsHierarchy, getCellSetsHierarchyByKeys,
+} from 'redux/selectors';
 
 import {
   updatePlotConfig,
@@ -47,8 +49,8 @@ const DataIntegration = (props) => {
     _.debounce((plotUuid) => dispatch(savePlotConfig(experimentId, plotUuid)), 2000), [],
   );
 
-  const { hierarchy } = cellSets;
-  const numSamples = hierarchy.find(({ key }) => key === 'sample').children.length;
+  const hierarchy = useSelector(getCellSetsHierarchy());
+  const numSamples = useSelector(getCellSetsHierarchyByKeys(['sample']))[0]?.children?.length;
 
   const [plots] = useState({
     embedding: {
@@ -229,8 +231,6 @@ const DataIntegration = (props) => {
   useEffect(() => {
     Object.values(plots).forEach((obj) => {
       const { plotUuid, plotType } = obj;
-
-      if (plotConfigs[plotUuid]) return;
 
       if (plotConfigs[plotUuid]) return;
 

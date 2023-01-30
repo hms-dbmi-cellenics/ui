@@ -17,7 +17,7 @@ import { loadCellSets } from 'redux/actions/cellSets';
 import PlatformError from 'components/PlatformError';
 import Loader from 'components/Loader';
 import populateHeatmapData from 'components/plots/helpers/heatmap/populateHeatmapData';
-import { getCellSets, getCellSetsHierarchy } from 'redux/selectors';
+import { getCellSets, getCellSetsHierarchyByKeys, getCellSetsHierarchy } from 'redux/selectors';
 import { plotNames } from 'utils/constants';
 import SelectData from 'components/plots/styling/SelectData';
 import HeatmapGroupBySettings from 'components/data-exploration/heatmap/HeatmapGroupBySettings';
@@ -34,18 +34,18 @@ const plotType = 'heatmap';
 
 const HeatmapPlot = ({ experimentId }) => {
   const dispatch = useDispatch();
+  const [vegaSpec, setVegaSpec] = useState();
+  const displaySavedGenes = useRef(true);
+
   const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
   const { expression: expressionData } = useSelector((state) => state.genes);
   const { error, loading } = expressionData;
   const cellSets = useSelector(getCellSets());
   const hierarchy = useSelector(getCellSetsHierarchy());
   const selectedGenes = useSelector((state) => state.genes.expression.views[plotUuid]?.data) || [];
-  const [vegaSpec, setVegaSpec] = useState();
-  const displaySavedGenes = useRef(true);
-
-  const numLegendItems = hierarchy.find(
-    ({ key }) => key === config?.selectedCellSet,
-  )?.children?.length;
+  const numLegendItems = useSelector(
+    getCellSetsHierarchyByKeys([config?.selectedCellSet]),
+  )[0]?.children?.length;
 
   useEffect(() => {
     dispatch(loadCellSets(experimentId));

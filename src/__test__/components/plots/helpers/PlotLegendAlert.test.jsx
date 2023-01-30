@@ -13,7 +13,22 @@ describe('PlotLegendAlert', () => {
     ).toBeInTheDocument();
     expect(
       screen.getByText(
-        /You can still display the plot legend by changing the value of "Toggle Legend" option in Plot Styling settings under "Legend"./gi,
+        /You can still display the plot legend by changing the value of "Toggle Legend" option in "Plot styling" settings under "Legend"./gi,
+      ),
+    ).toBeInTheDocument();
+  });
+
+  it('Displays the correct plot styling section name ', () => {
+    render(<PlotLegendAlert stylingSectionName='Plot options' />);
+
+    expect(
+      screen.getByText(
+        /We have hidden the plot legend, because it is too large and it interferes with the display of the plot./gi,
+      ),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        /You can still display the plot legend by changing the value of "Toggle Legend" option in "Plot options" settings under "Legend"./gi,
       ),
     ).toBeInTheDocument();
   });

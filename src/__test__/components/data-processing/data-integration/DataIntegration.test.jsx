@@ -2,7 +2,7 @@ import React from 'react';
 import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
-import { mockCellSets } from '__test__/test-utils/cellSets.mock';
+import { mockCellSets, mockCellSetsHierarchy } from '__test__/test-utils/cellSets.mock';
 
 import DataIntegration from 'components/data-processing/DataIntegration/DataIntegration';
 
@@ -10,7 +10,9 @@ import { initialPlotConfigStates } from 'redux/reducers/componentConfig/initialS
 import { initialEmbeddingState } from 'redux/reducers/embeddings/initialState';
 import { generateDataProcessingPlotUuid } from 'utils/generateCustomPlotUuid';
 
-import { getBackendStatus, getCellSets } from 'redux/selectors';
+import {
+  getBackendStatus, getCellSets, getCellSetsHierarchy, getCellSetsHierarchyByKeys,
+} from 'redux/selectors';
 import generateExperimentSettingsMock from '__test__/test-utils/experimentSettings.mock';
 import '__test__/test-utils/setupTests';
 import { screen, render } from '@testing-library/react';
@@ -72,6 +74,8 @@ const mockedStore = mockStore({
 describe('DataIntegration', () => {
   beforeEach(() => {
     getCellSets.mockReturnValue(() => ({ accessible: true, ...mockCellSets }));
+    getCellSetsHierarchy.mockReturnValue(() => mockCellSetsHierarchy);
+    getCellSetsHierarchyByKeys.mockImplementation((keys) => () => keys.map((key) => mockCellSetsHierarchy.find((child) => child.key === key)));
   });
   const renderDataIntegration = async () => await render(
     <Provider store={mockedStore}>

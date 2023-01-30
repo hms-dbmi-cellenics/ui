@@ -66,7 +66,7 @@ const ConfigureEmbedding = (props) => {
       plotType: 'embeddingPreviewByCellSets',
       plot: (config, actions) => (
         <Space direction='vertical'>
-          {config?.legend?.showAlert && numCellSets > MAX_LEGEND_ITEMS && <PlotLegendAlert />}
+          {config?.legend?.showAlert && numCellSets > MAX_LEGEND_ITEMS && <PlotLegendAlert stylingSectionName='Plot Options' />}
           <CategoricalEmbeddingPlot
             experimentId={experimentId}
             config={config}
@@ -83,7 +83,7 @@ const ConfigureEmbedding = (props) => {
       plotType: 'embeddingPreviewBySample',
       plot: (config, actions) => (
         <Space direction='vertical'>
-          {config?.legend?.showAlert && numSamples > MAX_LEGEND_ITEMS && <PlotLegendAlert />}
+          {config?.legend?.showAlert && numCellSets > MAX_LEGEND_ITEMS && <PlotLegendAlert stylingSectionName='Plot Options' />}
           <CategoricalEmbeddingPlot
             experimentId={experimentId}
             config={{
@@ -364,7 +364,9 @@ const ConfigureEmbedding = (props) => {
       />
       <Row gutter={16}>
         <Col flex='auto'>
-          {renderPlot()}
+          <center>
+            {renderPlot()}
+          </center>
         </Col>
 
         <Col flex='1 0px' style={{ minWidth: '300px' }}>
@@ -382,7 +384,7 @@ const ConfigureEmbedding = (props) => {
 
           <CalculationConfig experimentId={experimentId} onConfigChange={onConfigChange} />
           <Collapse>
-            <Panel header='Plot styling' key='styling'>
+            <Panel header='Plot options' key='styling'>
               <div style={{ height: 8 }} />
               <PlotStyling
                 formConfig={plotStylingControlsConfig}
