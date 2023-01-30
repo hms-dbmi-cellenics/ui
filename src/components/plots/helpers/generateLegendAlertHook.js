@@ -10,13 +10,17 @@ const generateLegendAlertHook = (hierarchy, cellSetKey, useConfigValue = true) =
       ({ key }) => key === cellSetName,
     )?.children?.length;
 
-    if (numLegendItems <= MAX_LEGEND_ITEMS) return plotConfig;
+    if (numLegendItems < MAX_LEGEND_ITEMS) return plotConfig;
+
+    const modifiedLegend = {
+      enabled: false,
+      showAlert: true,
+    };
+
+    if (!plotConfig.legend.enabled) modifiedLegend.showAlert = false;
 
     const modifiedConfig = _.merge({}, plotConfig, {
-      legend: {
-        enabled: false,
-        showAlert: true,
-      },
+      legend: modifiedLegend,
     });
 
     return modifiedConfig;

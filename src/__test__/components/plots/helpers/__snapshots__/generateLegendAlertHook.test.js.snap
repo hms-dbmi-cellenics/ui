@@ -3,7 +3,9 @@
 exports[`generateLegendAlertHook Should be able to use the hardcoded value for comparison 1`] = `
 Object {
   "legend": Object {
+    "colour": "#000000",
     "enabled": false,
+    "position": "right",
     "showAlert": true,
   },
   "selectedCellSet": "louvain",
@@ -13,7 +15,9 @@ Object {
 exports[`generateLegendAlertHook Should use the plotConfig cellSet value for comparison 1`] = `
 Object {
   "legend": Object {
+    "colour": "#000000",
     "enabled": false,
+    "position": "right",
     "showAlert": true,
   },
   "selectedCellSet": "louvain",

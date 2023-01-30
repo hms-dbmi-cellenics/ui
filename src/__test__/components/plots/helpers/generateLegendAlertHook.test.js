@@ -1,4 +1,5 @@
 import generateLegendAlertHook, { MAX_LEGEND_ITEMS } from 'components/plots/helpers/generateLegendAlertHook';
+import { legendBaseState } from 'redux/reducers/componentConfig/baseStylesState';
 
 const hierarchy = [
   {
@@ -13,6 +14,7 @@ const hierarchy = [
 
 const config = {
   selectedCellSet: 'louvain',
+  legend: legendBaseState,
 };
 
 describe('generateLegendAlertHook', () => {
@@ -42,6 +44,22 @@ describe('generateLegendAlertHook', () => {
 
     expect(JSON.stringify(config)).not.toEqual(JSON.stringify(modifiedConfig));
     expect(modifiedConfig).toMatchSnapshot();
+  });
+
+  it('Should not show legendAlert if plotConfig is already hidden', () => {
+    const hiddenConfig = {
+      selectedCellSet: 'louvain',
+      legend: {
+        enabled: false,
+        showAlert: true,
+      },
+    };
+
+    const hookFn = generateLegendAlertHook(hierarchy, 'selectedCellSet');
+
+    const modifiedConfig = hookFn(hiddenConfig);
+
+    expect(modifiedConfig.legend.showAlert).toEqual(false);
   });
 
   it('Should return original config if number of cellSets is less than maximum to be shown', () => {

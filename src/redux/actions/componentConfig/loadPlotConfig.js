@@ -10,15 +10,13 @@ const loadPlotConfig = (
   experimentId,
   plotUuid,
   plotType,
-  beforeDispatchHook,
+  beforeLoadConfigHook,
 ) => async (dispatch) => {
   try {
     const { config, plotData } = await fetchAPI(`/v2/experiments/${experimentId}/plots/${plotUuid}`);
 
-    let plotConfig = beforeDispatchHook ? beforeDispatchHook(config) : config;
-    plotConfig = _.merge({}, initialPlotConfigStates[plotType], plotConfig);
-
-    console.log('*** plotConfig', plotUuid, 'in try', plotConfig.legend);
+    let plotConfig = _.merge({}, initialPlotConfigStates[plotType], config);
+    plotConfig = beforeLoadConfigHook ? beforeLoadConfigHook(plotConfig) : plotConfig;
 
     dispatch({
       type: LOAD_CONFIG,
@@ -34,9 +32,7 @@ const loadPlotConfig = (
     // load default plot config if it not found
     if (e.statusCode === httpStatusCodes.NOT_FOUND) {
       let plotConfig = _.cloneDeep(initialPlotConfigStates[plotType]);
-      if (beforeDispatchHook) plotConfig = beforeDispatchHook(plotConfig);
-
-      console.log('*** plotConfig', plotUuid, 'in except', plotConfig.legend);
+      if (beforeLoadConfigHook) plotConfig = beforeLoadConfigHook(plotConfig);
 
       dispatch({
         type: LOAD_CONFIG,

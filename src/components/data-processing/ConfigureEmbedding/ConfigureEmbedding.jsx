@@ -64,20 +64,17 @@ const ConfigureEmbedding = (props) => {
       title: 'Cell sets',
       plotUuid: embeddingPreviewByCellSetsPlotUuid,
       plotType: 'embeddingPreviewByCellSets',
-      plot: (config, actions) => {
-        console.log('*** config?.legend?.showAlert', config?.legend?.showAlert);
-        return (
-          <Space direction='vertical'>
-            {config?.legend?.showAlert && numCellSets > MAX_LEGEND_ITEMS && <PlotLegendAlert />}
-            <CategoricalEmbeddingPlot
-              experimentId={experimentId}
-              config={config}
-              actions={actions}
-              onUpdate={updatePlotWithChanges}
-            />
-          </Space>
-        );
-      }
+      plot: (config, actions) => (
+        <Space direction='vertical'>
+          {config?.legend?.showAlert && numCellSets > MAX_LEGEND_ITEMS && <PlotLegendAlert />}
+          <CategoricalEmbeddingPlot
+            experimentId={experimentId}
+            config={config}
+            actions={actions}
+            onUpdate={updatePlotWithChanges}
+          />
+        </Space>
+      )
       ,
     },
     sample: {
