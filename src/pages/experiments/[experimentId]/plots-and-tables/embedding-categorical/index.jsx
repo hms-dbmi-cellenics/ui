@@ -8,19 +8,19 @@ import {
 } from 'antd';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
-import { getCellSets, getCellSetsHierarchy } from 'redux/selectors';
+import { getCellSets, getCellSetsHierarchy, getCellSetsHierarchyByKeys } from 'redux/selectors';
 import {
   updatePlotConfig,
   loadPlotConfig,
 } from 'redux/actions/componentConfig/index';
 import Header from 'components/Header';
 import { loadCellSets } from 'redux/actions/cellSets';
+import Loader from 'components/Loader';
 import CategoricalEmbeddingPlot from 'components/plots/CategoricalEmbeddingPlot';
 import PlotContainer from 'components/plots/PlotContainer';
 import SelectData from 'components/plots/styling/embedding-continuous/SelectData';
-import PlotLegendAlert from 'components/plots/helpers/PlotLegendAlert';
+import PlotLegendAlert, { MAX_LEGEND_ITEMS } from 'components/plots/helpers/PlotLegendAlert';
 import { plotNames } from 'utils/constants';
-import generateLegendAlertHook, { MAX_LEGEND_ITEMS } from 'components/plots/helpers/generateLegendAlertHook';
 
 const { Panel } = Collapse;
 
@@ -31,22 +31,29 @@ const EmbeddingCategoricalPage = ({ experimentId }) => {
   const dispatch = useDispatch();
   const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
   const cellSets = useSelector(getCellSets());
+  const numLegendItems = useSelector(
+    getCellSetsHierarchyByKeys([config?.selectedCellSet]),
+  )[0]?.children?.length;
   const hierarchy = useSelector(getCellSetsHierarchy());
-
-  const numLegendItems = hierarchy.find(
-    ({ key }) => key === config?.selectedCellSet,
-  )?.children?.length;
 
   useEffect(() => {
     dispatch(loadCellSets(experimentId));
+    if (!config) dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
   }, []);
 
-  useEffect(() => {
-    if (config) return;
+  const updatePlotWithChanges = (obj) => {
+    dispatch(updatePlotConfig(plotUuid, obj));
+  };
 
-    const beforeLoadConfigHook = generateLegendAlertHook(hierarchy, 'selectedCellSet');
-    dispatch(loadPlotConfig(experimentId, plotUuid, plotType, beforeLoadConfigHook));
-  }, [cellSets.accessible]);
+  useEffect(() => {
+    if (!config
+      || !cellSets.accessible
+      || !config.legend.enabled) return;
+
+    const showAlert = numLegendItems > MAX_LEGEND_ITEMS;
+
+    updatePlotWithChanges({ legend: { showAlert, enabled: !showAlert } });
+  }, [!config, cellSets.accessible]);
 
   const generateGroupByOptions = () => {
     if (!cellSets.accessible) {
@@ -56,10 +63,6 @@ const EmbeddingCategoricalPage = ({ experimentId }) => {
       value: key,
       label: `${cellSets.properties[key].name} (${children.length} ${children === 1 ? 'child' : 'children'})`,
     }));
-  };
-
-  const updatePlotWithChanges = (obj) => {
-    dispatch(updatePlotConfig(plotUuid, obj));
   };
 
   const plotStylingConfig = [
@@ -133,6 +136,29 @@ const EmbeddingCategoricalPage = ({ experimentId }) => {
     </>
   );
 
+  const render = () => {
+    if (!cellSets.accessible || !config) {
+      return (
+        <center>
+          <Loader experimentId={experimentId} />
+        </center>
+      );
+    }
+
+    return (
+      <Space direction='vertical'>
+        {config?.legend?.showAlert
+          && <PlotLegendAlert />}
+        <CategoricalEmbeddingPlot
+          experimentId={experimentId}
+          config={config}
+          plotUuid={plotUuid}
+          onUpdate={updatePlotWithChanges}
+        />
+      </Space>
+    );
+  };
+
   return (
     <>
       <Header title={plotNames.CATEGORICAL_EMBEDDING} />
@@ -145,17 +171,7 @@ const EmbeddingCategoricalPage = ({ experimentId }) => {
         extraControlPanels={renderExtraPanels()}
         defaultActiveKey='group-by'
       >
-        <Space direction='vertical'>
-          {config?.legend?.showAlert
-            && numLegendItems > MAX_LEGEND_ITEMS
-            && <PlotLegendAlert />}
-          <CategoricalEmbeddingPlot
-            experimentId={experimentId}
-            config={config}
-            plotUuid={plotUuid}
-            onUpdate={updatePlotWithChanges}
-          />
-        </Space>
+        { render() }
       </PlotContainer>
     </>
   );
