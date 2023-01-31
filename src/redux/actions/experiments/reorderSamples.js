@@ -10,7 +10,6 @@ const reorderSamples = (
   experimentId,
   oldIndex,
   newIndex,
-  newSampleOrder,
 ) => async (dispatch) => {
   dispatch({
     type: EXPERIMENTS_SAVING,
@@ -22,7 +21,7 @@ const reorderSamples = (
       newPosition: newIndex,
     };
 
-    await fetchAPI(
+    const newSampleOrder = await fetchAPI(
       `/v2/experiments/${experimentId}/samples/position`,
       {
         method: 'PUT',

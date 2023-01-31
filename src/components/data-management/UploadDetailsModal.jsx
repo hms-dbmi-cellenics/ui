@@ -21,11 +21,13 @@ dayjs.extend(utc);
 const UploadDetailsModal = (props) => {
   const dispatch = useDispatch();
   const {
-    visible, onCancel, uploadDetailsModalDataRef,
+    visible, onCancel, file,
   } = props;
-  const { fileCategory, sampleUuid } = uploadDetailsModalDataRef.current ?? {};
-  const file = uploadDetailsModalDataRef.current?.file ?? {};
-  const { upload } = file ?? {};
+
+  const {
+    name, fileCategory, sampleUuid, upload, size, lastModified, fileObject = undefined,
+  } = file ?? {};
+
   const status = upload?.status;
   const inputFileRef = useRef(null);
   const [replacementFileObject, setReplacementFileObject] = useState(null);
@@ -33,7 +35,7 @@ const UploadDetailsModal = (props) => {
   const { activeExperimentId } = useSelector((state) => state.experiments.meta);
   const samples = useSelector((state) => state.samples);
   const selectedTech = useSelector((state) => state.samples[sampleUuid]?.type);
-  const sampleName = samples[uploadDetailsModalDataRef.current?.sampleUuid]?.name;
+  const sampleName = samples[file?.sampleUuid]?.name;
 
   useEffect(() => {
     if (replacementFileObject) {
@@ -64,7 +66,7 @@ const UploadDetailsModal = (props) => {
   };
 
   const uploadFile = (newFile) => {
-    if (!uploadDetailsModalDataRef.current) {
+    if (!file) {
       return;
     }
 
@@ -76,7 +78,7 @@ const UploadDetailsModal = (props) => {
     <Button
       type='primary'
       key='retry'
-      disabled={!file?.fileObject}
+      disabled={!fileObject}
       block
       onClick={() => {
         uploadFile(file);
@@ -126,7 +128,7 @@ const UploadDetailsModal = (props) => {
       key='retry'
       block
       onClick={() => {
-        downloadSingleFile(activeExperimentId, sampleUuid, file.name);
+        downloadSingleFile(activeExperimentId, sampleUuid, name);
       }}
       style={{ width: '140px', marginBottom: '10px' }}
     >
@@ -172,7 +174,7 @@ const UploadDetailsModal = (props) => {
         {!isNotUploadedModal && (
           <Row style={{ marginTop: '5px', marginBottom: '5px' }}>
             <Col span={5}>Filename</Col>
-            <Col span={10}>{file.name}</Col>
+            <Col span={10}>{name}</Col>
           </Row>
         )}
 
@@ -182,14 +184,14 @@ const UploadDetailsModal = (props) => {
               <Row style={{ marginTop: '5px', marginBottom: '5px' }}>
                 <Col span={5}>File size</Col>
                 <Col span={10}>
-                  {toMBytes(file.size)}
+                  {toMBytes(size)}
                   {' '}
                   MB
                 </Col>
               </Row>
               <Row style={{ marginTop: '5px', marginBottom: '5px' }}>
                 <Col span={5}>Upload date</Col>
-                <Col span={10}>{fromISODateToFormatted(file.lastModified)}</Col>
+                <Col span={10}>{fromISODateToFormatted(lastModified)}</Col>
               </Row>
             </>
           )
@@ -206,14 +208,12 @@ const UploadDetailsModal = (props) => {
 };
 
 UploadDetailsModal.propTypes = {
-  file: PropTypes.object,
   visible: PropTypes.bool,
   onCancel: PropTypes.func,
-  uploadDetailsModalDataRef: PropTypes.object.isRequired,
+  file: PropTypes.object.isRequired,
 };
 
 UploadDetailsModal.defaultProps = {
-  file: {},
   visible: true,
   onCancel: () => { },
 };

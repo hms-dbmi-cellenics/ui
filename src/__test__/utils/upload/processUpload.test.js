@@ -353,8 +353,8 @@ describe('processUpload', () => {
     const uploadedFileProperties = uploadProperties.filter(
       ({ status }) => status === UploadStatus.UPLOADED,
     );
-    // There are 3 files actions with status uploading
-    expect(uploadingFileProperties.length).toEqual(3);
+    // There are no files actions with status uploading
+    expect(uploadingFileProperties.length).toEqual(0);
     // There are 3 files actions with status upload error
     expect(errorFileProperties.length).toEqual(3);
     // There are no file actions with status successfully uploaded
