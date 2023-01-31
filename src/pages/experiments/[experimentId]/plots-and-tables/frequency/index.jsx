@@ -1,6 +1,6 @@
 /* eslint-disable import/no-unresolved */
 /* eslint-disable no-param-reassign */
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { useSelector, useDispatch } from 'react-redux';
 import {
@@ -27,9 +27,8 @@ import loadCellSets from 'redux/actions/cellSets/loadCellSets';
 import plotCsvFilename from 'utils/fileNames';
 import { plotNames } from 'utils/constants';
 import PlotContainer from 'components/plots/PlotContainer';
-import generateLegendAlertHook, { MAX_LEGEND_ITEMS } from 'components/plots/helpers/generateLegendAlertHook';
 
-import PlotLegendAlert from 'components/plots/helpers/PlotLegendAlert';
+import PlotLegendAlert, { MAX_LEGEND_ITEMS } from 'components/plots/helpers/PlotLegendAlert';
 
 const { Panel } = Collapse;
 
@@ -42,6 +41,7 @@ const FrequencyPlotPage = ({ experimentId }) => {
   const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
   const cellSets = useSelector(getCellSets());
   const hierarchy = useSelector(getCellSetsHierarchy());
+  const displayLegendItemAlert = useRef(false);
 
   const numLegendItems = hierarchy.find(
     ({ key }) => key === config?.proportionGrouping,
@@ -58,14 +58,25 @@ const FrequencyPlotPage = ({ experimentId }) => {
 
   useEffect(() => {
     dispatch(loadCellSets(experimentId));
+    if (!config) dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
   }, []);
 
-  useEffect(() => {
-    if (config) return;
+  const updatePlotWithChanges = (obj) => {
+    dispatch(updatePlotConfig(plotUuid, obj));
+  };
 
-    const beforeLoadConfigHook = generateLegendAlertHook(hierarchy, 'proportionGrouping');
-    dispatch(loadPlotConfig(experimentId, plotUuid, plotType, beforeLoadConfigHook));
-  }, [cellSets.accessible]);
+  useEffect(() => {
+    if (!config
+      || !cellSets.accessible
+      || !config.legend.enabled) return;
+
+    const showAlert = numLegendItems > MAX_LEGEND_ITEMS;
+
+    if (displayLegendItemAlert.current === showAlert) return;
+
+    updatePlotWithChanges({ legend: { showAlert, enabled: !showAlert } });
+    displayLegendItemAlert.current = showAlert;
+  }, [!config, cellSets.accessible]);
 
   const plotStylingConfig = [
     {
@@ -134,10 +145,6 @@ const FrequencyPlotPage = ({ experimentId }) => {
     setCsvData(newCsvData);
   };
 
-  const updatePlotWithChanges = (obj) => {
-    dispatch(updatePlotConfig(plotUuid, obj));
-  };
-
   const changePlotType = (value) => {
     const chosenType = value.target.value;
 
@@ -186,9 +193,7 @@ const FrequencyPlotPage = ({ experimentId }) => {
 
     return (
       <Space direction='vertical'>
-        { config?.legend?.showAlert
-          && numLegendItems > MAX_LEGEND_ITEMS
-          && <PlotLegendAlert />}
+        { config?.legend?.showAlert && <PlotLegendAlert />}
         <center>
           <FrequencyPlot
             experimentId={experimentId}

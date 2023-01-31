@@ -14,7 +14,7 @@ import Loader from 'components/Loader';
 import { loadEmbedding } from 'redux/actions/embedding';
 import { loadProcessingSettings } from 'redux/actions/experimentSettings';
 import { loadCellSets } from 'redux/actions/cellSets';
-import { getCellSets, getCellSetsHierarchy, getCellSetsHierarchyByKeys } from 'redux/selectors';
+import { getCellSets, getCellSetsHierarchyByKeys } from 'redux/selectors';
 
 import getTrajectoryPlotStartingNodes from 'redux/actions/componentConfig/getTrajectoryPlotStartingNodes';
 
@@ -26,8 +26,7 @@ import PlatformError from 'components/PlatformError';
 import { plotNames, plotTypes } from 'utils/constants';
 import useConditionalEffect from 'utils/customHooks/useConditionalEffect';
 import updateTrajectoryPlotSelectedNodes from 'redux/actions/componentConfig/updateTrajectoryPlotSelectedNodes';
-import generateLegendAlertHook, { MAX_LEGEND_ITEMS } from 'components/plots/helpers/generateLegendAlertHook';
-import PlotLegendAlert from 'components/plots/helpers/PlotLegendAlert';
+import PlotLegendAlert, { MAX_LEGEND_ITEMS } from 'components/plots/helpers/PlotLegendAlert';
 import TrajectoryAnalysisNodeSelector from './TrajectoryAnalysisNodeSelector';
 import TrajectoryAnalysisDisplaySettings from './TrajectoryAnalysisDisplaySettings';
 
@@ -46,15 +45,18 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
   const dispatch = useDispatch();
   const [displaySettings, setDisplaySettings] = useState(initialDisplaySettings);
   const resetZoomRef = useRef();
+  const displayLegendItemAlert = useRef(false);
 
   // Currenty monocle3 trajectory analysis only supports
   // UMAP embedding. Therefore, this embedding is specifically fetched.
   const embeddingMethod = 'umap';
 
   const cellSets = useSelector(getCellSets());
-  const hierarchy = useSelector(getCellSetsHierarchy());
 
   const plotLoading = useSelector((state) => state.componentConfig[plotUuid]?.loading);
+  const legendEnabled = useSelector(
+    (state) => state.componentConfig[plotUuid]?.config?.legend?.enabled,
+  );
   const plotDataError = useSelector((state) => state.componentConfig[plotUuid]?.error);
   const configIsLoaded = useSelector((state) => !_.isNil(state.componentConfig[plotUuid]));
   const showLegendAlert = useSelector(
@@ -80,15 +82,28 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
   } = useSelector((state) => state.embeddings[embeddingMethod]) || {};
 
   useEffect(() => {
+    if (!configIsLoaded) {
+      dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
+    }
+
     if (!cellSets.accessible) dispatch(loadCellSets(experimentId));
     if (!embeddingSettings) dispatch(loadProcessingSettings(experimentId));
   }, []);
 
+  const updatePlotWithChanges = (obj) => {
+    dispatch(updatePlotConfig(plotUuid, obj));
+  };
+
   useEffect(() => {
-    if (configIsLoaded || !cellSets.accessible) return;
-    const beforeLoadConfigHook = generateLegendAlertHook(hierarchy, 'selectedCellSet');
-    dispatch(loadPlotConfig(experimentId, plotUuid, plotType, beforeLoadConfigHook));
-  }, [cellSets.accessible, configIsLoaded]);
+    if (!configIsLoaded
+      || !cellSets.accessible
+      || !legendEnabled) return;
+
+    const showAlert = numLegendItems > MAX_LEGEND_ITEMS;
+
+    updatePlotWithChanges({ legend: { showAlert, enabled: !showAlert } });
+    displayLegendItemAlert.current = showAlert;
+  }, [configIsLoaded, cellSets.accessible]);
 
   useEffect(() => {
     if (embeddingMethod
@@ -114,10 +129,6 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
     embeddingLoading,
     embeddingSettings,
   ]);
-
-  const updatePlotWithChanges = (obj) => {
-    dispatch(updatePlotConfig(plotUuid, obj));
-  };
 
   const plotStylingConfig = [
     {

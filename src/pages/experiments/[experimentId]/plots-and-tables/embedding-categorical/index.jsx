@@ -1,5 +1,5 @@
 /* eslint-disable no-param-reassign */
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import {
   Collapse,
   Select,
@@ -29,6 +29,9 @@ const plotType = 'embeddingCategorical';
 
 const EmbeddingCategoricalPage = ({ experimentId }) => {
   const dispatch = useDispatch();
+
+  const displayLegendItemAlert = useRef(false);
+
   const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
   const cellSets = useSelector(getCellSets());
   const numLegendItems = useSelector(
@@ -52,7 +55,10 @@ const EmbeddingCategoricalPage = ({ experimentId }) => {
 
     const showAlert = numLegendItems > MAX_LEGEND_ITEMS;
 
+    if (displayLegendItemAlert.current === showAlert) return;
+
     updatePlotWithChanges({ legend: { showAlert, enabled: !showAlert } });
+    displayLegendItemAlert.current = showAlert;
   }, [!config, cellSets.accessible]);
 
   const generateGroupByOptions = () => {
@@ -147,8 +153,7 @@ const EmbeddingCategoricalPage = ({ experimentId }) => {
 
     return (
       <Space direction='vertical'>
-        {config?.legend?.showAlert
-          && <PlotLegendAlert />}
+        {config?.legend?.showAlert && <PlotLegendAlert />}
         <CategoricalEmbeddingPlot
           experimentId={experimentId}
           config={config}

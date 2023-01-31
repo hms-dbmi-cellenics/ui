@@ -17,15 +17,14 @@ import { loadCellSets } from 'redux/actions/cellSets';
 import PlatformError from 'components/PlatformError';
 import Loader from 'components/Loader';
 import populateHeatmapData from 'components/plots/helpers/heatmap/populateHeatmapData';
-import { getCellSets, getCellSetsHierarchyByKeys, getCellSetsHierarchy } from 'redux/selectors';
+import { getCellSets, getCellSetsHierarchyByKeys } from 'redux/selectors';
 import { plotNames } from 'utils/constants';
 import SelectData from 'components/plots/styling/SelectData';
 import HeatmapGroupBySettings from 'components/data-exploration/heatmap/HeatmapGroupBySettings';
 import HeatmapMetadataTrackSettings from 'components/data-exploration/heatmap/HeatmapMetadataTrackSettings';
-import PlotLegendAlert from 'components/plots/helpers/PlotLegendAlert';
+import PlotLegendAlert, { MAX_LEGEND_ITEMS } from 'components/plots/helpers/PlotLegendAlert';
 
 import generateVegaData from 'components/plots/helpers/heatmap/vega/generateVegaData';
-import generateLegendAlertHook, { MAX_LEGEND_ITEMS } from 'components/plots/helpers/generateLegendAlertHook';
 
 const { Panel } = Collapse;
 
@@ -36,12 +35,12 @@ const HeatmapPlot = ({ experimentId }) => {
   const dispatch = useDispatch();
   const [vegaSpec, setVegaSpec] = useState();
   const displaySavedGenes = useRef(true);
+  const displayLegendItemAlert = useRef(false);
 
   const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
   const { expression: expressionData } = useSelector((state) => state.genes);
   const { error, loading } = expressionData;
   const cellSets = useSelector(getCellSets());
-  const hierarchy = useSelector(getCellSetsHierarchy());
   const selectedGenes = useSelector((state) => state.genes.expression.views[plotUuid]?.data) || [];
   const numLegendItems = useSelector(
     getCellSetsHierarchyByKeys([config?.selectedCellSet]),
@@ -49,6 +48,7 @@ const HeatmapPlot = ({ experimentId }) => {
 
   useEffect(() => {
     dispatch(loadCellSets(experimentId));
+    if (!config) dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
   }, []);
 
   useEffect(() => {
@@ -62,10 +62,22 @@ const HeatmapPlot = ({ experimentId }) => {
     }
   }, [config]);
 
+  const updatePlotWithChanges = (obj) => {
+    dispatch(updatePlotConfig(plotUuid, obj));
+  };
+
   useEffect(() => {
-    const beforeLoadConfigHook = generateLegendAlertHook(hierarchy, 'selectedCellSet');
-    dispatch(loadPlotConfig(experimentId, plotUuid, plotType, beforeLoadConfigHook));
-  }, [cellSets.accessible]);
+    if (!config
+      || !cellSets.accessible
+      || !config.legend.enabled) return;
+
+    const showAlert = numLegendItems > MAX_LEGEND_ITEMS;
+
+    if (displayLegendItemAlert.current === showAlert) return;
+
+    updatePlotWithChanges({ legend: { showAlert, enabled: !showAlert } });
+    displayLegendItemAlert.current = showAlert;
+  }, [!config, cellSets.accessible]);
 
   useEffect(() => {
     if (!config || _.isEmpty(expressionData)) {
@@ -99,11 +111,6 @@ const HeatmapPlot = ({ experimentId }) => {
 
     setVegaSpec(spec);
   }, [expressionData, config, cellSets]);
-
-  // updatedField is a subset of what default config has and contains only the things we want change
-  const updatePlotWithChanges = (updatedField) => {
-    dispatch(updatePlotConfig(plotUuid, updatedField));
-  };
 
   const onGeneEnter = (genes) => {
     // updating the selected genes in the config too so they are saved in dynamodb

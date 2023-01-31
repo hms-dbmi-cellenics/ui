@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import {
   Collapse,
   Skeleton,
@@ -34,9 +34,8 @@ import SelectData from 'components/plots/styling/SelectData';
 import populateHeatmapData from 'components/plots/helpers/heatmap/populateHeatmapData';
 import generateVegaData from 'components/plots/helpers/heatmap/vega/generateVegaData';
 import { plotNames } from 'utils/constants';
-import generateLegendAlertHook, { MAX_LEGEND_ITEMS } from 'components/plots/helpers/generateLegendAlertHook';
 
-import PlotLegendAlert from 'components/plots/helpers/PlotLegendAlert';
+import PlotLegendAlert, { MAX_LEGEND_ITEMS } from 'components/plots/helpers/PlotLegendAlert';
 
 import ScrollOnDrag from 'components/plots/ScrollOnDrag';
 
@@ -49,6 +48,7 @@ const MarkerHeatmap = ({ experimentId }) => {
   const dispatch = useDispatch();
 
   const [vegaSpec, setVegaSpec] = useState();
+  const displayLegendItemAlert = useRef(false);
 
   const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
 
@@ -82,15 +82,24 @@ const MarkerHeatmap = ({ experimentId }) => {
 
   useEffect(() => {
     if (!louvainClustersResolution) dispatch(loadProcessingSettings(experimentId));
+    if (!config) dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
     if (!hierarchy?.length) dispatch(loadCellSets(experimentId));
   }, []);
 
-  useEffect(() => {
-    if (config) return;
+  const updatePlotWithChanges = (updatedField) => {
+    dispatch(updatePlotConfig(plotUuid, updatedField));
+  };
 
-    const beforeLoadConfigHook = generateLegendAlertHook(hierarchy, 'selectedCellSet');
-    dispatch(loadPlotConfig(experimentId, plotUuid, plotType, beforeLoadConfigHook));
-  }, [cellSets.accessible]);
+  useEffect(() => {
+    if (!config
+      || !cellSets.accessible
+      || !config.legend.enabled) return;
+
+    const showAlert = numLegendItems > MAX_LEGEND_ITEMS;
+
+    updatePlotWithChanges({ legend: { showAlert, enabled: !showAlert } });
+    displayLegendItemAlert.current = showAlert;
+  }, [!config, cellSets.accessible]);
 
   useEffect(() => {
     if (louvainClustersResolution && config?.nMarkerGenes && hierarchy?.length) {
@@ -271,11 +280,6 @@ const MarkerHeatmap = ({ experimentId }) => {
   useEffect(() => {
     if (treeScrollable) ScrollOnDrag(treeScrollable);
   }, [treeScrollable]);
-
-  // updatedField is a subset of what default config has and contains only the things we want change
-  const updatePlotWithChanges = (updatedField) => {
-    dispatch(updatePlotConfig(plotUuid, updatedField));
-  };
 
   const plotStylingConfig = [
     {

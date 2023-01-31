@@ -24,8 +24,7 @@ import { generateDataProcessingPlotUuid } from 'utils/generateCustomPlotUuid';
 import Loader from 'components/Loader';
 import { getCellSets } from 'redux/selectors';
 import CalculationConfig from 'components/data-processing/ConfigureEmbedding/CalculationConfig';
-import generateLegendAlertHook, { MAX_LEGEND_ITEMS } from 'components/plots/helpers/generateLegendAlertHook';
-import PlotLegendAlert from 'components/plots/helpers/PlotLegendAlert';
+import PlotLegendAlert, { MAX_LEGEND_ITEMS } from 'components/plots/helpers/PlotLegendAlert';
 
 const { Panel } = Collapse;
 
@@ -37,9 +36,6 @@ const ConfigureEmbedding = (props) => {
   const cellMeta = useSelector((state) => state.cellMeta);
   const [selectedPlot, setSelectedPlot] = useState('cellCluster');
 
-  const embeddingPreviewByCellSetsPlotUuid = generateDataProcessingPlotUuid(null, filterName, 0);
-  const embeddingPreviewBySamplePlotUuid = generateDataProcessingPlotUuid(null, filterName, 1);
-
   const dispatch = useDispatch();
   const debounceSave = useCallback(
     _.debounce((plotUuid) => dispatch(savePlotConfig(experimentId, plotUuid)), 2000), [],
@@ -48,13 +44,11 @@ const ConfigureEmbedding = (props) => {
   const continuousEmbeddingPlots = ['mitochondrialContent', 'doubletScores', 'numOfGenes', 'numOfUmis'];
 
   const { hierarchy } = cellSets;
-  const numSamples = hierarchy.find(({ key }) => key === 'sample').children.length;
-  const numCellSets = hierarchy.find(({ key }) => key === 'louvain').children.length;
 
   useEffect(() => {
     continuousEmbeddingPlots.forEach((dataName) => {
       if (cellMeta[dataName].loading && !cellMeta[dataName].error) {
-        if (embeddingPreviewByCellSetsPlotUuid) dispatch(loadCellMeta(experimentId, dataName));
+        dispatch(loadCellMeta(experimentId, dataName));
       }
     });
   }, []);
@@ -62,11 +56,11 @@ const ConfigureEmbedding = (props) => {
   const plots = {
     cellCluster: {
       title: 'Cell sets',
-      plotUuid: embeddingPreviewByCellSetsPlotUuid,
+      plotUuid: generateDataProcessingPlotUuid(null, filterName, 0),
       plotType: 'embeddingPreviewByCellSets',
       plot: (config, actions) => (
         <Space direction='vertical'>
-          {config?.legend?.showAlert && numCellSets > MAX_LEGEND_ITEMS && <PlotLegendAlert stylingSectionName='Plot Options' />}
+          {config?.legend?.showAlert && <PlotLegendAlert stylingSectionName='Plot Options' />}
           <CategoricalEmbeddingPlot
             experimentId={experimentId}
             config={config}
@@ -79,11 +73,11 @@ const ConfigureEmbedding = (props) => {
     },
     sample: {
       title: 'Samples',
-      plotUuid: embeddingPreviewBySamplePlotUuid,
+      plotUuid: generateDataProcessingPlotUuid(null, filterName, 1),
       plotType: 'embeddingPreviewBySample',
       plot: (config, actions) => (
         <Space direction='vertical'>
-          {config?.legend?.showAlert && numCellSets > MAX_LEGEND_ITEMS && <PlotLegendAlert stylingSectionName='Plot Options' />}
+          {config?.legend?.showAlert && <PlotLegendAlert stylingSectionName='Plot Options' />}
           <CategoricalEmbeddingPlot
             experimentId={experimentId}
             config={{
@@ -266,26 +260,42 @@ const ConfigureEmbedding = (props) => {
     return plotConfigsToReturn;
   });
 
-  const selectedConfig = plotConfigs[plots[selectedPlot].plotUuid];
+  const activePlotUuid = plots[selectedPlot].plotUuid;
+  const activePlotType = plots[selectedPlot].plotType;
+  const selectedConfig = plotConfigs[activePlotUuid];
 
   useEffect(() => {
     Object.values(plots).forEach((obj) => {
-      const { plotUuid, plotType } = obj;
-
-      if (plotConfigs[plotUuid]) return;
-
-      let beforeLoadConfigHook = null;
-      if (plotUuid === embeddingPreviewByCellSetsPlotUuid) {
-        beforeLoadConfigHook = generateLegendAlertHook(hierarchy, 'louvain', false);
+      if (!plotConfigs[obj.plotUuid]) {
+        dispatch(loadPlotConfig(experimentId, obj.plotUuid, obj.plotType));
       }
-
-      if (plotUuid === embeddingPreviewBySamplePlotUuid) {
-        beforeLoadConfigHook = generateLegendAlertHook(hierarchy, 'sample', false);
-      }
-
-      dispatch(loadPlotConfig(experimentId, plotUuid, plotType, beforeLoadConfigHook));
     });
-  }, [cellSets.accessible]);
+  }, []);
+
+  const updatePlotWithChanges = (obj) => {
+    dispatch(updatePlotConfig(activePlotUuid, obj));
+    debounceSave(activePlotUuid);
+  };
+
+  useEffect(() => {
+    if (!selectedConfig
+      || !cellSets.accessible
+      || !selectedConfig.legend.enabled) return;
+
+    let legendItemKey = null;
+    if (activePlotType === 'embeddingPreviewByCellSets') {
+      legendItemKey = 'louvain';
+    } else if (activePlotType === 'embeddingPreviewBySample') {
+      legendItemKey = 'sample';
+    } else {
+      return;
+    }
+
+    const numLegendItems = hierarchy.find(({ key }) => key === legendItemKey).children.length;
+    const showAlert = numLegendItems > MAX_LEGEND_ITEMS;
+
+    updatePlotWithChanges({ legend: { showAlert, enabled: !showAlert } });
+  }, [!selectedConfig, activePlotType, cellSets.accessible]);
 
   useEffect(() => {
     // if we change a plot and the config is not saved yet
@@ -295,8 +305,6 @@ const ConfigureEmbedding = (props) => {
   }, [selectedPlot]);
 
   useEffect(() => {
-    // Do not update anything if the cell sets are stil loading or if
-    // the config does not exist yet.
     if (!selectedConfig) {
       return;
     }
@@ -308,11 +316,6 @@ const ConfigureEmbedding = (props) => {
       setPlot(plots[selectedPlot].plot(selectedConfig, plotActions));
     }
   }, [selectedConfig, cellSets]);
-
-  const updatePlotWithChanges = (obj) => {
-    dispatch(updatePlotConfig(plots[selectedPlot].plotUuid, obj));
-    debounceSave(plots[selectedPlot].plotUuid);
-  };
 
   const renderExtraControlPanels = () => (
     <Panel header='Select data' key='select-data'>
