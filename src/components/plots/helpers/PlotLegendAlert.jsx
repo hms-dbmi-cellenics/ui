@@ -4,6 +4,8 @@ import {
   Alert,
 } from 'antd';
 
+const MAX_LEGEND_ITEMS = 50;
+
 const PlotLegendAlert = (props) => {
   const { stylingSectionName } = props;
 
@@ -35,3 +37,4 @@ PlotLegendAlert.defaultProps = {
 };
 
 export default PlotLegendAlert;
+export { MAX_LEGEND_ITEMS };

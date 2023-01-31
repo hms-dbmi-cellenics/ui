@@ -1,5 +1,7 @@
 import React from 'react';
-import PlotLegendAlert from 'components/plots/helpers/PlotLegendAlert';
+import PlotLegendAlert, {
+  MAX_LEGEND_ITEMS,
+} from 'components/plots/helpers/PlotLegendAlert';
 import { render, screen } from '@testing-library/react';
 
 describe('PlotLegendAlert', () => {
@@ -31,5 +33,9 @@ describe('PlotLegendAlert', () => {
         /You can still display the plot legend by changing the value of "Toggle Legend" option in "Plot options" settings under "Legend"./gi,
       ),
     ).toBeInTheDocument();
+  });
+
+  it('Exports the number of max legend items to be shown', () => {
+    expect(MAX_LEGEND_ITEMS).toMatchInlineSnapshot('50');
   });
 });
