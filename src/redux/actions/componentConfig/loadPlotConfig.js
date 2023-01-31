@@ -6,34 +6,24 @@ import { initialPlotConfigStates } from 'redux/reducers/componentConfig/initialS
 import handleError from 'utils/http/handleError';
 import httpStatusCodes from 'utils/http/httpStatusCodes';
 
-const loadPlotConfig = (
-  experimentId,
-  plotUuid,
-  plotType,
-  beforeLoadConfigHook,
-) => async (dispatch) => {
+const loadPlotConfig = (experimentId, plotUuid, plotType) => async (dispatch) => {
   try {
-    const { config, plotData } = await fetchAPI(`/v2/experiments/${experimentId}/plots/${plotUuid}`);
+    const data = await fetchAPI(`/v2/experiments/${experimentId}/plots/${plotUuid}`);
 
-    let plotConfig = _.merge({}, initialPlotConfigStates[plotType], config);
-    plotConfig = beforeLoadConfigHook ? beforeLoadConfigHook(plotConfig) : plotConfig;
-
+    const plotConfig = _.merge({}, initialPlotConfigStates[plotType], data.config);
     dispatch({
       type: LOAD_CONFIG,
       payload: {
         experimentId,
         plotUuid,
         plotType,
-        plotData,
+        plotData: data.plotData,
         config: plotConfig,
       },
     });
   } catch (e) {
     // load default plot config if it not found
     if (e.statusCode === httpStatusCodes.NOT_FOUND) {
-      let plotConfig = _.cloneDeep(initialPlotConfigStates[plotType]);
-      if (beforeLoadConfigHook) plotConfig = beforeLoadConfigHook(plotConfig);
-
       dispatch({
         type: LOAD_CONFIG,
         payload: {
@@ -41,7 +31,7 @@ const loadPlotConfig = (
           plotUuid,
           plotType,
           plotData: [],
-          config: plotConfig,
+          config: _.cloneDeep(initialPlotConfigStates[plotType]),
         },
       });
       return;
