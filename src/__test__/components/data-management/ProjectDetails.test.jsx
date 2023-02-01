@@ -138,7 +138,7 @@ const withDataState = {
       ...initialExperimentBackendStatus,
       status: {
         gem2s: {
-          paramsHash: 'old-params-hash',
+          shouldRerun: true,
           status: PipelineStatus.SUCCEEDED,
         },
         pipeline: {

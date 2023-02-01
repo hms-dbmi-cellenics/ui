@@ -54,11 +54,9 @@ describe('GEM2SLoadingScreen', () => {
   });
 
   it('Clicking re-launch analysis re-runs GEM2S', () => {
-    const mockParamsHash = 'mockParamsHash';
-
     const component = mount(
       <Provider store={store}>
-        <GEM2SLoadingScreen experimentId='experimentId' paramsHash={mockParamsHash} gem2sStatus='error' />
+        <GEM2SLoadingScreen experimentId='experimentId' gem2sStatus='error' />
       </Provider>,
     );
 
@@ -66,12 +64,6 @@ describe('GEM2SLoadingScreen', () => {
     relaunchButton.simulate('click');
 
     expect(fetchAPI).toHaveBeenCalled();
-
-    const fetchAPIParams = fetchAPI.mock.calls[0];
-    const requestBody = JSON.parse(fetchAPIParams[1].body);
-
-    // Check that the body of the request is correct
-    expect(requestBody.paramsHash).toMatch(mockParamsHash);
   });
 
   it('Renders running state correctly', () => {
