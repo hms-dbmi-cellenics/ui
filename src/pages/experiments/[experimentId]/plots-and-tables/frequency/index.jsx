@@ -1,6 +1,7 @@
 /* eslint-disable import/no-unresolved */
 /* eslint-disable no-param-reassign */
 import React, { useEffect, useState, useRef } from 'react';
+import _ from 'lodash';
 import PropTypes from 'prop-types';
 import { useSelector, useDispatch } from 'react-redux';
 import {
@@ -38,7 +39,10 @@ const dataExplorationPath = '/experiments/[experimentId]/data-exploration';
 
 const FrequencyPlotPage = ({ experimentId }) => {
   const dispatch = useDispatch();
+
   const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
+  const configIsLoaded = useSelector((state) => !_.isNil(state.componentConfig[plotUuid]));
+
   const cellSets = useSelector(getCellSets());
   const hierarchy = useSelector(getCellSetsHierarchy());
   const displayLegendItemAlert = useRef(false);
@@ -66,7 +70,7 @@ const FrequencyPlotPage = ({ experimentId }) => {
   };
 
   useEffect(() => {
-    if (!config
+    if (!configIsLoaded
       || !cellSets.accessible
       || !config.legend.enabled) return;
 
@@ -76,7 +80,7 @@ const FrequencyPlotPage = ({ experimentId }) => {
 
     updatePlotWithChanges({ legend: { showAlert, enabled: !showAlert } });
     displayLegendItemAlert.current = showAlert;
-  }, [!config, cellSets.accessible]);
+  }, [configIsLoaded, cellSets.accessible]);
 
   const plotStylingConfig = [
     {

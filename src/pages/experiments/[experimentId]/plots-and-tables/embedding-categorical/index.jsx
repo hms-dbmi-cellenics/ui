@@ -1,5 +1,6 @@
 /* eslint-disable no-param-reassign */
 import React, { useEffect, useRef } from 'react';
+import _ from 'lodash';
 import {
   Collapse,
   Select,
@@ -33,6 +34,8 @@ const EmbeddingCategoricalPage = ({ experimentId }) => {
   const displayLegendItemAlert = useRef(false);
 
   const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
+  const configIsLoaded = useSelector((state) => !_.isNil(state.componentConfig[plotUuid]));
+
   const cellSets = useSelector(getCellSets());
   const numLegendItems = useSelector(
     getCellSetsHierarchyByKeys([config?.selectedCellSet]),
@@ -49,7 +52,7 @@ const EmbeddingCategoricalPage = ({ experimentId }) => {
   };
 
   useEffect(() => {
-    if (!config
+    if (!configIsLoaded
       || !cellSets.accessible
       || !config.legend.enabled) return;
 
@@ -59,7 +62,7 @@ const EmbeddingCategoricalPage = ({ experimentId }) => {
 
     updatePlotWithChanges({ legend: { showAlert, enabled: !showAlert } });
     displayLegendItemAlert.current = showAlert;
-  }, [!config, cellSets.accessible]);
+  }, [configIsLoaded, cellSets.accessible]);
 
   const generateGroupByOptions = () => {
     if (!cellSets.accessible) {

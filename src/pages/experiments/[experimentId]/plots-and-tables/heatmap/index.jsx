@@ -38,6 +38,8 @@ const HeatmapPlot = ({ experimentId }) => {
   const displayLegendItemAlert = useRef(false);
 
   const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
+  const configIsLoaded = useSelector((state) => !_.isNil(state.componentConfig[plotUuid]));
+
   const { expression: expressionData } = useSelector((state) => state.genes);
   const { error, loading } = expressionData;
   const cellSets = useSelector(getCellSets());
@@ -67,7 +69,7 @@ const HeatmapPlot = ({ experimentId }) => {
   };
 
   useEffect(() => {
-    if (!config
+    if (!configIsLoaded
       || !cellSets.accessible
       || !config.legend.enabled) return;
 
@@ -77,7 +79,7 @@ const HeatmapPlot = ({ experimentId }) => {
 
     updatePlotWithChanges({ legend: { showAlert, enabled: !showAlert } });
     displayLegendItemAlert.current = showAlert;
-  }, [!config, cellSets.accessible]);
+  }, [configIsLoaded, cellSets.accessible]);
 
   useEffect(() => {
     if (!config || _.isEmpty(expressionData)) {
