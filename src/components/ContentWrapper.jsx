@@ -269,7 +269,7 @@ const ContentWrapper = (props) => {
       }
 
       if (gem2sRunning && experiment?.parentExperimentId) {
-        return <GEM2SLoadingScreen experimentId={routeExperimentId} gem2sStatus='subsetting' completedSteps={completedGem2sSteps} experimentName={experiment.name} />;
+        return <GEM2SLoadingScreen experimentId={routeExperimentId} gem2sStatus='subsetting' completedSteps={completedGem2sSteps} experimentName={experimentName} />;
       }
 
       if (gem2sRunning || waitingForQcToLaunch) {
