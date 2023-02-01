@@ -79,6 +79,7 @@ const generateSpec = (config, plotData, xNamesToDisplay, yNamesToDisplay) => {
 
   return {
     $schema: 'https://vega.github.io/schema/vega/v5.json',
+    description: 'Frequency plot',
     width: config.dimensions.width,
     height: config.dimensions.height,
     autosize: { type: 'fit', resize: true },

@@ -244,7 +244,6 @@ const HeatmapPlot = ({ experimentId }) => {
       return (
         <Space direction='vertical'>
           {config.legend.showAlert
-          && numLegendItems > MAX_LEGEND_ITEMS
           && <PlotLegendAlert />}
           <center>
             <Vega spec={vegaSpec} renderer='webgl' />
