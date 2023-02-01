@@ -211,8 +211,7 @@ const DataIntegration = (props) => {
     (state) => state.componentConfig[plots[selectedPlot].plotUuid]?.plotData,
   );
 
-  const activePlotUuid = plots[selectedPlot].plotUuid;
-  const activePlotType = plots[selectedPlot].plotType;
+  const { plotUuid: activePlotUuid, plotType: activePlotType } = plots[selectedPlot];
   const selectedConfig = plotConfigs[activePlotUuid];
 
   const updatePlotWithChanges = (obj) => {

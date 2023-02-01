@@ -260,8 +260,7 @@ const ConfigureEmbedding = (props) => {
     return plotConfigsToReturn;
   });
 
-  const activePlotUuid = plots[selectedPlot].plotUuid;
-  const activePlotType = plots[selectedPlot].plotType;
+  const { plotUuid: activePlotUuid, plotType: activePlotType } = plots[selectedPlot];
   const selectedConfig = plotConfigs[activePlotUuid];
 
   useEffect(() => {
