@@ -56,6 +56,10 @@ const ContentWrapper = (props) => {
 
   const samples = useSelector((state) => state.samples);
 
+  // activeExperimentId holds the value in redux of the selected experiment
+  // after loading a page it is determined whether to use that ID or the ID in the route URL
+  // i.e. when we are in data management there is not exp ID in the URL so we get it from redux
+
   useEffect(() => {
     if (!activeExperimentId && !routeExperimentId) return;
 
