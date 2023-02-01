@@ -14,6 +14,7 @@ import fake from '__test__/test-utils/constants';
 import { loadPlotConfig, updatePlotConfig } from 'redux/actions/componentConfig';
 import { initialPlotConfigStates } from 'redux/reducers/componentConfig/initialState';
 import { act } from 'react-dom/test-utils';
+import createTestComponentFactory from '__test__/test-utils/testComponentFactory';
 
 enableFetchMocks();
 
@@ -33,17 +34,13 @@ const defaultProps = {
   plotType,
 };
 
-const renderPlotContainer = (store, props = {}) => {
-  const containerProps = { ...defaultProps, ...props };
+const plotContainerFactory = createTestComponentFactory(PlotContainer, defaultProps);
 
-  render(
-    <Provider store={store}>
-      <PlotContainer {...containerProps}>
-        <>Mock plot</>
-      </PlotContainer>
-    </Provider>,
-  );
-};
+const renderPlotContainer = (store, props = {}) => render(
+  <Provider store={store}>
+    {plotContainerFactory(props)}
+  </Provider>,
+);
 
 let store = null;
 
@@ -64,10 +61,10 @@ describe('PlotContainer', () => {
     await store.dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
   });
 
-  it('Renders itself and its children properly', async () => {
+  it('Renders itself and its children properly', () => {
     renderPlotContainer(store);
 
-    expect(screen.getByText('Mock plot')).toBeInTheDocument();
+    expect(screen.getByTitle('Plot')).toBeInTheDocument();
     expect(screen.getByText('Reset Plot')).toBeInTheDocument();
   });
 

@@ -3,6 +3,9 @@ import React, { useEffect, useState, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 
+import MultiBackend from 'react-dnd-multi-backend';
+import HTML5ToTouch from 'react-dnd-multi-backend/dist/cjs/HTML5toTouch';
+
 import {
   BuildOutlined,
   DatabaseOutlined,
@@ -36,6 +39,7 @@ import experimentUpdatesHandler from 'utils/experimentUpdatesHandler';
 import integrationTestConstants from 'utils/integrationTestConstants';
 import pipelineStatus from 'utils/pipelineStatusValues';
 import calculateGem2sRerunStatus from 'utils/data-management/calculateGem2sRerunStatus';
+import { DndProvider } from 'react-dnd';
 
 const { Sider } = Layout;
 const { Text } = Typography;
@@ -337,72 +341,74 @@ const ContentWrapper = (props) => {
 
   return (
     <>
-      {privacyPolicyIsNotAccepted(user, domainName) && (
-        <PrivacyPolicyIntercept user={user} onOk={() => dispatch(loadUser())} />
-      )}
-      <BrowserAlert />
-      <Layout style={{ minHeight: '100vh' }}>
-        <Sider
-          style={{
-            overflow: 'auto', height: '100vh', position: 'fixed', left: 0,
-          }}
-          width={210}
-          theme='dark'
-          mode='inline'
-          collapsible
-          collapsed={collapsed}
-          onCollapse={(collapse) => setCollapsed(collapse)}
-        >
-          <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-            {collapsed ? <SmallLogo /> : <BigLogo />}
-            <Menu
-              data-test-id={integrationTestConstants.ids.NAVIGATION_MENU}
-              theme='dark'
-              selectedKeys={
-                menuLinks
-                  .filter(({ module }) => module === currentModule)
-                  .map(({ module }) => module)
-              }
-              mode='inline'
-            >
-              {menuLinks.filter((item) => !item.disableIfNoExperiment).map(menuItemRender)}
-
-              <Menu.ItemGroup
-                title={!collapsed && (
-                  <Tooltip title={experimentName} placement='right'>
-                    <Space direction='vertical' style={{ width: '100%', cursor: 'default' }}>
-                      <Text
-                        style={{
-                          width: '100%',
-                          color: '#999999',
-                        }}
-                        strong
-                        ellipsis
-                      >
-                        {experimentName || 'No analysis'}
-                      </Text>
-                      {experimentName && (
-                        <Text style={{ color: '#999999' }}>
-                          Current analysis
-                        </Text>
-                      )}
-                    </Space>
-                  </Tooltip>
-
-                )}
+      <DndProvider backend={MultiBackend} options={HTML5ToTouch}>
+        {privacyPolicyIsNotAccepted(user, domainName) && (
+          <PrivacyPolicyIntercept user={user} onOk={() => dispatch(loadUser())} />
+        )}
+        <BrowserAlert />
+        <Layout style={{ minHeight: '100vh' }}>
+          <Sider
+            style={{
+              overflow: 'auto', height: '100vh', position: 'fixed', left: 0,
+            }}
+            width={210}
+            theme='dark'
+            mode='inline'
+            collapsible
+            collapsed={collapsed}
+            onCollapse={(collapse) => setCollapsed(collapse)}
+          >
+            <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+              {collapsed ? <SmallLogo /> : <BigLogo />}
+              <Menu
+                data-test-id={integrationTestConstants.ids.NAVIGATION_MENU}
+                theme='dark'
+                selectedKeys={
+                  menuLinks
+                    .filter(({ module }) => module === currentModule)
+                    .map(({ module }) => module)
+                }
+                mode='inline'
               >
-                {menuLinks.filter((item) => item.disableIfNoExperiment).map(menuItemRender)}
-              </Menu.ItemGroup>
+                {menuLinks.filter((item) => !item.disableIfNoExperiment).map(menuItemRender)}
 
-            </Menu>
-          </div>
-        </Sider>
-        <Layout
-          style={!collapsed ? { marginLeft: '210px' } : { marginLeft: '80px' }} // this is the collapsed width for our sider
-        >
-          {renderContent()}
+                <Menu.ItemGroup
+                  title={!collapsed && (
+                    <Tooltip title={experimentName} placement='right'>
+                      <Space direction='vertical' style={{ width: '100%', cursor: 'default' }}>
+                        <Text
+                          style={{
+                            width: '100%',
+                            color: '#999999',
+                          }}
+                          strong
+                          ellipsis
+                        >
+                          {experimentName || 'No analysis'}
+                        </Text>
+                        {experimentName && (
+                          <Text style={{ color: '#999999' }}>
+                            Current analysis
+                          </Text>
+                        )}
+                      </Space>
+                    </Tooltip>
+
+                  )}
+                >
+                  {menuLinks.filter((item) => item.disableIfNoExperiment).map(menuItemRender)}
+                </Menu.ItemGroup>
+
+              </Menu>
+            </div>
+          </Sider>
+          <Layout
+            style={!collapsed ? { marginLeft: '210px' } : { marginLeft: '80px' }} // this is the collapsed width for our sider
+          >
+            {renderContent()}
+          </Layout>
         </Layout>
-      </Layout>
+      </DndProvider>
     </>
   );
 };
