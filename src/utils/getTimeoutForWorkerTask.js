@@ -10,9 +10,10 @@ const getTimeoutForWorkerTaskUncapped = (state, taskName, options) => {
 
   switch (taskName) {
     case 'GetEmbedding': {
-      const { type } = options;
+      const { type, useSaved } = options;
 
       // Tsne is slower than tsne, so we give a bigger timeout to tsne
+      if (useSaved) return 0.001 * nCells + 60;
       if (type === 'umap') return 0.002 * nCells + 60;
       if (type === 'tsne') return 0.02 * nCells + 60;
 
