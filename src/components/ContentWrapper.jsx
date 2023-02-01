@@ -50,7 +50,6 @@ const ContentWrapper = (props) => {
 
   const currentExperimentIdRef = useRef(routeExperimentId);
   const activeExperimentId = useSelector((state) => state?.experiments?.meta?.activeExperimentId);
-  const activeExperiment = useSelector((state) => state.experiments[activeExperimentId]);
 
   const domainName = useSelector((state) => state.networkResources.domainName);
   const user = useSelector((state) => state.user.current);
@@ -128,14 +127,12 @@ const ContentWrapper = (props) => {
   const [gem2sRerunStatus, setGem2sRerunStatus] = useState(null);
 
   useEffect(() => {
-    if (!activeExperiment) return;
-
     const gem2sStatus = calculateGem2sRerunStatus(
-      gem2sBackendStatus, activeExperiment, samples, experiment,
+      gem2sBackendStatus, experiment, samples, experiment,
     );
 
     setGem2sRerunStatus(gem2sStatus);
-  }, [gem2sBackendStatus, activeExperiment, samples, experiment]);
+  }, [gem2sBackendStatus, experiment, samples, experiment]);
 
   useEffect(() => {
     dispatch(loadUser());
