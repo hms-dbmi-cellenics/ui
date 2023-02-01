@@ -49,29 +49,29 @@ const ContentWrapper = (props) => {
   const { navigateTo, currentModule } = useAppRouter();
 
   const currentExperimentIdRef = useRef(routeExperimentId);
-  const activeExperimentId = useSelector((state) => state?.experiments?.meta?.activeExperimentId);
+  const selectedExperimentID = useSelector((state) => state?.experiments?.meta?.activeExperimentId);
 
   const domainName = useSelector((state) => state.networkResources.domainName);
   const user = useSelector((state) => state.user.current);
 
   const samples = useSelector((state) => state.samples);
 
-  // activeExperimentId holds the value in redux of the selected experiment
+  // selectedExperimentID holds the value in redux of the selected experiment
   // after loading a page it is determined whether to use that ID or the ID in the route URL
   // i.e. when we are in data management there is not exp ID in the URL so we get it from redux
 
   useEffect(() => {
-    if (!activeExperimentId && !routeExperimentId) return;
+    if (!selectedExperimentID && !routeExperimentId) return;
 
     if (currentModule === modules.DATA_MANAGEMENT) {
-      currentExperimentIdRef.current = activeExperimentId;
+      currentExperimentIdRef.current = selectedExperimentID;
       return;
     }
 
     if (currentExperimentIdRef.current === routeExperimentId) return;
 
     currentExperimentIdRef.current = routeExperimentId;
-  }, [currentModule, activeExperimentId, routeExperimentId]);
+  }, [currentModule, selectedExperimentID, routeExperimentId]);
 
   const currentExperimentId = currentExperimentIdRef.current;
   const experiment = useSelector((state) => state?.experiments[currentExperimentId]);
