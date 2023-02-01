@@ -19,7 +19,7 @@ import PlatformError from 'components/PlatformError';
 import FrequencyPlot from 'components/plots/FrequencyPlot';
 import ExportAsCSV from 'components/plots/ExportAsCSV';
 
-import { getCellSets, getCellSetsHierarchyByKeys, getCellSetsHierarchy } from 'redux/selectors';
+import { getCellSets, getCellSetsHierarchyByKeys } from 'redux/selectors';
 import SelectCellSets from 'components/plots/styling/frequency/SelectCellSets';
 
 import { updatePlotConfig, loadPlotConfig } from 'redux/actions/componentConfig';
@@ -44,15 +44,14 @@ const FrequencyPlotPage = ({ experimentId }) => {
   const configIsLoaded = useSelector((state) => !_.isNil(state.componentConfig[plotUuid]));
 
   const cellSets = useSelector(getCellSets());
-  const hierarchy = useSelector(getCellSetsHierarchy());
-
-  const numLegendItems = hierarchy.find(
-    ({ key }) => key === config?.proportionGrouping,
-  )?.children?.length;
 
   const [cellSetClusters] = useSelector(
     getCellSetsHierarchyByKeys([config?.proportionGrouping]),
   );
+
+  const numLegendItems = useSelector(
+    getCellSetsHierarchyByKeys([config?.proportionGrouping]),
+  )[0]?.children?.length;
 
   const experimentName = useSelector((state) => state.experimentSettings.info.experimentName);
 
