@@ -45,7 +45,6 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
   const dispatch = useDispatch();
   const [displaySettings, setDisplaySettings] = useState(initialDisplaySettings);
   const resetZoomRef = useRef();
-  const displayLegendItemAlert = useRef(false);
 
   // Currenty monocle3 trajectory analysis only supports
   // UMAP embedding. Therefore, this embedding is specifically fetched.
@@ -101,8 +100,7 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
 
     const showAlert = numLegendItems > MAX_LEGEND_ITEMS;
 
-    updatePlotWithChanges({ legend: { showAlert, enabled: !showAlert } });
-    displayLegendItemAlert.current = showAlert;
+    if (showAlert) updatePlotWithChanges({ legend: { showAlert, enabled: !showAlert } });
   }, [configIsLoaded, cellSets.accessible]);
 
   useEffect(() => {

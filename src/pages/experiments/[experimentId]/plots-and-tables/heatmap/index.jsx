@@ -35,7 +35,6 @@ const HeatmapPlot = ({ experimentId }) => {
   const dispatch = useDispatch();
   const [vegaSpec, setVegaSpec] = useState();
   const displaySavedGenes = useRef(true);
-  const displayLegendItemAlert = useRef(false);
 
   const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
   const configIsLoaded = useSelector((state) => !_.isNil(state.componentConfig[plotUuid]));
@@ -75,10 +74,7 @@ const HeatmapPlot = ({ experimentId }) => {
 
     const showAlert = numLegendItems > MAX_LEGEND_ITEMS;
 
-    if (displayLegendItemAlert.current === showAlert) return;
-
-    updatePlotWithChanges({ legend: { showAlert, enabled: !showAlert } });
-    displayLegendItemAlert.current = showAlert;
+    if (showAlert) updatePlotWithChanges({ legend: { showAlert, enabled: !showAlert } });
   }, [configIsLoaded, cellSets.accessible]);
 
   useEffect(() => {

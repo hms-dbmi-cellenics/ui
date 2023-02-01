@@ -31,8 +31,6 @@ const plotType = 'embeddingCategorical';
 const EmbeddingCategoricalPage = ({ experimentId }) => {
   const dispatch = useDispatch();
 
-  const displayLegendItemAlert = useRef(false);
-
   const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
   const configIsLoaded = useSelector((state) => !_.isNil(state.componentConfig[plotUuid]));
 
@@ -58,10 +56,7 @@ const EmbeddingCategoricalPage = ({ experimentId }) => {
 
     const showAlert = numLegendItems > MAX_LEGEND_ITEMS;
 
-    if (displayLegendItemAlert.current === showAlert) return;
-
-    updatePlotWithChanges({ legend: { showAlert, enabled: !showAlert } });
-    displayLegendItemAlert.current = showAlert;
+    if (showAlert) updatePlotWithChanges({ legend: { showAlert, enabled: !showAlert } });
   }, [configIsLoaded, cellSets.accessible]);
 
   const generateGroupByOptions = () => {

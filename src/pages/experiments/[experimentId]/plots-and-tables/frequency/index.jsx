@@ -45,7 +45,6 @@ const FrequencyPlotPage = ({ experimentId }) => {
 
   const cellSets = useSelector(getCellSets());
   const hierarchy = useSelector(getCellSetsHierarchy());
-  const displayLegendItemAlert = useRef(false);
 
   const numLegendItems = hierarchy.find(
     ({ key }) => key === config?.proportionGrouping,
@@ -76,10 +75,7 @@ const FrequencyPlotPage = ({ experimentId }) => {
 
     const showAlert = numLegendItems > MAX_LEGEND_ITEMS;
 
-    if (displayLegendItemAlert.current === showAlert) return;
-
-    updatePlotWithChanges({ legend: { showAlert, enabled: !showAlert } });
-    displayLegendItemAlert.current = showAlert;
+    if (showAlert) updatePlotWithChanges({ legend: { showAlert, enabled: !showAlert } });
   }, [configIsLoaded, cellSets.accessible]);
 
   const plotStylingConfig = [

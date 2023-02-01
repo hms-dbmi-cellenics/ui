@@ -48,7 +48,6 @@ const MarkerHeatmap = ({ experimentId }) => {
   const dispatch = useDispatch();
 
   const [vegaSpec, setVegaSpec] = useState();
-  const displayLegendItemAlert = useRef(false);
 
   const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
   const configIsLoaded = useSelector((state) => !_.isNil(state.componentConfig[plotUuid]));
@@ -63,9 +62,9 @@ const MarkerHeatmap = ({ experimentId }) => {
     getCellSetsHierarchyByKeys([config?.selectedCellSet]),
   ).length;
 
-  const numLegendItems = hierarchy.find(
-    ({ key }) => key === config?.selectedCellSet,
-  )?.children?.length;
+  const numLegendItems = useSelector(
+    getCellSetsHierarchyByKeys([config?.selectedCellSet]),
+  )[0]?.children?.length;
 
   const loadedMarkerGenes = useSelector(
     (state) => state.genes.expression.views[plotUuid]?.data,
@@ -98,8 +97,7 @@ const MarkerHeatmap = ({ experimentId }) => {
 
     const showAlert = numLegendItems > MAX_LEGEND_ITEMS;
 
-    updatePlotWithChanges({ legend: { showAlert, enabled: !showAlert } });
-    displayLegendItemAlert.current = showAlert;
+    if (showAlert) updatePlotWithChanges({ legend: { showAlert, enabled: !showAlert } });
   }, [configIsLoaded, cellSets.accessible]);
 
   useEffect(() => {

@@ -227,7 +227,7 @@ const DataIntegration = (props) => {
 
     const showAlert = numLegendItems > MAX_LEGEND_ITEMS;
 
-    updatePlotWithChanges({ legend: { showAlert, enabled: !showAlert } });
+    if (showAlert) updatePlotWithChanges({ legend: { showAlert, enabled: !showAlert } });
   }, [!selectedConfig, activePlotType, cellSets.accessible]);
 
   const completedSteps = useSelector(
