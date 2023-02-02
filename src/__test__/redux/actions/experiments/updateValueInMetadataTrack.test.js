@@ -8,7 +8,10 @@ import { updateValueInMetadataTrack } from 'redux/actions/experiments';
 
 import '__test__/test-utils/setupTests';
 
+import { promiseResponse } from '__test__/test-utils/mockAPI';
+
 import { SAMPLES_ERROR, SAMPLES_SAVING, SAMPLES_VALUE_IN_METADATA_TRACK_UPDATED } from 'redux/actionTypes/samples';
+import { BACKEND_STATUS_LOADED, BACKEND_STATUS_LOADING } from 'redux/actionTypes/backendStatus';
 
 const mockStore = configureStore([thunk]);
 
@@ -27,14 +30,20 @@ describe('updateValueInMetadataTrack action', () => {
   it('Works correctly', async () => {
     const store = mockStore();
 
-    fetchMock.mockResolvedValue(new Response(JSON.stringify({})));
+    // Mock all api responses
+    fetchMock.mockIf(/.*/, () => promiseResponse(JSON.stringify({})));
 
     await store.dispatch(
       updateValueInMetadataTrack(experimentId, sampleId, metadataTrackKeyRCompatible, value),
     );
 
     const actions = store.getActions();
-    expect(_.map(actions, 'type')).toEqual([SAMPLES_SAVING, SAMPLES_VALUE_IN_METADATA_TRACK_UPDATED]);
+    expect(_.map(actions, 'type')).toEqual([
+      SAMPLES_SAVING,
+      SAMPLES_VALUE_IN_METADATA_TRACK_UPDATED,
+      BACKEND_STATUS_LOADING,
+      BACKEND_STATUS_LOADED,
+    ]);
     expect(_.map(actions, 'payload')).toMatchSnapshot();
 
     expect(fetchMock).toHaveBeenCalledWith(

@@ -19,7 +19,6 @@ jest.mock('redux/actions/backendStatus/loadBackendStatus',
 
 const experimentId = 'experiment-id';
 const projectId = 'project-id';
-const oldParamsHash = 'old-gem2s-hash';
 
 const initialState = {
   experiments: {
@@ -37,7 +36,7 @@ const initialState = {
       ...initialBackendState,
       status: {
         gem2s: {
-          paramsHash: oldParamsHash,
+          shouldRerun: false,
         },
       },
     },

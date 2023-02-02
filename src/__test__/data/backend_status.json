@@ -4,6 +4,7 @@
     "stopDate": "2021-10-20T12:53:50.986Z",
     "status": "SUCCEEDED",
     "error": false,
+    "shouldRerun": null,
     "completedSteps": [
       "ClassifierFilter",
       "CellSizeDistributionFilter",
@@ -30,7 +31,7 @@
       "PrepareExperiment",
       "UploadToAWS"
     ],
-    "paramsHash": "2a0a9cdca259ce91207cbe62574ba6f4851cfake", 
+    "shouldRerun": true, 
     "executionArn": "arn:aws:states:eu-east-1:000000000000:execution:biomage-gem2s-test-test9cd23b9138d3d5b6141835c85101495a92cd:fb047b29-a9fb-4e36-a0fc-b792e243test",
     "stateMachineArn": "arn:aws:states:eu-east-1:000000000000:stateMachine:biomage-gem2s-test-test9cd23b9138d3d5b6141835c85101495atest"
   },

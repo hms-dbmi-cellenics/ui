@@ -8,6 +8,7 @@ import {
 
 import handleError from 'utils/http/handleError';
 import fetchAPI from 'utils/http/fetchAPI';
+import { loadBackendStatus } from '../backendStatus';
 
 const updateSample = (sampleUuid, diff) => async (dispatch, getState) => {
   // In api v2 experimentId and experimentId are the same
@@ -50,6 +51,8 @@ const updateSample = (sampleUuid, diff) => async (dispatch, getState) => {
         sample: diff,
       },
     });
+
+    await dispatch(loadBackendStatus(experimentId));
   } catch (e) {
     const errorMessage = handleError(e, endUserMessages.ERROR_SAVING);
 

@@ -7,6 +7,7 @@ import fetchAPI from 'utils/http/fetchAPI';
 import { metadataNameToKey } from 'utils/data-management/metadataUtils';
 import endUserMessages from 'utils/endUserMessages';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
+import { loadBackendStatus } from '../backendStatus';
 
 const renameMetadataTrack = (
   oldName, newName, experimentId,
@@ -44,6 +45,8 @@ const renameMetadataTrack = (
         experimentId,
       },
     });
+
+    await dispatch(loadBackendStatus(experimentId));
   } catch (e) {
     pushNotificationMessage('error', endUserMessages.ERROR_SAVING);
   }
