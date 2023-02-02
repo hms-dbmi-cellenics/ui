@@ -160,8 +160,6 @@ describe('DataIntegration', () => {
     // elbow plot does not depend on the configure embedding step
     userEvent.click(screen.getByText(elbowPlotTitle));
 
-    screen.debug(null, Infinity);
-
     // The elbow plot should appear
     await waitFor(() => {
       expect(screen.getByRole('graphics-document')).toBeInTheDocument();

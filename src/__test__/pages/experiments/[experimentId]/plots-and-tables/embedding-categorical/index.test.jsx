@@ -151,8 +151,6 @@ describe('Categorical embedding plot', () => {
 
     await renderCategoricalEmbeddingPage(storeState);
 
-    screen.debug(null, Infinity);
-
     // Vega should appear
     await waitFor(() => {
       expect(screen.getByRole('graphics-document', { name: 'Categorical embedding plot' })).toBeInTheDocument();
