@@ -1,119 +1,119 @@
 import React from 'react';
 import { Provider } from 'react-redux';
-import configureStore from 'redux-mock-store';
-import thunk from 'redux-thunk';
-import { mockCellSets, mockCellSetsHierarchy } from '__test__/test-utils/cellSets.mock';
-
-import DataIntegration from 'components/data-processing/DataIntegration/DataIntegration';
-
-import { initialPlotConfigStates } from 'redux/reducers/componentConfig/initialState';
-import { initialEmbeddingState } from 'redux/reducers/embeddings/initialState';
-import { generateDataProcessingPlotUuid } from 'utils/generateCustomPlotUuid';
-
-import {
-  getBackendStatus, getCellSets, getCellSetsHierarchy, getCellSetsHierarchyByKeys,
-} from 'redux/selectors';
-import generateExperimentSettingsMock from '__test__/test-utils/experimentSettings.mock';
 import '__test__/test-utils/setupTests';
-import { screen, render } from '@testing-library/react';
+import { screen, render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import _ from 'lodash';
+import fake from '__test__/test-utils/constants';
+import mockAPI, {
+  statusResponse,
+  promiseResponse,
+  generateDefaultMockAPIResponses,
+} from '__test__/test-utils/mockAPI';
+import cellSetsData from '__test__/data/cell_sets.json';
+import { MAX_LEGEND_ITEMS } from 'components/plots/helpers/PlotLegendAlert';
+import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
+import { makeStore } from 'redux/store';
+import { seekFromS3 } from 'utils/work/seekWorkResponse';
+import mockEmbedding from '__test__/data/embedding.json';
 
-jest.mock('redux/selectors');
+import { generateDataProcessingPlotUuid } from 'utils/generateCustomPlotUuid';
+import DataIntegration from 'components/data-processing/DataIntegration/DataIntegration';
+import { loadProcessingSettings } from 'redux/actions/experimentSettings';
+import { loadBackendStatus } from 'redux/actions/backendStatus';
+import { loadCellSets } from 'redux/actions/cellSets';
 
-const dataIntegrationEmbeddingConfig = initialPlotConfigStates.dataIntegrationEmbedding;
-const dataIntegrationFrequencyConfig = initialPlotConfigStates.dataIntegrationFrequency;
-const dataIntegrationElbowConfig = initialPlotConfigStates.dataIntegrationElbow;
-
-const filterName = 'dataIntegration';
-const configureEmbeddingFilterName = 'configureEmbedding';
-
-const mockStore = configureStore([thunk]);
-
-const initialExperimentState = generateExperimentSettingsMock([]);
+const embeddingsPlotUuid = generateDataProcessingPlotUuid(null, 'configureEmbedding', 1);
+const elbowPlotUuid = generateDataProcessingPlotUuid(null, 'dataIntegration', 1);
+const frequencyPlotUuid = 'dataIntegrationFrequency';
 
 const embeddingsPlotTitle = 'Embedding coloured by sample';
 const elbowPlotTitle = 'Elbow plot showing principal components';
 const frequencyPlotTitle = 'Frequency plot coloured by sample';
 
-const mockedStore = mockStore({
-  embeddings: {
-    ...initialEmbeddingState,
-    umap: {
-      data: [
-        [1, 2],
-        [3, 4],
-        [5, 6],
-        [7, 8],
-        [9, 10],
-        [11, 12],
-      ],
-      loading: false,
-      error: false,
-    },
-  },
-  cellSets: mockCellSets,
-  experimentSettings: {
-    ...initialExperimentState,
-  },
-  componentConfig: {
-    dataIntegrationFrequency: {
-      config: dataIntegrationFrequencyConfig,
-      plotData: [],
-    },
-    [generateDataProcessingPlotUuid(null, configureEmbeddingFilterName, 1)]: {
-      config: dataIntegrationEmbeddingConfig,
-      plotData: [],
-    },
-    [generateDataProcessingPlotUuid(null, filterName, 1)]: {
-      config: dataIntegrationElbowConfig,
-      plotData: [],
-    },
-  },
+enableFetchMocks();
+
+jest.mock('object-hash', () => {
+  const objectHash = jest.requireActual('object-hash');
+  const mockWorkResultETag = jest.requireActual('__test__/test-utils/mockWorkResultETag').default;
+
+  const mockWorkRequestETag = (ETagParams) => `${ETagParams.body.name}`;
+
+  return mockWorkResultETag(objectHash, mockWorkRequestETag);
 });
 
+jest.mock('utils/work/seekWorkResponse', () => ({
+  __esModule: true,
+  dispatchWorkRequest: jest.fn(() => true),
+  seekFromS3: jest.fn(),
+}));
+
+const mockWorkerResponses = {
+  GetEmbedding: mockEmbedding,
+};
+
+let storeState = null;
+
+const renderDataIntegration = async (store) => await render(
+  <Provider store={store}>
+    <DataIntegration
+      experimentId={fake.EXPERIMENT_ID}
+      onPipelineRun={jest.fn()}
+      onConfigChange={jest.fn()}
+    />
+  </Provider>,
+);
+
+// simulating intial load of plot
+const customAPIResponses = {
+  [`/plots/${embeddingsPlotUuid}`]: () => statusResponse(404, 'Not Found'),
+  [`/plots/${elbowPlotUuid}`]: () => statusResponse(404, 'Not Found'),
+  [`/plots/${frequencyPlotUuid}`]: () => statusResponse(404, 'Not Found'),
+  [`experiments/${fake.EXPERIMENT_ID}/backendStatus`]: () => promiseResponse(
+    JSON.stringify({
+      pipeline: { status: 'SUCCEEDED', completedSteps: ['ConfigureEmbedding'] },
+      worker: { status: 'Running', started: true, ready: true },
+    }),
+  ),
+};
+const mockApiResponses = _.merge(
+  generateDefaultMockAPIResponses(fake.EXPERIMENT_ID), customAPIResponses,
+);
+
 describe('DataIntegration', () => {
-  beforeEach(() => {
-    getCellSets.mockReturnValue(() => ({ accessible: true, ...mockCellSets }));
-    getCellSetsHierarchy.mockReturnValue(() => mockCellSetsHierarchy);
-    getCellSetsHierarchyByKeys.mockImplementation((keys) => () => keys.map((key) => mockCellSetsHierarchy.find((child) => child.key === key)));
+  jest.clearAllMocks();
+
+  beforeEach(async () => {
+    fetchMock.resetMocks();
+    fetchMock.doMock();
+
+    seekFromS3
+      .mockReset()
+      .mockImplementationOnce(() => null)
+      .mockImplementationOnce((Etag) => mockWorkerResponses[Etag]);
+
+    fetchMock.mockIf(/.*/, mockAPI(mockApiResponses));
+    storeState = makeStore();
+    await storeState.dispatch(loadBackendStatus(fake.EXPERIMENT_ID));
+    await storeState.dispatch(loadProcessingSettings(fake.EXPERIMENT_ID));
+    await storeState.dispatch(loadCellSets(fake.EXPERIMENT_ID));
   });
-  const renderDataIntegration = async () => await render(
-    <Provider store={mockedStore}>
-      <DataIntegration
-        experimentId='1234'
-        onPipelineRun={jest.fn()}
-        onConfigChange={jest.fn()}
-      />
-    </Provider>,
-  );
 
   it('renders correctly', async () => {
-    getBackendStatus.mockReturnValue(() => ({
-      loading: false,
-      error: false,
-      status: { pipeline: { completedSteps: ['ConfigureEmbedding'] } },
-    }));
-
-    await renderDataIntegration();
-    screen.debug(null, Infinity);
+    await renderDataIntegration(storeState);
 
     expect(screen.getByText('Plot view')).toBeDefined();
     expect(screen.getByText('Data Integration')).toBeDefined();
     expect(screen.getByText('Downsampling Options')).toBeDefined();
     expect(screen.getByText('Plot styling')).toBeDefined();
 
-    const plots = screen.getAllByRole('graphics-document');
-    expect(plots.length).toEqual(1);
+    await waitFor(() => {
+      expect(screen.getByRole('graphics-document')).toBeInTheDocument();
+    });
   });
 
   it('allows selecting other plots', async () => {
-    getBackendStatus.mockReturnValue(() => ({
-      loading: false,
-      error: false,
-      status: { pipeline: { completedSteps: ['ConfigureEmbedding'] } },
-    }));
-
-    await renderDataIntegration();
+    await renderDataIntegration(storeState);
     const plots = [frequencyPlotTitle, elbowPlotTitle, embeddingsPlotTitle];
 
     plots.forEach((plot) => {
@@ -126,13 +126,29 @@ describe('DataIntegration', () => {
   });
 
   it('doesnt show plots that depend on configure embedding if it hasnt finished running yet', async () => {
-    getBackendStatus.mockReturnValue(() => ({
-      loading: false,
-      error: false,
-      status: { pipeline: { completedSteps: [] } },
-    }));
+    const emptyCompletedSteps = {
+      pipeline: {
+        status: 'SUCCEEDED',
+        completedSteps: [],
+      },
+      worker: {
+        status: 'Running',
+        started: true,
+        ready: true,
+      },
+    };
 
-    await renderDataIntegration();
+    const modifiedResponse = {
+      ...generateDefaultMockAPIResponses(fake.EXPERIMENT_ID),
+      ...customAPIResponses,
+      [`experiments/${fake.EXPERIMENT_ID}/backendStatus`]: () => promiseResponse(
+        JSON.stringify(emptyCompletedSteps),
+      ),
+    };
+
+    fetchMock.mockIf(/.*/, mockAPI(modifiedResponse));
+
+    await renderDataIntegration(storeState);
 
     // embeddings & frequency plots depend on configure embeddings, if the step
     // has not been completed they both should show the mssage "Nothing to show yet"
@@ -144,22 +160,66 @@ describe('DataIntegration', () => {
 
     // elbow plot does not depend on the configure embedding step
     userEvent.click(screen.getByText(elbowPlotTitle));
-    expect(screen.queryByText('Nothing to show yet')).not.toBeInTheDocument();
+
+    screen.debug(null, Infinity);
+
+    // The elbow plot should appear
+    await waitFor(() => {
+      expect(screen.getByRole('graphics-document')).toBeInTheDocument();
+    });
   });
 
   it('doesnt crash if backend status is null', async () => {
-    getBackendStatus.mockReturnValue(() => ({
-      loading: false,
-      error: false,
-      status: null,
-    }));
+    const modifiedResponse = {
+      ...generateDefaultMockAPIResponses(fake.EXPERIMENT_ID),
+      ...customAPIResponses,
+      [`experiments/${fake.EXPERIMENT_ID}/backendStatus`]: () => promiseResponse(null),
+    };
 
-    await renderDataIntegration();
+    fetchMock.mockIf(/.*/, mockAPI(modifiedResponse));
+
+    await renderDataIntegration(storeState);
 
     expect(screen.getByText('Plot view')).toBeDefined();
     expect(screen.getByText('Data Integration')).toBeDefined();
     expect(screen.getByText('Plot styling')).toBeDefined();
 
     expect(screen.getByText('Nothing to show yet')).toBeInTheDocument();
+  });
+
+  it('Renders a plot legend alert if there are more than MAX_LEGEND_ITEMS number of cell sets', async () => {
+    const sampleTemplate = (clusterIdx) => ({
+      key: `louvain-${clusterIdx}`,
+      name: `Cluster ${clusterIdx}`,
+      rootNode: false,
+      type: 'cellSets',
+      color: '#000000',
+      cellIds: [clusterIdx],
+    });
+
+    const manySamples = [...Array(MAX_LEGEND_ITEMS + 1)].map((c, idx) => sampleTemplate(idx));
+
+    // Add to samples
+    cellSetsData.cellSets[2].children = manySamples;
+
+    const manyCellSetsResponse = {
+      ...generateDefaultMockAPIResponses(fake.EXPERIMENT_ID),
+      ...customAPIResponses,
+      [`experiments/${fake.EXPERIMENT_ID}/cellSets`]: () => promiseResponse(JSON.stringify(cellSetsData)),
+    };
+
+    storeState.dispatch(loadCellSets(fake.EXPERIMENT_ID, true));
+
+    fetchMock.mockIf(/.*/, mockAPI(manyCellSetsResponse));
+
+    await renderDataIntegration(storeState);
+
+    // Vega should appear
+    await waitFor(() => {
+      expect(screen.getByRole('graphics-document')).toBeInTheDocument();
+    });
+
+    // The legend alert plot text should appear
+    expect(screen.getByText(/We have hidden the plot legend, because it is too large and it interferes with the display of the plot/)).toBeInTheDocument();
   });
 });

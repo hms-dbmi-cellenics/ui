@@ -31,18 +31,18 @@ jest.mock('react-resize-detector', () => (props) => {
 
 const frequencyIndexFactory = createTestComponentFactory(FrequencyIndex);
 
+let storeState = null;
+const plotUuid = 'frequencyPlotMain';
+
+// simulating intial load of plot
+const customAPIResponses = {
+  [`/plots/${plotUuid}`]: () => statusResponse(404, 'Not Found'),
+};
+const mockApiResponses = _.merge(
+  generateDefaultMockAPIResponses(fake.EXPERIMENT_ID), customAPIResponses,
+);
+
 describe('Frequency plots and tables index page', () => {
-  let storeState = null;
-  const plotUuid = 'frequencyPlotMain';
-
-  // simulating intial load of plot
-  const customAPIResponses = {
-    [`/plots/${plotUuid}`]: () => statusResponse(404, 'Not Found'),
-  };
-  const mockApiResponses = _.merge(
-    generateDefaultMockAPIResponses(fake.EXPERIMENT_ID), customAPIResponses,
-  );
-
   beforeEach(async () => {
     enableFetchMocks();
     fetchMock.resetMocks();
