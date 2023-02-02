@@ -5,7 +5,7 @@ import React, {
 import _ from 'lodash';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
-import { Button, Collapse } from 'antd';
+import { Button, Collapse, Space } from 'antd';
 import {
   updatePlotConfig,
   loadPlotConfig,
@@ -14,7 +14,7 @@ import Loader from 'components/Loader';
 import { loadEmbedding } from 'redux/actions/embedding';
 import { loadProcessingSettings } from 'redux/actions/experimentSettings';
 import { loadCellSets } from 'redux/actions/cellSets';
-import { getCellSets } from 'redux/selectors';
+import { getCellSets, getCellSetsHierarchyByKeys } from 'redux/selectors';
 
 import getTrajectoryPlotStartingNodes from 'redux/actions/componentConfig/getTrajectoryPlotStartingNodes';
 
@@ -26,6 +26,7 @@ import PlatformError from 'components/PlatformError';
 import { plotNames, plotTypes } from 'utils/constants';
 import useConditionalEffect from 'utils/customHooks/useConditionalEffect';
 import updateTrajectoryPlotSelectedNodes from 'redux/actions/componentConfig/updateTrajectoryPlotSelectedNodes';
+import PlotLegendAlert, { MAX_LEGEND_ITEMS } from 'components/plots/helpers/PlotLegendAlert';
 import TrajectoryAnalysisNodeSelector from './TrajectoryAnalysisNodeSelector';
 import TrajectoryAnalysisDisplaySettings from './TrajectoryAnalysisDisplaySettings';
 
@@ -52,13 +53,26 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
   const cellSets = useSelector(getCellSets());
 
   const plotLoading = useSelector((state) => state.componentConfig[plotUuid]?.loading);
+  const legendEnabled = useSelector(
+    (state) => state.componentConfig[plotUuid]?.config?.legend?.enabled,
+  );
   const plotDataError = useSelector((state) => state.componentConfig[plotUuid]?.error);
   const configIsLoaded = useSelector((state) => !_.isNil(state.componentConfig[plotUuid]));
+  const showLegendAlert = useSelector(
+    (state) => state.componentConfig[plotUuid]?.config?.legend?.showAlert,
+  );
+  const selectedCellSet = useSelector(
+    (state) => state.componentConfig[plotUuid]?.config?.selectedCellSet,
+  );
 
   const embeddingSettings = useSelector(
     (state) => state.experimentSettings.originalProcessing
       ?.configureEmbedding?.embeddingSettings,
   );
+
+  const numLegendItems = useSelector(
+    getCellSetsHierarchyByKeys([selectedCellSet]),
+  )[0]?.children?.length;
 
   const {
     data: embeddingData,
@@ -74,6 +88,20 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
     if (!cellSets.accessible) dispatch(loadCellSets(experimentId));
     if (!embeddingSettings) dispatch(loadProcessingSettings(experimentId));
   }, []);
+
+  const updatePlotWithChanges = (obj) => {
+    dispatch(updatePlotConfig(plotUuid, obj));
+  };
+
+  useEffect(() => {
+    if (!configIsLoaded
+      || !cellSets.accessible
+      || !legendEnabled) return;
+
+    const showAlert = numLegendItems > MAX_LEGEND_ITEMS;
+
+    if (showAlert) updatePlotWithChanges({ legend: { showAlert, enabled: !showAlert } });
+  }, [configIsLoaded, cellSets.accessible]);
 
   useEffect(() => {
     if (embeddingMethod
@@ -99,10 +127,6 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
     embeddingLoading,
     embeddingSettings,
   ]);
-
-  const updatePlotWithChanges = (obj) => {
-    dispatch(updatePlotConfig(plotUuid, obj));
-  };
 
   const plotStylingConfig = [
     {
@@ -178,7 +202,6 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
       );
     }
 
-    // if (!config
     if (embeddingLoading
       || plotLoading
       || !cellSets.accessible
@@ -192,18 +215,21 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
     }
 
     return (
-      <TrajectoryAnalysisPlot
-        ref={resetZoomRef}
-        experimentId={experimentId}
-        plotUuid={plotUuid}
-        onUpdate={updatePlotWithChanges}
-        displaySettings={displaySettings}
-        plotLoading={plotLoading}
-        plotDataError={plotDataError}
-        onClickNode={handleClickNode}
-        onLassoSelection={handleLassoSelection}
-        actions={{ export: true, editor: false, source: false }}
-      />
+      <Space direction='vertical'>
+        { showLegendAlert && numLegendItems > MAX_LEGEND_ITEMS && <PlotLegendAlert />}
+        <TrajectoryAnalysisPlot
+          ref={resetZoomRef}
+          experimentId={experimentId}
+          plotUuid={plotUuid}
+          onUpdate={updatePlotWithChanges}
+          displaySettings={displaySettings}
+          plotLoading={plotLoading}
+          plotDataError={plotDataError}
+          onClickNode={handleClickNode}
+          onLassoSelection={handleLassoSelection}
+          actions={{ export: true, editor: false, source: false }}
+        />
+      </Space>
     );
   };
 
