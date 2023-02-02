@@ -64,7 +64,6 @@ const renderDataIntegration = async (store) => await render(
   </Provider>,
 );
 
-// simulating intial load of plot
 const customAPIResponses = {
   [`/plots/${embeddingsPlotUuid}`]: () => statusResponse(404, 'Not Found'),
   [`/plots/${elbowPlotUuid}`]: () => statusResponse(404, 'Not Found'),
@@ -76,14 +75,14 @@ const customAPIResponses = {
     }),
   ),
 };
+
 const mockApiResponses = _.merge(
   generateDefaultMockAPIResponses(fake.EXPERIMENT_ID), customAPIResponses,
 );
 
 describe('DataIntegration', () => {
-  jest.clearAllMocks();
-
   beforeEach(async () => {
+    jest.clearAllMocks();
     fetchMock.resetMocks();
     fetchMock.doMock();
 
@@ -189,10 +188,8 @@ describe('DataIntegration', () => {
 
   it('Renders a plot legend alert if there are more than MAX_LEGEND_ITEMS number of cell sets', async () => {
     const sampleTemplate = (clusterIdx) => ({
-      key: `louvain-${clusterIdx}`,
-      name: `Cluster ${clusterIdx}`,
-      rootNode: false,
-      type: 'cellSets',
+      key: `sample-${clusterIdx}`,
+      name: `Sample ${clusterIdx}`,
       color: '#000000',
       cellIds: [clusterIdx],
     });
@@ -202,7 +199,7 @@ describe('DataIntegration', () => {
     // Add to samples
     cellSetsData.cellSets[2].children = manySamples;
 
-    const manyCellSetsResponse = {
+    const manySamplesResponse = {
       ...generateDefaultMockAPIResponses(fake.EXPERIMENT_ID),
       ...customAPIResponses,
       [`experiments/${fake.EXPERIMENT_ID}/cellSets`]: () => promiseResponse(JSON.stringify(cellSetsData)),
@@ -210,7 +207,7 @@ describe('DataIntegration', () => {
 
     storeState.dispatch(loadCellSets(fake.EXPERIMENT_ID, true));
 
-    fetchMock.mockIf(/.*/, mockAPI(manyCellSetsResponse));
+    fetchMock.mockIf(/.*/, mockAPI(manySamplesResponse));
 
     await renderDataIntegration(storeState);
 
