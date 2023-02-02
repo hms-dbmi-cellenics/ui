@@ -22,14 +22,14 @@ const gem2sStepsInfo = [
 
 const GEM2SLoadingScreen = (props) => {
   const {
-    gem2sStatus, paramsHash, completedSteps, experimentId, experimentName,
+    gem2sStatus, completedSteps, experimentId, experimentName,
   } = props;
 
   const dispatch = useDispatch();
 
   const dataManagementPath = '/data-management';
   const relaunchExperiment = async () => {
-    await dispatch(runGem2s(experimentId, paramsHash));
+    await dispatch(runGem2s(experimentId));
   };
 
   const texts = {
@@ -157,14 +157,12 @@ GEM2SLoadingScreen.propTypes = {
   gem2sStatus: PropTypes.oneOf(['error', 'running', 'toBeRun', 'subsetting']).isRequired,
   completedSteps: PropTypes.array,
   experimentId: PropTypes.string,
-  paramsHash: PropTypes.string,
   experimentName: PropTypes.string,
 };
 
 GEM2SLoadingScreen.defaultProps = {
   completedSteps: [],
   experimentId: null,
-  paramsHash: null,
   experimentName: null,
 };
 

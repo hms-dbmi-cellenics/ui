@@ -7,5 +7,12 @@ Array [
     "newKey": "New_track",
     "oldKey": "Old_track",
   },
+  Object {
+    "experimentId": "experiment-1234",
+  },
+  Object {
+    "experimentId": "experiment-1234",
+    "status": Object {},
+  },
 ]
 `;

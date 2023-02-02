@@ -12,9 +12,12 @@ import {
   EXPERIMENTS_METADATA_CREATE,
 } from 'redux/actionTypes/experiments';
 
+import { promiseResponse } from '__test__/test-utils/mockAPI';
+
 import '__test__/test-utils/setupTests';
 
 import { SAMPLES_UPDATE } from 'redux/actionTypes/samples';
+import { BACKEND_STATUS_LOADED, BACKEND_STATUS_LOADING } from 'redux/actionTypes/backendStatus';
 
 const mockStore = configureStore([thunk]);
 
@@ -59,14 +62,19 @@ describe('createMetadataTrack action', () => {
   it('Works correctly', async () => {
     const store = mockStore(oneExperimentState);
 
-    fetchMock.mockResolvedValue(new Response(JSON.stringify({})));
+    fetchMock.mockIf(/.*/, () => promiseResponse(JSON.stringify({})));
 
     await store.dispatch(createMetadataTrack('Test track', experiment1.id));
 
     const trackKeyRCompatible = 'Test_track';
 
     const actions = store.getActions();
-    expect(_.map(actions, 'type')).toEqual([EXPERIMENTS_METADATA_CREATE, SAMPLES_UPDATE]);
+    expect(_.map(actions, 'type')).toEqual([
+      EXPERIMENTS_METADATA_CREATE,
+      SAMPLES_UPDATE,
+      BACKEND_STATUS_LOADING,
+      BACKEND_STATUS_LOADED,
+    ]);
     expect(_.map(actions, 'payload')).toMatchSnapshot();
 
     expect(fetchMock).toHaveBeenCalledWith(

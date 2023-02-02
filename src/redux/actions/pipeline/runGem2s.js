@@ -7,10 +7,7 @@ import {
 
 import loadBackendStatus from 'redux/actions/backendStatus/loadBackendStatus';
 
-const runGem2s = (experimentId, paramsHash) => async (dispatch, getState) => {
-  const paramsHashToSend = paramsHash
-    ?? getState().backendStatus[experimentId].status.gem2s.paramsHash;
-
+const runGem2s = (experimentId) => async (dispatch) => {
   try {
     await fetchAPI(
       `/v2/experiments/${experimentId}/gem2s`,
@@ -19,7 +16,6 @@ const runGem2s = (experimentId, paramsHash) => async (dispatch, getState) => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ paramsHash: paramsHashToSend }),
       },
     );
 

@@ -35,7 +35,7 @@ const ChangesNotAppliedModal = (props) => {
     status: backendStatus,
   } = useSelector(getBackendStatus(experimentId));
 
-  const paramsHash = backendStatus?.gem2s?.paramsHash;
+  const shouldRerun = backendStatus?.gem2s?.shouldRerun;
 
   const dispatch = useDispatch();
 
@@ -47,7 +47,7 @@ const ChangesNotAppliedModal = (props) => {
     if (qcRerunDisabled) {
       setQCDisabledModalVisible(true);
     } else {
-      dispatch(runQC(experimentId, paramsHash));
+      dispatch(runQC(experimentId));
       onRunQC();
     }
   };
@@ -75,7 +75,7 @@ const ChangesNotAppliedModal = (props) => {
             <Button
               type='primary'
               key='run'
-              disabled={!experimentId || !paramsHash}
+              disabled={!experimentId || !shouldRerun}
               onClick={() => {
                 runQCIfPossible();
               }}
