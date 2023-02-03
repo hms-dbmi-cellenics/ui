@@ -6,17 +6,17 @@ import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 
 import {
-  Alert, Button, Skeleton, Space, Typography,
+  Alert, Button, Skeleton, Space, Tabs, Typography,
 } from 'antd';
 import {
   BlockOutlined, MergeCellsOutlined, SplitCellsOutlined,
 } from '@ant-design/icons';
 
-import SubsetCellSetsOperation from
-  'components/data-exploration/cell-sets-tool/SubsetCellSetsOperation';
+import SubsetCellSetsOperation from 'components/data-exploration/cell-sets-tool/SubsetCellSetsOperation';
 import CellSetOperation from 'components/data-exploration/cell-sets-tool/CellSetOperation';
 import PlatformError from 'components/PlatformError';
 import HierarchicalTree from 'components/data-exploration/hierarchical-tree/HierarchicalTree';
+import AnnotateClustersTool from 'components/data-exploration/cell-sets-tool/AnnotateClustersTool';
 
 import {
   createCellSet,
@@ -50,6 +50,8 @@ const CellSetsTool = (props) => {
   } = cellSets;
 
   const filteredCellIds = useRef(new Set());
+
+  const [activeTab, setActiveTab] = useState('cellSets');
 
   useEffect(() => {
     if (accessible && filteredCellIds.current.size === 0) {
@@ -164,17 +166,29 @@ const CellSetsTool = (props) => {
     return (
       <Space direction='vertical'>
         {operations}
-        <HierarchicalTree
-          experimentId={experimentId}
-          treeData={treeData}
-          store={FOCUS_TYPE}
-          onCheck={onCheck}
-          onNodeUpdate={onNodeUpdate}
-          onNodeDelete={onNodeDelete}
-          onCellSetReorder={onCellSetReorder}
-          showHideButton
-          checkedKeys={selectedCellSetKeys}
-        />
+        <Tabs
+          size='small'
+          activeKey={activeTab}
+          onChange={(key) => setActiveTab(key)}
+          tabBarExtraContent={operations}
+        >
+          <Tabs.TabPane tab='Cell sets' key='cellSets'>
+            <HierarchicalTree
+              experimentId={experimentId}
+              treeData={treeData}
+              store={FOCUS_TYPE}
+              onCheck={onCheck}
+              onNodeUpdate={onNodeUpdate}
+              onNodeDelete={onNodeDelete}
+              onCellSetReorder={onCellSetReorder}
+              showHideButton
+              checkedKeys={selectedCellSetKeys}
+            />
+          </Tabs.TabPane>
+          <Tabs.TabPane tab='Annotate clusters' key='annotateClusters'>
+            <AnnotateClustersTool />
+          </Tabs.TabPane>
+        </Tabs>
       </Space>
     );
   };
