@@ -24,8 +24,14 @@ const tissueTypeOptions = [
   'Thymus',
 ];
 
+const speciesOptions = [
+  'human',
+  'mouse',
+];
+
 const AnnotateClustersTool = () => {
   const [tissueType, setTissueType] = useState(null);
+  const [species, setSpecies] = useState(null);
 
   return (
     <Space direction='vertical'>
@@ -43,7 +49,17 @@ const AnnotateClustersTool = () => {
         />
       </Space>
 
-      <Button disabled={_.isNil(tissueType)}>
+      <Space direction='vertical' style={{ width: '100%' }}>
+        Species:
+        <Select
+          options={speciesOptions.map((option) => ({ label: option, value: option }))}
+          value={species}
+          placeholder='Select a species'
+          onChange={setSpecies}
+        />
+      </Space>
+
+      <Button disabled={_.isNil(tissueType) || _.isNil(species)} style={{ marginTop: '20px' }}>
         Compute
       </Button>
     </Space>
@@ -52,7 +68,6 @@ const AnnotateClustersTool = () => {
 
 AnnotateClustersTool.defaultProps = {};
 
-AnnotateClustersTool.propTypes = {
-};
+AnnotateClustersTool.propTypes = {};
 
 export default AnnotateClustersTool;
