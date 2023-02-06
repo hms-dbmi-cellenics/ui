@@ -6,17 +6,9 @@ import getTimeoutForWorkerTask from 'utils/getTimeoutForWorkerTask';
 import fetchWork from 'utils/work/fetchWork';
 
 const runCellSetsAnnotation = (experimentId, species, tissue) => async (dispatch, getState) => {
-  // const {
-  //   error, updatingCellSets, loading,
-  // } = getState().cellSets;
+  const { error, updatingCellSets, loading } = getState().cellSets;
 
-  // const { experimentSettings: { processing } } = getState();
-
-  // const { method } = processing.configureEmbedding.clusteringSettings;
-
-  // if ((loading && updatingCellSets) || error) {
-  //   return null;
-  // }
+  if ((loading && updatingCellSets) || error) return;
 
   const body = {
     name: 'GetScTypeAnnotation',
