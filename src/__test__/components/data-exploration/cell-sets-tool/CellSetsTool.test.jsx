@@ -1,5 +1,6 @@
 import React from 'react';
 
+import _ from 'lodash';
 import {
   render, screen, fireEvent, waitFor,
 } from '@testing-library/react';
@@ -17,16 +18,33 @@ import { makeStore } from 'redux/store';
 import CellSetsTool from 'components/data-exploration/cell-sets-tool/CellSetsTool';
 import { createCellSet } from 'redux/actions/cellSets';
 
+import { selectOption } from '__test__/test-utils/rtlHelpers';
+
 import '__test__/test-utils/setupTests';
+import { dispatchWorkRequest } from 'utils/work/seekWorkResponse';
+import mockAPI, { generateDefaultMockAPIResponses, promiseResponse } from '__test__/test-utils/mockAPI';
+import { loadBackendStatus } from 'redux/actions/backendStatus';
 
-jest.mock('utils/work/fetchWork');
+// jest.mock('utils/work/fetchWork');
 
-jest.mock('utils/socketConnection', () => ({
-  __esModule: true,
-  default: new Promise((resolve) => {
-    resolve({ emit: jest.fn(), on: jest.fn(), id: '5678' });
-  }),
+jest.mock('utils/work/seekWorkResponse', () => ({
+  seekFromS3: jest.fn(),
+  dispatchWorkRequest: jest.fn(),
 }));
+
+jest.mock('utils/socketConnection', () => {
+  const mockEmit = jest.fn();
+  const mockOn = jest.fn();
+
+  return {
+    __esModule: true,
+    default: new Promise((resolve) => {
+      resolve({ emit: mockEmit, on: mockOn, id: '5678' });
+    }),
+    mockEmit,
+    mockOn,
+  };
+});
 
 const mockNavigateTo = jest.fn();
 
@@ -64,12 +82,21 @@ const cellSetsToolFactory = createTestComponentFactory(CellSetsTool, defaultProp
 
 let storeState;
 
+// Mocking samples update / delete routes
+const customResponses = {
+  [`experiments/${experimentId}/cellSets`]: () => promiseResponse(JSON.stringify(cellSetsData)),
+};
+const mockAPIResponse = _.merge(
+  generateDefaultMockAPIResponses(experimentId),
+  customResponses,
+);
+
 describe('CellSetsTool', () => {
   beforeEach(async () => {
     enableFetchMocks();
-    fetchMock.resetMocks();
-    fetchMock.doMock();
-    fetchMock.mockResponse(JSON.stringify(cellSetsData));
+    fetchMock.mockClear();
+    fetchMock.mockIf(/.*/, mockAPI(mockAPIResponse));
+
     storeState = makeStore();
   });
 
@@ -443,7 +470,10 @@ describe('CellSetsTool', () => {
 
     expect(cellCetsGroups.length).toEqual(4);
 
-    let isInRedux = Object.keys(storeState.getState().cellSets.properties).includes(newClusterKey[0]);
+    let isInRedux = Object.keys(
+      storeState.getState().cellSets.properties,
+    ).includes(newClusterKey[0]);
+
     expect(isInRedux).toBe(true);
 
     // There should be a delete button for the scratchpad cluster.
@@ -640,5 +670,77 @@ describe('CellSetsTool', () => {
         method: 'POST',
       }),
     );
+  });
+
+  describe('AnnotateClustersTool', () => {
+    beforeEach(async () => {
+      jest.clearAllMocks();
+
+      await storeState.dispatch(loadBackendStatus(experimentId));
+
+      await act(async () => {
+        render(
+          <Provider store={storeState}>
+            {cellSetsToolFactory()}
+          </Provider>,
+        );
+      });
+
+      // Switch to tab
+      const annotateClustersTabTitle = screen.getByText('Annotate clusters');
+
+      // Switch to tab
+      userEvent.click(annotateClustersTabTitle);
+    });
+
+    it('Renders correctly', async () => {
+      // Check displays correct text
+      screen.getByText(/ScType/);
+      screen.getByText(/Tissue Type/);
+      screen.getByText(/Species/);
+      screen.getByText(/Compute/);
+
+      // Displays correct placeholder in selects
+      screen.getByText('Select a tissue type');
+      screen.getByText('Select a species');
+
+      // Displays button and it's disabled
+      expect(screen.getByRole('button', { name: /Compute/ })).toBeDisabled();
+    });
+
+    it('Can dispatch work request', async () => {
+      const tissueSelector = screen.getAllByRole('combobox')[0];
+      const speciesSelector = screen.getAllByRole('combobox')[1];
+
+      // Select options
+      await act(async () => {
+        await selectOption(/Liver/, tissueSelector);
+        await selectOption(/mouse/, speciesSelector);
+      });
+
+      // Now the button's enabled
+      const button = screen.getByRole('button', { name: /Compute/ });
+      expect(button).toBeEnabled();
+
+      // Click the button
+      act(() => {
+        userEvent.click(button);
+      });
+
+      // It dispatches a work request
+      await waitFor(() => {
+        expect(dispatchWorkRequest).toHaveBeenCalledWith(
+          experimentId,
+          {
+            name: 'ScTypeAnnotate',
+            species: 'mouse',
+            tissue: 'Liver',
+          },
+          expect.anything(),
+          expect.anything(),
+          { PipelineRunETag: '2021-10-20T12:51:44.755Z', broadcast: true },
+        );
+      });
+    });
   });
 });
