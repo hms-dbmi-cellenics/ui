@@ -90,7 +90,7 @@ const onWorkResponseUpdate = (update, dispatch, experimentId) => {
     request: { body: { name: workRequestName } },
   } = update;
 
-  if (workRequestName === 'ClusterCells') {
+  if (['ClusterCells', 'ScTypeAnnotate'].includes(workRequestName)) {
     dispatch(updateCellSetsClustering(experimentId));
     pushNotificationMessage('success', endUserMessages.SUCCESS_CELL_SETS_RECLUSTERED);
   }
