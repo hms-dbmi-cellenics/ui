@@ -121,7 +121,7 @@ const CellSetsTool = (props) => {
 
     if (numSelectedCellSetKeys > 0) {
       operations = (
-        <Space style={{ marginLeft: '0.5em' }}>
+        <Space style={{ marginBottom: '10px' }}>
           <SubsetCellSetsOperation
             onCreate={async (name) => {
               const newExperimentId = await dispatch(
@@ -165,14 +165,13 @@ const CellSetsTool = (props) => {
 
     return (
       <Space direction='vertical'>
-        {operations}
         <Tabs
           size='small'
           activeKey={activeTab}
           onChange={(key) => setActiveTab(key)}
-          tabBarExtraContent={operations}
         >
           <Tabs.TabPane tab='Cell sets' key='cellSets'>
+            {operations}
             <HierarchicalTree
               experimentId={experimentId}
               treeData={treeData}
