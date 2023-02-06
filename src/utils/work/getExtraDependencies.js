@@ -17,7 +17,7 @@ const getClusteringSettings = async (experimentId, dispatch, getState) => {
 
 const dependencyGetters = {
   ClusterCells: [],
-  GetScTypeAnnotation: [],
+  ScTypeAnnotate: [],
   GetExpressionCellSets: [],
   GetEmbedding: [],
   ListGenes: [],

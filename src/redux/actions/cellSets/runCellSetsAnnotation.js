@@ -11,7 +11,7 @@ const runCellSetsAnnotation = (experimentId, species, tissue) => async (dispatch
   if ((loading && updatingCellSets) || error) return;
 
   const body = {
-    name: 'GetScTypeAnnotation',
+    name: 'ScTypeAnnotate',
     cellSetName: 'Louvain clusters',
     species,
     tissue,
