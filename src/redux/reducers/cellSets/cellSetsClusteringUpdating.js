@@ -2,7 +2,7 @@
 import produce from 'immer';
 
 const cellSetsClusteringUpdating = produce((draft) => {
-  draft.updatingClustering = true;
+  draft.updatingCellSets = true;
   draft.loading = true;
 });
 

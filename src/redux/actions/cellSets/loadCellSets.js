@@ -7,10 +7,10 @@ import endUserMessages from 'utils/endUserMessages';
 
 const loadCellSets = (experimentId, forceReload = false) => async (dispatch, getState) => {
   const {
-    loading, error, updatingClustering, initialLoadPending,
+    loading, error, updatingCellSets, initialLoadPending,
   } = getState().cellSets;
 
-  const loadingBlocked = loading || updatingClustering;
+  const loadingBlocked = loading || updatingCellSets;
   const requiresLoading = initialLoadPending || error;
 
   const shouldLoad = requiresLoading && !loadingBlocked;

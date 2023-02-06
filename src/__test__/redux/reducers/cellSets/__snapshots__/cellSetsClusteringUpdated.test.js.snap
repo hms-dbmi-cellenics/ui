@@ -9,6 +9,6 @@ Object {
   "loading": true,
   "properties": Object {},
   "selected": Array [],
-  "updatingClustering": false,
+  "updatingCellSets": false,
 }
 `;

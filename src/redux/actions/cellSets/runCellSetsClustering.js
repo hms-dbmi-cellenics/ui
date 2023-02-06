@@ -7,14 +7,14 @@ import fetchWork from 'utils/work/fetchWork';
 
 const runCellSetsClustering = (experimentId, resolution) => async (dispatch, getState) => {
   const {
-    error, updatingClustering, loading,
+    error, updatingCellSets, loading,
   } = getState().cellSets;
 
   const { experimentSettings: { processing } } = getState();
 
   const { method } = processing.configureEmbedding.clusteringSettings;
 
-  if ((loading && updatingClustering) || error) {
+  if ((loading && updatingCellSets) || error) {
     return null;
   }
 

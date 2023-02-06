@@ -2,7 +2,7 @@
 
 const cellSetsClusteringUpdated = (state) => ({
   ...state,
-  updatingClustering: false,
+  updatingCellSets: false,
 });
 
 export default cellSetsClusteringUpdated;
