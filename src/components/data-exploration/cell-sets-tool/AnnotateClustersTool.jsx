@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 import _ from 'lodash';
 
 import {
   Button,
   Radio, Select, Space,
 } from 'antd';
+import { runCellSetsAnnotation } from 'redux/actions/cellSets';
+import { useDispatch } from 'react-redux';
 
-const tissueTypeOptions = [
+const tissueOptions = [
   'Immune system',
   'Pancreas',
   'Liver',
@@ -29,8 +32,10 @@ const speciesOptions = [
   'mouse',
 ];
 
-const AnnotateClustersTool = () => {
-  const [tissueType, setTissueType] = useState(null);
+const AnnotateClustersTool = ({ experimentId }) => {
+  const dispatch = useDispatch();
+
+  const [tissue, setTissue] = useState(null);
   const [species, setSpecies] = useState(null);
 
   return (
@@ -42,10 +47,10 @@ const AnnotateClustersTool = () => {
       <Space direction='vertical' style={{ width: '100%' }}>
         Tissue Type:
         <Select
-          options={tissueTypeOptions.map((option) => ({ label: option, value: option }))}
-          value={tissueType}
+          options={tissueOptions.map((option) => ({ label: option, value: option }))}
+          value={tissue}
           placeholder='Select a tissue type'
-          onChange={setTissueType}
+          onChange={setTissue}
         />
       </Space>
 
@@ -59,7 +64,11 @@ const AnnotateClustersTool = () => {
         />
       </Space>
 
-      <Button disabled={_.isNil(tissueType) || _.isNil(species)} style={{ marginTop: '20px' }}>
+      <Button
+        onClick={() => dispatch(runCellSetsAnnotation(experimentId, species, tissue))}
+        disabled={_.isNil(tissue) || _.isNil(species)}
+        style={{ marginTop: '20px' }}
+      >
         Compute
       </Button>
     </Space>
@@ -68,6 +77,8 @@ const AnnotateClustersTool = () => {
 
 AnnotateClustersTool.defaultProps = {};
 
-AnnotateClustersTool.propTypes = {};
+AnnotateClustersTool.propTypes = {
+  experimentId: PropTypes.string.isRequired,
+};
 
 export default AnnotateClustersTool;
