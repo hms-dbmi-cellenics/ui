@@ -166,6 +166,6 @@ Object {
     },
   },
   "selected": Array [],
-  "updatingCellSets": false,
+  "updatingClustering": false,
 }
 `;

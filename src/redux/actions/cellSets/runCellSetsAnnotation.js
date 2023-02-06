@@ -6,9 +6,9 @@ import getTimeoutForWorkerTask from 'utils/getTimeoutForWorkerTask';
 import fetchWork from 'utils/work/fetchWork';
 
 const runCellSetsAnnotation = (experimentId, species, tissue) => async (dispatch, getState) => {
-  const { error, updatingCellSets, loading } = getState().cellSets;
+  const { error, updatingClustering, loading } = getState().cellSets;
 
-  if ((loading && updatingCellSets) || error) return;
+  if ((loading && updatingClustering) || error) return;
 
   const body = {
     name: 'ScTypeAnnotate',

@@ -43,7 +43,7 @@ Object {
     "loading": false,
     "properties": Object {},
     "selected": Array [],
-    "updatingCellSets": false,
+    "updatingClustering": false,
   },
   "componentConfig": Object {},
   "differentialExpression": Object {
@@ -438,7 +438,7 @@ Object {
     "loading": false,
     "properties": Object {},
     "selected": Array [],
-    "updatingCellSets": false,
+    "updatingClustering": false,
   },
   "componentConfig": Object {},
   "differentialExpression": Object {

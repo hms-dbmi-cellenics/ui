@@ -6,10 +6,10 @@ describe('cellSetsClusteringUpdated', () => {
     const action = { payload: {} };
 
     const newState = cellSetsClusteringUpdatedReducer({
-      ...initialState, loading: true, error: false, updatingCellSets: true,
+      ...initialState, loading: true, error: false, updatingClustering: true,
     }, action);
 
-    // New data is in the new state and loading and updatingCellSets are false
+    // New data is in the new state and loading and updatingClustering are false
     expect(newState).toMatchSnapshot();
   });
 });

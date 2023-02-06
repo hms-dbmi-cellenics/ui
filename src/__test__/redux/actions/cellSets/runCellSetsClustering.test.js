@@ -47,7 +47,7 @@ describe('runCellSetsClustering action', () => {
 
   it('Does not dispatch on loading state if clustering is already recomputing', async () => {
     const store = mockStore({
-      cellSets: { loading: true, error: false, updatingCellSets: true },
+      cellSets: { loading: true, error: false, updatingClustering: true },
       experimentSettings: experimentSettingsStore,
       backendStatus,
       networkResources: {
@@ -60,7 +60,7 @@ describe('runCellSetsClustering action', () => {
 
   it('Does dispatch on loading state if clustering is not recomputing', async () => {
     const store = mockStore({
-      cellSets: { loading: true, error: false, updatingCellSets: false },
+      cellSets: { loading: true, error: false, updatingClustering: false },
       experimentSettings: experimentSettingsStore,
       backendStatus,
       networkResources: {

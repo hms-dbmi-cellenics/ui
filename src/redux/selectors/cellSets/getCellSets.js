@@ -7,7 +7,7 @@ const getCellSets = () => (state) => {
 
   const accessible = !stateToReturn.loading
     && !stateToReturn.initialLoadPending
-    && !stateToReturn.updatingCellSets
+    && !stateToReturn.updatingClustering
     && !stateToReturn.error;
 
   return {

@@ -5,7 +5,7 @@ const initialState = {
   initialLoadPending: true,
   loading: false,
   error: false,
-  updatingCellSets: false,
+  updatingClustering: false,
   hidden: new Set(),
 };
 

@@ -111,7 +111,7 @@ describe('loadCellSets action', () => {
   it('Does not dispatch on normal operation', async () => {
     const store = mockStore({
       cellSets: {
-        initialLoadPending: false, loading: false, error: false, updatingCellSets: false,
+        initialLoadPending: false, loading: false, error: false, updatingClustering: false,
       },
       experimentSettings,
     });

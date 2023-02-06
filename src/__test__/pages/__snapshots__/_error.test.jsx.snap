@@ -47,7 +47,7 @@ Array [
       "loading": false,
       "properties": Object {},
       "selected": Array [],
-      "updatingCellSets": false,
+      "updatingClustering": false,
     },
     "componentConfig": Object {},
     "differentialExpression": Object {
@@ -258,7 +258,7 @@ Array [
       "loading": false,
       "properties": Object {},
       "selected": Array [],
-      "updatingCellSets": false,
+      "updatingClustering": false,
     },
     "componentConfig": Object {},
     "differentialExpression": Object {
