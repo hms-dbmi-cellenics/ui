@@ -184,7 +184,7 @@ const CellSetsTool = (props) => {
               checkedKeys={selectedCellSetKeys}
             />
           </Tabs.TabPane>
-          <Tabs.TabPane tab='Annotate clusters' key='annotateClusters'>
+          <Tabs.TabPane tab='Annotate clusters' key='annotateClusters' disabled>
             <AnnotateClustersTool experimentId={experimentId} />
           </Tabs.TabPane>
         </Tabs>
