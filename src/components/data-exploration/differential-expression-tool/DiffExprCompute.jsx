@@ -191,7 +191,7 @@ const DiffExprCompute = (props) => {
                 For finding marker genes that distinguish one cluster from another. The calculation uses the presto implementation of the Wilcoxon rank sum test and auROC analysis. For more information see the
                 {' '}
                 <a
-                  href='http://htmlpreview.github.io/?https://github.com/immunogenomics/presto/blob/master/docs/getting-started.html'
+                  href='https://rdrr.io/github/immunogenomics/presto/f/vignettes/getting-started.Rmd'
                   target='_blank'
                   rel='noreferrer'
                 >
