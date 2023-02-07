@@ -25,8 +25,6 @@ import { dispatchWorkRequest } from 'utils/work/seekWorkResponse';
 import mockAPI, { generateDefaultMockAPIResponses, promiseResponse } from '__test__/test-utils/mockAPI';
 import { loadBackendStatus } from 'redux/actions/backendStatus';
 
-// jest.mock('utils/work/fetchWork');
-
 jest.mock('utils/work/seekWorkResponse', () => ({
   seekFromS3: jest.fn(),
   dispatchWorkRequest: jest.fn(),
