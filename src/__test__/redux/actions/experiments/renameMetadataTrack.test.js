@@ -10,7 +10,10 @@ import initialExperimentState from 'redux/reducers/experiments';
 import initialSampleState from 'redux/reducers/samples';
 
 import { EXPERIMENTS_METADATA_RENAME } from 'redux/actionTypes/experiments';
+import { BACKEND_STATUS_LOADED, BACKEND_STATUS_LOADING } from 'redux/actionTypes/backendStatus';
+
 import '__test__/test-utils/setupTests';
+import { promiseResponse } from '__test__/test-utils/mockAPI';
 
 const mockStore = configureStore([thunk]);
 
@@ -64,14 +67,18 @@ describe('renameMetadataTrack action', () => {
   it('Works correctly', async () => {
     const store = mockStore(initialState);
 
-    fetchMock.mockResolvedValue(new Response(JSON.stringify({})));
+    fetchMock.mockIf(/.*/, () => promiseResponse(JSON.stringify({})));
 
     await store.dispatch(
       renameMetadataTrack(oldMetadataTrack, newMetadataTrack, mockExperiment.id),
     );
 
     const actions = store.getActions();
-    expect(_.map(actions, 'type')).toEqual([EXPERIMENTS_METADATA_RENAME]);
+    expect(_.map(actions, 'type')).toEqual([
+      EXPERIMENTS_METADATA_RENAME,
+      BACKEND_STATUS_LOADING,
+      BACKEND_STATUS_LOADED,
+    ]);
     expect(_.map(actions, 'payload')).toMatchSnapshot();
 
     expect(fetchMock).toHaveBeenCalledWith(

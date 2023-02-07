@@ -155,13 +155,13 @@ Object {
   "height": 550,
   "legends": Array [
     Object {
-      "columns": 8,
+      "columns": 1,
       "direction": "horizontal",
       "fill": "legend",
       "labelFont": "sans-serif",
-      "labelLimit": 85,
+      "labelLimit": 0,
       "offset": 40,
-      "orient": "top",
+      "orient": "right",
       "symbolSize": 100,
       "symbolType": "circle",
       "type": "symbol",
@@ -359,7 +359,7 @@ Object {
   "signals": Array [
     Object {
       "name": "plotWidth",
-      "value": 100,
+      "value": 85,
     },
     Object {
       "name": "bandwidth",

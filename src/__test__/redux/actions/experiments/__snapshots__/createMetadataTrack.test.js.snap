@@ -14,5 +14,12 @@ Array [
     },
     "sampleUuid": "sample1",
   },
+  Object {
+    "experimentId": "expeirment-1",
+  },
+  Object {
+    "experimentId": "expeirment-1",
+    "status": Object {},
+  },
 ]
 `;

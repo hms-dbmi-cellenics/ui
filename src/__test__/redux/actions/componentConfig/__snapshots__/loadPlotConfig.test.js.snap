@@ -44,7 +44,8 @@ Object {
     "legend": Object {
       "colour": "#000000",
       "enabled": true,
-      "position": "top-left",
+      "position": "right",
+      "showAlert": false,
     },
     "marker": Object {
       "opacity": 5,
@@ -119,7 +120,8 @@ Object {
     "legend": Object {
       "colour": "#000000",
       "enabled": true,
-      "position": "top-left",
+      "position": "right",
+      "showAlert": false,
     },
     "marker": Object {
       "opacity": 5,

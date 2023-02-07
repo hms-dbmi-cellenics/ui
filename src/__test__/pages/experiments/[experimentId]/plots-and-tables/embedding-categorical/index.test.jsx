@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import _ from 'lodash';
 import CategoricalEmbedding from 'pages/experiments/[experimentId]/plots-and-tables/embedding-categorical/index';
@@ -18,7 +18,9 @@ import mockAPI, {
   promiseResponse,
   statusResponse,
 } from '__test__/test-utils/mockAPI';
+import cellSetsData from '__test__/data/cell_sets.json';
 import createTestComponentFactory from '__test__/test-utils/testComponentFactory';
+import { MAX_LEGEND_ITEMS } from 'components/plots/helpers/PlotLegendAlert';
 
 jest.mock('components/header/UserButton', () => () => <></>);
 jest.mock('react-resize-detector', () => (props) => {
@@ -122,5 +124,39 @@ describe('Categorical embedding plot', () => {
     await renderCategoricalEmbeddingPage(storeState);
 
     expect(screen.getByRole('graphics-document', { name: 'Categorical embedding plot' })).toBeInTheDocument();
+  });
+
+  it('Renders a plot legend alert if there are more than MAX_LEGEND_ITEMS number of cell sets', async () => {
+    const cellSetsTemplate = (clusterIdx) => ({
+      key: `louvain-${clusterIdx}`,
+      name: `Cluster ${clusterIdx}`,
+      rootNode: false,
+      type: 'cellSets',
+      color: '#000000',
+      cellIds: [clusterIdx],
+    });
+
+    const manyCellSets = [...Array(MAX_LEGEND_ITEMS + 1)].map((c, idx) => cellSetsTemplate(idx));
+
+    // Add to louvain cluster
+    cellSetsData.cellSets[0].children = manyCellSets;
+
+    const manyCellSetsResponse = {
+      ...generateDefaultMockAPIResponses(fake.EXPERIMENT_ID),
+      ...customAPIResponses,
+      [`experiments/${fake.EXPERIMENT_ID}/cellSets`]: () => promiseResponse(JSON.stringify(cellSetsData)),
+    };
+
+    fetchMock.mockIf(/.*/, mockAPI(manyCellSetsResponse));
+
+    await renderCategoricalEmbeddingPage(storeState);
+
+    // Vega should appear
+    await waitFor(() => {
+      expect(screen.getByRole('graphics-document', { name: 'Categorical embedding plot' })).toBeInTheDocument();
+    });
+
+    // The legend alert plot text should appear
+    expect(screen.getByText(/We have hidden the plot legend, because it is too large and it interferes with the display of the plot/)).toBeInTheDocument();
   });
 });

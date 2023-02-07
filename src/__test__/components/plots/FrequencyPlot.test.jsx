@@ -60,7 +60,7 @@ describe('Frequency plot tests', () => {
     await renderFrequencyPlot();
 
     expect(screen.getByText(/We're getting your data/i)).toBeInTheDocument();
-    expect(screen.queryByRole('graphics-document', { name: 'Vega visualization' })).toBeNull();
+    expect(screen.queryByRole('graphics-document', { name: 'Frequency plot' })).toBeNull();
 
     expect(updateCSV).not.toHaveBeenCalled();
   });

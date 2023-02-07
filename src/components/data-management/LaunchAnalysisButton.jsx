@@ -44,12 +44,12 @@ const LaunchAnalysisButton = () => {
   const activeExperiment = experiments[activeExperimentId];
 
   const [gem2sRerunStatus, setGem2sRerunStatus] = useState(
-    { rerun: true, paramsHash: null, reasons: [] },
+    { rerun: true, reasons: [] },
   );
 
   const launchAnalysis = async () => {
     if (gem2sRerunStatus.rerun) {
-      await dispatch(runGem2s(activeExperimentId, gem2sRerunStatus.paramsHash));
+      await dispatch(runGem2s(activeExperimentId));
     }
     navigateTo(modules.DATA_PROCESSING, { experimentId: activeExperimentId });
   };
@@ -63,10 +63,8 @@ const LaunchAnalysisButton = () => {
       || !experiments[activeExperimentId]?.sampleIds?.length > 0
     ) return;
 
-    const gem2sStatus = calculateGem2sRerunStatus(
-      gem2sBackendStatus, activeExperiment, samples,
-    );
-    setGem2sRerunStatus(gem2sStatus);
+    const status = calculateGem2sRerunStatus(gem2sBackendStatus, activeExperiment);
+    setGem2sRerunStatus(status);
   }, [backendStatus, activeExperimentId, samples, activeExperiment]);
 
   const canLaunchAnalysis = useCallback(() => {
