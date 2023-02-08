@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import {
-  Space, Button,
+  Space, Button, Menu, Dropdown,
 } from 'antd';
 import PropTypes from 'prop-types';
 
@@ -15,14 +15,34 @@ const ProjectsListContainer = (props) => {
 
   return (
     <Space direction='vertical' style={{ width: '100%' }}>
-      <Button
-        data-test-id={integrationTestConstants.ids.CREATE_NEW_PROJECT_BUTTON}
-        type='primary'
-        block
-        onClick={() => onCreateNewProject()}
+      <Dropdown
+        overlay={() => (
+          <Menu>
+            <Menu.Item
+              key='add-metadata-column'
+              onClick={() => onCreateNewProject()}
+            >
+              Upload Project
+            </Menu.Item>
+            <Menu.Item
+              key='upload-metadata-file'
+              onClick={() => { console.log('Redirect to dataset repository'); }}
+            >
+              Select from Dataset Repository
+            </Menu.Item>
+          </Menu>
+        )}
+        trigger={['click']}
+        placement='bottomRight'
       >
-        Create New Project
-      </Button>
+        <Button
+          data-test-id={integrationTestConstants.ids.CREATE_NEW_PROJECT_BUTTON}
+          type='primary'
+          block
+        >
+          Create New Project
+        </Button>
+      </Dropdown>
       <ProjectSearchBox onChange={(searchRegex) => setFilterParam(searchRegex)} />
       <ProjectsList height={height} filter={filterParam} />
     </Space>
