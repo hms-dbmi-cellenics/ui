@@ -5,12 +5,15 @@ import {
 import PropTypes from 'prop-types';
 
 import integrationTestConstants from 'utils/integrationTestConstants';
+import { useAppRouter } from 'utils/AppRouteProvider';
+import { modules } from 'utils/constants';
 import ProjectSearchBox from './ProjectSearchBox';
 import ProjectsList from './ProjectsList';
 
 const ProjectsListContainer = (props) => {
   const { height, onCreateNewProject } = props;
 
+  const { navigateTo } = useAppRouter();
   const [filterParam, setFilterParam] = useState(new RegExp('.*', 'i'));
 
   return (
@@ -19,14 +22,14 @@ const ProjectsListContainer = (props) => {
         overlay={() => (
           <Menu>
             <Menu.Item
-              key='add-metadata-column'
+              key='upload_project'
               onClick={() => onCreateNewProject()}
             >
               Upload Project
             </Menu.Item>
             <Menu.Item
-              key='upload-metadata-file'
-              onClick={() => { console.log('Redirect to dataset repository'); }}
+              key='copy_from_repository'
+              onClick={() => { navigateTo(modules.REPOSITORY); }}
             >
               Select from Dataset Repository
             </Menu.Item>
