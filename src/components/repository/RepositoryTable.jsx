@@ -6,80 +6,48 @@ import { CloseOutlined } from '@ant-design/icons';
 import PropTypes from 'prop-types';
 import { useAppRouter } from 'utils/AppRouteProvider';
 import { modules } from 'utils/constants';
+import fetchAPI from 'utils/http/fetchAPI';
+import { loadExperiments, setActiveExperiment } from 'redux/actions/experiments';
+import { useDispatch } from 'react-redux';
 
 const { Paragraph } = Typography;
 
-const cloneExperiment = () => {
-  // Dispatch an action
-  console.log('Cloning experiment into your list of experiments');
-};
-
-// Make ready-to-use rows for the table
-// e.g. turn sourceTitle+sourceUrl into a single <a> tag, etc.
-const formatData = (data) => data.map((row) => ({
-  name: row.name,
-  explore: <Button onClick={cloneExperiment}>Copy experiment</Button>,
-  publication: <a href={row.publicationUrl}>{row.publicationTitle}</a>,
-  dataSource: <a href={row.dataSourceUrl}>{row.dataSourceTitle}</a>,
-  species: row.species,
-  sampleCount: row.sampleCount,
-  cellCount: row.cellCount,
-  technology: row.technology,
-  description: row.description,
-}));
-
 const RepositoryTable = (props) => {
+  const cloneExperiment = async (exampleExperimentId) => {
+    const url = `/v2/experiments/${exampleExperimentId}/clone`;
+
+    const newExperimentId = await fetchAPI(
+      url,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+      },
+    );
+
+    await dispatch(loadExperiments());
+    await dispatch(setActiveExperiment(newExperimentId));
+    navigateTo(modules.DATA_MANAGEMENT, { experimentId: newExperimentId });
+  };
+
+  // Make ready-to-use rows for the table
+  // e.g. turn sourceTitle+sourceUrl into a single <a> tag, etc.
+  const formatData = (data) => data.map((row) => ({
+    name: row.name,
+    explore: <Button onClick={() => cloneExperiment(row.id)}>Copy experiment</Button>,
+    publication: <a href={row.publicationUrl}>{row.publicationTitle}</a>,
+    dataSource: <a href={row.dataSourceUrl}>{row.dataSourceTitle}</a>,
+    species: row.species,
+    sampleCount: row.sampleCount,
+    cellCount: row.cellCount,
+    technology: row.technology,
+    description: row.description,
+  }));
+
   const { data } = props;
   const formattedData = formatData(data);
-  const columns = [
-    {
-      title: 'Dataset name',
-      dataIndex: 'name',
-      key: 'name',
-    },
-    {
-      title: 'Select to explore',
-      dataIndex: 'explore',
-      key: 'explore',
-    },
-    {
-      title: 'Link to publication',
-      dataIndex: 'publication',
-      key: 'publication',
-    },
-    {
-      title: 'Link to data source',
-      dataIndex: 'dataSource',
-      key: 'dataSource',
-    },
-    {
-      title: 'Species',
-      dataIndex: 'species',
-      key: 'species',
-    },
-    {
-      title: 'Number of samples',
-      dataIndex: 'sampleCount',
-      key: 'sampleCount',
-    },
-    {
-      title: 'Cell count estimate',
-      dataIndex: 'cellCount',
-      key: 'cellCount',
-    },
-    {
-      title: 'Technology',
-      dataIndex: 'technology',
-      key: 'technology',
-    },
-    {
-      title: 'Short description',
-      dataIndex: 'description',
-      key: 'description',
-    },
-  ];
 
   const { navigateTo } = useAppRouter();
+  const dispatch = useDispatch();
 
   const onCloseTable = () => {
     navigateTo(modules.DATA_MANAGEMENT);
@@ -111,7 +79,7 @@ const RepositoryTable = (props) => {
     >
       <Table
         dataSource={formattedData}
-        columns={columns}
+        columns={TABLE_COLUMNS}
         locale={locale}
         showHeader={formattedData.length > 0}
         pagination={false}
@@ -142,5 +110,53 @@ RepositoryTable.propTypes = {
 RepositoryTable.defaultProps = {
   data: [],
 };
+
+const TABLE_COLUMNS = [
+  {
+    title: 'Dataset name',
+    dataIndex: 'name',
+    key: 'name',
+  },
+  {
+    title: 'Select to explore',
+    dataIndex: 'explore',
+    key: 'explore',
+  },
+  {
+    title: 'Link to publication',
+    dataIndex: 'publication',
+    key: 'publication',
+  },
+  {
+    title: 'Link to data source',
+    dataIndex: 'dataSource',
+    key: 'dataSource',
+  },
+  {
+    title: 'Species',
+    dataIndex: 'species',
+    key: 'species',
+  },
+  {
+    title: 'Number of samples',
+    dataIndex: 'sampleCount',
+    key: 'sampleCount',
+  },
+  {
+    title: 'Cell count estimate',
+    dataIndex: 'cellCount',
+    key: 'cellCount',
+  },
+  {
+    title: 'Technology',
+    dataIndex: 'technology',
+    key: 'technology',
+  },
+  {
+    title: 'Short description',
+    dataIndex: 'description',
+    key: 'description',
+  },
+];
 
 export default RepositoryTable;
