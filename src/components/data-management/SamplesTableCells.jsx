@@ -1,13 +1,13 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Space, Typography, Progress, Tooltip, Button,
 } from 'antd';
 import {
   UploadOutlined,
 } from '@ant-design/icons';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
-import styled from 'styled-components';
+
 import {
   deleteSamples, updateSample,
 } from 'redux/actions/samples';
@@ -19,49 +19,48 @@ import UploadDetailsModal from './UploadDetailsModal';
 
 const { Text } = Typography;
 
-const UploadCellStyle = styled.div`
-  whiteSpace: 'nowrap';
-  height: '35px';
-  minWidth: '90px';
-  display: 'flex';
-  justifyContent: 'center';
-  alignItems: 'center';
-`;
+const UploadDivStyle = {
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  verticalAlign: 'middle',
+};
 
 const UploadCell = (props) => {
-  const { columnId, tableCellData } = props;
-  const {
-    sampleUuid,
-    file,
-  } = tableCellData;
+  const { columnId, sampleUuid } = props;
 
-  const { progress = null, status = null } = file?.upload ?? {};
+  const file = useSelector((state) => state.samples[sampleUuid]?.files[columnId]);
 
   const [uploadDetailsModalVisible, setUploadDetailsModalVisible] = useState(false);
-  const uploadDetailsModalDataRef = useRef(null);
+  const [uploadDetailsModalData, setUploadDetailsModalData] = useState(false);
+
+  useEffect(() => {
+    setUploadDetailsModalData(file);
+  }, [file, file?.upload]);
+
+  const { progress = null, status = null } = uploadDetailsModalData?.upload
+    ?? { status: UploadStatus.FILE_NOT_FOUND };
 
   const showDetails = () => {
-    uploadDetailsModalDataRef.current = {
+    setUploadDetailsModalData({
       sampleUuid,
       fileCategory: columnId,
-      file,
-    };
+      ...uploadDetailsModalData,
+    });
     setUploadDetailsModalVisible(true);
   };
 
   const render = () => {
     if (status === UploadStatus.UPLOADED) {
       return (
-        <UploadCellStyle
+        <div
           className='hoverSelectCursor'
+          onClick={showDetails}
+          onKeyDown={showDetails}
+          style={{ ...UploadDivStyle, flexDirection: 'column' }}
         >
-          <Space
-            onClick={showDetails}
-            onKeyDown={showDetails}
-          >
-            <Text type='success'>{messageForStatus(status)}</Text>
-          </Space>
-        </UploadCellStyle>
+          <Text type='success'>{messageForStatus(status)}</Text>
+        </div>
       );
     }
 
@@ -72,26 +71,28 @@ const UploadCell = (props) => {
       ].includes(status)
     ) {
       return (
-        <UploadCellStyle>
-          <Space direction='vertical' size={[1, 1]}>
-            <Text type='warning'>{`${messageForStatus(status)}`}</Text>
-            {progress ? (<Progress percent={progress} size='small' />) : <div />}
-          </Space>
-        </UploadCellStyle>
+        <div
+          style={{
+            ...UploadDivStyle,
+            flexDirection: 'column',
+          }}
+        >
+          <Text type='warning'>{`${messageForStatus(status)}`}</Text>
+          {progress ? (<Progress style={{ marginLeft: '10%', width: '50%' }} percent={progress} size='small' />) : <div />}
+        </div>
       );
     }
 
     if (status === UploadStatus.UPLOAD_ERROR) {
       return (
-        <UploadCellStyle
+        <div
           className='hoverSelectCursor'
+          style={{ ...UploadDivStyle, flexDirection: 'column' }}
           onClick={showDetails}
           onKeyDown={showDetails}
         >
-          <Space>
-            <Text type='danger'>{messageForStatus(status)}</Text>
-          </Space>
-        </UploadCellStyle>
+          <Text type='danger'>{messageForStatus(status)}</Text>
+        </div>
       );
     }
     if (
@@ -102,27 +103,27 @@ const UploadCell = (props) => {
       ].includes(status)
     ) {
       return (
-        <UploadCellStyle>
-          <Space>
-            <Text type='danger'>{messageForStatus(status)}</Text>
-            <Tooltip placement='bottom' title='Upload missing' mouseLeaveDelay={0}>
-              <Button
-                size='large'
-                shape='link'
-                icon={<UploadOutlined />}
-                onClick={showDetails}
-              />
-            </Tooltip>
-          </Space>
-        </UploadCellStyle>
+        <div style={UploadDivStyle}>
+          <Text type='danger'>{messageForStatus(status)}</Text>
+          <Tooltip placement='bottom' title='Upload missing' mouseLeaveDelay={0}>
+            <Button
+              size='large'
+              shape='link'
+              icon={<UploadOutlined />}
+              onClick={showDetails}
+            />
+          </Tooltip>
+        </div>
       );
     }
   };
   return (
     <>
-      {render()}
+      <center>
+        {render()}
+      </center>
       <UploadDetailsModal
-        uploadDetailsModalDataRef={uploadDetailsModalDataRef}
+        file={uploadDetailsModalData}
         visible={uploadDetailsModalVisible}
         onCancel={() => setUploadDetailsModalVisible(false)}
       />
@@ -132,34 +133,35 @@ const UploadCell = (props) => {
 
 UploadCell.propTypes = {
   columnId: PropTypes.string.isRequired,
-  tableCellData: PropTypes.object.isRequired,
+  sampleUuid: PropTypes.string.isRequired,
 };
 
 const EditableFieldCell = (props) => {
   const {
-    cellText,
-    dataIndex, rowIdx, onAfterSubmit,
+    sampleUuid,
+    dataIndex: trackKey,
+    rowIdx,
+    onAfterSubmit,
   } = props;
+
+  const value = useSelector((state) => state.samples[sampleUuid]?.metadata[trackKey]);
+
   return (
-    <div key={`cell-${dataIndex}-${rowIdx}`} style={{ whiteSpace: 'nowrap' }}>
+    <div key={`cell-${trackKey}-${rowIdx}`} style={{ whiteSpace: 'nowrap' }}>
       <Space>
         <EditableField
           deleteEnabled={false}
-          value={cellText}
-          onAfterSubmit={(value) => onAfterSubmit(value)}
-          formatter={(value) => value.trim()}
+          value={value}
+          onAfterSubmit={(newValue) => onAfterSubmit(newValue)}
+          formatter={(rawValue) => rawValue.trim()}
         />
       </Space>
     </div>
   );
 };
 
-EditableFieldCell.defaultProps = {
-  cellText: 'N.A',
-};
-
 EditableFieldCell.propTypes = {
-  cellText: PropTypes.string,
+  sampleUuid: PropTypes.string.isRequired,
   dataIndex: PropTypes.string.isRequired,
   rowIdx: PropTypes.number.isRequired,
   onAfterSubmit: PropTypes.func.isRequired,
@@ -167,15 +169,19 @@ EditableFieldCell.propTypes = {
 
 const SampleNameCell = (props) => {
   const { cellInfo } = props;
-  const { text, record, idx } = cellInfo;
+  const { record: { uuid: sampleId }, idx } = cellInfo;
+
+  const name = useSelector((state) => state.samples[sampleId]?.name);
+
   const dispatch = useDispatch();
+
   return (
     <Text className={integrationTestConstants.classes.SAMPLES_TABLE_NAME_CELL} strong key={`sample-cell-${idx}`}>
       <EditableField
         deleteEnabled
-        value={text}
-        onAfterSubmit={(name) => dispatch(updateSample(record.uuid, { name }))}
-        onDelete={() => dispatch(deleteSamples([record.uuid]))}
+        value={name}
+        onAfterSubmit={(newName) => dispatch(updateSample(sampleId, { name: newName }))}
+        onDelete={() => dispatch(deleteSamples([sampleId]))}
       />
     </Text>
   );

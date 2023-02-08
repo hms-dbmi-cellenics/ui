@@ -1,30 +1,19 @@
 import pipelineStatusValues from 'utils/pipelineStatusValues';
-import generatePipelineParamsHash from './generatePipelineParamsHash';
+import _ from 'lodash';
 
-const calculatePipelineRerunStatus = (
-  pipelineBackendStatus, activeExperiment, samples,
-) => {
-  const pipelineStatus = pipelineBackendStatus?.status;
-  const existingParamsHash = pipelineBackendStatus?.paramsHash;
-
-  const newParamsHash = generatePipelineParamsHash(
-    activeExperiment,
-    samples,
-  );
-
-  const projectHashEqual = existingParamsHash === newParamsHash;
+const calculatePipelineRerunStatus = (pipelineBackendStatus, activeExperiment) => {
+  const { status: pipelineStatus, shouldRerun } = pipelineBackendStatus ?? {};
 
   const pipelineSuccessful = [
-    pipelineStatusValues.SUCCEEDED, pipelineStatusValues.RUNNING,
+    pipelineStatus.SUCCEEDED, pipelineStatus.RUNNING,
   ].includes(pipelineStatus);
 
   const rerunReasons = [];
   if (!pipelineSuccessful) rerunReasons.push('data has not been processed sucessfully');
-  if (!projectHashEqual) rerunReasons.push('the project samples/metadata have been modified');
+  if (shouldRerun) rerunReasons.push('the experiment samples/metadata have been modified');
 
   return ({
-    rerun: !pipelineSuccessful || !projectHashEqual,
-    paramsHash: newParamsHash,
+    rerun: _.isNil(activeExperiment.parentExperimentId) && (!pipelineSuccessful || shouldRerun),
     reasons: rerunReasons,
     complete: pipelineStatus === pipelineStatusValues.SUCCEEDED,
   });

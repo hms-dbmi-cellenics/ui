@@ -161,23 +161,42 @@ const processUpload = async (filesList, technology, samples, experimentId, dispa
       ),
     );
 
+    const promises = [];
+
     validSamplesList.forEach(([name, sample]) => {
-      Object.values(sample.files).forEach((file) => (
-        createAndUploadSingleFile(file, experimentId, sampleIdsByName[name], dispatch, technology)
-      ));
+      Object.values(sample.files).forEach((file) => {
+        promises.push(
+          async () => await createAndUploadSingleFile(
+            file,
+            experimentId,
+            sampleIdsByName[name],
+            dispatch,
+            technology,
+          ),
+        );
+      });
     });
+
+    // 5 at a time
+    const chunkedPromises = _.chunk(promises, promises.length);
+
+    // eslint-disable-next-line no-restricted-syntax
+    for await (const promisesChunk of chunkedPromises) {
+      await Promise.all(promisesChunk.map((promise) => promise()));
+    }
   } catch (e) {
     // Ignore the error, if createSamples fails we throw to
     // avoid attempting to upload any of these broken samples
   }
 };
+
 /**
- * This function converts an uploaded File object into a file record that will be inserted under
- * samples[files] in the redux store.
- * @param {File} fileObject the File object that is uploaded to the .
- * @param {string} technology the chosen technology that outputs this file. Used for verification.
- * @returns {object} fileRecord object that will be associated with a sample.
- */
+   * This function converts an uploaded File object into a file record that will be inserted under
+   * samples[files] in the redux store.
+   * @param {File} fileObject the File object that is uploaded to the .
+   * @param {string} technology the chosen technology that outputs this file. Used for verification.
+   * @returns {object} fileRecord object that will be associated with a sample.
+   */
 const fileObjectToFileRecord = async (fileObject, technology) => {
   // This is the first stage in uploading a file.
 

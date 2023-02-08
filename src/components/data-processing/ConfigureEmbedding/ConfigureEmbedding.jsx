@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
 import {
-  Row, Col, PageHeader, Radio, Collapse, Empty, Alert,
+  Row, Col, PageHeader, Radio, Collapse, Empty, Alert, Space,
 } from 'antd';
 import SelectData from 'components/plots/styling/embedding-continuous/SelectData';
 
@@ -24,6 +24,7 @@ import { generateDataProcessingPlotUuid } from 'utils/generateCustomPlotUuid';
 import Loader from 'components/Loader';
 import { getCellSets } from 'redux/selectors';
 import CalculationConfig from 'components/data-processing/ConfigureEmbedding/CalculationConfig';
+import PlotLegendAlert, { MAX_LEGEND_ITEMS } from 'components/plots/helpers/PlotLegendAlert';
 
 const { Panel } = Collapse;
 
@@ -42,6 +43,8 @@ const ConfigureEmbedding = (props) => {
 
   const continuousEmbeddingPlots = ['mitochondrialContent', 'doubletScores', 'numOfGenes', 'numOfUmis'];
 
+  const { hierarchy } = cellSets;
+
   useEffect(() => {
     continuousEmbeddingPlots.forEach((dataName) => {
       if (cellMeta[dataName].loading && !cellMeta[dataName].error) {
@@ -56,12 +59,15 @@ const ConfigureEmbedding = (props) => {
       plotUuid: generateDataProcessingPlotUuid(null, filterName, 0),
       plotType: 'embeddingPreviewByCellSets',
       plot: (config, actions) => (
-        <CategoricalEmbeddingPlot
-          experimentId={experimentId}
-          config={config}
-          actions={actions}
-          onUpdate={updatePlotWithChanges}
-        />
+        <Space direction='vertical'>
+          {config?.legend?.showAlert && <PlotLegendAlert stylingSectionName='Plot Options' />}
+          <CategoricalEmbeddingPlot
+            experimentId={experimentId}
+            config={config}
+            actions={actions}
+            onUpdate={updatePlotWithChanges}
+          />
+        </Space>
       )
       ,
     },
@@ -70,19 +76,22 @@ const ConfigureEmbedding = (props) => {
       plotUuid: generateDataProcessingPlotUuid(null, filterName, 1),
       plotType: 'embeddingPreviewBySample',
       plot: (config, actions) => (
-        <CategoricalEmbeddingPlot
-          experimentId={experimentId}
-          config={{
-            ...config,
-            legend: {
-              ...config.legend,
-              title: 'Sample Name',
-            },
-            selectedCellSet: 'sample',
-          }}
-          actions={actions}
-          onUpdate={updatePlotWithChanges}
-        />
+        <Space direction='vertical'>
+          {config?.legend?.showAlert && <PlotLegendAlert stylingSectionName='Plot Options' />}
+          <CategoricalEmbeddingPlot
+            experimentId={experimentId}
+            config={{
+              ...config,
+              legend: {
+                ...config.legend,
+                title: 'Sample Name',
+              },
+              selectedCellSet: 'sample',
+            }}
+            actions={actions}
+            onUpdate={updatePlotWithChanges}
+          />
+        </Space>
       ),
     },
     mitochondrialContent: {
@@ -251,7 +260,8 @@ const ConfigureEmbedding = (props) => {
     return plotConfigsToReturn;
   });
 
-  const selectedConfig = plotConfigs[plots[selectedPlot].plotUuid];
+  const { plotUuid: activePlotUuid, plotType: activePlotType } = plots[selectedPlot];
+  const selectedConfig = plotConfigs[activePlotUuid];
 
   useEffect(() => {
     Object.values(plots).forEach((obj) => {
@@ -261,6 +271,31 @@ const ConfigureEmbedding = (props) => {
     });
   }, []);
 
+  const updatePlotWithChanges = (obj) => {
+    dispatch(updatePlotConfig(activePlotUuid, obj));
+    debounceSave(activePlotUuid);
+  };
+
+  useEffect(() => {
+    if (!selectedConfig
+      || !cellSets.accessible
+      || !selectedConfig.legend.enabled) return;
+
+    let legendItemKey = null;
+    if (activePlotType === 'embeddingPreviewByCellSets') {
+      legendItemKey = 'louvain';
+    } else if (activePlotType === 'embeddingPreviewBySample') {
+      legendItemKey = 'sample';
+    } else {
+      return;
+    }
+
+    const numLegendItems = hierarchy.find(({ key }) => key === legendItemKey).children.length;
+    const showAlert = numLegendItems > MAX_LEGEND_ITEMS;
+
+    if (showAlert) updatePlotWithChanges({ legend: { showAlert, enabled: !showAlert } });
+  }, [!selectedConfig, activePlotType, cellSets.accessible]);
+
   useEffect(() => {
     // if we change a plot and the config is not saved yet
     if (outstandingChanges) {
@@ -269,8 +304,6 @@ const ConfigureEmbedding = (props) => {
   }, [selectedPlot]);
 
   useEffect(() => {
-    // Do not update anything if the cell sets are stil loading or if
-    // the config does not exist yet.
     if (!selectedConfig) {
       return;
     }
@@ -282,11 +315,6 @@ const ConfigureEmbedding = (props) => {
       setPlot(plots[selectedPlot].plot(selectedConfig, plotActions));
     }
   }, [selectedConfig, cellSets]);
-
-  const updatePlotWithChanges = (obj) => {
-    dispatch(updatePlotConfig(plots[selectedPlot].plotUuid, obj));
-    debounceSave(plots[selectedPlot].plotUuid);
-  };
 
   const renderExtraControlPanels = () => (
     <Panel header='Select data' key='select-data'>
@@ -327,7 +355,7 @@ const ConfigureEmbedding = (props) => {
 
   const radioStyle = {
     display: 'block',
-    height: '30px',
+    minHeight: '30px',
   };
 
   return (
@@ -338,10 +366,12 @@ const ConfigureEmbedding = (props) => {
       />
       <Row gutter={16}>
         <Col flex='auto'>
-          {renderPlot()}
+          <center>
+            {renderPlot()}
+          </center>
         </Col>
 
-        <Col flex='1 0px'>
+        <Col flex='1 0px' style={{ minWidth: '300px' }}>
           <Collapse defaultActiveKey={['plot-selector']}>
             <Panel header='Plot view' key='plot-selector'>
               <Radio.Group onChange={(e) => setSelectedPlot(e.target.value)} value={selectedPlot}>

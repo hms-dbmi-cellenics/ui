@@ -3,12 +3,14 @@ import React, {
 } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import {
-  Row, Col, Radio, PageHeader, Collapse, Alert, Empty,
+  Row, Col, Radio, PageHeader, Collapse, Alert, Empty, Space,
 } from 'antd';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
 
-import { getBackendStatus, getCellSets } from 'redux/selectors';
+import {
+  getBackendStatus, getCellSets, getCellSetsHierarchyByKeys,
+} from 'redux/selectors';
 
 import {
   updatePlotConfig,
@@ -23,6 +25,7 @@ import { generateDataProcessingPlotUuid } from 'utils/generateCustomPlotUuid';
 import EmptyPlot from 'components/plots/helpers/EmptyPlot';
 import PlotStyling from 'components/plots/styling/PlotStyling';
 import { isUnisample } from 'utils/experimentPredicates';
+import PlotLegendAlert, { MAX_LEGEND_ITEMS } from 'components/plots/helpers/PlotLegendAlert';
 import CalculationConfig from './CalculationConfig';
 
 const { Panel } = Collapse;
@@ -41,28 +44,33 @@ const DataIntegration = (props) => {
     _.debounce((plotUuid) => dispatch(savePlotConfig(experimentId, plotUuid)), 2000), [],
   );
 
+  const numLegendItems = useSelector(getCellSetsHierarchyByKeys(['sample']))[0]?.children?.length;
+
   const [plots] = useState({
     embedding: {
       title: 'Embedding coloured by sample',
       plotUuid: generateDataProcessingPlotUuid(null, configureEmbeddingFilterName, 1),
       plotType: 'dataIntegrationEmbedding',
       plot: (config, plotData, actions) => (
-        <CategoricalEmbeddingPlot
-          experimentId={experimentId}
-          config={{
-            ...config,
-            legend: {
-              ...config.legend,
-              title: 'Sample Name',
-            },
-            selectedCellSet: 'sample',
-            axes: {
-              defaultValues: [],
-            },
-          }}
-          actions={actions}
-          onUpdate={updatePlotWithChanges}
-        />
+        <Space direction='vertical'>
+          {config?.legend?.showAlert && <PlotLegendAlert />}
+          <CategoricalEmbeddingPlot
+            experimentId={experimentId}
+            config={{
+              ...config,
+              legend: {
+                ...config.legend,
+                title: 'Sample Name',
+              },
+              selectedCellSet: 'sample',
+              axes: {
+                defaultValues: [],
+              },
+            }}
+            actions={actions}
+            onUpdate={updatePlotWithChanges}
+          />
+        </Space>
       ),
       blockedByConfigureEmbedding: true,
     },
@@ -71,11 +79,14 @@ const DataIntegration = (props) => {
       plotUuid: 'dataIntegrationFrequency',
       plotType: 'dataIntegrationFrequency',
       plot: (config, plotData, actions) => (
-        <FrequencyPlot
-          experimentId={experimentId}
-          config={config}
-          actions={actions}
-        />
+        <Space direction='vertical'>
+          {config?.legend?.showAlert && <PlotLegendAlert />}
+          <FrequencyPlot
+            experimentId={experimentId}
+            config={config}
+            actions={actions}
+          />
+        </Space>
       ),
       blockedByConfigureEmbedding: true,
     },
@@ -200,7 +211,23 @@ const DataIntegration = (props) => {
     (state) => state.componentConfig[plots[selectedPlot].plotUuid]?.plotData,
   );
 
-  const selectedConfig = plotConfigs[plots[selectedPlot].plotUuid];
+  const { plotUuid: activePlotUuid, plotType: activePlotType } = plots[selectedPlot];
+  const selectedConfig = plotConfigs[activePlotUuid];
+
+  const updatePlotWithChanges = (obj) => {
+    dispatch(updatePlotConfig(activePlotUuid, obj));
+    debounceSave(activePlotUuid);
+  };
+
+  useEffect(() => {
+    if (!selectedConfig
+      || !cellSets.accessible
+      || !selectedConfig.legend.enabled) return;
+
+    const showAlert = numLegendItems > MAX_LEGEND_ITEMS;
+
+    if (showAlert) updatePlotWithChanges({ legend: { showAlert, enabled: !showAlert } });
+  }, [!selectedConfig, activePlotType, cellSets.accessible]);
 
   const completedSteps = useSelector(
     getBackendStatus(experimentId),
@@ -236,11 +263,6 @@ const DataIntegration = (props) => {
     }
   }, [selectedConfig, cellSets, plotData, calculationConfig]);
 
-  const updatePlotWithChanges = (obj) => {
-    dispatch(updatePlotConfig(plots[selectedPlot].plotUuid, obj));
-    debounceSave(plots[selectedPlot].plotUuid);
-  };
-
   const renderPlot = () => {
     const disabledByConfigEmbedding = plots[selectedPlot].blockedByConfigureEmbedding
       && !configureEmbeddingFinished.current;
@@ -273,7 +295,7 @@ const DataIntegration = (props) => {
   };
   const radioStyle = {
     display: 'block',
-    height: '30px',
+    minHeight: '30px',
   };
 
   return (

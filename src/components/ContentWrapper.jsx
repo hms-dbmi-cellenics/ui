@@ -2,6 +2,10 @@
 import React, { useEffect, useState, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
+
+import MultiBackend from 'react-dnd-multi-backend';
+import HTML5ToTouch from 'react-dnd-multi-backend/dist/cjs/HTML5toTouch';
+
 import {
   BuildOutlined,
   DatabaseOutlined,
@@ -28,11 +32,11 @@ import PrivacyPolicyIntercept from 'components/data-management/PrivacyPolicyInte
 import { getBackendStatus } from 'redux/selectors';
 import { loadUser } from 'redux/actions/user';
 import { loadBackendStatus } from 'redux/actions/backendStatus';
+
 import { isBrowser, privacyPolicyIsNotAccepted } from 'utils/deploymentInfo';
 import { modules } from 'utils/constants';
 import { useAppRouter } from 'utils/AppRouteProvider';
 import experimentUpdatesHandler from 'utils/experimentUpdatesHandler';
-
 import integrationTestConstants from 'utils/integrationTestConstants';
 import pipelineStatusValues from 'utils/pipelineStatusValues';
 import calculatePipelineRerunStatus from 'utils/data-management/calculatePipelineRerunStatus';
@@ -129,7 +133,6 @@ const ContentWrapper = (props) => {
           // Unload all previous socket.io hooks that may have been created for a different
           // experiment.
           io.off();
-
           io.on(`ExperimentUpdates-${currentExperimentId}`, (update) => cb(currentExperimentId, update));
         });
     }
@@ -304,11 +307,11 @@ const ContentWrapper = (props) => {
       }
 
       if (gem2sRunningError) {
-        return <PipelineLoadingScreen paramsHash={gem2sparamsHash} experimentId={routeExperimentId} pipelineStatus='error' pipelineType='gem2s' />;
+        return <PipelineLoadingScreen experimentId={routeExperimentId} pipelineStatus='error' pipelineType='gem2s' />;
       }
 
       if (seuratRunningError) {
-        return <PipelineLoadingScreen paramsHash={seuratparamsHash} experimentId={routeExperimentId} pipelineStatus='error' pipelineType='seurat' pipelineErrorMessage={seuratErrorMessage} />;
+        return <PipelineLoadingScreen experimentId={routeExperimentId} pipelineStatus='error' pipelineType='seurat' pipelineErrorMessage={seuratErrorMessage} />;
       }
 
       if (seuratComplete && currentModule === modules.DATA_PROCESSING) {
@@ -385,72 +388,74 @@ const ContentWrapper = (props) => {
 
   return (
     <>
-      {privacyPolicyIsNotAccepted(user, domainName) && (
-        <PrivacyPolicyIntercept user={user} onOk={() => dispatch(loadUser())} />
-      )}
-      <BrowserAlert />
-      <Layout style={{ minHeight: '100vh' }}>
-        <Sider
-          style={{
-            overflow: 'auto', height: '100vh', position: 'fixed', left: 0,
-          }}
-          width={210}
-          theme='dark'
-          mode='inline'
-          collapsible
-          collapsed={collapsed}
-          onCollapse={(collapse) => setCollapsed(collapse)}
-        >
-          <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-            {collapsed ? <SmallLogo /> : <BigLogo />}
-            <Menu
-              data-test-id={integrationTestConstants.ids.NAVIGATION_MENU}
-              theme='dark'
-              selectedKeys={
-                menuLinks
-                  .filter(({ module }) => module === currentModule)
-                  .map(({ module }) => module)
-              }
-              mode='inline'
-            >
-              {menuLinks.filter((item) => !item.disableIfNoExperiment).map(menuItemRender)}
-
-              <Menu.ItemGroup
-                title={!collapsed && (
-                  <Tooltip title={experimentName} placement='right'>
-                    <Space direction='vertical' style={{ width: '100%', cursor: 'default' }}>
-                      <Text
-                        style={{
-                          width: '100%',
-                          color: '#999999',
-                        }}
-                        strong
-                        ellipsis
-                      >
-                        {experimentName || 'No analysis'}
-                      </Text>
-                      {experimentName && (
-                        <Text style={{ color: '#999999' }}>
-                          Current analysis
-                        </Text>
-                      )}
-                    </Space>
-                  </Tooltip>
-
-                )}
+      <DndProvider backend={MultiBackend} options={HTML5ToTouch}>
+        {privacyPolicyIsNotAccepted(user, domainName) && (
+          <PrivacyPolicyIntercept user={user} onOk={() => dispatch(loadUser())} />
+        )}
+        <BrowserAlert />
+        <Layout style={{ minHeight: '100vh' }}>
+          <Sider
+            style={{
+              overflow: 'auto', height: '100vh', position: 'fixed', left: 0,
+            }}
+            width={210}
+            theme='dark'
+            mode='inline'
+            collapsible
+            collapsed={collapsed}
+            onCollapse={(collapse) => setCollapsed(collapse)}
+          >
+            <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+              {collapsed ? <SmallLogo /> : <BigLogo />}
+              <Menu
+                data-test-id={integrationTestConstants.ids.NAVIGATION_MENU}
+                theme='dark'
+                selectedKeys={
+                  menuLinks
+                    .filter(({ module }) => module === currentModule)
+                    .map(({ module }) => module)
+                }
+                mode='inline'
               >
-                {menuLinks.filter((item) => item.disableIfNoExperiment).map(menuItemRender)}
-              </Menu.ItemGroup>
+                {menuLinks.filter((item) => !item.disableIfNoExperiment).map(menuItemRender)}
 
-            </Menu>
-          </div>
-        </Sider>
-        <Layout
-          style={!collapsed ? { marginLeft: '210px' } : { marginLeft: '80px' }} // this is the collapsed width for our sider
-        >
-          {renderContent()}
+                <Menu.ItemGroup
+                  title={!collapsed && (
+                    <Tooltip title={experimentName} placement='right'>
+                      <Space direction='vertical' style={{ width: '100%', cursor: 'default' }}>
+                        <Text
+                          style={{
+                            width: '100%',
+                            color: '#999999',
+                          }}
+                          strong
+                          ellipsis
+                        >
+                          {experimentName || 'No analysis'}
+                        </Text>
+                        {experimentName && (
+                          <Text style={{ color: '#999999' }}>
+                            Current analysis
+                          </Text>
+                        )}
+                      </Space>
+                    </Tooltip>
+
+                  )}
+                >
+                  {menuLinks.filter((item) => item.disableIfNoExperiment).map(menuItemRender)}
+                </Menu.ItemGroup>
+
+              </Menu>
+            </div>
+          </Sider>
+          <Layout
+            style={!collapsed ? { marginLeft: '210px' } : { marginLeft: '80px' }} // this is the collapsed width for our sider
+          >
+            {renderContent()}
+          </Layout>
         </Layout>
-      </Layout>
+      </DndProvider>
     </>
   );
 };

@@ -4,7 +4,6 @@ import userEvent from '@testing-library/user-event';
 import { act } from 'react-dom/test-utils';
 import '@testing-library/jest-dom';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
-import reactSortableHoc from 'react-sortable-hoc';
 
 import _ from 'lodash';
 import { Provider } from 'react-redux';
@@ -61,13 +60,17 @@ const defaultProps = {
 
 const samplesTableFactory = createTestComponentFactory(SamplesTable, defaultProps);
 const renderSamplesTable = async (store) => {
+  let renderComponents;
+
   await act(async () => {
-    render(
+    renderComponents = render(
       <Provider store={store}>
         {samplesTableFactory()}
       </Provider>,
     );
   });
+
+  return renderComponents;
 };
 
 enableFetchMocks();
@@ -248,29 +251,6 @@ describe('Samples table', () => {
     sampleNames.forEach((sampleName) => {
       expect(screen.getByText(sampleName)).toBeInTheDocument();
     });
-  });
-
-  it('Reorder samples send correct request in api v2', async () => {
-    let onSortEndProp;
-    reactSortableHoc.sortableContainer.mockImplementationOnce(() => (...params) => {
-      onSortEndProp = params[0].onSortEnd;
-      return <></>;
-    });
-
-    await renderSamplesTable(storeState);
-
-    await act(async () => {
-      onSortEndProp({ oldIndex: 0, newIndex: 5 });
-    });
-
-    expect(fetchMock).toHaveBeenCalledWith(
-      `http://localhost:3000/v2/experiments/${experimentWithSamplesId}/samples/position`,
-      {
-        method: 'PUT',
-        headers: expect.anything(),
-        body: '{"oldPosition":0,"newPosition":5}',
-      },
-    );
   });
 
   describe('Example experiments functionality', () => {

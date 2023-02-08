@@ -8,6 +8,7 @@ import fetchAPI from 'utils/http/fetchAPI';
 import handleError from 'utils/http/handleError';
 
 import endUserMessages from 'utils/endUserMessages';
+import { loadBackendStatus } from '../backendStatus';
 
 const updateValueInMetadataTrack = (
   experimentId, sampleId, metadataTrackKey, value,
@@ -36,6 +37,8 @@ const updateValueInMetadataTrack = (
         value,
       },
     });
+
+    await dispatch(loadBackendStatus(experimentId));
   } catch (e) {
     const errorMessage = handleError(e, endUserMessages.ERROR_SAVING);
 

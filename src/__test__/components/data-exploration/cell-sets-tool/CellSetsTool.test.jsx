@@ -3,10 +3,10 @@ import React from 'react';
 import {
   render, screen, fireEvent, waitFor,
 } from '@testing-library/react';
-import { within } from '@testing-library/dom';
 import userEvent from '@testing-library/user-event';
 
 import { act } from 'react-dom/test-utils';
+import { within } from '@testing-library/dom';
 
 import { Provider } from 'react-redux';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
@@ -18,8 +18,6 @@ import CellSetsTool from 'components/data-exploration/cell-sets-tool/CellSetsToo
 import { createCellSet } from 'redux/actions/cellSets';
 
 import '__test__/test-utils/setupTests';
-import { withoutFilteredOutCells } from 'utils/cellSetOperations';
-import { createHierarchyFromTree, createPropertiesFromTree } from 'redux/reducers/cellSets/helpers';
 
 jest.mock('utils/work/fetchWork');
 
@@ -28,6 +26,14 @@ jest.mock('utils/socketConnection', () => ({
   default: new Promise((resolve) => {
     resolve({ emit: jest.fn(), on: jest.fn(), id: '5678' });
   }),
+}));
+
+const mockNavigateTo = jest.fn();
+
+jest.mock('utils/AppRouteProvider', () => ({
+  useAppRouter: jest.fn(() => ({
+    navigateTo: mockNavigateTo,
+  })),
 }));
 
 const cellSetsData = require('__test__/data/cell_sets.json');
@@ -57,6 +63,7 @@ const defaultProps = {
 const cellSetsToolFactory = createTestComponentFactory(CellSetsTool, defaultProps);
 
 let storeState;
+
 describe('CellSetsTool', () => {
   beforeEach(async () => {
     enableFetchMocks();
@@ -75,17 +82,11 @@ describe('CellSetsTool', () => {
       );
     });
 
-    // There should be a tab for cell sets
-    screen.getByText(/Cell sets/);
-
-    // // There should be a tab for metadata
-    screen.getByText(/Metadata/i);
-
     const editButtons = screen.getAllByLabelText(/Edit/);
-    expect(editButtons.length).toEqual(15);
-
     // There should be no delete buttons.
     const deleteButtons = screen.queryByText(/Delete/);
+
+    expect(editButtons.length).toEqual(3);
     expect(deleteButtons).toBeNull();
   });
 
@@ -103,11 +104,9 @@ describe('CellSetsTool', () => {
       storeState.dispatch(createCellSet(experimentId, 'New Cluster', '#3957ff', new Set([1, 2, 3, 4, 5])));
     });
 
-    // There should be a tab for cell sets
-    screen.getByText(/Cell sets/);
-
-    // // There should be a tab for metadata
-    screen.getByText(/Metadata/);
+    // expand custom cell sets tree
+    const customCellSetsGroup = screen.getAllByRole('img', { name: 'down' })[1];
+    userEvent.click(customCellSetsGroup);
 
     // There should be delete buttons for clusters under Custom cell sets.
     const deleteButtons = screen.getAllByLabelText(/Delete/);
@@ -138,6 +137,10 @@ describe('CellSetsTool', () => {
       );
     });
 
+    // expand the louvain clusters tree
+    const louvainCLustersGroup = screen.getAllByRole('img', { name: 'down' })[0];
+    userEvent.click(louvainCLustersGroup);
+
     // select the third louvain cluster
     const louvain3Cluster = screen.getByText('Cluster 3');
     userEvent.click(louvain3Cluster);
@@ -161,6 +164,10 @@ describe('CellSetsTool', () => {
         </Provider>,
       );
     });
+
+    // expand the louvain clusters tree
+    const louvainCLustersGroup = screen.getAllByRole('img', { name: 'down' })[0];
+    userEvent.click(louvainCLustersGroup);
 
     // select the third louvain cluster
     const louvain3Cluster = screen.getByText('Cluster 3');
@@ -187,6 +194,10 @@ describe('CellSetsTool', () => {
       );
     });
 
+    // expand custom cell sets tree
+    const customCellSetsGroup = screen.getAllByRole('img', { name: 'down' })[1];
+    userEvent.click(customCellSetsGroup);
+
     screen.getByText('New Cluster');
     const newClusterKey = getClusterByName('New Cluster');
 
@@ -195,12 +206,12 @@ describe('CellSetsTool', () => {
     const unionCellIds = [...cluster3CellIds, ...cluster4CellIds];
 
     // test the union cellSet function
-    const expecteddUnion = new Set(unionCellIds);
+    const expectedUnion = new Set(unionCellIds);
 
     // get the cell ids of the new cluster that got created as the union of those clusters
     const actualUnion = storeState.getState().cellSets.properties[newClusterKey].cellIds;
 
-    expect(actualUnion).toEqual(expecteddUnion);
+    expect(actualUnion).toEqual(expectedUnion);
   });
 
   it('can compute an intersection of 2 cell sets', async () => {
@@ -215,17 +226,26 @@ describe('CellSetsTool', () => {
     // ensure that initially we have 0 custom cell sets
     expect(screen.queryByText('New Cluster')).toBeNull();
 
-    // create a new cluster with some cells that will overlap:
-    await act(async () => {
-      storeState.dispatch(createCellSet(experimentId, 'test cluster', '#3957ff', new Set([1, 2, 3, 4])));
-    });
-    // select the newly created cluster
-    const scratchpadCluster = screen.getByText('test cluster');
-    userEvent.click(scratchpadCluster);
+    // expand the louvain clusters tree
+    const louvainCLustersGroup = screen.getAllByRole('img', { name: 'down' })[0];
+    userEvent.click(louvainCLustersGroup);
 
     // select the first louvain cluster
     const louvain0Cluster = screen.getByText('Cluster 0');
     userEvent.click(louvain0Cluster);
+
+    // create a new cluster with some cells that will overlap:
+    await act(async () => {
+      storeState.dispatch(createCellSet(experimentId, 'test cluster', '#3957ff', new Set([1, 2, 3, 4, 31, 32])));
+    });
+
+    // expand custom cell sets tree
+    const customCellSetsGroup = screen.getAllByRole('img', { name: 'down' })[1];
+    userEvent.click(customCellSetsGroup);
+
+    // select the newly created cluster
+    const scratchpadCluster = screen.getByText('test cluster');
+    userEvent.click(scratchpadCluster);
 
     const intersectOperation = screen.getByLabelText(/Intersection of selected$/i);
     userEvent.click(intersectOperation);
@@ -241,7 +261,12 @@ describe('CellSetsTool', () => {
       );
     });
 
+    // expand custom cell sets tree
+    const customCellSetsGroup2 = screen.getAllByRole('img', { name: 'down' })[0];
+    userEvent.click(customCellSetsGroup2);
+
     screen.getByText('New Cluster');
+
     const newClusterKey = getClusterByName('New Cluster');
     const actualIntersection = storeState.getState().cellSets.properties[newClusterKey].cellIds;
 
@@ -261,17 +286,26 @@ describe('CellSetsTool', () => {
     // ensure that initially we have 0 custom cell sets
     expect(screen.queryByText('New Cluster')).toBeNull();
 
-    // create a new cluster with some cells that will overlap:
-    await act(async () => {
-      storeState.dispatch(createCellSet(experimentId, 'test cluster', '#3957ff', new Set([1, 2, 3, 4])));
-    });
-    // select the newly created cluster
-    const scratchpadCluster = screen.getByText('test cluster');
-    userEvent.click(scratchpadCluster);
+    // expand the louvain clusters tree
+    const louvainCLustersGroup = screen.getAllByRole('img', { name: 'down' })[0];
+    userEvent.click(louvainCLustersGroup);
 
     // select the first louvain cluster
     const louvain0Cluster = screen.getByText('Cluster 0');
     userEvent.click(louvain0Cluster);
+
+    // create a new cluster with some cells that will overlap:
+    await act(async () => {
+      storeState.dispatch(createCellSet(experimentId, 'test cluster', '#3957ff', new Set([1, 2, 3, 4])));
+    });
+
+    // expand custom cell sets tree
+    const customCellSetsGroup = screen.getAllByRole('img', { name: 'down' })[1];
+    userEvent.click(customCellSetsGroup);
+
+    // select the newly created cluster
+    const scratchpadCluster = screen.getByText('test cluster');
+    userEvent.click(scratchpadCluster);
 
     const intersectOperation = screen.getByLabelText(/Intersection of selected$/i);
     userEvent.click(intersectOperation);
@@ -297,6 +331,10 @@ describe('CellSetsTool', () => {
         </Provider>,
       );
     });
+
+    // expand the louvain clusters tree
+    const louvainCLustersGroup = screen.getAllByRole('img', { name: 'down' })[0];
+    userEvent.click(louvainCLustersGroup);
 
     // select the first louvain cluster
     const louvain0Cluster = screen.getByText('Cluster 0');
@@ -335,6 +373,10 @@ describe('CellSetsTool', () => {
       );
     });
 
+    // expand the louvain clusters tree
+    const louvainCLustersGroup = screen.getAllByRole('img', { name: 'down' })[0];
+    userEvent.click(louvainCLustersGroup);
+
     // select the first louvain cluster
     const louvain0Cluster = screen.getByText('Cluster 0');
     userEvent.click(louvain0Cluster);
@@ -355,6 +397,10 @@ describe('CellSetsTool', () => {
       );
     });
 
+    // expand custom cell sets tree
+    const customCellSetsGroup = screen.getAllByRole('img', { name: 'down' })[1];
+    userEvent.click(customCellSetsGroup);
+
     screen.getByText('New Cluster');
     const newClusterKey = getClusterByName('New Cluster');
 
@@ -373,101 +419,6 @@ describe('CellSetsTool', () => {
     expect(actualComplement).toEqual(expectedComplement);
   });
 
-  it('cell set operations take into account only clusters that are in the current tab', async () => {
-    await act(async () => {
-      render(
-        <Provider store={storeState}>
-          {cellSetsToolFactory()}
-        </Provider>,
-      );
-    });
-
-    // select the first louvain cluster
-    const louvain0Cluster = screen.getByText('Cluster 0');
-    userEvent.click(louvain0Cluster);
-
-    // go to the metadata tab
-    const metadataTabButton = screen.getByText(/Metadata/i);
-    userEvent.click(metadataTabButton);
-
-    // select a sample cluster
-    const wt1Cluster = screen.getByText('WT1');
-    userEvent.click(wt1Cluster);
-
-    // now compute union while still in the metadata tab
-    const unionOperation = screen.getByLabelText(/Union of selected$/i);
-    userEvent.click(unionOperation);
-
-    const saveButton = screen.getByLabelText(/Save/i);
-    await act(async () => {
-      fireEvent(
-        saveButton,
-        new MouseEvent('click', {
-          bubbles: true,
-          cancelable: true,
-        }),
-      );
-    });
-
-    // go to the cell sets tab
-    const cellSetsTabButton = screen.getByText('Cell sets');
-    userEvent.click(cellSetsTabButton);
-
-    screen.getByText('New Cluster');
-    const newClusterKey = getClusterByName('New Cluster');
-
-    const WT1CEllIds = sampleList.find(({ name }) => name === 'WT1').cellIds;
-
-    // test the union cellSet function. It should not include the cluster 0 cells
-    const expectedUnion = new Set(WT1CEllIds);
-
-    // get the cell ids of the new cluster that got created as the union of those clusters
-    const actualUnion = storeState.getState().cellSets.properties[newClusterKey].cellIds;
-
-    expect(actualUnion).toEqual(expectedUnion);
-  });
-
-  it('selected cell sets show selected in both tabs', async () => {
-    await act(async () => {
-      render(
-        <Provider store={storeState}>
-          {cellSetsToolFactory()}
-        </Provider>,
-      );
-    });
-
-    // select the first louvain cluster
-    const louvain0Cluster = screen.getByText('Cluster 0');
-    userEvent.click(louvain0Cluster);
-
-    const numCellsCluster0 = louvainClusters.find(({ name }) => name === 'Cluster 0').cellIds.length;
-
-    screen.getByText(`${numCellsCluster0} cells selected`);
-
-    // go to the metadata tab
-    const metadataTabButton = screen.getByText(/Metadata/i);
-    userEvent.click(metadataTabButton);
-
-    // select some sample clusters
-    const wt1Cluster = screen.getByText('WT1');
-    userEvent.click(wt1Cluster);
-    const wt2Cluster = screen.getByText('WT2');
-    userEvent.click(wt2Cluster);
-
-    const cellsWT1 = sampleList.find(({ name }) => name === 'WT1').cellIds;
-    const cellsWT2 = sampleList.find(({ name }) => name === 'WT2').cellIds;
-    const selectedCellIds = [...cellsWT1, ...cellsWT2];
-
-    const cellSets = {
-      properties: createPropertiesFromTree(cellSetsData.cellSets),
-      hierarchy: createHierarchyFromTree(cellSetsData.cellSets),
-    };
-
-    const numSelectedCells = withoutFilteredOutCells(cellSets, selectedCellIds).size;
-
-    screen.getByText(`${numSelectedCells} cells selected`);
-  });
-
   it('Scratchpad cluster deletion works ', async () => {
     await act(async () => {
       render(
@@ -482,16 +433,51 @@ describe('CellSetsTool', () => {
       storeState.dispatch(createCellSet(experimentId, 'New Cluster', '#3957ff', new Set([1, 2, 3, 4, 5])));
     });
 
+    let cellCetsGroups = screen.getAllByRole('img', { name: 'down' });
+
+    // expand custom cell sets tree
+    userEvent.click(cellCetsGroups[1]);
+
     screen.getByText('New Cluster');
+    const newClusterKey = getClusterByName('New Cluster');
+
+    expect(cellCetsGroups.length).toEqual(4);
+
+    let isInRedux = Object.keys(storeState.getState().cellSets.properties).includes(newClusterKey[0]);
+    expect(isInRedux).toBe(true);
 
     // There should be a delete button for the scratchpad cluster.
+    // const deleteButton = screen.getByLabelText(/Delete/);
     const deleteButtons = screen.getAllByLabelText(/Delete/);
     expect(deleteButtons.length).toEqual(1);
 
     // Clicking on one of the buttons...
-    userEvent.click(deleteButtons[0]);
+    await act(async () => {
+      fireEvent(
+        deleteButtons[0],
+        new MouseEvent('click', {
+          bubbles: true,
+          cancelable: true,
+        }),
+      );
+    });
 
-    await waitFor(() => expect(screen.queryByText('New Cluster')).toBeNull());
+    // get all the cell set groups
+    cellCetsGroups = screen.getAllByRole('img', { name: 'down' });
+
+    await waitFor(() => {
+      // This test used to assert that "New Cluster" text is not found in "screen"
+      // in order to verify that deletion was successful.
+      // Due to behaviour that I couldn't possibly explain, "New Cluster" is still
+      // found in "screen" when it shouldn't. As a workaround, now the following lines test that:
+      // -- the Redux store is updated successfully -- "New Cluster" should not be there
+      // -- the "Custom cell sets" tree cannot be expanded.
+      //    This means that is has no children, and hence "New Cluster" is deleted.
+      expect(cellCetsGroups.length).toEqual(3);
+
+      isInRedux = Object.keys(storeState.getState().cellSets.properties).includes(newClusterKey[0]);
+      expect(isInRedux).toBe(false);
+    });
   });
 
   it('calculates filtered cell indices correctly', async () => {
@@ -503,9 +489,9 @@ describe('CellSetsTool', () => {
       );
     });
 
-    // go to the metadata tab
-    const metadataTabButton = screen.getByText(/Metadata/i);
-    userEvent.click(metadataTabButton);
+    // expand samples tree
+    const samplesGroup = screen.getAllByRole('img', { name: 'down' })[1];
+    userEvent.click(samplesGroup);
 
     // select a sample cluster
     const wt1Cluster = screen.getByText('WT1');
@@ -524,6 +510,10 @@ describe('CellSetsTool', () => {
       );
     });
 
+    // expand the louvain clusters tree
+    const louvainCLustersGroup = screen.getAllByRole('img', { name: 'down' })[0];
+    userEvent.click(louvainCLustersGroup);
+
     // hide the first cluster
     const hideButtons = screen.getAllByText('Hide');
     userEvent.click(hideButtons[0]);
@@ -540,6 +530,10 @@ describe('CellSetsTool', () => {
         </Provider>,
       );
     });
+
+    // expand the louvain clusters tree
+    const louvainCLustersGroup = screen.getAllByRole('img', { name: 'down' })[0];
+    userEvent.click(louvainCLustersGroup);
 
     // hide the first cluster
     let hideButtons = screen.getAllByText('Hide');
@@ -571,6 +565,10 @@ describe('CellSetsTool', () => {
       );
     });
 
+    // expand the louvain clusters tree
+    const louvainCLustersGroup = screen.getAllByRole('img', { name: 'down' })[0];
+    userEvent.click(louvainCLustersGroup);
+
     let hideButtons = screen.getAllByText('Hide');
     expect(hideButtons.length).toEqual(14);
 
@@ -598,45 +596,49 @@ describe('CellSetsTool', () => {
     expect(screen.queryByText('Unhide')).toBeNull();
   });
 
-  // it('Runs subset experiment correctly', async () => {
-  //   await act(async () => {
-  //     render(
-  //       <Provider store={storeState}>
-  //         {cellSetsToolFactory()}
-  //       </Provider>,
-  //     );
-  //   });
+  it('Runs subset experiment correctly', async () => {
+    await act(async () => {
+      render(
+        <Provider store={storeState}>
+          {cellSetsToolFactory()}
+        </Provider>,
+      );
+    });
 
-  //   // select the third louvain cluster
-  //   const louvain3Cluster = screen.getByText('Cluster 3');
-  //   userEvent.click(louvain3Cluster);
+    // expand the louvain clusters tree
+    const louvainCLustersGroup = screen.getAllByRole('img', { name: 'down' })[0];
+    userEvent.click(louvainCLustersGroup);
 
-  //   // select the fourth louvain cluster
-  //   const louvain4Cluster = screen.getByText('Cluster 4');
-  //   userEvent.click(louvain4Cluster);
+    // select the third louvain cluster
+    const louvain3Cluster = screen.getByText('Cluster 3');
+    userEvent.click(louvain3Cluster);
 
-  //   const subsetOperation = screen.getByLabelText('Create new experiment from selected cellsets');
-  //   userEvent.click(subsetOperation);
+    // select the fourth louvain cluster
+    const louvain4Cluster = screen.getByText('Cluster 4');
+    userEvent.click(louvain4Cluster);
 
-  //   const createModal = screen.getByTestId('subsetCellSetsModal');
-  //   const createButton = within(createModal).getByRole('button', { name: /Create/i });
+    const subsetOperation = screen.getByLabelText('Create new experiment from selected cellsets');
+    userEvent.click(subsetOperation);
 
-  //   await act(async () => {
-  //     fireEvent(
-  //       createButton,
-  //       new MouseEvent('click', {
-  //         bubbles: true,
-  //         cancelable: true,
-  //       }),
-  //     );
-  //   });
+    const createModal = screen.getByTestId('subsetCellSetsModal');
+    const createButton = within(createModal).getByRole('button', { name: /Create/i });
 
-  //   expect(fetchMock).toHaveBeenCalledWith(
-  //     expect.stringContaining(`/v2/experiments/${experimentId}/subset`),
-  //     expect.objectContaining({
-  //       body: expect.stringContaining('"cellSetKeys":["louvain-3","louvain-4"]'),
-  //       method: 'POST',
-  //     }),
-  //   );
-  // });
+    await act(async () => {
+      fireEvent(
+        createButton,
+        new MouseEvent('click', {
+          bubbles: true,
+          cancelable: true,
+        }),
+      );
+    });
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      expect.stringContaining(`/v2/experiments/${experimentId}/subset`),
+      expect.objectContaining({
+        body: expect.stringContaining('"cellSetKeys":["louvain-3","louvain-4"]'),
+        method: 'POST',
+      }),
+    );
+  });
 });

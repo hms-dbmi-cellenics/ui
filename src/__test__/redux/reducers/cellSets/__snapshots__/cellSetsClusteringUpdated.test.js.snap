@@ -8,7 +8,7 @@ Object {
   "initialLoadPending": true,
   "loading": true,
   "properties": Object {},
-  "selected": Object {},
+  "selected": Array [],
   "updatingClustering": false,
 }
 `;

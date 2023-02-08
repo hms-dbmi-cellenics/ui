@@ -144,7 +144,7 @@ describe('Data Management page', () => {
 
     expect(screen.getAllByText(/Project Details/i).length).toBeGreaterThan(0);
 
-    const addMetadataButton = screen.getByText(/Add Metadata/i).closest('button');
+    const addMetadataButton = screen.getByText(/Add metadata/i).closest('button');
 
     expect(addMetadataButton).toBeInTheDocument();
 

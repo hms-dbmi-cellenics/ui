@@ -18,10 +18,9 @@ import initialSamplesState, { sampleTemplate } from 'redux/reducers/samples/init
 import { initialExperimentBackendStatus } from 'redux/reducers/backendStatus/initialState';
 
 import UploadStatus from 'utils/upload/UploadStatus';
-import generatePipelineParamsHash from 'utils/data-management/generatePipelineParamsHash';
+import calculatePipelineRerunStatus from 'utils/data-management/calculatePipelineRerunStatus';
 import '__test__/test-utils/setupTests';
 
-jest.mock('utils/data-management/generatePipelineParamsHash');
 jest.mock('redux/actions/experimentSettings/updateExperimentInfo', () => jest.fn().mockReturnValue({ type: 'UPDATE_EXPERIMENT_INFO' }));
 jest.mock('redux/actions/pipeline', () => ({
   runGem2s: jest.fn().mockReturnValue({ type: 'RUN_GEM2S' }),
@@ -35,6 +34,8 @@ jest.mock('utils/AppRouteProvider', () => ({
     navigateTo: mockNavigateTo,
   })),
 }));
+
+jest.mock('utils/data-management/calculatePipelineRerunStatus');
 
 const mockStore = configureMockStore([thunk]);
 
@@ -70,12 +71,15 @@ const noDataState = {
       ...initialExperimentBackendStatus,
       status: {
         gem2s: {
+          shouldRerun: true,
           status: PipelineStatus.NOT_CREATED,
         },
         pipeline: {
+          shouldRerun: null,
           status: PipelineStatus.NOT_CREATED,
         },
         seurat: {
+          shouldRerun: null,
           status: PipelineStatus.NOT_CREATED,
         },
       },
@@ -130,13 +134,15 @@ const withDataState = {
       ...initialExperimentBackendStatus,
       status: {
         gem2s: {
-          paramsHash: 'old-params-hash',
+          shouldRerun: true,
           status: PipelineStatus.SUCCEEDED,
         },
         pipeline: {
+          shouldRerun: null,
           status: PipelineStatus.SUCCEEDED,
         },
         seurat: {
+          shouldRerun: null,
           status: PipelineStatus.NOT_CREATED,
         },
       },
@@ -173,13 +179,15 @@ const withSeuratDataState = {
       ...initialExperimentBackendStatus,
       status: {
         gem2s: {
+          shouldRerun: null,
           status: PipelineStatus.NOT_CREATED,
         },
         pipeline: {
+          shouldRerun: null,
           status: PipelineStatus.NOT_CREATED,
         },
         seurat: {
-          paramsHash: 'old-params-hash',
+          shouldRerun: true,
           status: PipelineStatus.SUCCEEDED,
         },
       },
@@ -187,12 +195,17 @@ const withSeuratDataState = {
   },
 };
 
+const rerunState = { rerun: true, reasons: ['the project samples/metadata have been modified'] };
+const notRerunState = { rerun: false, reasons: [] };
+
 describe('LaunchAnalysisButton', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
   it('Process project button is disabled if not all sample metadata are inserted', async () => {
+    calculatePipelineRerunStatus.mockReturnValue(rerunState);
+
     const notAllMetadataInserted = {
       ...withDataState,
       samples: {
@@ -207,31 +220,18 @@ describe('LaunchAnalysisButton', () => {
     await act(async () => {
       render(
         <Provider store={mockStore(notAllMetadataInserted)}>
-          <LaunchAnalysisButton technology={sampleTech['10X']} />
+          <LaunchAnalysisButton />
         </Provider>,
       );
     });
 
     const button = screen.getByText('Process project').closest('button');
-
     expect(button).toBeDisabled();
   });
 
   it('Process project button is disabled if there is no data', async () => {
-    await act(async () => {
-      render(
-        <Provider store={mockStore(noDataState)}>
-          <LaunchAnalysisButton technology={sampleTech['10X']} />
-        </Provider>,
-      );
-    });
+    calculatePipelineRerunStatus.mockReturnValue(rerunState);
 
-    const button = screen.getByText('Process project').closest('button');
-
-    expect(button).toBeDisabled();
-  });
-
-  it('Process project button is disabled if there is no data or technology', async () => {
     await act(async () => {
       render(
         <Provider store={mockStore(noDataState)}>
@@ -245,7 +245,9 @@ describe('LaunchAnalysisButton', () => {
     expect(button).toBeDisabled();
   });
 
-  it('Process project button is disabled if not all 10X data are uploaded', async () => {
+  it('Process project button is disabled if not all data are uploaded', async () => {
+    calculatePipelineRerunStatus.mockReturnValue(rerunState);
+
     const notAllDataUploaded = {
       ...withDataState,
       samples: {
@@ -263,7 +265,7 @@ describe('LaunchAnalysisButton', () => {
     await act(async () => {
       render(
         <Provider store={mockStore(notAllDataUploaded)}>
-          <LaunchAnalysisButton technology={sampleTech['10X']} />
+          <LaunchAnalysisButton />
         </Provider>,
       );
     });
@@ -291,7 +293,7 @@ describe('LaunchAnalysisButton', () => {
     await act(async () => {
       render(
         <Provider store={mockStore(notAllSeuratDataUploaded)}>
-          <LaunchAnalysisButton technology={sampleTech.SEURAT} />
+          <LaunchAnalysisButton />
         </Provider>,
       );
     });
@@ -301,11 +303,13 @@ describe('LaunchAnalysisButton', () => {
     expect(button).toBeDisabled();
   });
 
-  it('Process project button is enabled if there is data and all metadata for all samples are uploaded', async () => {
+  it('Process project button is enabled if there is data and all metadata for all samples are uplaoded', async () => {
+    calculatePipelineRerunStatus.mockReturnValue(rerunState);
+
     await act(async () => {
       render(
         <Provider store={mockStore(withDataState)}>
-          <LaunchAnalysisButton technology={sampleTech['10X']} />
+          <LaunchAnalysisButton />
         </Provider>,
       );
     });
@@ -319,7 +323,7 @@ describe('LaunchAnalysisButton', () => {
     await act(async () => {
       render(
         <Provider store={mockStore(withSeuratDataState)}>
-          <LaunchAnalysisButton technology={sampleTech.SEURAT} />
+          <LaunchAnalysisButton />
         </Provider>,
       );
     });
@@ -329,13 +333,13 @@ describe('LaunchAnalysisButton', () => {
     expect(button).not.toBeDisabled();
   });
 
-  it('Shows Go to Data Processing if there are no changes to the 10X experiment (same hash)', async () => {
-    generatePipelineParamsHash.mockReturnValueOnce('old-params-hash');
+  it('Shows Go to Data Processing if there are no changes to the experiment (same hash)', async () => {
+    calculatePipelineRerunStatus.mockReturnValue(notRerunState);
 
     await act(async () => {
       render(
         <Provider store={mockStore(withDataState)}>
-          <LaunchAnalysisButton technology={sampleTech['10X']} />
+          <LaunchAnalysisButton />
         </Provider>,
       );
     });
@@ -346,12 +350,12 @@ describe('LaunchAnalysisButton', () => {
   });
 
   it('Shows Go to Data Exploration if there are no changes to the Seurat experiment (same hash)', async () => {
-    generatePipelineParamsHash.mockReturnValueOnce('old-params-hash');
+    calculatePipelineRerunStatus.mockReturnValue(notRerunState);
 
     await act(async () => {
       render(
         <Provider store={mockStore(withSeuratDataState)}>
-          <LaunchAnalysisButton technology={sampleTech.SEURAT} />
+          <LaunchAnalysisButton />
         </Provider>,
       );
     });
@@ -361,13 +365,13 @@ describe('LaunchAnalysisButton', () => {
     });
   });
 
-  it('Shows Process project if there are changes to the 10X experiment (different hash)', async () => {
-    generatePipelineParamsHash.mockReturnValueOnce('new-params-hash');
+  it('Shows Process project if there are changes to the experiment', async () => {
+    calculatePipelineRerunStatus.mockReturnValue(rerunState);
 
     await act(async () => {
       render(
         <Provider store={mockStore(withDataState)}>
-          <LaunchAnalysisButton technology={sampleTech['10X']} />
+          <LaunchAnalysisButton />
         </Provider>,
       );
     });
@@ -378,12 +382,12 @@ describe('LaunchAnalysisButton', () => {
   });
 
   it('Shows Process project if there are changes to the Seurat experiment (different hash)', async () => {
-    generatePipelineParamsHash.mockReturnValueOnce('new-params-hash');
+    calculatePipelineRerunStatus.mockReturnValue(rerunState);
 
     await act(async () => {
       render(
         <Provider store={mockStore(withSeuratDataState)}>
-          <LaunchAnalysisButton technology={sampleTech.SEURAT} />
+          <LaunchAnalysisButton />
         </Provider>,
       );
     });
@@ -394,12 +398,12 @@ describe('LaunchAnalysisButton', () => {
   });
 
   it('Dispatches request for GEM2S if there are changes to the experiment', async () => {
-    generatePipelineParamsHash.mockReturnValueOnce('new-params-hash');
+    calculatePipelineRerunStatus.mockReturnValue(rerunState);
 
     await act(async () => {
       render(
         <Provider store={mockStore(withDataState)}>
-          <LaunchAnalysisButton technology={sampleTech['10X']} />
+          <LaunchAnalysisButton />
         </Provider>,
       );
     });
@@ -418,12 +422,12 @@ describe('LaunchAnalysisButton', () => {
   });
 
   it('Does not dispatch request for GEM2S if there are no changes to the experiment', async () => {
-    generatePipelineParamsHash.mockReturnValueOnce('old-params-hash');
+    calculatePipelineRerunStatus.mockReturnValue(notRerunState);
 
     await act(async () => {
       render(
         <Provider store={mockStore(withDataState)}>
-          <LaunchAnalysisButton technology={sampleTech['10X']} />
+          <LaunchAnalysisButton />
         </Provider>,
       );
     });
@@ -433,19 +437,18 @@ describe('LaunchAnalysisButton', () => {
   });
 
   it('Going to Data Processing should dispatch the correct actions', async () => {
-    generatePipelineParamsHash.mockReturnValueOnce('old-params-hash');
+    calculatePipelineRerunStatus.mockReturnValue(notRerunState);
 
     await act(async () => {
       render(
         <Provider store={mockStore(withDataState)}>
-          <LaunchAnalysisButton technology={sampleTech['10X']} />
+          <LaunchAnalysisButton />
         </Provider>,
       );
     });
 
     userEvent.click(screen.getByText('Go to Data Processing'));
     expect(runGem2s).not.toHaveBeenCalled();
-    expect(runSeurat).not.toHaveBeenCalled();
 
     // Call on navigation to go
     expect(mockNavigateTo).toHaveBeenCalled();
@@ -465,7 +468,7 @@ describe('LaunchAnalysisButton', () => {
     await act(async () => {
       render(
         <Provider store={mockStore(notProcessedSeuratDataState)}>
-          <LaunchAnalysisButton technology={sampleTech.SEURAT} />
+          <LaunchAnalysisButton />
         </Provider>,
       );
     });

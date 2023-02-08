@@ -26,6 +26,8 @@ export default {
   ERROR_FETCH_MARKER_GENES: 'We couldn\'t get the marker genes',
   ERROR_FILE_CATEGORY: 'The selected file name does not match the expected category.',
   ERROR_FILES_FOLDER: 'Only files contained in a folder are accepted for 10X uploads.',
+  ERROR_METADATA_MULTIPLE_FILES: 'You need to upload a single file in .tsv format',
+  ERROR_METADATA_WRONG_FORMAT: 'The file does not seem to be in the correct tsv key-value format.',
   ERROR_SEURAT_MULTIPLE_FILES: 'Only a single rds file is accepted for Seurat uploads.',
   ERROR_SEURAT_EXISTING_FILE: 'Please remove existing seurat rds file before uploading a new one.',
   ERROR_SEURAT_MAX_FILE_SIZE: 'rds objects must be less than 15 GB.',
@@ -44,7 +46,14 @@ export default {
   REFERRAL_ERROR: 'We couldn\'t process your referral. Please try submitting again.',
   REFERRAL_EMAIL_ERROR: 'The error you submitted was invalid. Please check again.',
   REFERRAL_SUCCESSFUL: 'Your invitation has been successfully sent. Thank you!',
-  SUCCESS_NEW_CLUSTER_CREATED: 'Created a new cluster. Check the `Cell sets and Metadata` window.',
+  SUCCESS_NEW_CLUSTER_CREATED: (
+    <>
+      Created a new cluster. Check &nbsp;
+      <b>Custom cell sets</b>
+      &nbsp; in the &nbsp;
+      <b>Cell sets and Metadata </b>
+      tile.
+    </>),
   SUCCESS_CELL_SETS_RECLUSTERED: 'Cell sets have been reclustered. Your cell sets have changed.',
   NO_CLUSTERS: 'No custom cell sets available, to create more go to data-exploration.',
   WORK_REQUEST_TIMED_OUT_RETRY: 'The task is taking longer than expected, please retry.',

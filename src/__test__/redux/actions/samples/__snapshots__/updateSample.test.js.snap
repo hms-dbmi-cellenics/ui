@@ -23,5 +23,12 @@ Array [
     },
     "sampleUuid": "asd123",
   },
+  Object {
+    "experimentId": null,
+  },
+  Object {
+    "error": "We couldn't get the status of the experiment's data processing.",
+    "experimentId": null,
+  },
 ]
 `;

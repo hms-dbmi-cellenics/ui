@@ -1,22 +1,26 @@
 /* eslint-disable no-param-reassign */
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
+import _ from 'lodash';
 import {
   Collapse,
   Select,
   Skeleton,
+  Space,
 } from 'antd';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
-import { getCellSets, getCellSetsHierarchy } from 'redux/selectors';
+import { getCellSets, getCellSetsHierarchy, getCellSetsHierarchyByKeys } from 'redux/selectors';
 import {
   updatePlotConfig,
   loadPlotConfig,
 } from 'redux/actions/componentConfig/index';
 import Header from 'components/Header';
 import { loadCellSets } from 'redux/actions/cellSets';
+import Loader from 'components/Loader';
 import CategoricalEmbeddingPlot from 'components/plots/CategoricalEmbeddingPlot';
 import PlotContainer from 'components/plots/PlotContainer';
 import SelectData from 'components/plots/styling/embedding-continuous/SelectData';
+import PlotLegendAlert, { MAX_LEGEND_ITEMS } from 'components/plots/helpers/PlotLegendAlert';
 import { plotNames } from 'utils/constants';
 
 const { Panel } = Collapse;
@@ -26,14 +30,34 @@ const plotType = 'embeddingCategorical';
 
 const EmbeddingCategoricalPage = ({ experimentId }) => {
   const dispatch = useDispatch();
+
   const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
+  const configIsLoaded = useSelector((state) => !_.isNil(state.componentConfig[plotUuid]));
+
   const cellSets = useSelector(getCellSets());
+  const numLegendItems = useSelector(
+    getCellSetsHierarchyByKeys([config?.selectedCellSet]),
+  )[0]?.children?.length;
   const hierarchy = useSelector(getCellSetsHierarchy());
 
   useEffect(() => {
-    if (!config) dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
     dispatch(loadCellSets(experimentId));
+    if (!config) dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
   }, []);
+
+  const updatePlotWithChanges = (obj) => {
+    dispatch(updatePlotConfig(plotUuid, obj));
+  };
+
+  useEffect(() => {
+    if (!configIsLoaded
+      || !cellSets.accessible
+      || !config.legend.enabled) return;
+
+    const showAlert = numLegendItems > MAX_LEGEND_ITEMS;
+
+    if (showAlert) updatePlotWithChanges({ legend: { showAlert, enabled: !showAlert } });
+  }, [configIsLoaded, cellSets.accessible]);
 
   const generateGroupByOptions = () => {
     if (!cellSets.accessible) {
@@ -43,10 +67,6 @@ const EmbeddingCategoricalPage = ({ experimentId }) => {
       value: key,
       label: `${cellSets.properties[key].name} (${children.length} ${children === 1 ? 'child' : 'children'})`,
     }));
-  };
-
-  const updatePlotWithChanges = (obj) => {
-    dispatch(updatePlotConfig(plotUuid, obj));
   };
 
   const plotStylingConfig = [
@@ -120,6 +140,28 @@ const EmbeddingCategoricalPage = ({ experimentId }) => {
     </>
   );
 
+  const render = () => {
+    if (!cellSets.accessible || !config) {
+      return (
+        <center>
+          <Loader experimentId={experimentId} />
+        </center>
+      );
+    }
+
+    return (
+      <Space direction='vertical'>
+        {config?.legend?.showAlert && <PlotLegendAlert />}
+        <CategoricalEmbeddingPlot
+          experimentId={experimentId}
+          config={config}
+          plotUuid={plotUuid}
+          onUpdate={updatePlotWithChanges}
+        />
+      </Space>
+    );
+  };
+
   return (
     <>
       <Header title={plotNames.CATEGORICAL_EMBEDDING} />
@@ -132,12 +174,7 @@ const EmbeddingCategoricalPage = ({ experimentId }) => {
         extraControlPanels={renderExtraPanels()}
         defaultActiveKey='group-by'
       >
-        <CategoricalEmbeddingPlot
-          experimentId={experimentId}
-          config={config}
-          plotUuid={plotUuid}
-          onUpdate={updatePlotWithChanges}
-        />
+        { render() }
       </PlotContainer>
     </>
   );
