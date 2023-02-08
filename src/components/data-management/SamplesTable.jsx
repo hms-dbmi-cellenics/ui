@@ -56,8 +56,7 @@ const SamplesTable = forwardRef((props, ref) => {
   );
 
   const activeExperiment = useSelector((state) => state.experiments[activeExperimentId]);
-  const selectedTech = samples[activeExperiment?.sampleIds[0]]?.type;
-  
+
   const parentExperimentName = useSelector(
     (state) => state.experiments[activeExperiment?.parentExperimentId]?.name,
   );
@@ -310,7 +309,7 @@ const SamplesTable = forwardRef((props, ref) => {
   const locale = {
     emptyText: (
       <ExampleExperimentsSpace
-        introductionText='Start uploading your samples by clicking on Add samples.'
+        introductionText='Start uploading your samples by clicking on Add data.'
         imageStyle={{ height: 60 }}
       />
     ),

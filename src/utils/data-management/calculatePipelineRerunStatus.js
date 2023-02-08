@@ -5,7 +5,7 @@ const calculatePipelineRerunStatus = (pipelineBackendStatus, activeExperiment) =
   const { status: pipelineStatus, shouldRerun } = pipelineBackendStatus ?? {};
 
   const pipelineSuccessful = [
-    pipelineStatus.SUCCEEDED, pipelineStatus.RUNNING,
+    pipelineStatusValues.SUCCEEDED, pipelineStatusValues.RUNNING,
   ].includes(pipelineStatus);
 
   const rerunReasons = [];

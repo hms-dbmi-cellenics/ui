@@ -40,6 +40,7 @@ import experimentUpdatesHandler from 'utils/experimentUpdatesHandler';
 import integrationTestConstants from 'utils/integrationTestConstants';
 import pipelineStatusValues from 'utils/pipelineStatusValues';
 import calculatePipelineRerunStatus from 'utils/data-management/calculatePipelineRerunStatus';
+import { DndProvider } from 'react-dnd';
 
 const { Sider } = Layout;
 const { Text } = Typography;
