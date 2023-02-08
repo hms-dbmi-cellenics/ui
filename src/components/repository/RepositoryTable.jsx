@@ -18,7 +18,7 @@ const cloneExperiment = () => {
 // e.g. turn sourceTitle+sourceUrl into a single <a> tag, etc.
 const formatData = (data) => data.map((row) => ({
   name: row.name,
-  explore: <Button onClick={cloneExperiment()}>Copy experiment</Button>,
+  explore: <Button onClick={cloneExperiment}>Copy experiment</Button>,
   publication: <a href={row.publicationUrl}>{row.publicationTitle}</a>,
   dataSource: <a href={row.dataSourceUrl}>{row.dataSourceTitle}</a>,
   species: row.species,

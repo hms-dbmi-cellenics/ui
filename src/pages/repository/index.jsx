@@ -1,6 +1,6 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { loadExperiments } from 'redux/actions/experiments';
+import { loadExampleExperiments } from 'redux/actions/experiments';
 import Header from 'components/Header';
 import { privacyPolicyIsNotAccepted } from 'utils/deploymentInfo';
 import RepositoryTable from 'components/repository/RepositoryTable';
@@ -9,33 +9,24 @@ const RepositoryPage = () => {
   const dispatch = useDispatch();
 
   const user = useSelector((state) => state.user.current);
-
   const domainName = useSelector((state) => state.networkResources?.domainName);
+  const exampleExperiments = useSelector((state) => state.experiments.meta?.exampleExperiments);
+  const [data, setData] = useState([]);
 
   useEffect(() => {
     if (privacyPolicyIsNotAccepted(user, domainName)) return;
-    dispatch(loadExperiments());
+    dispatch(loadExampleExperiments());
   }, [user]);
+
+  useEffect(() => {
+    setData(exampleExperiments);
+  }, [exampleExperiments]);
 
   return (
     <>
       <Header title='Data Management' />
       <RepositoryTable
-        data={[
-          {
-            id: '123',
-            name: 'My experiment',
-            description: 'This is my experiment',
-            publicationTitle: '10x Count',
-            publicationUrl: 'https://www.google.com/',
-            dataSourceTitle: 'This is my title',
-            dataSourceUrl: 'https://www.google.com/',
-            species: 'Human',
-            sampleCount: '12',
-            cellCount: '10000',
-            technology: '10x',
-          },
-        ]}
+        data={data}
       />
     </>
   );
