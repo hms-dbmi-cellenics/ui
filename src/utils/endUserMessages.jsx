@@ -53,6 +53,7 @@ export default {
       tile.
     </>),
   SUCCESS_CELL_SETS_RECLUSTERED: 'Cell sets have been reclustered. Your cell sets have changed.',
+  SUCCESS_CELL_SETS_ANNOTATED: 'Cell sets have been annotated. Your cell sets have changed.',
   NO_CLUSTERS: 'No custom cell sets available, to create more go to data-exploration.',
   WORK_REQUEST_TIMED_OUT_RETRY: 'The task is taking longer than expected, please retry.',
   SAVING_SAMPLE: 'Saving sample...',
