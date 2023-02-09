@@ -1,13 +1,22 @@
-import React from 'react';
 import {
-  Table, Card, Button, Empty, Space, Typography,
+  Button,
+  Card,
+  Empty,
+  Space,
+  Table,
+  Typography,
 } from 'antd';
-import { CloseOutlined } from '@ant-design/icons';
-import PropTypes from 'prop-types';
-import { useAppRouter } from 'utils/AppRouteProvider';
-import { modules } from 'utils/constants';
-import fetchAPI from 'utils/http/fetchAPI';
+import {
+  CloseOutlined,
+  RightCircleOutlined,
+} from '@ant-design/icons';
 import { loadExperiments, setActiveExperiment } from 'redux/actions/experiments';
+
+import PropTypes from 'prop-types';
+import React from 'react';
+import fetchAPI from 'utils/http/fetchAPI';
+import { modules } from 'utils/constants';
+import { useAppRouter } from 'utils/AppRouteProvider';
 import { useDispatch } from 'react-redux';
 
 const { Paragraph } = Typography;
@@ -33,13 +42,13 @@ const RepositoryTable = (props) => {
   // e.g. turn sourceTitle+sourceUrl into a single <a> tag, etc.
   const formatData = (data) => data.map((row) => ({
     name: row.name,
-    explore: <Button onClick={() => cloneExperiment(row.id)}>Copy experiment</Button>,
+    explore: <Button onClick={() => cloneExperiment(row.id)}><RightCircleOutlined /></Button>,
     publication: <a href={row.publicationUrl}>{row.publicationTitle}</a>,
     dataSource: <a href={row.dataSourceUrl}>{row.dataSourceTitle}</a>,
     species: row.species,
     sampleCount: row.sampleCount,
     cellCount: row.cellCount,
-    technology: row.technology,
+    technology: row.sampleTechnology,
     description: row.description,
   }));
 
@@ -118,17 +127,17 @@ const TABLE_COLUMNS = [
     key: 'name',
   },
   {
-    title: 'Select to explore',
+    title: 'Explore',
     dataIndex: 'explore',
     key: 'explore',
   },
   {
-    title: 'Link to publication',
+    title: 'Publication',
     dataIndex: 'publication',
     key: 'publication',
   },
   {
-    title: 'Link to data source',
+    title: 'Data Source',
     dataIndex: 'dataSource',
     key: 'dataSource',
   },
@@ -138,12 +147,12 @@ const TABLE_COLUMNS = [
     key: 'species',
   },
   {
-    title: 'Number of samples',
+    title: 'Sample Count',
     dataIndex: 'sampleCount',
     key: 'sampleCount',
   },
   {
-    title: 'Cell count estimate',
+    title: 'Cell Count Estimate',
     dataIndex: 'cellCount',
     key: 'cellCount',
   },
