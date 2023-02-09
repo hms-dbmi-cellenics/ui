@@ -21,6 +21,12 @@ import { useDispatch } from 'react-redux';
 
 const { Paragraph } = Typography;
 
+const formatTechName = (tech) => {
+  if (tech === '10x') return '10x Chromium';
+
+  return tech;
+};
+
 const RepositoryTable = (props) => {
   const cloneExperiment = async (exampleExperimentId) => {
     const url = `/v2/experiments/${exampleExperimentId}/clone`;
@@ -48,7 +54,7 @@ const RepositoryTable = (props) => {
     species: row.species,
     sampleCount: row.sampleCount,
     cellCount: row.cellCount,
-    technology: row.sampleTechnology,
+    technology: formatTechName(row.sampleTechnology),
     description: row.description,
   }));
 
@@ -79,7 +85,7 @@ const RepositoryTable = (props) => {
 
   return (
     <Card
-      title='Explore Data'
+      title='Datasets Repository'
       extra={(
         <Button onClick={onCloseTable}>
           <CloseOutlined />
