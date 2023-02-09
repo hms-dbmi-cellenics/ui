@@ -187,7 +187,7 @@ const withSeuratDataState = {
           status: PipelineStatus.NOT_CREATED,
         },
         seurat: {
-          shouldRerun: true,
+          shouldRerun: false,
           status: PipelineStatus.SUCCEEDED,
         },
       },
@@ -195,8 +195,8 @@ const withSeuratDataState = {
   },
 };
 
-const rerunState = { rerun: true, reasons: ['the project samples/metadata have been modified'] };
-const notRerunState = { rerun: false, reasons: [] };
+const rerunState = { rerun: true, reasons: ['the project samples/metadata have been modified'], complete: true };
+const notRerunState = { rerun: false, reasons: [], complete: true };
 
 describe('LaunchAnalysisButton', () => {
   beforeEach(() => {
@@ -455,12 +455,15 @@ describe('LaunchAnalysisButton', () => {
   });
 
   it('Does dispatch a request to runSeurat for an unprocessed experiment', async () => {
+    calculatePipelineRerunStatus.mockReturnValue(rerunState);
+
     const notProcessedSeuratDataState = {
       ...withSeuratDataState,
       backendStatus: {
         ...noDataState.backendStatus,
         seurat: {
           status: PipelineStatus.NOT_CREATED,
+          shouldRerun: true,
         },
       },
     };

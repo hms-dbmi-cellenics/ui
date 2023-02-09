@@ -56,7 +56,7 @@ describe('PipelineLoadingScreen', () => {
   it('Clicking re-launch analysis re-runs GEM2S', () => {
     const component = mount(
       <Provider store={store}>
-        <PipelineLoadingScreen experimentId='experimentId' gem2sStatus='error' />
+        <PipelineLoadingScreen experimentId='experimentId' pipelineStatus='error' pipelineType='gem2s' />
       </Provider>,
     );
 
@@ -108,7 +108,7 @@ describe('PipelineLoadingScreen', () => {
     const experimentName = 'newExperiment';
     const component = mount(
       <Provider store={store}>
-        <GEM2SLoadingScreen gem2sStatus='subsetting' completedSteps={completedSteps} steps={steps} experimentName={experimentName} />
+        <PipelineLoadingScreen pipelineStatus='subsetting' completedSteps={completedSteps} steps={steps} experimentName={experimentName} pipelineType='gem2s' />
       </Provider>,
     );
 

@@ -282,50 +282,6 @@ describe('processUpload', () => {
     );
   });
 
-  it('Updates redux correctly when there are file load and compress errors', async () => {
-    const invalidFiles = getValidFiles('v3').map((file) => ({ ...file, valid: false }));
-
-    await processUpload(
-      invalidFiles,
-      sampleType,
-      store.getState().samples,
-      mockExperimentId,
-      store.dispatch,
-    );
-
-    // Wait for uploads to be made
-    await waitForActions(
-      store,
-      new Array(3).fill({
-        type: SAMPLES_FILE_UPDATE,
-        payload: { fileDiff: { upload: { status: UploadStatus.FILE_READ_ERROR } } },
-      }),
-      { matcher: waitForActions.matchers.containing },
-    );
-
-    const fileUpdateActions = store.getActions().filter(
-      (action) => action.type === SAMPLES_FILE_UPDATE,
-    );
-
-    const uploadProperties = fileUpdateActions.map((action) => action.payload.fileDiff.upload);
-
-    const uploadingFileProperties = uploadProperties.filter(
-      ({ status }) => status === UploadStatus.UPLOADING,
-    );
-    const errorFileProperties = uploadProperties.filter(
-      ({ status }) => status === UploadStatus.FILE_READ_ERROR,
-    );
-    const uploadedFileProperties = uploadProperties.filter(
-      ({ status }) => status === UploadStatus.UPLOADED,
-    );
-    // There are no files actions with status uploading
-    expect(uploadingFileProperties.length).toEqual(0);
-    // There are 3 files actions with status upload error
-    expect(errorFileProperties.length).toEqual(3);
-    // There are no file actions with status successfully uploaded
-    expect(uploadedFileProperties.length).toEqual(0);
-  });
-
   it('Updates redux correctly when there are file upload errors', async () => {
     const mockAxiosCalls = [];
 

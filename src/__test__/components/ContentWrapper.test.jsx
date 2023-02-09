@@ -18,7 +18,8 @@ import { getBackendStatus } from 'redux/selectors';
 import { loadExperiments, setActiveExperiment } from 'redux/actions/experiments';
 
 import { updateExperimentInfo } from 'redux/actions/experimentSettings';
-import calculatePipelineParamsHash from 'utils/data-management/generatePipelineParamsHash';
+
+import calculatePipelineRerunStatus from 'utils/data-management/calculatePipelineRerunStatus';
 
 import mockAPI, {
   generateDefaultMockAPIResponses,
@@ -28,7 +29,7 @@ import { experiments } from '__test__/test-utils/mockData';
 
 jest.mock('redux/selectors');
 jest.mock('utils/socketConnection');
-jest.mock('utils/data-management/calculatePipelineParamsHash');
+jest.mock('utils/data-management/calculatePipelineRerunStatus');
 
 jest.mock('next/router', () => ({
   __esModule: true,
@@ -59,8 +60,6 @@ const firefoxUA = '"Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:96.0) Gecko
 Object.defineProperty(navigator, 'userAgent', { value: chromeUA, writable: true });
 
 enableFetchMocks();
-
-calculatePipelineParamsHash.mockImplementation(() => 'mockParamsHash');
 
 const experimentWithSamples = experiments.find((experiment) => experiment.samplesOrder.length > 0);
 
@@ -123,7 +122,7 @@ describe('ContentWrapper', () => {
 
     navigator.userAgent = chromeUA;
 
-    calculatePipelineRerunStatus.mockImplementation(() => ({ rerun: true, reasons: [] }));
+    calculatePipelineRerunStatus.mockImplementation(() => ({ rerun: true, reasons: [], complete: false }));
 
     await store.dispatch(loadExperiments());
     await store.dispatch(setActiveExperiment(experimentId));
@@ -167,7 +166,7 @@ describe('ContentWrapper', () => {
   });
 
   it('Links are enabled if the selected project is processed', async () => {
-    calculatePipelineRerunStatus.mockImplementationOnce(() => ({ rerun: false, reasons: [] }));
+    calculatePipelineRerunStatus.mockImplementationOnce(() => ({ rerun: false, reasons: [], complete: true }));
 
     const mockBackendStatus = {
       loading: false,
