@@ -65,7 +65,7 @@ const Embedding = (props) => {
     hidden: cellSetHidden,
   } = cellSets;
 
-  const selectedCell = useSelector((state) => state.cellInfo.cellId);
+  const selectedCell = useSelector((state) => state.cellInfo.cellId, _.isEqual);
   const expressionLoading = useSelector((state) => state.genes.expression.loading);
   const expressionMatrix = useSelector((state) => state.genes.expression.matrix);
 
