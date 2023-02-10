@@ -1,6 +1,6 @@
 // eslint-disable-file import/no-extraneous-dependencies
 import React, {
-  useState, useEffect, useRef, useMemo,
+  useState, useEffect, useRef, useMemo, useCallback,
 } from 'react';
 import dynamic from 'next/dynamic';
 import {
@@ -56,7 +56,7 @@ const Embedding = (props) => {
 
   const { data, loading, error } = useSelector((state) => state.embeddings[embeddingType]) || {};
 
-  const focusData = useSelector((state) => state.cellInfo.focus);
+  const focusData = useSelector((state) => state.cellInfo.focus, () => true);
 
   const cellSets = useSelector(getCellSets());
   const {
@@ -66,6 +66,7 @@ const Embedding = (props) => {
   } = cellSets;
 
   const selectedCell = useSelector((state) => state.cellInfo.cellId);
+  const selectedCellArray = useMemo(() => [selectedCell], [selectedCell]);
   const expressionLoading = useSelector((state) => state.genes.expression.loading);
   const expressionMatrix = useSelector((state) => state.genes.expression.matrix);
 
@@ -76,6 +77,15 @@ const Embedding = (props) => {
   const [cellColors, setCellColors] = useState({});
   const [cellInfoVisible, setCellInfoVisible] = useState(true);
   const [view, setView] = useState({ target: [4, -4, 0], zoom: INITIAL_ZOOM });
+
+  const setViewState = useCallback(({ zoom, target }) => {
+    setCellRadius(cellRadiusFromZoom(zoom));
+
+    setView({ zoom, target });
+  }, []);
+
+  const getExpressionValue = useCallback(() => { }, []);
+  const getCellIsSelected = useCallback(() => { }, []);
 
   // Load embedding settings if they aren't already.
   useEffect(() => {
@@ -138,6 +148,7 @@ const Embedding = (props) => {
   useEffect(() => {
     if (!data || !cellSetHidden || !cellSetProperties) return;
 
+    console.log('HOALHOLAHOAL');
     setConvertedCellsData(convertCellsData(data, cellSetHidden, cellSetProperties));
   }, [data, cellSetHidden, cellSetProperties]);
 
@@ -183,7 +194,7 @@ const Embedding = (props) => {
     }
   }, [selectedCell]);
 
-  const updateCellCoordinates = (newView) => {
+  const updateViewInfo = useCallback((newView) => {
     if (selectedCell && newView.project) {
       const [x, y] = newView.project(selectedCell);
       cellCoordinatesRef.current = {
@@ -193,11 +204,12 @@ const Embedding = (props) => {
         height,
       };
     }
-  };
+  }, [selectedCell]);
 
   const cellColorsForVitessce = useMemo(() => new Map(Object.entries(cellColors)), [cellColors]);
 
-  const updateCellsHover = (cell) => dispatch(updateCellInfo({ cellId: cell }));
+  const setCellHighlight = useCallback(() => { }, []);
+  // const setCellHighlight = useCallback((cell) => dispatch(updateCellInfo({ cellId: cell })), []);
 
   const onCreateCluster = (clusterName, clusterColor) => {
     setCreateClusterPopover(false);
@@ -215,13 +227,13 @@ const Embedding = (props) => {
     setCreateClusterPopover(false);
   };
 
-  const updateCellsSelection = (selection) => {
+  const updateCellsSelection = useCallback((selection) => {
     if (Array.from(selection).length > 0) {
       setCreateClusterPopover(true);
       const selectedIdsToInt = new Set(Array.from(selection).map((id) => parseInt(id, 10)));
       setSelectedIds(selectedIdsToInt);
     }
-  };
+  }, []);
 
   // Embedding data is loading.
   if (!data || loading) {
@@ -302,23 +314,19 @@ const Embedding = (props) => {
           <Scatterplot
             cellOpacity={0.8}
             cellRadius={cellRadius}
-            setCellHighlight={updateCellsHover}
+            setCellHighlight={setCellHighlight}
             theme='light'
             uuid={embeddingType}
             viewState={view}
-            updateViewInfo={updateCellCoordinates}
+            updateViewInfo={updateViewInfo}
             cells={convertedCellsData}
             mapping='PCA'
-            cellSelection={[selectedCell]}
-            cellColors={cellColorsForVitessce}
-            setViewState={({ zoom, target }) => {
-              setCellRadius(cellRadiusFromZoom(zoom));
-
-              setView({ zoom, target });
-            }}
-            getExpressionValue={() => { }}
-            getCellIsSelected={() => { }}
+            cellSelection={selectedCellArray}
             setCellSelection={updateCellsSelection}
+            cellColors={cellColorsForVitessce}
+            setViewState={setViewState}
+            getExpressionValue={getExpressionValue}
+            getCellIsSelected={getCellIsSelected}
 
           />
         ) : ''
