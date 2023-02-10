@@ -66,8 +66,6 @@ const Embedding = (props) => {
   } = cellSets;
 
   const selectedCell = useSelector((state) => state.cellInfo.cellId);
-  // const selectedCell = null;
-
   const expressionLoading = useSelector((state) => state.genes.expression.loading);
   const expressionMatrix = useSelector((state) => state.genes.expression.matrix);
 
@@ -149,7 +147,6 @@ const Embedding = (props) => {
   useEffect(() => {
     if (!data || !cellSetHidden || !cellSetProperties) return;
 
-    console.log('HOALHOLAHOAL');
     setConvertedCellsData(convertCellsData(data, cellSetHidden, cellSetProperties));
   }, [data, cellSetHidden, cellSetProperties]);
 
