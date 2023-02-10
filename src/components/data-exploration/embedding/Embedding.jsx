@@ -56,7 +56,7 @@ const Embedding = (props) => {
 
   const { data, loading, error } = useSelector((state) => state.embeddings[embeddingType]) || {};
 
-  const focusData = useSelector((state) => state.cellInfo.focus, () => true);
+  const focusData = useSelector((state) => state.cellInfo.focus);
 
   const cellSets = useSelector(getCellSets());
   const {
@@ -66,7 +66,8 @@ const Embedding = (props) => {
   } = cellSets;
 
   const selectedCell = useSelector((state) => state.cellInfo.cellId);
-  const selectedCellArray = useMemo(() => [selectedCell], [selectedCell]);
+  // const selectedCell = null;
+
   const expressionLoading = useSelector((state) => state.genes.expression.loading);
   const expressionMatrix = useSelector((state) => state.genes.expression.matrix);
 
@@ -194,9 +195,9 @@ const Embedding = (props) => {
     }
   }, [selectedCell]);
 
-  const updateViewInfo = useCallback((newView) => {
-    if (selectedCell && newView.project) {
-      const [x, y] = newView.project(selectedCell);
+  const updateViewInfo = useRef((viewInfo) => {
+    if (selectedCell && viewInfo.project) {
+      const [x, y] = viewInfo.project(selectedCell);
       cellCoordinatesRef.current = {
         x,
         y,
@@ -204,12 +205,25 @@ const Embedding = (props) => {
         height,
       };
     }
+  });
+
+  useEffect(() => {
+    updateViewInfo.current = (viewInfo) => {
+      if (selectedCell && viewInfo.project) {
+        const [x, y] = viewInfo.project(selectedCell);
+        cellCoordinatesRef.current = {
+          x,
+          y,
+          width,
+          height,
+        };
+      }
+    };
   }, [selectedCell]);
 
   const cellColorsForVitessce = useMemo(() => new Map(Object.entries(cellColors)), [cellColors]);
 
-  const setCellHighlight = useCallback(() => { }, []);
-  // const setCellHighlight = useCallback((cell) => dispatch(updateCellInfo({ cellId: cell })), []);
+  const setCellHighlight = useCallback((cell) => dispatch(updateCellInfo({ cellId: cell })), []);
 
   const onCreateCluster = (clusterName, clusterColor) => {
     setCreateClusterPopover(false);
@@ -318,16 +332,14 @@ const Embedding = (props) => {
             theme='light'
             uuid={embeddingType}
             viewState={view}
-            updateViewInfo={updateViewInfo}
+            updateViewInfo={updateViewInfo.current}
             cells={convertedCellsData}
             mapping='PCA'
-            cellSelection={selectedCellArray}
             setCellSelection={updateCellsSelection}
             cellColors={cellColorsForVitessce}
             setViewState={setViewState}
             getExpressionValue={getExpressionValue}
             getCellIsSelected={getCellIsSelected}
-
           />
         ) : ''
       }
