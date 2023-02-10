@@ -208,7 +208,7 @@ const Embedding = (props) => {
 
   const setCellHighlight = useCallback((cell) => dispatch(updateCellInfo({ cellId: cell })), []);
 
-  const updateCellsSelection = useCallback((selection) => {
+  const setCellsSelection = useCallback((selection) => {
     if (Array.from(selection).length > 0) {
       setCreateClusterPopover(true);
       const selectedIdsToInt = new Set(Array.from(selection).map((id) => parseInt(id, 10)));
@@ -314,7 +314,7 @@ const Embedding = (props) => {
             updateViewInfo={updateViewInfo}
             cells={convertedCellsData}
             mapping='PCA'
-            setCellSelection={updateCellsSelection}
+            setCellSelection={setCellsSelection}
             cellColors={cellColorsForVitessce}
             setViewState={setViewState}
             getExpressionValue={getExpressionValue}
