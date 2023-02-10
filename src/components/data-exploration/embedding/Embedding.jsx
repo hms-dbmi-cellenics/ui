@@ -77,15 +77,6 @@ const Embedding = (props) => {
   const [cellInfoVisible, setCellInfoVisible] = useState(true);
   const [view, setView] = useState({ target: [4, -4, 0], zoom: INITIAL_ZOOM });
 
-  const setViewState = useCallback(({ zoom, target }) => {
-    setCellRadius(cellRadiusFromZoom(zoom));
-
-    setView({ zoom, target });
-  }, []);
-
-  const getExpressionValue = useCallback(() => { }, []);
-  const getCellIsSelected = useCallback(() => { }, []);
-
   // Load embedding settings if they aren't already.
   useEffect(() => {
     if (!embeddingSettings) {
@@ -192,6 +183,8 @@ const Embedding = (props) => {
     }
   }, [selectedCell]);
 
+  const setCellHighlight = useCallback((cell) => dispatch(updateCellInfo({ cellId: cell })), []);
+
   const updateViewInfo = useCallback((viewInfo) => {
     if (selectedCell && viewInfo.project) {
       const [x, y] = viewInfo.project(selectedCell);
@@ -204,10 +197,6 @@ const Embedding = (props) => {
     }
   }, [selectedCell]);
 
-  const cellColorsForVitessce = useMemo(() => new Map(Object.entries(cellColors)), [cellColors]);
-
-  const setCellHighlight = useCallback((cell) => dispatch(updateCellInfo({ cellId: cell })), []);
-
   const setCellsSelection = useCallback((selection) => {
     if (Array.from(selection).length > 0) {
       setCreateClusterPopover(true);
@@ -215,6 +204,17 @@ const Embedding = (props) => {
       setSelectedIds(selectedIdsToInt);
     }
   }, []);
+
+  const cellColorsForVitessce = useMemo(() => new Map(Object.entries(cellColors)), [cellColors]);
+
+  const setViewState = useCallback(({ zoom, target }) => {
+    setCellRadius(cellRadiusFromZoom(zoom));
+
+    setView({ zoom, target });
+  }, []);
+
+  const getExpressionValue = useCallback(() => { }, []);
+  const getCellIsSelected = useCallback(() => { }, []);
 
   const onCreateCluster = (clusterName, clusterColor) => {
     setCreateClusterPopover(false);
