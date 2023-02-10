@@ -10,7 +10,7 @@ const cellClassDelete = produce((draft, action) => {
   const cellSetKeys = draft.hierarchy[cellClassIndex].children;
 
   // Remove cell clas from hierarchy
-  delete draft.hierarchy[cellClassIndex];
+  draft.hierarchy.splice(cellClassIndex, 1);
 
   // Delete from the properties as well.
   delete draft.properties[key];
