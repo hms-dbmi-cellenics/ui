@@ -220,10 +220,6 @@ const Embedding = (props) => {
     );
   };
 
-  const onCancelCreateCluster = () => {
-    setCreateClusterPopover(false);
-  };
-
   const updateCellsSelection = useCallback((selection) => {
     if (Array.from(selection).length > 0) {
       setCreateClusterPopover(true);
@@ -333,7 +329,7 @@ const Embedding = (props) => {
               visible
               popoverPosition={cellCoordinatesRef}
               onCreate={onCreateCluster}
-              onCancel={onCancelCreateCluster}
+              onCancel={() => setCreateClusterPopover(false)}
             />
           ) : (
             (cellInfoVisible && cellInfoTooltip) ? (
