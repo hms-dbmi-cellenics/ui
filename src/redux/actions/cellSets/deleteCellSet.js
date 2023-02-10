@@ -1,4 +1,4 @@
-import { CELL_CLASS_DELETE } from 'redux/actionTypes/cellSets';
+import { CELL_SETS_DELETE } from 'redux/actionTypes/cellSets';
 
 import endUserMessages from 'utils/endUserMessages';
 import fetchAPI from 'utils/http/fetchAPI';
@@ -48,7 +48,7 @@ const deleteCellSet = (experimentId, key) => async (dispatch, getState) => {
     );
 
     await dispatch({
-      type: CELL_CLASS_DELETE,
+      type: CELL_SETS_DELETE,
       payload: { key },
     });
   } catch (e) {
