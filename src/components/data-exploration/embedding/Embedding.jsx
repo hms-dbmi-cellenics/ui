@@ -2,6 +2,9 @@
 import React, {
   useState, useEffect, useRef, useMemo, useCallback,
 } from 'react';
+
+import _ from 'lodash';
+
 import dynamic from 'next/dynamic';
 import {
   useSelector, useDispatch,
