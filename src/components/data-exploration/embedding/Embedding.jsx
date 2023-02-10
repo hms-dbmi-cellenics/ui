@@ -208,6 +208,14 @@ const Embedding = (props) => {
 
   const setCellHighlight = useCallback((cell) => dispatch(updateCellInfo({ cellId: cell })), []);
 
+  const updateCellsSelection = useCallback((selection) => {
+    if (Array.from(selection).length > 0) {
+      setCreateClusterPopover(true);
+      const selectedIdsToInt = new Set(Array.from(selection).map((id) => parseInt(id, 10)));
+      setSelectedIds(selectedIdsToInt);
+    }
+  }, []);
+
   const onCreateCluster = (clusterName, clusterColor) => {
     setCreateClusterPopover(false);
     dispatch(
@@ -219,14 +227,6 @@ const Embedding = (props) => {
       ),
     );
   };
-
-  const updateCellsSelection = useCallback((selection) => {
-    if (Array.from(selection).length > 0) {
-      setCreateClusterPopover(true);
-      const selectedIdsToInt = new Set(Array.from(selection).map((id) => parseInt(id, 10)));
-      setSelectedIds(selectedIdsToInt);
-    }
-  }, []);
 
   // Embedding data is loading.
   if (!data || loading) {
