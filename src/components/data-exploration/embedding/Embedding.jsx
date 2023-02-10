@@ -204,12 +204,6 @@ const Embedding = (props) => {
     }
   }, [selectedCell]);
 
-  const updateViewInfoRef = useRef(updateViewInfo);
-
-  useEffect(() => {
-    updateViewInfoRef.current = updateViewInfo;
-  }, [updateViewInfo]);
-
   const cellColorsForVitessce = useMemo(() => new Map(Object.entries(cellColors)), [cellColors]);
 
   const setCellHighlight = useCallback((cell) => dispatch(updateCellInfo({ cellId: cell })), []);
@@ -321,7 +315,7 @@ const Embedding = (props) => {
             theme='light'
             uuid={embeddingType}
             viewState={view}
-            updateViewInfo={updateViewInfoRef.current}
+            updateViewInfo={updateViewInfo}
             cells={convertedCellsData}
             mapping='PCA'
             setCellSelection={updateCellsSelection}
