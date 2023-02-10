@@ -192,7 +192,7 @@ const Embedding = (props) => {
     }
   }, [selectedCell]);
 
-  const updateViewInfo = useRef((viewInfo) => {
+  const updateViewInfo = useCallback((viewInfo) => {
     if (selectedCell && viewInfo.project) {
       const [x, y] = viewInfo.project(selectedCell);
       cellCoordinatesRef.current = {
@@ -202,21 +202,13 @@ const Embedding = (props) => {
         height,
       };
     }
-  });
+  }, [selectedCell]);
+
+  const updateViewInfoRef = useRef(updateViewInfo);
 
   useEffect(() => {
-    updateViewInfo.current = (viewInfo) => {
-      if (selectedCell && viewInfo.project) {
-        const [x, y] = viewInfo.project(selectedCell);
-        cellCoordinatesRef.current = {
-          x,
-          y,
-          width,
-          height,
-        };
-      }
-    };
-  }, [selectedCell]);
+    updateViewInfoRef.current = updateViewInfo;
+  }, [updateViewInfo]);
 
   const cellColorsForVitessce = useMemo(() => new Map(Object.entries(cellColors)), [cellColors]);
 
@@ -329,7 +321,7 @@ const Embedding = (props) => {
             theme='light'
             uuid={embeddingType}
             viewState={view}
-            updateViewInfo={updateViewInfo.current}
+            updateViewInfo={updateViewInfoRef.current}
             cells={convertedCellsData}
             mapping='PCA'
             setCellSelection={updateCellsSelection}
