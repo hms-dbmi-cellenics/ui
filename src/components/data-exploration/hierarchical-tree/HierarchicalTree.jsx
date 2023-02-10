@@ -112,11 +112,14 @@ const HierarchicalTree = (props) => {
         onNodeUpdate(modified.key, { name: e });
       }}
       onDelete={() => {
-        onNodeDelete(modified.key);
+        onNodeDelete(modified.key, modified.rootNode);
       }}
       value={modified.name}
       showEdit={modified.key !== 'scratchpad'}
-      deleteEnabled={parentKey === 'scratchpad'}
+      deleteEnabled={
+        parentKey === 'scratchpad'
+        || !['louvain', 'scratchpad', 'sample'].includes(modified.key)
+      }
       renderBold={!!modified.rootNode}
     />
   );
