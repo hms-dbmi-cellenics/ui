@@ -10,6 +10,8 @@ import mockAPI, {
   generateDefaultMockAPIResponses,
 } from '__test__/test-utils/mockAPI';
 import { loadUser } from 'redux/actions/user';
+import loadDeploymentInfo from 'redux/actions/networkResources/loadDeploymentInfo';
+import { DomainName } from 'utils/deploymentInfo';
 
 const RepositoryPageFactory = createTestComponentFactory(RepositoryPage);
 
@@ -55,6 +57,7 @@ describe('Repository page', () => {
 
     store = makeStore();
     await store.dispatch(loadUser());
+    await store.dispatch(loadDeploymentInfo({ environment: 'production', domainName: DomainName.BIOMAGE }));
   });
 
   it('Does not render child component if terms are not accepted', async () => {
