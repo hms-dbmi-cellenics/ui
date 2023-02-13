@@ -81,7 +81,7 @@ const RepositoryTable = (props) => {
 
   return (
     <Card
-      title='Datasets Repository'
+      title='Public Datasets Repository'
       extra={(
         <Button onClick={onCloseTable}>
           <CloseOutlined />
