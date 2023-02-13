@@ -9,6 +9,7 @@ import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import mockAPI, {
   generateDefaultMockAPIResponses,
 } from '__test__/test-utils/mockAPI';
+import { loadUser } from 'redux/actions/user';
 
 const RepositoryPageFactory = createTestComponentFactory(RepositoryPage);
 
@@ -45,9 +46,12 @@ describe('Samples table', () => {
 
   beforeEach(async () => {
     jest.clearAllMocks();
-    store = makeStore();
+
     fetchMock.resetMocks();
     fetchMock.mockIf(/.*/, mockAPI(generateDefaultMockAPIResponses('1234-5678')));
+
+    store = makeStore();
+    await store.dispatch(loadUser());
   });
 
   it('Does not render child component if terms are not accepted', async () => {
