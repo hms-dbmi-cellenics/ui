@@ -53,26 +53,29 @@ const ContentWrapper = (props) => {
   const { navigateTo, currentModule } = useAppRouter();
 
   const currentExperimentIdRef = useRef(routeExperimentId);
-  const activeExperimentId = useSelector((state) => state?.experiments?.meta?.activeExperimentId);
-  const activeExperiment = useSelector((state) => state.experiments[activeExperimentId]);
+  const selectedExperimentID = useSelector((state) => state?.experiments?.meta?.activeExperimentId);
 
   const domainName = useSelector((state) => state.networkResources.domainName);
   const user = useSelector((state) => state.user.current);
 
   const samples = useSelector((state) => state.samples);
 
+  // selectedExperimentID holds the value in redux of the selected experiment
+  // after loading a page it is determined whether to use that ID or the ID in the route URL
+  // i.e. when we are in data management there is not exp ID in the URL so we get it from redux
+
   useEffect(() => {
-    if (!activeExperimentId && !routeExperimentId) return;
+    if (!selectedExperimentID && !routeExperimentId) return;
 
     if (currentModule === modules.DATA_MANAGEMENT) {
-      currentExperimentIdRef.current = activeExperimentId;
+      currentExperimentIdRef.current = selectedExperimentID;
       return;
     }
 
     if (currentExperimentIdRef.current === routeExperimentId) return;
 
     currentExperimentIdRef.current = routeExperimentId;
-  }, [currentModule, activeExperimentId, routeExperimentId]);
+  }, [currentModule, selectedExperimentID, routeExperimentId]);
 
   const currentExperimentId = currentExperimentIdRef.current;
   const experiment = useSelector((state) => state?.experiments[currentExperimentId]);
@@ -131,11 +134,11 @@ const ContentWrapper = (props) => {
   const [gem2sRerunStatus, setGem2sRerunStatus] = useState(null);
 
   useEffect(() => {
-    if (!activeExperiment) return;
+    if (!experiment) return;
 
-    const status = calculateGem2sRerunStatus(gem2sBackendStatus, activeExperiment);
+    const status = calculateGem2sRerunStatus(gem2sBackendStatus, experiment);
     setGem2sRerunStatus(status);
-  }, [gem2sBackendStatus, activeExperiment, samples, experiment]);
+  }, [gem2sBackendStatus, experiment, samples, experiment]);
 
   useEffect(() => {
     dispatch(loadUser());
@@ -272,7 +275,7 @@ const ContentWrapper = (props) => {
       }
 
       if (gem2sRunning && experiment?.parentExperimentId) {
-        return <GEM2SLoadingScreen experimentId={routeExperimentId} gem2sStatus='subsetting' completedSteps={completedGem2sSteps} experimentName={activeExperiment.name} />;
+        return <GEM2SLoadingScreen experimentId={routeExperimentId} gem2sStatus='subsetting' completedSteps={completedGem2sSteps} experimentName={experimentName} />;
       }
 
       if (gem2sRunning || waitingForQcToLaunch) {

@@ -57,4 +57,21 @@ describe('ProjectsList', () => {
 
     expect(onCreateNewProjectMock).toHaveBeenCalledTimes(1);
   });
+
+  it('navigates to repository page when selecting the option in the create project dropdown', async () => {
+    render(
+      <Provider store={storeState}>
+        <ProjectsListContainer />
+      </Provider>,
+    );
+
+    const createNewProjectButton = screen.getByText(/Create New Project/);
+
+    await act(async () => {
+      userEvent.click(createNewProjectButton);
+    });
+    fireEvent.click(screen.getByText('Select from Dataset Repository'));
+
+    expect(mockNavigateTo.mock.calls).toMatchSnapshot();
+  });
 });

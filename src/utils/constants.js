@@ -1,3 +1,5 @@
+import endUserMessages from 'utils/endUserMessages';
+
 const api = {
   V1: 'v1',
   V2: 'v2',
@@ -68,6 +70,11 @@ const downsamplingMethods = {
   DEFAULT_PERC_TO_KEEP: 5,
 };
 
+const cellSetsUpdatedMessages = {
+  ClusterCells: endUserMessages.SUCCESS_CELL_SETS_RECLUSTERED,
+  ScTypeAnnotate: endUserMessages.SUCCESS_CELL_SETS_ANNOTATED,
+};
+
 export {
   api,
   modules,
@@ -77,4 +84,5 @@ export {
   plotNames,
   layout,
   downsamplingMethods,
+  cellSetsUpdatedMessages,
 };
