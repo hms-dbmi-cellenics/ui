@@ -1,0 +1,9 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ProjectsList navigates to repository page when selecting the option in the create project dropdown 1`] = `
+Array [
+  Array [
+    "REPOSITORY",
+  ],
+]
+`;
