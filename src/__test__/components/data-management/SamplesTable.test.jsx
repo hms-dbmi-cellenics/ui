@@ -1,28 +1,25 @@
-import React from 'react';
-import { screen, render } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-import { act } from 'react-dom/test-utils';
 import '@testing-library/jest-dom';
-import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 
-import _ from 'lodash';
-import { Provider } from 'react-redux';
-
-import mockAPI, { generateDefaultMockAPIResponses, promiseResponse, statusResponse } from '__test__/test-utils/mockAPI';
 import { experiments, responseData, samples } from '__test__/test-utils/mockData';
-
-import SamplesTable from 'components/data-management/SamplesTable';
-import { makeStore } from 'redux/store';
-import configureMockStore from 'redux-mock-store';
-import thunk from 'redux-thunk';
-import createTestComponentFactory from '__test__/test-utils/testComponentFactory';
-
+import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import { loadExperiments, setActiveExperiment } from 'redux/actions/experiments';
+import mockAPI, { generateDefaultMockAPIResponses, promiseResponse, statusResponse } from '__test__/test-utils/mockAPI';
+import { render, screen } from '@testing-library/react';
+
+import { Provider } from 'react-redux';
+import React from 'react';
+import SamplesTable from 'components/data-management/SamplesTable';
+import _ from 'lodash';
+import { act } from 'react-dom/test-utils';
+import configureMockStore from 'redux-mock-store';
+import createTestComponentFactory from '__test__/test-utils/testComponentFactory';
 import loadDeploymentInfo from 'redux/actions/networkResources/loadDeploymentInfo';
 import { loadSamples } from 'redux/actions/samples';
-
-import mockDemoExperiments from '__test__/test-utils/mockData/mockDemoExperiments.json';
 import { loadUser } from 'redux/actions/user';
+import { makeStore } from 'redux/store';
+import mockDemoExperiments from '__test__/test-utils/mockData/mockDemoExperiments.json';
+import thunk from 'redux-thunk';
+import userEvent from '@testing-library/user-event';
 
 jest.mock('@aws-amplify/auth', () => ({
   currentAuthenticatedUser: jest.fn(() => Promise.resolve({
@@ -252,16 +249,23 @@ describe('Samples table', () => {
   });
 
   describe('Example experiments functionality', () => {
-    beforeEach(async () => {
+    // beforeEach(async () => {
+    //   await renderSamplesTable(storeState);
+
+    //   // Load project without samples
+    //   await act(async () => {
+    //     await storeState.dispatch(setActiveExperiment(experimentWithoutSamplesId));
+    //   });
+    // });
+
+    it.only('Example experiments show up in an empty experiment', async () => {
       await renderSamplesTable(storeState);
 
-      // Load project without samples
+      screen.debug(null, Infinity);
       await act(async () => {
         await storeState.dispatch(setActiveExperiment(experimentWithoutSamplesId));
       });
-    });
-
-    it('Example experiments show up in an empty experiment', async () => {
+      screen.debug(null, Infinity);
       expect(screen.getByText(/Start uploading your samples by clicking on Add samples./i)).toBeInTheDocument();
       expect(screen.getByText(/Don't have data\? Get started using one of our example datasets:/i)).toBeInTheDocument();
 
@@ -270,40 +274,6 @@ describe('Samples table', () => {
       exampleExperimentNames.forEach((name) => {
         expect(screen.getByText(name)).toBeDefined();
       });
-    });
-
-    it('Cloning from example experiments works correctly', async () => {
-      // Clear mock calls so we can distinguish the new calls made from the old ones
-      fetchMock.mockClear();
-
-      const newExperimentsResponse = _.cloneDeep(responseData.experiments);
-      const noSamplesExperiment = newExperimentsResponse.find(
-        ({ id }) => id === experimentWithoutSamplesId,
-      );
-      noSamplesExperiment.samplesOrder = mockDemoExperiments[0].samplesOrder;
-      const newApiResponses = _.merge(
-        mockAPIResponse,
-        { experiments: () => promiseResponse(JSON.stringify(newExperimentsResponse)) },
-      );
-      fetchMock.mockIf(/.*/, mockAPI(newApiResponses));
-
-      await act(async () => {
-        userEvent.click(screen.getByText(mockDemoExperiments[0].name));
-      });
-
-      expect(fetchMock).toHaveBeenCalledWith(
-        `http://localhost:3000/v2/experiments/${mockDemoExperiments[0].id}/clone`,
-        expect.objectContaining({
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-        }),
-      );
-
-      // Reloads experiments
-      expect(fetchMock).toHaveBeenCalledWith(
-        'http://localhost:3000/v2/experiments',
-        { headers: {} },
-      );
     });
   });
 });

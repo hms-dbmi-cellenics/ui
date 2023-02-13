@@ -49,7 +49,7 @@ const RepositoryTable = (props) => {
   const formatData = (data) => data.map((row) => ({
     key: row.id,
     name: row.name,
-    explore: <Button onClick={() => cloneExperiment(row.id)}><RightCircleOutlined /></Button>,
+    explore: <Button aria-label='clone' onClick={() => cloneExperiment(row.id)}><RightCircleOutlined /></Button>,
     publication: <a href={row.publicationUrl}>{row.publicationTitle}</a>,
     dataSource: <a href={row.dataSourceUrl}>{row.dataSourceTitle}</a>,
     species: row.species,

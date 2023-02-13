@@ -11,9 +11,12 @@ import React from 'react';
 import RepositoryTable from 'components/repository/RepositoryTable';
 import { act } from 'react-dom/test-utils';
 import configureMockStore from 'redux-mock-store';
+import fetchAPI from 'utils/http/fetchAPI';
 import initialState from 'redux/reducers/experiments/initialState';
 import thunk from 'redux-thunk';
+import userEvent from '@testing-library/user-event';
 
+jest.mock('utils/http/fetchAPI');
 const mockNavigateTo = jest.fn();
 
 jest.mock('utils/AppRouteProvider', () => ({
@@ -71,5 +74,17 @@ describe('RepositoryTable', () => {
         expect(screen.findByText(prop)).toBeDefined();
       }
     });
+  });
+
+  it('Cloning from example experiments works correctly', async () => {
+    await renderRepository(emptyStore, [experiment1]);
+
+    await act(async () => {
+      userEvent.click(screen.getByRole('button', {
+        name: /clone/i,
+      }));
+    });
+
+    expect(fetchAPI.mock.calls).toMatchSnapshot();
   });
 });
