@@ -5,10 +5,10 @@ import {
   Space,
   Table,
   Typography,
+  Tooltip,
 } from 'antd';
 import {
   CloseOutlined,
-  RightCircleOutlined,
 } from '@ant-design/icons';
 import { loadExperiments, setActiveExperiment } from 'redux/actions/experiments';
 
@@ -49,7 +49,7 @@ const RepositoryTable = (props) => {
   const formatData = (data) => data.map((row) => ({
     key: row.id,
     name: row.name,
-    explore: <Button aria-label='clone' onClick={() => cloneExperiment(row.id)}><RightCircleOutlined /></Button>,
+    explore: <Tooltip title='Click to explore this project.'><Button type='primary' aria-label='clone' onClick={() => cloneExperiment(row.id)}>Explore</Button></Tooltip>,
     publication: <a href={row.publicationUrl}>{row.publicationTitle}</a>,
     dataSource: <a href={row.dataSourceUrl}>{row.dataSourceTitle}</a>,
     species: row.species,
@@ -129,14 +129,14 @@ RepositoryTable.defaultProps = {
 
 const TABLE_COLUMNS = [
   {
+    title: '',
+    dataIndex: 'explore',
+    key: 'explore',
+  },
+  {
     title: 'Dataset name',
     dataIndex: 'name',
     key: 'name',
-  },
-  {
-    title: 'Explore',
-    dataIndex: 'explore',
-    key: 'explore',
   },
   {
     title: 'Publication',
