@@ -47,6 +47,7 @@ const RepositoryTable = (props) => {
   // Make ready-to-use rows for the table
   // e.g. turn sourceTitle+sourceUrl into a single <a> tag, etc.
   const formatData = (data) => data.map((row) => ({
+    key: row.id,
     name: row.name,
     explore: <Button onClick={() => cloneExperiment(row.id)}><RightCircleOutlined /></Button>,
     publication: <a href={row.publicationUrl}>{row.publicationTitle}</a>,
