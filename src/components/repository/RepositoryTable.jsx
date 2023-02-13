@@ -18,14 +18,9 @@ import fetchAPI from 'utils/http/fetchAPI';
 import { modules } from 'utils/constants';
 import { useAppRouter } from 'utils/AppRouteProvider';
 import { useDispatch } from 'react-redux';
+import { techNamesToDisplay } from 'utils/upload/fileUploadSpecifications';
 
 const { Paragraph } = Typography;
-
-const formatTechName = (tech) => {
-  if (tech === '10x') return '10x Chromium';
-
-  return tech;
-};
 
 const RepositoryTable = (props) => {
   const cloneExperiment = async (exampleExperimentId) => {
@@ -55,7 +50,7 @@ const RepositoryTable = (props) => {
     species: row.species,
     sampleCount: row.sampleCount,
     cellCount: row.cellCount,
-    technology: formatTechName(row.sampleTechnology),
+    sampleTechnology: techNamesToDisplay[row.sampleTechnology],
     description: row.description,
   }));
 
@@ -117,8 +112,8 @@ RepositoryTable.propTypes = {
       dataSourceUrl: PropTypes.string,
       species: PropTypes.string,
       sampleCount: PropTypes.string,
-      cellCount: PropTypes.string,
-      technology: PropTypes.string,
+      cellCount: PropTypes.number,
+      sampleTechnology: PropTypes.string,
     }),
   ),
 };
@@ -165,8 +160,8 @@ const TABLE_COLUMNS = [
   },
   {
     title: 'Technology',
-    dataIndex: 'technology',
-    key: 'technology',
+    dataIndex: 'sampleTechnology',
+    key: 'sampleTechnology',
   },
   {
     title: 'Short description',
