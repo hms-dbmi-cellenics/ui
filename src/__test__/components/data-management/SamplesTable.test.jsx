@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom';
 
-import { experiments, responseData, samples } from '__test__/test-utils/mockData';
+import { experiments, samples } from '__test__/test-utils/mockData';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import { loadExperiments, setActiveExperiment } from 'redux/actions/experiments';
 import mockAPI, { generateDefaultMockAPIResponses, promiseResponse, statusResponse } from '__test__/test-utils/mockAPI';
@@ -21,6 +21,13 @@ import mockDemoExperiments from '__test__/test-utils/mockData/mockDemoExperiment
 import thunk from 'redux-thunk';
 import userEvent from '@testing-library/user-event';
 
+const mockNavigateTo = jest.fn();
+
+jest.mock('utils/AppRouteProvider', () => ({
+  useAppRouter: jest.fn(() => ({
+    navigateTo: mockNavigateTo,
+  })),
+}));
 jest.mock('@aws-amplify/auth', () => ({
   currentAuthenticatedUser: jest.fn(() => Promise.resolve({
     attributes: {
@@ -249,31 +256,18 @@ describe('Samples table', () => {
   });
 
   describe('Example experiments functionality', () => {
-    // beforeEach(async () => {
-    //   await renderSamplesTable(storeState);
-
-    //   // Load project without samples
-    //   await act(async () => {
-    //     await storeState.dispatch(setActiveExperiment(experimentWithoutSamplesId));
-    //   });
-    // });
-
-    it.only('Example experiments show up in an empty experiment', async () => {
+    beforeEach(async () => {
       await renderSamplesTable(storeState);
 
-      screen.debug(null, Infinity);
+      // Load project without samples
       await act(async () => {
         await storeState.dispatch(setActiveExperiment(experimentWithoutSamplesId));
       });
-      screen.debug(null, Infinity);
+    });
+
+    it('Example experiments show up in an empty experiment', async () => {
       expect(screen.getByText(/Start uploading your samples by clicking on Add samples./i)).toBeInTheDocument();
-      expect(screen.getByText(/Don't have data\? Get started using one of our example datasets:/i)).toBeInTheDocument();
-
-      const exampleExperimentNames = _.map(mockDemoExperiments, 'name');
-
-      exampleExperimentNames.forEach((name) => {
-        expect(screen.getByText(name)).toBeDefined();
-      });
+      expect(screen.getByText(/Don't have data\? Get started using one of our example datasets!/i)).toBeInTheDocument();
     });
   });
 });

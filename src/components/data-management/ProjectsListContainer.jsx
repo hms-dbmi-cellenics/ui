@@ -1,14 +1,17 @@
-import React, { useState } from 'react';
 import {
-  Space, Button, Menu, Dropdown,
+  Button,
+  Dropdown,
+  Menu,
+  Space,
 } from 'antd';
-import PropTypes from 'prop-types';
+import React, { useState } from 'react';
 
-import integrationTestConstants from 'utils/integrationTestConstants';
-import { useAppRouter } from 'utils/AppRouteProvider';
-import { modules } from 'utils/constants';
 import ProjectSearchBox from './ProjectSearchBox';
 import ProjectsList from './ProjectsList';
+import PropTypes from 'prop-types';
+import integrationTestConstants from 'utils/integrationTestConstants';
+import { modules } from 'utils/constants';
+import { useAppRouter } from 'utils/AppRouteProvider';
 
 const ProjectsListContainer = (props) => {
   const { height, onCreateNewProject } = props;
