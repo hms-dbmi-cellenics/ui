@@ -25,8 +25,11 @@ const renderRepositoryPage = async (store) => {
 
 jest.mock('@aws-amplify/auth', () => ({
   currentAuthenticatedUser: jest.fn().mockImplementation(async () => ({
+    username: 'mockuser',
     attributes: {
       'custom:agreed_terms': 'false',
+      email: 'mock@user.name',
+      name: 'Mocked User',
     },
   })),
   federatedSignIn: jest.fn(),
@@ -41,7 +44,7 @@ jest.mock('redux/actions/experiments');
 
 enableFetchMocks();
 
-describe('Samples table', () => {
+describe('Repository page', () => {
   let store;
 
   beforeEach(async () => {
