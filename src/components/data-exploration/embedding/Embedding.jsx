@@ -3,8 +3,6 @@ import React, {
   useState, useEffect, useRef, useMemo, useCallback,
 } from 'react';
 
-import _ from 'lodash';
-
 import dynamic from 'next/dynamic';
 import {
   useSelector, useDispatch,
@@ -68,7 +66,7 @@ const Embedding = (props) => {
     hidden: cellSetHidden,
   } = cellSets;
 
-  const selectedCell = useSelector((state) => state.cellInfo.cellId, _.isEqual);
+  const selectedCell = useSelector((state) => state.cellInfo.cellId);
   const expressionLoading = useSelector((state) => state.genes.expression.loading);
   const expressionMatrix = useSelector((state) => state.genes.expression.matrix);
 
