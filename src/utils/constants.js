@@ -47,7 +47,7 @@ const plotUuids = {
 const plotNames = {
   CONTINUOUS_EMBEDDING: 'Continuous Embedding',
   CATEGORICAL_EMBEDDING: 'Categorical Embedding',
-  MARKER_HEATMAP: 'Marker Heatmap',
+  MARKER_HEATMAP: 'Heatmap',
   VOLCANO_PLOT: 'Volcano Plot',
   FREQUENCY_PLOT: 'Frequency Plot',
   VIOLIN_PLOT: 'Violin Plot',
