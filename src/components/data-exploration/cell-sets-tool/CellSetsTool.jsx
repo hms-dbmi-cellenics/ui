@@ -104,10 +104,9 @@ const CellSetsTool = (props) => {
   const onNodeDelete = useCallback((key, isCellClass) => {
     if (isCellClass) {
       dispatch(deleteCellClass(experimentId, key));
-      return;
+    } else {
+      dispatch(deleteCellSet(experimentId, key));
     }
-
-    dispatch(deleteCellSet(experimentId, key));
   }, [experimentId]);
 
   const onCellSetReorder = useCallback((cellSetKey, newPosition) => {
