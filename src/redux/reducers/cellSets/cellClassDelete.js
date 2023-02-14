@@ -17,7 +17,7 @@ const cellClassDelete = produce((draft, action) => {
 
   // Remove keys in selected cell sets
   _.remove(draft.selected.cellSets,
-    (currentSelectedKey) => cellSetKeys.include(currentSelectedKey));
+    (currentSelectedKey) => cellSetKeys.includes(currentSelectedKey));
 
   // Remove keys in selected cell sets
   cellSetKeys.forEach(({ key: cellSetKey }) => draft.hidden.delete(cellSetKey));
