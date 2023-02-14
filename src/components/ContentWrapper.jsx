@@ -90,9 +90,9 @@ const ContentWrapper = (props) => {
   const gem2sBackendStatus = backendStatus?.gem2s;
   const backendErrors = [pipelineStatus.FAILED, pipelineStatus.TIMED_OUT, pipelineStatus.ABORTED];
 
-  const pipelineStatusKey = backendStatus?.pipeline?.status;
-  const pipelineRunning = pipelineStatusKey === 'RUNNING';
-  const pipelineRunningError = backendErrors.includes(pipelineStatusKey);
+  const qcStatusKey = backendStatus?.pipeline?.status;
+  const qcRunning = qcStatusKey === 'RUNNING';
+  const qcRunningError = backendErrors.includes(qcStatusKey);
 
   const gem2sStatusKey = backendStatus?.gem2s?.status;
   const gem2sRunning = gem2sStatusKey === 'RUNNING';
@@ -257,7 +257,7 @@ const ContentWrapper = (props) => {
   ];
 
   const waitingForQcToLaunch = gem2sStatusKey === pipelineStatus.SUCCEEDED
-    && pipelineStatusKey === pipelineStatus.NOT_CREATED;
+    && qcStatusKey === pipelineStatus.NOT_CREATED;
 
   const renderContent = () => {
     if (routeExperimentId) {
@@ -286,11 +286,11 @@ const ContentWrapper = (props) => {
         return <GEM2SLoadingScreen experimentId={routeExperimentId} gem2sStatus='toBeRun' />;
       }
 
-      if (pipelineRunningError && currentModule !== modules.DATA_PROCESSING) {
+      if (qcRunningError && currentModule !== modules.DATA_PROCESSING) {
         return <PipelineRedirectToDataProcessing experimentId={routeExperimentId} pipelineStatus='error' />;
       }
 
-      if (pipelineRunning && currentModule !== modules.DATA_PROCESSING) {
+      if (qcRunning && currentModule !== modules.DATA_PROCESSING) {
         return <PipelineRedirectToDataProcessing experimentId={routeExperimentId} pipelineStatus='running' />;
       }
 
@@ -298,7 +298,7 @@ const ContentWrapper = (props) => {
         return children;
       }
 
-      if (pipelineStatusKey === pipelineStatus.NOT_CREATED && currentModule !== modules.DATA_PROCESSING) {
+      if (qcStatusKey === pipelineStatus.NOT_CREATED && currentModule !== modules.DATA_PROCESSING) {
         return <PipelineRedirectToDataProcessing experimentId={routeExperimentId} pipelineStatus='toBeRun' />;
       }
     }
@@ -314,7 +314,7 @@ const ContentWrapper = (props) => {
 
     const pipelineStatusDisable = disabledByPipelineStatus && (
       backendError || gem2sRunning || gem2sRunningError
-      || waitingForQcToLaunch || pipelineRunning || pipelineRunningError
+      || waitingForQcToLaunch || qcRunning || qcRunningError
     );
 
     return (
