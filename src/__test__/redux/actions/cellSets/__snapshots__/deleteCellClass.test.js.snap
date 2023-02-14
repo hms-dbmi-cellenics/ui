@@ -1,0 +1,30 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`deleteCellClass action Dispatches an action to delete cell class to the reducer 1`] = `
+Object {
+  "payload": Object {
+    "key": "my-key",
+  },
+  "type": "cellSets/deleteClass",
+}
+`;
+
+exports[`deleteCellClass action Sends fetch to the API when a cell set is deleted 1`] = `
+Object {
+  "body": "[{\\"$match\\":{\\"query\\":\\"$[?(@.key == \\\\\\"my-key\\\\\\")]\\",\\"value\\":{\\"$remove\\":true}}}]",
+  "headers": Object {
+    "Content-Type": "application/boschni-json-merger+json",
+  },
+  "method": "PATCH",
+}
+`;
+
+exports[`deleteCellClass action Uses V2 URL when using API version V2 1`] = `
+Object {
+  "body": "[{\\"$match\\":{\\"query\\":\\"$[?(@.key == \\\\\\"my-key\\\\\\")]\\",\\"value\\":{\\"$remove\\":true}}}]",
+  "headers": Object {
+    "Content-Type": "application/boschni-json-merger+json",
+  },
+  "method": "PATCH",
+}
+`;
