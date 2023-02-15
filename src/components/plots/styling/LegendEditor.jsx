@@ -39,7 +39,12 @@ const LegendEditor = (props) => {
       <p><strong>Toggle Legend</strong></p>
       <Form.Item>
         <Radio.Group
-          onChange={(e) => onUpdate({ legend: { enabled: e.target.value } })}
+          onChange={(e) => onUpdate({
+            legend: {
+              enabled: e.target.value,
+              showAlert: false,
+            },
+          })}
           value={config.legend.enabled}
         >
           <Radio value>Show</Radio>

@@ -1,17 +1,23 @@
-import React from 'react';
-import { Provider } from 'react-redux';
+import '@testing-library/jest-dom';
+import '__test__/test-utils/setupTests';
 
 import { render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-import '@testing-library/jest-dom';
-
-import { act } from 'react-dom/test-utils';
-
-import { makeStore } from 'redux/store';
 
 import ProjectsListContainer from 'components/data-management/ProjectsListContainer';
+import { Provider } from 'react-redux';
+import React from 'react';
+import { act } from 'react-dom/test-utils';
+import { fireEvent } from '@testing-library/dom';
+import { makeStore } from 'redux/store';
+import userEvent from '@testing-library/user-event';
 
-import '__test__/test-utils/setupTests';
+const mockNavigateTo = jest.fn();
+
+jest.mock('utils/AppRouteProvider', () => ({
+  useAppRouter: jest.fn(() => ({
+    navigateTo: mockNavigateTo,
+  })),
+}));
 
 describe('ProjectsList', () => {
   let storeState;
@@ -31,7 +37,7 @@ describe('ProjectsList', () => {
     expect(screen.getByText(/Create New Project/)).toBeDefined();
   });
 
-  it('triggers onCreateNewProject on clicking create new project button', () => {
+  it('triggers onCreateNewProject on clicking create new project button', async () => {
     const onCreateNewProjectMock = jest.fn(() => { });
 
     render(
@@ -44,10 +50,28 @@ describe('ProjectsList', () => {
 
     expect(onCreateNewProjectMock).toHaveBeenCalledTimes(0);
 
-    act(() => {
+    await act(async () => {
       userEvent.click(createNewProjectButton);
     });
+    fireEvent.click(screen.getByText('Upload Project'));
 
     expect(onCreateNewProjectMock).toHaveBeenCalledTimes(1);
+  });
+
+  it('navigates to repository page when selecting the option in the create project dropdown', async () => {
+    render(
+      <Provider store={storeState}>
+        <ProjectsListContainer />
+      </Provider>,
+    );
+
+    const createNewProjectButton = screen.getByText(/Create New Project/);
+
+    await act(async () => {
+      userEvent.click(createNewProjectButton);
+    });
+    fireEvent.click(screen.getByText('Select from Dataset Repository'));
+
+    expect(mockNavigateTo.mock.calls).toMatchSnapshot();
   });
 });

@@ -1,6 +1,7 @@
 import createCellSet from './createCellSet';
 import deleteCellSet from './deleteCellSet';
 import runCellSetsClustering from './runCellSetsClustering';
+import runCellSetsAnnotation from './runCellSetsAnnotation';
 import updateCellSetsClustering from './updateCellSetsClustering';
 
 import loadCellSets from './loadCellSets';
@@ -14,6 +15,7 @@ export {
   createCellSet,
   deleteCellSet,
   runCellSetsClustering,
+  runCellSetsAnnotation,
   updateCellSetsClustering,
   loadCellSets,
   reorderCellSet,

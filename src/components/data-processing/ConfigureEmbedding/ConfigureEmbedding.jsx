@@ -25,6 +25,7 @@ import { generateDataProcessingPlotUuid } from 'utils/generateCustomPlotUuid';
 import Loader from 'components/Loader';
 import { getCellSets } from 'redux/selectors';
 import CalculationConfig from 'components/data-processing/ConfigureEmbedding/CalculationConfig';
+import PlotLegendAlert, { MAX_LEGEND_ITEMS } from 'components/plots/helpers/PlotLegendAlert';
 
 const { Panel } = Collapse;
 
@@ -49,10 +50,13 @@ const ConfigureEmbedding = (props) => {
   const debounceSave = useCallback(
     _.debounce((plotUuid) => dispatch(savePlotConfig(experimentId, plotUuid)), 2000), [],
   );
-  const continuousEmbeddingPlots = ['mitochondrialContent', 'doubletScores', 'numOfGenes', 'numOfUmis'];
+  const cellMetaToLoad = ['mitochondrialContent', 'doubletScores', 'numOfGenes', 'numOfUmis'];
+
+  const { hierarchy } = cellSets;
 
   useEffect(() => {
-    continuousEmbeddingPlots.forEach((dataName) => {
+    cellMetaToLoad.forEach((dataName) => {
+      console.log('GONNA LOAD THIS ? ', cellMeta[dataName].loading && !cellMeta[dataName].error, dataName);
       if (cellMeta[dataName].loading && !cellMeta[dataName].error) {
         dispatch(loadCellMeta(experimentId, dataName));
       }
@@ -170,12 +174,15 @@ const ConfigureEmbedding = (props) => {
   };
 
   const renderCategoricalEmbedding = (config, actions) => (
-    <CategoricalEmbeddingPlot
-      experimentId={experimentId}
-      config={config}
-      actions={actions}
-      onUpdate={updatePlotWithChanges}
-    />
+    <Space direction='vertical'>
+      {config?.legend?.showAlert && <PlotLegendAlert stylingSectionName='Plot Options' />}
+      <CategoricalEmbeddingPlot
+        experimentId={experimentId}
+        config={config}
+        actions={actions}
+        onUpdate={updatePlotWithChanges}
+      />
+    </Space>
   );
 
   const plots = {
@@ -278,6 +285,7 @@ const ConfigureEmbedding = (props) => {
     },
   };
   const currentPlot = plots[selectedColouring].subPlots[plotType] || {};
+  const { plotUuid: activePlotUuid, plotType: activePlotType } = currentPlot;
 
   const plotStylingControlsConfig = [
     {
@@ -315,8 +323,7 @@ const ConfigureEmbedding = (props) => {
     });
     return plotConfigsToReturn;
   });
-
-  const selectedConfig = plotConfigs[currentPlot?.plotUuid];
+  const selectedConfig = plotConfigs[activePlotUuid];
 
   useEffect(() => {
     Object.values(plots).forEach(({ subPlots }) => {
@@ -327,15 +334,33 @@ const ConfigureEmbedding = (props) => {
   }, []);
 
   useEffect(() => {
+    if (!selectedConfig
+      || !cellSets.accessible
+      || !selectedConfig.legend.enabled) return;
+
+    let legendItemKey = null;
+    if (activePlotType === 'embeddingPreviewByCellSets') {
+      legendItemKey = 'louvain';
+    } else if (activePlotType === 'embeddingPreviewBySample') {
+      legendItemKey = 'sample';
+    } else {
+      return;
+    }
+
+    const numLegendItems = hierarchy.find(({ key }) => key === legendItemKey).children.length;
+    const showAlert = numLegendItems > MAX_LEGEND_ITEMS;
+
+    if (showAlert) updatePlotWithChanges({ legend: { showAlert, enabled: !showAlert } });
+  }, [!selectedConfig, activePlotType, cellSets.accessible]);
+
+  useEffect(() => {
     // if we change a plot and the config is not saved yet
     if (outstandingChanges) {
-      dispatch(savePlotConfig(experimentId, currentPlot.plotUuid));
+      dispatch(savePlotConfig(experimentId, activePlotUuid));
     }
   }, [currentPlot]);
 
   useEffect(() => {
-    // Do not update anything if the cell sets are stil loading or if
-    // the config does not exist yet.
     if (!selectedConfig) {
       return;
     }
@@ -403,10 +428,12 @@ const ConfigureEmbedding = (props) => {
       />
       <Row gutter={16}>
         <Col flex='auto'>
-          {renderPlot()}
+          <center>
+            {renderPlot()}
+          </center>
         </Col>
 
-        <Col flex='1 0px'>
+        <Col flex='1 0px' style={{ minWidth: '300px' }}>
           <Collapse defaultActiveKey={['plot-selector']}>
             <Panel header='Plot view' key='plot-selector'>
               <Space direction='vertical'>

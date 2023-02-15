@@ -43,7 +43,6 @@ const createAndUploadSingleFile = async (
   const fileType = getFileTypeV2(file.fileObject.name, file.fileObject.type);
 
   try {
-    console.log('Loading and compressing');
     loadedFile = await loadAndCompressIfNecessary(file, () => {
       dispatch(updateSampleFileUpload(experimentId, sampleId, fileType, UploadStatus.COMPRESSING));
     });
