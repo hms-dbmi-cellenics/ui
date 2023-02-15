@@ -1,7 +1,8 @@
 // eslint-disable-file import/no-extraneous-dependencies
 import React, {
-  useState, useEffect, useRef, useMemo,
+  useState, useEffect, useRef, useMemo, useCallback,
 } from 'react';
+
 import dynamic from 'next/dynamic';
 import {
   useSelector, useDispatch,
@@ -183,9 +184,11 @@ const Embedding = (props) => {
     }
   }, [selectedCell]);
 
-  const updateCellCoordinates = (newView) => {
-    if (selectedCell && newView.project) {
-      const [x, y] = newView.project(selectedCell);
+  const setCellHighlight = useCallback((cell) => dispatch(updateCellInfo({ cellId: cell })), []);
+
+  const updateViewInfo = useCallback((viewInfo) => {
+    if (selectedCell && viewInfo.project) {
+      const [x, y] = viewInfo.project(selectedCell);
       cellCoordinatesRef.current = {
         x,
         y,
@@ -193,11 +196,26 @@ const Embedding = (props) => {
         height,
       };
     }
-  };
+  }, [selectedCell]);
+
+  const setCellsSelection = useCallback((selection) => {
+    if (Array.from(selection).length > 0) {
+      setCreateClusterPopover(true);
+      const selectedIdsToInt = new Set(Array.from(selection).map((id) => parseInt(id, 10)));
+      setSelectedIds(selectedIdsToInt);
+    }
+  }, []);
 
   const cellColorsForVitessce = useMemo(() => new Map(Object.entries(cellColors)), [cellColors]);
 
-  const updateCellsHover = (cell) => dispatch(updateCellInfo({ cellId: cell }));
+  const setViewState = useCallback(({ zoom, target }) => {
+    setCellRadius(cellRadiusFromZoom(zoom));
+
+    setView({ zoom, target });
+  }, []);
+
+  const getExpressionValue = useCallback(() => { }, []);
+  const getCellIsSelected = useCallback(() => { }, []);
 
   const onCreateCluster = (clusterName, clusterColor) => {
     setCreateClusterPopover(false);
@@ -209,18 +227,6 @@ const Embedding = (props) => {
         selectedIds,
       ),
     );
-  };
-
-  const onCancelCreateCluster = () => {
-    setCreateClusterPopover(false);
-  };
-
-  const updateCellsSelection = (selection) => {
-    if (Array.from(selection).length > 0) {
-      setCreateClusterPopover(true);
-      const selectedIdsToInt = new Set(Array.from(selection).map((id) => parseInt(id, 10)));
-      setSelectedIds(selectedIdsToInt);
-    }
   };
 
   // Embedding data is loading.
@@ -302,24 +308,18 @@ const Embedding = (props) => {
           <Scatterplot
             cellOpacity={0.8}
             cellRadius={cellRadius}
-            setCellHighlight={updateCellsHover}
+            setCellHighlight={setCellHighlight}
             theme='light'
             uuid={embeddingType}
             viewState={view}
-            updateViewInfo={updateCellCoordinates}
+            updateViewInfo={updateViewInfo}
             cells={convertedCellsData}
             mapping='PCA'
-            cellSelection={[selectedCell]}
+            setCellSelection={setCellsSelection}
             cellColors={cellColorsForVitessce}
-            setViewState={({ zoom, target }) => {
-              setCellRadius(cellRadiusFromZoom(zoom));
-
-              setView({ zoom, target });
-            }}
-            getExpressionValue={() => { }}
-            getCellIsSelected={() => { }}
-            setCellSelection={updateCellsSelection}
-
+            setViewState={setViewState}
+            getExpressionValue={getExpressionValue}
+            getCellIsSelected={getCellIsSelected}
           />
         ) : ''
       }
@@ -330,7 +330,7 @@ const Embedding = (props) => {
               visible
               popoverPosition={cellCoordinatesRef}
               onCreate={onCreateCluster}
-              onCancel={onCancelCreateCluster}
+              onCancel={() => setCreateClusterPopover(false)}
             />
           ) : (
             (cellInfoVisible && cellInfoTooltip) ? (
