@@ -369,7 +369,7 @@ const generateSpec = (config, plotData) => {
     ],
     title:
     {
-      text: config.shownGene && config.shownGene !== 'notSelected' ? config.shownGene : config.title.text,
+      text: config.title.text || (config.shownGene !== 'notSelected' ? config.shownGene : ''),
       color: config.colour.masterColour,
       anchor: config.title.anchor,
       font: config.fontStyle.font,
