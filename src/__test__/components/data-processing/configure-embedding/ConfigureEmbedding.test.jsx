@@ -141,7 +141,7 @@ describe('Configure Embedding', () => {
     expect(screen.getAllByText('Select data')).toBeDefined();
   });
 
-  it('allows selecting other plots for', async () => {
+  it('allows selecting the varieties of plots', async () => {
     await renderConfigureEmbedding(storeState);
 
     // can select other plots for embedding
