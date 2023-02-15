@@ -138,9 +138,6 @@ const ConfigureEmbedding = (props) => {
       axes: {
         yAxisText: plotColouring,
       },
-      title: {
-        text: ' ',
-      },
     };
 
     return (

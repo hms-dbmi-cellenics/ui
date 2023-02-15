@@ -1,4 +1,5 @@
 import _ from 'lodash';
+import { title } from 'vega-lite/build/src/channeldef';
 
 /* eslint-disable no-param-reassign */
 const generateSpec = (config, plotData) => {
@@ -368,7 +369,7 @@ const generateSpec = (config, plotData) => {
     ],
     title:
     {
-      text: config.title.text || config.shownGene,
+      text: config.shownGene && config.shownGene !== 'notSelected' ? config.shownGene : config.title.text,
       color: config.colour.masterColour,
       anchor: config.title.anchor,
       font: config.fontStyle.font,
