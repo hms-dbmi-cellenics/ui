@@ -347,7 +347,7 @@ const ConfigureEmbedding = (props) => {
       return;
     }
 
-    const numLegendItems = hierarchy.find(({ key }) => key === legendItemKey).children.length;
+    const numLegendItems = hierarchy.find(({ key }) => key === legendItemKey)?.children.length;
     const showAlert = numLegendItems > MAX_LEGEND_ITEMS;
 
     if (showAlert) updatePlotWithChanges({ legend: { showAlert, enabled: !showAlert } });
@@ -371,7 +371,7 @@ const ConfigureEmbedding = (props) => {
     if (cellSets.accessible && selectedConfig) {
       setPlot(currentPlot.plot(selectedConfig, plotActions));
     }
-  }, [selectedConfig, cellSets]);
+  }, [selectedConfig, cellSets, cellMeta]);
 
   const updatePlotWithChanges = (obj) => {
     dispatch(updatePlotConfig(currentPlot.plotUuid, obj));

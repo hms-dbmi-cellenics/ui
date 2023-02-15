@@ -39,6 +39,10 @@ const CategoricalEmbeddingPlot = (props) => {
       dispatch(loadProcessingSettings(experimentId));
     }
 
+    if (!cellSets.error) {
+      dispatch(loadCellSets(experimentId));
+    }
+
     if (!embeddingData && embeddingSettings?.method) {
       dispatch(loadEmbedding(experimentId, embeddingSettings?.method));
     }
