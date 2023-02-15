@@ -124,7 +124,7 @@ const HierarchicalTree = (props) => {
 
         // Disable delete for child node if
         || (parentType && parentType === 'metadataCategorical')
-        || (parentKey && ['louvain', 'sample'].includes(parentKey))
+        || (parentKey && parentKey !== 'scratchpad')
       )}
       renderBold={!!modified.rootNode}
     />
