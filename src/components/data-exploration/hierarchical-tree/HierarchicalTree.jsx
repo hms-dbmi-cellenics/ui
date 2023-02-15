@@ -106,7 +106,7 @@ const HierarchicalTree = (props) => {
     return <></>;
   };
 
-  const renderEditableField = (modified, parentKey) => (
+  const renderEditableField = (modified, parentKey, parentType) => (
     <EditableField
       onAfterSubmit={(e) => {
         onNodeUpdate(modified.key, { name: e });
@@ -118,11 +118,13 @@ const HierarchicalTree = (props) => {
       showEdit={modified.key !== 'scratchpad'}
       deleteEnabled={!(
 
-        // Disable delete if
-        parentKey !== 'scratchpad'
-        || modified.type === 'metadataCategorical'
+        // Disable delete for root node if
+        modified.type === 'metadataCategorical'
         || ['louvain', 'scratchpad', 'sample'].includes(modified.key)
 
+        // Disable delete for child node if
+        || (parentType && parentType === 'metadataCategorical')
+        || (parentKey && ['louvain', 'sample'].includes(parentKey))
       )}
       renderBold={!!modified.rootNode}
     />
@@ -152,13 +154,13 @@ const HierarchicalTree = (props) => {
     return <></>;
   };
 
-  const renderTitlesRecursive = (source, parentKey = null) => {
+  const renderTitlesRecursive = (source, parentKey = null, parentType = null) => {
     const toRender = source && source.map((d) => {
       const modified = d;
       modified.title = (
         <Space>
           {renderFocusButton(modified)}
-          {renderEditableField(modified, parentKey)}
+          {renderEditableField(modified, parentKey, parentType)}
           {renderColorPicker(modified)}
           {renderHideButton(modified)}
         </Space>
@@ -167,7 +169,7 @@ const HierarchicalTree = (props) => {
       modified.selectable = false;
 
       if (modified.children) {
-        modified.children = renderTitlesRecursive(modified.children, modified.key);
+        modified.children = renderTitlesRecursive(modified.children, modified.key, modified.type);
       }
 
       return modified;
