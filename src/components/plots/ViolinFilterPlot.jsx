@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Vega } from 'react-vega';
 import 'vega-webgl-renderer';
@@ -11,24 +11,23 @@ import Loader from 'components/Loader';
 
 const ViolinFilterPlot = (props) => {
   const {
-    config, data, experimentId, loading, error, reloadPlotData, actions,
+    config, plotData, experimentId, loading, error, reloadPlotData, actions, cellSets,
   } = props;
   const dispatch = useDispatch();
-  const cellSets = useSelector((state) => state.cellSets);
 
   const [plotSpec, setPlotSpec] = useState({});
 
   useEffect(() => {
-    if (config && data) {
+    if (config && plotData) {
       const generatedPlotData = generateData(
         cellSets,
-        data,
+        plotData,
         'sample',
         'All',
       );
       setPlotSpec(generateSpec(config, generatedPlotData));
     }
-  }, [config, data]);
+  }, [config, plotData]);
 
   if (error) {
     return (
@@ -72,8 +71,9 @@ ViolinFilterPlot.propTypes = {
   loading: PropTypes.bool.isRequired,
   error: PropTypes.bool.isRequired,
   actions: PropTypes.object.isRequired,
-  data: PropTypes.array.isRequired,
+  plotData: PropTypes.array.isRequired,
   config: PropTypes.object.isRequired,
+  cellSets: PropTypes.object.isRequired,
 };
 
 export default ViolinFilterPlot;

@@ -56,7 +56,6 @@ const ConfigureEmbedding = (props) => {
 
   useEffect(() => {
     cellMetaToLoad.forEach((dataName) => {
-      console.log('GONNA LOAD THIS ? ', cellMeta[dataName].loading && !cellMeta[dataName].error, dataName);
       if (cellMeta[dataName].loading && !cellMeta[dataName].error) {
         dispatch(loadCellMeta(experimentId, dataName));
       }
@@ -143,13 +142,14 @@ const ConfigureEmbedding = (props) => {
     return (
       <ViolinFilterPlot
         experimentId={experimentId}
-        data={plotData}
+        plotData={plotData}
         config={changedConfig}
         loading={loading}
         error={error}
         actions={actions}
         reloadPlotData={() => dispatch(loadCellMeta(experimentId, plotColouring))}
         onUpdate={updatePlotWithChanges}
+        cellSets={cellSets}
       />
     );
   };

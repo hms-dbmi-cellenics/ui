@@ -1,5 +1,4 @@
 import _ from 'lodash';
-import { title } from 'vega-lite/build/src/channeldef';
 
 /* eslint-disable no-param-reassign */
 const generateSpec = (config, plotData) => {
