@@ -23,7 +23,7 @@ const ViolinFilterPlot = (props) => {
         cellSets,
         plotData,
         'sample',
-        config.selectedSample,
+        config.selectedSample || 'All',
       );
       setPlotSpec(generateSpec(config, generatedPlotData));
     }
