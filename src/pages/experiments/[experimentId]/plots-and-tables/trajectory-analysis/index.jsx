@@ -29,6 +29,7 @@ import updateTrajectoryPlotSelectedNodes from 'redux/actions/componentConfig/upd
 import PlotLegendAlert, { MAX_LEGEND_ITEMS } from 'components/plots/helpers/PlotLegendAlert';
 import TrajectoryAnalysisNodeSelector from './TrajectoryAnalysisNodeSelector';
 import TrajectoryAnalysisDisplaySettings from './TrajectoryAnalysisDisplaySettings';
+import MultipleCellSetSelection from './MultipleCellSetSelection';
 
 const { Panel } = Collapse;
 
@@ -61,8 +62,12 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
   const showLegendAlert = useSelector(
     (state) => state.componentConfig[plotUuid]?.config?.legend?.showAlert,
   );
-  const selectedCellSet = useSelector(
-    (state) => state.componentConfig[plotUuid]?.config?.selectedCellSet,
+  const selectedCellSets = useSelector(
+    (state) => state.componentConfig[plotUuid]?.config?.selectedCellSets,
+  );
+
+  const embeddingSample = useSelector(
+    (state) => state.componentConfig[plotUuid]?.config?.embeddingSample,
   );
 
   const embeddingSettings = useSelector(
@@ -71,7 +76,7 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
   );
 
   const numLegendItems = useSelector(
-    getCellSetsHierarchyByKeys([selectedCellSet]),
+    getCellSetsHierarchyByKeys([embeddingSample]),
   )[0]?.children?.length;
 
   const {
@@ -265,6 +270,16 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
         extraToolbarControls={renderExtraToolbarControls()}
         extraControlPanels={(
           <>
+            <Panel header='Trajectory analysis' key='trajectory-analysis'>
+              <MultipleCellSetSelection
+                experimentId={experimentId}
+                plotUuid={plotUuid}
+                selectedCellSets={selectedCellSets}
+                setSelectedCellSets={
+                  (chosenCellSets) => { updatePlotWithChanges({ selectedCellSets: chosenCellSets }); }
+                }
+              />
+            </Panel>
             <Panel header='Trajectory analysis' key='trajectory-analysis'>
               <TrajectoryAnalysisNodeSelector
                 experimentId={experimentId}

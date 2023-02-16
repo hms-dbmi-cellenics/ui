@@ -102,8 +102,8 @@ const TrajectoryAnalysisPlot = forwardRef((props, ref) => {
 
     return generateEmbeddingCategoricalData(
       cellSets,
-      config.selectedSample,
-      config.selectedCellSet,
+      config.embeddingSample,
+      config.embeddingCellSet,
       embeddingData,
     );
   }, [config, cellSets, embeddingData]);
