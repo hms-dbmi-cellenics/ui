@@ -270,7 +270,7 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
         extraToolbarControls={renderExtraToolbarControls()}
         extraControlPanels={(
           <>
-            <Panel header='Trajectory analysis' key='trajectory-analysis'>
+            <Panel header='Select Data' key='select-data'>
               <MultipleCellSetSelection
                 experimentId={experimentId}
                 plotUuid={plotUuid}

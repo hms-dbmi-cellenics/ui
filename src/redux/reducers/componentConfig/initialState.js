@@ -315,7 +315,7 @@ const trajectoryAnalysisInitialConfig = {
     enabled: false,
   },
   selectedNodes: [],
-  selectedCellSets: [],
+  selectedCellSets: ['louvain'],
   embeddingCellSet: 'louvain',
   embeddingSample: 'All',
 };
