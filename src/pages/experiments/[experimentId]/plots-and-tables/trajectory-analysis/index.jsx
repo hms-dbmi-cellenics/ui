@@ -270,7 +270,7 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
                       getTrajectoryPlotStartingNodes(experimentId, plotUuid);
                     }}
                   >
-                    Get starting nodes
+                    Calculate root nodes
                   </Button>
                 )}
               />
