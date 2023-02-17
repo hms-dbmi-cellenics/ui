@@ -39,12 +39,12 @@ const ConfigureEmbedding = (props) => {
   const cellSets = useSelector(getCellSets());
   const cellMeta = useSelector((state) => state.cellMeta);
 
-  const initialPlots = {
+  const initialPlotColouring = {
     embedding: 'cellCluster',
     violin: 'mitochondrialContent',
   };
 
-  const [selectedColouring, setSelectedColouring] = useState(initialPlots.embedding);
+  const [plotColouring, setPlotColouring] = useState(initialPlotColouring.embedding);
 
   const dispatch = useDispatch();
   const debounceSave = useCallback(
@@ -281,7 +281,7 @@ const ConfigureEmbedding = (props) => {
       },
     },
   };
-  const currentPlot = plots[selectedColouring].subPlots[plotType] || {};
+  const currentPlot = plots[plotColouring].subPlots[plotType] || {};
   const { plotUuid: activePlotUuid, plotType: activePlotType } = currentPlot;
 
   const plotStylingControlsConfig = [
@@ -395,7 +395,7 @@ const ConfigureEmbedding = (props) => {
       );
     }
 
-    if (selectedColouring === 'sample' && cellSets.accessible && isUnisample(cellSets.hierarchy)
+    if (plotColouring === 'sample' && cellSets.accessible && isUnisample(cellSets.hierarchy)
     ) {
       return (
         <center>
@@ -420,7 +420,7 @@ const ConfigureEmbedding = (props) => {
   return (
     <>
       <PageHeader
-        title={plots[selectedColouring].title}
+        title={plots[plotColouring].title}
         style={{ width: '100%', paddingRight: '0px' }}
       />
       <Row gutter={16}>
@@ -440,7 +440,7 @@ const ConfigureEmbedding = (props) => {
                     // also reset the colouring to the initial for the plot type, because
                     // some plot types do not have every colouring option
                     setPlotType(e.target.value);
-                    setSelectedColouring(initialPlots[e.target.value]);
+                    setPlotColouring(initialPlotColouring[e.target.value]);
                   }}
                   value={plotType}
                 >
@@ -451,7 +451,7 @@ const ConfigureEmbedding = (props) => {
                   ))}
                 </Radio.Group>
                 Colour plot by:
-                <Radio.Group onChange={(e) => setSelectedColouring(e.target.value)} value={selectedColouring}>
+                <Radio.Group onChange={(e) => setPlotColouring(e.target.value)} value={plotColouring}>
                   {Object.entries(plots).map(([key, plotObj]) => {
                     if (plots[key].subPlots[plotType]) {
                       return (
