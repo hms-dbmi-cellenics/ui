@@ -420,7 +420,11 @@ const CalculationConfig = (props) => {
 CalculationConfig.propTypes = {
   experimentId: PropTypes.string.isRequired,
   onConfigChange: PropTypes.func.isRequired,
-  disabled: PropTypes.bool.isRequired,
+  disabled: PropTypes.bool,
+};
+
+CalculationConfig.defaultProps = {
+  disabled: false,
 };
 
 export default CalculationConfig;

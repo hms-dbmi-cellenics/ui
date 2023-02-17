@@ -51,7 +51,7 @@ const ConfigureEmbedding = (props) => {
     _.debounce((plotUuid) => dispatch(savePlotConfig(experimentId, plotUuid)), 2000), [],
   );
   const cellMetaToLoad = ['mitochondrialContent', 'doubletScores', 'numOfGenes', 'numOfUmis'];
-
+  const controlsDisabledForViolin = plotType === 'violin';
   const { hierarchy } = cellSets;
 
   useEffect(() => {
@@ -376,9 +376,10 @@ const ConfigureEmbedding = (props) => {
   };
 
   const renderExtraControlPanels = () => (
-    <Panel header='Select data' key='select-data' disabled={plotType === 'violin'}>
+    <Panel header='Select data' key='select-data' collapsible={controlsDisabledForViolin && 'disabled'}>
       <SelectData
         config={selectedConfig}
+        disabled={controlsDisabledForViolin}
         onUpdate={updatePlotWithChanges}
         cellSets={cellSets}
       />
@@ -467,7 +468,7 @@ const ConfigureEmbedding = (props) => {
             </Panel>
           </Collapse>
 
-          <CalculationConfig experimentId={experimentId} onConfigChange={onConfigChange} disabled={plotType === 'violin'} />
+          <CalculationConfig experimentId={experimentId} onConfigChange={onConfigChange} disabled={controlsDisabledForViolin} />
           <Collapse>
             <Panel header='Plot options' key='styling'>
               <div style={{ height: 8 }} />
