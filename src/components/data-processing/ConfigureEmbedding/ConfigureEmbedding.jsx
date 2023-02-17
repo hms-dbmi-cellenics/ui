@@ -130,12 +130,12 @@ const ConfigureEmbedding = (props) => {
 
   ];
 
-  const renderViolin = (plotColouring, config, actions) => {
-    const { loading, data: plotData, error } = cellMeta[plotColouring];
+  const renderViolin = (colouring, config, actions) => {
+    const { loading, data: plotData, error } = cellMeta[colouring];
     const changedConfig = {
       ...config,
       axes: {
-        yAxisText: plotColouring,
+        yAxisText: colouring,
       },
     };
 
@@ -147,15 +147,15 @@ const ConfigureEmbedding = (props) => {
         loading={loading}
         error={error}
         actions={actions}
-        reloadPlotData={() => dispatch(loadCellMeta(experimentId, plotColouring))}
+        reloadPlotData={() => dispatch(loadCellMeta(experimentId, colouring))}
         onUpdate={updatePlotWithChanges}
         cellSets={cellSets}
       />
     );
   };
 
-  const renderContinuousEmbedding = (plotColouring, config, actions) => {
-    const { loading, data: plotData, error } = cellMeta[plotColouring];
+  const renderContinuousEmbedding = (colouring, config, actions) => {
+    const { loading, data: plotData, error } = cellMeta[colouring];
     return (
       <ContinuousEmbeddingPlot
         experimentId={experimentId}
@@ -163,7 +163,7 @@ const ConfigureEmbedding = (props) => {
         config={config}
         loading={loading}
         error={error}
-        reloadPlotData={() => dispatch(loadCellMeta(experimentId, plotColouring))}
+        reloadPlotData={() => dispatch(loadCellMeta(experimentId, colouring))}
         onUpdate={updatePlotWithChanges}
         actions={actions}
       />
@@ -376,7 +376,7 @@ const ConfigureEmbedding = (props) => {
   };
 
   const renderExtraControlPanels = () => (
-    <Panel header='Select data' key='select-data'>
+    <Panel header='Select data' key='select-data' disabled={plotType === 'violin'}>
       <SelectData
         config={selectedConfig}
         onUpdate={updatePlotWithChanges}
@@ -467,7 +467,7 @@ const ConfigureEmbedding = (props) => {
             </Panel>
           </Collapse>
 
-          <CalculationConfig experimentId={experimentId} onConfigChange={onConfigChange} />
+          <CalculationConfig experimentId={experimentId} onConfigChange={onConfigChange} disabled={plotType === 'violin'} />
           <Collapse>
             <Panel header='Plot options' key='styling'>
               <div style={{ height: 8 }} />

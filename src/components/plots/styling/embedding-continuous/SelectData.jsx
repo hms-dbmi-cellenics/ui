@@ -51,7 +51,7 @@ const SelectData = (props) => {
       <div>
         Select the data to view on the embedding:
       </div>
-      <Form.Item>
+      <Form.Item disabled>
         <Select
           value={config.selectedSample}
           style={{ width: 200 }}
