@@ -5,7 +5,9 @@ import React, {
 import _ from 'lodash';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
-import { Button, Collapse, Space } from 'antd';
+import {
+  Button, Collapse, Space, Empty,
+} from 'antd';
 import {
   updatePlotConfig,
   loadPlotConfig,
@@ -181,6 +183,12 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
       );
     }
 
+    if (!selectedCellSets?.length) {
+      return (
+        <Empty description="Select cell sets under 'Select Data' to get started." />
+      );
+    }
+
     if (plotDataError) {
       return (
         <PlatformError
@@ -260,15 +268,30 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
                 experimentId={experimentId}
                 plotUuid={plotUuid}
                 selectedCellSets={selectedCellSets}
-                setSelectedCellSets={
-                  (chosenCellSets) => { updatePlotWithChanges({ selectedCellSets: chosenCellSets }); }
+                onChange={
+                  (chosenCellSets) => {
+                    updatePlotWithChanges({ selectedCellSets: chosenCellSets });
+                    setDisplaySettings({
+                      showPseudotimeValues: false,
+                      showStartingNodes: false,
+                      hasRunPseudotime: false,
+                    });
+                  }
                 }
                 extraElements={(
                   <Button
                     type='primary'
                     onClick={() => {
-                      dispatch(getTrajectoryPlotStartingNodes(experimentId, plotUuid, selectedCellSets));
+                      dispatch(
+                        getTrajectoryPlotStartingNodes(experimentId, plotUuid, selectedCellSets),
+                      );
+                      setDisplaySettings({
+                        ...displaySettings,
+                        showStartingNodes: true,
+                      });
                     }}
+                    disabled={!selectedCellSets?.length}
+                    block
                   >
                     Calculate root nodes
                   </Button>

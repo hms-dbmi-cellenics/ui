@@ -8,7 +8,7 @@ import {
 } from 'antd';
 
 const TrajectoryAnalysisDisplaySettings = (props) => {
-  const { setSelectedCellSets, selectedCellSets, extraElements } = props;
+  const { onChange, selectedCellSets, extraElements } = props;
 
   const { properties } = useSelector(getCellSets());
 
@@ -22,17 +22,17 @@ const TrajectoryAnalysisDisplaySettings = (props) => {
   }), [properties]);
 
   return (
-    <Space direction='vertical'>
+    <Space direction='vertical' style={{ width: '100%' }}>
       <span>Select cell sets to use for trajectory analysis</span>
       <Select
         mode='multiple'
         allowClear
         style={{ width: '100%' }}
-        placeholder='Please select'
+        placeholder='Select cell sets'
         value={options.filter(({ value }) => selectedCellSets.includes(value))}
         onChange={(values) => {
           const selectedCellSetKeys = values.map(({ value }) => value);
-          setSelectedCellSets(selectedCellSetKeys);
+          onChange(selectedCellSetKeys);
         }}
         options={options}
         labelInValue
@@ -46,7 +46,7 @@ const TrajectoryAnalysisDisplaySettings = (props) => {
 };
 
 TrajectoryAnalysisDisplaySettings.propTypes = {
-  setSelectedCellSets: PropTypes.func.isRequired,
+  onChange: PropTypes.func.isRequired,
   selectedCellSets: PropTypes.object.isRequired,
   extraElements: PropTypes.node,
 };

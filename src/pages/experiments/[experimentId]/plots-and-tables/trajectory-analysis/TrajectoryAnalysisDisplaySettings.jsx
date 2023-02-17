@@ -23,7 +23,7 @@ const TrajectoryAnalysisDisplaySettings = (props) => {
       >
         <Space>
           <Radio value={false}>Cell sets</Radio>
-          <Radio disabled={!pseudotime} value>
+          <Radio disabled={!displaySettings.hasRunPseudotime || !pseudotime} value>
             Pseudotime
           </Radio>
         </Space>
