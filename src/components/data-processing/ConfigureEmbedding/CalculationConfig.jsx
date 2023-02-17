@@ -266,7 +266,7 @@ const CalculationConfig = (props) => {
 
   return (
     <Collapse defaultActiveKey={['embedding-settings', 'clustering-settings']}>
-      <Panel header='Embedding settings' key='embedding-settings' disabled={disabled}>
+      <Panel header='Embedding settings' key='embedding-settings' collapsible={disabled && 'disabled'}>
         <Form size='small' disabled={disabled}>
           {Boolean(changedQCFilters.size) && (
             <Form.Item>
@@ -328,7 +328,7 @@ const CalculationConfig = (props) => {
           {embeddingMethod === 'tsne' && renderTSNESettings()}
         </Form>
       </Panel>
-      <Panel header='Clustering settings' key='clustering-settings' disabled={disabled}>
+      <Panel header='Clustering settings' key='clustering-settings' collapsible={disabled && 'disabled'}>
         <Form size='small'>
           <Form.Item label={(
             <span>
