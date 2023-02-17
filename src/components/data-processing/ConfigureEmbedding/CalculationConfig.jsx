@@ -393,6 +393,7 @@ const CalculationConfig = (props) => {
               min={0}
               max={10}
               step={0.1}
+              disabled={disabled}
               value={resolution}
               onUpdate={(value) => {
                 if (value === resolution) { return; }
