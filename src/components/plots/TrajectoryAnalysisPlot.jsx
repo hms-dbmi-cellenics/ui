@@ -7,9 +7,9 @@ import PropTypes from 'prop-types';
 import { Vega } from 'react-vega';
 import 'vega-webgl-renderer';
 
-import { generateData as generateEmbeddingCategoricalData } from 'utils/plotSpecs/generateEmbeddingCategoricalSpec';
 import {
   generateTrajectoryAnalysisSpec,
+  generateTrajectoryEmbeddingData,
   generateStartingNodesData,
   generatePseudotimeData,
 } from 'utils/plotSpecs/generateTrajectoryAnalysisSpec';
@@ -100,13 +100,8 @@ const TrajectoryAnalysisPlot = forwardRef((props, ref) => {
       || !embeddingData?.length
     ) return {};
 
-    return generateEmbeddingCategoricalData(
-      cellSets,
-      config.embeddingSample,
-      config.embeddingCellSet,
-      embeddingData,
-    );
-  }, [config, cellSets, embeddingData]);
+    return generateTrajectoryEmbeddingData(cellSets, embeddingData, config.selectedCellSets);
+  }, [config.selectedCellSets.length, cellSets, embeddingData]);
 
   const startingNodesData = useMemo(() => {
     if (
@@ -166,7 +161,6 @@ const TrajectoryAnalysisPlot = forwardRef((props, ref) => {
     if (
       !embeddingPlotData
       || !cellSetLegendsData
-      || !startingNodesPlotData?.nodes
     ) return;
 
     const {

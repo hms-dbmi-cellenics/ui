@@ -24,7 +24,6 @@ import TrajectoryAnalysisPlot from 'components/plots/TrajectoryAnalysisPlot';
 import PlatformError from 'components/PlatformError';
 
 import { plotNames, plotTypes } from 'utils/constants';
-import useConditionalEffect from 'utils/customHooks/useConditionalEffect';
 import updateTrajectoryPlotSelectedNodes from 'redux/actions/componentConfig/updateTrajectoryPlotSelectedNodes';
 import PlotLegendAlert, { MAX_LEGEND_ITEMS } from 'components/plots/helpers/PlotLegendAlert';
 import TrajectoryAnalysisNodeSelector from './TrajectoryAnalysisNodeSelector';
@@ -117,22 +116,6 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
     }
   }, [embeddingMethod, !embeddingSettings]);
 
-  useConditionalEffect(() => {
-    if (
-      !configIsLoaded
-      || !embeddingMethod
-      || embeddingLoading
-      || embeddingError
-      || !embeddingData?.length
-    ) return;
-    dispatch(getTrajectoryPlotStartingNodes(experimentId, plotUuid));
-  }, [
-    configIsLoaded,
-    embeddingMethod,
-    embeddingLoading,
-    embeddingSettings,
-  ]);
-
   const plotStylingConfig = [
     {
       panelTitle: 'Main schema',
@@ -202,7 +185,7 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
       return (
         <PlatformError
           error={plotDataError}
-          onClick={() => dispatch(getTrajectoryPlotStartingNodes(experimentId, plotUuid))}
+          onClick={() => { dispatch(loadEmbedding(experimentId, embeddingSettings?.method)); }}
         />
       );
     }
@@ -268,9 +251,11 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
         plotType={plotType}
         plotStylingConfig={plotStylingConfig}
         extraToolbarControls={renderExtraToolbarControls()}
+        defaultActiveKey='select-data'
+        saveDebounceTime={10}
         extraControlPanels={(
           <>
-            <Panel header='Select Data' key='select-data'>
+            <Panel header='Select data' key='select-data'>
               <MultipleCellSetSelection
                 experimentId={experimentId}
                 plotUuid={plotUuid}
@@ -278,9 +263,19 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
                 setSelectedCellSets={
                   (chosenCellSets) => { updatePlotWithChanges({ selectedCellSets: chosenCellSets }); }
                 }
+                extraElements={(
+                  <Button
+                    type='primary'
+                    onClick={() => {
+                      getTrajectoryPlotStartingNodes(experimentId, plotUuid);
+                    }}
+                  >
+                    Get starting nodes
+                  </Button>
+                )}
               />
             </Panel>
-            <Panel header='Trajectory analysis' key='trajectory-analysis'>
+            <Panel header='Select root nodes' key='select-root-nodes'>
               <TrajectoryAnalysisNodeSelector
                 experimentId={experimentId}
                 plotUuid={plotUuid}
@@ -311,8 +306,6 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
             workflow.
           </>
         )}
-        defaultActiveKey='trajectory-analysis'
-        saveDebounceTime={10}
       >
         {render()}
       </PlotContainer>

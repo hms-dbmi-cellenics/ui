@@ -8,7 +8,7 @@ import {
 } from 'antd';
 
 const TrajectoryAnalysisDisplaySettings = (props) => {
-  const { setSelectedCellSets, selectedCellSets } = props;
+  const { setSelectedCellSets, selectedCellSets, extraElements } = props;
 
   const { properties } = useSelector(getCellSets());
 
@@ -23,7 +23,7 @@ const TrajectoryAnalysisDisplaySettings = (props) => {
 
   return (
     <Space direction='vertical'>
-      <p>Select cell sets to use for trajectory analysis</p>
+      <span>Select cell sets to use for trajectory analysis</span>
       <Select
         mode='multiple'
         allowClear
@@ -40,7 +40,7 @@ const TrajectoryAnalysisDisplaySettings = (props) => {
           (searchText, { name }) => name.toLowerCase().startsWith(searchText.toLowerCase())
         }
       />
-      <br />
+      { extraElements }
     </Space>
   );
 };
@@ -48,6 +48,11 @@ const TrajectoryAnalysisDisplaySettings = (props) => {
 TrajectoryAnalysisDisplaySettings.propTypes = {
   setSelectedCellSets: PropTypes.func.isRequired,
   selectedCellSets: PropTypes.object.isRequired,
+  extraElements: PropTypes.node,
+};
+
+TrajectoryAnalysisDisplaySettings.defaultProps = {
+  extraElements: null,
 };
 
 export default TrajectoryAnalysisDisplaySettings;
