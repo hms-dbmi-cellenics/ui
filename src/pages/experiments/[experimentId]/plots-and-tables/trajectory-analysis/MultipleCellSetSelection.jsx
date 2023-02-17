@@ -19,7 +19,7 @@ const TrajectoryAnalysisDisplaySettings = (props) => {
       label: rootNode ? `All ${name}` : `${name}`,
       value: key,
     };
-  }), []);
+  }), [properties]);
 
   return (
     <Space direction='vertical'>

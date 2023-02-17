@@ -267,7 +267,7 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
                   <Button
                     type='primary'
                     onClick={() => {
-                      getTrajectoryPlotStartingNodes(experimentId, plotUuid);
+                      dispatch(getTrajectoryPlotStartingNodes(experimentId, plotUuid, selectedCellSets));
                     }}
                   >
                     Calculate root nodes

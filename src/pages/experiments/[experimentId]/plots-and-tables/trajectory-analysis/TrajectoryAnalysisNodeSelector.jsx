@@ -19,8 +19,13 @@ const TrajectoryAnalysisNodeSelector = (props) => {
   const dispatch = useDispatch();
 
   const rootNodes = useSelector((state) => state.componentConfig[plotUuid]?.plotData?.nodes);
-  const selectedNodes = useSelector((state) => state.componentConfig[plotUuid]?.config?.selectedNodes);
   const plotLoading = useSelector((state) => state.componentConfig[plotUuid]?.loading);
+  const selectedNodes = useSelector(
+    (state) => state.componentConfig[plotUuid]?.config?.selectedNodes,
+  );
+  const selectedCellSets = useSelector(
+    (state) => state.componentConfig[plotUuid]?.config?.selectedCellSets,
+  );
 
   const render = () => {
     if (!displaySettings.showStartingNodes) {
@@ -116,7 +121,15 @@ const TrajectoryAnalysisNodeSelector = (props) => {
                     hasRunPseudotime: true,
                   });
 
-                  const success = await dispatch(getTrajectoryPlotPseudoTime(selectedNodes, experimentId, plotUuid));
+                  const success = await dispatch(
+                    getTrajectoryPlotPseudoTime(
+                      selectedNodes,
+                      experimentId,
+                      plotUuid,
+                      selectedCellSets,
+                    ),
+                  );
+
                   if (!success) {
                     setDisplaySettings({
                       ...displaySettings,

@@ -1,6 +1,4 @@
 /* eslint-disable no-param-reassign */
-import { getAllCells } from 'utils/cellSets';
-
 const maxLabelLength = 85;
 const maxLabelHeight = 25;
 const paddingSize = 5;
@@ -583,7 +581,6 @@ const insertPseudotimeSpec = (spec, config, pseudotime) => {
     {
       name: 'backgroundPseudotime',
       values: pseudotime.cellsWithoutPseudotimeValue,
-
     },
     {
       name: 'pseudotime',
@@ -736,26 +733,18 @@ const generateStartingNodesData = (nodes) => {
 };
 
 const generatePseudotimeData = (
-  cellSets,
   plotData,
-  embeddingData,
+  embeddingPlotData,
 ) => {
-  const selectedSampleCells = getAllCells(cellSets).map((cell) => cell.cellId);
-
   const cellsWithPseudotimeValue = [];
   const cellsWithoutPseudotimeValue = [];
 
-  const filteredCells = embeddingData
-    .map((coordinates, cellId) => ({ cellId, coordinates }))
-    .filter(({ cellId }) => selectedSampleCells.includes(cellId))
-    .filter(({ coordinates }) => coordinates !== undefined);
-
-  filteredCells
+  embeddingPlotData
     .forEach((data) => {
-      const { cellId, coordinates } = data;
+      const { cellId, x, y } = data;
       const cellData = {
-        x: coordinates[0],
-        y: coordinates[1],
+        x,
+        y,
         value: plotData[cellId],
       };
 
