@@ -1,14 +1,14 @@
-import generateETag from 'utils/work/generateETag';
-import { Environment } from 'utils/deploymentInfo';
-
-import { mockQcPipelineStartDate } from '__test__/utils/work/fetchWork.mock';
-import processingConfigData from '__test__/data/processing_config.json';
-import { makeStore } from 'redux/store';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import mockAPI, { generateDefaultMockAPIResponses } from '__test__/test-utils/mockAPI';
 
-const NON_GENE_EXPRESSION_ETAG = 'a6052b2fb1ff0684862e938a66abef9c'; // pragma: allowlist secret
-const GENE_EXPRESSION_D_ETAG = '61ea49da34b7e96adbb1811dc0040587'; // pragma: allowlist secret
+import { Environment } from 'utils/deploymentInfo';
+import generateETag from 'utils/work/generateETag';
+import { makeStore } from 'redux/store';
+import { mockQcPipelineStartDate } from '__test__/utils/work/fetchWork.mock';
+import processingConfigData from '__test__/data/processing_config.json';
+
+const NON_GENE_EXPRESSION_ETAG = '0569e731f72dcaec1c39251c13c345d9'; // pragma: allowlist secret
+const GENE_EXPRESSION_D_ETAG = 'e3dea8833127c0ab269ed16e799319e1'; // pragma: allowlist secret
 
 const experimentId = '1234';
 const mockExtras = undefined;
