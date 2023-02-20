@@ -298,7 +298,7 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
                 )}
               />
             </Panel>
-            <Panel header='Select root nodes' key='select-root-nodes'>
+            <Panel header='Trajectory analysis' key='trajectory-analysis'>
               <TrajectoryAnalysisNodeSelector
                 experimentId={experimentId}
                 plotUuid={plotUuid}

@@ -56,7 +56,7 @@ const TrajectoryAnalysisNodeSelector = (props) => {
         <p>
           Choose
           {' '}
-          <strong>Trajectory > Show</strong>
+          <strong>Starting nodes > Show</strong>
           {' '}
           under
           {' '}
