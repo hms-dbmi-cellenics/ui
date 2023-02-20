@@ -7,7 +7,7 @@ import {
   Select, Space,
 } from 'antd';
 
-const TrajectoryAnalysisDisplaySettings = (props) => {
+const MultipleCellSetSelection = (props) => {
   const { onChange, selectedCellSets, extraElements } = props;
 
   const { hierarchy, properties } = useSelector(getCellSets());
@@ -55,14 +55,15 @@ const TrajectoryAnalysisDisplaySettings = (props) => {
   );
 };
 
-TrajectoryAnalysisDisplaySettings.propTypes = {
+MultipleCellSetSelection.propTypes = {
   onChange: PropTypes.func.isRequired,
-  selectedCellSets: PropTypes.object.isRequired,
+  selectedCellSets: PropTypes.array,
   extraElements: PropTypes.node,
 };
 
-TrajectoryAnalysisDisplaySettings.defaultProps = {
+MultipleCellSetSelection.defaultProps = {
+  selectedCellSets: [],
   extraElements: null,
 };
 
-export default TrajectoryAnalysisDisplaySettings;
+export default MultipleCellSetSelection;

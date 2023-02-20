@@ -38,7 +38,7 @@ const plotUuid = 'trajectoryAnalysisMain';
 const plotType = plotTypes.TRAJECTORY_ANALYSIS;
 
 const initialDisplaySettings = {
-  showStartingNodes: true,
+  showStartingNodes: false,
   showPseudotimeValues: false,
   hasRunPseudotime: false,
 };
@@ -65,6 +65,9 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
   );
   const selectedCellSets = useSelector(
     (state) => state.componentConfig[plotUuid]?.config?.selectedCellSets,
+  );
+  const startingNodesReady = useSelector(
+    (state) => state.componentConfig[plotUuid]?.plotData?.nodes !== undefined,
   );
 
   const embeddingSample = useSelector(
@@ -202,6 +205,7 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
       || plotLoading
       || !cellSets.accessible
       || !embeddingData
+      || (displaySettings.showStartingNodes && !startingNodesReady)
     ) {
       return (
         <center>

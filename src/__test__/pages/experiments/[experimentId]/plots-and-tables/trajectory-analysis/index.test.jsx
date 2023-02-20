@@ -91,7 +91,7 @@ const trajectoryAnalysisPageFactory = createTestComponentFactory(
   defaultProps,
 );
 
-const defaultShownPlotDescription = 'Trajectory analysis plot showing clusters with trajectory';
+const defaultShownPlotDescription = 'Trajectory analysis plot showing clusters';
 const selectedRootNodes = [0, 1, 2];
 
 const renderTrajectoryAnalysisPage = async (store) => {
@@ -102,21 +102,42 @@ const renderTrajectoryAnalysisPage = async (store) => {
       </Provider>,
     )
   ));
+};
 
+const simulateNodeSelection = async (store) => {
   // Select several nodes
   await store.dispatch(updatePlotConfig(plotUuid, {
     selectedNodes: selectedRootNodes,
   }));
+
+  // Wait until nodes have been selected
+  await waitFor(() => {
+    expect(screen.getByText('Calculate pseudotime').closest('button')).not.toBeDisabled();
+  });
 };
 
-const runPseudotime = () => {
+const runGetRootNodes = async () => {
+  userEvent.click(screen.getByText('Calculate root nodes'));
+
+  // Wait until data is loaded
+  await waitFor(() => {
+    expect(screen.getByRole(
+      'graphics-document', { name: 'Trajectory analysis plot showing clusters with trajectory' },
+    )).toBeInTheDocument();
+  });
+};
+
+const runPseudotime = async () => {
   userEvent.click(screen.getByText('Trajectory analysis'));
-  userEvent.click(screen.getByText(/Calculate/i));
+
+  await simulateNodeSelection(storeState);
+
+  userEvent.click(screen.getByText('Calculate pseudotime'));
 
   // Pseudotime under display should no longer be disabled
-  userEvent.click(screen.getByText(/Display/i));
+  userEvent.click(screen.getByText('Display'));
 
-  expect(screen.getByText(/Pseudotime/i)).not.toBeDisabled();
+  expect(screen.getByText('Pseudotime')).not.toBeDisabled();
 };
 
 describe('Trajectory analysis plot', () => {
@@ -151,6 +172,7 @@ describe('Trajectory analysis plot', () => {
   it('Loads controls and elements', async () => {
     await renderTrajectoryAnalysisPage(storeState);
 
+    expect(screen.getByText('Select data')).toBeInTheDocument();
     expect(screen.getByText('Trajectory analysis')).toBeInTheDocument();
     expect(screen.getByText('Display')).toBeInTheDocument();
     expect(screen.getByText('Main schema')).toBeInTheDocument();
@@ -161,11 +183,22 @@ describe('Trajectory analysis plot', () => {
     expect(screen.getByText('Labels')).toBeInTheDocument();
   });
 
-  it('Renders the plot with cluster and trajectory by default', async () => {
+  it('Renders the plot with louvain cluster by default', async () => {
     await renderTrajectoryAnalysisPage(storeState);
 
     await waitFor(async () => {
-      expect(screen.getByRole('graphics-document', { name: 'Trajectory analysis plot showing clusters with trajectory' })).toBeInTheDocument();
+      expect(screen.getByRole('graphics-document', { name: 'Trajectory analysis plot showing clusters' })).toBeInTheDocument();
+    });
+  });
+
+  it('Has select data opened by default', async () => {
+    await renderTrajectoryAnalysisPage(storeState);
+
+    await waitFor(async () => {
+      expect(screen.getByText('Select cell sets to use for trajectory analysis')).toBeInTheDocument();
+
+      expect(screen.getByText('All fake louvain clusters')).toBeInTheDocument();
+      expect(screen.getByText('Calculate root nodes')).toBeInTheDocument();
     });
   });
 
@@ -174,46 +207,78 @@ describe('Trajectory analysis plot', () => {
 
     userEvent.click(screen.getByText('Colours'));
 
-    expect(screen.getByText(/Background Color/i)).toBeInTheDocument();
-    expect(screen.queryByText(/Colour Schemes/i)).toBeNull();
+    expect(screen.getByText('Background Color')).toBeInTheDocument();
+    expect(screen.queryByText('Colour Schemes')).toBeNull();
   });
 
-  it('Shows the number of nodes that are selected', async () => {
+  it('Displays an empty information if no cell sets are selected', async () => {
+    await renderTrajectoryAnalysisPage(storeState);
+
+    // Remove selected cell set
+    userEvent.click(screen.getByLabelText('close'));
+
+    expect(screen.queryByText(/Select cell sets under 'Select Data' to get started./));
+  });
+
+  it('Trying to run trajectory analysis without cells selected will show a message', async () => {
     await renderTrajectoryAnalysisPage(storeState);
 
     userEvent.click(screen.getByText('Trajectory analysis'));
 
-    expect(screen.getByText(`${selectedRootNodes.length} nodes selected`)).toBeInTheDocument();
-    expect(screen.getByText(/Calculate/i).closest('button')).not.toBeDisabled();
+    expect(screen.queryByText('To get started, select clusters to include in the analysis under Select data and run Calculate root nodes')).toBeNull();
+  });
 
-    // The "Clear selection" button is the 2nd element in the body with "Clear selection" text
-    // The 1st "Clear selection" text is inside the information text
-    const clearSelectionButton = screen.queryAllByText(/Clear selection/i)[1].closest('button');
-    expect(clearSelectionButton).toBeInTheDocument();
+  it('Running calculate root nodes display root nodes', async () => {
+    await renderTrajectoryAnalysisPage(storeState);
+
+    await runGetRootNodes();
+
+    userEvent.click(screen.getByText('Trajectory analysis'));
+
+    screen.debug(null, Infinity);
+
+    await waitFor(() => {
+      expect(screen.getByText(/To get started, select root nodes/)).toBeInTheDocument();
+    });
+
+    await simulateNodeSelection(storeState);
+
+    await waitFor(() => {
+      // shows the number of nodes that are selected
+      expect(screen.getByText(`${selectedRootNodes.length} nodes selected`)).toBeInTheDocument();
+      expect(screen.getByText('Calculate pseudotime').closest('button')).not.toBeDisabled();
+    });
   });
 
   it('Trajectory buttons should not be shown if there are no selected nodes', async () => {
     await renderTrajectoryAnalysisPage(storeState);
 
+    await runGetRootNodes();
+
     userEvent.click(screen.getByText('Trajectory analysis'));
+
+    await simulateNodeSelection(storeState);
 
     // The "Clear selection" button is the 2nd element in the body with "Clear selection" text
     // The 1st "Clear selection" text is inside the information text
-    const clearSelectionButton = screen.queryAllByText(/Clear selection/i)[1].closest('button');
+    const clearSelectionButton = screen.queryAllByText('Clear selection')[1].closest('button');
+    expect(clearSelectionButton).toBeInTheDocument();
 
     // Clearing nodes should hide the text and the buttons
     userEvent.click(clearSelectionButton);
 
     // Thes is only 1 "Clear selection" text now, which is in the information text
-    expect(screen.queryAllByText(/Clear selection/i).length).toEqual(1);
+    expect(screen.queryAllByText('Clear selection').length).toEqual(1);
 
     expect(screen.queryByText(`${selectedRootNodes.length} nodes selected`)).toBeNull();
-    expect(screen.queryByText(/Calculate/i)).toBeNull();
+    expect(screen.queryByText('Calculate pseudotime')).toBeNull();
   });
 
-  it('Clicking "Calculate" shows for pseudotime', async () => {
+  it('Clicking "Calculate pseudotime" shows pseudotime', async () => {
     await renderTrajectoryAnalysisPage(storeState);
-    runPseudotime();
+
+    await runGetRootNodes();
+    await runPseudotime();
 
     await waitFor(async () => {
       expect(screen.getByRole('graphics-document', { name: 'Trajectory analysis plot showing pseudotime with trajectory' })).toBeInTheDocument();
@@ -222,7 +287,9 @@ describe('Trajectory analysis plot', () => {
 
   it('Does not display labels options if displaying pseudotime', async () => {
     await renderTrajectoryAnalysisPage(storeState);
-    runPseudotime();
+
+    await runGetRootNodes();
+    await runPseudotime();
 
     await waitFor(() => {
       expect(screen.queryByText('Labels')).toBeNull();
@@ -232,8 +299,8 @@ describe('Trajectory analysis plot', () => {
   it('Hides trajectory if hidden option is selected', async () => {
     await renderTrajectoryAnalysisPage(storeState);
 
-    userEvent.click(screen.getByText(/Display/i));
-    userEvent.click(screen.getByText(/Hide/i));
+    userEvent.click(screen.getByText('Display'));
+    userEvent.click(screen.getByText('Hide'));
 
     await waitFor(async () => {
       expect(screen.getByRole('graphics-document', { name: 'Trajectory analysis plot showing clusters' })).toBeInTheDocument();
@@ -319,6 +386,10 @@ describe('Trajectory analysis plot', () => {
   it('lassoSelection handling works well', async () => {
     await renderTrajectoryAnalysisPage(storeState);
 
+    await runGetRootNodes();
+
+    userEvent.click(screen.getByText('Trajectory analysis'));
+
     const { signalListeners } = _.last(Vega.mock.calls)[0];
 
     signalListeners.lassoSelection('eventName', [0, 2, -10, 4]);
@@ -329,6 +400,12 @@ describe('Trajectory analysis plot', () => {
   it('addNode handling works well', async () => {
     await renderTrajectoryAnalysisPage(storeState);
 
+    await runGetRootNodes();
+
+    userEvent.click(screen.getByText('Trajectory analysis'));
+
+    await simulateNodeSelection(storeState);
+
     const { signalListeners } = _.last(Vega.mock.calls)[0];
 
     signalListeners.addNode('eventName', { node_id: 5 });
@@ -338,6 +415,12 @@ describe('Trajectory analysis plot', () => {
 
   it('removeNode handling works well', async () => {
     await renderTrajectoryAnalysisPage(storeState);
+
+    await runGetRootNodes();
+
+    userEvent.click(screen.getByText('Trajectory analysis'));
+
+    await simulateNodeSelection(storeState);
 
     const { signalListeners } = _.last(Vega.mock.calls)[0];
 
@@ -372,6 +455,8 @@ describe('Trajectory analysis plot', () => {
     await renderTrajectoryAnalysisPage(storeState);
 
     // The legend alert plot text should appear
-    expect(screen.getByText(/We have hidden the plot legend, because it is too large and it interferes with the display of the plot/)).toBeInTheDocument();
+    waitFor(() => {
+      expect(screen.getByText(/We have hidden the plot legend, because it is too large and it interferes with the display of the plot/i)).toBeInTheDocument();
+    });
   });
 });

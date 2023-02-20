@@ -671,7 +671,7 @@ describe('CellSetsTool', () => {
   });
 
   // Enable when AnnotateClustersTool panel is enabled
-  describe.skip('AnnotateClustersTool', () => {
+  describe('AnnotateClustersTool', () => {
     beforeEach(async () => {
       jest.clearAllMocks();
 

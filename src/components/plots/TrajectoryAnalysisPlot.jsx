@@ -289,7 +289,10 @@ const TrajectoryAnalysisPlot = forwardRef((props, ref) => {
         // so we need to use canvas for plotting pseudotime
         renderer={displaySettings.showPseudotimeValues ? 'canvas' : 'webgl'}
         actions={actions}
-        signalListeners={displaySettings.showStartingNodes ? plotListeners : {}}
+        signalListeners={
+          startingNodesPlotData?.nodes
+          && displaySettings.showStartingNodes ? plotListeners : {}
+        }
       />
     </center>
   );
