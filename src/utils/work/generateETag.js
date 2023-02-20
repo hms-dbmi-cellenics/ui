@@ -56,10 +56,7 @@ const generateETag = async (
     };
   }
 
-  const ETag = createObjectHash(ETagBody);
-  console.log('ETagBody: ', ETagBody);
-  console.log('ETag: ', ETag);
-  return ETag;
+  return createObjectHash(ETagBody);
 };
 
 export default generateETag;
