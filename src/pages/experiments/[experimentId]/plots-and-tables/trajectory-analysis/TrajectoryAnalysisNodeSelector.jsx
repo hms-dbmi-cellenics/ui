@@ -74,7 +74,7 @@ const TrajectoryAnalysisNodeSelector = (props) => {
           message={(
             <>
               <p>
-                Select root nodes by
+                To get started, select root nodes by
                 {' '}
                 <strong>clicking on the white points</strong>
                 . You can select multiple nodes at once by drawing a selection. To do this,

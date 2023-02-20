@@ -10,16 +10,26 @@ import {
 const TrajectoryAnalysisDisplaySettings = (props) => {
   const { onChange, selectedCellSets, extraElements } = props;
 
-  const { properties } = useSelector(getCellSets());
+  const { hierarchy, properties } = useSelector(getCellSets());
 
-  const options = useMemo(() => Object.entries(properties).map(([key, cellSetObject]) => {
-    const { name, rootNode } = cellSetObject;
+  const options = useMemo(() => {
+    const result = [];
 
-    return {
-      label: rootNode ? `All ${name}` : `${name}`,
-      value: key,
-    };
-  }), [properties]);
+    if (!hierarchy.length) return result;
+
+    hierarchy.forEach(({ key: parentKey, children }) => {
+      result.push({ label: `All ${parentKey}`, value: properties[parentKey].name });
+
+      const childrenOptions = children.map(({ key }) => ({
+        label: properties[key].name,
+        value: key,
+      }));
+
+      result.push(...childrenOptions);
+    });
+
+    return result;
+  }, [hierarchy]);
 
   return (
     <Space direction='vertical' style={{ width: '100%' }}>

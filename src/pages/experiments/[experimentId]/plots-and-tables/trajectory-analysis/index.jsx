@@ -287,6 +287,7 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
                       );
                       setDisplaySettings({
                         ...displaySettings,
+                        showPseudotimeValues: false,
                         showStartingNodes: true,
                       });
                     }}
