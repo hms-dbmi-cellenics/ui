@@ -18,7 +18,7 @@ const TrajectoryAnalysisDisplaySettings = (props) => {
     if (!hierarchy.length) return result;
 
     hierarchy.forEach(({ key: parentKey, children }) => {
-      result.push({ label: `All ${parentKey}`, value: properties[parentKey].name });
+      result.push({ label: `All ${properties[parentKey].name}`, value: parentKey });
 
       const childrenOptions = children.map(({ key }) => ({
         label: properties[key].name,
@@ -47,7 +47,7 @@ const TrajectoryAnalysisDisplaySettings = (props) => {
         options={options}
         labelInValue
         filterOption={
-          (searchText, { name }) => name.toLowerCase().startsWith(searchText.toLowerCase())
+          (searchText, { label }) => label.toLowerCase().match(searchText.toLowerCase())
         }
       />
       { extraElements }
