@@ -28,6 +28,29 @@ const TrajectoryAnalysisNodeSelector = (props) => {
   );
 
   const render = () => {
+    if (!rootNodes) {
+      return (
+        <Alert
+          type='info'
+          message={(
+            <>
+              <p>
+                To get started,
+                {' '}
+                select clusters to include in the analysis under
+                {' '}
+                <strong>Select data</strong>
+                {' '}
+                and run
+                {' '}
+                <strong>Calculate root nodes</strong>
+              </p>
+            </>
+          )}
+        />
+      );
+    }
+
     if (!displaySettings.showStartingNodes) {
       return (
         <p>
@@ -44,110 +67,83 @@ const TrajectoryAnalysisNodeSelector = (props) => {
       );
     }
 
-    const renderContent = () => {
-      if (!rootNodes) {
-        return (
-          <Alert
-            type='info'
-            message={(
-              <>
-                <p>
-                  To get started,
-                  {' '}
-                  select clusters to include in the analysis under
-                  {' '}
-                  <strong>Select data</strong>
-                  {' '}
-                  and run
-                  {' '}
-                  <strong>Calculate root nodes</strong>
-                </p>
-              </>
-            )}
-          />
-        );
-      }
-
-      return (
-        <Space direction='vertical' style={{ width: '100%' }}>
-          <Alert
-            type='info'
-            message={(
-              <>
-                <p>
-                  Select root nodes by
-                  {' '}
-                  <strong>clicking on the white points</strong>
-                  . You can select multiple nodes at once by drawing a selection. To do this,
-                  {' '}
-                  <strong>
-                    hold down the Shift key, and then click and drag
-                  </strong>
-                  . Nodes inside the selection will be added to the selection.
-                </p>
-                <p>
-                  Move around the plot by panning (click and drag) and zooming (pinch and zoom/scroll).
-                </p>
-                <p>
-                  Deselect nodes by clicking on a selected node, or by clicking
-                  {' '}
-                  <strong>Clear selection</strong>
-                  .
-                </p>
-              </>
-            )}
-          />
-          {selectedNodes?.length > 0 && (
+    return (
+      <Space direction='vertical' style={{ width: '100%' }}>
+        <Alert
+          type='info'
+          message={(
             <>
-              <strong>{`${selectedNodes.length} nodes selected`}</strong>
-              <Button
-                block
-                disabled={plotLoading}
-                onClick={() => {
-                  dispatch(updatePlotConfig(plotUuid, { selectedNodes: [] }));
-                }}
-              >
-                Clear selection
-              </Button>
-              <Button
-                type='primary'
-                block
-                disabled={plotLoading}
-                onClick={async () => {
-                  // Optimistic result to prevent flickering
-                  setDisplaySettings({
-                    ...displaySettings,
-                    showPseudotimeValues: true,
-                    hasRunPseudotime: true,
-                  });
-
-                  const success = await dispatch(
-                    getTrajectoryPlotPseudoTime(
-                      selectedNodes,
-                      experimentId,
-                      plotUuid,
-                      selectedCellSets,
-                    ),
-                  );
-
-                  if (!success) {
-                    setDisplaySettings({
-                      ...displaySettings,
-                      showPseudotimeValues: false,
-                      hasRunPseudotime: false,
-                    });
-                  }
-                }}
-              >
-                {displaySettings.hasRunPseudotime ? 'Recalculate' : 'Calculate'}
-              </Button>
+              <p>
+                Select root nodes by
+                {' '}
+                <strong>clicking on the white points</strong>
+                . You can select multiple nodes at once by drawing a selection. To do this,
+                {' '}
+                <strong>
+                  hold down the Shift key, and then click and drag
+                </strong>
+                . Nodes inside the selection will be added to the selection.
+              </p>
+              <p>
+                Move around the plot by panning (click and drag) and zooming (pinch and zoom/scroll).
+              </p>
+              <p>
+                Deselect nodes by clicking on a selected node, or by clicking
+                {' '}
+                <strong>Clear selection</strong>
+                .
+              </p>
             </>
           )}
-        </Space>
-      );
-    };
+        />
+        {selectedNodes?.length > 0 && (
+        <>
+          <strong>{`${selectedNodes.length} nodes selected`}</strong>
+          <Button
+            block
+            disabled={plotLoading}
+            onClick={() => {
+              dispatch(updatePlotConfig(plotUuid, { selectedNodes: [] }));
+            }}
+          >
+            Clear selection
+          </Button>
+          <Button
+            type='primary'
+            block
+            disabled={plotLoading}
+            onClick={async () => {
+              // Optimistic result to prevent flickering
+              setDisplaySettings({
+                ...displaySettings,
+                showPseudotimeValues: true,
+                hasRunPseudotime: true,
+              });
 
-    return renderContent();
+              const success = await dispatch(
+                getTrajectoryPlotPseudoTime(
+                  selectedNodes,
+                  experimentId,
+                  plotUuid,
+                  selectedCellSets,
+                ),
+              );
+
+              if (!success) {
+                setDisplaySettings({
+                  ...displaySettings,
+                  showPseudotimeValues: false,
+                  hasRunPseudotime: false,
+                });
+              }
+            }}
+          >
+            {displaySettings.hasRunPseudotime ? 'Recalculate pseudotime' : 'Calculate pseudotime'}
+          </Button>
+        </>
+        )}
+      </Space>
+    );
   };
 
   return render();
