@@ -40,6 +40,7 @@ const plotType = plotTypes.TRAJECTORY_ANALYSIS;
 const initialDisplaySettings = {
   showStartingNodes: false,
   showPseudotimeValues: false,
+  hasRunStartingNodes: false,
   hasRunPseudotime: false,
 };
 
@@ -279,6 +280,7 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
                       showPseudotimeValues: false,
                       showStartingNodes: false,
                       hasRunPseudotime: false,
+                      hasRunStartingNodes: false,
                     });
                   }
                 }
@@ -293,6 +295,7 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
                         ...displaySettings,
                         showPseudotimeValues: false,
                         showStartingNodes: true,
+                        hasRunStartingNodes: true,
                       });
                     }}
                     disabled={!selectedCellSets?.length}
