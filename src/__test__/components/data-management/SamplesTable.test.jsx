@@ -1,30 +1,33 @@
-import React from 'react';
-import { screen, render } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-import { act } from 'react-dom/test-utils';
 import '@testing-library/jest-dom';
+
+import { experiments, samples } from '__test__/test-utils/mockData';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
-import reactSortableHoc from 'react-sortable-hoc';
-
-import _ from 'lodash';
-import { Provider } from 'react-redux';
-
-import mockAPI, { generateDefaultMockAPIResponses, promiseResponse, statusResponse } from '__test__/test-utils/mockAPI';
-import { experiments, responseData, samples } from '__test__/test-utils/mockData';
-
-import SamplesTable from 'components/data-management/SamplesTable';
-import { makeStore } from 'redux/store';
-import configureMockStore from 'redux-mock-store';
-import thunk from 'redux-thunk';
-import createTestComponentFactory from '__test__/test-utils/testComponentFactory';
-
 import { loadExperiments, setActiveExperiment } from 'redux/actions/experiments';
+import mockAPI, { generateDefaultMockAPIResponses, promiseResponse, statusResponse } from '__test__/test-utils/mockAPI';
+import { render, screen } from '@testing-library/react';
+
+import { Provider } from 'react-redux';
+import React from 'react';
+import SamplesTable from 'components/data-management/SamplesTable';
+import _ from 'lodash';
+import { act } from 'react-dom/test-utils';
+import configureMockStore from 'redux-mock-store';
+import createTestComponentFactory from '__test__/test-utils/testComponentFactory';
 import loadDeploymentInfo from 'redux/actions/networkResources/loadDeploymentInfo';
 import { loadSamples } from 'redux/actions/samples';
-
-import mockDemoExperiments from '__test__/test-utils/mockData/mockDemoExperiments.json';
 import { loadUser } from 'redux/actions/user';
+import { makeStore } from 'redux/store';
+import mockDemoExperiments from '__test__/test-utils/mockData/mockDemoExperiments.json';
+import thunk from 'redux-thunk';
+import userEvent from '@testing-library/user-event';
 
+const mockNavigateTo = jest.fn();
+
+jest.mock('utils/AppRouteProvider', () => ({
+  useAppRouter: jest.fn(() => ({
+    navigateTo: mockNavigateTo,
+  })),
+}));
 jest.mock('@aws-amplify/auth', () => ({
   currentAuthenticatedUser: jest.fn(() => Promise.resolve({
     attributes: {
@@ -59,13 +62,17 @@ const defaultProps = {
 
 const samplesTableFactory = createTestComponentFactory(SamplesTable, defaultProps);
 const renderSamplesTable = async (store) => {
+  let renderComponents;
+
   await act(async () => {
-    render(
+    renderComponents = render(
       <Provider store={store}>
         {samplesTableFactory()}
       </Provider>,
     );
   });
+
+  return renderComponents;
 };
 
 enableFetchMocks();
@@ -248,29 +255,6 @@ describe('Samples table', () => {
     });
   });
 
-  it('Reorder samples send correct request in api v2', async () => {
-    let onSortEndProp;
-    reactSortableHoc.sortableContainer.mockImplementationOnce(() => (...params) => {
-      onSortEndProp = params[0].onSortEnd;
-      return <></>;
-    });
-
-    await renderSamplesTable(storeState);
-
-    await act(async () => {
-      onSortEndProp({ oldIndex: 0, newIndex: 5 });
-    });
-
-    expect(fetchMock).toHaveBeenCalledWith(
-      `http://localhost:3000/v2/experiments/${experimentWithSamplesId}/samples/position`,
-      {
-        method: 'PUT',
-        headers: expect.anything(),
-        body: '{"oldPosition":0,"newPosition":5}',
-      },
-    );
-  });
-
   describe('Example experiments functionality', () => {
     beforeEach(async () => {
       await renderSamplesTable(storeState);
@@ -283,47 +267,7 @@ describe('Samples table', () => {
 
     it('Example experiments show up in an empty experiment', async () => {
       expect(screen.getByText(/Start uploading your samples by clicking on Add samples./i)).toBeInTheDocument();
-      expect(screen.getByText(/Don't have data\? Get started using one of our example datasets:/i)).toBeInTheDocument();
-
-      const exampleExperimentNames = _.map(mockDemoExperiments, 'name');
-
-      exampleExperimentNames.forEach((name) => {
-        expect(screen.getByText(name)).toBeDefined();
-      });
-    });
-
-    it('Cloning from example experiments works correctly', async () => {
-      // Clear mock calls so we can distinguish the new calls made from the old ones
-      fetchMock.mockClear();
-
-      const newExperimentsResponse = _.cloneDeep(responseData.experiments);
-      const noSamplesExperiment = newExperimentsResponse.find(
-        ({ id }) => id === experimentWithoutSamplesId,
-      );
-      noSamplesExperiment.samplesOrder = mockDemoExperiments[0].samplesOrder;
-      const newApiResponses = _.merge(
-        mockAPIResponse,
-        { experiments: () => promiseResponse(JSON.stringify(newExperimentsResponse)) },
-      );
-      fetchMock.mockIf(/.*/, mockAPI(newApiResponses));
-
-      await act(async () => {
-        userEvent.click(screen.getByText(mockDemoExperiments[0].name));
-      });
-
-      expect(fetchMock).toHaveBeenCalledWith(
-        `http://localhost:3000/v2/experiments/${mockDemoExperiments[0].id}/clone`,
-        expect.objectContaining({
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-        }),
-      );
-
-      // Reloads experiments
-      expect(fetchMock).toHaveBeenCalledWith(
-        'http://localhost:3000/v2/experiments',
-        { headers: {} },
-      );
+      expect(screen.getByText(/Don't have data\? Get started using one of our example datasets!/i)).toBeInTheDocument();
     });
   });
 });

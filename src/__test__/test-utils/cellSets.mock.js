@@ -21,6 +21,7 @@ const mockCellSets = {
   error: false,
   loading: false,
   hierarchy: mockCellSetsHierarchy,
+  accessible: true,
   properties: {
     'cluster-a': {
       name: 'cluster a',
@@ -85,4 +86,5 @@ const mockCellSets = {
 export {
   // eslint-disable-next-line import/prefer-default-export
   mockCellSets,
+  mockCellSetsHierarchy,
 };

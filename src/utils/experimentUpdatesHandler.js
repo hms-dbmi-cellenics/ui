@@ -1,10 +1,12 @@
-import updateCellSetsClustering from 'redux/actions/cellSets/updateCellSetsClustering';
 import { updateProcessingSettingsFromQC, loadedProcessingConfig, updatePipelineVersion } from 'redux/actions/experimentSettings';
 import { updateBackendStatus } from 'redux/actions/backendStatus';
 import { replaceLoadedConfigs, updatePlotData } from 'redux/actions/componentConfig';
-import pushNotificationMessage from 'utils/pushNotificationMessage';
+import { loadCellSets, updateCellSetsClustering } from 'redux/actions/cellSets';
+import { loadSamples } from 'redux/actions/samples';
+import { reloadExperimentInfo } from 'redux/actions/experiments';
 
-import { loadCellSets } from 'redux/actions/cellSets';
+import pushNotificationMessage from 'utils/pushNotificationMessage';
+import { cellSetsUpdatedMessages } from 'utils/constants';
 import endUserMessages from 'utils/endUserMessages';
 
 const updateTypes = {
@@ -38,7 +40,7 @@ const experimentUpdatesHandler = (dispatch) => (experimentId, update) => {
       return onPlotConfigRefresh(update, dispatch);
     }
     default: {
-      console.log(`Error, unrecognized message type ${update.type}`);
+      console.log(`Error, unrecognized message type ${update.type}`, update);
     }
   }
 };
@@ -74,6 +76,13 @@ const onGEM2SUpdate = (update, dispatch, experimentId) => {
   if (processingConfig) {
     dispatch(loadedProcessingConfig(experimentId, processingConfig, true));
   }
+
+  // If we finished subsetSeurat, then we now know which samples survived the subset
+  // So load them
+  if (update?.taskName === 'subsetSeurat') {
+    dispatch(reloadExperimentInfo());
+    dispatch(loadSamples(experimentId));
+  }
 };
 
 const onWorkResponseUpdate = (update, dispatch, experimentId) => {
@@ -81,9 +90,9 @@ const onWorkResponseUpdate = (update, dispatch, experimentId) => {
     request: { body: { name: workRequestName } },
   } = update;
 
-  if (workRequestName === 'ClusterCells') {
+  if (['ClusterCells', 'ScTypeAnnotate'].includes(workRequestName)) {
     dispatch(updateCellSetsClustering(experimentId));
-    pushNotificationMessage('success', endUserMessages.SUCCESS_CELL_SETS_RECLUSTERED);
+    pushNotificationMessage('success', cellSetsUpdatedMessages[workRequestName]);
   }
 
   if (workRequestName === 'GetExpressionCellSets') {

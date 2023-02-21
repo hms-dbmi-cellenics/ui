@@ -343,6 +343,7 @@ describe('HierarchicalTree', () => {
         treeData={treeData}
         experimentId={fake.EXPERIMENT_ID}
         onNodeUpdate={mockOnNodeUpdate}
+        shouldExpandKeys
       />,
     );
 
@@ -373,6 +374,7 @@ describe('HierarchicalTree', () => {
         treeData={treeData}
         experimentId={fake.EXPERIMENT_ID}
         onNodeUpdate={mockOnNodeUpdate}
+        shouldExpandKeys
       />,
     );
 
@@ -408,6 +410,7 @@ describe('HierarchicalTree', () => {
         treeData={treeData}
         experimentId={fake.EXPERIMENT_ID}
         onNodeDelete={mockOnNodeDelete}
+        shouldExpandKeys
       />,
     );
 
@@ -438,6 +441,7 @@ describe('HierarchicalTree', () => {
       <HierarchicalTree
         treeData={treeData}
         experimentId={fake.EXPERIMENT_ID}
+        shouldExpandKeys
       />,
     );
 

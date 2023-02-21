@@ -1,27 +1,24 @@
-import React from 'react';
-import _ from 'lodash';
-
-import { render, screen } from '@testing-library/react';
-import { act } from 'react-dom/test-utils';
-import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
-import { Provider } from 'react-redux';
-
-import { makeStore } from 'redux/store';
-
 import '__test__/test-utils/mockWorkerBackend';
-import createTestComponentFactory from '__test__/test-utils/testComponentFactory';
-import mockAPI, { generateDefaultMockAPIResponses, promiseResponse } from '__test__/test-utils/mockAPI';
+
 import {
   experiments,
   samples,
 } from '__test__/test-utils/mockData';
+import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
+import { fireEvent, render, screen } from '@testing-library/react';
+import mockAPI, { generateDefaultMockAPIResponses, promiseResponse } from '__test__/test-utils/mockAPI';
 
 import DataManagementPage from 'pages/data-management';
-import userEvent from '@testing-library/user-event';
-
-import { setActiveExperiment } from 'redux/actions/experiments';
+import { Provider } from 'react-redux';
+import React from 'react';
+import _ from 'lodash';
+import { act } from 'react-dom/test-utils';
+import createTestComponentFactory from '__test__/test-utils/testComponentFactory';
 import loadDeploymentInfo from 'redux/actions/networkResources/loadDeploymentInfo';
 import { loadUser } from 'redux/actions/user';
+import { makeStore } from 'redux/store';
+import { setActiveExperiment } from 'redux/actions/experiments';
+import userEvent from '@testing-library/user-event';
 
 jest.mock('utils/downloadFromUrl');
 jest.mock('react-resize-detector', () => (props) => props.children({ width: 100, height: 100 }));
@@ -120,6 +117,7 @@ describe('Data Management page', () => {
     await act(async () => {
       userEvent.click(newProjectButton);
     });
+    fireEvent.click(screen.getByText('Upload Project'));
 
     expect(screen.getByLabelText(/new project name/i)).toBeInTheDocument();
 
@@ -144,7 +142,7 @@ describe('Data Management page', () => {
 
     expect(screen.getAllByText(/Project Details/i).length).toBeGreaterThan(0);
 
-    const addMetadataButton = screen.getByText(/Add Metadata/i).closest('button');
+    const addMetadataButton = screen.getByText(/Add metadata/i).closest('button');
 
     expect(addMetadataButton).toBeInTheDocument();
 

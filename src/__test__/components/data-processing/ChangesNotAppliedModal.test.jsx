@@ -37,7 +37,7 @@ jest.mock('utils/AppRouteProvider', () => ({
 getBackendStatus.mockImplementation(() => () => ({
   status: {
     gem2s: {
-      paramsHash: 'mock-params-hash',
+      shouldRerun: true,
     },
   },
 }));

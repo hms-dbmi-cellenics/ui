@@ -18,10 +18,9 @@ import initialSamplesState, { sampleTemplate } from 'redux/reducers/samples/init
 import { initialExperimentBackendStatus } from 'redux/reducers/backendStatus/initialState';
 
 import UploadStatus from 'utils/upload/UploadStatus';
-import generateGem2sParamsHash from 'utils/data-management/generateGem2sParamsHash';
+import calculateGem2sRerunStatus from 'utils/data-management/calculateGem2sRerunStatus';
 import '__test__/test-utils/setupTests';
 
-jest.mock('utils/data-management/generateGem2sParamsHash');
 jest.mock('redux/actions/experimentSettings/updateExperimentInfo', () => jest.fn().mockReturnValue({ type: 'UPDATE_EXPERIMENT_INFO' }));
 jest.mock('redux/actions/pipeline', () => ({
   runGem2s: jest.fn().mockReturnValue({ type: 'RUN_GEM2S' }),
@@ -34,6 +33,8 @@ jest.mock('utils/AppRouteProvider', () => ({
     navigateTo: mockNavigateTo,
   })),
 }));
+
+jest.mock('utils/data-management/calculateGem2sRerunStatus');
 
 const mockStore = configureMockStore([thunk]);
 
@@ -69,9 +70,11 @@ const noDataState = {
       ...initialExperimentBackendStatus,
       status: {
         gem2s: {
+          shouldRerun: true,
           status: PipelineStatus.NOT_CREATED,
         },
         pipeline: {
+          shouldRerun: null,
           status: PipelineStatus.NOT_CREATED,
         },
       },
@@ -126,10 +129,11 @@ const withDataState = {
       ...initialExperimentBackendStatus,
       status: {
         gem2s: {
-          paramsHash: 'old-params-hash',
+          shouldRerun: true,
           status: PipelineStatus.SUCCEEDED,
         },
         pipeline: {
+          shouldRerun: null,
           status: PipelineStatus.SUCCEEDED,
         },
       },
@@ -137,12 +141,17 @@ const withDataState = {
   },
 };
 
+const rerunState = { rerun: true, reasons: ['the project samples/metadata have been modified'] };
+const notRerunState = { rerun: false, reasons: [] };
+
 describe('LaunchAnalysisButton', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
   it('Process project button is disabled if not all sample metadata are inserted', async () => {
+    calculateGem2sRerunStatus.mockReturnValue(rerunState);
+
     const notAllMetadataInserted = {
       ...withDataState,
       samples: {
@@ -163,11 +172,12 @@ describe('LaunchAnalysisButton', () => {
     });
 
     const button = screen.getByText('Process project').closest('button');
-
     expect(button).toBeDisabled();
   });
 
   it('Process project button is disabled if there is no data', async () => {
+    calculateGem2sRerunStatus.mockReturnValue(rerunState);
+
     await act(async () => {
       render(
         <Provider store={mockStore(noDataState)}>
@@ -182,6 +192,8 @@ describe('LaunchAnalysisButton', () => {
   });
 
   it('Process project button is disabled if not all data are uploaded', async () => {
+    calculateGem2sRerunStatus.mockReturnValue(rerunState);
+
     const notAllDataUploaded = {
       ...withDataState,
       samples: {
@@ -210,6 +222,8 @@ describe('LaunchAnalysisButton', () => {
   });
 
   it('Process project button is enabled if there is data and all metadata for all samples are uplaoded', async () => {
+    calculateGem2sRerunStatus.mockReturnValue(rerunState);
+
     await act(async () => {
       render(
         <Provider store={mockStore(withDataState)}>
@@ -223,8 +237,8 @@ describe('LaunchAnalysisButton', () => {
     expect(button).not.toBeDisabled();
   });
 
-  it('Shows Go to Data Processing if there are no changes to the experiment (same hash)', async () => {
-    generateGem2sParamsHash.mockReturnValueOnce('old-params-hash');
+  it('Shows Go to Data Processing if there are no changes to the experiment', async () => {
+    calculateGem2sRerunStatus.mockReturnValue(notRerunState);
 
     await act(async () => {
       render(
@@ -239,8 +253,8 @@ describe('LaunchAnalysisButton', () => {
     });
   });
 
-  it('Shows Process project if there are changes to the experiment (different hash)', async () => {
-    generateGem2sParamsHash.mockReturnValueOnce('new-params-hash');
+  it('Shows Process project if there are changes to the experiment', async () => {
+    calculateGem2sRerunStatus.mockReturnValue(rerunState);
 
     await act(async () => {
       render(
@@ -256,7 +270,7 @@ describe('LaunchAnalysisButton', () => {
   });
 
   it('Dispatches request for GEM2S if there are changes to the experiment', async () => {
-    generateGem2sParamsHash.mockReturnValueOnce('new-params-hash');
+    calculateGem2sRerunStatus.mockReturnValue(rerunState);
 
     await act(async () => {
       render(
@@ -280,7 +294,7 @@ describe('LaunchAnalysisButton', () => {
   });
 
   it('Does not dispatch request for GEM2S if there are no changes to the experiment', async () => {
-    generateGem2sParamsHash.mockReturnValueOnce('old-params-hash');
+    calculateGem2sRerunStatus.mockReturnValue(notRerunState);
 
     await act(async () => {
       render(
@@ -295,7 +309,7 @@ describe('LaunchAnalysisButton', () => {
   });
 
   it('Going to Data Processing should dispatch the correct actions', async () => {
-    generateGem2sParamsHash.mockReturnValueOnce('old-params-hash');
+    calculateGem2sRerunStatus.mockReturnValue(notRerunState);
 
     await act(async () => {
       render(

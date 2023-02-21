@@ -6,17 +6,17 @@ import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 
 import {
-  Alert, Button, Empty, Skeleton, Space, Tabs, Typography,
+  Alert, Button, Skeleton, Space, Tabs, Typography,
 } from 'antd';
 import {
   BlockOutlined, MergeCellsOutlined, SplitCellsOutlined,
 } from '@ant-design/icons';
 
-// import SubsetCellSetsOperation from
-// 'components/data-exploration/cell-sets-tool/SubsetCellSetsOperation';
+import SubsetCellSetsOperation from 'components/data-exploration/cell-sets-tool/SubsetCellSetsOperation';
 import CellSetOperation from 'components/data-exploration/cell-sets-tool/CellSetOperation';
 import PlatformError from 'components/PlatformError';
 import HierarchicalTree from 'components/data-exploration/hierarchical-tree/HierarchicalTree';
+import AnnotateClustersTool from 'components/data-exploration/cell-sets-tool/AnnotateClustersTool';
 
 import {
   createCellSet,
@@ -27,9 +27,10 @@ import {
   updateCellSetProperty,
   updateCellSetSelected,
 } from 'redux/actions/cellSets';
-// import { runSubsetExperiment } from 'redux/actions/pipeline';
+import { runSubsetExperiment } from 'redux/actions/pipeline';
 import { getCellSets } from 'redux/selectors';
-
+import { useAppRouter } from 'utils/AppRouteProvider';
+import { modules } from 'utils/constants';
 import { composeTree } from 'utils/cellSets';
 import {
   complement, intersection, union, unionByCellClass,
@@ -37,16 +38,15 @@ import {
 
 const { Text } = Typography;
 
-const { TabPane } = Tabs;
-
 const CellSetsTool = (props) => {
   const { experimentId, width, height } = props;
 
   const dispatch = useDispatch();
+  const { navigateTo } = useAppRouter();
   const cellSets = useSelector(getCellSets());
 
   const {
-    accessible, error, hierarchy, properties, hidden, selected: allSelected,
+    accessible, error, hierarchy, properties, hidden, selected: selectedCellSetKeys,
   } = cellSets;
 
   const filteredCellIds = useRef(new Set());
@@ -65,20 +65,18 @@ const CellSetsTool = (props) => {
     dispatch(loadCellSets(experimentId));
   }, []);
 
-  const [cellSetTreeData, setCellSetTreeData] = useState(null);
-  const [metadataTreeData, setMetadataTreeData] = useState(null);
+  const [treeData, setTreeData] = useState(null);
 
   useEffect(() => {
-    setCellSetTreeData(composeTree(hierarchy, properties, 'cellSets'));
-    setMetadataTreeData(composeTree(hierarchy, properties, 'metadataCategorical'));
+    setTreeData(composeTree(hierarchy, properties));
   }, [hierarchy, properties]);
 
-  const [numSelected, setNumSelected] = useState(0);
+  const [numSelectedCellSetKeys, setNumSelectedCellSetKeys] = useState(0);
 
   useEffect(() => {
     const louvainClusters = hierarchy.find(({ key }) => key === 'louvain')?.children;
     const customClusters = hierarchy.find(({ key }) => key === 'scratchpad')?.children;
-    const treeClusters = cellSetTreeData?.find(({ key }) => key === 'scratchpad')?.children;
+    const treeClusters = treeData?.find(({ key }) => key === 'scratchpad')?.children;
 
     if (!customClusters || !treeClusters) return;
 
@@ -90,14 +88,13 @@ const CellSetsTool = (props) => {
   }, [hierarchy]);
 
   useEffect(() => {
-    const selected = allSelected[activeTab];
-    const selectedCells = union(selected, properties);
+    const selectedCells = union(selectedCellSetKeys, properties);
 
     const numSelectedFiltered = new Set([...selectedCells]
       .filter((cellIndex) => filteredCellIds.current.has(cellIndex)));
 
-    setNumSelected(numSelectedFiltered.size);
-  }, [activeTab, allSelected, properties]);
+    setNumSelectedCellSetKeys(numSelectedFiltered.size);
+  }, [selectedCellSetKeys, properties]);
 
   const onNodeUpdate = useCallback((key, data) => {
     dispatch(updateCellSetProperty(experimentId, key, data));
@@ -112,8 +109,8 @@ const CellSetsTool = (props) => {
   }, [experimentId]);
 
   const onCheck = useCallback((keys) => {
-    dispatch(updateCellSetSelected(keys, activeTab));
-  }, [experimentId, activeTab]);
+    dispatch(updateCellSetSelected(keys));
+  }, [experimentId]);
 
   /**
    * Renders the content inside the tool. Can be a skeleton during loading
@@ -121,20 +118,22 @@ const CellSetsTool = (props) => {
    */
   const renderContent = () => {
     let operations = null;
-    const selected = allSelected[activeTab];
 
-    if (numSelected) {
+    if (numSelectedCellSetKeys > 0) {
       operations = (
-        <Space style={{ marginLeft: '0.5em' }}>
-          {/* <SubsetCellSetsOperation
-            onCreate={(name) => {
-              dispatch(runSubsetExperiment(experimentId, name, selected));
+        <Space style={{ marginBottom: '10px' }}>
+          <SubsetCellSetsOperation
+            onCreate={async (name) => {
+              const newExperimentId = await dispatch(
+                runSubsetExperiment(experimentId, name, selectedCellSetKeys),
+              );
+              navigateTo(modules.DATA_PROCESSING, { experimentId: newExperimentId }, false, true);
             }}
-          /> */}
+          />
           <CellSetOperation
             icon={<MergeCellsOutlined />}
             onCreate={(name, color) => {
-              dispatch(createCellSet(experimentId, name, color, union(selected, properties)));
+              dispatch(createCellSet(experimentId, name, color, union(selectedCellSetKeys, properties)));
             }}
             ariaLabel='Union of selected'
             helpTitle='Create new cell set by combining selected sets in the current tab.'
@@ -143,7 +142,7 @@ const CellSetsTool = (props) => {
             icon={<BlockOutlined />}
             onCreate={(name, color) => {
               dispatch(
-                createCellSet(experimentId, name, color, intersection(selected, properties)),
+                createCellSet(experimentId, name, color, intersection(selectedCellSetKeys, properties)),
               );
             }}
             ariaLabel='Intersection of selected'
@@ -152,72 +151,49 @@ const CellSetsTool = (props) => {
           <CellSetOperation
             icon={<SplitCellsOutlined />}
             onCreate={(name, color) => {
-              dispatch(createCellSet(experimentId, name, color, complement(selected, properties)));
+              dispatch(createCellSet(experimentId, name, color, complement(selectedCellSetKeys, properties)));
             }}
             ariaLabel='Complement of selected'
             helpTitle='Create new cell set from the complement of the selected sets in the current tab.'
           />
           <Text type='primary' id='selectedCellSets'>
-            {`${numSelected} cell${numSelected === 1 ? '' : 's'} selected`}
-            {activeTab === 'metadataCategorical'}
+            {`${numSelectedCellSetKeys} cell${numSelectedCellSetKeys === 1 ? '' : 's'} selected`}
           </Text>
         </Space>
       );
     }
 
     return (
-      <>
+      <Space direction='vertical'>
         <Tabs
           size='small'
           activeKey={activeTab}
           onChange={(key) => setActiveTab(key)}
-          tabBarExtraContent={operations}
         >
-          <TabPane tab='Cell sets' key='cellSets'>
+          <Tabs.TabPane tab='Cell sets' key='cellSets'>
+            {operations}
             <HierarchicalTree
               experimentId={experimentId}
-              treeData={cellSetTreeData}
+              treeData={treeData}
               store={FOCUS_TYPE}
               onCheck={onCheck}
               onNodeUpdate={onNodeUpdate}
               onNodeDelete={onNodeDelete}
               onCellSetReorder={onCellSetReorder}
               showHideButton
-              checkedKeys={selected}
+              checkedKeys={selectedCellSetKeys}
             />
-          </TabPane>
-          <TabPane tab='Metadata' key='metadataCategorical'>
-            {metadataTreeData?.length > 0 ? (
-              <HierarchicalTree
-                experimentId={experimentId}
-                treeData={metadataTreeData}
-                store={FOCUS_TYPE}
-                onCheck={onCheck}
-                onNodeUpdate={onNodeUpdate}
-                onNodeDelete={onNodeDelete}
-                onCellSetReorder={onCellSetReorder}
-                showHideButton
-                checkedKeys={selected}
-              />
-            )
-              : (
-                <Empty description={(
-                  <>
-                    <Text type='primary'>You don&apos;t have any metadata added yet.</Text>
-                    <Text type='secondary'>Metadata is an experimental feature for certain pre-processed or multi-sample data sets.</Text>
-                  </>
-                )}
-                />
-              )}
-          </TabPane>
-
+          </Tabs.TabPane>
+          <Tabs.TabPane tab='Annotate clusters' key='annotateClusters' disabled>
+            <AnnotateClustersTool experimentId={experimentId} />
+          </Tabs.TabPane>
         </Tabs>
-      </>
+      </Space>
     );
   };
 
   if (!accessible) return <Skeleton active={false} title={false} />;
-  if (!cellSetTreeData || !metadataTreeData) return <Skeleton active title={false} avatar />;
+  if (!treeData) return <Skeleton active title={false} avatar />;
 
   if (error) {
     return (

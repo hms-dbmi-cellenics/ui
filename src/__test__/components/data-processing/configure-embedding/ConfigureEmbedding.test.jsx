@@ -1,106 +1,134 @@
-import ConfigureEmbedding from 'components/data-processing/ConfigureEmbedding/ConfigureEmbedding';
 import React from 'react';
 import { Provider } from 'react-redux';
-import { initialPlotConfigStates } from 'redux/reducers/componentConfig/initialState';
-import { initialEmbeddingState } from 'redux/reducers/embeddings/initialState';
-import configureStore from 'redux-mock-store';
-import thunk from 'redux-thunk';
-import { mockCellSets } from '__test__/test-utils/cellSets.mock';
-import { generateDataProcessingPlotUuid } from 'utils/generateCustomPlotUuid';
-import { screen, render } from '@testing-library/react';
-import generateExperimentSettingsMock from '__test__/test-utils/experimentSettings.mock';
+import '__test__/test-utils/setupTests';
 import userEvent from '@testing-library/user-event';
+import { screen, render, waitFor } from '@testing-library/react';
+import _ from 'lodash';
+import fake from '__test__/test-utils/constants';
+import mockAPI, {
+  statusResponse,
+  promiseResponse,
+  generateDefaultMockAPIResponses,
+} from '__test__/test-utils/mockAPI';
+import cellSetsData from '__test__/data/cell_sets.json';
+import { MAX_LEGEND_ITEMS } from 'components/plots/helpers/PlotLegendAlert';
+import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
+import { makeStore } from 'redux/store';
+import { seekFromS3 } from 'utils/work/seekWorkResponse';
+import mockEmbedding from '__test__/data/embedding.json';
 
-const mockStore = configureStore([thunk]);
+import { generateDataProcessingPlotUuid } from 'utils/generateCustomPlotUuid';
+import { loadProcessingSettings } from 'redux/actions/experimentSettings';
+import { loadBackendStatus } from 'redux/actions/backendStatus';
+import { loadCellSets } from 'redux/actions/cellSets';
+
+import ConfigureEmbedding from 'components/data-processing/ConfigureEmbedding/ConfigureEmbedding';
+
 const filterName = 'configureEmbedding';
-const initialExperimentState = generateExperimentSettingsMock([]);
 
-const {
-  embeddingPreviewBySample, embeddingPreviewByCellSets,
-  embeddingPreviewMitochondrialContent, embeddingPreviewDoubletScore,
-} = initialPlotConfigStates;
+const embeddingPreviewByCellSetsPlotUuid = generateDataProcessingPlotUuid(null, filterName, 0);
+const embeddingPreviewBySamplePlotUuid = generateDataProcessingPlotUuid(null, filterName, 1);
+const embeddingPreviewMitoContentPlotUuid = generateDataProcessingPlotUuid(null, filterName, 2);
+const embeddingPreviewDoubletScorePlotUuid = generateDataProcessingPlotUuid(null, filterName, 3);
+const embeddingPreviewNumOfGenesPlotUuid = generateDataProcessingPlotUuid(null, filterName, 4);
+const embeddingPreviewNumOfUmisPlotUuid = generateDataProcessingPlotUuid(null, filterName, 5);
 
-const mockedStore = mockStore({
-  embeddings: {
-    ...initialEmbeddingState,
-    umap: {
-      data: [
-        [1, 2],
-        [3, 4],
-        [5, 6],
-        [7, 8],
-        [9, 10],
-        [11, 12],
-      ],
-      loading: false,
-      error: false,
-    },
-  },
-  cellSets: mockCellSets,
-  cellMeta: {
-    doubletScores: {
-      loading: false,
-      error: false,
-      data: [1, 2, 3, 4, 5],
-    },
-    mitochondrialContent: {
-      loading: false,
-      error: false,
-      data: [6, 7, 8, 9, 10],
-    },
-    numOfGenes: {
-      loading: false,
-      error: false,
-      data: [6, 7, 8, 9, 10],
-    },
-    numOfUmis: {
-      loading: false,
-      error: false,
-      data: [6, 7, 8, 9, 10],
-    },
-  },
-  experimentSettings: {
-    ...initialExperimentState,
-  },
-  componentConfig: {
-    [generateDataProcessingPlotUuid(null, filterName, 0)]: {
-      config: embeddingPreviewBySample,
-      plotData: [],
-    },
-    [generateDataProcessingPlotUuid(null, filterName, 1)]: {
-      config: embeddingPreviewByCellSets,
-      plotData: [],
-    },
-    [generateDataProcessingPlotUuid(null, filterName, 2)]: {
-      config: embeddingPreviewMitochondrialContent,
-      plotData: [],
-    },
-    [generateDataProcessingPlotUuid(null, filterName, 3)]: {
-      config: embeddingPreviewDoubletScore,
-      plotData: [],
-    },
-  },
+enableFetchMocks();
+
+jest.mock('object-hash', () => {
+  const objectHash = jest.requireActual('object-hash');
+  const mockWorkResultETag = jest.requireActual('__test__/test-utils/mockWorkResultETag').default;
+
+  const mockWorkRequestETag = (ETagParams) => `${ETagParams.body.name}`;
+
+  return mockWorkResultETag(objectHash, mockWorkRequestETag);
 });
 
+jest.mock('utils/work/seekWorkResponse', () => ({
+  __esModule: true,
+  dispatchWorkRequest: jest.fn(() => true),
+  seekFromS3: jest.fn(),
+}));
+
+const mockWorkerResponses = {
+  GetEmbedding: mockEmbedding,
+  GetMitochondrialContent: [1, 2, 3, 4, 5],
+  GetDoubletScore: [1, 2, 3, 4, 5],
+  GetNGenes: [1, 2, 3, 4, 5],
+  GetNUmis: [1, 2, 3, 4, 5],
+};
+
+const renderConfigureEmbedding = async (store) => {
+  await render(
+    <Provider store={store}>
+      <ConfigureEmbedding
+        experimentId={fake.EXPERIMENT_ID}
+        key='configureEmbedding'
+        onConfigChange={jest.fn}
+      />
+    </Provider>,
+  );
+};
+
+const customAPIResponses = {
+  [`/plots/${embeddingPreviewByCellSetsPlotUuid}`]: () => statusResponse(404, 'Not Found'),
+  [`/plots/${embeddingPreviewBySamplePlotUuid}`]: () => statusResponse(404, 'Not Found'),
+  [`/plots/${embeddingPreviewMitoContentPlotUuid}`]: () => statusResponse(404, 'Not Found'),
+  [`/plots/${embeddingPreviewDoubletScorePlotUuid}`]: () => statusResponse(404, 'Not Found'),
+  [`/plots/${embeddingPreviewNumOfGenesPlotUuid}`]: () => statusResponse(404, 'Not Found'),
+  [`/plots/${embeddingPreviewNumOfUmisPlotUuid}`]: () => statusResponse(404, 'Not Found'),
+  [`experiments/${fake.EXPERIMENT_ID}/backendStatus`]: () => promiseResponse(
+    JSON.stringify({
+      pipeline: { status: 'SUCCEEDED', completedSteps: ['ConfigureEmbedding'] },
+      worker: { status: 'Running', started: true, ready: true },
+    }),
+  ),
+};
+
+let storeState = null;
+
+const mockApiResponses = _.merge(
+  generateDefaultMockAPIResponses(fake.EXPERIMENT_ID), customAPIResponses,
+);
+
 describe('Configure Embedding', () => {
-  const renderConfigureEmbedding = async () => {
-    const store = mockedStore;
-    await render(
-      <Provider store={store}>
-        <ConfigureEmbedding
-          experimentId='1234'
-          key='configureEmbedding'
-          onConfigChange={jest.fn}
-        />
-      </Provider>,
-    );
-  };
+  beforeEach(async () => {
+    jest.clearAllMocks();
+    fetchMock.resetMocks();
+    fetchMock.doMock();
+
+    seekFromS3
+      .mockReset()
+      // Call for GetEmbedding
+      .mockImplementationOnce(() => null)
+      .mockImplementationOnce((Etag) => mockWorkerResponses[Etag])
+      // Call for GetMitochondrialContent
+      .mockImplementationOnce(() => null)
+      .mockImplementationOnce((Etag) => mockWorkerResponses[Etag])
+      // Call for GetDoubletScore
+      .mockImplementationOnce(() => null)
+      .mockImplementationOnce((Etag) => mockWorkerResponses[Etag])
+      // Call for GetNGenes
+      .mockImplementationOnce(() => null)
+      .mockImplementationOnce((Etag) => mockWorkerResponses[Etag])
+      // Call for GetNUmis
+      .mockImplementationOnce(() => null)
+      .mockImplementationOnce((Etag) => mockWorkerResponses[Etag]);
+
+    fetchMock.mockIf(/.*/, mockAPI(mockApiResponses));
+    storeState = makeStore();
+    await storeState.dispatch(loadBackendStatus(fake.EXPERIMENT_ID));
+    await storeState.dispatch(loadProcessingSettings(fake.EXPERIMENT_ID));
+    await storeState.dispatch(loadCellSets(fake.EXPERIMENT_ID));
+  });
+
   it('renders correctly ', async () => {
-    await renderConfigureEmbedding();
+    await renderConfigureEmbedding(storeState);
 
     // one fullsize plot rendered
-    const plots = screen.getAllByRole('graphics-document');
-    expect(plots.length).toEqual(1);
+    await waitFor(() => {
+      expect(screen.getByRole('graphics-document')).toBeInTheDocument();
+    });
 
     // styling and settings options available
     expect(screen.getByText('Plot view')).toBeDefined();
@@ -114,7 +142,7 @@ describe('Configure Embedding', () => {
   });
 
   it('allows selecting other plots', async () => {
-    await renderConfigureEmbedding();
+    await renderConfigureEmbedding(storeState);
 
     // can select other plots
     ['Samples', 'Mitochondrial fraction reads', 'Doublet score', 'Cell sets', 'Number of genes', 'Number of UMIs'].forEach((plot) => {
@@ -124,5 +152,41 @@ describe('Configure Embedding', () => {
       // * the plot view selector
       expect(screen.getAllByText(plot).length).toEqual(2);
     });
+  });
+
+  it('Renders a plot legend alert if there are more than MAX_LEGEND_ITEMS number of cell sets', async () => {
+    const cellSetTemplate = (clusterIdx) => ({
+      key: `louvain-${clusterIdx}`,
+      name: `Cluster ${clusterIdx}`,
+      rootNode: false,
+      type: 'cellSets',
+      color: '#000000',
+      cellIds: [clusterIdx],
+    });
+
+    const manyCellSets = [...Array(MAX_LEGEND_ITEMS + 1)].map((c, idx) => cellSetTemplate(idx));
+
+    // Add to samples
+    cellSetsData.cellSets[0].children = manyCellSets;
+
+    const manyCellSetsResponse = {
+      ...generateDefaultMockAPIResponses(fake.EXPERIMENT_ID),
+      ...customAPIResponses,
+      [`experiments/${fake.EXPERIMENT_ID}/cellSets`]: () => promiseResponse(JSON.stringify(cellSetsData)),
+    };
+
+    storeState.dispatch(loadCellSets(fake.EXPERIMENT_ID, true));
+
+    fetchMock.mockIf(/.*/, mockAPI(manyCellSetsResponse));
+
+    await renderConfigureEmbedding(storeState);
+
+    // Vega should appear
+    await waitFor(() => {
+      expect(screen.getByRole('graphics-document')).toBeInTheDocument();
+    });
+
+    // The legend alert plot text should appear
+    expect(screen.getByText(/We have hidden the plot legend, because it is too large and it interferes with the display of the plot/)).toBeInTheDocument();
   });
 });

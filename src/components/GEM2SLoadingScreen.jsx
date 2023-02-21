@@ -22,14 +22,14 @@ const gem2sStepsInfo = [
 
 const GEM2SLoadingScreen = (props) => {
   const {
-    gem2sStatus, paramsHash, completedSteps, experimentId,
+    gem2sStatus, completedSteps, experimentId, experimentName,
   } = props;
 
   const dispatch = useDispatch();
 
   const dataManagementPath = '/data-management';
   const relaunchExperiment = async () => {
-    await dispatch(runGem2s(experimentId, paramsHash));
+    await dispatch(runGem2s(experimentId));
   };
 
   const texts = {
@@ -56,6 +56,14 @@ const GEM2SLoadingScreen = (props) => {
       image: '/undraw_Abstract_re_l9xy.svg',
       alt: 'A woman confusedly staring at an abstract drawing.',
       showProgress: false,
+    },
+    subsetting: {
+      status: 'running',
+      showProgress: true,
+      title: ' ',
+      subTitle: ' ',
+      image: '/undraw_Dev_focus_re_6iwt.svg',
+      alt: 'A woman working in front of a computer.',
     },
   };
 
@@ -101,8 +109,21 @@ const GEM2SLoadingScreen = (props) => {
               </Space>
             </div>
             <div>
-              <Title level={3}>We&apos;re launching your analysis...</Title>
-              <Text type='secondary'>You can wait or leave this screen and check again later</Text>
+              {gem2sStatus === 'subsetting' && (
+                <Title level={3}>
+                  Subsetting cell sets into
+                  <br />
+                  {experimentName}
+                </Title>
+              )}
+              {gem2sStatus === 'running' && (<Title level={3}>We&apos;re launching your analysis...</Title>)}
+              <Text type='secondary'>You can wait or leave this screen and check again later.</Text>
+              {gem2sStatus === 'subsetting' && (
+                <Text type='secondary'>
+                  <br />
+                  Your new project containing only the selected cell sets will be available in the Data Management module
+                </Text>
+              )}
             </div>
             <NotifyByEmail experimentId={experimentId} />
           </Space>
@@ -133,16 +154,16 @@ const GEM2SLoadingScreen = (props) => {
 };
 
 GEM2SLoadingScreen.propTypes = {
-  gem2sStatus: PropTypes.oneOf(['error', 'running', 'toBeRun']).isRequired,
+  gem2sStatus: PropTypes.oneOf(['error', 'running', 'toBeRun', 'subsetting']).isRequired,
   completedSteps: PropTypes.array,
   experimentId: PropTypes.string,
-  paramsHash: PropTypes.string,
+  experimentName: PropTypes.string,
 };
 
 GEM2SLoadingScreen.defaultProps = {
   completedSteps: [],
   experimentId: null,
-  paramsHash: null,
+  experimentName: null,
 };
 
 export default GEM2SLoadingScreen;

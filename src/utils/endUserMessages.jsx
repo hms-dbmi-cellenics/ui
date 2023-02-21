@@ -1,3 +1,4 @@
+/* eslint-disable react/react-in-jsx-scope */
 export default {
   ACCOUNT_DETAILS_UPDATED: 'Account details updated successfully.',
   CONNECTION_ERROR: 'Could not connect to the server. Check your internet connection and refresh the page.',
@@ -26,6 +27,8 @@ export default {
   ERROR_FETCH_MARKER_GENES: 'We couldn\'t get the marker genes',
   ERROR_FILE_CATEGORY: 'The selected file name does not match the expected category.',
   ERROR_FILES_FOLDER: 'Only files contained in a folder are accepted',
+  ERROR_METADATA_MULTIPLE_FILES: 'You need to upload a single file in .tsv format',
+  ERROR_METADATA_WRONG_FORMAT: 'The file does not seem to be in the correct tsv key-value format.',
   ERROR_NOT_SIGNED_IN: 'You need to sign in first. Click Sign in on the top right to begin.',
   ERROR_NO_PERMISSIONS: 'You do not have permissions to perform that action.',
   ERROR_LAUNCH_PATHWAY: 'We couldn\'t launch pathway analysis',
@@ -41,8 +44,16 @@ export default {
   REFERRAL_ERROR: 'We couldn\'t process your referral. Please try submitting again.',
   REFERRAL_EMAIL_ERROR: 'The error you submitted was invalid. Please check again.',
   REFERRAL_SUCCESSFUL: 'Your invitation has been successfully sent. Thank you!',
-  SUCCESS_NEW_CLUSTER_CREATED: 'Created a new cluster. Check the `Cell sets and Metadata` window.',
+  SUCCESS_NEW_CLUSTER_CREATED: (
+    <>
+      Created a new cluster. Check &nbsp;
+      <b>Custom cell sets</b>
+      &nbsp; in the &nbsp;
+      <b>Cell sets and Metadata </b>
+      tile.
+    </>),
   SUCCESS_CELL_SETS_RECLUSTERED: 'Cell sets have been reclustered. Your cell sets have changed.',
+  SUCCESS_CELL_SETS_ANNOTATED: 'Cell sets have been annotated. Your cell sets have changed.',
   NO_CLUSTERS: 'No custom cell sets available, to create more go to data-exploration.',
   WORK_REQUEST_TIMED_OUT_RETRY: 'The task is taking longer than expected, please retry.',
   SAVING_SAMPLE: 'Saving sample...',

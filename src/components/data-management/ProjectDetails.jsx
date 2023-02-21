@@ -4,7 +4,7 @@ import React, { useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import {
-  Space, Typography, Button,
+  Space, Typography, Button, Dropdown, Menu,
 } from 'antd';
 import {
   cloneExperiment, updateExperiment, loadExperiments, setActiveExperiment,
@@ -16,6 +16,7 @@ import { layout } from 'utils/constants';
 
 import SamplesTable from 'components/data-management/SamplesTable';
 import ProjectMenu from 'components/data-management/ProjectMenu';
+import AddMetadataButton from './AddMetadataButton';
 
 const { Text, Title } = Typography;
 
@@ -30,6 +31,7 @@ const ProjectDetails = ({ width, height }) => {
   const { activeExperimentId } = useSelector((state) => state.experiments.meta);
   const activeExperiment = useSelector((state) => state.experiments[activeExperimentId]);
   const samplesTableRef = useRef();
+  const parentExperimentId = activeExperiment?.parentExperimentId;
 
   const clone = async () => {
     const newExperimentId = await dispatch(cloneExperiment(activeExperimentId, `Copy of ${activeExperiment.name}`));
@@ -54,15 +56,13 @@ const ProjectDetails = ({ width, height }) => {
           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
             <Title level={3}>{activeExperiment.name}</Title>
             <Space>
-              <Button onClick={() => clone()}>
+              <Button
+                onClick={clone}
+                disabled={parentExperimentId}
+              >
                 Copy
               </Button>
-              <Button
-                disabled={activeExperiment.sampleIds?.length === 0}
-                onClick={() => samplesTableRef.current.createMetadataColumn()}
-              >
-                Add metadata
-              </Button>
+              <AddMetadataButton samplesTableRef={samplesTableRef} />
               <ProjectMenu />
             </Space>
           </div>

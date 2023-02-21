@@ -13,6 +13,7 @@ import handleError from 'utils/http/handleError';
 import endUserMessages from 'utils/endUserMessages';
 import { metadataNameToKey } from 'utils/data-management/metadataUtils';
 import { METADATA_DEFAULT_VALUE } from 'redux/reducers/experiments/initialState';
+import { loadBackendStatus } from '../backendStatus';
 
 const createMetadataTrack = (
   name, experimentId,
@@ -56,6 +57,8 @@ const createMetadataTrack = (
         },
       },
     })));
+
+    await dispatch(loadBackendStatus(experimentId));
   } catch (e) {
     handleError(e, endUserMessages.ERROR_SAVING);
   }

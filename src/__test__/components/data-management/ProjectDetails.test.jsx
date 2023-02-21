@@ -30,6 +30,7 @@ import UploadStatus from 'utils/upload/UploadStatus';
 import ProjectDetails from 'components/data-management/ProjectDetails';
 
 import '__test__/test-utils/setupTests';
+import createTestComponentFactory from '__test__/test-utils/testComponentFactory';
 
 const mockNavigateTo = jest.fn();
 
@@ -137,7 +138,7 @@ const withDataState = {
       ...initialExperimentBackendStatus,
       status: {
         gem2s: {
-          paramsHash: 'old-params-hash',
+          shouldRerun: true,
           status: PipelineStatus.SUCCEEDED,
         },
         pipeline: {
@@ -148,12 +149,15 @@ const withDataState = {
   },
 };
 
+const projectDetailsFactory = createTestComponentFactory(ProjectDetails, { width, height });
+
 describe('ProjectDetails', () => {
   let mockedCreateMetadataTrack;
   let mockedUpdateValueInMetadataTrack;
   let mockedCloneExperiment;
   let mockedLoadExperiments;
   let mockedSetActiveExperiment;
+
   beforeEach(() => {
     jest.clearAllMocks();
     mockedCreateMetadataTrack = jest.spyOn(createMetadataTrack, 'default');
@@ -163,10 +167,22 @@ describe('ProjectDetails', () => {
     mockedSetActiveExperiment = jest.spyOn(setActiveExperiment, 'default');
   });
 
+  const getMenuItems = async () => {
+    const menu = await screen.getByText('Add metadata');
+    expect(menu).not.toBeDisabled();
+
+    await act(async () => {
+      userEvent.click(menu);
+    });
+
+    const options = await screen.getAllByRole('menuitem');
+    return options;
+  };
+
   it('Has a title, project ID and description', () => {
     render(
       <Provider store={mockStore(noDataState)}>
-        <ProjectDetails width={width} height={height} />
+        {projectDetailsFactory()}
       </Provider>,
     );
 
@@ -183,7 +199,7 @@ describe('ProjectDetails', () => {
   it('Has 5 buttons', () => {
     render(
       <Provider store={mockStore(noDataState)}>
-        <ProjectDetails width={width} height={height} />
+        {projectDetailsFactory()}
       </Provider>,
     );
 
@@ -197,7 +213,7 @@ describe('ProjectDetails', () => {
   it('Add metadata button is disabled if there is no data', () => {
     render(
       <Provider store={mockStore(noDataState)}>
-        <ProjectDetails width={width} height={height} />
+        {projectDetailsFactory()}
       </Provider>,
     );
 
@@ -209,7 +225,7 @@ describe('ProjectDetails', () => {
   it('Add metadata button is enabled if there is data', () => {
     render(
       <Provider store={mockStore(withDataState)}>
-        <ProjectDetails width={width} height={height} />
+        {projectDetailsFactory()}
       </Provider>,
     );
 
@@ -218,39 +234,30 @@ describe('ProjectDetails', () => {
     expect(metadataButton).not.toBeDisabled();
   });
 
-  it('Download dropdown is disabled if there are no samples', () => {
-    const store = createStore(rootReducer, _.cloneDeep(noDataState), applyMiddleware(thunk));
+  it('Add metadata button is disabled for subset experiments', () => {
+    const state = _.cloneDeep(withDataState);
+    state.experiments[experiment1id].parentExperimentId = '736de01d-cb70-439a-9fdf-9b269a72fc67';
     render(
-      <Provider store={store}>
-        <ProjectDetails width={width} height={height} />
-      </Provider>,
-    );
-    const downloadDropdown = screen.getByText('Download').closest('button');
-    expect(downloadDropdown).toBeDisabled();
-  });
-
-  it('Shows all the samples that are uploaded', () => {
-    render(
-      <Provider store={mockStore(withDataState)}>
-        <ProjectDetails width={width} height={height} />
+      <Provider store={mockStore(state)}>
+        {projectDetailsFactory()}
       </Provider>,
     );
 
-    expect(screen.getByText(sample1Name)).toBeDefined();
-    expect(screen.getByText(sample2Name)).toBeDefined();
+    const metadataButton = screen.getByText('Add metadata').closest('button');
+
+    expect(metadataButton).toBeDisabled();
   });
 
   it('Creates a metadata column', async () => {
-    const store = createStore(rootReducer, _.cloneDeep(withDataState), applyMiddleware(thunk));
-    await act(async () => {
-      render(
-        <Provider store={store}>
-          <ProjectDetails width={width} height={height} />
-        </Provider>,
-      );
-    });
+    render(
+      <Provider store={mockStore(withDataState)}>
+        {projectDetailsFactory()}
+      </Provider>,
+    );
 
-    userEvent.click(screen.getByText('Add metadata'));
+    const options = await getMenuItems();
+
+    fireEvent.click(options[0]);
 
     const input = screen.getByDisplayValue('Track 1');
     fireEvent.change(input, { target: { value: 'myBrandNewMetadata' } });
@@ -260,34 +267,38 @@ describe('ProjectDetails', () => {
     expect(mockedCreateMetadataTrack).toHaveBeenCalledWith('myBrandNewMetadata', 'experiment-1');
   });
 
-  it('Cancels metadata creation', () => {
-    const store = createStore(rootReducer, _.cloneDeep(withDataState), applyMiddleware(thunk));
+  it('Cancels metadata creation', async () => {
+    const store = mockStore(withDataState);
     render(
       <Provider store={store}>
-        <ProjectDetails width={width} height={height} />
+        {projectDetailsFactory()}
       </Provider>,
     );
-    const addMetadata = screen.getByText('Add metadata');
-    userEvent.click(addMetadata);
-    const field = screen.getByRole('textbox');
-    userEvent.type(field, 'somenewMeta');
-    fireEvent.keyDown(field, { key: 'Escape', code: 'Escape' });
+
+    const options = await getMenuItems();
+
+    fireEvent.click(options[0]);
+
+    const input = screen.getByDisplayValue('Track 1');
+    fireEvent.change(input, { target: { value: 'myBrandNewMetadata' } });
+    fireEvent.keyDown(input, { key: 'Escape', code: 'Escape' });
 
     expect(store.getState().experiments[experiment1id].metadataKeys).toEqual(['metadata-1']);
   });
 
   it('Creates a metadata column trimming whitespaces in its name', async () => {
-    const store = createStore(rootReducer, _.cloneDeep(withDataState), applyMiddleware(thunk));
+    const store = mockStore(withDataState);
     await act(async () => {
       render(
         <Provider store={store}>
-          <ProjectDetails width={width} height={height} />
+          {projectDetailsFactory()}
         </Provider>,
       );
     });
 
-    userEvent.click(screen.getByText('Add metadata'));
+    const options = await getMenuItems();
 
+    fireEvent.click(options[0]);
     const input = screen.getByDisplayValue('Track 1');
     fireEvent.change(input, { target: { value: '  myBrandNewMetadata     ' } });
     fireEvent.keyDown(input, { key: 'Enter', code: 'Enter' });
@@ -297,17 +308,24 @@ describe('ProjectDetails', () => {
   });
 
   it('Trims whitespaces in metadata track values', async () => {
-    const store = createStore(rootReducer, _.cloneDeep(withDataState), applyMiddleware(thunk));
+    const store = mockStore(withDataState);
     await act(async () => {
       render(
         <Provider store={store}>
-          <ProjectDetails width={width} height={height} />
+          {projectDetailsFactory()}
         </Provider>,
       );
     });
 
+    // Wait and ensure that the dropdown is available before clicking
+    await waitFor(() => {
+      expect(screen.getByText('Add metadata')).toBeInTheDocument();
+    });
+
     // Add track column
-    userEvent.click(screen.getByText('Add metadata'));
+    const options = await getMenuItems();
+
+    fireEvent.click(options[0]);
     fireEvent.keyDown(screen.getByDisplayValue('Track 1'), { key: 'Enter', code: 'Enter' });
 
     // Change track value for sample
@@ -323,12 +341,37 @@ describe('ProjectDetails', () => {
     expect(mockedUpdateValueInMetadataTrack).toHaveBeenCalledWith('experiment-1', 'sample-1', 'metadata-1', 'myBrandNewMetadataWithWhitespaces');
   });
 
+  it('Download dropdown is disabled if there are no samples', () => {
+    const store = createStore(rootReducer, _.cloneDeep(noDataState), applyMiddleware(thunk));
+    render(
+      <Provider store={store}>
+        {projectDetailsFactory()}
+      </Provider>,
+    );
+    const downloadDropdown = screen.getByText('Download').closest('button');
+    expect(downloadDropdown).toBeDisabled();
+  });
+
+  it('Shows all the samples that are uploaded', async () => {
+    render(
+      <Provider store={mockStore(withDataState)}>
+        {projectDetailsFactory()}
+      </Provider>,
+    );
+
+    // Rows are rendered separately and they load their own data, so we need to wait for them
+    await waitFor(() => {
+      expect(screen.getByText(sample1Name)).toBeDefined();
+      expect(screen.getByText(sample2Name)).toBeDefined();
+    });
+  });
+
   it('Copy experiment button works', async () => {
     const store = mockStore(withDataState);
     await act(async () => {
       render(
         <Provider store={store}>
-          <ProjectDetails width={width} height={height} />
+          {projectDetailsFactory()}
         </Provider>,
       );
     });

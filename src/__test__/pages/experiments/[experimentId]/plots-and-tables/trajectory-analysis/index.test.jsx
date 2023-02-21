@@ -13,6 +13,8 @@ import { seekFromS3 } from 'utils/work/seekWorkResponse';
 import mockEmbedding from '__test__/data/embedding.json';
 import mockStartingNodes from '__test__/data/starting_nodes.json';
 import mockPseudoTime from '__test__/data/pseudotime.json';
+import cellSetsData from '__test__/data/cell_sets.json';
+import { MAX_LEGEND_ITEMS } from 'components/plots/helpers/PlotLegendAlert';
 import WorkResponseError from 'utils/errors/http/WorkResponseError';
 
 import preloadAll from 'jest-next-dynamic';
@@ -342,5 +344,34 @@ describe('Trajectory analysis plot', () => {
     signalListeners.removeNode('eventName', { node_id: 1 });
 
     expect(screen.getByText('2 nodes selected')).toBeInTheDocument();
+  });
+
+  it('Renders a plot legend alert if there are more than MAX_LEGEND_ITEMS number of cell sets', async () => {
+    const cellSetsTemplate = (clusterIdx) => ({
+      key: `louvain-${clusterIdx}`,
+      name: `Cluster ${clusterIdx}`,
+      rootNode: false,
+      type: 'cellSets',
+      color: '#000000',
+      cellIds: [clusterIdx],
+    });
+
+    const manyCellSets = [...Array(MAX_LEGEND_ITEMS + 1)].map((c, idx) => cellSetsTemplate(idx));
+
+    // Add to louvain cluster
+    cellSetsData.cellSets[0].children = manyCellSets;
+
+    const manyCellSetsResponse = {
+      ...generateDefaultMockAPIResponses(fake.EXPERIMENT_ID),
+      ...customAPIResponses,
+      [`experiments/${fake.EXPERIMENT_ID}/cellSets`]: () => promiseResponse(JSON.stringify(cellSetsData)),
+    };
+
+    fetchMock.mockIf(/.*/, mockAPI(manyCellSetsResponse));
+
+    await renderTrajectoryAnalysisPage(storeState);
+
+    // The legend alert plot text should appear
+    expect(screen.getByText(/We have hidden the plot legend, because it is too large and it interferes with the display of the plot/)).toBeInTheDocument();
   });
 });

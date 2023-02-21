@@ -1,16 +1,21 @@
 /* eslint-disable react/jsx-props-no-spreading */
+import _ from 'lodash';
 import React, {
-  useEffect, useState, forwardRef, useImperativeHandle,
+  useEffect, useState, forwardRef, useImperativeHandle, useMemo, useCallback,
 } from 'react';
+import { useVT } from 'virtualizedtableforantd4';
 
 import { useSelector, useDispatch } from 'react-redux';
 import {
-  Table, Row, Col, Typography, Space,
+  Table, Row, Typography, Space, Alert,
 } from 'antd';
 import {
   MenuOutlined,
 } from '@ant-design/icons';
-import { sortableHandle, sortableContainer, sortableElement } from 'react-sortable-hoc';
+import { sortableHandle } from 'react-sortable-hoc';
+
+import ReactResizeDetector from 'react-resize-detector';
+import { ClipLoader } from 'react-spinners';
 
 import ExampleExperimentsSpace from 'components/data-management/ExampleExperimentsSpace';
 import MetadataPopover from 'components/data-management/MetadataPopover';
@@ -23,46 +28,54 @@ import {
   updateValueInMetadataTrack,
   reorderSamples,
 } from 'redux/actions/experiments';
-
 import { loadSamples } from 'redux/actions/samples';
+import { METADATA_DEFAULT_VALUE } from 'redux/reducers/experiments/initialState';
 
-import UploadStatus from 'utils/upload/UploadStatus';
-import { arrayMoveImmutable } from 'utils/array-move';
+import DraggableBodyRow from 'components/data-management/DraggableBodyRow';
 
 import { metadataNameToKey, metadataKeyToName, temporaryMetadataKey } from 'utils/data-management/metadataUtils';
 import integrationTestConstants from 'utils/integrationTestConstants';
-import 'utils/css/data-management.css';
-import { ClipLoader } from 'react-spinners';
 import useConditionalEffect from 'utils/customHooks/useConditionalEffect';
-import { METADATA_DEFAULT_VALUE } from 'redux/reducers/experiments/initialState';
 import fileUploadSpecifications from 'utils/upload/fileUploadSpecifications';
+import 'utils/css/data-management.css';
 
 const { Text } = Typography;
 
 const SamplesTable = forwardRef((props, ref) => {
   const dispatch = useDispatch();
-  const [tableData, setTableData] = useState([]);
 
-  const experiments = useSelector((state) => state.experiments);
+  const [fullTableData, setFullTableData] = useState([]);
+
   const samples = useSelector((state) => state.samples);
+
   const samplesLoading = useSelector((state) => state.samples.meta.loading);
   const activeExperimentId = useSelector((state) => state.experiments.meta.activeExperimentId);
-
   const samplesValidating = useSelector(
     (state) => state.samples.meta.validating.includes(activeExperimentId),
   );
+
   const activeExperiment = useSelector((state) => state.experiments[activeExperimentId]);
-  const selectedTech = samples[activeExperiment?.sampleIds[0]]?.type;
+  const parentExperimentName = useSelector(
+    (state) => state.experiments[activeExperiment?.parentExperimentId]?.name,
+  );
+
+  const selectedTech = useSelector(
+    (state) => state.samples[activeExperiment?.sampleIds[0]]?.type,
+    _.isEqual,
+  );
+
   const [sampleNames, setSampleNames] = useState(new Set());
   const DragHandle = sortableHandle(() => <MenuOutlined style={{ cursor: 'grab', color: '#999' }} />);
 
-  const initialTableColumns = [
+  const [samplesLoaded, setSamplesLoaded] = useState(false);
+
+  const initialTableColumns = useMemo(() => ([
     {
       fixed: 'left',
       index: 0,
       key: 'sort',
       dataIndex: 'sort',
-      width: 30,
+      width: 50,
       render: () => <DragHandle />,
     },
     {
@@ -71,37 +84,37 @@ const SamplesTable = forwardRef((props, ref) => {
       key: 'sample',
       title: 'Sample',
       dataIndex: 'name',
-      fixed: true,
-      render: (text, record, indx) => <SampleNameCell cellInfo={{ text, record, indx }} />,
+      fixed: 'left',
+      render: (text, record, indx) => (
+        <SampleNameCell cellInfo={{ text, record, indx }} />
+      ),
     },
     ...fileUploadSpecifications[selectedTech]?.requiredFiles?.map((fileName, indx) => {
       const fileNameWithoutExtension = fileName.key.split('.')[0];
 
       return ({
         index: 2 + indx,
-        title: fileName.displayedName,
+        title: <center>{fileName.displayedName}</center>,
         key: fileNameWithoutExtension,
         dataIndex: fileNameWithoutExtension,
-        render: (tableCellData) => (
-          tableCellData && (
-            <UploadCell
-              columnId={fileNameWithoutExtension}
-              tableCellData={tableCellData}
-            />
-          )),
+        width: 170,
+        onCell: () => ({ style: { margin: '0px', padding: '0px' } }),
+        render: (tableCellData) => tableCellData && (
+          <UploadCell
+            columnId={fileName.key}
+            sampleUuid={tableCellData.sampleUuid}
+          />
+        ),
       });
     }) || [],
 
-  ];
+  ]), [selectedTech]);
 
   const [tableColumns, setTableColumns] = useState(initialTableColumns);
 
   useEffect(() => {
-    const samplesLoaded = activeExperiment?.sampleIds.every((sampleId) => samples[sampleId]);
-
     if (activeExperiment?.sampleIds.length > 0 && samplesLoaded) {
       // if there are samples - build the table columns
-
       const sanitizedSampleNames = new Set(
         activeExperiment.sampleIds.map((id) => samples[id]?.name.trim()),
       );
@@ -111,15 +124,14 @@ const SamplesTable = forwardRef((props, ref) => {
         (metadataKey) => createInitializedMetadataColumn(metadataKeyToName(metadataKey)),
       ) || [];
       setTableColumns([...initialTableColumns, ...metadataColumns]);
-    } else {
-      setTableColumns([]);
-      setSampleNames(new Set());
     }
-  }, [samples, activeExperiment]);
+  }, [samples, activeExperiment?.sampleIds, samplesLoaded]);
 
   useConditionalEffect(() => {
+    setSamplesLoaded(false);
+
     dispatch(loadSamples(activeExperimentId));
-  }, [activeExperimentId], { lazy: true });
+  }, [activeExperimentId]);
 
   const deleteMetadataColumn = (name) => {
     dispatch(deleteMetadataTrack(name, activeExperimentId));
@@ -143,7 +155,7 @@ const SamplesTable = forwardRef((props, ref) => {
       dataIndex: key,
       render: (cellValue, record, rowIdx) => (
         <EditableFieldCell
-          cellText={cellValue}
+          sampleUuid={record.uuid}
           dataIndex={key}
           rowIdx={rowIdx}
           onAfterSubmit={(newValue) => {
@@ -159,7 +171,6 @@ const SamplesTable = forwardRef((props, ref) => {
   };
 
   useImperativeHandle(ref, () => ({
-
     createMetadataColumn() {
       const key = temporaryMetadataKey(tableColumns);
       const previousTableColumns = tableColumns;
@@ -218,82 +229,20 @@ const SamplesTable = forwardRef((props, ref) => {
     );
   };
 
-  useEffect(() => {
-    if (!activeExperiment?.sampleIds.length) {
-      setTableData([]);
-      return;
-    }
+  const generateDataForItem = useCallback((sampleUuid) => {
+    const sampleFileNames = fileUploadSpecifications[selectedTech]?.requiredFiles
+      .map((fileName) => ([
+        fileName.key.split('.')[0],
+        { sampleUuid },
+      ]));
 
-    const newData = activeExperiment.sampleIds.map((sampleUuid, idx) => {
-      // upload problems sometimes lead to partial updates and incosistent states
-      // in this situation it's possible that the sampleUuid does not exist
-      // this a temporary fix so that the whole UI doesn't crash preventing the
-      // user from removing the dataset or uploading another one.
-
-      if (!samples[sampleUuid]) return {};
-
-      const { files: sampleFiles, fileNames: sampleFileNames } = samples[sampleUuid];
-
-      const fileData = {};
-      sampleFileNames.forEach((key) => {
-        const displayedFileInTable = key.split('.')[0];
-
-        const currentFile = sampleFiles[key] ?? { upload: { status: UploadStatus.FILE_NOT_FOUND } };
-        const currentFileData = { sampleUuid, file: currentFile };
-        fileData[displayedFileInTable] = currentFileData;
-      });
-
-      return {
-        key: idx,
-        name: samples[sampleUuid]?.name || 'UPLOAD ERROR: Please reupload sample',
-        uuid: sampleUuid,
-        ...fileData,
-        ...samples[sampleUuid]?.metadata,
-      };
-    });
-    setTableData(newData);
-  }, [experiments, samples, activeExperimentId]);
-
-  const noDataComponent = (
-    <ExampleExperimentsSpace
-      introductionText='Start uploading your samples by clicking on Add samples.'
-      imageStyle={{ height: 60 }}
-    />
-  );
-
-  const onSortEnd = async ({ oldIndex, newIndex }) => {
-    if (oldIndex !== newIndex) {
-      const newData = arrayMoveImmutable(tableData, oldIndex, newIndex).filter((el) => !!el);
-      const newSampleOrder = newData.map((sample) => sample.uuid);
-
-      try {
-        await dispatch(reorderSamples(activeExperimentId, oldIndex, newIndex, newSampleOrder));
-      } catch (e) {
-        // If the fetch fails, avoid doing setTableData(newData)
-        return;
-      }
-
-      setTableData(newData);
-    }
-  };
-
-  const SortableRow = sortableElement((otherProps) => <tr {...otherProps} className={`${otherProps.className} drag-visible`} />);
-  const SortableTable = sortableContainer((otherProps) => <tbody {...otherProps} />);
-
-  const DragContainer = (otherProps) => (
-    <SortableTable
-      useDragHandle
-      disableAutoscroll
-      helperClass='row-dragging'
-      onSortEnd={onSortEnd}
-      {...otherProps}
-    />
-  );
-
-  const DraggableRow = (otherProps) => {
-    const index = tableData.findIndex((x) => x.key === otherProps['data-row-key']);
-    return <SortableRow index={index} {...otherProps} />;
-  };
+    return {
+      key: sampleUuid,
+      name: samples[sampleUuid]?.name || 'UPLOAD ERROR: Please reupload sample',
+      uuid: sampleUuid,
+      ...Object.fromEntries(sampleFileNames),
+    };
+  }, [activeExperiment?.sampleIds, selectedTech, samples]);
 
   const renderLoader = () => (
     <>
@@ -316,37 +265,115 @@ const SamplesTable = forwardRef((props, ref) => {
     </>
   );
 
+  useEffect(() => {
+    if (!activeExperiment?.sampleIds.length) {
+      setFullTableData([]);
+      return;
+    }
+
+    const alreadyInTable = () => _.isEqual(
+      fullTableData.map(({ key }) => key),
+      activeExperiment.sampleIds,
+    );
+
+    const anyNotLoadedYet = () => activeExperiment.sampleIds.some((sampleId) => !samples[sampleId]);
+
+    if (alreadyInTable() || anyNotLoadedYet()) return;
+
+    const newData = activeExperiment.sampleIds.map((sampleUuid) => generateDataForItem(sampleUuid));
+
+    setFullTableData(newData);
+  }, [activeExperiment?.sampleIds, samples]);
+
+  const [size, setSize] = useState({ width: 0, height: 0 });
+
+  useEffect(() => {
+    const newSamplesLoaded = activeExperiment?.sampleIds.every((sampleId) => samples[sampleId]);
+
+    if (newSamplesLoaded === true && samplesLoaded === false) {
+      setSamplesLoaded(true);
+    }
+  }, [activeExperiment, samples]);
+
+  const [VT, setVT] = useVT(
+    () => ({
+      scroll: { y: size.height },
+    }),
+    [size.height],
+  );
+
+  useMemo(() => setVT({ body: { row: DraggableBodyRow } }), []);
+
+  const locale = {
+    emptyText: (
+      <ExampleExperimentsSpace
+        introductionText='Start uploading your samples by clicking on Add samples.'
+        imageStyle={{ height: 60 }}
+      />
+    ),
+  };
+
+  const moveRow = async (fromIndex, toIndex) => {
+    if (fromIndex === toIndex) return;
+
+    await dispatch(reorderSamples(activeExperimentId, fromIndex, toIndex));
+  };
+
   const renderSamplesTable = () => (
-    <Row>
-      <Col>
+    <ReactResizeDetector
+      handleHeight
+      refreshMode='throttle'
+      refreshRate={500}
+      onResize={(height) => { setSize({ height }); }}
+    >
+      {() => (
         <Table
-          id='samples-table'
-          size='small'
-          scroll={{
-            x: 'max-content',
-          }}
-          bordered
+          scroll={{ y: size.height, x: 'max-content' }}
+          components={VT}
           columns={tableColumns}
-          dataSource={tableData}
-          sticky
+          dataSource={fullTableData}
+          locale={locale}
+          showHeader={activeExperiment?.sampleIds.length > 0}
           pagination={false}
-          locale={{ emptyText: noDataComponent }}
-          components={{
-            body: {
-              wrapper: DragContainer,
-              row: DraggableRow,
-            },
-          }}
+          onRow={(record, index) => ({
+            index,
+            moveRow,
+          })}
+          sticky
+          bordered
         />
-      </Col>
-    </Row>
+      )}
+    </ReactResizeDetector>
   );
 
   return (
     <>
-      {samplesLoading || samplesValidating ? renderLoader() : renderSamplesTable()}
+      {
+        activeExperiment?.parentExperimentId ? (
+          <center>
+            <Alert
+              type='info'
+              message='Subsetted experiment'
+              description={(
+                <>
+                  This is a subset of
+                  {' '}
+                  <b>{parentExperimentName}</b>
+                  .
+                  <br />
+                  You can  see remaining samples after subsetting in
+                  the data processing and data exploration pages.
+                </>
+              )}
+            />
+          </center>
+        )
+          : !samplesLoaded || samplesLoading || samplesValidating
+            ? renderLoader()
+            : renderSamplesTable()
+      }
     </>
   );
 });
 
-export default React.memo(SamplesTable);
+export default SamplesTable;
