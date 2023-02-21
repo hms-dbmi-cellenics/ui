@@ -28,9 +28,9 @@ import PlatformError from 'components/PlatformError';
 import { plotNames, plotTypes } from 'utils/constants';
 import updateTrajectoryPlotSelectedNodes from 'redux/actions/componentConfig/updateTrajectoryPlotSelectedNodes';
 import PlotLegendAlert, { MAX_LEGEND_ITEMS } from 'components/plots/helpers/PlotLegendAlert';
-import TrajectoryAnalysisNodeSelector from './TrajectoryAnalysisNodeSelector';
-import TrajectoryAnalysisDisplaySettings from './TrajectoryAnalysisDisplaySettings';
-import MultipleCellSetSelection from './MultipleCellSetSelection';
+import TrajectoryAnalysisNodeSelector from 'components/plots/helpers/trajectory-analysis/TrajectoryAnalysisNodeSelector';
+import TrajectoryAnalysisDisplaySettings from 'components/plots/helpers/trajectory-analysis/TrajectoryAnalysisDisplaySettings';
+import MultipleCellSetSelection from 'components/plots/MultipleCellSetSelection';
 
 const { Panel } = Collapse;
 
@@ -272,6 +272,7 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
               <MultipleCellSetSelection
                 experimentId={experimentId}
                 plotUuid={plotUuid}
+                labelText='Select cell sets to use for trajectory analysis'
                 selectedCellSets={selectedCellSets}
                 onChange={
                   (chosenCellSets) => {
@@ -291,6 +292,7 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
                       dispatch(
                         getTrajectoryPlotStartingNodes(experimentId, plotUuid, selectedCellSets),
                       );
+                      dispatch(updatePlotWithChanges({ selectedNodes: [] }));
                       setDisplaySettings({
                         ...displaySettings,
                         showPseudotimeValues: false,
