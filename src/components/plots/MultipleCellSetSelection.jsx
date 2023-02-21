@@ -8,7 +8,9 @@ import {
 } from 'antd';
 
 const MultipleCellSetSelection = (props) => {
-  const { onChange, selectedCellSets, extraElements } = props;
+  const {
+    onChange, selectedCellSets, extraElements, labelText,
+  } = props;
 
   const { hierarchy, properties } = useSelector(getCellSets());
 
@@ -33,7 +35,7 @@ const MultipleCellSetSelection = (props) => {
 
   return (
     <Space direction='vertical' style={{ width: '100%' }}>
-      <span>Select cell sets to use for trajectory analysis</span>
+      { labelText }
       <Select
         mode='multiple'
         allowClear
@@ -58,11 +60,13 @@ const MultipleCellSetSelection = (props) => {
 MultipleCellSetSelection.propTypes = {
   onChange: PropTypes.func.isRequired,
   selectedCellSets: PropTypes.array,
+  labelText: PropTypes.string,
   extraElements: PropTypes.node,
 };
 
 MultipleCellSetSelection.defaultProps = {
   selectedCellSets: [],
+  labelText: 'Select cell sets',
   extraElements: null,
 };
 
