@@ -632,7 +632,7 @@ const insertPseudotimeSpec = (spec, config, pseudotime) => {
         update: {
           x: { scale: 'xscale', field: 'x' },
           y: { scale: 'yscale', field: 'y' },
-          size: { value: config.marker.size },
+          size: { signal: 'size' },
           fill: { value: 'lightgrey' },
           shape: { value: config.marker.shape },
           fillOpacity: { value: config.marker.opacity / 10 },
@@ -647,7 +647,7 @@ const insertPseudotimeSpec = (spec, config, pseudotime) => {
         update: {
           x: { scale: 'xscale', field: 'x' },
           y: { scale: 'yscale', field: 'y' },
-          size: { value: config.marker.size },
+          size: { signal: 'size' },
           fill: {
             scale: 'pseudotimeScale',
             field: 'value',
