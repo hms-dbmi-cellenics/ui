@@ -15,7 +15,7 @@ import { sampleTech } from 'utils/constants';
 import uploadParts from './processMultipartUpload';
 
 const prepareAndUploadFileToS3 = async (
-  projectId, sampleId, fileType, file, uploadUrlParams, dispatch,
+  experimentId, sampleId, fileType, file, uploadUrlParams, dispatch,
 ) => {
   let parts = null;
   const { signedUrls, uploadId, sampleFileId } = uploadUrlParams;
@@ -30,7 +30,7 @@ const prepareAndUploadFileToS3 = async (
 
     dispatch(
       updateSampleFileUpload(
-        projectId, sampleId, fileType, UploadStatus.UPLOADING, percentProgress ?? 0,
+        experimentId, sampleId, fileType, UploadStatus.UPLOADING, percentProgress ?? 0,
       ),
     );
   };
@@ -38,7 +38,7 @@ const prepareAndUploadFileToS3 = async (
   try {
     parts = await uploadParts(file, signedUrls, createOnUploadProgressForPart);
   } catch (e) {
-    dispatch(updateSampleFileUpload(projectId, sampleId, fileType, UploadStatus.UPLOAD_ERROR));
+    dispatch(updateSampleFileUpload(experimentId, sampleId, fileType, UploadStatus.UPLOAD_ERROR));
     return;
   }
 
@@ -58,8 +58,51 @@ const prepareAndUploadFileToS3 = async (
       body: JSON.stringify(body),
     });
 
-  dispatch(updateSampleFileUpload(projectId, sampleId, fileType, UploadStatus.UPLOADED));
+  dispatch(updateSampleFileUpload(experimentId, sampleId, fileType, UploadStatus.UPLOADED));
   return parts;
+};
+
+const createAndUploadSingleFile = async (file, experimentId, sampleId, dispatch, selectedTech) => {
+  const fileType = getFileTypeV2(file.fileObject.name, file.fileObject.type);
+
+  if (!file.compressed) {
+    try {
+      file.fileObject = await loadAndCompressIfNecessary(file, () => {
+        dispatch(updateSampleFileUpload(
+          experimentId, sampleId, fileType, UploadStatus.COMPRESSING,
+        ));
+      });
+      file.size = Buffer.byteLength(file.fileObject);
+    } catch (e) {
+      const fileErrorStatus = e.message === 'aborted'
+        ? UploadStatus.FILE_READ_ABORTED
+        : UploadStatus.FILE_READ_ERROR;
+
+      dispatch(updateSampleFileUpload(experimentId, sampleId, fileType, fileErrorStatus));
+      return;
+    }
+  }
+
+  let uploadUrlParams;
+  try {
+    const metadata = getMetadata(file, selectedTech);
+
+    uploadUrlParams = await dispatch(
+      createSampleFile(
+        experimentId,
+        sampleId,
+        fileType,
+        file.size,
+        metadata,
+        file,
+      ),
+    );
+  } catch (e) {
+    dispatch(updateSampleFileUpload(experimentId, sampleId, fileType, UploadStatus.UPLOAD_ERROR));
+    return;
+  }
+
+  await prepareAndUploadFileToS3(experimentId, sampleId, fileType, file, uploadUrlParams, dispatch);
 };
 
 const getMetadata = (file, selectedTech) => {
@@ -71,47 +114,7 @@ const getMetadata = (file, selectedTech) => {
       metadata.cellranger_version = 'v3';
     }
   }
-
   return metadata;
-};
-
-const createAndUploadSingleFile = async (file, projectId, sampleId, dispatch, selectedTech) => {
-  const metadata = getMetadata(file, selectedTech);
-  const fileType = getFileTypeV2(file.fileObject.name, file.fileObject.type);
-
-  if (!file.compressed) {
-    try {
-      file.fileObject = await loadAndCompressIfNecessary(file, () => {
-        dispatch(updateSampleFileUpload(projectId, sampleId, fileType, UploadStatus.COMPRESSING));
-      });
-      file.size = Buffer.byteLength(file.fileObject);
-    } catch (e) {
-      const fileErrorStatus = e.message === 'aborted' ? UploadStatus.FILE_READ_ABORTED : UploadStatus.FILE_READ_ERROR;
-
-      dispatch(updateSampleFileUpload(projectId, sampleId, fileType, fileErrorStatus));
-      return;
-    }
-  }
-
-  let uploadUrlParams;
-  try {
-    uploadUrlParams = await dispatch(
-      createSampleFile(
-        projectId,
-        sampleId,
-        fileType,
-        file.size,
-        metadata,
-        file,
-      ),
-    );
-  } catch (e) {
-    // If there was an error we can't continue the process, so return
-    // (the action creator handles the other consequences of the error)
-    return;
-  }
-
-  await prepareAndUploadFileToS3(projectId, sampleId, fileType, file, uploadUrlParams, dispatch);
 };
 
 const processUpload = async (filesList, technology, samples, experimentId, dispatch) => {

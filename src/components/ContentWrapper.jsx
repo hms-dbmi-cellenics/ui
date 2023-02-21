@@ -56,26 +56,29 @@ const ContentWrapper = (props) => {
   const { navigateTo, currentModule } = useAppRouter();
 
   const currentExperimentIdRef = useRef(routeExperimentId);
-  const activeExperimentId = useSelector((state) => state?.experiments?.meta?.activeExperimentId);
-  const activeExperiment = useSelector((state) => state.experiments[activeExperimentId]);
+  const selectedExperimentID = useSelector((state) => state?.experiments?.meta?.activeExperimentId);
 
   const domainName = useSelector((state) => state.networkResources.domainName);
   const user = useSelector((state) => state.user.current);
 
   const samples = useSelector((state) => state.samples);
 
+  // selectedExperimentID holds the value in redux of the selected experiment
+  // after loading a page it is determined whether to use that ID or the ID in the route URL
+  // i.e. when we are in data management there is not exp ID in the URL so we get it from redux
+
   useEffect(() => {
-    if (!activeExperimentId && !routeExperimentId) return;
+    if (!selectedExperimentID && !routeExperimentId) return;
 
     if (currentModule === modules.DATA_MANAGEMENT) {
-      currentExperimentIdRef.current = activeExperimentId;
+      currentExperimentIdRef.current = selectedExperimentID;
       return;
     }
 
     if (currentExperimentIdRef.current === routeExperimentId) return;
 
     currentExperimentIdRef.current = routeExperimentId;
-  }, [currentModule, activeExperimentId, routeExperimentId]);
+  }, [currentModule, selectedExperimentID, routeExperimentId]);
 
   const currentExperimentId = currentExperimentIdRef.current;
   const experiment = useSelector((state) => state?.experiments[currentExperimentId]);
@@ -95,7 +98,6 @@ const ContentWrapper = (props) => {
   const pipelineRunningError = backendErrors.includes(pipelineStatusKey);
 
   const gem2sStatusKey = backendStatus?.gem2s?.status;
-  const gem2sparamsHash = backendStatus?.gem2s?.paramsHash;
   const gem2sRunning = gem2sStatusKey === 'RUNNING';
   const gem2sRunningError = backendErrors.includes(gem2sStatusKey);
   const completedGem2sSteps = backendStatus?.gem2s?.completedSteps;
@@ -103,7 +105,6 @@ const ContentWrapper = (props) => {
   const seuratBackendStatus = backendStatus?.seurat;
   const seuratStatusKey = backendStatus?.seurat?.status;
   const seuratErrorCode = backendStatus?.seurat?.error?.error;
-  const seuratparamsHash = backendStatus?.seurat?.paramsHash;
   const seuratRunning = seuratStatusKey === 'RUNNING';
   const seuratRunningError = backendErrors.includes(seuratStatusKey);
   const completedSeuratSteps = backendStatus?.seurat?.completedSteps;
@@ -150,14 +151,14 @@ const ContentWrapper = (props) => {
   const [gem2sRerunStatus, setGem2sRerunStatus] = useState(null);
 
   useEffect(() => {
-    if (!activeExperiment) return;
+    if (!experiment) return;
 
     const pipelineStatus = calculatePipelineRerunStatus(
-      gem2sBackendStatus, activeExperiment, samples,
+      gem2sBackendStatus, experiment,
     );
 
     setGem2sRerunStatus(pipelineStatus);
-  }, [gem2sBackendStatus, activeExperiment, samples, experiment]);
+  }, [gem2sBackendStatus, experiment, samples]);
 
   const [seuratRerunStatus, setSeuratRerunStatus] = useState(null);
 
@@ -165,11 +166,11 @@ const ContentWrapper = (props) => {
     if (!activeExperiment) return;
 
     const pipelineStatus = calculatePipelineRerunStatus(
-      seuratBackendStatus, activeExperiment, samples,
+      seuratBackendStatus, experiment,
     );
 
     setSeuratRerunStatus(pipelineStatus);
-  }, [seuratBackendStatus, activeExperiment, samples, experiment]);
+  }, [seuratBackendStatus, experiment, samples]);
 
   useEffect(() => {
     dispatch(loadUser());
