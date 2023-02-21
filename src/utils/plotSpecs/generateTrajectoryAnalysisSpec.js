@@ -435,6 +435,7 @@ const insertTrajectorySpec = (
     {
       name: 'highlight',
       values: selectedNodes.map((nodeIdx) => ({
+        node_id: nodeIdx,
         x: nodesData.x[nodeIdx],
         y: nodesData.y[nodeIdx],
       })),
@@ -538,8 +539,9 @@ const insertTrajectorySpec = (
       },
     },
     {
-      name: 'selectedNodes',
       type: 'symbol',
+      name: 'selectedNodes',
+      interactive: true,
       from: { data: 'highlight' },
       encode: {
         update: {
