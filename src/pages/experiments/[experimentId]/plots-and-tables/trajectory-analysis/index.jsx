@@ -292,7 +292,7 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
                       dispatch(
                         getTrajectoryPlotStartingNodes(experimentId, plotUuid, selectedCellSets),
                       );
-                      dispatch(updatePlotWithChanges({ selectedNodes: [] }));
+                      updatePlotWithChanges({ selectedNodes: [] });
                       setDisplaySettings({
                         ...displaySettings,
                         showPseudotimeValues: false,
