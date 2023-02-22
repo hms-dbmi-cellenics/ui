@@ -56,13 +56,12 @@ const MarkerGeneSelection = (props) => {
           onSelect={onGenesSelect}
         />
         {showGeneTable
-          ? (
+          && (
             <GeneReorderTool
               plotUuid={plotUuid}
               onDelete={onGenesChange}
             />
-          )
-          : (<></>)}
+          )}
         <Button
           type='primary'
           onClick={onReset}
