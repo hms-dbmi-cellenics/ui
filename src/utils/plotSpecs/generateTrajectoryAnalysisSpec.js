@@ -435,7 +435,7 @@ const insertTrajectorySpec = (
     {
       name: 'highlight',
       values: selectedNodes.map((nodeIdx) => ({
-        node_id: nodeIdx,
+        nodeId: nodeIdx,
         x: nodesData.x[nodeIdx],
         y: nodesData.y[nodeIdx],
       })),
@@ -722,12 +722,12 @@ const generateStartingNodesData = (nodes) => {
   Object.values(nodes.x).forEach((nodeIdxX, nodeIdx) => {
     connectedNodes[nodeIdx].forEach((connectedIdx) => {
       trajectoryNodes.push(
-        { x: nodeIdxX, y: y[nodeIdx], node_id: nodeIdx },
+        { x: nodeIdxX, y: y[nodeIdx], nodeId: nodeIdx },
       );
       trajectoryNodes.push(
-        { x: x[connectedIdx], y: y[connectedIdx], node_id: connectedIdx },
+        { x: x[connectedIdx], y: y[connectedIdx], nodeId: connectedIdx },
       );
-      trajectoryNodes.push({ x: null, y: null, node_id: null });
+      trajectoryNodes.push({ x: null, y: null, nodeId: null });
     });
   });
 

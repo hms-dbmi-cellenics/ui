@@ -226,12 +226,12 @@ const TrajectoryAnalysisPlot = forwardRef((props, ref) => {
       viewStateRef.current = { xdom, ydom };
     },
     addNode: (eventName, payload) => {
-      const { node_id: nodeId } = payload;
+      const { nodeId } = payload;
 
       onClickNode('add', nodeId);
     },
     removeNode: (eventName, payload) => {
-      const { node_id: nodeId } = payload;
+      const { nodeId } = payload;
 
       onClickNode('remove', nodeId);
     },

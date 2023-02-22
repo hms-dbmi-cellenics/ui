@@ -408,7 +408,7 @@ describe('Trajectory analysis plot', () => {
 
     const { signalListeners } = _.last(Vega.mock.calls)[0];
 
-    signalListeners.addNode('eventName', { node_id: 5 });
+    signalListeners.addNode('eventName', { nodeId: 5 });
 
     expect(screen.getByText('4 nodes selected')).toBeInTheDocument();
   });
@@ -424,7 +424,7 @@ describe('Trajectory analysis plot', () => {
 
     const { signalListeners } = _.last(Vega.mock.calls)[0];
 
-    signalListeners.removeNode('eventName', { node_id: 1 });
+    signalListeners.removeNode('eventName', { nodeId: 1 });
 
     expect(screen.getByText('2 nodes selected')).toBeInTheDocument();
   });
