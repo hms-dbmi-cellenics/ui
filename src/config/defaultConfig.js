@@ -12,7 +12,7 @@ const supportEmailsByAccountId = {
 const config = {
   supportEmail: supportEmailsByAccountId[accountId],
   pipelineVersionToRerunQC: 2,
-  workerVersion: 3,
+  workerVersion: 3, // needs to match workerVersion in API
 };
 
 export default config;
