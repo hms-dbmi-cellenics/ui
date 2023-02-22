@@ -1,6 +1,6 @@
 /* eslint-disable no-param-reassign */
 import React, {
-  useEffect, useState, useRef,
+  useEffect, useState, useRef, useMemo,
 } from 'react';
 import _ from 'lodash';
 import { useSelector, useDispatch } from 'react-redux';
@@ -16,7 +16,7 @@ import Loader from 'components/Loader';
 import { loadEmbedding } from 'redux/actions/embedding';
 import { loadProcessingSettings } from 'redux/actions/experimentSettings';
 import { loadCellSets } from 'redux/actions/cellSets';
-import { getCellSets, getCellSetsHierarchyByKeys } from 'redux/selectors';
+import { getCellSets, getCellSetsHierarchy, getCellSetsHierarchyByKeys } from 'redux/selectors';
 
 import getTrajectoryPlotStartingNodes from 'redux/actions/componentConfig/getTrajectoryPlotStartingNodes';
 
@@ -30,7 +30,7 @@ import updateTrajectoryPlotSelectedNodes from 'redux/actions/componentConfig/upd
 import PlotLegendAlert, { MAX_LEGEND_ITEMS } from 'components/plots/helpers/PlotLegendAlert';
 import TrajectoryAnalysisNodeSelector from 'components/plots/helpers/trajectory-analysis/TrajectoryAnalysisNodeSelector';
 import TrajectoryAnalysisDisplaySettings from 'components/plots/helpers/trajectory-analysis/TrajectoryAnalysisDisplaySettings';
-import MultipleCellSetSelection from 'components/plots/MultipleCellSetSelection';
+import MultiSelect from 'components/MultiSelect';
 
 const { Panel } = Collapse;
 
@@ -54,6 +54,7 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
   const embeddingMethod = 'umap';
 
   const cellSets = useSelector(getCellSets());
+  const cellSetsHierarchy = useSelector(getCellSetsHierarchy());
 
   const plotLoading = useSelector((state) => state.componentConfig[plotUuid]?.loading);
   const legendEnabled = useSelector(
@@ -255,6 +256,15 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
     dispatch(updateTrajectoryPlotSelectedNodes(plotUuid, nodesInLasso, 'add'));
   };
 
+  const options = useMemo(() => cellSetsHierarchy.reduce(
+    (acc, curr) => {
+      const { key: parentKey, name: parentName, children } = curr;
+      acc.push({ key: parentKey, name: `All ${parentName}` });
+      acc.push(...children.flat());
+      return acc;
+    }, [],
+  ));
+
   return (
     <>
       <Header title={plotNames.TRAJECTORY_ANALYSIS} />
@@ -269,44 +279,46 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
         extraControlPanels={(
           <>
             <Panel header='Select data' key='select-data'>
-              <MultipleCellSetSelection
-                experimentId={experimentId}
-                plotUuid={plotUuid}
-                labelText='Select cell sets to use for trajectory analysis'
-                selectedCellSets={selectedCellSets}
-                onChange={
-                  (chosenCellSets) => {
-                    updatePlotWithChanges({ selectedCellSets: chosenCellSets });
-                    setDisplaySettings({
-                      showPseudotimeValues: false,
-                      showStartingNodes: false,
-                      hasRunPseudotime: false,
-                      hasRunStartingNodes: false,
-                    });
-                  }
-                }
-                extraElements={(
-                  <Button
-                    type='primary'
-                    onClick={() => {
-                      dispatch(
-                        getTrajectoryPlotStartingNodes(experimentId, plotUuid, selectedCellSets),
-                      );
-                      updatePlotWithChanges({ selectedNodes: [] });
+              <Space direction='vertical' style={{ width: '100%' }}>
+                <span>Select cell sets to use for trajectory analysis</span>
+                <MultiSelect
+                  items={options}
+                  onChange={
+                    (chosenCellSets) => {
+                      const selectedCellSetKeys = chosenCellSets.map(({ key }) => key);
+                      updatePlotWithChanges({ selectedCellSets: selectedCellSetKeys });
                       setDisplaySettings({
-                        ...displaySettings,
                         showPseudotimeValues: false,
-                        showStartingNodes: true,
-                        hasRunStartingNodes: true,
+                        showStartingNodes: false,
+                        hasRunPseudotime: false,
+                        hasRunStartingNodes: false,
                       });
-                    }}
-                    disabled={!selectedCellSets?.length}
-                    block
-                  >
-                    Calculate root nodes
-                  </Button>
-                )}
-              />
+                    }
+                  }
+                  placeholder='Select cell sets'
+                  initialSelectedKeys={selectedCellSets}
+                  style={{ width: '100%' }}
+                />
+                <Button
+                  type='primary'
+                  onClick={() => {
+                    dispatch(
+                      getTrajectoryPlotStartingNodes(experimentId, plotUuid, selectedCellSets),
+                    );
+                    updatePlotWithChanges({ selectedNodes: [] });
+                    setDisplaySettings({
+                      ...displaySettings,
+                      showPseudotimeValues: false,
+                      showStartingNodes: true,
+                      hasRunStartingNodes: true,
+                    });
+                  }}
+                  disabled={!selectedCellSets?.length}
+                  block
+                >
+                  Calculate root nodes
+                </Button>
+              </Space>
             </Panel>
             <Panel header='Trajectory analysis' key='trajectory-analysis'>
               <TrajectoryAnalysisNodeSelector

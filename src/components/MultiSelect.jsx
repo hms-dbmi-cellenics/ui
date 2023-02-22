@@ -3,12 +3,18 @@ import { Select } from 'antd';
 import PropTypes from 'prop-types';
 
 const itemsFromKeys = (initialSelectedKeys, inputItems) => (
-  initialSelectedKeys.map((key) => (inputItems.find((item) => item.key === key)))
+  initialSelectedKeys
+    .map((key) => (inputItems.find((item) => item.key === key)))
+    .filter((item) => !!item)
 );
 
 const MultiSelect = (props) => {
   const {
-    items: inputItems, onChange, placeholder, initialSelectedKeys,
+    items: inputItems,
+    onChange,
+    placeholder,
+    initialSelectedKeys,
+    style,
   } = props;
 
   const [selectedItems, setSelectedItems] = useState(
@@ -33,7 +39,7 @@ const MultiSelect = (props) => {
           newItems.map(({ key, label: name }) => ({ key, name })),
         );
       }}
-      style={{ width: '200px' }}
+      style={{ width: '200px', ...style }}
       placeholder={placeholder}
     >
       {filteredItems.map((item) => (
@@ -46,7 +52,8 @@ const MultiSelect = (props) => {
 };
 
 MultiSelect.propTypes = {
-  items: PropTypes.array.isRequired,
+  items: PropTypes.array,
+  style: PropTypes.object,
   initialSelectedKeys: PropTypes.array,
   onChange: PropTypes.func,
   placeholder: PropTypes.node,
@@ -54,6 +61,8 @@ MultiSelect.propTypes = {
 
 MultiSelect.defaultProps = {
   initialSelectedKeys: [],
+  items: [],
+  style: {},
   onChange: () => { },
   placeholder: null,
 };
