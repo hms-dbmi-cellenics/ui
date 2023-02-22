@@ -163,7 +163,7 @@ const ContentWrapper = (props) => {
   const [seuratRerunStatus, setSeuratRerunStatus] = useState(null);
 
   useEffect(() => {
-    if (!activeExperiment) return;
+    if (!experiment) return;
 
     const pipelineStatus = calculatePipelineRerunStatus(
       seuratBackendStatus, experiment,
