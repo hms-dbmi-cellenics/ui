@@ -263,7 +263,7 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
       acc.push(...children.flat());
       return acc;
     }, [],
-  ));
+  ), [cellSetsHierarchy]);
 
   return (
     <>
@@ -282,11 +282,10 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
               <Space direction='vertical' style={{ width: '100%' }}>
                 <span>Select cell sets to use for trajectory analysis</span>
                 <MultiSelect
-                  items={options}
+                  options={options}
                   onChange={
                     (chosenCellSets) => {
-                      const selectedCellSetKeys = chosenCellSets.map(({ key }) => key);
-                      updatePlotWithChanges({ selectedCellSets: selectedCellSetKeys });
+                      updatePlotWithChanges({ selectedCellSets: chosenCellSets });
                       setDisplaySettings({
                         showPseudotimeValues: false,
                         showStartingNodes: false,
@@ -296,7 +295,7 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
                     }
                   }
                   placeholder='Select cell sets'
-                  initialSelectedKeys={selectedCellSets}
+                  selectedKeys={selectedCellSets}
                   style={{ width: '100%' }}
                 />
                 <Button
