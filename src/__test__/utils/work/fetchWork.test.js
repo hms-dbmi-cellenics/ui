@@ -1,12 +1,11 @@
 /* eslint-disable global-require */
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
+import mockAPI, { generateDefaultMockAPIResponses } from '__test__/test-utils/mockAPI';
 
 import fetchWork from 'utils/work/fetchWork';
-import { makeStore } from 'redux/store';
-import { loadBackendStatus } from 'redux/actions/backendStatus';
-
-import mockAPI, { generateDefaultMockAPIResponses } from '__test__/test-utils/mockAPI';
 import { getFourGenesMatrix } from '__test__/utils/ExpressionMatrix/testMatrixes';
+import { loadBackendStatus } from 'redux/actions/backendStatus';
+import { makeStore } from 'redux/store';
 
 const {
   mockGenesListData,
@@ -26,8 +25,8 @@ jest.mock(
 );
 
 const experimentId = '1234';
-const NON_GENE_EXPRESSION_ETAG = '713b35c59f447a9d308d0bb36521e851'; // pragma: allowlist secret
-const GENE_EXPRESSION_ABCD_ETAG = 'a669a9c313883975c1678cc8f0e5d1f7'; // pragma: allowlist secret
+const NON_GENE_EXPRESSION_ETAG = '46c26130daa12e602dc2f08e55209e32'; // pragma: allowlist secret
+const GENE_EXPRESSION_ABCD_ETAG = '045b91c78b6a866a4c9909d62b2f6c70'; // pragma: allowlist secret
 const timeout = 10;
 
 const nonGeneExpressionWorkRequest = {
