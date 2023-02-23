@@ -1,59 +1,52 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Select } from 'antd';
 import PropTypes from 'prop-types';
 
-const itemsFromKeys = (initialSelectedKeys, inputItems) => (
-  initialSelectedKeys.map((key) => (inputItems.find((item) => item.key === key)))
-);
-
 const MultiSelect = (props) => {
   const {
-    items: inputItems, onChange, placeholder, initialSelectedKeys,
+    onChange,
+    placeholder,
+    selectedKeys,
+    options,
+    style,
   } = props;
 
-  const [selectedItems, setSelectedItems] = useState(
-    itemsFromKeys(initialSelectedKeys, inputItems),
-  );
-
-  useEffect(() => {
-    onChange(selectedItems);
-  }, [selectedItems]);
-
-  const filteredItems = inputItems.filter(
-    (inputItem) => !selectedItems.find((selectedItem) => selectedItem.key === inputItem.key),
-  );
+  const formattedValues = options
+    .filter(({ key }) => selectedKeys.includes(key))
+    .map(({ key, name }) => ({ label: name, value: key }));
 
   return (
     <Select
       mode='multiple'
+      allowClear
       labelInValue
-      value={selectedItems.map(({ key, name }) => ({ key, label: name }))}
-      onChange={(newItems) => {
-        setSelectedItems(
-          newItems.map(({ key, label: name }) => ({ key, name })),
-        );
+      value={formattedValues}
+      onChange={(values) => {
+        onChange(values.map(({ value }) => value));
       }}
-      style={{ width: '200px' }}
+      style={style}
       placeholder={placeholder}
-    >
-      {filteredItems.map((item) => (
-        <Select.Option key={item.key} value={item.key}>
-          {item.name}
-        </Select.Option>
-      ))}
-    </Select>
+      fieldNames={{ label: 'name', value: 'key' }}
+      options={options}
+      filterOption={
+        (searchText, { name }) => name.toLowerCase().match(searchText.toLowerCase())
+      }
+    />
   );
 };
 
 MultiSelect.propTypes = {
-  items: PropTypes.array.isRequired,
-  initialSelectedKeys: PropTypes.array,
+  options: PropTypes.array,
+  style: PropTypes.object,
+  selectedKeys: PropTypes.array,
   onChange: PropTypes.func,
   placeholder: PropTypes.node,
 };
 
 MultiSelect.defaultProps = {
-  initialSelectedKeys: [],
+  selectedKeys: [],
+  options: [],
+  style: {},
   onChange: () => { },
   placeholder: null,
 };
