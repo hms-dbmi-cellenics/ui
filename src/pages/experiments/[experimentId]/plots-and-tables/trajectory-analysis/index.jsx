@@ -274,13 +274,17 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
         plotType={plotType}
         plotStylingConfig={plotStylingConfig}
         extraToolbarControls={renderExtraToolbarControls()}
-        defaultActiveKey='select-data'
+        defaultActiveKey='trajectory-analysis'
         saveDebounceTime={10}
         extraControlPanels={(
           <>
-            <Panel header='Select data' key='select-data'>
+            <Panel header='Trajectory analysis' key='trajectory-analysis'>
               <Space direction='vertical' style={{ width: '100%' }}>
-                <span>Select cell sets to use for trajectory analysis</span>
+                <span>
+                  <strong>1.</strong>
+                  {' '}
+                  Select cell sets to use for trajectory analysis
+                </span>
                 <MultiSelect
                   options={options}
                   onChange={
@@ -300,6 +304,7 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
                 />
                 <Button
                   type='primary'
+                  disabled={!selectedCellSets?.length || plotLoading}
                   onClick={() => {
                     dispatch(
                       getTrajectoryPlotStartingNodes(experimentId, plotUuid, selectedCellSets),
@@ -312,20 +317,31 @@ const TrajectoryAnalysisPage = ({ experimentId }) => {
                       hasRunStartingNodes: true,
                     });
                   }}
-                  disabled={!selectedCellSets?.length}
                   block
                 >
                   Calculate root nodes
                 </Button>
+                {
+                  selectedCellSets?.length > 0
+                  && displaySettings.hasRunStartingNodes
+                  && startingNodesReady
+                  && (
+                    <>
+                      <p style={{ margin: '1em 0 0 0' }}>
+                        <strong>2.</strong>
+                        {' '}
+                        Select root nodes
+                      </p>
+                      <TrajectoryAnalysisNodeSelector
+                        experimentId={experimentId}
+                        plotUuid={plotUuid}
+                        setDisplaySettings={setDisplaySettings}
+                        displaySettings={displaySettings}
+                      />
+                    </>
+                  )
+                }
               </Space>
-            </Panel>
-            <Panel header='Trajectory analysis' key='trajectory-analysis'>
-              <TrajectoryAnalysisNodeSelector
-                experimentId={experimentId}
-                plotUuid={plotUuid}
-                setDisplaySettings={setDisplaySettings}
-                displaySettings={displaySettings}
-              />
             </Panel>
             <Panel header='Display' key='display'>
               <TrajectoryAnalysisDisplaySettings

@@ -128,8 +128,6 @@ const runGetRootNodes = async () => {
 };
 
 const runPseudotime = async () => {
-  userEvent.click(screen.getByText('Trajectory analysis'));
-
   await simulateNodeSelection(storeState);
 
   userEvent.click(screen.getByText('Calculate pseudotime'));
@@ -172,7 +170,6 @@ describe('Trajectory analysis plot', () => {
   it('Loads controls and elements', async () => {
     await renderTrajectoryAnalysisPage(storeState);
 
-    expect(screen.getByText('Select data')).toBeInTheDocument();
     expect(screen.getByText('Trajectory analysis')).toBeInTheDocument();
     expect(screen.getByText('Display')).toBeInTheDocument();
     expect(screen.getByText('Main schema')).toBeInTheDocument();
@@ -218,27 +215,19 @@ describe('Trajectory analysis plot', () => {
     userEvent.click(screen.getByLabelText('close'));
 
     expect(screen.queryByText(/Select cell sets under 'Select Data' to get started./));
-  });
 
-  it('Trying to run trajectory analysis without cells selected will show a message', async () => {
-    await renderTrajectoryAnalysisPage(storeState);
-
-    userEvent.click(screen.getByText('Trajectory analysis'));
-
-    expect(screen.queryByText('To get started, select clusters to include in the analysis under Select data and run Calculate root nodes')).toBeNull();
+    // Information about root node selection is hidden
+    expect(screen.queryByText(/Select root nodes by/)).toBeNull();
+    expect(screen.queryByText('Clear selection')).toBeNull();
+    expect(screen.queryByText('Calculate pseudotime')).toBeNull();
   });
 
   it('Running calculate root nodes display root nodes', async () => {
     await renderTrajectoryAnalysisPage(storeState);
-
     await runGetRootNodes();
 
-    userEvent.click(screen.getByText('Trajectory analysis'));
-
-    screen.debug(null, Infinity);
-
     await waitFor(() => {
-      expect(screen.getByText(/To get started, select root nodes/)).toBeInTheDocument();
+      expect(screen.getByText(/Select root nodes by/)).toBeInTheDocument();
     });
 
     await simulateNodeSelection(storeState);
@@ -250,28 +239,26 @@ describe('Trajectory analysis plot', () => {
     });
   });
 
-  it('Trajectory buttons should not be shown if there are no selected nodes', async () => {
+  it('Trajectory buttons should be disabled if there are no selected nodes', async () => {
     await renderTrajectoryAnalysisPage(storeState);
 
     await runGetRootNodes();
-
-    userEvent.click(screen.getByText('Trajectory analysis'));
-
     await simulateNodeSelection(storeState);
 
     // The "Clear selection" button is the 2nd element in the body with "Clear selection" text
     // The 1st "Clear selection" text is inside the information text
     const clearSelectionButton = screen.queryAllByText('Clear selection')[1].closest('button');
     expect(clearSelectionButton).toBeInTheDocument();
+    expect(clearSelectionButton).not.toBeDisabled();
 
-    // Clearing nodes should hide the text and the buttons
+    const calculatePseudoteTimeButton = screen.getByText('Calculate pseudotime').closest('button');
+    expect(calculatePseudoteTimeButton).toBeInTheDocument();
+    expect(calculatePseudoteTimeButton).not.toBeDisabled();
+
+    // Clearing nodes should disable the clear selection button
     userEvent.click(clearSelectionButton);
-
-    // Thes is only 1 "Clear selection" text now, which is in the information text
-    expect(screen.queryAllByText('Clear selection').length).toEqual(1);
-
-    expect(screen.queryByText(`${selectedRootNodes.length} nodes selected`)).toBeNull();
-    expect(screen.queryByText('Calculate pseudotime')).toBeNull();
+    expect(clearSelectionButton).toBeDisabled();
+    expect(calculatePseudoteTimeButton).toBeDisabled();
   });
 
   it('Clicking "Calculate pseudotime" shows pseudotime', async () => {
@@ -388,8 +375,6 @@ describe('Trajectory analysis plot', () => {
 
     await runGetRootNodes();
 
-    userEvent.click(screen.getByText('Trajectory analysis'));
-
     const { signalListeners } = _.last(Vega.mock.calls)[0];
 
     signalListeners.lassoSelection('eventName', [0, 2, -10, 4]);
@@ -401,9 +386,6 @@ describe('Trajectory analysis plot', () => {
     await renderTrajectoryAnalysisPage(storeState);
 
     await runGetRootNodes();
-
-    userEvent.click(screen.getByText('Trajectory analysis'));
-
     await simulateNodeSelection(storeState);
 
     const { signalListeners } = _.last(Vega.mock.calls)[0];
@@ -417,8 +399,6 @@ describe('Trajectory analysis plot', () => {
     await renderTrajectoryAnalysisPage(storeState);
 
     await runGetRootNodes();
-
-    userEvent.click(screen.getByText('Trajectory analysis'));
 
     await simulateNodeSelection(storeState);
 

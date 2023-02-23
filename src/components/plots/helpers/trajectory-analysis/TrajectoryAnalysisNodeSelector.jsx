@@ -74,7 +74,7 @@ const TrajectoryAnalysisNodeSelector = (props) => {
           message={(
             <>
               <p>
-                To get started, select root nodes by
+                Select root nodes by
                 {' '}
                 <strong>clicking on the white points</strong>
                 . You can select multiple nodes at once by drawing a selection. To do this,
@@ -96,52 +96,48 @@ const TrajectoryAnalysisNodeSelector = (props) => {
             </>
           )}
         />
-        {selectedNodes?.length > 0 && (
-        <>
-          <strong>{`${selectedNodes.length} nodes selected`}</strong>
-          <Button
-            block
-            disabled={plotLoading}
-            onClick={() => {
-              dispatch(updatePlotConfig(plotUuid, { selectedNodes: [] }));
-            }}
-          >
-            Clear selection
-          </Button>
-          <Button
-            type='primary'
-            block
-            disabled={plotLoading}
-            onClick={async () => {
-              // Optimistic result to prevent flickering
+        <strong>{`${selectedNodes.length} nodes selected`}</strong>
+        <Button
+          block
+          disabled={selectedNodes.length === 0 || plotLoading}
+          onClick={() => {
+            dispatch(updatePlotConfig(plotUuid, { selectedNodes: [] }));
+          }}
+        >
+          Clear selection
+        </Button>
+        <Button
+          type='primary'
+          block
+          disabled={selectedNodes.length === 0 || plotLoading}
+          onClick={async () => {
+            // Optimistic result to prevent flickering
+            setDisplaySettings({
+              ...displaySettings,
+              showPseudotimeValues: true,
+              hasRunPseudotime: true,
+            });
+
+            const success = await dispatch(
+              getTrajectoryPlotPseudoTime(
+                selectedNodes,
+                experimentId,
+                plotUuid,
+                selectedCellSets,
+              ),
+            );
+
+            if (!success) {
               setDisplaySettings({
                 ...displaySettings,
-                showPseudotimeValues: true,
-                hasRunPseudotime: true,
+                showPseudotimeValues: false,
+                hasRunPseudotime: false,
               });
-
-              const success = await dispatch(
-                getTrajectoryPlotPseudoTime(
-                  selectedNodes,
-                  experimentId,
-                  plotUuid,
-                  selectedCellSets,
-                ),
-              );
-
-              if (!success) {
-                setDisplaySettings({
-                  ...displaySettings,
-                  showPseudotimeValues: false,
-                  hasRunPseudotime: false,
-                });
-              }
-            }}
-          >
-            {displaySettings.hasRunPseudotime ? 'Recalculate pseudotime' : 'Calculate pseudotime'}
-          </Button>
-        </>
-        )}
+            }
+          }}
+        >
+          {displaySettings.hasRunPseudotime ? 'Recalculate pseudotime' : 'Calculate pseudotime'}
+        </Button>
       </Space>
     );
   };
