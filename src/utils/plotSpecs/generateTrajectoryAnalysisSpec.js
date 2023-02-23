@@ -1,4 +1,6 @@
 /* eslint-disable no-param-reassign */
+import _ from 'lodash';
+
 const maxLabelLength = 85;
 const maxLabelHeight = 25;
 const paddingSize = 5;
@@ -683,6 +685,9 @@ const generateTrajectoryEmbeddingData = (cellSets, embedding, selectedCellSets) 
       }));
   }).flat();
 
+  // Filter array for duplicate cell sets
+  selectedCellSetObjects = _.uniqBy(selectedCellSetObjects, 'key');
+
   selectedCellSetObjects.forEach((cellSet) => {
     const { key, name, color } = cellSet;
 
@@ -691,19 +696,19 @@ const generateTrajectoryEmbeddingData = (cellSets, embedding, selectedCellSets) 
     cellSet.cellIds.forEach((cellId) => {
       if (!embedding[cellId]) return;
 
-      plotData[cellId] = {
+      plotData.push({
         cellId,
         cellSetKey: key,
         cellSetName: name,
         color,
         x: embedding[cellId][0],
         y: embedding[cellId][1],
-      };
+      });
     });
   });
 
   return {
-    plotData: plotData.filter((idx) => idx !== undefined),
+    plotData,
     cellSetLegendsData,
   };
 };
