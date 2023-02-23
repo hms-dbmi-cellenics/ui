@@ -13,7 +13,9 @@ import InlineError from 'components/InlineError';
 
 const { Option, OptGroup } = Select;
 const SelectData = (props) => {
-  const { onUpdate, config, cellSets } = props;
+  const {
+    onUpdate, config, cellSets, disabled,
+  } = props;
 
   const {
     hierarchy,
@@ -55,6 +57,7 @@ const SelectData = (props) => {
         <Select
           value={config.selectedSample}
           style={{ width: 200 }}
+          disabled={disabled}
           onChange={(value) => {
             handleChange(value);
           }}
@@ -76,9 +79,11 @@ SelectData.propTypes = {
   onUpdate: PropTypes.func.isRequired,
   config: PropTypes.object,
   cellSets: PropTypes.object.isRequired,
+  disabled: PropTypes.bool,
 };
 
 SelectData.defaultProps = {
   config: null,
+  disabled: false,
 };
 export default SelectData;
