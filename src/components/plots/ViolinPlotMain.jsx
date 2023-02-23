@@ -13,7 +13,7 @@ import { generateSpec, generateData } from 'utils/plotSpecs/generateViolinSpec';
 import PlatformError from 'components/PlatformError';
 import Loader from 'components/Loader';
 
-const ViolinPlot = (props) => {
+const ViolinPlotMain = (props) => {
   const {
     experimentId, plotUuid,
   } = props;
@@ -103,9 +103,9 @@ const ViolinPlot = (props) => {
   return render();
 };
 
-ViolinPlot.propTypes = {
+ViolinPlotMain.propTypes = {
   experimentId: PropTypes.string.isRequired,
   plotUuid: PropTypes.string.isRequired,
 };
 
-export default ViolinPlot;
+export default ViolinPlotMain;
