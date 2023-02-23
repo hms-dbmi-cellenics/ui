@@ -16,7 +16,7 @@ import changeEmbeddingAxesIfNecessary from './helpers/changeEmbeddingAxesIfNeces
 const ContinuousEmbeddingPlot = (props) => {
   const {
     experimentId, config,
-    plotData, truncatedPlotData,
+    plotData,
     actions, loading, error,
     reloadPlotData, onUpdate,
   } = props;
@@ -67,7 +67,7 @@ const ContinuousEmbeddingPlot = (props) => {
           generateData(
             cellSets,
             config.selectedSample,
-            config.truncatedValues ? truncatedPlotData : plotData,
+            plotData,
             embeddingData,
           ),
         ),
@@ -138,7 +138,6 @@ ContinuousEmbeddingPlot.propTypes = {
   experimentId: PropTypes.string.isRequired,
   config: PropTypes.object,
   plotData: PropTypes.array,
-  truncatedPlotData: PropTypes.array,
   actions: PropTypes.oneOfType([
     PropTypes.bool,
     PropTypes.object,

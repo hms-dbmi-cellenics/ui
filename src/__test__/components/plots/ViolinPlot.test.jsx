@@ -10,7 +10,7 @@ import { loadBackendStatus } from 'redux/actions/backendStatus';
 import { seekFromS3 } from 'utils/work/seekWorkResponse';
 import expressionDataFAKEGENE from '__test__/data/gene_expression_FAKEGENE.json';
 
-import ViolinPlot from 'components/plots/ViolinPlot';
+import ViolinPlot from 'components/plots/ViolinPlotMain';
 
 import createTestComponentFactory from '__test__/test-utils/testComponentFactory';
 import { makeStore } from 'redux/store';
