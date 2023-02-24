@@ -36,7 +36,7 @@ const fileUploadSpecifications = {
     ],
     info: ` For each sample, upload a folder containing the 3 count matrix files. The
     folder's name will be used to name the sample in it. You can change this name later in Data Management.`,
-    validateName(fileName) { return this.acceptedFiles.has(fileName) || matchFileName(fileName, this.acceptedFiles); },
+    isNameValid(fileName) { return this.acceptedFiles.has(fileName) || matchFileName(fileName, this.acceptedFiles); },
     getCorrespondingName(fileName) {
       const allowedNames = Array.from(this.acceptedFiles);
 
@@ -53,7 +53,7 @@ const fileUploadSpecifications = {
     info: `For each sample, upload a folder containing the required file. The folder's
     name will be used to name the sample in it.
     You can change this name later in Data Management.`,
-    validateName: (fileName) => fileName.toLowerCase().match(/.*expression_data.st(.gz)?$/),
+    isNameValid: (fileName) => fileName.toLowerCase().match(/.*expression_data.st(.gz)?$/),
     getCorrespondingName: (fileName) => fileName,
   },
 };

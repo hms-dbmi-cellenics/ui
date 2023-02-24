@@ -29,7 +29,7 @@ const inspectFile = async (file, technology) => {
     return valid;
   } if (technology === sampleTech['10X']) {
     // immediately discard file if filename is not in valid set
-    if (!techOptions[technology].validateName(file.name)) {
+    if (!techOptions[technology].isNameValid(file.name)) {
       return Verdict.INVALID_NAME;
     }
 
