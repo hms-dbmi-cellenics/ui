@@ -104,7 +104,8 @@ const renderTrajectoryAnalysisPlot = async (store, props) => {
   });
 };
 
-const defaultShownPlotDescription = 'Trajectory analysis plot showing clusters with trajectory';
+const plotDescriptionWithoutData = 'Trajectory analysis plot showing clusters';
+const plotDescriptionWithData = 'Trajectory analysis plot showing clusters with trajectory';
 
 let storeState = null;
 describe('Trajectory analysis plot', () => {
@@ -129,14 +130,23 @@ describe('Trajectory analysis plot', () => {
     await storeState.dispatch(loadProcessingSettings(experimentId));
     await storeState.dispatch(loadEmbedding(experimentId, 'umap'));
     await storeState.dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
-    await storeState.dispatch(getTrajectoryPlotStartingNodes(experimentId, plotUuid));
   });
 
-  it('Renders correctly with data', async () => {
+  it('Renders correctly without starting nodes data', async () => {
     await renderTrajectoryAnalysisPlot(storeState);
 
     await waitFor(async () => {
-      await expect(screen.getByRole('graphics-document', { name: defaultShownPlotDescription })).toBeInTheDocument();
+      await expect(screen.getByRole('graphics-document', { name: plotDescriptionWithoutData })).toBeInTheDocument();
+    });
+  });
+
+  it('Renders correctly with starting nodes data', async () => {
+    await storeState.dispatch(getTrajectoryPlotStartingNodes(experimentId, plotUuid));
+
+    await renderTrajectoryAnalysisPlot(storeState);
+
+    await waitFor(async () => {
+      await expect(screen.getByRole('graphics-document', { name: plotDescriptionWithData })).toBeInTheDocument();
     });
   });
 
@@ -163,7 +173,7 @@ describe('Trajectory analysis plot', () => {
 
     await waitFor(async () => {
       expect(screen.getByText(/The embedding and trajectory below are generated from a UMAP embedding of your data/)).toBeInTheDocument();
-      expect(screen.getByRole('graphics-document', { name: defaultShownPlotDescription })).toBeInTheDocument();
+      expect(screen.getByRole('graphics-document', { name: plotDescriptionWithData })).toBeInTheDocument();
     });
   });
 });

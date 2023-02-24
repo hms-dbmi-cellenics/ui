@@ -7,9 +7,9 @@ import PropTypes from 'prop-types';
 import { Vega } from 'react-vega';
 import 'vega-webgl-renderer';
 
-import { generateData as generateEmbeddingCategoricalData } from 'utils/plotSpecs/generateEmbeddingCategoricalSpec';
 import {
   generateTrajectoryAnalysisSpec,
+  generateTrajectoryEmbeddingData,
   generateStartingNodesData,
   generatePseudotimeData,
 } from 'utils/plotSpecs/generateTrajectoryAnalysisSpec';
@@ -100,13 +100,8 @@ const TrajectoryAnalysisPlot = forwardRef((props, ref) => {
       || !embeddingData?.length
     ) return {};
 
-    return generateEmbeddingCategoricalData(
-      cellSets,
-      config.selectedSample,
-      config.selectedCellSet,
-      embeddingData,
-    );
-  }, [config, cellSets, embeddingData]);
+    return generateTrajectoryEmbeddingData(cellSets, embeddingData, config.selectedCellSets);
+  }, [config.selectedCellSets.length, cellSets, embeddingData]);
 
   const startingNodesData = useMemo(() => {
     if (
@@ -125,12 +120,11 @@ const TrajectoryAnalysisPlot = forwardRef((props, ref) => {
     ) return;
 
     return generatePseudotimeData(
-      cellSets,
       startingNodesPlotData.pseudotime,
-      embeddingData,
+      embeddingPlotData,
     );
   }, [
-    embeddingData,
+    embeddingPlotData,
     cellSets,
     startingNodesPlotData?.pseudotime,
     config?.selectedNodes,
@@ -166,7 +160,6 @@ const TrajectoryAnalysisPlot = forwardRef((props, ref) => {
     if (
       !embeddingPlotData
       || !cellSetLegendsData
-      || !startingNodesPlotData?.nodes
     ) return;
 
     const {
@@ -233,12 +226,12 @@ const TrajectoryAnalysisPlot = forwardRef((props, ref) => {
       viewStateRef.current = { xdom, ydom };
     },
     addNode: (eventName, payload) => {
-      const { node_id: nodeId } = payload;
+      const { nodeId } = payload;
 
       onClickNode('add', nodeId);
     },
     removeNode: (eventName, payload) => {
-      const { node_id: nodeId } = payload;
+      const { nodeId } = payload;
 
       onClickNode('remove', nodeId);
     },
@@ -296,7 +289,10 @@ const TrajectoryAnalysisPlot = forwardRef((props, ref) => {
         // so we need to use canvas for plotting pseudotime
         renderer={displaySettings.showPseudotimeValues ? 'canvas' : 'webgl'}
         actions={actions}
-        signalListeners={displaySettings.showStartingNodes ? plotListeners : {}}
+        signalListeners={
+          startingNodesPlotData?.nodes
+          && displaySettings.showStartingNodes ? plotListeners : {}
+        }
       />
     </center>
   );

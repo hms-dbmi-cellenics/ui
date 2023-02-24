@@ -45,7 +45,7 @@
     "@ant-design/icons": "^4.2.1",
     "@aws-amplify/auth": "^4.3.18",
     "@aws-amplify/core": "^4.3.10",
-    "@aws-amplify/storage": "^4.4.11",
+    "@aws-amplify/storage": "^5.1.5",
     "@aws-sdk/client-cognito-identity": "^3.11.0",
     "@aws-sdk/client-cognito-identity-provider": "^3.11.0",
     "@aws-sdk/client-sts": "^3.12.0",
