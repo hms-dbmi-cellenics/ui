@@ -377,7 +377,9 @@ describe('ProjectDetails', () => {
     });
     act(() => userEvent.click(screen.getByText('Copy')));
     expect(mockedCloneExperiment).toHaveBeenCalledTimes(1);
-    await waitFor(() => expect(mockedLoadExperiments).toHaveBeenCalledTimes(1));
-    expect(mockedSetActiveExperiment).toHaveBeenCalledTimes(1);
+    await waitFor(() => {
+      expect(mockedLoadExperiments).toHaveBeenCalledTimes(1);
+      expect(mockedSetActiveExperiment).toHaveBeenCalledTimes(1);
+    });
   });
 });

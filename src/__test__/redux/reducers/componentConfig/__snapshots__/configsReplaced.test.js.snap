@@ -505,6 +505,8 @@ Object {
         "height": 550,
         "width": 700,
       },
+      "embeddingCellSet": "louvain",
+      "embeddingSample": "All",
       "fontStyle": Object {
         "colour": "#000000",
         "font": "sans-serif",
@@ -526,6 +528,9 @@ Object {
         "size": 20,
       },
       "selectedCellSet": "louvain",
+      "selectedCellSets": Array [
+        "louvain",
+      ],
       "selectedNodes": Array [],
       "selectedSample": "All",
       "spec": "1.0.0",
