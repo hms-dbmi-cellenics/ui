@@ -10,7 +10,7 @@ coverage:
     project:                   # measuring the overall project coverage
       default:                 
         target: auto
-        threshold: 0.07%
+        threshold: 0.22%
 
     patch:                    # measuring the coverage of new changes
       default:
