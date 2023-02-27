@@ -74,7 +74,7 @@ const HeatmapPlot = (props) => {
       .configureEmbedding?.clusteringSettings.methodSettings.louvain.resolution,
   );
 
-  const expressionMatrix = useSelector((state) => state.genes.expression.matrix);
+  const expressionMatrix = useSelector((state) => state.genes.expression.downsampledMatrix);
 
   const { error: expressionDataError } = expressionData;
   const viewError = useSelector((state) => state.genes.expression.views[COMPONENT_TYPE]?.error);

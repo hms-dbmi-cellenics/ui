@@ -51,6 +51,7 @@ const loadMarkerGenes = (
           truncatedExpression,
           zScore,
           stats,
+          cellOrder,
         },
       },
     });
