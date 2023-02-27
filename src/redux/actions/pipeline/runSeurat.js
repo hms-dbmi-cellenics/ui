@@ -9,7 +9,7 @@ import {
 
 import loadBackendStatus from 'redux/actions/backendStatus/loadBackendStatus';
 
-const runSeurat = (experimentId, paramsHash) => async (dispatch) => {
+const runSeurat = (experimentId) => async (dispatch) => {
   dispatch({
     type: BACKEND_STATUS_LOADING,
     payload: {
@@ -25,7 +25,6 @@ const runSeurat = (experimentId, paramsHash) => async (dispatch) => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ paramsHash }),
       },
     );
 

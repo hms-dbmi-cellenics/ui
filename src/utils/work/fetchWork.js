@@ -74,6 +74,7 @@ const fetchWork = async (
   const backendStatus = getBackendStatus(experimentId)(getState()).status;
 
   const { environment } = getState().networkResources;
+
   if (!isBrowser) {
     throw new Error('Disabling network interaction on server');
   }

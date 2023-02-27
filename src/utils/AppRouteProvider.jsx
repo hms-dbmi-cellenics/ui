@@ -26,6 +26,7 @@ import DataProcessingIntercept from 'components/data-processing/DataProcessingIn
 
 const PATH_STUBS = {
   [modules.DATA_MANAGEMENT]: '/data-management',
+  [modules.REPOSITORY]: '/repository',
   [modules.DATA_PROCESSING]: '/data-processing',
   [modules.DATA_EXPLORATION]: '/data-exploration',
   [modules.PLOTS_AND_TABLES]: '/plots-and-tables',
@@ -35,6 +36,7 @@ const PATH_STUBS = {
 
 const PATHS = {
   [modules.DATA_MANAGEMENT]: `${PATH_STUBS[modules.DATA_MANAGEMENT]}`,
+  [modules.REPOSITORY]: `${PATH_STUBS[modules.REPOSITORY]}`,
   [modules.DATA_PROCESSING]: `/experiments/[experimentId]${PATH_STUBS[modules.DATA_PROCESSING]}`,
   [modules.DATA_EXPLORATION]: `/experiments/[experimentId]${PATH_STUBS[modules.DATA_EXPLORATION]}`,
   [modules.PLOTS_AND_TABLES]: `/experiments/[experimentId]${PATH_STUBS[modules.PLOTS_AND_TABLES]}`,
@@ -72,8 +74,13 @@ const AppRouteProvider = (props) => {
     ),
   };
 
-  const handleRouteChange = async (previousRoute, module, params, ignoreIntercepts) => {
+  const handleRouteChange = async (previousRoute, module, params, ignoreIntercepts, hardLoad) => {
     const nextRoute = PATHS[module].replace('[experimentId]', params.experimentId);
+
+    if (nextRoute.match(PATH_STUBS.REPOSITORY)) {
+      router.push(nextRoute);
+      return;
+    }
 
     if (
       previousRoute.match(PATH_STUBS.DATA_PROCESSING)
@@ -96,15 +103,19 @@ const AppRouteProvider = (props) => {
         dispatch(setActiveExperiment(params.experimentId));
       }
     }
-
-    router.push(nextRoute);
+    if (hardLoad) {
+      window.location = nextRoute;
+    } else {
+      router.push(nextRoute);
+    }
   };
 
   const navigateTo = async (
     module,
     params = {},
     ignoreIntercepts = false,
-  ) => handleRouteChange(router.pathname, module, params, ignoreIntercepts);
+    hardLoad = false,
+  ) => handleRouteChange(router.pathname, module, params, ignoreIntercepts, hardLoad);
 
   return (
     <AppRouterContext.Provider value={{ navigateTo, currentModule }}>

@@ -3,7 +3,6 @@ import thunk from 'redux-thunk';
 import waitForActions from 'redux-mock-store-await-actions';
 import axios from 'axios';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
-import { sampleTech } from 'utils/constants';
 
 import { SAMPLES_FILE_UPDATE } from 'redux/actionTypes/samples';
 import initialSampleState, { sampleTemplate } from 'redux/reducers/samples/initialState';
@@ -16,6 +15,7 @@ import processUpload from 'utils/upload/processUpload';
 
 import validate from 'utils/upload/validate10x';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
+import { sampleTech } from 'utils/constants';
 import mockFile from '__test__/test-utils/mockFile';
 
 enableFetchMocks();
@@ -68,6 +68,7 @@ const initialState = {
     [mockExperimentId]: {
       ...experimentTemplate,
       id: mockExperimentId,
+      sampleIds: [mockSampleUuid],
     },
   },
   samples: {

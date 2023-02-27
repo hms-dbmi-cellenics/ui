@@ -54,11 +54,9 @@ describe('PipelineLoadingScreen', () => {
   });
 
   it('Clicking re-launch analysis re-runs GEM2S', () => {
-    const mockParamsHash = 'mockParamsHash';
-
     const component = mount(
       <Provider store={store}>
-        <PipelineLoadingScreen experimentId='experimentId' paramsHash={mockParamsHash} pipelineStatus='error' pipelineType='gem2s' />
+        <PipelineLoadingScreen experimentId='experimentId' pipelineStatus='error' pipelineType='gem2s' />
       </Provider>,
     );
 
@@ -66,12 +64,6 @@ describe('PipelineLoadingScreen', () => {
     relaunchButton.simulate('click');
 
     expect(fetchAPI).toHaveBeenCalled();
-
-    const fetchAPIParams = fetchAPI.mock.calls[0];
-    const requestBody = JSON.parse(fetchAPIParams[1].body);
-
-    // Check that the body of the request is correct
-    expect(requestBody.paramsHash).toMatch(mockParamsHash);
   });
 
   it('Renders running state correctly', () => {
@@ -100,5 +92,26 @@ describe('PipelineLoadingScreen', () => {
 
     // Display step information as shown in steps
     expect(display.find('span.ant-typography').first().text()).toEqual(steps[completedSteps.length]);
+  });
+
+  it('Shows correct screen for subsetting experiment ', async () => {
+    const completedSteps = [
+      'step 1',
+      'step 2',
+    ];
+
+    const steps = [
+      'Downloading sample files',
+      'Preprocessing samples',
+      'Computing metrics',
+    ];
+    const experimentName = 'newExperiment';
+    const component = mount(
+      <Provider store={store}>
+        <PipelineLoadingScreen pipelineStatus='subsetting' completedSteps={completedSteps} steps={steps} experimentName={experimentName} pipelineType='gem2s' />
+      </Provider>,
+    );
+
+    expect(component.find('Title').first().text()).toEqual(`Subsetting cell sets into${experimentName}`);
   });
 });

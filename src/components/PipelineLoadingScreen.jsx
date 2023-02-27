@@ -35,7 +35,7 @@ const runnerByType = {
 
 const PipelineLoadingScreen = (props) => {
   const {
-    pipelineStatus, paramsHash, completedSteps, experimentId, pipelineType, pipelineErrorMessage,
+    pipelineStatus, completedSteps, experimentId, experimentName, pipelineType, pipelineErrorMessage,
   } = props;
 
   const pipelineStepsInfo = pipelineStepsInfoByType[pipelineType];
@@ -45,7 +45,7 @@ const PipelineLoadingScreen = (props) => {
 
   const dataManagementPath = '/data-management';
   const relaunchExperiment = () => {
-    dispatch(runner(experimentId, paramsHash));
+    dispatch(runner(experimentId));
   };
 
   const texts = {
@@ -72,6 +72,14 @@ const PipelineLoadingScreen = (props) => {
       image: '/undraw_Abstract_re_l9xy.svg',
       alt: 'A woman confusedly staring at an abstract drawing.',
       showProgress: false,
+    },
+    subsetting: {
+      status: 'running',
+      showProgress: true,
+      title: ' ',
+      subTitle: ' ',
+      image: '/undraw_Dev_focus_re_6iwt.svg',
+      alt: 'A woman working in front of a computer.',
     },
   };
 
@@ -117,8 +125,21 @@ const PipelineLoadingScreen = (props) => {
               </Space>
             </div>
             <div>
-              <Title level={3}>We&apos;re launching your analysis...</Title>
-              <Text type='secondary'>You can wait or leave this screen and check again later</Text>
+              {pipelineStatus === 'subsetting' && (
+                <Title level={3}>
+                  Subsetting cell sets into
+                  <br />
+                  {experimentName}
+                </Title>
+              )}
+              {pipelineStatus === 'running' && (<Title level={3}>We&apos;re launching your analysis...</Title>)}
+              <Text type='secondary'>You can wait or leave this screen and check again later.</Text>
+              {pipelineStatus === 'subsetting' && (
+                <Text type='secondary'>
+                  <br />
+                  Your new project containing only the selected cell sets will be available in the Data Management module
+                </Text>
+              )}
             </div>
             <NotifyByEmail experimentId={experimentId} />
           </Space>
@@ -149,18 +170,18 @@ const PipelineLoadingScreen = (props) => {
 };
 
 PipelineLoadingScreen.propTypes = {
-  pipelineStatus: PropTypes.oneOf(['error', 'running', 'toBeRun']).isRequired,
+  pipelineStatus: PropTypes.oneOf(['error', 'running', 'toBeRun', 'subsetting']).isRequired,
   pipelineType: PropTypes.oneOf(['gem2s', 'seurat']).isRequired,
   completedSteps: PropTypes.array,
   experimentId: PropTypes.string,
-  paramsHash: PropTypes.string,
+  experimentName: PropTypes.string,
   pipelineErrorMessage: PropTypes.string,
 };
 
 PipelineLoadingScreen.defaultProps = {
   completedSteps: [],
   experimentId: null,
-  paramsHash: null,
+  experimentName: null,
   pipelineErrorMessage: null,
 };
 

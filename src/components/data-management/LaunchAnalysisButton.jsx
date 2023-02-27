@@ -74,7 +74,7 @@ const LaunchAnalysisButton = () => {
     const runner = runnersByTechnology[selectedTech];
 
     if (pipelineRerunStatus.rerun) {
-      dispatch(runner(activeExperimentId, pipelineRerunStatus.paramsHash));
+      dispatch(runner(activeExperimentId));
     }
 
     const moduleName = seuratComplete ? modules.DATA_EXPLORATION : modules.DATA_PROCESSING;
@@ -91,9 +91,7 @@ const LaunchAnalysisButton = () => {
       || !experiments[activeExperimentId]?.sampleIds?.length > 0
     ) return;
 
-    const pipelineStatus = calculatePipelineRerunStatus(
-      pipelineBackendStatus, activeExperiment, samples,
-    );
+    const pipelineStatus = calculatePipelineRerunStatus(pipelineBackendStatus, activeExperiment);
     setPipelineRerunStatus(pipelineStatus);
   }, [backendStatus, activeExperimentId, samples, activeExperiment]);
 
@@ -109,10 +107,11 @@ const LaunchAnalysisButton = () => {
     const allSampleFilesUploaded = (sample) => {
       // Check if all files for a given tech has been uploaded
       const { fileNames } = sample;
-
-      if (!fileUploadSpecifications[sample.type].requiredFiles.every(
-        (file) => fileNames.includes(file.key),
-      )) { return false; }
+      if (
+        !fileUploadSpecifications[sample.type].requiredFiles.every(
+          (file) => fileNames.includes(file.key),
+        )
+      ) { return false; }
 
       let allUploaded = true;
 
@@ -141,6 +140,7 @@ const LaunchAnalysisButton = () => {
       if (!samples[sampleUuid]) return false;
 
       const checkedSample = samples[sampleUuid];
+
       return allSampleFilesUploaded(checkedSample)
         && allSampleMetadataInserted(checkedSample);
     });

@@ -18,7 +18,8 @@ import { getBackendStatus } from 'redux/selectors';
 import { loadExperiments, setActiveExperiment } from 'redux/actions/experiments';
 
 import { updateExperimentInfo } from 'redux/actions/experimentSettings';
-import generatePipelineParamsHash from 'utils/data-management/generatePipelineParamsHash';
+
+import calculatePipelineRerunStatus from 'utils/data-management/calculatePipelineRerunStatus';
 
 import mockAPI, {
   generateDefaultMockAPIResponses,
@@ -28,7 +29,7 @@ import { experiments } from '__test__/test-utils/mockData';
 
 jest.mock('redux/selectors');
 jest.mock('utils/socketConnection');
-jest.mock('utils/data-management/generatePipelineParamsHash');
+jest.mock('utils/data-management/calculatePipelineRerunStatus');
 
 jest.mock('next/router', () => ({
   __esModule: true,
@@ -59,8 +60,6 @@ const firefoxUA = '"Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:96.0) Gecko
 Object.defineProperty(navigator, 'userAgent', { value: chromeUA, writable: true });
 
 enableFetchMocks();
-
-generatePipelineParamsHash.mockImplementation(() => 'mockParamsHash');
 
 const experimentWithSamples = experiments.find((experiment) => experiment.samplesOrder.length > 0);
 
@@ -98,6 +97,12 @@ const renderContentWrapper = async (expId, expData) => {
   return result;
 };
 
+getBackendStatus.mockImplementation(() => () => ({
+  loading: false,
+  error: false,
+  status: null,
+}));
+
 describe('ContentWrapper', () => {
   beforeAll(async () => {
     await preloadAll();
@@ -117,15 +122,15 @@ describe('ContentWrapper', () => {
 
     navigator.userAgent = chromeUA;
 
-    getBackendStatus.mockImplementation(() => () => ({
-      loading: false,
-      error: false,
-      status: null,
-    }));
+    calculatePipelineRerunStatus.mockImplementation(() => ({ rerun: true, reasons: [], complete: false }));
 
     await store.dispatch(loadExperiments());
     await store.dispatch(setActiveExperiment(experimentId));
     await store.dispatch(updateExperimentInfo({ experimentId, experimentName, sampleIds }));
+  });
+
+  afterEach(() => {
+    calculatePipelineRerunStatus.mockRestore();
   });
 
   it('renders correctly', async () => {
@@ -161,6 +166,8 @@ describe('ContentWrapper', () => {
   });
 
   it('Links are enabled if the selected project is processed', async () => {
+    calculatePipelineRerunStatus.mockImplementationOnce(() => ({ rerun: false, reasons: [], complete: true }));
+
     const mockBackendStatus = {
       loading: false,
       error: false,
@@ -170,18 +177,17 @@ describe('ContentWrapper', () => {
         },
         gem2s: {
           status: 'SUCCEEDED',
-          paramsHash: 'mockParamsHash',
+          shouldRerun: false,
         },
         seurat: {
           status: 'NOT_CREATED',
-          paramsHash: 'mockParamsHash',
         },
       },
     };
 
     getBackendStatus.mockImplementation(() => () => mockBackendStatus);
 
-    await renderContentWrapper();
+    await renderContentWrapper(experimentId, experimentData);
 
     // Data Management is not disabled
     expect(screen.getByText('Data Management').closest('li')).toHaveAttribute('aria-disabled', 'false');
