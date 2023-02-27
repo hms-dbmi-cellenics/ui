@@ -40,7 +40,7 @@ const HeatmapPlot = ({ experimentId }) => {
   const configIsLoaded = useSelector((state) => !_.isNil(state.componentConfig[plotUuid]));
 
   const { expression: expressionData } = useSelector((state) => state.genes);
-  const { error, loading } = expressionData;
+  const { error, loading, downsampledMatrix } = expressionData;
   const cellSets = useSelector(getCellSets());
   const selectedGenes = useSelector((state) => state.genes.expression.views[plotUuid]?.data) || [];
   const numLegendItems = useSelector(
@@ -98,7 +98,7 @@ const HeatmapPlot = ({ experimentId }) => {
     }
 
     const cellOrder = populateHeatmapData(cellSets, config);
-    const data = generateVegaData(cellOrder, expressionData, config, cellSets);
+    const data = generateVegaData(cellOrder, downsampledMatrix, config, cellSets);
 
     const displayLabels = selectedGenes.length <= 53;
     const spec = generateSpec(config, 'Cluster ID', data, displayLabels);
@@ -244,7 +244,7 @@ const HeatmapPlot = ({ experimentId }) => {
       return (
         <Space direction='vertical'>
           {config.legend.showAlert
-          && <PlotLegendAlert />}
+            && <PlotLegendAlert />}
           <center>
             <Vega spec={vegaSpec} renderer='webgl' />
           </center>

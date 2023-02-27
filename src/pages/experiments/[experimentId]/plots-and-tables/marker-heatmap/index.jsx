@@ -53,7 +53,7 @@ const MarkerHeatmap = ({ experimentId }) => {
   const configIsLoaded = useSelector((state) => !_.isNil(state.componentConfig[plotUuid]));
 
   const { expression: expressionData } = useSelector((state) => state.genes);
-  const { error, loading } = expressionData;
+  const { error, loading, downsampledMatrix } = expressionData;
 
   const cellSets = useSelector(getCellSets());
   const { hierarchy, properties } = cellSets;
@@ -143,7 +143,7 @@ const MarkerHeatmap = ({ experimentId }) => {
     const getCellIdsForCluster = (clusterId) => properties[clusterId].cellIds;
 
     const getAverageExpressionForGene = (gene, currentCellIds) => {
-      const expressionValues = expressionData.matrix.getRawExpression(gene);
+      const expressionValues = downsampledMatrix.getRawExpression(gene);
       let totalValue = 0;
       currentCellIds.forEach((cellId) => {
         totalValue += expressionValues[cellId];
@@ -231,7 +231,7 @@ const MarkerHeatmap = ({ experimentId }) => {
 
     const cellOrder = populateHeatmapData(cellSets, config, true);
 
-    const data = generateVegaData(cellOrder, expressionData, config, cellSets);
+    const data = generateVegaData(cellOrder, downsampledMatrix, config, cellSets);
     const spec = generateSpec(config, 'Cluster ID', data, true);
 
     spec.description = 'Marker heatmap';
