@@ -5,6 +5,12 @@ const techNamesToDisplay = {
   [sampleTech.RHAPSODY]: 'BD Rhapsody',
 };
 
+const matchFileName = (fileName, fileNames) => {
+  const regexString = `.*(${Array.from(fileNames).join('|')})$`;
+  const regexp = new RegExp(regexString, 'i');
+  return fileName.match(regexp);
+};
+
 /* eslint-disable max-len */
 const fileUploadSpecifications = {
   [sampleTech['10X']]: {
@@ -30,7 +36,15 @@ const fileUploadSpecifications = {
     ],
     info: ` For each sample, upload a folder containing the 3 count matrix files. The
     folder's name will be used to name the sample in it. You can change this name later in Data Management.`,
-    fileNameFilter(fileName) { return this.acceptedFiles.has(fileName); },
+    isNameValid(fileName) { return this.acceptedFiles.has(fileName) || matchFileName(fileName, this.acceptedFiles); },
+    getCorrespondingName(fileName) {
+      const allowedNames = Array.from(this.acceptedFiles);
+
+      // Using for loop to allow breaking quickly
+      for (let i = 0; i < allowedNames.length; i += 1) {
+        if (fileName.endsWith(allowedNames[i])) return allowedNames[i];
+      }
+    },
   },
   [sampleTech.RHAPSODY]: {
     acceptedFiles: new Set(['expression_data.st', 'expression_data.st.gz']),
@@ -39,7 +53,8 @@ const fileUploadSpecifications = {
     info: `For each sample, upload a folder containing the required file. The folder's
     name will be used to name the sample in it.
     You can change this name later in Data Management.`,
-    fileNameFilter: (fileName) => fileName.toLowerCase().match(/.*expression_data.st(.gz)?$/),
+    isNameValid: (fileName) => fileName.toLowerCase().match(/.*expression_data.st(.gz)?$/),
+    getCorrespondingName: (fileName) => fileName,
   },
 };
 
