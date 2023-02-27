@@ -32,7 +32,7 @@ const speciesOptions = [
   'mouse',
 ];
 
-const AnnotateClustersTool = ({ experimentId }) => {
+const AnnotateClustersTool = ({ experimentId, onRunAnnotation }) => {
   const dispatch = useDispatch();
 
   const [tissue, setTissue] = useState(null);
@@ -65,7 +65,10 @@ const AnnotateClustersTool = ({ experimentId }) => {
       </Space>
 
       <Button
-        onClick={() => dispatch(runCellSetsAnnotation(experimentId, species, tissue))}
+        onClick={() => {
+          dispatch(runCellSetsAnnotation(experimentId, species, tissue));
+          onRunAnnotation();
+        }}
         disabled={_.isNil(tissue) || _.isNil(species)}
         style={{ marginTop: '20px' }}
       >
@@ -79,6 +82,7 @@ AnnotateClustersTool.defaultProps = {};
 
 AnnotateClustersTool.propTypes = {
   experimentId: PropTypes.string.isRequired,
+  onRunAnnotation: PropTypes.func.isRequired,
 };
 
 export default AnnotateClustersTool;
