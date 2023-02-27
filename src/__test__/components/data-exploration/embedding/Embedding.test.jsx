@@ -19,7 +19,7 @@ import generateExperimentSettingsMock from '__test__/test-utils/experimentSettin
 import { CELL_INFO_UPDATE } from 'redux/actionTypes/cellInfo';
 import '__test__/test-utils/setupTests';
 import { getTwoGenesExpressionMatrix } from '__test__/utils/ExpressionMatrix/testMatrixes';
-import ExpressionMatrix from 'utils/ExpressionMatrix/ExpressionMatrix';
+import ExpressionMatrix from 'utils/expression/ExpressionMatrix/ExpressionMatrix';
 
 const mockStore = configureMockStore([thunk]);
 let component;

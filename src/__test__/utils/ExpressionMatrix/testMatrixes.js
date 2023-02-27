@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import { SparseMatrix } from 'mathjs';
 
-import ExpressionMatrix from 'utils/ExpressionMatrix/ExpressionMatrix';
+import ExpressionMatrix from 'utils/expression/ExpressionMatrix/ExpressionMatrix';
 
 const getOneGeneMatrix = (geneSymbol, cellsCount = 10) => ({
   orderedGeneNames: [geneSymbol],

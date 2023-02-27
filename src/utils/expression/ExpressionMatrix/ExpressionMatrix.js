@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import { SparseMatrix } from 'mathjs';
 
-import { appendColumns, getColumn } from 'utils/ExpressionMatrix/sparseMatrixOperations';
+import { appendColumns, getColumn } from 'utils/expression/ExpressionMatrix/sparseMatrixOperations';
 
 class ExpressionMatrix {
   constructor() {
@@ -10,6 +10,7 @@ class ExpressionMatrix {
     this.rawGeneExpressions = new SparseMatrix();
     this.truncatedGeneExpressions = new SparseMatrix();
     this.zScore = new SparseMatrix();
+
     this.stats = {
       rawMean: [],
       rawStdev: [],

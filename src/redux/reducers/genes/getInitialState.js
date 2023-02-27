@@ -1,4 +1,4 @@
-import ExpressionMatrix from 'utils/ExpressionMatrix/ExpressionMatrix';
+import ExpressionMatrix from 'utils/expression/ExpressionMatrix/ExpressionMatrix';
 
 const initialViewState = {
   fetching: false,
