@@ -13,6 +13,7 @@ const markerGenesLoaded = produce((draft, action) => {
       zScore,
       stats,
       cellOrder,
+      heatmapSettings,
     },
   } = action.payload;
 
@@ -27,6 +28,7 @@ const markerGenesLoaded = produce((draft, action) => {
   );
 
   draft.expression.downsampledCellIndexes = cellOrder;
+  draft.expression.downsampledHeatmapSettings = heatmapSettings;
 
   draft.expression.views[plotUuid] = { fetching: false, error: false, data: orderedGeneNames };
 

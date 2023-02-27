@@ -17,6 +17,7 @@ const getInitialState = () => ({
     error: false,
     matrix: new ExpressionMatrix(),
     downsampledMatrix: new ExpressionMatrix(),
+    downsampledHeatmapSettings: [],
     downsampledCellIndexes: [],
     views: {},
   },

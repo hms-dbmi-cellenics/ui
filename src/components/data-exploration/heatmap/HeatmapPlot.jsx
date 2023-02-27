@@ -160,10 +160,18 @@ const HeatmapPlot = (props) => {
     ) {
       const nMarkerGenes = calculateIdealNMarkerGenes(louvainClusterCount);
 
+      // console.log('heatmapSettingsDebug');
+      // console.log(heatmapSettings);
+
       const cellOrder = populateHeatmapData(cellSets, heatmapSettings, true);
 
       dispatch(loadMarkerGenes(
-        experimentId, louvainClustersResolution, COMPONENT_TYPE, cellOrder, nMarkerGenes,
+        experimentId,
+        louvainClustersResolution,
+        COMPONENT_TYPE,
+        cellOrder,
+        nMarkerGenes,
+        heatmapSettings,
       ));
     }
   }, [louvainClusterCount, louvainClustersResolution]);

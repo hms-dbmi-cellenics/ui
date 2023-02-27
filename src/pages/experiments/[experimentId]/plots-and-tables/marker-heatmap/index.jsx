@@ -336,6 +336,7 @@ const MarkerHeatmap = ({ experimentId }) => {
       experimentId,
       louvainClustersResolution,
       plotUuid,
+      heatmapSettings,
       config.nMarkerGenes,
       config.selectedCellSet,
     ));
@@ -439,8 +440,11 @@ const MarkerHeatmap = ({ experimentId }) => {
           onClick={
             () => dispatch(
               loadMarkerGenes(
-                experimentId, louvainClustersResolution,
-                plotUuid, config.nMarkerGenes, config.selectedCellSet,
+                experimentId,
+                louvainClustersResolution,
+                plotUuid,
+                config.nMarkerGenes,
+                config.selectedCellSet,
               ),
             )
           }
