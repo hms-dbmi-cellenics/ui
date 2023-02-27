@@ -10,7 +10,7 @@ import handleError from 'utils/http/handleError';
 import endUserMessages from 'utils/endUserMessages';
 
 const loadMarkerGenes = (
-  experimentId, resolution, plotUuid, numGenes = 5, selectedCellSet = 'louvain',
+  experimentId, resolution, plotUuid, cellOrder, numGenes = 5, selectedCellSet = 'louvain',
 ) => async (dispatch, getState) => {
   // Disabled linter because we are using == to check for both null and undefined values
   // eslint-disable-next-line eqeqeq
@@ -19,6 +19,7 @@ const loadMarkerGenes = (
     name: 'MarkerHeatmap',
     nGenes: numGenes,
     cellSetKey: selectedCellSet,
+    cellIds: cellOrder,
   };
 
   dispatch({

@@ -2,6 +2,7 @@ import _ from 'lodash';
 
 import { difference, intersection } from 'utils/setOperations';
 import { getFilteredCells, union } from 'utils/cellSetOperations';
+import memoize from 'lru-memoize';
 
 const populateHeatmapData = (
   cellSets, heatmapSettings,
@@ -170,4 +171,4 @@ const populateHeatmapData = (
   return filteredCellOrder;
 };
 
-export default populateHeatmapData;
+export default memoize()(populateHeatmapData);
