@@ -2,7 +2,7 @@ import {
   CELL_SETS_LOADING, CELL_SETS_LOADED,
   CELL_SETS_CREATE,
   CELL_SETS_UPDATE_PROPERTY, CELL_SETS_SET_SELECTED,
-  CELL_SETS_DELETE,
+  CELL_SETS_DELETE, CELL_CLASS_DELETE,
   CELL_SETS_HIDE, CELL_SETS_UNHIDE, CELL_SETS_UNHIDE_ALL,
   CELL_SETS_ERROR,
   CELL_SETS_CLUSTERING_UPDATING, CELL_SETS_CLUSTERING_UPDATED, CELL_SETS_REORDER,
@@ -15,6 +15,7 @@ import cellSetsLoading from 'redux/reducers/cellSets/cellSetsLoading';
 import cellSetsLoaded from 'redux/reducers/cellSets/cellSetsLoaded';
 import cellSetsUpdateProperty from 'redux/reducers/cellSets/cellSetsUpdateProperty';
 import cellSetsDelete from 'redux/reducers/cellSets/cellSetsDelete';
+import cellClassDelete from 'redux/reducers/cellSets/cellClassDelete';
 import cellSetsReorder from 'redux/reducers/cellSets/cellSetsReorder';
 import cellSetsCreate from 'redux/reducers/cellSets/cellSetsCreate';
 import cellSetsSetSelected from 'redux/reducers/cellSets/cellSetsSetSelected';
@@ -36,6 +37,9 @@ const cellSetsReducer = (state = initialState, action) => {
     }
     case CELL_SETS_DELETE: {
       return cellSetsDelete(state, action);
+    }
+    case CELL_CLASS_DELETE: {
+      return cellClassDelete(state, action);
     }
     case CELL_SETS_REORDER: {
       return cellSetsReorder(state, action);

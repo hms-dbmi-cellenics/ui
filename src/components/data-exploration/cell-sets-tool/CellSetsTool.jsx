@@ -21,6 +21,7 @@ import AnnotateClustersTool from 'components/data-exploration/cell-sets-tool/Ann
 import {
   createCellSet,
   deleteCellSet,
+  deleteCellClass,
   loadCellSets,
   unhideAllCellSets,
   reorderCellSet,
@@ -100,8 +101,12 @@ const CellSetsTool = (props) => {
     dispatch(updateCellSetProperty(experimentId, key, data));
   }, [experimentId]);
 
-  const onNodeDelete = useCallback((key) => {
-    dispatch(deleteCellSet(experimentId, key));
+  const onNodeDelete = useCallback((key, isCellClass) => {
+    if (isCellClass) {
+      dispatch(deleteCellClass(experimentId, key));
+    } else {
+      dispatch(deleteCellSet(experimentId, key));
+    }
   }, [experimentId]);
 
   const onCellSetReorder = useCallback((cellSetKey, newPosition) => {
@@ -184,8 +189,11 @@ const CellSetsTool = (props) => {
               checkedKeys={selectedCellSetKeys}
             />
           </Tabs.TabPane>
-          <Tabs.TabPane tab='Annotate clusters' key='annotateClusters' disabled>
-            <AnnotateClustersTool experimentId={experimentId} />
+          <Tabs.TabPane tab='Annotate clusters' key='annotateClusters'>
+            <AnnotateClustersTool
+              experimentId={experimentId}
+              onRunAnnotation={() => { setActiveTab('cellSets'); }}
+            />
           </Tabs.TabPane>
         </Tabs>
       </Space>

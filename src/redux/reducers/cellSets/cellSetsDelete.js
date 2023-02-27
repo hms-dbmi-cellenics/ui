@@ -14,7 +14,7 @@ const cellSetsDelete = produce((draft, action) => {
   delete draft.properties[key];
 
   // If the key was in the list of selected keys, make sure we remove it from there.
-  _.remove(draft.selected.cellSets, (currentSelectedKey) => currentSelectedKey === key);
+  _.remove(draft.selected, (currentSelectedKey) => currentSelectedKey === key);
 
   // Delete from hidden if it was selected to be hidden.
   draft.hidden.delete(key);
