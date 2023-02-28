@@ -201,10 +201,18 @@ const HeatmapPlot = (props) => {
         error={expressionDataError}
         onClick={() => {
           if (markerGenesLoadingError) {
+            const { groupedTracks, selectedCellSet, selectedPoints } = heatmapSettings;
+
             dispatch(loadMarkerGenes(
-              experimentId, louvainClustersResolution,
+              experimentId,
+              louvainClustersResolution,
               COMPONENT_TYPE,
-              { numGenes: nMarkerGenes },
+              {
+                numGenes: nMarkerGenes,
+                groupedTracks,
+                selectedCellSet,
+                selectedPoints,
+              },
             ));
           }
 
