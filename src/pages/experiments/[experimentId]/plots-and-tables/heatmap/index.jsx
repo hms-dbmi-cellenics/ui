@@ -16,7 +16,7 @@ import { loadGeneExpression } from 'redux/actions/genes';
 import { loadCellSets } from 'redux/actions/cellSets';
 import PlatformError from 'components/PlatformError';
 import Loader from 'components/Loader';
-import populateHeatmapData from 'components/plots/helpers/heatmap/populateHeatmapData';
+import getHeatmapCellOrder from 'components/plots/helpers/heatmap/getHeatmapCellOrder';
 import { getCellSets, getCellSetsHierarchyByKeys } from 'redux/selectors';
 import { plotNames } from 'utils/constants';
 import SelectData from 'components/plots/styling/SelectData';
@@ -97,7 +97,7 @@ const HeatmapPlot = ({ experimentId }) => {
       return;
     }
 
-    const cellOrder = populateHeatmapData(cellSets, config);
+    const cellOrder = getHeatmapCellOrder(cellSets, config);
     const data = generateVegaData(cellOrder, downsampledMatrix, config, cellSets);
 
     const displayLabels = selectedGenes.length <= 53;

@@ -31,7 +31,7 @@ import { loadCellSets } from 'redux/actions/cellSets';
 import PlatformError from 'components/PlatformError';
 import Loader from 'components/Loader';
 import SelectData from 'components/plots/styling/SelectData';
-import populateHeatmapData from 'components/plots/helpers/heatmap/populateHeatmapData';
+import getHeatmapCellOrder from 'components/plots/helpers/heatmap/getHeatmapCellOrder';
 import generateVegaData from 'components/plots/helpers/heatmap/vega/generateVegaData';
 import { plotNames } from 'utils/constants';
 
@@ -237,7 +237,7 @@ const MarkerHeatmap = ({ experimentId }) => {
       return;
     }
 
-    const cellOrder = populateHeatmapData(cellSets, config, true);
+    const cellOrder = getHeatmapCellOrder(cellSets, config, true);
 
     const data = generateVegaData(cellOrder, downsampledMatrix, config, cellSets);
     const spec = generateSpec(config, 'Cluster ID', data, true);

@@ -4,7 +4,7 @@ import { difference, intersection } from 'utils/setOperations';
 import { getFilteredCells, union } from 'utils/cellSetOperations';
 import memoize from 'lru-memoize';
 
-const populateHeatmapData = (
+const getHeatmapCellOrder = (
   cellSets, heatmapSettings,
   downsampling = false,
 ) => {
@@ -171,4 +171,4 @@ const populateHeatmapData = (
   return filteredCellOrder;
 };
 
-export default memoize()(populateHeatmapData);
+export default memoize()(getHeatmapCellOrder);

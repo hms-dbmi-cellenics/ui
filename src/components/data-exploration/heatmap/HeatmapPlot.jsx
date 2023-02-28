@@ -16,7 +16,7 @@ import { updateCellInfo } from 'redux/actions/cellInfo';
 
 import Loader from 'components/Loader';
 import PlatformError from 'components/PlatformError';
-import populateHeatmapData from 'components/plots/helpers/heatmap/populateHeatmapData';
+import getHeatmapCellOrder from 'components/plots/helpers/heatmap/getHeatmapCellOrder';
 
 import HeatmapCellInfo from 'components/data-exploration/heatmap/HeatmapCellInfo';
 import HeatmapTracksCellInfo from 'components/data-exploration/heatmap/HeatmapTracksCellInfo';
@@ -127,7 +127,7 @@ const HeatmapPlot = (props) => {
       return;
     }
 
-    const cellOrder = populateHeatmapData(cellSets, heatmapSettings, true);
+    const cellOrder = getHeatmapCellOrder(cellSets, heatmapSettings, true);
 
     // Selected genes is not contained in heatmap settings for the
     // data exploration marker heatmap, so must be passed spearatedly.
@@ -163,7 +163,7 @@ const HeatmapPlot = (props) => {
       // console.log('heatmapSettingsDebug');
       // console.log(heatmapSettings);
 
-      const cellOrder = populateHeatmapData(cellSets, heatmapSettings, true);
+      const cellOrder = getHeatmapCellOrder(cellSets, heatmapSettings, true);
 
       dispatch(loadMarkerGenes(
         experimentId,
@@ -200,7 +200,7 @@ const HeatmapPlot = (props) => {
           if (markerGenesLoadingError) {
             const nMarkerGenes = calculateIdealNMarkerGenes(louvainClusterCount);
 
-            const cellOrder = populateHeatmapData(cellSets, heatmapSettings, true);
+            const cellOrder = getHeatmapCellOrder(cellSets, heatmapSettings, true);
 
             dispatch(loadMarkerGenes(
               experimentId, louvainClustersResolution,
