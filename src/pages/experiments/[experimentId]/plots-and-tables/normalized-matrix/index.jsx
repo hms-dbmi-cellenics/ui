@@ -79,7 +79,7 @@ const NormalizedMatrixPage = (props) => {
   const onSelectedItemsChanged = (type) => (newItems) => {
     const newConfig = {
       ...config,
-      [type]: newItems.map(({ key }) => key),
+      [type]: newItems,
     };
 
     dispatch(updatePlotConfig(plotUuid, newConfig));
@@ -133,37 +133,41 @@ const NormalizedMatrixPage = (props) => {
           <Space direction='vertical'>
             Subset by samples:
             <MultiSelect
-              items={sample.children.map(({ key, name }) => ({ key, name }))}
+              options={sample.children.map(({ key, name }) => ({ key, name }))}
               onChange={onSelectedItemsChanged('sample')}
-              initialSelectedKeys={config.sample}
+              selectedKeys={config.sample}
               placeholder='All'
+              style={{ width: '200px' }}
             />
           </Space>
           <Space direction='vertical'>
             Subset by metadata group:
             <MultiSelect
-              items={metadataCellSets.map(({ key, name }) => ({ key, name }))}
+              options={metadataCellSets.map(({ key, name }) => ({ key, name }))}
               onChange={onSelectedItemsChanged('metadata')}
-              initialSelectedKeys={config.metadata}
+              selectedKeys={config.metadata}
               placeholder='All'
+              style={{ width: '200px' }}
             />
           </Space>
           <Space direction='vertical'>
             Subset by clusters:
             <MultiSelect
-              items={louvain.children.map(({ key, name }) => ({ key, name }))}
+              options={louvain.children.map(({ key, name }) => ({ key, name }))}
               onChange={onSelectedItemsChanged('louvain')}
-              initialSelectedKeys={config.louvain}
+              selectedKeys={config.louvain}
               placeholder='All'
+              style={{ width: '200px' }}
             />
           </Space>
           <Space direction='vertical'>
             Subset by custom cell sets:
             <MultiSelect
-              items={scratchpad.children.map(({ key, name }) => ({ key, name }))}
+              options={scratchpad.children.map(({ key, name }) => ({ key, name }))}
               onChange={onSelectedItemsChanged('scratchpad')}
-              initialSelectedKeys={config.scratchpad}
+              selectedKeys={config.scratchpad}
               placeholder='All'
+              style={{ width: '200px' }}
             />
           </Space>
 

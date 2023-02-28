@@ -5,9 +5,38 @@ import readFileToBuffer from 'utils/upload/readFileToBuffer';
 jest.mock('utils/upload/readFileToBuffer');
 
 describe('fileInspector', () => {
+  beforeEach(async () => {
+    jest.clearAllMocks();
+  });
+
   it('Detects invalid filenames', async () => {
     const file = {
       name: 'random_file.gz',
+    };
+
+    expect(await inspectFile(file, sampleTech['10X']))
+      .toEqual(Verdict.INVALID_NAME);
+  });
+
+  it('Allows upload of prefixed 10x sample files', async () => {
+    const file = {
+      name: 'prefixed_barcodes.tsv.gz',
+      slice() { },
+    };
+
+    readFileToBuffer
+      .mockReturnValueOnce(
+        Promise.resolve(Buffer.from('ACGTACGTACGT-1')),
+      );
+
+    expect(await inspectFile(file, sampleTech['10X']))
+      .toEqual(Verdict.VALID_UNZIPPED);
+  });
+
+  it('Does not allow upload of postfixed 10x samples files', async () => {
+    const file = {
+      name: 'barcodes_postfixed.tsv.gz',
+      slice() { },
     };
 
     expect(await inspectFile(file, sampleTech['10X']))
