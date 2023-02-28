@@ -7,8 +7,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { Empty } from 'antd';
 import _ from 'lodash';
 
-import { getCellSets, getCellSetsHierarchyByKeys } from 'redux/selectors';
-import calculateIdealNMarkerGenes from 'utils/calculateIdealNMarkerGenes';
+import { getCellSets } from 'redux/selectors';
 
 import { loadGeneExpression, loadMarkerGenes } from 'redux/actions/genes';
 import { loadComponentConfig } from 'redux/actions/componentConfig';
@@ -36,6 +35,7 @@ const Heatmap = dynamic(
 // To avoid it sticking to the right too much (the left already has some margin)
 const heatmapRightMargin = 50;
 const heatmapBottomMargin = 40;
+const nMarkerGenes = 5;
 
 const HeatmapPlot = (props) => {
   const {
@@ -64,7 +64,6 @@ const HeatmapPlot = (props) => {
   } = useSelector((state) => state.genes.markers);
 
   const cellSets = useSelector(getCellSets());
-  const louvainClusterCount = useSelector(getCellSetsHierarchyByKeys(['louvain']), _.isEqual)[0]?.children.length ?? 0;
 
   const heatmapSettings = useSelector((state) => state.componentConfig[COMPONENT_TYPE]?.config,
     _.isEqual) || {};
@@ -169,12 +168,9 @@ const HeatmapPlot = (props) => {
   useEffect(() => {
     if (
       louvainClustersResolution
-      && louvainClusterCount > 0
       && !markerGenesLoadingError
       && !markerGenesLoading
     ) {
-      const nMarkerGenes = calculateIdealNMarkerGenes(louvainClusterCount);
-
       // console.log('heatmapSettingsDebug');
       // console.log(heatmapSettings);
 
@@ -191,7 +187,7 @@ const HeatmapPlot = (props) => {
         },
       ));
     }
-  }, [louvainClusterCount, louvainClustersResolution]);
+  }, [louvainClustersResolution]);
 
   useEffect(() => {
     if (cellHighlight) {
@@ -213,8 +209,6 @@ const HeatmapPlot = (props) => {
         error={expressionDataError}
         onClick={() => {
           if (markerGenesLoadingError) {
-            const nMarkerGenes = calculateIdealNMarkerGenes(louvainClusterCount);
-
             const cellOrder = getHeatmapCellOrder(cellSets, heatmapSettings, true);
 
             dispatch(loadMarkerGenes(
