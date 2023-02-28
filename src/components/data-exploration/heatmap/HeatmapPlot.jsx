@@ -136,7 +136,7 @@ const HeatmapPlot = (props) => {
     // heatmapSettings is is frozen in redux by immer.
     const data = generateVitessceData(
       downsampledCellOrder,
-      heatmapSettings,
+      heatmapSettings.selectedTracks,
       downsampledMatrix,
       selectedGenes,
       cellSets,
@@ -145,7 +145,7 @@ const HeatmapPlot = (props) => {
   }, [
     selectedGenes,
     downsampledCellOrder,
-    heatmapSettings?.selectedTracks,
+    heatmapSettings.selectedTracks,
     cellSets.hidden,
     // To reorder tracks when the track is reordered in hierarchy
     cellSets.hierarchy,

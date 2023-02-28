@@ -2,11 +2,9 @@ import generateVitessceHeatmapExpressionsMatrix from 'components/plots/helpers/h
 import generateVitessceHeatmapTracksData from 'components/plots/helpers/heatmap/vitessce/utils/generateVitessceHeatmapTracksData';
 
 const generateVitessceData = (
-  cellOrder, heatmapSettings,
+  cellOrder, selectedTracks,
   expressionMatrix, selectedGenes, cellSets,
 ) => {
-  const { selectedTracks } = heatmapSettings;
-
   const trackColorData = generateVitessceHeatmapTracksData(
     selectedTracks, cellSets, cellOrder,
   );
