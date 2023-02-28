@@ -151,6 +151,21 @@ const HeatmapPlot = (props) => {
     cellSets.properties,
   ]);
 
+  // useConditionalEffect(() => {
+  //   const cellOrder = getHeatmapCellOrder(cellSets, heatmapSettings, true);
+
+  //   dispatch(loadMarkerGenes(
+  //     experimentId,
+  //     louvainClustersResolution,
+  //     COMPONENT_TYPE,
+  //     cellOrder,
+  //     {
+  //       numGenes: 5,
+  //       heatmapSettings,
+  //     },
+  //   ));
+  // }, [cellSets, heatmapSettings]);
+
   useEffect(() => {
     if (
       louvainClustersResolution
