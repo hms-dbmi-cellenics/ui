@@ -144,7 +144,8 @@ const HeatmapPlot = (props) => {
     setHeatmapData(data);
   }, [
     selectedGenes,
-    heatmapSettings,
+    downsampledCellOrder,
+    heatmapSettings?.selectedTracks,
     cellSets.hidden,
     // To reorder tracks when the track is reordered in hierarchy
     cellSets.hierarchy,
