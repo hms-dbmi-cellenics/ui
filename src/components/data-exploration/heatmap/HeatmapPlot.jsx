@@ -15,7 +15,6 @@ import { updateCellInfo } from 'redux/actions/cellInfo';
 
 import Loader from 'components/Loader';
 import PlatformError from 'components/PlatformError';
-import getHeatmapCellOrder from 'components/plots/helpers/heatmap/getHeatmapCellOrder';
 
 import HeatmapCellInfo from 'components/data-exploration/heatmap/HeatmapCellInfo';
 import HeatmapTracksCellInfo from 'components/data-exploration/heatmap/HeatmapTracksCellInfo';
@@ -45,6 +44,10 @@ const HeatmapPlot = (props) => {
   const dispatch = useDispatch();
 
   const loadingGenes = useSelector((state) => state.genes.expression.loading);
+  const downsampledCellOrder = useSelector(
+    (state) => state.genes.expression.downsampledCellIndexes,
+  );
+
   const selectedGenes = useSelector((state) => state.genes.expression.views[COMPONENT_TYPE]?.data);
 
   const [viewState, setViewState] = useState({ zoom: 0, target: [0, 0] });
@@ -122,18 +125,17 @@ const HeatmapPlot = (props) => {
   useConditionalEffect(() => {
     if (!selectedGenes?.length > 0
       || cellSets.hierarchy.length === 0
+      || downsampledCellOrder.length === 0
     ) {
       return;
     }
-
-    const cellOrder = getHeatmapCellOrder(cellSets, heatmapSettings, true);
 
     // Selected genes is not contained in heatmap settings for the
     // data exploration marker heatmap, so must be passed spearatedly.
     // Trying to assign it to heatmapSettings will throw an error because
     // heatmapSettings is is frozen in redux by immer.
     const data = generateVitessceData(
-      cellOrder,
+      downsampledCellOrder,
       heatmapSettings,
       downsampledMatrix,
       selectedGenes,
@@ -150,44 +152,23 @@ const HeatmapPlot = (props) => {
     cellSets.properties,
   ]);
 
-  // useConditionalEffect(() => {
-  //   const cellOrder = getHeatmapCellOrder(cellSets, heatmapSettings, true);
-
-  //   dispatch(loadMarkerGenes(
-  //     experimentId,
-  //     louvainClustersResolution,
-  //     COMPONENT_TYPE,
-  //     cellOrder,
-  //     {
-  //       numGenes: 5,
-  //       heatmapSettings,
-  //     },
-  //   ));
-  // }, [cellSets, heatmapSettings]);
-
-  useEffect(() => {
+  useConditionalEffect(() => {
     if (
-      louvainClustersResolution
-      && !markerGenesLoadingError
-      && !markerGenesLoading
-    ) {
-      // console.log('heatmapSettingsDebug');
-      // console.log(heatmapSettings);
+      !cellSets.accessible
+      || markerGenesLoadingError || markerGenesLoading
+      || !louvainClustersResolution
+    ) return;
 
-      const cellOrder = getHeatmapCellOrder(cellSets, heatmapSettings, true);
-
-      dispatch(loadMarkerGenes(
-        experimentId,
-        louvainClustersResolution,
-        COMPONENT_TYPE,
-        cellOrder,
-        {
-          numGenes: nMarkerGenes,
-          heatmapSettings,
-        },
-      ));
-    }
-  }, [louvainClustersResolution]);
+    dispatch(loadMarkerGenes(
+      experimentId,
+      louvainClustersResolution,
+      COMPONENT_TYPE,
+      {
+        numGenes: nMarkerGenes,
+        heatmapSettings,
+      },
+    ));
+  }, [louvainClustersResolution, heatmapSettings, cellSets.accessible]);
 
   useEffect(() => {
     if (cellHighlight) {
@@ -209,12 +190,9 @@ const HeatmapPlot = (props) => {
         error={expressionDataError}
         onClick={() => {
           if (markerGenesLoadingError) {
-            const cellOrder = getHeatmapCellOrder(cellSets, heatmapSettings, true);
-
             dispatch(loadMarkerGenes(
               experimentId, louvainClustersResolution,
               COMPONENT_TYPE,
-              cellOrder,
               { numGenes: nMarkerGenes },
             ));
           }

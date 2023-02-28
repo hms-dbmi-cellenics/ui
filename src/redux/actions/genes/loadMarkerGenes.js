@@ -8,11 +8,16 @@ import fetchWork from 'utils/work/fetchWork';
 import getTimeoutForWorkerTask from 'utils/getTimeoutForWorkerTask';
 import handleError from 'utils/http/handleError';
 import endUserMessages from 'utils/endUserMessages';
+import { getCellSets } from 'redux/selectors';
+import getHeatmapCellOrder from 'components/plots/helpers/heatmap/getHeatmapCellOrder';
 
 const loadMarkerGenes = (
-  experimentId, resolution, plotUuid, cellOrder, options = undefined,
+  experimentId, resolution, plotUuid, options = undefined,
 ) => async (dispatch, getState) => {
   const { numGenes = 5, selectedCellSet = 'louvain', heatmapSettings = null } = options;
+
+  const cellSets = getCellSets()(getState());
+  const cellOrder = getHeatmapCellOrder(cellSets, heatmapSettings, true);
 
   // Disabled linter because we are using == to check for both null and undefined values
   // eslint-disable-next-line eqeqeq
