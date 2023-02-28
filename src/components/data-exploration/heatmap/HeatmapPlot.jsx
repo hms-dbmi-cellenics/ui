@@ -159,16 +159,26 @@ const HeatmapPlot = (props) => {
       || !louvainClustersResolution
     ) return;
 
+    const { groupedTracks, selectedCellSet, selectedPoints } = heatmapSettings;
+
     dispatch(loadMarkerGenes(
       experimentId,
       louvainClustersResolution,
       COMPONENT_TYPE,
       {
         numGenes: nMarkerGenes,
-        heatmapSettings,
+        groupedTracks,
+        selectedCellSet,
+        selectedPoints,
       },
     ));
-  }, [louvainClustersResolution, heatmapSettings, cellSets.accessible]);
+  }, [
+    louvainClustersResolution,
+    cellSets.accessible,
+    heatmapSettings?.groupedTracks,
+    heatmapSettings?.selectedCellSet,
+    heatmapSettings?.selectedPoints,
+  ]);
 
   useEffect(() => {
     if (cellHighlight) {

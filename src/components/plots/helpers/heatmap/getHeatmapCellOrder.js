@@ -2,16 +2,15 @@ import _ from 'lodash';
 
 import { difference, intersection } from 'utils/setOperations';
 import { getFilteredCells, union } from 'utils/cellSetOperations';
-import memoize from 'lru-memoize';
 
 const getHeatmapCellOrder = (
-  cellSets, heatmapSettings,
+  cellSets,
+  groupedTracks,
+  selectedCellSet,
+  selectedPoints,
   downsampling = false,
 ) => {
   const { hierarchy, properties, hidden } = cellSets;
-  const {
-    groupedTracks, selectedCellSet, selectedPoints,
-  } = heatmapSettings;
 
   const allFilteredCellIds = getFilteredCells(cellSets);
 
@@ -171,4 +170,4 @@ const getHeatmapCellOrder = (
   return filteredCellOrder;
 };
 
-export default memoize()(getHeatmapCellOrder);
+export default getHeatmapCellOrder;

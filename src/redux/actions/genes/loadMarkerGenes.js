@@ -14,10 +14,17 @@ import getHeatmapCellOrder from 'components/plots/helpers/heatmap/getHeatmapCell
 const loadMarkerGenes = (
   experimentId, resolution, plotUuid, options = undefined,
 ) => async (dispatch, getState) => {
-  const { numGenes = 5, selectedCellSet = 'louvain', heatmapSettings = null } = options;
+  const {
+    numGenes = 5,
+    groupedTracks = ['louvain'],
+    selectedCellSet = 'louvain',
+    selectedPoints = 'All',
+  } = options;
 
   const cellSets = getCellSets()(getState());
-  const cellOrder = getHeatmapCellOrder(cellSets, heatmapSettings, true);
+  const cellOrder = getHeatmapCellOrder(
+    cellSets, groupedTracks, selectedCellSet, selectedPoints, true,
+  );
 
   // Disabled linter because we are using == to check for both null and undefined values
   // eslint-disable-next-line eqeqeq
@@ -59,7 +66,12 @@ const loadMarkerGenes = (
           zScore,
           stats,
           cellOrder,
-          heatmapSettings,
+          downsampleSettings: {
+            numGenes,
+            groupedTracks,
+            selectedCellSet,
+            selectedPoints,
+          },
         },
       },
     });
