@@ -105,7 +105,12 @@ const MarkerHeatmap = ({ experimentId }) => {
       if (selectedCellSetClassAvailable) {
         dispatch(loadMarkerGenes(
           experimentId, louvainClustersResolution,
-          plotUuid, config.nMarkerGenes, config.selectedCellSet,
+          plotUuid,
+          null,
+          {
+            numGenes: config.nMarkerGenes,
+            selectedCellSet: config.selectedCellSet,
+          }, // , heatmapSettings },
         ));
       } else {
         pushNotificationMessage('error', endUserMessages.NO_CLUSTERS);
@@ -120,8 +125,11 @@ const MarkerHeatmap = ({ experimentId }) => {
         experimentId,
         louvainClustersResolution,
         plotUuid,
-        config.nMarkerGenes,
-        config.selectedCellSet,
+        null,
+        {
+          numGenes: config.nMarkerGenes,
+          selectedCellSet: config.selectedCellSet,
+        }, // , heatmapSettings },
       ));
     }
   }, [louvainClustersResolution]);
@@ -336,9 +344,11 @@ const MarkerHeatmap = ({ experimentId }) => {
       experimentId,
       louvainClustersResolution,
       plotUuid,
-      heatmapSettings,
-      config.nMarkerGenes,
-      config.selectedCellSet,
+      null,
+      {
+        numGenes: config.nMarkerGenes,
+        selectedCellSet: config.selectedCellSet,
+      }, // , heatmapSettings },
     ));
   };
 
@@ -443,8 +453,11 @@ const MarkerHeatmap = ({ experimentId }) => {
                 experimentId,
                 louvainClustersResolution,
                 plotUuid,
-                config.nMarkerGenes,
-                config.selectedCellSet,
+                null,
+                {
+                  numGenes: config.nMarkerGenes,
+                  selectedCellSet: config.selectedCellSet,
+                }, // , heatmapSettings },
               ),
             )
           }

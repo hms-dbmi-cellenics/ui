@@ -170,8 +170,10 @@ const HeatmapPlot = (props) => {
         louvainClustersResolution,
         COMPONENT_TYPE,
         cellOrder,
-        nMarkerGenes,
-        heatmapSettings,
+        {
+          numGenes: nMarkerGenes,
+          heatmapSettings,
+        },
       ));
     }
   }, [louvainClusterCount, louvainClustersResolution]);
@@ -202,7 +204,9 @@ const HeatmapPlot = (props) => {
 
             dispatch(loadMarkerGenes(
               experimentId, louvainClustersResolution,
-              COMPONENT_TYPE, cellOrder, nMarkerGenes,
+              COMPONENT_TYPE,
+              cellOrder,
+              { numGenes: nMarkerGenes },
             ));
           }
 
