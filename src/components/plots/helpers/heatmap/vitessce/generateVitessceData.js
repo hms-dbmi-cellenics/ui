@@ -3,7 +3,7 @@ import generateVitessceHeatmapTracksData from 'components/plots/helpers/heatmap/
 
 const generateVitessceData = (
   cellOrder, heatmapSettings,
-  expression, selectedGenes, cellSets,
+  expressionMatrix, selectedGenes, cellSets,
 ) => {
   const { selectedTracks } = heatmapSettings;
 
@@ -11,12 +11,10 @@ const generateVitessceData = (
     selectedTracks, cellSets, cellOrder,
   );
 
-  // Expression matrix is an array
-  // with shape [cell_1 gene_1, ..., cell_1 gene_n, cell_2 gene_1, ... ]
-  const expressionMatrix = generateVitessceHeatmapExpressionsMatrix(
+  const vitessceMatrix = generateVitessceHeatmapExpressionsMatrix(
     cellOrder,
     selectedGenes,
-    expression,
+    expressionMatrix,
   );
 
   const metadataTracksLabels = selectedTracks
@@ -26,7 +24,7 @@ const generateVitessceData = (
     expressionMatrix: {
       cols: selectedGenes,
       rows: cellOrder.map((x) => `${x}`),
-      matrix: Uint8Array.from(expressionMatrix),
+      matrix: Uint8Array.from(vitessceMatrix),
     },
     metadataTracks: {
       dataPoints: trackColorData,

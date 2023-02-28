@@ -76,7 +76,7 @@ const HeatmapPlot = (props) => {
 
   const expressionMatrix = useSelector((state) => state.genes.expression.downsampledMatrix);
 
-  const { error: expressionDataError } = expressionData;
+  const { error: expressionDataError, downsampledMatrix } = expressionData;
   const viewError = useSelector((state) => state.genes.expression.views[COMPONENT_TYPE]?.error);
 
   const updateCellCoordinates = (newView) => {
@@ -136,7 +136,7 @@ const HeatmapPlot = (props) => {
     const data = generateVitessceData(
       cellOrder,
       heatmapSettings,
-      expressionData,
+      downsampledMatrix,
       selectedGenes,
       cellSets,
     );
