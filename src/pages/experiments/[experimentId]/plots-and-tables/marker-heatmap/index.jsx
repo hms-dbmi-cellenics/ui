@@ -356,6 +356,7 @@ const MarkerHeatmap = ({ experimentId }) => {
           onReset={onReset}
           onGenesChange={onGenesChange}
           onGenesSelect={onGenesSelect}
+          showGeneTable={config.selectedGenes.length > 0}
         />
         <div style={{ paddingTop: '10px' }}>
           <p>Gene labels:</p>
@@ -451,8 +452,7 @@ const MarkerHeatmap = ({ experimentId }) => {
     if (!config
       || loading.length > 0
       || !cellSets.accessible
-      || loadingMarkerGenes
-      || !config.selectedGenes.length) {
+      || loadingMarkerGenes) {
       return (<Loader experimentId={experimentId} />);
     }
 
