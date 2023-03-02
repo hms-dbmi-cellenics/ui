@@ -12,7 +12,7 @@ import GeneSearchBar from 'components/plots/GeneSearchBar';
 
 const MarkerGeneSelection = (props) => {
   const {
-    config, plotUuid, genesToDisable, onUpdate, onReset, onGenesChange, onGenesSelect,
+    config, plotUuid, genesToDisable, onUpdate, onReset, onGenesChange, onGenesSelect, showGeneTable,
   } = props;
   const [numGenes, setNumGenes] = useState(config.nMarkerGenes);
 
@@ -55,10 +55,13 @@ const MarkerGeneSelection = (props) => {
           genesToDisable={genesToDisable}
           onSelect={onGenesSelect}
         />
-        <GeneReorderTool
-          plotUuid={plotUuid}
-          onDelete={onGenesChange}
-        />
+        {showGeneTable
+          && (
+            <GeneReorderTool
+              plotUuid={plotUuid}
+              onDelete={onGenesChange}
+            />
+          )}
         <Button
           type='primary'
           onClick={onReset}
@@ -94,6 +97,11 @@ MarkerGeneSelection.propTypes = {
   genesToDisable: propTypes.array.isRequired,
   onGenesChange: propTypes.func.isRequired,
   onGenesSelect: propTypes.func.isRequired,
+  showGeneTable: propTypes.bool,
+};
+
+MarkerGeneSelection.defaultProps = {
+  showGeneTable: true,
 };
 
 export default MarkerGeneSelection;
