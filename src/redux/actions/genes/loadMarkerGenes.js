@@ -19,12 +19,12 @@ const loadMarkerGenes = (
     groupedTracks = ['louvain'],
     selectedCellSet = 'louvain',
     selectedPoints = 'All',
-    // downsample = false,
+    downsample = false,
   } = options;
 
   const cellSets = getCellSets()(getState());
   const cellOrder = getHeatmapCellOrder(
-    cellSets, groupedTracks, selectedCellSet, selectedPoints, true,
+    cellSets, groupedTracks, selectedCellSet, selectedPoints, downsample,
   );
 
   // Disabled linter because we are using == to check for both null and undefined values
