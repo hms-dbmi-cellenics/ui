@@ -171,6 +171,7 @@ const HeatmapPlot = (props) => {
         groupedTracks,
         selectedCellSet,
         selectedPoints,
+        downsample: true,
       },
     ));
   }, [
@@ -212,6 +213,7 @@ const HeatmapPlot = (props) => {
                 groupedTracks,
                 selectedCellSet,
                 selectedPoints,
+                downsample: true,
               },
             ));
           }

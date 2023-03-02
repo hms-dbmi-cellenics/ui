@@ -9,7 +9,7 @@ import fetchWork from 'utils/work/fetchWork';
 import getTimeoutForWorkerTask from 'utils/getTimeoutForWorkerTask';
 
 const loadGeneExpression = (
-  experimentId, genes, componentUuid, usingDownsampledExpression = false,
+  experimentId, genes, componentUuid, checkDownsampledExpression = false,
 ) => async (dispatch, getState) => {
   const {
     loading, matrix, downsampledMatrix,
@@ -40,7 +40,7 @@ const loadGeneExpression = (
 
   // If we can use the downsampled expressions,
   // then add them to decide which genes need to be loaded
-  if (usingDownsampledExpression) {
+  if (checkDownsampledExpression) {
     const downsampledGenesLoaded = downsampledMatrix.getStoredGenes();
     genesAlreadyLoaded = [...new Set(genesAlreadyLoaded.concat(downsampledGenesLoaded))];
   }

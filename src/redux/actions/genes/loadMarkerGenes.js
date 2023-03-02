@@ -19,6 +19,7 @@ const loadMarkerGenes = (
     groupedTracks = ['louvain'],
     selectedCellSet = 'louvain',
     selectedPoints = 'All',
+    // downsample = false,
   } = options;
 
   const cellSets = getCellSets()(getState());

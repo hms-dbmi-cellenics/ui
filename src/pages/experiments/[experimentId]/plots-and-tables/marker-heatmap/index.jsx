@@ -106,11 +106,13 @@ const MarkerHeatmap = ({ experimentId }) => {
         dispatch(loadMarkerGenes(
           experimentId, louvainClustersResolution,
           plotUuid,
-          null,
           {
             numGenes: config.nMarkerGenes,
+            groupedTracks: config.groupedTracks,
             selectedCellSet: config.selectedCellSet,
-          }, // , heatmapSettings },
+            selectedPoints: config.selectedPoints,
+            downsample: false,
+          },
         ));
       } else {
         pushNotificationMessage('error', endUserMessages.NO_CLUSTERS);
@@ -125,11 +127,13 @@ const MarkerHeatmap = ({ experimentId }) => {
         experimentId,
         louvainClustersResolution,
         plotUuid,
-        null,
         {
           numGenes: config.nMarkerGenes,
+          groupedTracks: config.groupedTracks,
           selectedCellSet: config.selectedCellSet,
-        }, // , heatmapSettings },
+          selectedPoints: config.selectedPoints,
+          downsample: false,
+        },
       ));
     }
   }, [louvainClustersResolution]);
@@ -344,11 +348,13 @@ const MarkerHeatmap = ({ experimentId }) => {
       experimentId,
       louvainClustersResolution,
       plotUuid,
-      null,
       {
         numGenes: config.nMarkerGenes,
+        groupedTracks: config.groupedTracks,
         selectedCellSet: config.selectedCellSet,
-      }, // , heatmapSettings },
+        selectedPoints: config.selectedPoints,
+        downsample: false,
+      },
     ));
   };
 
@@ -453,11 +459,13 @@ const MarkerHeatmap = ({ experimentId }) => {
                 experimentId,
                 louvainClustersResolution,
                 plotUuid,
-                null,
                 {
                   numGenes: config.nMarkerGenes,
+                  groupedTracks: config.groupedTracks,
                   selectedCellSet: config.selectedCellSet,
-                }, // , heatmapSettings },
+                  selectedPoints: config.selectedPoints,
+                  downsample: false,
+                },
               ),
             )
           }
