@@ -9,10 +9,10 @@ import fetchWork from 'utils/work/fetchWork';
 import getTimeoutForWorkerTask from 'utils/getTimeoutForWorkerTask';
 
 const loadGeneExpression = (
-  experimentId, genes, componentUuid,
+  experimentId, genes, componentUuid, usingDownsampledExpression = false,
 ) => async (dispatch, getState) => {
   const {
-    loading, matrix,
+    loading, matrix, downsampledMatrix,
   } = getState().genes.expression;
 
   // If other gene expression data is already being loaded, don't dispatch.
@@ -36,7 +36,14 @@ const loadGeneExpression = (
   // we are not forced to reload all of the data.
 
   let genesToFetch = [...genes];
-  const genesAlreadyLoaded = matrix.getStoredGenes();
+  let genesAlreadyLoaded = matrix.getStoredGenes();
+
+  // If we can use the downsampled expressions,
+  // then add them to decide which genes need to be loaded
+  if (usingDownsampledExpression) {
+    const downsampledGenesLoaded = downsampledMatrix.getStoredGenes();
+    genesAlreadyLoaded = [...new Set(genesAlreadyLoaded.concat(downsampledGenesLoaded))];
+  }
 
   genesToFetch = genesToFetch.filter(
     (gene) => !new Set(upperCaseArray(genesAlreadyLoaded)).has(gene.toUpperCase()),
