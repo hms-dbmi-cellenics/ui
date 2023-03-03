@@ -1,4 +1,3 @@
-import _ from 'lodash';
 import { difference, intersection } from 'utils/setOperations';
 import { getFilteredCells, union } from 'utils/cellSetOperations';
 
@@ -49,8 +48,7 @@ const getHeatmapCellOrder = (
 
       // Take sample, it need to be always the same for the same cellIds so that
       // the ETag is always the same (which now depend on this)
-      // downsampledCellIds.push(...Array.from(bucket).slice(0, sampleSize));
-      downsampledCellIds.push(..._.sampleSize(Array.from(bucket), sampleSize));
+      downsampledCellIds.push(...Array.from(bucket).slice(0, sampleSize));
     });
 
     return downsampledCellIds;
