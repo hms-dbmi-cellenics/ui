@@ -6,7 +6,6 @@ const getHeatmapCellOrder = (
   groupedTracks,
   selectedCellSet,
   selectedPoints,
-  downsample = false,
 ) => {
   const { hierarchy, properties, hidden } = cellSets;
 
@@ -140,17 +139,7 @@ const getHeatmapCellOrder = (
 
     const { buckets, size } = splitByCartesianProductIntersections(groupByRootNodes);
 
-    if (downsample) {
-      return downsampleWithProportions(buckets, size);
-    }
-
-    const cellIds = [];
-
-    buckets.forEach((bucket) => {
-      bucket.forEach((bucketCellId) => cellIds.push(bucketCellId));
-    });
-
-    return cellIds;
+    return downsampleWithProportions(buckets, size);
   };
 
   let firstOptionCellIds = hierarchy.find(
