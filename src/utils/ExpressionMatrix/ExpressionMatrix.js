@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import { SparseMatrix } from 'mathjs';
 
-import { appendColumns, getColumn } from 'utils/expression/ExpressionMatrix/sparseMatrixOperations';
+import { appendColumns, getColumn } from 'utils/ExpressionMatrix/sparseMatrixOperations';
 
 class ExpressionMatrix {
   constructor() {

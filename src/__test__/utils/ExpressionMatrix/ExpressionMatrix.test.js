@@ -1,6 +1,6 @@
 import _ from 'lodash';
 
-import ExpressionMatrix from 'utils/expression/ExpressionMatrix/ExpressionMatrix';
+import ExpressionMatrix from 'utils/ExpressionMatrix/ExpressionMatrix';
 import { getOtherFourGenesMatrix, getOtherTwoGenesMatrix, getTwoGenesMatrix } from '__test__/utils/ExpressionMatrix/testMatrixes';
 
 describe('ExpressionMatrix', () => {
