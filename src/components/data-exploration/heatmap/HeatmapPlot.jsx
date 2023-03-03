@@ -126,9 +126,7 @@ const HeatmapPlot = (props) => {
     if (!selectedGenes?.length > 0
       || cellSets.hierarchy.length === 0
       || downsampledCellOrder.length === 0
-    ) {
-      return;
-    }
+    ) { return; }
 
     // Selected genes is not contained in heatmap settings for the
     // data exploration marker heatmap, so must be passed spearatedly.

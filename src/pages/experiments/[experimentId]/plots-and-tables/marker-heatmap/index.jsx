@@ -38,6 +38,7 @@ import { plotNames } from 'utils/constants';
 import PlotLegendAlert, { MAX_LEGEND_ITEMS } from 'components/plots/helpers/PlotLegendAlert';
 
 import ScrollOnDrag from 'components/plots/ScrollOnDrag';
+import useConditionalEffect from 'utils/customHooks/useConditionalEffect';
 
 const { Panel } = Collapse;
 const plotUuid = 'markerHeatmapPlotMain';
@@ -102,11 +103,12 @@ const MarkerHeatmap = ({ experimentId }) => {
     if (showAlert) updatePlotWithChanges({ legend: { showAlert, enabled: !showAlert } });
   }, [configIsLoaded, cellSets.accessible]);
 
-  useEffect(() => {
+  useConditionalEffect(() => {
     if (louvainClustersResolution && config?.nMarkerGenes && hierarchy?.length) {
       if (selectedCellSetClassAvailable) {
         dispatch(loadMarkerGenes(
-          experimentId, louvainClustersResolution,
+          experimentId,
+          louvainClustersResolution,
           plotUuid,
           {
             numGenes: config.nMarkerGenes,
