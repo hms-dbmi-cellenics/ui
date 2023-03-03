@@ -9,7 +9,7 @@ import getTimeoutForWorkerTask from 'utils/getTimeoutForWorkerTask';
 import handleError from 'utils/http/handleError';
 import endUserMessages from 'utils/endUserMessages';
 import { getCellSets } from 'redux/selectors';
-import getHeatmapCellOrder from 'components/plots/helpers/heatmap/getHeatmapCellOrder';
+// import getHeatmapCellOrder from 'components/plots/helpers/heatmap/getHeatmapCellOrder';
 
 const loadMarkerGenes = (
   experimentId, resolution, plotUuid, options = undefined,
@@ -22,9 +22,9 @@ const loadMarkerGenes = (
   } = options;
 
   const cellSets = getCellSets()(getState());
-  const cellOrder = getHeatmapCellOrder(
-    cellSets, groupedTracks, selectedCellSet, selectedPoints,
-  );
+  // const cellOrder = getHeatmapCellOrder(
+  //   cellSets, groupedTracks, selectedCellSet, selectedPoints,
+  // );
 
   // Disabled linter because we are using == to check for both null and undefined values
   // eslint-disable-next-line eqeqeq
@@ -33,7 +33,10 @@ const loadMarkerGenes = (
     name: 'MarkerHeatmap',
     nGenes: numGenes,
     cellSetKey: selectedCellSet,
-    cellIds: cellOrder,
+    groupedTracks,
+    selectedPoints,
+    hiddenCellSetKeys: cellSets.hidden,
+    // cellIds: cellOrder,
   };
 
   dispatch({
@@ -49,6 +52,7 @@ const loadMarkerGenes = (
       truncatedExpression: truncatedExpressionJson,
       zScore: zScoreJson,
       stats,
+      cellOrder,
     } = await fetchWork(experimentId, body, getState, dispatch, { timeout });
 
     const rawExpression = SparseMatrix.fromJSON(rawExpressionJson);
