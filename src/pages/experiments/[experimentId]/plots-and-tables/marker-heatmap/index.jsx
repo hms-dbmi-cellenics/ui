@@ -31,7 +31,7 @@ import { loadCellSets } from 'redux/actions/cellSets';
 import PlatformError from 'components/PlatformError';
 import Loader from 'components/Loader';
 import SelectData from 'components/plots/styling/SelectData';
-import getHeatmapCellOrder from 'components/plots/helpers/heatmap/getHeatmapCellOrder';
+
 import generateVegaData from 'components/plots/helpers/heatmap/vega/generateVegaData';
 import { plotNames } from 'utils/constants';
 
@@ -53,7 +53,9 @@ const MarkerHeatmap = ({ experimentId }) => {
   const configIsLoaded = useSelector((state) => !_.isNil(state.componentConfig[plotUuid]));
 
   const { expression: expressionData } = useSelector((state) => state.genes);
-  const { error, loading, downsampledMatrix } = expressionData;
+  const {
+    error, loading, downsampledMatrix, downsampledCellOrder,
+  } = expressionData;
 
   const cellSets = useSelector(getCellSets());
   const { hierarchy, properties } = cellSets;
@@ -71,8 +73,8 @@ const MarkerHeatmap = ({ experimentId }) => {
   ) || [];
 
   const {
-    loading: loadingMarkerGenes,
-    error: errorMarkerGenes,
+    loading: markerGenesLoading,
+    error: markerGenesLoadingError,
   } = useSelector((state) => state.genes.markers);
 
   const louvainClustersResolution = useSelector(
@@ -111,14 +113,20 @@ const MarkerHeatmap = ({ experimentId }) => {
             groupedTracks: config.groupedTracks,
             selectedCellSet: config.selectedCellSet,
             selectedPoints: config.selectedPoints,
-            downsample: false,
           },
         ));
       } else {
         pushNotificationMessage('error', endUserMessages.NO_CLUSTERS);
       }
     }
-  }, [config?.selectedCellSet, config?.nMarkerGenes, hierarchy]);
+  }, [
+    config?.nMarkerGenes,
+    config?.groupedTracks,
+    config?.selectedCellSet,
+    config?.selectedPoints,
+    hierarchy,
+    cellSets.accessible,
+  ]);
 
   useEffect(() => {
     if (louvainClustersResolution
@@ -132,7 +140,6 @@ const MarkerHeatmap = ({ experimentId }) => {
           groupedTracks: config.groupedTracks,
           selectedCellSet: config.selectedCellSet,
           selectedPoints: config.selectedPoints,
-          downsample: false,
         },
       ));
     }
@@ -237,13 +244,13 @@ const MarkerHeatmap = ({ experimentId }) => {
       || _.isEmpty(loadedMarkerGenes)
       || !loading
       || !hierarchy?.length
+      || markerGenesLoadingError
+      || markerGenesLoading
     ) {
       return;
     }
 
-    const cellOrder = getHeatmapCellOrder(cellSets, config, true);
-
-    const data = generateVegaData(cellOrder, downsampledMatrix, config, cellSets);
+    const data = generateVegaData(downsampledCellOrder, downsampledMatrix, config, cellSets);
     const spec = generateSpec(config, 'Cluster ID', data, true);
 
     spec.description = 'Marker heatmap';
@@ -267,7 +274,7 @@ const MarkerHeatmap = ({ experimentId }) => {
     spec.marks.push(extraMarks);
 
     setVegaSpec(spec);
-  }, [config, cellSets]);
+  }, [config, downsampledCellOrder]);
 
   useEffect(() => {
     const state = {
@@ -353,7 +360,6 @@ const MarkerHeatmap = ({ experimentId }) => {
         groupedTracks: config.groupedTracks,
         selectedCellSet: config.selectedCellSet,
         selectedPoints: config.selectedPoints,
-        downsample: false,
       },
     ));
   };
@@ -449,11 +455,11 @@ const MarkerHeatmap = ({ experimentId }) => {
       );
     }
 
-    if (errorMarkerGenes) {
+    if (markerGenesLoadingError) {
       return (
         <PlatformError
           description='Could not load marker genes.'
-          error={errorMarkerGenes}
+          error={markerGenesLoadingError}
           onClick={
             () => dispatch(
               loadMarkerGenes(
@@ -465,7 +471,6 @@ const MarkerHeatmap = ({ experimentId }) => {
                   groupedTracks: config.groupedTracks,
                   selectedCellSet: config.selectedCellSet,
                   selectedPoints: config.selectedPoints,
-                  downsample: false,
                 },
               ),
             )
@@ -477,7 +482,7 @@ const MarkerHeatmap = ({ experimentId }) => {
     if (!config
       || loading.length > 0
       || !cellSets.accessible
-      || loadingMarkerGenes) {
+      || markerGenesLoading) {
       return (<Loader experimentId={experimentId} />);
     }
 

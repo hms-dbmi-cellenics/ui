@@ -18,7 +18,7 @@ const getInitialState = () => ({
     matrix: new ExpressionMatrix(),
     downsampledMatrix: new ExpressionMatrix(),
     downsampledHeatmapSettings: [],
-    downsampledCellIndexes: [],
+    downsampledCellOrder: [],
     views: {},
   },
   selected: [],

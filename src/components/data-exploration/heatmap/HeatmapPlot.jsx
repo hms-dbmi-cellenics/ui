@@ -45,7 +45,7 @@ const HeatmapPlot = (props) => {
 
   const loadingGenes = useSelector((state) => state.genes.expression.loading);
   const downsampledCellOrder = useSelector(
-    (state) => state.genes.expression.downsampledCellIndexes,
+    (state) => state.genes.expression.downsampledCellOrder,
   );
 
   const selectedGenes = useSelector((state) => state.genes.expression.views[COMPONENT_TYPE]?.data);
@@ -156,7 +156,8 @@ const HeatmapPlot = (props) => {
   useConditionalEffect(() => {
     if (
       !cellSets.accessible
-      || markerGenesLoadingError || markerGenesLoading
+      || markerGenesLoadingError
+      || markerGenesLoading
       || !louvainClustersResolution
     ) return;
 
@@ -171,7 +172,6 @@ const HeatmapPlot = (props) => {
         groupedTracks,
         selectedCellSet,
         selectedPoints,
-        downsample: true,
       },
     ));
   }, [
@@ -213,7 +213,6 @@ const HeatmapPlot = (props) => {
                 groupedTracks,
                 selectedCellSet,
                 selectedPoints,
-                downsample: true,
               },
             ));
           }
