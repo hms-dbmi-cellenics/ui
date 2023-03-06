@@ -141,10 +141,11 @@ describe('Configure Embedding', () => {
     expect(screen.getAllByText('Select data')).toBeDefined();
   });
 
-  it('allows selecting other plots', async () => {
+  it('allows selecting different plot types', async () => {
     await renderConfigureEmbedding(storeState);
 
-    // can select other plots
+    // can select other plots for embedding
+    userEvent.click(screen.getByText('Embedding'));
     ['Samples', 'Mitochondrial fraction reads', 'Doublet score', 'Cell sets', 'Number of genes', 'Number of UMIs'].forEach((plot) => {
       userEvent.click(screen.getByText(plot));
       // check that there are two elements with the plot name:
@@ -152,6 +153,18 @@ describe('Configure Embedding', () => {
       // * the plot view selector
       expect(screen.getAllByText(plot).length).toEqual(2);
     });
+
+    // can select other plots for violin
+    await waitFor(() => userEvent.click(screen.getByText('Violin')));
+    ['Mitochondrial fraction reads', 'Doublet score', 'Number of genes', 'Number of UMIs'].forEach((plot) => {
+      userEvent.click(screen.getAllByText(plot)[0]);
+      expect(screen.getAllByText(plot).length).toEqual(2);
+    });
+
+    // violin plot does not have samples and cell sets options
+
+    expect(screen.queryByText('Samples')).toBeNull();
+    expect(screen.queryByText('Cell sets')).toBeNull();
   });
 
   it('Renders a plot legend alert if there are more than MAX_LEGEND_ITEMS number of cell sets', async () => {

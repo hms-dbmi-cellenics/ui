@@ -32,7 +32,7 @@ const EMBEDD_METHOD_TEXT = 'Reducing the dimensionality does lose some informati
   + 't-SNE and UMAP are stochastic and very much dependent on choice of parameters (t-SNE even more than UMAP) and can yield very different results in different runs. ';
 
 const CalculationConfig = (props) => {
-  const { experimentId, onConfigChange } = props;
+  const { experimentId, onConfigChange, disabled } = props;
   const FILTER_UUID = 'configureEmbedding';
   const dispatch = useDispatch();
 
@@ -157,6 +157,7 @@ const CalculationConfig = (props) => {
       )}
       >
         <InputNumber
+          disabled={disabled}
           value={umapSettings.minimumDistance}
           min={0}
           step={0.1}
@@ -194,6 +195,7 @@ const CalculationConfig = (props) => {
         <Select
           value={umapSettings.distanceMetric}
           onChange={(value) => setDistanceMetric(value)}
+          disabled={disabled}
         >
           <Option value='cosine'>Cosine</Option>
           <Option value='euclidean'>Euclidean</Option>
@@ -224,6 +226,7 @@ const CalculationConfig = (props) => {
         <InputNumber
           value={tsneSettings.perplexity}
           min={5}
+          disabled={disabled}
           onChange={(value) => setPerplexity(value)}
           onStep={(value) => setPerplexity(value)}
           onPressEnter={(e) => e.preventDefault()}
@@ -245,6 +248,7 @@ const CalculationConfig = (props) => {
         <InputNumber
           value={tsneSettings.learningRate}
           min={10}
+          disabled={disabled}
           max={1000}
           step={10}
           onChange={(value) => setLearningRate(value)}
@@ -262,48 +266,50 @@ const CalculationConfig = (props) => {
 
   return (
     <Collapse defaultActiveKey={['embedding-settings', 'clustering-settings']}>
-      <Panel header='Embedding settings' key='embedding-settings'>
-        <Form size='small'>
+      <Panel header='Embedding settings' key='embedding-settings' collapsible={disabled && 'disabled'}>
+        <Form size='small' disabled={disabled}>
           {Boolean(changedQCFilters.size) && (
             <Form.Item>
               <Alert message='Your changes are not yet applied. To update the plots, click Run.' type='warning' showIcon />
             </Form.Item>
           )}
 
-          <Form.Item label={(
-            <span>
-              Method&nbsp;
-              <Tooltip overlay={(
-                <span>
-                  {EMBEDD_METHOD_TEXT}
-                  More info for
-                  <a
-                    href='https://satijalab.org/seurat/reference/runumap'
-                    target='_blank'
-                    rel='noreferrer'
-                  >
-                    {' '}
-                    <code>UMAP</code>
-                    {' '}
-                  </a>
-                  or
-                  <a
-                    href='https://satijalab.org/seurat/reference/runtsne'
-                    target='_blank'
-                    rel='noreferrer'
-                  >
-                    {' '}
-                    <code>t-SNE</code>
-                  </a>
-                </span>
-              )}
-              >
-                <QuestionCircleOutlined />
-              </Tooltip>
-            </span>
-          )}
+          <Form.Item
+            label={(
+              <span>
+                Method&nbsp;
+                <Tooltip overlay={(
+                  <span>
+                    {EMBEDD_METHOD_TEXT}
+                    More info for
+                    <a
+                      href='https://satijalab.org/seurat/reference/runumap'
+                      target='_blank'
+                      rel='noreferrer'
+                    >
+                      {' '}
+                      <code>UMAP</code>
+                      {' '}
+                    </a>
+                    or
+                    <a
+                      href='https://satijalab.org/seurat/reference/runtsne'
+                      target='_blank'
+                      rel='noreferrer'
+                    >
+                      {' '}
+                      <code>t-SNE</code>
+                    </a>
+                  </span>
+                )}
+                >
+                  <QuestionCircleOutlined />
+                </Tooltip>
+              </span>
+            )}
           >
             <Select
+              disabled={disabled}
               value={embeddingMethod}
               onChange={(value) => {
                 updateSettings({
@@ -322,7 +328,7 @@ const CalculationConfig = (props) => {
           {embeddingMethod === 'tsne' && renderTSNESettings()}
         </Form>
       </Panel>
-      <Panel header='Clustering settings' key='clustering-settings'>
+      <Panel header='Clustering settings' key='clustering-settings' collapsible={disabled && 'disabled'}>
         <Form size='small'>
           <Form.Item label={(
             <span>
@@ -351,6 +357,7 @@ const CalculationConfig = (props) => {
           >
             <Select
               value={clusteringMethod}
+              disabled={disabled}
               onChange={(value) => updateSettings(
                 { clusteringSettings: { method: value } },
               )}
@@ -386,6 +393,7 @@ const CalculationConfig = (props) => {
               min={0}
               max={10}
               step={0.1}
+              disabled={disabled}
               value={resolution}
               onUpdate={(value) => {
                 if (value === resolution) { return; }
@@ -412,6 +420,11 @@ const CalculationConfig = (props) => {
 CalculationConfig.propTypes = {
   experimentId: PropTypes.string.isRequired,
   onConfigChange: PropTypes.func.isRequired,
+  disabled: PropTypes.bool,
+};
+
+CalculationConfig.defaultProps = {
+  disabled: false,
 };
 
 export default CalculationConfig;

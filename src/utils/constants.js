@@ -23,7 +23,6 @@ const sampleTech = {
 const plotTypes = {
   CONTINUOUS_EMBEDDING: 'embeddingContinuous',
   CATEGORICAL_EMBEDDING: 'embeddingCategorical',
-  HEATMAP: 'heatmap',
   MARKER_HEATMAP: 'markerHeatmap',
   VOLCANO_PLOT: 'volcano',
   FREQUENCY_PLOT: 'frequency',
@@ -36,7 +35,6 @@ const plotTypes = {
 const plotUuids = {
   CONTINUOUS_EMBEDDING: 'embeddingContinuousMain',
   CATEGORICAL_EMBEDDING: 'embeddingCategoricalMain',
-  HEATMAP: 'heatmapPlotMain',
   MARKER_HEATMAP: 'markerHeatmapPlotMain',
   VOLCANO_PLOT: 'volcanoPlotMain',
   FREQUENCY_PLOT: 'frequencyPlotMain',
@@ -49,8 +47,7 @@ const plotUuids = {
 const plotNames = {
   CONTINUOUS_EMBEDDING: 'Continuous Embedding',
   CATEGORICAL_EMBEDDING: 'Categorical Embedding',
-  HEATMAP: 'Custom Heatmap',
-  MARKER_HEATMAP: 'Marker Heatmap',
+  MARKER_HEATMAP: 'Heatmap',
   VOLCANO_PLOT: 'Volcano Plot',
   FREQUENCY_PLOT: 'Frequency Plot',
   VIOLIN_PLOT: 'Violin Plot',

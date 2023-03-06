@@ -2,6 +2,7 @@
 import _ from 'lodash';
 
 import axios from 'axios';
+import techOptions from 'utils/upload/fileUploadSpecifications';
 
 import {
   createSamples, createSampleFile, updateSampleFileUpload, validateSamples,
@@ -172,6 +173,15 @@ const processUpload = async (filesList, technology, samples, experimentId, dispa
   }
 };
 
+const getFileName = (filePath, technology) => {
+  const [folderName, fileName] = _.takeRight(filePath.split('/'), 2);
+
+  if (techOptions[technology].acceptedFiles.has(fileName)) return `${folderName}/${fileName}`;
+
+  const correspondingName = techOptions[technology].getCorrespondingName(fileName);
+  return `${folderName}/${correspondingName}`;
+};
+
 /**
    * This function converts an uploaded File object into a file record that will be inserted under
    * samples[files] in the redux store.
@@ -181,13 +191,6 @@ const processUpload = async (filesList, technology, samples, experimentId, dispa
    */
 const fileObjectToFileRecord = async (fileObject, technology) => {
   // This is the first stage in uploading a file.
-
-  // if the file has a path, trim to just the file and its folder.
-  // otherwise simply use its name
-  const filename = (fileObject.path)
-    ? _.takeRight(fileObject.path.split('/'), 2).join('/')
-    : fileObject.name;
-
   const verdict = await inspectFile(fileObject, technology);
 
   let error = '';
@@ -196,6 +199,12 @@ const fileObjectToFileRecord = async (fileObject, technology) => {
   } else if (verdict === Verdict.INVALID_FORMAT) {
     error = 'Invalid file format.';
   }
+
+  // if the file has a path, trim to just the file and its folder.
+  // otherwise simply use its name
+  const filename = (fileObject.path)
+    ? getFileName(fileObject.path, technology)
+    : fileObject.name;
 
   return {
     name: filename,
