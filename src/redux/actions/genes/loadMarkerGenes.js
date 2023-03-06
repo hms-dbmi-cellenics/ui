@@ -8,7 +8,6 @@ import fetchWork from 'utils/work/fetchWork';
 import getTimeoutForWorkerTask from 'utils/getTimeoutForWorkerTask';
 import handleError from 'utils/http/handleError';
 import endUserMessages from 'utils/endUserMessages';
-import { getCellSets } from 'redux/selectors';
 
 const loadMarkerGenes = (
   experimentId, resolution, plotUuid, options = undefined,
@@ -18,9 +17,8 @@ const loadMarkerGenes = (
     groupedTracks = ['louvain'],
     selectedCellSet = 'louvain',
     selectedPoints = 'All',
+    hiddenCellSets = [],
   } = options;
-
-  const cellSets = getCellSets()(getState());
 
   // Disabled linter because we are using == to check for both null and undefined values
   // eslint-disable-next-line eqeqeq
@@ -31,7 +29,7 @@ const loadMarkerGenes = (
     cellSetKey: selectedCellSet,
     groupByClasses: groupedTracks,
     selectedPoints,
-    hiddenCellSetKeys: Array.from(cellSets.hidden),
+    hiddenCellSetKeys: hiddenCellSets,
   };
 
   try {

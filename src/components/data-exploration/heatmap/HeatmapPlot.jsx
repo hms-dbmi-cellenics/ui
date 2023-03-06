@@ -170,6 +170,7 @@ const HeatmapPlot = (props) => {
         groupedTracks,
         selectedCellSet,
         selectedPoints,
+        hiddenCellSets: cellSets.hidden,
       },
     ));
   }, [
@@ -178,6 +179,7 @@ const HeatmapPlot = (props) => {
     heatmapSettings?.groupedTracks,
     heatmapSettings?.selectedCellSet,
     heatmapSettings?.selectedPoints,
+    cellSets.hidden,
   ]);
 
   useEffect(() => {
