@@ -34,12 +34,10 @@ const loadMarkerGenes = (
     hiddenCellSetKeys: Array.from(cellSets.hidden),
   };
 
-  dispatch({
-    type: MARKER_GENES_LOADING,
-  });
-
   try {
     const timeout = getTimeoutForWorkerTask(getState(), 'MarkerHeatmap');
+
+    let requestETag;
 
     const {
       orderedGeneNames,
@@ -48,7 +46,26 @@ const loadMarkerGenes = (
       zScore: zScoreJson,
       stats,
       cellOrder,
-    } = await fetchWork(experimentId, body, getState, dispatch, { timeout });
+    } = await fetchWork(
+      experimentId,
+      body,
+      getState,
+      dispatch,
+      {
+        timeout,
+        onETagGenerated: (ETag) => {
+          dispatch({ type: MARKER_GENES_LOADING, payload: { ETag } });
+
+          requestETag = ETag;
+        },
+      },
+    );
+
+    // If the ETag is different, that means that a new request was sent in between
+    // So we don't need to handle this outdated result
+    if (getState().genes.markers.ETag !== requestETag) {
+      return;
+    }
 
     const rawExpression = SparseMatrix.fromJSON(rawExpressionJson);
     const truncatedExpression = SparseMatrix.fromJSON(truncatedExpressionJson);

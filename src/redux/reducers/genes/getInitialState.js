@@ -26,6 +26,7 @@ const getInitialState = () => ({
   markers: {
     loading: false,
     error: false,
+    ETag: null,
   },
 });
 
