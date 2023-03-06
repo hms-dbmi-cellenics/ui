@@ -33,9 +33,9 @@ const loadMarkerGenes = (
     name: 'MarkerHeatmap',
     nGenes: numGenes,
     cellSetKey: selectedCellSet,
-    groupedTracks,
+    groupByClasses: groupedTracks,
     selectedPoints,
-    hiddenCellSetKeys: cellSets.hidden,
+    hiddenCellSetKeys: Array.from(cellSets.hidden),
     // cellIds: cellOrder,
   };
 
