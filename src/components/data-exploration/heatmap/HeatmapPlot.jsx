@@ -163,7 +163,6 @@ const HeatmapPlot = (props) => {
 
     dispatch(loadMarkerGenes(
       experimentId,
-      louvainClustersResolution,
       COMPONENT_TYPE,
       {
         numGenes: nMarkerGenes,
@@ -206,7 +205,6 @@ const HeatmapPlot = (props) => {
 
             dispatch(loadMarkerGenes(
               experimentId,
-              louvainClustersResolution,
               COMPONENT_TYPE,
               {
                 numGenes: nMarkerGenes,

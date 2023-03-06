@@ -108,7 +108,6 @@ const MarkerHeatmap = ({ experimentId }) => {
       if (selectedCellSetClassAvailable) {
         dispatch(loadMarkerGenes(
           experimentId,
-          louvainClustersResolution,
           plotUuid,
           {
             numGenes: config.nMarkerGenes,
@@ -135,7 +134,6 @@ const MarkerHeatmap = ({ experimentId }) => {
       && config && hierarchy?.length) {
       dispatch(loadMarkerGenes(
         experimentId,
-        louvainClustersResolution,
         plotUuid,
         {
           numGenes: config.nMarkerGenes,
@@ -355,7 +353,6 @@ const MarkerHeatmap = ({ experimentId }) => {
     onGenesChange([]);
     dispatch(loadMarkerGenes(
       experimentId,
-      louvainClustersResolution,
       plotUuid,
       {
         numGenes: config.nMarkerGenes,
@@ -466,7 +463,6 @@ const MarkerHeatmap = ({ experimentId }) => {
             () => dispatch(
               loadMarkerGenes(
                 experimentId,
-                louvainClustersResolution,
                 plotUuid,
                 {
                   numGenes: config.nMarkerGenes,

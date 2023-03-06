@@ -10,7 +10,7 @@ import handleError from 'utils/http/handleError';
 import endUserMessages from 'utils/endUserMessages';
 
 const loadMarkerGenes = (
-  experimentId, resolution, plotUuid, options = undefined,
+  experimentId, plotUuid, options = {},
 ) => async (dispatch, getState) => {
   const {
     numGenes = 5,
@@ -22,7 +22,7 @@ const loadMarkerGenes = (
 
   // Disabled linter because we are using == to check for both null and undefined values
   // eslint-disable-next-line eqeqeq
-  if (experimentId == null || resolution == null) throw new Error('Null or undefined parameter/s for loadMarkerGenes');
+  if (experimentId == null || plotUuid == null) throw new Error('Null or undefined parameter/s for loadMarkerGenes');
   const body = {
     name: 'MarkerHeatmap',
     nGenes: numGenes,

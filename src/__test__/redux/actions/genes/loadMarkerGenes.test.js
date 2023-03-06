@@ -48,7 +48,7 @@ describe('loadMarkerGenes action', () => {
     const errorMessage = 'Null or undefined parameter/s for loadMarkerGenes';
 
     try {
-      await store.dispatch(loadMarkerGenes(null, 1));
+      await store.dispatch(loadMarkerGenes(null, 'marker-heatmap-id'));
 
       // eslint-disable-next-line no-undef
       fail('it should not reach here');
