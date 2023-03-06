@@ -53,7 +53,6 @@ const loadMarkerGenes = (
         timeout,
         onETagGenerated: (ETag) => {
           dispatch({ type: MARKER_GENES_LOADING, payload: { ETag } });
-
           requestETag = ETag;
         },
       },
@@ -80,12 +79,6 @@ const loadMarkerGenes = (
           zScore,
           stats,
           cellOrder,
-          downsampleSettings: {
-            numGenes,
-            groupedTracks,
-            selectedCellSet,
-            selectedPoints,
-          },
         },
       },
     });

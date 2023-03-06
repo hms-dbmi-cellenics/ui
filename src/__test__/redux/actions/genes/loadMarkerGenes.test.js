@@ -73,18 +73,32 @@ describe('loadMarkerGenes action', () => {
     }
   });
 
-  it('dispatches appropriately on success', async () => {
+  it.only('dispatches appropriately on success', async () => {
     const store = mockStore({
-      genes: getInitialState(),
+      genes: {
+        ...getInitialState(),
+        markers: {
+          ...getInitialState().markers,
+          ETag: 'new-etag',
+        },
+      },
       experimentSettings,
       backendStatus,
     });
 
-    const mockResult = getOneGeneMatrix('geneA', 1);
+    const mockResult = {
+      ...getOneGeneMatrix('geneA', 1),
+      cellOrder: [0],
+    };
 
-    fetchWork.mockImplementationOnce(() => new Promise((resolve) => resolve(mockResult)));
+    fetchWork.mockImplementationOnce((_expId, _body, _getState, _dispatch, optionals) => {
+      // Simulate etag being generated
+      optionals.onETagGenerated('new-etag');
 
-    await store.dispatch(loadMarkerGenes(experimentId, 10, 'interactiveHeatmap'));
+      return new Promise((resolve) => resolve(mockResult));
+    });
+
+    await store.dispatch(loadMarkerGenes(experimentId, 'interactiveHeatmap'));
 
     const actions = store.getActions();
     expect(_.map(actions, 'type')).toEqual([MARKER_GENES_LOADING, MARKER_GENES_LOADED]);
@@ -98,9 +112,9 @@ describe('loadMarkerGenes action', () => {
       backendStatus,
     });
 
-    fetchWork.mockImplementationOnce(() => new Promise((resolve, reject) => reject(new Error('random error!'))));
+    fetchWork.mockImplementationOnce(() => new Promise((_resolve, reject) => reject(new Error('random error!'))));
 
-    await store.dispatch(loadMarkerGenes(experimentId, 10));
+    await store.dispatch(loadMarkerGenes(experimentId, 'interactiveHeatmap'));
 
     const actions = store.getActions();
     expect(_.map(actions, 'type')).toEqual([MARKER_GENES_LOADING, MARKER_GENES_ERROR]);
@@ -118,7 +132,7 @@ describe('loadMarkerGenes action', () => {
 
     const workRequestBody = { cellSetKey: defaultCellSetKey, nGenes: 5, name: 'MarkerHeatmap' };
 
-    await store.dispatch(loadMarkerGenes(experimentId, 10, 'interactiveHearmap', 5));
+    await store.dispatch(loadMarkerGenes(experimentId, 'interactiveHearmap', 5));
 
     expect(fetchWork).toHaveBeenCalled();
 

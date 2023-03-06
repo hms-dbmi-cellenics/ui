@@ -11,9 +11,14 @@ Array [
 
 exports[`loadMarkerGenes action dispatches appropriately on success 1`] = `
 Array [
-  undefined,
+  Object {
+    "ETag": "new-etag",
+  },
   Object {
     "data": Object {
+      "cellOrder": Array [
+        0,
+      ],
       "orderedGeneNames": Array [
         "geneA",
       ],
