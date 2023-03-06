@@ -73,7 +73,7 @@ describe('loadMarkerGenes action', () => {
     }
   });
 
-  it.only('dispatches appropriately on success', async () => {
+  it('dispatches appropriately on success', async () => {
     const store = mockStore({
       genes: {
         ...getInitialState(),
@@ -112,7 +112,12 @@ describe('loadMarkerGenes action', () => {
       backendStatus,
     });
 
-    fetchWork.mockImplementationOnce(() => new Promise((_resolve, reject) => reject(new Error('random error!'))));
+    fetchWork.mockImplementationOnce((_expId, _body, _getState, _dispatch, optionals) => {
+      // Simulate etag being generated
+      optionals.onETagGenerated('new-etag');
+
+      return new Promise((_resolve, reject) => reject(new Error('random error!')));
+    });
 
     await store.dispatch(loadMarkerGenes(experimentId, 'interactiveHeatmap'));
 
@@ -128,11 +133,16 @@ describe('loadMarkerGenes action', () => {
       backendStatus,
     });
 
-    const defaultCellSetKey = 'louvain';
+    const workRequestBody = {
+      name: 'MarkerHeatmap',
+      nGenes: 5,
+      cellSetKey: 'louvain',
+      groupByClasses: ['louvain'],
+      hiddenCellSetKeys: [],
+      selectedPoints: 'All',
+    };
 
-    const workRequestBody = { cellSetKey: defaultCellSetKey, nGenes: 5, name: 'MarkerHeatmap' };
-
-    await store.dispatch(loadMarkerGenes(experimentId, 'interactiveHearmap', 5));
+    await store.dispatch(loadMarkerGenes(experimentId, 'interactiveHearmap', { numGenes: 5 }));
 
     expect(fetchWork).toHaveBeenCalled();
 
