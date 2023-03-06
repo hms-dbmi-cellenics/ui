@@ -14,6 +14,7 @@ import { loadMarkerGenes } from 'redux/actions/genes';
 import loadProcessingSettings from 'redux/actions/experimentSettings/processingConfig/loadProcessingSettings';
 import { makeStore } from 'redux/store';
 import { seekFromS3 } from 'utils/work/seekWorkResponse';
+import { loadCellSets } from 'redux/actions/cellSets';
 
 jest.mock('utils/getTimeoutForWorkerTask', () => ({
   __esModule: true, // this property makes it work
@@ -92,19 +93,14 @@ describe('loadEmbedding action', () => {
     store = makeStore();
     await store.dispatch(loadProcessingSettings(experimentId));
     await store.dispatch(loadBackendStatus(experimentId));
+    await store.dispatch(loadCellSets(experimentId));
   });
 
   it('loadEmbedding generates correct hash params body for ETag', async () => {
     const hashMock = jest.fn((object) => MD5(object));
     createObjectHash.mockImplementation(hashMock);
 
-    // eslint-disable-next-line max-len
-    const { resolution } = experimentSettings.processing.configureEmbedding.clusteringSettings.methodSettings.louvain;
-
-    await store.dispatch(loadMarkerGenes(
-      experimentId,
-      resolution,
-    ));
+    await store.dispatch(loadMarkerGenes(experimentId, 'interactiveHeatmap'));
 
     expect(hashMock).toHaveBeenCalled();
     // this snapshot should max exactly API snapshot:
@@ -113,6 +109,6 @@ describe('loadEmbedding action', () => {
     // this ETag should match exactly the one in
     // submitMarkerHeatmap.test.js
     const ETag = hashMock.mock.results[0].value;
-    expect(ETag).toEqual('9db473fff00ea358446196ee3276f486'); // pragma: allowlist secret`
+    expect(ETag).toEqual('b4ed9c3bc1696ae0f46168da354ec705'); // pragma: allowlist secret`
   });
 });
