@@ -162,6 +162,55 @@ Object {
   },
   "genes": Object {
     "expression": Object {
+      "downsampledCellOrder": Array [],
+      "downsampledMatrix": ExpressionMatrix {
+        "geneIndexes": Object {},
+        "rawGeneExpressions": Object {
+          "datatype": undefined,
+          "index": Array [],
+          "mathjs": "SparseMatrix",
+          "ptr": Array [
+            0,
+          ],
+          "size": Array [
+            0,
+            0,
+          ],
+          "values": Array [],
+        },
+        "stats": Object {
+          "rawMean": Array [],
+          "rawStdev": Array [],
+          "truncatedMax": Array [],
+          "truncatedMin": Array [],
+        },
+        "truncatedGeneExpressions": Object {
+          "datatype": undefined,
+          "index": Array [],
+          "mathjs": "SparseMatrix",
+          "ptr": Array [
+            0,
+          ],
+          "size": Array [
+            0,
+            0,
+          ],
+          "values": Array [],
+        },
+        "zScore": Object {
+          "datatype": undefined,
+          "index": Array [],
+          "mathjs": "SparseMatrix",
+          "ptr": Array [
+            0,
+          ],
+          "size": Array [
+            0,
+            0,
+          ],
+          "values": Array [],
+        },
+      },
       "error": false,
       "loading": Array [],
       "matrix": ExpressionMatrix {
@@ -216,6 +265,7 @@ Object {
     },
     "focused": undefined,
     "markers": Object {
+      "ETag": null,
       "error": false,
       "loading": false,
     },
@@ -557,6 +607,55 @@ Object {
   },
   "genes": Object {
     "expression": Object {
+      "downsampledCellOrder": Array [],
+      "downsampledMatrix": ExpressionMatrix {
+        "geneIndexes": Object {},
+        "rawGeneExpressions": Object {
+          "datatype": undefined,
+          "index": Array [],
+          "mathjs": "SparseMatrix",
+          "ptr": Array [
+            0,
+          ],
+          "size": Array [
+            0,
+            0,
+          ],
+          "values": Array [],
+        },
+        "stats": Object {
+          "rawMean": Array [],
+          "rawStdev": Array [],
+          "truncatedMax": Array [],
+          "truncatedMin": Array [],
+        },
+        "truncatedGeneExpressions": Object {
+          "datatype": undefined,
+          "index": Array [],
+          "mathjs": "SparseMatrix",
+          "ptr": Array [
+            0,
+          ],
+          "size": Array [
+            0,
+            0,
+          ],
+          "values": Array [],
+        },
+        "zScore": Object {
+          "datatype": undefined,
+          "index": Array [],
+          "mathjs": "SparseMatrix",
+          "ptr": Array [
+            0,
+          ],
+          "size": Array [
+            0,
+            0,
+          ],
+          "values": Array [],
+        },
+      },
       "error": false,
       "loading": Array [],
       "matrix": ExpressionMatrix {
@@ -611,6 +710,7 @@ Object {
     },
     "focused": undefined,
     "markers": Object {
+      "ETag": null,
       "error": false,
       "loading": false,
     },
