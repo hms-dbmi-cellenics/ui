@@ -29,7 +29,7 @@ const loadMarkerGenes = (
     cellSetKey: selectedCellSet,
     groupByClasses: groupedTracks,
     selectedPoints,
-    hiddenCellSetKeys: hiddenCellSets,
+    hiddenCellSetKeys: Array.from(hiddenCellSets),
   };
 
   try {
