@@ -39,7 +39,7 @@ const loadGeneExpression = (
   // If we are using the downsampled expression, then check downsampledMatrix as well
   // as the normal one (we can use both)
   if (useDownsampledExpression) {
-    genesAlreadyLoaded = [...downsampledMatrix.getStoredGenes(), ...matrix.getStoredGenes()];
+    genesAlreadyLoaded = downsampledMatrix.getStoredGenes();
   } else {
     genesAlreadyLoaded = matrix.getStoredGenes();
   }
