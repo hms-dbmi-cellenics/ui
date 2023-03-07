@@ -162,7 +162,7 @@ describe('HeatmapPlot', () => {
     expect(screen.getByText(/We're getting your data .../i)).toBeInTheDocument();
   });
 
-  it('Shows loader message if the marker genes are loaded but there\'s other selected genes still loading', async (done) => {
+  it('Shows loader message if the marker genes are loaded but theres other selected genes still loading', async (done) => {
     const customWorkerResponses = {
       ...mockWorkerResponses,
       'loading_gene_id-expression': () => delayedResponse({ body: 'Not found', status: 404 }, 4000),
@@ -171,11 +171,13 @@ describe('HeatmapPlot', () => {
     seekFromS3
       .mockReset()
       // 1st set of marker gene calls
-      .mockImplementationOnce(() => null)
       .mockImplementationOnce((mockEtag) => customWorkerResponses[mockEtag]())
       // 2nd set of marker gene calls
-      .mockImplementationOnce(() => null)
-      .mockImplementationOnce((mockEtag) => customWorkerResponses[mockEtag]());
+      .mockImplementationOnce((mockEtag) => {
+        console.log('mockEtagDebug');
+        console.log(mockEtag);
+        return customWorkerResponses[mockEtag]();
+      });
 
     await storeState.dispatch(loadCellSets(experimentId));
 
@@ -186,7 +188,7 @@ describe('HeatmapPlot', () => {
 
     // A new gene is being loaded
     await act(async () => {
-      storeState.dispatch(loadGeneExpression(experimentId, [...markerGenesData5.orderedGeneNames, 'loading_gene_id'], 'interactiveHeatmap'));
+      storeState.dispatch(loadGeneExpression(experimentId, [...markerGenesData5.orderedGeneNames, 'loading_gene_id'], 'interactiveHeatmap', true));
     });
 
     // Loading screen shows up

@@ -449,7 +449,9 @@ const MarkerHeatmap = ({ experimentId }) => {
         <PlatformError
           description='Could not load gene expression data.'
           error={error}
-          onClick={() => dispatch(loadGeneExpression(experimentId, config.selectedGenes, plotUuid, true))}
+          onClick={
+            () => dispatch(loadGeneExpression(experimentId, config.selectedGenes, plotUuid, true))
+          }
         />
       );
     }
