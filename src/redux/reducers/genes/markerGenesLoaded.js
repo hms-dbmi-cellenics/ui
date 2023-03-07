@@ -18,7 +18,7 @@ const markerGenesLoaded = produce((draft, action) => {
 
   const downsampledExpressionMatrix = original(draft).expression.downsampledMatrix;
 
-  downsampledExpressionMatrix.pushGeneExpression(
+  downsampledExpressionMatrix.setGeneExpression(
     orderedGeneNames,
     rawExpression,
     truncatedExpression,
