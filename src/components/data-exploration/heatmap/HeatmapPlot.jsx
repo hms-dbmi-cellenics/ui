@@ -71,11 +71,6 @@ const HeatmapPlot = (props) => {
   const heatmapSettings = useSelector((state) => state.componentConfig[COMPONENT_TYPE]?.config,
     _.isEqual) || {};
 
-  const louvainClustersResolution = useSelector(
-    (state) => state.experimentSettings.processing
-      .configureEmbedding?.clusteringSettings.methodSettings.louvain.resolution,
-  );
-
   const expressionMatrix = useSelector((state) => state.genes.expression.downsampledMatrix);
 
   const { error: expressionDataError, downsampledMatrix } = expressionData;
@@ -156,7 +151,9 @@ const HeatmapPlot = (props) => {
       !cellSets.accessible
       || markerGenesLoadingError
       || markerGenesLoading
-      || !louvainClustersResolution
+      || !heatmapSettings.groupedTracks
+      || !heatmapSettings.selectedCellSet
+      || !heatmapSettings.selectedPoints
     ) return;
 
     const { groupedTracks, selectedCellSet, selectedPoints } = heatmapSettings;
@@ -173,7 +170,6 @@ const HeatmapPlot = (props) => {
       },
     ));
   }, [
-    louvainClustersResolution,
     cellSets.accessible,
     heatmapSettings?.groupedTracks,
     heatmapSettings?.selectedCellSet,
@@ -216,7 +212,7 @@ const HeatmapPlot = (props) => {
           }
 
           if ((expressionDataError || viewError) && !_.isNil(selectedGenes)) {
-            dispatch(loadGeneExpression(experimentId, selectedGenes, COMPONENT_TYPE));
+            dispatch(loadGeneExpression(experimentId, selectedGenes, COMPONENT_TYPE, true));
           }
         }}
       />

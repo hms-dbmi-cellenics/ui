@@ -338,7 +338,7 @@ const MarkerHeatmap = ({ experimentId }) => {
   ];
 
   const onGenesChange = (genes) => {
-    dispatch(loadGeneExpression(experimentId, genes, plotUuid));
+    dispatch(loadGeneExpression(experimentId, genes, plotUuid, true));
   };
 
   const onGenesSelect = (genes) => {
@@ -346,7 +346,7 @@ const MarkerHeatmap = ({ experimentId }) => {
 
     if (_.isEqual(allGenes, config?.selectedGenes)) return;
 
-    dispatch(loadGeneExpression(experimentId, allGenes, plotUuid));
+    dispatch(loadGeneExpression(experimentId, allGenes, plotUuid, true));
   };
 
   const onReset = () => {
@@ -449,7 +449,7 @@ const MarkerHeatmap = ({ experimentId }) => {
         <PlatformError
           description='Could not load gene expression data.'
           error={error}
-          onClick={() => dispatch(loadGeneExpression(experimentId, config.selectedGenes, plotUuid))}
+          onClick={() => dispatch(loadGeneExpression(experimentId, config.selectedGenes, plotUuid, true))}
         />
       );
     }
