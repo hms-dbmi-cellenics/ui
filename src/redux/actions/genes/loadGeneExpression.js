@@ -36,10 +36,10 @@ const loadGeneExpression = (
   // we are not forced to reload all of the data.
   let genesToFetch = [...genes];
   let genesAlreadyLoaded;
-  // If we are using the downsampled expression, then check downsampledMatrix instead
-  //  of the normal one
+  // If we are using the downsampled expression, then check downsampledMatrix as well
+  // as the normal one (we can use both)
   if (useDownsampledExpression) {
-    downsampledMatrix.getStoredGenes();
+    genesAlreadyLoaded = [...downsampledMatrix.getStoredGenes(), ...matrix.getStoredGenes()];
   } else {
     genesAlreadyLoaded = matrix.getStoredGenes();
   }
