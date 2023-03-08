@@ -83,7 +83,11 @@ const loadMarkerGenes = (
       },
     });
   } catch (e) {
-    const errorMessage = handleError(e, endUserMessages.ERROR_FETCH_MARKER_GENES, undefined, false);
+    const userMessage = e.message.includes('No cells found')
+      ? endUserMessages.ERROR_FETCH_MARKER_GENES_NO_CELLS_MATCHING
+      : endUserMessages.ERROR_FETCH_MARKER_GENES;
+
+    const errorMessage = handleError(e, userMessage, undefined, false);
     dispatch({
       type: MARKER_GENES_ERROR,
       payload: {
