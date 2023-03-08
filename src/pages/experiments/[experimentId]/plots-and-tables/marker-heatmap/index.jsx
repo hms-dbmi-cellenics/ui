@@ -104,21 +104,21 @@ const MarkerHeatmap = ({ experimentId }) => {
   }, [configIsLoaded, cellSets.accessible]);
 
   useConditionalEffect(() => {
-    if (louvainClustersResolution && config?.nMarkerGenes && hierarchy?.length) {
-      if (selectedCellSetClassAvailable) {
-        dispatch(loadMarkerGenes(
-          experimentId,
-          plotUuid,
-          {
-            numGenes: config.nMarkerGenes,
-            groupedTracks: config.groupedTracks,
-            selectedCellSet: config.selectedCellSet,
-            selectedPoints: config.selectedPoints,
-          },
-        ));
-      } else {
-        pushNotificationMessage('error', endUserMessages.NO_CLUSTERS);
-      }
+    if (!(louvainClustersResolution && config?.nMarkerGenes && hierarchy?.length)) return;
+
+    if (selectedCellSetClassAvailable) {
+      dispatch(loadMarkerGenes(
+        experimentId,
+        plotUuid,
+        {
+          numGenes: config.nMarkerGenes,
+          groupedTracks: config.groupedTracks,
+          selectedCellSet: config.selectedCellSet,
+          selectedPoints: config.selectedPoints,
+        },
+      ));
+    } else {
+      pushNotificationMessage('error', endUserMessages.NO_CLUSTERS);
     }
   }, [
     config?.nMarkerGenes,
