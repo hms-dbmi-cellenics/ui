@@ -25,7 +25,7 @@ export default {
   ERROR_FETCHING_BACKEND_STATUS: 'We couldn\'t get the status of the experiment\'s data processing.',
   ERROR_FETCH_BACKGROUND_GENE_EXP: 'We couldn\'t get the background gene expression',
   ERROR_FETCH_MARKER_GENES: 'We couldn\'t get the marker genes',
-  ERROR_FETCH_MARKER_GENES_NO_CELLS_MATCHING: 'No cells found, try changing your Select Data settings',
+  ERROR_FETCH_MARKER_GENES_NO_CELLS_MATCHING: 'No cells found, try changing your settings',
   ERROR_FILE_CATEGORY: 'The selected file name does not match the expected category.',
   ERROR_FILES_FOLDER: 'Only files contained in a folder are accepted',
   ERROR_METADATA_MULTIPLE_FILES: 'You need to upload a single file in .tsv format',
