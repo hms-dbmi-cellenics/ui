@@ -53,6 +53,7 @@ Object {
           9,
         ],
       },
+      "setGeneExpression": [Function],
       "stats": Object {
         "rawMean": Array [
           1,
@@ -153,6 +154,7 @@ Object {
         ],
         "values": Array [],
       },
+      "setGeneExpression": [Function],
       "stats": Object {
         "rawMean": Array [],
         "rawStdev": Array [],

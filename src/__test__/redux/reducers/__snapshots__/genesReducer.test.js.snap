@@ -19,6 +19,7 @@ Object {
         ],
         "values": Array [],
       },
+      "setGeneExpression": [Function],
       "stats": Object {
         "rawMean": Array [],
         "rawStdev": Array [],
@@ -69,6 +70,7 @@ Object {
         ],
         "values": Array [],
       },
+      "setGeneExpression": [Function],
       "stats": Object {
         "rawMean": Array [],
         "rawStdev": Array [],
@@ -138,6 +140,7 @@ Object {
         ],
         "values": Array [],
       },
+      "setGeneExpression": [Function],
       "stats": Object {
         "rawMean": Array [],
         "rawStdev": Array [],
@@ -188,6 +191,7 @@ Object {
         ],
         "values": Array [],
       },
+      "setGeneExpression": [Function],
       "stats": Object {
         "rawMean": Array [],
         "rawStdev": Array [],
@@ -261,6 +265,7 @@ Object {
         ],
         "values": Array [],
       },
+      "setGeneExpression": [Function],
       "stats": Object {
         "rawMean": Array [],
         "rawStdev": Array [],
@@ -311,6 +316,7 @@ Object {
         ],
         "values": Array [],
       },
+      "setGeneExpression": [Function],
       "stats": Object {
         "rawMean": Array [],
         "rawStdev": Array [],
@@ -383,6 +389,7 @@ Object {
         ],
         "values": Array [],
       },
+      "setGeneExpression": [Function],
       "stats": Object {
         "rawMean": Array [],
         "rawStdev": Array [],
@@ -433,6 +440,7 @@ Object {
         ],
         "values": Array [],
       },
+      "setGeneExpression": [Function],
       "stats": Object {
         "rawMean": Array [],
         "rawStdev": Array [],
@@ -527,6 +535,7 @@ Object {
           6,
         ],
       },
+      "setGeneExpression": [Function],
       "stats": Object {
         "rawMean": Array [
           0.3,
@@ -645,6 +654,7 @@ Object {
           6,
         ],
       },
+      "setGeneExpression": [Function],
       "stats": Object {
         "rawMean": Array [
           0.3,
@@ -770,6 +780,7 @@ Object {
         ],
         "values": Array [],
       },
+      "setGeneExpression": [Function],
       "stats": Object {
         "rawMean": Array [],
         "rawStdev": Array [],
@@ -820,6 +831,7 @@ Object {
         ],
         "values": Array [],
       },
+      "setGeneExpression": [Function],
       "stats": Object {
         "rawMean": Array [],
         "rawStdev": Array [],
@@ -910,6 +922,7 @@ Object {
         ],
         "values": Array [],
       },
+      "setGeneExpression": [Function],
       "stats": Object {
         "rawMean": Array [],
         "rawStdev": Array [],
@@ -960,6 +973,7 @@ Object {
         ],
         "values": Array [],
       },
+      "setGeneExpression": [Function],
       "stats": Object {
         "rawMean": Array [],
         "rawStdev": Array [],
@@ -1053,6 +1067,7 @@ Object {
         ],
         "values": Array [],
       },
+      "setGeneExpression": [Function],
       "stats": Object {
         "rawMean": Array [],
         "rawStdev": Array [],
@@ -1103,6 +1118,7 @@ Object {
         ],
         "values": Array [],
       },
+      "setGeneExpression": [Function],
       "stats": Object {
         "rawMean": Array [],
         "rawStdev": Array [],
@@ -1181,6 +1197,7 @@ Object {
         ],
         "values": Array [],
       },
+      "setGeneExpression": [Function],
       "stats": Object {
         "rawMean": Array [],
         "rawStdev": Array [],
@@ -1235,6 +1252,7 @@ Object {
         ],
         "values": Array [],
       },
+      "setGeneExpression": [Function],
       "stats": Object {
         "rawMean": Array [],
         "rawStdev": Array [],
@@ -1315,6 +1333,7 @@ Object {
         ],
         "values": Array [],
       },
+      "setGeneExpression": [Function],
       "stats": Object {
         "rawMean": Array [],
         "rawStdev": Array [],
@@ -1365,6 +1384,7 @@ Object {
         ],
         "values": Array [],
       },
+      "setGeneExpression": [Function],
       "stats": Object {
         "rawMean": Array [],
         "rawStdev": Array [],
@@ -1449,6 +1469,7 @@ Object {
         ],
         "values": Array [],
       },
+      "setGeneExpression": [Function],
       "stats": Object {
         "rawMean": Array [],
         "rawStdev": Array [],
@@ -1499,6 +1520,7 @@ Object {
         ],
         "values": Array [],
       },
+      "setGeneExpression": [Function],
       "stats": Object {
         "rawMean": Array [],
         "rawStdev": Array [],
@@ -1577,6 +1599,7 @@ Object {
         ],
         "values": Array [],
       },
+      "setGeneExpression": [Function],
       "stats": Object {
         "rawMean": Array [],
         "rawStdev": Array [],
@@ -1627,6 +1650,7 @@ Object {
         ],
         "values": Array [],
       },
+      "setGeneExpression": [Function],
       "stats": Object {
         "rawMean": Array [],
         "rawStdev": Array [],
@@ -1700,6 +1724,7 @@ Object {
         ],
         "values": Array [],
       },
+      "setGeneExpression": [Function],
       "stats": Object {
         "rawMean": Array [],
         "rawStdev": Array [],
@@ -1750,6 +1775,7 @@ Object {
         ],
         "values": Array [],
       },
+      "setGeneExpression": [Function],
       "stats": Object {
         "rawMean": Array [],
         "rawStdev": Array [],
@@ -1823,6 +1849,7 @@ Object {
         ],
         "values": Array [],
       },
+      "setGeneExpression": [Function],
       "stats": Object {
         "rawMean": Array [],
         "rawStdev": Array [],
@@ -1873,6 +1900,7 @@ Object {
         ],
         "values": Array [],
       },
+      "setGeneExpression": [Function],
       "stats": Object {
         "rawMean": Array [],
         "rawStdev": Array [],
@@ -1961,6 +1989,7 @@ Object {
           5,
         ],
       },
+      "setGeneExpression": [Function],
       "stats": Object {
         "rawMean": Array [
           0.3,
@@ -2056,6 +2085,7 @@ Object {
           5,
         ],
       },
+      "setGeneExpression": [Function],
       "stats": Object {
         "rawMean": Array [
           0.3,
@@ -2166,6 +2196,7 @@ Object {
         ],
         "values": Array [],
       },
+      "setGeneExpression": [Function],
       "stats": Object {
         "rawMean": Array [],
         "rawStdev": Array [],
@@ -2220,6 +2251,7 @@ Object {
         ],
         "values": Array [],
       },
+      "setGeneExpression": [Function],
       "stats": Object {
         "rawMean": Array [],
         "rawStdev": Array [],
