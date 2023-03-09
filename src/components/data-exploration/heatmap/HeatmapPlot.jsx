@@ -1,5 +1,5 @@
 import React, {
-  useRef, useEffect, useState,
+  useRef, useEffect, useState, useCallback,
 } from 'react';
 import dynamic from 'next/dynamic';
 import PropTypes from 'prop-types';
@@ -172,6 +172,11 @@ const HeatmapPlot = (props) => {
     }
   }, [cellHighlight]);
 
+  const clearCellInfo = useCallback(
+    () => { dispatch(updateCellInfo({ cellId: null })); },
+    [],
+  );
+
   if (isHeatmapGenesLoading || !cellSets.accessible) {
     return (
       <center>
@@ -236,7 +241,7 @@ const HeatmapPlot = (props) => {
   };
 
   return (
-    <div id='heatmap-container'>
+    <div id='heatmap-container' onMouseLeave={clearCellInfo}>
       <Heatmap
         uuid='heatmap-0'
         theme='light'
