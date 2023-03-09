@@ -173,11 +173,7 @@ describe('HeatmapPlot', () => {
       // 1st set of marker gene calls
       .mockImplementationOnce((mockEtag) => customWorkerResponses[mockEtag]())
       // 2nd set of marker gene calls
-      .mockImplementationOnce((mockEtag) => {
-        console.log('mockEtagDebug');
-        console.log(mockEtag);
-        return customWorkerResponses[mockEtag]();
-      });
+      .mockImplementationOnce((mockEtag) => customWorkerResponses[mockEtag]());
 
     await storeState.dispatch(loadCellSets(experimentId));
 
@@ -284,6 +280,16 @@ describe('HeatmapPlot', () => {
   });
 
   it('Shows an empty message when all cell sets are hidden ', async () => {
+    seekFromS3.mockReset();
+
+    // Mock each of the loadMarkerGenes calls caused by hiding a cell set
+    _.times(14, () => {
+      seekFromS3.mockImplementationOnce((mockEtag) => mockWorkerResponses[mockEtag]());
+    });
+
+    // Last call (all the cellSets are hidden) throw the error
+    seekFromS3.mockImplementationOnce(() => Promise.reject(new Error('No cells found')));
+
     await storeState.dispatch(loadCellSets(experimentId));
 
     await loadAndRenderDefaultHeatmap(storeState);
