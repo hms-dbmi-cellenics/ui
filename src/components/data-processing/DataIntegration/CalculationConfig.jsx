@@ -289,7 +289,6 @@ const CalculationConfig = (props) => {
           </div>
         </Panel>
       </Collapse>
-      {/* TODO: reenable when geometric sketching pipeline PRs are released */}
       <Collapse>
         <Panel header='Downsampling Options' key='downsampling-options'>
           <Space direction='vertical' style={{ width: '100%' }} />
