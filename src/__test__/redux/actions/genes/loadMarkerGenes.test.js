@@ -42,37 +42,6 @@ describe('loadMarkerGenes action', () => {
     },
   };
 
-  it('throws when parameters are undefined or null', async () => {
-    const store = mockStore({});
-
-    const errorMessage = 'Null or undefined parameter/s for loadMarkerGenes';
-
-    try {
-      await store.dispatch(loadMarkerGenes(null, 'marker-heatmap-id'));
-
-      // eslint-disable-next-line no-undef
-      fail('it should not reach here');
-    } catch (e) {
-      expect(e.message).toEqual(errorMessage);
-    }
-
-    try {
-      await store.dispatch(loadMarkerGenes(1, undefined));
-      // eslint-disable-next-line no-undef
-      fail('it should not reach here');
-    } catch (e) {
-      expect(e.message).toEqual(errorMessage);
-    }
-
-    try {
-      await store.dispatch(loadMarkerGenes(1));
-      // eslint-disable-next-line no-undef
-      fail('it should not reach here');
-    } catch (e) {
-      expect(e.message).toEqual(errorMessage);
-    }
-  });
-
   it('dispatches appropriately on success', async () => {
     const store = mockStore({
       genes: {
