@@ -154,8 +154,6 @@ const HeatmapPlot = (props) => {
   useConditionalEffect(() => {
     if (
       !cellSets.accessible
-      || markerGenesLoadingError
-      || markerGenesLoading
       || !louvainClustersResolution
       || !heatmapSettings.groupedTracks
       || !heatmapSettings.selectedCellSet
