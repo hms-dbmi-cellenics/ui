@@ -85,6 +85,26 @@ const loadMarkerGenes = (
       : endUserMessages.ERROR_FETCH_MARKER_GENES;
 
     const errorMessage = handleError(e, userMessage, undefined, false);
+
+    if (e.message.includes('No cells found')) {
+      dispatch({
+        type: MARKER_GENES_LOADED,
+        payload: {
+          plotUuid,
+          data: {
+            orderedGeneNames: [],
+            rawExpression: new SparseMatrix(),
+            truncatedExpression: new SparseMatrix(),
+            zScore: new SparseMatrix(),
+            stats: {},
+            cellOrder: [],
+          },
+        },
+      });
+
+      return;
+    }
+
     dispatch({
       type: MARKER_GENES_ERROR,
       payload: {

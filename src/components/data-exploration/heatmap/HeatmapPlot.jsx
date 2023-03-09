@@ -125,7 +125,7 @@ const HeatmapPlot = (props) => {
   useConditionalEffect(() => {
     if (!selectedGenes?.length > 0
       || cellSets.hierarchy.length === 0
-      || downsampledCellOrder.length === 0
+      || downsampledCellOrder?.length === 0
     ) { return; }
 
     // Selected genes is not contained in heatmap settings for the
@@ -226,7 +226,7 @@ const HeatmapPlot = (props) => {
     );
   }
 
-  if (heatmapData.expressionMatrix.matrix.length === 0) {
+  if (downsampledCellOrder.length === 0) {
     return (
       <center>
         <Empty description='Unhide some cell sets to show the heatmap' />
