@@ -487,6 +487,12 @@ const MarkerHeatmap = ({ experimentId }) => {
       return (<Loader experimentId={experimentId} />);
     }
 
+    if (downsampledCellOrder.length === 0) {
+      return (
+        <Empty description='No matching cells found, try changing your settings in Select Data.' />
+      );
+    }
+
     if (loadedMarkerGenes.length === 0) {
       return (
         <Empty description='Add some genes to this heatmap to get started.' />
