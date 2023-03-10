@@ -104,12 +104,14 @@ const MarkerHeatmap = ({ experimentId }) => {
   }, [configIsLoaded, cellSets.accessible]);
 
   useConditionalEffect(() => {
-    if (!(louvainClustersResolution && config?.nMarkerGenes && hierarchy?.length)) return;
-
-    if (!selectedCellSetClassAvailable) {
-      pushNotificationMessage('error', endUserMessages.NO_CLUSTERS);
-      return;
-    }
+    if (
+      !(
+        louvainClustersResolution
+        && config?.nMarkerGenes
+        && hierarchy?.length
+        && selectedCellSetClassAvailable
+      )
+    ) return;
 
     dispatch(loadMarkerGenes(
       experimentId,
