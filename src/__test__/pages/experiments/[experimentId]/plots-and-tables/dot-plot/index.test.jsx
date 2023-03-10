@@ -3,7 +3,8 @@ import _ from 'lodash';
 
 import { act } from 'react-dom/test-utils';
 import { render, screen } from '@testing-library/react';
-import { mount } from 'enzyme';
+import Enzyme, { mount } from 'enzyme';
+import Adapter from '@wojtekmaj/enzyme-adapter-react-17';
 import { fireEvent, waitFor, within } from '@testing-library/dom';
 import '@testing-library/jest-dom';
 import { Provider } from 'react-redux';
@@ -37,6 +38,8 @@ import ExportAsCSV from 'components/plots/ExportAsCSV';
 import waitForComponentToPaint from '__test__/test-utils/waitForComponentToPaint';
 import { arrayMoveImmutable } from 'utils/array-move';
 
+Enzyme.configure({ adapter: new Adapter() });
+
 jest.mock('components/plots/ExportAsCSV', () => jest.fn(() => (<></>)));
 jest.mock('components/header/UserButton', () => () => <></>);
 jest.mock('react-resize-detector', () => (props) => {
@@ -47,7 +50,7 @@ jest.mock('react-resize-detector', () => (props) => {
 
 jest.mock('object-hash', () => {
   const objectHash = jest.requireActual('object-hash');
-  const mockWorkResultETag = jest.requireActual('__test__/test-utils/mockWorkResultETag').default;
+  const mockWorkResultETag = jest.requireActual('__test__/test-utils/mockWorkResultETag');
 
   const mockWorkRequestETag = (ETagParams) => {
     if (ETagParams.body.name === 'ListGenes') return 'paginated-gene-expression';

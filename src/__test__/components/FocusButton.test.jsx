@@ -1,11 +1,14 @@
 import React from 'react';
-import { mount } from 'enzyme';
+import Enzyme, { mount } from 'enzyme';
+import Adapter from '@wojtekmaj/enzyme-adapter-react-17';
 import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import { CELL_INFO_FOCUS, CELL_INFO_UNFOCUS } from 'redux/actionTypes/cellInfo';
 import FocusButton from 'components/FocusButton';
 import '__test__/test-utils/setupTests';
+
+Enzyme.configure({ adapter: new Adapter() });
 
 const eventStub = {
   stopPropagation: () => { },

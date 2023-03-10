@@ -1,8 +1,11 @@
 import React from 'react';
-import { mount } from 'enzyme';
+import Enzyme, { mount } from 'enzyme';
+import Adapter from '@wojtekmaj/enzyme-adapter-react-17';
 import { Input, Select } from 'antd';
 import FilterGenes from 'components/data-exploration/generic-gene-table/FilterGenes';
 import '__test__/test-utils/setupTests';
+
+Enzyme.configure({ adapter: new Adapter() });
 
 const { Search } = Input;
 

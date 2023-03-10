@@ -1,4 +1,5 @@
-import { mount } from 'enzyme';
+import Enzyme, { mount } from 'enzyme';
+import Adapter from '@wojtekmaj/enzyme-adapter-react-17';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import _ from 'lodash';
 import MarkerHeatmap from 'pages/experiments/[experimentId]/plots-and-tables/marker-heatmap/index';
@@ -25,6 +26,8 @@ import createTestComponentFactory from '__test__/test-utils/testComponentFactory
 import waitForComponentToPaint from '__test__/test-utils/waitForComponentToPaint';
 import { arrayMoveImmutable } from 'utils/array-move';
 
+Enzyme.configure({ adapter: new Adapter() });
+
 jest.mock('components/header/UserButton', () => () => <></>);
 jest.mock('react-resize-detector', () => (props) => {
   // eslint-disable-next-line react/prop-types
@@ -36,7 +39,7 @@ jest.mock('react-resize-detector', () => (props) => {
 // EtagParams is the object that's passed to the function which generates ETag in fetchWork
 jest.mock('object-hash', () => {
   const objectHash = jest.requireActual('object-hash');
-  const mockWorkResultETag = jest.requireActual('__test__/test-utils/mockWorkResultETag').default;
+  const mockWorkResultETag = jest.requireActual('__test__/test-utils/mockWorkResultETag');
 
   const mockWorkRequestETag = (ETagParams) => {
     if (ETagParams.body.name === 'ListGenes') return 'ListGenes';

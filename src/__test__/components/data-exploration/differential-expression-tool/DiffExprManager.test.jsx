@@ -1,5 +1,6 @@
 import React from 'react';
-import { mount } from 'enzyme';
+import Enzyme, { mount } from 'enzyme';
+import Adapter from '@wojtekmaj/enzyme-adapter-react-17';
 import { act } from 'react-dom/test-utils';
 import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
@@ -14,6 +15,8 @@ import getInitialState from 'redux/reducers/genes/getInitialState';
 import cellSetsInitialState from 'redux/reducers/cellSets/initialState';
 
 import { mockCellSets } from '__test__/test-utils/cellSets.mock';
+
+Enzyme.configure({ adapter: new Adapter() });
 
 const mockStore = configureMockStore([thunk]);
 

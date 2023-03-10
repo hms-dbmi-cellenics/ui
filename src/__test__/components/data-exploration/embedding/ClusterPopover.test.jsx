@@ -1,8 +1,11 @@
 import React from 'react';
-import { mount } from 'enzyme';
+import Enzyme, { mount } from 'enzyme';
+import Adapter from '@wojtekmaj/enzyme-adapter-react-17';
 import ClusterPopover from 'components/data-exploration/embedding/ClusterPopover';
 import EditableField from 'components/EditableField';
 import '__test__/test-utils/setupTests';
+
+Enzyme.configure({ adapter: new Adapter() });
 
 let mockCreate;
 let mockCancel;

@@ -1,9 +1,12 @@
 import React from 'react';
 import { Table, Empty } from 'antd';
-import { mount } from 'enzyme';
+import Enzyme, { mount } from 'enzyme';
+import Adapter from '@wojtekmaj/enzyme-adapter-react-17';
 
 import FilterResultTable from 'components/data-processing/FilterResultTable';
 import '__test__/test-utils/setupTests';
+
+Enzyme.configure({ adapter: new Adapter() });
 
 const correctInput = {
   after: {

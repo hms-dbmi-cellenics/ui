@@ -3,7 +3,8 @@ import {
   Provider,
 } from 'react-redux';
 import { act } from 'react-dom/test-utils';
-import { mount } from 'enzyme';
+import Enzyme, { mount } from 'enzyme';
+import Adapter from '@wojtekmaj/enzyme-adapter-react-17';
 
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
@@ -20,6 +21,8 @@ import { CELL_INFO_UPDATE } from 'redux/actionTypes/cellInfo';
 import '__test__/test-utils/setupTests';
 import { getTwoGenesExpressionMatrix } from '__test__/utils/ExpressionMatrix/testMatrixes';
 import ExpressionMatrix from 'utils/ExpressionMatrix/ExpressionMatrix';
+
+Enzyme.configure({ adapter: new Adapter() });
 
 const mockStore = configureMockStore([thunk]);
 let component;

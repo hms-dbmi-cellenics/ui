@@ -1,7 +1,6 @@
 import React from 'react';
-import {
-  shallow, mount,
-} from 'enzyme';
+import Enzyme, { mount, shallow } from 'enzyme';
+import Adapter from '@wojtekmaj/enzyme-adapter-react-17';
 import { Provider } from 'react-redux';
 import waitForActions from 'redux-mock-store-await-actions';
 import thunk from 'redux-thunk';
@@ -14,6 +13,8 @@ import {
 import { UPDATE_CONFIG } from 'redux/actionTypes/componentConfig';
 import HeatmapGroupBySettings from 'components/data-exploration/heatmap/HeatmapGroupBySettings';
 import '__test__/test-utils/setupTests';
+
+Enzyme.configure({ adapter: new Adapter() });
 
 const mockStore = configureMockStore([thunk]);
 

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Input, Button, Typography } from 'antd';
-import { mount } from 'enzyme';
+import Enzyme, { mount } from 'enzyme';
+import Adapter from '@wojtekmaj/enzyme-adapter-react-17';
 import thunk from 'redux-thunk';
 import '@testing-library/jest-dom';
 import configureMockStore from 'redux-mock-store';
@@ -10,6 +11,8 @@ import NewProjectModal from 'components/data-management/NewProjectModal';
 import '__test__/test-utils/setupTests';
 
 import experimentsInitialState from 'redux/reducers/experiments/initialState';
+
+Enzyme.configure({ adapter: new Adapter() });
 
 const { TextArea } = Input;
 

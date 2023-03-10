@@ -1,5 +1,6 @@
 import React from 'react';
-import { mount } from 'enzyme';
+import Enzyme, { mount } from 'enzyme';
+import Adapter from '@wojtekmaj/enzyme-adapter-react-17';
 import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
@@ -8,6 +9,8 @@ import initialState, { experimentTemplate } from 'redux/reducers/experiments/ini
 import ProjectsList from 'components/data-management/ProjectsList';
 import ProjectCard from 'components/data-management/ProjectCard';
 import '__test__/test-utils/setupTests';
+
+Enzyme.configure({ adapter: new Adapter() });
 
 const mockStore = configureMockStore([thunk]);
 

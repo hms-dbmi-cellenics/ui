@@ -1,5 +1,6 @@
 import React from 'react';
-import { mount, shallow } from 'enzyme';
+import Enzyme, { mount, shallow } from 'enzyme';
+import Adapter from '@wojtekmaj/enzyme-adapter-react-17';
 import { act } from 'react-dom/test-utils';
 import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
@@ -16,6 +17,8 @@ import { mockCellSets } from '__test__/test-utils/cellSets.mock';
 
 import Loader from 'components/Loader';
 import fetchWork from 'utils/work/fetchWork';
+
+Enzyme.configure({ adapter: new Adapter() });
 
 jest.mock('utils/getTimeoutForWorkerTask', () => ({
   __esModule: true, // this property makes it work

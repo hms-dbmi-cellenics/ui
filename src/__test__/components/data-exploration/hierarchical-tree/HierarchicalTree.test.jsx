@@ -1,5 +1,6 @@
 import React from 'react';
-import { mount } from 'enzyme';
+import Enzyme, { mount } from 'enzyme';
+import Adapter from '@wojtekmaj/enzyme-adapter-react-17';
 
 import {
   EditOutlined, DeleteOutlined,
@@ -9,6 +10,8 @@ import HierarchicalTree from 'components/data-exploration/hierarchical-tree/Hier
 import waitForComponentToPaint from '__test__/test-utils/waitForComponentToPaint';
 
 import fake from '__test__/test-utils/constants';
+
+Enzyme.configure({ adapter: new Adapter() });
 
 const firstChild = {
   key: '1a',

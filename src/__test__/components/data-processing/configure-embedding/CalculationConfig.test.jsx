@@ -3,7 +3,8 @@ import _ from 'lodash';
 import {
   Select, Form, Alert,
 } from 'antd';
-import { mount } from 'enzyme';
+import Enzyme, { mount } from 'enzyme';
+import Adapter from '@wojtekmaj/enzyme-adapter-react-17';
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import { Provider } from 'react-redux';
@@ -15,6 +16,8 @@ import { initialEmbeddingState } from 'redux/reducers/embeddings/initialState';
 import CalculationConfig from 'components/data-processing/ConfigureEmbedding/CalculationConfig';
 import generateExperimentSettingsMock from '../../../test-utils/experimentSettings.mock';
 import '__test__/test-utils/setupTests';
+
+Enzyme.configure({ adapter: new Adapter() });
 
 enableFetchMocks();
 const mockStore = configureStore([thunk]);

@@ -1,11 +1,15 @@
 import React from 'react';
-import { mount } from 'enzyme';
+import Enzyme, { mount } from 'enzyme';
+import Adapter from '@wojtekmaj/enzyme-adapter-react-17';
+
 import EditableField from 'components/EditableField';
 import '__test__/test-utils/setupTests';
 
 import { fireEvent, render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { act } from 'react-dom/test-utils';
+
+Enzyme.configure({ adapter: new Adapter() });
 
 const eventStub = {
   stopPropagation: () => { },

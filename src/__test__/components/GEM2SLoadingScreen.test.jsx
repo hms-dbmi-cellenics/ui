@@ -1,6 +1,7 @@
 import React from 'react';
 import { Provider } from 'react-redux';
-import { mount, shallow } from 'enzyme';
+import Enzyme, { mount, shallow } from 'enzyme';
+import Adapter from '@wojtekmaj/enzyme-adapter-react-17';
 import thunk from 'redux-thunk';
 import {
   Result, Button, Progress,
@@ -9,6 +10,8 @@ import configureMockStore from 'redux-mock-store';
 import fetchAPI from 'utils/http/fetchAPI';
 import GEM2SLoadingScreen from 'components/GEM2SLoadingScreen';
 import '__test__/test-utils/setupTests';
+
+Enzyme.configure({ adapter: new Adapter() });
 
 const mockStore = configureMockStore([thunk]);
 
