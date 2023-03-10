@@ -119,4 +119,36 @@ describe('loadMarkerGenes action', () => {
 
     expect(functionArgs[1]).toEqual(workRequestBody);
   });
+
+  it('Doesnt dispatch MARKER_GENES_LOADED if theres a different ETag stored', async () => {
+    const store = mockStore({
+      genes: {
+        ...getInitialState(),
+        markers: {
+          ...getInitialState().markers,
+          ETag: 'different-etag',
+        },
+      },
+      experimentSettings,
+      backendStatus,
+    });
+
+    const mockResult = {
+      ...getOneGeneMatrix('geneA', 1),
+      cellOrder: [0],
+    };
+
+    fetchWork.mockImplementationOnce((_expId, _body, _getState, _dispatch, optionals) => {
+      // Simulate etag being generated
+      optionals.onETagGenerated('new-etag');
+
+      return new Promise((resolve) => resolve(mockResult));
+    });
+
+    await store.dispatch(loadMarkerGenes(experimentId, 'interactiveHeatmap'));
+
+    const actions = store.getActions();
+    expect(_.map(actions, 'type')).toEqual([MARKER_GENES_LOADING]);
+    expect(_.map(actions, 'payload')).toMatchSnapshot();
+  });
 });
