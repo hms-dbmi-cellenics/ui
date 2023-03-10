@@ -2,10 +2,15 @@ module.exports = (api) => {
   api.cache(() => process.env.NODE_ENV);
 
   let babelConfig = {
-    presets: [],
+    presets: [
+      "@babel/preset-react"
+    ],
     plugins: [
-      ["lodash"],
-      ["@babel/plugin-transform-runtime"]
+      "lodash",
+      "@babel/plugin-proposal-class-properties",
+      "babel-plugin-add-module-exports",
+      "@babel/plugin-transform-classes",
+      "@babel/plugin-transform-runtime"
     ]
   };
 
@@ -17,6 +22,13 @@ module.exports = (api) => {
         [
           "next/babel",
           {
+            "preset-env": {
+              useBuiltIns: "usage",
+              corejs: 2,
+              targets: {
+                ie: 11
+              },
+            },
             "transform-runtime": {
               corejs: false
             },

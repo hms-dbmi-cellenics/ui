@@ -10,6 +10,8 @@ const updateExperiment = (
   experimentId,
   experimentDiff,
 ) => async (dispatch) => {
+  console.log('*** inside updateExperiment');
+
   dispatch({
     type: EXPERIMENTS_SAVING,
   });
