@@ -108,6 +108,9 @@ const MarkerHeatmap = ({ experimentId }) => {
       !(
         louvainClustersResolution
         && config?.nMarkerGenes
+        && config?.groupedTracks
+        && config?.selectedCellSet
+        && config?.selectedPoints
         && hierarchy?.length
         && selectedCellSetClassAvailable
       )
@@ -130,23 +133,8 @@ const MarkerHeatmap = ({ experimentId }) => {
     config?.selectedPoints,
     hierarchy,
     cellSets.accessible,
+    louvainClustersResolution,
   ]);
-
-  useEffect(() => {
-    if (louvainClustersResolution
-      && config && hierarchy?.length) {
-      dispatch(loadMarkerGenes(
-        experimentId,
-        plotUuid,
-        {
-          numGenes: config.nMarkerGenes,
-          groupedTracks: config.groupedTracks,
-          selectedCellSet: config.selectedCellSet,
-          selectedPoints: config.selectedPoints,
-        },
-      ));
-    }
-  }, [louvainClustersResolution]);
 
   useEffect(() => {
     if (!config) {
