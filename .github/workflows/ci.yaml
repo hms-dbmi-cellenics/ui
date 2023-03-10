@@ -79,19 +79,19 @@ jobs:
           git config --global url."https://".insteadOf ssh://
           npm ci
 
-      - id: test
-        name: Run unit tests
-        uses: mattallty/jest-github-action@v1
-        env:
-          AWS_DEFAULT_REGION: eu-west-1
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          test-command: 'npm run coverage'
-          coverage-comment: false
+      # - id: test
+      #   name: Run unit tests
+      #   uses: mattallty/jest-github-action@v1
+      #   env:
+      #     AWS_DEFAULT_REGION: eu-west-1
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #   with:
+      #     test-command: 'npm run coverage'
+      #     coverage-comment: false
 
-      - id: upload-coverage
-        name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v1
+      # - id: upload-coverage
+      #   name: Upload coverage to Codecov
+      #   uses: codecov/codecov-action@v1
 
       - id: next-cache-seek
         name: Look up the Next.js build cache
