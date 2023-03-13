@@ -372,7 +372,7 @@ Object {
     "dx": 0,
     "font": "sans-serif",
     "fontSize": 20,
-    "text": "notSelected",
+    "text": "",
   },
   "width": 700,
 }

@@ -306,17 +306,15 @@ const trajectoryAnalysisInitialConfig = {
   },
   fontStyle: fontStyleBaseState,
   colour: colourBaseState,
-  marker: {
-    ...markerBaseState,
-    size: 20,
-  },
+  marker: markerBaseState,
   labels: {
     ...labelBaseState,
     enabled: false,
   },
   selectedNodes: [],
-  selectedCellSet: 'louvain',
-  selectedSample: 'All',
+  selectedCellSets: ['louvain'],
+  embeddingCellSet: 'louvain',
+  embeddingSample: 'All',
 };
 
 // PLOTS & TABLES - Multi view

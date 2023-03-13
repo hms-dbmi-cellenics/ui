@@ -1,0 +1,24 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`loadEmbedding action loadEmbedding generates correct hash params body for ETag: embeddings - hash call params 1`] = `
+Array [
+  Array [
+    Object {
+      "body": Object {
+        "config": Object {
+          "distanceMetric": "cosine",
+          "minimumDistance": 0.3,
+        },
+        "name": "GetEmbedding",
+        "type": "umap",
+      },
+      "cacheUniquenessKey": null,
+      "experimentId": "6463cb35-3e08-4e94-a181-6d155a5ca570",
+      "extraDependencies": Array [],
+      "extras": undefined,
+      "qcPipelineStartDate": "2016-03-22T04:00:00.000Z",
+      "workerVersion": 3,
+    },
+  ],
+]
+`;

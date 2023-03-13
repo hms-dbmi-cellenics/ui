@@ -16,7 +16,7 @@ spec:
   ref:
     branch: FILLED_IN_BY_CI
 ---
-apiVersion: image.toolkit.fluxcd.io/v1beta1
+apiVersion: image.toolkit.fluxcd.io/v1beta2
 kind: ImageRepository
 metadata:
   name: FILLED_IN_BY_CI
@@ -24,8 +24,9 @@ metadata:
 spec:
   image: FILLED_IN_BY_CI
   interval: 2m0s
+  provider: aws
 ---
-apiVersion: image.toolkit.fluxcd.io/v1beta1
+apiVersion: image.toolkit.fluxcd.io/v1beta2
 kind: ImagePolicy
 metadata:
   name: FILLED_IN_BY_CI
