@@ -1,9 +1,6 @@
 /* eslint-disable no-param-reassign */
 import _ from 'lodash';
 
-import axios from 'axios';
-import techOptions from 'utils/upload/fileUploadSpecifications';
-
 import {
   createSamples, createSampleFile, updateSampleFileUpload, validateSamples,
 } from 'redux/actions/samples';
