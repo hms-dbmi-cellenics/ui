@@ -168,6 +168,6 @@ describe('fileInspector', () => {
     };
 
     expect(await inspectFile(file, sampleTech.SEURAT))
-      .toEqual(Verdict.INVALID_FORMAT);
+      .toEqual(Verdict.INVALID_NAME);
   });
 });

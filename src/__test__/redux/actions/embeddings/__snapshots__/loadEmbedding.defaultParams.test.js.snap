@@ -11,6 +11,7 @@ Array [
         },
         "name": "GetEmbedding",
         "type": "umap",
+        "useSaved": undefined,
       },
       "cacheUniquenessKey": null,
       "experimentId": "6463cb35-3e08-4e94-a181-6d155a5ca570",
