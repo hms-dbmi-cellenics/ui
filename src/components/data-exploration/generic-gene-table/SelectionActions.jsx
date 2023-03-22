@@ -97,7 +97,12 @@ const SelectionActions = (props) => {
           >
             {listed ? 'Hide' : 'List'}
           </Button>
-          <ComponentActions name='Heatmap' experimentId={experimentId} componentType={COMPONENT_TYPE} />
+          <ComponentActions
+            name='Heatmap'
+            experimentId={experimentId}
+            componentType={COMPONENT_TYPE}
+            useDownsampledExpression
+          />
           <Button
             type='link'
             size='small'

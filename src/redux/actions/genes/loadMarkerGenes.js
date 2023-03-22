@@ -10,23 +10,29 @@ import handleError from 'utils/http/handleError';
 import endUserMessages from 'utils/endUserMessages';
 
 const loadMarkerGenes = (
-  experimentId, resolution, plotUuid, numGenes = 5, selectedCellSet = 'louvain',
+  experimentId, plotUuid, options = {},
 ) => async (dispatch, getState) => {
-  // Disabled linter because we are using == to check for both null and undefined values
-  // eslint-disable-next-line eqeqeq
-  if (experimentId == null || resolution == null) throw new Error('Null or undefined parameter/s for loadMarkerGenes');
+  const {
+    numGenes = 5,
+    groupedTracks = ['louvain'],
+    selectedCellSet = 'louvain',
+    selectedPoints = 'All',
+    hiddenCellSets = [],
+  } = options;
+
   const body = {
     name: 'MarkerHeatmap',
     nGenes: numGenes,
     cellSetKey: selectedCellSet,
+    groupByClasses: groupedTracks,
+    selectedPoints,
+    hiddenCellSetKeys: Array.from(hiddenCellSets),
   };
-
-  dispatch({
-    type: MARKER_GENES_LOADING,
-  });
 
   try {
     const timeout = getTimeoutForWorkerTask(getState(), 'MarkerHeatmap');
+
+    let requestETag;
 
     const {
       orderedGeneNames,
@@ -34,7 +40,26 @@ const loadMarkerGenes = (
       truncatedExpression: truncatedExpressionJson,
       zScore: zScoreJson,
       stats,
-    } = await fetchWork(experimentId, body, getState, dispatch, { timeout });
+      cellOrder,
+    } = await fetchWork(
+      experimentId,
+      body,
+      getState,
+      dispatch,
+      {
+        timeout,
+        onETagGenerated: (ETag) => {
+          dispatch({ type: MARKER_GENES_LOADING, payload: { ETag } });
+          requestETag = ETag;
+        },
+      },
+    );
+
+    // If the ETag is different, that means that a new request was sent in between
+    // So we don't need to handle this outdated result
+    if (getState().genes.markers.ETag !== requestETag) {
+      return;
+    }
 
     const rawExpression = SparseMatrix.fromJSON(rawExpressionJson);
     const truncatedExpression = SparseMatrix.fromJSON(truncatedExpressionJson);
@@ -50,11 +75,32 @@ const loadMarkerGenes = (
           truncatedExpression,
           zScore,
           stats,
+          cellOrder,
         },
       },
     });
   } catch (e) {
+    if (e.message.includes('No cells found')) {
+      dispatch({
+        type: MARKER_GENES_LOADED,
+        payload: {
+          plotUuid,
+          data: {
+            orderedGeneNames: [],
+            rawExpression: new SparseMatrix(),
+            truncatedExpression: new SparseMatrix(),
+            zScore: new SparseMatrix(),
+            stats: {},
+            cellOrder: [],
+          },
+        },
+      });
+
+      return;
+    }
+
     const errorMessage = handleError(e, endUserMessages.ERROR_FETCH_MARKER_GENES, undefined, false);
+
     dispatch({
       type: MARKER_GENES_ERROR,
       payload: {

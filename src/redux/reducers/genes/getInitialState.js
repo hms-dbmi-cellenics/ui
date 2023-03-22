@@ -6,15 +6,6 @@ const initialViewState = {
   data: [],
 };
 
-const initialExpressionState = {
-  min: 0,
-  max: 0,
-  mean: 0,
-  stdev: 0,
-  expression: [],
-  zScore: [],
-};
-
 const getInitialState = () => ({
   properties: {
     loading: [],
@@ -25,6 +16,8 @@ const getInitialState = () => ({
     loading: [],
     error: false,
     matrix: new ExpressionMatrix(),
+    downsampledMatrix: new ExpressionMatrix(),
+    downsampledCellOrder: [],
     views: {},
   },
   selected: [],
@@ -32,8 +25,9 @@ const getInitialState = () => ({
   markers: {
     loading: false,
     error: false,
+    ETag: null,
   },
 });
 
-export { initialViewState, initialExpressionState };
+export { initialViewState };
 export default getInitialState;

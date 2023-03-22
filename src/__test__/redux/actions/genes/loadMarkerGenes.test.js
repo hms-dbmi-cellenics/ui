@@ -42,49 +42,32 @@ describe('loadMarkerGenes action', () => {
     },
   };
 
-  it('throws when parameters are undefined or null', async () => {
-    const store = mockStore({});
-
-    const errorMessage = 'Null or undefined parameter/s for loadMarkerGenes';
-
-    try {
-      await store.dispatch(loadMarkerGenes(null, 1));
-
-      // eslint-disable-next-line no-undef
-      fail('it should not reach here');
-    } catch (e) {
-      expect(e.message).toEqual(errorMessage);
-    }
-
-    try {
-      await store.dispatch(loadMarkerGenes(1, undefined));
-      // eslint-disable-next-line no-undef
-      fail('it should not reach here');
-    } catch (e) {
-      expect(e.message).toEqual(errorMessage);
-    }
-
-    try {
-      await store.dispatch(loadMarkerGenes(1));
-      // eslint-disable-next-line no-undef
-      fail('it should not reach here');
-    } catch (e) {
-      expect(e.message).toEqual(errorMessage);
-    }
-  });
-
   it('dispatches appropriately on success', async () => {
     const store = mockStore({
-      genes: getInitialState(),
+      genes: {
+        ...getInitialState(),
+        markers: {
+          ...getInitialState().markers,
+          ETag: 'new-etag',
+        },
+      },
       experimentSettings,
       backendStatus,
     });
 
-    const mockResult = getOneGeneMatrix('geneA', 1);
+    const mockResult = {
+      ...getOneGeneMatrix('geneA', 1),
+      cellOrder: [0],
+    };
 
-    fetchWork.mockImplementationOnce(() => new Promise((resolve) => resolve(mockResult)));
+    fetchWork.mockImplementationOnce((_expId, _body, _getState, _dispatch, optionals) => {
+      // Simulate etag being generated
+      optionals.onETagGenerated('new-etag');
 
-    await store.dispatch(loadMarkerGenes(experimentId, 10, 'interactiveHeatmap'));
+      return new Promise((resolve) => resolve(mockResult));
+    });
+
+    await store.dispatch(loadMarkerGenes(experimentId, 'interactiveHeatmap'));
 
     const actions = store.getActions();
     expect(_.map(actions, 'type')).toEqual([MARKER_GENES_LOADING, MARKER_GENES_LOADED]);
@@ -98,9 +81,14 @@ describe('loadMarkerGenes action', () => {
       backendStatus,
     });
 
-    fetchWork.mockImplementationOnce(() => new Promise((resolve, reject) => reject(new Error('random error!'))));
+    fetchWork.mockImplementationOnce((_expId, _body, _getState, _dispatch, optionals) => {
+      // Simulate etag being generated
+      optionals.onETagGenerated('new-etag');
 
-    await store.dispatch(loadMarkerGenes(experimentId, 10));
+      return new Promise((_resolve, reject) => reject(new Error('random error!')));
+    });
+
+    await store.dispatch(loadMarkerGenes(experimentId, 'interactiveHeatmap'));
 
     const actions = store.getActions();
     expect(_.map(actions, 'type')).toEqual([MARKER_GENES_LOADING, MARKER_GENES_ERROR]);
@@ -114,16 +102,53 @@ describe('loadMarkerGenes action', () => {
       backendStatus,
     });
 
-    const defaultCellSetKey = 'louvain';
+    const workRequestBody = {
+      name: 'MarkerHeatmap',
+      nGenes: 5,
+      cellSetKey: 'louvain',
+      groupByClasses: ['louvain'],
+      hiddenCellSetKeys: [],
+      selectedPoints: 'All',
+    };
 
-    const workRequestBody = { cellSetKey: defaultCellSetKey, nGenes: 5, name: 'MarkerHeatmap' };
-
-    await store.dispatch(loadMarkerGenes(experimentId, 10, 'interactiveHearmap', 5));
+    await store.dispatch(loadMarkerGenes(experimentId, 'interactiveHearmap', { numGenes: 5 }));
 
     expect(fetchWork).toHaveBeenCalled();
 
     const functionArgs = fetchWork.mock.calls[0];
 
     expect(functionArgs[1]).toEqual(workRequestBody);
+  });
+
+  it('Doesnt dispatch MARKER_GENES_LOADED if theres a different ETag stored', async () => {
+    const store = mockStore({
+      genes: {
+        ...getInitialState(),
+        markers: {
+          ...getInitialState().markers,
+          ETag: 'different-etag',
+        },
+      },
+      experimentSettings,
+      backendStatus,
+    });
+
+    const mockResult = {
+      ...getOneGeneMatrix('geneA', 1),
+      cellOrder: [0],
+    };
+
+    fetchWork.mockImplementationOnce((_expId, _body, _getState, _dispatch, optionals) => {
+      // Simulate etag being generated
+      optionals.onETagGenerated('new-etag');
+
+      return new Promise((resolve) => resolve(mockResult));
+    });
+
+    await store.dispatch(loadMarkerGenes(experimentId, 'interactiveHeatmap'));
+
+    const actions = store.getActions();
+    expect(_.map(actions, 'type')).toEqual([MARKER_GENES_LOADING]);
+    expect(_.map(actions, 'payload')).toMatchSnapshot();
   });
 });

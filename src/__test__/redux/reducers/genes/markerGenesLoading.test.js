@@ -6,7 +6,7 @@ describe('markerGenesLoading', () => {
       markers: {},
     };
 
-    const newState = markerGenesLoadingReducer(initialState, {});
+    const newState = markerGenesLoadingReducer(initialState, { payload: { ETag: 'new-etag' } });
 
     expect(newState).toMatchSnapshot();
   });

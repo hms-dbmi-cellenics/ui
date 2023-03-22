@@ -6,12 +6,14 @@ const cartesian = (...array) => (
   ))
 );
 
-const generateVegaGeneExpressionsData = (cellOrder, geneOrder, expression, heatmapSettings) => {
+const generateVegaGeneExpressionsData = (
+  cellOrder, geneOrder, expressionMatrix, heatmapSettings,
+) => {
   const { expressionValue, truncatedValues } = heatmapSettings;
 
   const geneExpressionsData = [];
 
-  if (!expression.matrix.genesAreLoaded(geneOrder)) {
+  if (!expressionMatrix.genesAreLoaded(geneOrder)) {
     return;
   }
 
@@ -19,14 +21,14 @@ const generateVegaGeneExpressionsData = (cellOrder, geneOrder, expression, heatm
   const preloadedExpressions = {};
   geneOrder.forEach((gene) => {
     if (expressionValue === 'zScore') {
-      preloadedExpressions[gene] = { zScore: expression.matrix.getZScore(gene, cellOrder) };
+      preloadedExpressions[gene] = { zScore: expressionMatrix.getZScore(gene, cellOrder) };
       return;
     }
 
-    const geneExpression = { rawExpression: expression.matrix.getRawExpression(gene, cellOrder) };
+    const geneExpression = { rawExpression: expressionMatrix.getRawExpression(gene, cellOrder) };
 
     if (truncatedValues) {
-      geneExpression.truncatedExpression = expression.matrix.getTruncatedExpression(
+      geneExpression.truncatedExpression = expressionMatrix.getTruncatedExpression(
         gene, cellOrder,
       );
     }
