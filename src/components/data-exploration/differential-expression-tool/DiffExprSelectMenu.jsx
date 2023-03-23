@@ -97,7 +97,7 @@ DiffExprSelectMenu.propTypes = {
   selectedComparison: PropTypes.object.isRequired,
   cellSets: PropTypes.object.isRequired,
   option: PropTypes.string.isRequired,
-  filterType: PropType.string.isRequired,
-  onSelectCluster: PropType.func.isRequired,
+  filterType: PropTypes.string.isRequired,
+  onSelectCluster: PropTypes.func.isRequired,
 };
 export default DiffExprSelectMenu;

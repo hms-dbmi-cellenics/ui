@@ -22,11 +22,10 @@ const BatchDiffExpression = (props) => {
   const { experimentId } = props;
   const [chosenOperation, setChosenOperation] = useState('fullList');
   const dispatch = useDispatch();
+  const cellSets = useSelector(getCellSets());
+
   const rootCellSetNodes = useSelector(getCellSetsHierarchyByType('cellSets')).map(({ key }) => ({ key: cellSets.properties[key].name }));
   const rootMetadataCellSetNodes = useSelector(getCellSetsHierarchyByType('metadataCategorical')).map(({ key }) => ({ key: cellSets.properties[key].name }));
-  const cellSets = useSelector(getCellSets());
-  const rootCellSetNames = rootCellSetNodes
-    .map((cellSet) => ({ key: cellSets.properties[cellSet].name }));
 
   const [rootCellSet, setRootCellSet] = useState();
   const [selectedComparison, setSelectedComparison] = useState({ cellSet: '' });
@@ -56,7 +55,7 @@ const BatchDiffExpression = (props) => {
               onChange={(value) => setRootCellSet(value)}
               value={rootCellSet}
               style={{ width: '40%' }}
-              options={getSelectOptions(rootCellSetNames)}
+              options={getSelectOptions(rootCellSetNodes)}
             />
             <br />
           </>
@@ -93,7 +92,7 @@ const BatchDiffExpression = (props) => {
               onChange={(value) => setRootCellSet(value)}
               value={rootCellSet}
               style={{ width: '40%' }}
-              options={getSelectOptions(rootCellSetNames)}
+              options={getSelectOptions(rootCellSetNodes)}
             />
           </>
         );
