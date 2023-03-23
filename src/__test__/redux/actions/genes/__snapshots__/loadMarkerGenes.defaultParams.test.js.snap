@@ -6,8 +6,13 @@ Array [
     Object {
       "body": Object {
         "cellSetKey": "louvain",
+        "groupByClasses": Array [
+          "louvain",
+        ],
+        "hiddenCellSetKeys": Array [],
         "nGenes": 5,
         "name": "MarkerHeatmap",
+        "selectedPoints": "All",
       },
       "cacheUniquenessKey": null,
       "experimentId": "6463cb35-3e08-4e94-a181-6d155a5ca570",
@@ -20,6 +25,9 @@ Array [
             },
           },
         },
+        Array [
+          "louvain",
+        ],
         1,
       ],
       "extras": undefined,

@@ -3,9 +3,19 @@
 exports[`markerGenesLoaded returns correct state 1`] = `
 Object {
   "expression": Object {
-    "error": false,
-    "loading": Array [],
-    "matrix": ExpressionMatrix {
+    "downsampledCellOrder": Array [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+    ],
+    "downsampledMatrix": ExpressionMatrix {
       "geneIndexes": Object {
         "geneA": 0,
       },
@@ -43,6 +53,7 @@ Object {
           9,
         ],
       },
+      "setGeneExpression": [Function],
       "stats": Object {
         "rawMean": Array [
           1,
@@ -126,6 +137,57 @@ Object {
         ],
       },
     },
+    "error": false,
+    "loading": Array [],
+    "matrix": ExpressionMatrix {
+      "geneIndexes": Object {},
+      "rawGeneExpressions": Object {
+        "datatype": undefined,
+        "index": Array [],
+        "mathjs": "SparseMatrix",
+        "ptr": Array [
+          0,
+        ],
+        "size": Array [
+          0,
+          0,
+        ],
+        "values": Array [],
+      },
+      "setGeneExpression": [Function],
+      "stats": Object {
+        "rawMean": Array [],
+        "rawStdev": Array [],
+        "truncatedMax": Array [],
+        "truncatedMin": Array [],
+      },
+      "truncatedGeneExpressions": Object {
+        "datatype": undefined,
+        "index": Array [],
+        "mathjs": "SparseMatrix",
+        "ptr": Array [
+          0,
+        ],
+        "size": Array [
+          0,
+          0,
+        ],
+        "values": Array [],
+      },
+      "zScore": Object {
+        "datatype": undefined,
+        "index": Array [],
+        "mathjs": "SparseMatrix",
+        "ptr": Array [
+          0,
+        ],
+        "size": Array [
+          0,
+          0,
+        ],
+        "values": Array [],
+      },
+    },
     "views": Object {
       "interactiveHeatmap": Object {
         "data": Array [
@@ -138,6 +200,7 @@ Object {
   },
   "focused": undefined,
   "markers": Object {
+    "ETag": null,
     "error": false,
     "loading": false,
   },

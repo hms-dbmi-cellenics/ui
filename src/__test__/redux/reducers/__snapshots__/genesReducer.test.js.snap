@@ -3,6 +3,56 @@
 exports[`genesReducer Deselecting all genes updates to empty list 1`] = `
 Object {
   "expression": Object {
+    "downsampledCellOrder": Array [],
+    "downsampledMatrix": ExpressionMatrix {
+      "geneIndexes": Object {},
+      "rawGeneExpressions": Object {
+        "datatype": undefined,
+        "index": Array [],
+        "mathjs": "SparseMatrix",
+        "ptr": Array [
+          0,
+        ],
+        "size": Array [
+          0,
+          0,
+        ],
+        "values": Array [],
+      },
+      "setGeneExpression": [Function],
+      "stats": Object {
+        "rawMean": Array [],
+        "rawStdev": Array [],
+        "truncatedMax": Array [],
+        "truncatedMin": Array [],
+      },
+      "truncatedGeneExpressions": Object {
+        "datatype": undefined,
+        "index": Array [],
+        "mathjs": "SparseMatrix",
+        "ptr": Array [
+          0,
+        ],
+        "size": Array [
+          0,
+          0,
+        ],
+        "values": Array [],
+      },
+      "zScore": Object {
+        "datatype": undefined,
+        "index": Array [],
+        "mathjs": "SparseMatrix",
+        "ptr": Array [
+          0,
+        ],
+        "size": Array [
+          0,
+          0,
+        ],
+        "values": Array [],
+      },
+    },
     "error": false,
     "loading": Array [],
     "matrix": ExpressionMatrix {
@@ -20,6 +70,7 @@ Object {
         ],
         "values": Array [],
       },
+      "setGeneExpression": [Function],
       "stats": Object {
         "rawMean": Array [],
         "rawStdev": Array [],
@@ -57,6 +108,7 @@ Object {
   },
   "focused": undefined,
   "markers": Object {
+    "ETag": null,
     "error": false,
     "loading": false,
   },
@@ -72,6 +124,56 @@ Object {
 exports[`genesReducer Deselecting non-selected genes is handled gracefully 1`] = `
 Object {
   "expression": Object {
+    "downsampledCellOrder": Array [],
+    "downsampledMatrix": ExpressionMatrix {
+      "geneIndexes": Object {},
+      "rawGeneExpressions": Object {
+        "datatype": undefined,
+        "index": Array [],
+        "mathjs": "SparseMatrix",
+        "ptr": Array [
+          0,
+        ],
+        "size": Array [
+          0,
+          0,
+        ],
+        "values": Array [],
+      },
+      "setGeneExpression": [Function],
+      "stats": Object {
+        "rawMean": Array [],
+        "rawStdev": Array [],
+        "truncatedMax": Array [],
+        "truncatedMin": Array [],
+      },
+      "truncatedGeneExpressions": Object {
+        "datatype": undefined,
+        "index": Array [],
+        "mathjs": "SparseMatrix",
+        "ptr": Array [
+          0,
+        ],
+        "size": Array [
+          0,
+          0,
+        ],
+        "values": Array [],
+      },
+      "zScore": Object {
+        "datatype": undefined,
+        "index": Array [],
+        "mathjs": "SparseMatrix",
+        "ptr": Array [
+          0,
+        ],
+        "size": Array [
+          0,
+          0,
+        ],
+        "values": Array [],
+      },
+    },
     "error": false,
     "loading": Array [],
     "matrix": ExpressionMatrix {
@@ -89,6 +191,7 @@ Object {
         ],
         "values": Array [],
       },
+      "setGeneExpression": [Function],
       "stats": Object {
         "rawMean": Array [],
         "rawStdev": Array [],
@@ -126,6 +229,7 @@ Object {
   },
   "focused": undefined,
   "markers": Object {
+    "ETag": null,
     "error": false,
     "loading": false,
   },
@@ -145,6 +249,56 @@ Object {
 exports[`genesReducer Deselecting part of all genes updates list as set 1`] = `
 Object {
   "expression": Object {
+    "downsampledCellOrder": Array [],
+    "downsampledMatrix": ExpressionMatrix {
+      "geneIndexes": Object {},
+      "rawGeneExpressions": Object {
+        "datatype": undefined,
+        "index": Array [],
+        "mathjs": "SparseMatrix",
+        "ptr": Array [
+          0,
+        ],
+        "size": Array [
+          0,
+          0,
+        ],
+        "values": Array [],
+      },
+      "setGeneExpression": [Function],
+      "stats": Object {
+        "rawMean": Array [],
+        "rawStdev": Array [],
+        "truncatedMax": Array [],
+        "truncatedMin": Array [],
+      },
+      "truncatedGeneExpressions": Object {
+        "datatype": undefined,
+        "index": Array [],
+        "mathjs": "SparseMatrix",
+        "ptr": Array [
+          0,
+        ],
+        "size": Array [
+          0,
+          0,
+        ],
+        "values": Array [],
+      },
+      "zScore": Object {
+        "datatype": undefined,
+        "index": Array [],
+        "mathjs": "SparseMatrix",
+        "ptr": Array [
+          0,
+        ],
+        "size": Array [
+          0,
+          0,
+        ],
+        "values": Array [],
+      },
+    },
     "error": false,
     "loading": Array [],
     "matrix": ExpressionMatrix {
@@ -162,6 +316,7 @@ Object {
         ],
         "values": Array [],
       },
+      "setGeneExpression": [Function],
       "stats": Object {
         "rawMean": Array [],
         "rawStdev": Array [],
@@ -199,6 +354,7 @@ Object {
   },
   "focused": undefined,
   "markers": Object {
+    "ETag": null,
     "error": false,
     "loading": false,
   },
@@ -217,6 +373,56 @@ Object {
 exports[`genesReducer Error state handled appropriately 1`] = `
 Object {
   "expression": Object {
+    "downsampledCellOrder": Array [],
+    "downsampledMatrix": ExpressionMatrix {
+      "geneIndexes": Object {},
+      "rawGeneExpressions": Object {
+        "datatype": undefined,
+        "index": Array [],
+        "mathjs": "SparseMatrix",
+        "ptr": Array [
+          0,
+        ],
+        "size": Array [
+          0,
+          0,
+        ],
+        "values": Array [],
+      },
+      "setGeneExpression": [Function],
+      "stats": Object {
+        "rawMean": Array [],
+        "rawStdev": Array [],
+        "truncatedMax": Array [],
+        "truncatedMin": Array [],
+      },
+      "truncatedGeneExpressions": Object {
+        "datatype": undefined,
+        "index": Array [],
+        "mathjs": "SparseMatrix",
+        "ptr": Array [
+          0,
+        ],
+        "size": Array [
+          0,
+          0,
+        ],
+        "values": Array [],
+      },
+      "zScore": Object {
+        "datatype": undefined,
+        "index": Array [],
+        "mathjs": "SparseMatrix",
+        "ptr": Array [
+          0,
+        ],
+        "size": Array [
+          0,
+          0,
+        ],
+        "values": Array [],
+      },
+    },
     "error": false,
     "loading": Array [],
     "matrix": ExpressionMatrix {
@@ -234,6 +440,7 @@ Object {
         ],
         "values": Array [],
       },
+      "setGeneExpression": [Function],
       "stats": Object {
         "rawMean": Array [],
         "rawStdev": Array [],
@@ -271,6 +478,7 @@ Object {
   },
   "focused": undefined,
   "markers": Object {
+    "ETag": null,
     "error": false,
     "loading": false,
   },
@@ -292,6 +500,121 @@ Object {
 exports[`genesReducer Expression loaded state handled appropriately when other things are still loading 1`] = `
 Object {
   "expression": Object {
+    "downsampledCellOrder": Array [],
+    "downsampledMatrix": ExpressionMatrix {
+      "geneIndexes": Object {
+        "GeneA": 0,
+        "GeneB": 1,
+        "GeneC": 2,
+      },
+      "rawGeneExpressions": Object {
+        "datatype": undefined,
+        "index": Array [
+          0,
+          0,
+          2,
+          0,
+          2,
+        ],
+        "mathjs": "SparseMatrix",
+        "ptr": Array [
+          0,
+          1,
+          3,
+          5,
+        ],
+        "size": Array [
+          3,
+          3,
+        ],
+        "values": Array [
+          1,
+          2,
+          5,
+          1,
+          6,
+        ],
+      },
+      "setGeneExpression": [Function],
+      "stats": Object {
+        "rawMean": Array [
+          0.3,
+          2.3,
+          1.3,
+        ],
+        "rawStdev": Array [
+          0.4,
+          2,
+          1,
+        ],
+        "truncatedMax": Array [
+          1,
+          3,
+          5,
+        ],
+        "truncatedMin": Array [
+          0,
+          2,
+          1,
+        ],
+      },
+      "truncatedGeneExpressions": Object {
+        "datatype": undefined,
+        "index": Array [
+          0,
+          0,
+          2,
+          0,
+          2,
+        ],
+        "mathjs": "SparseMatrix",
+        "ptr": Array [
+          0,
+          1,
+          3,
+          5,
+        ],
+        "size": Array [
+          3,
+          3,
+        ],
+        "values": Array [
+          1,
+          2,
+          3,
+          0.5,
+          1,
+        ],
+      },
+      "zScore": Object {
+        "datatype": undefined,
+        "index": Array [
+          0,
+          0,
+          2,
+          0,
+          2,
+        ],
+        "mathjs": "SparseMatrix",
+        "ptr": Array [
+          0,
+          1,
+          3,
+          5,
+        ],
+        "size": Array [
+          3,
+          3,
+        ],
+        "values": Array [
+          1,
+          1,
+          3,
+          3,
+          1,
+        ],
+      },
+    },
     "error": false,
     "loading": Array [
       "GENED",
@@ -331,6 +654,7 @@ Object {
           6,
         ],
       },
+      "setGeneExpression": [Function],
       "stats": Object {
         "rawMean": Array [
           0.3,
@@ -424,6 +748,7 @@ Object {
   },
   "focused": undefined,
   "markers": Object {
+    "ETag": null,
     "error": false,
     "loading": false,
   },
@@ -439,6 +764,56 @@ Object {
 exports[`genesReducer Loaded paginated state handled appropriately 1`] = `
 Object {
   "expression": Object {
+    "downsampledCellOrder": Array [],
+    "downsampledMatrix": ExpressionMatrix {
+      "geneIndexes": Object {},
+      "rawGeneExpressions": Object {
+        "datatype": undefined,
+        "index": Array [],
+        "mathjs": "SparseMatrix",
+        "ptr": Array [
+          0,
+        ],
+        "size": Array [
+          0,
+          0,
+        ],
+        "values": Array [],
+      },
+      "setGeneExpression": [Function],
+      "stats": Object {
+        "rawMean": Array [],
+        "rawStdev": Array [],
+        "truncatedMax": Array [],
+        "truncatedMin": Array [],
+      },
+      "truncatedGeneExpressions": Object {
+        "datatype": undefined,
+        "index": Array [],
+        "mathjs": "SparseMatrix",
+        "ptr": Array [
+          0,
+        ],
+        "size": Array [
+          0,
+          0,
+        ],
+        "values": Array [],
+      },
+      "zScore": Object {
+        "datatype": undefined,
+        "index": Array [],
+        "mathjs": "SparseMatrix",
+        "ptr": Array [
+          0,
+        ],
+        "size": Array [
+          0,
+          0,
+        ],
+        "values": Array [],
+      },
+    },
     "error": false,
     "loading": Array [],
     "matrix": ExpressionMatrix {
@@ -456,6 +831,7 @@ Object {
         ],
         "values": Array [],
       },
+      "setGeneExpression": [Function],
       "stats": Object {
         "rawMean": Array [],
         "rawStdev": Array [],
@@ -493,6 +869,7 @@ Object {
   },
   "focused": undefined,
   "markers": Object {
+    "ETag": null,
     "error": false,
     "loading": false,
   },
@@ -529,6 +906,56 @@ Object {
 exports[`genesReducer Loaded paginated state handled appropriately when other things are still loading 1`] = `
 Object {
   "expression": Object {
+    "downsampledCellOrder": Array [],
+    "downsampledMatrix": ExpressionMatrix {
+      "geneIndexes": Object {},
+      "rawGeneExpressions": Object {
+        "datatype": undefined,
+        "index": Array [],
+        "mathjs": "SparseMatrix",
+        "ptr": Array [
+          0,
+        ],
+        "size": Array [
+          0,
+          0,
+        ],
+        "values": Array [],
+      },
+      "setGeneExpression": [Function],
+      "stats": Object {
+        "rawMean": Array [],
+        "rawStdev": Array [],
+        "truncatedMax": Array [],
+        "truncatedMin": Array [],
+      },
+      "truncatedGeneExpressions": Object {
+        "datatype": undefined,
+        "index": Array [],
+        "mathjs": "SparseMatrix",
+        "ptr": Array [
+          0,
+        ],
+        "size": Array [
+          0,
+          0,
+        ],
+        "values": Array [],
+      },
+      "zScore": Object {
+        "datatype": undefined,
+        "index": Array [],
+        "mathjs": "SparseMatrix",
+        "ptr": Array [
+          0,
+        ],
+        "size": Array [
+          0,
+          0,
+        ],
+        "values": Array [],
+      },
+    },
     "error": false,
     "loading": Array [],
     "matrix": ExpressionMatrix {
@@ -546,6 +973,7 @@ Object {
         ],
         "values": Array [],
       },
+      "setGeneExpression": [Function],
       "stats": Object {
         "rawMean": Array [],
         "rawStdev": Array [],
@@ -583,6 +1011,7 @@ Object {
   },
   "focused": undefined,
   "markers": Object {
+    "ETag": null,
     "error": false,
     "loading": false,
   },
@@ -622,6 +1051,56 @@ Object {
 exports[`genesReducer Loading on error state causes error to reset 1`] = `
 Object {
   "expression": Object {
+    "downsampledCellOrder": Array [],
+    "downsampledMatrix": ExpressionMatrix {
+      "geneIndexes": Object {},
+      "rawGeneExpressions": Object {
+        "datatype": undefined,
+        "index": Array [],
+        "mathjs": "SparseMatrix",
+        "ptr": Array [
+          0,
+        ],
+        "size": Array [
+          0,
+          0,
+        ],
+        "values": Array [],
+      },
+      "setGeneExpression": [Function],
+      "stats": Object {
+        "rawMean": Array [],
+        "rawStdev": Array [],
+        "truncatedMax": Array [],
+        "truncatedMin": Array [],
+      },
+      "truncatedGeneExpressions": Object {
+        "datatype": undefined,
+        "index": Array [],
+        "mathjs": "SparseMatrix",
+        "ptr": Array [
+          0,
+        ],
+        "size": Array [
+          0,
+          0,
+        ],
+        "values": Array [],
+      },
+      "zScore": Object {
+        "datatype": undefined,
+        "index": Array [],
+        "mathjs": "SparseMatrix",
+        "ptr": Array [
+          0,
+        ],
+        "size": Array [
+          0,
+          0,
+        ],
+        "values": Array [],
+      },
+    },
     "error": false,
     "loading": Array [],
     "matrix": ExpressionMatrix {
@@ -639,6 +1118,7 @@ Object {
         ],
         "values": Array [],
       },
+      "setGeneExpression": [Function],
       "stats": Object {
         "rawMean": Array [],
         "rawStdev": Array [],
@@ -676,6 +1156,7 @@ Object {
   },
   "focused": undefined,
   "markers": Object {
+    "ETag": null,
     "error": false,
     "loading": false,
   },
@@ -700,6 +1181,56 @@ Object {
 exports[`genesReducer Multiple components loading some of same expression triggers appropriate action 1`] = `
 Object {
   "expression": Object {
+    "downsampledCellOrder": Array [],
+    "downsampledMatrix": ExpressionMatrix {
+      "geneIndexes": Object {},
+      "rawGeneExpressions": Object {
+        "datatype": undefined,
+        "index": Array [],
+        "mathjs": "SparseMatrix",
+        "ptr": Array [
+          0,
+        ],
+        "size": Array [
+          0,
+          0,
+        ],
+        "values": Array [],
+      },
+      "setGeneExpression": [Function],
+      "stats": Object {
+        "rawMean": Array [],
+        "rawStdev": Array [],
+        "truncatedMax": Array [],
+        "truncatedMin": Array [],
+      },
+      "truncatedGeneExpressions": Object {
+        "datatype": undefined,
+        "index": Array [],
+        "mathjs": "SparseMatrix",
+        "ptr": Array [
+          0,
+        ],
+        "size": Array [
+          0,
+          0,
+        ],
+        "values": Array [],
+      },
+      "zScore": Object {
+        "datatype": undefined,
+        "index": Array [],
+        "mathjs": "SparseMatrix",
+        "ptr": Array [
+          0,
+        ],
+        "size": Array [
+          0,
+          0,
+        ],
+        "values": Array [],
+      },
+    },
     "error": false,
     "loading": Array [
       "a",
@@ -721,6 +1252,7 @@ Object {
         ],
         "values": Array [],
       },
+      "setGeneExpression": [Function],
       "stats": Object {
         "rawMean": Array [],
         "rawStdev": Array [],
@@ -769,6 +1301,7 @@ Object {
   },
   "focused": undefined,
   "markers": Object {
+    "ETag": null,
     "error": false,
     "loading": false,
   },
@@ -784,6 +1317,56 @@ Object {
 exports[`genesReducer Multiple components loading some of same property triggers appropriate action 1`] = `
 Object {
   "expression": Object {
+    "downsampledCellOrder": Array [],
+    "downsampledMatrix": ExpressionMatrix {
+      "geneIndexes": Object {},
+      "rawGeneExpressions": Object {
+        "datatype": undefined,
+        "index": Array [],
+        "mathjs": "SparseMatrix",
+        "ptr": Array [
+          0,
+        ],
+        "size": Array [
+          0,
+          0,
+        ],
+        "values": Array [],
+      },
+      "setGeneExpression": [Function],
+      "stats": Object {
+        "rawMean": Array [],
+        "rawStdev": Array [],
+        "truncatedMax": Array [],
+        "truncatedMin": Array [],
+      },
+      "truncatedGeneExpressions": Object {
+        "datatype": undefined,
+        "index": Array [],
+        "mathjs": "SparseMatrix",
+        "ptr": Array [
+          0,
+        ],
+        "size": Array [
+          0,
+          0,
+        ],
+        "values": Array [],
+      },
+      "zScore": Object {
+        "datatype": undefined,
+        "index": Array [],
+        "mathjs": "SparseMatrix",
+        "ptr": Array [
+          0,
+        ],
+        "size": Array [
+          0,
+          0,
+        ],
+        "values": Array [],
+      },
+    },
     "error": false,
     "loading": Array [],
     "matrix": ExpressionMatrix {
@@ -801,6 +1384,7 @@ Object {
         ],
         "values": Array [],
       },
+      "setGeneExpression": [Function],
       "stats": Object {
         "rawMean": Array [],
         "rawStdev": Array [],
@@ -838,6 +1422,7 @@ Object {
   },
   "focused": undefined,
   "markers": Object {
+    "ETag": null,
     "error": false,
     "loading": false,
   },
@@ -868,6 +1453,56 @@ Object {
 exports[`genesReducer Properties loading triggers appropriate changes 1`] = `
 Object {
   "expression": Object {
+    "downsampledCellOrder": Array [],
+    "downsampledMatrix": ExpressionMatrix {
+      "geneIndexes": Object {},
+      "rawGeneExpressions": Object {
+        "datatype": undefined,
+        "index": Array [],
+        "mathjs": "SparseMatrix",
+        "ptr": Array [
+          0,
+        ],
+        "size": Array [
+          0,
+          0,
+        ],
+        "values": Array [],
+      },
+      "setGeneExpression": [Function],
+      "stats": Object {
+        "rawMean": Array [],
+        "rawStdev": Array [],
+        "truncatedMax": Array [],
+        "truncatedMin": Array [],
+      },
+      "truncatedGeneExpressions": Object {
+        "datatype": undefined,
+        "index": Array [],
+        "mathjs": "SparseMatrix",
+        "ptr": Array [
+          0,
+        ],
+        "size": Array [
+          0,
+          0,
+        ],
+        "values": Array [],
+      },
+      "zScore": Object {
+        "datatype": undefined,
+        "index": Array [],
+        "mathjs": "SparseMatrix",
+        "ptr": Array [
+          0,
+        ],
+        "size": Array [
+          0,
+          0,
+        ],
+        "values": Array [],
+      },
+    },
     "error": false,
     "loading": Array [],
     "matrix": ExpressionMatrix {
@@ -885,6 +1520,7 @@ Object {
         ],
         "values": Array [],
       },
+      "setGeneExpression": [Function],
       "stats": Object {
         "rawMean": Array [],
         "rawStdev": Array [],
@@ -922,6 +1558,7 @@ Object {
   },
   "focused": undefined,
   "markers": Object {
+    "ETag": null,
     "error": false,
     "loading": false,
   },
@@ -946,6 +1583,56 @@ Object {
 exports[`genesReducer Selected genes get added as a set to a non-empty list 1`] = `
 Object {
   "expression": Object {
+    "downsampledCellOrder": Array [],
+    "downsampledMatrix": ExpressionMatrix {
+      "geneIndexes": Object {},
+      "rawGeneExpressions": Object {
+        "datatype": undefined,
+        "index": Array [],
+        "mathjs": "SparseMatrix",
+        "ptr": Array [
+          0,
+        ],
+        "size": Array [
+          0,
+          0,
+        ],
+        "values": Array [],
+      },
+      "setGeneExpression": [Function],
+      "stats": Object {
+        "rawMean": Array [],
+        "rawStdev": Array [],
+        "truncatedMax": Array [],
+        "truncatedMin": Array [],
+      },
+      "truncatedGeneExpressions": Object {
+        "datatype": undefined,
+        "index": Array [],
+        "mathjs": "SparseMatrix",
+        "ptr": Array [
+          0,
+        ],
+        "size": Array [
+          0,
+          0,
+        ],
+        "values": Array [],
+      },
+      "zScore": Object {
+        "datatype": undefined,
+        "index": Array [],
+        "mathjs": "SparseMatrix",
+        "ptr": Array [
+          0,
+        ],
+        "size": Array [
+          0,
+          0,
+        ],
+        "values": Array [],
+      },
+    },
     "error": false,
     "loading": Array [],
     "matrix": ExpressionMatrix {
@@ -963,6 +1650,7 @@ Object {
         ],
         "values": Array [],
       },
+      "setGeneExpression": [Function],
       "stats": Object {
         "rawMean": Array [],
         "rawStdev": Array [],
@@ -1000,6 +1688,7 @@ Object {
   },
   "focused": undefined,
   "markers": Object {
+    "ETag": null,
     "error": false,
     "loading": false,
   },
@@ -1019,6 +1708,56 @@ Object {
 exports[`genesReducer Selected genes get added on empty list 1`] = `
 Object {
   "expression": Object {
+    "downsampledCellOrder": Array [],
+    "downsampledMatrix": ExpressionMatrix {
+      "geneIndexes": Object {},
+      "rawGeneExpressions": Object {
+        "datatype": undefined,
+        "index": Array [],
+        "mathjs": "SparseMatrix",
+        "ptr": Array [
+          0,
+        ],
+        "size": Array [
+          0,
+          0,
+        ],
+        "values": Array [],
+      },
+      "setGeneExpression": [Function],
+      "stats": Object {
+        "rawMean": Array [],
+        "rawStdev": Array [],
+        "truncatedMax": Array [],
+        "truncatedMin": Array [],
+      },
+      "truncatedGeneExpressions": Object {
+        "datatype": undefined,
+        "index": Array [],
+        "mathjs": "SparseMatrix",
+        "ptr": Array [
+          0,
+        ],
+        "size": Array [
+          0,
+          0,
+        ],
+        "values": Array [],
+      },
+      "zScore": Object {
+        "datatype": undefined,
+        "index": Array [],
+        "mathjs": "SparseMatrix",
+        "ptr": Array [
+          0,
+        ],
+        "size": Array [
+          0,
+          0,
+        ],
+        "values": Array [],
+      },
+    },
     "error": false,
     "loading": Array [],
     "matrix": ExpressionMatrix {
@@ -1036,6 +1775,7 @@ Object {
         ],
         "values": Array [],
       },
+      "setGeneExpression": [Function],
       "stats": Object {
         "rawMean": Array [],
         "rawStdev": Array [],
@@ -1073,6 +1813,7 @@ Object {
   },
   "focused": undefined,
   "markers": Object {
+    "ETag": null,
     "error": false,
     "loading": false,
   },
@@ -1092,6 +1833,56 @@ Object {
 exports[`genesReducer Sets error state on expression error action 1`] = `
 Object {
   "expression": Object {
+    "downsampledCellOrder": Array [],
+    "downsampledMatrix": ExpressionMatrix {
+      "geneIndexes": Object {},
+      "rawGeneExpressions": Object {
+        "datatype": undefined,
+        "index": Array [],
+        "mathjs": "SparseMatrix",
+        "ptr": Array [
+          0,
+        ],
+        "size": Array [
+          0,
+          0,
+        ],
+        "values": Array [],
+      },
+      "setGeneExpression": [Function],
+      "stats": Object {
+        "rawMean": Array [],
+        "rawStdev": Array [],
+        "truncatedMax": Array [],
+        "truncatedMin": Array [],
+      },
+      "truncatedGeneExpressions": Object {
+        "datatype": undefined,
+        "index": Array [],
+        "mathjs": "SparseMatrix",
+        "ptr": Array [
+          0,
+        ],
+        "size": Array [
+          0,
+          0,
+        ],
+        "values": Array [],
+      },
+      "zScore": Object {
+        "datatype": undefined,
+        "index": Array [],
+        "mathjs": "SparseMatrix",
+        "ptr": Array [
+          0,
+        ],
+        "size": Array [
+          0,
+          0,
+        ],
+        "values": Array [],
+      },
+    },
     "error": "asd",
     "loading": Array [],
     "matrix": ExpressionMatrix {
@@ -1109,6 +1900,7 @@ Object {
         ],
         "values": Array [],
       },
+      "setGeneExpression": [Function],
       "stats": Object {
         "rawMean": Array [],
         "rawStdev": Array [],
@@ -1152,6 +1944,7 @@ Object {
   },
   "focused": undefined,
   "markers": Object {
+    "ETag": null,
     "error": false,
     "loading": false,
   },
@@ -1167,6 +1960,101 @@ Object {
 exports[`genesReducer Sets loaded state on expression loading action 1`] = `
 Object {
   "expression": Object {
+    "downsampledCellOrder": Array [],
+    "downsampledMatrix": ExpressionMatrix {
+      "geneIndexes": Object {
+        "Gzma": 0,
+        "Lyz2": 1,
+      },
+      "rawGeneExpressions": Object {
+        "datatype": undefined,
+        "index": Array [
+          0,
+          0,
+          2,
+        ],
+        "mathjs": "SparseMatrix",
+        "ptr": Array [
+          0,
+          1,
+          3,
+        ],
+        "size": Array [
+          3,
+          2,
+        ],
+        "values": Array [
+          1,
+          2,
+          5,
+        ],
+      },
+      "setGeneExpression": [Function],
+      "stats": Object {
+        "rawMean": Array [
+          0.3,
+          2.3,
+        ],
+        "rawStdev": Array [
+          0.4,
+          2,
+        ],
+        "truncatedMax": Array [
+          1,
+          3,
+        ],
+        "truncatedMin": Array [
+          0,
+          2,
+        ],
+      },
+      "truncatedGeneExpressions": Object {
+        "datatype": undefined,
+        "index": Array [
+          0,
+          0,
+          2,
+        ],
+        "mathjs": "SparseMatrix",
+        "ptr": Array [
+          0,
+          1,
+          3,
+        ],
+        "size": Array [
+          3,
+          2,
+        ],
+        "values": Array [
+          1,
+          2,
+          3,
+        ],
+      },
+      "zScore": Object {
+        "datatype": undefined,
+        "index": Array [
+          0,
+          0,
+          2,
+        ],
+        "mathjs": "SparseMatrix",
+        "ptr": Array [
+          0,
+          1,
+          3,
+        ],
+        "size": Array [
+          3,
+          2,
+        ],
+        "values": Array [
+          1,
+          1,
+          3,
+        ],
+      },
+    },
     "error": false,
     "loading": Array [],
     "matrix": ExpressionMatrix {
@@ -1197,6 +2085,7 @@ Object {
           5,
         ],
       },
+      "setGeneExpression": [Function],
       "stats": Object {
         "rawMean": Array [
           0.3,
@@ -1275,6 +2164,7 @@ Object {
   },
   "focused": undefined,
   "markers": Object {
+    "ETag": null,
     "error": false,
     "loading": false,
   },
@@ -1290,6 +2180,56 @@ Object {
 exports[`genesReducer Sets loading state on expression loading action 1`] = `
 Object {
   "expression": Object {
+    "downsampledCellOrder": Array [],
+    "downsampledMatrix": ExpressionMatrix {
+      "geneIndexes": Object {},
+      "rawGeneExpressions": Object {
+        "datatype": undefined,
+        "index": Array [],
+        "mathjs": "SparseMatrix",
+        "ptr": Array [
+          0,
+        ],
+        "size": Array [
+          0,
+          0,
+        ],
+        "values": Array [],
+      },
+      "setGeneExpression": [Function],
+      "stats": Object {
+        "rawMean": Array [],
+        "rawStdev": Array [],
+        "truncatedMax": Array [],
+        "truncatedMin": Array [],
+      },
+      "truncatedGeneExpressions": Object {
+        "datatype": undefined,
+        "index": Array [],
+        "mathjs": "SparseMatrix",
+        "ptr": Array [
+          0,
+        ],
+        "size": Array [
+          0,
+          0,
+        ],
+        "values": Array [],
+      },
+      "zScore": Object {
+        "datatype": undefined,
+        "index": Array [],
+        "mathjs": "SparseMatrix",
+        "ptr": Array [
+          0,
+        ],
+        "size": Array [
+          0,
+          0,
+        ],
+        "values": Array [],
+      },
+    },
     "error": false,
     "loading": Array [
       "A",
@@ -1311,6 +2251,7 @@ Object {
         ],
         "values": Array [],
       },
+      "setGeneExpression": [Function],
       "stats": Object {
         "rawMean": Array [],
         "rawStdev": Array [],
@@ -1354,6 +2295,7 @@ Object {
   },
   "focused": undefined,
   "markers": Object {
+    "ETag": null,
     "error": false,
     "loading": false,
   },
