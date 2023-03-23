@@ -16,7 +16,10 @@ const geneOperations = {
 };
 
 const ComponentActions = (props) => {
-  const { experimentId, name, componentType } = props;
+  const {
+    experimentId, name, componentType, useDownsampledExpression,
+  } = props;
+
   const dispatch = useDispatch();
   const selectedGenes = useSelector((state) => state.genes.selected);
   const displayedGenes = useSelector((state) => state.genes.expression?.views[componentType]?.data);
@@ -31,7 +34,7 @@ const ComponentActions = (props) => {
       newGenes = displayedGenes.filter((gene) => !selectedGenes.includes(gene));
     }
 
-    dispatch(loadGeneExpression(experimentId, newGenes, componentType));
+    dispatch(loadGeneExpression(experimentId, newGenes, componentType, useDownsampledExpression));
   };
 
   const menu = (
@@ -68,6 +71,7 @@ ComponentActions.propTypes = {
   experimentId: PropTypes.string.isRequired,
   componentType: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
+  useDownsampledExpression: PropTypes.bool.isRequired,
 };
 
 export default ComponentActions;

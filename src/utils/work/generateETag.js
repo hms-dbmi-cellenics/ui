@@ -29,7 +29,10 @@ const generateETag = async (
     cacheUniquenessKey = Math.random();
   }
 
-  const extraDependencies = await getExtraDependencies(experimentId, body.name, dispatch, getState);
+  const extraDependencies = await getExtraDependencies(
+    experimentId, body, dispatch, getState,
+  );
+
   let ETagBody;
 
   // They `body` key to create ETAg for gene expression is different

@@ -29,6 +29,7 @@ ExpressionMatrix {
       5,
     ],
   },
+  "setGeneExpression": [Function],
   "stats": Object {
     "rawMean": Array [
       0.3,
@@ -125,6 +126,7 @@ ExpressionMatrix {
       5,
     ],
   },
+  "setGeneExpression": [Function],
   "stats": Object {
     "rawMean": Array [
       0.3,
@@ -237,6 +239,7 @@ ExpressionMatrix {
       5,
     ],
   },
+  "setGeneExpression": [Function],
   "stats": Object {
     "rawMean": Array [
       0.3,
@@ -379,6 +382,7 @@ ExpressionMatrix {
       2,
     ],
   },
+  "setGeneExpression": [Function],
   "stats": Object {
     "rawMean": Array [
       0.3,

@@ -184,7 +184,16 @@ const Embedding = (props) => {
     }
   }, [selectedCell]);
 
-  const setCellHighlight = useCallback((cell) => dispatch(updateCellInfo({ cellId: cell })), []);
+  const setCellHighlight = useCallback((cell) => {
+    // Keep last shown tooltip
+    if (!cell) return;
+
+    dispatch(updateCellInfo({ cellId: cell }));
+  }, []);
+
+  const clearCellHighlight = useCallback(() => {
+    dispatch(updateCellInfo({ cellId: null }));
+  }, []);
 
   const updateViewInfo = useCallback((viewInfo) => {
     if (selectedCell && viewInfo.project) {
@@ -301,6 +310,9 @@ const Embedding = (props) => {
           setCellInfoVisible(true);
         }
       }}
+      onMouseLeave={clearCellHighlight}
+      onClick={clearCellHighlight}
+      onKeyPress={clearCellHighlight}
     >
       {renderExpressionView()}
       {

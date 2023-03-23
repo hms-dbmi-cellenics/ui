@@ -10,6 +10,7 @@ class ExpressionMatrix {
     this.rawGeneExpressions = new SparseMatrix();
     this.truncatedGeneExpressions = new SparseMatrix();
     this.zScore = new SparseMatrix();
+
     this.stats = {
       rawMean: [],
       rawStdev: [],
@@ -80,7 +81,7 @@ class ExpressionMatrix {
 
     // If the matrix was empty previously we can just replace it with the ones that are being pushed
     if (genesCount === 0) {
-      this.#setGeneExpression(
+      this.setGeneExpression(
         orderedNewGeneSymbols,
         newRawGeneExpression,
         newTruncatedGeneExpression,
@@ -116,7 +117,7 @@ class ExpressionMatrix {
     });
   }
 
-  #setGeneExpression = (
+  setGeneExpression = (
     orderedNewGeneSymbols,
     newRawGeneExpression,
     newTruncatedGeneExpression,
