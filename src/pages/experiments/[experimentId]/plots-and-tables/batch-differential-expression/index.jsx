@@ -6,6 +6,7 @@ import {
   Space,
   Button,
   Card,
+  Form,
 } from 'antd';
 import Header from 'components/Header';
 import { getCellSetsHierarchyByType, getCellSets } from 'redux/selectors';
@@ -28,7 +29,7 @@ const BatchDiffExpression = (props) => {
   const rootMetadataCellSetNodes = useSelector(getCellSetsHierarchyByType('metadataCategorical')).map(({ key }) => ({ key: cellSets.properties[key].name }));
 
   const [rootCellSet, setRootCellSet] = useState();
-  const [selectedComparison, setSelectedComparison] = useState({ cellSet: '' });
+  const [selectedComparison, setSelectedComparison] = useState();
 
   const [toComparison, setToComparison] = useState();
   useEffect(() => {
@@ -39,8 +40,8 @@ const BatchDiffExpression = (props) => {
 
   const changeOperation = (value) => {
     setChosenOperation(value.target.value);
-    setSelectedComparison({ cellSet: '' });
-    setToComparison({ cellSet: '' });
+    setSelectedComparison(null);
+    setToComparison(null);
     setRootCellSet(null);
   };
 
@@ -50,6 +51,7 @@ const BatchDiffExpression = (props) => {
         return (
           <>
             <div>Select the cell sets for which marker genes are to be computed in batch:</div>
+            <br />
             <Select
               placeholder='Select a cell set...'
               onChange={(value) => setRootCellSet(value)}
@@ -63,29 +65,28 @@ const BatchDiffExpression = (props) => {
       case 'compareForCellSets':
         return (
           <>
-            <div>
-              Select the comparison sample/groups for which batch
-              differential expression is to be computed:
-            </div>
+            Select the comparison sample/groups for which batch
+            differential expression is to be computed:
             <br />
             <DiffExprSelectMenu
               title='Compare sample/group:'
               option='cellSet'
               filterType='metadataCategorical'
-              onSelectCluster={(cellSet) => setSelectedComparison({ cellSet })}
-              value={selectedComparison.cellSet}
-              selectedComparison={selectedComparison}
+              onSelectCluster={(cellSet) => setSelectedComparison(cellSet)}
+              selectedComparison={{ cellSet: selectedComparison }}
+              value={selectedComparison}
               cellSets={cellSets}
             />
             <DiffExprSelectMenu
               title='To sample/group:'
               option='compareWith'
               filterType='metadataCategorical'
-              onSelectCluster={(cellSet) => setToComparison({ cellSet })}
-              selectedComparison={selectedComparison}
-              value={toComparison.cellSet}
+              onSelectCluster={(cellSet) => setToComparison(cellSet)}
+              selectedComparison={{ cellSet: selectedComparison }}
+              value={toComparison}
               cellSets={cellSets}
             />
+
             In batch for each cell set in:
             <Select
               placeholder='Select a cell set...'
@@ -99,29 +100,28 @@ const BatchDiffExpression = (props) => {
       case 'compareForSamples':
         return (
           <>
-            <div>
-              Select the comparison cell sets for which batch
-              differential expression is to be computed:
-            </div>
+            Select the comparison cell sets for which batch
+            differential expression is to be computed:
             <br />
             <DiffExprSelectMenu
               title='Compare cell set:'
               option='cellSet'
               filterType='cellSets'
-              onSelectCluster={(cellSet) => setSelectedComparison({ cellSet })}
-              selectedComparison={selectedComparison}
-              value={selectedComparison.cellSet}
+              onSelectCluster={(cellSet) => setSelectedComparison(cellSet)}
+              selectedComparison={{ cellSet: selectedComparison }}
+              value={selectedComparison}
               cellSets={cellSets}
             />
             <DiffExprSelectMenu
               title='To cell set:'
               option='compareWith'
               filterType='cellSets'
-              onSelectCluster={(cellSet) => setToComparison({ cellSet })}
-              selectedComparison={selectedComparison}
-              value={toComparison.cellSet}
+              onSelectCluster={(cellSet) => setToComparison(cellSet)}
+              selectedComparison={{ cellSet: selectedComparison }}
+              value={toComparison}
               cellSets={cellSets}
             />
+
             In batch for each sample/group in:
             <Select
               placeholder='Select a cell set...'
@@ -151,30 +151,34 @@ const BatchDiffExpression = (props) => {
         <div> Select the batch differential expression calculation to perform:</div>
         {' '}
         <br />
-        <Radio.Group value={chosenOperation} onChange={(e) => { changeOperation(e); }}>
-          <Space direction='vertical'>
-            <Space direction='horizontal'>
-              <Radio value='fullList'>
-                Generate a full list of marker genes for all cell sets
+        <Form size='small' layout='vertical'>
+
+          <Radio.Group value={chosenOperation} onChange={(e) => { changeOperation(e); }}>
+            <Space direction='vertical'>
+              <Space direction='horizontal'>
+                <Radio value='fullList'>
+                  Generate a full list of marker genes for all cell sets
+                </Radio>
+                <Tooltip title='Each cell set will be compared to all other cells, using all samples.'>
+                  <InfoCircleOutlined />
+                </Tooltip>
+              </Space>
+              <Radio value='compareForCellSets'>
+                Compare between two selected samples/groups for all cell sets
               </Radio>
-              <Tooltip title='Each cell set will be compared to all other cells, using all samples.'>
-                <InfoCircleOutlined />
-              </Tooltip>
+              <Radio value='compareForSamples'>
+                Compare between two selected cell sets for all samples/groups
+              </Radio>
             </Space>
-            <Radio value='compareForCellSets'>
-              Compare between two selected samples/groups for all cell sets
-            </Radio>
-            <Radio value='compareForSamples'>
-              Compare between two selected cell sets for all samples/groups
-            </Radio>
+          </Radio.Group>
+          <br />
+          <br />
+          <Space direction='vertical'>
+            {renderSpecificControls(chosenOperation)}
+            <br />
+            <Button type='primary' size='large'>Export as CSV...</Button>
           </Space>
-        </Radio.Group>
-        <br />
-        <br />
-        <Space direction='vertical'>
-          {renderSpecificControls(chosenOperation)}
-          <Button type='primary'>Export as CSV...</Button>
-        </Space>
+        </Form>
       </Card>
     </div>
   );
