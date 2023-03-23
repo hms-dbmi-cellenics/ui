@@ -54,6 +54,7 @@ const plotNames = {
   DOT_PLOT: 'Dot Plot',
   TRAJECTORY_ANALYSIS: 'Trajectory Analysis',
   NORMALIZED_EXPRESSION_MATRIX: 'Normalized Expression Matrix',
+  BATCH_DIFFERENTIAL_EXPRESSION: 'Batch Differential Expression Table',
 };
 
 const layout = {
