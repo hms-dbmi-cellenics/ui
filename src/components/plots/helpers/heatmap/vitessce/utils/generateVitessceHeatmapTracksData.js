@@ -14,7 +14,7 @@ const generateVitessceHeatmapTracksData = (trackOrder, cellSets, cells) => {
 
   const cellIdsColorsMap = new Map();
 
-  cells.forEach((cellId) => {
+  cells?.forEach((cellId) => {
     const allColorsForCell = trackOrder.map((cellClassKey) => colorForCell(cellId, cellClassKey));
 
     cellIdsColorsMap.set(`${cellId}`, allColorsForCell);

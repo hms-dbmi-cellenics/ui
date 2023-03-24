@@ -92,7 +92,7 @@ const BatchDiffExpression = (props) => {
               placeholder='Select a cell set...'
               onChange={(value) => setRootCellSet(value)}
               value={rootCellSet}
-              style={{ width: '40%' }}
+              style={{ width: '33.5%' }}
               options={getSelectOptions(rootCellSetNodes)}
             />
           </>
@@ -124,10 +124,10 @@ const BatchDiffExpression = (props) => {
 
             In batch for each sample/group in:
             <Select
-              placeholder='Select a cell set...'
+              placeholder='Select samples or metadata...'
               onChange={(value) => setRootCellSet(value)}
               value={rootCellSet}
-              style={{ width: '40%' }}
+              style={{ width: '34%' }}
               options={getSelectOptions(rootMetadataCellSetNodes)}
             />
           </>
