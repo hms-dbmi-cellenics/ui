@@ -1,14 +1,14 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`generateData generate spec returns the right data 1`] = `
-Object {
+{
   "$schema": "https://vega.github.io/schema/vega/v5.json",
-  "autosize": Object {
+  "autosize": {
     "resize": true,
     "type": "fit",
   },
-  "axes": Array [
-    Object {
+  "axes": [
+    {
       "gridColor": "#000000",
       "gridOpacity": 0,
       "gridWidth": 0.5,
@@ -26,11 +26,11 @@ Object {
       "titlePadding": 5,
       "zindex": 1,
     },
-    Object {
-      "encode": Object {
-        "labels": Object {
-          "update": Object {
-            "text": Object {
+    {
+      "encode": {
+        "labels": {
+          "update": {
+            "text": {
               "signal": "datum.value? data('groupCfg')[0][datum.value].name : ''",
             },
           },
@@ -57,91 +57,91 @@ Object {
     },
   ],
   "background": "#FFFFFF",
-  "data": Array [
-    Object {
-      "format": Object {
+  "data": [
+    {
+      "format": {
         "copy": true,
         "type": "json",
       },
       "name": "groupCfg",
-      "values": Object {
-        "25ca1d7f-40ac-4bdc-9625-2272478e7db7": Object {
+      "values": {
+        "25ca1d7f-40ac-4bdc-9625-2272478e7db7": {
           "color": "#c9080a",
           "name": "New Cluster3",
         },
-        "8297d513-6268-4ab0-a03e-e74a23ecec07": Object {
+        "8297d513-6268-4ab0-a03e-e74a23ecec07": {
           "color": "#3957ff",
           "name": "New Cluster",
         },
-        "99a7746b-7f9d-4e54-8acf-53031e4ff023": Object {
+        "99a7746b-7f9d-4e54-8acf-53031e4ff023": {
           "color": "#d3fe14",
           "name": "New Cluster2",
         },
-        "b452c7ed-d907-4923-b7ff-fcafadc0b807": Object {
+        "b452c7ed-d907-4923-b7ff-fcafadc0b807": {
           "color": "#fec7f8",
           "name": "New Cluster4",
         },
       },
     },
-    Object {
-      "format": Object {
+    {
+      "format": {
         "copy": true,
         "type": "json",
       },
       "name": "cells",
-      "values": Array [
-        Object {
+      "values": [
+        {
           "group": "8297d513-6268-4ab0-a03e-e74a23ecec07",
           "x": 0.5561686241217735,
           "y": -0.1578865578865579,
         },
-        Object {
+        {
           "group": "8297d513-6268-4ab0-a03e-e74a23ecec07",
           "x": 0.5683293645580038,
           "y": -0.1578865578865579,
         },
-        Object {
+        {
           "group": "8297d513-6268-4ab0-a03e-e74a23ecec07",
           "x": 0.4433627345700756,
           "y": -0.1578865578865579,
         },
       ],
     },
-    Object {
+    {
       "name": "density",
       "source": "cells",
-      "transform": Array [
-        Object {
-          "bandwidth": Object {
+      "transform": [
+        {
+          "bandwidth": {
             "signal": "bandwidth",
           },
           "field": "y",
-          "groupby": Array [
+          "groupby": [
             "group",
           ],
           "type": "kde",
         },
       ],
     },
-    Object {
+    {
       "name": "stats",
       "source": "cells",
-      "transform": Array [
-        Object {
-          "as": Array [
+      "transform": [
+        {
+          "as": [
             "q1",
             "median",
             "q3",
           ],
-          "fields": Array [
+          "fields": [
             "y",
             "y",
             "y",
           ],
-          "groupby": Array [
+          "groupby": [
             "group",
           ],
-          "ops": Array [
+          "ops": [
             "q1",
             "median",
             "q3",
@@ -153,8 +153,8 @@ Object {
   ],
   "description": "Violin plot",
   "height": 550,
-  "legends": Array [
-    Object {
+  "legends": [
+    {
       "columns": 1,
       "direction": "horizontal",
       "fill": "legend",
@@ -167,119 +167,119 @@ Object {
       "type": "symbol",
     },
   ],
-  "marks": Array [
-    Object {
+  "marks": [
+    {
       "clip": true,
-      "data": Array [
-        Object {
+      "data": [
+        {
           "name": "summaryOfGroup",
           "source": "stats",
-          "transform": Array [
-            Object {
+          "transform": [
+            {
               "expr": "datum.group === parent.group",
               "type": "filter",
             },
           ],
         },
-        Object {
+        {
           "name": "cellsInGroup",
           "source": "cells",
-          "transform": Array [
-            Object {
+          "transform": [
+            {
               "expr": "datum.group === parent.group && isDefined(datum.x)",
               "type": "filter",
             },
           ],
         },
       ],
-      "encode": Object {
-        "enter": Object {
-          "height": Object {
+      "encode": {
+        "enter": {
+          "height": {
             "signal": "height",
           },
-          "width": Object {
+          "width": {
             "signal": "plotWidth",
           },
-          "xc": Object {
+          "xc": {
             "band": 0.5,
             "field": "group",
             "scale": "layout",
           },
         },
       },
-      "from": Object {
-        "facet": Object {
+      "from": {
+        "facet": {
           "data": "density",
           "groupby": "group",
           "name": "violin",
         },
       },
-      "marks": Array [
-        Object {
-          "encode": Object {
-            "enter": Object {
-              "fill": Object {
+      "marks": [
+        {
+          "encode": {
+            "enter": {
+              "fill": {
                 "signal": "data('groupCfg')[0][parent.group].color",
               },
-              "orient": Object {
+              "orient": {
                 "value": "horizontal",
               },
             },
-            "update": Object {
-              "width": Object {
+            "update": {
+              "width": {
                 "field": "density",
                 "scale": "xdensity",
               },
-              "xc": Object {
+              "xc": {
                 "signal": "plotWidth / 2",
               },
-              "y": Object {
+              "y": {
                 "field": "value",
                 "scale": "yscale",
               },
             },
           },
-          "from": Object {
+          "from": {
             "data": "violin",
           },
           "orient": "horizontal",
           "type": "area",
         },
-        Object {
-          "encode": Object {
-            "update": Object {
-              "fill": Object {
+        {
+          "encode": {
+            "update": {
+              "fill": {
                 "value": "black",
               },
-              "fillOpacity": Object {
+              "fillOpacity": {
                 "value": 0.5,
               },
-              "opacity": Object {
+              "opacity": {
                 "value": 1,
               },
-              "shape": Object {
+              "shape": {
                 "value": "circle",
               },
-              "size": Object {
+              "size": {
                 "value": 5,
               },
-              "strokeWidth": Object {
+              "strokeWidth": {
                 "value": 0,
               },
-              "x": Object {
+              "x": {
                 "field": "x",
-                "offset": Object {
+                "offset": {
                   "signal": "plotWidth / 2",
                 },
                 "scale": "xrandom",
               },
-              "y": Object {
+              "y": {
                 "field": "y",
                 "scale": "yscale",
               },
             },
           },
-          "from": Object {
+          "from": {
             "data": "cellsInGroup",
           },
           "type": "symbol",
@@ -289,9 +289,9 @@ Object {
     },
   ],
   "padding": 5,
-  "scales": Array [
-    Object {
-      "domain": Object {
+  "scales": [
+    {
+      "domain": {
         "data": "cells",
         "field": "group",
       },
@@ -299,8 +299,8 @@ Object {
       "range": "width",
       "type": "band",
     },
-    Object {
-      "domain": Object {
+    {
+      "domain": {
         "data": "cells",
         "field": "y",
       },
@@ -309,45 +309,45 @@ Object {
       "range": "height",
       "type": "linear",
     },
-    Object {
-      "domain": Object {
+    {
+      "domain": {
         "data": "density",
         "field": "density",
       },
       "name": "xdensity",
-      "range": Array [
+      "range": [
         0,
-        Object {
+        {
           "signal": "plotWidth",
         },
       ],
       "type": "linear",
     },
-    Object {
-      "domain": Array [
+    {
+      "domain": [
         0,
         1,
       ],
       "name": "xrandom",
-      "range": Array [
-        Object {
+      "range": [
+        {
           "signal": "-plotWidth / 2",
         },
-        Object {
+        {
           "signal": "plotWidth / 2",
         },
       ],
       "type": "linear",
     },
-    Object {
-      "domain": Array [
+    {
+      "domain": [
         "New Cluster",
         "New Cluster2",
         "New Cluster3",
         "New Cluster4",
       ],
       "name": "legend",
-      "range": Array [
+      "range": [
         "#3957ff",
         "#d3fe14",
         "#c9080a",
@@ -356,17 +356,17 @@ Object {
       "type": "ordinal",
     },
   ],
-  "signals": Array [
-    Object {
+  "signals": [
+    {
       "name": "plotWidth",
       "value": 85,
     },
-    Object {
+    {
       "name": "bandwidth",
       "value": 0.3,
     },
   ],
-  "title": Object {
+  "title": {
     "anchor": "start",
     "color": "#000000",
     "dx": 0,

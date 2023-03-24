@@ -12,8 +12,6 @@ import {
 import { reorderSamples } from 'redux/actions/experiments';
 import initialExperimentState, { experimentTemplate } from 'redux/reducers/experiments/initialState';
 
-import '__test__/test-utils/setupTests';
-
 const mockStore = configureStore([thunk]);
 
 enableFetchMocks();

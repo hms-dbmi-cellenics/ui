@@ -39,7 +39,7 @@ const experimentId = fake.EXPERIMENT_ID;
 // EtagParams is the object that's passed to the function which generates ETag in fetchWork
 jest.mock('object-hash', () => {
   const objectHash = jest.requireActual('object-hash');
-  const mockWorkResultETag = jest.requireActual('__test__/test-utils/mockWorkResultETag').default;
+  const mockWorkResultETag = jest.requireActual('__test__/test-utils/mockWorkResultETag');
 
   const mockWorkRequestETag = (ETagParams) => `${ETagParams.body.nGenes}-marker-genes`;
   const mockGeneExpressionETag = (ETagParams) => `${ETagParams.missingGenesBody.genes.join('-')}-expression`;
@@ -162,7 +162,7 @@ describe('HeatmapPlot', () => {
     expect(screen.getByText(/We're getting your data .../i)).toBeInTheDocument();
   });
 
-  it('Shows loader message if the marker genes are loaded but there\'s other selected genes still loading', async (done) => {
+  it('Shows loader message if the marker genes are loaded but there\'s other selected genes still loading', async () => {
     const customWorkerResponses = {
       ...mockWorkerResponses,
       'loading_gene_id-expression': () => delayedResponse({ body: 'Not found', status: 404 }, 4000),
@@ -191,7 +191,6 @@ describe('HeatmapPlot', () => {
 
     // Loading screen shows up
     expect(screen.getByText(/We're getting your data .../i)).toBeInTheDocument();
-    done();
   });
 
   it('Handles marker genes loading error correctly', async () => {
@@ -340,7 +339,7 @@ describe('HeatmapPlot', () => {
     expect(vitesscePropsSpy.expressionMatrix.cols).toMatchSnapshot();
   });
 
-  it('Responds correctly to vitessce Heatmap callbacks', async (done) => {
+  it('Responds correctly to vitessce Heatmap callbacks', async () => {
     await storeState.dispatch(loadCellSets(experimentId));
 
     await loadAndRenderDefaultHeatmap(storeState);
@@ -402,6 +401,5 @@ describe('HeatmapPlot', () => {
 
     // And doesn't show the normal cell info again
     expect(screen.queryByText(/Gene name:/i)).not.toBeInTheDocument();
-    done();
   });
 });

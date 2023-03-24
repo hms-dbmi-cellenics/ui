@@ -1,6 +1,5 @@
 import React from 'react';
-import Enzyme, { mount } from 'enzyme';
-import Adapter from '@wojtekmaj/enzyme-adapter-react-17';
+import { mount } from 'enzyme';
 import _ from 'lodash';
 import thunk from 'redux-thunk';
 import configureMockStore from 'redux-mock-store';
@@ -14,8 +13,6 @@ import ExpressionCellSetModal from 'components/data-exploration/generic-gene-tab
 import fake from '__test__/test-utils/constants';
 
 import { GENES_DESELECT } from 'redux/actionTypes/genes';
-
-Enzyme.configure({ adapter: new Adapter() });
 
 const { Text } = Typography;
 

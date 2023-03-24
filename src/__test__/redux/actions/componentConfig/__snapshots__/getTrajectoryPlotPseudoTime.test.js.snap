@@ -1,10 +1,10 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Get trajectory plot pseudotime Dispatches the correct events 1`] = `
-Object {
-  "payload": Object {
-    "plotData": Object {
-      "pseudotime": Array [
+{
+  "payload": {
+    "plotData": {
+      "pseudotime": [
         null,
         null,
         3.6079,

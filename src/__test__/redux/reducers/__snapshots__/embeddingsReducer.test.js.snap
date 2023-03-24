@@ -1,9 +1,9 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`embeddingsReducer Loading on error condition resets error 1`] = `
-Object {
-  "fghfgdh": Object {
-    "data": Array [],
+{
+  "fghfgdh": {
+    "data": [],
     "error": false,
     "loading": true,
   },
@@ -11,9 +11,9 @@ Object {
 `;
 
 exports[`embeddingsReducer Sets error conditions 1`] = `
-Object {
-  "fghfgdh": Object {
-    "data": Array [],
+{
+  "fghfgdh": {
+    "data": [],
     "error": "wow, something really bad happened",
     "loading": false,
   },
@@ -21,9 +21,9 @@ Object {
 `;
 
 exports[`embeddingsReducer Sets up store for embedding when loading starts 1`] = `
-Object {
-  "fghfgdh": Object {
-    "data": Array [],
+{
+  "fghfgdh": {
+    "data": [],
     "error": false,
     "loading": true,
   },
@@ -32,18 +32,18 @@ Object {
 `;
 
 exports[`embeddingsReducer Sets up store properly for loaded cell sets. 1`] = `
-Object {
-  "fghfgdh": Object {
-    "data": Array [
-      Array [
+{
+  "fghfgdh": {
+    "data": [
+      [
         1,
         2,
       ],
-      Array [
+      [
         3,
         4,
       ],
-      Array [
+      [
         5,
         6,
       ],

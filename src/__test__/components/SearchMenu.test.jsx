@@ -1,12 +1,8 @@
 import React from 'react';
-import Enzyme, { mount, shallow } from 'enzyme';
-import Adapter from '@wojtekmaj/enzyme-adapter-react-17';
+import { mount, shallow } from 'enzyme';
 import { Menu, Input } from 'antd';
 import { PictureFilled, PictureOutlined } from '@ant-design/icons';
 import SearchMenu from 'components/SearchMenu';
-import '__test__/test-utils/setupTests';
-
-Enzyme.configure({ adapter: new Adapter() });
 
 describe('SearchMenu', () => {
   it('renders correctly with no options', () => {

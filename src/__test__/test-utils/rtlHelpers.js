@@ -1,12 +1,5 @@
-import { fireEvent, screen } from '@testing-library/dom';
-import userEvent from '@testing-library/user-event';
+import { fireEvent } from '@testing-library/react';
 import { act } from 'react-dom/test-utils';
-
-const selectOption = async (optionName, select) => {
-  await userEvent.click(select);
-  // userEvent click doesnt trigger the onChange in select
-  fireEvent.click(screen.getByTitle(optionName));
-};
 
 // dropFilesIntoDropzone takes an input element and simulates droping files into it
 // inputElement: this needs to be the actual input element not the dropzone itself, e.g.:
@@ -23,6 +16,5 @@ const dropFilesIntoDropzone = async (inputElement, files) => {
 
 export {
   // eslint-disable-next-line import/prefer-default-export
-  selectOption,
   dropFilesIntoDropzone,
 };

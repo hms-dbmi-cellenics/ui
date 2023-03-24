@@ -1,17 +1,17 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`markerGenesLoaded returns correct state 1`] = `
-Object {
-  "expression": Object {
+{
+  "expression": {
     "error": false,
-    "loading": Array [],
+    "loading": [],
     "matrix": ExpressionMatrix {
-      "geneIndexes": Object {
+      "geneIndexes": {
         "geneA": 0,
       },
-      "rawGeneExpressions": Object {
+      "rawGeneExpressions": {
         "datatype": undefined,
-        "index": Array [
+        "index": [
           1,
           2,
           3,
@@ -23,15 +23,15 @@ Object {
           9,
         ],
         "mathjs": "SparseMatrix",
-        "ptr": Array [
+        "ptr": [
           0,
           9,
         ],
-        "size": Array [
+        "size": [
           10,
           1,
         ],
-        "values": Array [
+        "values": [
           1,
           2,
           3,
@@ -43,23 +43,23 @@ Object {
           9,
         ],
       },
-      "stats": Object {
-        "rawMean": Array [
+      "stats": {
+        "rawMean": [
           1,
         ],
-        "rawStdev": Array [
+        "rawStdev": [
           0,
         ],
-        "truncatedMax": Array [
+        "truncatedMax": [
           1,
         ],
-        "truncatedMin": Array [
+        "truncatedMin": [
           1,
         ],
       },
-      "truncatedGeneExpressions": Object {
+      "truncatedGeneExpressions": {
         "datatype": undefined,
-        "index": Array [
+        "index": [
           1,
           2,
           3,
@@ -71,15 +71,15 @@ Object {
           9,
         ],
         "mathjs": "SparseMatrix",
-        "ptr": Array [
+        "ptr": [
           0,
           9,
         ],
-        "size": Array [
+        "size": [
           10,
           1,
         ],
-        "values": Array [
+        "values": [
           1,
           2,
           3,
@@ -91,9 +91,9 @@ Object {
           9,
         ],
       },
-      "zScore": Object {
+      "zScore": {
         "datatype": undefined,
-        "index": Array [
+        "index": [
           1,
           2,
           3,
@@ -105,15 +105,15 @@ Object {
           9,
         ],
         "mathjs": "SparseMatrix",
-        "ptr": Array [
+        "ptr": [
           0,
           9,
         ],
-        "size": Array [
+        "size": [
           10,
           1,
         ],
-        "values": Array [
+        "values": [
           1,
           2,
           3,
@@ -126,9 +126,9 @@ Object {
         ],
       },
     },
-    "views": Object {
-      "interactiveHeatmap": Object {
-        "data": Array [
+    "views": {
+      "interactiveHeatmap": {
+        "data": [
           "geneA",
         ],
         "error": false,
@@ -137,15 +137,15 @@ Object {
     },
   },
   "focused": undefined,
-  "markers": Object {
+  "markers": {
     "error": false,
     "loading": false,
   },
-  "properties": Object {
-    "data": Object {},
-    "loading": Array [],
-    "views": Object {},
+  "properties": {
+    "data": {},
+    "loading": [],
+    "views": {},
   },
-  "selected": Array [],
+  "selected": [],
 }
 `;

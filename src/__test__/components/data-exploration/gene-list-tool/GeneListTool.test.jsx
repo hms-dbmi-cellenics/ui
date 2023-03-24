@@ -1,6 +1,5 @@
 import React from 'react';
-import Enzyme, { mount } from 'enzyme';
-import Adapter from '@wojtekmaj/enzyme-adapter-react-17';
+import { mount } from 'enzyme';
 import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
 import preloadAll from 'jest-next-dynamic';
@@ -10,10 +9,6 @@ import { Empty } from 'antd';
 import GeneListTool from 'components/data-exploration/gene-list-tool/GeneListTool';
 
 import Loader from 'components/Loader';
-
-import '__test__/test-utils/setupTests';
-
-Enzyme.configure({ adapter: new Adapter() });
 
 jest.mock('utils/getTimeoutForWorkerTask', () => ({
   __esModule: true, // this property makes it work

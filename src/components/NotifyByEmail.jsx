@@ -10,9 +10,7 @@ const NotifyByEmail = (props) => {
   const experiment = useSelector((state) => state.experiments[experimentId]) || false;
   const dispatch = useDispatch();
   const changeEmailNotification = (value) => {
-    console.log('*** clicked 1');
     dispatch(updateExperiment(experimentId, { notifyByEmail: value }));
-    console.log('*** clicked 2');
   };
   const { activeExperimentId } = useSelector((state) => state?.experiments?.meta) || false;
 

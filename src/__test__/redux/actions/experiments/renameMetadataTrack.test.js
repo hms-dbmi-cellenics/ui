@@ -12,7 +12,6 @@ import initialSampleState from 'redux/reducers/samples';
 import { EXPERIMENTS_METADATA_RENAME } from 'redux/actionTypes/experiments';
 import { BACKEND_STATUS_LOADED, BACKEND_STATUS_LOADING } from 'redux/actionTypes/backendStatus';
 
-import '__test__/test-utils/setupTests';
 import { promiseResponse } from '__test__/test-utils/mockAPI';
 
 const mockStore = configureStore([thunk]);

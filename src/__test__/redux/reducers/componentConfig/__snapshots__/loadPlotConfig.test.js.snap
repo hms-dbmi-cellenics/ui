@@ -1,8 +1,8 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`loadPlotConfig Config loaded 1`] = `
-Object {
-  "embeddingCategoricalMain": Object {
+{
+  "embeddingCategoricalMain": {
     "config": undefined,
     "error": false,
     "experimentId": "1234",

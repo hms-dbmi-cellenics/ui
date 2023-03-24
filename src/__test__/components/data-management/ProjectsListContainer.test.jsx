@@ -1,13 +1,11 @@
 import '@testing-library/jest-dom';
-import '__test__/test-utils/setupTests';
 
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 
 import ProjectsListContainer from 'components/data-management/ProjectsListContainer';
 import { Provider } from 'react-redux';
 import React from 'react';
 import { act } from 'react-dom/test-utils';
-import { fireEvent } from '@testing-library/dom';
 import { makeStore } from 'redux/store';
 import userEvent from '@testing-library/user-event';
 

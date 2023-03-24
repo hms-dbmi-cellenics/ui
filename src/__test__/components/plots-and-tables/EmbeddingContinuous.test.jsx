@@ -1,6 +1,5 @@
 import React from 'react';
-import Enzyme, { mount } from 'enzyme';
-import Adapter from '@wojtekmaj/enzyme-adapter-react-17';
+import { mount } from 'enzyme';
 import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
@@ -8,8 +7,6 @@ import { Vega } from 'react-vega';
 
 import { initialPlotConfigStates } from 'redux/reducers/componentConfig/initialState';
 import { generateSpec, generateData } from 'utils/plotSpecs/generateEmbeddingContinuousSpec';
-
-Enzyme.configure({ adapter: new Adapter() });
 
 const mockStore = configureMockStore([thunk]);
 const cellSets = {

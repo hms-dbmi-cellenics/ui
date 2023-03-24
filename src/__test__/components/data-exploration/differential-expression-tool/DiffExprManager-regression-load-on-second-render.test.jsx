@@ -1,6 +1,5 @@
 import React from 'react';
-import Enzyme, { mount } from 'enzyme';
-import Adapter from '@wojtekmaj/enzyme-adapter-react-17';
+import { mount } from 'enzyme';
 import { act } from 'react-dom/test-utils';
 import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
@@ -14,8 +13,6 @@ import DiffExprResults from 'components/data-exploration/differential-expression
 import { mockCellSets } from '__test__/test-utils/cellSets.mock';
 
 import { DIFF_EXPR_LOADING, DIFF_EXPR_LOADED, DIFF_EXPR_ORDERING_SET } from 'redux/actionTypes/differentialExpression';
-
-Enzyme.configure({ adapter: new Adapter() });
 
 jest.mock('utils/work/fetchWork', () => (
   jest.fn(() => new Promise((resolve) => resolve({

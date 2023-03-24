@@ -1,10 +1,10 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`configsReplaced Replaces existing state 1`] = `
-Object {
-  "5722a512-6b29-497c-92af-3f09cde02f6e-classifier-0": Object {
-    "config": Object {
-      "axes": Object {
+{
+  "5722a512-6b29-497c-92af-3f09cde02f6e-classifier-0": {
+    "config": {
+      "axes": {
         "domainWidth": 2,
         "gridOpacity": 10,
         "gridWidth": 10,
@@ -15,7 +15,7 @@ Object {
         "xAxisText": "log10[ cell size (UMIs) ]",
         "yAxisText": "FDR (emptyDrops)",
       },
-      "axesRanges": Object {
+      "axesRanges": {
         "xAxisAuto": true,
         "xMax": 10,
         "xMin": 0,
@@ -24,31 +24,31 @@ Object {
         "yMin": 0,
       },
       "bandwidth": -1,
-      "colour": Object {
+      "colour": {
         "gradient": "default",
         "invert": "standard",
         "masterColour": "#000000",
         "reverseColourBar": false,
         "toggleInvert": "#FFFFFF",
       },
-      "dimensions": Object {
+      "dimensions": {
         "height": 500,
         "width": 630,
       },
-      "fontStyle": Object {
+      "fontStyle": {
         "colour": "#000000",
         "font": "sans-serif",
       },
-      "labels": Object {
+      "labels": {
         "enabled": true,
         "size": 18,
       },
-      "legend": Object {
+      "legend": {
         "colour": "#000000",
         "enabled": false,
         "position": "top-right",
       },
-      "marker": Object {
+      "marker": {
         "opacity": 5,
         "shape": "circle",
         "showOpacity": true,
@@ -56,7 +56,7 @@ Object {
       },
       "minProbability": 0.82,
       "spec": "1.0.0",
-      "title": Object {
+      "title": {
         "anchor": "start",
         "dx": 10,
         "fontSize": 20,
@@ -67,12 +67,12 @@ Object {
     "experimentId": "a964fa90-f6e8-4a18-9a85-0f93394713ca",
     "loading": false,
     "outstandingChanges": false,
-    "plotData": Array [],
+    "plotData": [],
     "plotType": "classifierEmptyDropsPlot",
   },
-  "5722a512-6b29-497c-92af-3f09cde02f6e-classifier-1": Object {
-    "config": Object {
-      "axes": Object {
+  "5722a512-6b29-497c-92af-3f09cde02f6e-classifier-1": {
+    "config": {
+      "axes": {
         "domainWidth": 2,
         "gridOpacity": 0,
         "gridWidth": 10,
@@ -83,7 +83,7 @@ Object {
         "xAxisText": "Droplet Rank",
         "yAxisText": "Droplet #UMIs",
       },
-      "axesRanges": Object {
+      "axesRanges": {
         "xAxisAuto": true,
         "xMax": 10,
         "xMin": 1,
@@ -91,31 +91,31 @@ Object {
         "yMax": 10,
         "yMin": 1,
       },
-      "colour": Object {
+      "colour": {
         "gradient": "default",
         "invert": "standard",
         "masterColour": "#000000",
         "reverseColourBar": false,
         "toggleInvert": "#FFFFFF",
       },
-      "dimensions": Object {
+      "dimensions": {
         "height": 400,
         "width": 530,
       },
-      "fontStyle": Object {
+      "fontStyle": {
         "colour": "#000000",
         "font": "sans-serif",
       },
-      "labels": Object {
+      "labels": {
         "enabled": true,
         "size": 18,
       },
-      "legend": Object {
+      "legend": {
         "colour": "#000000",
         "enabled": true,
         "position": "top-right",
       },
-      "marker": Object {
+      "marker": {
         "opacity": 5,
         "shape": "circle",
         "showOpacity": true,
@@ -123,7 +123,7 @@ Object {
       },
       "minCellSize": 990,
       "spec": "1.0.0",
-      "title": Object {
+      "title": {
         "anchor": "start",
         "dx": 10,
         "fontSize": 20,
@@ -134,23 +134,23 @@ Object {
     "experimentId": "a964fa90-f6e8-4a18-9a85-0f93394713ca",
     "loading": false,
     "outstandingChanges": false,
-    "plotData": Array [],
+    "plotData": [],
     "plotType": "classifierKneePlot",
   },
-  "5722a512-6b29-497c-92af-3f09cde02f6e-classifier-2": Object {
-    "config": Object {},
+  "5722a512-6b29-497c-92af-3f09cde02f6e-classifier-2": {
+    "config": {},
     "error": false,
     "experimentId": "a964fa90-f6e8-4a18-9a85-0f93394713ca",
     "loading": false,
     "outstandingChanges": false,
-    "plotData": Object {
-      "after": Object {
+    "plotData": {
+      "after": {
         "median_genes": 1379,
         "median_umis": 3438,
         "num_cells": 918,
         "total_genes": 15002,
       },
-      "before": Object {
+      "before": {
         "median_genes": 1379,
         "median_umis": 3438,
         "num_cells": 918,
@@ -159,9 +159,9 @@ Object {
     },
     "plotType": "filterTable",
   },
-  "ViolinMain": Object {
-    "config": Object {
-      "axes": Object {
+  "ViolinMain": {
+    "config": {
+      "axes": {
         "domainWidth": 2,
         "gridOpacity": 0,
         "gridWidth": 10,
@@ -172,42 +172,42 @@ Object {
         "xAxisText": "",
         "yAxisText": "",
       },
-      "axesRanges": Object {
+      "axesRanges": {
         "yAxisAuto": true,
         "yMax": 10,
         "yMin": 0,
       },
-      "colour": Object {
+      "colour": {
         "gradient": "default",
         "invert": "standard",
         "masterColour": "#000000",
         "reverseColourBar": false,
         "toggleInvert": "#FFFFFF",
       },
-      "dimensions": Object {
+      "dimensions": {
         "height": 400,
         "width": 550,
       },
-      "fontStyle": Object {
+      "fontStyle": {
         "colour": "#000000",
         "font": "sans-serif",
       },
       "kdeBandwidth": 0.3,
-      "keepValuesOnReset": Array [
+      "keepValuesOnReset": [
         "shownGene",
         "title",
       ],
-      "labels": Object {
+      "labels": {
         "enabled": true,
         "size": 18,
       },
-      "legend": Object {
+      "legend": {
         "colour": "#000000",
         "enabled": false,
         "position": "top",
         "showAlert": false,
       },
-      "marker": Object {
+      "marker": {
         "opacity": 5,
         "shape": "circle",
         "showOpacity": true,
@@ -220,7 +220,7 @@ Object {
       "shownGene": "Gzma",
       "spec": "1.0.0",
       "statisticsVisible": false,
-      "title": Object {
+      "title": {
         "anchor": "start",
         "dx": 0,
         "fontSize": 20,
@@ -231,12 +231,12 @@ Object {
     "experimentId": "a964fa90-f6e8-4a18-9a85-0f93394713ca",
     "loading": false,
     "outstandingChanges": false,
-    "plotData": Array [],
+    "plotData": [],
     "plotType": "violin",
   },
-  "ViolinMain-0": Object {
-    "config": Object {
-      "axes": Object {
+  "ViolinMain-0": {
+    "config": {
+      "axes": {
         "domainWidth": 2,
         "gridOpacity": 0,
         "gridWidth": 10,
@@ -247,42 +247,42 @@ Object {
         "xAxisText": "",
         "yAxisText": "",
       },
-      "axesRanges": Object {
+      "axesRanges": {
         "yAxisAuto": true,
         "yMax": 10,
         "yMin": 0,
       },
-      "colour": Object {
+      "colour": {
         "gradient": "default",
         "invert": "standard",
         "masterColour": "#000000",
         "reverseColourBar": false,
         "toggleInvert": "#FFFFFF",
       },
-      "dimensions": Object {
+      "dimensions": {
         "height": 400,
         "width": 550,
       },
-      "fontStyle": Object {
+      "fontStyle": {
         "colour": "#000000",
         "font": "sans-serif",
       },
       "kdeBandwidth": 0.3,
-      "keepValuesOnReset": Array [
+      "keepValuesOnReset": [
         "shownGene",
         "title",
       ],
-      "labels": Object {
+      "labels": {
         "enabled": true,
         "size": 18,
       },
-      "legend": Object {
+      "legend": {
         "colour": "#000000",
         "enabled": false,
         "position": "top",
         "showAlert": false,
       },
-      "marker": Object {
+      "marker": {
         "opacity": 5,
         "shape": "circle",
         "showOpacity": true,
@@ -295,7 +295,7 @@ Object {
       "shownGene": "Lyz2",
       "spec": "1.0.0",
       "statisticsVisible": false,
-      "title": Object {
+      "title": {
         "anchor": "start",
         "dx": 0,
         "fontSize": 20,
@@ -306,13 +306,13 @@ Object {
     "experimentId": "a964fa90-f6e8-4a18-9a85-0f93394713ca",
     "loading": false,
     "outstandingChanges": false,
-    "plotData": Array [],
+    "plotData": [],
     "plotType": "violin",
   },
-  "embeddingCategoricalMain": Object {
-    "config": Object {
-      "axes": Object {
-        "defaultValues": Array [
+  "embeddingCategoricalMain": {
+    "config": {
+      "axes": {
+        "defaultValues": [
           "x",
           "y",
         ],
@@ -326,7 +326,7 @@ Object {
         "xAxisText": "Umap 1",
         "yAxisText": "Umap 2",
       },
-      "axesRanges": Object {
+      "axesRanges": {
         "xAxisAuto": true,
         "xMax": 10,
         "xMin": 0,
@@ -334,32 +334,32 @@ Object {
         "yMax": 10,
         "yMin": 0,
       },
-      "colour": Object {
+      "colour": {
         "gradient": "default",
         "invert": "standard",
         "masterColour": "#000000",
         "reverseColourBar": false,
         "toggleInvert": "#FFFFFF",
       },
-      "dimensions": Object {
+      "dimensions": {
         "height": 550,
         "width": 700,
       },
-      "fontStyle": Object {
+      "fontStyle": {
         "colour": "#000000",
         "font": "sans-serif",
       },
-      "labels": Object {
+      "labels": {
         "enabled": false,
         "size": 18,
       },
-      "legend": Object {
+      "legend": {
         "colour": "#000000",
         "enabled": true,
         "position": "top",
         "showAlert": false,
       },
-      "marker": Object {
+      "marker": {
         "opacity": 5,
         "shape": "circle",
         "showOpacity": true,
@@ -368,7 +368,7 @@ Object {
       "selectedCellSet": "louvain",
       "selectedSample": "All",
       "spec": "1.0.0",
-      "title": Object {
+      "title": {
         "anchor": "start",
         "dx": 10,
         "fontSize": 20,
@@ -379,12 +379,12 @@ Object {
     "experimentId": "a964fa90-f6e8-4a18-9a85-0f93394713ca",
     "loading": false,
     "outstandingChanges": false,
-    "plotData": Array [],
+    "plotData": [],
     "plotType": "embeddingCategorical",
   },
-  "frequencyPlotMain": Object {
-    "config": Object {
-      "axes": Object {
+  "frequencyPlotMain": {
+    "config": {
+      "axes": {
         "domainWidth": 2,
         "gridOpacity": 0,
         "gridWidth": 10,
@@ -395,34 +395,34 @@ Object {
         "xAxisText": "Sample",
         "yAxisText": "Proportion",
       },
-      "axesRanges": Object {
+      "axesRanges": {
         "yAxisAuto": true,
         "yMax": 10,
         "yMin": 0,
       },
       "axisTitlesize": 13,
-      "colour": Object {
+      "colour": {
         "gradient": "default",
         "invert": "standard",
         "masterColour": "#000000",
         "reverseColourBar": false,
         "toggleInvert": "#FFFFFF",
       },
-      "dimensions": Object {
+      "dimensions": {
         "height": 500,
         "width": 500,
       },
-      "fontStyle": Object {
+      "fontStyle": {
         "colour": "#000000",
         "font": "sans-serif",
       },
       "frequencyType": "proportional",
       "geneexpLegendloc": "",
-      "labels": Object {
+      "labels": {
         "enabled": true,
         "size": 18,
       },
-      "legend": Object {
+      "legend": {
         "colour": "#000000",
         "enabled": true,
         "offset": 40,
@@ -430,7 +430,7 @@ Object {
         "showAlert": false,
         "title": "Cell Set",
       },
-      "marker": Object {
+      "marker": {
         "opacity": 5,
         "shape": "circle",
         "showOpacity": true,
@@ -438,7 +438,7 @@ Object {
       },
       "proportionGrouping": "louvain",
       "spec": "1.0.0",
-      "title": Object {
+      "title": {
         "anchor": "start",
         "dx": 10,
         "fontSize": 15,
@@ -450,14 +450,14 @@ Object {
     "experimentId": "a964fa90-f6e8-4a18-9a85-0f93394713ca",
     "loading": false,
     "outstandingChanges": false,
-    "plotData": Array [],
+    "plotData": [],
     "plotType": "frequency",
   },
-  "multiView-ViolinMain": Object {
-    "config": Object {
+  "multiView-ViolinMain": {
+    "config": {
       "ncols": 2,
       "nrows": 2,
-      "plotUuids": Array [
+      "plotUuids": [
         "ViolinMain",
         "ViolinMain-0",
       ],
@@ -466,13 +466,13 @@ Object {
     "experimentId": "a964fa90-f6e8-4a18-9a85-0f93394713ca",
     "loading": false,
     "outstandingChanges": false,
-    "plotData": Array [],
+    "plotData": [],
     "plotType": "multiView",
   },
-  "trajectoryAnalysisMain": Object {
-    "config": Object {
-      "axes": Object {
-        "defaultValues": Array [
+  "trajectoryAnalysisMain": {
+    "config": {
+      "axes": {
+        "defaultValues": [
           "x",
           "y",
         ],
@@ -486,7 +486,7 @@ Object {
         "xAxisText": "Umap 1",
         "yAxisText": "Umap 2",
       },
-      "axesRanges": Object {
+      "axesRanges": {
         "xAxisAuto": true,
         "xMax": 10,
         "xMin": 0,
@@ -494,47 +494,47 @@ Object {
         "yMax": 10,
         "yMin": 0,
       },
-      "colour": Object {
+      "colour": {
         "gradient": "default",
         "invert": "standard",
         "masterColour": "#000000",
         "reverseColourBar": false,
         "toggleInvert": "#FFFFFF",
       },
-      "dimensions": Object {
+      "dimensions": {
         "height": 550,
         "width": 700,
       },
       "embeddingCellSet": "louvain",
       "embeddingSample": "All",
-      "fontStyle": Object {
+      "fontStyle": {
         "colour": "#000000",
         "font": "sans-serif",
       },
-      "labels": Object {
+      "labels": {
         "enabled": false,
         "size": 18,
       },
-      "legend": Object {
+      "legend": {
         "colour": "#000000",
         "enabled": true,
         "position": "top",
         "showAlert": false,
       },
-      "marker": Object {
+      "marker": {
         "opacity": 5,
         "shape": "circle",
         "showOpacity": true,
         "size": 20,
       },
       "selectedCellSet": "louvain",
-      "selectedCellSets": Array [
+      "selectedCellSets": [
         "louvain",
       ],
-      "selectedNodes": Array [],
+      "selectedNodes": [],
       "selectedSample": "All",
       "spec": "1.0.0",
-      "title": Object {
+      "title": {
         "anchor": "start",
         "dx": 10,
         "fontSize": 20,
@@ -545,475 +545,475 @@ Object {
     "experimentId": "a964fa90-f6e8-4a18-9a85-0f93394713ca",
     "loading": false,
     "outstandingChanges": false,
-    "plotData": Object {
-      "nodes": Object {
-        "connectedNodes": Array [
-          Array [
+    "plotData": {
+      "nodes": {
+        "connectedNodes": [
+          [
             9,
             50,
           ],
-          Array [
+          [
             32,
           ],
-          Array [
+          [
             19,
             34,
           ],
-          Array [
+          [
             30,
             36,
           ],
-          Array [
+          [
             28,
             44,
           ],
-          Array [
+          [
             15,
             57,
           ],
-          Array [
+          [
             45,
             55,
           ],
-          Array [
+          [
             15,
             41,
           ],
-          Array [
+          [
             37,
             53,
           ],
-          Array [
+          [
             26,
           ],
-          Array [
+          [
             46,
             62,
           ],
-          Array [
+          [
             48,
             51,
           ],
-          Array [
+          [
             17,
             20,
           ],
-          Array [
+          [
             19,
             54,
           ],
-          Array [
+          [
             16,
             48,
           ],
-          Array [],
-          Array [
+          [],
+          [
             20,
           ],
-          Array [
+          [
             24,
             43,
           ],
-          Array [
+          [
             37,
             52,
           ],
-          Array [],
-          Array [],
-          Array [
+          [],
+          [],
+          [
             41,
             51,
           ],
-          Array [
+          [
             40,
             45,
           ],
-          Array [
+          [
             43,
             55,
           ],
-          Array [
+          [
             49,
           ],
-          Array [
+          [
             48,
             60,
           ],
-          Array [
+          [
             38,
           ],
-          Array [
+          [
             29,
             58,
           ],
-          Array [
+          [
             53,
           ],
-          Array [
+          [
             49,
           ],
-          Array [
+          [
             50,
           ],
-          Array [
+          [
             47,
           ],
-          Array [
+          [
             59,
           ],
-          Array [
+          [
             34,
             35,
           ],
-          Array [],
-          Array [],
-          Array [
+          [],
+          [],
+          [
             54,
           ],
-          Array [],
-          Array [
+          [],
+          [
             40,
           ],
-          Array [
+          [
             56,
             58,
           ],
-          Array [],
-          Array [],
-          Array [
+          [],
+          [],
+          [
             56,
             59,
           ],
-          Array [],
-          Array [
+          [],
+          [
             61,
           ],
-          Array [],
-          Array [
+          [],
+          [
             60,
           ],
-          Array [
+          [
             57,
           ],
-          Array [],
-          Array [],
-          Array [],
-          Array [],
-          Array [],
-          Array [],
-          Array [],
-          Array [],
-          Array [],
-          Array [
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [
             61,
           ],
-          Array [],
-          Array [],
-          Array [],
-          Array [],
-          Array [],
-          Array [
+          [],
+          [],
+          [],
+          [],
+          [],
+          [
             69,
           ],
-          Array [
+          [
             71,
           ],
-          Array [
+          [
             68,
             158,
           ],
-          Array [
+          [
             74,
             147,
           ],
-          Array [
+          [
             84,
             115,
           ],
-          Array [
+          [
             151,
           ],
-          Array [
+          [
             103,
             132,
           ],
-          Array [
+          [
             81,
             127,
           ],
-          Array [
+          [
             136,
           ],
-          Array [
+          [
             114,
             130,
           ],
-          Array [
+          [
             104,
             145,
           ],
-          Array [
+          [
             124,
           ],
-          Array [
+          [
             156,
           ],
-          Array [
+          [
             85,
             110,
           ],
-          Array [
+          [
             78,
             90,
           ],
-          Array [
+          [
             131,
           ],
-          Array [
+          [
             112,
             134,
           ],
-          Array [
+          [
             117,
             129,
           ],
-          Array [
+          [
             111,
           ],
-          Array [
+          [
             86,
             99,
           ],
-          Array [
+          [
             117,
             123,
             145,
           ],
-          Array [
+          [
             146,
           ],
-          Array [
+          [
             155,
           ],
-          Array [
+          [
             120,
           ],
-          Array [
+          [
             96,
             126,
           ],
-          Array [
+          [
             97,
             98,
           ],
-          Array [
+          [
             128,
             150,
           ],
-          Array [
+          [
             134,
           ],
-          Array [
+          [
             109,
             118,
           ],
-          Array [
+          [
             95,
             116,
           ],
-          Array [
+          [
             113,
             147,
           ],
-          Array [
+          [
             126,
             146,
           ],
-          Array [
+          [
             155,
           ],
-          Array [
+          [
             120,
           ],
-          Array [
+          [
             129,
           ],
-          Array [
+          [
             156,
           ],
-          Array [
+          [
             106,
           ],
-          Array [
+          [
             105,
             151,
           ],
-          Array [
+          [
             125,
             148,
           ],
-          Array [
+          [
             140,
             148,
           ],
-          Array [
+          [
             136,
             142,
           ],
-          Array [
+          [
             128,
           ],
-          Array [
+          [
             141,
           ],
-          Array [
+          [
             114,
           ],
-          Array [
+          [
             123,
             158,
           ],
-          Array [
+          [
             116,
             159,
           ],
-          Array [
+          [
             112,
           ],
-          Array [
+          [
             149,
           ],
-          Array [
+          [
             154,
           ],
-          Array [],
-          Array [
+          [],
+          [
             137,
           ],
-          Array [],
-          Array [
+          [],
+          [
             135,
           ],
-          Array [],
-          Array [],
-          Array [
+          [],
+          [],
+          [
             143,
           ],
-          Array [
+          [
             137,
           ],
-          Array [],
-          Array [
+          [],
+          [
             130,
             153,
           ],
-          Array [
+          [
             131,
             138,
           ],
-          Array [],
-          Array [
+          [],
+          [
             125,
           ],
-          Array [],
-          Array [],
-          Array [
+          [],
+          [],
+          [
             152,
           ],
-          Array [],
-          Array [],
-          Array [],
-          Array [],
-          Array [
+          [],
+          [],
+          [],
+          [],
+          [
             138,
           ],
-          Array [
+          [
             141,
             157,
           ],
-          Array [],
-          Array [
+          [],
+          [
             144,
           ],
-          Array [],
-          Array [],
-          Array [],
-          Array [
+          [],
+          [],
+          [],
+          [
             151,
           ],
-          Array [
+          [
             159,
           ],
-          Array [],
-          Array [
+          [],
+          [
             157,
           ],
-          Array [],
-          Array [
+          [],
+          [
             152,
           ],
-          Array [],
-          Array [],
-          Array [],
-          Array [],
-          Array [
+          [],
+          [],
+          [],
+          [],
+          [
             153,
           ],
-          Array [
+          [
             154,
           ],
-          Array [],
-          Array [],
-          Array [],
-          Array [],
-          Array [],
-          Array [],
-          Array [],
-          Array [],
-          Array [],
-          Array [
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [
             162,
           ],
-          Array [
+          [
             162,
             163,
           ],
-          Array [],
-          Array [],
-          Array [
+          [],
+          [],
+          [
             175,
           ],
-          Array [
+          [
             167,
             175,
           ],
-          Array [
+          [
             170,
             171,
           ],
-          Array [
+          [
             168,
           ],
-          Array [
+          [
             170,
           ],
-          Array [
+          [
             173,
           ],
-          Array [],
-          Array [
+          [],
+          [
             172,
           ],
-          Array [
+          [
             174,
           ],
-          Array [
+          [
             174,
           ],
-          Array [],
-          Array [],
+          [],
+          [],
         ],
-        "x": Array [
+        "x": [
           0.9333,
           0.1767,
           0.1522,
@@ -1191,7 +1191,7 @@ Object {
           0.2694,
           -0.04773,
         ],
-        "y": Array [
+        "y": [
           -3.159,
           -4.446,
           -2.64,

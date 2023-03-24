@@ -1,6 +1,5 @@
 import React from 'react';
-import Enzyme, { mount } from 'enzyme';
-import Adapter from '@wojtekmaj/enzyme-adapter-react-17';
+import { mount } from 'enzyme';
 import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
 import preloadAll from 'jest-next-dynamic';
@@ -9,9 +8,6 @@ import { Select } from 'antd';
 import { act } from 'react-dom/test-utils';
 import GeneSelectionMenu from 'components/data-exploration/generic-gene-table/GeneSelectionMenu';
 import SelectionActions from 'components/data-exploration/generic-gene-table/SelectionActions';
-import '__test__/test-utils/setupTests';
-
-Enzyme.configure({ adapter: new Adapter() });
 
 const mockStore = configureMockStore([thunk]);
 

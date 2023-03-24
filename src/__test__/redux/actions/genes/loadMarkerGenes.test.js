@@ -6,7 +6,6 @@ import loadMarkerGenes from 'redux/actions/genes/loadMarkerGenes';
 import { MARKER_GENES_ERROR, MARKER_GENES_LOADED, MARKER_GENES_LOADING } from 'redux/actionTypes/genes';
 import getInitialState from 'redux/reducers/genes/getInitialState';
 
-import '__test__/test-utils/setupTests';
 import { getOneGeneMatrix } from '__test__/utils/ExpressionMatrix/testMatrixes';
 
 jest.mock('utils/work/fetchWork');

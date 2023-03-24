@@ -1,9 +1,9 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`DiffExprManager regression test - diff exp would not reload after \`go back\` was hit and a new cluster selected if we then go back and change the parameters again, the new differential expression data should be loading 1`] = `
-Object {
-  "payload": Object {
-    "advancedFilters": Array [],
+{
+  "payload": {
+    "advancedFilters": [],
     "experimentId": "1234",
   },
   "type": "diffExpr/loading",
@@ -11,16 +11,16 @@ Object {
 `;
 
 exports[`DiffExprManager regression test - diff exp would not reload after \`go back\` was hit and a new cluster selected if we then go back and change the parameters again, the new differential expression data should be loading 2`] = `
-Object {
-  "payload": Object {
-    "comparisonGroup": Object {
+{
+  "payload": {
+    "comparisonGroup": {
       "basis": "scratchpad/scratchpad-a",
       "cellSet": "louvain/cluster-a",
       "compareWith": "louvain/cluster-b",
     },
     "comparisonType": "between",
-    "data": Array [
-      Object {
+    "data": [
+      {
         "Gene": "EASAD0",
         "auc": "0.1",
         "gene_names": "A",
@@ -30,7 +30,7 @@ Object {
         "pct_1": "100",
         "pct_2": "100",
       },
-      Object {
+      {
         "Gene": "ENASD23",
         "auc": "0.2",
         "gene_names": "B",
@@ -40,7 +40,7 @@ Object {
         "pct_1": "90",
         "pct_2": "90",
       },
-      Object {
+      {
         "Gene": "EN34S",
         "auc": "0.3",
         "gene_names": "C",
@@ -50,7 +50,7 @@ Object {
         "pct_1": "80",
         "pct_2": "80",
       },
-      Object {
+      {
         "Gene": "ENSD33",
         "auc": "0.4",
         "gene_names": "D",
@@ -60,7 +60,7 @@ Object {
         "pct_1": "70",
         "pct_2": "70",
       },
-      Object {
+      {
         "Gene": "ENASD233",
         "auc": "0.5",
         "gene_names": "E",
@@ -79,16 +79,16 @@ Object {
 `;
 
 exports[`DiffExprManager regression test - diff exp would not reload after \`go back\` was hit and a new cluster selected if we then go back and change the parameters again, the new differential expression data should be loading 3`] = `
-Object {
-  "payload": Object {
-    "comparisonGroup": Object {
+{
+  "payload": {
+    "comparisonGroup": {
       "basis": "scratchpad/scratchpad-a",
       "cellSet": "louvain/cluster-a",
       "compareWith": "louvain/cluster-b",
     },
     "comparisonType": "between",
-    "data": Array [
-      Object {
+    "data": [
+      {
         "Gene": "EASAD0",
         "auc": "0.1",
         "gene_names": "A",
@@ -98,7 +98,7 @@ Object {
         "pct_1": "100",
         "pct_2": "100",
       },
-      Object {
+      {
         "Gene": "ENASD23",
         "auc": "0.2",
         "gene_names": "B",
@@ -108,7 +108,7 @@ Object {
         "pct_1": "90",
         "pct_2": "90",
       },
-      Object {
+      {
         "Gene": "EN34S",
         "auc": "0.3",
         "gene_names": "C",
@@ -118,7 +118,7 @@ Object {
         "pct_1": "80",
         "pct_2": "80",
       },
-      Object {
+      {
         "Gene": "ENSD33",
         "auc": "0.4",
         "gene_names": "D",
@@ -128,7 +128,7 @@ Object {
         "pct_1": "70",
         "pct_2": "70",
       },
-      Object {
+      {
         "Gene": "ENASD233",
         "auc": "0.5",
         "gene_names": "E",
@@ -147,8 +147,8 @@ Object {
 `;
 
 exports[`DiffExprManager regression test - diff exp would not reload after \`go back\` was hit and a new cluster selected if we then go back and change the parameters again, the new differential expression data should be loading 4`] = `
-Object {
-  "payload": Object {
+{
+  "payload": {
     "orderBy": "logFC",
     "orderDirection": "DESC",
   },
@@ -157,9 +157,9 @@ Object {
 `;
 
 exports[`DiffExprManager regression test - diff exp would not reload after \`go back\` was hit and a new cluster selected on click of compute with changed parameters, DiffExprManager calls the results view and dispatches the appropriate actions 1`] = `
-Object {
-  "payload": Object {
-    "advancedFilters": Array [],
+{
+  "payload": {
+    "advancedFilters": [],
     "experimentId": "1234",
   },
   "type": "diffExpr/loading",
@@ -167,16 +167,16 @@ Object {
 `;
 
 exports[`DiffExprManager regression test - diff exp would not reload after \`go back\` was hit and a new cluster selected on click of compute with changed parameters, DiffExprManager calls the results view and dispatches the appropriate actions 2`] = `
-Object {
-  "payload": Object {
-    "comparisonGroup": Object {
+{
+  "payload": {
+    "comparisonGroup": {
       "basis": "scratchpad/scratchpad-a",
       "cellSet": "louvain/cluster-a",
       "compareWith": "louvain/cluster-b",
     },
     "comparisonType": "between",
-    "data": Array [
-      Object {
+    "data": [
+      {
         "Gene": "EASAD0",
         "auc": "0.1",
         "gene_names": "A",
@@ -186,7 +186,7 @@ Object {
         "pct_1": "100",
         "pct_2": "100",
       },
-      Object {
+      {
         "Gene": "ENASD23",
         "auc": "0.2",
         "gene_names": "B",
@@ -196,7 +196,7 @@ Object {
         "pct_1": "90",
         "pct_2": "90",
       },
-      Object {
+      {
         "Gene": "EN34S",
         "auc": "0.3",
         "gene_names": "C",
@@ -206,7 +206,7 @@ Object {
         "pct_1": "80",
         "pct_2": "80",
       },
-      Object {
+      {
         "Gene": "ENSD33",
         "auc": "0.4",
         "gene_names": "D",
@@ -216,7 +216,7 @@ Object {
         "pct_1": "70",
         "pct_2": "70",
       },
-      Object {
+      {
         "Gene": "ENASD233",
         "auc": "0.5",
         "gene_names": "E",

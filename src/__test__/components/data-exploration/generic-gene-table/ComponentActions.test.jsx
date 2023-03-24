@@ -1,6 +1,5 @@
 import React from 'react';
-import Enzyme, { mount } from 'enzyme';
-import Adapter from '@wojtekmaj/enzyme-adapter-react-17';
+import { mount } from 'enzyme';
 import { Provider } from 'react-redux';
 import { Dropdown } from 'antd';
 import waitForActions from 'redux-mock-store-await-actions';
@@ -11,8 +10,6 @@ import { GENES_EXPRESSION_LOADING, GENES_EXPRESSION_LOADED } from 'redux/actionT
 import fetchWork from 'utils/work/fetchWork';
 import ComponentActions from 'components/data-exploration/generic-gene-table/ComponentActions';
 import { getTwoGenesExpressionMatrix, getThreeGenesMatrix } from '__test__/utils/ExpressionMatrix/testMatrixes';
-
-Enzyme.configure({ adapter: new Adapter() });
 
 jest.mock('utils/getTimeoutForWorkerTask', () => ({
   __esModule: true, // this property makes it work
