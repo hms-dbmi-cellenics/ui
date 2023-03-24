@@ -162,6 +162,56 @@ exports[`switch experiment  Then updates the experiment info 1`] = `
   },
   "genes": {
     "expression": {
+      "downsampledCellOrder": [],
+      "downsampledMatrix": ExpressionMatrix {
+        "geneIndexes": {},
+        "rawGeneExpressions": {
+          "datatype": undefined,
+          "index": [],
+          "mathjs": "SparseMatrix",
+          "ptr": [
+            0,
+          ],
+          "size": [
+            0,
+            0,
+          ],
+          "values": [],
+        },
+        "setGeneExpression": [Function],
+        "stats": {
+          "rawMean": [],
+          "rawStdev": [],
+          "truncatedMax": [],
+          "truncatedMin": [],
+        },
+        "truncatedGeneExpressions": {
+          "datatype": undefined,
+          "index": [],
+          "mathjs": "SparseMatrix",
+          "ptr": [
+            0,
+          ],
+          "size": [
+            0,
+            0,
+          ],
+          "values": [],
+        },
+        "zScore": {
+          "datatype": undefined,
+          "index": [],
+          "mathjs": "SparseMatrix",
+          "ptr": [
+            0,
+          ],
+          "size": [
+            0,
+            0,
+          ],
+          "values": [],
+        },
+      },
       "error": false,
       "loading": [],
       "matrix": ExpressionMatrix {
@@ -179,6 +229,7 @@ exports[`switch experiment  Then updates the experiment info 1`] = `
           ],
           "values": [],
         },
+        "setGeneExpression": [Function],
         "stats": {
           "rawMean": [],
           "rawStdev": [],
@@ -216,6 +267,7 @@ exports[`switch experiment  Then updates the experiment info 1`] = `
     },
     "focused": undefined,
     "markers": {
+      "ETag": null,
       "error": false,
       "loading": false,
     },
@@ -557,6 +609,56 @@ exports[`switch experiment  switches the experiment to its initial values 1`] = 
   },
   "genes": {
     "expression": {
+      "downsampledCellOrder": [],
+      "downsampledMatrix": ExpressionMatrix {
+        "geneIndexes": {},
+        "rawGeneExpressions": {
+          "datatype": undefined,
+          "index": [],
+          "mathjs": "SparseMatrix",
+          "ptr": [
+            0,
+          ],
+          "size": [
+            0,
+            0,
+          ],
+          "values": [],
+        },
+        "setGeneExpression": [Function],
+        "stats": {
+          "rawMean": [],
+          "rawStdev": [],
+          "truncatedMax": [],
+          "truncatedMin": [],
+        },
+        "truncatedGeneExpressions": {
+          "datatype": undefined,
+          "index": [],
+          "mathjs": "SparseMatrix",
+          "ptr": [
+            0,
+          ],
+          "size": [
+            0,
+            0,
+          ],
+          "values": [],
+        },
+        "zScore": {
+          "datatype": undefined,
+          "index": [],
+          "mathjs": "SparseMatrix",
+          "ptr": [
+            0,
+          ],
+          "size": [
+            0,
+            0,
+          ],
+          "values": [],
+        },
+      },
       "error": false,
       "loading": [],
       "matrix": ExpressionMatrix {
@@ -574,6 +676,7 @@ exports[`switch experiment  switches the experiment to its initial values 1`] = 
           ],
           "values": [],
         },
+        "setGeneExpression": [Function],
         "stats": {
           "rawMean": [],
           "rawStdev": [],
@@ -611,6 +714,7 @@ exports[`switch experiment  switches the experiment to its initial values 1`] = 
     },
     "focused": undefined,
     "markers": {
+      "ETag": null,
       "error": false,
       "loading": false,
     },

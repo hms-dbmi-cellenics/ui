@@ -9,12 +9,14 @@ import {
 import { getTwoGenesMatrix, getThreeGenesMatrix } from '__test__/utils/ExpressionMatrix/testMatrixes';
 
 describe('genesReducer', () => {
-  it('Reduces identical state on unknown action', () => expect(
-    genesReducer(undefined, {
-      action: 'well/this/is/not/a/valid/action',
-      payload: {},
-    }),
-  ).toEqual(getInitialState()));
+  it('Reduces identical state on unknown action', () => {
+    expect(
+      JSON.stringify(genesReducer(undefined, {
+        action: 'well/this/is/not/a/valid/action',
+        payload: {},
+      })),
+    ).toEqual(JSON.stringify(getInitialState()));
+  });
 
   it('Sets loading state on expression loading action', () => {
     const newState = genesReducer(getInitialState(), {

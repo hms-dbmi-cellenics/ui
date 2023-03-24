@@ -289,8 +289,7 @@ const CalculationConfig = (props) => {
           </div>
         </Panel>
       </Collapse>
-      {/* TODO: reenable when geometric sketching pipeline PRs are released */}
-      <Collapse style={{ display: 'none' }}>
+      <Collapse>
         <Panel header='Downsampling Options' key='downsampling-options'>
           <Space direction='vertical' style={{ width: '100%' }} />
           <Form.Item>
@@ -375,9 +374,9 @@ const CalculationConfig = (props) => {
                   updateSettings({
                     downsampling: {
                       methodSettings:
-                       {
-                         [downsampling.method]: { percentageToKeep: parseInt(value, 0) },
-                       },
+                      {
+                        [downsampling.method]: { percentageToKeep: parseInt(value, 0) },
+                      },
 
                     },
                   });

@@ -22,8 +22,17 @@ const genesExpressionLoaded = (state, action) => {
     } = newGenes;
 
     const expressionMatrix = state.expression.matrix;
+    const downsampledExpressionMatrix = state.expression.downsampledMatrix;
 
     expressionMatrix.pushGeneExpression(
+      orderedGeneNames,
+      rawExpression,
+      truncatedExpression,
+      zScore,
+      stats,
+    );
+
+    downsampledExpressionMatrix.pushGeneExpression(
       orderedGeneNames,
       rawExpression,
       truncatedExpression,

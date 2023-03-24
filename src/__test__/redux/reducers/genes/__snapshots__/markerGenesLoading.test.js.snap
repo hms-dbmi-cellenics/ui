@@ -3,6 +3,7 @@
 exports[`markerGenesLoading returns correct state 1`] = `
 {
   "markers": {
+    "ETag": "new-etag",
     "error": false,
     "loading": true,
   },

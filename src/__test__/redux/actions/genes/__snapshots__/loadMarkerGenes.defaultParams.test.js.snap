@@ -6,8 +6,13 @@ exports[`loadEmbedding action loadEmbedding generates correct hash params body f
     {
       "body": {
         "cellSetKey": "louvain",
+        "groupByClasses": [
+          "louvain",
+        ],
+        "hiddenCellSetKeys": [],
         "nGenes": 5,
         "name": "MarkerHeatmap",
+        "selectedPoints": "All",
       },
       "cacheUniquenessKey": null,
       "experimentId": "6463cb35-3e08-4e94-a181-6d155a5ca570",
@@ -20,6 +25,9 @@ exports[`loadEmbedding action loadEmbedding generates correct hash params body f
             },
           },
         },
+        [
+          "louvain",
+        ],
         1,
       ],
       "extras": undefined,

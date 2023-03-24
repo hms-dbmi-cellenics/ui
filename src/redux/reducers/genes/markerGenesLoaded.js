@@ -12,18 +12,21 @@ const markerGenesLoaded = produce((draft, action) => {
       truncatedExpression,
       zScore,
       stats,
+      cellOrder,
     },
   } = action.payload;
 
-  const expressionMatrix = original(draft).expression.matrix;
+  const downsampledExpressionMatrix = original(draft).expression.downsampledMatrix;
 
-  expressionMatrix.pushGeneExpression(
+  downsampledExpressionMatrix.setGeneExpression(
     orderedGeneNames,
     rawExpression,
     truncatedExpression,
     zScore,
     stats,
   );
+
+  draft.expression.downsampledCellOrder = cellOrder;
 
   draft.expression.views[plotUuid] = { fetching: false, error: false, data: orderedGeneNames };
 

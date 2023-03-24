@@ -212,7 +212,7 @@ describe('Marker heatmap plot', () => {
     const genesToLoad = [...markerGenesData5.orderedGeneNames, 'FAKEGENE'];
 
     await act(async () => {
-      await storeState.dispatch(loadGeneExpression(experimentId, genesToLoad, plotUuid));
+      await storeState.dispatch(loadGeneExpression(experimentId, genesToLoad, plotUuid, true));
     });
 
     // Get genes displayed in the tree

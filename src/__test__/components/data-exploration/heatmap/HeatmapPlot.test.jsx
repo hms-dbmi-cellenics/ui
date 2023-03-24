@@ -2,7 +2,7 @@ import _ from 'lodash';
 import React from 'react';
 import preloadAll from 'jest-next-dynamic';
 
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import { act } from 'react-dom/test-utils';
 
 import { dispatchWorkRequest, seekFromS3 } from 'utils/work/seekWorkResponse';
@@ -171,10 +171,8 @@ describe('HeatmapPlot', () => {
     seekFromS3
       .mockReset()
       // 1st set of marker gene calls
-      .mockImplementationOnce(() => null)
       .mockImplementationOnce((mockEtag) => customWorkerResponses[mockEtag]())
       // 2nd set of marker gene calls
-      .mockImplementationOnce(() => null)
       .mockImplementationOnce((mockEtag) => customWorkerResponses[mockEtag]());
 
     await storeState.dispatch(loadCellSets(experimentId));
@@ -186,7 +184,7 @@ describe('HeatmapPlot', () => {
 
     // A new gene is being loaded
     await act(async () => {
-      storeState.dispatch(loadGeneExpression(experimentId, [...markerGenesData5.orderedGeneNames, 'loading_gene_id'], 'interactiveHeatmap'));
+      storeState.dispatch(loadGeneExpression(experimentId, [...markerGenesData5.orderedGeneNames, 'loading_gene_id'], 'interactiveHeatmap', true));
     });
 
     // Loading screen shows up
@@ -263,6 +261,10 @@ describe('HeatmapPlot', () => {
       .children.find(({ name }) => name === 'Cluster 3')
       .cellIds.map((cellId) => cellId.toString());
 
+    // It loaded once the marker genes
+    expect(dispatchWorkRequest).toHaveBeenCalledTimes(1);
+    expect(dispatchWorkRequest.mock.calls[0][1].name === 'MarkerHeatmap').toBe(true);
+
     // It shows cells in louvain-3
     expect(isSubset(cellsInLouvain3, vitesscePropsSpy.expressionMatrix.rows)).toEqual(true);
 
@@ -271,27 +273,18 @@ describe('HeatmapPlot', () => {
       await storeState.dispatch(setCellSetHiddenStatus('louvain-3'));
     });
 
-    // It doesn't show the cells for louvain-3 anymore
-    expect(isSubset(cellsInLouvain3, vitesscePropsSpy.expressionMatrix.rows)).toEqual(false);
-
-    // Keeps all the other cells and genes the same
-    expect(vitesscePropsSpy.expressionMatrix.rows).toMatchSnapshot();
-    expect(vitesscePropsSpy.expressionMatrix.cols).toMatchSnapshot();
-
-    // If a louvain-3 is shown again
-    await act(async () => {
-      await storeState.dispatch(setCellSetHiddenStatus('louvain-3'));
-    });
-
-    // It shows the cells for louvain-3 again
-    expect(isSubset(cellsInLouvain3, vitesscePropsSpy.expressionMatrix.rows)).toEqual(true);
-
-    // Keeps all the other cells and genes the same
-    expect(vitesscePropsSpy.expressionMatrix.rows).toMatchSnapshot();
-    expect(vitesscePropsSpy.expressionMatrix.cols).toMatchSnapshot();
+    // It performs the request with the new hidden cell sets array
+    expect(dispatchWorkRequest).toHaveBeenCalledTimes(2);
+    expect(dispatchWorkRequest.mock.calls[1]).toMatchSnapshot();
   });
 
   it('Shows an empty message when all cell sets are hidden ', async () => {
+    seekFromS3.mockReset();
+    seekFromS3.mockImplementationOnce((mockEtag) => mockWorkerResponses[mockEtag]());
+
+    // Last call (all the cellSets are hidden) throw the error
+    seekFromS3.mockImplementationOnce(() => Promise.reject(new Error('No cells found')));
+
     await storeState.dispatch(loadCellSets(experimentId));
 
     await loadAndRenderDefaultHeatmap(storeState);
@@ -313,7 +306,7 @@ describe('HeatmapPlot', () => {
     });
 
     // The plots shows an empty message
-    screen.getByText(/Unhide some cell sets to show the heatmap/i);
+    expect(screen.getByText(/Unhide some cell sets to show the heatmap/i)).toBeInTheDocument();
   });
 
   it('Reacts to cellClass groupby being changed', async () => {

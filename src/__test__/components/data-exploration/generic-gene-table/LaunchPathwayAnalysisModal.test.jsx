@@ -109,7 +109,7 @@ describe('Pathway analysis modal ', () => {
       expect(screen.getByLabelText(serviceName)).toBeInTheDocument();
     });
 
-    expect(screen.getByLabelText(pathwayServices.PANTHERDB).checked).toEqual(true);
+    expect(screen.getByLabelText(pathwayServices.ENRICHR).checked).toEqual(true);
     expect(screen.getByRole('combobox')).toBeInTheDocument();
     expect(screen.getByRole('spinbutton')).toBeInTheDocument();
     const closeButton = screen.getAllByLabelText('close')[0];
@@ -135,6 +135,9 @@ describe('Pathway analysis modal ', () => {
 
   it('Launches the service with PantherDB', async () => {
     await renderPathwayAnalysisModal(store);
+
+    // Choose enrichr and launch the analysis
+    userEvent.click(screen.getByText(pathwayServices.PANTHERDB));
 
     const defaultSpecies = 'HUMAN';
 
@@ -256,6 +259,8 @@ describe('Pathway analysis modal ', () => {
   it('Clicking on download link downloads the gene list', async () => {
     await renderPathwayAnalysisModal(store);
 
+    userEvent.click(screen.getByText(pathwayServices.PANTHERDB));
+
     await act(async () => {
       userEvent.click(screen.getByText(/download the reference genes/i));
     });
@@ -276,6 +281,8 @@ describe('Pathway analysis modal ', () => {
     getBackgroundExpressedGenes.mockImplementation(() => { throw e; });
 
     await renderPathwayAnalysisModal(store);
+
+    userEvent.click(screen.getByText(pathwayServices.PANTHERDB));
 
     await act(async () => {
       userEvent.click(screen.getByText(/download the reference genes/i));
