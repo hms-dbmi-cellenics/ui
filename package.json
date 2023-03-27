@@ -51,7 +51,6 @@
     "@aws-sdk/client-sts": "^3.12.0",
     "@aws-sdk/credential-provider-web-identity": "^3.12.0",
     "@babel/core": "^7.21.0",
-    "@babel/plugin-transform-runtime": "^7.9.0",
     "@babel/polyfill": "^7.8.7",
     "@next/bundle-analyzer": "^10.0.9",
     "@socialgouv/matomo-next": "^1.2.2",
