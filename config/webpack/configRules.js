@@ -68,15 +68,6 @@ const webpackConfigRules = (config, { dev, isServer }) => {
     });
   }
 
-  if (isServer) {
-    // deal antd style
-    const antStyles = /antd\/.*?\/style.*?/;
-    config.module.rules.unshift({
-      test: antStyles,
-      use: 'null-loader',
-    });
-  }
-
   config.module.rules.push(...rules);
 
   return config;
