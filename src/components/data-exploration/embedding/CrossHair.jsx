@@ -27,6 +27,7 @@ const CrossHair = (props) => {
   const commonStyle = {
     position: 'absolute',
     backgroundColor: 'gray',
+    pointerEvents: 'none',
   };
 
   if (crossHairsVisible && Object.keys(coordinates.current).length > 0) {

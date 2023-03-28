@@ -25,6 +25,8 @@ import { dispatchWorkRequest } from 'utils/work/seekWorkResponse';
 import mockAPI, { generateDefaultMockAPIResponses, promiseResponse } from '__test__/test-utils/mockAPI';
 import { loadBackendStatus } from 'redux/actions/backendStatus';
 
+enableFetchMocks();
+
 jest.mock('utils/work/seekWorkResponse', () => ({
   seekFromS3: jest.fn(),
   dispatchWorkRequest: jest.fn(),
@@ -53,6 +55,27 @@ jest.mock('utils/AppRouteProvider', () => ({
 }));
 
 const cellSetsData = require('__test__/data/cell_sets.json');
+
+const cellSetsWithAnnotatedCellClass = _.cloneDeep(cellSetsData);
+cellSetsWithAnnotatedCellClass.cellSets.push(
+  {
+    key: 'annotated-cell-class-key',
+    name: 'Annotated cell class',
+    rootNode: true,
+    children: [
+      {
+        key: 'annotated-cell-set-key',
+        name: 'Annotated cell set',
+        color: '#8c564b',
+        rootNode: false,
+        cellIds: [
+          1, 2, 3, 4, 5,
+        ],
+      },
+    ],
+    type: 'cellSets',
+  },
+);
 
 const louvainClusters = cellSetsData.cellSets.find(({ key }) => key === 'louvain').children;
 const sampleList = cellSetsData.cellSets.find(({ key }) => key === 'sample').children;
@@ -91,8 +114,9 @@ const mockAPIResponse = _.merge(
 
 describe('CellSetsTool', () => {
   beforeEach(async () => {
-    enableFetchMocks();
-    fetchMock.mockClear();
+    jest.clearAllMocks();
+
+    fetchMock.resetMocks();
     fetchMock.mockIf(/.*/, mockAPI(mockAPIResponse));
 
     storeState = makeStore();
@@ -670,76 +694,144 @@ describe('CellSetsTool', () => {
     );
   });
 
-  // Enable when AnnotateClustersTool panel is enabled
-  describe.skip('AnnotateClustersTool', () => {
-    beforeEach(async () => {
-      jest.clearAllMocks();
+  it('Annotated cell sets has delete buttons', async () => {
+    const mockAPICellClassAPIResponse = {
+      ...mockAPIResponse,
+      [`experiments/${experimentId}/cellSets`]: () => promiseResponse(JSON.stringify(cellSetsWithAnnotatedCellClass)),
+    };
 
-      await storeState.dispatch(loadBackendStatus(experimentId));
+    fetchMock.mockIf(/.*/, mockAPI(mockAPICellClassAPIResponse));
 
-      await act(async () => {
-        render(
-          <Provider store={storeState}>
-            {cellSetsToolFactory()}
-          </Provider>,
-        );
-      });
-
-      // Switch to tab
-      const annotateClustersTabTitle = screen.getByText('Annotate clusters');
-
-      // Switch to tab
-      userEvent.click(annotateClustersTabTitle);
+    await act(async () => {
+      render(
+        <Provider store={storeState}>
+          {cellSetsToolFactory()}
+        </Provider>,
+      );
     });
 
-    it('Renders correctly', async () => {
-      // Check displays correct text
-      screen.getByText(/ScType/);
-      screen.getByText(/Tissue Type/);
-      screen.getByText(/Species/);
-      screen.getByText(/Compute/);
+    // The annotated cell clas is the last class in the hierarchy
+    const annotatedCellSetsGroup = screen.getAllByRole('img', { name: 'down' }).pop();
+    userEvent.click(annotatedCellSetsGroup);
 
-      // Displays correct placeholder in selects
-      screen.getByText('Select a tissue type');
-      screen.getByText('Select a species');
+    // There should only be one delete button for the annotated cell class
+    const deleteButtons = screen.getAllByLabelText(/Delete/);
+    expect(deleteButtons.length).toEqual(1);
+  });
 
-      // Displays button and it's disabled
-      expect(screen.getByRole('button', { name: /Compute/ })).toBeDisabled();
+  it('Deleting annotated cell class deletes the cell class and the cell sets', async () => {
+    const mockAPICellClassAPIResponse = {
+      ...mockAPIResponse,
+      [`experiments/${experimentId}/cellSets`]: () => promiseResponse(JSON.stringify(cellSetsWithAnnotatedCellClass)),
+    };
+
+    fetchMock.mockIf(/.*/, mockAPI(mockAPICellClassAPIResponse));
+
+    await act(async () => {
+      render(
+        <Provider store={storeState}>
+          {cellSetsToolFactory()}
+        </Provider>,
+      );
     });
 
-    it('Can dispatch work request', async () => {
-      const tissueSelector = screen.getAllByRole('combobox')[0];
-      const speciesSelector = screen.getAllByRole('combobox')[1];
+    // The annotated cell clas is the last class in the hierarchy
+    const deleteAnnotatedCellClassButton = screen.getByLabelText(/Delete/);
+    act(() => {
+      userEvent.click(deleteAnnotatedCellClassButton);
+    });
 
-      // Select options
-      await act(async () => {
-        await selectOption(/Liver/, tissueSelector);
-        await selectOption(/mouse/, speciesSelector);
-      });
+    // get all the cell set groups
+    const numCellGroupsAfterDelete = screen.getAllByRole('img', { name: 'down' }).length;
 
-      // Now the button's enabled
-      const button = screen.getByRole('button', { name: /Compute/ });
-      expect(button).toBeEnabled();
+    await waitFor(() => {
+      // This test used to assert that "Annotated cell set" text is not found in "screen"
+      // in order to verify that deletion was successful.
+      // 4 Cell groups: louvain, custom cell sets, sample, Track_1 (metadata)
+      expect(numCellGroupsAfterDelete).toEqual(4);
 
-      // Click the button
-      act(() => {
-        userEvent.click(button);
-      });
+      expect(screen.queryByText('Annotated cell class')).toBeNull();
 
-      // It dispatches a work request
-      await waitFor(() => {
-        expect(dispatchWorkRequest).toHaveBeenCalledWith(
-          experimentId,
-          {
-            name: 'ScTypeAnnotate',
-            species: 'mouse',
-            tissue: 'Liver',
-          },
-          expect.anything(),
-          expect.anything(),
-          { PipelineRunETag: '2021-10-20T12:51:44.755Z', broadcast: true },
-        );
-      });
+      // Check that cell class does not exist anymore in redux
+      const isClassInRedux = Object.keys(storeState.getState().cellSets.properties).includes('annotated-cell-class-key');
+      expect(isClassInRedux).toBe(false);
+
+      // Check that cell set does not exist anymore in redux
+      const isCellSetInRedux = Object.keys(storeState.getState().cellSets.properties).includes('annotated-cell-set-key');
+      expect(isCellSetInRedux).toBe(false);
+    });
+  });
+});
+
+// Enable when AnnotateClustersTool panel is enabled
+describe('AnnotateClustersTool', () => {
+  beforeEach(async () => {
+    jest.clearAllMocks();
+
+    await storeState.dispatch(loadBackendStatus(experimentId));
+
+    await act(async () => {
+      render(
+        <Provider store={storeState}>
+          {cellSetsToolFactory()}
+        </Provider>,
+      );
+    });
+
+    // Switch to tab
+    const annotateClustersTabTitle = screen.getByText('Annotate clusters');
+
+    // Switch to tab
+    userEvent.click(annotateClustersTabTitle);
+  });
+
+  it('Renders correctly', async () => {
+    // Check displays correct text
+    screen.getByText(/ScType/);
+    screen.getByText(/Tissue Type/);
+    screen.getByText(/Species/);
+    screen.getByText(/Compute/);
+
+    // Displays correct placeholder in selects
+    screen.getByText('Select a tissue type');
+    screen.getByText('Select a species');
+
+    // Displays button and it's disabled
+    expect(screen.getByRole('button', { name: /Compute/ })).toBeDisabled();
+  });
+
+  it('Can dispatch work request', async () => {
+    const tissueSelector = screen.getAllByRole('combobox')[0];
+    const speciesSelector = screen.getAllByRole('combobox')[1];
+
+    // Select options
+    await act(async () => {
+      await selectOption(/Liver/, tissueSelector);
+      await selectOption(/mouse/, speciesSelector);
+    });
+
+    // Now the button's enabled
+    const button = screen.getByRole('button', { name: /Compute/ });
+    expect(button).toBeEnabled();
+
+    // Click the button
+    act(() => {
+      userEvent.click(button);
+    });
+
+    // It dispatches a work request
+    await waitFor(() => {
+      expect(dispatchWorkRequest).toHaveBeenCalledWith(
+        experimentId,
+        {
+          name: 'ScTypeAnnotate',
+          species: 'mouse',
+          tissue: 'Liver',
+        },
+        expect.anything(),
+        expect.anything(),
+        { PipelineRunETag: '2021-10-20T12:51:44.755Z', broadcast: true },
+      );
     });
   });
 });

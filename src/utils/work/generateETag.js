@@ -1,10 +1,7 @@
-import { MD5 } from 'object-hash';
-
-import config from 'config';
 import { Environment } from 'utils/deploymentInfo';
+import config from 'config';
 import getExtraDependencies from 'utils/work/getExtraDependencies';
-
-const createObjectHash = (object) => MD5(object);
+import createObjectHash from './createObjectHash';
 
 // Disable unique keys to reallow reuse of work results in development
 const DISABLE_UNIQUE_KEYS = [
@@ -32,7 +29,10 @@ const generateETag = async (
     cacheUniquenessKey = Math.random();
   }
 
-  const extraDependencies = await getExtraDependencies(experimentId, body.name, dispatch, getState);
+  const extraDependencies = await getExtraDependencies(
+    experimentId, body, dispatch, getState,
+  );
+
   let ETagBody;
 
   // They `body` key to create ETAg for gene expression is different

@@ -1,8 +1,18 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`loadMarkerGenes action Doesnt dispatch MARKER_GENES_LOADED if theres a different ETag stored 1`] = `
+Array [
+  Object {
+    "ETag": "new-etag",
+  },
+]
+`;
+
 exports[`loadMarkerGenes action dispatches appropriately on error 1`] = `
 Array [
-  undefined,
+  Object {
+    "ETag": "new-etag",
+  },
   Object {
     "error": "We couldn't get the marker genes",
   },
@@ -11,9 +21,14 @@ Array [
 
 exports[`loadMarkerGenes action dispatches appropriately on success 1`] = `
 Array [
-  undefined,
+  Object {
+    "ETag": "new-etag",
+  },
   Object {
     "data": Object {
+      "cellOrder": Array [
+        0,
+      ],
       "orderedGeneNames": Array [
         "geneA",
       ],

@@ -93,9 +93,9 @@ const ContentWrapper = (props) => {
   const gem2sBackendStatus = backendStatus?.gem2s;
   const backendErrors = [pipelineStatusValues.FAILED, pipelineStatusValues.TIMED_OUT, pipelineStatusValues.ABORTED];
 
-  const pipelineStatusKey = backendStatus?.pipeline?.status;
-  const pipelineRunning = pipelineStatusKey === 'RUNNING';
-  const pipelineRunningError = backendErrors.includes(pipelineStatusKey);
+  const qcStatusKey = backendStatus?.pipeline?.status;
+  const qcRunning = qcStatusKey === 'RUNNING';
+  const qcRunningError = backendErrors.includes(qcStatusKey);
 
   const gem2sStatusKey = backendStatus?.gem2s?.status;
   const gem2sRunning = gem2sStatusKey === 'RUNNING';
@@ -293,7 +293,7 @@ const ContentWrapper = (props) => {
   ];
 
   const waitingForQcToLaunch = gem2sStatusKey === pipelineStatusValues.SUCCEEDED
-    && pipelineStatusKey === pipelineStatusValues.NOT_CREATED;
+    && qcStatusKey === pipelineStatusValues.NOT_CREATED;
 
   const pipelineNotCreated = checkEveryIsValue([gem2sStatusKey, seuratStatusKey], pipelineStatusValues.NOT_CREATED);
 
@@ -333,11 +333,11 @@ const ContentWrapper = (props) => {
         return <PipelineLoadingScreen experimentId={routeExperimentId} pipelineStatus='toBeRun' />;
       }
 
-      if (pipelineRunningError && currentModule !== modules.DATA_PROCESSING) {
+      if (qcRunningError && currentModule !== modules.DATA_PROCESSING) {
         return <PipelineRedirectToDataProcessing experimentId={routeExperimentId} pipelineStatus='error' />;
       }
 
-      if (pipelineRunning && currentModule !== modules.DATA_PROCESSING) {
+      if (qcRunning && currentModule !== modules.DATA_PROCESSING) {
         return <PipelineRedirectToDataProcessing experimentId={routeExperimentId} pipelineStatus='running' />;
       }
 
@@ -364,7 +364,7 @@ const ContentWrapper = (props) => {
 
     const pipelineStatusDisable = disabledByPipelineStatus && (
       backendError || gem2sRunning || gem2sRunningError
-      || waitingForQcToLaunch || pipelineRunning || pipelineRunningError
+      || waitingForQcToLaunch || qcRunning || qcRunningError
       || seuratRunning || seuratRunningError
     );
 

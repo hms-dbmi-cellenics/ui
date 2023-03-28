@@ -6,6 +6,12 @@ const techNamesToDisplay = {
   [sampleTech.SEURAT]: 'Seurat',
 };
 
+const matchFileName = (fileName, fileNames) => {
+  const regexString = `.*(${Array.from(fileNames).join('|')})$`;
+  const regexp = new RegExp(regexString, 'i');
+  return fileName.match(regexp);
+};
+
 /* eslint-disable max-len */
 const fileUploadSpecifications = {
   [sampleTech['10X']]: {
@@ -36,6 +42,15 @@ const fileUploadSpecifications = {
     dropzoneText: 'Drag and drop folders here or click to browse.',
     // setting to empty string allows folder upload on dropzone click
     webkitdirectory: '',
+    isNameValid(fileName) { return this.acceptedFiles.has(fileName) || matchFileName(fileName, this.acceptedFiles); },
+    getCorrespondingName(fileName) {
+      const allowedNames = Array.from(this.acceptedFiles);
+
+      // Using for loop to allow breaking quickly
+      for (let i = 0; i < allowedNames.length; i += 1) {
+        if (fileName.endsWith(allowedNames[i])) return allowedNames[i];
+      }
+    },
   },
   [sampleTech.SEURAT]: {
     validExtensionTypes: ['.rds'],
@@ -59,6 +74,12 @@ const fileUploadSpecifications = {
     dropzoneText: 'Drag and drop *.rds file here or click to browse.',
     // setting to null allows file upload on dropzone click
     webkitdirectory: null,
+    isNameValid(fileName) {
+      return this.validExtensionTypes.some(
+        (validExtension) => fileName.endsWith(validExtension),
+      );
+    },
+    getCorrespondingName: () => 'r.rds',
   },
   [sampleTech.RHAPSODY]: {
     acceptedFiles: new Set(['expression_data.st', 'expression_data.st.gz']),
@@ -73,6 +94,8 @@ const fileUploadSpecifications = {
     ],
     dropzoneText: 'Drag and drop folders here or click to browse.',
     webkitdirectory: '',
+    isNameValid: (fileName) => fileName.toLowerCase().match(/.*expression_data.st(.gz)?$/),
+    getCorrespondingName: (fileName) => fileName,
   },
 
 };

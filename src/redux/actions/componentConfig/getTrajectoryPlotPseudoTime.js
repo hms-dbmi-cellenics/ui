@@ -11,6 +11,7 @@ const getTrajectoryPlotPseudoTime = (
   rootNodes,
   experimentId,
   plotUuid,
+  selectedCellSets,
 ) => async (dispatch, getState) => {
   // Currenty monocle3 only trajectory analysis only supports
   // UMAP embedding. Therefore, this embedding is specifically fetched.
@@ -58,6 +59,7 @@ const getTrajectoryPlotPseudoTime = (
       method: clusteringSettings.method,
       resolution: clusteringSettings.methodSettings[clusteringSettings.method].resolution,
     },
+    cellSets: selectedCellSets,
     rootNodes,
   };
 

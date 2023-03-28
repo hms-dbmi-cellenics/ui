@@ -100,12 +100,10 @@ const getTreeGenes = (container) => {
 };
 
 const renderHeatmapPage = async (store) => {
-  await act(async () => (
-    render(
-      <Provider store={store}>
-        {heatmapPageFactory()}
-      </Provider>,
-    )
+  await act(async () => render(
+    <Provider store={store}>
+      {heatmapPageFactory()}
+    </Provider>,
   ));
 };
 
@@ -215,7 +213,7 @@ describe('Marker heatmap plot', () => {
     const genesToLoad = [...markerGenesData5.orderedGeneNames, 'FAKEGENE'];
 
     await act(async () => {
-      await storeState.dispatch(loadGeneExpression(experimentId, genesToLoad, plotUuid));
+      await storeState.dispatch(loadGeneExpression(experimentId, genesToLoad, plotUuid, true));
     });
 
     // Get genes displayed in the tree
@@ -393,5 +391,25 @@ describe('Marker heatmap plot', () => {
 
     // The legend alert plot text should appear
     expect(screen.getByText(/We have hidden the plot legend, because it is too large and it interferes with the display of the plot/)).toBeInTheDocument();
+  });
+
+  it('renders the list of genes correctly', async () => {
+    await renderHeatmapPage(storeState);
+    const genes = getTreeGenes(screen.getByRole('tree'));
+    const geneTable = screen.getByText(genes[0]).parentElement;
+
+    // Render the table if there genes
+    expect(geneTable).toBeInTheDocument();
+
+    // Clear all genes
+    const geneTree = screen.getByRole('tree');
+    genes.forEach((gene) => {
+      const geneElement = within(geneTree).getByText(gene);
+      const geneRemoveButton = geneElement.nextSibling.firstChild;
+      userEvent.click(geneRemoveButton);
+    });
+
+    // Don't render the table if there are no genes
+    expect(geneTable).not.toBeInTheDocument();
   });
 });
