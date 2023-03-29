@@ -27,7 +27,7 @@ const referralWebhookEndpointsByAccountId = {
 const config = {
   supportEmail: supportEmailsByAccountId[accountId],
   pipelineVersionToRerunQC: 2,
-  workerVersion: 3, // needs to match workerVersion in API
+  workerVersion: 4, // needs to match workerVersion in API
   botToken: botTokensByAccountId[accountId],
   feedbackWebhookEndpoint: feedbackWebhookEndpointsByAccountId[accountId],
   referralWebhookEndpoint: referralWebhookEndpointsByAccountId[accountId],
