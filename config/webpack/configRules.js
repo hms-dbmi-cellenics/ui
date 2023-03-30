@@ -8,7 +8,7 @@ const srcFolder = [
   path.resolve(__dirname, '../src/redux'),
 ];
 
-const webpackConfigRules = (config, { dev, isServer }) => {
+const webpackConfigRules = (config, { dev }) => {
   // Download fonts and vector graphics instead of direct linking.
   const rules = [
     {

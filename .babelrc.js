@@ -8,6 +8,7 @@ module.exports = (api) => {
     plugins: [
       "lodash",
       "babel-plugin-add-module-exports",
+      "@babel/plugin-transform-runtime"
     ]
   };
 
