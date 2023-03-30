@@ -2,8 +2,6 @@
 const fs = require('fs');
 const path = require('path');
 const util = require('util');
-
-// const withLess = require('next-with-less');
 const withAntdLess = require('next-plugin-antd-less');
 
 const lessToJS = require('less-vars-to-js');
