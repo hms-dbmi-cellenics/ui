@@ -178,7 +178,8 @@ const ViolinIndex = ({ experimentId }) => {
       const plotUuidToAdd = generateMultiViewGridPlotUuid(plotUuid, newIndexes[index]);
       newPlotUuids.push(plotUuidToAdd);
 
-      // Taking the config the user currently sees, copy it and add the gene-specific settings
+      // Taking the config the user currently sees (selectedConfig),
+      //  copy it and add the gene-specific settings
       const customConfig = {
         ...selectedConfig,
         shownGene: gene,
