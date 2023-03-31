@@ -17,7 +17,7 @@ import { loadBackendStatus } from 'redux/actions/backendStatus/index';
 
 import { getBackendStatus } from 'redux/selectors';
 import handleError from 'utils/http/handleError';
-import downloadProcessedMatrix from 'utils/extraActionCreators/downloadProcessedMatrix';
+import downloadProcessedObject from 'utils/extraActionCreators/downloadProcessedObject';
 
 const DownloadDataButton = () => {
   const dispatch = useDispatch();
@@ -69,7 +69,7 @@ const DownloadDataButton = () => {
       if (!downloadTypes.has(type)) throw new Error('Invalid download type');
 
       setDownloadingProcessedSeurat(true);
-      await dispatch(downloadProcessedMatrix(activeExperimentId));
+      await dispatch(downloadProcessedObject(activeExperimentId));
       setDownloadingProcessedSeurat(false);
       setDropdownExpanded(false);
     } catch (e) {
