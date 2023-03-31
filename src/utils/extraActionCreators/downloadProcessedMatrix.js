@@ -29,7 +29,7 @@ const downloadProcessedMatrix = (experimentId) => async (dispatch, getState) => 
     experimentId, body, getState, dispatch, { timeout },
   );
 
-  downloadFromUrl(writeToFileURL(data), 'rds.r');
+  downloadFromUrl(writeToFileURL(data), 'ProcessedSeuratObject.rds');
 };
 
 export default downloadProcessedMatrix;
