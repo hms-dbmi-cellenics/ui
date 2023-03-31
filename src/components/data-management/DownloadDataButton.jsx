@@ -8,9 +8,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { saveAs } from 'file-saver';
 
 import downloadTypes from 'utils/data-management/downloadTypes';
-import fetchAPI from 'utils/http/fetchAPI';
 import endUserMessages from 'utils/endUserMessages';
-import downloadFromUrl from 'utils/downloadFromUrl';
 import pipelineStatus from 'utils/pipelineStatusValues';
 import { exportQCParameters, filterQCParameters } from 'utils/data-management/exportQCParameters';
 
@@ -18,7 +16,6 @@ import { loadBackendStatus } from 'redux/actions/backendStatus/index';
 
 import { getBackendStatus } from 'redux/selectors';
 import handleError from 'utils/http/handleError';
-import fetchWork from 'utils/work/fetchWork';
 import downloadProcessedMatrix from 'utils/extraActionCreators/downloadProcessedMatrix';
 
 const DownloadDataButton = () => {
@@ -34,7 +31,6 @@ const DownloadDataButton = () => {
 
   const samples = useSelector((state) => state.samples);
   const [qcHasRun, setQcHasRun] = useState(false);
-  const [gem2sHasRun, setGem2sHasRun] = useState(false);
   const [allSamplesAnalysed, setAllSamplesAnalysed] = useState(false);
 
   useEffect(() => {
@@ -46,9 +42,6 @@ const DownloadDataButton = () => {
   useEffect(() => {
     setQcHasRun(
       activeExperimentId && (backendStatuses?.pipeline?.status === pipelineStatus.SUCCEEDED),
-    );
-    setGem2sHasRun(
-      activeExperimentId && (backendStatuses?.gem2s?.status === pipelineStatus.SUCCEEDED),
     );
   }, [backendStatuses]);
 
@@ -105,7 +98,9 @@ const DownloadDataButton = () => {
             key='download-processing-settings'
             onClick={() => {
               const config = _.omit(experimentSettings.processing, ['meta']);
-              const filteredConfig = filterQCParameters(config, activeExperiment.sampleIds, samples);
+              const filteredConfig = filterQCParameters(
+                config, activeExperiment.sampleIds, samples,
+              );
               const blob = exportQCParameters(filteredConfig);
               saveAs(blob, `${activeExperimentId.split('-')[0]}_settings.txt`);
             }}
