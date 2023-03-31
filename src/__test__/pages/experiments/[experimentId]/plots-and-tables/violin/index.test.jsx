@@ -151,6 +151,9 @@ describe('ViolinIndex', () => {
     // check the multi view was expanded
     const multiViewConfig = storeState.getState().componentConfig[multiViewUuid].config;
     expect(_.isEqual([multiViewConfig.nrows, multiViewConfig.ncols], [2, 2])).toBe(true);
+
+    // New plot's config is correct
+    expect(storeState.getState().componentConfig['ViolinMain-0']).toMatchSnapshot('new-config');
   });
 
   it('Changes the shown gene', async () => {
