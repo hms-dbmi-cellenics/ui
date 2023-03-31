@@ -15,8 +15,8 @@ import downloadFromUrl from 'utils/downloadFromUrl';
 import writeToFile from 'utils/writeToFileURL';
 
 import launchPathwayService from 'utils/pathwayAnalysis/launchPathwayService';
-import getDiffExprGenes from 'utils/differentialExpression/getDiffExprGenes';
-import getBackgroundExpressedGenes from 'utils/differentialExpression/getBackgroundExpressedGenes';
+import getDiffExprGenes from 'utils/extraActionCreators/differentialExpression/getDiffExprGenes';
+import getBackgroundExpressedGenes from 'utils/extraActionCreators/differentialExpression/getBackgroundExpressedGenes';
 import { pathwayServices } from 'utils/pathwayAnalysis/pathwayConstants';
 import enrichrSpecies from 'utils/pathwayAnalysis/enrichrConstants';
 import endUserMessages from 'utils/endUserMessages';

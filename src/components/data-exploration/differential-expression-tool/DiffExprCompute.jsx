@@ -14,7 +14,7 @@ import { loadCellSets } from 'redux/actions/cellSets';
 import { getCellSets } from 'redux/selectors';
 import { composeTree } from 'utils/cellSets';
 import { setComparisonGroup, setComparisonType } from 'redux/actions/differentialExpression';
-import checkCanRunDiffExpr, { canRunDiffExprResults } from 'utils/differentialExpression/checkCanRunDiffExpr';
+import checkCanRunDiffExpr, { canRunDiffExprResults } from 'utils/extraActionCreators/differentialExpression/checkCanRunDiffExpr';
 import { getCellSetClassKey } from 'utils/cellSets';
 
 const { Option, OptGroup } = Select;

@@ -18,6 +18,8 @@ import { loadBackendStatus } from 'redux/actions/backendStatus/index';
 
 import { getBackendStatus } from 'redux/selectors';
 import handleError from 'utils/http/handleError';
+import fetchWork from 'utils/work/fetchWork';
+import downloadProcessedMatrix from 'utils/extraActionCreators/downloadProcessedMatrix';
 
 const DownloadDataButton = () => {
   const dispatch = useDispatch();
@@ -70,9 +72,7 @@ const DownloadDataButton = () => {
       if (!activeExperimentId) throw new Error('No experimentId specified');
       if (!downloadTypes.has(type)) throw new Error('Invalid download type');
 
-      const signedUrl = await fetchAPI(`/v2/experiments/${activeExperimentId}/download/${type}`);
-
-      downloadFromUrl(signedUrl);
+      dispatch(downloadProcessedMatrix(activeExperimentId));
     } catch (e) {
       handleError(e, endUserMessages.ERROR_DOWNLOADING_DATA);
     }
