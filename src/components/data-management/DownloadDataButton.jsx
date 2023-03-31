@@ -106,8 +106,8 @@ const DownloadDataButton = () => {
               placement='left'
             >
               <Space>
-                {downloadingProcessedSeurat && <ClipLoader size={20} />}
                 Processed Seurat object (.rds)
+                {downloadingProcessedSeurat && <ClipLoader size={20} />}
               </Space>
             </Tooltip>
           </Menu.Item>
