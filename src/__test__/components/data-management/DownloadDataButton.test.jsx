@@ -177,7 +177,7 @@ describe('DownloadDataButton', () => {
     expect(options[1]).toHaveAttribute('aria-disabled', 'true');
   });
 
-  it('Downolods data properly', async () => {
+  it('Downloads data properly', async () => {
     fetchAPI.mockImplementation(() => Promise.resolve('signedUrl'));
     getBackendStatus.mockImplementation(() => () => ({
       ...initialExperimentBackendStatus,

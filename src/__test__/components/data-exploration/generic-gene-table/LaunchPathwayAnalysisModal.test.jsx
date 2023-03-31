@@ -22,8 +22,8 @@ import enrichrSpecies from 'utils/pathwayAnalysis/enrichrConstants';
 import endUserMessages from 'utils/endUserMessages';
 
 jest.mock('utils/pathwayAnalysis/launchPathwayService');
-jest.mock('utils/differentialExpression/getDiffExprGenes');
-jest.mock('utils/differentialExpression/getBackgroundExpressedGenes');
+jest.mock('utils/extraActionCreators/differentialExpression/getDiffExprGenes');
+jest.mock('utils/extraActionCreators/differentialExpression/getBackgroundExpressedGenes');
 
 jest.mock('utils/http/handleError');
 jest.mock('utils/downloadFromUrl');
