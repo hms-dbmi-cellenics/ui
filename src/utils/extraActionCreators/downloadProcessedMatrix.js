@@ -8,7 +8,7 @@ import downloadFromUrl from 'utils/downloadFromUrl';
 import getEmbeddingETag from 'utils/work/getEmbeddingETag';
 
 const downloadProcessedMatrix = (experimentId) => async (dispatch, getState) => {
-  dispatch(loadProcessingSettings(experimentId));
+  await dispatch(loadProcessingSettings(experimentId));
 
   const {
     method: embeddingMethod,
