@@ -62,13 +62,23 @@ const MarkerGeneSelection = (props) => {
               onDelete={onGenesChange}
             />
           )}
-        <Button
-          type='primary'
-          onClick={onReset}
-          size='small'
-        >
-          Reset
-        </Button>
+        <Space size='small'>
+          <Button
+            type='primary'
+            onClick={onReset}
+            size='small'
+          >
+            Reset
+          </Button>
+          <Button
+            type='primary'
+            danger
+            onClick={() => onGenesChange([])}
+            size='small'
+          >
+            Clear All
+          </Button>
+        </Space>
       </Space>
     );
   };
