@@ -34,6 +34,7 @@ const DownloadDataButton = () => {
   const [qcHasRun, setQcHasRun] = useState(false);
   const [allSamplesAnalysed, setAllSamplesAnalysed] = useState(false);
   const [downloadingProcessedSeurat, setDownloadingProcessedSeurat] = useState(false);
+  const [dropdownExpanded, setDropdownExpanded] = useState(false);
 
   useEffect(() => {
     if (activeExperimentId && !backendLoading && !backendStatuses) {
@@ -77,8 +78,15 @@ const DownloadDataButton = () => {
 
   return (
     <Dropdown
+      visible={dropdownExpanded}
+      onVisibleChange={(visible) => setDropdownExpanded(visible)}
+      trigger={['click']}
       overlay={() => (
-        <Menu>
+        <Menu
+          onClick={(e) => {
+            if (e.key !== 'download-processed-seurat') setDropdownExpanded(false);
+          }}
+        >
           <Menu.Item
             key='download-processed-seurat'
             disabled={!qcHasRun || backendLoading}
@@ -126,7 +134,6 @@ const DownloadDataButton = () => {
           </Menu.Item>
         </Menu>
       )}
-      trigger={['click']}
       placement='bottomRight'
       disabled={
         experiments.ids.length === 0
