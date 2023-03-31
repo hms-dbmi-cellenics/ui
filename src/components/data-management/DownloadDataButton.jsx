@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import _ from 'lodash';
 import {
-  Menu, Tooltip, Dropdown, Button,
+  Menu, Tooltip, Dropdown, Button, Space,
 } from 'antd';
 
 import { useSelector, useDispatch } from 'react-redux';
 import { saveAs } from 'file-saver';
+import { ClipLoader } from 'react-spinners';
 
 import downloadTypes from 'utils/data-management/downloadTypes';
 import endUserMessages from 'utils/endUserMessages';
@@ -32,6 +33,7 @@ const DownloadDataButton = () => {
   const samples = useSelector((state) => state.samples);
   const [qcHasRun, setQcHasRun] = useState(false);
   const [allSamplesAnalysed, setAllSamplesAnalysed] = useState(false);
+  const [downloadingProcessedSeurat, setDownloadingProcessedSeurat] = useState(false);
 
   useEffect(() => {
     if (activeExperimentId && !backendLoading && !backendStatuses) {
@@ -65,7 +67,9 @@ const DownloadDataButton = () => {
       if (!activeExperimentId) throw new Error('No experimentId specified');
       if (!downloadTypes.has(type)) throw new Error('Invalid download type');
 
-      dispatch(downloadProcessedMatrix(activeExperimentId));
+      setDownloadingProcessedSeurat(true);
+      await dispatch(downloadProcessedMatrix(activeExperimentId));
+      setDownloadingProcessedSeurat(false);
     } catch (e) {
       handleError(e, endUserMessages.ERROR_DOWNLOADING_DATA);
     }
@@ -78,7 +82,9 @@ const DownloadDataButton = () => {
           <Menu.Item
             key='download-processed-seurat'
             disabled={!qcHasRun || backendLoading}
-            onClick={() => {
+            onClick={(e) => {
+              e.domEvent.stopPropagation();
+
               downloadExperimentData('processed-matrix');
             }}
           >
@@ -90,7 +96,10 @@ const DownloadDataButton = () => {
               }
               placement='left'
             >
-              Processed Seurat object (.rds)
+              <Space>
+                {downloadingProcessedSeurat && <ClipLoader size={20} />}
+                Processed Seurat object (.rds)
+              </Space>
             </Tooltip>
           </Menu.Item>
           <Menu.Item
