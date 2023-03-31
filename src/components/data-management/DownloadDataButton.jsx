@@ -71,6 +71,7 @@ const DownloadDataButton = () => {
       setDownloadingProcessedSeurat(true);
       await dispatch(downloadProcessedMatrix(activeExperimentId));
       setDownloadingProcessedSeurat(false);
+      setDropdownExpanded(false);
     } catch (e) {
       handleError(e, endUserMessages.ERROR_DOWNLOADING_DATA);
     }
