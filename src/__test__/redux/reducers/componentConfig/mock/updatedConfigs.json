@@ -251,7 +251,7 @@
         "width": 550,
         "height": 400
       },
-      "normalised": "normalised",
+      "normalised": "zScore",
       "kdeBandwidth": 0.3,
       "keepValuesOnReset": [
         "shownGene",
@@ -318,7 +318,7 @@
         "width": 550,
         "height": 400
       },
-      "normalised": "normalised",
+      "normalised": "zScore",
       "kdeBandwidth": 0.3,
       "keepValuesOnReset": [
         "shownGene",
