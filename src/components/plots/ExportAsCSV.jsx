@@ -4,11 +4,13 @@ import { CSVLink } from 'react-csv';
 import { Button } from 'antd';
 
 const ExportAsCSV = (props) => {
-  const { data, filename, disabled } = props;
+  const {
+    data, filename, disabled, size,
+  } = props;
   return (
     <CSVLink data={data} filename={filename}>
       <Button
-        size='small'
+        size={size}
         disabled={disabled}
         onClick={(e) => e.stopPropagation()}
       >
@@ -22,8 +24,10 @@ ExportAsCSV.propTypes = {
   data: PropTypes.array.isRequired,
   filename: PropTypes.string.isRequired,
   disabled: PropTypes.bool,
+  size: PropTypes.string,
 };
 ExportAsCSV.defaultProps = {
   disabled: false,
+  size: 'small',
 };
 export default ExportAsCSV;
