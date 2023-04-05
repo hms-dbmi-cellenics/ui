@@ -178,7 +178,7 @@ const CalculationConfig = (props) => {
               <Form.Item>
                 <Alert
                   type='warning'
-                  description='SeuratV4 is a computationally expensive method, so it will take a lot of time and resources to compute compared to other methods. It is recommended to evaluate other methods before using SeuratV4.'
+                  description='SeuratV4 is a computationally expensive method. It is highly likely that the integration will fail as it requires more resources than are currently available. We recommended you to evaluate other methods before using SeuratV4.'
                 />
               </Form.Item>
             )
