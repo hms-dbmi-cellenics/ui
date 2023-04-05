@@ -1,0 +1,79 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ViolinIndex Adds a new plot to multi view: new-config 1`] = `
+Object {
+  "config": Object {
+    "axes": Object {
+      "domainWidth": 2,
+      "gridOpacity": 0,
+      "gridWidth": 10,
+      "labelFontSize": 12,
+      "offset": 10,
+      "titleFontSize": 13,
+      "xAxisRotateLabels": true,
+      "xAxisText": "",
+      "yAxisText": "",
+    },
+    "axesRanges": Object {
+      "yAxisAuto": true,
+      "yMax": 10,
+      "yMin": 0,
+    },
+    "colour": Object {
+      "gradient": "default",
+      "invert": "standard",
+      "masterColour": "#000000",
+      "reverseColourBar": false,
+      "toggleInvert": "#FFFFFF",
+    },
+    "dimensions": Object {
+      "height": 400,
+      "width": 550,
+    },
+    "fontStyle": Object {
+      "colour": "#000000",
+      "font": "sans-serif",
+    },
+    "kdeBandwidth": 0.3,
+    "keepValuesOnReset": Array [
+      "shownGene",
+      "title",
+    ],
+    "labels": Object {
+      "enabled": true,
+      "size": 18,
+    },
+    "legend": Object {
+      "colour": "#000000",
+      "enabled": false,
+      "position": "right",
+      "showAlert": false,
+    },
+    "marker": Object {
+      "opacity": 5,
+      "shape": "circle",
+      "showOpacity": true,
+      "size": 5,
+    },
+    "normalised": "normalised",
+    "selectedCellSet": "louvain",
+    "selectedPoints": "All",
+    "selectedPointsVisible": true,
+    "shownGene": "Ccl5",
+    "spec": "1.0.0",
+    "statisticsVisible": false,
+    "title": Object {
+      "anchor": "start",
+      "dx": 0,
+      "fontSize": 20,
+      "text": "Ccl5",
+    },
+  },
+  "error": false,
+  "experimentId": "testae48e318dab9a1bd0bexperiment",
+  "loading": false,
+  "outstandingChanges": true,
+  "plotData": Array [],
+  "plotType": "violin",
+}
+`;

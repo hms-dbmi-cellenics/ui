@@ -127,32 +127,6 @@ describe('ViolinIndex', () => {
     expect(screen.getByRole('graphics-document', { name: 'Violin plot' })).toBeInTheDocument();
   });
 
-  it('Adds a new plot to multi view', async () => {
-    await renderViolinPage(storeState);
-
-    userEvent.click(screen.getByText(/View multiple plots/i));
-
-    const searchBox = screen.getByRole('combobox', { name: 'SearchBar' });
-
-    userEvent.type(searchBox, 'cc');
-
-    const option = screen.getByTitle('Ccl5');
-
-    await act(async () => {
-      // the element has pointer-events set to 'none', skip check
-      // based on https://stackoverflow.com/questions/61080116
-      userEvent.click(option, undefined, { skipPointerEventsCheck: true });
-    });
-
-    userEvent.click(screen.getByText('Add'));
-
-    await waitFor(() => expect(screen.getAllByRole('graphics-document', { name: 'Violin plot' }).length).toBe(2));
-
-    // check the multi view was expanded
-    const multiViewConfig = storeState.getState().componentConfig[multiViewUuid].config;
-    expect(_.isEqual([multiViewConfig.nrows, multiViewConfig.ncols], [2, 2])).toBe(true);
-  });
-
   it('Changes the shown gene', async () => {
     await renderViolinPage(storeState);
 
@@ -189,5 +163,63 @@ describe('ViolinIndex', () => {
 
     expect(screen.getByRole('graphics-document', { name: 'Violin plot' })).toBeInTheDocument();
     expect(storeState.getState().componentConfig[plotUuid].config.normalised).toBe('raw');
+  });
+
+  it('Adds a new plot to multi view', async () => {
+    await renderViolinPage(storeState);
+
+    userEvent.click(screen.getByText(/View multiple plots/i));
+
+    const searchBox = screen.getByRole('combobox', { name: 'SearchBar' });
+
+    userEvent.type(searchBox, 'cc');
+
+    const option = screen.getByTitle('Ccl5');
+
+    await act(async () => {
+      // the element has pointer-events set to 'none', skip check
+      // based on https://stackoverflow.com/questions/61080116
+      userEvent.click(option, undefined, { skipPointerEventsCheck: true });
+    });
+
+    userEvent.click(screen.getByText('Add'));
+
+    await waitFor(() => expect(screen.getAllByRole('graphics-document', { name: 'Violin plot' }).length).toBe(2));
+
+    // check the multi view was expanded
+    const multiViewConfig = storeState.getState().componentConfig[multiViewUuid].config;
+    expect(_.isEqual([multiViewConfig.nrows, multiViewConfig.ncols], [2, 2])).toBe(true);
+
+    // New plot's config is correct
+    expect(storeState.getState().componentConfig['ViolinMain-0']).toMatchSnapshot('new-config');
+  });
+
+  it('Adds new plot using same config as previous plot', async () => {
+    await renderViolinPage(storeState);
+
+    // Change to raw expression
+    userEvent.click(screen.getByText(/Data transformation/i));
+    userEvent.click(screen.getByText('Raw values'));
+
+    userEvent.click(screen.getByText(/View multiple plots/i));
+
+    const searchBox = screen.getByRole('combobox', { name: 'SearchBar' });
+
+    userEvent.type(searchBox, 'cc');
+
+    const option = screen.getByTitle('Ccl5');
+
+    await act(async () => {
+      // the element has pointer-events set to 'none', skip check
+      // based on https://stackoverflow.com/questions/61080116
+      userEvent.click(option, undefined, { skipPointerEventsCheck: true });
+    });
+
+    userEvent.click(screen.getByText('Add'));
+
+    await waitFor(() => expect(screen.getAllByRole('graphics-document', { name: 'Violin plot' }).length).toBe(2));
+
+    // New plot's config contains normalised set to raw too
+    expect(storeState.getState().componentConfig['ViolinMain-0'].config.normalised).toEqual('raw');
   });
 });
