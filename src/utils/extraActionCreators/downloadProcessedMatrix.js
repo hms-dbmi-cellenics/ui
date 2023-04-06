@@ -9,7 +9,7 @@ import getEmbeddingETag from 'utils/work/getEmbeddingETag';
 import handleError from 'utils/http/handleError';
 import endUserMessages from 'utils/endUserMessages';
 
-const downloadProcessedObject = (experimentId) => async (dispatch, getState) => {
+const downloadProcessedMatrix = (experimentId) => async (dispatch, getState) => {
   try {
     await dispatch(loadProcessingSettings(experimentId));
 
@@ -38,4 +38,4 @@ const downloadProcessedObject = (experimentId) => async (dispatch, getState) => 
   }
 };
 
-export default downloadProcessedObject;
+export default downloadProcessedMatrix;

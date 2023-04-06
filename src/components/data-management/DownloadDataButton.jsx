@@ -17,7 +17,7 @@ import { loadBackendStatus } from 'redux/actions/backendStatus/index';
 
 import { getBackendStatus } from 'redux/selectors';
 import handleError from 'utils/http/handleError';
-import downloadProcessedObject from 'utils/extraActionCreators/downloadProcessedObject';
+import downloadProcessedMatrix from 'utils/extraActionCreators/downloadProcessedMatrix';
 
 const DownloadDataButton = () => {
   const dispatch = useDispatch();
@@ -63,13 +63,14 @@ const DownloadDataButton = () => {
       // eslint-disable-next-line no-prototype-builtins
       && activeExperiment?.sampleIds?.every((s) => steps[0].hasOwnProperty(s));
   };
+
   const downloadExperimentData = async (type) => {
     try {
       if (!activeExperimentId) throw new Error('No experimentId specified');
       if (!downloadTypes.has(type)) throw new Error('Invalid download type');
 
       setDownloadingProcessedSeurat(true);
-      await dispatch(downloadProcessedObject(activeExperimentId));
+      await dispatch(downloadProcessedMatrix(activeExperimentId));
       setDownloadingProcessedSeurat(false);
       setDropdownExpanded(false);
     } catch (e) {

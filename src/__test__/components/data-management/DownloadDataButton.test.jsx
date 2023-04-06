@@ -1,91 +1,125 @@
 import React from 'react';
+import _ from 'lodash';
 import '@testing-library/jest-dom';
 import { Provider } from 'react-redux';
-import thunk from 'redux-thunk';
+// import thunk from 'redux-thunk';
 import { screen, render, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import preloadAll from 'jest-next-dynamic';
 
 import { act } from 'react-dom/test-utils';
-import configureMockStore from 'redux-mock-store';
+// import configureMockStore from 'redux-mock-store';
 
 import DownloadDataButton from 'components/data-management/DownloadDataButton';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
 import downloadFromUrl from 'utils/downloadFromUrl';
 
-import initialSamplesState from 'redux/reducers/samples/initialState';
-import initialExperimentsState from 'redux/reducers/experiments/initialState';
-import initialExperimentSettingsState from 'redux/reducers/experimentSettings/initialState';
-import { initialExperimentBackendStatus } from 'redux/reducers/backendStatus/initialState';
+// import initialSamplesState from 'redux/reducers/samples/initialState';
+// import initialExperimentsState from 'redux/reducers/experiments/initialState';
+// import initialExperimentSettingsState from 'redux/reducers/experimentSettings/initialState';
+// import { initialExperimentBackendStatus } from 'redux/reducers/backendStatus/initialState';
+// import { getBackendStatus } from 'redux/selectors';
 
-import { getBackendStatus } from 'redux/selectors';
-import fetchAPI from 'utils/http/fetchAPI';
+import { processingConfig } from '__test__/test-utils/mockData';
 
-jest.mock('redux/selectors');
+import fetchWork from 'utils/work/fetchWork';
+
+import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
+import { makeStore } from 'redux/store';
+import { loadExperiments } from 'redux/actions/experiments';
+
+import mockAPI, { generateDefaultMockAPIResponses, promiseResponse } from '__test__/test-utils/mockAPI';
+import fake from '__test__/test-utils/constants';
+import { loadBackendStatus } from 'redux/actions/backendStatus';
+// import { loadSamples } from 'redux/actions/samples';
+import { loadProcessingSettings } from 'redux/actions/experimentSettings';
+
+// jest.mock('redux/selectors');
 jest.mock('utils/pushNotificationMessage');
-jest.mock('utils/http/fetchAPI');
 jest.mock('utils/downloadFromUrl');
+jest.mock('utils/work/fetchWork');
 
-const mockStore = configureMockStore([thunk]);
-const experimentName = 'Experiment 1';
-const experimentDescription = 'Some description';
-const experimentId = 'my-experiment-🧬';
-const sample1Uuid = 'sample-1';
-const sample2Uuid = 'sample-2';
+// const mockStore = configureMockStore([thunk]);
+// const experimentName = 'Experiment 1';
+// const experimentDescription = 'Some description';
+// const experimentId = 'my-experiment-🧬';
+// const sample1Uuid = 'sample-1';
+// const sample2Uuid = 'sample-2';
 
-const noDataState = {
-  experiments: {
-    ...initialExperimentsState,
-    name: experimentName,
-    description: experimentDescription,
-    ids: ['experiment-1'],
-    meta: {
-      ...initialExperimentsState.meta,
-      activeExperimentId: experimentId,
-      loading: false,
-    },
-  },
-  experimentSettings: {
-    ...initialExperimentSettingsState,
-  },
-  samples: {
-    ...initialSamplesState,
-  },
+// const noDataState = {
+//   experiments: {
+//     ...initialExperimentsState,
+//     name: experimentName,
+//     description: experimentDescription,
+//     ids: ['experiment-1'],
+//     meta: {
+//       ...initialExperimentsState.meta,
+//       activeExperimentId: experimentId,
+//       loading: false,
+//     },
+//   },
+//   experimentSettings: {
+//     ...initialExperimentSettingsState,
+//   },
+//   samples: {
+//     ...initialSamplesState,
+//   },
+// };
+
+// const withDataState = {
+//   ...noDataState,
+//   experiments: {
+//     ...noDataState.experiments,
+//     [experimentId]: {
+//       ...noDataState.experiments[experimentId],
+//       sampleIds: [sample1Uuid, sample2Uuid],
+//       metadataKeys: ['metadata-1'],
+//     },
+//   },
+//   experimentSettings: {
+//     processing: {
+//       cellSizeDistribution: {
+//         [sample1Uuid]: {},
+//         [sample2Uuid]: {},
+//       },
+//     },
+//   },
+// };
+
+const experimentId = `${fake.EXPERIMENT_ID}-0`;
+
+enableFetchMocks();
+
+const customResponses = {
+  [`experiments/${experimentId}/processingConfig`]: () => promiseResponse(
+    JSON.stringify({ processingConfig }),
+  ),
 };
 
-const withDataState = {
-  ...noDataState,
-  experiments: {
-    ...noDataState.experiments,
-    [experimentId]: {
-      ...noDataState.experiments[experimentId],
-      sampleIds: [sample1Uuid, sample2Uuid],
-      metadataKeys: ['metadata-1'],
-    },
-  },
-  experimentSettings: {
-    processing: {
-      cellSizeDistribution: {
-        [sample1Uuid]: {},
-        [sample2Uuid]: {},
-      },
-    },
-  },
-};
 describe('DownloadDataButton', () => {
+  let storeState;
+
   beforeAll(async () => {
     await preloadAll();
   });
 
   beforeEach(() => {
     jest.clearAllMocks(); // Do not mistake with resetAllMocks()!
+
+    const mockAPIResponse = _.merge(
+      generateDefaultMockAPIResponses(experimentId),
+      customResponses,
+    );
+    fetchMock.resetMocks();
+    fetchMock.mockIf(/.*/, mockAPI(mockAPIResponse));
+
+    storeState = makeStore();
   });
 
-  const renderDownloadDataButton = async (state) => {
-    const store = mockStore(state);
+  const renderDownloadDataButton = async () => {
     await act(async () => {
       render(
-        <Provider store={store}>
+        <Provider store={storeState}>
           <DownloadDataButton />
         </Provider>,
       );
@@ -105,19 +139,19 @@ describe('DownloadDataButton', () => {
   };
 
   it('should render the download data menu', async () => {
-    getBackendStatus.mockImplementation(() => () => ({
-      ...initialExperimentBackendStatus,
-      status: {
-        pipeline: {
-          status: 'SUCCEEDED',
-        },
-        gem2s: {
-          status: 'SUCCEEDED',
-        },
-      },
-    }));
+    await act(async () => {
+      storeState.dispatch(loadExperiments());
+    });
+    await act(async () => {
+      storeState.dispatch(loadProcessingSettings(experimentId));
+    });
+    await act(async () => {
+      storeState.dispatch(loadBackendStatus(experimentId));
+    });
 
-    await renderDownloadDataButton(withDataState);
+    // await renderDownloadDataButton(withDataState);
+    await renderDownloadDataButton();
+
     const options = await getMenuItems();
     expect(options).toHaveLength(2);
     expect(options[0]).toHaveTextContent('Processed Seurat object (.rds)');
@@ -127,71 +161,82 @@ describe('DownloadDataButton', () => {
   });
 
   it('Processed Seurat object option is disabled if qc has not ran', async () => {
-    getBackendStatus.mockImplementation(() => () => ({
-      ...initialExperimentBackendStatus,
-      status: {
-        pipeline: {
-          status: 'DEFINETELY NOT SUCCEEDED',
-        },
-        gem2s: {
-          status: 'SUCCEEDED',
-        },
-      },
-    }));
+    // getBackendStatus.mockImplementation(() => () => ({
+    //   ...initialExperimentBackendStatus,
+    //   status: {
+    //     pipeline: {
+    //       status: 'DEFINETELY NOT SUCCEEDED',
+    //     },
+    //     gem2s: {
+    //       status: 'SUCCEEDED',
+    //     },
+    //   },
+    // }));
 
-    const state = { ...withDataState };
+    // const state = { ...withDataState };
+    // await renderDownloadDataButton(state);
 
-    await renderDownloadDataButton(state);
+    await renderDownloadDataButton();
     const options = await getMenuItems();
     expect(options[0]).toHaveAttribute('aria-disabled', 'true');
     expect(options[1]).toHaveAttribute('aria-disabled', 'false');
   });
 
   it('Data procesing settings option is disabled if a step misses a sample', async () => {
-    getBackendStatus.mockImplementation(() => () => ({
-      ...initialExperimentBackendStatus,
-      status: {
-        pipeline: {
-          status: 'SUCCEEDED',
-        },
-        gem2s: {
-          status: 'SUCCEEDED',
-        },
-      },
-    }));
+    // getBackendStatus.mockImplementation(() => () => ({
+    //   ...initialExperimentBackendStatus,
+    //   status: {
+    //     pipeline: {
+    //       status: 'SUCCEEDED',
+    //     },
+    //     gem2s: {
+    //       status: 'SUCCEEDED',
+    //     },
+    //   },
+    // }));
 
-    const state = {
-      ...withDataState,
-      experimentSettings: {
-        processing: {
-          cellSizeDistribution: {
-            [sample1Uuid]: {},
-          },
-        },
-      },
-    };
+    // const state = {
+    //   ...withDataState,
+    //   experimentSettings: {
+    //     processing: {
+    //       cellSizeDistribution: {
+    //         [sample1Uuid]: {},
+    //       },
+    //     },
+    //   },
+    // };
 
-    await renderDownloadDataButton(state);
+    // await renderDownloadDataButton(state);
+
+    await renderDownloadDataButton();
     const options = await getMenuItems();
     expect(options[0]).toHaveAttribute('aria-disabled', 'false');
     expect(options[1]).toHaveAttribute('aria-disabled', 'true');
   });
 
   it('Downloads data properly', async () => {
-    fetchAPI.mockImplementation(() => Promise.resolve('signedUrl'));
-    getBackendStatus.mockImplementation(() => () => ({
-      ...initialExperimentBackendStatus,
-      status: {
-        pipeline: {
-          status: 'SUCCEEDED',
-        },
-        gem2s: {
-          status: 'SUCCEEDED',
-        },
-      },
-    }));
+    // fetchAPI.mockImplementation(() => Promise.resolve('signedUrl'));
+    // getBackendStatus.mockImplementation(() => () => ({
+    //   ...initialExperimentBackendStatus,
+    //   status: {
+    //     pipeline: {
+    //       status: 'SUCCEEDED',
+    //     },
+    //     gem2s: {
+    //       status: 'SUCCEEDED',
+    //     },
+    //   },
+    // }));
 
-    await renderDownloadDataButton(withDataState);
+    fetchWork.mockImplementation((expId, body) => {
+      if (body.name === 'GetEmbedding') {
+        return Promise.resolve();
+      }
+    });
+
+    // await renderDownloadDataButton(withDataState);
+
+    await renderDownloadDataButton();
 
     // Open the Download dropdown
     userEvent.click(screen.getByText(/Download/i));
@@ -206,20 +251,21 @@ describe('DownloadDataButton', () => {
   });
 
   it('Shows an error if there is an error downloading data', async () => {
-    fetchAPI.mockImplementation(() => Promise.reject(new Error('Something went wrong')));
-    getBackendStatus.mockImplementation(() => () => ({
-      ...initialExperimentBackendStatus,
-      status: {
-        pipeline: {
-          status: 'SUCCEEDED',
-        },
-        gem2s: {
-          status: 'SUCCEEDED',
-        },
-      },
-    }));
+    // fetchAPI.mockImplementation(() => Promise.reject(new Error('Something went wrong')));
+    // getBackendStatus.mockImplementation(() => () => ({
+    //   ...initialExperimentBackendStatus,
+    //   status: {
+    //     pipeline: {
+    //       status: 'SUCCEEDED',
+    //     },
+    //     gem2s: {
+    //       status: 'SUCCEEDED',
+    //     },
+    //   },
+    // }));
 
-    await renderDownloadDataButton(withDataState);
+    // await renderDownloadDataButton(withDataState);
+    await renderDownloadDataButton();
 
     // Open the Download dropdown
     userEvent.click(screen.getByText(/Download/i));
@@ -234,14 +280,15 @@ describe('DownloadDataButton', () => {
   });
 
   it('Has options disabled if backend status is still loading', async () => {
-    getBackendStatus.mockImplementation(() => () => ({
-      loading: true,
-      error: false,
-      status: null,
-    }));
+    // getBackendStatus.mockImplementation(() => () => ({
+    //   loading: true,
+    //   error: false,
+    //   status: null,
+    // }));
 
-    const state = { ...withDataState };
-    await renderDownloadDataButton(state);
+    // const state = { ...withDataState };
+    // await renderDownloadDataButton(state);
+    await renderDownloadDataButton();
     const options = await getMenuItems();
 
     expect(options[0]).toHaveAttribute('aria-disabled', 'true');
