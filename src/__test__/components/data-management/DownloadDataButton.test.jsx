@@ -195,9 +195,6 @@ describe('DownloadDataButton', () => {
     // Remove settings for one sample
     delete processingConfigMissingSample.cellSizeDistribution[`${fake.SAMPLE_ID}-0`];
 
-    console.log('processingConfigMissingSampleclassifierDebug');
-    console.log(processingConfigMissingSample.classifier);
-
     const stepMissingMockAPIResponse = _.merge(
       mockAPIResponse,
       {
