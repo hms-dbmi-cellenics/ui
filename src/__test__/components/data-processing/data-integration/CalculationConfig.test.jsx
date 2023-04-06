@@ -4,14 +4,14 @@ import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import { mockCellSets } from '__test__/test-utils/cellSets.mock';
 import { downsamplingMethods } from 'utils/constants';
-
+import _ from 'lodash';
 import { initialPlotConfigStates } from 'redux/reducers/componentConfig/initialState';
 import { initialEmbeddingState } from 'redux/reducers/embeddings/initialState';
 import { generateDataProcessingPlotUuid } from 'utils/generateCustomPlotUuid';
 
 import generateExperimentSettingsMock from '__test__/test-utils/experimentSettings.mock';
 
-import { screen, render, fireEvent } from '@testing-library/react';
+import { screen, render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import CalculationConfig from 'components/data-processing/DataIntegration/CalculationConfig';
 import fake from '__test__/test-utils/constants';
@@ -47,7 +47,6 @@ const initialState = {
       error: false,
     },
   },
-
   cellSets: mockCellSets,
   experimentSettings: {
     ...initialExperimentState,
@@ -69,20 +68,22 @@ const initialState = {
 
 };
 
-describe('DataIntegration.CalculationConfig', () => {
-  const renderCalculationConfig = async (storeState) => {
-    const mockedStore = mockStore(storeState);
-    return await render(
-      <Provider store={mockedStore}>
-        <CalculationConfig
-          experimentId={fake.EXPERIMENT_ID}
-          changedFilters={{ current: new Set() }}
-          onConfigChange={jest.fn()}
-        />
-      </Provider>,
-    );
-  };
+const explanationText = 'SeuratV4 is a computationally expensive method. It is highly likely that the integration will fail as it requires more resources than are currently available. We recommended you to evaluate other methods before using SeuratV4.';
 
+const renderCalculationConfig = async (storeState) => {
+  const mockedStore = mockStore(storeState);
+  return await render(
+    <Provider store={mockedStore}>
+      <CalculationConfig
+        experimentId={fake.EXPERIMENT_ID}
+        changedFilters={{ current: new Set() }}
+        onConfigChange={jest.fn()}
+      />
+    </Provider>,
+  );
+};
+
+describe('DataIntegration.CalculationConfig', () => {
   it('renders correctly when data is in the store', async () => {
     await renderCalculationConfig(initialState);
 
@@ -147,6 +148,30 @@ describe('DataIntegration.CalculationConfig', () => {
 
     userEvent.type(input, '{backspace}{backspace}10');
     expect(input.value).toEqual('10');
-    // expect(screen.getByDisplayValue('60')).toBeDefined();
+  });
+
+  it('Does not display alert if SeuratV4 is not chosen as the ', async () => {
+    await renderCalculationConfig(initialState);
+
+    // Initially harmony is chosen
+    expect(screen.queryByText(explanationText)).toBeNull();
+  });
+
+  it('Displays an alert if SeuratV4 is chosen', async () => {
+    const seuratV4State = _.merge(initialState, {
+      experimentSettings: {
+        processing: {
+          dataIntegration: {
+            dataIntegration: {
+              method: 'seuratv4',
+            },
+          },
+        },
+      },
+    });
+
+    await renderCalculationConfig(seuratV4State);
+
+    expect(screen.getByText(explanationText)).toBeInTheDocument();
   });
 });
