@@ -3,13 +3,11 @@ import _ from 'lodash';
 import '@testing-library/jest-dom';
 import { Provider } from 'react-redux';
 
-// import thunk from 'redux-thunk';
 import { screen, render, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import preloadAll from 'jest-next-dynamic';
 
 import { act } from 'react-dom/test-utils';
-// import configureMockStore from 'redux-mock-store';
 
 import DownloadDataButton from 'components/data-management/DownloadDataButton';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
@@ -62,6 +60,16 @@ describe('DownloadDataButton', () => {
 
   const renderDownloadDataButton = async () => {
     await act(async () => {
+      storeState.dispatch(loadExperiments());
+    });
+    await act(async () => {
+      storeState.dispatch(loadProcessingSettings(experimentId));
+    });
+    await act(async () => {
+      storeState.dispatch(loadBackendStatus(experimentId));
+    });
+
+    await act(async () => {
       render(
         <Provider store={storeState}>
           <DownloadDataButton />
@@ -84,16 +92,6 @@ describe('DownloadDataButton', () => {
 
   it('should render the download data menu', async () => {
     fetchMock.mockIf(/.*/, mockAPI(mockAPIResponse));
-
-    await act(async () => {
-      storeState.dispatch(loadExperiments());
-    });
-    await act(async () => {
-      storeState.dispatch(loadProcessingSettings(experimentId));
-    });
-    await act(async () => {
-      storeState.dispatch(loadBackendStatus(experimentId));
-    });
 
     await renderDownloadDataButton();
 
@@ -119,17 +117,6 @@ describe('DownloadDataButton', () => {
 
     fetchMock.mockIf(/.*/, mockAPI(qcFailMockAPIResponse));
 
-    await act(async () => {
-      storeState.dispatch(loadExperiments());
-    });
-    await act(async () => {
-      storeState.dispatch(loadProcessingSettings(experimentId));
-    });
-
-    await act(async () => {
-      storeState.dispatch(loadBackendStatus(experimentId));
-    });
-
     await renderDownloadDataButton();
     const options = await getMenuItems();
     expect(options[0]).toHaveAttribute('aria-disabled', 'true');
@@ -153,17 +140,6 @@ describe('DownloadDataButton', () => {
 
     fetchMock.mockIf(/.*/, mockAPI(stepMissingMockAPIResponse));
 
-    await act(async () => {
-      storeState.dispatch(loadExperiments());
-    });
-    await act(async () => {
-      storeState.dispatch(loadProcessingSettings(experimentId));
-    });
-
-    await act(async () => {
-      storeState.dispatch(loadBackendStatus(experimentId));
-    });
-
     await renderDownloadDataButton();
 
     const options = await getMenuItems();
@@ -173,16 +149,6 @@ describe('DownloadDataButton', () => {
 
   it('Downloads data properly', async () => {
     fetchMock.mockIf(/.*/, mockAPI(mockAPIResponse));
-
-    await act(async () => {
-      storeState.dispatch(loadExperiments());
-    });
-    await act(async () => {
-      storeState.dispatch(loadProcessingSettings(experimentId));
-    });
-    await act(async () => {
-      storeState.dispatch(loadBackendStatus(experimentId));
-    });
 
     fetchWork.mockImplementation((expId, body) => {
       if (body.name === 'GetEmbedding') {
@@ -207,16 +173,6 @@ describe('DownloadDataButton', () => {
 
   it('Shows an error if there is an error downloading data', async () => {
     fetchMock.mockIf(/.*/, mockAPI(mockAPIResponse));
-
-    await act(async () => {
-      storeState.dispatch(loadExperiments());
-    });
-    await act(async () => {
-      storeState.dispatch(loadProcessingSettings(experimentId));
-    });
-    await act(async () => {
-      storeState.dispatch(loadBackendStatus(experimentId));
-    });
 
     fetchWork.mockImplementation((expId, body) => {
       if (body.name === 'GetEmbedding') {
@@ -251,16 +207,6 @@ describe('DownloadDataButton', () => {
     );
 
     fetchMock.mockIf(/.*/, mockAPI(loadingStatusApiResponse));
-
-    await act(async () => {
-      storeState.dispatch(loadExperiments());
-    });
-    await act(async () => {
-      storeState.dispatch(loadProcessingSettings(experimentId));
-    });
-    await act(async () => {
-      storeState.dispatch(loadBackendStatus(experimentId));
-    });
 
     await renderDownloadDataButton();
     const options = await getMenuItems();
