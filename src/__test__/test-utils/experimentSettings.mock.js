@@ -76,8 +76,12 @@ const generateProcessingConfigMock = (sampleIds) => ({
   dataIntegration: {
     enabled: true,
     dataIntegration: {
-      method: 'seuratv4',
+      method: 'harmony',
       methodSettings: {
+        harmony: {
+          numGenes: 2000,
+          normalisation: 'logNormalize',
+        },
         seuratv4: {
           numGenes: 2000,
           normalisation: 'logNormalize',
