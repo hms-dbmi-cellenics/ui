@@ -24,7 +24,7 @@ import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import { makeStore } from 'redux/store';
 import { loadExperiments } from 'redux/actions/experiments';
 
-import mockAPI, { delayedResponse, generateDefaultMockAPIResponses, promiseResponse } from '__test__/test-utils/mockAPI';
+import mockAPI, { generateDefaultMockAPIResponses, promiseResponse } from '__test__/test-utils/mockAPI';
 import fake from '__test__/test-utils/constants';
 import { loadBackendStatus } from 'redux/actions/backendStatus';
 import { loadProcessingSettings } from 'redux/actions/experimentSettings';
@@ -112,6 +112,7 @@ describe('DownloadDataButton', () => {
     backendStatus.gem2s.status = 'SUCCEEDED';
 
     const qcFailMockAPIResponse = _.merge(
+      {},
       mockAPIResponse,
       { [`experiments/${experimentId}/backendStatus`]: () => promiseResponse(JSON.stringify(backendStatus)) },
     );
@@ -141,6 +142,7 @@ describe('DownloadDataButton', () => {
     delete processingConfigMissingSample.cellSizeDistribution[`${fake.SAMPLE_ID}-0`];
 
     const stepMissingMockAPIResponse = _.merge(
+      {},
       mockAPIResponse,
       {
         [`experiments/${experimentId}/processingConfig`]: () => promiseResponse(
@@ -163,6 +165,7 @@ describe('DownloadDataButton', () => {
     });
 
     await renderDownloadDataButton();
+
     const options = await getMenuItems();
     expect(options[0]).toHaveAttribute('aria-disabled', 'false');
     expect(options[1]).toHaveAttribute('aria-disabled', 'true');
@@ -242,6 +245,7 @@ describe('DownloadDataButton', () => {
 
   it('Has options disabled if backend status is still loading', async () => {
     const loadingStatusApiResponse = _.merge(
+      {},
       mockAPIResponse,
       { [`experiments/${experimentId}/backendStatus`]: () => new Promise(() => { }) },
     );
