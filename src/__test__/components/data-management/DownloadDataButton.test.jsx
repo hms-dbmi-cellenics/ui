@@ -21,6 +21,7 @@ import downloadFromUrl from 'utils/downloadFromUrl';
 // import { getBackendStatus } from 'redux/selectors';
 
 import { processingConfig } from '__test__/test-utils/mockData';
+import backendStatusData from '__test__/data/backend_status.json';
 
 import fetchWork from 'utils/work/fetchWork';
 
@@ -90,11 +91,14 @@ const experimentId = `${fake.EXPERIMENT_ID}-0`;
 
 enableFetchMocks();
 
-const customResponses = {
-  [`experiments/${experimentId}/processingConfig`]: () => promiseResponse(
-    JSON.stringify({ processingConfig }),
-  ),
-};
+const mockAPIResponse = _.merge(
+  generateDefaultMockAPIResponses(experimentId),
+  {
+    [`experiments/${experimentId}/processingConfig`]: () => promiseResponse(
+      JSON.stringify({ processingConfig }),
+    ),
+  },
+);
 
 describe('DownloadDataButton', () => {
   let storeState;
@@ -105,13 +109,6 @@ describe('DownloadDataButton', () => {
 
   beforeEach(() => {
     jest.clearAllMocks(); // Do not mistake with resetAllMocks()!
-
-    const mockAPIResponse = _.merge(
-      generateDefaultMockAPIResponses(experimentId),
-      customResponses,
-    );
-    fetchMock.resetMocks();
-    fetchMock.mockIf(/.*/, mockAPI(mockAPIResponse));
 
     storeState = makeStore();
   });
@@ -139,6 +136,9 @@ describe('DownloadDataButton', () => {
   };
 
   it('should render the download data menu', async () => {
+    fetchMock.resetMocks();
+    fetchMock.mockIf(/.*/, mockAPI(mockAPIResponse));
+
     await act(async () => {
       storeState.dispatch(loadExperiments());
     });
@@ -160,21 +160,30 @@ describe('DownloadDataButton', () => {
     expect(options[1]).toHaveAttribute('aria-disabled', 'false');
   });
 
-  it('Processed Seurat object option is disabled if qc has not ran', async () => {
-    // getBackendStatus.mockImplementation(() => () => ({
-    //   ...initialExperimentBackendStatus,
-    //   status: {
-    //     pipeline: {
-    //       status: 'DEFINETELY NOT SUCCEEDED',
-    //     },
-    //     gem2s: {
-    //       status: 'SUCCEEDED',
-    //     },
-    //   },
-    // }));
+  it('Processed Seurat object option is disabled if qc has not succeeded', async () => {
+    const backendStatus = _.cloneDeep(backendStatusData);
 
-    // const state = { ...withDataState };
-    // await renderDownloadDataButton(state);
+    backendStatus.pipeline.status = 'FAILED';
+    backendStatus.gem2s.status = 'SUCCEEDED';
+
+    const qcFailMockAPIResponse = _.merge(
+      mockAPIResponse,
+      { [`experiments/${experimentId}/backendStatus`]: () => promiseResponse(JSON.stringify(backendStatus)) },
+    );
+
+    fetchMock.resetMocks();
+    fetchMock.mockIf(/.*/, mockAPI(qcFailMockAPIResponse));
+
+    await act(async () => {
+      storeState.dispatch(loadExperiments());
+    });
+    await act(async () => {
+      storeState.dispatch(loadProcessingSettings(experimentId));
+    });
+
+    await act(async () => {
+      storeState.dispatch(loadBackendStatus(experimentId));
+    });
 
     await renderDownloadDataButton();
     const options = await getMenuItems();
