@@ -2,6 +2,7 @@ import React from 'react';
 import _ from 'lodash';
 import '@testing-library/jest-dom';
 import { Provider } from 'react-redux';
+
 // import thunk from 'redux-thunk';
 import { screen, render, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -12,7 +13,7 @@ import { act } from 'react-dom/test-utils';
 
 import DownloadDataButton from 'components/data-management/DownloadDataButton';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
-import downloadFromUrl from 'utils/downloadFromUrl';
+import endUserMessages from 'utils/endUserMessages';
 
 // import initialSamplesState from 'redux/reducers/samples/initialState';
 // import initialExperimentsState from 'redux/reducers/experiments/initialState';
@@ -257,20 +258,28 @@ describe('DownloadDataButton', () => {
   });
 
   it('Shows an error if there is an error downloading data', async () => {
-    // fetchAPI.mockImplementation(() => Promise.reject(new Error('Something went wrong')));
-    // getBackendStatus.mockImplementation(() => () => ({
-    //   ...initialExperimentBackendStatus,
-    //   status: {
-    //     pipeline: {
-    //       status: 'SUCCEEDED',
-    //     },
-    //     gem2s: {
-    //       status: 'SUCCEEDED',
-    //     },
-    //   },
-    // }));
+    fetchMock.mockIf(/.*/, mockAPI(mockAPIResponse));
 
-    // await renderDownloadDataButton(withDataState);
+    await act(async () => {
+      storeState.dispatch(loadExperiments());
+    });
+    await act(async () => {
+      storeState.dispatch(loadProcessingSettings(experimentId));
+    });
+    await act(async () => {
+      storeState.dispatch(loadBackendStatus(experimentId));
+    });
+
+    fetchWork.mockImplementation((expId, body) => {
+      if (body.name === 'GetEmbedding') {
+        return Promise.resolve();
+      }
+
+      if (body.name === 'DownloadAnnotSeuratObject') {
+        return Promise.reject(new Error('some worker error'));
+      }
+    });
+
     await renderDownloadDataButton();
 
     // Open the Download dropdown
@@ -283,6 +292,7 @@ describe('DownloadDataButton', () => {
     });
 
     expect(pushNotificationMessage).toHaveBeenCalledTimes(1);
+    expect(pushNotificationMessage).toHaveBeenCalledWith('error', endUserMessages.ERROR_DOWNLOADING_SEURAT_OBJECT);
   });
 
   it('Has options disabled if backend status is still loading', async () => {
