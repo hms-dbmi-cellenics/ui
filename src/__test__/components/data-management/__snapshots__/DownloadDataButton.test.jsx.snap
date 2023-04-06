@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`DownloadDataButton Downloads data properly 1`] = `
+exports[`DownloadDataButton Downloads processed matrix properly 1`] = `
 Array [
   Array [
     "testae48e318dab9a1bd0bexperiment-0",

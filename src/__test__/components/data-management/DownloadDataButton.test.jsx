@@ -2,6 +2,7 @@ import React from 'react';
 import _ from 'lodash';
 import '@testing-library/jest-dom';
 import { Provider } from 'react-redux';
+import { saveAs } from 'file-saver';
 
 import { screen, render, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -26,10 +27,15 @@ import mockAPI, { generateDefaultMockAPIResponses, promiseResponse } from '__tes
 import fake from '__test__/test-utils/constants';
 import { loadBackendStatus } from 'redux/actions/backendStatus';
 import { loadProcessingSettings } from 'redux/actions/experimentSettings';
+import downloadFromUrl from 'utils/downloadFromUrl';
+import writeToFileURL from 'utils/writeToFileURL';
 
+jest.mock('file-saver');
+
+jest.mock('utils/work/fetchWork');
 jest.mock('utils/pushNotificationMessage');
 jest.mock('utils/downloadFromUrl');
-jest.mock('utils/work/fetchWork');
+jest.mock('utils/writeToFileURL');
 
 const experimentId = `${fake.EXPERIMENT_ID}-0`;
 
@@ -147,14 +153,39 @@ describe('DownloadDataButton', () => {
     expect(options[1]).toHaveAttribute('aria-disabled', 'true');
   });
 
-  it('Downloads data properly', async () => {
+  it('Downloads processing config properly', async () => {
     fetchMock.mockIf(/.*/, mockAPI(mockAPIResponse));
+
+    await renderDownloadDataButton();
+
+    // Open the Download dropdown
+    userEvent.click(screen.getByText(/Download/i));
+
+    const downloadButton = screen.getByText(/Data Processing settings/i);
+
+    await act(async () => {
+      fireEvent.click(downloadButton);
+    });
+
+    expect(saveAs).toHaveBeenCalled();
+  });
+
+  it('Downloads processed matrix properly', async () => {
+    fetchMock.mockIf(/.*/, mockAPI(mockAPIResponse));
+
+    const mockResult = '--ImAMock--';
+    const mockFileUrl = '--fileUrl--';
 
     fetchWork.mockImplementation((expId, body) => {
       if (body.name === 'GetEmbedding') {
         return Promise.resolve();
       }
+      if (body.name === 'DownloadAnnotSeuratObject') {
+        return Promise.resolve(mockResult);
+      }
     });
+
+    writeToFileURL.mockImplementationOnce(() => mockFileUrl);
 
     await renderDownloadDataButton();
 
@@ -169,6 +200,9 @@ describe('DownloadDataButton', () => {
 
     expect(fetchWork).toHaveBeenCalledTimes(2);
     expect(fetchWork.mock.calls).toMatchSnapshot();
+
+    expect(writeToFileURL).toHaveBeenCalledWith(mockResult);
+    expect(downloadFromUrl).toHaveBeenCalledWith(mockFileUrl, `${experimentId}_processed_matrix.rds`);
   });
 
   it('Shows an error if there is an error downloading data', async () => {
