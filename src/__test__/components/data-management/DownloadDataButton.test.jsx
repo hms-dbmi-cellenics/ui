@@ -149,7 +149,6 @@ describe('DownloadDataButton', () => {
       storeState.dispatch(loadBackendStatus(experimentId));
     });
 
-    // await renderDownloadDataButton(withDataState);
     await renderDownloadDataButton();
 
     const options = await getMenuItems();
@@ -224,26 +223,23 @@ describe('DownloadDataButton', () => {
   });
 
   it('Downloads data properly', async () => {
-    // fetchAPI.mockImplementation(() => Promise.resolve('signedUrl'));
-    // getBackendStatus.mockImplementation(() => () => ({
-    //   ...initialExperimentBackendStatus,
-    //   status: {
-    //     pipeline: {
-    //       status: 'SUCCEEDED',
-    //     },
-    //     gem2s: {
-    //       status: 'SUCCEEDED',
-    //     },
-    //   },
-    // }));
+    fetchMock.mockIf(/.*/, mockAPI(mockAPIResponse));
+
+    await act(async () => {
+      storeState.dispatch(loadExperiments());
+    });
+    await act(async () => {
+      storeState.dispatch(loadProcessingSettings(experimentId));
+    });
+    await act(async () => {
+      storeState.dispatch(loadBackendStatus(experimentId));
+    });
 
     fetchWork.mockImplementation((expId, body) => {
       if (body.name === 'GetEmbedding') {
         return Promise.resolve();
       }
     });
-
-    // await renderDownloadDataButton(withDataState);
 
     await renderDownloadDataButton();
 
@@ -256,7 +252,8 @@ describe('DownloadDataButton', () => {
       fireEvent.click(downloadButton);
     });
 
-    expect(downloadFromUrl).toHaveBeenCalledTimes(1);
+    expect(fetchWork).toHaveBeenCalledTimes(2);
+    expect(fetchWork.mock.calls).toMatchSnapshot();
   });
 
   it('Shows an error if there is an error downloading data', async () => {
