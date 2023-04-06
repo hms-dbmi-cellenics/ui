@@ -240,7 +240,7 @@ const violinConfig = {
   selectedPointsVisible: true,
   statisticsVisible: false,
   kdeBandwidth: 0.3,
-  normalised: 'normalised',
+  normalised: 'zScore',
   keepValuesOnReset: ['shownGene', 'title'],
 };
 
