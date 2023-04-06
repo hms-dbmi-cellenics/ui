@@ -15,12 +15,6 @@ import DownloadDataButton from 'components/data-management/DownloadDataButton';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
 import endUserMessages from 'utils/endUserMessages';
 
-// import initialSamplesState from 'redux/reducers/samples/initialState';
-// import initialExperimentsState from 'redux/reducers/experiments/initialState';
-// import initialExperimentSettingsState from 'redux/reducers/experimentSettings/initialState';
-// import { initialExperimentBackendStatus } from 'redux/reducers/backendStatus/initialState';
-// import { getBackendStatus } from 'redux/selectors';
-
 import { processingConfig } from '__test__/test-utils/mockData';
 import backendStatusData from '__test__/data/backend_status.json';
 
@@ -30,63 +24,14 @@ import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import { makeStore } from 'redux/store';
 import { loadExperiments } from 'redux/actions/experiments';
 
-import mockAPI, { generateDefaultMockAPIResponses, promiseResponse } from '__test__/test-utils/mockAPI';
+import mockAPI, { delayedResponse, generateDefaultMockAPIResponses, promiseResponse } from '__test__/test-utils/mockAPI';
 import fake from '__test__/test-utils/constants';
 import { loadBackendStatus } from 'redux/actions/backendStatus';
-// import { loadSamples } from 'redux/actions/samples';
 import { loadProcessingSettings } from 'redux/actions/experimentSettings';
 
-// jest.mock('redux/selectors');
 jest.mock('utils/pushNotificationMessage');
 jest.mock('utils/downloadFromUrl');
 jest.mock('utils/work/fetchWork');
-
-// const mockStore = configureMockStore([thunk]);
-// const experimentName = 'Experiment 1';
-// const experimentDescription = 'Some description';
-// const experimentId = 'my-experiment-🧬';
-// const sample1Uuid = 'sample-1';
-// const sample2Uuid = 'sample-2';
-
-// const noDataState = {
-//   experiments: {
-//     ...initialExperimentsState,
-//     name: experimentName,
-//     description: experimentDescription,
-//     ids: ['experiment-1'],
-//     meta: {
-//       ...initialExperimentsState.meta,
-//       activeExperimentId: experimentId,
-//       loading: false,
-//     },
-//   },
-//   experimentSettings: {
-//     ...initialExperimentSettingsState,
-//   },
-//   samples: {
-//     ...initialSamplesState,
-//   },
-// };
-
-// const withDataState = {
-//   ...noDataState,
-//   experiments: {
-//     ...noDataState.experiments,
-//     [experimentId]: {
-//       ...noDataState.experiments[experimentId],
-//       sampleIds: [sample1Uuid, sample2Uuid],
-//       metadataKeys: ['metadata-1'],
-//     },
-//   },
-//   experimentSettings: {
-//     processing: {
-//       cellSizeDistribution: {
-//         [sample1Uuid]: {},
-//         [sample2Uuid]: {},
-//       },
-//     },
-//   },
-// };
 
 const experimentId = `${fake.EXPERIMENT_ID}-0`;
 
@@ -296,14 +241,23 @@ describe('DownloadDataButton', () => {
   });
 
   it('Has options disabled if backend status is still loading', async () => {
-    // getBackendStatus.mockImplementation(() => () => ({
-    //   loading: true,
-    //   error: false,
-    //   status: null,
-    // }));
+    const loadingStatusApiResponse = _.merge(
+      mockAPIResponse,
+      { [`experiments/${experimentId}/backendStatus`]: () => new Promise(() => { }) },
+    );
 
-    // const state = { ...withDataState };
-    // await renderDownloadDataButton(state);
+    fetchMock.mockIf(/.*/, mockAPI(loadingStatusApiResponse));
+
+    await act(async () => {
+      storeState.dispatch(loadExperiments());
+    });
+    await act(async () => {
+      storeState.dispatch(loadProcessingSettings(experimentId));
+    });
+    await act(async () => {
+      storeState.dispatch(loadBackendStatus(experimentId));
+    });
+
     await renderDownloadDataButton();
     const options = await getMenuItems();
 
