@@ -50,7 +50,7 @@ const generateDefaultMockAPIResponses = (experimentId) => ({
     JSON.stringify(responseData.experiments),
   ),
   [`experiments/${experimentId}/samples`]: () => promiseResponse(
-    JSON.stringify(responseData.samples),
+    JSON.stringify(responseData.samples[0]),
   ),
   '/v2/experiments/examples': () => promiseResponse(
     JSON.stringify(mockDemoExperiments),
