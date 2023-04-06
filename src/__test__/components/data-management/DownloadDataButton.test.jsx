@@ -109,6 +109,7 @@ describe('DownloadDataButton', () => {
 
   beforeEach(() => {
     jest.clearAllMocks(); // Do not mistake with resetAllMocks()!
+    fetchMock.resetMocks();
 
     storeState = makeStore();
   });
@@ -136,7 +137,6 @@ describe('DownloadDataButton', () => {
   };
 
   it('should render the download data menu', async () => {
-    fetchMock.resetMocks();
     fetchMock.mockIf(/.*/, mockAPI(mockAPIResponse));
 
     await act(async () => {
@@ -171,7 +171,6 @@ describe('DownloadDataButton', () => {
       { [`experiments/${experimentId}/backendStatus`]: () => promiseResponse(JSON.stringify(backendStatus)) },
     );
 
-    fetchMock.resetMocks();
     fetchMock.mockIf(/.*/, mockAPI(qcFailMockAPIResponse));
 
     await act(async () => {
@@ -192,30 +191,34 @@ describe('DownloadDataButton', () => {
   });
 
   it('Data procesing settings option is disabled if a step misses a sample', async () => {
-    // getBackendStatus.mockImplementation(() => () => ({
-    //   ...initialExperimentBackendStatus,
-    //   status: {
-    //     pipeline: {
-    //       status: 'SUCCEEDED',
-    //     },
-    //     gem2s: {
-    //       status: 'SUCCEEDED',
-    //     },
-    //   },
-    // }));
+    const processingConfigMissingSample = _.cloneDeep(processingConfig);
+    // Remove settings for one sample
+    delete processingConfigMissingSample.cellSizeDistribution[`${fake.SAMPLE_ID}-0`];
 
-    // const state = {
-    //   ...withDataState,
-    //   experimentSettings: {
-    //     processing: {
-    //       cellSizeDistribution: {
-    //         [sample1Uuid]: {},
-    //       },
-    //     },
-    //   },
-    // };
+    console.log('processingConfigMissingSampleclassifierDebug');
+    console.log(processingConfigMissingSample.classifier);
 
-    // await renderDownloadDataButton(state);
+    const stepMissingMockAPIResponse = _.merge(
+      mockAPIResponse,
+      {
+        [`experiments/${experimentId}/processingConfig`]: () => promiseResponse(
+          JSON.stringify({ processingConfig: processingConfigMissingSample }),
+        ),
+      },
+    );
+
+    fetchMock.mockIf(/.*/, mockAPI(stepMissingMockAPIResponse));
+
+    await act(async () => {
+      storeState.dispatch(loadExperiments());
+    });
+    await act(async () => {
+      storeState.dispatch(loadProcessingSettings(experimentId));
+    });
+
+    await act(async () => {
+      storeState.dispatch(loadBackendStatus(experimentId));
+    });
 
     await renderDownloadDataButton();
     const options = await getMenuItems();
