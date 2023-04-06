@@ -32,7 +32,7 @@ const downloadProcessedObject = (experimentId) => async (dispatch, getState) => 
       experimentId, body, getState, dispatch, { timeout },
     );
 
-    downloadFromUrl(writeToFileURL(data), 'ProcessedSeuratObject.rds');
+    downloadFromUrl(writeToFileURL(data), `${experimentId}_processed_matrix.rds`);
   } catch (e) {
     handleError(e, endUserMessages.ERROR_DOWNLOADING_SEURAT_OBJECT);
   }
