@@ -55,7 +55,7 @@ Object {
       "showOpacity": true,
       "size": 5,
     },
-    "normalised": "normalised",
+    "normalised": "zScore",
     "selectedCellSet": "louvain",
     "selectedPoints": "All",
     "selectedPointsVisible": true,
