@@ -48,6 +48,9 @@ const experimentUpdatesHandler = (dispatch) => (experimentId, update) => {
 };
 
 const onQCUpdate = (update, dispatch, experimentId) => {
+  // If there was an error and no output was generated, return
+  if (!update.output) return;
+
   const { input, output, pipelineVersion } = update;
 
   const processingConfigUpdate = output?.config;
@@ -59,7 +62,9 @@ const onQCUpdate = (update, dispatch, experimentId) => {
       input.sampleUuid,
       false,
     ));
+  }
 
+  if (output.plotData) {
     Object.entries(output.plotData).forEach(([plotUuid, plotData]) => {
       dispatch(updatePlotData(plotUuid, plotData));
     });
