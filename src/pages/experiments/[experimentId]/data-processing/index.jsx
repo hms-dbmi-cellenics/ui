@@ -324,6 +324,13 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
 
   const currentStep = steps[stepIdx];
 
+  const stepIsDisabled = (index) => {
+    const disabledPendingExecution = pipelineRunning && !isStepComplete(steps[index].key);
+    const disabledByErrors = pipelineHadErrors && !isStepComplete(steps[index - 1]?.key);
+
+    return disabledPendingExecution || disabledByErrors;
+  };
+
   // check that the order and identities of the QC steps above match
   // the canonical representation
   console.assert(_.isEqual(qcSteps, steps.map((s) => s.key)));
@@ -409,16 +416,14 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
                     {
                       steps.map(
                         ({ name, key }, i) => {
-                          const disabledByPipeline = (pipelineNotFinished && !isStepComplete(key));
+                          // Display for users with 1-based index
                           const text = `${i + 1}. ${name}`;
 
                           return (
                             <Option
                               value={i}
                               key={key}
-                              disabled={
-                                disabledByPipeline
-                              }
+                              disabled={stepIsDisabled(i)}
                             >
                               {!checkIfSampleIsEnabled(key) ? (
                                 <>
@@ -434,7 +439,7 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
                                     {text}
                                   </span>
                                 </>
-                              ) : !disabledByPipeline ? (
+                              ) : !stepIsDisabled(i) ? (
                                 <>
                                   {/* finished */}
                                   <Text
@@ -471,7 +476,8 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
                                   </Text>
                                   <span style={{ marginLeft: '0.25rem' }}>{text}</span>
                                 </>
-                              ) : <></>}
+                              )
+                                : <></>}
                             </Option>
                           );
                         },
@@ -537,9 +543,7 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
                           const newStepIdx = Math.min(stepIdx + 1, steps.length - 1);
                           changeStepId(newStepIdx);
                         }}
-                        disabled={steps[stepIdx + 1] !== undefined
-                          && pipelineNotFinished
-                          && !isStepComplete(steps[stepIdx + 1].key)}
+                        disabled={steps[stepIdx + 1] !== undefined && stepIsDisabled(stepIdx + 1)}
                         icon={<RightOutlined />}
                         size='small'
                       />
