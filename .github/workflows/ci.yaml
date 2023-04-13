@@ -34,14 +34,12 @@ jobs:
           EOF
           )
 
-          UNCHECKED_BODY="${UNCHECKED_BODY//'%'/'%25'}"
-          UNCHECKED_BODY="${UNCHECKED_BODY//$'\n'/'%0A'}"
-          UNCHECKED_BODY="${UNCHECKED_BODY//$'\r'/'%0D'}"
-
           echo "Unchecked PR body"
           echo $UNCHECKED_BODY
 
-          echo "body=$UNCHECKED_BODY" >> $GITHUB_OUTPUT
+          echo "body<<EOF" >> $GITHUB_OUTPUT
+          echo $UNCHECKED_BODY >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
 
       - id: uncheck-integration-checkbox
         name: Uncheck the integration checkbox
