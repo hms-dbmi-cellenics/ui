@@ -48,10 +48,12 @@ const experimentUpdatesHandler = (dispatch) => (experimentId, update) => {
 };
 
 const onQCUpdate = (update, dispatch, experimentId) => {
+  const { input, output = undefined, pipelineVersion } = update;
+
+  dispatch(updatePipelineVersion(experimentId, pipelineVersion));
+
   // If there was an error and no output was generated, return
   if (!update.output) return;
-
-  const { input, output, pipelineVersion } = update;
 
   const processingConfigUpdate = output?.config;
 
@@ -69,8 +71,6 @@ const onQCUpdate = (update, dispatch, experimentId) => {
       dispatch(updatePlotData(plotUuid, plotData));
     });
   }
-
-  dispatch(updatePipelineVersion(experimentId, pipelineVersion));
 
   // If the pipeline finished we have a new clustering, so fetch it
   if (update.status.pipeline.status === 'SUCCEEDED') {
