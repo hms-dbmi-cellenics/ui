@@ -23,7 +23,9 @@ const experimentUpdatesHandler = (dispatch) => (experimentId, update) => {
 
   if (update.response?.error) {
     console.error('Experiment updates error:', update);
-    return;
+
+    // QC can handle updates even if there are errors
+    if (update.type !== updateTypes.QC) return;
   }
 
   switch (update.type) {
