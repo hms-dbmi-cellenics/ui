@@ -324,11 +324,15 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
 
   const currentStep = steps[stepIdx];
 
+  const stepHadErrors = (index) => pipelineHadErrors
+    && !isStepComplete(steps[index]?.key)
+    && isStepComplete(steps[index - 1]?.key);
+
   const stepIsDisabled = (index) => {
     const disabledPendingExecution = pipelineRunning && !isStepComplete(steps[index].key);
-    const disabledByErrors = pipelineHadErrors && !isStepComplete(steps[index - 1]?.key);
+    const disabledByError = pipelineHadErrors && !isStepComplete(steps[index - 1]?.key);
 
-    return disabledPendingExecution || disabledByErrors;
+    return disabledPendingExecution || disabledByError;
   };
 
   // check that the order and identities of the QC steps above match
@@ -435,6 +439,20 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
                                   </Text>
                                   <span
                                     style={{ marginLeft: '0.25rem', textDecoration: 'line-through' }}
+                                  >
+                                    {text}
+                                  </span>
+                                </>
+                              ) : stepHadErrors(i) ? (
+                                <>
+                                  {/* error */}
+                                  <Text
+                                    type='danger'
+                                  >
+                                    <CloseOutlined />
+                                  </Text>
+                                  <span
+                                    style={{ marginLeft: '0.25rem' }}
                                   >
                                     {text}
                                   </span>
