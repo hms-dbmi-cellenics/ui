@@ -15,8 +15,6 @@ import WorkResponseError from 'utils/errors/http/WorkResponseError';
 import WorkGenericError from 'utils/errors/http/WorkGenericError';
 import WorkTimeoutError from 'utils/errors/http/WorkTimeoutError';
 
-import '__test__/test-utils/setupTests';
-
 const mockWindowLocation = () => {
   delete window.location;
   window.location = { reload: jest.fn() };

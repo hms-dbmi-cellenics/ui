@@ -14,7 +14,6 @@ import { plotNames } from 'utils/constants';
 import endUserMessages from 'utils/endUserMessages';
 
 import { makeStore } from 'redux/store';
-import { selectOption } from '__test__/test-utils/rtlHelpers';
 import mockAPI, { generateDefaultMockAPIResponses, promiseResponse, statusResponse } from '__test__/test-utils/mockAPI';
 
 import fetchWork from 'utils/work/fetchWork';
@@ -132,15 +131,17 @@ describe('Normalized matrix index page', () => {
     await renderNormalizedMatrixIndex();
 
     const sampleSelect = screen.getAllByRole('combobox')[0];
-    await act(async () => {
-      await selectOption('WT1', sampleSelect);
-    });
+
+    userEvent.click(sampleSelect);
+    userEvent.click(screen.getByText('WT1'));
 
     const louvainSelect = screen.getAllByRole('combobox')[2];
-    await act(async () => {
-      await selectOption('Cluster 1', louvainSelect);
-      await selectOption('Cluster 5', louvainSelect);
-    });
+
+    userEvent.click(louvainSelect);
+    userEvent.click(screen.getByText('Cluster 1'));
+
+    userEvent.click(louvainSelect);
+    userEvent.click(screen.getByText('Cluster 5'));
 
     await act(async () => {
       userEvent.click(screen.getByRole('button', { name: 'Download' }));
@@ -215,9 +216,6 @@ describe('Normalized matrix index page', () => {
     expect(screen.getByText('KMeta')).toBeDefined();
   });
 
-  // Based on https://stackoverflow.com/a/51045733
-  const flushPromises = () => new Promise(setImmediate);
-
   it('Displays an alert if there is an empty cells result error', async () => {
     mockResponse.mockImplementation((req) => {
       if (req.method === 'PUT') return promiseResponse(JSON.stringify('OK'));
@@ -241,8 +239,6 @@ describe('Normalized matrix index page', () => {
     await act(async () => {
       userEvent.click(screen.getByRole('button', { name: 'Download' }));
     });
-
-    await flushPromises();
 
     expect(
       screen.getByText(endUserMessages.ERROR_NO_MATCHING_CELLS_NORMALIZED_EXPRESSION_MATRIX),

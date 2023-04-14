@@ -5,7 +5,6 @@ import setComparisonGroup from 'redux/actions/differentialExpression/setComparis
 import { DIFF_EXPR_COMPARISON_GROUP_SET } from 'redux/actionTypes/differentialExpression';
 
 import initialState from 'redux/reducers/differentialExpression/initialState';
-import '__test__/test-utils/setupTests';
 
 const mockStore = configureStore([thunk]);
 

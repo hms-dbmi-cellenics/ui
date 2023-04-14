@@ -1,9 +1,9 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`DiffExprResults fetches all the genes 1`] = `
-Object {
-  "payload": Object {
-    "advancedFilters": Array [],
+{
+  "payload": {
+    "advancedFilters": [],
     "experimentId": "1234",
   },
   "type": "diffExpr/loading",
@@ -11,16 +11,16 @@ Object {
 `;
 
 exports[`DiffExprResults fetches all the genes 2`] = `
-Object {
-  "payload": Object {
-    "comparisonGroup": Object {
+{
+  "payload": {
+    "comparisonGroup": {
       "basis": "scratchpad/scratchpad-a",
       "cellSet": "louvain/cluster-a",
       "compareWith": "louvain/cluster-b",
     },
     "comparisonType": "between",
-    "data": Array [
-      Object {
+    "data": [
+      {
         "Gene": "EASAD0",
         "auc": "0.1",
         "gene_names": "A",
@@ -30,7 +30,7 @@ Object {
         "pct_1": "100",
         "pct_2": "100",
       },
-      Object {
+      {
         "Gene": "ENASD23",
         "auc": "0.2",
         "gene_names": "B",
@@ -40,7 +40,7 @@ Object {
         "pct_1": "90",
         "pct_2": "90",
       },
-      Object {
+      {
         "Gene": "EN34S",
         "auc": "0.3",
         "gene_names": "C",
@@ -50,7 +50,7 @@ Object {
         "pct_1": "80",
         "pct_2": "80",
       },
-      Object {
+      {
         "Gene": "ENSD33",
         "auc": "0.4",
         "gene_names": "D",
@@ -60,7 +60,7 @@ Object {
         "pct_1": "70",
         "pct_2": "70",
       },
-      Object {
+      {
         "Gene": "ENASD233",
         "auc": "0.5",
         "gene_names": "E",

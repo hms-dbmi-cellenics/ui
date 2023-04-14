@@ -1,50 +1,50 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Mock data Describes samples 1`] = `
-Array [
-  Object {
+[
+  {
     "createdAt": "2021-12-07 17:36:27.773+00",
-    "experimentId": Object {
+    "experimentId": {
       "createdAt": "0000-00-00T00:00:00.000Z",
       "description": "Mock experiment 0",
       "id": "testae48e318dab9a1bd0bexperiment-0",
-      "metadataKeys": Array [],
+      "metadataKeys": [],
       "name": "Test Experiment-0",
       "notifyByEmail": true,
       "pipelineVersion": 1,
-      "pipelines": Object {
-        "gem2s": Object {
+      "pipelines": {
+        "gem2s": {
           "executionArn": "arn:aws:states:eu-west-1:000000000000:execution:biomage-gem2s-development-mock997586f1bae0a6d5c5beed65663ec1519de4:5f273383-f093-4112-95b0-d76db896test",
           "shouldRerun": true,
           "stateMachineArn": "arn:aws:states:eu-west-1:000000000000:stateMachine:biomage-gem2s-development-mock997586f1bae0a6d5c5beed65663ec151test",
         },
-        "qc": Object {
+        "qc": {
           "executionArn": "arn:aws:states:eu-west-1:000000000000:execution:biomage-qc-development-mock997586f1bae0a6d5c5beed65663ec1519de4:422493f3-68a0-4ecb-8b17-0e8cd7a3test",
           "shouldRerun": null,
           "stateMachineArn": "arn:aws:states:eu-west-1:000000000000:stateMachine:biomage-qc-development-mock997586f1bae0a6d5c5beed65663ec151test",
         },
       },
-      "samplesOrder": Array [
+      "samplesOrder": [
         "test9188-d682-test-mock-cb6d644cmock-0",
         "test9188-d682-test-mock-cb6d644cmock-1",
         "test9188-d682-test-mock-cb6d644cmock-2",
       ],
       "updatedAt": "0000-00-00T00:00:00.000Z",
     },
-    "files": Object {
-      "barcodes10X": Object {
+    "files": {
+      "barcodes10X": {
         "s3Path": "testcfd8122f-25af-4f1a-a306-3268d44ed402",
         "sampleFileType": "barcodes10x",
         "size": 100,
         "uploadStatus": "uploaded",
       },
-      "features10X": Object {
+      "features10X": {
         "s3Path": "testcfd8122f-25af-4f1a-a306-3268d44ed403",
         "sampleFileType": "features10x",
         "size": 100,
         "uploadStatus": "uploaded",
       },
-      "matrix10X": Object {
+      "matrix10X": {
         "s3Path": "testcfd8122f-25af-4f1a-a306-3268d44ed401",
         "sampleFileType": "matrix10x",
         "size": 1000,
@@ -52,58 +52,58 @@ Array [
       },
     },
     "id": "test9188-d682-test-mock-cb6d644cmock-0",
-    "metadata": Object {
+    "metadata": {
       "age": "BL",
       "timePoint": "BL",
     },
     "name": "Mock sample 0",
-    "options": Object {},
+    "options": {},
     "sampleTechnology": "10x",
     "updatedAt": "2021-12-07 17:38:42.036+00",
   },
-  Object {
+  {
     "createdAt": "2021-12-07 17:36:27.773+00",
-    "experimentId": Object {
+    "experimentId": {
       "createdAt": "0000-00-00T00:00:00.000Z",
       "description": "Mock experiment 0",
       "id": "testae48e318dab9a1bd0bexperiment-0",
-      "metadataKeys": Array [],
+      "metadataKeys": [],
       "name": "Test Experiment-0",
       "notifyByEmail": true,
       "pipelineVersion": 1,
-      "pipelines": Object {
-        "gem2s": Object {
+      "pipelines": {
+        "gem2s": {
           "executionArn": "arn:aws:states:eu-west-1:000000000000:execution:biomage-gem2s-development-mock997586f1bae0a6d5c5beed65663ec1519de4:5f273383-f093-4112-95b0-d76db896test",
           "shouldRerun": true,
           "stateMachineArn": "arn:aws:states:eu-west-1:000000000000:stateMachine:biomage-gem2s-development-mock997586f1bae0a6d5c5beed65663ec151test",
         },
-        "qc": Object {
+        "qc": {
           "executionArn": "arn:aws:states:eu-west-1:000000000000:execution:biomage-qc-development-mock997586f1bae0a6d5c5beed65663ec1519de4:422493f3-68a0-4ecb-8b17-0e8cd7a3test",
           "shouldRerun": null,
           "stateMachineArn": "arn:aws:states:eu-west-1:000000000000:stateMachine:biomage-qc-development-mock997586f1bae0a6d5c5beed65663ec151test",
         },
       },
-      "samplesOrder": Array [
+      "samplesOrder": [
         "test9188-d682-test-mock-cb6d644cmock-0",
         "test9188-d682-test-mock-cb6d644cmock-1",
         "test9188-d682-test-mock-cb6d644cmock-2",
       ],
       "updatedAt": "0000-00-00T00:00:00.000Z",
     },
-    "files": Object {
-      "barcodes10X": Object {
+    "files": {
+      "barcodes10X": {
         "s3Path": "testcfd8122f-25af-4f1a-a306-3268d44ed402",
         "sampleFileType": "barcodes10x",
         "size": 100,
         "uploadStatus": "uploaded",
       },
-      "features10X": Object {
+      "features10X": {
         "s3Path": "testcfd8122f-25af-4f1a-a306-3268d44ed403",
         "sampleFileType": "features10x",
         "size": 100,
         "uploadStatus": "uploaded",
       },
-      "matrix10X": Object {
+      "matrix10X": {
         "s3Path": "testcfd8122f-25af-4f1a-a306-3268d44ed401",
         "sampleFileType": "matrix10x",
         "size": 1000,
@@ -111,58 +111,58 @@ Array [
       },
     },
     "id": "test9188-d682-test-mock-cb6d644cmock-1",
-    "metadata": Object {
+    "metadata": {
       "age": "BL",
       "timePoint": "BL",
     },
     "name": "Mock sample 1",
-    "options": Object {},
+    "options": {},
     "sampleTechnology": "10x",
     "updatedAt": "2021-12-07 17:38:42.036+00",
   },
-  Object {
+  {
     "createdAt": "2021-12-07 17:36:27.773+00",
-    "experimentId": Object {
+    "experimentId": {
       "createdAt": "0000-00-00T00:00:00.000Z",
       "description": "Mock experiment 0",
       "id": "testae48e318dab9a1bd0bexperiment-0",
-      "metadataKeys": Array [],
+      "metadataKeys": [],
       "name": "Test Experiment-0",
       "notifyByEmail": true,
       "pipelineVersion": 1,
-      "pipelines": Object {
-        "gem2s": Object {
+      "pipelines": {
+        "gem2s": {
           "executionArn": "arn:aws:states:eu-west-1:000000000000:execution:biomage-gem2s-development-mock997586f1bae0a6d5c5beed65663ec1519de4:5f273383-f093-4112-95b0-d76db896test",
           "shouldRerun": true,
           "stateMachineArn": "arn:aws:states:eu-west-1:000000000000:stateMachine:biomage-gem2s-development-mock997586f1bae0a6d5c5beed65663ec151test",
         },
-        "qc": Object {
+        "qc": {
           "executionArn": "arn:aws:states:eu-west-1:000000000000:execution:biomage-qc-development-mock997586f1bae0a6d5c5beed65663ec1519de4:422493f3-68a0-4ecb-8b17-0e8cd7a3test",
           "shouldRerun": null,
           "stateMachineArn": "arn:aws:states:eu-west-1:000000000000:stateMachine:biomage-qc-development-mock997586f1bae0a6d5c5beed65663ec151test",
         },
       },
-      "samplesOrder": Array [
+      "samplesOrder": [
         "test9188-d682-test-mock-cb6d644cmock-0",
         "test9188-d682-test-mock-cb6d644cmock-1",
         "test9188-d682-test-mock-cb6d644cmock-2",
       ],
       "updatedAt": "0000-00-00T00:00:00.000Z",
     },
-    "files": Object {
-      "barcodes10X": Object {
+    "files": {
+      "barcodes10X": {
         "s3Path": "testcfd8122f-25af-4f1a-a306-3268d44ed402",
         "sampleFileType": "barcodes10x",
         "size": 100,
         "uploadStatus": "uploaded",
       },
-      "features10X": Object {
+      "features10X": {
         "s3Path": "testcfd8122f-25af-4f1a-a306-3268d44ed403",
         "sampleFileType": "features10x",
         "size": 100,
         "uploadStatus": "uploaded",
       },
-      "matrix10X": Object {
+      "matrix10X": {
         "s3Path": "testcfd8122f-25af-4f1a-a306-3268d44ed401",
         "sampleFileType": "matrix10x",
         "size": 1000,
@@ -170,12 +170,12 @@ Array [
       },
     },
     "id": "test9188-d682-test-mock-cb6d644cmock-2",
-    "metadata": Object {
+    "metadata": {
       "age": "BL",
       "timePoint": "BL",
     },
     "name": "Mock sample 2",
-    "options": Object {},
+    "options": {},
     "sampleTechnology": "10x",
     "updatedAt": "2021-12-07 17:38:42.036+00",
   },
@@ -183,106 +183,106 @@ Array [
 `;
 
 exports[`Mock response data Describes experiment response 1`] = `
-Array [
-  Object {
+[
+  {
     "createdAt": "0000-00-00T00:00:00.000Z",
     "description": "Mock experiment 0",
     "id": "testae48e318dab9a1bd0bexperiment-0",
-    "metadataKeys": Array [],
+    "metadataKeys": [],
     "name": "Test Experiment-0",
     "notifyByEmail": true,
     "pipelineVersion": 1,
-    "pipelines": Object {
-      "gem2s": Object {
+    "pipelines": {
+      "gem2s": {
         "executionArn": "arn:aws:states:eu-west-1:000000000000:execution:biomage-gem2s-development-mock997586f1bae0a6d5c5beed65663ec1519de4:5f273383-f093-4112-95b0-d76db896test",
         "shouldRerun": true,
         "stateMachineArn": "arn:aws:states:eu-west-1:000000000000:stateMachine:biomage-gem2s-development-mock997586f1bae0a6d5c5beed65663ec151test",
       },
-      "qc": Object {
+      "qc": {
         "executionArn": "arn:aws:states:eu-west-1:000000000000:execution:biomage-qc-development-mock997586f1bae0a6d5c5beed65663ec1519de4:422493f3-68a0-4ecb-8b17-0e8cd7a3test",
         "shouldRerun": null,
         "stateMachineArn": "arn:aws:states:eu-west-1:000000000000:stateMachine:biomage-qc-development-mock997586f1bae0a6d5c5beed65663ec151test",
       },
     },
-    "samplesOrder": Array [
+    "samplesOrder": [
       "test9188-d682-test-mock-cb6d644cmock-0",
       "test9188-d682-test-mock-cb6d644cmock-1",
       "test9188-d682-test-mock-cb6d644cmock-2",
     ],
     "updatedAt": "0000-00-00T00:00:00.000Z",
   },
-  Object {
+  {
     "createdAt": "0000-00-00T00:00:00.000Z",
     "description": "Mock experiment 1",
     "id": "testae48e318dab9a1bd0bexperiment-1",
-    "metadataKeys": Array [],
+    "metadataKeys": [],
     "name": "Test Experiment-1",
     "notifyByEmail": true,
     "pipelineVersion": 1,
-    "pipelines": Object {
-      "gem2s": Object {
+    "pipelines": {
+      "gem2s": {
         "executionArn": "arn:aws:states:eu-west-1:000000000000:execution:biomage-gem2s-development-mock997586f1bae0a6d5c5beed65663ec1519de4:5f273383-f093-4112-95b0-d76db896test",
         "shouldRerun": true,
         "stateMachineArn": "arn:aws:states:eu-west-1:000000000000:stateMachine:biomage-gem2s-development-mock997586f1bae0a6d5c5beed65663ec151test",
       },
-      "qc": Object {
+      "qc": {
         "executionArn": "arn:aws:states:eu-west-1:000000000000:execution:biomage-qc-development-mock997586f1bae0a6d5c5beed65663ec1519de4:422493f3-68a0-4ecb-8b17-0e8cd7a3test",
         "shouldRerun": null,
         "stateMachineArn": "arn:aws:states:eu-west-1:000000000000:stateMachine:biomage-qc-development-mock997586f1bae0a6d5c5beed65663ec151test",
       },
     },
-    "samplesOrder": Array [],
+    "samplesOrder": [],
     "updatedAt": "0000-00-00T00:00:00.000Z",
   },
 ]
 `;
 
 exports[`Mock response data Describes samples response 1`] = `
-Array [
-  Array [
-    Object {
+[
+  [
+    {
       "createdAt": "2021-12-07 17:36:27.773+00",
-      "experimentId": Object {
+      "experimentId": {
         "createdAt": "0000-00-00T00:00:00.000Z",
         "description": "Mock experiment 0",
         "id": "testae48e318dab9a1bd0bexperiment-0",
-        "metadataKeys": Array [],
+        "metadataKeys": [],
         "name": "Test Experiment-0",
         "notifyByEmail": true,
         "pipelineVersion": 1,
-        "pipelines": Object {
-          "gem2s": Object {
+        "pipelines": {
+          "gem2s": {
             "executionArn": "arn:aws:states:eu-west-1:000000000000:execution:biomage-gem2s-development-mock997586f1bae0a6d5c5beed65663ec1519de4:5f273383-f093-4112-95b0-d76db896test",
             "shouldRerun": true,
             "stateMachineArn": "arn:aws:states:eu-west-1:000000000000:stateMachine:biomage-gem2s-development-mock997586f1bae0a6d5c5beed65663ec151test",
           },
-          "qc": Object {
+          "qc": {
             "executionArn": "arn:aws:states:eu-west-1:000000000000:execution:biomage-qc-development-mock997586f1bae0a6d5c5beed65663ec1519de4:422493f3-68a0-4ecb-8b17-0e8cd7a3test",
             "shouldRerun": null,
             "stateMachineArn": "arn:aws:states:eu-west-1:000000000000:stateMachine:biomage-qc-development-mock997586f1bae0a6d5c5beed65663ec151test",
           },
         },
-        "samplesOrder": Array [
+        "samplesOrder": [
           "test9188-d682-test-mock-cb6d644cmock-0",
           "test9188-d682-test-mock-cb6d644cmock-1",
           "test9188-d682-test-mock-cb6d644cmock-2",
         ],
         "updatedAt": "0000-00-00T00:00:00.000Z",
       },
-      "files": Object {
-        "barcodes10X": Object {
+      "files": {
+        "barcodes10X": {
           "s3Path": "testcfd8122f-25af-4f1a-a306-3268d44ed402",
           "sampleFileType": "barcodes10x",
           "size": 100,
           "uploadStatus": "uploaded",
         },
-        "features10X": Object {
+        "features10X": {
           "s3Path": "testcfd8122f-25af-4f1a-a306-3268d44ed403",
           "sampleFileType": "features10x",
           "size": 100,
           "uploadStatus": "uploaded",
         },
-        "matrix10X": Object {
+        "matrix10X": {
           "s3Path": "testcfd8122f-25af-4f1a-a306-3268d44ed401",
           "sampleFileType": "matrix10x",
           "size": 1000,
@@ -290,58 +290,58 @@ Array [
         },
       },
       "id": "test9188-d682-test-mock-cb6d644cmock-0",
-      "metadata": Object {
+      "metadata": {
         "age": "BL",
         "timePoint": "BL",
       },
       "name": "Mock sample 0",
-      "options": Object {},
+      "options": {},
       "sampleTechnology": "10x",
       "updatedAt": "2021-12-07 17:38:42.036+00",
     },
-    Object {
+    {
       "createdAt": "2021-12-07 17:36:27.773+00",
-      "experimentId": Object {
+      "experimentId": {
         "createdAt": "0000-00-00T00:00:00.000Z",
         "description": "Mock experiment 0",
         "id": "testae48e318dab9a1bd0bexperiment-0",
-        "metadataKeys": Array [],
+        "metadataKeys": [],
         "name": "Test Experiment-0",
         "notifyByEmail": true,
         "pipelineVersion": 1,
-        "pipelines": Object {
-          "gem2s": Object {
+        "pipelines": {
+          "gem2s": {
             "executionArn": "arn:aws:states:eu-west-1:000000000000:execution:biomage-gem2s-development-mock997586f1bae0a6d5c5beed65663ec1519de4:5f273383-f093-4112-95b0-d76db896test",
             "shouldRerun": true,
             "stateMachineArn": "arn:aws:states:eu-west-1:000000000000:stateMachine:biomage-gem2s-development-mock997586f1bae0a6d5c5beed65663ec151test",
           },
-          "qc": Object {
+          "qc": {
             "executionArn": "arn:aws:states:eu-west-1:000000000000:execution:biomage-qc-development-mock997586f1bae0a6d5c5beed65663ec1519de4:422493f3-68a0-4ecb-8b17-0e8cd7a3test",
             "shouldRerun": null,
             "stateMachineArn": "arn:aws:states:eu-west-1:000000000000:stateMachine:biomage-qc-development-mock997586f1bae0a6d5c5beed65663ec151test",
           },
         },
-        "samplesOrder": Array [
+        "samplesOrder": [
           "test9188-d682-test-mock-cb6d644cmock-0",
           "test9188-d682-test-mock-cb6d644cmock-1",
           "test9188-d682-test-mock-cb6d644cmock-2",
         ],
         "updatedAt": "0000-00-00T00:00:00.000Z",
       },
-      "files": Object {
-        "barcodes10X": Object {
+      "files": {
+        "barcodes10X": {
           "s3Path": "testcfd8122f-25af-4f1a-a306-3268d44ed402",
           "sampleFileType": "barcodes10x",
           "size": 100,
           "uploadStatus": "uploaded",
         },
-        "features10X": Object {
+        "features10X": {
           "s3Path": "testcfd8122f-25af-4f1a-a306-3268d44ed403",
           "sampleFileType": "features10x",
           "size": 100,
           "uploadStatus": "uploaded",
         },
-        "matrix10X": Object {
+        "matrix10X": {
           "s3Path": "testcfd8122f-25af-4f1a-a306-3268d44ed401",
           "sampleFileType": "matrix10x",
           "size": 1000,
@@ -349,58 +349,58 @@ Array [
         },
       },
       "id": "test9188-d682-test-mock-cb6d644cmock-1",
-      "metadata": Object {
+      "metadata": {
         "age": "BL",
         "timePoint": "BL",
       },
       "name": "Mock sample 1",
-      "options": Object {},
+      "options": {},
       "sampleTechnology": "10x",
       "updatedAt": "2021-12-07 17:38:42.036+00",
     },
-    Object {
+    {
       "createdAt": "2021-12-07 17:36:27.773+00",
-      "experimentId": Object {
+      "experimentId": {
         "createdAt": "0000-00-00T00:00:00.000Z",
         "description": "Mock experiment 0",
         "id": "testae48e318dab9a1bd0bexperiment-0",
-        "metadataKeys": Array [],
+        "metadataKeys": [],
         "name": "Test Experiment-0",
         "notifyByEmail": true,
         "pipelineVersion": 1,
-        "pipelines": Object {
-          "gem2s": Object {
+        "pipelines": {
+          "gem2s": {
             "executionArn": "arn:aws:states:eu-west-1:000000000000:execution:biomage-gem2s-development-mock997586f1bae0a6d5c5beed65663ec1519de4:5f273383-f093-4112-95b0-d76db896test",
             "shouldRerun": true,
             "stateMachineArn": "arn:aws:states:eu-west-1:000000000000:stateMachine:biomage-gem2s-development-mock997586f1bae0a6d5c5beed65663ec151test",
           },
-          "qc": Object {
+          "qc": {
             "executionArn": "arn:aws:states:eu-west-1:000000000000:execution:biomage-qc-development-mock997586f1bae0a6d5c5beed65663ec1519de4:422493f3-68a0-4ecb-8b17-0e8cd7a3test",
             "shouldRerun": null,
             "stateMachineArn": "arn:aws:states:eu-west-1:000000000000:stateMachine:biomage-qc-development-mock997586f1bae0a6d5c5beed65663ec151test",
           },
         },
-        "samplesOrder": Array [
+        "samplesOrder": [
           "test9188-d682-test-mock-cb6d644cmock-0",
           "test9188-d682-test-mock-cb6d644cmock-1",
           "test9188-d682-test-mock-cb6d644cmock-2",
         ],
         "updatedAt": "0000-00-00T00:00:00.000Z",
       },
-      "files": Object {
-        "barcodes10X": Object {
+      "files": {
+        "barcodes10X": {
           "s3Path": "testcfd8122f-25af-4f1a-a306-3268d44ed402",
           "sampleFileType": "barcodes10x",
           "size": 100,
           "uploadStatus": "uploaded",
         },
-        "features10X": Object {
+        "features10X": {
           "s3Path": "testcfd8122f-25af-4f1a-a306-3268d44ed403",
           "sampleFileType": "features10x",
           "size": 100,
           "uploadStatus": "uploaded",
         },
-        "matrix10X": Object {
+        "matrix10X": {
           "s3Path": "testcfd8122f-25af-4f1a-a306-3268d44ed401",
           "sampleFileType": "matrix10x",
           "size": 1000,
@@ -408,12 +408,12 @@ Array [
         },
       },
       "id": "test9188-d682-test-mock-cb6d644cmock-2",
-      "metadata": Object {
+      "metadata": {
         "age": "BL",
         "timePoint": "BL",
       },
       "name": "Mock sample 2",
-      "options": Object {},
+      "options": {},
       "sampleTechnology": "10x",
       "updatedAt": "2021-12-07 17:38:42.036+00",
     },

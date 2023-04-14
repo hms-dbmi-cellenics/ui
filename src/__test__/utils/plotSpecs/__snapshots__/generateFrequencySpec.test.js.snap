@@ -1,50 +1,50 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Generate frequency plot data Generates count data 1`] = `
-Object {
-  "plotData": Array [
-    Object {
+{
+  "plotData": [
+    {
       "color": "#01FFFF",
       "x": "sample-1",
       "y": 2,
       "yCellSetKey": "cluster-a",
     },
-    Object {
+    {
       "color": "#23FFFF",
       "x": "sample-1",
       "y": 1,
       "yCellSetKey": "cluster-b",
     },
-    Object {
+    {
       "color": "#45FFFF",
       "x": "sample-1",
       "y": 0,
       "yCellSetKey": "cluster-c",
     },
-    Object {
+    {
       "color": "#01FFFF",
       "x": "sample-2",
       "y": 0,
       "yCellSetKey": "cluster-a",
     },
-    Object {
+    {
       "color": "#23FFFF",
       "x": "sample-2",
       "y": 1,
       "yCellSetKey": "cluster-b",
     },
-    Object {
+    {
       "color": "#45FFFF",
       "x": "sample-2",
       "y": 2,
       "yCellSetKey": "cluster-c",
     },
   ],
-  "xNamesToDisplay": Array [
+  "xNamesToDisplay": [
     "Sample 1",
     "Sample 2",
   ],
-  "yNamesToDisplay": Array [
+  "yNamesToDisplay": [
     "cluster a",
     "cluster b",
     "cluster c",
@@ -53,50 +53,50 @@ Object {
 `;
 
 exports[`Generate frequency plot data Generates proportional data 1`] = `
-Object {
-  "plotData": Array [
-    Object {
+{
+  "plotData": [
+    {
       "color": "#01FFFF",
       "x": "sample-1",
       "y": "66.667",
       "yCellSetKey": "cluster-a",
     },
-    Object {
+    {
       "color": "#23FFFF",
       "x": "sample-1",
       "y": "33.333",
       "yCellSetKey": "cluster-b",
     },
-    Object {
+    {
       "color": "#45FFFF",
       "x": "sample-1",
       "y": "0.000",
       "yCellSetKey": "cluster-c",
     },
-    Object {
+    {
       "color": "#01FFFF",
       "x": "sample-2",
       "y": "0.000",
       "yCellSetKey": "cluster-a",
     },
-    Object {
+    {
       "color": "#23FFFF",
       "x": "sample-2",
       "y": "33.333",
       "yCellSetKey": "cluster-b",
     },
-    Object {
+    {
       "color": "#45FFFF",
       "x": "sample-2",
       "y": "66.667",
       "yCellSetKey": "cluster-c",
     },
   ],
-  "xNamesToDisplay": Array [
+  "xNamesToDisplay": [
     "Sample 1",
     "Sample 2",
   ],
-  "yNamesToDisplay": Array [
+  "yNamesToDisplay": [
     "cluster a",
     "cluster b",
     "cluster c",

@@ -9,15 +9,16 @@ import thunk from 'redux-thunk';
 import '@testing-library/jest-dom';
 import configureStore from 'redux-mock-store';
 import { act } from 'react-dom/test-utils';
-import { fireEvent } from '@testing-library/dom';
 import userEvent from '@testing-library/user-event';
-import { screen, render, waitFor } from '@testing-library/react';
+import {
+  screen, render, waitFor,
+} from '@testing-library/react';
 
-import * as createMetadataTrack from 'redux/actions/experiments/createMetadataTrack';
-import * as updateValueInMetadataTrack from 'redux/actions/experiments/updateValueInMetadataTrack';
-import * as cloneExperiment from 'redux/actions/experiments/cloneExperiment';
-import * as loadExperiments from 'redux/actions/experiments/loadExperiments';
-import * as setActiveExperiment from 'redux/actions/experiments/setActiveExperiment';
+import mockedCreateMetadataTrack from 'redux/actions/experiments/createMetadataTrack';
+import mockedUpdateValueInMetadataTrack from 'redux/actions/experiments/updateValueInMetadataTrack';
+import mockedCloneExperiment from 'redux/actions/experiments/cloneExperiment';
+import mockedLoadExperiments from 'redux/actions/experiments/loadExperiments';
+import mockedSetActiveExperiment from 'redux/actions/experiments/setActiveExperiment';
 
 import initialSamplesState, { sampleTemplate } from 'redux/reducers/samples/initialState';
 import initialExperimentsState from 'redux/reducers/experiments/initialState';
@@ -29,7 +30,6 @@ import { sampleTech } from 'utils/constants';
 import UploadStatus from 'utils/upload/UploadStatus';
 import ProjectDetails from 'components/data-management/ProjectDetails';
 
-import '__test__/test-utils/setupTests';
 import createTestComponentFactory from '__test__/test-utils/testComponentFactory';
 
 const mockNavigateTo = jest.fn();
@@ -39,6 +39,12 @@ jest.mock('utils/AppRouteProvider', () => ({
     navigateTo: mockNavigateTo,
   })),
 }));
+
+jest.mock('redux/actions/experiments/createMetadataTrack', () => jest.fn(() => ({ type: 'MOCK_ACTION' })));
+jest.mock('redux/actions/experiments/updateValueInMetadataTrack', () => jest.fn(() => ({ type: 'MOCK_ACTION' })));
+jest.mock('redux/actions/experiments/cloneExperiment', () => jest.fn(() => ({ type: 'MOCK_ACTION' })));
+jest.mock('redux/actions/experiments/loadExperiments', () => jest.fn(() => ({ type: 'MOCK_ACTION' })));
+jest.mock('redux/actions/experiments/setActiveExperiment', () => jest.fn(() => ({ type: 'MOCK_ACTION' })));
 
 const mockStore = configureStore([thunk]);
 const width = 600;
@@ -152,19 +158,8 @@ const withDataState = {
 const projectDetailsFactory = createTestComponentFactory(ProjectDetails, { width, height });
 
 describe('ProjectDetails', () => {
-  let mockedCreateMetadataTrack;
-  let mockedUpdateValueInMetadataTrack;
-  let mockedCloneExperiment;
-  let mockedLoadExperiments;
-  let mockedSetActiveExperiment;
-
   beforeEach(() => {
     jest.clearAllMocks();
-    mockedCreateMetadataTrack = jest.spyOn(createMetadataTrack, 'default');
-    mockedUpdateValueInMetadataTrack = jest.spyOn(updateValueInMetadataTrack, 'default');
-    mockedCloneExperiment = jest.spyOn(cloneExperiment, 'default');
-    mockedLoadExperiments = jest.spyOn(loadExperiments, 'default');
-    mockedSetActiveExperiment = jest.spyOn(setActiveExperiment, 'default');
   });
 
   const getMenuItems = async () => {
@@ -257,11 +252,10 @@ describe('ProjectDetails', () => {
 
     const options = await getMenuItems();
 
-    fireEvent.click(options[0]);
+    userEvent.click(options[0]);
 
     const input = screen.getByDisplayValue('Track 1');
-    fireEvent.change(input, { target: { value: 'myBrandNewMetadata' } });
-    fireEvent.keyDown(input, { key: 'Enter', code: 'Enter' });
+    userEvent.type(input, '{selectall}{backspace}myBrandNewMetadata{enter}');
 
     expect(mockedCreateMetadataTrack).toBeCalledTimes(1);
     expect(mockedCreateMetadataTrack).toHaveBeenCalledWith('myBrandNewMetadata', 'experiment-1');
@@ -277,11 +271,10 @@ describe('ProjectDetails', () => {
 
     const options = await getMenuItems();
 
-    fireEvent.click(options[0]);
+    userEvent.click(options[0]);
 
     const input = screen.getByDisplayValue('Track 1');
-    fireEvent.change(input, { target: { value: 'myBrandNewMetadata' } });
-    fireEvent.keyDown(input, { key: 'Escape', code: 'Escape' });
+    userEvent.type(input, '{selectall}{backspace}myBrandNewMetadata{esc}');
 
     expect(store.getState().experiments[experiment1id].metadataKeys).toEqual(['metadata-1']);
   });
@@ -298,10 +291,9 @@ describe('ProjectDetails', () => {
 
     const options = await getMenuItems();
 
-    fireEvent.click(options[0]);
+    userEvent.click(options[0]);
     const input = screen.getByDisplayValue('Track 1');
-    fireEvent.change(input, { target: { value: '  myBrandNewMetadata     ' } });
-    fireEvent.keyDown(input, { key: 'Enter', code: 'Enter' });
+    userEvent.type(input, '{selectall}{backspace}  myBrandNewMetadata     {enter}');
 
     expect(mockedCreateMetadataTrack).toBeCalledTimes(1);
     expect(mockedCreateMetadataTrack).toHaveBeenCalledWith('myBrandNewMetadata', 'experiment-1');
@@ -325,17 +317,15 @@ describe('ProjectDetails', () => {
     // Add track column
     const options = await getMenuItems();
 
-    fireEvent.click(options[0]);
-    fireEvent.keyDown(screen.getByDisplayValue('Track 1'), { key: 'Enter', code: 'Enter' });
+    userEvent.click(options[0]);
+    userEvent.type(screen.getByDisplayValue('Track 1'), '{enter}');
 
     // Change track value for sample
-
-    act(() => userEvent.click(screen.getAllByRole('button', { name: 'Edit' })[1]));
+    userEvent.click(screen.getAllByRole('button', { name: 'Edit' })[1]);
 
     const input = screen.getByRole('textbox');
-    fireEvent.change(input, { target: { value: '  myBrandNewMetadataWithWhitespaces     ' } });
-
-    act(() => userEvent.click(screen.getByRole('button', { name: 'Save' })));
+    userEvent.type(input, '{selectall}{backspace}  myBrandNewMetadataWithWhitespaces     ');
+    userEvent.click(screen.getByRole('button', { name: 'Save' }));
 
     expect(mockedUpdateValueInMetadataTrack).toHaveBeenCalledTimes(1);
     expect(mockedUpdateValueInMetadataTrack).toHaveBeenCalledWith('experiment-1', 'sample-1', 'metadata-1', 'myBrandNewMetadataWithWhitespaces');

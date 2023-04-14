@@ -1,14 +1,14 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`cellSetsClusteringUpdated Sets loading and error indicators appropriately 1`] = `
-Object {
+{
   "error": false,
   "hidden": Set {},
-  "hierarchy": Array [],
+  "hierarchy": [],
   "initialLoadPending": true,
   "loading": true,
-  "properties": Object {},
-  "selected": Array [],
+  "properties": {},
+  "selected": [],
   "updatingClustering": false,
 }
 `;

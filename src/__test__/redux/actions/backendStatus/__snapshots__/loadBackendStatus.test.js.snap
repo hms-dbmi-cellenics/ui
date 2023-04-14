@@ -1,11 +1,11 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`loadBackendStatus Dispatches error if fetch fails 1`] = `
-Array [
-  Object {
+[
+  {
     "experimentId": "1234",
   },
-  Object {
+  {
     "error": "We couldn't get the status of the experiment's data processing.",
     "experimentId": "1234",
   },
@@ -13,28 +13,28 @@ Array [
 `;
 
 exports[`loadBackendStatus Works well if fetch works 1`] = `
-Array [
-  Object {
+[
+  {
     "experimentId": "1234",
   },
-  Object {
+  {
     "experimentId": "1234",
-    "status": Object {
-      "gem2s": Object {
-        "completedSteps": Array [],
+    "status": {
+      "gem2s": {
+        "completedSteps": [],
         "error": false,
         "startDate": null,
         "status": "NOT_CREATED",
         "stopDate": null,
       },
-      "pipeline": Object {
-        "completedSteps": Array [],
+      "pipeline": {
+        "completedSteps": [],
         "error": false,
         "startDate": null,
         "status": "NOT_CREATED",
         "stopDate": null,
       },
-      "worker": Object {
+      "worker": {
         "ready": true,
         "restartCount": 0,
         "started": true,

@@ -1,96 +1,96 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`switch experiment  Then updates the experiment info 1`] = `
-Object {
-  "backendStatus": Object {},
-  "cellInfo": Object {
-    "focus": Object {
+{
+  "backendStatus": {},
+  "cellInfo": {
+    "focus": {
       "key": "louvain",
       "store": "cellSets",
     },
     "groupedTrack": "louvain",
-    "selectedTracks": Array [
+    "selectedTracks": [
       "louvain",
     ],
   },
-  "cellMeta": Object {
-    "doubletScores": Object {
-      "data": Array [],
+  "cellMeta": {
+    "doubletScores": {
+      "data": [],
       "error": false,
       "loading": true,
     },
-    "mitochondrialContent": Object {
-      "data": Array [],
+    "mitochondrialContent": {
+      "data": [],
       "error": false,
       "loading": true,
     },
-    "numOfGenes": Object {
-      "data": Array [],
+    "numOfGenes": {
+      "data": [],
       "error": false,
       "loading": true,
     },
-    "numOfUmis": Object {
-      "data": Array [],
+    "numOfUmis": {
+      "data": [],
       "error": false,
       "loading": true,
     },
   },
-  "cellSets": Object {
+  "cellSets": {
     "error": false,
     "hidden": Set {},
-    "hierarchy": Array [],
+    "hierarchy": [],
     "initialLoadPending": true,
     "loading": false,
-    "properties": Object {},
-    "selected": Array [],
+    "properties": {},
+    "selected": [],
     "updatingClustering": false,
   },
-  "componentConfig": Object {},
-  "differentialExpression": Object {
-    "comparison": Object {
-      "advancedFilters": Array [],
-      "group": Object {
-        "between": Object {
+  "componentConfig": {},
+  "differentialExpression": {
+    "comparison": {
+      "advancedFilters": [],
+      "group": {
+        "between": {
           "basis": null,
           "cellSet": null,
           "compareWith": null,
         },
-        "within": Object {
+        "within": {
           "basis": null,
           "cellSet": null,
           "compareWith": null,
         },
       },
-      "ordering": Object {
+      "ordering": {
         "orderBy": "logFC",
         "orderDirection": "DESC",
       },
       "type": "within",
     },
-    "properties": Object {
-      "comparisonGroup": Object {},
+    "properties": {
+      "comparisonGroup": {},
       "comparisonType": null,
-      "data": Array [],
+      "data": [],
       "error": false,
       "loading": false,
       "total": 0,
     },
   },
-  "embeddings": Object {},
-  "experimentSettings": Object {
-    "info": Object {
+  "embeddings": {},
+  "experimentSettings": {
+    "info": {
       "experimentId": "testae48e318dab9a1bd0bexperiment-0",
       "experimentName": "Test Experiment-0",
       "pipelineVersion": 1,
-      "sampleIds": Array [
+      "sampleIds": [
         "test9188-d682-test-mock-cb6d644cmock-0",
         "test9188-d682-test-mock-cb6d644cmock-1",
         "test9188-d682-test-mock-cb6d644cmock-2",
       ],
     },
-    "originalProcessing": Object {},
-    "processing": Object {
-      "meta": Object {
+    "originalProcessing": {},
+    "processing": {
+      "meta": {
         "changedQCFilters": Set {},
         "completingStepError": false,
         "loading": false,
@@ -98,193 +98,193 @@ Object {
       },
     },
   },
-  "experiments": Object {
-    "ids": Array [
+  "experiments": {
+    "ids": [
       "testae48e318dab9a1bd0bexperiment-0",
       "testae48e318dab9a1bd0bexperiment-1",
     ],
-    "meta": Object {
+    "meta": {
       "activeExperimentId": "testae48e318dab9a1bd0bexperiment-1",
       "error": false,
       "loading": false,
       "saving": false,
     },
-    "testae48e318dab9a1bd0bexperiment-0": Object {
+    "testae48e318dab9a1bd0bexperiment-0": {
       "createdAt": "0000-00-00T00:00:00.000Z",
       "description": "Mock experiment 0",
       "id": "testae48e318dab9a1bd0bexperiment-0",
-      "metadataKeys": Array [],
+      "metadataKeys": [],
       "name": "Test Experiment-0",
       "notifyByEmail": true,
       "pipelineVersion": 1,
-      "pipelines": Object {
-        "gem2s": Object {
+      "pipelines": {
+        "gem2s": {
           "executionArn": "arn:aws:states:eu-west-1:000000000000:execution:biomage-gem2s-development-mock997586f1bae0a6d5c5beed65663ec1519de4:5f273383-f093-4112-95b0-d76db896test",
           "shouldRerun": true,
           "stateMachineArn": "arn:aws:states:eu-west-1:000000000000:stateMachine:biomage-gem2s-development-mock997586f1bae0a6d5c5beed65663ec151test",
         },
-        "qc": Object {
+        "qc": {
           "executionArn": "arn:aws:states:eu-west-1:000000000000:execution:biomage-qc-development-mock997586f1bae0a6d5c5beed65663ec1519de4:422493f3-68a0-4ecb-8b17-0e8cd7a3test",
           "shouldRerun": null,
           "stateMachineArn": "arn:aws:states:eu-west-1:000000000000:stateMachine:biomage-qc-development-mock997586f1bae0a6d5c5beed65663ec151test",
         },
       },
-      "sampleIds": Array [
+      "sampleIds": [
         "test9188-d682-test-mock-cb6d644cmock-0",
         "test9188-d682-test-mock-cb6d644cmock-1",
         "test9188-d682-test-mock-cb6d644cmock-2",
       ],
       "updatedAt": "0000-00-00T00:00:00.000Z",
     },
-    "testae48e318dab9a1bd0bexperiment-1": Object {
+    "testae48e318dab9a1bd0bexperiment-1": {
       "createdAt": "0000-00-00T00:00:00.000Z",
       "description": "Mock experiment 1",
       "id": "testae48e318dab9a1bd0bexperiment-1",
-      "metadataKeys": Array [],
+      "metadataKeys": [],
       "name": "Test Experiment-1",
       "notifyByEmail": true,
       "pipelineVersion": 1,
-      "pipelines": Object {
-        "gem2s": Object {
+      "pipelines": {
+        "gem2s": {
           "executionArn": "arn:aws:states:eu-west-1:000000000000:execution:biomage-gem2s-development-mock997586f1bae0a6d5c5beed65663ec1519de4:5f273383-f093-4112-95b0-d76db896test",
           "shouldRerun": true,
           "stateMachineArn": "arn:aws:states:eu-west-1:000000000000:stateMachine:biomage-gem2s-development-mock997586f1bae0a6d5c5beed65663ec151test",
         },
-        "qc": Object {
+        "qc": {
           "executionArn": "arn:aws:states:eu-west-1:000000000000:execution:biomage-qc-development-mock997586f1bae0a6d5c5beed65663ec1519de4:422493f3-68a0-4ecb-8b17-0e8cd7a3test",
           "shouldRerun": null,
           "stateMachineArn": "arn:aws:states:eu-west-1:000000000000:stateMachine:biomage-qc-development-mock997586f1bae0a6d5c5beed65663ec151test",
         },
       },
-      "sampleIds": Array [],
+      "sampleIds": [],
       "updatedAt": "0000-00-00T00:00:00.000Z",
     },
   },
-  "genes": Object {
-    "expression": Object {
-      "downsampledCellOrder": Array [],
+  "genes": {
+    "expression": {
+      "downsampledCellOrder": [],
       "downsampledMatrix": ExpressionMatrix {
-        "geneIndexes": Object {},
-        "rawGeneExpressions": Object {
+        "geneIndexes": {},
+        "rawGeneExpressions": {
           "datatype": undefined,
-          "index": Array [],
+          "index": [],
           "mathjs": "SparseMatrix",
-          "ptr": Array [
+          "ptr": [
             0,
           ],
-          "size": Array [
+          "size": [
             0,
             0,
           ],
-          "values": Array [],
+          "values": [],
         },
         "setGeneExpression": [Function],
-        "stats": Object {
-          "rawMean": Array [],
-          "rawStdev": Array [],
-          "truncatedMax": Array [],
-          "truncatedMin": Array [],
+        "stats": {
+          "rawMean": [],
+          "rawStdev": [],
+          "truncatedMax": [],
+          "truncatedMin": [],
         },
-        "truncatedGeneExpressions": Object {
+        "truncatedGeneExpressions": {
           "datatype": undefined,
-          "index": Array [],
+          "index": [],
           "mathjs": "SparseMatrix",
-          "ptr": Array [
+          "ptr": [
             0,
           ],
-          "size": Array [
+          "size": [
             0,
             0,
           ],
-          "values": Array [],
+          "values": [],
         },
-        "zScore": Object {
+        "zScore": {
           "datatype": undefined,
-          "index": Array [],
+          "index": [],
           "mathjs": "SparseMatrix",
-          "ptr": Array [
+          "ptr": [
             0,
           ],
-          "size": Array [
+          "size": [
             0,
             0,
           ],
-          "values": Array [],
+          "values": [],
         },
       },
       "error": false,
-      "loading": Array [],
+      "loading": [],
       "matrix": ExpressionMatrix {
-        "geneIndexes": Object {},
-        "rawGeneExpressions": Object {
+        "geneIndexes": {},
+        "rawGeneExpressions": {
           "datatype": undefined,
-          "index": Array [],
+          "index": [],
           "mathjs": "SparseMatrix",
-          "ptr": Array [
+          "ptr": [
             0,
           ],
-          "size": Array [
+          "size": [
             0,
             0,
           ],
-          "values": Array [],
+          "values": [],
         },
         "setGeneExpression": [Function],
-        "stats": Object {
-          "rawMean": Array [],
-          "rawStdev": Array [],
-          "truncatedMax": Array [],
-          "truncatedMin": Array [],
+        "stats": {
+          "rawMean": [],
+          "rawStdev": [],
+          "truncatedMax": [],
+          "truncatedMin": [],
         },
-        "truncatedGeneExpressions": Object {
+        "truncatedGeneExpressions": {
           "datatype": undefined,
-          "index": Array [],
+          "index": [],
           "mathjs": "SparseMatrix",
-          "ptr": Array [
+          "ptr": [
             0,
           ],
-          "size": Array [
+          "size": [
             0,
             0,
           ],
-          "values": Array [],
+          "values": [],
         },
-        "zScore": Object {
+        "zScore": {
           "datatype": undefined,
-          "index": Array [],
+          "index": [],
           "mathjs": "SparseMatrix",
-          "ptr": Array [
+          "ptr": [
             0,
           ],
-          "size": Array [
+          "size": [
             0,
             0,
           ],
-          "values": Array [],
+          "values": [],
         },
       },
-      "views": Object {},
+      "views": {},
     },
     "focused": undefined,
-    "markers": Object {
+    "markers": {
       "ETag": null,
       "error": false,
       "loading": false,
     },
-    "properties": Object {
-      "data": Object {},
-      "loading": Array [],
-      "views": Object {},
+    "properties": {
+      "data": {},
+      "loading": [],
+      "views": {},
     },
-    "selected": Array [],
+    "selected": [],
   },
-  "layout": Object {
+  "layout": {
     "panel": "Gene list",
-    "windows": Object {
+    "windows": {
       "direction": "row",
-      "first": Object {
+      "first": {
         "direction": "column",
-        "first": Object {
+        "first": {
           "direction": "row",
           "first": "UMAP",
           "second": "Cell sets and Metadata",
@@ -297,247 +297,247 @@ Object {
       "splitPercentage": 70,
     },
   },
-  "networkResources": Object {
+  "networkResources": {
     "domainName": undefined,
     "environment": undefined,
   },
-  "samples": Object {
-    "meta": Object {
+  "samples": {
+    "meta": {
       "error": false,
       "loading": false,
       "saving": false,
-      "validating": Array [],
+      "validating": [],
     },
-    "test9188-d682-test-mock-cb6d644cmock-0": Object {
+    "test9188-d682-test-mock-cb6d644cmock-0": {
       "createdDate": "2021-12-07 17:36:27.773+00",
       "experimentId": "testae48e318dab9a1bd0bexperiment-0",
-      "fileNames": Array [
+      "fileNames": [
         "matrix.mtx.gz",
         "barcodes.tsv.gz",
         "features.tsv.gz",
       ],
-      "files": Object {
-        "barcodes.tsv.gz": Object {
+      "files": {
+        "barcodes.tsv.gz": {
           "name": "barcodes.tsv.gz",
           "size": 100,
-          "upload": Object {
+          "upload": {
             "status": "uploaded",
           },
           "valid": true,
         },
-        "features.tsv.gz": Object {
+        "features.tsv.gz": {
           "name": "features.tsv.gz",
           "size": 100,
-          "upload": Object {
+          "upload": {
             "status": "uploaded",
           },
           "valid": true,
         },
-        "matrix.mtx.gz": Object {
+        "matrix.mtx.gz": {
           "name": "matrix.mtx.gz",
           "size": 1000,
-          "upload": Object {
+          "upload": {
             "status": "uploaded",
           },
           "valid": true,
         },
       },
       "lastModified": "2021-12-07 17:38:42.036+00",
-      "metadata": Object {
+      "metadata": {
         "age": "BL",
         "timePoint": "BL",
       },
       "name": "Mock sample 0",
-      "options": Object {},
+      "options": {},
       "type": "10x",
       "uuid": "test9188-d682-test-mock-cb6d644cmock-0",
     },
-    "test9188-d682-test-mock-cb6d644cmock-1": Object {
+    "test9188-d682-test-mock-cb6d644cmock-1": {
       "createdDate": "2021-12-07 17:36:27.773+00",
       "experimentId": "testae48e318dab9a1bd0bexperiment-0",
-      "fileNames": Array [
+      "fileNames": [
         "matrix.mtx.gz",
         "barcodes.tsv.gz",
         "features.tsv.gz",
       ],
-      "files": Object {
-        "barcodes.tsv.gz": Object {
+      "files": {
+        "barcodes.tsv.gz": {
           "name": "barcodes.tsv.gz",
           "size": 100,
-          "upload": Object {
+          "upload": {
             "status": "uploaded",
           },
           "valid": true,
         },
-        "features.tsv.gz": Object {
+        "features.tsv.gz": {
           "name": "features.tsv.gz",
           "size": 100,
-          "upload": Object {
+          "upload": {
             "status": "uploaded",
           },
           "valid": true,
         },
-        "matrix.mtx.gz": Object {
+        "matrix.mtx.gz": {
           "name": "matrix.mtx.gz",
           "size": 1000,
-          "upload": Object {
+          "upload": {
             "status": "uploaded",
           },
           "valid": true,
         },
       },
       "lastModified": "2021-12-07 17:38:42.036+00",
-      "metadata": Object {
+      "metadata": {
         "age": "BL",
         "timePoint": "BL",
       },
       "name": "Mock sample 1",
-      "options": Object {},
+      "options": {},
       "type": "10x",
       "uuid": "test9188-d682-test-mock-cb6d644cmock-1",
     },
-    "test9188-d682-test-mock-cb6d644cmock-2": Object {
+    "test9188-d682-test-mock-cb6d644cmock-2": {
       "createdDate": "2021-12-07 17:36:27.773+00",
       "experimentId": "testae48e318dab9a1bd0bexperiment-0",
-      "fileNames": Array [
+      "fileNames": [
         "matrix.mtx.gz",
         "barcodes.tsv.gz",
         "features.tsv.gz",
       ],
-      "files": Object {
-        "barcodes.tsv.gz": Object {
+      "files": {
+        "barcodes.tsv.gz": {
           "name": "barcodes.tsv.gz",
           "size": 100,
-          "upload": Object {
+          "upload": {
             "status": "uploaded",
           },
           "valid": true,
         },
-        "features.tsv.gz": Object {
+        "features.tsv.gz": {
           "name": "features.tsv.gz",
           "size": 100,
-          "upload": Object {
+          "upload": {
             "status": "uploaded",
           },
           "valid": true,
         },
-        "matrix.mtx.gz": Object {
+        "matrix.mtx.gz": {
           "name": "matrix.mtx.gz",
           "size": 1000,
-          "upload": Object {
+          "upload": {
             "status": "uploaded",
           },
           "valid": true,
         },
       },
       "lastModified": "2021-12-07 17:38:42.036+00",
-      "metadata": Object {
+      "metadata": {
         "age": "BL",
         "timePoint": "BL",
       },
       "name": "Mock sample 2",
-      "options": Object {},
+      "options": {},
       "type": "10x",
       "uuid": "test9188-d682-test-mock-cb6d644cmock-2",
     },
   },
-  "user": Object {
+  "user": {
     "current": null,
   },
 }
 `;
 
 exports[`switch experiment  switches the experiment to its initial values 1`] = `
-Object {
-  "backendStatus": Object {},
-  "cellInfo": Object {
-    "focus": Object {
+{
+  "backendStatus": {},
+  "cellInfo": {
+    "focus": {
       "key": "louvain",
       "store": "cellSets",
     },
     "groupedTrack": "louvain",
-    "selectedTracks": Array [
+    "selectedTracks": [
       "louvain",
     ],
   },
-  "cellMeta": Object {
-    "doubletScores": Object {
-      "data": Array [],
+  "cellMeta": {
+    "doubletScores": {
+      "data": [],
       "error": false,
       "loading": true,
     },
-    "mitochondrialContent": Object {
-      "data": Array [],
+    "mitochondrialContent": {
+      "data": [],
       "error": false,
       "loading": true,
     },
-    "numOfGenes": Object {
-      "data": Array [],
+    "numOfGenes": {
+      "data": [],
       "error": false,
       "loading": true,
     },
-    "numOfUmis": Object {
-      "data": Array [],
+    "numOfUmis": {
+      "data": [],
       "error": false,
       "loading": true,
     },
   },
-  "cellSets": Object {
+  "cellSets": {
     "error": false,
     "hidden": Set {},
-    "hierarchy": Array [],
+    "hierarchy": [],
     "initialLoadPending": true,
     "loading": false,
-    "properties": Object {},
-    "selected": Array [],
+    "properties": {},
+    "selected": [],
     "updatingClustering": false,
   },
-  "componentConfig": Object {},
-  "differentialExpression": Object {
-    "comparison": Object {
-      "advancedFilters": Array [],
-      "group": Object {
-        "between": Object {
+  "componentConfig": {},
+  "differentialExpression": {
+    "comparison": {
+      "advancedFilters": [],
+      "group": {
+        "between": {
           "basis": null,
           "cellSet": null,
           "compareWith": null,
         },
-        "within": Object {
+        "within": {
           "basis": null,
           "cellSet": null,
           "compareWith": null,
         },
       },
-      "ordering": Object {
+      "ordering": {
         "orderBy": "logFC",
         "orderDirection": "DESC",
       },
       "type": "within",
     },
-    "properties": Object {
-      "comparisonGroup": Object {},
+    "properties": {
+      "comparisonGroup": {},
       "comparisonType": null,
-      "data": Array [],
+      "data": [],
       "error": false,
       "loading": false,
       "total": 0,
     },
   },
-  "embeddings": Object {},
-  "experimentSettings": Object {
-    "info": Object {
+  "embeddings": {},
+  "experimentSettings": {
+    "info": {
       "experimentId": "testae48e318dab9a1bd0bexperiment-0",
       "experimentName": "Test Experiment-0",
       "pipelineVersion": 1,
-      "sampleIds": Array [
+      "sampleIds": [
         "test9188-d682-test-mock-cb6d644cmock-0",
         "test9188-d682-test-mock-cb6d644cmock-1",
         "test9188-d682-test-mock-cb6d644cmock-2",
       ],
     },
-    "originalProcessing": Object {},
-    "processing": Object {
-      "meta": Object {
+    "originalProcessing": {},
+    "processing": {
+      "meta": {
         "changedQCFilters": Set {},
         "completingStepError": false,
         "loading": false,
@@ -545,193 +545,193 @@ Object {
       },
     },
   },
-  "experiments": Object {
-    "ids": Array [
+  "experiments": {
+    "ids": [
       "testae48e318dab9a1bd0bexperiment-0",
       "testae48e318dab9a1bd0bexperiment-1",
     ],
-    "meta": Object {
+    "meta": {
       "activeExperimentId": "testae48e318dab9a1bd0bexperiment-1",
       "error": false,
       "loading": false,
       "saving": false,
     },
-    "testae48e318dab9a1bd0bexperiment-0": Object {
+    "testae48e318dab9a1bd0bexperiment-0": {
       "createdAt": "0000-00-00T00:00:00.000Z",
       "description": "Mock experiment 0",
       "id": "testae48e318dab9a1bd0bexperiment-0",
-      "metadataKeys": Array [],
+      "metadataKeys": [],
       "name": "Test Experiment-0",
       "notifyByEmail": true,
       "pipelineVersion": 1,
-      "pipelines": Object {
-        "gem2s": Object {
+      "pipelines": {
+        "gem2s": {
           "executionArn": "arn:aws:states:eu-west-1:000000000000:execution:biomage-gem2s-development-mock997586f1bae0a6d5c5beed65663ec1519de4:5f273383-f093-4112-95b0-d76db896test",
           "shouldRerun": true,
           "stateMachineArn": "arn:aws:states:eu-west-1:000000000000:stateMachine:biomage-gem2s-development-mock997586f1bae0a6d5c5beed65663ec151test",
         },
-        "qc": Object {
+        "qc": {
           "executionArn": "arn:aws:states:eu-west-1:000000000000:execution:biomage-qc-development-mock997586f1bae0a6d5c5beed65663ec1519de4:422493f3-68a0-4ecb-8b17-0e8cd7a3test",
           "shouldRerun": null,
           "stateMachineArn": "arn:aws:states:eu-west-1:000000000000:stateMachine:biomage-qc-development-mock997586f1bae0a6d5c5beed65663ec151test",
         },
       },
-      "sampleIds": Array [
+      "sampleIds": [
         "test9188-d682-test-mock-cb6d644cmock-0",
         "test9188-d682-test-mock-cb6d644cmock-1",
         "test9188-d682-test-mock-cb6d644cmock-2",
       ],
       "updatedAt": "0000-00-00T00:00:00.000Z",
     },
-    "testae48e318dab9a1bd0bexperiment-1": Object {
+    "testae48e318dab9a1bd0bexperiment-1": {
       "createdAt": "0000-00-00T00:00:00.000Z",
       "description": "Mock experiment 1",
       "id": "testae48e318dab9a1bd0bexperiment-1",
-      "metadataKeys": Array [],
+      "metadataKeys": [],
       "name": "Test Experiment-1",
       "notifyByEmail": true,
       "pipelineVersion": 1,
-      "pipelines": Object {
-        "gem2s": Object {
+      "pipelines": {
+        "gem2s": {
           "executionArn": "arn:aws:states:eu-west-1:000000000000:execution:biomage-gem2s-development-mock997586f1bae0a6d5c5beed65663ec1519de4:5f273383-f093-4112-95b0-d76db896test",
           "shouldRerun": true,
           "stateMachineArn": "arn:aws:states:eu-west-1:000000000000:stateMachine:biomage-gem2s-development-mock997586f1bae0a6d5c5beed65663ec151test",
         },
-        "qc": Object {
+        "qc": {
           "executionArn": "arn:aws:states:eu-west-1:000000000000:execution:biomage-qc-development-mock997586f1bae0a6d5c5beed65663ec1519de4:422493f3-68a0-4ecb-8b17-0e8cd7a3test",
           "shouldRerun": null,
           "stateMachineArn": "arn:aws:states:eu-west-1:000000000000:stateMachine:biomage-qc-development-mock997586f1bae0a6d5c5beed65663ec151test",
         },
       },
-      "sampleIds": Array [],
+      "sampleIds": [],
       "updatedAt": "0000-00-00T00:00:00.000Z",
     },
   },
-  "genes": Object {
-    "expression": Object {
-      "downsampledCellOrder": Array [],
+  "genes": {
+    "expression": {
+      "downsampledCellOrder": [],
       "downsampledMatrix": ExpressionMatrix {
-        "geneIndexes": Object {},
-        "rawGeneExpressions": Object {
+        "geneIndexes": {},
+        "rawGeneExpressions": {
           "datatype": undefined,
-          "index": Array [],
+          "index": [],
           "mathjs": "SparseMatrix",
-          "ptr": Array [
+          "ptr": [
             0,
           ],
-          "size": Array [
+          "size": [
             0,
             0,
           ],
-          "values": Array [],
+          "values": [],
         },
         "setGeneExpression": [Function],
-        "stats": Object {
-          "rawMean": Array [],
-          "rawStdev": Array [],
-          "truncatedMax": Array [],
-          "truncatedMin": Array [],
+        "stats": {
+          "rawMean": [],
+          "rawStdev": [],
+          "truncatedMax": [],
+          "truncatedMin": [],
         },
-        "truncatedGeneExpressions": Object {
+        "truncatedGeneExpressions": {
           "datatype": undefined,
-          "index": Array [],
+          "index": [],
           "mathjs": "SparseMatrix",
-          "ptr": Array [
+          "ptr": [
             0,
           ],
-          "size": Array [
+          "size": [
             0,
             0,
           ],
-          "values": Array [],
+          "values": [],
         },
-        "zScore": Object {
+        "zScore": {
           "datatype": undefined,
-          "index": Array [],
+          "index": [],
           "mathjs": "SparseMatrix",
-          "ptr": Array [
+          "ptr": [
             0,
           ],
-          "size": Array [
+          "size": [
             0,
             0,
           ],
-          "values": Array [],
+          "values": [],
         },
       },
       "error": false,
-      "loading": Array [],
+      "loading": [],
       "matrix": ExpressionMatrix {
-        "geneIndexes": Object {},
-        "rawGeneExpressions": Object {
+        "geneIndexes": {},
+        "rawGeneExpressions": {
           "datatype": undefined,
-          "index": Array [],
+          "index": [],
           "mathjs": "SparseMatrix",
-          "ptr": Array [
+          "ptr": [
             0,
           ],
-          "size": Array [
+          "size": [
             0,
             0,
           ],
-          "values": Array [],
+          "values": [],
         },
         "setGeneExpression": [Function],
-        "stats": Object {
-          "rawMean": Array [],
-          "rawStdev": Array [],
-          "truncatedMax": Array [],
-          "truncatedMin": Array [],
+        "stats": {
+          "rawMean": [],
+          "rawStdev": [],
+          "truncatedMax": [],
+          "truncatedMin": [],
         },
-        "truncatedGeneExpressions": Object {
+        "truncatedGeneExpressions": {
           "datatype": undefined,
-          "index": Array [],
+          "index": [],
           "mathjs": "SparseMatrix",
-          "ptr": Array [
+          "ptr": [
             0,
           ],
-          "size": Array [
+          "size": [
             0,
             0,
           ],
-          "values": Array [],
+          "values": [],
         },
-        "zScore": Object {
+        "zScore": {
           "datatype": undefined,
-          "index": Array [],
+          "index": [],
           "mathjs": "SparseMatrix",
-          "ptr": Array [
+          "ptr": [
             0,
           ],
-          "size": Array [
+          "size": [
             0,
             0,
           ],
-          "values": Array [],
+          "values": [],
         },
       },
-      "views": Object {},
+      "views": {},
     },
     "focused": undefined,
-    "markers": Object {
+    "markers": {
       "ETag": null,
       "error": false,
       "loading": false,
     },
-    "properties": Object {
-      "data": Object {},
-      "loading": Array [],
-      "views": Object {},
+    "properties": {
+      "data": {},
+      "loading": [],
+      "views": {},
     },
-    "selected": Array [],
+    "selected": [],
   },
-  "layout": Object {
+  "layout": {
     "panel": "Gene list",
-    "windows": Object {
+    "windows": {
       "direction": "row",
-      "first": Object {
+      "first": {
         "direction": "column",
-        "first": Object {
+        "first": {
           "direction": "row",
           "first": "UMAP",
           "second": "Cell sets and Metadata",
@@ -744,151 +744,151 @@ Object {
       "splitPercentage": 70,
     },
   },
-  "networkResources": Object {
+  "networkResources": {
     "domainName": undefined,
     "environment": undefined,
   },
-  "samples": Object {
-    "meta": Object {
+  "samples": {
+    "meta": {
       "error": false,
       "loading": false,
       "saving": false,
-      "validating": Array [],
+      "validating": [],
     },
-    "test9188-d682-test-mock-cb6d644cmock-0": Object {
+    "test9188-d682-test-mock-cb6d644cmock-0": {
       "createdDate": "2021-12-07 17:36:27.773+00",
       "experimentId": "testae48e318dab9a1bd0bexperiment-0",
-      "fileNames": Array [
+      "fileNames": [
         "matrix.mtx.gz",
         "barcodes.tsv.gz",
         "features.tsv.gz",
       ],
-      "files": Object {
-        "barcodes.tsv.gz": Object {
+      "files": {
+        "barcodes.tsv.gz": {
           "name": "barcodes.tsv.gz",
           "size": 100,
-          "upload": Object {
+          "upload": {
             "status": "uploaded",
           },
           "valid": true,
         },
-        "features.tsv.gz": Object {
+        "features.tsv.gz": {
           "name": "features.tsv.gz",
           "size": 100,
-          "upload": Object {
+          "upload": {
             "status": "uploaded",
           },
           "valid": true,
         },
-        "matrix.mtx.gz": Object {
+        "matrix.mtx.gz": {
           "name": "matrix.mtx.gz",
           "size": 1000,
-          "upload": Object {
+          "upload": {
             "status": "uploaded",
           },
           "valid": true,
         },
       },
       "lastModified": "2021-12-07 17:38:42.036+00",
-      "metadata": Object {
+      "metadata": {
         "age": "BL",
         "timePoint": "BL",
       },
       "name": "Mock sample 0",
-      "options": Object {},
+      "options": {},
       "type": "10x",
       "uuid": "test9188-d682-test-mock-cb6d644cmock-0",
     },
-    "test9188-d682-test-mock-cb6d644cmock-1": Object {
+    "test9188-d682-test-mock-cb6d644cmock-1": {
       "createdDate": "2021-12-07 17:36:27.773+00",
       "experimentId": "testae48e318dab9a1bd0bexperiment-0",
-      "fileNames": Array [
+      "fileNames": [
         "matrix.mtx.gz",
         "barcodes.tsv.gz",
         "features.tsv.gz",
       ],
-      "files": Object {
-        "barcodes.tsv.gz": Object {
+      "files": {
+        "barcodes.tsv.gz": {
           "name": "barcodes.tsv.gz",
           "size": 100,
-          "upload": Object {
+          "upload": {
             "status": "uploaded",
           },
           "valid": true,
         },
-        "features.tsv.gz": Object {
+        "features.tsv.gz": {
           "name": "features.tsv.gz",
           "size": 100,
-          "upload": Object {
+          "upload": {
             "status": "uploaded",
           },
           "valid": true,
         },
-        "matrix.mtx.gz": Object {
+        "matrix.mtx.gz": {
           "name": "matrix.mtx.gz",
           "size": 1000,
-          "upload": Object {
+          "upload": {
             "status": "uploaded",
           },
           "valid": true,
         },
       },
       "lastModified": "2021-12-07 17:38:42.036+00",
-      "metadata": Object {
+      "metadata": {
         "age": "BL",
         "timePoint": "BL",
       },
       "name": "Mock sample 1",
-      "options": Object {},
+      "options": {},
       "type": "10x",
       "uuid": "test9188-d682-test-mock-cb6d644cmock-1",
     },
-    "test9188-d682-test-mock-cb6d644cmock-2": Object {
+    "test9188-d682-test-mock-cb6d644cmock-2": {
       "createdDate": "2021-12-07 17:36:27.773+00",
       "experimentId": "testae48e318dab9a1bd0bexperiment-0",
-      "fileNames": Array [
+      "fileNames": [
         "matrix.mtx.gz",
         "barcodes.tsv.gz",
         "features.tsv.gz",
       ],
-      "files": Object {
-        "barcodes.tsv.gz": Object {
+      "files": {
+        "barcodes.tsv.gz": {
           "name": "barcodes.tsv.gz",
           "size": 100,
-          "upload": Object {
+          "upload": {
             "status": "uploaded",
           },
           "valid": true,
         },
-        "features.tsv.gz": Object {
+        "features.tsv.gz": {
           "name": "features.tsv.gz",
           "size": 100,
-          "upload": Object {
+          "upload": {
             "status": "uploaded",
           },
           "valid": true,
         },
-        "matrix.mtx.gz": Object {
+        "matrix.mtx.gz": {
           "name": "matrix.mtx.gz",
           "size": 1000,
-          "upload": Object {
+          "upload": {
             "status": "uploaded",
           },
           "valid": true,
         },
       },
       "lastModified": "2021-12-07 17:38:42.036+00",
-      "metadata": Object {
+      "metadata": {
         "age": "BL",
         "timePoint": "BL",
       },
       "name": "Mock sample 2",
-      "options": Object {},
+      "options": {},
       "type": "10x",
       "uuid": "test9188-d682-test-mock-cb6d644cmock-2",
     },
   },
-  "user": Object {
+  "user": {
     "current": null,
   },
 }

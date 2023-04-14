@@ -2,9 +2,6 @@
 
 exports[`SearchMenu renders correctly with category info 1`] = `
 <Tooltip
-  arrowPointAtCenter={false}
-  autoAdjustOverflow={true}
-  mouseEnterDelay={0.1}
   mouseLeaveDelay={0}
   placement="left"
 >
@@ -14,9 +11,6 @@ exports[`SearchMenu renders correctly with category info 1`] = `
 
 exports[`SearchMenu renders correctly with category info 2`] = `
 <Tooltip
-  arrowPointAtCenter={false}
-  autoAdjustOverflow={true}
-  mouseEnterDelay={0.1}
   mouseLeaveDelay={0}
   placement="left"
 >
@@ -26,9 +20,6 @@ exports[`SearchMenu renders correctly with category info 2`] = `
 
 exports[`SearchMenu renders correctly with options and one category 1`] = `
 <Tooltip
-  arrowPointAtCenter={false}
-  autoAdjustOverflow={true}
-  mouseEnterDelay={0.1}
   mouseLeaveDelay={0}
   placement="left"
 >
@@ -38,9 +29,6 @@ exports[`SearchMenu renders correctly with options and one category 1`] = `
 
 exports[`SearchMenu renders correctly with options and one category 2`] = `
 <Tooltip
-  arrowPointAtCenter={false}
-  autoAdjustOverflow={true}
-  mouseEnterDelay={0.1}
   mouseLeaveDelay={0}
   placement="left"
 >

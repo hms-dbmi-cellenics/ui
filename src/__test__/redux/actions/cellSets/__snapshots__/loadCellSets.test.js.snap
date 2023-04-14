@@ -1,17 +1,17 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`loadCellSets action Dispatches a loaded action when run with the initial state. 1`] = `
-Array [
-  Object {
+[
+  {
     "type": "cellSets/loading",
   },
-  Object {
-    "payload": Object {
-      "data": Array [
-        Object {
-          "children": Array [
-            Object {
-              "cellIds": Array [
+  {
+    "payload": {
+      "data": [
+        {
+          "children": [
+            {
+              "cellIds": [
                 5,
                 18,
                 33,
@@ -24,8 +24,8 @@ Array [
               "rootNode": false,
               "type": "cellSets",
             },
-            Object {
-              "cellIds": Array [
+            {
+              "cellIds": [
                 11,
                 23,
                 27,
@@ -38,8 +38,8 @@ Array [
               "rootNode": false,
               "type": "cellSets",
             },
-            Object {
-              "cellIds": Array [
+            {
+              "cellIds": [
                 68,
                 112,
                 122,
@@ -52,8 +52,8 @@ Array [
               "rootNode": false,
               "type": "cellSets",
             },
-            Object {
-              "cellIds": Array [
+            {
+              "cellIds": [
                 3,
                 34,
                 42,
@@ -72,10 +72,10 @@ Array [
           "rootNode": true,
           "type": "cellSets",
         },
-        Object {
-          "children": Array [
-            Object {
-              "cellIds": Array [
+        {
+          "children": [
+            {
+              "cellIds": [
                 3103,
                 449,
                 4023,
@@ -87,8 +87,8 @@ Array [
               "name": "New Cluster",
               "type": "cellSets",
             },
-            Object {
-              "cellIds": Array [
+            {
+              "cellIds": [
                 6536,
                 3654,
                 1075,
@@ -106,10 +106,10 @@ Array [
           "rootNode": true,
           "type": "cellSets",
         },
-        Object {
-          "children": Array [
-            Object {
-              "cellIds": Array [
+        {
+          "children": [
+            {
+              "cellIds": [
                 0,
                 1,
                 2,
@@ -136,12 +136,12 @@ Array [
 `;
 
 exports[`loadCellSets action Dispatches an error condition if fetch fails 1`] = `
-Array [
-  Object {
+[
+  {
     "type": "cellSets/loading",
   },
-  Object {
-    "payload": Object {
+  {
+    "payload": {
       "error": "We couldn't get the list of cell sets.",
     },
     "type": "cellSets/error",
@@ -150,17 +150,17 @@ Array [
 `;
 
 exports[`loadCellSets action Dispatches on initial load pending false and error state 1`] = `
-Array [
-  Object {
+[
+  {
     "type": "cellSets/loading",
   },
-  Object {
-    "payload": Object {
-      "data": Array [
-        Object {
-          "children": Array [
-            Object {
-              "cellIds": Array [
+  {
+    "payload": {
+      "data": [
+        {
+          "children": [
+            {
+              "cellIds": [
                 5,
                 18,
                 33,
@@ -173,8 +173,8 @@ Array [
               "rootNode": false,
               "type": "cellSets",
             },
-            Object {
-              "cellIds": Array [
+            {
+              "cellIds": [
                 11,
                 23,
                 27,
@@ -187,8 +187,8 @@ Array [
               "rootNode": false,
               "type": "cellSets",
             },
-            Object {
-              "cellIds": Array [
+            {
+              "cellIds": [
                 68,
                 112,
                 122,
@@ -201,8 +201,8 @@ Array [
               "rootNode": false,
               "type": "cellSets",
             },
-            Object {
-              "cellIds": Array [
+            {
+              "cellIds": [
                 3,
                 34,
                 42,
@@ -221,10 +221,10 @@ Array [
           "rootNode": true,
           "type": "cellSets",
         },
-        Object {
-          "children": Array [
-            Object {
-              "cellIds": Array [
+        {
+          "children": [
+            {
+              "cellIds": [
                 3103,
                 449,
                 4023,
@@ -236,8 +236,8 @@ Array [
               "name": "New Cluster",
               "type": "cellSets",
             },
-            Object {
-              "cellIds": Array [
+            {
+              "cellIds": [
                 6536,
                 3654,
                 1075,
@@ -255,10 +255,10 @@ Array [
           "rootNode": true,
           "type": "cellSets",
         },
-        Object {
-          "children": Array [
-            Object {
-              "cellIds": Array [
+        {
+          "children": [
+            {
+              "cellIds": [
                 0,
                 1,
                 2,

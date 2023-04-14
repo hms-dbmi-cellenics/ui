@@ -34,7 +34,7 @@ jest.mock('react-resize-detector', () => (props) => {
 // EtagParams is the object that's passed to the function which generates ETag in fetchWork
 jest.mock('object-hash', () => {
   const objectHash = jest.requireActual('object-hash');
-  const mockWorkResultETag = jest.requireActual('__test__/test-utils/mockWorkResultETag').default;
+  const mockWorkResultETag = jest.requireActual('__test__/test-utils/mockWorkResultETag');
 
   const mockWorkRequestETag = (EtagParams) => `${EtagParams.body.name}`;
   const mockGeneExpressionETag = () => '1-marker-genes';

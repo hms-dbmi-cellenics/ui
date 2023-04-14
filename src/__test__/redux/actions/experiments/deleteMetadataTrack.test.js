@@ -10,8 +10,6 @@ import deleteMetadataTrack from 'redux/actions/experiments/deleteMetadataTrack';
 import initialExperimentState from 'redux/reducers/experiments';
 import initialSampleState from 'redux/reducers/samples';
 
-import '__test__/test-utils/setupTests';
-
 import { EXPERIMENTS_METADATA_DELETE } from 'redux/actionTypes/experiments';
 import { SAMPLES_METADATA_DELETE } from 'redux/actionTypes/samples';
 
