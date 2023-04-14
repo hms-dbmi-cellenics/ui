@@ -55,7 +55,7 @@ const onQCUpdate = (update, dispatch, experimentId) => {
   // If there was an error and no output was generated, return
   if (!output) return;
 
-  const processingConfigUpdate = output.config;
+  const { config: processingConfigUpdate, plotData } = output;
 
   if (processingConfigUpdate) {
     dispatch(updateProcessingSettingsFromQC(
@@ -66,9 +66,9 @@ const onQCUpdate = (update, dispatch, experimentId) => {
     ));
   }
 
-  if (output.plotData) {
-    Object.entries(output.plotData).forEach(([plotUuid, plotData]) => {
-      dispatch(updatePlotData(plotUuid, plotData));
+  if (plotData) {
+    Object.entries(plotData).forEach(([plotUuid, plotDataItem]) => {
+      dispatch(updatePlotData(plotUuid, plotDataItem));
     });
   }
 
