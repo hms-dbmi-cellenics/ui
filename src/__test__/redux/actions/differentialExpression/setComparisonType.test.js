@@ -6,8 +6,6 @@ import { DIFF_EXPR_COMPARISON_TYPE_SET } from 'redux/actionTypes/differentialExp
 
 import initialState from 'redux/reducers/differentialExpression/initialState';
 
-import '__test__/test-utils/setupTests';
-
 const mockStore = configureStore([thunk]);
 
 describe('setComparisonType action', () => {

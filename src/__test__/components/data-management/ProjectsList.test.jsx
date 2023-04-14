@@ -7,7 +7,6 @@ import '@testing-library/jest-dom';
 import initialState, { experimentTemplate } from 'redux/reducers/experiments/initialState';
 import ProjectsList from 'components/data-management/ProjectsList';
 import ProjectCard from 'components/data-management/ProjectCard';
-import '__test__/test-utils/setupTests';
 
 const mockStore = configureMockStore([thunk]);
 

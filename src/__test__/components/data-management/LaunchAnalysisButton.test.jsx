@@ -19,7 +19,6 @@ import { initialExperimentBackendStatus } from 'redux/reducers/backendStatus/ini
 
 import UploadStatus from 'utils/upload/UploadStatus';
 import calculateGem2sRerunStatus from 'utils/data-management/calculateGem2sRerunStatus';
-import '__test__/test-utils/setupTests';
 
 jest.mock('redux/actions/experimentSettings/updateExperimentInfo', () => jest.fn().mockReturnValue({ type: 'UPDATE_EXPERIMENT_INFO' }));
 jest.mock('redux/actions/pipeline', () => ({

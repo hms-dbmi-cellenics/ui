@@ -3,9 +3,7 @@
 import React, { useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
-import {
-  Space, Typography, Button, Dropdown, Menu,
-} from 'antd';
+import { Space, Typography, Button } from 'antd';
 import {
   cloneExperiment, updateExperiment, loadExperiments, setActiveExperiment,
 } from 'redux/actions/experiments';

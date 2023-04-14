@@ -11,6 +11,7 @@ module.exports = {
     'react-app-polyfill/jsdom',
     'jest-canvas-mock',
     '<rootDir>/src/__test__/test-utils/matchMedia.mock.js',
+    '<rootDir>/src/__test__/test-utils/jestShim.js',
   ],
   setupFilesAfterEnv: [
     '<rootDir>/src/__test__/test-utils/setupTests.js',
@@ -25,6 +26,7 @@ module.exports = {
     'endUserMessages\\.js',
     'pipelineStatusValues\\.js',
   ],
+  testEnvironment: 'jsdom',
   testPathIgnorePatterns: [
     '.*\\.mock\\.js',
     'test-utils',
@@ -32,7 +34,6 @@ module.exports = {
   transform: {
     '^.+\\.(js|jsx|ts|tsx)$': '<rootDir>/node_modules/babel-jest',
     '^.+\\.css$': '<rootDir>/config/jest/cssTransform.js',
-    '^(?!.*\\.(js|jsx|ts|tsx|css|json)$)': '<rootDir>/config/jest/fileTransform.js',
   },
   transformIgnorePatterns: [
     '[/\\\\]node_modules[/\\\\].+\\.(js|jsx|ts|tsx)$',
@@ -40,10 +41,10 @@ module.exports = {
   ],
   modulePaths: [],
   moduleDirectories: ['node_modules', 'src'],
-
   moduleNameMapper: {
     '^react-native$': 'react-native-web',
     '^.+\\.module\\.(css|sass|scss)$': 'identity-obj-proxy',
+    uuid: require.resolve('uuid'), // https://stackoverflow.com/a/73203803
   },
   moduleFileExtensions: [
     'web.js',

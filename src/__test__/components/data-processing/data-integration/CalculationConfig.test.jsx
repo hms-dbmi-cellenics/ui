@@ -10,7 +10,6 @@ import { initialEmbeddingState } from 'redux/reducers/embeddings/initialState';
 import { generateDataProcessingPlotUuid } from 'utils/generateCustomPlotUuid';
 
 import generateExperimentSettingsMock from '__test__/test-utils/experimentSettings.mock';
-import '__test__/test-utils/setupTests';
 
 import { screen, render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';

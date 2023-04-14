@@ -1,454 +1,454 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Dot plot page Renders the plot page correctly 1`] = `
-Array [
-  Object {
-    "data": Array [
-      Object {
+[
+  {
+    "data": [
+      {
         "Average expression": 0.0417,
         "Cluster": "Cluster 5",
         "Fraction of cells expressing gene": 1.4031,
         "Gene": "Apoe",
       },
-      Object {
+      {
         "Average expression": 0.0273,
         "Cluster": "Cluster 6",
         "Fraction of cells expressing gene": 0.6678,
         "Gene": "Apoe",
       },
-      Object {
+      {
         "Average expression": 0.0276,
         "Cluster": "Cluster 7",
         "Fraction of cells expressing gene": 0.6211,
         "Gene": "Apoe",
       },
-      Object {
+      {
         "Average expression": 0.0254,
         "Cluster": "Cluster 8",
         "Fraction of cells expressing gene": 2.4631,
         "Gene": "Apoe",
       },
-      Object {
+      {
         "Average expression": 3.7359,
         "Cluster": "Cluster 9",
         "Fraction of cells expressing gene": 32.716,
         "Gene": "Apoe",
       },
-      Object {
+      {
         "Average expression": 0,
         "Cluster": "Cluster 10",
         "Fraction of cells expressing gene": 0,
         "Gene": "Apoe",
       },
-      Object {
+      {
         "Average expression": 95.087,
         "Cluster": "Cluster 11",
         "Fraction of cells expressing gene": 94.6429,
         "Gene": "Apoe",
       },
-      Object {
+      {
         "Average expression": 75.4928,
         "Cluster": "Cluster 12",
         "Fraction of cells expressing gene": 63.6364,
         "Gene": "Apoe",
       },
-      Object {
+      {
         "Average expression": 5.2359,
         "Cluster": "Cluster 13",
         "Fraction of cells expressing gene": 19.0476,
         "Gene": "Apoe",
       },
-      Object {
+      {
         "Average expression": 0.0246,
         "Cluster": "Cluster 14",
         "Fraction of cells expressing gene": 1.9608,
         "Gene": "Apoe",
       },
-      Object {
+      {
         "Average expression": 0.0251,
         "Cluster": "Cluster 0",
         "Fraction of cells expressing gene": 0.8608,
         "Gene": "Apoe",
       },
-      Object {
+      {
         "Average expression": 0.0102,
         "Cluster": "Cluster 1",
         "Fraction of cells expressing gene": 0.3534,
         "Gene": "Apoe",
       },
-      Object {
+      {
         "Average expression": 0.024,
         "Cluster": "Cluster 2",
         "Fraction of cells expressing gene": 0.5848,
         "Gene": "Apoe",
       },
-      Object {
+      {
         "Average expression": 0.0283,
         "Cluster": "Cluster 3",
         "Fraction of cells expressing gene": 0.7857,
         "Gene": "Apoe",
       },
-      Object {
+      {
         "Average expression": 0.0213,
         "Cluster": "Cluster 4",
         "Fraction of cells expressing gene": 0.4551,
         "Gene": "Apoe",
       },
-      Object {
+      {
         "Average expression": 0.0449,
         "Cluster": "Cluster 5",
         "Fraction of cells expressing gene": 1.4031,
         "Gene": "Chil3",
       },
-      Object {
+      {
         "Average expression": 0.0184,
         "Cluster": "Cluster 6",
         "Fraction of cells expressing gene": 0.5008,
         "Gene": "Chil3",
       },
-      Object {
+      {
         "Average expression": 0.0206,
         "Cluster": "Cluster 7",
         "Fraction of cells expressing gene": 0.6211,
         "Gene": "Chil3",
       },
-      Object {
+      {
         "Average expression": 0,
         "Cluster": "Cluster 8",
         "Fraction of cells expressing gene": 0,
         "Gene": "Chil3",
       },
-      Object {
+      {
         "Average expression": 0.0073,
         "Cluster": "Cluster 9",
         "Fraction of cells expressing gene": 0.6173,
         "Gene": "Chil3",
       },
-      Object {
+      {
         "Average expression": 0.0112,
         "Cluster": "Cluster 10",
         "Fraction of cells expressing gene": 0.7634,
         "Gene": "Chil3",
       },
-      Object {
+      {
         "Average expression": 2.3613,
         "Cluster": "Cluster 11",
         "Fraction of cells expressing gene": 17.8571,
         "Gene": "Chil3",
       },
-      Object {
+      {
         "Average expression": 10.7617,
         "Cluster": "Cluster 12",
         "Fraction of cells expressing gene": 37.5,
         "Gene": "Chil3",
       },
-      Object {
+      {
         "Average expression": 0,
         "Cluster": "Cluster 13",
         "Fraction of cells expressing gene": 0,
         "Gene": "Chil3",
       },
-      Object {
+      {
         "Average expression": 165.1493,
         "Cluster": "Cluster 14",
         "Fraction of cells expressing gene": 100,
         "Gene": "Chil3",
       },
-      Object {
+      {
         "Average expression": 0.0227,
         "Cluster": "Cluster 0",
         "Fraction of cells expressing gene": 0.7174,
         "Gene": "Chil3",
       },
-      Object {
+      {
         "Average expression": 0.0161,
         "Cluster": "Cluster 1",
         "Fraction of cells expressing gene": 0.7067,
         "Gene": "Chil3",
       },
-      Object {
+      {
         "Average expression": 0.0297,
         "Cluster": "Cluster 2",
         "Fraction of cells expressing gene": 0.8447,
         "Gene": "Chil3",
       },
-      Object {
+      {
         "Average expression": 0.0292,
         "Cluster": "Cluster 3",
         "Fraction of cells expressing gene": 0.7857,
         "Gene": "Chil3",
       },
-      Object {
+      {
         "Average expression": 0.0407,
         "Cluster": "Cluster 4",
         "Fraction of cells expressing gene": 0.7964,
         "Gene": "Chil3",
       },
-      Object {
+      {
         "Average expression": 0.3116,
         "Cluster": "Cluster 5",
         "Fraction of cells expressing gene": 5.102,
         "Gene": "Gzma",
       },
-      Object {
+      {
         "Average expression": 20.4925,
         "Cluster": "Cluster 6",
         "Fraction of cells expressing gene": 23.5392,
         "Gene": "Gzma",
       },
-      Object {
+      {
         "Average expression": 176.8351,
         "Cluster": "Cluster 7",
         "Fraction of cells expressing gene": 91.3043,
         "Gene": "Gzma",
       },
-      Object {
+      {
         "Average expression": 115.7325,
         "Cluster": "Cluster 8",
         "Fraction of cells expressing gene": 66.9951,
         "Gene": "Gzma",
       },
-      Object {
+      {
         "Average expression": 0.1699,
         "Cluster": "Cluster 9",
         "Fraction of cells expressing gene": 4.9383,
         "Gene": "Gzma",
       },
-      Object {
+      {
         "Average expression": 0.4124,
         "Cluster": "Cluster 10",
         "Fraction of cells expressing gene": 6.8702,
         "Gene": "Gzma",
       },
-      Object {
+      {
         "Average expression": 0.1222,
         "Cluster": "Cluster 11",
         "Fraction of cells expressing gene": 4.4643,
         "Gene": "Gzma",
       },
-      Object {
+      {
         "Average expression": 0.1052,
         "Cluster": "Cluster 12",
         "Fraction of cells expressing gene": 2.2727,
         "Gene": "Gzma",
       },
-      Object {
+      {
         "Average expression": 0.4625,
         "Cluster": "Cluster 13",
         "Fraction of cells expressing gene": 6.3492,
         "Gene": "Gzma",
       },
-      Object {
+      {
         "Average expression": 0.6459,
         "Cluster": "Cluster 14",
         "Fraction of cells expressing gene": 11.7647,
         "Gene": "Gzma",
       },
-      Object {
+      {
         "Average expression": 0.0839,
         "Cluster": "Cluster 0",
         "Fraction of cells expressing gene": 2.3434,
         "Gene": "Gzma",
       },
-      Object {
+      {
         "Average expression": 0.2872,
         "Cluster": "Cluster 1",
         "Fraction of cells expressing gene": 3.7102,
         "Gene": "Gzma",
       },
-      Object {
+      {
         "Average expression": 0.0892,
         "Cluster": "Cluster 2",
         "Fraction of cells expressing gene": 2.2742,
         "Gene": "Gzma",
       },
-      Object {
+      {
         "Average expression": 0.3174,
         "Cluster": "Cluster 3",
         "Fraction of cells expressing gene": 5.7143,
         "Gene": "Gzma",
       },
-      Object {
+      {
         "Average expression": 0.1183,
         "Cluster": "Cluster 4",
         "Fraction of cells expressing gene": 3.0717,
         "Gene": "Gzma",
       },
-      Object {
+      {
         "Average expression": 0.0134,
         "Cluster": "Cluster 5",
         "Fraction of cells expressing gene": 0.3827,
         "Gene": "Ifitm3",
       },
-      Object {
+      {
         "Average expression": 0.0311,
         "Cluster": "Cluster 6",
         "Fraction of cells expressing gene": 0.6678,
         "Gene": "Ifitm3",
       },
-      Object {
+      {
         "Average expression": 0.0844,
         "Cluster": "Cluster 7",
         "Fraction of cells expressing gene": 0.8282,
         "Gene": "Ifitm3",
       },
-      Object {
+      {
         "Average expression": 0.0659,
         "Cluster": "Cluster 8",
         "Fraction of cells expressing gene": 6.8966,
         "Gene": "Ifitm3",
       },
-      Object {
+      {
         "Average expression": 0.2257,
         "Cluster": "Cluster 9",
         "Fraction of cells expressing gene": 3.0864,
         "Gene": "Ifitm3",
       },
-      Object {
+      {
         "Average expression": 0.0667,
         "Cluster": "Cluster 10",
         "Fraction of cells expressing gene": 3.0534,
         "Gene": "Ifitm3",
       },
-      Object {
+      {
         "Average expression": 43.5782,
         "Cluster": "Cluster 11",
         "Fraction of cells expressing gene": 99.1071,
         "Gene": "Ifitm3",
       },
-      Object {
+      {
         "Average expression": 51.6382,
         "Cluster": "Cluster 12",
         "Fraction of cells expressing gene": 87.5,
         "Gene": "Ifitm3",
       },
-      Object {
+      {
         "Average expression": 23.2764,
         "Cluster": "Cluster 13",
         "Fraction of cells expressing gene": 68.254,
         "Gene": "Ifitm3",
       },
-      Object {
+      {
         "Average expression": 0.1597,
         "Cluster": "Cluster 14",
         "Fraction of cells expressing gene": 1.9608,
         "Gene": "Ifitm3",
       },
-      Object {
+      {
         "Average expression": 0.0226,
         "Cluster": "Cluster 0",
         "Fraction of cells expressing gene": 0.7652,
         "Gene": "Ifitm3",
       },
-      Object {
+      {
         "Average expression": 0.0255,
         "Cluster": "Cluster 1",
         "Fraction of cells expressing gene": 0.9423,
         "Gene": "Ifitm3",
       },
-      Object {
+      {
         "Average expression": 0.0375,
         "Cluster": "Cluster 2",
         "Fraction of cells expressing gene": 1.0396,
         "Gene": "Ifitm3",
       },
-      Object {
+      {
         "Average expression": 0.0238,
         "Cluster": "Cluster 3",
         "Fraction of cells expressing gene": 0.5,
         "Gene": "Ifitm3",
       },
-      Object {
+      {
         "Average expression": 0.0275,
         "Cluster": "Cluster 4",
         "Fraction of cells expressing gene": 0.5688,
         "Gene": "Ifitm3",
       },
-      Object {
+      {
         "Average expression": 0.0488,
         "Cluster": "Cluster 5",
         "Fraction of cells expressing gene": 1.5306,
         "Gene": "Lyz2",
       },
-      Object {
+      {
         "Average expression": 0.0124,
         "Cluster": "Cluster 6",
         "Fraction of cells expressing gene": 0.5008,
         "Gene": "Lyz2",
       },
-      Object {
+      {
         "Average expression": 0.0648,
         "Cluster": "Cluster 7",
         "Fraction of cells expressing gene": 1.8634,
         "Gene": "Lyz2",
       },
-      Object {
+      {
         "Average expression": 0.034,
         "Cluster": "Cluster 8",
         "Fraction of cells expressing gene": 3.4483,
         "Gene": "Lyz2",
       },
-      Object {
+      {
         "Average expression": 0.0565,
         "Cluster": "Cluster 9",
         "Fraction of cells expressing gene": 1.8519,
         "Gene": "Lyz2",
       },
-      Object {
+      {
         "Average expression": 0.0293,
         "Cluster": "Cluster 10",
         "Fraction of cells expressing gene": 0.7634,
         "Gene": "Lyz2",
       },
-      Object {
+      {
         "Average expression": 110.1555,
         "Cluster": "Cluster 11",
         "Fraction of cells expressing gene": 93.75,
         "Gene": "Lyz2",
       },
-      Object {
+      {
         "Average expression": 238.1269,
         "Cluster": "Cluster 12",
         "Fraction of cells expressing gene": 86.3636,
         "Gene": "Lyz2",
       },
-      Object {
+      {
         "Average expression": 2.088,
         "Cluster": "Cluster 13",
         "Fraction of cells expressing gene": 4.7619,
         "Gene": "Lyz2",
       },
-      Object {
+      {
         "Average expression": 128.2302,
         "Cluster": "Cluster 14",
         "Fraction of cells expressing gene": 100,
         "Gene": "Lyz2",
       },
-      Object {
+      {
         "Average expression": 0.0358,
         "Cluster": "Cluster 0",
         "Fraction of cells expressing gene": 1.1478,
         "Gene": "Lyz2",
       },
-      Object {
+      {
         "Average expression": 0.0561,
         "Cluster": "Cluster 1",
         "Fraction of cells expressing gene": 2.1201,
         "Gene": "Lyz2",
       },
-      Object {
+      {
         "Average expression": 0.0984,
         "Cluster": "Cluster 2",
         "Fraction of cells expressing gene": 2.3392,
         "Gene": "Lyz2",
       },
-      Object {
+      {
         "Average expression": 0.054,
         "Cluster": "Cluster 3",
         "Fraction of cells expressing gene": 1.5,
         "Gene": "Lyz2",
       },
-      Object {
+      {
         "Average expression": 0.1078,
         "Cluster": "Cluster 4",
         "Fraction of cells expressing gene": 1.3652,
@@ -457,28 +457,28 @@ Array [
     ],
     "filename": "Test_Experiment-dot_plot-louvain-All",
   },
-  Object {},
+  {},
 ]
 `;
 
 exports[`Dot plot page Should show a no data error if user is using marker gene and selected filter sets are not represented in more than 1 group in the base cell set 1`] = `
-Array [
-  Array [
+[
+  [
     "paginated-gene-expression",
     "testae48e318dab9a1bd0bexperiment",
     "ListGenes",
   ],
-  Array [
+  [
     "dot-plot-data",
     "testae48e318dab9a1bd0bexperiment",
     "DotPlot",
   ],
-  Array [
+  [
     "dot-plot-data",
     "testae48e318dab9a1bd0bexperiment",
     "DotPlot",
   ],
-  Array [
+  [
     "dot-plot-data",
     "testae48e318dab9a1bd0bexperiment",
     "DotPlot",

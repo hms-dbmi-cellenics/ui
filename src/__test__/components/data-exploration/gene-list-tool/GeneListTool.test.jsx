@@ -10,8 +10,6 @@ import GeneListTool from 'components/data-exploration/gene-list-tool/GeneListToo
 
 import Loader from 'components/Loader';
 
-import '__test__/test-utils/setupTests';
-
 jest.mock('utils/getTimeoutForWorkerTask', () => ({
   __esModule: true, // this property makes it work
   default: () => 60,

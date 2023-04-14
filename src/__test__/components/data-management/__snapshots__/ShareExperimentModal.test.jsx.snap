@@ -1,11 +1,11 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Share expeirment modal Inviting users works 1`] = `
-Array [
+[
   "http://localhost:3000/v2/access/testae48e318dab9a1bd0bexperiment",
-  Object {
-    "body": "{\\"projectUuid\\":\\"testae48e318dab9a1bd0bexperiment\\",\\"role\\":\\"explorer\\",\\"userEmail\\":\\"asd@asd.com\\"}",
-    "headers": Object {
+  {
+    "body": "{"projectUuid":"testae48e318dab9a1bd0bexperiment","role":"explorer","userEmail":"asd@asd.com"}",
+    "headers": {
       "Content-Type": "application/json",
     },
     "method": "PUT",

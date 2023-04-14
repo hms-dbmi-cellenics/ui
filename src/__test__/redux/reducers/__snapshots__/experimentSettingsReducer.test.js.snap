@@ -1,33 +1,33 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`experimentSettingsReducer Adds new object properly 1`] = `
-Object {
-  "info": Object {
+{
+  "info": {
     "experimentId": null,
     "experimentName": null,
     "pipelineVersion": null,
-    "sampleIds": Array [],
+    "sampleIds": [],
   },
-  "originalProcessing": Object {
-    "configureEmbedding": Object {
-      "embeddingSettings": Object {
-        "newProperty": Object {
+  "originalProcessing": {
+    "configureEmbedding": {
+      "embeddingSettings": {
+        "newProperty": {
           "name": "a",
           "value": "b",
         },
       },
     },
   },
-  "processing": Object {
-    "configureEmbedding": Object {
-      "embeddingSettings": Object {
-        "newProperty": Object {
+  "processing": {
+    "configureEmbedding": {
+      "embeddingSettings": {
+        "newProperty": {
           "name": "a",
           "value": "b",
         },
       },
     },
-    "meta": Object {
+    "meta": {
       "changedQCFilters": Set {},
       "completingStepError": false,
       "loading": false,
@@ -38,27 +38,27 @@ Object {
 `;
 
 exports[`experimentSettingsReducer Adds new value properly 1`] = `
-Object {
-  "info": Object {
+{
+  "info": {
     "experimentId": null,
     "experimentName": null,
     "pipelineVersion": null,
-    "sampleIds": Array [],
+    "sampleIds": [],
   },
-  "originalProcessing": Object {
-    "configureEmbedding": Object {
-      "embeddingSettings": Object {
+  "originalProcessing": {
+    "configureEmbedding": {
+      "embeddingSettings": {
         "newProperty": "property",
       },
     },
   },
-  "processing": Object {
-    "configureEmbedding": Object {
-      "embeddingSettings": Object {
+  "processing": {
+    "configureEmbedding": {
+      "embeddingSettings": {
         "newProperty": "property",
       },
     },
-    "meta": Object {
+    "meta": {
       "changedQCFilters": Set {},
       "completingStepError": false,
       "loading": false,
@@ -69,51 +69,51 @@ Object {
 `;
 
 exports[`experimentSettingsReducer Changing filter enabled property updates sample filter enabled property as well 1`] = `
-Object {
-  "info": Object {
+{
+  "info": {
     "experimentId": null,
     "experimentName": null,
     "pipelineVersion": 1,
-    "sampleIds": Array [],
+    "sampleIds": [],
   },
-  "originalProcessing": Object {
-    "cellSizeDistribution": Object {
-      "sample-KO": Object {
+  "originalProcessing": {
+    "cellSizeDistribution": {
+      "sample-KO": {
         "auto": true,
         "enabled": true,
-        "filterSettings": Object {
+        "filterSettings": {
           "binStep": 200,
           "minCellSize": 10800,
         },
       },
     },
-    "classifier": Object {
-      "sample-KO": Object {
+    "classifier": {
+      "sample-KO": {
         "auto": true,
         "enabled": true,
-        "filterSettings": Object {
+        "filterSettings": {
           "FDR": 0.1,
         },
         "prefiltered": false,
       },
     },
-    "configureEmbedding": Object {
-      "clusteringSettings": Object {
+    "configureEmbedding": {
+      "clusteringSettings": {
         "method": "louvain",
-        "methodSettings": Object {
-          "louvain": Object {
+        "methodSettings": {
+          "louvain": {
             "resolution": 0.5,
           },
         },
       },
-      "embeddingSettings": Object {
+      "embeddingSettings": {
         "method": "umap",
-        "methodSettings": Object {
-          "tsne": Object {
+        "methodSettings": {
+          "tsne": {
             "learningRate": 200,
             "perplexity": 30,
           },
-          "umap": Object {
+          "umap": {
             "distanceMetric": "euclidean",
             "minimumDistance": 0.1,
           },
@@ -121,59 +121,59 @@ Object {
       },
       "enabled": true,
     },
-    "dataIntegration": Object {
-      "dataIntegration": Object {
+    "dataIntegration": {
+      "dataIntegration": {
         "method": "harmony",
-        "methodSettings": Object {
-          "fastmnn": Object {
+        "methodSettings": {
+          "fastmnn": {
             "normalisation": "logNormalize",
             "numGenes": 2000,
           },
-          "harmony": Object {
+          "harmony": {
             "normalisation": "logNormalize",
             "numGenes": 2000,
           },
-          "seuratv4": Object {
+          "seuratv4": {
             "normalisation": "logNormalize",
             "numGenes": 2000,
           },
-          "unisample": Object {
+          "unisample": {
             "normalisation": "logNormalize",
             "numGenes": 2000,
           },
         },
       },
-      "dimensionalityReduction": Object {
-        "excludeGeneCategories": Array [],
+      "dimensionalityReduction": {
+        "excludeGeneCategories": [],
         "method": "rpca",
         "numPCs": 30,
       },
       "enabled": true,
     },
-    "doubletScores": Object {
-      "sample-KO": Object {
+    "doubletScores": {
+      "sample-KO": {
         "auto": true,
         "enabled": true,
-        "filterSettings": Object {
+        "filterSettings": {
           "binStep": 0.05,
           "probabilityThreshold": 0.2,
         },
       },
     },
-    "meta": Object {
+    "meta": {
       "changedQCFilters": Set {},
       "completingStepError": false,
       "loading": false,
       "loadingSettingsError": false,
     },
-    "mitochondrialContent": Object {
-      "sample-KO": Object {
+    "mitochondrialContent": {
+      "sample-KO": {
         "auto": true,
         "enabled": true,
-        "filterSettings": Object {
+        "filterSettings": {
           "method": "absoluteThreshold",
-          "methodSettings": Object {
-            "absoluteThreshold": Object {
+          "methodSettings": {
+            "absoluteThreshold": {
               "binStep": 200,
               "maxFraction": 0.1,
             },
@@ -181,14 +181,14 @@ Object {
         },
       },
     },
-    "numGenesVsNumUmis": Object {
-      "sample-KO": Object {
+    "numGenesVsNumUmis": {
+      "sample-KO": {
         "auto": true,
         "enabled": true,
-        "filterSettings": Object {
+        "filterSettings": {
           "regressionType": "gam",
-          "regressionTypeSettings": Object {
-            "gam": Object {
+          "regressionTypeSettings": {
+            "gam": {
               "p.level": 0.00009,
             },
           },
@@ -196,44 +196,44 @@ Object {
       },
     },
   },
-  "processing": Object {
-    "cellSizeDistribution": Object {
-      "sample-KO": Object {
+  "processing": {
+    "cellSizeDistribution": {
+      "sample-KO": {
         "auto": true,
         "enabled": false,
-        "filterSettings": Object {
+        "filterSettings": {
           "binStep": 200,
           "minCellSize": 10800,
         },
       },
     },
-    "classifier": Object {
-      "sample-KO": Object {
+    "classifier": {
+      "sample-KO": {
         "auto": true,
         "enabled": true,
-        "filterSettings": Object {
+        "filterSettings": {
           "FDR": 0.1,
         },
         "prefiltered": false,
       },
     },
-    "configureEmbedding": Object {
-      "clusteringSettings": Object {
+    "configureEmbedding": {
+      "clusteringSettings": {
         "method": "louvain",
-        "methodSettings": Object {
-          "louvain": Object {
+        "methodSettings": {
+          "louvain": {
             "resolution": 0.5,
           },
         },
       },
-      "embeddingSettings": Object {
+      "embeddingSettings": {
         "method": "umap",
-        "methodSettings": Object {
-          "tsne": Object {
+        "methodSettings": {
+          "tsne": {
             "learningRate": 200,
             "perplexity": 30,
           },
-          "umap": Object {
+          "umap": {
             "distanceMetric": "euclidean",
             "minimumDistance": 0.1,
           },
@@ -241,46 +241,46 @@ Object {
       },
       "enabled": true,
     },
-    "dataIntegration": Object {
-      "dataIntegration": Object {
+    "dataIntegration": {
+      "dataIntegration": {
         "method": "harmony",
-        "methodSettings": Object {
-          "fastmnn": Object {
+        "methodSettings": {
+          "fastmnn": {
             "normalisation": "logNormalize",
             "numGenes": 2000,
           },
-          "harmony": Object {
+          "harmony": {
             "normalisation": "logNormalize",
             "numGenes": 2000,
           },
-          "seuratv4": Object {
+          "seuratv4": {
             "normalisation": "logNormalize",
             "numGenes": 2000,
           },
-          "unisample": Object {
+          "unisample": {
             "normalisation": "logNormalize",
             "numGenes": 2000,
           },
         },
       },
-      "dimensionalityReduction": Object {
-        "excludeGeneCategories": Array [],
+      "dimensionalityReduction": {
+        "excludeGeneCategories": [],
         "method": "rpca",
         "numPCs": 30,
       },
       "enabled": true,
     },
-    "doubletScores": Object {
-      "sample-KO": Object {
+    "doubletScores": {
+      "sample-KO": {
         "auto": true,
         "enabled": true,
-        "filterSettings": Object {
+        "filterSettings": {
           "binStep": 0.05,
           "probabilityThreshold": 0.2,
         },
       },
     },
-    "meta": Object {
+    "meta": {
       "changedQCFilters": Set {
         "cellSizeDistribution",
       },
@@ -288,14 +288,14 @@ Object {
       "loading": false,
       "loadingSettingsError": false,
     },
-    "mitochondrialContent": Object {
-      "sample-KO": Object {
+    "mitochondrialContent": {
+      "sample-KO": {
         "auto": true,
         "enabled": true,
-        "filterSettings": Object {
+        "filterSettings": {
           "method": "absoluteThreshold",
-          "methodSettings": Object {
-            "absoluteThreshold": Object {
+          "methodSettings": {
+            "absoluteThreshold": {
               "binStep": 200,
               "maxFraction": 0.1,
             },
@@ -303,14 +303,14 @@ Object {
         },
       },
     },
-    "numGenesVsNumUmis": Object {
-      "sample-KO": Object {
+    "numGenesVsNumUmis": {
+      "sample-KO": {
         "auto": true,
         "enabled": true,
-        "filterSettings": Object {
+        "filterSettings": {
           "regressionType": "gam",
-          "regressionTypeSettings": Object {
-            "gam": Object {
+          "regressionTypeSettings": {
+            "gam": {
               "p.level": 0.00009,
             },
           },
@@ -322,51 +322,51 @@ Object {
 `;
 
 exports[`experimentSettingsReducer Correctly updates pipelineVersion 1`] = `
-Object {
-  "info": Object {
+{
+  "info": {
     "experimentId": null,
     "experimentName": null,
     "pipelineVersion": 2,
-    "sampleIds": Array [],
+    "sampleIds": [],
   },
-  "originalProcessing": Object {
-    "cellSizeDistribution": Object {
-      "sample-KO": Object {
+  "originalProcessing": {
+    "cellSizeDistribution": {
+      "sample-KO": {
         "auto": true,
         "enabled": true,
-        "filterSettings": Object {
+        "filterSettings": {
           "binStep": 200,
           "minCellSize": 10800,
         },
       },
     },
-    "classifier": Object {
-      "sample-KO": Object {
+    "classifier": {
+      "sample-KO": {
         "auto": true,
         "enabled": true,
-        "filterSettings": Object {
+        "filterSettings": {
           "FDR": 0.1,
         },
         "prefiltered": false,
       },
     },
-    "configureEmbedding": Object {
-      "clusteringSettings": Object {
+    "configureEmbedding": {
+      "clusteringSettings": {
         "method": "louvain",
-        "methodSettings": Object {
-          "louvain": Object {
+        "methodSettings": {
+          "louvain": {
             "resolution": 0.5,
           },
         },
       },
-      "embeddingSettings": Object {
+      "embeddingSettings": {
         "method": "umap",
-        "methodSettings": Object {
-          "tsne": Object {
+        "methodSettings": {
+          "tsne": {
             "learningRate": 200,
             "perplexity": 30,
           },
-          "umap": Object {
+          "umap": {
             "distanceMetric": "euclidean",
             "minimumDistance": 0.1,
           },
@@ -374,59 +374,59 @@ Object {
       },
       "enabled": true,
     },
-    "dataIntegration": Object {
-      "dataIntegration": Object {
+    "dataIntegration": {
+      "dataIntegration": {
         "method": "harmony",
-        "methodSettings": Object {
-          "fastmnn": Object {
+        "methodSettings": {
+          "fastmnn": {
             "normalisation": "logNormalize",
             "numGenes": 2000,
           },
-          "harmony": Object {
+          "harmony": {
             "normalisation": "logNormalize",
             "numGenes": 2000,
           },
-          "seuratv4": Object {
+          "seuratv4": {
             "normalisation": "logNormalize",
             "numGenes": 2000,
           },
-          "unisample": Object {
+          "unisample": {
             "normalisation": "logNormalize",
             "numGenes": 2000,
           },
         },
       },
-      "dimensionalityReduction": Object {
-        "excludeGeneCategories": Array [],
+      "dimensionalityReduction": {
+        "excludeGeneCategories": [],
         "method": "rpca",
         "numPCs": 30,
       },
       "enabled": true,
     },
-    "doubletScores": Object {
-      "sample-KO": Object {
+    "doubletScores": {
+      "sample-KO": {
         "auto": true,
         "enabled": true,
-        "filterSettings": Object {
+        "filterSettings": {
           "binStep": 0.05,
           "probabilityThreshold": 0.2,
         },
       },
     },
-    "meta": Object {
+    "meta": {
       "changedQCFilters": Set {},
       "completingStepError": false,
       "loading": false,
       "loadingSettingsError": false,
     },
-    "mitochondrialContent": Object {
-      "sample-KO": Object {
+    "mitochondrialContent": {
+      "sample-KO": {
         "auto": true,
         "enabled": true,
-        "filterSettings": Object {
+        "filterSettings": {
           "method": "absoluteThreshold",
-          "methodSettings": Object {
-            "absoluteThreshold": Object {
+          "methodSettings": {
+            "absoluteThreshold": {
               "binStep": 200,
               "maxFraction": 0.1,
             },
@@ -434,14 +434,14 @@ Object {
         },
       },
     },
-    "numGenesVsNumUmis": Object {
-      "sample-KO": Object {
+    "numGenesVsNumUmis": {
+      "sample-KO": {
         "auto": true,
         "enabled": true,
-        "filterSettings": Object {
+        "filterSettings": {
           "regressionType": "gam",
-          "regressionTypeSettings": Object {
-            "gam": Object {
+          "regressionTypeSettings": {
+            "gam": {
               "p.level": 0.00009,
             },
           },
@@ -449,44 +449,44 @@ Object {
       },
     },
   },
-  "processing": Object {
-    "cellSizeDistribution": Object {
-      "sample-KO": Object {
+  "processing": {
+    "cellSizeDistribution": {
+      "sample-KO": {
         "auto": true,
         "enabled": true,
-        "filterSettings": Object {
+        "filterSettings": {
           "binStep": 200,
           "minCellSize": 10800,
         },
       },
     },
-    "classifier": Object {
-      "sample-KO": Object {
+    "classifier": {
+      "sample-KO": {
         "auto": true,
         "enabled": true,
-        "filterSettings": Object {
+        "filterSettings": {
           "FDR": 0.1,
         },
         "prefiltered": false,
       },
     },
-    "configureEmbedding": Object {
-      "clusteringSettings": Object {
+    "configureEmbedding": {
+      "clusteringSettings": {
         "method": "louvain",
-        "methodSettings": Object {
-          "louvain": Object {
+        "methodSettings": {
+          "louvain": {
             "resolution": 0.5,
           },
         },
       },
-      "embeddingSettings": Object {
+      "embeddingSettings": {
         "method": "umap",
-        "methodSettings": Object {
-          "tsne": Object {
+        "methodSettings": {
+          "tsne": {
             "learningRate": 200,
             "perplexity": 30,
           },
-          "umap": Object {
+          "umap": {
             "distanceMetric": "euclidean",
             "minimumDistance": 0.1,
           },
@@ -494,59 +494,59 @@ Object {
       },
       "enabled": true,
     },
-    "dataIntegration": Object {
-      "dataIntegration": Object {
+    "dataIntegration": {
+      "dataIntegration": {
         "method": "harmony",
-        "methodSettings": Object {
-          "fastmnn": Object {
+        "methodSettings": {
+          "fastmnn": {
             "normalisation": "logNormalize",
             "numGenes": 2000,
           },
-          "harmony": Object {
+          "harmony": {
             "normalisation": "logNormalize",
             "numGenes": 2000,
           },
-          "seuratv4": Object {
+          "seuratv4": {
             "normalisation": "logNormalize",
             "numGenes": 2000,
           },
-          "unisample": Object {
+          "unisample": {
             "normalisation": "logNormalize",
             "numGenes": 2000,
           },
         },
       },
-      "dimensionalityReduction": Object {
-        "excludeGeneCategories": Array [],
+      "dimensionalityReduction": {
+        "excludeGeneCategories": [],
         "method": "rpca",
         "numPCs": 30,
       },
       "enabled": true,
     },
-    "doubletScores": Object {
-      "sample-KO": Object {
+    "doubletScores": {
+      "sample-KO": {
         "auto": true,
         "enabled": true,
-        "filterSettings": Object {
+        "filterSettings": {
           "binStep": 0.05,
           "probabilityThreshold": 0.2,
         },
       },
     },
-    "meta": Object {
+    "meta": {
       "changedQCFilters": Set {},
       "completingStepError": false,
       "loading": false,
       "loadingSettingsError": false,
     },
-    "mitochondrialContent": Object {
-      "sample-KO": Object {
+    "mitochondrialContent": {
+      "sample-KO": {
         "auto": true,
         "enabled": true,
-        "filterSettings": Object {
+        "filterSettings": {
           "method": "absoluteThreshold",
-          "methodSettings": Object {
-            "absoluteThreshold": Object {
+          "methodSettings": {
+            "absoluteThreshold": {
               "binStep": 200,
               "maxFraction": 0.1,
             },
@@ -554,14 +554,14 @@ Object {
         },
       },
     },
-    "numGenesVsNumUmis": Object {
-      "sample-KO": Object {
+    "numGenesVsNumUmis": {
+      "sample-KO": {
         "auto": true,
         "enabled": true,
-        "filterSettings": Object {
+        "filterSettings": {
           "regressionType": "gam",
-          "regressionTypeSettings": Object {
-            "gam": Object {
+          "regressionTypeSettings": {
+            "gam": {
               "p.level": 0.00009,
             },
           },
@@ -573,27 +573,27 @@ Object {
 `;
 
 exports[`experimentSettingsReducer Updates existing value properly 1`] = `
-Object {
-  "info": Object {
+{
+  "info": {
     "experimentId": null,
     "experimentName": null,
     "pipelineVersion": null,
-    "sampleIds": Array [],
+    "sampleIds": [],
   },
-  "originalProcessing": Object {
-    "configureEmbedding": Object {
-      "embeddingSettings": Object {
+  "originalProcessing": {
+    "configureEmbedding": {
+      "embeddingSettings": {
         "method": "newMethod",
       },
     },
   },
-  "processing": Object {
-    "configureEmbedding": Object {
-      "embeddingSettings": Object {
+  "processing": {
+    "configureEmbedding": {
+      "embeddingSettings": {
         "method": "newMethod",
       },
     },
-    "meta": Object {
+    "meta": {
       "changedQCFilters": Set {},
       "completingStepError": false,
       "loading": false,
@@ -604,51 +604,51 @@ Object {
 `;
 
 exports[`experimentSettingsReducer Updates sample settings properly 1`] = `
-Object {
-  "info": Object {
+{
+  "info": {
     "experimentId": null,
     "experimentName": null,
     "pipelineVersion": 1,
-    "sampleIds": Array [],
+    "sampleIds": [],
   },
-  "originalProcessing": Object {
-    "cellSizeDistribution": Object {
-      "sample-KO": Object {
+  "originalProcessing": {
+    "cellSizeDistribution": {
+      "sample-KO": {
         "auto": true,
         "enabled": true,
-        "filterSettings": Object {
+        "filterSettings": {
           "binStep": 200,
           "minCellSize": 10800,
         },
       },
     },
-    "classifier": Object {
-      "sample-KO": Object {
+    "classifier": {
+      "sample-KO": {
         "auto": true,
         "enabled": true,
-        "filterSettings": Object {
+        "filterSettings": {
           "FDR": 0.1,
         },
         "prefiltered": false,
       },
     },
-    "configureEmbedding": Object {
-      "clusteringSettings": Object {
+    "configureEmbedding": {
+      "clusteringSettings": {
         "method": "louvain",
-        "methodSettings": Object {
-          "louvain": Object {
+        "methodSettings": {
+          "louvain": {
             "resolution": 0.5,
           },
         },
       },
-      "embeddingSettings": Object {
+      "embeddingSettings": {
         "method": "umap",
-        "methodSettings": Object {
-          "tsne": Object {
+        "methodSettings": {
+          "tsne": {
             "learningRate": 200,
             "perplexity": 30,
           },
-          "umap": Object {
+          "umap": {
             "distanceMetric": "euclidean",
             "minimumDistance": 0.1,
           },
@@ -656,59 +656,59 @@ Object {
       },
       "enabled": true,
     },
-    "dataIntegration": Object {
-      "dataIntegration": Object {
+    "dataIntegration": {
+      "dataIntegration": {
         "method": "harmony",
-        "methodSettings": Object {
-          "fastmnn": Object {
+        "methodSettings": {
+          "fastmnn": {
             "normalisation": "logNormalize",
             "numGenes": 2000,
           },
-          "harmony": Object {
+          "harmony": {
             "normalisation": "logNormalize",
             "numGenes": 2000,
           },
-          "seuratv4": Object {
+          "seuratv4": {
             "normalisation": "logNormalize",
             "numGenes": 2000,
           },
-          "unisample": Object {
+          "unisample": {
             "normalisation": "logNormalize",
             "numGenes": 2000,
           },
         },
       },
-      "dimensionalityReduction": Object {
-        "excludeGeneCategories": Array [],
+      "dimensionalityReduction": {
+        "excludeGeneCategories": [],
         "method": "rpca",
         "numPCs": 30,
       },
       "enabled": true,
     },
-    "doubletScores": Object {
-      "sample-KO": Object {
+    "doubletScores": {
+      "sample-KO": {
         "auto": true,
         "enabled": true,
-        "filterSettings": Object {
+        "filterSettings": {
           "binStep": 0.05,
           "probabilityThreshold": 0.2,
         },
       },
     },
-    "meta": Object {
+    "meta": {
       "changedQCFilters": Set {},
       "completingStepError": false,
       "loading": false,
       "loadingSettingsError": false,
     },
-    "mitochondrialContent": Object {
-      "sample-KO": Object {
+    "mitochondrialContent": {
+      "sample-KO": {
         "auto": true,
         "enabled": true,
-        "filterSettings": Object {
+        "filterSettings": {
           "method": "absoluteThreshold",
-          "methodSettings": Object {
-            "absoluteThreshold": Object {
+          "methodSettings": {
+            "absoluteThreshold": {
               "binStep": 200,
               "maxFraction": 0.1,
             },
@@ -716,14 +716,14 @@ Object {
         },
       },
     },
-    "numGenesVsNumUmis": Object {
-      "sample-KO": Object {
+    "numGenesVsNumUmis": {
+      "sample-KO": {
         "auto": true,
         "enabled": true,
-        "filterSettings": Object {
+        "filterSettings": {
           "regressionType": "gam",
-          "regressionTypeSettings": Object {
-            "gam": Object {
+          "regressionTypeSettings": {
+            "gam": {
               "p.level": 0.00009,
             },
           },
@@ -731,44 +731,44 @@ Object {
       },
     },
   },
-  "processing": Object {
-    "cellSizeDistribution": Object {
-      "sample-KO": Object {
+  "processing": {
+    "cellSizeDistribution": {
+      "sample-KO": {
         "auto": true,
         "enabled": true,
-        "filterSettings": Object {
+        "filterSettings": {
           "binStep": 400,
           "minCellSize": 10800,
         },
       },
     },
-    "classifier": Object {
-      "sample-KO": Object {
+    "classifier": {
+      "sample-KO": {
         "auto": true,
         "enabled": true,
-        "filterSettings": Object {
+        "filterSettings": {
           "FDR": 0.1,
         },
         "prefiltered": false,
       },
     },
-    "configureEmbedding": Object {
-      "clusteringSettings": Object {
+    "configureEmbedding": {
+      "clusteringSettings": {
         "method": "louvain",
-        "methodSettings": Object {
-          "louvain": Object {
+        "methodSettings": {
+          "louvain": {
             "resolution": 0.5,
           },
         },
       },
-      "embeddingSettings": Object {
+      "embeddingSettings": {
         "method": "umap",
-        "methodSettings": Object {
-          "tsne": Object {
+        "methodSettings": {
+          "tsne": {
             "learningRate": 200,
             "perplexity": 30,
           },
-          "umap": Object {
+          "umap": {
             "distanceMetric": "euclidean",
             "minimumDistance": 0.1,
           },
@@ -776,59 +776,59 @@ Object {
       },
       "enabled": true,
     },
-    "dataIntegration": Object {
-      "dataIntegration": Object {
+    "dataIntegration": {
+      "dataIntegration": {
         "method": "harmony",
-        "methodSettings": Object {
-          "fastmnn": Object {
+        "methodSettings": {
+          "fastmnn": {
             "normalisation": "logNormalize",
             "numGenes": 2000,
           },
-          "harmony": Object {
+          "harmony": {
             "normalisation": "logNormalize",
             "numGenes": 2000,
           },
-          "seuratv4": Object {
+          "seuratv4": {
             "normalisation": "logNormalize",
             "numGenes": 2000,
           },
-          "unisample": Object {
+          "unisample": {
             "normalisation": "logNormalize",
             "numGenes": 2000,
           },
         },
       },
-      "dimensionalityReduction": Object {
-        "excludeGeneCategories": Array [],
+      "dimensionalityReduction": {
+        "excludeGeneCategories": [],
         "method": "rpca",
         "numPCs": 30,
       },
       "enabled": true,
     },
-    "doubletScores": Object {
-      "sample-KO": Object {
+    "doubletScores": {
+      "sample-KO": {
         "auto": true,
         "enabled": true,
-        "filterSettings": Object {
+        "filterSettings": {
           "binStep": 0.05,
           "probabilityThreshold": 0.2,
         },
       },
     },
-    "meta": Object {
+    "meta": {
       "changedQCFilters": Set {},
       "completingStepError": false,
       "loading": false,
       "loadingSettingsError": false,
     },
-    "mitochondrialContent": Object {
-      "sample-KO": Object {
+    "mitochondrialContent": {
+      "sample-KO": {
         "auto": true,
         "enabled": true,
-        "filterSettings": Object {
+        "filterSettings": {
           "method": "absoluteThreshold",
-          "methodSettings": Object {
-            "absoluteThreshold": Object {
+          "methodSettings": {
+            "absoluteThreshold": {
               "binStep": 200,
               "maxFraction": 0.1,
             },
@@ -836,14 +836,14 @@ Object {
         },
       },
     },
-    "numGenesVsNumUmis": Object {
-      "sample-KO": Object {
+    "numGenesVsNumUmis": {
+      "sample-KO": {
         "auto": true,
         "enabled": true,
-        "filterSettings": Object {
+        "filterSettings": {
           "regressionType": "gam",
-          "regressionTypeSettings": Object {
-            "gam": Object {
+          "regressionTypeSettings": {
+            "gam": {
               "p.level": 0.00009,
             },
           },

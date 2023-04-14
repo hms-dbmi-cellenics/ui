@@ -1,8 +1,8 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`loadCellMeta action Dispatches a loaded action when run with the initial state. 1`] = `
-Object {
-  "payload": Object {
+{
+  "payload": {
     "metaName": "mitochondrialContent",
   },
   "type": "cellMeta/loading",
@@ -10,8 +10,8 @@ Object {
 `;
 
 exports[`loadCellMeta action Dispatches a loading action when run after an error condition. 1`] = `
-Object {
-  "payload": Object {
+{
+  "payload": {
     "metaName": "mitochondrialContent",
   },
   "type": "cellMeta/loading",
@@ -19,8 +19,8 @@ Object {
 `;
 
 exports[`loadCellMeta action Dispatches an error condition if fetch fails 1`] = `
-Object {
-  "payload": Object {
+{
+  "payload": {
     "metaName": "mitochondrialContent",
   },
   "type": "cellMeta/loading",

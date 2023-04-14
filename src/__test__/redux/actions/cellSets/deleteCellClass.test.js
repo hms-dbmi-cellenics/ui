@@ -8,8 +8,6 @@ import { CELL_CLASS_DELETE } from 'redux/actionTypes/cellSets';
 import initialState from 'redux/reducers/cellSets/initialState';
 import deleteCellClass from 'redux/actions/cellSets/deleteCellClass';
 
-import '__test__/test-utils/setupTests';
-
 enableFetchMocks();
 
 const mockStore = configureStore([thunk]);

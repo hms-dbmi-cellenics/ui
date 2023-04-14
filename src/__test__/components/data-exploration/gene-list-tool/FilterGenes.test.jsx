@@ -2,7 +2,6 @@ import React from 'react';
 import { mount } from 'enzyme';
 import { Input, Select } from 'antd';
 import FilterGenes from 'components/data-exploration/generic-gene-table/FilterGenes';
-import '__test__/test-utils/setupTests';
 
 const { Search } = Input;
 

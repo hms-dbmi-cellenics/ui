@@ -18,7 +18,6 @@ import { EMBEDDINGS_LOADING } from 'redux/actionTypes/embeddings';
 import { runQC } from 'redux/actions/pipeline';
 
 import generateExperimentSettingsMock from '__test__/test-utils/experimentSettings.mock';
-import '__test__/test-utils/setupTests';
 
 jest.mock('utils/getTimeoutForWorkerTask', () => () => 1);
 
