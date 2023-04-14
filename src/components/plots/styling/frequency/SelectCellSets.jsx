@@ -46,12 +46,6 @@ const SelectCellSets = (props) => {
   const metadataMenu = getSelectOptions(optionsMetadata);
   const cellSetMenu = getSelectOptions(optionsCellSets);
 
-  console.log('optionsCellSetsDebug');
-  console.log(optionsCellSets);
-
-  console.log('cellSetMenuDebug');
-  console.log(cellSetMenu);
-
   let menuValue;
 
   if (!metadataMenu) {
