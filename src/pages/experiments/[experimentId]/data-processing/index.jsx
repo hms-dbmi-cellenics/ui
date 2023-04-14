@@ -165,7 +165,6 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
 
   const steps = [
     {
-
       key: 'classifier',
       name: getUserFriendlyQCStepName('classifier'),
       description: 'The Classifier filter is based on the ‘emptyDrops’ method which distinguishes between droplets containing cells and ambient RNA. Droplets are filtered based on the False Discovery Rate (FDR) value - the red line on the density plot. In the knee plot, the ‘mixed’ population shown in grey contains some cells that are filtered out and some that remain and can be filtered further in the next filter.',
@@ -596,7 +595,7 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
       return <div><PipelineRedirectToDataProcessing pipelineStatus='runningStep' /></div>;
     }
 
-    if (pipelineNotFinished && !isStepComplete(key)) {
+    if (stepIsDisabled(stepIdx)) {
       return (
         <div>
           <div style={{ display: 'flex', justifyContent: 'center' }}>
