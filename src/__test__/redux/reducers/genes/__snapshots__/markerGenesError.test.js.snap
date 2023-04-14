@@ -1,8 +1,8 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`markerGenesError returns correct state 1`] = `
-Object {
-  "markers": Object {
+{
+  "markers": {
     "error": true,
     "loading": false,
   },

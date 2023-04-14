@@ -1,10 +1,10 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`cellSetsReducer Adds cells to scratchpad on creation 1`] = `
-Array [
-  Object {
-    "children": Array [
-      Object {
+[
+  {
+    "children": [
+      {
         "key": "key2",
       },
     ],
@@ -14,8 +14,8 @@ Array [
 `;
 
 exports[`cellSetsReducer Adds cells to scratchpad on creation 2`] = `
-Object {
-  "key2": Object {
+{
+  "key2": {
     "cellIds": Set {
       1,
       2,
@@ -51,20 +51,20 @@ Set {
 exports[`cellSetsReducer Handles unhiding of previously hidden cell sets 1`] = `Set {}`;
 
 exports[`cellSetsReducer Removes child correctly 1`] = `
-Array [
-  Object {
-    "children": Array [],
+[
+  {
+    "children": [],
     "key": "1",
   },
-  Object {
-    "children": Array [],
+  {
+    "children": [],
     "key": "2",
   },
 ]
 `;
 
 exports[`cellSetsReducer Selected cells are maintained 1`] = `
-Array [
+[
   "a",
   "b",
   "c",
@@ -72,7 +72,7 @@ Array [
 `;
 
 exports[`cellSetsReducer Selected cells are maintained 2`] = `
-Array [
+[
   1,
   2,
   "c",
@@ -81,15 +81,15 @@ Array [
 `;
 
 exports[`cellSetsReducer Sets up store properly for loaded cell sets. 1`] = `
-Object {
-  "1": Object {
+{
+  "1": {
     "cellIds": Set {},
     "color": undefined,
     "name": "parent 1",
     "rootNode": true,
     "type": undefined,
   },
-  "1a": Object {
+  "1a": {
     "cellIds": Set {},
     "color": "#00FF00",
     "name": "first child",
@@ -97,7 +97,7 @@ Object {
     "rootNode": undefined,
     "type": undefined,
   },
-  "2": Object {
+  "2": {
     "cellIds": Set {},
     "color": undefined,
     "name": "parent 2",
@@ -108,7 +108,7 @@ Object {
 `;
 
 exports[`cellSetsReducer Updates cell set properties 1`] = `
-Object {
+{
   "cellIds": undefined,
   "color": "#ffffff",
   "name": "favorite child",
@@ -117,55 +117,55 @@ Object {
 `;
 
 exports[`cellSetsReducer reorders correctly 1`] = `
-Object {
+{
   "error": false,
   "hidden": Set {},
-  "hierarchy": Array [
-    Object {
-      "children": Array [
-        Object {
+  "hierarchy": [
+    {
+      "children": [
+        {
           "key": "1b",
         },
-        Object {
+        {
           "key": "1a",
         },
       ],
       "key": "1",
     },
-    Object {
-      "children": Array [],
+    {
+      "children": [],
       "key": "2",
     },
   ],
   "initialLoadPending": true,
   "loading": false,
-  "properties": Object {
-    "1": Object {
+  "properties": {
+    "1": {
       "cellIds": undefined,
       "color": undefined,
       "name": "parent 1",
       "rootNode": true,
     },
-    "1a": Object {
-      "cellIds": Array [],
+    "1a": {
+      "cellIds": [],
       "color": "#00FF00",
       "name": "first child",
       "rootNode": false,
     },
-    "1b": Object {
-      "cellIds": Array [],
+    "1b": {
+      "cellIds": [],
       "color": "#00FFFF",
       "name": "second child",
       "rootNode": false,
     },
-    "2": Object {
+    "2": {
       "cellIds": undefined,
       "color": undefined,
       "name": "parent 2",
       "rootNode": true,
     },
   },
-  "selected": Array [],
+  "selected": [],
   "updatingClustering": false,
 }
 `;

@@ -17,7 +17,7 @@ import { CELL_SETS_CREATE } from 'redux/actionTypes/cellSets';
 import { initialEmbeddingState } from 'redux/reducers/embeddings/initialState';
 import generateExperimentSettingsMock from '__test__/test-utils/experimentSettings.mock';
 import { CELL_INFO_UPDATE } from 'redux/actionTypes/cellInfo';
-import '__test__/test-utils/setupTests';
+
 import { getTwoGenesExpressionMatrix } from '__test__/utils/ExpressionMatrix/testMatrixes';
 import ExpressionMatrix from 'utils/ExpressionMatrix/ExpressionMatrix';
 

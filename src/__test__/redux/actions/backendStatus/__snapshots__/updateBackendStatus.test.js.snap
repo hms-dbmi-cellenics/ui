@@ -1,12 +1,12 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`updateBackendStatus Dispatches the correct action 1`] = `
-Object {
-  "payload": Object {
+{
+  "payload": {
     "experimentId": "1234",
-    "status": Object {
-      "status": Object {
-        "gem2s": Object {
+    "status": {
+      "status": {
+        "gem2s": {
           "status": "Running",
         },
       },

@@ -9,8 +9,6 @@ import {
 } from 'redux/actionTypes/experiments';
 import { loadExperiments } from 'redux/actions/experiments';
 
-import '__test__/test-utils/setupTests';
-
 enableFetchMocks();
 
 const mockStore = configureStore([thunk]);

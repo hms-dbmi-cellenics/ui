@@ -3,7 +3,6 @@ import React from 'react';
 import { act } from 'react-dom/test-utils';
 import userEvent from '@testing-library/user-event';
 import { render, screen } from '@testing-library/react';
-import '__test__/test-utils/setupTests';
 
 import HeatmapSettings from 'components/data-exploration/heatmap/HeatmapSettings';
 

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Provider } from 'react-redux';
-import '__test__/test-utils/setupTests';
+
 import userEvent from '@testing-library/user-event';
 import { screen, render, waitFor } from '@testing-library/react';
 import _ from 'lodash';
@@ -37,7 +37,7 @@ enableFetchMocks();
 
 jest.mock('object-hash', () => {
   const objectHash = jest.requireActual('object-hash');
-  const mockWorkResultETag = jest.requireActual('__test__/test-utils/mockWorkResultETag').default;
+  const mockWorkResultETag = jest.requireActual('__test__/test-utils/mockWorkResultETag');
 
   const mockWorkRequestETag = (ETagParams) => `${ETagParams.body.name}`;
 

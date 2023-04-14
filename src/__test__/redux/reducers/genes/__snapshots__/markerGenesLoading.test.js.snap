@@ -1,8 +1,8 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`markerGenesLoading returns correct state 1`] = `
-Object {
-  "markers": Object {
+{
+  "markers": {
     "ETag": "new-etag",
     "error": false,
     "loading": true,

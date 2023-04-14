@@ -6,8 +6,6 @@ import initialState from 'redux/reducers/cellSets/initialState';
 
 import uuid from 'uuid';
 
-import '__test__/test-utils/setupTests';
-
 enableFetchMocks();
 
 jest.mock('uuid', () => jest.fn());

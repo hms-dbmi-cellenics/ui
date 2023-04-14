@@ -1,8 +1,8 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`setCellInfoFocus action Dispatches focus event when a previous focus exists but a new one is specified 1`] = `
-Object {
-  "payload": Object {
+{
+  "payload": {
     "experimentId": "1234",
     "key": "focus-key",
     "store": "focus-store",
@@ -12,8 +12,8 @@ Object {
 `;
 
 exports[`setCellInfoFocus action Dispatches focus event when focus is specified and no previous focus exists 1`] = `
-Object {
-  "payload": Object {
+{
+  "payload": {
     "experimentId": "1234",
     "key": "focus-key",
     "store": "focus-store",
@@ -23,8 +23,8 @@ Object {
 `;
 
 exports[`setCellInfoFocus action Dispatches unfocus event when a focused data is specified again 1`] = `
-Object {
-  "payload": Object {
+{
+  "payload": {
     "experimentId": "1234",
   },
   "type": "cellInfo/unfocus",

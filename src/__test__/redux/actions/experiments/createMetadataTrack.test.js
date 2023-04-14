@@ -14,8 +14,6 @@ import {
 
 import { promiseResponse } from '__test__/test-utils/mockAPI';
 
-import '__test__/test-utils/setupTests';
-
 import { SAMPLES_UPDATE } from 'redux/actionTypes/samples';
 import { BACKEND_STATUS_LOADED, BACKEND_STATUS_LOADING } from 'redux/actionTypes/backendStatus';
 

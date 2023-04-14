@@ -1,20 +1,20 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`updateExperiment Handles error and then rethrows (so the UI doesnt reorder) 1`] = `
-Array [
+[
   undefined,
-  Object {
+  {
     "error": "Error: Some api error",
   },
 ]
 `;
 
 exports[`updateExperiment Updates properties correctly 1`] = `
-Array [
+[
   undefined,
-  Object {
-    "experiment": Object {
-      "sampleIds": Array [
+  {
+    "experiment": {
+      "sampleIds": [
         "sample2",
         "sample1",
       ],

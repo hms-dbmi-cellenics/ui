@@ -3,7 +3,7 @@ import React from 'react';
 import { act } from 'react-dom/test-utils';
 import '@testing-library/jest-dom';
 import userEvent from '@testing-library/user-event';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import _ from 'lodash';
 
@@ -43,7 +43,7 @@ jest.mock('react-resize-detector', () => (props) => {
 
 jest.mock('object-hash', () => {
   const objectHash = jest.requireActual('object-hash');
-  const mockWorkResultETag = jest.requireActual('__test__/test-utils/mockWorkResultETag').default;
+  const mockWorkResultETag = jest.requireActual('__test__/test-utils/mockWorkResultETag');
 
   const mockWorkRequestETag = () => 'differential-expression';
 
@@ -93,41 +93,22 @@ let storeState = null;
 const runComparison = async () => {
   // Choose cell set 1
   const selectCellSet1 = screen.getByRole('combobox', { name: /Compare cell set/i });
-  await act(async () => {
-    fireEvent.change(selectCellSet1, { target: { value: 'Cluster 0' } });
-  });
-
-  const cellSet1Option = screen.getByText(/Cluster 0/);
-  await act(async () => {
-    fireEvent.click(cellSet1Option);
-  });
+  userEvent.click(selectCellSet1);
+  userEvent.click(screen.getByText('Cluster 0'));
 
   // Select the 2nd cell set
   const selectCellSet2 = screen.getByRole('combobox', { name: /and cell set/i });
-  await act(async () => {
-    fireEvent.change(selectCellSet2, { target: { value: 'All' } });
-  });
+  userEvent.click(selectCellSet2);
 
-  const cellSet2Option = screen.getByText(/All other cells/);
-  await act(async () => {
-    fireEvent.click(cellSet2Option);
-  });
+  userEvent.click(screen.getByText('All other cells'));
 
   // With all samples
   const selectSampleOrGroup = screen.getByRole('combobox', { name: /within sample/i });
-  await act(async () => {
-    fireEvent.change(selectSampleOrGroup, { target: { value: 'WT1' } });
-  });
-
-  const sampleOrGroupOption = screen.getByText(/WT1/);
-  await act(async () => {
-    fireEvent.click(sampleOrGroupOption);
-  });
+  userEvent.click(selectSampleOrGroup);
+  userEvent.click(screen.getByText('WT1'));
 
   // Run the comparison
-  await act(async () => {
-    userEvent.click(screen.getByText(/Compute/i));
-  });
+  userEvent.click(screen.getByText(/Compute/i));
 };
 
 describe('Volcano plot page', () => {
@@ -175,7 +156,9 @@ describe('Volcano plot page', () => {
     await runComparison();
 
     // The plot should show up
-    expect(screen.getByRole('graphics-document', { name: 'Vega visualization' })).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByRole('graphics-document', { name: 'Vega visualization' })).toBeInTheDocument();
+    });
 
     // The CSV download button should be enabled
     const csvButton = screen.getByText(/Export as CSV/i).closest('button');
@@ -192,8 +175,10 @@ describe('Volcano plot page', () => {
 
     await runComparison();
 
-    expect(screen.getByText(/We're getting your data/i)).toBeInTheDocument();
-    expect(screen.queryByRole('graphics-document', { name: 'Vega visualization' })).toBeNull();
+    await waitFor(() => {
+      expect(screen.getByText(/We're getting your data/i)).toBeInTheDocument();
+      expect(screen.queryByRole('graphics-document', { name: 'Vega visualization' })).toBeNull();
+    });
 
     // The CSV download button should be disabled
     const csvButton = screen.getByText(/Export as CSV/i).closest('button');
@@ -210,8 +195,10 @@ describe('Volcano plot page', () => {
 
     await runComparison();
 
-    expect(screen.getByText(/Could not load differential expression data/i)).toBeInTheDocument();
-    expect(screen.queryByRole('graphics-document', { name: 'Vega visualization' })).toBeNull();
+    await waitFor(() => {
+      expect(screen.getByText(/Could not load differential expression data/i)).toBeInTheDocument();
+      expect(screen.queryByRole('graphics-document', { name: 'Vega visualization' })).toBeNull();
+    });
 
     // The CSV download button should be disabled
     const csvButton = screen.getByText(/Export as CSV/i).closest('button');

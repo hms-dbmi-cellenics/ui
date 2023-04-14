@@ -9,7 +9,7 @@ import initialSampleState, { sampleTemplate } from 'redux/reducers/samples/initi
 import initialExperimentState, { experimentTemplate } from 'redux/reducers/experiments/initialState';
 
 import UploadStatus from 'utils/upload/UploadStatus';
-import { waitFor } from '@testing-library/dom';
+import { waitFor } from '@testing-library/react';
 
 import processUpload from 'utils/upload/processUpload';
 
@@ -104,8 +104,6 @@ const initialState = {
     },
   },
 };
-// Based on https://stackoverflow.com/a/51045733
-const flushPromises = () => new Promise(setImmediate);
 const mockStore = configureMockStore([thunk]);
 
 jest.mock('utils/upload/loadAndCompressIfNecessary',
@@ -178,9 +176,6 @@ describe('processUpload', () => {
     expect(mockAxiosCalls[0].data).toEqual('loadedGzippedFile');
     expect(mockAxiosCalls[1].data).toEqual('loadedGzippedFile');
     expect(mockAxiosCalls[2].data).toEqual('loadedGzippedFile');
-
-    // Wait until all put promises are resolved
-    await flushPromises();
 
     const fileUpdateActions = store.getActions().filter(
       (action) => action.type === SAMPLES_FILE_UPDATE,
@@ -265,9 +260,6 @@ describe('processUpload', () => {
     expect(mockAxiosCalls[0].data).toEqual('loadedGzippedFile');
     expect(mockAxiosCalls[1].data).toEqual('loadedGzippedFile');
     expect(mockAxiosCalls[2].data).toEqual('loadedGzippedFile');
-
-    // Wait until all put promises are resolved
-    await flushPromises();
 
     const fileUpdateActions = store.getActions().filter(
       (action) => action.type === SAMPLES_FILE_UPDATE,

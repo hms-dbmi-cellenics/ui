@@ -8,7 +8,6 @@ import { Select } from 'antd';
 import { act } from 'react-dom/test-utils';
 import GeneSelectionMenu from 'components/data-exploration/generic-gene-table/GeneSelectionMenu';
 import SelectionActions from 'components/data-exploration/generic-gene-table/SelectionActions';
-import '__test__/test-utils/setupTests';
 
 const mockStore = configureMockStore([thunk]);
 

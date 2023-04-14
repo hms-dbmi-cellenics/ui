@@ -1,16 +1,16 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`ExpressionCellSetModal Sends the correct genes list with params 1`] = `
-Array [
+[
   "testae48e318dab9a1bd0bexperiment",
-  Object {
-    "genesConfig": Array [
-      Object {
+  {
+    "genesConfig": [
+      {
         "comparisonType": "lessThan",
         "geneName": "DOK3",
         "thresholdValue": 0.05,
       },
-      Object {
+      {
         "comparisonType": "greaterThan",
         "geneName": "DOK4",
         "thresholdValue": 0,
@@ -20,7 +20,7 @@ Array [
   },
   180,
   "112b7e18e9ff5a18aeea19c27688864d",
-  Object {
+  {
     "PipelineRunETag": "2021-10-20T12:51:44.755Z",
     "broadcast": true,
   },

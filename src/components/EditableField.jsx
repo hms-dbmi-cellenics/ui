@@ -101,6 +101,7 @@ const EditableField = (props) => {
         <>
           <Input
             data-testid='editableFieldInput'
+            aria-label='Input'
             autoFocus
             onChange={onChange}
             size='small'

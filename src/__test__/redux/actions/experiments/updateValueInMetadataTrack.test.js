@@ -6,8 +6,6 @@ import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 
 import { updateValueInMetadataTrack } from 'redux/actions/experiments';
 
-import '__test__/test-utils/setupTests';
-
 import { promiseResponse } from '__test__/test-utils/mockAPI';
 
 import { SAMPLES_ERROR, SAMPLES_SAVING, SAMPLES_VALUE_IN_METADATA_TRACK_UPDATED } from 'redux/actionTypes/samples';

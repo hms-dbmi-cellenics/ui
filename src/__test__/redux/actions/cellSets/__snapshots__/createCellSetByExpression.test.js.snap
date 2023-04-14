@@ -1,16 +1,16 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`createCellSetByExpression Dispatches the correct body 1`] = `
-Array [
+[
   "testae48e318dab9a1bd0bexperiment",
-  Object {
-    "genesConfig": Array [
-      Object {
+  {
+    "genesConfig": [
+      {
         "comparisonType": "greaterThan",
         "geneName": "GeneA",
         "thresholdValue": "0.00",
       },
-      Object {
+      {
         "comparisonType": "lessThan",
         "geneName": "GeneB",
         "thresholdValue": "0.05",
@@ -20,7 +20,7 @@ Array [
   },
   [Function],
   [Function],
-  Object {
+  {
     "broadcast": true,
   },
 ]

@@ -2,7 +2,6 @@ import React from 'react';
 import { mount } from 'enzyme';
 import ClusterPopover from 'components/data-exploration/embedding/ClusterPopover';
 import EditableField from 'components/EditableField';
-import '__test__/test-utils/setupTests';
 
 let mockCreate;
 let mockCancel;

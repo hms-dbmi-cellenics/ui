@@ -1,24 +1,24 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`cellMeta Sets error state on expression error action 1`] = `
-Object {
-  "doubletScores": Object {
-    "data": Array [],
+{
+  "doubletScores": {
+    "data": [],
     "error": false,
     "loading": true,
   },
-  "mitochondrialContent": Object {
-    "data": Array [],
+  "mitochondrialContent": {
+    "data": [],
     "error": "error",
     "loading": false,
   },
-  "numOfGenes": Object {
-    "data": Array [],
+  "numOfGenes": {
+    "data": [],
     "error": false,
     "loading": true,
   },
-  "numOfUmis": Object {
-    "data": Array [],
+  "numOfUmis": {
+    "data": [],
     "error": false,
     "loading": true,
   },
@@ -26,14 +26,14 @@ Object {
 `;
 
 exports[`cellMeta Sets loaded state on expression loading action 1`] = `
-Object {
-  "doubletScores": Object {
-    "data": Array [],
+{
+  "doubletScores": {
+    "data": [],
     "error": false,
     "loading": true,
   },
-  "mitochondrialContent": Object {
-    "data": Array [
+  "mitochondrialContent": {
+    "data": [
       1,
       2,
       3,
@@ -41,13 +41,13 @@ Object {
     "error": false,
     "loading": false,
   },
-  "numOfGenes": Object {
-    "data": Array [],
+  "numOfGenes": {
+    "data": [],
     "error": false,
     "loading": true,
   },
-  "numOfUmis": Object {
-    "data": Array [],
+  "numOfUmis": {
+    "data": [],
     "error": false,
     "loading": true,
   },
@@ -55,24 +55,24 @@ Object {
 `;
 
 exports[`cellMeta Sets loading state on expression loading action 1`] = `
-Object {
-  "doubletScores": Object {
-    "data": Array [],
+{
+  "doubletScores": {
+    "data": [],
     "error": false,
     "loading": true,
   },
-  "mitochondrialContent": Object {
-    "data": Array [],
+  "mitochondrialContent": {
+    "data": [],
     "error": false,
     "loading": true,
   },
-  "numOfGenes": Object {
-    "data": Array [],
+  "numOfGenes": {
+    "data": [],
     "error": false,
     "loading": true,
   },
-  "numOfUmis": Object {
-    "data": Array [],
+  "numOfUmis": {
+    "data": [],
     "error": false,
     "loading": true,
   },

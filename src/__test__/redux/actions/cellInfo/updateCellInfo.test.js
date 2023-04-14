@@ -3,7 +3,6 @@ import thunk from 'redux-thunk';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import updateCellInfo from 'redux/actions/cellInfo/updateCellInfo';
 import { CELL_INFO_UPDATE } from 'redux/actionTypes/cellInfo';
-import '__test__/test-utils/setupTests';
 
 enableFetchMocks();
 const mockStore = configureStore([thunk]);
