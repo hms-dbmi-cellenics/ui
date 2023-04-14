@@ -55,7 +55,7 @@ const onQCUpdate = (update, dispatch, experimentId) => {
   // If there was an error and no output was generated, return
   if (!output) return;
 
-  const processingConfigUpdate = output?.config;
+  const processingConfigUpdate = output.config;
 
   if (processingConfigUpdate) {
     dispatch(updateProcessingSettingsFromQC(
