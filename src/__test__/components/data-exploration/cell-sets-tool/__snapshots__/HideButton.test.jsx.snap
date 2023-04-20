@@ -1,8 +1,8 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`HideButton clicking on hidden state triggers unhide action 1`] = `
-{
-  "payload": {
+Object {
+  "payload": Object {
     "key": "random-hidden-key",
   },
   "type": "cellSets/unhide",
@@ -10,8 +10,8 @@ exports[`HideButton clicking on hidden state triggers unhide action 1`] = `
 `;
 
 exports[`HideButton clicking on visible state triggers hide acction 1`] = `
-{
-  "payload": {
+Object {
+  "payload": Object {
     "key": "not-hidden",
   },
   "type": "cellSets/hide",

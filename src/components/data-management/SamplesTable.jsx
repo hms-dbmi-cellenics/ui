@@ -37,6 +37,7 @@ import { metadataNameToKey, metadataKeyToName, temporaryMetadataKey } from 'util
 import integrationTestConstants from 'utils/integrationTestConstants';
 import useConditionalEffect from 'utils/customHooks/useConditionalEffect';
 import fileUploadSpecifications from 'utils/upload/fileUploadSpecifications';
+import 'utils/css/data-management.css';
 
 const { Text } = Typography;
 

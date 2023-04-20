@@ -1,5 +1,7 @@
 import React from 'react';
-import { mount, shallow } from 'enzyme';
+import {
+  shallow, mount,
+} from 'enzyme';
 import { Provider } from 'react-redux';
 import waitForActions from 'redux-mock-store-await-actions';
 import thunk from 'redux-thunk';
@@ -11,6 +13,7 @@ import {
 } from 'antd';
 import { UPDATE_CONFIG } from 'redux/actionTypes/componentConfig';
 import HeatmapGroupBySettings from 'components/data-exploration/heatmap/HeatmapGroupBySettings';
+import '__test__/test-utils/setupTests';
 
 const mockStore = configureMockStore([thunk]);
 

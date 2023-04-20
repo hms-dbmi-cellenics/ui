@@ -6,6 +6,8 @@ import {
 import updateFilterSettings from 'redux/actions/experimentSettings/processingConfig/updateFilterSettings';
 import generateExperimentSettingsMock from '../../../test-utils/experimentSettings.mock';
 
+import '__test__/test-utils/setupTests';
+
 const mockStore = configureStore([thunk]);
 
 const initialExperimentState = generateExperimentSettingsMock([]);

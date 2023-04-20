@@ -1,9 +1,9 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`ViolinIndex Adds a new plot to multi view: new-config 1`] = `
-{
-  "config": {
-    "axes": {
+Object {
+  "config": Object {
+    "axes": Object {
       "domainWidth": 2,
       "gridOpacity": 0,
       "gridWidth": 10,
@@ -14,42 +14,42 @@ exports[`ViolinIndex Adds a new plot to multi view: new-config 1`] = `
       "xAxisText": "",
       "yAxisText": "",
     },
-    "axesRanges": {
+    "axesRanges": Object {
       "yAxisAuto": true,
       "yMax": 10,
       "yMin": 0,
     },
-    "colour": {
+    "colour": Object {
       "gradient": "default",
       "invert": "standard",
       "masterColour": "#000000",
       "reverseColourBar": false,
       "toggleInvert": "#FFFFFF",
     },
-    "dimensions": {
+    "dimensions": Object {
       "height": 400,
       "width": 550,
     },
-    "fontStyle": {
+    "fontStyle": Object {
       "colour": "#000000",
       "font": "sans-serif",
     },
     "kdeBandwidth": 0.3,
-    "keepValuesOnReset": [
+    "keepValuesOnReset": Array [
       "shownGene",
       "title",
     ],
-    "labels": {
+    "labels": Object {
       "enabled": true,
       "size": 18,
     },
-    "legend": {
+    "legend": Object {
       "colour": "#000000",
       "enabled": false,
       "position": "right",
       "showAlert": false,
     },
-    "marker": {
+    "marker": Object {
       "opacity": 5,
       "shape": "circle",
       "showOpacity": true,
@@ -62,7 +62,7 @@ exports[`ViolinIndex Adds a new plot to multi view: new-config 1`] = `
     "shownGene": "Ccl5",
     "spec": "1.0.0",
     "statisticsVisible": false,
-    "title": {
+    "title": Object {
       "anchor": "start",
       "dx": 0,
       "fontSize": 20,
@@ -73,7 +73,7 @@ exports[`ViolinIndex Adds a new plot to multi view: new-config 1`] = `
   "experimentId": "testae48e318dab9a1bd0bexperiment",
   "loading": false,
   "outstandingChanges": true,
-  "plotData": [],
+  "plotData": Array [],
   "plotType": "violin",
 }
 `;

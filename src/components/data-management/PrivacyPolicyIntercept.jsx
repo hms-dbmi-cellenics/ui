@@ -7,7 +7,7 @@ import {
   Modal, Space, Checkbox, Typography,
 } from 'antd';
 
-import styles from 'components/data-management/PrivacyPolicyIntercept.module.css';
+import 'components/data-management/PrivacyPolicyIntercept.css';
 
 import pushNotificationMessage from 'utils/pushNotificationMessage';
 import endUserMessages from 'utils/endUserMessages';
@@ -37,7 +37,7 @@ const PrivacyPolicyIntercept = (props) => {
       title='Agree to the Biomage privacy policy to continue using Cellenics'
       visible
       centered
-      className={styles['ok-to-the-right-modal']}
+      className='ok-to-the-right-modal'
       cancelText='Sign out'
       cancelButtonProps={{ danger: true }}
       okButtonProps={{ disabled: agreedPrivacyPolicy !== 'true' }}
