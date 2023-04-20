@@ -6,6 +6,15 @@ import {
 import Link from 'next/link';
 
 import { plotNames, layout } from 'utils/constants';
+import embeddingContinuous from '../../../public/static/media/embeddingContinuous.png';
+import embeddingCategorical from '../../../public/static/media/embeddingCategorical.png';
+import violin from '../../../public/static/media/violin.png';
+import dotPlot from '../../../public/static/media/dotplot.png';
+import volcano from '../../../public/static/media/volcano.png';
+import frequency from '../../../public/static/media/frequency.png';
+import markerHeatmap from '../../../public/static/media/marker_heatmap.png';
+import normalizedExpressionMatrix from '../../../public/static/media/normalized_expression_matrix.png';
+import trajectoryAnalysis from '../../../public/static/media/trajectory_analysis.png';
 
 const CARD_STYLE = { marginBottom: '1em' };
 const CardItem = (({ onClick, item, href }) => (
@@ -39,19 +48,19 @@ const plots = [
     plots: [
       {
         name: plotNames.CATEGORICAL_EMBEDDING,
-        image: '/static/media/embeddingCategorical.png',
+        image: embeddingCategorical,
         key: 'embedding-categorical-key',
         link: 'embedding-categorical',
       },
       {
         name: 'Frequency Plot',
-        image: '/static/media/frequency.png',
+        image: frequency,
         key: 'frequency-key',
         link: 'frequency',
       },
       {
         name: 'Trajectory Analysis',
-        image: '/static/media/trajectory_analysis.png',
+        image: trajectoryAnalysis,
         key: 'trajectory-analysis-key',
         link: 'trajectory-analysis',
       },
@@ -62,31 +71,31 @@ const plots = [
     plots: [
       {
         name: plotNames.CONTINUOUS_EMBEDDING,
-        image: '/static/media/embeddingContinuous.png',
+        image: embeddingContinuous,
         key: 'embedding-continuous-key',
         link: 'embedding-continuous',
       },
       {
         name: plotNames.MARKER_HEATMAP,
-        image: '/static/media/marker_heatmap.png',
+        image: markerHeatmap,
         key: 'marker-heatmap-key',
         link: 'marker-heatmap',
       },
       {
         name: plotNames.VIOLIN_PLOT,
-        image: '/static/media/violin.png',
+        image: violin,
         key: 'violin-key',
         link: 'violin',
       },
       {
         name: plotNames.DOT_PLOT,
-        image: '/static/media/dotplot.png',
+        image: dotPlot,
         key: 'dot-key',
         link: 'dot-plot',
       },
       {
         name: plotNames.NORMALIZED_EXPRESSION_MATRIX,
-        image: '/static/media/normalized_expression_matrix.png',
+        image: normalizedExpressionMatrix,
         key: 'normalized-matrix-key',
         link: 'normalized-matrix',
       },
@@ -97,7 +106,7 @@ const plots = [
     plots: [
       {
         name: plotNames.VOLCANO_PLOT,
-        image: '/static/media/volcano.png',
+        image: volcano,
         key: 'volcano-key',
         link: 'volcano',
       },

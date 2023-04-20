@@ -1,38 +1,38 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`samplesReducer Adds a new sample correctly 1`] = `
-{
-  "asd123": {
+Object {
+  "asd123": Object {
     "complete": false,
     "createdDate": "2021-01-01T14:48:00.000Z",
     "error": false,
     "experimentId": null,
-    "fileNames": [],
-    "files": {},
+    "fileNames": Array [],
+    "files": Object {},
     "lastModified": "2021-01-01T14:48:00.000Z",
-    "metadata": {},
+    "metadata": Object {},
     "name": "test sample",
-    "options": {},
+    "options": Object {},
     "type": null,
     "uuid": "asd123",
   },
-  "meta": {
+  "meta": Object {
     "error": false,
     "loading": false,
     "saving": false,
-    "validating": [],
+    "validating": Array [],
   },
-  "qwe234": {
+  "qwe234": Object {
     "complete": false,
     "createdDate": "2021-01-02T14:48:00.000Z",
     "error": false,
     "experimentId": null,
-    "fileNames": [],
-    "files": {},
+    "fileNames": Array [],
+    "files": Object {},
     "lastModified": "2021-01-02T14:48:00.000Z",
-    "metadata": {},
+    "metadata": Object {},
     "name": "test sample 2",
-    "options": {},
+    "options": Object {},
     "type": null,
     "uuid": "qwe234",
   },
@@ -40,42 +40,42 @@ exports[`samplesReducer Adds a new sample correctly 1`] = `
 `;
 
 exports[`samplesReducer Adds validating to an experiment 1`] = `
-{
-  "asd123": {
+Object {
+  "asd123": Object {
     "complete": false,
     "createdDate": "2021-01-01T14:48:00.000Z",
     "error": false,
     "experimentId": null,
-    "fileNames": [],
-    "files": {},
+    "fileNames": Array [],
+    "files": Object {},
     "lastModified": "2021-01-01T14:48:00.000Z",
-    "metadata": {},
+    "metadata": Object {},
     "name": "test sample",
-    "options": {
+    "options": Object {
       "someOption": false,
     },
     "type": null,
     "uuid": "asd123",
   },
-  "meta": {
+  "meta": Object {
     "error": false,
     "loading": false,
     "saving": false,
-    "validating": [
+    "validating": Array [
       "validatingExperimentId",
     ],
   },
-  "qwe234": {
+  "qwe234": Object {
     "complete": false,
     "createdDate": "2021-01-02T14:48:00.000Z",
     "error": false,
     "experimentId": null,
-    "fileNames": [],
-    "files": {},
+    "fileNames": Array [],
+    "files": Object {},
     "lastModified": "2021-01-02T14:48:00.000Z",
-    "metadata": {},
+    "metadata": Object {},
     "name": "test sample 2",
-    "options": {
+    "options": Object {
       "someOption": false,
     },
     "type": null,
@@ -85,185 +85,185 @@ exports[`samplesReducer Adds validating to an experiment 1`] = `
 `;
 
 exports[`samplesReducer Delete samples correctly 1`] = `
-{
-  "asd123": {
+Object {
+  "asd123": Object {
     "complete": false,
     "createdDate": "2021-01-01T14:48:00.000Z",
     "error": false,
     "experimentId": null,
-    "fileNames": [],
-    "files": {},
+    "fileNames": Array [],
+    "files": Object {},
     "lastModified": "2021-01-01T14:48:00.000Z",
-    "metadata": {},
+    "metadata": Object {},
     "name": "test sample",
-    "options": {},
+    "options": Object {},
     "type": null,
     "uuid": "asd123",
   },
-  "meta": {
+  "meta": Object {
     "error": false,
     "loading": false,
     "saving": false,
-    "validating": [],
+    "validating": Array [],
   },
 }
 `;
 
 exports[`samplesReducer Deletes sample metadata correctly 1`] = `
-{
-  "[object Object]": {
-    "metadata": {
+Object {
+  "[object Object]": Object {
+    "metadata": Object {
       "metadata-test": "old-value",
     },
   },
-  "asd123": {
+  "asd123": Object {
     "complete": false,
     "createdDate": "2021-01-01T14:48:00.000Z",
     "error": false,
     "experimentId": null,
-    "fileNames": [],
-    "files": {},
+    "fileNames": Array [],
+    "files": Object {},
     "lastModified": "2021-01-01T14:48:00.000Z",
-    "metadata": {},
+    "metadata": Object {},
     "name": "test sample",
-    "options": {},
+    "options": Object {},
     "type": null,
     "uuid": "asd123",
   },
-  "meta": {
+  "meta": Object {
     "error": false,
     "loading": false,
     "saving": false,
-    "validating": [],
+    "validating": Array [],
   },
 }
 `;
 
 exports[`samplesReducer Handles experimentMetadataRename correctly 1`] = `
-{
-  "asd123": {
+Object {
+  "asd123": Object {
     "experimentId": "mockExpId",
-    "metadata": {
+    "metadata": Object {
       "metadata-new": "value",
     },
   },
-  "meta": {
+  "meta": Object {
     "error": false,
     "loading": false,
     "saving": false,
-    "validating": [],
+    "validating": Array [],
   },
 }
 `;
 
 exports[`samplesReducer Handles samplesValueInMetadataTrackUpdated correctly 1`] = `
-{
-  "asd123": {
-    "metadata": {
+Object {
+  "asd123": Object {
+    "metadata": Object {
       "metadata-test": "new-value",
     },
   },
-  "meta": {
+  "meta": Object {
     "error": false,
     "loading": false,
     "saving": false,
-    "validating": [],
+    "validating": Array [],
   },
 }
 `;
 
 exports[`samplesReducer Inserts a new sample correctly 1`] = `
-{
-  "asd123": {
+Object {
+  "asd123": Object {
     "complete": false,
     "createdDate": "2021-01-01T14:48:00.000Z",
     "error": false,
     "experimentId": null,
-    "fileNames": [],
-    "files": {},
+    "fileNames": Array [],
+    "files": Object {},
     "lastModified": "2021-01-01T14:48:00.000Z",
-    "metadata": {},
+    "metadata": Object {},
     "name": "test sample",
-    "options": {},
+    "options": Object {},
     "type": null,
     "uuid": "asd123",
   },
-  "meta": {
+  "meta": Object {
     "error": false,
     "loading": false,
     "saving": false,
-    "validating": [],
+    "validating": Array [],
   },
 }
 `;
 
 exports[`samplesReducer Inserts sample metadata correctly 1`] = `
-{
-  "[object Object]": {
-    "metadata": {},
+Object {
+  "[object Object]": Object {
+    "metadata": Object {},
   },
-  "asd123": {
+  "asd123": Object {
     "complete": false,
     "createdDate": "2021-01-01T14:48:00.000Z",
     "error": false,
     "experimentId": null,
-    "fileNames": [],
-    "files": {},
+    "fileNames": Array [],
+    "files": Object {},
     "lastModified": "2021-01-01T14:48:00.000Z",
-    "metadata": {
+    "metadata": Object {
       "metadata-test": "value",
     },
     "name": "test sample",
-    "options": {},
+    "options": Object {},
     "type": null,
     "uuid": "asd123",
   },
-  "meta": {
+  "meta": Object {
     "error": false,
     "loading": false,
     "saving": false,
-    "validating": [],
+    "validating": Array [],
   },
 }
 `;
 
 exports[`samplesReducer Loads samples correctly 1`] = `
-{
-  "asd123": {
+Object {
+  "asd123": Object {
     "complete": false,
     "createdDate": "2021-01-01T14:48:00.000Z",
     "error": false,
     "experimentId": null,
-    "fileNames": [],
-    "files": {},
+    "fileNames": Array [],
+    "files": Object {},
     "lastModified": "2021-01-01T14:48:00.000Z",
-    "metadata": {},
+    "metadata": Object {},
     "name": "test sample",
-    "options": {},
+    "options": Object {},
     "type": null,
     "uuid": "asd123",
   },
-  "ids": [
+  "ids": Array [
     "asd123",
     "qwe234",
   ],
-  "meta": {
+  "meta": Object {
     "error": false,
     "loading": false,
     "saving": false,
-    "validating": [],
+    "validating": Array [],
   },
-  "qwe234": {
+  "qwe234": Object {
     "complete": false,
     "createdDate": "2021-01-02T14:48:00.000Z",
     "error": false,
     "experimentId": null,
-    "fileNames": [],
-    "files": {},
+    "fileNames": Array [],
+    "files": Object {},
     "lastModified": "2021-01-02T14:48:00.000Z",
-    "metadata": {},
+    "metadata": Object {},
     "name": "test sample 2",
-    "options": {},
+    "options": Object {},
     "type": null,
     "uuid": "qwe234",
   },
@@ -271,39 +271,39 @@ exports[`samplesReducer Loads samples correctly 1`] = `
 `;
 
 exports[`samplesReducer Removes validating from an experiment 1`] = `
-{
-  "asd123": {
+Object {
+  "asd123": Object {
     "complete": false,
     "createdDate": "2021-01-01T14:48:00.000Z",
     "error": false,
     "experimentId": null,
-    "fileNames": [],
-    "files": {},
+    "fileNames": Array [],
+    "files": Object {},
     "lastModified": "2021-01-01T14:48:00.000Z",
-    "metadata": {},
+    "metadata": Object {},
     "name": "test sample",
-    "options": {
+    "options": Object {
       "someOption": false,
     },
     "type": null,
     "uuid": "asd123",
   },
-  "meta": {
-    "validating": [
+  "meta": Object {
+    "validating": Array [
       "otherValidatingExperimentId",
     ],
   },
-  "qwe234": {
+  "qwe234": Object {
     "complete": false,
     "createdDate": "2021-01-02T14:48:00.000Z",
     "error": false,
     "experimentId": null,
-    "fileNames": [],
-    "files": {},
+    "fileNames": Array [],
+    "files": Object {},
     "lastModified": "2021-01-02T14:48:00.000Z",
-    "metadata": {},
+    "metadata": Object {},
     "name": "test sample 2",
-    "options": {
+    "options": Object {
       "someOption": false,
     },
     "type": null,
@@ -313,22 +313,22 @@ exports[`samplesReducer Removes validating from an experiment 1`] = `
 `;
 
 exports[`samplesReducer Sets up saved state correctly 1`] = `
-{
-  "asd123": {
+Object {
+  "asd123": Object {
     "complete": false,
     "createdDate": "2021-01-01T14:48:00.000Z",
     "error": false,
     "experimentId": null,
-    "fileNames": [],
-    "files": {},
+    "fileNames": Array [],
+    "files": Object {},
     "lastModified": "2021-01-01T14:48:00.000Z",
-    "metadata": {},
+    "metadata": Object {},
     "name": "test sample",
-    "options": {},
+    "options": Object {},
     "type": null,
     "uuid": "asd123",
   },
-  "meta": {
+  "meta": Object {
     "error": false,
     "loading": false,
     "saving": false,
@@ -337,22 +337,22 @@ exports[`samplesReducer Sets up saved state correctly 1`] = `
 `;
 
 exports[`samplesReducer Sets up saving state correctly 1`] = `
-{
-  "asd123": {
+Object {
+  "asd123": Object {
     "complete": false,
     "createdDate": "2021-01-01T14:48:00.000Z",
     "error": false,
     "experimentId": null,
-    "fileNames": [],
-    "files": {},
+    "fileNames": Array [],
+    "files": Object {},
     "lastModified": "2021-01-01T14:48:00.000Z",
-    "metadata": {},
+    "metadata": Object {},
     "name": "test sample",
-    "options": {},
+    "options": Object {},
     "type": null,
     "uuid": "asd123",
   },
-  "meta": {
+  "meta": Object {
     "error": false,
     "loading": false,
     "saving": "Saving",
@@ -361,22 +361,22 @@ exports[`samplesReducer Sets up saving state correctly 1`] = `
 `;
 
 exports[`samplesReducer Stores error state correctly 1`] = `
-{
-  "asd123": {
+Object {
+  "asd123": Object {
     "complete": false,
     "createdDate": "2021-01-01T14:48:00.000Z",
     "error": false,
     "experimentId": null,
-    "fileNames": [],
-    "files": {},
+    "fileNames": Array [],
+    "files": Object {},
     "lastModified": "2021-01-01T14:48:00.000Z",
-    "metadata": {},
+    "metadata": Object {},
     "name": "test sample",
-    "options": {},
+    "options": Object {},
     "type": null,
     "uuid": "asd123",
   },
-  "meta": {
+  "meta": Object {
     "error": "Error message",
     "loading": false,
     "saving": false,
@@ -385,65 +385,65 @@ exports[`samplesReducer Stores error state correctly 1`] = `
 `;
 
 exports[`samplesReducer Updates a sample correctly 1`] = `
-{
-  "asd123": {
+Object {
+  "asd123": Object {
     "complete": false,
     "createdDate": "2021-01-01T14:48:00.000Z",
     "error": false,
     "experimentId": null,
-    "fileNames": [],
-    "files": {},
+    "fileNames": Array [],
+    "files": Object {},
     "lastModified": "2021-01-01T14:48:00.000Z",
-    "metadata": {},
+    "metadata": Object {},
     "name": "updated name",
-    "options": {},
+    "options": Object {},
     "type": null,
     "uuid": "asd123",
   },
-  "meta": {
+  "meta": Object {
     "error": false,
     "loading": false,
     "saving": false,
-    "validating": [],
+    "validating": Array [],
   },
 }
 `;
 
 exports[`samplesReducer Updates options correctly 1`] = `
-{
-  "asd123": {
+Object {
+  "asd123": Object {
     "complete": false,
     "createdDate": "2021-01-01T14:48:00.000Z",
     "error": false,
     "experimentId": null,
-    "fileNames": [],
-    "files": {},
+    "fileNames": Array [],
+    "files": Object {},
     "lastModified": "2021-01-01T14:48:00.000Z",
-    "metadata": {},
+    "metadata": Object {},
     "name": "test sample",
-    "options": {
+    "options": Object {
       "someOption": true,
     },
     "type": null,
     "uuid": "asd123",
   },
-  "meta": {
+  "meta": Object {
     "error": false,
     "loading": false,
     "saving": false,
-    "validating": [],
+    "validating": Array [],
   },
-  "qwe234": {
+  "qwe234": Object {
     "complete": false,
     "createdDate": "2021-01-02T14:48:00.000Z",
     "error": false,
     "experimentId": null,
-    "fileNames": [],
-    "files": {},
+    "fileNames": Array [],
+    "files": Object {},
     "lastModified": "2021-01-02T14:48:00.000Z",
-    "metadata": {},
+    "metadata": Object {},
     "name": "test sample 2",
-    "options": {
+    "options": Object {
       "someOption": true,
     },
     "type": null,
@@ -453,17 +453,17 @@ exports[`samplesReducer Updates options correctly 1`] = `
 `;
 
 exports[`samplesReducer Updates sample files correctly 1`] = `
-{
-  "asd123": {
+Object {
+  "asd123": Object {
     "complete": false,
     "createdDate": "2021-01-01T14:48:00.000Z",
     "error": false,
     "experimentId": null,
-    "fileNames": [
+    "fileNames": Array [
       "features.tsv",
     ],
-    "files": {
-      "features.tsv": {
+    "files": Object {
+      "features.tsv": Object {
         "error": false,
         "lastModified": "newLastModified",
         "mime": "",
@@ -472,24 +472,24 @@ exports[`samplesReducer Updates sample files correctly 1`] = `
         "path": "",
         "size": 0,
         "success": false,
-        "upload": {
+        "upload": Object {
           "amplifyPromise": null,
           "status": null,
         },
       },
     },
     "lastModified": "newLastModified",
-    "metadata": {},
+    "metadata": Object {},
     "name": "test sample",
-    "options": {},
+    "options": Object {},
     "type": null,
     "uuid": "asd123",
   },
-  "meta": {
+  "meta": Object {
     "error": false,
     "loading": false,
     "saving": false,
-    "validating": [],
+    "validating": Array [],
   },
 }
 `;

@@ -1,8 +1,8 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`FocusButton clicking on focused button triggers unfocus action 1`] = `
-{
-  "payload": {
+Object {
+  "payload": Object {
     "experimentId": "a",
   },
   "type": "cellInfo/unfocus",
@@ -10,8 +10,8 @@ exports[`FocusButton clicking on focused button triggers unfocus action 1`] = `
 `;
 
 exports[`FocusButton clicking on unfocused button triggers focus action 1`] = `
-{
-  "payload": {
+Object {
+  "payload": Object {
     "experimentId": "a",
     "key": "new-key",
     "store": "new-store",

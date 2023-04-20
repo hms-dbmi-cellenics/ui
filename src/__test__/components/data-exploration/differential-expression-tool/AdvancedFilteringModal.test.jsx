@@ -1,8 +1,9 @@
 import React from 'react';
 import { act } from 'react-dom/test-utils';
 import '@testing-library/jest-dom';
-import { render, screen, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import {
+  render, screen, fireEvent, waitFor,
+} from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { makeStore } from 'redux/store';
 
@@ -52,14 +53,10 @@ describe('Advanced filtering modal', () => {
   it('Add filter button adds new form items', async () => {
     await renderAdvancedFilteringModal(storeState);
     const addFilterButton = screen.getByText('Add custom filter');
-
-    userEvent.click(addFilterButton);
-
+    addFilterButton.click();
     expect(screen.getAllByRole('combobox').length).toEqual(2);
     expect(screen.getByPlaceholderText('Insert value')).toBeInTheDocument();
-
-    userEvent.click(addFilterButton);
-
+    addFilterButton.click();
     expect(screen.getAllByRole('combobox').length).toEqual(4);
     expect(screen.getAllByPlaceholderText('Insert value').length).toEqual(2);
   });
@@ -69,15 +66,15 @@ describe('Advanced filtering modal', () => {
 
     // adding 2 custom filters
     const addFilterButton = screen.getByText('Add custom filter');
-    userEvent.click(addFilterButton);
-    userEvent.click(addFilterButton);
+    addFilterButton.click();
+    addFilterButton.click();
 
     // checking the number of entries in the row
     expect(screen.getAllByRole('combobox').length).toEqual(4);
     const closeButton = screen.getAllByLabelText('close')[1];
 
     // clicking close should remove entry
-    userEvent.click(closeButton);
+    closeButton.click();
     expect(screen.getAllByRole('combobox').length).toEqual(2);
   });
 
@@ -85,10 +82,9 @@ describe('Advanced filtering modal', () => {
     await renderAdvancedFilteringModal(storeState);
 
     const presetFiltersButton = screen.getByText('Add preset filter');
-    userEvent.hover(presetFiltersButton);
-
+    fireEvent.mouseOver(presetFiltersButton);
     const upregulatedButton = await waitFor(() => screen.getByText('Up-regulated'));
-    userEvent.click(upregulatedButton);
+    upregulatedButton.click();
 
     expect(screen.getAllByRole('combobox').length).toEqual(2);
     expect(screen.getByText('logFC')).toBeInTheDocument();
@@ -100,18 +96,17 @@ describe('Advanced filtering modal', () => {
 
     // adding a filter
     const presetFiltersButton = screen.getByText('Add preset filter');
-    userEvent.hover(presetFiltersButton);
-
+    fireEvent.mouseOver(presetFiltersButton);
     const upregulatedButton = await waitFor(() => screen.getByText('Up-regulated'));
 
-    userEvent.click(upregulatedButton);
+    upregulatedButton.click();
 
     await waitFor(() => screen.getByText('logFC'));
 
     // applying filters and checking if onLaunch was called
     const applyButton = screen.getByText('Apply filters');
 
-    userEvent.click(applyButton);
+    applyButton.click();
 
     await waitFor(() => expect(onLaunch).toHaveBeenCalled());
   });
@@ -121,7 +116,7 @@ describe('Advanced filtering modal', () => {
 
     // adding a filter
     const presetFiltersButton = screen.getByText('Add preset filter');
-    userEvent.hover(presetFiltersButton);
+    fireEvent.mouseOver(presetFiltersButton);
 
     await waitFor(() => {
       expect(screen.getByText('Up-regulated')).toBeInTheDocument();
@@ -131,12 +126,15 @@ describe('Advanced filtering modal', () => {
 
     // Add a filter
     const addFilterButton = screen.getByText('Add custom filter');
-    userEvent.click(addFilterButton);
+    addFilterButton.click();
 
     // Open the combobox
     const propertyDropdown = screen.getAllByRole('combobox')[0];
-    userEvent.click(propertyDropdown);
-    userEvent.click(screen.getAllByText('logFC')[1]);
+    fireEvent.mouseMove(propertyDropdown);
+
+    await act(async () => {
+      fireEvent.change(propertyDropdown, { target: { value: 'LogFC' } });
+    });
 
     // Get all available options
     const listOptionContainer = screen.getByText('AUC').closest('div[class=rc-virtual-list]');
@@ -172,7 +170,7 @@ describe('Advanced filtering modal', () => {
 
     // adding a filter
     const presetFiltersButton = screen.getByText('Add preset filter');
-    userEvent.hover(presetFiltersButton);
+    fireEvent.mouseOver(presetFiltersButton);
 
     // The "Significant" preset option should not be there because it needs p_val_adj
     await waitFor(() => {
@@ -183,17 +181,18 @@ describe('Advanced filtering modal', () => {
 
     // Add a filter
     const addFilterButton = screen.getByText('Add custom filter');
-    userEvent.click(addFilterButton);
+    addFilterButton.click();
 
     // Open the combobox
     const propertyDropdown = screen.getAllByRole('combobox')[0];
-    userEvent.click(propertyDropdown);
+    fireEvent.mouseMove(propertyDropdown);
 
-    const logFcOption = screen.getAllByText('logFC')[1];
-    userEvent.click(logFcOption);
+    await act(async () => {
+      fireEvent.change(propertyDropdown, { target: { value: 'LogFC' } });
+    });
 
     // Get all available options
-    const listOptionContainer = logFcOption.closest('div[class=rc-virtual-list]');
+    const listOptionContainer = screen.queryAllByText('logFC')[1].closest('div[class=rc-virtual-list]');
     const options = listOptionContainer.querySelectorAll('div[class=ant-select-item-option-content]');
 
     const expectedFilterOptions = ['logFC'];
