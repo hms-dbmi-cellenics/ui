@@ -6,7 +6,7 @@ const getCellSetsHierarchyByName = (name) => (cellSets) => {
   const rootCluster = Object.keys(properties).filter((key) => (
     properties[key].name === name
   ));
-  console.log('TOOOSAODASDA ', rootCluster);
+
   const hierarchyToReturn = Object.values(hierarchy).filter(
     (currCluster) => currCluster.key === rootCluster[0],
   );

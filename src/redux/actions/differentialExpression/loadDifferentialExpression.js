@@ -23,7 +23,7 @@ const loadDifferentialExpression = (
   });
 
   const body = generateDiffExprBody(experimentId, comparisonGroup, comparisonType);
-  console.log('BODY ', body);
+
   let extras = {};
   let pagination = {};
   if (tableState) {

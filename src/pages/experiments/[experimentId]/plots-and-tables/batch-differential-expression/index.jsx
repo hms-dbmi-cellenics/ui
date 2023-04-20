@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import {
   Radio,
   Tooltip,
@@ -7,6 +7,7 @@ import {
   Button,
   Card,
   Form,
+  Alert,
 } from 'antd';
 import Header from 'components/Header';
 import { getCellSetsHierarchyByType, getCellSets } from 'redux/selectors';
@@ -16,30 +17,29 @@ import PropTypes from 'prop-types';
 import { InfoCircleOutlined } from '@ant-design/icons';
 import { plotNames } from 'utils/constants';
 import getSelectOptions from 'utils/plots/getSelectOptions';
-import dayjs from 'dayjs';
-import utc from 'dayjs/plugin/utc';
 import Loader from 'components/Loader';
 import DiffExprSelectMenu from 'components/data-exploration/differential-expression-tool/DiffExprSelectMenu';
 import getBatchDiffExpr from 'utils/differentialExpression/getBatchDiffExpr';
 import getCellSetsHierarchyByName from 'redux/selectors/cellSets/getCellSetsHierarchyByName';
-import ExportAsCSV from 'components/plots/ExportAsCSV';
-import _ from 'lodash';
+import { zipSync } from 'fflate';
+import { saveAs } from 'file-saver';
+import checkCanRunDiffExpr, { canRunDiffExprResults } from 'utils/differentialExpression/checkCanRunDiffExpr';
 
-dayjs.extend(utc);
+import _ from 'lodash';
 
 const BatchDiffExpression = (props) => {
   const { experimentId } = props;
   const [chosenOperation, setChosenOperation] = useState('fullList');
   const dispatch = useDispatch();
   const cellSets = useSelector(getCellSets());
-
+  const experimentName = useSelector((state) => state.experimentSettings.info.experimentName);
   const rootCellSetNodes = useSelector(getCellSetsHierarchyByType('cellSets')).map(({ key }) => ({ key: cellSets.properties[key].name }));
   const rootMetadataCellSetNodes = useSelector(getCellSetsHierarchyByType('metadataCategorical')).map(({ key }) => ({ key: cellSets.properties[key].name }));
 
   const [dataLoading, setDataLoading] = useState();
+  const [dataDownloading, setDataDownloading] = useState();
   const [csvData, setCsvData] = useState([]);
-  const [filename, setFilename] = useState();
-
+  const [canRunDE, setCanRunDE] = useState(false);
   const comparisonInitialState = {
     cellSet: null,
     compareWith: null,
@@ -54,19 +54,18 @@ const BatchDiffExpression = (props) => {
     }
   }, []);
 
-  const changeOperation = (value) => {
-    setComparison(comparisonInitialState);
+  useEffect(() => {
     setCsvData([]);
     setDataLoading(false);
 
-    setChosenOperation(value.target.value);
+    setChosenOperation(chosenOperation);
     const comparisonTypes = {
-      fillList: 'within',
+      fullList: 'within',
       compareForCellSets: 'within',
       compareForSamples: 'between',
     };
-    changeComparison('comparisonType', comparisonTypes[value.target.value]);
-  };
+    setComparison({ ...comparisonInitialState, comparisonType: comparisonTypes[chosenOperation] });
+  }, [chosenOperation]);
 
   const changeComparison = (key, value) => {
     setCsvData([]);
@@ -75,27 +74,104 @@ const BatchDiffExpression = (props) => {
     setComparison(newComparison);
   };
 
+  const getBatchClusterNames = (basis) => {
+    const batchHierarchy = getCellSetsHierarchyByName(basis)(cellSets);
+    const batchClusterNames = batchHierarchy[0].children.map((cluster) => cluster.key);
+    return batchClusterNames;
+  };
+
+  const canRunDiffExpr = (comparisonGroup) => {
+    const { properties, hierarchy } = cellSets;
+    return checkCanRunDiffExpr(
+      properties,
+      hierarchy,
+      { [comparisonGroup.comparisonType]: comparisonGroup },
+      comparisonGroup.comparisonType,
+      true,
+    );
+  };
+  const isFormValid = useCallback(() => {
+    const { cellSet, compareWith, basis } = comparison;
+    if (!basis) return false;
+    const batchClusterNames = getBatchClusterNames(basis);
+
+    if (cellSet && compareWith && basis) {
+      const results = batchClusterNames.map((currentBasis) => (
+        canRunDiffExpr({ ...comparison, basis: currentBasis })));
+      // setCanRunDE(results);
+      return results;
+    }
+    if (chosenOperation === 'fullList' && basis) {
+      const results = batchClusterNames.map((currentBasis) => (
+        canRunDiffExpr({
+          ...comparison, basis: 'all', compareWith: 'background', cellSet: currentBasis,
+        })));
+      // setCanRunDE(results);
+      return results;
+    }
+    return false;
+  }, [comparison, chosenOperation]);
+
+  const downloadCSVsAsZip = (data) => {
+    setDataDownloading(true);
+    const encoder = new TextEncoder();
+    const archiveName = `batchDE_${experimentName}.zip`;
+
+    const batchClusterNames = getBatchClusterNames(comparison.basis);
+    const CSVs = data.reduce((accumulator, currentData, indx) => {
+      let csvString;
+      let fileName;
+      if (!currentData.error) {
+        // Get the column names from the keys of the first object in currentData
+        const columnNames = Object.keys(currentData[0]).join(',');
+        const csvRows = currentData.map((obj) => Object.values(obj).join(','));
+
+        // Add the column names as the first row and join the CSV data with new lines
+        csvString = `${columnNames}\n${csvRows.join('\n')}`;
+        fileName = `DE-${batchClusterNames[indx]}.csv`;
+      } else {
+        // If currentData[0] is not an array, include the error message in the CSV file
+        csvString = `error\n${currentData.error}`;
+        fileName = `DE-${batchClusterNames[indx]}-error.csv`;
+      }
+
+      const encodedString = encoder.encode(csvString);
+      accumulator[fileName] = encodedString;
+      return accumulator;
+    }, {});
+
+    const zipped = zipSync({ [archiveName]: CSVs });
+
+    const blob = new Blob([zipped], { type: 'application/zip' });
+    saveAs(blob, archiveName);
+    setDataDownloading(false);
+  };
+
   const getData = async () => {
     setDataLoading(true);
     const {
       cellSet, compareWith, basis, comparisonType,
     } = comparison;
-    console.log('COMPARISON ', comparison);
-    const batchHierarchy = getCellSetsHierarchyByName(basis)(cellSets);
-    const batchClusterNames = batchHierarchy[0].children.map((cluster) => cluster.key);
 
-    const comparisonObject = {
-      cellSet,
-      compareWith,
-      basis: batchClusterNames,
-    };
+    let comparisonObject = {};
+    const batchClusterNames = getBatchClusterNames(basis);
+
+    if (chosenOperation === 'fullList') {
+      comparisonObject = {
+        cellSet: batchClusterNames,
+        compareWith: 'background',
+        basis: ['all'],
+      };
+    } else {
+      comparisonObject = {
+        cellSet: [cellSet],
+        compareWith,
+        basis: batchClusterNames,
+      };
+    }
     const data = await dispatch(getBatchDiffExpr(experimentId, comparisonObject, comparisonType));
-
-    const date = dayjs.utc().format('YYYY-MM-DD-HH-mm-ss');
-    setFilename(`BatchDE_${experimentId}_${cellSet}_vs_${compareWith}_${date}.csv`);
     setCsvData(data);
     setDataLoading(false);
-    console.log('DATA IS ', data);
   };
 
   const renderSpecificControls = (operation) => {
@@ -206,33 +282,85 @@ const BatchDiffExpression = (props) => {
         <br />
         <Form size='small' layout='vertical'>
 
-          <Radio.Group value={chosenOperation} onChange={(e) => { changeOperation(e); }}>
+          <Radio.Group value={chosenOperation} onChange={(e) => { setChosenOperation(e.target.value); }}>
             <Space direction='vertical'>
               <Space direction='horizontal'>
                 <Radio value='fullList'>
                   Generate a full list of marker genes for all cell sets
+                  {'   '}
+                  <Tooltip title='Each cell set will be compared to all other cells, using all samples.'>
+                    <InfoCircleOutlined />
+                  </Tooltip>
                 </Radio>
-                <Tooltip title='Each cell set will be compared to all other cells, using all samples.'>
-                  <InfoCircleOutlined />
-                </Tooltip>
               </Space>
               <Radio value='compareForCellSets'>
-                Compare between two selected samples/groups for all cell sets
+                Compare two selected samples/groups within a cell set for all cell sets
               </Radio>
               <Radio value='compareForSamples'>
-                Compare between two selected cell sets for all samples/groups
+                Compare between two cell sets for all samples/groups
               </Radio>
             </Space>
           </Radio.Group>
+
           <br />
           <br />
           <Space direction='vertical'>
             {renderSpecificControls(chosenOperation)}
+            <Space direction='horizontal'>
+              {
+                isFormValid().length && isFormValid().includes(canRunDiffExprResults.INSUFFCIENT_CELLS_ERROR)
+                  ? (
+                    <Alert
+                      message='Warning'
+                      style={{ width: '50%' }}
+                      description={(
+                        <>
+                          One or more of the selected samples/groups does not contain enough cells in the selected cell set.
+                          Those comparisons will be skipped.
+                        </>
+                      )}
+                      type='error'
+                      showIcon
+                    />
+                  )
+                  : isFormValid().length && isFormValid().includes(canRunDiffExprResults.INSUFFICIENT_CELLS_WARNING)
+                    ? (
+                      <Alert
+                        message='Warning'
+                        style={{ width: '50%' }}
+                        description={(
+                          <>
+                            For one of more of the comparisons, there are fewer than 3 samples with the minimum number of cells (10).
+                            Only logFC values will be calculated and results should be used for exploratory purposes only.
+                          </>
+                        )}
+                        type='warning'
+                        showIcon
+                      />
+                    )
+                    : <></>
+              }
+            </Space>
             <br />
             <Space direction='horizontal'>
-              <ExportAsCSV type='primary' size='large' disabled={!csvData.length} data={csvData} filename={filename} />
-              <Button loading={dataLoading} size='large' onClick={getData} disabled={csvData.length}> Compute </Button>
+              <Button
+                disabled={!csvData.length}
+                size='large'
+                type='primary'
+                onClick={() => downloadCSVsAsZip(csvData)}
+              >
+                Download Archive
+              </Button>
+              <Button
+                loading={dataLoading}
+                size='large'
+                onClick={() => { getData(); }}
+                disabled={csvData.length || !isFormValid()}
+              >
+                {dataLoading ? 'Computing' : 'Compute'}
+              </Button>
             </Space>
+
           </Space>
         </Form>
       </Card>

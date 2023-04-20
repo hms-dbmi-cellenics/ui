@@ -2,9 +2,9 @@ import fetchWork from 'utils/work/fetchWork';
 import getTimeoutForWorkerTask from 'utils/getTimeoutForWorkerTask';
 import { getCellSetKey } from 'utils/cellSets';
 import getArray from 'utils/getArray';
+import pushNotificationMessage from 'utils/pushNotificationMessage';
 
 const getBatchDiffExpr = (experimentId, comparisonObject, comparisonType) => async (dispatch, getState) => {
-  console.log('SENDING COMPARISON TYPE ', comparisonType);
   const workBody = {
     name: 'BatchDifferentialExpression',
     experimentId,
@@ -15,11 +15,25 @@ const getBatchDiffExpr = (experimentId, comparisonObject, comparisonType) => asy
   };
 
   const timeout = getTimeoutForWorkerTask(getState(), 'DifferentialExpression');
+  try {
+    const data = await fetchWork(
+      experimentId, workBody, getState, dispatch, { timeout },
+    );
 
-  const data = await fetchWork(
-    experimentId, workBody, getState, dispatch, { timeout },
-  );
-  const rows = data.map((row) => getArray(row.data));
-  return rows;
+    if (!data.length) {
+      pushNotificationMessage('warning', 'No data available for this comparison, make sure the selected cell set is not empty');
+    }
+
+    const rows = data.map((row) => {
+      if (!row.total) {
+        return { error: row.data };
+      }
+      return getArray(row.data);
+    });
+    return rows;
+  } catch (e) {
+    pushNotificationMessage('error', 'Something went wrong while computing your data.');
+    return { error: e };
+  }
 };
 export default getBatchDiffExpr;

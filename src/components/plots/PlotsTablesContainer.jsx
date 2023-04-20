@@ -103,8 +103,7 @@ const plots = [
       },
       {
         name: plotNames.BATCH_DIFFERENTIAL_EXPRESSION,
-        // change the image once we have a table ready
-        image: volcano,
+        image: '/static/media/batch-de.png',
         key: 'batch-differential-expression-key',
         link: 'batch-differential-expression',
       },
