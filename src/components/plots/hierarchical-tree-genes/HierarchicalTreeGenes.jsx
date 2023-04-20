@@ -2,6 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Tree, Skeleton } from 'antd';
 
+import 'components/plots/hierarchical-tree-genes/HierarchicalTreeGenes.css';
+
 const HierarchicalTreeGenes = (props) => {
   const {
     treeData,

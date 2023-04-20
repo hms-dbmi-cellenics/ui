@@ -2,30 +2,30 @@
 
 exports[`ExperimentUpdatesHandler Handles qc errors correctly with config update 1`] = `
 [MockFunction] {
-  "calls": [
-    [
+  "calls": Array [
+    Array [
       "Experiment updates error:",
-      {
-        "input": {
+      Object {
+        "input": Object {
           "sampleUuid": "mockSampleUuid",
           "taskName": "mockTaskName",
         },
-        "output": {
-          "config": {
-            "processingConfigUpdate": {
+        "output": Object {
+          "config": Object {
+            "processingConfigUpdate": Object {
               "mockProcessingConfigUpdate": "mockProcessingConfigUpdate",
             },
           },
           "plotData": undefined,
         },
         "pipelineVersion": 2,
-        "response": {
+        "response": Object {
           "error": true,
           "errorCode": "MOCK_ERROR_CODE",
           "userMessage": "mockUserMessage",
         },
-        "status": {
-          "pipeline": {
+        "status": Object {
+          "pipeline": Object {
             "status": "ERROR",
           },
         },
@@ -33,8 +33,8 @@ exports[`ExperimentUpdatesHandler Handles qc errors correctly with config update
       },
     ],
   ],
-  "results": [
-    {
+  "results": Array [
+    Object {
       "type": "return",
       "value": undefined,
     },
@@ -44,23 +44,23 @@ exports[`ExperimentUpdatesHandler Handles qc errors correctly with config update
 
 exports[`ExperimentUpdatesHandler Handles qc errors correctly without config update 1`] = `
 [MockFunction] {
-  "calls": [
-    [
+  "calls": Array [
+    Array [
       "Experiment updates error:",
-      {
-        "input": {
+      Object {
+        "input": Object {
           "sampleUuid": "mockSampleUuid",
           "taskName": "mockTaskName",
         },
         "output": undefined,
         "pipelineVersion": 2,
-        "response": {
+        "response": Object {
           "error": true,
           "errorCode": "MOCK_ERROR_CODE",
           "userMessage": "mockUserMessage",
         },
-        "status": {
-          "pipeline": {
+        "status": Object {
+          "pipeline": Object {
             "status": "ERROR",
           },
         },
@@ -68,8 +68,8 @@ exports[`ExperimentUpdatesHandler Handles qc errors correctly without config upd
       },
     ],
   ],
-  "results": [
-    {
+  "results": Array [
+    Object {
       "type": "return",
       "value": undefined,
     },
@@ -78,10 +78,10 @@ exports[`ExperimentUpdatesHandler Handles qc errors correctly without config upd
 `;
 
 exports[`ExperimentUpdatesHandler Loads cell sets if QC pipeline completes  1`] = `
-[
+Array [
   "testae48e318dab9a1bd0bexperiment",
-  {
-    "pipeline": {
+  Object {
+    "pipeline": Object {
       "status": "SUCCEEDED",
     },
   },
@@ -89,15 +89,15 @@ exports[`ExperimentUpdatesHandler Loads cell sets if QC pipeline completes  1`] 
 `;
 
 exports[`ExperimentUpdatesHandler Loads cell sets if QC pipeline completes  2`] = `
-[
+Array [
   "mockPlotUuid",
   "mockPlotData",
 ]
 `;
 
 exports[`ExperimentUpdatesHandler Loads cell sets if QC pipeline completes  3`] = `
-[
-  [
+Array [
+  Array [
     "testae48e318dab9a1bd0bexperiment",
     2,
   ],
@@ -105,17 +105,17 @@ exports[`ExperimentUpdatesHandler Loads cell sets if QC pipeline completes  3`] 
 `;
 
 exports[`ExperimentUpdatesHandler Loads cell sets if QC pipeline completes  4`] = `
-[
+Array [
   "testae48e318dab9a1bd0bexperiment",
   true,
 ]
 `;
 
 exports[`ExperimentUpdatesHandler Triggers properly for GEM2S updates  1`] = `
-[
+Array [
   "testae48e318dab9a1bd0bexperiment",
-  {
-    "pipeline": {
+  Object {
+    "pipeline": Object {
       "status": "RUNNING",
     },
   },
@@ -125,10 +125,10 @@ exports[`ExperimentUpdatesHandler Triggers properly for GEM2S updates  1`] = `
 exports[`ExperimentUpdatesHandler Triggers properly for GEM2S updates  2`] = `undefined`;
 
 exports[`ExperimentUpdatesHandler Triggers properly for QC updates  1`] = `
-[
+Array [
   "testae48e318dab9a1bd0bexperiment",
-  {
-    "pipeline": {
+  Object {
+    "pipeline": Object {
       "status": "RUNNING",
     },
   },
@@ -136,10 +136,10 @@ exports[`ExperimentUpdatesHandler Triggers properly for QC updates  1`] = `
 `;
 
 exports[`ExperimentUpdatesHandler Triggers properly for QC updates  2`] = `
-[
+Array [
   "mockTaskName",
-  {
-    "processingConfigUpdate": {
+  Object {
+    "processingConfigUpdate": Object {
       "mockProcessingConfigUpdate": "mockProcessingConfigUpdate",
     },
   },
@@ -149,8 +149,8 @@ exports[`ExperimentUpdatesHandler Triggers properly for QC updates  2`] = `
 `;
 
 exports[`ExperimentUpdatesHandler Triggers properly for QC updates  3`] = `
-[
-  [
+Array [
+  Array [
     "testae48e318dab9a1bd0bexperiment",
     2,
   ],
@@ -158,7 +158,7 @@ exports[`ExperimentUpdatesHandler Triggers properly for QC updates  3`] = `
 `;
 
 exports[`ExperimentUpdatesHandler Triggers properly for QC updates  4`] = `
-[
+Array [
   "mockPlotUuid",
   "mockPlotData",
 ]

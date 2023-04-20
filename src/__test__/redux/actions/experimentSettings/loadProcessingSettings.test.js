@@ -11,6 +11,8 @@ import loadProcessingSettings from 'redux/actions/experimentSettings/processingC
 
 import generateExperimentSettingsMock from '__test__/test-utils/experimentSettings.mock';
 
+import '__test__/test-utils/setupTests';
+
 enableFetchMocks();
 const mockStore = configureStore([thunk]);
 

@@ -41,7 +41,7 @@ jest.mock('react-resize-detector', () => (props) => {
 // EtagParams is the object that's passed to the function which generates ETag in fetchWork
 jest.mock('object-hash', () => {
   const objectHash = jest.requireActual('object-hash');
-  const mockWorkResultETag = jest.requireActual('__test__/test-utils/mockWorkResultETag');
+  const mockWorkResultETag = jest.requireActual('__test__/test-utils/mockWorkResultETag').default;
 
   const mockWorkRequestETag = (ETagParams) => `${ETagParams.body.name}`;
 
@@ -379,9 +379,7 @@ describe('Trajectory analysis plot', () => {
 
     signalListeners.lassoSelection('eventName', [0, 2, -10, 4]);
 
-    await waitFor(() => {
-      expect(screen.getByText('9 nodes selected')).toBeInTheDocument();
-    });
+    expect(screen.getByText('9 nodes selected')).toBeInTheDocument();
   });
 
   it('addNode handling works well', async () => {
@@ -394,9 +392,7 @@ describe('Trajectory analysis plot', () => {
 
     signalListeners.addNode('eventName', { nodeId: 5 });
 
-    await waitFor(() => {
-      expect(screen.getByText('4 nodes selected')).toBeInTheDocument();
-    });
+    expect(screen.getByText('4 nodes selected')).toBeInTheDocument();
   });
 
   it('removeNode handling works well', async () => {
@@ -410,9 +406,7 @@ describe('Trajectory analysis plot', () => {
 
     signalListeners.removeNode('eventName', { nodeId: 1 });
 
-    await waitFor(() => {
-      expect(screen.getByText('2 nodes selected')).toBeInTheDocument();
-    });
+    expect(screen.getByText('2 nodes selected')).toBeInTheDocument();
   });
 
   it('Renders a plot legend alert if there are more than MAX_LEGEND_ITEMS number of cell sets', async () => {

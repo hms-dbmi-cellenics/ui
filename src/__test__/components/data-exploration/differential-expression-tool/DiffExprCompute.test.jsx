@@ -146,18 +146,36 @@ describe('DiffExprCompute', () => {
 
     // Choose cell set 1
     const selectCellSet1 = screen.getByRole('combobox', { name: /Compare cell set/i });
-    userEvent.click(selectCellSet1);
-    userEvent.click(screen.getByText('Cluster 0'));
+    await act(async () => {
+      fireEvent.change(selectCellSet1, { target: { value: 'Cluster 0' } });
+    });
+
+    const cellSet1Option = screen.getByText(/Cluster 0/);
+    await act(async () => {
+      fireEvent.click(cellSet1Option);
+    });
 
     // Select the 2nd cell set
-    const selectCellSet2 = screen.getByRole('combobox', { name: /and cell set:/ });
-    userEvent.click(selectCellSet2);
-    userEvent.click(screen.getByText('All other cells'));
+    const selectCellSet2 = screen.getByRole('combobox', { name: /and cell set/i });
+    await act(async () => {
+      fireEvent.change(selectCellSet2, { target: { value: 'All' } });
+    });
+
+    const cellSet2Option = screen.getByText(/All other cells/);
+    await act(async () => {
+      fireEvent.click(cellSet2Option);
+    });
 
     // With all samples
     const selectSampleOrGroup = screen.getByRole('combobox', { name: /within sample/i });
-    userEvent.click(selectSampleOrGroup);
-    userEvent.click(screen.getByText('WT1'));
+    await act(async () => {
+      fireEvent.change(selectSampleOrGroup, { target: { value: 'WT1' } });
+    });
+
+    const sampleOrGroupOption = screen.getByText(/WT1/);
+    await act(async () => {
+      fireEvent.click(sampleOrGroupOption);
+    });
 
     // Compute button should be enabled
     await waitFor(() => {
@@ -180,20 +198,36 @@ describe('DiffExprCompute', () => {
 
     // Choose cell set
     const selectCellSet = screen.getByRole('combobox', { name: /Compare cell set/i });
-    userEvent.click(selectCellSet);
-    userEvent.click(screen.getByText(/Cluster 1/));
+    await act(async () => {
+      fireEvent.change(selectCellSet, { target: { value: 'Cluster 1' } });
+    });
+
+    const cellSetOption = screen.getByText(/Cluster 1/);
+    await act(async () => {
+      fireEvent.click(cellSetOption);
+    });
 
     // Select the 1st group
     const selectGroup1 = screen.getByRole('combobox', { name: /between sample\/group/i });
-    userEvent.click(selectGroup1);
-    userEvent.click(screen.getByText(/KO/));
+    await act(async () => {
+      fireEvent.change(selectGroup1, { target: { value: 'KO' } });
+    });
+
+    const group1Option = screen.getByText(/KO/);
+    await act(async () => {
+      fireEvent.click(group1Option);
+    });
 
     // Select the 2nd group
     const selectGroup2 = screen.getByRole('combobox', { name: /and sample\/group/i });
-    userEvent.click(selectGroup2);
+    await act(async () => {
+      fireEvent.change(selectGroup2, { target: { value: 'WT1' } });
+    });
 
     const group2Option = screen.queryAllByText(/WT1/)[1];
-    userEvent.click(group2Option);
+    await act(async () => {
+      fireEvent.click(group2Option);
+    });
 
     // There should be a warning
     await waitFor(() => {
@@ -213,18 +247,36 @@ describe('DiffExprCompute', () => {
 
     // Choose cell set
     const selectCellSet = screen.getByRole('combobox', { name: /Compare cell set/i });
-    userEvent.click(selectCellSet);
-    userEvent.click(screen.getByText(/Cluster 0/));
+    await act(async () => {
+      fireEvent.change(selectCellSet, { target: { value: 'Cluster 0' } });
+    });
+
+    const cellSetOption = screen.getByText(/Cluster 0/);
+    await act(async () => {
+      fireEvent.click(cellSetOption);
+    });
 
     // Select the 1st group
     const selectGroup1 = screen.getByRole('combobox', { name: /between sample\/group/i });
-    userEvent.click(selectGroup1);
-    userEvent.click(screen.getByText(/WT1/));
+    await act(async () => {
+      fireEvent.change(selectGroup1, { target: { value: 'WT1' } });
+    });
+
+    const group1Option = screen.getByText(/WT1/);
+    await act(async () => {
+      fireEvent.click(group1Option);
+    });
 
     // Select the 2nd group
     const selectGroup2 = screen.getByRole('combobox', { name: /and sample\/group/i });
-    userEvent.click(selectGroup2);
-    userEvent.click(screen.getByText(/Rest of Samples/));
+    await act(async () => {
+      fireEvent.change(selectGroup2, { target: { value: 'Rest of Samples' } });
+    });
+
+    const group2Option = screen.getByText(/Rest of Samples/);
+    await act(async () => {
+      fireEvent.click(group2Option);
+    });
 
     // There should be an error message
     await waitFor(() => {
@@ -244,21 +296,35 @@ describe('DiffExprCompute', () => {
 
     // Choose cell set
     const selectCellSet = screen.getByRole('combobox', { name: /Compare cell set/i });
-    userEvent.click(selectCellSet);
-    userEvent.click(screen.getByText(/All/));
+    await act(async () => {
+      fireEvent.change(selectCellSet, { target: { value: 'All' } });
+    });
+
+    const cellSetOption = screen.getByText(/All/);
+    await act(async () => {
+      fireEvent.click(cellSetOption);
+    });
 
     // Select the 1st group
     const selectGroup1 = screen.getByRole('combobox', { name: /between sample\/group/i });
-    userEvent.click(selectGroup1);
-    userEvent.click(screen.getByText(/WT1/));
+    await act(async () => {
+      fireEvent.change(selectGroup1, { target: { value: 'WT1' } });
+    });
+
+    const group1Option = screen.getByText(/WT1/);
+    await act(async () => {
+      fireEvent.click(group1Option);
+    });
 
     // Select the 2nd group
     const selectGroup2 = screen.getByRole('combobox', { name: /and sample\/group/i });
-    userEvent.click(selectGroup2);
-    userEvent.click(screen.getByText(/Rest of Samples/));
-
     await act(async () => {
       fireEvent.change(selectGroup2, { target: { value: 'Rest of Samples' } });
+    });
+
+    const group2Option = screen.getByText(/Rest of Samples/);
+    await act(async () => {
+      fireEvent.click(group2Option);
     });
 
     // There should not be a warning and button should be enabled
@@ -277,24 +343,38 @@ describe('DiffExprCompute', () => {
 
     // Choose cell set 1
     const selectCellSet1 = screen.getByRole('combobox', { name: /Compare cell set/i });
-    userEvent.click(selectCellSet1);
-    userEvent.click(screen.getByText(/Cluster 0/));
+    await act(async () => {
+      fireEvent.change(selectCellSet1, { target: { value: 'Cluster 0' } });
+    });
+
+    const cellSet1Option = screen.getByText(/Cluster 0/);
+    await act(async () => {
+      fireEvent.click(cellSet1Option);
+    });
 
     // Select the 2nd cell set
     const selectCellSet2 = screen.getByRole('combobox', { name: /and cell set/i });
-    userEvent.click(selectCellSet2);
-
-    screen.debug(null, Infinity);
+    await act(async () => {
+      fireEvent.change(selectCellSet2, { target: { value: 'Cluster 2' } });
+    });
 
     // There are 2 'Cluster 2' options because we have 2 cell set dropdowns
     // Choose the 2nd one.
     const cellSet2Option = screen.getAllByText(/Cluster 2/)[1];
-    userEvent.click(cellSet2Option);
+    await act(async () => {
+      fireEvent.click(cellSet2Option);
+    });
 
     // With all samples
     const selectSampleOrGroup = screen.getByRole('combobox', { name: /within sample/i });
-    userEvent.click(selectSampleOrGroup);
-    userEvent.click(screen.getByText(/WT1/));
+    await act(async () => {
+      fireEvent.change(selectSampleOrGroup, { target: { value: 'WT1' } });
+    });
+
+    const sampleOrGroupOption = screen.getByText(/WT1/);
+    await act(async () => {
+      fireEvent.click(sampleOrGroupOption);
+    });
 
     // Delete the cell set delected in the first option
     await act(async () => {

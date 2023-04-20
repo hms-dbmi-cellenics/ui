@@ -2,10 +2,9 @@ import React from 'react';
 import _ from 'lodash';
 
 import { act } from 'react-dom/test-utils';
-import {
-  render, screen, fireEvent, waitFor, within,
-} from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { mount } from 'enzyme';
+import { fireEvent, waitFor, within } from '@testing-library/dom';
 import '@testing-library/jest-dom';
 import { Provider } from 'react-redux';
 
@@ -48,7 +47,7 @@ jest.mock('react-resize-detector', () => (props) => {
 
 jest.mock('object-hash', () => {
   const objectHash = jest.requireActual('object-hash');
-  const mockWorkResultETag = jest.requireActual('__test__/test-utils/mockWorkResultETag');
+  const mockWorkResultETag = jest.requireActual('__test__/test-utils/mockWorkResultETag').default;
 
   const mockWorkRequestETag = (ETagParams) => {
     if (ETagParams.body.name === 'ListGenes') return 'paginated-gene-expression';
