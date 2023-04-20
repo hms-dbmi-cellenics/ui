@@ -10,6 +10,7 @@ import { GENES_EXPRESSION_LOADING, GENES_EXPRESSION_LOADED, GENES_EXPRESSION_ERR
 import fetchWork from 'utils/work/fetchWork';
 import pipelineStatusValues from 'utils/pipelineStatusValues';
 
+import '__test__/test-utils/setupTests';
 import { getOneGeneMatrix } from '__test__/utils/ExpressionMatrix/testMatrixes';
 
 jest.mock('utils/work/fetchWork');
@@ -103,7 +104,7 @@ describe('loadGeneExpression action', () => {
     expect(_.map(actions, 'type')).toEqual([GENES_EXPRESSION_LOADING, GENES_EXPRESSION_LOADED]);
     expect(_.map(actions, 'payload')).toMatchSnapshot();
 
-    expect(_.isEqual(actions[1].payload.newGenes, mockResult)).toBe(true);
+    expect(actions[1].payload.newGenes).toEqual(mockResult);
   });
 
   it('Dispatches appropriately on failure', async () => {

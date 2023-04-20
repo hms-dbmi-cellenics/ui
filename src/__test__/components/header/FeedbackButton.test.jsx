@@ -1,4 +1,5 @@
 import '@testing-library/jest-dom';
+import '__test__/test-utils/setupTests';
 
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import {

@@ -1,96 +1,96 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`ErrorPage Should post error to Slack if environment is production 1`] = `
-[
-  {
+Array [
+  Object {
     "message": "Some error message",
   },
-  {
-    "backendStatus": {},
-    "cellInfo": {
-      "focus": {
+  Object {
+    "backendStatus": Object {},
+    "cellInfo": Object {
+      "focus": Object {
         "key": "louvain",
         "store": "cellSets",
       },
       "groupedTrack": "louvain",
-      "selectedTracks": [
+      "selectedTracks": Array [
         "louvain",
       ],
     },
-    "cellMeta": {
-      "doubletScores": {
-        "data": [],
+    "cellMeta": Object {
+      "doubletScores": Object {
+        "data": Array [],
         "error": false,
         "loading": true,
       },
-      "mitochondrialContent": {
-        "data": [],
+      "mitochondrialContent": Object {
+        "data": Array [],
         "error": false,
         "loading": true,
       },
-      "numOfGenes": {
-        "data": [],
+      "numOfGenes": Object {
+        "data": Array [],
         "error": false,
         "loading": true,
       },
-      "numOfUmis": {
-        "data": [],
+      "numOfUmis": Object {
+        "data": Array [],
         "error": false,
         "loading": true,
       },
     },
-    "cellSets": {
+    "cellSets": Object {
       "error": false,
       "hidden": Set {},
-      "hierarchy": [],
+      "hierarchy": Array [],
       "initialLoadPending": true,
       "loading": false,
-      "properties": {},
-      "selected": [],
+      "properties": Object {},
+      "selected": Array [],
       "updatingClustering": false,
     },
-    "componentConfig": {},
-    "differentialExpression": {
-      "comparison": {
-        "advancedFilters": [],
-        "group": {
-          "between": {
+    "componentConfig": Object {},
+    "differentialExpression": Object {
+      "comparison": Object {
+        "advancedFilters": Array [],
+        "group": Object {
+          "between": Object {
             "basis": null,
             "cellSet": null,
             "compareWith": null,
           },
-          "within": {
+          "within": Object {
             "basis": null,
             "cellSet": null,
             "compareWith": null,
           },
         },
-        "ordering": {
+        "ordering": Object {
           "orderBy": "logFC",
           "orderDirection": "DESC",
         },
         "type": "within",
       },
-      "properties": {
-        "comparisonGroup": {},
+      "properties": Object {
+        "comparisonGroup": Object {},
         "comparisonType": null,
-        "data": [],
+        "data": Array [],
         "error": false,
         "loading": false,
         "total": 0,
       },
     },
-    "embeddings": {},
-    "experimentSettings": {
-      "info": {
+    "embeddings": Object {},
+    "experimentSettings": Object {
+      "info": Object {
         "experimentId": null,
         "experimentName": null,
         "pipelineVersion": null,
-        "sampleIds": [],
+        "sampleIds": Array [],
       },
-      "originalProcessing": {},
-      "processing": {
-        "meta": {
+      "originalProcessing": Object {},
+      "processing": Object {
+        "meta": Object {
           "changedQCFilters": Set {},
           "completingStepError": false,
           "loading": false,
@@ -98,140 +98,140 @@ exports[`ErrorPage Should post error to Slack if environment is production 1`] =
         },
       },
     },
-    "experiments": {
-      "ids": [],
-      "meta": {
+    "experiments": Object {
+      "ids": Array [],
+      "meta": Object {
         "activeExperimentId": null,
         "error": false,
         "loading": false,
         "saving": false,
       },
     },
-    "genes": {
-      "expression": {
-        "downsampledCellOrder": [],
+    "genes": Object {
+      "expression": Object {
+        "downsampledCellOrder": Array [],
         "downsampledMatrix": ExpressionMatrix {
-          "geneIndexes": {},
-          "rawGeneExpressions": {
+          "geneIndexes": Object {},
+          "rawGeneExpressions": Object {
             "datatype": undefined,
-            "index": [],
+            "index": Array [],
             "mathjs": "SparseMatrix",
-            "ptr": [
+            "ptr": Array [
               0,
             ],
-            "size": [
+            "size": Array [
               0,
               0,
             ],
-            "values": [],
+            "values": Array [],
           },
           "setGeneExpression": [Function],
-          "stats": {
-            "rawMean": [],
-            "rawStdev": [],
-            "truncatedMax": [],
-            "truncatedMin": [],
+          "stats": Object {
+            "rawMean": Array [],
+            "rawStdev": Array [],
+            "truncatedMax": Array [],
+            "truncatedMin": Array [],
           },
-          "truncatedGeneExpressions": {
+          "truncatedGeneExpressions": Object {
             "datatype": undefined,
-            "index": [],
+            "index": Array [],
             "mathjs": "SparseMatrix",
-            "ptr": [
+            "ptr": Array [
               0,
             ],
-            "size": [
+            "size": Array [
               0,
               0,
             ],
-            "values": [],
+            "values": Array [],
           },
-          "zScore": {
+          "zScore": Object {
             "datatype": undefined,
-            "index": [],
+            "index": Array [],
             "mathjs": "SparseMatrix",
-            "ptr": [
+            "ptr": Array [
               0,
             ],
-            "size": [
+            "size": Array [
               0,
               0,
             ],
-            "values": [],
+            "values": Array [],
           },
         },
         "error": false,
-        "loading": [],
+        "loading": Array [],
         "matrix": ExpressionMatrix {
-          "geneIndexes": {},
-          "rawGeneExpressions": {
+          "geneIndexes": Object {},
+          "rawGeneExpressions": Object {
             "datatype": undefined,
-            "index": [],
+            "index": Array [],
             "mathjs": "SparseMatrix",
-            "ptr": [
+            "ptr": Array [
               0,
             ],
-            "size": [
+            "size": Array [
               0,
               0,
             ],
-            "values": [],
+            "values": Array [],
           },
           "setGeneExpression": [Function],
-          "stats": {
-            "rawMean": [],
-            "rawStdev": [],
-            "truncatedMax": [],
-            "truncatedMin": [],
+          "stats": Object {
+            "rawMean": Array [],
+            "rawStdev": Array [],
+            "truncatedMax": Array [],
+            "truncatedMin": Array [],
           },
-          "truncatedGeneExpressions": {
+          "truncatedGeneExpressions": Object {
             "datatype": undefined,
-            "index": [],
+            "index": Array [],
             "mathjs": "SparseMatrix",
-            "ptr": [
+            "ptr": Array [
               0,
             ],
-            "size": [
+            "size": Array [
               0,
               0,
             ],
-            "values": [],
+            "values": Array [],
           },
-          "zScore": {
+          "zScore": Object {
             "datatype": undefined,
-            "index": [],
+            "index": Array [],
             "mathjs": "SparseMatrix",
-            "ptr": [
+            "ptr": Array [
               0,
             ],
-            "size": [
+            "size": Array [
               0,
               0,
             ],
-            "values": [],
+            "values": Array [],
           },
         },
-        "views": {},
+        "views": Object {},
       },
       "focused": undefined,
-      "markers": {
+      "markers": Object {
         "ETag": null,
         "error": false,
         "loading": false,
       },
-      "properties": {
-        "data": {},
-        "loading": [],
-        "views": {},
+      "properties": Object {
+        "data": Object {},
+        "loading": Array [],
+        "views": Object {},
       },
-      "selected": [],
+      "selected": Array [],
     },
-    "layout": {
+    "layout": Object {
       "panel": "Gene list",
-      "windows": {
+      "windows": Object {
         "direction": "row",
-        "first": {
+        "first": Object {
           "direction": "column",
-          "first": {
+          "first": Object {
             "direction": "row",
             "first": "UMAP",
             "second": "Cell sets and Metadata",
@@ -244,19 +244,19 @@ exports[`ErrorPage Should post error to Slack if environment is production 1`] =
         "splitPercentage": 70,
       },
     },
-    "networkResources": {
+    "networkResources": Object {
       "domainName": "scp.biomage.net",
       "environment": "production",
     },
-    "samples": {
-      "meta": {
+    "samples": Object {
+      "meta": Object {
         "error": false,
         "loading": false,
         "saving": false,
-        "validating": [],
+        "validating": Array [],
       },
     },
-    "user": {
+    "user": Object {
       "current": null,
     },
   },
@@ -264,96 +264,96 @@ exports[`ErrorPage Should post error to Slack if environment is production 1`] =
 `;
 
 exports[`ErrorPage Should post error to Slack if environment is staging 1`] = `
-[
-  {
+Array [
+  Object {
     "message": "Some error message",
   },
-  {
-    "backendStatus": {},
-    "cellInfo": {
-      "focus": {
+  Object {
+    "backendStatus": Object {},
+    "cellInfo": Object {
+      "focus": Object {
         "key": "louvain",
         "store": "cellSets",
       },
       "groupedTrack": "louvain",
-      "selectedTracks": [
+      "selectedTracks": Array [
         "louvain",
       ],
     },
-    "cellMeta": {
-      "doubletScores": {
-        "data": [],
+    "cellMeta": Object {
+      "doubletScores": Object {
+        "data": Array [],
         "error": false,
         "loading": true,
       },
-      "mitochondrialContent": {
-        "data": [],
+      "mitochondrialContent": Object {
+        "data": Array [],
         "error": false,
         "loading": true,
       },
-      "numOfGenes": {
-        "data": [],
+      "numOfGenes": Object {
+        "data": Array [],
         "error": false,
         "loading": true,
       },
-      "numOfUmis": {
-        "data": [],
+      "numOfUmis": Object {
+        "data": Array [],
         "error": false,
         "loading": true,
       },
     },
-    "cellSets": {
+    "cellSets": Object {
       "error": false,
       "hidden": Set {},
-      "hierarchy": [],
+      "hierarchy": Array [],
       "initialLoadPending": true,
       "loading": false,
-      "properties": {},
-      "selected": [],
+      "properties": Object {},
+      "selected": Array [],
       "updatingClustering": false,
     },
-    "componentConfig": {},
-    "differentialExpression": {
-      "comparison": {
-        "advancedFilters": [],
-        "group": {
-          "between": {
+    "componentConfig": Object {},
+    "differentialExpression": Object {
+      "comparison": Object {
+        "advancedFilters": Array [],
+        "group": Object {
+          "between": Object {
             "basis": null,
             "cellSet": null,
             "compareWith": null,
           },
-          "within": {
+          "within": Object {
             "basis": null,
             "cellSet": null,
             "compareWith": null,
           },
         },
-        "ordering": {
+        "ordering": Object {
           "orderBy": "logFC",
           "orderDirection": "DESC",
         },
         "type": "within",
       },
-      "properties": {
-        "comparisonGroup": {},
+      "properties": Object {
+        "comparisonGroup": Object {},
         "comparisonType": null,
-        "data": [],
+        "data": Array [],
         "error": false,
         "loading": false,
         "total": 0,
       },
     },
-    "embeddings": {},
-    "experimentSettings": {
-      "info": {
+    "embeddings": Object {},
+    "experimentSettings": Object {
+      "info": Object {
         "experimentId": null,
         "experimentName": null,
         "pipelineVersion": null,
-        "sampleIds": [],
+        "sampleIds": Array [],
       },
-      "originalProcessing": {},
-      "processing": {
-        "meta": {
+      "originalProcessing": Object {},
+      "processing": Object {
+        "meta": Object {
           "changedQCFilters": Set {},
           "completingStepError": false,
           "loading": false,
@@ -361,140 +361,140 @@ exports[`ErrorPage Should post error to Slack if environment is staging 1`] = `
         },
       },
     },
-    "experiments": {
-      "ids": [],
-      "meta": {
+    "experiments": Object {
+      "ids": Array [],
+      "meta": Object {
         "activeExperimentId": null,
         "error": false,
         "loading": false,
         "saving": false,
       },
     },
-    "genes": {
-      "expression": {
-        "downsampledCellOrder": [],
+    "genes": Object {
+      "expression": Object {
+        "downsampledCellOrder": Array [],
         "downsampledMatrix": ExpressionMatrix {
-          "geneIndexes": {},
-          "rawGeneExpressions": {
+          "geneIndexes": Object {},
+          "rawGeneExpressions": Object {
             "datatype": undefined,
-            "index": [],
+            "index": Array [],
             "mathjs": "SparseMatrix",
-            "ptr": [
+            "ptr": Array [
               0,
             ],
-            "size": [
+            "size": Array [
               0,
               0,
             ],
-            "values": [],
+            "values": Array [],
           },
           "setGeneExpression": [Function],
-          "stats": {
-            "rawMean": [],
-            "rawStdev": [],
-            "truncatedMax": [],
-            "truncatedMin": [],
+          "stats": Object {
+            "rawMean": Array [],
+            "rawStdev": Array [],
+            "truncatedMax": Array [],
+            "truncatedMin": Array [],
           },
-          "truncatedGeneExpressions": {
+          "truncatedGeneExpressions": Object {
             "datatype": undefined,
-            "index": [],
+            "index": Array [],
             "mathjs": "SparseMatrix",
-            "ptr": [
+            "ptr": Array [
               0,
             ],
-            "size": [
+            "size": Array [
               0,
               0,
             ],
-            "values": [],
+            "values": Array [],
           },
-          "zScore": {
+          "zScore": Object {
             "datatype": undefined,
-            "index": [],
+            "index": Array [],
             "mathjs": "SparseMatrix",
-            "ptr": [
+            "ptr": Array [
               0,
             ],
-            "size": [
+            "size": Array [
               0,
               0,
             ],
-            "values": [],
+            "values": Array [],
           },
         },
         "error": false,
-        "loading": [],
+        "loading": Array [],
         "matrix": ExpressionMatrix {
-          "geneIndexes": {},
-          "rawGeneExpressions": {
+          "geneIndexes": Object {},
+          "rawGeneExpressions": Object {
             "datatype": undefined,
-            "index": [],
+            "index": Array [],
             "mathjs": "SparseMatrix",
-            "ptr": [
+            "ptr": Array [
               0,
             ],
-            "size": [
+            "size": Array [
               0,
               0,
             ],
-            "values": [],
+            "values": Array [],
           },
           "setGeneExpression": [Function],
-          "stats": {
-            "rawMean": [],
-            "rawStdev": [],
-            "truncatedMax": [],
-            "truncatedMin": [],
+          "stats": Object {
+            "rawMean": Array [],
+            "rawStdev": Array [],
+            "truncatedMax": Array [],
+            "truncatedMin": Array [],
           },
-          "truncatedGeneExpressions": {
+          "truncatedGeneExpressions": Object {
             "datatype": undefined,
-            "index": [],
+            "index": Array [],
             "mathjs": "SparseMatrix",
-            "ptr": [
+            "ptr": Array [
               0,
             ],
-            "size": [
+            "size": Array [
               0,
               0,
             ],
-            "values": [],
+            "values": Array [],
           },
-          "zScore": {
+          "zScore": Object {
             "datatype": undefined,
-            "index": [],
+            "index": Array [],
             "mathjs": "SparseMatrix",
-            "ptr": [
+            "ptr": Array [
               0,
             ],
-            "size": [
+            "size": Array [
               0,
               0,
             ],
-            "values": [],
+            "values": Array [],
           },
         },
-        "views": {},
+        "views": Object {},
       },
       "focused": undefined,
-      "markers": {
+      "markers": Object {
         "ETag": null,
         "error": false,
         "loading": false,
       },
-      "properties": {
-        "data": {},
-        "loading": [],
-        "views": {},
+      "properties": Object {
+        "data": Object {},
+        "loading": Array [],
+        "views": Object {},
       },
-      "selected": [],
+      "selected": Array [],
     },
-    "layout": {
+    "layout": Object {
       "panel": "Gene list",
-      "windows": {
+      "windows": Object {
         "direction": "row",
-        "first": {
+        "first": Object {
           "direction": "column",
-          "first": {
+          "first": Object {
             "direction": "row",
             "first": "UMAP",
             "second": "Cell sets and Metadata",
@@ -507,19 +507,19 @@ exports[`ErrorPage Should post error to Slack if environment is staging 1`] = `
         "splitPercentage": 70,
       },
     },
-    "networkResources": {
+    "networkResources": Object {
       "domainName": "scp.biomage.net",
       "environment": "staging",
     },
-    "samples": {
-      "meta": {
+    "samples": Object {
+      "meta": Object {
         "error": false,
         "loading": false,
         "saving": false,
-        "validating": [],
+        "validating": Array [],
       },
     },
-    "user": {
+    "user": Object {
       "current": null,
     },
   },

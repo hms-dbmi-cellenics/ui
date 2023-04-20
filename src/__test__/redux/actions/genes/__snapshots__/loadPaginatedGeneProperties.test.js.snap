@@ -1,10 +1,10 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`loadPaginatedGeneProperties action Dispatches appropriately on error condition 1`] = `
-{
-  "payload": {
+Object {
+  "payload": Object {
     "componentUuid": "asd",
-    "properties": [
+    "properties": Array [
       "a",
       "b",
       "c",
@@ -15,12 +15,12 @@ exports[`loadPaginatedGeneProperties action Dispatches appropriately on error co
 `;
 
 exports[`loadPaginatedGeneProperties action Dispatches appropriately on error condition 2`] = `
-{
-  "payload": {
+Object {
+  "payload": Object {
     "componentUuid": "asd",
     "error": [Error: random error!],
     "experimentId": "1234",
-    "properties": [
+    "properties": Array [
       "a",
       "b",
       "c",
@@ -31,10 +31,10 @@ exports[`loadPaginatedGeneProperties action Dispatches appropriately on error co
 `;
 
 exports[`loadPaginatedGeneProperties action Dispatches appropriately on success condition 1`] = `
-{
-  "payload": {
+Object {
+  "payload": Object {
     "componentUuid": "asd",
-    "properties": [
+    "properties": Array [
       "a",
       "b",
       "c",
@@ -45,19 +45,19 @@ exports[`loadPaginatedGeneProperties action Dispatches appropriately on success 
 `;
 
 exports[`loadPaginatedGeneProperties action Dispatches appropriately on success condition 2`] = `
-{
-  "payload": {
+Object {
+  "payload": Object {
     "componentUuid": "asd",
-    "data": {
-      "a": {
+    "data": Object {
+      "a": Object {
         "dispersions": 1,
       },
-      "b": {
+      "b": Object {
         "dispersions": 1,
       },
     },
     "experimentId": "1234",
-    "properties": [
+    "properties": Array [
       "a",
       "b",
       "c",
@@ -69,15 +69,15 @@ exports[`loadPaginatedGeneProperties action Dispatches appropriately on success 
 `;
 
 exports[`loadPaginatedGeneProperties action Dispatches appropriately on success condition 3`] = `
-[
+Array [
   "1234",
-  {
+  Object {
     "limit": 20,
     "name": "ListGenes",
     "offset": 20,
     "orderBy": "gene_names",
     "orderDirection": "ASC",
-    "selectFields": [
+    "selectFields": Array [
       "gene_names",
       "a",
       "b",
@@ -86,7 +86,7 @@ exports[`loadPaginatedGeneProperties action Dispatches appropriately on success 
   },
   60,
   "f7aeae492eecc9d6ea35ab2cc0212ad1",
-  {
+  Object {
     "PipelineRunETag": "2021-01-01T01:01:01.000Z",
     "broadcast": false,
   },

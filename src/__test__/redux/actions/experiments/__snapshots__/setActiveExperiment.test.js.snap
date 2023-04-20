@@ -1,8 +1,8 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`setActiveExperiment action Dispatches event correctly 1`] = `
-{
-  "payload": {
+Object {
+  "payload": Object {
     "experimentId": "67890",
   },
   "type": "experiments/setActive",
