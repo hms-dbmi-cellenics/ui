@@ -12,6 +12,7 @@ import {
 
 import { updatePlotConfig } from 'redux/actions/componentConfig';
 import { getCellSets, getCellSetsHierarchy } from 'redux/selectors';
+import { ClipLoader } from 'react-spinners';
 import ReorderableList from '../../ReorderableList';
 
 const convertToReorderableListData = (cellClassKeys, selected, hierarchy) => (
@@ -97,6 +98,10 @@ const HeatmapMetadataTrackSettings = (props) => {
   const rightItem = (trackDataItem) => (
     hierarchy.filter((current) => current.key === trackDataItem.key)[0].name
   );
+
+  if (!cellSetsAccessible) {
+    return <ClipLoader />;
+  }
 
   return (
     <div style={{ padding: '5px' }}>
