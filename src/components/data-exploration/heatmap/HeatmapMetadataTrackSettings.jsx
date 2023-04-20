@@ -93,7 +93,7 @@ const HeatmapMetadataTrackSettings = (props) => {
   );
 
   const rightItem = (trackDataItem) => (
-    hierarchy.filter((current) => current.key === trackDataItem.key)[0].name
+    hierarchy.filter((current) => current.key === trackDataItem.key)[0]?.name
   );
 
   return (
