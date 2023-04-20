@@ -12,7 +12,8 @@ import {
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 import { updatePlotConfig } from 'redux/actions/componentConfig';
-import { getCellSetsHierarchy } from 'redux/selectors';
+import { getCellSets, getCellSetsHierarchy } from 'redux/selectors';
+import { ClipLoader } from 'react-spinners';
 import ReorderableList from '../../ReorderableList';
 
 const HeatmapGroupBySettings = (props) => {
@@ -23,7 +24,9 @@ const HeatmapGroupBySettings = (props) => {
   const groupedTracksKeys = useSelector(
     (state) => state.componentConfig[componentType].config.groupedTracks,
   );
+  const { accessible: cellSetsAccessible } = useSelector(getCellSets());
   const allCellSetsGroupBys = useSelector(getCellSetsHierarchy());
+
   const getCellSetsOrder = () => {
     const groupedCellSets = [];
 
@@ -63,11 +66,13 @@ const HeatmapGroupBySettings = (props) => {
   }, [cellSetsOrder]);
 
   useEffect(() => {
+    if (!cellSetsAccessible) return;
+
     if (!_.isEqual(previousGroupedKeys(), groupedTracksKeys)) {
       const newOrder = getCellSetsOrder();
       setCellSetsOrder(newOrder);
     }
-  }, [groupedTracksKeys]);
+  }, [groupedTracksKeys, cellSetsAccessible]);
   const indexOfCellSet = (cellSet) => cellSetsOrder.findIndex((elem) => (elem.key === cellSet.key));
 
   // This is so that a click on + or - buttons doesn't close the menu
@@ -108,6 +113,10 @@ const HeatmapGroupBySettings = (props) => {
       }
     </Menu>
   );
+
+  if (!cellSetsAccessible) {
+    return <ClipLoader />;
+  }
 
   return (
     <div style={{ padding: '5px' }} key='dropdown'>
