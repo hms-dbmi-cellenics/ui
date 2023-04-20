@@ -37,15 +37,15 @@ const BatchDiffExpression = (props) => {
   const rootMetadataCellSetNodes = useSelector(getCellSetsHierarchyByType('metadataCategorical')).map(({ key }) => ({ key: cellSets.properties[key].name }));
 
   const [dataLoading, setDataLoading] = useState();
-  const [dataDownloading, setDataDownloading] = useState();
   const [csvData, setCsvData] = useState([]);
-  const [canRunDE, setCanRunDE] = useState(false);
+
   const comparisonInitialState = {
     cellSet: null,
     compareWith: null,
     basis: null,
     comparisonType: null,
   };
+
   const [comparison, setComparison] = useState(comparisonInitialState);
 
   useEffect(() => {
@@ -113,9 +113,8 @@ const BatchDiffExpression = (props) => {
   }, [comparison, chosenOperation]);
 
   const downloadCSVsAsZip = (data) => {
-    setDataDownloading(true);
     const encoder = new TextEncoder();
-    const archiveName = `batchDE_${experimentName}.zip`;
+    const archiveName = `batchDE_${experimentName}`;
 
     const batchClusterNames = getBatchClusterNames(comparison.basis);
     const CSVs = data.reduce((accumulator, currentData, indx) => {
@@ -144,7 +143,6 @@ const BatchDiffExpression = (props) => {
 
     const blob = new Blob([zipped], { type: 'application/zip' });
     saveAs(blob, archiveName);
-    setDataDownloading(false);
   };
 
   const getData = async () => {
