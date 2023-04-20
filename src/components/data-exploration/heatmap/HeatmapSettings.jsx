@@ -11,7 +11,8 @@ import HeatmapMetadataTrackSettings from 'components/data-exploration/heatmap/He
 import HeatmapGroupBySettings from 'components/data-exploration/heatmap/HeatmapGroupBySettings';
 
 import NoStyleAntdMenuItem from 'components/NoStyleAntdMenuItem';
-import styles from 'utils/css/no-style-menu-item.module.css';
+
+import 'utils/css/no-style-menu-item.css';
 
 const { SubMenu } = Menu;
 
@@ -20,7 +21,7 @@ const HeatmapSettings = (props) => {
 
   const renderMenu = () => (
     <Menu size='small'>
-      <SubMenu key='metadataTracks' title='Metadata tracks' icon={<></>} popupClassName={styles['no-style-menu-item']}>
+      <SubMenu key='metadataTracks' title='Metadata tracks' icon={<></>} popupClassName='no-style-menu-item'>
         <NoStyleAntdMenuItem>
           <HeatmapMetadataTrackSettings componentType={componentType} />
         </NoStyleAntdMenuItem>

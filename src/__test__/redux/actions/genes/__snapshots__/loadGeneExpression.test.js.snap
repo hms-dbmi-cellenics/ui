@@ -1,11 +1,11 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`loadGeneExpression action Dispatches appropriately on failure 1`] = `
-{
-  "payload": {
+Object {
+  "payload": Object {
     "componentUuid": "asd",
     "experimentId": "1234",
-    "genes": [
+    "genes": Array [
       "a",
       "b",
       "c",
@@ -16,12 +16,12 @@ exports[`loadGeneExpression action Dispatches appropriately on failure 1`] = `
 `;
 
 exports[`loadGeneExpression action Dispatches appropriately on failure 2`] = `
-{
-  "payload": {
+Object {
+  "payload": Object {
     "componentUuid": "asd",
     "error": [Error: random error!],
     "experimentId": "1234",
-    "genes": [
+    "genes": Array [
       "a",
       "b",
       "c",
@@ -32,80 +32,80 @@ exports[`loadGeneExpression action Dispatches appropriately on failure 2`] = `
 `;
 
 exports[`loadGeneExpression action Dispatches appropriately on success 1`] = `
-[
-  {
+Array [
+  Object {
     "componentUuid": "asd",
     "experimentId": "1234",
-    "genes": [
+    "genes": Array [
       "a",
       "b",
       "c",
     ],
   },
-  {
+  Object {
     "componentUuid": "asd",
-    "genes": [
+    "genes": Array [
       "geneA",
     ],
-    "newGenes": {
-      "orderedGeneNames": [
+    "newGenes": Object {
+      "orderedGeneNames": Array [
         "geneA",
       ],
-      "rawExpression": {
+      "rawExpression": Object {
         "datatype": undefined,
-        "index": [],
+        "index": Array [],
         "mathjs": "SparseMatrix",
-        "ptr": [
+        "ptr": Array [
           0,
           0,
         ],
-        "size": [
+        "size": Array [
           1,
           1,
         ],
-        "values": [],
+        "values": Array [],
       },
-      "stats": {
-        "rawMean": [
+      "stats": Object {
+        "rawMean": Array [
           1,
         ],
-        "rawStdev": [
+        "rawStdev": Array [
           0,
         ],
-        "truncatedMax": [
+        "truncatedMax": Array [
           1,
         ],
-        "truncatedMin": [
+        "truncatedMin": Array [
           1,
         ],
       },
-      "truncatedExpression": {
+      "truncatedExpression": Object {
         "datatype": undefined,
-        "index": [],
+        "index": Array [],
         "mathjs": "SparseMatrix",
-        "ptr": [
+        "ptr": Array [
           0,
           0,
         ],
-        "size": [
+        "size": Array [
           1,
           1,
         ],
-        "values": [],
+        "values": Array [],
       },
-      "zScore": {
+      "zScore": Object {
         "datatype": undefined,
-        "index": [],
+        "index": Array [],
         "mathjs": "SparseMatrix",
-        "ptr": [
+        "ptr": Array [
           0,
           0,
         ],
-        "size": [
+        "size": Array [
           1,
           1,
         ],
-        "values": [],
+        "values": Array [],
       },
     },
   },
@@ -113,11 +113,11 @@ exports[`loadGeneExpression action Dispatches appropriately on success 1`] = `
 `;
 
 exports[`loadGeneExpression action Dispatches appropriately on unrun pipeline 1`] = `
-{
-  "payload": {
+Object {
+  "payload": Object {
     "componentUuid": "asd",
     "experimentId": "1234",
-    "genes": [
+    "genes": Array [
       "a",
       "b",
       "c",
@@ -128,12 +128,12 @@ exports[`loadGeneExpression action Dispatches appropriately on unrun pipeline 1`
 `;
 
 exports[`loadGeneExpression action Dispatches appropriately on unrun pipeline 2`] = `
-{
-  "payload": {
+Object {
+  "payload": Object {
     "componentUuid": "asd",
     "error": [Error: random error!],
     "experimentId": "1234",
-    "genes": [
+    "genes": Array [
       "a",
       "b",
       "c",
@@ -145,11 +145,11 @@ exports[`loadGeneExpression action Dispatches appropriately on unrun pipeline 2`
 
 exports[`loadGeneExpression action Does not send work for already loaded expression data. 1`] = `
 [MockFunction] {
-  "calls": [
-    [
+  "calls": Array [
+    Array [
       "1234",
-      {
-        "genes": [
+      Object {
+        "genes": Array [
           "b",
           "c",
         ],
@@ -157,13 +157,13 @@ exports[`loadGeneExpression action Does not send work for already loaded express
       },
       [Function],
       [Function],
-      {
+      Object {
         "timeout": 60,
       },
     ],
   ],
-  "results": [
-    {
+  "results": Array [
+    Object {
       "type": "return",
       "value": Promise {},
     },

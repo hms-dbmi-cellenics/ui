@@ -1,9 +1,9 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`updateCellSetSelected action Dispatches an action to update property to the reducer 1`] = `
-{
-  "payload": {
-    "keys": [
+Object {
+  "payload": Object {
+    "keys": Array [
       1,
       3,
       4,

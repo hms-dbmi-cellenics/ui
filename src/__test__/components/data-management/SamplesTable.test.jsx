@@ -4,7 +4,7 @@ import { experiments, samples } from '__test__/test-utils/mockData';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import { loadExperiments, setActiveExperiment } from 'redux/actions/experiments';
 import mockAPI, { generateDefaultMockAPIResponses, promiseResponse, statusResponse } from '__test__/test-utils/mockAPI';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 
 import { Provider } from 'react-redux';
 import React from 'react';
@@ -67,9 +67,7 @@ const renderSamplesTable = async (store) => {
   await act(async () => {
     renderComponents = render(
       <Provider store={store}>
-        <div style={{ minHeight: '200px', minWidth: '500px' }}>
-          {samplesTableFactory()}
-        </div>
+        {samplesTableFactory()}
       </Provider>,
     );
   });
@@ -257,12 +255,17 @@ describe('Samples table', () => {
     });
   });
 
-  it('Example experiments show up in an empty experiment', async () => {
-    await renderSamplesTable(storeState);
+  describe('Example experiments functionality', () => {
+    beforeEach(async () => {
+      await renderSamplesTable(storeState);
 
-    await storeState.dispatch(setActiveExperiment(experimentWithoutSamplesId));
+      // Load project without samples
+      await act(async () => {
+        await storeState.dispatch(setActiveExperiment(experimentWithoutSamplesId));
+      });
+    });
 
-    waitFor(() => {
+    it('Example experiments show up in an empty experiment', async () => {
       expect(screen.getByText(/Start uploading your samples by clicking on Add samples./i)).toBeInTheDocument();
       expect(screen.getByText(/Don't have data\? Get started using one of our example datasets!/i)).toBeInTheDocument();
     });

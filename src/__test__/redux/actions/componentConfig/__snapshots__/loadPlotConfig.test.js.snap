@@ -1,9 +1,9 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`loadPlotConfig Loads config properly 1`] = `
-{
-  "config": {
-    "axes": {
+Object {
+  "config": Object {
+    "axes": Object {
       "domainWidth": 2,
       "gridOpacity": 0,
       "gridWidth": 10,
@@ -14,7 +14,7 @@ exports[`loadPlotConfig Loads config properly 1`] = `
       "xAxisText": "#UMIs in cell",
       "yAxisText": "#UMIs * #Cells",
     },
-    "axesRanges": {
+    "axesRanges": Object {
       "xAxisAuto": true,
       "xMax": 10,
       "xMin": 0,
@@ -22,32 +22,32 @@ exports[`loadPlotConfig Loads config properly 1`] = `
       "yMax": 10,
       "yMin": 0,
     },
-    "colour": {
+    "colour": Object {
       "gradient": "default",
       "invert": "standard",
       "masterColour": "#000000",
       "reverseColourBar": false,
       "toggleInvert": "#FFFFFF",
     },
-    "dimensions": {
+    "dimensions": Object {
       "height": 400,
       "width": 530,
     },
-    "fontStyle": {
+    "fontStyle": Object {
       "colour": "#000000",
       "font": "sans-serif",
     },
-    "labels": {
+    "labels": Object {
       "enabled": true,
       "size": 18,
     },
-    "legend": {
+    "legend": Object {
       "colour": "#000000",
       "enabled": true,
       "position": "right",
       "showAlert": false,
     },
-    "marker": {
+    "marker": Object {
       "opacity": 5,
       "shape": "circle",
       "showOpacity": true,
@@ -55,7 +55,7 @@ exports[`loadPlotConfig Loads config properly 1`] = `
     },
     "minCellSize": 10800,
     "spec": "1.0.0",
-    "title": {
+    "title": Object {
       "anchor": "start",
       "dx": 10,
       "fontSize": 20,
@@ -66,7 +66,7 @@ exports[`loadPlotConfig Loads config properly 1`] = `
   "experimentId": "testae48e318dab9a1bd0bexperiment",
   "loading": false,
   "outstandingChanges": false,
-  "plotData": [
+  "plotData": Array [
     1,
     2,
     3,
@@ -77,9 +77,9 @@ exports[`loadPlotConfig Loads config properly 1`] = `
 `;
 
 exports[`loadPlotConfig Loads default initial config for plots if plot config is not found 1`] = `
-{
-  "config": {
-    "axes": {
+Object {
+  "config": Object {
+    "axes": Object {
       "domainWidth": 2,
       "gridOpacity": 0,
       "gridWidth": 10,
@@ -90,7 +90,7 @@ exports[`loadPlotConfig Loads default initial config for plots if plot config is
       "xAxisText": "#UMIs in cell",
       "yAxisText": "#UMIs * #Cells",
     },
-    "axesRanges": {
+    "axesRanges": Object {
       "xAxisAuto": true,
       "xMax": 10,
       "xMin": 0,
@@ -98,32 +98,32 @@ exports[`loadPlotConfig Loads default initial config for plots if plot config is
       "yMax": 10,
       "yMin": 0,
     },
-    "colour": {
+    "colour": Object {
       "gradient": "default",
       "invert": "standard",
       "masterColour": "#000000",
       "reverseColourBar": false,
       "toggleInvert": "#FFFFFF",
     },
-    "dimensions": {
+    "dimensions": Object {
       "height": 400,
       "width": 530,
     },
-    "fontStyle": {
+    "fontStyle": Object {
       "colour": "#000000",
       "font": "sans-serif",
     },
-    "labels": {
+    "labels": Object {
       "enabled": true,
       "size": 18,
     },
-    "legend": {
+    "legend": Object {
       "colour": "#000000",
       "enabled": true,
       "position": "right",
       "showAlert": false,
     },
-    "marker": {
+    "marker": Object {
       "opacity": 5,
       "shape": "circle",
       "showOpacity": true,
@@ -131,7 +131,7 @@ exports[`loadPlotConfig Loads default initial config for plots if plot config is
     },
     "minCellSize": 10800,
     "spec": "1.0.0",
-    "title": {
+    "title": Object {
       "anchor": "start",
       "dx": 10,
       "fontSize": 20,
@@ -142,7 +142,7 @@ exports[`loadPlotConfig Loads default initial config for plots if plot config is
   "experimentId": "testae48e318dab9a1bd0bexperiment",
   "loading": false,
   "outstandingChanges": false,
-  "plotData": [],
+  "plotData": Array [],
   "plotType": "cellSizeDistributionHistogram",
 }
 `;
