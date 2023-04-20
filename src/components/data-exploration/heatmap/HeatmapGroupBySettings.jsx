@@ -10,11 +10,14 @@ import {
   Button, Space, Menu, Dropdown,
 } from 'antd';
 import PropTypes from 'prop-types';
+import { ClipLoader } from 'react-spinners';
 import _ from 'lodash';
+
 import { updatePlotConfig } from 'redux/actions/componentConfig';
 import { getCellSets, getCellSetsHierarchy } from 'redux/selectors';
-import { ClipLoader } from 'react-spinners';
-import ReorderableList from '../../ReorderableList';
+
+import ReorderableList from 'components/ReorderableList';
+import colors from 'utils/colors';
 
 const HeatmapGroupBySettings = (props) => {
   const dispatch = useDispatch();
@@ -114,9 +117,16 @@ const HeatmapGroupBySettings = (props) => {
     </Menu>
   );
 
-  if (!cellSetsAccessible) {
-    return <ClipLoader />;
-  }
+  // if (!cellSetsAccessible) {
+  //   return <ClipLoader style={{ width: '50px' }} />;
+  //   return (
+  //     <div style={{ padding: '5px' }} key='dropdown'>
+  //       <Space>
+  //         <ClipLoader />
+  //       </Space>
+  //     </div>
+  //   );
+  // }
 
   return (
     <div style={{ padding: '5px' }} key='dropdown'>
@@ -128,11 +138,14 @@ const HeatmapGroupBySettings = (props) => {
           </div>
         </Dropdown>
 
-        <ReorderableList
-          onChange={setCellSetsOrder}
-          listData={cellSetsOrder}
-          rightItem={(cellSet) => cellSet.name}
-        />
+        {cellSetsAccessible
+          ? (
+            <ReorderableList
+              onChange={setCellSetsOrder}
+              listData={cellSetsOrder}
+              rightItem={(cellSet) => cellSet.name}
+            />
+          ) : <center><ClipLoader size={20} color={colors.darkRed} /></center>}
       </Space>
     </div>
   );
