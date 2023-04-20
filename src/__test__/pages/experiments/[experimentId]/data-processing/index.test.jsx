@@ -15,7 +15,6 @@ import initialCellSetsState from 'redux/reducers/cellSets/initialState';
 import initialSamplesState, { sampleTemplate } from 'redux/reducers/samples/initialState';
 
 import { getBackendStatus } from 'redux/selectors';
-import '__test__/test-utils/setupTests';
 
 import { runQC } from 'redux/actions/pipeline';
 import generateExperimentSettingsMock from '__test__/test-utils/experimentSettings.mock';

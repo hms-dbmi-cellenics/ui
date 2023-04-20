@@ -1,9 +1,9 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`PostErrorToSlack Posts requests correctly 1`] = `
-Array [
+[
   "https://slack.com/api/files.upload",
-  Object {
+  {
     "body": FormData {},
     "method": "POST",
   },
@@ -42,28 +42,28 @@ line2
 
     ===== REDUX STATE =====
     {
-  \\"cellInfo\\": {
-    \\"focus\\": {
-      \\"store\\": \\"cellSets\\",
-      \\"key\\": \\"louvain\\"
+  "cellInfo": {
+    "focus": {
+      "store": "cellSets",
+      "key": "louvain"
     },
-    \\"groupedTrack\\": \\"louvain\\",
-    \\"selectedTracks\\": [
-      \\"louvain\\"
+    "groupedTrack": "louvain",
+    "selectedTracks": [
+      "louvain"
     ]
   },
-  \\"cellSets\\": {
-    \\"properies\\": {
-      \\"louvain-0\\": {
-        \\"cellIds\\": {}
+  "cellSets": {
+    "properies": {
+      "louvain-0": {
+        "cellIds": {}
       }
     }
   },
-  \\"cellMeta\\": {
-    \\"mitochondrialContent\\": {
-      \\"loading\\": true,
-      \\"error\\": false,
-      \\"data\\": [
+  "cellMeta": {
+    "mitochondrialContent": {
+      "loading": true,
+      "error": false,
+      "data": [
         0,
         0,
         0,
@@ -84,12 +84,12 @@ line2
         0,
         0,
         0,
-        \\"...\\"
+        "..."
       ]
     }
   },
-  \\"networkResources\\": {
-    \\"environment\\": \\"test\\"
+  "networkResources": {
+    "environment": "test"
   }
 }"
 `;

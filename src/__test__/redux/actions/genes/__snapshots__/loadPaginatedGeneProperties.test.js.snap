@@ -1,10 +1,10 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`loadPaginatedGeneProperties action Dispatches appropriately on error condition 1`] = `
-Object {
-  "payload": Object {
+{
+  "payload": {
     "componentUuid": "asd",
-    "properties": Array [
+    "properties": [
       "a",
       "b",
       "c",
@@ -15,12 +15,12 @@ Object {
 `;
 
 exports[`loadPaginatedGeneProperties action Dispatches appropriately on error condition 2`] = `
-Object {
-  "payload": Object {
+{
+  "payload": {
     "componentUuid": "asd",
     "error": [Error: random error!],
     "experimentId": "1234",
-    "properties": Array [
+    "properties": [
       "a",
       "b",
       "c",
@@ -31,10 +31,10 @@ Object {
 `;
 
 exports[`loadPaginatedGeneProperties action Dispatches appropriately on success condition 1`] = `
-Object {
-  "payload": Object {
+{
+  "payload": {
     "componentUuid": "asd",
-    "properties": Array [
+    "properties": [
       "a",
       "b",
       "c",
@@ -45,19 +45,19 @@ Object {
 `;
 
 exports[`loadPaginatedGeneProperties action Dispatches appropriately on success condition 2`] = `
-Object {
-  "payload": Object {
+{
+  "payload": {
     "componentUuid": "asd",
-    "data": Object {
-      "a": Object {
+    "data": {
+      "a": {
         "dispersions": 1,
       },
-      "b": Object {
+      "b": {
         "dispersions": 1,
       },
     },
     "experimentId": "1234",
-    "properties": Array [
+    "properties": [
       "a",
       "b",
       "c",
@@ -69,15 +69,15 @@ Object {
 `;
 
 exports[`loadPaginatedGeneProperties action Dispatches appropriately on success condition 3`] = `
-Array [
+[
   "1234",
-  Object {
+  {
     "limit": 20,
     "name": "ListGenes",
     "offset": 20,
     "orderBy": "gene_names",
     "orderDirection": "ASC",
-    "selectFields": Array [
+    "selectFields": [
       "gene_names",
       "a",
       "b",
@@ -86,7 +86,7 @@ Array [
   },
   60,
   "f7aeae492eecc9d6ea35ab2cc0212ad1",
-  Object {
+  {
     "PipelineRunETag": "2021-01-01T01:01:01.000Z",
     "broadcast": false,
   },

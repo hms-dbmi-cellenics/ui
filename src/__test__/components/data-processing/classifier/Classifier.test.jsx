@@ -14,8 +14,6 @@ import generateExperimentSettingsMock from '../../../test-utils/experimentSettin
 
 import filterStatisticsMock from '../../../test-utils/plotData.mock';
 
-import '__test__/test-utils/setupTests';
-
 const mockStore = configureStore([thunk]);
 
 const sampleId = 'sample-WT';

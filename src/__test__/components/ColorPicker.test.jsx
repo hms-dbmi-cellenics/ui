@@ -1,7 +1,6 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import ColorPicker from 'components/ColorPicker';
-import '__test__/test-utils/setupTests';
 
 describe('ColorPicker', () => {
   const initialColor = '#ffff00';

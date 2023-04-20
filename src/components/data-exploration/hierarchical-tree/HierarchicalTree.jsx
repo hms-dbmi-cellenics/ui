@@ -13,8 +13,6 @@ import ColorPicker from 'components/ColorPicker';
 import FocusButton from 'components/FocusButton';
 import HideButton from 'components/data-exploration/cell-sets-tool/HideButton';
 
-import 'components/data-exploration/hierarchical-tree/hierarchicalTree.css';
-
 const HierarchicalTree = (props) => {
   const {
     onCheck: propOnCheck,

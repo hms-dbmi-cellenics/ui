@@ -8,7 +8,7 @@ import fake from '__test__/test-utils/constants';
 import fetchWork from 'utils/work/fetchWork';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
 import endUserMessages from 'utils/endUserMessages';
-import { waitFor } from '@testing-library/dom';
+import { waitFor } from '@testing-library/react';
 
 jest.mock('utils/work/fetchWork', () => (jest.fn(() => ({}))));
 jest.mock('utils/pushNotificationMessage');

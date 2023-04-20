@@ -6,7 +6,6 @@ import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import loadCellSets from 'redux/actions/cellSets/loadCellSets';
 import initialState from 'redux/reducers/cellSets/initialState';
 
-import '__test__/test-utils/setupTests';
 import { CELL_SETS_ERROR, CELL_SETS_LOADED, CELL_SETS_LOADING } from 'redux/actionTypes/cellSets';
 
 enableFetchMocks();

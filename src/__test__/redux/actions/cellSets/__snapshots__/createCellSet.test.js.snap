@@ -1,8 +1,8 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`createCellSet action Dispatches an action to create cell set to the reducer 1`] = `
-Object {
-  "payload": Object {
+{
+  "payload": {
     "cellIds": Set {
       1,
       2,
@@ -18,9 +18,9 @@ Object {
 `;
 
 exports[`createCellSet action Sends fetch to the API when creating cell set 1`] = `
-Object {
-  "body": "[{\\"$match\\":{\\"query\\":\\"$[?(@.key == \\\\\\"scratchpad\\\\\\")]\\",\\"value\\":{\\"children\\":[{\\"$insert\\":{\\"index\\":\\"-\\",\\"value\\":{\\"key\\":\\"some-uuid\\",\\"name\\":\\"one\\",\\"color\\":\\"#ff0000\\",\\"type\\":\\"cellSets\\",\\"cellIds\\":[1,2,3]}}}]}}}]",
-  "headers": Object {
+{
+  "body": "[{"$match":{"query":"$[?(@.key == \\"scratchpad\\")]","value":{"children":[{"$insert":{"index":"-","value":{"key":"some-uuid","name":"one","color":"#ff0000","type":"cellSets","cellIds":[1,2,3]}}}]}}}]",
+  "headers": {
     "Content-Type": "application/boschni-json-merger+json",
   },
   "method": "PATCH",
@@ -28,9 +28,9 @@ Object {
 `;
 
 exports[`createCellSet action Uses V2 URL when using API version V2 1`] = `
-Object {
-  "body": "[{\\"$match\\":{\\"query\\":\\"$[?(@.key == \\\\\\"scratchpad\\\\\\")]\\",\\"value\\":{\\"children\\":[{\\"$insert\\":{\\"index\\":\\"-\\",\\"value\\":{\\"key\\":\\"some-uuid\\",\\"name\\":\\"one\\",\\"color\\":\\"#ff0000\\",\\"type\\":\\"cellSets\\",\\"cellIds\\":[1,2,3]}}}]}}}]",
-  "headers": Object {
+{
+  "body": "[{"$match":{"query":"$[?(@.key == \\"scratchpad\\")]","value":{"children":[{"$insert":{"index":"-","value":{"key":"some-uuid","name":"one","color":"#ff0000","type":"cellSets","cellIds":[1,2,3]}}}]}}}]",
+  "headers": {
     "Content-Type": "application/boschni-json-merger+json",
   },
   "method": "PATCH",

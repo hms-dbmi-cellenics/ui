@@ -8,8 +8,6 @@ import updateCellSetProperty from 'redux/actions/cellSets/updateCellSetProperty'
 import { CELL_SETS_UPDATE_PROPERTY } from 'redux/actionTypes/cellSets';
 import initialState from 'redux/reducers/cellSets/initialState';
 
-import '__test__/test-utils/setupTests';
-
 enableFetchMocks();
 
 const mockStore = configureStore([thunk]);

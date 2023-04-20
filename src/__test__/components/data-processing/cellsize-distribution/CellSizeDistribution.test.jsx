@@ -13,7 +13,6 @@ import CalculationConfig from 'components/data-processing/CellSizeDistribution/C
 import generateExperimentSettingsMock from '../../../test-utils/experimentSettings.mock';
 
 import filterStatisticsMock from '../../../test-utils/plotData.mock';
-import '__test__/test-utils/setupTests';
 
 const mockStore = configureStore([thunk]);
 

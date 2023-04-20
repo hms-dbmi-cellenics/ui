@@ -1,32 +1,32 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`updateSample action Error handling works 1`] = `
-Array [
-  Object {
+[
+  {
     "message": "Saving sample...",
   },
-  Object {
+  {
     "error": "We couldn't save your data.",
   },
 ]
 `;
 
 exports[`updateSample action Works correctly 1`] = `
-Array [
-  Object {
+[
+  {
     "message": "Saving sample...",
   },
   undefined,
-  Object {
-    "sample": Object {
+  {
+    "sample": {
       "name": "updated name",
     },
     "sampleUuid": "asd123",
   },
-  Object {
+  {
     "experimentId": null,
   },
-  Object {
+  {
     "error": "We couldn't get the status of the experiment's data processing.",
     "experimentId": null,
   },

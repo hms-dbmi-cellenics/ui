@@ -1,10 +1,10 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`ExperimentUpdatesHandler Loads cell sets if QC pipeline completes  1`] = `
-Array [
+[
   "testae48e318dab9a1bd0bexperiment",
-  Object {
-    "pipeline": Object {
+  {
+    "pipeline": {
       "status": "SUCCEEDED",
     },
   },
@@ -12,15 +12,15 @@ Array [
 `;
 
 exports[`ExperimentUpdatesHandler Loads cell sets if QC pipeline completes  2`] = `
-Array [
+[
   "mockPlotUuid",
   "mockPlotData",
 ]
 `;
 
 exports[`ExperimentUpdatesHandler Loads cell sets if QC pipeline completes  3`] = `
-Array [
-  Array [
+[
+  [
     "testae48e318dab9a1bd0bexperiment",
     2,
   ],
@@ -28,7 +28,7 @@ Array [
 `;
 
 exports[`ExperimentUpdatesHandler Loads cell sets if QC pipeline completes  4`] = `
-Array [
+[
   "testae48e318dab9a1bd0bexperiment",
   true,
 ]
@@ -36,32 +36,32 @@ Array [
 
 exports[`ExperimentUpdatesHandler Logs error if there is an error returned as an experiment update 1`] = `
 [MockFunction] {
-  "calls": Array [
-    Array [
+  "calls": [
+    [
       "Experiment updates error:",
-      Object {
-        "input": Object {
+      {
+        "input": {
           "sampleUuid": "mockSampleUuid",
           "taskName": "mockTaskName",
         },
-        "output": Object {
-          "config": Object {
-            "processingConfigUpdate": Object {
+        "output": {
+          "config": {
+            "processingConfigUpdate": {
               "mockProcessingConfigUpdate": "mockProcessingConfigUpdate",
             },
           },
-          "plotData": Object {
+          "plotData": {
             "mockPlotUuid": "mockPlotData",
           },
         },
         "pipelineVersion": 2,
-        "response": Object {
+        "response": {
           "error": true,
           "errorCode": "MOCK_ERROR_CODE",
           "userMessage": "mockUserMessage",
         },
-        "status": Object {
-          "pipeline": Object {
+        "status": {
+          "pipeline": {
             "status": "ERROR",
           },
         },
@@ -69,8 +69,8 @@ exports[`ExperimentUpdatesHandler Logs error if there is an error returned as an
       },
     ],
   ],
-  "results": Array [
-    Object {
+  "results": [
+    {
       "type": "return",
       "value": undefined,
     },
@@ -79,10 +79,10 @@ exports[`ExperimentUpdatesHandler Logs error if there is an error returned as an
 `;
 
 exports[`ExperimentUpdatesHandler Triggers properly for GEM2S updates  1`] = `
-Array [
+[
   "testae48e318dab9a1bd0bexperiment",
-  Object {
-    "pipeline": Object {
+  {
+    "pipeline": {
       "status": "RUNNING",
     },
   },
@@ -92,10 +92,10 @@ Array [
 exports[`ExperimentUpdatesHandler Triggers properly for GEM2S updates  2`] = `undefined`;
 
 exports[`ExperimentUpdatesHandler Triggers properly for QC updates  1`] = `
-Array [
+[
   "testae48e318dab9a1bd0bexperiment",
-  Object {
-    "pipeline": Object {
+  {
+    "pipeline": {
       "status": "RUNNING",
     },
   },
@@ -103,10 +103,10 @@ Array [
 `;
 
 exports[`ExperimentUpdatesHandler Triggers properly for QC updates  2`] = `
-Array [
+[
   "mockTaskName",
-  Object {
-    "processingConfigUpdate": Object {
+  {
+    "processingConfigUpdate": {
       "mockProcessingConfigUpdate": "mockProcessingConfigUpdate",
     },
   },
@@ -116,8 +116,8 @@ Array [
 `;
 
 exports[`ExperimentUpdatesHandler Triggers properly for QC updates  3`] = `
-Array [
-  Array [
+[
+  [
     "testae48e318dab9a1bd0bexperiment",
     2,
   ],
@@ -125,7 +125,7 @@ Array [
 `;
 
 exports[`ExperimentUpdatesHandler Triggers properly for QC updates  4`] = `
-Array [
+[
   "mockPlotUuid",
   "mockPlotData",
 ]

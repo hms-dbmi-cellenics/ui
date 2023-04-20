@@ -2,7 +2,7 @@ import _ from 'lodash';
 import React from 'react';
 import preloadAll from 'jest-next-dynamic';
 
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import { act } from 'react-dom/test-utils';
 
 import { dispatchWorkRequest, seekFromS3 } from 'utils/work/seekWorkResponse';
@@ -39,7 +39,7 @@ const experimentId = fake.EXPERIMENT_ID;
 // EtagParams is the object that's passed to the function which generates ETag in fetchWork
 jest.mock('object-hash', () => {
   const objectHash = jest.requireActual('object-hash');
-  const mockWorkResultETag = jest.requireActual('__test__/test-utils/mockWorkResultETag').default;
+  const mockWorkResultETag = jest.requireActual('__test__/test-utils/mockWorkResultETag');
 
   const mockWorkRequestETag = (ETagParams) => `${ETagParams.body.nGenes}-marker-genes`;
   const mockGeneExpressionETag = (ETagParams) => `${ETagParams.missingGenesBody.genes.join('-')}-expression`;
@@ -162,7 +162,7 @@ describe('HeatmapPlot', () => {
     expect(screen.getByText(/We're getting your data .../i)).toBeInTheDocument();
   });
 
-  it('Shows loader message if the marker genes are loaded but theres other selected genes still loading', async (done) => {
+  it('Shows loader message if the marker genes are loaded but there\'s other selected genes still loading', async () => {
     const customWorkerResponses = {
       ...mockWorkerResponses,
       'loading_gene_id-expression': () => delayedResponse({ body: 'Not found', status: 404 }, 4000),
@@ -189,7 +189,6 @@ describe('HeatmapPlot', () => {
 
     // Loading screen shows up
     expect(screen.getByText(/We're getting your data .../i)).toBeInTheDocument();
-    done();
   });
 
   it('Handles marker genes loading error correctly', async () => {
@@ -281,11 +280,7 @@ describe('HeatmapPlot', () => {
 
   it('Shows an empty message when all cell sets are hidden ', async () => {
     seekFromS3.mockReset();
-
-    // Mock each of the loadMarkerGenes calls caused by hiding a cell set
-    _.times(14, () => {
-      seekFromS3.mockImplementationOnce((mockEtag) => mockWorkerResponses[mockEtag]());
-    });
+    seekFromS3.mockImplementationOnce((mockEtag) => mockWorkerResponses[mockEtag]());
 
     // Last call (all the cellSets are hidden) throw the error
     seekFromS3.mockImplementationOnce(() => Promise.reject(new Error('No cells found')));
@@ -311,7 +306,7 @@ describe('HeatmapPlot', () => {
     });
 
     // The plots shows an empty message
-    screen.getByText(/Unhide some cell sets to show the heatmap/i);
+    expect(screen.getByText(/Unhide some cell sets to show the heatmap/i)).toBeInTheDocument();
   });
 
   it('Reacts to cellClass groupby being changed', async () => {
@@ -337,7 +332,7 @@ describe('HeatmapPlot', () => {
     expect(vitesscePropsSpy.expressionMatrix.cols).toMatchSnapshot();
   });
 
-  it('Responds correctly to vitessce Heatmap callbacks', async (done) => {
+  it('Responds correctly to vitessce Heatmap callbacks', async () => {
     await storeState.dispatch(loadCellSets(experimentId));
 
     await loadAndRenderDefaultHeatmap(storeState);
@@ -399,6 +394,5 @@ describe('HeatmapPlot', () => {
 
     // And doesn't show the normal cell info again
     expect(screen.queryByText(/Gene name:/i)).not.toBeInTheDocument();
-    done();
   });
 });

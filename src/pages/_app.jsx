@@ -4,7 +4,7 @@ import '../../assets/nprogress.css';
 import Amplify, { Credentials } from '@aws-amplify/core';
 /* eslint-disable react/jsx-props-no-spreading */
 import React, { useEffect, useState } from 'react';
-import Router, { useRouter } from 'next/router';
+import { useRouter } from 'next/router';
 import NProgress from 'nprogress';
 import PropTypes from 'prop-types';
 import { DefaultSeo } from 'next-seo';
@@ -43,9 +43,6 @@ const mockCredentialsForInframock = () => {
 };
 
 NProgress.configure({ showSpinner: false });
-Router.events.on('routeChangeStart', () => NProgress.start());
-Router.events.on('routeChangeComplete', () => NProgress.done());
-Router.events.on('routeChangeError', () => NProgress.done());
 
 Amplify.configure({
   ssr: true,
@@ -56,6 +53,13 @@ const addDashesToExperimentId = (experimentId) => experimentId.replace(/(.{8})(.
 const WrappedApp = ({ Component, pageProps }) => {
   const { httpError, amplifyConfig } = pageProps;
   const router = useRouter();
+
+  useEffect(() => {
+    router.events.on('routeChangeStart', () => NProgress.start());
+    router.events.on('routeChangeComplete', () => NProgress.done());
+    router.events.on('routeChangeError', () => NProgress.done());
+  }, [router]);
+
   const { experimentId: urlExperimentId } = router.query;
 
   // If the experimentId exists (we are not is data management) and
