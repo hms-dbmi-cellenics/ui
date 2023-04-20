@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import PrettyTime from 'components/PrettyTime';
 import dayjs from 'dayjs';
@@ -23,15 +23,11 @@ describe('PrettyTime', () => {
     expect(screen.getByText('invalid date')).toBeInTheDocument();
   });
 
-  it('displays the full time on hover', async () => {
+  it('displays the full time on hover', () => {
     render(<PrettyTime isoTime={isoTime} />);
     const element = screen.getByText(relativeTime);
-
     userEvent.hover(element);
-
-    await waitFor(() => {
-      expect(screen.getByText(`on ${localIsoTime}`)).toBeInTheDocument();
-    });
+    expect(screen.getByText(`on ${localIsoTime}`)).toBeInTheDocument();
   });
 
   it('displays the relative time again on mouse leave', () => {

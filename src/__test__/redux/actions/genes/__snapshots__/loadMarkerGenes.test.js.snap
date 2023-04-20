@@ -1,92 +1,92 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`loadMarkerGenes action Doesnt dispatch MARKER_GENES_LOADED if theres a different ETag stored 1`] = `
-[
-  {
+Array [
+  Object {
     "ETag": "new-etag",
   },
 ]
 `;
 
 exports[`loadMarkerGenes action dispatches appropriately on error 1`] = `
-[
-  {
+Array [
+  Object {
     "ETag": "new-etag",
   },
-  {
+  Object {
     "error": "We couldn't get the marker genes",
   },
 ]
 `;
 
 exports[`loadMarkerGenes action dispatches appropriately on success 1`] = `
-[
-  {
+Array [
+  Object {
     "ETag": "new-etag",
   },
-  {
-    "data": {
-      "cellOrder": [
+  Object {
+    "data": Object {
+      "cellOrder": Array [
         0,
       ],
-      "orderedGeneNames": [
+      "orderedGeneNames": Array [
         "geneA",
       ],
-      "rawExpression": {
+      "rawExpression": Object {
         "datatype": undefined,
-        "index": [],
+        "index": Array [],
         "mathjs": "SparseMatrix",
-        "ptr": [
+        "ptr": Array [
           0,
           0,
         ],
-        "size": [
+        "size": Array [
           1,
           1,
         ],
-        "values": [],
+        "values": Array [],
       },
-      "stats": {
-        "rawMean": [
+      "stats": Object {
+        "rawMean": Array [
           1,
         ],
-        "rawStdev": [
+        "rawStdev": Array [
           0,
         ],
-        "truncatedMax": [
+        "truncatedMax": Array [
           1,
         ],
-        "truncatedMin": [
+        "truncatedMin": Array [
           1,
         ],
       },
-      "truncatedExpression": {
+      "truncatedExpression": Object {
         "datatype": undefined,
-        "index": [],
+        "index": Array [],
         "mathjs": "SparseMatrix",
-        "ptr": [
+        "ptr": Array [
           0,
           0,
         ],
-        "size": [
+        "size": Array [
           1,
           1,
         ],
-        "values": [],
+        "values": Array [],
       },
-      "zScore": {
+      "zScore": Object {
         "datatype": undefined,
-        "index": [],
+        "index": Array [],
         "mathjs": "SparseMatrix",
-        "ptr": [
+        "ptr": Array [
           0,
           0,
         ],
-        "size": [
+        "size": Array [
           1,
           1,
         ],
-        "values": [],
+        "values": Array [],
       },
     },
     "plotUuid": "interactiveHeatmap",

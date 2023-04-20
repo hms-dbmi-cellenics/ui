@@ -2,11 +2,12 @@ import React from 'react';
 
 import _ from 'lodash';
 import {
-  render, screen, fireEvent, waitFor, within,
+  render, screen, fireEvent, waitFor,
 } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import { act } from 'react-dom/test-utils';
+import { within } from '@testing-library/dom';
 
 import { Provider } from 'react-redux';
 import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
@@ -17,6 +18,9 @@ import { makeStore } from 'redux/store';
 import CellSetsTool from 'components/data-exploration/cell-sets-tool/CellSetsTool';
 import { createCellSet } from 'redux/actions/cellSets';
 
+import { selectOption } from '__test__/test-utils/rtlHelpers';
+
+import '__test__/test-utils/setupTests';
 import { dispatchWorkRequest } from 'utils/work/seekWorkResponse';
 import mockAPI, { generateDefaultMockAPIResponses, promiseResponse } from '__test__/test-utils/mockAPI';
 import { loadBackendStatus } from 'redux/actions/backendStatus';
@@ -801,12 +805,10 @@ describe('AnnotateClustersTool', () => {
     const speciesSelector = screen.getAllByRole('combobox')[1];
 
     // Select options
-    userEvent.click(tissueSelector);
-    userEvent.click(screen.getByText(/Liver/));
-
-    // Choose the mouse option
-    userEvent.click(speciesSelector);
-    userEvent.click(screen.getAllByText(/mouse/)[1]);
+    await act(async () => {
+      await selectOption(/Liver/, tissueSelector);
+      await selectOption(/mouse/, speciesSelector);
+    });
 
     // Now the button's enabled
     const button = screen.getByRole('button', { name: /Compute/ });

@@ -1,16 +1,16 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`add window adds a new window if layout is empty 1`] = `
-{
-  "payload": {
+Object {
+  "payload": Object {
     "panel": undefined,
-    "windows": {
+    "windows": Object {
       "direction": "row",
-      "first": {
+      "first": Object {
         "direction": "row",
-        "first": {
+        "first": Object {
           "direction": "column",
-          "first": {
+          "first": Object {
             "direction": "row",
             "first": "UMAP",
             "second": "Cell sets and Metadata",
@@ -31,16 +31,16 @@ exports[`add window adds a new window if layout is empty 1`] = `
 `;
 
 exports[`add window adds a window to existing ones 1`] = `
-{
-  "payload": {
+Object {
+  "payload": Object {
     "panel": "newPanel",
-    "windows": {
+    "windows": Object {
       "direction": "row",
-      "first": {
+      "first": Object {
         "direction": "row",
-        "first": {
+        "first": Object {
           "direction": "column",
-          "first": {
+          "first": Object {
             "direction": "row",
             "first": "UMAP",
             "second": "Cell sets and Metadata",
@@ -61,14 +61,14 @@ exports[`add window adds a window to existing ones 1`] = `
 `;
 
 exports[`add window updates panel if window exists 1`] = `
-{
-  "payload": {
+Object {
+  "payload": Object {
     "panel": "Differential expression",
-    "windows": {
+    "windows": Object {
       "direction": "row",
-      "first": {
+      "first": Object {
         "direction": "column",
-        "first": {
+        "first": Object {
           "direction": "row",
           "first": "UMAP",
           "second": "Cell sets and Metadata",
