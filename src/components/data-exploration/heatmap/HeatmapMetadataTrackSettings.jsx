@@ -11,7 +11,7 @@ import {
 } from 'antd';
 
 import { updatePlotConfig } from 'redux/actions/componentConfig';
-import { getCellSetsHierarchy } from 'redux/selectors';
+import { getCellSets, getCellSetsHierarchy } from 'redux/selectors';
 import ReorderableList from '../../ReorderableList';
 
 const convertToReorderableListData = (cellClassKeys, selected, hierarchy) => (
@@ -28,6 +28,8 @@ const HeatmapMetadataTrackSettings = (props) => {
   const dispatch = useDispatch();
 
   const { componentType } = props;
+
+  const { accessible: cellSetsAccessible } = useSelector(getCellSets());
   const hierarchy = useSelector(getCellSetsHierarchy());
 
   const selectedTracks = useSelector(
@@ -50,7 +52,7 @@ const HeatmapMetadataTrackSettings = (props) => {
     );
 
     setListData([...selectedTracksListData, ...unselectedTracksListData]);
-  }, [selectedTracks]);
+  }, [selectedTracks, cellSetsAccessible]);
 
   const setTrackSelected = (selected, key) => {
     const newSelectedTracks = [...selectedTracks];
@@ -93,7 +95,7 @@ const HeatmapMetadataTrackSettings = (props) => {
   );
 
   const rightItem = (trackDataItem) => (
-    hierarchy.filter((current) => current.key === trackDataItem.key)[0]?.name
+    hierarchy.filter((current) => current.key === trackDataItem.key)[0].name
   );
 
   return (
