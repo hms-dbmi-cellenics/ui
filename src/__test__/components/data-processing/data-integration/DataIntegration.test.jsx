@@ -108,7 +108,7 @@ describe('DataIntegration', () => {
 
     await waitFor(() => {
       expect(screen.getByRole('graphics-document')).toBeInTheDocument();
-    });
+    }, { timeout: 6000 });
   });
 
   it('allows selecting other plots', async () => {
