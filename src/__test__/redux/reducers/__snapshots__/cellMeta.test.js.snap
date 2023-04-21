@@ -1,24 +1,24 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`cellMeta Sets error state on expression error action 1`] = `
-{
-  "doubletScores": {
-    "data": [],
+Object {
+  "doubletScores": Object {
+    "data": Array [],
     "error": false,
     "loading": true,
   },
-  "mitochondrialContent": {
-    "data": [],
+  "mitochondrialContent": Object {
+    "data": Array [],
     "error": "error",
     "loading": false,
   },
-  "numOfGenes": {
-    "data": [],
+  "numOfGenes": Object {
+    "data": Array [],
     "error": false,
     "loading": true,
   },
-  "numOfUmis": {
-    "data": [],
+  "numOfUmis": Object {
+    "data": Array [],
     "error": false,
     "loading": true,
   },
@@ -26,14 +26,14 @@ exports[`cellMeta Sets error state on expression error action 1`] = `
 `;
 
 exports[`cellMeta Sets loaded state on expression loading action 1`] = `
-{
-  "doubletScores": {
-    "data": [],
+Object {
+  "doubletScores": Object {
+    "data": Array [],
     "error": false,
     "loading": true,
   },
-  "mitochondrialContent": {
-    "data": [
+  "mitochondrialContent": Object {
+    "data": Array [
       1,
       2,
       3,
@@ -41,13 +41,13 @@ exports[`cellMeta Sets loaded state on expression loading action 1`] = `
     "error": false,
     "loading": false,
   },
-  "numOfGenes": {
-    "data": [],
+  "numOfGenes": Object {
+    "data": Array [],
     "error": false,
     "loading": true,
   },
-  "numOfUmis": {
-    "data": [],
+  "numOfUmis": Object {
+    "data": Array [],
     "error": false,
     "loading": true,
   },
@@ -55,24 +55,24 @@ exports[`cellMeta Sets loaded state on expression loading action 1`] = `
 `;
 
 exports[`cellMeta Sets loading state on expression loading action 1`] = `
-{
-  "doubletScores": {
-    "data": [],
+Object {
+  "doubletScores": Object {
+    "data": Array [],
     "error": false,
     "loading": true,
   },
-  "mitochondrialContent": {
-    "data": [],
+  "mitochondrialContent": Object {
+    "data": Array [],
     "error": false,
     "loading": true,
   },
-  "numOfGenes": {
-    "data": [],
+  "numOfGenes": Object {
+    "data": Array [],
     "error": false,
     "loading": true,
   },
-  "numOfUmis": {
-    "data": [],
+  "numOfUmis": Object {
+    "data": Array [],
     "error": false,
     "loading": true,
   },

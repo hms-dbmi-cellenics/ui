@@ -1,9 +1,9 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`markerGenesLoaded returns correct state 1`] = `
-{
-  "expression": {
-    "downsampledCellOrder": [
+Object {
+  "expression": Object {
+    "downsampledCellOrder": Array [
       0,
       1,
       2,
@@ -16,12 +16,12 @@ exports[`markerGenesLoaded returns correct state 1`] = `
       9,
     ],
     "downsampledMatrix": ExpressionMatrix {
-      "geneIndexes": {
+      "geneIndexes": Object {
         "geneA": 0,
       },
-      "rawGeneExpressions": {
+      "rawGeneExpressions": Object {
         "datatype": undefined,
-        "index": [
+        "index": Array [
           1,
           2,
           3,
@@ -33,15 +33,15 @@ exports[`markerGenesLoaded returns correct state 1`] = `
           9,
         ],
         "mathjs": "SparseMatrix",
-        "ptr": [
+        "ptr": Array [
           0,
           9,
         ],
-        "size": [
+        "size": Array [
           10,
           1,
         ],
-        "values": [
+        "values": Array [
           1,
           2,
           3,
@@ -54,23 +54,23 @@ exports[`markerGenesLoaded returns correct state 1`] = `
         ],
       },
       "setGeneExpression": [Function],
-      "stats": {
-        "rawMean": [
+      "stats": Object {
+        "rawMean": Array [
           1,
         ],
-        "rawStdev": [
+        "rawStdev": Array [
           0,
         ],
-        "truncatedMax": [
+        "truncatedMax": Array [
           1,
         ],
-        "truncatedMin": [
+        "truncatedMin": Array [
           1,
         ],
       },
-      "truncatedGeneExpressions": {
+      "truncatedGeneExpressions": Object {
         "datatype": undefined,
-        "index": [
+        "index": Array [
           1,
           2,
           3,
@@ -82,15 +82,15 @@ exports[`markerGenesLoaded returns correct state 1`] = `
           9,
         ],
         "mathjs": "SparseMatrix",
-        "ptr": [
+        "ptr": Array [
           0,
           9,
         ],
-        "size": [
+        "size": Array [
           10,
           1,
         ],
-        "values": [
+        "values": Array [
           1,
           2,
           3,
@@ -102,9 +102,9 @@ exports[`markerGenesLoaded returns correct state 1`] = `
           9,
         ],
       },
-      "zScore": {
+      "zScore": Object {
         "datatype": undefined,
-        "index": [
+        "index": Array [
           1,
           2,
           3,
@@ -116,15 +116,15 @@ exports[`markerGenesLoaded returns correct state 1`] = `
           9,
         ],
         "mathjs": "SparseMatrix",
-        "ptr": [
+        "ptr": Array [
           0,
           9,
         ],
-        "size": [
+        "size": Array [
           10,
           1,
         ],
-        "values": [
+        "values": Array [
           1,
           2,
           3,
@@ -138,59 +138,59 @@ exports[`markerGenesLoaded returns correct state 1`] = `
       },
     },
     "error": false,
-    "loading": [],
+    "loading": Array [],
     "matrix": ExpressionMatrix {
-      "geneIndexes": {},
-      "rawGeneExpressions": {
+      "geneIndexes": Object {},
+      "rawGeneExpressions": Object {
         "datatype": undefined,
-        "index": [],
+        "index": Array [],
         "mathjs": "SparseMatrix",
-        "ptr": [
+        "ptr": Array [
           0,
         ],
-        "size": [
+        "size": Array [
           0,
           0,
         ],
-        "values": [],
+        "values": Array [],
       },
       "setGeneExpression": [Function],
-      "stats": {
-        "rawMean": [],
-        "rawStdev": [],
-        "truncatedMax": [],
-        "truncatedMin": [],
+      "stats": Object {
+        "rawMean": Array [],
+        "rawStdev": Array [],
+        "truncatedMax": Array [],
+        "truncatedMin": Array [],
       },
-      "truncatedGeneExpressions": {
+      "truncatedGeneExpressions": Object {
         "datatype": undefined,
-        "index": [],
+        "index": Array [],
         "mathjs": "SparseMatrix",
-        "ptr": [
+        "ptr": Array [
           0,
         ],
-        "size": [
+        "size": Array [
           0,
           0,
         ],
-        "values": [],
+        "values": Array [],
       },
-      "zScore": {
+      "zScore": Object {
         "datatype": undefined,
-        "index": [],
+        "index": Array [],
         "mathjs": "SparseMatrix",
-        "ptr": [
+        "ptr": Array [
           0,
         ],
-        "size": [
+        "size": Array [
           0,
           0,
         ],
-        "values": [],
+        "values": Array [],
       },
     },
-    "views": {
-      "interactiveHeatmap": {
-        "data": [
+    "views": Object {
+      "interactiveHeatmap": Object {
+        "data": Array [
           "geneA",
         ],
         "error": false,
@@ -199,16 +199,16 @@ exports[`markerGenesLoaded returns correct state 1`] = `
     },
   },
   "focused": undefined,
-  "markers": {
+  "markers": Object {
     "ETag": null,
     "error": false,
     "loading": false,
   },
-  "properties": {
-    "data": {},
-    "loading": [],
-    "views": {},
+  "properties": Object {
+    "data": Object {},
+    "loading": Array [],
+    "views": Object {},
   },
-  "selected": [],
+  "selected": Array [],
 }
 `;

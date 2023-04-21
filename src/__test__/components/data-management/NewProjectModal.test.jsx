@@ -7,6 +7,7 @@ import configureMockStore from 'redux-mock-store';
 import { Provider } from 'react-redux';
 import { ClipLoader } from 'react-spinners';
 import NewProjectModal from 'components/data-management/NewProjectModal';
+import '__test__/test-utils/setupTests';
 
 import experimentsInitialState from 'redux/reducers/experiments/initialState';
 

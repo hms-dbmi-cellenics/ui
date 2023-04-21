@@ -1,10 +1,10 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`ExperimentUpdatesHandler Loads cell sets if QC pipeline completes  1`] = `
-[
+Array [
   "testae48e318dab9a1bd0bexperiment",
-  {
-    "pipeline": {
+  Object {
+    "pipeline": Object {
       "status": "SUCCEEDED",
     },
   },
@@ -12,15 +12,15 @@ exports[`ExperimentUpdatesHandler Loads cell sets if QC pipeline completes  1`] 
 `;
 
 exports[`ExperimentUpdatesHandler Loads cell sets if QC pipeline completes  2`] = `
-[
+Array [
   "mockPlotUuid",
   "mockPlotData",
 ]
 `;
 
 exports[`ExperimentUpdatesHandler Loads cell sets if QC pipeline completes  3`] = `
-[
-  [
+Array [
+  Array [
     "testae48e318dab9a1bd0bexperiment",
     2,
   ],
@@ -28,7 +28,7 @@ exports[`ExperimentUpdatesHandler Loads cell sets if QC pipeline completes  3`] 
 `;
 
 exports[`ExperimentUpdatesHandler Loads cell sets if QC pipeline completes  4`] = `
-[
+Array [
   "testae48e318dab9a1bd0bexperiment",
   true,
 ]
@@ -36,32 +36,32 @@ exports[`ExperimentUpdatesHandler Loads cell sets if QC pipeline completes  4`] 
 
 exports[`ExperimentUpdatesHandler Logs error if there is an error returned as an experiment update 1`] = `
 [MockFunction] {
-  "calls": [
-    [
+  "calls": Array [
+    Array [
       "Experiment updates error:",
-      {
-        "input": {
+      Object {
+        "input": Object {
           "sampleUuid": "mockSampleUuid",
           "taskName": "mockTaskName",
         },
-        "output": {
-          "config": {
-            "processingConfigUpdate": {
+        "output": Object {
+          "config": Object {
+            "processingConfigUpdate": Object {
               "mockProcessingConfigUpdate": "mockProcessingConfigUpdate",
             },
           },
-          "plotData": {
+          "plotData": Object {
             "mockPlotUuid": "mockPlotData",
           },
         },
         "pipelineVersion": 2,
-        "response": {
+        "response": Object {
           "error": true,
           "errorCode": "MOCK_ERROR_CODE",
           "userMessage": "mockUserMessage",
         },
-        "status": {
-          "pipeline": {
+        "status": Object {
+          "pipeline": Object {
             "status": "ERROR",
           },
         },
@@ -69,8 +69,8 @@ exports[`ExperimentUpdatesHandler Logs error if there is an error returned as an
       },
     ],
   ],
-  "results": [
-    {
+  "results": Array [
+    Object {
       "type": "return",
       "value": undefined,
     },
@@ -79,10 +79,10 @@ exports[`ExperimentUpdatesHandler Logs error if there is an error returned as an
 `;
 
 exports[`ExperimentUpdatesHandler Triggers properly for GEM2S updates  1`] = `
-[
+Array [
   "testae48e318dab9a1bd0bexperiment",
-  {
-    "pipeline": {
+  Object {
+    "pipeline": Object {
       "status": "RUNNING",
     },
   },
@@ -92,10 +92,10 @@ exports[`ExperimentUpdatesHandler Triggers properly for GEM2S updates  1`] = `
 exports[`ExperimentUpdatesHandler Triggers properly for GEM2S updates  2`] = `undefined`;
 
 exports[`ExperimentUpdatesHandler Triggers properly for QC updates  1`] = `
-[
+Array [
   "testae48e318dab9a1bd0bexperiment",
-  {
-    "pipeline": {
+  Object {
+    "pipeline": Object {
       "status": "RUNNING",
     },
   },
@@ -103,10 +103,10 @@ exports[`ExperimentUpdatesHandler Triggers properly for QC updates  1`] = `
 `;
 
 exports[`ExperimentUpdatesHandler Triggers properly for QC updates  2`] = `
-[
+Array [
   "mockTaskName",
-  {
-    "processingConfigUpdate": {
+  Object {
+    "processingConfigUpdate": Object {
       "mockProcessingConfigUpdate": "mockProcessingConfigUpdate",
     },
   },
@@ -116,8 +116,8 @@ exports[`ExperimentUpdatesHandler Triggers properly for QC updates  2`] = `
 `;
 
 exports[`ExperimentUpdatesHandler Triggers properly for QC updates  3`] = `
-[
-  [
+Array [
+  Array [
     "testae48e318dab9a1bd0bexperiment",
     2,
   ],
@@ -125,7 +125,7 @@ exports[`ExperimentUpdatesHandler Triggers properly for QC updates  3`] = `
 `;
 
 exports[`ExperimentUpdatesHandler Triggers properly for QC updates  4`] = `
-[
+Array [
   "mockPlotUuid",
   "mockPlotData",
 ]

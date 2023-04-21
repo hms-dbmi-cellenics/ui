@@ -2,18 +2,20 @@ import React, { useEffect, useState } from 'react';
 import {
   Space, Typography, Progress, Tooltip, Button,
 } from 'antd';
-import { UploadOutlined } from '@ant-design/icons';
+import {
+  UploadOutlined,
+} from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 
-import { deleteSamples, updateSample } from 'redux/actions/samples';
+import {
+  deleteSamples, updateSample,
+} from 'redux/actions/samples';
 import integrationTestConstants from 'utils/integrationTestConstants';
 
 import UploadStatus, { messageForStatus } from 'utils/upload/UploadStatus';
-import EditableField from 'components/EditableField';
-import UploadDetailsModal from 'components/data-management/UploadDetailsModal';
-
-import styles from 'components/data-management/SamplesTableCells.module.css';
+import EditableField from '../EditableField';
+import UploadDetailsModal from './UploadDetailsModal';
 
 const { Text } = Typography;
 
@@ -52,7 +54,7 @@ const UploadCell = (props) => {
     if (status === UploadStatus.UPLOADED) {
       return (
         <div
-          className={styles.hoverSelectCursor}
+          className='hoverSelectCursor'
           onClick={showDetails}
           onKeyDown={showDetails}
           style={{ ...UploadDivStyle, flexDirection: 'column' }}
@@ -84,7 +86,7 @@ const UploadCell = (props) => {
     if (status === UploadStatus.UPLOAD_ERROR) {
       return (
         <div
-          className={styles.hoverSelectCursor}
+          className='hoverSelectCursor'
           style={{ ...UploadDivStyle, flexDirection: 'column' }}
           onClick={showDetails}
           onKeyDown={showDetails}

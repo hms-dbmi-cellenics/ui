@@ -2,6 +2,7 @@ import React from 'react';
 import { act } from 'react-dom/test-utils';
 import { mount } from 'enzyme';
 import ReorderableList from 'components/ReorderableList';
+import '__test__/test-utils/setupTests';
 
 describe('ReorderableList', () => {
   let onChangeCount;

@@ -9,6 +9,7 @@ import {
 import saveProcessingSettings from 'redux/actions/experimentSettings/processingConfig/saveProcessingSettings';
 
 import generateExperimentSettingsMock from '__test__/test-utils/experimentSettings.mock';
+import '__test__/test-utils/setupTests';
 
 const mockStore = configureStore([thunk]);
 

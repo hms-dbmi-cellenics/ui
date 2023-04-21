@@ -5,6 +5,7 @@ import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import { CELL_INFO_FOCUS, CELL_INFO_UNFOCUS } from 'redux/actionTypes/cellInfo';
 import FocusButton from 'components/FocusButton';
+import '__test__/test-utils/setupTests';
 
 const eventStub = {
   stopPropagation: () => { },
@@ -25,7 +26,7 @@ const store = mockStore({
 });
 
 describe('FocusButton', () => {
-  it('Renders correctly', () => {
+  test('renders correctly', () => {
     const component = mount(
       <Provider store={store}>
         <FocusButton
@@ -43,7 +44,7 @@ describe('FocusButton', () => {
     expect(button.length).toEqual(1);
   });
 
-  it('renders correctly when unfocused', () => {
+  test('renders correctly when unfocused', () => {
     const component = mount(
       <Provider store={store}>
         <FocusButton
@@ -58,7 +59,7 @@ describe('FocusButton', () => {
     expect(focusButtonTooltip.props().title).toContain('Show');
   });
 
-  it('renders correctly when focused', () => {
+  test('renders correctly when focused', () => {
     const component = mount(
       <Provider store={store}>
         <FocusButton
@@ -73,7 +74,7 @@ describe('FocusButton', () => {
     expect(focusButtonTooltip.props().title).toContain('Hide');
   });
 
-  it('clicking on focused button triggers unfocus action', () => {
+  test('clicking on focused button triggers unfocus action', () => {
     const component = mount(
       <Provider store={store}>
         <FocusButton
@@ -95,7 +96,7 @@ describe('FocusButton', () => {
     expect(action).toMatchSnapshot();
   });
 
-  it('clicking on unfocused button triggers focus action', () => {
+  test('clicking on unfocused button triggers focus action', () => {
     const component = mount(
       <Provider store={store}>
         <FocusButton
