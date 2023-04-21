@@ -1,6 +1,7 @@
 import _ from 'lodash';
 import generateMockSamples from './generateMockSamples';
 import generateMockExperiments from './generateMockExperiments';
+import generateMockProcessingConfig from './generateMockProcessingConfig';
 
 // This file is a work in progress to generate mock data for the endpoints of the test.
 // The generated data should be usable as response data to be sent via the mocked API in mockAPI.js
@@ -16,15 +17,18 @@ responseData.samples = [generateMockSamples(
   3,
 )];
 
+responseData.processingConfig = generateMockProcessingConfig(3);
+
 // Add samples to first experiment
 const samples = responseData.samples[0];
 const sampleIds = _.map(samples, 'id');
 responseData.experiments[0].samplesOrder = sampleIds;
 
-const { experiments } = responseData;
+const { experiments, processingConfig } = responseData;
 
 export {
   experiments,
   samples,
+  processingConfig,
   responseData,
 };
