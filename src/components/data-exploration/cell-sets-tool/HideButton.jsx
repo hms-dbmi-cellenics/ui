@@ -8,7 +8,7 @@ import {
 } from 'react-redux';
 import { setCellSetHiddenStatus } from 'redux/actions/cellSets';
 import { getCellSets } from 'redux/selectors';
-import colors from 'utils/colors';
+import colors from 'utils/styling/colors';
 
 const HideButton = (props) => {
   const { cellSetKey } = props;

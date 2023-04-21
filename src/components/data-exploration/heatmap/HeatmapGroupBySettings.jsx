@@ -17,7 +17,7 @@ import { updatePlotConfig } from 'redux/actions/componentConfig';
 import { getCellSets, getCellSetsHierarchy } from 'redux/selectors';
 
 import ReorderableList from 'components/ReorderableList';
-import colors from 'utils/colors';
+import colors from 'utils/styling/colors';
 
 const HeatmapGroupBySettings = (props) => {
   const dispatch = useDispatch();

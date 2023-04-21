@@ -13,7 +13,7 @@ import {
 import { updatePlotConfig } from 'redux/actions/componentConfig';
 import { getCellSets, getCellSetsHierarchy } from 'redux/selectors';
 import { ClipLoader } from 'react-spinners';
-import colors from 'utils/colors';
+import colors from 'utils/styling/colors';
 import ReorderableList from '../../ReorderableList';
 
 const convertToReorderableListData = (cellClassKeys, selected, hierarchy) => (

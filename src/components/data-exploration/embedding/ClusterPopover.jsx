@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Popover } from 'antd';
-import colorProvider from 'utils/colorProvider';
+import colorProvider from 'utils/styling/colorProvider';
 import EditableField from '../../EditableField';
 
 const ClusterPopover = (props) => {
