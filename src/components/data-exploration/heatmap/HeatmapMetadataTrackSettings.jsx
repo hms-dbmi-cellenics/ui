@@ -11,7 +11,9 @@ import {
 } from 'antd';
 
 import { updatePlotConfig } from 'redux/actions/componentConfig';
-import { getCellSetsHierarchy } from 'redux/selectors';
+import { getCellSets, getCellSetsHierarchy } from 'redux/selectors';
+import { ClipLoader } from 'react-spinners';
+import colors from 'utils/styling/colors';
 import ReorderableList from '../../ReorderableList';
 
 const convertToReorderableListData = (cellClassKeys, selected, hierarchy) => (
@@ -28,6 +30,8 @@ const HeatmapMetadataTrackSettings = (props) => {
   const dispatch = useDispatch();
 
   const { componentType } = props;
+
+  const { accessible: cellSetsAccessible } = useSelector(getCellSets());
   const hierarchy = useSelector(getCellSetsHierarchy());
 
   const selectedTracks = useSelector(
@@ -50,7 +54,7 @@ const HeatmapMetadataTrackSettings = (props) => {
     );
 
     setListData([...selectedTracksListData, ...unselectedTracksListData]);
-  }, [selectedTracks]);
+  }, [selectedTracks, cellSetsAccessible]);
 
   const setTrackSelected = (selected, key) => {
     const newSelectedTracks = [...selectedTracks];
@@ -98,12 +102,17 @@ const HeatmapMetadataTrackSettings = (props) => {
 
   return (
     <div style={{ padding: '5px' }}>
-      <ReorderableList
-        onChange={setTrackOrder}
-        listData={listData}
-        leftItem={leftItem}
-        rightItem={rightItem}
-      />
+      {
+        cellSetsAccessible
+          ? (
+            <ReorderableList
+              onChange={setTrackOrder}
+              listData={listData}
+              leftItem={leftItem}
+              rightItem={rightItem}
+            />
+          ) : <center><ClipLoader size={20} color={colors.darkRed} /></center>
+      }
     </div>
   );
 };
