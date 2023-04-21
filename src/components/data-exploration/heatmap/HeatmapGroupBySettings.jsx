@@ -117,17 +117,6 @@ const HeatmapGroupBySettings = (props) => {
     </Menu>
   );
 
-  // if (!cellSetsAccessible) {
-  //   return <ClipLoader style={{ width: '50px' }} />;
-  //   return (
-  //     <div style={{ padding: '5px' }} key='dropdown'>
-  //       <Space>
-  //         <ClipLoader />
-  //       </Space>
-  //     </div>
-  //   );
-  // }
-
   return (
     <div style={{ padding: '5px' }} key='dropdown'>
       <Space direction='vertical'>
