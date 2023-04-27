@@ -5,7 +5,7 @@ import fetchWork from 'utils/work/fetchWork';
 import getTimeoutForWorkerTask from 'utils/getTimeoutForWorkerTask';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
 import fake from '__test__/test-utils/constants';
-import getBatchDiffExpr from 'utils/differentialExpression/getBatchDiffExpr';
+import getBatchDiffExpr from 'utils/extraActionCreators/differentialExpression/getBatchDiffExpr';
 
 jest.mock('utils/work/fetchWork');
 jest.mock('utils/getTimeoutForWorkerTask');
