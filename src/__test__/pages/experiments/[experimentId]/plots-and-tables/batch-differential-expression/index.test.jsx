@@ -2,7 +2,7 @@ import _ from 'lodash';
 import React from 'react';
 import { Provider } from 'react-redux';
 import {
-  render, screen, fireEvent, waitFor,
+  render, screen, fireEvent,
 } from '@testing-library/react';
 import BatchDiffExpression from 'pages/experiments/[experimentId]/plots-and-tables/batch-differential-expression/index';
 import fake from '__test__/test-utils/constants';
@@ -13,8 +13,8 @@ import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
 import { makeStore } from 'redux/store';
 import { selectOption } from '__test__/test-utils/rtlHelpers';
 import mockAPI, { generateDefaultMockAPIResponses } from '__test__/test-utils/mockAPI';
-import * as getBatchDiffExpr from 'utils/differentialExpression/getBatchDiffExpr';
-import * as checkCanRunDiffExprModule from 'utils/differentialExpression/checkCanRunDiffExpr';
+import * as getBatchDiffExpr from 'utils/extraActionCreators/differentialExpression/getBatchDiffExpr';
+import * as checkCanRunDiffExprModule from 'utils/extraActionCreators/differentialExpression/checkCanRunDiffExpr';
 
 jest.spyOn(checkCanRunDiffExprModule, 'default').mockImplementation(() => true);
 

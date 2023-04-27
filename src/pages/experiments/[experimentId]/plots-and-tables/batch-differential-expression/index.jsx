@@ -16,16 +16,15 @@ import { loadCellSets } from 'redux/actions/cellSets';
 import PropTypes from 'prop-types';
 import { InfoCircleOutlined } from '@ant-design/icons';
 import { plotNames } from 'utils/constants';
-import getSelectOptions from 'utils/plots/getSelectOptions';
 import Loader from 'components/Loader';
 import DiffExprSelectMenu from 'components/data-exploration/differential-expression-tool/DiffExprSelectMenu';
-import getBatchDiffExpr from 'utils/differentialExpression/getBatchDiffExpr';
+import getBatchDiffExpr from 'utils/extraActionCreators/differentialExpression/getBatchDiffExpr';
 import getCellSetsHierarchyByName from 'redux/selectors/cellSets/getCellSetsHierarchyByName';
 import { zipSync } from 'fflate';
 import { saveAs } from 'file-saver';
-import checkCanRunDiffExpr, { canRunDiffExprResults } from 'utils/differentialExpression/checkCanRunDiffExpr';
-
+import checkCanRunDiffExpr, { canRunDiffExprResults } from 'utils/extraActionCreators/differentialExpression/checkCanRunDiffExpr';
 import _ from 'lodash';
+import { metadataKeyToName } from 'utils/data-management/metadataUtils';
 
 const BatchDiffExpression = (props) => {
   const { experimentId } = props;
@@ -141,6 +140,25 @@ const BatchDiffExpression = (props) => {
 
     const blob = new Blob([zipped], { type: 'application/zip' });
     saveAs(blob, archiveName);
+  };
+
+  const getSelectOptions = (options) => {
+    const selectOptions = [];
+    if (!options.length) {
+      return;
+    }
+
+    Array.from(options).forEach((option) => {
+    // We need to translate 'scratchpad' into 'custom cell sets' because
+    // that is what is displayed in Data Exploration
+      const label = option.key === 'scratchpad' ? 'custom cell sets' : option.key;
+
+      selectOptions.push({
+        value: option.key,
+        label: _.upperFirst(metadataKeyToName(label)),
+      });
+    });
+    return selectOptions;
   };
 
   const getData = async () => {

@@ -5,15 +5,7 @@ import { act } from 'react-dom/test-utils';
 const selectOption = async (optionName, select) => {
   await userEvent.click(select);
   // userEvent click doesnt trigger the onChange in select
-  // if the option name is not specified, click the first one
-  if (!optionName) {
-    const options = screen.getAllByRole('option', { within: select });
-    console.log('OPTIONSSSS ', options);
-    // Click the first option
-    fireEvent.click(options[0]);
-  } else {
-    fireEvent.click(screen.getAllByTitle(optionName)[0]);
-  }
+  fireEvent.click(screen.getAllByTitle(optionName)[0]);
 };
 
 // dropFilesIntoDropzone takes an input element and simulates droping files into it
