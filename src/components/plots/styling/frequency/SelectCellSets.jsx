@@ -7,8 +7,22 @@ import {
 } from 'antd';
 
 import { getCellSetsHierarchyByType } from 'redux/selectors';
-import getSelectOptions from 'utils/plots/getSelectOptions';
 import { useSelector } from 'react-redux';
+
+const getSelectOptions = (options) => {
+  const selectOptions = [];
+  if (!options.length) {
+    return;
+  }
+
+  Array.from(options).forEach((option) => {
+    selectOptions.push({
+      value: option.key,
+      label: option.name,
+    });
+  });
+  return selectOptions;
+};
 
 const SelectCellSets = (props) => {
   const {
@@ -31,6 +45,7 @@ const SelectCellSets = (props) => {
 
   const metadataMenu = getSelectOptions(optionsMetadata);
   const cellSetMenu = getSelectOptions(optionsCellSets);
+
   let menuValue;
 
   if (!metadataMenu) {
