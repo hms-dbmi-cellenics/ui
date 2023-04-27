@@ -4,7 +4,8 @@ import { getCellSetKey } from 'utils/cellSets';
 import getArray from 'utils/getArray';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
 
-const getBatchDiffExpr = (experimentId, comparisonObject, comparisonType) => async (dispatch, getState) => {
+const getBatchDiffExpr = (experimentId,
+  comparisonObject, comparisonType) => async (dispatch, getState) => {
   const workBody = {
     name: 'BatchDifferentialExpression',
     experimentId,

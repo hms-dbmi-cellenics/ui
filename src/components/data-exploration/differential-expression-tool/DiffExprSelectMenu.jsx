@@ -38,7 +38,7 @@ const DiffExprSelectMenu = (props) => {
     if (selectedComparison) {
       return children.map(({ key, name }) => {
         const uniqueKey = `${rootKey}/${key}`;
-
+        console.log('NAME FORR KEY ', key, name, option)
         return (
           <Option key={uniqueKey} disabled={shouldDisable(rootKey, key)}>
             {name}
