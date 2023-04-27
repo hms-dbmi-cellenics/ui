@@ -39,6 +39,7 @@ export default {
   ERROR_SAVING_PLOT_CONFIG: 'We couldn\'t save your plot configuration.',
   ERROR_STARTING_PIPLELINE: 'We couldn\'t start working on your data.',
   ERROR_SIGN_IN: 'We couldn\'t sign you in. Please try again.',
+  ERROR_DOWNLOADING_SEURAT_OBJECT: 'We couldn\'t get the processed Seurat object.',
   FEEDBACK_ERROR: 'We couldn\'t process your feedback. Please try submitting again.',
   FEEDBACK_SUCCESSFUL: 'Your feedback has been successfully sent. Thank you!',
   REFERRAL_ERROR: 'We couldn\'t process your referral. Please try submitting again.',

@@ -1,11 +1,10 @@
-import { getBackendStatus } from 'redux/selectors';
 import { PLOT_DATA_LOADED, PLOT_DATA_LOADING, PLOT_DATA_ERROR } from 'redux/actionTypes/componentConfig';
 
 import handleError from 'utils/http/handleError';
 import endUserMessages from 'utils/endUserMessages';
 import fetchWork from 'utils/work/fetchWork';
-import generateETag from 'utils/work/generateETag';
 import getTimeoutForWorkerTask from 'utils/getTimeoutForWorkerTask';
+import getEmbeddingETag from 'utils/work/getEmbeddingETag';
 
 const getTrajectoryPlotPseudoTime = (
   rootNodes,
@@ -16,42 +15,20 @@ const getTrajectoryPlotPseudoTime = (
   // Currenty monocle3 only trajectory analysis only supports
   // UMAP embedding. Therefore, this embedding is specifically fetched.
   const embeddingMethod = 'umap';
-
-  const {
-    clusteringSettings,
-    embeddingSettings: { methodSettings },
-  } = getState().experimentSettings.processing.configureEmbedding;
-
-  const { environment } = getState().networkResources;
-  const {
-    pipeline:
-    { startDate: qcPipelineStartDate },
-  } = getBackendStatus(experimentId)(getState()).status;
-
-  const embeddingBody = {
-    name: 'GetEmbedding',
-    type: embeddingMethod,
-    config: methodSettings[embeddingMethod],
-  };
-
-  const embeddingETag = await generateETag(
-    experimentId,
-    embeddingBody,
-    undefined,
-    qcPipelineStartDate,
-    environment,
-    clusteringSettings,
-    dispatch,
-    getState,
-  );
+  const embeddingETag = await getEmbeddingETag(experimentId, getState, dispatch, embeddingMethod);
 
   const timeout = getTimeoutForWorkerTask(getState(), 'TrajectoryAnalysisPseudotime');
+
+  const {
+    clusteringSettings,
+    embeddingSettings,
+  } = getState().experimentSettings.processing.configureEmbedding;
 
   const body = {
     name: 'GetTrajectoryAnalysisPseudoTime',
     embedding: {
       method: embeddingMethod,
-      methodSettings: methodSettings[embeddingMethod],
+      methodSettings: embeddingSettings.methodSettings[embeddingMethod],
       ETag: embeddingETag,
     },
     clustering: {

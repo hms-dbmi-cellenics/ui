@@ -13,8 +13,7 @@ import PropTypes from 'prop-types';
 import { loadCellSets } from 'redux/actions/cellSets';
 import { getCellSets } from 'redux/selectors';
 import { setComparisonGroup, setComparisonType } from 'redux/actions/differentialExpression';
-import checkCanRunDiffExpr, { canRunDiffExprResults } from 'utils/differentialExpression/checkCanRunDiffExpr';
-import DiffExprSelectMenu from 'components/data-exploration/differential-expression-tool/DiffExprSelectMenu';
+import checkCanRunDiffExpr, { canRunDiffExprResults } from 'utils/extraActionCreators/differentialExpression/checkCanRunDiffExpr';
 
 const ComparisonType = Object.freeze({ BETWEEN: 'between', WITHIN: 'within' });
 
