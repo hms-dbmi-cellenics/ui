@@ -96,7 +96,6 @@ const BatchDiffExpression = (props) => {
     if (cellSet && compareWith && basis) {
       const results = batchClusterNames.map((currentBasis) => (
         canRunDiffExpr({ ...comparison, basis: currentBasis })));
-      console.log('LOOK AT RESULTS LOL ', results);
       return results;
     }
     if (chosenOperation === 'fullList' && basis) {
@@ -206,7 +205,6 @@ const BatchDiffExpression = (props) => {
           </>
         );
       case 'compareForCellSets':
-        console.log('select optionsss ', getSelectOptions(rootCellSetNodes));
         return (
           <>
             Select the comparison sample/groups for which batch
@@ -288,7 +286,6 @@ const BatchDiffExpression = (props) => {
       </center>
     );
   }
-  console.log('csvData.length || !isFormValid(),', csvData.length || !isFormValid());
   return (
     <div width='60%'>
       <Header title={plotNames.BATCH_DIFFERENTIAL_EXPRESSION} />
