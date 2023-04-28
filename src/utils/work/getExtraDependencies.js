@@ -1,5 +1,6 @@
+import loadCellSets from 'redux/actions/cellSets/loadCellSets';
 import { loadProcessingSettings } from 'redux/actions/experimentSettings';
-import { getCellSetsHierarchyByKeys } from 'redux/selectors';
+import { getCellSetsHierarchy, getCellSetsHierarchyByKeys } from 'redux/selectors';
 import workerVersions from 'utils/work/workerVersions';
 
 const getClusteringSettings = async (experimentId, body, dispatch, getState) => {
@@ -18,12 +19,21 @@ const getClusteringSettings = async (experimentId, body, dispatch, getState) => 
 
 // Check that the cell sets within the selected cellSetKey didn't change
 // e.g., if cell set was deleted we can't use cache
-const getCellSetDependencies = async (experimentId, body, dispatch, getState) => {
-  const children = getCellSetsHierarchyByKeys([body.cellSetKey])(getState());
+const getSelectedCellSet = async (experimentId, body, dispatch, getState) => {
+  await dispatch(loadCellSets(experimentId));
 
+  const children = getCellSetsHierarchyByKeys([body.cellSetKey])(getState());
   const cellSetsKeys = children.map((cellSet) => cellSet.key);
 
   return cellSetsKeys;
+};
+
+const getCellSets = async (experimentId, body, dispatch, getState) => {
+  await dispatch(loadCellSets(experimentId));
+
+  const hierarchy = getCellSetsHierarchy()(getState());
+
+  return hierarchy;
 };
 
 const dependencyGetters = {
@@ -40,10 +50,11 @@ const dependencyGetters = {
   GetMitochondrialContent: [],
   GetNGenes: [],
   GetNUmis: [],
-  MarkerHeatmap: [getClusteringSettings, getCellSetDependencies],
+  MarkerHeatmap: [getClusteringSettings, getSelectedCellSet],
   GetTrajectoryAnalysisStartingNodes: [getClusteringSettings],
   GetTrajectoryAnalysisPseudoTime: [getClusteringSettings],
   GetNormalizedExpression: [getClusteringSettings],
+  DownloadAnnotSeuratObject: [getClusteringSettings, getCellSets],
 };
 
 const getExtraDependencies = async (experimentId, body, dispatch, getState) => {
