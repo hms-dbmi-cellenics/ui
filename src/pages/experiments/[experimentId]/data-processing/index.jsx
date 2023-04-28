@@ -23,6 +23,7 @@ import {
 import React, {
   useCallback,
   useEffect,
+  useMemo,
   useState,
 } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -183,6 +184,7 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
               sampleIds={sampleKeys}
               onConfigChange={() => onConfigChange(key)}
               stepDisabled={!checkIfSampleIsEnabled(key)}
+              stepHadErrors={getStepHadErrors(key)}
             />
           )}
         />
@@ -206,6 +208,7 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
               sampleIds={sampleKeys}
               onConfigChange={() => onConfigChange(key)}
               stepDisabled={!checkIfSampleIsEnabled(key)}
+              stepHadErrors={getStepHadErrors(key)}
             />
           )}
         />
@@ -229,6 +232,7 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
               sampleIds={sampleKeys}
               onConfigChange={() => onConfigChange(key)}
               stepDisabled={!checkIfSampleIsEnabled(key)}
+              stepHadErrors={getStepHadErrors(key)}
             />
           )}
         />
@@ -253,6 +257,7 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
               onConfigChange={() => onConfigChange(key)}
               stepDisabled={!checkIfSampleIsEnabled(key)}
               onQCRunClick={() => setRunQCModalVisible(true)}
+              stepHadErrors={getStepHadErrors(key)}
             />
           )}
         />
@@ -288,6 +293,7 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
               sampleIds={sampleKeys}
               onConfigChange={() => onConfigChange(key)}
               stepDisabled={!checkIfSampleIsEnabled(key)}
+              stepHadErrors={getStepHadErrors(key)}
             />
           )}
         />
@@ -303,6 +309,7 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
           key={key}
           onConfigChange={() => onConfigChange(key)}
           disableDataIntegration={sampleKeys && sampleKeys.length === 1}
+          stepHadErrors={getStepHadErrors(key)}
         />
       ),
     },
@@ -316,6 +323,7 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
           experimentId={expId}
           key={key}
           onConfigChange={() => onConfigChange(key)}
+          stepHadErrors={getStepHadErrors(key)}
         />
       ),
     },
@@ -323,9 +331,7 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
 
   const currentStep = steps[stepIdx];
 
-  const stepHadErrors = (index) => pipelineHadErrors
-    && !isStepComplete(steps[index]?.key)
-    && isStepComplete(steps[index - 1]?.key);
+  const getStepHadErrors = (key) => pipelineHadErrors && !isStepComplete(key);
 
   const stepIsDisabled = (index) => {
     const disabledPendingExecution = pipelineRunning && !isStepComplete(steps[index].key);
@@ -442,7 +448,7 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
                                     {text}
                                   </span>
                                 </>
-                              ) : stepHadErrors(i) ? (
+                              ) : getStepHadErrors(steps[i].key) ? (
                                 <>
                                   {/* error */}
                                   <Text

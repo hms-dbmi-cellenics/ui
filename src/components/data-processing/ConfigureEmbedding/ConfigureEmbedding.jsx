@@ -26,11 +26,12 @@ import Loader from 'components/Loader';
 import { getCellSets } from 'redux/selectors';
 import CalculationConfig from 'components/data-processing/ConfigureEmbedding/CalculationConfig';
 import PlotLegendAlert, { MAX_LEGEND_ITEMS } from 'components/plots/helpers/PlotLegendAlert';
+import EmptyPlot from 'components/plots/helpers/EmptyPlot';
 
 const { Panel } = Collapse;
 
 const ConfigureEmbedding = (props) => {
-  const { experimentId, onConfigChange } = props;
+  const { experimentId, onConfigChange, stepHadErrors } = props;
   const [plot, setPlot] = useState(null);
   const filterName = 'configureEmbedding';
   const plotTypes = ['embedding', 'violin'];
@@ -381,6 +382,15 @@ const ConfigureEmbedding = (props) => {
 
   const renderPlot = () => {
     // Spinner for main window
+    if (stepHadErrors) {
+      return (
+        <center>
+          <EmptyPlot mini={false} style={{ width: 400, height: 400 }} />
+        </center>
+      );
+    }
+
+    // Spinner for main window
     if (!selectedConfig) {
       return (
         <center>
@@ -482,6 +492,7 @@ const ConfigureEmbedding = (props) => {
 ConfigureEmbedding.propTypes = {
   experimentId: PropTypes.string.isRequired,
   onConfigChange: PropTypes.func.isRequired,
+  stepHadErrors: PropTypes.bool.isRequired,
 };
 
 export default ConfigureEmbedding;
