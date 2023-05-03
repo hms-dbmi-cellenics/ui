@@ -3,6 +3,7 @@ import { JSON_parse } from 'uint8array-json-parser';
 
 const resultParsers = {
   GetNormalizedExpression: (result) => result,
+  DownloadAnnotSeuratObject: (result) => result,
   default: (result) => JSON_parse(result),
 };
 

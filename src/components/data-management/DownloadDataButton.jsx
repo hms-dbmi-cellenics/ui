@@ -1,16 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import _ from 'lodash';
 import {
-  Menu, Tooltip, Dropdown, Button,
+  Menu, Tooltip, Dropdown, Button, Space,
 } from 'antd';
 
 import { useSelector, useDispatch } from 'react-redux';
 import { saveAs } from 'file-saver';
+import { ClipLoader } from 'react-spinners';
 
 import downloadTypes from 'utils/data-management/downloadTypes';
-import fetchAPI from 'utils/http/fetchAPI';
 import endUserMessages from 'utils/endUserMessages';
-import downloadFromUrl from 'utils/downloadFromUrl';
 import pipelineStatus from 'utils/pipelineStatusValues';
 import { exportQCParameters, filterQCParameters } from 'utils/data-management/exportQCParameters';
 
@@ -18,6 +17,7 @@ import { loadBackendStatus } from 'redux/actions/backendStatus/index';
 
 import { getBackendStatus } from 'redux/selectors';
 import handleError from 'utils/http/handleError';
+import downloadProcessedMatrix from 'utils/extraActionCreators/downloadProcessedMatrix';
 
 const DownloadDataButton = () => {
   const dispatch = useDispatch();
@@ -32,8 +32,9 @@ const DownloadDataButton = () => {
 
   const samples = useSelector((state) => state.samples);
   const [qcHasRun, setQcHasRun] = useState(false);
-  const [gem2sHasRun, setGem2sHasRun] = useState(false);
   const [allSamplesAnalysed, setAllSamplesAnalysed] = useState(false);
+  const [downloadingProcessedSeurat, setDownloadingProcessedSeurat] = useState(false);
+  const [dropdownExpanded, setDropdownExpanded] = useState(false);
 
   useEffect(() => {
     if (activeExperimentId && !backendLoading && !backendStatuses) {
@@ -44,9 +45,6 @@ const DownloadDataButton = () => {
   useEffect(() => {
     setQcHasRun(
       activeExperimentId && (backendStatuses?.pipeline?.status === pipelineStatus.SUCCEEDED),
-    );
-    setGem2sHasRun(
-      activeExperimentId && (backendStatuses?.gem2s?.status === pipelineStatus.SUCCEEDED),
     );
   }, [backendStatuses]);
 
@@ -65,14 +63,16 @@ const DownloadDataButton = () => {
       // eslint-disable-next-line no-prototype-builtins
       && activeExperiment?.sampleIds?.every((s) => steps[0].hasOwnProperty(s));
   };
+
   const downloadExperimentData = async (type) => {
     try {
       if (!activeExperimentId) throw new Error('No experimentId specified');
       if (!downloadTypes.has(type)) throw new Error('Invalid download type');
 
-      const signedUrl = await fetchAPI(`/v2/experiments/${activeExperimentId}/download/${type}`);
-
-      downloadFromUrl(signedUrl);
+      setDownloadingProcessedSeurat(true);
+      await dispatch(downloadProcessedMatrix(activeExperimentId));
+      setDownloadingProcessedSeurat(false);
+      setDropdownExpanded(false);
     } catch (e) {
       handleError(e, endUserMessages.ERROR_DOWNLOADING_DATA);
     }
@@ -80,12 +80,21 @@ const DownloadDataButton = () => {
 
   return (
     <Dropdown
+      visible={dropdownExpanded}
+      onVisibleChange={(visible) => setDropdownExpanded(visible)}
+      trigger={['click']}
       overlay={() => (
-        <Menu>
+        <Menu
+          onClick={(e) => {
+            if (e.key !== 'download-processed-seurat') setDropdownExpanded(false);
+          }}
+        >
           <Menu.Item
             key='download-processed-seurat'
             disabled={!qcHasRun || backendLoading}
-            onClick={() => {
+            onClick={(e) => {
+              e.domEvent.stopPropagation();
+
               downloadExperimentData('processed-matrix');
             }}
           >
@@ -97,7 +106,10 @@ const DownloadDataButton = () => {
               }
               placement='left'
             >
-              Processed Seurat object (.rds)
+              <Space>
+                Processed Seurat object (.rds)
+                {downloadingProcessedSeurat && <ClipLoader size={20} color='#8f0b10' />}
+              </Space>
             </Tooltip>
           </Menu.Item>
           <Menu.Item
@@ -105,7 +117,9 @@ const DownloadDataButton = () => {
             key='download-processing-settings'
             onClick={() => {
               const config = _.omit(experimentSettings.processing, ['meta']);
-              const filteredConfig = filterQCParameters(config, activeExperiment.sampleIds, samples);
+              const filteredConfig = filterQCParameters(
+                config, activeExperiment.sampleIds, samples,
+              );
               const blob = exportQCParameters(filteredConfig);
               saveAs(blob, `${activeExperimentId.split('-')[0]}_settings.txt`);
             }}
@@ -122,7 +136,6 @@ const DownloadDataButton = () => {
           </Menu.Item>
         </Menu>
       )}
-      trigger={['click']}
       placement='bottomRight'
       disabled={
         experiments.ids.length === 0
