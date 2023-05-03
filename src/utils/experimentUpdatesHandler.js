@@ -23,7 +23,9 @@ const experimentUpdatesHandler = (dispatch) => (experimentId, update) => {
 
   if (update.response?.error) {
     console.error('Experiment updates error:', update);
-    return;
+
+    // QC can handle updates even if there are errors
+    if (update.type !== updateTypes.QC) return;
   }
 
   switch (update.type) {
@@ -48,7 +50,12 @@ const experimentUpdatesHandler = (dispatch) => (experimentId, update) => {
 const onQCUpdate = (update, dispatch, experimentId) => {
   const { input, output, pipelineVersion } = update;
 
-  const processingConfigUpdate = output?.config;
+  dispatch(updatePipelineVersion(experimentId, pipelineVersion));
+
+  // If there was an error and no output was generated, return
+  if (!output) return;
+
+  const { config: processingConfigUpdate, plotData } = output;
 
   if (processingConfigUpdate) {
     dispatch(updateProcessingSettingsFromQC(
@@ -57,13 +64,13 @@ const onQCUpdate = (update, dispatch, experimentId) => {
       input.sampleUuid,
       false,
     ));
-
-    Object.entries(output.plotData).forEach(([plotUuid, plotData]) => {
-      dispatch(updatePlotData(plotUuid, plotData));
-    });
   }
 
-  dispatch(updatePipelineVersion(experimentId, pipelineVersion));
+  if (plotData) {
+    Object.entries(plotData).forEach(([plotUuid, plotDataItem]) => {
+      dispatch(updatePlotData(plotUuid, plotDataItem));
+    });
+  }
 
   // If the pipeline finished we have a new clustering, so fetch it
   if (update.status.pipeline.status === 'SUCCEEDED') {
