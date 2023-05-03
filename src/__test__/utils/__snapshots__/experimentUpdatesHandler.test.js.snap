@@ -1,5 +1,82 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`ExperimentUpdatesHandler Handles qc errors correctly with config update 1`] = `
+[MockFunction] {
+  "calls": Array [
+    Array [
+      "Experiment updates error:",
+      Object {
+        "input": Object {
+          "sampleUuid": "mockSampleUuid",
+          "taskName": "mockTaskName",
+        },
+        "output": Object {
+          "config": Object {
+            "processingConfigUpdate": Object {
+              "mockProcessingConfigUpdate": "mockProcessingConfigUpdate",
+            },
+          },
+          "plotData": undefined,
+        },
+        "pipelineVersion": 2,
+        "response": Object {
+          "error": true,
+          "errorCode": "MOCK_ERROR_CODE",
+          "userMessage": "mockUserMessage",
+        },
+        "status": Object {
+          "pipeline": Object {
+            "status": "ERROR",
+          },
+        },
+        "type": "qc",
+      },
+    ],
+  ],
+  "results": Array [
+    Object {
+      "type": "return",
+      "value": undefined,
+    },
+  ],
+}
+`;
+
+exports[`ExperimentUpdatesHandler Handles qc errors correctly without config update 1`] = `
+[MockFunction] {
+  "calls": Array [
+    Array [
+      "Experiment updates error:",
+      Object {
+        "input": Object {
+          "sampleUuid": "mockSampleUuid",
+          "taskName": "mockTaskName",
+        },
+        "output": undefined,
+        "pipelineVersion": 2,
+        "response": Object {
+          "error": true,
+          "errorCode": "MOCK_ERROR_CODE",
+          "userMessage": "mockUserMessage",
+        },
+        "status": Object {
+          "pipeline": Object {
+            "status": "ERROR",
+          },
+        },
+        "type": "qc",
+      },
+    ],
+  ],
+  "results": Array [
+    Object {
+      "type": "return",
+      "value": undefined,
+    },
+  ],
+}
+`;
+
 exports[`ExperimentUpdatesHandler Loads cell sets if QC pipeline completes  1`] = `
 Array [
   "testae48e318dab9a1bd0bexperiment",
@@ -32,50 +109,6 @@ Array [
   "testae48e318dab9a1bd0bexperiment",
   true,
 ]
-`;
-
-exports[`ExperimentUpdatesHandler Logs error if there is an error returned as an experiment update 1`] = `
-[MockFunction] {
-  "calls": Array [
-    Array [
-      "Experiment updates error:",
-      Object {
-        "input": Object {
-          "sampleUuid": "mockSampleUuid",
-          "taskName": "mockTaskName",
-        },
-        "output": Object {
-          "config": Object {
-            "processingConfigUpdate": Object {
-              "mockProcessingConfigUpdate": "mockProcessingConfigUpdate",
-            },
-          },
-          "plotData": Object {
-            "mockPlotUuid": "mockPlotData",
-          },
-        },
-        "pipelineVersion": 2,
-        "response": Object {
-          "error": true,
-          "errorCode": "MOCK_ERROR_CODE",
-          "userMessage": "mockUserMessage",
-        },
-        "status": Object {
-          "pipeline": Object {
-            "status": "ERROR",
-          },
-        },
-        "type": "qc",
-      },
-    ],
-  ],
-  "results": Array [
-    Object {
-      "type": "return",
-      "value": undefined,
-    },
-  ],
-}
 `;
 
 exports[`ExperimentUpdatesHandler Triggers properly for GEM2S updates  1`] = `
