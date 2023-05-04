@@ -35,7 +35,7 @@ const allowedPlotActions = {
 
 const MitochondrialContent = (props) => {
   const {
-    experimentId, sampleId, sampleIds, onConfigChange, stepDisabled,
+    experimentId, sampleId, sampleIds, onConfigChange, stepDisabled, stepHadErrors,
   } = props;
 
   const dispatch = useDispatch();
@@ -144,7 +144,7 @@ const MitochondrialContent = (props) => {
 
   const renderPlot = () => {
     // Spinner for main window
-    if (!selectedConfig || !selectedPlotData) {
+    if (!selectedConfig || !selectedPlotData || stepHadErrors) {
       return (
         <center>
           <Skeleton.Image style={{ width: 400, height: 400 }} />
@@ -235,6 +235,7 @@ MitochondrialContent.propTypes = {
   sampleIds: PropTypes.array.isRequired,
   onConfigChange: PropTypes.func.isRequired,
   stepDisabled: PropTypes.bool,
+  stepHadErrors: PropTypes.bool.isRequired,
 };
 
 MitochondrialContent.defaultProps = {
