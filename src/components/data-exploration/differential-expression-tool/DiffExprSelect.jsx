@@ -7,7 +7,7 @@ import {
 
 const { Option, OptGroup } = Select;
 
-const DiffExprSelectMenu = (props) => {
+const DiffExprSelect = (props) => {
   const {
     title, option, filterType, onSelectCluster, selectedComparison, cellSets, value
   } = props;
@@ -87,11 +87,11 @@ const DiffExprSelectMenu = (props) => {
   );
 };
 
-DiffExprSelectMenu.defaultProps = {
+DiffExprSelect.defaultProps = {
   value: null,
 }
 
-DiffExprSelectMenu.propTypes = {
+DiffExprSelect.propTypes = {
   title: PropTypes.string.isRequired,
   selectedComparison: PropTypes.object.isRequired,
   cellSets: PropTypes.object.isRequired,
@@ -99,4 +99,4 @@ DiffExprSelectMenu.propTypes = {
   filterType: PropTypes.string.isRequired,
   onSelectCluster: PropTypes.func.isRequired,
 };
-export default DiffExprSelectMenu;
+export default DiffExprSelect;

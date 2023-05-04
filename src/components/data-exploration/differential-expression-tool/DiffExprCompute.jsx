@@ -14,7 +14,7 @@ import { loadCellSets } from 'redux/actions/cellSets';
 import { getCellSets } from 'redux/selectors';
 import { setComparisonGroup, setComparisonType } from 'redux/actions/differentialExpression';
 import checkCanRunDiffExpr, { canRunDiffExprResults } from 'utils/extraActionCreators/differentialExpression/checkCanRunDiffExpr';
-import DiffExprSelectMenu from 'components/data-exploration/differential-expression-tool/DiffExprSelectMenu';
+import DiffExprSelect from 'components/data-exploration/differential-expression-tool/DiffExprSelect';
 
 const ComparisonType = Object.freeze({ BETWEEN: 'between', WITHIN: 'within' });
 
@@ -102,7 +102,7 @@ const DiffExprCompute = (props) => {
   const renderClusterSelectorItem = ({
     title, option, filterType,
   }) => {
-    if (!cellSets.hierarchy.length) {
+    if (!cellSets.accessible) {
       return (
         <center>
           <Loader experimentId={experimentId} />
@@ -110,7 +110,7 @@ const DiffExprCompute = (props) => {
       );
     }
     return (
-      <DiffExprSelectMenu
+      <DiffExprSelect
         title={title}
         option={option}
         filterType={filterType}

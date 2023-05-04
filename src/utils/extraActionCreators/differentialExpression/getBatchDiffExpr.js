@@ -5,7 +5,26 @@ import getArray from 'utils/getArray';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
 
 const getBatchDiffExpr = (experimentId,
-  comparisonObject, comparisonType) => async (dispatch, getState) => {
+  comparison, chosenOperation, batchClusterNames) => async (dispatch, getState) => {
+  const {
+    cellSet, compareWith, comparisonType,
+  } = comparison;
+
+  let comparisonObject = {};
+
+  if (chosenOperation === 'fullList') {
+    comparisonObject = {
+      cellSet: batchClusterNames,
+      compareWith: 'background',
+      basis: ['all'],
+    };
+  } else {
+    comparisonObject = {
+      cellSet: [cellSet],
+      compareWith,
+      basis: batchClusterNames,
+    };
+  }
   const workBody = {
     name: 'BatchDifferentialExpression',
     experimentId,

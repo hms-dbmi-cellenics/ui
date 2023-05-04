@@ -1,4 +1,6 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, {
+  useEffect, useState, useCallback,
+} from 'react';
 import {
   Radio,
   Tooltip,
@@ -10,21 +12,32 @@ import {
   Alert,
 } from 'antd';
 import Header from 'components/Header';
-import { getCellSetsHierarchyByType, getCellSets } from 'redux/selectors';
+import { getCellSetsHierarchyByType, getCellSets, getCellSetsHierarchyByKeys } from 'redux/selectors';
 import { useSelector, useDispatch } from 'react-redux';
 import { loadCellSets } from 'redux/actions/cellSets';
 import PropTypes from 'prop-types';
 import { InfoCircleOutlined } from '@ant-design/icons';
 import { plotNames } from 'utils/constants';
 import Loader from 'components/Loader';
-import DiffExprSelectMenu from 'components/data-exploration/differential-expression-tool/DiffExprSelectMenu';
+import DiffExprSelect from 'components/data-exploration/differential-expression-tool/DiffExprSelect';
 import getBatchDiffExpr from 'utils/extraActionCreators/differentialExpression/getBatchDiffExpr';
-import getCellSetsHierarchyByName from 'redux/selectors/cellSets/getCellSetsHierarchyByName';
 import { zipSync } from 'fflate';
 import { saveAs } from 'file-saver';
 import checkCanRunDiffExpr, { canRunDiffExprResults } from 'utils/extraActionCreators/differentialExpression/checkCanRunDiffExpr';
 import _ from 'lodash';
 import { metadataKeyToName } from 'utils/data-management/metadataUtils';
+
+const comparisonTypes = {
+  fullList: 'within',
+  compareForCellSets: 'within',
+  compareForSamples: 'between',
+};
+const comparisonInitialState = {
+  cellSet: null,
+  compareWith: null,
+  basis: null,
+  comparisonType: null,
+};
 
 const BatchDiffExpression = (props) => {
   const { experimentId } = props;
@@ -32,50 +45,36 @@ const BatchDiffExpression = (props) => {
   const dispatch = useDispatch();
   const cellSets = useSelector(getCellSets());
   const experimentName = useSelector((state) => state.experimentSettings.info.experimentName);
-  const rootCellSetNodes = useSelector(getCellSetsHierarchyByType('cellSets')).map(({ key }) => ({ key: cellSets.properties[key].name }));
-  const rootMetadataCellSetNodes = useSelector(getCellSetsHierarchyByType('metadataCategorical')).map(({ key }) => ({ key: cellSets.properties[key].name }));
+  const rootCellSetNodes = useSelector(getCellSetsHierarchyByType('cellSets'));
+  const rootMetadataCellSetNodes = useSelector(getCellSetsHierarchyByType('metadataCategorical'));
 
   const [dataLoading, setDataLoading] = useState();
   const [csvData, setCsvData] = useState([]);
 
-  const comparisonInitialState = {
-    cellSet: null,
-    compareWith: null,
-    basis: null,
-    comparisonType: null,
-  };
   const [comparison, setComparison] = useState(comparisonInitialState);
+  const batchClusterNames = useSelector(getCellSetsHierarchyByKeys([comparison.basis]))[0]?.children
+    .map((child) => child.key);
 
   useEffect(() => {
-    if (!cellSets.hierarchy.length) {
-      dispatch(loadCellSets(experimentId));
-    }
+    dispatch(loadCellSets(experimentId));
   }, []);
 
   useEffect(() => {
-    setCsvData([]);
+    changeComparison({
+      ...comparisonInitialState,
+      comparisonType: comparisonTypes[chosenOperation],
+    });
     setDataLoading(false);
-
     setChosenOperation(chosenOperation);
-    const comparisonTypes = {
-      fullList: 'within',
-      compareForCellSets: 'within',
-      compareForSamples: 'between',
-    };
-    setComparison({ ...comparisonInitialState, comparisonType: comparisonTypes[chosenOperation] });
   }, [chosenOperation]);
 
-  const changeComparison = (key, value) => {
+  const changeComparison = (diff) => {
     setCsvData([]);
-    const newComparison = _.cloneDeep(comparison);
-    newComparison[key] = value;
-    setComparison(newComparison);
-  };
 
-  const getBatchClusterNames = (basis) => {
-    const batchHierarchy = getCellSetsHierarchyByName(basis)(cellSets);
-    const batchClusterNames = batchHierarchy[0].children.map((cluster) => cluster.key);
-    return batchClusterNames;
+    setComparison({
+      ...comparison,
+      ...diff,
+    });
   };
 
   const canRunDiffExpr = (comparisonGroup) => {
@@ -88,31 +87,39 @@ const BatchDiffExpression = (props) => {
       true,
     );
   };
-  const isFormValid = useCallback(() => {
+
+  const getResult = (initialComparison) => batchClusterNames.reduce((acc, currentBasis) => {
+    const curr = canRunDiffExpr({ ...initialComparison, basis: currentBasis });
+    if (acc !== canRunDiffExprResults.TRUE) {
+      return acc;
+    }
+    return curr !== canRunDiffExprResults.TRUE ? curr : acc;
+  }, canRunDiffExprResults.TRUE);
+
+  const isFormInvalid = useCallback(() => {
     const { cellSet, compareWith, basis } = comparison;
-    if (!basis) return false;
-    const batchClusterNames = getBatchClusterNames(basis);
+    if (!basis) return true;
 
     if (cellSet && compareWith && basis) {
-      const results = batchClusterNames.map((currentBasis) => (
-        canRunDiffExpr({ ...comparison, basis: currentBasis })));
-      return results;
+      return getResult(comparison);
     }
+
     if (chosenOperation === 'fullList' && basis) {
-      const results = batchClusterNames.map((currentBasis) => (
-        canRunDiffExpr({
-          ...comparison, basis: 'all', compareWith: 'background', cellSet: currentBasis,
-        })));
-      return results;
+      const fullListComparison = {
+        ...comparison,
+        basis: 'all',
+        compareWith: 'background',
+        cellSet: null,
+      };
+      return getResult(fullListComparison);
     }
-    return false;
+    return true;
   }, [comparison, chosenOperation]);
 
   const downloadCSVsAsZip = (data) => {
     const encoder = new TextEncoder();
     const archiveName = `batchDE_${experimentName}`;
 
-    const batchClusterNames = getBatchClusterNames(comparison.basis);
     const CSVs = data.reduce((accumulator, currentData, indx) => {
       let csvString;
       let fileName;
@@ -141,16 +148,16 @@ const BatchDiffExpression = (props) => {
     saveAs(blob, archiveName);
   };
 
-  const getSelectOptions = (options) => {
+  const getSelectOptions = useCallback((options) => {
     const selectOptions = [];
-    if (!options.length) {
+    if (!options?.length) {
       return;
     }
 
     Array.from(options).forEach((option) => {
     // We need to translate 'scratchpad' into 'custom cell sets' because
     // that is what is displayed in Data Exploration
-      const label = option.key === 'scratchpad' ? 'custom cell sets' : option.key;
+      const label = option.name === 'scratchpad' ? 'custom cell sets' : option.name;
 
       selectOptions.push({
         value: option.key,
@@ -158,31 +165,13 @@ const BatchDiffExpression = (props) => {
       });
     });
     return selectOptions;
-  };
+  }, []);
 
   const getData = async () => {
     setDataLoading(true);
-    const {
-      cellSet, compareWith, basis, comparisonType,
-    } = comparison;
-
-    let comparisonObject = {};
-    const batchClusterNames = getBatchClusterNames(basis);
-
-    if (chosenOperation === 'fullList') {
-      comparisonObject = {
-        cellSet: batchClusterNames,
-        compareWith: 'background',
-        basis: ['all'],
-      };
-    } else {
-      comparisonObject = {
-        cellSet: [cellSet],
-        compareWith,
-        basis: batchClusterNames,
-      };
-    }
-    const data = await dispatch(getBatchDiffExpr(experimentId, comparisonObject, comparisonType));
+    const data = await dispatch(
+      getBatchDiffExpr(experimentId, comparison, chosenOperation, batchClusterNames),
+    );
     setCsvData(data);
     setDataLoading(false);
   };
@@ -196,7 +185,7 @@ const BatchDiffExpression = (props) => {
             <br />
             <Select
               placeholder='Select a cell set...'
-              onChange={(value) => changeComparison('basis', value)}
+              onChange={(value) => changeComparison({ basis: value })}
               value={comparison.basis}
               style={{ width: '40%' }}
               options={getSelectOptions(rootCellSetNodes)}
@@ -210,20 +199,20 @@ const BatchDiffExpression = (props) => {
             Select the comparison sample/groups for which batch
             differential expression is to be computed:
             <br />
-            <DiffExprSelectMenu
+            <DiffExprSelect
               title='Compare sample/group:'
               option='cellSet'
               filterType='metadataCategorical'
-              onSelectCluster={(cellSet) => changeComparison('cellSet', cellSet)}
+              onSelectCluster={(cellSet) => changeComparison({ cellSet })}
               selectedComparison={{ cellSet: comparison.cellSet }}
               value={comparison.cellSet}
               cellSets={cellSets}
             />
-            <DiffExprSelectMenu
+            <DiffExprSelect
               title='To sample/group:'
               option='compareWith'
               filterType='metadataCategorical'
-              onSelectCluster={(cellSet) => changeComparison('compareWith', cellSet)}
+              onSelectCluster={(cellSet) => changeComparison({ compareWith: cellSet })}
               selectedComparison={{ cellSet: comparison.cellSet }}
               value={comparison.compareWith}
               cellSets={cellSets}
@@ -232,7 +221,7 @@ const BatchDiffExpression = (props) => {
             In batch for each cell set in:
             <Select
               placeholder='Select a cell set...'
-              onChange={(value) => changeComparison('basis', value)}
+              onChange={(value) => changeComparison({ basis: value })}
               value={comparison.basis}
               style={{ width: '33.5%' }}
               options={getSelectOptions(rootCellSetNodes)}
@@ -245,20 +234,20 @@ const BatchDiffExpression = (props) => {
             Select the comparison cell sets for which batch
             differential expression is to be computed:
             <br />
-            <DiffExprSelectMenu
+            <DiffExprSelect
               title='Compare cell set:'
               option='cellSet'
               filterType='cellSets'
-              onSelectCluster={(cellSet) => changeComparison('cellSet', cellSet)}
+              onSelectCluster={(cellSet) => changeComparison({ cellSet })}
               selectedComparison={{ cellSet: comparison.cellSet }}
               value={comparison.cellSet}
               cellSets={cellSets}
             />
-            <DiffExprSelectMenu
+            <DiffExprSelect
               title='To cell set:'
               option='compareWith'
               filterType='cellSets'
-              onSelectCluster={(cellSet) => changeComparison('compareWith', cellSet)}
+              onSelectCluster={(cellSet) => changeComparison({ compareWith: cellSet })}
               selectedComparison={{ cellSet: comparison.cellSet }}
               value={comparison.compareWith}
               cellSets={cellSets}
@@ -267,7 +256,7 @@ const BatchDiffExpression = (props) => {
             In batch for each sample/group in:
             <Select
               placeholder='Select samples or metadata...'
-              onChange={(value) => changeComparison('basis', value)}
+              onChange={(value) => changeComparison({ basis: value })}
               value={comparison.basis}
               style={{ width: '34%' }}
               options={getSelectOptions(rootMetadataCellSetNodes)}
@@ -321,7 +310,7 @@ const BatchDiffExpression = (props) => {
             {renderSpecificControls(chosenOperation)}
             <Space direction='horizontal'>
               {
-                isFormValid().length && isFormValid().includes(canRunDiffExprResults.INSUFFCIENT_CELLS_ERROR)
+                isFormInvalid() === canRunDiffExprResults.INSUFFCIENT_CELLS_ERROR
                   ? (
                     <Alert
                       message='Warning'
@@ -332,11 +321,11 @@ const BatchDiffExpression = (props) => {
                           Those comparisons will be skipped.
                         </>
                       )}
-                      type='error'
+                      type='warning'
                       showIcon
                     />
                   )
-                  : isFormValid().length && isFormValid().includes(canRunDiffExprResults.INSUFFICIENT_CELLS_WARNING)
+                  : isFormInvalid() === canRunDiffExprResults.INSUFFICIENT_CELLS_WARNING
                     ? (
                       <Alert
                         message='Warning'
@@ -368,7 +357,7 @@ const BatchDiffExpression = (props) => {
                 loading={dataLoading}
                 size='large'
                 onClick={() => { getData(); }}
-                disabled={csvData.length || !isFormValid()}
+                disabled={csvData.length || isFormInvalid() === true}
               >
                 {dataLoading ? 'Computing' : 'Compute'}
               </Button>
