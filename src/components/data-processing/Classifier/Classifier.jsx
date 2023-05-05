@@ -54,7 +54,7 @@ const plotStylingControlsConfig = [
 
 const Classifier = (props) => {
   const {
-    experimentId, sampleId, sampleIds, onConfigChange, stepDisabled,
+    experimentId, sampleId, sampleIds, onConfigChange, stepDisabled, stepHadErrors,
   } = props;
 
   const dispatch = useDispatch();
@@ -136,7 +136,7 @@ const Classifier = (props) => {
 
   const renderPlot = () => {
     // Spinner for main window
-    if (!selectedPlotConfig || !selectedPlotData) {
+    if (!selectedPlotConfig || !selectedPlotData || stepHadErrors) {
       return (
         <center>
           <Skeleton.Image style={{ width: 400, height: 400 }} />
@@ -229,6 +229,7 @@ Classifier.propTypes = {
   sampleIds: PropTypes.array.isRequired,
   onConfigChange: PropTypes.func.isRequired,
   stepDisabled: PropTypes.bool,
+  stepHadErrors: PropTypes.bool.isRequired,
 };
 
 Classifier.defaultProps = {
