@@ -9,6 +9,7 @@ import {
 import { saveProcessingSettings } from 'redux/actions/experimentSettings';
 import { loadBackendStatus } from 'redux/actions/backendStatus';
 import { loadEmbedding } from 'redux/actions/embedding';
+// import isUserAuthorized from 'utils/isUserAuthorized';
 
 const runOnlyConfigureEmbedding = async (experimentId, embeddingMethod, dispatch) => {
   await dispatch(saveProcessingSettings(experimentId, 'configureEmbedding'));
@@ -42,6 +43,10 @@ const runQC = (experimentId) => async (dispatch, getState) => {
     return;
   }
 
+  const url = `/v2/experiments/${experimentId}/qc`;
+
+  // const authorized = await isUserAuthorized(experimentId, url, 'POST');
+
   const changesToProcessingConfig = Array.from(changedQCFilters).map((key) => {
     const currentConfig = processing[key];
     return {
@@ -58,12 +63,10 @@ const runQC = (experimentId) => async (dispatch, getState) => {
     // We don't need to manually save any processing config because it is done by
     // the api once the pipeline finishes successfully
     await fetchAPI(
-      `/v2/experiments/${experimentId}/qc`,
+      url,
       {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           processingConfig: changesToProcessingConfig,
         }),
