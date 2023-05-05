@@ -16,12 +16,12 @@ import mockAPI, { generateDefaultMockAPIResponses } from '__test__/test-utils/mo
 import * as getBatchDiffExpr from 'utils/extraActionCreators/differentialExpression/getBatchDiffExpr';
 import * as checkCanRunDiffExprModule from 'utils/extraActionCreators/differentialExpression/checkCanRunDiffExpr';
 
-jest.spyOn(checkCanRunDiffExprModule, 'default').mockImplementation(() => true);
+jest.spyOn(checkCanRunDiffExprModule, 'default').mockImplementation(() => 'TRUE');
 
 describe('Batch differential expression tests ', () => {
   let storeState = null;
   const mockApiResponses = _.merge(generateDefaultMockAPIResponses(fake.EXPERIMENT_ID));
-  let updateExperimentSpy;
+  let getBatchDiffExprSpy;
 
   beforeEach(async () => {
     jest.clearAllMocks();
@@ -31,7 +31,7 @@ describe('Batch differential expression tests ', () => {
     fetchMock.doMock();
     fetchMock.mockIf(/.*/, mockAPI(mockApiResponses));
     storeState = makeStore();
-    updateExperimentSpy = jest.spyOn(getBatchDiffExpr, 'default');
+    getBatchDiffExprSpy = jest.spyOn(getBatchDiffExpr, 'default');
   });
 
   const renderPage = async () => {
@@ -97,12 +97,13 @@ describe('Batch differential expression tests ', () => {
 
     // After clicking the Compute button, it should be in a loading state
     expect(screen.getByText('Computing')).toBeInTheDocument();
-    expect(updateExperimentSpy).toHaveBeenCalledWith('testae48e318dab9a1bd0bexperiment',
+    expect(getBatchDiffExprSpy).toHaveBeenCalledWith('testae48e318dab9a1bd0bexperiment',
       {
-        basis: ['louvain-0', 'louvain-1', 'louvain-2', 'louvain-3', 'louvain-4', 'louvain-5', 'louvain-6', 'louvain-7', 'louvain-8', 'louvain-9', 'louvain-10', 'louvain-11', 'louvain-12', 'louvain-13'],
-        cellSet: ['sample/b62028a1-ffa0-4f10-823d-93c9ddb88898'],
+        basis: 'louvain',
+        cellSet: 'sample/b62028a1-ffa0-4f10-823d-93c9ddb88898',
         compareWith: 'sample/rest',
-      },
-      'within');
+        comparisonType: 'within',
+      }, 'compareForCellSets',
+      ['louvain-0', 'louvain-1', 'louvain-2', 'louvain-3', 'louvain-4', 'louvain-5', 'louvain-6', 'louvain-7', 'louvain-8', 'louvain-9', 'louvain-10', 'louvain-11', 'louvain-12', 'louvain-13']);
   });
 });

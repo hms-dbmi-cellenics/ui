@@ -55,7 +55,7 @@ const DiffExprSelect = (props) => {
         onChange={(cellSet) => onSelectCluster(cellSet, option)}
         // if we are in the volcano plot, the values are stored in redux, so we can just use the object
         // if we are in batch differential expression, the value is managed by state variables so we send it
-        value={value || selectedComparison[option] || null}
+        value={value ?? selectedComparison[option] ?? null}
         size='small'
         aria-label={title}
       >

@@ -45,14 +45,14 @@ const BatchDiffExpression = (props) => {
   const dispatch = useDispatch();
   const cellSets = useSelector(getCellSets());
   const experimentName = useSelector((state) => state.experimentSettings.info.experimentName);
-  const rootCellSetNodes = useSelector(getCellSetsHierarchyByType('cellSets'));
-  const rootMetadataCellSetNodes = useSelector(getCellSetsHierarchyByType('metadataCategorical'));
+  const cellSetNodes = useSelector(getCellSetsHierarchyByType('cellSets'));
+  const metadataCellSetNodes = useSelector(getCellSetsHierarchyByType('metadataCategorical'));
 
   const [dataLoading, setDataLoading] = useState();
   const [csvData, setCsvData] = useState([]);
 
   const [comparison, setComparison] = useState(comparisonInitialState);
-  const batchClusterNames = useSelector(getCellSetsHierarchyByKeys([comparison.basis]))[0]?.children
+  const batchCellSetKeys = useSelector(getCellSetsHierarchyByKeys([comparison.basis]))[0]?.children
     .map((child) => child.key);
 
   useEffect(() => {
@@ -88,7 +88,7 @@ const BatchDiffExpression = (props) => {
     );
   };
 
-  const getResult = (initialComparison) => batchClusterNames.reduce((acc, currentBasis) => {
+  const getResult = (initialComparison) => batchCellSetKeys.reduce((acc, currentBasis) => {
     const curr = canRunDiffExpr({ ...initialComparison, basis: currentBasis });
     if (acc !== canRunDiffExprResults.TRUE) {
       return acc;
@@ -130,11 +130,11 @@ const BatchDiffExpression = (props) => {
 
         // Add the column names as the first row and join the CSV data with new lines
         csvString = `${columnNames}\n${csvRows.join('\n')}`;
-        fileName = `DE-${batchClusterNames[indx]}.csv`;
+        fileName = `DE-${batchCellSetKeys[indx]}.csv`;
       } else {
         // If currentData[0] is not an array, include the error message in the CSV file
         csvString = `error\n${currentData.error}`;
-        fileName = `DE-${batchClusterNames[indx]}-error.csv`;
+        fileName = `DE-${batchCellSetKeys[indx]}-error.csv`;
       }
 
       const encodedString = encoder.encode(csvString);
@@ -150,18 +150,12 @@ const BatchDiffExpression = (props) => {
 
   const getSelectOptions = useCallback((options) => {
     const selectOptions = [];
-    if (!options?.length) {
-      return;
-    }
+    if (options?.length === 0) return;
 
     Array.from(options).forEach((option) => {
-    // We need to translate 'scratchpad' into 'custom cell sets' because
-    // that is what is displayed in Data Exploration
-      const label = option.name === 'scratchpad' ? 'custom cell sets' : option.name;
-
       selectOptions.push({
         value: option.key,
-        label: _.upperFirst(metadataKeyToName(label)),
+        label: _.upperFirst(metadataKeyToName(option.name)),
       });
     });
     return selectOptions;
@@ -170,7 +164,7 @@ const BatchDiffExpression = (props) => {
   const getData = async () => {
     setDataLoading(true);
     const data = await dispatch(
-      getBatchDiffExpr(experimentId, comparison, chosenOperation, batchClusterNames),
+      getBatchDiffExpr(experimentId, comparison, chosenOperation, batchCellSetKeys),
     );
     setCsvData(data);
     setDataLoading(false);
@@ -188,7 +182,7 @@ const BatchDiffExpression = (props) => {
               onChange={(value) => changeComparison({ basis: value })}
               value={comparison.basis}
               style={{ width: '40%' }}
-              options={getSelectOptions(rootCellSetNodes)}
+              options={getSelectOptions(cellSetNodes)}
             />
             <br />
           </>
@@ -224,7 +218,7 @@ const BatchDiffExpression = (props) => {
               onChange={(value) => changeComparison({ basis: value })}
               value={comparison.basis}
               style={{ width: '33.5%' }}
-              options={getSelectOptions(rootCellSetNodes)}
+              options={getSelectOptions(cellSetNodes)}
             />
           </>
         );
@@ -259,7 +253,7 @@ const BatchDiffExpression = (props) => {
               onChange={(value) => changeComparison({ basis: value })}
               value={comparison.basis}
               style={{ width: '34%' }}
-              options={getSelectOptions(rootMetadataCellSetNodes)}
+              options={getSelectOptions(metadataCellSetNodes)}
             />
           </>
         );

@@ -22,9 +22,6 @@ const getCellSetsHierarchyByType = (...params) => (state) => (
 const getCellSetsHierarchyByKeys = (...params) => (state) => (
   cellSetsSelectors.getCellSetsHierarchyByKeys(...params)(state.cellSets));
 
-const getCellSetsHierarchyByName = (...params) => (state) => (
-  cellSetsSelectors.getCellSetsHierarchyByName(...params)(state.cellSets));
-
 const getPlotConfigs = (...params) => (state) => (
   componentConfigSelectors.getPlotConfigs(...params)(state.componentConfig));
 
@@ -32,7 +29,6 @@ const getGeneList = (...params) => (state) => (
   genesSelectors.getGeneList(...params)(state.genes));
 
 export {
-  getCellSetsHierarchyByName,
   getBackendStatus,
   getCellSets,
   getCellSetsHierarchy,

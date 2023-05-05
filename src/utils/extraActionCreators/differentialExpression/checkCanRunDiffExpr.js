@@ -31,6 +31,9 @@ const checkCanRunDiffExpr = (
   selectedComparison,
   batchDE = false,
 ) => {
+  // we only need to check cell availability for comparisons which are not 'within'
+  // in the case of running batch DE, we have 'within' comparisons where there can be missing cells,
+  // but only when the basis is not all of the cell sets
   if (selectedComparison === ComparisonType.WITHIN && (!batchDE || comparisonGroup[selectedComparison].basis === 'all')) {
     return canRunDiffExprResults.TRUE;
   }
