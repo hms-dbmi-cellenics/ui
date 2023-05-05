@@ -15,6 +15,7 @@ const comparisonObject = {
   cellSet: 'cellSet',
   compareWith: 'compareWith',
   basis: 'basis',
+  comparisonType: 'within',
 };
 
 const expectedResult = [
@@ -36,7 +37,7 @@ describe('getBatchDiffExpr test', () => {
   });
 
   it('Dispatches correctly', async () => {
-    await store.dispatch(getBatchDiffExpr(fake.EXPERIMENT_ID, comparisonObject, 'comparisonType'));
+    await store.dispatch(getBatchDiffExpr(fake.EXPERIMENT_ID, comparisonObject, 'fullList', ['louvain-1', 'louvain-2']));
 
     expect(fetchWork).toHaveBeenCalledTimes(1);
 
@@ -45,21 +46,26 @@ describe('getBatchDiffExpr test', () => {
 
     // Checking body
     expect(body).toEqual(
-      expect.objectContaining({
+      {
+        basis: [
+          'all',
+        ],
+        cellSet: [
+          'louvain-1',
+          'louvain-2',
+        ],
+        compareWith: 'background',
+        comparisonType: 'within',
+        experimentId: 'testae48e318dab9a1bd0bexperiment',
         name: 'BatchDifferentialExpression',
-        experimentId: fake.EXPERIMENT_ID,
-        cellSet: comparisonObject.cellSet,
-        compareWith: comparisonObject.compareWith,
-        basis: comparisonObject.basis,
-        comparisonType: 'comparisonType',
-      }),
+      },
     );
   });
 
   it('Shows a warning notification when there is no data', async () => {
     fetchWork.mockImplementation(() => Promise.resolve([]));
 
-    await store.dispatch(getBatchDiffExpr(fake.EXPERIMENT_ID, comparisonObject, 'comparisonType'));
+    await store.dispatch(getBatchDiffExpr(fake.EXPERIMENT_ID, comparisonObject, 'fullList', ['louvain-1', 'louvain-2']));
 
     expect(pushNotificationMessage).toHaveBeenCalledWith('warning', 'No data available for this comparison, make sure the selected cell set is not empty');
   });
@@ -68,7 +74,7 @@ describe('getBatchDiffExpr test', () => {
     const error = new Error('Error');
     fetchWork.mockImplementation(() => Promise.reject(error));
 
-    const result = await store.dispatch(getBatchDiffExpr(fake.EXPERIMENT_ID, comparisonObject, 'comparisonType'));
+    const result = await store.dispatch(getBatchDiffExpr(fake.EXPERIMENT_ID, comparisonObject, 'fullList', ['louvain-1', 'louvain-2']));
 
     expect(pushNotificationMessage).toHaveBeenCalledWith('error', 'Something went wrong while computing your data.');
     expect(result).toEqual({ error });
