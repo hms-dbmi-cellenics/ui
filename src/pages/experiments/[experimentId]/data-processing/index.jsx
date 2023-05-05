@@ -61,7 +61,7 @@ import { runQC } from 'redux/actions/pipeline';
 
 import { useAppRouter } from 'utils/AppRouteProvider';
 import { modules } from 'utils/constants';
-import QCRerunDisabledModal from 'components/QCRerunDisabledModal';
+import QCRerunDisabledModal from 'components/modals/QCRerunDisabledModal';
 
 const { Text } = Typography;
 const { Option } = Select;

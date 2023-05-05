@@ -11,7 +11,7 @@ import { getBackendStatus } from 'redux/selectors';
 import { discardChangedQCFilters } from 'redux/actions/experimentSettings';
 import { runQC } from 'redux/actions/pipeline';
 
-import QCRerunDisabledModal from 'components/QCRerunDisabledModal';
+import QCRerunDisabledModal from 'components/modals/QCRerunDisabledModal';
 import { getUserFriendlyQCStepName } from 'utils/qcSteps';
 
 const { Text } = Typography;
