@@ -44,7 +44,7 @@ const allowedPlotActions = {
 
 const CellSizeDistribution = (props) => {
   const {
-    experimentId, sampleId, sampleIds, onConfigChange, stepDisabled,
+    experimentId, sampleId, sampleIds, onConfigChange, stepDisabled, stepHadErrors,
   } = props;
 
   const dispatch = useDispatch();
@@ -160,7 +160,7 @@ const CellSizeDistribution = (props) => {
 
   const renderPlot = () => {
     // Spinner for main window
-    if (!selectedConfig || !selectedPlotData) {
+    if (!selectedConfig || !selectedPlotData || stepHadErrors) {
       return (
         <center>
           <Skeleton.Image style={{ width: 400, height: 400 }} />
@@ -181,7 +181,6 @@ const CellSizeDistribution = (props) => {
             <Col flex='auto'>
               {renderPlot()}
             </Col>
-
             <Col flex='1 0px'>
               <Space direction='vertical'>
                 {Object.entries(plots).map(([key, plotObj]) => (
@@ -198,6 +197,7 @@ const CellSizeDistribution = (props) => {
                       cursor: 'pointer',
                     }}
                   >
+
                     <MiniPlot
                       experimentId={experimentId}
                       plotUuid={plotObj.plotUuid}
@@ -255,6 +255,7 @@ CellSizeDistribution.propTypes = {
   sampleIds: PropTypes.array.isRequired,
   onConfigChange: PropTypes.func.isRequired,
   stepDisabled: PropTypes.bool,
+  stepHadErrors: PropTypes.bool.isRequired,
 };
 
 CellSizeDistribution.defaultProps = {
