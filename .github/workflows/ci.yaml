@@ -40,7 +40,7 @@ jobs:
           # This sets multiline strings into the output variable
           # See https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#example-of-a-multiline-string
           echo "body<<EOF" >> $GITHUB_OUTPUT
-          echo $UNCHECKED_BODY >> $GITHUB_OUTPUT
+          echo "$UNCHECKED_BODY" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
 
       - id: uncheck-integration-checkbox
