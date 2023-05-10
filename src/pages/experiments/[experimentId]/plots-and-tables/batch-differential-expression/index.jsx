@@ -49,7 +49,6 @@ const BatchDiffExpression = (props) => {
   const metadataCellSetNodes = useSelector(getCellSetsHierarchyByType('metadataCategorical'));
 
   const [dataLoading, setDataLoading] = useState();
-  const [csvData, setCsvData] = useState([]);
 
   const [comparison, setComparison] = useState(comparisonInitialState);
   const batchCellSetKeys = useSelector(getCellSetsHierarchyByKeys([comparison.basis]))[0]?.children
@@ -69,8 +68,6 @@ const BatchDiffExpression = (props) => {
   }, [chosenOperation]);
 
   const changeComparison = (diff) => {
-    setCsvData([]);
-
     setComparison({
       ...comparison,
       ...diff,
@@ -166,8 +163,8 @@ const BatchDiffExpression = (props) => {
     const data = await dispatch(
       getBatchDiffExpr(experimentId, comparison, chosenOperation, batchCellSetKeys),
     );
-    setCsvData(data);
     setDataLoading(false);
+    downloadCSVsAsZip(data);
   };
 
   const renderSpecificControls = (operation) => {
@@ -340,23 +337,16 @@ const BatchDiffExpression = (props) => {
             <br />
             <Space direction='horizontal'>
               <Button
-                disabled={!csvData.length}
-                size='large'
-                type='primary'
-                onClick={() => downloadCSVsAsZip(csvData)}
-              >
-                Download Archive
-              </Button>
-              <Button
+                disabled={isFormInvalid() === true}
                 loading={dataLoading}
                 size='large'
-                onClick={() => { getData(); }}
-                disabled={csvData.length || isFormInvalid() === true}
+                type='primary'
+                onClick={() => getData()}
               >
-                {dataLoading ? 'Computing' : 'Compute'}
+                Compute and Download
               </Button>
             </Space>
-
+            This might take several minutes to complete.
           </Space>
         </Form>
       </Card>

@@ -44,14 +44,12 @@ describe('Batch differential expression tests ', () => {
   it('Renders correctly', async () => {
     await renderPage();
     expect(screen.getByText(/Select the batch differential expression calculation to perform:/i)).toBeInTheDocument();
-    expect(screen.getByText('Compute').closest('button')).toBeDisabled();
-    expect(screen.getByText(/Download Archive/i).closest('button')).toBeDisabled();
+    expect(screen.getByText(/Compute/).closest('button')).toBeDisabled();
   });
 
   it('Shows correct input fields for each comparison option', async () => {
     await renderPage();
 
-    // const fullListRadio = screen.getByLabelText(/Generate a full list of marker genes for all cell sets/i);
     const compareForCellSetsRadio = screen.getByLabelText(/Compare two selected samples\/groups within a cell set for all cell sets/i);
     const compareForSamplesRadio = screen.getByLabelText(/Compare between two cell sets for all samples\/groups/i);
 
@@ -74,7 +72,7 @@ describe('Batch differential expression tests ', () => {
     await renderPage();
 
     const secondOption = screen.getByText('Compare two selected samples/groups within a cell set for all cell sets');
-    const computeButton = screen.getByText('Compute').closest('button');
+    const computeButton = screen.getByText(/Compute/).closest('button');
 
     // Initial state should have the Compute button disabled
     expect(computeButton).toBeDisabled();
@@ -95,8 +93,6 @@ describe('Batch differential expression tests ', () => {
     expect(button).toBeEnabled();
     fireEvent.click(button);
 
-    // After clicking the Compute button, it should be in a loading state
-    expect(screen.getByText('Computing')).toBeInTheDocument();
     expect(getBatchDiffExprSpy).toHaveBeenCalledWith('testae48e318dab9a1bd0bexperiment',
       {
         basis: 'louvain',
