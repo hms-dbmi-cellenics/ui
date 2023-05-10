@@ -129,9 +129,7 @@ const NewProjectModal = (props) => {
                 }}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' && isValidName) {
-                    onCreate(projectName, projectDescription);
-                    setProjectName('');
-                    setIsValidName(false);
+                    submit();
                   }
                 }}
                 placeholder='Ex.: Lung gamma delta T cells'
