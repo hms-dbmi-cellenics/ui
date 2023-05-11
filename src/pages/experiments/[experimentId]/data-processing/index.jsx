@@ -62,6 +62,8 @@ import { runQC } from 'redux/actions/pipeline';
 import { useAppRouter } from 'utils/AppRouteProvider';
 import { modules } from 'utils/constants';
 import QCRerunDisabledModal from 'components/modals/QCRerunDisabledModal';
+import isUserAuthorized from 'utils/isUserAuthorized';
+import { getURL } from 'redux/actions/pipeline/runQC';
 
 const { Text } = Typography;
 const { Option } = Select;
@@ -95,13 +97,16 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
   );
 
   const changesOutstanding = Boolean(changedQCFilters.size);
-  const qcRerunDisabled = pipelineVersion < config.pipelineVersionToRerunQC;
+
+  const [runQCAuthorized, setRunQCAuthorized] = useState(false);
+
+  const qcVersionIsOld = pipelineVersion < config.pipelineVersionToRerunQC;
 
   const [stepIdx, setStepIdx] = useState(0);
   const [runQCModalVisible, setRunQCModalVisible] = useState(false);
   const [inputsList, setInputsList] = useState([]);
 
-  useEffect(() => {
+  useEffect(async () => {
     // If processingConfig is not loaded then reload
     if (Object.keys(processingConfig).length <= 1) {
       dispatch(loadProcessingSettings(experimentId));
@@ -109,6 +114,10 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
 
     dispatch(loadSamples(experimentId));
     dispatch(loadCellSets(experimentId));
+
+    setRunQCAuthorized(
+      await isUserAuthorized(experimentId, getURL(experimentId), 'POST'),
+    );
   }, []);
 
   // Checks if the step is in the 'completed steps' list we get from the pipeline status
@@ -664,10 +673,11 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
       />
       <Space direction='vertical' style={{ width: '100%', padding: '0 10px' }}>
         {runQCModalVisible && (
-          qcRerunDisabled ? (
+          (qcVersionIsOld || !runQCAuthorized) ? (
             <QCRerunDisabledModal
               experimentId={experimentId}
               onFinish={() => setRunQCModalVisible(false)}
+              runQCAuthorized={runQCAuthorized}
             />
           ) : (
             <Modal

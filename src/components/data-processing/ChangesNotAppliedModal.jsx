@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import {
@@ -13,6 +13,8 @@ import { runQC } from 'redux/actions/pipeline';
 
 import QCRerunDisabledModal from 'components/modals/QCRerunDisabledModal';
 import { getUserFriendlyQCStepName } from 'utils/qcSteps';
+import isUserAuthorized from 'utils/isUserAuthorized';
+import { getURL } from 'redux/actions/pipeline/runQC';
 
 const { Text } = Typography;
 
@@ -35,16 +37,18 @@ const ChangesNotAppliedModal = (props) => {
     status: backendStatus,
   } = useSelector(getBackendStatus(experimentId));
 
+  const [runQCAuthorized, setRunQCAuthorized] = useState();
+
   const shouldRerun = backendStatus?.gem2s?.shouldRerun;
 
   const dispatch = useDispatch();
 
   const [QCDisabledModalVisible, setQCDisabledModalVisible] = useState(false);
 
-  const runQCIfPossible = () => {
-    const qcRerunDisabled = pipelineVersion < config.pipelineVersionToRerunQC;
+  const runQCIfPossible = async () => {
+    const oldQCVersion = pipelineVersion < config.pipelineVersionToRerunQC;
 
-    if (qcRerunDisabled) {
+    if (oldQCVersion || !runQCAuthorized) {
       setQCDisabledModalVisible(true);
     } else {
       dispatch(runQC(experimentId));
@@ -57,6 +61,12 @@ const ChangesNotAppliedModal = (props) => {
     onCloseModal();
   };
 
+  useEffect(async () => {
+    const authorized = await isUserAuthorized(experimentId, getURL(experimentId), 'POST');
+
+    setRunQCAuthorized(authorized);
+  });
+
   return (
     <>
       {QCDisabledModalVisible && (
@@ -64,6 +74,7 @@ const ChangesNotAppliedModal = (props) => {
           experimentId={experimentId}
           onFinish={closeModals}
           visible={QCDisabledModalVisible}
+          runQCAuthorized={runQCAuthorized}
         />
       )}
       <Modal
