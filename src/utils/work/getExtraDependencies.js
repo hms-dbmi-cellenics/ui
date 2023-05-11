@@ -43,6 +43,7 @@ const dependencyGetters = {
   GetEmbedding: [],
   ListGenes: [],
   DifferentialExpression: [getClusteringSettings],
+  BatchDifferentialExpression: [getClusteringSettings],
   GeneExpression: [],
   GetBackgroundExpressedGenes: [getClusteringSettings],
   DotPlot: [getClusteringSettings],
