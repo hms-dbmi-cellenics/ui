@@ -60,11 +60,11 @@ jobs:
 
           echo "Is staging N/A?"
           echo $IS_STAGING_NA
-          echo "::set-output name=is-staging-na::$IS_STAGING_NA"
+          echo "is-staging-na=$IS_STAGING_NA" >> $GITHUB_OUTPUT
 
           echo "Full URL:"
           echo $URL
-          echo "::set-output name=url::$URL"
+          echo "url=$URL" >> $GITHUB_OUTPUT
 
           SANDBOX=$(pcregrep -o2 -M "$REGEX" <<\EOF
           ${{ github.event.pull_request.body }}
@@ -72,7 +72,7 @@ jobs:
           )
           echo "Extracted sandbox:"
           echo $SANDBOX
-          echo "::set-output name=sandbox::$SANDBOX"
+          echo "sandbox=$SANDBOX" >> $GITHUB_OUTPUT
 
       - id: reach-staging
         if: steps.extract-staging.outputs.url != 'N/A'
@@ -121,8 +121,8 @@ jobs:
           fi
           echo $SHOULD_RUN_E2E
 
-          echo "::set-output name=should-e2e-cancel::$SHOULD_CANCEL_E2E"
-          echo "::set-output name=should-e2e-run::$SHOULD_RUN_E2E"
+          echo "should-e2e-cancel=$SHOULD_CANCEL_E2E" >> $GITHUB_OUTPUT
+          echo "should-e2e-run=$SHOULD_RUN_E2E" >> $GITHUB_OUTPUT
 
       - id: cancel
         name: Cancel if staging is not N/A and box is not checked
@@ -142,12 +142,12 @@ jobs:
         run: |-
           echo "SHA of latest GitHub branch commit:"
           echo ${{ github.event.pull_request.head.sha }}
-          echo "::set-output name=github_sha::${{ github.event.pull_request.head.sha }}"
+          echo "github_sha=${{ github.event.pull_request.head.sha }}" >> $GITHUB_OUTPUT
 
           REPO_NAME=$(echo $GITHUB_REPOSITORY | awk -F '/' '{print $2}')
           echo "Repo name:"
           echo $REPO_NAME
-          echo "::set-output name=repo_name::$REPO_NAME"
+          echo "repo_name=$REPO_NAME" >> $GITHUB_OUTPUT
 
       - id: extract-integration-test-ref
         if: steps.check-e2e-run.outputs.should-e2e-run == 'true'
@@ -165,7 +165,7 @@ jobs:
           )
 
           echo "Ref given is $INTEGRATION_TEST_REF, setting it as is."
-          echo "::set-output name=ref::$INTEGRATION_TEST_REF"
+          echo "ref=$INTEGRATION_TEST_REF" >> $GITHUB_OUTPUT
 
       - id: run-integration-test
         if: steps.check-e2e-run.outputs.should-e2e-run == 'true'
@@ -194,14 +194,14 @@ jobs:
           EOF
           )
 
-          UNCHECKED_BODY="${UNCHECKED_BODY//'%'/'%25'}"
-          UNCHECKED_BODY="${UNCHECKED_BODY//$'\n'/'%0A'}"
-          UNCHECKED_BODY="${UNCHECKED_BODY//$'\r'/'%0D'}"
-
           echo "Unchecked PR body"
           echo $UNCHECKED_BODY
 
-          echo "::set-output name=body::$UNCHECKED_BODY"
+          # This sets multiline strings into the output variable
+          # See https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#example-of-a-multiline-string
+          echo "body<<EOF" >> "$GITHUB_OUTPUT"
+          echo "$UNCHECKED_BODY" >> "$GITHUB_OUTPUT"
+          echo "EOF" >> "$GITHUB_OUTPUT"
 
       - id: uncheck-integration-checkbox
         if: failure()

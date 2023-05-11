@@ -15,15 +15,15 @@ import downloadFromUrl from 'utils/downloadFromUrl';
 import writeToFile from 'utils/writeToFileURL';
 
 import launchPathwayService from 'utils/pathwayAnalysis/launchPathwayService';
-import getDiffExprGenes from 'utils/differentialExpression/getDiffExprGenes';
-import getBackgroundExpressedGenes from 'utils/differentialExpression/getBackgroundExpressedGenes';
+import getDiffExprGenes from 'utils/extraActionCreators/differentialExpression/getDiffExprGenes';
+import getBackgroundExpressedGenes from 'utils/extraActionCreators/differentialExpression/getBackgroundExpressedGenes';
 import { pathwayServices } from 'utils/pathwayAnalysis/pathwayConstants';
 import enrichrSpecies from 'utils/pathwayAnalysis/enrichrConstants';
 import endUserMessages from 'utils/endUserMessages';
 
 jest.mock('utils/pathwayAnalysis/launchPathwayService');
-jest.mock('utils/differentialExpression/getDiffExprGenes');
-jest.mock('utils/differentialExpression/getBackgroundExpressedGenes');
+jest.mock('utils/extraActionCreators/differentialExpression/getDiffExprGenes');
+jest.mock('utils/extraActionCreators/differentialExpression/getBackgroundExpressedGenes');
 
 jest.mock('utils/http/handleError');
 jest.mock('utils/downloadFromUrl');

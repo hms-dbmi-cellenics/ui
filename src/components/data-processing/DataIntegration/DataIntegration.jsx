@@ -31,7 +31,7 @@ import CalculationConfig from './CalculationConfig';
 const { Panel } = Collapse;
 const DataIntegration = (props) => {
   const {
-    experimentId, onConfigChange, stepDisabled, disableDataIntegration,
+    experimentId, onConfigChange, stepDisabled, stepHadErrors, disableDataIntegration,
   } = props;
   const [selectedPlot, setSelectedPlot] = useState('embedding');
   const [plot, setPlot] = useState(null);
@@ -268,7 +268,7 @@ const DataIntegration = (props) => {
       && !configureEmbeddingFinished.current;
 
     // Spinner for main window
-    if (!selectedConfig || disabledByConfigEmbedding) {
+    if (!selectedConfig || disabledByConfigEmbedding || stepHadErrors) {
       return (
         <center>
           <EmptyPlot mini={false} style={{ width: 400, height: 400 }} />
@@ -350,6 +350,7 @@ DataIntegration.propTypes = {
   experimentId: PropTypes.string.isRequired,
   onConfigChange: PropTypes.func.isRequired,
   stepDisabled: PropTypes.bool,
+  stepHadErrors: PropTypes.bool.isRequired,
   disableDataIntegration: PropTypes.bool,
 };
 

@@ -29,8 +29,14 @@ const checkCanRunDiffExpr = (
   hierarchy,
   comparisonGroup,
   selectedComparison,
+  batchDE = false,
 ) => {
-  if (selectedComparison === ComparisonType.WITHIN) return canRunDiffExprResults.TRUE;
+  // we only need to check cell availability for comparisons which are not 'within'
+  // in the case of running batch DE, we have 'within' comparisons where there can be missing cells,
+  // but only when the basis is not all of the cell sets
+  if (selectedComparison === ComparisonType.WITHIN && (!batchDE || comparisonGroup[selectedComparison].basis === 'all')) {
+    return canRunDiffExprResults.TRUE;
+  }
 
   const { basis, cellSet, compareWith } = comparisonGroup?.[selectedComparison] || {};
 
@@ -41,8 +47,9 @@ const checkCanRunDiffExpr = (
     || !cellSet
     || !compareWith
     || !cellIdToSampleMap.length > 0
-  ) { return canRunDiffExprResults.FALSE; }
-
+  ) {
+    return canRunDiffExprResults.FALSE;
+  }
   const basisCellSetKey = getCellSetKey(basis);
   const cellSetKey = getCellSetKey(cellSet);
   const compareWithKey = getCellSetKey(compareWith);

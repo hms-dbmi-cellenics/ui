@@ -10,10 +10,14 @@ import {
   Button, Space, Menu, Dropdown,
 } from 'antd';
 import PropTypes from 'prop-types';
+import { ClipLoader } from 'react-spinners';
 import _ from 'lodash';
+
 import { updatePlotConfig } from 'redux/actions/componentConfig';
-import { getCellSetsHierarchy } from 'redux/selectors';
-import ReorderableList from '../../ReorderableList';
+import { getCellSets, getCellSetsHierarchy } from 'redux/selectors';
+
+import ReorderableList from 'components/ReorderableList';
+import colors from 'utils/styling/colors';
 
 const HeatmapGroupBySettings = (props) => {
   const dispatch = useDispatch();
@@ -23,7 +27,9 @@ const HeatmapGroupBySettings = (props) => {
   const groupedTracksKeys = useSelector(
     (state) => state.componentConfig[componentType].config.groupedTracks,
   );
+  const { accessible: cellSetsAccessible } = useSelector(getCellSets());
   const allCellSetsGroupBys = useSelector(getCellSetsHierarchy());
+
   const getCellSetsOrder = () => {
     const groupedCellSets = [];
 
@@ -63,11 +69,13 @@ const HeatmapGroupBySettings = (props) => {
   }, [cellSetsOrder]);
 
   useEffect(() => {
+    if (!cellSetsAccessible) return;
+
     if (!_.isEqual(previousGroupedKeys(), groupedTracksKeys)) {
       const newOrder = getCellSetsOrder();
       setCellSetsOrder(newOrder);
     }
-  }, [groupedTracksKeys]);
+  }, [groupedTracksKeys, cellSetsAccessible]);
   const indexOfCellSet = (cellSet) => cellSetsOrder.findIndex((elem) => (elem.key === cellSet.key));
 
   // This is so that a click on + or - buttons doesn't close the menu
@@ -119,11 +127,14 @@ const HeatmapGroupBySettings = (props) => {
           </div>
         </Dropdown>
 
-        <ReorderableList
-          onChange={setCellSetsOrder}
-          listData={cellSetsOrder}
-          rightItem={(cellSet) => cellSet.name}
-        />
+        {cellSetsAccessible
+          ? (
+            <ReorderableList
+              onChange={setCellSetsOrder}
+              listData={cellSetsOrder}
+              rightItem={(cellSet) => cellSet.name}
+            />
+          ) : <center><ClipLoader size={20} color={colors.darkRed} /></center>}
       </Space>
     </div>
   );
