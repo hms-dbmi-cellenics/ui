@@ -33,7 +33,7 @@ const getBatchDiffExpr = (experimentId,
     basis: getCellSetKey(comparisonObject.basis),
     comparisonType,
   };
-  const numberOfComparisons = batchClusterNames.length;
+  const numberOfComparisons = batchClusterNames.length + 2;
   const timeout = getTimeoutForWorkerTask(getState(), 'DifferentialExpression') * numberOfComparisons;
   try {
     const data = await fetchWork(
