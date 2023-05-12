@@ -1,6 +1,8 @@
 import _ from 'lodash';
 import React from 'react';
-import { screen, render, act } from '@testing-library/react';
+import {
+  screen, render, act, waitFor,
+} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
@@ -88,10 +90,11 @@ describe('ChangesNotAppliedModal', () => {
     jest.clearAllMocks();
 
     fetchMock.resetMocks();
-    fetchMock.mockIf(/.*/, mockAPI(mockAPIResponses));
   });
 
   it('Displays correctly', () => {
+    fetchMock.mockIf(/.*/, mockAPI(mockAPIResponses));
+
     render(
       <Provider store={mockStore(withChangesState)}>
         <ChangesNotAppliedModal />
@@ -115,6 +118,8 @@ describe('ChangesNotAppliedModal', () => {
   });
 
   it('Shows the correct list of changed QC filters', () => {
+    fetchMock.mockIf(/.*/, mockAPI(mockAPIResponses));
+
     render(
       <Provider store={mockStore(withChangesState)}>
         <ChangesNotAppliedModal />
@@ -129,6 +134,8 @@ describe('ChangesNotAppliedModal', () => {
   });
 
   it('Does not display list of QC filters if there are no changed qc filters', () => {
+    fetchMock.mockIf(/.*/, mockAPI(mockAPIResponses));
+
     render(
       <Provider store={mockStore(noChangesState)}>
         <ChangesNotAppliedModal />
@@ -142,7 +149,12 @@ describe('ChangesNotAppliedModal', () => {
     expect(screen.queryByText('Step 2')).toBeNull();
   });
 
-  it('Fires the correct action for Run button', () => {
+  it('Fires the correct action for Run button', async () => {
+    fetchMock.mockIf(/.*/, mockAPI({
+      ...mockAPIResponses,
+      [`/v2/access/${experimentId}/check?url=%2Fv2%2Fexperiments%2F${experimentId}%2Fqc&method=POST`]: () => Promise.resolve(JSON.stringify(true)),
+    }));
+
     const mockRunQC = jest.fn();
 
     render(
@@ -151,11 +163,16 @@ describe('ChangesNotAppliedModal', () => {
       </Provider>,
     );
 
+    await waitFor(() => {
+      expect(screen.getByText('Run')).toBeInTheDocument();
+    });
+
     userEvent.click(screen.getByText('Run'));
     expect(mockRunQC).toHaveBeenCalled();
   });
 
   it('Fires the correct action for Discard button', () => {
+    fetchMock.mockIf(/.*/, mockAPI(mockAPIResponses));
     const mockOnDiscardChanges = jest.fn();
 
     render(
@@ -169,6 +186,7 @@ describe('ChangesNotAppliedModal', () => {
   });
 
   it('Fires the correct action when closed', () => {
+    fetchMock.mockIf(/.*/, mockAPI(mockAPIResponses));
     const mockOnCloseModal = jest.fn();
 
     render(
@@ -182,6 +200,7 @@ describe('ChangesNotAppliedModal', () => {
   });
 
   it('Shows the QCRerunDisabledModal if the pipelineVersion is too old', async () => {
+    fetchMock.mockIf(/.*/, mockAPI(mockAPIResponses));
     const mockRunQC = jest.fn();
 
     const oldPipelineState = _.cloneDeep(withChangesState);

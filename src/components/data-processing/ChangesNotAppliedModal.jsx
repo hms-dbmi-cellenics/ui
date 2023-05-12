@@ -37,7 +37,7 @@ const ChangesNotAppliedModal = (props) => {
     status: backendStatus,
   } = useSelector(getBackendStatus(experimentId));
 
-  const [runQCAuthorized, setRunQCAuthorized] = useState();
+  const [runQCAuthorized, setRunQCAuthorized] = useState(null);
 
   const shouldRerun = backendStatus?.gem2s?.shouldRerun;
 
