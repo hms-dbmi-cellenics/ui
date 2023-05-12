@@ -250,4 +250,42 @@ describe('ChangesNotAppliedModal', () => {
 
     expect(fetchMock.mock.calls).toMatchSnapshot();
   });
+
+  it('Shows the QCRerunDisabledModal if the user isnt authorized to rerun qc', async () => {
+    fetchMock.mockIf(/.*/, mockAPI({
+      ...mockAPIResponses,
+      [urlMatcher]: () => Promise.resolve(JSON.stringify(false)),
+    }));
+    const mockRunQC = jest.fn();
+
+    const oldPipelineState = _.cloneDeep(withChangesState);
+    oldPipelineState.experimentSettings.info.pipelineVersion = 0;
+
+    const onCloseModalMock = jest.fn();
+    render(
+      <Provider store={mockStore(oldPipelineState)}>
+        <ChangesNotAppliedModal onRunQC={() => mockRunQC()} onCloseModal={onCloseModalMock} />
+      </Provider>,
+    );
+
+    userEvent.click(screen.getByText('Run'));
+
+    expect(mockRunQC).not.toHaveBeenCalled();
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(/Your account is not authorized to run data processing on this project. You have 2 options:/),
+      ).toBeInTheDocument();
+    });
+
+    // When clicking clone project, the modal disappears and navigateTo is called
+    await act(async () => {
+      userEvent.click(screen.getAllByText(/Clone Project/)[1]);
+    });
+
+    expect(onCloseModalMock).toHaveBeenCalled();
+    expect(mockNavigateTo).toHaveBeenCalled();
+
+    expect(fetchMock.mock.calls).toMatchSnapshot();
+  });
 });
