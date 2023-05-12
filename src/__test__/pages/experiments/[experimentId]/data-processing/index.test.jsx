@@ -314,6 +314,65 @@ describe('DataProcessingPage', () => {
     });
   });
 
+  it('Shows not authorized modal if user cant rerun the experiment', async () => {
+    fetchMock.mockIf(new RegExp(`/v2/access/${experimentId}/check?.*`), () => Promise.resolve(JSON.stringify(false)));
+
+    const store = getStore(experimentId, {
+      experimentSettings: {
+        info: { pipelineVersion: config.pipelineVersionToRerunQC },
+        processing: { meta: { changedQCFilters: new Set(['classifier']) } },
+      },
+    });
+
+    render(
+      <Provider store={store}>
+        {dataProcessingPageFactory()}
+      </Provider>,
+    );
+
+    // Change settings by clicking on the "manual" radio button
+    userEvent.click(screen.getByText('Manual'));
+
+    // Click on the run button
+    userEvent.click(screen.getByText('Run'));
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(/Your account is not authorized to run data processing on this project. You have 2 options:/),
+      ).toBeInTheDocument();
+    });
+
+    // The Clone Project text is the 1st element with "Clone Project" in it
+    const cloneProjectText = screen.getAllByText('Clone Project')[0];
+    expect(cloneProjectText).toBeInTheDocument();
+    expect(screen.getByText(/to clone this project and run from the beginning for the new project only./)).toBeInTheDocument();
+    expect(screen.getByText(/Your current project will not re-run, and will still be available to explore./)).toBeInTheDocument();
+
+    // The Cancel text is the 1st element with "Cancel" in it
+    const cancelText = screen.getAllByText('Cancel')[0];
+    expect(cancelText).toBeInTheDocument();
+    expect(screen.getByText(/to close this popup. You can then choose to discard the changed settings in your current project./)).toBeInTheDocument();
+
+    // There should be 2 buttons
+
+    // The clone project button is the 2nd element with "Clone Project" in it
+    const cloneProjectButton = screen.getAllByText('Clone Project')[1];
+    expect(cloneProjectButton).toBeInTheDocument();
+
+    // The cancel button is the 3rd element with "Cancel" in it
+    const cancelButton = screen.getAllByText('Cancel')[1];
+    expect(cancelButton).toBeInTheDocument();
+
+    // Clicking the Clone Project button will call the clone experiment action
+
+    userEvent.click(cloneProjectButton);
+
+    await waitFor(() => {
+      expect(cloneExperiment).toHaveBeenCalledTimes(1);
+      expect(mockNavigateTo).toHaveBeenCalledTimes(1);
+    });
+  });
+
   it('Should not show extra information if there is no new version of the QC pipeline', async () => {
     fetchMock.mockIf(new RegExp(`/v2/access/${experimentId}/check?.*`), () => Promise.resolve(JSON.stringify(true)));
 
