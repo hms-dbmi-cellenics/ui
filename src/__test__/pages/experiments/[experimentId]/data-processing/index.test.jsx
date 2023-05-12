@@ -138,6 +138,8 @@ enableFetchMocks();
 
 describe('DataProcessingPage', () => {
   beforeEach(() => {
+    jest.clearAllMocks();
+
     fetchMock.resetMocks();
     fetchMock.doMock();
   });
