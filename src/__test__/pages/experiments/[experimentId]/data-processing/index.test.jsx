@@ -26,6 +26,8 @@ import { cloneExperiment } from 'redux/actions/experiments';
 import { EXPERIMENT_SETTINGS_SET_QC_STEP_ENABLED } from 'redux/actionTypes/experimentSettings';
 import config from 'config';
 
+import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
+
 jest.mock('components/header/UserButton', () => () => <></>);
 jest.mock('redux/actions/experimentSettings/processingConfig/saveProcessingSettings');
 jest.mock('redux/actions/experiments', () => ({
@@ -132,7 +134,14 @@ const defaultProps = {
 
 const dataProcessingPageFactory = createTestComponentFactory(DataProcessingPage, defaultProps);
 
+enableFetchMocks();
+
 describe('DataProcessingPage', () => {
+  beforeEach(() => {
+    fetchMock.resetMocks();
+    fetchMock.doMock();
+  });
+
   it('Renders the first page correctly', () => {
     const store = getStore();
 
@@ -205,14 +214,17 @@ describe('DataProcessingPage', () => {
     expect(url).toEqual(modules.DATA_EXPLORATION);
   });
 
-  it('Triggers the pipeline on click run filter', () => {
-    const store = getStore(experimentId, { experimentSettings: { processing: { meta: { changedQCFilters: new Set(['classifier']) } } } });
+  it('Triggers the pipeline on click run filter', async () => {
+    fetchMock.mockIf(new RegExp(`/v2/access/${experimentId}/check?.*`), () => Promise.resolve(JSON.stringify(true)));
 
-    render(
-      <Provider store={store}>
-        {dataProcessingPageFactory()}
-      </Provider>,
-    );
+    const store = getStore(experimentId, { experimentSettings: { processing: { meta: { changedQCFilters: new Set(['classifier']) } } } });
+    await act(() => {
+      render(
+        <Provider store={store}>
+          {dataProcessingPageFactory()}
+        </Provider>,
+      );
+    });
 
     // Change settings by clicking on the "manual" radio button
     const manualButton = screen.getByText('Manual');
@@ -221,6 +233,10 @@ describe('DataProcessingPage', () => {
 
     // Click on the run button
     userEvent.click(screen.getByText('Run'));
+
+    await waitFor(() => {
+      expect(screen.getByText('Start')).toBeInTheDocument();
+    });
 
     // Click on the start button
     userEvent.click(screen.getByText('Start'));
