@@ -150,9 +150,10 @@ describe('ChangesNotAppliedModal', () => {
   });
 
   it('Fires the correct action for Run button', async () => {
+    const urlMatcher = `/v2/access/${experimentId}/check?url=%2Fv2%2Fexperiments%2F${experimentId}%2Fqc&method=POST`;
     fetchMock.mockIf(/.*/, mockAPI({
       ...mockAPIResponses,
-      [`/v2/access/${experimentId}/check?url=%2Fv2%2Fexperiments%2F${experimentId}%2Fqc&method=POST`]: () => Promise.resolve(JSON.stringify(true)),
+      [urlMatcher]: () => Promise.resolve(JSON.stringify(true)),
     }));
 
     const mockRunQC = jest.fn();
