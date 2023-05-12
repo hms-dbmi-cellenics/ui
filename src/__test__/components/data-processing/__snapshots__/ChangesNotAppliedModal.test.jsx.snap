@@ -3,6 +3,13 @@
 exports[`ChangesNotAppliedModal Shows the QCRerunDisabledModal if the pipelineVersion is too old 1`] = `
 Array [
   Array [
+    "http://localhost:3000/v2/access/experiment-id/check?url=%2Fv2%2Fexperiments%2Fexperiment-id%2Fqc&method=POST",
+    Object {
+      "headers": Object {},
+      "method": "GET",
+    },
+  ],
+  Array [
     "http://localhost:3000/v2/experiments/experiment-id/clone",
     Object {
       "body": "{\\"name\\":\\"Clone of expName\\"}",

@@ -84,6 +84,7 @@ const withChangesState = {
 enableFetchMocks();
 
 const mockAPIResponses = generateDefaultMockAPIResponses(experimentId);
+const urlMatcher = `/v2/access/${experimentId}/check?url=%2Fv2%2Fexperiments%2F${experimentId}%2Fqc&method=POST`;
 
 describe('ChangesNotAppliedModal', () => {
   beforeEach(() => {
@@ -93,7 +94,10 @@ describe('ChangesNotAppliedModal', () => {
   });
 
   it('Displays correctly', () => {
-    fetchMock.mockIf(/.*/, mockAPI(mockAPIResponses));
+    fetchMock.mockIf(/.*/, mockAPI({
+      ...mockAPIResponses,
+      [urlMatcher]: () => Promise.resolve(JSON.stringify(true)),
+    }));
 
     render(
       <Provider store={mockStore(withChangesState)}>
@@ -118,7 +122,10 @@ describe('ChangesNotAppliedModal', () => {
   });
 
   it('Shows the correct list of changed QC filters', () => {
-    fetchMock.mockIf(/.*/, mockAPI(mockAPIResponses));
+    fetchMock.mockIf(/.*/, mockAPI({
+      ...mockAPIResponses,
+      [urlMatcher]: () => Promise.resolve(JSON.stringify(true)),
+    }));
 
     render(
       <Provider store={mockStore(withChangesState)}>
@@ -134,7 +141,10 @@ describe('ChangesNotAppliedModal', () => {
   });
 
   it('Does not display list of QC filters if there are no changed qc filters', () => {
-    fetchMock.mockIf(/.*/, mockAPI(mockAPIResponses));
+    fetchMock.mockIf(/.*/, mockAPI({
+      ...mockAPIResponses,
+      [urlMatcher]: () => Promise.resolve(JSON.stringify(true)),
+    }));
 
     render(
       <Provider store={mockStore(noChangesState)}>
@@ -150,7 +160,6 @@ describe('ChangesNotAppliedModal', () => {
   });
 
   it('Fires the correct action for Run button', async () => {
-    const urlMatcher = `/v2/access/${experimentId}/check?url=%2Fv2%2Fexperiments%2F${experimentId}%2Fqc&method=POST`;
     fetchMock.mockIf(/.*/, mockAPI({
       ...mockAPIResponses,
       [urlMatcher]: () => Promise.resolve(JSON.stringify(true)),
@@ -173,7 +182,10 @@ describe('ChangesNotAppliedModal', () => {
   });
 
   it('Fires the correct action for Discard button', () => {
-    fetchMock.mockIf(/.*/, mockAPI(mockAPIResponses));
+    fetchMock.mockIf(/.*/, mockAPI({
+      ...mockAPIResponses,
+      [urlMatcher]: () => Promise.resolve(JSON.stringify(true)),
+    }));
     const mockOnDiscardChanges = jest.fn();
 
     render(
@@ -187,7 +199,10 @@ describe('ChangesNotAppliedModal', () => {
   });
 
   it('Fires the correct action when closed', () => {
-    fetchMock.mockIf(/.*/, mockAPI(mockAPIResponses));
+    fetchMock.mockIf(/.*/, mockAPI({
+      ...mockAPIResponses,
+      [urlMatcher]: () => Promise.resolve(JSON.stringify(true)),
+    }));
     const mockOnCloseModal = jest.fn();
 
     render(
@@ -201,7 +216,10 @@ describe('ChangesNotAppliedModal', () => {
   });
 
   it('Shows the QCRerunDisabledModal if the pipelineVersion is too old', async () => {
-    fetchMock.mockIf(/.*/, mockAPI(mockAPIResponses));
+    fetchMock.mockIf(/.*/, mockAPI({
+      ...mockAPIResponses,
+      [urlMatcher]: () => Promise.resolve(JSON.stringify(true)),
+    }));
     const mockRunQC = jest.fn();
 
     const oldPipelineState = _.cloneDeep(withChangesState);
@@ -217,7 +235,10 @@ describe('ChangesNotAppliedModal', () => {
     userEvent.click(screen.getByText('Run'));
 
     expect(mockRunQC).not.toHaveBeenCalled();
-    expect(screen.getByText(/Due to a recent update, re-running the pipeline will initiate the run from the beginning/)).toBeInTheDocument();
+
+    await waitFor(() => {
+      expect(screen.getByText(/Due to a recent update, re-running the pipeline will initiate the run from the beginning/)).toBeInTheDocument();
+    });
 
     // When clicking clone project, the modal disappears and navigateTo is called
     await act(async () => {
