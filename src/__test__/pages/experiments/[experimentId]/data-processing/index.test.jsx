@@ -245,6 +245,8 @@ describe('DataProcessingPage', () => {
   });
 
   it('Shows extra information if there is a new version of the QC pipeline', async () => {
+    fetchMock.mockIf(new RegExp(`/v2/access/${experimentId}/check?.*`), () => Promise.resolve(JSON.stringify(true)));
+
     const store = getStore(experimentId, {
       experimentSettings: {
         info: { pipelineVersion: config.pipelineVersionToRerunQC - 1 },
@@ -264,7 +266,9 @@ describe('DataProcessingPage', () => {
     // Click on the run button
     userEvent.click(screen.getByText('Run'));
 
-    expect(screen.getByText(/Due to a recent update, re-running the pipeline will initiate the run from the beginning/)).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText(/Due to a recent update, re-running the pipeline will initiate the run from the beginning/)).toBeInTheDocument();
+    });
 
     // The Start text is the 1st element with "Start" in it
     const startText = screen.getAllByText('Start')[0];
