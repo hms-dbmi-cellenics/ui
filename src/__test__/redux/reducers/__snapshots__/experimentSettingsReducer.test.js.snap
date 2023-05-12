@@ -124,9 +124,13 @@ Object {
     },
     "dataIntegration": Object {
       "dataIntegration": Object {
-        "method": "seuratv4",
+        "method": "harmony",
         "methodSettings": Object {
           "fastmnn": Object {
+            "normalisation": "logNormalize",
+            "numGenes": 2000,
+          },
+          "harmony": Object {
             "normalisation": "logNormalize",
             "numGenes": 2000,
           },
@@ -241,9 +245,13 @@ Object {
     },
     "dataIntegration": Object {
       "dataIntegration": Object {
-        "method": "seuratv4",
+        "method": "harmony",
         "methodSettings": Object {
           "fastmnn": Object {
+            "normalisation": "logNormalize",
+            "numGenes": 2000,
+          },
+          "harmony": Object {
             "normalisation": "logNormalize",
             "numGenes": 2000,
           },
@@ -371,9 +379,13 @@ Object {
     },
     "dataIntegration": Object {
       "dataIntegration": Object {
-        "method": "seuratv4",
+        "method": "harmony",
         "methodSettings": Object {
           "fastmnn": Object {
+            "normalisation": "logNormalize",
+            "numGenes": 2000,
+          },
+          "harmony": Object {
             "normalisation": "logNormalize",
             "numGenes": 2000,
           },
@@ -488,9 +500,13 @@ Object {
     },
     "dataIntegration": Object {
       "dataIntegration": Object {
-        "method": "seuratv4",
+        "method": "harmony",
         "methodSettings": Object {
           "fastmnn": Object {
+            "normalisation": "logNormalize",
+            "numGenes": 2000,
+          },
+          "harmony": Object {
             "normalisation": "logNormalize",
             "numGenes": 2000,
           },
@@ -647,9 +663,13 @@ Object {
     },
     "dataIntegration": Object {
       "dataIntegration": Object {
-        "method": "seuratv4",
+        "method": "harmony",
         "methodSettings": Object {
           "fastmnn": Object {
+            "normalisation": "logNormalize",
+            "numGenes": 2000,
+          },
+          "harmony": Object {
             "normalisation": "logNormalize",
             "numGenes": 2000,
           },
@@ -764,9 +784,13 @@ Object {
     },
     "dataIntegration": Object {
       "dataIntegration": Object {
-        "method": "seuratv4",
+        "method": "harmony",
         "methodSettings": Object {
           "fastmnn": Object {
+            "normalisation": "logNormalize",
+            "numGenes": 2000,
+          },
+          "harmony": Object {
             "normalisation": "logNormalize",
             "numGenes": 2000,
           },

@@ -1,7 +1,7 @@
 import { makeStore } from 'redux/store';
 import fetchWork from 'utils/work/fetchWork';
 
-import getBackgroundExpressedGenes from 'utils/differentialExpression/getBackgroundExpressedGenes';
+import getBackgroundExpressedGenes from 'utils/extraActionCreators/differentialExpression/getBackgroundExpressedGenes';
 
 jest.mock('utils/work/fetchWork');
 

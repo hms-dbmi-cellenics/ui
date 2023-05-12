@@ -5,7 +5,7 @@ import { act } from 'react-dom/test-utils';
 const selectOption = async (optionName, select) => {
   await userEvent.click(select);
   // userEvent click doesnt trigger the onChange in select
-  fireEvent.click(screen.getByTitle(optionName));
+  fireEvent.click(screen.getAllByTitle(optionName)[0]);
 };
 
 // dropFilesIntoDropzone takes an input element and simulates droping files into it

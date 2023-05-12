@@ -4,20 +4,17 @@ import {
 } from 'react-redux';
 
 import {
-  Button, Form, Select, Radio, Tooltip, Space, Alert
+  Button, Form, Radio, Tooltip, Space, Alert,
 } from 'antd';
 
 import { InfoCircleOutlined } from '@ant-design/icons';
-
+import Loader from 'components/Loader';
 import PropTypes from 'prop-types';
 import { loadCellSets } from 'redux/actions/cellSets';
 import { getCellSets } from 'redux/selectors';
-import { composeTree } from 'utils/cellSets';
 import { setComparisonGroup, setComparisonType } from 'redux/actions/differentialExpression';
-import checkCanRunDiffExpr, { canRunDiffExprResults } from 'utils/differentialExpression/checkCanRunDiffExpr';
-import { getCellSetClassKey } from 'utils/cellSets';
-
-const { Option, OptGroup } = Select;
+import checkCanRunDiffExpr, { canRunDiffExprResults } from 'utils/extraActionCreators/differentialExpression/checkCanRunDiffExpr';
+import DiffExprSelect from 'components/data-exploration/differential-expression-tool/DiffExprSelect';
 
 const ComparisonType = Object.freeze({ BETWEEN: 'between', WITHIN: 'within' });
 
@@ -27,7 +24,8 @@ const DiffExprCompute = (props) => {
   } = props;
 
   const dispatch = useDispatch();
-  const { properties, hierarchy } = useSelector(getCellSets());
+  const cellSets = useSelector(getCellSets());
+  const { properties, hierarchy } = cellSets;
   const [isFormValid, setIsFormValid] = useState(false);
   const [numSamples, setNumSamples] = useState(0);
   const comparisonGroup = useSelector((state) => state.differentialExpression.comparison.group);
@@ -55,23 +53,20 @@ const DiffExprCompute = (props) => {
       const theOnlySampleOption = {
         ...comparisonGroup[ComparisonType.WITHIN],
         type: ComparisonType.WITHIN,
-        basis: `sample/${samples[0].key}`
-      }
+        basis: `sample/${samples[0].key}`,
+      };
       dispatch(setComparisonGroup(theOnlySampleOption));
     }
-
   }, [Object.keys(properties).length]);
 
   // Evaluate if the selected comparisons can be run. Returns results
   // that can be used to display appropriate warnings and errors if it cannot be run.
-  const canRunDiffExpr = useCallback(() => {
-    return checkCanRunDiffExpr(
-      properties,
-      hierarchy,
-      comparisonGroup,
-      selectedComparison
-    )
-  }, [basis, cellSet, compareWith, numSamples]);
+  const canRunDiffExpr = useCallback(() => checkCanRunDiffExpr(
+    properties,
+    hierarchy,
+    comparisonGroup,
+    selectedComparison,
+  ), [basis, cellSet, compareWith, numSamples]);
 
   const validateForm = () => {
     if (!cellSet || !compareWith || !basis) {
@@ -107,72 +102,22 @@ const DiffExprCompute = (props) => {
   const renderClusterSelectorItem = ({
     title, option, filterType,
   }) => {
-    // Depending on the cell set type specified, set the default name
-    const placeholder = filterType === 'metadataCategorical' ? 'sample/group' : 'cell set';
-
-    const tree = composeTree(hierarchy, properties, filterType);
-
-    const renderChildren = (rootKey, children) => {
-      if (!children || children.length === 0) { return (<></>); }
-
-      // If this is the `compareWith` option, we need to add `the rest` under the group previously selected.
-      if (option === 'compareWith' && comparisonGroup[selectedComparison]?.cellSet?.startsWith(`${rootKey}/`)) {
-        children.unshift({ key: `rest`, name: `Rest of ${properties[rootKey].name}` });
-      }
-
-      const shouldDisable = (rootKey, key) => {
-        // Should always disable something already selected.
-        const isAlreadySelected = Object.values(comparisonGroup[selectedComparison]).includes(`${rootKey}/${key}`);
-
-        // or a cell set that is not in the same group as selected previously in `cellSet`
-        const parentGroup = getCellSetClassKey(comparisonGroup[selectedComparison]?.cellSet);
-        const isNotInTheSameGroup = rootKey !== parentGroup;
-
-        return isAlreadySelected || (option === 'compareWith' && isNotInTheSameGroup);
-      }
-
-      if (comparisonGroup[selectedComparison]) {
-        return children.map(({ key, name }) => {
-          const uniqueKey = `${rootKey}/${key}`;
-
-          return <Option key={uniqueKey} disabled={shouldDisable(rootKey, key)}>
-            {name}
-          </Option>
-        });
-      }
-    };
-
+    if (!cellSets.accessible) {
+      return (
+        <center>
+          <Loader experimentId={experimentId} />
+        </center>
+      );
+    }
     return (
-      <Form.Item label={title}>
-        <Select
-          placeholder={`Select a ${placeholder}...`}
-          style={{ width: 200 }}
-          onChange={(cellSet) => onSelectCluster(cellSet, option)}
-          value={comparisonGroup[selectedComparison][option] ?? null}
-          size='small'
-          aria-label={title}
-        >
-          {
-            option === 'basis' &&
-            <Option key='all'>
-              All
-            </Option>
-          }
-          {
-            option === 'compareWith' &&
-            <Option key='background'>
-              All other cells
-            </Option>
-          }
-          {
-            tree && tree.map(({ key, children }) => (
-              <OptGroup label={properties[key]?.name} key={key}>
-                {renderChildren(key, [...children])}
-              </OptGroup>
-            ))
-          }
-        </Select>
-      </Form.Item >
+      <DiffExprSelect
+        title={title}
+        option={option}
+        filterType={filterType}
+        onSelectCluster={onSelectCluster}
+        selectedComparison={comparisonGroup[selectedComparison]}
+        cellSets={cellSets}
+      />
     );
   };
 
@@ -181,9 +126,12 @@ const DiffExprCompute = (props) => {
       <Radio.Group
         onChange={(e) => {
           dispatch(setComparisonType(e.target.value));
-        }} defaultValue={selectedComparison}>
+        }}
+        defaultValue={selectedComparison}
+      >
         <Radio
-          value={ComparisonType.WITHIN}>
+          value={ComparisonType.WITHIN}
+        >
           <Space>
             Compare cell sets within a sample/group
             <Tooltip overlay={(
@@ -196,7 +144,8 @@ const DiffExprCompute = (props) => {
                   rel='noreferrer'
                 >
                   presto vignette
-                </a>.
+                </a>
+                .
               </span>
             )}
             >
@@ -230,7 +179,8 @@ const DiffExprCompute = (props) => {
                   rel='noreferrer'
                 >
                   pseudobulk limma-voom workflow
-                </a>.
+                </a>
+                .
               </span>
             )}
             >
@@ -243,11 +193,13 @@ const DiffExprCompute = (props) => {
       {selectedComparison === ComparisonType.WITHIN
         ? (
           <>
-            {renderClusterSelectorItem({
-              title: 'Compare cell set:',
-              option: 'cellSet',
-              filterType: 'cellSets',
-            })}
+            {
+              renderClusterSelectorItem({
+                title: 'Compare cell set:',
+                option: 'cellSet',
+                filterType: 'cellSets',
+              })
+            }
 
             {renderClusterSelectorItem({
               title: 'and cell set:',
@@ -284,42 +236,44 @@ const DiffExprCompute = (props) => {
         )}
       <Space direction='vertical'>
         {
-          isFormValid && canRunDiffExpr() === canRunDiffExprResults.INSUFFCIENT_CELLS_ERROR ?
-            <Alert
-              message="Error"
-              description={
-                <>
-                  One or more of the selected samples/groups does not contain enough cells in the selected cell set.
-                  Therefore, the analysis can not be run. Select other cell set(s) or samples/groups to compare.
-                </>
-              }
-              type="error"
-              showIcon
-            /> :
-            isFormValid && canRunDiffExpr() === canRunDiffExprResults.INSUFFICIENT_CELLS_WARNING ?
+          isFormValid && canRunDiffExpr() === canRunDiffExprResults.INSUFFCIENT_CELLS_ERROR
+            ? (
               <Alert
-                message="Warning"
-                description={
+                message='Error'
+                description={(
                   <>
-                    For the selected comparison, there are fewer than 3 samples with the minimum number of cells (10).
-                    Only logFC values will be calculated and results should be used for exploratory purposes only.
+                    One or more of the selected samples/groups does not contain enough cells in the selected cell set.
+                    Therefore, the analysis can not be run. Select other cell set(s) or samples/groups to compare.
                   </>
-                }
-                type="warning"
+                )}
+                type='error'
                 showIcon
               />
-              :
-              <></>
+            )
+            : isFormValid && canRunDiffExpr() === canRunDiffExprResults.INSUFFICIENT_CELLS_WARNING
+              ? (
+                <Alert
+                  message='Warning'
+                  description={(
+                    <>
+                      For the selected comparison, there are fewer than 3 samples with the minimum number of cells (10).
+                      Only logFC values will be calculated and results should be used for exploratory purposes only.
+                    </>
+                  )}
+                  type='warning'
+                  showIcon
+                />
+              )
+              : <></>
         }
         <Space direction='horizontal'>
           <Button
             size='small'
-            disabled={!isFormValid ||
-              [
+            disabled={!isFormValid
+              || [
                 canRunDiffExprResults.FALSE,
-                canRunDiffExprResults.INSUFFCIENT_CELLS_ERROR
-              ].includes(canRunDiffExpr())
-            }
+                canRunDiffExprResults.INSUFFCIENT_CELLS_ERROR,
+              ].includes(canRunDiffExpr())}
             onClick={() => onCompute()}
           >
             Compute
@@ -336,4 +290,4 @@ DiffExprCompute.propTypes = {
 };
 
 export default DiffExprCompute;
-export { ComparisonType }
+export { ComparisonType };

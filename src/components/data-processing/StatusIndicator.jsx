@@ -34,6 +34,8 @@ const StatusIndicator = (props) => {
     error: errorLoadingBackendStatus,
   } = useSelector(getBackendStatus(experimentId));
 
+  const pipelineHadErrors = ['FAILED', 'TIMED_OUT', 'ABORTED'].includes(backendStatus.pipeline.status);
+
   const {
     startDate, stopDate, status, error,
   } = backendStatus?.pipeline || {};
@@ -157,6 +159,7 @@ const StatusIndicator = (props) => {
           allSteps={allSteps}
           currentStep={currentStep}
           completedSteps={completedSteps.length}
+          pipelineHadErrors={pipelineHadErrors}
         />
         <div style={{ display: 'inline-block' }}>
           {statusIndicators[status]?.icon}

@@ -37,6 +37,7 @@ const getTimeoutForWorkerTask = (state, taskName) => {
     case 'GetMitochondrialContent':
     case 'GetDoubletScore':
     case 'GetNormalizedExpression':
+    case 'DownloadAnnotSeuratObject':
     case 'DifferentialExpression':
     case 'GetNUmis':
     case 'GetNGenes':

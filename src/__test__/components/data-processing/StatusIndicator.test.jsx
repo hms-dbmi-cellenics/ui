@@ -127,9 +127,12 @@ describe('StatusIndicator', () => {
   });
 
   it('Shows correctly for failed status', async () => {
-    const failedState = { status: pipelineStatus.FAILED };
+    const failedState = { status: pipelineStatus.FAILED, completedSteps: steps.slice(0, 3) };
 
-    renderStatusIndicator(mockStore(generateState(failedState)));
+    renderStatusIndicator(
+      mockStore(generateState(failedState)),
+      { completedSteps: failedState.completedSteps, allSteps: steps },
+    );
 
     openDropdown();
 

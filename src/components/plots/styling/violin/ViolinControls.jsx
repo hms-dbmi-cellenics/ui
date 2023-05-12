@@ -66,8 +66,8 @@ const ViolinControls = (props) => {
                 onChange={(e) => onUpdateConditional({ normalised: e.target.value })}
                 value={config.normalised}
               >
-                <Radio value='normalised'>Normalized</Radio>
                 <Radio value='raw'>Raw values</Radio>
+                <Radio value='zScore'>Z-score</Radio>
               </Radio.Group>
             </Form.Item>
             <Form.Item label='Bandwidth Adjustment'>
