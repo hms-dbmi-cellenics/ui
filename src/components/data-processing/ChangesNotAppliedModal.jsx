@@ -61,11 +61,9 @@ const ChangesNotAppliedModal = (props) => {
     onCloseModal();
   };
 
-  useEffect(async () => {
-    const authorized = await isUserAuthorized(experimentId, getURL(experimentId), 'POST');
-
-    setRunQCAuthorized(authorized);
-  });
+  useEffect(() => {
+    isUserAuthorized(experimentId, getURL(experimentId), 'POST').then(setRunQCAuthorized);
+  }, []);
 
   return (
     <>

@@ -106,7 +106,7 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
   const [runQCModalVisible, setRunQCModalVisible] = useState(false);
   const [inputsList, setInputsList] = useState([]);
 
-  useEffect(async () => {
+  useEffect(() => {
     // If processingConfig is not loaded then reload
     if (Object.keys(processingConfig).length <= 1) {
       dispatch(loadProcessingSettings(experimentId));
@@ -115,9 +115,7 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
     dispatch(loadSamples(experimentId));
     dispatch(loadCellSets(experimentId));
 
-    setRunQCAuthorized(
-      await isUserAuthorized(experimentId, getURL(experimentId), 'POST'),
-    );
+    isUserAuthorized(experimentId, getURL(experimentId), 'POST').then(setRunQCAuthorized);
   }, []);
 
   // Checks if the step is in the 'completed steps' list we get from the pipeline status
