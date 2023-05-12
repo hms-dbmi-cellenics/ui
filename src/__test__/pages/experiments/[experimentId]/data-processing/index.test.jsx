@@ -143,6 +143,8 @@ describe('DataProcessingPage', () => {
   });
 
   it('Renders the first page correctly', () => {
+    fetchMock.mockIf(new RegExp(`/v2/access/${experimentId}/check?.*`), () => Promise.resolve(JSON.stringify(true)));
+
     const store = getStore();
 
     render(
@@ -177,6 +179,8 @@ describe('DataProcessingPage', () => {
   });
 
   it('Last button of the filter should redirect to Data Exploration', () => {
+    fetchMock.mockIf(new RegExp(`/v2/access/${experimentId}/check?.*`), () => Promise.resolve(JSON.stringify(true)));
+
     const store = getStore();
 
     render(
@@ -310,7 +314,9 @@ describe('DataProcessingPage', () => {
     });
   });
 
-  it('Should not show extra information if there is no new version of the QC pipeline', () => {
+  it('Should not show extra information if there is no new version of the QC pipeline', async () => {
+    fetchMock.mockIf(new RegExp(`/v2/access/${experimentId}/check?.*`), () => Promise.resolve(JSON.stringify(true)));
+
     const store = getStore(experimentId, {
       experimentSettings: {
         processing: { meta: { changedQCFilters: new Set(['classifier']) } },
@@ -335,11 +341,15 @@ describe('DataProcessingPage', () => {
     expect(screen.queryByText(/Due to a recent update, re-running the pipeline will initiate the run from the beginning/)).toBeNull();
 
     // There should only be 2 buttons
-    expect(screen.getByText('Start')).toBeInTheDocument();
-    expect(screen.getByText('Cancel')).toBeInTheDocument();
+    await waitFor(async () => {
+      expect(screen.getByText('Start')).toBeInTheDocument();
+      expect(screen.getByText('Cancel')).toBeInTheDocument();
+    });
   });
 
   it('Classifier filter (1st filter) should show custom disabled message if sample is prefiltered ', () => {
+    fetchMock.mockIf(new RegExp(`/v2/access/${experimentId}/check?.*`), () => Promise.resolve(JSON.stringify(true)));
+
     const store = getStore(
       experimentId,
       {
@@ -376,6 +386,8 @@ describe('DataProcessingPage', () => {
   });
 
   it('Classifier filter (1st filter) should not be disabled and not show error if not prefiltered ', async () => {
+    fetchMock.mockIf(new RegExp(`/v2/access/${experimentId}/check?.*`), () => Promise.resolve(JSON.stringify(true)));
+
     const store = getStore();
 
     await render(
@@ -394,6 +406,8 @@ describe('DataProcessingPage', () => {
   });
 
   it('A disabled filter shows a warning', async () => {
+    fetchMock.mockIf(new RegExp(`/v2/access/${experimentId}/check?.*`), () => Promise.resolve(JSON.stringify(true)));
+
     const store = getStore(
       experimentId,
       {
@@ -421,6 +435,8 @@ describe('DataProcessingPage', () => {
   });
 
   it('Disabling a filter saves and dispatches appropriate actions', async () => {
+    fetchMock.mockIf(new RegExp(`/v2/access/${experimentId}/check?.*`), () => Promise.resolve(JSON.stringify(true)));
+
     const store = getStore(experimentId);
     saveProcessingSettings.mockImplementation(() => () => Promise.resolve());
     render(
@@ -438,6 +454,8 @@ describe('DataProcessingPage', () => {
   });
 
   it('Shows a wait screen if pipeline is still running', () => {
+    fetchMock.mockIf(new RegExp(`/v2/access/${experimentId}/check?.*`), () => Promise.resolve(JSON.stringify(true)));
+
     getBackendStatus.mockImplementation(() => () => ({
       loading: false,
       error: false,
