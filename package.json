@@ -119,7 +119,7 @@
     "socket.io-client": "^2.3.0",
     "socket.io-mock": "^1.3.2",
     "stacktrace-js": "^2.0.2",
-    "styled-components": "^5.3.1",
+    "styled-components": "^5.3.10",
     "swr": "^1.1.2",
     "terser-webpack-plugin": "^1.1.0",
     "thread-loader": "^2.1.3",
