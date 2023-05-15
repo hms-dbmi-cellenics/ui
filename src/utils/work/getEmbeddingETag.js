@@ -4,7 +4,7 @@ import generateETag from 'utils/work/generateETag';
 const getEmbeddingETag = async (experimentId, getState, dispatch, inputEmbeddingMethod = null) => {
   const {
     clusteringSettings,
-    embeddingSettings: { methodSettings, method: reduxEmbeddingMethod },
+    embeddingSettings: { methodSettings, method: reduxEmbeddingMethod, useSaved },
   } = getState().experimentSettings.processing.configureEmbedding;
 
   const { environment } = getState().networkResources;
@@ -19,6 +19,7 @@ const getEmbeddingETag = async (experimentId, getState, dispatch, inputEmbedding
     name: 'GetEmbedding',
     type: embeddingMethod,
     config: methodSettings[embeddingMethod],
+    useSaved,
   };
 
   const embeddingETag = await generateETag(
