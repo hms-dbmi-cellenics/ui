@@ -14,7 +14,6 @@ const CoursesBanner = () => {
     }
     // If the current time is past the expiry time, remove the items from localStorage
     const bannerClosed = JSON.parse(bannerClosedItem);
-    console.log('BANNER CLOSED ', bannerClosed);
 
     if ((bannerClosed.timestamp && new Date().getTime() > bannerClosed.timestamp)) {
       localStorage.removeItem('bannerClosed');
