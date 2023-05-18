@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Alert, Typography } from 'antd';
 
-const { Link } = Typography;
+const { Link, Text } = Typography;
 
 const CoursesBanner = () => {
   const [visible, setVisible] = useState(true);
@@ -31,11 +31,10 @@ const CoursesBanner = () => {
     localStorage.setItem('bannerClosed', JSON.stringify(bannerClosed));
     setVisible(false);
   };
-
   return visible ? (
     <Alert
       message={(
-        <>
+        <Text style={{ fontSize: '18px', lineHeight: '2' }}>
           Do you want to learn how to get the most out of
           {' '}
           <strong>Cellenics®</strong>
@@ -46,11 +45,12 @@ const CoursesBanner = () => {
           <Link href='https://www.biomage.net/cellenicscourse' target='_blank'>this page</Link>
           .
           {'  '}
+          <br />
           <Link href='https://docs.google.com/forms/d/e/1FAIpQLSc3RkmbEUXOsCtFS030wIbtdHebDlXqY2ebUC0oPFobHTUdsg/viewform' target='_blank'> Register here today </Link>
           and boost your analysis skills!
-        </>
+        </Text>
       )}
-      type='info'
+      type='warning'
       showIcon
       banner
       closable

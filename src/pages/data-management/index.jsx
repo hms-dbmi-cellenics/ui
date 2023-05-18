@@ -107,9 +107,9 @@ const DataManagementPage = () => {
 
   return (
     <>
-      <Header title='Data Management' />
       {(domainName === DomainName.BIOMAGE || domainName === DomainName.BIOMAGE_STAGING)
       && (<CoursesBanner />)}
+      <Header title='Data Management' />
       {newProjectModalVisible ? (
         <NewProjectModal
           onCancel={() => { setNewProjectModalVisible(false); }}
