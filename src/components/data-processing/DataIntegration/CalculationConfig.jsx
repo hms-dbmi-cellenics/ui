@@ -279,7 +279,7 @@ const CalculationConfig = (props) => {
               >
                 <Space direction='vertical'>
                   <Checkbox value='ribosomal'>Ribosomal</Checkbox>
-                  <Checkbox disabled value='mitochondrial'>Mitochondrial</Checkbox>
+                  <Checkbox value='mitochondrial'>Mitochondrial</Checkbox>
                   <Checkbox value='cellCycle'>
                     <span>
                       Cell cycle genes
