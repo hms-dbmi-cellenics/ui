@@ -9,7 +9,6 @@ import {
 import { saveProcessingSettings } from 'redux/actions/experimentSettings';
 import { loadBackendStatus } from 'redux/actions/backendStatus';
 import { loadEmbedding } from 'redux/actions/embedding';
-// import isUserAuthorized from 'utils/isUserAuthorized';
 
 const runOnlyConfigureEmbedding = async (experimentId, embeddingMethod, dispatch) => {
   await dispatch(saveProcessingSettings(experimentId, 'configureEmbedding'));
