@@ -13,7 +13,7 @@ const AddMetadataButton = ({ samplesTableRef }) => {
   const dispatch = useDispatch();
   const { activeExperimentId } = useSelector((state) => state.experiments.meta);
   const activeExperiment = useSelector((state) => state.experiments[activeExperimentId]);
-  const parentExperimentId = activeExperiment?.parentExperimentId;
+  const isSubsetted = activeExperiment?.isSubsetted;
   const [uploadModalVisible, setUploadModalVisible] = useState(false);
 
   const uploadFiles = (file) => {
@@ -44,7 +44,7 @@ const AddMetadataButton = ({ samplesTableRef }) => {
         )}
         trigger={['click']}
         placement='bottomRight'
-        disabled={activeExperiment.sampleIds?.length === 0 || parentExperimentId}
+        disabled={activeExperiment.sampleIds?.length === 0 || isSubsetted}
       >
         <Button>
           Add metadata

@@ -31,7 +31,7 @@ const ProjectDetails = ({ width, height }) => {
   const { activeExperimentId } = useSelector((state) => state.experiments.meta);
   const activeExperiment = useSelector((state) => state.experiments[activeExperimentId]);
   const samplesTableRef = useRef();
-  const parentExperimentId = activeExperiment?.parentExperimentId;
+  const isSubsetted = activeExperiment?.isSubsetted;
 
   const clone = async () => {
     const newExperimentId = await dispatch(cloneExperiment(activeExperimentId, `Copy of ${activeExperiment.name}`));
@@ -58,7 +58,7 @@ const ProjectDetails = ({ width, height }) => {
             <Space>
               <Button
                 onClick={clone}
-                disabled={parentExperimentId}
+                disabled={isSubsetted}
               >
                 Copy
               </Button>
