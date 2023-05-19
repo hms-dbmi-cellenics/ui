@@ -9,7 +9,7 @@ const experimentTemplate = {
   metadataKeys: [],
   pipelineVersion: 1,
   parentExperimentId: null,
-  isSubsetted: null,
+  isSubsetted: false,
 };
 
 const initialState = {
