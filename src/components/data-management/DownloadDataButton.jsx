@@ -31,7 +31,7 @@ const DownloadDataButton = () => {
   } = useSelector(getBackendStatus(activeExperimentId));
 
   const samples = useSelector((state) => state.samples);
-  const [qcHasRun, setQcHasRun] = useState(false);
+  const [pipelineHasRun, setPipelineHasRun] = useState(false);
   const [allSamplesAnalysed, setAllSamplesAnalysed] = useState(false);
   const [downloadingProcessedSeurat, setDownloadingProcessedSeurat] = useState(false);
   const [dropdownExpanded, setDropdownExpanded] = useState(false);
@@ -43,8 +43,12 @@ const DownloadDataButton = () => {
   }, [activeExperimentId]);
 
   useEffect(() => {
-    setQcHasRun(
-      activeExperimentId && (backendStatuses?.pipeline?.status === pipelineStatus.SUCCEEDED),
+    console.log('backendStatuses!!!');
+    console.log(backendStatuses);
+
+    setPipelineHasRun(
+      activeExperimentId && (backendStatuses?.pipeline?.status === pipelineStatus.SUCCEEDED
+        || backendStatuses?.seurat?.status === pipelineStatus.SUCCEEDED),
     );
   }, [backendStatuses]);
 
@@ -91,7 +95,7 @@ const DownloadDataButton = () => {
         >
           <Menu.Item
             key='download-processed-seurat'
-            disabled={!qcHasRun || backendLoading}
+            disabled={!pipelineHasRun || backendLoading}
             onClick={(e) => {
               e.domEvent.stopPropagation();
 
@@ -100,7 +104,7 @@ const DownloadDataButton = () => {
           >
             <Tooltip
               title={
-                qcHasRun
+                pipelineHasRun
                   ? 'With Data Processing filters and settings applied'
                   : 'Launch analysis to process data'
               }
