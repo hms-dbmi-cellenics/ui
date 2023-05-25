@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  PageHeader, Space,
+  PageHeader, Space, Button,
 } from 'antd';
 import PropTypes from 'prop-types';
 import { NextSeo } from 'next-seo';
@@ -35,6 +35,11 @@ const Header = (props) => {
         extra={(
           <Space size='large'>
             <Space>
+              <Button>
+                <a href='https://www.biomage.net/cellenicscourse' target='_blank' rel='noreferrer'>
+                  Courses
+                </a>
+              </Button>
               <HelpButton />
               <FeedbackButton />
               <ReferralButton />

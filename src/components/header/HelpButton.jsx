@@ -29,7 +29,7 @@ const HelpButton = () => {
       </a>
       {' '}
       and
-      <a href='https://www.biomage.net/resources' target='_blank' rel='noreferrer'> tutorial videos </a>
+      <a href='https://www.youtube.com/@biomageltd4616/featured' target='_blank' rel='noreferrer'> tutorial videos </a>
       that are available on our website!
 
       {accountId !== AccountId.BIOMAGE && (
