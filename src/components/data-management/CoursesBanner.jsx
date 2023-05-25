@@ -15,6 +15,7 @@ const CoursesBanner = () => {
     // If the current time is past the expiry time, remove the items from localStorage
     const bannerClosed = JSON.parse(bannerClosedItem);
 
+    // after the timeout passes the entry is deleted from localstorage and the banner is shown again
     if ((bannerClosed.timestamp && new Date().getTime() > bannerClosed.timestamp)) {
       localStorage.removeItem('bannerClosed');
       setVisible(true);
@@ -26,6 +27,7 @@ const CoursesBanner = () => {
   const handleClose = () => {
     const bannerClosed = {
       value: 'true',
+      // adding a 7 day timeout
       timestamp: new Date().getTime() + (7 * 24 * 60 * 60 * 1000),
     };
     localStorage.setItem('bannerClosed', JSON.stringify(bannerClosed));
