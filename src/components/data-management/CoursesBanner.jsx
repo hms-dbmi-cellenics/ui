@@ -36,7 +36,7 @@ const CoursesBanner = () => {
   return visible ? (
     <Alert
       message={(
-        <Text style={{ fontSize: '18px', lineHeight: '2' }}>
+        <Text style={{ fontSize: '16px', lineHeight: '1.5' }}>
           Do you want to learn how to get the most out of
           {' '}
           <strong>Cellenics®</strong>
