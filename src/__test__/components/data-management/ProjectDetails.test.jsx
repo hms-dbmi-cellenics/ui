@@ -237,6 +237,8 @@ describe('ProjectDetails', () => {
   it('Add metadata button is disabled for subset experiments', () => {
     const state = _.cloneDeep(withDataState);
     state.experiments[experiment1id].parentExperimentId = '736de01d-cb70-439a-9fdf-9b269a72fc67';
+    state.experiments[experiment1id].isSubsetted = true;
+
     render(
       <Provider store={mockStore(state)}>
         {projectDetailsFactory()}

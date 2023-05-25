@@ -227,6 +227,7 @@ Object {
     "createdAt": "2021-01-01",
     "description": "this is a test description",
     "id": "experiment-1",
+    "isSubsetted": false,
     "metadataKeys": Array [],
     "name": "experiment 1",
     "notifyByEmail": true,

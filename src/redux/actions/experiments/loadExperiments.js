@@ -11,7 +11,6 @@ const loadExperiments = () => async (dispatch) => {
 
   try {
     const experiments = await fetchAPI('/v2/experiments');
-
     experiments.forEach((experiment) => {
       // eslint-disable-next-line no-param-reassign
       experiment.sampleIds = experiment.samplesOrder;
