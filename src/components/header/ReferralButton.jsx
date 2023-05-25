@@ -47,7 +47,6 @@ const ReferralButton = () => {
         text: user.attributes.name,
 
       },
-
       {
         type: 'mrkdwn',
         text: '*Email:*',
@@ -56,7 +55,14 @@ const ReferralButton = () => {
         type: 'plain_text',
         text: user.attributes.email,
       },
-
+      {
+        type: 'mrkdwn',
+        text: '*Domain:*',
+      },
+      {
+        type: 'plain_text',
+        text: window.location.hostname,
+      },
       {
         type: 'mrkdwn',
         text: '*User UUID:*',
