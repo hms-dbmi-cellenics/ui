@@ -58,4 +58,6 @@ export default {
   WORK_REQUEST_TIMED_OUT_RETRY: 'The task is taking longer than expected, please retry.',
   SAVING_SAMPLE: 'Saving sample...',
   SAVING_PROJECT: 'Saving project...',
+  SHARE_SUCESS_NOTIFICATION_FAILURE: 'The project was shared, but we weren’t able to notify the new collaborator',
+  SHARE_FAILURE: 'We weren\'t able to share the project',
 };
