@@ -349,7 +349,7 @@ const SamplesTable = forwardRef((props, ref) => {
   return (
     <>
       {
-        activeExperiment?.parentExperimentId ? (
+        activeExperiment?.isSubsetted ? (
           <center>
             <Alert
               type='info'
@@ -358,7 +358,7 @@ const SamplesTable = forwardRef((props, ref) => {
                 <>
                   This is a subset of
                   {' '}
-                  <b>{parentExperimentName}</b>
+                  <b>{parentExperimentName || ' a deleted experiment'}</b>
                   .
                   <br />
                   You can  see remaining samples after subsetting in
