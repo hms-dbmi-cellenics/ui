@@ -27,7 +27,7 @@ const sendInvites = async (addedUsers, experimentInfo) => {
       );
       pushNotificationMessage('success', `User ${user} has been successfully invited to view ${experimentName}.`);
     } catch (e) {
-      handleError(e);
+      handleError(e, e?.userMessage);
     }
   });
 
