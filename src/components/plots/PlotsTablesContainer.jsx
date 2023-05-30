@@ -110,6 +110,12 @@ const plots = [
         key: 'volcano-key',
         link: 'volcano',
       },
+      {
+        name: plotNames.BATCH_DIFFERENTIAL_EXPRESSION,
+        image: '/static/media/batch-de.png',
+        key: 'batch-differential-expression-key',
+        link: 'batch-differential-expression',
+      },
     ],
   },
 ];

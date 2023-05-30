@@ -13,7 +13,7 @@ import {
 import { loadCellSets } from 'redux/actions/cellSets';
 import Header from 'components/Header';
 import PlotContainer from 'components/plots/PlotContainer';
-import ViolinPlot from 'components/plots/ViolinPlotMain';
+import ViolinPlotMain from 'components/plots/ViolinPlotMain';
 import { getCellSets, getGeneList, getPlotConfigs } from 'redux/selectors';
 import { plotNames } from 'utils/constants';
 import MultiViewGrid from 'components/plots/MultiViewGrid';
@@ -174,13 +174,18 @@ const ViolinIndex = ({ experimentId }) => {
 
     const newPlotUuids = [...multiViewPlotUuids];
 
-    const dimensionsToUse = plotConfigs[multiViewPlotUuids[0]].dimensions;
-
     genesToAdd.forEach((gene, index) => {
       const plotUuidToAdd = generateMultiViewGridPlotUuid(plotUuid, newIndexes[index]);
       newPlotUuids.push(plotUuidToAdd);
 
-      const customConfig = { shownGene: gene, title: { text: gene }, dimensions: dimensionsToUse };
+      // Taking the config the user currently sees (selectedConfig),
+      //  copy it and add the gene-specific settings
+      const customConfig = {
+        ...selectedConfig,
+        shownGene: gene,
+        title: { text: gene },
+      };
+
       loadComponent(plotUuidToAdd, plotType, true, customConfig);
     });
 
@@ -259,7 +264,7 @@ const ViolinIndex = ({ experimentId }) => {
   );
 
   const renderPlot = (plotUuidToRender) => (
-    <ViolinPlot
+    <ViolinPlotMain
       experimentId={experimentId}
       plotUuid={plotUuidToRender}
     />

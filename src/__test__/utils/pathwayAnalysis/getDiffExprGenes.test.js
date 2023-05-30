@@ -5,7 +5,7 @@ import { makeStore } from 'redux/store';
 import fetchWork from 'utils/work/fetchWork';
 
 import setGeneOrdering from 'redux/actions/differentialExpression/setGeneOrdering';
-import getDiffExprGenes from 'utils/differentialExpression/getDiffExprGenes';
+import getDiffExprGenes from 'utils/extraActionCreators/differentialExpression/getDiffExprGenes';
 
 import fake from '__test__/test-utils/constants';
 

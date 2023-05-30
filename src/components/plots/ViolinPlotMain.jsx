@@ -35,7 +35,7 @@ const ViolinPlotMain = (props) => {
       && !geneExpression.error
       && geneExpression.matrix.geneIsLoaded(config.shownGene)
       && cellSets.accessible) {
-      const geneExpressionData = config.normalised === 'normalised'
+      const geneExpressionData = config.normalised === 'zScore'
         ? geneExpression.matrix.getZScore(config.shownGene)
         : geneExpression.matrix.getRawExpression(config.shownGene);
 

@@ -8,6 +8,7 @@ import {
 } from 'react-redux';
 import { setCellSetHiddenStatus } from 'redux/actions/cellSets';
 import { getCellSets } from 'redux/selectors';
+import colors from 'utils/styling/colors';
 
 const HideButton = (props) => {
   const { cellSetKey } = props;
@@ -20,8 +21,8 @@ const HideButton = (props) => {
   const style = {};
 
   if ((hiddenCellSets.has(cellSetKey))) {
-    style.color = '#40a9ff';
-    style.borderColor = '#40a9ff';
+    style.color = colors.lightBlue;
+    style.borderColor = colors.lightBlue;
   }
 
   return (

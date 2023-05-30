@@ -23,6 +23,7 @@ import {
 import React, {
   useCallback,
   useEffect,
+  useMemo,
   useState,
 } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -165,7 +166,6 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
 
   const steps = [
     {
-
       key: 'classifier',
       name: getUserFriendlyQCStepName('classifier'),
       description: 'The Classifier filter is based on the ‘emptyDrops’ method which distinguishes between droplets containing cells and ambient RNA. Droplets are filtered based on the False Discovery Rate (FDR) value - the red line on the density plot. In the knee plot, the ‘mixed’ population shown in grey contains some cells that are filtered out and some that remain and can be filtered further in the next filter.',
@@ -184,6 +184,7 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
               sampleIds={sampleKeys}
               onConfigChange={() => onConfigChange(key)}
               stepDisabled={!checkIfSampleIsEnabled(key)}
+              stepHadErrors={getStepHadErrors(key)}
             />
           )}
         />
@@ -207,6 +208,7 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
               sampleIds={sampleKeys}
               onConfigChange={() => onConfigChange(key)}
               stepDisabled={!checkIfSampleIsEnabled(key)}
+              stepHadErrors={getStepHadErrors(key)}
             />
           )}
         />
@@ -230,6 +232,7 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
               sampleIds={sampleKeys}
               onConfigChange={() => onConfigChange(key)}
               stepDisabled={!checkIfSampleIsEnabled(key)}
+              stepHadErrors={getStepHadErrors(key)}
             />
           )}
         />
@@ -254,6 +257,7 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
               onConfigChange={() => onConfigChange(key)}
               stepDisabled={!checkIfSampleIsEnabled(key)}
               onQCRunClick={() => setRunQCModalVisible(true)}
+              stepHadErrors={getStepHadErrors(key)}
             />
           )}
         />
@@ -289,6 +293,7 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
               sampleIds={sampleKeys}
               onConfigChange={() => onConfigChange(key)}
               stepDisabled={!checkIfSampleIsEnabled(key)}
+              stepHadErrors={getStepHadErrors(key)}
             />
           )}
         />
@@ -304,6 +309,7 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
           key={key}
           onConfigChange={() => onConfigChange(key)}
           disableDataIntegration={sampleKeys && sampleKeys.length === 1}
+          stepHadErrors={getStepHadErrors(key)}
         />
       ),
     },
@@ -317,12 +323,22 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
           experimentId={expId}
           key={key}
           onConfigChange={() => onConfigChange(key)}
+          stepHadErrors={getStepHadErrors(key)}
         />
       ),
     },
   ];
 
   const currentStep = steps[stepIdx];
+
+  const getStepHadErrors = (key) => pipelineHadErrors && !isStepComplete(key);
+
+  const stepIsDisabled = (index) => {
+    const disabledPendingExecution = pipelineRunning && !isStepComplete(steps[index].key);
+    const disabledByError = pipelineHadErrors && !isStepComplete(steps[index - 1]?.key);
+
+    return disabledPendingExecution || disabledByError;
+  };
 
   // check that the order and identities of the QC steps above match
   // the canonical representation
@@ -409,16 +425,14 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
                     {
                       steps.map(
                         ({ name, key }, i) => {
-                          const disabledByPipeline = (pipelineNotFinished && !isStepComplete(key));
+                          // Display for users with 1-based index
                           const text = `${i + 1}. ${name}`;
 
                           return (
                             <Option
                               value={i}
                               key={key}
-                              disabled={
-                                disabledByPipeline
-                              }
+                              disabled={stepIsDisabled(i)}
                             >
                               {!checkIfSampleIsEnabled(key) ? (
                                 <>
@@ -434,7 +448,21 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
                                     {text}
                                   </span>
                                 </>
-                              ) : !disabledByPipeline ? (
+                              ) : getStepHadErrors(steps[i].key) ? (
+                                <>
+                                  {/* error */}
+                                  <Text
+                                    type='danger'
+                                  >
+                                    <CloseOutlined />
+                                  </Text>
+                                  <span
+                                    style={{ marginLeft: '0.25rem' }}
+                                  >
+                                    {text}
+                                  </span>
+                                </>
+                              ) : !stepIsDisabled(i) ? (
                                 <>
                                   {/* finished */}
                                   <Text
@@ -471,7 +499,8 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
                                   </Text>
                                   <span style={{ marginLeft: '0.25rem' }}>{text}</span>
                                 </>
-                              ) : <></>}
+                              )
+                                : <></>}
                             </Option>
                           );
                         },
@@ -537,9 +566,7 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
                           const newStepIdx = Math.min(stepIdx + 1, steps.length - 1);
                           changeStepId(newStepIdx);
                         }}
-                        disabled={steps[stepIdx + 1] !== undefined
-                          && pipelineNotFinished
-                          && !isStepComplete(steps[stepIdx + 1].key)}
+                        disabled={steps[stepIdx + 1] !== undefined && stepIsDisabled(stepIdx + 1)}
                         icon={<RightOutlined />}
                         size='small'
                       />
@@ -574,7 +601,7 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
       return <div><PipelineRedirectToDataProcessing pipelineStatus='runningStep' /></div>;
     }
 
-    if (pipelineNotFinished && !isStepComplete(key)) {
+    if (stepIsDisabled(stepIdx)) {
       return (
         <div>
           <div style={{ display: 'flex', justifyContent: 'center' }}>

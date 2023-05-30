@@ -33,7 +33,7 @@ const plotType = 'doubletScoreHistogram';
 
 const DoubletScores = (props) => {
   const {
-    experimentId, sampleId, sampleIds, onConfigChange, stepDisabled,
+    experimentId, sampleId, sampleIds, onConfigChange, stepDisabled, stepHadErrors,
   } = props;
 
   const plotUuid = generateDataProcessingPlotUuid(sampleId, filterName, 0);
@@ -97,7 +97,7 @@ const DoubletScores = (props) => {
 
   const renderPlot = () => {
     // Spinner for main window
-    if (!config || !plotData) {
+    if (!config || !plotData || stepHadErrors) {
       return (
         <center>
           <Skeleton.Image style={{ width: 400, height: 400 }} />
@@ -171,6 +171,7 @@ DoubletScores.propTypes = {
   sampleIds: PropTypes.array.isRequired,
   onConfigChange: PropTypes.func.isRequired,
   stepDisabled: PropTypes.bool,
+  stepHadErrors: PropTypes.bool.isRequired,
 };
 
 DoubletScores.defaultProps = {

@@ -18,7 +18,6 @@ const getMultipleWindowsConfig = (first, second) => ({
 const addWindow = (panel, window) => (dispatch, getState) => {
   const { layout } = getState();
   let newLayout;
-  console.log('panel and window are', panel, window);
 
   // only use panel if window is passed too
   const panelExtra = (panel && window) ? panel : undefined;
