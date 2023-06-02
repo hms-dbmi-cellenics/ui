@@ -34,14 +34,14 @@ jobs:
           EOF
           )
 
-          UNCHECKED_BODY="${UNCHECKED_BODY//'%'/'%25'}"
-          UNCHECKED_BODY="${UNCHECKED_BODY//$'\n'/'%0A'}"
-          UNCHECKED_BODY="${UNCHECKED_BODY//$'\r'/'%0D'}"
-
           echo "Unchecked PR body"
           echo $UNCHECKED_BODY
 
-          echo "::set-output name=body::$UNCHECKED_BODY"
+          # This sets multiline strings into the output variable
+          # See https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#example-of-a-multiline-string
+          echo "body<<EOF" >> "$GITHUB_OUTPUT"
+          echo "$UNCHECKED_BODY" >> "$GITHUB_OUTPUT"
+          echo "EOF" >> "$GITHUB_OUTPUT"
 
       - id: uncheck-integration-checkbox
         name: Uncheck the integration checkbox
@@ -139,7 +139,7 @@ jobs:
           # This will take a ref like `refs/heads/master`
           # and turn it into `refs-heads-master`
           REF_ID=$(echo $GITHUB_REF | sed 's/\//-/g')
-          echo "::set-output name=ref-id::$REF_ID"
+          echo "ref-id=$REF_ID" >> $GITHUB_OUTPUT
 
           # the final tag is something like:
           # refs-heads-master-a4f8bc313dae
@@ -166,13 +166,13 @@ jobs:
           # IMAGE_TAG is used in the Build Docker Image step.
           # We can easily build the image-tag from REF_ID and COMMIT_SHA for non-production releases.
           # But we can not easily create the image tag for production releases, so we're bulding it here
-          echo "::set-output name=image-tag::$IMAGE_TAG"
+          echo "image-tag=$IMAGE_TAG" >> $GITHUB_OUTPUT
 
           # This will take a GitHub repo name like `biomage-org/releases`
           # and turns it into `releases`. This will be the name of the
           # ECR repository.
           IMAGE_REPO_NAME=$(echo $GITHUB_REPOSITORY | awk -F '/' '{print $2}')
-          echo "::set-output name=repo-name::$IMAGE_REPO_NAME"
+          echo "repo-name=$IMAGE_REPO_NAME" >> $GITHUB_OUTPUT
 
       - id: set-up-creds
         name: Configure AWS credentials
@@ -251,7 +251,7 @@ jobs:
         name: Fill out a new HelmRelease resource
         run: |-
           export DEPLOYMENT_NAME=$(echo $GITHUB_REPOSITORY | awk -F '/' '{print $2}')
-          echo "::set-output name=deployment-name::$DEPLOYMENT_NAME"
+          echo "deployment-name=$DEPLOYMENT_NAME" >> $GITHUB_OUTPUT
 
           if [ "${{ matrix.environment }}" = "production" ]; then
             export SANDBOX_ID="default"
@@ -295,7 +295,7 @@ jobs:
             export MANIFEST_PATH="./staging"
           fi
 
-          echo "::set-output name=kubernetes-env::$KUBERNETES_ENV"
+          echo "kubernetes-env=$KUBERNETES_ENV" >> $GITHUB_OUTPUT
 
           export NAMESPACE="$DEPLOYMENT_NAME-$SANDBOX_ID"
           export CHART_SOURCE_NAME="$DEPLOYMENT_NAME-chart"

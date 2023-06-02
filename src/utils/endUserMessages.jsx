@@ -39,6 +39,7 @@ export default {
   ERROR_SAVING_PLOT_CONFIG: 'We couldn\'t save your plot configuration.',
   ERROR_STARTING_PIPLELINE: 'We couldn\'t start working on your data.',
   ERROR_SIGN_IN: 'We couldn\'t sign you in. Please try again.',
+  ERROR_DOWNLOADING_SEURAT_OBJECT: 'We couldn\'t get the processed Seurat object.',
   FEEDBACK_ERROR: 'We couldn\'t process your feedback. Please try submitting again.',
   FEEDBACK_SUCCESSFUL: 'Your feedback has been successfully sent. Thank you!',
   REFERRAL_ERROR: 'We couldn\'t process your referral. Please try submitting again.',
@@ -54,8 +55,9 @@ export default {
     </>),
   SUCCESS_CELL_SETS_RECLUSTERED: 'Cell sets have been reclustered. Your cell sets have changed.',
   SUCCESS_CELL_SETS_ANNOTATED: 'Cell sets have been annotated. Your cell sets have changed.',
-  NO_CLUSTERS: 'No custom cell sets available, to create more go to data-exploration.',
   WORK_REQUEST_TIMED_OUT_RETRY: 'The task is taking longer than expected, please retry.',
   SAVING_SAMPLE: 'Saving sample...',
   SAVING_PROJECT: 'Saving project...',
+  SHARE_SUCESS_NOTIFICATION_FAILURE: 'The project was shared, but we weren’t able to notify the new collaborator',
+  SHARE_FAILURE: 'We weren\'t able to share the project',
 };

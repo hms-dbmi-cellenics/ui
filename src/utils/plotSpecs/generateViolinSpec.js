@@ -146,7 +146,7 @@ const generateSpec = (config, plotData) => {
         orient: 'left',
         scale: 'yscale',
         zindex: 1,
-        title: config.axes.yAxisText ? config.axes.yAxisText : (config.normalised === 'normalised' ? 'Normalised Expression' : 'Raw Expression'),
+        title: config.axes.yAxisText ? config.axes.yAxisText : (config.normalised === 'zScore' ? 'Z-Score of Expression' : 'Raw Expression'),
         titlePadding: 5,
         gridColor: config.colour.masterColour,
         gridOpacity: (config.axes.gridOpacity / 20),

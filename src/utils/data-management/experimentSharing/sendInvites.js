@@ -1,6 +1,7 @@
 import fetchAPI from 'utils/http/fetchAPI';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
 import handleError from 'utils/http/handleError';
+import endUserMessages from 'utils/endUserMessages';
 
 const sendInvites = async (addedUsers, experimentInfo) => {
   const {
@@ -27,7 +28,11 @@ const sendInvites = async (addedUsers, experimentInfo) => {
       );
       pushNotificationMessage('success', `User ${user} has been successfully invited to view ${experimentName}.`);
     } catch (e) {
-      handleError(e);
+      const messageToDisplay = e?.userMessage === 'NotificationFailure'
+        ? endUserMessages.SHARE_SUCESS_NOTIFICATION_FAILURE
+        : endUserMessages.SHARE_FAILURE;
+
+      handleError(e, messageToDisplay);
     }
   });
 

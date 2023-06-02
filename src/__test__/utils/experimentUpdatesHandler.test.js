@@ -99,19 +99,6 @@ describe('ExperimentUpdatesHandler', () => {
     jest.clearAllMocks();
   });
 
-  it('Logs error if there is an error returned as an experiment update', () => {
-    const mockUpdate = {
-      ...mockQcUpdate,
-      response: mockError,
-      status: mockBackendStatusError,
-    };
-
-    triggerExperimentUpdate(mockUpdate);
-
-    expect(global.console.error).toHaveBeenCalledTimes(1);
-    expect(global.console.error).toMatchSnapshot();
-  });
-
   it('Triggers properly for GEM2S updates ', () => {
     const mockUpdate = mockGem2sUpdate;
 
@@ -161,6 +148,53 @@ describe('ExperimentUpdatesHandler', () => {
     expect(loadCellSets).not.toHaveBeenCalled();
 
     expect(pushNotificationMessage).not.toHaveBeenCalled();
+  });
+
+  it('Handles qc errors correctly with config update', () => {
+    const mockUpdate = {
+      ...mockQcUpdate,
+      output: {
+        ...mockQcUpdate.output,
+        plotData: undefined,
+      },
+      response: mockError,
+      status: mockBackendStatusError,
+    };
+
+    triggerExperimentUpdate(mockUpdate);
+
+    // Performs all the updates it can
+    expect(updateBackendStatus).toHaveBeenCalledTimes(1);
+    expect(updateProcessingSettingsFromQC).toHaveBeenCalledTimes(1);
+    expect(updatePipelineVersion).toHaveBeenCalledTimes(1);
+
+    // Doesn't try to update the plot data
+    expect(updatePlotData).not.toHaveBeenCalled();
+
+    expect(global.console.error).toHaveBeenCalledTimes(1);
+    expect(global.console.error).toMatchSnapshot();
+  });
+
+  it('Handles qc errors correctly without config update', () => {
+    const mockUpdate = {
+      ...mockQcUpdate,
+      output: undefined,
+      response: mockError,
+      status: mockBackendStatusError,
+    };
+
+    triggerExperimentUpdate(mockUpdate);
+
+    // Performs all the updates it can
+    expect(updateBackendStatus).toHaveBeenCalledTimes(1);
+    expect(updatePipelineVersion).toHaveBeenCalledTimes(1);
+
+    // Doesn't try to update the plot data or config
+    expect(updateProcessingSettingsFromQC).not.toHaveBeenCalled();
+    expect(updatePlotData).not.toHaveBeenCalled();
+
+    expect(global.console.error).toHaveBeenCalledTimes(1);
+    expect(global.console.error).toMatchSnapshot();
   });
 
   it('Loads cell sets if QC pipeline completes ', () => {

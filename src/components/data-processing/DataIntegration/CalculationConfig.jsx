@@ -10,7 +10,7 @@ import {
   Form,
   Checkbox,
   Tooltip,
-  Typography,
+  Alert,
 } from 'antd';
 
 import {
@@ -25,7 +25,6 @@ import { updateFilterSettings } from 'redux/actions/experimentSettings';
 import NormalisationOptions from './NormalisationOptions';
 
 const { Option } = Select;
-const { Text } = Typography;
 const { Panel } = Collapse;
 
 const getDownsampling = (downsamplingConfig = {}) => {
@@ -61,13 +60,13 @@ const CalculationConfig = (props) => {
       disabled: false,
     },
     {
-      value: 'seuratv4',
-      text: 'Seurat v4',
+      value: 'fastmnn',
+      text: 'Fast MNN',
       disabled: false,
     },
     {
-      value: 'fastmnn',
-      text: 'Fast MNN',
+      value: 'seuratv4',
+      text: 'Seurat v4',
       disabled: false,
     },
     {
@@ -164,15 +163,27 @@ const CalculationConfig = (props) => {
 
       <Collapse defaultActiveKey='data-integration'>
         <Panel header='Data Integration' key='data-integration'>
-          <Space direction='vertical' style={{ width: '100%' }} />
-          <Form.Item>
-            <Text>
+          <Form.Item style={{ marginBottom: 0 }}>
+            <p>
               <strong style={{ marginRight: '0.5rem' }}>Data integration settings:</strong>
               <Tooltip title='Integration of multiple samples corrects for batch effect. These methods identify shared cell states that are present across different datasets, even if they were collected from different individuals, experimental conditions, technologies, or even species. The user selects the integration method and sets the controls, as appropriate. Harmony is selected as default.'>
                 <QuestionCircleOutlined />
               </Tooltip>
-            </Text>
+            </p>
           </Form.Item>
+
+          {
+            dataIntegration.method === 'seuratv4'
+            && (
+              <Form.Item>
+                <Alert
+                  type='warning'
+                  description='SeuratV4 is a computationally expensive method. It is highly likely that the integration will fail as it requires more resources than are currently available. We recommended you to evaluate other methods before using SeuratV4.'
+                />
+              </Form.Item>
+            )
+          }
+
           <div style={{ paddingLeft: '1rem' }}>
             <Form.Item
               label='Method:'
@@ -208,13 +219,13 @@ const CalculationConfig = (props) => {
             />
 
           </div>
-          <Form.Item>
-            <Text>
+          <Form.Item style={{ marginBottom: 0, marginTop: '1rem' }}>
+            <p>
               <strong style={{ marginRight: '0.5rem' }}>Dimensionality reduction settings:</strong>
               <Tooltip title='Dimensionality reduction is necessary to summarise and visualise single cell RNA-seq data. The most common method is Principal Component Analysis. The user sets the number of Principal Components (PCs). This is the number that explains the majority of the variation within the dataset (ideally >90%), and is typically set between 5 and 30.'>
                 <QuestionCircleOutlined />
               </Tooltip>
-            </Text>
+            </p>
           </Form.Item>
           <div style={{ paddingLeft: '1rem' }}>
             <Form.Item label='Number of Principal Components'>
@@ -267,8 +278,8 @@ const CalculationConfig = (props) => {
                 value={dimensionalityReduction.excludeGeneCategories}
               >
                 <Space direction='vertical'>
-                  <Checkbox disabled value='ribosomal'>Ribosomal</Checkbox>
-                  <Checkbox disabled value='mitochondrial'>Mitochondrial</Checkbox>
+                  <Checkbox value='ribosomal'>Ribosomal</Checkbox>
+                  <Checkbox value='mitochondrial'>Mitochondrial</Checkbox>
                   <Checkbox value='cellCycle'>
                     <span>
                       Cell cycle genes
@@ -289,17 +300,16 @@ const CalculationConfig = (props) => {
           </div>
         </Panel>
       </Collapse>
-      {/* TODO: reenable when geometric sketching pipeline PRs are released */}
-      <Collapse style={{ display: 'none' }}>
+      <Collapse>
         <Panel header='Downsampling Options' key='downsampling-options'>
           <Space direction='vertical' style={{ width: '100%' }} />
           <Form.Item>
-            <Text>
+            <p>
               <strong style={{ marginRight: '0.5rem' }}>Downsampling settings:</strong>
               <Tooltip title='Large datasets (e.g. >100,000 cells) can be downsampled specifically for the integration step. This speeds up the time it takes to integrate large datasets using some methods (especially Seurat_v4 and FastMNN), and enables large datasets to successfully complete the pipeline. Once the data are integrated, the full data are available for downstream analysis and visualization.'>
                 <QuestionCircleOutlined />
               </Tooltip>
-            </Text>
+            </p>
           </Form.Item>
           <div style={{ paddingLeft: '1rem' }}>
 
@@ -375,9 +385,9 @@ const CalculationConfig = (props) => {
                   updateSettings({
                     downsampling: {
                       methodSettings:
-                       {
-                         [downsampling.method]: { percentageToKeep: parseInt(value, 0) },
-                       },
+                      {
+                        [downsampling.method]: { percentageToKeep: parseInt(value, 0) },
+                      },
 
                     },
                   });

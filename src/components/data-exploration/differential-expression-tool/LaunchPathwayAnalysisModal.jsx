@@ -6,11 +6,11 @@ import {
 import PropTypes from 'prop-types';
 
 import launchPathwayService from 'utils/pathwayAnalysis/launchPathwayService';
-import getDiffExprGenes from 'utils/differentialExpression/getDiffExprGenes';
+import getDiffExprGenes from 'utils/extraActionCreators/differentialExpression/getDiffExprGenes';
 import writeToFileURL from 'utils/writeToFileURL';
 import downloadFromUrl from 'utils/downloadFromUrl';
 
-import getBackgroundExpressedGenes from 'utils/differentialExpression/getBackgroundExpressedGenes';
+import getBackgroundExpressedGenes from 'utils/extraActionCreators/differentialExpression/getBackgroundExpressedGenes';
 import enrichrSpecies from 'utils/pathwayAnalysis/enrichrConstants';
 import pantherDBSpecies from 'utils/pathwayAnalysis/pantherDBSpecies.json';
 import { pathwayServices } from 'utils/pathwayAnalysis/pathwayConstants';
@@ -29,7 +29,7 @@ const LaunchPathwayAnalysisModal = (props) => {
 
   const dispatch = useDispatch();
 
-  const [externalService, setExternalService] = useState(pathwayServices.PANTHERDB);
+  const [externalService, setExternalService] = useState(pathwayServices.ENRICHR);
   const [useAllGenes, setUseAllGenes] = useState(true);
   const [numGenes, setNumGenes] = useState(0);
   const [gettingBackgroundGenes, setGettingBackgroundGenes] = useState(false);

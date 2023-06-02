@@ -19,7 +19,7 @@ Object {
       "orient": "left",
       "scale": "yscale",
       "tickColor": "#000000",
-      "title": "Normalised Expression",
+      "title": "Z-Score of Expression",
       "titleColor": "#000000",
       "titleFont": "sans-serif",
       "titleFontSize": 13,

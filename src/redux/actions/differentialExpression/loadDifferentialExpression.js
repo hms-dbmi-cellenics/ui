@@ -5,29 +5,8 @@ import {
 import fetchWork from 'utils/work/fetchWork';
 import getTimeoutForWorkerTask from 'utils/getTimeoutForWorkerTask';
 
-import { getCellSetKey } from 'utils/cellSets';
-
-function getArray(object) {
-  return Object.keys(object).reduce((r, k) => {
-    object[k].forEach((a, i) => {
-      // eslint-disable-next-line no-param-reassign
-      r[i] = r[i] || {};
-      // eslint-disable-next-line no-param-reassign
-      r[i][k] = a;
-    });
-    return r;
-  }, []);
-}
-
-const generateDiffExprBody = (experimentId, comparisonGroup, comparisonType, extras) => ({
-  name: 'DifferentialExpression',
-  experimentId,
-  cellSet: getCellSetKey(comparisonGroup.cellSet),
-  compareWith: getCellSetKey(comparisonGroup.compareWith),
-  basis: getCellSetKey(comparisonGroup.basis),
-  comparisonType,
-  ...extras,
-});
+import generateDiffExprBody from 'utils/work/generateDiffExprBody';
+import getArray from 'utils/getArray';
 
 const loadDifferentialExpression = (
   experimentId, comparisonGroup, comparisonType, tableState, newAdvancedFilters = null,
@@ -44,6 +23,7 @@ const loadDifferentialExpression = (
   });
 
   const body = generateDiffExprBody(experimentId, comparisonGroup, comparisonType);
+
   let extras = {};
   let pagination = {};
   if (tableState) {
