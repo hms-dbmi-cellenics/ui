@@ -133,11 +133,18 @@ const ConfigureEmbedding = (props) => {
 
   const renderViolin = (colouring, config, actions) => {
     const { loading, data: plotData, error } = cellMeta[colouring];
+    const modifiedConfig = {
+      ...config,
+      axes:{
+        ...config.axes,
+        yAxisText: config.axes.yAxisText || plotColouring,
+      }
+    }
     return (
       <ViolinFilterPlot
         experimentId={experimentId}
         plotData={plotData}
-        config={config}
+        config={modifiedConfig}
         loading={loading}
         error={error}
         actions={actions}
