@@ -10,31 +10,30 @@ const getBatchDiffExpr = (experimentId,
     cellSet, compareWith, comparisonType,
   } = comparison;
 
-  let comparisonObject = {};
-
+  let workBody = {};
   if (chosenOperation === 'fullList') {
-    comparisonObject = {
+    workBody = {
+      name: 'BatchDifferentialExpression',
+      experimentId,
       cellSet: batchClusterNames,
       compareWith: 'background',
       basis: ['all'],
+      comparisonType,
     };
   } else {
-    comparisonObject = {
-      cellSet: [cellSet],
-      compareWith,
+    workBody = {
+      name: 'BatchDifferentialExpression',
+      experimentId,
+      cellSet: [getCellSetKey(cellSet)],
+      compareWith: getCellSetKey(compareWith),
       basis: batchClusterNames,
+      comparisonType,
     };
   }
-  const workBody = {
-    name: 'BatchDifferentialExpression',
-    experimentId,
-    cellSet: getCellSetKey(comparisonObject.cellSet),
-    compareWith: getCellSetKey(comparisonObject.compareWith),
-    basis: getCellSetKey(comparisonObject.basis),
-    comparisonType,
-  };
-  const numberOfComparisons = batchClusterNames.length + 2;
+
+  const numberOfComparisons = batchClusterNames.length;
   const timeout = getTimeoutForWorkerTask(getState(), 'DifferentialExpression') * numberOfComparisons;
+
   try {
     const data = await fetchWork(
       experimentId, workBody, getState, dispatch, { timeout },
