@@ -97,8 +97,6 @@ const BatchDiffExpression = (props) => {
 
   const isFormInvalid = useCallback(() => {
     const { cellSet, compareWith, basis } = comparison;
-    if (!basis) return true;
-
     if (cellSet && compareWith && basis) {
       return getResult(comparison);
     }
