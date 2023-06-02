@@ -9,6 +9,7 @@ import {
   Button,
   Card,
   Form,
+  Alert,
 } from 'antd';
 import Header from 'components/Header';
 import { getCellSetsHierarchyByType, getCellSets, getCellSetsHierarchyByKeys } from 'redux/selectors';
@@ -23,11 +24,12 @@ import getBatchDiffExpr from 'utils/extraActionCreators/differentialExpression/g
 import { zipSync } from 'fflate';
 import { saveAs } from 'file-saver';
 import _ from 'lodash';
+import checkCanRunDiffExpr, { canRunDiffExprResults } from 'utils/extraActionCreators/differentialExpression/checkCanRunDiffExpr';
 import { metadataKeyToName } from 'utils/data-management/metadataUtils';
 
 const comparisonTypes = {
   fullList: 'within',
-  compareForCellSets: 'within',
+  compareForCellSets: 'between',
   compareForSamples: 'within',
 };
 const comparisonInitialState = {
@@ -74,13 +76,31 @@ const BatchDiffExpression = (props) => {
       ...diff,
     });
   };
+  const canRunDiffExpr = (comparisonGroup) => {
+    const { properties, hierarchy } = cellSets;
+    return checkCanRunDiffExpr(
+      properties,
+      hierarchy,
+      { [comparisonGroup.comparisonType]: comparisonGroup },
+      comparisonGroup.comparisonType,
+      true,
+    );
+  };
+
+  const getResult = (initialComparison) => batchCellSetKeys.reduce((acc, currentBasis) => {
+    const curr = canRunDiffExpr({ ...initialComparison, basis: currentBasis });
+    if (acc !== canRunDiffExprResults.TRUE) {
+      return acc;
+    }
+    return curr !== canRunDiffExprResults.TRUE ? curr : acc;
+  }, canRunDiffExprResults.TRUE);
 
   const isFormInvalid = useCallback(() => {
     const { cellSet, compareWith, basis } = comparison;
     if (!basis) return true;
 
     if (cellSet && compareWith && basis) {
-      return false;
+      return getResult(comparison);
     }
 
     if (chosenOperation === 'fullList' && basis) {
@@ -93,14 +113,19 @@ const BatchDiffExpression = (props) => {
     const encoder = new TextEncoder();
     const archiveName = `batchDE_${experimentName}`;
     const CSVs = data.reduce((accumulator, currentData, indx) => {
-      // Get the column names from the keys of the first object in currentData
-      const columnNames = Object.keys(currentData[0]).join(',');
-      const csvRows = currentData.map((obj) => Object.values(obj).join(','));
-
-      // Add the column names as the first row and join the CSV data with new lines
-      const csvString = `${columnNames}\n${csvRows.join('\n')}`;
-      const fileName = `DE-${batchCellSetKeys[indx]}.csv`;
-
+      let csvString;
+      let fileName;
+      if (!currentData.error) {
+        // Get the column names from the keys of the first object in currentData
+        const columnNames = Object.keys(currentData[0]).join(',');
+        const csvRows = currentData.map((obj) => Object.values(obj).join(','));
+        csvString = `${columnNames}\n${csvRows.join('\n')}`;
+        fileName = `DE-${batchCellSetKeys[indx]}.csv`;
+      } else {
+        // If currentData[0] is not an array, include the error message in the CSV file
+        csvString = `error\n${currentData.error}`;
+        fileName = `DE-${batchCellSetKeys[indx]}-error.csv`;
+      }
       const encodedString = encoder.encode(csvString);
       accumulator[fileName] = encodedString;
       return accumulator;
@@ -267,10 +292,10 @@ const BatchDiffExpression = (props) => {
                         </span>
                       )}
                     >
-                      Compare two selected samples/groups within a cell set for all cell sets
+                      Compare between two selected samples/groups in a cell set for all cell sets
                     </Tooltip>
                   ) : (
-                    'Compare two selected samples/groups within a cell set for all cell sets'
+                    'Compare between two selected samples/groups in a cell set for all cell sets'
                   )
                 }
               </Radio>
@@ -284,6 +309,41 @@ const BatchDiffExpression = (props) => {
           <br />
           <Space direction='vertical'>
             {renderSpecificControls(chosenOperation)}
+            <Space direction='horizontal'>
+              {
+                isFormInvalid() === canRunDiffExprResults.INSUFFCIENT_CELLS_ERROR
+                  ? (
+                    <Alert
+                      message='Warning'
+                      style={{ width: '50%' }}
+                      description={(
+                        <>
+                          One or more of the selected samples/groups does not contain enough cells in the selected cell set.
+                          Those comparisons will be skipped.
+                        </>
+                      )}
+                      type='warning'
+                      showIcon
+                    />
+                  )
+                  : isFormInvalid() === canRunDiffExprResults.INSUFFICIENT_CELLS_WARNING
+                    ? (
+                      <Alert
+                        message='Warning'
+                        style={{ width: '50%' }}
+                        description={(
+                          <>
+                            For one of more of the comparisons, there are fewer than 3 samples with the minimum number of cells (10).
+                            Only logFC values will be calculated and results should be used for exploratory purposes only.
+                          </>
+                        )}
+                        type='warning'
+                        showIcon
+                      />
+                    )
+                    : <></>
+              }
+            </Space>
             <br />
             <Space direction='horizontal'>
               <Button
