@@ -60,4 +60,6 @@ export default {
   SAVING_PROJECT: 'Saving project...',
   SHARE_SUCESS_NOTIFICATION_FAILURE: 'The project was shared, but we weren’t able to notify the new collaborator',
   SHARE_FAILURE: 'We weren\'t able to share the project',
+  ERROR_CLONING_DEFAULT: 'We couldn\'t clone the project.',
+  ERROR_CLONING_PIPELINE_LOCKED: 'We couldn\'t clone the project because data processing is currently running, wait until it finishes and try again',
 };
