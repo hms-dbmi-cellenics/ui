@@ -52,6 +52,9 @@ const BatchDiffExpression = (props) => {
   const batchCellSetKeys = useSelector(getCellSetsHierarchyByKeys([comparison.basis]))[0]?.children
     .map((child) => child.key);
 
+  const isDatasetUnisample = (useSelector((state) => (
+    state.experimentSettings.info.sampleIds.length)) === 1);
+
   useEffect(() => {
     dispatch(loadCellSets(experimentId));
   }, []);
@@ -89,7 +92,6 @@ const BatchDiffExpression = (props) => {
   const downloadCSVsAsZip = (data) => {
     const encoder = new TextEncoder();
     const archiveName = `batchDE_${experimentName}`;
-
     const CSVs = data.reduce((accumulator, currentData, indx) => {
       // Get the column names from the keys of the first object in currentData
       const columnNames = Object.keys(currentData[0]).join(',');
@@ -254,11 +256,26 @@ const BatchDiffExpression = (props) => {
                   </Tooltip>
                 </Radio>
               </Space>
-              <Radio value='compareForCellSets'>
-                Compare two selected samples/groups within a cell set for all cell sets
+              <Radio value='compareForCellSets' disabled={isDatasetUnisample}>
+                {
+                  isDatasetUnisample ? (
+                    <Tooltip
+                      overlay={(
+                        <span>
+                          Comparison between samples/groups is
+                          not possible with a dataset that contains only 1 sample
+                        </span>
+                      )}
+                    >
+                      Compare two selected samples/groups within a cell set for all cell sets
+                    </Tooltip>
+                  ) : (
+                    'Compare two selected samples/groups within a cell set for all cell sets'
+                  )
+                }
               </Radio>
               <Radio value='compareForSamples'>
-                Compare between two cell sets for all samples/groups
+                Compare two cell sets for all samples/groups
               </Radio>
             </Space>
           </Radio.Group>

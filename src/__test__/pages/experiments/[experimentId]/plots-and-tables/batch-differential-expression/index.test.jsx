@@ -51,7 +51,7 @@ describe('Batch differential expression tests ', () => {
     await renderPage();
 
     const compareForCellSetsRadio = screen.getByLabelText(/Compare two selected samples\/groups within a cell set for all cell sets/i);
-    const compareForSamplesRadio = screen.getByLabelText(/Compare between two cell sets for all samples\/groups/i);
+    const compareForSamplesRadio = screen.getByLabelText(/Compare two cell sets for all samples\/groups/i);
 
     expect(screen.getByText(/Select the cell sets for which marker genes are to be computed in batch:/i)).toBeInTheDocument();
     expect(screen.getByText('Select a cell set...')).toBeInTheDocument();
