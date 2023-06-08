@@ -1,9 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-
-import { Space } from 'antd';
-
-import { ClipLoader } from 'react-spinners';
 import { loadExperiments } from 'redux/actions/experiments';
 
 import Header from 'components/Header';
@@ -15,8 +11,9 @@ import { loadProcessingSettings } from 'redux/actions/experimentSettings';
 import loadBackendStatus from 'redux/actions/backendStatus/loadBackendStatus';
 import { loadSamples } from 'redux/actions/samples';
 import ExampleExperimentsSpace from 'components/data-management/ExampleExperimentsSpace';
-import { privacyPolicyIsNotAccepted } from 'utils/deploymentInfo';
+import { privacyPolicyIsNotAccepted, DomainName } from 'utils/deploymentInfo';
 import Loader from 'components/Loader';
+import CoursesBanner from 'components/data-management/CoursesBanner';
 
 const DataManagementPage = () => {
   const dispatch = useDispatch();
@@ -110,6 +107,8 @@ const DataManagementPage = () => {
 
   return (
     <>
+      {(domainName === DomainName.BIOMAGE || domainName === DomainName.BIOMAGE_STAGING)
+      && (<CoursesBanner />)}
       <Header title='Data Management' />
       {newProjectModalVisible ? (
         <NewProjectModal

@@ -28,7 +28,7 @@ jobs:
       - id: check-issue-url
         name: Check issue URL
         run: |-
-          REGEX="#### URL to issue\s?\r\n(https:\/\/biomage\.atlassian\.net\/browse\/BIOMAGE-[0-9]+|N\/A)"
+          REGEX="#### URL to issue\s?\r\n(https:\/\/biomage\.atlassian\.net\/browse\/BIOMAGE-[0-9]+|https:\/\/github\.com\/biomage-org\/issues\/issues\/[0-9]+|N\/A)"
 
           echo "REGEX to test against:"
           echo $REGEX

@@ -274,7 +274,7 @@ const ContentWrapper = (props) => {
         return <GEM2SLoadingScreen experimentId={routeExperimentId} gem2sStatus='error' />;
       }
 
-      if (gem2sRunning && experiment?.parentExperimentId) {
+      if (gem2sRunning && experiment?.isSubsetted) {
         return <GEM2SLoadingScreen experimentId={routeExperimentId} gem2sStatus='subsetting' completedSteps={completedGem2sSteps} experimentName={experimentName} />;
       }
 
