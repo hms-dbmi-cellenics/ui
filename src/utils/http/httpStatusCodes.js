@@ -4,6 +4,7 @@ const httpStatusCodes = {
   UNAUTHORIZED: 401,
   FORBIDDEN: 403,
   NOT_FOUND: 404,
+  LOCKED: 423,
   INTERNAL_SERVER: 500,
 };
 

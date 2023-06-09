@@ -12,7 +12,7 @@ import NotifyByEmail from './NotifyByEmail';
 const { Title, Text } = Typography;
 
 const gem2sStepsInfo = [
-  'Downloading sample files',
+  'Preparing files',
   'Preprocessing samples',
   'Computing metrics',
   'Converting samples',

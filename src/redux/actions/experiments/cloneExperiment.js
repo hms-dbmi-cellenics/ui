@@ -10,6 +10,7 @@ import {
 import endUserMessages from 'utils/endUserMessages';
 
 import handleError from 'utils/http/handleError';
+import httpStatusCodes from 'utils/http/httpStatusCodes';
 
 const cloneExperiment = (
   originalId, name = null,
@@ -31,7 +32,11 @@ const cloneExperiment = (
 
     return newExperimentId;
   } catch (e) {
-    const errorMessage = handleError(e, endUserMessages.ERROR_SAVING);
+    const message = e.statusCode === httpStatusCodes.LOCKED
+      ? endUserMessages.ERROR_CLONING_PIPELINE_LOCKED
+      : endUserMessages.ERROR_CLONING_DEFAULT;
+
+    const errorMessage = handleError(e, message);
 
     dispatch({
       type: EXPERIMENTS_ERROR,
@@ -39,6 +44,8 @@ const cloneExperiment = (
         error: errorMessage,
       },
     });
+
+    return originalId;
   }
 };
 
