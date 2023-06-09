@@ -48,10 +48,14 @@ const LaunchAnalysisButton = () => {
   );
 
   const launchAnalysis = async () => {
+    let shouldNavigate = true;
     if (gem2sRerunStatus.rerun) {
-      await dispatch(runGem2s(activeExperimentId));
+      shouldNavigate = await dispatch(runGem2s(activeExperimentId));
     }
-    navigateTo(modules.DATA_PROCESSING, { experimentId: activeExperimentId });
+
+    if (shouldNavigate) {
+      navigateTo(modules.DATA_PROCESSING, { experimentId: activeExperimentId });
+    }
   };
 
   useEffect(() => {

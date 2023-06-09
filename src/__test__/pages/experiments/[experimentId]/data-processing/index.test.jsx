@@ -26,6 +26,8 @@ import { cloneExperiment } from 'redux/actions/experiments';
 import { EXPERIMENT_SETTINGS_SET_QC_STEP_ENABLED } from 'redux/actionTypes/experimentSettings';
 import config from 'config';
 
+import fetchMock, { enableFetchMocks } from 'jest-fetch-mock';
+
 jest.mock('components/header/UserButton', () => () => <></>);
 jest.mock('redux/actions/experimentSettings/processingConfig/saveProcessingSettings');
 jest.mock('redux/actions/experiments', () => ({
@@ -132,8 +134,19 @@ const defaultProps = {
 
 const dataProcessingPageFactory = createTestComponentFactory(DataProcessingPage, defaultProps);
 
+enableFetchMocks();
+
 describe('DataProcessingPage', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+
+    fetchMock.resetMocks();
+    fetchMock.doMock();
+  });
+
   it('Renders the first page correctly', () => {
+    fetchMock.mockIf(new RegExp(`/v2/access/${experimentId}/check?.*`), () => Promise.resolve(JSON.stringify(true)));
+
     const store = getStore();
 
     render(
@@ -168,6 +181,8 @@ describe('DataProcessingPage', () => {
   });
 
   it('Last button of the filter should redirect to Data Exploration', () => {
+    fetchMock.mockIf(new RegExp(`/v2/access/${experimentId}/check?.*`), () => Promise.resolve(JSON.stringify(true)));
+
     const store = getStore();
 
     render(
@@ -205,14 +220,17 @@ describe('DataProcessingPage', () => {
     expect(url).toEqual(modules.DATA_EXPLORATION);
   });
 
-  it('Triggers the pipeline on click run filter', () => {
-    const store = getStore(experimentId, { experimentSettings: { processing: { meta: { changedQCFilters: new Set(['classifier']) } } } });
+  it('Triggers the pipeline on click run filter', async () => {
+    fetchMock.mockIf(new RegExp(`/v2/access/${experimentId}/check?.*`), () => Promise.resolve(JSON.stringify(true)));
 
-    render(
-      <Provider store={store}>
-        {dataProcessingPageFactory()}
-      </Provider>,
-    );
+    const store = getStore(experimentId, { experimentSettings: { processing: { meta: { changedQCFilters: new Set(['classifier']) } } } });
+    await act(() => {
+      render(
+        <Provider store={store}>
+          {dataProcessingPageFactory()}
+        </Provider>,
+      );
+    });
 
     // Change settings by clicking on the "manual" radio button
     const manualButton = screen.getByText('Manual');
@@ -222,6 +240,10 @@ describe('DataProcessingPage', () => {
     // Click on the run button
     userEvent.click(screen.getByText('Run'));
 
+    await waitFor(() => {
+      expect(screen.getByText('Start')).toBeInTheDocument();
+    });
+
     // Click on the start button
     userEvent.click(screen.getByText('Start'));
 
@@ -229,6 +251,8 @@ describe('DataProcessingPage', () => {
   });
 
   it('Shows extra information if there is a new version of the QC pipeline', async () => {
+    fetchMock.mockIf(new RegExp(`/v2/access/${experimentId}/check?.*`), () => Promise.resolve(JSON.stringify(true)));
+
     const store = getStore(experimentId, {
       experimentSettings: {
         info: { pipelineVersion: config.pipelineVersionToRerunQC - 1 },
@@ -248,7 +272,9 @@ describe('DataProcessingPage', () => {
     // Click on the run button
     userEvent.click(screen.getByText('Run'));
 
-    expect(screen.getByText(/Due to a recent update, re-running the pipeline will initiate the run from the beginning/)).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText(/Due to a recent update, re-running the pipeline will initiate the run from the beginning/)).toBeInTheDocument();
+    });
 
     // The Start text is the 1st element with "Start" in it
     const startText = screen.getAllByText('Start')[0];
@@ -290,7 +316,68 @@ describe('DataProcessingPage', () => {
     });
   });
 
-  it('Should not show extra information if there is no new version of the QC pipeline', () => {
+  it('Shows not authorized modal if user cant rerun the experiment', async () => {
+    fetchMock.mockIf(new RegExp(`/v2/access/${experimentId}/check?.*`), () => Promise.resolve(JSON.stringify(false)));
+
+    const store = getStore(experimentId, {
+      experimentSettings: {
+        info: { pipelineVersion: config.pipelineVersionToRerunQC },
+        processing: { meta: { changedQCFilters: new Set(['classifier']) } },
+      },
+    });
+
+    render(
+      <Provider store={store}>
+        {dataProcessingPageFactory()}
+      </Provider>,
+    );
+
+    // Change settings by clicking on the "manual" radio button
+    userEvent.click(screen.getByText('Manual'));
+
+    // Click on the run button
+    userEvent.click(screen.getByText('Run'));
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(/Your account is not authorized to run data processing on this project. You have 2 options:/),
+      ).toBeInTheDocument();
+    });
+
+    // The Clone Project text is the 1st element with "Clone Project" in it
+    const cloneProjectText = screen.getAllByText('Clone Project')[0];
+    expect(cloneProjectText).toBeInTheDocument();
+    expect(screen.getByText(/to clone this project and run from the beginning for the new project only./)).toBeInTheDocument();
+    expect(screen.getByText(/Your current project will not re-run, and will still be available to explore./)).toBeInTheDocument();
+
+    // The Cancel text is the 1st element with "Cancel" in it
+    const cancelText = screen.getAllByText('Cancel')[0];
+    expect(cancelText).toBeInTheDocument();
+    expect(screen.getByText(/to close this popup. You can then choose to discard the changed settings in your current project./)).toBeInTheDocument();
+
+    // There should be 2 buttons
+
+    // The clone project button is the 2nd element with "Clone Project" in it
+    const cloneProjectButton = screen.getAllByText('Clone Project')[1];
+    expect(cloneProjectButton).toBeInTheDocument();
+
+    // The cancel button is the 3rd element with "Cancel" in it
+    const cancelButton = screen.getAllByText('Cancel')[1];
+    expect(cancelButton).toBeInTheDocument();
+
+    // Clicking the Clone Project button will call the clone experiment action
+
+    userEvent.click(cloneProjectButton);
+
+    await waitFor(() => {
+      expect(cloneExperiment).toHaveBeenCalledTimes(1);
+      expect(mockNavigateTo).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  it('Should not show extra information if there is no new version of the QC pipeline', async () => {
+    fetchMock.mockIf(new RegExp(`/v2/access/${experimentId}/check?.*`), () => Promise.resolve(JSON.stringify(true)));
+
     const store = getStore(experimentId, {
       experimentSettings: {
         processing: { meta: { changedQCFilters: new Set(['classifier']) } },
@@ -315,11 +402,15 @@ describe('DataProcessingPage', () => {
     expect(screen.queryByText(/Due to a recent update, re-running the pipeline will initiate the run from the beginning/)).toBeNull();
 
     // There should only be 2 buttons
-    expect(screen.getByText('Start')).toBeInTheDocument();
-    expect(screen.getByText('Cancel')).toBeInTheDocument();
+    await waitFor(async () => {
+      expect(screen.getByText('Start')).toBeInTheDocument();
+      expect(screen.getByText('Cancel')).toBeInTheDocument();
+    });
   });
 
   it('Classifier filter (1st filter) should show custom disabled message if sample is prefiltered ', () => {
+    fetchMock.mockIf(new RegExp(`/v2/access/${experimentId}/check?.*`), () => Promise.resolve(JSON.stringify(true)));
+
     const store = getStore(
       experimentId,
       {
@@ -356,6 +447,8 @@ describe('DataProcessingPage', () => {
   });
 
   it('Classifier filter (1st filter) should not be disabled and not show error if not prefiltered ', async () => {
+    fetchMock.mockIf(new RegExp(`/v2/access/${experimentId}/check?.*`), () => Promise.resolve(JSON.stringify(true)));
+
     const store = getStore();
 
     await render(
@@ -374,6 +467,8 @@ describe('DataProcessingPage', () => {
   });
 
   it('A disabled filter shows a warning', async () => {
+    fetchMock.mockIf(new RegExp(`/v2/access/${experimentId}/check?.*`), () => Promise.resolve(JSON.stringify(true)));
+
     const store = getStore(
       experimentId,
       {
@@ -401,6 +496,8 @@ describe('DataProcessingPage', () => {
   });
 
   it('Disabling a filter saves and dispatches appropriate actions', async () => {
+    fetchMock.mockIf(new RegExp(`/v2/access/${experimentId}/check?.*`), () => Promise.resolve(JSON.stringify(true)));
+
     const store = getStore(experimentId);
     saveProcessingSettings.mockImplementation(() => () => Promise.resolve());
     render(
@@ -418,6 +515,8 @@ describe('DataProcessingPage', () => {
   });
 
   it('Shows a wait screen if pipeline is still running', () => {
+    fetchMock.mockIf(new RegExp(`/v2/access/${experimentId}/check?.*`), () => Promise.resolve(JSON.stringify(true)));
+
     getBackendStatus.mockImplementation(() => () => ({
       loading: false,
       error: false,

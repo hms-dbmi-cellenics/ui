@@ -11,9 +11,24 @@ import { cloneExperiment } from 'redux/actions/experiments';
 import { useAppRouter } from 'utils/AppRouteProvider';
 import { modules } from 'utils/constants';
 
+const texts = {
+  qcTooOld: (
+    <>
+      Due to a recent update, re-running the pipeline
+      will initiate the run from the beginning
+      and you will lose all of your annotated cell sets. You have 3 options:
+    </>
+  ),
+  runQCNotAuthorized: (
+    <>
+      Your account is not authorized to run data processing on this project. You have 2 options:
+    </>
+  ),
+};
+
 const QCRerunDisabledModal = (props) => {
   const {
-    experimentId, onFinish, visible,
+    experimentId, onFinish, visible, runQCAuthorized,
   } = props;
 
   const dispatch = useDispatch();
@@ -42,7 +57,7 @@ const QCRerunDisabledModal = (props) => {
       onCancel={() => onFinish()}
       footer={
         [
-          <Button type='primary' onClick={() => triggerOnRunGem2s()}>Start</Button>,
+          ...runQCAuthorized ? [<Button type='primary' onClick={() => triggerOnRunGem2s()}>Start</Button>] : [],
           <Button type='primary' onClick={() => cloneExperimentAndSelectIt()}>Clone Project</Button>,
           <Button onClick={() => onFinish()}>Cancel</Button>,
         ]
@@ -53,18 +68,18 @@ const QCRerunDisabledModal = (props) => {
         description={(
           <>
             <p>
-              Due to a recent update, re-running the pipeline
-              will initiate the run from the beginning
-              and you will lose all of your annotated cell sets. You have 3 options:
+              {runQCAuthorized ? texts.qcTooOld : texts.runQCNotAuthorized}
             </p>
             <ul>
-              <li>
-                Click
-                <Text code>Start</Text>
-                {' '}
-                to re-run this project analysis from the beginning. Note that you will
-                lose all of your annotated cell sets.
-              </li>
+              {runQCAuthorized && (
+                <li>
+                  Click
+                  <Text code>Start</Text>
+                  {' '}
+                  to re-run this project analysis from the beginning. Note that you will
+                  lose all of your annotated cell sets.
+                </li>
+              )}
               <li>
                 Click
                 <Text code>Clone Project</Text>
@@ -83,11 +98,15 @@ const QCRerunDisabledModal = (props) => {
           </>
         )}
       />
-      <p>
-        This might take several minutes.
-        Your navigation within Cellenics will be restricted during this time.
-        Do you want to start?
-      </p>
+      {
+        runQCAuthorized && (
+          <p>
+            This might take several minutes.
+            Your navigation within Cellenics will be restricted during this time.
+            Do you want to start?
+          </p>
+        )
+      }
     </Modal>
   );
 };
@@ -96,6 +115,7 @@ QCRerunDisabledModal.propTypes = {
   experimentId: PropTypes.string.isRequired,
   onFinish: PropTypes.func,
   visible: PropTypes.bool,
+  runQCAuthorized: PropTypes.bool.isRequired,
 };
 
 QCRerunDisabledModal.defaultProps = {
