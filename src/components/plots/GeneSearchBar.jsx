@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
-import { AutoComplete, Button, Input } from 'antd';
+import {
+  AutoComplete, Button, Input, Skeleton,
+} from 'antd';
 import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
 import { getGeneList } from 'redux/selectors';
@@ -63,7 +65,14 @@ const GeneSearchBar = (props) => {
 
     setSearchState({ value: '', options: [] });
   };
-
+  const placeholder = `Search for ${allowMultiple ? 'genes' : 'a gene'}...`;
+  if (!genes?.length) {
+    return (
+      <div data-testid='skeletonInput'>
+        <Skeleton.Input style={{ width: 200 }} active />
+      </div>
+    );
+  }
   return (
     <Input.Group compact>
       <AutoComplete
@@ -74,7 +83,7 @@ const GeneSearchBar = (props) => {
         options={searchState.options}
         onSelect={onOptionSelect}
         onSearch={onSearch}
-        placeholder='Search for genes...'
+        placeholder={placeholder}
       />
       <Button
         type='primary'
