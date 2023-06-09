@@ -28,6 +28,16 @@ const runOnlyConfigureEmbedding = async (experimentId, embeddingMethod, dispatch
   );
 };
 
+// Question for review, I thought of implementing this function for all the URLs here
+// (extracting all the URLs into one single place and using constants to
+//  define which url I am trying to access)
+// Since it is a lot of changes, I didn't want to do it before first
+//  getting an opinion on this in review
+// I want to do it btw)
+// It would also work nicely with isUserAuthorized, instead of passing a url
+//  we could pass the constant that corresponds to this
+const getURL = (experimentId) => `/v2/experiments/${experimentId}/qc`;
+
 const runQC = (experimentId) => async (dispatch, getState) => {
   const { processing } = getState().experimentSettings;
   const { changedQCFilters } = processing.meta;
@@ -58,12 +68,10 @@ const runQC = (experimentId) => async (dispatch, getState) => {
     // We don't need to manually save any processing config because it is done by
     // the api once the pipeline finishes successfully
     await fetchAPI(
-      `/v2/experiments/${experimentId}/qc`,
+      getURL(experimentId),
       {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           processingConfig: changesToProcessingConfig,
         }),
@@ -86,4 +94,5 @@ const runQC = (experimentId) => async (dispatch, getState) => {
   }
 };
 
+export { getURL };
 export default runQC;

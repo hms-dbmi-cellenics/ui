@@ -61,7 +61,11 @@ import { runQC } from 'redux/actions/pipeline';
 
 import { useAppRouter } from 'utils/AppRouteProvider';
 import { modules } from 'utils/constants';
-import QCRerunDisabledModal from 'components/QCRerunDisabledModal';
+import QCRerunDisabledModal from 'components/modals/QCRerunDisabledModal';
+import isUserAuthorized from 'utils/isUserAuthorized';
+import { getURL } from 'redux/actions/pipeline/runQC';
+import Loader from 'components/Loader';
+import { ClipLoader } from 'react-spinners';
 
 const { Text } = Typography;
 const { Option } = Select;
@@ -95,7 +99,10 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
   );
 
   const changesOutstanding = Boolean(changedQCFilters.size);
-  const qcRerunDisabled = pipelineVersion < config.pipelineVersionToRerunQC;
+
+  const [runQCAuthorized, setRunQCAuthorized] = useState(null);
+
+  const qcVersionIsOld = pipelineVersion < config.pipelineVersionToRerunQC;
 
   const [stepIdx, setStepIdx] = useState(0);
   const [runQCModalVisible, setRunQCModalVisible] = useState(false);
@@ -109,6 +116,8 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
 
     dispatch(loadSamples(experimentId));
     dispatch(loadCellSets(experimentId));
+
+    isUserAuthorized(experimentId, getURL(experimentId), 'POST').then(setRunQCAuthorized);
   }, []);
 
   // Checks if the step is in the 'completed steps' list we get from the pipeline status
@@ -664,30 +673,32 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
       />
       <Space direction='vertical' style={{ width: '100%', padding: '0 10px' }}>
         {runQCModalVisible && (
-          qcRerunDisabled ? (
-            <QCRerunDisabledModal
-              experimentId={experimentId}
-              onFinish={() => setRunQCModalVisible(false)}
-            />
-          ) : (
-            <Modal
-              title='Run data processing with the changed settings'
-              visible
-              onCancel={() => setRunQCModalVisible(false)}
-              footer={
-                [
-                  <Button type='primary' onClick={() => onPipelineRun()}>Start</Button>,
-                  <Button onClick={() => setRunQCModalVisible(false)}>Cancel</Button>,
-                ]
-              }
-            >
-              <p>
-                This might take several minutes.
-                Your navigation within Cellenics will be restricted during this time.
-                Do you want to start?
-              </p>
-            </Modal>
-          )
+          runQCAuthorized === null ? <ClipLoader />
+            : (qcVersionIsOld || !runQCAuthorized) ? (
+              <QCRerunDisabledModal
+                experimentId={experimentId}
+                onFinish={() => setRunQCModalVisible(false)}
+                runQCAuthorized={runQCAuthorized}
+              />
+            ) : (
+              <Modal
+                title='Run data processing with the changed settings'
+                visible
+                onCancel={() => setRunQCModalVisible(false)}
+                footer={
+                  [
+                    <Button type='primary' onClick={() => onPipelineRun()}>Start</Button>,
+                    <Button onClick={() => setRunQCModalVisible(false)}>Cancel</Button>,
+                  ]
+                }
+              >
+                <p>
+                  This might take several minutes.
+                  Your navigation within Cellenics will be restricted during this time.
+                  Do you want to start?
+                </p>
+              </Modal>
+            )
         )}
         <Card
           title={renderTitle()}
