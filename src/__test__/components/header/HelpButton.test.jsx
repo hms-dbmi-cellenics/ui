@@ -40,7 +40,7 @@ describe('HelpButton', () => {
     expect(guideLink).toHaveAttribute('target', '_blank');
 
     const websiteLink = screen.getByText(/tutorial videos/i).closest('a');
-    expect(websiteLink).toHaveAttribute('href', 'https://www.biomage.net/resources');
+    expect(websiteLink).toHaveAttribute('href', 'https://www.youtube.com/@biomageltd4616/featured');
     expect(websiteLink).toHaveAttribute('target', '_blank');
 
     const forumLink = screen.getByText(/Cellenics community forum/i).closest('a');

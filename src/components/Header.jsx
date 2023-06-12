@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  PageHeader, Space,
+  PageHeader, Space, Button,
 } from 'antd';
 import PropTypes from 'prop-types';
 import { NextSeo } from 'next-seo';
@@ -10,6 +10,7 @@ import UserButton from 'components/header/UserButton';
 import FeedbackButton from 'components/header/FeedbackButton';
 import ReferralButton from 'components/header/ReferralButton';
 import HelpButton from 'components/header/HelpButton';
+import { DomainName } from 'utils/deploymentInfo';
 
 const Header = (props) => {
   const {
@@ -17,7 +18,7 @@ const Header = (props) => {
   } = props;
   const experiment = useSelector((state) => state?.experiments[experimentId]);
   const experimentName = experimentData?.experimentName || experiment?.name;
-
+  const domainName = useSelector((state) => state.networkResources?.domainName);
   const truncateText = (text) => (
     (text && text.length > 28) ? `${text.substr(0, 27)}…` : text
   );
@@ -35,6 +36,14 @@ const Header = (props) => {
         extra={(
           <Space size='large'>
             <Space>
+              {(domainName === DomainName.BIOMAGE || domainName === DomainName.BIOMAGE_STAGING)
+                && (
+                  <Button>
+                    <a href='https://www.biomage.net/cellenicscourse' target='_blank' rel='noreferrer'>
+                      Courses
+                    </a>
+                  </Button>
+                )}
               <HelpButton />
               <FeedbackButton />
               <ReferralButton />

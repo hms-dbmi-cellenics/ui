@@ -23,14 +23,14 @@ import DiffExprSelect from 'components/data-exploration/differential-expression-
 import getBatchDiffExpr from 'utils/extraActionCreators/differentialExpression/getBatchDiffExpr';
 import { zipSync } from 'fflate';
 import { saveAs } from 'file-saver';
-import checkCanRunDiffExpr, { canRunDiffExprResults } from 'utils/extraActionCreators/differentialExpression/checkCanRunDiffExpr';
 import _ from 'lodash';
+import checkCanRunDiffExpr, { canRunDiffExprResults } from 'utils/extraActionCreators/differentialExpression/checkCanRunDiffExpr';
 import { metadataKeyToName } from 'utils/data-management/metadataUtils';
 
 const comparisonTypes = {
   fullList: 'within',
-  compareForCellSets: 'within',
-  compareForSamples: 'between',
+  compareForCellSets: 'between',
+  compareForSamples: 'within',
 };
 const comparisonInitialState = {
   cellSet: null,
@@ -54,6 +54,9 @@ const BatchDiffExpression = (props) => {
   const batchCellSetKeys = useSelector(getCellSetsHierarchyByKeys([comparison.basis]))[0]?.children
     .map((child) => child.key);
 
+  const isDatasetUnisample = (useSelector((state) => (
+    state.experimentSettings.info.sampleIds.length)) === 1);
+
   useEffect(() => {
     dispatch(loadCellSets(experimentId));
   }, []);
@@ -73,7 +76,6 @@ const BatchDiffExpression = (props) => {
       ...diff,
     });
   };
-
   const canRunDiffExpr = (comparisonGroup) => {
     const { properties, hierarchy } = cellSets;
     return checkCanRunDiffExpr(
@@ -95,20 +97,12 @@ const BatchDiffExpression = (props) => {
 
   const isFormInvalid = useCallback(() => {
     const { cellSet, compareWith, basis } = comparison;
-    if (!basis) return true;
-
     if (cellSet && compareWith && basis) {
       return getResult(comparison);
     }
 
     if (chosenOperation === 'fullList' && basis) {
-      const fullListComparison = {
-        ...comparison,
-        basis: 'all',
-        compareWith: 'background',
-        cellSet: null,
-      };
-      return getResult(fullListComparison);
+      return false;
     }
     return true;
   }, [comparison, chosenOperation]);
@@ -116,7 +110,6 @@ const BatchDiffExpression = (props) => {
   const downloadCSVsAsZip = (data) => {
     const encoder = new TextEncoder();
     const archiveName = `batchDE_${experimentName}`;
-
     const CSVs = data.reduce((accumulator, currentData, indx) => {
       let csvString;
       let fileName;
@@ -124,8 +117,6 @@ const BatchDiffExpression = (props) => {
         // Get the column names from the keys of the first object in currentData
         const columnNames = Object.keys(currentData[0]).join(',');
         const csvRows = currentData.map((obj) => Object.values(obj).join(','));
-
-        // Add the column names as the first row and join the CSV data with new lines
         csvString = `${columnNames}\n${csvRows.join('\n')}`;
         fileName = `DE-${batchCellSetKeys[indx]}.csv`;
       } else {
@@ -133,7 +124,6 @@ const BatchDiffExpression = (props) => {
         csvString = `error\n${currentData.error}`;
         fileName = `DE-${batchCellSetKeys[indx]}-error.csv`;
       }
-
       const encodedString = encoder.encode(csvString);
       accumulator[fileName] = encodedString;
       return accumulator;
@@ -275,7 +265,10 @@ const BatchDiffExpression = (props) => {
         <br />
         <Form size='small' layout='vertical'>
 
-          <Radio.Group value={chosenOperation} onChange={(e) => { setChosenOperation(e.target.value); }}>
+          <Radio.Group
+            value={chosenOperation}
+            onChange={(e) => { setChosenOperation(e.target.value); }}
+          >
             <Space direction='vertical'>
               <Space direction='horizontal'>
                 <Radio value='fullList'>
@@ -286,11 +279,26 @@ const BatchDiffExpression = (props) => {
                   </Tooltip>
                 </Radio>
               </Space>
-              <Radio value='compareForCellSets'>
-                Compare two selected samples/groups within a cell set for all cell sets
+              <Radio value='compareForCellSets' disabled={isDatasetUnisample}>
+                {
+                  isDatasetUnisample ? (
+                    <Tooltip
+                      overlay={(
+                        <span>
+                          Comparison between samples/groups is
+                          not possible with a dataset that contains only 1 sample
+                        </span>
+                      )}
+                    >
+                      Compare between two selected samples/groups in a cell set for all cell sets
+                    </Tooltip>
+                  ) : (
+                    'Compare between two selected samples/groups in a cell set for all cell sets'
+                  )
+                }
               </Radio>
               <Radio value='compareForSamples'>
-                Compare between two cell sets for all samples/groups
+                Compare two cell sets for all samples/groups
               </Radio>
             </Space>
           </Radio.Group>
