@@ -1,6 +1,8 @@
 import _ from 'lodash';
 import React from 'react';
-import { screen, render, act } from '@testing-library/react';
+import {
+  screen, render, act, waitFor,
+} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
@@ -82,16 +84,21 @@ const withChangesState = {
 enableFetchMocks();
 
 const mockAPIResponses = generateDefaultMockAPIResponses(experimentId);
+const urlMatcher = `/v2/access/${experimentId}/check?url=%2Fv2%2Fexperiments%2F${experimentId}%2Fqc&method=POST`;
 
 describe('ChangesNotAppliedModal', () => {
   beforeEach(() => {
     jest.clearAllMocks();
 
     fetchMock.resetMocks();
-    fetchMock.mockIf(/.*/, mockAPI(mockAPIResponses));
   });
 
   it('Displays correctly', () => {
+    fetchMock.mockIf(/.*/, mockAPI({
+      ...mockAPIResponses,
+      [urlMatcher]: () => Promise.resolve(JSON.stringify(true)),
+    }));
+
     render(
       <Provider store={mockStore(withChangesState)}>
         <ChangesNotAppliedModal />
@@ -115,6 +122,11 @@ describe('ChangesNotAppliedModal', () => {
   });
 
   it('Shows the correct list of changed QC filters', () => {
+    fetchMock.mockIf(/.*/, mockAPI({
+      ...mockAPIResponses,
+      [urlMatcher]: () => Promise.resolve(JSON.stringify(true)),
+    }));
+
     render(
       <Provider store={mockStore(withChangesState)}>
         <ChangesNotAppliedModal />
@@ -129,6 +141,11 @@ describe('ChangesNotAppliedModal', () => {
   });
 
   it('Does not display list of QC filters if there are no changed qc filters', () => {
+    fetchMock.mockIf(/.*/, mockAPI({
+      ...mockAPIResponses,
+      [urlMatcher]: () => Promise.resolve(JSON.stringify(true)),
+    }));
+
     render(
       <Provider store={mockStore(noChangesState)}>
         <ChangesNotAppliedModal />
@@ -142,7 +159,12 @@ describe('ChangesNotAppliedModal', () => {
     expect(screen.queryByText('Step 2')).toBeNull();
   });
 
-  it('Fires the correct action for Run button', () => {
+  it('Fires the correct action for Run button', async () => {
+    fetchMock.mockIf(/.*/, mockAPI({
+      ...mockAPIResponses,
+      [urlMatcher]: () => Promise.resolve(JSON.stringify(true)),
+    }));
+
     const mockRunQC = jest.fn();
 
     render(
@@ -151,11 +173,19 @@ describe('ChangesNotAppliedModal', () => {
       </Provider>,
     );
 
+    await waitFor(() => {
+      expect(screen.getByText('Run')).toBeInTheDocument();
+    });
+
     userEvent.click(screen.getByText('Run'));
     expect(mockRunQC).toHaveBeenCalled();
   });
 
   it('Fires the correct action for Discard button', () => {
+    fetchMock.mockIf(/.*/, mockAPI({
+      ...mockAPIResponses,
+      [urlMatcher]: () => Promise.resolve(JSON.stringify(true)),
+    }));
     const mockOnDiscardChanges = jest.fn();
 
     render(
@@ -169,6 +199,10 @@ describe('ChangesNotAppliedModal', () => {
   });
 
   it('Fires the correct action when closed', () => {
+    fetchMock.mockIf(/.*/, mockAPI({
+      ...mockAPIResponses,
+      [urlMatcher]: () => Promise.resolve(JSON.stringify(true)),
+    }));
     const mockOnCloseModal = jest.fn();
 
     render(
@@ -182,6 +216,10 @@ describe('ChangesNotAppliedModal', () => {
   });
 
   it('Shows the QCRerunDisabledModal if the pipelineVersion is too old', async () => {
+    fetchMock.mockIf(/.*/, mockAPI({
+      ...mockAPIResponses,
+      [urlMatcher]: () => Promise.resolve(JSON.stringify(true)),
+    }));
     const mockRunQC = jest.fn();
 
     const oldPipelineState = _.cloneDeep(withChangesState);
@@ -197,7 +235,48 @@ describe('ChangesNotAppliedModal', () => {
     userEvent.click(screen.getByText('Run'));
 
     expect(mockRunQC).not.toHaveBeenCalled();
-    expect(screen.getByText(/Due to a recent update, re-running the pipeline will initiate the run from the beginning/)).toBeInTheDocument();
+
+    await waitFor(() => {
+      expect(screen.getByText(/Due to a recent update, re-running the pipeline will initiate the run from the beginning/)).toBeInTheDocument();
+    });
+
+    // When clicking clone project, the modal disappears and navigateTo is called
+    await act(async () => {
+      userEvent.click(screen.getAllByText(/Clone Project/)[1]);
+    });
+
+    expect(onCloseModalMock).toHaveBeenCalled();
+    expect(mockNavigateTo).toHaveBeenCalled();
+
+    expect(fetchMock.mock.calls).toMatchSnapshot();
+  });
+
+  it('Shows the QCRerunDisabledModal if the user isnt authorized to rerun qc', async () => {
+    fetchMock.mockIf(/.*/, mockAPI({
+      ...mockAPIResponses,
+      [urlMatcher]: () => Promise.resolve(JSON.stringify(false)),
+    }));
+    const mockRunQC = jest.fn();
+
+    const oldPipelineState = _.cloneDeep(withChangesState);
+    oldPipelineState.experimentSettings.info.pipelineVersion = 0;
+
+    const onCloseModalMock = jest.fn();
+    render(
+      <Provider store={mockStore(oldPipelineState)}>
+        <ChangesNotAppliedModal onRunQC={() => mockRunQC()} onCloseModal={onCloseModalMock} />
+      </Provider>,
+    );
+
+    userEvent.click(screen.getByText('Run'));
+
+    expect(mockRunQC).not.toHaveBeenCalled();
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(/Your account is not authorized to run data processing on this project. You have 2 options:/),
+      ).toBeInTheDocument();
+    });
 
     // When clicking clone project, the modal disappears and navigateTo is called
     await act(async () => {
