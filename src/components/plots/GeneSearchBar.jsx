@@ -66,7 +66,7 @@ const GeneSearchBar = (props) => {
     setSearchState({ value: '', options: [] });
   };
   const placeholder = `Search for ${allowMultiple ? 'genes' : 'a gene'}...`;
-  if (!genes?.length) {
+  if (!geneList?.length) {
     return (
       <div data-testid='skeletonInput'>
         <Skeleton.Input style={{ width: 200 }} active />

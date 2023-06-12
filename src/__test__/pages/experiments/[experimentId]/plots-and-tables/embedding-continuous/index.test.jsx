@@ -86,7 +86,7 @@ const renderContinuousEmbeddingPage = async (store) => {
   ));
 };
 
-describe('Categorical embedding plot', () => {
+describe('Continuous embedding plot', () => {
   beforeAll(async () => {
     await preloadAll();
   });

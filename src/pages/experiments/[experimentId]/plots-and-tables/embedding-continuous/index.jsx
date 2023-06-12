@@ -10,7 +10,6 @@ import {
 import SelectData from 'components/plots/styling/embedding-continuous/SelectData';
 import Header from 'components/Header';
 import ContinuousEmbeddingPlot from 'components/plots/ContinuousEmbeddingPlot';
-import loadGeneList from 'redux/actions/genes/loadGeneList';
 import PlotContainer from 'components/plots/PlotContainer';
 import { loadPaginatedGeneProperties, loadGeneExpression } from 'redux/actions/genes';
 
@@ -30,7 +29,7 @@ const plotType = 'embeddingContinuous';
 const PROPERTIES = ['dispersions'];
 const tableState = {
   pagination: {
-    current: 1, pageSize: 1, showSizeChanger: true, total: 0,
+    current: 1, pageSize: 1000000, showSizeChanger: true,
   },
   geneNamesFilter: null,
   sorter: { field: PROPERTIES[0], columnKey: PROPERTIES[0], order: 'descend' },
@@ -53,7 +52,6 @@ const ContinuousEmbeddingPage = ({ experimentId }) => {
   useEffect(() => {
     if (!config) dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
     dispatch(loadCellSets(experimentId));
-    dispatch(loadGeneList(experimentId));
   }, []);
 
   useEffect(() => {
