@@ -7,8 +7,8 @@ import PropTypes from 'prop-types';
 import { useSelector, useDispatch } from 'react-redux';
 
 import uploadMetadataFile from 'redux/actions/experiments/uploadMetadataFile';
-import MetadataUploadModal from './MetadataUploadModal';
 import { sampleTech } from 'utils/constants';
+import MetadataUploadModal from './MetadataUploadModal';
 
 const AddMetadataButton = ({ samplesTableRef }) => {
   const dispatch = useDispatch();
@@ -47,7 +47,7 @@ const AddMetadataButton = ({ samplesTableRef }) => {
         )}
         trigger={['click']}
         placement='bottomRight'
-        disabled={activeExperiment.sampleIds?.length === 0 || || isSubsetted || selectedTech === sampleTech.SEURAT}
+        disabled={activeExperiment.sampleIds?.length === 0 || isSubsetted || selectedTech === sampleTech.SEURAT}
       >
         <Button>
           Add metadata

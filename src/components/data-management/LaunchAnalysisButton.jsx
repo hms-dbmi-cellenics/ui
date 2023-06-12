@@ -70,7 +70,7 @@ const LaunchAnalysisButton = () => {
     setSeuratComplete(isSeuratComplete);
   }, [pipelineRerunStatus, selectedTech]);
 
-  const launchAnalysis = () => {
+  const launchAnalysis = async () => {
     const runner = runnersByTechnology[selectedTech];
 
     let shouldNavigate = true;
