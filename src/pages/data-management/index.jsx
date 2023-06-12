@@ -13,7 +13,6 @@ import { loadSamples } from 'redux/actions/samples';
 import ExampleExperimentsSpace from 'components/data-management/ExampleExperimentsSpace';
 import { privacyPolicyIsNotAccepted, DomainName } from 'utils/deploymentInfo';
 import Loader from 'components/Loader';
-import CoursesBanner from 'components/data-management/CoursesBanner';
 
 const DataManagementPage = () => {
   const dispatch = useDispatch();
@@ -107,8 +106,6 @@ const DataManagementPage = () => {
 
   return (
     <>
-      {(domainName === DomainName.BIOMAGE || domainName === DomainName.BIOMAGE_STAGING)
-      && (<CoursesBanner />)}
       <Header title='Data Management' />
       {newProjectModalVisible ? (
         <NewProjectModal
