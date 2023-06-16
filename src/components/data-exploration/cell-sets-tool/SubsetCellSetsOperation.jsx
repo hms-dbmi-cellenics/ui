@@ -14,7 +14,7 @@ const SubsetCellSetsOperation = (props) => {
 
   const firstSampleId = useSelector((store) => store.experimentSettings.info.sampleIds[0]);
   const experimentName = useSelector((store) => store.experimentSettings.info.experimentName);
-  const experimentType = useSelector((store) => store.samples[firstSampleId].type);
+  const experimentType = useSelector((store) => store.samples[firstSampleId]?.type);
 
   const [showSubsetCellSets, setShowSubsetCellSets] = useState(false);
 
@@ -23,7 +23,7 @@ const SubsetCellSetsOperation = (props) => {
       <Tooltip placement='top' title='Subset selected cell sets to a new project.'>
         <Button
           type='dashed'
-          disabled={experimentType == sampleTech.SEURAT}
+          disabled={experimentType === sampleTech.SEURAT}
           aria-label='Create new experiment from selected cellsets'
           size='small'
           icon={<PieChartOutlined />}
