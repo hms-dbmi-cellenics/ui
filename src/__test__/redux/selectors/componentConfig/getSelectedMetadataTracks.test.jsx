@@ -1,7 +1,7 @@
 import { mockCellSets } from '__test__/test-utils/cellSets.mock';
 import getSelectedMetadataTracks from 'redux/selectors/componentConfig/getSelectedMetadataTracks';
 
-describe('Get cell sets selector test', () => {
+describe('get selected metadata tracks test', () => {
   const existingClusters = ['cluster-a', 'cluster-b'];
   const nonExistingCluster = [...existingClusters, 'this-doesnt-exist'];
   const mockState = {
