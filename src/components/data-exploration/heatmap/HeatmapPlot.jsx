@@ -9,7 +9,7 @@ import _ from 'lodash';
 
 import { getCellSets } from 'redux/selectors';
 
-import { loadGeneExpression, loadMarkerGenes } from 'redux/actions/genes';
+import { loadDownsampledGeneExpression, loadGeneExpression, loadMarkerGenes } from 'redux/actions/genes';
 import { loadComponentConfig } from 'redux/actions/componentConfig';
 import { updateCellInfo } from 'redux/actions/cellInfo';
 
@@ -162,17 +162,29 @@ const HeatmapPlot = (props) => {
 
     const { groupedTracks, selectedCellSet, selectedPoints } = heatmapSettings;
 
-    dispatch(loadMarkerGenes(
-      experimentId,
-      COMPONENT_TYPE,
-      {
-        numGenes: nMarkerGenes,
-        groupedTracks,
-        selectedCellSet,
-        selectedPoints,
-        hiddenCellSets: cellSets.hidden,
-      },
-    ));
+    const downsampleSettings = {
+      groupedTracks,
+      selectedCellSet,
+      selectedPoints,
+      hiddenCellSets: cellSets.hidden,
+    };
+
+    // If selectedGenes are not set, load marker genes instead (first load)
+    if (_.isNil(selectedGenes)) {
+      dispatch(loadMarkerGenes(
+        experimentId,
+        COMPONENT_TYPE,
+        { numGenes: nMarkerGenes, ...downsampleSettings },
+      ));
+    } else {
+      // Load current genes
+      dispatch(loadDownsampledGeneExpression(
+        experimentId,
+        selectedGenes,
+        COMPONENT_TYPE,
+        downsampleSettings,
+      ));
+    }
   }, [
     louvainClustersResolution,
     cellSets.accessible,
@@ -206,9 +218,9 @@ const HeatmapPlot = (props) => {
       <PlatformError
         error={expressionDataError}
         onClick={() => {
-          if (markerGenesLoadingError) {
-            const { groupedTracks, selectedCellSet, selectedPoints } = heatmapSettings;
+          const { groupedTracks, selectedCellSet, selectedPoints } = heatmapSettings;
 
+          if (markerGenesLoadingError) {
             dispatch(loadMarkerGenes(
               experimentId,
               COMPONENT_TYPE,
@@ -222,7 +234,16 @@ const HeatmapPlot = (props) => {
           }
 
           if ((expressionDataError || viewError) && !_.isNil(selectedGenes)) {
-            dispatch(loadGeneExpression(experimentId, selectedGenes, COMPONENT_TYPE, true));
+            const downsampleSettings = {
+              groupedTracks,
+              selectedCellSet,
+              selectedPoints,
+              hiddenCellSets: cellSets.hidden,
+            };
+
+            dispatch(loadDownsampledGeneExpression(
+              experimentId, selectedGenes, COMPONENT_TYPE, downsampleSettings,
+            ));
           }
         }}
       />

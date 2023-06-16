@@ -1,4 +1,3 @@
-import _ from 'lodash';
 import { SparseMatrix } from 'mathjs';
 
 import {
@@ -8,19 +7,18 @@ import {
 import fetchWork from 'utils/work/fetchWork';
 import getTimeoutForWorkerTask from 'utils/getTimeoutForWorkerTask';
 
-const loadGeneExpression = (
+const loadDownsampledGeneExpression = (
   experimentId,
   genes,
   componentUuid,
+  downsampleSettings = null,
 ) => async (dispatch, getState) => {
-  const { loading, matrix } = getState().genes.expression;
+  const { loading } = getState().genes.expression;
 
   // If other gene expression data is already being loaded, don't dispatch.
   if (loading.length > 0) {
     return null;
   }
-
-  const upperCaseArray = (array) => (array.map((element) => element.toUpperCase()));
 
   // Dispatch loading state.
   dispatch({
@@ -32,35 +30,14 @@ const loadGeneExpression = (
     },
   });
 
-  // Check which of the genes we actually need to load. Only do this if
-  // we are not forced to reload all of the data.
-  let genesToFetch = [...genes];
-  const genesAlreadyLoaded = matrix.getStoredGenes();
-
-  genesToFetch = genesToFetch.filter(
-    (gene) => !new Set(upperCaseArray(genesAlreadyLoaded)).has(gene.toUpperCase()),
-  );
-
-  const displayedGenes = genesAlreadyLoaded.filter(
-    (gene) => upperCaseArray(genes).includes(gene.toUpperCase()),
-  );
-
-  if (genesToFetch.length === 0) {
-    // All genes are already loaded.
-    return dispatch({
-      type: GENES_EXPRESSION_LOADED,
-      payload: {
-        experimentId,
-        componentUuid,
-        genes: displayedGenes,
-      },
-    });
-  }
+  console.log('downsampleSettingsDebug');
+  console.log(downsampleSettings);
 
   const body = {
     name: 'GeneExpression',
-    genes: genesToFetch,
-    downsampled: false,
+    genes,
+    downsampled: true,
+    downsampleSettings,
   };
 
   const timeout = getTimeoutForWorkerTask(getState(), 'GeneExpression');
@@ -72,6 +49,7 @@ const loadGeneExpression = (
       truncatedExpression: truncatedExpressionJson,
       zScore: zScoreJson,
       stats,
+      cellOrder,
     } = await fetchWork(
       experimentId, body, getState, dispatch, { timeout },
     );
@@ -80,13 +58,11 @@ const loadGeneExpression = (
     const truncatedExpression = SparseMatrix.fromJSON(truncatedExpressionJson);
     const zScore = SparseMatrix.fromJSON(zScoreJson);
 
-    const fetchedGenes = _.concat(displayedGenes, orderedGeneNames);
-
     dispatch({
       type: GENES_EXPRESSION_LOADED,
       payload: {
         componentUuid,
-        genes: fetchedGenes,
+        genes,
         newGenes: {
           orderedGeneNames,
           stats,
@@ -94,6 +70,7 @@ const loadGeneExpression = (
           truncatedExpression,
           zScore,
         },
+        downsampledCellOrder: cellOrder,
       },
     });
   } catch (error) {
@@ -109,4 +86,4 @@ const loadGeneExpression = (
   }
 };
 
-export default loadGeneExpression;
+export default loadDownsampledGeneExpression;
