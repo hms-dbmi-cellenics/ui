@@ -323,7 +323,7 @@ const ContentWrapper = (props) => {
     // disable links if user is not in one of the experiment analysis modules
     const nonExperimentModule = ![DATA_EXPLORATION,
       DATA_MANAGEMENT, DATA_PROCESSING, PLOTS_AND_TABLES]
-      .includes(currentModule);
+      .includes(currentModule) && disableIfNoExperiment;
 
     return (
       <Menu.Item
