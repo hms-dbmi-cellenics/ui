@@ -44,9 +44,6 @@ const genesExpressionLoaded = (state, action) => {
     }
   }
 
-  // console.log('downsampledCellOrderDebug');
-  // console.log(downsampledCellOrder);
-
   return {
     ...state,
     expression: {

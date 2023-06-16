@@ -30,9 +30,6 @@ const loadDownsampledGeneExpression = (
     },
   });
 
-  console.log('downsampleSettingsDebug');
-  console.log(downsampleSettings);
-
   const body = {
     name: 'GeneExpression',
     genes,
