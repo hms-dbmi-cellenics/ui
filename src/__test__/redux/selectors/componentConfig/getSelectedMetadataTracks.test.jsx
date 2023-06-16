@@ -1,4 +1,3 @@
-import { initialComponentConfigStates } from 'redux/reducers/componentConfig/initialState';
 import { mockCellSets } from '__test__/test-utils/cellSets.mock';
 import getSelectedMetadataTracks from 'redux/selectors/componentConfig/getSelectedMetadataTracks';
 
@@ -12,7 +11,6 @@ describe('Get cell sets selector test', () => {
     cellSets: mockCellSets,
   };
   it('should return tracks if cellsets are defined', () => {
-    console.log('INITIAL COMPONENT CONFIG ', initialComponentConfigStates.interactiveHeatmap);
     expect(getSelectedMetadataTracks('interactiveHeatmap')(mockState)).toEqual(existingClusters);
   });
 
