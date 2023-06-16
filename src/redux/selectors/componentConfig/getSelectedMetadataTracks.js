@@ -2,9 +2,7 @@ import createMemoizedSelector from 'redux/selectors/createMemoizedSelector';
 import getCellSets from '../cellSets/getCellSets';
 
 const getSelectedMetadataTracks = (plotUuid) => (state) => {
-  const cellSetsAccessible = getCellSets()(state).accessible;
-
-  if (!cellSetsAccessible) return [];
+  if (!state.accessible) return [];
 
   const selectedTracks = state.componentConfig[plotUuid]?.config.selectedTracks;
   if (!selectedTracks?.length) return [];
@@ -17,4 +15,7 @@ const getSelectedMetadataTracks = (plotUuid) => (state) => {
   return existingSelectedTracks;
 };
 
-export default createMemoizedSelector(getSelectedMetadataTracks);
+export default createMemoizedSelector(
+  getSelectedMetadataTracks,
+  { inputSelectors: getCellSets() },
+);
