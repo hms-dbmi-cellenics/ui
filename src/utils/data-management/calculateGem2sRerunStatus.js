@@ -4,7 +4,7 @@ import pipelineStatus from 'utils/pipelineStatusValues';
 
 const calculateGem2sRerunStatus = (gem2sBackendStatus, activeExperiment) => {
   const { status: gem2sStatus, shouldRerun } = gem2sBackendStatus ?? {};
-
+  console.log('GEM2S STATUS ', gem2sStatus);
   const gem2sSuccessful = [
     pipelineStatus.SUCCEEDED, pipelineStatus.RUNNING,
   ].includes(gem2sStatus);
