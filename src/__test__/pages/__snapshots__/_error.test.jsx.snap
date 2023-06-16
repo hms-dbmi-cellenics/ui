@@ -245,7 +245,7 @@ Array [
       },
     },
     "networkResources": Object {
-      "domainName": "scp.biomage.net",
+      "domainName": "cellenics.hms.harvard.edu",
       "environment": "production",
     },
     "samples": Object {
@@ -508,7 +508,7 @@ Array [
       },
     },
     "networkResources": Object {
-      "domainName": "scp.biomage.net",
+      "domainName": "cellenics.hms.harvard.edu",
       "environment": "staging",
     },
     "samples": Object {

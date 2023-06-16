@@ -27,13 +27,12 @@ import BrowserAlert from 'components/BrowserAlert';
 import PreloadContent from 'components/PreloadContent';
 import PipelineLoadingScreen from 'components/PipelineLoadingScreen';
 import PipelineRedirectToDataProcessing from 'components/PipelineRedirectToDataProcessing';
-import PrivacyPolicyIntercept from 'components/data-management/PrivacyPolicyIntercept';
 
 import { getBackendStatus } from 'redux/selectors';
 import { loadUser } from 'redux/actions/user';
 import { loadBackendStatus } from 'redux/actions/backendStatus';
 
-import { isBrowser, privacyPolicyIsNotAccepted } from 'utils/deploymentInfo';
+import { isBrowser } from 'utils/deploymentInfo';
 import { modules } from 'utils/constants';
 import { useAppRouter } from 'utils/AppRouteProvider';
 import experimentUpdatesHandler from 'utils/experimentUpdatesHandler';
@@ -391,9 +390,6 @@ const ContentWrapper = (props) => {
   return (
     <>
       <DndProvider backend={MultiBackend} options={HTML5ToTouch}>
-        {privacyPolicyIsNotAccepted(user, domainName) && (
-          <PrivacyPolicyIntercept user={user} onOk={() => dispatch(loadUser())} />
-        )}
         <BrowserAlert />
         <Layout style={{ minHeight: '100vh' }}>
           <Sider

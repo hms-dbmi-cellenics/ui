@@ -2,7 +2,6 @@ import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { loadExampleExperiments } from 'redux/actions/experiments';
 import Header from 'components/Header';
-import { privacyPolicyIsNotAccepted } from 'utils/deploymentInfo';
 import RepositoryTable from 'components/repository/RepositoryTable';
 
 const RepositoryPage = () => {
@@ -13,7 +12,6 @@ const RepositoryPage = () => {
   const exampleExperiments = useSelector((state) => state.experiments.meta?.exampleExperiments);
 
   useEffect(() => {
-    if (privacyPolicyIsNotAccepted(user, domainName)) return;
     dispatch(loadExampleExperiments());
   }, [user]);
 
