@@ -95,7 +95,6 @@ const DotPlotPage = (props) => {
   const { data: geneData } = useSelector((state) => state.genes.properties || {});
 
   const cellSets = useSelector(getCellSets());
-
   const [moreThanTwoGroups, setMoreThanTwoGroups] = useState(false);
   const [reorderAfterFetch, setReorderAfterFetch] = useState(false);
   const [reset, setReset] = useState(false);
@@ -336,6 +335,11 @@ const DotPlotPage = (props) => {
     return newDataSorted;
   };
 
+  const onUpdateSelectData = (obj) => {
+    const selectedCellSet = Object.values(obj)[0];
+    const updateObj = { axes: { yAxisText: cellSets.properties[selectedCellSet]?.name }, ...obj };
+    updatePlotWithChanges(updateObj);
+  };
   const updatePlotWithChanges = (obj) => {
     dispatch(updatePlotConfig(plotUuid, obj));
   };
@@ -381,7 +385,7 @@ const DotPlotPage = (props) => {
       <Panel header='Select data' key='select-data'>
         <SelectData
           config={config}
-          onUpdate={updatePlotWithChanges}
+          onUpdate={onUpdateSelectData}
           cellSets={cellSets}
           firstSelectionText='Select the cell sets or metadata that cells are grouped by (determines the y-axis)'
         />

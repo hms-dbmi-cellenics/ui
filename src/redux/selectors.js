@@ -4,8 +4,8 @@
 
 import * as backendSelectors from './selectors/backendStatus';
 import * as cellSetsSelectors from './selectors/cellSets';
-import * as componentConfigSelectors from './selectors/componentConfig';
 import * as genesSelectors from './selectors/genes';
+import * as componentConfigSelectors from './selectors/componentConfig';
 
 const getBackendStatus = (...params) => (state) => (
   backendSelectors.getBackendStatus(...params)(state.backendStatus));
@@ -28,6 +28,9 @@ const getPlotConfigs = (...params) => (state) => (
 const getGeneList = (...params) => (state) => (
   genesSelectors.getGeneList(...params)(state.genes));
 
+const getSelectedMetadataTracks = (...params) => (state) => (
+  componentConfigSelectors.getSelectedMetadataTracks(...params)(state)
+);
 export {
   getBackendStatus,
   getCellSets,
@@ -36,4 +39,5 @@ export {
   getCellSetsHierarchyByKeys,
   getPlotConfigs,
   getGeneList,
+  getSelectedMetadataTracks,
 };
