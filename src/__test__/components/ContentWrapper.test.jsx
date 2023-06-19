@@ -199,6 +199,19 @@ describe('ContentWrapper', () => {
     expect(screen.getByText('Plots and Tables').closest('li')).toHaveAttribute('aria-disabled', 'false');
   });
 
+  it('Links are disabled if user is not in a module/page for experiment analysing', async () => {
+    useRouter.mockImplementation(() => ({
+      pathname: '/repository',
+    }));
+
+    await renderContentWrapper(experimentId, experimentData);
+
+    expect(screen.getByText('Data Management').closest('li')).toHaveAttribute('aria-disabled', 'false');
+    expect(screen.getByText('Data Processing').closest('li')).toHaveAttribute('aria-disabled', 'true');
+    expect(screen.getByText('Data Exploration').closest('li')).toHaveAttribute('aria-disabled', 'true');
+    expect(screen.getByText('Plots and Tables').closest('li')).toHaveAttribute('aria-disabled', 'true');
+  });
+
   it('has the correct sider and layout style when opened / closed', async () => {
     const siderHasWidth = (container, expectedWidth) => {
       const div = container.firstChild;
