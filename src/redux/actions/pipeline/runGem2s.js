@@ -25,12 +25,16 @@ const runGem2s = (experimentId) => async (dispatch) => {
     });
 
     await dispatch(loadBackendStatus(experimentId));
+
+    return true;
   } catch (e) {
     const errorMessage = handleError(e, endUserMessages.ERROR_STARTING_PIPLELINE);
 
     if (errorMessage !== endUserMessages.ERROR_NO_PERMISSIONS) {
       await dispatch(loadBackendStatus(experimentId));
     }
+
+    return false;
   }
 };
 

@@ -52,7 +52,7 @@ describe('ReferralButton', () => {
     expect(screen.getByText(/Send invite/i)).toBeDefined();
   });
 
-  it('Submit button is disaibled if email is invalid', async () => {
+  it('Submit button is disabled if email is invalid', async () => {
     render(<ReferralButton />);
 
     const invalidEmail = 'invalidEmail';

@@ -44,8 +44,8 @@ const PipelineLoadingScreen = (props) => {
   const dispatch = useDispatch();
 
   const dataManagementPath = '/data-management';
-  const relaunchExperiment = () => {
-    dispatch(runner(experimentId));
+  const relaunchExperiment = async () => {
+    await dispatch(runner(experimentId));
   };
 
   const texts = {
@@ -68,7 +68,7 @@ const PipelineLoadingScreen = (props) => {
     error: {
       status: 'error',
       title: 'We\'ve had an issue while launching your analysis.',
-      subTitle: pipelineErrorMessage || 'You can return to Data Management or try to re-launch the current analysis.',
+      subTitle: pipelineErrorMessage || 'You can launch another analysis or retry to launch the current analysis.',
       image: '/undraw_Abstract_re_l9xy.svg',
       alt: 'A woman confusedly staring at an abstract drawing.',
       showProgress: false,
@@ -103,7 +103,7 @@ const PipelineLoadingScreen = (props) => {
         <Space size='large'>
           <Link as={dataManagementPath} href={dataManagementPath} passHref>
             <Button type='primary' key='console'>
-              Return to Data Management
+              Launch Another Analysis
             </Button>
           </Link>
           <Button type='primary' key='console' onClick={relaunchExperiment}>

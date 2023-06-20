@@ -70,15 +70,18 @@ const LaunchAnalysisButton = () => {
     setSeuratComplete(isSeuratComplete);
   }, [pipelineRerunStatus, selectedTech]);
 
-  const launchAnalysis = () => {
+  const launchAnalysis = async () => {
     const runner = runnersByTechnology[selectedTech];
 
+    let shouldNavigate = true;
     if (pipelineRerunStatus.rerun) {
-      dispatch(runner(activeExperimentId));
+      shouldNavigate = await dispatch(runner(activeExperimentId));
     }
 
-    const moduleName = seuratComplete ? modules.DATA_EXPLORATION : modules.DATA_PROCESSING;
-    navigateTo(moduleName, { experimentId: activeExperimentId });
+    if (shouldNavigate) {
+      const moduleName = seuratComplete ? modules.DATA_EXPLORATION : modules.DATA_PROCESSING;
+      navigateTo(moduleName, { experimentId: activeExperimentId });
+    }
   };
 
   useEffect(() => {

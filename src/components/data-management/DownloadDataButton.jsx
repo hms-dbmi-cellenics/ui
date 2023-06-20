@@ -43,9 +43,6 @@ const DownloadDataButton = () => {
   }, [activeExperimentId]);
 
   useEffect(() => {
-    console.log('backendStatuses!!!');
-    console.log(backendStatuses);
-
     setPipelineHasRun(
       activeExperimentId && (backendStatuses?.pipeline?.status === pipelineStatus.SUCCEEDED
         || backendStatuses?.seurat?.status === pipelineStatus.SUCCEEDED),

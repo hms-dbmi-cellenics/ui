@@ -33,7 +33,7 @@ describe('Batch differential expression tests ', () => {
     storeState = makeStore();
     getBatchDiffExprSpy = jest.spyOn(getBatchDiffExpr, 'default');
   });
-
+  const secondOptionText = 'Compare between two selected samples/groups in a cell set for all cell sets';
   const renderPage = async () => {
     await act(async () => render(
       <Provider store={storeState}>
@@ -50,8 +50,8 @@ describe('Batch differential expression tests ', () => {
   it('Shows correct input fields for each comparison option', async () => {
     await renderPage();
 
-    const compareForCellSetsRadio = screen.getByLabelText(/Compare two selected samples\/groups within a cell set for all cell sets/i);
-    const compareForSamplesRadio = screen.getByLabelText(/Compare between two cell sets for all samples\/groups/i);
+    const compareForCellSetsRadio = screen.getByLabelText(secondOptionText);
+    const compareForSamplesRadio = screen.getByLabelText(/Compare two cell sets for all samples\/groups/i);
 
     expect(screen.getByText(/Select the cell sets for which marker genes are to be computed in batch:/i)).toBeInTheDocument();
     expect(screen.getByText('Select a cell set...')).toBeInTheDocument();
@@ -71,7 +71,7 @@ describe('Batch differential expression tests ', () => {
   it('sending a request should work', async () => {
     await renderPage();
 
-    const secondOption = screen.getByText('Compare two selected samples/groups within a cell set for all cell sets');
+    const secondOption = screen.getByText(secondOptionText);
     const computeButton = screen.getByText(/Compute/).closest('button');
 
     // Initial state should have the Compute button disabled
@@ -98,7 +98,7 @@ describe('Batch differential expression tests ', () => {
         basis: 'louvain',
         cellSet: 'sample/b62028a1-ffa0-4f10-823d-93c9ddb88898',
         compareWith: 'sample/rest',
-        comparisonType: 'within',
+        comparisonType: 'between',
       }, 'compareForCellSets',
       ['louvain-0', 'louvain-1', 'louvain-2', 'louvain-3', 'louvain-4', 'louvain-5', 'louvain-6', 'louvain-7', 'louvain-8', 'louvain-9', 'louvain-10', 'louvain-11', 'louvain-12', 'louvain-13']);
   });
