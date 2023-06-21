@@ -1,6 +1,7 @@
 const _ = require('lodash');
 
 const fileTypes = {
+  'matrix.h5': '10x_h5',
   matrix: 'matrix10x',
   barcodes: 'barcodes10x',
   features: 'features10x',

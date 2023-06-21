@@ -17,7 +17,16 @@ const GZIP_SIGNATURE = Buffer.from([0x1f, 0x8b]);
 
 const inspectFile = async (file, technology) => {
   // Validate a file requested for upload to the platform.
+  if (technology === sampleTech.H5) {
+    if (!techOptions[sampleTech.H5].isNameValid(file.name)) {
+      return Verdict.INVALID_NAME;
+    }
 
+    const data = await readFileToBuffer(file.slice(0, 16));
+    const isGzipped = !data.slice(0, 2).compare(GZIP_SIGNATURE);
+    const valid = isGzipped ? Verdict.VALID_ZIPPED : Verdict.VALID_UNZIPPED;
+    return valid;
+  }
   if (technology === sampleTech.RHAPSODY) {
     if (!file.name.toLowerCase().includes('expression_data.st')) {
       return Verdict.INVALID_NAME;
