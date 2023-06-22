@@ -8,7 +8,6 @@ import mockDemoExperiments from '__test__/test-utils/mockData/mockDemoExperiment
 
 import fake from '__test__/test-utils/constants';
 
-// A ticket has been created to address this : https://biomage.atlassian.net/browse/BIOMAGE-1553
 import {
   responseData,
 } from '__test__/test-utils/mockData';

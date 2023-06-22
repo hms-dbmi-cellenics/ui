@@ -2,33 +2,33 @@ import { init, push } from '@socialgouv/matomo-next';
 import Auth from '@aws-amplify/auth';
 import { Environment } from './deploymentInfo';
 
-const MATOMO_URL = 'https://biomage.matomo.cloud';
+const MATOMO_URL = 'https://cellenics.matomo.cloud';
 
-// To test a staging deployment, you'll need to go to biomage.matomo.cloud
+// To test a staging deployment, you'll need to go to matomo.cloud
 // and change the URL there to point to your staging env URL.
 // To test locally, just enable the development environemnt.
-// The Site Ids are defined in biomage.matomo.cloud
+// The Site Ids are defined in matomo.cloud
 const trackingInfo = {
   [Environment.PRODUCTION]: {
     enabled: true,
     siteId: 1,
-    containerId: 'lkIodjnO',
+    containerId: 'zdMhc9ey',
   },
   [Environment.STAGING]: {
     enabled: false,
     siteId: 2,
-    containerId: 'FX7UBNS6',
+    containerId: 'lMoIVl5D',
   },
   [Environment.DEVELOPMENT]: {
     enabled: false,
     siteId: 3,
-    containerId: 'lS8ZRMXJ',
+    containerId: 'uMEoPBAl',
   },
 };
 
 let env = Environment.DEVELOPMENT;
 
-const getTrackingDetails = (e) => trackingInfo[e];
+const getTrackingDetails = (e) => ({ ...trackingInfo[e] });
 
 const initTracking = async (environment) => {
   // set the environment for the tracking sytem

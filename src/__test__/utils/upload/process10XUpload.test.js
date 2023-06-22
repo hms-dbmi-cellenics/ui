@@ -13,57 +13,45 @@ import { waitFor } from '@testing-library/dom';
 
 import processUpload from 'utils/upload/processUpload';
 
-import loadAndCompressIfNecessary from 'utils/upload/loadAndCompressIfNecessary';
 import validate from 'utils/upload/validate10x';
 import pushNotificationMessage from 'utils/pushNotificationMessage';
 import { sampleTech } from 'utils/constants';
+import mockFile from '__test__/test-utils/mockFile';
 
 enableFetchMocks();
 
-const getValidFiles = (cellrangerVersion) => {
+const getValidFiles = (cellrangerVersion, compressed = true) => {
   const filename = cellrangerVersion === 'v2' ? 'genes.tsv.gz' : 'features.tsv.gz';
 
-  return ([
+  let fileList = [
     {
       name: `WT13/${filename}`,
-      fileObject: {
-        name: filename,
-        path: `/WT13/${filename}`,
-        type: 'application/gzip',
-        size: 100,
-      },
+      fileObject: mockFile(filename, '/'),
       upload: { status: UploadStatus.UPLOADING },
       errors: '',
-      compressed: true,
+      compressed,
       valid: true,
     },
     {
       name: 'WT13/barcodes.tsv.gz',
-      fileObject: {
-        name: 'barcodes.tsv.gz',
-        path: '/WT13/barcodes.tsv.gz',
-        type: 'application/gzip',
-        size: 100,
-      },
+      fileObject: mockFile('barcodes.tsv.gz', '/'),
       upload: { status: UploadStatus.UPLOADING },
       errors: '',
-      compressed: true,
+      compressed,
       valid: true,
     },
     {
       name: 'WT13/matrix.mtx.gz',
-      fileObject: {
-        name: 'matrix.mtx.gz',
-        path: '/WT13/matrix.mtx.gz',
-        type: 'application/gzip',
-        size: 100,
-      },
+      fileObject: mockFile('matrix.mtx.gz', '/'),
       upload: { status: UploadStatus.UPLOADING },
       errors: '',
-      compressed: true,
+      compressed,
       valid: true,
     },
-  ]);
+  ];
+
+  fileList = fileList.map((file) => ({ ...file, size: file.fileObject.size }));
+  return fileList;
 };
 
 const sampleType = sampleTech['10X'];
@@ -136,9 +124,14 @@ describe('processUpload', () => {
   beforeEach(() => {
     jest.clearAllMocks();
 
+    const mockUploadUrlParams = {
+      signedUrls: ['theSignedUrl'],
+      uploadId: 'some_id',
+    };
+
     fetchMock.resetMocks();
     fetchMock.doMock();
-    fetchMock.mockResponse(JSON.stringify('theSignedUrl'), { status: 200 });
+    fetchMock.mockResponse(JSON.stringify(mockUploadUrlParams), { status: 200 });
 
     store = mockStore(initialState);
   });
@@ -147,15 +140,17 @@ describe('processUpload', () => {
     const mockAxiosCalls = [];
     const uploadSuccess = (params) => {
       mockAxiosCalls.push(params);
-      return Promise.resolve('Resolved');
+      return Promise.resolve({ headers: { etag: 'etag-blah' } });
     };
 
     axios.request.mockImplementationOnce(uploadSuccess)
       .mockImplementationOnce(uploadSuccess)
       .mockImplementationOnce(uploadSuccess);
 
+    const filesList = getValidFiles('v3');
+
     await processUpload(
-      getValidFiles('v3'),
+      filesList,
       sampleType,
       store.getState().samples,
       mockExperimentId,
@@ -175,9 +170,9 @@ describe('processUpload', () => {
     // Three axios put calls are made
     expect(mockAxiosCalls.length).toBe(3);
     // Each put call is made with the correct information
-    expect(mockAxiosCalls[0].data).toEqual('loadedGzippedFile');
-    expect(mockAxiosCalls[1].data).toEqual('loadedGzippedFile');
-    expect(mockAxiosCalls[2].data).toEqual('loadedGzippedFile');
+    expect(mockAxiosCalls[0].data).toBeInstanceOf(Blob);
+    expect(mockAxiosCalls[1].data).toBeInstanceOf(Blob);
+    expect(mockAxiosCalls[2].data).toBeInstanceOf(Blob);
 
     // Wait until all put promises are resolved
     await flushPromises();
@@ -198,27 +193,11 @@ describe('processUpload', () => {
     // There are 3 files actions with status uploaded
     expect(uploadedStatusProperties.length).toEqual(3);
 
-    // Calls to loadAndCompressIfNecessary are done correctly
-    expect(loadAndCompressIfNecessary.mock.calls.map((calls) => calls[0])).toMatchSnapshot();
-
-    // If we trigger onCompression then an action to update uploadStatus to COMPRESSING is made
-    const onCompression = loadAndCompressIfNecessary.mock.calls[0][1];
-    onCompression();
-
-    await waitForActions(
-      store,
-      [{
-        type: SAMPLES_FILE_UPDATE,
-        payload: { fileDiff: { upload: { status: UploadStatus.COMPRESSING } } },
-      }],
-      { matcher: waitForActions.matchers.containing },
-    );
-
     // axios request calls are correct
     expect(axios.request.mock.calls.map((call) => call[0])).toMatchSnapshot();
 
     // If we trigger axios onUploadProgress it updates the progress correctly
-    axios.request.mock.calls[0][0].onUploadProgress({ loaded: 20, total: 40 });
+    axios.request.mock.calls[0][0].onUploadProgress({ loaded: filesList[0].fileObject.size / 2 });
 
     await waitForActions(
       store,
@@ -234,15 +213,17 @@ describe('processUpload', () => {
     const mockAxiosCalls = [];
     const uploadSuccess = (params) => {
       mockAxiosCalls.push(params);
-      return Promise.resolve('Resolved');
+      return Promise.resolve({ headers: { etag: 'etag-blah' } });
     };
 
     axios.request.mockImplementationOnce(uploadSuccess)
       .mockImplementationOnce(uploadSuccess)
       .mockImplementationOnce(uploadSuccess);
 
+    const filesList = getValidFiles('v2');
+
     await processUpload(
-      getValidFiles('v2'),
+      filesList,
       sampleType,
       store.getState().samples,
       mockExperimentId,
@@ -262,9 +243,9 @@ describe('processUpload', () => {
     // Three axios put calls are made
     expect(mockAxiosCalls.length).toBe(3);
     // Each put call is made with the correct information
-    expect(mockAxiosCalls[0].data).toEqual('loadedGzippedFile');
-    expect(mockAxiosCalls[1].data).toEqual('loadedGzippedFile');
-    expect(mockAxiosCalls[2].data).toEqual('loadedGzippedFile');
+    expect(mockAxiosCalls[0].data).toBeInstanceOf(Blob);
+    expect(mockAxiosCalls[1].data).toBeInstanceOf(Blob);
+    expect(mockAxiosCalls[2].data).toBeInstanceOf(Blob);
 
     // Wait until all put promises are resolved
     await flushPromises();
@@ -285,27 +266,11 @@ describe('processUpload', () => {
     // There are 3 files actions with status uploaded
     expect(uploadedStatusProperties.length).toEqual(3);
 
-    // Calls to loadAndCompressIfNecessary are done correctly
-    expect(loadAndCompressIfNecessary.mock.calls.map((calls) => calls[0])).toMatchSnapshot();
-
-    // If we trigger onCompression then an action to update uploadStatus to COMPRESSING is made
-    const onCompression = loadAndCompressIfNecessary.mock.calls[0][1];
-    onCompression();
-
-    await waitForActions(
-      store,
-      [{
-        type: SAMPLES_FILE_UPDATE,
-        payload: { fileDiff: { upload: { status: UploadStatus.COMPRESSING } } },
-      }],
-      { matcher: waitForActions.matchers.containing },
-    );
-
     // axios request calls are correct
     expect(axios.request.mock.calls.map((call) => call[0])).toMatchSnapshot();
 
     // If we trigger axios onUploadProgress it updates the progress correctly
-    axios.request.mock.calls[0][0].onUploadProgress({ loaded: 20, total: 40 });
+    axios.request.mock.calls[0][0].onUploadProgress({ loaded: filesList[0].fileObject.size / 2 });
 
     await waitForActions(
       store,
@@ -315,50 +280,6 @@ describe('processUpload', () => {
       }],
       { matcher: waitForActions.matchers.containing },
     );
-  });
-
-  it('Updates redux correctly when there are file load and compress errors', async () => {
-    const invalidFiles = getValidFiles('v3').map((file) => ({ ...file, valid: false }));
-
-    await processUpload(
-      invalidFiles,
-      sampleType,
-      store.getState().samples,
-      mockExperimentId,
-      store.dispatch,
-    );
-
-    // Wait for uploads to be made
-    await waitForActions(
-      store,
-      new Array(3).fill({
-        type: SAMPLES_FILE_UPDATE,
-        payload: { fileDiff: { upload: { status: UploadStatus.FILE_READ_ERROR } } },
-      }),
-      { matcher: waitForActions.matchers.containing },
-    );
-
-    const fileUpdateActions = store.getActions().filter(
-      (action) => action.type === SAMPLES_FILE_UPDATE,
-    );
-
-    const uploadProperties = fileUpdateActions.map((action) => action.payload.fileDiff.upload);
-
-    const uploadingFileProperties = uploadProperties.filter(
-      ({ status }) => status === UploadStatus.UPLOADING,
-    );
-    const errorFileProperties = uploadProperties.filter(
-      ({ status }) => status === UploadStatus.FILE_READ_ERROR,
-    );
-    const uploadedFileProperties = uploadProperties.filter(
-      ({ status }) => status === UploadStatus.UPLOADED,
-    );
-    // There are no files actions with status uploading
-    expect(uploadingFileProperties.length).toEqual(0);
-    // There are 3 files actions with status upload error
-    expect(errorFileProperties.length).toEqual(3);
-    // There are no file actions with status successfully uploaded
-    expect(uploadedFileProperties.length).toEqual(0);
   });
 
   it('Updates redux correctly when there are file upload errors', async () => {

@@ -152,4 +152,22 @@ describe('fileInspector', () => {
     expect(await inspectFile(file, 'Invalid technology'))
       .toEqual(Verdict.INVALID_FORMAT);
   });
+
+  it('Detects a Seurat *.rds file properly', async () => {
+    const file = {
+      name: 'scdata.rds',
+    };
+
+    expect(await inspectFile(file, sampleTech.SEURAT))
+      .toEqual(Verdict.VALID_ZIPPED);
+  });
+
+  it('Detects invalid Seurat file names properly', async () => {
+    const file = {
+      name: 'blah.txt',
+    };
+
+    expect(await inspectFile(file, sampleTech.SEURAT))
+      .toEqual(Verdict.INVALID_NAME);
+  });
 });

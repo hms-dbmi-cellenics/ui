@@ -14,9 +14,6 @@ const compress = (buffer) => new Promise((resolve, reject) => {
 const loadAndCompressIfNecessary = (file, onCompression = () => ({})) => {
   return readFileToBuffer(file.fileObject)
     .then((buffer) => {
-      if (file.compressed) {
-        return buffer;
-      }
       onCompression();
       return compress(buffer);
     });

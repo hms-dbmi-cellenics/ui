@@ -44,6 +44,9 @@ const BatchDiffExpression = (props) => {
   const [chosenOperation, setChosenOperation] = useState('fullList');
   const dispatch = useDispatch();
   const cellSets = useSelector(getCellSets());
+  const { properties, hierarchy } = cellSets;
+  const [numSamples, setNumSamples] = useState(0);
+
   const experimentName = useSelector((state) => state.experimentSettings.info.experimentName);
   const cellSetNodes = useSelector(getCellSetsHierarchyByType('cellSets'));
   const metadataCellSetNodes = useSelector(getCellSetsHierarchyByType('metadataCategorical'));
@@ -54,12 +57,19 @@ const BatchDiffExpression = (props) => {
   const batchCellSetKeys = useSelector(getCellSetsHierarchyByKeys([comparison.basis]))[0]?.children
     .map((child) => child.key);
 
-  const isDatasetUnisample = (useSelector((state) => (
-    state.experimentSettings.info.sampleIds.length)) === 1);
-
   useEffect(() => {
     dispatch(loadCellSets(experimentId));
   }, []);
+
+  useEffect(() => {
+    if (hierarchy && hierarchy.length === 0) return;
+
+    const samples = hierarchy?.find(
+      (rootNode) => (rootNode.key === 'sample'),
+    )?.children;
+
+    setNumSamples(samples.length);
+  }, [Object.keys(properties).length]);
 
   useEffect(() => {
     changeComparison({
@@ -76,16 +86,13 @@ const BatchDiffExpression = (props) => {
       ...diff,
     });
   };
-  const canRunDiffExpr = (comparisonGroup) => {
-    const { properties, hierarchy } = cellSets;
-    return checkCanRunDiffExpr(
-      properties,
-      hierarchy,
-      { [comparisonGroup.comparisonType]: comparisonGroup },
-      comparisonGroup.comparisonType,
-      true,
-    );
-  };
+  const canRunDiffExpr = (comparisonGroup) => checkCanRunDiffExpr(
+    properties,
+    hierarchy,
+    { [comparisonGroup.comparisonType]: comparisonGroup },
+    comparisonGroup.comparisonType,
+    true,
+  );
 
   const getResult = (initialComparison) => batchCellSetKeys.reduce((acc, currentBasis) => {
     const curr = canRunDiffExpr({ ...initialComparison, basis: currentBasis });
@@ -279,9 +286,9 @@ const BatchDiffExpression = (props) => {
                   </Tooltip>
                 </Radio>
               </Space>
-              <Radio value='compareForCellSets' disabled={isDatasetUnisample}>
+              <Radio value='compareForCellSets' disabled={numSamples === 1}>
                 {
-                  isDatasetUnisample ? (
+                  numSamples === 1 ? (
                     <Tooltip
                       overlay={(
                         <span>

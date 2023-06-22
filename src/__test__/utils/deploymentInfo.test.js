@@ -1,38 +1,8 @@
 import {
-  ssrGetDeploymentInfo, DomainName, privacyPolicyIsNotAccepted, Environment,
+  ssrGetDeploymentInfo, DomainName, Environment,
 } from 'utils/deploymentInfo';
 
 describe('deploymentInfo', () => {
-  describe('privacyPolicyIsNotAccepted', () => {
-    it('Returns false for users that accepted privacy policy', () => {
-      const user = { attributes: { 'custom:agreed_terms': 'true' } };
-      const domainName = DomainName.BIOMAGE;
-
-      expect(privacyPolicyIsNotAccepted(user, domainName)).toEqual(false);
-    });
-
-    it('Returns false for users that arent in Biomage deployment', () => {
-      const user = { attributes: {} };
-      const domainName = 'Someotherdomain.com';
-
-      expect(privacyPolicyIsNotAccepted(user, domainName)).toEqual(false);
-    });
-
-    it('Returns true for users that still need to accept terms in Biomage', () => {
-      const user = { attributes: {} };
-      const domainName = DomainName.BIOMAGE;
-
-      expect(privacyPolicyIsNotAccepted(user, domainName)).toEqual(true);
-    });
-
-    it('Returns true for users that still need to accept terms in Biomage staging', () => {
-      const user = { attributes: {} };
-      const domainName = DomainName.BIOMAGE_STAGING;
-
-      expect(privacyPolicyIsNotAccepted(user, domainName)).toEqual(true);
-    });
-  });
-
   describe('ssrGetDeploymentInfo', () => {
     let originalEnv;
 
@@ -58,33 +28,33 @@ describe('deploymentInfo', () => {
 
       expect(ssrGetDeploymentInfo()).toEqual({
         environment: Environment.DEVELOPMENT,
-        domainName: DomainName.BIOMAGE,
+        domainName: DomainName.HMS,
       });
     });
 
-    it('Works with prod k8s env in biomage domain', () => {
+    it('Works with prod k8s env in hms domain', () => {
       process.env = {
         NODE_ENV: Environment.PRODUCTION,
         K8S_ENV: Environment.PRODUCTION,
-        DOMAIN_NAME: DomainName.BIOMAGE,
+        DOMAIN_NAME: DomainName.HMS,
       };
 
       expect(ssrGetDeploymentInfo()).toEqual({
         environment: Environment.PRODUCTION,
-        domainName: DomainName.BIOMAGE,
+        domainName: DomainName.HMS,
       });
     });
 
-    it('Works with staging k8s env in biomage staging domain', () => {
+    it('Works with staging k8s env in hms staging domain', () => {
       process.env = {
         NODE_ENV: Environment.PRODUCTION,
         K8S_ENV: Environment.STAGING,
-        DOMAIN_NAME: DomainName.BIOMAGE_STAGING,
+        DOMAIN_NAME: DomainName.HMS_STAGING,
       };
 
       expect(ssrGetDeploymentInfo()).toEqual({
         environment: Environment.STAGING,
-        domainName: DomainName.BIOMAGE_STAGING,
+        domainName: DomainName.HMS_STAGING,
       });
     });
 
@@ -93,7 +63,7 @@ describe('deploymentInfo', () => {
 
       expect(ssrGetDeploymentInfo()).toEqual({
         environment: Environment.DEVELOPMENT,
-        domainName: DomainName.BIOMAGE,
+        domainName: DomainName.HMS,
       });
     });
   });

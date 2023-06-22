@@ -35,7 +35,7 @@ const ProjectMenu = () => {
           onClick={() => setUploadModalVisible(true)}
           disabled={isSubsetted}
         >
-          Add samples
+          Add data
         </Button>
         <DownloadDataButton />
         <Button

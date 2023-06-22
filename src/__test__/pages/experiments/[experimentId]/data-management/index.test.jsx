@@ -146,12 +146,12 @@ describe('Data Management page', () => {
 
     expect(addMetadataButton).toBeInTheDocument();
 
-    // We do this because the instruction to add samples also contain "Add samples"
-    const addSamplesElement = screen.getAllByText(/Add Samples/i);
-    const addSampleButton = addSamplesElement.find((el) => el.closest('button'));
+    // We do this because the instruction to add samples also contain "Add data"
+    const addDataElement = screen.getAllByText(/Add data/i);
+    const addDataButton = addDataElement.find((el) => el.closest('button'));
 
-    expect(addSampleButton).toBeInTheDocument();
-    expect(addSampleButton).not.toBeDisabled();
+    expect(addDataButton).toBeInTheDocument();
+    expect(addDataButton).not.toBeDisabled();
 
     const downloadButton = screen.getByText(/Download/i).closest('button');
 

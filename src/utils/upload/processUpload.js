@@ -1,9 +1,6 @@
 /* eslint-disable no-param-reassign */
 import _ from 'lodash';
 
-import axios from 'axios';
-import techOptions from 'utils/upload/fileUploadSpecifications';
-
 import {
   createSamples, createSampleFile, updateSampleFileUpload, validateSamples,
 } from 'redux/actions/samples';
@@ -11,53 +8,86 @@ import {
 import UploadStatus from 'utils/upload/UploadStatus';
 import loadAndCompressIfNecessary from 'utils/upload/loadAndCompressIfNecessary';
 import { inspectFile, Verdict } from 'utils/upload/fileInspector';
+import fetchAPI from 'utils/http/fetchAPI';
+
 import getFileTypeV2 from 'utils/getFileTypeV2';
 import { sampleTech } from 'utils/constants';
+import uploadParts from './processMultipartUpload';
 
-const MAX_RETRIES = 2;
-
-const putInS3 = async (loadedFileData, signedUrl, onUploadProgress, currentRetry = 0) => {
-  try {
-    await axios.request({
-      method: 'put',
-      url: signedUrl,
-      data: loadedFileData,
-      headers: {
-        'Content-Type': 'application/octet-stream',
-      },
-      onUploadProgress,
-    });
-  } catch (e) {
-    if (currentRetry < MAX_RETRIES) {
-      await putInS3(loadedFileData, signedUrl, onUploadProgress, currentRetry + 1);
-    }
-
-    throw e;
-  }
-};
-
-const createAndUploadSingleFile = async (
-  file, experimentId, sampleId, dispatch, selectedTech,
+const prepareAndUploadFileToS3 = async (
+  experimentId, sampleId, fileType, file, uploadUrlParams, dispatch,
 ) => {
-  let loadedFile = null;
+  let parts = null;
+  const { signedUrls, uploadId, sampleFileId } = uploadUrlParams;
 
-  const fileType = getFileTypeV2(file.fileObject.name, file.fileObject.type);
+  const uploadedPartSizes = new Array(signedUrls.length).fill(0);
+  const totalSize = file.size;
+
+  const createOnUploadProgressForPart = (partIndex) => (progress) => {
+    uploadedPartSizes[partIndex] = progress.loaded;
+    const totalUploaded = _.sum(uploadedPartSizes);
+    const percentProgress = Math.floor((totalUploaded * 100) / totalSize);
+
+    dispatch(
+      updateSampleFileUpload(
+        experimentId, sampleId, fileType, UploadStatus.UPLOADING, percentProgress ?? 0,
+      ),
+    );
+  };
 
   try {
-    loadedFile = await loadAndCompressIfNecessary(file, () => {
-      dispatch(updateSampleFileUpload(experimentId, sampleId, fileType, UploadStatus.COMPRESSING));
-    });
+    parts = await uploadParts(file, signedUrls, createOnUploadProgressForPart);
   } catch (e) {
-    const fileErrorStatus = e.message === 'aborted' ? UploadStatus.FILE_READ_ABORTED : UploadStatus.FILE_READ_ERROR;
-
-    dispatch(updateSampleFileUpload(experimentId, sampleId, fileType, fileErrorStatus));
+    dispatch(updateSampleFileUpload(experimentId, sampleId, fileType, UploadStatus.UPLOAD_ERROR));
     return;
   }
 
+  const requestUrl = '/v2/completeMultipartUpload';
+  const body = {
+    parts,
+    uploadId,
+    sampleFileId,
+  };
+
+  await fetchAPI(requestUrl,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(body),
+    });
+
+  dispatch(updateSampleFileUpload(experimentId, sampleId, fileType, UploadStatus.UPLOADED));
+  return parts;
+};
+
+const createAndUploadSingleFile = async (file, experimentId, sampleId, dispatch, selectedTech) => {
+  const fileType = getFileTypeV2(file.fileObject.name, file.fileObject.type);
+
+  if (!file.compressed) {
+    try {
+      file.fileObject = await loadAndCompressIfNecessary(file, () => {
+        dispatch(updateSampleFileUpload(
+          experimentId, sampleId, fileType, UploadStatus.COMPRESSING,
+        ));
+      });
+      file.size = Buffer.byteLength(file.fileObject);
+    } catch (e) {
+      const fileErrorStatus = e.message === 'aborted'
+        ? UploadStatus.FILE_READ_ABORTED
+        : UploadStatus.FILE_READ_ERROR;
+
+      dispatch(updateSampleFileUpload(experimentId, sampleId, fileType, fileErrorStatus));
+      return;
+    }
+  }
+
+  let uploadUrlParams;
   try {
     const metadata = getMetadata(file, selectedTech);
 
-    const signedUrl = await dispatch(
+    uploadUrlParams = await dispatch(
       createSampleFile(
         experimentId,
         sampleId,
@@ -67,22 +97,12 @@ const createAndUploadSingleFile = async (
         file,
       ),
     );
-
-    await putInS3(loadedFile, signedUrl, (progress) => {
-      const percentProgress = Math.round((progress.loaded / progress.total) * 100);
-
-      dispatch(
-        updateSampleFileUpload(
-          experimentId, sampleId, fileType, UploadStatus.UPLOADING, percentProgress ?? 0,
-        ),
-      );
-    });
   } catch (e) {
     dispatch(updateSampleFileUpload(experimentId, sampleId, fileType, UploadStatus.UPLOAD_ERROR));
     return;
   }
 
-  await dispatch(updateSampleFileUpload(experimentId, sampleId, fileType, UploadStatus.UPLOADED));
+  await prepareAndUploadFileToS3(experimentId, sampleId, fileType, file, uploadUrlParams, dispatch);
 };
 
 const getMetadata = (file, selectedTech) => {
@@ -173,15 +193,6 @@ const processUpload = async (filesList, technology, samples, experimentId, dispa
   }
 };
 
-const getFileName = (filePath, technology) => {
-  const [folderName, fileName] = _.takeRight(filePath.split('/'), 2);
-
-  if (techOptions[technology].acceptedFiles.has(fileName)) return `${folderName}/${fileName}`;
-
-  const correspondingName = techOptions[technology].getCorrespondingName(fileName);
-  return `${folderName}/${correspondingName}`;
-};
-
 /**
    * This function converts an uploaded File object into a file record that will be inserted under
    * samples[files] in the redux store.
@@ -191,6 +202,13 @@ const getFileName = (filePath, technology) => {
    */
 const fileObjectToFileRecord = async (fileObject, technology) => {
   // This is the first stage in uploading a file.
+
+  // if the file has a path, trim to just the file and its folder.
+  // otherwise simply use its name
+  const filename = (fileObject.path)
+    ? _.takeRight(fileObject.path.split('/'), 2).join('/')
+    : fileObject.name;
+
   const verdict = await inspectFile(fileObject, technology);
 
   let error = '';
@@ -199,12 +217,6 @@ const fileObjectToFileRecord = async (fileObject, technology) => {
   } else if (verdict === Verdict.INVALID_FORMAT) {
     error = 'Invalid file format.';
   }
-
-  // if the file has a path, trim to just the file and its folder.
-  // otherwise simply use its name
-  const filename = (fileObject.path)
-    ? getFileName(fileObject.path, technology)
-    : fileObject.name;
 
   return {
     name: filename,

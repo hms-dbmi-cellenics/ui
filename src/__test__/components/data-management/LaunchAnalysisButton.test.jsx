@@ -8,7 +8,7 @@ import { act } from 'react-dom/test-utils';
 import {
   screen, render, waitFor, fireEvent,
 } from '@testing-library/react';
-import { runGem2s } from 'redux/actions/pipeline';
+import { runGem2s, runSeurat } from 'redux/actions/pipeline';
 
 import PipelineStatus from 'utils/pipelineStatusValues';
 import { sampleTech } from 'utils/constants';
@@ -18,12 +18,13 @@ import initialSamplesState, { sampleTemplate } from 'redux/reducers/samples/init
 import { initialExperimentBackendStatus } from 'redux/reducers/backendStatus/initialState';
 
 import UploadStatus from 'utils/upload/UploadStatus';
-import calculateGem2sRerunStatus from 'utils/data-management/calculateGem2sRerunStatus';
+import calculatePipelineRerunStatus from 'utils/data-management/calculatePipelineRerunStatus';
 import '__test__/test-utils/setupTests';
 
 jest.mock('redux/actions/experimentSettings/updateExperimentInfo', () => jest.fn().mockReturnValue({ type: 'UPDATE_EXPERIMENT_INFO' }));
 jest.mock('redux/actions/pipeline', () => ({
   runGem2s: jest.fn().mockReturnValue({ type: 'RUN_GEM2S' }),
+  runSeurat: jest.fn().mockReturnValue({ type: 'RUN_SEURAT' }),
 }));
 
 const mockNavigateTo = jest.fn();
@@ -34,7 +35,7 @@ jest.mock('utils/AppRouteProvider', () => ({
   })),
 }));
 
-jest.mock('utils/data-management/calculateGem2sRerunStatus');
+jest.mock('utils/data-management/calculatePipelineRerunStatus');
 
 const mockStore = configureMockStore([thunk]);
 
@@ -74,6 +75,10 @@ const noDataState = {
           status: PipelineStatus.NOT_CREATED,
         },
         pipeline: {
+          shouldRerun: null,
+          status: PipelineStatus.NOT_CREATED,
+        },
+        seurat: {
           shouldRerun: null,
           status: PipelineStatus.NOT_CREATED,
         },
@@ -136,13 +141,62 @@ const withDataState = {
           shouldRerun: null,
           status: PipelineStatus.SUCCEEDED,
         },
+        seurat: {
+          shouldRerun: null,
+          status: PipelineStatus.NOT_CREATED,
+        },
       },
     },
   },
 };
 
-const rerunState = { rerun: true, reasons: ['the project samples/metadata have been modified'] };
-const notRerunState = { rerun: false, reasons: [] };
+const withSeuratDataState = {
+  ...noDataState,
+  experiments: {
+    ...noDataState.experiments,
+    [experiment1id]: {
+      ...experimentTemplate,
+      ...noDataState.experiments[experiment1id],
+      sampleIds: [sample1Uuid],
+    },
+  },
+  samples: {
+    ...noDataState.samples,
+    [sample1Uuid]: {
+      ...sampleTemplate,
+      name: sample1Name,
+      experimentId: experiment1id,
+      uuid: sample1Uuid,
+      type: sampleTech.SEURAT,
+      fileNames: ['r.rds'],
+      files: {
+        'r.rds': { valid: true, upload: { status: UploadStatus.UPLOADED } },
+      },
+    },
+  },
+  backendStatus: {
+    [experiment1id]: {
+      ...initialExperimentBackendStatus,
+      status: {
+        gem2s: {
+          shouldRerun: null,
+          status: PipelineStatus.NOT_CREATED,
+        },
+        pipeline: {
+          shouldRerun: null,
+          status: PipelineStatus.NOT_CREATED,
+        },
+        seurat: {
+          shouldRerun: false,
+          status: PipelineStatus.SUCCEEDED,
+        },
+      },
+    },
+  },
+};
+
+const rerunState = { rerun: true, reasons: ['the project samples/metadata have been modified'], complete: true };
+const notRerunState = { rerun: false, reasons: [], complete: true };
 
 describe('LaunchAnalysisButton', () => {
   beforeEach(() => {
@@ -150,7 +204,7 @@ describe('LaunchAnalysisButton', () => {
   });
 
   it('Process project button is disabled if not all sample metadata are inserted', async () => {
-    calculateGem2sRerunStatus.mockReturnValue(rerunState);
+    calculatePipelineRerunStatus.mockReturnValue(rerunState);
 
     const notAllMetadataInserted = {
       ...withDataState,
@@ -176,7 +230,7 @@ describe('LaunchAnalysisButton', () => {
   });
 
   it('Process project button is disabled if there is no data', async () => {
-    calculateGem2sRerunStatus.mockReturnValue(rerunState);
+    calculatePipelineRerunStatus.mockReturnValue(rerunState);
 
     await act(async () => {
       render(
@@ -192,7 +246,7 @@ describe('LaunchAnalysisButton', () => {
   });
 
   it('Process project button is disabled if not all data are uploaded', async () => {
-    calculateGem2sRerunStatus.mockReturnValue(rerunState);
+    calculatePipelineRerunStatus.mockReturnValue(rerunState);
 
     const notAllDataUploaded = {
       ...withDataState,
@@ -221,8 +275,36 @@ describe('LaunchAnalysisButton', () => {
     expect(button).toBeDisabled();
   });
 
+  it('Process project button is disabled if not all Seurat data is uploaded', async () => {
+    const notAllSeuratDataUploaded = {
+      ...withSeuratDataState,
+      samples: {
+        ...withSeuratDataState.samples,
+        [sample1Uuid]: {
+          ...withSeuratDataState.samples[sample1Uuid],
+          files: {
+            ...withSeuratDataState.samples[sample1Uuid].files,
+            'r.rds': { valid: true, upload: { status: UploadStatus.UPLOADING } },
+          },
+        },
+      },
+    };
+
+    await act(async () => {
+      render(
+        <Provider store={mockStore(notAllSeuratDataUploaded)}>
+          <LaunchAnalysisButton />
+        </Provider>,
+      );
+    });
+
+    const button = screen.getByText('Process project').closest('button');
+
+    expect(button).toBeDisabled();
+  });
+
   it('Process project button is enabled if there is data and all metadata for all samples are uplaoded', async () => {
-    calculateGem2sRerunStatus.mockReturnValue(rerunState);
+    calculatePipelineRerunStatus.mockReturnValue(rerunState);
 
     await act(async () => {
       render(
@@ -237,8 +319,22 @@ describe('LaunchAnalysisButton', () => {
     expect(button).not.toBeDisabled();
   });
 
-  it('Shows Go to Data Processing if there are no changes to the experiment', async () => {
-    calculateGem2sRerunStatus.mockReturnValue(notRerunState);
+  it('Process project button is enabled if all Seurat data is uploaded', async () => {
+    await act(async () => {
+      render(
+        <Provider store={mockStore(withSeuratDataState)}>
+          <LaunchAnalysisButton />
+        </Provider>,
+      );
+    });
+
+    const button = screen.getByText('Process project').closest('button');
+
+    expect(button).not.toBeDisabled();
+  });
+
+  it('Shows Go to Data Processing if there are no changes to the experiment (same hash)', async () => {
+    calculatePipelineRerunStatus.mockReturnValue(notRerunState);
 
     await act(async () => {
       render(
@@ -253,8 +349,24 @@ describe('LaunchAnalysisButton', () => {
     });
   });
 
+  it('Shows Go to Data Exploration if there are no changes to the Seurat experiment (same hash)', async () => {
+    calculatePipelineRerunStatus.mockReturnValue(notRerunState);
+
+    await act(async () => {
+      render(
+        <Provider store={mockStore(withSeuratDataState)}>
+          <LaunchAnalysisButton />
+        </Provider>,
+      );
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText('Go to Data Exploration')).toBeDefined();
+    });
+  });
+
   it('Shows Process project if there are changes to the experiment', async () => {
-    calculateGem2sRerunStatus.mockReturnValue(rerunState);
+    calculatePipelineRerunStatus.mockReturnValue(rerunState);
 
     await act(async () => {
       render(
@@ -269,8 +381,24 @@ describe('LaunchAnalysisButton', () => {
     });
   });
 
+  it('Shows Process project if there are changes to the Seurat experiment (different hash)', async () => {
+    calculatePipelineRerunStatus.mockReturnValue(rerunState);
+
+    await act(async () => {
+      render(
+        <Provider store={mockStore(withSeuratDataState)}>
+          <LaunchAnalysisButton />
+        </Provider>,
+      );
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText('Process project')).toBeDefined();
+    });
+  });
+
   it('Dispatches request for GEM2S if there are changes to the experiment', async () => {
-    calculateGem2sRerunStatus.mockReturnValue(rerunState);
+    calculatePipelineRerunStatus.mockReturnValue(rerunState);
 
     await act(async () => {
       render(
@@ -286,7 +414,7 @@ describe('LaunchAnalysisButton', () => {
 
     // fireEvent is used here instead of user event
     // because fireEvent does not check for pointer-events: none
-    // whiich is checked by userEvents disables interaction with the button
+    // which is checked by userEvents disables interaction with the button
     // See https://github.com/ant-design/ant-design/issues/31105
     fireEvent.click(screen.getByText('Yes'));
 
@@ -294,7 +422,7 @@ describe('LaunchAnalysisButton', () => {
   });
 
   it('Does not dispatch request for GEM2S if there are no changes to the experiment', async () => {
-    calculateGem2sRerunStatus.mockReturnValue(notRerunState);
+    calculatePipelineRerunStatus.mockReturnValue(notRerunState);
 
     await act(async () => {
       render(
@@ -309,7 +437,7 @@ describe('LaunchAnalysisButton', () => {
   });
 
   it('Going to Data Processing should dispatch the correct actions', async () => {
-    calculateGem2sRerunStatus.mockReturnValue(notRerunState);
+    calculatePipelineRerunStatus.mockReturnValue(notRerunState);
 
     await act(async () => {
       render(
@@ -324,5 +452,41 @@ describe('LaunchAnalysisButton', () => {
 
     // Call on navigation to go
     expect(mockNavigateTo).toHaveBeenCalled();
+  });
+
+  it('Does dispatch a request to runSeurat for an unprocessed experiment', async () => {
+    calculatePipelineRerunStatus.mockReturnValue(rerunState);
+
+    const notProcessedSeuratDataState = {
+      ...withSeuratDataState,
+      backendStatus: {
+        ...noDataState.backendStatus,
+        seurat: {
+          status: PipelineStatus.NOT_CREATED,
+          shouldRerun: true,
+        },
+      },
+    };
+
+    await act(async () => {
+      render(
+        <Provider store={mockStore(notProcessedSeuratDataState)}>
+          <LaunchAnalysisButton />
+        </Provider>,
+      );
+    });
+
+    userEvent.click(screen.getByText('Process project'));
+
+    await waitFor(() => screen.getByText('Yes'));
+
+    // fireEvent is used here instead of user event
+    // because fireEvent does not check for pointer-events: none
+    // which is checked by userEvents disables interaction with the button
+    // See https://github.com/ant-design/ant-design/issues/31105
+    fireEvent.click(screen.getByText('Yes'));
+
+    expect(runGem2s).not.toHaveBeenCalled();
+    expect(runSeurat).toHaveBeenCalled();
   });
 });

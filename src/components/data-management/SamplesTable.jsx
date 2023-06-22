@@ -38,6 +38,7 @@ import integrationTestConstants from 'utils/integrationTestConstants';
 import useConditionalEffect from 'utils/customHooks/useConditionalEffect';
 import fileUploadSpecifications from 'utils/upload/fileUploadSpecifications';
 import 'utils/css/data-management.css';
+import { sampleTech } from 'utils/constants';
 
 const { Text } = Typography;
 
@@ -55,6 +56,7 @@ const SamplesTable = forwardRef((props, ref) => {
   );
 
   const activeExperiment = useSelector((state) => state.experiments[activeExperimentId]);
+
   const parentExperimentName = useSelector(
     (state) => state.experiments[activeExperiment?.parentExperimentId]?.name,
   );
@@ -82,7 +84,7 @@ const SamplesTable = forwardRef((props, ref) => {
       className: `${integrationTestConstants.classes.SAMPLE_CELL}`,
       index: 1,
       key: 'sample',
-      title: 'Sample',
+      title: selectedTech === sampleTech.SEURAT ? 'File' : 'Sample',
       dataIndex: 'name',
       fixed: 'left',
       render: (text, record, indx) => (
@@ -307,7 +309,7 @@ const SamplesTable = forwardRef((props, ref) => {
   const locale = {
     emptyText: (
       <ExampleExperimentsSpace
-        introductionText='Start uploading your samples by clicking on Add samples.'
+        introductionText='Start uploading your samples by clicking on Add data.'
         imageStyle={{ height: 60 }}
       />
     ),

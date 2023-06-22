@@ -6,36 +6,52 @@ import { useDispatch } from 'react-redux';
 import Link from 'next/link';
 import PropTypes from 'prop-types';
 import runGem2s from 'redux/actions/pipeline/runGem2s';
-
+import runSeurat from 'redux/actions/pipeline/runSeurat';
 import NotifyByEmail from './NotifyByEmail';
 
 const { Title, Text } = Typography;
 
-const gem2sStepsInfo = [
-  'Preparing files',
-  'Preprocessing samples',
-  'Computing metrics',
-  'Converting samples',
-  'Preparing analysis',
-  'Uploading completed data',
-];
+const pipelineStepsInfoByType = {
+  gem2s: [
+    'Downloading sample files',
+    'Preprocessing samples',
+    'Computing metrics',
+    'Converting samples',
+    'Preparing analysis',
+    'Uploading completed data',
+  ],
 
-const GEM2SLoadingScreen = (props) => {
+  seurat: [
+    'Downloading RDS file',
+    'Processing Seurat object',
+    'Uploading completed data',
+  ],
+};
+
+const runnerByType = {
+  gem2s: runGem2s,
+  seurat: runSeurat,
+};
+
+const PipelineLoadingScreen = (props) => {
   const {
-    gem2sStatus, completedSteps, experimentId, experimentName,
+    pipelineStatus, completedSteps, experimentId, experimentName, pipelineType, pipelineErrorMessage,
   } = props;
+
+  const pipelineStepsInfo = pipelineStepsInfoByType[pipelineType];
+  const runner = runnerByType[pipelineType];
 
   const dispatch = useDispatch();
 
   const dataManagementPath = '/data-management';
   const relaunchExperiment = async () => {
-    await dispatch(runGem2s(experimentId));
+    await dispatch(runner(experimentId));
   };
 
   const texts = {
     toBeRun: {
       status: 'toBeRun',
-      title: 'Let\'s upload and pre-process data your data.',
+      title: 'Let\'s upload and pre-process your data.',
       subTitle: 'Your data needs to be uploaded and pre-processed before it can be explored. To begin, go to Data Management.',
       showProgress: false,
       image: '/undraw_To_the_stars_qhyy.svg',
@@ -52,7 +68,7 @@ const GEM2SLoadingScreen = (props) => {
     error: {
       status: 'error',
       title: 'We\'ve had an issue while launching your analysis.',
-      subTitle: 'You can launch another analysis or retry to launch the current analysis.',
+      subTitle: pipelineErrorMessage || 'You can launch another analysis or retry to launch the current analysis.',
       image: '/undraw_Abstract_re_l9xy.svg',
       alt: 'A woman confusedly staring at an abstract drawing.',
       showProgress: false,
@@ -69,10 +85,10 @@ const GEM2SLoadingScreen = (props) => {
 
   const {
     status, title, subTitle, image, alt,
-  } = texts[gem2sStatus];
+  } = texts[pipelineStatus];
 
   const renderExtra = () => {
-    if (gem2sStatus === 'toBeRun') {
+    if (pipelineStatus === 'toBeRun') {
       return (
         <Link as={dataManagementPath} href={dataManagementPath} passHref>
           <Button type='primary' key='console'>
@@ -82,7 +98,7 @@ const GEM2SLoadingScreen = (props) => {
       );
     }
 
-    if (gem2sStatus === 'error') {
+    if (pipelineStatus === 'error') {
       return (
         <Space size='large'>
           <Link as={dataManagementPath} href={dataManagementPath} passHref>
@@ -104,21 +120,21 @@ const GEM2SLoadingScreen = (props) => {
             <br />
             <div>
               <Space direction='vertical' style={{ width: '100%' }}>
-                <Progress strokeWidth={10} type='line' percent={Math.floor((completedSteps.length / gem2sStepsInfo.length) * 100)} />
-                <Text type='secondary'>{(gem2sStepsInfo[completedSteps.length])}</Text>
+                <Progress strokeWidth={10} type='line' percent={Math.floor((completedSteps.length / pipelineStepsInfo.length) * 100)} />
+                <Text type='secondary'>{(pipelineStepsInfo[completedSteps.length])}</Text>
               </Space>
             </div>
             <div>
-              {gem2sStatus === 'subsetting' && (
+              {pipelineStatus === 'subsetting' && (
                 <Title level={3}>
                   Subsetting cell sets into
                   <br />
                   {experimentName}
                 </Title>
               )}
-              {gem2sStatus === 'running' && (<Title level={3}>We&apos;re launching your analysis...</Title>)}
+              {pipelineStatus === 'running' && (<Title level={3}>We&apos;re launching your analysis...</Title>)}
               <Text type='secondary'>You can wait or leave this screen and check again later.</Text>
-              {gem2sStatus === 'subsetting' && (
+              {pipelineStatus === 'subsetting' && (
                 <Text type='secondary'>
                   <br />
                   Your new project containing only the selected cell sets will be available in the Data Management module
@@ -153,17 +169,20 @@ const GEM2SLoadingScreen = (props) => {
   );
 };
 
-GEM2SLoadingScreen.propTypes = {
-  gem2sStatus: PropTypes.oneOf(['error', 'running', 'toBeRun', 'subsetting']).isRequired,
+PipelineLoadingScreen.propTypes = {
+  pipelineStatus: PropTypes.oneOf(['error', 'running', 'toBeRun', 'subsetting']).isRequired,
+  pipelineType: PropTypes.oneOf(['gem2s', 'seurat']).isRequired,
   completedSteps: PropTypes.array,
   experimentId: PropTypes.string,
   experimentName: PropTypes.string,
+  pipelineErrorMessage: PropTypes.string,
 };
 
-GEM2SLoadingScreen.defaultProps = {
+PipelineLoadingScreen.defaultProps = {
   completedSteps: [],
   experimentId: null,
   experimentName: null,
+  pipelineErrorMessage: null,
 };
 
-export default GEM2SLoadingScreen;
+export default PipelineLoadingScreen;

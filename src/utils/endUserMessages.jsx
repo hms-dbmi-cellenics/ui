@@ -1,4 +1,3 @@
-/* eslint-disable react/react-in-jsx-scope */
 export default {
   ACCOUNT_DETAILS_UPDATED: 'Account details updated successfully.',
   CONNECTION_ERROR: 'Could not connect to the server. Check your internet connection and refresh the page.',
@@ -26,9 +25,12 @@ export default {
   ERROR_FETCH_BACKGROUND_GENE_EXP: 'We couldn\'t get the background gene expression',
   ERROR_FETCH_MARKER_GENES: 'We couldn\'t get the marker genes',
   ERROR_FILE_CATEGORY: 'The selected file name does not match the expected category.',
-  ERROR_FILES_FOLDER: 'Only files contained in a folder are accepted',
+  ERROR_FILES_FOLDER: 'Only files contained in a folder are accepted for 10X uploads.',
   ERROR_METADATA_MULTIPLE_FILES: 'You need to upload a single file in .tsv format',
   ERROR_METADATA_WRONG_FORMAT: 'The file does not seem to be in the correct tsv key-value format.',
+  ERROR_SEURAT_MULTIPLE_FILES: 'Only a single rds file is accepted for Seurat uploads.',
+  ERROR_SEURAT_EXISTING_FILE: 'Please remove existing seurat rds file before uploading a new one.',
+  ERROR_SEURAT_MAX_FILE_SIZE: 'rds objects must be less than 15 GB.',
   ERROR_NOT_SIGNED_IN: 'You need to sign in first. Click Sign in on the top right to begin.',
   ERROR_NO_PERMISSIONS: 'You do not have permissions to perform that action.',
   ERROR_LAUNCH_PATHWAY: 'We couldn\'t launch pathway analysis',

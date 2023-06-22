@@ -56,7 +56,7 @@ describe('Repository page', () => {
       },
     ));
     await store.dispatch(loadUser());
-    await store.dispatch(loadDeploymentInfo({ environment: 'production', domainName: DomainName.BIOMAGE }));
+    await store.dispatch(loadDeploymentInfo({ environment: 'production', domainName: DomainName.HMS }));
 
     await renderRepositoryPage(store);
     expect(fetchMock).not.toHaveBeenCalledWith(
@@ -72,7 +72,7 @@ describe('Repository page', () => {
       },
     ));
     await store.dispatch(loadUser());
-    await store.dispatch(loadDeploymentInfo({ environment: 'production', domainName: DomainName.BIOMAGE }));
+    await store.dispatch(loadDeploymentInfo({ environment: 'production', domainName: DomainName.HMS }));
 
     await renderRepositoryPage(store);
 

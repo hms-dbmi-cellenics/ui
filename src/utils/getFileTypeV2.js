@@ -5,6 +5,7 @@ const fileTypes = {
   barcodes: 'barcodes10x',
   features: 'features10x',
   genes: 'features10x',
+  '.rds': 'seurat',
   expression_data: 'rhapsody',
 };
 
