@@ -334,7 +334,6 @@ const MarkerHeatmap = ({ experimentId }) => {
   };
 
   const onReset = () => {
-    onGenesChange([]);
     dispatch(loadMarkerGenes(
       experimentId,
       plotUuid,
