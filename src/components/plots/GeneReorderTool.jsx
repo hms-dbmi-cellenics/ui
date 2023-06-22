@@ -1,4 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, {
+  useCallback, useEffect, useState,
+} from 'react';
+import _ from 'lodash';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 
@@ -14,10 +17,22 @@ const GeneReorderTool = (props) => {
   const { plotUuid, onDelete } = props;
 
   const dispatch = useDispatch();
-  
-  const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
 
-  // Tree from antd requires format [{key: , title: }], made from gene names from loadedMarkerGenes and config
+  const config = useSelector((state) => state.componentConfig[plotUuid]?.config);
+  const genesLoading = useSelector((state) => state.genes.expression.loading);
+
+  const [selectedGenesLocal, setSelectedGenesLocal] = useState([]);
+
+  useEffect(() => {
+    setSelectedGenesLocal(config?.selectedGenes);
+  }, [config?.selectedGenes]);
+
+  const debouncedOnDelete = useCallback(_.debounce((newGenes) => {
+    onDelete(newGenes);
+  }, 1000), []);
+
+  // Tree from antd requires format [{key: , title: }],
+  // made from gene names from loadedMarkerGenes and config
   const composeGeneTree = (treeGenes) => {
     if (!treeGenes.length) {
       return [];
@@ -33,8 +48,8 @@ const GeneReorderTool = (props) => {
   const [geneTreeData, setGeneTreeData] = useState([]);
 
   useEffect(() => {
-    setGeneTreeData(composeGeneTree(config?.selectedGenes));
-  }, [config?.selectedGenes]);
+    setGeneTreeData(composeGeneTree(selectedGenesLocal));
+  }, [selectedGenesLocal]);
 
   // geneKey is equivalent to it's index, moves a gene from pos geneKey to newPosition
   // dispatches an action to update selectedGenes in config
@@ -47,10 +62,12 @@ const GeneReorderTool = (props) => {
   };
 
   const onNodeDelete = (geneKey) => {
-    const genes = geneTreeData.map((treeNode) => treeNode.title);
+    const genes = [...geneTreeData.map((treeNode) => treeNode.title)];
     genes.splice(geneKey, 1);
 
-    onDelete(genes);
+    setSelectedGenesLocal(genes);
+
+    debouncedOnDelete(genes);
   };
 
   const renderTitles = (data) => {
@@ -63,6 +80,7 @@ const GeneReorderTool = (props) => {
           {treeNode.title}
           <Button
             type='text'
+            disabled={genesLoading.length > 0}
             onClick={() => {
               onNodeDelete(treeNode.key);
             }}
@@ -80,7 +98,7 @@ const GeneReorderTool = (props) => {
 
   useEffect(() => {
     setRenderedTreeData(renderTitles(geneTreeData));
-  }, [geneTreeData]);
+  }, [geneTreeData, genesLoading]);
 
   return (
     <HierarchicalTreeGenes
