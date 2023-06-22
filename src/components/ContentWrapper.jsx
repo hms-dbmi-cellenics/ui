@@ -311,16 +311,24 @@ const ContentWrapper = (props) => {
   }) => {
     const notProcessedExperimentDisable = !routeExperimentId && disableIfNoExperiment
       && (!gem2sRerunStatus || gem2sRerunStatus.rerun);
-
     const pipelineStatusDisable = disabledByPipelineStatus && (
       backendError || gem2sRunning || gem2sRunningError
       || waitingForQcToLaunch || qcRunning || qcRunningError
     );
 
+    const {
+      DATA_EXPLORATION, DATA_MANAGEMENT, DATA_PROCESSING, PLOTS_AND_TABLES,
+    } = modules;
+
+    // disable links if user is not in one of the experiment analysis modules
+    const nonExperimentModule = ![DATA_EXPLORATION,
+      DATA_MANAGEMENT, DATA_PROCESSING, PLOTS_AND_TABLES]
+      .includes(currentModule) && disableIfNoExperiment;
+
     return (
       <Menu.Item
         id={module}
-        disabled={notProcessedExperimentDisable || pipelineStatusDisable}
+        disabled={notProcessedExperimentDisable || pipelineStatusDisable || nonExperimentModule}
         key={module}
         icon={icon}
         onClick={() => navigateTo(

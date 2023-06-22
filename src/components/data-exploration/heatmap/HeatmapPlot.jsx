@@ -7,7 +7,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { Empty } from 'antd';
 import _ from 'lodash';
 
-import { getCellSets } from 'redux/selectors';
+import { getCellSets, getSelectedMetadataTracks } from 'redux/selectors';
 
 import { loadDownsampledGeneExpression, loadMarkerGenes } from 'redux/actions/genes';
 import { loadComponentConfig } from 'redux/actions/componentConfig';
@@ -70,7 +70,7 @@ const HeatmapPlot = (props) => {
 
   const heatmapSettings = useSelector((state) => state.componentConfig[COMPONENT_TYPE]?.config,
     _.isEqual) || {};
-
+  const selectedTracks = useSelector(getSelectedMetadataTracks(COMPONENT_TYPE));
   const louvainClustersResolution = useSelector(
     (state) => state.experimentSettings.processing
       .configureEmbedding?.clusteringSettings.methodSettings.louvain.resolution,
@@ -134,7 +134,7 @@ const HeatmapPlot = (props) => {
     // heatmapSettings is is frozen in redux by immer.
     const data = generateVitessceData(
       downsampledCellOrder,
-      heatmapSettings.selectedTracks,
+      selectedTracks,
       downsampledMatrix,
       selectedGenes,
       cellSets,
@@ -143,7 +143,7 @@ const HeatmapPlot = (props) => {
   }, [
     selectedGenes,
     downsampledCellOrder,
-    heatmapSettings.selectedTracks,
+    selectedTracks,
     cellSets.hidden,
     // To reorder tracks when the track is reordered in hierarchy
     cellSets.hierarchy,
@@ -259,7 +259,7 @@ const HeatmapPlot = (props) => {
 
     const [cellIndexStr, trackIndex, mouseX, mouseY] = info;
 
-    const cellSetClassKey = heatmapSettings.selectedTracks[trackIndex];
+    const cellSetClassKey = selectedTracks[trackIndex];
 
     const cellClassProps = getContainingCellSetsProperties(
       parseInt(cellIndexStr, 10), [cellSetClassKey],
