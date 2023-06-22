@@ -9,7 +9,7 @@ import _ from 'lodash';
 
 import { getCellSets } from 'redux/selectors';
 
-import { loadDownsampledGeneExpression, loadGeneExpression, loadMarkerGenes } from 'redux/actions/genes';
+import { loadDownsampledGeneExpression, loadMarkerGenes } from 'redux/actions/genes';
 import { loadComponentConfig } from 'redux/actions/componentConfig';
 import { updateCellInfo } from 'redux/actions/cellInfo';
 
@@ -182,7 +182,6 @@ const HeatmapPlot = (props) => {
         experimentId,
         selectedGenes,
         COMPONENT_TYPE,
-        downsampleSettings,
       ));
     }
   }, [
@@ -234,15 +233,8 @@ const HeatmapPlot = (props) => {
           }
 
           if ((expressionDataError || viewError) && !_.isNil(selectedGenes)) {
-            const downsampleSettings = {
-              groupedTracks,
-              selectedCellSet,
-              selectedPoints,
-              hiddenCellSets: cellSets.hidden,
-            };
-
             dispatch(loadDownsampledGeneExpression(
-              experimentId, selectedGenes, COMPONENT_TYPE, downsampleSettings,
+              experimentId, selectedGenes, COMPONENT_TYPE,
             ));
           }
         }}

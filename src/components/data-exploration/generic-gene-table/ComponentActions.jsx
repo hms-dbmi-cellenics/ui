@@ -8,7 +8,6 @@ import { useSelector, useDispatch } from 'react-redux';
 import _ from 'lodash';
 import { PlusOutlined, RedoOutlined, MinusOutlined } from '@ant-design/icons';
 import { loadDownsampledGeneExpression, loadGeneExpression } from 'redux/actions/genes';
-import { getCellSets } from 'redux/selectors';
 
 const geneOperations = {
   ADD: 'add',
@@ -25,13 +24,6 @@ const ComponentActions = (props) => {
   const selectedGenes = useSelector((state) => state.genes.selected);
   const displayedGenes = useSelector((state) => state.genes.expression?.views[componentType]?.data);
 
-  const componentConfig = useSelector(
-    (state) => state.componentConfig[componentType]?.config,
-    _.isEqual,
-  ) || {};
-
-  const { hidden: hiddenCellSets } = useSelector(getCellSets());
-
   const performGeneOperation = (genesOperation) => {
     let newGenes = _.cloneDeep(selectedGenes);
 
@@ -43,18 +35,7 @@ const ComponentActions = (props) => {
     }
 
     if (useDownsampledExpression) {
-      const { groupedTracks, selectedCellSet, selectedPoints } = componentConfig;
-
-      const downsampleSettings = {
-        groupedTracks,
-        selectedCellSet,
-        selectedPoints,
-        hiddenCellSets,
-      };
-
-      dispatch(
-        loadDownsampledGeneExpression(experimentId, newGenes, componentType, downsampleSettings),
-      );
+      dispatch(loadDownsampledGeneExpression(experimentId, newGenes, componentType));
     } else {
       dispatch(loadGeneExpression(experimentId, newGenes, componentType));
     }

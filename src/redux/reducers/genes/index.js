@@ -3,7 +3,7 @@ import {
   GENES_PROPERTIES_LOADING, GENES_PROPERTIES_LOADED_PAGINATED, GENES_PROPERTIES_ERROR,
   GENES_SELECT, GENES_DESELECT,
   GENES_EXPRESSION_LOADING, GENES_EXPRESSION_LOADED, GENES_EXPRESSION_ERROR,
-  MARKER_GENES_LOADING, MARKER_GENES_LOADED, MARKER_GENES_ERROR,
+  MARKER_GENES_LOADING, DOWNSAMPLED_GENES_LOADING, MARKER_GENES_LOADED, MARKER_GENES_ERROR,
 } from '../../actionTypes/genes';
 
 import { EXPERIMENT_SETTINGS_QC_START } from '../../actionTypes/experimentSettings';
@@ -18,6 +18,8 @@ import genesExpressionError from './genesExpressionError';
 import markerGenesLoading from './markerGenesLoading';
 import markerGenesError from './markerGenesError';
 import markerGenesLoaded from './markerGenesLoaded';
+
+import downsampledGenesLoading from './downsampledGenesLoading';
 
 import genesSelect from './genesSelect';
 import genesDeselect from './genesDeselect';
@@ -53,6 +55,9 @@ const genesReducer = (state = getInitialState(), action) => {
     }
     case MARKER_GENES_LOADING: {
       return markerGenesLoading(state, action);
+    }
+    case DOWNSAMPLED_GENES_LOADING: {
+      return downsampledGenesLoading(state, action);
     }
     case MARKER_GENES_LOADED: {
       return markerGenesLoaded(state, action);

@@ -15,6 +15,7 @@ const fetchGeneExpressionWorkWithoutLocalCache = async (
   environment,
   broadcast,
   extras,
+  onETagGenerated,
   dispatch,
   getState,
 ) => {
@@ -31,6 +32,8 @@ const fetchGeneExpressionWorkWithoutLocalCache = async (
     dispatch,
     getState,
   );
+
+  onETagGenerated(ETag);
 
   // Then, we may be able to find this in S3.
   const response = await seekFromS3(ETag, experimentId, body.name);
@@ -95,6 +98,7 @@ const fetchWork = async (
       environment,
       broadcast,
       extras,
+      onETagGenerated,
       dispatch,
       getState,
     );
