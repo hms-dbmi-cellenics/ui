@@ -23,10 +23,12 @@ const loadMarkerGenes = (
   const body = {
     name: 'MarkerHeatmap',
     nGenes: numGenes,
-    cellSetKey: selectedCellSet,
-    groupByClasses: groupedTracks,
-    selectedPoints,
-    hiddenCellSetKeys: Array.from(hiddenCellSets),
+    downsampleSettings: {
+      selectedCellSet,
+      groupedTracks,
+      selectedPoints,
+      hiddenCellSetKeys: Array.from(hiddenCellSets),
+    },
   };
 
   try {

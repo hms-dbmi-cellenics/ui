@@ -17,12 +17,17 @@ const getClusteringSettings = async (experimentId, body, dispatch, getState) => 
   return clusteringSettings;
 };
 
-// Check that the cell sets within the selected cellSetKey didn't change
+// Check that the cell sets within the selected selectedCellSet didn't change
 // e.g., if cell set was deleted we can't use cache
-const getSelectedCellSet = async (experimentId, body, dispatch, getState) => {
+const getDownsampleSelectedCellSet = async (experimentId, body, dispatch, getState) => {
+  if (!body.downsampleSettings) return '';
+
   await dispatch(loadCellSets(experimentId));
 
-  const children = getCellSetsHierarchyByKeys([body.cellSetKey])(getState());
+  const children = getCellSetsHierarchyByKeys(
+    [body.downsampleSettings.selectedCellSet],
+  )(getState());
+
   const cellSetsKeys = children.map((cellSet) => cellSet.key);
 
   return cellSetsKeys;
@@ -36,6 +41,19 @@ const getCellSets = async (experimentId, body, dispatch, getState) => {
   return hierarchy;
 };
 
+const getDownsampleSettingsCellSets = async (experimentId, body, dispatch, getState) => {
+  if (!body.downsampleSettings) return '';
+
+  await dispatch(loadCellSets(experimentId));
+
+  const groupedCellSetKeys = getCellSetsHierarchy(body.downsampleSettings.groupedTracks)(getState())
+    .map((cellClass) => cellClass.children)
+    .flat()
+    .map(({ key }) => key);
+
+  return groupedCellSetKeys;
+};
+
 const dependencyGetters = {
   ClusterCells: [],
   ScTypeAnnotate: [],
@@ -44,14 +62,18 @@ const dependencyGetters = {
   ListGenes: [],
   DifferentialExpression: [getClusteringSettings],
   BatchDifferentialExpression: [getClusteringSettings],
-  GeneExpression: [],
+  GeneExpression: [
+    getClusteringSettings, getDownsampleSettingsCellSets, getDownsampleSelectedCellSet,
+  ],
   GetBackgroundExpressedGenes: [getClusteringSettings],
   DotPlot: [getClusteringSettings],
   GetDoubletScore: [],
   GetMitochondrialContent: [],
   GetNGenes: [],
   GetNUmis: [],
-  MarkerHeatmap: [getClusteringSettings, getSelectedCellSet],
+  MarkerHeatmap: [
+    getClusteringSettings, getDownsampleSelectedCellSet, getDownsampleSettingsCellSets,
+  ],
   GetTrajectoryAnalysisStartingNodes: [getClusteringSettings],
   GetTrajectoryAnalysisPseudoTime: [getClusteringSettings],
   GetNormalizedExpression: [getClusteringSettings],

@@ -7,7 +7,9 @@ import { useSelector, useDispatch } from 'react-redux';
 import { Empty } from 'antd';
 import _ from 'lodash';
 
-import { getCellSets, getSelectedMetadataTracks } from 'redux/selectors';
+import {
+  getCellSets, getCellSetsHierarchyByKeys, getSelectedMetadataTracks,
+} from 'redux/selectors';
 
 import { loadDownsampledGeneExpression, loadMarkerGenes } from 'redux/actions/genes';
 import { loadComponentConfig } from 'redux/actions/componentConfig';
@@ -75,6 +77,13 @@ const HeatmapPlot = (props) => {
     (state) => state.experimentSettings.processing
       .configureEmbedding?.clusteringSettings.methodSettings.louvain.resolution,
   );
+
+  const groupedCellSets = useSelector((state) => {
+    if (!heatmapSettings.groupedTracks) return undefined;
+
+    const groupedCellClasses = getCellSetsHierarchyByKeys(heatmapSettings.groupedTracks)(state);
+    return groupedCellClasses.map((cellClass) => cellClass.children).flat();
+  }, _.isEqual);
 
   const expressionMatrix = useSelector((state) => state.genes.expression.downsampledMatrix);
 
@@ -191,6 +200,7 @@ const HeatmapPlot = (props) => {
     heatmapSettings?.selectedCellSet,
     heatmapSettings?.selectedPoints,
     cellSets.hidden,
+    groupedCellSets,
   ]);
 
   useEffect(() => {
