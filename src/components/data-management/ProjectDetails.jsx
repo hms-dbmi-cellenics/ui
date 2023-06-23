@@ -4,7 +4,7 @@ import React, { useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import {
-  Space, Typography, Button, Dropdown, Menu,
+  Space, Typography, Button,
 } from 'antd';
 import {
   cloneExperiment, updateExperiment, loadExperiments, setActiveExperiment,
@@ -31,7 +31,6 @@ const ProjectDetails = ({ width, height }) => {
   const { activeExperimentId } = useSelector((state) => state.experiments.meta);
   const activeExperiment = useSelector((state) => state.experiments[activeExperimentId]);
   const samplesTableRef = useRef();
-  const isSubsetted = activeExperiment?.isSubsetted;
 
   const clone = async () => {
     const newExperimentId = await dispatch(cloneExperiment(activeExperimentId, `Copy of ${activeExperiment.name}`));
@@ -58,7 +57,6 @@ const ProjectDetails = ({ width, height }) => {
             <Space>
               <Button
                 onClick={clone}
-                disabled={isSubsetted}
               >
                 Copy
               </Button>
