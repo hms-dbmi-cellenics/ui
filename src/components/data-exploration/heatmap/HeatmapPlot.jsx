@@ -82,6 +82,7 @@ const HeatmapPlot = (props) => {
     if (!heatmapSettings.groupedTracks) return undefined;
 
     const groupedCellClasses = getCellSetsHierarchyByKeys(heatmapSettings.groupedTracks)(state);
+
     return groupedCellClasses.map((cellClass) => cellClass.children).flat();
   }, _.isEqual);
 
