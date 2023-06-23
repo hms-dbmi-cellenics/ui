@@ -27,6 +27,9 @@ describe('fileInspector', () => {
     readFileToBuffer
       .mockReturnValueOnce(
         Promise.resolve(Buffer.from('ACGTACGTACGT-1')),
+      )
+      .mockReturnValueOnce(
+        Promise.resolve(Buffer.from('ACGTACGTACGT-1')),
       );
 
     expect(await inspectFile(file, sampleTech['10X']))
@@ -54,6 +57,12 @@ describe('fileInspector', () => {
         Promise.resolve(Buffer.from('%%MatrixMarket')),
       )
       .mockReturnValueOnce(
+        Promise.resolve(Buffer.from('%%MatrixMarket')),
+      )
+      .mockReturnValueOnce(
+        Promise.resolve(Buffer.from('Def. not a matrix')),
+      )
+      .mockReturnValueOnce(
         Promise.resolve(Buffer.from('Def. not a matrix')),
       );
 
@@ -75,10 +84,22 @@ describe('fileInspector', () => {
         Promise.resolve(Buffer.from('ENS00123456789-1')),
       )
       .mockReturnValueOnce(
+        Promise.resolve(Buffer.from('ENS00123456789-1')),
+      )
+      .mockReturnValueOnce(
+        Promise.resolve(Buffer.from('lnc_inter_chr1_1')),
+      )
+      .mockReturnValueOnce(
         Promise.resolve(Buffer.from('lnc_inter_chr1_1')),
       )
       .mockReturnValueOnce(
         Promise.resolve(Buffer.from('"ENS00123456789-')),
+      )
+      .mockReturnValueOnce(
+        Promise.resolve(Buffer.from('"ENS00123456789-')),
+      )
+      .mockReturnValueOnce(
+        Promise.resolve(Buffer.from('"lnc_inter_chr1_')),
       )
       .mockReturnValueOnce(
         Promise.resolve(Buffer.from('"lnc_inter_chr1_')),
@@ -106,6 +127,12 @@ describe('fileInspector', () => {
     readFileToBuffer
       .mockReturnValueOnce(
         Promise.resolve(Buffer.from('ACGTACGTACGT-1')),
+      )
+      .mockReturnValueOnce(
+        Promise.resolve(Buffer.from('ACGTACGTACGT-1')),
+      )
+      .mockReturnValueOnce(
+        Promise.resolve(Buffer.from('ACGTACGTACGT-1\t')),
       )
       .mockReturnValueOnce(
         Promise.resolve(Buffer.from('ACGTACGTACGT-1\t')),
