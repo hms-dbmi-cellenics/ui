@@ -80,6 +80,13 @@ const MarkerHeatmap = ({ experimentId }) => {
       .configureEmbedding?.clusteringSettings.methodSettings.louvain.resolution,
   ) || false;
 
+  const groupedCellSets = useSelector((state) => {
+    if (!config?.groupedTracks) return undefined;
+
+    const groupedCellClasses = getCellSetsHierarchyByKeys(config.groupedTracks)(state);
+    return groupedCellClasses.map((cellClass) => cellClass.children).flat();
+  }, _.isEqual);
+
   useEffect(() => {
     if (!louvainClustersResolution) dispatch(loadProcessingSettings(experimentId));
     if (!config) dispatch(loadPlotConfig(experimentId, plotUuid, plotType));
@@ -140,6 +147,7 @@ const MarkerHeatmap = ({ experimentId }) => {
     hierarchy,
     cellSets.accessible,
     louvainClustersResolution,
+    groupedCellSets,
   ]);
 
   useEffect(() => {
