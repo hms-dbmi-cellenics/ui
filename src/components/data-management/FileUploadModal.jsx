@@ -211,7 +211,7 @@ const FileUploadModal = (props) => {
                 >
                   {
                     Object.values(sampleTech)
-                      // .filter((tech) => tech !== sampleTech.H5)
+                      .filter((tech) => tech !== sampleTech.H5)
                       .map((tech) => (
                         <Option key={`key-${tech}`} value={tech}>
                           {techNamesToDisplay[tech]}

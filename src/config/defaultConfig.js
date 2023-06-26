@@ -2,7 +2,7 @@ import nextConfig from 'next/config';
 
 import { AccountId } from 'utils/deploymentInfo';
 
-const accountId = nextConfig()?.publicRuntimeConfig?.accountId ?? AccountId.HMS;
+const accountId = nextConfig()?.publicRuntimeConfig?.accountId ?? AccountId.BIOMAGE;
 
 const getSupportEmail = (account) => {
   if (account === AccountId.HMS) {

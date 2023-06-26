@@ -63,23 +63,21 @@ const inspect10XFile = async (file) => {
     gunzip.push(await readFileToBuffer(file.slice(0, 128)));
   }
 
-  const valid = isGzipped ? Verdict.VALID_ZIPPED : Verdict.VALID_UNZIPPED;
-
   // check matrix file starts with matrix signature
   if (file.name.match(/.*(matrix.mtx|matrix.mtx.gz)$/i)
     && !data.slice(0, MATRIX_SIGNATURE.length).compare(MATRIX_SIGNATURE)) {
-    return valid;
+    return verdict;
   }
 
   // gene/non-coding IDs can be in many formats so we don't validate features
   if (file.name.match(/.*(genes.tsv|genes.tsv.gz|features.tsv|features.tsv.gz)$/i)) {
-    return valid;
+    return verdict;
   }
 
   // check barcodes file starts with a 16 digit DNA sequence
   if (file.name.match(/.*(barcodes.tsv|barcodes.tsv.gz)$/i)
     && !data.toString().match(/\t/)) {
-    return valid;
+    return verdict;
   }
 
   return Verdict.INVALID_FORMAT;
