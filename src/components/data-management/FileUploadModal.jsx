@@ -204,6 +204,7 @@ const FileUploadModal = (props) => {
               >
                 <Select
                   aria-label='sampleTechnologySelect'
+                  data-testid='uploadTechSelect'
                   defaultValue={selectedTech}
                   disabled={currentSelectedTech}
                   onChange={(value) => setSelectedTech(value)}
