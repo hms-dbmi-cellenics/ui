@@ -21,7 +21,6 @@ const DataManagementPage = () => {
   const { activeExperimentId } = useSelector((state) => state.experiments.meta);
   const experiments = useSelector(((state) => state.experiments));
   const user = useSelector((state) => state.user.current);
-  const domainName = useSelector((state) => state.networkResources?.domainName);
 
   const activeExperiment = experiments[activeExperimentId];
 

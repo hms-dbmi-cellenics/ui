@@ -8,7 +8,6 @@ const RepositoryPage = () => {
   const dispatch = useDispatch();
 
   const user = useSelector((state) => state.user.current);
-  const domainName = useSelector((state) => state.networkResources?.domainName);
   const exampleExperiments = useSelector((state) => state.experiments.meta?.exampleExperiments);
 
   useEffect(() => {

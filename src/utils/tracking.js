@@ -1,8 +1,13 @@
 import { init, push } from '@socialgouv/matomo-next';
 import Auth from '@aws-amplify/auth';
+import { AccountId } from 'utils/deploymentInfo';
+import nextConfig from 'next/config';
 import { Environment } from './deploymentInfo';
 
-const MATOMO_URL = 'https://cellenics.matomo.cloud';
+const accountId = nextConfig()?.publicRuntimeConfig?.accountId;
+const isAccountHMS = accountId === AccountId.HMS;
+const matomoName = isAccountHMS ? 'cellenics' : 'biomage';
+const MATOMO_URL = `https://${matomoName}.matomo.cloud`;
 
 // To test a staging deployment, you'll need to go to matomo.cloud
 // and change the URL there to point to your staging env URL.
@@ -12,17 +17,17 @@ const trackingInfo = {
   [Environment.PRODUCTION]: {
     enabled: true,
     siteId: 1,
-    containerId: 'zdMhc9ey',
+    containerId: isAccountHMS ? 'zdMhc9ey' : 'lkIodjnO',
   },
   [Environment.STAGING]: {
     enabled: false,
     siteId: 2,
-    containerId: 'lMoIVl5D',
+    containerId: isAccountHMS ? 'lMoIVl5D' : 'FX7UBNS6',
   },
   [Environment.DEVELOPMENT]: {
     enabled: false,
     siteId: 3,
-    containerId: 'uMEoPBAl',
+    containerId: isAccountHMS ? 'uMEoPBAl' : 'lS8ZRMXJ',
   },
 };
 

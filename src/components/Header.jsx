@@ -36,6 +36,14 @@ const Header = (props) => {
         extra={(
           <Space size='large'>
             <Space>
+              {(domainName === DomainName.BIOMAGE || domainName === DomainName.BIOMAGE_STAGING)
+                && (
+                  <Button>
+                    <a href='https://www.biomage.net/cellenicscourse' target='_blank' rel='noreferrer'>
+                      Courses
+                    </a>
+                  </Button>
+                )}
               <HelpButton />
               <FeedbackButton />
               <ReferralButton />
