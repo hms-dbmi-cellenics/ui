@@ -101,10 +101,10 @@ const fileUploadSpecifications = {
   [sampleTech.H5]: {
     acceptedFiles: new Set(['matrix.h5', 'matrix.h5.gz']),
     requiredFiles: [{ key: 'matrix.h5.gz', displayedName: 'matrix.h5' }],
-    inputInfo: [['matrix.h5', 'matrix.h5.gz']],
-    fileUploadParagraphs: `For each sample, upload a folder containing the h5 file. The folder's
+    inputInfo: [['<code>matrix.h5</code> or <code>matrix.h5.gz</code>']],
+    fileUploadParagraphs: [`For each sample, upload a folder containing the h5 file. The folder's
     name will be used to name the sample in it.
-    You can change this name later in Data Management.`,
+    You can change this name later in Data Management.`],
     isNameValid: (fileName) => fileName.toLowerCase().match(/.*matrix.h5(.gz)?$/),
     getCorrespondingName: (fileName) => fileName,
   },
