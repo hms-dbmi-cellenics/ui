@@ -18,6 +18,7 @@ const modules = {
 const sampleTech = {
   '10X': '10x',
   RHAPSODY: 'rhapsody',
+  H5: '10x_h5',
 };
 
 const plotTypes = {
