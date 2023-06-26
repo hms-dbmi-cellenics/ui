@@ -35,6 +35,7 @@ const SEURAT_MAX_FILE_SIZE = 15 * 1024 * 1024 * 1024;
 const extraHelpText = {
   [sampleTech['10X']]: () => <></>,
   [sampleTech.SEURAT]: () => <></>,
+  [sampleTech.H5]: () => <></>,
   [sampleTech.RHAPSODY]: () => (
     <Paragraph>
       <ul>
@@ -205,12 +206,17 @@ const FileUploadModal = (props) => {
                   aria-label='sampleTechnologySelect'
                   defaultValue={selectedTech}
                   onChange={(value) => setSelectedTech(value)}
-                  disabled={Boolean(currentSelectedTech)}
-                  data-testid='uploadTechSelect'
+                  style={{ width: 180 }} // Fix the width so that the dropdown doesn't change size when the value changes
                 >
-                  {Object.values(sampleTech).map((tech) => (
-                    <Option key={`key-${tech}`} value={tech}>{techNamesToDisplay[tech]}</Option>
-                  ))}
+                  {
+                    Object.values(sampleTech)
+                      .filter((tech) => tech !== sampleTech.H5)
+                      .map((tech) => (
+                        <Option key={`key-${tech}`} value={tech}>
+                          {techNamesToDisplay[tech]}
+                        </Option>
+                      ))
+                  }
                 </Select>
               </Tooltip>
             </Space>

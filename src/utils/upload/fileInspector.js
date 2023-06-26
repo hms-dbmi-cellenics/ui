@@ -15,12 +15,19 @@ const MATRIX_SIGNATURE = Buffer.from('%%MatrixMarket');
 
 const GZIP_SIGNATURE = Buffer.from([0x1f, 0x8b]);
 
+const isGzipped = async (file) => {
+  const data = await readFileToBuffer(file.slice(0, 16));
+  const hasGzipSignature = !data.slice(0, 2).compare(GZIP_SIGNATURE);
+  return hasGzipSignature ? Verdict.VALID_ZIPPED : Verdict.VALID_UNZIPPED;
+};
+
 const inspectFile = async (file, technology) => {
   if (Object.values(sampleTech).includes(technology)
    && !techOptions[technology].isNameValid(file.name)) {
     return Verdict.INVALID_NAME;
   }
 
+  // Validate a file requested for upload to the platform.
   if (technology === sampleTech['10X']) {
     return inspect10XFile(file);
   } if (technology === sampleTech.SEURAT) {
@@ -29,19 +36,26 @@ const inspectFile = async (file, technology) => {
   } if (technology === sampleTech.RHAPSODY) {
     return inspectRhapsodyFile(file);
   }
-
+  if (technology === sampleTech.H5) {
+    return inspectH5File(file);
+  }
   return Verdict.INVALID_FORMAT;
 };
 
+const inspectH5File = async (file) => {
+  if (!techOptions[sampleTech.H5].isNameValid(file.name)) {
+    return Verdict.INVALID_NAME;
+  }
+  return await isGzipped(file);
+};
+
 const inspect10XFile = async (file) => {
-  // Validate a file requested for upload to the platform.
-
   // if name is valid, inspect first 16 bytes to validate format
+
   let data = await readFileToBuffer(file.slice(0, 16));
+  const verdict = await isGzipped(file);
 
-  const isGzipped = !data.slice(0, 2).compare(GZIP_SIGNATURE);
-
-  if (isGzipped) {
+  if (verdict === Verdict.VALID_ZIPPED) {
     // if gzipped, decompress a small chunk to further validate contents
     const gunzip = new Gunzip((chunk) => {
       data = Buffer.from(chunk.slice(0, 16));
@@ -71,12 +85,7 @@ const inspect10XFile = async (file) => {
   return Verdict.INVALID_FORMAT;
 };
 
-const inspectRhapsodyFile = async (file) => {
-  const data = await readFileToBuffer(file.slice(0, 16));
-  const isGzipped = !data.slice(0, 2).compare(GZIP_SIGNATURE);
-  const valid = isGzipped ? Verdict.VALID_ZIPPED : Verdict.VALID_UNZIPPED;
-  return valid;
-};
+const inspectRhapsodyFile = async (file) => (isGzipped(file));
 
 export {
   inspectFile,

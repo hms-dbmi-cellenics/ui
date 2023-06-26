@@ -4,6 +4,7 @@ const techNamesToDisplay = {
   [sampleTech['10X']]: '10X Chromium',
   [sampleTech.RHAPSODY]: 'BD Rhapsody',
   [sampleTech.SEURAT]: 'Seurat',
+  [sampleTech.H5]: '10X Chromium - H5',
 };
 
 const matchFileName = (fileName, fileNames) => {
@@ -97,7 +98,16 @@ const fileUploadSpecifications = {
     isNameValid: (fileName) => fileName.toLowerCase().match(/.*expression_data.st(.gz)?$/),
     getCorrespondingName: (fileName) => fileName,
   },
-
+  [sampleTech.H5]: {
+    acceptedFiles: new Set(['matrix.h5', 'matrix.h5.gz']),
+    requiredFiles: [{ key: 'matrix.h5.gz', displayedName: 'matrix.h5' }],
+    inputInfo: [['matrix.h5', 'matrix.h5.gz']],
+    fileUploadParagraphs: `For each sample, upload a folder containing the h5 file. The folder's
+    name will be used to name the sample in it.
+    You can change this name later in Data Management.`,
+    isNameValid: (fileName) => fileName.toLowerCase().match(/.*matrix.h5(.gz)?$/),
+    getCorrespondingName: (fileName) => fileName,
+  },
 };
 
 export { techNamesToDisplay };
