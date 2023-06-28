@@ -345,7 +345,7 @@ const ContentWrapper = (props) => {
         return children;
       }
 
-      if (gem2sNotCreated && currentModule !== modules.DATA_PROCESSING) {
+      if (qcStatusKey === pipelineStatusValues.NOT_CREATED && currentModule !== modules.DATA_PROCESSING) {
         return <PipelineRedirectToDataProcessing experimentId={routeExperimentId} pipelineStatus='toBeRun' />;
       }
     }
