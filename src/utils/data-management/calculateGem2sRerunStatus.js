@@ -1,7 +1,7 @@
 import pipelineStatusValues from 'utils/pipelineStatusValues';
 import _ from 'lodash';
 
-const calculatePipelineRerunStatus = (pipelineBackendStatus, activeExperiment) => {
+const calculateGem2sRerunStatus = (pipelineBackendStatus, activeExperiment) => {
   const { status: pipelineStatus, shouldRerun } = pipelineBackendStatus ?? {};
 
   const pipelineSuccessful = [
@@ -19,4 +19,4 @@ const calculatePipelineRerunStatus = (pipelineBackendStatus, activeExperiment) =
   });
 };
 
-export default calculatePipelineRerunStatus;
+export default calculateGem2sRerunStatus;

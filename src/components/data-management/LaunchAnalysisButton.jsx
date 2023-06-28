@@ -9,7 +9,7 @@ import fileUploadSpecifications from 'utils/upload/fileUploadSpecifications';
 import UploadStatus from 'utils/upload/UploadStatus';
 import integrationTestConstants from 'utils/integrationTestConstants';
 import { runGem2s, runSeurat } from 'redux/actions/pipeline';
-import calculatePipelineRerunStatus from 'utils/data-management/calculatePipelineRerunStatus';
+import calculateGem2sRerunStatus from 'utils/data-management/calculateGem2sRerunStatus';
 
 import { useAppRouter } from 'utils/AppRouteProvider';
 
@@ -94,7 +94,7 @@ const LaunchAnalysisButton = () => {
       || !experiments[activeExperimentId]?.sampleIds?.length > 0
     ) return;
 
-    const pipelineStatus = calculatePipelineRerunStatus(pipelineBackendStatus, activeExperiment);
+    const pipelineStatus = calculateGem2sRerunStatus(pipelineBackendStatus, activeExperiment);
     setPipelineRerunStatus(pipelineStatus);
   }, [backendStatus, activeExperimentId, samples, activeExperiment]);
 

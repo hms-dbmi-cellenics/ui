@@ -39,7 +39,7 @@ import { useAppRouter } from 'utils/AppRouteProvider';
 import experimentUpdatesHandler from 'utils/experimentUpdatesHandler';
 import integrationTestConstants from 'utils/integrationTestConstants';
 import pipelineStatusValues from 'utils/pipelineStatusValues';
-import calculatePipelineRerunStatus from 'utils/data-management/calculatePipelineRerunStatus';
+import calculateGem2sRerunStatus from 'utils/data-management/calculateGem2sRerunStatus';
 import { DndProvider } from 'react-dnd';
 
 const { Sider } = Layout;
@@ -153,7 +153,7 @@ const ContentWrapper = (props) => {
   useEffect(() => {
     if (!experiment) return;
 
-    const pipelineStatus = calculatePipelineRerunStatus(
+    const pipelineStatus = calculateGem2sRerunStatus(
       gem2sBackendStatus, experiment,
     );
 
@@ -165,7 +165,7 @@ const ContentWrapper = (props) => {
   useEffect(() => {
     if (!experiment) return;
 
-    const pipelineStatus = calculatePipelineRerunStatus(
+    const pipelineStatus = calculateGem2sRerunStatus(
       seuratBackendStatus, experiment,
     );
 
