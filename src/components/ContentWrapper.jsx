@@ -295,7 +295,7 @@ const ContentWrapper = (props) => {
   const waitingForQcToLaunch = gem2sStatusKey === pipelineStatusValues.SUCCEEDED
     && qcStatusKey === pipelineStatusValues.NOT_CREATED;
 
-  const pipelineNotCreated = checkEveryIsValue([gem2sStatusKey, seuratStatusKey], pipelineStatusValues.NOT_CREATED);
+  const gem2sNotCreated = checkEveryIsValue([gem2sStatusKey, seuratStatusKey], pipelineStatusValues.NOT_CREATED);
 
   const renderContent = () => {
     if (routeExperimentId) {
@@ -329,7 +329,7 @@ const ContentWrapper = (props) => {
         return <GEM2SLoadingScreen experimentId={routeExperimentId} pipelineStatus='running' completedSteps={completedSeuratSteps} pipelineType='seurat' />;
       }
 
-      if (pipelineNotCreated) {
+      if (gem2sNotCreated) {
         return <GEM2SLoadingScreen experimentId={routeExperimentId} pipelineStatus='toBeRun' />;
       }
 
@@ -345,7 +345,7 @@ const ContentWrapper = (props) => {
         return children;
       }
 
-      if (pipelineNotCreated && currentModule !== modules.DATA_PROCESSING) {
+      if (gem2sNotCreated && currentModule !== modules.DATA_PROCESSING) {
         return <PipelineRedirectToDataProcessing experimentId={routeExperimentId} pipelineStatus='toBeRun' />;
       }
     }
