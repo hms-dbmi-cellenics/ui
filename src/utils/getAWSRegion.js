@@ -2,7 +2,7 @@ const getAWSRegion = () => {
   // only works in ssr, where process.env is available
 
   if (process.env.NODE_ENV === 'development') {
-    return 'eu-west-1';
+    return process.env.AWS_DEFAULT_REGION || 'eu-west-1';
   }
 
   const { AWS_REGION, AWS_DEFAULT_REGION } = process.env;
