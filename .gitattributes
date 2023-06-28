@@ -1,0 +1,3 @@
+.github/pull_request_template.md merge=ours
+README.md merge=ours
+LICENSE merge=ours
