@@ -26,7 +26,7 @@ import PrivacyPolicyIntercept from 'components/data-management/PrivacyPolicyInte
 
 import BrowserAlert from 'components/BrowserAlert';
 import PreloadContent from 'components/PreloadContent';
-import PipelineLoadingScreen from 'components/PipelineLoadingScreen';
+import GEM2SLoadingScreen from 'components/GEM2SLoadingScreen';
 import PipelineRedirectToDataProcessing from 'components/PipelineRedirectToDataProcessing';
 
 import { getBackendStatus } from 'redux/selectors';
@@ -309,11 +309,11 @@ const ContentWrapper = (props) => {
       }
 
       if (gem2sRunningError) {
-        return <PipelineLoadingScreen experimentId={routeExperimentId} pipelineStatus='error' pipelineType='gem2s' />;
+        return <GEM2SLoadingScreen experimentId={routeExperimentId} pipelineStatus='error' pipelineType='gem2s' />;
       }
 
       if (seuratRunningError) {
-        return <PipelineLoadingScreen experimentId={routeExperimentId} pipelineStatus='error' pipelineType='seurat' pipelineErrorMessage={seuratErrorMessage} />;
+        return <GEM2SLoadingScreen experimentId={routeExperimentId} pipelineStatus='error' pipelineType='seurat' pipelineErrorMessage={seuratErrorMessage} />;
       }
 
       if (seuratComplete && currentModule === modules.DATA_PROCESSING) {
@@ -322,15 +322,15 @@ const ContentWrapper = (props) => {
       }
 
       if (gem2sRunning || waitingForQcToLaunch) {
-        return <PipelineLoadingScreen experimentId={routeExperimentId} pipelineStatus='running' completedSteps={completedGem2sSteps} pipelineType='gem2s' />;
+        return <GEM2SLoadingScreen experimentId={routeExperimentId} pipelineStatus='running' completedSteps={completedGem2sSteps} pipelineType='gem2s' />;
       }
 
       if (seuratRunning) {
-        return <PipelineLoadingScreen experimentId={routeExperimentId} pipelineStatus='running' completedSteps={completedSeuratSteps} pipelineType='seurat' />;
+        return <GEM2SLoadingScreen experimentId={routeExperimentId} pipelineStatus='running' completedSteps={completedSeuratSteps} pipelineType='seurat' />;
       }
 
       if (pipelineNotCreated) {
-        return <PipelineLoadingScreen experimentId={routeExperimentId} pipelineStatus='toBeRun' />;
+        return <GEM2SLoadingScreen experimentId={routeExperimentId} pipelineStatus='toBeRun' />;
       }
 
       if (qcRunningError && currentModule !== modules.DATA_PROCESSING) {
