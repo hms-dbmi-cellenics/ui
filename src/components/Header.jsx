@@ -11,7 +11,7 @@ import FeedbackButton from 'components/header/FeedbackButton';
 import ReferralButton from 'components/header/ReferralButton';
 import HelpButton from 'components/header/HelpButton';
 import nextConfig from 'next/config';
-import returnDomainSpecificContent from 'utils/domainSpecificContent.jsx';
+import renderDomainSpecificContentContent from 'utils/domainSpecificContent.jsx';
 
 const Header = (props) => {
   const {
@@ -37,7 +37,7 @@ const Header = (props) => {
         extra={(
           <Space size='large'>
             <Space>
-              {returnDomainSpecificContent('Courses', accountId)}
+              {renderDomainSpecificContentContent('Courses', accountId)}
               <HelpButton
                 accountId={accountId}
               />

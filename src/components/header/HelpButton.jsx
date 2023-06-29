@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Button, Dropdown, Card } from 'antd';
 import { QuestionCircleOutlined, DownOutlined } from '@ant-design/icons';
 import config from 'config';
-import returnDomainSpecificContent from 'utils/domainSpecificContent.jsx';
+import renderDomainSpecificContentContent from 'utils/domainSpecificContent.jsx';
 import PropTypes from 'prop-types';
 
 const HelpButton = (props) => {
@@ -11,7 +11,7 @@ const HelpButton = (props) => {
   console.log('ACCOUNT ID ', accountId);
   const overlay = () => (
     <Card size='small' style={{ padding: '1em', width: '265px' }}>
-      {returnDomainSpecificContent('HelpButton', accountId)}
+      {renderDomainSpecificContentContent('HelpButton', accountId)}
       <br />
       For 1-2-1 support with your analysis, contact
       {' '}

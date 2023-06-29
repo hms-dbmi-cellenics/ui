@@ -2,7 +2,7 @@ import React from 'react';
 import { AccountId } from 'utils/deploymentInfo';
 import { Button } from 'antd';
 
-const domainSpecific = {
+const domainSpecificContent = {
   HMS: {
 
   },
@@ -39,18 +39,18 @@ const domainSpecific = {
   },
 };
 
-export default function returnDomainSpecificContent(component, accountId) {
+export default function renderDomainSpecificContentContent(component, accountId) {
   switch (accountId) {
     case AccountId.HMS:
-      return domainSpecific.HMS[component];
+      return domainSpecificContent.HMS[component];
     case AccountId.BIOMAGE:
       return (
         <>
-          {domainSpecific.BIOMAGE[component]}
-          {domainSpecific.nonHMS[component]}
+          {domainSpecificContent.BIOMAGE[component]}
+          {domainSpecificContent.nonHMS[component]}
         </>
       );
     default:
-      return domainSpecific.nonHMS[component];
+      return domainSpecificContent.nonHMS[component];
   }
 }
