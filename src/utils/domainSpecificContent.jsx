@@ -1,6 +1,7 @@
 import React from 'react';
 import { AccountId } from 'utils/deploymentInfo';
 import { Button } from 'antd';
+import nextConfig from 'next/config';
 
 const domainSpecificContent = {
   HMS: {
@@ -34,12 +35,15 @@ const domainSpecificContent = {
         <a href='https://www.biomage.net/user-guide' target='_blank' rel='noreferrer'>
           user guide
         </a>
+        <br />
       </>
     ),
   },
 };
 
-export default function renderDomainSpecificContentContent(component, accountId) {
+export default function renderDomainSpecificContentContent(component) {
+  const accountId = nextConfig()?.publicRuntimeConfig?.accountId;
+
   switch (accountId) {
     case AccountId.HMS:
       return domainSpecificContent.HMS[component];

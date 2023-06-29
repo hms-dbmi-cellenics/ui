@@ -10,7 +10,6 @@ import UserButton from 'components/header/UserButton';
 import FeedbackButton from 'components/header/FeedbackButton';
 import ReferralButton from 'components/header/ReferralButton';
 import HelpButton from 'components/header/HelpButton';
-import nextConfig from 'next/config';
 import renderDomainSpecificContentContent from 'utils/domainSpecificContent.jsx';
 
 const Header = (props) => {
@@ -22,7 +21,6 @@ const Header = (props) => {
   const truncateText = (text) => (
     (text && text.length > 28) ? `${text.substr(0, 27)}…` : text
   );
-  const accountId = nextConfig()?.publicRuntimeConfig?.accountId;
 
   return (
     <>
@@ -37,10 +35,8 @@ const Header = (props) => {
         extra={(
           <Space size='large'>
             <Space>
-              {renderDomainSpecificContentContent('Courses', accountId)}
-              <HelpButton
-                accountId={accountId}
-              />
+              {renderDomainSpecificContentContent('Courses')}
+              <HelpButton />
               <FeedbackButton />
               <ReferralButton />
               {extra}

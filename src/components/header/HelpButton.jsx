@@ -3,16 +3,12 @@ import { Button, Dropdown, Card } from 'antd';
 import { QuestionCircleOutlined, DownOutlined } from '@ant-design/icons';
 import config from 'config';
 import renderDomainSpecificContentContent from 'utils/domainSpecificContent.jsx';
-import PropTypes from 'prop-types';
 
-const HelpButton = (props) => {
-  const { accountId } = props;
+const HelpButton = () => {
   const [visible, setVisible] = useState(false);
-  console.log('ACCOUNT ID ', accountId);
   const overlay = () => (
     <Card size='small' style={{ padding: '1em', width: '265px' }}>
-      {renderDomainSpecificContentContent('HelpButton', accountId)}
-      <br />
+      {renderDomainSpecificContentContent('HelpButton')}
       For 1-2-1 support with your analysis, contact
       {' '}
       <a href={`mailto:${config.supportEmail}`}>{config.supportEmail}</a>
@@ -37,7 +33,5 @@ const HelpButton = (props) => {
     </Dropdown>
   );
 };
-HelpButton.propTypes = {
-  accountId: PropTypes.string.isRequired,
-};
+
 export default HelpButton;
