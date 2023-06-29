@@ -2,37 +2,17 @@ import React, { useState } from 'react';
 import { Button, Dropdown, Card } from 'antd';
 import { QuestionCircleOutlined, DownOutlined } from '@ant-design/icons';
 import config from 'config';
-import nextConfig from 'next/config';
-import { AccountId } from 'utils/deploymentInfo';
+import returnDomainSpecificContent from 'utils/domainSpecificContent.jsx';
+import PropTypes from 'prop-types';
 
-const accountId = nextConfig()?.publicRuntimeConfig?.accountId;
-const { BIOMAGE, HMS } = AccountId;
-const HelpButton = () => {
+const HelpButton = (props) => {
+  const { accountId } = props;
   const [visible, setVisible] = useState(false);
-
+  console.log('ACCOUNT ID ', accountId);
   const overlay = () => (
     <Card size='small' style={{ padding: '1em', width: '265px' }}>
-      {(accountId === BIOMAGE) && (
-      <>
-        Ask questions about how to use Cellenics and make feature requests on the
-          {' '}
-        <a href='https://community.biomage.net/' target='_blank' rel='noreferrer'>Cellenics community forum</a>
-        !
-        The Biomage team will reply to your message as soon as possible.
-        <br />
-        <br />
-      </>
-      )}
-      {(accountId !== HMS) && (
-      <>
-        Check out the
-          {' '}
-        <a href='https://www.biomage.net/user-guide' target='_blank' rel='noreferrer'>
-          user guide
-        </a>
-      </>
-      )}
-
+      {returnDomainSpecificContent('HelpButton', accountId)}
+      <br />
       For 1-2-1 support with your analysis, contact
       {' '}
       <a href={`mailto:${config.supportEmail}`}>{config.supportEmail}</a>
@@ -57,5 +37,7 @@ const HelpButton = () => {
     </Dropdown>
   );
 };
-
+HelpButton.propTypes = {
+  accountId: PropTypes.string.isRequired,
+};
 export default HelpButton;
