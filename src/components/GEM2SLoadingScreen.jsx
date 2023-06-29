@@ -33,7 +33,7 @@ const runnerByType = {
   seurat: runSeurat,
 };
 
-const PipelineLoadingScreen = (props) => {
+const GEM2SLoadingScreen = (props) => {
   const {
     pipelineStatus, completedSteps, experimentId, experimentName, pipelineType, pipelineErrorMessage,
   } = props;
@@ -169,7 +169,7 @@ const PipelineLoadingScreen = (props) => {
   );
 };
 
-PipelineLoadingScreen.propTypes = {
+GEM2SLoadingScreen.propTypes = {
   pipelineStatus: PropTypes.oneOf(['error', 'running', 'toBeRun', 'subsetting']).isRequired,
   pipelineType: PropTypes.oneOf(['gem2s', 'seurat']).isRequired,
   completedSteps: PropTypes.array,
@@ -178,11 +178,11 @@ PipelineLoadingScreen.propTypes = {
   pipelineErrorMessage: PropTypes.string,
 };
 
-PipelineLoadingScreen.defaultProps = {
+GEM2SLoadingScreen.defaultProps = {
   completedSteps: [],
   experimentId: null,
   experimentName: null,
   pipelineErrorMessage: null,
 };
 
-export default PipelineLoadingScreen;
+export default GEM2SLoadingScreen;

@@ -7,7 +7,7 @@ import {
 } from 'antd';
 import configureMockStore from 'redux-mock-store';
 import fetchAPI from 'utils/http/fetchAPI';
-import PipelineLoadingScreen from 'components/PipelineLoadingScreen';
+import GEM2SLoadingScreen from 'components/GEM2SLoadingScreen';
 import '__test__/test-utils/setupTests';
 
 const mockStore = configureMockStore([thunk]);
@@ -17,15 +17,15 @@ const store = mockStore({ experiments: {} });
 jest.mock('utils/http/fetchAPI');
 fetchAPI.mockImplementation(() => Promise.resolve(new Response(JSON.stringify({}))));
 
-describe('PipelineLoadingScreen', () => {
+describe('GEM2SLoadingScreen', () => {
   it('Does not render without gem2s status', () => {
-    expect(() => shallow(<PipelineLoadingScreen />)).toThrow();
+    expect(() => shallow(<GEM2SLoadingScreen />)).toThrow();
   });
 
   it('Renders toBeRun state correctly', () => {
     const component = mount(
       <Provider store={store}>
-        <PipelineLoadingScreen pipelineStatus='toBeRun' pipelineType='gem2s' />
+        <GEM2SLoadingScreen pipelineStatus='toBeRun' pipelineType='gem2s' />
       </Provider>,
     );
 
@@ -39,7 +39,7 @@ describe('PipelineLoadingScreen', () => {
   it('Renders error state correctly', () => {
     const component = mount(
       <Provider store={store}>
-        <PipelineLoadingScreen pipelineStatus='error' pipelineType='gem2s' />
+        <GEM2SLoadingScreen pipelineStatus='error' pipelineType='gem2s' />
       </Provider>,
     );
 
@@ -56,7 +56,7 @@ describe('PipelineLoadingScreen', () => {
   it('Clicking re-launch analysis re-runs GEM2S', () => {
     const component = mount(
       <Provider store={store}>
-        <PipelineLoadingScreen experimentId='experimentId' pipelineStatus='error' pipelineType='gem2s' />
+        <GEM2SLoadingScreen experimentId='experimentId' pipelineStatus='error' pipelineType='gem2s' />
       </Provider>,
     );
 
@@ -80,7 +80,7 @@ describe('PipelineLoadingScreen', () => {
 
     const component = mount(
       <Provider store={store}>
-        <PipelineLoadingScreen pipelineStatus='running' completedSteps={completedSteps} steps={steps} pipelineType='gem2s' />
+        <GEM2SLoadingScreen pipelineStatus='running' completedSteps={completedSteps} steps={steps} pipelineType='gem2s' />
       </Provider>,
     );
 
@@ -108,7 +108,7 @@ describe('PipelineLoadingScreen', () => {
     const experimentName = 'newExperiment';
     const component = mount(
       <Provider store={store}>
-        <PipelineLoadingScreen pipelineStatus='subsetting' completedSteps={completedSteps} steps={steps} experimentName={experimentName} pipelineType='gem2s' />
+        <GEM2SLoadingScreen pipelineStatus='subsetting' completedSteps={completedSteps} steps={steps} experimentName={experimentName} pipelineType='gem2s' />
       </Provider>,
     );
 
