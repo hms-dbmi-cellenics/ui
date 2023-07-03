@@ -45,8 +45,6 @@ const BatchDiffExpression = (props) => {
   const dispatch = useDispatch();
   const cellSets = useSelector(getCellSets());
   const { properties, hierarchy } = cellSets;
-  const [numSamples, setNumSamples] = useState(0);
-
   const experimentName = useSelector((state) => state.experimentSettings.info.experimentName);
   const cellSetNodes = useSelector(getCellSetsHierarchyByType('cellSets'));
   const metadataCellSetNodes = useSelector(getCellSetsHierarchyByType('metadataCategorical'));
@@ -56,20 +54,12 @@ const BatchDiffExpression = (props) => {
   const [comparison, setComparison] = useState(comparisonInitialState);
   const batchCellSetKeys = useSelector(getCellSetsHierarchyByKeys([comparison.basis]))[0]?.children
     .map((child) => child.key);
+  const isDatasetUnisample = (useSelector((state) => (
+    state.experimentSettings.info.sampleIds.length)) === 1);
 
   useEffect(() => {
     dispatch(loadCellSets(experimentId));
   }, []);
-
-  useEffect(() => {
-    if (hierarchy && hierarchy.length === 0) return;
-
-    const samples = hierarchy?.find(
-      (rootNode) => (rootNode.key === 'sample'),
-    )?.children;
-
-    setNumSamples(samples.length);
-  }, [Object.keys(properties).length]);
 
   useEffect(() => {
     changeComparison({
@@ -286,9 +276,9 @@ const BatchDiffExpression = (props) => {
                   </Tooltip>
                 </Radio>
               </Space>
-              <Radio value='compareForCellSets' disabled={numSamples === 1}>
+              <Radio value='compareForCellSets' disabled={isDatasetUnisample}>
                 {
-                  numSamples === 1 ? (
+                  isDatasetUnisample ? (
                     <Tooltip
                       overlay={(
                         <span>

@@ -83,7 +83,7 @@ jobs:
         name: Run unit tests
         uses: mattallty/jest-github-action@v1
         env:
-          AWS_DEFAULT_REGION: us-east-1
+          AWS_DEFAULT_REGION: ${{ secrets.AWS_REGION }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           test-command: 'npm run coverage'

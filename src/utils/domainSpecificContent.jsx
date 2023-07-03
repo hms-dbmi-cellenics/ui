@@ -7,7 +7,7 @@ const domainSpecificContent = {
   HMS: {
 
   },
-  BIOMAGE: {
+  COMMUNITY_INSTANCE: {
     HelpButton: (
       <>
         Ask questions about how to use Cellenics and make feature requests on the
@@ -27,7 +27,7 @@ const domainSpecificContent = {
       </Button>
     ),
   },
-  nonHMS: {
+  THIRD_PARTY: {
     HelpButton: (
       <>
         Check out the
@@ -35,6 +35,10 @@ const domainSpecificContent = {
         <a href='https://www.biomage.net/user-guide' target='_blank' rel='noreferrer'>
           user guide
         </a>
+        and
+        {' '}
+        <a href='https://www.youtube.com/@biomageltd4616/featured' target='_blank' rel='noreferrer'> tutorial videos </a>
+        that are available on our website!
         <br />
       </>
     ),
@@ -50,11 +54,11 @@ export default function renderDomainSpecificContent(component) {
     case AccountId.BIOMAGE:
       return (
         <>
-          {domainSpecificContent.BIOMAGE[component]}
-          {domainSpecificContent.nonHMS[component]}
+          {domainSpecificContent.COMMUNITY_INSTANCE[component]}
+          {domainSpecificContent.THIRD_PARTY[component]}
         </>
       );
     default:
-      return domainSpecificContent.nonHMS[component];
+      return domainSpecificContent.THIRD_PARTY[component];
   }
 }
