@@ -2,26 +2,36 @@ import React from 'react';
 import { AccountId } from 'utils/deploymentInfo';
 import { Button } from 'antd';
 import nextConfig from 'next/config';
+import config from 'config';
 
 const reusedContent = {
-  HelpButton: (
-    <>
-      Check out the
-      {' '}
-      <a href='https://www.biomage.net/user-guide' target='_blank' rel='noreferrer'>
-        user guide
+  HelpButton: {
+    BiomageUserGuide: (
+      <>
+        Check out the
         {' '}
-      </a>
-      and
-      {' '}
-      <a href='https://www.youtube.com/@biomageltd4616/featured' target='_blank' rel='noreferrer'> tutorial videos </a>
-      <br />
-    </>
-  ),
+        <a href='https://www.biomage.net/user-guide' target='_blank' rel='noreferrer'>
+          user guide
+          {' '}
+        </a>
+        and
+        {' '}
+        <a href='https://www.youtube.com/@biomageltd4616/featured' target='_blank' rel='noreferrer'> tutorial videos </a>
+        <br />
+      </>
+    ),
+    OneToOneSupport: (
+      <>
+        For 1-2-1 support with your analysis, contact
+        {' '}
+        <a href={`mailto: ${config.supportEmail}`}>{config.supportEmail}</a>
+      </>
+    ),
+  },
 };
 const domainSpecificContent = {
   HMS: {
-
+    HelpButton: reusedContent.HelpButton.OneToOneSupport,
   },
   COMMUNITY_INSTANCE: {
     HelpButton: (
@@ -33,7 +43,7 @@ const domainSpecificContent = {
         The Biomage team will reply to your message as soon as possible.
         <br />
         <br />
-        {reusedContent.HelpButton}
+        {reusedContent.HelpButton.BiomageUserGuide}
       </>
     ),
     Courses: (
@@ -45,12 +55,19 @@ const domainSpecificContent = {
     ),
   },
   THIRD_PARTY: {
-    HelpButton: reusedContent.HelpButton,
+    HelpButton: (
+      <>
+        {reusedContent.HelpButton.BiomageUserGuide}
+        <br />
+        {reusedContent.HelpButton.OneToOneSupport}
+      </>
+    ),
   },
 };
 
 export default function renderDomainSpecificContent(component) {
   const accountId = nextConfig()?.publicRuntimeConfig?.accountId;
+
   switch (accountId) {
     case AccountId.HMS:
       return domainSpecificContent.HMS[component];
