@@ -26,7 +26,6 @@ describe('HelpButton', () => {
     expect(screen.getByText(/user guide/i)).toBeDefined();
     expect(screen.getByText(/Ask questions about how to use Cellenics and make feature requests/i)).toBeDefined();
     expect(screen.getByText(/Cellenics community forum/i)).toBeDefined();
-    expect(screen.getByText(/For 1-2-1 support with your analysis/i)).toBeDefined();
   });
   it('Links contain the desired targets', () => {
     renderHelpButton();
@@ -44,6 +43,5 @@ describe('HelpButton', () => {
     const forumLink = screen.getByText(/Cellenics community forum/i).closest('a');
     expect(forumLink).toHaveAttribute('href', 'https://community.biomage.net/');
     expect(forumLink).toHaveAttribute('target', '_blank');
-    expect(screen.getByText(/For 1-2-1 support with your analysis/i)).toBeDefined();
   });
 });
