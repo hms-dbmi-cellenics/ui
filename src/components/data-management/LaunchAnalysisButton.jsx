@@ -13,19 +13,6 @@ import calculateGem2sRerunStatus from 'utils/data-management/calculateGem2sRerun
 
 import { useAppRouter } from 'utils/AppRouteProvider';
 
-const runnersByTechnology = {
-  [sampleTech['10X']]: runGem2s,
-  [sampleTech.RHAPSODY]: runGem2s,
-  [sampleTech.SEURAT]: runSeurat,
-};
-
-const pipelineByTechnology = {
-  [sampleTech['10X']]: 'gem2s',
-  [sampleTech.RHAPSODY]: 'gem2s',
-  [sampleTech.SEURAT]: 'seurat',
-
-};
-
 const LaunchButtonTemplate = (props) => {
   const {
     // eslint-disable-next-line react/prop-types
@@ -56,22 +43,17 @@ const LaunchAnalysisButton = () => {
   const { activeExperimentId } = experiments.meta;
   const activeExperiment = experiments[activeExperimentId];
   const selectedTech = samples[activeExperiment?.sampleIds[0]]?.type;
+  const isTechSeurat = selectedTech === sampleTech.SEURAT;
 
   const [pipelineRerunStatus, setPipelineRerunStatus] = useState(
     {
       rerun: true, paramsHash: null, reasons: [], complete: false,
     },
   );
-
-  const [seuratComplete, setSeuratComplete] = useState(false);
-
-  useEffect(() => {
-    const isSeuratComplete = selectedTech === sampleTech.SEURAT && pipelineRerunStatus.complete;
-    setSeuratComplete(isSeuratComplete);
-  }, [pipelineRerunStatus, selectedTech]);
+  const isSeuratComplete = isTechSeurat && pipelineRerunStatus.complete;
 
   const launchAnalysis = async () => {
-    const runner = runnersByTechnology[selectedTech];
+    const runner = isTechSeurat ? runSeurat : runGem2s;
 
     let shouldNavigate = true;
     if (pipelineRerunStatus.rerun) {
@@ -79,14 +61,14 @@ const LaunchAnalysisButton = () => {
     }
 
     if (shouldNavigate) {
-      const moduleName = seuratComplete ? modules.DATA_EXPLORATION : modules.DATA_PROCESSING;
+      const moduleName = isSeuratComplete ? modules.DATA_EXPLORATION : modules.DATA_PROCESSING;
       navigateTo(moduleName, { experimentId: activeExperimentId });
     }
   };
 
   useEffect(() => {
     // The value of backend status is null for new experiments that have never run
-    const pipeline = pipelineByTechnology[selectedTech];
+    const pipeline = isTechSeurat ? 'seurat' : 'gem2s';
     const pipelineBackendStatus = backendStatus[activeExperimentId]?.status?.[pipeline];
 
     if (
@@ -155,7 +137,7 @@ const LaunchAnalysisButton = () => {
 
     if (pipelineRerunStatus.rerun) {
       buttonText = 'Process project';
-    } else if (seuratComplete) {
+    } else if (isSeuratComplete) {
       buttonText = 'Go to Data Exploration';
     } else {
       buttonText = 'Go to Data Processing';
