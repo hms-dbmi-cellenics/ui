@@ -47,10 +47,7 @@ const fileUploadSpecifications = {
     getCorrespondingName(fileName) {
       const allowedNames = Array.from(this.acceptedFiles);
 
-      // Using for loop to allow breaking quickly
-      for (let i = 0; i < allowedNames.length; i += 1) {
-        if (fileName.endsWith(allowedNames[i])) return allowedNames[i];
-      }
+      return allowedNames.find((allowedName) => fileName.endsWith(allowedName));
     },
   },
   [sampleTech.SEURAT]: {
