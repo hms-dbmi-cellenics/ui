@@ -2,10 +2,15 @@ import { sampleTech } from 'utils/constants';
 
 const fileTypesByTech = {
   [sampleTech['10X']]: {
+    // This handling won't be necessary after the file validation is refactored
     'matrix.mtx.gz': 'matrix10x',
     'barcodes.tsv.gz': 'barcodes10x',
     'features.tsv.gz': 'features10x',
     'genes.tsv.gz': 'features10x',
+    'matrix.mtx': 'matrix10x',
+    'barcodes.tsv': 'barcodes10x',
+    'features.tsv': 'features10x',
+    'genes.tsv': 'features10x',
   },
   [sampleTech.H5]: {
     'matrix.h5': '10x_h5',
