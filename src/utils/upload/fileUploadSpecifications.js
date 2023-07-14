@@ -10,7 +10,7 @@ const techNamesToDisplay = {
 const matchFileName = (fileName, fileNames) => {
   const regexString = `.*(${Array.from(fileNames).join('|')})$`;
   const regexp = new RegExp(regexString, 'i');
-  return fileName.match(regexp);
+  return regexp.test(fileName);
 };
 
 /* eslint-disable max-len */
@@ -43,7 +43,7 @@ const fileUploadSpecifications = {
     dropzoneText: 'Drag and drop folders here or click to browse.',
     // setting to empty string allows folder upload on dropzone click
     webkitdirectory: '',
-    isNameValid(fileName) { return this.acceptedFiles.has(fileName) || matchFileName(fileName, this.acceptedFiles); },
+    isNameValid(fileName) { return matchFileName(fileName, this.acceptedFiles); },
     getCorrespondingName(fileName) {
       const allowedNames = Array.from(this.acceptedFiles);
 
