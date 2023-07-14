@@ -344,8 +344,7 @@ const ContentWrapper = (props) => {
       if (process.env.NODE_ENV === 'development') {
         return children;
       }
-
-      if (qcStatusKey === pipelineStatusValues.NOT_CREATED && currentModule !== modules.DATA_PROCESSING) {
+      if (qcStatusKey === pipelineStatusValues.NOT_CREATED && currentModule !== modules.DATA_PROCESSING && !isSeurat) {
         return <PipelineRedirectToDataProcessing experimentId={routeExperimentId} pipelineStatus='toBeRun' />;
       }
     }

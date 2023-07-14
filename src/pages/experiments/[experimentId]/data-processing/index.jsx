@@ -64,7 +64,6 @@ import { modules } from 'utils/constants';
 import QCRerunDisabledModal from 'components/modals/QCRerunDisabledModal';
 import isUserAuthorized from 'utils/isUserAuthorized';
 import { getURL } from 'redux/actions/pipeline/runQC';
-import Loader from 'components/Loader';
 import { ClipLoader } from 'react-spinners';
 
 const { Text } = Typography;
@@ -499,16 +498,16 @@ const DataProcessingPage = ({ experimentId, experimentData }) => {
                               ) : pipelineNotFinished
                                 && !pipelineRunning
                                 && !isStepComplete(key) ? (
-                                <>
-                                  <Text
-                                    type='danger'
-                                    strong
-                                  >
-                                    <WarningOutlined />
-                                  </Text>
-                                  <span style={{ marginLeft: '0.25rem' }}>{text}</span>
-                                </>
-                              )
+                                  <>
+                                    <Text
+                                      type='danger'
+                                      strong
+                                    >
+                                      <WarningOutlined />
+                                    </Text>
+                                    <span style={{ marginLeft: '0.25rem' }}>{text}</span>
+                                  </>
+                                )
                                 : <></>}
                             </Option>
                           );
