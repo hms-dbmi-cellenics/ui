@@ -13,7 +13,7 @@ import fetchAPI from 'utils/http/fetchAPI';
 import getFileTypeV2 from 'utils/getFileTypeV2';
 import { sampleTech } from 'utils/constants';
 import fileUploadSpecifications from 'utils/upload/fileUploadSpecifications';
-import uploadParts from 'utils/upload/processMultipartUpload';
+import processMultipartUpload from 'utils/upload/processMultipartUpload';
 
 const prepareAndUploadFileToS3 = async (
   experimentId, sampleId, fileType, file, uploadUrlParams, dispatch,
@@ -37,7 +37,7 @@ const prepareAndUploadFileToS3 = async (
   };
 
   try {
-    parts = await uploadParts(file, signedUrls, createOnUploadProgressForPart);
+    parts = await processMultipartUpload(file, signedUrls, createOnUploadProgressForPart);
   } catch (e) {
     dispatch(updateSampleFileUpload(experimentId, sampleId, fileType, UploadStatus.UPLOAD_ERROR));
     return;

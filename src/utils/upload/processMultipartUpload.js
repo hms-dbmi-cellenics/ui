@@ -23,7 +23,7 @@ const putPartInS3 = async (blob, signedUrl, onUploadProgress, currentRetry = 0) 
   }
 };
 
-const uploadParts = async (file, signedUrls, createOnUploadProgressForPart) => {
+const processMultipartUpload = async (file, signedUrls, createOnUploadProgressForPart) => {
   const promises = [];
 
   signedUrls.forEach((signedUrl, index) => {
@@ -45,4 +45,4 @@ const uploadParts = async (file, signedUrls, createOnUploadProgressForPart) => {
   }));
 };
 
-export default uploadParts;
+export default processMultipartUpload;
