@@ -105,15 +105,17 @@ const FileUploadModal = (props) => {
     } else {
       let filesNotInFolder = false;
 
-      // Remove all files that aren't in a folder
       filteredFiles = filteredFiles
+        // Remove all files that aren't in a folder
         .filter((file) => {
           const inFolder = file.path.includes('/');
 
           filesNotInFolder ||= !inFolder;
 
           return inFolder;
-        });
+        })
+        // Remove all files that don't fit the current technology's valid names
+        .filter((file) => techOptions[selectedTech].isNameValid(file.name));
 
       if (filesNotInFolder) {
         handleError('error', endUserMessages.ERROR_FILES_FOLDER);
