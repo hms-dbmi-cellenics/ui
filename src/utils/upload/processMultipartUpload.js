@@ -3,20 +3,25 @@ import axios from 'axios';
 const FILE_CHUNK_SIZE = 10000000;
 const MAX_RETRIES = 2;
 
-const putPartInS3 = (blob, signedUrl, onUploadProgress, currentRetry = 0) => axios.request({
-  method: 'put',
-  data: blob,
-  url: signedUrl,
-  headers: {
-    'Content-Type': 'application/octet-stream',
-  },
-  onUploadProgress,
-})
-  .catch(() => {
+const putPartInS3 = async (blob, signedUrl, onUploadProgress, currentRetry = 0) => {
+  try {
+    return await axios.request({
+      method: 'put',
+      data: blob,
+      url: signedUrl,
+      headers: {
+        'Content-Type': 'application/octet-stream',
+      },
+      onUploadProgress,
+    });
+  } catch (e) {
     if (currentRetry < MAX_RETRIES) {
-      putPartInS3(blob, signedUrl, onUploadProgress, currentRetry + 1);
+      return await putPartInS3(blob, signedUrl, onUploadProgress, currentRetry + 1);
     }
-  });
+
+    throw e;
+  }
+};
 
 const uploadParts = async (file, signedUrls, createOnUploadProgressForPart) => {
   const promises = [];

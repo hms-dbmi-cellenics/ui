@@ -64,7 +64,7 @@ const prepareAndUploadFileToS3 = async (
 };
 
 const createAndUploadSingleFile = async (file, experimentId, sampleId, dispatch, selectedTech) => {
-  const fileType = getFileTypeV2(file.fileObject.name, file.fileObject.type);
+  const fileType = getFileTypeV2(file.name, selectedTech);
 
   if (!file.compressed) {
     try {
