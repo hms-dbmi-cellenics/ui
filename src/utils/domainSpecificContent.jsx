@@ -33,7 +33,7 @@ const domainSpecificContent = {
   HMS: {
     HelpButton: reusedContent.HelpButton.OneToOneSupport,
   },
-  COMMUNITY_INSTANCE: {
+  BIOMAGE: {
     HelpButton: (
       <>
         Ask questions about how to use Cellenics and make feature requests on the
@@ -72,7 +72,7 @@ export default function renderDomainSpecificContent(component) {
     case AccountId.HMS:
       return domainSpecificContent.HMS[component];
     case AccountId.BIOMAGE:
-      return domainSpecificContent.COMMUNITY_INSTANCE[component];
+      return domainSpecificContent.BIOMAGE[component];
     default:
       return domainSpecificContent.THIRD_PARTY[component];
   }
