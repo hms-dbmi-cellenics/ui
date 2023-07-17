@@ -54,7 +54,7 @@ const domainSpecificContent = {
       </Button>
     ),
   },
-  THIRD_PARTY: {
+  BIOMAGE_PRIVATE: {
     HelpButton: (
       <>
         {reusedContent.HelpButton.BiomageUserGuide}
@@ -74,6 +74,6 @@ export default function renderDomainSpecificContent(component) {
     case AccountId.BIOMAGE:
       return domainSpecificContent.BIOMAGE[component];
     default:
-      return domainSpecificContent.THIRD_PARTY[component];
+      return domainSpecificContent.BIOMAGE_PRIVATE[component];
   }
 }
