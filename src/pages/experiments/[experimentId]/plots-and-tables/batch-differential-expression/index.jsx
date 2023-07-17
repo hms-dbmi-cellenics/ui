@@ -44,6 +44,7 @@ const BatchDiffExpression = (props) => {
   const [chosenOperation, setChosenOperation] = useState('fullList');
   const dispatch = useDispatch();
   const cellSets = useSelector(getCellSets());
+  const { properties, hierarchy } = cellSets;
   const experimentName = useSelector((state) => state.experimentSettings.info.experimentName);
   const cellSetNodes = useSelector(getCellSetsHierarchyByType('cellSets'));
   const metadataCellSetNodes = useSelector(getCellSetsHierarchyByType('metadataCategorical'));
@@ -53,7 +54,6 @@ const BatchDiffExpression = (props) => {
   const [comparison, setComparison] = useState(comparisonInitialState);
   const batchCellSetKeys = useSelector(getCellSetsHierarchyByKeys([comparison.basis]))[0]?.children
     .map((child) => child.key);
-
   const isDatasetUnisample = (useSelector((state) => (
     state.experimentSettings.info.sampleIds.length)) === 1);
 
@@ -76,16 +76,13 @@ const BatchDiffExpression = (props) => {
       ...diff,
     });
   };
-  const canRunDiffExpr = (comparisonGroup) => {
-    const { properties, hierarchy } = cellSets;
-    return checkCanRunDiffExpr(
-      properties,
-      hierarchy,
-      { [comparisonGroup.comparisonType]: comparisonGroup },
-      comparisonGroup.comparisonType,
-      true,
-    );
-  };
+  const canRunDiffExpr = (comparisonGroup) => checkCanRunDiffExpr(
+    properties,
+    hierarchy,
+    { [comparisonGroup.comparisonType]: comparisonGroup },
+    comparisonGroup.comparisonType,
+    true,
+  );
 
   const getResult = (initialComparison) => batchCellSetKeys.reduce((acc, currentBasis) => {
     const curr = canRunDiffExpr({ ...initialComparison, basis: currentBasis });

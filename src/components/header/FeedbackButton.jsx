@@ -89,8 +89,8 @@ const FeedbackButton = () => {
     };
 
     try {
-      const { getWebhookUrl } = await import('utils/slack');
-      const r = await fetch(getWebhookUrl(), {
+      const { getFeedbackWebhookUrl } = await import('utils/slack');
+      const r = await fetch(getFeedbackWebhookUrl(), {
         method: 'POST',
         body: JSON.stringify(feedbackData),
       });

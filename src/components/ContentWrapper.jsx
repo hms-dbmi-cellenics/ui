@@ -21,12 +21,13 @@ import {
 } from 'antd';
 
 import Error from 'pages/_error';
+import pipelineErrorUserMessages from 'utils/pipelineErrorUserMessages';
+import PrivacyPolicyIntercept from 'components/data-management/PrivacyPolicyIntercept';
 
 import BrowserAlert from 'components/BrowserAlert';
 import PreloadContent from 'components/PreloadContent';
 import GEM2SLoadingScreen from 'components/GEM2SLoadingScreen';
 import PipelineRedirectToDataProcessing from 'components/PipelineRedirectToDataProcessing';
-import PrivacyPolicyIntercept from 'components/data-management/PrivacyPolicyIntercept';
 
 import { getBackendStatus } from 'redux/selectors';
 import { loadUser } from 'redux/actions/user';
@@ -37,12 +38,14 @@ import { modules } from 'utils/constants';
 import { useAppRouter } from 'utils/AppRouteProvider';
 import experimentUpdatesHandler from 'utils/experimentUpdatesHandler';
 import integrationTestConstants from 'utils/integrationTestConstants';
-import pipelineStatus from 'utils/pipelineStatusValues';
+import pipelineStatusValues from 'utils/pipelineStatusValues';
 import calculateGem2sRerunStatus from 'utils/data-management/calculateGem2sRerunStatus';
 import { DndProvider } from 'react-dnd';
 
 const { Sider } = Layout;
 const { Text } = Typography;
+
+const checkEveryIsValue = (arr, value) => arr.every((item) => item === value);
 
 const ContentWrapper = (props) => {
   const dispatch = useDispatch();
@@ -88,7 +91,7 @@ const ContentWrapper = (props) => {
     status: backendStatus,
   } = useSelector(getBackendStatus(currentExperimentId));
   const gem2sBackendStatus = backendStatus?.gem2s;
-  const backendErrors = [pipelineStatus.FAILED, pipelineStatus.TIMED_OUT, pipelineStatus.ABORTED];
+  const backendErrors = [pipelineStatusValues.FAILED, pipelineStatusValues.TIMED_OUT, pipelineStatusValues.ABORTED];
 
   const qcStatusKey = backendStatus?.pipeline?.status;
   const qcRunning = qcStatusKey === 'RUNNING';
@@ -98,6 +101,20 @@ const ContentWrapper = (props) => {
   const gem2sRunning = gem2sStatusKey === 'RUNNING';
   const gem2sRunningError = backendErrors.includes(gem2sStatusKey);
   const completedGem2sSteps = backendStatus?.gem2s?.completedSteps;
+
+  const seuratBackendStatus = backendStatus?.seurat;
+  const seuratStatusKey = backendStatus?.seurat?.status;
+  const seuratErrorCode = backendStatus?.seurat?.error?.error;
+  const seuratRunning = seuratStatusKey === 'RUNNING';
+  const seuratRunningError = backendErrors.includes(seuratStatusKey);
+  const completedSeuratSteps = backendStatus?.seurat?.completedSteps;
+  const seuratComplete = seuratStatusKey === pipelineStatusValues.SUCCEEDED;
+  const isSeurat = (seuratStatusKey && seuratStatusKey !== pipelineStatusValues.NOT_CREATED) || false;
+
+  const [seuratErrorMessage, setSeuratErrorMessage] = useState();
+  useEffect(() => {
+    setSeuratErrorMessage(pipelineErrorUserMessages[seuratErrorCode]);
+  }, [seuratErrorCode]);
 
   // This is used to prevent a race condition where the page would start loading immediately
   // when the backend status was previously loaded. In that case, `backendLoading` is `false`
@@ -136,9 +153,24 @@ const ContentWrapper = (props) => {
   useEffect(() => {
     if (!experiment) return;
 
-    const status = calculateGem2sRerunStatus(gem2sBackendStatus, experiment);
-    setGem2sRerunStatus(status);
-  }, [gem2sBackendStatus, experiment, samples, experiment]);
+    const pipelineStatus = calculateGem2sRerunStatus(
+      gem2sBackendStatus, experiment,
+    );
+
+    setGem2sRerunStatus(pipelineStatus);
+  }, [gem2sBackendStatus, experiment, samples]);
+
+  const [seuratRerunStatus, setSeuratRerunStatus] = useState(null);
+
+  useEffect(() => {
+    if (!experiment) return;
+
+    const pipelineStatus = calculateGem2sRerunStatus(
+      seuratBackendStatus, experiment,
+    );
+
+    setSeuratRerunStatus(pipelineStatus);
+  }, [seuratBackendStatus, experiment, samples]);
 
   useEffect(() => {
     dispatch(loadUser());
@@ -232,6 +264,7 @@ const ContentWrapper = (props) => {
       name: 'Data Management',
       disableIfNoExperiment: false,
       disabledByPipelineStatus: true,
+      disabledIfSeuratComplete: false,
     },
     {
       module: modules.DATA_PROCESSING,
@@ -239,6 +272,7 @@ const ContentWrapper = (props) => {
       name: 'Data Processing',
       disableIfNoExperiment: true,
       disabledByPipelineStatus: false,
+      disabledIfSeuratComplete: true,
     },
     {
       module: modules.DATA_EXPLORATION,
@@ -246,6 +280,7 @@ const ContentWrapper = (props) => {
       name: 'Data Exploration',
       disableIfNoExperiment: true,
       disabledByPipelineStatus: true,
+      disabledIfSeuratComplete: false,
     },
     {
       module: modules.PLOTS_AND_TABLES,
@@ -253,11 +288,14 @@ const ContentWrapper = (props) => {
       name: 'Plots and Tables',
       disableIfNoExperiment: true,
       disabledByPipelineStatus: true,
+      disabledIfSeuratComplete: false,
     },
   ];
 
-  const waitingForQcToLaunch = gem2sStatusKey === pipelineStatus.SUCCEEDED
-    && qcStatusKey === pipelineStatus.NOT_CREATED;
+  const waitingForQcToLaunch = gem2sStatusKey === pipelineStatusValues.SUCCEEDED
+    && qcStatusKey === pipelineStatusValues.NOT_CREATED;
+
+  const gem2sNotCreated = checkEveryIsValue([gem2sStatusKey, seuratStatusKey], pipelineStatusValues.NOT_CREATED);
 
   const renderContent = () => {
     if (routeExperimentId) {
@@ -271,19 +309,28 @@ const ContentWrapper = (props) => {
       }
 
       if (gem2sRunningError) {
-        return <GEM2SLoadingScreen experimentId={routeExperimentId} gem2sStatus='error' />;
+        return <GEM2SLoadingScreen experimentId={routeExperimentId} pipelineStatus='error' pipelineType='gem2s' />;
       }
 
-      if (gem2sRunning && experiment?.isSubsetted) {
-        return <GEM2SLoadingScreen experimentId={routeExperimentId} gem2sStatus='subsetting' completedSteps={completedGem2sSteps} experimentName={experimentName} />;
+      if (seuratRunningError) {
+        return <GEM2SLoadingScreen experimentId={routeExperimentId} pipelineStatus='error' pipelineType='seurat' pipelineErrorMessage={seuratErrorMessage} />;
+      }
+
+      if (seuratComplete && currentModule === modules.DATA_PROCESSING) {
+        navigateTo(modules.DATA_EXPLORATION, { experimentId: routeExperimentId });
+        return <></>;
       }
 
       if (gem2sRunning || waitingForQcToLaunch) {
-        return <GEM2SLoadingScreen experimentId={routeExperimentId} gem2sStatus='running' completedSteps={completedGem2sSteps} />;
+        return <GEM2SLoadingScreen experimentId={routeExperimentId} pipelineStatus='running' completedSteps={completedGem2sSteps} pipelineType='gem2s' />;
       }
 
-      if (gem2sStatusKey === pipelineStatus.NOT_CREATED) {
-        return <GEM2SLoadingScreen experimentId={routeExperimentId} gem2sStatus='toBeRun' />;
+      if (seuratRunning) {
+        return <GEM2SLoadingScreen experimentId={routeExperimentId} pipelineStatus='running' completedSteps={completedSeuratSteps} pipelineType='seurat' />;
+      }
+
+      if (gem2sNotCreated) {
+        return <GEM2SLoadingScreen experimentId={routeExperimentId} pipelineStatus='toBeRun' />;
       }
 
       if (qcRunningError && currentModule !== modules.DATA_PROCESSING) {
@@ -294,12 +341,13 @@ const ContentWrapper = (props) => {
         return <PipelineRedirectToDataProcessing experimentId={routeExperimentId} pipelineStatus='running' />;
       }
 
-      if (process.env.NODE_ENV === 'development') {
-        return children;
+      if (qcStatusKey === pipelineStatusValues.NOT_CREATED
+        && currentModule !== modules.DATA_PROCESSING && !isSeurat) {
+        return <PipelineRedirectToDataProcessing experimentId={routeExperimentId} pipelineStatus='toBeRun' />;
       }
 
-      if (qcStatusKey === pipelineStatus.NOT_CREATED && currentModule !== modules.DATA_PROCESSING) {
-        return <PipelineRedirectToDataProcessing experimentId={routeExperimentId} pipelineStatus='toBeRun' />;
+      if (process.env.NODE_ENV === 'development') {
+        return children;
       }
     }
 
@@ -307,13 +355,18 @@ const ContentWrapper = (props) => {
   };
 
   const menuItemRender = ({
-    module, icon, name, disableIfNoExperiment, disabledByPipelineStatus,
+    module, icon, name, disableIfNoExperiment, disabledByPipelineStatus, disabledIfSeuratComplete,
   }) => {
+    const needRunGem2s = !isSeurat && (!gem2sRerunStatus || gem2sRerunStatus.rerun);
+    const needRunSeurat = isSeurat && (!seuratRerunStatus || seuratRerunStatus.rerun);
+
     const notProcessedExperimentDisable = !routeExperimentId && disableIfNoExperiment
-      && (!gem2sRerunStatus || gem2sRerunStatus.rerun);
+      && (needRunGem2s || needRunSeurat);
+
     const pipelineStatusDisable = disabledByPipelineStatus && (
       backendError || gem2sRunning || gem2sRunningError
       || waitingForQcToLaunch || qcRunning || qcRunningError
+      || seuratRunning || seuratRunningError
     );
 
     const {
@@ -324,11 +377,13 @@ const ContentWrapper = (props) => {
     const nonExperimentModule = ![DATA_EXPLORATION,
       DATA_MANAGEMENT, DATA_PROCESSING, PLOTS_AND_TABLES]
       .includes(currentModule) && disableIfNoExperiment;
+    const seuratCompleteDisable = disabledIfSeuratComplete && seuratComplete;
 
     return (
       <Menu.Item
         id={module}
-        disabled={notProcessedExperimentDisable || pipelineStatusDisable || nonExperimentModule}
+        disabled={notProcessedExperimentDisable || pipelineStatusDisable
+          || seuratCompleteDisable || nonExperimentModule}
         key={module}
         icon={icon}
         onClick={() => navigateTo(
@@ -346,6 +401,7 @@ const ContentWrapper = (props) => {
   return (
     <>
       <DndProvider backend={MultiBackend} options={HTML5ToTouch}>
+        {/* Privacy policy only for biomage deployment */}
         {privacyPolicyIsNotAccepted(user, domainName) && (
           <PrivacyPolicyIntercept user={user} onOk={() => dispatch(loadUser())} />
         )}

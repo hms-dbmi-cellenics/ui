@@ -122,7 +122,7 @@ describe('ContentWrapper', () => {
 
     navigator.userAgent = chromeUA;
 
-    calculateGem2sRerunStatus.mockImplementation(() => ({ rerun: true, reasons: [] }));
+    calculateGem2sRerunStatus.mockImplementation(() => ({ rerun: true, reasons: [], complete: false }));
 
     await store.dispatch(loadExperiments());
     await store.dispatch(setActiveExperiment(experimentId));
@@ -166,7 +166,7 @@ describe('ContentWrapper', () => {
   });
 
   it('Links are enabled if the selected project is processed', async () => {
-    calculateGem2sRerunStatus.mockImplementationOnce(() => ({ rerun: false, reasons: [] }));
+    calculateGem2sRerunStatus.mockImplementationOnce(() => ({ rerun: false, reasons: [], complete: true }));
 
     const mockBackendStatus = {
       loading: false,
@@ -178,6 +178,9 @@ describe('ContentWrapper', () => {
         gem2s: {
           status: 'SUCCEEDED',
           shouldRerun: false,
+        },
+        seurat: {
+          status: 'NOT_CREATED',
         },
       },
     };

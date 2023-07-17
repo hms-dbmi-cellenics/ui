@@ -7,6 +7,7 @@ import PropTypes from 'prop-types';
 import { useSelector, useDispatch } from 'react-redux';
 
 import uploadMetadataFile from 'redux/actions/experiments/uploadMetadataFile';
+import { sampleTech } from 'utils/constants';
 import MetadataUploadModal from './MetadataUploadModal';
 
 const AddMetadataButton = ({ samplesTableRef }) => {
@@ -14,6 +15,8 @@ const AddMetadataButton = ({ samplesTableRef }) => {
   const { activeExperimentId } = useSelector((state) => state.experiments.meta);
   const activeExperiment = useSelector((state) => state.experiments[activeExperimentId]);
   const isSubsetted = activeExperiment?.isSubsetted;
+  const samples = useSelector((state) => state.samples);
+  const selectedTech = samples[activeExperiment?.sampleIds[0]]?.type;
   const [uploadModalVisible, setUploadModalVisible] = useState(false);
 
   const uploadFiles = (file) => {
@@ -44,7 +47,7 @@ const AddMetadataButton = ({ samplesTableRef }) => {
         )}
         trigger={['click']}
         placement='bottomRight'
-        disabled={activeExperiment.sampleIds?.length === 0 || isSubsetted}
+        disabled={activeExperiment.sampleIds?.length === 0 || isSubsetted || selectedTech === sampleTech.SEURAT}
       >
         <Button>
           Add metadata

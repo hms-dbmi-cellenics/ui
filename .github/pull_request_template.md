@@ -13,7 +13,7 @@
 #### Link to staging deployment URL (or set N/A)
 <!---
   Delete this comment and include the URL of the staging environment for this pull request.
-  Refer to https://github.com/biomage-org/biomage-utils#stage on how to stage a staging environment.
+  Refer to https://github.com/hms-dbmi-cellenics/cellenics-utils#stage on how to stage a staging environment.
   If a staging environment for testing is not necessary for this PR, replace this comment with N/A 
   and explain why a staging environment is not required for this PR.
 
@@ -34,7 +34,7 @@ master
   If you DID NOT modify the integration tests for this PR, this can be left as `master`.
 
   If you DID modify the integration tests for this PR, add the name of the branch you created
-  in biomage-org/testing that will be used to test this branch.
+  in hms-dbmi-cellenics/testing that will be used to test this branch.
 -->
 
 # Merge checklist
@@ -46,6 +46,7 @@ Your changes will be ready for merging after all of the steps below have been co
 ### Code updates
 Have best practices and ongoing refactors being observed in this PR
 - [ ] Migrated any selector / reducer used to the new format.
+- [ ] All new dependency licenses have been checked for compatibility.
 
 ### Manual/unit testing
 - [ ] Tested changes using InfraMock locally **or** no tests required for change, e.g. Kubernetes chart updates.
@@ -53,9 +54,9 @@ Have best practices and ongoing refactors being observed in this PR
 - [ ] Unit tests written **or** no unit tests required for change, e.g. documentation update.
 
 <!---
-  Download the latest production data using `biomage experiment pull`.
-  To set up easy local testing with inframock, follow the instructions here: https://github.com/biomage-org/inframock
-  To deploy to the staging environment, follow the instructions here: https://github.com/biomage-org/biomage-utils
+  Download the latest production data using `cellenics experiment pull`.
+  To set up easy local testing with inframock, follow the instructions here: https://github.com/hms-dbmi-cellenics/inframock
+  To deploy to the staging environment, follow the instructions here: https://github.com/hms-dbmi-cellenics/cellenics-utils
 -->
 
 ### Integration testing

@@ -25,7 +25,7 @@ describe('GEM2SLoadingScreen', () => {
   it('Renders toBeRun state correctly', () => {
     const component = mount(
       <Provider store={store}>
-        <GEM2SLoadingScreen gem2sStatus='toBeRun' />
+        <GEM2SLoadingScreen pipelineStatus='toBeRun' pipelineType='gem2s' />
       </Provider>,
     );
 
@@ -39,7 +39,7 @@ describe('GEM2SLoadingScreen', () => {
   it('Renders error state correctly', () => {
     const component = mount(
       <Provider store={store}>
-        <GEM2SLoadingScreen gem2sStatus='error' />
+        <GEM2SLoadingScreen pipelineStatus='error' pipelineType='gem2s' />
       </Provider>,
     );
 
@@ -56,7 +56,7 @@ describe('GEM2SLoadingScreen', () => {
   it('Clicking re-launch analysis re-runs GEM2S', () => {
     const component = mount(
       <Provider store={store}>
-        <GEM2SLoadingScreen experimentId='experimentId' gem2sStatus='error' />
+        <GEM2SLoadingScreen experimentId='experimentId' pipelineStatus='error' pipelineType='gem2s' />
       </Provider>,
     );
 
@@ -80,7 +80,7 @@ describe('GEM2SLoadingScreen', () => {
 
     const component = mount(
       <Provider store={store}>
-        <GEM2SLoadingScreen gem2sStatus='running' completedSteps={completedSteps} steps={steps} />
+        <GEM2SLoadingScreen pipelineStatus='running' completedSteps={completedSteps} steps={steps} pipelineType='gem2s' />
       </Provider>,
     );
 
@@ -108,7 +108,7 @@ describe('GEM2SLoadingScreen', () => {
     const experimentName = 'newExperiment';
     const component = mount(
       <Provider store={store}>
-        <GEM2SLoadingScreen gem2sStatus='subsetting' completedSteps={completedSteps} steps={steps} experimentName={experimentName} />
+        <GEM2SLoadingScreen pipelineStatus='subsetting' completedSteps={completedSteps} steps={steps} experimentName={experimentName} pipelineType='gem2s' />
       </Provider>,
     );
 

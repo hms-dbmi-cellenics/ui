@@ -11,9 +11,8 @@ import { loadProcessingSettings } from 'redux/actions/experimentSettings';
 import loadBackendStatus from 'redux/actions/backendStatus/loadBackendStatus';
 import { loadSamples } from 'redux/actions/samples';
 import ExampleExperimentsSpace from 'components/data-management/ExampleExperimentsSpace';
-import { privacyPolicyIsNotAccepted, DomainName } from 'utils/deploymentInfo';
 import Loader from 'components/Loader';
-import CoursesBanner from 'components/data-management/CoursesBanner';
+import { privacyPolicyIsNotAccepted } from 'utils/deploymentInfo';
 
 const DataManagementPage = () => {
   const dispatch = useDispatch();
@@ -23,15 +22,14 @@ const DataManagementPage = () => {
   const { activeExperimentId } = useSelector((state) => state.experiments.meta);
   const experiments = useSelector(((state) => state.experiments));
   const user = useSelector((state) => state.user.current);
-  const domainName = useSelector((state) => state.networkResources?.domainName);
 
   const activeExperiment = experiments[activeExperimentId];
+  const domainName = useSelector((state) => state.networkResources?.domainName);
 
   const [newProjectModalVisible, setNewProjectModalVisible] = useState(false);
 
   useEffect(() => {
     if (privacyPolicyIsNotAccepted(user, domainName)) return;
-
     if (experiments.ids.length === 0) dispatch(loadExperiments());
   }, [user]);
 
@@ -50,7 +48,7 @@ const DataManagementPage = () => {
   useEffect(() => {
     if (!activeExperimentId
       || !activeExperiment
-      || privacyPolicyIsNotAccepted(user, domainName)
+       || privacyPolicyIsNotAccepted(user, domainName)
     ) return;
 
     dispatch(loadProcessingSettings(activeExperimentId));
@@ -107,8 +105,6 @@ const DataManagementPage = () => {
 
   return (
     <>
-      {(domainName === DomainName.BIOMAGE || domainName === DomainName.BIOMAGE_STAGING)
-      && (<CoursesBanner />)}
       <Header title='Data Management' />
       {newProjectModalVisible ? (
         <NewProjectModal

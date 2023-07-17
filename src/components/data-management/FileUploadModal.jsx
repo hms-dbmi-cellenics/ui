@@ -12,9 +12,11 @@ import {
   Empty,
   Divider,
   List,
+  Tooltip,
 } from 'antd';
 import { CheckCircleTwoTone, CloseCircleTwoTone, DeleteOutlined } from '@ant-design/icons';
 import Dropzone from 'react-dropzone';
+import { useSelector } from 'react-redux';
 
 import config from 'config';
 import { sampleTech } from 'utils/constants';
@@ -27,8 +29,12 @@ import endUserMessages from 'utils/endUserMessages';
 const { Text, Title, Paragraph } = Typography;
 const { Option } = Select;
 
+// allow at most 15 GiB .rds object uploads
+const SEURAT_MAX_FILE_SIZE = 15 * 1024 * 1024 * 1024;
+
 const extraHelpText = {
   [sampleTech['10X']]: () => <></>,
+  [sampleTech.SEURAT]: () => <></>,
   [sampleTech.H5]: () => <></>,
   [sampleTech.RHAPSODY]: () => (
     <Paragraph>
@@ -49,9 +55,14 @@ const extraHelpText = {
 const FileUploadModal = (props) => {
   const { onUpload, onCancel, currentSelectedTech } = props;
 
+  const samples = useSelector((state) => state.samples);
+  const activeExperimentId = useSelector((state) => state.experiments.meta.activeExperimentId);
+  const previouslyUploadedSamples = Object.keys(samples)
+    .filter((key) => samples[key].experimentId === activeExperimentId);
+
   const guidanceFileLink = 'https://drive.google.com/file/d/1VPaB-yofuExinY2pXyGEEx-w39_OPubO/view';
 
-  const [selectedTech, setSelectedTech] = useState(sampleTech['10X']);
+  const [selectedTech, setSelectedTech] = useState(currentSelectedTech ?? sampleTech['10X']);
   const [canUpload, setCanUpload] = useState(false);
   const [filesList, setFilesList] = useState([]);
 
@@ -59,36 +70,63 @@ const FileUploadModal = (props) => {
     setCanUpload(filesList.length && filesList.every((file) => file.valid));
   }, [filesList]);
 
+  useEffect(() => {
+    setFilesList([]);
+  }, [selectedTech]);
+
   // Handle on Drop
-  const onDrop = async (droppedFiles) => {
-    let filesNotInFolder = false;
-    if (currentSelectedTech && currentSelectedTech !== selectedTech) {
-      handleError('error', endUserMessages.ERROR_SAMPLE_TECHNOLOGY);
-      return;
+  const onDrop = async (acceptedFiles) => {
+    // Remove all hidden files
+    let filteredFiles = acceptedFiles
+      .filter((file) => !file.name.startsWith('.') && !file.name.startsWith('__MACOSX'));
+
+    if (selectedTech === sampleTech.SEURAT) {
+      const newFiles = await Promise.all(filteredFiles.map((file) => (
+        fileObjectToFileRecord(file, selectedTech)
+      )));
+
+      if (previouslyUploadedSamples.length) {
+        handleError('error', endUserMessages.ERROR_SEURAT_EXISTING_FILE);
+        return;
+      }
+
+      const allFiles = [...filesList, ...newFiles];
+      if (allFiles.length > 1) {
+        handleError('error', endUserMessages.ERROR_SEURAT_MULTIPLE_FILES);
+      }
+
+      const seuratFile = allFiles[0];
+      if (seuratFile.size > SEURAT_MAX_FILE_SIZE) {
+        handleError('error', endUserMessages.ERROR_SEURAT_MAX_FILE_SIZE);
+        return;
+      }
+
+      setFilesList([seuratFile]);
+    } else {
+      let filesNotInFolder = false;
+
+      filteredFiles = filteredFiles
+        // Remove all files that aren't in a folder
+        .filter((file) => {
+          const inFolder = file.path.includes('/');
+
+          filesNotInFolder ||= !inFolder;
+
+          return inFolder;
+        })
+        // Remove all files that don't fit the current technology's valid names
+        .filter((file) => techOptions[selectedTech].isNameValid(file.name));
+
+      if (filesNotInFolder) {
+        handleError('error', endUserMessages.ERROR_FILES_FOLDER);
+      }
+
+      const newFiles = await Promise.all(filteredFiles.map((file) => (
+        fileObjectToFileRecord(file, selectedTech)
+      )));
+
+      setFilesList([...filesList, ...newFiles]);
     }
-
-    const filteredFiles = droppedFiles
-      // Remove all hidden files
-      .filter((file) => !file.name.startsWith('.') && !file.name.startsWith('__MACOSX'))
-      // Remove all files that aren't in a folder
-      .filter((file) => {
-        const inFolder = file.path.includes('/');
-
-        filesNotInFolder ||= !inFolder;
-
-        return inFolder;
-      })
-      .filter((file) => techOptions[selectedTech].isNameValid(file.name));
-
-    if (filesNotInFolder) {
-      handleError('error', endUserMessages.ERROR_FILES_FOLDER);
-    }
-
-    const newFiles = await Promise.all(filteredFiles.map((file) => (
-      fileObjectToFileRecord(file, selectedTech)
-    )));
-
-    setFilesList([...filesList, ...newFiles]);
   };
 
   const removeFile = (fileName) => {
@@ -99,15 +137,18 @@ const FileUploadModal = (props) => {
     setFilesList(newArray);
   };
 
+  const { fileUploadParagraphs, dropzoneText, webkitdirectory } = techOptions[selectedTech];
+
   const renderHelpText = () => (
     <>
       <Space direction='vertical' style={{ width: '100%' }}>
-        <Paragraph>
-          {techOptions[selectedTech].info}
-        </Paragraph>
-        <Paragraph>
-          The required files for each sample are:
-        </Paragraph>
+        {
+          fileUploadParagraphs.map((text) => (
+            <Paragraph key={text}>
+              <div dangerouslySetInnerHTML={{ __html: text }} />
+            </Paragraph>
+          ))
+        }
         <List
           dataSource={techOptions[selectedTech].inputInfo}
           size='small'
@@ -116,11 +157,8 @@ const FileUploadModal = (props) => {
           renderItem={(item) => (
             <List.Item>
               {
-                item.map((fileName, i) => (
-                  <span key={fileName}>
-                    <Text code>{`${fileName}`}</Text>
-                    {i !== item.length - 1 && ' or '}
-                  </span>
+                item.map((fileName) => (
+                  <span key={fileName} className='ant-typography' dangerouslySetInnerHTML={{ __html: item }} />
                 ))
               }
             </List.Item>
@@ -161,21 +199,29 @@ const FileUploadModal = (props) => {
                 Technology:
                 <span style={{ color: 'red', marginRight: '2em' }}>*</span>
               </Title>
-              <Select
-                aria-label='sampleTechnologySelect'
-                defaultValue={selectedTech}
-                onChange={(value) => setSelectedTech(value)}
-                style={{ width: 180 }} // Fix the width so that the dropdown doesn't change size when the value changes
+              <Tooltip
+                title={currentSelectedTech
+                  && 'Remove existing data or create a new project to change technology.'}
+                placement='bottom'
               >
-                {
-                  Object.values(sampleTech)
-                    .map((tech) => (
-                      <Option key={`key-${tech}`} value={tech}>
-                        {techNamesToDisplay[tech]}
-                      </Option>
-                    ))
-                }
-              </Select>
+                <Select
+                  aria-label='sampleTechnologySelect'
+                  data-testid='uploadTechSelect'
+                  defaultValue={selectedTech}
+                  disabled={currentSelectedTech}
+                  onChange={(value) => setSelectedTech(value)}
+                  style={{ width: 180 }} // Fix the width so that the dropdown doesn't change size when the value changes
+                >
+                  {
+                    Object.values(sampleTech)
+                      .map((tech) => (
+                        <Option key={`key-${tech}`} value={tech}>
+                          {techNamesToDisplay[tech]}
+                        </Option>
+                      ))
+                  }
+                </Select>
+              </Tooltip>
             </Space>
             <Text type='secondary'>
               <i>
@@ -196,7 +242,7 @@ const FileUploadModal = (props) => {
             File Upload:
             <span style={{ color: 'red', marginRight: '2em' }}>*</span>
           </Title>
-          {selectedTech && renderHelpText()}
+          {selectedTech && renderHelpText(selectedTech)}
         </Col>
       </Row>
 
@@ -228,8 +274,8 @@ const FileUploadModal = (props) => {
                 {...getRootProps({ className: 'dropzone' })}
                 id='dropzone'
               >
-                <input data-test-id={integrationTestConstants.ids.FILE_UPLOAD_INPUT} {...getInputProps()} webkitdirectory='' />
-                <Empty description='Drag and drop folders here or click to browse.' image={Empty.PRESENTED_IMAGE_SIMPLE} />
+                <input data-test-id={integrationTestConstants.ids.FILE_UPLOAD_INPUT} {...getInputProps()} webkitdirectory={webkitdirectory} />
+                <Empty description={dropzoneText} image={Empty.PRESENTED_IMAGE_SIMPLE} />
               </div>
             )}
           </Dropzone>

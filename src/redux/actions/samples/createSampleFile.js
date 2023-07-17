@@ -39,7 +39,7 @@ const createSampleFile = (
       },
     });
 
-    const signedUrl = await fetchAPI(
+    const uploadUrlParams = await fetchAPI(
       url,
       {
         method: 'POST',
@@ -50,7 +50,10 @@ const createSampleFile = (
       },
     );
 
-    return signedUrl;
+    return {
+      ...uploadUrlParams,
+      sampleFileId: body.sampleFileId,
+    };
   } catch (e) {
     dispatch(updateSampleFileUpload(experimentId, sampleId, type, UploadStatus.UPLOAD_ERROR));
 

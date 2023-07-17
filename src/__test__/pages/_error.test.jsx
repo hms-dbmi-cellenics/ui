@@ -37,7 +37,7 @@ describe('ErrorPage', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     storeState = makeStore();
-    storeState.dispatch(loadDeploymentInfo({ environment: 'production', domainName: DomainName.BIOMAGE }));
+    storeState.dispatch(loadDeploymentInfo({ environment: 'production', domainName: DomainName.HMS }));
   });
 
   it('Renders properly without props', () => {
@@ -71,7 +71,7 @@ describe('ErrorPage', () => {
   });
 
   it('Should post error to Slack if environment is production', () => {
-    storeState.dispatch(loadDeploymentInfo({ environment: 'production', domainName: DomainName.BIOMAGE }));
+    storeState.dispatch(loadDeploymentInfo({ environment: 'production', domainName: DomainName.HMS }));
 
     renderErrorPage(mockErrorProp, storeState);
 
@@ -80,7 +80,7 @@ describe('ErrorPage', () => {
   });
 
   it('Should post error to Slack if environment is staging', () => {
-    storeState.dispatch(loadDeploymentInfo({ environment: 'staging', domainName: DomainName.BIOMAGE }));
+    storeState.dispatch(loadDeploymentInfo({ environment: 'staging', domainName: DomainName.HMS }));
 
     renderErrorPage(mockErrorProp, storeState);
 
@@ -89,7 +89,7 @@ describe('ErrorPage', () => {
   });
 
   it('Should not post error to Slack if environment is not production', () => {
-    storeState.dispatch(loadDeploymentInfo({ environment: 'development', domainName: DomainName.BIOMAGE }));
+    storeState.dispatch(loadDeploymentInfo({ environment: 'development', domainName: DomainName.HMS }));
 
     renderErrorPage(mockErrorProp, storeState);
 

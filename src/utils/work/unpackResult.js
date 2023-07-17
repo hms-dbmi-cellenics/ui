@@ -1,6 +1,12 @@
 import { decompress } from 'fflate';
 
-const unpackResult = async (storageResp) => {
+const unpackResult = async (storageResp, taskName = null) => {
+  // SeuratObject can fail to download when loaded into memory
+  if (taskName === 'DownloadAnnotSeuratObject') {
+    const blob = await storageResp.blob();
+    return (blob);
+  }
+
   const arrayBuf = await storageResp.arrayBuffer();
 
   const resultPromise = new Promise((resolve, reject) => {
