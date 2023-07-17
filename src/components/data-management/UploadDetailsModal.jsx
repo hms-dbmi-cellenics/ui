@@ -128,7 +128,7 @@ const UploadDetailsModal = (props) => {
       key='retry'
       block
       onClick={() => {
-        downloadSingleFile(activeExperimentId, sampleUuid, name);
+        downloadSingleFile(activeExperimentId, sampleUuid, name, selectedTech);
       }}
       style={{ width: '140px', marginBottom: '10px' }}
     >
