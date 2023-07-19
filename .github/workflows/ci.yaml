@@ -315,7 +315,7 @@ jobs:
             select(di == 0).metadata.labels.sandboxId = strenv(SANDBOX_ID) |
             select(di == 1).metadata.name = strenv(CHART_SOURCE_NAME) |
             select(di == 1).metadata.namespace = strenv(NAMESPACE) |
-            select(di == 1).spec.url = "https://github.com/" + strenv(GITHUB_REPOSITORY_OWNER	) + "/iac" |
+            select(di == 1).spec.url = "https://github.com/" + strenv(GITHUB_OWNER) + "/iac" |
             select(di == 1).spec.ref.branch = strenv(CHART_REF) |
             select(di == 2).metadata.name = strenv(DEPLOYMENT_NAME) |
             select(di == 2).metadata.namespace = strenv(NAMESPACE) |
@@ -362,6 +362,7 @@ jobs:
             cat $DEPLOYMENT_NAME.yaml
 
         env:
+          GITHUB_OWNER: ${{ github.repository_owner }}
           REF_ID: ${{ needs.build-docker.outputs.ref-id }}
           IMAGE_TAG: ${{ needs.build-docker.outputs.image-tag }}
           REGISTRY: ${{ steps.login-ecr.outputs.registry }}
