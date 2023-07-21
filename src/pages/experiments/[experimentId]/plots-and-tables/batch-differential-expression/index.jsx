@@ -55,9 +55,9 @@ const BatchDiffExpression = (props) => {
   const batchCellSetKeys = useSelector(getCellSetsHierarchyByKeys([comparison.basis]))[0]?.children
     .map((child) => child.key);
 
-  const samples = useSelector(getCellSetsHierarchyByKeys(['sample']));
+  const [sample] = useSelector(getCellSetsHierarchyByKeys(['sample']));
 
-  const isDatasetUnisample = useMemo(() => samples.length === 1, [samples]);
+  const isDatasetUnisample = useMemo(() => sample.children.length === 1, [sample]);
 
   useEffect(() => {
     dispatch(loadCellSets(experimentId));
