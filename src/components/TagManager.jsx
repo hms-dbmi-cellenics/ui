@@ -2,17 +2,16 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Head from 'next/head';
 import { getTrackingDetails } from 'utils/tracking';
-import { AccountId } from 'utils/deploymentInfo';
-import nextConfig from 'next/config';
+
+import renderDomainSpecificContent from 'utils/domainSpecificContent';
 
 const TagManager = ({ environment }) => {
   const { enabled, containerId } = getTrackingDetails(environment);
-  const accountId = nextConfig()?.publicRuntimeConfig?.accountId;
+
   // if tracking is not enabled don't add tag manager to the head
   if (!enabled) return (null);
 
-  // whether to use biomage or HMS matomo account
-  const matomoName = accountId === AccountId.BIOMAGE ? 'biomage' : 'cellenics';
+  const matomoName = renderDomainSpecificContent('matomoName');
 
   const mtmTrackingCode = `var _mtm = window._mtm = window._mtm || [];
             _mtm.push({'mtm.startTime': (new Date().getTime()), 'event': 'mtm.Start'});

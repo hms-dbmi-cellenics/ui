@@ -32,6 +32,7 @@ const reusedContent = {
 const domainSpecificContent = {
   HMS: {
     HelpButton: reusedContent.HelpButton.OneToOneSupport,
+    matomoName: 'cellenics',
   },
   BIOMAGE: {
     HelpButton: (
@@ -53,6 +54,7 @@ const domainSpecificContent = {
         </a>
       </Button>
     ),
+    matomoName: 'biomage',
   },
   BIOMAGE_PRIVATE: {
     HelpButton: (
