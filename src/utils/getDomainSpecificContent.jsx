@@ -67,7 +67,7 @@ const domainSpecificContent = {
   },
 };
 
-export default function renderDomainSpecificContent(component) {
+export default function getDomainSpecificContent(component) {
   const accountId = nextConfig()?.publicRuntimeConfig?.accountId;
 
   switch (accountId) {
