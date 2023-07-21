@@ -22,6 +22,7 @@ const AccountId = {
   HMS: '160782110667',
   BIOMAGE: '242905224710',
 };
+
 const ssrGetDeploymentInfo = () => {
   let currentEnvironment = null;
 

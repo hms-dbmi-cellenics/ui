@@ -12,6 +12,7 @@ const lessToJS = require('less-vars-to-js');
 const withBundleAnalyzer = require('@next/bundle-analyzer')({
   enabled: process.env.ANALYZE === 'true',
 });
+
 const webpackConfigPlugins = require('./config/webpack/configPlugins');
 const webpackConfigRules = require('./config/webpack/configRules');
 const webpackConfigSourcemaps = require('./config/webpack/configSourcemaps');
@@ -96,6 +97,22 @@ const nextConfig = {
   },
 };
 
+const AccountId = {
+  HMS: '160782110667',
+  BIOMAGE: '242905224710',
+};
+
+let accountId = process.env.AWS_ACCOUNT_ID;
+if (isDev) {
+  if (process.env.DEV_ACCOUNT === undefined) {
+    throw new Error(
+      `In local environment, DEV_ACCOUNT is expected to be set, possible values are: ${Object.keys(AccountId)} or "other" for other aws accounts`,
+    );
+  }
+
+  accountId = AccountId[process.env.DEV_ACCOUNT];
+}
+
 module.exports = withPlugins([
   [withBundleAnalyzer],
   [images],
@@ -110,7 +127,7 @@ module.exports = withPlugins([
   {
     publicRuntimeConfig: {
       domainName: process.env.DOMAIN_NAME,
-      accountId: process.env.AWS_ACCOUNT_ID,
+      accountId,
     },
   },
 ], nextConfig);
