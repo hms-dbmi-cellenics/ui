@@ -28,10 +28,6 @@ const trackingInfo = {
   },
 };
 
-// Before merge: trackingInfo could be simplified further by not adding the containerId
-// straight away and instead setting it after like this:
-// trackingInfo = _.merge({}, trackingInfo, getDomainSpecificContent('containerIds'))
-
 let env = Environment.DEVELOPMENT;
 
 const getTrackingDetails = (e) => ({ ...trackingInfo[e] });
