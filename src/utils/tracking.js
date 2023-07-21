@@ -3,11 +3,12 @@ import Auth from '@aws-amplify/auth';
 import { AccountId } from 'utils/deploymentInfo';
 import nextConfig from 'next/config';
 import { Environment } from './deploymentInfo';
+import getDomainSpecificContent from './getDomainSpecificContent';
 
 const accountId = nextConfig()?.publicRuntimeConfig?.accountId;
 const isAccountHMS = accountId === AccountId.HMS;
-const matomoName = isAccountHMS ? 'cellenics' : 'biomage';
-const MATOMO_URL = `https://${matomoName}.matomo.cloud`;
+
+const MATOMO_URL = `https://${getDomainSpecificContent('matomoName')}.matomo.cloud`;
 
 // To test a staging deployment, you'll need to go to matomo.cloud
 // and change the URL there to point to your staging env URL.
