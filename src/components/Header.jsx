@@ -35,7 +35,7 @@ const Header = (props) => {
         extra={(
           <Space size='large'>
             <Space>
-              {renderDomainSpecificContent('Courses')}
+              {renderDomainSpecificContent('HeaderExtraButton')}
               <HelpButton />
               <FeedbackButton />
               <ReferralButton />

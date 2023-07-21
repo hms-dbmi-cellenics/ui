@@ -46,7 +46,7 @@ const domainSpecificContent = {
         {reusedContent.HelpButton.BiomageUserGuide}
       </>
     ),
-    Courses: (
+    HeaderExtraButton: (
       <Button>
         <a href='https://www.biomage.net/cellenicscourse' target='_blank' rel='noreferrer'>
           Courses
