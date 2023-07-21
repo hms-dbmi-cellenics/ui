@@ -1,5 +1,5 @@
 import React from 'react';
-import { AccountId } from 'utils/deploymentInfo';
+import { AccountId, Environment } from 'utils/deploymentInfo';
 import { Button } from 'antd';
 import nextConfig from 'next/config';
 import config from 'config';
@@ -29,12 +29,25 @@ const reusedContent = {
     ),
   },
 };
+
+const biomageContainerIds = {
+  [Environment.PRODUCTION]: 'lkIodjnO',
+  [Environment.STAGING]: 'FX7UBNS6',
+  [Environment.DEVELOPMENT]: 'lS8ZRMXJ',
+};
+
 const domainSpecificContent = {
   HMS: {
+    containerIds: {
+      [Environment.PRODUCTION]: 'zdMhc9ey',
+      [Environment.STAGING]: 'lMoIVl5D',
+      [Environment.DEVELOPMENT]: 'uMEoPBAl',
+    },
     HelpButton: reusedContent.HelpButton.OneToOneSupport,
     matomoName: 'cellenics',
   },
   BIOMAGE: {
+    containerIds: biomageContainerIds,
     HelpButton: (
       <>
         Ask questions about how to use Cellenics and make feature requests on the
@@ -57,6 +70,7 @@ const domainSpecificContent = {
     matomoName: 'biomage',
   },
   BIOMAGE_PRIVATE: {
+    containerIds: biomageContainerIds,
     HelpButton: (
       <>
         {reusedContent.HelpButton.BiomageUserGuide}

@@ -1,12 +1,8 @@
 import { init, push } from '@socialgouv/matomo-next';
 import Auth from '@aws-amplify/auth';
-import { AccountId } from 'utils/deploymentInfo';
-import nextConfig from 'next/config';
+
 import { Environment } from './deploymentInfo';
 import getDomainSpecificContent from './getDomainSpecificContent';
-
-const accountId = nextConfig()?.publicRuntimeConfig?.accountId;
-const isAccountHMS = accountId === AccountId.HMS;
 
 const MATOMO_URL = `https://${getDomainSpecificContent('matomoName')}.matomo.cloud`;
 
@@ -18,19 +14,23 @@ const trackingInfo = {
   [Environment.PRODUCTION]: {
     enabled: true,
     siteId: 1,
-    containerId: isAccountHMS ? 'zdMhc9ey' : 'lkIodjnO',
+    containerId: getDomainSpecificContent('containerIds')[Environment.PRODUCTION],
   },
   [Environment.STAGING]: {
     enabled: false,
     siteId: 2,
-    containerId: isAccountHMS ? 'lMoIVl5D' : 'FX7UBNS6',
+    containerId: getDomainSpecificContent('containerIds')[Environment.STAGING],
   },
   [Environment.DEVELOPMENT]: {
     enabled: false,
     siteId: 3,
-    containerId: isAccountHMS ? 'uMEoPBAl' : 'lS8ZRMXJ',
+    containerId: getDomainSpecificContent('containerIds')[Environment.DEVELOPMENT],
   },
 };
+
+// Before merge: trackingInfo could be simplified further by not adding the containerId
+// straight away and instead setting it after like this:
+// trackingInfo = _.merge({}, trackingInfo, getDomainSpecificContent('containerIds'))
 
 let env = Environment.DEVELOPMENT;
 
