@@ -17,6 +17,8 @@ const webpackConfigPlugins = require('./config/webpack/configPlugins');
 const webpackConfigRules = require('./config/webpack/configRules');
 const webpackConfigSourcemaps = require('./config/webpack/configSourcemaps');
 
+const { AccountId } = require('./src/utils/deploymentInfo');
+
 const isDev = !process.env.NODE_ENV || process.env.NODE_ENV === 'development';
 
 // Where your antd-custom.less file lives
@@ -95,11 +97,6 @@ const nextConfig = {
 
     return final;
   },
-};
-
-const AccountId = {
-  HMS: '160782110667',
-  BIOMAGE: '242905224710',
 };
 
 let accountId = process.env.AWS_ACCOUNT_ID;
