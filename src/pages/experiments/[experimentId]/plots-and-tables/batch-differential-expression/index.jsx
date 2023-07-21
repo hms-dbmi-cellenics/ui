@@ -1,5 +1,5 @@
 import React, {
-  useEffect, useState, useCallback,
+  useEffect, useState, useCallback, useMemo,
 } from 'react';
 import {
   Radio,
@@ -54,8 +54,10 @@ const BatchDiffExpression = (props) => {
   const [comparison, setComparison] = useState(comparisonInitialState);
   const batchCellSetKeys = useSelector(getCellSetsHierarchyByKeys([comparison.basis]))[0]?.children
     .map((child) => child.key);
-  const isDatasetUnisample = (useSelector((state) => (
-    state.experimentSettings.info.sampleIds.length)) === 1);
+
+  const samples = useSelector(getCellSetsHierarchyByKeys(['sample']));
+
+  const isDatasetUnisample = useMemo(() => samples.length === 1, [samples]);
 
   useEffect(() => {
     dispatch(loadCellSets(experimentId));
