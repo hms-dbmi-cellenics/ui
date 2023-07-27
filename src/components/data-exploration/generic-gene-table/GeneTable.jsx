@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import {
-  Table, Space,
+  Table, Space, Tooltip,
 } from 'antd';
 import _ from 'lodash';
 import PropTypes from 'prop-types';
@@ -22,7 +22,7 @@ const valueComparator = (key) => (a, b) => {
 const GeneTable = (props) => {
   const {
     experimentId, error, loading, columns, propData, loadData,
-    total, initialTableState, width, height, extraOptions,
+    total, initialTableState, width, height, extraOptions, geneColumnTooltipText,
   } = props;
 
   const dispatch = useDispatch();
@@ -159,7 +159,19 @@ const GeneTable = (props) => {
       },
       {
         fixed: 'left',
-        title: 'Gene',
+        title: (
+          geneColumnTooltipText
+            ? (
+              <Tooltip
+                title={geneColumnTooltipText}
+                placement='top'
+                trigger='hover'
+              >
+                Gene
+              </Tooltip>
+            )
+            : 'Gene'
+        ),
         dataIndex: 'gene_names',
         key: 'gene_names',
         sorter: valueComparator('gene_names'),
@@ -237,6 +249,7 @@ const GeneTable = (props) => {
 GeneTable.defaultProps = {
   initialTableState: {},
   extraOptions: null,
+  geneColumnTooltipText: null,
 };
 
 GeneTable.propTypes = {
@@ -256,6 +269,7 @@ GeneTable.propTypes = {
   extraOptions: PropTypes.node,
   width: PropTypes.number.isRequired,
   height: PropTypes.number.isRequired,
+  geneColumnTooltipText: PropTypes.string,
 };
 
 export default GeneTable;

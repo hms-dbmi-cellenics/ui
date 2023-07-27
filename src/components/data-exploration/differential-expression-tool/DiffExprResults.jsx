@@ -198,6 +198,7 @@ const DiffExprResults = (props) => {
             <Button type='link' size='small' onClick={() => setPathwayAnalysisModalVisible(!pathwayAnalysisModalVisible)}>Pathway analysis</Button>
           </>
         )}
+        geneColumnTooltipText='All genes present in the dataset are shown in the differential expression results table. Note that a gene is typically considered ‘differentially expressed’ based on established thresholds on adjusted p-value and/or log fold change. You should apply your own criteria and thresholds to filter the resulting list of genes using the "Advanced filtering" button.'
       />
       {
         pathwayAnalysisModalVisible && (
