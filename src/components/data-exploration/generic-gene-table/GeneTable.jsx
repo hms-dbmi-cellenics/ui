@@ -167,7 +167,7 @@ const GeneTable = (props) => {
                 placement='top'
                 trigger='hover'
               >
-                <span style={{ display: 'inline-block', width: '100%' }}>Gene</span>
+                Gene
               </Tooltip>
             )
             : 'Gene'
