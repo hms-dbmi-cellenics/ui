@@ -39,6 +39,13 @@ const comparisonInitialState = {
   comparisonType: null,
 };
 
+const cellSetNameFromKey = (properties, key) => {
+  // some entries have the parent cell set in the name like sample/213123-asda-2321
+  // the second part after the slash is needed to return the cell set name
+  const keySplitted = key?.split('/')[1] || key;
+  return properties[keySplitted]?.name.replace(/\s+/g, '_') || keySplitted;
+};
+
 const BatchDiffExpression = (props) => {
   const { experimentId } = props;
   const [chosenOperation, setChosenOperation] = useState('fullList');
@@ -54,6 +61,7 @@ const BatchDiffExpression = (props) => {
   const [comparison, setComparison] = useState(comparisonInitialState);
   const batchCellSetKeys = useSelector(getCellSetsHierarchyByKeys([comparison.basis]))[0]?.children
     .map((child) => child.key);
+  const batchCellSetNames = batchCellSetKeys?.map((key) => cellSetNameFromKey(properties, key));
 
   const [sample] = useSelector(getCellSetsHierarchyByKeys(['sample']));
 
@@ -108,7 +116,14 @@ const BatchDiffExpression = (props) => {
 
   const downloadCSVsAsZip = (data) => {
     const encoder = new TextEncoder();
-    const archiveName = `batchDE_${experimentName}`;
+    let archiveName;
+    const { cellSet, compareWith, basis } = comparison;
+    const experimentNameNoSpace = experimentName.replace(/\s+/g, '_');
+    if (chosenOperation === 'fullList') {
+      archiveName = `${experimentNameNoSpace}-FULL-LIST-${cellSetNameFromKey(properties, basis)}`;
+    } else {
+      archiveName = `${experimentNameNoSpace}-${cellSetNameFromKey(properties, cellSet)}-TO-${cellSetNameFromKey(properties, compareWith)}-IN-${cellSetNameFromKey(properties, basis)}`;
+    }
     const CSVs = data.reduce((accumulator, currentData, indx) => {
       let csvString;
       let fileName;
@@ -117,11 +132,11 @@ const BatchDiffExpression = (props) => {
         const columnNames = Object.keys(currentData[0]).join(',');
         const csvRows = currentData.map((obj) => Object.values(obj).join(','));
         csvString = `${columnNames}\n${csvRows.join('\n')}`;
-        fileName = `DE-${batchCellSetKeys[indx]}.csv`;
+        fileName = `DE-${batchCellSetNames[indx]}.csv`;
       } else {
         // If currentData[0] is not an array, include the error message in the CSV file
         csvString = `error\n${currentData.error}`;
-        fileName = `DE-${batchCellSetKeys[indx]}-error.csv`;
+        fileName = `DE-${batchCellSetNames[indx]}-error.csv`;
       }
       const encodedString = encoder.encode(csvString);
       accumulator[fileName] = encodedString;
@@ -270,7 +285,7 @@ const BatchDiffExpression = (props) => {
           >
             <Space direction='vertical'>
               <Space direction='horizontal'>
-                <Radio value='fullList'>
+                <Radio value='fullList' disabled={dataLoading}>
                   Generate a full list of marker genes for all cell sets
                   {'   '}
                   <Tooltip title='Each cell set will be compared to all other cells, using all samples.'>
@@ -278,7 +293,7 @@ const BatchDiffExpression = (props) => {
                   </Tooltip>
                 </Radio>
               </Space>
-              <Radio value='compareForCellSets' disabled={isDatasetUnisample}>
+              <Radio value='compareForCellSets' disabled={isDatasetUnisample || dataLoading}>
                 {
                   isDatasetUnisample ? (
                     <Tooltip
@@ -296,7 +311,7 @@ const BatchDiffExpression = (props) => {
                   )
                 }
               </Radio>
-              <Radio value='compareForSamples'>
+              <Radio value='compareForSamples' disabled={dataLoading}>
                 Compare two cell sets for all samples/groups
               </Radio>
             </Space>
