@@ -68,5 +68,3 @@ AddMetadataButton.propTypes = {
 };
 
 export default AddMetadataButton;
-
-// Stub commit
