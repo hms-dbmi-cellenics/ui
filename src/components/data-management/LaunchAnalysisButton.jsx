@@ -3,12 +3,12 @@ import { useSelector, useDispatch } from 'react-redux';
 import {
   Button, Tooltip, Popconfirm,
 } from 'antd';
-import { modules } from 'utils/constants';
+import { modules, sampleTech } from 'utils/constants';
 
 import fileUploadSpecifications from 'utils/upload/fileUploadSpecifications';
 import UploadStatus from 'utils/upload/UploadStatus';
 import integrationTestConstants from 'utils/integrationTestConstants';
-import { runGem2s } from 'redux/actions/pipeline';
+import { runGem2s, runSeurat } from 'redux/actions/pipeline';
 import calculateGem2sRerunStatus from 'utils/data-management/calculateGem2sRerunStatus';
 
 import { useAppRouter } from 'utils/AppRouteProvider';
@@ -42,33 +42,42 @@ const LaunchAnalysisButton = () => {
 
   const { activeExperimentId } = experiments.meta;
   const activeExperiment = experiments[activeExperimentId];
+  const selectedTech = samples[activeExperiment?.sampleIds[0]]?.type;
+  const isTechSeurat = selectedTech === sampleTech.SEURAT;
 
-  const [gem2sRerunStatus, setGem2sRerunStatus] = useState(
-    { rerun: true, reasons: [] },
+  const [pipelineRerunStatus, setPipelineRerunStatus] = useState(
+    {
+      rerun: true, paramsHash: null, reasons: [], complete: false,
+    },
   );
+  const isSeuratComplete = isTechSeurat && pipelineRerunStatus.complete;
 
   const launchAnalysis = async () => {
+    const runner = isTechSeurat ? runSeurat : runGem2s;
+
     let shouldNavigate = true;
-    if (gem2sRerunStatus.rerun) {
-      shouldNavigate = await dispatch(runGem2s(activeExperimentId));
+    if (pipelineRerunStatus.rerun) {
+      shouldNavigate = await dispatch(runner(activeExperimentId));
     }
 
     if (shouldNavigate) {
-      navigateTo(modules.DATA_PROCESSING, { experimentId: activeExperimentId });
+      const moduleName = isSeuratComplete ? modules.DATA_EXPLORATION : modules.DATA_PROCESSING;
+      navigateTo(moduleName, { experimentId: activeExperimentId });
     }
   };
 
   useEffect(() => {
     // The value of backend status is null for new experiments that have never run
-    const gem2sBackendStatus = backendStatus[activeExperimentId]?.status?.gem2s;
+    const pipeline = isTechSeurat ? 'seurat' : 'gem2s';
+    const pipelineBackendStatus = backendStatus[activeExperimentId]?.status?.[pipeline];
 
     if (
-      !gem2sBackendStatus
+      !pipelineBackendStatus
       || !experiments[activeExperimentId]?.sampleIds?.length > 0
     ) return;
 
-    const status = calculateGem2sRerunStatus(gem2sBackendStatus, activeExperiment);
-    setGem2sRerunStatus(status);
+    const pipelineStatus = calculateGem2sRerunStatus(pipelineBackendStatus, activeExperiment);
+    setPipelineRerunStatus(pipelineStatus);
   }, [backendStatus, activeExperimentId, samples, activeExperiment]);
 
   const canLaunchAnalysis = useCallback(() => {
@@ -124,7 +133,15 @@ const LaunchAnalysisButton = () => {
   }, [samples, activeExperiment?.sampleIds, activeExperiment?.metadataKeys]);
 
   const renderLaunchButton = () => {
-    const buttonText = !gem2sRerunStatus.rerun ? 'Go to Data Processing' : 'Process project';
+    let buttonText;
+
+    if (pipelineRerunStatus.rerun) {
+      buttonText = 'Process project';
+    } else if (isSeuratComplete) {
+      buttonText = 'Go to Data Exploration';
+    } else {
+      buttonText = 'Go to Data Processing';
+    }
 
     if (!backendStatus[activeExperimentId] || backendStatus[activeExperimentId]?.loading) {
       return <LaunchButtonTemplate text='Loading project...' disabled loading />;
@@ -144,10 +161,10 @@ const LaunchAnalysisButton = () => {
       );
     }
 
-    if (gem2sRerunStatus.rerun) {
+    if (pipelineRerunStatus.rerun) {
       return (
         <Popconfirm
-          title={`This project has to be processed because ${gem2sRerunStatus.reasons.join(' and ')}. \
+          title={`This project has to be processed because ${pipelineRerunStatus.reasons.join(' and ')}. \
         This will take several minutes.\
         Do you want to continue?`}
           onConfirm={() => launchAnalysis()}

@@ -7,8 +7,8 @@ import { makeStore } from 'redux/store';
 import { mockQcPipelineStartDate } from '__test__/utils/work/fetchWork.mock';
 import processingConfigData from '__test__/data/processing_config.json';
 
-const NON_GENE_EXPRESSION_ETAG = '0569e731f72dcaec1c39251c13c345d9'; // pragma: allowlist secret
-const GENE_EXPRESSION_D_ETAG = 'e3dea8833127c0ab269ed16e799319e1'; // pragma: allowlist secret
+const NON_GENE_EXPRESSION_ETAG = '8203e3ba0d492753400d09168c0f0b03'; // pragma: allowlist secret
+const GENE_EXPRESSION_D_ETAG = 'ee5abd900fc2b8d1ec5eca1419be090d'; // pragma: allowlist secret
 
 const experimentId = '1234';
 const mockExtras = undefined;

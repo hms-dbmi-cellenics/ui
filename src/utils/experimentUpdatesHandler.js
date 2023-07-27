@@ -12,6 +12,7 @@ import endUserMessages from 'utils/endUserMessages';
 const updateTypes = {
   QC: 'qc',
   GEM2S: 'gem2s',
+  SEURAT: 'seurat',
   WORK_RESPONSE: 'WorkResponse',
   PLOT_CONFIG_REFRESH: 'PlotConfigRefresh',
 };
@@ -34,6 +35,9 @@ const experimentUpdatesHandler = (dispatch) => (experimentId, update) => {
     }
     case updateTypes.GEM2S: {
       return onGEM2SUpdate(update, dispatch, experimentId);
+    }
+    case updateTypes.SEURAT: {
+      return onSeuratUpdate(update, dispatch, experimentId);
     }
     case updateTypes.WORK_RESPONSE: {
       return onWorkResponseUpdate(update, dispatch, experimentId);
@@ -110,6 +114,13 @@ const onWorkResponseUpdate = (update, dispatch, experimentId) => {
 
 const onPlotConfigRefresh = (update, dispatch) => {
   dispatch(replaceLoadedConfigs(update.updatedConfigs));
+};
+
+const onSeuratUpdate = (update, dispatch, experimentId) => {
+  // If the pipeline finished we have a new clustering, so fetch it
+  if (update.status.seurat.status === 'SUCCEEDED') {
+    dispatch(loadCellSets(experimentId, true));
+  }
 };
 
 export default experimentUpdatesHandler;

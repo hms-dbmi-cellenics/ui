@@ -116,7 +116,6 @@ const WrappedApp = ({ Component, pageProps }) => {
           />
         );
       }
-
       if (httpError === 424) {
         return (
           <NotFoundPage
@@ -164,14 +163,10 @@ const WrappedApp = ({ Component, pageProps }) => {
         titleTemplate='%s &middot; Cellenics'
         defaultTitle='Cellenics'
         description='Cellenics turns your single cell datasets into meaningful biology. It’s free for academic researchers, and you get world-class quality analytical insight: simple data upload, data integration for batch effect correction, beautiful publication-quality figures, and much more.'
-        twitter={{
-          site: '@BiomageLtd',
-          cardType: 'summary',
-        }}
         openGraph={{
           type: 'website',
           locale: 'en_US',
-          site_name: 'Biomage Cellenics',
+          site_name: 'Cellenics',
         }}
       />
       <TagManager

@@ -3,16 +3,20 @@ import PropTypes from 'prop-types';
 import Head from 'next/head';
 import { getTrackingDetails } from 'utils/tracking';
 
+import getDomainSpecificContent from 'utils/getDomainSpecificContent';
+
 const TagManager = ({ environment }) => {
   const { enabled, containerId } = getTrackingDetails(environment);
 
   // if tracking is not enabled don't add tag manager to the head
   if (!enabled) return (null);
 
+  const matomoName = getDomainSpecificContent('matomoName');
+
   const mtmTrackingCode = `var _mtm = window._mtm = window._mtm || [];
-          _mtm.push({'mtm.startTime': (new Date().getTime()), 'event': 'mtm.Start'});
-          var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
-          g.async=true; g.src='https://cdn.matomo.cloud/biomage.matomo.cloud/container_${containerId}.js'; s.parentNode.insertBefore(g,s);`;
+            _mtm.push({'mtm.startTime': (new Date().getTime()), 'event': 'mtm.Start'});
+            var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+            g.async=true; g.src='https://cdn.matomo.cloud/${matomoName}.matomo.cloud/container_${containerId}.js'; s.parentNode.insertBefore(g,s);`;
 
   return (
     <Head>

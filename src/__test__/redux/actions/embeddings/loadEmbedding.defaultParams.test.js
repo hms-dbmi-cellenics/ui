@@ -107,6 +107,6 @@ describe('loadEmbedding action', () => {
     // this ETag should match exactly the one in
     // submitMarkerHeatmap.test.js
     const ETag = hashMock.mock.results[0].value;
-    expect(ETag).toEqual('fb7a8a67c7806fa90c69b9cdb16dd478'); // pragma: allowlist secret`
+    expect(ETag).toEqual('5c144d6e44aa4e09497a4bc5b12a285c'); // pragma: allowlist secret`
   });
 });

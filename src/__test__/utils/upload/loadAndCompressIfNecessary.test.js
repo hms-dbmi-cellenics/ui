@@ -1,48 +1,36 @@
-import { gzip } from 'fflate';
-
 import loadAndCompressIfNecessary from 'utils/upload/loadAndCompressIfNecessary';
+import mockFile, { range } from '__test__/test-utils/mockFile';
+
+import { gzip } from 'fflate';
 
 jest.mock('fflate', () => ({
   gzip: jest.fn(),
 }));
 
-jest.mock('utils/upload/readFileToBuffer', () => (fileObject) => Promise.resolve(Buffer.from(fileObject)));
-
-const mockContent = 'mock_file';
+const mockContent = range(1024);
 
 describe('loadAndCompressIfNecessary', () => {
-  it('Does not compress file if file is compressed', async () => {
+  it('compresses a file', async () => {
     const uncompressedFile = {
-      fileObject: mockContent,
-      compressed: true,
-    };
-
-    const result = await loadAndCompressIfNecessary(uncompressedFile);
-
-    expect(result.toString()).toEqual(mockContent);
-    expect(gzip).not.toHaveBeenCalled();
-  });
-
-  it('Compresses file if not compressed', async () => {
-    const compressedFile = {
-      fileObject: mockContent,
-      compressed: false,
+      fileObject: mockFile('features.tsv'),
     };
 
     gzip.mockImplementation((buffer, opt, fn) => {
       fn(null, buffer);
     });
 
-    const result = await loadAndCompressIfNecessary(compressedFile);
+    const mockOnCompression = jest.fn();
 
-    expect(result.toString()).toEqual(mockContent);
+    const result = await loadAndCompressIfNecessary(uncompressedFile, mockOnCompression);
+
     expect(gzip).toHaveBeenCalledTimes(1);
+    expect(mockOnCompression).toHaveBeenCalledTimes(1);
+    expect(result.toString()).toEqual(mockContent);
   });
 
   it('Throws an error if there is an error while compressing file', async () => {
     const uncompressedFile = {
-      fileObject: mockContent,
-      compressed: false,
+      fileObject: mockFile('features.tsv'),
     };
 
     const errorString = 'some error';

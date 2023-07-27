@@ -86,6 +86,9 @@ const noDataState = {
         pipeline: {
           status: PipelineStatus.NOT_CREATED,
         },
+        seurat: {
+          status: PipelineStatus.NOT_CREATED,
+        },
       },
     },
   },
@@ -142,6 +145,51 @@ const withDataState = {
           status: PipelineStatus.SUCCEEDED,
         },
         pipeline: {
+          status: PipelineStatus.SUCCEEDED,
+        },
+        seurat: {
+          status: PipelineStatus.NOT_CREATED,
+        },
+      },
+    },
+  },
+};
+
+const withSeuratDataState = {
+  ...noDataState,
+  experiments: {
+    ...noDataState.experiments,
+    [experiment1id]: {
+      ...noDataState.experiments[experiment1id],
+      sampleIds: [sample1Uuid],
+    },
+  },
+  samples: {
+    ...noDataState.samples,
+    [sample1Uuid]: {
+      ...sampleTemplate,
+      name: sample1Name,
+      experimentId: experiment1id,
+      uuid: sample1Uuid,
+      type: sampleTech.SEURAT,
+      fileNames: ['r.rds'],
+      files: {
+        'r.rds': { valid: true, upload: { status: UploadStatus.UPLOADED } },
+      },
+    },
+  },
+  backendStatus: {
+    [experiment1id]: {
+      ...initialExperimentBackendStatus,
+      status: {
+        gem2s: {
+          status: PipelineStatus.NOT_CREATED,
+        },
+        pipeline: {
+          status: PipelineStatus.NOT_CREATED,
+        },
+        seurat: {
+          paramsHash: 'old-params-hash',
           status: PipelineStatus.SUCCEEDED,
         },
       },
@@ -203,7 +251,7 @@ describe('ProjectDetails', () => {
       </Provider>,
     );
 
-    expect(screen.getByText('Add samples')).toBeDefined();
+    expect(screen.getByText('Add data')).toBeDefined();
     expect(screen.getByText('Add metadata')).toBeDefined();
     expect(screen.getByText('Download')).toBeDefined();
     expect(screen.getByText('Process project')).toBeDefined();
@@ -232,6 +280,18 @@ describe('ProjectDetails', () => {
     const metadataButton = screen.getByText('Add metadata').closest('button');
 
     expect(metadataButton).not.toBeDisabled();
+  });
+
+  it('Add metadata button is disabled if it is Seurat', () => {
+    render(
+      <Provider store={mockStore(withSeuratDataState)}>
+        {projectDetailsFactory()}
+      </Provider>,
+    );
+
+    const metadataButton = screen.getByText('Add metadata').closest('button');
+
+    expect(metadataButton).toBeDisabled();
   });
 
   it('Add metadata button is disabled for subset experiments', () => {

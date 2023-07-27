@@ -106,6 +106,7 @@ const generateProcessingConfigMock = (sampleIds) => ({
     enabled: true,
     embeddingSettings: {
       method: 'umap',
+      useSaved: false,
       methodSettings: {
         umap: {
           minimumDistance: 0.1,

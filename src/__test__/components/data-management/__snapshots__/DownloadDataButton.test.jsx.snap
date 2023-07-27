@@ -11,6 +11,7 @@ Array [
       },
       "name": "GetEmbedding",
       "type": "umap",
+      "useSaved": undefined,
     },
     [Function],
     [Function],
@@ -21,7 +22,7 @@ Array [
   Array [
     "testae48e318dab9a1bd0bexperiment-0",
     Object {
-      "embeddingETag": "3ab3e178818e5ade19c61b8fb49a0709",
+      "embeddingETag": "40425699abc7c16fbf3430b3d4ff3f3e",
       "name": "DownloadAnnotSeuratObject",
     },
     [Function],

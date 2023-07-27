@@ -12,7 +12,7 @@ metadata:
   namespace: FILLED_IN_BY_CI
 spec:
   interval: 5m0s
-  url: https://github.com/biomage-org/iac
+  url: FILLED_IN_BY_CI
   ref:
     branch: FILLED_IN_BY_CI
 ---
@@ -82,9 +82,9 @@ spec:
     # its own health checks/cordoning
     readinessProbe:
       probeType: exec
-      command: ["echo", "0"]
+      command: ['echo', '0']
     loadBalancerHealthCheck:
-      path: "/robots.txt"
+      path: '/robots.txt'
       periodSeconds: 30
     livenessProbe:
       probeType: tcpSocket

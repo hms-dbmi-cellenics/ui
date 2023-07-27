@@ -24,7 +24,7 @@ const loadEmbedding = (
 
   if (!embeddingState) return null;
 
-  const { methodSettings } = embeddingState;
+  const { methodSettings, useSaved } = embeddingState;
 
   // Set up loading state.
   dispatch({
@@ -37,10 +37,11 @@ const loadEmbedding = (
   const body = {
     name: 'GetEmbedding',
     type: embeddingType,
+    useSaved,
     config: methodSettings[embeddingType],
   };
 
-  const timeout = getTimeoutForWorkerTask(getState(), 'GetEmbedding', { type: embeddingType });
+  const timeout = getTimeoutForWorkerTask(getState(), 'GetEmbedding', { type: embeddingType, useSaved });
 
   try {
     const data = await fetchWork(

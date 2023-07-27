@@ -95,7 +95,7 @@ describe('ProjectMenu', () => {
     });
 
     // Has add samples button
-    expect(screen.getByText('Add samples').closest('button')).toBeInTheDocument();
+    expect(screen.getByText('Add data').closest('button')).toBeInTheDocument();
 
     // Has Download button
     expect(screen.getByText('Download')).toBeInTheDocument();
@@ -107,7 +107,7 @@ describe('ProjectMenu', () => {
     expect(screen.getByText('Share')).toBeInTheDocument();
   });
 
-  it('Clicking Add Samples should bring up the add samples modal', async () => {
+  it('Clicking Add Data should bring up the add data modal', async () => {
     await act(async () => {
       render(
         <Provider store={storeState}>
@@ -116,10 +116,10 @@ describe('ProjectMenu', () => {
       );
     });
 
-    const addSamplesButton = screen.getByText('Add samples').closest('button');
+    const addDataButton = screen.getByText('Add data').closest('button');
 
     await act(async () => {
-      userEvent.click(addSamplesButton);
+      userEvent.click(addDataButton);
     });
 
     expect(screen.getByText('Upload')).toBeInTheDocument();
